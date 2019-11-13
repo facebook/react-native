@@ -90,8 +90,20 @@ function LogBoxInspector(props: Props): React.Node {
   );
 }
 
+const headerTitleMap = {
+  warn: 'Warning',
+  error: 'Error',
+  fatal: 'Exception',
+  syntax: 'Syntax Error',
+  component: 'Component Exception',
+};
+
 function LogBoxInspectorBody(props) {
   const [collapsed, setCollapsed] = React.useState(true);
+
+  const headerTitle =
+    headerTitleMap[props.log.isComponentError ? 'component' : props.log.level];
+
   if (collapsed) {
     return (
       <>
@@ -100,6 +112,7 @@ function LogBoxInspectorBody(props) {
           onPress={() => setCollapsed(!collapsed)}
           message={props.log.message}
           level={props.log.level}
+          title={headerTitle}
         />
         <ScrollView style={styles.scrollBody}>
           <LogBoxInspectorCodeFrame codeFrame={props.log.codeFrame} />
@@ -117,6 +130,7 @@ function LogBoxInspectorBody(props) {
         onPress={() => setCollapsed(!collapsed)}
         message={props.log.message}
         level={props.log.level}
+        title={headerTitle}
       />
       <LogBoxInspectorReactFrames log={props.log} />
       <LogBoxInspectorStackFrames log={props.log} onRetry={props.onRetry} />

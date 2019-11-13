@@ -24,6 +24,7 @@ type Props = $ReadOnly<{|
   collapsed: boolean,
   message: Message,
   level: LogLevel,
+  title: string,
   onPress: () => void,
 |}>;
 
@@ -51,14 +52,7 @@ function LogBoxInspectorMessageHeader(props: Props): React.Node {
     <View style={messageStyles.body}>
       <View style={messageStyles.heading}>
         <Text style={[messageStyles.headingText, messageStyles[props.level]]}>
-          {
-            {
-              warn: 'Warning',
-              error: 'Error',
-              fatal: 'Fatal Error',
-              syntax: 'Syntax Error',
-            }[props.level]
-          }
+          {props.title}
         </Text>
         {renderShowMore()}
       </View>

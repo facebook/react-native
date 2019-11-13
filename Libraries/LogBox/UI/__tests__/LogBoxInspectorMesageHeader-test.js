@@ -20,6 +20,7 @@ describe('LogBoxInspectorMessageHeader', () => {
   it('should render error', () => {
     const output = render.shallowRender(
       <LogBoxInspectorMessageHeader
+        title="Error"
         level="error"
         collapsed={false}
         message={{
@@ -36,6 +37,7 @@ describe('LogBoxInspectorMessageHeader', () => {
   it('should render fatal', () => {
     const output = render.shallowRender(
       <LogBoxInspectorMessageHeader
+        title="Fatal Error"
         level="fatal"
         collapsed={false}
         message={{
@@ -52,6 +54,7 @@ describe('LogBoxInspectorMessageHeader', () => {
   it('should render syntax error', () => {
     const output = render.shallowRender(
       <LogBoxInspectorMessageHeader
+        title="Syntax Error"
         level="syntax"
         collapsed={false}
         message={{
@@ -68,6 +71,7 @@ describe('LogBoxInspectorMessageHeader', () => {
   it('should not render collapse button for short content', () => {
     const output = render.shallowRender(
       <LogBoxInspectorMessageHeader
+        title="Warning"
         level="warn"
         collapsed={false}
         message={{
@@ -84,6 +88,7 @@ describe('LogBoxInspectorMessageHeader', () => {
   it('should render "collapse" if expanded', () => {
     const output = render.shallowRender(
       <LogBoxInspectorMessageHeader
+        title="Warning"
         level="warn"
         collapsed={false}
         message={{content: '#'.repeat(200), substitutions: []}}
@@ -97,6 +102,7 @@ describe('LogBoxInspectorMessageHeader', () => {
   it('should render "see more" if collapsed', () => {
     const output = render.shallowRender(
       <LogBoxInspectorMessageHeader
+        title="Warning"
         level="warn"
         collapsed={true}
         message={{
