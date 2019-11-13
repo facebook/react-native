@@ -17,6 +17,7 @@ import ScrollView from '../../Components/ScrollView/ScrollView';
 import StyleSheet from '../../StyleSheet/StyleSheet';
 import View from '../../Components/View/View';
 import * as LogBoxData from '../Data/LogBoxData';
+import Keyboard from '../../Components/Keyboard/Keyboard';
 import LogBoxInspectorFooter from './LogBoxInspectorFooter';
 import LogBoxInspectorMessageHeader from './LogBoxInspectorMessageHeader';
 import LogBoxInspectorReactFrames from './LogBoxInspectorReactFrames';
@@ -58,6 +59,10 @@ function LogBoxInspector(props: Props): React.Node {
       LogBoxData.symbolicateLogLazy(logs[nextIndex]);
     }
   }, [logs, selectedIndex]);
+
+  React.useEffect(() => {
+    Keyboard.dismiss();
+  }, []);
 
   function _handleRetry() {
     LogBoxData.retrySymbolicateLogNow(log);
