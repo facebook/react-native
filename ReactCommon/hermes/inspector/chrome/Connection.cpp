@@ -75,6 +75,7 @@ class Connection::Impl : public inspector::InspectorObserver,
   void handle(const m::debugger::PauseRequest &req) override;
   void handle(const m::debugger::RemoveBreakpointRequest &req) override;
   void handle(const m::debugger::ResumeRequest &req) override;
+  void handle(const m::debugger::SetBreakpointRequest &req) override;
   void handle(const m::debugger::SetBreakpointByUrlRequest &req) override;
   void handle(const m::debugger::SetPauseOnExceptionsRequest &req) override;
   void handle(const m::debugger::StepIntoRequest &req) override;
@@ -475,6 +476,40 @@ void Connection::Impl::handle(const m::debugger::RemoveBreakpointRequest &req) {
 
 void Connection::Impl::handle(const m::debugger::ResumeRequest &req) {
   sendResponseToClientViaExecutor(inspector_->resume(), req.id);
+}
+
+void Connection::Impl::handle(const m::debugger::SetBreakpointRequest &req) {
+  debugger::SourceLocation loc;
+
+  auto scriptId = folly::tryTo<unsigned int>(req.location.scriptId);
+  if (!scriptId) {
+    sendErrorToClientViaExecutor(
+        req.id, "Expected integer scriptId: " + req.location.scriptId);
+    return;
+  }
+
+  loc.fileId = scriptId.value();
+  // CDP Locations are 0-based, Hermes lines/columns are 1-based
+  loc.line = req.location.lineNumber + 1;
+  if (req.location.columnNumber) {
+    loc.column = req.location.columnNumber.value() + 1;
+  }
+
+  inspector_->setBreakpoint(loc, req.condition)
+      .via(executor_.get())
+      .thenValue([this, id = req.id](debugger::BreakpointInfo info) {
+        m::debugger::SetBreakpointResponse resp;
+        resp.id = id;
+        resp.breakpointId = folly::to<std::string>(info.id);
+
+        if (info.resolved) {
+          resp.actualLocation =
+              m::debugger::makeLocation(info.resolvedLocation);
+        }
+
+        sendResponseToClient(resp);
+      })
+      .thenError<std::exception>(sendErrorToClient(req.id));
 }
 
 void Connection::Impl::handle(

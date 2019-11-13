@@ -398,6 +398,24 @@ TEST(MessageTests, TestRequestFromJson) {
   EXPECT_TRUE(invalidReq.hasException());
 }
 
+TEST(MessageTests, TestBreakpointRequestFromJSON) {
+  std::unique_ptr<Request> baseReq = Request::fromJsonThrowOnError(R"({
+    "id": 1,
+    "method": "Debugger.setBreakpoint",
+    "params": {
+      "location": {
+        "scriptId": "23",
+        "lineNumber": 45,
+        "columnNumber": 67
+      }
+    }
+  })");
+  auto req = static_cast<debugger::SetBreakpointRequest *>(baseReq.get());
+  EXPECT_EQ(req->location.scriptId, "23");
+  EXPECT_EQ(req->location.lineNumber, 45);
+  EXPECT_EQ(req->location.columnNumber.value(), 67);
+}
+
 struct MyHandler : public NoopRequestHandler {
   void handle(const debugger::EnableRequest &req) override {
     enableReq = req;

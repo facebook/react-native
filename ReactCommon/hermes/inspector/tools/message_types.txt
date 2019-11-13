@@ -8,6 +8,7 @@ Debugger.removeBreakpoint
 Debugger.resume
 Debugger.resumed
 Debugger.scriptParsed
+Debugger.setBreakpoint
 Debugger.setBreakpointByUrl
 Debugger.setPauseOnExceptions
 Debugger.stepInto
