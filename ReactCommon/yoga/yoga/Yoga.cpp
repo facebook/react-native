@@ -1868,15 +1868,17 @@ static float YGNodeCalculateAvailableInnerDim(
     const YGNodeConstRef node,
     YGFlexDirection axis,
     float availableDim,
-    float ownerDim) {
+    float ownerDim,
+    float ownerDimForMarginPadding) {
   YGFlexDirection direction =
       YGFlexDirectionIsRow(axis) ? YGFlexDirectionRow : YGFlexDirectionColumn;
   YGDimension dimension =
       YGFlexDirectionIsRow(axis) ? YGDimensionWidth : YGDimensionHeight;
 
-  const float margin = node->getMarginForAxis(direction, ownerDim).unwrap();
+  const float margin =
+      node->getMarginForAxis(direction, ownerDimForMarginPadding).unwrap();
   const float paddingAndBorder =
-      YGNodePaddingAndBorderForAxis(node, direction, ownerDim);
+      YGNodePaddingAndBorderForAxis(node, direction, ownerDimForMarginPadding);
 
   float availableInnerDim = availableDim - margin - paddingAndBorder;
   // Max dimension overrides predefined dimension value; Min dimension in turn
@@ -2894,9 +2896,9 @@ static void YGNodelayoutImpl(
   // STEP 2: DETERMINE AVAILABLE SIZE IN MAIN AND CROSS DIRECTIONS
 
   float availableInnerWidth = YGNodeCalculateAvailableInnerDim(
-      node, YGFlexDirectionRow, availableWidth, ownerWidth);
+      node, YGFlexDirectionRow, availableWidth, ownerWidth, ownerWidth);
   float availableInnerHeight = YGNodeCalculateAvailableInnerDim(
-      node, YGFlexDirectionColumn, availableHeight, ownerHeight);
+      node, YGFlexDirectionColumn, availableHeight, ownerHeight, ownerWidth);
 
   float availableInnerMainDim =
       isMainAxisRow ? availableInnerWidth : availableInnerHeight;
