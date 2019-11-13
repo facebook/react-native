@@ -83,11 +83,11 @@ function LogBoxInspectorSourceMapStatus(props: Props): React.Node {
       break;
   }
 
-  if (props.status === 'COMPLETE') {
+  if (props.status === 'COMPLETE' || image == null) {
     return null;
   }
 
-  return image == null ? null : (
+  return (
     <LogBoxButton
       backgroundColor={{
         default: 'transparent',
@@ -101,7 +101,9 @@ function LogBoxInspectorSourceMapStatus(props: Props): React.Node {
         style={[
           styles.image,
           {tintColor: color},
-          state.rotate == null ? null : {transform: [{rotate: state.rotate}]},
+          state.rotate == null || props.status !== 'PENDING'
+            ? null
+            : {transform: [{rotate: state.rotate}]},
         ]}
       />
       <Text style={[styles.text, {color}]}>Source Map</Text>
