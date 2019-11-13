@@ -141,6 +141,26 @@ struct RectangleEdges {
   }
 };
 
+template <typename T>
+RectangleEdges<T> operator+(
+    RectangleEdges<T> const &lhs,
+    RectangleEdges<T> const &rhs) {
+  return RectangleEdges<T>{lhs.left + rhs.left,
+                           lhs.top + rhs.top,
+                           lhs.right + rhs.right,
+                           lhs.bottom + rhs.bottom};
+}
+
+template <typename T>
+RectangleEdges<T> operator-(
+    RectangleEdges<T> const &lhs,
+    RectangleEdges<T> const &rhs) {
+  return RectangleEdges<T>{lhs.left - rhs.left,
+                           lhs.top - rhs.top,
+                           lhs.right - rhs.right,
+                           lhs.bottom - rhs.bottom};
+}
+
 /*
  * Generic data structure describes some values associated with *corners*
  * of a rectangle.
