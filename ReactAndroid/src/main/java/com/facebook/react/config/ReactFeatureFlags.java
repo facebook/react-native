@@ -26,11 +26,11 @@ public class ReactFeatureFlags {
   public static boolean useMapNativeAccessor = false;
 
   /**
-   * Should this application use TurboModules. If yes, then any module that inherits {@link
+   * Should this application use TurboModules? If yes, then any module that inherits {@link
    * com.facebook.react.turbomodule.core.interfaces.TurboModule} will NOT be passed in to C++
    * CatalystInstanceImpl
    */
-  public static boolean useTurboModules = false;
+  public static volatile boolean useTurboModules = false;
 
   /**
    * Log tags of when a view deleted on the native side {@link
