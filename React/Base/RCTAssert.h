@@ -136,6 +136,11 @@ RCT_EXTERN NSString *RCTCurrentThreadName(void);
 RCT_EXTERN NSString *RCTFormatError(NSString *message, NSArray<NSDictionary<NSString *, id> *> *stacktrace, NSUInteger maxMessageLength);
 
 /**
+ * Formats a JS stack trace for logging.
+ */
+RCT_EXTERN NSString *RCTFormatStackTrace(NSArray<NSDictionary<NSString *, id> *> *stackTrace);
+
+/**
  * Convenience macro to assert which thread is currently running (DEBUG mode only)
  */
 #if DEBUG
