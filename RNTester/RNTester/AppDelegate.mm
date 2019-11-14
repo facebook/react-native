@@ -16,6 +16,10 @@
 #import <React/RCTImageLoader.h>
 #import <React/RCTLocalAssetImageLoader.h>
 #import <React/RCTGIFImageDecoder.h>
+#import <React/RCTNetworking.h>
+#import <React/RCTHTTPRequestHandler.h>
+#import <React/RCTDataRequestHandler.h>
+#import <React/RCTFileRequestHandler.h>
 #import <React/RCTRootView.h>
 
 #import <cxxreact/JSExecutor.h>
@@ -150,6 +154,14 @@
       return @[[RCTLocalAssetImageLoader new]];
     } decodersProvider:^NSArray<id<RCTImageDataDecoder>> *{
       return @[[RCTGIFImageDecoder new]];
+    }];
+  } else if (moduleClass == RCTNetworking.class) {
+    return [[moduleClass alloc] initWithHandlersProvider:^NSArray<id<RCTURLRequestHandler>> *{
+      return @[
+        [RCTHTTPRequestHandler new],
+        [RCTDataRequestHandler new],
+        [RCTFileRequestHandler new],
+      ];
     }];
   }
   // No custom initializer here.
