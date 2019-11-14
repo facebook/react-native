@@ -82,7 +82,12 @@ const ActivityIndicator = (props: Props, forwardedRef?: any) => {
       sizeProp = 'large';
       break;
     default:
-      sizeStyle = {height: props.size, width: props.size};
+      if (typeof size === 'number') {
+        sizeStyle = {height: props.size, width: props.size};
+      } else {
+        sizeStyle = styles.sizeSmall;
+        sizeProp = 'small';
+      }
       break;
   }
 
@@ -101,10 +106,7 @@ const ActivityIndicator = (props: Props, forwardedRef?: any) => {
   return (
     <View
       onLayout={onLayout}
-      style={StyleSheet.compose(
-        styles.container,
-        style,
-      )}>
+      style={StyleSheet.compose(styles.container, style)}>
       {Platform.OS === 'android' ? (
         // $FlowFixMe Flow doesn't know when this is the android component
         <PlatformActivityIndicator {...nativeProps} {...androidProps} />
