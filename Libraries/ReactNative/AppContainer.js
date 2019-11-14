@@ -34,15 +34,19 @@ type Props = $ReadOnly<{|
 type State = {|
   inspector: ?React.Node,
   mainKey: number,
+  hasError: boolean,
 |};
 
 class AppContainer extends React.Component<Props, State> {
   state: State = {
     inspector: null,
     mainKey: 1,
+    hasError: false,
   };
   _mainRef: ?React.ElementRef<typeof View>;
   _subscription: ?EmitterSubscription = null;
+
+  static getDerivedStateFromError: any = undefined;
 
   static childContextTypes:
     | any
@@ -132,7 +136,7 @@ class AppContainer extends React.Component<Props, State> {
     return (
       <RootTagContext.Provider value={this.props.rootTag}>
         <View style={styles.appContainer} pointerEvents="box-none">
-          {innerView}
+          {!this.state.hasError && innerView}
           {this.state.inspector}
           {logBox}
         </View>
@@ -152,6 +156,15 @@ if (__DEV__) {
     if (global.__reactExperimentalLogBox) {
       const LogBox = require('../LogBox/LogBox');
       LogBox.install();
+
+      // TODO: (rickhanlonii) T57484314 Temporary hack to fix LogBox experiment but we need to
+      // either decide to provide an error boundary by default or move this to a separate root.
+      AppContainer.getDerivedStateFromError = function getDerivedStateFromError(
+        error,
+        state,
+      ) {
+        return {...state, hasError: true};
+      };
     } else {
       const YellowBox = require('../YellowBox/YellowBox');
       YellowBox.install();
