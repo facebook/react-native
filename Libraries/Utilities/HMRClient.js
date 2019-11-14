@@ -211,6 +211,7 @@ Error: ${e.message}`;
     client.on('update', ({isInitialUpdate}) => {
       if (client.isEnabled() && !isInitialUpdate) {
         dismissRedbox();
+        LogBoxData.clearSyntaxErrors();
       }
     });
 
@@ -297,8 +298,6 @@ function flushEarlyLogs(client) {
 }
 
 function dismissRedbox() {
-  LogBoxData.clearSyntaxErrors();
-
   if (
     Platform.OS === 'ios' &&
     NativeRedBox != null &&
