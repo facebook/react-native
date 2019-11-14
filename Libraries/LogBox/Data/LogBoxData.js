@@ -44,7 +44,7 @@ export type Subscription = $ReadOnly<{|
   unsubscribe: () => void,
 |}>;
 
-type WarningInfo = {|
+export type WarningInfo = {|
   finalFormat: string,
   forceDialogImmediately: boolean,
   suppressDialog_LEGACY: boolean,
@@ -54,7 +54,7 @@ type WarningInfo = {|
   monitorSampleRate: number,
 |};
 
-type WarningFilter = (format: string) => WarningInfo;
+export type WarningFilter = (format: string) => WarningInfo;
 
 const observers: Set<{observer: Observer}> = new Set();
 const ignorePatterns: Set<IgnorePattern> = new Set();
