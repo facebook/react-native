@@ -20,13 +20,49 @@ import LogBoxInspectorStackFrame from './LogBoxInspectorStackFrame';
 import LogBoxInspectorSection from './LogBoxInspectorSection';
 import * as LogBoxStyle from './LogBoxStyle';
 import openFileInEditor from '../../Core/Devtools/openFileInEditor';
-
+import type {Stack} from '../Data/LogBoxSymbolication';
 import type LogBoxLog from '../Data/LogBoxLog';
 
 type Props = $ReadOnly<{|
   log: LogBoxLog,
   onRetry: () => void,
 |}>;
+
+export function getCollapseMessage(
+  stackFrames: Stack,
+  collapsed: boolean,
+): string {
+  if (stackFrames.length === 0) {
+    return 'No frames to show';
+  }
+
+  const collapsedCount = stackFrames.reduce((count, {collapse}) => {
+    if (collapse === true) {
+      return count + 1;
+    }
+
+    return count;
+  }, 0);
+
+  if (collapsedCount === 0) {
+    return 'Showing all frames';
+  }
+
+  const framePlural = `frame${collapsedCount > 1 ? 's' : ''}`;
+  if (collapsedCount === stackFrames.length) {
+    return collapsed
+      ? `See${
+          collapsedCount > 1 ? ' all ' : ' '
+        }${collapsedCount} collapsed ${framePlural}`
+      : `Collapse${
+          collapsedCount > 1 ? ' all ' : ' '
+        }${collapsedCount} ${framePlural}`;
+  } else {
+    return collapsed
+      ? `See ${collapsedCount} more ${framePlural}`
+      : `Collapse ${collapsedCount} ${framePlural}`;
+  }
+}
 
 function LogBoxInspectorStackFrames(props: Props): React.Node {
   const [collapsed, setCollapsed] = React.useState(true);
@@ -36,23 +72,6 @@ function LogBoxInspectorStackFrames(props: Props): React.Node {
       return props.log.getAvailableStack().filter(({collapse}) => !collapse);
     } else {
       return props.log.getAvailableStack();
-    }
-  }
-
-  function getCollapseMessage() {
-    const stackFrames = props.log.getAvailableStack();
-    const collapsedCount = stackFrames.reduce((count, {collapse}) => {
-      if (collapse !== true) {
-        return count + 1;
-      }
-
-      return count;
-    }, 0);
-
-    if (collapsed) {
-      return `See ${collapsedCount} more frames`;
-    } else {
-      return `Collapse ${collapsedCount} frames`;
     }
   }
 
@@ -77,7 +96,7 @@ function LogBoxInspectorStackFrames(props: Props): React.Node {
       />
       <StackFrameFooter
         onPress={() => setCollapsed(!collapsed)}
-        message={getCollapseMessage()}
+        message={getCollapseMessage(props.log.getAvailableStack(), collapsed)}
       />
     </LogBoxInspectorSection>
   );
@@ -110,13 +129,14 @@ function StackFrameList(props) {
 
 function StackFrameFooter(props) {
   return (
-    <View>
+    <View style={stackStyles.collapseContainer}>
       <LogBoxButton
         backgroundColor={{
           default: 'transparent',
           pressed: LogBoxStyle.getBackgroundColor(1),
         }}
-        onPress={props.onPress}>
+        onPress={props.onPress}
+        style={stackStyles.collapseButton}>
         <Text style={stackStyles.collapse}>{props.message}</Text>
       </LogBoxButton>
     </View>
@@ -152,13 +172,20 @@ const stackStyles = StyleSheet.create({
     fontWeight: '500',
     paddingHorizontal: 27,
   },
+  collapseContainer: {
+    marginLeft: 15,
+    flexDirection: 'row',
+  },
+  collapseButton: {
+    borderRadius: 5,
+  },
   collapse: {
     color: LogBoxStyle.getTextColor(0.7),
     fontSize: 12,
     fontWeight: '300',
     lineHeight: 20,
-    marginLeft: 25,
     marginTop: 0,
+    paddingHorizontal: 10,
     paddingVertical: 5,
   },
 });

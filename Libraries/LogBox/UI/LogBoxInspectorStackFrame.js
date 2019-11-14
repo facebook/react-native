@@ -30,36 +30,38 @@ function LogBoxInspectorStackFrame(props: Props): React.Node {
   const {frame, onPress} = props;
 
   return (
-    <LogBoxButton
-      backgroundColor={{
-        default: 'transparent',
-        pressed: LogBoxStyle.getBackgroundColor(1),
-      }}
-      onPress={onPress}
-      style={styles.frame}>
-      <Text style={[styles.name, frame.collapse === true && styles.dim]}>
-        {frame.methodName}
-      </Text>
-
-      <View style={styles.lineLocation}>
-        <Text
-          ellipsizeMode="middle"
-          numberOfLines={1}
-          style={[styles.location, frame.collapse === true && styles.dim]}>
-          {getFileName(frame)}
+    <View style={styles.frameContainer}>
+      <LogBoxButton
+        backgroundColor={{
+          default: 'transparent',
+          pressed: LogBoxStyle.getBackgroundColor(1),
+        }}
+        onPress={onPress}
+        style={styles.frame}>
+        <Text style={[styles.name, frame.collapse === true && styles.dim]}>
+          {frame.methodName}
         </Text>
-        {frame.lineNumber != null && (
-          <Text style={[styles.line, frame.collapse === true && styles.dim]}>
-            :{frame.lineNumber}
+
+        <View style={styles.lineLocation}>
+          <Text
+            ellipsizeMode="middle"
+            numberOfLines={1}
+            style={[styles.location, frame.collapse === true && styles.dim]}>
+            {getFileName(frame)}
           </Text>
-        )}
-        {frame.column != null && !isNaN(parseInt(frame.column, 10)) && (
-          <Text style={[styles.line, frame.collapse === true && styles.dim]}>
-            :{parseInt(frame.column, 10) + 1}
-          </Text>
-        )}
-      </View>
-    </LogBoxButton>
+          {frame.lineNumber != null && (
+            <Text style={[styles.line, frame.collapse === true && styles.dim]}>
+              :{frame.lineNumber}
+            </Text>
+          )}
+          {frame.column != null && !isNaN(parseInt(frame.column, 10)) && (
+            <Text style={[styles.line, frame.collapse === true && styles.dim]}>
+              :{parseInt(frame.column, 10) + 1}
+            </Text>
+          )}
+        </View>
+      </LogBoxButton>
+    </View>
   );
 }
 
@@ -75,9 +77,15 @@ function getFileName(frame: StackFrame): string {
 }
 
 const styles = StyleSheet.create({
+  frameContainer: {
+    flexDirection: 'row',
+    paddingHorizontal: 15,
+  },
   frame: {
-    paddingHorizontal: 25,
+    flex: 1,
     paddingVertical: 4,
+    paddingHorizontal: 10,
+    borderRadius: 5,
   },
   lineLocation: {
     flexDirection: 'row',

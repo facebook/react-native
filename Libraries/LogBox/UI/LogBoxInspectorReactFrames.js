@@ -55,34 +55,46 @@ function LogBoxInspectorReactFrames(props: Props): React.Node {
           key={index}
           style={componentStyles.frame}>
           <View style={componentStyles.component}>
-            <Text style={componentStyles.bracket}>{'<'}</Text>
-            <Text style={componentStyles.frameName}>{frame.component}</Text>
-            <Text style={componentStyles.bracket}>{' />'}</Text>
+            <Text style={componentStyles.frameName}>
+              <Text style={componentStyles.bracket}>{'<'}</Text>
+              {frame.component}
+              <Text style={componentStyles.bracket}>{' />'}</Text>
+            </Text>
           </View>
           <Text style={componentStyles.frameLocation}>{frame.location}</Text>
         </View>
       ))}
-      <LogBoxButton
-        backgroundColor={{
-          default: 'transparent',
-          pressed: LogBoxStyle.getBackgroundColor(1),
-        }}
-        onPress={() => setCollapsed(!collapsed)}>
-        <Text style={componentStyles.collapse}>{getCollapseMessage()}</Text>
-      </LogBoxButton>
+      <View style={componentStyles.collapseContainer}>
+        <LogBoxButton
+          backgroundColor={{
+            default: 'transparent',
+            pressed: LogBoxStyle.getBackgroundColor(1),
+          }}
+          onPress={() => setCollapsed(!collapsed)}
+          style={componentStyles.collapseButton}>
+          <Text style={componentStyles.collapse}>{getCollapseMessage()}</Text>
+        </LogBoxButton>
+      </View>
     </LogBoxInspectorSection>
   );
 }
 
 const componentStyles = StyleSheet.create({
+  collapseContainer: {
+    marginLeft: 15,
+    flexDirection: 'row',
+  },
+  collapseButton: {
+    borderRadius: 5,
+  },
   collapse: {
     color: LogBoxStyle.getTextColor(0.7),
     fontSize: 12,
     fontWeight: '300',
     lineHeight: 20,
-    marginLeft: 25,
     marginTop: 0,
     paddingVertical: 5,
+    paddingHorizontal: 10,
   },
   frame: {
     paddingHorizontal: 25,
@@ -90,6 +102,7 @@ const componentStyles = StyleSheet.create({
   },
   component: {
     flexDirection: 'row',
+    paddingRight: 10,
   },
   frameName: {
     fontFamily: Platform.select({android: 'monospace', ios: 'Menlo'}),

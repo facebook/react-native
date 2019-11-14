@@ -16,23 +16,10 @@ exports[`LogBoxInspectorReactFrames should render componentStack frames 1`] = `
       style={
         Object {
           "flexDirection": "row",
+          "paddingRight": 10,
         }
       }
     >
-      <Text
-        style={
-          Object {
-            "color": "rgba(255, 255, 255, 0.4)",
-            "fontFamily": "Menlo",
-            "fontSize": 14,
-            "fontWeight": "500",
-            "includeFontPadding": false,
-            "lineHeight": 18,
-          }
-        }
-      >
-        &lt;
-      </Text>
       <Text
         style={
           Object {
@@ -44,21 +31,35 @@ exports[`LogBoxInspectorReactFrames should render componentStack frames 1`] = `
           }
         }
       >
-        MyComponent
-      </Text>
-      <Text
-        style={
-          Object {
-            "color": "rgba(255, 255, 255, 0.4)",
-            "fontFamily": "Menlo",
-            "fontSize": 14,
-            "fontWeight": "500",
-            "includeFontPadding": false,
-            "lineHeight": 18,
+        <Text
+          style={
+            Object {
+              "color": "rgba(255, 255, 255, 0.4)",
+              "fontFamily": "Menlo",
+              "fontSize": 14,
+              "fontWeight": "500",
+              "includeFontPadding": false,
+              "lineHeight": 18,
+            }
           }
-        }
-      >
-         /&gt;
+        >
+          &lt;
+        </Text>
+        MyComponent
+        <Text
+          style={
+            Object {
+              "color": "rgba(255, 255, 255, 0.4)",
+              "fontFamily": "Menlo",
+              "fontSize": 14,
+              "fontWeight": "500",
+              "includeFontPadding": false,
+              "lineHeight": 18,
+            }
+          }
+        >
+           /&gt;
+        </Text>
       </Text>
     </View>
     <Text
@@ -76,31 +77,45 @@ exports[`LogBoxInspectorReactFrames should render componentStack frames 1`] = `
       MyComponentFile.js:1
     </Text>
   </View>
-  <LogBoxButton
-    backgroundColor={
+  <View
+    style={
       Object {
-        "default": "transparent",
-        "pressed": "rgba(51, 51, 51, 1)",
+        "flexDirection": "row",
+        "marginLeft": 15,
       }
     }
-    onPress={[Function]}
   >
-    <Text
+    <LogBoxButton
+      backgroundColor={
+        Object {
+          "default": "transparent",
+          "pressed": "rgba(51, 51, 51, 1)",
+        }
+      }
+      onPress={[Function]}
       style={
         Object {
-          "color": "rgba(255, 255, 255, 0.7)",
-          "fontSize": 12,
-          "fontWeight": "300",
-          "lineHeight": 20,
-          "marginLeft": 25,
-          "marginTop": 0,
-          "paddingVertical": 5,
+          "borderRadius": 5,
         }
       }
     >
-      See -2 more components
-    </Text>
-  </LogBoxButton>
+      <Text
+        style={
+          Object {
+            "color": "rgba(255, 255, 255, 0.7)",
+            "fontSize": 12,
+            "fontWeight": "300",
+            "lineHeight": 20,
+            "marginTop": 0,
+            "paddingHorizontal": 10,
+            "paddingVertical": 5,
+          }
+        }
+      >
+        See -2 more components
+      </Text>
+    </LogBoxButton>
+  </View>
 </LogBoxInspectorSection>
 `;
 

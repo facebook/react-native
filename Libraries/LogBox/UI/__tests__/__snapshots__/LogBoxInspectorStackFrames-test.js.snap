@@ -18,7 +18,7 @@ exports[`LogBoxInspectorStackFrame should render stack frames with 1 frame colla
         Object {
           "collapse": false,
           "column": 1,
-          "file": "app.js",
+          "file": "dependency.js",
           "lineNumber": 1,
           "methodName": "foo",
         },
@@ -27,7 +27,7 @@ exports[`LogBoxInspectorStackFrame should render stack frames with 1 frame colla
     status="NONE"
   />
   <StackFrameFooter
-    message="See 1 more frames"
+    message="See 1 more frame"
     onPress={[Function]}
   />
 </LogBoxInspectorSection>
