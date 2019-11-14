@@ -36,19 +36,5 @@ State::Shared State::getMostRecentState() const {
                 : ShadowNodeFragment::statePlaceholder();
 }
 
-#ifdef ANDROID
-const folly::dynamic State::getDynamic() const {
-  LOG(FATAL)
-      << "State::getDynamic should never be called (some virtual method of a concrete implementation should be called instead)";
-  abort();
-  return folly::dynamic::object();
-}
-void State::updateState(folly::dynamic data) const {
-  LOG(FATAL)
-      << "State::updateState should never be called (some virtual method of a concrete implementation should be called instead).";
-  abort();
-}
-#endif
-
 } // namespace react
 } // namespace facebook

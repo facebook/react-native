@@ -85,7 +85,7 @@ class ConcreteState : public State {
   }
 
 #ifdef ANDROID
-  const folly::dynamic getDynamic() const override {
+  folly::dynamic getDynamic() const override {
     return data_.getDynamic();
   }
 

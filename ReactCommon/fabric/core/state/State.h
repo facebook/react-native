@@ -36,8 +36,8 @@ class State {
   State::Shared getMostRecentState() const;
 
 #ifdef ANDROID
-  virtual const folly::dynamic getDynamic() const;
-  virtual void updateState(folly::dynamic data) const;
+  virtual folly::dynamic getDynamic() const = 0;
+  virtual void updateState(folly::dynamic data) const = 0;
 #endif
 
   void commit(std::shared_ptr<ShadowNode const> const &shadowNode) const;
