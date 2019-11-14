@@ -424,13 +424,22 @@ public class DevSupportManagerImpl
         });
   }
 
+  private int getExponentActivityId() {
+    return -1;
+  }
+
   @Override
   public void reloadExpoApp() {
     try {
-      int activityId = mDevServerHelper.mSettings.exponentActivityId;
-      Class.forName("host.exp.exponent.ReactNativeStaticHelpers").getMethod("reloadFromManifest", int.class).invoke(null, activityId);
+      Class.forName("host.exp.exponent.ReactNativeStaticHelpers").getMethod("reloadFromManifest", int.class).invoke(null, getExponentActivityId());
     } catch (Exception expoHandleErrorException) {
       expoHandleErrorException.printStackTrace();
+
+      // reloadExpoApp replaces handleReloadJS in some places
+      // where in Expo we would like to reload from manifest.
+      // If so, if anything goes wrong here, we can fall back
+      // to plain JS reload.
+      handleReloadJS();
     }
   }
 
@@ -477,52 +486,52 @@ public class DevSupportManagerImpl
             handleReloadJS();
           }
         });
-//    if (mDevSettings.isNuclideJSDebugEnabled()) {
-//      options.put(
-//          mApplicationContext.getString(R.string.reactandroid_catalyst_debug_nuclide),
-//          new DevOptionHandler() {
-//            @Override
-//            public void onOptionSelected() {
-//              mDevServerHelper.attachDebugger(mApplicationContext, "ReactNative");
-//            }
-//          });
-//    }
-// NOTE(brentvatne): This option does not make sense for Expo
-//    options.put(
-//        mApplicationContext.getString(R.string.reactandroid_catalyst_change_bundle_location),
-//        new DevOptionHandler() {
-//          @Override
-//          public void onOptionSelected() {
-//            Activity context = mReactInstanceManagerHelper.getCurrentActivity();
-//            if (context == null || context.isFinishing()) {
-//              FLog.e(
-//                  ReactConstants.TAG,
-//                  "Unable to launch change bundle location because react activity is not available");
-//              return;
-//            }
-//
-//            final EditText input = new EditText(context);
-//            input.setHint("localhost:8081");
-//
-//            AlertDialog bundleLocationDialog =
-//                new AlertDialog.Builder(context)
-//                    .setTitle(
-//                        mApplicationContext.getString(R.string.reactandroid_catalyst_change_bundle_location))
-//                    .setView(input)
-//                    .setPositiveButton(
-//                        android.R.string.ok,
-//                        new DialogInterface.OnClickListener() {
-//                          @Override
-//                          public void onClick(DialogInterface dialog, int which) {
-//                            String host = input.getText().toString();
-//                            mDevSettings.getPackagerConnectionSettings().setDebugServerHost(host);
-//                            handleReloadJS();
-//                          }
-//                        })
-//                    .create();
-//            bundleLocationDialog.show();
-//          }
-//      });
+    expo_transformer_remove: if (mDevSettings.isNuclideJSDebugEnabled()) {
+      options.put(
+          mApplicationContext.getString(R.string.reactandroid_catalyst_debug_nuclide),
+          new DevOptionHandler() {
+            @Override
+            public void onOptionSelected() {
+              mDevServerHelper.attachDebugger(mApplicationContext, "ReactNative");
+            }
+          });
+    }
+    // NOTE(brentvatne): This option does not make sense for Expo
+    expo_transformer_remove: options.put(
+        mApplicationContext.getString(R.string.reactandroid_catalyst_change_bundle_location),
+        new DevOptionHandler() {
+          @Override
+          public void onOptionSelected() {
+            Activity context = mReactInstanceManagerHelper.getCurrentActivity();
+            if (context == null || context.isFinishing()) {
+              FLog.e(
+                  ReactConstants.TAG,
+                  "Unable to launch change bundle location because react activity is not available");
+              return;
+            }
+
+            final EditText input = new EditText(context);
+            input.setHint("localhost:8081");
+
+            AlertDialog bundleLocationDialog =
+                new AlertDialog.Builder(context)
+                    .setTitle(
+                        mApplicationContext.getString(R.string.reactandroid_catalyst_change_bundle_location))
+                    .setView(input)
+                    .setPositiveButton(
+                        android.R.string.ok,
+                        new DialogInterface.OnClickListener() {
+                          @Override
+                          public void onClick(DialogInterface dialog, int which) {
+                            String host = input.getText().toString();
+                            mDevSettings.getPackagerConnectionSettings().setDebugServerHost(host);
+                            handleReloadJS();
+                          }
+                        })
+                    .create();
+            bundleLocationDialog.show();
+          }
+        });
     options.put(
         // NOTE: `isElementInspectorEnabled` is not guaranteed to be accurate.
         mApplicationContext.getString(R.string.reactandroid_catalyst_inspector),
@@ -552,28 +561,28 @@ public class DevSupportManagerImpl
                 mCurrentContext.getJSModule(HMRClient.class).disable();
               }
             }
-//            if (nextEnabled && !mDevSettings.isJSDevModeEnabled()) {
-//              Toast.makeText(
-//                      mApplicationContext,
-//                      mApplicationContext.getString(R.string.reactandroid_catalyst_hot_reloading_auto_enable),
-//                      Toast.LENGTH_LONG)
-//                  .show();
-//              mDevSettings.setJSDevModeEnabled(true);
-//              handleReloadJS();
-//            }
+            expo_transformer_remove: if (nextEnabled && !mDevSettings.isJSDevModeEnabled()) {
+              Toast.makeText(
+                      mApplicationContext,
+                      mApplicationContext.getString(R.string.reactandroid_catalyst_hot_reloading_auto_enable),
+                      Toast.LENGTH_LONG)
+                  .show();
+              mDevSettings.setJSDevModeEnabled(true);
+              handleReloadJS();
+            }
           }
         });
 
-//    options.put(
-//        mIsSamplingProfilerEnabled
-//            ? mApplicationContext.getString(R.string.reactandroid_catalyst_sample_profiler_disable)
-//            : mApplicationContext.getString(R.string.reactandroid_catalyst_sample_profiler_enable),
-//        new DevOptionHandler() {
-//          @Override
-//          public void onOptionSelected() {
-//            toggleJSSamplingProfiler();
-//          }
-//        });
+    expo_transformer_remove: options.put(
+        mIsSamplingProfilerEnabled
+            ? mApplicationContext.getString(R.string.reactandroid_catalyst_sample_profiler_disable)
+            : mApplicationContext.getString(R.string.reactandroid_catalyst_sample_profiler_enable),
+        new DevOptionHandler() {
+          @Override
+          public void onOptionSelected() {
+            toggleJSSamplingProfiler();
+          }
+        });
 
     options.put(
         mDevSettings.isFpsDebugEnabled()
@@ -594,16 +603,16 @@ public class DevSupportManagerImpl
             mDevSettings.setFpsDebugEnabled(!mDevSettings.isFpsDebugEnabled());
           }
         });
-//    options.put(
-//        mApplicationContext.getString(R.string.reactandroid_catalyst_settings),
-//        new DevOptionHandler() {
-//          @Override
-//          public void onOptionSelected() {
-//            Intent intent = new Intent(mApplicationContext, DevSettingsActivity.class);
-//            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-//            mApplicationContext.startActivity(intent);
-//          }
-//        });
+    expo_transformer_remove: options.put(
+        mApplicationContext.getString(R.string.reactandroid_catalyst_settings),
+        new DevOptionHandler() {
+          @Override
+          public void onOptionSelected() {
+            Intent intent = new Intent(mApplicationContext, DevSettingsActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            mApplicationContext.startActivity(intent);
+          }
+        });
 
     if (mCustomDevOptions.size() > 0) {
       options.putAll(mCustomDevOptions);
