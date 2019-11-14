@@ -59,6 +59,21 @@ describe('LogBoxMessage', () => {
     expect(output).toMatchSnapshot();
   });
 
+  it('should render a plaintext message and clean the content', () => {
+    const output = render.shallowRender(
+      <LogBoxMessage
+        plaintext
+        style={{}}
+        message={{
+          content: 'Error: This should not start with Error:',
+          substitutions: [],
+        }}
+      />,
+    );
+
+    expect(output).toMatchSnapshot();
+  });
+
   it('Should strip "Warning: " without breaking substitution', () => {
     const output = render.shallowRender(
       <LogBoxMessage

@@ -28,7 +28,7 @@ function LogBoxMessage(props: Props): React.Node {
   const {content, substitutions}: Message = props.message;
 
   if (props.plaintext === true) {
-    return <Text>{content}</Text>;
+    return <Text>{cleanContent(content)}</Text>;
   }
 
   const substitutionStyle: TextStyleProp = props.style;
