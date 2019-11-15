@@ -68,7 +68,7 @@ describe('LogBoxInspectorMessageHeader', () => {
     expect(output).toMatchSnapshot();
   });
 
-  it('should not render collapse button for short content', () => {
+  it('should not render See More button for short content', () => {
     const output = render.shallowRender(
       <LogBoxInspectorMessageHeader
         title="Warning"
@@ -85,13 +85,13 @@ describe('LogBoxInspectorMessageHeader', () => {
     expect(output).toMatchSnapshot();
   });
 
-  it('should render "collapse" if expanded', () => {
+  it('should not render "See More" if expanded', () => {
     const output = render.shallowRender(
       <LogBoxInspectorMessageHeader
         title="Warning"
         level="warn"
         collapsed={false}
-        message={{content: '#'.repeat(200), substitutions: []}}
+        message={{content: '#'.repeat(301), substitutions: []}}
         onPress={() => {}}
       />,
     );
@@ -99,14 +99,14 @@ describe('LogBoxInspectorMessageHeader', () => {
     expect(output).toMatchSnapshot();
   });
 
-  it('should render "see more" if collapsed', () => {
+  it('should render "See More" if collapsed', () => {
     const output = render.shallowRender(
       <LogBoxInspectorMessageHeader
         title="Warning"
         level="warn"
         collapsed={true}
         message={{
-          content: '#'.repeat(200),
+          content: '#'.repeat(301),
           substitutions: [],
         }}
         onPress={() => {}}

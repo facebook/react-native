@@ -14,7 +14,6 @@ import * as React from 'react';
 import StyleSheet from '../../StyleSheet/StyleSheet';
 import Text from '../../Text/Text';
 import View from '../../Components/View/View';
-import LogBoxButton from './LogBoxButton';
 import * as LogBoxStyle from './LogBoxStyle';
 import LogBoxMessage from './LogBoxMessage';
 import type {LogLevel} from '../Data/LogBoxLog';
@@ -28,23 +27,20 @@ type Props = $ReadOnly<{|
   onPress: () => void,
 |}>;
 
+const SHOW_MORE_MESSAGE_LENGTH = 300;
+
 function LogBoxInspectorMessageHeader(props: Props): React.Node {
   function renderShowMore() {
-    if (props.message.content.length < 140) {
+    if (
+      props.message.content.length < SHOW_MORE_MESSAGE_LENGTH ||
+      !props.collapsed
+    ) {
       return null;
     }
     return (
-      <LogBoxButton
-        backgroundColor={{
-          default: 'transparent',
-          pressed: LogBoxStyle.getBackgroundLightColor(1),
-        }}
-        style={messageStyles.button}
-        onPress={() => props.onPress()}>
-        <Text style={messageStyles.collapse}>
-          {props.collapsed ? 'see more' : 'collapse'}
-        </Text>
-      </LogBoxButton>
+      <Text style={messageStyles.collapse} onPress={() => props.onPress()}>
+        ... See More
+      </Text>
     );
   }
 
@@ -54,15 +50,14 @@ function LogBoxInspectorMessageHeader(props: Props): React.Node {
         <Text style={[messageStyles.headingText, messageStyles[props.level]]}>
           {props.title}
         </Text>
-        {renderShowMore()}
       </View>
-      <Text
-        numberOfLines={props.collapsed ? 5 : null}
-        style={messageStyles.bodyText}>
+      <Text style={messageStyles.bodyText}>
         <LogBoxMessage
+          maxLength={props.collapsed ? SHOW_MORE_MESSAGE_LENGTH : Infinity}
           message={props.message}
           style={messageStyles.messageText}
         />
+        {renderShowMore()}
       </Text>
     </View>
   );
@@ -118,7 +113,7 @@ const messageStyles = StyleSheet.create({
   },
   collapse: {
     color: LogBoxStyle.getTextColor(0.7),
-    fontSize: 12,
+    fontSize: 14,
     fontWeight: '300',
     lineHeight: 12,
   },

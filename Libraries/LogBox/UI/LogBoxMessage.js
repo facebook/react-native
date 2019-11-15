@@ -20,6 +20,7 @@ type Props = {
   message: Message,
   style: TextStyleProp,
   plaintext?: ?boolean,
+  maxLength?: ?number,
 };
 
 const cleanContent = content => content.replace(/(Warning|Error): /g, '');
@@ -31,8 +32,27 @@ function LogBoxMessage(props: Props): React.Node {
     return <Text>{cleanContent(content)}</Text>;
   }
 
+  const maxLength = props.maxLength != null ? props.maxLength : Infinity;
   const substitutionStyle: TextStyleProp = props.style;
   const elements = [];
+  let length = 0;
+  const createUnderLength = (key, message, style) => {
+    let cleanMessage = cleanContent(message);
+
+    if (props.maxLength != null) {
+      cleanMessage = cleanMessage.slice(0, props.maxLength - length);
+    }
+
+    if (length < maxLength) {
+      elements.push(
+        <Text key={key} style={style}>
+          {cleanMessage}
+        </Text>,
+      );
+    }
+
+    length += cleanMessage.length;
+  };
 
   const lastOffset = substitutions.reduce((prevOffset, substitution, index) => {
     const key = String(index);
@@ -43,25 +63,21 @@ function LogBoxMessage(props: Props): React.Node {
         substitution.offset - prevOffset,
       );
 
-      elements.push(<Text key={key}>{cleanContent(prevPart)}</Text>);
+      createUnderLength(key, prevPart);
     }
 
     const substititionPart = content.substr(
       substitution.offset,
       substitution.length,
     );
-    elements.push(
-      <Text key={key + '.5'} style={substitutionStyle}>
-        {cleanContent(substititionPart)}
-      </Text>,
-    );
 
+    createUnderLength(key + '.5', substititionPart, substitutionStyle);
     return substitution.offset + substitution.length;
   }, 0);
 
   if (lastOffset < content.length) {
     const lastPart = content.substr(lastOffset);
-    elements.push(<Text key="-1">{cleanContent(lastPart)}</Text>);
+    createUnderLength('-1', lastPart);
   }
 
   return <>{elements}</>;

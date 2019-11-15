@@ -101,6 +101,10 @@ const headerTitleMap = {
 function LogBoxInspectorBody(props) {
   const [collapsed, setCollapsed] = React.useState(true);
 
+  React.useEffect(() => {
+    setCollapsed(true);
+  }, [props.log]);
+
   const headerTitle =
     headerTitleMap[props.log.isComponentError ? 'component' : props.log.level];
 
@@ -132,6 +136,7 @@ function LogBoxInspectorBody(props) {
         level={props.log.level}
         title={headerTitle}
       />
+      <LogBoxInspectorCodeFrame codeFrame={props.log.codeFrame} />
       <LogBoxInspectorReactFrames log={props.log} />
       <LogBoxInspectorStackFrames log={props.log} onRetry={props.onRetry} />
       <LogBoxInspectorMeta />
