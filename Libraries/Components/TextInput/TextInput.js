@@ -895,18 +895,18 @@ const TextInput = createReactClass({
         <RCTTextInputView
           ref={this._setNativeRef}
           {...this.props}
-          onFocus={this._onFocus}
+          dataDetectorTypes={this.props.dataDetectorTypes}
           onBlur={this._onBlur}
           onChange={this._onChange}
           onContentSizeChange={this.props.onContentSizeChange}
+          onFocus={this._onFocus}
+          onScroll={this._onScroll}
           onSelectionChange={this._onSelectionChange}
-          onTextInput={this._onTextInput}
           onSelectionChangeShouldSetResponder={emptyFunctionThatReturnsTrue}
+          onTextInput={this._onTextInput}
           selection={selection}
           style={style}
           text={this._getText()}
-          dataDetectorTypes={this.props.dataDetectorTypes}
-          onScroll={this._onScroll}
         />
       );
     } else if (Platform.OS === 'android') {
@@ -928,19 +928,19 @@ const TextInput = createReactClass({
           ref={this._setNativeRef}
           {...this.props}
           autoCapitalize={autoCapitalize}
+          children={children}
+          disableFullscreenUI={this.props.disableFullscreenUI}
           mostRecentEventCount={0}
-          onFocus={this._onFocus}
           onBlur={this._onBlur}
           onChange={this._onChange}
+          onFocus={this._onFocus}
+          onScroll={this._onScroll}
           onSelectionChange={this._onSelectionChange}
           onTextInput={this._onTextInput}
           selection={selection}
           style={style}
           text={this._getText()}
-          children={children}
-          disableFullscreenUI={this.props.disableFullscreenUI}
           textBreakStrategy={this.props.textBreakStrategy}
-          onScroll={this._onScroll}
         />
       );
     }
