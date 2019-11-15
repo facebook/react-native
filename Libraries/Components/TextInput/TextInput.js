@@ -872,32 +872,29 @@ const TextInput = createReactClass({
       // This is a hack to let Flow know we want an exact object
     |} = {...null};
 
+    const selection =
+      this.props.selection && this.props.selection.end == null
+        ? {
+            start: this.props.selection.start,
+            end: this.props.selection.start,
+          }
+        : null;
+
     if (Platform.OS === 'ios') {
-      const props = Object.assign({}, this.props);
-      props.style = [this.props.style];
-
-      if (props.selection && props.selection.end == null) {
-        props.selection = {
-          start: props.selection.start,
-          end: props.selection.start,
-        };
-      }
-
-      const RCTTextInputView = props.multiline
+      const RCTTextInputView = this.props.multiline
         ? RCTMultilineTextInputView
         : RCTSinglelineTextInputView;
 
-      if (props.multiline) {
-        props.style.unshift(styles.multilineInput);
-      }
+      const style = this.props.multiline
+        ? [styles.multilineInput, this.props.style]
+        : this.props.style;
 
-      additionalTouchableProps.rejectResponderTermination =
-        props.rejectResponderTermination;
+      additionalTouchableProps.rejectResponderTermination = this.props.rejectResponderTermination;
 
       textInput = (
         <RCTTextInputView
           ref={this._setNativeRef}
-          {...props}
+          {...this.props}
           onFocus={this._onFocus}
           onBlur={this._onBlur}
           onChange={this._onChange}
@@ -905,15 +902,16 @@ const TextInput = createReactClass({
           onSelectionChange={this._onSelectionChange}
           onTextInput={this._onTextInput}
           onSelectionChangeShouldSetResponder={emptyFunctionThatReturnsTrue}
+          selection={selection}
+          style={style}
           text={this._getText()}
           dataDetectorTypes={this.props.dataDetectorTypes}
           onScroll={this._onScroll}
         />
       );
     } else if (Platform.OS === 'android') {
-      const props = Object.assign({}, this.props);
-      props.style = [this.props.style];
-      props.autoCapitalize = props.autoCapitalize || 'sentences';
+      const style = [this.props.style];
+      const autoCapitalize = this.props.autoCapitalize || 'sentences';
       let children = this.props.children;
       let childCount = 0;
       React.Children.forEach(children, () => ++childCount);
@@ -925,23 +923,19 @@ const TextInput = createReactClass({
         children = <Text>{children}</Text>;
       }
 
-      if (props.selection && props.selection.end == null) {
-        props.selection = {
-          start: props.selection.start,
-          end: props.selection.start,
-        };
-      }
-
       textInput = (
         <AndroidTextInput
           ref={this._setNativeRef}
-          {...props}
+          {...this.props}
+          autoCapitalize={autoCapitalize}
           mostRecentEventCount={0}
           onFocus={this._onFocus}
           onBlur={this._onBlur}
           onChange={this._onChange}
           onSelectionChange={this._onSelectionChange}
           onTextInput={this._onTextInput}
+          selection={selection}
+          style={style}
           text={this._getText()}
           children={children}
           disableFullscreenUI={this.props.disableFullscreenUI}
