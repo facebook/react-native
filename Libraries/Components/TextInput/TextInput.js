@@ -11,7 +11,6 @@
 'use strict';
 
 const DeprecatedTextInputPropTypes = require('../../DeprecatedPropTypes/DeprecatedTextInputPropTypes');
-const NativeMethodsMixin = require('../../Renderer/shims/NativeMethodsMixin');
 const Platform = require('../../Utilities/Platform');
 const React = require('react');
 const ReactNative = require('../../Renderer/shims/ReactNative');
@@ -30,7 +29,12 @@ import type {ColorValue} from '../../StyleSheet/StyleSheetTypes';
 import type {ViewProps} from '../View/ViewPropTypes';
 import type {SyntheticEvent, ScrollEvent} from '../../Types/CoreEventTypes';
 import type {PressEvent} from '../../Types/CoreEventTypes';
-import type {HostComponent} from '../../Renderer/shims/ReactNativeTypes';
+import type {
+  HostComponent,
+  MeasureOnSuccessCallback,
+  MeasureInWindowOnSuccessCallback,
+  MeasureLayoutOnSuccessCallback,
+} from '../../Renderer/shims/ReactNativeTypes';
 
 let AndroidTextInput;
 let RCTMultilineTextInputView;
@@ -806,11 +810,6 @@ const TextInput = createReactClass({
       underlineColorAndroid: 'transparent',
     };
   },
-  /**
-   * `NativeMethodsMixin` will look for this when invoking `setNativeProps`. We
-   * make `this` look like an actual native component class.
-   */
-  mixins: [NativeMethodsMixin],
 
   _inputRef: (undefined: any),
   _focusSubscription: (undefined: ?Function),
@@ -898,6 +897,33 @@ const TextInput = createReactClass({
 
   getNativeRef: function(): ?React.ElementRef<HostComponent<mixed>> {
     return this._inputRef;
+  },
+
+  // From NativeMethodsMixin
+  // We need these instead of using forwardRef because we also have the other
+  // methods we expose
+  blur: function() {
+    this._inputRef && this._inputRef.blur();
+  },
+  focus: function() {
+    this._inputRef && this._inputRef.focus();
+  },
+  measure: function(callback: MeasureOnSuccessCallback) {
+    this._inputRef && this._inputRef.measure(callback);
+  },
+  measureInWindow: function(callback: MeasureInWindowOnSuccessCallback) {
+    this._inputRef && this._inputRef.measureInWindow(callback);
+  },
+  measureLayout: function(
+    relativeToNativeNode: number | React.ElementRef<HostComponent<mixed>>,
+    onSuccess: MeasureLayoutOnSuccessCallback,
+    onFail?: () => void,
+  ) {
+    this._inputRef &&
+      this._inputRef.measureLayout(relativeToNativeNode, onSuccess, onFail);
+  },
+  setNativeProps: function(nativeProps: Object) {
+    this._inputRef && this._inputRef.setNativeProps(nativeProps);
   },
 
   render: function() {
