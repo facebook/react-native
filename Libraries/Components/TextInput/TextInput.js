@@ -812,16 +812,6 @@ const TextInput = createReactClass({
    */
   mixins: [NativeMethodsMixin],
 
-  /**
-   * Returns `true` if the input is currently focused; `false` otherwise.
-   */
-  isFocused: function(): boolean {
-    return (
-      TextInputState.currentlyFocusedField() ===
-      ReactNative.findNodeHandle(this._inputRef)
-    );
-  },
-
   _inputRef: (undefined: any),
   _focusSubscription: (undefined: ?Function),
   _lastNativeText: (undefined: ?string),
@@ -838,6 +828,40 @@ const TextInput = createReactClass({
 
     if (this.props.autoFocus) {
       this._rafId = requestAnimationFrame(this.focus);
+    }
+  },
+
+  componentDidUpdate: function() {
+    // This is necessary in case native updates the text and JS decides
+    // that the update should be ignored and we should stick with the value
+    // that we have in JS.
+    const nativeProps = {};
+
+    if (
+      this._lastNativeText !== this.props.value &&
+      typeof this.props.value === 'string'
+    ) {
+      nativeProps.text = this.props.value;
+    }
+
+    // Selection is also a controlled prop, if the native value doesn't match
+    // JS, update to the JS value.
+    const {selection} = this.props;
+    if (
+      this._lastNativeSelection &&
+      selection &&
+      (this._lastNativeSelection.start !== selection.start ||
+        this._lastNativeSelection.end !== selection.end)
+    ) {
+      nativeProps.selection = this.props.selection;
+    }
+
+    if (
+      Object.keys(nativeProps).length > 0 &&
+      this._inputRef &&
+      this._inputRef.setNativeProps
+    ) {
+      this._inputRef.setNativeProps(nativeProps);
     }
   },
 
@@ -860,6 +884,20 @@ const TextInput = createReactClass({
    */
   clear: function() {
     this.setNativeProps({text: ''});
+  },
+
+  /**
+   * Returns `true` if the input is currently focused; `false` otherwise.
+   */
+  isFocused: function(): boolean {
+    return (
+      TextInputState.currentlyFocusedField() ===
+      ReactNative.findNodeHandle(this._inputRef)
+    );
+  },
+
+  getNativeRef: function(): ?React.ElementRef<HostComponent<mixed>> {
+    return this._inputRef;
   },
 
   render: function() {
@@ -974,17 +1012,6 @@ const TextInput = createReactClass({
     this._inputRef = ref;
   },
 
-  getNativeRef: function(): ?React.ElementRef<HostComponent<mixed>> {
-    return this._inputRef;
-  },
-
-  _onFocus: function(event: FocusEvent) {
-    TextInputState.focusField(ReactNative.findNodeHandle(this._inputRef));
-    if (this.props.onFocus) {
-      this.props.onFocus(event);
-    }
-  },
-
   _onPress: function(event: PressEvent) {
     if (this.props.editable || this.props.editable === undefined) {
       this.focus();
@@ -1030,37 +1057,10 @@ const TextInput = createReactClass({
     }
   },
 
-  componentDidUpdate: function() {
-    // This is necessary in case native updates the text and JS decides
-    // that the update should be ignored and we should stick with the value
-    // that we have in JS.
-    const nativeProps = {};
-
-    if (
-      this._lastNativeText !== this.props.value &&
-      typeof this.props.value === 'string'
-    ) {
-      nativeProps.text = this.props.value;
-    }
-
-    // Selection is also a controlled prop, if the native value doesn't match
-    // JS, update to the JS value.
-    const {selection} = this.props;
-    if (
-      this._lastNativeSelection &&
-      selection &&
-      (this._lastNativeSelection.start !== selection.start ||
-        this._lastNativeSelection.end !== selection.end)
-    ) {
-      nativeProps.selection = this.props.selection;
-    }
-
-    if (
-      Object.keys(nativeProps).length > 0 &&
-      this._inputRef &&
-      this._inputRef.setNativeProps
-    ) {
-      this._inputRef.setNativeProps(nativeProps);
+  _onFocus: function(event: FocusEvent) {
+    TextInputState.focusField(ReactNative.findNodeHandle(this._inputRef));
+    if (this.props.onFocus) {
+      this.props.onFocus(event);
     }
   },
 
