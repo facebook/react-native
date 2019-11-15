@@ -860,9 +860,108 @@ const TextInput = createReactClass({
   render: function() {
     let textInput;
     if (Platform.OS === 'ios') {
-      textInput = this._renderIOS();
+      const props = Object.assign({}, this.props);
+      props.style = [this.props.style];
+
+      if (props.selection && props.selection.end == null) {
+        props.selection = {
+          start: props.selection.start,
+          end: props.selection.start,
+        };
+      }
+
+      const RCTTextInputView = props.multiline
+        ? RCTMultilineTextInputView
+        : RCTSinglelineTextInputView;
+
+      if (props.multiline) {
+        props.style.unshift(styles.multilineInput);
+      }
+
+      const textContainer = (
+        <RCTTextInputView
+          ref={this._setNativeRef}
+          {...props}
+          onFocus={this._onFocus}
+          onBlur={this._onBlur}
+          onChange={this._onChange}
+          onContentSizeChange={this.props.onContentSizeChange}
+          onSelectionChange={this._onSelectionChange}
+          onTextInput={this._onTextInput}
+          onSelectionChangeShouldSetResponder={emptyFunctionThatReturnsTrue}
+          text={this._getText()}
+          dataDetectorTypes={this.props.dataDetectorTypes}
+          onScroll={this._onScroll}
+        />
+      );
+
+      textInput = (
+        <TouchableWithoutFeedback
+          onLayout={props.onLayout}
+          onPress={this._onPress}
+          rejectResponderTermination={props.rejectResponderTermination}
+          accessible={props.accessible}
+          accessibilityLabel={props.accessibilityLabel}
+          accessibilityRole={props.accessibilityRole}
+          accessibilityState={props.accessibilityState}
+          nativeID={this.props.nativeID}
+          testID={props.testID}>
+          {textContainer}
+        </TouchableWithoutFeedback>
+      );
     } else if (Platform.OS === 'android') {
-      textInput = this._renderAndroid();
+      const props = Object.assign({}, this.props);
+      props.style = [this.props.style];
+      props.autoCapitalize = props.autoCapitalize || 'sentences';
+      let children = this.props.children;
+      let childCount = 0;
+      React.Children.forEach(children, () => ++childCount);
+      invariant(
+        !(this.props.value && childCount),
+        'Cannot specify both value and children.',
+      );
+      if (childCount > 1) {
+        children = <Text>{children}</Text>;
+      }
+
+      if (props.selection && props.selection.end == null) {
+        props.selection = {
+          start: props.selection.start,
+          end: props.selection.start,
+        };
+      }
+
+      const textContainer = (
+        <AndroidTextInput
+          ref={this._setNativeRef}
+          {...props}
+          mostRecentEventCount={0}
+          onFocus={this._onFocus}
+          onBlur={this._onBlur}
+          onChange={this._onChange}
+          onSelectionChange={this._onSelectionChange}
+          onTextInput={this._onTextInput}
+          text={this._getText()}
+          children={children}
+          disableFullscreenUI={this.props.disableFullscreenUI}
+          textBreakStrategy={this.props.textBreakStrategy}
+          onScroll={this._onScroll}
+        />
+      );
+
+      textInput = (
+        <TouchableWithoutFeedback
+          onLayout={props.onLayout}
+          onPress={this._onPress}
+          accessible={this.props.accessible}
+          accessibilityLabel={this.props.accessibilityLabel}
+          accessibilityRole={this.props.accessibilityRole}
+          accessibilityState={this.props.accessibilityState}
+          nativeID={this.props.nativeID}
+          testID={this.props.testID}>
+          {textContainer}
+        </TouchableWithoutFeedback>
+      );
     }
     return (
       <TextAncestor.Provider value={true}>{textInput}</TextAncestor.Provider>
@@ -883,113 +982,6 @@ const TextInput = createReactClass({
 
   getNativeRef: function(): ?React.ElementRef<HostComponent<mixed>> {
     return this._inputRef;
-  },
-
-  _renderIOS: function() {
-    const props = Object.assign({}, this.props);
-    props.style = [this.props.style];
-
-    if (props.selection && props.selection.end == null) {
-      props.selection = {
-        start: props.selection.start,
-        end: props.selection.start,
-      };
-    }
-
-    const RCTTextInputView = props.multiline
-      ? RCTMultilineTextInputView
-      : RCTSinglelineTextInputView;
-
-    if (props.multiline) {
-      props.style.unshift(styles.multilineInput);
-    }
-
-    const textContainer = (
-      <RCTTextInputView
-        ref={this._setNativeRef}
-        {...props}
-        onFocus={this._onFocus}
-        onBlur={this._onBlur}
-        onChange={this._onChange}
-        onContentSizeChange={this.props.onContentSizeChange}
-        onSelectionChange={this._onSelectionChange}
-        onTextInput={this._onTextInput}
-        onSelectionChangeShouldSetResponder={emptyFunctionThatReturnsTrue}
-        text={this._getText()}
-        dataDetectorTypes={this.props.dataDetectorTypes}
-        onScroll={this._onScroll}
-      />
-    );
-
-    return (
-      <TouchableWithoutFeedback
-        onLayout={props.onLayout}
-        onPress={this._onPress}
-        rejectResponderTermination={props.rejectResponderTermination}
-        accessible={props.accessible}
-        accessibilityLabel={props.accessibilityLabel}
-        accessibilityRole={props.accessibilityRole}
-        accessibilityState={props.accessibilityState}
-        nativeID={this.props.nativeID}
-        testID={props.testID}>
-        {textContainer}
-      </TouchableWithoutFeedback>
-    );
-  },
-
-  _renderAndroid: function() {
-    const props = Object.assign({}, this.props);
-    props.style = [this.props.style];
-    props.autoCapitalize = props.autoCapitalize || 'sentences';
-    let children = this.props.children;
-    let childCount = 0;
-    React.Children.forEach(children, () => ++childCount);
-    invariant(
-      !(this.props.value && childCount),
-      'Cannot specify both value and children.',
-    );
-    if (childCount > 1) {
-      children = <Text>{children}</Text>;
-    }
-
-    if (props.selection && props.selection.end == null) {
-      props.selection = {
-        start: props.selection.start,
-        end: props.selection.start,
-      };
-    }
-
-    const textContainer = (
-      <AndroidTextInput
-        ref={this._setNativeRef}
-        {...props}
-        mostRecentEventCount={0}
-        onFocus={this._onFocus}
-        onBlur={this._onBlur}
-        onChange={this._onChange}
-        onSelectionChange={this._onSelectionChange}
-        onTextInput={this._onTextInput}
-        text={this._getText()}
-        children={children}
-        disableFullscreenUI={this.props.disableFullscreenUI}
-        textBreakStrategy={this.props.textBreakStrategy}
-        onScroll={this._onScroll}
-      />
-    );
-
-    return (
-      <TouchableWithoutFeedback
-        onLayout={props.onLayout}
-        onPress={this._onPress}
-        accessible={this.props.accessible}
-        accessibilityLabel={this.props.accessibilityLabel}
-        accessibilityRole={this.props.accessibilityRole}
-        accessibilityState={this.props.accessibilityState}
-        nativeID={this.props.nativeID}
-        testID={this.props.testID}>
-        {textContainer}
-      </TouchableWithoutFeedback>
-    );
   },
 
   _onFocus: function(event: FocusEvent) {
