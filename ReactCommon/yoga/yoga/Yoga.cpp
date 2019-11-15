@@ -1670,13 +1670,13 @@ static void YGNodeWithMeasureFuncSetMeasuredDimensions(
       "Expected node to have custom measure function");
 
   const float paddingAndBorderAxisRow =
-      YGNodePaddingAndBorderForAxis(node, YGFlexDirectionRow, availableWidth);
-  const float paddingAndBorderAxisColumn = YGNodePaddingAndBorderForAxis(
-      node, YGFlexDirectionColumn, availableWidth);
+      YGNodePaddingAndBorderForAxis(node, YGFlexDirectionRow, ownerWidth);
+  const float paddingAndBorderAxisColumn =
+      YGNodePaddingAndBorderForAxis(node, YGFlexDirectionColumn, ownerWidth);
   const float marginAxisRow =
-      node->getMarginForAxis(YGFlexDirectionRow, availableWidth).unwrap();
+      node->getMarginForAxis(YGFlexDirectionRow, ownerWidth).unwrap();
   const float marginAxisColumn =
-      node->getMarginForAxis(YGFlexDirectionColumn, availableWidth).unwrap();
+      node->getMarginForAxis(YGFlexDirectionColumn, ownerWidth).unwrap();
 
   // We want to make sure we don't call measure with negative size
   const float innerWidth = YGFloatIsUndefined(availableWidth)
