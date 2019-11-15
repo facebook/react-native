@@ -828,6 +828,11 @@ public class UIManagerModule extends ReactContextBaseJavaModule
     }
   }
 
+  @Override
+  public void setAllowImmediateUIOperationExecution(boolean flag) {
+    // Noop outside of Fabric, call directly on FabricUIManager
+  }
+
   /**
    * Schedule a block to be executed on the UI thread. Useful if you need to execute view logic
    * after all currently queued view updates have completed.
