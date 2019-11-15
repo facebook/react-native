@@ -25,13 +25,20 @@ import com.facebook.react.bridge.ReactContext;
 public class ThemedReactContext extends ReactContext {
 
   private final ReactApplicationContext mReactApplicationContext;
+  @Nullable private final String mSurfaceID;
 
   public ThemedReactContext(ReactApplicationContext reactApplicationContext, Context base) {
+    this(reactApplicationContext, base, null);
+  }
+
+  public ThemedReactContext(
+      ReactApplicationContext reactApplicationContext, Context base, @Nullable String surfaceID) {
     super(base);
     if (reactApplicationContext.hasCatalystInstance()) {
       initializeWithInstance(reactApplicationContext.getCatalystInstance());
     }
     mReactApplicationContext = reactApplicationContext;
+    mSurfaceID = surfaceID;
   }
 
   @Override
@@ -58,5 +65,13 @@ public class ThemedReactContext extends ReactContext {
   @Override
   public String getInstanceKey() {
     return mReactApplicationContext.getInstanceKey();
+  }
+
+  /**
+   * @return a {@link String} that represents the ID of the js application that is being rendered
+   *     with this {@link ThemedReactContext}
+   */
+  public @Nullable String getSurfaceID() {
+    return mSurfaceID;
   }
 }
