@@ -678,6 +678,18 @@ export type Props = $ReadOnly<{|
   contextMenuHidden?: ?boolean,
 |}>;
 
+type DefaultProps = $ReadOnly<{|
+  allowFontScaling: boolean,
+  rejectResponderTermination: boolean,
+  underlineColorAndroid: 'transparent',
+|}>;
+
+type State = {|
+  currentlyFocusedField: typeof TextInputState.currentlyFocusedField,
+  focusTextInput: typeof TextInputState.focusTextInput,
+  blurTextInput: typeof TextInputState.blurTextInput,
+|};
+
 const emptyFunctionThatReturnsTrue = () => true;
 
 /**
@@ -791,8 +803,8 @@ const emptyFunctionThatReturnsTrue = () => true;
  * or control this param programmatically with native code.
  *
  */
-class TextInput extends React.Component<Props> {
-  static defaultProps = {
+class TextInput extends React.Component<Props, State> {
+  static defaultProps: DefaultProps = {
     allowFontScaling: true,
     rejectResponderTermination: true,
     underlineColorAndroid: 'transparent',
@@ -800,7 +812,7 @@ class TextInput extends React.Component<Props> {
 
   static propTypes = DeprecatedTextInputPropTypes;
 
-  static State = {
+  static State: State = {
     currentlyFocusedField: TextInputState.currentlyFocusedField,
     focusTextInput: TextInputState.focusTextInput,
     blurTextInput: TextInputState.blurTextInput,
@@ -876,52 +888,54 @@ class TextInput extends React.Component<Props> {
   /**
    * Removes all text from the `TextInput`.
    */
-  clear = () => {
+  clear: () => void = () => {
     this.setNativeProps({text: ''});
   };
 
   /**
    * Returns `true` if the input is currently focused; `false` otherwise.
    */
-  isFocused = (): boolean => {
+  isFocused: () => boolean = () => {
     return (
       TextInputState.currentlyFocusedField() ===
       ReactNative.findNodeHandle(this._inputRef)
     );
   };
 
-  getNativeRef = (): ?React.ElementRef<HostComponent<mixed>> => {
+  getNativeRef: () => ?React.ElementRef<HostComponent<mixed>> = () => {
     return this._inputRef;
   };
 
   // From NativeMethodsMixin
   // We need these instead of using forwardRef because we also have the other
   // methods we expose
-  blur = () => {
+  blur: () => void = () => {
     this._inputRef && this._inputRef.blur();
   };
-  focus = () => {
+  focus: () => void = () => {
     this._inputRef && this._inputRef.focus();
   };
-  measure = (callback: MeasureOnSuccessCallback) => {
+  measure: (callback: MeasureOnSuccessCallback) => void = callback => {
     this._inputRef && this._inputRef.measure(callback);
   };
-  measureInWindow = (callback: MeasureInWindowOnSuccessCallback) => {
+  measureInWindow: (
+    callback: MeasureInWindowOnSuccessCallback,
+  ) => void = callback => {
     this._inputRef && this._inputRef.measureInWindow(callback);
   };
-  measureLayout = (
+  measureLayout: (
     relativeToNativeNode: number | React.ElementRef<HostComponent<mixed>>,
     onSuccess: MeasureLayoutOnSuccessCallback,
     onFail?: () => void,
-  ) => {
+  ) => void = (relativeToNativeNode, onSuccess, onFail) => {
     this._inputRef &&
       this._inputRef.measureLayout(relativeToNativeNode, onSuccess, onFail);
   };
-  setNativeProps = (nativeProps: Object) => {
+  setNativeProps: (nativeProps: Object) => void = nativeProps => {
     this._inputRef && this._inputRef.setNativeProps(nativeProps);
   };
 
-  render() {
+  render(): React.Node {
     let textInput = null;
     let additionalTouchableProps: {|
       rejectResponderTermination?: $PropertyType<
