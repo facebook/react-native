@@ -89,7 +89,10 @@ jest
     mockComponent('../Libraries/Text/Text', MockNativeMethods),
   )
   .mock('../Libraries/Components/TextInput/TextInput', () =>
-    mockComponent('../Libraries/Components/TextInput/TextInput'),
+    mockComponent(
+      '../Libraries/Components/TextInput/TextInput',
+      MockNativeMethods,
+    ),
   )
   .mock('../Libraries/Modal/Modal', () =>
     mockComponent('../Libraries/Modal/Modal'),
@@ -312,6 +315,14 @@ jest
         render() {
           return React.createElement(viewName, this.props, this.props.children);
         }
+
+        // The methods that exist on host components
+        blur = jest.fn();
+        focus = jest.fn();
+        measure = jest.fn();
+        measureInWindow = jest.fn();
+        measureLayout = jest.fn();
+        setNativeProps = jest.fn();
       };
 
       if (viewName === 'RCTView') {

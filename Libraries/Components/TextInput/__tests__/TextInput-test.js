@@ -16,7 +16,6 @@ const ReactTestRenderer = require('react-test-renderer');
 const TextInput = require('../TextInput');
 const ReactNative = require('../../../Renderer/shims/ReactNative');
 
-import type {FocusEvent} from '../TextInput';
 import Component from '@reactions/component';
 
 const {enter} = require('../../../Utilities/ReactNativeTestTools');
@@ -25,16 +24,19 @@ jest.unmock('../TextInput');
 
 describe('TextInput tests', () => {
   let input;
+  let inputRef;
   let onChangeListener;
   let onChangeTextListener;
   const initialValue = 'initialValue';
   beforeEach(() => {
+    inputRef = React.createRef(null);
     onChangeListener = jest.fn();
     onChangeTextListener = jest.fn();
     const renderTree = ReactTestRenderer.create(
       <Component initialState={{text: initialValue}}>
         {({setState, state}) => (
           <TextInput
+            ref={inputRef}
             value={state.text}
             onChangeText={text => {
               onChangeTextListener(text);
@@ -50,14 +52,20 @@ describe('TextInput tests', () => {
     input = renderTree.root.findByType(TextInput);
   });
   it('has expected instance functions', () => {
-    expect(input.instance.isFocused).toBeInstanceOf(Function); // Would have prevented S168585
-    expect(input.instance.clear).toBeInstanceOf(Function);
-    expect(input.instance.focus).toBeInstanceOf(Function);
-    expect(input.instance.blur).toBeInstanceOf(Function);
-    expect(input.instance.setNativeProps).toBeInstanceOf(Function);
-    expect(input.instance.measure).toBeInstanceOf(Function);
-    expect(input.instance.measureInWindow).toBeInstanceOf(Function);
-    expect(input.instance.measureLayout).toBeInstanceOf(Function);
+    expect(inputRef.current.isFocused).toBeInstanceOf(Function); // Would have prevented S168585
+    expect(inputRef.current.clear).toBeInstanceOf(Function);
+    expect(inputRef.current.focus).toBeInstanceOf(jest.fn().constructor);
+    expect(inputRef.current.blur).toBeInstanceOf(jest.fn().constructor);
+    expect(inputRef.current.setNativeProps).toBeInstanceOf(
+      jest.fn().constructor,
+    );
+    expect(inputRef.current.measure).toBeInstanceOf(jest.fn().constructor);
+    expect(inputRef.current.measureInWindow).toBeInstanceOf(
+      jest.fn().constructor,
+    );
+    expect(inputRef.current.measureLayout).toBeInstanceOf(
+      jest.fn().constructor,
+    );
   });
   it('calls onChange callbacks', () => {
     expect(input.props.value).toBe(initialValue);

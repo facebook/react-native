@@ -21,19 +21,18 @@ const TextInputState = require('./TextInputState');
 const TouchableWithoutFeedback = require('../Touchable/TouchableWithoutFeedback');
 
 const invariant = require('invariant');
+const nullthrows = require('nullthrows');
 const requireNativeComponent = require('../../ReactNative/requireNativeComponent');
+const setAndForwardRef = require('../../Utilities/setAndForwardRef');
 
 import type {TextStyleProp, ViewStyleProp} from '../../StyleSheet/StyleSheet';
 import type {ColorValue} from '../../StyleSheet/StyleSheetTypes';
 import type {ViewProps} from '../View/ViewPropTypes';
 import type {SyntheticEvent, ScrollEvent} from '../../Types/CoreEventTypes';
 import type {PressEvent} from '../../Types/CoreEventTypes';
-import type {
-  HostComponent,
-  MeasureOnSuccessCallback,
-  MeasureInWindowOnSuccessCallback,
-  MeasureLayoutOnSuccessCallback,
-} from '../../Renderer/shims/ReactNativeTypes';
+import type {HostComponent} from '../../Renderer/shims/ReactNativeTypes';
+
+type ReactRefSetter<T> = {current: null | T} | ((ref: null | T) => mixed);
 
 let AndroidTextInput;
 let RCTMultilineTextInputView;
@@ -676,6 +675,10 @@ export type Props = $ReadOnly<{|
    * If `true`, contextMenuHidden is hidden. The default value is `false`.
    */
   contextMenuHidden?: ?boolean,
+
+  forwardedRef?: ?ReactRefSetter<
+    React.ElementRef<HostComponent<mixed>> & ImperativeMethods,
+  >,
 |}>;
 
 type DefaultProps = $ReadOnly<{|
@@ -684,11 +687,11 @@ type DefaultProps = $ReadOnly<{|
   underlineColorAndroid: 'transparent',
 |}>;
 
-type State = {|
-  currentlyFocusedField: typeof TextInputState.currentlyFocusedField,
-  focusTextInput: typeof TextInputState.focusTextInput,
-  blurTextInput: typeof TextInputState.blurTextInput,
-|};
+type ImperativeMethods = $ReadOnly<{|
+  clear: () => void,
+  isFocused: () => boolean,
+  getNativeRef: () => ?React.ElementRef<HostComponent<mixed>>,
+|}>;
 
 const emptyFunctionThatReturnsTrue = () => true;
 
@@ -803,22 +806,14 @@ const emptyFunctionThatReturnsTrue = () => true;
  * or control this param programmatically with native code.
  *
  */
-class TextInput extends React.Component<Props, State> {
+class InternalTextInput extends React.Component<Props> {
   static defaultProps: DefaultProps = {
     allowFontScaling: true,
     rejectResponderTermination: true,
     underlineColorAndroid: 'transparent',
   };
 
-  static propTypes = DeprecatedTextInputPropTypes;
-
-  static State: State = {
-    currentlyFocusedField: TextInputState.currentlyFocusedField,
-    focusTextInput: TextInputState.focusTextInput,
-    blurTextInput: TextInputState.blurTextInput,
-  };
-
-  _inputRef: ?React.ElementRef<HostComponent<mixed>> = null;
+  _inputRef: null | React.ElementRef<HostComponent<mixed>> = null;
   _focusSubscription: ?Function = undefined;
   _lastNativeText: ?Stringish = null;
   _lastNativeSelection: ?Selection = null;
@@ -833,7 +828,11 @@ class TextInput extends React.Component<Props, State> {
     }
 
     if (this.props.autoFocus) {
-      this._rafId = requestAnimationFrame(this.focus);
+      this._rafId = requestAnimationFrame(() => {
+        if (this._inputRef) {
+          this._inputRef.focus();
+        }
+      });
     }
   }
 
@@ -874,7 +873,7 @@ class TextInput extends React.Component<Props, State> {
   componentWillUnmount() {
     this._focusSubscription && this._focusSubscription.remove();
     if (this.isFocused()) {
-      this.blur();
+      nullthrows(this._inputRef).blur();
     }
     const tag = ReactNative.findNodeHandle(this._inputRef);
     if (tag != null) {
@@ -889,7 +888,9 @@ class TextInput extends React.Component<Props, State> {
    * Removes all text from the `TextInput`.
    */
   clear: () => void = () => {
-    this.setNativeProps({text: ''});
+    if (this._inputRef != null) {
+      this._inputRef.setNativeProps({text: ''});
+    }
   };
 
   /**
@@ -904,35 +905,6 @@ class TextInput extends React.Component<Props, State> {
 
   getNativeRef: () => ?React.ElementRef<HostComponent<mixed>> = () => {
     return this._inputRef;
-  };
-
-  // From NativeMethodsMixin
-  // We need these instead of using forwardRef because we also have the other
-  // methods we expose
-  blur: () => void = () => {
-    this._inputRef && this._inputRef.blur();
-  };
-  focus: () => void = () => {
-    this._inputRef && this._inputRef.focus();
-  };
-  measure: (callback: MeasureOnSuccessCallback) => void = callback => {
-    this._inputRef && this._inputRef.measure(callback);
-  };
-  measureInWindow: (
-    callback: MeasureInWindowOnSuccessCallback,
-  ) => void = callback => {
-    this._inputRef && this._inputRef.measureInWindow(callback);
-  };
-  measureLayout: (
-    relativeToNativeNode: number | React.ElementRef<HostComponent<mixed>>,
-    onSuccess: MeasureLayoutOnSuccessCallback,
-    onFail?: () => void,
-  ) => void = (relativeToNativeNode, onSuccess, onFail) => {
-    this._inputRef &&
-      this._inputRef.measureLayout(relativeToNativeNode, onSuccess, onFail);
-  };
-  setNativeProps: (nativeProps: Object) => void = nativeProps => {
-    this._inputRef && this._inputRef.setNativeProps(nativeProps);
   };
 
   render(): React.Node {
@@ -1045,13 +1017,44 @@ class TextInput extends React.Component<Props, State> {
       : '';
   }
 
-  _setNativeRef = (ref: any) => {
-    this._inputRef = ref;
-  };
+  _setNativeRef = setAndForwardRef({
+    getForwardedRef: () => this.props.forwardedRef,
+    setLocalRef: ref => {
+      this._inputRef = ref;
+
+      /*
+      Hi reader from the future. I'm sorry for this.
+
+      This is a hack. Ideally we would forwardRef to the underlying
+      host component. However, since TextInput has it's own methods that can be
+      called as well, if we used the standard forwardRef then these
+      methods wouldn't be accessible and thus be a breaking change.
+
+      We have a couple of options of how to handle this:
+      - Return a new ref with everything we methods from both. This is problematic
+        because we need React to also know it is a host component which requires
+        internals of the class implementation of the ref.
+      - Break the API and have some other way to call one set of the methods or
+        the other. This is our long term approach as we want to eventually
+        get the methods on host components off the ref. So instead of calling
+        ref.measure() you might call ReactNative.measure(ref). This would hopefully
+        let the ref for TextInput then have the methods like `.clear`. Or we do it
+        the other way and make it TextInput.clear(textInputRef) which would be fine
+        too. Either way though is a breaking change that is longer term.
+      - Mutate this ref. :( Gross, but accomplishes what we need in the meantime
+        before we can get to the long term breaking change.
+      */
+      if (ref) {
+        ref.clear = this.clear;
+        ref.isFocused = this.isFocused;
+        ref.getNativeRef = this.getNativeRef;
+      }
+    },
+  });
 
   _onPress = (event: PressEvent) => {
     if (this.props.editable || this.props.editable === undefined) {
-      this.focus();
+      nullthrows(this._inputRef).focus();
     }
   };
 
@@ -1117,16 +1120,44 @@ class TextInput extends React.Component<Props, State> {
   };
 }
 
-class InternalTextInputType extends ReactNative.NativeComponent<Props> {
-  clear() {}
+const ExportedForwardRef: React.AbstractComponent<
+  React.ElementConfig<typeof InternalTextInput>,
+  React.ElementRef<HostComponent<mixed>> & ImperativeMethods,
+> = React.forwardRef(function TextInput(
+  props,
+  forwardedRef: ReactRefSetter<
+    React.ElementRef<HostComponent<mixed>> & ImperativeMethods,
+  >,
+) {
+  return <InternalTextInput {...props} forwardedRef={forwardedRef} />;
+});
 
-  getNativeRef(): ?React.ElementRef<HostComponent<mixed>> {}
+// $FlowFixMe
+ExportedForwardRef.defaultProps = {
+  allowFontScaling: true,
+  rejectResponderTermination: true,
+  underlineColorAndroid: 'transparent',
+};
 
-  // $FlowFixMe
-  isFocused(): boolean {}
-}
+// TODO: Deprecate this
+// $FlowFixMe
+ExportedForwardRef.propTypes = DeprecatedTextInputPropTypes;
 
-const TypedTextInput = ((TextInput: any): Class<InternalTextInputType>);
+// $FlowFixMe
+ExportedForwardRef.State = {
+  currentlyFocusedField: TextInputState.currentlyFocusedField,
+  focusTextInput: TextInputState.focusTextInput,
+  blurTextInput: TextInputState.blurTextInput,
+};
+
+type TextInputComponentStatics = $ReadOnly<{|
+  State: $ReadOnly<{|
+    currentlyFocusedField: typeof TextInputState.currentlyFocusedField,
+    focusTextInput: typeof TextInputState.focusTextInput,
+    blurTextInput: typeof TextInputState.blurTextInput,
+  |}>,
+  propTypes: typeof DeprecatedTextInputPropTypes,
+|}>;
 
 const styles = StyleSheet.create({
   multilineInput: {
@@ -1137,4 +1168,11 @@ const styles = StyleSheet.create({
   },
 });
 
-module.exports = TypedTextInput;
+module.exports = ((ExportedForwardRef: any): React.AbstractComponent<
+  React.ElementConfig<typeof InternalTextInput>,
+  $ReadOnly<{|
+    ...React.ElementRef<HostComponent<mixed>>,
+    ...ImperativeMethods,
+  |}>,
+> &
+  TextInputComponentStatics);
