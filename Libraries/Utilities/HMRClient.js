@@ -242,9 +242,7 @@ Error: ${e.message}`;
 
     client.on('close', data => {
       LoadingView.hide();
-      setHMRUnavailableReason(
-        'Disconnected from the Metro server. Reload to reconnect.',
-      );
+      setHMRUnavailableReason('Disconnected from the Metro server.');
     });
 
     if (isEnabled) {
