@@ -268,6 +268,11 @@ type IOSProps = $ReadOnly<{|
 
   PasswordRules?: ?PasswordRules,
 
+  /*
+   * @platform ios
+   */
+  rejectResponderTermination?: ?boolean,
+
   /**
    * If `false`, scrolling of the text view will be disabled.
    * The default value is `true`. Does only work with 'multiline={true}'.
@@ -858,7 +863,15 @@ const TextInput = createReactClass({
   },
 
   render: function() {
-    let textInput;
+    let textInput = null;
+    let additionalTouchableProps: {|
+      rejectResponderTermination?: $PropertyType<
+        Props,
+        'rejectResponderTermination',
+      >,
+      // This is a hack to let Flow know we want an exact object
+    |} = {...null};
+
     if (Platform.OS === 'ios') {
       const props = Object.assign({}, this.props);
       props.style = [this.props.style];
@@ -878,7 +891,10 @@ const TextInput = createReactClass({
         props.style.unshift(styles.multilineInput);
       }
 
-      const textContainer = (
+      additionalTouchableProps.rejectResponderTermination =
+        props.rejectResponderTermination;
+
+      textInput = (
         <RCTTextInputView
           ref={this._setNativeRef}
           {...props}
@@ -893,21 +909,6 @@ const TextInput = createReactClass({
           dataDetectorTypes={this.props.dataDetectorTypes}
           onScroll={this._onScroll}
         />
-      );
-
-      textInput = (
-        <TouchableWithoutFeedback
-          onLayout={props.onLayout}
-          onPress={this._onPress}
-          rejectResponderTermination={props.rejectResponderTermination}
-          accessible={props.accessible}
-          accessibilityLabel={props.accessibilityLabel}
-          accessibilityRole={props.accessibilityRole}
-          accessibilityState={props.accessibilityState}
-          nativeID={this.props.nativeID}
-          testID={props.testID}>
-          {textContainer}
-        </TouchableWithoutFeedback>
       );
     } else if (Platform.OS === 'android') {
       const props = Object.assign({}, this.props);
@@ -931,7 +932,7 @@ const TextInput = createReactClass({
         };
       }
 
-      const textContainer = (
+      textInput = (
         <AndroidTextInput
           ref={this._setNativeRef}
           {...props}
@@ -948,23 +949,22 @@ const TextInput = createReactClass({
           onScroll={this._onScroll}
         />
       );
-
-      textInput = (
+    }
+    return (
+      <TextAncestor.Provider value={true}>
         <TouchableWithoutFeedback
-          onLayout={props.onLayout}
+          onLayout={this.props.onLayout}
           onPress={this._onPress}
           accessible={this.props.accessible}
           accessibilityLabel={this.props.accessibilityLabel}
           accessibilityRole={this.props.accessibilityRole}
           accessibilityState={this.props.accessibilityState}
           nativeID={this.props.nativeID}
-          testID={this.props.testID}>
-          {textContainer}
+          testID={this.props.testID}
+          {...additionalTouchableProps}>
+          {textInput}
         </TouchableWithoutFeedback>
-      );
-    }
-    return (
-      <TextAncestor.Provider value={true}>{textInput}</TextAncestor.Provider>
+      </TextAncestor.Provider>
     );
   },
 
