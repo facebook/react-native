@@ -10,14 +10,13 @@
 #import <React/RCTBridge.h>
 #import <React/RCTConvert.h>
 #import <React/RCTEventDispatcher.h>
+#import <React/RCTImageBlurUtils.h>
 #import <React/RCTImageSource.h>
+#import <React/RCTImageUtils.h>
+#import <React/RCTImageLoaderWithAttributionProtocol.h>
+#import <React/RCTUIImageViewAnimated.h>
 #import <React/RCTUtils.h>
 #import <React/UIView+React.h>
-
-#import <React/RCTUIImageViewAnimated.h>
-#import <React/RCTImageBlurUtils.h>
-#import <React/RCTImageUtils.h>
-#import <React/RCTImageLoaderProtocol.h>
 
 /**
  * Determines whether an image of `currentSize` should be reloaded for display
@@ -80,7 +79,7 @@ static NSDictionary *onLoadParamsForSource(RCTImageSource *source)
   // Whether the latest change of props requires the image to be reloaded
   BOOL _needsReload;
 
-   RCTUIImageViewAnimated *_imageView;
+  RCTUIImageViewAnimated *_imageView;
 }
 
 - (instancetype)initWithBridge:(RCTBridge *)bridge
@@ -320,15 +319,19 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
       [weakSelf imageLoaderLoadedImage:loadedImage error:error forImageSource:source partial:NO];
     };
 
-    _reloadImageCancellationBlock =
-    [[_bridge moduleForName:@"ImageLoader" lazilyLoadIfNecessary:YES] loadImageWithURLRequest:source.request
-                                                                        size:imageSize
-                                                                       scale:imageScale
-                                                                     clipped:NO
-                                                                  resizeMode:_resizeMode
-                                                               progressBlock:progressHandler
-                                                            partialLoadBlock:partialLoadHandler
-                                                             completionBlock:completionHandler];
+    id<RCTImageLoaderWithAttributionProtocol> imageLoader = [_bridge moduleForName:@"ImageLoader"
+                                                             lazilyLoadIfNecessary:YES];
+    _reloadImageCancellationBlock = [imageLoader loadImageWithURLRequest:source.request
+                                                                    size:imageSize
+                                                                   scale:imageScale
+                                                                 clipped:NO
+                                                              resizeMode:_resizeMode
+                                                             attribution:{
+                                                                         .surfaceId = [self.rootTag intValue],
+                                                                         }
+                                                           progressBlock:progressHandler
+                                                        partialLoadBlock:partialLoadHandler
+                                                         completionBlock:completionHandler];
   } else {
     [self clearImage];
   }

@@ -24,7 +24,7 @@
 - (instancetype)initWithManagerClass:(Class)managerClass
                               bridge:(RCTBridge *)bridge NS_DESIGNATED_INITIALIZER;
 
-- (UIView *)createViewWithTag:(NSNumber *)tag;
+- (UIView *)createViewWithTag:(NSNumber *)tag rootTag:(NSNumber *)rootTag;
 - (RCTShadowView *)createShadowViewWithTag:(NSNumber *)tag;
 - (void)setProps:(NSDictionary<NSString *, id> *)props forView:(id<RCTComponent>)view;
 - (void)setProps:(NSDictionary<NSString *, id> *)props forShadowView:(RCTShadowView *)shadowView;

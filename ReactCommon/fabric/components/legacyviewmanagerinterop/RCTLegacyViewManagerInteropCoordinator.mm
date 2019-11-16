@@ -60,7 +60,8 @@ using namespace facebook::react;
 
 - (UIView *)paperView
 {
-  return [_componentData createViewWithTag:NULL];
+  // TODO: pass in the right tags?
+  return [_componentData createViewWithTag:NULL rootTag:NULL];
 }
 
 - (void)setProps:(folly::dynamic const &)props forView:(UIView *)view

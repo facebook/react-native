@@ -988,7 +988,7 @@ RCT_EXPORT_METHOD(createView:(nonnull NSNumber *)reactTag
       return;
     }
 
-    preliminaryCreatedView = [componentData createViewWithTag:reactTag];
+    preliminaryCreatedView = [componentData createViewWithTag:reactTag rootTag:rootTag];
 
     if (preliminaryCreatedView) {
       self->_viewRegistry[reactTag] = preliminaryCreatedView;

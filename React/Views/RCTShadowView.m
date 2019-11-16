@@ -57,6 +57,7 @@ typedef NS_ENUM(unsigned int, meta_prop_t) {
 }
 
 @synthesize reactTag = _reactTag;
+@synthesize rootTag = _rootTag;
 
 // YogaNode API
 

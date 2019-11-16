@@ -66,12 +66,13 @@ static SEL selectorForType(NSString *type)
 
 RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
-- (UIView *)createViewWithTag:(NSNumber *)tag
+- (UIView *)createViewWithTag:(NSNumber *)tag rootTag:(NSNumber *)rootTag
 {
   RCTAssertMainQueue();
 
   UIView *view = [self.manager view];
   view.reactTag = tag;
+  view.rootTag = rootTag;
 #if !TARGET_OS_TV
   view.multipleTouchEnabled = YES;
 #endif
@@ -94,7 +95,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   if (!isShadowView) {
     if (!json && !_defaultView) {
       // Only create default view if json is null
-      _defaultView = [self createViewWithTag:nil];
+      _defaultView = [self createViewWithTag:nil rootTag:nil];
     }
     ((void (*)(id, SEL, id, id, id))objc_msgSend)(self.manager, setter, json, view, _defaultView);
   } else {

@@ -25,6 +25,16 @@
   objc_setAssociatedObject(self, @selector(reactTag), reactTag, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 }
 
+- (NSNumber *)rootTag
+{
+  return objc_getAssociatedObject(self, _cmd);
+}
+
+- (void)setRootTag:(NSNumber *)rootTag
+{
+  objc_setAssociatedObject(self, @selector(rootTag), rootTag, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+}
+
 - (NSNumber *)nativeID
 {
   return objc_getAssociatedObject(self, _cmd);

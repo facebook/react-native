@@ -24,6 +24,7 @@ typedef void (^RCTBubblingEventBlock)(NSDictionary *body);
 @protocol RCTComponent <NSObject>
 
 @property (nonatomic, copy) NSNumber *reactTag;
+@property (nonatomic, copy) NSNumber *rootTag;
 
 - (void)insertReactSubview:(id<RCTComponent>)subview atIndex:(NSInteger)atIndex;
 - (void)removeReactSubview:(id<RCTComponent>)subview;
