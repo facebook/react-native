@@ -39,7 +39,7 @@ void ImageShadowNode::updateLocalData() {
   // Now we are about to mutate the Shadow Node.
   ensureUnsealed();
 
-  auto imageRequest = imageManager_->requestImage(imageSource);
+  auto imageRequest = imageManager_->requestImage(imageSource, getSurfaceId());
   auto imageLocalData =
       std::make_shared<ImageLocalData>(imageSource, std::move(imageRequest));
   setLocalData(imageLocalData);

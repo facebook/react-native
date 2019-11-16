@@ -20,7 +20,9 @@ ImageManager::~ImageManager() {
   // Not implemented.
 }
 
-ImageRequest ImageManager::requestImage(const ImageSource &imageSource) const {
+ImageRequest ImageManager::requestImage(
+    const ImageSource &imageSource,
+    SurfaceId surfaceId) const {
   // Not implemented.
   return ImageRequest(imageSource);
 }

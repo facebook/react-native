@@ -11,7 +11,7 @@
 #import <react/utils/ManagedObjectWrapper.h>
 #import <react/utils/SharedFunction.h>
 
-#import <React/RCTImageLoader.h>
+#import <React/RCTImageLoaderWithAttributionProtocol.h>
 #import <react/imagemanager/ImageResponse.h>
 #import <react/imagemanager/ImageResponseObserver.h>
 
@@ -20,11 +20,11 @@
 using namespace facebook::react;
 
 @implementation RCTImageManager {
-  RCTImageLoader *_imageLoader;
+  id<RCTImageLoaderWithAttributionProtocol> _imageLoader;
   dispatch_queue_t _backgroundSerialQueue;
 }
 
-- (instancetype)initWithImageLoader:(RCTImageLoader *)imageLoader
+- (instancetype)initWithImageLoader:(id<RCTImageLoaderWithAttributionProtocol>)imageLoader
 {
   if (self = [super init]) {
     _imageLoader = imageLoader;
@@ -35,7 +35,7 @@ using namespace facebook::react;
   return self;
 }
 
-- (ImageRequest)requestImage:(ImageSource)imageSource
+- (ImageRequest)requestImage:(ImageSource)imageSource surfaceId:(SurfaceId)surfaceId
 {
   SystraceSection s("RCTImageManager::requestImage");
 
@@ -87,6 +87,9 @@ using namespace facebook::react;
                                               scale:imageSource.scale
                                             clipped:YES
                                          resizeMode:RCTResizeModeStretch
+                                        attribution:{
+                                                        .surfaceId = surfaceId,
+                                                    }
                                       progressBlock:progressBlock
                                    partialLoadBlock:nil
                                     completionBlock:completionBlock];

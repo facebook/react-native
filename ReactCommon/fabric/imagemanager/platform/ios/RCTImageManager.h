@@ -7,21 +7,23 @@
 
 #import <UIKit/UIKit.h>
 
+#import <react/core/ReactPrimitives.h>
 #import <react/imagemanager/ImageRequest.h>
 #import <react/imagemanager/primitives.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
-@class RCTImageLoader;
+@protocol RCTImageLoaderWithAttributionProtocol;
 
 /**
  * iOS-specific ImageManager.
  */
 @interface RCTImageManager : NSObject
 
-- (instancetype)initWithImageLoader:(RCTImageLoader *)imageLoader;
+- (instancetype)initWithImageLoader:(id<RCTImageLoaderWithAttributionProtocol>)imageLoader;
 
-- (facebook::react::ImageRequest)requestImage:(facebook::react::ImageSource)imageSource;
+- (facebook::react::ImageRequest)requestImage:(facebook::react::ImageSource)imageSource
+                                    surfaceId:(facebook::react::SurfaceId)surfaceId;
 
 @end
 

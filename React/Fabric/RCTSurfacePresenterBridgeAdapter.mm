@@ -13,6 +13,7 @@
 #import <React/RCTAssert.h>
 #import <React/RCTBridge+Private.h>
 #import <React/RCTImageLoader.h>
+#import <React/RCTImageLoaderWithAttributionProtocol.h>
 #import <React/RCTSurfacePresenter.h>
 #import <React/RCTSurfacePresenterStub.h>
 
@@ -36,7 +37,7 @@ static ContextContainer::Shared RCTContextContainerFromBridge(RCTBridge *bridge)
       : [bridge moduleForClass:[RCTImageLoader class]];
 
   contextContainer->insert("Bridge", wrapManagedObjectWeakly(bridge));
-  contextContainer->insert("RCTImageLoader", wrapManagedObject(imageLoader));
+  contextContainer->insert("RCTImageLoader", wrapManagedObject((id<RCTImageLoaderWithAttributionProtocol>)imageLoader));
   return contextContainer;
 }
 

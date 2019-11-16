@@ -9,6 +9,7 @@
 
 #include <memory>
 
+#include <react/core/ReactPrimitives.h>
 #include <react/imagemanager/ImageRequest.h>
 #include <react/imagemanager/primitives.h>
 #include <react/utils/ContextContainer.h>
@@ -28,7 +29,8 @@ class ImageManager {
   ImageManager(ContextContainer::Shared const &contextContainer);
   ~ImageManager();
 
-  ImageRequest requestImage(const ImageSource &imageSource) const;
+  ImageRequest requestImage(const ImageSource &imageSource, SurfaceId surfaceId)
+      const;
 
  private:
   void *self_;

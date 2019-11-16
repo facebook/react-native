@@ -63,13 +63,13 @@ void SliderShadowNode::updateLocalData() {
   // TODO: check if multiple requests are cached or if it's a net loss
   const auto &newLocalData = std::make_shared<SliderLocalData>(
       newTrackImageSource,
-      imageManager_->requestImage(newTrackImageSource),
+      imageManager_->requestImage(newTrackImageSource, getSurfaceId()),
       newMinimumTrackImageSource,
-      imageManager_->requestImage(newMinimumTrackImageSource),
+      imageManager_->requestImage(newMinimumTrackImageSource, getSurfaceId()),
       newMaximumTrackImageSource,
-      imageManager_->requestImage(newMaximumTrackImageSource),
+      imageManager_->requestImage(newMaximumTrackImageSource, getSurfaceId()),
       newThumbImageSource,
-      imageManager_->requestImage(newThumbImageSource));
+      imageManager_->requestImage(newThumbImageSource, getSurfaceId()));
   setLocalData(newLocalData);
 }
 
