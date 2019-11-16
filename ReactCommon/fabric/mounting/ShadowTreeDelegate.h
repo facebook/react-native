@@ -22,7 +22,7 @@ class ShadowTreeDelegate {
   /*
    * Called right after Shadow Tree commit a new state of the the tree.
    */
-  virtual void shadowTreeDidCommit(
+  virtual void shadowTreeDidFinishTransaction(
       ShadowTree const &shadowTree,
       MountingCoordinator::Shared const &mountingCoordinator) const = 0;
 

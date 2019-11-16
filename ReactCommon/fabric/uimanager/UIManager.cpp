@@ -298,10 +298,10 @@ ShadowTreeRegistry const &UIManager::getShadowTreeRegistry() const {
 
 #pragma mark - ShadowTreeDelegate
 
-void UIManager::shadowTreeDidCommit(
+void UIManager::shadowTreeDidFinishTransaction(
     ShadowTree const &shadowTree,
     MountingCoordinator::Shared const &mountingCoordinator) const {
-  SystraceSection s("UIManager::shadowTreeDidCommit");
+  SystraceSection s("UIManager::shadowTreeDidFinishTransaction");
 
   if (delegate_) {
     delegate_->uiManagerDidFinishTransaction(mountingCoordinator);

@@ -50,7 +50,7 @@ class UIManager final : public ShadowTreeDelegate {
 
 #pragma mark - ShadowTreeDelegate
 
-  void shadowTreeDidCommit(
+  void shadowTreeDidFinishTransaction(
       ShadowTree const &shadowTree,
       MountingCoordinator::Shared const &mountingCoordinator) const override;
 

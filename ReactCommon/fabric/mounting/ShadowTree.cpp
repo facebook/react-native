@@ -198,7 +198,7 @@ bool ShadowTree::tryCommit(ShadowTreeCommitTransaction transaction) const {
       ShadowTreeRevision{newRootShadowNode, revisionNumber, telemetry});
 
   if (delegate_) {
-    delegate_->shadowTreeDidCommit(*this, mountingCoordinator_);
+    delegate_->shadowTreeDidFinishTransaction(*this, mountingCoordinator_);
   }
 
   return true;
