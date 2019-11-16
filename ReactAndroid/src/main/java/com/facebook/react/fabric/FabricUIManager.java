@@ -533,8 +533,14 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
       mMountItems.add(mountItem);
     }
 
-    if (mImmediatelyExecutedMountItemsOnUI && UiThreadUtil.isOnUiThread()) {
-      dispatchMountItems();
+    if (UiThreadUtil.isOnUiThread()) {
+      // We only read these flags on the UI thread.
+      boolean immediateExecutionEnabled =
+          !ReactFeatureFlags.allowDisablingImmediateExecutionOfScheduleMountItems
+              || mImmediatelyExecutedMountItemsOnUI;
+      if (immediateExecutionEnabled) {
+        dispatchMountItems();
+      }
     }
 
     // Post markers outside of lock and after sync mounting finishes its execution
