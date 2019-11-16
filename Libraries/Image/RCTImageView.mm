@@ -327,6 +327,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
                                                                  clipped:NO
                                                               resizeMode:_resizeMode
                                                              attribution:{
+                                                                         .nativeViewTag = [self.reactTag intValue],
                                                                          .surfaceId = [self.rootTag intValue],
                                                                          }
                                                            progressBlock:progressHandler
