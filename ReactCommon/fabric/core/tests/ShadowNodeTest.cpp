@@ -40,7 +40,8 @@ TEST(ShadowNodeTest, handleShadowNodeCreation) {
           /* .eventEmitter = */ ShadowNodeFragment::eventEmitterPlaceholder(),
           /* .children = */ ShadowNode::emptySharedShadowNodeSharedList(),
       },
-      componentDescriptor);
+      componentDescriptor,
+      ShadowNodeTraits{});
 
   ASSERT_FALSE(node->getSealed());
   ASSERT_STREQ(node->getComponentName(), "Test");
@@ -65,7 +66,8 @@ TEST(ShadowNodeTest, handleShadowNodeSimpleCloning) {
           /* .eventEmitter = */ ShadowNodeFragment::eventEmitterPlaceholder(),
           /* .children = */ ShadowNode::emptySharedShadowNodeSharedList(),
       },
-      componentDescriptor);
+      componentDescriptor,
+      ShadowNodeTraits{});
   auto node2 = std::make_shared<TestShadowNode>(*node, ShadowNodeFragment{});
 
   ASSERT_STREQ(node->getComponentName(), "Test");
@@ -86,7 +88,8 @@ TEST(ShadowNodeTest, handleShadowNodeMutation) {
           /* .eventEmitter = */ ShadowNodeFragment::eventEmitterPlaceholder(),
           /* .children = */ ShadowNode::emptySharedShadowNodeSharedList(),
       },
-      componentDescriptor);
+      componentDescriptor,
+      ShadowNodeTraits{});
   auto node2 = std::make_shared<TestShadowNode>(
       ShadowNodeFragment{
           /* .tag = */ 2,
@@ -95,7 +98,8 @@ TEST(ShadowNodeTest, handleShadowNodeMutation) {
           /* .eventEmitter = */ ShadowNodeFragment::eventEmitterPlaceholder(),
           /* .children = */ ShadowNode::emptySharedShadowNodeSharedList(),
       },
-      componentDescriptor);
+      componentDescriptor,
+      ShadowNodeTraits{});
   auto node3 = std::make_shared<TestShadowNode>(
       ShadowNodeFragment{
           /* .tag = */ 3,
@@ -104,7 +108,8 @@ TEST(ShadowNodeTest, handleShadowNodeMutation) {
           /* .eventEmitter = */ ShadowNodeFragment::eventEmitterPlaceholder(),
           /* .children = */ ShadowNode::emptySharedShadowNodeSharedList(),
       },
-      componentDescriptor);
+      componentDescriptor,
+      ShadowNodeTraits{});
 
   node1->appendChild(node2);
   node1->appendChild(node3);
@@ -146,7 +151,8 @@ TEST(ShadowNodeTest, handleCloneFunction) {
           /* .eventEmitter = */ ShadowNodeFragment::eventEmitterPlaceholder(),
           /* .children = */ ShadowNode::emptySharedShadowNodeSharedList(),
       },
-      componentDescriptor);
+      componentDescriptor,
+      ShadowNodeTraits{});
 
   auto firstNodeClone = firstNode->clone({});
 
@@ -183,7 +189,8 @@ TEST(ShadowNodeTest, handleLocalData) {
           /* .eventEmitter = */ ShadowNodeFragment::eventEmitterPlaceholder(),
           /* .children = */ ShadowNode::emptySharedShadowNodeSharedList(),
       },
-      componentDescriptor);
+      componentDescriptor,
+      ShadowNodeTraits{});
   auto secondNode = std::make_shared<TestShadowNode>(
       ShadowNodeFragment{
           /* .tag = */ 9,
@@ -192,7 +199,8 @@ TEST(ShadowNodeTest, handleLocalData) {
           /* .eventEmitter = */ ShadowNodeFragment::eventEmitterPlaceholder(),
           /* .children = */ ShadowNode::emptySharedShadowNodeSharedList(),
       },
-      componentDescriptor);
+      componentDescriptor,
+      ShadowNodeTraits{});
   auto thirdNode = std::make_shared<TestShadowNode>(
       ShadowNodeFragment{
           /* .tag = */ 9,
@@ -201,7 +209,8 @@ TEST(ShadowNodeTest, handleLocalData) {
           /* .eventEmitter = */ ShadowNodeFragment::eventEmitterPlaceholder(),
           /* .children = */ ShadowNode::emptySharedShadowNodeSharedList(),
       },
-      componentDescriptor);
+      componentDescriptor,
+      ShadowNodeTraits{});
 
   firstNode->setLocalData(localData42);
   secondNode->setLocalData(localData42);
@@ -244,7 +253,8 @@ TEST(ShadowNodeTest, handleBacktracking) {
           /* .eventEmitter = */ ShadowNodeFragment::eventEmitterPlaceholder(),
           /* .children = */ ShadowNode::emptySharedShadowNodeSharedList(),
       },
-      componentDescriptor);
+      componentDescriptor,
+      ShadowNodeTraits{});
 
   auto nodeABA = std::make_shared<TestShadowNode>(
       ShadowNodeFragment{
@@ -254,7 +264,8 @@ TEST(ShadowNodeTest, handleBacktracking) {
           /* .eventEmitter = */ ShadowNodeFragment::eventEmitterPlaceholder(),
           /* .children = */ ShadowNode::emptySharedShadowNodeSharedList(),
       },
-      componentDescriptor);
+      componentDescriptor,
+      ShadowNodeTraits{});
   auto nodeABB = std::make_shared<TestShadowNode>(
       ShadowNodeFragment{
           /* .tag = */ ShadowNodeFragment::tagPlaceholder(),
@@ -263,7 +274,8 @@ TEST(ShadowNodeTest, handleBacktracking) {
           /* .eventEmitter = */ ShadowNodeFragment::eventEmitterPlaceholder(),
           /* .children = */ ShadowNode::emptySharedShadowNodeSharedList(),
       },
-      componentDescriptor);
+      componentDescriptor,
+      ShadowNodeTraits{});
   auto nodeABC = std::make_shared<TestShadowNode>(
       ShadowNodeFragment{
           /* .tag = */ ShadowNodeFragment::tagPlaceholder(),
@@ -272,7 +284,8 @@ TEST(ShadowNodeTest, handleBacktracking) {
           /* .eventEmitter = */ ShadowNodeFragment::eventEmitterPlaceholder(),
           /* .children = */ ShadowNode::emptySharedShadowNodeSharedList(),
       },
-      componentDescriptor);
+      componentDescriptor,
+      ShadowNodeTraits{});
 
   auto nodeABChildren = std::make_shared<SharedShadowNodeList>(
       SharedShadowNodeList{nodeABA, nodeABB, nodeABC});
@@ -284,7 +297,8 @@ TEST(ShadowNodeTest, handleBacktracking) {
           /* .eventEmitter = */ ShadowNodeFragment::eventEmitterPlaceholder(),
           /* .children = */ nodeABChildren,
       },
-      componentDescriptor);
+      componentDescriptor,
+      ShadowNodeTraits{});
 
   auto nodeAC = std::make_shared<TestShadowNode>(
       ShadowNodeFragment{
@@ -294,7 +308,8 @@ TEST(ShadowNodeTest, handleBacktracking) {
           /* .eventEmitter = */ ShadowNodeFragment::eventEmitterPlaceholder(),
           /* .children = */ ShadowNode::emptySharedShadowNodeSharedList(),
       },
-      componentDescriptor);
+      componentDescriptor,
+      ShadowNodeTraits{});
 
   auto nodeAChildren = std::make_shared<SharedShadowNodeList>(
       SharedShadowNodeList{nodeAA, nodeAB, nodeAC});
@@ -306,7 +321,8 @@ TEST(ShadowNodeTest, handleBacktracking) {
           /* .eventEmitter = */ ShadowNodeFragment::eventEmitterPlaceholder(),
           /* .children = */ nodeAChildren,
       },
-      componentDescriptor);
+      componentDescriptor,
+      ShadowNodeTraits{});
 
   auto nodeZ = std::make_shared<TestShadowNode>(
       ShadowNodeFragment{
@@ -316,7 +332,8 @@ TEST(ShadowNodeTest, handleBacktracking) {
           /* .eventEmitter = */ ShadowNodeFragment::eventEmitterPlaceholder(),
           /* .children = */ ShadowNode::emptySharedShadowNodeSharedList(),
       },
-      componentDescriptor);
+      componentDescriptor,
+      ShadowNodeTraits{});
 
   std::vector<std::reference_wrapper<const ShadowNode>> ancestors = {};
 

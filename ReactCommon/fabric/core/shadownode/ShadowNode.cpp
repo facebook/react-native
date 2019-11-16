@@ -32,8 +32,9 @@ bool ShadowNode::sameFamily(const ShadowNode &first, const ShadowNode &second) {
 #pragma mark - Constructors
 
 ShadowNode::ShadowNode(
-    const ShadowNodeFragment &fragment,
-    const ComponentDescriptor &componentDescriptor)
+    ShadowNodeFragment const &fragment,
+    ComponentDescriptor const &componentDescriptor,
+    ShadowNodeTraits traits)
     :
 #if RN_DEBUG_STRING_CONVERTIBLE
       revision_(1),
@@ -48,9 +49,11 @@ ShadowNode::ShadowNode(
           fragment.surfaceId,
           fragment.eventEmitter,
           componentDescriptor)),
-      childrenAreShared_(true) {
+      traits_(traits) {
   assert(props_);
   assert(children_);
+
+  traits_.set(ShadowNodeTraits::Trait::ChildrenAreShared);
 
   for (const auto &child : *children_) {
     child->family_->setParent(family_);
@@ -74,7 +77,7 @@ ShadowNode::ShadowNode(
           fragment.state ? fragment.state
                          : sourceShadowNode.getMostRecentState()),
       family_(sourceShadowNode.family_),
-      childrenAreShared_(true) {
+      traits_(sourceShadowNode.traits_) {
   // `tag`, `surfaceId`, and `eventEmitter` cannot be changed with cloning.
   assert(fragment.tag == ShadowNodeFragment::tagPlaceholder());
   assert(fragment.surfaceId == ShadowNodeFragment::surfaceIdPlaceholder());
@@ -83,6 +86,8 @@ ShadowNode::ShadowNode(
 
   assert(props_);
   assert(children_);
+
+  traits_.set(ShadowNodeTraits::Trait::ChildrenAreShared);
 
   if (fragment.children) {
     for (const auto &child : *children_) {
@@ -107,6 +112,10 @@ ComponentHandle ShadowNode::getComponentHandle() const {
 
 const SharedShadowNodeList &ShadowNode::getChildren() const {
   return *children_;
+}
+
+ShadowNodeTraits ShadowNode::getTraits() const {
+  return traits_;
 }
 
 const SharedProps &ShadowNode::getProps() const {
@@ -215,10 +224,11 @@ void ShadowNode::setLocalData(const SharedLocalData &localData) {
 }
 
 void ShadowNode::cloneChildrenIfShared() {
-  if (!childrenAreShared_) {
+  if (!traits_.check(ShadowNodeTraits::Trait::ChildrenAreShared)) {
     return;
   }
-  childrenAreShared_ = false;
+
+  traits_.unset(ShadowNodeTraits::Trait::ChildrenAreShared);
   children_ = std::make_shared<SharedShadowNodeList>(*children_);
 }
 

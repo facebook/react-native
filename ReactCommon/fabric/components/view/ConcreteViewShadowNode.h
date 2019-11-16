@@ -54,9 +54,10 @@ class ConcreteViewShadowNode : public ConcreteShadowNode<
   using ConcreteViewProps = ViewPropsT;
 
   ConcreteViewShadowNode(
-      const ShadowNodeFragment &fragment,
-      const ComponentDescriptor &componentDescriptor)
-      : BaseShadowNode(fragment, componentDescriptor),
+      ShadowNodeFragment const &fragment,
+      ComponentDescriptor const &componentDescriptor,
+      ShadowNodeTraits traits)
+      : BaseShadowNode(fragment, componentDescriptor, traits),
         YogaLayoutableShadowNode() {
     YogaLayoutableShadowNode::setProps(
         *std::static_pointer_cast<const ConcreteViewProps>(fragment.props));
@@ -65,8 +66,8 @@ class ConcreteViewShadowNode : public ConcreteShadowNode<
   };
 
   ConcreteViewShadowNode(
-      const ShadowNode &sourceShadowNode,
-      const ShadowNodeFragment &fragment)
+      ShadowNode const &sourceShadowNode,
+      ShadowNodeFragment const &fragment)
       : BaseShadowNode(sourceShadowNode, fragment),
         YogaLayoutableShadowNode(
             static_cast<const ConcreteViewShadowNode &>(sourceShadowNode)) {

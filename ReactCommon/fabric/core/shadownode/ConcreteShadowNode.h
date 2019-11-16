@@ -50,6 +50,14 @@ class ConcreteShadowNode : public ShadowNode {
     return ComponentHandle(concreteComponentName);
   }
 
+  /*
+   * A set of traits associated with a particular class.
+   * Reimplement in subclasses to declare class-specific traits.
+   */
+  static ShadowNodeTraits BaseTraits() {
+    return ShadowNodeTraits{};
+  }
+
   static SharedConcreteProps Props(
       const RawProps &rawProps,
       const SharedProps &baseProps = nullptr) {

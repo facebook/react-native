@@ -70,7 +70,12 @@ class ComponentDescriptor {
   virtual ComponentName getComponentName() const = 0;
 
   /*
-   * Creates a new `ShadowNode` of a particular type.
+   * Returns traits associated with a particular component type.
+   */
+  virtual ShadowNodeTraits getTraits() const = 0;
+
+  /*
+   * Creates a new `ShadowNode` of a particular component type.
    */
   virtual SharedShadowNode createShadowNode(
       const ShadowNodeFragment &fragment) const = 0;

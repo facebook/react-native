@@ -18,6 +18,7 @@
 #include <react/core/ReactPrimitives.h>
 #include <react/core/Sealable.h>
 #include <react/core/ShadowNodeFamily.h>
+#include <react/core/ShadowNodeTraits.h>
 #include <react/core/State.h>
 #include <react/debug/DebugStringConvertible.h>
 
@@ -70,8 +71,9 @@ class ShadowNode : public virtual Sealable,
    * Creates a Shadow Node based on fields specified in a `fragment`.
    */
   ShadowNode(
-      const ShadowNodeFragment &fragment,
-      const ComponentDescriptor &componentDescriptor);
+      ShadowNodeFragment const &fragment,
+      ComponentDescriptor const &componentDescriptor,
+      ShadowNodeTraits traits);
 
   /*
    * Creates a Shadow Node via cloning given `sourceShadowNode` and
@@ -93,6 +95,11 @@ class ShadowNode : public virtual Sealable,
 
   ComponentName getComponentName() const;
   ComponentHandle getComponentHandle() const;
+
+  /*
+   * Returns a stored traits.
+   */
+  ShadowNodeTraits getTraits() const;
 
   SharedProps const &getProps() const;
   SharedShadowNodeList const &getChildren() const;
@@ -196,10 +203,10 @@ class ShadowNode : public virtual Sealable,
   ShadowNodeFamily::Shared family_;
 
   /*
-   * Indicates that `children` list is shared between nodes and need
-   * to be cloned before the first mutation.
+   * Traits associated with the particular `ShadowNode` class and an instance of
+   * that class.
    */
-  bool childrenAreShared_;
+  ShadowNodeTraits traits_;
 };
 
 } // namespace react
