@@ -41,12 +41,22 @@ public class ReactImageManager extends SimpleViewManager<ReactImageView> {
   private final @Nullable Object mCallerContext;
   private final @Nullable ReactCallerContextFactory mCallerContextFactory;
 
+  /**
+   * @deprecated use {@link ReactImageManager#ReactImageManager(AbstractDraweeControllerBuilder,
+   *     ReactCallerContextFactory)} instead.
+   */
+  @Deprecated
   public ReactImageManager(
       @Nullable AbstractDraweeControllerBuilder draweeControllerBuilder,
       @Nullable Object callerContext) {
     this(draweeControllerBuilder, null, callerContext);
   }
 
+  /**
+   * @deprecated use {@link ReactImageManager#ReactImageManager(AbstractDraweeControllerBuilder,
+   *     GlobalImageLoadListener, ReactCallerContextFactory)} instead.
+   */
+  @Deprecated
   public ReactImageManager(
       @Nullable AbstractDraweeControllerBuilder draweeControllerBuilder,
       @Nullable GlobalImageLoadListener globalImageLoadListener,
@@ -87,6 +97,8 @@ public class ReactImageManager extends SimpleViewManager<ReactImageView> {
     return mDraweeControllerBuilder;
   }
 
+  /** @deprecated use {@link ReactCallerContextFactory} instead */
+  @Deprecated
   public Object getCallerContext() {
     return mCallerContext;
   }
