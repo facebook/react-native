@@ -7,6 +7,9 @@
 
 package com.facebook.react.fabric.mounting;
 
+import static com.facebook.infer.annotation.ThreadConfined.ANY;
+import static com.facebook.infer.annotation.ThreadConfined.UI;
+
 import android.content.Context;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,6 +19,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
 import com.facebook.infer.annotation.Assertions;
+import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.react.bridge.ReactSoftException;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
@@ -55,6 +59,14 @@ public class MountingManager {
     mViewManagerRegistry = viewManagerRegistry;
   }
 
+  /**
+   * This mutates the rootView, which is an Android View, so this should only be called on the UI
+   * thread.
+   *
+   * @param reactRootTag
+   * @param rootView
+   */
+  @ThreadConfined(UI)
   public void addRootView(int reactRootTag, @NonNull View rootView) {
     if (rootView.getId() != View.NO_ID) {
       throw new IllegalViewOperationException(
@@ -490,6 +502,7 @@ public class MountingManager {
   }
 
   @AnyThread
+  @ThreadConfined(ANY)
   public @Nullable EventEmitterWrapper getEventEmitter(int reactTag) {
     ViewState viewState = getNullableViewState(reactTag);
     return viewState == null ? null : viewState.mEventEmitter;
