@@ -21,18 +21,21 @@
 namespace facebook {
 namespace react {
 
-YogaLayoutableShadowNode::YogaLayoutableShadowNode()
-    : yogaConfig_(nullptr), yogaNode_(&initializeYogaConfig(yogaConfig_)) {
+YogaLayoutableShadowNode::YogaLayoutableShadowNode(bool isLeaf)
+    : yogaConfig_(nullptr),
+      yogaNode_(&initializeYogaConfig(yogaConfig_)),
+      isLeaf_(isLeaf) {
   yogaNode_.setContext(this);
 }
 
 YogaLayoutableShadowNode::YogaLayoutableShadowNode(
-    const YogaLayoutableShadowNode &layoutableShadowNode)
+    YogaLayoutableShadowNode const &layoutableShadowNode)
     : LayoutableShadowNode(layoutableShadowNode),
       yogaConfig_(nullptr),
       yogaNode_(
           layoutableShadowNode.yogaNode_,
-          &initializeYogaConfig(yogaConfig_)) {
+          &initializeYogaConfig(yogaConfig_)),
+      isLeaf_(layoutableShadowNode.isLeaf_) {
   yogaNode_.setContext(this);
   yogaNode_.setOwner(nullptr);
 
@@ -70,6 +73,10 @@ void YogaLayoutableShadowNode::enableMeasurement() {
 }
 
 void YogaLayoutableShadowNode::appendChild(YogaLayoutableShadowNode *child) {
+  if (isLeaf_) {
+    return;
+  }
+
   ensureUnsealed();
 
   yogaNode_.setDirty(true);
@@ -95,6 +102,10 @@ void YogaLayoutableShadowNode::appendChild(YogaLayoutableShadowNode *child) {
 
 void YogaLayoutableShadowNode::setChildren(
     YogaLayoutableShadowNode::UnsharedList children) {
+  if (isLeaf_) {
+    return;
+  }
+
   ensureUnsealed();
 
   // Optimization:

@@ -58,7 +58,8 @@ class ConcreteViewShadowNode : public ConcreteShadowNode<
       ComponentDescriptor const &componentDescriptor,
       ShadowNodeTraits traits)
       : BaseShadowNode(fragment, componentDescriptor, traits),
-        YogaLayoutableShadowNode() {
+        YogaLayoutableShadowNode(
+            traits.check(ShadowNodeTraits::Trait::LeafYogaNode)) {
     YogaLayoutableShadowNode::setProps(
         *std::static_pointer_cast<const ConcreteViewProps>(fragment.props));
     YogaLayoutableShadowNode::setChildren(

@@ -39,6 +39,12 @@ class ParagraphShadowNode : public ConcreteViewShadowNode<
  public:
   using ConcreteViewShadowNode::ConcreteViewShadowNode;
 
+  static ShadowNodeTraits BaseTraits() {
+    auto traits = ConcreteViewShadowNode::BaseTraits();
+    traits.set(ShadowNodeTraits::Trait::LeafYogaNode);
+    return traits;
+  }
+
   /*
    * Returns a `AttributedString` which represents text content of the node.
    */
