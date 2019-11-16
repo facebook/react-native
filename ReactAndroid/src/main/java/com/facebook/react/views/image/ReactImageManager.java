@@ -39,25 +39,45 @@ public class ReactImageManager extends SimpleViewManager<ReactImageView> {
   private @Nullable AbstractDraweeControllerBuilder mDraweeControllerBuilder;
   private @Nullable GlobalImageLoadListener mGlobalImageLoadListener;
   private final @Nullable Object mCallerContext;
+  private final @Nullable ReactCallerContextFactory mCallerContextFactory;
 
   public ReactImageManager(
-      AbstractDraweeControllerBuilder draweeControllerBuilder, Object callerContext) {
+      @Nullable AbstractDraweeControllerBuilder draweeControllerBuilder,
+      @Nullable Object callerContext) {
     this(draweeControllerBuilder, null, callerContext);
   }
 
   public ReactImageManager(
-      AbstractDraweeControllerBuilder draweeControllerBuilder,
+      @Nullable AbstractDraweeControllerBuilder draweeControllerBuilder,
       @Nullable GlobalImageLoadListener globalImageLoadListener,
-      Object callerContext) {
+      @Nullable Object callerContext) {
     mDraweeControllerBuilder = draweeControllerBuilder;
     mGlobalImageLoadListener = globalImageLoadListener;
     mCallerContext = callerContext;
+    mCallerContextFactory = null;
+  }
+
+  public ReactImageManager(
+      @Nullable AbstractDraweeControllerBuilder draweeControllerBuilder,
+      @Nullable ReactCallerContextFactory callerContextFactory) {
+    this(draweeControllerBuilder, null, callerContextFactory);
+  }
+
+  public ReactImageManager(
+      @Nullable AbstractDraweeControllerBuilder draweeControllerBuilder,
+      @Nullable GlobalImageLoadListener globalImageLoadListener,
+      @Nullable ReactCallerContextFactory callerContextFactory) {
+    mDraweeControllerBuilder = draweeControllerBuilder;
+    mGlobalImageLoadListener = globalImageLoadListener;
+    mCallerContextFactory = callerContextFactory;
+    mCallerContext = null;
   }
 
   public ReactImageManager() {
     // Lazily initialize as FrescoModule have not been initialized yet
     mDraweeControllerBuilder = null;
     mCallerContext = null;
+    mCallerContextFactory = null;
   }
 
   public AbstractDraweeControllerBuilder getDraweeControllerBuilder() {
@@ -73,8 +93,12 @@ public class ReactImageManager extends SimpleViewManager<ReactImageView> {
 
   @Override
   public ReactImageView createViewInstance(ThemedReactContext context) {
+    Object callerContext =
+        mCallerContextFactory != null
+            ? mCallerContextFactory.getOrCreateCallerContext(context)
+            : getCallerContext();
     return new ReactImageView(
-        context, getDraweeControllerBuilder(), mGlobalImageLoadListener, getCallerContext());
+        context, getDraweeControllerBuilder(), mGlobalImageLoadListener, callerContext);
   }
 
   // In JS this is Image.props.source
