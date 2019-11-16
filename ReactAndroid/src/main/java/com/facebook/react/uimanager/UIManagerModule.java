@@ -417,7 +417,8 @@ public class UIManagerModule extends ReactContextBaseJavaModule
     final int tag = ReactRootViewTagGenerator.getNextRootViewTag();
     final ReactApplicationContext reactApplicationContext = getReactApplicationContext();
     final ThemedReactContext themedRootContext =
-        new ThemedReactContext(reactApplicationContext, rootView.getContext());
+        new ThemedReactContext(
+            reactApplicationContext, rootView.getContext(), ((ReactRoot) rootView).getSurfaceID());
 
     mUIImplementation.registerRootView(rootView, tag, themedRootContext);
     Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);

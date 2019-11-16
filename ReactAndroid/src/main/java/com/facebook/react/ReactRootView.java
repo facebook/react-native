@@ -426,6 +426,13 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
     mShouldLogContentAppeared = shouldLogContentAppeared;
   }
 
+  @Nullable
+  @Override
+  public String getSurfaceID() {
+    Bundle appProperties = getAppProperties();
+    return appProperties != null ? appProperties.getString("surfaceID") : null;
+  }
+
   private void updateRootLayoutSpecs(final int widthMeasureSpec, final int heightMeasureSpec) {
     if (mReactInstanceManager == null) {
       FLog.w(

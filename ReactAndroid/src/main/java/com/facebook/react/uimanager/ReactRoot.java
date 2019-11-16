@@ -48,4 +48,13 @@ public interface ReactRoot {
 
   /** Sets a flag that determines whether to log that content appeared on next view added. */
   void setShouldLogContentAppeared(boolean shouldLogContentAppeared);
+
+  /**
+   * @return a {@link String} that represents the root js application that is being rendered with
+   *     this {@link ReactRoot}
+   * @deprecated We recommend to not use this method as it is will be replaced in the near future.
+   */
+  @Deprecated
+  @Nullable
+  String getSurfaceID();
 }

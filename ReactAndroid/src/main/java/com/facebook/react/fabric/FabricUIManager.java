@@ -172,12 +172,15 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
   public <T extends View> int addRootView(
       final T rootView, final WritableMap initialProps, final @Nullable String initialUITemplate) {
     final int rootTag = ReactRootViewTagGenerator.getNextRootViewTag();
+    ReactRoot reactRootView = (ReactRoot) rootView;
+
     // TODO T31905686: Combine with startSurface below
     ThemedReactContext reactContext =
-        new ThemedReactContext(mReactApplicationContext, rootView.getContext());
+        new ThemedReactContext(
+            mReactApplicationContext, rootView.getContext(), reactRootView.getSurfaceID());
     mMountingManager.addRootView(rootTag, rootView);
+    String moduleName = reactRootView.getJSModuleName();
     mReactContextForRootTag.put(rootTag, reactContext);
-    String moduleName = ((ReactRoot) rootView).getJSModuleName();
     if (ENABLE_FABRIC_LOGS) {
       FLog.d(TAG, "Starting surface for module: %s and reactTag: %d", moduleName, rootTag);
     }
@@ -198,7 +201,7 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
       int heightMeasureSpec) {
     final int rootTag = ReactRootViewTagGenerator.getNextRootViewTag();
     ThemedReactContext reactContext =
-        new ThemedReactContext(mReactApplicationContext, rootView.getContext());
+        new ThemedReactContext(mReactApplicationContext, rootView.getContext(), moduleName);
     if (ENABLE_FABRIC_LOGS) {
       FLog.d(TAG, "Starting surface for module: %s and reactTag: %d", moduleName, rootTag);
     }
