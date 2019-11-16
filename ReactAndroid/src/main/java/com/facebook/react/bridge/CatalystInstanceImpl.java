@@ -105,7 +105,7 @@ public class CatalystInstanceImpl implements CatalystInstance {
   private @Nullable String mSourceURL;
 
   private JavaScriptContextHolder mJavaScriptContextHolder;
-  private @Nullable TurboModuleRegistry mTurboModuleRegistry = null;
+  private volatile @Nullable TurboModuleRegistry mTurboModuleRegistry = null;
   private @Nullable JSIModule mTurboModuleManagerJSIModule = null;
 
   // C++ parts
