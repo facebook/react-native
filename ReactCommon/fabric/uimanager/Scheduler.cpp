@@ -85,27 +85,44 @@ Scheduler::Scheduler(
 }
 
 Scheduler::~Scheduler() {
-#ifndef NDEBUG
-  /*
-   * This requirement must be satisfied to make concurrent deallocation of
-   * `Scheduler` and calling on it from `UIManager` side thread-safe.
-   * Conceptually, `UIManager` is allowed to call `Scheduler` only if the
-   * corresponding `ShadowTree` instance exists (which is not fully enforced
-   * yet).
-   */
-  auto hasRunningSurfaces = false;
+  // All Surfaces must be explicitly stopped before destroying `Scheduler`.
+  // The idea is that `UIManager` is allowed to call `Scheduler` only if the
+  // corresponding `ShadowTree` instance exists.
+
+  // The thread-safety of this operation is guaranteed by this requirement.
+  uiManager_->setDelegate(nullptr);
+
+  // Then, let's verify that the requirement was satisfied.
+  auto surfaceIds = std::vector<SurfaceId>{};
   uiManager_->getShadowTreeRegistry().enumerate(
       [&](ShadowTree const &shadowTree, bool &stop) {
-        stop = true;
-        hasRunningSurfaces = true;
+        surfaceIds.push_back(shadowTree.getSurfaceId());
       });
 
   assert(
-      !hasRunningSurfaces &&
-      "Scheduler was destroyed with sill running Surfaces.");
-#endif
+      surfaceIds.size() == 0 &&
+      "Scheduler was destroyed with outstanding Surfaces.");
 
-  uiManager_->setDelegate(nullptr);
+  if (surfaceIds.size() == 0) {
+    return;
+  }
+
+  LOG(FATAL) << "Scheduler was destroyed with outstanding Surfaces.";
+
+  // If we are here, that means assert didn't fire which indicates that we in
+  // production.
+
+  // Now we have still-running surfaces, which is no good, no good.
+  // That's indeed a sign of a severe issue on the application layer.
+  // At this point, we don't have much to lose, so we are trying to unmount all
+  // outstanding `ShadowTree`s to prevent all stored JSI entities from
+  // overliving the `Scheduler`. (Unmounting `ShadowNode`s disables
+  // `EventEmitter`s which destroys JSI objects.)
+  for (auto surfaceId : surfaceIds) {
+    uiManager_->getShadowTreeRegistry().visit(
+        surfaceId,
+        [](ShadowTree const &shadowTree) { shadowTree.commitEmptyTree(); });
+  }
 }
 
 void Scheduler::startSurface(
