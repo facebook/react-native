@@ -134,8 +134,11 @@ void Scheduler::startSurface(
   SystraceSection s("Scheduler::startSurface");
 
   auto shadowTree = std::make_unique<ShadowTree>(
-      surfaceId, layoutConstraints, layoutContext, *rootComponentDescriptor_);
-  shadowTree->setDelegate(uiManager_.get());
+      surfaceId,
+      layoutConstraints,
+      layoutContext,
+      *rootComponentDescriptor_,
+      *uiManager_);
 
   auto uiManager = uiManager_;
 

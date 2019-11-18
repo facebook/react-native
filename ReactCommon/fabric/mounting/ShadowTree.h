@@ -38,7 +38,8 @@ class ShadowTree final {
       SurfaceId surfaceId,
       LayoutConstraints const &layoutConstraints,
       LayoutContext const &layoutContext,
-      RootComponentDescriptor const &rootComponentDescriptor);
+      RootComponentDescriptor const &rootComponentDescriptor,
+      ShadowTreeDelegate const &delegate);
 
   ~ShadowTree();
 
@@ -65,16 +66,6 @@ class ShadowTree final {
    */
   void commitEmptyTree() const;
 
-#pragma mark - Delegate
-
-  /*
-   * Sets and gets the delegate.
-   * The delegate is stored as a raw pointer, so the owner must null
-   * the pointer before being destroyed.
-   */
-  void setDelegate(ShadowTreeDelegate const *delegate);
-  ShadowTreeDelegate const *getDelegate() const;
-
  private:
   RootShadowNode::Unshared cloneRootShadowNode(
       RootShadowNode::Shared const &oldRootShadowNode,
@@ -85,12 +76,12 @@ class ShadowTree final {
       std::vector<LayoutableShadowNode const *> &affectedLayoutableNodes) const;
 
   SurfaceId const surfaceId_;
+  ShadowTreeDelegate const &delegate_;
   mutable better::shared_mutex commitMutex_;
   mutable RootShadowNode::Shared
       rootShadowNode_; // Protected by `commitMutex_`.
   mutable ShadowTreeRevision::Number revisionNumber_{
       0}; // Protected by `commitMutex_`.
-  ShadowTreeDelegate const *delegate_;
   MountingCoordinator::Shared mountingCoordinator_;
 };
 

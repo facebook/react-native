@@ -91,10 +91,11 @@ static void updateMountedFlag(
 
 ShadowTree::ShadowTree(
     SurfaceId surfaceId,
-    const LayoutConstraints &layoutConstraints,
-    const LayoutContext &layoutContext,
-    const RootComponentDescriptor &rootComponentDescriptor)
-    : surfaceId_(surfaceId) {
+    LayoutConstraints const &layoutConstraints,
+    LayoutContext const &layoutContext,
+    RootComponentDescriptor const &rootComponentDescriptor,
+    ShadowTreeDelegate const &delegate)
+    : surfaceId_(surfaceId), delegate_(delegate) {
   const auto noopEventEmitter = std::make_shared<const ViewEventEmitter>(
       nullptr, -1, std::shared_ptr<const EventDispatcher>());
 
@@ -197,9 +198,7 @@ bool ShadowTree::tryCommit(ShadowTreeCommitTransaction transaction) const {
   mountingCoordinator_->push(
       ShadowTreeRevision{newRootShadowNode, revisionNumber, telemetry});
 
-  if (delegate_) {
-    delegate_->shadowTreeDidFinishTransaction(*this, mountingCoordinator_);
-  }
+  delegate_.shadowTreeDidFinishTransaction(*this, mountingCoordinator_);
 
   return true;
 }
@@ -242,16 +241,6 @@ void ShadowTree::emitLayoutEvents(
 
     viewEventEmitter.onLayout(layoutableNode->getLayoutMetrics());
   }
-}
-
-#pragma mark - Delegate
-
-void ShadowTree::setDelegate(ShadowTreeDelegate const *delegate) {
-  delegate_ = delegate;
-}
-
-ShadowTreeDelegate const *ShadowTree::getDelegate() const {
-  return delegate_;
 }
 
 } // namespace react
