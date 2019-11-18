@@ -10,6 +10,7 @@
 #import <React/RCTPrimitives.h>
 #import <React/RCTSurfacePresenterStub.h>
 
+#import <React/RCTComponentViewFactory.h>
 #import <react/utils/ContextContainer.h>
 #import <react/utils/RuntimeExecutor.h>
 
@@ -18,7 +19,6 @@ NS_ASSUME_NONNULL_BEGIN
 @class RCTFabricSurface;
 @class RCTImageLoader;
 @class RCTMountingManager;
-@class RCTComponentViewFactory;
 
 /**
  * Coordinates presenting of React Native Surfaces and represents application

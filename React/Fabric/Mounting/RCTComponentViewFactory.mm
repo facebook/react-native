@@ -66,8 +66,15 @@ using namespace facebook::react;
 
   providerRegistry->setComponentDescriptorProviderRequest([providerRegistry,
                                                            componentViewFactory](ComponentName requestedComponentName) {
-    // Fallback 1: Call the delegate.
-    // To be implemented.
+    // Fallback 1: Call delegate for component view class.
+    if (componentViewFactory.delegate) {
+      Class<RCTComponentViewProtocol> klass =
+          [componentViewFactory.delegate componentViewClassWithName:requestedComponentName];
+      if (klass) {
+        [componentViewFactory registerComponentViewClass:klass];
+        return;
+      }
+    }
 
     // Fallback 2: Try to use Paper Interop.
     if ([RCTLegacyViewManagerInteropComponentView isSupported:RCTNSStringFromString(requestedComponentName)]) {
