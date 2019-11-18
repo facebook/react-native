@@ -59,7 +59,6 @@ const timerIDs: Array<?number> = [];
 let immediates: Array<number> = [];
 let requestIdleCallbacks: Array<number> = [];
 const requestIdleCallbackTimeouts: {[number]: number} = {};
-const identifiers: Array<null | {methodName: string}> = [];
 
 let GUID = 1;
 let errors: ?Array<Error> = null;
@@ -81,14 +80,6 @@ function _allocateCallback(func: Function, type: JSTimerType): number {
   timerIDs[freeIndex] = id;
   callbacks[freeIndex] = func;
   types[freeIndex] = type;
-  if (__DEV__) {
-    const parseErrorStack = require('../Devtools/parseErrorStack');
-    // TODO: (moti) T55685778 Use Error.captureStackTrace on Hermes
-    const stack = parseErrorStack(new Error());
-    if (stack) {
-      identifiers[freeIndex] = stack[1]; // skip _allocateCallback's own stack frame
-    }
-  }
   return id;
 }
 
@@ -122,8 +113,7 @@ function _callTimer(timerID: number, frameTime: number, didTimeout: ?boolean) {
   }
 
   if (__DEV__) {
-    const identifier = identifiers[timerIndex] || {};
-    Systrace.beginEvent('Systrace.callTimer: ' + identifier.methodName);
+    Systrace.beginEvent('Systrace.callTimer: ' + type);
   }
 
   // Clear the metadata
@@ -204,7 +194,6 @@ function _clearIndex(i: number) {
   timerIDs[i] = null;
   callbacks[i] = null;
   types[i] = null;
-  identifiers[i] = null;
 }
 
 function _freeCallback(timerID: number) {
