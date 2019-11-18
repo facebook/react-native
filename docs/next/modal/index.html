@@ -72,111 +72,64 @@
 <blockquote>
 <p>Note: If you need more control over how to present modals over the rest of your app, then consider using a top-level Navigator.</p>
 </blockquote>
-<pre><code class="hljs css language-jsx"><span class="token keyword">import</span> React<span class="token punctuation">,</span> <span class="token punctuation">{</span>Component<span class="token punctuation">}</span> <span class="token keyword">from</span> <span class="token string">'react'</span><span class="token punctuation">;</span>
-<span class="token keyword">import</span> <span class="token punctuation">{</span>Modal<span class="token punctuation">,</span> Text<span class="token punctuation">,</span> TouchableHighlight<span class="token punctuation">,</span> View<span class="token punctuation">,</span> Alert<span class="token punctuation">}</span> <span class="token keyword">from</span> <span class="token string">'react-native'</span><span class="token punctuation">;</span>
+<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React, {Component, useState} <span class="hljs-keyword">from</span> <span class="hljs-string">'react'</span>;
+<span class="hljs-keyword">import</span> {Modal, Text, TouchableHighlight, View, Alert} <span class="hljs-keyword">from</span> <span class="hljs-string">'react-native'</span>;
 
-<span class="token keyword">class</span> <span class="token class-name">ModalExample</span> <span class="token keyword">extends</span> <span class="token class-name">Component</span> <span class="token punctuation">{</span>
-  state <span class="token operator">=</span> <span class="token punctuation">{</span>
-    modalVisible<span class="token punctuation">:</span> <span class="token boolean">false</span><span class="token punctuation">,</span>
-  <span class="token punctuation">}</span><span class="token punctuation">;</span>
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">App</span>(<span class="hljs-params"></span>) </span>{
+  <span class="hljs-keyword">const</span> [modalVisible, setModalVisible] = useState(<span class="hljs-literal">false</span>);
+  <span class="hljs-keyword">return</span> (
+    <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">View</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{{marginTop:</span> <span class="hljs-attr">22</span>}}&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">Modal</span>
+        <span class="hljs-attr">animationType</span>=<span class="hljs-string">"slide"</span>
+        <span class="hljs-attr">transparent</span>=<span class="hljs-string">{false}</span>
+        <span class="hljs-attr">visible</span>=<span class="hljs-string">{modalVisible}</span>
+        <span class="hljs-attr">onRequestClose</span>=<span class="hljs-string">{()</span> =&gt;</span> {
+          Alert.alert('Modal has been closed.');
+        }}&gt;
+        <span class="hljs-tag">&lt;<span class="hljs-name">View</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{{marginTop:</span> <span class="hljs-attr">22</span>}}&gt;</span>
+          <span class="hljs-tag">&lt;<span class="hljs-name">View</span>&gt;</span>
+            <span class="hljs-tag">&lt;<span class="hljs-name">Text</span>&gt;</span>Hello World!<span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span>
 
-  <span class="token function">setModalVisible</span><span class="token punctuation">(</span><span class="token parameter">visible</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
-    <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">setState</span><span class="token punctuation">(</span><span class="token punctuation">{</span>modalVisible<span class="token punctuation">:</span> visible<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-  <span class="token punctuation">}</span>
+            <span class="hljs-tag">&lt;<span class="hljs-name">TouchableHighlight</span>
+              <span class="hljs-attr">onPress</span>=<span class="hljs-string">{()</span> =&gt;</span> {
+                setModalVisible(!modalVisible);
+              }}&gt;
+              <span class="hljs-tag">&lt;<span class="hljs-name">Text</span>&gt;</span>Hide Modal<span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span>
+            <span class="hljs-tag">&lt;/<span class="hljs-name">TouchableHighlight</span>&gt;</span>
+          <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span>
+        <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span>
+      <span class="hljs-tag">&lt;/<span class="hljs-name">Modal</span>&gt;</span>
 
-  <span class="token function">render</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
-    <span class="token keyword">return</span> <span class="token punctuation">(</span>
-      <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span><span class="token class-name">View</span></span> <span class="token attr-name">style</span><span class="token script language-javascript"><span class="token script-punctuation punctuation">=</span><span class="token punctuation">{</span><span class="token punctuation">{</span>marginTop<span class="token punctuation">:</span> <span class="token number">22</span><span class="token punctuation">}</span><span class="token punctuation">}</span></span><span class="token punctuation">></span></span>
-        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span><span class="token class-name">Modal</span></span>
-          <span class="token attr-name">animationType</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>slide<span class="token punctuation">"</span></span>
-          <span class="token attr-name">transparent</span><span class="token script language-javascript"><span class="token script-punctuation punctuation">=</span><span class="token punctuation">{</span><span class="token boolean">false</span><span class="token punctuation">}</span></span>
-          <span class="token attr-name">visible</span><span class="token script language-javascript"><span class="token script-punctuation punctuation">=</span><span class="token punctuation">{</span><span class="token keyword">this</span><span class="token punctuation">.</span>state<span class="token punctuation">.</span>modalVisible<span class="token punctuation">}</span></span>
-          <span class="token attr-name">onRequestClose</span><span class="token script language-javascript"><span class="token script-punctuation punctuation">=</span><span class="token punctuation">{</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">{</span>
-            Alert<span class="token punctuation">.</span><span class="token function">alert</span><span class="token punctuation">(</span><span class="token string">'Modal has been closed.'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-          <span class="token punctuation">}</span><span class="token punctuation">}</span></span><span class="token punctuation">></span></span>
-          <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span><span class="token class-name">View</span></span> <span class="token attr-name">style</span><span class="token script language-javascript"><span class="token script-punctuation punctuation">=</span><span class="token punctuation">{</span><span class="token punctuation">{</span>marginTop<span class="token punctuation">:</span> <span class="token number">22</span><span class="token punctuation">}</span><span class="token punctuation">}</span></span><span class="token punctuation">></span></span>
-            <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span><span class="token class-name">View</span></span><span class="token punctuation">></span></span>
-              <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span><span class="token class-name">Text</span></span><span class="token punctuation">></span></span>Hello World<span class="token operator">!</span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span><span class="token class-name">Text</span></span><span class="token punctuation">></span></span>
-
-              <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span><span class="token class-name">TouchableHighlight</span></span>
-                <span class="token attr-name">onPress</span><span class="token script language-javascript"><span class="token script-punctuation punctuation">=</span><span class="token punctuation">{</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">{</span>
-                  <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">setModalVisible</span><span class="token punctuation">(</span><span class="token operator">!</span><span class="token keyword">this</span><span class="token punctuation">.</span>state<span class="token punctuation">.</span>modalVisible<span class="token punctuation">)</span><span class="token punctuation">;</span>
-                <span class="token punctuation">}</span><span class="token punctuation">}</span></span><span class="token punctuation">></span></span>
-                <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span><span class="token class-name">Text</span></span><span class="token punctuation">></span></span>Hide Modal<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span><span class="token class-name">Text</span></span><span class="token punctuation">></span></span>
-              <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span><span class="token class-name">TouchableHighlight</span></span><span class="token punctuation">></span></span>
-            <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span><span class="token class-name">View</span></span><span class="token punctuation">></span></span>
-          <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span><span class="token class-name">View</span></span><span class="token punctuation">></span></span>
-        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span><span class="token class-name">Modal</span></span><span class="token punctuation">></span></span>
-
-        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span><span class="token class-name">TouchableHighlight</span></span>
-          <span class="token attr-name">onPress</span><span class="token script language-javascript"><span class="token script-punctuation punctuation">=</span><span class="token punctuation">{</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">{</span>
-            <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">setModalVisible</span><span class="token punctuation">(</span><span class="token boolean">true</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-          <span class="token punctuation">}</span><span class="token punctuation">}</span></span><span class="token punctuation">></span></span>
-          <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span><span class="token class-name">Text</span></span><span class="token punctuation">></span></span>Show Modal<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span><span class="token class-name">Text</span></span><span class="token punctuation">></span></span>
-        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span><span class="token class-name">TouchableHighlight</span></span><span class="token punctuation">></span></span>
-      <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span><span class="token class-name">View</span></span><span class="token punctuation">></span></span>
-    <span class="token punctuation">)</span><span class="token punctuation">;</span>
-  <span class="token punctuation">}</span>
-<span class="token punctuation">}</span>
-</code></pre>
-<hr>
+      <span class="hljs-tag">&lt;<span class="hljs-name">TouchableHighlight</span>
+        <span class="hljs-attr">onPress</span>=<span class="hljs-string">{()</span> =&gt;</span> {
+          setModalVisible(true);
+        }}&gt;
+        <span class="hljs-tag">&lt;<span class="hljs-name">Text</span>&gt;</span>Show Modal<span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span>
+      <span class="hljs-tag">&lt;/<span class="hljs-name">TouchableHighlight</span>&gt;</span>
+    <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span></span>
+  );
+}
+</code></pre></div><div class="desktop-friendly-snack" style="margin-top: 15px; margin-bottom: 15px"><div
+        data-snack-name="rn-modal"
+        data-snack-description="Example usage"
+        data-snack-code="import%20React%2C%20%7BComponent%2C%20useState%7D%20from%20'react'%3B%0Aimport%20%7BModal%2C%20Text%2C%20TouchableHighlight%2C%20View%2C%20Alert%7D%20from%20'react-native'%3B%0A%0Aexport%20default%20function%20App()%20%7B%0A%20%20const%20%5BmodalVisible%2C%20setModalVisible%5D%20%3D%20useState(false)%3B%0A%20%20return%20(%0A%20%20%20%20%3CView%20style%3D%7B%7BmarginTop%3A%2022%7D%7D%3E%0A%20%20%20%20%20%20%3CModal%0A%20%20%20%20%20%20%20%20animationType%3D%22slide%22%0A%20%20%20%20%20%20%20%20transparent%3D%7Bfalse%7D%0A%20%20%20%20%20%20%20%20visible%3D%7BmodalVisible%7D%0A%20%20%20%20%20%20%20%20onRequestClose%3D%7B()%20%3D%3E%20%7B%0A%20%20%20%20%20%20%20%20%20%20Alert.alert('Modal%20has%20been%20closed.')%3B%0A%20%20%20%20%20%20%20%20%7D%7D%3E%0A%20%20%20%20%20%20%20%20%3CView%20style%3D%7B%7BmarginTop%3A%2022%7D%7D%3E%0A%20%20%20%20%20%20%20%20%20%20%3CView%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%3CText%3EHello%20World!%3C%2FText%3E%0A%0A%20%20%20%20%20%20%20%20%20%20%20%20%3CTouchableHighlight%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20onPress%3D%7B()%20%3D%3E%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20setModalVisible(!modalVisible)%3B%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%7D%7D%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3CText%3EHide%20Modal%3C%2FText%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%3C%2FTouchableHighlight%3E%0A%20%20%20%20%20%20%20%20%20%20%3C%2FView%3E%0A%20%20%20%20%20%20%20%20%3C%2FView%3E%0A%20%20%20%20%20%20%3C%2FModal%3E%0A%0A%20%20%20%20%20%20%3CTouchableHighlight%0A%20%20%20%20%20%20%20%20onPress%3D%7B()%20%3D%3E%20%7B%0A%20%20%20%20%20%20%20%20%20%20setModalVisible(true)%3B%0A%20%20%20%20%20%20%20%20%7D%7D%3E%0A%20%20%20%20%20%20%20%20%3CText%3EShow%20Modal%3C%2FText%3E%0A%20%20%20%20%20%20%3C%2FTouchableHighlight%3E%0A%20%20%20%20%3C%2FView%3E%0A%20%20)%3B%0A%7D%0A"
+        data-snack-platform="web"
+        data-snack-preview="true"
+        style="
+          overflow: hidden;
+          background: #fafafa;
+          border: 1px solid rgba(0,0,0,.16);
+          border-radius: 4px;
+          height: 514px;
+          width: 100%;
+        "
+      ></div></div></div><hr>
 <h1><a class="anchor" aria-hidden="true" id="reference"></a><a href="#reference" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Reference</h1>
 <h2><a class="anchor" aria-hidden="true" id="props"></a><a href="#props" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Props</h2>
-<h3><a class="anchor" aria-hidden="true" id="visible"></a><a href="#visible" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>visible</code></h3>
-<p>The <code>visible</code> prop determines whether your modal is visible.</p>
-<table>
-<thead>
-<tr><th>Type</th><th>Required</th></tr>
-</thead>
-<tbody>
-<tr><td>bool</td><td>No</td></tr>
-</tbody>
-</table>
-<hr>
-<h3><a class="anchor" aria-hidden="true" id="supportedorientations"></a><a href="#supportedorientations" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>supportedOrientations</code></h3>
-<p>The <code>supportedOrientations</code> prop allows the modal to be rotated to any of the specified orientations. On iOS, the modal is still restricted by what's specified in your app's Info.plist's UISupportedInterfaceOrientations field. When using <code>presentationStyle</code> of <code>pageSheet</code> or <code>formSheet</code>, this property will be ignored by iOS.</p>
-<table>
-<thead>
-<tr><th>Type</th><th>Required</th><th>Platform</th></tr>
-</thead>
-<tbody>
-<tr><td>array of enum('portrait', 'portrait-upside-down', 'landscape', 'landscape-left', 'landscape-right')</td><td>No</td><td>iOS</td></tr>
-</tbody>
-</table>
-<hr>
-<h3><a class="anchor" aria-hidden="true" id="onrequestclose"></a><a href="#onrequestclose" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>onRequestClose</code></h3>
-<p>The <code>onRequestClose</code> callback is called when the user taps the hardware back button on Android or the menu button on Apple TV. Because of this required prop, be aware that <code>BackHandler</code> events will not be emitted as long as the modal is open.</p>
-<table>
-<thead>
-<tr><th>Type</th><th>Required</th><th>Platform</th></tr>
-</thead>
-<tbody>
-<tr><td>function</td><td>Yes</td><td>Android, Platform.isTVOS</td></tr>
-<tr><td>function</td><td>No</td><td>(Others)</td></tr>
-</tbody>
-</table>
-<hr>
-<h3><a class="anchor" aria-hidden="true" id="onshow"></a><a href="#onshow" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>onShow</code></h3>
-<p>The <code>onShow</code> prop allows passing a function that will be called once the modal has been shown.</p>
-<table>
-<thead>
-<tr><th>Type</th><th>Required</th></tr>
-</thead>
-<tbody>
-<tr><td>function</td><td>No</td></tr>
-</tbody>
-</table>
-<hr>
-<h3><a class="anchor" aria-hidden="true" id="transparent"></a><a href="#transparent" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>transparent</code></h3>
-<p>The <code>transparent</code> prop determines whether your modal will fill the entire view. Setting this to <code>true</code> will render the modal over a transparent background.</p>
-<table>
-<thead>
-<tr><th>Type</th><th>Required</th></tr>
-</thead>
-<tbody>
-<tr><td>bool</td><td>No</td></tr>
-</tbody>
-</table>
+<h3><a class="anchor" aria-hidden="true" id="animated"></a><a href="#animated" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>animated</code></h3>
+<blockquote>
+<p><strong>Deprecated.</strong> Use the <a href="/react-native/docs/next/modal#animationtype"><code>animationType</code></a> prop instead.</p>
+</blockquote>
 <hr>
 <h3><a class="anchor" aria-hidden="true" id="animationtype"></a><a href="#animationtype" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>animationType</code></h3>
 <p>The <code>animationType</code> prop controls how the modal animates.</p>
@@ -228,6 +181,29 @@
 </tbody>
 </table>
 <hr>
+<h3><a class="anchor" aria-hidden="true" id="onrequestclose"></a><a href="#onrequestclose" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>onRequestClose</code></h3>
+<p>The <code>onRequestClose</code> callback is called when the user taps the hardware back button on Android or the menu button on Apple TV. Because of this required prop, be aware that <code>BackHandler</code> events will not be emitted as long as the modal is open.</p>
+<table>
+<thead>
+<tr><th>Type</th><th>Required</th><th>Platform</th></tr>
+</thead>
+<tbody>
+<tr><td>function</td><td>Yes</td><td>Android, Platform.isTVOS</td></tr>
+<tr><td>function</td><td>No</td><td>(Others)</td></tr>
+</tbody>
+</table>
+<hr>
+<h3><a class="anchor" aria-hidden="true" id="onshow"></a><a href="#onshow" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>onShow</code></h3>
+<p>The <code>onShow</code> prop allows passing a function that will be called once the modal has been shown.</p>
+<table>
+<thead>
+<tr><th>Type</th><th>Required</th></tr>
+</thead>
+<tbody>
+<tr><td>function</td><td>No</td></tr>
+</tbody>
+</table>
+<hr>
 <h3><a class="anchor" aria-hidden="true" id="presentationstyle"></a><a href="#presentationstyle" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>presentationStyle</code></h3>
 <p>The <code>presentationStyle</code> prop controls how the modal appears (generally on larger devices such as iPad or plus-sized iPhones). See <a href="https://developer.apple.com/reference/uikit/uimodalpresentationstyle">https://developer.apple.com/reference/uikit/uimodalpresentationstyle</a> for details.</p>
 <ul>
@@ -246,11 +222,50 @@
 </tbody>
 </table>
 <hr>
-<h3><a class="anchor" aria-hidden="true" id="animated"></a><a href="#animated" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>animated</code></h3>
-<blockquote>
-<p><strong>Deprecated.</strong> Use the <a href="/react-native/docs/next/modal#animationtype"><code>animationType</code></a> prop instead.</p>
-</blockquote>
-</span></div></article></div><div class="docs-prevnext"><a class="docs-prev button" href="/react-native/docs/next/maskedviewios"><span class="arrow-prev">← </span><span>Previous</span></a><a class="docs-next button" href="/react-native/docs/next/picker"><span>Picker</span><span class="arrow-next"> →</span></a></div></div></div><nav class="onPageNav"><ul class="toc-headings"><li><a href="#props">Props</a><ul class="toc-headings"><li><a href="#visible"><code>visible</code></a></li><li><a href="#supportedorientations"><code>supportedOrientations</code></a></li><li><a href="#onrequestclose"><code>onRequestClose</code></a></li><li><a href="#onshow"><code>onShow</code></a></li><li><a href="#transparent"><code>transparent</code></a></li><li><a href="#animationtype"><code>animationType</code></a></li><li><a href="#hardwareaccelerated"><code>hardwareAccelerated</code></a></li><li><a href="#ondismiss"><code>onDismiss</code></a></li><li><a href="#onorientationchange"><code>onOrientationChange</code></a></li><li><a href="#presentationstyle"><code>presentationStyle</code></a></li><li><a href="#animated"><code>animated</code></a></li></ul></li></ul></nav></div><footer class="nav-footer" id="footer"><section class="sitemap"><div><h5>Docs</h5><a href="/react-native/docs/getting-started.html">Getting Started</a><a href="/react-native/docs/tutorial.html">Tutorial</a><a href="/react-native/docs/components-and-apis.html">Components and APIs</a><a href="/react-native/docs/more-resources.html">More Resources</a></div><div><h5>Community</h5><a href="/react-native/help.html">The React Native Community</a><a href="/react-native/showcase.html">Who&#x27;s using React Native?</a><a href="http://stackoverflow.com/questions/tagged/react-native" target="_blank">Ask Questions on Stack Overflow</a><a href="https://github.com/facebook/react-native/blob/master/CONTRIBUTING.md">Contributor Guide</a><a href="https://dev.to/t/reactnative" target="_blank">DEV Community</a></div><div><h5>More Resources</h5><a href="/react-native/blog/">Blog</a><a href="https://twitter.com/reactnative" target="_blank">Twitter</a><a href="https://github.com/facebook/react-native" target="_blank">GitHub</a><a href="http://reactjs.org" target="_blank">React</a></div></section><a href="https://code.facebook.com/projects/" target="_blank" class="fbOpenSource"><img src="/react-native/img/oss_logo.png" alt="Facebook Open Source" width="170" height="45"/></a><section class="copyright">Copyright © 2019 Facebook Inc.</section></footer></div><script type="text/javascript" src="https://cdn.jsdelivr.net/docsearch.js/1/docsearch.min.js"></script><script>window.fbAsyncInit = function() {FB.init({appId:'1677033832619985',xfbml:true,version:'v2.7'});};(function(d, s, id){var js, fjs = d.getElementsByTagName(s)[0];if (d.getElementById(id)) {return;}js = d.createElement(s); js.id = id;js.src = '//connect.facebook.net/en_US/sdk.js';fjs.parentNode.insertBefore(js, fjs);}(document, 'script','facebook-jssdk'));
+<h3><a class="anchor" aria-hidden="true" id="statusbartranslucent"></a><a href="#statusbartranslucent" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>statusBarTranslucent</code></h3>
+<p>The <code>statusBarTranslucent</code> prop determines whether your modal should go under the system statusbar.</p>
+<table>
+<thead>
+<tr><th>Type</th><th>Required</th></tr>
+</thead>
+<tbody>
+<tr><td>bool</td><td>No</td></tr>
+</tbody>
+</table>
+<hr>
+<h3><a class="anchor" aria-hidden="true" id="supportedorientations"></a><a href="#supportedorientations" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>supportedOrientations</code></h3>
+<p>The <code>supportedOrientations</code> prop allows the modal to be rotated to any of the specified orientations. On iOS, the modal is still restricted by what's specified in your app's Info.plist's UISupportedInterfaceOrientations field. When using <code>presentationStyle</code> of <code>pageSheet</code> or <code>formSheet</code>, this property will be ignored by iOS.</p>
+<table>
+<thead>
+<tr><th>Type</th><th>Required</th><th>Platform</th></tr>
+</thead>
+<tbody>
+<tr><td>array of enum('portrait', 'portrait-upside-down', 'landscape', 'landscape-left', 'landscape-right')</td><td>No</td><td>iOS</td></tr>
+</tbody>
+</table>
+<hr>
+<h3><a class="anchor" aria-hidden="true" id="transparent"></a><a href="#transparent" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>transparent</code></h3>
+<p>The <code>transparent</code> prop determines whether your modal will fill the entire view. Setting this to <code>true</code> will render the modal over a transparent background.</p>
+<table>
+<thead>
+<tr><th>Type</th><th>Required</th></tr>
+</thead>
+<tbody>
+<tr><td>bool</td><td>No</td></tr>
+</tbody>
+</table>
+<hr>
+<h3><a class="anchor" aria-hidden="true" id="visible"></a><a href="#visible" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>visible</code></h3>
+<p>The <code>visible</code> prop determines whether your modal is visible.</p>
+<table>
+<thead>
+<tr><th>Type</th><th>Required</th></tr>
+</thead>
+<tbody>
+<tr><td>bool</td><td>No</td></tr>
+</tbody>
+</table>
+</span></div></article></div><div class="docs-prevnext"><a class="docs-prev button" href="/react-native/docs/next/maskedviewios"><span class="arrow-prev">← </span><span>Previous</span></a><a class="docs-next button" href="/react-native/docs/next/picker"><span>Picker</span><span class="arrow-next"> →</span></a></div></div></div><nav class="onPageNav"><ul class="toc-headings"><li><a href="#props">Props</a><ul class="toc-headings"><li><a href="#animated"><code>animated</code></a></li><li><a href="#animationtype"><code>animationType</code></a></li><li><a href="#hardwareaccelerated"><code>hardwareAccelerated</code></a></li><li><a href="#ondismiss"><code>onDismiss</code></a></li><li><a href="#onorientationchange"><code>onOrientationChange</code></a></li><li><a href="#onrequestclose"><code>onRequestClose</code></a></li><li><a href="#onshow"><code>onShow</code></a></li><li><a href="#presentationstyle"><code>presentationStyle</code></a></li><li><a href="#statusbartranslucent"><code>statusBarTranslucent</code></a></li><li><a href="#supportedorientations"><code>supportedOrientations</code></a></li><li><a href="#transparent"><code>transparent</code></a></li><li><a href="#visible"><code>visible</code></a></li></ul></li></ul></nav></div><footer class="nav-footer" id="footer"><section class="sitemap"><div><h5>Docs</h5><a href="/react-native/docs/getting-started.html">Getting Started</a><a href="/react-native/docs/tutorial.html">Tutorial</a><a href="/react-native/docs/components-and-apis.html">Components and APIs</a><a href="/react-native/docs/more-resources.html">More Resources</a></div><div><h5>Community</h5><a href="/react-native/help.html">The React Native Community</a><a href="/react-native/showcase.html">Who&#x27;s using React Native?</a><a href="http://stackoverflow.com/questions/tagged/react-native" target="_blank">Ask Questions on Stack Overflow</a><a href="https://github.com/facebook/react-native/blob/master/CONTRIBUTING.md">Contributor Guide</a><a href="https://dev.to/t/reactnative" target="_blank">DEV Community</a></div><div><h5>More Resources</h5><a href="/react-native/blog/">Blog</a><a href="https://twitter.com/reactnative" target="_blank">Twitter</a><a href="https://github.com/facebook/react-native" target="_blank">GitHub</a><a href="http://reactjs.org" target="_blank">React</a></div></section><a href="https://code.facebook.com/projects/" target="_blank" class="fbOpenSource"><img src="/react-native/img/oss_logo.png" alt="Facebook Open Source" width="170" height="45"/></a><section class="copyright">Copyright © 2019 Facebook Inc.</section></footer></div><script type="text/javascript" src="https://cdn.jsdelivr.net/docsearch.js/1/docsearch.min.js"></script><script>window.fbAsyncInit = function() {FB.init({appId:'1677033832619985',xfbml:true,version:'v2.7'});};(function(d, s, id){var js, fjs = d.getElementsByTagName(s)[0];if (d.getElementById(id)) {return;}js = d.createElement(s); js.id = id;js.src = '//connect.facebook.net/en_US/sdk.js';fjs.parentNode.insertBefore(js, fjs);}(document, 'script','facebook-jssdk'));
                 </script><script>window.twttr=(function(d,s, id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return t;js=d.createElement(s);js.id=id;js.src='https://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js, fjs);t._e = [];t.ready = function(f) {t._e.push(f);};return t;}(document, 'script', 'twitter-wjs'));</script><script>
                 document.addEventListener('keyup', function(e) {
                   if (e.target !== document.body) {
