@@ -207,6 +207,8 @@ static void RNPerformMountInstructions(
 
 @implementation RCTMountingManager {
   RCTMountingTransactionObserverCoordinator _observerCoordinator;
+  BOOL _transactionInFlight;
+  BOOL _followUpTransactionRequired;
 }
 
 - (instancetype)init
@@ -225,14 +227,14 @@ static void RNPerformMountInstructions(
     // * No need to do a thread jump;
     // * No need to do expensive copy of all mutations;
     // * No need to allocate a block.
-    [self mountMutations:mountingCoordinator];
+    [self initiateTransaction:mountingCoordinator];
     return;
   }
 
   auto mountingCoordinatorCopy = mountingCoordinator;
   RCTExecuteOnMainQueue(^{
     RCTAssertMainQueue();
-    [self mountMutations:mountingCoordinatorCopy];
+    [self initiateTransaction:mountingCoordinatorCopy];
   });
 }
 
@@ -252,9 +254,28 @@ static void RNPerformMountInstructions(
   });
 }
 
-- (void)mountMutations:(MountingCoordinator::Shared const &)mountingCoordinator
+- (void)initiateTransaction:(MountingCoordinator::Shared const &)mountingCoordinator
 {
-  SystraceSection s("-[RCTMountingManager mountMutations:]");
+  SystraceSection s("-[RCTMountingManager initiateTransaction:]");
+  RCTAssertMainQueue();
+
+  if (_transactionInFlight) {
+    _followUpTransactionRequired = YES;
+    return;
+  }
+
+  do {
+    _followUpTransactionRequired = NO;
+    _transactionInFlight = YES;
+    [self performTransaction:mountingCoordinator];
+    _transactionInFlight = NO;
+  } while (_followUpTransactionRequired);
+}
+
+- (void)performTransaction:(MountingCoordinator::Shared const &)mountingCoordinator
+{
+  SystraceSection s("-[RCTMountingManager performTransaction:]");
+  RCTAssertMainQueue();
 
   auto transaction = mountingCoordinator->pullTransaction();
   if (!transaction.has_value()) {
@@ -268,7 +289,6 @@ static void RNPerformMountInstructions(
     return;
   }
 
-  RCTAssertMainQueue();
   auto telemetry = transaction->getTelemetry();
   auto number = transaction->getNumber();
 
