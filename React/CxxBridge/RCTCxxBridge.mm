@@ -45,7 +45,7 @@
 #import <React/RCTFBSystrace.h>
 #endif
 
-#if RCT_DEV && __has_include(<React/RCTDevLoadingView.h>)
+#if (RCT_DEV | RCT_ENABLE_LOADING_VIEW) && __has_include(<React/RCTDevLoadingView.h>)
 #import <React/RCTDevLoadingView.h>
 #endif
 
@@ -376,7 +376,7 @@ struct RCTInstanceCallback : public InstanceCallback {
     sourceCode = source.data;
     dispatch_group_leave(prepareBridge);
   } onProgress:^(RCTLoadingProgress *progressData) {
-#if RCT_DEV && __has_include(<React/RCTDevLoadingView.h>)
+#if (RCT_DEV | RCT_ENABLE_LOADING_VIEW) && __has_include(<React/RCTDevLoadingView.h>)
     // Note: RCTDevLoadingView should have been loaded at this point, so no need to allow lazy loading.
     RCTDevLoadingView *loadingView = [weakSelf moduleForName:RCTBridgeModuleNameForClass([RCTDevLoadingView class])
                                        lazilyLoadIfNecessary:NO];
