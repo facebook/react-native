@@ -26,6 +26,18 @@ Size TextLayoutManager::measure(
     AttributedString attributedString,
     ParagraphAttributes paragraphAttributes,
     LayoutConstraints layoutConstraints) const {
+  return measureCache_.get(
+      MeasureCacheKey{attributedString, paragraphAttributes, layoutConstraints},
+      [&](MeasureCacheKey const &key) {
+        return doMeasure(
+            attributedString, paragraphAttributes, layoutConstraints);
+      });
+}
+
+Size TextLayoutManager::doMeasure(
+    AttributedString attributedString,
+    ParagraphAttributes paragraphAttributes,
+    LayoutConstraints layoutConstraints) const {
   const jni::global_ref<jobject> &fabricUIManager =
       contextContainer_->at<jni::global_ref<jobject>>("FabricUIManager");
 

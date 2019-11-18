@@ -34,10 +34,13 @@ Size TextLayoutManager::measure(
     ParagraphAttributes paragraphAttributes,
     LayoutConstraints layoutConstraints) const
 {
-  RCTTextLayoutManager *textLayoutManager = (__bridge RCTTextLayoutManager *)self_;
-  return [textLayoutManager measureWithAttributedString:attributedString
-                                    paragraphAttributes:paragraphAttributes
-                                      layoutConstraints:layoutConstraints];
+  return measureCache_.get(
+      MeasureCacheKey{attributedString, paragraphAttributes, layoutConstraints}, [&](MeasureCacheKey const &key) {
+        RCTTextLayoutManager *textLayoutManager = (__bridge RCTTextLayoutManager *)self_;
+        return [textLayoutManager measureWithAttributedString:attributedString
+                                          paragraphAttributes:paragraphAttributes
+                                            layoutConstraints:layoutConstraints];
+      });
 }
 
 } // namespace react

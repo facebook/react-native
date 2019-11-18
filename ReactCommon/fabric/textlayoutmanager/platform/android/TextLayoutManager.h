@@ -13,6 +13,7 @@
 #include <react/attributedstring/ParagraphAttributes.h>
 #include <react/core/LayoutConstraints.h>
 #include <react/utils/ContextContainer.h>
+#include <react/utils/SimpleThreadSafeCache.h>
 
 namespace facebook {
 namespace react {
@@ -45,9 +46,18 @@ class TextLayoutManager {
   void *getNativeTextLayoutManager() const;
 
  private:
-  void *self_;
+  Size doMeasure(
+      AttributedString attributedString,
+      ParagraphAttributes paragraphAttributes,
+      LayoutConstraints layoutConstraints) const;
 
+  using MeasureCacheKey =
+      std::tuple<AttributedString, ParagraphAttributes, LayoutConstraints>;
+  using MeasureCache = SimpleThreadSafeCache<MeasureCacheKey, Size, 256>;
+
+  void *self_;
   ContextContainer::Shared contextContainer_;
+  MeasureCache measureCache_{};
 };
 
 } // namespace react
