@@ -187,20 +187,33 @@ export function parseLogBoxLog(
   category: Category,
   message: Message,
 |} {
-  // This detects a very narrow case of a simple log string,
-  // with a component stack appended by React DevTools.
-  // In this case, we extract the component stack,
-  // because LogBox formats those pleasantly.
-  // If there are other substitutions or formatting,
-  // this could potentially corrupt the data, but there
-  // are currently no known cases of that happening.
-  let componentStack = [];
+  const message = args[0];
   let argsWithoutComponentStack = [];
-  for (const arg of args) {
-    if (typeof arg === 'string' && /^\n {4}in/.exec(arg)) {
-      componentStack = parseComponentStack(arg);
-    } else {
-      argsWithoutComponentStack.push(arg);
+  let componentStack = [];
+
+  // Extract component stack from warnings like "Some warning%s".
+  if (
+    typeof message === 'string' &&
+    message.slice(-2) === '%s' &&
+    args.length > 0
+  ) {
+    const lastArg = args[args.length - 1];
+    // Does it look like React component stack? "   in ..."
+    if (typeof lastArg === 'string' && /\s{4}in/.test(lastArg)) {
+      argsWithoutComponentStack = args.slice(0, -1);
+      argsWithoutComponentStack[0] = message.slice(0, -2);
+      componentStack = parseComponentStack(lastArg);
+    }
+  }
+
+  if (componentStack.length === 0) {
+    // Try finding the component stack elsewhere.
+    for (const arg of args) {
+      if (typeof arg === 'string' && /^\n {4}in/.exec(arg)) {
+        componentStack = parseComponentStack(arg);
+      } else {
+        argsWithoutComponentStack.push(arg);
+      }
     }
   }
 

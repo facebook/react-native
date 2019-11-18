@@ -150,10 +150,19 @@ if (__DEV__) {
     }
   };
 
+  const isRCTLogAdviceWarning = (...args) => {
+    // RCTLogAdvice is a native logging function designed to show users
+    // a message in the console, but not show it to them in Logbox.
+    return typeof args[0] === 'string' && args[0].startsWith('(ADVICE)');
+  };
+
+  const isWarningModuleWarning = (...args) => {
+    return typeof args[0] === 'string' && args[0].startsWith('Warning: ');
+  };
+
   const registerWarning = (...args): void => {
     try {
-      // This is carried over from the old YellowBox, but it is not clear why.
-      if (typeof args[0] !== 'string' || !args[0].startsWith('(ADVICE)')) {
+      if (!isRCTLogAdviceWarning(...args)) {
         const {category, message, componentStack} = parseLogBoxLog(args);
 
         if (!LogBoxData.isMessageIgnored(message.content)) {
@@ -177,8 +186,8 @@ if (__DEV__) {
 
   const registerError = (...args): void => {
     try {
-      // Only show LogBox for the `warning` module, otherwise pass through and skip.
-      if (typeof args[0] !== 'string' || !args[0].startsWith('Warning: ')) {
+      if (!isWarningModuleWarning(...args)) {
+        // Only show LogBox for the `warning` module, otherwise pass through and skip.
         error.call(console, ...args);
         return;
       }

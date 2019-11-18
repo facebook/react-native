@@ -108,6 +108,33 @@ describe('parseLogBoxLog', () => {
     });
   });
 
+  it('detects a component stack in an interpolated warning', () => {
+    expect(
+      parseLogBoxLog([
+        'Warning: Function components cannot be given refs. Attempts to access this ref will fail. Did you mean to use React.forwardRef()?%s%s',
+        '\n\nCheck the render method of `Container(Component)`.',
+        '\n    in MyComponent (at filename.js:1)\n    in MyOtherComponent (at filename2.js:1)',
+      ]),
+    ).toEqual({
+      componentStack: [
+        {component: 'MyComponent', location: 'filename.js:1'},
+        {component: 'MyOtherComponent', location: 'filename2.js:1'},
+      ],
+      category:
+        'Warning: Function components cannot be given refs. Attempts to access this ref will fail. Did you mean to use React.forwardRef()?﻿%s',
+      message: {
+        content:
+          'Warning: Function components cannot be given refs. Attempts to access this ref will fail. Did you mean to use React.forwardRef()?\n\nCheck the render method of `Container(Component)`.',
+        substitutions: [
+          {
+            length: 52,
+            offset: 129,
+          },
+        ],
+      },
+    });
+  });
+
   it('detects a component stack in the second argument', () => {
     expect(
       parseLogBoxLog([
