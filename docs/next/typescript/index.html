@@ -147,30 +147,30 @@ const Hello: React.FC&lt;Props&gt; = (props) =&gt; {
     const getExclamationMarks = (numChars: number) =&gt; <span class="hljs-keyword">Array</span>(numChars + <span class="hljs-number">1</span>).<span class="hljs-keyword">join</span>(<span class="hljs-string">'!'</span>);
     <span class="hljs-keyword">return</span> (
         &lt;<span class="hljs-keyword">View</span> style={styles.root}&gt;
-            &lt;<span class="hljs-type">Text</span> style={styles.greeting}&gt;
-                Hello{<span class="hljs-string">' '</span>}
-                {props.name + getExclamationMarks(enthusiasmLevel || <span class="hljs-number">0</span>)}
-            &lt;/<span class="hljs-type">Text</span>&gt;
+        &lt;<span class="hljs-type">Text</span> style={styles.greeting}&gt;
+            Hello{<span class="hljs-string">' '</span>}
+            {props.name + getExclamationMarks(enthusiasmLevel || <span class="hljs-number">0</span>)}
+        &lt;/<span class="hljs-type">Text</span>&gt;
 
-            &lt;<span class="hljs-keyword">View</span> style={styles.buttons}&gt;
-                &lt;<span class="hljs-keyword">View</span> style={styles.button}&gt;
-                &lt;Button
-                    title="-"
-                    onPress={onDecrement}
-                    accessibilityLabel="decrement"
-                    color="red"
-                /&gt;
-                &lt;/<span class="hljs-keyword">View</span>&gt;
-
-                &lt;<span class="hljs-keyword">View</span> style={styles.button}&gt;
-                &lt;Button
-                    title="+"
-                    onPress={onIncrement}
-                    accessibilityLabel="increment"
-                    color="blue"
-                /&gt;
-                &lt;/<span class="hljs-keyword">View</span>&gt;
+        &lt;<span class="hljs-keyword">View</span> style={styles.buttons}&gt;
+            &lt;<span class="hljs-keyword">View</span> style={styles.button}&gt;
+            &lt;Button
+                title="-"
+                onPress={onDecrement}
+                accessibilityLabel="decrement"
+                color="red"
+            /&gt;
             &lt;/<span class="hljs-keyword">View</span>&gt;
+
+            &lt;<span class="hljs-keyword">View</span> style={styles.button}&gt;
+            &lt;Button
+                title="+"
+                onPress={onIncrement}
+                accessibilityLabel="increment"
+                color="blue"
+            /&gt;
+            &lt;/<span class="hljs-keyword">View</span>&gt;
+        &lt;/<span class="hljs-keyword">View</span>&gt;
         &lt;/<span class="hljs-keyword">View</span>&gt;
     );
 }
@@ -182,7 +182,7 @@ const styles = StyleSheet.<span class="hljs-keyword">create</span>({
         alignSelf: <span class="hljs-string">'center'</span>,
     },
     buttons: {
-        flexDirection: <span class="hljs-string">'row'</span>,
+       flexDirection: <span class="hljs-string">'row'</span>,
         minHeight: <span class="hljs-number">70</span>,
         alignItems: <span class="hljs-string">'stretch'</span>,
         alignSelf: <span class="hljs-string">'center'</span>,
