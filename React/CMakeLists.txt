@@ -116,8 +116,6 @@ set(REACT_SRC_HEADERS
   Views/RCTTextDecorationLineType.h
   Views/RCTView.h
   Views/RCTViewManager.h
-  Views/RCTWebView.h
-  Views/RCTWebViewManager.h
   Views/RCTWrapperViewController.h
   Views/ScrollView/RCTScrollableProtocol.h
   Views/ScrollView/RCTScrollContentView.h
