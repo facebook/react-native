@@ -929,7 +929,9 @@ public class DevSupportManagerImpl
         new Runnable() {
           @Override
           public void run() {
-            handleReloadJS();
+            // NOTE(brentvatne): rather than reload just JS we need to reload the entire project from manifest
+            // handleReloadJS();
+            reloadExpoApp();
           }
         });
   }
