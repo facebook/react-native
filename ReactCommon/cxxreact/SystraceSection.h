@@ -25,26 +25,27 @@ namespace react {
  */
 #ifdef WITH_FBSYSTRACE
 struct ConcreteSystraceSection {
-public:
-  template<typename... ConvertsToStringPiece>
-  explicit
-  ConcreteSystraceSection(__unused const char* name, __unused ConvertsToStringPiece&&... args)
-    : m_section(TRACE_TAG_REACT_CXX_BRIDGE, name, args...)
-  {}
+ public:
+  template <typename... ConvertsToStringPiece>
+  explicit ConcreteSystraceSection(
+      const char *name,
+      ConvertsToStringPiece &&... args)
+      : m_section(TRACE_TAG_REACT_CXX_BRIDGE, name, args...) {}
 
-private:
+ private:
   fbsystrace::FbSystraceSection m_section;
 };
 using SystraceSection = ConcreteSystraceSection;
 #else
 struct DummySystraceSection {
-public:
-  template<typename... ConvertsToStringPiece>
-  explicit
-  DummySystraceSection(__unused const char* name, __unused ConvertsToStringPiece&&... args)
-    {}
+ public:
+  template <typename... ConvertsToStringPiece>
+  explicit DummySystraceSection(
+      __unused const char *name,
+      __unused ConvertsToStringPiece &&... args) {}
 };
 using SystraceSection = DummySystraceSection;
 #endif
 
-}}
+} // namespace react
+} // namespace facebook
