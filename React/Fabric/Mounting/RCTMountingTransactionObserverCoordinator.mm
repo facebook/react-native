@@ -21,6 +21,7 @@ void RCTMountingTransactionObserverCoordinator::registerViewComponentDescriptor(
   }
 
   auto &surfaceRegistry = registry_[surfaceId];
+  assert(surfaceRegistry.count(componentViewDescriptor) == 0);
   surfaceRegistry.insert(componentViewDescriptor);
 }
 
@@ -34,6 +35,7 @@ void RCTMountingTransactionObserverCoordinator::unregisterViewComponentDescripto
   }
 
   auto &surfaceRegistry = registry_[surfaceId];
+  assert(surfaceRegistry.count(componentViewDescriptor) == 1);
   surfaceRegistry.erase(componentViewDescriptor);
 }
 
