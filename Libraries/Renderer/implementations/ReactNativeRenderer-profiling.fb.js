@@ -1003,7 +1003,6 @@ function restoreStateOfTarget(target) {
       "setRestoreImplementation() needs to be called to handle a target for controlled events. This error is likely caused by a bug in React. Please file an issue."
     );
 }
-require("../shims/ReactFeatureFlags");
 function batchedUpdatesImpl(fn, bookkeeping) {
   return fn(bookkeeping);
 }
@@ -1333,7 +1332,17 @@ function findCurrentHostFiber(parent) {
 }
 var emptyObject = {},
   removedKeys = null,
-  removedKeyCount = 0;
+  removedKeyCount = 0,
+  deepDifferOptions = { unsafelyIgnoreFunctions: !0 };
+function defaultDiffer(prevProp, nextProp) {
+  return "object" !== typeof nextProp || null === nextProp
+    ? !0
+    : ReactNativePrivateInterface.deepDiffer(
+        prevProp,
+        nextProp,
+        deepDifferOptions
+      );
+}
 function restoreDeletedValuesInNestedArray(
   updatePayload,
   node,
@@ -1488,9 +1497,7 @@ function diffProperties(updatePayload, prevProps, nextProps, validAttributes) {
         }
       else if (prevProp !== nextProp)
         if ("object" !== typeof attributeConfig)
-          ("object" !== typeof nextProp ||
-            null === nextProp ||
-            ReactNativePrivateInterface.deepDiffer(prevProp, nextProp)) &&
+          defaultDiffer(prevProp, nextProp) &&
             ((updatePayload || (updatePayload = {}))[propKey] = nextProp);
         else if (
           "function" === typeof attributeConfig.diff ||
@@ -1500,9 +1507,7 @@ function diffProperties(updatePayload, prevProps, nextProps, validAttributes) {
             void 0 === prevProp ||
             ("function" === typeof attributeConfig.diff
               ? attributeConfig.diff(prevProp, nextProp)
-              : "object" !== typeof nextProp ||
-                null === nextProp ||
-                ReactNativePrivateInterface.deepDiffer(prevProp, nextProp))
+              : defaultDiffer(prevProp, nextProp))
           )
             (attributeConfig =
               "function" === typeof attributeConfig.process
@@ -2280,7 +2285,7 @@ var classComponentUpdater = {
   },
   enqueueSetState: function(inst, payload, callback) {
     inst = inst._reactInternalFiber;
-    var currentTime = requestCurrentTime(),
+    var currentTime = requestCurrentTimeForUpdate(),
       suspenseConfig = ReactCurrentBatchConfig.suspense;
     currentTime = computeExpirationForFiber(currentTime, inst, suspenseConfig);
     suspenseConfig = createUpdate(currentTime, suspenseConfig);
@@ -2293,7 +2298,7 @@ var classComponentUpdater = {
   },
   enqueueReplaceState: function(inst, payload, callback) {
     inst = inst._reactInternalFiber;
-    var currentTime = requestCurrentTime(),
+    var currentTime = requestCurrentTimeForUpdate(),
       suspenseConfig = ReactCurrentBatchConfig.suspense;
     currentTime = computeExpirationForFiber(currentTime, inst, suspenseConfig);
     suspenseConfig = createUpdate(currentTime, suspenseConfig);
@@ -2307,7 +2312,7 @@ var classComponentUpdater = {
   },
   enqueueForceUpdate: function(inst, callback) {
     inst = inst._reactInternalFiber;
-    var currentTime = requestCurrentTime(),
+    var currentTime = requestCurrentTimeForUpdate(),
       suspenseConfig = ReactCurrentBatchConfig.suspense;
     currentTime = computeExpirationForFiber(currentTime, inst, suspenseConfig);
     suspenseConfig = createUpdate(currentTime, suspenseConfig);
@@ -3222,6 +3227,7 @@ function createResponderListener(responder, props) {
   return { responder: responder, props: props };
 }
 var ReactCurrentDispatcher$1 = ReactSharedInternals.ReactCurrentDispatcher,
+  ReactCurrentBatchConfig$1 = ReactSharedInternals.ReactCurrentBatchConfig,
   renderExpirationTime$1 = 0,
   currentlyRenderingFiber$1 = null,
   currentHook = null,
@@ -3413,6 +3419,26 @@ function updateReducer(reducer) {
   }
   return [hook.memoizedState, queue.dispatch];
 }
+function mountState(initialState) {
+  var hook = mountWorkInProgressHook();
+  "function" === typeof initialState && (initialState = initialState());
+  hook.memoizedState = hook.baseState = initialState;
+  initialState = hook.queue = {
+    last: null,
+    dispatch: null,
+    lastRenderedReducer: basicStateReducer,
+    lastRenderedState: initialState
+  };
+  initialState = initialState.dispatch = dispatchAction.bind(
+    null,
+    currentlyRenderingFiber$1,
+    initialState
+  );
+  return [hook.memoizedState, initialState];
+}
+function updateState(initialState) {
+  return updateReducer(basicStateReducer, initialState);
+}
 function pushEffect(tag, create, destroy, deps) {
   tag = { tag: tag, create: create, destroy: destroy, deps: deps, next: null };
   null === componentUpdateQueue
@@ -3452,6 +3478,12 @@ function updateEffectImpl(fiberEffectTag, hookEffectTag, create, deps) {
   sideEffectTag |= fiberEffectTag;
   hook.memoizedState = pushEffect(hookEffectTag, create, destroy, deps);
 }
+function mountEffect(create, deps) {
+  return mountEffectImpl(516, 192, create, deps);
+}
+function updateEffect(create, deps) {
+  return updateEffectImpl(516, 192, create, deps);
+}
 function imperativeHandleEffect(create, ref) {
   if ("function" === typeof ref)
     return (
@@ -3471,6 +3503,26 @@ function imperativeHandleEffect(create, ref) {
     );
 }
 function mountDebugValue() {}
+function mountCallback(callback, deps) {
+  mountWorkInProgressHook().memoizedState = [
+    callback,
+    void 0 === deps ? null : deps
+  ];
+  return callback;
+}
+function updateCallback(callback, deps) {
+  var hook = updateWorkInProgressHook();
+  deps = void 0 === deps ? null : deps;
+  var prevState = hook.memoizedState;
+  if (
+    null !== prevState &&
+    null !== deps &&
+    areHookInputsEqual(deps, prevState[1])
+  )
+    return prevState[0];
+  hook.memoizedState = [callback, deps];
+  return callback;
+}
 function dispatchAction(fiber, queue, action) {
   if (!(25 > numberOfReRenders))
     throw Error(
@@ -3501,7 +3553,7 @@ function dispatchAction(fiber, queue, action) {
       queue.next = fiber;
     }
   else {
-    var currentTime = requestCurrentTime(),
+    var currentTime = requestCurrentTimeForUpdate(),
       suspenseConfig = ReactCurrentBatchConfig.suspense;
     currentTime = computeExpirationForFiber(currentTime, fiber, suspenseConfig);
     suspenseConfig = {
@@ -3549,21 +3601,15 @@ var ContextOnlyDispatcher = {
     useRef: throwInvalidHookError,
     useState: throwInvalidHookError,
     useDebugValue: throwInvalidHookError,
-    useResponder: throwInvalidHookError
+    useResponder: throwInvalidHookError,
+    useDeferredValue: throwInvalidHookError,
+    useTransition: throwInvalidHookError
   },
   HooksDispatcherOnMount = {
     readContext: readContext,
-    useCallback: function(callback, deps) {
-      mountWorkInProgressHook().memoizedState = [
-        callback,
-        void 0 === deps ? null : deps
-      ];
-      return callback;
-    },
+    useCallback: mountCallback,
     useContext: readContext,
-    useEffect: function(create, deps) {
-      return mountEffectImpl(516, 192, create, deps);
-    },
+    useEffect: mountEffect,
     useImperativeHandle: function(ref, create, deps) {
       deps = null !== deps && void 0 !== deps ? deps.concat([ref]) : null;
       return mountEffectImpl(
@@ -3605,45 +3651,60 @@ var ContextOnlyDispatcher = {
       initialValue = { current: initialValue };
       return (hook.memoizedState = initialValue);
     },
-    useState: function(initialState) {
-      var hook = mountWorkInProgressHook();
-      "function" === typeof initialState && (initialState = initialState());
-      hook.memoizedState = hook.baseState = initialState;
-      initialState = hook.queue = {
-        last: null,
-        dispatch: null,
-        lastRenderedReducer: basicStateReducer,
-        lastRenderedState: initialState
-      };
-      initialState = initialState.dispatch = dispatchAction.bind(
-        null,
-        currentlyRenderingFiber$1,
-        initialState
-      );
-      return [hook.memoizedState, initialState];
-    },
+    useState: mountState,
     useDebugValue: mountDebugValue,
-    useResponder: createResponderListener
+    useResponder: createResponderListener,
+    useDeferredValue: function(value, config) {
+      var _mountState = mountState(value),
+        prevValue = _mountState[0],
+        setValue = _mountState[1];
+      mountEffect(
+        function() {
+          Scheduler.unstable_next(function() {
+            var previousConfig = ReactCurrentBatchConfig$1.suspense;
+            ReactCurrentBatchConfig$1.suspense =
+              void 0 === config ? null : config;
+            try {
+              setValue(value);
+            } finally {
+              ReactCurrentBatchConfig$1.suspense = previousConfig;
+            }
+          });
+        },
+        [value, config]
+      );
+      return prevValue;
+    },
+    useTransition: function(config) {
+      var _mountState2 = mountState(!1),
+        isPending = _mountState2[0],
+        setPending = _mountState2[1];
+      return [
+        mountCallback(
+          function(callback) {
+            setPending(!0);
+            Scheduler.unstable_next(function() {
+              var previousConfig = ReactCurrentBatchConfig$1.suspense;
+              ReactCurrentBatchConfig$1.suspense =
+                void 0 === config ? null : config;
+              try {
+                setPending(!1), callback();
+              } finally {
+                ReactCurrentBatchConfig$1.suspense = previousConfig;
+              }
+            });
+          },
+          [config, isPending]
+        ),
+        isPending
+      ];
+    }
   },
   HooksDispatcherOnUpdate = {
     readContext: readContext,
-    useCallback: function(callback, deps) {
-      var hook = updateWorkInProgressHook();
-      deps = void 0 === deps ? null : deps;
-      var prevState = hook.memoizedState;
-      if (
-        null !== prevState &&
-        null !== deps &&
-        areHookInputsEqual(deps, prevState[1])
-      )
-        return prevState[0];
-      hook.memoizedState = [callback, deps];
-      return callback;
-    },
+    useCallback: updateCallback,
     useContext: readContext,
-    useEffect: function(create, deps) {
-      return updateEffectImpl(516, 192, create, deps);
-    },
+    useEffect: updateEffect,
     useImperativeHandle: function(ref, create, deps) {
       deps = null !== deps && void 0 !== deps ? deps.concat([ref]) : null;
       return updateEffectImpl(
@@ -3674,11 +3735,54 @@ var ContextOnlyDispatcher = {
     useRef: function() {
       return updateWorkInProgressHook().memoizedState;
     },
-    useState: function(initialState) {
-      return updateReducer(basicStateReducer, initialState);
-    },
+    useState: updateState,
     useDebugValue: mountDebugValue,
-    useResponder: createResponderListener
+    useResponder: createResponderListener,
+    useDeferredValue: function(value, config) {
+      var _updateState = updateState(value),
+        prevValue = _updateState[0],
+        setValue = _updateState[1];
+      updateEffect(
+        function() {
+          Scheduler.unstable_next(function() {
+            var previousConfig = ReactCurrentBatchConfig$1.suspense;
+            ReactCurrentBatchConfig$1.suspense =
+              void 0 === config ? null : config;
+            try {
+              setValue(value);
+            } finally {
+              ReactCurrentBatchConfig$1.suspense = previousConfig;
+            }
+          });
+        },
+        [value, config]
+      );
+      return prevValue;
+    },
+    useTransition: function(config) {
+      var _updateState2 = updateState(!1),
+        isPending = _updateState2[0],
+        setPending = _updateState2[1];
+      return [
+        updateCallback(
+          function(callback) {
+            setPending(!0);
+            Scheduler.unstable_next(function() {
+              var previousConfig = ReactCurrentBatchConfig$1.suspense;
+              ReactCurrentBatchConfig$1.suspense =
+                void 0 === config ? null : config;
+              try {
+                setPending(!1), callback();
+              } finally {
+                ReactCurrentBatchConfig$1.suspense = previousConfig;
+              }
+            });
+          },
+          [config, isPending]
+        ),
+        isPending
+      ];
+    }
   },
   now$1 = Scheduler.unstable_now,
   commitTime = 0,
@@ -4892,7 +4996,9 @@ function completeWork(current, workInProgress, renderExpirationTime$jscomp$0) {
                 ((workInProgress.updateQueue = current),
                 (workInProgress.effectTag |= 4)),
               cutOffTailIfNeeded(newProps, !0),
-              null === newProps.tail && "hidden" === newProps.tailMode)
+              null === newProps.tail &&
+                "hidden" === newProps.tailMode &&
+                !tag.alternate)
             ) {
               workInProgress = workInProgress.lastEffect = newProps.lastEffect;
               null !== workInProgress && (workInProgress.nextEffect = null);
@@ -5663,7 +5769,7 @@ var ceil = Math.ceil,
   rootWithNestedUpdates = null,
   spawnedWorkDuringRender = null,
   currentEventTime = 0;
-function requestCurrentTime() {
+function requestCurrentTimeForUpdate() {
   return (executionContext & (RenderContext | CommitContext)) !== NoContext
     ? 1073741821 - ((now() / 10) | 0)
     : 0 !== currentEventTime
@@ -5798,7 +5904,7 @@ function ensureRootIsScheduled(root) {
         (root.callbackExpirationTime = 0),
         (root.callbackPriority = 90));
     else {
-      var currentTime = requestCurrentTime();
+      var currentTime = requestCurrentTimeForUpdate();
       currentTime = inferPriorityFromExpirationTime(
         currentTime,
         expirationTime
@@ -5831,7 +5937,7 @@ function performConcurrentWorkOnRoot(root, didTimeout) {
   currentEventTime = 0;
   if (didTimeout)
     return (
-      (didTimeout = requestCurrentTime()),
+      (didTimeout = requestCurrentTimeForUpdate()),
       markRootExpiredAtTime(root, didTimeout),
       ensureRootIsScheduled(root),
       null
@@ -6865,7 +6971,7 @@ function resolveRetryThenable(boundaryFiber, thenable) {
   null !== retryCache && retryCache.delete(thenable);
   thenable = 0;
   0 === thenable &&
-    ((thenable = requestCurrentTime()),
+    ((thenable = requestCurrentTimeForUpdate()),
     (thenable = computeExpirationForFiber(thenable, boundaryFiber, null)));
   boundaryFiber = markUpdateTimeFromFiberToRoot(boundaryFiber, thenable);
   null !== boundaryFiber &&
@@ -6905,7 +7011,8 @@ beginWork$$1 = function(current$$1, workInProgress, renderExpirationTime) {
             pushProvider(workInProgress, workInProgress.memoizedProps.value);
             break;
           case 12:
-            workInProgress.effectTag |= 4;
+            workInProgress.childExpirationTime >= renderExpirationTime &&
+              (workInProgress.effectTag |= 4);
             break;
           case 13:
             if (null !== workInProgress.memoizedState) {
@@ -7561,7 +7668,7 @@ function injectInternals(internals) {
     onCommitFiberRoot = function(root, expirationTime) {
       try {
         var didError = 64 === (root.current.effectTag & 64),
-          currentTime = requestCurrentTime(),
+          currentTime = 1073741821 - ((now() / 10) | 0),
           priorityLevel = inferPriorityFromExpirationTime(
             currentTime,
             expirationTime
@@ -7831,7 +7938,7 @@ function findHostInstance(component) {
 }
 function updateContainer(element, container, parentComponent, callback) {
   var current$$1 = container.current,
-    currentTime = requestCurrentTime(),
+    currentTime = requestCurrentTimeForUpdate(),
     suspenseConfig = ReactCurrentBatchConfig.suspense;
   currentTime = computeExpirationForFiber(
     currentTime,
@@ -8222,7 +8329,7 @@ var roots = new Map(),
     throw Error("getInspectorDataForViewTag() is not available in production");
   },
   bundleType: 0,
-  version: "16.10.2",
+  version: "16.11.0",
   rendererPackageName: "react-native-renderer"
 });
 var ReactNativeRenderer$2 = { default: ReactNativeRenderer },
