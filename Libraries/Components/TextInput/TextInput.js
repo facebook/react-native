@@ -548,8 +548,6 @@ export type Props = $ReadOnly<{|
    */
   onContentSizeChange?: ?(e: ContentSizeChangeEvent) => mixed,
 
-  onTextInput?: ?(e: TextInputEvent) => mixed,
-
   /**
    * Callback that is called when text input ends.
    */
@@ -948,7 +946,6 @@ class InternalTextInput extends React.Component<Props> {
           onScroll={this._onScroll}
           onSelectionChange={this._onSelectionChange}
           onSelectionChangeShouldSetResponder={emptyFunctionThatReturnsTrue}
-          onTextInput={this._onTextInput}
           selection={selection}
           style={style}
           text={this._getText()}
@@ -983,7 +980,6 @@ class InternalTextInput extends React.Component<Props> {
           onFocus={this._onFocus}
           onScroll={this._onScroll}
           onSelectionChange={this._onSelectionChange}
-          onTextInput={this._onTextInput}
           selection={selection}
           style={style}
           text={this._getText()}
@@ -1109,10 +1105,6 @@ class InternalTextInput extends React.Component<Props> {
     if (this.props.onBlur) {
       this.props.onBlur(event);
     }
-  };
-
-  _onTextInput = (event: TextInputEvent) => {
-    this.props.onTextInput && this.props.onTextInput(event);
   };
 
   _onScroll = (event: ScrollEvent) => {
