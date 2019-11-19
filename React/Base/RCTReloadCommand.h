@@ -32,4 +32,7 @@ RCT_EXTERN void RCTTriggerReloadCommandListeners(NSString *reason);
  * This notification fires anytime RCTTriggerReloadCommandListeners() is called.
  */
 RCT_EXTERN NSString *const RCTTriggerReloadCommandNotification;
-RCT_EXTERN NSString *const RCTTriggerReloadCommandReasonKey; // key in userInfo for RCTTriggerReloadCommandNotification
+RCT_EXTERN NSString *const RCTTriggerReloadCommandReasonKey;
+RCT_EXTERN NSString *const RCTTriggerReloadCommandBundleURLKey;
+
+RCT_EXTERN void RCTReloadCommandSetBundleURL(NSURL *URL);

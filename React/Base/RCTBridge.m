@@ -355,10 +355,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
   Class bridgeClass = self.bridgeClass;
 
-  RCTExecuteOnMainQueue(^{
-    RCTRegisterReloadCommandListener(self);
-  });
-
   // Only update bundleURL from delegate if delegate bundleURL has changed
   NSURL *previousDelegateURL = _delegateBundleURL;
   _delegateBundleURL = [self.delegate sourceURLForBridge:self];
@@ -368,6 +364,11 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
   // Sanitize the bundle URL
   _bundleURL = [RCTConvert NSURL:_bundleURL.absoluteString];
+
+  RCTExecuteOnMainQueue(^{
+    RCTRegisterReloadCommandListener(self);
+    RCTReloadCommandSetBundleURL(self->_bundleURL);
+  });
 
   self.batchedBridge = [[bridgeClass alloc] initWithParentBridge:self];
   [self.batchedBridge start];

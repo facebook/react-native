@@ -13,9 +13,11 @@
 
 static NSHashTable<id<RCTReloadListener>> *listeners;
 static NSLock *listenersLock;
+static NSURL *bundleURL;
 
 NSString *const RCTTriggerReloadCommandNotification = @"RCTTriggerReloadCommandNotification";
 NSString *const RCTTriggerReloadCommandReasonKey = @"reason";
+NSString *const RCTTriggerReloadCommandBundleURLKey = @"bundleURL";
 
 void RCTRegisterReloadCommandListener(id<RCTReloadListener> listener)
 {
@@ -47,10 +49,17 @@ void RCTTriggerReloadCommandListeners(NSString *reason)
   [listenersLock lock];
   [[NSNotificationCenter defaultCenter] postNotificationName:RCTTriggerReloadCommandNotification
                                                       object:nil
-                                                    userInfo:@{RCTTriggerReloadCommandReasonKey: RCTNullIfNil(reason)} ];
+                                                    userInfo:@{RCTTriggerReloadCommandReasonKey: RCTNullIfNil(reason),
+                                                               RCTTriggerReloadCommandBundleURLKey: RCTNullIfNil(bundleURL)
+                                                    }];
 
   for (id<RCTReloadListener> l in [listeners allObjects]) {
     [l didReceiveReloadCommand];
   }
   [listenersLock unlock];
+}
+
+void RCTReloadCommandSetBundleURL(NSURL *URL)
+{
+  bundleURL = URL;
 }
