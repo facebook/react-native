@@ -51,7 +51,8 @@ class StyleSheetValidation {
     if (!__DEV__ || global.__RCTProfileIsProfiling) {
       return;
     }
-    for (const prop in styles[name]) {
+    const styleProps = Object.keys(styles[name]);
+    for (const prop of styleProps) {
       StyleSheetValidation.validateStyleProp(
         prop,
         styles[name],
