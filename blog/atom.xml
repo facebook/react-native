@@ -13,7 +13,7 @@
         <link href="https://facebook.github.io/react-native/blog/2019/11/18/react-native-doctor.html">
         </link>
         <updated>2019-11-18T06:00:00Z</updated>
-        <summary type="html"><![CDATA[<p>After a lot of collaborative effort from 6 contributors from the React Native Community, we're excited to launch <code>doctor</code>. It's a brand-new React Native CLI command to help you out with getting started, troubleshooting and automatically fixing errors w...</p>]]></summary>
+        <summary type="html"><![CDATA[<p>After over 20 pull requests from 6 contributors in the React Native Community, we're excited to launch <code>react-native doctor</code>, a new command to help you out with getting started, troubleshooting and automatically fixing errors with your development envi...</p>]]></summary>
         <author>
             <name>Lucas Bento</name>
             <uri>https://twitter.com/lbentosilva</uri>

@@ -17,7 +17,7 @@
             <link>https://facebook.github.io/react-native/blog/2019/11/18/react-native-doctor.html</link>
             <guid>https://facebook.github.io/react-native/blog/2019/11/18/react-native-doctor.html</guid>
             <pubDate>Mon, 18 Nov 2019 06:00:00 GMT</pubDate>
-            <description><![CDATA[<p>After a lot of collaborative effort from 6 contributors from the React Native Community, we're excited to launch <code>doctor</code>. It's a brand-new React Native CLI command to help you out with getting started, troubleshooting and automatically fixing errors w...</p>]]></description>
+            <description><![CDATA[<p>After over 20 pull requests from 6 contributors in the React Native Community, we're excited to launch <code>react-native doctor</code>, a new command to help you out with getting started, troubleshooting and automatically fixing errors with your development envi...</p>]]></description>
         </item>
         <item>
             <title><![CDATA[Announcing React Native 0.61 with Fast Refresh]]></title>
