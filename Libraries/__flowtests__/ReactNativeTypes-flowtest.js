@@ -34,7 +34,7 @@ const MyHostComponent = (('Host': any): HostComponent<mixed>);
   }}
 />;
 
-declare var NativeComponent: _InternalReactNativeComponentClass<{}>;
+declare var NativeComponent: _InternalReactNativeComponentClass<{...}>;
 class MyNativeComponent extends NativeComponent {}
 
 <MyNativeComponent
