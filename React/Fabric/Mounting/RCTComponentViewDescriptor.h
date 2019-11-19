@@ -21,7 +21,7 @@ class RCTComponentViewDescriptor final {
   /*
    * Associated (and owned) native view instance.
    */
-  UIView<RCTComponentViewProtocol> *view;
+  __strong UIView<RCTComponentViewProtocol> *view = nil;
 
   /*
    * Indicates a requirement to call on the view methods from

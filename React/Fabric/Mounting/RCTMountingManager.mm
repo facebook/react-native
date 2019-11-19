@@ -46,7 +46,7 @@ static void RNDeleteMountInstruction(
     SurfaceId surfaceId)
 {
   auto const &oldChildShadowView = mutation.oldChildShadowView;
-  RCTComponentViewDescriptor componentViewDescriptor = [registry componentViewDescriptorWithTag:oldChildShadowView.tag];
+  auto const &componentViewDescriptor = [registry componentViewDescriptorWithTag:oldChildShadowView.tag];
   observerCoordinator.unregisterViewComponentDescriptor(componentViewDescriptor, surfaceId);
   [registry enqueueComponentViewWithComponentHandle:oldChildShadowView.componentHandle
                                                 tag:oldChildShadowView.tag
