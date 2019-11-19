@@ -393,8 +393,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:unused)
 {
   if ([self performAccessibilityAction:@"activate"]) {
     return YES;
-  }
-  else if (_onAccessibilityTap) {
+  } else if (_onAccessibilityTap) {
     _onAccessibilityTap(nil);
     return YES;
   } else {

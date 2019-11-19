@@ -44,6 +44,22 @@ AccessibilityProps::AccessibilityProps(
           rawProps,
           "accessibilityIgnoresInvertColors",
           sourceProps.accessibilityIgnoresInvertColors)),
+      onAccessibilityTap(convertRawProp(
+          rawProps,
+          "onAccessibilityTap",
+          sourceProps.onAccessibilityTap)),
+      onAccessibilityMagicTap(convertRawProp(
+          rawProps,
+          "onAccessibilityMagicTap",
+          sourceProps.onAccessibilityMagicTap)),
+      onAccessibilityEscape(convertRawProp(
+          rawProps,
+          "onAccessibilityEscape",
+          sourceProps.onAccessibilityEscape)),
+      onAccessibilityAction(convertRawProp(
+          rawProps,
+          "onAccessibilityAction",
+          sourceProps.onAccessibilityAction)),
       testId(convertRawProp(rawProps, "testId", sourceProps.testId)) {}
 
 #pragma mark - DebugStringConvertible

@@ -32,6 +32,11 @@ class AccessibilityProps {
   bool const accessibilityViewIsModal{false};
   bool const accessibilityElementsHidden{false};
   bool const accessibilityIgnoresInvertColors{false};
+  bool const onAccessibilityTap{};
+  bool const onAccessibilityMagicTap{};
+  bool const onAccessibilityEscape{};
+  bool const onAccessibilityAction{};
+
   std::string const testId{""};
 
 #pragma mark - DebugStringConvertible
