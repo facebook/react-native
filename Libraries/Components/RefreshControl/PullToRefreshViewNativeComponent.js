@@ -13,9 +13,11 @@
 import type {DirectEventHandler, WithDefault} from '../../Types/CodegenTypes';
 import type {ColorValue} from '../../StyleSheet/StyleSheetTypes';
 import type {ViewProps} from '../View/ViewPropTypes';
+import * as React from 'react';
 
 import codegenNativeComponent from '../../Utilities/codegenNativeComponent';
 import type {HostComponent} from '../../Renderer/shims/ReactNativeTypes';
+import codegenNativeCommands from 'react-native/Libraries/Utilities/codegenNativeCommands';
 
 type NativeProps = $ReadOnly<{|
   ...ViewProps,
@@ -43,6 +45,19 @@ type NativeProps = $ReadOnly<{|
    */
   refreshing: boolean,
 |}>;
+
+type ComponentType = HostComponent<NativeProps>;
+
+interface NativeCommands {
+  +setNativeRefreshing: (
+    viewRef: React.ElementRef<ComponentType>,
+    refreshing: boolean,
+  ) => void;
+}
+
+export const Commands: NativeCommands = codegenNativeCommands<NativeCommands>({
+  supportedCommands: ['setNativeRefreshing'],
+});
 
 export default (codegenNativeComponent<NativeProps>('PullToRefreshView', {
   paperComponentName: 'RCTRefreshControl',

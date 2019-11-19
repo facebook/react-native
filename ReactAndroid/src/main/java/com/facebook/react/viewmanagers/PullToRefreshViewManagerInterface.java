@@ -17,4 +17,5 @@ public interface PullToRefreshViewManagerInterface<T extends View> {
   void setTitleColor(T view, @Nullable Integer value);
   void setTitle(T view, @Nullable String value);
   void setRefreshing(T view, boolean value);
+  void setNativeRefreshing(T view, boolean refreshing);
 }

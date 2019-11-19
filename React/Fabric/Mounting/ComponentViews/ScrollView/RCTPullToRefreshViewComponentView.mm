@@ -10,11 +10,16 @@
 #import <react/components/rncore/ComponentDescriptors.h>
 #import <react/components/rncore/EventEmitters.h>
 #import <react/components/rncore/Props.h>
+#import <react/components/rncore/RCTComponentViewHelpers.h>
 
 #import <React/RCTConversions.h>
+#import <React/RCTRefreshableProtocol.h>
 #import <React/RCTScrollViewComponentView.h>
 
 using namespace facebook::react;
+
+@interface RCTPullToRefreshViewComponentView () <RCTPullToRefreshViewViewProtocol, RCTRefreshableProtocol>
+@end
 
 @implementation RCTPullToRefreshViewComponentView {
   UIRefreshControl *_refreshControl;
@@ -143,6 +148,36 @@ using namespace facebook::react;
     _scrollViewComponentView.scrollView.refreshControl = nil;
   }
   _scrollViewComponentView = nil;
+}
+
+#pragma mark - Native commands
+
+- (void)handleCommand:(const NSString *)commandName args:(const NSArray *)args
+{
+  RCTPullToRefreshViewHandleCommand(self, commandName, args);
+}
+
+- (void)setNativeRefreshing:(BOOL)refreshing
+{
+  if (refreshing) {
+    [_refreshControl beginRefreshing];
+  } else {
+    [_refreshControl endRefreshing];
+  }
+}
+
+#pragma mark - RCTRefreshableProtocol
+
+- (void)setRefreshing:(BOOL)refreshing
+{
+  [self setNativeRefreshing:refreshing];
+}
+
+#pragma mark -
+
+- (NSString *)componentViewName_DO_NOT_USE_THIS_IS_BROKEN
+{
+  return @"RefreshControl";
 }
 
 @end

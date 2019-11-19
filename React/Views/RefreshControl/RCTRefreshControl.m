@@ -6,8 +6,12 @@
  */
 
 #import "RCTRefreshControl.h"
+#import "RCTRefreshableProtocol.h"
 
 #import "RCTUtils.h"
+
+@interface RCTRefreshControl () <RCTRefreshableProtocol>
+@end
 
 @implementation RCTRefreshControl {
   BOOL _isInitialRender;
@@ -45,9 +49,9 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 
   // If the control is refreshing when mounted we need to call
   // beginRefreshing in layoutSubview or it doesn't work.
-  if (_currentRefreshingState && _isInitialRender) {
+ if (_currentRefreshingState && _isInitialRender) {
     [self beginRefreshingProgrammatically];
-  }
+ }
   _isInitialRender = false;
 }
 
