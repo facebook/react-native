@@ -77,8 +77,6 @@ const NSInteger RCTComponentViewRegistryRecyclePoolMaxSize = 1024;
 @implementation RCTComponentViewRegistry {
   better::map<Tag, RCTComponentViewDescriptor> _registry;
   better::map<ComponentHandle, std::vector<RCTComponentViewDescriptor>> _recyclePool;
-
-  std::unordered_set<RCTComponentViewDescriptor> _mountingTransactionObservers;
 }
 
 - (instancetype)init
@@ -135,11 +133,6 @@ const NSInteger RCTComponentViewRegistryRecyclePoolMaxSize = 1024;
 
   _registry.insert({tag, componentViewDescriptor});
 
-  if (componentViewDescriptor.observesMountingTransactionDidMount ||
-      componentViewDescriptor.observesMountingTransactionWillMount) {
-    _mountingTransactionObservers.insert(componentViewDescriptor);
-  }
-
 #ifdef LEGACY_UIMANAGER_INTEGRATION_ENABLED
   [RCTUIManager registerView:componentViewDescriptor.view];
 #endif
@@ -159,11 +152,6 @@ const NSInteger RCTComponentViewRegistryRecyclePoolMaxSize = 1024;
 #ifdef LEGACY_UIMANAGER_INTEGRATION_ENABLED
   [RCTUIManager unregisterView:componentViewDescriptor.view];
 #endif
-
-  if (componentViewDescriptor.observesMountingTransactionDidMount ||
-      componentViewDescriptor.observesMountingTransactionWillMount) {
-    _mountingTransactionObservers.erase(componentViewDescriptor);
-  }
 
   _registry.erase(tag);
   componentViewDescriptor.view.tag = 0;
