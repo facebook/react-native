@@ -139,6 +139,7 @@
   }
 
   std::static_pointer_cast<ImageEventEmitter const>(_eventEmitter)->onLoad();
+  std::static_pointer_cast<ImageEventEmitter const>(_eventEmitter)->onLoadEnd();
 
   const auto &imageProps = *std::static_pointer_cast<ImageProps const>(_props);
 
@@ -160,8 +161,6 @@
   // Apply trilinear filtering to smooth out mis-sized images.
   self->_imageView.layer.minificationFilter = kCAFilterTrilinear;
   self->_imageView.layer.magnificationFilter = kCAFilterTrilinear;
-
-  std::static_pointer_cast<ImageEventEmitter const>(self->_eventEmitter)->onLoadEnd();
 }
 
 - (void)didReceiveProgress:(float)progress fromObserver:(void const *)observer
@@ -182,6 +181,7 @@
   }
 
   std::static_pointer_cast<ImageEventEmitter const>(_eventEmitter)->onError();
+  std::static_pointer_cast<ImageEventEmitter const>(_eventEmitter)->onLoadEnd();
 }
 
 @end
