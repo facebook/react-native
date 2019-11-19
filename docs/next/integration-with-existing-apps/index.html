@@ -166,7 +166,11 @@
 <p>You can specify which <code>subspec</code>s your app will depend on in a <code>Podfile</code> file. The easiest way to create a <code>Podfile</code> is by running the CocoaPods <code>init</code> command in the <code>/ios</code> subfolder of your project:</p>
 <pre><code class="hljs"><span class="hljs-variable">$ </span>pod init
 </code></pre>
-<p>The <code>Podfile</code> will contain a boilerplate setup that you will tweak for your integration purposes. In the end, <code>Podfile</code> should look something similar to this:</p>
+<p>The <code>Podfile</code> will contain a boilerplate setup that you will tweak for your integration purposes.</p>
+<blockquote>
+<p>The <code>Podfile</code> version changes depending on your version of <code>react-native</code>. Refer to <a href="https://react-native-community.github.io/upgrade-helper/">https://react-native-community.github.io/upgrade-helper/</a> for the specific version of <code>Podfile</code> you should be using.</p>
+</blockquote>
+<p>Ultimately, your <code>Podfile</code> should look something similar to this:</p>
 <p><block class="objc" /></p>
 <pre><code class="hljs"># The target name is most likely the name of your project.
 target <span class="hljs-string">'NumberTileGame'</span> <span class="hljs-keyword">do</span>
