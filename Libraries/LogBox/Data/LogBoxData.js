@@ -56,8 +56,14 @@ export type WarningInfo = {|
 
 export type WarningFilter = (format: string) => WarningInfo;
 
+type AppInfo = $ReadOnly<{|
+  appVersion: string,
+  engine: string,
+|}>;
+
 const observers: Set<{observer: Observer}> = new Set();
 const ignorePatterns: Set<IgnorePattern> = new Set();
+let appInfo: ?() => AppInfo = null;
 let logs: LogBoxLogs = new Set();
 let updateTimeout = null;
 let _isDisabled = false;
@@ -293,6 +299,14 @@ export function dismiss(log: LogBoxLog): void {
 
 export function setWarningFilter(filter: WarningFilter): void {
   warningFilter = filter;
+}
+
+export function setAppInfo(info: () => AppInfo): void {
+  appInfo = info;
+}
+
+export function getAppInfo(): ?AppInfo {
+  return appInfo != null ? appInfo() : null;
 }
 
 export function checkWarningFilter(format: string): WarningInfo {

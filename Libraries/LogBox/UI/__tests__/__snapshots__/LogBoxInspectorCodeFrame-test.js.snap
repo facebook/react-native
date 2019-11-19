@@ -2,6 +2,7 @@
 
 exports[`LogBoxInspectorCodeFrame should render a code frame 1`] = `
 <LogBoxInspectorSection
+  action={<AppInfo />}
   heading="Source"
 >
   <View

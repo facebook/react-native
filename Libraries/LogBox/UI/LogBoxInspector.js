@@ -22,7 +22,6 @@ import LogBoxInspectorFooter from './LogBoxInspectorFooter';
 import LogBoxInspectorMessageHeader from './LogBoxInspectorMessageHeader';
 import LogBoxInspectorReactFrames from './LogBoxInspectorReactFrames';
 import LogBoxInspectorStackFrames from './LogBoxInspectorStackFrames';
-import LogBoxInspectorMeta from './LogBoxInspectorMeta';
 import LogBoxInspectorHeader from './LogBoxInspectorHeader';
 import * as LogBoxStyle from './LogBoxStyle';
 
@@ -122,7 +121,6 @@ function LogBoxInspectorBody(props) {
           <LogBoxInspectorCodeFrame codeFrame={props.log.codeFrame} />
           <LogBoxInspectorReactFrames log={props.log} />
           <LogBoxInspectorStackFrames log={props.log} onRetry={props.onRetry} />
-          <LogBoxInspectorMeta />
         </ScrollView>
       </>
     );
@@ -139,7 +137,6 @@ function LogBoxInspectorBody(props) {
       <LogBoxInspectorCodeFrame codeFrame={props.log.codeFrame} />
       <LogBoxInspectorReactFrames log={props.log} />
       <LogBoxInspectorStackFrames log={props.log} onRetry={props.onRetry} />
-      <LogBoxInspectorMeta />
     </ScrollView>
   );
 }

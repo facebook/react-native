@@ -709,4 +709,18 @@ describe('LogBoxData', () => {
     expect(LogBoxData.isLogBoxErrorMessage(receivedErrorMessage)).toBe(true);
     expect(LogBoxData.isLogBoxErrorMessage('Some other error')).toBe(false);
   });
+
+  it('getAppInfo returns null without any function registered', () => {
+    expect(LogBoxData.getAppInfo()).toBe(null);
+  });
+
+  it('getAppInfo returns the registered app info', () => {
+    const info = {
+      appVersion: 'App Version',
+      engine: 'Hermes',
+    };
+
+    LogBoxData.setAppInfo(() => info);
+    expect(LogBoxData.getAppInfo()).toBe(info);
+  });
 });

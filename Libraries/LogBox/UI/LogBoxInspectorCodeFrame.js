@@ -21,6 +21,7 @@ import LogBoxButton from './LogBoxButton';
 import openFileInEditor from '../../Core/Devtools/openFileInEditor';
 import stripAnsi from 'strip-ansi';
 import LogBoxInspectorSection from './LogBoxInspectorSection';
+import * as LogBoxData from '../Data/LogBoxData';
 type Props = $ReadOnly<{|
   codeFrame: ?CodeFrame,
 |}>;
@@ -41,7 +42,7 @@ function LogBoxInspectorCodeFrame(props: Props): React.Node {
   }
 
   return (
-    <LogBoxInspectorSection heading="Source">
+    <LogBoxInspectorSection heading="Source" action={<AppInfo />}>
       <View style={styles.box}>
         <View style={styles.frame}>
           <ScrollView horizontal>
@@ -68,6 +69,29 @@ function LogBoxInspectorCodeFrame(props: Props): React.Node {
     </LogBoxInspectorSection>
   );
 }
+
+function AppInfo() {
+  const appInfo = LogBoxData.getAppInfo();
+  if (appInfo == null) {
+    return null;
+  }
+
+  return (
+    <Text style={appInfoStyles.text}>
+      {appInfo.appVersion} ({appInfo.engine})
+    </Text>
+  );
+}
+
+const appInfoStyles = StyleSheet.create({
+  text: {
+    color: LogBoxStyle.getTextColor(0.4),
+    fontSize: 12,
+    lineHeight: 12,
+    flex: 0,
+    flexGrow: 0,
+  },
+});
 
 const styles = StyleSheet.create({
   box: {
