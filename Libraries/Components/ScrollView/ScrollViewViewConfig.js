@@ -10,8 +10,6 @@
 
 'use strict';
 
-import {} from '../../Utilities/differ/pointsDiffer';
-
 import type {GeneratedViewConfig} from '../../Utilities/registerGeneratedViewConfig';
 
 const ScrollViewViewConfig = {
