@@ -6,17 +6,10 @@
  */
 
 #import <UIKit/UIKit.h>
-
 #import <React/RCTBridgeModule.h>
 
 @class RCTLoadingProgress;
 
 @interface RCTDevLoadingView : NSObject <RCTBridgeModule>
-
-+ (void)setEnabled:(BOOL)enabled;
-- (void)showMessage:(NSString *)message color:(UIColor *)color backgroundColor:(UIColor *)backgroundColor;
-- (void)showWithURL:(NSURL *)URL;
 - (void)updateProgress:(RCTLoadingProgress *)progress;
-- (void)hide;
-
 @end
