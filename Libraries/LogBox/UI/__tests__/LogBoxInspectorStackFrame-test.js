@@ -34,6 +34,23 @@ describe('LogBoxInspectorStackFrame', () => {
     expect(output).toMatchSnapshot();
   });
 
+  it('should render stack frame without press feedback', () => {
+    const output = render.shallowRender(
+      <LogBoxInspectorStackFrame
+        frame={{
+          column: 1,
+          file: 'app.js',
+          lineNumber: 1,
+          methodName: 'foo',
+          collapse: false,
+        }}
+      />,
+    );
+
+    // Both button backgrounds should be transparent
+    expect(output).toMatchSnapshot();
+  });
+
   it('should render collapsed stack frame with dimmed text', () => {
     const output = render.shallowRender(
       <LogBoxInspectorStackFrame

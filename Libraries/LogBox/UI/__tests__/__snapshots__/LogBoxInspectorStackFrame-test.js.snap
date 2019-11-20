@@ -227,3 +227,110 @@ exports[`LogBoxInspectorStackFrame should render stack frame 1`] = `
   </LogBoxButton>
 </View>
 `;
+
+exports[`LogBoxInspectorStackFrame should render stack frame without press feedback 1`] = `
+<View
+  style={
+    Object {
+      "flexDirection": "row",
+      "paddingHorizontal": 15,
+    }
+  }
+>
+  <LogBoxButton
+    backgroundColor={
+      Object {
+        "default": "transparent",
+        "pressed": "transparent",
+      }
+    }
+    style={
+      Object {
+        "borderRadius": 5,
+        "flex": 1,
+        "paddingHorizontal": 10,
+        "paddingVertical": 4,
+      }
+    }
+  >
+    <Text
+      style={
+        Array [
+          Object {
+            "color": "rgba(255, 255, 255, 1)",
+            "fontFamily": "Menlo",
+            "fontSize": 14,
+            "fontWeight": "400",
+            "includeFontPadding": false,
+            "lineHeight": 18,
+          },
+          false,
+        ]
+      }
+    >
+      foo
+    </Text>
+    <View
+      style={
+        Object {
+          "flexDirection": "row",
+        }
+      }
+    >
+      <Text
+        ellipsizeMode="middle"
+        numberOfLines={1}
+        style={
+          Array [
+            Object {
+              "color": "rgba(255, 255, 255, 0.8)",
+              "fontSize": 12,
+              "fontWeight": "300",
+              "includeFontPadding": false,
+              "lineHeight": 16,
+              "paddingLeft": 10,
+            },
+            false,
+          ]
+        }
+      >
+        app.js
+      </Text>
+      <Text
+        style={
+          Array [
+            Object {
+              "color": "rgba(255, 255, 255, 0.8)",
+              "fontSize": 12,
+              "fontWeight": "300",
+              "includeFontPadding": false,
+              "lineHeight": 16,
+            },
+            false,
+          ]
+        }
+      >
+        :
+        1
+      </Text>
+      <Text
+        style={
+          Array [
+            Object {
+              "color": "rgba(255, 255, 255, 0.8)",
+              "fontSize": 12,
+              "fontWeight": "300",
+              "includeFontPadding": false,
+              "lineHeight": 16,
+            },
+            false,
+          ]
+        }
+      >
+        :
+        2
+      </Text>
+    </View>
+  </LogBoxButton>
+</View>
+`;

@@ -41,10 +41,7 @@ function LogBoxInspector(props: Props): React.Node {
 
   const log = logs[selectedIndex];
   React.useEffect(() => {
-    // Symbolicate the visible log if it hasn't been already.
-    if (log != null && log.symbolicated.status !== 'COMPLETE') {
-      LogBoxData.symbolicateLogNow(log);
-    }
+    LogBoxData.symbolicateLogNow(log);
   }, [log]);
 
   React.useEffect(() => {
