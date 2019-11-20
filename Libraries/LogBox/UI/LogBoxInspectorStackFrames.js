@@ -85,19 +85,11 @@ function LogBoxInspectorStackFrames(props: Props): React.Node {
       action={
         <LogBoxInspectorSourceMapStatus
           onPress={
-            props.log.symbolicated.status === 'FAILED' ? props.onRetry : null
+            props.log.symbolicated.status !== 'COMPLETE' ? props.onRetry : null
           }
           status={props.log.symbolicated.status}
         />
       }>
-      {props.log.symbolicated.status !== 'COMPLETE' && (
-        <View style={stackStyles.hintBox}>
-          <Text style={stackStyles.hintText}>
-            This call stack is not symbolicated. Some features are unavailable
-            such as viewing the function name or tapping to open files.
-          </Text>
-        </View>
-      )}
       <StackFrameList
         list={getStackList()}
         status={props.log.symbolicated.status}
@@ -119,11 +111,15 @@ function StackFrameList(props) {
           <LogBoxInspectorStackFrame
             key={index}
             frame={frame}
-            onPress={
-              props.status === 'COMPLETE' && file != null && lineNumber != null
-                ? () => openFileInEditor(file, lineNumber)
-                : null
-            }
+            onPress={() => {
+              if (
+                props.status === 'COMPLETE' &&
+                file != null &&
+                lineNumber != null
+              ) {
+                openFileInEditor(file, lineNumber);
+              }
+            }}
           />
         );
       })}
@@ -175,22 +171,6 @@ const stackStyles = StyleSheet.create({
     lineHeight: 18,
     fontWeight: '500',
     paddingHorizontal: 27,
-  },
-  hintText: {
-    color: LogBoxStyle.getTextColor(0.7),
-    fontSize: 13,
-    includeFontPadding: false,
-    lineHeight: 18,
-    fontWeight: '400',
-    marginHorizontal: 10,
-  },
-  hintBox: {
-    backgroundColor: LogBoxStyle.getBackgroundColor(),
-    marginHorizontal: 10,
-    paddingHorizontal: 5,
-    paddingVertical: 10,
-    borderRadius: 5,
-    marginBottom: 5,
   },
   collapseContainer: {
     marginLeft: 15,

@@ -241,7 +241,6 @@ export function symbolicateLogNow(log: LogBoxLog) {
     handleUpdate();
   });
 }
-
 export function retrySymbolicateLogNow(log: LogBoxLog) {
   log.retrySymbolicate(() => {
     handleUpdate();

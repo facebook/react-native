@@ -41,7 +41,7 @@ function LogBoxInspectorStackFrame(props: Props): React.Node {
       <LogBoxButton
         backgroundColor={{
           default: 'transparent',
-          pressed: onPress ? LogBoxStyle.getBackgroundColor(1) : 'transparent',
+          pressed: LogBoxStyle.getBackgroundColor(1),
         }}
         onPress={onPress}
         style={styles.frame}>
