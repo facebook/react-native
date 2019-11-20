@@ -28,7 +28,7 @@ if (
       'react-native': __dirname,
     },
     roots: [path.resolve(__dirname)],
-    projectRoot: __dirname,
+    projectRoot: path.resolve(__dirname, '../../'),
 
     serializer: {
       getModulesRunBeforeMainModule: () => [
