@@ -211,7 +211,7 @@ Error: ${e.message}`;
     client.on('update', ({isInitialUpdate}) => {
       if (client.isEnabled() && !isInitialUpdate) {
         dismissRedbox();
-        LogBoxData.clearSyntaxErrors();
+        LogBoxData.clear();
       }
     });
 

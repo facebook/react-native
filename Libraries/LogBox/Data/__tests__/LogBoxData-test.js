@@ -164,7 +164,7 @@ describe('LogBoxData', () => {
     expect(registry()[0]).toBeUndefined();
   });
 
-  it('clears all logs except syntax errors', () => {
+  it('clears all logs', () => {
     addLogs(['A', 'B']);
     addSoftErrors(['C', 'D']);
     addFatalErrors(['E', 'F']);
@@ -174,7 +174,7 @@ describe('LogBoxData', () => {
     expect(registry().length).toBe(7);
 
     LogBoxData.clear();
-    expect(registry().length).toBe(1);
+    expect(registry().length).toBe(0);
   });
 
   it('clears only warnings', () => {
@@ -202,20 +202,7 @@ describe('LogBoxData', () => {
     expect(registry().length).toBe(3);
   });
 
-  it('clears only syntax errors', () => {
-    addLogs(['A', 'B']);
-    addSoftErrors(['C', 'D', 'E']);
-    addFatalErrors(['F']);
-    addSyntaxError();
-    flushLogs();
-
-    expect(registry().length).toBe(7);
-
-    LogBoxData.clearSyntaxErrors();
-    expect(registry().length).toBe(6);
-  });
-
-  it('clears all types', () => {
+  it('clears all types except syntax errors', () => {
     addLogs(['A', 'B']);
     addSoftErrors(['C', 'D', 'E']);
     addFatalErrors(['F']);
@@ -226,8 +213,7 @@ describe('LogBoxData', () => {
 
     LogBoxData.clearErrors();
     LogBoxData.clearWarnings();
-    LogBoxData.clearSyntaxErrors();
-    expect(registry().length).toBe(0);
+    expect(registry().length).toBe(1);
   });
 
   it('keeps logs in chronological order', () => {
@@ -609,27 +595,6 @@ describe('LogBoxData', () => {
 
     // Does nothing when already empty.
     LogBoxData.clearErrors();
-    jest.runAllImmediates();
-    expect(observer.mock.calls.length).toBe(3);
-  });
-
-  it('updates observers when syntax errors cleared', () => {
-    const {observer} = observe();
-    expect(observer.mock.calls.length).toBe(1);
-
-    addLogs(['A']);
-    addSoftErrors(['B']);
-    addFatalErrors(['C']);
-    addSyntaxError();
-    jest.runAllImmediates();
-    expect(observer.mock.calls.length).toBe(2);
-
-    LogBoxData.clearSyntaxErrors();
-    jest.runAllImmediates();
-    expect(observer.mock.calls.length).toBe(3);
-
-    // Does nothing when already empty.
-    LogBoxData.clearSyntaxErrors();
     jest.runAllImmediates();
     expect(observer.mock.calls.length).toBe(3);
   });

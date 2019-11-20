@@ -252,9 +252,8 @@ export function symbolicateLogLazy(log: LogBoxLog) {
 }
 
 export function clear(): void {
-  const newLogs = Array.from(logs).filter(log => log.level === 'syntax');
-  if (newLogs.length !== logs.size) {
-    logs = new Set(newLogs);
+  if (logs.size > 0) {
+    logs = new Set();
     handleUpdate();
   }
 }
@@ -276,14 +275,6 @@ export function clearErrors(): void {
   const newLogs = Array.from(logs).filter(
     log => log.level !== 'error' && log.level !== 'fatal',
   );
-  if (newLogs.length !== logs.size) {
-    logs = new Set(newLogs);
-    handleUpdate();
-  }
-}
-
-export function clearSyntaxErrors(): void {
-  const newLogs = Array.from(logs).filter(log => log.level !== 'syntax');
   if (newLogs.length !== logs.size) {
     logs = new Set(newLogs);
     handleUpdate();
