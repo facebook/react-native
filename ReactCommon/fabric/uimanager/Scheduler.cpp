@@ -107,7 +107,7 @@ Scheduler::~Scheduler() {
     return;
   }
 
-  LOG(FATAL) << "Scheduler was destroyed with outstanding Surfaces.";
+  LOG(ERROR) << "Scheduler was destroyed with outstanding Surfaces.";
 
   // If we are here, that means assert didn't fire which indicates that we in
   // production.
