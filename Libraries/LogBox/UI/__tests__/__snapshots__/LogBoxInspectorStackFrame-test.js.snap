@@ -46,76 +46,28 @@ exports[`LogBoxInspectorStackFrame should render collapsed stack frame with dimm
     >
       foo
     </Text>
-    <View
+    <Text
+      ellipsizeMode="middle"
+      numberOfLines={1}
       style={
-        Object {
-          "flexDirection": "row",
-        }
+        Array [
+          Object {
+            "color": "rgba(255, 255, 255, 0.8)",
+            "fontSize": 12,
+            "fontWeight": "300",
+            "includeFontPadding": false,
+            "lineHeight": 16,
+            "paddingLeft": 10,
+          },
+          Object {
+            "color": "rgba(255, 255, 255, 0.4)",
+            "fontWeight": "300",
+          },
+        ]
       }
     >
-      <Text
-        ellipsizeMode="middle"
-        numberOfLines={1}
-        style={
-          Array [
-            Object {
-              "color": "rgba(255, 255, 255, 0.8)",
-              "fontSize": 12,
-              "fontWeight": "300",
-              "includeFontPadding": false,
-              "lineHeight": 16,
-              "paddingLeft": 10,
-            },
-            Object {
-              "color": "rgba(255, 255, 255, 0.4)",
-              "fontWeight": "300",
-            },
-          ]
-        }
-      >
-        app.js
-      </Text>
-      <Text
-        style={
-          Array [
-            Object {
-              "color": "rgba(255, 255, 255, 0.8)",
-              "fontSize": 12,
-              "fontWeight": "300",
-              "includeFontPadding": false,
-              "lineHeight": 16,
-            },
-            Object {
-              "color": "rgba(255, 255, 255, 0.4)",
-              "fontWeight": "300",
-            },
-          ]
-        }
-      >
-        :
-        1
-      </Text>
-      <Text
-        style={
-          Array [
-            Object {
-              "color": "rgba(255, 255, 255, 0.8)",
-              "fontSize": 12,
-              "fontWeight": "300",
-              "includeFontPadding": false,
-              "lineHeight": 16,
-            },
-            Object {
-              "color": "rgba(255, 255, 255, 0.4)",
-              "fontWeight": "300",
-            },
-          ]
-        }
-      >
-        :
-        2
-      </Text>
-    </View>
+      app.js:1:2
+    </Text>
   </LogBoxButton>
 </View>
 `;
@@ -163,67 +115,25 @@ exports[`LogBoxInspectorStackFrame should render stack frame 1`] = `
     >
       foo
     </Text>
-    <View
+    <Text
+      ellipsizeMode="middle"
+      numberOfLines={1}
       style={
-        Object {
-          "flexDirection": "row",
-        }
+        Array [
+          Object {
+            "color": "rgba(255, 255, 255, 0.8)",
+            "fontSize": 12,
+            "fontWeight": "300",
+            "includeFontPadding": false,
+            "lineHeight": 16,
+            "paddingLeft": 10,
+          },
+          false,
+        ]
       }
     >
-      <Text
-        ellipsizeMode="middle"
-        numberOfLines={1}
-        style={
-          Array [
-            Object {
-              "color": "rgba(255, 255, 255, 0.8)",
-              "fontSize": 12,
-              "fontWeight": "300",
-              "includeFontPadding": false,
-              "lineHeight": 16,
-              "paddingLeft": 10,
-            },
-            false,
-          ]
-        }
-      >
-        app.js
-      </Text>
-      <Text
-        style={
-          Array [
-            Object {
-              "color": "rgba(255, 255, 255, 0.8)",
-              "fontSize": 12,
-              "fontWeight": "300",
-              "includeFontPadding": false,
-              "lineHeight": 16,
-            },
-            false,
-          ]
-        }
-      >
-        :
-        1
-      </Text>
-      <Text
-        style={
-          Array [
-            Object {
-              "color": "rgba(255, 255, 255, 0.8)",
-              "fontSize": 12,
-              "fontWeight": "300",
-              "includeFontPadding": false,
-              "lineHeight": 16,
-            },
-            false,
-          ]
-        }
-      >
-        :
-        2
-      </Text>
-    </View>
+      app.js:1:2
+    </Text>
   </LogBoxButton>
 </View>
 `;

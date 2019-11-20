@@ -28,7 +28,14 @@ type Props = $ReadOnly<{|
 
 function LogBoxInspectorStackFrame(props: Props): React.Node {
   const {frame, onPress} = props;
-
+  const column = frame.column != null && parseInt(frame.column, 10);
+  const location =
+    getFileName(frame.file) +
+    (frame.lineNumber != null
+      ? ':' +
+        frame.lineNumber +
+        (column && !isNaN(column) ? ':' + (column + 1) : '')
+      : '');
   return (
     <View style={styles.frameContainer}>
       <LogBoxButton
@@ -41,39 +48,26 @@ function LogBoxInspectorStackFrame(props: Props): React.Node {
         <Text style={[styles.name, frame.collapse === true && styles.dim]}>
           {frame.methodName}
         </Text>
-
-        <View style={styles.lineLocation}>
-          <Text
-            ellipsizeMode="middle"
-            numberOfLines={1}
-            style={[styles.location, frame.collapse === true && styles.dim]}>
-            {getFileName(frame)}
-          </Text>
-          {frame.lineNumber != null && (
-            <Text style={[styles.line, frame.collapse === true && styles.dim]}>
-              :{frame.lineNumber}
-            </Text>
-          )}
-          {frame.column != null && !isNaN(parseInt(frame.column, 10)) && (
-            <Text style={[styles.line, frame.collapse === true && styles.dim]}>
-              :{parseInt(frame.column, 10) + 1}
-            </Text>
-          )}
-        </View>
+        <Text
+          ellipsizeMode="middle"
+          numberOfLines={1}
+          style={[styles.location, frame.collapse === true && styles.dim]}>
+          {location}
+        </Text>
       </LogBoxButton>
     </View>
   );
 }
 
-function getFileName(frame: StackFrame): string {
-  const {file} = frame;
+function getFileName(file) {
   if (file == null) {
     return '<unknown>';
   }
   const queryIndex = file.indexOf('?');
-
-  const path = queryIndex < 0 ? file : file.substr(0, queryIndex);
-  return path.substr(path.lastIndexOf('/') + 1);
+  return file.substring(
+    file.lastIndexOf('/') + 1,
+    queryIndex === -1 ? file.length : queryIndex,
+  );
 }
 
 const styles = StyleSheet.create({
