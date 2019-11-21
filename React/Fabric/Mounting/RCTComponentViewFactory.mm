@@ -19,7 +19,6 @@
 #import "RCTARTSurfaceViewComponentView.h"
 #import "RCTActivityIndicatorViewComponentView.h"
 #import "RCTComponentViewClassDescriptor.h"
-#import "RCTFabricComponentsPlugins.h"
 #import "RCTImageComponentView.h"
 #import "RCTLegacyViewManagerInteropComponentView.h"
 #import "RCTModalHostViewComponentView.h"
@@ -27,6 +26,7 @@
 #import "RCTParagraphComponentView.h"
 #import "RCTPullToRefreshViewComponentView.h"
 #import "RCTRootComponentView.h"
+#import "RCTSafeAreaViewComponentView.h"
 #import "RCTScrollViewComponentView.h"
 #import "RCTSliderComponentView.h"
 #import "RCTSwitchComponentView.h"
@@ -60,6 +60,7 @@ using namespace facebook::react;
   [componentViewFactory registerComponentViewClass:[RCTUnimplementedNativeComponentView class]];
   [componentViewFactory registerComponentViewClass:[RCTModalHostViewComponentView class]];
   [componentViewFactory registerComponentViewClass:[RCTARTSurfaceViewComponentView class]];
+  [componentViewFactory registerComponentViewClass:[RCTSafeAreaViewComponentView class]];
 
   auto providerRegistry = &componentViewFactory->_providerRegistry;
 
@@ -73,16 +74,9 @@ using namespace facebook::react;
         [componentViewFactory registerComponentViewClass:klass];
         return;
       }
-    } else {
-      // Fallback 2: In case delegate isn't defined, look into core components.
-      Class<RCTComponentViewProtocol> klass = RCTFabricComponentsProvider(requestedComponentName);
-      if (klass) {
-        [componentViewFactory registerComponentViewClass:klass];
-        return;
-      }
     }
 
-    // Fallback 3: Try to use Paper Interop.
+    // Fallback 2: Try to use Paper Interop.
     if ([RCTLegacyViewManagerInteropComponentView isSupported:RCTNSStringFromString(requestedComponentName)]) {
       auto flavor = std::make_shared<std::string const>(requestedComponentName);
       auto componentName = ComponentName{flavor->c_str()};
@@ -96,7 +90,7 @@ using namespace facebook::react;
       return;
     }
 
-    // Fallback 4: Finally use <UnimplementedView>.
+    // Fallback 3: Finally use <UnimplementedView>.
     auto flavor = std::make_shared<std::string const>(requestedComponentName);
     auto componentName = ComponentName{flavor->c_str()};
     auto componentHandle = reinterpret_cast<ComponentHandle>(componentName);
