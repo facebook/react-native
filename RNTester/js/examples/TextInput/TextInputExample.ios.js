@@ -181,6 +181,43 @@ class RewriteExampleInvalidCharacters extends React.Component<
   }
 }
 
+class RewriteInvalidCharactersAndClearExample extends React.Component<
+  $FlowFixMeProps,
+  any,
+> {
+  inputRef: ?React.ElementRef<typeof TextInput> = null;
+
+  constructor(props) {
+    super(props);
+    this.state = {text: ''};
+  }
+  render() {
+    return (
+      <View style={styles.rewriteContainer}>
+        <TextInput
+          ref={ref => {
+            this.inputRef = ref;
+          }}
+          multiline={false}
+          onChangeText={text => {
+            this.setState({text: text.replace(/\s/g, '')});
+          }}
+          style={styles.default}
+          value={this.state.text}
+        />
+        <Button
+          onPress={() => {
+            if (this.inputRef != null) {
+              this.inputRef.clear();
+            }
+          }}
+          title="Clear"
+        />
+      </View>
+    );
+  }
+}
+
 class RewriteExampleKana extends React.Component<$FlowFixMeProps, any> {
   constructor(props) {
     super(props);
@@ -596,6 +633,12 @@ exports.examples = [
     title: 'Live Re-Write (no spaces allowed)',
     render: function(): React.Node {
       return <RewriteExampleInvalidCharacters />;
+    },
+  },
+  {
+    title: 'Rewrite (no spaces allowed) and clear',
+    render: function(): React.Node {
+      return <RewriteInvalidCharactersAndClearExample />;
     },
   },
   {
