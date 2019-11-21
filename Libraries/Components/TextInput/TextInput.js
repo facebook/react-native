@@ -812,7 +812,6 @@ class InternalTextInput extends React.Component<Props> {
   };
 
   _inputRef: null | React.ElementRef<HostComponent<mixed>> = null;
-  _focusSubscription: ?Function = undefined;
   _lastNativeText: ?Stringish = null;
   _lastNativeSelection: ?Selection = null;
   _rafId: ?AnimationFrameID = null;
@@ -869,7 +868,6 @@ class InternalTextInput extends React.Component<Props> {
   }
 
   componentWillUnmount() {
-    this._focusSubscription && this._focusSubscription.remove();
     if (this.isFocused()) {
       nullthrows(this._inputRef).blur();
     }
