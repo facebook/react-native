@@ -2566,18 +2566,56 @@ injection.injectEventPluginsByName({
   ReactNativeBridgeEventPlugin: ReactNativeBridgeEventPlugin
 });
 
+// Uncomment to re-export dynamic flags from the fbsource version.
+var _require = require("../shims/ReactFeatureFlags");
+var enableNativeTargetAsInstance = _require.enableNativeTargetAsInstance; // The rest of the flags are static for better dead code elimination.
+
+var enableUserTimingAPI = true;
+var enableProfilerTimer = true;
+var enableSchedulerTracing = true;
+var enableSuspenseServerRenderer = false;
+
+var debugRenderPhaseSideEffectsForStrictMode = true;
+
+var replayFailedUnitOfWorkWithInvokeGuardedCallback = true;
+var warnAboutDeprecatedLifecycles = true;
+var enableFlareAPI = false;
+var enableFundamentalAPI = false;
+var enableScopeAPI = false;
+
+var warnAboutUnmockedScheduler = true;
+var flushSuspenseFallbacksInTests = true;
+var enableSuspenseCallback = false;
+var warnAboutDefaultPropsOnFunctionComponents = false;
+var warnAboutStringRefs = false;
+var disableLegacyContext = false;
+var disableSchedulerTimeoutBasedOnReactExpirationTime = false;
+// Only used in www builds.
+
+// Flow magic to verify the exports of this file match the original version.
+
 function getInstanceFromInstance(instanceHandle) {
   return instanceHandle;
 }
 
 function getTagFromInstance(inst) {
-  var tag = inst.stateNode.canonical._nativeTag;
+  if (enableNativeTargetAsInstance) {
+    var nativeInstance = inst.stateNode.canonical;
 
-  if (!tag) {
-    throw Error("All native instances should have a tag.");
+    if (!nativeInstance._nativeTag) {
+      throw Error("All native instances should have a tag.");
+    }
+
+    return nativeInstance;
+  } else {
+    var tag = inst.stateNode.canonical._nativeTag;
+
+    if (!tag) {
+      throw Error("All native instances should have a tag.");
+    }
+
+    return tag;
   }
-
-  return tag;
 }
 
 function getFiberCurrentPropsFromNode$1(inst) {
@@ -2919,33 +2957,6 @@ var Incomplete =
 var ShouldCapture =
   /*         */
   4096;
-
-// Uncomment to re-export dynamic flags from the fbsource version.
-// export const {} = require('../shims/ReactFeatureFlags');
-// The rest of the flags are static for better dead code elimination.
-var enableUserTimingAPI = true;
-var enableProfilerTimer = true;
-var enableSchedulerTracing = true;
-var enableSuspenseServerRenderer = false;
-
-var debugRenderPhaseSideEffectsForStrictMode = true;
-
-var replayFailedUnitOfWorkWithInvokeGuardedCallback = true;
-var warnAboutDeprecatedLifecycles = true;
-var enableFlareAPI = false;
-var enableFundamentalAPI = false;
-var enableScopeAPI = false;
-
-var warnAboutUnmockedScheduler = true;
-var flushSuspenseFallbacksInTests = true;
-var enableSuspenseCallback = false;
-var warnAboutDefaultPropsOnFunctionComponents = false;
-var warnAboutStringRefs = false;
-var disableLegacyContext = false;
-var disableSchedulerTimeoutBasedOnReactExpirationTime = false;
-// Only used in www builds.
-
-// Flow magic to verify the exports of this file match the original version.
 
 var ReactCurrentOwner$1 = ReactSharedInternals.ReactCurrentOwner;
 function getNearestMountedFiber(fiber) {
@@ -4380,13 +4391,23 @@ function dispatchEvent(target, topLevelType, nativeEvent) {
     dispatchEventForResponderEventSystem(topLevelType, target, nativeEvent);
   }
 
+  var eventTarget = null;
+
+  if (enableNativeTargetAsInstance) {
+    if (targetFiber != null) {
+      eventTarget = targetFiber.stateNode.canonical;
+    }
+  } else {
+    eventTarget = nativeEvent.target;
+  }
+
   batchedUpdates(function() {
     // Heritage plugin event system
     runExtractedPluginEventsInBatch(
       topLevelType,
       targetFiber,
       nativeEvent,
-      nativeEvent.target,
+      eventTarget,
       PLUGIN_EVENT_SYSTEM
     );
   }); // React Native doesn't use ReactControlledComponent but if it did, here's

@@ -12,6 +12,7 @@
 
 const ReactFeatureFlags = {
   debugRenderPhaseSideEffects: false,
+  enableNativeTargetAsInstance: true,
 };
 
 module.exports = ReactFeatureFlags;

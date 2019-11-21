@@ -2567,6 +2567,30 @@ injection.injectEventPluginsByName({
   ReactNativeBridgeEventPlugin: ReactNativeBridgeEventPlugin
 });
 
+var debugRenderPhaseSideEffectsForStrictMode = false;
+var enableUserTimingAPI = true;
+var replayFailedUnitOfWorkWithInvokeGuardedCallback = true;
+var warnAboutDeprecatedLifecycles = true;
+var enableProfilerTimer = true;
+var enableSchedulerTracing = true;
+var enableSuspenseServerRenderer = false;
+
+var enableFlareAPI = false;
+var enableFundamentalAPI = false;
+var enableScopeAPI = false;
+
+var warnAboutUnmockedScheduler = false;
+var flushSuspenseFallbacksInTests = true;
+var enableSuspenseCallback = false;
+var warnAboutDefaultPropsOnFunctionComponents = false;
+var warnAboutStringRefs = false;
+var disableLegacyContext = false;
+var disableSchedulerTimeoutBasedOnReactExpirationTime = false;
+
+var enableNativeTargetAsInstance = false; // Only used in www builds.
+
+// Flow magic to verify the exports of this file match the original version.
+
 var instanceCache = new Map();
 var instanceProps = new Map();
 function precacheFiberNode(hostInst, tag) {
@@ -2582,17 +2606,33 @@ function getInstanceFromTag(tag) {
 }
 
 function getTagFromInstance(inst) {
-  var tag = inst.stateNode._nativeTag;
+  if (enableNativeTargetAsInstance) {
+    var nativeInstance = inst.stateNode;
+    var tag = nativeInstance._nativeTag;
 
-  if (tag === undefined) {
-    tag = inst.stateNode.canonical._nativeTag;
+    if (tag === undefined) {
+      nativeInstance = nativeInstance.canonical;
+      tag = nativeInstance._nativeTag;
+    }
+
+    if (!tag) {
+      throw Error("All native instances should have a tag.");
+    }
+
+    return nativeInstance;
+  } else {
+    var _tag = inst.stateNode._nativeTag;
+
+    if (_tag === undefined) {
+      _tag = inst.stateNode.canonical._nativeTag;
+    }
+
+    if (!_tag) {
+      throw Error("All native instances should have a tag.");
+    }
+
+    return _tag;
   }
-
-  if (!tag) {
-    throw Error("All native instances should have a tag.");
-  }
-
-  return tag;
 }
 
 function getFiberCurrentPropsFromNode$1(stateNode) {
@@ -2648,29 +2688,6 @@ function restoreStateIfNeeded() {
     }
   }
 }
-
-var debugRenderPhaseSideEffectsForStrictMode = false;
-var enableUserTimingAPI = true;
-var replayFailedUnitOfWorkWithInvokeGuardedCallback = true;
-var warnAboutDeprecatedLifecycles = true;
-var enableProfilerTimer = true;
-var enableSchedulerTracing = true;
-var enableSuspenseServerRenderer = false;
-
-var enableFlareAPI = false;
-var enableFundamentalAPI = false;
-var enableScopeAPI = false;
-
-var warnAboutUnmockedScheduler = false;
-var flushSuspenseFallbacksInTests = true;
-var enableSuspenseCallback = false;
-var warnAboutDefaultPropsOnFunctionComponents = false;
-var warnAboutStringRefs = false;
-var disableLegacyContext = false;
-var disableSchedulerTimeoutBasedOnReactExpirationTime = false;
-// Only used in www builds.
-
-// Flow magic to verify the exports of this file match the original version.
 
 // the renderer. Such as when we're dispatching events or if third party
 // libraries need to call batchedUpdates. Eventually, this API will go away when
@@ -2804,12 +2821,22 @@ var removeTouchesAtIndices = function(touches, indices) {
 function _receiveRootNodeIDEvent(rootNodeID, topLevelType, nativeEventParam) {
   var nativeEvent = nativeEventParam || EMPTY_NATIVE_EVENT;
   var inst = getInstanceFromTag(rootNodeID);
+  var target = null;
+
+  if (enableNativeTargetAsInstance) {
+    if (inst != null) {
+      target = inst.stateNode;
+    }
+  } else {
+    target = nativeEvent.target;
+  }
+
   batchedUpdates(function() {
     runExtractedPluginEventsInBatch(
       topLevelType,
       inst,
       nativeEvent,
-      nativeEvent.target,
+      target,
       PLUGIN_EVENT_SYSTEM
     );
   }); // React Native doesn't use ReactControlledComponent but if it did, here's
