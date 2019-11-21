@@ -35,7 +35,29 @@ AttributedString AndroidTextInputShadowNode::getAttributedString() const {
   textAttributes.apply(getProps()->textAttributes);
 
   // Use BaseTextShadowNode to get attributed string from children
-  return BaseTextShadowNode::getAttributedString(textAttributes, *this);
+  {
+    auto const &attributedString =
+        BaseTextShadowNode::getAttributedString(textAttributes, *this);
+    if (!attributedString.isEmpty()) {
+      return std::move(attributedString);
+    }
+  }
+
+  // Return placeholder text instead, if text was empty.
+  auto placeholderAttributedString = AttributedString{};
+  auto fragment = AttributedString::Fragment{};
+  fragment.string = getProps()->placeholder;
+
+  // For measurement purposes, we want to make sure that there's at least a
+  // single character in the string so that the measured height is greater than
+  // zero. Otherwise, empty TextInputs with no placeholder don't display at all.
+  if (fragment.string == "") {
+    fragment.string = " ";
+  }
+  fragment.textAttributes = textAttributes;
+  fragment.parentShadowView = ShadowView(*this);
+  placeholderAttributedString.appendFragment(fragment);
+  return placeholderAttributedString;
 }
 
 #pragma mark - LayoutableShadowNode
