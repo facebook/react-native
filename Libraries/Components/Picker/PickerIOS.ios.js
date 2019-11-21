@@ -115,7 +115,11 @@ class PickerIOS extends React.Component<Props, State> {
     // This is necessary in case native updates the picker and JS decides
     // that the update should be ignored and we should stick with the value
     // that we have in JS.
-    if (this._picker && this._lastNativeValue !== this.state.selectedIndex) {
+    if (
+      this._picker &&
+      this._lastNativeValue !== undefined &&
+      this._lastNativeValue !== this.state.selectedIndex
+    ) {
       PickerCommands.setNativeSelectedIndex(
         this._picker,
         this.state.selectedIndex,
