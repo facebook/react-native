@@ -31,22 +31,6 @@ const sanitize = ({
   }
   const stack = [];
   for (const maybeFrame of maybeStack) {
-    if (typeof maybeFrame !== 'object' || maybeFrame == null) {
-      throw new Error('Expected each stack frame to be an object.');
-    }
-    if (typeof maybeFrame.column !== 'number' && maybeFrame.column != null) {
-      throw new Error('Expected stack frame `column` to be a nullable number.');
-    }
-    if (typeof maybeFrame.file !== 'string') {
-      throw new Error('Expected stack frame `file` to be a string.');
-    }
-    if (typeof maybeFrame.lineNumber !== 'number') {
-      throw new Error('Expected stack frame `lineNumber` to be a number.');
-    }
-    if (typeof maybeFrame.methodName !== 'string') {
-      throw new Error('Expected stack frame `methodName` to be a string.');
-    }
-
     let collapse = false;
     if ('collapse' in maybeFrame) {
       if (typeof maybeFrame.collapse !== 'boolean') {
