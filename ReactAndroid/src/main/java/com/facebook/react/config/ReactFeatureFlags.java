@@ -78,4 +78,16 @@ public class ReactFeatureFlags {
    * TODO T54997838: remove as followup
    */
   public static boolean allowDisablingImmediateExecutionOfScheduleMountItems = false;
+
+  /**
+   * This react flag enables a custom algorithm for the getChildVisibleRect() method in the classes
+   * ReactViewGroup, ReactHorizontalScrollView and ReactScrollView.
+   *
+   * <p>This new algorithm clip child rects if overflow is set to ViewProps.HIDDEN. More details in
+   * https://github.com/facebook/react-native/issues/23870 and
+   * https://github.com/facebook/react-native/pull/26334
+   *
+   * <p>The react flag is disabled by default because this is increasing ANRs (T57363204)
+   */
+  public static boolean clipChildRectsIfOverflowIsHidden = false;
 }

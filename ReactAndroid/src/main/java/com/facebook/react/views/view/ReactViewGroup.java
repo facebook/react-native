@@ -31,6 +31,7 @@ import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.common.annotations.VisibleForTesting;
+import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.react.modules.i18nmanager.I18nUtil;
 import com.facebook.react.touch.OnInterceptTouchEventListener;
 import com.facebook.react.touch.ReactHitSlopView;
@@ -433,8 +434,9 @@ public class ReactViewGroup extends ViewGroup
 
   @Override
   public boolean getChildVisibleRect(View child, Rect r, android.graphics.Point offset) {
-    return ReactClippingViewGroupHelper.getChildVisibleRectHelper(
-        child, r, offset, this, mOverflow);
+    return ReactFeatureFlags.clipChildRectsIfOverflowIsHidden
+        ? ReactClippingViewGroupHelper.getChildVisibleRectHelper(child, r, offset, this, mOverflow)
+        : super.getChildVisibleRect(child, r, offset);
   }
 
   @Override

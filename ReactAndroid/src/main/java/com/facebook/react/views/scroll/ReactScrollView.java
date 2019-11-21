@@ -24,6 +24,7 @@ import androidx.core.view.ViewCompat;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.common.ReactConstants;
+import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.react.uimanager.MeasureSpecAssertions;
 import com.facebook.react.uimanager.ReactClippingViewGroup;
 import com.facebook.react.uimanager.ReactClippingViewGroupHelper;
@@ -345,8 +346,9 @@ public class ReactScrollView extends ScrollView
 
   @Override
   public boolean getChildVisibleRect(View child, Rect r, android.graphics.Point offset) {
-    return ReactClippingViewGroupHelper.getChildVisibleRectHelper(
-        child, r, offset, this, mOverflow);
+    return ReactFeatureFlags.clipChildRectsIfOverflowIsHidden
+        ? ReactClippingViewGroupHelper.getChildVisibleRectHelper(child, r, offset, this, mOverflow)
+        : super.getChildVisibleRect(child, r, offset);
   }
 
   @Override
