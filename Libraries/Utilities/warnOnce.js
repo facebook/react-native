@@ -12,7 +12,7 @@
 
 const warning = require('fbjs/lib/warning');
 
-const warnedKeys: {[string]: boolean} = {};
+const warnedKeys: {[string]: boolean, ...} = {};
 
 /**
  * A simple function that prints a warning message once per session.

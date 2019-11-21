@@ -46,6 +46,7 @@ export type CompositeAnimation = {
   reset: () => void,
   _startNativeLoop: (iterations?: number) => void,
   _isUsingNativeDriver: () => boolean,
+  ...
 };
 
 const add = function(
@@ -341,7 +342,9 @@ const sequence = function(
 };
 
 type ParallelConfig = {
-  stopTogether?: boolean, // If one is stopped, stop all.  default: true
+  // If one is stopped, stop all.  default: true
+  stopTogether?: boolean,
+  ...
 };
 const parallel = function(
   animations: Array<CompositeAnimation>,
@@ -435,6 +438,7 @@ const stagger = function(
 type LoopAnimationConfig = {
   iterations: number,
   resetBeforeIteration?: boolean,
+  ...
 };
 
 const loop = function(

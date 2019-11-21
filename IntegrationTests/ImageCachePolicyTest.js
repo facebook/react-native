@@ -27,12 +27,13 @@ const {TestModule} = ReactNative.NativeModules;
 
 const TESTS = ['only-if-cached', 'default', 'reload', 'force-cache'];
 
-type Props = {};
+type Props = {...};
 type State = {
   'only-if-cached'?: boolean,
   default?: boolean,
   reload?: boolean,
   'force-cache'?: boolean,
+  ...
 };
 
 class ImageCachePolicyTest extends React.Component<Props, $FlowFixMeState> {

@@ -28,7 +28,12 @@ class Info {
   sample_count: number = 0;
 }
 
-type FrameMetrics = {inLayout?: boolean, length: number, offset: number};
+type FrameMetrics = {
+  inLayout?: boolean,
+  length: number,
+  offset: number,
+  ...
+};
 
 const DEBUG = false;
 
@@ -52,7 +57,9 @@ class FillRateHelper {
   _mostlyBlankStartTime = (null: ?number);
   _samplesStartTime = (null: ?number);
 
-  static addListener(callback: FillRateInfo => void): {remove: () => void} {
+  static addListener(
+    callback: FillRateInfo => void,
+  ): {remove: () => void, ...} {
     warning(
       _sampleRate !== null,
       'Call `FillRateHelper.setSampleRate` before `addListener`.',
@@ -133,16 +140,19 @@ class FillRateHelper {
       data: any,
       getItemCount: (data: any) => number,
       initialNumToRender: number,
+      ...
     },
     state: {
       first: number,
       last: number,
+      ...
     },
     scrollMetrics: {
       dOffset: number,
       offset: number,
       velocity: number,
       visibleLength: number,
+      ...
     },
   ): number {
     if (

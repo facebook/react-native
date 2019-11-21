@@ -12,10 +12,11 @@ export type CapturedError = {
   +componentName: ?string,
   +componentStack: string,
   +error: mixed,
-  +errorBoundary: ?{},
+  +errorBoundary: ?{...},
   +errorBoundaryFound: boolean,
   +errorBoundaryName: string | null,
   +willRetry: boolean,
+  ...
 };
 
 import type {ExtendedError} from './Devtools/parseErrorStack';

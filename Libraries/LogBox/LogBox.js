@@ -257,4 +257,5 @@ module.exports = (LogBoxComponent: Class<React.Component<Props, State>> & {
   ignoreLogs($ReadOnlyArray<IgnorePattern>): void,
   install(): void,
   uninstall(): void,
+  ...
 });

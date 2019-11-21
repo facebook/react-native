@@ -135,7 +135,7 @@ export type RefreshControlProps = $ReadOnly<{|
 class RefreshControl extends React.Component<RefreshControlProps> {
   static SIZE: any = RefreshLayoutConsts.SIZE;
 
-  _setNativePropsOnRef: ?({refreshing: boolean}) => void;
+  _setNativePropsOnRef: ?({refreshing: boolean, ...}) => void;
   _lastNativeRefreshing = false;
 
   componentDidMount() {

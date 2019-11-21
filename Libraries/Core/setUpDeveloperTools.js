@@ -12,9 +12,7 @@
 
 import Platform from '../Utilities/Platform';
 
-declare var console: typeof console & {
-  _isPolyfilled: boolean,
-};
+declare var console: typeof console & {_isPolyfilled: boolean, ...};
 
 /**
  * Sets up developer tools for React Native.

@@ -146,7 +146,7 @@ module.exports = {
     schema: SchemaType,
     moduleSpecName: string,
   ): FilesOutput {
-    const nativeModules: {[name: string]: NativeModuleShape} = Object.keys(
+    const nativeModules: {[name: string]: NativeModuleShape, ...} = Object.keys(
       schema.modules,
     )
       .map(moduleName => {

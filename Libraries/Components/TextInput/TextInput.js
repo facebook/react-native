@@ -32,7 +32,7 @@ import type {SyntheticEvent, ScrollEvent} from '../../Types/CoreEventTypes';
 import type {PressEvent} from '../../Types/CoreEventTypes';
 import type {HostComponent} from '../../Renderer/shims/ReactNativeTypes';
 
-type ReactRefSetter<T> = {current: null | T} | ((ref: null | T) => mixed);
+type ReactRefSetter<T> = {current: null | T, ...} | ((ref: null | T) => mixed);
 
 let AndroidTextInput;
 let RCTMultilineTextInputView;

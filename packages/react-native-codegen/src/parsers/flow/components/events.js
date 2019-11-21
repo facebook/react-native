@@ -212,6 +212,7 @@ type EventTypeAST = Object;
 type TypeMap = {
   // $FlowFixMe there's no flowtype for ASTs
   [string]: Object,
+  ...,
 };
 
 function getEvents(

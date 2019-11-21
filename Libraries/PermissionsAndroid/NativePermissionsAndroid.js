@@ -54,7 +54,7 @@ export interface Spec extends TurboModule {
   ) => Promise<boolean>;
   +requestMultiplePermissions: (
     permissions: Array<PermissionType>,
-  ) => Promise<{[permission: PermissionType]: PermissionStatus}>;
+  ) => Promise<{[permission: PermissionType]: PermissionStatus, ...}>;
 }
 
 export default (TurboModuleRegistry.get<Spec>('PermissionsAndroid'): ?Spec);

@@ -33,8 +33,10 @@ type Props = {
   list: {
     ComponentExamples: Array<RNTesterExample>,
     APIExamples: Array<RNTesterExample>,
+    ...
   },
   style?: ?ViewStyleProp,
+  ...
 };
 
 class RowComponent extends React.PureComponent<{
@@ -43,6 +45,7 @@ class RowComponent extends React.PureComponent<{
   onPress?: Function,
   onShowUnderlay?: Function,
   onHideUnderlay?: Function,
+  ...
 }> {
   _onPress = () => {
     if (this.props.onPress) {

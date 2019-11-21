@@ -25,6 +25,7 @@ const invariant = require('invariant');
 
 export type ReactRenderer = {
   getInspectorDataForViewTag: (viewTag: number) => Object,
+  ...
 };
 
 const hook = window.__REACT_DEVTOOLS_GLOBAL_HOOK__;
@@ -68,6 +69,7 @@ class Inspector extends React.Component<
   {
     inspectedViewTag: ?number,
     onRequestRerenderApp: (callback: (tag: ?number) => void) => void,
+    ...
   },
   {
     devtoolsAgent: ?Object,
@@ -79,6 +81,7 @@ class Inspector extends React.Component<
     inspected: any,
     inspectedViewTag: any,
     networking: boolean,
+    ...
   },
 > {
   _hideTimeoutID: TimeoutID | null = null;

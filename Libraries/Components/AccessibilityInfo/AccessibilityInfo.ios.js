@@ -34,6 +34,7 @@ type ChangeEventName = $Keys<{
   reduceMotionChanged: string,
   reduceTransparencyChanged: string,
   screenReaderChanged: string,
+  ...
 }>;
 
 const _subscriptions = new Map();

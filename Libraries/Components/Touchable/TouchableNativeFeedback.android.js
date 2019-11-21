@@ -166,6 +166,7 @@ const TouchableNativeFeedbackImpl = createReactClass({
     SelectableBackground: function(): {
       type: 'ThemeAttrAndroid',
       attribute: 'selectableItemBackground',
+      ...
     } {
       return {type: 'ThemeAttrAndroid', attribute: 'selectableItemBackground'};
     },
@@ -177,6 +178,7 @@ const TouchableNativeFeedbackImpl = createReactClass({
     SelectableBackgroundBorderless: function(): {
       type: 'ThemeAttrAndroid',
       attribute: 'selectableItemBackgroundBorderless',
+      ...
     } {
       return {
         type: 'ThemeAttrAndroid',
@@ -200,6 +202,7 @@ const TouchableNativeFeedbackImpl = createReactClass({
       type: 'RippleAndroid',
       color: ?number,
       borderless: boolean,
+      ...
     } {
       return {
         type: 'RippleAndroid',

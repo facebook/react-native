@@ -398,7 +398,11 @@ module.exports = {
   selection: (PropTypes.shape({
     start: PropTypes.number.isRequired,
     end: PropTypes.number,
-  }): React$PropType$Primitive<{end?: number, start: number}>),
+  }): React$PropType$Primitive<{
+    end?: number,
+    start: number,
+    ...
+  }>),
   /**
    * The value to show for the text input. `TextInput` is a controlled
    * component, which means the native value will be forced to match this

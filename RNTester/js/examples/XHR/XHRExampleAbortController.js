@@ -14,7 +14,7 @@ const React = require('react');
 
 const {Alert, Button, View} = require('react-native');
 
-class XHRExampleAbortController extends React.Component<{}, {}> {
+class XHRExampleAbortController extends React.Component<{...}, {...}> {
   _timeout: any;
 
   _submit(abortDelay) {

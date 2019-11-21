@@ -449,7 +449,14 @@ const ScrollResponderMixin = {
    * This is deprecated due to ambiguity (y before x), and SHOULD NOT BE USED.
    */
   scrollResponderScrollTo: function(
-    x?: number | {x?: number, y?: number, animated?: boolean},
+    x?:
+      | number
+      | {
+          x?: number,
+          y?: number,
+          animated?: boolean,
+          ...
+        },
     y?: number,
     animated?: boolean,
   ) {
@@ -481,7 +488,7 @@ const ScrollResponderMixin = {
    *
    * `scrollResponderScrollToEnd({animated: true})`
    */
-  scrollResponderScrollToEnd: function(options?: {animated?: boolean}) {
+  scrollResponderScrollToEnd: function(options?: {animated?: boolean, ...}) {
     // Default to true
     const animated = (options && options.animated) !== false;
 

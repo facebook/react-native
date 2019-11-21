@@ -31,6 +31,7 @@ export type ExceptionData = {
   isFatal: boolean,
   // flowlint-next-line unclear-type:off
   extraData?: Object,
+  ...
 };
 
 export interface Spec extends TurboModule {

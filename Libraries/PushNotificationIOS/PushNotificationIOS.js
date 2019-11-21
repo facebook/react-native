@@ -31,6 +31,7 @@ export type FetchResult = {
   NewData: string,
   NoData: string,
   ResultFailed: string,
+  ...
 };
 
 /**
@@ -58,6 +59,7 @@ export type PushNotificationEventName = $Keys<{
    * handler will be invoked with {message: string, code: number, details: any}.
    */
   registrationError: string,
+  ...
 }>;
 
 /**
@@ -301,10 +303,12 @@ class PushNotificationIOS {
     alert?: boolean,
     badge?: boolean,
     sound?: boolean,
+    ...
   }): Promise<{
     alert: boolean,
     badge: boolean,
     sound: boolean,
+    ...
   }> {
     let requestedPermissions = {
       alert: true,

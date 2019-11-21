@@ -13,7 +13,7 @@
 import type {TurboModule} from '../../TurboModule/RCTExport';
 import * as TurboModuleRegistry from '../../TurboModule/TurboModuleRegistry';
 
-type EndResult = {finished: boolean};
+type EndResult = {finished: boolean, ...};
 type EndCallback = (result: EndResult) => void;
 
 export type EventMapping = {|

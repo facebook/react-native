@@ -16,6 +16,7 @@ export type PlatformSelectSpec<D, N, I> = {
   default?: D,
   native?: N,
   ios?: I,
+  ...
 };
 
 const Platform = {

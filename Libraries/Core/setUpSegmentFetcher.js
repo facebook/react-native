@@ -31,7 +31,13 @@ function __fetchSegment(
   SegmentFetcher.fetchSegment(
     segmentId,
     options,
-    (errorObject: ?{message: string, code: string}) => {
+    (
+      errorObject: ?{
+        message: string,
+        code: string,
+        ...
+      },
+    ) => {
       if (errorObject) {
         const error = new Error(errorObject.message);
         (error: any).code = errorObject.code; // flowlint-line unclear-type: off
@@ -63,7 +69,14 @@ function __getSegment(
   SegmentFetcher.getSegment(
     segmentId,
     options,
-    (errorObject: ?{message: string, code: string}, path: ?string) => {
+    (
+      errorObject: ?{
+        message: string,
+        code: string,
+        ...
+      },
+      path: ?string,
+    ) => {
       if (errorObject) {
         const error = new Error(errorObject.message);
         (error: any).code = errorObject.code; // flowlint-line unclear-type: off

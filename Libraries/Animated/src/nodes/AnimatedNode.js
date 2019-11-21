@@ -15,14 +15,14 @@ const NativeAnimatedHelper = require('../NativeAnimatedHelper');
 const NativeAnimatedAPI = NativeAnimatedHelper.API;
 const invariant = require('invariant');
 
-type ValueListenerCallback = (state: {value: number}) => mixed;
+type ValueListenerCallback = (state: {value: number, ...}) => mixed;
 
 let _uniqueId = 1;
 
 // Note(vjeux): this would be better as an interface but flow doesn't
 // support them yet
 class AnimatedNode {
-  _listeners: {[key: string]: ValueListenerCallback};
+  _listeners: {[key: string]: ValueListenerCallback, ...};
   __nativeAnimatedValueListener: ?any;
   __attach(): void {}
   __detach(): void {

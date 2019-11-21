@@ -17,10 +17,10 @@ import type {
 } from '../Renderer/shims/ReactNativeTypes';
 
 // TODO: type these properly.
-type Node = {};
+type Node = {...};
 type NodeSet = Array<Node>;
-type NodeProps = {};
-type InstanceHandle = {};
+type NodeProps = {...};
+type InstanceHandle = {...};
 type Spec = {|
   +createNode: (
     reactTag: number,

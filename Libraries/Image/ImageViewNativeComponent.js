@@ -33,7 +33,7 @@ type NativeProps = $ReadOnly<{|
 
   // Android native props
   shouldNotifyLoadEvents?: boolean,
-  src?: ?ResolvedAssetSource | $ReadOnlyArray<{uri: string}>,
+  src?: ?ResolvedAssetSource | $ReadOnlyArray<{uri: string, ...}>,
   headers?: ?string,
   defaultSrc?: ?string,
   loadingIndicatorSrc?: ?string,

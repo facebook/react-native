@@ -217,8 +217,18 @@ function addWhitelistedInterpolationParam(param: string): void {
 
 function validateTransform(
   configs: Array<
-    | {type: 'animated', property: string, nodeTag: ?number}
-    | {type: 'static', property: string, value: number | string},
+    | {
+        type: 'animated',
+        property: string,
+        nodeTag: ?number,
+        ...
+      }
+    | {
+        type: 'static',
+        property: string,
+        value: number | string,
+        ...
+      },
   >,
 ): void {
   configs.forEach(config => {
@@ -232,7 +242,7 @@ function validateTransform(
   });
 }
 
-function validateStyles(styles: {[key: string]: ?number}): void {
+function validateStyles(styles: {[key: string]: ?number, ...}): void {
   for (const key in styles) {
     if (!STYLES_WHITELIST.hasOwnProperty(key)) {
       throw new Error(

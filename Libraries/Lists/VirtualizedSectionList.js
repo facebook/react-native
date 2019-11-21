@@ -30,7 +30,6 @@ export type SectionBase<SectionItemT> = {
    * the array index will be used by default.
    */
   key?: string,
-
   // Optional props will override list-wide props just for this section.
   renderItem?: ?(info: {
     item: SectionItemT,
@@ -40,10 +39,13 @@ export type SectionBase<SectionItemT> = {
       highlight: () => void,
       unhighlight: () => void,
       updateProps: (select: 'leading' | 'trailing', newProps: Object) => void,
+      ...
     },
+    ...
   }) => null | React.Element<any>,
   ItemSeparatorComponent?: ?React.ComponentType<any>,
   keyExtractor?: (item: SectionItemT, index?: ?number) => string,
+  ...
 };
 
 type RequiredProps<SectionT: SectionBase<any>> = {|
@@ -62,7 +64,9 @@ type OptionalProps<SectionT: SectionBase<any>> = {|
       highlight: () => void,
       unhighlight: () => void,
       updateProps: (select: 'leading' | 'trailing', newProps: Object) => void,
+      ...
     },
+    ...
   }) => null | React.Element<any>,
   /**
    * Rendered at the top of each section. These stick to the top of the `ScrollView` by default on
@@ -70,12 +74,14 @@ type OptionalProps<SectionT: SectionBase<any>> = {|
    */
   renderSectionHeader?: ?(info: {
     section: SectionT,
+    ...
   }) => null | React.Element<any>,
   /**
    * Rendered at the bottom of each section.
    */
   renderSectionFooter?: ?(info: {
     section: SectionT,
+    ...
   }) => null | React.Element<any>,
   /**
    * Rendered at the top and bottom of each section (note this is different from
@@ -90,7 +96,7 @@ type OptionalProps<SectionT: SectionBase<any>> = {|
    * enabled by default on iOS because that is the platform standard there.
    */
   stickySectionHeadersEnabled?: boolean,
-  onEndReached?: ?({distanceFromEnd: number}) => void,
+  onEndReached?: ?({distanceFromEnd: number, ...}) => void,
 |};
 
 type VirtualizedListProps = React.ElementProps<typeof VirtualizedList>;
@@ -100,9 +106,7 @@ export type Props<SectionT> = {|
   ...OptionalProps<SectionT>,
   ...$Diff<
     VirtualizedListProps,
-    {
-      renderItem: $PropertyType<VirtualizedListProps, 'renderItem'>,
-    },
+    {renderItem: $PropertyType<VirtualizedListProps, 'renderItem'>, ...},
   >,
 |};
 export type ScrollToLocationParamsType = {|
@@ -118,7 +122,7 @@ type DefaultProps = {|
   data: $ReadOnlyArray<Item>,
 |};
 
-type State = {childProps: VirtualizedListProps};
+type State = {childProps: VirtualizedListProps, ...};
 
 /**
  * Right now this just flattens everything into one list and uses VirtualizedList under the
@@ -250,13 +254,17 @@ class VirtualizedSectionList<
     index: number,
   ): ?{
     section: SectionT,
-    key: string, // Key of the section or combined key for section + item
-    index: ?number, // Relative index within the section
-    header?: ?boolean, // True if this is the section header
+    // Key of the section or combined key for section + item
+    key: string,
+    // Relative index within the section
+    index: ?number,
+    // True if this is the section header
+    header?: ?boolean,
     leadingItem?: ?Item,
     leadingSection?: ?SectionT,
     trailingItem?: ?Item,
     trailingSection?: ?SectionT,
+    ...
   } {
     let itemIndex = index;
     const {getItem, getItemCount, keyExtractor, sections} = this.props;
@@ -323,6 +331,7 @@ class VirtualizedSectionList<
   }: {
     viewableItems: Array<ViewToken>,
     changed: Array<ViewToken>,
+    ...
   }) => {
     const onViewableItemsChanged = this.props.onViewableItemsChanged;
     if (onViewableItemsChanged != null) {
@@ -335,7 +344,7 @@ class VirtualizedSectionList<
     }
   };
 
-  _renderItem = ({item, index}: {item: Item, index: number}) => {
+  _renderItem = ({item, index}: {item: Item, index: number, ...}) => {
     const info = this._subExtractor(index);
     if (!info) {
       return null;
@@ -448,6 +457,7 @@ type ItemWithSeparatorState = {
     highlighted: false,
     ...ItemWithSeparatorCommonProps,
   |}>,
+  ...
 };
 
 class ItemWithSeparator extends React.Component<

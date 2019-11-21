@@ -23,7 +23,7 @@ const {
 
 const Item = Picker.Item;
 
-class PermissionsExample extends React.Component<{}, $FlowFixMeState> {
+class PermissionsExample extends React.Component<{...}, $FlowFixMeState> {
   state = {
     permission: PermissionsAndroid.PERMISSIONS.CAMERA,
     hasPermission: 'Not Checked',

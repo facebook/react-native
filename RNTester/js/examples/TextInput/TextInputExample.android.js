@@ -21,7 +21,7 @@ const {
   Switch,
 } = require('react-native');
 
-class TextEventsExample extends React.Component<{}, $FlowFixMeState> {
+class TextEventsExample extends React.Component<{...}, $FlowFixMeState> {
   state = {
     curText: '<No Event>',
     prevText: '<No Event>',
@@ -179,7 +179,7 @@ class TokenizedTextExample extends React.Component<
   }
 }
 
-class BlurOnSubmitExample extends React.Component<{}> {
+class BlurOnSubmitExample extends React.Component<{...}> {
   focusNextField = nextField => {
     this.refs[nextField].focus();
   };
@@ -260,6 +260,7 @@ type SelectionExampleState = {
     end?: number,
   |}>,
   value: string,
+  ...
 };
 
 class SelectionExample extends React.Component<
@@ -337,7 +338,7 @@ class SelectionExample extends React.Component<
   }
 }
 
-class AutogrowingTextInputExample extends React.Component<{}> {
+class AutogrowingTextInputExample extends React.Component<{...}> {
   constructor(props) {
     super(props);
 

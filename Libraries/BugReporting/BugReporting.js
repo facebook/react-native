@@ -16,9 +16,13 @@ import type EmitterSubscription from '../vendor/emitter/EmitterSubscription';
 import NativeBugReporting from './NativeBugReporting';
 import NativeRedBox from '../NativeModules/specs/NativeRedBox';
 
-type ExtraData = {[key: string]: string};
+type ExtraData = {[key: string]: string, ...};
 type SourceCallback = () => string;
-type DebugData = {extras: ExtraData, files: ExtraData};
+type DebugData = {
+  extras: ExtraData,
+  files: ExtraData,
+  ...
+};
 
 function defaultExtras() {
   BugReporting.addFileSource('react_hierarchy.txt', () =>
@@ -68,7 +72,7 @@ class BugReporting {
   static addSource(
     key: string,
     callback: SourceCallback,
-  ): {remove: () => void} {
+  ): {remove: () => void, ...} {
     return this._addSource(key, callback, BugReporting._extraSources);
   }
 
@@ -83,7 +87,7 @@ class BugReporting {
   static addFileSource(
     key: string,
     callback: SourceCallback,
-  ): {remove: () => void} {
+  ): {remove: () => void, ...} {
     return this._addSource(key, callback, BugReporting._fileSources);
   }
 
@@ -91,7 +95,7 @@ class BugReporting {
     key: string,
     callback: SourceCallback,
     source: Map<string, SourceCallback>,
-  ): {remove: () => void} {
+  ): {remove: () => void, ...} {
     BugReporting._maybeInit();
     if (source.has(key)) {
       console.warn(

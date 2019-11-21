@@ -55,7 +55,7 @@ type TBackHandler = {|
   +addEventListener: (
     eventName: BackPressEventName,
     handler: Function,
-  ) => {remove: () => void},
+  ) => {remove: () => void, ...},
   +removeEventListener: (
     eventName: BackPressEventName,
     handler: Function,
@@ -94,7 +94,7 @@ if (Platform.isTV) {
     addEventListener: function(
       eventName: BackPressEventName,
       handler: Function,
-    ): {remove: () => void} {
+    ): {remove: () => void, ...} {
       _backPressSubscriptions.add(handler);
       return {
         remove: () => BackHandler.removeEventListener(eventName, handler),

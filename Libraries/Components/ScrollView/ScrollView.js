@@ -73,12 +73,11 @@ export type ScrollResponderType = {
   getInnerViewNode: $PropertyType<ScrollView, 'getInnerViewNode'>,
   getInnerViewRef: $PropertyType<ScrollView, 'getInnerViewRef'>,
   getNativeScrollRef: $PropertyType<ScrollView, 'getNativeScrollRef'>,
-
   setNativeProps: $PropertyType<ScrollView, 'setNativeProps'>,
   scrollTo: $PropertyType<ScrollView, 'scrollTo'>,
   flashScrollIndicators: $PropertyType<ScrollView, 'flashScrollIndicators'>,
-
   ...typeof ScrollResponder.Mixin,
+  ...
 };
 
 type IOSProps = $ReadOnly<{|
@@ -372,9 +371,7 @@ type VRProps = $ReadOnly<{|
 
 type StickyHeaderComponentType = React.AbstractComponent<
   ScrollViewStickyHeaderProps,
-  $ReadOnly<{
-    setNextHeaderY: number => void,
-  }>,
+  $ReadOnly<{setNextHeaderY: number => void, ...}>,
 >;
 
 export type Props = $ReadOnly<{|
@@ -702,7 +699,7 @@ class ScrollView extends React.Component<Props, State> {
   _scrollAnimatedValue: AnimatedImplementation.Value = new AnimatedImplementation.Value(
     0,
   );
-  _scrollAnimatedValueAttachment: ?{detach: () => void} = null;
+  _scrollAnimatedValueAttachment: ?{detach: () => void, ...} = null;
   _stickyHeaderRefs: Map<
     string,
     React.ElementRef<StickyHeaderComponentType>,
@@ -753,7 +750,7 @@ class ScrollView extends React.Component<Props, State> {
     }
   }
 
-  setNativeProps(props: {[key: string]: mixed}) {
+  setNativeProps(props: {[key: string]: mixed, ...}) {
     this._scrollViewRef && this._scrollViewRef.setNativeProps(props);
   }
 
@@ -796,7 +793,14 @@ class ScrollView extends React.Component<Props, State> {
    * This is deprecated due to ambiguity (y before x), and SHOULD NOT BE USED.
    */
   scrollTo(
-    options?: {x?: number, y?: number, animated?: boolean} | number,
+    options?:
+      | {
+          x?: number,
+          y?: number,
+          animated?: boolean,
+          ...
+        }
+      | number,
     deprecatedX?: number,
     deprecatedAnimated?: boolean,
   ) {
@@ -829,7 +833,7 @@ class ScrollView extends React.Component<Props, State> {
    * `scrollToEnd({animated: false})` for immediate scrolling.
    * If no options are passed, `animated` defaults to true.
    */
-  scrollToEnd(options?: ?{animated?: boolean}) {
+  scrollToEnd(options?: ?{animated?: boolean, ...}) {
     // Default to true
     const animated = (options && options.animated) !== false;
     this._scrollResponder.scrollResponderScrollToEnd({

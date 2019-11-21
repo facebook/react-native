@@ -39,17 +39,18 @@ export type AppConfig = {
   component?: ComponentProvider,
   run?: Function,
   section?: boolean,
+  ...
 };
 export type Runnable = {
   component?: ComponentProvider,
   run: Function,
+  ...
 };
-export type Runnables = {
-  [appKey: string]: Runnable,
-};
+export type Runnables = {[appKey: string]: Runnable, ...};
 export type Registry = {
   sections: Array<string>,
   runnables: Runnables,
+  ...
 };
 export type WrapperComponentProvider = any => React$ComponentType<*>;
 

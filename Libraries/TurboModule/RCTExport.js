@@ -30,7 +30,7 @@
 
 // eslint-disable-next-line no-unused-vars
 export interface DEPRECATED_RCTExport<T: void = void> {
-  +getConstants?: () => {};
+  +getConstants?: () => {...};
 }
 
 // eslint-disable-next-line lint/react-native-modules

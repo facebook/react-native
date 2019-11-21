@@ -19,7 +19,7 @@ export type RequestBody =
   | string
   | Blob
   | FormData
-  | {uri: string}
+  | {uri: string, ...}
   | ArrayBuffer
   | $ArrayBufferView;
 

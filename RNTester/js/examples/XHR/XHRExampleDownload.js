@@ -46,7 +46,7 @@ class ProgressBar extends React.Component<$FlowFixMeProps> {
   }
 }
 
-class XHRExampleDownload extends React.Component<{}, Object> {
+class XHRExampleDownload extends React.Component<{...}, Object> {
   state: Object = {
     downloading: false,
     // set by onreadystatechange

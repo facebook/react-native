@@ -27,7 +27,7 @@ class Entity extends React.Component<{|children: React.Node|}> {
     );
   }
 }
-class AttributeToggler extends React.Component<{}, $FlowFixMeState> {
+class AttributeToggler extends React.Component<{...}, $FlowFixMeState> {
   state = {fontWeight: 'bold', fontSize: 15};
 
   toggleWeight = () => {
@@ -70,7 +70,7 @@ class AttributeToggler extends React.Component<{}, $FlowFixMeState> {
   }
 }
 
-class TextExample extends React.Component<{}> {
+class TextExample extends React.Component<{...}> {
   render(): React.Node {
     return (
       <RNTesterPage title="<Text>">

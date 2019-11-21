@@ -17,9 +17,7 @@ import type {SyntheticEvent} from '../../Libraries/Types/CoreEventTypes';
 import type {ViewProps} from '../../Libraries/Components/View/ViewPropTypes';
 
 type SnapshotReadyEvent = SyntheticEvent<
-  $ReadOnly<{
-    testIdentifier: string,
-  }>,
+  $ReadOnly<{testIdentifier: string, ...}>,
 >;
 
 type NativeProps = $ReadOnly<{|

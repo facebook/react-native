@@ -34,6 +34,7 @@ export type RNTesterTheme = {
   LinkColor: string,
   SystemPurpleColor: string,
   ToolbarColor: string,
+  ...
 };
 
 export const RNTesterLightTheme = {

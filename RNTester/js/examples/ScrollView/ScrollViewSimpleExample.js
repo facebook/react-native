@@ -21,7 +21,7 @@ const {
 
 const NUM_ITEMS = 20;
 
-class ScrollViewSimpleExample extends React.Component<{}> {
+class ScrollViewSimpleExample extends React.Component<{...}> {
   makeItems: (nItems: number, styles: any) => Array<any> = (
     nItems: number,
     styles,

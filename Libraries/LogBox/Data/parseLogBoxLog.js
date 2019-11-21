@@ -15,13 +15,17 @@ import stringifySafe from '../../Utilities/stringifySafe';
 import type {ExceptionData} from '../../Core/NativeExceptionsManager';
 import type {LogBoxLogData} from './LogBoxLog';
 
-export type ExtendedExceptionData = ExceptionData & {isComponentError: boolean};
+export type ExtendedExceptionData = ExceptionData & {
+  isComponentError: boolean,
+  ...
+};
 export type Category = string;
 export type CodeFrame = $ReadOnly<{|
   content: string,
   location: {
     row: number,
     column: number,
+    ...
   },
   fileName: string,
 |}>;

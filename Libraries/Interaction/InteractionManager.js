@@ -87,7 +87,12 @@ const InteractionManager = {
    */
   runAfterInteractions(
     task: ?Task,
-  ): {then: Function, done: Function, cancel: Function} {
+  ): {
+    then: Function,
+    done: Function,
+    cancel: Function,
+    ...
+  } {
     const tasks = [];
     const promise = new Promise(resolve => {
       _scheduleUpdate();

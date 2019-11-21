@@ -140,6 +140,7 @@ function reportException(e: ExtendedError, isFatal: boolean) {
 declare var console: typeof console & {
   _errorOriginal: typeof console.error,
   reportErrorsAsExceptions: boolean,
+  ...
 };
 
 /**

@@ -26,6 +26,7 @@ export type Rationale = {
   buttonPositive?: string,
   buttonNegative?: string,
   buttonNeutral?: string,
+  ...
 };
 
 const PERMISSION_REQUEST_RESULT = Object.freeze({
@@ -239,7 +240,7 @@ class PermissionsAndroid {
    */
   requestMultiple(
     permissions: Array<PermissionType>,
-  ): Promise<{[permission: PermissionType]: PermissionStatus}> {
+  ): Promise<{[permission: PermissionType]: PermissionStatus, ...}> {
     if (Platform.OS !== 'android') {
       console.warn(
         '"PermissionsAndroid" module works only for Android platform.',

@@ -64,7 +64,7 @@ function enter(instance: ReactTestInstance, text: string) {
 
 // Returns null if there is no error, otherwise returns an error message string.
 function maximumDepthError(
-  tree: {toJSON: () => ReactTestRendererNode},
+  tree: {toJSON: () => ReactTestRendererNode, ...},
   maxDepthLimit: number,
 ): ?string {
   const maxDepth = maximumDepthOfJSON(tree.toJSON());

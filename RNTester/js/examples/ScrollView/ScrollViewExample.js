@@ -128,7 +128,7 @@ exports.examples = [
     title: '<ScrollView> enable & disable\n',
     description: 'ScrollView scrolling behaviour can be disabled and enabled',
     render: function(): React.Node {
-      class EnableDisableList extends React.Component<{}, *> {
+      class EnableDisableList extends React.Component<{...}, *> {
         state = {
           scrollEnabled: true,
         };
@@ -172,7 +172,7 @@ if (Platform.OS === 'ios') {
       'without causing the visible content to jump. Re-ordering is not supported.',
     render: function() {
       let itemCount = 6;
-      class AppendingList extends React.Component<{}, *> {
+      class AppendingList extends React.Component<{...}, *> {
         state = {
           /* $FlowFixMe(>=0.85.0 site=react_native_fb) This comment suppresses
            * an error found when Flow v0.85 was deployed. To see the error,

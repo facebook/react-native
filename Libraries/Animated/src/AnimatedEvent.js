@@ -18,10 +18,11 @@ const invariant = require('invariant');
 
 const {shouldUseNativeDriver} = require('./NativeAnimatedHelper');
 
-export type Mapping = {[key: string]: Mapping} | AnimatedValue;
+export type Mapping = {[key: string]: Mapping, ...} | AnimatedValue;
 export type EventConfig = {
   listener?: ?Function,
   useNativeDriver: boolean,
+  ...
 };
 
 function attachNativeEvent(
@@ -87,9 +88,7 @@ class AnimatedEvent {
   _argMapping: Array<?Mapping>;
   _listeners: Array<Function> = [];
   _callListeners: Function;
-  _attachedEvent: ?{
-    detach: () => void,
-  };
+  _attachedEvent: ?{detach: () => void, ...};
   __isNative: boolean;
 
   constructor(argMapping: Array<?Mapping>, config: EventConfig) {

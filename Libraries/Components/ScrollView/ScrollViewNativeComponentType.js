@@ -23,7 +23,6 @@ import type {PointProp} from '../../StyleSheet/PointPropType';
 
 export type ScrollViewNativeProps = $ReadOnly<{
   ...ViewProps,
-
   alwaysBounceHorizontal?: ?boolean,
   alwaysBounceVertical?: ?boolean,
   automaticallyAdjustContentInsets?: ?boolean,
@@ -78,12 +77,11 @@ export type ScrollViewNativeProps = $ReadOnly<{
   snapToOffsets?: ?$ReadOnlyArray<number>,
   snapToStart?: ?boolean,
   zoomScale?: ?number,
-
   DEPRECATED_sendUpdatedChildFrames?: ?boolean,
-
   // Overrides
-  style?: {...ViewStyleProp} | DangerouslyImpreciseStyle,
+  style?: {...ViewStyleProp, ...} | DangerouslyImpreciseStyle,
   onResponderGrant?: ?(e: any) => void | boolean,
+  ...
 }>;
 
 export type ScrollViewNativeComponentType = HostComponent<ScrollViewNativeProps>;

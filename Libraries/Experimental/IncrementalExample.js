@@ -36,7 +36,11 @@ let totalWidgets = 0;
 
 class SlowWidget extends React.Component<
   $FlowFixMeProps,
-  {ctorTimestamp: number, timeToMount: number},
+  {
+    ctorTimestamp: number,
+    timeToMount: number,
+    ...
+  },
 > {
   constructor(props, context) {
     super(props, context);
@@ -92,7 +96,7 @@ function Block(props: Object) {
 
 const Row = (props: Object) => <View style={styles.row} {...props} />;
 
-class IncrementalExample extends React.Component<mixed, {stats: ?Object}> {
+class IncrementalExample extends React.Component<mixed, {stats: ?Object, ...}> {
   static title: string = '<Incremental*>';
   static description: string =
     'Enables incremental rendering of complex components.';

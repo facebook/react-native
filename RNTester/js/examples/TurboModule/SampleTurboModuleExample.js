@@ -22,7 +22,14 @@ import {
 import * as React from 'react';
 
 type State = {|
-  testResults: {[string]: {type: string, value: mixed}},
+  testResults: {
+    [string]: {
+      type: string,
+      value: mixed,
+      ...
+    },
+    ...,
+  },
 |};
 
 class SampleTurboModuleExample extends React.Component<{||}, State> {

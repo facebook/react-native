@@ -236,7 +236,9 @@ class FlatListExample extends React.PureComponent<Props, State> {
       item: any,
       index: ?number,
       section?: any,
+      ...
     }>,
+    ...
   }) => {
     // Impressions can be logged here
     if (this.state.logViewable) {

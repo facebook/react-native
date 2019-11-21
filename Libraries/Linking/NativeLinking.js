@@ -24,7 +24,11 @@ export interface Spec extends TurboModule {
   // Android only
   +sendIntent: (
     action: string,
-    extras: ?Array<{key: string, value: string | number | boolean}>,
+    extras: ?Array<{
+      key: string,
+      value: string | number | boolean,
+      ...
+    }>,
   ) => Promise<void>;
 
   // Events

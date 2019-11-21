@@ -18,11 +18,11 @@ const invariant = require('invariant');
 const setAndForwardRef = require('../../Utilities/setAndForwardRef');
 
 export type AnimatedComponentType<
-  Props: {+[string]: mixed},
+  Props: {+[string]: mixed, ...},
   Instance,
 > = React.AbstractComponent<$ObjMap<Props, () => any>, Instance>;
 
-function createAnimatedComponent<Props: {+[string]: mixed}, Instance>(
+function createAnimatedComponent<Props: {+[string]: mixed, ...}, Instance>(
   Component: React.AbstractComponent<Props, Instance>,
 ): AnimatedComponentType<Props, Instance> {
   invariant(

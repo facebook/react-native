@@ -24,7 +24,7 @@ export type Subscription = $ReadOnly<{|
   unsubscribe: () => void,
 |}>;
 
-const observers: Set<{observer: Observer}> = new Set();
+const observers: Set<{observer: Observer, ...}> = new Set();
 const ignorePatterns: Set<IgnorePattern> = new Set();
 const registry: Registry = new Map();
 

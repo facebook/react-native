@@ -643,6 +643,7 @@ export type ____DangerouslyImpreciseStyle_Internal = {
   +resizeMode?: 'contain' | 'cover' | 'stretch' | 'center' | 'repeat',
   +tintColor?: ColorValue,
   +overlayColor?: string,
+  ...
 };
 
 type GenericStyleProp<+T> =
@@ -668,4 +669,5 @@ export type ____ImageStyleProp_Internal = GenericStyleProp<
 
 export type ____Styles_Internal = {
   +[key: string]: $Shape<____DangerouslyImpreciseStyle_Internal>,
+  ...,
 };

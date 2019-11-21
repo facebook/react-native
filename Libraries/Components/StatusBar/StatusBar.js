@@ -34,6 +34,7 @@ export type StatusBarStyle = $Keys<{
    * Light background, dark texts and icons
    */
   'dark-content': string,
+  ...
 }>;
 
 /**
@@ -52,6 +53,7 @@ export type StatusBarAnimation = $Keys<{
    * Slide animation
    */
   slide: string,
+  ...
 }>;
 
 type AndroidProps = $ReadOnly<{|

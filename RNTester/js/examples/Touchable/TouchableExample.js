@@ -30,7 +30,7 @@ import {useEffect, useRef, useState} from 'react';
 const forceTouchAvailable =
   (Platform.OS === 'ios' && Platform.constants.forceTouchAvailable) || false;
 
-class TouchableHighlightBox extends React.Component<{}, $FlowFixMeState> {
+class TouchableHighlightBox extends React.Component<{...}, $FlowFixMeState> {
   state = {
     timesPressed: 0,
   };
@@ -77,7 +77,10 @@ class TouchableHighlightBox extends React.Component<{}, $FlowFixMeState> {
   }
 }
 
-class TouchableWithoutFeedbackBox extends React.Component<{}, $FlowFixMeState> {
+class TouchableWithoutFeedbackBox extends React.Component<
+  {...},
+  $FlowFixMeState,
+> {
   state = {
     timesPressed: 0,
   };
@@ -113,7 +116,7 @@ class TouchableWithoutFeedbackBox extends React.Component<{}, $FlowFixMeState> {
   }
 }
 
-class TextOnPressBox extends React.Component<{}, $FlowFixMeState> {
+class TextOnPressBox extends React.Component<{...}, $FlowFixMeState> {
   state = {
     timesPressed: 0,
   };
@@ -148,7 +151,7 @@ class TextOnPressBox extends React.Component<{}, $FlowFixMeState> {
   }
 }
 
-class TouchableFeedbackEvents extends React.Component<{}, $FlowFixMeState> {
+class TouchableFeedbackEvents extends React.Component<{...}, $FlowFixMeState> {
   state = {
     eventLog: [],
   };
@@ -188,7 +191,7 @@ class TouchableFeedbackEvents extends React.Component<{}, $FlowFixMeState> {
   };
 }
 
-class TouchableDelayEvents extends React.Component<{}, $FlowFixMeState> {
+class TouchableDelayEvents extends React.Component<{...}, $FlowFixMeState> {
   state = {
     eventLog: [],
   };
@@ -229,7 +232,7 @@ class TouchableDelayEvents extends React.Component<{}, $FlowFixMeState> {
   };
 }
 
-class ForceTouchExample extends React.Component<{}, $FlowFixMeState> {
+class ForceTouchExample extends React.Component<{...}, $FlowFixMeState> {
   state = {
     force: 0,
   };
@@ -263,7 +266,7 @@ class ForceTouchExample extends React.Component<{}, $FlowFixMeState> {
   }
 }
 
-class TouchableHitSlop extends React.Component<{}, $FlowFixMeState> {
+class TouchableHitSlop extends React.Component<{...}, $FlowFixMeState> {
   state = {
     timesPressed: 0,
   };
@@ -343,7 +346,7 @@ function TouchableNativeMethods() {
   );
 }
 
-class TouchableDisabled extends React.Component<{}> {
+class TouchableDisabled extends React.Component<{...}> {
   render() {
     return (
       <View>

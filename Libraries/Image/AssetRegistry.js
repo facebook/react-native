@@ -20,6 +20,7 @@ export type PackagerAsset = {
   +hash: string,
   +name: string,
   +type: string,
+  ...
 };
 
 const assets: Array<PackagerAsset> = [];

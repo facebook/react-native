@@ -45,9 +45,7 @@ UIManager.setLayoutAnimationEnabledExperimental(true);
 
 const DRAWER_WIDTH_LEFT = 56;
 
-type Props = {
-  exampleFromAppetizeParams?: ?string,
-};
+type Props = {exampleFromAppetizeParams?: ?string, ...};
 
 const APP_STATE_KEY = 'RNTesterAppState.v2';
 
@@ -63,6 +61,7 @@ const Header = ({
 }: {
   onPressDrawer?: () => mixed,
   title: string,
+  ...
 }) => (
   <RNTesterThemeContext.Consumer>
     {theme => {
@@ -94,6 +93,7 @@ const RNTesterExampleContainerViaHook = ({
   title: string,
   module: RNTesterExample,
   exampleRef: () => void,
+  ...
 }) => {
   const colorScheme = useColorScheme();
   const theme = colorScheme === 'dark' ? themes.dark : themes.light;
@@ -115,7 +115,9 @@ const RNTesterDrawerContentViaHook = ({
   list: {
     ComponentExamples: Array<RNTesterExample>,
     APIExamples: Array<RNTesterExample>,
+    ...
   },
+  ...
 }) => {
   const colorScheme = useColorScheme();
   const theme = colorScheme === 'dark' ? themes.dark : themes.light;
@@ -149,7 +151,9 @@ const RNTesterExampleListViaHook = ({
   list: {
     ComponentExamples: Array<RNTesterExample>,
     APIExamples: Array<RNTesterExample>,
+    ...
   },
+  ...
 }) => {
   const colorScheme = useColorScheme();
   const theme = colorScheme === 'dark' ? themes.dark : themes.light;

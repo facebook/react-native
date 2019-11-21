@@ -58,7 +58,7 @@ const types: Array<?JSTimerType> = [];
 const timerIDs: Array<?number> = [];
 let immediates: Array<number> = [];
 let requestIdleCallbacks: Array<number> = [];
-const requestIdleCallbackTimeouts: {[number]: number} = {};
+const requestIdleCallbackTimeouts: {[number]: number, ...} = {};
 
 let GUID = 1;
 let errors: ?Array<Error> = null;

@@ -24,6 +24,7 @@ type CircleStyles = {
   backgroundColor?: string,
   left?: number,
   top?: number,
+  ...
 };
 
 const CIRCLE_SIZE = 80;

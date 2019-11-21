@@ -21,11 +21,10 @@ import type {HostComponent} from '../../../../../Libraries/Renderer/shims/ReactN
 
 type OnChangeEvent = $ReadOnly<{|
   location: {
-    source: {
-      url: string,
-    },
+    source: {url: string, ...},
     x: Int32,
     y: Int32,
+    ...
   },
 |}>;
 

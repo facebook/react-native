@@ -18,11 +18,21 @@ export interface Spec extends TurboModule {
   +getConstants: () => {||};
   +getSize: (
     uri: string,
-  ) => Promise<$ReadOnly<{width: number, height: number}>>;
+  ) => Promise<
+    $ReadOnly<{
+      width: number,
+      height: number,
+      ...
+    }>,
+  >;
   +getSizeWithHeaders: (
     uri: string,
     headers: Object,
-  ) => Promise<{width: number, height: number}>;
+  ) => Promise<{
+    width: number,
+    height: number,
+    ...
+  }>;
   +prefetchImage: (uri: string, requestId: number) => Promise<boolean>;
   +queryCache: (uris: Array<string>) => Promise<Object>;
 }

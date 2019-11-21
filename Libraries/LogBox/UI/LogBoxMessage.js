@@ -21,6 +21,7 @@ type Props = {
   style: TextStyleProp,
   plaintext?: ?boolean,
   maxLength?: ?number,
+  ...
 };
 
 const cleanContent = content => content.replace(/(Warning|Error): /g, '');

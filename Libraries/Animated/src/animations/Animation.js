@@ -14,7 +14,7 @@ const NativeAnimatedHelper = require('../NativeAnimatedHelper');
 
 import type AnimatedValue from '../nodes/AnimatedValue';
 
-export type EndResult = {finished: boolean};
+export type EndResult = {finished: boolean, ...};
 export type EndCallback = (result: EndResult) => void;
 
 export type AnimationConfig = {
@@ -22,6 +22,7 @@ export type AnimationConfig = {
   useNativeDriver: boolean,
   onComplete?: ?EndCallback,
   iterations?: number,
+  ...
 };
 
 // Important note: start() and stop() will only be called at most once.

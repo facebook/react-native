@@ -18,7 +18,7 @@ const {TestModule} = ReactNative.NativeModules;
 import NativeAccessibilityManager from 'react-native/Libraries/Components/AccessibilityInfo/NativeAccessibilityManager';
 import invariant from 'invariant';
 
-class AccessibilityManagerTest extends React.Component<{}> {
+class AccessibilityManagerTest extends React.Component<{...}> {
   componentDidMount() {
     invariant(
       NativeAccessibilityManager,

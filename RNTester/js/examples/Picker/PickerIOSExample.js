@@ -97,7 +97,7 @@ const CAR_MAKES_AND_MODELS = {
   },
 };
 
-class PickerExample extends React.Component<{}, $FlowFixMeState> {
+class PickerExample extends React.Component<{...}, $FlowFixMeState> {
   state = {
     carMake: 'cadillac',
     modelIndex: 3,
@@ -142,7 +142,7 @@ class PickerExample extends React.Component<{}, $FlowFixMeState> {
   }
 }
 
-class PickerStyleExample extends React.Component<{}, $FlowFixMeState> {
+class PickerStyleExample extends React.Component<{...}, $FlowFixMeState> {
   state = {
     carMake: 'cadillac',
     modelIndex: 0,

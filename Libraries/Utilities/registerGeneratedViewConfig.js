@@ -23,11 +23,13 @@ export type GeneratedViewConfig = {
         bubbled: string,
       |}>,
     |}>,
+    ...,
   }>,
   directEventTypes?: $ReadOnly<{
     [eventName: string]: $ReadOnly<{|
       registrationName: string,
     |}>,
+    ...,
   }>,
   validAttributes?: {
     [propName: string]:
@@ -36,7 +38,9 @@ export type GeneratedViewConfig = {
           diff?: <T>(arg1: any, arg2: any) => boolean,
           process?: (arg1: any) => any,
         |}>,
+    ...,
   },
+  ...
 };
 
 function registerGeneratedViewConfig(

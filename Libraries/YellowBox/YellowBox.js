@@ -172,4 +172,5 @@ module.exports = (YellowBox: Class<React.Component<Props, State>> & {
   ignoreWarnings($ReadOnlyArray<IgnorePattern>): void,
   install(): void,
   uninstall(): void,
+  ...
 });

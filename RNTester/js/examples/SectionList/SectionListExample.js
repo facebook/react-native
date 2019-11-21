@@ -67,7 +67,7 @@ const CustomSeparatorComponent = ({highlighted, text}) => (
   </View>
 );
 
-class SectionListExample extends React.PureComponent<{}, $FlowFixMeState> {
+class SectionListExample extends React.PureComponent<{...}, $FlowFixMeState> {
   state:
     | any
     | {|
@@ -230,10 +230,12 @@ class SectionListExample extends React.PureComponent<{}, $FlowFixMeState> {
     changed: Array<{
       key: string,
       isViewable: boolean,
-      item: {columns: Array<*>},
+      item: {columns: Array<*>, ...},
       index: ?number,
       section?: any,
+      ...
     }>,
+    ...
   }) => {
     // Impressions can be logged here
     if (this.state.logViewable) {

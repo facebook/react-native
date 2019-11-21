@@ -18,7 +18,7 @@ export function toCppType(type: string): string {
   return type.substr(0, 1).toUpperCase() + type.substr(1);
 }
 
-const jsTypeMappings: {[key: string]: string} = {
+const jsTypeMappings: {[key: string]: string, ...} = {
   any: 'folly::dynamic',
   array: 'folly::dynamic',
   boolean: 'bool',

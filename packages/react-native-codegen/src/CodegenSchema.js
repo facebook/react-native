@@ -316,12 +316,12 @@ export type ComponentShape = $ReadOnly<{|
 export type SchemaType = $ReadOnly<{|
   modules: $ReadOnly<{
     [module: string]: $ReadOnly<{|
-      components?: $ReadOnly<{
-        [component: string]: ComponentShape,
-      }>,
+      components?: $ReadOnly<{[component: string]: ComponentShape, ...}>,
       nativeModules?: $ReadOnly<{
         [nativeModule: string]: NativeModuleShape,
+        ...,
       }>,
     |}>,
+    ...,
   }>,
 |}>;

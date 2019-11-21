@@ -35,9 +35,11 @@ let viewConfig:
             captured: string,
           |}>,
         |}>,
+        ...,
       }>,
       directEventTypes?: $ReadOnly<{
         [eventName: string]: $ReadOnly<{|registrationName: string|}>,
+        ...,
       }>,
       uiViewClassName: string,
       validAttributes?: {
@@ -47,6 +49,7 @@ let viewConfig:
               diff?: <T>(arg1: any, arg2: any) => boolean,
               process?: (arg1: any) => any,
             |}>,
+        ...,
       },
     |};
 

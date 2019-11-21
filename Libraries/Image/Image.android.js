@@ -59,13 +59,18 @@ const ImageProps = {
       }),
     ),
   ]): React$PropType$Primitive<
-    | {headers?: {[string]: string}, uri?: string}
+    | {
+        headers?: {[string]: string, ...},
+        uri?: string,
+        ...
+      }
     | number
     | Array<{
-        headers?: {[string]: string},
+        headers?: {[string]: string, ...},
         height?: number,
         uri?: string,
         width?: number,
+        ...
       }>,
   >),
   /**
@@ -87,7 +92,7 @@ const ImageProps = {
     }),
     // Opaque type returned by require('./image.jpg')
     PropTypes.number,
-  ]): React$PropType$Primitive<{uri?: string} | number>),
+  ]): React$PropType$Primitive<{uri?: string, ...} | number>),
   progressiveRenderingEnabled: PropTypes.bool,
   fadeDuration: PropTypes.number,
   /**
@@ -168,7 +173,7 @@ function getSize(
  */
 function getSizeWithHeaders(
   url: string,
-  headers: {[string]: string},
+  headers: {[string]: string, ...},
   success: (width: number, height: number) => void,
   failure?: (error: any) => void,
 ): any {
@@ -201,7 +206,7 @@ function abortPrefetch(requestId: number) {
  */
 async function queryCache(
   urls: Array<string>,
-): Promise<{[string]: 'memory' | 'disk' | 'disk/memory'}> {
+): Promise<{[string]: 'memory' | 'disk' | 'disk/memory', ...}> {
   return await NativeImageLoaderAndroid.queryCache(urls);
 }
 

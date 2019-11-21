@@ -19,7 +19,7 @@ const createExamplePage = function(
   title: ?string,
   exampleModule: RNTesterExample,
 ): React.ComponentType<any> {
-  class ExamplePage extends React.Component<{}> {
+  class ExamplePage extends React.Component<{...}> {
     render() {
       return <RNTesterExampleContainer module={exampleModule} title={title} />;
     }

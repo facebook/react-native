@@ -64,7 +64,7 @@ type TBackHandler = {|
   +addEventListener: (
     eventName: BackPressEventName,
     handler: Function,
-  ) => {remove: () => void},
+  ) => {remove: () => void, ...},
   +removeEventListener: (
     eventName: BackPressEventName,
     handler: Function,
@@ -88,7 +88,7 @@ const BackHandler: TBackHandler = {
   addEventListener: function(
     eventName: BackPressEventName,
     handler: Function,
-  ): {remove: () => void} {
+  ): {remove: () => void, ...} {
     if (_backPressSubscriptions.indexOf(handler) === -1) {
       _backPressSubscriptions.push(handler);
     }

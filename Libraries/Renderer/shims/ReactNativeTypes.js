@@ -45,9 +45,8 @@ export type AttributeConfiguration<
   TStyleProps = string,
 > = $ReadOnly<{
   [propName: TProps]: AttributeType,
-  style: $ReadOnly<{
-    [propName: TStyleProps]: AttributeType,
-  }>,
+  style: $ReadOnly<{[propName: TStyleProps]: AttributeType, ...}>,
+  ...
 }>;
 
 export type ReactNativeBaseComponentViewConfig<
@@ -62,18 +61,16 @@ export type ReactNativeBaseComponentViewConfig<
         bubbled: string,
       |}>,
     |}>,
+    ...,
   }>,
-  Commands?: $ReadOnly<{
-    [commandName: string]: number,
-  }>,
+  Commands?: $ReadOnly<{[commandName: string]: number, ...}>,
   directEventTypes?: $ReadOnly<{
     [eventName: string]: $ReadOnly<{|
       registrationName: string,
     |}>,
+    ...,
   }>,
-  NativeProps?: $ReadOnly<{
-    [propName: string]: string,
-  }>,
+  NativeProps?: $ReadOnly<{[propName: string]: string, ...}>,
   uiViewClassName: string,
   validAttributes: AttributeConfiguration<TProps, TStyleProps>,
 |}>;
@@ -116,6 +113,7 @@ export type NativeMethods = {
     onFail?: () => void,
   ): void,
   setNativeProps(nativeProps: Object): void,
+  ...
 };
 
 export type NativeMethodsMixinType = NativeMethods;
@@ -126,10 +124,12 @@ type SecretInternalsType = {
   computeComponentStackForErrorReporting(tag: number): string,
   // TODO (bvaughn) Decide which additional types to expose here?
   // And how much information to fill in for the above types.
+  ...
 };
 
 type SecretInternalsFabricType = {
   NativeMethodsMixin: NativeMethodsMixinType,
+  ...
 };
 
 /**
@@ -150,9 +150,10 @@ export type ReactNativeType = {
   ): any,
   unmountComponentAtNode(containerTag: number): any,
   unmountComponentAtNodeAndRemoveContainer(containerTag: number): any,
-  unstable_batchedUpdates: any, // TODO (bvaughn) Add types
-
+  // TODO (bvaughn) Add types
+  unstable_batchedUpdates: any,
   __SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED: SecretInternalsType,
+  ...
 };
 
 export type ReactFabricType = {
@@ -167,6 +168,7 @@ export type ReactFabricType = {
   ): any,
   unmountComponentAtNode(containerTag: number): any,
   __SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED: SecretInternalsFabricType,
+  ...
 };
 
 export type ReactNativeEventTarget = {
@@ -176,7 +178,9 @@ export type ReactNativeEventTarget = {
     viewConfig: ReactNativeBaseComponentViewConfig<>,
     currentProps: Object,
     _internalInstanceHandle: Object,
+    ...
   },
+  ...
 };
 
 export type ReactFaricEventTouch = {
@@ -190,6 +194,7 @@ export type ReactFaricEventTouch = {
   target: number,
   timestamp: number,
   force: number,
+  ...
 };
 
 export type ReactFaricEvent = {
@@ -197,12 +202,14 @@ export type ReactFaricEvent = {
   changedTouches: Array<ReactFaricEventTouch>,
   targetTouches: Array<ReactFaricEventTouch>,
   target: number,
+  ...
 };
 
 export type ReactNativeResponderEvent = {
   nativeEvent: ReactFaricEvent,
   target: null | ReactNativeEventTarget,
   type: string,
+  ...
 };
 
 export type ReactNativeResponderContext = {
@@ -222,12 +229,14 @@ export type ReactNativeResponderContext = {
       right: number,
       top: number,
       bottom: number,
+      ...
     }) => void,
   ): void,
   addRootEventTypes: (rootEventTypes: Array<string>) => void,
   removeRootEventTypes: (rootEventTypes: Array<string>) => void,
   getTimeStamp: () => number,
   getResponderNode(): ReactNativeEventTarget | null,
+  ...
 };
 
 export type PointerType =

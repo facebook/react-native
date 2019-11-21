@@ -29,6 +29,7 @@ export type Props = {
   inverted: ?boolean,
   // The height of the parent ScrollView. Currently only set when inverted.
   scrollViewHeight: ?number,
+  ...
 };
 
 type State = {
@@ -36,6 +37,7 @@ type State = {
   layoutY: number,
   layoutHeight: number,
   nextHeaderLayoutY: ?number,
+  ...
 };
 
 class ScrollViewStickyHeader extends React.Component<Props, State> {

@@ -24,6 +24,7 @@ export type CodeFrame = $ReadOnly<{|
   location: {
     row: number,
     column: number,
+    ...
   },
   fileName: string,
 |}>;

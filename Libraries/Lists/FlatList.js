@@ -89,7 +89,12 @@ type OptionalProps<ItemT> = {|
   getItemLayout?: (
     data: ?Array<ItemT>,
     index: number,
-  ) => {length: number, offset: number, index: number},
+  ) => {
+    length: number,
+    offset: number,
+    index: number,
+    ...
+  },
   /**
    * If true, renders items next to each other horizontally instead of stacked vertically.
    */
@@ -144,9 +149,11 @@ export type Props<ItemT> = {
       getItemLayout: $PropertyType<VirtualizedListProps, 'getItemLayout'>,
       renderItem: $PropertyType<VirtualizedListProps, 'renderItem'>,
       keyExtractor: $PropertyType<VirtualizedListProps, 'keyExtractor'>,
+      ...
     },
   >,
   ...FlatListProps<ItemT>,
+  ...
 };
 
 const defaultProps = {
@@ -275,7 +282,7 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
   /**
    * Scrolls to the end of the content. May be janky without `getItemLayout` prop.
    */
-  scrollToEnd(params?: ?{animated?: ?boolean}) {
+  scrollToEnd(params?: ?{animated?: ?boolean, ...}) {
     if (this._listRef) {
       this._listRef.scrollToEnd(params);
     }
@@ -294,6 +301,7 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
     index: number,
     viewOffset?: number,
     viewPosition?: number,
+    ...
   }) {
     if (this._listRef) {
       this._listRef.scrollToIndex(params);
@@ -310,6 +318,7 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
     animated?: ?boolean,
     item: ItemT,
     viewPosition?: number,
+    ...
   }) {
     if (this._listRef) {
       this._listRef.scrollToItem(params);
@@ -321,7 +330,7 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
    *
    * Check out [scrollToOffset](docs/virtualizedlist.html#scrolltooffset) of VirtualizedList
    */
-  scrollToOffset(params: {animated?: ?boolean, offset: number}) {
+  scrollToOffset(params: {animated?: ?boolean, offset: number, ...}) {
     if (this._listRef) {
       this._listRef.scrollToOffset(params);
     }
@@ -364,7 +373,7 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
     }
   }
 
-  setNativeProps(props: {[string]: mixed}) {
+  setNativeProps(props: {[string]: mixed, ...}) {
     if (this._listRef) {
       this._listRef.setNativeProps(props);
     }
@@ -512,11 +521,13 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
     onViewableItemsChanged: ?(info: {
       viewableItems: Array<ViewToken>,
       changed: Array<ViewToken>,
+      ...
     }) => void,
   ) {
     return (info: {
       viewableItems: Array<ViewToken>,
       changed: Array<ViewToken>,
+      ...
     }) => {
       const {numColumns} = this.props;
       if (onViewableItemsChanged) {

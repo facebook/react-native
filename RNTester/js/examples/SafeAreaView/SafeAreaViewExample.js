@@ -24,7 +24,7 @@ const {
 } = require('react-native');
 
 class SafeAreaViewExample extends React.Component<
-  {},
+  {...},
   {|
     modalVisible: boolean,
     emulateUnlessSupported: boolean,
@@ -83,7 +83,7 @@ class SafeAreaViewExample extends React.Component<
   }
 }
 
-class IsIPhoneXExample extends React.Component<{}> {
+class IsIPhoneXExample extends React.Component<{...}> {
   render() {
     return (
       <View>

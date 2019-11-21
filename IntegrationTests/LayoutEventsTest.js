@@ -38,6 +38,7 @@ type State = {
   viewLayout?: Layout,
   viewStyle?: ViewStyleProp,
   containerStyle?: ViewStyleProp,
+  ...
 };
 
 class LayoutEventsTest extends React.Component<Props, State> {

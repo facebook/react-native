@@ -20,7 +20,11 @@ export interface Spec extends TurboModule {
   +getSizeWithHeaders: (
     uri: string,
     headers: Object,
-  ) => Promise<{width: number, height: number}>;
+  ) => Promise<{
+    width: number,
+    height: number,
+    ...
+  }>;
   +prefetchImage: (uri: string) => Promise<boolean>;
   +queryCache: (uris: Array<string>) => Promise<Object>;
 }

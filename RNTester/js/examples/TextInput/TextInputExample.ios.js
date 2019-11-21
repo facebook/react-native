@@ -37,7 +37,7 @@ class WithLabel extends React.Component<$FlowFixMeProps> {
   }
 }
 
-class TextEventsExample extends React.Component<{}, $FlowFixMeState> {
+class TextEventsExample extends React.Component<{...}, $FlowFixMeState> {
   state = {
     curText: '<No Event>',
     prevText: '<No Event>',
@@ -99,7 +99,7 @@ class TextEventsExample extends React.Component<{}, $FlowFixMeState> {
   }
 }
 
-class TextInputAccessoryViewExample extends React.Component<{}, *> {
+class TextInputAccessoryViewExample extends React.Component<{...}, *> {
   constructor(props) {
     super(props);
     this.state = {text: 'Placeholder Text'};
@@ -306,7 +306,7 @@ class TokenizedTextExample extends React.Component<$FlowFixMeProps, any> {
   }
 }
 
-class BlurOnSubmitExample extends React.Component<{}> {
+class BlurOnSubmitExample extends React.Component<{...}> {
   focusNextField = nextField => {
     this.refs[nextField].focus();
   };
@@ -367,6 +367,7 @@ type SelectionExampleState = {
     end?: number,
   |}>,
   value: string,
+  ...
 };
 
 class SelectionExample extends React.Component<

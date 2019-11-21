@@ -46,13 +46,12 @@ export type AccessibilityRole =
 export type AccessibilityActionInfo = $ReadOnly<{
   name: string,
   label?: string,
+  ...
 }>;
 
 // The info included in the event sent to onAccessibilityAction
 export type AccessibilityActionEvent = SyntheticEvent<
-  $ReadOnly<{
-    actionName: string,
-  }>,
+  $ReadOnly<{actionName: string, ...}>,
 >;
 
 export type AccessibilityState = {
@@ -61,6 +60,7 @@ export type AccessibilityState = {
   checked?: ?boolean | 'mixed',
   busy?: boolean,
   expanded?: boolean,
+  ...
 };
 
 export type AccessibilityValue = $ReadOnly<{|

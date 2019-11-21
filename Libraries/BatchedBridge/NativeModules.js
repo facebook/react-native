@@ -29,7 +29,11 @@ export type MethodType = 'async' | 'promise' | 'sync';
 function genModule(
   config: ?ModuleConfig,
   moduleID: number,
-): ?{name: string, module?: Object} {
+): ?{
+  name: string,
+  module?: Object,
+  ...
+} {
   if (!config) {
     return null;
   }
@@ -151,13 +155,13 @@ function arrayContains<T>(array: $ReadOnlyArray<T>, value: T): boolean {
 }
 
 function updateErrorWithErrorData(
-  errorData: {message: string},
+  errorData: {message: string, ...},
   error: ExtendedError,
 ): ExtendedError {
   return Object.assign(error, errorData || {});
 }
 
-let NativeModules: {[moduleName: string]: Object} = {};
+let NativeModules: {[moduleName: string]: Object, ...} = {};
 if (global.nativeModuleProxy) {
   NativeModules = global.nativeModuleProxy;
 } else if (!global.nativeExtensions) {
