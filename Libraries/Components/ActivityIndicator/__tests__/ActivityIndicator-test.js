@@ -13,42 +13,21 @@
 
 const React = require('react');
 const ActivityIndicator = require('../ActivityIndicator');
-const render = require('../../../../jest/renderer');
+
+const ReactNativeTestTools = require('../../../Utilities/ReactNativeTestTools');
 
 describe('<ActivityIndicator />', () => {
   it('should set displayName to prevent <Component /> regressions', () => {
     expect(ActivityIndicator.displayName).toBe('ActivityIndicator');
   });
 
-  it('should render as <ActivityIndicator> when mocked', () => {
-    const instance = render.create(
-      <ActivityIndicator size="large" color="#0000ff" />,
+  it('should render as expected', () => {
+    ReactNativeTestTools.expectRendersMatchingSnapshot(
+      'ActivityIndicator',
+      () => <ActivityIndicator size="large" color="#0000ff" />,
+      () => {
+        jest.dontMock('../ActivityIndicator');
+      },
     );
-    expect(instance).toMatchSnapshot();
-  });
-
-  it('should shallow render as <ActivityIndicator> when mocked', () => {
-    const output = render.shallow(
-      <ActivityIndicator size="large" color="#0000ff" />,
-    );
-    expect(output).toMatchSnapshot();
-  });
-
-  it('should shallow render as <ForwardRef(ActivityIndicator)> when not mocked', () => {
-    jest.dontMock('../ActivityIndicator');
-
-    const output = render.shallow(
-      <ActivityIndicator size="large" color="#0000ff" />,
-    );
-    expect(output).toMatchSnapshot();
-  });
-
-  it('should render as <View> when not mocked', () => {
-    jest.dontMock('../ActivityIndicator');
-
-    const instance = render.create(
-      <ActivityIndicator size="large" color="#0000ff" />,
-    );
-    expect(instance).toMatchSnapshot();
   });
 });

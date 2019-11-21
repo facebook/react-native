@@ -13,7 +13,10 @@
 'use strict';
 
 const React = require('react');
+
 const ReactTestRenderer = require('react-test-renderer');
+const ShallowRenderer = require('react-test-renderer/shallow');
+const shallowRenderer = new ShallowRenderer();
 
 const {Switch, Text, TextInput, VirtualizedList} = require('react-native');
 
@@ -94,6 +97,44 @@ function expectNoConsoleError() {
   });
 }
 
+function expectRendersMatchingSnapshot(
+  name: string,
+  ComponentProvider: () => React.Element<any>,
+  unmockComponent: () => mixed,
+) {
+  let instance;
+
+  jest.resetAllMocks();
+
+  instance = ReactTestRenderer.create(<ComponentProvider />);
+  expect(instance).toMatchSnapshot(
+    'should deep render when mocked (please verify output manually)',
+  );
+
+  jest.resetAllMocks();
+  unmockComponent();
+
+  instance = shallowRenderer.render(<ComponentProvider />);
+  expect(instance).toMatchSnapshot(
+    `should shallow render as <${name} /> when not mocked`,
+  );
+
+  jest.resetAllMocks();
+
+  instance = shallowRenderer.render(<ComponentProvider />);
+  expect(instance).toMatchSnapshot(
+    `should shallow render as <${name} /> when mocked`,
+  );
+
+  jest.resetAllMocks();
+  unmockComponent();
+
+  instance = ReactTestRenderer.create(<ComponentProvider />);
+  expect(instance).toMatchSnapshot(
+    'should deep render when not mocked (please verify output manually)',
+  );
+}
+
 // Takes a node from toJSON()
 function maximumDepthOfJSON(node: ReactTestRendererNode): number {
   if (node == null) {
@@ -159,6 +200,7 @@ export {byTextMatching};
 export {enter};
 export {expectNoConsoleWarn};
 export {expectNoConsoleError};
+export {expectRendersMatchingSnapshot};
 export {maximumDepthError};
 export {maximumDepthOfJSON};
 export {renderAndEnforceStrictMode};

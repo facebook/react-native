@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`<Picker /> should render as <View> when mocked 1`] = `
+exports[`<Picker /> should render as expected: should deep render when mocked (please verify output manually) 1`] = `
 <View>
   <RCTPicker
     items={
@@ -31,7 +31,7 @@ exports[`<Picker /> should render as <View> when mocked 1`] = `
 </View>
 `;
 
-exports[`<Picker /> should render as <View> when not mocked 1`] = `
+exports[`<Picker /> should render as expected: should deep render when not mocked (please verify output manually) 1`] = `
 <View>
   <RCTPicker
     items={
@@ -62,7 +62,7 @@ exports[`<Picker /> should render as <View> when not mocked 1`] = `
 </View>
 `;
 
-exports[`<Picker /> should shallow render as <Picker> when mocked 1`] = `
+exports[`<Picker /> should render as expected: should shallow render as <Picker /> when mocked 1`] = `
 <Picker
   mode="dialog"
   onValueChange={[MockFunction]}
@@ -79,7 +79,7 @@ exports[`<Picker /> should shallow render as <Picker> when mocked 1`] = `
 </Picker>
 `;
 
-exports[`<Picker /> should shallow render as <Picker> when not mocked 1`] = `
+exports[`<Picker /> should render as expected: should shallow render as <Picker /> when not mocked 1`] = `
 <Picker
   mode="dialog"
   onValueChange={[MockFunction]}
