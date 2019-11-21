@@ -18,7 +18,10 @@ const ReactNative = require('../../../Renderer/shims/ReactNative');
 
 import Component from '@reactions/component';
 
-const {enter} = require('../../../Utilities/ReactNativeTestTools');
+const {
+  enter,
+  expectRendersMatchingSnapshot,
+} = require('../../../Utilities/ReactNativeTestTools');
 
 jest.unmock('../TextInput');
 
@@ -149,5 +152,15 @@ describe('TextInput tests', () => {
     expect(textInputRe1.current.isFocused()).toBe(false);
     expect(textInputRe2.current.isFocused()).toBe(true);
     expect(TextInput.State.currentlyFocusedField()).toBe(inputTag2);
+  });
+
+  it('should render as expected', () => {
+    expectRendersMatchingSnapshot(
+      'TextInput',
+      () => <TextInput />,
+      () => {
+        jest.dontMock('../TextInput');
+      },
+    );
   });
 });
