@@ -20,6 +20,7 @@ const ScrollView = require('../Components/ScrollView/ScrollView');
 const StyleSheet = require('../StyleSheet/StyleSheet');
 const View = require('../Components/View/View');
 const ViewabilityHelper = require('./ViewabilityHelper');
+const ExperimentalVirtualizedListOptContext = require('./ExperimentalVirtualizedListOptContext');
 
 const flattenStyle = require('../StyleSheet/flattenStyle');
 const infoLog = require('../Utilities/infoLog');
@@ -35,6 +36,7 @@ import type {
   ViewToken,
   ViewabilityConfigCallbackPair,
 } from './ViewabilityHelper';
+import type {LayoutEvent} from 'react-native/Libraries/Types/CoreEventTypes';
 
 type Item = any;
 
@@ -96,6 +98,10 @@ type OptionalProps = {|
    * `data` prop, stick it here and treat it immutably.
    */
   extraData?: any,
+  /**
+   * `experimentalVirtualizedListOpt` will not send this.props in parentProps to CellRenderer
+   */
+  experimentalVirtualizedListOpt?: ?boolean,
   getItemLayout?: (
     data: any,
     index: number,
@@ -205,6 +211,7 @@ type OptionalProps = {|
    * within half the visible length of the list.
    */
   onEndReachedThreshold?: ?number,
+  onLayout?: ?(e: LayoutEvent) => void,
   /**
    * If provided, a standard RefreshControl will be added for "Pull to Refresh" functionality. Make
    * sure to also set the `refreshing` prop correctly.
@@ -745,7 +752,6 @@ class VirtualizedList extends React.PureComponent<Props, State> {
         this._frames = storedState.frames;
       }
     }
-
     this.state = initialState;
   }
 
@@ -807,6 +813,12 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       getItemCount,
       horizontal,
       keyExtractor,
+      getItemLayout,
+      renderItem,
+      extraData,
+      debug,
+      ListItemComponent,
+      experimentalVirtualizedListOpt,
     } = this.props;
     const stickyOffset = this.props.ListHeaderComponent ? 1 : 0;
     const end = getItemCount(data) - 1;
@@ -819,27 +831,46 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       if (stickyIndicesFromProps.has(ii + stickyOffset)) {
         stickyHeaderIndices.push(cells.length);
       }
-      cells.push(
-        <CellRenderer
-          CellRendererComponent={CellRendererComponent}
-          ItemSeparatorComponent={ii < end ? ItemSeparatorComponent : undefined}
-          cellKey={key}
-          fillRateHelper={this._fillRateHelper}
-          horizontal={horizontal}
-          index={ii}
-          inversionStyle={inversionStyle}
-          item={item}
-          key={key}
-          prevCellKey={prevCellKey}
-          onUpdateSeparators={this._onUpdateSeparators}
-          onLayout={e => this._onCellLayout(e, key, ii)}
-          onUnmount={this._onCellUnmount}
-          parentProps={this.props}
-          ref={ref => {
-            this._cellRefs[key] = ref;
-          }}
-        />,
-      );
+      const cellRendererBaseProps: CellRendererBaseProps = {
+        CellRendererComponent: CellRendererComponent,
+        ItemSeparatorComponent: ii < end ? ItemSeparatorComponent : undefined,
+        cellKey: key,
+        fillRateHelper: this._fillRateHelper,
+        horizontal: horizontal,
+        index: ii,
+        inversionStyle: inversionStyle,
+        item: item,
+        key: key,
+        prevCellKey: prevCellKey,
+        onUpdateSeparators: this._onUpdateSeparators,
+        onUnmount: this._onCellUnmount,
+        extraData: extraData,
+        ref: ref => {
+          this._cellRefs[key] = ref;
+        },
+      };
+      if (experimentalVirtualizedListOpt) {
+        cells.push(
+          <CellRenderer
+            {...cellRendererBaseProps}
+            experimentalVirtualizedListOpt
+            onLayout={this._onCellLayout}
+            getItemLayout={getItemLayout}
+            renderItem={renderItem}
+            ListItemComponent={ListItemComponent}
+            debug={debug}
+          />,
+        );
+      } else {
+        cells.push(
+          <CellRenderer
+            {...cellRendererBaseProps}
+            experimentalVirtualizedListOpt={false}
+            onLayout={e => this._onCellLayout(e, key, ii)}
+            parentProps={this.props}
+          />,
+        );
+      }
       prevCellKey = key;
     }
   }
@@ -1126,6 +1157,13 @@ class VirtualizedList extends React.PureComponent<Props, State> {
         </ScrollView.Context.Consumer>
       );
     }
+    if (this.props.experimentalVirtualizedListOpt) {
+      ret = (
+        <ExperimentalVirtualizedListOptContext.Provider value={true}>
+          {ret}
+        </ExperimentalVirtualizedListOptContext.Provider>
+      );
+    }
     if (this.props.debug) {
       return (
         <View style={styles.debug}>
@@ -1252,7 +1290,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     }
   };
 
-  _onCellLayout(e, cellKey, index) {
+  _onCellLayout = (e, cellKey, index): void => {
     const layout = e.nativeEvent.layout;
     const next = {
       offset: this._selectOffset(layout),
@@ -1293,7 +1331,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
 
     this._computeBlankness();
     this._updateViewableItems(this.props.data);
-  }
+  };
 
   _onCellUnmount = (cellKey: string) => {
     const curr = this._frames[cellKey];
@@ -1819,7 +1857,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
   }
 }
 
-type CellRendererProps = {
+type CellRendererBaseProps = {
   CellRendererComponent?: ?React.ComponentType<any>,
   ItemSeparatorComponent: ?React.ComponentType<*>,
   cellKey: string,
@@ -1828,9 +1866,23 @@ type CellRendererProps = {
   index: number,
   inversionStyle: ViewStyleProp,
   item: Item,
-  onLayout: (event: Object) => void, // This is extracted by ScrollViewStickyHeader
   onUnmount: (cellKey: string) => void,
   onUpdateSeparators: (cellKeys: Array<?string>, props: Object) => void,
+  prevCellKey: ?string,
+};
+
+type FlattenedParentProps = CellRendererBaseProps & {
+  experimentalVirtualizedListOpt: true,
+  getItemLayout?: $PropertyType<OptionalProps, 'getItemLayout'>,
+  renderItem?: $PropertyType<OptionalProps, 'renderItem'>,
+  ListItemComponent: $PropertyType<OptionalProps, 'ListItemComponent'>,
+  onLayout: (event: LayoutEvent, key: string, index: number) => void, // This is extracted by ScrollViewStickyHeader
+  debug: ?boolean,
+};
+
+type UnFlattenedParentProps = CellRendererBaseProps & {
+  experimentalVirtualizedListOpt: false,
+  onLayout: (event: LayoutEvent) => void, // This is extracted by ScrollViewStickyHeader
   parentProps: {
     getItemLayout?: (
       data: any,
@@ -1838,9 +1890,11 @@ type CellRendererProps = {
     ) => {length: number, offset: number, index: number}, // e.g. height, y,
     renderItem?: ?RenderItemType<Item>,
     ListItemComponent?: ?(React.ComponentType<any> | React.Element<any>),
+    debug: ?boolean,
   },
-  prevCellKey: ?string,
 };
+
+type CellRendererProps = FlattenedParentProps | UnFlattenedParentProps;
 
 type CellRendererState = {
   separatorProps: $ReadOnly<{|
@@ -1920,6 +1974,15 @@ class CellRenderer extends React.Component<
     this.props.onUnmount(this.props.cellKey);
   }
 
+  _onLayout = (e): void => {
+    if (this.props.experimentalVirtualizedListOpt) {
+      this.props.onLayout &&
+        this.props.onLayout(e, this.props.cellKey, this.props.index);
+    } else {
+      this.props.onLayout && this.props.onLayout(e);
+    }
+  };
+
   _renderElement(renderItem, ListItemComponent, item, index) {
     if (renderItem && ListItemComponent) {
       console.warn(
@@ -1962,9 +2025,25 @@ class CellRenderer extends React.Component<
       item,
       index,
       inversionStyle,
-      parentProps,
     } = this.props;
-    const {renderItem, getItemLayout, ListItemComponent} = parentProps;
+
+    let ListItemComponent: $PropertyType<OptionalProps, 'ListEmptyComponent'>;
+    let renderItem: $PropertyType<OptionalProps, 'renderItem'>;
+    let debug: $PropertyType<OptionalProps, 'debug'>;
+    let getItemLayout: $PropertyType<OptionalProps, 'getItemLayout'>;
+    if (this.props.experimentalVirtualizedListOpt === true) {
+      ListItemComponent = this.props.ListItemComponent;
+      renderItem = this.props.renderItem;
+      debug = this.props.debug;
+      getItemLayout = this.props.getItemLayout;
+    } else {
+      const parentProps = this.props.parentProps;
+      ListItemComponent = parentProps.ListItemComponent;
+      renderItem = parentProps.renderItem;
+      debug = parentProps.debug;
+      getItemLayout = parentProps.getItemLayout;
+    }
+
     const element = this._renderElement(
       renderItem,
       ListItemComponent,
@@ -1973,12 +2052,9 @@ class CellRenderer extends React.Component<
     );
 
     const onLayout =
-      /* $FlowFixMe(>=0.68.0 site=react_native_fb) This comment suppresses an
-       * error found when Flow v0.68 was deployed. To see the error delete this
-       * comment and run Flow. */
-      getItemLayout && !parentProps.debug && !fillRateHelper.enabled()
+      getItemLayout && !debug && !fillRateHelper.enabled()
         ? undefined
-        : this.props.onLayout;
+        : this._onLayout;
     // NOTE: that when this is a sticky header, `onLayout` will get automatically extracted and
     // called explicitly by `ScrollViewStickyHeader`.
     const itemSeparator = ItemSeparatorComponent && (

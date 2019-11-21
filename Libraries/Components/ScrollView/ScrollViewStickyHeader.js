@@ -14,6 +14,7 @@ const AnimatedImplementation = require('../../Animated/src/AnimatedImplementatio
 const React = require('react');
 const StyleSheet = require('../../StyleSheet/StyleSheet');
 const View = require('../View/View');
+const ExperimentalVirtualizedListOptContext = require('../../Lists/ExperimentalVirtualizedListOptContext');
 
 import type {LayoutEvent} from '../../Types/CoreEventTypes';
 
@@ -29,6 +30,7 @@ export type Props = {
   inverted: ?boolean,
   // The height of the parent ScrollView. Currently only set when inverted.
   scrollViewHeight: ?number,
+  experimentalVirtualizedListOpt?: ?boolean,
 };
 
 type State = {
@@ -60,7 +62,11 @@ class ScrollViewStickyHeader extends React.Component<Props, State> {
     this.props.onLayout(event);
     const child = React.Children.only(this.props.children);
     if (child.props.onLayout) {
-      child.props.onLayout(event);
+      if (this.props.experimentalVirtualizedListOpt) {
+        child.props.onLayout(event, child.props.cellKey, child.props.index);
+      } else {
+        child.props.onLayout(event);
+      }
     }
   };
 
@@ -161,4 +167,24 @@ const styles = StyleSheet.create({
   },
 });
 
-module.exports = ScrollViewStickyHeader;
+class ScrollViewStickyHeaderWrapped extends React.Component<Props, State> {
+  _childRef: ?React.ElementRef<typeof ScrollViewStickyHeader>;
+  setNextHeaderY(y: number) {
+    this._childRef && this._childRef.setNextHeaderY(y);
+  }
+  render(): React.Node {
+    return (
+      <ExperimentalVirtualizedListOptContext.Consumer>
+        {experimentalVirtualizedListOpt => {
+          <ScrollViewStickyHeader
+            {...this.props}
+            ref={ref => (this._childRef = ref)}
+            experimentalVirtualizedListOpt={experimentalVirtualizedListOpt}
+          />;
+        }}
+      </ExperimentalVirtualizedListOptContext.Consumer>
+    );
+  }
+}
+
+module.exports = ScrollViewStickyHeaderWrapped;
