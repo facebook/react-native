@@ -989,8 +989,6 @@ injection.injectEventPluginsByName({
     }
   }
 });
-var enableNativeTargetAsInstance = require("../shims/ReactFeatureFlags")
-  .enableNativeTargetAsInstance;
 function getInstanceFromInstance(instanceHandle) {
   return instanceHandle;
 }
@@ -999,12 +997,6 @@ getFiberCurrentPropsFromNode = function(inst) {
 };
 getInstanceFromNode = getInstanceFromInstance;
 getNodeFromInstance = function(inst) {
-  if (enableNativeTargetAsInstance) {
-    inst = inst.stateNode.canonical;
-    if (!inst._nativeTag)
-      throw Error("All native instances should have a tag.");
-    return inst;
-  }
   inst = inst.stateNode.canonical._nativeTag;
   if (!inst) throw Error("All native instances should have a tag.");
   return inst;
@@ -1515,12 +1507,8 @@ function _inheritsLoose(subClass, superClass) {
 })(React.Component);
 new Map();
 function dispatchEvent(target, topLevelType, nativeEvent) {
-  var eventTarget = null;
-  enableNativeTargetAsInstance
-    ? null != target && (eventTarget = target.stateNode.canonical)
-    : (eventTarget = nativeEvent.target);
   batchedUpdates(function() {
-    var events = eventTarget;
+    var events = nativeEvent.target;
     for (var events$jscomp$0 = null, i = 0; i < plugins.length; i++) {
       var possiblePlugin = plugins[i];
       possiblePlugin &&

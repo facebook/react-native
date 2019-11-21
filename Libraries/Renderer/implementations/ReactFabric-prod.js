@@ -1508,10 +1508,8 @@ function _inheritsLoose(subClass, superClass) {
 })(React.Component);
 new Map();
 function dispatchEvent(target, topLevelType, nativeEvent) {
-  var eventTarget = null;
-  eventTarget = nativeEvent.target;
   batchedUpdates(function() {
-    var events = eventTarget;
+    var events = nativeEvent.target;
     for (var events$jscomp$0 = null, i = 0; i < plugins.length; i++) {
       var possiblePlugin = plugins[i];
       possiblePlugin &&

@@ -2566,34 +2566,6 @@ injection.injectEventPluginsByName({
   ReactNativeBridgeEventPlugin: ReactNativeBridgeEventPlugin
 });
 
-// Uncomment to re-export dynamic flags from the fbsource version.
-var _require = require("../shims/ReactFeatureFlags");
-var enableNativeTargetAsInstance = _require.enableNativeTargetAsInstance; // The rest of the flags are static for better dead code elimination.
-
-var enableUserTimingAPI = true;
-var enableProfilerTimer = true;
-var enableSchedulerTracing = true;
-var enableSuspenseServerRenderer = false;
-
-var debugRenderPhaseSideEffectsForStrictMode = true;
-
-var replayFailedUnitOfWorkWithInvokeGuardedCallback = true;
-var warnAboutDeprecatedLifecycles = true;
-var enableFlareAPI = false;
-var enableFundamentalAPI = false;
-var enableScopeAPI = false;
-
-var warnAboutUnmockedScheduler = true;
-var flushSuspenseFallbacksInTests = true;
-var enableSuspenseCallback = false;
-var warnAboutDefaultPropsOnFunctionComponents = false;
-var warnAboutStringRefs = false;
-var disableLegacyContext = false;
-var disableSchedulerTimeoutBasedOnReactExpirationTime = false;
-// Only used in www builds.
-
-// Flow magic to verify the exports of this file match the original version.
-
 var instanceCache = new Map();
 var instanceProps = new Map();
 function precacheFiberNode(hostInst, tag) {
@@ -2609,33 +2581,17 @@ function getInstanceFromTag(tag) {
 }
 
 function getTagFromInstance(inst) {
-  if (enableNativeTargetAsInstance) {
-    var nativeInstance = inst.stateNode;
-    var tag = nativeInstance._nativeTag;
+  var tag = inst.stateNode._nativeTag;
 
-    if (tag === undefined) {
-      nativeInstance = nativeInstance.canonical;
-      tag = nativeInstance._nativeTag;
-    }
-
-    if (!tag) {
-      throw Error("All native instances should have a tag.");
-    }
-
-    return nativeInstance;
-  } else {
-    var _tag = inst.stateNode._nativeTag;
-
-    if (_tag === undefined) {
-      _tag = inst.stateNode.canonical._nativeTag;
-    }
-
-    if (!_tag) {
-      throw Error("All native instances should have a tag.");
-    }
-
-    return _tag;
+  if (tag === undefined) {
+    tag = inst.stateNode.canonical._nativeTag;
   }
+
+  if (!tag) {
+    throw Error("All native instances should have a tag.");
+  }
+
+  return tag;
 }
 
 function getFiberCurrentPropsFromNode$1(stateNode) {
@@ -2691,6 +2647,33 @@ function restoreStateIfNeeded() {
     }
   }
 }
+
+// Uncomment to re-export dynamic flags from the fbsource version.
+// export const {} = require('../shims/ReactFeatureFlags');
+// The rest of the flags are static for better dead code elimination.
+var enableUserTimingAPI = true;
+var enableProfilerTimer = true;
+var enableSchedulerTracing = true;
+var enableSuspenseServerRenderer = false;
+
+var debugRenderPhaseSideEffectsForStrictMode = true;
+
+var replayFailedUnitOfWorkWithInvokeGuardedCallback = true;
+var warnAboutDeprecatedLifecycles = true;
+var enableFlareAPI = false;
+var enableFundamentalAPI = false;
+var enableScopeAPI = false;
+
+var warnAboutUnmockedScheduler = true;
+var flushSuspenseFallbacksInTests = true;
+var enableSuspenseCallback = false;
+var warnAboutDefaultPropsOnFunctionComponents = false;
+var warnAboutStringRefs = false;
+var disableLegacyContext = false;
+var disableSchedulerTimeoutBasedOnReactExpirationTime = false;
+// Only used in www builds.
+
+// Flow magic to verify the exports of this file match the original version.
 
 // the renderer. Such as when we're dispatching events or if third party
 // libraries need to call batchedUpdates. Eventually, this API will go away when
@@ -2824,22 +2807,12 @@ var removeTouchesAtIndices = function(touches, indices) {
 function _receiveRootNodeIDEvent(rootNodeID, topLevelType, nativeEventParam) {
   var nativeEvent = nativeEventParam || EMPTY_NATIVE_EVENT;
   var inst = getInstanceFromTag(rootNodeID);
-  var target = null;
-
-  if (enableNativeTargetAsInstance) {
-    if (inst != null) {
-      target = inst.stateNode;
-    }
-  } else {
-    target = nativeEvent.target;
-  }
-
   batchedUpdates(function() {
     runExtractedPluginEventsInBatch(
       topLevelType,
       inst,
       nativeEvent,
-      target,
+      nativeEvent.target,
       PLUGIN_EVENT_SYSTEM
     );
   }); // React Native doesn't use ReactControlledComponent but if it did, here's

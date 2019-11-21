@@ -989,9 +989,7 @@ injection.injectEventPluginsByName({
     }
   }
 });
-var enableNativeTargetAsInstance = require("../shims/ReactFeatureFlags")
-    .enableNativeTargetAsInstance,
-  instanceCache = new Map(),
+var instanceCache = new Map(),
   instanceProps = new Map();
 function getInstanceFromTag(tag) {
   return instanceCache.get(tag) || null;
@@ -1035,13 +1033,9 @@ function batchedUpdates(fn, bookkeeping) {
 var EMPTY_NATIVE_EVENT = {};
 function _receiveRootNodeIDEvent(rootNodeID, topLevelType, nativeEventParam) {
   var nativeEvent = nativeEventParam || EMPTY_NATIVE_EVENT,
-    inst = getInstanceFromTag(rootNodeID),
-    target = null;
-  enableNativeTargetAsInstance
-    ? null != inst && (target = inst.stateNode)
-    : (target = nativeEvent.target);
+    inst = getInstanceFromTag(rootNodeID);
   batchedUpdates(function() {
-    var events = target;
+    var events = nativeEvent.target;
     for (var events$jscomp$0 = null, i = 0; i < plugins.length; i++) {
       var possiblePlugin = plugins[i];
       possiblePlugin &&
@@ -1114,14 +1108,7 @@ getFiberCurrentPropsFromNode = function(stateNode) {
 };
 getInstanceFromNode = getInstanceFromTag;
 getNodeFromInstance = function(inst) {
-  if (enableNativeTargetAsInstance) {
-    inst = inst.stateNode;
-    var tag = inst._nativeTag;
-    void 0 === tag && ((inst = inst.canonical), (tag = inst._nativeTag));
-    if (!tag) throw Error("All native instances should have a tag.");
-    return inst;
-  }
-  tag = inst.stateNode._nativeTag;
+  var tag = inst.stateNode._nativeTag;
   void 0 === tag && (tag = inst.stateNode.canonical._nativeTag);
   if (!tag) throw Error("All native instances should have a tag.");
   return tag;

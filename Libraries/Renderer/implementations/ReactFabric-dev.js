@@ -2567,52 +2567,18 @@ injection.injectEventPluginsByName({
   ReactNativeBridgeEventPlugin: ReactNativeBridgeEventPlugin
 });
 
-var debugRenderPhaseSideEffectsForStrictMode = false;
-var enableUserTimingAPI = true;
-var replayFailedUnitOfWorkWithInvokeGuardedCallback = true;
-var warnAboutDeprecatedLifecycles = true;
-var enableProfilerTimer = true;
-var enableSchedulerTracing = true;
-var enableSuspenseServerRenderer = false;
-
-var enableFlareAPI = false;
-var enableFundamentalAPI = false;
-var enableScopeAPI = false;
-
-var warnAboutUnmockedScheduler = false;
-var flushSuspenseFallbacksInTests = true;
-var enableSuspenseCallback = false;
-var warnAboutDefaultPropsOnFunctionComponents = false;
-var warnAboutStringRefs = false;
-var disableLegacyContext = false;
-var disableSchedulerTimeoutBasedOnReactExpirationTime = false;
-
-var enableNativeTargetAsInstance = false; // Only used in www builds.
-
-// Flow magic to verify the exports of this file match the original version.
-
 function getInstanceFromInstance(instanceHandle) {
   return instanceHandle;
 }
 
 function getTagFromInstance(inst) {
-  if (enableNativeTargetAsInstance) {
-    var nativeInstance = inst.stateNode.canonical;
+  var tag = inst.stateNode.canonical._nativeTag;
 
-    if (!nativeInstance._nativeTag) {
-      throw Error("All native instances should have a tag.");
-    }
-
-    return nativeInstance;
-  } else {
-    var tag = inst.stateNode.canonical._nativeTag;
-
-    if (!tag) {
-      throw Error("All native instances should have a tag.");
-    }
-
-    return tag;
+  if (!tag) {
+    throw Error("All native instances should have a tag.");
   }
+
+  return tag;
 }
 
 function getFiberCurrentPropsFromNode$1(inst) {
@@ -2954,6 +2920,29 @@ var Incomplete =
 var ShouldCapture =
   /*         */
   4096;
+
+var debugRenderPhaseSideEffectsForStrictMode = false;
+var enableUserTimingAPI = true;
+var replayFailedUnitOfWorkWithInvokeGuardedCallback = true;
+var warnAboutDeprecatedLifecycles = true;
+var enableProfilerTimer = true;
+var enableSchedulerTracing = true;
+var enableSuspenseServerRenderer = false;
+
+var enableFlareAPI = false;
+var enableFundamentalAPI = false;
+var enableScopeAPI = false;
+
+var warnAboutUnmockedScheduler = false;
+var flushSuspenseFallbacksInTests = true;
+var enableSuspenseCallback = false;
+var warnAboutDefaultPropsOnFunctionComponents = false;
+var warnAboutStringRefs = false;
+var disableLegacyContext = false;
+var disableSchedulerTimeoutBasedOnReactExpirationTime = false;
+// Only used in www builds.
+
+// Flow magic to verify the exports of this file match the original version.
 
 var ReactCurrentOwner$1 = ReactSharedInternals.ReactCurrentOwner;
 function getNearestMountedFiber(fiber) {
@@ -4388,23 +4377,13 @@ function dispatchEvent(target, topLevelType, nativeEvent) {
     dispatchEventForResponderEventSystem(topLevelType, target, nativeEvent);
   }
 
-  var eventTarget = null;
-
-  if (enableNativeTargetAsInstance) {
-    if (targetFiber != null) {
-      eventTarget = targetFiber.stateNode.canonical;
-    }
-  } else {
-    eventTarget = nativeEvent.target;
-  }
-
   batchedUpdates(function() {
     // Heritage plugin event system
     runExtractedPluginEventsInBatch(
       topLevelType,
       targetFiber,
       nativeEvent,
-      eventTarget,
+      nativeEvent.target,
       PLUGIN_EVENT_SYSTEM
     );
   }); // React Native doesn't use ReactControlledComponent but if it did, here's

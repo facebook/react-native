@@ -1035,11 +1035,9 @@ function batchedUpdates(fn, bookkeeping) {
 var EMPTY_NATIVE_EVENT = {};
 function _receiveRootNodeIDEvent(rootNodeID, topLevelType, nativeEventParam) {
   var nativeEvent = nativeEventParam || EMPTY_NATIVE_EVENT,
-    inst = getInstanceFromTag(rootNodeID),
-    target = null;
-  target = nativeEvent.target;
+    inst = getInstanceFromTag(rootNodeID);
   batchedUpdates(function() {
-    var events = target;
+    var events = nativeEvent.target;
     for (var events$jscomp$0 = null, i = 0; i < plugins.length; i++) {
       var possiblePlugin = plugins[i];
       possiblePlugin &&
@@ -1112,10 +1110,10 @@ getFiberCurrentPropsFromNode = function(stateNode) {
 };
 getInstanceFromNode = getInstanceFromTag;
 getNodeFromInstance = function(inst) {
-  var _tag = inst.stateNode._nativeTag;
-  void 0 === _tag && (_tag = inst.stateNode.canonical._nativeTag);
-  if (!_tag) throw Error("All native instances should have a tag.");
-  return _tag;
+  var tag = inst.stateNode._nativeTag;
+  void 0 === tag && (tag = inst.stateNode.canonical._nativeTag);
+  if (!tag) throw Error("All native instances should have a tag.");
+  return tag;
 };
 ResponderEventPlugin.injection.injectGlobalResponderHandler({
   onChange: function(from, to, blockNativeResponder) {
