@@ -10,21 +10,13 @@
 #import <QuartzCore/QuartzCore.h>
 
 #import <React/RCTBridge.h>
-#import <React/RCTConvert.h>
 #import <React/RCTDefines.h>
-#import <React/RCTDevLoadingViewSetEnabled.h>
 #import <React/RCTModalHostViewController.h>
 #import <React/RCTUtils.h>
-#import <FBReactNativeSpec/FBReactNativeSpec.h>
-
-#import "CoreModulesPlugins.h"
-
-using namespace facebook::react;
-
-@interface RCTDevLoadingView () <NativeDevLoadingViewSpec>
-@end
 
 #if RCT_DEV | RCT_ENABLE_LOADING_VIEW
+
+static BOOL isEnabled = YES;
 
 @implementation RCTDevLoadingView
 {
@@ -36,6 +28,11 @@ using namespace facebook::react;
 @synthesize bridge = _bridge;
 
 RCT_EXPORT_MODULE()
+
++ (void)setEnabled:(BOOL)enabled
+{
+  isEnabled = enabled;
+}
 
 + (BOOL)requiresMainQueueSetup
 {
@@ -60,14 +57,9 @@ RCT_EXPORT_MODULE()
   }
 }
 
-RCT_EXPORT_METHOD(showMessage:(NSString *)message color:(NSNumber *)color backgroundColor:(NSNumber *)backgroundColor)
+RCT_EXPORT_METHOD(showMessage:(NSString *)message color:(UIColor *)color backgroundColor:(UIColor *)backgroundColor)
 {
-  [self showMessage:message withColor:[RCTConvert UIColor:color] andBackgroundColor:[RCTConvert UIColor:backgroundColor]];
-}
-
--(void)showMessage:(NSString *)message withColor:(UIColor *)color andBackgroundColor:(UIColor *)backgroundColor
-{
-  if (!RCTDevLoadingViewGetEnabled()) {
+  if (!isEnabled) {
     return;
   }
 
@@ -107,7 +99,7 @@ RCT_EXPORT_METHOD(showMessage:(NSString *)message color:(NSNumber *)color backgr
 
 RCT_EXPORT_METHOD(hide)
 {
-  if (!RCTDevLoadingViewGetEnabled()) {
+  if (!isEnabled) {
     return;
   }
 
@@ -149,8 +141,8 @@ RCT_EXPORT_METHOD(hide)
   }
 
   [self showMessage:message
-          withColor:color
- andBackgroundColor:backgroundColor];
+              color:color
+    backgroundColor:backgroundColor];
 }
 
 - (void)updateProgress:(RCTLoadingProgress *)progress
@@ -163,11 +155,6 @@ RCT_EXPORT_METHOD(hide)
   });
 }
 
-- (std::shared_ptr<TurboModule>)getTurboModuleWithJsInvoker:(std::shared_ptr<CallInvoker>)jsInvoker
-{
-  return std::make_shared<NativeDevLoadingViewSpecJSI>(self, jsInvoker);
-}
-
 @end
 
 #else
@@ -175,19 +162,12 @@ RCT_EXPORT_METHOD(hide)
 @implementation RCTDevLoadingView
 
 + (NSString *)moduleName { return nil; }
-- (void)showMessage:(NSString *)message color:(NSNumber *)color backgroundColor:(NSNumber *)backgroundColor { }
++ (void)setEnabled:(BOOL)enabled { }
+- (void)showMessage:(NSString *)message color:(UIColor *)color backgroundColor:(UIColor *)backgroundColor { }
 - (void)showWithURL:(NSURL *)URL { }
 - (void)updateProgress:(RCTLoadingProgress *)progress { }
 - (void)hide { }
-- (std::shared_ptr<TurboModule>)getTurboModuleWithJsInvoker:(std::shared_ptr<CallInvoker>)jsInvoker
-{
-  return std::make_shared<NativeDevLoadingViewSpecJSI>(self, jsInvoker);
-}
 
 @end
 
 #endif
-
-Class RCTDevLoadingViewCls(void) {
-  return RCTDevLoadingView.class;
-}
