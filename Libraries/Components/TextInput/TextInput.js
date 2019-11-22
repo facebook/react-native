@@ -702,14 +702,25 @@ function useFocusOnMount(
     // Since initialAutoFocusValue and inputRef will never change
     // this should match the expected behavior
     if (initialAutoFocusValue.current) {
-      const rafId = requestAnimationFrame(() => {
+      const focus = () => {
         if (inputRef.current != null) {
           inputRef.current.focus();
         }
-      });
+      };
+
+      let rafId;
+      if (Platform.OS === 'android') {
+        // On Android this needs to be executed in a rAF callback
+        // otherwise the keyboard opens then closes immediately.
+        rafId = requestAnimationFrame(focus);
+      } else {
+        focus();
+      }
 
       return () => {
-        cancelAnimationFrame(rafId);
+        if (rafId != null) {
+          cancelAnimationFrame(rafId);
+        }
       };
     }
   }, [initialAutoFocusValue, inputRef]);
