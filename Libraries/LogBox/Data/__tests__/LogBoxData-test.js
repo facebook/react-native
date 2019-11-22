@@ -172,9 +172,11 @@ describe('LogBoxData', () => {
     flushLogs();
 
     expect(registry().length).toBe(7);
+    expect(selectedLogIndex()).toBe(4); // Fatal index.
 
     LogBoxData.clear();
     expect(registry().length).toBe(0);
+    expect(selectedLogIndex()).toBe(-1); // Reset selected index.
   });
 
   it('clears only warnings', () => {
@@ -184,9 +186,11 @@ describe('LogBoxData', () => {
     flushLogs();
 
     expect(registry().length).toBe(6);
+    expect(selectedLogIndex()).toBe(5); // Fatal index.
 
     LogBoxData.clearWarnings();
     expect(registry().length).toBe(4);
+    expect(selectedLogIndex()).toBe(3); // New fatal index.
   });
 
   it('clears errors and fatals, but not syntax errors.', () => {
@@ -197,9 +201,11 @@ describe('LogBoxData', () => {
     flushLogs();
 
     expect(registry().length).toBe(7);
+    expect(selectedLogIndex()).toBe(5); // Fatal index.
 
     LogBoxData.clearErrors();
     expect(registry().length).toBe(3);
+    expect(selectedLogIndex()).toBe(2); // New Fatal index.
   });
 
   it('clears all types except syntax errors', () => {
@@ -210,10 +216,12 @@ describe('LogBoxData', () => {
     flushLogs();
 
     expect(registry().length).toBe(7);
+    expect(selectedLogIndex()).toBe(5); // Fatal index.
 
     LogBoxData.clearErrors();
     LogBoxData.clearWarnings();
     expect(registry().length).toBe(1);
+    expect(selectedLogIndex()).toBe(0); // New Fatal index.
   });
 
   it('keeps logs in chronological order', () => {

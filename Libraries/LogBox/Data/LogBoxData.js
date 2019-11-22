@@ -255,6 +255,7 @@ export function symbolicateLogLazy(log: LogBoxLog) {
 export function clear(): void {
   if (logs.size > 0) {
     logs = new Set();
+    _selectedIndex = -1;
     handleUpdate();
   }
 }
@@ -268,6 +269,7 @@ export function clearWarnings(): void {
   const newLogs = Array.from(logs).filter(log => log.level !== 'warn');
   if (newLogs.length !== logs.size) {
     logs = new Set(newLogs);
+    _selectedIndex = -1;
     handleUpdate();
   }
 }
@@ -278,6 +280,7 @@ export function clearErrors(): void {
   );
   if (newLogs.length !== logs.size) {
     logs = new Set(newLogs);
+    _selectedIndex = -1;
     handleUpdate();
   }
 }
