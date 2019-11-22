@@ -19,6 +19,7 @@
 
 #import "RCTAssert.h"
 #import "RCTLog.h"
+#import <React/RCTUtilsUIOverride.h>
 
 NSString *const RCTErrorUnspecified = @"EUNSPECIFIED";
 
@@ -501,8 +502,8 @@ UIWindow *__nullable RCTKeyWindow(void)
 
 UIViewController *__nullable RCTPresentedViewController(void)
 {
-  if (RCTRunningInAppExtension()) {
-    return nil;
+  if ([RCTUtilsUIOverride hasPresentedViewController]) {
+    return [RCTUtilsUIOverride presentedViewController];
   }
 
   UIViewController *controller = RCTKeyWindow().rootViewController;
