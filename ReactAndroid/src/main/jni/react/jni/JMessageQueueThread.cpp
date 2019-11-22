@@ -32,9 +32,20 @@ struct JavaJSException : jni::JavaClass<JavaJSException, JThrowable> {
 };
 
 std::function<void()> wrapRunnable(std::function<void()>&& runnable) {
-  return [runnable=std::move(runnable)] {
+  return [runnable = std::move(runnable)]() mutable {
+    if (!runnable) {
+      // Runnable is empty, nothing to run.
+      return;
+    }
+
+    auto localRunnable = std::move(runnable);
+
+    // Clearing `runnable` to free all associated resources that stored lambda
+    // might retain.
+    runnable = nullptr;
+
     try {
-      runnable();
+      localRunnable();
     } catch (const jsi::JSError& ex) {
       throwNewJavaException(
           JavaJSException::create(ex.getMessage().c_str(), ex.getStack().c_str(), ex)
