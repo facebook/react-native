@@ -232,7 +232,7 @@ void YGNode::removeChild(uint32_t index) {
 }
 
 void YGNode::setLayoutDirection(YGDirection direction) {
-  layout_.direction() = direction;
+  layout_.setDirection(direction);
 }
 
 void YGNode::setLayoutMargin(float margin, int index) {
@@ -270,7 +270,7 @@ void YGNode::setLayoutMeasuredDimension(float measuredDimension, int index) {
 }
 
 void YGNode::setLayoutHadOverflow(bool hadOverflow) {
-  layout_.hadOverflow() = hadOverflow;
+  layout_.setHadOverflow(hadOverflow);
 }
 
 void YGNode::setLayoutDimension(float dimension, int index) {
@@ -536,11 +536,11 @@ bool YGNode::didUseLegacyFlag() {
 
 void YGNode::setLayoutDoesLegacyFlagAffectsLayout(
     bool doesLegacyFlagAffectsLayout) {
-  layout_.doesLegacyStretchFlagAffectsLayout() = doesLegacyFlagAffectsLayout;
+  layout_.setDoesLegacyStretchFlagAffectsLayout(doesLegacyFlagAffectsLayout);
 }
 
 void YGNode::setLayoutDidUseLegacyFlag(bool didUseLegacyFlag) {
-  layout_.didUseLegacyFlag() = didUseLegacyFlag;
+  layout_.setDidUseLegacyFlag(didUseLegacyFlag);
 }
 
 bool YGNode::isLayoutTreeEqualToNode(const YGNode& node) const {
