@@ -85,6 +85,9 @@ Scheduler::Scheduler(
 }
 
 Scheduler::~Scheduler() {
+  LOG(WARNING) << "Scheduler::~Scheduler() was called (address: " << this
+               << ").";
+
   // All Surfaces must be explicitly stopped before destroying `Scheduler`.
   // The idea is that `UIManager` is allowed to call `Scheduler` only if the
   // corresponding `ShadowTree` instance exists.

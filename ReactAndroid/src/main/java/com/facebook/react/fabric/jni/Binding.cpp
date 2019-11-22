@@ -102,6 +102,9 @@ void Binding::startSurfaceWithConstraints(
     jfloat maxHeight) {
   SystraceSection s("FabricUIManagerBinding::startSurfaceWithConstraints");
 
+  LOG(WARNING) << "Binding::startSurfaceWithConstraints() was called (address: "
+               << this << ", surfaceId: " << surfaceId << ").";
+
   std::shared_ptr<Scheduler> scheduler = getScheduler();
   if (!scheduler) {
     LOG(ERROR) << "Binding::startSurfaceWithConstraints: scheduler disappeared";
@@ -144,6 +147,9 @@ void Binding::renderTemplateToSurface(jint surfaceId, jstring uiTemplate) {
 
 void Binding::stopSurface(jint surfaceId) {
   SystraceSection s("FabricUIManagerBinding::stopSurface");
+
+  LOG(WARNING) << "Binding::stopSurface() was called (address: " << this
+               << ", surfaceId: " << surfaceId << ").";
 
   std::shared_ptr<Scheduler> scheduler = getScheduler();
   if (!scheduler) {
@@ -190,6 +196,9 @@ void Binding::installFabricUIManager(
     ComponentFactoryDelegate *componentsRegistry,
     jni::alias_ref<jobject> reactNativeConfig) {
   SystraceSection s("FabricUIManagerBinding::installFabricUIManager");
+
+  LOG(WARNING) << "Binding::installFabricUIManager() was called (address: "
+               << this << ").";
 
   // Use std::lock and std::adopt_lock to prevent deadlocks by locking mutexes at the same time
   std::lock(schedulerMutex_, javaUIManagerMutex_);
@@ -252,6 +261,8 @@ void Binding::installFabricUIManager(
 }
 
 void Binding::uninstallFabricUIManager() {
+  LOG(WARNING) << "Binding::uninstallFabricUIManager() was called (address: "
+               << this << ").";
   // Use std::lock and std::adopt_lock to prevent deadlocks by locking mutexes at the same time
   std::lock(schedulerMutex_, javaUIManagerMutex_);
   std::lock_guard<std::mutex> schedulerLock(schedulerMutex_, std::adopt_lock);

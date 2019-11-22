@@ -9,6 +9,7 @@
 
 #include <react/debug/SystraceSection.h>
 
+#include <glog/logging.h>
 #include <jsi/JSIDynamic.h>
 
 namespace facebook {
@@ -53,6 +54,9 @@ std::shared_ptr<UIManagerBinding> UIManagerBinding::createAndInstallIfNeeded(
 }
 
 UIManagerBinding::~UIManagerBinding() {
+  LOG(WARNING) << "UIManager::~UIManager() was called (address: " << this
+               << ").";
+
   // We must detach the `UIBinding` on deallocation to prevent accessing
   // deallocated `UIManagerBinding`.
   // Since `UIManagerBinding` retains `UIManager`, `UIManager` always overlive

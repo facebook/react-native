@@ -26,6 +26,7 @@ class UIManagerBinding;
 
 class UIManager final : public ShadowTreeDelegate {
  public:
+  ~UIManager();
 
   void setComponentDescriptorRegistry(
       const SharedComponentDescriptorRegistry &componentDescriptorRegistry);

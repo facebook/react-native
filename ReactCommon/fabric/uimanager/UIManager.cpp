@@ -10,8 +10,15 @@
 #include <react/core/ShadowNodeFragment.h>
 #include <react/debug/SystraceSection.h>
 
+#include <glog/logging.h>
+
 namespace facebook {
 namespace react {
+
+UIManager::~UIManager() {
+  LOG(WARNING) << "UIManager::~UIManager() was called (address: " << this
+               << ").";
+}
 
 SharedShadowNode UIManager::createNode(
     Tag tag,
