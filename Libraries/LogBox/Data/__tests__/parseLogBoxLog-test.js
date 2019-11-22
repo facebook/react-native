@@ -223,6 +223,52 @@ describe('parseLogBoxLog', () => {
     });
   });
 
+  it('parses a reference error', () => {
+    const error = {
+      message: `
+
+  197 | });
+  198 |
+> 199 | export default CrashReactApp;
+      | ^
+  200 |`,
+      originalMessage: `TransformError ReferenceError: /path/to/RKJSModules/Apps/CrashReact/CrashReactApp.js: 'import' and 'export' may only appear at the top level (199:0)
+
+  197 | });
+  198 |
+> 199 | export default CrashReactApp;
+      | ^
+  200 |`,
+      name: '',
+      isComponentError: false,
+      componentStack: '',
+      stack: [],
+      id: 0,
+      isFatal: true,
+    };
+
+    expect(parseLogBoxException(error)).toEqual({
+      level: 'syntax',
+      isComponentError: false,
+      codeFrame: {
+        fileName: '/path/to/RKJSModules/Apps/CrashReact/CrashReactApp.js',
+        location: {row: 199, column: 0},
+        content: `  197 | });
+  198 |
+> 199 | export default CrashReactApp;
+      | ^
+  200 |`,
+      },
+      message: {
+        content: "'import' and 'export' may only appear at the top level",
+        substitutions: [],
+      },
+      stack: [],
+      componentStack: [],
+      category: '/path/to/RKJSModules/Apps/CrashReact/CrashReactApp.js-199-0',
+    });
+  });
+
   it('parses a error log', () => {
     const error = {
       id: 0,

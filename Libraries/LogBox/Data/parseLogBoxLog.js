@@ -146,7 +146,7 @@ export function parseLogBoxException(
   const message =
     error.originalMessage != null ? error.originalMessage : 'Unknown';
   const match = message.match(
-    /(?:TransformError )?(?:SyntaxError: )(.*): (.*) \((\d+):(\d+)\)\n\n([\s\S]+)/,
+    /(?:TransformError )?(?:SyntaxError: |ReferenceError: )(.*): (.*) \((\d+):(\d+)\)\n\n([\s\S]+)/,
   );
 
   if (!match) {
