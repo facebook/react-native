@@ -51,6 +51,9 @@ export default function Ansi({
             remove_empty: true,
             use_classes: true,
           }).map((bundle, key) => {
+            // Remove the vertical bar after line numbers
+            const content =
+              key === 1 ? bundle.content.replace(/\| $/, ' ') : bundle.content;
             const textStyle =
               bundle.fg && COLORS[bundle.fg]
                 ? {
@@ -62,7 +65,7 @@ export default function Ansi({
                   };
             return (
               <Text style={[style, textStyle]} key={key}>
-                {bundle.content}
+                {content}
               </Text>
             );
           })}
