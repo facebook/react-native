@@ -28,24 +28,22 @@ exports[`LogBoxInspectorCodeFrame should render a code frame 1`] = `
       <ScrollViewMock
         horizontal={true}
       >
-        <Text
+        <Ansi
           style={
             Object {
               "color": "rgba(255, 255, 255, 1)",
-              "flex": 1,
               "fontFamily": "Menlo",
               "fontSize": 12,
               "includeFontPadding": false,
               "lineHeight": 20,
             }
           }
-        >
-            197 | });
+          text="  197 | });
     198 |
-  &gt; 199 | export default CrashReactApp;
+  > 199 | export default CrashReactApp;
         | ^
-    200 |
-        </Text>
+    200 |"
+        />
       </ScrollViewMock>
     </View>
     <LogBoxButton

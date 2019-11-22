@@ -19,7 +19,7 @@ import * as LogBoxStyle from './LogBoxStyle';
 import type {CodeFrame} from '../Data/parseLogBoxLog';
 import LogBoxButton from './LogBoxButton';
 import openFileInEditor from '../../Core/Devtools/openFileInEditor';
-import stripAnsi from 'strip-ansi';
+import AnsiHighlight from './AnsiHighlight';
 import LogBoxInspectorSection from './LogBoxInspectorSection';
 import * as LogBoxData from '../Data/LogBoxData';
 type Props = $ReadOnly<{|
@@ -46,7 +46,7 @@ function LogBoxInspectorCodeFrame(props: Props): React.Node {
       <View style={styles.box}>
         <View style={styles.frame}>
           <ScrollView horizontal>
-            <Text style={styles.content}>{stripAnsi(codeFrame.content)}</Text>
+            <AnsiHighlight style={styles.content} text={codeFrame.content} />
           </ScrollView>
         </View>
         <LogBoxButton
@@ -112,7 +112,6 @@ const styles = StyleSheet.create({
   },
   content: {
     color: LogBoxStyle.getTextColor(1),
-    flex: 1,
     fontSize: 12,
     includeFontPadding: false,
     lineHeight: 20,
