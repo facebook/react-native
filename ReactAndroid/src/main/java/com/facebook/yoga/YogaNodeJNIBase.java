@@ -138,12 +138,12 @@ public abstract class YogaNodeJNIBase extends YogaNode implements Cloneable {
   }
 
   /**
-   * @returns the {@link YogaNode} that owns this {@link YogaNode}.
-   * The owner is used to identify the YogaTree that a {@link YogaNode} belongs
-   * to.
+   * The owner is used to identify the YogaTree that a {@link YogaNode} belongs to.
    * This method will return the parent of the {@link YogaNode} when the
    * {@link YogaNode} only belongs to one YogaTree or null when the
    * {@link YogaNode} is shared between two or more YogaTrees.
+   *
+   * @return the {@link YogaNode} that owns this {@link YogaNode}.
    */
   @Nullable
   public YogaNodeJNIBase getOwner() {
@@ -521,7 +521,7 @@ public abstract class YogaNodeJNIBase extends YogaNode implements Cloneable {
    * This is different than calling removeChildAt and addChildAt because this method ONLY replaces
    * the child in the mChildren datastructure. @DoNotStrip: called from JNI
    *
-   * @return the nativePointer of the newNode {@linl YogaNode}
+   * @return the nativePointer of the newNode {@link YogaNode}
    */
   @DoNotStrip
   private final long replaceChild(YogaNodeJNIBase newNode, int childIndex) {
