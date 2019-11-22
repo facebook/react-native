@@ -582,10 +582,7 @@ void updateIndexedStyleProp(
 YOGA_EXPORT void YGNodeStyleSetDirection(
     const YGNodeRef node,
     const YGDirection value) {
-  if (node->getStyle().direction() != value) {
-    node->getStyle().direction() = value;
-    node->markDirtyAndPropogate();
-  }
+  updateStyle<MSVC_HINT(direction)>(node, &YGStyle::direction, value);
 }
 YOGA_EXPORT YGDirection YGNodeStyleGetDirection(const YGNodeConstRef node) {
   return node->getStyle().direction();
@@ -594,10 +591,8 @@ YOGA_EXPORT YGDirection YGNodeStyleGetDirection(const YGNodeConstRef node) {
 YOGA_EXPORT void YGNodeStyleSetFlexDirection(
     const YGNodeRef node,
     const YGFlexDirection flexDirection) {
-  if (node->getStyle().flexDirection() != flexDirection) {
-    node->getStyle().flexDirection() = flexDirection;
-    node->markDirtyAndPropogate();
-  }
+  updateStyle<MSVC_HINT(flexDirection)>(
+      node, &YGStyle::flexDirection, flexDirection);
 }
 YOGA_EXPORT YGFlexDirection
 YGNodeStyleGetFlexDirection(const YGNodeConstRef node) {
@@ -607,10 +602,8 @@ YGNodeStyleGetFlexDirection(const YGNodeConstRef node) {
 YOGA_EXPORT void YGNodeStyleSetJustifyContent(
     const YGNodeRef node,
     const YGJustify justifyContent) {
-  if (node->getStyle().justifyContent() != justifyContent) {
-    node->getStyle().justifyContent() = justifyContent;
-    node->markDirtyAndPropogate();
-  }
+  updateStyle<MSVC_HINT(justifyContent)>(
+      node, &YGStyle::justifyContent, justifyContent);
 }
 YOGA_EXPORT YGJustify YGNodeStyleGetJustifyContent(const YGNodeConstRef node) {
   return node->getStyle().justifyContent();
@@ -619,10 +612,8 @@ YOGA_EXPORT YGJustify YGNodeStyleGetJustifyContent(const YGNodeConstRef node) {
 YOGA_EXPORT void YGNodeStyleSetAlignContent(
     const YGNodeRef node,
     const YGAlign alignContent) {
-  if (node->getStyle().alignContent() != alignContent) {
-    node->getStyle().alignContent() = alignContent;
-    node->markDirtyAndPropogate();
-  }
+  updateStyle<MSVC_HINT(alignContent)>(
+      node, &YGStyle::alignContent, alignContent);
 }
 YOGA_EXPORT YGAlign YGNodeStyleGetAlignContent(const YGNodeConstRef node) {
   return node->getStyle().alignContent();
@@ -631,10 +622,7 @@ YOGA_EXPORT YGAlign YGNodeStyleGetAlignContent(const YGNodeConstRef node) {
 YOGA_EXPORT void YGNodeStyleSetAlignItems(
     const YGNodeRef node,
     const YGAlign alignItems) {
-  if (node->getStyle().alignItems() != alignItems) {
-    node->getStyle().alignItems() = alignItems;
-    node->markDirtyAndPropogate();
-  }
+  updateStyle<MSVC_HINT(alignItems)>(node, &YGStyle::alignItems, alignItems);
 }
 YOGA_EXPORT YGAlign YGNodeStyleGetAlignItems(const YGNodeConstRef node) {
   return node->getStyle().alignItems();
@@ -643,10 +631,7 @@ YOGA_EXPORT YGAlign YGNodeStyleGetAlignItems(const YGNodeConstRef node) {
 YOGA_EXPORT void YGNodeStyleSetAlignSelf(
     const YGNodeRef node,
     const YGAlign alignSelf) {
-  if (node->getStyle().alignSelf() != alignSelf) {
-    node->getStyle().alignSelf() = alignSelf;
-    node->markDirtyAndPropogate();
-  }
+  updateStyle<MSVC_HINT(alignSelf)>(node, &YGStyle::alignSelf, alignSelf);
 }
 YOGA_EXPORT YGAlign YGNodeStyleGetAlignSelf(const YGNodeConstRef node) {
   return node->getStyle().alignSelf();
@@ -655,10 +640,8 @@ YOGA_EXPORT YGAlign YGNodeStyleGetAlignSelf(const YGNodeConstRef node) {
 YOGA_EXPORT void YGNodeStyleSetPositionType(
     const YGNodeRef node,
     const YGPositionType positionType) {
-  if (node->getStyle().positionType() != positionType) {
-    node->getStyle().positionType() = positionType;
-    node->markDirtyAndPropogate();
-  }
+  updateStyle<MSVC_HINT(positionType)>(
+      node, &YGStyle::positionType, positionType);
 }
 YOGA_EXPORT YGPositionType
 YGNodeStyleGetPositionType(const YGNodeConstRef node) {
@@ -668,10 +651,7 @@ YGNodeStyleGetPositionType(const YGNodeConstRef node) {
 YOGA_EXPORT void YGNodeStyleSetFlexWrap(
     const YGNodeRef node,
     const YGWrap flexWrap) {
-  if (node->getStyle().flexWrap() != flexWrap) {
-    node->getStyle().flexWrap() = flexWrap;
-    node->markDirtyAndPropogate();
-  }
+  updateStyle<MSVC_HINT(flexWrap)>(node, &YGStyle::flexWrap, flexWrap);
 }
 YOGA_EXPORT YGWrap YGNodeStyleGetFlexWrap(const YGNodeConstRef node) {
   return node->getStyle().flexWrap();
@@ -680,10 +660,7 @@ YOGA_EXPORT YGWrap YGNodeStyleGetFlexWrap(const YGNodeConstRef node) {
 YOGA_EXPORT void YGNodeStyleSetOverflow(
     const YGNodeRef node,
     const YGOverflow overflow) {
-  if (node->getStyle().overflow() != overflow) {
-    node->getStyle().overflow() = overflow;
-    node->markDirtyAndPropogate();
-  }
+  updateStyle<MSVC_HINT(overflow)>(node, &YGStyle::overflow, overflow);
 }
 YOGA_EXPORT YGOverflow YGNodeStyleGetOverflow(const YGNodeConstRef node) {
   return node->getStyle().overflow();
@@ -692,10 +669,7 @@ YOGA_EXPORT YGOverflow YGNodeStyleGetOverflow(const YGNodeConstRef node) {
 YOGA_EXPORT void YGNodeStyleSetDisplay(
     const YGNodeRef node,
     const YGDisplay display) {
-  if (node->getStyle().display() != display) {
-    node->getStyle().display() = display;
-    node->markDirtyAndPropogate();
-  }
+  updateStyle<MSVC_HINT(display)>(node, &YGStyle::display, display);
 }
 YOGA_EXPORT YGDisplay YGNodeStyleGetDisplay(const YGNodeConstRef node) {
   return node->getStyle().display();
