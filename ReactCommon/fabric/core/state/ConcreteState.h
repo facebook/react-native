@@ -52,11 +52,12 @@ class ConcreteState : public State {
    */
   void updateState(
       Data &&newData,
-      EventPriority priority = EventPriority::SynchronousUnbatched) const {
+      EventPriority priority = EventPriority::AsynchronousUnbatched) const {
     updateState(
         [data = std::move(newData)](const Data &oldData) mutable -> Data && {
           return std::move(data);
-        });
+        },
+        priority);
   }
 
   /*
