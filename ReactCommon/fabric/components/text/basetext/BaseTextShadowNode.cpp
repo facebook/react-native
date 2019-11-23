@@ -54,7 +54,8 @@ AttributedString BaseTextShadowNode::getAttributedString(
 
     // Any other kind of ShadowNode
     auto fragment = AttributedString::Fragment{};
-    fragment.shadowView = ShadowView(*childNode);
+    fragment.string = AttributedString::Fragment::AttachmentCharacter();
+    fragment.parentShadowView = ShadowView(*childNode);
     fragment.textAttributes = textAttributes;
     attributedString.appendFragment(fragment);
   }

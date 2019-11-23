@@ -17,13 +17,17 @@ using Fragments = AttributedString::Fragments;
 
 #pragma mark - Fragment
 
+std::string Fragment::AttachmentCharacter() {
+  return "\uFFFC"; // Unicode `OBJECT REPLACEMENT CHARACTER`
+}
+
+bool Fragment::isAttachment() const {
+  return string == AttachmentCharacter();
+}
+
 bool Fragment::operator==(const Fragment &rhs) const {
-  return std::tie(string, textAttributes, shadowView, parentShadowView) ==
-      std::tie(
-             rhs.string,
-             rhs.textAttributes,
-             rhs.shadowView,
-             rhs.parentShadowView);
+  return std::tie(string, textAttributes, parentShadowView) ==
+      std::tie(rhs.string, rhs.textAttributes, rhs.parentShadowView);
 }
 
 bool Fragment::operator!=(const Fragment &rhs) const {
