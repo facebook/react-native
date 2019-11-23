@@ -16,11 +16,11 @@
     "eslint-plugin-eslint-comments": "^3.1.2",
     "eslint-plugin-flowtype": "2.50.3",
     "eslint-plugin-jest": "22.4.1",
-    "eslint-plugin-prettier": "~3.1.1",
+    "eslint-plugin-prettier": "^3.0.0",
     "eslint-plugin-react": "7.16.0",
     "eslint-plugin-react-hooks": "^2.0.1",
     "eslint-plugin-react-native": "3.8.1",
-    "prettier": "~1.19.0"
+    "prettier": "^1.17.0"
   },
   "peerDependencies": {
     "eslint": ">=5"
