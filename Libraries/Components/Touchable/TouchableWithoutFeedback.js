@@ -51,6 +51,10 @@ const OVERRIDE_PROPS = [
   'accessibilityActions',
   'onAccessibilityAction',
   'accessibilityValue',
+  'importantForAccessibility',
+  'accessibilityLiveRegion',
+  'accessibilityViewIsModal',
+  'accessibilityElementsHidden',
   'hitSlop',
   'nativeID',
   'onBlur',
@@ -68,6 +72,9 @@ export type Props = $ReadOnly<{|
   accessibilityState?: ?AccessibilityState,
   accessibilityValue?: ?AccessibilityValue,
   accessible?: ?boolean,
+  accessibilityLiveRegion?: ?('none' | 'polite' | 'assertive'),
+  accessibilityViewIsModal?: ?boolean,
+  accessibilityElementsHidden?: ?boolean,
   children?: ?React.Node,
   delayLongPress?: ?number,
   delayPressIn?: ?number,
@@ -75,6 +82,7 @@ export type Props = $ReadOnly<{|
   disabled?: ?boolean,
   focusable?: ?boolean,
   hitSlop?: ?EdgeInsetsProp,
+  importantForAccessibility?: ?('auto' | 'yes' | 'no' | 'no-hide-descendants'),
   nativeID?: ?string,
   onAccessibilityAction?: ?(event: AccessibilityActionEvent) => mixed,
   onBlur?: ?(event: BlurEvent) => mixed,
@@ -111,6 +119,55 @@ const TouchableWithoutFeedbackImpl = ((createReactClass({
     accessibilityActions: PropTypes.array,
     onAccessibilityAction: PropTypes.func,
     accessibilityValue: PropTypes.object,
+    /**
+     * Indicates to accessibility services whether the user should be notified
+     * when this view changes. Works for Android API >= 19 only.
+     *
+     * @platform android
+     *
+     * See http://facebook.github.io/react-native/docs/view.html#accessibilityliveregion
+     */
+    accessibilityLiveRegion: (PropTypes.oneOf([
+      'none',
+      'polite',
+      'assertive',
+    ]): React$PropType$Primitive<'none' | 'polite' | 'assertive'>),
+    /**
+     * Controls how view is important for accessibility which is if it
+     * fires accessibility events and if it is reported to accessibility services
+     * that query the screen. Works for Android only.
+     *
+     * @platform android
+     *
+     * See http://facebook.github.io/react-native/docs/view.html#importantforaccessibility
+     */
+    importantForAccessibility: (PropTypes.oneOf([
+      'auto',
+      'yes',
+      'no',
+      'no-hide-descendants',
+    ]): React$PropType$Primitive<
+      'auto' | 'yes' | 'no' | 'no-hide-descendants',
+    >),
+    /**
+     * A value indicating whether VoiceOver should ignore the elements
+     * within views that are siblings of the receiver.
+     * Default is `false`.
+     *
+     * @platform ios
+     *
+     * See http://facebook.github.io/react-native/docs/view.html#accessibilityviewismodal
+     */
+    accessibilityViewIsModal: PropTypes.bool,
+    /**
+     * A value indicating whether the accessibility elements contained within
+     * this accessibility element are hidden.
+     *
+     * @platform ios
+     *
+     * See http://facebook.github.io/react-native/docs/view.html#accessibilityElementsHidden
+     */
+    accessibilityElementsHidden: PropTypes.bool,
     /**
      * When `accessible` is true (which is the default) this may be called when
      * the OS-specific concept of "focus" occurs. Some platforms may not have

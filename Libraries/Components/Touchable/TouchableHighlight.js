@@ -397,6 +397,10 @@ const TouchableHighlightImpl = ((createReactClass({
         accessibilityValue={this.props.accessibilityValue}
         accessibilityActions={this.props.accessibilityActions}
         onAccessibilityAction={this.props.onAccessibilityAction}
+        importantForAccessibility={this.props.importantForAccessibility}
+        accessibilityLiveRegion={this.props.accessibilityLiveRegion}
+        accessibilityViewIsModal={this.props.accessibilityViewIsModal}
+        accessibilityElementsHidden={this.props.accessibilityElementsHidden}
         style={StyleSheet.compose(
           this.props.style,
           this.state.extraUnderlayStyle,
