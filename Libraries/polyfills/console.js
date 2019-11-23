@@ -615,15 +615,30 @@ if (global.nativeLoggingHook) {
     });
   }
 } else if (!global.console) {
-  const log = global.print || function consoleLoggingStub() {};
+  function stub() {}
+  const log = global.print || stub;
+
   global.console = {
+    debug: log,
     error: log,
     info: log,
     log: log,
-    warn: log,
     trace: log,
-    debug: log,
-    table: log,
+    warn: log,
+    assert(expression, label) {
+      if (!expression) {
+        log('Assertion failed: ' + label);
+      }
+    },
+    clear: stub,
+    dir: stub,
+    dirxml: stub,
+    group: stub,
+    groupCollapsed: stub,
+    groupEnd: stub,
+    profile: stub,
+    profileEnd: stub,
+    table: stub,
   };
 
   Object.defineProperty(console, '_isPolyfilled', {
