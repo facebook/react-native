@@ -18,8 +18,8 @@ using namespace facebook::react;
   SimpleThreadSafeCache<AttributedString, std::shared_ptr<const void>, 256> _cache;
 }
 
-static NSLineBreakMode RCTNSLineBreakModeFromWritingDirection(
-    EllipsizeMode ellipsizeMode) {
+static NSLineBreakMode RCTNSLineBreakModeFromEllipsizeMode(EllipsizeMode ellipsizeMode)
+{
   switch (ellipsizeMode) {
     case EllipsizeMode::Clip:
       return NSLineBreakByClipping;
@@ -80,8 +80,7 @@ static NSLineBreakMode RCTNSLineBreakModeFromWritingDirection(
 
   textContainer.lineFragmentPadding = 0.0; // Note, the default value is 5.
   textContainer.lineBreakMode = paragraphAttributes.maximumNumberOfLines > 0
-      ? RCTNSLineBreakModeFromWritingDirection(
-            paragraphAttributes.ellipsizeMode)
+      ? RCTNSLineBreakModeFromEllipsizeMode(paragraphAttributes.ellipsizeMode)
       : NSLineBreakByClipping;
   textContainer.maximumNumberOfLines = paragraphAttributes.maximumNumberOfLines;
 
