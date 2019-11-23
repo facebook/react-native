@@ -7,6 +7,7 @@
 
 #include "RawPropsKeyMap.h"
 
+#include <algorithm>
 #include <cassert>
 #include <cstdlib>
 #include <cstring>
@@ -14,15 +15,19 @@
 namespace facebook {
 namespace react {
 
-int RawPropsKeyMap::comparator(void const *lhs, void const *rhs) noexcept {
-  auto a = static_cast<RawPropsKeyMap::Item const *>(lhs);
-  auto b = static_cast<RawPropsKeyMap::Item const *>(rhs);
+bool RawPropsKeyMap::hasSameName(Item const &lhs, Item const &rhs) noexcept {
+  return lhs.length == rhs.length &&
+      (std::memcmp(lhs.name, rhs.name, lhs.length) == 0);
+}
 
-  if (a->length != b->length) {
-    return a->length - b->length;
+bool RawPropsKeyMap::shouldFirstOneBeBeforeSecondOne(
+    Item const &lhs,
+    Item const &rhs) noexcept {
+  if (lhs.length != rhs.length) {
+    return lhs.length < rhs.length;
   }
 
-  return std::memcmp(a->name, b->name, a->length);
+  return std::memcmp(lhs.name, rhs.name, rhs.length) < 0;
 }
 
 void RawPropsKeyMap::insert(
@@ -36,11 +41,22 @@ void RawPropsKeyMap::insert(
 
 void RawPropsKeyMap::reindex() noexcept {
   // Sorting `items_` by property names length and then lexicographically.
-  std::qsort(
-      items_.data(),
-      items_.size(),
-      sizeof(decltype(items_)::value_type),
-      &RawPropsKeyMap::comparator);
+  // Note, sort algorithm must be stable.
+  std::stable_sort(
+      items_.begin(),
+      items_.end(),
+      &RawPropsKeyMap::shouldFirstOneBeBeforeSecondOne);
+
+  // Filtering out duplicating keys.
+  // If some `*Props` object requests a prop more than once, only the first
+  // request will be fulfilled. E.g. `TextInputProps` class has a sub-property
+  // `backgroundColor` twice, the first time as part of `ViewProps` base-class
+  // and the second as part of `BaseTextProps` base-class. In this
+  // configuration, the only one which comes first (from `ViewProps`, which
+  // appear first) will be assigned.
+  items_.erase(
+      std::unique(items_.begin(), items_.end(), &RawPropsKeyMap::hasSameName),
+      items_.end());
 
   buckets_.resize(kPropNameLengthHardCap);
 

@@ -44,13 +44,16 @@ class RawPropsKeyMap final {
       RawPropsPropNameLength length) noexcept;
 
  private:
-  static int comparator(void const *lhs, void const *rhs) noexcept;
-
   struct Item {
     RawPropsValueIndex value;
     RawPropsPropNameLength length;
     char name[kPropNameLengthHardCap];
   };
+
+  static bool shouldFirstOneBeBeforeSecondOne(
+      Item const &lhs,
+      Item const &rhs) noexcept;
+  static bool hasSameName(Item const &lhs, Item const &rhs) noexcept;
 
   better::small_vector<Item, kNumberOfExplicitlySpecifedPropsSoftCap> items_{};
   better::small_vector<RawPropsPropNameLength, kPropNameLengthHardCap>
