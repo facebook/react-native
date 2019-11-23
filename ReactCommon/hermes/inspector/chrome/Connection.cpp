@@ -646,9 +646,21 @@ Connection::Impl::makePropsFromValue(
       m::runtime::PropertyDescriptor desc;
       desc.name = propName.utf8(runtime);
 
-      jsi::Value propValue = obj.getProperty(runtime, propName);
-      desc.value = m::runtime::makeRemoteObject(
-          runtime, propValue, objTable_, objectGroup);
+      try {
+        // Currently, we fetch the property even if it runs code.
+        // Chrome instead detects getters and makes you click to invoke.
+        jsi::Value propValue = obj.getProperty(runtime, propName);
+        desc.value = m::runtime::makeRemoteObject(
+            runtime, propValue, objTable_, objectGroup);
+      } catch (const jsi::JSError &err) {
+        // We fetched a property with a getter that threw. Show a placeholder.
+        // We could have added additional info, but the UI quickly gets messy.
+        desc.value = m::runtime::makeRemoteObject(
+            runtime,
+            jsi::String::createFromUtf8(runtime, "(Exception)"),
+            objTable_,
+            objectGroup);
+      }
 
       result.emplace_back(std::move(desc));
     }
