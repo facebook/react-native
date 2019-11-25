@@ -183,7 +183,7 @@ function createAnimatedComponent<Props: {+[string]: mixed, ...}, Instance>(
       }
     }
 
-    componentWillUnmount() {
+    UNSAFE_componentWillMount() {
       this._propsAnimated && this._propsAnimated.__detach();
       this._detachNativeEvents();
     }
