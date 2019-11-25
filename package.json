@@ -192,5 +192,8 @@
         "name": "iPhone 6s"
       }
     }
+  },
+  "beachball": {
+    "shouldPublish": false
   }
 }
