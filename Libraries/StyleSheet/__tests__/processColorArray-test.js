@@ -27,9 +27,7 @@ describe('processColorArray', () => {
       );
       expect(colorFromStringArray).toEqual(expectedIntArray);
     });
-  });
 
-  describe('predefined RGB array', () => {
     it('should convert array of color type rgb(x, y, z)', () => {
       const colorFromRGBArray = processColorArray([
         'rgb(10, 20, 30)',
@@ -41,9 +39,7 @@ describe('processColorArray', () => {
       );
       expect(colorFromRGBArray).toEqual(platformSpecific(expectedIntArray));
     });
-  });
 
-  describe('predefined HSL array', () => {
     it('should convert array of color type hsl(x, y%, z%)', () => {
       const colorFromHSLArray = processColorArray([
         'hsl(318, 69%, 55%)',
@@ -54,6 +50,11 @@ describe('processColorArray', () => {
         platformSpecific,
       );
       expect(colorFromHSLArray).toEqual(platformSpecific(expectedIntArray));
+    });
+
+    it('should return null if no array', () => {
+      const colorFromNoArray = processColorArray(null);
+      expect(colorFromNoArray).toEqual(null);
     });
   });
 });
