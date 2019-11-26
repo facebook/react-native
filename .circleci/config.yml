@@ -59,8 +59,8 @@ commands:
     steps:
       - restore_cache:
           keys:
-            - v3-yarn-cache-{{ arch }}-{{ checksum "yarn.lock" }}
-            - v3-yarn-cache-{{ arch }}
+            - v4-yarn-cache-{{ arch }}-{{ checksum "yarn.lock" }}
+            - v4-yarn-cache-{{ arch }}
       - run:
           name: Run Yarn
           command: |
@@ -72,7 +72,7 @@ commands:
       - save_cache:
           paths:
             - ~/.cache/yarn
-          key: v3-yarn-cache-{{ arch }}-{{ checksum "yarn.lock" }}
+          key: v4-yarn-cache-{{ arch }}-{{ checksum "yarn.lock" }}
 
   install_buck_tooling:
     steps:
