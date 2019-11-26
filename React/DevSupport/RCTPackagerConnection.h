@@ -69,6 +69,8 @@ typedef void (^RCTConnectedHandler)(void);
 - (void)addHandler:(id<RCTPackagerClientMethod>)handler
          forMethod:(NSString *)method __deprecated_msg("Use addRequestHandler or addNotificationHandler instead");
 
+- (void)setBundleURL:(NSURL *)bundleURL;
+
 @end
 
 NS_ASSUME_NONNULL_END

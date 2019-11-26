@@ -96,6 +96,23 @@ static RCTReconnectingWebSocket *socketForLocation(NSString *const jsLocation)
   return [[RCTReconnectingWebSocket alloc] initWithURL:components.URL queue:queue];
 }
 
+// NOTE(brentvatne): mainly copied over from socketForLocation to support passing in a bundleURL
+static RCTReconnectingWebSocket *socketForURL(NSURL *url)
+{
+  NSURLComponents *const components = [NSURLComponents new];
+  components.host = [url host];
+  components.scheme = @"http";
+  components.port =  [url port];
+  components.path = @"/message";
+  components.queryItems = @[[NSURLQueryItem queryItemWithName:@"role" value:@"ios"]];
+  static dispatch_queue_t queue;
+  static dispatch_once_t onceToken;
+  dispatch_once(&onceToken, ^{
+    queue = dispatch_queue_create("com.facebook.RCTPackagerConnectionQueue", DISPATCH_QUEUE_SERIAL);
+  });
+  return [[RCTReconnectingWebSocket alloc] initWithURL:components.URL queue:queue];
+}
+
 - (void)stop
 {
   std::lock_guard<std::mutex> l(_mutex);
@@ -130,6 +147,21 @@ static RCTReconnectingWebSocket *socketForLocation(NSString *const jsLocation)
   _socket = socketForLocation(jsLocation);
   _socket.delegate = self;
   [_socket start];
+}
+
+// NOTE(brentvatne): mainly copied over from bundleURLSettingsChanged to support setting bundleURL for expo client
+- (void)setBundleURL:(NSURL *)bundleURL
+{
+    std::lock_guard<std::mutex> l(_mutex);
+    if (_socket == nil) {
+      return; // already stopped
+    }
+
+    _socket.delegate = nil;
+    [_socket stop];
+    _socket = socketForURL(bundleURL);
+    _socket.delegate = self;
+    [_socket start];
 }
 
 - (RCTHandlerToken)addNotificationHandler:(RCTNotificationHandler)handler queue:(dispatch_queue_t)queue forMethod:(NSString *)method
