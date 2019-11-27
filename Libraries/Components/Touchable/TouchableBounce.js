@@ -14,12 +14,12 @@ import Pressability from '../../Pressability/Pressability.js';
 import {PressabilityDebugView} from '../../Pressability/PressabilityDebug.js';
 import type {ViewStyleProp} from '../../StyleSheet/StyleSheet.js';
 import TVTouchable from './TVTouchable.js';
-import type {Props as TouchableWithoutFeedbackProps} from './TouchableWithoutFeedback.js';
+import typeof TouchableWithoutFeedback from './TouchableWithoutFeedback.js';
 import {Animated, Platform} from 'react-native';
 import * as React from 'react';
 
 type Props = $ReadOnly<{|
-  ...TouchableWithoutFeedbackProps,
+  ...React.ElementConfig<TouchableWithoutFeedback>,
 
   onPressAnimationComplete?: ?() => void,
   onPressWithCompletion?: ?(callback: () => void) => void,

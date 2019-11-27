@@ -13,7 +13,7 @@
 import Pressability from '../../Pressability/Pressability.js';
 import {PressabilityDebugView} from '../../Pressability/PressabilityDebug.js';
 import TVTouchable from './TVTouchable.js';
-import type {Props as TouchableWithoutFeedbackProps} from './TouchableWithoutFeedback.js';
+import typeof TouchableWithoutFeedback from './TouchableWithoutFeedback.js';
 import Animated from 'react-native/Libraries/Animated/src/Animated';
 import Easing from 'react-native/Libraries/Animated/src/Easing';
 import type {ViewStyleProp} from 'react-native/Libraries/StyleSheet/StyleSheet';
@@ -31,7 +31,7 @@ type TVProps = $ReadOnly<{|
 |}>;
 
 type Props = $ReadOnly<{|
-  ...TouchableWithoutFeedbackProps,
+  ...React.ElementConfig<TouchableWithoutFeedback>,
   ...TVProps,
 
   activeOpacity?: ?number,

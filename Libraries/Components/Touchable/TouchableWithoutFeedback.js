@@ -30,7 +30,7 @@ import type {
 import {Platform, View} from 'react-native';
 import * as React from 'react';
 
-export type Props = $ReadOnly<{|
+type Props = $ReadOnly<{|
   accessibilityActions?: ?$ReadOnlyArray<AccessibilityActionInfo>,
   accessibilityElementsHidden?: ?boolean,
   accessibilityHint?: ?Stringish,

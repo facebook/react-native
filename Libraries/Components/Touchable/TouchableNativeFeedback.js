@@ -13,7 +13,7 @@
 import Pressability from '../../Pressability/Pressability.js';
 import {PressabilityDebugView} from '../../Pressability/PressabilityDebug.js';
 import TVTouchable from './TVTouchable.js';
-import type {Props as TouchableWithoutFeedbackProps} from './TouchableWithoutFeedback.js';
+import typeof TouchableWithoutFeedback from './TouchableWithoutFeedback.js';
 import {Commands} from 'react-native/Libraries/Components/View/ViewNativeComponent';
 import ReactNative from 'react-native/Libraries/Renderer/shims/ReactNative';
 import type {PressEvent} from 'react-native/Libraries/Types/CoreEventTypes';
@@ -21,7 +21,7 @@ import {Platform, View, processColor} from 'react-native';
 import * as React from 'react';
 
 type Props = $ReadOnly<{|
-  ...TouchableWithoutFeedbackProps,
+  ...React.ElementConfig<TouchableWithoutFeedback>,
 
   /**
    * Determines the type of background drawable that's going to be used to
