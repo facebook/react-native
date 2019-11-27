@@ -8,6 +8,7 @@
 package com.facebook.react.animated;
 
 import androidx.annotation.Nullable;
+import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Callback;
@@ -17,6 +18,7 @@ import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableMap;
+import com.facebook.react.common.ReactConstants;
 import com.facebook.react.common.annotations.VisibleForTesting;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
@@ -97,19 +99,27 @@ public class NativeAnimatedModule extends ReactContextBaseJavaModule
         new GuardedFrameCallback(reactContext) {
           @Override
           protected void doFrameGuarded(final long frameTimeNanos) {
-            NativeAnimatedNodesManager nodesManager = getNodesManager();
-            if (nodesManager.hasActiveAnimations()) {
-              nodesManager.runUpdates(frameTimeNanos);
-            }
+            try {
+              NativeAnimatedNodesManager nodesManager = getNodesManager();
+              if (nodesManager.hasActiveAnimations()) {
+                nodesManager.runUpdates(frameTimeNanos);
+              }
 
-            // TODO: Would be great to avoid adding this callback in case there are no active
-            // animations
-            // and no outstanding tasks on the operations queue. Apparently frame callbacks can only
-            // be posted from the UI thread and therefore we cannot schedule them directly from
-            // @ReactMethod methods
-            Assertions.assertNotNull(mReactChoreographer)
-                .postFrameCallback(
-                    ReactChoreographer.CallbackType.NATIVE_ANIMATED_MODULE, mAnimatedFrameCallback);
+              // TODO: Would be great to avoid adding this callback in case there are no active
+              // animations
+              // and no outstanding tasks on the operations queue. Apparently frame callbacks can
+              // only
+              // be posted from the UI thread and therefore we cannot schedule them directly from
+              // @ReactMethod methods
+              Assertions.assertNotNull(mReactChoreographer)
+                  .postFrameCallback(
+                      ReactChoreographer.CallbackType.NATIVE_ANIMATED_MODULE,
+                      mAnimatedFrameCallback);
+            } catch (Exception ex) {
+              // TODO T57341690 remove this when T57341690 is resolved
+              FLog.e(ReactConstants.TAG, "Exception while executing animated frame callback.", ex);
+              throw new RuntimeException(ex);
+            }
           }
         };
   }
