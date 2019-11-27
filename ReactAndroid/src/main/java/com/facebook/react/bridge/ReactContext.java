@@ -16,11 +16,13 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import androidx.annotation.Nullable;
+import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.react.bridge.queue.MessageQueueThread;
 import com.facebook.react.bridge.queue.ReactQueueConfiguration;
 import com.facebook.react.common.LifecycleState;
+import com.facebook.react.common.ReactConstants;
 import com.facebook.react.config.ReactFeatureFlags;
 import java.lang.ref.WeakReference;
 import java.util.concurrent.CopyOnWriteArraySet;
@@ -359,11 +361,23 @@ public class ReactContext extends ContextWrapper {
    * otherwise.
    */
   public void handleException(Exception e) {
-    if (mCatalystInstance != null
-        && !mCatalystInstance.isDestroyed()
-        && mNativeModuleCallExceptionHandler != null) {
+    boolean catalystInstanceVariableExists = mCatalystInstance != null;
+    boolean isCatalystInstanceAlive =
+        catalystInstanceVariableExists && !mCatalystInstance.isDestroyed();
+    boolean hasExceptionHandler = mNativeModuleCallExceptionHandler != null;
+
+    if (isCatalystInstanceAlive && hasExceptionHandler) {
       mNativeModuleCallExceptionHandler.handleException(e);
     } else {
+      FLog.e(
+          ReactConstants.TAG,
+          "Unable to handle Exception - catalystInstanceVariableExists: "
+              + catalystInstanceVariableExists
+              + " - isCatalystInstanceAlive: "
+              + !isCatalystInstanceAlive
+              + " - hasExceptionHandler: "
+              + hasExceptionHandler,
+          e);
       throw new RuntimeException(e);
     }
   }
