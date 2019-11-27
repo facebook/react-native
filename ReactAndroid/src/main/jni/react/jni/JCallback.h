@@ -9,7 +9,7 @@
 
 #include <memory>
 
-#include <fb/fbjni.h>
+#include <fbjni/fbjni.h>
 #include <folly/dynamic.h>
 
 #include "NativeArray.h"

@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include <fb/fbjni.h>
+#include <fbjni/fbjni.h>
 #include <ReactCommon/JavaTurboModule.h>
 #include <ReactCommon/CallInvoker.h>
 #include <string>

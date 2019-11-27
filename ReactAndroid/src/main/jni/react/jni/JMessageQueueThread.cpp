@@ -10,7 +10,7 @@
 #include <condition_variable>
 #include <mutex>
 
-#include <fb/fbjni.h>
+#include <fbjni/fbjni.h>
 #include <fb/log.h>
 #include <jsi/jsi.h>
 

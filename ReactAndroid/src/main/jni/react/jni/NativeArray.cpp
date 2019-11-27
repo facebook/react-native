@@ -7,7 +7,7 @@
 
 #include "NativeArray.h"
 
-#include <fb/fbjni.h>
+#include <fbjni/fbjni.h>
 #include <folly/json.h>
 
 using namespace facebook::jni;

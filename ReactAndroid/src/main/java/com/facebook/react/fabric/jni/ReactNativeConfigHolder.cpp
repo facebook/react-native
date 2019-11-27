@@ -7,7 +7,7 @@
 
 #import "ReactNativeConfigHolder.h"
 
-#include <fb/fbjni.h>
+#include <fbjni/fbjni.h>
 
 using namespace facebook::react;
 

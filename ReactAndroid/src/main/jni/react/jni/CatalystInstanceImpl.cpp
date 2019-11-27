@@ -24,11 +24,11 @@
 #include <cxxreact/ModuleRegistry.h>
 #include <cxxreact/RAMBundleRegistry.h>
 #include <cxxreact/RecoverableError.h>
-#include <fb/fbjni/ByteBuffer.h>
 #include <fb/log.h>
+#include <fbjni/ByteBuffer.h>
 #include <folly/dynamic.h>
-#include <jni/Countable.h>
-#include <jni/LocalReference.h>
+// #include <jni/Countable.h>
+// #include <jni/LocalReference.h>
 
 #include "CxxModuleWrapper.h"
 #include "JNativeRunnable.h"

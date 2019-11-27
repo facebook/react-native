@@ -8,7 +8,7 @@
 #pragma once
 
 #include <cxxreact/NativeModule.h>
-#include <fb/fbjni.h>
+#include <fbjni/fbjni.h>
 #include <folly/Optional.h>
 
 #include "MethodInvoker.h"

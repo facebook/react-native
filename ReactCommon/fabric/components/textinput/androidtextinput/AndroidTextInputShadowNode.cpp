@@ -7,7 +7,7 @@
 
 #include "AndroidTextInputShadowNode.h"
 
-#include <fb/fbjni.h>
+#include <fbjni/fbjni.h>
 #include <react/attributedstring/TextAttributes.h>
 #include <react/components/text/BaseTextShadowNode.h>
 #include <react/core/LayoutConstraints.h>

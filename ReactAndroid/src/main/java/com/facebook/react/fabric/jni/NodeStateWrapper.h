@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include <fb/fbjni.h>
+#include <fbjni/fbjni.h>
 #include <react/core/State.h>
 #include <react/jni/ReadableNativeMap.h>
 

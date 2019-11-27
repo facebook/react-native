@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include <fb/fbjni.h>
+#include <fbjni/fbjni.h>
 #include <react/config/ReactNativeConfig.h>
 #include <react/jni/JMessageQueueThread.h>
 #include <react/jni/ReadableNativeMap.h>

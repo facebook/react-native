@@ -6,7 +6,7 @@
  */
 
 #include "NodeStateWrapper.h"
-#include <fb/fbjni.h>
+#include <fbjni/fbjni.h>
 #include <react/jni/ReadableNativeMap.h>
 
 using namespace facebook::jni;

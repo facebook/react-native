@@ -8,7 +8,7 @@
 #include "JReactMarker.h"
 #include <mutex>
 #include <cxxreact/ReactMarker.h>
-#include <fb/fbjni.h>
+#include <fbjni/fbjni.h>
 
 namespace facebook {
 namespace react {

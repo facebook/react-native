@@ -7,7 +7,7 @@
 
 #include "BlobCollector.h"
 
-#include <fb/fbjni.h>
+#include <fbjni/fbjni.h>
 #include <memory>
 #include <mutex>
 

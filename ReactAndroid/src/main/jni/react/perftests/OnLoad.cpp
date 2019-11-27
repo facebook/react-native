@@ -6,7 +6,7 @@
  */
 
 #include <fb/log.h>
-#include <fb/fbjni.h>
+#include <fbjni/fbjni.h>
 #include <cxxreact/CxxModule.h>
 #include <cxxreact/JsArgumentHelpers.h>
 

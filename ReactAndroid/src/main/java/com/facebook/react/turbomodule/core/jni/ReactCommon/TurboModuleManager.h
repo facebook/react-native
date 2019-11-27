@@ -9,7 +9,7 @@
 
 #include <memory>
 #include <unordered_map>
-#include <fb/fbjni.h>
+#include <fbjni/fbjni.h>
 #include <jsi/jsi.h>
 #include <ReactCommon/TurboModule.h>
 #include <ReactCommon/JavaTurboModule.h>

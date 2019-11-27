@@ -11,7 +11,7 @@
 #include <string>
 
 #include <cxxreact/CxxModule.h>
-#include <fb/fbjni.h>
+#include <fbjni/fbjni.h>
 
 namespace facebook {
 namespace react {
