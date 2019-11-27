@@ -36,6 +36,9 @@ function byClickable(): Predicate {
         typeof node.props.onPress === 'function') ||
       // note: Special casing <Switch /> since it doesn't use touchable
       (node.type === Switch && node.props && node.props.disabled !== true) ||
+      // HACK: Find components that use `Pressability`.
+      node.instance?.state?.pressability != null ||
+      // TODO: Remove this after deleting `Touchable`.
       (node.instance &&
         typeof node.instance.touchableHandlePress === 'function'),
     'is clickable',
@@ -177,7 +180,7 @@ function tap(instance: ReactTestInstance) {
   } else {
     // Only tap when props.disabled isn't set (or there aren't any props)
     if (!touchable.props || !touchable.props.disabled) {
-      touchable.instance.touchableHandlePress({nativeEvent: {}});
+      touchable.props.onPress({nativeEvent: {}});
     }
   }
 }
