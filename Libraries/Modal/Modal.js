@@ -229,7 +229,7 @@ class Modal extends React.Component<Props> {
     }
 
     const innerChildren = __DEV__ ? (
-      <AppContainer rootTag={this.context.rootTag}>
+      <AppContainer rootTag={this.context.rootTag} internal_excludeLogBox>
         {this.props.children}
       </AppContainer>
     ) : (

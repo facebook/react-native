@@ -27,6 +27,7 @@ type Props = $ReadOnly<{|
   rootTag: number,
   showArchitectureIndicator?: boolean,
   WrapperComponent?: ?React.ComponentType<any>,
+  internal_excludeLogBox?: ?boolean,
 |}>;
 
 type State = {|
@@ -94,7 +95,7 @@ class AppContainer extends React.Component<Props, State> {
 
   render(): React.Node {
     let logBox = null;
-    if (__DEV__) {
+    if (__DEV__ && !this.props.internal_excludeLogBox) {
       if (!global.__RCTProfileIsProfiling) {
         if (global.__reactExperimentalLogBox) {
           const LogBox = require('../LogBox/LogBox');

@@ -13,10 +13,10 @@
 import Image from '../../Image/Image';
 import Platform from '../../Utilities/Platform';
 import * as React from 'react';
-import SafeAreaView from '../../Components/SafeAreaView/SafeAreaView';
 import StyleSheet from '../../StyleSheet/StyleSheet';
 import Text from '../../Text/Text';
 import View from '../../Components/View/View';
+import StatusBar from '../../Components/StatusBar/StatusBar';
 import LogBoxImageSource from './LogBoxImageSource';
 import LogBoxButton from './LogBoxButton';
 import * as LogBoxStyle from './LogBoxStyle';
@@ -31,13 +31,13 @@ type Props = $ReadOnly<{|
 function LogBoxInspectorHeader(props: Props): React.Node {
   if (props.level === 'syntax') {
     return (
-      <SafeAreaView style={styles[props.level]}>
+      <View style={[styles.safeArea, styles[props.level]]}>
         <View style={styles.header}>
           <View style={styles.title}>
             <Text style={styles.titleText}>Failed to compile</Text>
           </View>
         </View>
-      </SafeAreaView>
+      </View>
     );
   }
 
@@ -49,7 +49,7 @@ function LogBoxInspectorHeader(props: Props): React.Node {
   const titleText = `Log ${props.selectedIndex + 1} of ${props.total}`;
 
   return (
-    <SafeAreaView style={styles[props.level]}>
+    <View style={[styles.safeArea, styles[props.level]]}>
       <View style={styles.header}>
         <LogBoxInspectorHeaderButton
           disabled={props.total <= 1}
@@ -67,26 +67,26 @@ function LogBoxInspectorHeader(props: Props): React.Node {
           onPress={() => props.onSelectIndex(nextIndex)}
         />
       </View>
-    </SafeAreaView>
+    </View>
   );
 }
 
 const backgroundForLevel = (level: LogLevel) =>
   ({
     warn: {
-      default: LogBoxStyle.getWarningColor(),
+      default: 'transparent',
       pressed: LogBoxStyle.getWarningDarkColor(),
     },
     error: {
-      default: LogBoxStyle.getErrorColor(),
+      default: 'transparent',
       pressed: LogBoxStyle.getErrorDarkColor(),
     },
     fatal: {
-      default: LogBoxStyle.getFatalColor(),
+      default: 'transparent',
       pressed: LogBoxStyle.getFatalDarkColor(),
     },
     syntax: {
-      default: LogBoxStyle.getFatalColor(),
+      default: 'transparent',
       pressed: LogBoxStyle.getFatalDarkColor(),
     },
   }[level]);
@@ -126,7 +126,7 @@ const headerStyles = StyleSheet.create({
     borderRadius: 3,
   },
   buttonImage: {
-    tintColor: LogBoxStyle.getTextColor(1),
+    tintColor: LogBoxStyle.getBackgroundColor(1),
   },
 });
 
@@ -156,11 +156,14 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   titleText: {
-    color: LogBoxStyle.getTextColor(1),
+    color: LogBoxStyle.getBackgroundColor(1),
     fontSize: 16,
     fontWeight: '600',
     includeFontPadding: false,
     lineHeight: 20,
+  },
+  safeArea: {
+    paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 40,
   },
 });
 

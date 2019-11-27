@@ -13,7 +13,7 @@
 import type {LogLevel} from '../Data/LogBoxLog';
 
 import * as React from 'react';
-import SafeAreaView from '../../Components/SafeAreaView/SafeAreaView';
+import DeviceInfo from '../../Utilities/DeviceInfo';
 import StyleSheet from '../../StyleSheet/StyleSheet';
 import Text from '../../Text/Text';
 import View from '../../Components/View/View';
@@ -30,9 +30,11 @@ function LogBoxInspectorFooter(props: Props): React.Node {
   if (props.level === 'syntax') {
     return (
       <View style={styles.root}>
-        <Text style={styles.syntaxErrorText}>
-          This error cannot be dismissed.
-        </Text>
+        <View style={styles.button}>
+          <Text style={styles.syntaxErrorText}>
+            This error cannot be dismissed.
+          </Text>
+        </View>
       </View>
     );
   }
@@ -58,18 +60,18 @@ function FooterButton(props: ButtonProps): React.Node {
         pressed: LogBoxStyle.getBackgroundDarkColor(),
       }}
       onPress={props.onPress}
-      style={buttonStyles.button}>
+      style={buttonStyles.safeArea}>
       <View style={buttonStyles.content}>
         <Text style={buttonStyles.label}>{props.text}</Text>
       </View>
-      <SafeAreaView />
     </LogBoxButton>
   );
 }
 
 const buttonStyles = StyleSheet.create({
-  button: {
+  safeArea: {
     flex: 1,
+    paddingBottom: DeviceInfo.getConstants().isIPhoneX_deprecated ? 30 : 0,
   },
   content: {
     alignItems: 'center',
@@ -91,8 +93,10 @@ const styles = StyleSheet.create({
     shadowOffset: {width: 0, height: -2},
     shadowRadius: 2,
     shadowOpacity: 0.5,
-    elevation: 1,
     flexDirection: 'row',
+  },
+  button: {
+    flex: 1,
   },
   syntaxErrorText: {
     textAlign: 'center',

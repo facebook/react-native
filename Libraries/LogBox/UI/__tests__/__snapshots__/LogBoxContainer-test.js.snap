@@ -4,7 +4,7 @@ exports[`LogBoxContainer should render both an error and warning notification 1`
 <View
   style={
     Object {
-      "bottom": 10,
+      "bottom": 20,
       "left": 10,
       "position": "absolute",
       "right": 10,
@@ -83,13 +83,6 @@ exports[`LogBoxContainer should render both an error and warning notification 1`
       totalLogCount={1}
     />
   </View>
-  <ForwardRef(SafeAreaView)
-    style={
-      Object {
-        "flex": 1,
-      }
-    }
-  />
 </View>
 `;
 
@@ -198,7 +191,7 @@ exports[`LogBoxContainer should render the latest error notification 1`] = `
 <View
   style={
     Object {
-      "bottom": 10,
+      "bottom": 20,
       "left": 10,
       "position": "absolute",
       "right": 10,
@@ -241,13 +234,6 @@ exports[`LogBoxContainer should render the latest error notification 1`] = `
       totalLogCount={2}
     />
   </View>
-  <ForwardRef(SafeAreaView)
-    style={
-      Object {
-        "flex": 1,
-      }
-    }
-  />
 </View>
 `;
 
@@ -255,7 +241,7 @@ exports[`LogBoxContainer should render the latest warning notification 1`] = `
 <View
   style={
     Object {
-      "bottom": 10,
+      "bottom": 20,
       "left": 10,
       "position": "absolute",
       "right": 10,
@@ -298,12 +284,5 @@ exports[`LogBoxContainer should render the latest warning notification 1`] = `
       totalLogCount={2}
     />
   </View>
-  <ForwardRef(SafeAreaView)
-    style={
-      Object {
-        "flex": 1,
-      }
-    }
-  />
 </View>
 `;

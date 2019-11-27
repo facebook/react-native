@@ -11,11 +11,10 @@
 'use strict';
 
 import LogBoxInspectorCodeFrame from './LogBoxInspectorCodeFrame';
-import Platform from '../../Utilities/Platform';
 import * as React from 'react';
 import ScrollView from '../../Components/ScrollView/ScrollView';
 import StyleSheet from '../../StyleSheet/StyleSheet';
-import View from '../../Components/View/View';
+import Modal from '../../Modal/Modal';
 import * as LogBoxData from '../Data/LogBoxData';
 import Keyboard from '../../Components/Keyboard/Keyboard';
 import LogBoxInspectorFooter from './LogBoxInspectorFooter';
@@ -69,7 +68,12 @@ function LogBoxInspector(props: Props): React.Node {
   }
 
   return (
-    <View style={styles.root}>
+    <Modal
+      animationType="none"
+      visible
+      statusBarTranslucent
+      supportedOrientations={['portrait']}
+      presentationStyle="overFullScreen">
       <LogBoxInspectorHeader
         onSelectIndex={props.onChangeSelectedIndex}
         selectedIndex={selectedIndex}
@@ -82,7 +86,7 @@ function LogBoxInspector(props: Props): React.Node {
         onMinimize={props.onMinimize}
         level={log.level}
       />
-    </View>
+    </Modal>
   );
 }
 
@@ -139,11 +143,6 @@ function LogBoxInspectorBody(props) {
 }
 
 const styles = StyleSheet.create({
-  root: {
-    backgroundColor: LogBoxStyle.getTextColor(1),
-    elevation: Platform.OS === 'android' ? Number.MAX_SAFE_INTEGER : undefined,
-    height: '100%',
-  },
   scrollBody: {
     backgroundColor: LogBoxStyle.getBackgroundColor(0.9),
     flex: 1,

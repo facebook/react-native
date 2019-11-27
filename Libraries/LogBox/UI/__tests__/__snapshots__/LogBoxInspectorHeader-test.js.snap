@@ -1,11 +1,16 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`LogBoxInspectorHeader should render both buttons for two total 1`] = `
-<ForwardRef(SafeAreaView)
+<View
   style={
-    Object {
-      "backgroundColor": "rgba(250, 186, 48, 1)",
-    }
+    Array [
+      Object {
+        "paddingTop": 40,
+      },
+      Object {
+        "backgroundColor": "rgba(250, 186, 48, 1)",
+      },
+    ]
   }
 >
   <View
@@ -34,7 +39,7 @@ exports[`LogBoxInspectorHeader should render both buttons for two total 1`] = `
       <Text
         style={
           Object {
-            "color": "rgba(255, 255, 255, 1)",
+            "color": "rgba(51, 51, 51, 1)",
             "fontSize": 16,
             "fontWeight": "600",
             "includeFontPadding": false,
@@ -52,15 +57,20 @@ exports[`LogBoxInspectorHeader should render both buttons for two total 1`] = `
       onPress={[Function]}
     />
   </View>
-</ForwardRef(SafeAreaView)>
+</View>
 `;
 
 exports[`LogBoxInspectorHeader should render no buttons for one total 1`] = `
-<ForwardRef(SafeAreaView)
+<View
   style={
-    Object {
-      "backgroundColor": "rgba(250, 186, 48, 1)",
-    }
+    Array [
+      Object {
+        "paddingTop": 40,
+      },
+      Object {
+        "backgroundColor": "rgba(250, 186, 48, 1)",
+      },
+    ]
   }
 >
   <View
@@ -89,7 +99,7 @@ exports[`LogBoxInspectorHeader should render no buttons for one total 1`] = `
       <Text
         style={
           Object {
-            "color": "rgba(255, 255, 255, 1)",
+            "color": "rgba(51, 51, 51, 1)",
             "fontSize": 16,
             "fontWeight": "600",
             "includeFontPadding": false,
@@ -107,15 +117,20 @@ exports[`LogBoxInspectorHeader should render no buttons for one total 1`] = `
       onPress={[Function]}
     />
   </View>
-</ForwardRef(SafeAreaView)>
+</View>
 `;
 
 exports[`LogBoxInspectorHeader should render syntax error header 1`] = `
-<ForwardRef(SafeAreaView)
+<View
   style={
-    Object {
-      "backgroundColor": "rgba(243, 83, 105, 1)",
-    }
+    Array [
+      Object {
+        "paddingTop": 40,
+      },
+      Object {
+        "backgroundColor": "rgba(243, 83, 105, 1)",
+      },
+    ]
   }
 >
   <View
@@ -138,7 +153,7 @@ exports[`LogBoxInspectorHeader should render syntax error header 1`] = `
       <Text
         style={
           Object {
-            "color": "rgba(255, 255, 255, 1)",
+            "color": "rgba(51, 51, 51, 1)",
             "fontSize": 16,
             "fontWeight": "600",
             "includeFontPadding": false,
@@ -150,15 +165,20 @@ exports[`LogBoxInspectorHeader should render syntax error header 1`] = `
       </Text>
     </View>
   </View>
-</ForwardRef(SafeAreaView)>
+</View>
 `;
 
 exports[`LogBoxInspectorHeader should render two buttons for three or more total 1`] = `
-<ForwardRef(SafeAreaView)
+<View
   style={
-    Object {
-      "backgroundColor": "rgba(250, 186, 48, 1)",
-    }
+    Array [
+      Object {
+        "paddingTop": 40,
+      },
+      Object {
+        "backgroundColor": "rgba(250, 186, 48, 1)",
+      },
+    ]
   }
 >
   <View
@@ -187,7 +207,7 @@ exports[`LogBoxInspectorHeader should render two buttons for three or more total
       <Text
         style={
           Object {
-            "color": "rgba(255, 255, 255, 1)",
+            "color": "rgba(51, 51, 51, 1)",
             "fontSize": 16,
             "fontWeight": "600",
             "includeFontPadding": false,
@@ -205,5 +225,5 @@ exports[`LogBoxInspectorHeader should render two buttons for three or more total
       onPress={[Function]}
     />
   </View>
-</ForwardRef(SafeAreaView)>
+</View>
 `;

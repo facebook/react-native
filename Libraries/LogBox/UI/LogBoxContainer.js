@@ -108,14 +108,13 @@ function LogBoxContainer(props: Props): React.Node {
           />
         </View>
       )}
-      <SafeAreaView style={styles.safeArea} />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   list: {
-    bottom: 10,
+    bottom: 20,
     left: 10,
     right: 10,
     position: 'absolute',
@@ -124,9 +123,6 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     marginBottom: 5,
     overflow: 'hidden',
-  },
-  safeArea: {
-    flex: 1,
   },
 });
 
