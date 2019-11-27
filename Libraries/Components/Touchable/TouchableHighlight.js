@@ -4,45 +4,20 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @flow
+ * @flow strict-local
  * @format
  */
 
 'use strict';
 
-import TouchableInjection from './TouchableInjection';
-
-const DeprecatedColorPropType = require('../../DeprecatedPropTypes/DeprecatedColorPropType');
-const DeprecatedViewPropTypes = require('../../DeprecatedPropTypes/DeprecatedViewPropTypes');
-const NativeMethodsMixin = require('../../Renderer/shims/NativeMethodsMixin');
-const Platform = require('../../Utilities/Platform');
-const PropTypes = require('prop-types');
-const React = require('react');
-const ReactNativeViewAttributes = require('../View/ReactNativeViewAttributes');
-const StyleSheet = require('../../StyleSheet/StyleSheet');
-const Touchable = require('./Touchable');
-const TouchableWithoutFeedback = require('./TouchableWithoutFeedback');
-const View = require('../View/View');
-
-const createReactClass = require('create-react-class');
-const ensurePositiveDelayProps = require('./ensurePositiveDelayProps');
-
-import type {PressEvent} from '../../Types/CoreEventTypes';
-import type {ViewStyleProp} from '../../StyleSheet/StyleSheet';
-import type {ColorValue} from '../../StyleSheet/StyleSheetTypes';
-import type {Props as TouchableWithoutFeedbackProps} from './TouchableWithoutFeedback';
-
-const DEFAULT_PROPS = {
-  activeOpacity: 0.85,
-  delayPressOut: 100,
-  underlayColor: 'black',
-};
-
-const PRESS_RETENTION_OFFSET = {top: 20, left: 20, right: 20, bottom: 30};
-
-type IOSProps = $ReadOnly<{|
-  hasTVPreferredFocus?: ?boolean,
-|}>;
+import Pressability from '../../Pressability/Pressability.js';
+import {PressabilityDebugView} from '../../Pressability/PressabilityDebug.js';
+import type {ViewStyleProp} from '../../StyleSheet/StyleSheet.js';
+import type {ColorValue} from '../../StyleSheet/StyleSheetTypes.js';
+import TVTouchable from './TVTouchable.js';
+import type {Props as TouchableWithoutFeedbackProps} from './TouchableWithoutFeedback.js';
+import {Platform, StyleSheet, View} from 'react-native';
+import * as React from 'react';
 
 type AndroidProps = $ReadOnly<{|
   nextFocusDown?: ?number,
@@ -52,10 +27,14 @@ type AndroidProps = $ReadOnly<{|
   nextFocusUp?: ?number,
 |}>;
 
-export type Props = $ReadOnly<{|
+type IOSProps = $ReadOnly<{|
+  hasTVPreferredFocus?: ?boolean,
+|}>;
+
+type Props = $ReadOnly<{|
   ...TouchableWithoutFeedbackProps,
-  ...IOSProps,
   ...AndroidProps,
+  ...IOSProps,
 
   activeOpacity?: ?number,
   underlayColor?: ?ColorValue,
@@ -63,6 +42,18 @@ export type Props = $ReadOnly<{|
   onShowUnderlay?: ?() => void,
   onHideUnderlay?: ?() => void,
   testOnly_pressed?: ?boolean,
+
+  hostRef: React.Ref<typeof View>,
+|}>;
+
+type ExtraStyles = $ReadOnly<{|
+  child: ViewStyleProp,
+  underlay: ViewStyleProp,
+|}>;
+
+type State = $ReadOnly<{|
+  pressability: Pressability,
+  extraStyles: ?ExtraStyles,
 |}>;
 
 /**
@@ -161,232 +152,141 @@ export type Props = $ReadOnly<{|
  * ```
  *
  */
+class TouchableHighlight extends React.Component<Props, State> {
+  _hideTimeout: ?TimeoutID;
+  _isMounted: boolean = false;
+  _tvTouchable: ?TVTouchable;
 
-const TouchableHighlightImpl = ((createReactClass({
-  displayName: 'TouchableHighlight',
-  propTypes: {
-    /* $FlowFixMe(>=0.89.0 site=react_native_fb) This comment suppresses an
-     * error found when Flow v0.89 was deployed. To see the error, delete this
-     * comment and run Flow. */
-    ...TouchableWithoutFeedback.propTypes,
-    /**
-     * Determines what the opacity of the wrapped view should be when touch is
-     * active.
-     */
-    activeOpacity: PropTypes.number,
-    /**
-     * The color of the underlay that will show through when the touch is
-     * active.
-     */
-    underlayColor: DeprecatedColorPropType,
-    /**
-     * Style to apply to the container/underlay. Most commonly used to make sure
-     * rounded corners match the wrapped component.
-     */
-    style: DeprecatedViewPropTypes.style,
-    /**
-     * Called immediately after the underlay is shown
-     */
-    onShowUnderlay: PropTypes.func,
-    /**
-     * Called immediately after the underlay is hidden
-     */
-    onHideUnderlay: PropTypes.func,
-    /**
-     * *(Apple TV only)* TV preferred focus (see documentation for the View component).
-     *
-     * @platform ios
-     */
-    hasTVPreferredFocus: PropTypes.bool,
-    /**
-     * TV next focus down (see documentation for the View component).
-     *
-     * @platform android
-     */
-    nextFocusDown: PropTypes.number,
-    /**
-     * TV next focus forward (see documentation for the View component).
-     *
-     * @platform android
-     */
-    nextFocusForward: PropTypes.number,
-    /**
-     * TV next focus left (see documentation for the View component).
-     *
-     * @platform android
-     */
-    nextFocusLeft: PropTypes.number,
-    /**
-     * TV next focus right (see documentation for the View component).
-     *
-     * @platform android
-     */
-    nextFocusRight: PropTypes.number,
-    /**
-     * TV next focus up (see documentation for the View component).
-     *
-     * @platform android
-     */
-    nextFocusUp: PropTypes.number,
-    /**
-     * Handy for snapshot tests.
-     */
-    testOnly_pressed: PropTypes.bool,
-  },
+  state: State = {
+    pressability: new Pressability({
+      getHitSlop: () => this.props.hitSlop,
+      getLongPressDelayMS: () => {
+        if (this.props.delayLongPress != null) {
+          const maybeNumber = this.props.delayLongPress;
+          if (typeof maybeNumber === 'number') {
+            return maybeNumber;
+          }
+        }
+        return 500;
+      },
+      getPressDelayMS: () => this.props.delayPressIn,
+      getPressOutDelayMS: () => this.props.delayPressOut,
+      getPressRectOffset: () => this.props.pressRetentionOffset,
+      getTouchSoundDisabled: () => this.props.touchSoundDisabled,
+      onBlur: event => {
+        if (Platform.isTV) {
+          this._hideUnderlay();
+        }
+        if (this.props.onBlur != null) {
+          this.props.onBlur(event);
+        }
+      },
+      onFocus: event => {
+        if (Platform.isTV) {
+          this._showUnderlay();
+        }
+        if (this.props.onFocus != null) {
+          this.props.onFocus(event);
+        }
+      },
+      onLongPress: event => {
+        if (this.props.onLongPress != null) {
+          this.props.onLongPress(event);
+        }
+      },
+      onPress: event => {
+        if (this._hideTimeout != null) {
+          clearTimeout(this._hideTimeout);
+        }
+        if (!Platform.isTV) {
+          this._showUnderlay();
+          this._hideTimeout = setTimeout(() => {
+            this._hideUnderlay();
+          }, this.props.delayPressOut ?? 0);
+        }
+        if (this.props.onPress != null) {
+          this.props.onPress(event);
+        }
+      },
+      onPressIn: event => {
+        if (this._hideTimeout != null) {
+          clearTimeout(this._hideTimeout);
+          this._hideTimeout = null;
+        }
+        this._showUnderlay();
+        if (this.props.onPressIn != null) {
+          this.props.onPressIn(event);
+        }
+      },
+      onPressOut: event => {
+        if (this._hideTimeout == null) {
+          this._hideUnderlay();
+        }
+        if (this.props.onPressOut != null) {
+          this.props.onPressOut(event);
+        }
+      },
+      onResponderTerminationRequest: () =>
+        !this.props.rejectResponderTermination,
+      onStartShouldSetResponder: () => !this.props.disabled,
+    }),
+    extraStyles:
+      this.props.testOnly_pressed === true ? this._createExtraStyles() : null,
+  };
 
-  mixins: [NativeMethodsMixin, Touchable.Mixin.withoutDefaultFocusAndBlur],
+  _createExtraStyles(): ExtraStyles {
+    return {
+      child: {opacity: this.props.activeOpacity ?? 0.85},
+      underlay: {backgroundColor: this.props.underlayColor ?? 'black'},
+    };
+  }
 
-  getDefaultProps: () => DEFAULT_PROPS,
-
-  getInitialState: function() {
-    this._isMounted = false;
-    if (this.props.testOnly_pressed) {
-      return {
-        ...this.touchableGetInitialState(),
-        extraChildStyle: {
-          opacity: this.props.activeOpacity,
-        },
-        extraUnderlayStyle: {
-          backgroundColor: this.props.underlayColor,
-        },
-      };
-    } else {
-      return {
-        ...this.touchableGetInitialState(),
-        extraChildStyle: null,
-        extraUnderlayStyle: null,
-      };
-    }
-  },
-
-  componentDidMount: function() {
-    this._isMounted = true;
-    ensurePositiveDelayProps(this.props);
-  },
-
-  componentWillUnmount: function() {
-    this._isMounted = false;
-    clearTimeout(this._hideTimeout);
-  },
-
-  UNSAFE_componentWillReceiveProps: function(nextProps) {
-    ensurePositiveDelayProps(nextProps);
-  },
-
-  viewConfig: {
-    uiViewClassName: 'RCTView',
-    validAttributes: ReactNativeViewAttributes.RCTView,
-  },
-
-  /**
-   * `Touchable.Mixin` self callbacks. The mixin will invoke these if they are
-   * defined on your component.
-   */
-  touchableHandleActivePressIn: function(e: PressEvent) {
-    clearTimeout(this._hideTimeout);
-    this._hideTimeout = null;
-    this._showUnderlay();
-    this.props.onPressIn && this.props.onPressIn(e);
-  },
-
-  touchableHandleActivePressOut: function(e: PressEvent) {
-    if (!this._hideTimeout) {
-      this._hideUnderlay();
-    }
-    this.props.onPressOut && this.props.onPressOut(e);
-  },
-
-  touchableHandleFocus: function(e: Event) {
-    if (Platform.isTV) {
-      this._showUnderlay();
-    }
-    this.props.onFocus && this.props.onFocus(e);
-  },
-
-  touchableHandleBlur: function(e: Event) {
-    if (Platform.isTV) {
-      this._hideUnderlay();
-    }
-    this.props.onBlur && this.props.onBlur(e);
-  },
-
-  touchableHandlePress: function(e: PressEvent) {
-    clearTimeout(this._hideTimeout);
-    if (!Platform.isTV) {
-      this._showUnderlay();
-      this._hideTimeout = setTimeout(
-        this._hideUnderlay,
-        this.props.delayPressOut,
-      );
-    }
-    this.props.onPress && this.props.onPress(e);
-  },
-
-  touchableHandleLongPress: function(e: PressEvent) {
-    this.props.onLongPress && this.props.onLongPress(e);
-  },
-
-  touchableGetPressRectOffset: function() {
-    return this.props.pressRetentionOffset || PRESS_RETENTION_OFFSET;
-  },
-
-  touchableGetHitSlop: function() {
-    return this.props.hitSlop;
-  },
-
-  touchableGetHighlightDelayMS: function() {
-    return this.props.delayPressIn;
-  },
-
-  touchableGetLongPressDelayMS: function() {
-    return this.props.delayLongPress;
-  },
-
-  touchableGetPressOutDelayMS: function() {
-    return this.props.delayPressOut;
-  },
-
-  _showUnderlay: function() {
+  _showUnderlay(): void {
     if (!this._isMounted || !this._hasPressHandler()) {
       return;
     }
-    this.setState({
-      extraChildStyle: {
-        opacity: this.props.activeOpacity,
-      },
-      extraUnderlayStyle: {
-        backgroundColor: this.props.underlayColor,
-      },
-    });
-    this.props.onShowUnderlay && this.props.onShowUnderlay();
-  },
+    this.setState({extraStyles: this._createExtraStyles()});
+    if (this.props.onShowUnderlay != null) {
+      this.props.onShowUnderlay();
+    }
+  }
 
-  _hideUnderlay: function() {
-    clearTimeout(this._hideTimeout);
-    this._hideTimeout = null;
-    if (this.props.testOnly_pressed) {
+  _hideUnderlay(): void {
+    if (this._hideTimeout != null) {
+      clearTimeout(this._hideTimeout);
+      this._hideTimeout = null;
+    }
+    if (this.props.testOnly_pressed === true) {
       return;
     }
     if (this._hasPressHandler()) {
-      this.setState({
-        extraChildStyle: null,
-        extraUnderlayStyle: null,
-      });
-      this.props.onHideUnderlay && this.props.onHideUnderlay();
+      this.setState({extraStyles: null});
+      if (this.props.onHideUnderlay != null) {
+        this.props.onHideUnderlay();
+      }
     }
-  },
+  }
 
-  _hasPressHandler: function() {
-    return !!(
-      this.props.onPress ||
-      this.props.onPressIn ||
-      this.props.onPressOut ||
-      this.props.onLongPress
+  _hasPressHandler(): boolean {
+    return (
+      this.props.onPress != null ||
+      this.props.onPressIn != null ||
+      this.props.onPressOut != null ||
+      this.props.onLongPress != null
     );
-  },
+  }
 
-  render: function() {
+  render(): React.Node {
     const child = React.Children.only(this.props.children);
+
+    // BACKWARD-COMPATIBILITY: Focus and blur events were never supported before
+    // adopting `Pressability`, so preserve that behavior.
+    const {
+      onBlur,
+      onFocus,
+      ...eventHandlersWithoutBlurAndFocus
+    } = this.state.pressability.getEventHandlers();
+
     return (
       <View
         accessible={this.props.accessible !== false}
@@ -403,7 +303,7 @@ const TouchableHighlightImpl = ((createReactClass({
         accessibilityElementsHidden={this.props.accessibilityElementsHidden}
         style={StyleSheet.compose(
           this.props.style,
-          this.state.extraUnderlayStyle,
+          this.state.extraStyles?.underlay,
         )}
         onLayout={this.props.onLayout}
         hitSlop={this.props.hitSlop}
@@ -416,35 +316,61 @@ const TouchableHighlightImpl = ((createReactClass({
         focusable={
           this.props.focusable !== false && this.props.onPress !== undefined
         }
-        onClick={this.touchableHandlePress}
-        onStartShouldSetResponder={this.touchableHandleStartShouldSetResponder}
-        onResponderTerminationRequest={
-          this.touchableHandleResponderTerminationRequest
-        }
-        onResponderGrant={this.touchableHandleResponderGrant}
-        onResponderMove={this.touchableHandleResponderMove}
-        onResponderRelease={this.touchableHandleResponderRelease}
-        onResponderTerminate={this.touchableHandleResponderTerminate}
         nativeID={this.props.nativeID}
-        testID={this.props.testID}>
+        testID={this.props.testID}
+        ref={this.props.hostRef}
+        {...eventHandlersWithoutBlurAndFocus}>
         {React.cloneElement(child, {
           style: StyleSheet.compose(
             child.props.style,
-            this.state.extraChildStyle,
+            this.state.extraStyles?.child,
           ),
         })}
-        {Touchable.renderDebugView({
-          color: 'green',
-          hitSlop: this.props.hitSlop,
-        })}
+        {__DEV__ ? (
+          <PressabilityDebugView color="green" hitSlop={this.props.hitSlop} />
+        ) : null}
       </View>
     );
-  },
-}): any): React.ComponentType<Props>);
+  }
 
-const TouchableHighlight: React.ComponentType<Props> =
-  TouchableInjection.unstable_TouchableHighlight == null
-    ? TouchableHighlightImpl
-    : TouchableInjection.unstable_TouchableHighlight;
+  componentDidMount(): void {
+    this._isMounted = true;
+    if (Platform.isTV) {
+      this._tvTouchable = new TVTouchable(this, {
+        getDisabled: () => this.props.disabled === true,
+        onBlur: event => {
+          if (this.props.onBlur != null) {
+            this.props.onBlur(event);
+          }
+        },
+        onFocus: event => {
+          if (this.props.onFocus != null) {
+            this.props.onFocus(event);
+          }
+        },
+        onPress: event => {
+          if (this.props.onPress != null) {
+            this.props.onPress(event);
+          }
+        },
+      });
+    }
+  }
 
-module.exports = TouchableHighlight;
+  componentWillUnmount(): void {
+    this._isMounted = false;
+    if (this._hideTimeout != null) {
+      clearTimeout(this._hideTimeout);
+    }
+    if (Platform.isTV) {
+      if (this._tvTouchable != null) {
+        this._tvTouchable.destroy();
+      }
+    }
+    this.state.pressability.reset();
+  }
+}
+
+module.exports = (React.forwardRef((props, hostRef) => (
+  <TouchableHighlight {...props} hostRef={hostRef} />
+)): React.ComponentType<$ReadOnly<$Diff<Props, {|hostRef: mixed|}>>>);
