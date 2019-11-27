@@ -177,7 +177,32 @@ describe('parseLogBoxLog', () => {
     });
   });
 
-  it('parses a syntax error', () => {
+  it('parses a transform error as a fatal', () => {
+    const error = {
+      message: 'TransformError failed to transform file.',
+      originalMessage: 'TransformError failed to transform file.',
+      name: '',
+      isComponentError: false,
+      componentStack: '',
+      stack: [],
+      id: 0,
+      isFatal: true,
+    };
+
+    expect(parseLogBoxException(error)).toEqual({
+      level: 'syntax',
+      isComponentError: false,
+      message: {
+        content: 'TransformError failed to transform file.',
+        substitutions: [],
+      },
+      stack: [],
+      componentStack: [],
+      category: 'TransformError failed to transform file.',
+    });
+  });
+
+  it('parses a babel transform syntax error', () => {
     const error = {
       message: `
 
@@ -266,6 +291,99 @@ describe('parseLogBoxLog', () => {
       stack: [],
       componentStack: [],
       category: '/path/to/RKJSModules/Apps/CrashReact/CrashReactApp.js-199-0',
+    });
+  });
+
+  it('parses a babel codeframe error', () => {
+    const error = {
+      message: `TransformError RKJSModules/Apps/CrashReact/CrashReactApp.js: /path/to/RKJSModules/Apps/CrashReact/CrashReactApp.js: The first argument to \`fbRemoteAsset\` is "null_state_glyphs", but the requested asset is missing from the local metadata. Either the asset does not exist or the metadata is not up-to-date.
+
+Please follow the instructions at: fburl.com/rn-remote-assets
+  197 | });
+  198 |
+> 199 | export default CrashReactApp;
+      | ^
+  200 |`,
+      originalMessage: `TransformError RKJSModules/Apps/CrashReact/CrashReactApp.js: /path/to/RKJSModules/Apps/CrashReact/CrashReactApp.js: The first argument to \`fbRemoteAsset\` is "null_state_glyphs", but the requested asset is missing from the local metadata. Either the asset does not exist or the metadata is not up-to-date.
+
+Please follow the instructions at: fburl.com/rn-remote-assets
+  197 | });
+  198 |
+> 199 | export default CrashReactApp;
+      | ^
+  200 |`,
+      name: '',
+      isComponentError: false,
+      componentStack: '',
+      stack: [],
+      id: 0,
+      isFatal: true,
+    };
+
+    expect(parseLogBoxException(error)).toEqual({
+      level: 'syntax',
+      isComponentError: false,
+      codeFrame: {
+        fileName: '/path/to/RKJSModules/Apps/CrashReact/CrashReactApp.js',
+        location: null,
+        content: `  197 | });
+  198 |
+> 199 | export default CrashReactApp;
+      | ^
+  200 |`,
+      },
+      message: {
+        content: `The first argument to \`fbRemoteAsset\` is "null_state_glyphs", but the requested asset is missing from the local metadata. Either the asset does not exist or the metadata is not up-to-date.
+
+Please follow the instructions at: fburl.com/rn-remote-assets`,
+        substitutions: [],
+      },
+      stack: [],
+      componentStack: [],
+      category: '/path/to/RKJSModules/Apps/CrashReact/CrashReactApp.js-1-1',
+    });
+  });
+
+  it('parses a babel codeframe error with ansi', () => {
+    const error = {
+      message: `TransformError RKJSModules/Apps/CrashReact/CrashReactApp.js: /path/to/RKJSModules/Apps/CrashReact/CrashReactApp.js: The first argument to \`fbRemoteAsset\` is "null_state_glyphs", but the requested asset is missing from the local metadata. Either the asset does not exist or the metadata is not up-to-date.
+
+Please follow the instructions at: fburl.com/rn-remote-assets
+  197 | });
+  198 |
+> 199 | export default CrashReactApp;
+      | ^
+  200 |`,
+      originalMessage: `TransformError RKJSModules/Apps/CrashReact/CrashReactApp.js: /path/to/RKJSModules/Apps/CrashReact/CrashReactApp.js: The first argument to \`fbRemoteAsset\` is "null_state_glyphs", but the requested asset is missing from the local metadata. Either the asset does not exist or the metadata is not up-to-date.
+
+Please follow the instructions at: fburl.com/rn-remote-assets
+\u001b[0m \u001b[90m 46 | \u001b[39m            headline\u001b[33m=\u001b[39m\u001b[32m"CrashReact Error Boundary"\u001b[39m\u001b[0m\n\u001b[0m \u001b[90m 47 | \u001b[39m            body\u001b[33m=\u001b[39m{\u001b[32m\`\${this.state.errorMessage}\`\u001b[39m}\u001b[0m\n\u001b[0m\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 48 | \u001b[39m            icon\u001b[33m=\u001b[39m{fbRemoteAsset(\u001b[32m'null_state_glyphs'\u001b[39m\u001b[33m,\u001b[39m {\u001b[0m\n\u001b[0m \u001b[90m    | \u001b[39m                                                     \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\u001b[0m\n\u001b[0m \u001b[90m 49 | \u001b[39m              name\u001b[33m:\u001b[39m \u001b[32m'codexxx'\u001b[39m\u001b[33m,\u001b[39m\u001b[0m\n\u001b[0m \u001b[90m 50 | \u001b[39m              size\u001b[33m:\u001b[39m \u001b[32m'112'\u001b[39m\u001b[33m,\u001b[39m\u001b[0m\n\u001b[0m \u001b[90m 51 | \u001b[39m            })}\u001b[0m`,
+      name: '',
+      isComponentError: false,
+      componentStack: '',
+      stack: [],
+      id: 0,
+      isFatal: true,
+    };
+
+    expect(parseLogBoxException(error)).toEqual({
+      level: 'syntax',
+      isComponentError: false,
+      codeFrame: {
+        fileName: '/path/to/RKJSModules/Apps/CrashReact/CrashReactApp.js',
+        location: null,
+        content:
+          "\u001b[0m \u001b[90m 46 | \u001b[39m            headline\u001b[33m=\u001b[39m\u001b[32m\"CrashReact Error Boundary\"\u001b[39m\u001b[0m\n\u001b[0m \u001b[90m 47 | \u001b[39m            body\u001b[33m=\u001b[39m{\u001b[32m`${this.state.errorMessage}`\u001b[39m}\u001b[0m\n\u001b[0m\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 48 | \u001b[39m            icon\u001b[33m=\u001b[39m{fbRemoteAsset(\u001b[32m'null_state_glyphs'\u001b[39m\u001b[33m,\u001b[39m {\u001b[0m\n\u001b[0m \u001b[90m    | \u001b[39m                                                     \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\u001b[0m\n\u001b[0m \u001b[90m 49 | \u001b[39m              name\u001b[33m:\u001b[39m \u001b[32m'codexxx'\u001b[39m\u001b[33m,\u001b[39m\u001b[0m\n\u001b[0m \u001b[90m 50 | \u001b[39m              size\u001b[33m:\u001b[39m \u001b[32m'112'\u001b[39m\u001b[33m,\u001b[39m\u001b[0m\n\u001b[0m \u001b[90m 51 | \u001b[39m            })}\u001b[0m",
+      },
+      message: {
+        content: `The first argument to \`fbRemoteAsset\` is "null_state_glyphs", but the requested asset is missing from the local metadata. Either the asset does not exist or the metadata is not up-to-date.
+
+Please follow the instructions at: fburl.com/rn-remote-assets`,
+        substitutions: [],
+      },
+      stack: [],
+      componentStack: [],
+      category: '/path/to/RKJSModules/Apps/CrashReact/CrashReactApp.js-1-1',
     });
   });
 
@@ -402,7 +520,7 @@ describe('parseLogBoxLog', () => {
     });
   });
 
-  it('a malformed syntax error falls back to a fatal', () => {
+  it('a malformed syntax error falls back to a syntax error', () => {
     const error = {
       id: 0,
       isFatal: true,
@@ -426,7 +544,7 @@ describe('parseLogBoxLog', () => {
     };
 
     expect(parseLogBoxException(error)).toEqual({
-      level: 'fatal',
+      level: 'syntax',
       category:
         "TransformError SyntaxError: /path/to/RKJSModules/Apps/CrashReact/CrashReactApp.js: 'import' and 'export' may only appear at the top level (199:0)",
       message: {

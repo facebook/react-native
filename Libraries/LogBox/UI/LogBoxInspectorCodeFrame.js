@@ -41,6 +41,17 @@ function LogBoxInspectorCodeFrame(props: Props): React.Node {
     return codeFrame.fileName;
   }
 
+  function getLocation() {
+    const location = codeFrame.location;
+    if (location != null) {
+      return ` (${location.row}:${
+        location.column + 1 /* Code frame columns are zero indexed */
+      })`;
+    }
+
+    return null;
+  }
+
   return (
     <LogBoxInspectorSection heading="Source" action={<AppInfo />}>
       <View style={styles.box}>
@@ -59,10 +70,8 @@ function LogBoxInspectorCodeFrame(props: Props): React.Node {
             openFileInEditor(codeFrame.fileName, codeFrame.location?.row ?? 0);
           }}>
           <Text style={styles.fileText}>
-            {getFileName()} ({codeFrame.location.row}:
-            {codeFrame.location.column +
-              1 /* Code frame columns are zero indexed */}
-            )
+            {getFileName()}
+            {getLocation()}
           </Text>
         </LogBoxButton>
       </View>

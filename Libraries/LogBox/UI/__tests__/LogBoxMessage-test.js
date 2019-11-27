@@ -166,6 +166,20 @@ describe('LogBoxMessage', () => {
     expect(output).toMatchSnapshot();
   });
 
+  it('Should strip "TransformError " without breaking substitution', () => {
+    const output = render.shallowRender(
+      <LogBoxMessage
+        style={{}}
+        message={{
+          content: 'TransformError normal substitution normal',
+          substitutions: [{length: 12, offset: 22}],
+        }}
+      />,
+    );
+
+    expect(output).toMatchSnapshot();
+  });
+
   it('Should strip "Warning: " without breaking substitution', () => {
     const output = render.shallowRender(
       <LogBoxMessage

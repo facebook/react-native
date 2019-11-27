@@ -41,4 +41,22 @@ describe('LogBoxInspectorCodeFrame', () => {
 
     expect(output).toMatchSnapshot();
   });
+
+  it('should render a code frame without a location', () => {
+    const output = render.shallowRender(
+      <LogBoxInspectorCodeFrame
+        codeFrame={{
+          fileName: '/path/to/RKJSModules/Apps/CrashReact/CrashReactApp.js',
+          location: null,
+          content: `  197 | });
+    198 |
+  > 199 | export default CrashReactApp;
+        | ^
+    200 |`,
+        }}
+      />,
+    );
+
+    expect(output).toMatchSnapshot();
+  });
 });

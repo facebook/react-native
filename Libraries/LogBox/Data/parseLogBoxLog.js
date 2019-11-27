@@ -15,6 +15,9 @@ import stringifySafe from '../../Utilities/stringifySafe';
 import type {ExceptionData} from '../../Core/NativeExceptionsManager';
 import type {LogBoxLogData} from './LogBoxLog';
 
+const BABEL_TRANSFORM_ERROR_FORMAT = /^(?:TransformError )?(?:SyntaxError: |ReferenceError: )(.*): (.*) \((\d+):(\d+)\)\n\n([\s\S]+)/;
+const BABEL_CODE_FRAME_ERROR_FORMAT = /^(?:TransformError )?(?:.*): (.*): ([\s\S]+?)\n([ >]{2}[\d\s]+ \|[\s\S]+|\u{001b}[\s\S]+)/u;
+
 export type ExtendedExceptionData = ExceptionData & {
   isComponentError: boolean,
   ...
@@ -22,7 +25,7 @@ export type ExtendedExceptionData = ExceptionData & {
 export type Category = string;
 export type CodeFrame = $ReadOnly<{|
   content: string,
-  location: {
+  location: ?{
     row: number,
     column: number,
     ...
@@ -145,42 +148,77 @@ export function parseLogBoxException(
 ): LogBoxLogData {
   const message =
     error.originalMessage != null ? error.originalMessage : 'Unknown';
-  const match = message.match(
-    /(?:TransformError )?(?:SyntaxError: |ReferenceError: )(.*): (.*) \((\d+):(\d+)\)\n\n([\s\S]+)/,
-  );
 
-  if (!match) {
+  const babelTransformError = message.match(BABEL_TRANSFORM_ERROR_FORMAT);
+  if (babelTransformError) {
+    // Transform errors are thrown from inside the Babel transformer.
+    const [
+      fileName,
+      content,
+      row,
+      column,
+      codeFrame,
+    ] = babelTransformError.slice(1);
+
     return {
-      level: error.isFatal || error.isComponentError ? 'fatal' : 'error',
-      stack: error.stack,
-      isComponentError: error.isComponentError,
-      componentStack:
-        error.componentStack != null
-          ? parseComponentStack(error.componentStack)
-          : [],
-      ...parseCategory([message]),
+      level: 'syntax',
+      stack: [],
+      isComponentError: false,
+      componentStack: [],
+      codeFrame: {
+        fileName,
+        location: {
+          row: parseInt(row, 10),
+          column: parseInt(column, 10),
+        },
+        content: codeFrame,
+      },
+      message: {
+        content,
+        substitutions: [],
+      },
+      category: `${fileName}-${row}-${column}`,
     };
   }
 
-  const [fileName, content, row, column, codeFrame] = match.slice(1);
-  return {
-    level: 'syntax',
-    stack: [],
-    isComponentError: false,
-    componentStack: [],
-    codeFrame: {
-      fileName,
-      location: {
-        row: parseInt(row, 10),
-        column: parseInt(column, 10),
+  const babelCodeFrameError = message.match(BABEL_CODE_FRAME_ERROR_FORMAT);
+
+  if (babelCodeFrameError) {
+    // Codeframe errors are thrown from any use of buildCodeFrameError.
+    const [fileName, content, codeFrame] = babelCodeFrameError.slice(1);
+    return {
+      level: 'syntax',
+      stack: [],
+      isComponentError: false,
+      componentStack: [],
+      codeFrame: {
+        fileName,
+        location: null, // We are not given the location.
+        content: codeFrame,
       },
-      content: codeFrame,
-    },
-    message: {
-      content,
-      substitutions: [],
-    },
-    category: `${fileName}-${row}-${column}`,
+      message: {
+        content,
+        substitutions: [],
+      },
+      category: `${fileName}-${1}-${1}`,
+    };
+  }
+
+  const level = message.match(/^TransformError /)
+    ? 'syntax'
+    : error.isFatal || error.isComponentError
+    ? 'fatal'
+    : 'error';
+
+  return {
+    level: level,
+    stack: error.stack,
+    isComponentError: error.isComponentError,
+    componentStack:
+      error.componentStack != null
+        ? parseComponentStack(error.componentStack)
+        : [],
+    ...parseCategory([message]),
   };
 }
 
