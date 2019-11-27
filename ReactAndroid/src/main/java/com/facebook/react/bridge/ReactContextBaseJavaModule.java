@@ -13,6 +13,7 @@ import android.app.Activity;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import com.facebook.common.logging.FLog;
+import com.facebook.infer.annotation.Assertions;
 import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.react.common.build.ReactBuildConfig;
 
@@ -21,7 +22,11 @@ import com.facebook.react.common.build.ReactBuildConfig;
  */
 public abstract class ReactContextBaseJavaModule extends BaseJavaModule {
 
-  private final ReactApplicationContext mReactApplicationContext;
+  private final @Nullable ReactApplicationContext mReactApplicationContext;
+
+  public ReactContextBaseJavaModule() {
+    mReactApplicationContext = null;
+  }
 
   public ReactContextBaseJavaModule(@NonNull ReactApplicationContext reactContext) {
     mReactApplicationContext = reactContext;
@@ -29,7 +34,9 @@ public abstract class ReactContextBaseJavaModule extends BaseJavaModule {
 
   /** Subclasses can use this method to access catalyst context passed as a constructor. */
   protected final ReactApplicationContext getReactApplicationContext() {
-    return mReactApplicationContext;
+    return Assertions.assertNotNull(
+        mReactApplicationContext,
+        "Tried to get ReactApplicationContext even though NativeModule wasn't instantiated with one");
   }
 
   /**
