@@ -82,8 +82,10 @@ void AndroidTextInputShadowNode::updateStateIfNeeded() {
     return;
   }
 
-  setStateData(AndroidTextInputState{
-      attributedString, getProps()->paragraphAttributes, textLayoutManager_});
+  setStateData(AndroidTextInputState{state.mostRecentEventCount,
+                                     attributedString,
+                                     getProps()->paragraphAttributes,
+                                     textLayoutManager_});
 }
 
 #pragma mark - LayoutableShadowNode

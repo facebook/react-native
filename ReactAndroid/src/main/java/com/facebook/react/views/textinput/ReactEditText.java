@@ -36,6 +36,9 @@ import androidx.core.view.AccessibilityDelegateCompat;
 import androidx.core.view.ViewCompat;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.ReactContext;
+import com.facebook.react.bridge.WritableMap;
+import com.facebook.react.bridge.WritableNativeMap;
+import com.facebook.react.uimanager.StateWrapper;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.views.text.ReactSpan;
 import com.facebook.react.views.text.ReactTextUpdate;
@@ -91,6 +94,8 @@ public class ReactEditText extends EditText {
   private int mFontStyle = ReactTypefaceUtils.UNSET;
 
   private ReactViewBackgroundManager mReactBackgroundManager;
+
+  protected @Nullable StateWrapper mStateWrapper = null;
 
   private static final KeyListener sKeyListener = QwertyKeyListener.getInstanceForFullKeyboard();
 
@@ -274,7 +279,17 @@ public class ReactEditText extends EditText {
   }
 
   public void setMostRecentEventCount(int mostRecentEventCount) {
+    if (mMostRecentEventCount == mostRecentEventCount) {
+      return;
+    }
+
     mMostRecentEventCount = mostRecentEventCount;
+
+    if (mStateWrapper != null) {
+      WritableMap map = new WritableNativeMap();
+      map.putInt("mostRecentEventCount", mMostRecentEventCount);
+      mStateWrapper.updateState(map);
+    }
   }
 
   public void setScrollWatcher(ScrollWatcher scrollWatcher) {
@@ -416,8 +431,9 @@ public class ReactEditText extends EditText {
 
     mTypefaceDirty = false;
 
-    Typeface newTypeface = ReactTypefaceUtils.applyStyles(
-        getTypeface(), mFontStyle, mFontWeight, mFontFamily, getContext().getAssets());
+    Typeface newTypeface =
+        ReactTypefaceUtils.applyStyles(
+            getTypeface(), mFontStyle, mFontWeight, mFontFamily, getContext().getAssets());
     setTypeface(newTypeface);
   }
 

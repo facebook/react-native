@@ -24,6 +24,8 @@ namespace react {
  */
 class AndroidTextInputState final {
  public:
+  int64_t mostRecentEventCount{0};
+
   /*
    * All content of <Paragraph> component represented as an `AttributedString`.
    */
@@ -44,10 +46,12 @@ class AndroidTextInputState final {
 
 #ifdef ANDROID
   AndroidTextInputState(
+      int64_t mostRecentEventCount,
       AttributedString const &attributedString,
       ParagraphAttributes const &paragraphAttributes,
       SharedTextLayoutManager const &layoutManager)
-      : attributedString(attributedString),
+      : mostRecentEventCount(mostRecentEventCount),
+        attributedString(attributedString),
         paragraphAttributes(paragraphAttributes),
         layoutManager(layoutManager) {}
   AndroidTextInputState() = default;

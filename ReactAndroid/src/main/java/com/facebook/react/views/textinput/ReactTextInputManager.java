@@ -1072,10 +1072,11 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
     // TODO add justificationMode prop into local Data
     int justificationMode = Layout.JUSTIFICATION_MODE_NONE;
 
+    view.mStateWrapper = stateWrapper;
+
     return new ReactTextUpdate(
         spanned,
-        view.mNativeEventCount, // TODO add this into state, and call setState when the native event
-        // count is incremented?
+        state.getInt("mostRecentEventCount"),
         false, // TODO add this into local Data
         textViewProps.getTextAlign(),
         textBreakStrategy,
