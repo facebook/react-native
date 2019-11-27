@@ -39,7 +39,7 @@ AttributedString AndroidTextInputShadowNode::getAttributedString() const {
     auto const &attributedString =
         BaseTextShadowNode::getAttributedString(textAttributes, *this);
     if (!attributedString.isEmpty()) {
-      return std::move(attributedString);
+      return attributedString;
     }
   }
 
@@ -60,6 +60,32 @@ AttributedString AndroidTextInputShadowNode::getAttributedString() const {
   return placeholderAttributedString;
 }
 
+void AndroidTextInputShadowNode::setTextLayoutManager(
+    SharedTextLayoutManager textLayoutManager) {
+  ensureUnsealed();
+  textLayoutManager_ = textLayoutManager;
+}
+
+void AndroidTextInputShadowNode::updateStateIfNeeded() {
+  ensureUnsealed();
+
+  auto attributedString = getAttributedString();
+  auto const &state = getStateData();
+
+  assert(textLayoutManager_);
+  assert(
+      (!state.layoutManager || state.layoutManager == textLayoutManager_) &&
+      "`StateData` refers to a different `TextLayoutManager`");
+
+  if (state.attributedString == attributedString &&
+      state.layoutManager == textLayoutManager_) {
+    return;
+  }
+
+  setStateData(AndroidTextInputState{
+      attributedString, getProps()->paragraphAttributes, textLayoutManager_});
+}
+
 #pragma mark - LayoutableShadowNode
 
 Size AndroidTextInputShadowNode::measure(
@@ -70,52 +96,12 @@ Size AndroidTextInputShadowNode::measure(
     return {0, 0};
   }
 
-  const jni::global_ref<jobject> &fabricUIManager =
-      contextContainer_->at<jni::global_ref<jobject>>("FabricUIManager");
-
-  static auto measure =
-      jni::findClassStatic("com/facebook/react/fabric/FabricUIManager")
-          ->getMethod<jlong(
-              jstring,
-              ReadableMap::javaobject,
-              ReadableMap::javaobject,
-              ReadableMap::javaobject,
-              jfloat,
-              jfloat,
-              jfloat,
-              jfloat)>("measure");
-
-  auto minimumSize = layoutConstraints.minimumSize;
-  auto maximumSize = layoutConstraints.maximumSize;
-
-  local_ref<JString> componentName =
-      make_jstring(AndroidTextInputComponentName);
-
-  local_ref<ReadableNativeMap::javaobject> attributedStringRNM =
-      ReadableNativeMap::newObjectCxxArgs(toDynamic(attributedString));
-  local_ref<ReadableMap::javaobject> attributedStringRM = make_local(
-      reinterpret_cast<ReadableMap::javaobject>(attributedStringRNM.get()));
-
-  local_ref<ReadableNativeMap::javaobject> nativeLocalProps = make_local(
-      ReadableNativeMap::createWithContents(getProps()->getDynamic()));
-  local_ref<ReadableMap::javaobject> props = make_local(
-      reinterpret_cast<ReadableMap::javaobject>(nativeLocalProps.get()));
-
-  // For AndroidTextInput purposes:
-  // localData == textAttributes
-  return yogaMeassureToSize(measure(
-      fabricUIManager,
-      componentName.get(),
-      attributedStringRM.get(),
-      props.get(),
-      nullptr,
-      minimumSize.width,
-      maximumSize.width,
-      minimumSize.height,
-      maximumSize.height));
+  return textLayoutManager_->measure(
+      attributedString, getProps()->paragraphAttributes, layoutConstraints);
 }
 
 void AndroidTextInputShadowNode::layout(LayoutContext layoutContext) {
+  updateStateIfNeeded();
   ConcreteViewShadowNode::layout(layoutContext);
 }
 

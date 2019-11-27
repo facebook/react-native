@@ -7,7 +7,6 @@
 
 package com.facebook.react.views.textinput;
 
-import android.content.Context;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
@@ -31,13 +30,16 @@ import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.bridge.ReadableNativeMap;
 import com.facebook.react.bridge.ReadableType;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.uimanager.BaseViewManager;
 import com.facebook.react.uimanager.LayoutShadowNode;
 import com.facebook.react.uimanager.PixelUtil;
+import com.facebook.react.uimanager.ReactStylesDiffMap;
 import com.facebook.react.uimanager.Spacing;
+import com.facebook.react.uimanager.StateWrapper;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.ViewDefaults;
@@ -50,10 +52,10 @@ import com.facebook.react.views.scroll.ScrollEvent;
 import com.facebook.react.views.scroll.ScrollEventType;
 import com.facebook.react.views.text.DefaultStyleValuesUtil;
 import com.facebook.react.views.text.ReactTextUpdate;
+import com.facebook.react.views.text.TextAttributeProps;
 import com.facebook.react.views.text.TextInlineImageSpan;
 import com.facebook.react.views.text.TextLayoutManager;
 import com.facebook.yoga.YogaConstants;
-import com.facebook.yoga.YogaMeasureMode;
 import java.lang.reflect.Field;
 import java.util.LinkedList;
 import java.util.Map;
@@ -1024,23 +1026,59 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
             "sentences",
             InputType.TYPE_TEXT_FLAG_CAP_SENTENCES));
   }
-  /** Measure function for Fabric. */
-  @Override
-  public long measure(
-      Context context,
-      ReadableMap localData,
-      ReadableMap props,
-      ReadableMap state,
-      float width,
-      YogaMeasureMode widthMode,
-      float height,
-      YogaMeasureMode heightMode) {
-    return TextLayoutManager.measureText(
-        context, localData, props, width, widthMode, height, heightMode);
-  }
 
   @Override
   public void setPadding(ReactEditText view, int left, int top, int right, int bottom) {
     view.setPadding(left, top, right, bottom);
+  }
+
+  // This is copied from ReactTextViewManager
+  // TODO: this should be from a common class or a static method somewhere
+  private int getTextBreakStrategy(@Nullable String textBreakStrategy) {
+    int androidTextBreakStrategy = Layout.BREAK_STRATEGY_HIGH_QUALITY;
+    if (textBreakStrategy != null) {
+      switch (textBreakStrategy) {
+        case "simple":
+          androidTextBreakStrategy = Layout.BREAK_STRATEGY_SIMPLE;
+          break;
+        case "balanced":
+          androidTextBreakStrategy = Layout.BREAK_STRATEGY_BALANCED;
+          break;
+        default:
+          androidTextBreakStrategy = Layout.BREAK_STRATEGY_HIGH_QUALITY;
+          break;
+      }
+    }
+    return androidTextBreakStrategy;
+  }
+
+  @Override
+  public Object updateState(
+      ReactEditText view, ReactStylesDiffMap props, @Nullable StateWrapper stateWrapper) {
+    // TODO T55794595: Add support for updating state with null stateWrapper
+    ReadableNativeMap state = stateWrapper.getState();
+    ReadableMap attributedString = state.getMap("attributedString");
+    ReadableMap paragraphAttributes = state.getMap("paragraphAttributes");
+
+    Spannable spanned =
+        TextLayoutManager.getOrCreateSpannableForText(view.getContext(), attributedString);
+    //    view.setSpanned(spanned);
+
+    TextAttributeProps textViewProps = new TextAttributeProps(props);
+
+    int textBreakStrategy =
+        getTextBreakStrategy(paragraphAttributes.getString("textBreakStrategy"));
+
+    // TODO add justificationMode prop into local Data
+    int justificationMode = Layout.JUSTIFICATION_MODE_NONE;
+
+    return new ReactTextUpdate(
+        spanned,
+        view.mNativeEventCount, // TODO add this into state, and call setState when the native event
+        // count is incremented?
+        false, // TODO add this into local Data
+        textViewProps.getTextAlign(),
+        textBreakStrategy,
+        justificationMode);
   }
 }

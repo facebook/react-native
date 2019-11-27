@@ -9,6 +9,7 @@
 
 #include "AndroidTextInputEventEmitter.h"
 #include "AndroidTextInputProps.h"
+#include "AndroidTextInputState.h"
 
 #include <react/components/view/ConcreteViewShadowNode.h>
 #include <react/utils/ContextContainer.h>
@@ -26,7 +27,8 @@ extern const char AndroidTextInputComponentName[];
 class AndroidTextInputShadowNode : public ConcreteViewShadowNode<
                                        AndroidTextInputComponentName,
                                        AndroidTextInputProps,
-                                       AndroidTextInputEventEmitter> {
+                                       AndroidTextInputEventEmitter,
+                                       AndroidTextInputState> {
  public:
   using ConcreteViewShadowNode::ConcreteViewShadowNode;
 
@@ -37,6 +39,13 @@ class AndroidTextInputShadowNode : public ConcreteViewShadowNode<
    */
   AttributedString getAttributedString() const;
 
+  /*
+   * Associates a shared TextLayoutManager with the node.
+   * `ParagraphShadowNode` uses the manager to measure text content
+   * and construct `ParagraphState` objects.
+   */
+  void setTextLayoutManager(SharedTextLayoutManager textLayoutManager);
+
 #pragma mark - LayoutableShadowNode
 
   Size measure(LayoutConstraints layoutConstraints) const override;
@@ -44,6 +53,20 @@ class AndroidTextInputShadowNode : public ConcreteViewShadowNode<
 
  private:
   ContextContainer *contextContainer_{};
+
+  /*
+   * Creates a `State` object (with `AttributedText` and
+   * `TextLayoutManager`) if needed.
+   */
+  void updateStateIfNeeded();
+
+  SharedTextLayoutManager textLayoutManager_;
+
+  /*
+   * Cached attributed string that represents the content of the subtree started
+   * from the node.
+   */
+  mutable folly::Optional<AttributedString> cachedAttributedString_{};
 };
 
 } // namespace react

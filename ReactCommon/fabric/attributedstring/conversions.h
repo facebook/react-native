@@ -16,6 +16,7 @@
 #include <react/core/LayoutableShadowNode.h>
 #include <react/core/ShadowNode.h>
 #include <react/core/conversions.h>
+#include <react/core/propsConversions.h>
 #include <react/graphics/Geometry.h>
 #include <react/graphics/conversions.h>
 #include <cmath>
@@ -314,7 +315,8 @@ inline void fromRawValue(
   }
 
   // TODO: remove "underline line-through" after "line-through" deprecation
-  if (string == "underline-strikethrough" || string == "underline line-through") {
+  if (string == "underline-strikethrough" ||
+      string == "underline line-through") {
     result = TextDecorationLineType::UnderlineStrikethrough;
     return;
   }
@@ -407,6 +409,39 @@ inline std::string toString(
     case TextDecorationLinePattern::DashDotDot:
       return "dash-dot-dot";
   }
+}
+
+inline ParagraphAttributes convertRawProp(
+    RawProps const &rawProps,
+    ParagraphAttributes const &defaultParagraphAttributes) {
+  auto paragraphAttributes = ParagraphAttributes{};
+
+  paragraphAttributes.maximumNumberOfLines = convertRawProp(
+      rawProps,
+      "numberOfLines",
+      defaultParagraphAttributes.maximumNumberOfLines);
+  paragraphAttributes.ellipsizeMode = convertRawProp(
+      rawProps, "ellipsizeMode", defaultParagraphAttributes.ellipsizeMode);
+  paragraphAttributes.textBreakStrategy = convertRawProp(
+      rawProps,
+      "textBreakStrategy",
+      defaultParagraphAttributes.textBreakStrategy);
+  paragraphAttributes.adjustsFontSizeToFit = convertRawProp(
+      rawProps,
+      "adjustsFontSizeToFit",
+      defaultParagraphAttributes.adjustsFontSizeToFit);
+  paragraphAttributes.minimumFontSize = convertRawProp(
+      rawProps,
+      "minimumFontSize",
+      defaultParagraphAttributes.minimumFontSize,
+      std::numeric_limits<Float>::quiet_NaN());
+  paragraphAttributes.maximumFontSize = convertRawProp(
+      rawProps,
+      "maximumFontSize",
+      defaultParagraphAttributes.maximumFontSize,
+      std::numeric_limits<Float>::quiet_NaN());
+
+  return paragraphAttributes;
 }
 
 #ifdef ANDROID
