@@ -37,7 +37,7 @@ class AndroidTextInputShadowNode : public ConcreteViewShadowNode<
   /*
    * Returns a `AttributedString` which represents text content of the node.
    */
-  AttributedString getAttributedString() const;
+  AttributedString getAttributedString(bool usePlaceholders) const;
 
   /*
    * Associates a shared TextLayoutManager with the node.

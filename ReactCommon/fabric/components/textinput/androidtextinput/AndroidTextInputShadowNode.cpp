@@ -30,7 +30,8 @@ void AndroidTextInputShadowNode::setContextContainer(
   contextContainer_ = contextContainer;
 }
 
-AttributedString AndroidTextInputShadowNode::getAttributedString() const {
+AttributedString AndroidTextInputShadowNode::getAttributedString(
+    bool usePlaceholders) const {
   auto textAttributes = TextAttributes::defaultTextAttributes();
   textAttributes.apply(getProps()->textAttributes);
 
@@ -38,7 +39,7 @@ AttributedString AndroidTextInputShadowNode::getAttributedString() const {
   {
     auto const &attributedString =
         BaseTextShadowNode::getAttributedString(textAttributes, *this);
-    if (!attributedString.isEmpty()) {
+    if (!attributedString.isEmpty() || !usePlaceholders) {
       return attributedString;
     }
   }
@@ -69,7 +70,7 @@ void AndroidTextInputShadowNode::setTextLayoutManager(
 void AndroidTextInputShadowNode::updateStateIfNeeded() {
   ensureUnsealed();
 
-  auto attributedString = getAttributedString();
+  auto attributedString = getAttributedString(false);
   auto const &state = getStateData();
 
   assert(textLayoutManager_);
@@ -92,7 +93,7 @@ void AndroidTextInputShadowNode::updateStateIfNeeded() {
 
 Size AndroidTextInputShadowNode::measure(
     LayoutConstraints layoutConstraints) const {
-  AttributedString attributedString = getAttributedString();
+  AttributedString attributedString = getAttributedString(true);
 
   if (attributedString.isEmpty()) {
     return {0, 0};
