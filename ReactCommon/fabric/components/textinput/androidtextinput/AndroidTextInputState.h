@@ -51,7 +51,9 @@ class AndroidTextInputState final {
         paragraphAttributes(paragraphAttributes),
         layoutManager(layoutManager) {}
   AndroidTextInputState() = default;
-  AndroidTextInputState(folly::dynamic const &data) {
+  AndroidTextInputState(
+      AndroidTextInputState const &previousState,
+      folly::dynamic const &data) {
     assert(false && "Not supported");
   };
   folly::dynamic getDynamic() const;

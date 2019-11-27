@@ -51,7 +51,9 @@ class ParagraphState final {
         paragraphAttributes(paragraphAttributes),
         layoutManager(layoutManager) {}
   ParagraphState() = default;
-  ParagraphState(folly::dynamic const &data) {
+  ParagraphState(
+      ParagraphState const &previousState,
+      folly::dynamic const &data) {
     assert(false && "Not supported");
   };
   folly::dynamic getDynamic() const;
