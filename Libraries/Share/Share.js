@@ -56,9 +56,9 @@ class Share {
    *  - `url` - an URL to share
    *
    * At least one of URL and message is required.
-   * 
+   *
    * #### Android
-   * 
+   *
    * - `title` - title of the message
    *
    * ### Options
