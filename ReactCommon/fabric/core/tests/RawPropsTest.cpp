@@ -252,3 +252,19 @@ TEST(ShadowNodeTest, handleRawPropsPrimitiveTypesIncomplete) {
   ASSERT_EQ(raw.at("boolValue", nullptr, nullptr), nullptr);
   ASSERT_EQ((int)*raw.at("intValue", nullptr, nullptr), 42);
 }
+
+#ifndef NDEBUG
+TEST(ShadowNodeTest, handleRawPropsPrimitiveTypesIncorrectLookup) {
+  const auto &raw = RawProps(folly::dynamic::object("intValue", (int)42));
+
+  auto parser = RawPropsParser();
+  parser.prepare<PropsPrimitiveTypes>();
+  raw.parse(parser);
+
+  // Before D18662135, looking up an invalid key would trigger
+  // an infinite loop. This is out of contract, so we should only
+  // test this in debug.
+  ASSERT_EQ(raw.at("flurb", nullptr, nullptr), nullptr);
+  ASSERT_EQ((int)*raw.at("intValue", nullptr, nullptr), 42);
+}
+#endif
