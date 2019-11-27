@@ -36,29 +36,40 @@ AttributedString AndroidTextInputShadowNode::getAttributedString(
   textAttributes.apply(getProps()->textAttributes);
 
   // Use BaseTextShadowNode to get attributed string from children
-  {
-    auto const &attributedString =
-        BaseTextShadowNode::getAttributedString(textAttributes, *this);
-    if (!attributedString.isEmpty() || !usePlaceholders) {
-      return attributedString;
+  auto const &attributedString =
+      BaseTextShadowNode::getAttributedString(textAttributes, *this);
+  if (!attributedString.isEmpty()) {
+    return attributedString;
+  }
+  if (!getProps()->text.empty() || usePlaceholders) {
+    // If the BaseTextShadowNode didn't detect any child Text nodes, we
+    // may actually just have a `text` attribute.
+    // TODO: figure out why BaseTextShadowNode doesn't pick this up, this
+    // is a bug. A minimal Playground example that triggers this: P122991121
+    auto textAttributedString = AttributedString{};
+    auto fragment = AttributedString::Fragment{};
+    fragment.string = getProps()->text;
+
+    if (usePlaceholders) {
+      // Return placeholder text instead, if text was empty.
+      if (fragment.string.empty()) {
+        fragment.string = getProps()->placeholder;
+      }
+      // For measurement purposes, we want to make sure that there's at least a
+      // single character in the string so that the measured height is greater
+      // than zero. Otherwise, empty TextInputs with no placeholder don't
+      // display at all.
+      if (fragment.string.empty()) {
+        fragment.string = " ";
+      }
     }
+    fragment.textAttributes = textAttributes;
+    fragment.parentShadowView = ShadowView(*this);
+    textAttributedString.appendFragment(fragment);
+    return textAttributedString;
   }
 
-  // Return placeholder text instead, if text was empty.
-  auto placeholderAttributedString = AttributedString{};
-  auto fragment = AttributedString::Fragment{};
-  fragment.string = getProps()->placeholder;
-
-  // For measurement purposes, we want to make sure that there's at least a
-  // single character in the string so that the measured height is greater than
-  // zero. Otherwise, empty TextInputs with no placeholder don't display at all.
-  if (fragment.string == "") {
-    fragment.string = " ";
-  }
-  fragment.textAttributes = textAttributes;
-  fragment.parentShadowView = ShadowView(*this);
-  placeholderAttributedString.appendFragment(fragment);
-  return placeholderAttributedString;
+  return attributedString;
 }
 
 void AndroidTextInputShadowNode::setTextLayoutManager(

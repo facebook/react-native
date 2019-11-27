@@ -15,6 +15,7 @@ import android.text.InputFilter;
 import android.text.InputType;
 import android.text.Layout;
 import android.text.Spannable;
+import android.text.SpannableStringBuilder;
 import android.text.TextWatcher;
 import android.view.Gravity;
 import android.view.KeyEvent;
@@ -55,6 +56,7 @@ import com.facebook.react.views.text.ReactTextUpdate;
 import com.facebook.react.views.text.TextAttributeProps;
 import com.facebook.react.views.text.TextInlineImageSpan;
 import com.facebook.react.views.text.TextLayoutManager;
+import com.facebook.react.views.text.TextTransform;
 import com.facebook.yoga.YogaConstants;
 import java.lang.reflect.Field;
 import java.util.LinkedList;
@@ -72,6 +74,8 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
 
   private static final int FOCUS_TEXT_INPUT = 1;
   private static final int BLUR_TEXT_INPUT = 2;
+  private static final int SET_MOST_RECENT_EVENT_COUNT = 3;
+  private static final int SET_TEXT_AND_SELECTION = 4;
 
   private static final int INPUT_TYPE_KEYBOARD_NUMBER_PAD = InputType.TYPE_CLASS_NUMBER;
   private static final int INPUT_TYPE_KEYBOARD_DECIMAL_PAD =
@@ -177,10 +181,16 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
       ReactEditText reactEditText, int commandId, @Nullable ReadableArray args) {
     switch (commandId) {
       case FOCUS_TEXT_INPUT:
-        reactEditText.requestFocusFromJS();
+        this.receiveCommand(reactEditText, "focus", args);
         break;
       case BLUR_TEXT_INPUT:
-        reactEditText.clearFocusFromJS();
+        this.receiveCommand(reactEditText, "blur", args);
+        break;
+      case SET_MOST_RECENT_EVENT_COUNT:
+        this.receiveCommand(reactEditText, "setMostRecentEventCount", args);
+        break;
+      case SET_TEXT_AND_SELECTION:
+        this.receiveCommand(reactEditText, "setTextAndSelection", args);
         break;
     }
   }
@@ -197,7 +207,38 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
       case "blurTextInput":
         reactEditText.clearFocusFromJS();
         break;
+      case "setMostRecentEventCount":
+        reactEditText.setMostRecentEventCount(args.getInt(0));
+        break;
+      case "setTextAndSelection":
+        int mostRecentEventCount = args.getInt(0);
+
+        if (mostRecentEventCount != UNSET) {
+          String text = args.getString(1);
+
+          int start = args.getInt(2);
+          int end = args.getInt(3);
+          if (end == UNSET) {
+            end = start;
+          }
+
+          // TODO: construct a ReactTextUpdate and use that with maybeSetText
+          // instead of calling setText, etc directly - doing that will definitely cause bugs.
+          reactEditText.maybeSetText(getReactTextUpdate(text, mostRecentEventCount, start, end));
+        }
+        break;
     }
+  }
+
+  // TODO: if we're able to fill in all these values and call maybeSetText when appropriate
+  // I think this is all that's needed to fully support TextInput in Fabric
+  private ReactTextUpdate getReactTextUpdate(
+      String text, int mostRecentEventCount, int start, int end) {
+    SpannableStringBuilder sb = new SpannableStringBuilder();
+    sb.append(TextTransform.apply(text, TextTransform.UNSET));
+
+    return new ReactTextUpdate(
+        sb, mostRecentEventCount, false, 0, 0, 0, 0, Gravity.NO_GRAVITY, 0, 0, start, end);
   }
 
   @Override
