@@ -17,10 +17,28 @@
 namespace facebook {
 namespace react {
 
+// During parser initialization, Props structs are used to parse
+// "fake"/empty objects, and `at` is called repeatedly which tells us
+// which props are accessed during parsing, and in which order.
 RawValue const *RawPropsParser::at(
     RawProps const &rawProps,
     RawPropsKey const &key) const noexcept {
   if (UNLIKELY(!ready_)) {
+    // Check against the same key being inserted more than once.
+    // This happens commonly with nested Props structs, where the higher-level
+    // struct may access all fields, and then the nested Props struct may
+    // access fields a second (or third, etc) time.
+    // Without this, multiple entries will be created for the same key, but
+    // only the first access of the key will return a sensible value.
+    // The complexity of this is (n + (n - 1) + (n - 2) + ... + (n - (n - 1) +
+    // 1))) or n*n - (1/2)(n*(n+1)). If there are 100 props, this will result in
+    // 4950 lookups and equality checks on initialization of the parser, which
+    // happens exactly once per component.
+    for (int i = 0; i < size_; i++) {
+      if (keys_[i] == key) {
+        return nullptr;
+      }
+    }
     // This is not thread-safe part; this happens only during initialization of
     // a `ComponentDescriptor` where it is actually safe.
     keys_.push_back(key);

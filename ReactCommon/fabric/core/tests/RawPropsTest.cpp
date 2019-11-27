@@ -96,6 +96,28 @@ class PropsPrimitiveTypes : public Props {
   const bool boolValue{false};
 };
 
+class PropsMultiLookup : public Props {
+ public:
+  PropsMultiLookup() = default;
+  PropsMultiLookup(
+      const PropsMultiLookup &sourceProps,
+      const RawProps &rawProps)
+      : floatValue(convertRawProp(
+            rawProps,
+            "floatValue",
+            sourceProps.floatValue,
+            17.5)),
+        // While this specific pattern is uncommon, it's a simplication of a
+        // pattern that does occur a lot: nested structs that access props we
+        // have already accessed populating Props
+        derivedFloatValue(
+            convertRawProp(rawProps, "floatValue", sourceProps.floatValue, 40) *
+            2) {}
+
+  const float floatValue{17.5};
+  const float derivedFloatValue{40};
+};
+
 TEST(ShadowNodeTest, handleProps) {
   const auto &raw = RawProps(folly::dynamic::object("nativeID", "abc"));
   auto parser = RawPropsParser();
@@ -268,3 +290,18 @@ TEST(ShadowNodeTest, handleRawPropsPrimitiveTypesIncorrectLookup) {
   ASSERT_EQ((int)*raw.at("intValue", nullptr, nullptr), 42);
 }
 #endif
+
+TEST(ShadowNodeTest, handlePropsMultiLookup) {
+  const auto &raw = RawProps(folly::dynamic::object("floatValue", (float)10.0));
+  auto parser = RawPropsParser();
+  parser.prepare<PropsMultiLookup>();
+  raw.parse(parser);
+
+  auto props = std::make_shared<PropsMultiLookup>(PropsMultiLookup(), raw);
+
+  // Props are not sealed after applying raw props.
+  ASSERT_FALSE(props->getSealed());
+
+  ASSERT_NEAR(props->floatValue, 10.0, 0.00001);
+  ASSERT_NEAR(props->derivedFloatValue, 20.0, 0.00001);
+}
