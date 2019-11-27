@@ -122,7 +122,7 @@
             <link>https://facebook.github.io/react-native/blog/2018/04/09/build-com-app.html</link>
             <guid>https://facebook.github.io/react-native/blog/2018/04/09/build-com-app.html</guid>
             <pubDate>Mon, 09 Apr 2018 06:00:00 GMT</pubDate>
-            <description><![CDATA[<p><a href="https://www.build.com/">Build.com</a>, headquartered in Chico, California, is one of the largest online retailers for home improvement items. The team has had a strong web-centric business for 18 years and began thinking about a mobile App in 2015. Building unique iOS and Andro...</p>]]></description>
+            <description><![CDATA[<p><a href="https://www.build.com/">Build.com</a>, headquartered in Chico, California, is one of the largest online retailers for home improvement items. The team has had a strong web-centric business for 18 years and began thinking about a mobile App in 2015. Building unique Android and i...</p>]]></description>
         </item>
         <item>
             <title><![CDATA[Building <InputAccessoryView> For React Native]]></title>
@@ -290,7 +290,7 @@
             <link>https://facebook.github.io/react-native/blog/2016/03/28/dive-into-react-native-performance.html</link>
             <guid>https://facebook.github.io/react-native/blog/2016/03/28/dive-into-react-native-performance.html</guid>
             <pubDate>Mon, 28 Mar 2016 06:00:00 GMT</pubDate>
-            <description><![CDATA[<p>React Native allows you to build iOS and Android apps in JavaScript using React and Relay's declarative programming model. This leads to more concise, easier-to-understand code; fast iteration without a compile cycle; and easy sharing of code across ...</p>]]></description>
+            <description><![CDATA[<p>React Native allows you to build Android and iOS apps in JavaScript using React and Relay's declarative programming model. This leads to more concise, easier-to-understand code; fast iteration without a compile cycle; and easy sharing of code across ...</p>]]></description>
         </item>
         <item>
             <title><![CDATA[Introducing Hot Reloading]]></title>
