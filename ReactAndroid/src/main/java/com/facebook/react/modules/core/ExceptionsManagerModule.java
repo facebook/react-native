@@ -9,7 +9,7 @@ package com.facebook.react.modules.core;
 
 import com.facebook.common.logging.FLog;
 import com.facebook.react.bridge.Arguments;
-import com.facebook.react.bridge.BaseJavaModule;
+import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.JavaOnlyMap;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableArray;
@@ -22,7 +22,7 @@ import com.facebook.react.util.ExceptionDataHelper;
 import com.facebook.react.util.JSStackTrace;
 
 @ReactModule(name = ExceptionsManagerModule.NAME)
-public class ExceptionsManagerModule extends BaseJavaModule {
+public class ExceptionsManagerModule extends ReactContextBaseJavaModule {
 
   public static final String NAME = "ExceptionsManager";
 
