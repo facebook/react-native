@@ -71,6 +71,10 @@ if [[ "$ENTRY_FILE" ]]; then
   :
 elif [[ -s "index.ios.js" ]]; then
    ENTRY_FILE=${1:-index.ios.js}
+elif [[ -s "index.ios.ts" ]]; then
+   ENTRY_FILE=${1:-index.ios.ts}
+elif [[ -s "index.ts" ]]; then
+   ENTRY_FILE=${1:-index.ts}
  else
    ENTRY_FILE=${1:-index.js}
 fi
