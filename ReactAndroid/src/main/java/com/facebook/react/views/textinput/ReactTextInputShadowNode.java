@@ -1,9 +1,10 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
- * directory of this source tree.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
+
 package com.facebook.react.views.textinput;
 
 import android.annotation.TargetApi;
@@ -156,6 +157,18 @@ public class ReactTextInputShadowNode extends ReactBaseTextShadowNode
   @ReactProp(name = PROP_TEXT)
   public void setText(@Nullable String text) {
     mText = text;
+    if (text != null) {
+      // The selection shouldn't be bigger than the length of the text
+      if (mSelectionStart > text.length()) {
+        mSelectionStart = text.length();
+      }
+      if (mSelectionEnd > text.length()) {
+        mSelectionEnd = text.length();
+      }
+    } else {
+      mSelectionStart = UNSET;
+      mSelectionEnd = UNSET;
+    }
     markUpdated();
   }
 

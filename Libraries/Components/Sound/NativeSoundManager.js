@@ -20,4 +20,4 @@ export interface Spec extends TurboModule {
   +playTouchSound: () => void;
 }
 
-export default (TurboModuleRegistry.getEnforcing<Spec>('SoundManager'): Spec);
+export default (TurboModuleRegistry.get<Spec>('SoundManager'): ?Spec);

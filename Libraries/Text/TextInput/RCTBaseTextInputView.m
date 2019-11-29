@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -67,7 +67,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
 - (void)enforceTextAttributesIfNeeded
 {
   id<RCTBackedTextInputViewProtocol> backedTextInputView = self.backedTextInputView;
-  backedTextInputView.reactTextAttributes = _textAttributes;
+  backedTextInputView.defaultTextAttributes = [_textAttributes effectiveTextAttributes];
 }
 
 - (void)setReactPaddingInsets:(UIEdgeInsets)reactPaddingInsets
@@ -284,24 +284,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
       [textInputView reloadInputViews];
     }
   }
-}
-
-- (BOOL)secureTextEntry {
-  return self.backedTextInputView.secureTextEntry;
-}
-
-- (void)setSecureTextEntry:(BOOL)secureTextEntry {
-  UIView<RCTBackedTextInputViewProtocol> *textInputView = self.backedTextInputView;
-
-  if (textInputView.secureTextEntry != secureTextEntry) {
-    textInputView.secureTextEntry = secureTextEntry;
-
-    // Fix #5859, see https://stackoverflow.com/questions/14220187/uitextfield-has-trailing-whitespace-after-securetextentry-toggle/22537788#22537788
-    NSAttributedString *originalText = [textInputView.attributedText copy];
-    self.backedTextInputView.attributedText = [NSAttributedString new];
-    self.backedTextInputView.attributedText = originalText;
-  }
-
 }
 
 #pragma mark - RCTBackedTextInputDelegate

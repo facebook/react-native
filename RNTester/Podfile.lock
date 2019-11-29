@@ -203,30 +203,58 @@ PODS:
   - React-RCTActionSheet (1000.0.0):
     - React-Core/RCTActionSheetHeaders (= 1000.0.0)
   - React-RCTAnimation (1000.0.0):
+    - FBReactNativeSpec (= 1000.0.0)
+    - Folly (= 2018.10.22.00)
+    - RCTTypeSafety (= 1000.0.0)
     - React-Core/RCTAnimationHeaders (= 1000.0.0)
+    - ReactCommon/turbomodule/core (= 1000.0.0)
   - React-RCTBlob (1000.0.0):
+    - FBReactNativeSpec (= 1000.0.0)
+    - Folly (= 2018.10.22.00)
     - React-Core/RCTBlobHeaders (= 1000.0.0)
     - React-Core/RCTWebSocket (= 1000.0.0)
     - React-jsi (= 1000.0.0)
     - React-RCTNetwork (= 1000.0.0)
+    - ReactCommon/turbomodule/core (= 1000.0.0)
   - React-RCTImage (1000.0.0):
+    - FBReactNativeSpec (= 1000.0.0)
+    - Folly (= 2018.10.22.00)
+    - RCTTypeSafety (= 1000.0.0)
     - React-Core/RCTImageHeaders (= 1000.0.0)
     - React-RCTNetwork (= 1000.0.0)
+    - ReactCommon/turbomodule/core (= 1000.0.0)
   - React-RCTLinking (1000.0.0):
+    - FBReactNativeSpec (= 1000.0.0)
     - React-Core/RCTLinkingHeaders (= 1000.0.0)
+    - ReactCommon/turbomodule/core (= 1000.0.0)
   - React-RCTNetwork (1000.0.0):
+    - FBReactNativeSpec (= 1000.0.0)
+    - Folly (= 2018.10.22.00)
+    - RCTTypeSafety (= 1000.0.0)
     - React-Core/RCTNetworkHeaders (= 1000.0.0)
+    - ReactCommon/turbomodule/core (= 1000.0.0)
   - React-RCTPushNotification (1000.0.0):
+    - FBReactNativeSpec (= 1000.0.0)
+    - RCTTypeSafety (= 1000.0.0)
     - React-Core/RCTPushNotificationHeaders (= 1000.0.0)
+    - ReactCommon/turbomodule/core (= 1000.0.0)
   - React-RCTSettings (1000.0.0):
+    - FBReactNativeSpec (= 1000.0.0)
+    - Folly (= 2018.10.22.00)
+    - RCTTypeSafety (= 1000.0.0)
     - React-Core/RCTSettingsHeaders (= 1000.0.0)
+    - ReactCommon/turbomodule/core (= 1000.0.0)
   - React-RCTTest (1000.0.0):
     - React-Core (= 1000.0.0)
+    - React-CoreModules (= 1000.0.0)
   - React-RCTText (1000.0.0):
     - React-Core/RCTTextHeaders (= 1000.0.0)
   - React-RCTVibration (1000.0.0):
+    - FBReactNativeSpec (= 1000.0.0)
+    - Folly (= 2018.10.22.00)
     - React-Core/RCTVibrationHeaders (= 1000.0.0)
-  - ReactCommon/jscallinvoker (1000.0.0):
+    - ReactCommon/turbomodule/core (= 1000.0.0)
+  - ReactCommon/callinvoker (1000.0.0):
     - DoubleConversion
     - Folly (= 2018.10.22.00)
     - glog
@@ -238,7 +266,7 @@ PODS:
     - React-Core (= 1000.0.0)
     - React-cxxreact (= 1000.0.0)
     - React-jsi (= 1000.0.0)
-    - ReactCommon/jscallinvoker (= 1000.0.0)
+    - ReactCommon/callinvoker (= 1000.0.0)
   - ReactCommon/turbomodule/samples (1000.0.0):
     - DoubleConversion
     - Folly (= 2018.10.22.00)
@@ -246,7 +274,7 @@ PODS:
     - React-Core (= 1000.0.0)
     - React-cxxreact (= 1000.0.0)
     - React-jsi (= 1000.0.0)
-    - ReactCommon/jscallinvoker (= 1000.0.0)
+    - ReactCommon/callinvoker (= 1000.0.0)
     - ReactCommon/turbomodule/core (= 1000.0.0)
   - Yoga (1.14.0)
 
@@ -279,13 +307,13 @@ DEPENDENCIES:
   - React-RCTTest (from `RCTTest`)
   - React-RCTText (from `../Libraries/Text`)
   - React-RCTVibration (from `../Libraries/Vibration`)
-  - ReactCommon/jscallinvoker (from `../ReactCommon`)
+  - ReactCommon/callinvoker (from `../ReactCommon`)
   - ReactCommon/turbomodule/core (from `../ReactCommon`)
   - ReactCommon/turbomodule/samples (from `../ReactCommon`)
   - Yoga (from `../ReactCommon/yoga`)
 
 SPEC REPOS:
-  https://github.com/cocoapods/specs.git:
+  trunk:
     - boost-for-react-native
 
 EXTERNAL SOURCES:
@@ -364,19 +392,19 @@ SPEC CHECKSUMS:
   React-jsiexecutor: c0ab8c80a6e88380d63f583690a50d4a723b47b5
   React-jsinspector: ea0a218071a11c3687cef2480580180caa6a64c0
   React-RCTActionSheet: 090e7bd7c5774d919c47c4eeff78223a7fd8c19c
-  React-RCTAnimation: 73d536fff417a101724d9529189c95a94263710c
-  React-RCTBlob: 86017e0ba937b94445c5f680fef27ab831700fe7
-  React-RCTImage: 7f5c9bff34905f1bc216be512ba0ae68f872208a
-  React-RCTLinking: d7d7f792e63a8d57380cecbb9b7a3b31f92d1bb6
-  React-RCTNetwork: c8f9d40297f35ea3792ea81866f33e8b45c25935
-  React-RCTPushNotification: acffa8af6a20e6d41b041a8c4cb4bea0de9df0dd
-  React-RCTSettings: dd4009546ce88c3647c32f0b5922459ab313fdca
-  React-RCTTest: 73df09ec226fcad6e7e058a313e5dd16cccf86a8
+  React-RCTAnimation: 891c2b3404c214dc19faee57b5f249da6deeb099
+  React-RCTBlob: 8df793b30385b7ffe7e6703651043bad369cd756
+  React-RCTImage: 3ee9a6cd02c7741ebe3a001d51a18c349019778f
+  React-RCTLinking: 7ccb8f6dcfd4b95b68a73119aca7bca9fa530b08
+  React-RCTNetwork: 565fa6cc6108db9210fe5774f04ce52edccbb8ed
+  React-RCTPushNotification: 494ccfc569e2a699c0cc1a816eaebf8197a2ebc8
+  React-RCTSettings: 8138286da8de74839cb436dd37704ed64d4bfe78
+  React-RCTTest: d148e0657ce77ffd43a10325c284f47f25fb0532
   React-RCTText: 9078167d3bc011162326f2d8ef4dd580ec1eca17
-  React-RCTVibration: 63c20d89204937ff8c7bbc1e712383347e6fbd90
-  ReactCommon: 63d1a6355d5810a21a61efda9ac93804571a1b8b
-  Yoga: 0abc4039ca4c0de783ab88c0ee21273583cbc2af
+  React-RCTVibration: e3269787c533de8c4f54f489202d848fdef33e1d
+  ReactCommon: 9d212865526209dc2d01be40340c8d27b53e6bea
+  Yoga: d88d8b51ee5b247f43211e2edf272438df1b484f
 
 PODFILE CHECKSUM: 060903e270072f1e192b064848e6c34528af1c87
 
-COCOAPODS: 1.7.1
+COCOAPODS: 1.8.4

@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -13,6 +13,7 @@
 #include <react/attributedstring/ParagraphAttributes.h>
 #include <react/core/LayoutConstraints.h>
 #include <react/utils/ContextContainer.h>
+#include <react/utils/SimpleThreadSafeCache.h>
 
 namespace facebook {
 namespace react {
@@ -44,7 +45,12 @@ class TextLayoutManager {
   void *getNativeTextLayoutManager() const;
 
  private:
+  using MeasureCacheKey =
+      std::tuple<AttributedString, ParagraphAttributes, LayoutConstraints>;
+  using MeasureCache = SimpleThreadSafeCache<MeasureCacheKey, Size, 256>;
+
   void *self_;
+  MeasureCache measureCache_{};
 };
 
 } // namespace react

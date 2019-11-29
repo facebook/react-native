@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -21,25 +21,38 @@ class AndroidTextInputComponentDescriptor final
  public:
   AndroidTextInputComponentDescriptor(
       EventDispatcher::Weak eventDispatcher,
-      const ContextContainer::Shared &contextContainer)
+      const ContextContainer::Shared &contextContainer,
+      ComponentDescriptor::Flavor const &flavor = {})
       : ConcreteComponentDescriptor<AndroidTextInputShadowNode>(
             eventDispatcher,
-            contextContainer) {}
+            contextContainer,
+            flavor) {
+    // Every single `AndroidTextInputShadowNode` will have a reference to
+    // a shared `TextLayoutManager`.
+    textLayoutManager_ = std::make_shared<TextLayoutManager>(contextContainer);
+  }
 
  protected:
   void adopt(UnsharedShadowNode shadowNode) const override {
     assert(std::dynamic_pointer_cast<AndroidTextInputShadowNode>(shadowNode));
-    auto concreteShadowNode =
+    auto textInputShadowNode =
         std::static_pointer_cast<AndroidTextInputShadowNode>(shadowNode);
 
-    concreteShadowNode->setContextContainer(
+    // `ParagraphShadowNode` uses `TextLayoutManager` to measure text content
+    // and communicate text rendering metrics to mounting layer.
+    textInputShadowNode->setTextLayoutManager(textLayoutManager_);
+
+    textInputShadowNode->setContextContainer(
         const_cast<ContextContainer *>(getContextContainer().get()));
 
-    concreteShadowNode->dirtyLayout();
-    concreteShadowNode->enableMeasurement();
+    textInputShadowNode->dirtyLayout();
+    textInputShadowNode->enableMeasurement();
 
     ConcreteComponentDescriptor::adopt(shadowNode);
   }
+
+ private:
+  SharedTextLayoutManager textLayoutManager_;
 };
 
 } // namespace react

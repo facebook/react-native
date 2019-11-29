@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -16,7 +16,7 @@ bool RCTBridgingToBool(id value)
 
 folly::Optional<bool> RCTBridgingToOptionalBool(id value)
 {
-  if (!value) {
+  if (!RCTNilIfNull(value)) {
     return {};
   }
   return RCTBridgingToBool(value);
@@ -29,7 +29,7 @@ NSString *RCTBridgingToString(id value)
 
 folly::Optional<double> RCTBridgingToOptionalDouble(id value)
 {
-  if (!value) {
+  if (!RCTNilIfNull(value)) {
     return {};
   }
   return RCTBridgingToDouble(value);

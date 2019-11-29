@@ -13,6 +13,7 @@
 type Point = {
   x: ?number,
   y: ?number,
+  ...
 };
 
 const dummyPoint = {x: undefined, y: undefined};

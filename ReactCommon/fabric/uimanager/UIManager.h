@@ -1,4 +1,9 @@
-// Copyright 2004-present Facebook. All Rights Reserved.
+/*
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
 
 #pragma once
 
@@ -8,6 +13,8 @@
 
 #include <react/core/ShadowNode.h>
 #include <react/core/StateData.h>
+#include <react/mounting/ShadowTree.h>
+#include <react/mounting/ShadowTreeDelegate.h>
 #include <react/mounting/ShadowTreeRegistry.h>
 #include <react/uimanager/ComponentDescriptorRegistry.h>
 #include <react/uimanager/UIManagerDelegate.h>
@@ -17,8 +24,9 @@ namespace react {
 
 class UIManagerBinding;
 
-class UIManager {
+class UIManager final : public ShadowTreeDelegate {
  public:
+  ~UIManager();
 
   void setComponentDescriptorRegistry(
       const SharedComponentDescriptorRegistry &componentDescriptorRegistry);
@@ -40,6 +48,12 @@ class UIManager {
   void visitBinding(
       std::function<void(UIManagerBinding const &uiManagerBinding)> callback)
       const;
+
+#pragma mark - ShadowTreeDelegate
+
+  void shadowTreeDidFinishTransaction(
+      ShadowTree const &shadowTree,
+      MountingCoordinator::Shared const &mountingCoordinator) const override;
 
  private:
   friend class UIManagerBinding;
@@ -65,9 +79,8 @@ class UIManager {
       SurfaceId surfaceId,
       const SharedShadowNodeUnsharedList &rootChildren) const;
 
-  void setNativeProps(
-      const SharedShadowNode &shadowNode,
-      const RawProps &rawProps) const;
+  void setNativeProps(ShadowNode const &shadowNode, RawProps const &rawProps)
+      const;
 
   void setJSResponder(
       const SharedShadowNode &shadowNode,
@@ -89,8 +102,8 @@ class UIManager {
    * and performs a commit.
    */
   void updateState(
-      const SharedShadowNode &shadowNode,
-      const StateData::Shared &rawStateData) const;
+      ShadowNode const &shadowNode,
+      StateData::Shared const &rawStateData) const;
 
   void dispatchCommand(
       const SharedShadowNode &shadowNode,

@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -209,10 +209,10 @@ void RCTProfileTrampolineEnd(void)
   RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"objc_call,modules,auto");
 }
 
-static UIView *(*originalCreateView)(RCTComponentData *, SEL, NSNumber *);
-static UIView *RCTProfileCreateView(RCTComponentData *self, SEL _cmd, NSNumber *tag)
+static UIView *(*originalCreateView)(RCTComponentData *, SEL, NSNumber *, NSNumber *);
+static UIView *RCTProfileCreateView(RCTComponentData *self, SEL _cmd, NSNumber *tag, NSNumber *rootTag)
 {
-  UIView *view = originalCreateView(self, _cmd, tag);
+  UIView *view = originalCreateView(self, _cmd, tag, rootTag);
   RCTProfileHookInstance(view);
   return view;
 }
@@ -224,7 +224,7 @@ static void RCTProfileHookUIManager(RCTUIManager *uiManager)
       RCTProfileHookInstance([uiManager viewForReactTag:view]);
     }
 
-    Method createView = class_getInstanceMethod([RCTComponentData class], @selector(createViewWithTag:));
+    Method createView = class_getInstanceMethod([RCTComponentData class], @selector(createViewWithTag:rootTag:));
 
     if (method_getImplementation(createView) != (IMP)RCTProfileCreateView) {
       originalCreateView = (typeof(originalCreateView))method_getImplementation(createView);
@@ -372,7 +372,7 @@ void RCTProfileUnhookModules(RCTBridge *bridge)
 
 + (void)reload
 {
-  [RCTProfilingBridge() reload];
+  [RCTProfilingBridge() reloadWithReason:@"Profiling controls"];
 }
 
 + (void)toggle:(UIButton *)target

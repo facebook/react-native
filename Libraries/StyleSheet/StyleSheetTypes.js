@@ -18,6 +18,12 @@ export type PointValue = {|
   x: number,
   y: number,
 |};
+export type EdgeInsetsValue = {|
+  top: number,
+  left: number,
+  right: number,
+  bottom: number,
+|};
 export type DimensionValue = null | number | string | AnimatedNode;
 
 /**
@@ -637,6 +643,7 @@ export type ____DangerouslyImpreciseStyle_Internal = {
   +resizeMode?: 'contain' | 'cover' | 'stretch' | 'center' | 'repeat',
   +tintColor?: ColorValue,
   +overlayColor?: string,
+  ...
 };
 
 type GenericStyleProp<+T> =
@@ -662,4 +669,5 @@ export type ____ImageStyleProp_Internal = GenericStyleProp<
 
 export type ____Styles_Internal = {
   +[key: string]: $Shape<____DangerouslyImpreciseStyle_Internal>,
+  ...,
 };

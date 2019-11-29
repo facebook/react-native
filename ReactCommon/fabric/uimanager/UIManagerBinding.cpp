@@ -1,9 +1,15 @@
-// Copyright 2004-present Facebook. All Rights Reserved.
+/*
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
 
 #include "UIManagerBinding.h"
 
 #include <react/debug/SystraceSection.h>
 
+#include <glog/logging.h>
 #include <jsi/JSIDynamic.h>
 
 namespace facebook {
@@ -48,6 +54,9 @@ std::shared_ptr<UIManagerBinding> UIManagerBinding::createAndInstallIfNeeded(
 }
 
 UIManagerBinding::~UIManagerBinding() {
+  LOG(WARNING) << "UIManager::~UIManager() was called (address: " << this
+               << ").";
+
   // We must detach the `UIBinding` on deallocation to prevent accessing
   // deallocated `UIManagerBinding`.
   // Since `UIManagerBinding` retains `UIManager`, `UIManager` always overlive
@@ -155,7 +164,35 @@ jsi::Value UIManagerBinding::get(
     jsi::Runtime &runtime,
     const jsi::PropNameID &name) {
   auto methodName = name.utf8(runtime);
-  auto uiManager = uiManager_;
+
+  // Convert shared_ptr<UIManager> to a raw ptr
+  // Why? Because:
+  // 1) UIManagerBinding strongly retains UIManager. The JS VM
+  //    strongly retains UIManagerBinding (through the JSI).
+  //    These functions are JSI functions and are only called via
+  //    the JS VM; if the JS VM is torn down, those functions can't
+  //    execute and these lambdas won't execute.
+  // 2) The UIManager is only deallocated when all references to it
+  //    are deallocated, including the UIManagerBinding. That only
+  //    happens when the JS VM is deallocated. So, the raw pointer
+  //    is safe.
+  //
+  // Even if it's safe, why not just use shared_ptr anyway as
+  //  extra insurance?
+  // 1) Using shared_ptr or weak_ptr when they're not needed is
+  //    a pessimisation. It's more instructions executed without
+  //    any additional value in this case.
+  // 2) How and when exactly these lambdas is deallocated is
+  //    complex. Adding shared_ptr to them which causes the UIManager
+  //    to potentially live longer is unnecessary, complicated cognitive
+  //    overhead.
+  // 3) There is a strong suspicion that retaining UIManager from
+  //    these C++ lambdas, which are retained by an object that is held onto
+  //    by the JSI, caused some crashes upon deallocation of the
+  //    Scheduler and JS VM. This could happen if, for instance, C++
+  //    semantics cause these lambda to not be deallocated until
+  //    a CPU tick (or more) after the JS VM is deallocated.
+  UIManager *uiManager = uiManager_.get();
 
   // Semantic: Creates a new node with given pieces.
   if (methodName == "createNode") {
@@ -518,7 +555,7 @@ jsi::Value UIManagerBinding::get(
             const jsi::Value *arguments,
             size_t count) -> jsi::Value {
           uiManager->setNativeProps(
-              shadowNodeFromValue(runtime, arguments[0]),
+              *shadowNodeFromValue(runtime, arguments[0]),
               RawProps(runtime, arguments[1]));
 
           return jsi::Value::undefined();

@@ -94,7 +94,7 @@ class Entity extends React.Component<$FlowFixMeProps> {
   }
 }
 
-class AttributeToggler extends React.Component<{}, $FlowFixMeState> {
+class AttributeToggler extends React.Component<{...}, $FlowFixMeState> {
   state = {fontWeight: 'bold', fontSize: 15};
 
   toggleWeight = () => {

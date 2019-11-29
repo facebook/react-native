@@ -1,7 +1,9 @@
-// Copyright (c) Facebook, Inc. and its affiliates.
-
-// This source code is licensed under the MIT license found in the
-// LICENSE file in the root directory of this source tree.
+/*
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
 
 #include "Scheduler.h"
 
@@ -30,7 +32,8 @@ Scheduler::Scheduler(
   auto uiManager = std::make_shared<UIManager>();
   auto eventOwnerBox = std::make_shared<EventBeat::OwnerBox>();
 
-  auto eventPipe = [=](jsi::Runtime &runtime,
+  auto eventPipe = [uiManager](
+                       jsi::Runtime &runtime,
                        const EventTarget *eventTarget,
                        const std::string &type,
                        const ValueFactory &payloadFactory) {
@@ -40,10 +43,10 @@ Scheduler::Scheduler(
     });
   };
 
-  auto statePipe = [=](const StateData::Shared &data,
+  auto statePipe = [uiManager](
+                       const StateData::Shared &data,
                        const StateTarget &stateTarget) {
-    uiManager->updateState(
-        stateTarget.getShadowNode().shared_from_this(), data);
+    uiManager->updateState(stateTarget.getShadowNode(), data);
   };
 
   eventDispatcher_ = std::make_shared<EventDispatcher>(
@@ -69,8 +72,11 @@ Scheduler::Scheduler(
     uiManagerBinding->attach(uiManager);
   });
 
+  auto componentDescriptorRegistryKey =
+      "ComponentDescriptorRegistry_DO_NOT_USE_PRETTY_PLEASE";
+  schedulerToolbox.contextContainer->erase(componentDescriptorRegistryKey);
   schedulerToolbox.contextContainer->insert(
-      "ComponentDescriptorRegistry_DO_NOT_USE_PRETTY_PLEASE",
+      componentDescriptorRegistryKey,
       std::weak_ptr<ComponentDescriptorRegistry const>(
           componentDescriptorRegistry_));
 
@@ -79,7 +85,47 @@ Scheduler::Scheduler(
 }
 
 Scheduler::~Scheduler() {
+  LOG(WARNING) << "Scheduler::~Scheduler() was called (address: " << this
+               << ").";
+
+  // All Surfaces must be explicitly stopped before destroying `Scheduler`.
+  // The idea is that `UIManager` is allowed to call `Scheduler` only if the
+  // corresponding `ShadowTree` instance exists.
+
+  // The thread-safety of this operation is guaranteed by this requirement.
   uiManager_->setDelegate(nullptr);
+
+  // Then, let's verify that the requirement was satisfied.
+  auto surfaceIds = std::vector<SurfaceId>{};
+  uiManager_->getShadowTreeRegistry().enumerate(
+      [&](ShadowTree const &shadowTree, bool &stop) {
+        surfaceIds.push_back(shadowTree.getSurfaceId());
+      });
+
+  assert(
+      surfaceIds.size() == 0 &&
+      "Scheduler was destroyed with outstanding Surfaces.");
+
+  if (surfaceIds.size() == 0) {
+    return;
+  }
+
+  LOG(ERROR) << "Scheduler was destroyed with outstanding Surfaces.";
+
+  // If we are here, that means assert didn't fire which indicates that we in
+  // production.
+
+  // Now we have still-running surfaces, which is no good, no good.
+  // That's indeed a sign of a severe issue on the application layer.
+  // At this point, we don't have much to lose, so we are trying to unmount all
+  // outstanding `ShadowTree`s to prevent all stored JSI entities from
+  // overliving the `Scheduler`. (Unmounting `ShadowNode`s disables
+  // `EventEmitter`s which destroys JSI objects.)
+  for (auto surfaceId : surfaceIds) {
+    uiManager_->getShadowTreeRegistry().visit(
+        surfaceId,
+        [](ShadowTree const &shadowTree) { shadowTree.commitEmptyTree(); });
+  }
 }
 
 void Scheduler::startSurface(
@@ -91,8 +137,11 @@ void Scheduler::startSurface(
   SystraceSection s("Scheduler::startSurface");
 
   auto shadowTree = std::make_unique<ShadowTree>(
-      surfaceId, layoutConstraints, layoutContext, *rootComponentDescriptor_);
-  shadowTree->setDelegate(this);
+      surfaceId,
+      layoutConstraints,
+      layoutContext,
+      *rootComponentDescriptor_,
+      *uiManager_);
 
   auto uiManager = uiManager_;
 
@@ -125,7 +174,7 @@ void Scheduler::renderTemplateToSurface(
 
     uiManager_->getShadowTreeRegistry().visit(
         surfaceId, [=](const ShadowTree &shadowTree) {
-          return shadowTree.tryCommit([&](const SharedRootShadowNode
+          return shadowTree.tryCommit([&](RootShadowNode::Shared const
                                               &oldRootShadowNode) {
             return std::make_shared<RootShadowNode>(
                 *oldRootShadowNode,
@@ -187,7 +236,7 @@ Size Scheduler::measureSurface(
   uiManager_->getShadowTreeRegistry().visit(
       surfaceId, [&](const ShadowTree &shadowTree) {
         shadowTree.tryCommit(
-            [&](const SharedRootShadowNode &oldRootShadowNode) {
+            [&](RootShadowNode::Shared const &oldRootShadowNode) {
               auto rootShadowNode =
                   oldRootShadowNode->clone(layoutConstraints, layoutContext);
               rootShadowNode->layout();
@@ -205,8 +254,8 @@ void Scheduler::constraintSurfaceLayout(
   SystraceSection s("Scheduler::constraintSurfaceLayout");
 
   uiManager_->getShadowTreeRegistry().visit(
-      surfaceId, [&](const ShadowTree &shadowTree) {
-        shadowTree.commit([&](const SharedRootShadowNode &oldRootShadowNode) {
+      surfaceId, [&](ShadowTree const &shadowTree) {
+        shadowTree.commit([&](RootShadowNode::Shared const &oldRootShadowNode) {
           return oldRootShadowNode->clone(layoutConstraints, layoutContext);
         });
       });
@@ -227,40 +276,15 @@ SchedulerDelegate *Scheduler::getDelegate() const {
   return delegate_;
 }
 
-#pragma mark - ShadowTreeDelegate
+#pragma mark - UIManagerDelegate
 
-void Scheduler::shadowTreeDidCommit(
-    ShadowTree const &shadowTree,
-    MountingCoordinator::Shared const &mountingCoordinator) const {
-  SystraceSection s("Scheduler::shadowTreeDidCommit");
+void Scheduler::uiManagerDidFinishTransaction(
+    MountingCoordinator::Shared const &mountingCoordinator) {
+  SystraceSection s("Scheduler::uiManagerDidFinishTransaction");
 
   if (delegate_) {
     delegate_->schedulerDidFinishTransaction(mountingCoordinator);
   }
-}
-
-#pragma mark - UIManagerDelegate
-
-void Scheduler::uiManagerDidFinishTransaction(
-    SurfaceId surfaceId,
-    const SharedShadowNodeUnsharedList &rootChildNodes) {
-  SystraceSection s("Scheduler::uiManagerDidFinishTransaction");
-
-  uiManager_->getShadowTreeRegistry().visit(
-      surfaceId, [&](const ShadowTree &shadowTree) {
-        shadowTree.commit([&](const SharedRootShadowNode &oldRootShadowNode) {
-          return std::make_shared<RootShadowNode>(
-              *oldRootShadowNode,
-              ShadowNodeFragment{
-                  /* .tag = */ ShadowNodeFragment::tagPlaceholder(),
-                  /* .surfaceId = */ ShadowNodeFragment::surfaceIdPlaceholder(),
-                  /* .props = */ ShadowNodeFragment::propsPlaceholder(),
-                  /* .eventEmitter = */
-                  ShadowNodeFragment::eventEmitterPlaceholder(),
-                  /* .children = */ rootChildNodes,
-              });
-        });
-      });
 }
 
 void Scheduler::uiManagerDidCreateShadowNode(

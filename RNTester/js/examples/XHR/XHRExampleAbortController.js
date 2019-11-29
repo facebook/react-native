@@ -14,13 +14,12 @@ const React = require('react');
 
 const {Alert, Button, View} = require('react-native');
 
-class XHRExampleAbortController extends React.Component<{}, {}> {
+class XHRExampleAbortController extends React.Component<{...}, {...}> {
   _timeout: any;
 
   _submit(abortDelay) {
     clearTimeout(this._timeout);
-    // eslint-disable-next-line no-undef
-    const abortController = new AbortController();
+    const abortController = new global.AbortController();
     fetch('https://facebook.github.io/react-native/', {
       signal: abortController.signal,
     })

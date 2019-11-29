@@ -157,6 +157,10 @@ const APIExamples: Array<RNTesterExample> = [
     module: require('../examples/DatePicker/DatePickerAndroidExample'),
   },
   {
+    key: 'DevSettings',
+    module: require('../examples/DevSettings/DevSettingsExample'),
+  },
+  {
     key: 'Dimensions',
     module: require('../examples/Dimensions/DimensionsExample'),
   },

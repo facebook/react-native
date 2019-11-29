@@ -1,9 +1,10 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
- * directory of this source tree.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
+
 package com.facebook.react.uimanager;
 
 import android.os.Bundle;
@@ -47,4 +48,13 @@ public interface ReactRoot {
 
   /** Sets a flag that determines whether to log that content appeared on next view added. */
   void setShouldLogContentAppeared(boolean shouldLogContentAppeared);
+
+  /**
+   * @return a {@link String} that represents the root js application that is being rendered with
+   *     this {@link ReactRoot}
+   * @deprecated We recommend to not use this method as it is will be replaced in the near future.
+   */
+  @Deprecated
+  @Nullable
+  String getSurfaceID();
 }

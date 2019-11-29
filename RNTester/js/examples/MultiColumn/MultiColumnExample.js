@@ -110,7 +110,12 @@ class MultiColumnExample extends React.PureComponent<
   _getItemLayout(
     data: any,
     index: number,
-  ): {length: number, offset: number, index: number} {
+  ): {
+    length: number,
+    offset: number,
+    index: number,
+    ...
+  } {
     const length =
       getItemLayout(data, index).length + 2 * (CARD_MARGIN + BORDER_WIDTH);
     return {length, offset: length * index, index};
@@ -131,10 +136,12 @@ class MultiColumnExample extends React.PureComponent<
     changed: Array<{
       key: string,
       isViewable: boolean,
-      item: {columns: Array<*>},
+      item: {columns: Array<*>, ...},
       index: ?number,
       section?: any,
+      ...
     }>,
+    ...
   }) => {
     // Impressions can be logged here
     if (this.state.logViewable) {

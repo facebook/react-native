@@ -4,10 +4,10 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- *
  * @format
  * @emails oncall+react_native
  */
+
 'use strict';
 
 const React = require('react');
@@ -44,7 +44,7 @@ describe('VirtualizedList', () => {
   });
 
   it('warns if both renderItem or ListItemComponent are specified. Uses ListItemComponent', () => {
-    jest.spyOn(global.console, 'warn');
+    jest.spyOn(console, 'warn').mockImplementationOnce(() => {});
     function ListItemComponent({item}) {
       return <item value={item.key} testID={`${item.key}-ListItemComponent`} />;
     }
@@ -60,16 +60,22 @@ describe('VirtualizedList', () => {
       />,
     );
 
-    expect(console.warn.mock.calls).toEqual([
-      [
-        'VirtualizedList: Both ListItemComponent and renderItem props are present. ListItemComponent will take precedence over renderItem.',
-      ],
-    ]);
+    expect(console.warn).toBeCalledWith(
+      'VirtualizedList: Both ListItemComponent and renderItem props are present. ListItemComponent will take precedence over renderItem.',
+    );
     expect(component).toMatchSnapshot();
     console.warn.mockRestore();
   });
 
   it('throws if no renderItem or ListItemComponent', () => {
+    // Silence the React error boundary warning; we expect an uncaught error.
+    jest.spyOn(console, 'error').mockImplementation(message => {
+      if (message.startsWith('The above error occured in the ')) {
+        return;
+      }
+      console.errorDebug(message);
+    });
+
     const componentFactory = () =>
       ReactTestRenderer.create(
         <VirtualizedList
@@ -81,6 +87,8 @@ describe('VirtualizedList', () => {
     expect(componentFactory).toThrow(
       'VirtualizedList: Either ListItemComponent or renderItem props are required but none were found.',
     );
+
+    console.error.mockRestore();
   });
 
   it('renders empty list', () => {

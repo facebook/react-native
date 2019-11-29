@@ -1,14 +1,16 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
- * directory of this source tree.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
+
 package com.facebook.react.uimanager;
 
 import android.view.View;
 import android.view.ViewGroup;
 import androidx.annotation.Nullable;
+import com.facebook.react.bridge.UiThreadUtil;
 import java.util.List;
 import java.util.WeakHashMap;
 
@@ -43,6 +45,8 @@ public abstract class ViewGroupManager<T extends ViewGroup>
    * @param views the set of views to add
    */
   public void addViews(T parent, List<View> views) {
+    UiThreadUtil.assertOnUiThread();
+
     for (int i = 0, size = views.size(); i < size; i++) {
       addView(parent, views.get(i), i);
     }
@@ -65,10 +69,14 @@ public abstract class ViewGroupManager<T extends ViewGroup>
   }
 
   public void removeViewAt(T parent, int index) {
+    UiThreadUtil.assertOnUiThread();
+
     parent.removeViewAt(index);
   }
 
   public void removeView(T parent, View view) {
+    UiThreadUtil.assertOnUiThread();
+
     for (int i = 0; i < getChildCount(parent); i++) {
       if (getChildAt(parent, i) == view) {
         removeViewAt(parent, i);
@@ -78,6 +86,8 @@ public abstract class ViewGroupManager<T extends ViewGroup>
   }
 
   public void removeAllViews(T parent) {
+    UiThreadUtil.assertOnUiThread();
+
     for (int i = getChildCount(parent) - 1; i >= 0; i--) {
       removeViewAt(parent, i);
     }

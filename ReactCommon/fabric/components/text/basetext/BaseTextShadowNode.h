@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -27,8 +27,8 @@ class BaseTextShadowNode {
    * function, or if TextInput should inherit from BaseTextShadowNode.
    */
   static AttributedString getAttributedString(
-      const TextAttributes &baseTextAttributes,
-      const SharedShadowNode &parentNode);
+      TextAttributes const &baseTextAttributes,
+      ShadowNode const &parentNode);
 };
 
 } // namespace react

@@ -125,7 +125,7 @@ class DisabledSwitchExample extends React.Component<
   }
 }
 
-class ColorSwitchExample extends React.Component<{}, $FlowFixMeState> {
+class ColorSwitchExample extends React.Component<{...}, $FlowFixMeState> {
   state = {
     colorTrueSwitchIsOn: true,
     colorFalseSwitchIsOn: false,
@@ -158,7 +158,7 @@ class ColorSwitchExample extends React.Component<{}, $FlowFixMeState> {
   }
 }
 
-class EventSwitchExample extends React.Component<{}, $FlowFixMeState> {
+class EventSwitchExample extends React.Component<{...}, $FlowFixMeState> {
   state = {
     eventSwitchIsOn: false,
     eventSwitchRegressionIsOn: true,

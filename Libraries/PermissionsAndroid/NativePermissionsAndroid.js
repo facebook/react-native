@@ -25,6 +25,7 @@ export type PermissionType =
   | 'android.permission.READ_CONTACTS'
   | 'android.permission.WRITE_CONTACTS'
   | 'android.permission.GET_ACCOUNTS'
+  | 'android.permission.ACCESS_BACKGROUND_LOCATION'
   | 'android.permission.ACCESS_FINE_LOCATION'
   | 'android.permission.ACCESS_COARSE_LOCATION'
   | 'android.permission.RECORD_AUDIO'
@@ -53,7 +54,7 @@ export interface Spec extends TurboModule {
   ) => Promise<boolean>;
   +requestMultiplePermissions: (
     permissions: Array<PermissionType>,
-  ) => Promise<{[permission: PermissionType]: PermissionStatus}>;
+  ) => Promise<{[permission: PermissionType]: PermissionStatus, ...}>;
 }
 
 export default (TurboModuleRegistry.get<Spec>('PermissionsAndroid'): ?Spec);

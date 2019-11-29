@@ -12,17 +12,14 @@
 
 import type {RNTesterTheme} from '../components/RNTesterTheme';
 
-export type RNTesterBackAction = {
-  type: 'RNTesterBackAction',
-};
+export type RNTesterBackAction = {type: 'RNTesterBackAction', ...};
 
-export type RNTesterListAction = {
-  type: 'RNTesterListAction',
-};
+export type RNTesterListAction = {type: 'RNTesterListAction', ...};
 
 export type RNTesterExampleAction = {
   type: 'RNTesterExampleAction',
   openExample: string,
+  ...
 };
 
 export type RNTesterAction =

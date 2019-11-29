@@ -1,7 +1,9 @@
-// Copyright (c) Facebook, Inc. and its affiliates.
-
-// This source code is licensed under the MIT license found in the
-// LICENSE file in the root directory of this source tree.
+/*
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
 
 #pragma once
 
@@ -12,8 +14,6 @@
 #include <react/config/ReactNativeConfig.h>
 #include <react/core/ComponentDescriptor.h>
 #include <react/core/LayoutConstraints.h>
-#include <react/mounting/ShadowTree.h>
-#include <react/mounting/ShadowTreeDelegate.h>
 #include <react/uimanager/ComponentDescriptorFactory.h>
 #include <react/uimanager/ComponentDescriptorRegistry.h>
 #include <react/uimanager/SchedulerDelegate.h>
@@ -29,7 +29,7 @@ namespace react {
 /*
  * Scheduler coordinates Shadow Tree updates and event flows.
  */
-class Scheduler final : public UIManagerDelegate, public ShadowTreeDelegate {
+class Scheduler final : public UIManagerDelegate {
  public:
   Scheduler(SchedulerToolbox schedulerToolbox, SchedulerDelegate *delegate);
   ~Scheduler();
@@ -81,8 +81,7 @@ class Scheduler final : public UIManagerDelegate, public ShadowTreeDelegate {
 #pragma mark - UIManagerDelegate
 
   void uiManagerDidFinishTransaction(
-      SurfaceId surfaceId,
-      const SharedShadowNodeUnsharedList &rootChildNodes) override;
+      MountingCoordinator::Shared const &mountingCoordinator) override;
   void uiManagerDidCreateShadowNode(
       const SharedShadowNode &shadowNode) override;
   void uiManagerDidDispatchCommand(
@@ -95,17 +94,10 @@ class Scheduler final : public UIManagerDelegate, public ShadowTreeDelegate {
       bool blockNativeResponder) override;
   void uiManagerDidClearJSResponder() override;
 
-#pragma mark - ShadowTreeDelegate
-
-  void shadowTreeDidCommit(
-      ShadowTree const &shadowTree,
-      MountingCoordinator::Shared const &mountingCoordinator) const override;
-
  private:
   SchedulerDelegate *delegate_;
   SharedComponentDescriptorRegistry componentDescriptorRegistry_;
   std::unique_ptr<const RootComponentDescriptor> rootComponentDescriptor_;
-  ShadowTreeRegistry shadowTreeRegistry_;
   RuntimeExecutor runtimeExecutor_;
   std::shared_ptr<UIManager> uiManager_;
   std::shared_ptr<const ReactNativeConfig> reactNativeConfig_;

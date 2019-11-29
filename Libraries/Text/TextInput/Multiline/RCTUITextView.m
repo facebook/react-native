@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -18,9 +18,8 @@
   UILabel *_placeholderView;
   UITextView *_detachedTextView;
   RCTBackedTextViewDelegateAdapter *_textInputDelegateAdapter;
+  NSDictionary<NSAttributedStringKey, id> *_defaultTextAttributes;
 }
-
-@synthesize reactTextAttributes = _reactTextAttributes;
 
 static UIFont *defaultPlaceholderFont()
 {
@@ -44,18 +43,21 @@ static UIColor *defaultPlaceholderColor()
     _placeholderView = [[UILabel alloc] initWithFrame:self.bounds];
     _placeholderView.isAccessibilityElement = NO;
     _placeholderView.numberOfLines = 0;
-    _placeholderView.textColor = defaultPlaceholderColor();
     [self addSubview:_placeholderView];
 
     _textInputDelegateAdapter = [[RCTBackedTextViewDelegateAdapter alloc] initWithTextView:self];
+
+    self.backgroundColor = [UIColor clearColor];
+    self.textColor = [UIColor blackColor];
+    // This line actually removes 5pt (default value) left and right padding in UITextView.
+    self.textContainer.lineFragmentPadding = 0;
+#if !TARGET_OS_TV
+    self.scrollsToTop = NO;
+#endif
+    self.scrollEnabled = YES;
   }
 
   return self;
-}
-
-- (void)dealloc
-{
-  [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 #pragma mark - Accessibility
@@ -91,35 +93,31 @@ static UIColor *defaultPlaceholderColor()
 - (void)setPlaceholder:(NSString *)placeholder
 {
   _placeholder = placeholder;
-  _placeholderView.attributedText = [[NSAttributedString alloc] initWithString:_placeholder ?: @"" attributes:[self placeholderEffectiveTextAttributes]];
+  [self _updatePlaceholder];
 }
 
 - (void)setPlaceholderColor:(UIColor *)placeholderColor
 {
   _placeholderColor = placeholderColor;
-  _placeholderView.textColor = _placeholderColor ?: defaultPlaceholderColor();
+  [self _updatePlaceholder];
 }
 
-- (void)setReactTextAttributes:(RCTTextAttributes *)reactTextAttributes
+- (void)setDefaultTextAttributes:(NSDictionary<NSAttributedStringKey, id> *)defaultTextAttributes
 {
-  if ([reactTextAttributes isEqual:_reactTextAttributes]) {
-    return;
-  }
-  self.typingAttributes = reactTextAttributes.effectiveTextAttributes;
-  _reactTextAttributes = reactTextAttributes;
-  // Update placeholder text attributes
-  [self setPlaceholder:_placeholder];
+  _defaultTextAttributes = defaultTextAttributes;
+  self.typingAttributes = defaultTextAttributes;
+  [self _updatePlaceholder];
 }
 
-- (RCTTextAttributes *)reactTextAttributes
+- (NSDictionary<NSAttributedStringKey, id> *)defaultTextAttributes
 {
-  return _reactTextAttributes;
+  return _defaultTextAttributes;
 }
 
 - (void)textDidChange
 {
   _textWasPasted = NO;
-  [self invalidatePlaceholderVisibility];
+  [self _invalidatePlaceholderVisibility];
 }
 
 #pragma mark - Overrides
@@ -127,7 +125,7 @@ static UIColor *defaultPlaceholderColor()
 - (void)setFont:(UIFont *)font
 {
   [super setFont:font];
-  _placeholderView.font = font ?: defaultPlaceholderFont();
+  [self _updatePlaceholder];
 }
 
 - (void)setTextAlignment:(NSTextAlignment)textAlignment
@@ -195,7 +193,7 @@ static UIColor *defaultPlaceholderColor()
   UIEdgeInsets textContainerInset = self.textContainerInset;
   NSString *placeholder = self.placeholder ?: @"";
   CGSize maxPlaceholderSize = CGSizeMake(UIEdgeInsetsInsetRect(self.bounds, textContainerInset).size.width, CGFLOAT_MAX);
-  CGSize placeholderSize = [placeholder boundingRectWithSize:maxPlaceholderSize options:NSStringDrawingUsesLineFragmentOrigin attributes:[self placeholderEffectiveTextAttributes] context:nil].size;
+  CGSize placeholderSize = [placeholder boundingRectWithSize:maxPlaceholderSize options:NSStringDrawingUsesLineFragmentOrigin attributes:[self _placeholderTextAttributes] context:nil].size;
   placeholderSize = CGSizeMake(RCTCeilPixelValue(placeholderSize.width), RCTCeilPixelValue(placeholderSize.height));
   placeholderSize.width += textContainerInset.left + textContainerInset.right;
   placeholderSize.height += textContainerInset.top + textContainerInset.bottom;
@@ -253,25 +251,28 @@ static UIColor *defaultPlaceholderColor()
 
 #pragma mark - Placeholder
 
-- (void)invalidatePlaceholderVisibility
+- (void)_invalidatePlaceholderVisibility
 {
   BOOL isVisible = _placeholder.length != 0 && self.attributedText.length == 0;
   _placeholderView.hidden = !isVisible;
 }
 
-- (NSDictionary<NSAttributedStringKey, id> *)placeholderEffectiveTextAttributes
+- (void)_updatePlaceholder
 {
-  NSMutableDictionary<NSAttributedStringKey, id> *effectiveTextAttributes = [NSMutableDictionary dictionaryWithDictionary:@{
-                                                                                                                            NSFontAttributeName: _reactTextAttributes.effectiveFont ?: defaultPlaceholderFont(),
-                                                                                                                            NSForegroundColorAttributeName: self.placeholderColor ?: defaultPlaceholderColor(),
-                                                                                                                            NSKernAttributeName:isnan(_reactTextAttributes.letterSpacing) ? @0 : @(_reactTextAttributes.letterSpacing)
-                                                                                                                            }];
-  NSParagraphStyle *paragraphStyle = [_reactTextAttributes effectiveParagraphStyle];
-  if (paragraphStyle) {
-    effectiveTextAttributes[NSParagraphStyleAttributeName] = paragraphStyle;
+  _placeholderView.attributedText = [[NSAttributedString alloc] initWithString:_placeholder ?: @"" attributes:[self _placeholderTextAttributes]];
+}
+
+- (NSDictionary<NSAttributedStringKey, id> *)_placeholderTextAttributes
+{
+  NSMutableDictionary<NSAttributedStringKey, id> *textAttributes = [_defaultTextAttributes mutableCopy] ?: [NSMutableDictionary new];
+
+  [textAttributes setValue:self.placeholderColor ?: defaultPlaceholderColor() forKey:NSForegroundColorAttributeName];
+
+  if (![textAttributes objectForKey:NSFontAttributeName]) {
+    [textAttributes setValue:defaultPlaceholderFont() forKey:NSFontAttributeName];
   }
-  
-  return [effectiveTextAttributes copy];
+
+  return textAttributes;
 }
 
 #pragma mark - Utility Methods

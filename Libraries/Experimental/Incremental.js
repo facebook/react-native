@@ -90,10 +90,9 @@ export type Props = {
    */
   name: string,
   children: React.Node,
+  ...
 };
-type State = {
-  doIncrementalRender: boolean,
-};
+type State = {doIncrementalRender: boolean, ...};
 
 class Incremental extends React.Component<Props, State> {
   props: Props;
@@ -191,7 +190,9 @@ export type Context = {
   incrementalGroup: ?{
     groupId: string,
     incrementalCount: number,
+    ...
   },
+  ...
 };
 
 module.exports = Incremental;

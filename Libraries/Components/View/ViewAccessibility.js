@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @flow strict
+ * @flow strict-local
  */
 
 'use strict';
@@ -46,13 +46,12 @@ export type AccessibilityRole =
 export type AccessibilityActionInfo = $ReadOnly<{
   name: string,
   label?: string,
+  ...
 }>;
 
 // The info included in the event sent to onAccessibilityAction
 export type AccessibilityActionEvent = SyntheticEvent<
-  $ReadOnly<{
-    actionName: string,
-  }>,
+  $ReadOnly<{actionName: string, ...}>,
 >;
 
 export type AccessibilityState = {
@@ -61,4 +60,27 @@ export type AccessibilityState = {
   checked?: ?boolean | 'mixed',
   busy?: boolean,
   expanded?: boolean,
+  ...
 };
+
+export type AccessibilityValue = $ReadOnly<{|
+  /**
+   * The minimum value of this component's range. (should be an integer)
+   */
+  min?: number,
+
+  /**
+   * The maximum value of this component's range. (should be an integer)
+   */
+  max?: number,
+
+  /**
+   * The current value of this component's range. (should be an integer)
+   */
+  now?: number,
+
+  /**
+   * A textual description of this component's value. (will override minimum, current, and maximum if set)
+   */
+  text?: string,
+|}>;

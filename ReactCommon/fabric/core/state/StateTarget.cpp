@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -13,8 +13,8 @@ namespace react {
 
 StateTarget::StateTarget() : shadowNode_(nullptr) {}
 
-StateTarget::StateTarget(const ShadowNode &shadowNode)
-    : shadowNode_(shadowNode.shared_from_this()) {}
+StateTarget::StateTarget(std::shared_ptr<ShadowNode const> shadowNode)
+    : shadowNode_(shadowNode) {}
 
 StateTarget::operator bool() const {
   return (bool)shadowNode_;
@@ -22,7 +22,7 @@ StateTarget::operator bool() const {
 
 const ShadowNode &StateTarget::getShadowNode() const {
   assert(shadowNode_ && "Stored pointer to a ShadowNode must not be null.");
-  return *std::static_pointer_cast<const ShadowNode>(shadowNode_);
+  return *shadowNode_;
 }
 
 } // namespace react

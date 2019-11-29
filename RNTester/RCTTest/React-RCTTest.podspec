@@ -1,4 +1,3 @@
-# coding: utf-8
 # Copyright (c) Facebook, Inc. and its affiliates.
 #
 # This source code is licensed under the MIT license found in the
@@ -30,6 +29,7 @@ Pod::Spec.new do |s|
   s.preserve_paths         = "package.json", "LICENSE", "LICENSE-docs"
   s.framework              = "XCTest"
   s.header_dir             = "RCTTest"
-  
+
   s.dependency "React-Core", version
+  s.dependency "React-CoreModules", version
 end

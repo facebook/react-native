@@ -33,6 +33,8 @@ export interface Spec extends TurboModule {
     successCallback: (imageURL: string, height: number, width: number) => void,
     cancelCallback: () => void,
   ) => void;
+  +clearAllPendingVideos: () => void;
+  +removePendingVideo: (url: string) => void;
 }
 
 export default (TurboModuleRegistry.get<Spec>('ImagePickerIOS'): ?Spec);

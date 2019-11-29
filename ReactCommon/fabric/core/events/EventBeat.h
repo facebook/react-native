@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -75,13 +75,13 @@ class EventBeat {
    */
   void setBeatCallback(const BeatCallback &beatCallback);
 
+ protected:
   /*
    * Should be used by sublasses to send a beat.
    * Receiver might ignore the call if a beat was not requested.
    */
   void beat(jsi::Runtime &runtime) const;
 
- protected:
   BeatCallback beatCallback_;
   SharedOwnerBox ownerBox_;
   mutable std::atomic<bool> isRequested_{false};

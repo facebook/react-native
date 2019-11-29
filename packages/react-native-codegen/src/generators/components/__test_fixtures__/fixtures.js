@@ -479,6 +479,35 @@ const POINT_PROP: SchemaType = {
   },
 };
 
+const INSETS_PROP: SchemaType = {
+  modules: {
+    ScrollView: {
+      components: {
+        InsetsPropNativeComponent: {
+          extendsProps: [
+            {
+              type: 'ReactNativeBuiltInType',
+              knownTypeName: 'ReactNativeCoreViewProps',
+            },
+          ],
+          events: [],
+          props: [
+            {
+              name: 'contentInset',
+              optional: true,
+              typeAnnotation: {
+                type: 'NativePrimitiveTypeAnnotation',
+                name: 'EdgeInsetsPrimitive',
+              },
+            },
+          ],
+          commands: [],
+        },
+      },
+    },
+  },
+};
+
 const ARRAY_PROPS: SchemaType = {
   modules: {
     Slider: {
@@ -1474,6 +1503,27 @@ const COMMANDS_AND_PROPS: SchemaType = {
   },
 };
 
+const EXCLUDE_ANDROID: SchemaType = {
+  modules: {
+    ExcludedAndroid: {
+      components: {
+        ExcludedAndroidComponent: {
+          excludedPlatform: 'android',
+          extendsProps: [
+            {
+              type: 'ReactNativeBuiltInType',
+              knownTypeName: 'ReactNativeCoreViewProps',
+            },
+          ],
+          events: [],
+          props: [],
+          commands: [],
+        },
+      },
+    },
+  },
+};
+
 module.exports = {
   NO_PROPS_NO_EVENTS,
   INTERFACE_ONLY,
@@ -1485,6 +1535,7 @@ module.exports = {
   COLOR_PROP,
   IMAGE_PROP,
   POINT_PROP,
+  INSETS_PROP,
   ARRAY_PROPS,
   ARRAY_PROPS_WITH_NESTED_OBJECT,
   OBJECT_PROPS,
@@ -1498,4 +1549,5 @@ module.exports = {
   TWO_COMPONENTS_DIFFERENT_FILES,
   COMMANDS,
   COMMANDS_AND_PROPS,
+  EXCLUDE_ANDROID,
 };

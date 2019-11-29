@@ -30,7 +30,7 @@ const {
  * - The app renders fine
  * - The nativeID property is passed to the native views
  */
-class NativeIdTestApp extends React.Component<{}> {
+class NativeIdTestApp extends React.Component<{...}> {
   render(): React.Node {
     const uri =
       'data:image/gif;base64,' +

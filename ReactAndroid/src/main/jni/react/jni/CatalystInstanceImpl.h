@@ -1,14 +1,16 @@
-// Copyright (c) Facebook, Inc. and its affiliates.
+/*
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
 
-// This source code is licensed under the MIT license found in the
-// LICENSE file in the root directory of this source tree.
-
+#include <memory>
 #include <string>
 
 #include <ReactCommon/BridgeJSCallInvoker.h>
-#include <ReactCommon/JSCallInvokerHolder.h>
+#include <ReactCommon/CallInvokerHolder.h>
 #include <fb/fbjni.h>
-#include <folly/Memory.h>
 
 #include "CxxModuleWrapper.h"
 #include "JMessageQueueThread.h"
@@ -89,7 +91,8 @@ class CatalystInstanceImpl : public jni::HybridClass<CatalystInstanceImpl> {
       std::string method,
       NativeArray *arguments);
   void jniCallJSCallback(jint callbackId, NativeArray *arguments);
-  jni::alias_ref<JSCallInvokerHolder::javaobject> getJSCallInvokerHolder();
+  jni::alias_ref<CallInvokerHolder::javaobject> getJSCallInvokerHolder();
+  jni::alias_ref<CallInvokerHolder::javaobject> getNativeCallInvokerHolder();
   void setGlobalVariable(std::string propName, std::string &&jsonValue);
   jlong getJavaScriptContext();
   void handleMemoryPressure(int pressureLevel);
@@ -99,8 +102,8 @@ class CatalystInstanceImpl : public jni::HybridClass<CatalystInstanceImpl> {
   std::shared_ptr<Instance> instance_;
   std::shared_ptr<ModuleRegistry> moduleRegistry_;
   std::shared_ptr<JMessageQueueThread> moduleMessageQueue_;
-  jni::global_ref<JSCallInvokerHolder::javaobject> javaInstanceHolder_;
-  std::shared_ptr<BridgeJSCallInvoker> jsCallInvoker_;
+  jni::global_ref<CallInvokerHolder::javaobject> jsCallInvokerHolder_;
+  jni::global_ref<CallInvokerHolder::javaobject> nativeCallInvokerHolder_;
 };
 
 } // namespace react

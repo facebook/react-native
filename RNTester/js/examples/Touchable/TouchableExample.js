@@ -25,10 +25,12 @@ const {
   View,
 } = require('react-native');
 
+import {useEffect, useRef, useState} from 'react';
+
 const forceTouchAvailable =
   (Platform.OS === 'ios' && Platform.constants.forceTouchAvailable) || false;
 
-class TouchableHighlightBox extends React.Component<{}, $FlowFixMeState> {
+class TouchableHighlightBox extends React.Component<{...}, $FlowFixMeState> {
   state = {
     timesPressed: 0,
   };
@@ -60,10 +62,6 @@ class TouchableHighlightBox extends React.Component<{}, $FlowFixMeState> {
             style={styles.wrapper}
             testID="touchable_highlight_text_button"
             activeOpacity={1}
-            tvParallaxProperties={{
-              pressMagnification: 1.3,
-              pressDuration: 0.6,
-            }}
             underlayColor="rgb(210, 230, 255)"
             onPress={this.touchableOnPress}>
             <View style={styles.wrapperCustom}>
@@ -79,7 +77,10 @@ class TouchableHighlightBox extends React.Component<{}, $FlowFixMeState> {
   }
 }
 
-class TouchableWithoutFeedbackBox extends React.Component<{}, $FlowFixMeState> {
+class TouchableWithoutFeedbackBox extends React.Component<
+  {...},
+  $FlowFixMeState,
+> {
   state = {
     timesPressed: 0,
   };
@@ -115,7 +116,7 @@ class TouchableWithoutFeedbackBox extends React.Component<{}, $FlowFixMeState> {
   }
 }
 
-class TextOnPressBox extends React.Component<{}, $FlowFixMeState> {
+class TextOnPressBox extends React.Component<{...}, $FlowFixMeState> {
   state = {
     timesPressed: 0,
   };
@@ -150,7 +151,7 @@ class TextOnPressBox extends React.Component<{}, $FlowFixMeState> {
   }
 }
 
-class TouchableFeedbackEvents extends React.Component<{}, $FlowFixMeState> {
+class TouchableFeedbackEvents extends React.Component<{...}, $FlowFixMeState> {
   state = {
     eventLog: [],
   };
@@ -190,7 +191,7 @@ class TouchableFeedbackEvents extends React.Component<{}, $FlowFixMeState> {
   };
 }
 
-class TouchableDelayEvents extends React.Component<{}, $FlowFixMeState> {
+class TouchableDelayEvents extends React.Component<{...}, $FlowFixMeState> {
   state = {
     eventLog: [],
   };
@@ -231,7 +232,7 @@ class TouchableDelayEvents extends React.Component<{}, $FlowFixMeState> {
   };
 }
 
-class ForceTouchExample extends React.Component<{}, $FlowFixMeState> {
+class ForceTouchExample extends React.Component<{...}, $FlowFixMeState> {
   state = {
     force: 0,
   };
@@ -265,7 +266,7 @@ class ForceTouchExample extends React.Component<{}, $FlowFixMeState> {
   }
 }
 
-class TouchableHitSlop extends React.Component<{}, $FlowFixMeState> {
+class TouchableHitSlop extends React.Component<{...}, $FlowFixMeState> {
   state = {
     timesPressed: 0,
   };
@@ -303,7 +304,49 @@ class TouchableHitSlop extends React.Component<{}, $FlowFixMeState> {
   }
 }
 
-class TouchableDisabled extends React.Component<{}> {
+function TouchableNativeMethodChecker<
+  T: React.AbstractComponent<any, any>,
+>(props: {|Component: T, name: string|}): React.Node {
+  const [status, setStatus] = useState<?boolean>(null);
+  const ref = useRef<?React.ElementRef<T>>(null);
+
+  useEffect(() => {
+    setStatus(ref.current != null && typeof ref.current.measure === 'function');
+  }, []);
+
+  return (
+    <View style={[styles.row, styles.block]}>
+      <props.Component ref={ref}>
+        <View />
+      </props.Component>
+      <Text>
+        {props.name + ': '}
+        {status == null
+          ? 'Missing Ref!'
+          : status === true
+          ? 'Native Methods Exist'
+          : 'Native Methods Missing!'}
+      </Text>
+    </View>
+  );
+}
+
+function TouchableNativeMethods() {
+  return (
+    <View>
+      <TouchableNativeMethodChecker
+        Component={TouchableHighlight}
+        name="TouchableHighlight"
+      />
+      <TouchableNativeMethodChecker
+        Component={TouchableOpacity}
+        name="TouchableOpacity"
+      />
+    </View>
+  );
+}
+
+class TouchableDisabled extends React.Component<{...}> {
   render() {
     return (
       <View>
@@ -359,10 +402,9 @@ class TouchableDisabled extends React.Component<{}> {
 
         {Platform.OS === 'android' && (
           <TouchableNativeFeedback
-            style={[styles.row, styles.block]}
             onPress={() => console.log('custom TNF has been clicked')}
             background={TouchableNativeFeedback.SelectableBackground()}>
-            <View>
+            <View style={[styles.row, styles.block]}>
               <Text style={[styles.button, styles.nativeFeedbackButton]}>
                 Enabled TouchableNativeFeedback
               </Text>
@@ -373,10 +415,9 @@ class TouchableDisabled extends React.Component<{}> {
         {Platform.OS === 'android' && (
           <TouchableNativeFeedback
             disabled={true}
-            style={[styles.row, styles.block]}
             onPress={() => console.log('custom TNF has been clicked')}
             background={TouchableNativeFeedback.SelectableBackground()}>
-            <View>
+            <View style={[styles.row, styles.block]}>
               <Text
                 style={[styles.disabledButton, styles.nativeFeedbackButton]}>
                 Disabled TouchableNativeFeedback
@@ -553,6 +594,13 @@ exports.examples = [
       'without changing the view bounds.': string),
     render: function(): React.Element<any> {
       return <TouchableHitSlop />;
+    },
+  },
+  {
+    title: 'Touchable Native Methods',
+    description: ('Some <Touchable*> components expose native methods like `measure`.': string),
+    render: function(): React.Element<any> {
+      return <TouchableNativeMethods />;
     },
   },
   {

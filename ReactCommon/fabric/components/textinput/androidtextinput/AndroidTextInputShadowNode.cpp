@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -30,71 +30,92 @@ void AndroidTextInputShadowNode::setContextContainer(
   contextContainer_ = contextContainer;
 }
 
-AttributedString AndroidTextInputShadowNode::getAttributedString() const {
+AttributedString AndroidTextInputShadowNode::getAttributedString(
+    bool usePlaceholders) const {
   auto textAttributes = TextAttributes::defaultTextAttributes();
   textAttributes.apply(getProps()->textAttributes);
 
   // Use BaseTextShadowNode to get attributed string from children
-  return BaseTextShadowNode::getAttributedString(
-      textAttributes, shared_from_this());
+  auto const &attributedString =
+      BaseTextShadowNode::getAttributedString(textAttributes, *this);
+  if (!attributedString.isEmpty()) {
+    return attributedString;
+  }
+  if (!getProps()->text.empty() || usePlaceholders) {
+    // If the BaseTextShadowNode didn't detect any child Text nodes, we
+    // may actually just have a `text` attribute.
+    // TODO: figure out why BaseTextShadowNode doesn't pick this up, this
+    // is a bug. A minimal Playground example that triggers this: P122991121
+    auto textAttributedString = AttributedString{};
+    auto fragment = AttributedString::Fragment{};
+    fragment.string = getProps()->text;
+
+    if (usePlaceholders) {
+      // Return placeholder text instead, if text was empty.
+      if (fragment.string.empty()) {
+        fragment.string = getProps()->placeholder;
+      }
+      // For measurement purposes, we want to make sure that there's at least a
+      // single character in the string so that the measured height is greater
+      // than zero. Otherwise, empty TextInputs with no placeholder don't
+      // display at all.
+      if (fragment.string.empty()) {
+        fragment.string = " ";
+      }
+    }
+    fragment.textAttributes = textAttributes;
+    fragment.parentShadowView = ShadowView(*this);
+    textAttributedString.appendFragment(fragment);
+    return textAttributedString;
+  }
+
+  return attributedString;
+}
+
+void AndroidTextInputShadowNode::setTextLayoutManager(
+    SharedTextLayoutManager textLayoutManager) {
+  ensureUnsealed();
+  textLayoutManager_ = textLayoutManager;
+}
+
+void AndroidTextInputShadowNode::updateStateIfNeeded() {
+  ensureUnsealed();
+
+  auto attributedString = getAttributedString(false);
+  auto const &state = getStateData();
+
+  assert(textLayoutManager_);
+  assert(
+      (!state.layoutManager || state.layoutManager == textLayoutManager_) &&
+      "`StateData` refers to a different `TextLayoutManager`");
+
+  if (state.attributedString == attributedString &&
+      state.layoutManager == textLayoutManager_) {
+    return;
+  }
+
+  setStateData(AndroidTextInputState{state.mostRecentEventCount,
+                                     attributedString,
+                                     getProps()->paragraphAttributes,
+                                     textLayoutManager_});
 }
 
 #pragma mark - LayoutableShadowNode
 
 Size AndroidTextInputShadowNode::measure(
     LayoutConstraints layoutConstraints) const {
-  AttributedString attributedString = getAttributedString();
+  AttributedString attributedString = getAttributedString(true);
 
   if (attributedString.isEmpty()) {
     return {0, 0};
   }
 
-  const jni::global_ref<jobject> &fabricUIManager =
-      contextContainer_->at<jni::global_ref<jobject>>("FabricUIManager");
-
-  static auto measure =
-      jni::findClassStatic("com/facebook/react/fabric/FabricUIManager")
-          ->getMethod<jlong(
-              jstring,
-              ReadableMap::javaobject,
-              ReadableMap::javaobject,
-              ReadableMap::javaobject,
-              jfloat,
-              jfloat,
-              jfloat,
-              jfloat)>("measure");
-
-  auto minimumSize = layoutConstraints.minimumSize;
-  auto maximumSize = layoutConstraints.maximumSize;
-
-  local_ref<JString> componentName =
-      make_jstring(AndroidTextInputComponentName);
-
-  local_ref<ReadableNativeMap::javaobject> attributedStringRNM =
-      ReadableNativeMap::newObjectCxxArgs(toDynamic(attributedString));
-  local_ref<ReadableMap::javaobject> attributedStringRM = make_local(
-      reinterpret_cast<ReadableMap::javaobject>(attributedStringRNM.get()));
-
-  local_ref<ReadableNativeMap::javaobject> nativeLocalProps = make_local(
-      ReadableNativeMap::createWithContents(getProps()->getDynamic()));
-  local_ref<ReadableMap::javaobject> props = make_local(
-      reinterpret_cast<ReadableMap::javaobject>(nativeLocalProps.get()));
-
-  // For AndroidTextInput purposes:
-  // localData == textAttributes
-  return yogaMeassureToSize(measure(
-      fabricUIManager,
-      componentName.get(),
-      attributedStringRM.get(),
-      props.get(),
-      nullptr,
-      minimumSize.width,
-      maximumSize.width,
-      minimumSize.height,
-      maximumSize.height));
+  return textLayoutManager_->measure(
+      attributedString, getProps()->paragraphAttributes, layoutConstraints);
 }
 
 void AndroidTextInputShadowNode::layout(LayoutContext layoutContext) {
+  updateStateIfNeeded();
   ConcreteViewShadowNode::layout(layoutContext);
 }
 

@@ -28,7 +28,7 @@ const codegenNativeComponent = require('codegenNativeComponent');
 
 import type {Int32} from 'CodegenTypes';
 import type {ViewProps} from 'ViewPropTypes';
-import type {NativeComponent} from 'codegenNativeComponent';
+import type {HostComponent} from 'react-native';
 
 export type ModuleProps = $ReadOnly<{|
   ...ViewProps,
@@ -43,7 +43,7 @@ export const Commands = codegenNativeCommands<{
 
 export default (codegenNativeComponent<ModuleProps>(
   'Module',
-): NativeComponent<ModuleProps>);
+): HostComponent<ModuleProps>);
 `;
 
 const COMMANDS_DEFINED_MULTIPLE_TIMES = `
@@ -64,7 +64,7 @@ const codegenNativeComponent = require('codegenNativeComponent');
 
 import type {Int32} from 'CodegenTypes';
 import type {ViewProps} from 'ViewPropTypes';
-import type {NativeComponent} from 'codegenNativeComponent';
+import type {HostComponent} from 'react-native';
 
 interface NativeCommands {
   +hotspotUpdate: (viewRef: React.Ref<'RCTView'>, x: Int32, y: Int32) => void;
@@ -84,7 +84,7 @@ export const Commands2 = codegenNativeCommands<NativeCommands>({
 
 export default (codegenNativeComponent<ModuleProps>(
   'Module',
-): NativeComponent<ModuleProps>);
+): HostComponent<ModuleProps>);
 `;
 
 const COMMANDS_DEFINED_WITHOUT_REF = `
@@ -105,7 +105,7 @@ const codegenNativeComponent = require('codegenNativeComponent');
 
 import type {Int32} from 'CodegenTypes';
 import type {ViewProps} from 'ViewPropTypes';
-import type {NativeComponent} from 'codegenNativeComponent';
+import type {HostComponent} from 'react-native';
 
 interface NativeCommands {
   +hotspotUpdate: (x: Int32, y: Int32) => void;
@@ -122,7 +122,7 @@ export const Commands = codegenNativeCommands<NativeCommands>({
 
 export default (codegenNativeComponent<ModuleProps>(
   'Module',
-): NativeComponent<ModuleProps>);
+): HostComponent<ModuleProps>);
 `;
 
 const COMMANDS_DEFINED_WITH_NULLABLE_REF = `
@@ -143,7 +143,7 @@ const codegenNativeComponent = require('codegenNativeComponent');
 
 import type {Int32} from 'CodegenTypes';
 import type {ViewProps} from 'ViewPropTypes';
-import type {NativeComponent} from 'codegenNativeComponent';
+import type {HostComponent} from 'react-native';
 
 interface NativeCommands {
   +hotspotUpdate: (viewRef: ?React.Ref<'RCTView'>, x: Int32, y: Int32) => void;
@@ -160,7 +160,7 @@ export const Commands = codegenNativeCommands<NativeCommands>({
 
 export default (codegenNativeComponent<ModuleProps>(
   'Module',
-): NativeComponent<ModuleProps>);
+): HostComponent<ModuleProps>);
 `;
 
 const COMMANDS_DEFINED_WITH_MISMATCHED_METHOD_NAMES = `
@@ -181,7 +181,7 @@ const codegenNativeComponent = require('codegenNativeComponent');
 
 import type {Int32} from 'CodegenTypes';
 import type {ViewProps} from 'ViewPropTypes';
-import type {NativeComponent} from 'codegenNativeComponent';
+import type {HostComponent} from 'react-native';
 
 interface NativeCommands {
   +hotspotUpdate: (viewRef: React.Ref<'RCTView'>, x: Int32, y: Int32) => void;
@@ -203,7 +203,7 @@ export const Commands = codegenNativeCommands<NativeCommands>({
 
 export default (codegenNativeComponent<ModuleProps>(
   'Module',
-): NativeComponent<ModuleProps>);
+): HostComponent<ModuleProps>);
 `;
 
 const COMMANDS_DEFINED_WITHOUT_METHOD_NAMES = `
@@ -224,7 +224,7 @@ const codegenNativeComponent = require('codegenNativeComponent');
 
 import type {Int32} from 'CodegenTypes';
 import type {ViewProps} from 'ViewPropTypes';
-import type {NativeComponent} from 'codegenNativeComponent';
+import type {HostComponent} from 'react-native';
 
 interface NativeCommands {
   +hotspotUpdate: (viewRef: React.Ref<'RCTView'>, x: Int32, y: Int32) => void;
@@ -244,7 +244,7 @@ export const Commands = codegenNativeCommands<NativeCommands>();
 
 export default (codegenNativeComponent<ModuleProps>(
   'Module',
-): NativeComponent<ModuleProps>);
+): HostComponent<ModuleProps>);
 `;
 
 const NULLABLE_WITH_DEFAULT = `
@@ -264,7 +264,7 @@ const codegenNativeComponent = require('codegenNativeComponent');
 
 import type {WithDefault, Float} from 'CodegenTypes';
 import type {ViewProps} from 'ViewPropTypes';
-import type {NativeComponent} from 'codegenNativeComponent';
+import type {HostComponent} from 'react-native';
 
 export type ModuleProps = $ReadOnly<{|
   ...ViewProps,
@@ -273,7 +273,7 @@ export type ModuleProps = $ReadOnly<{|
 
 export default (codegenNativeComponent<ModuleProps>(
   'Module',
-): NativeComponent<ModuleProps>);
+): HostComponent<ModuleProps>);
 `;
 
 const NON_OPTIONAL_KEY_WITH_DEFAULT_VALUE = `
@@ -293,7 +293,7 @@ const codegenNativeComponent = require('codegenNativeComponent');
 
 import type {WithDefault, Float} from 'CodegenTypes';
 import type {ViewProps} from 'ViewPropTypes';
-import type {NativeComponent} from 'codegenNativeComponent';
+import type {HostComponent} from 'react-native';
 
 export type ModuleProps = $ReadOnly<{|
   ...ViewProps,
@@ -302,7 +302,7 @@ export type ModuleProps = $ReadOnly<{|
 
 export default (codegenNativeComponent<ModuleProps>(
   'Module',
-): NativeComponent<ModuleProps>);
+): HostComponent<ModuleProps>);
 `;
 
 const PROPS_CONFLICT_NAMES = `
@@ -319,7 +319,7 @@ const PROPS_CONFLICT_NAMES = `
 'use strict';
 
 import type {ViewProps} from 'ViewPropTypes';
-import type {NativeComponent} from 'codegenNativeComponent';
+import type {HostComponent} from 'react-native';
 
 const codegenNativeComponent = require('codegenNativeComponent');
 
@@ -332,7 +332,7 @@ export type ModuleProps = $ReadOnly<{|
 
 export default (codegenNativeComponent<ModuleProps>(
   'Module',
-): NativeComponent<ModuleProps>);
+): HostComponent<ModuleProps>);
 `;
 
 const PROPS_CONFLICT_WITH_SPREAD_PROPS = `
@@ -349,7 +349,7 @@ const PROPS_CONFLICT_WITH_SPREAD_PROPS = `
 'use strict';
 
 import type {ViewProps} from 'ViewPropTypes';
-import type {NativeComponent} from 'codegenNativeComponent';
+import type {HostComponent} from 'react-native';
 
 const codegenNativeComponent = require('codegenNativeComponent');
 
@@ -366,7 +366,7 @@ export type ModuleProps = $ReadOnly<{|
 
 export default (codegenNativeComponent<ModuleProps>(
   'Module',
-): NativeComponent<ModuleProps>);
+): HostComponent<ModuleProps>);
 `;
 
 const PROPS_SPREAD_CONFLICTS_WITH_PROPS = `
@@ -383,7 +383,7 @@ const PROPS_SPREAD_CONFLICTS_WITH_PROPS = `
 'use strict';
 
 import type {ViewProps} from 'ViewPropTypes';
-import type {NativeComponent} from 'codegenNativeComponent';
+import type {HostComponent} from 'react-native';
 
 const codegenNativeComponent = require('codegenNativeComponent');
 
@@ -400,7 +400,7 @@ export type ModuleProps = $ReadOnly<{|
 
 export default (codegenNativeComponent<ModuleProps>(
   'Module',
-): NativeComponent<ModuleProps>);
+): HostComponent<ModuleProps>);
 `;
 
 const PROP_NUMBER_TYPE = `
@@ -417,7 +417,7 @@ const PROP_NUMBER_TYPE = `
 'use strict';
 
 import type {ViewProps} from 'ViewPropTypes';
-import type {NativeComponent} from 'codegenNativeComponent';
+import type {HostComponent} from 'react-native';
 
 const codegenNativeComponent = require('codegenNativeComponent');
 
@@ -429,7 +429,7 @@ export type ModuleProps = $ReadOnly<{|
 
 export default (codegenNativeComponent<ModuleProps>(
   'Module',
-): NativeComponent<ModuleProps>);
+): HostComponent<ModuleProps>);
 `;
 
 const PROP_MIXED_ENUM = `
@@ -446,7 +446,7 @@ const PROP_MIXED_ENUM = `
 'use strict';
 
 import type {ViewProps} from 'ViewPropTypes';
-import type {NativeComponent} from 'codegenNativeComponent';
+import type {HostComponent} from 'react-native';
 
 const codegenNativeComponent = require('codegenNativeComponent');
 
@@ -458,7 +458,7 @@ export type ModuleProps = $ReadOnly<{|
 
 export default (codegenNativeComponent<ModuleProps>(
   'Module',
-): NativeComponent<ModuleProps>);
+): HostComponent<ModuleProps>);
 `;
 
 const PROP_ENUM_BOOLEAN = `
@@ -475,7 +475,7 @@ const PROP_ENUM_BOOLEAN = `
 'use strict';
 
 import type {ViewProps} from 'ViewPropTypes';
-import type {NativeComponent} from 'codegenNativeComponent';
+import type {HostComponent} from 'react-native';
 
 const codegenNativeComponent = require('codegenNativeComponent');
 
@@ -487,7 +487,7 @@ export type ModuleProps = $ReadOnly<{|
 
 export default (codegenNativeComponent<ModuleProps>(
   'Module',
-): NativeComponent<ModuleProps>);
+): HostComponent<ModuleProps>);
 `;
 
 const PROP_ARRAY_MIXED_ENUM = `
@@ -504,7 +504,7 @@ const PROP_ARRAY_MIXED_ENUM = `
 'use strict';
 
 import type {ViewProps} from 'ViewPropTypes';
-import type {NativeComponent} from 'codegenNativeComponent';
+import type {HostComponent} from 'react-native';
 
 const codegenNativeComponent = require('codegenNativeComponent');
 
@@ -516,7 +516,7 @@ export type ModuleProps = $ReadOnly<{|
 
 export default (codegenNativeComponent<ModuleProps>(
   'Module',
-): NativeComponent<ModuleProps>);
+): HostComponent<ModuleProps>);
 `;
 
 const PROP_ARRAY_ENUM_BOOLEAN = `
@@ -533,7 +533,7 @@ const PROP_ARRAY_ENUM_BOOLEAN = `
 'use strict';
 
 import type {ViewProps} from 'ViewPropTypes';
-import type {NativeComponent} from 'codegenNativeComponent';
+import type {HostComponent} from 'react-native';
 
 const codegenNativeComponent = require('codegenNativeComponent');
 
@@ -545,7 +545,7 @@ export type ModuleProps = $ReadOnly<{|
 
 export default (codegenNativeComponent<ModuleProps>(
   'Module',
-): NativeComponent<ModuleProps>);
+): HostComponent<ModuleProps>);
 `;
 
 const PROP_ARRAY_ENUM_INT = `
@@ -562,7 +562,7 @@ const PROP_ARRAY_ENUM_INT = `
 'use strict';
 
 import type {ViewProps} from 'ViewPropTypes';
-import type {NativeComponent} from 'codegenNativeComponent';
+import type {HostComponent} from 'react-native';
 
 const codegenNativeComponent = require('codegenNativeComponent');
 
@@ -574,7 +574,7 @@ export type ModuleProps = $ReadOnly<{|
 
 export default (codegenNativeComponent<ModuleProps>(
   'Module',
-): NativeComponent<ModuleProps>);
+): HostComponent<ModuleProps>);
 `;
 
 module.exports = {

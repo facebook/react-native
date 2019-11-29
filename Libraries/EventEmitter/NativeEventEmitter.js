@@ -21,6 +21,7 @@ import type EmitterSubscription from '../vendor/emitter/EmitterSubscription';
 type NativeModule = {
   +addListener: (eventType: string) => void,
   +removeListeners: (count: number) => void,
+  ...
 };
 
 /**

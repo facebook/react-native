@@ -1,12 +1,14 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
- * directory of this source tree.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
+
 package com.facebook.react.modules.network;
 
 import android.net.Uri;
+import android.os.Bundle;
 import android.util.Base64;
 import androidx.annotation.Nullable;
 import com.facebook.common.logging.FLog;
@@ -248,7 +250,10 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
           withCredentials);
     } catch (Throwable th) {
       FLog.e(TAG, "Failed to send url request: " + url, th);
-      ResponseUtil.onRequestError(getEventEmitter(), requestId, th.getMessage(), th);
+      final RCTDeviceEventEmitter eventEmitter = getEventEmitter("sendRequest error");
+      if (eventEmitter != null) {
+        ResponseUtil.onRequestError(eventEmitter, requestId, th.getMessage(), th);
+      }
     }
   }
 
@@ -263,7 +268,7 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
       final boolean useIncrementalUpdates,
       int timeout,
       boolean withCredentials) {
-    final RCTDeviceEventEmitter eventEmitter = getEventEmitter();
+    final RCTDeviceEventEmitter eventEmitter = getEventEmitter("sendRequestInternal");
 
     try {
       Uri uri = Uri.parse(url);
@@ -625,18 +630,18 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
   }
 
   private static WritableMap translateHeaders(Headers headers) {
-    WritableMap responseHeaders = Arguments.createMap();
+    Bundle responseHeaders = new Bundle();
     for (int i = 0; i < headers.size(); i++) {
       String headerName = headers.name(i);
       // multiple values for the same header
-      if (responseHeaders.hasKey(headerName)) {
+      if (responseHeaders.containsKey(headerName)) {
         responseHeaders.putString(
             headerName, responseHeaders.getString(headerName) + ", " + headers.value(i));
       } else {
         responseHeaders.putString(headerName, headers.value(i));
       }
     }
-    return responseHeaders;
+    return Arguments.fromBundle(responseHeaders);
   }
 
   @ReactMethod
@@ -663,7 +668,7 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
 
   private @Nullable MultipartBody.Builder constructMultipartBody(
       ReadableArray body, String contentType, int requestId) {
-    RCTDeviceEventEmitter eventEmitter = getEventEmitter();
+    RCTDeviceEventEmitter eventEmitter = getEventEmitter("constructMultipartBody");
     MultipartBody.Builder multipartBuilder = new MultipartBody.Builder();
     multipartBuilder.setType(MediaType.parse(contentType));
 
@@ -749,7 +754,13 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
     return headersBuilder.build();
   }
 
-  private RCTDeviceEventEmitter getEventEmitter() {
-    return getReactApplicationContext().getJSModule(RCTDeviceEventEmitter.class);
+  private RCTDeviceEventEmitter getEventEmitter(String reason) {
+    ReactApplicationContext reactApplicationContext = getReactApplicationContextIfActiveOrWarn();
+
+    if (reactApplicationContext != null) {
+      return getReactApplicationContext().getJSModule(RCTDeviceEventEmitter.class);
+    }
+
+    return null;
   }
 }

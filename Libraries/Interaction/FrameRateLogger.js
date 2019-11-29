@@ -38,6 +38,7 @@ const FrameRateLogger = {
   setGlobalOptions: function(options: {
     debug?: boolean,
     reportStackTraces?: boolean,
+    ...
   }) {
     if (options.debug !== undefined) {
       invariant(

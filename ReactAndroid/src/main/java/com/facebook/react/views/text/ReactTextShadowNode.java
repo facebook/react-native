@@ -1,9 +1,10 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
- * directory of this source tree.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
+
 package com.facebook.react.views.text;
 
 import android.annotation.TargetApi;
@@ -19,11 +20,14 @@ import android.widget.TextView;
 import androidx.annotation.Nullable;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.Arguments;
+import com.facebook.react.bridge.ReactNoCrashSoftException;
+import com.facebook.react.bridge.ReactSoftException;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.uimanager.NativeViewHierarchyOptimizer;
 import com.facebook.react.uimanager.ReactShadowNode;
 import com.facebook.react.uimanager.Spacing;
+import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.UIViewOperationQueue;
 import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.events.RCTEventEmitter;
@@ -156,14 +160,21 @@ public class ReactTextShadowNode extends ReactBaseTextShadowNode {
           }
 
           if (mShouldNotifyOnTextLayout) {
+            ThemedReactContext themedReactContext = getThemedContext();
             WritableArray lines =
                 FontMetricsUtil.getFontMetrics(
-                    text, layout, sTextPaintInstance, getThemedContext());
+                    text, layout, sTextPaintInstance, themedReactContext);
             WritableMap event = Arguments.createMap();
             event.putArray("lines", lines);
-            getThemedContext()
-                .getJSModule(RCTEventEmitter.class)
-                .receiveEvent(getReactTag(), "topTextLayout", event);
+            if (themedReactContext.hasActiveCatalystInstance()) {
+              themedReactContext
+                  .getJSModule(RCTEventEmitter.class)
+                  .receiveEvent(getReactTag(), "topTextLayout", event);
+            } else {
+              ReactSoftException.logSoftException(
+                  "ReactTextShadowNode",
+                  new ReactNoCrashSoftException("Cannot get RCTEventEmitter, no CatalystInstance"));
+            }
           }
 
           if (mNumberOfLines != UNSET && mNumberOfLines < layout.getLineCount()) {

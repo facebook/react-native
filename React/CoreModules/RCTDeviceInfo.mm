@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -112,19 +112,6 @@ static NSDictionary *RCTExportedDimensions(RCTBridge *bridge)
   };
 }
 
-- (void)dealloc
-{
-  [NSNotificationCenter.defaultCenter removeObserver:self];
-}
-
-- (void)invalidate
-{
-  RCTExecuteOnMainQueue(^{
-    self->_bridge = nil;
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
-  });
-}
-
 - (NSDictionary<NSString *, id> *)constantsToExport
 {
   return [self getConstants];
@@ -212,7 +199,7 @@ static NSDictionary *RCTExportedDimensions(RCTBridge *bridge)
 
 #endif // TARGET_OS_TV
 
-- (std::shared_ptr<TurboModule>)getTurboModuleWithJsInvoker:(std::shared_ptr<JSCallInvoker>)jsInvoker
+- (std::shared_ptr<TurboModule>)getTurboModuleWithJsInvoker:(std::shared_ptr<CallInvoker>)jsInvoker
 {
   return std::make_shared<NativeDeviceInfoSpecJSI>(self, jsInvoker);
 }

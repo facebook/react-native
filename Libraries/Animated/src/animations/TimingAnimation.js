@@ -7,6 +7,7 @@
  * @flow
  * @format
  */
+
 'use strict';
 
 const AnimatedValue = require('../nodes/AnimatedValue');
@@ -18,10 +19,19 @@ const {shouldUseNativeDriver} = require('../NativeAnimatedHelper');
 import type {AnimationConfig, EndCallback} from './Animation';
 
 export type TimingAnimationConfig = AnimationConfig & {
-  toValue: number | AnimatedValue | {x: number, y: number} | AnimatedValueXY,
+  toValue:
+    | number
+    | AnimatedValue
+    | {
+        x: number,
+        y: number,
+        ...
+      }
+    | AnimatedValueXY,
   easing?: (value: number) => number,
   duration?: number,
   delay?: number,
+  ...
 };
 
 export type TimingAnimationConfigSingle = AnimationConfig & {
@@ -29,6 +39,7 @@ export type TimingAnimationConfigSingle = AnimationConfig & {
   easing?: (value: number) => number,
   duration?: number,
   delay?: number,
+  ...
 };
 
 let _easeInOut;
@@ -66,8 +77,9 @@ class TimingAnimation extends Animation {
   __getNativeAnimationConfig(): any {
     const frameDuration = 1000.0 / 60.0;
     const frames = [];
-    for (let dt = 0.0; dt < this._duration; dt += frameDuration) {
-      frames.push(this._easing(dt / this._duration));
+    const numFrames = Math.round(this._duration / frameDuration);
+    for (let frame = 0; frame < numFrames; frame++) {
+      frames.push(this._easing(frame / numFrames));
     }
     frames.push(this._easing(1));
     return {

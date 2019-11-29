@@ -1,9 +1,10 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the MIT license found in the LICENSE
- * file in the root directory of this source tree.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
+
 package com.facebook.yoga;
 
 import com.facebook.proguard.annotations.DoNotStrip;
@@ -54,11 +55,11 @@ public abstract class YogaNodeJNIBase extends YogaNode implements Cloneable {
   }
 
   YogaNodeJNIBase() {
-    this(YogaNative.jni_YGNodeNew());
+    this(YogaNative.jni_YGNodeNewJNI());
   }
 
   YogaNodeJNIBase(YogaConfig config) {
-    this(YogaNative.jni_YGNodeNewWithConfig(config.mNativePointer));
+    this(YogaNative.jni_YGNodeNewWithConfigJNI(((YogaConfigJNIBase)config).mNativePointer));
   }
 
   public void reset() {
@@ -69,7 +70,7 @@ public abstract class YogaNodeJNIBase extends YogaNode implements Cloneable {
     mHasNewLayout = true;
     mLayoutDirection = 0;
 
-    YogaNative.jni_YGNodeReset(mNativePointer);
+    YogaNative.jni_YGNodeResetJNI(mNativePointer);
   }
 
   public int getChildCount() {
@@ -94,22 +95,22 @@ public abstract class YogaNodeJNIBase extends YogaNode implements Cloneable {
     }
     mChildren.add(i, child);
     child.mOwner = this;
-    YogaNative.jni_YGNodeInsertChild(mNativePointer, child.mNativePointer, i);
+    YogaNative.jni_YGNodeInsertChildJNI(mNativePointer, child.mNativePointer, i);
   }
 
   public void setIsReferenceBaseline(boolean isReferenceBaseline) {
-    YogaNative.jni_YGNodeSetIsReferenceBaseline(mNativePointer, isReferenceBaseline);
+    YogaNative.jni_YGNodeSetIsReferenceBaselineJNI(mNativePointer, isReferenceBaseline);
   }
 
   public boolean isReferenceBaseline() {
-    return YogaNative.jni_YGNodeIsReferenceBaseline(mNativePointer);
+    return YogaNative.jni_YGNodeIsReferenceBaselineJNI(mNativePointer);
   }
 
   @Override
   public YogaNodeJNIBase cloneWithoutChildren() {
     try {
       YogaNodeJNIBase clonedYogaNode = (YogaNodeJNIBase) super.clone();
-      long clonedNativePointer = YogaNative.jni_YGNodeClone(mNativePointer);
+      long clonedNativePointer = YogaNative.jni_YGNodeCloneJNI(mNativePointer);
       clonedYogaNode.mOwner = null;
       clonedYogaNode.mNativePointer = clonedNativePointer;
       clonedYogaNode.clearChildren();
@@ -122,7 +123,7 @@ public abstract class YogaNodeJNIBase extends YogaNode implements Cloneable {
 
   private void clearChildren() {
     mChildren = null;
-    YogaNative.jni_YGNodeClearChildren(mNativePointer);
+    YogaNative.jni_YGNodeClearChildrenJNI(mNativePointer);
   }
 
   public YogaNodeJNIBase removeChildAt(int i) {
@@ -132,17 +133,17 @@ public abstract class YogaNodeJNIBase extends YogaNode implements Cloneable {
     }
     final YogaNodeJNIBase child = mChildren.remove(i);
     child.mOwner = null;
-    YogaNative.jni_YGNodeRemoveChild(mNativePointer, child.mNativePointer);
+    YogaNative.jni_YGNodeRemoveChildJNI(mNativePointer, child.mNativePointer);
     return child;
   }
 
   /**
-   * @returns the {@link YogaNode} that owns this {@link YogaNode}.
-   * The owner is used to identify the YogaTree that a {@link YogaNode} belongs
-   * to.
+   * The owner is used to identify the YogaTree that a {@link YogaNode} belongs to.
    * This method will return the parent of the {@link YogaNode} when the
    * {@link YogaNode} only belongs to one YogaTree or null when the
    * {@link YogaNode} is shared between two or more YogaTrees.
+   *
+   * @return the {@link YogaNode} that owns this {@link YogaNode}.
    */
   @Nullable
   public YogaNodeJNIBase getOwner() {
@@ -179,285 +180,285 @@ public abstract class YogaNodeJNIBase extends YogaNode implements Cloneable {
       nativePointers[i] = nodes[i].mNativePointer;
     }
 
-    YogaNative.jni_YGNodeCalculateLayout(mNativePointer, width, height, nativePointers, nodes);
+    YogaNative.jni_YGNodeCalculateLayoutJNI(mNativePointer, width, height, nativePointers, nodes);
   }
 
   public void dirty() {
-    YogaNative.jni_YGNodeMarkDirty(mNativePointer);
+    YogaNative.jni_YGNodeMarkDirtyJNI(mNativePointer);
   }
 
   public void dirtyAllDescendants() {
-    YogaNative.jni_YGNodeMarkDirtyAndPropogateToDescendants(mNativePointer);
+    YogaNative.jni_YGNodeMarkDirtyAndPropogateToDescendantsJNI(mNativePointer);
   }
 
   public boolean isDirty() {
-    return YogaNative.jni_YGNodeIsDirty(mNativePointer);
+    return YogaNative.jni_YGNodeIsDirtyJNI(mNativePointer);
   }
 
   @Override
   public void copyStyle(YogaNode srcNode) {
-    YogaNative.jni_YGNodeCopyStyle(mNativePointer, ((YogaNodeJNIBase) srcNode).mNativePointer);
+    YogaNative.jni_YGNodeCopyStyleJNI(mNativePointer, ((YogaNodeJNIBase) srcNode).mNativePointer);
   }
 
   public YogaDirection getStyleDirection() {
-    return YogaDirection.fromInt(YogaNative.jni_YGNodeStyleGetDirection(mNativePointer));
+    return YogaDirection.fromInt(YogaNative.jni_YGNodeStyleGetDirectionJNI(mNativePointer));
   }
 
   public void setDirection(YogaDirection direction) {
-    YogaNative.jni_YGNodeStyleSetDirection(mNativePointer, direction.intValue());
+    YogaNative.jni_YGNodeStyleSetDirectionJNI(mNativePointer, direction.intValue());
   }
 
   public YogaFlexDirection getFlexDirection() {
-    return YogaFlexDirection.fromInt(YogaNative.jni_YGNodeStyleGetFlexDirection(mNativePointer));
+    return YogaFlexDirection.fromInt(YogaNative.jni_YGNodeStyleGetFlexDirectionJNI(mNativePointer));
   }
 
   public void setFlexDirection(YogaFlexDirection flexDirection) {
-    YogaNative.jni_YGNodeStyleSetFlexDirection(mNativePointer, flexDirection.intValue());
+    YogaNative.jni_YGNodeStyleSetFlexDirectionJNI(mNativePointer, flexDirection.intValue());
   }
 
   public YogaJustify getJustifyContent() {
-    return YogaJustify.fromInt(YogaNative.jni_YGNodeStyleGetJustifyContent(mNativePointer));
+    return YogaJustify.fromInt(YogaNative.jni_YGNodeStyleGetJustifyContentJNI(mNativePointer));
   }
 
   public void setJustifyContent(YogaJustify justifyContent) {
-    YogaNative.jni_YGNodeStyleSetJustifyContent(mNativePointer, justifyContent.intValue());
+    YogaNative.jni_YGNodeStyleSetJustifyContentJNI(mNativePointer, justifyContent.intValue());
   }
 
   public YogaAlign getAlignItems() {
-    return YogaAlign.fromInt(YogaNative.jni_YGNodeStyleGetAlignItems(mNativePointer));
+    return YogaAlign.fromInt(YogaNative.jni_YGNodeStyleGetAlignItemsJNI(mNativePointer));
   }
 
   public void setAlignItems(YogaAlign alignItems) {
-    YogaNative.jni_YGNodeStyleSetAlignItems(mNativePointer, alignItems.intValue());
+    YogaNative.jni_YGNodeStyleSetAlignItemsJNI(mNativePointer, alignItems.intValue());
   }
 
   public YogaAlign getAlignSelf() {
-    return YogaAlign.fromInt(YogaNative.jni_YGNodeStyleGetAlignSelf(mNativePointer));
+    return YogaAlign.fromInt(YogaNative.jni_YGNodeStyleGetAlignSelfJNI(mNativePointer));
   }
 
   public void setAlignSelf(YogaAlign alignSelf) {
-    YogaNative.jni_YGNodeStyleSetAlignSelf(mNativePointer, alignSelf.intValue());
+    YogaNative.jni_YGNodeStyleSetAlignSelfJNI(mNativePointer, alignSelf.intValue());
   }
 
   public YogaAlign getAlignContent() {
-    return YogaAlign.fromInt(YogaNative.jni_YGNodeStyleGetAlignContent(mNativePointer));
+    return YogaAlign.fromInt(YogaNative.jni_YGNodeStyleGetAlignContentJNI(mNativePointer));
   }
 
   public void setAlignContent(YogaAlign alignContent) {
-    YogaNative.jni_YGNodeStyleSetAlignContent(mNativePointer, alignContent.intValue());
+    YogaNative.jni_YGNodeStyleSetAlignContentJNI(mNativePointer, alignContent.intValue());
   }
 
   public YogaPositionType getPositionType() {
-    return YogaPositionType.fromInt(YogaNative.jni_YGNodeStyleGetPositionType(mNativePointer));
+    return YogaPositionType.fromInt(YogaNative.jni_YGNodeStyleGetPositionTypeJNI(mNativePointer));
   }
 
   public void setPositionType(YogaPositionType positionType) {
-    YogaNative.jni_YGNodeStyleSetPositionType(mNativePointer, positionType.intValue());
+    YogaNative.jni_YGNodeStyleSetPositionTypeJNI(mNativePointer, positionType.intValue());
   }
 
   public YogaWrap getWrap() {
-    return YogaWrap.fromInt(YogaNative.jni_YGNodeStyleGetFlexWrap(mNativePointer));
+    return YogaWrap.fromInt(YogaNative.jni_YGNodeStyleGetFlexWrapJNI(mNativePointer));
   }
 
   public void setWrap(YogaWrap flexWrap) {
-    YogaNative.jni_YGNodeStyleSetFlexWrap(mNativePointer, flexWrap.intValue());
+    YogaNative.jni_YGNodeStyleSetFlexWrapJNI(mNativePointer, flexWrap.intValue());
   }
 
   public YogaOverflow getOverflow() {
-    return YogaOverflow.fromInt(YogaNative.jni_YGNodeStyleGetOverflow(mNativePointer));
+    return YogaOverflow.fromInt(YogaNative.jni_YGNodeStyleGetOverflowJNI(mNativePointer));
   }
 
   public void setOverflow(YogaOverflow overflow) {
-    YogaNative.jni_YGNodeStyleSetOverflow(mNativePointer, overflow.intValue());
+    YogaNative.jni_YGNodeStyleSetOverflowJNI(mNativePointer, overflow.intValue());
   }
 
   public YogaDisplay getDisplay() {
-    return YogaDisplay.fromInt(YogaNative.jni_YGNodeStyleGetDisplay(mNativePointer));
+    return YogaDisplay.fromInt(YogaNative.jni_YGNodeStyleGetDisplayJNI(mNativePointer));
   }
 
   public void setDisplay(YogaDisplay display) {
-    YogaNative.jni_YGNodeStyleSetDisplay(mNativePointer, display.intValue());
+    YogaNative.jni_YGNodeStyleSetDisplayJNI(mNativePointer, display.intValue());
   }
 
   public float getFlex() {
-    return YogaNative.jni_YGNodeStyleGetFlex(mNativePointer);
+    return YogaNative.jni_YGNodeStyleGetFlexJNI(mNativePointer);
   }
 
   public void setFlex(float flex) {
-    YogaNative.jni_YGNodeStyleSetFlex(mNativePointer, flex);
+    YogaNative.jni_YGNodeStyleSetFlexJNI(mNativePointer, flex);
   }
 
   public float getFlexGrow() {
-    return YogaNative.jni_YGNodeStyleGetFlexGrow(mNativePointer);
+    return YogaNative.jni_YGNodeStyleGetFlexGrowJNI(mNativePointer);
   }
 
   public void setFlexGrow(float flexGrow) {
-    YogaNative.jni_YGNodeStyleSetFlexGrow(mNativePointer, flexGrow);
+    YogaNative.jni_YGNodeStyleSetFlexGrowJNI(mNativePointer, flexGrow);
   }
 
   public float getFlexShrink() {
-    return YogaNative.jni_YGNodeStyleGetFlexShrink(mNativePointer);
+    return YogaNative.jni_YGNodeStyleGetFlexShrinkJNI(mNativePointer);
   }
 
   public void setFlexShrink(float flexShrink) {
-    YogaNative.jni_YGNodeStyleSetFlexShrink(mNativePointer, flexShrink);
+    YogaNative.jni_YGNodeStyleSetFlexShrinkJNI(mNativePointer, flexShrink);
   }
 
   public YogaValue getFlexBasis() {
-    return valueFromLong(YogaNative.jni_YGNodeStyleGetFlexBasis(mNativePointer));
+    return valueFromLong(YogaNative.jni_YGNodeStyleGetFlexBasisJNI(mNativePointer));
   }
 
   public void setFlexBasis(float flexBasis) {
-    YogaNative.jni_YGNodeStyleSetFlexBasis(mNativePointer, flexBasis);
+    YogaNative.jni_YGNodeStyleSetFlexBasisJNI(mNativePointer, flexBasis);
   }
 
   public void setFlexBasisPercent(float percent) {
-    YogaNative.jni_YGNodeStyleSetFlexBasisPercent(mNativePointer, percent);
+    YogaNative.jni_YGNodeStyleSetFlexBasisPercentJNI(mNativePointer, percent);
   }
 
   public void setFlexBasisAuto() {
-    YogaNative.jni_YGNodeStyleSetFlexBasisAuto(mNativePointer);
+    YogaNative.jni_YGNodeStyleSetFlexBasisAutoJNI(mNativePointer);
   }
 
   public YogaValue getMargin(YogaEdge edge) {
-    return valueFromLong(YogaNative.jni_YGNodeStyleGetMargin(mNativePointer, edge.intValue()));
+    return valueFromLong(YogaNative.jni_YGNodeStyleGetMarginJNI(mNativePointer, edge.intValue()));
   }
 
   public void setMargin(YogaEdge edge, float margin) {
-    YogaNative.jni_YGNodeStyleSetMargin(mNativePointer, edge.intValue(), margin);
+    YogaNative.jni_YGNodeStyleSetMarginJNI(mNativePointer, edge.intValue(), margin);
   }
 
   public void setMarginPercent(YogaEdge edge, float percent) {
-    YogaNative.jni_YGNodeStyleSetMarginPercent(mNativePointer, edge.intValue(), percent);
+    YogaNative.jni_YGNodeStyleSetMarginPercentJNI(mNativePointer, edge.intValue(), percent);
   }
 
   public void setMarginAuto(YogaEdge edge) {
-    YogaNative.jni_YGNodeStyleSetMarginAuto(mNativePointer, edge.intValue());
+    YogaNative.jni_YGNodeStyleSetMarginAutoJNI(mNativePointer, edge.intValue());
   }
 
   public YogaValue getPadding(YogaEdge edge) {
-    return valueFromLong(YogaNative.jni_YGNodeStyleGetPadding(mNativePointer, edge.intValue()));
+    return valueFromLong(YogaNative.jni_YGNodeStyleGetPaddingJNI(mNativePointer, edge.intValue()));
   }
 
   public void setPadding(YogaEdge edge, float padding) {
-    YogaNative.jni_YGNodeStyleSetPadding(mNativePointer, edge.intValue(), padding);
+    YogaNative.jni_YGNodeStyleSetPaddingJNI(mNativePointer, edge.intValue(), padding);
   }
 
   public void setPaddingPercent(YogaEdge edge, float percent) {
-    YogaNative.jni_YGNodeStyleSetPaddingPercent(mNativePointer, edge.intValue(), percent);
+    YogaNative.jni_YGNodeStyleSetPaddingPercentJNI(mNativePointer, edge.intValue(), percent);
   }
 
   public float getBorder(YogaEdge edge) {
-    return YogaNative.jni_YGNodeStyleGetBorder(mNativePointer, edge.intValue());
+    return YogaNative.jni_YGNodeStyleGetBorderJNI(mNativePointer, edge.intValue());
   }
 
   public void setBorder(YogaEdge edge, float border) {
-    YogaNative.jni_YGNodeStyleSetBorder(mNativePointer, edge.intValue(), border);
+    YogaNative.jni_YGNodeStyleSetBorderJNI(mNativePointer, edge.intValue(), border);
   }
 
   public YogaValue getPosition(YogaEdge edge) {
-    return valueFromLong(YogaNative.jni_YGNodeStyleGetPosition(mNativePointer, edge.intValue()));
+    return valueFromLong(YogaNative.jni_YGNodeStyleGetPositionJNI(mNativePointer, edge.intValue()));
   }
 
   public void setPosition(YogaEdge edge, float position) {
-    YogaNative.jni_YGNodeStyleSetPosition(mNativePointer, edge.intValue(), position);
+    YogaNative.jni_YGNodeStyleSetPositionJNI(mNativePointer, edge.intValue(), position);
   }
 
   public void setPositionPercent(YogaEdge edge, float percent) {
-    YogaNative.jni_YGNodeStyleSetPositionPercent(mNativePointer, edge.intValue(), percent);
+    YogaNative.jni_YGNodeStyleSetPositionPercentJNI(mNativePointer, edge.intValue(), percent);
   }
 
   public YogaValue getWidth() {
-    return valueFromLong(YogaNative.jni_YGNodeStyleGetWidth(mNativePointer));
+    return valueFromLong(YogaNative.jni_YGNodeStyleGetWidthJNI(mNativePointer));
   }
 
   public void setWidth(float width) {
-    YogaNative.jni_YGNodeStyleSetWidth(mNativePointer, width);
+    YogaNative.jni_YGNodeStyleSetWidthJNI(mNativePointer, width);
   }
 
   public void setWidthPercent(float percent) {
-    YogaNative.jni_YGNodeStyleSetWidthPercent(mNativePointer, percent);
+    YogaNative.jni_YGNodeStyleSetWidthPercentJNI(mNativePointer, percent);
   }
 
   public void setWidthAuto() {
-    YogaNative.jni_YGNodeStyleSetWidthAuto(mNativePointer);
+    YogaNative.jni_YGNodeStyleSetWidthAutoJNI(mNativePointer);
   }
 
   public YogaValue getHeight() {
-    return valueFromLong(YogaNative.jni_YGNodeStyleGetHeight(mNativePointer));
+    return valueFromLong(YogaNative.jni_YGNodeStyleGetHeightJNI(mNativePointer));
   }
 
   public void setHeight(float height) {
-    YogaNative.jni_YGNodeStyleSetHeight(mNativePointer, height);
+    YogaNative.jni_YGNodeStyleSetHeightJNI(mNativePointer, height);
   }
 
   public void setHeightPercent(float percent) {
-    YogaNative.jni_YGNodeStyleSetHeightPercent(mNativePointer, percent);
+    YogaNative.jni_YGNodeStyleSetHeightPercentJNI(mNativePointer, percent);
   }
 
   public void setHeightAuto() {
-    YogaNative.jni_YGNodeStyleSetHeightAuto(mNativePointer);
+    YogaNative.jni_YGNodeStyleSetHeightAutoJNI(mNativePointer);
   }
 
   public YogaValue getMinWidth() {
-    return valueFromLong(YogaNative.jni_YGNodeStyleGetMinWidth(mNativePointer));
+    return valueFromLong(YogaNative.jni_YGNodeStyleGetMinWidthJNI(mNativePointer));
   }
 
   public void setMinWidth(float minWidth) {
-    YogaNative.jni_YGNodeStyleSetMinWidth(mNativePointer, minWidth);
+    YogaNative.jni_YGNodeStyleSetMinWidthJNI(mNativePointer, minWidth);
   }
 
   public void setMinWidthPercent(float percent) {
-    YogaNative.jni_YGNodeStyleSetMinWidthPercent(mNativePointer, percent);
+    YogaNative.jni_YGNodeStyleSetMinWidthPercentJNI(mNativePointer, percent);
   }
 
   public YogaValue getMinHeight() {
-    return valueFromLong(YogaNative.jni_YGNodeStyleGetMinHeight(mNativePointer));
+    return valueFromLong(YogaNative.jni_YGNodeStyleGetMinHeightJNI(mNativePointer));
   }
 
   public void setMinHeight(float minHeight) {
-    YogaNative.jni_YGNodeStyleSetMinHeight(mNativePointer, minHeight);
+    YogaNative.jni_YGNodeStyleSetMinHeightJNI(mNativePointer, minHeight);
   }
 
   public void setMinHeightPercent(float percent) {
-    YogaNative.jni_YGNodeStyleSetMinHeightPercent(mNativePointer, percent);
+    YogaNative.jni_YGNodeStyleSetMinHeightPercentJNI(mNativePointer, percent);
   }
 
   public YogaValue getMaxWidth() {
-    return valueFromLong(YogaNative.jni_YGNodeStyleGetMaxWidth(mNativePointer));
+    return valueFromLong(YogaNative.jni_YGNodeStyleGetMaxWidthJNI(mNativePointer));
   }
 
   public void setMaxWidth(float maxWidth) {
-    YogaNative.jni_YGNodeStyleSetMaxWidth(mNativePointer, maxWidth);
+    YogaNative.jni_YGNodeStyleSetMaxWidthJNI(mNativePointer, maxWidth);
   }
 
   public void setMaxWidthPercent(float percent) {
-    YogaNative.jni_YGNodeStyleSetMaxWidthPercent(mNativePointer, percent);
+    YogaNative.jni_YGNodeStyleSetMaxWidthPercentJNI(mNativePointer, percent);
   }
 
   public YogaValue getMaxHeight() {
-    return valueFromLong(YogaNative.jni_YGNodeStyleGetMaxHeight(mNativePointer));
+    return valueFromLong(YogaNative.jni_YGNodeStyleGetMaxHeightJNI(mNativePointer));
   }
 
   public void setMaxHeight(float maxheight) {
-    YogaNative.jni_YGNodeStyleSetMaxHeight(mNativePointer, maxheight);
+    YogaNative.jni_YGNodeStyleSetMaxHeightJNI(mNativePointer, maxheight);
   }
 
   public void setMaxHeightPercent(float percent) {
-    YogaNative.jni_YGNodeStyleSetMaxHeightPercent(mNativePointer, percent);
+    YogaNative.jni_YGNodeStyleSetMaxHeightPercentJNI(mNativePointer, percent);
   }
 
   public float getAspectRatio() {
-    return YogaNative.jni_YGNodeStyleGetAspectRatio(mNativePointer);
+    return YogaNative.jni_YGNodeStyleGetAspectRatioJNI(mNativePointer);
   }
 
   public void setAspectRatio(float aspectRatio) {
-    YogaNative.jni_YGNodeStyleSetAspectRatio(mNativePointer, aspectRatio);
+    YogaNative.jni_YGNodeStyleSetAspectRatioJNI(mNativePointer, aspectRatio);
   }
 
   public void setMeasureFunction(YogaMeasureFunction measureFunction) {
     mMeasureFunction = measureFunction;
-    YogaNative.jni_YGNodeSetHasMeasureFunc(mNativePointer, measureFunction != null);
+    YogaNative.jni_YGNodeSetHasMeasureFuncJNI(mNativePointer, measureFunction != null);
   }
 
   // Implementation Note: Why this method needs to stay final
@@ -481,7 +482,7 @@ public abstract class YogaNodeJNIBase extends YogaNode implements Cloneable {
 
   public void setBaselineFunction(YogaBaselineFunction baselineFunction) {
     mBaselineFunction = baselineFunction;
-    YogaNative.jni_YGNodeSetHasBaselineFunc(mNativePointer, baselineFunction != null);
+    YogaNative.jni_YGNodeSetHasBaselineFuncJNI(mNativePointer, baselineFunction != null);
   }
 
   @DoNotStrip
@@ -512,11 +513,7 @@ public abstract class YogaNodeJNIBase extends YogaNode implements Cloneable {
    * layout of the tree rooted at this node.
    */
   public void print() {
-    YogaNative.jni_YGNodePrint(mNativePointer);
-  }
-
-  public void setStyleInputs(float[] styleInputsArray, int size) {
-    YogaNative.jni_YGNodeSetStyleInputs(mNativePointer, styleInputsArray, size);
+    YogaNative.jni_YGNodePrintJNI(mNativePointer);
   }
 
   /**
@@ -524,7 +521,7 @@ public abstract class YogaNodeJNIBase extends YogaNode implements Cloneable {
    * This is different than calling removeChildAt and addChildAt because this method ONLY replaces
    * the child in the mChildren datastructure. @DoNotStrip: called from JNI
    *
-   * @return the nativePointer of the newNode {@linl YogaNode}
+   * @return the nativePointer of the newNode {@link YogaNode}
    */
   @DoNotStrip
   private final long replaceChild(YogaNodeJNIBase newNode, int childIndex) {

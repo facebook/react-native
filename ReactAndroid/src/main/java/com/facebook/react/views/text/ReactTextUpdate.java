@@ -1,10 +1,13 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
- * directory of this source tree.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
+
 package com.facebook.react.views.text;
+
+import static com.facebook.react.views.text.TextAttributeProps.UNSET;
 
 import android.text.Layout;
 import android.text.Spannable;
@@ -76,6 +79,28 @@ public class ReactTextUpdate {
         paddingTop,
         paddingEnd,
         paddingBottom,
+        textAlign,
+        textBreakStrategy,
+        justificationMode,
+        -1,
+        -1);
+  }
+
+  public ReactTextUpdate(
+      Spannable text,
+      int jsEventCounter,
+      boolean containsImages,
+      int textAlign,
+      int textBreakStrategy,
+      int justificationMode) {
+    this(
+        text,
+        jsEventCounter,
+        containsImages,
+        UNSET,
+        UNSET,
+        UNSET,
+        UNSET,
         textAlign,
         textBreakStrategy,
         justificationMode,

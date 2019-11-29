@@ -15,10 +15,10 @@ const React = require('react');
 const {StyleSheet, Text, TouchableHighlight, View} = require('react-native');
 
 class RootViewSizeFlexibilityExampleApp extends React.Component<
-  {toggled: boolean},
+  {toggled: boolean, ...},
   any,
 > {
-  constructor(props: {toggled: boolean}) {
+  constructor(props: {toggled: boolean, ...}) {
     super(props);
     this.state = {toggled: false};
   }

@@ -36,6 +36,7 @@ const OUTER_PROPS = Object.assign(Object.create(null), {
   right: true,
   bottom: true,
   top: true,
+  transform: true,
 });
 
 function splitLayoutProps(
@@ -43,6 +44,7 @@ function splitLayoutProps(
 ): {
   outer: DangerouslyImpreciseStyle,
   inner: DangerouslyImpreciseStyle,
+  ...
 } {
   const inner = {};
   const outer = {};

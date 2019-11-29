@@ -1,16 +1,30 @@
-// Copyright (c) Facebook, Inc. and its affiliates.
-
-// This source code is licensed under the MIT license found in the
-// LICENSE file in the root directory of this source tree.
+/*
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
 
 import org.apache.tools.ant.taskdefs.condition.Os
 
-def config = project.hasProperty("react") ? project.react : [];
+def config = project.hasProperty("react") ? project.react : [:];
+
+def detectEntryFile(config) {
+    if (System.getenv('ENTRY_FILE')) {
+        return System.getenv('ENTRY_FILE')
+    } else if (config.entryFile) {
+        return config.entryFile
+    } else if ((new File("${projectDir}/../../index.android.js")).exists()) {
+        return "index.android.js"
+    }
+
+    return "index.js";
+}
 
 def cliPath = config.cliPath ?: "node_modules/react-native/cli.js"
 def composeSourceMapsPath = config.composeSourceMapsPath ?: "node_modules/react-native/scripts/compose-source-maps.js"
 def bundleAssetName = config.bundleAssetName ?: "index.android.bundle"
-def entryFile = config.entryFile ?: "index.android.js"
+def entryFile = detectEntryFile(config)
 def bundleCommand = config.bundleCommand ?: "bundle"
 def reactRoot = file(config.root ?: "../../")
 def inputExcludes = config.inputExcludes ?: ["android/**", "ios/**"]
@@ -85,6 +99,19 @@ afterEvaluate {
         // Additional node and packager commandline arguments
         def nodeExecutableAndArgs = config.nodeExecutableAndArgs ?: ["node"]
         def extraPackagerArgs = config.extraPackagerArgs ?: []
+        def npx = Os.isFamily(Os.FAMILY_WINDOWS) ? "npx.cmd" : "npx"
+
+        def execCommand = []
+
+        if (config.cliPath || config.nodeExecutableAndArgs) {
+            if (Os.isFamily(Os.FAMILY_WINDOWS)) {
+                execCommand.addAll(["cmd", "/c", *nodeExecutableAndArgs, cliPath])
+            } else {
+                execCommand.addAll([*nodeExecutableAndArgs, cliPath])
+            }
+        } else {
+            execCommand.addAll([npx, "react-native"])
+        }
 
         def enableHermes = enableHermesForVariant(variant)
 
@@ -126,15 +153,10 @@ afterEvaluate {
                 extraArgs.add(bundleConfig);
             }
 
-            if (Os.isFamily(Os.FAMILY_WINDOWS)) {
-                commandLine("cmd", "/c", *nodeExecutableAndArgs, cliPath, bundleCommand, "--platform", "android", "--dev", "${devEnabled}",
-                    "--reset-cache", "--entry-file", entryFile, "--bundle-output", jsBundleFile, "--assets-dest", resourcesDir,
-                    "--sourcemap-output", enableHermes ? jsPackagerSourceMapFile : jsOutputSourceMapFile, *extraArgs)
-            } else {
-                commandLine(*nodeExecutableAndArgs, cliPath, bundleCommand, "--platform", "android", "--dev", "${devEnabled}",
-                    "--reset-cache", "--entry-file", entryFile, "--bundle-output", jsBundleFile, "--assets-dest", resourcesDir,
-                    "--sourcemap-output", enableHermes ? jsPackagerSourceMapFile : jsOutputSourceMapFile, *extraArgs)
-            }
+            commandLine(*execCommand, bundleCommand, "--platform", "android", "--dev", "${devEnabled}",
+                "--reset-cache", "--entry-file", entryFile, "--bundle-output", jsBundleFile, "--assets-dest", resourcesDir,
+                "--sourcemap-output", enableHermes ? jsPackagerSourceMapFile : jsOutputSourceMapFile, *extraArgs)
+
 
             if (enableHermes) {
                 doLast {
@@ -149,7 +171,12 @@ afterEvaluate {
                             hermesFlags = config.hermesFlagsDebug
                             if (hermesFlags == null) hermesFlags = []
                         }
-                        commandLine(getHermesCommand(), "-emit-binary", "-out", hbcTempFile, jsBundleFile, *hermesFlags)
+
+                        if (Os.isFamily(Os.FAMILY_WINDOWS)) {
+                            commandLine("cmd", "/c", getHermesCommand(), "-emit-binary", "-out", hbcTempFile, jsBundleFile, *hermesFlags)
+                        } else {
+                            commandLine(getHermesCommand(), "-emit-binary", "-out", hbcTempFile, jsBundleFile, *hermesFlags)
+                        }
                     }
                     ant.move(
                         file: hbcTempFile,

@@ -67,6 +67,9 @@ function getImports(component: ComponentShape): Set<string> {
       case 'PointPrimitive':
         imports.add('import com.facebook.react.bridge.ReadableMap;');
         return;
+      case 'EdgeInsetsPrimitive':
+        imports.add('import com.facebook.react.bridge.ReadableMap;');
+        return;
       default:
         (name: empty);
         throw new Error(

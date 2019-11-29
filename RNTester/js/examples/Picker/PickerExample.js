@@ -16,11 +16,9 @@ const {Picker, StyleSheet, Text} = require('react-native');
 
 const Item = Picker.Item;
 
-type State = {
-  value: string | number,
-};
+type State = {value: string | number, ...};
 
-class BasicPickerExample extends React.Component<{}, State> {
+class BasicPickerExample extends React.Component<{...}, State> {
   state: State = {
     value: 'key1',
   };
@@ -39,7 +37,7 @@ class BasicPickerExample extends React.Component<{}, State> {
   }
 }
 
-class DisabledPickerExample extends React.Component<{}, State> {
+class DisabledPickerExample extends React.Component<{...}, State> {
   state: State = {
     value: 'key1',
   };
@@ -57,7 +55,7 @@ class DisabledPickerExample extends React.Component<{}, State> {
   }
 }
 
-class DropdownPickerExample extends React.Component<{}, State> {
+class DropdownPickerExample extends React.Component<{...}, State> {
   state: State = {
     value: 'key1',
   };
@@ -76,7 +74,7 @@ class DropdownPickerExample extends React.Component<{}, State> {
   }
 }
 
-class PromptPickerExample extends React.Component<{}, State> {
+class PromptPickerExample extends React.Component<{...}, State> {
   state: State = {
     value: 'key1',
   };
@@ -95,11 +93,9 @@ class PromptPickerExample extends React.Component<{}, State> {
   }
 }
 
-type ColorState = {
-  color: string | number,
-};
+type ColorState = {color: string | number, ...};
 
-class ColorPickerExample extends React.Component<{}, ColorState> {
+class ColorPickerExample extends React.Component<{...}, ColorState> {
   state: ColorState = {
     color: 'red',
   };

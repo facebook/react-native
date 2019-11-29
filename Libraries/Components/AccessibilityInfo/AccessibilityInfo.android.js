@@ -22,6 +22,7 @@ type ChangeEventName = $Keys<{
   change: string,
   reduceMotionChanged: string,
   screenReaderChanged: string,
+  ...
 }>;
 
 const _subscriptions = new Map();
@@ -91,6 +92,9 @@ const AccessibilityInfo = {
    * Same as `isScreenReaderEnabled`
    */
   get fetch(): () => Promise<boolean> {
+    console.warn(
+      'AccessibilityInfo.fetch is deprecated, call Accessibility.isScreenReaderEnabled instead',
+    );
     return this.isScreenReaderEnabled;
   },
 

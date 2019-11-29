@@ -210,6 +210,9 @@ class FlatListExample extends React.PureComponent<Props, State> {
 
     return {
       renderItem: undefined,
+      /* $FlowFixMe(>=0.111.0 site=react_native_fb) This comment suppresses an
+       * error found when Flow v0.111 was deployed. To see the error, delete
+       * this comment and run Flow. */
       [flatListPropKey]: ({item, separators}) => {
         return (
           <ItemComponent
@@ -233,7 +236,9 @@ class FlatListExample extends React.PureComponent<Props, State> {
       item: any,
       index: ?number,
       section?: any,
+      ...
     }>,
+    ...
   }) => {
     // Impressions can be logged here
     if (this.state.logViewable) {
@@ -247,7 +252,7 @@ class FlatListExample extends React.PureComponent<Props, State> {
     this._listRef.getNode().recordInteraction();
     pressItem(this, key);
   };
-  _listRef: Animated.FlatList;
+  _listRef: React.ElementRef<typeof Animated.FlatList>;
 }
 
 const styles = StyleSheet.create({

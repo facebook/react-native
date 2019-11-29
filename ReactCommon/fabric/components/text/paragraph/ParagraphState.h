@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -8,6 +8,7 @@
 #pragma once
 
 #include <react/attributedstring/AttributedString.h>
+#include <react/attributedstring/ParagraphAttributes.h>
 #include <react/textlayoutmanager/TextLayoutManager.h>
 
 #ifdef ANDROID
@@ -29,6 +30,12 @@ class ParagraphState final {
   AttributedString attributedString;
 
   /*
+   * Represents all visual attributes of a paragraph of text represented as
+   * a ParagraphAttributes.
+   */
+  ParagraphAttributes paragraphAttributes;
+
+  /*
    * `TextLayoutManager` provides a connection to platform-specific
    * text rendering infrastructure which is capable to render the
    * `AttributedString`.
@@ -38,10 +45,15 @@ class ParagraphState final {
 #ifdef ANDROID
   ParagraphState(
       AttributedString const &attributedString,
+      ParagraphAttributes const &paragraphAttributes,
       SharedTextLayoutManager const &layoutManager)
-      : attributedString(attributedString), layoutManager(layoutManager) {}
+      : attributedString(attributedString),
+        paragraphAttributes(paragraphAttributes),
+        layoutManager(layoutManager) {}
   ParagraphState() = default;
-  ParagraphState(folly::dynamic const &data) {
+  ParagraphState(
+      ParagraphState const &previousState,
+      folly::dynamic const &data) {
     assert(false && "Not supported");
   };
   folly::dynamic getDynamic() const;

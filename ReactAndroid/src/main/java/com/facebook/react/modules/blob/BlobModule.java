@@ -1,9 +1,10 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
- * directory of this source tree.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
+
 package com.facebook.react.modules.blob;
 
 import android.content.res.Resources;
@@ -12,6 +13,7 @@ import android.net.Uri;
 import android.provider.MediaStore;
 import android.webkit.MimeTypeMap;
 import androidx.annotation.Nullable;
+import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
@@ -144,6 +146,11 @@ public class BlobModule extends ReactContextBaseJavaModule {
   }
 
   @Override
+  public void initialize() {
+    BlobCollector.install(getReactApplicationContext(), this);
+  }
+
+  @Override
   public String getName() {
     return NAME;
   }
@@ -170,11 +177,16 @@ public class BlobModule extends ReactContextBaseJavaModule {
   }
 
   public void store(byte[] data, String blobId) {
-    mBlobs.put(blobId, data);
+    synchronized (mBlobs) {
+      mBlobs.put(blobId, data);
+    }
   }
 
+  @DoNotStrip
   public void remove(String blobId) {
-    mBlobs.remove(blobId);
+    synchronized (mBlobs) {
+      mBlobs.remove(blobId);
+    }
   }
 
   public @Nullable byte[] resolve(Uri uri) {
@@ -193,17 +205,19 @@ public class BlobModule extends ReactContextBaseJavaModule {
   }
 
   public @Nullable byte[] resolve(String blobId, int offset, int size) {
-    byte[] data = mBlobs.get(blobId);
-    if (data == null) {
-      return null;
+    synchronized (mBlobs) {
+      byte[] data = mBlobs.get(blobId);
+      if (data == null) {
+        return null;
+      }
+      if (size == -1) {
+        size = data.length - offset;
+      }
+      if (offset > 0 || size != data.length) {
+        data = Arrays.copyOfRange(data, offset, offset + size);
+      }
+      return data;
     }
-    if (size == -1) {
-      size = data.length - offset;
-    }
-    if (offset > 0 || size != data.length) {
-      data = Arrays.copyOfRange(data, offset, offset + size);
-    }
-    return data;
   }
 
   public @Nullable byte[] resolve(ReadableMap blob) {
@@ -272,37 +286,59 @@ public class BlobModule extends ReactContextBaseJavaModule {
     return type;
   }
 
-  private WebSocketModule getWebSocketModule() {
-    return getReactApplicationContext().getNativeModule(WebSocketModule.class);
+  private WebSocketModule getWebSocketModule(String reason) {
+    ReactApplicationContext reactApplicationContext = getReactApplicationContextIfActiveOrWarn();
+
+    if (reactApplicationContext != null) {
+      return reactApplicationContext.getNativeModule(WebSocketModule.class);
+    }
+
+    return null;
   }
 
   @ReactMethod
   public void addNetworkingHandler() {
-    NetworkingModule networkingModule =
-        getReactApplicationContext().getNativeModule(NetworkingModule.class);
-    networkingModule.addUriHandler(mNetworkingUriHandler);
-    networkingModule.addRequestBodyHandler(mNetworkingRequestBodyHandler);
-    networkingModule.addResponseHandler(mNetworkingResponseHandler);
+    ReactApplicationContext reactApplicationContext = getReactApplicationContextIfActiveOrWarn();
+
+    if (reactApplicationContext != null) {
+      NetworkingModule networkingModule =
+          reactApplicationContext.getNativeModule(NetworkingModule.class);
+      networkingModule.addUriHandler(mNetworkingUriHandler);
+      networkingModule.addRequestBodyHandler(mNetworkingRequestBodyHandler);
+      networkingModule.addResponseHandler(mNetworkingResponseHandler);
+    }
   }
 
   @ReactMethod
   public void addWebSocketHandler(final int id) {
-    getWebSocketModule().setContentHandler(id, mWebSocketContentHandler);
+    WebSocketModule webSocketModule = getWebSocketModule("addWebSocketHandler");
+
+    if (webSocketModule != null) {
+      webSocketModule.setContentHandler(id, mWebSocketContentHandler);
+    }
   }
 
   @ReactMethod
   public void removeWebSocketHandler(final int id) {
-    getWebSocketModule().setContentHandler(id, null);
+    WebSocketModule webSocketModule = getWebSocketModule("removeWebSocketHandler");
+
+    if (webSocketModule != null) {
+      webSocketModule.setContentHandler(id, null);
+    }
   }
 
   @ReactMethod
   public void sendOverSocket(ReadableMap blob, int id) {
-    byte[] data = resolve(blob.getString("blobId"), blob.getInt("offset"), blob.getInt("size"));
+    WebSocketModule webSocketModule = getWebSocketModule("sendOverSocket");
 
-    if (data != null) {
-      getWebSocketModule().sendBinary(ByteString.of(data), id);
-    } else {
-      getWebSocketModule().sendBinary((ByteString) null, id);
+    if (webSocketModule != null) {
+      byte[] data = resolve(blob.getString("blobId"), blob.getInt("offset"), blob.getInt("size"));
+
+      if (data != null) {
+        webSocketModule.sendBinary(ByteString.of(data), id);
+      } else {
+        webSocketModule.sendBinary((ByteString) null, id);
+      }
     }
   }
 

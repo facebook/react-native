@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -18,11 +18,13 @@ LongLivedObjectCollection &LongLivedObjectCollection::get() {
 
 LongLivedObjectCollection::LongLivedObjectCollection() {}
 
-void LongLivedObjectCollection::add(std::shared_ptr<LongLivedObject> so) {
+void LongLivedObjectCollection::add(std::shared_ptr<LongLivedObject> so) const {
+  std::lock_guard<std::mutex> lock(collectionMutex_);
   collection_.insert(so);
 }
 
-void LongLivedObjectCollection::remove(const LongLivedObject *o) {
+void LongLivedObjectCollection::remove(const LongLivedObject *o) const {
+  std::lock_guard<std::mutex> lock(collectionMutex_);
   auto p = collection_.begin();
   for (; p != collection_.end(); p++) {
     if (p->get() == o) {
@@ -34,7 +36,8 @@ void LongLivedObjectCollection::remove(const LongLivedObject *o) {
   }
 }
 
-void LongLivedObjectCollection::clear() {
+void LongLivedObjectCollection::clear() const {
+  std::lock_guard<std::mutex> lock(collectionMutex_);
   collection_.clear();
 }
 

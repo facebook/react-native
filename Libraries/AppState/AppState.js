@@ -12,10 +12,11 @@
 
 const EventEmitter = require('../vendor/emitter/EventEmitter');
 const NativeEventEmitter = require('../EventEmitter/NativeEventEmitter');
-import NativeAppState from './NativeAppState';
 
-const logError = require('../Utilities/logError');
 const invariant = require('invariant');
+const logError = require('../Utilities/logError');
+
+import NativeAppState from './NativeAppState';
 
 /**
  * `AppState` can tell you if the app is in the foreground or background,
@@ -148,11 +149,11 @@ class MissingNativeAppStateShim extends EventEmitter {
   isAvailable: boolean = false;
   currentState: ?string = null;
 
-  addEventListener() {
+  addEventListener(type: string, handler: Function) {
     throwMissingNativeModule();
   }
 
-  removeEventListener() {
+  removeEventListener(type: string, handler: Function) {
     throwMissingNativeModule();
   }
 
@@ -173,10 +174,8 @@ class MissingNativeAppStateShim extends EventEmitter {
 // This module depends on the native `RCTAppState` module. If you don't include it,
 // `AppState.isAvailable` will return `false`, and any method calls will throw.
 // We reassign the class variable to keep the autodoc generator happy.
-if (NativeAppState) {
-  AppState = new AppState();
-} else {
-  AppState = new MissingNativeAppStateShim();
-}
+const AppStateInstance: AppState | MissingNativeAppStateShim = NativeAppState
+  ? new AppState()
+  : new MissingNativeAppStateShim();
 
-module.exports = AppState;
+module.exports = AppStateInstance;

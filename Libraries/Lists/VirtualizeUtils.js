@@ -7,6 +7,7 @@
  * @flow
  * @format
  */
+
 'use strict';
 
 const invariant = require('invariant');
@@ -19,7 +20,13 @@ const invariant = require('invariant');
 function elementsThatOverlapOffsets(
   offsets: Array<number>,
   itemCount: number,
-  getFrameMetrics: (index: number) => {length: number, offset: number},
+  getFrameMetrics: (
+    index: number,
+  ) => {
+    length: number,
+    offset: number,
+    ...
+  },
 ): Array<number> {
   const out = [];
   let outLength = 0;
@@ -51,8 +58,16 @@ function elementsThatOverlapOffsets(
  * faster.
  */
 function newRangeCount(
-  prev: {first: number, last: number},
-  next: {first: number, last: number},
+  prev: {
+    first: number,
+    last: number,
+    ...
+  },
+  next: {
+    first: number,
+    last: number,
+    ...
+  },
 ): number {
   return (
     next.last -
@@ -77,16 +92,32 @@ function computeWindowedRenderLimits(
     getItemCount: (data: any) => number,
     maxToRenderPerBatch: number,
     windowSize: number,
+    ...
   },
-  prev: {first: number, last: number},
-  getFrameMetricsApprox: (index: number) => {length: number, offset: number},
+  prev: {
+    first: number,
+    last: number,
+    ...
+  },
+  getFrameMetricsApprox: (
+    index: number,
+  ) => {
+    length: number,
+    offset: number,
+    ...
+  },
   scrollMetrics: {
     dt: number,
     offset: number,
     velocity: number,
     visibleLength: number,
+    ...
   },
-): {first: number, last: number} {
+): {
+  first: number,
+  last: number,
+  ...
+} {
   const {data, getItemCount, maxToRenderPerBatch, windowSize} = props;
   const itemCount = getItemCount(data);
   if (itemCount === 0) {

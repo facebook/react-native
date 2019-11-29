@@ -8,6 +8,7 @@
  * @format
  * @preventMunge
  */
+
 'use strict';
 
 const {AnimatedEvent, attachNativeEvent} = require('./AnimatedEvent');
@@ -45,6 +46,7 @@ export type CompositeAnimation = {
   reset: () => void,
   _startNativeLoop: (iterations?: number) => void,
   _isUsingNativeDriver: () => boolean,
+  ...
 };
 
 const add = function(
@@ -168,6 +170,9 @@ const spring = function(
 
       _startNativeLoop: function(iterations?: number): void {
         const singleConfig = {...config, iterations};
+        /* $FlowFixMe(>=0.111.0 site=react_native_fb) This comment suppresses
+         * an error found when Flow v0.111 was deployed. To see the error,
+         * delete this comment and run Flow. */
         start(value, singleConfig);
       },
 
@@ -222,6 +227,9 @@ const timing = function(
 
       _startNativeLoop: function(iterations?: number): void {
         const singleConfig = {...config, iterations};
+        /* $FlowFixMe(>=0.111.0 site=react_native_fb) This comment suppresses
+         * an error found when Flow v0.111 was deployed. To see the error,
+         * delete this comment and run Flow. */
         start(value, singleConfig);
       },
 
@@ -264,6 +272,9 @@ const decay = function(
 
       _startNativeLoop: function(iterations?: number): void {
         const singleConfig = {...config, iterations};
+        /* $FlowFixMe(>=0.111.0 site=react_native_fb) This comment suppresses
+         * an error found when Flow v0.111 was deployed. To see the error,
+         * delete this comment and run Flow. */
         start(value, singleConfig);
       },
 
@@ -331,7 +342,9 @@ const sequence = function(
 };
 
 type ParallelConfig = {
-  stopTogether?: boolean, // If one is stopped, stop all.  default: true
+  // If one is stopped, stop all.  default: true
+  stopTogether?: boolean,
+  ...
 };
 const parallel = function(
   animations: Array<CompositeAnimation>,
@@ -425,6 +438,7 @@ const stagger = function(
 type LoopAnimationConfig = {
   iterations: number,
   resetBeforeIteration?: boolean,
+  ...
 };
 
 const loop = function(
@@ -508,7 +522,7 @@ function unforkEvent(
   }
 }
 
-const event = function(argMapping: Array<?Mapping>, config?: EventConfig): any {
+const event = function(argMapping: Array<?Mapping>, config: EventConfig): any {
   const animatedEvent = new AnimatedEvent(argMapping, config);
   if (animatedEvent.__isNative) {
     return animatedEvent;

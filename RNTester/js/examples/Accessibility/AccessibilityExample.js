@@ -13,17 +13,29 @@ const React = require('react');
 const {
   AccessibilityInfo,
   Button,
+  Image,
   Text,
   View,
   TouchableOpacity,
   TouchableWithoutFeedback,
   Alert,
-  UIManager,
-  findNodeHandle,
-  Platform,
+  StyleSheet,
 } = require('react-native');
 
 const RNTesterBlock = require('../../components/RNTesterBlock');
+
+const checkImageSource = require('./check.png');
+const uncheckImageSource = require('./uncheck.png');
+const mixedCheckboxImageSource = require('./mixed.png');
+
+const styles = StyleSheet.create({
+  image: {
+    width: 20,
+    height: 20,
+    resizeMode: 'contain',
+    marginRight: 10,
+  },
+});
 
 class AccessibilityExample extends React.Component {
   render() {
@@ -161,13 +173,6 @@ class CheckboxExample extends React.Component {
     this.setState({
       checkboxState: checkboxState,
     });
-
-    if (Platform.OS === 'android') {
-      UIManager.sendAccessibilityEvent(
-        findNodeHandle(this),
-        UIManager.AccessibilityEventTypes.typeViewClicked,
-      );
-    }
   };
 
   render() {
@@ -195,13 +200,6 @@ class SwitchExample extends React.Component {
     this.setState({
       switchState: switchState,
     });
-
-    if (Platform.OS === 'android') {
-      UIManager.sendAccessibilityEvent(
-        findNodeHandle(this),
-        UIManager.AccessibilityEventTypes.typeViewClicked,
-      );
-    }
   };
 
   render() {
@@ -252,13 +250,6 @@ class SelectionExample extends React.Component {
                 isSelected: !this.state.isSelected,
               });
             }
-
-            if (Platform.OS === 'android') {
-              UIManager.sendAccessibilityEvent(
-                findNodeHandle(this.selectableElement.current),
-                UIManager.AccessibilityEventTypes.typeViewClicked,
-              );
-            }
           }}
           accessibilityLabel="element 19"
           accessibilityState={{
@@ -292,13 +283,6 @@ class ExpandableElementExample extends React.Component {
     this.setState({
       expandState: expandState,
     });
-
-    if (Platform.OS === 'android') {
-      UIManager.sendAccessibilityEvent(
-        findNodeHandle(this),
-        UIManager.AccessibilityEventTypes.typeViewClicked,
-      );
-    }
   };
 
   render() {
@@ -310,6 +294,114 @@ class ExpandableElementExample extends React.Component {
         accessibilityHint="click me to change state">
         <Text>Expandable element example</Text>
       </TouchableOpacity>
+    );
+  }
+}
+
+class NestedCheckBox extends React.Component {
+  state = {
+    checkbox1: false,
+    checkbox2: false,
+    checkbox3: false,
+  };
+
+  _onPress1 = () => {
+    let checkbox1 = false;
+    if (this.state.checkbox1 === false) {
+      checkbox1 = true;
+    } else if (this.state.checkbox1 === 'mixed') {
+      checkbox1 = false;
+    } else {
+      checkbox1 = false;
+    }
+    setTimeout(() => {
+      this.setState({
+        checkbox1: checkbox1,
+        checkbox2: checkbox1,
+        checkbox3: checkbox1,
+      });
+    }, 2000);
+  };
+
+  _onPress2 = () => {
+    const checkbox2 = !this.state.checkbox2;
+
+    this.setState({
+      checkbox2: checkbox2,
+      checkbox1:
+        checkbox2 && this.state.checkbox3
+          ? true
+          : checkbox2 || this.state.checkbox3
+          ? 'mixed'
+          : false,
+    });
+  };
+
+  _onPress3 = () => {
+    const checkbox3 = !this.state.checkbox3;
+
+    this.setState({
+      checkbox3: checkbox3,
+      checkbox1:
+        this.state.checkbox2 && checkbox3
+          ? true
+          : this.state.checkbox2 || checkbox3
+          ? 'mixed'
+          : false,
+    });
+  };
+
+  render() {
+    return (
+      <View>
+        <TouchableOpacity
+          style={{flex: 1, flexDirection: 'row'}}
+          onPress={this._onPress1}
+          accessibilityLabel="Meat"
+          accessibilityHint="State changes in 2 seconds after clicking."
+          accessibilityRole="checkbox"
+          accessibilityState={{checked: this.state.checkbox1}}>
+          <Image
+            style={styles.image}
+            source={
+              this.state.checkbox1 === 'mixed'
+                ? mixedCheckboxImageSource
+                : this.state.checkbox1
+                ? checkImageSource
+                : uncheckImageSource
+            }
+          />
+          <Text>Meat</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={{flex: 1, flexDirection: 'row'}}
+          onPress={this._onPress2}
+          accessibilityLabel="Beef"
+          accessibilityRole="checkbox"
+          accessibilityState={{checked: this.state.checkbox2}}>
+          <Image
+            style={styles.image}
+            source={
+              this.state.checkbox2 ? checkImageSource : uncheckImageSource
+            }
+          />
+          <Text>Beef</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={{flex: 1, flexDirection: 'row'}}
+          onPress={this._onPress3}
+          accessibilityLabel="Bacon"
+          accessibilityRole="checkbox"
+          accessibilityState={{checked: this.state.checkbox3}}>
+          <Image
+            style={styles.image}
+            source={
+              this.state.checkbox3 ? checkImageSource : uncheckImageSource
+            }
+          />
+          <Text>Bacon</Text>
+        </TouchableOpacity>
+      </View>
     );
   }
 }
@@ -412,6 +504,9 @@ class AccessibilityRoleAndStateExample extends React.Component<{}> {
         </View>
         <ExpandableElementExample />
         <SelectionExample />
+        <RNTesterBlock title="Nested checkbox with delayed state change">
+          <NestedCheckBox />
+        </RNTesterBlock>
       </View>
     );
   }
@@ -512,6 +607,91 @@ class AccessibilityActionsExample extends React.Component {
     );
   }
 }
+
+class FakeSliderExample extends React.Component {
+  state = {
+    current: 50,
+    textualValue: 'center',
+  };
+
+  increment = () => {
+    let newValue = this.state.current + 2;
+    if (newValue > 100) {
+      newValue = 100;
+    }
+    this.setState({
+      current: newValue,
+    });
+  };
+
+  decrement = () => {
+    let newValue = this.state.current - 2;
+    if (newValue < 0) {
+      newValue = 0;
+    }
+    this.setState({
+      current: newValue,
+    });
+  };
+
+  render() {
+    return (
+      <View>
+        <View
+          accessible={true}
+          accessibilityLabel="Fake Slider"
+          accessibilityRole="adjustable"
+          accessibilityActions={[{name: 'increment'}, {name: 'decrement'}]}
+          onAccessibilityAction={event => {
+            switch (event.nativeEvent.actionName) {
+              case 'increment':
+                this.increment();
+                break;
+              case 'decrement':
+                this.decrement();
+                break;
+            }
+          }}
+          accessibilityValue={{
+            min: 0,
+            now: this.state.current,
+            max: 100,
+          }}>
+          <Text>Fake Slider</Text>
+        </View>
+        <TouchableWithoutFeedback
+          accessible={true}
+          accessibilityLabel="Equalizer"
+          accessibilityRole="adjustable"
+          accessibilityActions={[{name: 'increment'}, {name: 'decrement'}]}
+          onAccessibilityAction={event => {
+            switch (event.nativeEvent.actionName) {
+              case 'increment':
+                if (this.state.textualValue === 'center') {
+                  this.setState({textualValue: 'right'});
+                } else if (this.state.textualValue === 'left') {
+                  this.setState({textualValue: 'center'});
+                }
+                break;
+              case 'decrement':
+                if (this.state.textualValue === 'center') {
+                  this.setState({textualValue: 'left'});
+                } else if (this.state.textualValue === 'right') {
+                  this.setState({textualValue: 'center'});
+                }
+                break;
+            }
+          }}
+          accessibilityValue={{text: this.state.textualValue}}>
+          <View>
+            <Text>Equalizer</Text>
+          </View>
+        </TouchableWithoutFeedback>
+      </View>
+    );
+  }
+}
+
 class ScreenReaderStatusExample extends React.Component<{}> {
   state = {
     screenReaderEnabled: false,
@@ -589,6 +769,12 @@ exports.examples = [
     title: 'Accessibility action examples',
     render(): React.Element<typeof AccessibilityActionsExample> {
       return <AccessibilityActionsExample />;
+    },
+  },
+  {
+    title: 'Fake Slider Example',
+    render(): React.Element<typeof FakeSliderExample> {
+      return <FakeSliderExample />;
     },
   },
   {

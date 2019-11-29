@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -6,13 +6,11 @@
  */
 
 #import <UIKit/UIKit.h>
-#import <memory>
 
-#import <React/RCTBridge.h>
-#import <React/RCTComponentViewFactory.h>
 #import <React/RCTPrimitives.h>
 #import <React/RCTSurfacePresenterStub.h>
-#import <react/config/ReactNativeConfig.h>
+
+#import <React/RCTComponentViewFactory.h>
 #import <react/utils/ContextContainer.h>
 #import <react/utils/RuntimeExecutor.h>
 
@@ -25,18 +23,26 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  * Coordinates presenting of React Native Surfaces and represents application
  * facing interface of running React Native core.
- * SurfacePresenter incapsulates a bridge object inside and discourage direct
- * access to it.
  */
 @interface RCTSurfacePresenter : NSObject
 
-- (instancetype)initWithBridge:(RCTBridge *_Nullable)bridge
-                        config:(std::shared_ptr<const facebook::react::ReactNativeConfig>)config
-                   imageLoader:(RCTImageLoader *)imageLoader
-               runtimeExecutor:(facebook::react::RuntimeExecutor)runtimeExecutor;
+- (instancetype)initWithContextContainer:(facebook::react::ContextContainer::Shared)contextContainer
+                         runtimeExecutor:(facebook::react::RuntimeExecutor)runtimeExecutor;
 
 @property (nonatomic, readonly) RCTComponentViewFactory *componentViewFactory;
-@property (nonatomic, readonly) facebook::react::ContextContainer::Shared contextContainer;
+
+@property (nonatomic) facebook::react::ContextContainer::Shared contextContainer;
+@property (nonatomic) facebook::react::RuntimeExecutor runtimeExecutor;
+
+/*
+ * Suspends/resumes all surfaces associated with the presenter.
+ * Suspending is a process or gracefull stopping all surfaces and destroying all underlying infrastructure
+ * with a future possibility of recreating the infrastructure and restarting the surfaces from scratch.
+ * Suspending is usually a part of a bundle reloading process.
+ * Can be called on any thread.
+ */
+- (BOOL)suspend;
+- (BOOL)resume;
 
 @end
 

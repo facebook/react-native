@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -86,11 +86,6 @@ RCT_EXPORT_MODULE()
 + (BOOL)requiresMainQueueSetup
 {
   return NO;
-}
-
-- (void)dealloc
-{
-  [NSNotificationCenter.defaultCenter removeObserver:self];
 }
 
 - (void)invalidate
@@ -335,7 +330,25 @@ static NSDictionary *deviceOrientationEventBody(UIDeviceOrientation orientation)
 - (NSString *)viewNameForReactTag:(NSNumber *)reactTag
 {
   RCTAssertUIManagerQueue();
-  return _shadowViewRegistry[reactTag].viewName;
+  NSString *name = _shadowViewRegistry[reactTag].viewName;
+  if (name) {
+    return name;
+  }
+
+  __block UIView *view;
+  RCTUnsafeExecuteOnMainQueueSync(^{
+    view = self->_viewRegistry[reactTag];
+  });
+
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wundeclared-selector"
+
+  if ([view respondsToSelector:@selector(componentViewName_DO_NOT_USE_THIS_IS_BROKEN)]) {
+    return [view performSelector:@selector(componentViewName_DO_NOT_USE_THIS_IS_BROKEN)];
+  }
+
+#pragma clang diagnostic pop
+  return nil;
 }
 
 - (UIView *)viewForReactTag:(NSNumber *)reactTag
@@ -975,7 +988,7 @@ RCT_EXPORT_METHOD(createView:(nonnull NSNumber *)reactTag
       return;
     }
 
-    preliminaryCreatedView = [componentData createViewWithTag:reactTag];
+    preliminaryCreatedView = [componentData createViewWithTag:reactTag rootTag:rootTag];
 
     if (preliminaryCreatedView) {
       self->_viewRegistry[reactTag] = preliminaryCreatedView;

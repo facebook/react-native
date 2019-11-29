@@ -1,6 +1,9 @@
-// Copyright 2004-present Facebook. All Rights Reserved.
-// This source code is licensed under the MIT license found in the
-// LICENSE file in the root directory of this source tree.
+/*
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
 
 #include "Binding.h"
 #include "AsyncEventBeat.h"
@@ -8,6 +11,7 @@
 #include "ReactNativeConfigHolder.h"
 #include "StateWrapperImpl.h"
 
+#import <better/set.h>
 #include <fb/fbjni.h>
 #include <jsi/JSIDynamic.h>
 #include <jsi/jsi.h>
@@ -43,8 +47,8 @@ static constexpr auto UIManagerJavaDescriptor =
     "com/facebook/react/fabric/FabricUIManager";
 
 struct RemoveDeleteMetadata {
-  int tag;
-  int parentTag;
+  Tag tag;
+  Tag parentTag;
   int index;
   bool shouldRemove;
   bool shouldDelete;
@@ -98,6 +102,9 @@ void Binding::startSurfaceWithConstraints(
     jfloat maxHeight) {
   SystraceSection s("FabricUIManagerBinding::startSurfaceWithConstraints");
 
+  LOG(WARNING) << "Binding::startSurfaceWithConstraints() was called (address: "
+               << this << ", surfaceId: " << surfaceId << ").";
+
   std::shared_ptr<Scheduler> scheduler = getScheduler();
   if (!scheduler) {
     LOG(ERROR) << "Binding::startSurfaceWithConstraints: scheduler disappeared";
@@ -140,6 +147,9 @@ void Binding::renderTemplateToSurface(jint surfaceId, jstring uiTemplate) {
 
 void Binding::stopSurface(jint surfaceId) {
   SystraceSection s("FabricUIManagerBinding::stopSurface");
+
+  LOG(WARNING) << "Binding::stopSurface() was called (address: " << this
+               << ", surfaceId: " << surfaceId << ").";
 
   std::shared_ptr<Scheduler> scheduler = getScheduler();
   if (!scheduler) {
@@ -187,6 +197,9 @@ void Binding::installFabricUIManager(
     jni::alias_ref<jobject> reactNativeConfig) {
   SystraceSection s("FabricUIManagerBinding::installFabricUIManager");
 
+  LOG(WARNING) << "Binding::installFabricUIManager() was called (address: "
+               << this << ").";
+
   // Use std::lock and std::adopt_lock to prevent deadlocks by locking mutexes at the same time
   std::lock(schedulerMutex_, javaUIManagerMutex_);
   std::lock_guard<std::mutex> schedulerLock(schedulerMutex_, std::adopt_lock);
@@ -210,8 +223,6 @@ void Binding::installFabricUIManager(
             });
       };
 
-  eventBeatManager->setRuntimeExecutor(runtimeExecutor);
-
   // TODO: T31905686 Create synchronous Event Beat
   jni::global_ref<jobject> localJavaUIManager = javaUIManager_;
   EventBeat::Factory synchronousBeatFactory =
@@ -234,6 +245,11 @@ void Binding::installFabricUIManager(
   // Keep reference to config object and cache some feature flags here
   reactNativeConfig_ = config;
   shouldCollateRemovesAndDeletes_ = reactNativeConfig_->getBool("react_fabric:enable_removedelete_collation_android");
+  collapseDeleteCreateMountingInstructions_ = reactNativeConfig_->getBool(
+      "react_fabric:enabled_collapse_delete_create_mounting_instructions");
+  ;
+
+  disablePreallocateViews_ = reactNativeConfig_->getBool("react_fabric:disabled_view_preallocation_android");
 
   auto toolbox = SchedulerToolbox{};
   toolbox.contextContainer = contextContainer;
@@ -245,6 +261,8 @@ void Binding::installFabricUIManager(
 }
 
 void Binding::uninstallFabricUIManager() {
+  LOG(WARNING) << "Binding::uninstallFabricUIManager() was called (address: "
+               << this << ").";
   // Use std::lock and std::adopt_lock to prevent deadlocks by locking mutexes at the same time
   std::lock(schedulerMutex_, javaUIManagerMutex_);
   std::lock_guard<std::mutex> schedulerLock(schedulerMutex_, std::adopt_lock);
@@ -470,7 +488,7 @@ local_ref<JMountItem::javaobject> createDeleteMountItem(
 
 local_ref<JMountItem::javaobject> createRemoveAndDeleteMultiMountItem(
   const jni::global_ref<jobject> &javaUIManager,
-  std::vector<RemoveDeleteMetadata> metadata) {
+  const std::vector<RemoveDeleteMetadata> &metadata) {
 
   auto env = Environment::current();
   auto removeAndDeleteArray = env->NewIntArray(metadata.size()*4);
@@ -489,7 +507,16 @@ local_ref<JMountItem::javaobject> createRemoveAndDeleteMultiMountItem(
     jni::findClassStatic(UIManagerJavaDescriptor)
       ->getMethod<alias_ref<JMountItem>(jintArray)>("removeDeleteMultiMountItem");
 
-  return removeDeleteMultiInstruction(javaUIManager, removeAndDeleteArray);
+  auto ret = removeDeleteMultiInstruction(javaUIManager, removeAndDeleteArray);
+
+  // It is not strictly necessary to manually delete the ref here, in this particular case.
+  // If JNI memory is being allocated in a loop, it's easy to overload the localref table
+  // and crash; this is not possible in this case since the JNI would automatically clear this
+  // ref when it goes out of scope, anyway. However, this is being left here as a reminder of
+  // good hygiene and to be careful with JNI-allocated memory in general.
+  env->DeleteLocalRef(removeAndDeleteArray);
+
+  return ret;
 }
 
 // TODO T48019320: because we pass initial props and state to the Create (and preallocate) mount instruction,
@@ -539,7 +566,7 @@ void Binding::schedulerDidFinishTransaction(
   std::lock_guard<std::recursive_mutex> lock(commitMutex_);
 
   SystraceSection s("FabricUIManagerBinding::schedulerDidFinishTransaction");
-  long finishTransactionStartTime = getTime();
+  long finishTransactionStartTime = monotonicTimeInMilliseconds();
 
   jni::global_ref<jobject> localJavaUIManager = getJavaUIManager();
   if (!localJavaUIManager) {
@@ -557,6 +584,32 @@ void Binding::schedulerDidFinishTransaction(
   auto surfaceId = mountingTransaction->getSurfaceId();
   auto &mutations = mountingTransaction->getMutations();
 
+  facebook::better::set<Tag> createAndDeleteTagsToProcess;
+  // When collapseDeleteCreateMountingInstructions_ is enabled, the
+  // createAndDeleteTagsToProcess set will contain all the tags belonging to
+  // CREATE and DELETE mutation instructions that needs to be processed. If a
+  // CREATE or DELETE mutation instruction does not belong in the set, it means
+  // that the we received a pair of mutation instructions: DELETE - CREATE and
+  // it is not necessary to create or delete on the screen.
+  if (collapseDeleteCreateMountingInstructions_) {
+    for (const auto &mutation : mutations) {
+      if (mutation.type == ShadowViewMutation::Delete) {
+        // TAG on 'Delete' mutation instructions are part of the
+        // oldChildShadowView
+        createAndDeleteTagsToProcess.insert(mutation.oldChildShadowView.tag);
+      } else if (mutation.type == ShadowViewMutation::Create) {
+        // TAG on 'Create' mutation instructions are part of the
+        // newChildShadowView
+        Tag tag = mutation.newChildShadowView.tag;
+        if (createAndDeleteTagsToProcess.find(tag) ==
+            createAndDeleteTagsToProcess.end()) {
+          createAndDeleteTagsToProcess.insert(tag);
+        } else {
+          createAndDeleteTagsToProcess.erase(tag);
+        }
+      }
+    }
+  }
   int64_t commitNumber = telemetry.getCommitNumber();
 
   std::vector<local_ref<jobject>> queue;
@@ -576,6 +629,23 @@ void Binding::schedulerDidFinishTransaction(
   for (const auto &mutation : mutations) {
     auto oldChildShadowView = mutation.oldChildShadowView;
     auto newChildShadowView = mutation.newChildShadowView;
+    auto mutationType = mutation.type;
+
+    if (collapseDeleteCreateMountingInstructions_ &&
+        (mutationType == ShadowViewMutation::Create ||
+         mutationType == ShadowViewMutation::Delete) &&
+        createAndDeleteTagsToProcess.size() > 0) {
+      // The TAG on 'Delete' mutation instructions are part of the
+      // oldChildShadowView. On the other side, the TAG on 'Create' mutation
+      // instructions are part of the newChildShadowView
+      Tag tag = mutationType == ShadowViewMutation::Create
+          ? mutation.newChildShadowView.tag
+          : mutation.oldChildShadowView.tag;
+      if (createAndDeleteTagsToProcess.find(tag) ==
+          createAndDeleteTagsToProcess.end()) {
+        continue;
+      }
+    }
 
     bool isVirtual = newChildShadowView.layoutMetrics == EmptyLayoutMetrics &&
         oldChildShadowView.layoutMetrics == EmptyLayoutMetrics;
@@ -590,7 +660,7 @@ void Binding::schedulerDidFinishTransaction(
 
     switch (mutation.type) {
       case ShadowViewMutation::Create: {
-        if (mutation.newChildShadowView.props->revision > 1 ||
+        if (disablePreallocateViews_ || mutation.newChildShadowView.props->revision > 1 ||
             deletedViewTags.find(mutation.newChildShadowView.tag) !=
                 deletedViewTags.end()) {
           mountItems[position++] =
@@ -671,7 +741,7 @@ void Binding::schedulerDidFinishTransaction(
           mountItems[position++] =
               createInsertMountItem(localJavaUIManager, mutation);
 
-          if (mutation.newChildShadowView.props->revision > 1 ||
+          if (disablePreallocateViews_ || mutation.newChildShadowView.props->revision > 1 ||
               deletedViewTags.find(mutation.newChildShadowView.tag) !=
                   deletedViewTags.end()) {
             mountItems[position++] =
@@ -745,7 +815,7 @@ void Binding::schedulerDidFinishTransaction(
           ->getMethod<void(JMountItem::javaobject, jint, jlong, jlong, jlong, jlong, jlong, jlong, jlong)>(
               "scheduleMountItem");
 
-  long finishTransactionEndTime = getTime();
+  long finishTransactionEndTime = monotonicTimeInMilliseconds();
 
   scheduleMountItem(
       localJavaUIManager,
@@ -767,6 +837,10 @@ void Binding::setPixelDensity(float pointScaleFactor) {
 void Binding::schedulerDidRequestPreliminaryViewAllocation(
     const SurfaceId surfaceId,
     const ShadowView &shadowView) {
+
+  if (disablePreallocateViews_) {
+    return;
+  }
 
   jni::global_ref<jobject> localJavaUIManager = getJavaUIManager();
   if (!localJavaUIManager) {

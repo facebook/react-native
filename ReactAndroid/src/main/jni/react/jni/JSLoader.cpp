@@ -1,7 +1,9 @@
-// Copyright (c) Facebook, Inc. and its affiliates.
-
-// This source code is licensed under the MIT license found in the
-// LICENSE file in the root directory of this source tree.
+/*
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
 
 #include "JSLoader.h"
 
@@ -10,8 +12,8 @@
 #include <fb/fbjni.h>
 #include <fb/log.h>
 #include <folly/Conv.h>
-#include <folly/Memory.h>
 #include <fstream>
+#include <memory>
 #include <sstream>
 #include <streambuf>
 #include <string>
@@ -46,7 +48,7 @@ std::unique_ptr<const JSBigString> loadScriptFromAssets(
       assetName.c_str(),
       AASSET_MODE_STREAMING); // Optimized for sequential read: see AssetManager.java for docs
     if (asset) {
-      auto buf = folly::make_unique<JSBigBufferString>(AAsset_getLength(asset));
+      auto buf = std::make_unique<JSBigBufferString>(AAsset_getLength(asset));
       size_t offset = 0;
       int readbytes;
       while ((readbytes = AAsset_read(asset, buf->data() + offset, buf->size() - offset)) > 0) {

@@ -25,10 +25,8 @@ export type SymbolicationRequest = $ReadOnly<{|
 class YellowBoxWarning {
   static parse({
     args,
-    framesToPop,
   }: $ReadOnly<{|
     args: $ReadOnlyArray<mixed>,
-    framesToPop: number,
   |}>): {|
     category: Category,
     message: Message,
@@ -56,7 +54,8 @@ class YellowBoxWarning {
 
     return {
       ...YellowBoxCategory.parse(mutableArgs),
-      stack: createStack({framesToPop: framesToPop + 1}),
+      // TODO: Use Error.captureStackTrace on Hermes
+      stack: parseErrorStack(new Error()),
     };
   }
 
@@ -122,12 +121,6 @@ class YellowBoxWarning {
       },
     };
   }
-}
-
-function createStack({framesToPop}: $ReadOnly<{|framesToPop: number|}>): Stack {
-  const error: any = new Error();
-  error.framesToPop = framesToPop + 1;
-  return parseErrorStack(error);
 }
 
 module.exports = YellowBoxWarning;

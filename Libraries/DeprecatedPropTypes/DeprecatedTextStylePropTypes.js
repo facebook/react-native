@@ -54,9 +54,6 @@ const DeprecatedTextStylePropTypes = {
     | '800'
     | '900',
   >),
-  /**
-   * @platform ios
-   */
   fontVariant: (ReactPropTypes.arrayOf(
     ReactPropTypes.oneOf([
       'small-caps',
@@ -77,7 +74,11 @@ const DeprecatedTextStylePropTypes = {
   textShadowOffset: (ReactPropTypes.shape({
     width: ReactPropTypes.number,
     height: ReactPropTypes.number,
-  }): React$PropType$Primitive<{height?: number, width?: number}>),
+  }): React$PropType$Primitive<{
+    height?: number,
+    width?: number,
+    ...
+  }>),
   textShadowRadius: ReactPropTypes.number,
   textShadowColor: DeprecatedColorPropType,
   /**

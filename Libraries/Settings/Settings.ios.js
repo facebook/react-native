@@ -16,7 +16,11 @@ const invariant = require('invariant');
 
 import NativeSettingsManager from './NativeSettingsManager';
 
-const subscriptions: Array<{keys: Array<string>, callback: ?Function}> = [];
+const subscriptions: Array<{
+  keys: Array<string>,
+  callback: ?Function,
+  ...
+}> = [];
 
 const Settings = {
   _settings: (NativeSettingsManager &&

@@ -7,6 +7,7 @@
  * @flow
  * @format
  */
+
 'use strict';
 
 const BatchedBridge = require('../BatchedBridge/BatchedBridge');
@@ -24,7 +25,7 @@ import NativeHeadlessJsTaskSupport from './NativeHeadlessJsTaskSupport';
 import HeadlessJsTaskError from './HeadlessJsTaskError';
 
 type Task = (taskData: any) => Promise<void>;
-type TaskProvider = () => Task;
+export type TaskProvider = () => Task;
 type TaskCanceller = () => void;
 type TaskCancelProvider = () => TaskCanceller;
 
@@ -38,17 +39,18 @@ export type AppConfig = {
   component?: ComponentProvider,
   run?: Function,
   section?: boolean,
+  ...
 };
 export type Runnable = {
   component?: ComponentProvider,
   run: Function,
+  ...
 };
-export type Runnables = {
-  [appKey: string]: Runnable,
-};
+export type Runnables = {[appKey: string]: Runnable, ...};
 export type Registry = {
   sections: Array<string>,
   runnables: Runnables,
+  ...
 };
 export type WrapperComponentProvider = any => React$ComponentType<*>;
 

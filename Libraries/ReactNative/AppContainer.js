@@ -19,9 +19,7 @@ const RootTagContext = require('./RootTagContext');
 const StyleSheet = require('../StyleSheet/StyleSheet');
 const View = require('../Components/View/View');
 
-type Context = {
-  rootTag: number,
-};
+type Context = {rootTag: number, ...};
 
 type Props = $ReadOnly<{|
   children?: React.Node,
@@ -29,20 +27,25 @@ type Props = $ReadOnly<{|
   rootTag: number,
   showArchitectureIndicator?: boolean,
   WrapperComponent?: ?React.ComponentType<any>,
+  internal_excludeLogBox?: ?boolean,
 |}>;
 
 type State = {|
   inspector: ?React.Node,
   mainKey: number,
+  hasError: boolean,
 |};
 
 class AppContainer extends React.Component<Props, State> {
   state: State = {
     inspector: null,
     mainKey: 1,
+    hasError: false,
   };
   _mainRef: ?React.ElementRef<typeof View>;
   _subscription: ?EmitterSubscription = null;
+
+  static getDerivedStateFromError: any = undefined;
 
   static childContextTypes:
     | any
@@ -91,11 +94,16 @@ class AppContainer extends React.Component<Props, State> {
   }
 
   render(): React.Node {
-    let yellowBox = null;
-    if (__DEV__) {
+    let logBox = null;
+    if (__DEV__ && !this.props.internal_excludeLogBox) {
       if (!global.__RCTProfileIsProfiling) {
-        const YellowBox = require('../YellowBox/YellowBox');
-        yellowBox = <YellowBox />;
+        if (global.__reactExperimentalLogBox) {
+          const LogBox = require('../LogBox/LogBox');
+          logBox = <LogBox />;
+        } else {
+          const YellowBox = require('../YellowBox/YellowBox');
+          logBox = <YellowBox />;
+        }
       }
     }
 
@@ -127,9 +135,9 @@ class AppContainer extends React.Component<Props, State> {
     return (
       <RootTagContext.Provider value={this.props.rootTag}>
         <View style={styles.appContainer} pointerEvents="box-none">
-          {innerView}
-          {yellowBox}
+          {!this.state.hasError && innerView}
           {this.state.inspector}
+          {logBox}
         </View>
       </RootTagContext.Provider>
     );
@@ -144,8 +152,22 @@ const styles = StyleSheet.create({
 
 if (__DEV__) {
   if (!global.__RCTProfileIsProfiling) {
-    const YellowBox = require('../YellowBox/YellowBox');
-    YellowBox.install();
+    if (global.__reactExperimentalLogBox) {
+      const LogBox = require('../LogBox/LogBox');
+      LogBox.install();
+
+      // TODO: (rickhanlonii) T57484314 Temporary hack to fix LogBox experiment but we need to
+      // either decide to provide an error boundary by default or move this to a separate root.
+      AppContainer.getDerivedStateFromError = function getDerivedStateFromError(
+        error,
+        state,
+      ) {
+        return {...state, hasError: true};
+      };
+    } else {
+      const YellowBox = require('../YellowBox/YellowBox');
+      YellowBox.install();
+    }
   }
 }
 

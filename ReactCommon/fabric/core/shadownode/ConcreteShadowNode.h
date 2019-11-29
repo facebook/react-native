@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -48,6 +48,14 @@ class ConcreteShadowNode : public ShadowNode {
 
   static ComponentHandle Handle() {
     return ComponentHandle(concreteComponentName);
+  }
+
+  /*
+   * A set of traits associated with a particular class.
+   * Reimplement in subclasses to declare class-specific traits.
+   */
+  static ShadowNodeTraits BaseTraits() {
+    return ShadowNodeTraits{};
   }
 
   static SharedConcreteProps Props(

@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -44,6 +44,22 @@ AccessibilityProps::AccessibilityProps(
           rawProps,
           "accessibilityIgnoresInvertColors",
           sourceProps.accessibilityIgnoresInvertColors)),
+      onAccessibilityTap(convertRawProp(
+          rawProps,
+          "onAccessibilityTap",
+          sourceProps.onAccessibilityTap)),
+      onAccessibilityMagicTap(convertRawProp(
+          rawProps,
+          "onAccessibilityMagicTap",
+          sourceProps.onAccessibilityMagicTap)),
+      onAccessibilityEscape(convertRawProp(
+          rawProps,
+          "onAccessibilityEscape",
+          sourceProps.onAccessibilityEscape)),
+      onAccessibilityAction(convertRawProp(
+          rawProps,
+          "onAccessibilityAction",
+          sourceProps.onAccessibilityAction)),
       testId(convertRawProp(rawProps, "testId", sourceProps.testId)) {}
 
 #pragma mark - DebugStringConvertible

@@ -167,11 +167,6 @@ describe('MessageQueue', function() {
     }).toThrow();
     await expect(promise1).rejects.toBeInstanceOf(Error);
     await expect(promise1).rejects.toMatchObject({message: 'firstFailure'});
-    // Check that we get a useful stack trace from failures.
-    const error = await promise1.catch(x => x);
-    expect(getLineFromFrame(parseErrorStack(error)[0])).toContain(
-      'NativeModules.RemoteModule1.promiseReturningMethod(',
-    );
 
     // Handle the second remote invocation by signaling success.
     BatchedBridge.__invokeCallback(secondSuccCBID, ['secondSucc']);
@@ -211,36 +206,6 @@ describe('MessageQueue', function() {
       });
     });
 
-    it('throwing a "native" exception gets framesToPop = 2', function() {
-      global.nativeCallSyncHook = () => {
-        throw new Error('Exception in HostFunction: foo');
-      };
-      let error;
-      try {
-        NativeModules.RemoteModule1.syncMethod('paloAlto', 'menloPark');
-      } catch (e) {
-        error = e;
-      }
-      // We can't test this behaviour with `getLineFromFrame` because our mock
-      // function adds an extra frame, so check `framesToPop` directly instead.
-      expect(error.framesToPop).toBe(2);
-    });
-
-    it('throwing a "native" exception preserves framesToPop if set', function() {
-      global.nativeCallSyncHook = () => {
-        const e = new Error('Exception in HostFunction: foo');
-        e.framesToPop = 42;
-        throw e;
-      };
-      let error;
-      try {
-        NativeModules.RemoteModule1.syncMethod('paloAlto', 'menloPark');
-      } catch (e) {
-        error = e;
-      }
-      expect(error.framesToPop).toBe(42);
-    });
-
     it('returning a value', function() {
       global.nativeCallSyncHook = jest.fn(() => {
         return 'secondSucc';
@@ -259,24 +224,3 @@ describe('MessageQueue', function() {
     });
   });
 });
-
-const linesByFile = new Map();
-
-function getLineFromFrame({lineNumber /* 1-based */, file}) {
-  if (file == null) {
-    return null;
-  }
-  const cleanedFile = cleanFileName(file);
-  const lines =
-    linesByFile.get(cleanedFile) ||
-    fs.readFileSync(cleanedFile, 'utf8').split('\n');
-  if (!linesByFile.has(cleanedFile)) {
-    linesByFile.set(cleanedFile, lines);
-  }
-  return (lines[lineNumber - 1] || '').trim();
-}
-
-// Works around a parseErrorStack bug involving `new X` stack frames.
-function cleanFileName(file) {
-  return file.replace(/^.+? \((?=\/)/, '');
-}

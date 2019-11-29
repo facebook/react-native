@@ -1,9 +1,10 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
- * directory of this source tree.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
+
 package com.facebook.react.testing;
 
 import com.facebook.react.modules.debug.interfaces.DeveloperSettings;
@@ -52,4 +53,7 @@ public class ReactSettingsForTests implements DeveloperSettings {
   public boolean isStartSamplingProfilerOnInit() {
     return false;
   }
+
+  @Override
+  public void addMenuItem(String title) {}
 }

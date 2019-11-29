@@ -92,6 +92,7 @@ type Style = {
   right: number,
   bottom: number,
   left: number,
+  ...
 };
 
 /**

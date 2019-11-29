@@ -1,19 +1,22 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
- * directory of this source tree.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
+
 package com.facebook.react.views.checkbox;
 
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.util.TypedValue;
 import android.widget.CompoundButton;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.TintContextWrapper;
 import androidx.core.widget.CompoundButtonCompat;
 import com.facebook.react.bridge.ReactContext;
+import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.uimanager.SimpleViewManager;
 import com.facebook.react.uimanager.ThemedReactContext;
@@ -77,6 +80,18 @@ public class ReactCheckBoxManager extends SimpleViewManager<ReactCheckBox> {
     view.setOnCheckedChangeListener(null);
     view.setOn(on);
     view.setOnCheckedChangeListener(ON_CHECKED_CHANGE_LISTENER);
+  }
+
+  @Override
+  public void receiveCommand(
+      @NonNull ReactCheckBox root, String commandId, @Nullable ReadableArray args) {
+    switch (commandId) {
+      case "setNativeValue":
+        if (args != null) {
+          setOn(root, args.getBoolean(0));
+          break;
+        }
+    }
   }
 
   private static int getThemeColor(final Context context, String colorId) {

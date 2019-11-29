@@ -6,6 +6,7 @@
  *
  * @format
  */
+
 'use strict';
 
 const {parseString} = require('react-native-codegen/src/parsers/flow');

@@ -1,11 +1,13 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
- * directory of this source tree.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
+
 package com.facebook.react.fabric.mounting.mountitems;
 
+import androidx.annotation.NonNull;
 import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.react.bridge.ReactMarker;
 import com.facebook.react.bridge.ReactMarkerConstants;
@@ -24,8 +26,10 @@ import com.facebook.systrace.Systrace;
 @DoNotStrip
 public class BatchMountItem implements MountItem {
 
-  private final MountItem[] mMountItems;
+  @NonNull private final MountItem[] mMountItems;
+
   private final int mSize;
+
   private final int mCommitNumber;
 
   public BatchMountItem(MountItem[] items, int size, int commitNumber) {
@@ -42,7 +46,7 @@ public class BatchMountItem implements MountItem {
   }
 
   @Override
-  public void execute(MountingManager mountingManager) {
+  public void execute(@NonNull MountingManager mountingManager) {
     Systrace.beginSection(
         Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "FabricUIManager::mountViews - " + mSize + " items");
 

@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -6,6 +6,8 @@
  */
 
 #include "ShadowNodeFamily.h"
+
+#include <react/core/ComponentDescriptor.h>
 
 namespace facebook {
 namespace react {
@@ -18,7 +20,9 @@ ShadowNodeFamily::ShadowNodeFamily(
     : tag_(tag),
       surfaceId_(surfaceId),
       eventEmitter_(eventEmitter),
-      componentDescriptor_(componentDescriptor) {}
+      componentDescriptor_(componentDescriptor),
+      componentHandle_(componentDescriptor.getComponentHandle()),
+      componentName_(componentDescriptor.getComponentName()) {}
 
 void ShadowNodeFamily::setParent(ShadowNodeFamily::Shared const &parent) const {
   assert(parent_.lock() == nullptr || parent_.lock() == parent);
@@ -28,6 +32,14 @@ void ShadowNodeFamily::setParent(ShadowNodeFamily::Shared const &parent) const {
 
   parent_ = parent;
   hasParent_ = true;
+}
+
+ComponentHandle ShadowNodeFamily::getComponentHandle() const {
+  return componentHandle_;
+}
+
+ComponentName ShadowNodeFamily::getComponentName() const {
+  return componentName_;
 }
 
 } // namespace react

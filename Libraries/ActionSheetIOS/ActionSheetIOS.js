@@ -7,6 +7,7 @@
  * @flow
  * @format
  */
+
 'use strict';
 
 import RCTActionSheetManager from './NativeActionSheetManager';
@@ -41,7 +42,7 @@ const ActionSheetIOS = {
       +title?: ?string,
       +message?: ?string,
       +options: Array<string>,
-      +destructiveButtonIndex?: ?number,
+      +destructiveButtonIndex?: ?number | ?Array<number>,
       +cancelButtonIndex?: ?number,
       +anchor?: ?number,
       +tintColor?: number | string,
@@ -55,10 +56,21 @@ const ActionSheetIOS = {
     invariant(typeof callback === 'function', 'Must provide a valid callback');
     invariant(RCTActionSheetManager, "ActionSheetManager does't exist");
 
-    const {tintColor, ...remainingOptions} = options;
+    const {tintColor, destructiveButtonIndex, ...remainingOptions} = options;
+    let destructiveButtonIndices = null;
+
+    if (Array.isArray(destructiveButtonIndex)) {
+      destructiveButtonIndices = destructiveButtonIndex;
+    } else if (typeof destructiveButtonIndex === 'number') {
+      destructiveButtonIndices = [destructiveButtonIndex];
+    }
 
     RCTActionSheetManager.showActionSheetWithOptions(
-      {...remainingOptions, tintColor: processColor(tintColor)},
+      {
+        ...remainingOptions,
+        tintColor: processColor(tintColor),
+        destructiveButtonIndices,
+      },
       callback,
     );
   },

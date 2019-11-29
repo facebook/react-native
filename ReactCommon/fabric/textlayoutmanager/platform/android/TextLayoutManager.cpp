@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -23,6 +23,18 @@ void *TextLayoutManager::getNativeTextLayoutManager() const {
 }
 
 Size TextLayoutManager::measure(
+    AttributedString attributedString,
+    ParagraphAttributes paragraphAttributes,
+    LayoutConstraints layoutConstraints) const {
+  return measureCache_.get(
+      MeasureCacheKey{attributedString, paragraphAttributes, layoutConstraints},
+      [&](MeasureCacheKey const &key) {
+        return doMeasure(
+            attributedString, paragraphAttributes, layoutConstraints);
+      });
+}
+
+Size TextLayoutManager::doMeasure(
     AttributedString attributedString,
     ParagraphAttributes paragraphAttributes,
     LayoutConstraints layoutConstraints) const {

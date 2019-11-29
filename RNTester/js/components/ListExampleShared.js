@@ -30,6 +30,7 @@ export type Item = {
   key: string,
   pressed: boolean,
   noImage?: ?boolean,
+  ...
 };
 
 function genItemData(count: number, start: number = 0): Array<Item> {
@@ -56,6 +57,7 @@ class ItemComponent extends React.PureComponent<{
   onPress: (key: string) => void,
   onShowUnderlay?: () => void,
   onHideUnderlay?: () => void,
+  ...
 }> {
   _onPress = () => {
     this.props.onPress(this.props.item.key);
@@ -69,9 +71,6 @@ class ItemComponent extends React.PureComponent<{
         onPress={this._onPress}
         onShowUnderlay={this.props.onShowUnderlay}
         onHideUnderlay={this.props.onHideUnderlay}
-        tvParallaxProperties={{
-          pressMagnification: 1.1,
-        }}
         style={horizontal ? styles.horizItem : styles.item}>
         <View
           style={[
@@ -91,7 +90,7 @@ class ItemComponent extends React.PureComponent<{
   }
 }
 
-const renderStackedItem = ({item}: {item: Item}): React.Node => {
+const renderStackedItem = ({item}: {item: Item, ...}): React.Node => {
   const itemHash = Math.abs(hashCode(item.title));
   const imgSource = THUMB_URLS[itemHash % THUMB_URLS.length];
   return (
@@ -104,7 +103,7 @@ const renderStackedItem = ({item}: {item: Item}): React.Node => {
   );
 };
 
-class FooterComponent extends React.PureComponent<{}> {
+class FooterComponent extends React.PureComponent<{...}> {
   render(): React.Node {
     return (
       <View style={styles.headerFooterContainer}>
@@ -117,7 +116,7 @@ class FooterComponent extends React.PureComponent<{}> {
   }
 }
 
-class HeaderComponent extends React.PureComponent<{}> {
+class HeaderComponent extends React.PureComponent<{...}> {
   render(): React.Node {
     return (
       <View style={styles.headerFooterContainer}>
@@ -130,7 +129,7 @@ class HeaderComponent extends React.PureComponent<{}> {
   }
 }
 
-class ListEmptyComponent extends React.PureComponent<{}> {
+class ListEmptyComponent extends React.PureComponent<{...}> {
   render(): React.Node {
     return (
       <View style={styles.listEmpty}>
@@ -140,7 +139,7 @@ class ListEmptyComponent extends React.PureComponent<{}> {
   }
 }
 
-class SeparatorComponent extends React.PureComponent<{}> {
+class SeparatorComponent extends React.PureComponent<{...}> {
   render(): React.Node {
     return <View style={styles.separator} />;
   }

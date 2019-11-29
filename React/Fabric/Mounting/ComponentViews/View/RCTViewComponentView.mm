@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -341,14 +341,6 @@ static RCTBorderColors RCTBorderColorsFromBorderColors(BorderColors borderColors
                          .right = RCTCGColorRefUnretainedFromSharedColor(borderColors.right)};
 }
 
-static UIEdgeInsets UIEdgeInsetsFromBorderInsets(EdgeInsets edgeInsets)
-{
-  return UIEdgeInsets{.left = (CGFloat)edgeInsets.left,
-                      .top = (CGFloat)edgeInsets.top,
-                      .bottom = (CGFloat)edgeInsets.bottom,
-                      .right = (CGFloat)edgeInsets.right};
-}
-
 static RCTBorderStyle RCTBorderStyleFromBorderStyle(BorderStyle borderStyle)
 {
   switch (borderStyle) {
@@ -431,7 +423,7 @@ static RCTBorderStyle RCTBorderStyleFromBorderStyle(BorderStyle borderStyle)
         RCTBorderStyleFromBorderStyle(borderMetrics.borderStyles.left),
         layer.bounds.size,
         RCTCornerRadiiFromBorderRadii(borderMetrics.borderRadii),
-        UIEdgeInsetsFromBorderInsets(borderMetrics.borderWidths),
+        RCTUIEdgeInsetsFromEdgeInsets(borderMetrics.borderWidths),
         RCTBorderColorsFromBorderColors(borderMetrics.borderColors),
         _backgroundColor.CGColor,
         self.clipsToBounds);
@@ -539,26 +531,42 @@ static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
 
 - (BOOL)accessibilityActivate
 {
-  _eventEmitter->onAccessibilityTap();
-  return YES;
+  if (_eventEmitter && _props->onAccessibilityTap) {
+    _eventEmitter->onAccessibilityTap();
+    return YES;
+  } else {
+    return NO;
+  }
 }
 
 - (BOOL)accessibilityPerformMagicTap
 {
-  _eventEmitter->onAccessibilityMagicTap();
-  return YES;
+  if (_eventEmitter && _props->onAccessibilityMagicTap) {
+    _eventEmitter->onAccessibilityMagicTap();
+    return YES;
+  } else {
+    return NO;
+  }
 }
 
 - (BOOL)accessibilityPerformEscape
 {
-  _eventEmitter->onAccessibilityEscape();
-  return YES;
+  if (_eventEmitter && _props->onAccessibilityEscape) {
+    _eventEmitter->onAccessibilityEscape();
+    return YES;
+  } else {
+    return NO;
+  }
 }
 
 - (BOOL)didActivateAccessibilityCustomAction:(UIAccessibilityCustomAction *)action
 {
-  _eventEmitter->onAccessibilityAction(RCTStringFromNSString(action.name));
-  return YES;
+  if (_eventEmitter && _props->onAccessibilityAction) {
+    _eventEmitter->onAccessibilityAction(RCTStringFromNSString(action.name));
+    return YES;
+  } else {
+    return NO;
+  }
 }
 
 - (SharedTouchEventEmitter)touchEventEmitterAtPoint:(CGPoint)point

@@ -1,13 +1,14 @@
 /*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the MIT license found in the LICENSE
- * file in the root directory of this source tree.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
+
 #pragma once
 
 #include "YGValue.h"
-
+#include "YGMacros.h"
 #include <cmath>
 #include <cstdint>
 #include <limits>
@@ -39,7 +40,7 @@ namespace detail {
 //            0x40000000         0x7f7fffff
 // - Zero is supported, negative zero is not
 // - values outside of the representable range are clamped
-class CompactValue {
+class YOGA_EXPORT CompactValue {
   friend constexpr bool operator==(CompactValue, CompactValue) noexcept;
 
 public:

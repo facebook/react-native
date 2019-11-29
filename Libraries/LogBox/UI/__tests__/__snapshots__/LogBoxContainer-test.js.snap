@@ -1,0 +1,288 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`LogBoxContainer should render both an error and warning notification 1`] = `
+<View
+  style={
+    Object {
+      "bottom": 20,
+      "left": 10,
+      "position": "absolute",
+      "right": 10,
+    }
+  }
+>
+  <View
+    style={
+      Object {
+        "borderRadius": 8,
+        "marginBottom": 5,
+        "overflow": "hidden",
+      }
+    }
+  >
+    <LogBoxLogNotification
+      level="warn"
+      log={
+        LogBoxLog {
+          "category": "Some kind of message",
+          "codeFrame": undefined,
+          "componentStack": Array [],
+          "count": 1,
+          "isComponentError": false,
+          "level": "warn",
+          "message": Object {
+            "content": "Some kind of message",
+            "substitutions": Array [],
+          },
+          "stack": Array [],
+          "symbolicated": Object {
+            "error": null,
+            "stack": null,
+            "status": "NONE",
+          },
+        }
+      }
+      onPressDismiss={[Function]}
+      onPressOpen={[Function]}
+      totalLogCount={1}
+    />
+  </View>
+  <View
+    style={
+      Object {
+        "borderRadius": 8,
+        "marginBottom": 5,
+        "overflow": "hidden",
+      }
+    }
+  >
+    <LogBoxLogNotification
+      level="error"
+      log={
+        LogBoxLog {
+          "category": "Some kind of message (latest)",
+          "codeFrame": undefined,
+          "componentStack": Array [],
+          "count": 1,
+          "isComponentError": false,
+          "level": "error",
+          "message": Object {
+            "content": "Some kind of message (latest)",
+            "substitutions": Array [],
+          },
+          "stack": Array [],
+          "symbolicated": Object {
+            "error": null,
+            "stack": null,
+            "status": "NONE",
+          },
+        }
+      }
+      onPressDismiss={[Function]}
+      onPressOpen={[Function]}
+      totalLogCount={1}
+    />
+  </View>
+</View>
+`;
+
+exports[`LogBoxContainer should render null with no logs 1`] = `null`;
+
+exports[`LogBoxContainer should render null with no selected log and disabled 1`] = `null`;
+
+exports[`LogBoxContainer should render selected fatal error even when disabled 1`] = `
+<View
+  style={
+    Object {
+      "bottom": 0,
+      "left": 0,
+      "position": "absolute",
+      "right": 0,
+      "top": 0,
+    }
+  }
+>
+  <LogBoxInspector
+    logs={
+      Array [
+        LogBoxLog {
+          "category": "Some kind of message",
+          "codeFrame": undefined,
+          "componentStack": Array [],
+          "count": 1,
+          "isComponentError": false,
+          "level": "fatal",
+          "message": Object {
+            "content": "Should be selected",
+            "substitutions": Array [],
+          },
+          "stack": Array [],
+          "symbolicated": Object {
+            "error": null,
+            "stack": null,
+            "status": "NONE",
+          },
+        },
+      ]
+    }
+    onChangeSelectedIndex={[Function]}
+    onDismiss={[Function]}
+    onMinimize={[Function]}
+    selectedIndex={0}
+  />
+</View>
+`;
+
+exports[`LogBoxContainer should render selected syntax error even when disabled 1`] = `
+<View
+  style={
+    Object {
+      "bottom": 0,
+      "left": 0,
+      "position": "absolute",
+      "right": 0,
+      "top": 0,
+    }
+  }
+>
+  <LogBoxInspector
+    logs={
+      Array [
+        LogBoxLog {
+          "category": "Some kind of syntax error message",
+          "codeFrame": Object {
+            "content": "  197 | });
+  198 |
+> 199 | export default CrashReactApp;
+      | ^
+  200 |",
+            "fileName": "/path/to/RKJSModules/Apps/CrashReact/CrashReactApp.js",
+            "location": Object {
+              "column": 0,
+              "row": 199,
+            },
+          },
+          "componentStack": Array [],
+          "count": 1,
+          "isComponentError": false,
+          "level": "syntax",
+          "message": Object {
+            "content": "Should be selected",
+            "substitutions": Array [],
+          },
+          "stack": Array [],
+          "symbolicated": Object {
+            "error": null,
+            "stack": null,
+            "status": "NONE",
+          },
+        },
+      ]
+    }
+    onChangeSelectedIndex={[Function]}
+    onDismiss={[Function]}
+    onMinimize={[Function]}
+    selectedIndex={0}
+  />
+</View>
+`;
+
+exports[`LogBoxContainer should render the latest error notification 1`] = `
+<View
+  style={
+    Object {
+      "bottom": 20,
+      "left": 10,
+      "position": "absolute",
+      "right": 10,
+    }
+  }
+>
+  <View
+    style={
+      Object {
+        "borderRadius": 8,
+        "marginBottom": 5,
+        "overflow": "hidden",
+      }
+    }
+  >
+    <LogBoxLogNotification
+      level="error"
+      log={
+        LogBoxLog {
+          "category": "Some kind of message (latest)",
+          "codeFrame": undefined,
+          "componentStack": Array [],
+          "count": 1,
+          "isComponentError": false,
+          "level": "error",
+          "message": Object {
+            "content": "Some kind of message (latest)",
+            "substitutions": Array [],
+          },
+          "stack": Array [],
+          "symbolicated": Object {
+            "error": null,
+            "stack": null,
+            "status": "NONE",
+          },
+        }
+      }
+      onPressDismiss={[Function]}
+      onPressOpen={[Function]}
+      totalLogCount={2}
+    />
+  </View>
+</View>
+`;
+
+exports[`LogBoxContainer should render the latest warning notification 1`] = `
+<View
+  style={
+    Object {
+      "bottom": 20,
+      "left": 10,
+      "position": "absolute",
+      "right": 10,
+    }
+  }
+>
+  <View
+    style={
+      Object {
+        "borderRadius": 8,
+        "marginBottom": 5,
+        "overflow": "hidden",
+      }
+    }
+  >
+    <LogBoxLogNotification
+      level="warn"
+      log={
+        LogBoxLog {
+          "category": "Some kind of message (latest)",
+          "codeFrame": undefined,
+          "componentStack": Array [],
+          "count": 1,
+          "isComponentError": false,
+          "level": "warn",
+          "message": Object {
+            "content": "Some kind of message (latest)",
+            "substitutions": Array [],
+          },
+          "stack": Array [],
+          "symbolicated": Object {
+            "error": null,
+            "stack": null,
+            "status": "NONE",
+          },
+        }
+      }
+      onPressDismiss={[Function]}
+      onPressOpen={[Function]}
+      totalLogCount={2}
+    />
+  </View>
+</View>
+`;

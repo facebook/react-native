@@ -1,7 +1,9 @@
-// Copyright (c) Facebook, Inc. and its affiliates.
-
-// This source code is licensed under the MIT license found in the
-// LICENSE file in the root directory of this source tree.
+/*
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
 
 package com.facebook.react.uimanager;
 
@@ -9,6 +11,7 @@ import android.graphics.Color;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewParent;
+import android.view.accessibility.AccessibilityEvent;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.view.ViewCompat;
@@ -170,6 +173,13 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
               && accessibilityState.getType(STATE_CHECKED) == ReadableType.String)) {
         updateViewContentDescription(view);
         break;
+      } else if (view.isAccessibilityFocused()) {
+        // Internally Talkback ONLY uses TYPE_VIEW_CLICKED for "checked" and
+        // "selected" announcements. Send a click event to make sure Talkback
+        // get notified for the state changes that don't happen upon users' click.
+        // For the state changes that happens immediately, Talkback will skip
+        // the duplicated click event.
+        view.sendAccessibilityEvent(AccessibilityEvent.TYPE_VIEW_CLICKED);
       }
     }
   }
@@ -179,6 +189,7 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
     final ReadableMap accessibilityState = (ReadableMap) view.getTag(R.id.accessibility_state);
     final String accessibilityHint = (String) view.getTag(R.id.accessibility_hint);
     final List<String> contentDescription = new ArrayList<>();
+    final ReadableMap accessibilityValue = (ReadableMap) view.getTag(R.id.accessibility_value);
     if (accessibilityLabel != null) {
       contentDescription.add(accessibilityLabel);
     }
@@ -205,6 +216,12 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
         }
       }
     }
+    if (accessibilityValue != null && accessibilityValue.hasKey("text")) {
+      final Dynamic text = accessibilityValue.getDynamic("text");
+      if (text != null && text.getType() == ReadableType.String) {
+        contentDescription.add(text.asString());
+      }
+    }
     if (accessibilityHint != null) {
       contentDescription.add(accessibilityHint);
     }
@@ -221,6 +238,18 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
     }
 
     view.setTag(R.id.accessibility_actions, accessibilityActions);
+  }
+
+  @ReactProp(name = ViewProps.ACCESSIBILITY_VALUE)
+  public void setAccessibilityValue(T view, ReadableMap accessibilityValue) {
+    if (accessibilityValue == null) {
+      return;
+    }
+
+    view.setTag(R.id.accessibility_value, accessibilityValue);
+    if (accessibilityValue.hasKey("text")) {
+      updateViewContentDescription(view);
+    }
   }
 
   @Override

@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -25,7 +25,7 @@ struct StateData final {
 
 #ifdef ANDROID
   StateData() = default;
-  StateData(folly::dynamic data){};
+  StateData(StateData const &previousState, folly::dynamic data){};
   folly::dynamic getDynamic() const;
 #endif
 };

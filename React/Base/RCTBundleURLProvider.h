@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -30,6 +30,17 @@ extern const NSUInteger kRCTBundleURLProviderDefaultPort;
  * Reset every settings to default.
  */
 - (void)resetToDefaults;
+
+#if RCT_DEV
+- (BOOL)isPackagerRunning:(NSString *)host;
+#endif
+
+/**
+ * Returns the jsBundleURL for a given bundle entrypoint and
+ * the fallback offline JS bundle if the packager is not running.
+ */
+- (NSURL *)jsBundleURLForBundleRoot:(NSString *)bundleRoot
+                fallbackURLProvider:(NSURL *(^)(void))fallbackURLProvider;
 
 /**
  * Returns the jsBundleURL for a given bundle entrypoint and

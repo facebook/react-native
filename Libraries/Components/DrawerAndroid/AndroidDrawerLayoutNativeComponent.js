@@ -19,9 +19,8 @@ import type {
   Float,
 } from 'react-native/Libraries/Types/CodegenTypes';
 import codegenNativeCommands from 'react-native/Libraries/Utilities/codegenNativeCommands';
-import codegenNativeComponent, {
-  type NativeComponentType,
-} from 'react-native/Libraries/Utilities/codegenNativeComponent';
+import codegenNativeComponent from 'react-native/Libraries/Utilities/codegenNativeComponent';
+import type {HostComponent} from 'react-native/Libraries/Renderer/shims/ReactNativeTypes';
 import * as React from 'react';
 
 type DrawerStateEvent = $ReadOnly<{|
@@ -64,7 +63,7 @@ type NativeProps = $ReadOnly<{|
    * from the edge of the window.
    */
 
-  drawerWidth?: ?Float,
+  drawerWidth?: WithDefault<Float, null>,
 
   /**
    * Specifies the lock mode of the drawer. The drawer can be locked in 3 states:
@@ -110,7 +109,7 @@ type NativeProps = $ReadOnly<{|
   statusBarBackgroundColor?: ?ColorValue,
 |}>;
 
-type NativeType = NativeComponentType<NativeProps>;
+type NativeType = HostComponent<NativeProps>;
 
 interface NativeCommands {
   +openDrawer: (viewRef: React.ElementRef<NativeType>) => void;

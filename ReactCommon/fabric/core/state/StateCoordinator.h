@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -15,8 +15,6 @@
 
 namespace facebook {
 namespace react {
-
-class ShadowNode;
 
 /*
  * Coordinates a vision of the same state values between shadow nodes from

@@ -10,69 +10,65 @@
 
 'use strict';
 
-const React = require('react');
+import React, {useEffect, useState} from 'react';
+import {Animated, StyleSheet, Text, View} from 'react-native';
 
-const {Animated, StyleSheet, Text, View} = require('react-native');
+import type {Node, Element} from 'react';
 
-class Flip extends React.Component<{}, $FlowFixMeState> {
-  state = {
-    theta: new Animated.Value(45),
-  };
-
-  componentDidMount() {
-    this._animate();
-  }
-
-  _animate = () => {
-    this.state.theta.setValue(0);
-    Animated.timing(this.state.theta, {
+function Flip() {
+  const [theta] = useState(new Animated.Value(45));
+  const animate = () => {
+    theta.setValue(0);
+    Animated.timing(theta, {
       toValue: 360,
       duration: 5000,
       useNativeDriver: false,
-    }).start(this._animate);
+    }).start(animate);
   };
 
-  render() {
-    return (
-      <View style={styles.flipCardContainer}>
-        <Animated.View
-          style={[
-            styles.flipCard,
-            {
-              transform: [
-                {perspective: 850},
-                {
-                  rotateX: this.state.theta.interpolate({
-                    inputRange: [0, 180],
-                    outputRange: ['0deg', '180deg'],
-                  }),
-                },
-              ],
-            },
-          ]}>
-          <Text style={styles.flipText}>This text is flipping great.</Text>
-        </Animated.View>
-        <Animated.View
-          style={[
-            styles.flipCard,
-            styles.flipCard1,
-            {
-              transform: [
-                {perspective: 850},
-                {
-                  rotateX: this.state.theta.interpolate({
-                    inputRange: [0, 180],
-                    outputRange: ['180deg', '360deg'],
-                  }),
-                },
-              ],
-            },
-          ]}>
-          <Text style={styles.flipText}>On the flip side...</Text>
-        </Animated.View>
-      </View>
-    );
-  }
+  useEffect(() => {
+    animate();
+  });
+
+  return (
+    <View style={styles.flipCardContainer}>
+      <Animated.View
+        style={[
+          styles.flipCard,
+          {
+            transform: [
+              {perspective: 850},
+              {
+                rotateX: theta.interpolate({
+                  inputRange: [0, 180],
+                  outputRange: ['0deg', '180deg'],
+                }),
+              },
+            ],
+          },
+        ]}>
+        <Text style={styles.flipText}>This text is flipping great.</Text>
+      </Animated.View>
+      <Animated.View
+        style={[
+          styles.flipCard,
+          styles.flipCard1,
+          {
+            transform: [
+              {perspective: 850},
+              {
+                rotateX: theta.interpolate({
+                  inputRange: [0, 180],
+                  outputRange: ['180deg', '360deg'],
+                }),
+              },
+            ],
+          },
+        ]}>
+        <Text style={styles.flipText}>On the flip side...</Text>
+      </Animated.View>
+    </View>
+  );
 }
 
 const styles = StyleSheet.create({
@@ -196,7 +192,7 @@ exports.examples = [
   {
     title: 'Perspective, Rotate, Animation',
     description: 'perspective: 850, rotateX: Animated.timing(0 -> 360)',
-    render(): React.Element<any> {
+    render(): Element<any> {
       return <Flip />;
     },
   },
@@ -204,7 +200,7 @@ exports.examples = [
     title: 'Translate, Rotate, Scale',
     description:
       "translateX: 100, translateY: 50, rotate: '30deg', scaleX: 2, scaleY: 2",
-    render(): React.Node {
+    render(): Node {
       return (
         <View style={styles.container}>
           <View style={styles.box1} />
@@ -216,7 +212,7 @@ exports.examples = [
     title: 'Scale, Translate, Rotate, ',
     description:
       "scaleX: 2, scaleY: 2, translateX: 100, translateY: 50, rotate: '30deg'",
-    render(): React.Node {
+    render(): Node {
       return (
         <View style={styles.container}>
           <View style={styles.box2} />
@@ -227,7 +223,7 @@ exports.examples = [
   {
     title: 'Rotate',
     description: "rotate: '30deg'",
-    render(): React.Node {
+    render(): Node {
       return (
         <View style={styles.container}>
           <View style={styles.box3step1} />
@@ -238,7 +234,7 @@ exports.examples = [
   {
     title: 'Rotate, Scale',
     description: "rotate: '30deg', scaleX: 2, scaleY: 2",
-    render(): React.Node {
+    render(): Node {
       return (
         <View style={styles.container}>
           <View style={styles.box3step2} />
@@ -250,7 +246,7 @@ exports.examples = [
     title: 'Rotate, Scale, Translate ',
     description:
       "rotate: '30deg', scaleX: 2, scaleY: 2, translateX: 100, translateY: 50",
-    render(): React.Node {
+    render(): Node {
       return (
         <View style={styles.container}>
           <View style={styles.box3step3} />
@@ -261,7 +257,7 @@ exports.examples = [
   {
     title: 'Translate, Scale, Rotate',
     description: "translate: [200, 350], scale: 2.5, rotate: '-0.2rad'",
-    render(): React.Node {
+    render(): Node {
       return (
         <View style={styles.container}>
           <View style={styles.box4} />
@@ -272,7 +268,7 @@ exports.examples = [
   {
     title: 'Translate, Rotate, Scale',
     description: "translate: [-50, 35], rotate: '50deg', scale: 2",
-    render(): React.Node {
+    render(): Node {
       return (
         <View style={styles.container}>
           <View style={[styles.box5, styles.box5Transform]} />

@@ -13,13 +13,20 @@
 const React = require('react');
 const SectionList = require('../SectionList');
 
-function renderMyListItem(info: {item: {title: string}, index: number}) {
+function renderMyListItem(info: {
+  item: {title: string, ...},
+  index: number,
+  ...
+}) {
   return <span />;
 }
 
-const renderMyHeader = ({section}: {section: {fooNumber: number} & Object}) => (
-  <span />
-);
+const renderMyHeader = ({
+  section,
+}: {
+  section: {fooNumber: number, ...} & Object,
+  ...
+}) => <span />;
 
 module.exports = {
   testGoodDataWithGoodItem(): React.Node {
@@ -52,7 +59,7 @@ module.exports = {
     return [
       // $FlowExpectedError - title should be inside `item`
       <SectionList
-        renderItem={(info: {title: string}) => <span />}
+        renderItem={(info: {title: string, ...}) => <span />}
         sections={sections}
       />,
       <SectionList
@@ -62,7 +69,7 @@ module.exports = {
       />,
       // EverythingIsFine
       <SectionList
-        renderItem={(info: {item: {title: string}}) => <span />}
+        renderItem={(info: {item: {title: string, ...}, ...}) => <span />}
         sections={sections}
       />,
     ];

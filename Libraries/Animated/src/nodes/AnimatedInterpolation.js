@@ -7,7 +7,9 @@
  * @flow
  * @format
  */
+
 /* eslint no-bitwise: 0 */
+
 'use strict';
 
 const AnimatedNode = require('./AnimatedNode');
@@ -30,6 +32,7 @@ export type InterpolationConfigType = {
   extrapolate?: ExtrapolateType,
   extrapolateLeft?: ExtrapolateType,
   extrapolateRight?: ExtrapolateType,
+  ...
 };
 
 const linear = t => t;

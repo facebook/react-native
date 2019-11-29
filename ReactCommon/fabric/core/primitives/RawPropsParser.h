@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -35,7 +35,7 @@ class RawPropsParser final {
    * To be used by `ConcreteComponentDescriptor` only.
    */
   template <typename PropsT>
-  void prepare() {
+  void prepare() noexcept {
     static_assert(
         std::is_base_of<Props, PropsT>::value,
         "PropsT must be a descendant of Props");
@@ -54,17 +54,18 @@ class RawPropsParser final {
   /*
    * To be used by `RawProps` only.
    */
-  void preparse(RawProps const &rawProps) const;
+  void preparse(RawProps const &rawProps) const noexcept;
 
   /*
    * Non-generic part of `prepare`.
    */
-  void postPrepare();
+  void postPrepare() noexcept;
 
   /*
    * To be used by `RawProps` only.
    */
-  RawValue const *at(RawProps const &rawProps, RawPropsKey const &key) const;
+  RawValue const *at(RawProps const &rawProps, RawPropsKey const &key) const
+      noexcept;
 
   mutable better::small_vector<RawPropsKey, kNumberOfPropsPerComponentSoftCap>
       keys_{};

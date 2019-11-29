@@ -21,7 +21,11 @@ const {
   Switch,
 } = require('react-native');
 
-class TextEventsExample extends React.Component<{}, $FlowFixMeState> {
+const TextInputSharedExamples = require('./TextInputSharedExamples.js');
+
+import type {RNTesterExampleModuleItem} from '../../types/RNTesterTypes';
+
+class TextEventsExample extends React.Component<{...}, $FlowFixMeState> {
   state = {
     curText: '<No Event>',
     prevText: '<No Event>',
@@ -82,51 +86,10 @@ class TextEventsExample extends React.Component<{}, $FlowFixMeState> {
   }
 }
 
-class RewriteExample extends React.Component<$FlowFixMeProps, $FlowFixMeState> {
-  /* $FlowFixMe(>=0.85.0 site=react_native_android_fb) This comment suppresses
-   * an error found when Flow v0.85 was deployed. To see the error, delete this
-   * comment and run Flow. */
-  constructor(props) {
-    super(props);
-    this.state = {text: ''};
-  }
-  render() {
-    const limit = 20;
-    const remainder = limit - this.state.text.length;
-    const remainderColor = remainder > 5 ? 'blue' : 'red';
-    return (
-      /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was found
-       * when making Flow check .android.js files. */
-      <View style={styles.rewriteContainer}>
-        <TextInput
-          multiline={false}
-          maxLength={limit}
-          onChangeText={text => {
-            text = text.replace(/ /g, '_');
-            this.setState({text});
-          }}
-          /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was
-           * found when making Flow check .android.js files. */
-          style={styles.default}
-          value={this.state.text}
-        />
-        {/* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was
-         * found when making Flow check .android.js files. */}
-        <Text style={[styles.remainder, {color: remainderColor}]}>
-          {remainder}
-        </Text>
-      </View>
-    );
-  }
-}
-
 class TokenizedTextExample extends React.Component<
   $FlowFixMeProps,
   $FlowFixMeState,
 > {
-  /* $FlowFixMe(>=0.85.0 site=react_native_android_fb) This comment suppresses
-   * an error found when Flow v0.85 was deployed. To see the error, delete this
-   * comment and run Flow. */
   constructor(props) {
     super(props);
     this.state = {text: 'Hello #World'};
@@ -185,7 +148,7 @@ class TokenizedTextExample extends React.Component<
   }
 }
 
-class BlurOnSubmitExample extends React.Component<{}> {
+class BlurOnSubmitExample extends React.Component<{...}> {
   focusNextField = nextField => {
     this.refs[nextField].focus();
   };
@@ -266,6 +229,7 @@ type SelectionExampleState = {
     end?: number,
   |}>,
   value: string,
+  ...
 };
 
 class SelectionExample extends React.Component<
@@ -343,7 +307,7 @@ class SelectionExample extends React.Component<
   }
 }
 
-class AutogrowingTextInputExample extends React.Component<{}> {
+class AutogrowingTextInputExample extends React.Component<{...}> {
   constructor(props) {
     super(props);
 
@@ -448,86 +412,8 @@ const styles = StyleSheet.create({
 
 exports.title = '<TextInput>';
 exports.description = 'Single and multi-line text inputs.';
-exports.examples = [
-  {
-    title: 'Auto-focus',
-    render: function(): React.Node {
-      return (
-        <TextInput
-          autoFocus={true}
-          multiline={true}
-          /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was
-           * found when making Flow check .android.js files. */
-          style={styles.input}
-          accessibilityLabel="I am the accessibility label for text input"
-        />
-      );
-    },
-  },
-  {
-    title: "Live Re-Write (<sp>  ->  '_')",
-    render: function(): React.Node {
-      return <RewriteExample />;
-    },
-  },
-  {
-    title: 'Auto-capitalize',
-    render: function(): React.Node {
-      const autoCapitalizeTypes = ['none', 'sentences', 'words', 'characters'];
-      const examples = autoCapitalizeTypes.map(type => {
-        return (
-          <TextInput
-            key={type}
-            autoCapitalize={type}
-            placeholder={'autoCapitalize: ' + type}
-            style={styles.singleLine}
-          />
-        );
-      });
-      return <View>{examples}</View>;
-    },
-  },
-  {
-    title: 'Auto-correct',
-    render: function(): React.Node {
-      return (
-        <View>
-          <TextInput
-            autoCorrect={true}
-            placeholder="This has autoCorrect"
-            style={styles.singleLine}
-          />
-          <TextInput
-            autoCorrect={false}
-            placeholder="This does not have autoCorrect"
-            style={styles.singleLine}
-          />
-        </View>
-      );
-    },
-  },
-  {
-    title: 'Keyboard types',
-    render: function(): React.Node {
-      const keyboardTypes = [
-        'default',
-        'email-address',
-        'numeric',
-        'phone-pad',
-      ];
-      const examples = keyboardTypes.map(type => {
-        return (
-          <TextInput
-            key={type}
-            keyboardType={type}
-            placeholder={'keyboardType: ' + type}
-            style={styles.singleLine}
-          />
-        );
-      });
-      return <View>{examples}</View>;
-    },
-  },
+exports.examples = ([
+  ...TextInputSharedExamples,
   {
     title: 'Blur on submit',
     render: function(): React.Element<any> {
@@ -616,6 +502,13 @@ exports.examples = [
               {fontFamily: 'sans-serif', fontWeight: 'bold'},
             ]}
             placeholder="Sans-Serif bold"
+          />
+          <TextInput
+            style={[
+              styles.singleLine,
+              {fontFamily: 'sans-serif', fontWeight: '500'},
+            ]}
+            placeholder="Sans-Serif 500"
           />
           <TextInput
             style={[
@@ -885,4 +778,5 @@ exports.examples = [
       );
     },
   },
-];
+]: Array<RNTesterExampleModuleItem>);
+

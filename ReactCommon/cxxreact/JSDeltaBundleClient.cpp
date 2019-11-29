@@ -1,29 +1,30 @@
-// Copyright (c) Facebook, Inc. and its affiliates.
-//
-// This source code is licensed under the MIT license found in the
-// LICENSE file in the root directory of this source tree.
+/*
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
 
 #include "JSDeltaBundleClient.h"
 
+#include <memory>
 #include <sstream>
-
-#include <folly/Memory.h>
 
 namespace facebook {
 namespace react {
 
 namespace {
-  std::string startupCode(const folly::dynamic *pre, const folly::dynamic *post) {
-    std::ostringstream startupCode;
+std::string startupCode(const folly::dynamic *pre, const folly::dynamic *post) {
+  std::ostringstream startupCode;
 
-    for (auto section : {pre, post}) {
-      if (section != nullptr) {
-        startupCode << section->getString() << '\n';
-      }
+  for (auto section : {pre, post}) {
+    if (section != nullptr) {
+      startupCode << section->getString() << '\n';
     }
-
-    return startupCode.str();
   }
+
+  return startupCode.str();
+}
 } // namespace
 
 void JSDeltaBundleClient::patchModules(const folly::dynamic *modules) {
@@ -34,7 +35,7 @@ void JSDeltaBundleClient::patchModules(const folly::dynamic *modules) {
   }
 }
 
-void JSDeltaBundleClient::patch(const folly::dynamic& delta) {
+void JSDeltaBundleClient::patch(const folly::dynamic &delta) {
   auto const base = delta.get_ptr("base");
 
   if (base != nullptr && base->asBool()) {
@@ -74,10 +75,10 @@ void JSDeltaBundleClient::patch(const folly::dynamic& delta) {
       patchModules(modified);
     }
   }
-
 }
 
-JSModulesUnbundle::Module JSDeltaBundleClient::getModule(uint32_t moduleId) const {
+JSModulesUnbundle::Module JSDeltaBundleClient::getModule(
+    uint32_t moduleId) const {
   auto search = modules_.find(moduleId);
   if (search != modules_.end()) {
     return {folly::to<std::string>(search->first, ".js"), search->second};
@@ -87,7 +88,7 @@ JSModulesUnbundle::Module JSDeltaBundleClient::getModule(uint32_t moduleId) cons
 }
 
 std::unique_ptr<const JSBigString> JSDeltaBundleClient::getStartupCode() const {
-  return folly::make_unique<JSBigStdString>(startupCode_);
+  return std::make_unique<JSBigStdString>(startupCode_);
 }
 
 void JSDeltaBundleClient::clear() {
