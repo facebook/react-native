@@ -22,7 +22,7 @@ const View = require('../View/View');
 const SoundManager = require('../Sound/SoundManager');
 
 const keyMirror = require('fbjs/lib/keyMirror');
-const normalizeColor = require('../../Color/normalizeColor');
+const normalizeColor = require('../../StyleSheet/normalizeColor');
 
 import type {EdgeInsetsProp} from '../../StyleSheet/EdgeInsetsPropType';
 import type {PressEvent} from '../../Types/CoreEventTypes';
