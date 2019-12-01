@@ -7,6 +7,14 @@ pr:
 - master
 
 jobs:
+  - job: JavaScriptRNPR
+    displayName: JavaScript React Native PR
+    pool:
+      vmImage: macOS-10.14
+      demands: ['xcode', 'sh', 'npm']
+    steps:
+      - template: templates/apple-job-javascript.yml
+
   - job: AppleRNPR
     displayName: Apple React Native PR
     strategy:

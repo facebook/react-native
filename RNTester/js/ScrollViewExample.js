@@ -39,6 +39,7 @@ exports.examples = [
               // $FlowFixMe Invalid prop usage
               _scrollView = scrollView;
             }}
+            acceptsKeyboardFocus={true} // TODO(macOS ISS#2323203)
             automaticallyAdjustContentInsets={false}
             onScroll={() => {
               console.log('onScroll!');

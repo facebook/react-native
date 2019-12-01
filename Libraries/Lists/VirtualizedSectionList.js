@@ -21,6 +21,7 @@ import type {
   Props as VirtualizedListProps,
   SelectedRowIndexPathType, // TODO(macOS ISS#2323203)
 } from './VirtualizedList';
+import type {ScrollEvent} from '../Types/CoreEventTypes'; // TODO(macOS ISS#2323203)
 
 type Item = any;
 
@@ -296,7 +297,7 @@ class VirtualizedSectionList<
     this._listRef.ensureItemAtIndexIsVisible(index);
   };
 
-  _handleKeyDown = e => {
+  _handleKeyDown = (e: ScrollEvent) => {
     if (Platform.OS === 'macos') {
       const event = e.nativeEvent;
       const key = event.key;
@@ -339,7 +340,7 @@ class VirtualizedSectionList<
   }; // ]TODO(macOS ISS#2323203)
 
   render() {
-    let keyEventHandler = this.props.onKeyDown; // [TODO(macOS ISS#2323203)
+    let keyEventHandler = this.props.onScrollKeyDown; // [TODO(macOS ISS#2323203)
     if (!keyEventHandler) {
       keyEventHandler = this.props.enableSelectionOnKeyPress
         ? this._handleKeyDown
@@ -349,7 +350,7 @@ class VirtualizedSectionList<
       <VirtualizedList
         {...this.state.childProps}
         ref={this._captureRef}
-        onKeyDown={keyEventHandler}
+        onScrollKeyDown={keyEventHandler}
         {...this.state.selectedRowIndexPath}
       /> // TODO(macOS ISS#2323203)
     );

@@ -132,17 +132,12 @@ export type ScrollEvent = SyntheticEvent<
     |}>,
     zoomScale?: number,
     responderIgnoreScroll?: boolean,
+    key?: string, // TODO(macOS)
   |}>,
 >;
 
 export type SwitchChangeEvent = SyntheticEvent<
   $ReadOnly<{|
     value: boolean,
-  |}>,
->;
-
-export type KeyboardEvent = SyntheticEvent<
-  $ReadOnly<{|
-    key: string,
   |}>,
 >;

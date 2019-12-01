@@ -1408,7 +1408,7 @@ RCT_SCROLL_EVENT_HANDLER(scrollViewDidScrollToTop, onScrollToTop)
   if (self == [[self window] firstResponder] &&
       theEvent.keyCode != 48) {
     NSString *keyCommand = [self keyCommandFromKeyCode:theEvent.keyCode];
-    RCT_SEND_SCROLL_EVENT(onKeyDown, (@{ @"key": keyCommand}));
+    RCT_SEND_SCROLL_EVENT(onScrollKeyDown, (@{ @"key": keyCommand}));
 	} else {
     [super keyDown:theEvent];
 		

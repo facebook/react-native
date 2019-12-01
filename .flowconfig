@@ -1,7 +1,6 @@
 [ignore]
 ; We fork some components by platform
 .*/*[.]android.js
-.*/*[.]macos.js
 
 ; Ignore templates for 'react-native init'
 <PROJECT_ROOT>/template/.*

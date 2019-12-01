@@ -57,7 +57,7 @@ class RowComponent extends React.PureComponent<{
         onShowUnderlay={this.props.onShowUnderlay}
         onHideUnderlay={this.props.onHideUnderlay}
         onAccessibilityTap={this._onPress}
-        acceptsKeyboardFocus={false}
+        acceptsKeyboardFocus={false} // TODO(macOS ISS#2323203)
         onPress={this._onPress}>
         <View style={rowStyle}>
           <Text style={styles.rowTitleText}>{item.module.title}</Text>
@@ -109,6 +109,7 @@ class RNTesterExampleList extends React.Component<Props, $FlowFixMeState> {
               itemShouldUpdate={this._itemShouldUpdate}
               keyboardShouldPersistTaps="handled"
               acceptsKeyboardFocus={true} // TODO(macOS ISS#2323203)
+              onSelectionEntered={this._handleOnSelectionEntered} // TODO(macOS ISS#2323203)
               enableSelectionOnKeyPress={true} // TODO(macOS ISS#2323203)
               automaticallyAdjustContentInsets={false}
               keyboardDismissMode="on-drag"

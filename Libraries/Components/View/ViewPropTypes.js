@@ -14,7 +14,7 @@ import type {
   PressEvent,
   Layout,
   LayoutEvent,
-  KeyboardEvent,
+  ScrollEvent, // TODO(macOS ISS#2323203)
 } from '../../Types/CoreEventTypes';
 import type {EdgeInsetsProp} from '../../StyleSheet/EdgeInsetsPropType';
 import type {Node} from 'react';
@@ -58,10 +58,10 @@ type DirectEventProps = $ReadOnly<{|
   onDoubleClick?: ?(event: SyntheticEvent<{}>) => mixed, // TODO(macOS ISS#2323203)
 
   /**
-   * When `accessible` is true, the system will try to invoke this function
+   * When `acceptsKeyboardFocus` is true, the system will try to invoke this function
    * when the user performs accessibility key down gesture.
    */
-  onKeyDown?: ?(event: KeyboardEvent) => mixed, // TODO(macOS ISS#2323203)
+  onScrollKeyDown?: ?(event: ScrollEvent) => mixed, // TODO(macOS ISS#2323203)
 
   onMouseEnter?: (event: SyntheticEvent<{}>) => mixed, // [TODO(macOS ISS#2323203)
 

@@ -31,8 +31,11 @@ exports[`VirtualizedSectionList handles nested lists 1`] = `
   onScroll={[Function]}
   onScrollBeginDrag={[Function]}
   onScrollEndDrag={[Function]}
+  onScrollKeyDown={null}
   renderItem={[Function]}
+  rowIndex={-1}
   scrollEventThrottle={50}
+  sectionIndex={0}
   sections={
     Array [
       Object {
@@ -91,8 +94,11 @@ exports[`VirtualizedSectionList handles nested lists 1`] = `
         onScroll={[Function]}
         onScrollBeginDrag={[Function]}
         onScrollEndDrag={[Function]}
+        onScrollKeyDown={null}
         renderItem={[Function]}
+        rowIndex={-1}
         scrollEventThrottle={50}
+        sectionIndex={0}
         sections={
           Array [
             Object {
@@ -172,8 +178,11 @@ exports[`VirtualizedSectionList handles nested lists 1`] = `
         onScroll={[Function]}
         onScrollBeginDrag={[Function]}
         onScrollEndDrag={[Function]}
+        onScrollKeyDown={null}
         renderItem={[Function]}
+        rowIndex={-1}
         scrollEventThrottle={50}
+        sectionIndex={0}
         sections={
           Array [
             Object {
@@ -291,8 +300,11 @@ exports[`VirtualizedSectionList handles separators correctly 1`] = `
   onScroll={[Function]}
   onScrollBeginDrag={[Function]}
   onScrollEndDrag={[Function]}
+  onScrollKeyDown={null}
   renderItem={[Function]}
+  rowIndex={-1}
   scrollEventThrottle={50}
+  sectionIndex={0}
   sections={
     Array [
       Object {
@@ -448,8 +460,11 @@ exports[`VirtualizedSectionList handles separators correctly 2`] = `
   onScroll={[Function]}
   onScrollBeginDrag={[Function]}
   onScrollEndDrag={[Function]}
+  onScrollKeyDown={null}
   renderItem={[Function]}
+  rowIndex={-1}
   scrollEventThrottle={50}
+  sectionIndex={0}
   sections={
     Array [
       Object {
@@ -605,8 +620,11 @@ exports[`VirtualizedSectionList handles separators correctly 3`] = `
   onScroll={[Function]}
   onScrollBeginDrag={[Function]}
   onScrollEndDrag={[Function]}
+  onScrollKeyDown={null}
   renderItem={[Function]}
+  rowIndex={-1}
   scrollEventThrottle={50}
+  sectionIndex={0}
   sections={
     Array [
       Object {
@@ -776,6 +794,7 @@ exports[`VirtualizedSectionList renders all the bells and whistles 1`] = `
   onScroll={[Function]}
   onScrollBeginDrag={[Function]}
   onScrollEndDrag={[Function]}
+  onScrollKeyDown={null}
   refreshControl={
     <RefreshControlMock
       onRefresh={[MockFunction]}
@@ -784,7 +803,9 @@ exports[`VirtualizedSectionList renders all the bells and whistles 1`] = `
   }
   refreshing={false}
   renderItem={[Function]}
+  rowIndex={-1}
   scrollEventThrottle={50}
+  sectionIndex={0}
   sections={
     Array [
       Object {
@@ -1020,8 +1041,11 @@ exports[`VirtualizedSectionList renders empty list 1`] = `
   onScroll={[Function]}
   onScrollBeginDrag={[Function]}
   onScrollEndDrag={[Function]}
+  onScrollKeyDown={null}
   renderItem={[Function]}
+  rowIndex={-1}
   scrollEventThrottle={50}
+  sectionIndex={0}
   sections={Array []}
   stickyHeaderIndices={Array []}
   updateCellsBatchingPeriod={50}
@@ -1051,8 +1075,11 @@ exports[`VirtualizedSectionList renders empty list with empty component 1`] = `
   onScroll={[Function]}
   onScrollBeginDrag={[Function]}
   onScrollEndDrag={[Function]}
+  onScrollKeyDown={null}
   renderItem={[Function]}
+  rowIndex={-1}
   scrollEventThrottle={50}
+  sectionIndex={0}
   sections={Array []}
   stickyHeaderIndices={Array []}
   updateCellsBatchingPeriod={50}
@@ -1103,8 +1130,11 @@ exports[`VirtualizedSectionList renders list with empty component 1`] = `
   onScroll={[Function]}
   onScrollBeginDrag={[Function]}
   onScrollEndDrag={[Function]}
+  onScrollKeyDown={null}
   renderItem={[Function]}
+  rowIndex={-1}
   scrollEventThrottle={50}
+  sectionIndex={0}
   sections={
     Array [
       Object {
@@ -1158,8 +1188,11 @@ exports[`VirtualizedSectionList renders null list 1`] = `
   onScroll={[Function]}
   onScrollBeginDrag={[Function]}
   onScrollEndDrag={[Function]}
+  onScrollKeyDown={null}
   renderItem={[Function]}
+  rowIndex={-1}
   scrollEventThrottle={50}
+  sectionIndex={0}
   stickyHeaderIndices={Array []}
   updateCellsBatchingPeriod={50}
   windowSize={21}
@@ -1202,8 +1235,11 @@ exports[`VirtualizedSectionList renders simple list 1`] = `
   onScroll={[Function]}
   onScrollBeginDrag={[Function]}
   onScrollEndDrag={[Function]}
+  onScrollKeyDown={null}
   renderItem={[Function]}
+  rowIndex={-1}
   scrollEventThrottle={50}
+  sectionIndex={0}
   sections={
     Array [
       Object {

@@ -34,6 +34,7 @@ import type {
   ViewToken,
   ViewabilityConfigCallbackPair,
 } from './ViewabilityHelper';
+import type {ScrollEvent} from '../Types/CoreEventTypes'; // TODO(macOS ISS#2323203)
 
 type Item = any;
 
@@ -1098,7 +1099,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
   }
 
   _defaultRenderScrollComponent = props => {
-    let keyEventHandler = this.props.onKeyDown; // [TODO(macOS ISS#2323203)
+    let keyEventHandler = this.props.onScrollKeyDown; // [TODO(macOS ISS#2323203)
     if (!keyEventHandler) {
       keyEventHandler = this.props.enableSelectionOnKeyPress
         ? this._handleKeyDown
@@ -1119,7 +1120,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
         // $FlowFixMe Invalid prop usage
         <ScrollView
           {...props}
-          onKeyDown={keyEventHandler} // TODO(macOS ISS#2323203)
+          onScrollKeyDown={keyEventHandler} // TODO(macOS ISS#2323203)
           refreshControl={
             props.refreshControl == null ? (
               <RefreshControl
@@ -1135,7 +1136,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       );
     } else {
       // $FlowFixMe Invalid prop usage
-      return <ScrollView {...props} onKeyDown={keyEventHandler} />; // TODO(macOS ISS#2323203)
+      return <ScrollView {...props} onScrollKeyDown={keyEventHandler} />; // TODO(macOS ISS#2323203)
     }
   };
 
@@ -1280,7 +1281,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     }
   };
 
-  _handleKeyDown = e => {
+  _handleKeyDown = (e: ScrollEvent) => {
     if (this.props.onKeyDown) {
       this.props.onKeyDown(e);
     } else {
