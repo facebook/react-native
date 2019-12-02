@@ -221,7 +221,8 @@ export <span class="hljs-keyword">default</span> Hello;
 <span class="hljs-addition">+     "baseUrl": ".",</span>
 <span class="hljs-addition">+     "paths": {</span>
 <span class="hljs-addition">+       "*": ["src/*"],</span>
-<span class="hljs-addition">+       "tests": ["tests/*"]</span>
+<span class="hljs-addition">+       "tests": ["tests/*"],</span>
+<span class="hljs-addition">+       "@components/*": ["src/components/*"],</span>
 <span class="hljs-addition">+     },</span>
     }
 </code></pre>
@@ -243,7 +244,8 @@ npm install --save-dev babel-plugin-module-resolver
 <span class="hljs-addition">+         root: ['./src'],</span>
 <span class="hljs-addition">+         extensions: ['.ios.js', '.android.js', '.js', '.ts', '.tsx', '.json'],</span>
 <span class="hljs-addition">+         alias: {</span>
-<span class="hljs-addition">+           "test/*": ["./test/"]</span>
+<span class="hljs-addition">+           "tests": ["./tests/"],</span>
+<span class="hljs-addition">+           "@components": "./src/components",</span>
 <span class="hljs-addition">+         }</span>
 <span class="hljs-addition">+       }</span>
 <span class="hljs-addition">+     ]</span>
