@@ -73,13 +73,6 @@ using namespace facebook::react;
         [componentViewFactory registerComponentViewClass:klass];
         return;
       }
-    } else {
-      // Fallback 2: In case delegate isn't defined, look into core components.
-      Class<RCTComponentViewProtocol> klass = RCTFabricComponentsProvider(requestedComponentName);
-      if (klass) {
-        [componentViewFactory registerComponentViewClass:klass];
-        return;
-      }
     }
 
     // Fallback 3: Try to use Paper Interop.
