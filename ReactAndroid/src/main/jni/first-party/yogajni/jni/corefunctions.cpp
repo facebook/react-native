@@ -76,6 +76,19 @@ void assertNoPendingJniException(JNIEnv* env) {
   throw YogaJniException(throwable);
 }
 
+void assertNoPendingJniExceptionIf(JNIEnv* env, bool condition) {
+  if (!condition) {
+    return;
+  }
+
+  if (env->ExceptionCheck() == JNI_TRUE) {
+    assertNoPendingJniException(env);
+    return;
+  }
+
+  throw YogaJniException();
+}
+
 } // namespace vanillajni
 } // namespace yoga
 } // namespace facebook
