@@ -15,6 +15,7 @@
 #include <yoga/log.h>
 #include <iostream>
 #include <memory>
+#include "YogaJniException.h"
 
 using namespace facebook::yoga::vanillajni;
 using facebook::yoga::detail::Log;
@@ -372,8 +373,11 @@ static void jni_YGNodeCalculateLayoutJNI(
         YGNodeStyleGetDirection(_jlong2YGNodeRef(nativePointer)),
         layoutContext);
     YGTransferLayoutOutputsRecursive(env, obj, root, layoutContext);
-  } catch (jthrowable throwable) {
-    env->Throw(throwable);
+  } catch (const YogaJniException& jniException) {
+    ScopedLocalRef<jthrowable> throwable = jniException.getThrowable();
+    if (throwable.get()) {
+      env->Throw(throwable.get());
+    }
   }
 }
 

@@ -7,6 +7,7 @@
 
 #include "corefunctions.h"
 #include "macros.h"
+#include "YogaJniException.h"
 
 namespace facebook {
 namespace yoga {
@@ -72,7 +73,7 @@ void assertNoPendingJniException(JNIEnv* env) {
     logErrorMessageAndDie("Unable to get pending JNI exception.");
   }
   env->ExceptionClear();
-  throw throwable;
+  throw YogaJniException(throwable);
 }
 
 } // namespace vanillajni
