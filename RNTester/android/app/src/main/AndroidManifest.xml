@@ -35,6 +35,7 @@
         android:name=".RNTesterActivity"
         android:label="@string/app_name"
         android:screenOrientation="fullSensor"
+        android:launchMode="singleTask"
         android:configChanges="orientation|screenSize|uiMode" >
       <intent-filter>
         <action android:name="android.intent.action.MAIN" />
