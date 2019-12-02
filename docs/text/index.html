@@ -623,7 +623,7 @@
 <p>Specifies font weight. The values 'normal' and 'bold' are supported for most fonts. Not all fonts have a variant for each of the numeric values, in that case the closest one is chosen.</p></li>
 <li><p><strong><code>lineHeight</code></strong>: number</p></li>
 <li><p><strong><code>textAlign</code></strong>: enum('auto', 'left', 'right', 'center', 'justify')</p>
-<p>Specifies text alignment. The value 'justify' is only supported on Android and iOS Oreo (8.0) or above (API level &gt;= 26). For lower android version it will fallback to <code>left</code>.</p></li>
+<p>Specifies text alignment. On Android, the value 'justify' is only supported on Oreo (8.0) or above (API level &gt;= 26). The value will fallback to <code>left</code> on lower Android versions.</p></li>
 <li><p><strong><code>textDecorationLine</code></strong>: enum('none', 'underline', 'line-through', 'underline line-through')</p></li>
 <li><p><strong><code>textShadowColor</code></strong>: <a href="/react-native/docs/colors">color</a></p></li>
 <li><p><strong><code>fontFamily</code></strong>: string</p></li>
