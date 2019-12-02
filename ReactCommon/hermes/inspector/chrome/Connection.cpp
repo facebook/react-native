@@ -595,6 +595,10 @@ Connection::Impl::makePropsFromScope(
     std::pair<uint32_t, uint32_t> frameAndScopeIndex,
     const std::string &objectGroup,
     const debugger::ProgramState &state) {
+  // Chrome represents variables in a scope as properties on a dummy object.
+  // We don't instantiate such dummy objects, we just pretended to have one.
+  // Chrome has now asked for its properties, so it's time to synthesize
+  // descriptions of the properties that the dummy object would have had.
   std::vector<m::runtime::PropertyDescriptor> result;
 
   uint32_t frameIndex = frameAndScopeIndex.first;
@@ -602,6 +606,19 @@ Connection::Impl::makePropsFromScope(
   debugger::LexicalInfo lexicalInfo = state.getLexicalInfo(frameIndex);
   uint32_t varCount = lexicalInfo.getVariablesCountInScope(scopeIndex);
 
+  // If this is the frame's local scope, include 'this'.
+  if (scopeIndex == 0) {
+    auto varInfo = state.getVariableInfoForThis(frameIndex);
+    m::runtime::PropertyDescriptor desc;
+    desc.name = varInfo.name;
+    desc.value = m::runtime::makeRemoteObject(
+        getRuntime(), varInfo.value, objTable_, objectGroup);
+    // Chrome only shows enumerable properties.
+    desc.enumerable = true;
+    result.emplace_back(std::move(desc));
+  }
+
+  // Then add each of the variables in this lexical scope.
   for (uint32_t varIndex = 0; varIndex < varCount; varIndex++) {
     debugger::VariableInfo varInfo =
         state.getVariableInfo(frameIndex, scopeIndex, varIndex);
@@ -610,6 +627,7 @@ Connection::Impl::makePropsFromScope(
     desc.name = varInfo.name;
     desc.value = m::runtime::makeRemoteObject(
         getRuntime(), varInfo.value, objTable_, objectGroup);
+    desc.enumerable = true;
 
     result.emplace_back(std::move(desc));
   }

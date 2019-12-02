@@ -7,6 +7,7 @@
 
 #pragma once
 
+#include <better/map.h>
 #include <better/mutex.h>
 
 #include <react/core/ReactPrimitives.h>
@@ -60,7 +61,7 @@ class ShadowTreeRegistry final {
 
  private:
   mutable better::shared_mutex mutex_;
-  mutable std::unordered_map<SurfaceId, std::unique_ptr<ShadowTree>>
+  mutable better::map<SurfaceId, std::unique_ptr<ShadowTree>>
       registry_; // Protected by `mutex_`.
 };
 

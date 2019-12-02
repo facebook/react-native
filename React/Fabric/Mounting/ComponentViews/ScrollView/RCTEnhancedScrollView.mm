@@ -7,7 +7,20 @@
 
 #import "RCTEnhancedScrollView.h"
 
-@implementation RCTEnhancedScrollView
+@implementation RCTEnhancedScrollView {
+  __weak id<UIScrollViewDelegate> _publicDelegate;
+}
+
++ (BOOL)automaticallyNotifiesObserversForKey:(NSString *)key
+{
+  if ([key isEqualToString:@"delegate"]) {
+    // For `delegate` property, we issue KVO notifications manually.
+    // We need that to block notifications caused by setting the original `UIScrollView`s property.
+    return NO;
+  }
+
+  return [super automaticallyNotifiesObserversForKey:key];
+}
 
 - (instancetype)initWithFrame:(CGRect)frame
 {
@@ -18,9 +31,49 @@
       // and keeps it as an opt-in behavior.
       self.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
     }
+
+    __weak __typeof(self) weakSelf = self;
+    _delegateSplitter = [[RCTGenericDelegateSplitter alloc] initWithDelegateUpdateBlock:^(id delegate) {
+      [weakSelf setPrivateDelegate:delegate];
+    }];
   }
 
   return self;
+}
+
+- (void)dealloc
+{
+  // This is not strictly necessary but that prevents a crash caused by a bug in UIKit.
+  [self setPrivateDelegate:nil];
+}
+
+- (void)setPrivateDelegate:(id<UIScrollViewDelegate>)delegate
+{
+  [super setDelegate:delegate];
+}
+
+- (id<UIScrollViewDelegate>)delegate
+{
+  return _publicDelegate;
+}
+
+- (void)setDelegate:(id<UIScrollViewDelegate>)delegate
+{
+  if (_publicDelegate == delegate) {
+    return;
+  }
+
+  if (_publicDelegate) {
+    [_delegateSplitter removeDelegate:_publicDelegate];
+  }
+
+  [self willChangeValueForKey:@"delegate"];
+  _publicDelegate = delegate;
+  [self didChangeValueForKey:@"delegate"];
+
+  if (_publicDelegate) {
+    [_delegateSplitter addDelegate:_publicDelegate];
+  }
 }
 
 @end

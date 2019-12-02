@@ -351,7 +351,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
   // Does nothing.
 }
 
-- (BOOL)textInputShouldChangeTextInRange:(NSRange)range replacementText:(NSString *)text
+- (NSString *)textInputShouldChangeText:(NSString *)text inRange:(NSRange)range
 {
   id<RCTBackedTextInputViewProtocol> backedTextInputView = self.backedTextInputView;
 
@@ -390,7 +390,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
         [self textInputDidChange];
       }
 
-      return NO;
+      return nil; // Rejecting the change.
     }
   }
 
@@ -414,7 +414,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
     });
   }
 
-  return YES;
+  return text; // Accepting the change.
 }
 
 - (void)textInputDidChange
@@ -431,7 +431,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
   NSRange predictionRange;
   if (findMismatch(backedTextInputView.attributedText.string, _predictedText, &currentRange, &predictionRange)) {
     NSString *replacement = [backedTextInputView.attributedText.string substringWithRange:currentRange];
-    [self textInputShouldChangeTextInRange:predictionRange replacementText:replacement];
+    [self textInputShouldChangeText:replacement inRange:predictionRange];
     // JS will assume the selection changed based on the location of our shouldChangeTextInRange, so reset it.
     [self textInputDidChangeSelection];
   }

@@ -71,12 +71,7 @@ static void RCTSendPaperScrollEvent_DEPRECATED(UIScrollView *scrollView, NSInteg
     _containerView = [[UIView alloc] initWithFrame:CGRectZero];
     [_scrollView addSubview:_containerView];
 
-    __weak __typeof(self) weakSelf = self;
-    _scrollViewDelegateSplitter = [[RCTGenericDelegateSplitter alloc] initWithDelegateUpdateBlock:^(id delegate) {
-      weakSelf.scrollView.delegate = delegate;
-    }];
-
-    [_scrollViewDelegateSplitter addDelegate:self];
+    [self.scrollViewDelegateSplitter addDelegate:self];
 
     _scrollEventThrottle = INFINITY;
   }
@@ -84,10 +79,9 @@ static void RCTSendPaperScrollEvent_DEPRECATED(UIScrollView *scrollView, NSInteg
   return self;
 }
 
-- (void)dealloc
+- (RCTGenericDelegateSplitter<id<UIScrollViewDelegate>> *)scrollViewDelegateSplitter
 {
-  // This is not strictly necessary but that prevents a crash caused by a bug in UIKit.
-  _scrollView.delegate = nil;
+  return ((RCTEnhancedScrollView *)_scrollView).delegateSplitter;
 }
 
 #pragma mark - RCTComponentViewProtocol

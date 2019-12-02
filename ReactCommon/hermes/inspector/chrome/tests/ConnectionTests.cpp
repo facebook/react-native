@@ -1377,7 +1377,8 @@ TEST(ConnectionTests, testGetProperties) {
       conn,
       msgId++,
       scopeObjId,
-      {{"num", PropInfo("number").setValue(123)},
+      {{"this", PropInfo("undefined")},
+       {"num", PropInfo("number").setValue(123)},
        {"obj", PropInfo("object")},
        {"arr", PropInfo("object").setSubtype("array")},
        {"bar", PropInfo("function")}});
@@ -1458,7 +1459,7 @@ TEST(ConnectionTests, testGetPropertiesOnlyOwnProperties) {
       conn,
       msgId++,
       scopeObject.objectId.value(),
-      {{"obj", PropInfo("object")}, {"protoObject", PropInfo("object")}});
+      {{"this", PropInfo("undefined")}, {"obj", PropInfo("object")}, {"protoObject", PropInfo("object")}});
   EXPECT_EQ(scopeChildren.count("obj"), 1);
   std::string objId = scopeChildren.at("obj");
 
@@ -1815,14 +1816,14 @@ TEST(ConnectionTests, testScopeVariables) {
   EXPECT_EQ(scopeChain.size(), 2);
 
   // [2] inspect local scope
-  EXPECT_EQ(scopeChain.at(0).name, "Scope 0");
   EXPECT_EQ(scopeChain.at(0).type, "local");
   auto localScopeObject = scopeChain.at(0).object;
   auto localScopeObjectChildren = expectProps(
       conn,
       msgId++,
       localScopeObject.objectId.value(),
-      {{"localString", PropInfo("string").setValue("local-string")},
+      {{"this", PropInfo("undefined")},
+       {"localString", PropInfo("string").setValue("local-string")},
        {"localObject", PropInfo("object")}});
   auto localObjectId = localScopeObjectChildren.at("localObject");
   expectProps(
@@ -1838,7 +1839,6 @@ TEST(ConnectionTests, testScopeVariables) {
   // in our test code and we can't use expectProps() method here.
   // As a workaround we create a Map of properties and check that
   // those global properties that we have defined are in the map.
-  EXPECT_EQ(scopeChain.at(1).name, "Global Scope");
   EXPECT_EQ(scopeChain.at(1).type, "global");
   auto globalScopeObject = scopeChain.at(1).object;
   m::runtime::GetPropertiesRequest req;

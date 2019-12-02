@@ -12,7 +12,6 @@
 #include <react/core/RawValue.h>
 #include <memory>
 #include <string>
-#include <unordered_map>
 
 namespace facebook {
 namespace react {
