@@ -6,11 +6,10 @@
     <description>Contains Mac and iOS Implementations of React-Native</description>
     <authors>Microsoft</authors>
     <projectUrl>https://github.com/microsoft/react-native</projectUrl>
+    <repository type="git" url="$repoUri$" commit="$commitId$"/>   
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
   </metadata>
   <files>
-    <!-- __OUTPUTDIR__ will be replaced by the VSTO Build Agent with a local path such as ~/myagent/_work/1/output -->
-
     <!-- iOS device debug -->
     <file src="..\..\..\DerivedData\RNTester\Build\Products\Debug-iphoneos\libArt.a" target="Debug-iphoneos"/>
     <file src="..\..\..\DerivedData\RNTester\Build\Products\Debug-iphoneos\libcxxreact.a" target="Debug-iphoneos"/>
@@ -23,7 +22,6 @@
     <file src="..\..\..\DerivedData\RNTester\Build\Products\Debug-iphoneos\libRCTAnimation.a" target="Debug-iphoneos"/>
     <file src="..\..\..\DerivedData\RNTester\Build\Products\Debug-iphoneos\libRCTBlob.a" target="Debug-iphoneos"/>
     <file src="..\..\..\DerivedData\RNTester\Build\Products\Debug-iphoneos\libRCTCameraRoll.a" target="Debug-iphoneos"/>
-    <file src="..\..\..\DerivedData\RNTester\Build\Products\Debug-iphoneos\libRCTGeolocation.a" target="Debug-iphoneos"/>
     <file src="..\..\..\DerivedData\RNTester\Build\Products\Debug-iphoneos\libRCTImage.a" target="Debug-iphoneos"/>
     <file src="..\..\..\DerivedData\RNTester\Build\Products\Debug-iphoneos\libRCTLinking.a" target="Debug-iphoneos"/>
     <file src="..\..\..\DerivedData\RNTester\Build\Products\Debug-iphoneos\libRCTNetwork.a" target="Debug-iphoneos"/>
@@ -47,7 +45,6 @@
     <file src="..\..\..\DerivedData\RNTester\Build\Products\Release-iphoneos\libRCTAnimation.a" target="Ship-iphoneos"/>
     <file src="..\..\..\DerivedData\RNTester\Build\Products\Release-iphoneos\libRCTBlob.a" target="Ship-iphoneos"/>
     <file src="..\..\..\DerivedData\RNTester\Build\Products\Release-iphoneos\libRCTCameraRoll.a" target="Ship-iphoneos"/>
-    <file src="..\..\..\DerivedData\RNTester\Build\Products\Release-iphoneos\libRCTGeolocation.a" target="Ship-iphoneos"/>
     <file src="..\..\..\DerivedData\RNTester\Build\Products\Release-iphoneos\libRCTImage.a" target="Ship-iphoneos"/>
     <file src="..\..\..\DerivedData\RNTester\Build\Products\Release-iphoneos\libRCTLinking.a" target="Ship-iphoneos"/>
     <file src="..\..\..\DerivedData\RNTester\Build\Products\Release-iphoneos\libRCTNetwork.a" target="Ship-iphoneos"/>
@@ -71,7 +68,6 @@
     <file src="..\..\..\DerivedData\RNTester\Build\Products\Debug-iphonesimulator\libRCTAnimation.a" target="Debug-iphonesimulator"/>
     <file src="..\..\..\DerivedData\RNTester\Build\Products\Debug-iphonesimulator\libRCTBlob.a" target="Debug-iphonesimulator"/>
     <file src="..\..\..\DerivedData\RNTester\Build\Products\Debug-iphonesimulator\libRCTCameraRoll.a" target="Debug-iphonesimulator"/>
-    <file src="..\..\..\DerivedData\RNTester\Build\Products\Debug-iphonesimulator\libRCTGeolocation.a" target="Debug-iphonesimulator"/>
     <file src="..\..\..\DerivedData\RNTester\Build\Products\Debug-iphonesimulator\libRCTImage.a" target="Debug-iphonesimulator"/>
     <file src="..\..\..\DerivedData\RNTester\Build\Products\Debug-iphonesimulator\libRCTLinking.a" target="Debug-iphonesimulator"/>
     <file src="..\..\..\DerivedData\RNTester\Build\Products\Debug-iphonesimulator\libRCTNetwork.a" target="Debug-iphonesimulator"/>
@@ -95,7 +91,6 @@
     <file src="..\..\..\DerivedData\RNTester\Build\Products\Release-iphonesimulator\libRCTAnimation.a" target="Ship-iphonesimulator"/>
     <file src="..\..\..\DerivedData\RNTester\Build\Products\Release-iphonesimulator\libRCTBlob.a" target="Ship-iphonesimulator"/>
     <file src="..\..\..\DerivedData\RNTester\Build\Products\Release-iphonesimulator\libRCTCameraRoll.a" target="Ship-iphonesimulator"/>
-    <file src="..\..\..\DerivedData\RNTester\Build\Products\Release-iphonesimulator\libRCTGeolocation.a" target="Ship-iphonesimulator"/>
     <file src="..\..\..\DerivedData\RNTester\Build\Products\Release-iphonesimulator\libRCTImage.a" target="Ship-iphonesimulator"/>
     <file src="..\..\..\DerivedData\RNTester\Build\Products\Release-iphonesimulator\libRCTLinking.a" target="Ship-iphonesimulator"/>
     <file src="..\..\..\DerivedData\RNTester\Build\Products\Release-iphonesimulator\libRCTNetwork.a" target="Ship-iphonesimulator"/>
@@ -118,7 +113,6 @@
     <file src="..\..\..\DerivedData\RNTester\Build\Products\Debug\libRCTActionSheet.a" target="Debug-macosx"/>
     <file src="..\..\..\DerivedData\RNTester\Build\Products\Debug\libRCTAnimation.a" target="Debug-macosx"/>
     <file src="..\..\..\DerivedData\RNTester\Build\Products\Debug\libRCTBlob-macOS.a" target="Debug-macosx"/>
-    <file src="..\..\..\DerivedData\RNTester\Build\Products\Debug\libRCTGeolocation-macOS.a" target="Debug-macosx"/>
     <file src="..\..\..\DerivedData\RNTester\Build\Products\Debug\libRCTImage.a" target="Debug-macosx"/>
     <file src="..\..\..\DerivedData\RNTester\Build\Products\Debug\libRCTLinking-macOS.a" target="Debug-macosx"/>
     <file src="..\..\..\DerivedData\RNTester\Build\Products\Debug\libRCTNetwork.a" target="Debug-macosx"/>
@@ -140,7 +134,6 @@
     <file src="..\..\..\DerivedData\RNTester\Build\Products\Release\libRCTActionSheet.a" target="Ship-macosx"/>
     <file src="..\..\..\DerivedData\RNTester\Build\Products\Release\libRCTAnimation.a" target="Ship-macosx"/>
     <file src="..\..\..\DerivedData\RNTester\Build\Products\Release\libRCTBlob-macOS.a" target="Ship-macosx"/>
-    <file src="..\..\..\DerivedData\RNTester\Build\Products\Release\libRCTGeolocation-macOS.a" target="Ship-macosx"/>
     <file src="..\..\..\DerivedData\RNTester\Build\Products\Release\libRCTImage.a" target="Ship-macosx"/>
     <file src="..\..\..\DerivedData\RNTester\Build\Products\Release\libRCTLinking-macOS.a" target="Ship-macosx"/>
     <file src="..\..\..\DerivedData\RNTester\Build\Products\Release\libRCTNetwork.a" target="Ship-macosx"/>
