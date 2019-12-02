@@ -89,6 +89,7 @@
         data-snack-description="Example usage"
         data-snack-code="import%20React%2C%20%7B%20Component%20%7D%20from%20'react'%3B%0Aimport%20%7B%20TextInput%20%7D%20from%20'react-native'%3B%0A%0Aexport%20default%20function%20UselessTextInput()%20%7B%0A%20%20const%20%5Bvalue%2C%20onChangeText%5D%20%3D%20React.useState('Useless%20Placeholder')%3B%0A%0A%20%20return%20(%0A%20%20%20%20%3CTextInput%0A%20%20%20%20%20%20style%3D%7B%7B%20height%3A%2040%2C%20borderColor%3A%20'gray'%2C%20borderWidth%3A%201%20%7D%7D%0A%20%20%20%20%20%20onChangeText%3D%7Btext%20%3D%3E%20onChangeText(text)%7D%0A%20%20%20%20%20%20value%3D%7Bvalue%7D%0A%20%20%20%20%2F%3E%0A%20%20)%3B%0A%7D%0A"
         data-snack-platform="web"
+        data-snack-supported-platforms=ios,android,web
         data-snack-preview="true"
         style="
           overflow: hidden;
@@ -139,6 +140,7 @@ export default function UselessTextInputMultiline() {
         data-snack-description="Example usage"
         data-snack-code="import%20React%2C%20%7B%20Component%20%7D%20from%20'react'%3B%0Aimport%20%7B%20View%2C%20TextInput%20%7D%20from%20'react-native'%3B%0A%0Afunction%20UselessTextInput(props)%20%7B%0A%20%20return%20(%0A%20%20%20%20%3CTextInput%0A%20%20%20%20%20%20%7B...props%7D%20%2F%2F%20Inherit%20any%20props%20passed%20to%20it%3B%20e.g.%2C%20multiline%2C%20numberOfLines%20below%0A%20%20%20%20%20%20editable%0A%20%20%20%20%20%20maxLength%3D%7B40%7D%0A%20%20%20%20%2F%3E%0A%20%20)%3B%0A%7D%0A%0Aexport%20default%20function%20UselessTextInputMultiline()%20%7B%0A%20%20const%20%5Bvalue%2C%20onChangeText%5D%20%3D%20React.useState('Useless%20Multiline%20Placeholder')%3B%0A%0A%20%20%2F%2F%20If%20you%20type%20something%20in%20the%20text%20box%20that%20is%20a%20color%2C%20the%20background%20will%20change%20to%20that%0A%20%20%2F%2F%20color.%0A%20%20return%20(%0A%20%20%20%20%3CView%0A%20%20%20%20%20%20style%3D%7B%7B%0A%20%20%20%20%20%20%20%20backgroundColor%3A%20value%2C%0A%20%20%20%20%20%20%20%20borderBottomColor%3A%20'%23000000'%2C%0A%20%20%20%20%20%20%20%20borderBottomWidth%3A%201%2C%0A%20%20%20%20%20%20%7D%7D%3E%0A%20%20%20%20%20%20%3CUselessTextInput%0A%20%20%20%20%20%20%20%20multiline%0A%20%20%20%20%20%20%20%20numberOfLines%3D%7B4%7D%0A%20%20%20%20%20%20%20%20onChangeText%3D%7Btext%20%3D%3E%20onChangeText(text)%7D%0A%20%20%20%20%20%20%20%20value%3D%7Bvalue%7D%0A%20%20%20%20%20%20%2F%3E%0A%20%20%20%20%3C%2FView%3E%0A%20%20)%3B%0A%7D%0A"
         data-snack-platform="web"
+        data-snack-supported-platforms=ios,android,web
         data-snack-preview="true"
         style="
           overflow: hidden;
