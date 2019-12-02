@@ -237,7 +237,9 @@ const Slider = (
   return (
     <SliderNativeComponent
       {...localProps}
+      // TODO: Reconcile these across the two platforms.
       enabled={!disabled}
+      disabled={disabled}
       maximumValue={maximumValue}
       minimumValue={minimumValue}
       onChange={onChangeEvent}
