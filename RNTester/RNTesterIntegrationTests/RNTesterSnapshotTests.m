@@ -38,9 +38,8 @@ RCT_TEST(LayoutExample)
 RCT_TEST(ScrollViewExample)
 RCT_TEST(TextExample)
 #if !TARGET_OS_TV
-// No switch or slider available on tvOS
+// No switch available on tvOS
 RCT_TEST(SwitchExample)
-RCT_TEST(SliderExample)
 #endif
 
 - (void)testZZZNotInRecordMode

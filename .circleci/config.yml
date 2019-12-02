@@ -34,7 +34,7 @@ executors:
   reactnativeios:
     <<: *defaults
     macos:
-      xcode: "10.2.1"
+      xcode: "10.3.0"
 
 # -------------------------
 #        COMMANDS
@@ -109,13 +109,13 @@ commands:
     steps:
       - restore_cache:
           keys:
-            - v1-brew
+            - v2-brew
       - steps: << parameters.steps >>
       - save_cache:
           paths:
             - /usr/local/Homebrew
             - ~/Library/Caches/Homebrew
-          key: v1-brew
+          key: v2-brew
 
   with_pods_cache_span:
     parameters:
