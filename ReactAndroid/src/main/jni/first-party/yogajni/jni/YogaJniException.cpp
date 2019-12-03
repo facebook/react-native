@@ -19,18 +19,19 @@ YogaJniException::YogaJniException() {
   static const jmethodID methodId = facebook::yoga::vanillajni::getMethodId(
       getCurrentEnv(), cl, "<init>", "()V");
   auto throwable = getCurrentEnv()->NewObject(cl, methodId);
-  throwable_ = make_global_ref(static_cast<jthrowable>(throwable));
+  throwable_ =
+      newGlobalRef(getCurrentEnv(), static_cast<jthrowable>(throwable));
 }
 
 YogaJniException::YogaJniException(jthrowable throwable) {
-  throwable_ = make_global_ref(throwable);
+  throwable_ = newGlobalRef(getCurrentEnv(), throwable);
 }
 
 YogaJniException::YogaJniException(YogaJniException&& rhs)
     : throwable_(std::move(rhs.throwable_)) {}
 
 YogaJniException::YogaJniException(const YogaJniException& rhs) {
-  throwable_ = make_global_ref(rhs.throwable_.get());
+  throwable_ = newGlobalRef(getCurrentEnv(), rhs.throwable_.get());
 }
 
 YogaJniException::~YogaJniException() {
@@ -42,7 +43,9 @@ YogaJniException::~YogaJniException() {
 }
 
 ScopedLocalRef<jthrowable> YogaJniException::getThrowable() const noexcept {
-  return make_local_ref(getCurrentEnv(), throwable_.get());
+  return make_local_ref(
+      getCurrentEnv(),
+      static_cast<jthrowable>(getCurrentEnv()->NewLocalRef(throwable_.get())));
 }
 } // namespace vanillajni
 } // namespace yoga

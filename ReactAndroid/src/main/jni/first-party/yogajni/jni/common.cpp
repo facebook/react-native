@@ -96,6 +96,16 @@ ScopedGlobalRef<jobject> newGlobalRef(JNIEnv* env, jobject obj) {
 
   return make_global_ref(result);
 }
+
+ScopedGlobalRef<jthrowable> newGlobalRef(JNIEnv* env, jthrowable obj) {
+  jthrowable result = static_cast<jthrowable>(env->NewGlobalRef(obj));
+
+  if (!result) {
+    logErrorMessageAndDie("Could not obtain global reference from object");
+  }
+
+  return make_global_ref(result);
+}
 } // namespace vanillajni
 } // namespace yoga
 } // namespace facebook
