@@ -20,20 +20,10 @@
 namespace facebook {
 namespace react {
 
-/// Converts a duration given as a long from Java, into a std::chrono duration.
-static constexpr std::chrono::hours msToHours(jlong ms) {
-  using namespace std::chrono;
-  return duration_cast<hours>(milliseconds(ms));
-}
-
 static ::hermes::vm::RuntimeConfig makeRuntimeConfig(
     jlong heapSizeMB,
     bool es6Symbol,
-    jint bytecodeWarmupPercent,
-    bool tripWireEnabled,
-    jni::alias_ref<jsi::jni::HermesMemoryDumper> heapDumper,
-    jlong tripWireCooldownMS,
-    jlong tripWireLimitBytes) {
+    jint bytecodeWarmupPercent) {
   namespace vm = ::hermes::vm;
   auto gcConfigBuilder =
       vm::GCConfig::Builder()
@@ -44,40 +34,6 @@ static ::hermes::vm::RuntimeConfig makeRuntimeConfig(
           // normal operation when we reach the (first) TTI point.
           .withAllocInYoung(false)
           .withRevertToYGAtTTI(true);
-
-  if (tripWireEnabled) {
-    assert(
-        heapDumper &&
-        "Must provide a heap dumper instance if tripwire is enabled");
-
-    gcConfigBuilder.withTripwireConfig(
-        vm::GCTripwireConfig::Builder()
-            .withLimit(tripWireLimitBytes)
-            .withCooldown(msToHours(tripWireCooldownMS))
-            .withCallback([globalHeapDumper = jni::make_global(heapDumper)](
-                              vm::GCTripwireContext &ctx) mutable {
-              if (!globalHeapDumper->shouldSaveSnapshot()) {
-                return;
-              }
-
-              std::string crashId = globalHeapDumper->getId();
-              std::string path = globalHeapDumper->getInternalStorage();
-              path += "/dump_";
-              path += crashId;
-              path += ".hermes";
-
-              bool successful = ctx.createSnapshotToFile(path);
-              if (!successful) {
-                LOG(ERROR) << "Failed to write Hermes Memory Dump to " << path
-                           << "\n";
-                return;
-              }
-
-              LOG(INFO) << "Hermes Memory Dump saved on: " << path << "\n";
-              globalHeapDumper->setMetaData(crashId);
-            })
-            .build());
-  }
 
   return vm::RuntimeConfig::Builder()
       .withGCConfig(gcConfigBuilder.build())
@@ -111,20 +67,10 @@ class HermesExecutorHolder
       jni::alias_ref<jclass>,
       jlong heapSizeMB,
       bool es6Symbol,
-      jint bytecodeWarmupPercent,
-      bool tripWireEnabled,
-      jni::alias_ref<jsi::jni::HermesMemoryDumper> heapDumper,
-      jlong tripWireCooldownMS,
-      jlong tripWireLimitBytes) {
+      jint bytecodeWarmupPercent) {
     JReactMarker::setLogPerfMarkerIfNeeded();
-    auto runtimeConfig = makeRuntimeConfig(
-        heapSizeMB,
-        es6Symbol,
-        bytecodeWarmupPercent,
-        tripWireEnabled,
-        heapDumper,
-        tripWireCooldownMS,
-        tripWireLimitBytes);
+    auto runtimeConfig =
+        makeRuntimeConfig(heapSizeMB, es6Symbol, bytecodeWarmupPercent);
     return makeCxxInstance(std::make_unique<HermesExecutorFactory>(
         installBindings, JSIExecutor::defaultTimeoutInvoker, runtimeConfig));
   }
