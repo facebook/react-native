@@ -55,20 +55,9 @@ public class ReactContext extends ContextWrapper {
   private @Nullable NativeModuleCallExceptionHandler mNativeModuleCallExceptionHandler;
   private @Nullable NativeModuleCallExceptionHandler mExceptionHandlerWrapper;
   private @Nullable WeakReference<Activity> mCurrentActivity;
-  private final @Nullable String mInstanceKey;
 
   public ReactContext(Context base) {
     super(base);
-    mInstanceKey = null;
-  }
-
-  /**
-   * A constructor that takes a unique string identifier for the React instance. For bridgeless mode
-   * only - do not use.
-   */
-  /* package */ ReactContext(Context base, String instanceKey) {
-    super(base);
-    mInstanceKey = instanceKey;
   }
 
   /** Set and initialize CatalystInstance for this Context. This should be called exactly once. */
@@ -432,15 +421,5 @@ public class ReactContext extends ContextWrapper {
    */
   public JavaScriptContextHolder getJavaScriptContextHolder() {
     return mCatalystInstance.getJavaScriptContextHolder();
-  }
-
-  /**
-   * TODO T43898341 Make this package-private once we've consolidated the classes that need this in
-   * this package
-   *
-   * @return The key for the associated React instance
-   */
-  public @Nullable String getInstanceKey() {
-    return mInstanceKey;
   }
 }

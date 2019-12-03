@@ -61,12 +61,6 @@ public class ThemedReactContext extends ReactContext {
     return mReactApplicationContext.getCurrentActivity();
   }
 
-  @Nullable
-  @Override
-  public String getInstanceKey() {
-    return mReactApplicationContext.getInstanceKey();
-  }
-
   /**
    * @return a {@link String} that represents the ID of the js application that is being rendered
    *     with this {@link ThemedReactContext}
