@@ -196,6 +196,9 @@ static void RCTSendPaperScrollEvent_DEPRECATED(UIScrollView *scrollView, NSInteg
 
 - (void)_updateStateWithContentOffset
 {
+  /*
+  Propagation ScrollView's contentOffset value to ShadowNode tree is temporarily disabled.
+
   auto contentOffset = RCTPointFromCGPoint(_scrollView.contentOffset);
 
   _state->updateState([contentOffset](ScrollViewShadowNode::ConcreteState::Data const &data) {
@@ -203,6 +206,7 @@ static void RCTSendPaperScrollEvent_DEPRECATED(UIScrollView *scrollView, NSInteg
     newData.contentOffset = contentOffset;
     return newData;
   });
+  */
 }
 
 - (void)prepareForRecycle
