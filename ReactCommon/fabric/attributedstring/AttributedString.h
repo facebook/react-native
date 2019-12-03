@@ -51,6 +51,12 @@ class AttributedString : public Sealable, public DebugStringConvertible {
     bool operator!=(const Fragment &rhs) const;
   };
 
+  class Range {
+   public:
+    int location{0};
+    int length{0};
+  };
+
   using Fragments = better::small_vector<Fragment, 1>;
 
   /*
