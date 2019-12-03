@@ -12,7 +12,7 @@
 
 const Platform = require('../Utilities/Platform');
 
-const normalizeColor = require('../Color/normalizeColor');
+const normalizeColor = require('./normalizeColor');
 
 /* eslint no-bitwise: 0 */
 function processColor(color?: ?(string | number)): ?number {

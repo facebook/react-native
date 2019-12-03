@@ -10,7 +10,7 @@
 
 'use strict';
 
-import normalizeColor from '../Color/normalizeColor.js';
+import normalizeColor from '../StyleSheet/normalizeColor.js';
 import {Touchable, View} from 'react-native';
 import * as React from 'react';
 
