@@ -237,7 +237,12 @@ class TouchableHighlight extends React.Component<Props, State> {
   _createExtraStyles(): ExtraStyles {
     return {
       child: {opacity: this.props.activeOpacity ?? 0.85},
-      underlay: {backgroundColor: this.props.underlayColor ?? 'black'},
+      underlay: {
+        backgroundColor:
+          this.props.underlayColor === undefined
+            ? 'black'
+            : this.props.underlayColor,
+      },
     };
   }
 
