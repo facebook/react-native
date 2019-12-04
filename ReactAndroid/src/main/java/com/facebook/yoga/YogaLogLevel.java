@@ -28,6 +28,7 @@ public enum YogaLogLevel {
     return mIntValue;
   }
 
+  @DoNotStrip
   public static YogaLogLevel fromInt(int value) {
     switch (value) {
       case 0: return ERROR;
