@@ -177,10 +177,14 @@ target <span class="hljs-string">'NumberTileGame'</span> <span class="hljs-keywo
 
   # Your <span class="hljs-string">'node_modules'</span> directory is probably <span class="hljs-keyword">in</span> the root of your project,
   # but <span class="hljs-keyword">if</span> not, adjust the <span class="hljs-string">`:path`</span> accordingly
+  pod <span class="hljs-string">'FBLazyVector'</span>, :<span class="hljs-function"><span class="hljs-params">path</span> =&gt;</span> <span class="hljs-string">"../node_modules/react-native/Libraries/FBLazyVector"</span>
+  pod <span class="hljs-string">'FBReactNativeSpec'</span>, :<span class="hljs-function"><span class="hljs-params">path</span> =&gt;</span> <span class="hljs-string">"../node_modules/react-native/Libraries/FBReactNativeSpec"</span>
+  pod <span class="hljs-string">'RCTRequired'</span>, :<span class="hljs-function"><span class="hljs-params">path</span> =&gt;</span> <span class="hljs-string">"../node_modules/react-native/Libraries/RCTRequired"</span>
+  pod <span class="hljs-string">'RCTTypeSafety'</span>, :<span class="hljs-function"><span class="hljs-params">path</span> =&gt;</span> <span class="hljs-string">"../node_modules/react-native/Libraries/TypeSafety"</span>
   pod <span class="hljs-string">'React'</span>, :<span class="hljs-function"><span class="hljs-params">path</span> =&gt;</span> <span class="hljs-string">'../node_modules/react-native/'</span>
-  pod <span class="hljs-string">'React-Core'</span>, :<span class="hljs-function"><span class="hljs-params">path</span> =&gt;</span> <span class="hljs-string">'../node_modules/react-native/React'</span>
-  pod <span class="hljs-string">'React-DevSupport'</span>, :<span class="hljs-function"><span class="hljs-params">path</span> =&gt;</span> <span class="hljs-string">'../node_modules/react-native/React'</span>
-  pod <span class="hljs-string">'React-fishhook'</span>, :<span class="hljs-function"><span class="hljs-params">path</span> =&gt;</span> <span class="hljs-string">'../node_modules/react-native/Libraries/fishhook'</span>
+  pod <span class="hljs-string">'React-Core'</span>, :<span class="hljs-function"><span class="hljs-params">path</span> =&gt;</span> <span class="hljs-string">'../node_modules/react-native/'</span>
+  pod <span class="hljs-string">'React-CoreModules'</span>, :<span class="hljs-function"><span class="hljs-params">path</span> =&gt;</span> <span class="hljs-string">'../node_modules/react-native/React/CoreModules'</span>
+  pod <span class="hljs-string">'React-Core/DevSupport'</span>, :<span class="hljs-function"><span class="hljs-params">path</span> =&gt;</span> <span class="hljs-string">'../node_modules/react-native/'</span>
   pod <span class="hljs-string">'React-RCTActionSheet'</span>, :<span class="hljs-function"><span class="hljs-params">path</span> =&gt;</span> <span class="hljs-string">'../node_modules/react-native/Libraries/ActionSheetIOS'</span>
   pod <span class="hljs-string">'React-RCTAnimation'</span>, :<span class="hljs-function"><span class="hljs-params">path</span> =&gt;</span> <span class="hljs-string">'../node_modules/react-native/Libraries/NativeAnimation'</span>
   pod <span class="hljs-string">'React-RCTBlob'</span>, :<span class="hljs-function"><span class="hljs-params">path</span> =&gt;</span> <span class="hljs-string">'../node_modules/react-native/Libraries/Blob'</span>
@@ -190,17 +194,20 @@ target <span class="hljs-string">'NumberTileGame'</span> <span class="hljs-keywo
   pod <span class="hljs-string">'React-RCTSettings'</span>, :<span class="hljs-function"><span class="hljs-params">path</span> =&gt;</span> <span class="hljs-string">'../node_modules/react-native/Libraries/Settings'</span>
   pod <span class="hljs-string">'React-RCTText'</span>, :<span class="hljs-function"><span class="hljs-params">path</span> =&gt;</span> <span class="hljs-string">'../node_modules/react-native/Libraries/Text'</span>
   pod <span class="hljs-string">'React-RCTVibration'</span>, :<span class="hljs-function"><span class="hljs-params">path</span> =&gt;</span> <span class="hljs-string">'../node_modules/react-native/Libraries/Vibration'</span>
-  pod <span class="hljs-string">'React-RCTWebSocket'</span>, :<span class="hljs-function"><span class="hljs-params">path</span> =&gt;</span> <span class="hljs-string">'../node_modules/react-native/Libraries/WebSocket'</span>
+  pod <span class="hljs-string">'React-Core/RCTWebSocket'</span>, :<span class="hljs-function"><span class="hljs-params">path</span> =&gt;</span> <span class="hljs-string">'../node_modules/react-native/'</span>
 
   pod <span class="hljs-string">'React-cxxreact'</span>, :<span class="hljs-function"><span class="hljs-params">path</span> =&gt;</span> <span class="hljs-string">'../node_modules/react-native/ReactCommon/cxxreact'</span>
   pod <span class="hljs-string">'React-jsi'</span>, :<span class="hljs-function"><span class="hljs-params">path</span> =&gt;</span> <span class="hljs-string">'../node_modules/react-native/ReactCommon/jsi'</span>
   pod <span class="hljs-string">'React-jsiexecutor'</span>, :<span class="hljs-function"><span class="hljs-params">path</span> =&gt;</span> <span class="hljs-string">'../node_modules/react-native/ReactCommon/jsiexecutor'</span>
   pod <span class="hljs-string">'React-jsinspector'</span>, :<span class="hljs-function"><span class="hljs-params">path</span> =&gt;</span> <span class="hljs-string">'../node_modules/react-native/ReactCommon/jsinspector'</span>
+  pod <span class="hljs-string">'ReactCommon/jscallinvoker'</span>, :<span class="hljs-function"><span class="hljs-params">path</span> =&gt;</span> <span class="hljs-string">"../node_modules/react-native/ReactCommon"</span>
+  pod <span class="hljs-string">'ReactCommon/turbomodule/core'</span>, :<span class="hljs-function"><span class="hljs-params">path</span> =&gt;</span> <span class="hljs-string">"../node_modules/react-native/ReactCommon"</span>
   pod <span class="hljs-string">'Yoga'</span>, :<span class="hljs-function"><span class="hljs-params">path</span> =&gt;</span> <span class="hljs-string">'../node_modules/react-native/ReactCommon/yoga'</span>
 
   pod <span class="hljs-string">'DoubleConversion'</span>, :<span class="hljs-function"><span class="hljs-params">podspec</span> =&gt;</span> <span class="hljs-string">'../node_modules/react-native/third-party-podspecs/DoubleConversion.podspec'</span>
   pod <span class="hljs-string">'glog'</span>, :<span class="hljs-function"><span class="hljs-params">podspec</span> =&gt;</span> <span class="hljs-string">'../node_modules/react-native/third-party-podspecs/glog.podspec'</span>
   pod <span class="hljs-string">'Folly'</span>, :<span class="hljs-function"><span class="hljs-params">podspec</span> =&gt;</span> <span class="hljs-string">'../node_modules/react-native/third-party-podspecs/Folly.podspec'</span>
+
 end
 </code></pre>
 <p><block class="swift" /></p>
