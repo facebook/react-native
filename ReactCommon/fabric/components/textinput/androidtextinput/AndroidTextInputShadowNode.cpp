@@ -8,6 +8,7 @@
 #include "AndroidTextInputShadowNode.h"
 
 #include <fb/fbjni.h>
+#include <react/attributedstring/AttributedStringBox.h>
 #include <react/attributedstring/TextAttributes.h>
 #include <react/components/text/BaseTextShadowNode.h>
 #include <react/core/LayoutConstraints.h>
@@ -111,7 +112,9 @@ Size AndroidTextInputShadowNode::measure(
   }
 
   return textLayoutManager_->measure(
-      attributedString, getProps()->paragraphAttributes, layoutConstraints);
+      AttributedStringBox{attributedString},
+      getProps()->paragraphAttributes,
+      layoutConstraints);
 }
 
 void AndroidTextInputShadowNode::layout(LayoutContext layoutContext) {
