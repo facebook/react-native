@@ -81,9 +81,12 @@ AttributedString AndroidTextInputShadowNode::getPlaceholderAttributedString(
   auto textAttributes = TextAttributes::defaultTextAttributes();
   textAttributes.apply(getProps()->textAttributes);
 
+  // If there's no text, it's possible that this Fragment isn't actually
+  // appended to the AttributedString (see implementation of appendFragment)
   fragment.textAttributes = textAttributes;
   fragment.parentShadowView = ShadowView(*this);
   textAttributedString.appendFragment(fragment);
+
   return textAttributedString;
 }
 
@@ -112,10 +115,20 @@ void AndroidTextInputShadowNode::updateStateIfNeeded() {
     return;
   }
 
+  // Store default TextAttributes in state.
+  // In the case where the TextInput is completely empty (no value, no
+  // defaultValue, no placeholder, no children) there are therefore no fragments
+  // in the AttributedString, and when State is updated, it needs some way to
+  // reconstruct a Fragment with default TextAttributes.
+  auto defaultTextAttributes = TextAttributes::defaultTextAttributes();
+  defaultTextAttributes.apply(getProps()->textAttributes);
+
   setStateData(AndroidTextInputState{state.mostRecentEventCount,
                                      reactTreeAttributedString,
                                      reactTreeAttributedString,
                                      getProps()->paragraphAttributes,
+                                     defaultTextAttributes,
+                                     ShadowView(*this),
                                      textLayoutManager_});
 }
 

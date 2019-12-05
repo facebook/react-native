@@ -46,6 +46,20 @@ class AndroidTextInputState final {
    */
   ParagraphAttributes paragraphAttributes{};
 
+  /**
+   * Default TextAttributes used if we need to construct a new Fragment.
+   * Only used if text is inserted into an AttributedString with no existing
+   * Fragments.
+   */
+  TextAttributes defaultTextAttributes;
+
+  /**
+   * Default parent ShadowView used if we need to construct a new Fragment.
+   * Only used if text is inserted into an AttributedString with no existing
+   * Fragments.
+   */
+  ShadowView defaultParentShadowView;
+
   /*
    * `TextLayoutManager` provides a connection to platform-specific
    * text rendering infrastructure which is capable to render the
@@ -55,6 +69,8 @@ class AndroidTextInputState final {
 
 #ifdef ANDROID
   AttributedString updateAttributedString(
+      TextAttributes const &defaultTextAttributes,
+      ShadowView const &defaultParentShadowView,
       AttributedString const &original,
       folly::dynamic const &data) {
     if (data["textChanged"].empty()) {
@@ -82,6 +98,15 @@ class AndroidTextInputState final {
       i++;
     }
 
+    if (fragments.size() > original.getFragments().size()) {
+      for (; i < fragments.size(); i++) {
+        str.appendFragment(
+            AttributedString::Fragment{fragments[i]["string"].getString(),
+                                       defaultTextAttributes,
+                                       defaultParentShadowView});
+      }
+    }
+
     return str;
   }
 
@@ -90,21 +115,30 @@ class AndroidTextInputState final {
       AttributedString const &attributedString,
       AttributedString const &reactTreeAttributedString,
       ParagraphAttributes const &paragraphAttributes,
+      TextAttributes const &defaultTextAttributes,
+      ShadowView const &defaultParentShadowView,
       SharedTextLayoutManager const &layoutManager)
       : mostRecentEventCount(mostRecentEventCount),
         attributedString(attributedString),
         reactTreeAttributedString(reactTreeAttributedString),
         paragraphAttributes(paragraphAttributes),
+        defaultTextAttributes(defaultTextAttributes),
+        defaultParentShadowView(defaultParentShadowView),
         layoutManager(layoutManager) {}
   AndroidTextInputState() = default;
   AndroidTextInputState(
       AndroidTextInputState const &previousState,
       folly::dynamic const &data)
       : mostRecentEventCount((int64_t)data["mostRecentEventCount"].getInt()),
-        attributedString(
-            updateAttributedString(previousState.attributedString, data)),
+        attributedString(updateAttributedString(
+            previousState.defaultTextAttributes,
+            previousState.defaultParentShadowView,
+            previousState.attributedString,
+            data)),
         reactTreeAttributedString(previousState.reactTreeAttributedString),
         paragraphAttributes(previousState.paragraphAttributes),
+        defaultTextAttributes(previousState.defaultTextAttributes),
+        defaultParentShadowView(previousState.defaultParentShadowView),
         layoutManager(previousState.layoutManager){};
   folly::dynamic getDynamic() const;
 #endif
