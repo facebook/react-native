@@ -24,6 +24,11 @@ jobs:
       - task: UseNode@1
         inputs:
           version: '10.x'
+      
+      # Install NuGet v4.6.4+
+      - task: NuGetToolInstaller@1
+        inputs:
+          versionSpec: '>=4.6.4'
 
       - task: CmdLine@2
         displayName: npm install
@@ -112,6 +117,7 @@ jobs:
           command: pack
           packagesToPack: 'ReactAndroid/ReactAndroid.nuspec'
           packDestination: '$(System.DefaultWorkingDirectory)'
+          buildProperties: buildNumber=$(buildNumber);commitId=$(Build.SourceVersion)
 
       - task: Gradle@1
         displayName: gradlew clean

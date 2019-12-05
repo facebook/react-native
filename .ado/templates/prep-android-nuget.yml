@@ -1,12 +1,12 @@
 steps:
   - task: PowerShell@2
-    displayName: Extract version from package.json, and put it in nuspec
+    displayName: Extract version from package.json, and put it in `buildNumber` variable
     inputs:
       targetType: inline # filePath | inline
       script: |
         $lines = Get-Content package.json | Where {$_ -match '^\s*"version":.*'} 
         $npmVersion = $lines.Trim().Split()[1].Trim('",');
-        (Get-Content ReactAndroid/ReactAndroid.nuspec).replace('__BuildBuildNumber__', $npmVersion) | Set-Content ReactAndroid/ReactAndroid.nuspec
+        echo "##vso[task.setvariable variable=buildNumber]$npmVersion"
 
   # Pretty yucky - but we dont want devmain to have to update versions _all_ over the place
   - task: PowerShell@2

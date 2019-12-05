@@ -28,6 +28,11 @@ jobs:
         submodules: recursive # set to 'true' for a single level of submodules or 'recursive' to get submodules of submodules
         persistCredentials: true # set to 'true' to leave the OAuth token in the Git config after the initial fetch
 
+      # Install NuGet v4.6.4+
+      - task: NuGetToolInstaller@1
+        inputs:
+          versionSpec: '>=4.6.4'
+
       - task: CmdLine@2
         displayName: npm install
         inputs:
@@ -110,6 +115,7 @@ jobs:
           command: pack
           packagesToPack: 'ReactAndroid/ReactAndroid.nuspec'
           packDestination: '$(Build.StagingDirectory)\final'
+          buildProperties: buildNumber=$(buildNumber);commitId=$(Build.SourceVersion)
 
       - task: CmdLine@2
         displayName: Do Publish
