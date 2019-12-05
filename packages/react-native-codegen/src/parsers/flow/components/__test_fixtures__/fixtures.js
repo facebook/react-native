@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @flow
+ * @flow strict-local
  * @format
  */
 
@@ -76,7 +76,7 @@ const ONE_OF_EACH_PROP_EVENT_DEFAULT_AND_OPTIONS = `
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @flow
+ * @flow strict-local
  */
 
 'use strict';
@@ -116,7 +116,7 @@ const ONE_OF_EACH_PROP_EVENT_DEFAULT_AND_OPTIONS_NO_CAST = `
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @flow
+ * @flow strict-local
  */
 
 'use strict';
@@ -156,7 +156,7 @@ const NO_PROPS_EVENTS_ONLY_DEPRECATED_VIEW_CONFIG_NAME_OPTION = `
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @flow
+ * @flow strict-local
  */
 
 'use strict';
@@ -183,7 +183,7 @@ const ALL_PROP_TYPES_NO_EVENTS = `
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @flow
+ * @flow strict-local
  */
 
 'use strict';
@@ -301,7 +301,7 @@ const ARRAY_PROP_TYPES_NO_EVENTS = `
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @flow
+ * @flow strict-local
  */
 
 'use strict';
@@ -454,7 +454,7 @@ const OBJECT_PROP_TYPES_NO_EVENTS = `
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @flow
+ * @flow strict-local
  */
 
 'use strict';
@@ -540,7 +540,7 @@ const PROPS_ALIASED_LOCALLY = `
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @flow
+ * @flow strict-local
  */
 
 'use strict';
@@ -585,7 +585,7 @@ const EVENTS_DEFINED_INLINE_WITH_ALL_TYPES = `
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @flow
+ * @flow strict-local
  */
 
 'use strict';
@@ -694,7 +694,7 @@ const EVENTS_DEFINED_AS_NULL_INLINE = `
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @flow
+ * @flow strict-local
  */
 
 'use strict';
@@ -743,7 +743,7 @@ const PROPS_AND_EVENTS_TYPES_EXPORTED = `
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @flow
+ * @flow strict-local
  */
 
 'use strict';
@@ -786,7 +786,7 @@ const PROPS_AS_EXTERNAL_TYPES = `
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @flow
+ * @flow strict-local
  */
 
 'use strict';
@@ -816,7 +816,7 @@ const COMMANDS_DEFINED_WITH_ALL_TYPES = `
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @flow
+ * @flow strict-local
  */
 
 'use strict';
@@ -864,7 +864,7 @@ const COMMANDS_WITH_EXTERNAL_TYPES = `
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @flow
+ * @flow strict-local
  */
 
 'use strict';
@@ -914,7 +914,7 @@ const COMMANDS_AND_EVENTS_TYPES_EXPORTED = `
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @flow
+ * @flow strict-local
  */
 
 'use strict';
