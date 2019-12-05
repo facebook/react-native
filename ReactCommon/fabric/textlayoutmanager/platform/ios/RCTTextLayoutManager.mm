@@ -32,16 +32,15 @@ static NSLineBreakMode RCTNSLineBreakModeFromEllipsizeMode(EllipsizeMode ellipsi
   }
 }
 
-- (facebook::react::Size)
-    measureWithAttributedString:(AttributedString)attributedString
-            paragraphAttributes:(ParagraphAttributes)paragraphAttributes
-              layoutConstraints:(LayoutConstraints)layoutConstraints {
+- (facebook::react::Size)measureNSAttributedString:(NSAttributedString *)attributedString
+                               paragraphAttributes:(ParagraphAttributes)paragraphAttributes
+                                 layoutConstraints:(LayoutConstraints)layoutConstraints
+{
   CGSize maximumSize = CGSize{layoutConstraints.maximumSize.width,
                               layoutConstraints.maximumSize.height};
-  NSTextStorage *textStorage = [self
-      _textStorageAndLayoutManagerWithAttributesString:[self _nsAttributedStringFromAttributedString:attributedString]
-                                   paragraphAttributes:paragraphAttributes
-                                                  size:maximumSize];
+  NSTextStorage *textStorage = [self _textStorageAndLayoutManagerWithAttributesString:attributedString
+                                                                  paragraphAttributes:paragraphAttributes
+                                                                                 size:maximumSize];
 
   NSLayoutManager *layoutManager = textStorage.layoutManagers.firstObject;
   NSTextContainer *textContainer = layoutManager.textContainers.firstObject;
@@ -53,6 +52,15 @@ static NSLineBreakMode RCTNSLineBreakModeFromEllipsizeMode(EllipsizeMode ellipsi
                   MIN(size.height, maximumSize.height)};
 
   return facebook::react::Size{size.width, size.height};
+}
+
+- (facebook::react::Size)measureAttributedString:(AttributedString)attributedString
+                             paragraphAttributes:(ParagraphAttributes)paragraphAttributes
+                               layoutConstraints:(LayoutConstraints)layoutConstraints
+{
+  return [self measureNSAttributedString:[self _nsAttributedStringFromAttributedString:attributedString]
+                     paragraphAttributes:paragraphAttributes
+                       layoutConstraints:layoutConstraints];
 }
 
 - (void)drawAttributedString:(AttributedString)attributedString
