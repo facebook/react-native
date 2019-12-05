@@ -17,7 +17,8 @@ import type {
   FocusEvent,
   PressEvent,
 } from '../../Types/CoreEventTypes';
-import {Platform, TVEventHandler} from 'react-native';
+import Platform from '../../Utilities/Platform';
+import TVEventHandler from '../../Components/AppleTV/TVEventHandler';
 
 type TVTouchableConfig = $ReadOnly<{|
   getDisabled: () => boolean,

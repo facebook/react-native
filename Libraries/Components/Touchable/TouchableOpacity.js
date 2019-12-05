@@ -18,7 +18,7 @@ import Animated from 'react-native/Libraries/Animated/src/Animated';
 import Easing from 'react-native/Libraries/Animated/src/Easing';
 import type {ViewStyleProp} from 'react-native/Libraries/StyleSheet/StyleSheet';
 import flattenStyle from 'react-native/Libraries/StyleSheet/flattenStyle';
-import {Platform} from 'react-native';
+import Platform from '../../Utilities/Platform';
 import * as React from 'react';
 
 type TVProps = $ReadOnly<{|

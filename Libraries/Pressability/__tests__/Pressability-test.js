@@ -16,7 +16,8 @@ import * as HoverState from '../HoverState.js';
 import Pressability from '../Pressability.js';
 import invariant from 'invariant';
 import nullthrows from 'nullthrows';
-import {Platform, UIManager} from 'react-native';
+import Platform from '../../Utilities/Platform';
+import UIManager from '../../ReactNative/UIManager';
 
 // TODO: Move this util to a shared location.
 function getMock<TArguments: $ReadOnlyArray<mixed>, TReturn>(

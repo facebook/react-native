@@ -10,7 +10,7 @@
 
 'use strict';
 
-import {Platform} from 'react-native';
+import Platform from '../Utilities/Platform';
 
 let isEnabled = false;
 

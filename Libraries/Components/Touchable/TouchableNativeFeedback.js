@@ -17,7 +17,9 @@ import typeof TouchableWithoutFeedback from './TouchableWithoutFeedback.js';
 import {Commands} from 'react-native/Libraries/Components/View/ViewNativeComponent';
 import ReactNative from 'react-native/Libraries/Renderer/shims/ReactNative';
 import type {PressEvent} from 'react-native/Libraries/Types/CoreEventTypes';
-import {Platform, View, processColor} from 'react-native';
+import Platform from '../../Utilities/Platform';
+import View from '../../Components/View/View';
+import processColor from '../../StyleSheet/processColor';
 import * as React from 'react';
 
 type Props = $ReadOnly<{|

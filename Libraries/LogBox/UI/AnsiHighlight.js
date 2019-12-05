@@ -9,7 +9,8 @@
  */
 
 import {ansiToJson} from 'anser';
-import {Text, View} from 'react-native';
+import Text from '../../Text/Text';
+import View from '../../Components/View/View';
 import * as React from 'react';
 
 import type {TextStyleProp} from 'react-native/Libraries/StyleSheet/StyleSheet';

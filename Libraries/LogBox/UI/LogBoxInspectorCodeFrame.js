@@ -11,7 +11,8 @@
 'use strict';
 
 import * as React from 'react';
-import {Platform, ScrollView} from 'react-native';
+import Platform from '../../Utilities/Platform';
+import ScrollView from '../../Components/ScrollView/ScrollView';
 import StyleSheet from '../../StyleSheet/StyleSheet';
 import Text from '../../Text/Text';
 import View from '../../Components/View/View';

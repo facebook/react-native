@@ -20,7 +20,9 @@ import type {
   PressEvent,
   MouseEvent,
 } from '../Types/CoreEventTypes.js';
-import {type HostComponent, Platform, UIManager} from 'react-native';
+import Platform from '../Utilities/Platform';
+import UIManager from '../ReactNative/UIManager';
+import type {HostComponent} from '../Renderer/shims/ReactNativeTypes';
 import * as React from 'react';
 
 export type PressabilityConfig = $ReadOnly<{|

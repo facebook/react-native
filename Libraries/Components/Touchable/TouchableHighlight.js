@@ -12,11 +12,12 @@
 
 import Pressability from '../../Pressability/Pressability.js';
 import {PressabilityDebugView} from '../../Pressability/PressabilityDebug.js';
-import type {ViewStyleProp} from '../../StyleSheet/StyleSheet.js';
+import StyleSheet, {type ViewStyleProp} from '../../StyleSheet/StyleSheet.js';
 import type {ColorValue} from '../../StyleSheet/StyleSheetTypes.js';
 import TVTouchable from './TVTouchable.js';
 import typeof TouchableWithoutFeedback from './TouchableWithoutFeedback.js';
-import {Platform, StyleSheet, View} from 'react-native';
+import Platform from '../../Utilities/Platform';
+import View from '../../Components/View/View';
 import * as React from 'react';
 
 type AndroidProps = $ReadOnly<{|
