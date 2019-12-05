@@ -72,6 +72,7 @@ inexact-spread=warn
 unnecessary-invariant=warn
 signature-verification-failure=warn
 deprecated-utility=error
+implicit-inexact-object=error
 
 [strict]
 deprecated-type
