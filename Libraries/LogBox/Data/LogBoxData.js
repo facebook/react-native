@@ -61,7 +61,7 @@ type AppInfo = $ReadOnly<{|
   engine: string,
 |}>;
 
-const observers: Set<{observer: Observer}> = new Set();
+const observers: Set<{observer: Observer, ...}> = new Set();
 const ignorePatterns: Set<IgnorePattern> = new Set();
 let appInfo: ?() => AppInfo = null;
 let logs: LogBoxLogs = new Set();

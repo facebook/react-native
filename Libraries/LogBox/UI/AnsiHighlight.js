@@ -41,6 +41,7 @@ export default function Ansi({
 }: {
   text: string,
   style: TextStyleProp,
+  ...
 }): React.Node {
   let commonWhitespaceLength = Infinity;
   const parsedLines = text.split(/\n/).map(line =>
