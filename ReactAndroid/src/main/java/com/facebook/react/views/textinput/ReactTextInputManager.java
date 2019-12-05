@@ -212,6 +212,7 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
         break;
       case "setTextAndSelection":
         int mostRecentEventCount = args.getInt(0);
+        reactEditText.setMostRecentEventCount(mostRecentEventCount);
 
         if (mostRecentEventCount != UNSET) {
           String text = args.getString(1);
