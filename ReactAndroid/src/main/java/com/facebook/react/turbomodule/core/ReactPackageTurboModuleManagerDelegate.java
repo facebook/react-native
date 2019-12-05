@@ -15,6 +15,7 @@ import com.facebook.react.TurboReactPackage;
 import com.facebook.react.bridge.CxxModuleWrapper;
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
+import com.facebook.react.module.model.ReactModuleInfo;
 import com.facebook.react.turbomodule.core.interfaces.TurboModule;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -105,6 +106,21 @@ public abstract class ReactPackageTurboModuleManagerDelegate extends TurboModule
     }
 
     return mModules.get(moduleName);
+  }
+
+  @Override
+  public List<String> getEagerInitModuleNames() {
+    List<String> moduleNames = new ArrayList<>();
+    for (TurboReactPackage reactPackage : mPackages) {
+      for (ReactModuleInfo moduleInfo :
+          reactPackage.getReactModuleInfoProvider().getReactModuleInfos().values()) {
+
+        if (moduleInfo.isTurboModule() && moduleInfo.needsEagerInit()) {
+          moduleNames.add(moduleInfo.name());
+        }
+      }
+    }
+    return moduleNames;
   }
 
   public abstract static class Builder {
