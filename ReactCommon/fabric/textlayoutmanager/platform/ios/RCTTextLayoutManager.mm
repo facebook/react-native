@@ -36,6 +36,13 @@ static NSLineBreakMode RCTNSLineBreakModeFromEllipsizeMode(EllipsizeMode ellipsi
                                paragraphAttributes:(ParagraphAttributes)paragraphAttributes
                                  layoutConstraints:(LayoutConstraints)layoutConstraints
 {
+  if (attributedString.length == 0) {
+    // This is not really an optimization because that should be checked much earlier on the call stack.
+    // Sometimes, very irregularly, measuring an empty string crashes/freezes iOS internal text infrastructure.
+    // This is our last line of defense.
+    return layoutConstraints.clamp({0, 0});
+  }
+
   CGSize maximumSize = CGSize{layoutConstraints.maximumSize.width,
                               layoutConstraints.maximumSize.height};
   NSTextStorage *textStorage = [self _textStorageAndLayoutManagerWithAttributesString:attributedString
