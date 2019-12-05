@@ -45,6 +45,10 @@ AttributedString AndroidTextInputShadowNode::getAttributedString(
     auto fragment = AttributedString::Fragment{};
     fragment.string = getProps()->text;
     fragment.textAttributes = textAttributes;
+    // If the TextInput opacity is 0 < n < 1, the opacity of the TextInput and
+    // text value's background will stack. This is a hack/workaround to prevent
+    // that effect.
+    fragment.textAttributes.backgroundColor = clearColor();
     fragment.parentShadowView = ShadowView(*this);
     attributedString.prependFragment(fragment);
 
