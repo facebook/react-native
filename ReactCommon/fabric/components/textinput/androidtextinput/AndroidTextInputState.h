@@ -27,24 +27,55 @@ class AndroidTextInputState final {
   int64_t mostRecentEventCount{0};
 
   /*
-   * All content of <Paragraph> component represented as an `AttributedString`.
+   * All content of <TextInput> component represented as an `AttributedString`.
    */
-  AttributedString attributedString;
+  AttributedString attributedString{};
 
   /*
    * Represents all visual attributes of a paragraph of text represented as
    * a ParagraphAttributes.
    */
-  ParagraphAttributes paragraphAttributes;
+  ParagraphAttributes paragraphAttributes{};
 
   /*
    * `TextLayoutManager` provides a connection to platform-specific
    * text rendering infrastructure which is capable to render the
    * `AttributedString`.
    */
-  SharedTextLayoutManager layoutManager;
+  SharedTextLayoutManager layoutManager{};
 
 #ifdef ANDROID
+  AttributedString updateAttributedString(
+      AttributedString const &original,
+      folly::dynamic const &data) {
+    if (data["textChanged"].empty()) {
+      return original;
+    }
+
+    // TODO: parse other attributes besides just string?
+    // on the other hand, not much should be driven from Java
+    // TODO: it'd be really nice to treat these as operational transforms
+    // instead of having to pass the whole string across.
+    // Unfortunately we don't have a good way of communicating from Java to C++
+    // *which* version of the State changes should be applied to; and if there's
+    // a conflict, we don't have any recourse of any way to bail out of a
+    // commit.
+
+    auto str = AttributedString{};
+
+    int i = 0;
+    folly::dynamic fragments = data["textChanged"]["fragments"];
+    for (auto const &fragment : original.getFragments()) {
+      str.appendFragment(AttributedString::Fragment{
+          fragments.size() > i ? fragments[i]["string"].getString() : "",
+          fragment.textAttributes,
+          fragment.parentShadowView});
+      i++;
+    }
+
+    return str;
+  }
+
   AndroidTextInputState(
       int64_t mostRecentEventCount,
       AttributedString const &attributedString,
@@ -57,9 +88,12 @@ class AndroidTextInputState final {
   AndroidTextInputState() = default;
   AndroidTextInputState(
       AndroidTextInputState const &previousState,
-      folly::dynamic const &data) {
-    assert(false && "Not supported");
-  };
+      folly::dynamic const &data)
+      : mostRecentEventCount((int64_t)data["mostRecentEventCount"].getInt()),
+        attributedString(
+            updateAttributedString(previousState.attributedString, data)),
+        paragraphAttributes(previousState.paragraphAttributes),
+        layoutManager(previousState.layoutManager){};
   folly::dynamic getDynamic() const;
 #endif
 };
