@@ -15,6 +15,7 @@ namespace react {
 
 #ifdef ANDROID
 folly::dynamic AndroidTextInputState::getDynamic() const {
+  // Java doesn't need all fields, so we don't pass them along.
   folly::dynamic newState = folly::dynamic::object();
   newState["mostRecentEventCount"] = mostRecentEventCount;
   newState["attributedString"] = toDynamic(attributedString);

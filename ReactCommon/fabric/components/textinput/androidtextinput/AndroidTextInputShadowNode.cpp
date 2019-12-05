@@ -29,8 +29,7 @@ void AndroidTextInputShadowNode::setContextContainer(
   contextContainer_ = contextContainer;
 }
 
-AttributedString AndroidTextInputShadowNode::getAttributedString(
-    bool usePlaceholders) const {
+AttributedString AndroidTextInputShadowNode::getAttributedString() const {
   // Use BaseTextShadowNode to get attributed string from children
   auto childTextAttributes = TextAttributes::defaultTextAttributes();
   childTextAttributes.apply(getProps()->textAttributes);
@@ -61,16 +60,21 @@ AttributedString AndroidTextInputShadowNode::getAttributedString(
     return attributedString;
   }
 
+  return getPlaceholderAttributedString(false);
+}
+
+// For measurement purposes, we want to make sure that there's at least a
+// single character in the string so that the measured height is greater
+// than zero. Otherwise, empty TextInputs with no placeholder don't
+// display at all.
+AttributedString AndroidTextInputShadowNode::getPlaceholderAttributedString(
+    bool ensureMinimumLength) const {
   // Return placeholder text, since text and children are empty.
   auto textAttributedString = AttributedString{};
   auto fragment = AttributedString::Fragment{};
   fragment.string = getProps()->placeholder;
 
-  // For measurement purposes, we want to make sure that there's at least a
-  // single character in the string so that the measured height is greater
-  // than zero. Otherwise, empty TextInputs with no placeholder don't
-  // display at all.
-  if (fragment.string.empty() && usePlaceholders) {
+  if (fragment.string.empty() && ensureMinimumLength) {
     fragment.string = " ";
   }
 
@@ -92,7 +96,7 @@ void AndroidTextInputShadowNode::setTextLayoutManager(
 void AndroidTextInputShadowNode::updateStateIfNeeded() {
   ensureUnsealed();
 
-  auto attributedString = getAttributedString(false);
+  auto reactTreeAttributedString = getAttributedString();
   auto const &state = getStateData();
 
   assert(textLayoutManager_);
@@ -100,13 +104,17 @@ void AndroidTextInputShadowNode::updateStateIfNeeded() {
       (!state.layoutManager || state.layoutManager == textLayoutManager_) &&
       "`StateData` refers to a different `TextLayoutManager`");
 
-  if (state.attributedString == attributedString &&
+  // Tree is often out of sync with the value of the TextInput.
+  // This is by design - don't change the value of the TextInput in the State,
+  // and therefore in Java, unless the tree itself changes.
+  if (state.reactTreeAttributedString == reactTreeAttributedString &&
       state.layoutManager == textLayoutManager_) {
     return;
   }
 
   setStateData(AndroidTextInputState{state.mostRecentEventCount,
-                                     attributedString,
+                                     reactTreeAttributedString,
+                                     reactTreeAttributedString,
                                      getProps()->paragraphAttributes,
                                      textLayoutManager_});
 }
@@ -115,7 +123,13 @@ void AndroidTextInputShadowNode::updateStateIfNeeded() {
 
 Size AndroidTextInputShadowNode::measure(
     LayoutConstraints layoutConstraints) const {
-  AttributedString attributedString = getAttributedString(true);
+  auto const &state = getStateData();
+
+  AttributedString attributedString = state.attributedString;
+
+  if (attributedString.isEmpty()) {
+    attributedString = getPlaceholderAttributedString(true);
+  }
 
   if (attributedString.isEmpty()) {
     return {0, 0};

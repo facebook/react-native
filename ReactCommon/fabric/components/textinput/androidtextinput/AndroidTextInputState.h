@@ -32,6 +32,15 @@ class AndroidTextInputState final {
   AttributedString attributedString{};
 
   /*
+   * All content of <TextInput> component represented as an `AttributedString`.
+   * This stores the previous computed *from the React tree*. This usually
+   * doesn't change as the TextInput contents are being updated. If it does
+   * change, we need to wipe out current contents of the TextInput and replace
+   * with the new value from the tree.
+   */
+  AttributedString reactTreeAttributedString{};
+
+  /*
    * Represents all visual attributes of a paragraph of text represented as
    * a ParagraphAttributes.
    */
@@ -79,10 +88,12 @@ class AndroidTextInputState final {
   AndroidTextInputState(
       int64_t mostRecentEventCount,
       AttributedString const &attributedString,
+      AttributedString const &reactTreeAttributedString,
       ParagraphAttributes const &paragraphAttributes,
       SharedTextLayoutManager const &layoutManager)
       : mostRecentEventCount(mostRecentEventCount),
         attributedString(attributedString),
+        reactTreeAttributedString(reactTreeAttributedString),
         paragraphAttributes(paragraphAttributes),
         layoutManager(layoutManager) {}
   AndroidTextInputState() = default;
@@ -92,6 +103,7 @@ class AndroidTextInputState final {
       : mostRecentEventCount((int64_t)data["mostRecentEventCount"].getInt()),
         attributedString(
             updateAttributedString(previousState.attributedString, data)),
+        reactTreeAttributedString(previousState.reactTreeAttributedString),
         paragraphAttributes(previousState.paragraphAttributes),
         layoutManager(previousState.layoutManager){};
   folly::dynamic getDynamic() const;
