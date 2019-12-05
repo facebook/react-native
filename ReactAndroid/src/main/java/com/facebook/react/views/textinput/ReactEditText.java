@@ -35,9 +35,8 @@ import androidx.annotation.Nullable;
 import androidx.core.view.AccessibilityDelegateCompat;
 import androidx.core.view.ViewCompat;
 import com.facebook.infer.annotation.Assertions;
+import com.facebook.react.bridge.JavaOnlyMap;
 import com.facebook.react.bridge.ReactContext;
-import com.facebook.react.bridge.WritableMap;
-import com.facebook.react.bridge.WritableNativeMap;
 import com.facebook.react.uimanager.StateWrapper;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.views.text.ReactSpan;
@@ -72,8 +71,13 @@ public class ReactEditText extends EditText {
   private boolean mShouldAllowFocus;
   private int mDefaultGravityHorizontal;
   private int mDefaultGravityVertical;
+
+  /** A count of events sent to JS or C++. */
   protected int mNativeEventCount;
+
+  /** The most recent event number acked by JavaScript. Should only be updated from JS, not C++. */
   protected int mMostRecentEventCount;
+
   private @Nullable ArrayList<TextWatcher> mListeners;
   private @Nullable TextWatcherDelegator mTextWatcherDelegator;
   private int mStagedInputType;
@@ -95,7 +99,11 @@ public class ReactEditText extends EditText {
 
   private ReactViewBackgroundManager mReactBackgroundManager;
 
+  protected @Nullable JavaOnlyMap mAttributedString = null;
   protected @Nullable StateWrapper mStateWrapper = null;
+  protected boolean mDisableTextDiffing = false;
+
+  protected boolean mIsSettingTextFromState = false;
 
   private static final KeyListener sKeyListener = QwertyKeyListener.getInstanceForFullKeyboard();
 
@@ -279,17 +287,7 @@ public class ReactEditText extends EditText {
   }
 
   public void setMostRecentEventCount(int mostRecentEventCount) {
-    if (mMostRecentEventCount == mostRecentEventCount) {
-      return;
-    }
-
     mMostRecentEventCount = mostRecentEventCount;
-
-    if (mStateWrapper != null) {
-      WritableMap map = new WritableNativeMap();
-      map.putInt("mostRecentEventCount", mMostRecentEventCount);
-      mStateWrapper.updateState(map);
-    }
   }
 
   public void setScrollWatcher(ScrollWatcher scrollWatcher) {
@@ -453,6 +451,18 @@ public class ReactEditText extends EditText {
     return ++mNativeEventCount;
   }
 
+  public void maybeSetTextFromJS(ReactTextUpdate reactTextUpdate) {
+    mIsSettingTextFromJS = true;
+    maybeSetText(reactTextUpdate);
+    mIsSettingTextFromJS = false;
+  }
+
+  public void maybeSetTextFromState(ReactTextUpdate reactTextUpdate) {
+    mIsSettingTextFromState = true;
+    maybeSetText(reactTextUpdate);
+    mIsSettingTextFromState = false;
+  }
+
   // VisibleForTesting from {@link TextInputEventsTestCase}.
   public void maybeSetText(ReactTextUpdate reactTextUpdate) {
     if (isSecureText() && TextUtils.equals(getText(), reactTextUpdate.getText())) {
@@ -465,6 +475,10 @@ public class ReactEditText extends EditText {
       return;
     }
 
+    if (reactTextUpdate.mAttributedString != null) {
+      mAttributedString = JavaOnlyMap.deepClone(reactTextUpdate.mAttributedString);
+    }
+
     // The current text gets replaced with the text received from JS. However, the spans on the
     // current text need to be adapted to the new text. Since TextView#setText() will remove or
     // reset some of these spans even if they are set directly, SpannableStringBuilder#replace() is
@@ -473,17 +487,24 @@ public class ReactEditText extends EditText {
         new SpannableStringBuilder(reactTextUpdate.getText());
     manageSpans(spannableStringBuilder);
     mContainsImages = reactTextUpdate.containsImages();
-    mIsSettingTextFromJS = true;
+
+    // When we update text, we trigger onChangeText code that will
+    // try to update state if the wrapper is available. Temporarily disable
+    // to prevent an (asynchronous) infinite loop.
+    mDisableTextDiffing = true;
 
     // On some devices, when the text is cleared, buggy keyboards will not clear the composing
     // text so, we have to set text to null, which will clear the currently composing text.
     if (reactTextUpdate.getText().length() == 0) {
       setText(null);
     } else {
+      // When we update text, we trigger onChangeText code that will
+      // try to update state if the wrapper is available. Temporarily disable
+      // to prevent an infinite loop.
       getText().replace(0, length(), spannableStringBuilder);
     }
+    mDisableTextDiffing = false;
 
-    mIsSettingTextFromJS = false;
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
       if (getBreakStrategy() != reactTextUpdate.getTextBreakStrategy()) {
         setBreakStrategy(reactTextUpdate.getTextBreakStrategy());
