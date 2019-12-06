@@ -43,8 +43,8 @@ static NSLineBreakMode RCTNSLineBreakModeFromEllipsizeMode(EllipsizeMode ellipsi
     return {0, 0};
   }
 
-  CGSize maximumSize = CGSize{layoutConstraints.maximumSize.width,
-                              layoutConstraints.maximumSize.height};
+  CGSize maximumSize = CGSize{layoutConstraints.maximumSize.width, CGFLOAT_MAX};
+
   NSTextStorage *textStorage = [self _textStorageAndLayoutManagerWithAttributesString:attributedString
                                                                   paragraphAttributes:paragraphAttributes
                                                                                  size:maximumSize];
