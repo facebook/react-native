@@ -38,12 +38,14 @@ Size TextLayoutManager::measure(
 {
   RCTTextLayoutManager *textLayoutManager = (__bridge RCTTextLayoutManager *)self_;
 
+  auto size = Size{};
+
   switch (attributedStringBox.getMode()) {
     case AttributedStringBox::Mode::Value: {
       auto &attributedString = attributedStringBox.getValue();
 
-      return measureCache_.get(
-          MeasureCacheKey{attributedString, paragraphAttributes, layoutConstraints}, [&](MeasureCacheKey const &key) {
+      size = measureCache_.get(
+          {attributedString, paragraphAttributes, layoutConstraints}, [&](TextMeasureCacheKey const &key) {
             return [textLayoutManager measureAttributedString:attributedString
                                           paragraphAttributes:paragraphAttributes
                                             layoutConstraints:layoutConstraints];
@@ -55,12 +57,14 @@ Size TextLayoutManager::measure(
       NSAttributedString *nsAttributedString =
           (NSAttributedString *)unwrapManagedObject(attributedStringBox.getOpaquePointer());
 
-      return [textLayoutManager measureNSAttributedString:nsAttributedString
+      size = [textLayoutManager measureNSAttributedString:nsAttributedString
                                       paragraphAttributes:paragraphAttributes
                                         layoutConstraints:layoutConstraints];
       break;
     }
   }
+
+  return layoutConstraints.clamp(size);
 }
 
 } // namespace react

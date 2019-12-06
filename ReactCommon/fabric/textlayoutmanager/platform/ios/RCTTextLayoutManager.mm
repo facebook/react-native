@@ -40,7 +40,7 @@ static NSLineBreakMode RCTNSLineBreakModeFromEllipsizeMode(EllipsizeMode ellipsi
     // This is not really an optimization because that should be checked much earlier on the call stack.
     // Sometimes, very irregularly, measuring an empty string crashes/freezes iOS internal text infrastructure.
     // This is our last line of defense.
-    return layoutConstraints.clamp({0, 0});
+    return {0, 0};
   }
 
   CGSize maximumSize = CGSize{layoutConstraints.maximumSize.width,
@@ -55,10 +55,7 @@ static NSLineBreakMode RCTNSLineBreakModeFromEllipsizeMode(EllipsizeMode ellipsi
 
   CGSize size = [layoutManager usedRectForTextContainer:textContainer].size;
 
-  size = (CGSize){MIN(size.width, maximumSize.width),
-                  MIN(size.height, maximumSize.height)};
-
-  return facebook::react::Size{size.width, size.height};
+  return {size.width, size.height};
 }
 
 - (facebook::react::Size)measureAttributedString:(AttributedString)attributedString
