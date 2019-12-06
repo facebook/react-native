@@ -241,6 +241,11 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   }
 }
 
+- (bool)isConnected
+{
+  return _webSocket != nil;
+}
+
 - (void)connect
 {
   if (_closed) {

@@ -128,7 +128,7 @@ static void displayErrorAlert(UIViewController *view, NSString *message)
 
   NSString *key = [inspectorURL absoluteString];
   RCTInspectorPackagerConnection *connection = socketConnections[key];
-  if (!connection) {
+  if (!connection || !connection.isConnected) {
     connection = [[RCTInspectorPackagerConnection alloc] initWithURL:inspectorURL];
     socketConnections[key] = connection;
     [connection connect];
