@@ -20,6 +20,7 @@
 
 #import "RCTConversions.h"
 #import "RCTEnhancedScrollView.h"
+#import "RCTFabricComponentsPlugins.h"
 
 using namespace facebook::react;
 
@@ -395,3 +396,8 @@ static void RCTSendPaperScrollEvent_DEPRECATED(UIScrollView *scrollView, NSInteg
 }
 
 @end
+
+Class<RCTComponentViewProtocol> RCTScrollViewCls(void)
+{
+  return RCTScrollViewComponentView.class;
+}

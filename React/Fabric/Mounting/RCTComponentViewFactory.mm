@@ -27,7 +27,6 @@
 #import "RCTParagraphComponentView.h"
 #import "RCTPullToRefreshViewComponentView.h"
 #import "RCTRootComponentView.h"
-#import "RCTScrollViewComponentView.h"
 #import "RCTSliderComponentView.h"
 #import "RCTSwitchComponentView.h"
 #import "RCTUnimplementedNativeComponentView.h"
@@ -50,7 +49,6 @@ using namespace facebook::react;
 
   [componentViewFactory registerComponentViewClass:[RCTViewComponentView class]];
   [componentViewFactory registerComponentViewClass:[RCTRootComponentView class]];
-  [componentViewFactory registerComponentViewClass:[RCTScrollViewComponentView class]];
   [componentViewFactory registerComponentViewClass:[RCTPullToRefreshViewComponentView class]];
   [componentViewFactory registerComponentViewClass:[RCTImageComponentView class]];
   [componentViewFactory registerComponentViewClass:[RCTParagraphComponentView class]];

@@ -30,6 +30,7 @@ Class<RCTComponentViewProtocol> RCTFabricComponentsProvider(const char *name);
 
 // Lookup functions
 Class<RCTComponentViewProtocol> RCTSafeAreaViewCls(void) __attribute__((used));
+Class<RCTComponentViewProtocol> RCTScrollViewCls(void) __attribute__((used));
 
 #ifdef __cplusplus
 }
