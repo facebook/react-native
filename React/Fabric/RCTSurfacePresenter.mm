@@ -168,8 +168,13 @@ using namespace facebook::react;
     return NO; // This view probably isn't managed by Fabric
   }
   ComponentHandle handle = [[componentView class] componentDescriptorProvider].handle;
-  ComponentDescriptor const &componentDescriptor = [_scheduler getComponentDescriptor:handle];
-  [_mountingManager synchronouslyUpdateViewOnUIThread:tag changedProps:props componentDescriptor:componentDescriptor];
+  auto *componentDescriptor = [_scheduler findComponentDescriptorByHandle_DO_NOT_USE_THIS_IS_BROKEN:handle];
+
+  if (!componentDescriptor) {
+    return YES;
+  }
+
+  [_mountingManager synchronouslyUpdateViewOnUIThread:tag changedProps:props componentDescriptor:*componentDescriptor];
   return YES;
 }
 
