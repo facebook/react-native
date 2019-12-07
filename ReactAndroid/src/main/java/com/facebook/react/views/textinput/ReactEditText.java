@@ -593,11 +593,19 @@ public class ReactEditText extends EditText {
     setIntrinsicContentSize();
   }
 
+  // TODO T58784068: delete this method
   private void setIntrinsicContentSize() {
-    ReactContext reactContext = (ReactContext) getContext();
-    UIManagerModule uiManager = reactContext.getNativeModule(UIManagerModule.class);
-    final ReactTextInputLocalData localData = new ReactTextInputLocalData(this);
-    uiManager.setViewLocalData(getId(), localData);
+    // This serves as a check for whether we're running under Paper or Fabric.
+    // By the time this is called, in Fabric we will have a state
+    // wrapper 100% of the time.
+    // Since the LocalData object is constructed by getting values from the underlying EditText
+    // view, we don't need to construct one or apply it at all - it provides no use in Fabric.
+    if (mStateWrapper == null) {
+      ReactContext reactContext = (ReactContext) getContext();
+      final ReactTextInputLocalData localData = new ReactTextInputLocalData(this);
+      UIManagerModule uiManager = reactContext.getNativeModule(UIManagerModule.class);
+      uiManager.setViewLocalData(getId(), localData);
+    }
   }
 
   /* package */ void setGravityHorizontal(int gravityHorizontal) {
