@@ -14,10 +14,14 @@ void ComponentDescriptorProviderRegistry::add(
     ComponentDescriptorProvider provider) const {
   std::unique_lock<better::shared_mutex> lock(mutex_);
 
+  /*
+  // TODO: T57583139
+  The assert is temporarily disabled to reduce the volume of the signal.
   assert(
       componentDescriptorProviders_.find(provider.handle) ==
           componentDescriptorProviders_.end() &&
       "Attempt to register an already registered ComponentDescriptorProvider.");
+  */
 
   if (componentDescriptorProviders_.find(provider.handle) !=
       componentDescriptorProviders_.end()) {
