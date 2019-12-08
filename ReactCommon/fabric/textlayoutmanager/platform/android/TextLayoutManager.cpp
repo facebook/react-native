@@ -29,8 +29,8 @@ Size TextLayoutManager::measure(
   auto &attributedString = attributedStringBox.getValue();
 
   return measureCache_.get(
-      MeasureCacheKey{attributedString, paragraphAttributes, layoutConstraints},
-      [&](MeasureCacheKey const &key) {
+      {attributedString, paragraphAttributes, layoutConstraints},
+      [&](TextMeasureCacheKey const &key) {
         return doMeasure(
             attributedString, paragraphAttributes, layoutConstraints);
       });
