@@ -53,7 +53,7 @@ struct ShadowView final {
 std::string getDebugName(ShadowView const &object);
 std::vector<DebugStringConvertibleObject> getDebugProps(
     ShadowView const &object,
-    DebugStringConvertibleOptions options = {});
+    DebugStringConvertibleOptions options);
 
 #endif
 

@@ -100,7 +100,7 @@ better::optional<MountingTransaction> MountingCoordinator::pullTransaction()
                << "\n";
     LOG(ERROR) << "Mutations:"
                << "\n"
-               << getDebugDescription(mutations);
+               << getDebugDescription(mutations, {});
     assert(false);
   }
 #endif
