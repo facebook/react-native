@@ -36,6 +36,8 @@ emoji=true
 esproposal.optional_chaining=enable
 esproposal.nullish_coalescing=enable
 
+exact_by_default=true
+
 module.file_ext=.js
 module.file_ext=.json
 module.file_ext=.ios.js
@@ -72,7 +74,6 @@ inexact-spread=warn
 unnecessary-invariant=warn
 signature-verification-failure=warn
 deprecated-utility=error
-implicit-inexact-object=error
 
 [strict]
 deprecated-type
