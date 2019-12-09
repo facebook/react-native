@@ -8,12 +8,18 @@
 #import <UIKit/UIKit.h>
 
 #import <React/RCTBridge.h>
+#import <React/RCTDefines.h>
 #import <React/RCTResizeMode.h>
 #import <React/RCTURLRequestHandler.h>
 #import <React/RCTImageDataDecoder.h>
 #import <React/RCTImageURLLoader.h>
 #import <React/RCTImageCache.h>
 #import <React/RCTImageLoaderProtocol.h>
+
+RCT_EXTERN BOOL RCTImageLoadingInstrumentationEnabled(void);
+RCT_EXTERN BOOL RCTImageLoadingPerfInstrumentationEnabled(void);
+RCT_EXTERN void RCTEnableImageLoadingInstrumentation(BOOL enabled);
+RCT_EXTERN void RCTEnableImageLoadingPerfInstrumentation(BOOL enabled);
 
 @interface RCTImageLoader : NSObject <RCTBridgeModule, RCTImageLoaderProtocol>
 - (instancetype)init;

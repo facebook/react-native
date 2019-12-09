@@ -25,6 +25,29 @@
 
 using namespace facebook::react;
 
+static BOOL imageInstrumentationEnabled = NO;
+static BOOL imagePerfInstrumentationEnabled = NO;
+
+BOOL RCTImageLoadingInstrumentationEnabled(void)
+{
+  return imageInstrumentationEnabled;
+}
+
+BOOL RCTImageLoadingPerfInstrumentationEnabled(void)
+{
+  return imagePerfInstrumentationEnabled;
+}
+
+void RCTEnableImageLoadingInstrumentation(BOOL enabled)
+{
+  imageInstrumentationEnabled = enabled;
+}
+
+void RCTEnableImageLoadingPerfInstrumentation(BOOL enabled)
+{
+  imagePerfInstrumentationEnabled = enabled;
+}
+
 static NSInteger RCTImageBytesForImage(UIImage *image)
 {
   NSInteger singleImageBytes = image.size.width * image.size.height * image.scale * image.scale * 4;
