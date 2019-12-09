@@ -50,31 +50,23 @@ AttributedString AndroidTextInputShadowNode::getAttributedString() const {
     fragment.textAttributes.backgroundColor = clearColor();
     fragment.parentShadowView = ShadowView(*this);
     attributedString.prependFragment(fragment);
-
-    // We know this is not empty, because we at least have the `text` value
-    return attributedString;
   }
 
-  // No need to use placeholder if we have text at this point.
-  if (!attributedString.isEmpty()) {
-    return attributedString;
-  }
-
-  return getPlaceholderAttributedString(false);
+  return attributedString;
 }
 
 // For measurement purposes, we want to make sure that there's at least a
 // single character in the string so that the measured height is greater
 // than zero. Otherwise, empty TextInputs with no placeholder don't
 // display at all.
-AttributedString AndroidTextInputShadowNode::getPlaceholderAttributedString(
-    bool ensureMinimumLength) const {
+AttributedString AndroidTextInputShadowNode::getPlaceholderAttributedString()
+    const {
   // Return placeholder text, since text and children are empty.
   auto textAttributedString = AttributedString{};
   auto fragment = AttributedString::Fragment{};
   fragment.string = getProps()->placeholder;
 
-  if (fragment.string.empty() && ensureMinimumLength) {
+  if (fragment.string.empty()) {
     fragment.string = " ";
   }
 
@@ -123,13 +115,23 @@ void AndroidTextInputShadowNode::updateStateIfNeeded() {
   auto defaultTextAttributes = TextAttributes::defaultTextAttributes();
   defaultTextAttributes.apply(getProps()->textAttributes);
 
-  setStateData(AndroidTextInputState{state.mostRecentEventCount,
-                                     reactTreeAttributedString,
-                                     reactTreeAttributedString,
-                                     getProps()->paragraphAttributes,
-                                     defaultTextAttributes,
-                                     ShadowView(*this),
-                                     textLayoutManager_});
+  // Even if we're here and updating state, it may be only to update the layout
+  // manager If that is the case, make sure we don't update text: pass in the
+  // current attributedString unchanged, and pass in zero for the "event count"
+  // so no changes are applied There's no way to prevent a state update from
+  // flowing to Java, so we just ensure it's a noop in those cases.
+  setStateData(AndroidTextInputState{
+      (state.reactTreeAttributedString == reactTreeAttributedString
+           ? 0
+           : getProps()->mostRecentEventCount),
+      (state.reactTreeAttributedString == reactTreeAttributedString
+           ? state.attributedString
+           : reactTreeAttributedString),
+      reactTreeAttributedString,
+      getProps()->paragraphAttributes,
+      defaultTextAttributes,
+      ShadowView(*this),
+      textLayoutManager_});
 }
 
 #pragma mark - LayoutableShadowNode
@@ -141,7 +143,7 @@ Size AndroidTextInputShadowNode::measure(
   AttributedString attributedString = state.attributedString;
 
   if (attributedString.isEmpty()) {
-    attributedString = getPlaceholderAttributedString(true);
+    attributedString = getPlaceholderAttributedString();
   }
 
   if (attributedString.isEmpty()) {
