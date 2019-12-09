@@ -14,6 +14,10 @@
 SCRIPTS=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 ROOT=$(dirname "$SCRIPTS")
 
+SKIPPED_TESTS=()
+# See https://gist.github.com/0xced/56035d2f57254cf518b5 - crashes in iOS 13
+SKIPPED_TESTS+=("-skip-testing:RNTesterUnitTests/testNotUTF8Convertible")
+
 # Create cleanup handler
 cleanup() {
   EXIT=$?
@@ -56,7 +60,8 @@ runTests() {
     -workspace RNTester/RNTesterPods.xcworkspace \
     -scheme RNTester \
     -sdk iphonesimulator \
-    -destination "platform=iOS Simulator,name=$IOS_DEVICE,OS=$IOS_TARGET_OS"
+    -destination "platform=iOS Simulator,name=$IOS_DEVICE,OS=$IOS_TARGET_OS" \
+    "${SKIPPED_TESTS[@]}"
 }
 
 buildProject() {
