@@ -254,11 +254,21 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
     if (extraData instanceof ReactTextUpdate) {
       ReactTextUpdate update = (ReactTextUpdate) extraData;
 
-      view.setPadding(
-          (int) update.getPaddingLeft(),
-          (int) update.getPaddingTop(),
-          (int) update.getPaddingRight(),
-          (int) update.getPaddingBottom());
+      // TODO T58784068: delete this block of code, these are always unset in Fabric
+      int paddingLeft = (int) update.getPaddingLeft();
+      int paddingTop = (int) update.getPaddingTop();
+      int paddingRight = (int) update.getPaddingRight();
+      int paddingBottom = (int) update.getPaddingBottom();
+      if (paddingLeft != UNSET
+          || paddingTop != UNSET
+          || paddingRight != UNSET
+          || paddingBottom != UNSET) {
+        view.setPadding(
+            paddingLeft != UNSET ? paddingLeft : view.getPaddingLeft(),
+            paddingTop != UNSET ? paddingTop : view.getPaddingTop(),
+            paddingRight != UNSET ? paddingRight : view.getPaddingRight(),
+            paddingBottom != UNSET ? paddingBottom : view.getPaddingBottom());
+      }
 
       if (update.containsImages()) {
         Spannable spannable = update.getText();
