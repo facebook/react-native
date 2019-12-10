@@ -304,6 +304,27 @@ public class ReactInstanceManager {
       public JavaScriptExecutorFactory getJavaScriptExecutorFactory() {
         return ReactInstanceManager.this.getJSExecutorFactory();
       }
+
+      @Override
+      public @Nullable View createRootView(String appKey) {
+        Activity currentActivity = getCurrentActivity();
+        if (currentActivity != null) {
+          ReactRootView rootView = new ReactRootView(currentActivity);
+
+          rootView.startReactApplication(ReactInstanceManager.this, appKey, null);
+
+          return rootView;
+        }
+
+        return null;
+      }
+
+      @Override
+      public void destroyRootView(View rootView) {
+        if (rootView instanceof ReactRootView) {
+          ((ReactRootView) rootView).unmountReactApplication();
+        }
+      }
     };
   }
 

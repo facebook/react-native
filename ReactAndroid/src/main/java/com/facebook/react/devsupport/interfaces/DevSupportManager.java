@@ -7,6 +7,7 @@
 
 package com.facebook.react.devsupport.interfaces;
 
+import android.view.View;
 import androidx.annotation.Nullable;
 import com.facebook.react.bridge.NativeModuleCallExceptionHandler;
 import com.facebook.react.bridge.ReactContext;
@@ -24,6 +25,11 @@ public interface DevSupportManager extends NativeModuleCallExceptionHandler {
   void showNewJavaError(String message, Throwable e);
 
   void addCustomDevOption(String optionName, DevOptionHandler optionHandler);
+
+  @Nullable
+  View createRootView(String appKey);
+
+  void destroyRootView(View rootView);
 
   void showNewJSError(String message, ReadableArray details, int errorCookie);
 
