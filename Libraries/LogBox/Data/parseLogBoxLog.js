@@ -42,12 +42,7 @@ export type Message = $ReadOnly<{|
   >,
 |}>;
 
-export type ComponentStack = $ReadOnlyArray<
-  $ReadOnly<{|
-    component: string,
-    location: string,
-  |}>,
->;
+export type ComponentStack = $ReadOnlyArray<CodeFrame>;
 
 const SUBSTITUTION = UTFSequence.BOM + '%s';
 
@@ -127,6 +122,7 @@ export function parseCategory(
     },
   };
 }
+
 export function parseComponentStack(message: string): ComponentStack {
   return message
     .split(/\n {4}in /g)
@@ -134,11 +130,17 @@ export function parseComponentStack(message: string): ComponentStack {
       if (!s) {
         return null;
       }
-      let [component, location] = s.split(/ \(at /);
-      if (!location) {
-        [component, location] = s.split(/ \(/);
+      const match = s.match(/(.*) \(at (.*\.js):([\d]+)\)/);
+      if (!match) {
+        return null;
       }
-      return {component, location: location && location.replace(')', '')};
+
+      let [content, fileName, row] = match.slice(1);
+      return {
+        content,
+        fileName,
+        location: {column: -1, row: parseInt(row, 10)},
+      };
     })
     .filter(Boolean);
 }
