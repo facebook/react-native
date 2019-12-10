@@ -1682,7 +1682,7 @@ namespace JS {
 }
 @protocol NativeJSDevSupportSpec <RCTBridgeModule, RCTTurboModule>
 
-- (void)onSuccess:(NSDictionary *)data;
+- (void)onSuccess:(NSString *)data;
 - (void)onFailure:(double)errorCode
             error:(NSString *)error;
 - (facebook::react::ModuleConstants<JS::NativeJSDevSupport::Constants::Builder>)constantsToExport;
