@@ -14,7 +14,7 @@ import LogBoxInspectorCodeFrame from './LogBoxInspectorCodeFrame';
 import * as React from 'react';
 import ScrollView from '../../Components/ScrollView/ScrollView';
 import StyleSheet from '../../StyleSheet/StyleSheet';
-import Modal from '../../Modal/Modal';
+import View from '../../Components/View/View';
 import * as LogBoxData from '../Data/LogBoxData';
 import Keyboard from '../../Components/Keyboard/Keyboard';
 import LogBoxInspectorFooter from './LogBoxInspectorFooter';
@@ -23,8 +23,7 @@ import LogBoxInspectorReactFrames from './LogBoxInspectorReactFrames';
 import LogBoxInspectorStackFrames from './LogBoxInspectorStackFrames';
 import LogBoxInspectorHeader from './LogBoxInspectorHeader';
 import * as LogBoxStyle from './LogBoxStyle';
-
-import type LogBoxLog, {LogLevel} from '../Data/LogBoxLog';
+import LogBoxLog, {type LogLevel} from '../Data/LogBoxLog';
 
 type Props = $ReadOnly<{|
   onDismiss: () => void,
@@ -40,7 +39,9 @@ function LogBoxInspector(props: Props): React.Node {
 
   const log = logs[selectedIndex];
   React.useEffect(() => {
-    LogBoxData.symbolicateLogNow(log);
+    if (log) {
+      LogBoxData.symbolicateLogNow(log);
+    }
   }, [log]);
 
   React.useEffect(() => {
@@ -68,12 +69,7 @@ function LogBoxInspector(props: Props): React.Node {
   }
 
   return (
-    <Modal
-      animationType="none"
-      visible
-      statusBarTranslucent
-      supportedOrientations={['portrait']}
-      presentationStyle="overFullScreen">
+    <View style={styles.root}>
       <LogBoxInspectorHeader
         onSelectIndex={props.onChangeSelectedIndex}
         selectedIndex={selectedIndex}
@@ -86,7 +82,7 @@ function LogBoxInspector(props: Props): React.Node {
         onMinimize={props.onMinimize}
         level={log.level}
       />
-    </Modal>
+    </View>
   );
 }
 
@@ -143,6 +139,10 @@ function LogBoxInspectorBody(props) {
 }
 
 const styles = StyleSheet.create({
+  root: {
+    flex: 1,
+    backgroundColor: LogBoxStyle.getTextColor(),
+  },
   scrollBody: {
     backgroundColor: LogBoxStyle.getBackgroundColor(0.9),
     flex: 1,

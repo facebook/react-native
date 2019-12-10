@@ -126,7 +126,7 @@ const headerStyles = StyleSheet.create({
     borderRadius: 3,
   },
   buttonImage: {
-    tintColor: LogBoxStyle.getBackgroundColor(1),
+    tintColor: LogBoxStyle.getTextColor(),
   },
 });
 
@@ -156,7 +156,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   titleText: {
-    color: LogBoxStyle.getBackgroundColor(1),
+    color: LogBoxStyle.getTextColor(),
     fontSize: 16,
     fontWeight: '600',
     includeFontPadding: false,

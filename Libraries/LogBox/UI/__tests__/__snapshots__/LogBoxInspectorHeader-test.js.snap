@@ -39,7 +39,7 @@ exports[`LogBoxInspectorHeader should render both buttons for two total 1`] = `
       <Text
         style={
           Object {
-            "color": "rgba(51, 51, 51, 1)",
+            "color": "rgba(255, 255, 255, 1)",
             "fontSize": 16,
             "fontWeight": "600",
             "includeFontPadding": false,
@@ -99,7 +99,7 @@ exports[`LogBoxInspectorHeader should render no buttons for one total 1`] = `
       <Text
         style={
           Object {
-            "color": "rgba(51, 51, 51, 1)",
+            "color": "rgba(255, 255, 255, 1)",
             "fontSize": 16,
             "fontWeight": "600",
             "includeFontPadding": false,
@@ -153,7 +153,7 @@ exports[`LogBoxInspectorHeader should render syntax error header 1`] = `
       <Text
         style={
           Object {
-            "color": "rgba(51, 51, 51, 1)",
+            "color": "rgba(255, 255, 255, 1)",
             "fontSize": 16,
             "fontWeight": "600",
             "includeFontPadding": false,
@@ -207,7 +207,7 @@ exports[`LogBoxInspectorHeader should render two buttons for three or more total
       <Text
         style={
           Object {
-            "color": "rgba(51, 51, 51, 1)",
+            "color": "rgba(255, 255, 255, 1)",
             "fontSize": 16,
             "fontWeight": "600",
             "includeFontPadding": false,

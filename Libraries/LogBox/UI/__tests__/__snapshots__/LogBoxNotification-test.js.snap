@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`LogBoxLogNotification should render log 1`] = `
+exports[`LogBoxNotification should render log 1`] = `
 <View
   style={
     Object {

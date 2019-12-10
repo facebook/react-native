@@ -12,7 +12,7 @@
 'use strict';
 
 const React = require('react');
-const LogBoxLogNotification = require('../LogBoxLogNotification').default;
+const LogBoxNotification = require('../LogBoxNotification').default;
 const LogBoxLog = require('../../Data/LogBoxLog').default;
 const render = require('../../../../jest/renderer');
 
@@ -28,10 +28,10 @@ const log = new LogBoxLog({
   componentStack: [],
 });
 
-describe('LogBoxLogNotification', () => {
+describe('LogBoxNotification', () => {
   it('should render log', () => {
     const output = render.shallowRender(
-      <LogBoxLogNotification
+      <LogBoxNotification
         log={log}
         totalLogCount={1}
         level="warn"

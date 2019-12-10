@@ -11,46 +11,31 @@
 'use strict';
 
 import * as React from 'react';
-import SafeAreaView from '../../Components/SafeAreaView/SafeAreaView';
-import StyleSheet from '../../StyleSheet/StyleSheet';
-import View from '../../Components/View/View';
-import LogBoxInspector from './LogBoxInspector';
-import LogBoxLog from '../Data/LogBoxLog';
-import LogBoxLogNotification from './LogBoxLogNotification';
-import type {LogBoxLogs} from '../Data/LogBoxData';
+import StyleSheet from '../StyleSheet/StyleSheet';
+import View from '../Components/View/View';
+import * as LogBoxData from './Data/LogBoxData';
+import LogBoxLog from './Data/LogBoxLog';
+import LogBoxLogNotification from './UI/LogBoxNotification';
 
 type Props = $ReadOnly<{|
-  onDismiss: (log: LogBoxLog) => void,
-  onDismissWarns: () => void,
-  onDismissErrors: () => void,
-  setSelectedLog: number => void,
-  logs: LogBoxLogs,
+  logs: $ReadOnlyArray<LogBoxLog>,
   selectedLogIndex: number,
   isDisabled?: ?boolean,
 |}>;
 
-function LogBoxContainer(props: Props): React.Node {
-  const {selectedLogIndex, setSelectedLog} = props;
+export function _LogBoxNotificationContainer(props: Props): React.Node {
+  const {logs} = props;
 
-  const logs = Array.from(props.logs);
+  const onDismissWarns = () => {
+    LogBoxData.clearWarnings();
+  };
+  const onDismissErrors = () => {
+    LogBoxData.clearErrors();
+  };
 
-  function handleInspectorDismiss() {
-    // Here we handle the cases when the log is dismissed and it
-    // was either the last log, or when the current index
-    // is now outside the bounds of the log array.
-    if (selectedLogIndex != null) {
-      if (logs.length - 1 <= 0) {
-        setSelectedLog(-1);
-      } else if (selectedLogIndex >= logs.length - 1) {
-        setSelectedLog(selectedLogIndex - 1);
-      }
-      props.onDismiss(logs[selectedLogIndex]);
-    }
-  }
-
-  function handleInspectorMinimize() {
-    setSelectedLog(-1);
-  }
+  const setSelectedLog = (index: number): void => {
+    LogBoxData.setSelectedLog(index);
+  };
 
   function openLog(log: LogBoxLog) {
     let index = logs.length - 1;
@@ -60,20 +45,6 @@ function LogBoxContainer(props: Props): React.Node {
       index -= 1;
     }
     setSelectedLog(index);
-  }
-
-  if (selectedLogIndex > -1) {
-    return (
-      <View style={StyleSheet.absoluteFill}>
-        <LogBoxInspector
-          onDismiss={handleInspectorDismiss}
-          onMinimize={handleInspectorMinimize}
-          onChangeSelectedIndex={setSelectedLog}
-          logs={logs}
-          selectedIndex={selectedLogIndex}
-        />
-      </View>
-    );
   }
 
   if (logs.length === 0 || props.isDisabled === true) {
@@ -93,7 +64,7 @@ function LogBoxContainer(props: Props): React.Node {
             level="warn"
             totalLogCount={warnings.length}
             onPressOpen={() => openLog(warnings[warnings.length - 1])}
-            onPressDismiss={props.onDismissWarns}
+            onPressDismiss={onDismissWarns}
           />
         </View>
       )}
@@ -104,7 +75,7 @@ function LogBoxContainer(props: Props): React.Node {
             level="error"
             totalLogCount={errors.length}
             onPressOpen={() => openLog(errors[errors.length - 1])}
-            onPressDismiss={props.onDismissErrors}
+            onPressDismiss={onDismissErrors}
           />
         </View>
       )}
@@ -126,4 +97,6 @@ const styles = StyleSheet.create({
   },
 });
 
-export default LogBoxContainer;
+export default (LogBoxData.withSubscription(
+  _LogBoxNotificationContainer,
+): React.AbstractComponent<{||}>);
