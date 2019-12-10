@@ -25,7 +25,13 @@ function getLogBoxLog() {
     message: {content: '...', substitutions: []},
     stack: createStack(['A', 'B', 'C']),
     category: 'Message category...',
-    componentStack: [{component: 'LogBoxLog', location: 'LogBoxLog.js:1'}],
+    componentStack: [
+      {
+        content: 'LogBoxLog',
+        fileName: 'LogBoxLog.js',
+        location: {column: -1, row: 1},
+      },
+    ],
     codeFrame: {
       fileName: '/path/to/RKJSModules/Apps/CrashReact/CrashReactApp.js',
       location: {row: 199, column: 0},
@@ -69,7 +75,11 @@ describe('LogBoxLog', () => {
     expect(log.stack).toEqual(createStack(['A', 'B', 'C']));
     expect(log.category).toEqual('Message category...');
     expect(log.componentStack).toEqual([
-      {component: 'LogBoxLog', location: 'LogBoxLog.js:1'},
+      {
+        content: 'LogBoxLog',
+        fileName: 'LogBoxLog.js',
+        location: {column: -1, row: 1},
+      },
     ]);
     expect(log.codeFrame).toEqual({
       fileName: '/path/to/RKJSModules/Apps/CrashReact/CrashReactApp.js',

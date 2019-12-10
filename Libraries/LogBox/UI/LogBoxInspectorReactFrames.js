@@ -18,12 +18,37 @@ import View from '../../Components/View/View';
 import LogBoxButton from './LogBoxButton';
 import * as LogBoxStyle from './LogBoxStyle';
 import LogBoxInspectorSection from './LogBoxInspectorSection';
+import openFileInEditor from '../../Core/Devtools/openFileInEditor';
 import type LogBoxLog from '../Data/LogBoxLog';
 
 type Props = $ReadOnly<{|
   log: LogBoxLog,
 |}>;
 
+const BEFORE_SLASH_RE = /^(.*)[\\/]/;
+
+// Taken from React https://github.com/facebook/react/blob/206d61f72214e8ae5b935f0bf8628491cb7f0797/packages/react-devtools-shared/src/backend/describeComponentFrame.js#L27-L41
+function getPrettyFileName(path) {
+  let fileName = path.replace(BEFORE_SLASH_RE, '');
+
+  // In DEV, include code for a common special case:
+  // prefer "folder/index.js" instead of just "index.js".
+  if (/^index\./.test(fileName)) {
+    const match = path.match(BEFORE_SLASH_RE);
+    if (match) {
+      const pathBeforeSlash = match[1];
+      if (pathBeforeSlash) {
+        const folderName = pathBeforeSlash.replace(BEFORE_SLASH_RE, '');
+        // Note the below string contains a zero width space after the "/" character.
+        // This is to prevent browsers like Chrome from formatting the file name as a link.
+        // (Since this is a source link, it would not work to open the source file anyway.)
+        fileName = folderName + '/​' + fileName;
+      }
+    }
+  }
+
+  return fileName;
+}
 function LogBoxInspectorReactFrames(props: Props): React.Node {
   const [collapsed, setCollapsed] = React.useState(true);
   if (props.log.componentStack == null || props.log.componentStack.length < 1) {
@@ -39,6 +64,10 @@ function LogBoxInspectorReactFrames(props: Props): React.Node {
   }
 
   function getCollapseMessage() {
+    if (props.log.componentStack.length <= 3) {
+      return;
+    }
+
     const count = props.log.componentStack.length - 3;
     if (collapsed) {
       return `See ${count} more components`;
@@ -53,15 +82,34 @@ function LogBoxInspectorReactFrames(props: Props): React.Node {
         <View
           // Unfortunately we don't have a unique identifier for stack traces.
           key={index}
-          style={componentStyles.frame}>
-          <View style={componentStyles.component}>
-            <Text style={componentStyles.frameName}>
-              <Text style={componentStyles.bracket}>{'<'}</Text>
-              {frame.component}
-              <Text style={componentStyles.bracket}>{' />'}</Text>
+          style={componentStyles.frameContainer}>
+          <LogBoxButton
+            backgroundColor={{
+              default: 'transparent',
+              pressed: LogBoxStyle.getBackgroundColor(1),
+            }}
+            onPress={
+              // Older versions of DevTools do not provide full path.
+              // This will not work on Windows, remove check once the
+              // DevTools return the full file path.
+              frame.fileName.startsWith('/')
+                ? () =>
+                    openFileInEditor(frame.fileName, frame.location?.row ?? 1)
+                : null
+            }
+            style={componentStyles.frame}>
+            <View style={componentStyles.component}>
+              <Text style={componentStyles.frameName}>
+                <Text style={componentStyles.bracket}>{'<'}</Text>
+                {frame.content}
+                <Text style={componentStyles.bracket}>{' />'}</Text>
+              </Text>
+            </View>
+            <Text style={componentStyles.frameLocation}>
+              {getPrettyFileName(frame.fileName)}
+              {frame.location ? `:${frame.location.row}` : ''}
             </Text>
-          </View>
-          <Text style={componentStyles.frameLocation}>{frame.location}</Text>
+          </LogBoxButton>
         </View>
       ))}
       <View style={componentStyles.collapseContainer}>
@@ -96,9 +144,15 @@ const componentStyles = StyleSheet.create({
     paddingVertical: 5,
     paddingHorizontal: 10,
   },
+  frameContainer: {
+    flexDirection: 'row',
+    paddingHorizontal: 15,
+  },
   frame: {
-    paddingHorizontal: 25,
+    flex: 1,
     paddingVertical: 4,
+    paddingHorizontal: 10,
+    borderRadius: 5,
   },
   component: {
     flexDirection: 'row',
