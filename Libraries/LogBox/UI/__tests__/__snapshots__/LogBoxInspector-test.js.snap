@@ -1,17 +1,13 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`LogBoxContainer should render fatal with selectedIndex 2 1`] = `
-<Component
-  animationType="none"
-  hardwareAccelerated={false}
-  presentationStyle="overFullScreen"
-  statusBarTranslucent={true}
-  supportedOrientations={
-    Array [
-      "portrait",
-    ]
+<View
+  style={
+    Object {
+      "backgroundColor": "rgba(255, 255, 255, 1)",
+      "flex": 1,
+    }
   }
-  visible={true}
 >
   <LogBoxInspectorHeader
     level="fatal"
@@ -47,23 +43,19 @@ exports[`LogBoxContainer should render fatal with selectedIndex 2 1`] = `
     onDismiss={[Function]}
     onMinimize={[Function]}
   />
-</Component>
+</View>
 `;
 
 exports[`LogBoxContainer should render null with no logs 1`] = `null`;
 
 exports[`LogBoxContainer should render warning with selectedIndex 0 1`] = `
-<Component
-  animationType="none"
-  hardwareAccelerated={false}
-  presentationStyle="overFullScreen"
-  statusBarTranslucent={true}
-  supportedOrientations={
-    Array [
-      "portrait",
-    ]
+<View
+  style={
+    Object {
+      "backgroundColor": "rgba(255, 255, 255, 1)",
+      "flex": 1,
+    }
   }
-  visible={true}
 >
   <LogBoxInspectorHeader
     level="warn"
@@ -99,5 +91,5 @@ exports[`LogBoxContainer should render warning with selectedIndex 0 1`] = `
     onDismiss={[Function]}
     onMinimize={[Function]}
   />
-</Component>
+</View>
 `;

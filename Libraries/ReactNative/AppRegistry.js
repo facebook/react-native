@@ -294,7 +294,8 @@ const AppRegistry = {
 BatchedBridge.registerCallableModule('AppRegistry', AppRegistry);
 
 if (__DEV__) {
-  AppRegistry.registerComponent('LogBox', () => () => null);
+  const LogBoxInspector = require('../LogBox/LogBoxInspectorContainer').default;
+  AppRegistry.registerComponent('LogBox', () => LogBoxInspector);
 }
 
 module.exports = AppRegistry;

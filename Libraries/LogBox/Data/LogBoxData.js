@@ -10,6 +10,7 @@
 
 ('use strict');
 
+import * as React from 'react';
 import LogBoxLog from './LogBoxLog';
 import {parseLogBoxException} from './parseLogBoxLog';
 import type {LogLevel} from './LogBoxLog';
@@ -368,4 +369,98 @@ export function observe(observer: Observer): Subscription {
       observers.delete(subscription);
     },
   };
+}
+
+type Props = $ReadOnly<{||}>;
+type State = $ReadOnly<{|
+  logs: LogBoxLogs,
+  isDisabled: boolean,
+  hasError: boolean,
+  selectedLogIndex: number,
+|}>;
+
+type SubscribedComponent = React.AbstractComponent<
+  $ReadOnly<{|
+    logs: $ReadOnlyArray<LogBoxLog>,
+    isDisabled: boolean,
+    selectedLogIndex: number,
+  |}>,
+>;
+
+export function withSubscription(
+  WrappedComponent: SubscribedComponent,
+): React.AbstractComponent<{||}> {
+  class LogBoxStateSubscription extends React.Component<Props, State> {
+    static getDerivedStateFromError() {
+      return {hasError: true};
+    }
+
+    componentDidCatch(err: Error, errorInfo: {componentStack: string, ...}) {
+      reportLogBoxError(err, errorInfo.componentStack);
+    }
+
+    _subscription: ?Subscription;
+
+    state = {
+      logs: new Set(),
+      isDisabled: false,
+      hasError: false,
+      selectedLogIndex: -1,
+    };
+
+    render(): React.Node {
+      if (this.state.hasError) {
+        // This happens when the component failed to render, in which case we delegate to the native redbox.
+        // We can't show anyback fallback UI here, because the error may be with <View> or <Text>.
+        return null;
+      }
+
+      return (
+        <WrappedComponent
+          logs={Array.from(this.state.logs)}
+          isDisabled={this.state.isDisabled}
+          selectedLogIndex={this.state.selectedLogIndex}
+        />
+      );
+    }
+
+    componentDidMount(): void {
+      this._subscription = observe(data => {
+        this.setState(data);
+      });
+    }
+
+    componentWillUnmount(): void {
+      if (this._subscription != null) {
+        this._subscription.unsubscribe();
+      }
+    }
+
+    _handleDismiss = (): void => {
+      // Here we handle the cases when the log is dismissed and it
+      // was either the last log, or when the current index
+      // is now outside the bounds of the log array.
+      const {selectedLogIndex, logs: stateLogs} = this.state;
+      const logsArray = Array.from(stateLogs);
+      if (selectedLogIndex != null) {
+        if (logsArray.length - 1 <= 0) {
+          setSelectedLog(-1);
+        } else if (selectedLogIndex >= logsArray.length - 1) {
+          setSelectedLog(selectedLogIndex - 1);
+        }
+
+        dismiss(logsArray[selectedLogIndex]);
+      }
+    };
+
+    _handleMinimize = (): void => {
+      setSelectedLog(-1);
+    };
+
+    _handleSetSelectedLog = (index: number): void => {
+      setSelectedLog(index);
+    };
+  }
+
+  return LogBoxStateSubscription;
 }

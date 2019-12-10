@@ -98,8 +98,9 @@ class AppContainer extends React.Component<Props, State> {
     if (__DEV__ && !this.props.internal_excludeLogBox) {
       if (!global.__RCTProfileIsProfiling) {
         if (global.__reactExperimentalLogBox) {
-          const LogBox = require('../LogBox/LogBox');
-          logBox = <LogBox />;
+          const LogBoxNotificationContainer = require('../LogBox/LogBoxNotificationContainer')
+            .default;
+          logBox = <LogBoxNotificationContainer />;
         } else {
           const YellowBox = require('../YellowBox/YellowBox');
           logBox = <YellowBox />;
@@ -155,15 +156,6 @@ if (__DEV__) {
     if (global.__reactExperimentalLogBox) {
       const LogBox = require('../LogBox/LogBox');
       LogBox.install();
-
-      // TODO: (rickhanlonii) T57484314 Temporary hack to fix LogBox experiment but we need to
-      // either decide to provide an error boundary by default or move this to a separate root.
-      AppContainer.getDerivedStateFromError = function getDerivedStateFromError(
-        error,
-        state,
-      ) {
-        return {...state, hasError: true};
-      };
     } else {
       const YellowBox = require('../YellowBox/YellowBox');
       YellowBox.install();
