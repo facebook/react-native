@@ -42,9 +42,7 @@ import java.io.OutputStream;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 /** Native module that provides image cropping functionality. */
 @ReactModule(name = ImageEditingManager.NAME)
@@ -97,11 +95,6 @@ public class ImageEditingManager extends ReactContextBaseJavaModule {
   @Override
   public String getName() {
     return NAME;
-  }
-
-  @Override
-  public Map<String, Object> getConstants() {
-    return Collections.emptyMap();
   }
 
   @Override
