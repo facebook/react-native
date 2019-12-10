@@ -16,20 +16,14 @@
 #import <react/core/ReactPrimitives.h>
 #import <react/uimanager/ComponentDescriptorProviderRegistry.h>
 
-#import "RCTARTSurfaceViewComponentView.h"
-#import "RCTActivityIndicatorViewComponentView.h"
 #import "RCTComponentViewClassDescriptor.h"
 #import "RCTFabricComponentsPlugins.h"
 #import "RCTImageComponentView.h"
 #import "RCTLegacyViewManagerInteropComponentView.h"
-#import "RCTModalHostViewComponentView.h"
 #import "RCTMountingTransactionObserving.h"
 #import "RCTParagraphComponentView.h"
-#import "RCTPullToRefreshViewComponentView.h"
 #import "RCTRootComponentView.h"
-#import "RCTSliderComponentView.h"
-#import "RCTSwitchComponentView.h"
-#import "RCTUnimplementedNativeComponentView.h"
+
 #import "RCTUnimplementedViewComponentView.h"
 #import "RCTViewComponentView.h"
 
@@ -47,17 +41,10 @@ using namespace facebook::react;
 {
   RCTComponentViewFactory *componentViewFactory = [[RCTComponentViewFactory alloc] init];
 
-  [componentViewFactory registerComponentViewClass:[RCTViewComponentView class]];
   [componentViewFactory registerComponentViewClass:[RCTRootComponentView class]];
-  [componentViewFactory registerComponentViewClass:[RCTPullToRefreshViewComponentView class]];
+  [componentViewFactory registerComponentViewClass:[RCTViewComponentView class]];
   [componentViewFactory registerComponentViewClass:[RCTImageComponentView class]];
   [componentViewFactory registerComponentViewClass:[RCTParagraphComponentView class]];
-  [componentViewFactory registerComponentViewClass:[RCTActivityIndicatorViewComponentView class]];
-  [componentViewFactory registerComponentViewClass:[RCTSliderComponentView class]];
-  [componentViewFactory registerComponentViewClass:[RCTSwitchComponentView class]];
-  [componentViewFactory registerComponentViewClass:[RCTUnimplementedNativeComponentView class]];
-  [componentViewFactory registerComponentViewClass:[RCTModalHostViewComponentView class]];
-  [componentViewFactory registerComponentViewClass:[RCTARTSurfaceViewComponentView class]];
 
   auto providerRegistry = &componentViewFactory->_providerRegistry;
 

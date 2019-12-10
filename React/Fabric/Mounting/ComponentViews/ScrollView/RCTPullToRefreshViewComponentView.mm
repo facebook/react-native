@@ -16,6 +16,8 @@
 #import <React/RCTRefreshableProtocol.h>
 #import <React/RCTScrollViewComponentView.h>
 
+#import "FBRCTFabricComponentsPlugins.h"
+
 using namespace facebook::react;
 
 @interface RCTPullToRefreshViewComponentView () <RCTPullToRefreshViewViewProtocol, RCTRefreshableProtocol>
@@ -181,3 +183,8 @@ using namespace facebook::react;
 }
 
 @end
+
+Class<RCTComponentViewProtocol> RCTPullToRefreshViewCls(void)
+{
+  return RCTPullToRefreshViewComponentView.class;
+}
