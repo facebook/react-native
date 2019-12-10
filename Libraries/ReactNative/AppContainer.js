@@ -94,17 +94,14 @@ class AppContainer extends React.Component<Props, State> {
   }
 
   render(): React.Node {
-    let logBox = null;
-    if (__DEV__ && !this.props.internal_excludeLogBox) {
-      if (!global.__RCTProfileIsProfiling) {
-        if (global.__reactExperimentalLogBox) {
-          const LogBoxNotificationContainer = require('../LogBox/LogBoxNotificationContainer')
-            .default;
-          logBox = <LogBoxNotificationContainer />;
-        } else {
-          const YellowBox = require('../YellowBox/YellowBox');
-          logBox = <YellowBox />;
-        }
+    let yellowBox = null;
+    if (__DEV__) {
+      if (
+        !global.__RCTProfileIsProfiling &&
+        !this.props.internal_excludeLogBox
+      ) {
+        const YellowBox = require('../YellowBox/YellowBox');
+        yellowBox = <YellowBox />;
       }
     }
 
@@ -138,7 +135,7 @@ class AppContainer extends React.Component<Props, State> {
         <View style={styles.appContainer} pointerEvents="box-none">
           {!this.state.hasError && innerView}
           {this.state.inspector}
-          {logBox}
+          {yellowBox}
         </View>
       </RootTagContext.Provider>
     );
@@ -153,13 +150,8 @@ const styles = StyleSheet.create({
 
 if (__DEV__) {
   if (!global.__RCTProfileIsProfiling) {
-    if (global.__reactExperimentalLogBox) {
-      const LogBox = require('../LogBox/LogBox');
-      LogBox.install();
-    } else {
-      const YellowBox = require('../YellowBox/YellowBox');
-      YellowBox.install();
-    }
+    const YellowBox = require('../YellowBox/YellowBox');
+    YellowBox.install();
   }
 }
 

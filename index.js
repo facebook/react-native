@@ -438,6 +438,9 @@ module.exports = {
   get unstable_RootTagContext(): RootTagContext {
     return require('./Libraries/ReactNative/RootTagContext');
   },
+  get unstable_enableLogBox(): () => void {
+    return require('./Libraries/YellowBox/YellowBox').__unstable_enableLogBox;
+  },
 
   // Prop Types
   get ColorPropType(): DeprecatedColorPropType {

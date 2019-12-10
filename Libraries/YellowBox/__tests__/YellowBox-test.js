@@ -11,8 +11,16 @@
 
 'use strict';
 
+import * as React from 'react';
 const YellowBox = require('../YellowBox');
 const YellowBoxRegistry = require('../Data/YellowBoxRegistry');
+const LogBoxData = require('../../LogBox/Data/LogBoxData');
+const render = require('../../../jest/renderer');
+
+jest.mock('../../LogBox/LogBoxNotificationContainer', () => ({
+  __esModule: true,
+  default: 'LogBoxNotificationContainer',
+}));
 
 describe('YellowBox', () => {
   const {error, warn} = console;
@@ -73,5 +81,50 @@ describe('YellowBox', () => {
 
     (console: any).error('Warning: ...');
     expect(YellowBoxRegistry.add).toBeCalled();
+  });
+
+  it('if LogBox is enabled, installs and uninstalls LogBox', () => {
+    jest.mock('../../LogBox/Data/LogBoxData');
+    jest.mock('../Data/YellowBoxRegistry');
+
+    YellowBox.__unstable_enableLogBox();
+    YellowBox.install();
+
+    (console: any).warn('Some warning');
+    expect(YellowBoxRegistry.add).not.toBeCalled();
+    expect(LogBoxData.addLog).toBeCalled();
+    expect(YellowBox.__unstable_isLogBoxEnabled()).toBe(true);
+
+    YellowBox.uninstall();
+    (LogBoxData.addLog: any).mockClear();
+
+    (console: any).warn('Some warning');
+    expect(YellowBoxRegistry.add).not.toBeCalled();
+    expect(LogBoxData.addLog).not.toBeCalled();
+    expect(YellowBox.__unstable_isLogBoxEnabled()).toBe(true);
+  });
+
+  it('throws if LogBox is enabled after YellowBox is installed', () => {
+    jest.mock('../Data/YellowBoxRegistry');
+
+    YellowBox.install();
+
+    expect(() => YellowBox.__unstable_enableLogBox()).toThrow(
+      'LogBox must be enabled before AppContainer is required so that it can properly wrap the console methods.\n\nPlease enable LogBox earlier in your app.\n\n',
+    );
+  });
+
+  it('should render YellowBoxContainer by default', () => {
+    const output = render.shallowRender(<YellowBox />);
+
+    expect(output).toMatchSnapshot();
+  });
+
+  it('should render LogBoxNotificationContainer when LogBox is enabled', () => {
+    YellowBox.__unstable_enableLogBox();
+
+    const output = render.shallowRender(<YellowBox />);
+
+    expect(output).toMatchSnapshot();
   });
 });
