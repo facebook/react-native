@@ -191,6 +191,9 @@ function appendNewLog(newLog) {
       if (addPendingLog && status !== 'PENDING') {
         addPendingLog();
         clearTimeout(optimisticTimeout);
+      } else if (status !== 'PENDING') {
+        // The log has already been added but we need to trigger a render.
+        handleUpdate();
       }
     });
   } else {
