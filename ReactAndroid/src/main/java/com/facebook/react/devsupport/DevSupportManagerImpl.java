@@ -19,6 +19,7 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.hardware.SensorManager;
 import android.util.Pair;
+import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 import androidx.annotation.Nullable;
@@ -375,6 +376,14 @@ public class DevSupportManagerImpl
       mRedBoxDialog.dismiss();
       mRedBoxDialog = null;
     }
+  }
+
+  public @Nullable View createRootView(String appKey) {
+    return mReactInstanceManagerHelper.createRootView(appKey);
+  }
+
+  public void destroyRootView(View rootView) {
+    mReactInstanceManagerHelper.destroyRootView(rootView);
   }
 
   private void hideDevOptionsDialog() {
