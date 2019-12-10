@@ -12,7 +12,14 @@
 
 const React = require('react');
 
-const {Button, Text, TextInput, View, StyleSheet} = require('react-native');
+const {
+  Button,
+  Platform,
+  Text,
+  TextInput,
+  View,
+  StyleSheet,
+} = require('react-native');
 
 import type {RNTesterExampleModuleItem} from '../../types/RNTesterTypes';
 
@@ -539,36 +546,39 @@ module.exports = ([
   {
     title: 'fontFamily, fontWeight and fontStyle',
     render: function(): React.Node {
+      const fontFamilyA = Platform.OS === 'ios' ? 'Cochin' : 'sans-serif';
+      const fontFamilyB = Platform.OS === 'ios' ? 'Courier' : 'serif';
+
       return (
         <View>
           <TextInput
-            style={[styles.singleLine, {fontFamily: 'sans-serif'}]}
-            placeholder="Custom fonts like Sans-Serif are supported"
+            style={[styles.singleLine, {fontFamily: fontFamilyA}]}
+            placeholder={`Custom fonts like ${fontFamilyA} are supported`}
           />
           <TextInput
             style={[
               styles.singleLine,
-              {fontFamily: 'sans-serif', fontWeight: 'bold'},
+              {fontFamily: fontFamilyA, fontWeight: 'bold'},
             ]}
-            placeholder="Sans-Serif bold"
+            placeholder={`${fontFamilyA} bold`}
           />
           <TextInput
             style={[
               styles.singleLine,
-              {fontFamily: 'sans-serif', fontWeight: '500'},
+              {fontFamily: fontFamilyA, fontWeight: '500'},
             ]}
-            placeholder="Sans-Serif 500"
+            placeholder={`${fontFamilyA} 500`}
           />
           <TextInput
             style={[
               styles.singleLine,
-              {fontFamily: 'sans-serif', fontStyle: 'italic'},
+              {fontFamily: fontFamilyA, fontStyle: 'italic'},
             ]}
-            placeholder="Sans-Serif italic"
+            placeholder={`${fontFamilyA} italic`}
           />
           <TextInput
-            style={[styles.singleLine, {fontFamily: 'serif'}]}
-            placeholder="Serif"
+            style={[styles.singleLine, {fontFamily: fontFamilyB}]}
+            placeholder={fontFamilyB}
           />
         </View>
       );
