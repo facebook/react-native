@@ -29,6 +29,7 @@ function renderApplication<Props: Object>(
   fabric?: boolean,
   showArchitectureIndicator?: boolean,
   scopedPerformanceLogger?: IPerformanceLogger,
+  isLogBox?: boolean,
 ) {
   invariant(rootTag, 'Expect to have a valid rootTag, instead got ', rootTag);
 
@@ -39,7 +40,8 @@ function renderApplication<Props: Object>(
         rootTag={rootTag}
         fabric={fabric}
         showArchitectureIndicator={showArchitectureIndicator}
-        WrapperComponent={WrapperComponent}>
+        WrapperComponent={WrapperComponent}
+        internal_excludeLogBox={isLogBox}>
         <RootComponent {...initialProps} rootTag={rootTag} />
       </AppContainer>
     </PerformanceLoggerContext.Provider>

@@ -125,6 +125,7 @@ const AppRegistry = {
           appParameters.fabric,
           showArchitectureIndicator,
           scopedPerformanceLogger,
+          appKey === 'LogBox',
         );
       },
     };
@@ -291,5 +292,9 @@ const AppRegistry = {
 };
 
 BatchedBridge.registerCallableModule('AppRegistry', AppRegistry);
+
+if (__DEV__) {
+  AppRegistry.registerComponent('LogBox', () => () => null);
+}
 
 module.exports = AppRegistry;
