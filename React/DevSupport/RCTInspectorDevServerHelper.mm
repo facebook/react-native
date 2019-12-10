@@ -7,7 +7,7 @@
 
 #import <React/RCTInspectorDevServerHelper.h>
 
-#if RCT_DEV && !TARGET_OS_UIKITFORMAC
+#if RCT_DEV
 
 #import <React/RCTLog.h>
 #import <UIKit/UIKit.h>

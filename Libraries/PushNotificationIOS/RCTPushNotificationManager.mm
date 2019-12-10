@@ -26,7 +26,7 @@ static NSString *const kRemoteNotificationRegistrationFailed = @"RemoteNotificat
 
 static NSString *const kErrorUnableToRequestPermissions = @"E_UNABLE_TO_REQUEST_PERMISSIONS";
 
-#if !TARGET_OS_TV && !TARGET_OS_UIKITFORMAC
+#if !TARGET_OS_TV
 @implementation RCTConvert (NSCalendarUnit)
 
 RCT_ENUM_CONVERTER(NSCalendarUnit,
