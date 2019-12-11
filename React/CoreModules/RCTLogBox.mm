@@ -15,6 +15,7 @@
 #import <React/RCTErrorInfo.h>
 #import <React/RCTEventDispatcher.h>
 #import <React/RCTJSStackFrame.h>
+#import <React/RCTRedBoxSetEnabled.h>
 #import <React/RCTReloadCommand.h>
 #import <React/RCTUtils.h>
 
@@ -102,10 +103,13 @@ RCT_EXPORT_MODULE()
 
 - (void)setBridge:(RCTBridge *)bridge
 {
- _bridge = bridge;
- dispatch_async(dispatch_get_main_queue(), ^{
-     self->_window = [[RCTLogBoxWindow alloc] initWithFrame:[UIScreen mainScreen].bounds bridge: self->_bridge];
- });
+  _bridge = bridge;
+
+  if (RCTRedBoxGetEnabled()) {
+    dispatch_async(dispatch_get_main_queue(), ^{
+      self->_window = [[RCTLogBoxWindow alloc] initWithFrame:[UIScreen mainScreen].bounds bridge: self->_bridge];
+    });
+  }
 }
 
 RCT_EXPORT_METHOD(show)
