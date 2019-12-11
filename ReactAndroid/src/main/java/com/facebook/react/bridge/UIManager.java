@@ -56,6 +56,9 @@ public interface UIManager extends JSIModule, PerformanceCounter {
    */
   void dispatchCommand(int reactTag, String commandId, @Nullable ReadableArray commandArgs);
 
+  /** @return the {@link EventDispatcher} object that is used by this class. */
+  <T> T getEventDispatcher();
+
   /**
    * Used by native animated module to bypass the process of updating the values through the shadow
    * view hierarchy. This method will directly update native views, which means that updates for
