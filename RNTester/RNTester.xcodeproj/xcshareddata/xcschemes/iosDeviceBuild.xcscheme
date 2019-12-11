@@ -34,6 +34,188 @@
                ReferencedContainer = "container:RNTester.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
+         <BuildActionEntry
+             buildForTesting = "YES"
+             buildForRunning = "YES"
+             buildForProfiling = "YES"
+             buildForArchiving = "YES"
+             buildForAnalyzing = "YES">
+             <BuildableReference
+                BuildableIdentifier = "primary"
+                BlueprintIdentifier = "0CF68AC01AF0540F00FF9E5C"
+                BuildableName = "libART.a"
+                BlueprintName = "ART"
+                ReferencedContainer = "container:../Libraries/ART/ART.xcodeproj">
+             </BuildableReference>
+          </BuildActionEntry>
+          <BuildActionEntry
+             buildForTesting = "YES"
+             buildForRunning = "YES"
+             buildForProfiling = "YES"
+             buildForArchiving = "YES"
+             buildForAnalyzing = "YES">
+             <BuildableReference
+                BuildableIdentifier = "primary"
+                BlueprintIdentifier = "58B511DA1A9E6C8500147676"
+                BuildableName = "libRCTActionSheet.a"
+                BlueprintName = "RCTActionSheet"
+                ReferencedContainer = "container:../Libraries/ActionSheetIOS/RCTActionSheet.xcodeproj">
+             </BuildableReference>
+          </BuildActionEntry>
+          <BuildActionEntry
+             buildForTesting = "YES"
+             buildForRunning = "YES"
+             buildForProfiling = "YES"
+             buildForArchiving = "YES"
+             buildForAnalyzing = "YES">
+             <BuildableReference
+                BuildableIdentifier = "primary"
+                BlueprintIdentifier = "58B511DA1A9E6C8500147676"
+                BuildableName = "libRCTAnimation.a"
+                BlueprintName = "RCTAnimation"
+                ReferencedContainer = "container:../Libraries/NativeAnimation/RCTAnimation.xcodeproj">
+             </BuildableReference>
+          </BuildActionEntry>
+          <BuildActionEntry
+             buildForTesting = "YES"
+             buildForRunning = "YES"
+             buildForProfiling = "YES"
+             buildForArchiving = "YES"
+             buildForAnalyzing = "YES">
+             <BuildableReference
+                BuildableIdentifier = "primary"
+                BlueprintIdentifier = "358F4ED61D1E81A9004DF814"
+                BuildableName = "libRCTBlob.a"
+                BlueprintName = "RCTBlob"
+                ReferencedContainer = "container:../Libraries/Blob/RCTBlob.xcodeproj">
+             </BuildableReference>
+          </BuildActionEntry>
+          <BuildActionEntry
+             buildForTesting = "YES"
+             buildForRunning = "YES"
+             buildForProfiling = "YES"
+             buildForArchiving = "YES"
+             buildForAnalyzing = "YES">
+             <BuildableReference
+                BuildableIdentifier = "primary"
+                BlueprintIdentifier = "58B5115C1A9E6B3D00147676"
+                BuildableName = "libRCTCameraRoll.a"
+                BlueprintName = "RCTCameraRoll"
+                ReferencedContainer = "container:../Libraries/CameraRoll/RCTCameraRoll.xcodeproj">
+             </BuildableReference>
+          </BuildActionEntry>
+          <BuildActionEntry
+             buildForTesting = "YES"
+             buildForRunning = "YES"
+             buildForProfiling = "YES"
+             buildForArchiving = "YES"
+             buildForAnalyzing = "YES">
+             <BuildableReference
+                BuildableIdentifier = "primary"
+                BlueprintIdentifier = "58B5115C1A9E6B3D00147676"
+                BuildableName = "libRCTImage.a"
+                BlueprintName = "RCTImage"
+                ReferencedContainer = "container:../Libraries/Image/RCTImage.xcodeproj">
+             </BuildableReference>
+          </BuildActionEntry>
+          <BuildActionEntry
+             buildForTesting = "YES"
+             buildForRunning = "YES"
+             buildForProfiling = "YES"
+             buildForArchiving = "YES"
+             buildForAnalyzing = "YES">
+             <BuildableReference
+                BuildableIdentifier = "primary"
+                BlueprintIdentifier = "58B511DA1A9E6C8500147676"
+                BuildableName = "libRCTLinking.a"
+                BlueprintName = "RCTLinking"
+                ReferencedContainer = "container:../Libraries/LinkingIOS/RCTLinking.xcodeproj">
+             </BuildableReference>
+          </BuildActionEntry>
+          <BuildActionEntry
+             buildForTesting = "YES"
+             buildForRunning = "YES"
+             buildForProfiling = "YES"
+             buildForArchiving = "YES"
+             buildForAnalyzing = "YES">
+             <BuildableReference
+                BuildableIdentifier = "primary"
+                BlueprintIdentifier = "58B511DA1A9E6C8500147676"
+                BuildableName = "libRCTNetwork.a"
+                BlueprintName = "RCTNetwork"
+                ReferencedContainer = "container:../Libraries/Network/RCTNetwork.xcodeproj">
+             </BuildableReference>
+          </BuildActionEntry>
+          <BuildActionEntry
+             buildForTesting = "YES"
+             buildForRunning = "YES"
+             buildForProfiling = "YES"
+             buildForArchiving = "YES"
+             buildForAnalyzing = "YES">
+             <BuildableReference
+                BuildableIdentifier = "primary"
+                BlueprintIdentifier = "58B511DA1A9E6C8500147676"
+                BuildableName = "libRCTPushNotification.a"
+                BlueprintName = "RCTPushNotification"
+                ReferencedContainer = "container:../Libraries/PushNotificationIOS/RCTPushNotification.xcodeproj">
+             </BuildableReference>
+          </BuildActionEntry>
+          <BuildActionEntry
+             buildForTesting = "YES"
+             buildForRunning = "YES"
+             buildForProfiling = "YES"
+             buildForArchiving = "YES"
+             buildForAnalyzing = "YES">
+             <BuildableReference
+                BuildableIdentifier = "primary"
+                BlueprintIdentifier = "58B511DA1A9E6C8500147676"
+                BuildableName = "libRCTSettings.a"
+                BlueprintName = "RCTSettings"
+                ReferencedContainer = "container:../Libraries/Settings/RCTSettings.xcodeproj">
+             </BuildableReference>
+          </BuildActionEntry>
+          <BuildActionEntry
+             buildForTesting = "YES"
+             buildForRunning = "YES"
+             buildForProfiling = "YES"
+             buildForArchiving = "YES"
+             buildForAnalyzing = "YES">
+             <BuildableReference
+                BuildableIdentifier = "primary"
+                BlueprintIdentifier = "58B5119A1A9E6C1200147676"
+                BuildableName = "libRCTText.a"
+                BlueprintName = "RCTText"
+                ReferencedContainer = "container:../Libraries/Text/RCTText.xcodeproj">
+             </BuildableReference>
+          </BuildActionEntry>
+          <BuildActionEntry
+             buildForTesting = "YES"
+             buildForRunning = "YES"
+             buildForProfiling = "YES"
+             buildForArchiving = "YES"
+             buildForAnalyzing = "YES">
+             <BuildableReference
+                BuildableIdentifier = "primary"
+                BlueprintIdentifier = "832C817F1AAF6DEF007FA2F7"
+                BuildableName = "libRCTVibration.a"
+                BlueprintName = "RCTVibration"
+                ReferencedContainer = "container:../Libraries/Vibration/RCTVibration.xcodeproj">
+             </BuildableReference>
+          </BuildActionEntry>
+          <BuildActionEntry
+             buildForTesting = "YES"
+             buildForRunning = "YES"
+             buildForProfiling = "YES"
+             buildForArchiving = "YES"
+             buildForAnalyzing = "YES">
+             <BuildableReference
+                BuildableIdentifier = "primary"
+                BlueprintIdentifier = "3C86DF451ADF2C930047B81A"
+                BuildableName = "libRCTWebSocket.a"
+                BlueprintName = "RCTWebSocket"
+                ReferencedContainer = "container:../Libraries/WebSocket/RCTWebSocket.xcodeproj">
+             </BuildableReference>
+          </BuildActionEntry>
       </BuildActionEntries>
    </BuildAction>
    <TestAction
@@ -41,8 +223,6 @@
       selectedDebuggerIdentifier = "Xcode.DebuggerFoundation.Debugger.LLDB"
       selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
       shouldUseLaunchSchemeArgsEnv = "YES">
-      <Testables>
-      </Testables>
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
@@ -52,8 +232,8 @@
             ReferencedContainer = "container:RNTester.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
-      <AdditionalOptions>
-      </AdditionalOptions>
+      <Testables>
+      </Testables>
    </TestAction>
    <LaunchAction
       buildConfiguration = "Debug"
@@ -74,8 +254,6 @@
             ReferencedContainer = "container:RNTester.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
-      <AdditionalOptions>
-      </AdditionalOptions>
    </LaunchAction>
    <ProfileAction
       buildConfiguration = "Release"
