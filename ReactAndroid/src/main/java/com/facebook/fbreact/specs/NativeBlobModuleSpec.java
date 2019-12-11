@@ -55,11 +55,10 @@ public abstract class NativeBlobModuleSpec extends ReactContextBaseJavaModule im
   public final @Nullable Map<String, Object> getConstants() {
     Map<String, Object> constants = getTypedExportedConstants();
     if (ReactBuildConfig.DEBUG || ReactBuildConfig.IS_INTERNAL_BUILD) {
-      Set<String> obligatoryFlowConstants = new HashSet<>(Arrays.asList(
-          "BLOB_URI_SCHEME"
-      ));
+      Set<String> obligatoryFlowConstants = new HashSet<>();
       Set<String> optionalFlowConstants = new HashSet<>(Arrays.asList(
-          "BLOB_URI_HOST"
+          "BLOB_URI_HOST",
+          "BLOB_URI_SCHEME"
       ));
       Set<String> undeclaredConstants = new HashSet<>(constants.keySet());
       undeclaredConstants.removeAll(obligatoryFlowConstants);
