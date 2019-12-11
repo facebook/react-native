@@ -8,6 +8,7 @@
 #import "RCTAppearance.h"
 
 #import <FBReactNativeSpec/FBReactNativeSpec.h>
+#import <React/RCTConstants.h>
 #import <React/RCTEventEmitter.h>
 
 #import "CoreModulesPlugins.h"
@@ -86,7 +87,7 @@ RCT_EXPORT_SYNCHRONOUS_TYPED_METHOD(NSString *, getColorScheme)
   NSDictionary *userInfo = [notification userInfo];
   UITraitCollection *traitCollection = nil;
   if (userInfo) {
-    traitCollection = userInfo[@"traitCollection"];
+    traitCollection = userInfo[RCTUserInterfaceStyleDidChangeNotificationTraitCollectionKey];
   }
   NSString *newColorScheme = RCTColorSchemePreference(traitCollection);
   if (![_currentColorScheme isEqualToString:newColorScheme]) {
