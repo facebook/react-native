@@ -35,6 +35,12 @@
   [self _updateDelegate];
 }
 
+- (void)removeAllDelegates
+{
+  [_delegates removeAllObjects];
+  [self _updateDelegate];
+}
+
 #pragma mark - Private
 
 - (void)_updateDelegate

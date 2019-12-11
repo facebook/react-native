@@ -80,6 +80,13 @@ static void RCTSendPaperScrollEvent_DEPRECATED(UIScrollView *scrollView, NSInteg
   return self;
 }
 
+- (void)dealloc
+{
+  // Removing all delegates from the splitter nils the actual delegate which prevents a crash on UIScrollView
+  // deallocation.
+  [self.scrollViewDelegateSplitter removeAllDelegates];
+}
+
 - (RCTGenericDelegateSplitter<id<UIScrollViewDelegate>> *)scrollViewDelegateSplitter
 {
   return ((RCTEnhancedScrollView *)_scrollView).delegateSplitter;
