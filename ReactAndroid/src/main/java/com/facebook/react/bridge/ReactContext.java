@@ -413,6 +413,11 @@ public class ReactContext extends ContextWrapper {
     return mCurrentActivity.get();
   }
 
+  /** @deprecated DO NOT USE, this method will be removed in the near future. */
+  public boolean isBridgeless() {
+    return false;
+  }
+
   /**
    * Get the C pointer (as a long) to the JavaScriptCore context associated with this instance. Use
    * the following pattern to ensure that the JS context is not cleared while you are using it:
