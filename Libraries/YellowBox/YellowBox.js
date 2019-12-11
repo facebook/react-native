@@ -14,6 +14,8 @@ const React = require('react');
 
 import type {Registry, IgnorePattern} from './Data/YellowBoxRegistry';
 import * as LogBoxData from '../LogBox/Data/LogBoxData';
+import NativeLogBox from '../NativeModules/specs/NativeLogBox';
+
 type Props = $ReadOnly<{||}>;
 type State = {|
   registry: ?Registry,
@@ -118,6 +120,11 @@ if (__DEV__) {
     }
 
     static __unstable_enableLogBox(): void {
+      if (NativeLogBox == null) {
+        // The native module is required to enable LogBox.
+        return;
+      }
+
       if (_isInstalled) {
         throw new Error(
           'LogBox must be enabled before AppContainer is required so that it can properly wrap the console methods.\n\nPlease enable LogBox earlier in your app.\n\n',
