@@ -16,7 +16,7 @@ const YellowBox = require('../YellowBox');
 const YellowBoxRegistry = require('../Data/YellowBoxRegistry');
 const LogBoxData = require('../../LogBox/Data/LogBoxData');
 const render = require('../../../jest/renderer');
-
+jest.mock('../../NativeModules/specs/NativeLogBox', () => true);
 jest.mock('../../LogBox/LogBoxNotificationContainer', () => ({
   __esModule: true,
   default: 'LogBoxNotificationContainer',
