@@ -77,7 +77,7 @@ xcprettyFormat() {
     REPORTS_DIR="$THIS_DIR/../build/reports"
   fi
 
-  xcpretty --report junit --output "$REPORTS_DIR/$TEST_NAME/results.xml"
+  xcpretty --report junit --output "$REPORTS_DIR/ios/results.xml"
 }
 
 preloadBundles() {

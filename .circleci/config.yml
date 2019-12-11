@@ -53,7 +53,7 @@ commands:
     steps:
       - run:
           name: Initial Setup
-          command: mkdir -p ./reports/{buck,build,junit,outputs,results}
+          command: mkdir -p ./reports/{buck,build,junit,outputs}
 
   run_yarn:
     steps:
@@ -519,7 +519,7 @@ jobs:
             find . -type f -regex ".*/outputs/androidTest-results/connected/.*xml" -exec cp {} ./reports/outputs/ \;
             find . -type f -regex ".*/buck-out/gen/ReactAndroid/src/test/.*/.*xml" -exec cp {} ./reports/buck/ \;
             if [ -f ~/react-native/reports/buck/all-results-raw.xml ]; then
-              ./tooling/junit/buck_to_junit.sh ~/react-native/reports/buck/all-results-raw.xml ~/react-native/reports/results/all-results-junit.xml
+              ./tooling/junit/buck_to_junit.sh ~/react-native/reports/buck/all-results-raw.xml ~/react-native/reports/junit/results.xml
             fi
           when: always
 
