@@ -427,4 +427,12 @@ public class ReactContext extends ContextWrapper {
   public JavaScriptContextHolder getJavaScriptContextHolder() {
     return mCatalystInstance.getJavaScriptContextHolder();
   }
+
+  public JSIModule getJSIModule(JSIModuleType moduleType) {
+    if (!hasActiveCatalystInstance()) {
+      throw new IllegalStateException(
+          "Unable to retrieve a JSIModule if CatalystInstance is not active.");
+    }
+    return mCatalystInstance.getJSIModule(moduleType);
+  }
 }
