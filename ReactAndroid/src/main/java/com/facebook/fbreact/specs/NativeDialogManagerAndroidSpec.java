@@ -12,6 +12,7 @@
 
 package com.facebook.fbreact.specs;
 
+import androidx.annotation.Nullable;
 import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
@@ -24,7 +25,6 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import javax.annotation.Nullable;
 
 public abstract class NativeDialogManagerAndroidSpec extends ReactContextBaseJavaModule implements ReactModuleWithSpec, TurboModule {
   public NativeDialogManagerAndroidSpec(ReactApplicationContext reactContext) {

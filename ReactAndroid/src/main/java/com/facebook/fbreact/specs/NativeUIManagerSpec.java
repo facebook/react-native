@@ -12,6 +12,7 @@
 
 package com.facebook.fbreact.specs;
 
+import androidx.annotation.Nullable;
 import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
@@ -23,7 +24,6 @@ import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.turbomodule.core.interfaces.TurboModule;
 import java.util.Map;
-import javax.annotation.Nullable;
 
 public abstract class NativeUIManagerSpec extends ReactContextBaseJavaModule implements ReactModuleWithSpec, TurboModule {
   public NativeUIManagerSpec(ReactApplicationContext reactContext) {

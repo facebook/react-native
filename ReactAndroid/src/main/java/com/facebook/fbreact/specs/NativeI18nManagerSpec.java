@@ -12,6 +12,7 @@
 
 package com.facebook.fbreact.specs;
 
+import androidx.annotation.Nullable;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
@@ -22,7 +23,6 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import javax.annotation.Nullable;
 
 public abstract class NativeI18nManagerSpec extends ReactContextBaseJavaModule implements ReactModuleWithSpec, TurboModule {
   public NativeI18nManagerSpec(ReactApplicationContext reactContext) {
