@@ -415,6 +415,9 @@ jobs:
             - ~/.cocoapods/repos
           key: v1-cocoapods-{{ checksum "template/ios/Podfile" }}
 
+      - store_test_results:
+          path: ./reports/junit
+
   test_js_e2e:
     executor: node8
     steps:
