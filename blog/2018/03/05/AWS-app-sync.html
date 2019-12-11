@@ -107,16 +107,16 @@ react-<span class="hljs-keyword">native</span> <span class="hljs-keyword">link</
 </code></pre>
 <p>We're also excited to see that the Expo team has included this <a href="https://blog.expo.io/expo-sdk-v25-0-0-is-now-available-714d10a8c3f7">in their latest SDK</a> so that you can use Amplify without ejecting.</p>
 <p>Finally, specific to React Native (and React) development, Amplify contains <a href="https://reactjs.org/docs/higher-order-components.html">higher order components (HOCs)</a> for easily wrapping functionality, such as for sign-up and sign-in to your app:</p>
-<pre><code class="hljs"><span class="hljs-keyword">import</span> <span class="hljs-type">Amplify</span>, { withAuthenticator } from <span class="hljs-symbol">'aws</span>-amplify-react-native';
-<span class="hljs-keyword">import</span> aws_exports from './aws-exports';
+<pre><code class="hljs">import Amplify, { withAuthenticator } <span class="hljs-keyword">from</span> <span class="hljs-string">'aws-amplify-react-native'</span>;
+import aws_exports <span class="hljs-keyword">from</span> <span class="hljs-string">'./aws-exports'</span>;
 
-<span class="hljs-type">Amplify</span>.configure(aws_exports);
+Amplify.configure(aws_exports);
 
-<span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">App</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">React</span>.<span class="hljs-title">Component</span> </span>{
-...
+class App extends React.Component {
+<span class="hljs-built_in">..</span>.
 }
 
-export <span class="hljs-keyword">default</span> withAuthenticator(<span class="hljs-type">App</span>);
+<span class="hljs-builtin-name">export</span><span class="hljs-built_in"> default </span>withAuthenticator(App);
 </code></pre>
 <p>The underlying component is also provided as <code>&lt;Authenticator /&gt;</code>, which gives you full control to customize the UI. It also gives you some properties around managing the state of the user, such as if they've signed in or are waiting for MFA confirmation, and callbacks that you can fire when state changes.</p>
 <p>Similarly, you'll find general React components that you can use for different use cases. You can customize these to your needs, for example, to show all private images from Amazon S3 in the <code>Storage</code> module:</p>
@@ -137,14 +137,14 @@ export <span class="hljs-keyword">default</span> withAuthenticator(<span class="
 <p>In a way similar to AWS Amplify, you can use <a href="https://docs.aws.amazon.com/appsync/latest/devguide/security.html">enterprise security features</a> on your GraphQL API with AWS AppSync. The service lets you get started quickly with API keys. However, as you roll to production it can transition to using AWS Identity and Access Management (IAM) or OIDC tokens from Amazon Cognito user pools. You can control access at the resolver level with policies on types. You can even use logical checks for <a href="https://docs.aws.amazon.com/appsync/latest/devguide/security.html#fine-grained-access-control">fine-grained access control</a> checks at run time, such as detecting if a user is the owner of a specific database resource. There are also capabilities around checking group membership for executing resolvers or individual database record access.</p>
 <p>To help React Native developers learn more about these technologies, there is a <a href="https://docs.aws.amazon.com/appsync/latest/devguide/quickstart.html">built-in GraphQL sample schema</a> that you can launch on the AWS AppSync console homepage. This sample deploys a GraphQL schema, provisions database tables, and connects queries, mutations, and subscriptions automatically for you. There is also a functioning <a href="https://github.com/aws-samples/aws-mobile-appsync-events-starter-react-native">React Native example for AWS AppSync</a> which leverages this built in schema (as well as a <a href="https://github.com/aws-samples/aws-mobile-appsync-events-starter-react">React example</a>), which enable you to get both your client and cloud components running in minutes.</p>
 <p>Getting started is simple when you use the <code>AWSAppSyncClient</code>, which plugs in to the <a href="https://github.com/apollographql/apollo-client">Apollo Client</a>. The <code>AWSAppSyncClient</code> handles security and signing for your GraphQL API, offline functionality, and the subscription handshake and negotiation process:</p>
-<pre><code class="hljs"><span class="hljs-keyword">import</span> AWSAppSyncClient <span class="hljs-keyword">from</span> <span class="hljs-string">"aws-appsync"</span>;
-<span class="hljs-keyword">import</span> { Rehydrated } <span class="hljs-keyword">from</span> <span class="hljs-string">'aws-appsync-react'</span>;
-<span class="hljs-keyword">import</span> { AUTH_TYPE } <span class="hljs-keyword">from</span> <span class="hljs-string">"aws-appsync/lib/link/auth-link"</span>;
+<pre><code class="hljs">import AWSAppSyncClient <span class="hljs-keyword">from</span> <span class="hljs-string">"aws-appsync"</span>;
+import { Rehydrated } <span class="hljs-keyword">from</span> <span class="hljs-string">'aws-appsync-react'</span>;
+import { AUTH_TYPE } <span class="hljs-keyword">from</span> <span class="hljs-string">"aws-appsync/lib/link/auth-link"</span>;
 
-<span class="hljs-keyword">const</span> client = <span class="hljs-keyword">new</span> AWSAppSyncClient({
+const<span class="hljs-built_in"> client </span>= new AWSAppSyncClient({
   url: awsconfig.graphqlEndpoint,
   region: awsconfig.region,
-  auth: {<span class="hljs-keyword">type</span>: AUTH_TYPE.API_KEY, apiKey: awsconfig.apiKey}
+  auth: {type: AUTH_TYPE.API_KEY, apiKey: awsconfig.apiKey}
 });
 </code></pre>
 <p>The AppSync console provides a configuration file for download, which contains your GraphQL endpoint, AWS Region, and API key. You can then use the client with <a href="https://github.com/apollographql/react-apollo">React Apollo</a>:</p>

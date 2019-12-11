@@ -68,12 +68,12 @@
                 };
               }
             });
-        </script></nav></div><div class="container mainContainer"><div class="wrapper"><div class="post"><header class="postHeader"><a class="edit-page-link button" href="https://github.com/facebook/react-native-website/blob/master/docs/textinput.md" target="_blank" rel="noreferrer noopener">Edit</a><h1 class="postHeaderTitle">TextInput</h1></header><article><div><span><p>A foundational component for inputting text into the app via a keyboard. Props provide configurability for several features, such as auto-correction, auto-capitalization, placeholder text, and different keyboard types, such as a numeric keypad.</p>
+        </script></nav></div><div class="container mainContainer docsContainer"><div class="wrapper"><div class="post"><header class="postHeader"><a class="edit-page-link button" href="https://github.com/facebook/react-native-website/blob/master/docs/textinput.md" target="_blank" rel="noreferrer noopener">Edit</a><h1 id="__docusaurus" class="postHeaderTitle">TextInput</h1></header><article><div><span><p>A foundational component for inputting text into the app via a keyboard. Props provide configurability for several features, such as auto-correction, auto-capitalization, placeholder text, and different keyboard types, such as a numeric keypad.</p>
 <p>One use case is to plop down a <code>TextInput</code> and subscribe to the <code>onChangeText</code> events to read the user input. There are also other events, such as <code>onSubmitEditing</code> and <code>onFocus</code> that can be subscribed to. A minimal example:</p>
-<pre><code class="hljs">  &lt;TextInput
-    style={{<span class="hljs-built_in">height</span>: <span class="hljs-number">40</span>, borderColor: <span class="hljs-string">'gray'</span>, borderWidth: <span class="hljs-number">1</span>}}
-    onChangeText={(<span class="hljs-built_in">text</span>) =&gt; <span class="hljs-keyword">this</span>.setState({<span class="hljs-built_in">text</span>})}
-    value={<span class="hljs-keyword">this</span>.state.<span class="hljs-built_in">text</span>}
+<pre><code class="hljs">  <span class="hljs-variable">&lt;TextInput
+    style={{height: 40, borderColor: 'gray', borderWidth: 1}}
+    onChangeText={(text) =&gt;</span> this.<span class="hljs-built_in">set</span>State({text})}
+    value={this.<span class="hljs-keyword">state</span>.text}
   /&gt;
 </code></pre>
 <p>Note that some props are only available with multiline={true/false}:</p>

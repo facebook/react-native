@@ -68,7 +68,7 @@
                 };
               }
             });
-        </script></nav></div><div class="container mainContainer"><div class="wrapper"><div class="post"><header class="postHeader"><a class="edit-page-link button" href="https://github.com/facebook/react-native-website/blob/master/docs/getting-started.md" target="_blank" rel="noreferrer noopener">Edit</a><h1 class="postHeaderTitle">Getting Started</h1></header><article><div><span><p>This page will help you install and build your first React Native app. If you already have React Native installed, you can skip ahead to the <a href="/react-native/docs/0.32/tutorial">Tutorial</a>.</p>
+        </script></nav></div><div class="container mainContainer docsContainer"><div class="wrapper"><div class="post"><header class="postHeader"><a class="edit-page-link button" href="https://github.com/facebook/react-native-website/blob/master/docs/getting-started.md" target="_blank" rel="noreferrer noopener">Edit</a><h1 id="__docusaurus" class="postHeaderTitle">Getting Started</h1></header><article><div><span><p>This page will help you install and build your first React Native app. If you already have React Native installed, you can skip ahead to the <a href="/react-native/docs/0.32/tutorial">Tutorial</a>.</p>
 <p><strong>If you are new to mobile development</strong>, the easiest way to get started is with Expo CLI. Expo is a set of tools built around React Native and, while it has many <a href="https://expo.io/features">features</a>, the most relevant feature for us right now is that it can get you writing a React Native app within minutes. You will only need a recent version of Node.js and a phone or emulator. If you'd like to try out React Native directly in your web browser before installing any tools, you can try out <a href="https://snack.expo.io/">Snack</a>.</p>
 <p><strong>If you are already familiar with mobile development</strong>, you may want to use React Native CLI. It requires Xcode or Android Studio to get started. If you already have one of these tools installed, you should be able to get up and running within a few minutes. If they are not installed, you should expect to spend about an hour installing and configuring them.</p>
 <div class="toggler">
@@ -172,7 +172,7 @@ npm start <span class="hljs-comment"># you can also use: expo start</span>
 <p>We recommend installing Node and Python2 via <a href="https://chocolatey.org">Chocolatey</a>, a popular package manager for Windows.</p>
 <p>React Native also requires a recent version of the <a href="http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html">Java SE Development Kit (JDK)</a>, as well as Python 2. Both can be installed using Chocolatey.</p>
 <p>Open an Administrator Command Prompt (right click Command Prompt and select &quot;Run as Administrator&quot;), then run the following command:</p>
-<pre><code class="hljs css language-powershell">choco install -y nodejs.install python2 jdk8
+<pre><code class="hljs css language-powershell">choco install <span class="hljs-literal">-y</span> nodejs.install python2 jdk8
 </code></pre>
 <p>If you have already installed Node on your system, make sure it is Node 8.3 or newer. If you already have a JDK on your system, make sure it is version 8 or newer.</p>
 <blockquote>
@@ -191,7 +191,7 @@ npm start <span class="hljs-comment"># you can also use: expo start</span>
 <p><h3>The React Native CLI</h3></p>
 <p>Node comes with npm, which lets you install the React Native command line interface.</p>
 <p>Run the following command in a Command Prompt or shell:</p>
-<pre><code class="hljs css language-powershell">npm install -g react-native-cli
+<pre><code class="hljs css language-powershell">npm install <span class="hljs-literal">-g</span> react<span class="hljs-literal">-native</span><span class="hljs-literal">-cli</span>
 </code></pre>
 <blockquote>
 <p>If you get an error like <code>Cannot find module 'npmlog'</code>, try installing npm directly: <code>curl -0 -L https://npmjs.org/install.sh | sudo sh</code>.</p>
@@ -286,7 +286,7 @@ npm start <span class="hljs-comment"># you can also use: expo start</span>
 <p><h4>4. Add platform-tools to Path</h4></p>
 <p>Open the System pane under <strong>System and Security</strong> in the Windows Control Panel, then click on <strong>Change settings...</strong>. Open the <strong>Advanced</strong> tab and click on <strong>Environment Variables...</strong>. Select the <strong>Path</strong> variable, then click <strong>Edit</strong>. Click <strong>New</strong> and add the path to platform-tools to the list.</p>
 <p>The default location for this folder is:</p>
-<pre><code class="hljs css language-powershell">c:\Users\YOUR_USERNAME\AppData\Local\Android\Sdk\platform-tools
+<pre><code class="hljs css language-powershell">c:\Users\YOUR_USERNAME\AppData\Local\Android\Sdk\platform<span class="hljs-literal">-tools</span>
 </code></pre>
 <p><block class="native linux android" /></p>
 <p><h3>Watchman</h3></p>
@@ -302,7 +302,7 @@ npm start <span class="hljs-comment"># you can also use: expo start</span>
 <p>This is not necessary if you are integrating React Native into an existing application, if you &quot;ejected&quot; from Expo (or Create React Native App), or if you're adding iOS support to an existing React Native project (see <a href="/react-native/docs/0.32/platform-specific-code">Platform Specific Code</a>). You can also use a third-party CLI to init your React Native app, such as <a href="https://github.com/infinitered/ignite">Ignite CLI</a>.</p>
 <p><h3>[Optional] Using a specific version</h3></p>
 <p>If you want to start a new project with a specific React Native version, you can use the <code>--version</code> argument:</p>
-<pre><code class="hljs">react-native init AwesomeProject --version X<span class="hljs-selector-class">.XX</span><span class="hljs-selector-class">.X</span>
+<pre><code class="hljs"><span class="hljs-selector-tag">react-native</span> <span class="hljs-selector-tag">init</span> <span class="hljs-selector-tag">AwesomeProject</span> <span class="hljs-selector-tag">--version</span> <span class="hljs-selector-tag">X</span><span class="hljs-selector-class">.XX</span><span class="hljs-selector-class">.X</span>
 </code></pre>
 <pre><code class="hljs">react-<span class="hljs-keyword">native</span> init AwesomeProject --version react-<span class="hljs-keyword">native</span><span class="hljs-meta">@next</span>
 </code></pre>
@@ -314,7 +314,7 @@ npm start <span class="hljs-comment"># you can also use: expo start</span>
 <p>This is not necessary if you are integrating React Native into an existing application, if you &quot;ejected&quot; from Create React Native App, or if you're adding Android support to an existing React Native project (see <a href="/react-native/docs/0.32/platform-specific-code">Platform Specific Code</a>). You can also use a third-party CLI to init your React Native app, such as <a href="https://github.com/infinitered/ignite">Ignite CLI</a>.</p>
 <p><h3>[Optional] Using a specific version</h3></p>
 <p>If you want to start a new project with a specific React Native version, you can use the <code>--version</code> argument:</p>
-<pre><code class="hljs">react-native init AwesomeProject --version X<span class="hljs-selector-class">.XX</span><span class="hljs-selector-class">.X</span>
+<pre><code class="hljs"><span class="hljs-selector-tag">react-native</span> <span class="hljs-selector-tag">init</span> <span class="hljs-selector-tag">AwesomeProject</span> <span class="hljs-selector-tag">--version</span> <span class="hljs-selector-tag">X</span><span class="hljs-selector-class">.XX</span><span class="hljs-selector-class">.X</span>
 </code></pre>
 <pre><code class="hljs">react-<span class="hljs-keyword">native</span> init AwesomeProject --version react-<span class="hljs-keyword">native</span><span class="hljs-meta">@next</span>
 </code></pre>

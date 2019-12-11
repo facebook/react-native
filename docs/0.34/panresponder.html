@@ -68,7 +68,7 @@
                 };
               }
             });
-        </script></nav></div><div class="container mainContainer"><div class="wrapper"><div class="post"><header class="postHeader"><a class="edit-page-link button" href="https://github.com/facebook/react-native-website/blob/master/docs/panresponder.md" target="_blank" rel="noreferrer noopener">Edit</a><h1 class="postHeaderTitle">PanResponder</h1></header><article><div><span><p><code>PanResponder</code> reconciles several touches into a single gesture. It makes single-touch gestures resilient to extra touches, and can be used to recognize basic multi-touch gestures.</p>
+        </script></nav></div><div class="container mainContainer docsContainer"><div class="wrapper"><div class="post"><header class="postHeader"><a class="edit-page-link button" href="https://github.com/facebook/react-native-website/blob/master/docs/panresponder.md" target="_blank" rel="noreferrer noopener">Edit</a><h1 id="__docusaurus" class="postHeaderTitle">PanResponder</h1></header><article><div><span><p><code>PanResponder</code> reconciles several touches into a single gesture. It makes single-touch gestures resilient to extra touches, and can be used to recognize basic multi-touch gestures.</p>
 <p>By default, <code>PanResponder</code> holds an `InteractionManager handle to block long-running JS events from interrupting active gestures.</p>
 <p>It provides a predictable wrapper of the responder handlers provided by the <a href="/react-native/docs/0.34/gesture-responder-system">gesture responder system</a>. For each handler, it provides a new <code>gestureState</code> object alongside the native event object:</p>
 <pre><code class="hljs">onPanResponderMove: <span class="hljs-function"><span class="hljs-params">(event, gestureState)</span> =&gt;</span> {}
@@ -105,7 +105,7 @@
 <pre><code class="hljs">  componentWillMount: <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) </span>{
     <span class="hljs-keyword">this</span>._panResponder = PanResponder.create({
       <span class="hljs-comment">// Ask to be the responder:</span>
-      onStartShouldSetPanResponder: <span class="hljs-function">(<span class="hljs-params">evt, gestureState</span>) =&gt;</span> <span class="hljs-literal">true</span>,
+      <span class="hljs-attr">onStartShouldSetPanResponder</span>: <span class="hljs-function">(<span class="hljs-params">evt, gestureState</span>) =&gt;</span> <span class="hljs-literal">true</span>,
       <span class="hljs-attr">onStartShouldSetPanResponderCapture</span>: <span class="hljs-function">(<span class="hljs-params">evt, gestureState</span>) =&gt;</span> <span class="hljs-literal">true</span>,
       <span class="hljs-attr">onMoveShouldSetPanResponder</span>: <span class="hljs-function">(<span class="hljs-params">evt, gestureState</span>) =&gt;</span> <span class="hljs-literal">true</span>,
       <span class="hljs-attr">onMoveShouldSetPanResponderCapture</span>: <span class="hljs-function">(<span class="hljs-params">evt, gestureState</span>) =&gt;</span> <span class="hljs-literal">true</span>,

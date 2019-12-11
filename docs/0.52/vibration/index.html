@@ -68,7 +68,7 @@
                 };
               }
             });
-        </script></nav></div><div class="container mainContainer"><div class="wrapper"><div class="post"><header class="postHeader"><a class="edit-page-link button" href="https://github.com/facebook/react-native-website/blob/master/docs/vibration.md" target="_blank" rel="noreferrer noopener">Edit</a><h1 class="postHeaderTitle">Vibration</h1></header><article><div><span><p>The Vibration API is exposed at <code>Vibration.vibrate()</code>. The vibration is synchronous so this method will return immediately.</p>
+        </script></nav></div><div class="container mainContainer docsContainer"><div class="wrapper"><div class="post"><header class="postHeader"><a class="edit-page-link button" href="https://github.com/facebook/react-native-website/blob/master/docs/vibration.md" target="_blank" rel="noreferrer noopener">Edit</a><h1 id="__docusaurus" class="postHeaderTitle">Vibration</h1></header><article><div><span><p>The Vibration API is exposed at <code>Vibration.vibrate()</code>. The vibration is synchronous so this method will return immediately.</p>
 <p>There will be no effect on devices that do not support Vibration, eg. the simulator.</p>
 <p><strong>Note for Android:</strong> add <code>&lt;uses-permission android:name=&quot;android.permission.VIBRATE&quot;/&gt;</code> to <code>AndroidManifest.xml</code></p>
 <p>Since the <strong>vibration duration in iOS is not configurable</strong>, so there are some differences with Android. In Android, if <code>pattern</code> is a number, it specified the vibration duration in ms. If <code>pattern</code> is an array, those odd indices is the vibration duration, while the even one are the separation time.</p>

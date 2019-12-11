@@ -449,14 +449,14 @@ $ <span class="hljs-built_in">create-react-native-app</span> <span class="hljs-s
 <p>Finally, we added a custom Flow type declaration for <code>idx</code> that allows the traversal in the second argument to be properly type-checked while permitting nested access on nullable properties.</p>
 <p>The function, Babel plugin, and Flow declaration are now <a href="https://github.com/facebookincubator/idx">available on GitHub</a>. They are used by installing the <strong>idx</strong> and <strong>babel-plugin-idx</strong> npm packages, and adding “idx” to the list of plugins in your <code>.babelrc</code> file.</p>
 </span></div></article></div><div class="post"><header class="postHeader"><h1 class="postHeaderTitle"><a href="/react-native/blog/2017/03/13/better-list-views">Better List Views in React Native</a></h1><p class="post-meta">March 13, 2017</p><div class="authorBlock"><p class="post-authorName"><a href="https://github.com/sahrens" target="_blank" rel="noreferrer noopener">Spencer Ahrens</a>Software Engineer at Facebook</p><div class="authorPhoto authorPhotoBig"><a href="https://github.com/sahrens" target="_blank" rel="noreferrer noopener"><img src="https://avatars1.githubusercontent.com/u/1509831" alt="Spencer Ahrens"/></a></div></div></header><article class="post-content"><div><span><p>Many of you have started playing with some of our new List components already after our <a href="https://www.facebook.com/groups/react.native.community/permalink/921378591331053">teaser announcement in the community group</a>, but we are officially announcing them today! No more <code>ListView</code>s or <code>DataSource</code>s, stale rows, ignored bugs, or excessive memory consumption - with the latest React Native March 2017 release candidate (<code>0.43-rc.1</code>) you can pick from the new suite of components what best fits your use-case, with great perf and feature sets out of the box:</p>
-<h3><a class="anchor" aria-hidden="true" id="flatlist-https-facebookgithubio-react-native-releases-next-flatlistmd"></a><a href="#flatlist-https-facebookgithubio-react-native-releases-next-flatlistmd" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><a href="https://facebook.github.io/react-native/releases/next/flatlist.md"><code>&lt;FlatList&gt;</code></a></h3>
+<h3><a class="anchor" aria-hidden="true" id="flatlisthttpsfacebookgithubioreact-nativereleasesnextflatlistmd"></a><a href="#flatlisthttpsfacebookgithubioreact-nativereleasesnextflatlistmd" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><a href="https://facebook.github.io/react-native/releases/next/flatlist.md"><code>&lt;FlatList&gt;</code></a></h3>
 <p>This is the workhorse component for simple, performant lists. Provide an array of data and a <code>renderItem</code> function and you're good to go:</p>
 <pre><code class="hljs">&lt;FlatList
   data={[{<span class="hljs-meta">title</span>: <span class="hljs-string">'Title Text'</span>, <span class="hljs-meta">key</span>: <span class="hljs-string">'item1'</span>}, ...]}
   renderItem={({item}) =&gt; &lt;ListItem <span class="hljs-meta">title</span>={item.<span class="hljs-meta">title</span>} /&gt;}
 /&gt;
 </code></pre>
-<h3><a class="anchor" aria-hidden="true" id="sectionlist-https-facebookgithubio-react-native-releases-next-sectionlistmd"></a><a href="#sectionlist-https-facebookgithubio-react-native-releases-next-sectionlistmd" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><a href="https://facebook.github.io/react-native/releases/next/sectionlist.md"><code>&lt;SectionList&gt;</code></a></h3>
+<h3><a class="anchor" aria-hidden="true" id="sectionlisthttpsfacebookgithubioreact-nativereleasesnextsectionlistmd"></a><a href="#sectionlisthttpsfacebookgithubioreact-nativereleasesnextsectionlistmd" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><a href="https://facebook.github.io/react-native/releases/next/sectionlist.md"><code>&lt;SectionList&gt;</code></a></h3>
 <p>If you want to render a set of data broken into logical sections, maybe with section headers (e.g. in an alphabetical address book), and potentially with heterogeneous data and rendering (such as a profile view with some buttons followed by a composer, then a photo grid, then a friend grid, and finally a list of stories), this is the way to go.</p>
 <pre><code class="hljs">&lt;SectionList
   renderItem={({item}) =&gt; &lt;ListItem title={item.title} /&gt;}
@@ -476,7 +476,7 @@ $ <span class="hljs-built_in">create-react-native-app</span> <span class="hljs-s
   ]}
 /&gt;
 </code></pre>
-<h3><a class="anchor" aria-hidden="true" id="virtualizedlist-https-facebookgithubio-react-native-releases-next-virtualizedlistmd"></a><a href="#virtualizedlist-https-facebookgithubio-react-native-releases-next-virtualizedlistmd" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><a href="https://facebook.github.io/react-native/releases/next/virtualizedlist.md"><code>&lt;VirtualizedList&gt;</code></a></h3>
+<h3><a class="anchor" aria-hidden="true" id="virtualizedlisthttpsfacebookgithubioreact-nativereleasesnextvirtualizedlistmd"></a><a href="#virtualizedlisthttpsfacebookgithubioreact-nativereleasesnextvirtualizedlistmd" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><a href="https://facebook.github.io/react-native/releases/next/virtualizedlist.md"><code>&lt;VirtualizedList&gt;</code></a></h3>
 <p>The implementation behind the scenes with a more flexible API. Especially handy if your data is not in a plain array (e.g. an immutable list).</p>
 <h2><a class="anchor" aria-hidden="true" id="features"></a><a href="#features" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Features</h2>
 <p>Lists are used in many contexts, so we packed the new components full of features to handle the majority of use cases out of the box:</p>
@@ -566,13 +566,13 @@ $ <span class="hljs-built_in">create-react-native-app</span> <span class="hljs-s
 });
 </code></pre>
 <p>Create the native interpolation node, this tells the native driver how to interpolate a value:</p>
-<pre><code class="hljs"><span class="hljs-selector-tag">NativeAnimatedModule</span><span class="hljs-selector-class">.createNode</span>({
-  <span class="hljs-attribute">id</span>: <span class="hljs-number">2</span>,
-  type: <span class="hljs-string">'interpolation'</span>,
-  inputRange: [<span class="hljs-number">0</span>, <span class="hljs-number">10</span>],
-  outputRange: [<span class="hljs-number">10</span>, <span class="hljs-number">0</span>],
-  extrapolate: <span class="hljs-string">'clamp'</span>,
-});
+<pre><code class="hljs"><span class="hljs-string">NativeAnimatedModule.createNode({</span>
+  <span class="hljs-attr">id:</span> <span class="hljs-number">2</span><span class="hljs-string">,</span>
+  <span class="hljs-attr">type:</span> <span class="hljs-string">'interpolation'</span><span class="hljs-string">,</span>
+  <span class="hljs-attr">inputRange:</span> <span class="hljs-string">[0,</span> <span class="hljs-number">10</span><span class="hljs-string">],</span>
+  <span class="hljs-attr">outputRange:</span> <span class="hljs-string">[10,</span> <span class="hljs-number">0</span><span class="hljs-string">],</span>
+  <span class="hljs-attr">extrapolate:</span> <span class="hljs-string">'clamp'</span><span class="hljs-string">,</span>
+<span class="hljs-string">});</span>
 </code></pre>
 <p>Create the native props node, this tells the native driver which prop on the view it is attached to:</p>
 <pre><code class="hljs"><span class="hljs-selector-tag">NativeAnimatedModule</span><span class="hljs-selector-class">.createNode</span>({
@@ -590,11 +590,11 @@ $ <span class="hljs-built_in">create-react-native-app</span> <span class="hljs-s
 </code></pre>
 <p>With that, the native animated module has all the info it needs to update the native views directly without having to go to JS to calculate any value.</p>
 <p>All there is left to do is actually start the animation by specifying what type of animation curve we want and what animated value to update. Timing animations can also be simplified by calculating every frame of the animation in advance in JS to make the native implementation smaller.</p>
-<pre><code class="hljs">NativeAnimatedModule.startAnimation({
-  type: <span class="hljs-string">'timing'</span>,
-  frames: [<span class="hljs-number">0</span>, <span class="hljs-number">0.1</span>, <span class="hljs-number">0.2</span>, <span class="hljs-number">0.4</span>, <span class="hljs-number">0.65</span>, ...],
-  animatedValueId: <span class="hljs-number">1</span>,
-});
+<pre><code class="hljs"><span class="hljs-string">NativeAnimatedModule.startAnimation({</span>
+  <span class="hljs-attr">type:</span> <span class="hljs-string">'timing'</span><span class="hljs-string">,</span>
+  <span class="hljs-attr">frames:</span> <span class="hljs-string">[0,</span> <span class="hljs-number">0.1</span><span class="hljs-string">,</span> <span class="hljs-number">0.2</span><span class="hljs-string">,</span> <span class="hljs-number">0.4</span><span class="hljs-string">,</span> <span class="hljs-number">0.65</span><span class="hljs-string">,</span> <span class="hljs-string">...],</span>
+  <span class="hljs-attr">animatedValueId:</span> <span class="hljs-number">1</span><span class="hljs-string">,</span>
+<span class="hljs-string">});</span>
 </code></pre>
 <p>And now here's the breakdown of what happens when the animation runs:</p>
 <ul>
@@ -631,15 +631,15 @@ $ <span class="hljs-built_in">create-react-native-app</span> <span class="hljs-s
 <span class="hljs-tag">&lt;/<span class="hljs-name">ScrollView</span>&gt;</span>
 </span></code></pre>
 <p>After:</p>
-<pre><code class="hljs">&lt;Animated<span class="hljs-selector-class">.ScrollView</span> <span class="hljs-comment">// &lt;-- Use the Animated ScrollView wrapper</span>
-  scrollEventThrottle={<span class="hljs-number">1</span>} <span class="hljs-comment">// &lt;-- Use 1 here to make sure no events are ever missed</span>
-  onScroll={Animated.event(
-    [{ nativeEvent: { contentOffset: { y: this<span class="hljs-selector-class">.state</span><span class="hljs-selector-class">.animatedValue</span> } } }],
-    { useNativeDriver: true } <span class="hljs-comment">// &lt;-- Add this</span>
-  )}
-&gt;
-  {<span class="hljs-attribute">content</span>}
-&lt;/Animated.ScrollView&gt;
+<pre><code class="hljs"><span class="hljs-string">&lt;Animated.ScrollView</span> <span class="hljs-string">//</span> <span class="hljs-string">&lt;--</span> <span class="hljs-string">Use</span> <span class="hljs-string">the</span> <span class="hljs-string">Animated</span> <span class="hljs-string">ScrollView</span> <span class="hljs-string">wrapper</span>
+  <span class="hljs-string">scrollEventThrottle={1}</span> <span class="hljs-string">//</span> <span class="hljs-string">&lt;--</span> <span class="hljs-string">Use</span> <span class="hljs-number">1</span> <span class="hljs-string">here</span> <span class="hljs-string">to</span> <span class="hljs-string">make</span> <span class="hljs-string">sure</span> <span class="hljs-literal">no</span> <span class="hljs-string">events</span> <span class="hljs-string">are</span> <span class="hljs-string">ever</span> <span class="hljs-string">missed</span>
+  <span class="hljs-string">onScroll={Animated.event(</span>
+    <span class="hljs-string">[{</span> <span class="hljs-attr">nativeEvent:</span> <span class="hljs-string">{</span> <span class="hljs-attr">contentOffset:</span> <span class="hljs-string">{</span> <span class="hljs-attr">y:</span> <span class="hljs-string">this.state.animatedValue</span> <span class="hljs-string">}</span> <span class="hljs-string">}</span> <span class="hljs-string">}],</span>
+    <span class="hljs-string">{</span> <span class="hljs-attr">useNativeDriver:</span> <span class="hljs-literal">true</span> <span class="hljs-string">}</span> <span class="hljs-string">//</span> <span class="hljs-string">&lt;--</span> <span class="hljs-string">Add</span> <span class="hljs-string">this</span>
+  <span class="hljs-string">)}</span>
+<span class="hljs-string">&gt;
+  {content}
+</span><span class="hljs-string">&lt;/Animated.ScrollView&gt;</span>
 </code></pre>
 <h2><a class="anchor" aria-hidden="true" id="caveats"></a><a href="#caveats" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Caveats</h2>
 <p>Not everything you can do with Animated is currently supported in Native Animated. The main limitation is that you can only animate non-layout properties, things like <code>transform</code> and <code>opacity</code> will work but Flexbox and position properties won't. Another one is with <code>Animated.event</code>, it will only work with direct events and not bubbling events. This means it does not work with <code>PanResponder</code> but does work with things like <code>ScrollView#onScroll</code>.</p>

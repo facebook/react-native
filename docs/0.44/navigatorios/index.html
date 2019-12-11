@@ -68,7 +68,7 @@
                 };
               }
             });
-        </script></nav></div><div class="container mainContainer"><div class="wrapper"><div class="post"><header class="postHeader"><a class="edit-page-link button" href="https://github.com/facebook/react-native-website/blob/master/docs/navigatorios.md" target="_blank" rel="noreferrer noopener">Edit</a><h1 class="postHeaderTitle">NavigatorIOS</h1></header><article><div><span><p><code>NavigatorIOS</code> is a wrapper around <a href="https://developer.apple.com/library/ios/documentation/UIKit/Reference/UINavigationController_Class/"><code>UINavigationController</code></a>, enabling you to implement a navigation stack. It works exactly the same as it would on a native app using <code>UINavigationController</code>, providing the same animations and behavior from UIKIt.</p>
+        </script></nav></div><div class="container mainContainer docsContainer"><div class="wrapper"><div class="post"><header class="postHeader"><a class="edit-page-link button" href="https://github.com/facebook/react-native-website/blob/master/docs/navigatorios.md" target="_blank" rel="noreferrer noopener">Edit</a><h1 id="__docusaurus" class="postHeaderTitle">NavigatorIOS</h1></header><article><div><span><p><code>NavigatorIOS</code> is a wrapper around <a href="https://developer.apple.com/library/ios/documentation/UIKit/Reference/UINavigationController_Class/"><code>UINavigationController</code></a>, enabling you to implement a navigation stack. It works exactly the same as it would on a native app using <code>UINavigationController</code>, providing the same animations and behavior from UIKIt.</p>
 <p>As the name implies, it is only available on iOS. Take a look at <a href="https://reactnavigation.org/"><code>React Navigation</code></a> for a cross-platform solution in JavaScript, or check out either of these components for native solutions: <a href="http://airbnb.io/native-navigation/">native-navigation</a>, <a href="https://github.com/wix/react-native-navigation">react-native-navigation</a>.</p>
 <p>To set up the navigator, provide the <code>initialRoute</code> prop with a route object. A route object is used to describe each scene that your app navigates to. <code>initialRoute</code> represents the first route in your navigator.</p>
 <pre><code class="hljs"><span class="hljs-keyword">import</span> <span class="hljs-type">React</span>, { <span class="hljs-type">Component</span>, <span class="hljs-type">PropTypes</span> } from <span class="hljs-symbol">'reac</span>t';
@@ -91,7 +91,7 @@ export <span class="hljs-keyword">default</span> <span class="hljs-class"><span 
 <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">MyScene</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">Component</span> </span>{
   static propTypes = {
     title: <span class="hljs-type">PropTypes</span>.string.isRequired,
-    navigator: <span class="hljs-type">PropTypes</span>.<span class="hljs-keyword">object</span>.isRequired,
+    navigator: <span class="hljs-type">PropTypes</span><span class="hljs-class">.<span class="hljs-keyword">object</span>.<span class="hljs-title">isRequired</span>,</span>
   }
 
   _onForward = () =&gt; {
