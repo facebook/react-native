@@ -2062,6 +2062,7 @@ namespace JS {
           RCTRequired<NSString *> osVersion;
           RCTRequired<NSString *> systemName;
           RCTRequired<NSString *> interfaceIdiom;
+          RCTRequired<bool> isMac;
         };
 
         /** Initialize with a set of values */
@@ -3671,6 +3672,8 @@ inline JS::NativePlatformConstantsIOS::Constants::Builder::Builder(const Input i
   d[@"systemName"] = systemName;
   auto interfaceIdiom = i.interfaceIdiom.get();
   d[@"interfaceIdiom"] = interfaceIdiom;
+  auto isMac = i.isMac.get();
+  d[@"isMac"] = @(isMac);
   return d;
 }) {}
 inline JS::NativePlatformConstantsIOS::Constants::Builder::Builder(Constants i) : _factory(^{

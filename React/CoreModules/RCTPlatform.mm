@@ -32,6 +32,14 @@ static NSString *interfaceIdiom(UIUserInterfaceIdiom idiom) {
   }
 }
 
+static BOOL isMac() {
+#if TARGET_OS_MACCATALYST
+  return YES;
+#else
+  return NO;
+#endif
+}
+
 @interface RCTPlatform () <NativePlatformConstantsIOSSpec>
 @end
 
@@ -65,6 +73,7 @@ RCT_EXPORT_MODULE(PlatformConstants)
     .systemName = [device systemName],
     .interfaceIdiom = interfaceIdiom([device userInterfaceIdiom]),
     .isTesting = RCTRunningInTestEnvironment() ? true : false,
+    .isMac = isMac() ? true : false,
     .reactNativeVersion = JS::NativePlatformConstantsIOS::ConstantsReactNativeVersion::Builder({
       .minor = [versions[@"minor"] doubleValue],
       .major = [versions[@"major"] doubleValue],
