@@ -7,13 +7,12 @@
 
 #import "RCTSurfaceHostingView.h"
 
+#import "RCTConstants.h"
 #import "RCTDefines.h"
 #import "RCTSurface.h"
 #import "RCTSurfaceDelegate.h"
 #import "RCTSurfaceView.h"
 #import "RCTUtils.h"
-
-static NSString *const RCTUserInterfaceStyleDidChangeNotification = @"RCTUserInterfaceStyleDidChangeNotification";
 
 @interface RCTSurfaceHostingView ()
 
@@ -208,21 +207,15 @@ RCT_NOT_IMPLEMENTED(- (nullable instancetype)initWithCoder:(NSCoder *)coder)
 
 #pragma mark - UITraitCollection updates
 
-#if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && defined(__IPHONE_13_0) && \
-    __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_13_0
 - (void)traitCollectionDidChange:(UITraitCollection *)previousTraitCollection
 {
   [super traitCollectionDidChange:previousTraitCollection];
-
-  if (@available(iOS 13.0, *)) {
-    if ([previousTraitCollection hasDifferentColorAppearanceComparedToTraitCollection:self.traitCollection]) {
-      [[NSNotificationCenter defaultCenter] postNotificationName:RCTUserInterfaceStyleDidChangeNotification
-                                                          object:self
-                                                        userInfo:@{@"traitCollection": self.traitCollection}];
-    }
-  }
+  [[NSNotificationCenter defaultCenter] postNotificationName:RCTUserInterfaceStyleDidChangeNotification
+                                                      object:self
+                                                    userInfo:@{
+                                                      RCTUserInterfaceStyleDidChangeNotificationTraitCollectionKey: self.traitCollection,
+                                                    }];
 }
-#endif
 
 #pragma mark - Private stuff
 
