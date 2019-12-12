@@ -124,14 +124,14 @@ public class ReactContext extends ContextWrapper {
    */
   public <T extends JavaScriptModule> T getJSModule(Class<T> jsInterface) {
     if (mCatalystInstance == null) {
-      throw new RuntimeException(EARLY_JS_ACCESS_EXCEPTION_MESSAGE);
+      throw new IllegalStateException(EARLY_JS_ACCESS_EXCEPTION_MESSAGE);
     }
     return mCatalystInstance.getJSModule(jsInterface);
   }
 
   public <T extends NativeModule> boolean hasNativeModule(Class<T> nativeModuleInterface) {
     if (mCatalystInstance == null) {
-      throw new RuntimeException(
+      throw new IllegalStateException(
           "Trying to call native module before CatalystInstance has been set!");
     }
     return mCatalystInstance.hasNativeModule(nativeModuleInterface);
@@ -140,7 +140,7 @@ public class ReactContext extends ContextWrapper {
   /** @return the instance of the specified module interface associated with this ReactContext. */
   public <T extends NativeModule> T getNativeModule(Class<T> nativeModuleInterface) {
     if (mCatalystInstance == null) {
-      throw new RuntimeException(
+      throw new IllegalStateException(
           "Trying to call native module before CatalystInstance has been set!");
     }
     return mCatalystInstance.getNativeModule(nativeModuleInterface);
@@ -186,7 +186,7 @@ public class ReactContext extends ContextWrapper {
               });
           break;
         default:
-          throw new RuntimeException("Unhandled lifecycle state.");
+          throw new IllegalStateException("Unhandled lifecycle state.");
       }
     }
   }
@@ -367,7 +367,7 @@ public class ReactContext extends ContextWrapper {
               + " - hasExceptionHandler: "
               + hasExceptionHandler,
           e);
-      throw new RuntimeException(e);
+      throw new IllegalStateException(e);
     }
   }
 
