@@ -69,6 +69,11 @@ RCT_EXPORT_SHADOW_PROPERTY(text, NSString)
 RCT_EXPORT_SHADOW_PROPERTY(placeholder, NSString)
 RCT_EXPORT_SHADOW_PROPERTY(onContentSizeChange, RCTBubblingEventBlock)
 
+RCT_CUSTOM_VIEW_PROPERTY(multiline, BOOL, UIView)
+{
+  // No op.
+  // This View Manager doesn't use this prop but it must be exposed here via ViewConfig to enable Fabric component use it.
+}
 
 - (RCTShadowView *)shadowView
 {
