@@ -27,6 +27,7 @@
                                                object:self];
 
     _textInputDelegateAdapter = [[RCTBackedTextFieldDelegateAdapter alloc] initWithTextField:self];
+    _scrollEnabled = YES;
   }
 
   return self;
@@ -92,16 +93,6 @@
 - (void)setEditable:(BOOL)editable
 {
   self.enabled = editable;
-}
-
-- (void)setScrollEnabled:(BOOL)enabled
-{
-  // Do noting, compatible with multiline textinput
-}
-
-- (BOOL)scrollEnabled
-{
-  return NO;
 }
 
 - (void)setSecureTextEntry:(BOOL)secureTextEntry
