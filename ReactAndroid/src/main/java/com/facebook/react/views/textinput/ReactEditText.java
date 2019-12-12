@@ -30,8 +30,8 @@ import android.view.accessibility.AccessibilityNodeInfo;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputConnection;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.EditText;
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.AppCompatEditText;
 import androidx.core.view.AccessibilityDelegateCompat;
 import androidx.core.view.ViewCompat;
 import com.facebook.infer.annotation.Assertions;
@@ -59,7 +59,7 @@ import java.util.ArrayList;
  * called this explicitly. This is the default behavior on other platforms as well.
  * VisibleForTesting from {@link TextInputEventsTestCase}.
  */
-public class ReactEditText extends EditText {
+public class ReactEditText extends AppCompatEditText {
 
   private final InputMethodManager mInputMethodManager;
   // This flag is set to true when we set the text of the EditText explicitly. In that case, no
