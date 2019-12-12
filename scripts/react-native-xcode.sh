@@ -71,8 +71,12 @@ if [[ "$ENTRY_FILE" ]]; then
   :
 elif [[ -s "index.ios.js" ]]; then
    ENTRY_FILE=${1:-index.ios.js}
- else
+elif [[ -s "index.js" ]]; then
    ENTRY_FILE=${1:-index.js}
+elif [[ -s "index.ios.ts" ]]; then
+   ENTRY_FILE=${1:-index.ios.ts}
+else
+   ENTRY_FILE=${1:-index.ts}
 fi
 
 if [[ -s "$HOME/.nvm/nvm.sh" ]]; then
