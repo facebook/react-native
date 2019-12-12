@@ -90,14 +90,14 @@ class KeyboardAvoidingView extends React.Component<Props, State> {
     return Math.max(frame.y + frame.height - keyboardY, 0);
   }
 
-  _onKeyboardChange = (event: ?KeyboardEvent) => {
+  _onKeyboardChange = (event: ?KeyboardEvent, hidden = false) => {
     if (event == null) {
       this.setState({bottom: 0});
       return;
     }
 
     const {duration, easing, endCoordinates} = event;
-    const height = this._relativeKeyboardHeight(endCoordinates);
+    const height = hidden ? 0 : this._relativeKeyboardHeight(endCoordinates);
 
     if (this.state.bottom === height) {
       return;
@@ -131,7 +131,9 @@ class KeyboardAvoidingView extends React.Component<Props, State> {
       ];
     } else {
       this._subscriptions = [
-        Keyboard.addListener('keyboardDidHide', this._onKeyboardChange),
+        Keyboard.addListener('keyboardDidHide', e =>
+          this._onKeyboardChange(e, true),
+        ),
         Keyboard.addListener('keyboardDidShow', this._onKeyboardChange),
       ];
     }
