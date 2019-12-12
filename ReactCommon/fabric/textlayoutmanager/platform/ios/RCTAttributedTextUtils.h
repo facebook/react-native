@@ -8,6 +8,7 @@
 #import <UIKit/UIKit.h>
 
 #include <react/attributedstring/AttributedString.h>
+#include <react/attributedstring/AttributedStringBox.h>
 #include <react/attributedstring/TextAttributes.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -25,7 +26,13 @@ NSDictionary<NSAttributedStringKey, id> *RCTNSTextAttributesFromTextAttributes(
  * Conversions amond `NSAttributedString`, `AttributedString` and `AttributedStringBox`.
  */
 NSAttributedString *RCTNSAttributedStringFromAttributedString(
-    const facebook::react::AttributedString &attributedString);
+    facebook::react::AttributedString const &attributedString);
+
+NSAttributedString *RCTNSAttributedStringFromAttributedStringBox(
+    facebook::react::AttributedStringBox const &attributedStringBox);
+
+facebook::react::AttributedStringBox RCTAttributedStringBoxFromNSAttributedString(
+    NSAttributedString *nsAttributedString);
 
 @interface RCTWeakEventEmitterWrapper : NSObject
 @property (nonatomic, assign) facebook::react::SharedEventEmitter eventEmitter;

@@ -11,6 +11,7 @@
 #include <react/textlayoutmanager/RCTFontProperties.h>
 #include <react/textlayoutmanager/RCTFontUtils.h>
 #include <react/textlayoutmanager/RCTTextPrimitivesConversions.h>
+#include <react/utils/ManagedObjectWrapper.h>
 
 using namespace facebook::react;
 
@@ -267,4 +268,19 @@ NSAttributedString *RCTNSAttributedStringFromAttributedString(const AttributedSt
   [nsAttributedString endEditing];
 
   return nsAttributedString;
+}
+
+NSAttributedString *RCTNSAttributedStringFromAttributedStringBox(AttributedStringBox const &attributedStringBox)
+{
+  switch (attributedStringBox.getMode()) {
+    case AttributedStringBox::Mode::Value:
+      return RCTNSAttributedStringFromAttributedString(attributedStringBox.getValue());
+    case AttributedStringBox::Mode::OpaquePointer:
+      return (NSAttributedString *)unwrapManagedObject(attributedStringBox.getOpaquePointer());
+  }
+}
+
+AttributedStringBox RCTAttributedStringBoxFromNSAttributedString(NSAttributedString *nsAttributedString)
+{
+  return nsAttributedString.length ? AttributedStringBox{wrapManagedObject(nsAttributedString)} : AttributedStringBox{};
 }
