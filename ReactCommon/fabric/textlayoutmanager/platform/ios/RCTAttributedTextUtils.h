@@ -12,18 +12,23 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-NSString *const RCTAttributedStringIsHighlightedAttributeName =
-    @"IsHighlighted";
+NSString *const RCTAttributedStringIsHighlightedAttributeName = @"IsHighlighted";
 NSString *const RCTAttributedStringEventEmitterKey = @"EventEmitter";
 
-/**
- * Constructs ready-to-render `NSAttributedString` by given `AttributedString`.
+/*
+ * Creates `NSTextAttributes` from given `facebook::react::TextAttributes`
+ */
+NSDictionary<NSAttributedStringKey, id> *RCTNSTextAttributesFromTextAttributes(
+    facebook::react::TextAttributes const &textAttributes);
+
+/*
+ * Conversions amond `NSAttributedString`, `AttributedString` and `AttributedStringBox`.
  */
 NSAttributedString *RCTNSAttributedStringFromAttributedString(
     const facebook::react::AttributedString &attributedString);
 
 @interface RCTWeakEventEmitterWrapper : NSObject
-@property(nonatomic, assign) facebook::react::SharedEventEmitter eventEmitter;
+@property (nonatomic, assign) facebook::react::SharedEventEmitter eventEmitter;
 @end
 
 NS_ASSUME_NONNULL_END

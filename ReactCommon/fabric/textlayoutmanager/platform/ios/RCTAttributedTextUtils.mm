@@ -105,8 +105,7 @@ inline static UIColor *RCTEffectiveBackgroundColorFromTextAttributes(const TextA
   return effectiveBackgroundColor ?: [UIColor clearColor];
 }
 
-static NSDictionary<NSAttributedStringKey, id> *RCTNSTextAttributesFromTextAttributes(
-    const TextAttributes &textAttributes)
+NSDictionary<NSAttributedStringKey, id> *RCTNSTextAttributesFromTextAttributes(TextAttributes const &textAttributes)
 {
   NSMutableDictionary<NSAttributedStringKey, id> *attributes = [NSMutableDictionary dictionaryWithCapacity:10];
 
