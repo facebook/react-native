@@ -13,6 +13,8 @@
 const React = require('react');
 
 import type {Registry, IgnorePattern} from './Data/YellowBoxRegistry';
+import YellowBoxWarning from './Data/YellowBoxWarning';
+
 import * as LogBoxData from '../LogBox/Data/LogBoxData';
 import NativeLogBox from '../NativeModules/specs/NativeLogBox';
 
@@ -78,15 +80,10 @@ if (__DEV__) {
         return;
       }
       errorImpl = function(...args) {
-        error.call(console, ...args);
-        // Show YellowBox for the `warning` module.
-        if (typeof args[0] === 'string' && args[0].startsWith('Warning: ')) {
-          registerWarning(...args);
-        }
+        registerError(...args);
       };
 
       warnImpl = function(...args) {
-        warn.call(console, ...args);
         registerWarning(...args);
       };
 
@@ -151,7 +148,53 @@ if (__DEV__) {
   };
 
   const registerWarning = (...args): void => {
-    YellowBoxRegistry.add({args});
+    if (typeof args[0] === 'string' && args[0].startsWith('(ADVICE)')) {
+      return;
+    }
+
+    const {category, message, stack} = YellowBoxWarning.parse({
+      args,
+    });
+
+    if (!YellowBoxRegistry.isWarningIgnored(message)) {
+      YellowBoxRegistry.add({category, message, stack});
+      warn.call(console, ...args);
+    }
+  };
+
+  const registerError = (...args): void => {
+    // Only show YellowBox for the `warning` module, otherwise pass through and skip.
+    if (typeof args[0] !== 'string' || !args[0].startsWith('Warning: ')) {
+      error.call(console, ...args);
+      return;
+    }
+
+    const format = args[0].replace('Warning: ', '');
+    const filterResult = LogBoxData.checkWarningFilter(format);
+    if (filterResult.suppressCompletely) {
+      return;
+    }
+
+    args[0] = filterResult.finalFormat;
+    const {category, message, stack} = YellowBoxWarning.parse({
+      args,
+    });
+
+    if (YellowBoxRegistry.isWarningIgnored(message)) {
+      return;
+    }
+
+    if (filterResult.forceDialogImmediately === true) {
+      // This will pop a redbox. Do not downgrade. These are real bugs with same severity as throws.
+      error.call(console, message.content);
+    } else {
+      // Unfortunately, we need to add the Warning: prefix back so we don't show a redbox later.
+      args[0] = `Warning: ${filterResult.finalFormat}`;
+
+      // Note: YellowBox has no concept of "soft errors" so we're showing YellowBox for those.
+      YellowBoxRegistry.add({category, message, stack});
+      error.call(console, ...args);
+    }
   };
 } else {
   YellowBox = class extends React.Component<Props, State> {
