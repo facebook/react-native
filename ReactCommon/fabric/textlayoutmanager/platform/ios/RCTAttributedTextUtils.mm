@@ -217,6 +217,12 @@ static NSDictionary<NSAttributedStringKey, id> *RCTNSTextAttributesFromTextAttri
 
 NSAttributedString *RCTNSAttributedStringFromAttributedString(const AttributedString &attributedString)
 {
+  static UIImage *placeholderImage;
+  static dispatch_once_t onceToken;
+  dispatch_once(&onceToken, ^{
+    placeholderImage = [[UIImage alloc] init];
+  });
+
   NSMutableAttributedString *nsAttributedString = [[NSMutableAttributedString alloc] init];
 
   [nsAttributedString beginEditing];
@@ -230,6 +236,7 @@ NSAttributedString *RCTNSAttributedStringFromAttributedString(const AttributedSt
                        .size = {.width = layoutMetrics.frame.size.width, .height = layoutMetrics.frame.size.height}};
 
       NSTextAttachment *attachment = [NSTextAttachment new];
+      attachment.image = placeholderImage;
       attachment.bounds = bounds;
 
       nsAttributedStringFragment = [NSAttributedString attributedStringWithAttachment:attachment];
