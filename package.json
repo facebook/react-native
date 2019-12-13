@@ -86,9 +86,6 @@
   },
   "dependencies": {
     "@babel/runtime": "^7.0.0",
-    "@react-native-community/cli": "^3.0.0",
-    "@react-native-community/cli-platform-android": "^3.0.0",
-    "@react-native-community/cli-platform-ios": "^3.0.0",
     "abort-controller": "^3.0.0",
     "anser": "^1.4.9",
     "base64-js": "^1.1.2",
@@ -120,6 +117,9 @@
   "devDependencies": {
     "@babel/core": "^7.0.0",
     "@babel/generator": "^7.5.0",
+    "@react-native-community/cli": "^3.0.0",
+    "@react-native-community/cli-platform-android": "^3.0.0",
+    "@react-native-community/cli-platform-ios": "^3.0.0",
     "@react-native-community/eslint-plugin": "file:packages/eslint-plugin-react-native-community",
     "@reactions/component": "^2.0.2",
     "async": "^2.4.0",
