@@ -107,11 +107,11 @@ import java.util.Map;
       }
     }
 
-    if(mPropMap.keySetIterator().hasNextKey()) {
+    if(shadowViewProps.keySetIterator().hasNextKey()) {
       mUIManager.synchronouslyUpdateViewOnUIThread(mConnectedViewTag, mPropMap);
     }
 
-    if(shadowViewProps.keySetIterator().hasNextKey()) {
+    if(mPropMap.keySetIterator().hasNextKey()) {
       mNativeAnimatedNodesManager.enqueueUpdateViewOnNativeThread(mConnectedViewTag, shadowViewProps);
     }
   }
