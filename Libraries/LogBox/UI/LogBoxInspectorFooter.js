@@ -101,9 +101,11 @@ const styles = StyleSheet.create({
   syntaxErrorText: {
     textAlign: 'center',
     width: '100%',
+    height: 48,
     fontSize: 14,
-    paddingTop: 15,
-    paddingBottom: 15,
+    lineHeight: 20,
+    paddingTop: 20,
+    paddingBottom: 50,
     fontStyle: 'italic',
     color: LogBoxStyle.getTextColor(0.6),
   },

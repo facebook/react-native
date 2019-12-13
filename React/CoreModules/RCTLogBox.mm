@@ -17,6 +17,8 @@
 #import <React/RCTJSStackFrame.h>
 #import <React/RCTRedBoxSetEnabled.h>
 #import <React/RCTReloadCommand.h>
+#import <React/RCTRedBoxSetEnabled.h>
+#import <React/RCTSurface.h>
 #import <React/RCTUtils.h>
 
 #import <objc/runtime.h>
@@ -25,61 +27,52 @@
 
 #if RCT_DEV_MENU
 
-@class RCTLogBoxWindow;
+@class RCTLogBoxView;
 
-@protocol RCTLogBoxWindowActionDelegate <NSObject>
-
-- (void)logBoxWindow:(RCTLogBoxWindow *)logBoxWindow openStackFrameInEditor:(RCTJSStackFrame *)stackFrame;
-- (void)reloadFromlogBoxWindow:(RCTLogBoxWindow *)logBoxWindow;
-- (void)loadExtraDataViewController;
-
+@interface RCTLogBoxView : UIView
 @end
 
-@interface RCTLogBoxWindow : UIWindow <UITableViewDelegate>
-@property (nonatomic, weak) id<RCTLogBoxWindowActionDelegate> actionDelegate;
-@end
-
-@implementation RCTLogBoxWindow
+@implementation RCTLogBoxView
 {
-  UITableView *_stackTraceTableView;
-  NSString *_lastErrorMessage;
-  NSArray<RCTJSStackFrame *> *_lastStackTrace;
-  int _lastErrorCookie;
+  UIViewController *_rootViewController;
+  RCTSurface *_surface;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame bridge:(RCTBridge *)bridge
 {
-  _lastErrorCookie = -1;
   if ((self = [super initWithFrame:frame])) {
-#if TARGET_OS_TV
-    self.windowLevel = UIWindowLevelAlert + 1000;
-#else
-    self.windowLevel = UIWindowLevelStatusBar - 1;
-#endif
     self.backgroundColor = [UIColor clearColor];
-    self.hidden = YES;
 
-    RCTRootView *rootView = [[RCTRootView alloc] initWithBridge:bridge moduleName:@"LogBox" initialProperties:nil];
+    _surface = [[RCTSurface alloc] initWithBridge:bridge moduleName:@"LogBox" initialProperties:@{}];
 
-    UIViewController *rootViewController = [UIViewController new];
-    rootViewController.view = rootView;
-    self.rootViewController = rootViewController;
+    [_surface start];
+    [_surface setSize:frame.size];
+
+    if (![_surface synchronouslyWaitForStage:RCTSurfaceStageSurfaceDidInitialMounting timeout:.5]) {
+      RCTLogInfo(@"Failed to mount LogBox within 500ms");
+    }
+
+    _rootViewController = [UIViewController new];
+    _rootViewController.view = (UIView *)_surface.view;
+    _rootViewController.view.backgroundColor = [UIColor clearColor];
+    _rootViewController.modalPresentationStyle = UIModalPresentationFullScreen;
   }
   return self;
 }
 
+- (void)dealloc
+{
+  // Dismiss by deallocating the window.
+  // This will also handle JS reload, otherwise the LogBox view would be stuck on top.
+  [_rootViewController.view resignFirstResponder];
+  [_rootViewController dismissViewControllerAnimated:NO completion:NULL];
+}
 
 - (void)show
 {
-  [self becomeFirstResponder];
-  [self makeKeyAndVisible];
-}
-
-- (void)dismiss
-{
-  self.hidden = YES;
-  [self resignFirstResponder];
-  [RCTSharedApplication().delegate.window makeKeyWindow];
+  [RCTSharedApplication().delegate.window.rootViewController presentViewController:_rootViewController animated:NO completion:^{
+    [self->_rootViewController.view becomeFirstResponder];
+  }];
 }
 
 @end
@@ -89,7 +82,7 @@
 
 @implementation RCTLogBox
 {
-  RCTLogBoxWindow *_window;
+  RCTLogBoxView *_view;
 }
 
 @synthesize bridge = _bridge;
@@ -101,34 +94,34 @@ RCT_EXPORT_MODULE()
   return YES;
 }
 
-- (void)setBridge:(RCTBridge *)bridge
+RCT_EXPORT_METHOD(show)
 {
-  _bridge = bridge;
-
   if (RCTRedBoxGetEnabled()) {
     dispatch_async(dispatch_get_main_queue(), ^{
-      self->_window = [[RCTLogBoxWindow alloc] initWithFrame:[UIScreen mainScreen].bounds bridge: self->_bridge];
+      if (!self->_view) {
+        self->_view = [[RCTLogBoxView alloc] initWithFrame:[UIScreen mainScreen].bounds bridge: self->_bridge];
+      }
+      [self->_view show];
     });
   }
 }
 
-RCT_EXPORT_METHOD(show)
-{
-  dispatch_async(dispatch_get_main_queue(), ^{
-    [self->_window show];
-  });
-}
-
 RCT_EXPORT_METHOD(hide)
 {
-  dispatch_async(dispatch_get_main_queue(), ^{
-    [self->_window dismiss];
-  });
+  if (RCTRedBoxGetEnabled()) {
+    dispatch_async(dispatch_get_main_queue(), ^{
+      self->_view = nil;
+    });
+  }
 }
 
 - (std::shared_ptr<facebook::react::TurboModule>)getTurboModuleWithJsInvoker:(std::shared_ptr<facebook::react::CallInvoker>)jsInvoker
 {
-  return std::make_shared<facebook::react::NativeLogBoxSpecJSI>(self, jsInvoker);
+  if (RCTRedBoxGetEnabled()) {
+    return std::make_shared<facebook::react::NativeLogBoxSpecJSI>(self, jsInvoker);
+  }
+
+  return nullptr;
 }
 
 @end

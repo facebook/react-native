@@ -22,7 +22,7 @@ import type {
 } from './parseLogBoxLog';
 import parseErrorStack from '../../Core/Devtools/parseErrorStack';
 import type {ExtendedError} from '../../Core/Devtools/parseErrorStack';
-
+import NativeLogBox from '../../NativeModules/specs/NativeLogBox';
 export type LogBoxLogs = Set<LogBoxLog>;
 export type LogData = $ReadOnly<{|
   level: LogLevel,
@@ -86,20 +86,6 @@ const LOGBOX_ERROR_MESSAGE =
   'An error was thrown when attempting to render log messages via LogBox.';
 
 function getNextState() {
-  const logArray = Array.from(logs);
-  let index = logArray.length - 1;
-  while (index >= 0) {
-    // The latest syntax error is selected and displayed before all other logs.
-    if (logArray[index].level === 'syntax') {
-      return {
-        logs,
-        isDisabled: _isDisabled,
-        selectedLogIndex: index,
-      };
-    }
-    index -= 1;
-  }
-
   return {
     logs,
     isDisabled: _isDisabled,
@@ -175,9 +161,10 @@ function appendNewLog(newLog) {
     let addPendingLog = () => {
       logs.add(newLog);
       if (_selectedIndex <= 0) {
-        _selectedIndex = logs.size - 1;
+        setSelectedLog(logs.size - 1);
+      } else {
+        handleUpdate();
       }
-      handleUpdate();
       addPendingLog = null;
     };
 
@@ -196,6 +183,9 @@ function appendNewLog(newLog) {
         handleUpdate();
       }
     });
+  } else if (newLog.level === 'syntax') {
+    logs.add(newLog);
+    setSelectedLog(logs.size - 1);
   } else {
     logs.add(newLog);
     handleUpdate();
@@ -259,21 +249,42 @@ export function symbolicateLogLazy(log: LogBoxLog) {
 export function clear(): void {
   if (logs.size > 0) {
     logs = new Set();
-    _selectedIndex = -1;
-    handleUpdate();
+    setSelectedLog(-1);
   }
 }
 
-export function setSelectedLog(index: number): void {
-  _selectedIndex = index;
+export function setSelectedLog(proposedNewIndex: number): void {
+  const oldIndex = _selectedIndex;
+  let newIndex = proposedNewIndex;
+
+  const logArray = Array.from(logs);
+  let index = logArray.length - 1;
+  while (index >= 0) {
+    // The latest syntax error is selected and displayed before all other logs.
+    if (logArray[index].level === 'syntax') {
+      newIndex = index;
+      break;
+    }
+    index -= 1;
+  }
+  _selectedIndex = newIndex;
   handleUpdate();
+  if (NativeLogBox) {
+    setTimeout(() => {
+      if (oldIndex < 0 && newIndex >= 0) {
+        NativeLogBox.show();
+      } else if (oldIndex >= 0 && newIndex < 0) {
+        NativeLogBox.hide();
+      }
+    }, 0);
+  }
 }
 
 export function clearWarnings(): void {
   const newLogs = Array.from(logs).filter(log => log.level !== 'warn');
   if (newLogs.length !== logs.size) {
     logs = new Set(newLogs);
-    _selectedIndex = -1;
+    setSelectedLog(-1);
     handleUpdate();
   }
 }
@@ -284,8 +295,7 @@ export function clearErrors(): void {
   );
   if (newLogs.length !== logs.size) {
     logs = new Set(newLogs);
-    _selectedIndex = -1;
-    handleUpdate();
+    setSelectedLog(-1);
   }
 }
 
