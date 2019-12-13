@@ -14,12 +14,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 @protocol RCTBackedTextInputViewProtocol <UITextInput>
 
-@property (nonatomic, strong, nullable) UIColor *textColor; // TODO: T57162853 Merge with `defaultTextAttributes`.
-@property (nonatomic, strong, nullable) UIFont *font; // TODO: T57162853 Merge with `defaultTextAttributes`.
 @property (nonatomic, copy, nullable) NSAttributedString *attributedText;
 @property (nonatomic, copy, nullable) NSString *placeholder;
 @property (nonatomic, strong, nullable) UIColor *placeholderColor;
-@property (nonatomic, assign) NSTextAlignment textAlignment; // TODO: T57162853 Merge with `defaultTextAttributes`.
 @property (nonatomic, assign, readonly) BOOL textWasPasted;
 @property (nonatomic, assign) UIEdgeInsets textContainerInset;
 @property (nonatomic, strong, nullable) UIView *inputAccessoryView;
