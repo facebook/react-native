@@ -57,14 +57,14 @@ import java.util.Map;
       TimingModule.class,
       UIManagerModule.class,
     })
-/* package */ class CoreModulesPackage extends TurboReactPackage implements ReactPackageLogger {
+public class CoreModulesPackage extends TurboReactPackage implements ReactPackageLogger {
 
   private final ReactInstanceManager mReactInstanceManager;
   private final DefaultHardwareBackBtnHandler mHardwareBackBtnHandler;
   private final boolean mLazyViewManagersEnabled;
   private final int mMinTimeLeftInFrameForNonBatchedOperationMs;
 
-  CoreModulesPackage(
+  public CoreModulesPackage(
       ReactInstanceManager reactInstanceManager,
       DefaultHardwareBackBtnHandler hardwareBackBtnHandler,
       @Nullable UIImplementationProvider uiImplementationProvider,

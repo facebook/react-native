@@ -30,7 +30,7 @@ import java.util.Map;
       JSDevSupport.class,
     })
 public class DebugCorePackage extends TurboReactPackage {
-  DebugCorePackage() {}
+  public DebugCorePackage() {}
 
   @Override
   public NativeModule getModule(String name, ReactApplicationContext reactContext) {
