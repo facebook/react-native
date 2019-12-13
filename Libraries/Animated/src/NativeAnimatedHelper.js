@@ -21,6 +21,7 @@ import type {
 import type {AnimationConfig, EndCallback} from './animations/Animation';
 import type {InterpolationConfigType} from './nodes/AnimatedInterpolation';
 import invariant from 'invariant';
+import {colorToRgba} from './colorToRgba';
 
 let __nativeAnimatedNodeTagCount = 1; /* used for animated nodes */
 let __nativeAnimationIdCount = 1; /* used for started animations */
@@ -159,7 +160,7 @@ const API = {
  * In general native animated implementation should support any numeric property that doesn't need
  * to be updated through the shadow view hierarchy (all non-layout properties).
  */
-const STYLES_WHITELIST = {
+const SHADOW_VIEW_PROPS = {
   opacity: true,
   transform: true,
   borderRadius: true,
@@ -175,6 +176,15 @@ const STYLES_WHITELIST = {
   /* ios styles */
   shadowOpacity: true,
   shadowRadius: true,
+  /* colors */
+  backgroundColor: true,
+  borderRightColor: true,
+  borderBottomColor: true,
+  borderColor: true,
+  borderEndColor: true,
+  borderLeftColor: true,
+  borderStartColor: true,
+  borderTopColor: true,
   /* legacy android transform properties */
   scaleX: true,
   scaleY: true,
@@ -204,7 +214,7 @@ const SUPPORTED_INTERPOLATION_PARAMS = {
 };
 
 function addWhitelistedStyleProp(prop: string): void {
-  STYLES_WHITELIST[prop] = true;
+  SHADOW_VIEW_PROPS[prop] = true;
 }
 
 function addWhitelistedTransformProp(prop: string): void {
@@ -243,13 +253,7 @@ function validateTransform(
 }
 
 function validateStyles(styles: {[key: string]: ?number, ...}): void {
-  for (const key in styles) {
-    if (!STYLES_WHITELIST.hasOwnProperty(key)) {
-      throw new Error(
-        `Style property '${key}' is not supported by native animated module`,
-      );
-    }
-  }
+  // Do nothing - everything is supported.
 }
 
 function validateInterpolation(config: InterpolationConfigType): void {
@@ -312,9 +316,17 @@ function transformDataType(value: number | string): number | string {
     const radians = (degrees * Math.PI) / 180.0;
     return radians;
   } else {
-    return value;
+    return colorToRgba(value);
   }
 }
+
+function configureProps() {
+  if (NativeAnimatedModule && NativeAnimatedModule.configureProps) {
+    NativeAnimatedModule.configureProps(Object.keys(SHADOW_VIEW_PROPS));
+  }
+}
+
+configureProps();
 
 module.exports = {
   API,

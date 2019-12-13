@@ -27,6 +27,7 @@ export type AnimatedNodeConfig = Object;
 export type AnimatingNodeConfig = Object;
 
 export interface Spec extends TurboModule {
+  +configureProps: (shadowViewProps: string[]) => void;
   +createAnimatedNode: (tag: number, config: AnimatedNodeConfig) => void;
   +startListeningToAnimatedNodeValue: (tag: number) => void;
   +stopListeningToAnimatedNodeValue: (tag: number) => void;

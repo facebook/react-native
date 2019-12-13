@@ -654,6 +654,50 @@ exports.examples = [
     },
   },
   {
+    title: 'Interpolate colors and size',
+    render: function(): React.Node {
+      return (
+        <Tester type="timing" config={{duration: 1000}}>
+          {anim => (
+            <Animated.View
+              style={[
+                styles.block,
+                {
+                  transform: [
+                    {
+                      translateX: anim.interpolate({
+                        inputRange: [0, 1],
+                        outputRange: [0, 200],
+                      }),
+                    },
+                    {
+                      translateY: anim.interpolate({
+                        inputRange: [0, 0.5, 1],
+                        outputRange: [0, 50, 0],
+                      }),
+                    },
+                  ],
+                  width: anim.interpolate({
+                    inputRange: [0, 0.5, 1],
+                    outputRange: [50, 100, 50],
+                  }),
+                  borderRadius: anim.interpolate({
+                    inputRange: [0, 0.5, 1],
+                    outputRange: [0, 100, 0],
+                  }),
+                  backgroundColor: anim.interpolate({
+                    inputRange: [0, 0.5, 1],
+                    outputRange: ['rgba(255, 0, 0, 0.25)', '#00FF00', 'blue'],
+                  }),
+                },
+              ]}
+            />
+          )}
+        </Tester>
+      );
+    },
+  },
+  {
     title: 'Drive custom property (tap to animate)',
     render: function(): React.Node {
       return (

@@ -642,19 +642,6 @@ describe('Native Animated', () => {
       }
     });
 
-    it('fails for unsupported styles', () => {
-      const left = new Animated.Value(0);
-
-      TestRenderer.create(<Animated.View style={{left}} />);
-
-      const animation = Animated.timing(left, {
-        toValue: 10,
-        duration: 50,
-        useNativeDriver: true,
-      });
-      expect(animation.start).toThrowError(/left/);
-    });
-
     it('works for any `static` props and styles', () => {
       // Passing "unsupported" props should work just fine as long as they are not animated
       const opacity = new Animated.Value(0);
