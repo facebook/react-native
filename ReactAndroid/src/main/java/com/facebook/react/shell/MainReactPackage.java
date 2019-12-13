@@ -41,6 +41,7 @@ import com.facebook.react.modules.timepicker.TimePickerDialogModule;
 import com.facebook.react.modules.toast.ToastModule;
 import com.facebook.react.modules.vibration.VibrationModule;
 import com.facebook.react.modules.websocket.WebSocketModule;
+import com.facebook.react.turbomodule.core.interfaces.TurboModule;
 import com.facebook.react.uimanager.ViewManager;
 import com.facebook.react.views.art.ARTRenderableViewManager;
 import com.facebook.react.views.art.ARTSurfaceViewManager;
@@ -255,7 +256,7 @@ public class MainReactPackage extends TurboReactPackage {
                 reactModule.needsEagerInit(),
                 reactModule.hasConstants(),
                 reactModule.isCxxModule(),
-                false));
+                TurboModule.class.isAssignableFrom(moduleClass)));
       }
 
       return new ReactModuleInfoProvider() {
