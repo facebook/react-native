@@ -133,32 +133,27 @@ static NSRegularExpression *regex;
   if (_hasStringOutput) {
     // 'rgba(0, 100, 200, 0)'
     // ->
-    // 'rgba(${interpolations[0](input)}, ${interpolations[1](input)}, ...'
+    // numberic argb color
     if (_numVals > 1) {
-      NSString *text = _soutputRange[0];
-      NSMutableString *formattedText = [NSMutableString stringWithString:text];
-      NSUInteger i = _numVals;
-      for (NSTextCheckingResult *match in [_matches reverseObjectEnumerator]) {
+      NSMutableArray<NSNumber*>* colors = [[NSMutableArray alloc] initWithCapacity:_numVals];
+      for (int i=0; i < _numVals; i++) {
         CGFloat val = RCTInterpolateValueInRange(inputValue,
                                                           _inputRange,
-                                                          _outputs[--i],
+                                                          _outputs[i],
                                                           _extrapolateLeft,
                                                           _extrapolateRight);
-        NSString *str;
         if (_shouldRound) {
           // rgba requires that the r,g,b are integers.... so we want to round them, but we *dont* want to
           // round the opacity (4th column).
           bool isAlpha = i == 3;
-          CGFloat rounded = isAlpha ? round(val * 1000) / 1000 : round(val);
-          str = isAlpha ? [NSString stringWithFormat:@"%1.3f", rounded] : [NSString stringWithFormat:@"%1.0f", rounded];
+          CGFloat rounded = isAlpha ? round(val * 1000) / 1000 : round(val) / 255;
+          [colors addObject:[NSNumber numberWithDouble:rounded]];
         } else {
-          NSNumber *numberValue = [NSNumber numberWithDouble:val];
-          str = [numberValue stringValue];
+          NSNumber *numberValue = [NSNumber numberWithDouble:val / 255.0];
+          [colors addObject:numberValue];
         }
-
-        [formattedText replaceCharactersInRange:[match range] withString:str];
       }
-      self.animatedObject = formattedText;
+      self.animatedObject = colors;
     } else {
       self.animatedObject = [regex stringByReplacingMatchesInString:_soutputRange[0]
                                                  options:0

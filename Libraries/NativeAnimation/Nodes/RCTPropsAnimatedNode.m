@@ -11,6 +11,7 @@
 #import <React/RCTSurfacePresenterStub.h>
 #import <React/RCTUIManager.h>
 
+#import <React/RCTNativeAnimatedNodesManager.h>
 #import <React/RCTAnimationUtils.h>
 #import <React/RCTStyleAnimatedNode.h>
 #import <React/RCTValueAnimatedNode.h>
@@ -67,9 +68,25 @@
     [_bridge.surfacePresenter synchronouslyUpdateViewOnUIThread:_connectedViewTag
                                                           props:_propsDictionary];
   } else {
-    [_bridge.uiManager synchronouslyUpdateViewOnUIThread:_connectedViewTag
-                                                viewName:_connectedViewName
-                                                   props:_propsDictionary];
+    NSMutableDictionary *shadowViewProps = [NSMutableDictionary new];
+    NSMutableDictionary *props = [NSMutableDictionary new];
+
+    for (NSString *key in _propsDictionary.allKeys) {
+      if([self.manager.shadowViewProps containsObject: key]) {
+        [shadowViewProps setObject:_propsDictionary[key] forKey:key];
+      } else {
+        [props setObject:_propsDictionary[key] forKey:key];
+      }
+    }
+
+    if (shadowViewProps.count > 0) {
+      [_bridge.uiManager synchronouslyUpdateViewOnUIThread:_connectedViewTag
+                                                  viewName:_connectedViewName
+                                                     props:shadowViewProps];
+    }
+    if (props.count > 0) {
+      [self.manager enqueueUpdateViewOnNativeThread:_connectedViewTag viewName:_connectedViewName props:props];
+    }
   }
 }
 

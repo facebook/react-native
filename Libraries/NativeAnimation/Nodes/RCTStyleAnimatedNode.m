@@ -39,7 +39,11 @@
     if (node) {
       if ([node isKindOfClass:[RCTValueAnimatedNode class]]) {
         RCTValueAnimatedNode *parentNode = (RCTValueAnimatedNode *)node;
-        [self->_propsDictionary setObject:@(parentNode.value) forKey:property];
+        if(parentNode.animatedObject != nil) {
+          [self->_propsDictionary setObject:parentNode.animatedObject forKey:property];
+        } else {
+          [self->_propsDictionary setObject:@(parentNode.value) forKey:property];
+        }
       } else if ([node isKindOfClass:[RCTTransformAnimatedNode class]]) {
         RCTTransformAnimatedNode *parentNode = (RCTTransformAnimatedNode *)node;
         [self->_propsDictionary addEntriesFromDictionary:parentNode.propsDictionary];

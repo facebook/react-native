@@ -8,6 +8,7 @@
 #import <React/RCTNativeAnimatedNodesManager.h>
 
 #import <React/RCTConvert.h>
+#import <React/RCTUIManagerUtils.h>
 
 #import <React/RCTAdditionAnimatedNode.h>
 #import <React/RCTAnimatedNode.h>
@@ -27,6 +28,18 @@
 #import <React/RCTTransformAnimatedNode.h>
 #import <React/RCTValueAnimatedNode.h>
 #import <React/RCTTrackingAnimatedNode.h>
+
+typedef void (^RCTOnAnimationCallback)(RCTUIManager *uiManager);
+
+@interface RCTUIManager ()
+
+- (void)updateView:(nonnull NSNumber *)reactTag
+          viewName:(NSString *)viewName
+             props:(NSDictionary *)props;
+
+- (void)setNeedsLayout;
+
+@end
 
 // We do some normalizing of the event names in RCTEventDispatcher#RCTNormalizeInputEventName.
 // To make things simpler just get rid of the parts we change in the event names we use here.
@@ -52,6 +65,8 @@ static NSString *RCTNormalizeAnimatedEventName(NSString *eventName)
   NSMutableDictionary<NSString *, NSMutableArray<RCTEventAnimation *> *> *_eventDrivers;
   NSMutableSet<id<RCTAnimationDriver>> *_activeAnimations;
   CADisplayLink *_displayLink;
+  NSArray<NSString*>* _shadowViewProps;
+  NSMutableArray<RCTOnAnimationCallback> *_operationsInBatch;
 }
 
 - (instancetype)initWithBridge:(nonnull RCTBridge *)bridge
@@ -61,8 +76,20 @@ static NSString *RCTNormalizeAnimatedEventName(NSString *eventName)
     _animationNodes = [NSMutableDictionary new];
     _eventDrivers = [NSMutableDictionary new];
     _activeAnimations = [NSMutableSet new];
+    _shadowViewProps = [[NSArray alloc] init];
+    _operationsInBatch = [NSMutableArray new];
   }
   return self;
+}
+
+- (NSArray<NSString*>*) shadowViewProps
+{
+  return _shadowViewProps;
+}
+
+- (void)configureProps:(NSArray<NSString*>*)shadowViewProps               
+{
+  _shadowViewProps = [NSArray arrayWithArray:shadowViewProps];  
 }
 
 - (BOOL)isNodeManagedByFabric:(nonnull NSNumber *)tag
@@ -72,6 +99,15 @@ static NSString *RCTNormalizeAnimatedEventName(NSString *eventName)
     return [node isManagedByFabric];
   }
   return false;
+}
+
+- (void)enqueueUpdateViewOnNativeThread:(nonnull NSNumber *)reactTag
+                               viewName:(NSString *) viewName
+                                  props:(NSMutableDictionary *)props {
+  RCTBridge* bridge = _bridge;
+  [_operationsInBatch addObject:^(RCTUIManager *uiManager) {
+    [bridge.uiManager updateView:reactTag viewName:viewName props:props];
+  }];
 }
 
 #pragma mark -- Graph
@@ -461,6 +497,17 @@ static NSString *RCTNormalizeAnimatedEventName(NSString *eventName)
       [node updateNodeIfNecessary];
     }
   }];
+
+  if (_operationsInBatch.count != 0) {
+    NSMutableArray<RCTOnAnimationCallback> *copiedOperationsQueue = _operationsInBatch;
+    _operationsInBatch = [NSMutableArray new];
+    RCTExecuteOnUIManagerQueue(^{
+      for (int i = 0; i < copiedOperationsQueue.count; i++) {
+        copiedOperationsQueue[i](self->_bridge.uiManager);
+      }
+      [self->_bridge.uiManager setNeedsLayout];
+    });
+  }
 }
 
 @end

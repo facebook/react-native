@@ -216,6 +216,11 @@ RCT_EXPORT_METHOD(removeAnimatedEventFromView:(double)viewTag
   }];
 }
 
+RCT_EXPORT_METHOD(configureProps:(NSArray<NSString*>*)shadowViewProps)
+{
+  [_nodesManager configureProps:shadowViewProps];
+}
+
 #pragma mark -- Batch handling
 
 - (void)addOperationBlock:(AnimatedOperation)operation
