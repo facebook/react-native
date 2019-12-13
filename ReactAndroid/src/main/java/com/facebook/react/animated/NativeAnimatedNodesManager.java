@@ -12,24 +12,31 @@ import androidx.annotation.Nullable;
 import com.facebook.common.logging.FLog;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Callback;
+import com.facebook.react.bridge.GuardedRunnable;
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
+import com.facebook.react.bridge.ReactApplicationContext;
+import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.uimanager.IllegalViewOperationException;
+import com.facebook.react.uimanager.ReactShadowNode;
+import com.facebook.react.uimanager.UIImplementation;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.events.Event;
 import com.facebook.react.uimanager.events.EventDispatcherListener;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
 import java.util.Queue;
+import java.util.Set;
 
 /**
  * This is the main class that coordinates how native animated JS implementation drives UI changes.
@@ -58,10 +65,29 @@ import java.util.Queue;
   // Used to avoid allocating a new array on every frame in `runUpdates` and `onEventDispatch`.
   private final List<AnimatedNode> mRunUpdateNodeList = new LinkedList<>();
 
-  public NativeAnimatedNodesManager(UIManagerModule uiManager) {
+  private final ReactContext mContext;
+  private final UIManagerModule mUIManager;
+  private final UIImplementation mUIImplementation;
+
+  public Set<String> shadowViewProps = Collections.emptySet();
+
+  private final class NativeUpdateOperation {
+    public int mViewTag;
+    public WritableMap mNativeProps;
+    public NativeUpdateOperation(int viewTag, WritableMap nativeProps) {
+      mViewTag = viewTag;
+      mNativeProps = nativeProps;
+    }
+  }
+  private Queue<NativeUpdateOperation> mOperationsInBatch = new LinkedList<>();
+
+  public NativeAnimatedNodesManager(UIManagerModule uiManager, ReactApplicationContext context) {
     mUIManagerModule = uiManager;
     uiManager.getEventDispatcher().addListener(this);
     mCustomEventNamesResolver = uiManager.getDirectEventNamesResolver();
+    mContext = context;
+    mUIManager = context.getNativeModule(UIManagerModule.class);
+    mUIImplementation = mUIManager.getUIImplementation();
   }
 
   /*package*/ @Nullable
@@ -386,6 +412,14 @@ import java.util.Queue;
     }
   }
 
+  public void configureProps(Set<String> shadowViewProps) {
+    this.shadowViewProps = shadowViewProps;
+  }
+
+  public void enqueueUpdateViewOnNativeThread(int viewTag, WritableMap nativeProps) {
+    mOperationsInBatch.add(new NativeUpdateOperation(viewTag, nativeProps));
+  }
+
   @Override
   public void onEventDispatch(final Event event) {
     // Events can be dispatched from any thread so we have to make sure handleEvent is run from the
@@ -456,6 +490,28 @@ import java.util.Queue;
 
     updateNodes(mRunUpdateNodeList);
     mRunUpdateNodeList.clear();
+
+    if (!mOperationsInBatch.isEmpty()) {
+      final Queue<NativeUpdateOperation> copiedOperationsQueue = mOperationsInBatch;
+      mOperationsInBatch = new LinkedList<>();
+      mContext.runOnNativeModulesQueueThread(
+        new GuardedRunnable(mContext) {
+          @Override
+          public void runGuarded() {
+            boolean shouldDispatchUpdates = mUIImplementation.getUIViewOperationQueue().isEmpty();
+            while (!copiedOperationsQueue.isEmpty()) {
+              NativeUpdateOperation op = copiedOperationsQueue.remove();
+              ReactShadowNode shadowNode = mUIImplementation.resolveShadowNode(op.mViewTag);
+              if (shadowNode != null) {
+                mUIManager.updateView(op.mViewTag, shadowNode.getViewClass(), op.mNativeProps);
+              }
+            }
+            if (shouldDispatchUpdates) {
+              mUIImplementation.dispatchViewUpdates(-1); // no associated batchId
+            }
+          }
+        });
+    }
 
     // Cleanup finished animations. Iterate over the array of animations and override ones that has
     // finished, then resize `mActiveAnimations`.

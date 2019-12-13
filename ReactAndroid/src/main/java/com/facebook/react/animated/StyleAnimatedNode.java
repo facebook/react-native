@@ -34,18 +34,29 @@ import java.util.Map;
     mNativeAnimatedNodesManager = nativeAnimatedNodesManager;
   }
 
-  public void collectViewUpdates(JavaOnlyMap propsMap) {
+  public void collectViewUpdates(JavaOnlyMap shadowViewProps, JavaOnlyMap props) {
     for (Map.Entry<String, Integer> entry : mPropMapping.entrySet()) {
       @Nullable AnimatedNode node = mNativeAnimatedNodesManager.getNodeById(entry.getValue());
       if (node == null) {
         throw new IllegalArgumentException("Mapped style node does not exists");
       } else if (node instanceof TransformAnimatedNode) {
-        ((TransformAnimatedNode) node).collectViewUpdates(propsMap);
+        ((TransformAnimatedNode) node).collectViewUpdates(shadowViewProps);
       } else if (node instanceof ValueAnimatedNode) {
-        propsMap.putDouble(entry.getKey(), ((ValueAnimatedNode) node).getValue());
+        Object animatedObject =  ((ValueAnimatedNode) node).getAnimatedObject();
+        if (mNativeAnimatedNodesManager.shadowViewProps.contains(entry.getKey())) {
+          if(animatedObject != null)
+            addProp(shadowViewProps, entry.getKey(), animatedObject);
+          else
+            shadowViewProps.putDouble(entry.getKey(), ((ValueAnimatedNode) node).getValue());
+        } else {
+          if(animatedObject != null)
+            addProp(props, entry.getKey(), animatedObject);
+          else
+            props.putDouble(entry.getKey(), ((ValueAnimatedNode) node).getValue());
+        }
       } else {
         throw new IllegalArgumentException(
-            "Unsupported type of node used in property node " + node.getClass());
+          "Unsupported type of node used in property node " + node.getClass());
       }
     }
   }

@@ -77,25 +77,42 @@ import java.util.Map;
     if (mConnectedViewTag == -1) {
       return;
     }
+    JavaOnlyMap shadowViewProps = new JavaOnlyMap();
+
     for (Map.Entry<String, Integer> entry : mPropNodeMapping.entrySet()) {
+      String key = entry.getKey();
       @Nullable AnimatedNode node = mNativeAnimatedNodesManager.getNodeById(entry.getValue());
       if (node == null) {
         throw new IllegalArgumentException("Mapped property node does not exists");
       } else if (node instanceof StyleAnimatedNode) {
-        ((StyleAnimatedNode) node).collectViewUpdates(mPropMap);
+        ((StyleAnimatedNode) node).collectViewUpdates(mPropMap, shadowViewProps);
       } else if (node instanceof ValueAnimatedNode) {
         Object animatedObject = ((ValueAnimatedNode) node).getAnimatedObject();
-        if (animatedObject instanceof String) {
-          mPropMap.putString(entry.getKey(), (String) animatedObject);
+        if (animatedObject != null) {
+          if (mNativeAnimatedNodesManager.shadowViewProps.contains(key)) {
+            addProp(shadowViewProps, key, animatedObject);
+          } else {
+            addProp(mPropMap, key, animatedObject);
+          }
         } else {
-          mPropMap.putDouble(entry.getKey(), ((ValueAnimatedNode) node).getValue());
+          if (mNativeAnimatedNodesManager.shadowViewProps.contains(key)) {
+            shadowViewProps.putDouble(key, ((ValueAnimatedNode) node).getValue());
+          } else {
+            mPropMap.putDouble(entry.getKey(), ((ValueAnimatedNode) node).getValue());
+          }
         }
       } else {
         throw new IllegalArgumentException(
-            "Unsupported type of node used in property node " + node.getClass());
+          "Unsupported type of node used in property node " + node.getClass());
       }
     }
 
-    mUIManager.synchronouslyUpdateViewOnUIThread(mConnectedViewTag, mPropMap);
+    if(mPropMap.keySetIterator().hasNextKey()) {
+      mUIManager.synchronouslyUpdateViewOnUIThread(mConnectedViewTag, mPropMap);
+    }
+
+    if(shadowViewProps.keySetIterator().hasNextKey()) {
+      mNativeAnimatedNodesManager.enqueueUpdateViewOnNativeThread(mConnectedViewTag, shadowViewProps);
+    }
   }
 }

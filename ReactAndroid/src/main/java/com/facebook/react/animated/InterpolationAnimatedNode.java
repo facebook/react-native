@@ -9,6 +9,7 @@ package com.facebook.react.animated;
 
 import androidx.annotation.Nullable;
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
+import com.facebook.react.bridge.JavaOnlyArray;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReadableType;
@@ -219,31 +220,29 @@ import java.util.regex.Pattern;
     if (mHasStringOutput) {
       // 'rgba(0, 100, 200, 0)'
       // ->
-      // 'rgba(${interpolations[0](input)}, ${interpolations[1](input)}, ...'
+      // argb value as int
       if (mNumVals > 1) {
-        StringBuffer sb = new StringBuffer(mPattern.length());
-        int i = 0;
-        mSOutputMatcher.reset();
-        while (mSOutputMatcher.find()) {
+        JavaOnlyArray colors = new JavaOnlyArray();
+        for(int i = 0; i < mNumVals; i++) {
           double val =
-              interpolate(value, mInputRange, mOutputs[i++], mExtrapolateLeft, mExtrapolateRight);
+            interpolate(value, mInputRange, mOutputs[i], mExtrapolateLeft, mExtrapolateRight);
           if (mShouldRound) {
             // rgba requires that the r,g,b are integers.... so we want to round them, but we *dont*
             // want to
             // round the opacity (4th column).
-            boolean isAlpha = i == 4;
-            int rounded = (int) Math.round(isAlpha ? val * 1000 : val);
-            String num =
-                isAlpha ? Double.toString((double) rounded / 1000) : Integer.toString(rounded);
-            mSOutputMatcher.appendReplacement(sb, num);
+            boolean isAlpha = i == 3;
+            int rounded = (int) (isAlpha ? Math.round(val * 255) : val);
+            colors.pushDouble(rounded);
           } else {
             int intVal = (int) val;
-            String num = intVal != val ? Double.toString(val) : Integer.toString(intVal);
-            mSOutputMatcher.appendReplacement(sb, num);
+            colors.pushInt(intVal);
           }
         }
-        mSOutputMatcher.appendTail(sb);
-        mAnimatedObject = sb.toString();
+
+        mAnimatedObject = ((colors.getInt(2) & 0xff) |
+          ((colors.getInt(1) & 0xff) << 8) |
+          ((colors.getInt(0) & 0xff) << 16) |
+          ((colors.getInt(3) & 0xff) << 24));
       } else {
         mAnimatedObject = mSOutputMatcher.replaceFirst(String.valueOf(mValue));
       }

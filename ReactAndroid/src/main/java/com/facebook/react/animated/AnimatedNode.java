@@ -9,6 +9,9 @@ package com.facebook.react.animated;
 
 import androidx.annotation.Nullable;
 import com.facebook.infer.annotation.Assertions;
+import com.facebook.react.bridge.WritableArray;
+import com.facebook.react.bridge.WritableMap;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -57,4 +60,30 @@ import java.util.List;
    * it can be used to calculate node's value.
    */
   public void update() {}
+
+  /**
+   *
+   * Method used by StyleAnimatedNode and PropAnimatedNode to build property maps
+   */
+  protected static void addProp(WritableMap propMap, String key, Object value) {
+    if (value == null) {
+      propMap.putNull(key);
+    } else if (value instanceof Double) {
+      propMap.putDouble(key, (Double) value);
+    } else if (value instanceof Integer) {
+      propMap.putInt(key, (int) value);
+    } else if (value instanceof Number) {
+      propMap.putDouble(key, ((Number) value).doubleValue());
+    } else if (value instanceof Boolean) {
+      propMap.putBoolean(key, (Boolean) value);
+    } else if (value instanceof String) {
+      propMap.putString(key, (String) value);
+    } else if (value instanceof WritableArray) {
+      propMap.putArray(key, (WritableArray)value);
+    } else if (value instanceof WritableMap) {
+      propMap.putMap(key, (WritableMap)value);
+    } else {
+      throw new IllegalStateException("Unknown type of animated value");
+    }
+  }
 }

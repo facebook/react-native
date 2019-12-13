@@ -132,7 +132,7 @@ public class UIImplementation {
     return mViewManagers.get(className);
   }
 
-  /*package*/ UIViewOperationQueue getUIViewOperationQueue() {
+  public UIViewOperationQueue getUIViewOperationQueue() {
     return mOperationsQueue;
   }
 
