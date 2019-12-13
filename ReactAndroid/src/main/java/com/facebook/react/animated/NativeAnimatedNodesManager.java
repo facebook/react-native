@@ -23,7 +23,6 @@ import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.uimanager.IllegalViewOperationException;
 import com.facebook.react.uimanager.ReactShadowNode;
-import com.facebook.react.uimanager.UIImplementation;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.events.Event;
 import com.facebook.react.uimanager.events.EventDispatcherListener;
@@ -67,7 +66,6 @@ import java.util.Set;
 
   private final ReactContext mContext;
   private final UIManagerModule mUIManager;
-  private final UIImplementation mUIImplementation;
 
   public Set<String> shadowViewProps = Collections.emptySet();
 
@@ -87,7 +85,6 @@ import java.util.Set;
     mCustomEventNamesResolver = uiManager.getDirectEventNamesResolver();
     mContext = context;
     mUIManager = context.getNativeModule(UIManagerModule.class);
-    mUIImplementation = mUIManager.getUIImplementation();
   }
 
   /*package*/ @Nullable
@@ -498,16 +495,16 @@ import java.util.Set;
         new GuardedRunnable(mContext) {
           @Override
           public void runGuarded() {
-            boolean shouldDispatchUpdates = mUIImplementation.getUIViewOperationQueue().isEmpty();
+            boolean shouldDispatchUpdates = mUIManager.getUIImplementation().getUIViewOperationQueue().isEmpty();
             while (!copiedOperationsQueue.isEmpty()) {
               NativeUpdateOperation op = copiedOperationsQueue.remove();
-              ReactShadowNode shadowNode = mUIImplementation.resolveShadowNode(op.mViewTag);
+              ReactShadowNode shadowNode = mUIManager.getUIImplementation().resolveShadowNode(op.mViewTag);
               if (shadowNode != null) {
                 mUIManager.updateView(op.mViewTag, shadowNode.getViewClass(), op.mNativeProps);
               }
             }
             if (shouldDispatchUpdates) {
-              mUIImplementation.dispatchViewUpdates(-1); // no associated batchId
+              mUIManager.getUIImplementation().dispatchViewUpdates(-1); // no associated batchId
             }
           }
         });

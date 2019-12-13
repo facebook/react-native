@@ -29,6 +29,9 @@ import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.events.Event;
 import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.react.uimanager.events.RCTEventEmitter;
+
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Map;
 import org.junit.Before;
 import org.junit.Rule;
@@ -121,6 +124,7 @@ public class NativeAnimatedNodeTraversalTest {
           }
         });
     mNativeAnimatedNodesManager = new NativeAnimatedNodesManager(mUIManagerMock, mReactApplicationContextMock);
+    mNativeAnimatedNodesManager.configureProps(new HashSet<>(Arrays.asList("opacity", "translateX")));
   }
 
   /**
@@ -807,6 +811,7 @@ public class NativeAnimatedNodeTraversalTest {
       }
     });
     mNativeAnimatedNodesManager = new NativeAnimatedNodesManager(mUIManagerMock, mReactApplicationContextMock);
+    mNativeAnimatedNodesManager.configureProps(new HashSet<>(Arrays.asList("opacity", "translateX")));
 
     createSimpleAnimatedViewWithOpacity(viewTag, 0d);
 
