@@ -24,7 +24,6 @@ import com.facebook.react.modules.common.ModuleDataCleaner;
 import com.facebook.react.modules.network.CookieJarContainer;
 import com.facebook.react.modules.network.ForwardingCookieHandler;
 import com.facebook.react.modules.network.OkHttpClientProvider;
-import com.facebook.react.turbomodule.core.interfaces.TurboModule;
 import java.util.HashSet;
 import okhttp3.JavaNetCookieJar;
 import okhttp3.OkHttpClient;
@@ -36,7 +35,7 @@ import okhttp3.OkHttpClient;
  */
 @ReactModule(name = FrescoModule.NAME, needsEagerInit = true)
 public class FrescoModule extends ReactContextBaseJavaModule
-    implements ModuleDataCleaner.Cleanable, LifecycleEventListener, TurboModule {
+    implements ModuleDataCleaner.Cleanable, LifecycleEventListener {
 
   public static final String NAME = "FrescoModule";
   private final boolean mClearOnDestroy;
