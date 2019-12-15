@@ -85,7 +85,7 @@ import java.util.Map;
       if (node == null) {
         throw new IllegalArgumentException("Mapped property node does not exists");
       } else if (node instanceof StyleAnimatedNode) {
-        ((StyleAnimatedNode) node).collectViewUpdates(mPropMap, shadowViewProps);
+        ((StyleAnimatedNode) node).collectViewUpdates(shadowViewProps, mPropMap);
       } else if (node instanceof ValueAnimatedNode) {
         Object animatedObject = ((ValueAnimatedNode) node).getAnimatedObject();
         if (animatedObject != null) {
@@ -108,11 +108,11 @@ import java.util.Map;
     }
 
     if(shadowViewProps.keySetIterator().hasNextKey()) {
-      mUIManager.synchronouslyUpdateViewOnUIThread(mConnectedViewTag, mPropMap);
+      mUIManager.synchronouslyUpdateViewOnUIThread(mConnectedViewTag, shadowViewProps);
     }
 
     if(mPropMap.keySetIterator().hasNextKey()) {
-      mNativeAnimatedNodesManager.enqueueUpdateViewOnNativeThread(mConnectedViewTag, shadowViewProps);
+      mNativeAnimatedNodesManager.enqueueUpdateViewOnNativeThread(mConnectedViewTag, mPropMap);
     }
   }
 }
