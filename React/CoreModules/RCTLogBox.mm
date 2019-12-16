@@ -117,11 +117,7 @@ RCT_EXPORT_METHOD(hide)
 
 - (std::shared_ptr<facebook::react::TurboModule>)getTurboModuleWithJsInvoker:(std::shared_ptr<facebook::react::CallInvoker>)jsInvoker
 {
-  if (RCTRedBoxGetEnabled()) {
-    return std::make_shared<facebook::react::NativeLogBoxSpecJSI>(self, jsInvoker);
-  }
-
-  return nullptr;
+  return std::make_shared<facebook::react::NativeLogBoxSpecJSI>(self, jsInvoker);
 }
 
 @end
