@@ -100,7 +100,6 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
           | InputType.TYPE_CLASS_PHONE
           | PASSWORD_VISIBILITY_FLAG;
 
-  private static final String KEYBOARD_TYPE_DEFAULT = "default";
   private static final String KEYBOARD_TYPE_EMAIL_ADDRESS = "email-address";
   private static final String KEYBOARD_TYPE_NUMERIC = "numeric";
   private static final String KEYBOARD_TYPE_DECIMAL_PAD = "decimal-pad";
@@ -108,7 +107,6 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
   private static final String KEYBOARD_TYPE_PHONE_PAD = "phone-pad";
   private static final String KEYBOARD_TYPE_VISIBLE_PASSWORD = "visible-password";
   private static final List<String> KEYBOARD_TYPES = new ArrayList<>(Arrays.asList(
-    KEYBOARD_TYPE_DEFAULT,
     KEYBOARD_TYPE_EMAIL_ADDRESS,
     KEYBOARD_TYPE_NUMERIC,
     KEYBOARD_TYPE_DECIMAL_PAD,
@@ -730,7 +728,7 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
   @ReactProp(name = "keyboardType")
   public void setKeyboardType(ReactEditText view, @Nullable String keyboardType) {
     int flagsToSet = InputType.TYPE_CLASS_TEXT;
-    if (keyboardType == null || !KEYBOARD_TYPES.contains(keyboardType) || KEYBOARD_TYPE_DEFAULT.equalsIgnoreCase(keyboardType)) {
+    if (keyboardType == null || !KEYBOARD_TYPES.contains(keyboardType)) {
       return;
     } else if (KEYBOARD_TYPE_NUMERIC.equalsIgnoreCase(keyboardType)) {
       flagsToSet = INPUT_TYPE_KEYBOARD_NUMBERED;
