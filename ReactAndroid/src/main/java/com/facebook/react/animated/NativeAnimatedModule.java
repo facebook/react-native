@@ -9,13 +9,12 @@ package com.facebook.react.animated;
 
 import androidx.annotation.Nullable;
 import com.facebook.common.logging.FLog;
+import com.facebook.fbreact.specs.NativeAnimatedModuleSpec;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.bridge.ReactContextBaseJavaModule;
-import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.common.ReactConstants;
@@ -75,7 +74,7 @@ import java.util.ArrayList;
  * while UI thread is "executing" the animation loop.
  */
 @ReactModule(name = NativeAnimatedModule.NAME)
-public class NativeAnimatedModule extends ReactContextBaseJavaModule
+public class NativeAnimatedModule extends NativeAnimatedModuleSpec
     implements LifecycleEventListener, UIManagerModuleListener {
 
   public static final String NAME = "NativeAnimatedModule";
@@ -110,7 +109,7 @@ public class NativeAnimatedModule extends ReactContextBaseJavaModule
               // and no outstanding tasks on the operations queue. Apparently frame callbacks can
               // only
               // be posted from the UI thread and therefore we cannot schedule them directly from
-              // @ReactMethod methods
+              // @Override
               Assertions.assertNotNull(mReactChoreographer)
                   .postFrameCallback(
                       ReactChoreographer.CallbackType.NATIVE_ANIMATED_MODULE,
@@ -216,8 +215,10 @@ public class NativeAnimatedModule extends ReactContextBaseJavaModule
     mNodesManager = nodesManager;
   }
 
-  @ReactMethod
-  public void createAnimatedNode(final int tag, final ReadableMap config) {
+  @Override
+  public void createAnimatedNode(final double tagDouble, final ReadableMap config) {
+    final int tag = (int) tagDouble;
+
     mOperations.add(
         new UIThreadOperation() {
           @Override
@@ -227,8 +228,10 @@ public class NativeAnimatedModule extends ReactContextBaseJavaModule
         });
   }
 
-  @ReactMethod
-  public void startListeningToAnimatedNodeValue(final int tag) {
+  @Override
+  public void startListeningToAnimatedNodeValue(final double tagDouble) {
+    final int tag = (int) tagDouble;
+
     final AnimatedNodeValueListener listener =
         new AnimatedNodeValueListener() {
           public void onValueUpdate(double value) {
@@ -255,8 +258,10 @@ public class NativeAnimatedModule extends ReactContextBaseJavaModule
         });
   }
 
-  @ReactMethod
-  public void stopListeningToAnimatedNodeValue(final int tag) {
+  @Override
+  public void stopListeningToAnimatedNodeValue(final double tagDouble) {
+    final int tag = (int) tagDouble;
+
     mOperations.add(
         new UIThreadOperation() {
           @Override
@@ -266,8 +271,10 @@ public class NativeAnimatedModule extends ReactContextBaseJavaModule
         });
   }
 
-  @ReactMethod
-  public void dropAnimatedNode(final int tag) {
+  @Override
+  public void dropAnimatedNode(final double tagDouble) {
+    final int tag = (int) tagDouble;
+
     mOperations.add(
         new UIThreadOperation() {
           @Override
@@ -277,8 +284,10 @@ public class NativeAnimatedModule extends ReactContextBaseJavaModule
         });
   }
 
-  @ReactMethod
-  public void setAnimatedNodeValue(final int tag, final double value) {
+  @Override
+  public void setAnimatedNodeValue(final double tagDouble, final double value) {
+    final int tag = (int) tagDouble;
+
     mOperations.add(
         new UIThreadOperation() {
           @Override
@@ -288,8 +297,10 @@ public class NativeAnimatedModule extends ReactContextBaseJavaModule
         });
   }
 
-  @ReactMethod
-  public void setAnimatedNodeOffset(final int tag, final double value) {
+  @Override
+  public void setAnimatedNodeOffset(final double tagDouble, final double value) {
+    final int tag = (int) tagDouble;
+
     mOperations.add(
         new UIThreadOperation() {
           @Override
@@ -299,8 +310,10 @@ public class NativeAnimatedModule extends ReactContextBaseJavaModule
         });
   }
 
-  @ReactMethod
-  public void flattenAnimatedNodeOffset(final int tag) {
+  @Override
+  public void flattenAnimatedNodeOffset(final double tagDouble) {
+    final int tag = (int) tagDouble;
+
     mOperations.add(
         new UIThreadOperation() {
           @Override
@@ -310,8 +323,10 @@ public class NativeAnimatedModule extends ReactContextBaseJavaModule
         });
   }
 
-  @ReactMethod
-  public void extractAnimatedNodeOffset(final int tag) {
+  @Override
+  public void extractAnimatedNodeOffset(final double tagDouble) {
+    final int tag = (int) tagDouble;
+
     mOperations.add(
         new UIThreadOperation() {
           @Override
@@ -321,12 +336,15 @@ public class NativeAnimatedModule extends ReactContextBaseJavaModule
         });
   }
 
-  @ReactMethod
+  @Override
   public void startAnimatingNode(
-      final int animationId,
-      final int animatedNodeTag,
+      final double animationIdDouble,
+      final double animatedNodeTagDouble,
       final ReadableMap animationConfig,
       final Callback endCallback) {
+    final int animationId = (int) animationIdDouble;
+    final int animatedNodeTag = (int) animatedNodeTagDouble;
+
     mOperations.add(
         new UIThreadOperation() {
           @Override
@@ -337,8 +355,10 @@ public class NativeAnimatedModule extends ReactContextBaseJavaModule
         });
   }
 
-  @ReactMethod
-  public void stopAnimation(final int animationId) {
+  @Override
+  public void stopAnimation(final double animationIdDouble) {
+    final int animationId = (int) animationIdDouble;
+
     mOperations.add(
         new UIThreadOperation() {
           @Override
@@ -348,8 +368,12 @@ public class NativeAnimatedModule extends ReactContextBaseJavaModule
         });
   }
 
-  @ReactMethod
-  public void connectAnimatedNodes(final int parentNodeTag, final int childNodeTag) {
+  @Override
+  public void connectAnimatedNodes(
+      final double parentNodeTagDouble, final double childNodeTagDouble) {
+    final int parentNodeTag = (int) parentNodeTagDouble;
+    final int childNodeTag = (int) childNodeTagDouble;
+
     mOperations.add(
         new UIThreadOperation() {
           @Override
@@ -359,8 +383,12 @@ public class NativeAnimatedModule extends ReactContextBaseJavaModule
         });
   }
 
-  @ReactMethod
-  public void disconnectAnimatedNodes(final int parentNodeTag, final int childNodeTag) {
+  @Override
+  public void disconnectAnimatedNodes(
+      final double parentNodeTagDouble, final double childNodeTagDouble) {
+    final int parentNodeTag = (int) parentNodeTagDouble;
+    final int childNodeTag = (int) childNodeTagDouble;
+
     mOperations.add(
         new UIThreadOperation() {
           @Override
@@ -370,8 +398,12 @@ public class NativeAnimatedModule extends ReactContextBaseJavaModule
         });
   }
 
-  @ReactMethod
-  public void connectAnimatedNodeToView(final int animatedNodeTag, final int viewTag) {
+  @Override
+  public void connectAnimatedNodeToView(
+      final double animatedNodeTagDouble, final double viewTagDouble) {
+    final int animatedNodeTag = (int) animatedNodeTagDouble;
+    final int viewTag = (int) viewTagDouble;
+
     mOperations.add(
         new UIThreadOperation() {
           @Override
@@ -381,8 +413,12 @@ public class NativeAnimatedModule extends ReactContextBaseJavaModule
         });
   }
 
-  @ReactMethod
-  public void disconnectAnimatedNodeFromView(final int animatedNodeTag, final int viewTag) {
+  @Override
+  public void disconnectAnimatedNodeFromView(
+      final double animatedNodeTagDouble, final double viewTagDouble) {
+    final int animatedNodeTag = (int) animatedNodeTagDouble;
+    final int viewTag = (int) viewTagDouble;
+
     mOperations.add(
         new UIThreadOperation() {
           @Override
@@ -392,8 +428,10 @@ public class NativeAnimatedModule extends ReactContextBaseJavaModule
         });
   }
 
-  @ReactMethod
-  public void restoreDefaultValues(final int animatedNodeTag) {
+  @Override
+  public void restoreDefaultValues(final double animatedNodeTagDouble) {
+    final int animatedNodeTag = (int) animatedNodeTagDouble;
+
     mPreOperations.add(
         new UIThreadOperation() {
           @Override
@@ -403,9 +441,11 @@ public class NativeAnimatedModule extends ReactContextBaseJavaModule
         });
   }
 
-  @ReactMethod
+  @Override
   public void addAnimatedEventToView(
-      final int viewTag, final String eventName, final ReadableMap eventMapping) {
+      final double viewTagDouble, final String eventName, final ReadableMap eventMapping) {
+    final int viewTag = (int) viewTagDouble;
+
     mOperations.add(
         new UIThreadOperation() {
           @Override
@@ -415,9 +455,12 @@ public class NativeAnimatedModule extends ReactContextBaseJavaModule
         });
   }
 
-  @ReactMethod
+  @Override
   public void removeAnimatedEventFromView(
-      final int viewTag, final String eventName, final int animatedValueTag) {
+      final double viewTagDouble, final String eventName, final double animatedValueTagDouble) {
+    final int viewTag = (int) viewTagDouble;
+    final int animatedValueTag = (int) animatedValueTagDouble;
+
     mOperations.add(
         new UIThreadOperation() {
           @Override
@@ -425,5 +468,15 @@ public class NativeAnimatedModule extends ReactContextBaseJavaModule
             animatedNodesManager.removeAnimatedEventFromView(viewTag, eventName, animatedValueTag);
           }
         });
+  }
+
+  @Override
+  public void addListener(String eventName) {
+    // iOS only
+  }
+
+  @Override
+  public void removeListeners(double count) {
+    // iOS only
   }
 }

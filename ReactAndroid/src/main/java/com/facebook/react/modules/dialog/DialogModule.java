@@ -17,11 +17,10 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
 import com.facebook.common.logging.FLog;
+import com.facebook.fbreact.specs.NativeDialogManagerAndroidSpec;
 import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.bridge.ReactContextBaseJavaModule;
-import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.SoftAssertions;
@@ -31,7 +30,7 @@ import com.facebook.react.module.annotations.ReactModule;
 import java.util.Map;
 
 @ReactModule(name = DialogModule.NAME)
-public class DialogModule extends ReactContextBaseJavaModule implements LifecycleEventListener {
+public class DialogModule extends NativeDialogManagerAndroidSpec implements LifecycleEventListener {
 
   /* package */ static final String FRAGMENT_TAG =
       "com.facebook.catalyst.react.dialog.DialogModule";
@@ -149,7 +148,7 @@ public class DialogModule extends ReactContextBaseJavaModule implements Lifecycl
   }
 
   @Override
-  public Map<String, Object> getConstants() {
+  public Map<String, Object> getTypedExportedConstants() {
     return CONSTANTS;
   }
 
@@ -179,7 +178,7 @@ public class DialogModule extends ReactContextBaseJavaModule implements Lifecycl
     }
   }
 
-  @ReactMethod
+  @Override
   public void showAlert(
       ReadableMap options, Callback errorCallback, final Callback actionCallback) {
     final FragmentManagerHelper fragmentManagerHelper = getFragmentManagerHelper();

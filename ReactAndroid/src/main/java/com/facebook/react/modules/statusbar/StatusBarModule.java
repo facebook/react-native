@@ -19,11 +19,10 @@ import android.view.WindowManager;
 import androidx.annotation.Nullable;
 import androidx.core.view.ViewCompat;
 import com.facebook.common.logging.FLog;
+import com.facebook.fbreact.specs.NativeStatusBarManagerAndroidSpec;
 import com.facebook.react.bridge.GuardedRunnable;
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.bridge.ReactContextBaseJavaModule;
-import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.common.ReactConstants;
@@ -33,7 +32,7 @@ import java.util.Map;
 
 /** {@link NativeModule} that allows changing the appearance of the status bar. */
 @ReactModule(name = StatusBarModule.NAME)
-public class StatusBarModule extends ReactContextBaseJavaModule {
+public class StatusBarModule extends NativeStatusBarManagerAndroidSpec {
 
   private static final String HEIGHT_KEY = "HEIGHT";
   private static final String DEFAULT_BACKGROUND_COLOR_KEY = "DEFAULT_BACKGROUND_COLOR";
@@ -49,7 +48,7 @@ public class StatusBarModule extends ReactContextBaseJavaModule {
   }
 
   @Override
-  public @Nullable Map<String, Object> getConstants() {
+  public @Nullable Map<String, Object> getTypedExportedConstants() {
     final Context context = getReactApplicationContext();
     final Activity activity = getCurrentActivity();
 
@@ -70,8 +69,10 @@ public class StatusBarModule extends ReactContextBaseJavaModule {
         HEIGHT_KEY, height, DEFAULT_BACKGROUND_COLOR_KEY, statusBarColorString);
   }
 
-  @ReactMethod
-  public void setColor(final int color, final boolean animated) {
+  @Override
+  public void setColor(final double colorDouble, final boolean animated) {
+    final int color = (int) colorDouble;
+
     final Activity activity = getCurrentActivity();
     if (activity == null) {
       FLog.w(
@@ -114,7 +115,7 @@ public class StatusBarModule extends ReactContextBaseJavaModule {
     }
   }
 
-  @ReactMethod
+  @Override
   public void setTranslucent(final boolean translucent) {
     final Activity activity = getCurrentActivity();
     if (activity == null) {
@@ -156,7 +157,7 @@ public class StatusBarModule extends ReactContextBaseJavaModule {
     }
   }
 
-  @ReactMethod
+  @Override
   public void setHidden(final boolean hidden) {
     final Activity activity = getCurrentActivity();
     if (activity == null) {
@@ -180,7 +181,7 @@ public class StatusBarModule extends ReactContextBaseJavaModule {
         });
   }
 
-  @ReactMethod
+  @Override
   public void setStyle(@Nullable final String style) {
     final Activity activity = getCurrentActivity();
     if (activity == null) {
