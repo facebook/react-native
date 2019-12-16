@@ -31,24 +31,26 @@ function getMock<TArguments: $ReadOnlyArray<mixed>, TReturn>(
 
 const createMockPressability = overrides => {
   const config = {
-    getHitSlop: jest.fn(),
-    getHoverInDelayMS: jest.fn(() => null),
-    getHoverOutDelayMS: jest.fn(() => null),
-    getLongPressDelayMS: jest.fn(() => null),
-    getPressDelayMS: jest.fn(() => null),
-    getPressOutDelayMS: jest.fn(() => null),
-    getPressRectOffset: jest.fn(),
+    cancelable: null,
+    disabled: null,
+    hitSlop: null,
+    pressRectOffset: null,
+    delayHoverIn: null,
+    delayHoverOut: null,
+    delayLongPress: null,
+    delayPressIn: null,
+    delayPressOut: null,
     onBlur: jest.fn(),
     onFocus: jest.fn(),
     onHoverIn: jest.fn(),
     onHoverOut: jest.fn(),
     onLongPress: jest.fn(),
-    onLongPressShouldCancelPress: jest.fn(),
     onPress: jest.fn(),
     onPressIn: jest.fn(),
     onPressOut: jest.fn(),
-    onResponderTerminationRequest: jest.fn(() => true),
-    onStartShouldSetResponder: jest.fn(() => true),
+    onLongPressShouldCancelPress_DEPRECATED: jest.fn(),
+    onResponderTerminationRequest_DEPRECATED: jest.fn(() => true),
+    onStartShouldSetResponder_DEPRECATED: jest.fn(() => true),
     ...overrides,
   };
   const touchable = new Pressability(config);
@@ -282,7 +284,7 @@ describe('Pressability', () => {
 
     it('is called after no delay by default', () => {
       const {config, handlers} = createMockPressability({
-        getHoverInDelayMS: () => null,
+        delayHoverIn: null,
       });
       invariant(
         typeof handlers.onMouseEnter === 'function',
@@ -293,9 +295,9 @@ describe('Pressability', () => {
       expect(config.onHoverIn).toBeCalled();
     });
 
-    it('falls back to no delay if `getHoverInDelayMS` is omitted', () => {
+    it('falls back to no delay if `delayHoverIn` is omitted', () => {
       const {config, handlers} = createMockPressability({
-        getHoverInDelayMS: null,
+        delayHoverIn: null,
       });
       invariant(
         typeof handlers.onMouseEnter === 'function',
@@ -308,7 +310,7 @@ describe('Pressability', () => {
 
     it('is called after a configured delay', () => {
       const {config, handlers} = createMockPressability({
-        getHoverInDelayMS: () => 500,
+        delayHoverIn: 500,
       });
       invariant(
         typeof handlers.onMouseEnter === 'function',
@@ -324,7 +326,7 @@ describe('Pressability', () => {
 
     it('is called synchronously if delay is 0ms', () => {
       const {config, handlers} = createMockPressability({
-        getHoverInDelayMS: () => 0,
+        delayHoverIn: 0,
       });
       invariant(
         typeof handlers.onMouseEnter === 'function',
@@ -354,7 +356,7 @@ describe('Pressability', () => {
 
     it('is called if pressed for 500ms after the press delay', () => {
       const {config, handlers} = createMockPressability({
-        getPressDelayMS: () => 100,
+        delayPressIn: 100,
       });
 
       handlers.onStartShouldSetResponder();
@@ -383,7 +385,7 @@ describe('Pressability', () => {
 
     it('falls back to a minimum of 10ms before calling `onLongPress`', () => {
       const {config, handlers} = createMockPressability({
-        getLongPressDelayMS: () => 0,
+        delayLongPress: 0,
       });
 
       handlers.onStartShouldSetResponder();
@@ -432,7 +434,7 @@ describe('Pressability', () => {
 
     it('is called after no delay by default', () => {
       const {config, handlers} = createMockPressability({
-        getPressDelayMS: () => null,
+        delayPressIn: null,
       });
 
       handlers.onStartShouldSetResponder();
@@ -442,9 +444,9 @@ describe('Pressability', () => {
       expect(config.onPressIn).toBeCalled();
     });
 
-    it('falls back to no delay if `getPressDelayMS` is omitted', () => {
+    it('falls back to no delay if `delayPressIn` is omitted', () => {
       const {config, handlers} = createMockPressability({
-        getPressDelayMS: null,
+        delayPressIn: null,
       });
 
       handlers.onStartShouldSetResponder();
@@ -456,7 +458,7 @@ describe('Pressability', () => {
 
     it('is called after a configured delay', () => {
       const {config, handlers} = createMockPressability({
-        getPressDelayMS: () => 500,
+        delayPressIn: 500,
       });
 
       handlers.onStartShouldSetResponder();
@@ -471,7 +473,7 @@ describe('Pressability', () => {
 
     it('is called synchronously if delay is 0ms', () => {
       const {config, handlers} = createMockPressability({
-        getPressDelayMS: () => 0,
+        delayPressIn: 0,
       });
 
       handlers.onStartShouldSetResponder();
@@ -489,7 +491,7 @@ describe('Pressability', () => {
       it('`onPress*` are called when no delay', () => {
         mockUIManagerMeasure();
         const {config, handlers} = createMockPressability({
-          getHitSlop: () => mockSlop,
+          hitSlop: mockSlop,
         });
 
         handlers.onStartShouldSetResponder();
@@ -521,8 +523,8 @@ describe('Pressability', () => {
       it('`onPress*` are called after a delay', () => {
         mockUIManagerMeasure();
         const {config, handlers} = createMockPressability({
-          getHitSlop: () => mockSlop,
-          getPressDelayMS: () => 500,
+          hitSlop: mockSlop,
+          delayPressIn: 500,
         });
 
         handlers.onStartShouldSetResponder();
@@ -584,7 +586,7 @@ describe('Pressability', () => {
       it('`onPress*` are not called after a delay', () => {
         mockUIManagerMeasure();
         const {config, handlers} = createMockPressability({
-          getPressDelayMS: () => 500,
+          delayPressIn: 500,
         });
 
         handlers.onStartShouldSetResponder();
@@ -611,7 +613,7 @@ describe('Pressability', () => {
       it('`onPress*` are called when press is released before measure completes', () => {
         mockUIManagerMeasure({delay: 1000});
         const {config, handlers} = createMockPressability({
-          getPressDelayMS: () => 500,
+          delayPressIn: 500,
         });
 
         handlers.onStartShouldSetResponder();
@@ -643,7 +645,7 @@ describe('Pressability', () => {
   describe('onStartShouldSetResponder', () => {
     it('if omitted the responder is set by default', () => {
       const {handlers} = createMockPressability({
-        onStartShouldSetResponder: null,
+        onStartShouldSetResponder_DEPRECATED: null,
       });
 
       expect(handlers.onStartShouldSetResponder()).toBe(true);
@@ -651,11 +653,14 @@ describe('Pressability', () => {
 
     it('if supplied it is called', () => {
       const {config, handlers} = createMockPressability();
+      const onStartShouldSetResponder_DEPRECATED = nullthrows(
+        config.onStartShouldSetResponder_DEPRECATED,
+      );
 
-      nullthrows(config.onStartShouldSetResponder).mockReturnValue(false);
+      onStartShouldSetResponder_DEPRECATED.mockReturnValue(false);
       expect(handlers.onStartShouldSetResponder()).toBe(false);
 
-      nullthrows(config.onStartShouldSetResponder).mockReturnValue(true);
+      onStartShouldSetResponder_DEPRECATED.mockReturnValue(true);
       expect(handlers.onStartShouldSetResponder()).toBe(true);
     });
   });

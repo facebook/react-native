@@ -10,7 +10,9 @@
 
 'use strict';
 
-import Pressability from '../../Pressability/Pressability.js';
+import Pressability, {
+  type PressabilityConfig,
+} from '../../Pressability/Pressability.js';
 import {PressabilityDebugView} from '../../Pressability/PressabilityDebug.js';
 import TVTouchable from './TVTouchable.js';
 import typeof TouchableWithoutFeedback from './TouchableWithoutFeedback.js';
@@ -144,31 +146,21 @@ class TouchableNativeFeedback extends React.Component<Props, State> {
   _tvTouchable: ?TVTouchable;
 
   state: State = {
-    pressability: new Pressability({
-      getHitSlop: () => this.props.hitSlop,
-      getLongPressDelayMS: () => {
-        if (this.props.delayLongPress != null) {
-          const maybeNumber = this.props.delayLongPress;
-          if (typeof maybeNumber === 'number') {
-            return maybeNumber;
-          }
-        }
-        return 500;
-      },
-      getPressDelayMS: () => this.props.delayPressIn,
-      getPressOutDelayMS: () => this.props.delayPressOut,
-      getPressRectOffset: () => this.props.pressRetentionOffset,
-      getTouchSoundDisabled: () => this.props.touchSoundDisabled,
-      onLongPress: event => {
-        if (this.props.onLongPress != null) {
-          this.props.onLongPress(event);
-        }
-      },
-      onPress: event => {
-        if (this.props.onPress != null) {
-          this.props.onPress(event);
-        }
-      },
+    pressability: new Pressability(this._createPressabilityConfig()),
+  };
+
+  _createPressabilityConfig(): PressabilityConfig {
+    return {
+      cancelable: !this.props.rejectResponderTermination,
+      disabled: this.props.disabled,
+      hitSlop: this.props.hitSlop,
+      delayLongPress: this.props.delayLongPress,
+      delayPressIn: this.props.delayPressIn,
+      delayPressOut: this.props.delayPressOut,
+      pressRectOffset: this.props.pressRetentionOffset,
+      android_disableSound: this.props.touchSoundDisabled,
+      onLongPress: this.props.onLongPress,
+      onPress: this.props.onPress,
       onPressIn: event => {
         if (Platform.OS === 'android') {
           this._dispatchPressedStateChange(true);
@@ -191,11 +183,8 @@ class TouchableNativeFeedback extends React.Component<Props, State> {
           this.props.onPressOut(event);
         }
       },
-      onResponderTerminationRequest: () =>
-        !this.props.rejectResponderTermination,
-      onStartShouldSetResponder: () => !this.props.disabled,
-    }),
-  };
+    };
+  }
 
   _dispatchPressedStateChange(pressed: boolean): void {
     if (Platform.OS === 'android') {
@@ -310,6 +299,10 @@ class TouchableNativeFeedback extends React.Component<Props, State> {
         },
       });
     }
+  }
+
+  componentDidUpdate(prevProps: Props, prevState: State) {
+    this.state.pressability.configure(this._createPressabilityConfig());
   }
 
   componentWillUnmount(): void {
