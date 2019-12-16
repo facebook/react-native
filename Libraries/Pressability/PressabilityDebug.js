@@ -43,8 +43,12 @@ type Props = $ReadOnly<{|
 export function PressabilityDebugView({color, hitSlop}: Props): React.Node {
   if (__DEV__) {
     if (isEnabled()) {
+      const normalizedColor = normalizeColor(color);
+      if (typeof normalizedColor !== 'number') {
+        return null;
+      }
       const baseColor =
-        '#' + (normalizeColor(color) ?? 0).toString(16).padStart(8, '0');
+        '#' + (normalizedColor ?? 0).toString(16).padStart(8, '0');
 
       return (
         <View

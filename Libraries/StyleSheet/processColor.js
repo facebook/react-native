@@ -13,9 +13,12 @@
 const Platform = require('../Utilities/Platform');
 
 const normalizeColor = require('./normalizeColor');
+import type {ColorValue, ProcessedColorValue} from './ColorValueTypes';
 
 /* eslint no-bitwise: 0 */
-function processColor(color?: ?(string | number)): ?number {
+function processColor(
+  color?: ?(number | ColorValue),
+): ?ProcessedColorValue {
   if (color === undefined || color === null) {
     return color;
   }
@@ -23,6 +26,20 @@ function processColor(color?: ?(string | number)): ?number {
   let int32Color = normalizeColor(color);
   if (int32Color === null || int32Color === undefined) {
     return undefined;
+  }
+
+  if (typeof int32Color === 'object') {
+    const processColorObject = require('./processColorObject');
+
+    const processedColorObj = processColorObject(int32Color);
+
+    if (processedColorObj !== null) {
+      return processedColorObj;
+    }
+  }
+
+  if (typeof int32Color !== 'number') {
+    return null;
   }
 
   // Converts 0xrrggbbaa into 0xaarrggbb

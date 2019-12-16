@@ -772,6 +772,16 @@ static CGFloat RCTDefaultIfNegativeTo(CGFloat defaultValue, CGFloat x) {
   // solve this, we'll need to add a container view inside the main view to
   // correctly clip the subviews.
 
+#if !TARGET_OS_OSX
+  id savedTraitCollection = nil;
+#if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 130000
+  if (@available(iOS 13.0, *)) {
+    savedTraitCollection = [UITraitCollection currentTraitCollection];
+    [UITraitCollection setCurrentTraitCollection:[self traitCollection]];
+  }
+#endif
+#endif
+
   if (useIOSBorderRendering) {
     layer.cornerRadius = cornerRadii.topLeft;
     layer.borderColor = borderColors.left;
@@ -783,6 +793,13 @@ static CGFloat RCTDefaultIfNegativeTo(CGFloat defaultValue, CGFloat x) {
     return;
   }
 
+#if !TARGET_OS_OSX
+#if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 130000
+  if (@available(iOS 13.0, *)) {
+    [UITraitCollection setCurrentTraitCollection:savedTraitCollection];
+  }
+#endif 
+#endif
   UIImage *image = RCTGetBorderImage(_borderStyle,
                                      layer.bounds.size,
                                      cornerRadii,

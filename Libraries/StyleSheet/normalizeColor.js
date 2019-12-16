@@ -12,7 +12,11 @@
 
 'use strict';
 
-function normalizeColor(color: string | number): ?number {
+import type {ColorValue, ProcessedColorValue} from './ColorValueTypes';
+
+function normalizeColor(
+  color: ?(ColorValue | ProcessedColorValue)
+): ?ProcessedColorValue {
   const matchers = getMatchers();
   let match;
 
@@ -20,6 +24,20 @@ function normalizeColor(color: string | number): ?number {
     if (color >>> 0 === color && color >= 0 && color <= 0xffffffff) {
       return color;
     }
+    return null;
+  }
+
+  if (typeof color === 'object' && color !== null) {
+    const normalizeColorObject = require('./normalizeColorObject');
+
+    const normalizedColorObj = normalizeColorObject(color);
+
+    if (normalizedColorObj !== null) {
+      return color;
+    }
+  }
+
+  if (typeof color !== 'string') {
     return null;
   }
 

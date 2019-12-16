@@ -12,6 +12,7 @@
 
 import type {TurboModule} from '../TurboModule/RCTExport';
 import * as TurboModuleRegistry from '../TurboModule/TurboModuleRegistry';
+import type {ProcessedColorValue} from '../StyleSheet/StyleSheetTypes';
 
 export interface Spec extends TurboModule {
   +getConstants: () => {||};
@@ -23,7 +24,7 @@ export interface Spec extends TurboModule {
       +destructiveButtonIndices?: ?Array<number>,
       +cancelButtonIndex?: ?number,
       +anchor?: ?number,
-      +tintColor?: ?number,
+      +tintColor?: ?ProcessedColorValue,
     |},
     callback: (buttonIndex: number) => void,
   ) => void;
@@ -33,7 +34,7 @@ export interface Spec extends TurboModule {
       +url?: ?string,
       +subject?: ?string,
       +anchor?: ?number,
-      +tintColor?: ?number,
+      +tintColor?: ?ProcessedColorValue,
       +excludedActivityTypes?: ?Array<string>,
     |},
     failureCallback: (error: {|

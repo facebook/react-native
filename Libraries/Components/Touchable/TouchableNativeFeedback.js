@@ -20,6 +20,7 @@ import type {PressEvent} from 'react-native/Libraries/Types/CoreEventTypes';
 import Platform from '../../Utilities/Platform';
 import View from '../../Components/View/View';
 import processColor from '../../StyleSheet/processColor';
+import type {ProcessedColorValue} from '../../StyleSheet/StyleSheetTypes';
 import * as React from 'react';
 
 type Props = $ReadOnly<{|
@@ -127,7 +128,7 @@ class TouchableNativeFeedback extends React.Component<Props, State> {
     borderless: boolean,
   ) => $ReadOnly<{|
     borderless: boolean,
-    color: ?number,
+    color: ?ProcessedColorValue,
     type: 'RippleAndroid',
   |}> = (color: string, borderless: boolean) => ({
     type: 'RippleAndroid',
