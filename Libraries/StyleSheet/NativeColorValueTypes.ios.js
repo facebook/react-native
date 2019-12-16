@@ -22,7 +22,7 @@ export type NativeColorValue = {
 
 export const PlatformColor = (
   name: string,
-  options?: NativeColorValue
+  options?: NativeColorValue,
 ): ColorValue => {
   if (options) {
     return options;
