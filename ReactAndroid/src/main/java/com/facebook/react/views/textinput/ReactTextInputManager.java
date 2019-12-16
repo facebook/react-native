@@ -97,6 +97,7 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
           | InputType.TYPE_CLASS_PHONE
           | PASSWORD_VISIBILITY_FLAG;
 
+  private static final String KEYBOARD_TYPE_DEFAULT = "default";
   private static final String KEYBOARD_TYPE_EMAIL_ADDRESS = "email-address";
   private static final String KEYBOARD_TYPE_NUMERIC = "numeric";
   private static final String KEYBOARD_TYPE_DECIMAL_PAD = "decimal-pad";
@@ -717,7 +718,9 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
   @ReactProp(name = "keyboardType")
   public void setKeyboardType(ReactEditText view, @Nullable String keyboardType) {
     int flagsToSet = InputType.TYPE_CLASS_TEXT;
-    if (KEYBOARD_TYPE_NUMERIC.equalsIgnoreCase(keyboardType)) {
+    if (keyboardType == null || KEYBOARD_TYPE_DEFAULT.equalsIgnoreCase(keyboardType)) {
+      return;
+    } else if (KEYBOARD_TYPE_NUMERIC.equalsIgnoreCase(keyboardType)) {
       flagsToSet = INPUT_TYPE_KEYBOARD_NUMBERED;
     } else if (KEYBOARD_TYPE_NUMBER_PAD.equalsIgnoreCase(keyboardType)) {
       flagsToSet = INPUT_TYPE_KEYBOARD_NUMBER_PAD;
