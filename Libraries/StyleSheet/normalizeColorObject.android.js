@@ -17,4 +17,3 @@ function normalizeColorObject(color: NativeColorValue): ?ProcessedColorValue {
 }
 
 module.exports = normalizeColorObject;
-

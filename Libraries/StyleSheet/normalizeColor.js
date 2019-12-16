@@ -15,7 +15,7 @@
 import type {ColorValue, ProcessedColorValue} from './ColorValueTypes';
 
 function normalizeColor(
-  color: ?(ColorValue | ProcessedColorValue)
+  color: ?(ColorValue | ProcessedColorValue),
 ): ?ProcessedColorValue {
   const matchers = getMatchers();
   let match;

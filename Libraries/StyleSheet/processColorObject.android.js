@@ -17,4 +17,3 @@ function processColorObject(color: NativeColorValue): ?NativeColorValue {
 }
 
 module.exports = processColorObject;
-

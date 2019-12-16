@@ -16,9 +16,7 @@ const normalizeColor = require('./normalizeColor');
 import type {ColorValue, ProcessedColorValue} from './ColorValueTypes';
 
 /* eslint no-bitwise: 0 */
-function processColor(
-  color?: ?(number | ColorValue),
-): ?ProcessedColorValue {
+function processColor(color?: ?(number | ColorValue)): ?ProcessedColorValue {
   if (color === undefined || color === null) {
     return color;
   }
