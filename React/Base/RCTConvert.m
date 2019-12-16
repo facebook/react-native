@@ -509,13 +509,12 @@ RCT_CGSTRUCT_CONVERTER(CGAffineTransform, (@[
   @"a", @"b", @"c", @"d", @"tx", @"ty"
 ]))
 
-// [TODO(macOS ISS#2323203)
 static NSString *const RCTFallback = @"fallback";
 static NSString *const RCTFallbackARGB = @"fallback-argb";
 static NSString *const RCTSelector = @"selector";
 static NSString *const RCTIndex = @"index";
 
-/** The following dictionary defines the react-native semantic colors for macos and ios.
+/** The following dictionary defines the react-native semantic colors for ios.
  *  If the value for a given name is empty then the name itself
  *  is used as the UIColor selector.
  *  If the RCTSelector key is present then that value is used for a selector instead
@@ -530,86 +529,6 @@ static NSDictionary<NSString *, NSDictionary *>* RCTSemanticColorsMap()
   static NSDictionary<NSString *, NSDictionary *> *colorMap = nil;
   if (colorMap == nil) {
     colorMap = @{
-#if TARGET_OS_OSX
-      // https://developer.apple.com/documentation/appkit/nscolor/ui_element_colors
-      // Label Colors
-      @"labelColor": @{}, // 10_10
-      @"secondaryLabelColor": @{}, // 10_10
-      @"tertiaryLabelColor": @{}, // 10_10
-      @"quaternaryLabelColor": @{}, // 10_10
-      // Text Colors
-      @"textColor": @{},
-      @"placeholderTextColor": @{}, // 10_10
-      @"selectedTextColor": @{},
-      @"textBackgroundColor": @{},
-      @"selectedTextBackgroundColor": @{},
-      @"keyboardFocusIndicatorColor": @{},
-      @"unemphasizedSelectedTextColor": @{ // 10_14
-        RCTFallback: @"selectedTextColor"
-      },
-      @"unemphasizedSelectedTextBackgroundColor": @{ // 10_14
-        RCTFallback: @"textBackgroundColor"
-      },
-      // Content Colors
-      @"linkColor": @{}, // 10_10
-      @"separatorColor": @{ // 10_14: Replacement for +controlHighlightColor, +controlLightHighlightColor, +controlShadowColor, +controlDarkShadowColor
-        RCTFallback: @"gridColor"
-      },
-      @"selectedContentBackgroundColor": @{ // 10_14: Alias for +alternateSelectedControlColor
-        RCTFallback: @"alternateSelectedControlColor"
-      },
-      @"unemphasizedSelectedContentBackgroundColor": @{ // 10_14: Alias for +secondarySelectedControlColor
-        RCTFallback: @"secondarySelectedControlColor"
-      },
-      // Menu Colors
-      @"selectedMenuItemTextColor": @{},
-      // Table Colors
-      @"gridColor": @{},
-      @"headerTextColor": @{},
-      @"alternatingContentBackgroundColorEven": @{ // 10_14: Alias for +controlAlternatingRowBackgroundColors
-        RCTSelector: @"alternatingContentBackgroundColors",
-        RCTIndex: @0,
-        RCTFallback: @"controlAlternatingRowBackgroundColors"
-      },
-      @"alternatingContentBackgroundColorOdd": @{ // 10_14: Alias for +controlAlternatingRowBackgroundColors
-        RCTSelector: @"alternatingContentBackgroundColors",
-        RCTIndex: @1,
-        RCTFallback: @"controlAlternatingRowBackgroundColors"
-      },
-      // Control Colors
-      @"controlAccentColor": @{ // 10_14
-        RCTFallback: @"controlColor"
-      },
-      @"controlColor": @{},
-      @"controlBackgroundColor": @{},
-      @"controlTextColor": @{},
-      @"disabledControlTextColor": @{},
-      @"selectedControlColor": @{},
-      @"selectedControlTextColor": @{},
-      @"alternateSelectedControlTextColor": @{},
-      @"scrubberTexturedBackgroundColor": @{}, // 10_12_2
-      // Window Colors
-      @"windowBackgroundColor": @{},
-      @"windowFrameTextColor": @{},
-      @"underPageBackgroundColor": @{}, // 10_8
-      // Highlights and Shadows
-      @"findHighlightColor": @{ // 10_13
-        RCTFallback: @"highlightColor"
-      },
-      @"highlightColor": @{},
-      @"shadowColor": @{},
-      // https://developer.apple.com/documentation/appkit/nscolor/standard_colors
-      // Standard Colors
-      @"systemBlueColor": @{},   // 10_10
-      @"systemBrownColor": @{},  // 10_10
-      @"systemGrayColor": @{},   // 10_10
-      @"systemGreenColor": @{},  // 10_10
-      @"systemOrangeColor": @{}, // 10_10
-      @"systemPinkColor": @{},   // 10_10
-      @"systemPurpleColor": @{}, // 10_10
-      @"systemRedColor": @{},    // 10_10
-      @"systemYellowColor": @{}, // 10_10
-#else // TARGET_OS_IOS
       // https://developer.apple.com/documentation/uikit/uicolor/ui_element_colors
       // Label Colors
       @"labelColor": @{ // iOS 13.0
@@ -708,7 +627,6 @@ static NSDictionary<NSString *, NSDictionary *>* RCTSemanticColorsMap()
       @"systemGray6Color": @{ // iOS 13.0
         RCTFallbackARGB: @(0xFFf2f2f7)
       },
-#endif
 #if DEBUG
       // The follow exist for Unit Tests
       @"unitTestFallbackColor": @{
@@ -791,7 +709,6 @@ static NSString *RCTSemanticColorNames()
   }
   return names;
 }
-// ]TODO(macOS ISS#2323203)
 
 + (UIColor *)UIColor:(id)json
 {
@@ -812,7 +729,6 @@ static NSString *RCTSemanticColorNames()
     CGFloat g = ((argb >> 8) & 0xFF) / 255.0;
     CGFloat b = (argb & 0xFF) / 255.0;
     return [UIColor colorWithRed:r green:g blue:b alpha:a];
-// [TODO(macOS ISS#2323203)
   } else if ([json isKindOfClass:[NSDictionary class]]) {
     NSDictionary *dictionary = json;
     id value = nil;
@@ -830,10 +746,6 @@ static NSString *RCTSemanticColorNames()
       id dark = [appearances objectForKey:@"dark"];
       UIColor *darkColor = [RCTConvert UIColor:dark];
       if (lightColor != nil && darkColor != nil) {
-#if TARGET_OS_OSX
-        RCTDynamicColor *color = [[RCTDynamicColor alloc] initWithAquaColor:lightColor darkAquaColor:darkColor];
-        return color;
-#else
 #if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 130000
         if (@available(iOS 13.0, *)) {
           UIColor *color = [UIColor colorWithDynamicProvider:^UIColor * _Nonnull(UITraitCollection * _Nonnull collection) {
@@ -846,16 +758,14 @@ static NSString *RCTSemanticColorNames()
 #if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 130000
         }
 #endif
-#endif
       } else {
-        RCTLogConvertError(json, @"a UIColor. Expected a mac dynamic appearance aware color.");
+        RCTLogConvertError(json, @"a UIColor. Expected an iOS dynamic appearance aware color.");
         return nil;
       }
     } else {
-      RCTLogConvertError(json, @"a UIColor. Expected a mac semantic color or dynamic appearance aware color.");
+      RCTLogConvertError(json, @"a UIColor. Expected an iOS semantic color or dynamic appearance aware color.");
       return nil;
     }
-// ]TODO(macOS ISS#2323203)
   } else {
     RCTLogConvertError(json, @"a UIColor. Did you forget to call processColor() on the JS side?");
     return nil;
