@@ -67,6 +67,7 @@ import com.facebook.yoga.YogaConstants;
 import java.lang.reflect.Field;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.Arrays;
 
 /** Manages instances of TextInput. */
 @ReactModule(name = ReactTextInputManager.REACT_CLASS)
@@ -104,6 +105,15 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
   private static final String KEYBOARD_TYPE_NUMBER_PAD = "number-pad";
   private static final String KEYBOARD_TYPE_PHONE_PAD = "phone-pad";
   private static final String KEYBOARD_TYPE_VISIBLE_PASSWORD = "visible-password";
+  private static final String[] KEYBOARD_TYPES = new String[]{ 
+    KEYBOARD_TYPE_DEFAULT,
+    KEYBOARD_TYPE_EMAIL_ADDRESS,
+    KEYBOARD_TYPE_NUMERIC,
+    KEYBOARD_TYPE_DECIMAL_PAD,
+    KEYBOARD_TYPE_NUMBER_PAD,
+    KEYBOARD_TYPE_PHONE_PAD,
+    KEYBOARD_TYPE_VISIBLE_PASSWORD
+  };
   private static final InputFilter[] EMPTY_FILTERS = new InputFilter[0];
   private static final int UNSET = -1;
 
@@ -718,7 +728,7 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
   @ReactProp(name = "keyboardType")
   public void setKeyboardType(ReactEditText view, @Nullable String keyboardType) {
     int flagsToSet = InputType.TYPE_CLASS_TEXT;
-    if (keyboardType == null || KEYBOARD_TYPE_DEFAULT.equalsIgnoreCase(keyboardType)) {
+    if (keyboardType == null || !Arrays.asList(KEYBOARD_TYPES).contains(keyboardType) || KEYBOARD_TYPE_DEFAULT.equalsIgnoreCase(keyboardType)) {
       return;
     } else if (KEYBOARD_TYPE_NUMERIC.equalsIgnoreCase(keyboardType)) {
       flagsToSet = INPUT_TYPE_KEYBOARD_NUMBERED;
