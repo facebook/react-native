@@ -22,7 +22,7 @@ export type NativeColorValue = {
 
 export const PlatformColor = (
   name: string,
-  options?: Object /* flowlint-line unclear-type: off */,
+  options?: NativeColorValue
 ): ColorValue => {
   if (options) {
     return options;
