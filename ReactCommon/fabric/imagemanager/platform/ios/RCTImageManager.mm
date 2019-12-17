@@ -12,9 +12,11 @@
 #import <react/utils/SharedFunction.h>
 
 #import <React/RCTImageLoaderWithAttributionProtocol.h>
+
 #import <react/imagemanager/ImageResponse.h>
 #import <react/imagemanager/ImageResponseObserver.h>
 
+#import "RCTImageInstrumentationProxy.h"
 #import "RCTImagePrimitivesConversions.h"
 
 using namespace facebook::react;
@@ -39,7 +41,7 @@ using namespace facebook::react;
 {
   SystraceSection s("RCTImageManager::requestImage");
 
-  auto imageRequest = ImageRequest(imageSource);
+  auto imageRequest = ImageRequest(imageSource, std::make_unique<RCTImageInstrumentationProxy>(_imageLoader));
   auto weakObserverCoordinator =
       (std::weak_ptr<const ImageResponseObserverCoordinator>)imageRequest.getSharedObserverCoordinator();
 

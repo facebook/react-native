@@ -10,6 +10,11 @@
 #import <React/RCTImageLoaderProtocol.h>
 #import <React/RCTImageURLLoaderWithAttribution.h>
 
+RCT_EXTERN BOOL RCTImageLoadingInstrumentationEnabled(void);
+RCT_EXTERN BOOL RCTImageLoadingPerfInstrumentationEnabled(void);
+RCT_EXTERN void RCTEnableImageLoadingInstrumentation(BOOL enabled);
+RCT_EXTERN void RCTEnableImageLoadingPerfInstrumentation(BOOL enabled);
+
 @protocol RCTImageLoaderWithAttributionProtocol<RCTImageLoaderProtocol>
 
 /**

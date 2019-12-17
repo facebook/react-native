@@ -10,8 +10,10 @@
 namespace facebook {
 namespace react {
 
-ImageRequest::ImageRequest(const ImageSource &imageSource)
-    : imageSource_(imageSource) {
+ImageRequest::ImageRequest(
+    const ImageSource &imageSource,
+    std::shared_ptr<const ImageInstrumentation> instrumentation)
+    : imageSource_(imageSource), instrumentation_(instrumentation) {
   // Not implemented.
 }
 
