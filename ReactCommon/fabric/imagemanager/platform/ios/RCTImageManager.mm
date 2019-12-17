@@ -41,7 +41,8 @@ using namespace facebook::react;
 {
   SystraceSection s("RCTImageManager::requestImage");
 
-  auto imageRequest = ImageRequest(imageSource, std::make_unique<RCTImageInstrumentationProxy>(_imageLoader));
+  auto imageInstrumentation = std::make_shared<RCTImageInstrumentationProxy>(_imageLoader);
+  auto imageRequest = ImageRequest(imageSource, imageInstrumentation);
   auto weakObserverCoordinator =
       (std::weak_ptr<const ImageResponseObserverCoordinator>)imageRequest.getSharedObserverCoordinator();
 
@@ -97,6 +98,10 @@ using namespace facebook::react;
                                     completionBlock:completionBlock];
     RCTImageLoaderCancellationBlock cancelationBlock = loaderRequest.cancellationBlock;
     sharedCancelationFunction.assign([cancelationBlock]() { cancelationBlock(); });
+
+    if (imageInstrumentation) {
+      imageInstrumentation->setImageURLLoaderRequest(loaderRequest);
+    }
   });
 
   return imageRequest;

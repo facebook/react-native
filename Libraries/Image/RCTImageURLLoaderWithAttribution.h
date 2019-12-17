@@ -21,9 +21,10 @@ struct ImageURLLoaderAttribution {
 @interface RCTImageURLLoaderRequest : NSObject
 
 @property (nonatomic, strong, readonly) NSString *requestId;
+@property (nonatomic, strong, readonly) NSURL *imageURL;
 @property (nonatomic, copy, readonly) RCTImageLoaderCancellationBlock cancellationBlock;
 
-- (instancetype)initWithRequestId:(NSString *)requestId cancellationBlock:(RCTImageLoaderCancellationBlock)cancellationBlock;
+- (instancetype)initWithRequestId:(NSString *)requestId imageURL:(NSURL *)imageURL cancellationBlock:(RCTImageLoaderCancellationBlock)cancellationBlock;
 - (void)cancel;
 
 @end
@@ -47,5 +48,20 @@ struct ImageURLLoaderAttribution {
                               progressHandler:(RCTImageLoaderProgressBlock)progressHandler
                            partialLoadHandler:(RCTImageLoaderPartialLoadBlock)partialLoadHandler
                             completionHandler:(RCTImageLoaderCompletionBlock)completionHandler;
+
+/**
+ * Image instrumentation - notify that the image content (UIImage) has been set on the native view.
+ */
+- (void)trackURLImageContentDidSetForRequest:(RCTImageURLLoaderRequest *)loaderRequest;
+
+/**
+ * Image instrumentation - start tracking the on-screen visibility of the native image view.
+ */
+- (void)trackURLImageVisibilityForRequest:(RCTImageURLLoaderRequest *)loaderRequest imageView:(UIView *)imageView;
+
+/**
+ * Image instrumentation - notify that the native image view was destroyed.
+ */
+- (void)trackURLImageDidDestroy:(RCTImageURLLoaderRequest *)loaderRequest;
 
 @end

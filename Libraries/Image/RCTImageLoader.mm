@@ -507,7 +507,7 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
                                                     completionHandler:^(NSError *error, UIImage *image) {
                                                       completionHandler(error, image, nil);
                                                     }];
-    return [[RCTImageURLLoaderRequest alloc] initWithRequestId:nil cancellationBlock:cb];
+    return [[RCTImageURLLoaderRequest alloc] initWithRequestId:nil imageURL:request.URL cancellationBlock:cb];
   }
 
   // All access to URL cache must be serialized
@@ -574,7 +574,7 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
     }
   });
 
-  return [[RCTImageURLLoaderRequest alloc] initWithRequestId:requestId cancellationBlock:^{
+  return [[RCTImageURLLoaderRequest alloc] initWithRequestId:requestId imageURL:request.URL cancellationBlock:^{
     BOOL alreadyCancelled = atomic_fetch_or(cancelled.get(), 1);
     if (alreadyCancelled) {
       return;
@@ -700,6 +700,8 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
   };
 }
 
+#pragma mark - RCTImageLoaderWithAttributionProtocol
+
 - (RCTImageURLLoaderRequest *)loadImageWithURLRequest:(NSURLRequest *)imageURLRequest
                                                  size:(CGSize)size
                                                 scale:(CGFloat)scale
@@ -777,7 +779,42 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
                                                                  partialLoadBlock:partialLoadBlock
                                                                   completionBlock:completionHandler];
   cancelLoad = loaderRequest.cancellationBlock;
-  return [[RCTImageURLLoaderRequest alloc] initWithRequestId:loaderRequest.requestId cancellationBlock:cancellationBlock];
+  return [[RCTImageURLLoaderRequest alloc] initWithRequestId:loaderRequest.requestId imageURL:imageURLRequest.URL cancellationBlock:cancellationBlock];
+}
+
+- (void)trackURLImageContentDidSetForRequest:(RCTImageURLLoaderRequest *)loaderRequest
+{
+  if (!loaderRequest) {
+    return;
+  }
+
+  id<RCTImageURLLoader> loadHandler = [self imageURLLoaderForURL:loaderRequest.imageURL];
+  if ([loadHandler respondsToSelector:@selector(trackURLImageContentDidSetForRequest:)]) {
+    [(id<RCTImageURLLoaderWithAttribution>)loadHandler trackURLImageContentDidSetForRequest:loaderRequest];
+  }
+}
+
+- (void)trackURLImageVisibilityForRequest:(RCTImageURLLoaderRequest *)loaderRequest imageView:(UIView *)imageView
+{
+  if (!loaderRequest || !imageView) {
+    return;
+  }
+
+  id<RCTImageURLLoader> loadHandler = [self imageURLLoaderForURL:loaderRequest.imageURL];
+  if ([loadHandler respondsToSelector:@selector(trackURLImageVisibilityForRequest:imageView:)]) {
+    [(id<RCTImageURLLoaderWithAttribution>)loadHandler trackURLImageVisibilityForRequest:loaderRequest imageView:imageView];
+  }
+}
+
+- (void)trackURLImageDidDestroy:(RCTImageURLLoaderRequest *)loaderRequest
+{
+  if (!loaderRequest) {
+    return;
+  }
+  id<RCTImageURLLoader> loadHandler = [self imageURLLoaderForURL:loaderRequest.imageURL];
+  if ([loadHandler respondsToSelector:@selector(trackURLImageDidDestroy:)]) {
+    [(id<RCTImageURLLoaderWithAttribution>)loadHandler trackURLImageDidDestroy:loaderRequest];
+  }
 }
 
 - (RCTImageLoaderCancellationBlock)decodeImageData:(NSData *)data

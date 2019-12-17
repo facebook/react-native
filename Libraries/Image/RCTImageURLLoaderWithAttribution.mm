@@ -9,10 +9,11 @@
 
 @implementation RCTImageURLLoaderRequest
 
-- (instancetype)initWithRequestId:(NSString *)requestId cancellationBlock:(RCTImageLoaderCancellationBlock)cancellationBlock
+- (instancetype)initWithRequestId:(NSString *)requestId imageURL:(NSURL *)imageURL cancellationBlock:(RCTImageLoaderCancellationBlock)cancellationBlock
 {
   if (self = [super init]) {
     _requestId = requestId;
+    _imageURL = imageURL;
     _cancellationBlock = cancellationBlock;
   }
 

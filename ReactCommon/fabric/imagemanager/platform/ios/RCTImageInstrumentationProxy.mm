@@ -15,15 +15,25 @@ RCTImageInstrumentationProxy::RCTImageInstrumentationProxy(id<RCTImageLoaderWith
 {
 }
 
+RCTImageInstrumentationProxy::~RCTImageInstrumentationProxy()
+{
+  if (!imageURLLoaderRequest_) {
+    return;
+  }
+  [imageLoader_ trackURLImageDidDestroy:imageURLLoaderRequest_];
+}
+
 void RCTImageInstrumentationProxy::didSetImage() const
 {
   if (!RCTImageLoadingPerfInstrumentationEnabled()) {
     return;
   }
 
-  // TODO (T58941612): Not yet supported.
-  if (imageLoader_) {
+  if (!imageURLLoaderRequest_) {
+    return;
   }
+
+  [imageLoader_ trackURLImageContentDidSetForRequest:imageURLLoaderRequest_];
 }
 
 void RCTImageInstrumentationProxy::didEnterVisibilityRange() const
@@ -33,6 +43,9 @@ void RCTImageInstrumentationProxy::didEnterVisibilityRange() const
   }
 
   // TODO (T58941612): Not yet supported.
+  if (!imageURLLoaderRequest_) {
+    return;
+  }
 }
 
 void RCTImageInstrumentationProxy::didExitVisibilityRange() const
@@ -42,6 +55,9 @@ void RCTImageInstrumentationProxy::didExitVisibilityRange() const
   }
 
   // TODO (T58941612): Not yet supported.
+  if (!imageURLLoaderRequest_) {
+    return;
+  }
 }
 
 void RCTImageInstrumentationProxy::trackNativeImageView(UIView *imageView) const
@@ -50,7 +66,15 @@ void RCTImageInstrumentationProxy::trackNativeImageView(UIView *imageView) const
     return;
   }
 
-  // TODO (T58941612): Not yet supported.
+  if (!imageURLLoaderRequest_) {
+    return;
+  }
+  [imageLoader_ trackURLImageVisibilityForRequest:imageURLLoaderRequest_ imageView:imageView];
+}
+
+void RCTImageInstrumentationProxy::setImageURLLoaderRequest(RCTImageURLLoaderRequest *request)
+{
+  imageURLLoaderRequest_ = request;
 }
 
 } // namespace react

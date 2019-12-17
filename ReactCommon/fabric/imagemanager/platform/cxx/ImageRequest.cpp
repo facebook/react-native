@@ -38,5 +38,17 @@ const std::shared_ptr<const ImageResponseObserverCoordinator>
   // Not implemented
   abort();
 }
+
+const std::shared_ptr<const ImageInstrumentation>
+    &ImageRequest::getSharedImageInstrumentation() const {
+  // Not implemented
+  abort();
+}
+
+const ImageInstrumentation &ImageRequest::getImageInstrumentation() const {
+  // Not implemented
+  abort();
+}
+
 } // namespace react
 } // namespace facebook

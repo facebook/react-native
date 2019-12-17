@@ -20,15 +20,18 @@ namespace react {
 class RCTImageInstrumentationProxy final : public ImageInstrumentation {
  public:
   RCTImageInstrumentationProxy(id<RCTImageLoaderWithAttributionProtocol> imageLoader);
+  ~RCTImageInstrumentationProxy();
 
   void didSetImage() const override;
   void didEnterVisibilityRange() const override;
   void didExitVisibilityRange() const override;
 
   void trackNativeImageView(UIView *imageView) const;
+  void setImageURLLoaderRequest(RCTImageURLLoaderRequest *request);
 
  private:
   __weak id<RCTImageLoaderWithAttributionProtocol> imageLoader_;
+  RCTImageURLLoaderRequest *imageURLLoaderRequest_;
 };
 
 } // namespace react
