@@ -36,7 +36,12 @@ RCTMessageThread::~RCTMessageThread() {
 
 // This is analogous to dispatch_async
 void RCTMessageThread::runAsync(std::function<void()> func) {
-  CFRunLoopPerformBlock(m_cfRunLoop, kCFRunLoopCommonModes, ^{ func(); });
+  CFRunLoopPerformBlock(m_cfRunLoop, kCFRunLoopCommonModes, ^{
+    // Create an autorelease pool each run loop to prevent memory footprint from growing too large, which can lead to performance problems.
+    @autoreleasepool {
+      func();
+    }
+  });
   CFRunLoopWakeUp(m_cfRunLoop);
 }
 
