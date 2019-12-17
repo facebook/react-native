@@ -17,7 +17,7 @@ import com.facebook.react.module.annotations.ReactModule;
 import java.util.HashMap;
 import java.util.Map;
 
-@ReactModule(name = JSDevSupport.MODULE_NAME)
+@ReactModule(name = JSDevSupport.MODULE_NAME, canOverrideExistingModule = true)
 public class JSDevSupport extends NativeJSDevSupportSpec {
   public static final String MODULE_NAME = "JSDevSupport";
 
