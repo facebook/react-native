@@ -169,11 +169,11 @@ RCT_EXPORT_MODULE()
 
   if (!_loaders) {
     // Get loaders, sorted in reverse priority order (highest priority first)
-    RCTAssert(_bridge, @"Bridge not set");
 
     if (_loadersProvider) {
       _loaders = _loadersProvider();
     } else {
+      RCTAssert(_bridge, @"Trying to find RCTImageURLLoaders and bridge not set.");
       _loaders = [_bridge modulesConformingToProtocol:@protocol(RCTImageURLLoader)];
     }
 
@@ -233,11 +233,11 @@ RCT_EXPORT_MODULE()
 
   if (!_decoders) {
     // Get decoders, sorted in reverse priority order (highest priority first)
-    RCTAssert(_bridge, @"Bridge not set");
 
     if (_decodersProvider) {
       _decoders = _decodersProvider();
     } else {
+      RCTAssert(_bridge, @"Trying to find RCTImageDataDecoders and bridge not set.");
       _decoders = [_bridge modulesConformingToProtocol:@protocol(RCTImageDataDecoder)];
     }
 
