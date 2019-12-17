@@ -1,3 +1,4 @@
+.appveyor/config.yml
 environment:
   ANDROID_HOME: "C:\\android-sdk-windows"
   ANDROID_NDK: "C:\\android-sdk-windows\\android-ndk-r19c"
