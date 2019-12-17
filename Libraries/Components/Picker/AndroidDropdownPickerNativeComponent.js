@@ -22,12 +22,15 @@ import type {
 } from '../../Types/CodegenTypes';
 import type {HostComponent} from '../../Renderer/shims/ReactNativeTypes';
 import type {TextStyleProp} from '../../StyleSheet/StyleSheet';
-import type {ColorValue} from '../../StyleSheet/StyleSheetTypes';
+import type {
+  ColorValue,
+  ProcessedColorValue,
+} from '../../StyleSheet/StyleSheetTypes';
 import type {ViewProps} from '../../Components/View/ViewPropTypes';
 
 type PickerItem = $ReadOnly<{|
   label: string,
-  color?: ?Int32,
+  color?: ?ProcessedColorValue,
 |}>;
 
 type PickerItemSelectEvent = $ReadOnly<{|

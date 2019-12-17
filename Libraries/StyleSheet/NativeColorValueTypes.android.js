@@ -12,9 +12,16 @@
 
 import type {ColorValue} from './ColorValueTypes';
 
-export type NativeColorValue = Object; // flowlint-line unclear-type: off
+export type NativeColorValue = {
+  hypothetical_android_color?: string,
+};
 
 export const PlatformColor = (
   name: string,
   options?: Object /* flowlint-line unclear-type: off */,
-): ColorValue => null;
+): ColorValue => {
+  if (options) {
+    return options;
+  }
+  return {hypothetical_android_color: name};
+};

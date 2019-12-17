@@ -14,6 +14,7 @@ const Platform = require('../../Utilities/Platform');
 const React = require('react');
 
 const processColor = require('../../StyleSheet/processColor');
+import type {ColorValue} from '../../StyleSheet/StyleSheetTypes';
 
 import NativeStatusBarManagerAndroid from './NativeStatusBarManagerAndroid';
 import NativeStatusBarManagerIOS from './NativeStatusBarManagerIOS';
@@ -61,7 +62,7 @@ type AndroidProps = $ReadOnly<{|
    * The background color of the status bar.
    * @platform android
    */
-  backgroundColor?: ?string,
+  backgroundColor?: ?ColorValue,
   /**
    * If the status bar is translucent.
    * When translucent is set to true, the app will draw under the status bar.

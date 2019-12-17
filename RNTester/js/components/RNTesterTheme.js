@@ -11,29 +11,30 @@
 'use strict';
 
 import * as React from 'react';
-import {Appearance} from 'react-native';
+import {Appearance, Platform, PlatformColor} from 'react-native';
+import type {ColorValue} from '../../../Libraries/StyleSheet/StyleSheetTypes';
 
 export type RNTesterTheme = {
-  LabelColor: string,
-  SecondaryLabelColor: string,
-  TertiaryLabelColor: string,
-  QuaternaryLabelColor: string,
-  PlaceholderTextColor: string,
-  SystemBackgroundColor: string,
-  SecondarySystemBackgroundColor: string,
-  TertiarySystemBackgroundColor: string,
-  GroupedBackgroundColor: string,
-  SecondaryGroupedBackgroundColor: string,
-  TertiaryGroupedBackgroundColor: string,
-  SystemFillColor: string,
-  SecondarySystemFillColor: string,
-  TertiarySystemFillColor: string,
-  QuaternarySystemFillColor: string,
-  SeparatorColor: string,
-  OpaqueSeparatorColor: string,
-  LinkColor: string,
-  SystemPurpleColor: string,
-  ToolbarColor: string,
+  LabelColor: ColorValue,
+  SecondaryLabelColor: ColorValue,
+  TertiaryLabelColor: ColorValue,
+  QuaternaryLabelColor: ColorValue,
+  PlaceholderTextColor: ColorValue,
+  SystemBackgroundColor: ColorValue,
+  SecondarySystemBackgroundColor: ColorValue,
+  TertiarySystemBackgroundColor: ColorValue,
+  GroupedBackgroundColor: ColorValue,
+  SecondaryGroupedBackgroundColor: ColorValue,
+  TertiaryGroupedBackgroundColor: ColorValue,
+  SystemFillColor: ColorValue,
+  SecondarySystemFillColor: ColorValue,
+  TertiarySystemFillColor: ColorValue,
+  QuaternarySystemFillColor: ColorValue,
+  SeparatorColor: ColorValue,
+  OpaqueSeparatorColor: ColorValue,
+  LinkColor: ColorValue,
+  SystemPurpleColor: ColorValue,
+  ToolbarColor: ColorValue,
   ...
 };
 
@@ -85,5 +86,26 @@ export const RNTesterDarkTheme = {
 
 export const themes = {light: RNTesterLightTheme, dark: RNTesterDarkTheme};
 export const RNTesterThemeContext: React.Context<RNTesterTheme> = React.createContext(
-  Appearance.getColorScheme() === 'dark' ? themes.dark : themes.light,
+  Platform.OS === 'ios'
+    ? {
+        ...(Appearance.getColorScheme() === 'dark'
+          ? themes.dark
+          : themes.light),
+        LabelColor: PlatformColor('labelColor'),
+        ToolbarColor: PlatformColor('', {
+          dynamic: {light: 'red', dark: 'blue'},
+        }),
+      }
+    : Platform.OS === 'android'
+    ? {
+        ...(Appearance.getColorScheme() === 'dark'
+          ? themes.dark
+          : themes.light),
+        ToolbarColor: PlatformColor('', {
+          hypothetical_android_color: 'ToolbarColor',
+        }),
+      }
+    : Appearance.getColorScheme() === 'dark'
+    ? themes.dark
+    : themes.light,
 );

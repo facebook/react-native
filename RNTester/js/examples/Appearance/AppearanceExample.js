@@ -191,7 +191,9 @@ exports.examples = [
                           paddingVertical: 2,
                           color: theme.LabelColor,
                         }}>
-                        {theme[key]}
+                        {typeof theme[key] === 'string'
+                          ? theme[key]
+                          : JSON.stringify(theme[key])}
                       </Text>
                     </View>
                   </View>
