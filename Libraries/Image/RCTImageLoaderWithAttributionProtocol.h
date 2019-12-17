@@ -16,14 +16,14 @@
  * Same as the variant in RCTImageURLLoaderProtocol, but allows passing attribution
  * information that each image URL loader can process.
  */
-- (RCTImageLoaderCancellationBlock)loadImageWithURLRequest:(NSURLRequest *)imageURLRequest
-                                                      size:(CGSize)size
-                                                     scale:(CGFloat)scale
-                                                   clipped:(BOOL)clipped
-                                                resizeMode:(RCTResizeMode)resizeMode
-                                               attribution:(const facebook::react::ImageURLLoaderAttribution &)attribution
-                                             progressBlock:(RCTImageLoaderProgressBlock)progressBlock
-                                          partialLoadBlock:(RCTImageLoaderPartialLoadBlock)partialLoadBlock
-                                           completionBlock:(RCTImageLoaderCompletionBlock)completionBlock;
+- (RCTImageURLLoaderRequest *)loadImageWithURLRequest:(NSURLRequest *)imageURLRequest
+                                                 size:(CGSize)size
+                                                scale:(CGFloat)scale
+                                              clipped:(BOOL)clipped
+                                           resizeMode:(RCTResizeMode)resizeMode
+                                          attribution:(const facebook::react::ImageURLLoaderAttribution &)attribution
+                                        progressBlock:(RCTImageLoaderProgressBlock)progressBlock
+                                     partialLoadBlock:(RCTImageLoaderPartialLoadBlock)partialLoadBlock
+                                      completionBlock:(RCTImageLoaderCompletionBlock)completionBlock;
 
 @end

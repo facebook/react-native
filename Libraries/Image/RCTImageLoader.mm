@@ -7,6 +7,7 @@
 
 #import <objc/runtime.h>
 #import <atomic>
+#import <mach/mach_time.h>
 
 #import <ImageIO/ImageIO.h>
 
@@ -52,6 +53,18 @@ static NSInteger RCTImageBytesForImage(UIImage *image)
 {
   NSInteger singleImageBytes = image.size.width * image.size.height * image.scale * image.scale * 4;
   return image.images ? image.images.count * singleImageBytes : singleImageBytes;
+}
+
+static uint64_t monotonicTimeGetCurrentNanoseconds(void)
+{
+  static struct mach_timebase_info tb_info = {0};
+  static dispatch_once_t onceToken;
+  dispatch_once(&onceToken, ^{
+    __unused int ret = mach_timebase_info(&tb_info);
+    assert(0 == ret);
+  });
+
+  return (mach_absolute_time() * tb_info.numer) / tb_info.denom;
 }
 
 @interface RCTImageLoader() <NativeImageLoaderIOSSpec, RCTImageLoaderWithAttributionProtocol>
@@ -314,7 +327,6 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
                                  scale:1
                                clipped:YES
                             resizeMode:RCTResizeModeStretch
-                           attribution:{}
                          progressBlock:nil
                       partialLoadBlock:nil
                        completionBlock:callback];
@@ -329,15 +341,18 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
                                           partialLoadBlock:(RCTImageLoaderPartialLoadBlock)partialLoadBlock
                                            completionBlock:(RCTImageLoaderCompletionBlock)completionBlock
 {
-  return [self loadImageWithURLRequest:imageURLRequest
-                                  size:size
-                                 scale:scale
-                               clipped:clipped
-                            resizeMode:resizeMode
-                           attribution:{}
-                         progressBlock:progressBlock
-                      partialLoadBlock:partialLoadBlock
-                       completionBlock:completionBlock];
+  RCTImageURLLoaderRequest *request = [self loadImageWithURLRequest:imageURLRequest
+                                                               size:size
+                                                              scale:scale
+                                                            clipped:clipped
+                                                         resizeMode:resizeMode
+                                                        attribution:{}
+                                                      progressBlock:progressBlock
+                                                   partialLoadBlock:partialLoadBlock
+                                                    completionBlock:completionBlock];
+  return ^{
+    [request cancel];
+  };
 }
 
 - (void)dequeueTasks
@@ -406,14 +421,14 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
  * path taken. This is useful if you want to skip decoding, e.g. when preloading
  * the image, or retrieving metadata.
  */
-- (RCTImageLoaderCancellationBlock)_loadImageOrDataWithURLRequest:(NSURLRequest *)request
-                                                             size:(CGSize)size
-                                                            scale:(CGFloat)scale
-                                                       resizeMode:(RCTResizeMode)resizeMode
-                                                      attribution:(const ImageURLLoaderAttribution &)attribution
-                                                    progressBlock:(RCTImageLoaderProgressBlock)progressHandler
-                                                 partialLoadBlock:(RCTImageLoaderPartialLoadBlock)partialLoadHandler
-                                                  completionBlock:(void (^)(NSError *error, id imageOrData, BOOL cacheResult, NSURLResponse *response))completionBlock
+- (RCTImageURLLoaderRequest *)_loadImageOrDataWithURLRequest:(NSURLRequest *)request
+                                                        size:(CGSize)size
+                                                       scale:(CGFloat)scale
+                                                  resizeMode:(RCTResizeMode)resizeMode
+                                                 attribution:(const ImageURLLoaderAttribution &)attribution
+                                               progressBlock:(RCTImageLoaderProgressBlock)progressHandler
+                                            partialLoadBlock:(RCTImageLoaderPartialLoadBlock)partialLoadHandler
+                                             completionBlock:(void (^)(NSError *error, id imageOrData, BOOL cacheResult, NSURLResponse *response))completionBlock
 {
   {
     NSMutableURLRequest *mutableRequest = [request mutableCopy];
@@ -445,6 +460,8 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
   auto cancelled = std::make_shared<std::atomic<int>>(0);
   __block dispatch_block_t cancelLoad = nil;
   __block NSLock *cancelLoadLock = [NSLock new];
+  NSString *requestId = [NSString stringWithFormat:@"%@-%llu",[[NSUUID UUID] UUIDString], monotonicTimeGetCurrentNanoseconds()];
+
   void (^completionHandler)(NSError *, id, NSURLResponse *) = ^(NSError *error, id imageOrData, NSURLResponse *response) {
     [cancelLoadLock lock];
     cancelLoad = nil;
@@ -473,6 +490,7 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
                                                                            size:size
                                                                           scale:scale
                                                                      resizeMode:resizeMode
+                                                                      requestId:requestId
                                                                     attribution:attributionCopy
                                                                 progressHandler:progressHandler
                                                              partialLoadHandler:partialLoadHandler
@@ -480,15 +498,16 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
                                                                 completionHandler(error, image, nil);
                                                               }];
     }
-    return [loadHandler loadImageForURL:request.URL
-                                   size:size
-                                  scale:scale
-                             resizeMode:resizeMode
-                        progressHandler:progressHandler
-                     partialLoadHandler:partialLoadHandler
-                      completionHandler:^(NSError *error, UIImage *image) {
-                        completionHandler(error, image, nil);
-                      }];
+    RCTImageLoaderCancellationBlock cb = [loadHandler loadImageForURL:request.URL
+                                                                 size:size
+                                                                scale:scale
+                                                           resizeMode:resizeMode
+                                                      progressHandler:progressHandler
+                                                   partialLoadHandler:partialLoadHandler
+                                                    completionHandler:^(NSError *error, UIImage *image) {
+                                                      completionHandler(error, image, nil);
+                                                    }];
+    return [[RCTImageURLLoaderRequest alloc] initWithRequestId:nil cancellationBlock:cb];
   }
 
   // All access to URL cache must be serialized
@@ -506,16 +525,18 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
     if (loadHandler) {
       dispatch_block_t cancelLoadLocal;
       if ([loadHandler conformsToProtocol:@protocol(RCTImageURLLoaderWithAttribution)]) {
-        cancelLoadLocal = [(id<RCTImageURLLoaderWithAttribution>)loadHandler loadImageForURL:request.URL
-                                                                                        size:size
-                                                                                       scale:scale
-                                                                                  resizeMode:resizeMode
-                                                                                 attribution:attributionCopy
-                                                                             progressHandler:progressHandler
-                                                                          partialLoadHandler:partialLoadHandler
-                                                                           completionHandler:^(NSError *error, UIImage *image) {
-                                                                             completionHandler(error, image, nil);
-                                                                           }];
+        RCTImageURLLoaderRequest *loaderRequest = [(id<RCTImageURLLoaderWithAttribution>)loadHandler loadImageForURL:request.URL
+                                                                                                                size:size
+                                                                                                               scale:scale
+                                                                                                          resizeMode:resizeMode
+                                                                                                           requestId:requestId
+                                                                                                         attribution:attributionCopy
+                                                                                                     progressHandler:progressHandler
+                                                                                                  partialLoadHandler:partialLoadHandler
+                                                                                                   completionHandler:^(NSError *error, UIImage *image) {
+                                                                                                     completionHandler(error, image, nil);
+                                                                                                   }];
+        cancelLoadLocal = loaderRequest.cancellationBlock;
       } else {
        cancelLoadLocal = [loadHandler loadImageForURL:request.URL
                                                  size:size
@@ -553,7 +574,7 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
     }
   });
 
-  return ^{
+  return [[RCTImageURLLoaderRequest alloc] initWithRequestId:requestId cancellationBlock:^{
     BOOL alreadyCancelled = atomic_fetch_or(cancelled.get(), 1);
     if (alreadyCancelled) {
       return;
@@ -565,7 +586,7 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
     if (cancelLoadLocal) {
       cancelLoadLocal();
     }
-  };
+  }];
 }
 
 - (RCTImageLoaderCancellationBlock)_loadURLRequest:(NSURLRequest *)request
@@ -679,15 +700,15 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
   };
 }
 
-- (RCTImageLoaderCancellationBlock)loadImageWithURLRequest:(NSURLRequest *)imageURLRequest
-                                                      size:(CGSize)size
-                                                     scale:(CGFloat)scale
-                                                   clipped:(BOOL)clipped
-                                                resizeMode:(RCTResizeMode)resizeMode
-                                               attribution:(const ImageURLLoaderAttribution &)attribution
-                                             progressBlock:(RCTImageLoaderProgressBlock)progressBlock
-                                          partialLoadBlock:(RCTImageLoaderPartialLoadBlock)partialLoadBlock
-                                           completionBlock:(RCTImageLoaderCompletionBlock)completionBlock
+- (RCTImageURLLoaderRequest *)loadImageWithURLRequest:(NSURLRequest *)imageURLRequest
+                                                 size:(CGSize)size
+                                                scale:(CGFloat)scale
+                                              clipped:(BOOL)clipped
+                                           resizeMode:(RCTResizeMode)resizeMode
+                                          attribution:(const ImageURLLoaderAttribution &)attribution
+                                        progressBlock:(RCTImageLoaderProgressBlock)progressBlock
+                                     partialLoadBlock:(RCTImageLoaderPartialLoadBlock)partialLoadBlock
+                                      completionBlock:(RCTImageLoaderCompletionBlock)completionBlock
 {
   auto cancelled = std::make_shared<std::atomic<int>>(0);
   __block dispatch_block_t cancelLoad = nil;
@@ -747,15 +768,16 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
     [cancelLoadLock unlock];
   };
 
-  cancelLoad = [self _loadImageOrDataWithURLRequest:imageURLRequest
-                                               size:size
-                                              scale:scale
-                                         resizeMode:resizeMode
-                                        attribution:attribution
-                                      progressBlock:progressBlock
-                                   partialLoadBlock:partialLoadBlock
-                                    completionBlock:completionHandler];
-  return cancellationBlock;
+  RCTImageURLLoaderRequest *loaderRequest = [self _loadImageOrDataWithURLRequest:imageURLRequest
+                                                                             size:size
+                                                                            scale:scale
+                                                                       resizeMode:resizeMode
+                                                                      attribution:attribution
+                                                                    progressBlock:progressBlock
+                                                                 partialLoadBlock:partialLoadBlock
+                                                                  completionBlock:completionHandler];
+  cancelLoad = loaderRequest.cancellationBlock;
+  return [[RCTImageURLLoaderRequest alloc] initWithRequestId:loaderRequest.requestId cancellationBlock:cancellationBlock];
 }
 
 - (RCTImageLoaderCancellationBlock)decodeImageData:(NSData *)data
@@ -905,14 +927,15 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
     callback(error, size);
   };
 
-  return [self _loadImageOrDataWithURLRequest:imageURLRequest
-                                         size:CGSizeZero
-                                        scale:1
-                                   resizeMode:RCTResizeModeStretch
-                                  attribution:{}
-                                progressBlock:NULL
-                             partialLoadBlock:NULL
-                              completionBlock:completion];
+  RCTImageURLLoaderRequest *loaderRequest = [self _loadImageOrDataWithURLRequest:imageURLRequest
+                                                                            size:CGSizeZero
+                                                                           scale:1
+                                                                      resizeMode:RCTResizeModeStretch
+                                                                     attribution:{}
+                                                                   progressBlock:NULL
+                                                                partialLoadBlock:NULL
+                                                                 completionBlock:completion];
+  return loaderRequest.cancellationBlock;
 }
 
 - (NSDictionary *)getImageCacheStatus:(NSArray *)requests

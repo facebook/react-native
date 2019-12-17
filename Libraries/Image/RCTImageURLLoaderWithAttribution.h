@@ -18,6 +18,16 @@ struct ImageURLLoaderAttribution {
 } // namespace react
 } // namespace facebook
 
+@interface RCTImageURLLoaderRequest : NSObject
+
+@property (nonatomic, strong, readonly) NSString *requestId;
+@property (nonatomic, copy, readonly) RCTImageLoaderCancellationBlock cancellationBlock;
+
+- (instancetype)initWithRequestId:(NSString *)requestId cancellationBlock:(RCTImageLoaderCancellationBlock)cancellationBlock;
+- (void)cancel;
+
+@end
+
 /**
  * Same as the RCTImageURLLoader interface, but allows passing in optional `attribution` information.
  * This is useful for per-app logging and other instrumentation.
@@ -26,14 +36,16 @@ struct ImageURLLoaderAttribution {
 
 /**
  * Same as the RCTImageURLLoader variant above, but allows optional `attribution` information.
+ * Caller may also specify a preferred requestId for tracking purpose.
  */
-- (RCTImageLoaderCancellationBlock)loadImageForURL:(NSURL *)imageURL
-                                              size:(CGSize)size
-                                             scale:(CGFloat)scale
-                                        resizeMode:(RCTResizeMode)resizeMode
-                                       attribution:(const facebook::react::ImageURLLoaderAttribution &)attribution
-                                   progressHandler:(RCTImageLoaderProgressBlock)progressHandler
-                                partialLoadHandler:(RCTImageLoaderPartialLoadBlock)partialLoadHandler
-                                 completionHandler:(RCTImageLoaderCompletionBlock)completionHandler;
+- (RCTImageURLLoaderRequest *)loadImageForURL:(NSURL *)imageURL
+                                         size:(CGSize)size
+                                        scale:(CGFloat)scale
+                                   resizeMode:(RCTResizeMode)resizeMode
+                                    requestId:(NSString *)requestId
+                                  attribution:(const facebook::react::ImageURLLoaderAttribution &)attribution
+                              progressHandler:(RCTImageLoaderProgressBlock)progressHandler
+                           partialLoadHandler:(RCTImageLoaderPartialLoadBlock)partialLoadHandler
+                            completionHandler:(RCTImageLoaderCompletionBlock)completionHandler;
 
 @end

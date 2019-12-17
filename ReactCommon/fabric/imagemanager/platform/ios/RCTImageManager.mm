@@ -81,7 +81,7 @@ using namespace facebook::react;
       observerCoordinator->nativeImageResponseProgress(progress / (float)total);
     };
 
-    RCTImageLoaderCancellationBlock cancelationBlock =
+    RCTImageURLLoaderRequest *loaderRequest =
         [self->_imageLoader loadImageWithURLRequest:request
                                                size:CGSizeMake(imageSource.size.width, imageSource.size.height)
                                               scale:imageSource.scale
@@ -93,7 +93,7 @@ using namespace facebook::react;
                                       progressBlock:progressBlock
                                    partialLoadBlock:nil
                                     completionBlock:completionBlock];
-
+    RCTImageLoaderCancellationBlock cancelationBlock = loaderRequest.cancellationBlock;
     sharedCancelationFunction.assign([cancelationBlock]() { cancelationBlock(); });
   });
 
