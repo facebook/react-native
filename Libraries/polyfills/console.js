@@ -599,14 +599,7 @@ if (global.nativeLoggingHook) {
     // The following methods are not supported by this polyfill but
     // we still should pass them to original console if they are
     // supported by it.
-    [
-      'clear',
-      'dir',
-      'dirxml',
-      'groupCollapsed',
-      'profile',
-      'profileEnd',
-    ].forEach(methodName => {
+    ['clear', 'dir', 'dirxml', 'profile', 'profileEnd'].forEach(methodName => {
       if (typeof originalConsole[methodName] === 'function') {
         console[methodName] = function() {
           originalConsole[methodName](...arguments);

@@ -694,6 +694,13 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
   }
 
   @Override
+  @NonNull
+  @SuppressWarnings("unchecked")
+  public EventDispatcher getEventDispatcher() {
+    return mEventDispatcher;
+  }
+
+  @Override
   public void onHostPause() {
     ReactChoreographer.getInstance()
         .removeFrameCallback(ReactChoreographer.CallbackType.DISPATCH_UI, mDispatchUIFrameCallback);

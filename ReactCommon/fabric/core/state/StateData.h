@@ -25,7 +25,7 @@ struct StateData final {
 
 #ifdef ANDROID
   StateData() = default;
-  StateData(folly::dynamic data){};
+  StateData(StateData const &previousState, folly::dynamic data){};
   folly::dynamic getDynamic() const;
 #endif
 };

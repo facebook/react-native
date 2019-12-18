@@ -125,7 +125,8 @@ public class TextLayoutManager {
     }
   }
 
-  protected static Spannable getOrCreateSpannableForText(
+  // public because both ReactTextViewManager and ReactTextInputManager need to use this
+  public static Spannable getOrCreateSpannableForText(
       Context context, ReadableMap attributedString) {
 
     Spannable preparedSpannableText;

@@ -16,7 +16,7 @@ using facebook::yoga::detail::CompactValue;
 
 YGNode::YGNode(YGNode&& node) {
   context_ = node.context_;
-  flags_ = node.flags_;
+  flags = node.flags;
   measure_ = node.measure_;
   baseline_ = node.baseline_;
   print_ = node.print_;
@@ -42,7 +42,7 @@ YGNode::YGNode(const YGNode& node, YGConfigRef config) : YGNode{node} {
 
 void YGNode::print(void* printContext) {
   if (print_.noContext != nullptr) {
-    if (flags_.at<printUsesContext_>()) {
+    if (facebook::yoga::detail::getBooleanData(flags, printUsesContext_)) {
       print_.withContext(this, printContext);
     } else {
       print_.noContext(this);
@@ -148,14 +148,14 @@ YGSize YGNode::measure(
     YGMeasureMode heightMode,
     void* layoutContext) {
 
-  return flags_.at<measureUsesContext_>()
+  return facebook::yoga::detail::getBooleanData(flags, measureUsesContext_)
       ? measure_.withContext(
             this, width, widthMode, height, heightMode, layoutContext)
       : measure_.noContext(this, width, widthMode, height, heightMode);
 }
 
 float YGNode::baseline(float width, float height, void* layoutContext) {
-  return flags_.at<baselineUsesContext_>()
+  return facebook::yoga::detail::getBooleanData(flags, baselineUsesContext_)
       ? baseline_.withContext(this, width, height, layoutContext)
       : baseline_.noContext(this, width, height);
 }
@@ -166,7 +166,7 @@ void YGNode::setMeasureFunc(decltype(YGNode::measure_) measureFunc) {
   if (measureFunc.noContext == nullptr) {
     // TODO: t18095186 Move nodeType to opt-in function and mark appropriate
     // places in Litho
-    flags_.at<nodeType_>() = YGNodeTypeDefault;
+    setNodeType(YGNodeTypeDefault);
   } else {
     YGAssertWithNode(
         this,
@@ -182,14 +182,14 @@ void YGNode::setMeasureFunc(decltype(YGNode::measure_) measureFunc) {
 }
 
 void YGNode::setMeasureFunc(YGMeasureFunc measureFunc) {
-  flags_.at<measureUsesContext_>() = false;
+  facebook::yoga::detail::setBooleanData(flags, measureUsesContext_, false);
   decltype(YGNode::measure_) m;
   m.noContext = measureFunc;
   setMeasureFunc(m);
 }
 
 YOGA_EXPORT void YGNode::setMeasureFunc(MeasureWithContextFn measureFunc) {
-  flags_.at<measureUsesContext_>() = true;
+  facebook::yoga::detail::setBooleanData(flags, measureUsesContext_, true);
   decltype(YGNode::measure_) m;
   m.withContext = measureFunc;
   setMeasureFunc(m);
@@ -208,10 +208,10 @@ void YGNode::insertChild(YGNodeRef child, uint32_t index) {
 }
 
 void YGNode::setDirty(bool isDirty) {
-  if (isDirty == flags_.at<isDirty_>()) {
+  if (isDirty == facebook::yoga::detail::getBooleanData(flags, isDirty_)) {
     return;
   }
-  flags_.at<isDirty_>() = isDirty;
+  facebook::yoga::detail::setBooleanData(flags, isDirty_, isDirty);
   if (isDirty && dirtied_) {
     dirtied_(this);
   }
@@ -351,7 +351,9 @@ YGValue YGNode::resolveFlexBasisPtr() const {
     return flexBasis;
   }
   if (!style_.flex().isUndefined() && style_.flex().unwrap() > 0.0f) {
-    return flags_.at<useWebDefaults_>() ? YGValueAuto : YGValueZero;
+    return facebook::yoga::detail::getBooleanData(flags, useWebDefaults_)
+        ? YGValueAuto
+        : YGValueZero;
   }
   return YGValueAuto;
 }
@@ -390,7 +392,7 @@ void YGNode::cloneChildrenIfNeeded(void* cloneContext) {
 }
 
 void YGNode::markDirtyAndPropogate() {
-  if (!flags_.at<isDirty_>()) {
+  if (!facebook::yoga::detail::getBooleanData(flags, isDirty_)) {
     setDirty(true);
     setLayoutComputedFlexBasis(YGFloatOptional());
     if (owner_) {
@@ -400,7 +402,7 @@ void YGNode::markDirtyAndPropogate() {
 }
 
 void YGNode::markDirtyAndPropogateDownwards() {
-  flags_.at<isDirty_>() = true;
+  facebook::yoga::detail::setBooleanData(flags, isDirty_, true);
   for_each(children_.begin(), children_.end(), [](YGNodeRef childNode) {
     childNode->markDirtyAndPropogateDownwards();
   });
@@ -427,12 +429,13 @@ float YGNode::resolveFlexShrink() const {
   if (!style_.flexShrink().isUndefined()) {
     return style_.flexShrink().unwrap();
   }
-  if (!flags_.at<useWebDefaults_>() && !style_.flex().isUndefined() &&
-      style_.flex().unwrap() < 0.0f) {
+  if (!facebook::yoga::detail::getBooleanData(flags, useWebDefaults_) &&
+      !style_.flex().isUndefined() && style_.flex().unwrap() < 0.0f) {
     return -style_.flex().unwrap();
   }
-  return flags_.at<useWebDefaults_>() ? kWebDefaultFlexShrink
-                                      : kDefaultFlexShrink;
+  return facebook::yoga::detail::getBooleanData(flags, useWebDefaults_)
+      ? kWebDefaultFlexShrink
+      : kDefaultFlexShrink;
 }
 
 bool YGNode::isNodeFlexible() {
@@ -577,7 +580,8 @@ void YGNode::reset() {
 
   clearChildren();
 
-  auto webDefaults = flags_.at<useWebDefaults_>();
+  auto webDefaults =
+      facebook::yoga::detail::getBooleanData(flags, useWebDefaults_);
   *this = YGNode{getConfig()};
   if (webDefaults) {
     useWebDefaults();

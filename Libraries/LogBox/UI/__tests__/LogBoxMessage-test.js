@@ -6,7 +6,7 @@
  *
  * @format
  * @emails oncall+react_native
- * @flow
+ * @flow strict-local
  */
 
 'use strict';
@@ -159,6 +159,20 @@ describe('LogBoxMessage', () => {
         message={{
           content: 'Error: This should not start with Error:',
           substitutions: [],
+        }}
+      />,
+    );
+
+    expect(output).toMatchSnapshot();
+  });
+
+  it('Should strip "TransformError " without breaking substitution', () => {
+    const output = render.shallowRender(
+      <LogBoxMessage
+        style={{}}
+        message={{
+          content: 'TransformError normal substitution normal',
+          substitutions: [{length: 12, offset: 22}],
         }}
       />,
     );

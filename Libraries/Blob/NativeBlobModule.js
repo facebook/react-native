@@ -14,7 +14,7 @@ import type {TurboModule} from '../TurboModule/RCTExport';
 import * as TurboModuleRegistry from '../TurboModule/TurboModuleRegistry';
 
 export interface Spec extends TurboModule {
-  +getConstants: () => {|BLOB_URI_SCHEME: string, BLOB_URI_HOST: ?string|};
+  +getConstants: () => {|BLOB_URI_SCHEME: ?string, BLOB_URI_HOST: ?string|};
   +addNetworkingHandler: () => void;
   +addWebSocketHandler: (id: number) => void;
   +removeWebSocketHandler: (id: number) => void;

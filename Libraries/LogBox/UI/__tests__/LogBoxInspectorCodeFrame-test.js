@@ -6,7 +6,7 @@
  *
  * @format
  * @emails oncall+react_native
- * @flow
+ * @flow strict-local
  */
 
 'use strict';
@@ -30,6 +30,24 @@ describe('LogBoxInspectorCodeFrame', () => {
         codeFrame={{
           fileName: '/path/to/RKJSModules/Apps/CrashReact/CrashReactApp.js',
           location: {row: 199, column: 0},
+          content: `  197 | });
+    198 |
+  > 199 | export default CrashReactApp;
+        | ^
+    200 |`,
+        }}
+      />,
+    );
+
+    expect(output).toMatchSnapshot();
+  });
+
+  it('should render a code frame without a location', () => {
+    const output = render.shallowRender(
+      <LogBoxInspectorCodeFrame
+        codeFrame={{
+          fileName: '/path/to/RKJSModules/Apps/CrashReact/CrashReactApp.js',
+          location: null,
           content: `  197 | });
     198 |
   > 199 | export default CrashReactApp;

@@ -509,10 +509,10 @@ jsi::Value UIManagerBinding::get(
               runtime,
               {0,
                0,
-               jsi::Value{runtime, (double)frame.origin.x},
-               jsi::Value{runtime, (double)frame.origin.y},
                jsi::Value{runtime, (double)frame.size.width},
-               jsi::Value{runtime, (double)frame.size.height}});
+               jsi::Value{runtime, (double)frame.size.height},
+               jsi::Value{runtime, (double)frame.origin.x},
+               jsi::Value{runtime, (double)frame.origin.y}});
           return jsi::Value::undefined();
         });
   }

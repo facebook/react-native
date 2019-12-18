@@ -80,7 +80,7 @@ using ShadowViewMutationList = std::vector<ShadowViewMutation>;
 std::string getDebugName(ShadowViewMutation const &object);
 std::vector<DebugStringConvertibleObject> getDebugProps(
     ShadowViewMutation const &object,
-    DebugStringConvertibleOptions options = {});
+    DebugStringConvertibleOptions options);
 
 #endif
 

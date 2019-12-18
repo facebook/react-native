@@ -97,6 +97,9 @@ rn_apple_library(
             name = "RedBox",
             native_class_func = "RCTRedBoxCls",
         ) + react_module_plugin_providers(
+            name = "LogBox",
+            native_class_func = "RCTLogBoxCls",
+        ) + react_module_plugin_providers(
             name = "TVNavigationEventEmitter",
             native_class_func = "RCTTVNavigationEventEmitterCls",
         ) + react_module_plugin_providers(

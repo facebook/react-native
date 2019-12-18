@@ -96,7 +96,7 @@ public class ReactTextViewManager
 
     return new ReactTextUpdate(
         spanned,
-        -1, // TODO add this into local Data?
+        state.hasKey("mostRecentEventCount") ? state.getInt("mostRecentEventCount") : -1,
         false, // TODO add this into local Data
         textViewProps.getTextAlign(),
         textBreakStrategy,

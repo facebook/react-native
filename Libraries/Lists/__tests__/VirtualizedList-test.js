@@ -281,4 +281,57 @@ describe('VirtualizedList', () => {
       }),
     );
   });
+
+  it('getScrollRef for case where it returns a ScrollView', () => {
+    const listRef = React.createRef(null);
+
+    ReactTestRenderer.create(
+      <VirtualizedList
+        data={[{key: 'i1'}, {key: 'i2'}, {key: 'i3'}]}
+        renderItem={({item}) => <item value={item.key} />}
+        getItem={(data, index) => data[index]}
+        getItemCount={data => data.length}
+        ref={listRef}
+      />,
+    );
+
+    const scrollRef = listRef.current.getScrollRef();
+
+    // This is checking if the ref acts like a ScrollView. If we had an
+    // `isScrollView(ref)` method, that would be preferred.
+    expect(scrollRef.scrollTo).toBeInstanceOf(Function);
+  });
+
+  it('getScrollRef for case where it returns a View', () => {
+    const listRef = React.createRef(null);
+
+    ReactTestRenderer.create(
+      <VirtualizedList
+        data={[{key: 'outer0'}, {key: 'outer1'}]}
+        renderItem={outerInfo => (
+          <VirtualizedList
+            data={[
+              {key: outerInfo.item.key + ':inner0'},
+              {key: outerInfo.item.key + ':inner1'},
+            ]}
+            renderItem={innerInfo => {
+              return <item title={innerInfo.item.key} />;
+            }}
+            getItem={(data, index) => data[index]}
+            getItemCount={data => data.length}
+            ref={listRef}
+          />
+        )}
+        getItem={(data, index) => data[index]}
+        getItemCount={data => data.length}
+      />,
+    );
+    const scrollRef = listRef.current.getScrollRef();
+
+    // This is checking if the ref acts like a host component. If we had an
+    // `isHostComponent(ref)` method, that would be preferred.
+    expect(scrollRef.measure).toBeInstanceOf(jest.fn().constructor);
+    expect(scrollRef.measureLayout).toBeInstanceOf(jest.fn().constructor);
+    expect(scrollRef.measureInWindow).toBeInstanceOf(jest.fn().constructor);
+  });
 });

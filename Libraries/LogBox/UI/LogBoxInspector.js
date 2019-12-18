@@ -11,7 +11,6 @@
 'use strict';
 
 import LogBoxInspectorCodeFrame from './LogBoxInspectorCodeFrame';
-import Platform from '../../Utilities/Platform';
 import * as React from 'react';
 import ScrollView from '../../Components/ScrollView/ScrollView';
 import StyleSheet from '../../StyleSheet/StyleSheet';
@@ -24,8 +23,7 @@ import LogBoxInspectorReactFrames from './LogBoxInspectorReactFrames';
 import LogBoxInspectorStackFrames from './LogBoxInspectorStackFrames';
 import LogBoxInspectorHeader from './LogBoxInspectorHeader';
 import * as LogBoxStyle from './LogBoxStyle';
-
-import type LogBoxLog, {LogLevel} from '../Data/LogBoxLog';
+import LogBoxLog, {type LogLevel} from '../Data/LogBoxLog';
 
 type Props = $ReadOnly<{|
   onDismiss: () => void,
@@ -41,7 +39,9 @@ function LogBoxInspector(props: Props): React.Node {
 
   const log = logs[selectedIndex];
   React.useEffect(() => {
-    LogBoxData.symbolicateLogNow(log);
+    if (log) {
+      LogBoxData.symbolicateLogNow(log);
+    }
   }, [log]);
 
   React.useEffect(() => {
@@ -140,9 +140,8 @@ function LogBoxInspectorBody(props) {
 
 const styles = StyleSheet.create({
   root: {
-    backgroundColor: LogBoxStyle.getTextColor(1),
-    elevation: Platform.OS === 'android' ? Number.MAX_SAFE_INTEGER : undefined,
-    height: '100%',
+    flex: 1,
+    backgroundColor: LogBoxStyle.getTextColor(),
   },
   scrollBody: {
     backgroundColor: LogBoxStyle.getBackgroundColor(0.9),

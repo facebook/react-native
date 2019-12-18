@@ -19,13 +19,13 @@ NS_ASSUME_NONNULL_BEGIN
  */
 @interface RCTTextLayoutManager : NSObject
 
-- (facebook::react::Size)
-    measureWithAttributedString:
-        (facebook::react::AttributedString)attributedString
-            paragraphAttributes:
-                (facebook::react::ParagraphAttributes)paragraphAttributes
-              layoutConstraints:
-                  (facebook::react::LayoutConstraints)layoutConstraints;
+- (facebook::react::Size)measureAttributedString:(facebook::react::AttributedString)attributedString
+                             paragraphAttributes:(facebook::react::ParagraphAttributes)paragraphAttributes
+                               layoutConstraints:(facebook::react::LayoutConstraints)layoutConstraints;
+
+- (facebook::react::Size)measureNSAttributedString:(NSAttributedString *)attributedString
+                               paragraphAttributes:(facebook::react::ParagraphAttributes)paragraphAttributes
+                                 layoutConstraints:(facebook::react::LayoutConstraints)layoutConstraints;
 
 - (void)drawAttributedString:(facebook::react::AttributedString)attributedString
          paragraphAttributes:

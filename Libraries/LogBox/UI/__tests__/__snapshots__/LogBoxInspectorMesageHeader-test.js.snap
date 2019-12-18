@@ -5,7 +5,6 @@ exports[`LogBoxInspectorMessageHeader should not render "See More" if expanded 1
   style={
     Object {
       "backgroundColor": "rgba(51, 51, 51, 1)",
-      "elevation": 2,
       "flex": 0,
       "shadowColor": "#000",
       "shadowOffset": Object {
@@ -83,7 +82,6 @@ exports[`LogBoxInspectorMessageHeader should not render See More button for shor
   style={
     Object {
       "backgroundColor": "rgba(51, 51, 51, 1)",
-      "elevation": 2,
       "flex": 0,
       "shadowColor": "#000",
       "shadowOffset": Object {
@@ -161,7 +159,6 @@ exports[`LogBoxInspectorMessageHeader should render "See More" if collapsed 1`] 
   style={
     Object {
       "backgroundColor": "rgba(51, 51, 51, 1)",
-      "elevation": 2,
       "flex": 0,
       "shadowColor": "#000",
       "shadowOffset": Object {
@@ -252,7 +249,6 @@ exports[`LogBoxInspectorMessageHeader should render error 1`] = `
   style={
     Object {
       "backgroundColor": "rgba(51, 51, 51, 1)",
-      "elevation": 2,
       "flex": 0,
       "shadowColor": "#000",
       "shadowOffset": Object {
@@ -330,7 +326,6 @@ exports[`LogBoxInspectorMessageHeader should render fatal 1`] = `
   style={
     Object {
       "backgroundColor": "rgba(51, 51, 51, 1)",
-      "elevation": 2,
       "flex": 0,
       "shadowColor": "#000",
       "shadowOffset": Object {
@@ -408,7 +403,6 @@ exports[`LogBoxInspectorMessageHeader should render syntax error 1`] = `
   style={
     Object {
       "backgroundColor": "rgba(51, 51, 51, 1)",
-      "elevation": 2,
       "flex": 0,
       "shadowColor": "#000",
       "shadowOffset": Object {

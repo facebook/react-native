@@ -16,21 +16,14 @@
 #import <react/core/ReactPrimitives.h>
 #import <react/uimanager/ComponentDescriptorProviderRegistry.h>
 
-#import "RCTARTSurfaceViewComponentView.h"
-#import "RCTActivityIndicatorViewComponentView.h"
 #import "RCTComponentViewClassDescriptor.h"
+#import "RCTFabricComponentsPlugins.h"
 #import "RCTImageComponentView.h"
 #import "RCTLegacyViewManagerInteropComponentView.h"
-#import "RCTModalHostViewComponentView.h"
 #import "RCTMountingTransactionObserving.h"
 #import "RCTParagraphComponentView.h"
-#import "RCTPullToRefreshViewComponentView.h"
 #import "RCTRootComponentView.h"
-#import "RCTSafeAreaViewComponentView.h"
-#import "RCTScrollViewComponentView.h"
-#import "RCTSliderComponentView.h"
-#import "RCTSwitchComponentView.h"
-#import "RCTUnimplementedNativeComponentView.h"
+
 #import "RCTUnimplementedViewComponentView.h"
 #import "RCTViewComponentView.h"
 
@@ -48,19 +41,10 @@ using namespace facebook::react;
 {
   RCTComponentViewFactory *componentViewFactory = [[RCTComponentViewFactory alloc] init];
 
-  [componentViewFactory registerComponentViewClass:[RCTViewComponentView class]];
   [componentViewFactory registerComponentViewClass:[RCTRootComponentView class]];
-  [componentViewFactory registerComponentViewClass:[RCTScrollViewComponentView class]];
-  [componentViewFactory registerComponentViewClass:[RCTPullToRefreshViewComponentView class]];
+  [componentViewFactory registerComponentViewClass:[RCTViewComponentView class]];
   [componentViewFactory registerComponentViewClass:[RCTImageComponentView class]];
   [componentViewFactory registerComponentViewClass:[RCTParagraphComponentView class]];
-  [componentViewFactory registerComponentViewClass:[RCTActivityIndicatorViewComponentView class]];
-  [componentViewFactory registerComponentViewClass:[RCTSliderComponentView class]];
-  [componentViewFactory registerComponentViewClass:[RCTSwitchComponentView class]];
-  [componentViewFactory registerComponentViewClass:[RCTUnimplementedNativeComponentView class]];
-  [componentViewFactory registerComponentViewClass:[RCTModalHostViewComponentView class]];
-  [componentViewFactory registerComponentViewClass:[RCTARTSurfaceViewComponentView class]];
-  [componentViewFactory registerComponentViewClass:[RCTSafeAreaViewComponentView class]];
 
   auto providerRegistry = &componentViewFactory->_providerRegistry;
 
@@ -76,7 +60,7 @@ using namespace facebook::react;
       }
     }
 
-    // Fallback 2: Try to use Paper Interop.
+    // Fallback 3: Try to use Paper Interop.
     if ([RCTLegacyViewManagerInteropComponentView isSupported:RCTNSStringFromString(requestedComponentName)]) {
       auto flavor = std::make_shared<std::string const>(requestedComponentName);
       auto componentName = ComponentName{flavor->c_str()};
@@ -90,7 +74,7 @@ using namespace facebook::react;
       return;
     }
 
-    // Fallback 3: Finally use <UnimplementedView>.
+    // Fallback 4: Finally use <UnimplementedView>.
     auto flavor = std::make_shared<std::string const>(requestedComponentName);
     auto componentName = ComponentName{flavor->c_str()};
     auto componentHandle = reinterpret_cast<ComponentHandle>(componentName);

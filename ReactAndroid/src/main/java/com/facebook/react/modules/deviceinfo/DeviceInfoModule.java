@@ -9,9 +9,9 @@ package com.facebook.react.modules.deviceinfo;
 
 import android.content.Context;
 import androidx.annotation.Nullable;
-import com.facebook.react.bridge.BaseJavaModule;
 import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.ReactApplicationContext;
+import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactNoCrashSoftException;
 import com.facebook.react.bridge.ReactSoftException;
 import com.facebook.react.module.annotations.ReactModule;
@@ -23,7 +23,7 @@ import java.util.Map;
 
 /** Module that exposes Android Constants to JS. */
 @ReactModule(name = DeviceInfoModule.NAME)
-public class DeviceInfoModule extends BaseJavaModule
+public class DeviceInfoModule extends ReactContextBaseJavaModule
     implements LifecycleEventListener, TurboModule {
 
   public static final String NAME = "DeviceInfo";
@@ -32,12 +32,15 @@ public class DeviceInfoModule extends BaseJavaModule
   private float mFontScale;
 
   public DeviceInfoModule(ReactApplicationContext reactContext) {
-    this((Context) reactContext);
+    super(reactContext);
+    DisplayMetricsHolder.initDisplayMetricsIfNotInitialized(reactContext);
+    mFontScale = reactContext.getResources().getConfiguration().fontScale;
     mReactApplicationContext = reactContext;
     mReactApplicationContext.addLifecycleEventListener(this);
   }
 
   public DeviceInfoModule(Context context) {
+    super(null);
     mReactApplicationContext = null;
     DisplayMetricsHolder.initDisplayMetricsIfNotInitialized(context);
     mFontScale = context.getResources().getConfiguration().fontScale;

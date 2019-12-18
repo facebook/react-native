@@ -7,9 +7,6 @@
 
 package com.facebook.yoga;
 
-import com.facebook.proguard.annotations.DoNotStrip;
-
-@DoNotStrip
 public enum YogaEdge {
   LEFT(0),
   TOP(1),

@@ -91,7 +91,7 @@ class ConcreteState : public State {
   }
 
   void updateState(folly::dynamic data) const override {
-    updateState(std::move(Data(data)));
+    updateState(std::move(Data(data_, data)));
   }
 #endif
 

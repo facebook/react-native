@@ -229,6 +229,11 @@ using namespace facebook::react;
     self.accessibilityElement.accessibilityElementsHidden = newViewProps.accessibilityElementsHidden;
   }
 
+  if (oldViewProps.accessibilityTraits != newViewProps.accessibilityTraits) {
+    self.accessibilityElement.accessibilityTraits =
+        RCTUIAccessibilityTraitsFromAccessibilityTraits(newViewProps.accessibilityTraits);
+  }
+
   // `accessibilityIgnoresInvertColors`
   if (oldViewProps.accessibilityIgnoresInvertColors != newViewProps.accessibilityIgnoresInvertColors) {
 #if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 110000 /* __IPHONE_11_0 */

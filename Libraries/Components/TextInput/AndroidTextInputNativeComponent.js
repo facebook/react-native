@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @flow
+ * @flow strict-local
  * @format
  */
 
@@ -18,11 +18,13 @@ import type {
   Float,
   Int32,
   WithDefault,
-} from 'react-native/Libraries/Types/CodegenTypes';
+} from '../../Types/CodegenTypes';
 import type {HostComponent} from '../../Renderer/shims/ReactNativeTypes';
 import type {TextStyleProp, ViewStyleProp} from '../../StyleSheet/StyleSheet';
 import type {ColorValue} from '../../StyleSheet/StyleSheetTypes';
-import {requireNativeComponent} from 'react-native';
+import requireNativeComponent from '../../ReactNative/requireNativeComponent';
+import codegenNativeCommands from '../../Utilities/codegenNativeCommands';
+import * as React from 'react';
 
 export type KeyboardType =
   // Cross Platform
@@ -533,6 +535,33 @@ export type NativeProps = $ReadOnly<{|
   mostRecentEventCount: Int32,
   text?: ?string,
 |}>;
+
+type NativeType = HostComponent<NativeProps>;
+
+interface NativeCommands {
+  +focus: (viewRef: React.ElementRef<NativeType>) => void;
+  +blur: (viewRef: React.ElementRef<NativeType>) => void;
+  +setMostRecentEventCount: (
+    viewRef: React.ElementRef<NativeType>,
+    eventCount: Int32,
+  ) => void;
+  +setTextAndSelection: (
+    viewRef: React.ElementRef<NativeType>,
+    mostRecentEventCount: Int32,
+    value: ?string, // in theory this is nullable
+    start: Int32,
+    end: Int32,
+  ) => void;
+}
+
+export const Commands: NativeCommands = codegenNativeCommands<NativeCommands>({
+  supportedCommands: [
+    'focus',
+    'blur',
+    'setMostRecentEventCount',
+    'setTextAndSelection',
+  ],
+});
 
 const AndroidTextInputNativeComponent: HostComponent<NativeProps> = requireNativeComponent<NativeProps>(
   'AndroidTextInput',

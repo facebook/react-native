@@ -7,9 +7,6 @@
 
 package com.facebook.yoga;
 
-import com.facebook.proguard.annotations.DoNotStrip;
-
-@DoNotStrip
 public enum YogaFlexDirection {
   COLUMN(0),
   COLUMN_REVERSE(1),

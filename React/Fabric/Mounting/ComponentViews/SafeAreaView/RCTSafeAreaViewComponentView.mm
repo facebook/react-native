@@ -9,7 +9,9 @@
 
 #import <react/components/safeareaview/SafeAreaViewComponentDescriptor.h>
 #import <react/components/safeareaview/SafeAreaViewState.h>
+#import "FBRCTFabricComponentsPlugins.h"
 #import "RCTConversions.h"
+#import "RCTFabricComponentsPlugins.h"
 
 using namespace facebook::react;
 
@@ -65,3 +67,8 @@ using namespace facebook::react;
 }
 
 @end
+
+Class<RCTComponentViewProtocol> RCTSafeAreaViewCls(void)
+{
+  return RCTSafeAreaViewComponentView.class;
+}

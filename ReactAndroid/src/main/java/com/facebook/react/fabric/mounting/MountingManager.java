@@ -20,6 +20,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.infer.annotation.ThreadConfined;
+import com.facebook.react.bridge.ReactNoCrashSoftException;
 import com.facebook.react.bridge.ReactSoftException;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
@@ -138,10 +139,15 @@ public class MountingManager {
   public void receiveCommand(int reactTag, int commandId, @Nullable ReadableArray commandArgs) {
     ViewState viewState = getNullableViewState(reactTag);
 
+    // It's not uncommon for JS to send events as/after a component is being removed from the
+    // view hierarchy. For example, TextInput may send a "blur" command in response to the view
+    // disappearing. Throw `ReactNoCrashSoftException` so they're logged but don't crash in dev
+    // for now.
+    // TODO T58653970: Crash in debug again and fix all the places that cause this to crash.
     if (viewState == null) {
       ReactSoftException.logSoftException(
           MountingManager.TAG,
-          new IllegalStateException(
+          new ReactNoCrashSoftException(
               "Unable to find viewState for tag: " + reactTag + " for commandId: " + commandId));
       return;
     }

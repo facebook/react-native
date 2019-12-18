@@ -4,14 +4,15 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @flow
+ * @flow strict-local
  * @format
  */
 
 'use strict';
 
 import * as React from 'react';
-import {Platform, ScrollView} from 'react-native';
+import Platform from '../../Utilities/Platform';
+import ScrollView from '../../Components/ScrollView/ScrollView';
 import StyleSheet from '../../StyleSheet/StyleSheet';
 import Text from '../../Text/Text';
 import View from '../../Components/View/View';
@@ -41,6 +42,17 @@ function LogBoxInspectorCodeFrame(props: Props): React.Node {
     return codeFrame.fileName;
   }
 
+  function getLocation() {
+    const location = codeFrame.location;
+    if (location != null) {
+      return ` (${location.row}:${
+        location.column + 1 /* Code frame columns are zero indexed */
+      })`;
+    }
+
+    return null;
+  }
+
   return (
     <LogBoxInspectorSection heading="Source" action={<AppInfo />}>
       <View style={styles.box}>
@@ -59,10 +71,8 @@ function LogBoxInspectorCodeFrame(props: Props): React.Node {
             openFileInEditor(codeFrame.fileName, codeFrame.location?.row ?? 0);
           }}>
           <Text style={styles.fileText}>
-            {getFileName()} ({codeFrame.location.row}:
-            {codeFrame.location.column +
-              1 /* Code frame columns are zero indexed */}
-            )
+            {getFileName()}
+            {getLocation()}
           </Text>
         </LogBoxButton>
       </View>

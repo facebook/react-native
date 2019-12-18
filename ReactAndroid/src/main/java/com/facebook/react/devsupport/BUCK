@@ -36,6 +36,7 @@ rn_android_library(
         react_native_target("java/com/facebook/react/packagerconnection:packagerconnection"),
         react_native_target("res:devsupport"),
     ],
+    exported_deps = [react_native_target("java/com/facebook/fbreact/specs:FBReactNativeSpec")],
 )
 
 rn_android_library(

@@ -14,7 +14,7 @@
 
 import requireNativeComponent from '../../Libraries/ReactNative/requireNativeComponent';
 import type {HostComponent} from '../../Libraries/Renderer/shims/ReactNativeTypes';
-import {UIManager} from 'react-native';
+import UIManager from '../ReactNative/UIManager';
 
 // TODO: import from CodegenSchema once workspaces are enabled
 type Options = $ReadOnly<{|

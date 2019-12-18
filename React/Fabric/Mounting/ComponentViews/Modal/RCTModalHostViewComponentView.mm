@@ -13,6 +13,7 @@
 #import <react/components/rncore/EventEmitters.h>
 #import <react/components/rncore/Props.h>
 
+#import "FBRCTFabricComponentsPlugins.h"
 #import "RCTConversions.h"
 #import "RCTFabricModalHostViewController.h"
 
@@ -215,3 +216,8 @@ static ModalHostViewOnOrientationChangeStruct onOrientationChangeStruct(CGRect r
 }
 
 @end
+
+Class<RCTComponentViewProtocol> RCTModalHostViewCls(void)
+{
+  return RCTModalHostViewComponentView.class;
+}

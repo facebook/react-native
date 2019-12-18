@@ -163,7 +163,7 @@ public class BlobModule extends ReactContextBaseJavaModule {
     String packageName = getReactApplicationContext().getPackageName();
     int resourceId = resources.getIdentifier("blob_provider_authority", "string", packageName);
     if (resourceId == 0) {
-      return null;
+      return MapBuilder.<String, Object>of();
     }
 
     return MapBuilder.<String, Object>of(

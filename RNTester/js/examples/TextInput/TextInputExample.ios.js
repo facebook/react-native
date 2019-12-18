@@ -41,68 +41,6 @@ class WithLabel extends React.Component<$FlowFixMeProps> {
   }
 }
 
-class TextEventsExample extends React.Component<{...}, $FlowFixMeState> {
-  state = {
-    curText: '<No Event>',
-    prevText: '<No Event>',
-    prev2Text: '<No Event>',
-    prev3Text: '<No Event>',
-  };
-
-  updateText = text => {
-    this.setState(state => {
-      return {
-        curText: text,
-        prevText: state.curText,
-        prev2Text: state.prevText,
-        prev3Text: state.prev2Text,
-      };
-    });
-  };
-
-  render() {
-    return (
-      <View>
-        <TextInput
-          autoCapitalize="none"
-          placeholder="Enter text to see events"
-          autoCorrect={false}
-          onFocus={() => this.updateText('onFocus')}
-          onBlur={() => this.updateText('onBlur')}
-          onChange={event =>
-            this.updateText('onChange text: ' + event.nativeEvent.text)
-          }
-          onEndEditing={event =>
-            this.updateText('onEndEditing text: ' + event.nativeEvent.text)
-          }
-          onSubmitEditing={event =>
-            this.updateText('onSubmitEditing text: ' + event.nativeEvent.text)
-          }
-          onSelectionChange={event =>
-            this.updateText(
-              'onSelectionChange range: ' +
-                event.nativeEvent.selection.start +
-                ',' +
-                (event.nativeEvent.selection.end || ''),
-            )
-          }
-          onKeyPress={event => {
-            this.updateText('onKeyPress key: ' + event.nativeEvent.key);
-          }}
-          style={styles.default}
-        />
-        <Text style={styles.eventLabel}>
-          {this.state.curText}
-          {'\n'}
-          (prev: {this.state.prevText}){'\n'}
-          (prev2: {this.state.prev2Text}){'\n'}
-          (prev3: {this.state.prev3Text})
-        </Text>
-      </View>
-    );
-  }
-}
-
 class TextInputAccessoryViewExample extends React.Component<{...}, *> {
   constructor(props) {
     super(props);
@@ -192,203 +130,6 @@ class SecureEntryExample extends React.Component<$FlowFixMeProps, any> {
             style={{marginLeft: 4}}
             value={this.state.isSecureTextEntry}
           />
-        </View>
-      </View>
-    );
-  }
-}
-
-class TokenizedTextExample extends React.Component<$FlowFixMeProps, any> {
-  constructor(props) {
-    super(props);
-    this.state = {text: 'Hello #World'};
-  }
-  render() {
-    //define delimiter
-    let delimiter = /\s+/;
-
-    //split string
-    let _text = this.state.text;
-    let token,
-      index,
-      parts = [];
-    while (_text) {
-      delimiter.lastIndex = 0;
-      token = delimiter.exec(_text);
-      if (token === null) {
-        break;
-      }
-      index = token.index;
-      if (token[0].length === 0) {
-        index = 1;
-      }
-      parts.push(_text.substr(0, index));
-      parts.push(token[0]);
-      index = index + token[0].length;
-      _text = _text.slice(index);
-    }
-    parts.push(_text);
-
-    //highlight hashtags
-    parts = parts.map(text => {
-      if (/^#/.test(text)) {
-        return (
-          <Text key={text} style={styles.hashtag}>
-            {text}
-          </Text>
-        );
-      } else {
-        return text;
-      }
-    });
-
-    return (
-      <View>
-        <TextInput
-          multiline={true}
-          style={styles.multiline}
-          onChangeText={text => {
-            this.setState({text});
-          }}>
-          <Text>{parts}</Text>
-        </TextInput>
-      </View>
-    );
-  }
-}
-
-class BlurOnSubmitExample extends React.Component<{...}> {
-  focusNextField = nextField => {
-    this.refs[nextField].focus();
-  };
-
-  render() {
-    return (
-      <View>
-        <TextInput
-          ref="1"
-          style={styles.default}
-          placeholder="blurOnSubmit = false"
-          returnKeyType="next"
-          blurOnSubmit={false}
-          onSubmitEditing={() => this.focusNextField('2')}
-        />
-        <TextInput
-          ref="2"
-          style={styles.default}
-          keyboardType="email-address"
-          placeholder="blurOnSubmit = false"
-          returnKeyType="next"
-          blurOnSubmit={false}
-          onSubmitEditing={() => this.focusNextField('3')}
-        />
-        <TextInput
-          ref="3"
-          style={styles.default}
-          keyboardType="url"
-          placeholder="blurOnSubmit = false"
-          returnKeyType="next"
-          blurOnSubmit={false}
-          onSubmitEditing={() => this.focusNextField('4')}
-        />
-        <TextInput
-          ref="4"
-          style={styles.default}
-          keyboardType="numeric"
-          returnKeyType="done"
-          placeholder="blurOnSubmit = false"
-          blurOnSubmit={false}
-          onSubmitEditing={() => this.focusNextField('5')}
-        />
-        <TextInput
-          ref="5"
-          style={styles.default}
-          keyboardType="numbers-and-punctuation"
-          placeholder="blurOnSubmit = true"
-          returnKeyType="done"
-        />
-      </View>
-    );
-  }
-}
-
-type SelectionExampleState = {
-  selection: $ReadOnly<{|
-    start: number,
-    end?: number,
-  |}>,
-  value: string,
-  ...
-};
-
-class SelectionExample extends React.Component<
-  $FlowFixMeProps,
-  SelectionExampleState,
-> {
-  _textInput: any;
-
-  constructor(props) {
-    super(props);
-    this.state = {
-      selection: {start: 0, end: 0},
-      value: props.value,
-    };
-  }
-
-  onSelectionChange({nativeEvent: {selection}}) {
-    this.setState({selection});
-  }
-
-  getRandomPosition() {
-    const length = this.state.value.length;
-    return Math.round(Math.random() * length);
-  }
-
-  select(start, end) {
-    this._textInput.focus();
-    this.setState({selection: {start, end}});
-  }
-
-  selectRandom() {
-    const positions = [this.getRandomPosition(), this.getRandomPosition()].sort(
-      (a, b) => a - b,
-    );
-    this.select(...positions);
-  }
-
-  placeAt(position) {
-    this.select(position, position);
-  }
-
-  placeAtRandom() {
-    this.placeAt(this.getRandomPosition());
-  }
-
-  render() {
-    const length = this.state.value.length;
-
-    return (
-      <View>
-        <TextInput
-          multiline={this.props.multiline}
-          onChangeText={value => this.setState({value})}
-          onSelectionChange={this.onSelectionChange.bind(this)}
-          ref={textInput => (this._textInput = textInput)}
-          selection={this.state.selection}
-          style={this.props.style}
-          value={this.state.value}
-        />
-        <View>
-          <Text>selection = {JSON.stringify(this.state.selection)}</Text>
-          <Text onPress={this.placeAt.bind(this, 0)}>
-            Place at Start (0, 0)
-          </Text>
-          <Text onPress={this.placeAt.bind(this, length)}>
-            Place at End ({length}, {length})
-          </Text>
-          <Text onPress={this.placeAtRandom.bind(this)}>Place at Random</Text>
-          <Text onPress={this.select.bind(this, 0, length)}>Select All</Text>
-          <Text onPress={this.selectRandom.bind(this)}>Select Random</Text>
         </View>
       </View>
     );
@@ -492,10 +233,6 @@ const styles = StyleSheet.create({
     letterSpacing: 10,
     textAlign: 'center',
   },
-  eventLabel: {
-    margin: 3,
-    fontSize: 12,
-  },
   labelContainer: {
     flexDirection: 'row',
     marginVertical: 2,
@@ -514,10 +251,6 @@ const styles = StyleSheet.create({
   remainder: {
     textAlign: 'right',
     width: 24,
-  },
-  hashtag: {
-    color: 'blue',
-    fontWeight: 'bold',
   },
 });
 
@@ -626,12 +359,6 @@ exports.examples = ([
     },
   },
   {
-    title: 'Event handling',
-    render: function(): React.Element<any> {
-      return <TextEventsExample />;
-    },
-  },
-  {
     title: 'Colored input text',
     render: function(): React.Node {
       return (
@@ -731,12 +458,6 @@ exports.examples = ([
           </WithLabel>
         </View>
       );
-    },
-  },
-  {
-    title: 'Blur on submit',
-    render: function(): React.Element<any> {
-      return <BlurOnSubmitExample />;
     },
   },
   {
@@ -917,30 +638,6 @@ exports.examples = ([
     },
   },
   {
-    title: 'Attributed text',
-    render: function(): React.Node {
-      return <TokenizedTextExample />;
-    },
-  },
-  {
-    title: 'Text selection & cursor placement',
-    render: function(): React.Node {
-      return (
-        <View>
-          <SelectionExample
-            style={styles.default}
-            value="text selection can be changed"
-          />
-          <SelectionExample
-            multiline
-            style={styles.multiline}
-            value={'multiline text selection\ncan also be changed'}
-          />
-        </View>
-      );
-    },
-  },
-  {
     title: 'TextInput maxLength',
     render: function(): React.Node {
       return (
@@ -984,38 +681,6 @@ exports.examples = ([
           <WithLabel label="name">
             <TextInput textContentType="name" style={styles.default} />
           </WithLabel>
-        </View>
-      );
-    },
-  },
-  {
-    title: 'fontFamily, fontWeight and fontStyle',
-    render: function(): React.Node {
-      return (
-        <View>
-          <TextInput
-            style={[styles.default, {fontFamily: 'Cochin'}]}
-            placeholder="Custom fonts like Cochin are supported"
-          />
-          <TextInput
-            style={[styles.default, {fontFamily: 'Cochin', fontWeight: 'bold'}]}
-            placeholder="Cochin bold"
-          />
-          <TextInput
-            style={[styles.default, {fontFamily: 'Cochin', fontWeight: '500'}]}
-            placeholder="Cochin 500"
-          />
-          <TextInput
-            style={[
-              styles.default,
-              {fontFamily: 'Cochin', fontStyle: 'italic'},
-            ]}
-            placeholder="Cochin italic"
-          />
-          <TextInput
-            style={[styles.default, {fontFamily: 'Courier'}]}
-            placeholder="Courier"
-          />
         </View>
       );
     },

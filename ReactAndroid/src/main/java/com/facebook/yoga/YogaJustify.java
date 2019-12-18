@@ -7,9 +7,6 @@
 
 package com.facebook.yoga;
 
-import com.facebook.proguard.annotations.DoNotStrip;
-
-@DoNotStrip
 public enum YogaJustify {
   FLEX_START(0),
   CENTER(1),

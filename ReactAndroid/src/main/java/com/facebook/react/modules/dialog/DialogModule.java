@@ -234,7 +234,7 @@ public class DialogModule extends ReactContextBaseJavaModule implements Lifecycl
    */
   private @Nullable FragmentManagerHelper getFragmentManagerHelper() {
     Activity activity = getCurrentActivity();
-    if (activity == null) {
+    if (activity == null || !(activity instanceof FragmentActivity)) {
       return null;
     }
     return new FragmentManagerHelper(((FragmentActivity) activity).getSupportFragmentManager());

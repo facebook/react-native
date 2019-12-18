@@ -7,9 +7,6 @@
 
 package com.facebook.yoga;
 
-import com.facebook.proguard.annotations.DoNotStrip;
-
-@DoNotStrip
 public enum YogaWrap {
   NO_WRAP(0),
   WRAP(1),

@@ -29,7 +29,7 @@ class ScrollViewState final {
 
 #ifdef ANDROID
   ScrollViewState() = default;
-  ScrollViewState(folly::dynamic data){};
+  ScrollViewState(ScrollViewState const &previousState, folly::dynamic data){};
   folly::dynamic getDynamic() const {
     return {};
   };

@@ -440,9 +440,9 @@ export type Props = $ReadOnly<{|
    *     synchrony with the touch; dragging upwards cancels the dismissal.
    *     On android this is not supported and it will have the same behavior as 'none'.
    */
-  keyboardDismissMode?: ?(
-    | 'none' // default
-    | 'on-drag' // cross-platform
+  keyboardDismissMode?: ?// default
+  (| 'none' // cross-platform
+    | 'on-drag'
     | 'interactive'
   ), // ios only
   /**

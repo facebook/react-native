@@ -20,6 +20,7 @@ typedef RCTBundleStatus *(^RCTBundleStatusProvider)(void);
 @interface RCTInspectorPackagerConnection : NSObject
 - (instancetype)initWithURL:(NSURL *)url;
 
+- (bool)isConnected;
 - (void)connect;
 - (void)closeQuietly;
 - (void)sendEventToAllConnections:(NSString *)event;

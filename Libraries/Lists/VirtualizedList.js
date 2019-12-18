@@ -520,7 +520,9 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     }
   }
 
-  getScrollRef(): ?React.ElementRef<typeof ScrollView> {
+  getScrollRef():
+    | ?React.ElementRef<typeof ScrollView>
+    | ?React.ElementRef<typeof View> {
     if (this._scrollRef && this._scrollRef.getScrollRef) {
       return this._scrollRef.getScrollRef();
     } else {

@@ -143,6 +143,19 @@ ComponentDescriptor const &ComponentDescriptorRegistry::at(
   return *it->second;
 }
 
+ComponentDescriptor const *ComponentDescriptorRegistry::
+    findComponentDescriptorByHandle_DO_NOT_USE_THIS_IS_BROKEN(
+        ComponentHandle componentHandle) const {
+  std::shared_lock<better::shared_mutex> lock(mutex_);
+
+  auto iterator = _registryByHandle.find(componentHandle);
+  if (iterator == _registryByHandle.end()) {
+    return nullptr;
+  }
+
+  return iterator->second.get();
+}
+
 ComponentDescriptor const &ComponentDescriptorRegistry::at(
     ComponentHandle componentHandle) const {
   std::shared_lock<better::shared_mutex> lock(mutex_);

@@ -7,14 +7,10 @@
 
 package com.facebook.yoga;
 
-import com.facebook.proguard.annotations.DoNotStrip;
-
-@DoNotStrip
 public interface YogaMeasureFunction {
   /**
    * Return a value created by YogaMeasureOutput.make(width, height);
    */
-  @DoNotStrip
   long measure(
       YogaNode node,
       float width,

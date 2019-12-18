@@ -17,39 +17,6 @@
 namespace facebook {
 namespace react {
 
-static ParagraphAttributes convertRawProp(
-    RawProps const &rawProps,
-    ParagraphAttributes const &defaultParagraphAttributes) {
-  auto paragraphAttributes = ParagraphAttributes{};
-
-  paragraphAttributes.maximumNumberOfLines = convertRawProp(
-      rawProps,
-      "numberOfLines",
-      defaultParagraphAttributes.maximumNumberOfLines);
-  paragraphAttributes.ellipsizeMode = convertRawProp(
-      rawProps, "ellipsizeMode", defaultParagraphAttributes.ellipsizeMode);
-  paragraphAttributes.textBreakStrategy = convertRawProp(
-      rawProps,
-      "textBreakStrategy",
-      defaultParagraphAttributes.textBreakStrategy);
-  paragraphAttributes.adjustsFontSizeToFit = convertRawProp(
-      rawProps,
-      "adjustsFontSizeToFit",
-      defaultParagraphAttributes.adjustsFontSizeToFit);
-  paragraphAttributes.minimumFontSize = convertRawProp(
-      rawProps,
-      "minimumFontSize",
-      defaultParagraphAttributes.minimumFontSize,
-      std::numeric_limits<Float>::quiet_NaN());
-  paragraphAttributes.maximumFontSize = convertRawProp(
-      rawProps,
-      "maximumFontSize",
-      defaultParagraphAttributes.maximumFontSize,
-      std::numeric_limits<Float>::quiet_NaN());
-
-  return paragraphAttributes;
-}
-
 ParagraphProps::ParagraphProps(
     ParagraphProps const &sourceProps,
     RawProps const &rawProps)

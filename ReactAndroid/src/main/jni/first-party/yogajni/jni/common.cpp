@@ -18,11 +18,11 @@ void registerNatives(
     size_t numMethods) {
   jclass clazz = env->FindClass(className);
 
-  assertNoPendingJniException(env);
+  assertNoPendingJniExceptionIf(env, !clazz);
 
-  env->RegisterNatives(clazz, methods, numMethods);
+  auto result = env->RegisterNatives(clazz, methods, numMethods);
 
-  assertNoPendingJniException(env);
+  assertNoPendingJniExceptionIf(env, result != JNI_OK);
 }
 
 jmethodID getStaticMethodId(
@@ -32,7 +32,7 @@ jmethodID getStaticMethodId(
     const char* methodDescriptor) {
   jmethodID methodId =
       env->GetStaticMethodID(clazz, methodName, methodDescriptor);
-  assertNoPendingJniException(env);
+  assertNoPendingJniExceptionIf(env, !methodId);
   return methodId;
 }
 
@@ -42,7 +42,7 @@ jmethodID getMethodId(
     const char* methodName,
     const char* methodDescriptor) {
   jmethodID methodId = env->GetMethodID(clazz, methodName, methodDescriptor);
-  assertNoPendingJniException(env);
+  assertNoPendingJniExceptionIf(env, !methodId);
   return methodId;
 }
 
@@ -52,7 +52,7 @@ jfieldID getFieldId(
     const char* fieldName,
     const char* fieldSignature) {
   jfieldID fieldId = env->GetFieldID(clazz, fieldName, fieldSignature);
-  assertNoPendingJniException(env);
+  assertNoPendingJniExceptionIf(env, !fieldId);
   return fieldId;
 }
 
@@ -83,12 +83,22 @@ callStaticObjectMethod(JNIEnv* env, jclass clazz, jmethodID methodId, ...) {
   va_start(args, methodId);
   jobject result = env->CallStaticObjectMethodV(clazz, methodId, args);
   va_end(args);
-  assertNoPendingJniException(env);
+  assertNoPendingJniExceptionIf(env, !result);
   return make_local_ref(env, result);
 }
 
 ScopedGlobalRef<jobject> newGlobalRef(JNIEnv* env, jobject obj) {
   jobject result = env->NewGlobalRef(obj);
+
+  if (!result) {
+    logErrorMessageAndDie("Could not obtain global reference from object");
+  }
+
+  return make_global_ref(result);
+}
+
+ScopedGlobalRef<jthrowable> newGlobalRef(JNIEnv* env, jthrowable obj) {
+  jthrowable result = static_cast<jthrowable>(env->NewGlobalRef(obj));
 
   if (!result) {
     logErrorMessageAndDie("Could not obtain global reference from object");

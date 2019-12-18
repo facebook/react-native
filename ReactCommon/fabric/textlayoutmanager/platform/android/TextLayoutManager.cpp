@@ -23,12 +23,14 @@ void *TextLayoutManager::getNativeTextLayoutManager() const {
 }
 
 Size TextLayoutManager::measure(
-    AttributedString attributedString,
+    AttributedStringBox attributedStringBox,
     ParagraphAttributes paragraphAttributes,
     LayoutConstraints layoutConstraints) const {
+  auto &attributedString = attributedStringBox.getValue();
+
   return measureCache_.get(
-      MeasureCacheKey{attributedString, paragraphAttributes, layoutConstraints},
-      [&](MeasureCacheKey const &key) {
+      {attributedString, paragraphAttributes, layoutConstraints},
+      [&](TextMeasureCacheKey const &key) {
         return doMeasure(
             attributedString, paragraphAttributes, layoutConstraints);
       });

@@ -261,9 +261,11 @@ void Scheduler::constraintSurfaceLayout(
       });
 }
 
-const ComponentDescriptor &Scheduler::getComponentDescriptor(
-    ComponentHandle handle) {
-  return componentDescriptorRegistry_->at(handle);
+ComponentDescriptor const *
+Scheduler::findComponentDescriptorByHandle_DO_NOT_USE_THIS_IS_BROKEN(
+    ComponentHandle handle) const {
+  return componentDescriptorRegistry_
+      ->findComponentDescriptorByHandle_DO_NOT_USE_THIS_IS_BROKEN(handle);
 }
 
 #pragma mark - Delegate

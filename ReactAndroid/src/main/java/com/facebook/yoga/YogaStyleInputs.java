@@ -7,9 +7,6 @@
 
 package com.facebook.yoga;
 
-import com.facebook.proguard.annotations.DoNotStrip;
-
-@DoNotStrip
 public class YogaStyleInputs {
   public static final short LAYOUT_DIRECTION = 0;
   public static final short FLEX_DIRECTION = 1;

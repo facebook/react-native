@@ -39,6 +39,15 @@ class ComponentDescriptorRegistry {
       ComponentDescriptorParameters const &parameters,
       ComponentDescriptorProviderRegistry const &providerRegistry);
 
+  /*
+   * This is broken. Please do not use.
+   * If you requesting a ComponentDescriptor and unsure that it's there, you are
+   * doing something wrong.
+   */
+  ComponentDescriptor const *
+  findComponentDescriptorByHandle_DO_NOT_USE_THIS_IS_BROKEN(
+      ComponentHandle componentHandle) const;
+
   ComponentDescriptor const &at(std::string const &componentName) const;
   ComponentDescriptor const &at(ComponentHandle componentHandle) const;
 

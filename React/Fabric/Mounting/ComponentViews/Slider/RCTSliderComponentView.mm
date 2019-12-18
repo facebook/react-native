@@ -14,6 +14,8 @@
 #import <react/components/slider/SliderComponentDescriptor.h>
 #import <react/components/slider/SliderLocalData.h>
 
+#import "FBRCTFabricComponentsPlugins.h"
+
 using namespace facebook::react;
 
 @interface RCTSliderComponentView () <RCTImageResponseDelegate>
@@ -333,3 +335,8 @@ using namespace facebook::react;
 }
 
 @end
+
+Class<RCTComponentViewProtocol> RCTSliderCls(void)
+{
+  return RCTSliderComponentView.class;
+}

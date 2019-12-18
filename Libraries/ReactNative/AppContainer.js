@@ -27,6 +27,7 @@ type Props = $ReadOnly<{|
   rootTag: number,
   showArchitectureIndicator?: boolean,
   WrapperComponent?: ?React.ComponentType<any>,
+  internal_excludeLogBox?: ?boolean,
 |}>;
 
 type State = {|
@@ -93,16 +94,14 @@ class AppContainer extends React.Component<Props, State> {
   }
 
   render(): React.Node {
-    let logBox = null;
+    let yellowBox = null;
     if (__DEV__) {
-      if (!global.__RCTProfileIsProfiling) {
-        if (global.__reactExperimentalLogBox) {
-          const LogBox = require('../LogBox/LogBox');
-          logBox = <LogBox />;
-        } else {
-          const YellowBox = require('../YellowBox/YellowBox');
-          logBox = <YellowBox />;
-        }
+      if (
+        !global.__RCTProfileIsProfiling &&
+        !this.props.internal_excludeLogBox
+      ) {
+        const YellowBox = require('../YellowBox/YellowBox');
+        yellowBox = <YellowBox />;
       }
     }
 
@@ -136,7 +135,7 @@ class AppContainer extends React.Component<Props, State> {
         <View style={styles.appContainer} pointerEvents="box-none">
           {!this.state.hasError && innerView}
           {this.state.inspector}
-          {logBox}
+          {yellowBox}
         </View>
       </RootTagContext.Provider>
     );
@@ -151,22 +150,8 @@ const styles = StyleSheet.create({
 
 if (__DEV__) {
   if (!global.__RCTProfileIsProfiling) {
-    if (global.__reactExperimentalLogBox) {
-      const LogBox = require('../LogBox/LogBox');
-      LogBox.install();
-
-      // TODO: (rickhanlonii) T57484314 Temporary hack to fix LogBox experiment but we need to
-      // either decide to provide an error boundary by default or move this to a separate root.
-      AppContainer.getDerivedStateFromError = function getDerivedStateFromError(
-        error,
-        state,
-      ) {
-        return {...state, hasError: true};
-      };
-    } else {
-      const YellowBox = require('../YellowBox/YellowBox');
-      YellowBox.install();
-    }
+    const YellowBox = require('../YellowBox/YellowBox');
+    YellowBox.install();
   }
 }
 

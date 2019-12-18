@@ -125,6 +125,7 @@ const AppRegistry = {
           appParameters.fabric,
           showArchitectureIndicator,
           scopedPerformanceLogger,
+          appKey === 'LogBox',
         );
       },
     };
@@ -180,13 +181,15 @@ const AppRegistry = {
    * See http://facebook.github.io/react-native/docs/appregistry.html#runapplication
    */
   runApplication(appKey: string, appParameters: any): void {
-    const msg =
-      'Running "' + appKey + '" with ' + JSON.stringify(appParameters);
-    infoLog(msg);
-    BugReporting.addSource(
-      'AppRegistry.runApplication' + runCount++,
-      () => msg,
-    );
+    if (appKey !== 'LogBox') {
+      const msg =
+        'Running "' + appKey + '" with ' + JSON.stringify(appParameters);
+      infoLog(msg);
+      BugReporting.addSource(
+        'AppRegistry.runApplication' + runCount++,
+        () => msg,
+      );
+    }
     invariant(
       runnables[appKey] && runnables[appKey].run,
       `"${appKey}" has not been registered. This can happen if:\n` +
@@ -291,5 +294,18 @@ const AppRegistry = {
 };
 
 BatchedBridge.registerCallableModule('AppRegistry', AppRegistry);
+
+if (__DEV__) {
+  const LogBoxInspector = require('../LogBox/LogBoxInspectorContainer').default;
+  AppRegistry.registerComponent('LogBox', () => LogBoxInspector);
+} else {
+  AppRegistry.registerComponent(
+    'LogBox',
+    () =>
+      function NoOp() {
+        return null;
+      },
+  );
+}
 
 module.exports = AppRegistry;

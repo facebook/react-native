@@ -402,10 +402,9 @@ class TouchableDisabled extends React.Component<{...}> {
 
         {Platform.OS === 'android' && (
           <TouchableNativeFeedback
-            style={[styles.row, styles.block]}
             onPress={() => console.log('custom TNF has been clicked')}
             background={TouchableNativeFeedback.SelectableBackground()}>
-            <View>
+            <View style={[styles.row, styles.block]}>
               <Text style={[styles.button, styles.nativeFeedbackButton]}>
                 Enabled TouchableNativeFeedback
               </Text>
@@ -416,10 +415,9 @@ class TouchableDisabled extends React.Component<{...}> {
         {Platform.OS === 'android' && (
           <TouchableNativeFeedback
             disabled={true}
-            style={[styles.row, styles.block]}
             onPress={() => console.log('custom TNF has been clicked')}
             background={TouchableNativeFeedback.SelectableBackground()}>
-            <View>
+            <View style={[styles.row, styles.block]}>
               <Text
                 style={[styles.disabledButton, styles.nativeFeedbackButton]}>
                 Disabled TouchableNativeFeedback
