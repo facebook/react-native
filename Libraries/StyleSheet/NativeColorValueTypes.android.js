@@ -5,14 +5,14 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @flow strict
+ * @flow strict-local
  */
 
 'use strict';
 
-import type {ColorValue} from './ColorValueTypes';
+import type {ColorValue, ProcessedColorValue} from './ColorValueTypes';
 
-export type NativeColorValue = {
+export opaque type NativeColorValue = {
   hypothetical_android_color?: string,
 };
 
@@ -24,4 +24,16 @@ export const PlatformColor = (
     return options;
   }
   return {hypothetical_android_color: name};
+};
+
+export const normalizeColorObject = (
+  color: NativeColorValue,
+): ?ProcessedColorValue => {
+  return null;
+};
+
+export const processColorObject = (
+  color: NativeColorValue,
+): ?NativeColorValue => {
+  return null;
 };

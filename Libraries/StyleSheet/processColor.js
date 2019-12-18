@@ -27,7 +27,8 @@ function processColor(color?: ?(number | ColorValue)): ?ProcessedColorValue {
   }
 
   if (typeof int32Color === 'object') {
-    const processColorObject = require('./processColorObject');
+    const processColorObject = require('./NativeColorValueTypes')
+      .processColorObject;
 
     const processedColorObj = processColorObject(int32Color);
 
