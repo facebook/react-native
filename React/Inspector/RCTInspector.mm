@@ -7,7 +7,7 @@
 
 #import <React/RCTInspector.h>
 
-#if RCT_DEV && !TARGET_OS_UIKITFORMAC
+#if RCT_DEV
 
 #include <jsinspector/InspectorInterfaces.h>
 

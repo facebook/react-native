@@ -262,7 +262,7 @@ RCT_EXPORT_MODULE()
     if (devSettings.isNuclideDebuggingAvailable && !devSettings.isDebuggingRemotely) {
       [items addObject:[RCTDevMenuItem buttonItemWithTitle:@"Debug with Nuclide"
                                                    handler:^{
-#if RCT_ENABLE_INSPECTOR && !TARGET_OS_UIKITFORMAC
+#if RCT_ENABLE_INSPECTOR
                                                      [RCTInspectorDevServerHelper
                                                          attachDebugger:@"ReactNative"
                                                           withBundleURL:bridge.bundleURL
