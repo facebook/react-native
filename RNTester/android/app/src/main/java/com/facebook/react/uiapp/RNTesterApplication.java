@@ -64,7 +64,7 @@ public class RNTesterApplication extends Application implements ReactApplication
    * @param reactInstanceManager
    */
   private static void initializeFlipper(
-    Context context, ReactInstanceManager reactInstanceManager) {
+      Context context, ReactInstanceManager reactInstanceManager) {
     if (BuildConfig.DEBUG) {
       try {
         /*
@@ -73,8 +73,8 @@ public class RNTesterApplication extends Application implements ReactApplication
         */
         Class<?> aClass = Class.forName("com.facebook.react.uiapp.ReactNativeFlipper");
         aClass
-          .getMethod("initializeFlipper", Context.class, ReactInstanceManager.class)
-          .invoke(null, context, reactInstanceManager);
+            .getMethod("initializeFlipper", Context.class, ReactInstanceManager.class)
+            .invoke(null, context, reactInstanceManager);
       } catch (ClassNotFoundException e) {
         e.printStackTrace();
       } catch (NoSuchMethodException e) {
