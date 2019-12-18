@@ -39,12 +39,6 @@ void ComponentDescriptorRegistry::add(
   _registryByHandle[componentDescriptorProvider.handle] =
       sharedComponentDescriptor;
   _registryByName[componentDescriptorProvider.name] = sharedComponentDescriptor;
-
-  if (strcmp(componentDescriptorProvider.name, "UnimplementedNativeView") ==
-      0) {
-    auto *self = const_cast<ComponentDescriptorRegistry *>(this);
-    self->setFallbackComponentDescriptor(sharedComponentDescriptor);
-  }
 }
 
 void ComponentDescriptorRegistry::registerComponentDescriptor(
