@@ -37,7 +37,7 @@ inline NSString *RCTNSStringFromString(const std::string &string)
   return [NSString stringWithCString:string.c_str() encoding:NSUTF8StringEncoding];
 }
 
-static std::shared_ptr<void> const contructCoordinator(
+static std::shared_ptr<void> const constructCoordinator(
     ContextContainer::Shared const &contextContainer,
     ComponentDescriptor::Flavor const &flavor)
 {
@@ -56,7 +56,7 @@ LegacyViewManagerInteropComponentDescriptor::LegacyViewManagerInteropComponentDe
     ContextContainer::Shared const &contextContainer,
     ComponentDescriptor::Flavor const &flavor)
     : ConcreteComponentDescriptor(eventDispatcher, contextContainer, flavor),
-      _coordinator(contructCoordinator(contextContainer, flavor))
+      _coordinator(constructCoordinator(contextContainer, flavor))
 {
 }
 
