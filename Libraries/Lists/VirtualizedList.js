@@ -1708,12 +1708,13 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     }
     this.setState(state => {
       let newState;
+      const {contentLength, offset, visibleLength} = this._scrollMetrics;
       if (!isVirtualizationDisabled) {
         // If we run this with bogus data, we'll force-render window {first: 0, last: 0},
         // and wipe out the initialNumToRender rendered elements.
         // So let's wait until the scroll view metrics have been set up. And until then,
         // we will trust the initialNumToRender suggestion
-        if (this._scrollMetrics.visibleLength) {
+        if (visibleLength > 0 && contentLength > 0) {
           // If we have a non-zero initialScrollIndex and run this before we've scrolled,
           // we'll wipe out the initialNumToRender rendered elements starting at initialScrollIndex.
           // So let's wait until we've scrolled the view to the right place. And until then,
@@ -1728,7 +1729,6 @@ class VirtualizedList extends React.PureComponent<Props, State> {
           }
         }
       } else {
-        const {contentLength, offset, visibleLength} = this._scrollMetrics;
         const distanceFromEnd = contentLength - visibleLength - offset;
         const renderAhead =
           /* $FlowFixMe(>=0.63.0 site=react_native_fb) This comment suppresses
@@ -1771,6 +1771,13 @@ class VirtualizedList extends React.PureComponent<Props, State> {
             break;
           }
         }
+      }
+      if (
+        newState != null &&
+        newState.first === state.first &&
+        newState.last === state.last
+      ) {
+        newState = null;
       }
       return newState;
     });

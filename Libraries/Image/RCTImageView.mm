@@ -321,18 +321,19 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
 
     id<RCTImageLoaderWithAttributionProtocol> imageLoader = [_bridge moduleForName:@"ImageLoader"
                                                              lazilyLoadIfNecessary:YES];
-    _reloadImageCancellationBlock = [imageLoader loadImageWithURLRequest:source.request
-                                                                    size:imageSize
-                                                                   scale:imageScale
-                                                                 clipped:NO
-                                                              resizeMode:_resizeMode
-                                                             attribution:{
-                                                                         .nativeViewTag = [self.reactTag intValue],
-                                                                         .surfaceId = [self.rootTag intValue],
-                                                                         }
-                                                           progressBlock:progressHandler
-                                                        partialLoadBlock:partialLoadHandler
-                                                         completionBlock:completionHandler];
+    RCTImageURLLoaderRequest *loaderRequest = [imageLoader loadImageWithURLRequest:source.request
+                                                                              size:imageSize
+                                                                             scale:imageScale
+                                                                           clipped:NO
+                                                                        resizeMode:_resizeMode
+                                                                       attribution:{
+                                                                                   .nativeViewTag = [self.reactTag intValue],
+                                                                                   .surfaceId = [self.rootTag intValue],
+                                                                                   }
+                                                                     progressBlock:progressHandler
+                                                                  partialLoadBlock:partialLoadHandler
+                                                                   completionBlock:completionHandler];
+    _reloadImageCancellationBlock = loaderRequest.cancellationBlock;
   } else {
     [self clearImage];
   }

@@ -69,11 +69,12 @@ describe('VirtualizedList', () => {
 
   it('throws if no renderItem or ListItemComponent', () => {
     // Silence the React error boundary warning; we expect an uncaught error.
+    const consoleError = console.error;
     jest.spyOn(console, 'error').mockImplementation(message => {
       if (message.startsWith('The above error occured in the ')) {
         return;
       }
-      console.errorDebug(message);
+      consoleError(message);
     });
 
     const componentFactory = () =>
@@ -333,5 +334,54 @@ describe('VirtualizedList', () => {
     expect(scrollRef.measure).toBeInstanceOf(jest.fn().constructor);
     expect(scrollRef.measureLayout).toBeInstanceOf(jest.fn().constructor);
     expect(scrollRef.measureInWindow).toBeInstanceOf(jest.fn().constructor);
+  });
+  it("does not call onEndReached when it shouldn't", () => {
+    const ITEM_HEIGHT = 40;
+    const layout = {width: 300, height: 600};
+    let data = Array(20)
+      .fill()
+      .map((_, key) => ({key: String(key)}));
+    const onEndReached = jest.fn();
+    const props = {
+      data,
+      initialNumToRender: 10,
+      renderItem: ({item}) => <item value={item.key} />,
+      getItem: (items, index) => items[index],
+      getItemCount: items => items.length,
+      getItemLayout: (items, index) => ({
+        length: ITEM_HEIGHT,
+        offset: ITEM_HEIGHT * index,
+        index,
+      }),
+      onEndReached,
+    };
+
+    const component = ReactTestRenderer.create(<VirtualizedList {...props} />);
+
+    const instance = component.getInstance();
+
+    instance._onLayout({nativeEvent: {layout}});
+
+    // We want to test the unusual case of onContentSizeChange firing after
+    // onLayout, which can cause https://github.com/facebook/react-native/issues/16067
+    instance._onContentSizeChange(300, props.initialNumToRender * ITEM_HEIGHT);
+    instance._onContentSizeChange(300, data.length * ITEM_HEIGHT);
+    jest.runAllTimers();
+
+    expect(onEndReached).not.toHaveBeenCalled();
+
+    instance._onScroll({
+      timeStamp: 1000,
+      nativeEvent: {
+        contentOffset: {y: 700, x: 0},
+        layoutMeasurement: layout,
+        contentSize: {...layout, height: data.length * ITEM_HEIGHT},
+        zoomScale: 1,
+        contentInset: {right: 0, top: 0, left: 0, bottom: 0},
+      },
+    });
+    jest.runAllTimers();
+
+    expect(onEndReached).toHaveBeenCalled();
   });
 });

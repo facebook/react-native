@@ -30,6 +30,7 @@ import com.facebook.react.modules.debug.DevSettingsModule;
 import com.facebook.react.modules.debug.SourceCodeModule;
 import com.facebook.react.modules.deviceinfo.DeviceInfoModule;
 import com.facebook.react.modules.systeminfo.AndroidInfoModule;
+import com.facebook.react.turbomodule.core.interfaces.TurboModule;
 import com.facebook.react.uimanager.UIImplementationProvider;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.ViewManager;
@@ -56,14 +57,14 @@ import java.util.Map;
       TimingModule.class,
       UIManagerModule.class,
     })
-/* package */ class CoreModulesPackage extends TurboReactPackage implements ReactPackageLogger {
+public class CoreModulesPackage extends TurboReactPackage implements ReactPackageLogger {
 
   private final ReactInstanceManager mReactInstanceManager;
   private final DefaultHardwareBackBtnHandler mHardwareBackBtnHandler;
   private final boolean mLazyViewManagersEnabled;
   private final int mMinTimeLeftInFrameForNonBatchedOperationMs;
 
-  CoreModulesPackage(
+  public CoreModulesPackage(
       ReactInstanceManager reactInstanceManager,
       DefaultHardwareBackBtnHandler hardwareBackBtnHandler,
       @Nullable UIImplementationProvider uiImplementationProvider,
@@ -116,7 +117,7 @@ import java.util.Map;
                 reactModule.needsEagerInit(),
                 reactModule.hasConstants(),
                 reactModule.isCxxModule(),
-                false));
+                TurboModule.class.isAssignableFrom(moduleClass)));
       }
 
       return new ReactModuleInfoProvider() {

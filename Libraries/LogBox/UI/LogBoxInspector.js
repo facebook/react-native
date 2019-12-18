@@ -36,8 +36,8 @@ type Props = $ReadOnly<{|
 
 function LogBoxInspector(props: Props): React.Node {
   const {logs, selectedIndex} = props;
+  let log = logs[selectedIndex];
 
-  const log = logs[selectedIndex];
   React.useEffect(() => {
     if (log) {
       LogBoxData.symbolicateLogNow(log);

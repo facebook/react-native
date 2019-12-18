@@ -14,7 +14,6 @@ const EmitterSubscription = require('../vendor/emitter/EmitterSubscription');
 const PropTypes = require('prop-types');
 const RCTDeviceEventEmitter = require('../EventEmitter/RCTDeviceEventEmitter');
 const React = require('react');
-const ReactNative = require('../Renderer/shims/ReactNative');
 const RootTagContext = require('./RootTagContext');
 const StyleSheet = require('../StyleSheet/StyleSheet');
 const View = require('../Components/View/View');
@@ -68,14 +67,12 @@ class AppContainer extends React.Component<Props, State> {
             const Inspector = require('../Inspector/Inspector');
             const inspector = this.state.inspector ? null : (
               <Inspector
-                inspectedViewTag={ReactNative.findNodeHandle(this._mainRef)}
-                onRequestRerenderApp={updateInspectedViewTag => {
+                isFabric={this.props.fabric === true}
+                inspectedView={this._mainRef}
+                onRequestRerenderApp={updateInspectedView => {
                   this.setState(
                     s => ({mainKey: s.mainKey + 1}),
-                    () =>
-                      updateInspectedViewTag(
-                        ReactNative.findNodeHandle(this._mainRef),
-                      ),
+                    () => updateInspectedView(this._mainRef),
                   );
                 }}
               />

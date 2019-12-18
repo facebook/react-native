@@ -10,7 +10,7 @@ yarn build
 
 FBSOURCE=$(hg root)
 MSGTYPES_PATH="${FBSOURCE}/xplat/js/react-native-github/ReactCommon/hermes/inspector/tools/message_types.txt"
-PROTO_PATH="${FBSOURCE}/xplat/third-party/chrome-devtools-protocol/json/js_protocol.json"
+PROTO_PATH="${FBSOURCE}/third-party/chrome-devtools-protocol/json/js_protocol.json"
 HEADER_PATH="${FBSOURCE}/xplat/js/react-native-github/ReactCommon/hermes/inspector/chrome/MessageTypes.h"
 CPP_PATH="${FBSOURCE}/xplat/js/react-native-github/ReactCommon/hermes/inspector/chrome/MessageTypes.cpp"
 

@@ -13,7 +13,9 @@
 #import <react/components/image/ImageEventEmitter.h>
 #import <react/components/image/ImageLocalData.h>
 #import <react/components/image/ImageProps.h>
+#import <react/imagemanager/ImageInstrumentation.h>
 #import <react/imagemanager/ImageRequest.h>
+#import <react/imagemanager/RCTImageInstrumentationProxy.h>
 #import <react/imagemanager/RCTImagePrimitivesConversions.h>
 
 #import "RCTConversions.h"
@@ -100,6 +102,12 @@
     // Loading actually starts a little before this, but this is the first time we know
     // the image is loading and can fire an event from this component
     std::static_pointer_cast<ImageEventEmitter const>(_eventEmitter)->onLoadStart();
+
+    // TODO (T58941612): Tracking for visibility should be done directly on this class.
+    // For now, we consolidate instrumentation logic in the image loader, so that pre-Fabric gets the same treatment.
+    auto instrumentation = std::static_pointer_cast<const RCTImageInstrumentationProxy>(
+        _imageLocalData->getImageRequest().getSharedImageInstrumentation());
+    instrumentation->trackNativeImageView(self);
   }
 }
 
@@ -161,6 +169,8 @@
   // Apply trilinear filtering to smooth out mis-sized images.
   self->_imageView.layer.minificationFilter = kCAFilterTrilinear;
   self->_imageView.layer.magnificationFilter = kCAFilterTrilinear;
+
+  _imageLocalData->getImageRequest().getImageInstrumentation().didSetImage();
 }
 
 - (void)didReceiveProgress:(float)progress fromObserver:(void const *)observer

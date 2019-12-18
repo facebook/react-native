@@ -29,8 +29,10 @@ exports[`LogBoxInspectorFooter should render no buttons and a message for syntax
           "color": "rgba(255, 255, 255, 0.6)",
           "fontSize": 14,
           "fontStyle": "italic",
-          "paddingBottom": 15,
-          "paddingTop": 15,
+          "height": 48,
+          "lineHeight": 20,
+          "paddingBottom": 50,
+          "paddingTop": 20,
           "textAlign": "center",
           "width": "100%",
         }

@@ -39,12 +39,6 @@ void ComponentDescriptorRegistry::add(
   _registryByHandle[componentDescriptorProvider.handle] =
       sharedComponentDescriptor;
   _registryByName[componentDescriptorProvider.name] = sharedComponentDescriptor;
-
-  if (strcmp(componentDescriptorProvider.name, "UnimplementedNativeView") ==
-      0) {
-    auto *self = const_cast<ComponentDescriptorRegistry *>(this);
-    self->setFallbackComponentDescriptor(sharedComponentDescriptor);
-  }
 }
 
 void ComponentDescriptorRegistry::registerComponentDescriptor(
@@ -177,7 +171,7 @@ SharedShadowNode ComponentDescriptorRegistry::createNode(
   auto const props =
       componentDescriptor.cloneProps(nullptr, RawProps(propsDynamic));
   auto const state = componentDescriptor.createInitialState(
-      ShadowNodeFragment{surfaceId, tag, props, eventEmitter});
+      ShadowNodeFragment{tag, surfaceId, props, eventEmitter});
 
   return componentDescriptor.createShadowNode({
       /* .tag = */ tag,
