@@ -414,33 +414,40 @@ inline std::string toString(
 
 inline ParagraphAttributes convertRawProp(
     RawProps const &rawProps,
+    ParagraphAttributes const &sourceParagraphAttributes,
     ParagraphAttributes const &defaultParagraphAttributes) {
   auto paragraphAttributes = ParagraphAttributes{};
 
   paragraphAttributes.maximumNumberOfLines = convertRawProp(
       rawProps,
       "numberOfLines",
+      sourceParagraphAttributes.maximumNumberOfLines,
       defaultParagraphAttributes.maximumNumberOfLines);
   paragraphAttributes.ellipsizeMode = convertRawProp(
-      rawProps, "ellipsizeMode", defaultParagraphAttributes.ellipsizeMode);
+      rawProps,
+      "ellipsizeMode",
+      sourceParagraphAttributes.ellipsizeMode,
+      defaultParagraphAttributes.ellipsizeMode);
   paragraphAttributes.textBreakStrategy = convertRawProp(
       rawProps,
       "textBreakStrategy",
+      sourceParagraphAttributes.textBreakStrategy,
       defaultParagraphAttributes.textBreakStrategy);
   paragraphAttributes.adjustsFontSizeToFit = convertRawProp(
       rawProps,
       "adjustsFontSizeToFit",
+      sourceParagraphAttributes.adjustsFontSizeToFit,
       defaultParagraphAttributes.adjustsFontSizeToFit);
   paragraphAttributes.minimumFontSize = convertRawProp(
       rawProps,
       "minimumFontSize",
-      defaultParagraphAttributes.minimumFontSize,
-      std::numeric_limits<Float>::quiet_NaN());
+      sourceParagraphAttributes.minimumFontSize,
+      defaultParagraphAttributes.minimumFontSize);
   paragraphAttributes.maximumFontSize = convertRawProp(
       rawProps,
       "maximumFontSize",
-      defaultParagraphAttributes.maximumFontSize,
-      std::numeric_limits<Float>::quiet_NaN());
+      sourceParagraphAttributes.maximumFontSize,
+      defaultParagraphAttributes.maximumFontSize);
 
   return paragraphAttributes;
 }
