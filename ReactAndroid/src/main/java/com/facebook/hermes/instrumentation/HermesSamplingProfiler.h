@@ -9,7 +9,6 @@
 #define HERMESSAMPLINGPROFILER_H_
 
 #include <fbjni/fbjni.h>
-// #include <jni/Registration.h>
 #include <jsi/jsi.h>
 
 namespace facebook {
