@@ -296,7 +296,8 @@ def getNdkBuildFullPath() {
 }
 
 def buildReactNdkLib = tasks.register("buildReactNdkLib", Exec) {
-    dependsOn(prepareJSC, prepareHermes, prepareBoost, prepareDoubleConversion, prepareFolly, prepareGlog)
+    dependsOn(prepareJSC, prepareHermes, prepareBoost, prepareDoubleConversion, prepareFolly, prepareGlog, extractAARHeaders, extractJNIFiles)
+
     inputs.dir("$projectDir/../ReactCommon")
     inputs.dir("src/main/jni")
     inputs.dir("src/main/java/com/facebook/react/modules/blob")
@@ -416,8 +417,6 @@ android {
     tasks.withType(JavaCompile) {
         compileTask ->
             compileTask.dependsOn(packageReactNdkLibs)
-            compileTask.dependsOn(extractAARHeaders)
-            compileTask.dependsOn(extractJNIFiles)
     }
 
     clean.dependsOn(cleanReactNdkLib)
