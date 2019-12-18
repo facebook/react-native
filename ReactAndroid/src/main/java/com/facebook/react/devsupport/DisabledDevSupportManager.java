@@ -130,7 +130,7 @@ public class DisabledDevSupportManager implements DevSupportManager {
   public void reloadJSFromServer(String bundleURL) {}
 
   @Override
-  public void isPackagerRunning(PackagerStatusCallback callback) {}
+  public void isPackagerRunning(final PackagerStatusCallback callback) {}
 
   @Override
   public @Nullable File downloadBundleResourceFromUrlSync(
@@ -150,6 +150,10 @@ public class DisabledDevSupportManager implements DevSupportManager {
 
   @Override
   public void registerErrorCustomizer(ErrorCustomizer errorCustomizer) {}
+
+  @Override
+  public void setPackagerLocationCustomizer(
+      PackagerLocationCustomizer packagerLocationCustomizer) {}
 
   @Override
   public void handleException(Exception e) {

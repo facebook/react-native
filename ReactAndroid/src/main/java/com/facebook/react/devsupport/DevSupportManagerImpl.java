@@ -140,6 +140,7 @@ public class DevSupportManagerImpl
   private @Nullable ErrorType mLastErrorType;
   private @Nullable DevBundleDownloadListener mBundleDownloadListener;
   private @Nullable List<ErrorCustomizer> mErrorCustomizers;
+  private @Nullable PackagerLocationCustomizer mPackagerLocationCustomizer;
 
   private InspectorPackagerConnection.BundleStatus mBundleStatus;
 
@@ -877,8 +878,19 @@ public class DevSupportManagerImpl
   }
 
   @Override
-  public void isPackagerRunning(PackagerStatusCallback callback) {
-    mDevServerHelper.isPackagerRunning(callback);
+  public void isPackagerRunning(final PackagerStatusCallback callback) {
+    Runnable checkPackagerRunning =
+        new Runnable() {
+          @Override
+          public void run() {
+            mDevServerHelper.isPackagerRunning(callback);
+          }
+        };
+    if (mPackagerLocationCustomizer != null) {
+      mPackagerLocationCustomizer.run(checkPackagerRunning);
+    } else {
+      checkPackagerRunning.run();
+    }
   }
 
   @Override
@@ -1239,5 +1251,10 @@ public class DevSupportManagerImpl
   /** Intent action for reloading the JS */
   private static String getReloadAppAction(Context context) {
     return context.getPackageName() + RELOAD_APP_ACTION_SUFFIX;
+  }
+
+  @Override
+  public void setPackagerLocationCustomizer(PackagerLocationCustomizer packagerLocationCustomizer) {
+    mPackagerLocationCustomizer = packagerLocationCustomizer;
   }
 }
