@@ -280,6 +280,10 @@ const sequence = function(
   let current = 0;
   return {
     start: function(callback?: ?EndCallback) {
+      if (current > 0) {
+        throw new Error("Can't start a new iteration until previous one ends");
+      }
+
       const onComplete = function(result) {
         if (!result.finished) {
           current = 0;

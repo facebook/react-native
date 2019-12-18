@@ -230,6 +230,22 @@ describe('Animated tests', () => {
       expect(cb).toBeCalledTimes(2);
     });
 
+    it('throws when user tries to start while already running', () => {
+      const anim1 = {start: jest.fn()};
+      const anim2 = {start: jest.fn()};
+      const cb = jest.fn();
+
+      const seq = Animated.sequence([anim1, anim2]);
+
+      seq.start(cb);
+      anim1.start.mock.calls[0][0]({finished: true});
+      expect(() => seq.start(cb)).toThrowError();
+      anim2.start.mock.calls[0][0]({finished: true});
+      expect(() => seq.start(cb)).not.toThrowError();
+      expect(cb).toBeCalledTimes(1);
+      expect(() => seq.start(cb)).not.toThrowError();
+    });
+
     it('supports interrupting sequence', () => {
       const anim1 = {start: jest.fn()};
       const anim2 = {start: jest.fn()};
