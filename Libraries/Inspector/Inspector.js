@@ -18,7 +18,6 @@ const React = require('react');
 const ReactNative = require('../Renderer/shims/ReactNative');
 const StyleSheet = require('../StyleSheet/StyleSheet');
 const Touchable = require('../Components/Touchable/Touchable');
-const UIManager = require('../ReactNative/UIManager');
 const View = require('../Components/View/View');
 
 const invariant = require('invariant');
@@ -153,11 +152,7 @@ class Inspector extends React.Component<
   _onAgentShowNativeHighlight = node => {
     clearTimeout(this._hideTimeoutID);
 
-    if (typeof node !== 'number') {
-      node = ReactNative.findNodeHandle(node);
-    }
-
-    UIManager.measure(node, (x, y, width, height, left, top) => {
+    node.measure((x, y, width, height, left, top) => {
       this.setState({
         hierarchy: [],
         inspected: {
