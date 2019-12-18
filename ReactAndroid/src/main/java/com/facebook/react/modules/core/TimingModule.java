@@ -11,6 +11,7 @@ import com.facebook.fbreact.specs.NativeTimingSpec;
 import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.WritableArray;
+import com.facebook.react.common.annotations.VisibleForTesting;
 import com.facebook.react.devsupport.interfaces.DevSupportManager;
 import com.facebook.react.jstasks.HeadlessJsTaskContext;
 import com.facebook.react.jstasks.HeadlessJsTaskEventListener;
@@ -133,5 +134,10 @@ public final class TimingModule extends NativeTimingSpec
         HeadlessJsTaskContext.getInstance(getReactApplicationContext());
     headlessJsTaskContext.removeTaskEventListener(this);
     mJavaTimerManager.onInstanceDestroy();
+  }
+
+  @VisibleForTesting
+  public boolean hasActiveTimersInRange(long rangeMs) {
+    return mJavaTimerManager.hasActiveTimersInRange(rangeMs);
   }
 }
