@@ -41,10 +41,11 @@ Transform LayoutableShadowNode::getTransform() const {
 }
 
 LayoutMetrics LayoutableShadowNode::getRelativeLayoutMetrics(
-    const LayoutableShadowNode &ancestorLayoutableShadowNode) const {
+    LayoutableShadowNode const &ancestorLayoutableShadowNode,
+    LayoutInspectingPolicy policy) const {
   auto &ancestorShadowNode =
-      dynamic_cast<const ShadowNode &>(ancestorLayoutableShadowNode);
-  auto &shadowNode = dynamic_cast<const ShadowNode &>(*this);
+      dynamic_cast<ShadowNode const &>(ancestorLayoutableShadowNode);
+  auto &shadowNode = dynamic_cast<ShadowNode const &>(*this);
 
   auto ancestors = shadowNode.getAncestors(ancestorShadowNode);
 
@@ -58,16 +59,21 @@ LayoutMetrics LayoutableShadowNode::getRelativeLayoutMetrics(
     auto &currentShadowNode = it->first.get();
 
     auto layoutableCurrentShadowNode =
-        dynamic_cast<const LayoutableShadowNode *>(&currentShadowNode);
+        dynamic_cast<LayoutableShadowNode const *>(&currentShadowNode);
 
     if (!layoutableCurrentShadowNode) {
       return EmptyLayoutMetrics;
     }
 
     auto origin = layoutableCurrentShadowNode->getLayoutMetrics().frame.origin;
-    auto transform = layoutableCurrentShadowNode->getTransform();
 
-    layoutMetrics.frame.origin += origin * transform;
+    if (policy.includeTransform || policy.includeScrollViewContentOffset) {
+      // The check for ScrollView will be implemented after we have
+      // a dedicated trait (part of `ShadowNodeTraits`) for that.
+      origin = origin * layoutableCurrentShadowNode->getTransform();
+    }
+
+    layoutMetrics.frame.origin += origin;
   }
 
   return layoutMetrics;
@@ -96,7 +102,7 @@ void LayoutableShadowNode::layout(LayoutContext layoutContext) {
     child->ensureUnsealed();
     child->setHasNewLayout(false);
 
-    const auto childLayoutMetrics = child->getLayoutMetrics();
+    auto childLayoutMetrics = child->getLayoutMetrics();
     if (childLayoutMetrics.displayType == DisplayType::None) {
       continue;
     }

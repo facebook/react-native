@@ -31,6 +31,12 @@ struct LayoutContext;
  */
 class LayoutableShadowNode : public virtual Sealable {
  public:
+  class LayoutInspectingPolicy final {
+   public:
+    bool includeTransform{true};
+    bool includeScrollViewContentOffset{true};
+  };
+
   using UnsharedList = better::
       small_vector<LayoutableShadowNode *, kShadowNodeChildrenSmallVectorSize>;
 
@@ -77,7 +83,8 @@ class LayoutableShadowNode : public virtual Sealable {
    * Returns layout metrics relatively to the given ancestor node.
    */
   LayoutMetrics getRelativeLayoutMetrics(
-      const LayoutableShadowNode &ancestorLayoutableShadowNode) const;
+      LayoutableShadowNode const &ancestorLayoutableShadowNode,
+      LayoutInspectingPolicy policy) const;
 
  protected:
   /*

@@ -423,7 +423,9 @@ jsi::Value UIManagerBinding::get(
             size_t count) -> jsi::Value {
           auto layoutMetrics = uiManager->getRelativeLayoutMetrics(
               *shadowNodeFromValue(runtime, arguments[0]),
-              shadowNodeFromValue(runtime, arguments[1]).get());
+              shadowNodeFromValue(runtime, arguments[1]).get(),
+              {/* .includeTransform = */ true,
+               /* .includeScrollViewContentOffset = */ true});
           auto frame = layoutMetrics.frame;
           auto result = jsi::Object(runtime);
           result.setProperty(runtime, "left", frame.origin.x);
@@ -466,7 +468,9 @@ jsi::Value UIManagerBinding::get(
             size_t count) -> jsi::Value {
           auto layoutMetrics = uiManager->getRelativeLayoutMetrics(
               *shadowNodeFromValue(runtime, arguments[0]),
-              shadowNodeFromValue(runtime, arguments[1]).get());
+              shadowNodeFromValue(runtime, arguments[1]).get(),
+              {/* .includeTransform = */ false,
+               /* .includeScrollViewContentOffset = */ false});
 
           if (layoutMetrics == EmptyLayoutMetrics) {
             auto onFailFunction =
@@ -500,7 +504,10 @@ jsi::Value UIManagerBinding::get(
             const jsi::Value *arguments,
             size_t count) -> jsi::Value {
           auto layoutMetrics = uiManager->getRelativeLayoutMetrics(
-              *shadowNodeFromValue(runtime, arguments[0]), nullptr);
+              *shadowNodeFromValue(runtime, arguments[0]),
+              nullptr,
+              {/* .includeTransform = */ true,
+               /* .includeScrollViewContentOffset = */ true});
           auto frame = layoutMetrics.frame;
           auto onSuccessFunction =
               arguments[1].getObject(runtime).getFunction(runtime);
@@ -528,7 +535,10 @@ jsi::Value UIManagerBinding::get(
             const jsi::Value *arguments,
             size_t count) -> jsi::Value {
           auto layoutMetrics = uiManager->getRelativeLayoutMetrics(
-              *shadowNodeFromValue(runtime, arguments[0]), nullptr);
+              *shadowNodeFromValue(runtime, arguments[0]),
+              nullptr,
+              {/* .includeTransform = */ true,
+               /* .includeScrollViewContentOffset = */ true});
 
           auto onSuccessFunction =
               arguments[1].getObject(runtime).getFunction(runtime);

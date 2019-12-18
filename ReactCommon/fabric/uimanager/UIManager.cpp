@@ -168,13 +168,14 @@ void UIManager::setNativeProps(
 }
 
 LayoutMetrics UIManager::getRelativeLayoutMetrics(
-    const ShadowNode &shadowNode,
-    const ShadowNode *ancestorShadowNode) const {
+    ShadowNode const &shadowNode,
+    ShadowNode const *ancestorShadowNode,
+    LayoutableShadowNode::LayoutInspectingPolicy policy) const {
   SystraceSection s("UIManager::getRelativeLayoutMetrics");
 
   if (!ancestorShadowNode) {
     shadowTreeRegistry_.visit(
-        shadowNode.getSurfaceId(), [&](const ShadowTree &shadowTree) {
+        shadowNode.getSurfaceId(), [&](ShadowTree const &shadowTree) {
           shadowTree.tryCommit(
               [&](RootShadowNode::Shared const &oldRootShadowNode) {
                 ancestorShadowNode = oldRootShadowNode.get();
@@ -193,7 +194,7 @@ LayoutMetrics UIManager::getRelativeLayoutMetrics(
   }
 
   return layoutableShadowNode->getRelativeLayoutMetrics(
-      *layoutableAncestorShadowNode);
+      *layoutableAncestorShadowNode, policy);
 }
 
 void UIManager::updateState(

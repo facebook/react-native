@@ -94,8 +94,9 @@ class UIManager final : public ShadowTreeDelegate {
    * `ancestorShadowNode` is nullptr).
    */
   LayoutMetrics getRelativeLayoutMetrics(
-      const ShadowNode &shadowNode,
-      const ShadowNode *ancestorShadowNode) const;
+      ShadowNode const &shadowNode,
+      ShadowNode const *ancestorShadowNode,
+      LayoutableShadowNode::LayoutInspectingPolicy policy) const;
 
   /*
    * Creates a new shadow node with given state data, clones what's necessary
