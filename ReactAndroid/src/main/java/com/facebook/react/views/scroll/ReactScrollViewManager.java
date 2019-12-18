@@ -17,7 +17,9 @@ import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.uimanager.DisplayMetricsHolder;
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.ReactClippingViewGroupHelper;
+import com.facebook.react.uimanager.ReactStylesDiffMap;
 import com.facebook.react.uimanager.Spacing;
+import com.facebook.react.uimanager.StateWrapper;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.ViewGroupManager;
 import com.facebook.react.uimanager.ViewProps;
@@ -288,6 +290,13 @@ public class ReactScrollViewManager extends ViewGroupManager<ReactScrollView>
       view.setVerticalFadingEdgeEnabled(false);
       view.setFadingEdgeLength(0);
     }
+  }
+
+  @Override
+  public Object updateState(
+      ReactScrollView view, ReactStylesDiffMap props, @Nullable StateWrapper stateWrapper) {
+    view.updateState(stateWrapper);
+    return null;
   }
 
   @Override
