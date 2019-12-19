@@ -26,7 +26,7 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
-  [self initializeFlipper:application];
+  [AppDelegate initializeFlipper:application];
   RCTBridge *bridge = [[RCTBridge alloc] initWithDelegate:self launchOptions:launchOptions];
   RCTRootView *rootView = [[RCTRootView alloc] initWithBridge:bridge
                                                    moduleName:@"HelloWorld"
@@ -51,7 +51,7 @@
 #endif
 }
 
-- (void) initializeFlipper:(UIApplication *)application
++ (void) initializeFlipper:(UIApplication *)application
 {
 #if DEBUG
 #ifdef FB_SONARKIT_ENABLED
