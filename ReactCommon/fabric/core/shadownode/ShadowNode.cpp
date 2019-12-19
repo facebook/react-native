@@ -74,8 +74,7 @@ ShadowNode::ShadowNode(
                          : sourceShadowNode.getMostRecentState()),
       family_(sourceShadowNode.family_),
       traits_(sourceShadowNode.traits_) {
-  // `tag`, `surfaceId`, and `eventEmitter` cannot be changed with cloning.
-  assert(fragment.tag == ShadowNodeFragment::tagPlaceholder());
+  // `surfaceId`, and `eventEmitter` cannot be changed with cloning.
   assert(fragment.surfaceId == ShadowNodeFragment::surfaceIdPlaceholder());
   assert(
       fragment.eventEmitter == ShadowNodeFragment::eventEmitterPlaceholder());

@@ -78,7 +78,8 @@ class ComponentDescriptor {
    * Creates a new `ShadowNode` of a particular component type.
    */
   virtual SharedShadowNode createShadowNode(
-      const ShadowNodeFragment &fragment) const = 0;
+      const ShadowNodeFragment &fragment,
+      ShadowNodeFamilyFragment const &familyFragment) const = 0;
 
   /*
    * Clones a `ShadowNode` with optionally new `props` and/or `children`.

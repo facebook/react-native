@@ -27,7 +27,6 @@ TEST(ShadowNodeTest, handleShadowNodeCreation) {
       componentDescriptor);
   auto node = std::make_shared<TestShadowNode>(
       ShadowNodeFragment{
-          /* .tag = */ 9,
           /* .surfaceId = */ 1,
           /* .props = */ std::make_shared<const TestProps>(),
           /* .eventEmitter = */ ShadowNodeFragment::eventEmitterPlaceholder(),
@@ -60,7 +59,6 @@ TEST(ShadowNodeTest, handleShadowNodeSimpleCloning) {
       componentDescriptor);
   auto node = std::make_shared<TestShadowNode>(
       ShadowNodeFragment{
-          /* .tag = */ 9,
           /* .surfaceId = */ 1,
           /* .props = */ std::make_shared<const TestProps>(),
           /* .eventEmitter = */ ShadowNodeFragment::eventEmitterPlaceholder(),
@@ -89,7 +87,6 @@ TEST(ShadowNodeTest, handleShadowNodeMutation) {
   auto props = std::make_shared<const TestProps>();
   auto node1 = std::make_shared<TestShadowNode>(
       ShadowNodeFragment{
-          /* .tag = */ 1,
           /* .surfaceId = */ 1,
           /* .props = */ std::make_shared<const TestProps>(),
           /* .eventEmitter = */ ShadowNodeFragment::eventEmitterPlaceholder(),
@@ -106,7 +103,6 @@ TEST(ShadowNodeTest, handleShadowNodeMutation) {
       componentDescriptor);
   auto node2 = std::make_shared<TestShadowNode>(
       ShadowNodeFragment{
-          /* .tag = */ 2,
           /* .surfaceId = */ 1,
           /* .props = */ std::make_shared<const TestProps>(),
           /* .eventEmitter = */ ShadowNodeFragment::eventEmitterPlaceholder(),
@@ -123,7 +119,6 @@ TEST(ShadowNodeTest, handleShadowNodeMutation) {
       componentDescriptor);
   auto node3 = std::make_shared<TestShadowNode>(
       ShadowNodeFragment{
-          /* .tag = */ 3,
           /* .surfaceId = */ 1,
           /* .props = */ std::make_shared<const TestProps>(),
           /* .eventEmitter = */ ShadowNodeFragment::eventEmitterPlaceholder(),
@@ -173,7 +168,6 @@ TEST(ShadowNodeTest, handleCloneFunction) {
 
   auto firstNode = std::make_shared<TestShadowNode>(
       ShadowNodeFragment{
-          /* .tag = */ 9,
           /* .surfaceId = */ 1,
           /* .props = */ std::make_shared<const TestProps>(),
           /* .eventEmitter = */ ShadowNodeFragment::eventEmitterPlaceholder(),
@@ -218,7 +212,6 @@ TEST(ShadowNodeTest, handleLocalData) {
   auto props = std::make_shared<const TestProps>();
   auto firstNode = std::make_shared<TestShadowNode>(
       ShadowNodeFragment{
-          /* .tag = */ 9,
           /* .surfaceId = */ 1,
           /* .props = */ props,
           /* .eventEmitter = */ ShadowNodeFragment::eventEmitterPlaceholder(),
@@ -228,7 +221,6 @@ TEST(ShadowNodeTest, handleLocalData) {
       ShadowNodeTraits{});
   auto secondNode = std::make_shared<TestShadowNode>(
       ShadowNodeFragment{
-          /* .tag = */ 9,
           /* .surfaceId = */ 1,
           /* .props = */ props,
           /* .eventEmitter = */ ShadowNodeFragment::eventEmitterPlaceholder(),
@@ -238,7 +230,6 @@ TEST(ShadowNodeTest, handleLocalData) {
       ShadowNodeTraits{});
   auto thirdNode = std::make_shared<TestShadowNode>(
       ShadowNodeFragment{
-          /* .tag = */ 9,
           /* .surfaceId = */ 1,
           /* .props = */ props,
           /* .eventEmitter = */ ShadowNodeFragment::eventEmitterPlaceholder(),
@@ -289,7 +280,6 @@ TEST(ShadowNodeTest, handleBacktracking) {
       componentDescriptor);
   auto nodeAA = std::make_shared<TestShadowNode>(
       ShadowNodeFragment{
-          /* .tag = */ ShadowNodeFragment::tagPlaceholder(),
           /* .surfaceId = */ ShadowNodeFragment::surfaceIdPlaceholder(),
           /* .props = */ props,
           /* .eventEmitter = */ ShadowNodeFragment::eventEmitterPlaceholder(),
@@ -307,7 +297,6 @@ TEST(ShadowNodeTest, handleBacktracking) {
       componentDescriptor);
   auto nodeABA = std::make_shared<TestShadowNode>(
       ShadowNodeFragment{
-          /* .tag = */ ShadowNodeFragment::tagPlaceholder(),
           /* .surfaceId = */ ShadowNodeFragment::surfaceIdPlaceholder(),
           /* .props = */ props,
           /* .eventEmitter = */ ShadowNodeFragment::eventEmitterPlaceholder(),
@@ -325,7 +314,6 @@ TEST(ShadowNodeTest, handleBacktracking) {
       componentDescriptor);
   auto nodeABB = std::make_shared<TestShadowNode>(
       ShadowNodeFragment{
-          /* .tag = */ ShadowNodeFragment::tagPlaceholder(),
           /* .surfaceId = */ ShadowNodeFragment::surfaceIdPlaceholder(),
           /* .props = */ props,
           /* .eventEmitter = */ ShadowNodeFragment::eventEmitterPlaceholder(),
@@ -343,7 +331,6 @@ TEST(ShadowNodeTest, handleBacktracking) {
       componentDescriptor);
   auto nodeABC = std::make_shared<TestShadowNode>(
       ShadowNodeFragment{
-          /* .tag = */ ShadowNodeFragment::tagPlaceholder(),
           /* .surfaceId = */ ShadowNodeFragment::surfaceIdPlaceholder(),
           /* .props = */ props,
           /* .eventEmitter = */ ShadowNodeFragment::eventEmitterPlaceholder(),
@@ -364,7 +351,6 @@ TEST(ShadowNodeTest, handleBacktracking) {
       componentDescriptor);
   auto nodeAB = std::make_shared<TestShadowNode>(
       ShadowNodeFragment{
-          /* .tag = */ ShadowNodeFragment::tagPlaceholder(),
           /* .surfaceId = */ ShadowNodeFragment::surfaceIdPlaceholder(),
           /* .props = */ props,
           /* .eventEmitter = */ ShadowNodeFragment::eventEmitterPlaceholder(),
@@ -382,7 +368,6 @@ TEST(ShadowNodeTest, handleBacktracking) {
       componentDescriptor);
   auto nodeAC = std::make_shared<TestShadowNode>(
       ShadowNodeFragment{
-          /* .tag = */ ShadowNodeFragment::tagPlaceholder(),
           /* .surfaceId = */ ShadowNodeFragment::surfaceIdPlaceholder(),
           /* .props = */ props,
           /* .eventEmitter = */ ShadowNodeFragment::eventEmitterPlaceholder(),
@@ -403,7 +388,6 @@ TEST(ShadowNodeTest, handleBacktracking) {
       componentDescriptor);
   auto nodeA = std::make_shared<TestShadowNode>(
       ShadowNodeFragment{
-          /* .tag = */ ShadowNodeFragment::tagPlaceholder(),
           /* .surfaceId = */ ShadowNodeFragment::surfaceIdPlaceholder(),
           /* .props = */ props,
           /* .eventEmitter = */ ShadowNodeFragment::eventEmitterPlaceholder(),
@@ -421,7 +405,6 @@ TEST(ShadowNodeTest, handleBacktracking) {
       componentDescriptor);
   auto nodeZ = std::make_shared<TestShadowNode>(
       ShadowNodeFragment{
-          /* .tag = */ ShadowNodeFragment::tagPlaceholder(),
           /* .surfaceId = */ ShadowNodeFragment::surfaceIdPlaceholder(),
           /* .props = */ props,
           /* .eventEmitter = */ ShadowNodeFragment::eventEmitterPlaceholder(),

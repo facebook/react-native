@@ -66,15 +66,13 @@ class ConcreteComponentDescriptor : public ComponentDescriptor {
   }
 
   SharedShadowNode createShadowNode(
-      const ShadowNodeFragment &fragment) const override {
+      const ShadowNodeFragment &fragment,
+      ShadowNodeFamilyFragment const &familyFragment) const override {
     assert(std::dynamic_pointer_cast<const ConcreteProps>(fragment.props));
     assert(std::dynamic_pointer_cast<const ConcreteEventEmitter>(
         fragment.eventEmitter));
 
-    auto family = std::make_shared<ShadowNodeFamily const>(
-        ShadowNodeFamilyFragment{
-            fragment.tag, fragment.surfaceId, fragment.eventEmitter},
-        *this);
+    auto family = std::make_shared<ShadowNodeFamily>(familyFragment, *this);
 
     auto shadowNode =
         std::make_shared<ShadowNodeT>(fragment, family, getTraits());

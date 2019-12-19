@@ -27,7 +27,6 @@ namespace react {
  * fragment content to store or pass the data asynchronously.
  */
 struct ShadowNodeFragment {
-  Tag const tag = tagPlaceholder();
   SurfaceId const surfaceId = surfaceIdPlaceholder();
   Props::Shared const &props = propsPlaceholder();
   EventEmitter::Shared const &eventEmitter = eventEmitterPlaceholder();
@@ -40,7 +39,6 @@ struct ShadowNodeFragment {
    * Use as default arguments as an indication that the field does not need to
    * be changed.
    */
-  static Tag const tagPlaceholder();
   static SurfaceId const surfaceIdPlaceholder();
   static Props::Shared const &propsPlaceholder();
   static EventEmitter::Shared const &eventEmitterPlaceholder();
@@ -66,7 +64,6 @@ struct ShadowNodeFragment {
     explicit operator ShadowNodeFragment() const;
 
    private:
-    Tag const tag_;
     SurfaceId const surfaceId_;
     Props::Shared const props_;
     EventEmitter::Shared const eventEmitter_;

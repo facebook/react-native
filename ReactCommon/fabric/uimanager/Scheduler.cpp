@@ -174,22 +174,21 @@ void Scheduler::renderTemplateToSurface(
 
     uiManager_->getShadowTreeRegistry().visit(
         surfaceId, [=](const ShadowTree &shadowTree) {
-          return shadowTree.tryCommit([&](RootShadowNode::Shared const
-                                              &oldRootShadowNode) {
-            return std::make_shared<RootShadowNode>(
-                *oldRootShadowNode,
-                ShadowNodeFragment{
-                    /* .tag = */ ShadowNodeFragment::tagPlaceholder(),
-                    /* .surfaceId = */
-                    ShadowNodeFragment::surfaceIdPlaceholder(),
-                    /* .props = */ ShadowNodeFragment::propsPlaceholder(),
-                    /* .eventEmitter = */
-                    ShadowNodeFragment::eventEmitterPlaceholder(),
-                    /* .children = */
-                    std::make_shared<SharedShadowNodeList>(
-                        SharedShadowNodeList{tree}),
-                });
-          });
+          return shadowTree.tryCommit(
+              [&](RootShadowNode::Shared const &oldRootShadowNode) {
+                return std::make_shared<RootShadowNode>(
+                    *oldRootShadowNode,
+                    ShadowNodeFragment{
+                        /* .surfaceId = */
+                        ShadowNodeFragment::surfaceIdPlaceholder(),
+                        /* .props = */ ShadowNodeFragment::propsPlaceholder(),
+                        /* .eventEmitter = */
+                        ShadowNodeFragment::eventEmitterPlaceholder(),
+                        /* .children = */
+                        std::make_shared<SharedShadowNodeList>(
+                            SharedShadowNodeList{tree}),
+                    });
+              });
         });
   } catch (const std::exception &e) {
     LOG(ERROR) << "    >>>> EXCEPTION <<<  rendering uiTemplate in "
