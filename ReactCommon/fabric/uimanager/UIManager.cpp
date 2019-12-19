@@ -36,11 +36,10 @@ SharedShadowNode UIManager::createNode(
       componentDescriptor.createEventEmitter(std::move(eventTarget), tag);
   auto const props = componentDescriptor.cloneProps(nullptr, rawProps);
   auto const state = componentDescriptor.createInitialState(
-      ShadowNodeFragment{surfaceId, props, eventEmitter});
+      ShadowNodeFragment{props, eventEmitter}, surfaceId);
 
   auto shadowNode = componentDescriptor.createShadowNode(
       ShadowNodeFragment{
-          /* .surfaceId = */ surfaceId,
           /* .props = */
           fallbackDescriptor != nullptr &&
                   fallbackDescriptor->getComponentHandle() ==
@@ -85,7 +84,6 @@ SharedShadowNode UIManager::cloneNode(
   auto clonedShadowNode = componentDescriptor.cloneShadowNode(
       *shadowNode,
       {
-          /* .surfaceId = */ ShadowNodeFragment::surfaceIdPlaceholder(),
           /* .props = */
           rawProps ? componentDescriptor.cloneProps(
                          shadowNode->getProps(), *rawProps)
@@ -116,7 +114,6 @@ void UIManager::completeSurface(
       return std::make_shared<RootShadowNode>(
           *oldRootShadowNode,
           ShadowNodeFragment{
-              /* .surfaceId = */ ShadowNodeFragment::surfaceIdPlaceholder(),
               /* .props = */ ShadowNodeFragment::propsPlaceholder(),
               /* .eventEmitter = */
               ShadowNodeFragment::eventEmitterPlaceholder(),
@@ -156,8 +153,6 @@ void UIManager::setNativeProps(
               return oldRootShadowNode->clone(
                   shadowNode, [&](ShadowNode const &oldShadowNode) {
                     return oldShadowNode.clone({
-                        /* .surfaceId = */
-                        ShadowNodeFragment::surfaceIdPlaceholder(),
                         /* .props = */ props,
                     });
                   });
@@ -209,8 +204,6 @@ void UIManager::updateState(
           return oldRootShadowNode->clone(
               shadowNode, [&](ShadowNode const &oldShadowNode) {
                 return oldShadowNode.clone({
-                    /* .surfaceId = */
-                    ShadowNodeFragment::surfaceIdPlaceholder(),
                     /* .props = */ ShadowNodeFragment::propsPlaceholder(),
                     /* .eventEmitter = */
                     ShadowNodeFragment::eventEmitterPlaceholder(),

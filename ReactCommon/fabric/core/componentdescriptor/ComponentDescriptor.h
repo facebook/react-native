@@ -118,7 +118,8 @@ class ComponentDescriptor {
    * State's data which can be constructed based on initial Props.
    */
   virtual State::Shared createInitialState(
-      ShadowNodeFragment const &fragment) const = 0;
+      ShadowNodeFragment const &fragment,
+      SurfaceId const surfaceId) const = 0;
 
   /*
    * Creates a new State object that represents (and contains) a new version of

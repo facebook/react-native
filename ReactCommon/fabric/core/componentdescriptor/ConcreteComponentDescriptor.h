@@ -134,14 +134,15 @@ class ConcreteComponentDescriptor : public ComponentDescriptor {
   }
 
   virtual State::Shared createInitialState(
-      ShadowNodeFragment const &fragment) const override {
+      ShadowNodeFragment const &fragment,
+      SurfaceId const surfaceId) const override {
     if (std::is_same<ConcreteStateData, StateData>::value) {
       // Default case: Returning `null` for nodes that don't use `State`.
       return nullptr;
     }
 
     return std::make_shared<ConcreteState>(
-        ConcreteShadowNode::initialStateData(fragment, *this),
+        ConcreteShadowNode::initialStateData(fragment, surfaceId, *this),
         std::make_shared<StateCoordinator>(eventDispatcher_));
   }
 

@@ -10,10 +10,6 @@
 namespace facebook {
 namespace react {
 
-SurfaceId const ShadowNodeFragment::surfaceIdPlaceholder() {
-  return 0;
-}
-
 Props::Shared const &ShadowNodeFragment::propsPlaceholder() {
   static auto &instance = *new Props::Shared();
   return instance;
@@ -43,8 +39,7 @@ State::Shared const &ShadowNodeFragment::statePlaceholder() {
 using Value = ShadowNodeFragment::Value;
 
 Value::Value(ShadowNodeFragment const &fragment)
-    : surfaceId_(fragment.surfaceId),
-      props_(fragment.props),
+    : props_(fragment.props),
       eventEmitter_(fragment.eventEmitter),
       children_(fragment.children),
       localData_(fragment.localData),
@@ -52,7 +47,7 @@ Value::Value(ShadowNodeFragment const &fragment)
 
 Value::operator ShadowNodeFragment() const {
   return ShadowNodeFragment{
-      surfaceId_, props_, eventEmitter_, children_, localData_, state_};
+      props_, eventEmitter_, children_, localData_, state_};
 }
 
 } // namespace react

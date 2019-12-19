@@ -179,8 +179,6 @@ void Scheduler::renderTemplateToSurface(
                 return std::make_shared<RootShadowNode>(
                     *oldRootShadowNode,
                     ShadowNodeFragment{
-                        /* .surfaceId = */
-                        ShadowNodeFragment::surfaceIdPlaceholder(),
                         /* .props = */ ShadowNodeFragment::propsPlaceholder(),
                         /* .eventEmitter = */
                         ShadowNodeFragment::eventEmitterPlaceholder(),

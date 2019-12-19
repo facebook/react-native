@@ -105,7 +105,6 @@ ShadowTree::ShadowTree(
   rootShadowNode_ = std::static_pointer_cast<const RootShadowNode>(
       rootComponentDescriptor.createShadowNode(
           ShadowNodeFragment{
-              /* .surfaceId = */ surfaceId,
               /* .props = */ props,
               /* .eventEmitter = */ noopEventEmitter,
           },
@@ -211,7 +210,6 @@ void ShadowTree::commitEmptyTree() const {
         return std::make_shared<RootShadowNode>(
             *oldRootShadowNode,
             ShadowNodeFragment{
-                /* .surfaceId = */ ShadowNodeFragment::surfaceIdPlaceholder(),
                 /* .props = */ ShadowNodeFragment::propsPlaceholder(),
                 /* .eventEmitter = */
                 ShadowNodeFragment::eventEmitterPlaceholder(),

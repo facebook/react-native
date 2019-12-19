@@ -50,8 +50,7 @@ StubViewTree stubViewTreeFromShadowNode(ShadowNode const &rootShadowNode) {
       sliceChildShadowNodeViewPairs(rootShadowNode));
 
   auto emptyRootShadowNode = rootShadowNode.clone(
-      ShadowNodeFragment{ShadowNodeFragment::surfaceIdPlaceholder(),
-                         ShadowNodeFragment::propsPlaceholder(),
+      ShadowNodeFragment{ShadowNodeFragment::propsPlaceholder(),
                          ShadowNodeFragment::eventEmitterPlaceholder(),
                          ShadowNode::emptySharedShadowNodeSharedList()});
 
