@@ -74,11 +74,12 @@ if (__DEV__) {
     }
 
     static install(): void {
-      _isInstalled = true;
       if (_isLogBoxEnabled) {
         LogBox.install();
         return;
       }
+      _isInstalled = true;
+
       errorImpl = function(...args) {
         registerError(...args);
       };
