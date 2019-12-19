@@ -20,14 +20,23 @@ export opaque type NativeColorValue = {
   },
 };
 
-export const PlatformColor = (
-  name: string,
-  options?: Object /* flowlint-line unclear-type: off */,
-): ColorValue => {
-  if (options) {
-    return options;
-  }
+export const PlatformColor = (name: string): ColorValue => {
   return {semantic: name};
+};
+
+export type IOSDynamicColorTuple = {
+  light: ColorValue,
+  dark: ColorValue,
+};
+
+export const IOSDynamicColor = (tuple: IOSDynamicColorTuple): ColorValue => {
+  return {dynamic: {light: tuple.light, dark: tuple.dark}};
+};
+
+export const AndroidHypotheticalColor = (
+  object: Object, // flowlint-line unclear-type: off
+): ColorValue => {
+  return null;
 };
 
 export const normalizeColorObject = (

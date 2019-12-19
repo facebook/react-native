@@ -13,6 +13,8 @@
 import * as React from 'react';
 import {Appearance, Platform, PlatformColor} from 'react-native';
 import type {ColorValue} from '../../../Libraries/StyleSheet/StyleSheetTypes';
+import {IOSDynamicColor} from '../../../Libraries/StyleSheet/NativeColorValueTypes';
+import {AndroidHypotheticalColor} from '../../../Libraries/StyleSheet/NativeColorValueTypes';
 
 export type RNTesterTheme = {
   LabelColor: ColorValue,
@@ -92,16 +94,14 @@ export const RNTesterThemeContext: React.Context<RNTesterTheme> = React.createCo
           ? themes.dark
           : themes.light),
         LabelColor: PlatformColor('labelColor'),
-        ToolbarColor: PlatformColor('', {
-          dynamic: {light: 'red', dark: 'blue'},
-        }),
+        ToolbarColor: IOSDynamicColor({light: 'red', dark: 'blue'}),
       }
     : Platform.OS === 'android'
     ? {
         ...(Appearance.getColorScheme() === 'dark'
           ? themes.dark
           : themes.light),
-        ToolbarColor: PlatformColor('', {
+        ToolbarColor: AndroidHypotheticalColor({
           hypothetical_android_color: 'ToolbarColor',
         }),
       }

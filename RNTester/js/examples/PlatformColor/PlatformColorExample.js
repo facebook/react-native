@@ -13,6 +13,7 @@
 const React = require('react');
 const ReactNative = require('react-native');
 const {PlatformColor, Text, View} = ReactNative;
+import {IOSDynamicColor} from '../../../../Libraries/StyleSheet/NativeColorValueTypes';
 
 type State = {};
 
@@ -123,9 +124,7 @@ class DynamicColorsExample extends React.Component<{}, State> {
             style={{
               flex: 0.25,
               alignItems: 'stretch',
-              backgroundColor: PlatformColor('', {
-                dynamic: {light: 'red', dark: 'blue'},
-              }),
+              backgroundColor: IOSDynamicColor({light: 'red', dark: 'blue'}),
             }}
           />
         </View>
