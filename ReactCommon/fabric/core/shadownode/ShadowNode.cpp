@@ -45,9 +45,9 @@ ShadowNode::ShadowNode(
                             : emptySharedShadowNodeSharedList()),
       state_(fragment.state),
       family_(std::make_shared<ShadowNodeFamily const>(
-          fragment.tag,
-          fragment.surfaceId,
-          fragment.eventEmitter,
+          ShadowNodeFamilyFragment{fragment.tag,
+                                   fragment.surfaceId,
+                                   fragment.eventEmitter},
           componentDescriptor)),
       traits_(traits) {
   assert(props_);
