@@ -209,7 +209,7 @@ public class MainReactPackage extends TurboReactPackage {
   public ReactModuleInfoProvider getReactModuleInfoProvider() {
     try {
       Class<?> reactModuleInfoProviderClass =
-          Class.forName("com.facebook.react.MainReactPackage$$ReactModuleInfoProvider");
+          Class.forName("com.facebook.react.shell.MainReactPackage$$ReactModuleInfoProvider");
       return (ReactModuleInfoProvider) reactModuleInfoProviderClass.newInstance();
     } catch (ClassNotFoundException e) {
       // In OSS case, the annotation processor does not run. We fall back on creating this byhand
