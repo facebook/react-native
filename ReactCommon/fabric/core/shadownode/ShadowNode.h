@@ -72,7 +72,7 @@ class ShadowNode : public virtual Sealable,
    */
   ShadowNode(
       ShadowNodeFragment const &fragment,
-      ComponentDescriptor const &componentDescriptor,
+      ShadowNodeFamily::Shared const &family,
       ShadowNodeTraits traits);
 
   /*

@@ -43,10 +43,13 @@ class TestProps : public Props {
  public:
   using Props::Props;
 };
+
 using SharedTestProps = std::shared_ptr<const TestProps>;
 
 class TestShadowNode;
+
 using SharedTestShadowNode = std::shared_ptr<const TestShadowNode>;
+
 class TestShadowNode : public ConcreteShadowNode<TestComponentName, TestProps> {
  public:
   using ConcreteShadowNode::ConcreteShadowNode;

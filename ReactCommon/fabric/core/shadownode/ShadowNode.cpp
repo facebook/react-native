@@ -33,7 +33,7 @@ bool ShadowNode::sameFamily(const ShadowNode &first, const ShadowNode &second) {
 
 ShadowNode::ShadowNode(
     ShadowNodeFragment const &fragment,
-    ComponentDescriptor const &componentDescriptor,
+    ShadowNodeFamily::Shared const &family,
     ShadowNodeTraits traits)
     :
 #if RN_DEBUG_STRING_CONVERTIBLE
@@ -44,11 +44,7 @@ ShadowNode::ShadowNode(
           fragment.children ? fragment.children
                             : emptySharedShadowNodeSharedList()),
       state_(fragment.state),
-      family_(std::make_shared<ShadowNodeFamily const>(
-          ShadowNodeFamilyFragment{fragment.tag,
-                                   fragment.surfaceId,
-                                   fragment.eventEmitter},
-          componentDescriptor)),
+      family_(family),
       traits_(traits) {
   assert(props_);
   assert(children_);
