@@ -15,6 +15,43 @@ import {Animated, StyleSheet, Text, View} from 'react-native';
 
 import type {Node, Element} from 'react';
 
+function AnimateTansformSingleProp() {
+  const [theta] = useState(new Animated.Value(45));
+  const animate = () => {
+    theta.setValue(0);
+    Animated.timing(theta, {
+      toValue: 100,
+      duration: 3000,
+      useNativeDriver: false,
+    }).start(animate);
+  };
+
+  useEffect(() => {
+    animate();
+  });
+
+  return (
+    <View style={styles.flipCardContainer}>
+      <Animated.View
+        style={[
+          styles.box6,
+          {
+            transform: [
+              {
+                rotate: theta.interpolate({
+                  inputRange: [0, 100],
+                  outputRange: ['0deg', '360deg'],
+                }),
+              },
+            ],
+          },
+        ]}>
+        <Text style={styles.flipText}>This text is flipping great.</Text>
+      </Animated.View>
+    </View>
+  );
+}
+
 function Flip() {
   const [theta] = useState(new Animated.Value(45));
   const animate = () => {
@@ -160,6 +197,10 @@ const styles = StyleSheet.create({
   box5Transform: {
     transform: [{translate: [-50, 35]}, {rotate: '50deg'}, {scale: 2}],
   },
+  box6: {
+    backgroundColor: 'salmon',
+    alignSelf: 'center',
+  },
   flipCardContainer: {
     marginVertical: 40,
     flex: 1,
@@ -274,6 +315,13 @@ exports.examples = [
           <View style={[styles.box5, styles.box5Transform]} />
         </View>
       );
+    },
+  },
+  {
+    title: 'Amimate Translate single prop',
+    description: "rotate: '360deg'",
+    render(): Node {
+      return <AnimateTansformSingleProp />;
     },
   },
 ];
