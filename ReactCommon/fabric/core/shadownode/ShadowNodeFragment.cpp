@@ -15,11 +15,6 @@ Props::Shared const &ShadowNodeFragment::propsPlaceholder() {
   return instance;
 }
 
-EventEmitter::Shared const &ShadowNodeFragment::eventEmitterPlaceholder() {
-  static auto &instance = *new EventEmitter::Shared();
-  return instance;
-}
-
 ShadowNode::SharedListOfShared const &
 ShadowNodeFragment::childrenPlaceholder() {
   static auto &instance = *new ShadowNode::SharedListOfShared();
@@ -40,14 +35,12 @@ using Value = ShadowNodeFragment::Value;
 
 Value::Value(ShadowNodeFragment const &fragment)
     : props_(fragment.props),
-      eventEmitter_(fragment.eventEmitter),
       children_(fragment.children),
       localData_(fragment.localData),
       state_(fragment.state) {}
 
 Value::operator ShadowNodeFragment() const {
-  return ShadowNodeFragment{
-      props_, eventEmitter_, children_, localData_, state_};
+  return ShadowNodeFragment{props_, children_, localData_, state_};
 }
 
 } // namespace react

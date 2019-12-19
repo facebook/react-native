@@ -180,8 +180,6 @@ void Scheduler::renderTemplateToSurface(
                     *oldRootShadowNode,
                     ShadowNodeFragment{
                         /* .props = */ ShadowNodeFragment::propsPlaceholder(),
-                        /* .eventEmitter = */
-                        ShadowNodeFragment::eventEmitterPlaceholder(),
                         /* .children = */
                         std::make_shared<SharedShadowNodeList>(
                             SharedShadowNodeList{tree}),

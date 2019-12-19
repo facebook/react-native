@@ -51,7 +51,6 @@ StubViewTree stubViewTreeFromShadowNode(ShadowNode const &rootShadowNode) {
 
   auto emptyRootShadowNode = rootShadowNode.clone(
       ShadowNodeFragment{ShadowNodeFragment::propsPlaceholder(),
-                         ShadowNodeFragment::eventEmitterPlaceholder(),
                          ShadowNode::emptySharedShadowNodeSharedList()});
 
   auto stubViewTree = StubViewTree(ShadowView(*emptyRootShadowNode));

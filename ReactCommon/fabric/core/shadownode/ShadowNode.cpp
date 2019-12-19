@@ -74,9 +74,6 @@ ShadowNode::ShadowNode(
                          : sourceShadowNode.getMostRecentState()),
       family_(sourceShadowNode.family_),
       traits_(sourceShadowNode.traits_) {
-  // `eventEmitter` cannot be changed with cloning.
-  assert(
-      fragment.eventEmitter == ShadowNodeFragment::eventEmitterPlaceholder());
 
   assert(props_);
   assert(children_);

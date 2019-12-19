@@ -106,7 +106,6 @@ ShadowTree::ShadowTree(
       rootComponentDescriptor.createShadowNode(
           ShadowNodeFragment{
               /* .props = */ props,
-              /* .eventEmitter = */ noopEventEmitter,
           },
           {surfaceId, surfaceId, noopEventEmitter}));
 
@@ -211,8 +210,6 @@ void ShadowTree::commitEmptyTree() const {
             *oldRootShadowNode,
             ShadowNodeFragment{
                 /* .props = */ ShadowNodeFragment::propsPlaceholder(),
-                /* .eventEmitter = */
-                ShadowNodeFragment::eventEmitterPlaceholder(),
                 /* .children = */ ShadowNode::emptySharedShadowNodeSharedList(),
             });
       });

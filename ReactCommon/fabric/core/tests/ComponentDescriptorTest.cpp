@@ -26,7 +26,6 @@ TEST(ComponentDescriptorTest, createShadowNode) {
   SharedShadowNode node = descriptor->createShadowNode(
       ShadowNodeFragment{
           /* .props = */ props,
-          /* .eventEmitter = */ descriptor->createEventEmitter(0, 9),
       },
       ShadowNodeFamilyFragment{
           /* .tag = */ 9,
@@ -52,7 +51,6 @@ TEST(ComponentDescriptorTest, cloneShadowNode) {
   SharedShadowNode node = descriptor->createShadowNode(
       ShadowNodeFragment{
           /* .props = */ props,
-          /* .eventEmitter = */ descriptor->createEventEmitter(0, 9),
       },
       ShadowNodeFamilyFragment{
           /* .tag = */ 9,
@@ -78,7 +76,6 @@ TEST(ComponentDescriptorTest, appendChild) {
   SharedShadowNode node1 = descriptor->createShadowNode(
       ShadowNodeFragment{
           /* .props = */ props,
-          /* .eventEmitter = */ descriptor->createEventEmitter(0, 1),
       },
       ShadowNodeFamilyFragment{
           /* .tag = */ 1,
@@ -88,7 +85,6 @@ TEST(ComponentDescriptorTest, appendChild) {
   SharedShadowNode node2 = descriptor->createShadowNode(
       ShadowNodeFragment{
           /* .props = */ props,
-          /* .eventEmitter = */ descriptor->createEventEmitter(0, 2),
       },
       ShadowNodeFamilyFragment{
           /* .tag = */ 2,
@@ -98,7 +94,6 @@ TEST(ComponentDescriptorTest, appendChild) {
   SharedShadowNode node3 = descriptor->createShadowNode(
       ShadowNodeFragment{
           /* .props = */ props,
-          /* .eventEmitter = */ descriptor->createEventEmitter(0, 3),
       },
       ShadowNodeFamilyFragment{
           /* .tag = */ 3,

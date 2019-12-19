@@ -74,7 +74,6 @@ RootShadowNode::Unshared RootShadowNode::clone(
 
     childNode = parentNode.clone({
         ShadowNodeFragment::propsPlaceholder(),
-        ShadowNodeFragment::eventEmitterPlaceholder(),
         std::make_shared<SharedShadowNodeList>(children),
     });
   }

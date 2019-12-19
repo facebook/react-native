@@ -36,7 +36,7 @@ SharedShadowNode UIManager::createNode(
       componentDescriptor.createEventEmitter(std::move(eventTarget), tag);
   auto const props = componentDescriptor.cloneProps(nullptr, rawProps);
   auto const state = componentDescriptor.createInitialState(
-      ShadowNodeFragment{props, eventEmitter}, surfaceId);
+      ShadowNodeFragment{props}, surfaceId);
 
   auto shadowNode = componentDescriptor.createShadowNode(
       ShadowNodeFragment{
@@ -47,7 +47,6 @@ SharedShadowNode UIManager::createNode(
               ? componentDescriptor.cloneProps(
                     props, RawProps(folly::dynamic::object("name", name)))
               : props,
-          /* .eventEmitter = */ eventEmitter,
           /* .children = */ ShadowNodeFragment::childrenPlaceholder(),
           /* .localData = */ ShadowNodeFragment::localDataPlaceholder(),
           /* .state = */ state,
@@ -88,7 +87,6 @@ SharedShadowNode UIManager::cloneNode(
           rawProps ? componentDescriptor.cloneProps(
                          shadowNode->getProps(), *rawProps)
                    : ShadowNodeFragment::propsPlaceholder(),
-          /* .eventEmitter = */ ShadowNodeFragment::eventEmitterPlaceholder(),
           /* .children = */ children,
       });
 
@@ -115,8 +113,6 @@ void UIManager::completeSurface(
           *oldRootShadowNode,
           ShadowNodeFragment{
               /* .props = */ ShadowNodeFragment::propsPlaceholder(),
-              /* .eventEmitter = */
-              ShadowNodeFragment::eventEmitterPlaceholder(),
               /* .children = */ rootChildren,
           });
     });
@@ -205,8 +201,6 @@ void UIManager::updateState(
               shadowNode, [&](ShadowNode const &oldShadowNode) {
                 return oldShadowNode.clone({
                     /* .props = */ ShadowNodeFragment::propsPlaceholder(),
-                    /* .eventEmitter = */
-                    ShadowNodeFragment::eventEmitterPlaceholder(),
                     /* .children = */ ShadowNodeFragment::childrenPlaceholder(),
                     /* .localData = */
                     ShadowNodeFragment::localDataPlaceholder(),

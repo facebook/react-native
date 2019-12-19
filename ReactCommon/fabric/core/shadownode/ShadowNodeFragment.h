@@ -28,7 +28,6 @@ namespace react {
  */
 struct ShadowNodeFragment {
   Props::Shared const &props = propsPlaceholder();
-  EventEmitter::Shared const &eventEmitter = eventEmitterPlaceholder();
   ShadowNode::SharedListOfShared const &children = childrenPlaceholder();
   LocalData::Shared const &localData = localDataPlaceholder();
   State::Shared const &state = statePlaceholder();
@@ -39,7 +38,6 @@ struct ShadowNodeFragment {
    * be changed.
    */
   static Props::Shared const &propsPlaceholder();
-  static EventEmitter::Shared const &eventEmitterPlaceholder();
   static ShadowNode::SharedListOfShared const &childrenPlaceholder();
   static LocalData::Shared const &localDataPlaceholder();
   static State::Shared const &statePlaceholder();
@@ -63,7 +61,6 @@ struct ShadowNodeFragment {
 
    private:
     Props::Shared const props_;
-    EventEmitter::Shared const eventEmitter_;
     ShadowNode::SharedListOfShared const children_;
     LocalData::Shared const localData_;
     State::Shared const state_;

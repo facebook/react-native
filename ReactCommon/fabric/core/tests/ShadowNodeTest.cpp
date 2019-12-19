@@ -28,7 +28,6 @@ TEST(ShadowNodeTest, handleShadowNodeCreation) {
   auto node = std::make_shared<TestShadowNode>(
       ShadowNodeFragment{
           /* .props = */ std::make_shared<const TestProps>(),
-          /* .eventEmitter = */ ShadowNodeFragment::eventEmitterPlaceholder(),
           /* .children = */ ShadowNode::emptySharedShadowNodeSharedList(),
       },
       family,
@@ -59,7 +58,6 @@ TEST(ShadowNodeTest, handleShadowNodeSimpleCloning) {
   auto node = std::make_shared<TestShadowNode>(
       ShadowNodeFragment{
           /* .props = */ std::make_shared<const TestProps>(),
-          /* .eventEmitter = */ ShadowNodeFragment::eventEmitterPlaceholder(),
           /* .children = */ ShadowNode::emptySharedShadowNodeSharedList(),
       },
       family,
@@ -86,7 +84,6 @@ TEST(ShadowNodeTest, handleShadowNodeMutation) {
   auto node1 = std::make_shared<TestShadowNode>(
       ShadowNodeFragment{
           /* .props = */ std::make_shared<const TestProps>(),
-          /* .eventEmitter = */ ShadowNodeFragment::eventEmitterPlaceholder(),
           /* .children = */ ShadowNode::emptySharedShadowNodeSharedList(),
       },
       family1,
@@ -101,7 +98,6 @@ TEST(ShadowNodeTest, handleShadowNodeMutation) {
   auto node2 = std::make_shared<TestShadowNode>(
       ShadowNodeFragment{
           /* .props = */ std::make_shared<const TestProps>(),
-          /* .eventEmitter = */ ShadowNodeFragment::eventEmitterPlaceholder(),
           /* .children = */ ShadowNode::emptySharedShadowNodeSharedList(),
       },
       family2,
@@ -116,7 +112,6 @@ TEST(ShadowNodeTest, handleShadowNodeMutation) {
   auto node3 = std::make_shared<TestShadowNode>(
       ShadowNodeFragment{
           /* .props = */ std::make_shared<const TestProps>(),
-          /* .eventEmitter = */ ShadowNodeFragment::eventEmitterPlaceholder(),
           /* .children = */ ShadowNode::emptySharedShadowNodeSharedList(),
       },
       family3,
@@ -164,7 +159,6 @@ TEST(ShadowNodeTest, handleCloneFunction) {
   auto firstNode = std::make_shared<TestShadowNode>(
       ShadowNodeFragment{
           /* .props = */ std::make_shared<const TestProps>(),
-          /* .eventEmitter = */ ShadowNodeFragment::eventEmitterPlaceholder(),
           /* .children = */ ShadowNode::emptySharedShadowNodeSharedList(),
       },
       family,
@@ -207,7 +201,6 @@ TEST(ShadowNodeTest, handleLocalData) {
   auto firstNode = std::make_shared<TestShadowNode>(
       ShadowNodeFragment{
           /* .props = */ props,
-          /* .eventEmitter = */ ShadowNodeFragment::eventEmitterPlaceholder(),
           /* .children = */ ShadowNode::emptySharedShadowNodeSharedList(),
       },
       family,
@@ -215,7 +208,6 @@ TEST(ShadowNodeTest, handleLocalData) {
   auto secondNode = std::make_shared<TestShadowNode>(
       ShadowNodeFragment{
           /* .props = */ props,
-          /* .eventEmitter = */ ShadowNodeFragment::eventEmitterPlaceholder(),
           /* .children = */ ShadowNode::emptySharedShadowNodeSharedList(),
       },
       family,
@@ -223,7 +215,6 @@ TEST(ShadowNodeTest, handleLocalData) {
   auto thirdNode = std::make_shared<TestShadowNode>(
       ShadowNodeFragment{
           /* .props = */ props,
-          /* .eventEmitter = */ ShadowNodeFragment::eventEmitterPlaceholder(),
           /* .children = */ ShadowNode::emptySharedShadowNodeSharedList(),
       },
       family,
@@ -272,7 +263,6 @@ TEST(ShadowNodeTest, handleBacktracking) {
   auto nodeAA = std::make_shared<TestShadowNode>(
       ShadowNodeFragment{
           /* .props = */ props,
-          /* .eventEmitter = */ ShadowNodeFragment::eventEmitterPlaceholder(),
           /* .children = */ ShadowNode::emptySharedShadowNodeSharedList(),
       },
       familyAA,
@@ -288,7 +278,6 @@ TEST(ShadowNodeTest, handleBacktracking) {
   auto nodeABA = std::make_shared<TestShadowNode>(
       ShadowNodeFragment{
           /* .props = */ props,
-          /* .eventEmitter = */ ShadowNodeFragment::eventEmitterPlaceholder(),
           /* .children = */ ShadowNode::emptySharedShadowNodeSharedList(),
       },
       familyABA,
@@ -304,7 +293,6 @@ TEST(ShadowNodeTest, handleBacktracking) {
   auto nodeABB = std::make_shared<TestShadowNode>(
       ShadowNodeFragment{
           /* .props = */ props,
-          /* .eventEmitter = */ ShadowNodeFragment::eventEmitterPlaceholder(),
           /* .children = */ ShadowNode::emptySharedShadowNodeSharedList(),
       },
       familyABB,
@@ -320,7 +308,6 @@ TEST(ShadowNodeTest, handleBacktracking) {
   auto nodeABC = std::make_shared<TestShadowNode>(
       ShadowNodeFragment{
           /* .props = */ props,
-          /* .eventEmitter = */ ShadowNodeFragment::eventEmitterPlaceholder(),
           /* .children = */ ShadowNode::emptySharedShadowNodeSharedList(),
       },
       familyABC,
@@ -339,7 +326,6 @@ TEST(ShadowNodeTest, handleBacktracking) {
   auto nodeAB = std::make_shared<TestShadowNode>(
       ShadowNodeFragment{
           /* .props = */ props,
-          /* .eventEmitter = */ ShadowNodeFragment::eventEmitterPlaceholder(),
           /* .children = */ nodeABChildren,
       },
       familyAB,
@@ -355,7 +341,6 @@ TEST(ShadowNodeTest, handleBacktracking) {
   auto nodeAC = std::make_shared<TestShadowNode>(
       ShadowNodeFragment{
           /* .props = */ props,
-          /* .eventEmitter = */ ShadowNodeFragment::eventEmitterPlaceholder(),
           /* .children = */ ShadowNode::emptySharedShadowNodeSharedList(),
       },
       familyAC,
@@ -374,7 +359,6 @@ TEST(ShadowNodeTest, handleBacktracking) {
   auto nodeA = std::make_shared<TestShadowNode>(
       ShadowNodeFragment{
           /* .props = */ props,
-          /* .eventEmitter = */ ShadowNodeFragment::eventEmitterPlaceholder(),
           /* .children = */ nodeAChildren,
       },
       familyA,
@@ -390,7 +374,6 @@ TEST(ShadowNodeTest, handleBacktracking) {
   auto nodeZ = std::make_shared<TestShadowNode>(
       ShadowNodeFragment{
           /* .props = */ props,
-          /* .eventEmitter = */ ShadowNodeFragment::eventEmitterPlaceholder(),
           /* .children = */ ShadowNode::emptySharedShadowNodeSharedList(),
       },
       familyZ,
