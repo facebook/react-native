@@ -72,11 +72,6 @@ using namespace facebook::react;
   return self;
 }
 
-- (RCTComponentViewFactory *)componentViewFactory
-{
-  return _mountingManager.componentViewRegistry.componentViewFactory;
-}
-
 - (ContextContainer::Shared)contextContainer
 {
   std::lock_guard<std::mutex> lock(_schedulerMutex);
@@ -210,12 +205,12 @@ using namespace facebook::react;
 
 - (RCTScheduler *)_createScheduler
 {
-  auto componentRegistryFactory = [factory = wrapManagedObject(self.componentViewFactory)](
-                                      EventDispatcher::Weak const &eventDispatcher,
-                                      ContextContainer::Shared const &contextContainer) {
-    return [(RCTComponentViewFactory *)unwrapManagedObject(factory)
-        createComponentDescriptorRegistryWithParameters:{eventDispatcher, contextContainer}];
-  };
+  auto componentRegistryFactory =
+      [factory = wrapManagedObject(_mountingManager.componentViewRegistry.componentViewFactory)](
+          EventDispatcher::Weak const &eventDispatcher, ContextContainer::Shared const &contextContainer) {
+        return [(RCTComponentViewFactory *)unwrapManagedObject(factory)
+            createComponentDescriptorRegistryWithParameters:{eventDispatcher, contextContainer}];
+      };
 
   auto runtimeExecutor = _runtimeExecutor;
 

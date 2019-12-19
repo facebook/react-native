@@ -14,15 +14,11 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@protocol RCTComponentViewFactoryDelegate <NSObject>
-
 /**
  * Given a component name, return its actual class. If component with doesn't exist, nil is returned.
  * Can be called on any thread.
  */
-- (Class<RCTComponentViewProtocol>)componentViewClassWithName:(facebook::react::ComponentName)name;
-
-@end
+extern "C" Class<RCTComponentViewProtocol> RCTComponentViewClassWithName(const char *componentName);
 
 /**
  * Registry of supported component view classes that can instantiate
@@ -51,8 +47,6 @@ NS_ASSUME_NONNULL_BEGIN
  */
 - (facebook::react::ComponentDescriptorRegistry::Shared)createComponentDescriptorRegistryWithParameters:
     (facebook::react::ComponentDescriptorParameters)parameters;
-
-@property (atomic, weak, nullable) id<RCTComponentViewFactoryDelegate> delegate;
 
 @end
 
