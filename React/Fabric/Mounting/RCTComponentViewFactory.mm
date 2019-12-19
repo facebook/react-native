@@ -9,6 +9,7 @@
 
 #import <React/RCTAssert.h>
 #import <React/RCTConversions.h>
+#import <glog/logging.h>
 
 #import <better/map.h>
 #import <better/mutex.h>
@@ -43,8 +44,14 @@ using namespace facebook::react;
 
   [componentViewFactory registerComponentViewClass:[RCTRootComponentView class]];
   [componentViewFactory registerComponentViewClass:[RCTViewComponentView class]];
-  [componentViewFactory registerComponentViewClass:[RCTImageComponentView class]];
   [componentViewFactory registerComponentViewClass:[RCTParagraphComponentView class]];
+
+  Class<RCTComponentViewProtocol> imageClass = RCTComponentViewClassWithName("Image");
+  if (imageClass) {
+    [componentViewFactory registerComponentViewClass:imageClass];
+  } else {
+    LOG(FATAL) << "Image component not found";
+  }
 
   auto providerRegistry = &componentViewFactory->_providerRegistry;
 

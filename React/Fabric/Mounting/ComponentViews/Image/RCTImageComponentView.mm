@@ -19,6 +19,7 @@
 #import <react/imagemanager/RCTImagePrimitivesConversions.h>
 
 #import "RCTConversions.h"
+#import "RCTFabricComponentsPlugins.h"
 
 @interface RCTImageComponentView () <RCTImageResponseDelegate>
 @end
@@ -195,3 +196,8 @@
 }
 
 @end
+
+Class<RCTComponentViewProtocol> RCTImageCls(void)
+{
+  return RCTImageComponentView.class;
+}
