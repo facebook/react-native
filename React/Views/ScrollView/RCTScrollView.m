@@ -829,10 +829,12 @@ RCT_SCROLL_EVENT_HANDLER(scrollViewDidScrollToTop, onScrollToTop)
       return NO;
     }
   }
-  if(self.inverted) {
+
+  if (self.inverted) {
     [self scrollToEnd:YES];
     return NO;
   }
+
   return YES;
 }
 
