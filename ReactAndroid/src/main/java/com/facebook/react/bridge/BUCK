@@ -11,6 +11,7 @@ INTERFACES = [
     "ReadableArray.java",
     "ReadableType.java",
     "NativeArrayInterface.java",
+    "LifecycleEventListener.java",
 ]
 
 rn_android_library(
