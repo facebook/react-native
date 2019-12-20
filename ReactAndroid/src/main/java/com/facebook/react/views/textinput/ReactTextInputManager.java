@@ -733,7 +733,7 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
       flagsToSet = InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD;
     } else {
       // This prevents KEYBOARD_TYPE_FLAGS from being set when the keyboardType is
-      //  default or null. Setting of this flag breaks autoCapitalize prop.
+      // default, unsupported or null. Setting of this flag breaks the autoCapitalize functionality.
       return;
     }
     updateStagedInputTypeFlag(view, KEYBOARD_TYPE_FLAGS, flagsToSet);
