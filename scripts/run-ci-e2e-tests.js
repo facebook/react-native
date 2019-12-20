@@ -242,7 +242,7 @@ try {
                 '--report',
                 'junit',
                 '--output',
-                `"~/reports/junit/${iosTestType}-e2e/results.xml"`,
+                `"~/react-native/reports/junit/${iosTestType}-e2e/results.xml"`,
               ].join(' ') +
               ' && exit ${PIPESTATUS[0]}',
           ).code;

@@ -53,7 +53,7 @@ commands:
     steps:
       - run:
           name: Initial Setup
-          command: mkdir -p ~/reports/{buck,build,junit,outputs}
+          command: mkdir -p ./reports/{buck,build,junit,outputs}
 
   run_yarn:
     steps:
@@ -249,7 +249,7 @@ jobs:
 
       - run:
           name: Lint code
-          command: scripts/circleci/exec_swallow_error.sh yarn lint --format junit -o ~/reports/junit/eslint/results.xml
+          command: scripts/circleci/exec_swallow_error.sh yarn lint --format junit -o ./reports/junit/eslint/results.xml
           when: always
 
       - run:
@@ -275,7 +275,7 @@ jobs:
           when: always
 
       - store_test_results:
-          path: ~/reports/junit
+          path: ./reports/junit
 
   # -------------------------
   #   JOBS: Test JavaScript
@@ -298,7 +298,7 @@ jobs:
           command: node ./scripts/run-ci-javascript-tests.js --maxWorkers 2
 
       - store_test_results:
-          path: ~/reports/junit
+          path: ./reports/junit
   # -------------------------
   #     JOBS: Test iOS
   # -------------------------
@@ -310,7 +310,7 @@ jobs:
         type: boolean
         default: false
     environment:
-      - REPORTS_DIR: "./reports"
+      - REPORTS_DIR: "./reports/junit"
     steps:
       - restore_cache_checkout:
           checkout_type: ios
@@ -350,7 +350,7 @@ jobs:
 
       - run: yarn test-ios
       - store_test_results:
-          path: ~/reports/junit
+          path: ./reports/junit
 
   # Runs iOS end-to-end tests
   test_ios_e2e:
@@ -415,6 +415,9 @@ jobs:
             - ~/.cocoapods/repos
           key: v1-cocoapods-{{ checksum "template/ios/Podfile" }}
 
+      - store_test_results:
+          path: ./reports/junit
+
   test_js_e2e:
     executor: node8
     steps:
@@ -429,7 +432,7 @@ jobs:
           command: node ./scripts/run-ci-e2e-tests.js --js --retries 3
 
       - store_test_results:
-          path: ~/reports/junit
+          path: ./reports/junit
 
   # -------------------------
   #    JOBS: Test Android
@@ -494,7 +497,7 @@ jobs:
       # Test Suite
       - run:
           name: Run Unit Tests
-          command: buck test ReactAndroid/src/test/... --config build.threads=$BUILD_THREADS --xml ~/reports/buck/all-results-raw.xml
+          command: buck test ReactAndroid/src/test/... --config build.threads=$BUILD_THREADS --xml ./reports/buck/all-results-raw.xml
 
       - run:
           name: Run Instrumentation Tests
@@ -512,16 +515,16 @@ jobs:
       - run:
           name: Collect Test Results
           command: |
-            find . -type f -regex ".*/build/test-results/debug/.*xml" -exec cp {} ~/reports/build/ \;
-            find . -type f -regex ".*/outputs/androidTest-results/connected/.*xml" -exec cp {} ~/reports/outputs/ \;
-            find . -type f -regex ".*/buck-out/gen/ReactAndroid/src/test/.*/.*xml" -exec cp {} ~/reports/buck/ \;
+            find . -type f -regex ".*/build/test-results/debug/.*xml" -exec cp {} ./reports/build/ \;
+            find . -type f -regex ".*/outputs/androidTest-results/connected/.*xml" -exec cp {} ./reports/outputs/ \;
+            find . -type f -regex ".*/buck-out/gen/ReactAndroid/src/test/.*/.*xml" -exec cp {} ./reports/buck/ \;
             if [ -f ~/react-native/reports/buck/all-results-raw.xml ]; then
-              ./tooling/junit/buck_to_junit.sh ~/react-native/reports/buck/all-results-raw.xml ~/react-native/reports/junit/all-results-junit.xml
+              ./tooling/junit/buck_to_junit.sh ~/react-native/reports/buck/all-results-raw.xml ~/react-native/reports/junit/results.xml
             fi
           when: always
 
       - store_test_results:
-          path: ~/reports/junit
+          path: ./reports/junit
 
   # -------------------------
   #    JOBS: Test Docker
