@@ -12,7 +12,7 @@
 
 const React = require('react');
 const ReactNative = require('react-native');
-const {PlatformColor, Text, View} = ReactNative;
+const {PlatformColor, StyleSheet, Text, View} = ReactNative;
 import {IOSDynamicColor} from '../../../../Libraries/StyleSheet/NativeColorValueTypes';
 
 type State = {};
@@ -75,19 +75,11 @@ class SemanticColorsExample extends React.Component<{}, State> {
     let table = [];
     for (let color of colors) {
       table.push(
-        <View style={{flex: 0.75, flexDirection: 'row'}} key={color}>
-          <Text
-            style={{
-              flex: 1,
-              alignItems: 'stretch',
-              color: PlatformColor('labelColor'),
-            }}>
-            {color}
-          </Text>
+        <View style={styles.row} key={color}>
+          <Text style={styles.labelCell}>{color}</Text>
           <View
             style={{
-              flex: 0.25,
-              alignItems: 'stretch',
+              ...styles.colorCell,
               backgroundColor: PlatformColor(`${color}`),
             }}
           />
@@ -98,11 +90,7 @@ class SemanticColorsExample extends React.Component<{}, State> {
   }
 
   render() {
-    return (
-      <View style={{flex: 1, flexDirection: 'column'}}>
-        {this.createTable()}
-      </View>
-    );
+    return <View style={styles.column}>{this.createTable()}</View>;
   }
 }
 
@@ -110,20 +98,14 @@ class FallbackColorsExample extends React.Component<{}, State> {
   state: State;
   render() {
     return (
-      <View style={{flex: 1, flexDirection: 'column'}}>
-        <View style={{flex: 0.75, flexDirection: 'row'}}>
-          <Text
-            style={{
-              flex: 1,
-              alignItems: 'stretch',
-              color: PlatformColor('labelColor'),
-            }}>
+      <View style={styles.column}>
+        <View style={styles.row}>
+          <Text style={styles.labelCell}>
             First choice is 'bogus' so falls back to 'systemGreenColor'
           </Text>
           <View
             style={{
-              flex: 0.25,
-              alignItems: 'stretch',
+              ...styles.colorCell,
               backgroundColor: PlatformColor('bogus', 'systemGreenColor'),
             }}
           />
@@ -137,37 +119,25 @@ class DynamicColorsExample extends React.Component<{}, State> {
   state: State;
   render() {
     return (
-      <View style={{flex: 1, flexDirection: 'column'}}>
-        <View style={{flex: 0.75, flexDirection: 'row'}}>
-          <Text
-            style={{
-              flex: 1,
-              alignItems: 'stretch',
-              color: PlatformColor('labelColor'),
-            }}>
+      <View style={styles.column}>
+        <View style={styles.row}>
+          <Text style={styles.labelCell}>
             'red' or 'blue' depending on Light or Dark theme.
           </Text>
           <View
             style={{
-              flex: 0.25,
-              alignItems: 'stretch',
+              ...styles.colorCell,
               backgroundColor: IOSDynamicColor({light: 'red', dark: 'blue'}),
             }}
           />
         </View>
-        <View style={{flex: 0.75, flexDirection: 'row'}}>
-          <Text
-            style={{
-              flex: 1,
-              alignItems: 'stretch',
-              color: PlatformColor('labelColor'),
-            }}>
+        <View style={styles.row}>
+          <Text style={styles.labelCell}>
             'foo' with blue fallback or 'bar' with red fallback.
           </Text>
           <View
             style={{
-              flex: 0.25,
-              alignItems: 'stretch',
+              ...styles.colorCell,
               backgroundColor: IOSDynamicColor({
                 light: PlatformColor('foo', 'systemBlueColor'),
                 dark: PlatformColor('bar', 'systemRedColor'),
@@ -179,6 +149,17 @@ class DynamicColorsExample extends React.Component<{}, State> {
     );
   }
 }
+
+const styles = StyleSheet.create({
+  column: {flex: 1, flexDirection: 'column'},
+  row: {flex: 0.75, flexDirection: 'row'},
+  labelCell: {
+    flex: 1,
+    alignItems: 'stretch',
+    color: PlatformColor('labelColor'),
+  },
+  colorCell: {flex: 0.25, alignItems: 'stretch'},
+});
 
 exports.title = 'PlatformColor';
 exports.description =
