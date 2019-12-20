@@ -159,8 +159,8 @@ const HMRClient: HMRClientNativeInterface = {
     isEnabled: boolean,
   ) {
     invariant(platform, 'Missing required parameter `platform`');
-    invariant(bundleEntry, 'Missing required paramenter `bundleEntry`');
-    invariant(host, 'Missing required paramenter `host`');
+    invariant(bundleEntry, 'Missing required parameter `bundleEntry`');
+    invariant(host, 'Missing required parameter `host`');
     invariant(!hmrClient, 'Cannot initialize hmrClient twice');
 
     // Moving to top gives errors due to NativeModules not being initialized
