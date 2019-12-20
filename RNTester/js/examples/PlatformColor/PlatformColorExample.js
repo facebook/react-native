@@ -118,13 +118,40 @@ class DynamicColorsExample extends React.Component<{}, State> {
               alignItems: 'stretch',
               color: PlatformColor('labelColor'),
             }}>
-            Red or Blue depending on Light or Dark theme
+            'red' or 'blue' depending on Light or Dark theme
           </Text>
           <View
             style={{
               flex: 0.25,
               alignItems: 'stretch',
               backgroundColor: IOSDynamicColor({light: 'red', dark: 'blue'}),
+            }}
+          />
+        </View>
+      </View>
+    );
+  }
+}
+
+class FallbackColorsExample extends React.Component<{}, State> {
+  state: State;
+  render() {
+    return (
+      <View style={{flex: 1, flexDirection: 'column'}}>
+        <View style={{flex: 0.75, flexDirection: 'row'}}>
+          <Text
+            style={{
+              flex: 1,
+              alignItems: 'stretch',
+              color: PlatformColor('labelColor'),
+            }}>
+            First choice is 'bogus' so falls back to 'systemGreenColor'
+          </Text>
+          <View
+            style={{
+              flex: 0.25,
+              alignItems: 'stretch',
+              backgroundColor: PlatformColor('booger', 'systemGreenColor'),
             }}
           />
         </View>
@@ -147,6 +174,12 @@ exports.examples = [
     title: 'Dynamic Colors',
     render: function(): React.Element<any> {
       return <DynamicColorsExample />;
+    },
+  },
+  {
+    title: 'Fallback Colors',
+    render: function(): React.Element<any> {
+      return <FallbackColorsExample />;
     },
   },
 ];

@@ -13,15 +13,15 @@
 import type {ColorValue, ProcessedColorValue} from './ColorValueTypes';
 
 export opaque type NativeColorValue = {
-  semantic?: string,
+  semantic?: Array<string>,
   dynamic?: {
     light: ?(ColorValue | ProcessedColorValue),
     dark: ?(ColorValue | ProcessedColorValue),
   },
 };
 
-export const PlatformColor = (name: string): ColorValue => {
-  return {semantic: name};
+export const PlatformColor = (...names: Array<string>): ColorValue => {
+  return {semantic: names};
 };
 
 export type IOSDynamicColorTuple = {

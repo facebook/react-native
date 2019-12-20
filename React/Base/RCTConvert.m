@@ -733,12 +733,25 @@ static NSString *RCTSemanticColorNames()
     NSDictionary *dictionary = json;
     id value = nil;
     if ((value = [dictionary objectForKey:@"semantic"])) {
-      NSString *semanticName = value;
-      UIColor *color = RCTColorFromSemanticColorName(semanticName);
-      if (color == nil) {
-        RCTLogConvertError(json, [@"a UIColor.  Expected one of the following values: " stringByAppendingString:RCTSemanticColorNames()]);
+      if ([value isKindOfClass:[NSString class]]) {
+        NSString *semanticName = value;
+        UIColor *color = RCTColorFromSemanticColorName(semanticName);
+        if (color == nil) {
+          RCTLogConvertError(json, [@"a UIColor.  Expected one of the following values: " stringByAppendingString:RCTSemanticColorNames()]);
+        }
+        return color;
+      } else if ([value isKindOfClass:[NSArray class]]) {
+        for (id name in value) {
+          UIColor *color = RCTColorFromSemanticColorName(name);
+          if (color != nil) {
+            return color;
+          }
+        }
+        RCTLogConvertError(json, [@"a UIColor.  None of the names in the array were one of the following values: " stringByAppendingString:RCTSemanticColorNames()]);
+        return nil;
       }
-      return color;
+      RCTLogConvertError(json, @"a UIColor.  Expected either a single name or an array of names but got something else.");
+      return nil;
     } else if ((value = [dictionary objectForKey:@"dynamic"])) {
       NSDictionary *appearances = value;
       id light = [appearances objectForKey:@"light"];
