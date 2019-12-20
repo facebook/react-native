@@ -106,33 +106,6 @@ class SemanticColorsExample extends React.Component<{}, State> {
   }
 }
 
-class DynamicColorsExample extends React.Component<{}, State> {
-  state: State;
-  render() {
-    return (
-      <View style={{flex: 1, flexDirection: 'column'}}>
-        <View style={{flex: 0.75, flexDirection: 'row'}}>
-          <Text
-            style={{
-              flex: 1,
-              alignItems: 'stretch',
-              color: PlatformColor('labelColor'),
-            }}>
-            'red' or 'blue' depending on Light or Dark theme
-          </Text>
-          <View
-            style={{
-              flex: 0.25,
-              alignItems: 'stretch',
-              backgroundColor: IOSDynamicColor({light: 'red', dark: 'blue'}),
-            }}
-          />
-        </View>
-      </View>
-    );
-  }
-}
-
 class FallbackColorsExample extends React.Component<{}, State> {
   state: State;
   render() {
@@ -151,7 +124,54 @@ class FallbackColorsExample extends React.Component<{}, State> {
             style={{
               flex: 0.25,
               alignItems: 'stretch',
-              backgroundColor: PlatformColor('booger', 'systemGreenColor'),
+              backgroundColor: PlatformColor('bogus', 'systemGreenColor'),
+            }}
+          />
+        </View>
+      </View>
+    );
+  }
+}
+
+class DynamicColorsExample extends React.Component<{}, State> {
+  state: State;
+  render() {
+    return (
+      <View style={{flex: 1, flexDirection: 'column'}}>
+        <View style={{flex: 0.75, flexDirection: 'row'}}>
+          <Text
+            style={{
+              flex: 1,
+              alignItems: 'stretch',
+              color: PlatformColor('labelColor'),
+            }}>
+            'red' or 'blue' depending on Light or Dark theme.
+          </Text>
+          <View
+            style={{
+              flex: 0.25,
+              alignItems: 'stretch',
+              backgroundColor: IOSDynamicColor({light: 'red', dark: 'blue'}),
+            }}
+          />
+        </View>
+        <View style={{flex: 0.75, flexDirection: 'row'}}>
+          <Text
+            style={{
+              flex: 1,
+              alignItems: 'stretch',
+              color: PlatformColor('labelColor'),
+            }}>
+            'foo' with blue fallback or 'bar' with red fallback.
+          </Text>
+          <View
+            style={{
+              flex: 0.25,
+              alignItems: 'stretch',
+              backgroundColor: IOSDynamicColor({
+                light: PlatformColor('foo', 'systemBlueColor'),
+                dark: PlatformColor('bar', 'systemRedColor'),
+              }),
             }}
           />
         </View>
@@ -171,15 +191,15 @@ exports.examples = [
     },
   },
   {
-    title: 'Dynamic Colors',
-    render: function(): React.Element<any> {
-      return <DynamicColorsExample />;
-    },
-  },
-  {
     title: 'Fallback Colors',
     render: function(): React.Element<any> {
       return <FallbackColorsExample />;
+    },
+  },
+  {
+    title: 'Dynamic Colors',
+    render: function(): React.Element<any> {
+      return <DynamicColorsExample />;
     },
   },
 ];
