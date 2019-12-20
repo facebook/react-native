@@ -229,27 +229,25 @@ void ShadowNode::setMounted(bool mounted) const {
 
 AncestorList ShadowNode::getAncestors(
     ShadowNode const &ancestorShadowNode) const {
-  auto ancestors = AncestorList{};
   auto families = better::small_vector<ShadowNodeFamily const *, 64>{};
   auto ancestorFamily = ancestorShadowNode.family_.get();
-  auto descendantFamily = family_.get();
 
-  auto family = descendantFamily;
+  auto family = family_.get();
   while (family && family != ancestorFamily) {
     families.push_back(family);
     family = family->parent_.lock().get();
   }
 
   if (family != ancestorFamily) {
-    ancestors.clear();
-    return ancestors;
+    return {};
   }
 
+  auto ancestors = AncestorList{};
   auto parentNode = &ancestorShadowNode;
   for (auto it = families.rbegin(); it != families.rend(); it++) {
     auto childFamily = *it;
-    auto found = bool{false};
-    auto childIndex = int{0};
+    auto found = false;
+    auto childIndex = 0;
     for (const auto &childNode : *parentNode->children_) {
       if (childNode->family_.get() == childFamily) {
         ancestors.push_back({*parentNode, childIndex});
