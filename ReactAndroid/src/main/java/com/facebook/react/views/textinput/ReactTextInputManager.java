@@ -67,9 +67,6 @@ import com.facebook.yoga.YogaConstants;
 import java.lang.reflect.Field;
 import java.util.LinkedList;
 import java.util.Map;
-import java.util.Arrays;
-import java.util.ArrayList;
-import java.util.List;
 
 /** Manages instances of TextInput. */
 @ReactModule(name = ReactTextInputManager.REACT_CLASS)
@@ -106,14 +103,6 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
   private static final String KEYBOARD_TYPE_NUMBER_PAD = "number-pad";
   private static final String KEYBOARD_TYPE_PHONE_PAD = "phone-pad";
   private static final String KEYBOARD_TYPE_VISIBLE_PASSWORD = "visible-password";
-  private static final List<String> KEYBOARD_TYPES = new ArrayList<>(Arrays.asList(
-    KEYBOARD_TYPE_EMAIL_ADDRESS,
-    KEYBOARD_TYPE_NUMERIC,
-    KEYBOARD_TYPE_DECIMAL_PAD,
-    KEYBOARD_TYPE_NUMBER_PAD,
-    KEYBOARD_TYPE_PHONE_PAD,
-    KEYBOARD_TYPE_VISIBLE_PASSWORD
-  ));
   private static final InputFilter[] EMPTY_FILTERS = new InputFilter[0];
   private static final int UNSET = -1;
 
@@ -728,9 +717,7 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
   @ReactProp(name = "keyboardType")
   public void setKeyboardType(ReactEditText view, @Nullable String keyboardType) {
     int flagsToSet = InputType.TYPE_CLASS_TEXT;
-    if (keyboardType == null || !KEYBOARD_TYPES.contains(keyboardType)) {
-      return;
-    } else if (KEYBOARD_TYPE_NUMERIC.equalsIgnoreCase(keyboardType)) {
+    if (KEYBOARD_TYPE_NUMERIC.equalsIgnoreCase(keyboardType)) {
       flagsToSet = INPUT_TYPE_KEYBOARD_NUMBERED;
     } else if (KEYBOARD_TYPE_NUMBER_PAD.equalsIgnoreCase(keyboardType)) {
       flagsToSet = INPUT_TYPE_KEYBOARD_NUMBER_PAD;
@@ -744,6 +731,10 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
       // This will supercede secureTextEntry={false}. If it doesn't, due to the way
       //  the flags work out, the underlying field will end up a URI-type field.
       flagsToSet = InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD;
+    } else {
+      // This prevents KEYBOARD_TYPE_FLAGS from being set when the keyboardType is
+      //  default or null. Setting of this flag breaks autoCapitalize prop.
+      return;
     }
     updateStagedInputTypeFlag(view, KEYBOARD_TYPE_FLAGS, flagsToSet);
     checkPasswordType(view);
