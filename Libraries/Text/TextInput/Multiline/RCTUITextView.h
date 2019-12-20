@@ -7,7 +7,7 @@
 
 #import <React/RCTUIKit.h> // TODO(macOS ISS#2323203)
 
-#import <RCTText/RCTTextUIKit.h> // TODO(macOS ISS#2323203)
+#import "RCTTextUIKit.h" // TODO(macOS ISS#2323203)
 
 #import "RCTBackedTextInputViewProtocol.h"
 

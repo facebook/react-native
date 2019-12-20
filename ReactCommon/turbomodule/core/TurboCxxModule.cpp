@@ -10,7 +10,7 @@
 #include <vector>
 
 #include <jsi/JSIDynamic.h>
-#include <turbomodule/core/TurboModuleUtils.h>
+#include <jsireact/TurboModuleUtils.h>
 
 using namespace facebook;
 using namespace facebook::xplat::module;

@@ -1,3 +1,5 @@
+source 'https://cdn.cocoapods.org/'
+
 platform :ios, '9.0'
 
 require_relative '../scripts/autolink-ios'
@@ -13,6 +15,7 @@ target 'RNTester' do
   pod 'React-turbomodule-samples', :path => '../ReactCommon/turbomodule/samples'
 
   # Additional Pods which aren't included in the default Podfile
+  pod 'React-RCTCameraRoll', :path => '../Libraries/CameraRoll'
   pod 'React-ART', :path => '../Libraries/ART'
   pod 'React-RCTPushNotification', :path => '../Libraries/PushNotificationIOS'
 

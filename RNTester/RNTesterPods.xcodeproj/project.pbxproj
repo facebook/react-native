@@ -19,7 +19,6 @@
 		5C60EB1C226440DB0018C04F /* AppDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = 5C60EB1B226440DB0018C04F /* AppDelegate.mm */; };
 		5CB07C9B226467E60039471C /* RNTesterTurboModuleProvider.mm in Sources */ = {isa = PBXBuildFile; fileRef = 5CB07C99226467E60039471C /* RNTesterTurboModuleProvider.mm */; };
 		68E1E4BC2230DF2F00570185 /* ComponentRegistry.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 68E1E4BB2230DF2F00570185 /* ComponentRegistry.cpp */; };
-		7DBD3B12498EA276DB551187 /* libPods-RNTester-macOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B334FFB3ADFDA3CD1AC56276 /* libPods-RNTester-macOS.a */; };
 		9F15345F233AB2C4006DFE44 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 9F15345E233AB2C4006DFE44 /* AppDelegate.m */; };
 		9F153461233AB2C7006DFE44 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 9F153460233AB2C7006DFE44 /* Assets.xcassets */; };
 		9F153464233AB2C7006DFE44 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 9F153462233AB2C7006DFE44 /* MainMenu.xib */; };
@@ -73,7 +72,6 @@
 		5C60EB1B226440DB0018C04F /* AppDelegate.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = AppDelegate.mm; path = RNTester/AppDelegate.mm; sourceTree = "<group>"; };
 		5CB07C99226467E60039471C /* RNTesterTurboModuleProvider.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = RNTesterTurboModuleProvider.mm; path = RNTester/RNTesterTurboModuleProvider.mm; sourceTree = "<group>"; };
 		5CB07C9A226467E60039471C /* RNTesterTurboModuleProvider.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RNTesterTurboModuleProvider.h; path = RNTester/RNTesterTurboModuleProvider.h; sourceTree = "<group>"; };
-		6496F17D31B774EA32BD0826 /* Pods-RNTester-macOS.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RNTester-macOS.debug.xcconfig"; path = "Pods/Target Support Files/Pods-RNTester-macOS/Pods-RNTester-macOS.debug.xcconfig"; sourceTree = "<group>"; };
 		68E1E4BB2230DF2F00570185 /* ComponentRegistry.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ComponentRegistry.cpp; sourceTree = "<group>"; };
 		8508AD3C1DC3509924E63948 /* libPods-RNTester.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-RNTester.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		98233960D1D6A1977D1C7EAF /* Pods-RNTester.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RNTester.debug.xcconfig"; path = "Pods/Target Support Files/Pods-RNTester/Pods-RNTester.debug.xcconfig"; sourceTree = "<group>"; };
@@ -91,8 +89,6 @@
 		9F153478233AB2C7006DFE44 /* RNTester-macOSUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "RNTester-macOSUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		9F15347C233AB2C7006DFE44 /* RNTester_macOSUITests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNTester_macOSUITests.m; sourceTree = "<group>"; };
 		9F15347E233AB2C7006DFE44 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		B334FFB3ADFDA3CD1AC56276 /* libPods-RNTester-macOS.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-RNTester-macOS.a"; sourceTree = BUILT_PRODUCTS_DIR; };
-		DF4471DC0AC942297AB6F78F /* Pods-RNTester-macOS.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RNTester-macOS.release.xcconfig"; path = "Pods/Target Support Files/Pods-RNTester-macOS/Pods-RNTester-macOS.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -115,7 +111,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				7DBD3B12498EA276DB551187 /* libPods-RNTester-macOS.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -177,7 +172,6 @@
 			isa = PBXGroup;
 			children = (
 				8508AD3C1DC3509924E63948 /* libPods-RNTester.a */,
-				B334FFB3ADFDA3CD1AC56276 /* libPods-RNTester-macOS.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -198,8 +192,6 @@
 			children = (
 				98233960D1D6A1977D1C7EAF /* Pods-RNTester.debug.xcconfig */,
 				5BEC8567F3741044B6A5EFC5 /* Pods-RNTester.release.xcconfig */,
-				6496F17D31B774EA32BD0826 /* Pods-RNTester-macOS.debug.xcconfig */,
-				DF4471DC0AC942297AB6F78F /* Pods-RNTester-macOS.release.xcconfig */,
 			);
 			name = Pods;
 			sourceTree = "<group>";
@@ -318,7 +310,6 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 9F153485233AB2C7006DFE44 /* Build configuration list for PBXNativeTarget "RNTester-macOS" */;
 			buildPhases = (
-				9A94D591C3930FBAE398B556 /* [CP] Check Pods Manifest.lock */,
 				9F153457233AB2C4006DFE44 /* Sources */,
 				9F153458233AB2C4006DFE44 /* Frameworks */,
 				9F153459233AB2C4006DFE44 /* Resources */,
@@ -500,28 +491,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "export NODE_BINARY=node\n$SRCROOT/../scripts/react-native-xcode.sh RNTester/js/RNTesterApp.ios.js";
-		};
-		9A94D591C3930FBAE398B556 /* [CP] Check Pods Manifest.lock */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
-				"${PODS_ROOT}/Manifest.lock",
-			);
-			name = "[CP] Check Pods Manifest.lock";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-RNTester-macOS-checkManifestLockResult.txt",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
-			showEnvVarsInLog = 0;
 		};
 		F9CB97B0D9633939D43E75E0 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -911,7 +880,6 @@
 		};
 		9F15347F233AB2C7006DFE44 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 6496F17D31B774EA32BD0826 /* Pods-RNTester-macOS.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ANALYZER_NONNULL = YES;
@@ -937,7 +905,6 @@
 		};
 		9F153480233AB2C7006DFE44 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = DF4471DC0AC942297AB6F78F /* Pods-RNTester-macOS.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ANALYZER_NONNULL = YES;
