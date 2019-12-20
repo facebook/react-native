@@ -23,12 +23,21 @@ void RCTEnableAppearancePreference(BOOL enabled) {
   sAppearancePreferenceEnabled = enabled;
 }
 
+static NSString *sColorSchemeOverride = nil;
+void RCTOverrideAppearancePreference(NSString *const colorSchemeOverride) {
+  sColorSchemeOverride = colorSchemeOverride;
+}
+
 static NSString *RCTColorSchemePreference(UITraitCollection *traitCollection)
 {
 #if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && defined(__IPHONE_13_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_13_0
   if (@available(iOS 13.0, *)) {
     static NSDictionary *appearances;
     static dispatch_once_t onceToken;
+
+    if (sColorSchemeOverride) {
+      return sColorSchemeOverride;
+    }
 
     dispatch_once(&onceToken, ^{
       appearances = @{
