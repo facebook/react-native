@@ -7,6 +7,8 @@
 
 package com.facebook.react.views.textinput;
 
+import static com.facebook.react.uimanager.UIManagerHelper.getReactContext;
+
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
@@ -1056,7 +1058,7 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
 
     public ReactContentSizeWatcher(ReactEditText editText) {
       mEditText = editText;
-      ReactContext reactContext = (ReactContext) editText.getContext();
+      ReactContext reactContext = getReactContext(editText);
       mEventDispatcher = reactContext.getNativeModule(UIManagerModule.class).getEventDispatcher();
     }
 
@@ -1099,7 +1101,8 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
 
     public ReactSelectionWatcher(ReactEditText editText) {
       mReactEditText = editText;
-      ReactContext reactContext = (ReactContext) editText.getContext();
+
+      ReactContext reactContext = getReactContext(editText);
       mEventDispatcher = reactContext.getNativeModule(UIManagerModule.class).getEventDispatcher();
     }
 
@@ -1133,7 +1136,7 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
 
     public ReactScrollWatcher(ReactEditText editText) {
       mReactEditText = editText;
-      ReactContext reactContext = (ReactContext) editText.getContext();
+      ReactContext reactContext = getReactContext(editText);
       mEventDispatcher = reactContext.getNativeModule(UIManagerModule.class).getEventDispatcher();
     }
 

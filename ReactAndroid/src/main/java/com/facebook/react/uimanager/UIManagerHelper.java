@@ -9,8 +9,12 @@ package com.facebook.react.uimanager;
 
 import static com.facebook.react.uimanager.common.UIManagerType.FABRIC;
 import static com.facebook.react.uimanager.common.ViewUtil.getUIManagerType;
-import com.facebook.react.bridge.CatalystInstance;
+
+import android.content.Context;
+import android.content.ContextWrapper;
+import android.view.View;
 import androidx.annotation.Nullable;
+import com.facebook.react.bridge.CatalystInstance;
 import com.facebook.react.bridge.JSIModuleType;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReactSoftException;
@@ -64,5 +68,21 @@ public class UIManagerHelper {
       ReactContext context, @UIManagerType int uiManagerType) {
     UIManager uiManager = getUIManager(context, uiManagerType);
     return uiManager == null ? null : (EventDispatcher) uiManager.getEventDispatcher();
+  }
+
+  /**
+   * @return The {@link ReactContext} associated to the {@link View} received as a parameter.
+   *     <p>We can't rely that the method View.getContext() will return the same context that was
+   *     passed as a parameter during the construction of the View.
+   *     <p>For example the AppCompatEditText class wraps the context received as a parameter in the
+   *     constructor of the View into a TintContextWrapper object. See:
+   *     https://android.googlesource.com/platform/frameworks/support/+/dd55716/v7/appcompat/src/android/support/v7/widget/AppCompatEditText.java#55
+   */
+  public static ReactContext getReactContext(View view) {
+    Context context = view.getContext();
+    if (!(context instanceof ReactContext) && context instanceof ContextWrapper) {
+      context = ((ContextWrapper) context).getBaseContext();
+    }
+    return (ReactContext) context;
   }
 }
