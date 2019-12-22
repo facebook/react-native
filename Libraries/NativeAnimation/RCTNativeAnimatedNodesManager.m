@@ -99,7 +99,17 @@ static NSString *RCTNormalizeAnimatedEventName(NSString *eventName)
       @"borderStartColor",
       @"borderTopColor",
       @"shadowOpacity",
-      @"shadowRadius"];
+      @"shadowRadius",
+      @"translateX",
+      @"translateY",
+      @"scale",
+      @"scaleX",
+      @"scaleY",
+      @"rotate",
+      @"rotateX",
+      @"rotateY",
+      @"rotateZ",
+      @"perspective"];
   }
   return self;
 }
