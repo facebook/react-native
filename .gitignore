@@ -35,6 +35,11 @@ buck-out
 /ReactAndroid/src/main/jni/prebuilt/lib/
 /ReactAndroid/src/main/gen
 
+# Android Studio
+.project
+.settings
+.classpath
+
 # Watchman
 .watchmanconfig
 
