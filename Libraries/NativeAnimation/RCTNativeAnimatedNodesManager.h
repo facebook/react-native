@@ -13,13 +13,11 @@
 
 @interface RCTNativeAnimatedNodesManager : NSObject
 
-@property (nonatomic, copy, readonly) NSArray<NSString*>* shadowViewProps;
+@property (nonatomic, copy, readonly) NSArray<NSString*>* uiThreadProps;
 
 - (nonnull instancetype)initWithBridge:(nonnull RCTBridge *)bridge;
 
-- (void)configureProps:(NSArray<NSString*>*)shadowViewProps;
-
-- (void)enqueueUpdateViewOnNativeThread:(nonnull NSNumber *)reactTag
+- (void)enqueueUpdateViewOnUIManager:(nonnull NSNumber *)reactTag
                                viewName:(NSString *) viewName
                                   props:(NSMutableDictionary *)props;
 

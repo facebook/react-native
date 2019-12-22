@@ -68,24 +68,24 @@
     [_bridge.surfacePresenter synchronouslyUpdateViewOnUIThread:_connectedViewTag
                                                           props:_propsDictionary];
   } else {
-    NSMutableDictionary *shadowViewProps = [NSMutableDictionary new];
+    NSMutableDictionary *uiThreadProps = [NSMutableDictionary new];
     NSMutableDictionary *props = [NSMutableDictionary new];
 
     for (NSString *key in _propsDictionary.allKeys) {
-      if([self.manager.shadowViewProps containsObject: key]) {
-        [shadowViewProps setObject:_propsDictionary[key] forKey:key];
+      if([self.manager.uiThreadProps containsObject: key]) {
+        [uiThreadProps setObject:_propsDictionary[key] forKey:key];
       } else {
         [props setObject:_propsDictionary[key] forKey:key];
       }
     }
 
-    if (shadowViewProps.count > 0) {
+    if (uiThreadProps.count > 0) {
       [_bridge.uiManager synchronouslyUpdateViewOnUIThread:_connectedViewTag
                                                   viewName:_connectedViewName
-                                                     props:shadowViewProps];
+                                                     props:uiThreadProps];
     }
     if (props.count > 0) {
-      [self.manager enqueueUpdateViewOnNativeThread:_connectedViewTag viewName:_connectedViewName props:props];
+      [self.manager enqueueUpdateViewOnUIManager:_connectedViewTag viewName:_connectedViewName props:props];
     }
   }
 }

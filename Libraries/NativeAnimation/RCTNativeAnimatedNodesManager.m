@@ -65,7 +65,7 @@ static NSString *RCTNormalizeAnimatedEventName(NSString *eventName)
   NSMutableDictionary<NSString *, NSMutableArray<RCTEventAnimation *> *> *_eventDrivers;
   NSMutableSet<id<RCTAnimationDriver>> *_activeAnimations;
   CADisplayLink *_displayLink;
-  NSArray<NSString*>* _shadowViewProps;
+  NSArray<NSString*>* _uiThreadProps;
   NSMutableArray<RCTOnAnimationCallback> *_operationsInBatch;
 }
 
@@ -76,20 +76,37 @@ static NSString *RCTNormalizeAnimatedEventName(NSString *eventName)
     _animationNodes = [NSMutableDictionary new];
     _eventDrivers = [NSMutableDictionary new];
     _activeAnimations = [NSMutableSet new];
-    _shadowViewProps = [[NSArray alloc] init];
     _operationsInBatch = [NSMutableArray new];
+    _uiThreadProps = @[
+      @"opacity",
+      @"transform",
+      @"borderRadius",
+      @"borderBottomEndRadius",
+      @"borderBottomLeftRadius",
+      @"borderBottomRightRadius",
+      @"borderBottomStartRadius",
+      @"borderTopEndRadius",
+      @"borderTopLeftRadius",
+      @"borderTopRightRadius",
+      @"borderTopStartRadius",
+      @"elevation",
+      @"backgroundColor",
+      @"borderRightColor",
+      @"borderBottomColor",
+      @"borderColor",
+      @"borderEndColor",
+      @"borderLeftColor",
+      @"borderStartColor",
+      @"borderTopColor",
+      @"shadowOpacity",
+      @"shadowRadius"];
   }
   return self;
 }
 
-- (NSArray<NSString*>*) shadowViewProps
+- (NSArray<NSString*>*) uiThreadProps
 {
-  return _shadowViewProps;
-}
-
-- (void)configureProps:(NSArray<NSString*>*)shadowViewProps               
-{
-  _shadowViewProps = [NSArray arrayWithArray:shadowViewProps];  
+  return _uiThreadProps;
 }
 
 - (BOOL)isNodeManagedByFabric:(nonnull NSNumber *)tag
@@ -101,7 +118,7 @@ static NSString *RCTNormalizeAnimatedEventName(NSString *eventName)
   return false;
 }
 
-- (void)enqueueUpdateViewOnNativeThread:(nonnull NSNumber *)reactTag
+- (void)enqueueUpdateViewOnUIManager:(nonnull NSNumber *)reactTag
                                viewName:(NSString *) viewName
                                   props:(NSMutableDictionary *)props {
   RCTBridge* bridge = _bridge;

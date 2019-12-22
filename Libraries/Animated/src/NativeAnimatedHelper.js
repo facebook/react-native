@@ -154,44 +154,6 @@ const API = {
   },
 };
 
-/**
- * Styles allowed by the native animated implementation.
- *
- * In general native animated implementation should support any numeric property that doesn't need
- * to be updated through the shadow view hierarchy (all non-layout properties).
- */
-const SHADOW_VIEW_PROPS = {
-  opacity: true,
-  transform: true,
-  borderRadius: true,
-  borderBottomEndRadius: true,
-  borderBottomLeftRadius: true,
-  borderBottomRightRadius: true,
-  borderBottomStartRadius: true,
-  borderTopEndRadius: true,
-  borderTopLeftRadius: true,
-  borderTopRightRadius: true,
-  borderTopStartRadius: true,
-  elevation: true,
-  /* ios styles */
-  shadowOpacity: true,
-  shadowRadius: true,
-  /* colors */
-  backgroundColor: true,
-  borderRightColor: true,
-  borderBottomColor: true,
-  borderColor: true,
-  borderEndColor: true,
-  borderLeftColor: true,
-  borderStartColor: true,
-  borderTopColor: true,
-  /* legacy android transform properties */
-  scaleX: true,
-  scaleY: true,
-  translateX: true,
-  translateY: true,
-};
-
 const TRANSFORM_WHITELIST = {
   translateX: true,
   translateY: true,
