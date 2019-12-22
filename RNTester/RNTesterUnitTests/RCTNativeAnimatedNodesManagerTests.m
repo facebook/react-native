@@ -142,7 +142,6 @@ static id RCTPropChecker(NSString *prop, NSNumber *value)
  */
 - (void)createSimpleAnimatedView:(NSNumber *)viewTag withOpacity:(CGFloat)opacity
 {
-  [_nodesManager configureProps:@[@"opacity", @"translateX"]];
   [_nodesManager createAnimatedNode:@101
                              config:@{@"type": @"value", @"value": @(opacity), @"offset": @0}];
   [_nodesManager createAnimatedNode:@201
@@ -528,8 +527,6 @@ static id RCTPropChecker(NSString *prop, NSNumber *value)
                                  firstValue:(CGFloat)firstValue
                                 secondValue:(CGFloat)secondValue
 {
-  [_nodesManager configureProps:@[@"opacity", @"translateX"]];
-  
   [_nodesManager createAnimatedNode:@101
                              config:@{@"type": @"value", @"value": @(firstValue), @"offset": @0}];
   [_nodesManager createAnimatedNode:@201
@@ -680,8 +677,6 @@ static id RCTPropChecker(NSString *prop, NSNumber *value)
 - (void)testMultiplicationNode
 {
   NSNumber *viewTag = @51;
-  [_nodesManager configureProps:@[@"opacity", @"translateX"]];
-  
   [_nodesManager createAnimatedNode:@101
                              config:@{@"type": @"value", @"value": @1, @"offset": @0}];
   [_nodesManager createAnimatedNode:@201
@@ -771,7 +766,6 @@ static id RCTPropChecker(NSString *prop, NSNumber *value)
 - (void)testInterpolationNode
 {
   NSNumber *viewTag = @51;
-  [_nodesManager configureProps:@[@"opacity", @"translateX"]];
   [_nodesManager createAnimatedNode:@101
                              config:@{@"type": @"value", @"value": @10, @"offset": @0}];
   [_nodesManager createAnimatedNode:@201
@@ -880,8 +874,6 @@ static id RCTPropChecker(NSString *prop, NSNumber *value)
                                initialValue:(CGFloat)initialValue
                             animationConfig:(NSDictionary *)animationConfig
 {
-  [_nodesManager configureProps:@[@"opacity", @"translateX"]];
-  
   [_nodesManager createAnimatedNode:@101
                              config:@{@"type": @"value", @"value": @(initialValue), @"offset": @0}];
   [_nodesManager createAnimatedNode:@301
