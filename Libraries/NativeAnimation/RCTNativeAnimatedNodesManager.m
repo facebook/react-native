@@ -66,7 +66,7 @@ static NSString *RCTNormalizeAnimatedEventName(NSString *eventName)
   NSMutableSet<id<RCTAnimationDriver>> *_activeAnimations;
   CADisplayLink *_displayLink;
   NSArray<NSString*>* _uiThreadProps;
-  NSMutableArray<RCTOnAnimationCallback> *_operationsInBatch;
+  NSMutableArray<RCTOnAnimationCallback> *_uiManagerOperationQueue;
 }
 
 - (instancetype)initWithBridge:(nonnull RCTBridge *)bridge
@@ -76,7 +76,7 @@ static NSString *RCTNormalizeAnimatedEventName(NSString *eventName)
     _animationNodes = [NSMutableDictionary new];
     _eventDrivers = [NSMutableDictionary new];
     _activeAnimations = [NSMutableSet new];
-    _operationsInBatch = [NSMutableArray new];
+    _uiManagerOperationQueue = [NSMutableArray new];
     _uiThreadProps = @[
       @"opacity",
       @"transform",
@@ -132,7 +132,7 @@ static NSString *RCTNormalizeAnimatedEventName(NSString *eventName)
                                viewName:(NSString *) viewName
                                   props:(NSMutableDictionary *)props {
   RCTBridge* bridge = _bridge;
-  [_operationsInBatch addObject:^(RCTUIManager *uiManager) {
+  [_uiManagerOperationQueue addObject:^(RCTUIManager *uiManager) {
     [bridge.uiManager updateView:reactTag viewName:viewName props:props];
   }];
 }
@@ -525,9 +525,9 @@ static NSString *RCTNormalizeAnimatedEventName(NSString *eventName)
     }
   }];
 
-  if (_operationsInBatch.count != 0) {
-    NSMutableArray<RCTOnAnimationCallback> *copiedOperationsQueue = _operationsInBatch;
-    _operationsInBatch = [NSMutableArray new];
+  if (_uiManagerOperationQueue.count != 0) {
+    NSMutableArray<RCTOnAnimationCallback> *copiedOperationsQueue = _uiManagerOperationQueue;
+    _uiManagerOperationQueue = [NSMutableArray new];
     RCTExecuteOnUIManagerQueue(^{
       for (int i = 0; i < copiedOperationsQueue.count; i++) {
         copiedOperationsQueue[i](self->_bridge.uiManager);
