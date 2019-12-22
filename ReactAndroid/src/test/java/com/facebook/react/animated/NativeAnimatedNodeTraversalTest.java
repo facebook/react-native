@@ -13,6 +13,7 @@ import static org.mockito.Matchers.anyInt;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.atMost;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -858,6 +859,33 @@ public class NativeAnimatedNodeTraversalTest {
     mNativeAnimatedNodesManager.restoreDefaultValues(propsNodeTag);
     verify(mUIManagerMock).synchronouslyUpdateViewOnUIThread(eq(viewTag), stylesCaptor.capture());
     assertThat(stylesCaptor.getValue().isNull("opacity"));
+  }
+
+  @Test
+  public void testEnqueUpdatesOnCorrectThread() {
+    int viewTag = 1000;
+    int propsNodeTag = 3;
+    mNativeAnimatedNodesManager.createAnimatedNode(1, JavaOnlyMap.of("type", "value", "value", 1d, "offset", 0d));
+    mNativeAnimatedNodesManager.createAnimatedNode(2,
+      JavaOnlyMap.of("type", "style", "style", JavaOnlyMap.of("left", 1)));
+    mNativeAnimatedNodesManager.createAnimatedNode(propsNodeTag,
+      JavaOnlyMap.of("type", "props", "props", JavaOnlyMap.of("style", 2)));
+    mNativeAnimatedNodesManager.connectAnimatedNodes(1, 2);
+    mNativeAnimatedNodesManager.connectAnimatedNodes(2, propsNodeTag);
+    mNativeAnimatedNodesManager.connectAnimatedNodeToView(propsNodeTag, viewTag);
+
+    JavaOnlyArray frames = JavaOnlyArray.of(0d, 0.5d, 1d);
+    Callback animationCallback = mock(Callback.class);
+    mNativeAnimatedNodesManager.startAnimatingNode(1, 1,
+      JavaOnlyMap.of("type", "frames", "frames", frames, "toValue", 0d), animationCallback);
+
+    for (int i = 0; i < frames.size(); i++) {
+      mNativeAnimatedNodesManager.runUpdates(nextFrameTime());
+    }
+
+    verify(mUIManagerMock, never()).synchronouslyUpdateViewOnUIThread(anyInt(), any(ReadableMap.class));
+    ValueAnimatedNode node = (ValueAnimatedNode)mNativeAnimatedNodesManager.getNodeById(1);
+    assertThat(node.mValue).isEqualTo(0);
   }
 
   /**
