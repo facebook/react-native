@@ -15,9 +15,6 @@ import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.bridge.ReactContextBaseJavaModule;
-import com.facebook.react.bridge.ReactMethod;
-import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.common.ReactConstants;
@@ -31,8 +28,6 @@ import com.facebook.react.uimanager.UIBlock;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.UIManagerModuleListener;
 import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Set;
 
 /**
  * Module that exposes interface for creating and managing animated nodes on the "native" side.
@@ -226,30 +221,14 @@ public class NativeAnimatedModule extends NativeAnimatedModuleSpec
   @Override
   public void createAnimatedNode(final double tagDouble, final ReadableMap config) {
     final int tag = (int) tagDouble;
+
     mOperations.add(
-      new UIThreadOperation() {
-        @Override
-        public void execute(NativeAnimatedNodesManager animatedNodesManager) {
-          animatedNodesManager.createAnimatedNode(tag, config);
-        }
-      }
-    );
-  }
-
-  @ReactMethod
-  public void configureProps(ReadableArray shadowViewProps) {
-    int size = shadowViewProps.size();
-    final Set<String> props = new HashSet<>(size);
-    for (int i = 0; i < size; i++) {
-      props.add(shadowViewProps.getString(i));
-    }
-
-    mOperations.add(new UIThreadOperation() {
-      @Override
-      public void execute(NativeAnimatedNodesManager nodesManager) {
-        nodesManager.configureProps(props);
-      }
-    });
+        new UIThreadOperation() {
+          @Override
+          public void execute(NativeAnimatedNodesManager animatedNodesManager) {
+            animatedNodesManager.createAnimatedNode(tag, config);
+          }
+        });
   }
 
   @Override

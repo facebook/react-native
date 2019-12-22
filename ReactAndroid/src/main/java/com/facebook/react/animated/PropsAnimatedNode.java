@@ -77,7 +77,7 @@ import java.util.Map;
     if (mConnectedViewTag == -1) {
       return;
     }
-    JavaOnlyMap shadowViewProps = new JavaOnlyMap();
+    JavaOnlyMap uiThreadProps = new JavaOnlyMap();
 
     for (Map.Entry<String, Integer> entry : mPropNodeMapping.entrySet()) {
       String key = entry.getKey();
@@ -85,18 +85,18 @@ import java.util.Map;
       if (node == null) {
         throw new IllegalArgumentException("Mapped property node does not exists");
       } else if (node instanceof StyleAnimatedNode) {
-        ((StyleAnimatedNode) node).collectViewUpdates(shadowViewProps, mPropMap);
+        ((StyleAnimatedNode) node).collectViewUpdates(uiThreadProps, mPropMap);
       } else if (node instanceof ValueAnimatedNode) {
         Object animatedObject = ((ValueAnimatedNode) node).getAnimatedObject();
         if (animatedObject != null) {
-          if (mNativeAnimatedNodesManager.shadowViewProps.contains(key)) {
-            addProp(shadowViewProps, key, animatedObject);
+          if (mNativeAnimatedNodesManager.uiThreadProps.contains(key)) {
+            addProp(uiThreadProps, key, animatedObject);
           } else {
             addProp(mPropMap, key, animatedObject);
           }
         } else {
-          if (mNativeAnimatedNodesManager.shadowViewProps.contains(key)) {
-            shadowViewProps.putDouble(key, ((ValueAnimatedNode) node).getValue());
+          if (mNativeAnimatedNodesManager.uiThreadProps.contains(key)) {
+            uiThreadProps.putDouble(key, ((ValueAnimatedNode) node).getValue());
           } else {
             mPropMap.putDouble(entry.getKey(), ((ValueAnimatedNode) node).getValue());
           }
@@ -107,12 +107,12 @@ import java.util.Map;
       }
     }
 
-    if(shadowViewProps.keySetIterator().hasNextKey()) {
-      mUIManager.synchronouslyUpdateViewOnUIThread(mConnectedViewTag, shadowViewProps);
+    if(uiThreadProps.keySetIterator().hasNextKey()) {
+      mUIManager.synchronouslyUpdateViewOnUIThread(mConnectedViewTag, uiThreadProps);
     }
 
     if(mPropMap.keySetIterator().hasNextKey()) {
-      mNativeAnimatedNodesManager.enqueueUpdateViewOnNativeThread(mConnectedViewTag, mPropMap);
+      mNativeAnimatedNodesManager.enqueueUpdateViewOnUIManager(mConnectedViewTag, mPropMap);
     }
   }
 }

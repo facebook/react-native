@@ -116,7 +116,6 @@ class AnimatedStyle extends AnimatedWithChildren {
       // Non-animated styles are set using `setNativeProps`, no need
       // to pass those as a part of the node config
     }
-    NativeAnimatedHelper.validateStyles(styleConfig);
     return {
       type: 'style',
       style: styleConfig,

@@ -28,8 +28,10 @@ import com.facebook.react.uimanager.events.Event;
 import com.facebook.react.uimanager.events.EventDispatcherListener;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
@@ -67,14 +69,39 @@ import java.util.Set;
   private final ReactContext mContext;
   private final UIManagerModule mUIManager;
 
-  public Set<String> shadowViewProps = Collections.emptySet();
+  public static final Set<String> uiThreadProps = new HashSet<>(Arrays.asList(
+    "opacity",
+    "transform",
+    "borderRadius",
+    "borderBottomEndRadius",
+    "borderBottomLeftRadius",
+    "borderBottomRightRadius",
+    "borderBottomStartRadius",
+    "borderTopEndRadius",
+    "borderTopLeftRadius",
+    "borderTopRightRadius",
+    "borderTopStartRadius",
+    "elevation",
+    "backgroundColor",
+    "borderRightColor",
+    "borderBottomColor",
+    "borderColor",
+    "borderEndColor",
+    "borderLeftColor",
+    "borderStartColor",
+    "borderTopColor",
+    /* legacy android transform properties */
+    "scaleX",
+    "scaleY",
+    "translateX",
+    "translateY"));
 
   private final class NativeUpdateOperation {
     public int mViewTag;
-    public WritableMap mNativeProps;
-    public NativeUpdateOperation(int viewTag, WritableMap nativeProps) {
+    public WritableMap mProps;
+    public NativeUpdateOperation(int viewTag, WritableMap props) {
       mViewTag = viewTag;
-      mNativeProps = nativeProps;
+      mProps = props;
     }
   }
   private Queue<NativeUpdateOperation> mOperationsInBatch = new LinkedList<>();
@@ -409,12 +436,8 @@ import java.util.Set;
     }
   }
 
-  public void configureProps(Set<String> shadowViewProps) {
-    this.shadowViewProps = shadowViewProps;
-  }
-
-  public void enqueueUpdateViewOnNativeThread(int viewTag, WritableMap nativeProps) {
-    mOperationsInBatch.add(new NativeUpdateOperation(viewTag, nativeProps));
+  public void enqueueUpdateViewOnUIManager(int viewTag, WritableMap props) {
+    mOperationsInBatch.add(new NativeUpdateOperation(viewTag, props));
   }
 
   @Override
@@ -500,7 +523,7 @@ import java.util.Set;
               NativeUpdateOperation op = copiedOperationsQueue.remove();
               ReactShadowNode shadowNode = mUIManager.getUIImplementation().resolveShadowNode(op.mViewTag);
               if (shadowNode != null) {
-                mUIManager.updateView(op.mViewTag, shadowNode.getViewClass(), op.mNativeProps);
+                mUIManager.updateView(op.mViewTag, shadowNode.getViewClass(), op.mProps);
               }
             }
             if (shouldDispatchUpdates) {

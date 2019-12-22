@@ -214,7 +214,11 @@ const SUPPORTED_INTERPOLATION_PARAMS = {
 };
 
 function addWhitelistedStyleProp(prop: string): void {
-  SHADOW_VIEW_PROPS[prop] = true;
+  console.warn(
+    'addWhitelistedStyleProp is now deprecated and no longer in use. ' +
+      'The native animated module now supports animating all properties ' +
+      'when the useNativeDriver flag is set to true.',
+  );
 }
 
 function addWhitelistedTransformProp(prop: string): void {
@@ -253,7 +257,11 @@ function validateTransform(
 }
 
 function validateStyles(styles: {[key: string]: ?number, ...}): void {
-  // Do nothing - everything is supported.
+  console.warn(
+    'validateStyles is now deprecated and no longer in use. ' +
+      'The native animated module now supports animating all properties ' +
+      'when the useNativeDriver flag is set to true.',
+  );
 }
 
 function validateInterpolation(config: InterpolationConfigType): void {
@@ -319,14 +327,6 @@ function transformDataType(value: number | string): number | string {
     return colorToRgba(value);
   }
 }
-
-function configureProps() {
-  if (NativeAnimatedModule && NativeAnimatedModule.configureProps) {
-    NativeAnimatedModule.configureProps(Object.keys(SHADOW_VIEW_PROPS));
-  }
-}
-
-configureProps();
 
 module.exports = {
   API,
