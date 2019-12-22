@@ -98,8 +98,8 @@ import java.util.Set;
 
   private final class NativeUpdateOperation {
     public int mViewTag;
-    public WritableMap mProps;
-    public NativeUpdateOperation(int viewTag, WritableMap props) {
+    public ReadableMap mProps;
+    public NativeUpdateOperation(int viewTag, ReadableMap props) {
       mViewTag = viewTag;
       mProps = props;
     }
@@ -436,7 +436,7 @@ import java.util.Set;
     }
   }
 
-  public void enqueueUpdateViewOnUIManager(int viewTag, WritableMap props) {
+  public void enqueueUpdateViewOnUIManager(int viewTag, ReadableMap props) {
     mOperationsInBatch.add(new NativeUpdateOperation(viewTag, props));
   }
 
