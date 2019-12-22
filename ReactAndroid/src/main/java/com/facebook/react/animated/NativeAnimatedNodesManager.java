@@ -29,7 +29,6 @@ import com.facebook.react.uimanager.events.EventDispatcherListener;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -96,15 +95,15 @@ import java.util.Set;
     "translateX",
     "translateY"));
 
-  private final class NativeUpdateOperation {
+  private final class UIManagerUpdateOperation {
     public int mViewTag;
     public ReadableMap mProps;
-    public NativeUpdateOperation(int viewTag, ReadableMap props) {
+    public UIManagerUpdateOperation(int viewTag, ReadableMap props) {
       mViewTag = viewTag;
       mProps = props;
     }
   }
-  private Queue<NativeUpdateOperation> mOperationsInBatch = new LinkedList<>();
+  private Queue<UIManagerUpdateOperation> mUIManagerOperationQueue = new LinkedList<>();
 
   public NativeAnimatedNodesManager(UIManagerModule uiManager, ReactApplicationContext context) {
     mUIManagerModule = uiManager;
@@ -437,7 +436,7 @@ import java.util.Set;
   }
 
   public void enqueueUpdateViewOnUIManager(int viewTag, ReadableMap props) {
-    mOperationsInBatch.add(new NativeUpdateOperation(viewTag, props));
+    mUIManagerOperationQueue.add(new UIManagerUpdateOperation(viewTag, props));
   }
 
   @Override
@@ -511,16 +510,16 @@ import java.util.Set;
     updateNodes(mRunUpdateNodeList);
     mRunUpdateNodeList.clear();
 
-    if (!mOperationsInBatch.isEmpty()) {
-      final Queue<NativeUpdateOperation> copiedOperationsQueue = mOperationsInBatch;
-      mOperationsInBatch = new LinkedList<>();
+    if (!mUIManagerOperationQueue.isEmpty()) {
+      final Queue<UIManagerUpdateOperation> copiedOperationsQueue = mUIManagerOperationQueue;
+      mUIManagerOperationQueue = new LinkedList<>();
       mContext.runOnNativeModulesQueueThread(
         new GuardedRunnable(mContext) {
           @Override
           public void runGuarded() {
             boolean shouldDispatchUpdates = mUIManager.getUIImplementation().getUIViewOperationQueue().isEmpty();
             while (!copiedOperationsQueue.isEmpty()) {
-              NativeUpdateOperation op = copiedOperationsQueue.remove();
+              UIManagerUpdateOperation op = copiedOperationsQueue.remove();
               ReactShadowNode shadowNode = mUIManager.getUIImplementation().resolveShadowNode(op.mViewTag);
               if (shadowNode != null) {
                 mUIManager.updateView(op.mViewTag, shadowNode.getViewClass(), op.mProps);
