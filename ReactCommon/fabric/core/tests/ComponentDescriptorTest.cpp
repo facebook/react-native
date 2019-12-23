@@ -14,7 +14,8 @@ using namespace facebook::react;
 TEST(ComponentDescriptorTest, createShadowNode) {
   auto eventDispatcher = std::shared_ptr<EventDispatcher const>();
   SharedComponentDescriptor descriptor =
-      std::make_shared<TestComponentDescriptor>(eventDispatcher);
+      std::make_shared<TestComponentDescriptor>(
+          ComponentDescriptorParameters{eventDispatcher, nullptr, nullptr});
 
   ASSERT_EQ(descriptor->getComponentHandle(), TestShadowNode::Handle());
   ASSERT_STREQ(descriptor->getComponentName(), TestShadowNode::Name());
@@ -44,7 +45,8 @@ TEST(ComponentDescriptorTest, createShadowNode) {
 TEST(ComponentDescriptorTest, cloneShadowNode) {
   auto eventDispatcher = std::shared_ptr<EventDispatcher const>();
   SharedComponentDescriptor descriptor =
-      std::make_shared<TestComponentDescriptor>(eventDispatcher);
+      std::make_shared<TestComponentDescriptor>(
+          ComponentDescriptorParameters{eventDispatcher, nullptr, nullptr});
 
   const auto &raw = RawProps(folly::dynamic::object("nativeID", "abc"));
   SharedProps props = descriptor->cloneProps(nullptr, raw);
@@ -68,7 +70,8 @@ TEST(ComponentDescriptorTest, cloneShadowNode) {
 TEST(ComponentDescriptorTest, appendChild) {
   auto eventDispatcher = std::shared_ptr<EventDispatcher const>();
   SharedComponentDescriptor descriptor =
-      std::make_shared<TestComponentDescriptor>(eventDispatcher);
+      std::make_shared<TestComponentDescriptor>(
+          ComponentDescriptorParameters{eventDispatcher, nullptr, nullptr});
 
   const auto &raw = RawProps(folly::dynamic::object("nativeID", "abc"));
   SharedProps props = descriptor->cloneProps(nullptr, raw);
