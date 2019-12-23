@@ -510,28 +510,6 @@ import java.util.Set;
     updateNodes(mRunUpdateNodeList);
     mRunUpdateNodeList.clear();
 
-    if (!mUIManagerOperationQueue.isEmpty()) {
-      final Queue<UIManagerUpdateOperation> copiedOperationsQueue = mUIManagerOperationQueue;
-      mUIManagerOperationQueue = new LinkedList<>();
-      mContext.runOnNativeModulesQueueThread(
-        new GuardedRunnable(mContext) {
-          @Override
-          public void runGuarded() {
-            boolean shouldDispatchUpdates = mUIManager.getUIImplementation().getUIViewOperationQueue().isEmpty();
-            while (!copiedOperationsQueue.isEmpty()) {
-              UIManagerUpdateOperation op = copiedOperationsQueue.remove();
-              ReactShadowNode shadowNode = mUIManager.getUIImplementation().resolveShadowNode(op.mViewTag);
-              if (shadowNode != null) {
-                mUIManager.updateView(op.mViewTag, shadowNode.getViewClass(), op.mProps);
-              }
-            }
-            if (shouldDispatchUpdates) {
-              mUIManager.getUIImplementation().dispatchViewUpdates(-1); // no associated batchId
-            }
-          }
-        });
-    }
-
     // Cleanup finished animations. Iterate over the array of animations and override ones that has
     // finished, then resize `mActiveAnimations`.
     if (hasFinishedAnimations) {
@@ -652,6 +630,28 @@ import java.util.Set;
           }
         }
       }
+    }
+
+    if (!mUIManagerOperationQueue.isEmpty()) {
+      final Queue<UIManagerUpdateOperation> copiedOperationsQueue = mUIManagerOperationQueue;
+      mUIManagerOperationQueue = new LinkedList<>();
+      mContext.runOnNativeModulesQueueThread(
+        new GuardedRunnable(mContext) {
+          @Override
+          public void runGuarded() {
+            boolean shouldDispatchUpdates = mUIManager.getUIImplementation().getUIViewOperationQueue().isEmpty();
+            while (!copiedOperationsQueue.isEmpty()) {
+              UIManagerUpdateOperation op = copiedOperationsQueue.remove();
+              ReactShadowNode shadowNode = mUIManager.getUIImplementation().resolveShadowNode(op.mViewTag);
+              if (shadowNode != null) {
+                mUIManager.updateView(op.mViewTag, shadowNode.getViewClass(), op.mProps);
+              }
+            }
+            if (shouldDispatchUpdates) {
+              mUIManager.getUIImplementation().dispatchViewUpdates(-1); // no associated batchId
+            }
+          }
+        });
     }
 
     // Verify that we've visited *all* active nodes. Throw otherwise as this would mean there is a
