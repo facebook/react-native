@@ -9,6 +9,7 @@
 
 #include <react/core/ShadowNodeFragment.h>
 #include <react/debug/SystraceSection.h>
+#include <react/graphics/Geometry.h>
 
 #include <glog/logging.h>
 
@@ -132,6 +133,12 @@ void UIManager::clearJSResponder() const {
   if (delegate_) {
     delegate_->uiManagerDidClearJSResponder();
   }
+}
+
+ShadowNode::Shared UIManager::findNodeAtPoint(
+    const ShadowNode::Shared &node,
+    Point point) const {
+  return LayoutableShadowNode::findNodeAtPoint(node, point);
 }
 
 void UIManager::setNativeProps(

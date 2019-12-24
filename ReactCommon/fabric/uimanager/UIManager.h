@@ -88,6 +88,10 @@ class UIManager final : public ShadowTreeDelegate {
 
   void clearJSResponder() const;
 
+  ShadowNode::Shared findNodeAtPoint(
+      const ShadowNode::Shared &shadowNode,
+      Point point) const;
+
   /*
    * Returns layout metrics of given `shadowNode` relative to
    * `ancestorShadowNode` (relative to the root node in case if provided
