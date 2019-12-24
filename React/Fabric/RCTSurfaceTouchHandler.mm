@@ -206,14 +206,25 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithTarget : (id)target action : (SEL)act
 - (void)_updateTouches:(NSSet<UITouch *> *)touches
 {
   for (UITouch *touch in touches) {
-    UpdateActiveTouchWithUITouch(_activeTouches.at(touch), touch, _rootComponentView);
+    auto iterator = _activeTouches.find(touch);
+    assert(iterator != _activeTouches.end() && "Inconsistency between local and UIKit touch registries");
+    if (iterator == _activeTouches.end()) {
+      continue;
+    }
+
+    UpdateActiveTouchWithUITouch(iterator->second, touch, _rootComponentView);
   }
 }
 
 - (void)_unregisterTouches:(NSSet<UITouch *> *)touches
 {
   for (UITouch *touch in touches) {
-    const auto &activeTouch = _activeTouches.at(touch);
+    auto iterator = _activeTouches.find(touch);
+    assert(iterator != _activeTouches.end() && "Inconsistency between local and UIKit touch registries");
+    if (iterator == _activeTouches.end()) {
+      continue;
+    }
+    auto &activeTouch = iterator->second;
     _identifierPool.enqueue(activeTouch.touch.identifier);
     _activeTouches.erase(touch);
   }
@@ -225,7 +236,12 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithTarget : (id)target action : (SEL)act
   activeTouches.reserve(touches.count);
 
   for (UITouch *touch in touches) {
-    activeTouches.push_back(_activeTouches.at(touch));
+    auto iterator = _activeTouches.find(touch);
+    assert(iterator != _activeTouches.end() && "Inconsistency between local and UIKit touch registries");
+    if (iterator == _activeTouches.end()) {
+      continue;
+    }
+    activeTouches.push_back(iterator->second);
   }
 
   return activeTouches;
