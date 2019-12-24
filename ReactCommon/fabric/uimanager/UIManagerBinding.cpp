@@ -602,27 +602,6 @@ jsi::Value UIManagerBinding::get(
         });
   }
 
-  if (methodName == "findShadowNodeByTag_DEPRECATED") {
-    return jsi::Function::createFromHostFunction(
-        runtime,
-        name,
-        1,
-        [uiManager](
-            jsi::Runtime &runtime,
-            jsi::Value const &thisValue,
-            jsi::Value const *arguments,
-            size_t count) -> jsi::Value {
-          auto shadowNode = uiManager->findShadowNodeByTag_DEPRECATED(
-              tagFromValue(runtime, arguments[0]));
-
-          if (!shadowNode) {
-            return jsi::Value::null();
-          }
-
-          return valueFromShadowNode(runtime, shadowNode);
-        });
-  }
-
   return jsi::Value::undefined();
 }
 
