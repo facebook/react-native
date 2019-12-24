@@ -200,8 +200,11 @@ dependencies {
 
     if (enableHermes) {
         def hermesPath = "../../node_modules/hermes-engine/android/";
-        debugImplementation files(hermesPath + "hermes-debug.aar")
-        releaseImplementation files(hermesPath + "hermes-release.aar")
+        if(gradle.startParameter.taskNames.contains("Release")) {
+            implementation files(hermesPath + "hermes-release.aar")
+        } else {
+            implementation files(hermesPath + "hermes-debug.aar")
+        }
     } else {
         implementation jscFlavor
     }
