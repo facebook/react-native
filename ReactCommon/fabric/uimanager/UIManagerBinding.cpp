@@ -251,6 +251,36 @@ jsi::Value UIManagerBinding::get(
         });
   }
 
+  if (methodName == "findNodeAtPoint") {
+    return jsi::Function::createFromHostFunction(
+        runtime,
+        name,
+        2,
+        [uiManager](
+            jsi::Runtime &runtime,
+            const jsi::Value &thisValue,
+            const jsi::Value *arguments,
+            size_t count) -> jsi::Value {
+          auto node = shadowNodeFromValue(runtime, arguments[0]);
+          auto locationX = (Float)arguments[1].getNumber();
+          auto locationY = (Float)arguments[2].getNumber();
+          auto onSuccessFunction =
+              arguments[3].getObject(runtime).getFunction(runtime);
+          auto targetNode =
+              uiManager->findNodeAtPoint(node, Point{locationX, locationY});
+          auto &eventTarget = targetNode->getEventEmitter()->eventTarget_;
+
+          EventEmitter::DispatchMutex().lock();
+          eventTarget->retain(runtime);
+          auto instanceHandle = eventTarget->getInstanceHandle(runtime);
+          eventTarget->release(runtime);
+          EventEmitter::DispatchMutex().unlock();
+
+          onSuccessFunction.call(runtime, std::move(instanceHandle));
+          return jsi::Value::undefined();
+        });
+  }
+
   if (methodName == "clearJSResponder") {
     return jsi::Function::createFromHostFunction(
         runtime,
