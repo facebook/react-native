@@ -198,25 +198,32 @@ public class JavaTimerManager {
 
   public void onHostPause() {
     isPaused.set(true);
-    clearFrameCallback();
-    maybeIdleCallback();
+    if (!isRunningTasks.get()) {
+      clearFrameCallback();
+      maybeIdleCallback();
+    }
   }
 
   public void onHostDestroy() {
-    clearFrameCallback();
-    maybeIdleCallback();
+    isPaused.set(false);
+    if (!isRunningTasks.get()) {
+      clearFrameCallback();
+      maybeIdleCallback();
+    }
   }
 
   public void onHostResume() {
     isPaused.set(false);
     // TODO(5195192) Investigate possible problems related to restarting all tasks at the same
     // moment
-    setChoreographerCallback();
-    maybeSetChoreographerIdleCallback();
+    if (!isRunningTasks.get()) {
+      setChoreographerCallback();
+      maybeSetChoreographerIdleCallback();
+    }
   }
 
   public void onHeadlessJsTaskStart(int taskId) {
-    if (!isRunningTasks.getAndSet(true)) {
+    if (!isRunningTasks.getAndSet(true) && !isPaused.get()) {
       setChoreographerCallback();
       maybeSetChoreographerIdleCallback();
     }
@@ -225,7 +232,7 @@ public class JavaTimerManager {
   public void onHeadlessJsTaskFinish(int taskId) {
     HeadlessJsTaskContext headlessJsTaskContext =
         HeadlessJsTaskContext.getInstance(mReactApplicationContext);
-    if (!headlessJsTaskContext.hasActiveTasks()) {
+    if (!headlessJsTaskContext.hasActiveTasks() && isPaused.get())) {
       isRunningTasks.set(false);
       clearFrameCallback();
       maybeIdleCallback();
