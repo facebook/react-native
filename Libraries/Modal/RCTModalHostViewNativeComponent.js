@@ -70,7 +70,8 @@ type NativeProps = $ReadOnly<{|
 
   /**
    * The `onRequestClose` callback is called when the user taps the hardware
-   * back button on Android or the menu button on Apple TV.
+   * back button on Android, the menu button on Apple TV, or a modal is dismissed
+   * with a gesture on iOS 13+.
    *
    * This is required on Apple TV and Android.
    *

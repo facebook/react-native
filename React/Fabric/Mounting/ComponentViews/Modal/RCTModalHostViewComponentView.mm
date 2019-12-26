@@ -111,6 +111,7 @@ static ModalHostViewOnOrientationChangeStruct onOrientationChangeStruct(CGRect r
     _viewController = [RCTFabricModalHostViewController new];
     _viewController.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
     _viewController.delegate = self;
+    _viewController.presentationController.delegate = self;
   }
 
   return self;
