@@ -70,46 +70,42 @@
             });
         </script></nav></div><div class="container mainContainer docsContainer"><div class="wrapper"><div class="post"><header class="postHeader"><a class="edit-page-link button" href="https://github.com/facebook/react-native-website/blob/master/docs/inputaccessoryview.md" target="_blank" rel="noreferrer noopener">Edit</a><h1 id="__docusaurus" class="postHeaderTitle">InputAccessoryView</h1></header><article><div><span><p>A component which enables customization of the keyboard input accessory view on iOS. The input accessory view is displayed above the keyboard whenever a <code>TextInput</code> has focus. This component can be used to create custom toolbars.</p>
 <p>To use this component wrap your custom toolbar with the InputAccessoryView component, and set a <code>nativeID</code>. Then, pass that <code>nativeID</code> as the <code>inputAccessoryViewID</code> of whatever <code>TextInput</code> you desire. A basic example:</p>
-<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React, { Component } <span class="hljs-keyword">from</span> <span class="hljs-string">'react'</span>;
-<span class="hljs-keyword">import</span> { View, ScrollView, TextInput, InputAccessoryView, Button } <span class="hljs-keyword">from</span> <span class="hljs-string">'react-native'</span>;
+<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React, { useState } <span class="hljs-keyword">from</span> <span class="hljs-string">'react'</span>;
+<span class="hljs-keyword">import</span> { Button, InputAccessoryView, ScrollView, TextInput } <span class="hljs-keyword">from</span> <span class="hljs-string">'react-native'</span>;
 
-<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">UselessTextInput</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">Component</span> </span>{
-  <span class="hljs-keyword">constructor</span>(props) {
-    <span class="hljs-keyword">super</span>(props);
-    <span class="hljs-keyword">this</span>.state = {<span class="hljs-attr">text</span>: <span class="hljs-string">'Placeholder Text'</span>};
-  }
-
-  render() {
-    <span class="hljs-keyword">const</span> inputAccessoryViewID = <span class="hljs-string">"uniqueID"</span>;
-    <span class="hljs-keyword">return</span> (
-      &lt;View&gt;
-        &lt;ScrollView keyboardDismissMode="interactive"&gt;
-          &lt;TextInput
-            style={{
-              padding: 10,
-              paddingTop: 50,
-            }}
-            inputAccessoryViewID={inputAccessoryViewID}
-            onChangeText={text =&gt; this.setState({text})}
-            value={this.state.text}
-          /&gt;
-        &lt;/ScrollView&gt;
-        &lt;InputAccessoryView nativeID={inputAccessoryViewID}&gt;
-          &lt;Button
-            onPress={() =&gt; this.setState({text: 'Placeholder Text'})}
-            title="Reset Text"
-          /&gt;
-        &lt;/InputAccessoryView&gt;
-      &lt;/View&gt;
-    );
-  }
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> App = <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
+  <span class="hljs-keyword">const</span> inputAccessoryViewID = <span class="hljs-string">'uniqueID'</span>;
+  <span class="hljs-keyword">const</span> initialText = <span class="hljs-string">'Placeholder Text'</span>;
+  <span class="hljs-keyword">const</span> [text, setText] = useState(initialText);
+  
+  <span class="hljs-keyword">return</span> (
+    &lt;&gt;
+      &lt;ScrollView keyboardDismissMode="interactive"&gt;
+        &lt;TextInput
+          style={{
+            padding: 16,
+            marginTop: 50
+          }}
+          inputAccessoryViewID={inputAccessoryViewID}
+          onChangeText={text =&gt; setText(text)}
+          value={text}
+        /&gt;
+      &lt;/ScrollView&gt;
+      &lt;InputAccessoryView nativeID={inputAccessoryViewID}&gt;
+        &lt;Button
+          onPress={() =&gt; setText(initialText)}
+          title="Reset Text"
+        /&gt;
+      &lt;/InputAccessoryView&gt;
+    &lt;/&gt;
+  );
 }
 </code></pre></div><div class="desktop-friendly-snack" style="margin-top: 15px; margin-bottom: 15px"><div
         data-snack-name="InputAccessoryView"
         data-snack-description="Example usage"
-        data-snack-code="import%20React%2C%20%7B%20Component%20%7D%20from%20'react'%3B%0Aimport%20%7B%20View%2C%20ScrollView%2C%20TextInput%2C%20InputAccessoryView%2C%20Button%20%7D%20from%20'react-native'%3B%0A%0Aexport%20default%20class%20UselessTextInput%20extends%20Component%20%7B%0A%20%20constructor(props)%20%7B%0A%20%20%20%20super(props)%3B%0A%20%20%20%20this.state%20%3D%20%7Btext%3A%20'Placeholder%20Text'%7D%3B%0A%20%20%7D%0A%0A%20%20render()%20%7B%0A%20%20%20%20const%20inputAccessoryViewID%20%3D%20%22uniqueID%22%3B%0A%20%20%20%20return%20(%0A%20%20%20%20%20%20%3CView%3E%0A%20%20%20%20%20%20%20%20%3CScrollView%20keyboardDismissMode%3D%22interactive%22%3E%0A%20%20%20%20%20%20%20%20%20%20%3CTextInput%0A%20%20%20%20%20%20%20%20%20%20%20%20style%3D%7B%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20padding%3A%2010%2C%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20paddingTop%3A%2050%2C%0A%20%20%20%20%20%20%20%20%20%20%20%20%7D%7D%0A%20%20%20%20%20%20%20%20%20%20%20%20inputAccessoryViewID%3D%7BinputAccessoryViewID%7D%0A%20%20%20%20%20%20%20%20%20%20%20%20onChangeText%3D%7Btext%20%3D%3E%20this.setState(%7Btext%7D)%7D%0A%20%20%20%20%20%20%20%20%20%20%20%20value%3D%7Bthis.state.text%7D%0A%20%20%20%20%20%20%20%20%20%20%2F%3E%0A%20%20%20%20%20%20%20%20%3C%2FScrollView%3E%0A%20%20%20%20%20%20%20%20%3CInputAccessoryView%20nativeID%3D%7BinputAccessoryViewID%7D%3E%0A%20%20%20%20%20%20%20%20%20%20%3CButton%0A%20%20%20%20%20%20%20%20%20%20%20%20onPress%3D%7B()%20%3D%3E%20this.setState(%7Btext%3A%20'Placeholder%20Text'%7D)%7D%0A%20%20%20%20%20%20%20%20%20%20%20%20title%3D%22Reset%20Text%22%0A%20%20%20%20%20%20%20%20%20%20%2F%3E%0A%20%20%20%20%20%20%20%20%3C%2FInputAccessoryView%3E%0A%20%20%20%20%20%20%3C%2FView%3E%0A%20%20%20%20)%3B%0A%20%20%7D%0A%7D%0A"
-        data-snack-platform="ios"
-        data-snack-supported-platforms=ios,android,web
+        data-snack-code="import%20React%2C%20%7B%20useState%20%7D%20from%20'react'%3B%0Aimport%20%7B%20Button%2C%20InputAccessoryView%2C%20ScrollView%2C%20TextInput%20%7D%20from%20'react-native'%3B%0A%0Aexport%20default%20App%20%3D%20()%20%3D%3E%20%7B%0A%20%20const%20inputAccessoryViewID%20%3D%20'uniqueID'%3B%0A%20%20const%20initialText%20%3D%20'Placeholder%20Text'%3B%0A%20%20const%20%5Btext%2C%20setText%5D%20%3D%20useState(initialText)%3B%0A%20%20%0A%20%20return%20(%0A%20%20%20%20%3C%3E%0A%20%20%20%20%20%20%3CScrollView%20keyboardDismissMode%3D%22interactive%22%3E%0A%20%20%20%20%20%20%20%20%3CTextInput%0A%20%20%20%20%20%20%20%20%20%20style%3D%7B%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20padding%3A%2016%2C%0A%20%20%20%20%20%20%20%20%20%20%20%20marginTop%3A%2050%0A%20%20%20%20%20%20%20%20%20%20%7D%7D%0A%20%20%20%20%20%20%20%20%20%20inputAccessoryViewID%3D%7BinputAccessoryViewID%7D%0A%20%20%20%20%20%20%20%20%20%20onChangeText%3D%7Btext%20%3D%3E%20setText(text)%7D%0A%20%20%20%20%20%20%20%20%20%20value%3D%7Btext%7D%0A%20%20%20%20%20%20%20%20%2F%3E%0A%20%20%20%20%20%20%3C%2FScrollView%3E%0A%20%20%20%20%20%20%3CInputAccessoryView%20nativeID%3D%7BinputAccessoryViewID%7D%3E%0A%20%20%20%20%20%20%20%20%3CButton%0A%20%20%20%20%20%20%20%20%20%20onPress%3D%7B()%20%3D%3E%20setText(initialText)%7D%0A%20%20%20%20%20%20%20%20%20%20title%3D%22Reset%20Text%22%0A%20%20%20%20%20%20%20%20%2F%3E%0A%20%20%20%20%20%20%3C%2FInputAccessoryView%3E%0A%20%20%20%20%3C%2F%3E%0A%20%20)%3B%0A%7D%0A"
+        data-snack-platform="web"
+        data-snack-supported-platforms=ios,web
         data-snack-preview="true"
         style="
           overflow: hidden;
