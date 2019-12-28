@@ -9,6 +9,7 @@
 
 #include <react/core/ShadowNodeFragment.h>
 #include <react/debug/SystraceSection.h>
+#include <react/graphics/Geometry.h>
 
 #include <glog/logging.h>
 
@@ -134,6 +135,12 @@ void UIManager::clearJSResponder() const {
   }
 }
 
+ShadowNode::Shared UIManager::findNodeAtPoint(
+    const ShadowNode::Shared &node,
+    Point point) const {
+  return LayoutableShadowNode::findNodeAtPoint(node, point);
+}
+
 void UIManager::setNativeProps(
     ShadowNode const &shadowNode,
     RawProps const &rawProps) const {
@@ -218,47 +225,6 @@ void UIManager::dispatchCommand(
   if (delegate_) {
     delegate_->uiManagerDidDispatchCommand(shadowNode, commandName, args);
   }
-}
-
-static ShadowNode::Shared findShadowNodeByTagRecursively(
-    ShadowNode::Shared const &parentShadowNode,
-    Tag tag) {
-  if (parentShadowNode->getTag() == tag) {
-    return parentShadowNode;
-  }
-
-  for (ShadowNode::Shared const &shadowNode : parentShadowNode->getChildren()) {
-    auto result = findShadowNodeByTagRecursively(shadowNode, tag);
-    if (result) {
-      return result;
-    }
-  }
-
-  return nullptr;
-}
-
-ShadowNode::Shared UIManager::findShadowNodeByTag_DEPRECATED(Tag tag) const {
-  auto shadowNode = ShadowNode::Shared{};
-
-  shadowTreeRegistry_.enumerate([&](ShadowTree const &shadowTree, bool &stop) {
-    auto rootShadowNode = ShadowNode::Shared{};
-    // This is tricky.
-    // The public interface of `ShadowTree` discourages accessing a stored
-    // pointer to a root node because of the possible data race.
-    // To work around this, we ask for a commit and immediately cancel it
-    // returning `nullptr` instead of a new shadow tree.
-    shadowTree.tryCommit([&](RootShadowNode::Shared const &oldRootShadowNode) {
-      rootShadowNode = oldRootShadowNode;
-      return nullptr;
-    });
-
-    shadowNode = findShadowNodeByTagRecursively(rootShadowNode, tag);
-    if (shadowNode) {
-      stop = true;
-    }
-  });
-
-  return shadowNode;
 }
 
 void UIManager::setComponentDescriptorRegistry(

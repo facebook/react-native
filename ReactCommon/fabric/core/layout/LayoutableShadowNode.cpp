@@ -114,6 +114,32 @@ void LayoutableShadowNode::layout(LayoutContext layoutContext) {
   }
 }
 
+ShadowNode::Shared LayoutableShadowNode::findNodeAtPoint(
+    ShadowNode::Shared node,
+    Point point) {
+  auto layoutableShadowNode =
+      dynamic_cast<const LayoutableShadowNode *>(node.get());
+
+  if (!layoutableShadowNode) {
+    return nullptr;
+  }
+  auto frame = layoutableShadowNode->getLayoutMetrics().frame;
+  auto isPointInside = frame.containsPoint(point);
+
+  if (!isPointInside) {
+    return nullptr;
+  }
+
+  auto newPoint = point - frame.origin;
+  for (const auto &childShadowNode : node->getChildren()) {
+    auto hitView = findNodeAtPoint(childShadowNode, newPoint);
+    if (hitView) {
+      return hitView;
+    }
+  }
+  return isPointInside ? node : nullptr;
+}
+
 void LayoutableShadowNode::layoutChildren(LayoutContext layoutContext) {
   // Default implementation does nothing.
 }

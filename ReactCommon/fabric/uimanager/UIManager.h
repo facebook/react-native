@@ -88,6 +88,10 @@ class UIManager final : public ShadowTreeDelegate {
 
   void clearJSResponder() const;
 
+  ShadowNode::Shared findNodeAtPoint(
+      const ShadowNode::Shared &shadowNode,
+      Point point) const;
+
   /*
    * Returns layout metrics of given `shadowNode` relative to
    * `ancestorShadowNode` (relative to the root node in case if provided
@@ -110,14 +114,6 @@ class UIManager final : public ShadowTreeDelegate {
       const SharedShadowNode &shadowNode,
       std::string const &commandName,
       folly::dynamic const args) const;
-
-  /*
-   * Iterates over all shadow nodes which are parts of all registered surfaces
-   * and find the one that has given `tag`. Returns `nullptr` if the node wasn't
-   * found. This is a temporary workaround that should not be used in any core
-   * functionality.
-   */
-  ShadowNode::Shared findShadowNodeByTag_DEPRECATED(Tag tag) const;
 
   ShadowTreeRegistry const &getShadowTreeRegistry() const;
 

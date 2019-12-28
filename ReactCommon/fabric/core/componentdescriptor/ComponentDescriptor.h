@@ -18,6 +18,7 @@
 namespace facebook {
 namespace react {
 
+class ComponentDescriptorParameters;
 class ComponentDescriptor;
 
 using SharedComponentDescriptor = std::shared_ptr<ComponentDescriptor const>;
@@ -44,10 +45,7 @@ class ComponentDescriptor {
    */
   using Flavor = std::shared_ptr<void const>;
 
-  ComponentDescriptor(
-      EventDispatcher::Weak const &eventDispatcher,
-      ContextContainer::Shared const &contextContainer,
-      ComponentDescriptor::Flavor const &flavor);
+  ComponentDescriptor(ComponentDescriptorParameters const &parameters);
 
   virtual ~ComponentDescriptor() = default;
 
@@ -134,6 +132,17 @@ class ComponentDescriptor {
   ContextContainer::Shared contextContainer_;
   RawPropsParser rawPropsParser_{};
   Flavor flavor_;
+};
+
+/*
+ * Represents a collection of arguments that sufficient to construct a
+ * `ComponentDescriptor`.
+ */
+class ComponentDescriptorParameters {
+ public:
+  EventDispatcher::Weak eventDispatcher;
+  ContextContainer::Shared contextContainer;
+  ComponentDescriptor::Flavor flavor;
 };
 
 } // namespace react

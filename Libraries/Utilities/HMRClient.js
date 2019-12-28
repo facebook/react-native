@@ -10,6 +10,7 @@
 
 'use strict';
 
+const DevSettings = require('./DevSettings');
 const Platform = require('./Platform');
 const invariant = require('invariant');
 
@@ -274,6 +275,11 @@ function setHMRUnavailableReason(reason) {
 }
 
 function registerBundleEntryPoints(client) {
+  if (hmrUnavailableReason) {
+    DevSettings.reload('Bundle Splitting – Metro disconnected');
+    return;
+  }
+
   if (pendingEntryPoints.length > 0) {
     client.send(
       JSON.stringify({

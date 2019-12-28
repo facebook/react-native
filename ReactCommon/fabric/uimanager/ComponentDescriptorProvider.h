@@ -15,17 +15,6 @@ namespace facebook {
 namespace react {
 
 /*
- * Represents a collection of arguments that sufficient to construct a
- * `ComponentDescriptor`.
- */
-class ComponentDescriptorParameters {
- public:
-  EventDispatcher::Weak eventDispatcher;
-  ContextContainer::Shared contextContainer;
-  ComponentDescriptor::Flavor flavor;
-};
-
-/*
  * Callable signature that represents the signature of `ComponentDescriptor`
  * constructor. The callable returns a unique pointer conveniently represents an
  * abstract type and ownership of the newly created object.
@@ -61,10 +50,7 @@ ComponentDescriptor::Unique concreteComponentDescriptorConstructor(
       std::is_base_of<ComponentDescriptor, ComponentDescriptorT>::value,
       "ComponentDescriptorT must be a descendant of ComponentDescriptor");
 
-  return std::make_unique<ComponentDescriptorT const>(
-      parameters.eventDispatcher,
-      parameters.contextContainer,
-      parameters.flavor);
+  return std::make_unique<ComponentDescriptorT const>(parameters);
 }
 
 /*

@@ -17,6 +17,7 @@
 #include <react/core/Sealable.h>
 #include <react/core/ShadowNode.h>
 #include <react/debug/DebugStringConvertible.h>
+#include <react/graphics/Geometry.h>
 #include <react/graphics/Transform.h>
 
 namespace facebook {
@@ -85,6 +86,14 @@ class LayoutableShadowNode : public virtual Sealable {
   LayoutMetrics getRelativeLayoutMetrics(
       LayoutableShadowNode const &ancestorLayoutableShadowNode,
       LayoutInspectingPolicy policy) const;
+
+  /*
+   * Returns the ShadowNode that is rendered at the Point received as a
+   * parameter.
+   */
+  static ShadowNode::Shared findNodeAtPoint(
+      ShadowNode::Shared node,
+      Point point);
 
  protected:
   /*

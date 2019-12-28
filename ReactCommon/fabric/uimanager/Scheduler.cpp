@@ -61,8 +61,8 @@ Scheduler::Scheduler(
   componentDescriptorRegistry_ = schedulerToolbox.componentRegistryFactory(
       eventDispatcher_, schedulerToolbox.contextContainer);
 
-  rootComponentDescriptor_ =
-      std::make_unique<const RootComponentDescriptor>(eventDispatcher_);
+  rootComponentDescriptor_ = std::make_unique<const RootComponentDescriptor>(
+      ComponentDescriptorParameters{eventDispatcher_, nullptr, nullptr});
 
   uiManager->setDelegate(this);
   uiManager->setComponentDescriptorRegistry(componentDescriptorRegistry_);
