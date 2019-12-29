@@ -22,6 +22,17 @@
 #import <React/RCTFileRequestHandler.h>
 #import <React/RCTRootView.h>
 
+#if DEBUG
+#ifdef FB_SONARKIT_ENABLED
+#import <FlipperKit/FlipperClient.h>
+#import <FlipperKitLayoutPlugin/FlipperKitLayoutPlugin.h>
+#import <FlipperKitUserDefaultsPlugin/FKUserDefaultsPlugin.h>
+#import <FlipperKitNetworkPlugin/FlipperKitNetworkPlugin.h>
+#import <SKIOSNetworkPlugin/SKIOSNetworkAdapter.h>
+#import <FlipperKitReactPlugin/FlipperKitReactPlugin.h>
+#endif
+#endif
+
 #import <cxxreact/JSExecutor.h>
 
 #if !TARGET_OS_TV && !TARGET_OS_UIKITFORMAC
@@ -51,6 +62,7 @@
 
 - (BOOL)application:(__unused UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
+  [AppDelegate initializeFlipper:application];
   RCTEnableTurboModule(YES);
 
   _bridge = [[RCTBridge alloc] initWithDelegate:self
@@ -92,6 +104,21 @@
   NSString *bundleRoot = [NSString stringWithFormat:@"%@RNTester/js/RNTesterApp.ios", bundlePrefix];
   return [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:bundleRoot
                                                         fallbackResource:nil];
+}
+
++ (void) initializeFlipper:(UIApplication *)application
+{
+#if DEBUG
+#ifdef FB_SONARKIT_ENABLED
+  FlipperClient *client = [FlipperClient sharedClient];
+  SKDescriptorMapper *layoutDescriptorMapper = [[SKDescriptorMapper alloc] initWithDefaults];
+  [client addPlugin: [[FlipperKitLayoutPlugin alloc] initWithRootNode: application withDescriptorMapper: layoutDescriptorMapper]];
+  [client addPlugin: [[FKUserDefaultsPlugin alloc] initWithSuiteName:nil]];
+  [client addPlugin: [FlipperKitReactPlugin new]];
+  [client addPlugin: [[FlipperKitNetworkPlugin alloc] initWithNetworkAdapter:[SKIOSNetworkAdapter new]]];
+  [client start];
+#endif
+#endif
 }
 
 - (BOOL)application:(UIApplication *)app
