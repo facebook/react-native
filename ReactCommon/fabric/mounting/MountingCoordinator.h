@@ -13,10 +13,6 @@
 #include <react/mounting/MountingTransaction.h>
 #include <react/mounting/ShadowTreeRevision.h>
 
-#ifndef NDEBUG
-#define RN_SHADOW_TREE_INTROSPECTION
-#endif
-
 #ifdef RN_SHADOW_TREE_INTROSPECTION
 #include <react/mounting/stubs.h>
 #endif
