@@ -18,6 +18,10 @@ PODS:
     - boost-for-react-native
     - DoubleConversion
     - glog
+  - Folly/Fabric (2018.10.22.00):
+    - boost-for-react-native
+    - DoubleConversion
+    - glog
   - glog (0.3.5)
   - RCTRequired (1000.0.0)
   - RCTTypeSafety (1000.0.0):
@@ -182,6 +186,235 @@ PODS:
     - Folly (= 2018.10.22.00)
     - glog
     - React-jsinspector (= 1000.0.0)
+  - React-Fabric (1000.0.0):
+    - FBReactNativeSpec (= 1000.0.0)
+    - Folly/Fabric (= 2018.10.22.00)
+    - RCTRequired (= 1000.0.0)
+    - RCTTypeSafety (= 1000.0.0)
+    - React-Fabric/attributedstring (= 1000.0.0)
+    - React-Fabric/better (= 1000.0.0)
+    - React-Fabric/components (= 1000.0.0)
+    - React-Fabric/config (= 1000.0.0)
+    - React-Fabric/core (= 1000.0.0)
+    - React-Fabric/debug (= 1000.0.0)
+    - React-Fabric/imagemanager (= 1000.0.0)
+    - React-Fabric/mounting (= 1000.0.0)
+    - React-Fabric/textlayoutmanager (= 1000.0.0)
+    - React-Fabric/uimanager (= 1000.0.0)
+    - React-Fabric/utils (= 1000.0.0)
+    - React-graphics (= 1000.0.0)
+    - React-jsiexecutor (= 1000.0.0)
+    - ReactCommon/turbomodule/core (= 1000.0.0)
+  - React-Fabric/attributedstring (1000.0.0):
+    - FBReactNativeSpec (= 1000.0.0)
+    - Folly/Fabric (= 2018.10.22.00)
+    - RCTRequired (= 1000.0.0)
+    - RCTTypeSafety (= 1000.0.0)
+    - React-graphics (= 1000.0.0)
+    - React-jsiexecutor (= 1000.0.0)
+    - ReactCommon/turbomodule/core (= 1000.0.0)
+  - React-Fabric/better (1000.0.0):
+    - FBReactNativeSpec (= 1000.0.0)
+    - Folly/Fabric (= 2018.10.22.00)
+    - RCTRequired (= 1000.0.0)
+    - RCTTypeSafety (= 1000.0.0)
+    - React-graphics (= 1000.0.0)
+    - React-jsiexecutor (= 1000.0.0)
+    - ReactCommon/turbomodule/core (= 1000.0.0)
+  - React-Fabric/components (1000.0.0):
+    - FBReactNativeSpec (= 1000.0.0)
+    - Folly/Fabric (= 2018.10.22.00)
+    - RCTRequired (= 1000.0.0)
+    - RCTTypeSafety (= 1000.0.0)
+    - React-Fabric/components/activityindicator (= 1000.0.0)
+    - React-Fabric/components/image (= 1000.0.0)
+    - React-Fabric/components/legacyviewmanagerinterop (= 1000.0.0)
+    - React-Fabric/components/modal (= 1000.0.0)
+    - React-Fabric/components/picker (= 1000.0.0)
+    - React-Fabric/components/rncore (= 1000.0.0)
+    - React-Fabric/components/root (= 1000.0.0)
+    - React-Fabric/components/safeareaview (= 1000.0.0)
+    - React-Fabric/components/scrollview (= 1000.0.0)
+    - React-Fabric/components/slider (= 1000.0.0)
+    - React-Fabric/components/text (= 1000.0.0)
+    - React-Fabric/components/unimplementedview (= 1000.0.0)
+    - React-Fabric/components/view (= 1000.0.0)
+    - React-graphics (= 1000.0.0)
+    - React-jsiexecutor (= 1000.0.0)
+    - ReactCommon/turbomodule/core (= 1000.0.0)
+  - React-Fabric/components/activityindicator (1000.0.0):
+    - FBReactNativeSpec (= 1000.0.0)
+    - Folly/Fabric (= 2018.10.22.00)
+    - RCTRequired (= 1000.0.0)
+    - RCTTypeSafety (= 1000.0.0)
+    - React-graphics (= 1000.0.0)
+    - React-jsiexecutor (= 1000.0.0)
+    - ReactCommon/turbomodule/core (= 1000.0.0)
+  - React-Fabric/components/image (1000.0.0):
+    - FBReactNativeSpec (= 1000.0.0)
+    - Folly/Fabric (= 2018.10.22.00)
+    - RCTRequired (= 1000.0.0)
+    - RCTTypeSafety (= 1000.0.0)
+    - React-graphics (= 1000.0.0)
+    - React-jsiexecutor (= 1000.0.0)
+    - ReactCommon/turbomodule/core (= 1000.0.0)
+  - React-Fabric/components/legacyviewmanagerinterop (1000.0.0):
+    - FBReactNativeSpec (= 1000.0.0)
+    - Folly/Fabric (= 2018.10.22.00)
+    - RCTRequired (= 1000.0.0)
+    - RCTTypeSafety (= 1000.0.0)
+    - React-graphics (= 1000.0.0)
+    - React-jsiexecutor (= 1000.0.0)
+    - ReactCommon/turbomodule/core (= 1000.0.0)
+  - React-Fabric/components/modal (1000.0.0):
+    - FBReactNativeSpec (= 1000.0.0)
+    - Folly/Fabric (= 2018.10.22.00)
+    - RCTRequired (= 1000.0.0)
+    - RCTTypeSafety (= 1000.0.0)
+    - React-graphics (= 1000.0.0)
+    - React-jsiexecutor (= 1000.0.0)
+    - ReactCommon/turbomodule/core (= 1000.0.0)
+  - React-Fabric/components/picker (1000.0.0):
+    - FBReactNativeSpec (= 1000.0.0)
+    - Folly/Fabric (= 2018.10.22.00)
+    - RCTRequired (= 1000.0.0)
+    - RCTTypeSafety (= 1000.0.0)
+    - React-graphics (= 1000.0.0)
+    - React-jsiexecutor (= 1000.0.0)
+    - ReactCommon/turbomodule/core (= 1000.0.0)
+  - React-Fabric/components/rncore (1000.0.0):
+    - FBReactNativeSpec (= 1000.0.0)
+    - Folly/Fabric (= 2018.10.22.00)
+    - RCTRequired (= 1000.0.0)
+    - RCTTypeSafety (= 1000.0.0)
+    - React-graphics (= 1000.0.0)
+    - React-jsiexecutor (= 1000.0.0)
+    - ReactCommon/turbomodule/core (= 1000.0.0)
+  - React-Fabric/components/root (1000.0.0):
+    - FBReactNativeSpec (= 1000.0.0)
+    - Folly/Fabric (= 2018.10.22.00)
+    - RCTRequired (= 1000.0.0)
+    - RCTTypeSafety (= 1000.0.0)
+    - React-graphics (= 1000.0.0)
+    - React-jsiexecutor (= 1000.0.0)
+    - ReactCommon/turbomodule/core (= 1000.0.0)
+  - React-Fabric/components/safeareaview (1000.0.0):
+    - FBReactNativeSpec (= 1000.0.0)
+    - Folly/Fabric (= 2018.10.22.00)
+    - RCTRequired (= 1000.0.0)
+    - RCTTypeSafety (= 1000.0.0)
+    - React-graphics (= 1000.0.0)
+    - React-jsiexecutor (= 1000.0.0)
+    - ReactCommon/turbomodule/core (= 1000.0.0)
+  - React-Fabric/components/scrollview (1000.0.0):
+    - FBReactNativeSpec (= 1000.0.0)
+    - Folly/Fabric (= 2018.10.22.00)
+    - RCTRequired (= 1000.0.0)
+    - RCTTypeSafety (= 1000.0.0)
+    - React-graphics (= 1000.0.0)
+    - React-jsiexecutor (= 1000.0.0)
+    - ReactCommon/turbomodule/core (= 1000.0.0)
+  - React-Fabric/components/slider (1000.0.0):
+    - FBReactNativeSpec (= 1000.0.0)
+    - Folly/Fabric (= 2018.10.22.00)
+    - RCTRequired (= 1000.0.0)
+    - RCTTypeSafety (= 1000.0.0)
+    - React-graphics (= 1000.0.0)
+    - React-jsiexecutor (= 1000.0.0)
+    - ReactCommon/turbomodule/core (= 1000.0.0)
+  - React-Fabric/components/text (1000.0.0):
+    - FBReactNativeSpec (= 1000.0.0)
+    - Folly/Fabric (= 2018.10.22.00)
+    - RCTRequired (= 1000.0.0)
+    - RCTTypeSafety (= 1000.0.0)
+    - React-graphics (= 1000.0.0)
+    - React-jsiexecutor (= 1000.0.0)
+    - ReactCommon/turbomodule/core (= 1000.0.0)
+  - React-Fabric/components/unimplementedview (1000.0.0):
+    - FBReactNativeSpec (= 1000.0.0)
+    - Folly/Fabric (= 2018.10.22.00)
+    - RCTRequired (= 1000.0.0)
+    - RCTTypeSafety (= 1000.0.0)
+    - React-graphics (= 1000.0.0)
+    - React-jsiexecutor (= 1000.0.0)
+    - ReactCommon/turbomodule/core (= 1000.0.0)
+    - Yoga
+  - React-Fabric/components/view (1000.0.0):
+    - FBReactNativeSpec (= 1000.0.0)
+    - Folly/Fabric (= 2018.10.22.00)
+    - RCTRequired (= 1000.0.0)
+    - RCTTypeSafety (= 1000.0.0)
+    - React-graphics (= 1000.0.0)
+    - React-jsiexecutor (= 1000.0.0)
+    - ReactCommon/turbomodule/core (= 1000.0.0)
+    - Yoga
+  - React-Fabric/config (1000.0.0):
+    - FBReactNativeSpec (= 1000.0.0)
+    - Folly/Fabric (= 2018.10.22.00)
+    - RCTRequired (= 1000.0.0)
+    - RCTTypeSafety (= 1000.0.0)
+    - React-graphics (= 1000.0.0)
+    - React-jsiexecutor (= 1000.0.0)
+    - ReactCommon/turbomodule/core (= 1000.0.0)
+  - React-Fabric/core (1000.0.0):
+    - FBReactNativeSpec (= 1000.0.0)
+    - Folly/Fabric (= 2018.10.22.00)
+    - RCTRequired (= 1000.0.0)
+    - RCTTypeSafety (= 1000.0.0)
+    - React-graphics (= 1000.0.0)
+    - React-jsiexecutor (= 1000.0.0)
+    - ReactCommon/turbomodule/core (= 1000.0.0)
+  - React-Fabric/debug (1000.0.0):
+    - FBReactNativeSpec (= 1000.0.0)
+    - Folly/Fabric (= 2018.10.22.00)
+    - RCTRequired (= 1000.0.0)
+    - RCTTypeSafety (= 1000.0.0)
+    - React-graphics (= 1000.0.0)
+    - React-jsiexecutor (= 1000.0.0)
+    - ReactCommon/turbomodule/core (= 1000.0.0)
+  - React-Fabric/imagemanager (1000.0.0):
+    - FBReactNativeSpec (= 1000.0.0)
+    - Folly/Fabric (= 2018.10.22.00)
+    - RCTRequired (= 1000.0.0)
+    - RCTTypeSafety (= 1000.0.0)
+    - React-graphics (= 1000.0.0)
+    - React-jsiexecutor (= 1000.0.0)
+    - React-RCTImage (= 1000.0.0)
+    - ReactCommon/turbomodule/core (= 1000.0.0)
+  - React-Fabric/mounting (1000.0.0):
+    - FBReactNativeSpec (= 1000.0.0)
+    - Folly/Fabric (= 2018.10.22.00)
+    - RCTRequired (= 1000.0.0)
+    - RCTTypeSafety (= 1000.0.0)
+    - React-graphics (= 1000.0.0)
+    - React-jsiexecutor (= 1000.0.0)
+    - ReactCommon/turbomodule/core (= 1000.0.0)
+  - React-Fabric/textlayoutmanager (1000.0.0):
+    - FBReactNativeSpec (= 1000.0.0)
+    - Folly/Fabric (= 2018.10.22.00)
+    - RCTRequired (= 1000.0.0)
+    - RCTTypeSafety (= 1000.0.0)
+    - React-graphics (= 1000.0.0)
+    - React-jsiexecutor (= 1000.0.0)
+    - ReactCommon/turbomodule/core (= 1000.0.0)
+  - React-Fabric/uimanager (1000.0.0):
+    - FBReactNativeSpec (= 1000.0.0)
+    - Folly/Fabric (= 2018.10.22.00)
+    - RCTRequired (= 1000.0.0)
+    - RCTTypeSafety (= 1000.0.0)
+    - React-graphics (= 1000.0.0)
+    - React-jsiexecutor (= 1000.0.0)
+    - ReactCommon/turbomodule/core (= 1000.0.0)
+  - React-Fabric/utils (1000.0.0):
+    - FBReactNativeSpec (= 1000.0.0)
+    - Folly/Fabric (= 2018.10.22.00)
+    - RCTRequired (= 1000.0.0)
+    - RCTTypeSafety (= 1000.0.0)
+    - React-graphics (= 1000.0.0)
+    - React-jsiexecutor (= 1000.0.0)
+    - ReactCommon/turbomodule/core (= 1000.0.0)
+  - React-graphics (1000.0.0):
+    - Folly/Fabric (= 2018.10.22.00)
   - React-jsi (1000.0.0):
     - boost-for-react-native (= 1.63.0)
     - DoubleConversion
@@ -189,6 +422,11 @@ PODS:
     - glog
     - React-jsi/Default (= 1000.0.0)
   - React-jsi/Default (1000.0.0):
+    - boost-for-react-native (= 1.63.0)
+    - DoubleConversion
+    - Folly (= 2018.10.22.00)
+    - glog
+  - React-jsi/Fabric (1000.0.0):
     - boost-for-react-native (= 1.63.0)
     - DoubleConversion
     - Folly (= 2018.10.22.00)
@@ -216,6 +454,11 @@ PODS:
     - React-jsi (= 1000.0.0)
     - React-RCTNetwork (= 1000.0.0)
     - ReactCommon/turbomodule/core (= 1000.0.0)
+  - React-RCTFabric (1000.0.0):
+    - Folly/Fabric (= 2018.10.22.00)
+    - React-Core (= 1000.0.0)
+    - React-Fabric (= 1000.0.0)
+    - React-RCTImage (= 1000.0.0)
   - React-RCTImage (1000.0.0):
     - FBReactNativeSpec (= 1000.0.0)
     - Folly (= 2018.10.22.00)
@@ -283,6 +526,7 @@ DEPENDENCIES:
   - FBLazyVector (from `../Libraries/FBLazyVector`)
   - FBReactNativeSpec (from `../Libraries/FBReactNativeSpec`)
   - Folly (from `../third-party-podspecs/Folly.podspec`)
+  - Folly/Fabric (from `../third-party-podspecs/Folly.podspec`)
   - glog (from `../third-party-podspecs/glog.podspec`)
   - RCTRequired (from `../Libraries/RCTRequired`)
   - RCTTypeSafety (from `../Libraries/TypeSafety`)
@@ -293,12 +537,16 @@ DEPENDENCIES:
   - React-Core/RCTWebSocket (from `../`)
   - React-CoreModules (from `../React/CoreModules`)
   - React-cxxreact (from `../ReactCommon/cxxreact`)
+  - React-Fabric (from `../ReactCommon`)
+  - React-graphics (from `../ReactCommon/fabric/graphics`)
   - React-jsi (from `../ReactCommon/jsi`)
+  - React-jsi/Fabric (from `../ReactCommon/jsi`)
   - React-jsiexecutor (from `../ReactCommon/jsiexecutor`)
   - React-jsinspector (from `../ReactCommon/jsinspector`)
   - React-RCTActionSheet (from `../Libraries/ActionSheetIOS`)
   - React-RCTAnimation (from `../Libraries/NativeAnimation`)
   - React-RCTBlob (from `../Libraries/Blob`)
+  - React-RCTFabric (from `../React`)
   - React-RCTImage (from `../Libraries/Image`)
   - React-RCTLinking (from `../Libraries/LinkingIOS`)
   - React-RCTNetwork (from `../Libraries/Network`)
@@ -341,6 +589,10 @@ EXTERNAL SOURCES:
     :path: "../React/CoreModules"
   React-cxxreact:
     :path: "../ReactCommon/cxxreact"
+  React-Fabric:
+    :path: "../ReactCommon"
+  React-graphics:
+    :path: "../ReactCommon/fabric/graphics"
   React-jsi:
     :path: "../ReactCommon/jsi"
   React-jsiexecutor:
@@ -353,6 +605,8 @@ EXTERNAL SOURCES:
     :path: "../Libraries/NativeAnimation"
   React-RCTBlob:
     :path: "../Libraries/Blob"
+  React-RCTFabric:
+    :path: "../React"
   React-RCTImage:
     :path: "../Libraries/Image"
   React-RCTLinking:
@@ -377,34 +631,37 @@ EXTERNAL SOURCES:
 SPEC CHECKSUMS:
   boost-for-react-native: 39c7adb57c4e60d6c5479dd8623128eb5b3f0f2c
   DoubleConversion: 5805e889d232975c086db112ece9ed034df7a0b2
-  FBLazyVector: 34431b7e61740bed29b082ff81500b0ffafaffa0
-  FBReactNativeSpec: e9febd2d5cc091662f172724165922b2e28d10a3
+  FBLazyVector: ef8d59934fb77bf87b670034e35464fd7bf49c50
+  FBReactNativeSpec: f6414ea0f67edd971fa14a319d84e407c6021fed
   Folly: 30e7936e1c45c08d884aa59369ed951a8e68cf51
   glog: 1f3da668190260b06b429bb211bfbee5cd790c28
-  RCTRequired: 33f3b89d2d82ef01c02b9b4f8146c43762e509d8
-  RCTTypeSafety: 2b1cb2d92b779aa9a3522f67bd4f07e6b6d0797e
-  React: 28a654b69575941571c073a656bc06795825e7f7
-  React-ART: a5da06a892342d03896e0db45a7072525981f63c
-  React-Core: f8656b21cfe16b1fe276686f3b921bce0fa6de4d
-  React-CoreModules: 96b2f1e0b84493e6c1b7f3bb21357f24fdcfce2f
-  React-cxxreact: 7c4242192149ce0205b53efaa03e3bf86ba4337c
-  React-jsi: 98d1f9d8a79d2720ba6a44c2d928a77f315b7e4f
-  React-jsiexecutor: c0ab8c80a6e88380d63f583690a50d4a723b47b5
-  React-jsinspector: ea0a218071a11c3687cef2480580180caa6a64c0
-  React-RCTActionSheet: 090e7bd7c5774d919c47c4eeff78223a7fd8c19c
-  React-RCTAnimation: 891c2b3404c214dc19faee57b5f249da6deeb099
-  React-RCTBlob: 8df793b30385b7ffe7e6703651043bad369cd756
-  React-RCTImage: 3ee9a6cd02c7741ebe3a001d51a18c349019778f
-  React-RCTLinking: 7ccb8f6dcfd4b95b68a73119aca7bca9fa530b08
-  React-RCTNetwork: 565fa6cc6108db9210fe5774f04ce52edccbb8ed
-  React-RCTPushNotification: 494ccfc569e2a699c0cc1a816eaebf8197a2ebc8
-  React-RCTSettings: 8138286da8de74839cb436dd37704ed64d4bfe78
-  React-RCTTest: d148e0657ce77ffd43a10325c284f47f25fb0532
-  React-RCTText: 9078167d3bc011162326f2d8ef4dd580ec1eca17
-  React-RCTVibration: e3269787c533de8c4f54f489202d848fdef33e1d
-  ReactCommon: 9d212865526209dc2d01be40340c8d27b53e6bea
-  Yoga: d88d8b51ee5b247f43211e2edf272438df1b484f
+  RCTRequired: 313e307961c4fb04249717ef8554b14e33deb78c
+  RCTTypeSafety: b1f4ecfa3e7e9a4f9c5dbfd1a5827c0f786ac8f6
+  React: 8373da0c5c6c4014fc1ff584c3bc6601ea596494
+  React-ART: 50deffd9beb0906f424b458f0dccc524522ddf4b
+  React-Core: 4c89fbf558079a8ee5b225d1922679bd575bf721
+  React-CoreModules: b6927d9c5985c9209124bb38213a5c37b904aedc
+  React-cxxreact: 58b7beb4310830ed937afbd59be23bbc3c8fb990
+  React-Fabric: 2dfef7cbd1c62db2a11e1b60203a4a2267b843a4
+  React-graphics: d95f4d0d0e5bdce7a7c80958974140794a98fa7c
+  React-jsi: f21f6d08c9a99ba556a44219f7971268e2857ad4
+  React-jsiexecutor: e21156a74e9eb33809141ba92758cc8f111fcc90
+  React-jsinspector: 6b109fcba852b05c1c29f71f6c91ec9b28a61fb6
+  React-RCTActionSheet: d80377e2d65670b555d231c32e6eabe4f3987de6
+  React-RCTAnimation: 0c83547642501937af7a432e11bb4298db6d3302
+  React-RCTBlob: 53500836c2c8780358c275f19b0c274c04cbceb9
+  React-RCTFabric: 1f69f8ace6b9d7e0633c430af785397529a79d28
+  React-RCTImage: f8b674687553c2ebe1eff0b10cf92a9fa5d2acb5
+  React-RCTLinking: b8754e5cdedea984325187867f571247f73cba3c
+  React-RCTNetwork: 797cb5c517501d30a950342e03be5f939145eb1c
+  React-RCTPushNotification: 848d50ab3c757222433106bef8b5225f0547afe2
+  React-RCTSettings: b819c6fd234b6e246e18aafe1b0e1a0d6c98f2b2
+  React-RCTTest: 8e3cca8afd2940ac9bebced09e6a859f9e75059f
+  React-RCTText: b889616d08611db98c058a095b93c0eeeb706fbd
+  React-RCTVibration: 9959bce4d7054ce9ff668a356e09672ea4a1779f
+  ReactCommon: 56ca03cd57d2d15a0607ba15575d53e112786f75
+  Yoga: 8f35d3ddc50313f51de3c58b464552272265a785
 
-PODFILE CHECKSUM: 060903e270072f1e192b064848e6c34528af1c87
+PODFILE CHECKSUM: ba908f518555b87ea0474ecc314910e68ac6dde4
 
 COCOAPODS: 1.8.4

@@ -9,7 +9,7 @@
 #import <react/uimanager/ComponentDescriptorProvider.h>
 #import "RCTARTSurfaceViewComponentDescriptor.h"
 
-#import "FBRCTFabricComponentsPlugins.h"
+//#import "FBRCTFabricComponentsPlugins.h"
 
 using namespace facebook::react;
 

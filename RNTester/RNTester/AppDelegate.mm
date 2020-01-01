@@ -21,6 +21,7 @@
 #import <React/RCTDataRequestHandler.h>
 #import <React/RCTFileRequestHandler.h>
 #import <React/RCTRootView.h>
+#import <react/utils/ContextContainer.h>
 
 #import <cxxreact/JSExecutor.h>
 
@@ -29,7 +30,7 @@
 #endif
 
 #ifdef RN_FABRIC_ENABLED
-#import <React/RCTSurfacePresenter.h>
+#import <React/RCTSurfacePresenterBridgeAdapter.h>
 #import <React/RCTFabricSurfaceHostingProxyRootView.h>
 #endif
 
@@ -40,7 +41,7 @@
 @interface AppDelegate() <RCTCxxBridgeDelegate, RCTTurboModuleManagerDelegate>{
 
 #ifdef RN_FABRIC_ENABLED
-  RCTSurfacePresenter *_surfacePresenter;
+  RCTSurfacePresenterBridgeAdapter *_surfacePresenter;
 #endif
 
   RCTTurboModuleManager *_turboModuleManager;
@@ -64,14 +65,10 @@
   }
 
 #ifdef RN_FABRIC_ENABLED
-  _surfacePresenter = [[RCTSurfacePresenter alloc] initWithBridge:_bridge
-                                                           config:nil
-                                                      imageLoader:RCTTurboModuleEnabled() ?
-                                                                  [_bridge moduleForName:@"RCTImageLoader"
-                                                                  lazilyLoadIfNecessary:YES] : nil
-                                                  runtimeExecutor:nullptr];
+facebook::react::ContextContainer::Shared * _contextContainer;
+_surfacePresenter = [[RCTSurfacePresenterBridgeAdapter alloc] initWithBridge:_bridge contextContainer:nil];
 
-  _bridge.surfacePresenter = _surfacePresenter;
+  //_bridge.surfacePresenter = _surfacePresenter;
 
   UIView *rootView = [[RCTFabricSurfaceHostingProxyRootView alloc] initWithBridge:_bridge moduleName:@"RNTesterApp" initialProperties:initProps];
 #else

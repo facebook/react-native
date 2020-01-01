@@ -50,7 +50,7 @@ const template = `
  * LICENSE file in the root directory of this source tree.
  */
 
-#include <react/modules/::_LIBRARY_NAME_::/NativeModules.h>
+#include <react/components/::_LIBRARY_NAME_::/NativeModules.h>
 
 namespace facebook {
 namespace react {
