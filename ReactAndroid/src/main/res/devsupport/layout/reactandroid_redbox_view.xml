@@ -4,6 +4,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:background="#1A1A1A"
+    android:fitsSystemWindows="true"
     >
     <ListView
         android:id="@+id/rn_redbox_stack"
