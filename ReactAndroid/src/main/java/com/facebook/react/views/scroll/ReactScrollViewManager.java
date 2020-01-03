@@ -85,6 +85,12 @@ public class ReactScrollViewManager extends ViewGroupManager<ReactScrollView>
     view.setDecelerationRate(decelerationRate);
   }
 
+  @ReactProp(name = "disableIntervalMomentum")
+  public void setDisableIntervalMomentum(
+      ReactScrollView view, boolean disbaleIntervalMomentum) {
+    view.setDisableIntervalMomentum(disbaleIntervalMomentum);
+  }
+
   @ReactProp(name = "snapToInterval")
   public void setSnapToInterval(ReactScrollView view, float snapToInterval) {
     // snapToInterval needs to be exposed as a float because of the Javascript interface.

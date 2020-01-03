@@ -73,6 +73,7 @@ public class ReactScrollView extends ScrollView
   private @Nullable String mScrollPerfTag;
   private @Nullable Drawable mEndBackground;
   private int mEndFillColor = Color.TRANSPARENT;
+  private boolean mDisableIntervalMomentum = false;
   private int mSnapInterval = 0;
   private float mDecelerationRate = 0.985f;
   private @Nullable List<Integer> mSnapOffsets;
@@ -133,6 +134,10 @@ public class ReactScrollView extends ScrollView
     }
 
     return scroller;
+  }
+
+  public void setDisableIntervalMomentum(boolean disableIntervalMomentum) {
+    mDisableIntervalMomentum = disableIntervalMomentum;
   }
 
   public void setSendMomentumEvents(boolean sendMomentumEvents) {
@@ -609,6 +614,10 @@ public class ReactScrollView extends ScrollView
 
     int maximumOffset = getMaxScrollY();
     int targetOffset = predictFinalScrollPosition(velocityY);
+    if (mDisableIntervalMomentum) {
+      targetOffset = getScrollY();
+    }
+
     int smallerOffset = 0;
     int largerOffset = maximumOffset;
     int firstOffset = 0;
