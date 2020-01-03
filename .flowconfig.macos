@@ -1,8 +1,8 @@
 [ignore]
+; TODO(macOS ISS#2323203)
 ; We fork some components by platform
 .*/*[.]ios.js
-; TODO(macOS ISS#2323203):
-.*/*[.]macos.js
+.*/*[.]android.js
 
 ; Ignore templates for 'react-native init'
 <PROJECT_ROOT>/template/.*
@@ -24,17 +24,8 @@
 ; Ignore polyfills
 .*/Libraries/polyfills/.*
 
-; TODO(macOS ISS#2323203): Ignore metro.config.js
+; Ignore metro.config.js
 <PROJECT_ROOT>/metro.config.js
-
-; Ignore files that have a base platform file and an android file
-<PROJECT_ROOT>/Libraries/Image/Image.js
-<PROJECT_ROOT>/Libraries/Network/RCTNetworking.js
-<PROJECT_ROOT>/Libraries/Utilities/HMRLoadingView.js
-<PROJECT_ROOT>/Libraries/Components/Touchable/TouchableNativeFeedback.js
-
-; Ignore rn-cli.config.js
-<PROJECT_ROOT>/rn-cli.config.js
 
 ; These should not be required directly
 ; require from fbjs/lib instead: require('fbjs/lib/warning')
@@ -60,7 +51,7 @@ esproposal.nullish_coalescing=enable
 
 module.file_ext=.js
 module.file_ext=.json
-module.file_ext=.android.js
+module.file_ext=.macos.js
 
 module.system=haste
 module.system.haste.use_name_reducers=true
@@ -69,11 +60,10 @@ module.system.haste.use_name_reducers=true
 module.system.haste.name_reducers='^.*/\([a-zA-Z0-9$_.-]+\.js\(\.flow\)?\)$' -> '\1'
 # strip .js or .js.flow suffix
 module.system.haste.name_reducers='^\(.*\)\.js\(\.flow\)?$' -> '\1'
-# strip .android suffix
-module.system.haste.name_reducers='^\(.*\)\.android$' -> '\1'
-module.system.haste.name_reducers='^\(.*\)\.ios$' -> '\1'
-# TODO(macOS ISS#2323203):
+# strip .macos suffix
 module.system.haste.name_reducers='^\(.*\)\.macos$' -> '\1'
+module.system.haste.name_reducers='^\(.*\)\.ios$' -> '\1'
+module.system.haste.name_reducers='^\(.*\)\.android$' -> '\1'
 module.system.haste.name_reducers='^\(.*\)\.native$' -> '\1'
 module.system.haste.paths.blacklist=.*/__tests__/.*
 module.system.haste.paths.blacklist=.*/__mocks__/.*
@@ -92,8 +82,8 @@ suppress_type=$FlowFixMe
 suppress_type=$FlowFixMeProps
 suppress_type=$FlowFixMeState
 
-suppress_comment=\\(.\\|\n\\)*\\$FlowFixMe\\($\\|[^(]\\|(\\(<VERSION>\\)? *\\(site=[a-z,_]*react_native\\(_android\\)?_\\(oss\\|fb\\)[a-z,_]*\\)?)\\)
-suppress_comment=\\(.\\|\n\\)*\\$FlowIssue\\((\\(<VERSION>\\)? *\\(site=[a-z,_]*react_native\\(_android\\)?_\\(oss\\|fb\\)[a-z,_]*\\)?)\\)?:? #[0-9]+
+suppress_comment=\\(.\\|\n\\)*\\$FlowFixMe\\($\\|[^(]\\|(\\(<VERSION>\\)? *\\(site=[a-z,_]*react_native\\(_ios\\)?_\\(oss\\|fb\\)[a-z,_]*\\)?)\\)
+suppress_comment=\\(.\\|\n\\)*\\$FlowIssue\\((\\(<VERSION>\\)? *\\(site=[a-z,_]*react_native\\(_ios\\)?_\\(oss\\|fb\\)[a-z,_]*\\)?)\\)?:? #[0-9]+
 suppress_comment=\\(.\\|\n\\)*\\$FlowExpectedError
 
 [lints]

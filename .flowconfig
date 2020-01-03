@@ -1,6 +1,8 @@
 [ignore]
 ; We fork some components by platform
 .*/*[.]android.js
+; TODO(macOS ISS#2323203):
+.*/*[.]macos.js
 
 ; Ignore templates for 'react-native init'
 <PROJECT_ROOT>/template/.*
@@ -60,6 +62,8 @@ module.system.haste.name_reducers='^.*/\([a-zA-Z0-9$_.-]+\.js\(\.flow\)?\)$' -> 
 module.system.haste.name_reducers='^\(.*\)\.js\(\.flow\)?$' -> '\1'
 # strip .ios suffix
 module.system.haste.name_reducers='^\(.*\)\.ios$' -> '\1'
+# TODO(macOS ISS#2323203):
+module.system.haste.name_reducers='^\(.*\)\.macos$' -> '\1'
 module.system.haste.name_reducers='^\(.*\)\.android$' -> '\1'
 module.system.haste.name_reducers='^\(.*\)\.native$' -> '\1'
 module.system.haste.paths.blacklist=.*/__tests__/.*

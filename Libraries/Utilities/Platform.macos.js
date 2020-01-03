@@ -32,6 +32,9 @@ const Platform = {
     }
     return false;
   },
+  get isTV() {
+    return false;
+  },
   select: <D, I>(spec: PlatformSelectSpec<D, I>): D | I =>
     'macos' in spec ? spec.macos : spec.default,
 };

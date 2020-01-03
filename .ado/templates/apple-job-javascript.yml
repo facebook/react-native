@@ -13,8 +13,14 @@ steps:
   - script: 'yarn test-ci'
     displayName: 'yarn test-ci'
 
-  - script: 'yarn flow'
-    displayName: 'yarn flow'
+  - script: 'yarn flow-check-ios'
+    displayName: 'yarn flow-check-ios'
+
+  - script: 'yarn flow-check-macos'
+    displayName: 'yarn flow-check-macos'
+
+  - script: 'yarn flow-check-android'
+    displayName: 'yarn flow-check-android'
 
   - script: 'yarn lint'
     displayName: 'yarn lint'
