@@ -65,7 +65,7 @@ static NSString *RCTNormalizeAnimatedEventName(NSString *eventName)
   NSMutableDictionary<NSString *, NSMutableArray<RCTEventAnimation *> *> *_eventDrivers;
   NSMutableSet<id<RCTAnimationDriver>> *_activeAnimations;
   CADisplayLink *_displayLink;
-  NSArray<NSString*>* _uiThreadProps;
+  NSArray<NSString*>* _layoutProps;
   NSMutableArray<RCTOnAnimationCallback> *_uiManagerOperationQueue;
 }
 
@@ -77,46 +77,67 @@ static NSString *RCTNormalizeAnimatedEventName(NSString *eventName)
     _eventDrivers = [NSMutableDictionary new];
     _activeAnimations = [NSMutableSet new];
     _uiManagerOperationQueue = [NSMutableArray new];
-    _uiThreadProps = @[
-      @"opacity",
-      @"transform",
-      @"borderRadius",
-      @"borderBottomEndRadius",
-      @"borderBottomLeftRadius",
-      @"borderBottomRightRadius",
-      @"borderBottomStartRadius",
-      @"borderTopEndRadius",
-      @"borderTopLeftRadius",
-      @"borderTopRightRadius",
-      @"borderTopStartRadius",
-      @"elevation",
-      @"backgroundColor",
-      @"borderRightColor",
-      @"borderBottomColor",
-      @"borderColor",
-      @"borderEndColor",
-      @"borderLeftColor",
-      @"borderStartColor",
-      @"borderTopColor",
-      @"shadowOpacity",
-      @"shadowRadius",
-      @"translateX",
-      @"translateY",
-      @"scale",
-      @"scaleX",
-      @"scaleY",
-      @"rotate",
-      @"rotateX",
-      @"rotateY",
-      @"rotateZ",
-      @"perspective"];
+    _layoutProps = @[
+      @"top",
+      @"right",
+      @"start",
+      @"end",
+      @"bottom",
+      @"left",
+      @"width",
+      @"height",
+      @"minWidth",
+      @"maxWidth",
+      @"minHeight",
+      @"maxHeight",
+      @"borderTopWidth",
+      @"borderRightWidth",
+      @"borderBottomWidth",
+      @"borderLeftWidth",
+      @"borderStartWidth",
+      @"borderEndWidth",
+      @"borderWidth",
+      @"marginTop",
+      @"marginRight",
+      @"marginBottom",
+      @"marginLeft",
+      @"marginStart",
+      @"marginEnd",
+      @"marginVertical",
+      @"marginHorizontal",
+      @"margin",
+      @"paddingTop",
+      @"paddingRight",
+      @"paddingBottom",
+      @"paddingLeft",
+      @"paddingStart",
+      @"paddingEnd",
+      @"paddingVertical",
+      @"paddingHorizontal",
+      @"padding",
+      @"flex",
+      @"flexGrow",
+      @"flexShrink",
+      @"flexBasis",
+      @"flexDirection",
+      @"flexWrap",
+      @"justifyContent",
+      @"alignItems",
+      @"alignSelf",
+      @"alignContent",
+      @"position",
+      @"aspectRatio",
+      @"overflow",
+      @"display",
+      @"onLayout",
+      @"direction"];
   }
   return self;
 }
 
-- (NSArray<NSString*>*) uiThreadProps
+- (NSArray<NSString*>*) layoutProps
 {
-  return _uiThreadProps;
+  return _layoutProps;
 }
 
 - (BOOL)isNodeManagedByFabric:(nonnull NSNumber *)tag

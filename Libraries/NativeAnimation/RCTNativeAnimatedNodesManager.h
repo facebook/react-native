@@ -13,7 +13,7 @@
 
 @interface RCTNativeAnimatedNodesManager : NSObject
 
-@property (nonatomic, copy, readonly) NSArray<NSString*>* uiThreadProps;
+@property (nonatomic, copy, readonly) NSArray<NSString*>* layoutProps;
 
 - (nonnull instancetype)initWithBridge:(nonnull RCTBridge *)bridge;
 

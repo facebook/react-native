@@ -77,7 +77,7 @@ import java.util.Map;
     if (mConnectedViewTag == -1) {
       return;
     }
-    JavaOnlyMap uiThreadProps = new JavaOnlyMap();
+    JavaOnlyMap layoutProps = new JavaOnlyMap();
 
     for (Map.Entry<String, Integer> entry : mPropNodeMapping.entrySet()) {
       String key = entry.getKey();
@@ -85,18 +85,18 @@ import java.util.Map;
       if (node == null) {
         throw new IllegalArgumentException("Mapped property node does not exists");
       } else if (node instanceof StyleAnimatedNode) {
-        ((StyleAnimatedNode) node).collectViewUpdates(uiThreadProps, mPropMap);
+        ((StyleAnimatedNode) node).collectViewUpdates(layoutProps, mPropMap);
       } else if (node instanceof ValueAnimatedNode) {
         Object animatedObject = ((ValueAnimatedNode) node).getAnimatedObject();
         if (animatedObject != null) {
-          if (mNativeAnimatedNodesManager.uiThreadProps.contains(key)) {
-            addProp(uiThreadProps, key, animatedObject);
+          if (mNativeAnimatedNodesManager.layoutProps.contains(key)) {
+            addProp(layoutProps, key, animatedObject);
           } else {
             addProp(mPropMap, key, animatedObject);
           }
         } else {
-          if (mNativeAnimatedNodesManager.uiThreadProps.contains(key)) {
-            uiThreadProps.putDouble(key, ((ValueAnimatedNode) node).getValue());
+          if (mNativeAnimatedNodesManager.layoutProps.contains(key)) {
+            layoutProps.putDouble(key, ((ValueAnimatedNode) node).getValue());
           } else {
             mPropMap.putDouble(entry.getKey(), ((ValueAnimatedNode) node).getValue());
           }
@@ -107,12 +107,12 @@ import java.util.Map;
       }
     }
 
-    if(uiThreadProps.keySetIterator().hasNextKey()) {
-      mUIManager.synchronouslyUpdateViewOnUIThread(mConnectedViewTag, uiThreadProps);
+    if(mPropMap.keySetIterator().hasNextKey()) {
+      mUIManager.synchronouslyUpdateViewOnUIThread(mConnectedViewTag, mPropMap);
     }
 
-    if(mPropMap.keySetIterator().hasNextKey()) {
-      mNativeAnimatedNodesManager.enqueueUpdateViewOnUIManager(mConnectedViewTag, mPropMap);
+    if(layoutProps.keySetIterator().hasNextKey()) {
+      mNativeAnimatedNodesManager.enqueueUpdateViewOnUIManager(mConnectedViewTag, layoutProps);
     }
   }
 }

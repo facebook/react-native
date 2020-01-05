@@ -34,20 +34,20 @@ import java.util.Map;
     mNativeAnimatedNodesManager = nativeAnimatedNodesManager;
   }
 
-  public void collectViewUpdates(JavaOnlyMap uiThreadProps, JavaOnlyMap props) {
+  public void collectViewUpdates(JavaOnlyMap layoutProps, JavaOnlyMap props) {
     for (Map.Entry<String, Integer> entry : mPropMapping.entrySet()) {
       @Nullable AnimatedNode node = mNativeAnimatedNodesManager.getNodeById(entry.getValue());
       if (node == null) {
         throw new IllegalArgumentException("Mapped style node does not exists");
       } else if (node instanceof TransformAnimatedNode) {
-        ((TransformAnimatedNode) node).collectViewUpdates(uiThreadProps);
+        ((TransformAnimatedNode) node).collectViewUpdates(props);
       } else if (node instanceof ValueAnimatedNode) {
         Object animatedObject =  ((ValueAnimatedNode) node).getAnimatedObject();
-        if (mNativeAnimatedNodesManager.uiThreadProps.contains(entry.getKey())) {
+        if (mNativeAnimatedNodesManager.layoutProps.contains(entry.getKey())) {
           if(animatedObject != null)
-            addProp(uiThreadProps, entry.getKey(), animatedObject);
+            addProp(layoutProps, entry.getKey(), animatedObject);
           else
-            uiThreadProps.putDouble(entry.getKey(), ((ValueAnimatedNode) node).getValue());
+            layoutProps.putDouble(entry.getKey(), ((ValueAnimatedNode) node).getValue());
         } else {
           if(animatedObject != null)
             addProp(props, entry.getKey(), animatedObject);
