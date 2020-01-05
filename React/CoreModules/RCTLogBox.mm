@@ -48,8 +48,8 @@
     [_surface start];
     [_surface setSize:frame.size];
 
-    if (![_surface synchronouslyWaitForStage:RCTSurfaceStageSurfaceDidInitialMounting timeout:.5]) {
-      RCTLogInfo(@"Failed to mount LogBox within 500ms");
+    if (![_surface synchronouslyWaitForStage:RCTSurfaceStageSurfaceDidInitialMounting timeout:1]) {
+      RCTLogInfo(@"Failed to mount LogBox within 1s");
     }
 
     _rootViewController = [UIViewController new];
