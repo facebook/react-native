@@ -9,6 +9,7 @@
     "url": "git@github.com:facebook/react-native.git"
   },
   "dependencies": {
+    "@react-native-community/eslint-plugin": "^1.0.0",
     "@typescript-eslint/eslint-plugin": "^1.5.0",
     "@typescript-eslint/parser": "^1.5.0",
     "babel-eslint": "10.0.3",
