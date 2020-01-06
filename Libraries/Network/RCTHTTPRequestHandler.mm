@@ -82,11 +82,11 @@ RCT_EXPORT_MODULE()
     callbackQueue.maxConcurrentOperationCount = 1;
     callbackQueue.underlyingQueue = [[_bridge networking] methodQueue];
     NSURLSessionConfiguration *configuration;
-    // Set allowsCellularAccess to NO ONLY if key ReactNetworkForceWifiOnly exists AND its value is YES
     if (urlSessionConfigurationProvider) {
       configuration = urlSessionConfigurationProvider();
     } else {
       configuration = [NSURLSessionConfiguration defaultSessionConfiguration];
+      // Set allowsCellularAccess to NO ONLY if key ReactNetworkForceWifiOnly exists AND its value is YES
       if (useWifiOnly) {
         configuration.allowsCellularAccess = ![useWifiOnly boolValue];
       }
