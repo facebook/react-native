@@ -152,6 +152,10 @@ const API = {
       animatedNodeTag,
     );
   },
+  addEnqueuedUpdateProp(prop: string) {
+    invariant(NativeAnimatedModule, 'Native animated module is not available');
+    NativeAnimatedModule.addEnqueuedUpdateProp(prop);
+  },
 };
 
 const TRANSFORM_WHITELIST = {

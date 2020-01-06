@@ -216,6 +216,11 @@ RCT_EXPORT_METHOD(removeAnimatedEventFromView:(double)viewTag
   }];
 }
 
+RCT_EXPORT_METHOD(addEnqueuedUpdateProp:(NSString*)propName)
+{
+  [_nodesManager addEnqueuedUpdateProp: propName];
+}
+
 #pragma mark -- Batch handling
 
 - (void)addOperationBlock:(AnimatedOperation)operation

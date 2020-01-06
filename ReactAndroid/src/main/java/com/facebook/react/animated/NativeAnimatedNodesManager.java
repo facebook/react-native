@@ -150,6 +150,12 @@ import java.util.Set;
     return mActiveAnimations.size() > 0 || mUpdatedNodes.size() > 0;
   }
 
+  public void addEnqueuedUpdateProp(String propName) {
+    if(!layoutProps.contains(propName)) {
+      layoutProps.add(propName);
+    }
+  }
+
   public void createAnimatedNode(int tag, ReadableMap config) {
     if (mAnimatedNodes.get(tag) != null) {
       throw new JSApplicationIllegalArgumentException(

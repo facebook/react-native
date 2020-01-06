@@ -57,6 +57,7 @@ export interface Spec extends TurboModule {
     eventName: string,
     animatedNodeTag: number,
   ) => void;
+  +addEnqueuedUpdateProp: (prop: string) => void;
 
   // Events
   +addListener: (eventName: string) => void;

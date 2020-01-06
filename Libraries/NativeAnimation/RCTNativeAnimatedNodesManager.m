@@ -65,7 +65,7 @@ static NSString *RCTNormalizeAnimatedEventName(NSString *eventName)
   NSMutableDictionary<NSString *, NSMutableArray<RCTEventAnimation *> *> *_eventDrivers;
   NSMutableSet<id<RCTAnimationDriver>> *_activeAnimations;
   CADisplayLink *_displayLink;
-  NSArray<NSString*>* _layoutProps;
+  NSMutableArray<NSString*>* _layoutProps;
   NSMutableArray<RCTOnAnimationCallback> *_uiManagerOperationQueue;
 }
 
@@ -77,7 +77,7 @@ static NSString *RCTNormalizeAnimatedEventName(NSString *eventName)
     _eventDrivers = [NSMutableDictionary new];
     _activeAnimations = [NSMutableSet new];
     _uiManagerOperationQueue = [NSMutableArray new];
-    _layoutProps = @[
+    _layoutProps = [NSMutableArray arrayWithArray:@[
       @"top",
       @"right",
       @"start",
@@ -129,7 +129,7 @@ static NSString *RCTNormalizeAnimatedEventName(NSString *eventName)
       @"aspectRatio",
       @"overflow",
       @"display",
-      @"direction"];
+      @"direction"]];
   }
   return self;
 }
@@ -155,6 +155,15 @@ static NSString *RCTNormalizeAnimatedEventName(NSString *eventName)
   [_uiManagerOperationQueue addObject:^(RCTUIManager *uiManager) {
     [bridge.uiManager updateView:reactTag viewName:viewName props:props];
   }];
+}
+
+- (void) addEnqueuedUpdateProp:(NSString*)propName {
+  for(int i=0; i<_layoutProps.count; i++) {
+    if([_layoutProps[i] isEqualToString:propName]) {
+      return;
+    }
+  }
+  [_layoutProps addObject:propName];
 }
 
 #pragma mark -- Graph

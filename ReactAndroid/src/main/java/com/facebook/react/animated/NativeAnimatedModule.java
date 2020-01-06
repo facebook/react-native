@@ -482,4 +482,9 @@ public class NativeAnimatedModule extends NativeAnimatedModuleSpec
   public void removeListeners(double count) {
     // iOS only
   }
+
+  @Override
+  public void addEnqueuedUpdateProp(String propName) {
+    mNodesManager.addEnqueuedUpdateProp(propName);
+  }
 }

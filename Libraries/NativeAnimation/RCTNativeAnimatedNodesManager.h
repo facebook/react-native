@@ -17,6 +17,8 @@
 
 - (nonnull instancetype)initWithBridge:(nonnull RCTBridge *)bridge;
 
+- (void)addEnqueuedUpdateProp:(NSString*)propName;
+
 - (void)enqueueUpdateViewOnUIManager:(nonnull NSNumber *)reactTag
                                viewName:(NSString *) viewName
                                   props:(NSMutableDictionary *)props;

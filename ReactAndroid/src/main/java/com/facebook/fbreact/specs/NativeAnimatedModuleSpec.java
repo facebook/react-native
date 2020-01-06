@@ -84,4 +84,7 @@ public abstract class NativeAnimatedModuleSpec extends ReactContextBaseJavaModul
 
   @ReactMethod
   public abstract void addListener(String eventName);
+
+  @ReactMethod
+  public abstract void addEnqueuedUpdateProp(String propName);
 }
