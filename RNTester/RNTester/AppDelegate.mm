@@ -22,6 +22,7 @@
 #import <React/RCTFileRequestHandler.h>
 #import <React/RCTRootView.h>
 #import <react/utils/ContextContainer.h>
+#import <react/config/ReactNativeConfig.h>
 
 #import <cxxreact/JSExecutor.h>
 
@@ -30,6 +31,7 @@
 #endif
 
 #ifdef RN_FABRIC_ENABLED
+#import <React/RCTSurfacePresenter.h>
 #import <React/RCTSurfacePresenterBridgeAdapter.h>
 #import <React/RCTFabricSurfaceHostingProxyRootView.h>
 #endif
@@ -41,7 +43,7 @@
 @interface AppDelegate() <RCTCxxBridgeDelegate, RCTTurboModuleManagerDelegate>{
 
 #ifdef RN_FABRIC_ENABLED
-  RCTSurfacePresenterBridgeAdapter *_surfacePresenter;
+  RCTSurfacePresenterBridgeAdapter * adapter;
 #endif
 
   RCTTurboModuleManager *_turboModuleManager;
@@ -65,10 +67,20 @@
   }
 
 #ifdef RN_FABRIC_ENABLED
-facebook::react::ContextContainer::Shared * _contextContainer;
-_surfacePresenter = [[RCTSurfacePresenterBridgeAdapter alloc] initWithBridge:_bridge contextContainer:nil];
 
-  //_bridge.surfacePresenter = _surfacePresenter;
+facebook::react::ContextContainer::Shared _contextContainer = std::make_shared<facebook::react::ContextContainer>();
+
+
+
+
+std::shared_ptr<const facebook::react::ReactNativeConfig> _reactNativeConfig;
+
+_reactNativeConfig = std::make_shared<const facebook::react::EmptyReactNativeConfig>();
+_contextContainer->insert("ReactNativeConfig", _reactNativeConfig);
+
+
+adapter = [[RCTSurfacePresenterBridgeAdapter alloc] initWithBridge:_bridge contextContainer:_contextContainer];
+
 
   UIView *rootView = [[RCTFabricSurfaceHostingProxyRootView alloc] initWithBridge:_bridge moduleName:@"RNTesterApp" initialProperties:initProps];
 #else
