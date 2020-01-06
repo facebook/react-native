@@ -13,7 +13,6 @@
 #import "RCTSurfaceDelegate.h"
 #import "RCTSurfaceView.h"
 #import "RCTUtils.h"
-#import "RCTLog.h"
 
 @interface RCTSurfaceHostingView ()
 
@@ -82,21 +81,8 @@ RCT_NOT_IMPLEMENTED(- (nullable instancetype)initWithCoder:(NSCoder *)coder)
     &maximumSize
   );
 
-  // FIXME T59424871
-  // This is a temporary workaround for a deadlock caused by re-entering this method.
-  // Recursive calling of `setFrame:` is weird but generally legal. We need to figure out how to solve that properly.
-  static BOOL isRecursive = NO;
-  if (isRecursive) {
-    RCTLogWarn(@"Recursive call to -[RCTSurfaceHostingView setFrame:] is not supported.");
-    return;
-  }
-
-  isRecursive = YES;
-
-  [_surface setMinimumSize:minimumSize
-               maximumSize:maximumSize];
-
-  isRecursive = NO;
+    [_surface setMinimumSize:minimumSize
+                 maximumSize:maximumSize];
 }
 
 - (CGSize)intrinsicContentSize
