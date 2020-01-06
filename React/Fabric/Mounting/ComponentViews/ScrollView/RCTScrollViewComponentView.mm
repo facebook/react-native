@@ -400,6 +400,7 @@ static void RCTSendPaperScrollEvent_DEPRECATED(UIScrollView *scrollView, NSInteg
 
 @end
 
+
 Class<RCTComponentViewProtocol> RCTScrollViewCls(void)
 {
   return RCTScrollViewComponentView.class;

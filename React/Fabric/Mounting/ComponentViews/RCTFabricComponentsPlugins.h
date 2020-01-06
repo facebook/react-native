@@ -22,9 +22,6 @@
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wreturn-type-c-linkage"
 
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 Class<RCTComponentViewProtocol> RCTFabricComponentsProvider(const char *name);
 
@@ -40,9 +37,7 @@ Class<RCTComponentViewProtocol> RCTModalHostViewCls(void) __attribute__((used));
 Class<RCTComponentViewProtocol> RCTARTSurfaceViewCls(void) __attribute__((used));
 Class<RCTComponentViewProtocol> RCTImageCls(void) __attribute__((used));
 
-#ifdef __cplusplus
-}
-#endif
+
 
 #pragma GCC diagnostic pop
 
