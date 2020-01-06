@@ -12,7 +12,6 @@
 #import <react/components/text/ParagraphState.h>
 #import <react/components/text/RawTextComponentDescriptor.h>
 #import <react/components/text/TextComponentDescriptor.h>
-#import <react/core/LocalData.h>
 #import <react/graphics/Geometry.h>
 #import <react/textlayoutmanager/RCTTextLayoutManager.h>
 #import <react/textlayoutmanager/TextLayoutManager.h>
