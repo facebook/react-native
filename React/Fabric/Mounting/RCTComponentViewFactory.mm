@@ -17,6 +17,12 @@
 #import <react/core/ReactPrimitives.h>
 #import <react/uimanager/ComponentDescriptorProviderRegistry.h>
 
+#ifdef RN_DISABLE_OSS_PLUGIN_HEADER
+#import <RCTFabricComponentPlugin/RCTFabricPluginProvider.h>
+#else
+#import "RCTFabricComponentsPlugins.h"
+#endif
+
 #import "RCTComponentViewClassDescriptor.h"
 #import "RCTFabricComponentsPlugins.h"
 #import "RCTImageComponentView.h"
@@ -24,13 +30,17 @@
 #import "RCTMountingTransactionObserving.h"
 #import "RCTParagraphComponentView.h"
 #import "RCTRootComponentView.h"
-
 #import "RCTUnimplementedViewComponentView.h"
 #import "RCTViewComponentView.h"
 
 #import <objc/runtime.h>
 
 using namespace facebook::react;
+
+static Class<RCTComponentViewProtocol> RCTComponentViewClassWithName(const char *componentName)
+{
+  return RCTFabricComponentsProvider(componentName);
+}
 
 @implementation RCTComponentViewFactory {
   better::map<ComponentHandle, RCTComponentViewClassDescriptor> _componentViewClasses;

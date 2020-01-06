@@ -19,6 +19,6 @@ Pod::Spec.new do |spec|
   spec.compiler_flags = '-Wno-unreachable-code'
 
   # Pinning to the same version as React.podspec.
-  spec.platforms = { :ios => "9.0", :tvos => "9.2" }
+  spec.platforms = { :ios => "10.0", :tvos => "10.0" }
 
 end

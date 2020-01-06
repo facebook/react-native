@@ -15,12 +15,6 @@
 NS_ASSUME_NONNULL_BEGIN
 
 /**
- * Given a component name, return its actual class. If component with doesn't exist, nil is returned.
- * Can be called on any thread.
- */
-extern "C" Class<RCTComponentViewProtocol> RCTComponentViewClassWithName(const char *componentName);
-
-/**
  * Registry of supported component view classes that can instantiate
  * view component instances by given component handle.
  */

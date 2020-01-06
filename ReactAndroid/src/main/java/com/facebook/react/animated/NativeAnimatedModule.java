@@ -128,9 +128,12 @@ public class NativeAnimatedModule extends NativeAnimatedModuleSpec
     ReactApplicationContext reactApplicationContext = getReactApplicationContextIfActiveOrWarn();
 
     if (reactApplicationContext != null) {
-      UIManagerModule uiManager = reactApplicationContext.getNativeModule(UIManagerModule.class);
       reactApplicationContext.addLifecycleEventListener(this);
-      uiManager.addUIManagerListener(this);
+      if (!reactApplicationContext.isBridgeless()) {
+        // TODO T59412313 Implement this API on FabricUIManager to use in bridgeless mode
+        UIManagerModule uiManager = reactApplicationContext.getNativeModule(UIManagerModule.class);
+        uiManager.addUIManagerListener(this);
+      }
     }
   }
 

@@ -10,6 +10,7 @@
 #include <react/components/rncore/EventEmitters.h>
 #include <react/components/rncore/Props.h>
 #include <react/components/slider/SliderMeasurementsManager.h>
+#include <react/components/slider/SliderState.h>
 #include <react/components/view/ConcreteViewShadowNode.h>
 #include <react/imagemanager/ImageManager.h>
 #include <react/imagemanager/primitives.h>
@@ -25,7 +26,8 @@ extern const char SliderComponentName[];
 class SliderShadowNode final : public ConcreteViewShadowNode<
                                    SliderComponentName,
                                    SliderProps,
-                                   SliderEventEmitter> {
+                                   SliderEventEmitter,
+                                   SliderState> {
  public:
   using ConcreteViewShadowNode::ConcreteViewShadowNode;
 
@@ -42,8 +44,7 @@ class SliderShadowNode final : public ConcreteViewShadowNode<
   void layout(LayoutContext layoutContext) override;
 
  private:
-  // (Re)Creates a `LocalData` object (with `ImageRequest`) if needed.
-  void updateLocalData();
+  void updateStateIfNeeded();
 
   ImageSource getTrackImageSource() const;
   ImageSource getMinimumTrackImageSource() const;
