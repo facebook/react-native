@@ -9,6 +9,7 @@
 
 #include <react/components/image/ImageEventEmitter.h>
 #include <react/components/image/ImageProps.h>
+#include <react/components/image/ImageState.h>
 #include <react/components/view/ConcreteViewShadowNode.h>
 #include <react/imagemanager/ImageManager.h>
 #include <react/imagemanager/primitives.h>
@@ -24,7 +25,8 @@ extern const char ImageComponentName[];
 class ImageShadowNode final : public ConcreteViewShadowNode<
                                   ImageComponentName,
                                   ImageProps,
-                                  ImageEventEmitter> {
+                                  ImageEventEmitter,
+                                  ImageState> {
  public:
   using ConcreteViewShadowNode::ConcreteViewShadowNode;
 
@@ -38,14 +40,11 @@ class ImageShadowNode final : public ConcreteViewShadowNode<
   void layout(LayoutContext layoutContext) override;
 
  private:
-  /*
-   * (Re)Creates a `LocalData` object (with `ImageRequest`) if needed.
-   */
-  void updateLocalData();
-
   ImageSource getImageSource() const;
 
   SharedImageManager imageManager_;
+
+  void updateStateIfNeeded();
 };
 
 } // namespace react

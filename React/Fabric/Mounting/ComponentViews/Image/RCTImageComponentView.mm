@@ -11,7 +11,6 @@
 #import <React/RCTImageResponseObserverProxy.h>
 #import <react/components/image/ImageComponentDescriptor.h>
 #import <react/components/image/ImageEventEmitter.h>
-#import <react/components/image/ImageLocalData.h>
 #import <react/components/image/ImageProps.h>
 #import <react/imagemanager/ImageInstrumentation.h>
 #import <react/imagemanager/ImageRequest.h>
@@ -26,7 +25,7 @@
 
 @implementation RCTImageComponentView {
   UIImageView *_imageView;
-  SharedImageLocalData _imageLocalData;
+  ImageShadowNode::ConcreteState::Shared _state;
   ImageResponseObserverCoordinator const *_coordinator;
   RCTImageResponseObserverProxy _imageResponseObserverProxy;
 }
@@ -80,34 +79,28 @@
   [super updateProps:props oldProps:oldProps];
 }
 
-- (void)updateLocalData:(SharedLocalData)localData oldLocalData:(SharedLocalData)oldLocalData
+- (void)updateState:(facebook::react::State::Shared const &)state
+           oldState:(facebook::react::State::Shared const &)oldState
 {
-  auto imageLocalData = std::static_pointer_cast<ImageLocalData const>(localData);
+  _state = std::static_pointer_cast<ImageShadowNode::ConcreteState const>(state);
+  auto _oldState = std::static_pointer_cast<ImageShadowNode::ConcreteState const>(oldState);
+  auto data = _state->getData();
 
-  // This call (setting `coordinator`) must be unconditional (at the same block as setting `LocalData`)
-  // because the setter stores a raw pointer to object that `LocalData` owns.
-  self.coordinator = imageLocalData ? &imageLocalData->getImageRequest().getObserverCoordinator() : nullptr;
+  // This call (setting `coordinator`) must be unconditional (at the same block as setting `State`)
+  // because the setter stores a raw pointer to object that `State` owns.
+  self.coordinator = &data.getImageRequest().getObserverCoordinator();
 
-  auto previousData = _imageLocalData;
-  _imageLocalData = imageLocalData;
+  bool havePreviousData = _oldState && _oldState->getData().getImageSource() != ImageSource{};
 
-  if (!_imageLocalData) {
-    // This might happen in very rare cases (e.g. inside a subtree inside a node with `display: none`).
-    // That's quite normal.
-    return;
-  }
-
-  bool havePreviousData = previousData != nullptr;
-
-  if (!havePreviousData || _imageLocalData->getImageSource() != previousData->getImageSource()) {
+  if (!havePreviousData || data.getImageSource() != _oldState->getData().getImageSource()) {
     // Loading actually starts a little before this, but this is the first time we know
     // the image is loading and can fire an event from this component
     std::static_pointer_cast<ImageEventEmitter const>(_eventEmitter)->onLoadStart();
 
     // TODO (T58941612): Tracking for visibility should be done directly on this class.
     // For now, we consolidate instrumentation logic in the image loader, so that pre-Fabric gets the same treatment.
-    auto instrumentation = std::static_pointer_cast<const RCTImageInstrumentationProxy>(
-        _imageLocalData->getImageRequest().getSharedImageInstrumentation());
+    auto instrumentation = std::static_pointer_cast<RCTImageInstrumentationProxy const>(
+        data.getImageRequest().getSharedImageInstrumentation());
     instrumentation->trackNativeImageView(self);
   }
 }
@@ -128,7 +121,7 @@
   [super prepareForRecycle];
   self.coordinator = nullptr;
   _imageView.image = nil;
-  _imageLocalData.reset();
+  _state.reset();
 }
 
 - (void)dealloc
@@ -171,7 +164,7 @@
   self->_imageView.layer.minificationFilter = kCAFilterTrilinear;
   self->_imageView.layer.magnificationFilter = kCAFilterTrilinear;
 
-  _imageLocalData->getImageRequest().getImageInstrumentation().didSetImage();
+  _state->getData().getImageRequest().getImageInstrumentation().didSetImage();
 }
 
 - (void)didReceiveProgress:(float)progress fromObserver:(void const *)observer
