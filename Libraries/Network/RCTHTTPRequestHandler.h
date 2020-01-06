@@ -8,6 +8,8 @@
 #import <React/RCTInvalidating.h>
 #import <React/RCTURLRequestHandler.h>
 
+typedef NSURLSessionConfiguration* (^NSURLSessionConfigurationProvider)(void);
+RCT_EXTERN void RCTSetCustomNSURLSessionConfigurationProvider(NSURLSessionConfigurationProvider);
 /**
  * This is the default RCTURLRequestHandler implementation for HTTP requests.
  */
