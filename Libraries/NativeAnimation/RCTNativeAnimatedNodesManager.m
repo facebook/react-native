@@ -129,7 +129,6 @@ static NSString *RCTNormalizeAnimatedEventName(NSString *eventName)
       @"aspectRatio",
       @"overflow",
       @"display",
-      @"onLayout",
       @"direction"];
   }
   return self;

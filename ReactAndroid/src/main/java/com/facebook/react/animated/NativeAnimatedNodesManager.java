@@ -120,7 +120,6 @@ import java.util.Set;
     "aspectRatio",
     "overflow",
     "display",
-    "onLayout",
     "direction")
     );
 
