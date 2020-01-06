@@ -251,7 +251,7 @@ class Modal extends React.Component<Props> {
         supportedOrientations={this.props.supportedOrientations}
         onOrientationChange={this.props.onOrientationChange}>
         <ScrollView.Context.Provider value={null}>
-          <View style={[styles.container, containerStyles]}>
+          <View style={[styles.container(this.props.positionFromTop), containerStyles]}>
             {innerChildren}
           </View>
         </ScrollView.Context.Provider>
@@ -270,14 +270,14 @@ const styles = StyleSheet.create({
   modal: {
     position: 'absolute',
   },
-  container: {
+  container:(top) =>{ return {
     /* $FlowFixMe(>=0.111.0 site=react_native_fb) This comment suppresses an
      * error found when Flow v0.111 was deployed. To see the error, delete this
      * comment and run Flow. */
     [side]: 0,
-    top: 0,
+    top: top?top:0,
     flex: 1,
-  },
+  }},
 });
 
 module.exports = Modal;
