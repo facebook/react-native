@@ -35,6 +35,12 @@ public class SegmentedControlManagerDelegate<T extends View, U extends BaseViewM
       case "tintColor":
         mViewManager.setTintColor(view, value == null ? null : ((Double) value).intValue());
         break;
+      case "textColor":
+        mViewManager.setTextColor(view, value == null ? null : ((Double) value).intValue());
+        break;
+      case "backgroundColor":
+        mViewManager.setBackgroundColor(view, value == null ? null : ((Double) value).intValue());
+        break;
       case "momentary":
         mViewManager.setMomentary(view, value == null ? false : (boolean) value);
         break;
