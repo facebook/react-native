@@ -263,12 +263,8 @@ let Image = (props: ImagePropsType, forwardedRef) => {
   let style;
   let sources;
   if (source?.uri != null) {
-    /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was found
-     * when making Flow check .android.js files. */
     const {width, height} = source;
     style = flattenStyle([{width, height}, styles.base, props.style]);
-    /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was found
-     * when making Flow check .android.js files. */
     sources = [{uri: source.uri}];
   } else {
     style = flattenStyle([styles.base, props.style]);
