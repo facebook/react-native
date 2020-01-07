@@ -56,7 +56,7 @@ if (
     },
     resolver: {
       hasteImplModulePath: require.resolve('./jest/hasteImpl'),
-      platforms: ['win32', 'ios', 'macos', 'android'],
+      platforms: ['ios', 'macos', 'android'],
     },
     transformer: {
       assetRegistryPath: require.resolve('./Libraries/Image/AssetRegistry'),

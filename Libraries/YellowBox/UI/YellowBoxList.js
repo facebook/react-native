@@ -20,7 +20,6 @@ const YellowBoxButton = require('./YellowBoxButton');
 const YellowBoxInspector = require('./YellowBoxInspector');
 const YellowBoxListRow = require('./YellowBoxListRow');
 const YellowBoxStyle = require('./YellowBoxStyle');
-const Platform = require('../../Utilities/Platform'); // TODO(windows ISS)
 
 import type {Category} from '../Data/YellowBoxCategory';
 import type {Registry} from '../Data/YellowBoxRegistry';
@@ -36,13 +35,10 @@ type State = {|
 |};
 
 const VIEWPORT_RATIO = 0.5;
-const MAX_ITEMS =
-  Platform.OS === 'win32' || Platform.OS === 'windesktop'
-    ? 3
-    : Math.floor(
-        (Dimensions.get('window').height * VIEWPORT_RATIO) /
-          (YellowBoxListRow.GUTTER + YellowBoxListRow.HEIGHT),
-      ); // TODO(windows ISS)
+const MAX_ITEMS = Math.floor(
+  (Dimensions.get('window').height * VIEWPORT_RATIO) /
+    (YellowBoxListRow.GUTTER + YellowBoxListRow.HEIGHT),
+);
 
 class YellowBoxList extends React.Component<Props, State> {
   state = {
@@ -73,7 +69,7 @@ class YellowBoxList extends React.Component<Props, State> {
     }
 
     const listStyle = {
-      width: Platform.OS === 'win32' ? '85%' : undefined, // TODO(windows ISS)
+      width: undefined,
       height:
         // Additional `0.5` so the (N + 1)th row can peek into view.
         Math.min(items.length, MAX_ITEMS + 0.5) *
@@ -130,7 +126,7 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   dismissAll: {
-    bottom: Platform.OS === 'win32' ? 0 : '100%', // TODO(windows ISS)
+    bottom: '100%',
     flexDirection: 'row',
     justifyContent: 'flex-end',
     paddingBottom: 4,
