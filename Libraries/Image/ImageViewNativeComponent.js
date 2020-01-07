@@ -12,8 +12,6 @@
 
 const requireNativeComponent = require('../ReactNative/requireNativeComponent');
 
-import codegenNativeComponent from '../Utilities/codegenNativeComponent';
-
 import type {DangerouslyImpreciseStyle} from '../StyleSheet/StyleSheet';
 import type {ResolvedAssetSource} from './AssetSourceResolver';
 import type {HostComponent} from '../Renderer/shims/ReactNativeTypes';
@@ -21,6 +19,9 @@ import type {ImageProps} from './ImageProps';
 import type {ViewProps} from '../Components/View/ViewPropTypes';
 import type {ImageStyleProp} from '../StyleSheet/StyleSheet';
 import type {ColorValue} from '../StyleSheet/StyleSheetTypes';
+
+import ImageViewViewConfig from './ImageViewViewConfig';
+const ReactNativeViewConfigRegistry = require('../Renderer/shims/ReactNativeViewConfigRegistry');
 
 type NativeProps = $ReadOnly<{|
   ...ImageProps,
@@ -40,15 +41,15 @@ type NativeProps = $ReadOnly<{|
 |}>;
 
 let ImageViewNativeComponent;
-
 if (global.RN$Bridgeless) {
-  ImageViewNativeComponent = codegenNativeComponent<NativeProps>(
-    'RCTImageView',
-  );
+  ReactNativeViewConfigRegistry.register('RCTImageView', () => {
+    return ImageViewViewConfig;
+  });
+  ImageViewNativeComponent = 'RCTImageView';
 } else {
   ImageViewNativeComponent = requireNativeComponent<NativeProps>(
     'RCTImageView',
   );
 }
 
-module.exports = (ImageViewNativeComponent: HostComponent<NativeProps>);
+export default ((ImageViewNativeComponent: any): HostComponent<NativeProps>); // flowlint-line unclear-type:off
