@@ -52,7 +52,7 @@
 - (BOOL)application:(__unused UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
   RCTEnableTurboModule(YES);
-  // uncomment to configure NRURLSession
+  // uncomment to configure NSURLSession
   /* RCTSetCustomNSURLSessionConfigurationProvider(^NSURLSessionConfiguration *{
     NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration defaultSessionConfiguration];
     // configure the session

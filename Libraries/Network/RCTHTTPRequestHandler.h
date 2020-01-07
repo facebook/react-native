@@ -9,6 +9,9 @@
 #import <React/RCTURLRequestHandler.h>
 
 typedef NSURLSessionConfiguration* (^NSURLSessionConfigurationProvider)(void);
+/**
+ *  The block provided via this function will provide the NSURLSessionConfiguration for all HTTP requests made by the app.
+*/
 RCT_EXTERN void RCTSetCustomNSURLSessionConfigurationProvider(NSURLSessionConfigurationProvider);
 /**
  * This is the default RCTURLRequestHandler implementation for HTTP requests.
