@@ -65,7 +65,7 @@ static NSString *RCTNormalizeAnimatedEventName(NSString *eventName)
   NSMutableDictionary<NSString *, NSMutableArray<RCTEventAnimation *> *> *_eventDrivers;
   NSMutableSet<id<RCTAnimationDriver>> *_activeAnimations;
   CADisplayLink *_displayLink;
-  NSMutableArray<NSString*>* _layoutProps;
+  NSMutableSet<NSString*>* _layoutProps;
   NSMutableArray<RCTOnAnimationCallback> *_uiManagerOperationQueue;
 }
 
@@ -77,7 +77,7 @@ static NSString *RCTNormalizeAnimatedEventName(NSString *eventName)
     _eventDrivers = [NSMutableDictionary new];
     _activeAnimations = [NSMutableSet new];
     _uiManagerOperationQueue = [NSMutableArray new];
-    _layoutProps = [NSMutableArray arrayWithArray:@[
+    _layoutProps = [NSMutableSet setWithArray: @[
       @"top",
       @"right",
       @"start",
@@ -134,7 +134,7 @@ static NSString *RCTNormalizeAnimatedEventName(NSString *eventName)
   return self;
 }
 
-- (NSArray<NSString*>*) layoutProps
+- (NSSet<NSString*>*) layoutProps
 {
   return _layoutProps;
 }
@@ -158,11 +158,6 @@ static NSString *RCTNormalizeAnimatedEventName(NSString *eventName)
 }
 
 - (void) addEnqueuedUpdateProp:(NSString*)propName {
-  for(int i=0; i<_layoutProps.count; i++) {
-    if([_layoutProps[i] isEqualToString:propName]) {
-      return;
-    }
-  }
   [_layoutProps addObject:propName];
 }
 
