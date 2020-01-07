@@ -74,7 +74,7 @@ let warningFilter: WarningFilter = function(format) {
   return {
     finalFormat: format,
     forceDialogImmediately: false,
-    suppressDialog_LEGACY: false,
+    suppressDialog_LEGACY: true,
     suppressCompletely: false,
     monitorEvent: 'unknown',
     monitorListVersion: 0,

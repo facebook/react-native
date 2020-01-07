@@ -18,6 +18,8 @@ const base64 = require('base64-js');
 const invariant = require('invariant');
 const warning = require('fbjs/lib/warning');
 
+const DEBUG_NETWORK_SEND_DELAY: false = false; // Set to a number of milliseconds when debugging
+
 export type NativeResponseType = 'base64' | 'blob' | 'text';
 export type ResponseType =
   | ''
@@ -511,22 +513,29 @@ class XMLHttpRequest extends (EventTarget(...XHR_EVENTS): any) {
       nativeResponseType = 'blob';
     }
 
-    invariant(this._method, 'Request method needs to be defined.');
-    invariant(this._url, 'Request URL needs to be defined.');
-    RCTNetworking.sendRequest(
-      this._method,
-      this._trackingName,
-      this._url,
-      this._headers,
-      data,
-      /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was found
-       * when making Flow check .android.js files. */
-      nativeResponseType,
-      incrementalEvents,
-      this.timeout,
-      this.__didCreateRequest.bind(this),
-      this.withCredentials,
-    );
+    const doSend = () => {
+      invariant(this._method, 'Request method needs to be defined.');
+      invariant(this._url, 'Request URL needs to be defined.');
+      RCTNetworking.sendRequest(
+        this._method,
+        this._trackingName,
+        this._url,
+        this._headers,
+        data,
+        /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was found
+         * when making Flow check .android.js files. */
+        nativeResponseType,
+        incrementalEvents,
+        this.timeout,
+        this.__didCreateRequest.bind(this),
+        this.withCredentials,
+      );
+    };
+    if (DEBUG_NETWORK_SEND_DELAY) {
+      setTimeout(doSend, DEBUG_NETWORK_SEND_DELAY);
+    } else {
+      doSend();
+    }
   }
 
   abort(): void {

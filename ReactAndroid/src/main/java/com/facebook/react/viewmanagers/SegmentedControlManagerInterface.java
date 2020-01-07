@@ -18,5 +18,7 @@ public interface SegmentedControlManagerInterface<T extends View> {
   void setSelectedIndex(T view, int value);
   void setEnabled(T view, boolean value);
   void setTintColor(T view, @Nullable Integer value);
+  void setTextColor(T view, @Nullable Integer value);
+  void setBackgroundColor(T view, @Nullable Integer value);
   void setMomentary(T view, boolean value);
 }

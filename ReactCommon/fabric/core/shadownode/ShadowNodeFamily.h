@@ -11,6 +11,7 @@
 
 #include <react/core/EventEmitter.h>
 #include <react/core/ReactPrimitives.h>
+#include <react/core/ShadowNodeFamilyFragment.h>
 
 namespace facebook {
 namespace react {
@@ -27,9 +28,7 @@ class ShadowNodeFamily {
   using Weak = std::weak_ptr<ShadowNodeFamily const>;
 
   ShadowNodeFamily(
-      Tag tag,
-      SurfaceId surfaceId,
-      SharedEventEmitter const &eventEmitter,
+      ShadowNodeFamilyFragment const &fragment,
       ComponentDescriptor const &componentDescriptor);
 
   /*

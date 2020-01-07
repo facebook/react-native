@@ -9,12 +9,19 @@
 
 #import <React/RCTAssert.h>
 #import <React/RCTConversions.h>
+#import <glog/logging.h>
 
 #import <better/map.h>
 #import <better/mutex.h>
 
 #import <react/core/ReactPrimitives.h>
 #import <react/uimanager/ComponentDescriptorProviderRegistry.h>
+
+#ifdef RN_DISABLE_OSS_PLUGIN_HEADER
+#import <RCTFabricComponentPlugin/RCTFabricPluginProvider.h>
+#else
+#import "RCTFabricComponentsPlugins.h"
+#endif
 
 #import "RCTComponentViewClassDescriptor.h"
 #import "RCTFabricComponentsPlugins.h"
@@ -23,13 +30,17 @@
 #import "RCTMountingTransactionObserving.h"
 #import "RCTParagraphComponentView.h"
 #import "RCTRootComponentView.h"
-
 #import "RCTUnimplementedViewComponentView.h"
 #import "RCTViewComponentView.h"
 
 #import <objc/runtime.h>
 
 using namespace facebook::react;
+
+static Class<RCTComponentViewProtocol> RCTComponentViewClassWithName(const char *componentName)
+{
+  return RCTFabricComponentsProvider(componentName);
+}
 
 @implementation RCTComponentViewFactory {
   better::map<ComponentHandle, RCTComponentViewClassDescriptor> _componentViewClasses;
@@ -43,48 +54,51 @@ using namespace facebook::react;
 
   [componentViewFactory registerComponentViewClass:[RCTRootComponentView class]];
   [componentViewFactory registerComponentViewClass:[RCTViewComponentView class]];
-  [componentViewFactory registerComponentViewClass:[RCTImageComponentView class]];
   [componentViewFactory registerComponentViewClass:[RCTParagraphComponentView class]];
+
+  Class<RCTComponentViewProtocol> imageClass = RCTComponentViewClassWithName("Image");
+  if (imageClass) {
+    [componentViewFactory registerComponentViewClass:imageClass];
+  } else {
+    LOG(FATAL) << "Image component not found";
+  }
 
   auto providerRegistry = &componentViewFactory->_providerRegistry;
 
-  providerRegistry->setComponentDescriptorProviderRequest([providerRegistry,
-                                                           componentViewFactory](ComponentName requestedComponentName) {
-    // Fallback 1: Call delegate for component view class.
-    if (componentViewFactory.delegate) {
-      Class<RCTComponentViewProtocol> klass =
-          [componentViewFactory.delegate componentViewClassWithName:requestedComponentName];
-      if (klass) {
-        [componentViewFactory registerComponentViewClass:klass];
-        return;
-      }
-    }
+  providerRegistry->setComponentDescriptorProviderRequest(
+      [providerRegistry, componentViewFactory](ComponentName requestedComponentName) {
+        // Fallback 1: Call provider function for component view class.
+        Class<RCTComponentViewProtocol> klass = RCTComponentViewClassWithName(requestedComponentName);
+        if (klass) {
+          [componentViewFactory registerComponentViewClass:klass];
+          return;
+        }
 
-    // Fallback 3: Try to use Paper Interop.
-    if ([RCTLegacyViewManagerInteropComponentView isSupported:RCTNSStringFromString(requestedComponentName)]) {
-      auto flavor = std::make_shared<std::string const>(requestedComponentName);
-      auto componentName = ComponentName{flavor->c_str()};
-      auto componentHandle = reinterpret_cast<ComponentHandle>(componentName);
-      auto constructor = [RCTLegacyViewManagerInteropComponentView componentDescriptorProvider].constructor;
+        // Fallback 2: Try to use Paper Interop.
+        if ([RCTLegacyViewManagerInteropComponentView isSupported:RCTNSStringFromString(requestedComponentName)]) {
+          auto flavor = std::make_shared<std::string const>(requestedComponentName);
+          auto componentName = ComponentName{flavor->c_str()};
+          auto componentHandle = reinterpret_cast<ComponentHandle>(componentName);
+          auto constructor = [RCTLegacyViewManagerInteropComponentView componentDescriptorProvider].constructor;
 
-      providerRegistry->add(ComponentDescriptorProvider{componentHandle, componentName, flavor, constructor});
+          providerRegistry->add(ComponentDescriptorProvider{componentHandle, componentName, flavor, constructor});
 
-      componentViewFactory->_componentViewClasses[componentHandle] = [componentViewFactory
-          _componentViewClassDescriptorFromClass:[RCTLegacyViewManagerInteropComponentView class]];
-      return;
-    }
+          componentViewFactory->_componentViewClasses[componentHandle] = [componentViewFactory
+              _componentViewClassDescriptorFromClass:[RCTLegacyViewManagerInteropComponentView class]];
+          return;
+        }
 
-    // Fallback 4: Finally use <UnimplementedView>.
-    auto flavor = std::make_shared<std::string const>(requestedComponentName);
-    auto componentName = ComponentName{flavor->c_str()};
-    auto componentHandle = reinterpret_cast<ComponentHandle>(componentName);
-    auto constructor = [RCTUnimplementedViewComponentView componentDescriptorProvider].constructor;
+        // Fallback 3: Finally use <UnimplementedView>.
+        auto flavor = std::make_shared<std::string const>(requestedComponentName);
+        auto componentName = ComponentName{flavor->c_str()};
+        auto componentHandle = reinterpret_cast<ComponentHandle>(componentName);
+        auto constructor = [RCTUnimplementedViewComponentView componentDescriptorProvider].constructor;
 
-    providerRegistry->add(ComponentDescriptorProvider{componentHandle, componentName, flavor, constructor});
+        providerRegistry->add(ComponentDescriptorProvider{componentHandle, componentName, flavor, constructor});
 
-    componentViewFactory->_componentViewClasses[componentHandle] =
-        [componentViewFactory _componentViewClassDescriptorFromClass:[RCTUnimplementedViewComponentView class]];
-  });
+        componentViewFactory->_componentViewClasses[componentHandle] =
+            [componentViewFactory _componentViewClassDescriptorFromClass:[RCTUnimplementedViewComponentView class]];
+      });
 
   return componentViewFactory;
 }

@@ -23,11 +23,15 @@ import androidx.annotation.Nullable;
 import androidx.core.view.ViewCompat;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.ReactContext;
+import com.facebook.react.bridge.WritableMap;
+import com.facebook.react.bridge.WritableNativeMap;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.react.uimanager.MeasureSpecAssertions;
+import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.ReactClippingViewGroup;
 import com.facebook.react.uimanager.ReactClippingViewGroupHelper;
+import com.facebook.react.uimanager.StateWrapper;
 import com.facebook.react.uimanager.ViewProps;
 import com.facebook.react.uimanager.events.NativeGestureUtil;
 import com.facebook.react.views.view.ReactViewBackgroundManager;
@@ -48,6 +52,8 @@ public class ReactScrollView extends ScrollView
 
   private static @Nullable Field sScrollerField;
   private static boolean sTriedToGetScrollerField = false;
+  private static final String CONTENT_OFFSET_LEFT = "contentOffsetLeft";
+  private static final String CONTENT_OFFSET_TOP = "contentOffsetTop";
 
   private final OnScrollDispatchHelper mOnScrollDispatchHelper = new OnScrollDispatchHelper();
   private final @Nullable OverScroller mScroller;
@@ -74,6 +80,7 @@ public class ReactScrollView extends ScrollView
   private boolean mSnapToEnd = true;
   private View mContentView;
   private ReactViewBackgroundManager mReactBackgroundManager;
+  private @Nullable StateWrapper mStateWrapper;
 
   public ReactScrollView(ReactContext context) {
     this(context, null);
@@ -287,6 +294,8 @@ public class ReactScrollView extends ScrollView
     mVelocityHelper.calculateVelocity(ev);
     int action = ev.getAction() & MotionEvent.ACTION_MASK;
     if (action == MotionEvent.ACTION_UP && mDragging) {
+      updateStateOnScroll();
+
       float velocityX = mVelocityHelper.getXVelocity();
       float velocityY = mVelocityHelper.getYVelocity();
       ReactScrollViewHelper.emitScrollEndDragEvent(this, velocityX, velocityY);
@@ -488,6 +497,8 @@ public class ReactScrollView extends ScrollView
               ViewCompat.postOnAnimationDelayed(
                   ReactScrollView.this, this, ReactScrollViewHelper.MOMENTUM_DELAY);
             } else {
+              updateStateOnScroll();
+
               if (mPagingEnabled && !mSnappingToPage) {
                 // Only if we have pagingEnabled and we have not snapped to the page do we
                 // need to continue checking for the scroll.  And we cause that scroll by asking for
@@ -798,5 +809,24 @@ public class ReactScrollView extends ScrollView
 
   public void setBorderStyle(@Nullable String style) {
     mReactBackgroundManager.setBorderStyle(style);
+  }
+
+  public void updateState(@Nullable StateWrapper stateWrapper) {
+    mStateWrapper = stateWrapper;
+  }
+
+  /**
+   * Called on any stabilized onScroll change to propagate content offset value to a Shadow Node.
+   */
+  private void updateStateOnScroll() {
+    if (mStateWrapper == null) {
+      return;
+    }
+
+    WritableMap map = new WritableNativeMap();
+    map.putDouble(CONTENT_OFFSET_LEFT, PixelUtil.toDIPFromPixel(getScrollX()));
+    map.putDouble(CONTENT_OFFSET_TOP, PixelUtil.toDIPFromPixel(getScrollY()));
+
+    mStateWrapper.updateState(map);
   }
 }

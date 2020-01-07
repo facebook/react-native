@@ -7,6 +7,8 @@
 
 package com.facebook.react.views.textinput;
 
+import static com.facebook.react.uimanager.UIManagerHelper.getReactContext;
+
 import android.content.Context;
 import android.graphics.Rect;
 import android.graphics.Typeface;
@@ -114,7 +116,7 @@ public class ReactEditText extends AppCompatEditText {
     mReactBackgroundManager = new ReactViewBackgroundManager(this);
     mInputMethodManager =
         (InputMethodManager)
-            Assertions.assertNotNull(getContext().getSystemService(Context.INPUT_METHOD_SERVICE));
+            Assertions.assertNotNull(context.getSystemService(Context.INPUT_METHOD_SERVICE));
     mDefaultGravityHorizontal =
         getGravity() & (Gravity.HORIZONTAL_GRAVITY_MASK | Gravity.RELATIVE_HORIZONTAL_GRAVITY_MASK);
     mDefaultGravityVertical = getGravity() & Gravity.VERTICAL_GRAVITY_MASK;
@@ -219,7 +221,7 @@ public class ReactEditText extends AppCompatEditText {
 
   @Override
   public InputConnection onCreateInputConnection(EditorInfo outAttrs) {
-    ReactContext reactContext = (ReactContext) getContext();
+    ReactContext reactContext = getReactContext(this);
     InputConnection inputConnection = super.onCreateInputConnection(outAttrs);
     if (inputConnection != null && mOnKeyPress) {
       inputConnection =
@@ -601,7 +603,7 @@ public class ReactEditText extends AppCompatEditText {
     // Since the LocalData object is constructed by getting values from the underlying EditText
     // view, we don't need to construct one or apply it at all - it provides no use in Fabric.
     if (mStateWrapper == null) {
-      ReactContext reactContext = (ReactContext) getContext();
+      ReactContext reactContext = getReactContext(this);
       final ReactTextInputLocalData localData = new ReactTextInputLocalData(this);
       UIManagerModule uiManager = reactContext.getNativeModule(UIManagerModule.class);
       uiManager.setViewLocalData(getId(), localData);

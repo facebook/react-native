@@ -16,7 +16,10 @@ const React = require('react');
 import type {ColorValue} from '../../StyleSheet/StyleSheetTypes';
 import type {ViewProps} from '../View/ViewPropTypes';
 import AndroidSwipeRefreshLayoutNativeComponent from './AndroidSwipeRefreshLayoutNativeComponent';
-import PullToRefreshViewNativeComponent from './PullToRefreshViewNativeComponent';
+
+import PullToRefreshViewNativeComponent, {
+  Commands as PullToRefreshCommands,
+} from './PullToRefreshViewNativeComponent';
 
 let RefreshLayoutConsts: any;
 if (Platform.OS === 'android') {
@@ -138,6 +141,8 @@ class RefreshControl extends React.Component<RefreshControlProps> {
   _setNativePropsOnRef: ?({refreshing: boolean, ...}) => void;
   _lastNativeRefreshing = false;
 
+  _nativeRef: ?React.ElementRef<typeof PullToRefreshViewNativeComponent>;
+
   componentDidMount() {
     this._lastNativeRefreshing = this.props.refreshing;
   }
@@ -152,16 +157,26 @@ class RefreshControl extends React.Component<RefreshControlProps> {
       this.props.refreshing !== this._lastNativeRefreshing &&
       this._setNativePropsOnRef
     ) {
-      this._setNativePropsOnRef({
-        refreshing: this.props.refreshing,
-      });
+      if (Platform.OS === 'android') {
+        this._setNativePropsOnRef({
+          refreshing: this.props.refreshing,
+        });
+      } else if (this._nativeRef) {
+        PullToRefreshCommands.setNativeRefreshing(
+          this._nativeRef,
+          this.props.refreshing,
+        );
+      }
       this._lastNativeRefreshing = this.props.refreshing;
     }
   }
 
   render(): React.Node {
-    const setRef = ref =>
-      (this._setNativePropsOnRef = ref ? ref.setNativeProps.bind(ref) : null);
+    const setRef = ref => {
+      this._setNativePropsOnRef = ref ? ref.setNativeProps.bind(ref) : null;
+      this._nativeRef = ref;
+    };
+
     if (Platform.OS === 'ios') {
       const {
         enabled,

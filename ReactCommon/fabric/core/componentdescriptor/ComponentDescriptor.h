@@ -18,6 +18,7 @@
 namespace facebook {
 namespace react {
 
+class ComponentDescriptorParameters;
 class ComponentDescriptor;
 
 using SharedComponentDescriptor = std::shared_ptr<ComponentDescriptor const>;
@@ -44,10 +45,7 @@ class ComponentDescriptor {
    */
   using Flavor = std::shared_ptr<void const>;
 
-  ComponentDescriptor(
-      EventDispatcher::Weak const &eventDispatcher,
-      ContextContainer::Shared const &contextContainer,
-      ComponentDescriptor::Flavor const &flavor);
+  ComponentDescriptor(ComponentDescriptorParameters const &parameters);
 
   virtual ~ComponentDescriptor() = default;
 
@@ -78,7 +76,8 @@ class ComponentDescriptor {
    * Creates a new `ShadowNode` of a particular component type.
    */
   virtual SharedShadowNode createShadowNode(
-      const ShadowNodeFragment &fragment) const = 0;
+      const ShadowNodeFragment &fragment,
+      ShadowNodeFamilyFragment const &familyFragment) const = 0;
 
   /*
    * Clones a `ShadowNode` with optionally new `props` and/or `children`.
@@ -117,7 +116,8 @@ class ComponentDescriptor {
    * State's data which can be constructed based on initial Props.
    */
   virtual State::Shared createInitialState(
-      ShadowNodeFragment const &fragment) const = 0;
+      ShadowNodeFragment const &fragment,
+      SurfaceId const surfaceId) const = 0;
 
   /*
    * Creates a new State object that represents (and contains) a new version of
@@ -132,6 +132,17 @@ class ComponentDescriptor {
   ContextContainer::Shared contextContainer_;
   RawPropsParser rawPropsParser_{};
   Flavor flavor_;
+};
+
+/*
+ * Represents a collection of arguments that sufficient to construct a
+ * `ComponentDescriptor`.
+ */
+class ComponentDescriptorParameters {
+ public:
+  EventDispatcher::Weak eventDispatcher;
+  ContextContainer::Shared contextContainer;
+  ComponentDescriptor::Flavor flavor;
 };
 
 } // namespace react

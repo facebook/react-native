@@ -939,7 +939,7 @@ unsigned countOccurences(const std::string& of, const std::string& in) {
 } // namespace
 
 TEST_P(JSITest, JSErrorsArePropagatedNicely) {
-  unsigned callsBeoreError = 5;
+  unsigned callsBeforeError = 5;
 
   Function sometimesThrows = function(
       "function sometimesThrows(shouldThrow, callback) {"
@@ -953,9 +953,9 @@ TEST_P(JSITest, JSErrorsArePropagatedNicely) {
       rt,
       PropNameID::forAscii(rt, "callback"),
       0,
-      [&sometimesThrows, &callsBeoreError](
+      [&sometimesThrows, &callsBeforeError](
           Runtime& rt, const Value& thisVal, const Value* args, size_t count) {
-        return sometimesThrows.call(rt, --callsBeoreError == 0, args[0]);
+        return sometimesThrows.call(rt, --callsBeforeError == 0, args[0]);
       });
 
   try {
@@ -973,6 +973,55 @@ TEST_P(JSITest, JSErrorsCanBeConstructedWithStack) {
   auto err = JSError(rt, "message", "stack");
   EXPECT_EQ(err.getMessage(), "message");
   EXPECT_EQ(err.getStack(), "stack");
+}
+
+TEST_P(JSITest, JSErrorDoesNotInfinitelyRecurse) {
+  Value globalString = rt.global().getProperty(rt, "String");
+  rt.global().setProperty(rt, "String", Value::undefined());
+  try {
+    eval("throw Error('whoops')");
+    FAIL() << "expected exception";
+  } catch (const JSError& ex) {
+    EXPECT_EQ(
+        ex.getMessage(),
+        "[Exception while creating message string: callGlobalFunction: "
+        "JS global property 'String' is undefined, expected a Function]");
+  }
+  rt.global().setProperty(rt, "String", globalString);
+
+  Value globalError = rt.global().getProperty(rt, "Error");
+  rt.global().setProperty(rt, "Error", Value::undefined());
+  try {
+    rt.global().getPropertyAsFunction(rt, "NotAFunction");
+    FAIL() << "expected exception";
+  } catch (const JSError& ex) {
+    EXPECT_EQ(
+        ex.getMessage(),
+        "callGlobalFunction: JS global property 'Error' is undefined, "
+        "expected a Function (while raising getPropertyAsObject: "
+        "property 'NotAFunction' is undefined, expected an Object)");
+  }
+
+  // If Error is missing, this is fundamentally a problem with JS code
+  // messing up the global object, so it should present in JS code as
+  // a catchable string.  Not an Error (because that's broken), or as
+  // a C++ failure.
+
+  auto fails = [](Runtime& rt, const Value&, const Value*, size_t) -> Value {
+    return rt.global().getPropertyAsObject(rt, "NotAProperty");
+  };
+  EXPECT_EQ(
+      function("function (f) { try { f(); return 'undefined'; }"
+               "catch (e) { return typeof e; } }")
+          .call(
+              rt,
+              Function::createFromHostFunction(
+                  rt, PropNameID::forAscii(rt, "fails"), 0, fails))
+          .getString(rt)
+          .utf8(rt),
+      "string");
+
+  rt.global().setProperty(rt, "Error", globalError);
 }
 
 TEST_P(JSITest, ScopeDoesNotCrashTest) {

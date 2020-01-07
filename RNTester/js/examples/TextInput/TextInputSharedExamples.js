@@ -596,8 +596,6 @@ module.exports = ([
       return (
         <View>
           <SelectionExample
-            /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was
-             * found when making Flow check .android.js files. */
             style={styles.default}
             value="text selection can be changed"
           />

@@ -12,6 +12,7 @@
 
 const AnimatedValue = require('../nodes/AnimatedValue');
 const AnimatedValueXY = require('../nodes/AnimatedValueXY');
+const AnimatedInterpolation = require('../nodes/AnimatedInterpolation');
 const Animation = require('./Animation');
 const SpringConfig = require('../SpringConfig');
 
@@ -30,7 +31,8 @@ export type SpringAnimationConfig = AnimationConfig & {
         y: number,
         ...
       }
-    | AnimatedValueXY,
+    | AnimatedValueXY
+    | AnimatedInterpolation,
   overshootClamping?: boolean,
   restDisplacementThreshold?: number,
   restSpeedThreshold?: number,
@@ -53,7 +55,7 @@ export type SpringAnimationConfig = AnimationConfig & {
 };
 
 export type SpringAnimationConfigSingle = AnimationConfig & {
-  toValue: number | AnimatedValue,
+  toValue: number | AnimatedValue | AnimatedInterpolation,
   overshootClamping?: boolean,
   restDisplacementThreshold?: number,
   restSpeedThreshold?: number,

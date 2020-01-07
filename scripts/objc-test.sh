@@ -69,7 +69,7 @@ buildProject() {
 xcprettyFormat() {
   if [ "$CI" ]; then
     # Circle CI expects JUnit reports to be available here
-    REPORTS_DIR="$HOME/react-native/reports"
+    REPORTS_DIR="$HOME/react-native/reports/junit"
   else
     THIS_DIR=$(cd -P "$(dirname "$(readlink "${BASH_SOURCE[0]}" || echo "${BASH_SOURCE[0]}")")" && pwd)
 
@@ -77,7 +77,7 @@ xcprettyFormat() {
     REPORTS_DIR="$THIS_DIR/../build/reports"
   fi
 
-  xcpretty --report junit --output "$REPORTS_DIR/junit/$TEST_NAME/results.xml"
+  xcpretty --report junit --output "$REPORTS_DIR/ios/results.xml"
 }
 
 preloadBundles() {

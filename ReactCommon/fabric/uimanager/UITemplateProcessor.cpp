@@ -34,7 +34,7 @@ struct RBCContext {
 // TODO: use RBCContext instead of all the separate arguments.
 SharedShadowNode UITemplateProcessor::runCommand(
     const folly::dynamic &command,
-    Tag rootTag,
+    SurfaceId surfaceId,
     std::vector<SharedShadowNode> &nodes,
     std::vector<folly::dynamic> &registers,
     const ComponentDescriptorRegistry &componentDescriptorRegistry,
@@ -49,7 +49,7 @@ SharedShadowNode UITemplateProcessor::runCommand(
     const auto parentTag = command[3].asInt();
     const auto &props = command[4];
     nodes[tag] = componentDescriptorRegistry.createNode(
-        tag + tagOffset, type, rootTag, props, nullptr);
+        tag + tagOffset, type, surfaceId, props, nullptr);
     if (parentTag > -1) { // parentTag == -1 indicates root node
       auto parentShadowNode = nodes[parentTag];
       auto const &componentDescriptor = componentDescriptorRegistry.at(
@@ -87,7 +87,7 @@ SharedShadowNode UITemplateProcessor::runCommand(
     for (const auto &nextCommand : nextCommands) {
       runCommand(
           nextCommand,
-          rootTag,
+          surfaceId,
           nodes,
           registers,
           componentDescriptorRegistry,
@@ -102,7 +102,7 @@ SharedShadowNode UITemplateProcessor::runCommand(
 
 SharedShadowNode UITemplateProcessor::buildShadowTree(
     const std::string &jsonStr,
-    Tag rootTag,
+    SurfaceId surfaceId,
     const folly::dynamic &params,
     const ComponentDescriptorRegistry &componentDescriptorRegistry,
     const NativeModuleRegistry &nativeModuleRegistry,
@@ -131,7 +131,7 @@ SharedShadowNode UITemplateProcessor::buildShadowTree(
       }
       auto ret = runCommand(
           command,
-          rootTag,
+          surfaceId,
           nodes,
           registers,
           componentDescriptorRegistry,

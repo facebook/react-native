@@ -103,12 +103,11 @@ ShadowTree::ShadowTree(
       *RootShadowNode::defaultSharedProps(), layoutConstraints, layoutContext);
 
   rootShadowNode_ = std::static_pointer_cast<const RootShadowNode>(
-      rootComponentDescriptor.createShadowNode(ShadowNodeFragment{
-          /* .tag = */ surfaceId,
-          /* .surfaceId = */ surfaceId,
-          /* .props = */ props,
-          /* .eventEmitter = */ noopEventEmitter,
-      }));
+      rootComponentDescriptor.createShadowNode(
+          ShadowNodeFragment{
+              /* .props = */ props,
+          },
+          {surfaceId, surfaceId, noopEventEmitter}));
 
   mountingCoordinator_ = std::make_shared<MountingCoordinator const>(
       ShadowTreeRevision{rootShadowNode_, 0, {}});
@@ -210,11 +209,7 @@ void ShadowTree::commitEmptyTree() const {
         return std::make_shared<RootShadowNode>(
             *oldRootShadowNode,
             ShadowNodeFragment{
-                /* .tag = */ ShadowNodeFragment::tagPlaceholder(),
-                /* .surfaceId = */ ShadowNodeFragment::surfaceIdPlaceholder(),
                 /* .props = */ ShadowNodeFragment::propsPlaceholder(),
-                /* .eventEmitter = */
-                ShadowNodeFragment::eventEmitterPlaceholder(),
                 /* .children = */ ShadowNode::emptySharedShadowNodeSharedList(),
             });
       });

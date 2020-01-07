@@ -35,3 +35,6 @@ Libraries/Text/* @shergin
 
 # These should not be modified through a GitHub PR
 LICENSE* @hramos @cpojer @yungsters
+
+# The eslint-config-react-native-community package requires manual publishing after merging
+/packages/eslint-config-react-native-community/* @matt-oakes

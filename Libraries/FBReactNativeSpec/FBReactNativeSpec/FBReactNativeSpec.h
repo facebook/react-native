@@ -1976,7 +1976,7 @@ namespace JS {
           RCTRequired<NSString *> Serial;
           RCTRequired<NSString *> Fingerprint;
           RCTRequired<NSString *> Model;
-          RCTRequired<NSString *> ServerHost;
+          NSString *ServerHost;
           RCTRequired<NSString *> uiMode;
         };
 
@@ -3633,7 +3633,7 @@ inline JS::NativePlatformConstantsAndroid::Constants::Builder::Builder(const Inp
   d[@"Fingerprint"] = Fingerprint;
   auto Model = i.Model.get();
   d[@"Model"] = Model;
-  auto ServerHost = i.ServerHost.get();
+  auto ServerHost = i.ServerHost;
   d[@"ServerHost"] = ServerHost;
   auto uiMode = i.uiMode.get();
   d[@"uiMode"] = uiMode;

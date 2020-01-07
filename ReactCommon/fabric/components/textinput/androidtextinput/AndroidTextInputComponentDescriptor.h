@@ -20,16 +20,11 @@ class AndroidTextInputComponentDescriptor final
     : public ConcreteComponentDescriptor<AndroidTextInputShadowNode> {
  public:
   AndroidTextInputComponentDescriptor(
-      EventDispatcher::Weak eventDispatcher,
-      const ContextContainer::Shared &contextContainer,
-      ComponentDescriptor::Flavor const &flavor = {})
-      : ConcreteComponentDescriptor<AndroidTextInputShadowNode>(
-            eventDispatcher,
-            contextContainer,
-            flavor) {
+      ComponentDescriptorParameters const &parameters)
+      : ConcreteComponentDescriptor<AndroidTextInputShadowNode>(parameters) {
     // Every single `AndroidTextInputShadowNode` will have a reference to
     // a shared `TextLayoutManager`.
-    textLayoutManager_ = std::make_shared<TextLayoutManager>(contextContainer);
+    textLayoutManager_ = std::make_shared<TextLayoutManager>(contextContainer_);
   }
 
  protected:

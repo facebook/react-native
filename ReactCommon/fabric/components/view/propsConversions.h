@@ -212,29 +212,70 @@ static inline CascadedRectangleCorners<T> convertRawProp(
     RawProps const &rawProps,
     char const *prefix,
     char const *suffix,
-    CascadedRectangleCorners<T> const &sourceValue) {
+    CascadedRectangleCorners<T> const &sourceValue,
+    CascadedRectangleCorners<T> const &defaultValue) {
   CascadedRectangleCorners<T> result;
 
   result.topLeft = convertRawProp(
-      rawProps, "TopLeft", sourceValue.topLeft, {}, prefix, suffix);
+      rawProps,
+      "TopLeft",
+      sourceValue.topLeft,
+      defaultValue.topLeft,
+      prefix,
+      suffix);
   result.topRight = convertRawProp(
-      rawProps, "TopRight", sourceValue.topRight, {}, prefix, suffix);
+      rawProps,
+      "TopRight",
+      sourceValue.topRight,
+      defaultValue.topRight,
+      prefix,
+      suffix);
   result.bottomLeft = convertRawProp(
-      rawProps, "BottomLeft", sourceValue.bottomLeft, {}, prefix, suffix);
+      rawProps,
+      "BottomLeft",
+      sourceValue.bottomLeft,
+      defaultValue.bottomLeft,
+      prefix,
+      suffix);
   result.bottomRight = convertRawProp(
-      rawProps, "BottomRight", sourceValue.bottomRight, {}, prefix, suffix);
+      rawProps,
+      "BottomRight",
+      sourceValue.bottomRight,
+      defaultValue.bottomRight,
+      prefix,
+      suffix);
 
   result.topStart = convertRawProp(
-      rawProps, "TopStart", sourceValue.topStart, {}, prefix, suffix);
+      rawProps,
+      "TopStart",
+      sourceValue.topStart,
+      defaultValue.topStart,
+      prefix,
+      suffix);
   result.topEnd = convertRawProp(
-      rawProps, "TopEnd", sourceValue.topEnd, {}, prefix, suffix);
+      rawProps,
+      "TopEnd",
+      sourceValue.topEnd,
+      defaultValue.topEnd,
+      prefix,
+      suffix);
   result.bottomStart = convertRawProp(
-      rawProps, "BottomStart", sourceValue.bottomStart, {}, prefix, suffix);
+      rawProps,
+      "BottomStart",
+      sourceValue.bottomStart,
+      defaultValue.bottomStart,
+      prefix,
+      suffix);
   result.bottomEnd = convertRawProp(
-      rawProps, "BottomEnd", sourceValue.bottomEnd, {}, prefix, suffix);
+      rawProps,
+      "BottomEnd",
+      sourceValue.bottomEnd,
+      defaultValue.bottomEnd,
+      prefix,
+      suffix);
 
-  result.all =
-      convertRawProp(rawProps, "", sourceValue.all, {}, prefix, suffix);
+  result.all = convertRawProp(
+      rawProps, "", sourceValue.all, defaultValue.all, prefix, suffix);
 
   return result;
 }
@@ -244,29 +285,45 @@ static inline CascadedRectangleEdges<T> convertRawProp(
     RawProps const &rawProps,
     char const *prefix,
     char const *suffix,
-    CascadedRectangleEdges<T> const &sourceValue) {
+    CascadedRectangleEdges<T> const &sourceValue,
+    CascadedRectangleEdges<T> const &defaultValue) {
   CascadedRectangleEdges<T> result;
 
-  result.left =
-      convertRawProp(rawProps, "Left", sourceValue.left, {}, prefix, suffix);
-  result.right =
-      convertRawProp(rawProps, "Right", sourceValue.right, {}, prefix, suffix);
-  result.top =
-      convertRawProp(rawProps, "Top", sourceValue.top, {}, prefix, suffix);
+  result.left = convertRawProp(
+      rawProps, "Left", sourceValue.left, defaultValue.left, prefix, suffix);
+  result.right = convertRawProp(
+      rawProps, "Right", sourceValue.right, defaultValue.right, prefix, suffix);
+  result.top = convertRawProp(
+      rawProps, "Top", sourceValue.top, defaultValue.top, prefix, suffix);
   result.bottom = convertRawProp(
-      rawProps, "Bottom", sourceValue.bottom, {}, prefix, suffix);
+      rawProps,
+      "Bottom",
+      sourceValue.bottom,
+      defaultValue.bottom,
+      prefix,
+      suffix);
 
-  result.start =
-      convertRawProp(rawProps, "Start", sourceValue.start, {}, prefix, suffix);
-  result.end =
-      convertRawProp(rawProps, "End", sourceValue.end, {}, prefix, suffix);
+  result.start = convertRawProp(
+      rawProps, "Start", sourceValue.start, defaultValue.start, prefix, suffix);
+  result.end = convertRawProp(
+      rawProps, "End", sourceValue.end, defaultValue.end, prefix, suffix);
   result.horizontal = convertRawProp(
-      rawProps, "Horizontal", sourceValue.horizontal, {}, prefix, suffix);
+      rawProps,
+      "Horizontal",
+      sourceValue.horizontal,
+      defaultValue.horizontal,
+      prefix,
+      suffix);
   result.vertical = convertRawProp(
-      rawProps, "Vertical", sourceValue.vertical, {}, prefix, suffix);
+      rawProps,
+      "Vertical",
+      sourceValue.vertical,
+      defaultValue.vertical,
+      prefix,
+      suffix);
 
-  result.all =
-      convertRawProp(rawProps, "", sourceValue.all, {}, prefix, suffix);
+  result.all = convertRawProp(
+      rawProps, "", sourceValue.all, defaultValue.all, prefix, suffix);
 
   return result;
 }

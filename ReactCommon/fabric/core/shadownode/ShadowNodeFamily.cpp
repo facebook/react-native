@@ -13,13 +13,11 @@ namespace facebook {
 namespace react {
 
 ShadowNodeFamily::ShadowNodeFamily(
-    Tag tag,
-    SurfaceId surfaceId,
-    SharedEventEmitter const &eventEmitter,
+    ShadowNodeFamilyFragment const &fragment,
     ComponentDescriptor const &componentDescriptor)
-    : tag_(tag),
-      surfaceId_(surfaceId),
-      eventEmitter_(eventEmitter),
+    : tag_(fragment.tag),
+      surfaceId_(fragment.surfaceId),
+      eventEmitter_(fragment.eventEmitter),
       componentDescriptor_(componentDescriptor),
       componentHandle_(componentDescriptor.getComponentHandle()),
       componentName_(componentDescriptor.getComponentName()) {}
