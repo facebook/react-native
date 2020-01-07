@@ -222,14 +222,6 @@ function validateTransform(
   });
 }
 
-function validateStyles(styles: {[key: string]: ?number, ...}): void {
-  console.warn(
-    'validateStyles is now deprecated and no longer in use. ' +
-      'The native animated module now supports animating all properties ' +
-      'when the useNativeDriver flag is set to true.',
-  );
-}
-
 function validateInterpolation(config: InterpolationConfigType): void {
   for (const key in config) {
     if (!SUPPORTED_INTERPOLATION_PARAMS.hasOwnProperty(key)) {
@@ -299,7 +291,6 @@ module.exports = {
   addWhitelistedStyleProp,
   addWhitelistedTransformProp,
   addWhitelistedInterpolationParam,
-  validateStyles,
   validateTransform,
   validateInterpolation,
   generateNewNodeTag,
