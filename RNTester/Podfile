@@ -1,3 +1,38 @@
+# [TODO(macOS GH#217)
+#
+# This monkey-patching of the CocoaPods Specification class will strip our MS versions from the specifications and
+# replace them with `1000.0.0`, which is the version that upstream always has set in `master`.
+module StripMSVersion
+  require 'cocoapods-core/specification'
+  Pod::Specification.prepend(self)
+
+  def source=(source)
+    if source.is_a?(Hash) && source.has_key?(:tag)
+      super(source.merge(:tag => StripMSVersion.strip(source[:tag])))
+    else
+      super
+    end
+  end
+
+  def version=(version)
+    super(StripMSVersion.strip(version))
+  end
+
+  def dependency(dep, *args)
+    version, *other_version_requirements = args
+    super(dep, *[StripMSVersion.strip(version), *other_version_requirements].compact)
+  end
+
+  private
+
+  VERSION_REGEXP = /\d+\.\d+\.\d+-microsoft\.\d+/
+
+  def self.strip(version)
+    version && version.sub(VERSION_REGEXP, '1000.0.0')
+  end
+end
+# ]TODO(macOS GH#214)
+
 source 'https://cdn.cocoapods.org/'
 
 platform :ios, '9.0'
