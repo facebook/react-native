@@ -82,7 +82,7 @@
     "test-ios": "./scripts/objc-test.sh test"
   },
   "peerDependencies": {
-    "react": "16.11.0"
+    "react": "16.12.0"
   },
   "dependencies": {
     "@babel/runtime": "^7.0.0",
@@ -112,7 +112,7 @@
     "react-devtools-core": "^4.0.6",
     "react-refresh": "^0.4.0",
     "regenerator-runtime": "^0.13.2",
-    "scheduler": "0.17.0",
+    "scheduler": "0.18.0",
     "stacktrace-parser": "^0.1.3",
     "use-subscription": "^1.0.0",
     "whatwg-fetch": "^3.0.0"
@@ -148,8 +148,8 @@
     "jscodeshift": "^0.6.2",
     "mkdirp": "^0.5.1",
     "prettier": "1.17.0",
-    "react": "16.11.0",
-    "react-test-renderer": "16.11.0",
+    "react": "16.12.0",
+    "react-test-renderer": "16.12.0",
     "shelljs": "^0.7.8",
     "signedsource": "^1.0.0",
     "ws": "^6.1.4",
