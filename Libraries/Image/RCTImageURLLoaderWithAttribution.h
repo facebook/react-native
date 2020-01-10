@@ -7,6 +7,7 @@
 
 #import <React/RCTImageURLLoader.h>
 
+#ifdef __cplusplus
 namespace facebook {
 namespace react {
 
@@ -17,6 +18,7 @@ struct ImageURLLoaderAttribution {
 
 } // namespace react
 } // namespace facebook
+#endif
 
 /**
  * Same as the RCTImageURLLoader interface, but allows passing in optional `attribution` information.
@@ -24,6 +26,7 @@ struct ImageURLLoaderAttribution {
  */
 @protocol RCTImageURLLoaderWithAttribution <RCTImageURLLoader>
 
+#ifdef __cplusplus
 /**
  * Same as the RCTImageURLLoader variant above, but allows optional `attribution` information.
  */
@@ -35,5 +38,6 @@ struct ImageURLLoaderAttribution {
                                    progressHandler:(RCTImageLoaderProgressBlock)progressHandler
                                 partialLoadHandler:(RCTImageLoaderPartialLoadBlock)partialLoadHandler
                                  completionHandler:(RCTImageLoaderCompletionBlock)completionHandler;
+#endif
 
 @end
