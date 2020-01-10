@@ -13,6 +13,9 @@
 
 #import "RCTAnimationPlugins.h"
 
+@interface RCTNativeAnimatedModule() <NativeAnimatedModuleSpec>
+@end
+
 typedef void (^AnimatedOperation)(RCTNativeAnimatedNodesManager *nodesManager);
 
 @implementation RCTNativeAnimatedModule
@@ -330,6 +333,12 @@ RCT_EXPORT_METHOD(removeAnimatedEventFromView:(double)viewTag
   RCTExecuteOnMainQueue(^{
     [self->_nodesManager handleAnimatedEvent:event];
   });
+}
+
+- (std::shared_ptr<facebook::react::TurboModule>)getTurboModuleWithJsInvoker:
+(std::shared_ptr<facebook::react::CallInvoker>)jsInvoker
+{
+  return std::make_shared<facebook::react::NativeAnimatedModuleSpecJSI>(self, jsInvoker);
 }
 
 @end
