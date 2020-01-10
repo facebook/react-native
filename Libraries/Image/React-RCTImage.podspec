@@ -33,6 +33,8 @@ Pod::Spec.new do |s|
   s.source_files           = "*.{m,mm}"
   s.preserve_paths         = "package.json", "LICENSE", "LICENSE-docs"
   s.header_dir             = "RCTImage"
+  s.exclude_files          = "RCTImageLoaderWithAttributionProtocol.h",
+                             "RCTImageURLLoaderWithAttribution.h"
   s.pod_target_xcconfig    = {
                                "USE_HEADERMAP" => "YES",
                                "CLANG_CXX_LANGUAGE_STANDARD" => "c++14",
