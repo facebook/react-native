@@ -38,6 +38,7 @@ RCT_EXPORT_MODULE(BlobModule)
 
 @synthesize bridge = _bridge;
 @synthesize methodQueue = _methodQueue;
+@synthesize turboModuleLookupDelegate = _turboModuleLookupDelegate;
 
 - (void)setBridge:(RCTBridge *)bridge
 {
@@ -139,10 +140,18 @@ RCT_EXPORT_MODULE(BlobModule)
 
 RCT_EXPORT_METHOD(addNetworkingHandler)
 {
-  dispatch_async(_bridge.networking.methodQueue, ^{
-    [self->_bridge.networking addRequestHandler:self];
-    [self->_bridge.networking addResponseHandler:self];
-  });
+  if (_bridge){
+    dispatch_async(_bridge.networking.methodQueue, ^{
+      [self->_bridge.networking addRequestHandler:self];
+      [self->_bridge.networking addResponseHandler:self];
+    });
+  } else {
+    RCTNetworking *networking = [_turboModuleLookupDelegate moduleForName:"RCTNetworking"];
+    dispatch_async(networking.methodQueue, ^{
+      [networking addRequestHandler:self];
+      [networking addResponseHandler:self];
+    });
+  }
 }
 
 RCT_EXPORT_METHOD(addWebSocketHandler:(double)socketID)
