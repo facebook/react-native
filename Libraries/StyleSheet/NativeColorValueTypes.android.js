@@ -39,11 +39,14 @@ export const AndroidHypotheticalColor = (
 export const normalizeColorObject = (
   color: NativeColorValue,
 ): ?ProcessedColorValue => {
+  if ('hypothetical_android_color' in color) {
+    return color;
+  }
   return null;
 };
 
 export const processColorObject = (
   color: NativeColorValue,
 ): ?NativeColorValue => {
-  return null;
+  return color;
 };

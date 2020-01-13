@@ -15,6 +15,7 @@ import com.facebook.react.bridge.DynamicFromObject;
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.bridge.ReadableNativeMap;
 import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.annotations.ReactPropGroup;
 import java.lang.reflect.Method;
@@ -186,6 +187,35 @@ import java.util.Map;
     @Override
     protected Object getValueOrDefault(Object value) {
       return value == null ? mDefaultValue : (Double) value;
+    }
+  }
+
+  private static class ColorPropSetter extends PropSetter {
+    private final int mDefaultValue;
+
+    public ColorPropSetter(ReactProp prop, Method setter) {
+      super(prop, "mixed", setter);
+      mDefaultValue = 0;
+    }
+
+    public ColorPropSetter(ReactProp prop, Method setter, int defaultValue) {
+      super(prop, "mixed", setter);
+      mDefaultValue = defaultValue;
+    }
+
+    @Override
+    protected Object getValueOrDefault(Object value) {
+      if (value == null) {
+        return new Integer(mDefaultValue);
+      }
+      if (value.getClass() == ReadableMap.class || value.getClass() == ReadableNativeMap.class) {
+        // TODO handle custom map
+        return new Integer(0xFF000000);
+      }
+      if (value instanceof Double) {
+        return ((Double) value).intValue();
+      }
+      return null;
     }
   }
 
@@ -379,6 +409,9 @@ import java.util.Map;
     } else if (propTypeClass == boolean.class) {
       return new BooleanPropSetter(annotation, method, annotation.defaultBoolean());
     } else if (propTypeClass == int.class) {
+      if (annotation.customType() == "Color") {
+        return new ColorPropSetter(annotation, method, annotation.defaultInt());
+      }
       return new IntPropSetter(annotation, method, annotation.defaultInt());
     } else if (propTypeClass == float.class) {
       return new FloatPropSetter(annotation, method, annotation.defaultFloat());
@@ -389,6 +422,9 @@ import java.util.Map;
     } else if (propTypeClass == Boolean.class) {
       return new BoxedBooleanPropSetter(annotation, method);
     } else if (propTypeClass == Integer.class) {
+      if (annotation.customType() == "Color") {
+        return new ColorPropSetter(annotation, method);
+      }
       return new BoxedIntPropSetter(annotation, method);
     } else if (propTypeClass == ReadableArray.class) {
       return new ArrayPropSetter(annotation, method);
