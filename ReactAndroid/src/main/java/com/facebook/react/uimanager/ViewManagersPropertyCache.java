@@ -7,9 +7,13 @@
 
 package com.facebook.react.uimanager;
 
+import android.content.Context;
+import android.content.res.Resources;
 import android.view.View;
+import android.util.TypedValue;
 import androidx.annotation.Nullable;
 import com.facebook.common.logging.FLog;
+import com.facebook.react.R;
 import com.facebook.react.bridge.Dynamic;
 import com.facebook.react.bridge.DynamicFromObject;
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
@@ -18,6 +22,8 @@ import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReadableNativeMap;
 import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.annotations.ReactPropGroup;
+
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -82,13 +88,13 @@ import java.util.Map;
       try {
         if (mIndex == null) {
           VIEW_MGR_ARGS[0] = viewToUpdate;
-          VIEW_MGR_ARGS[1] = getValueOrDefault(value);
+          VIEW_MGR_ARGS[1] = getValueOrDefault(value, viewToUpdate.getContext());
           mSetter.invoke(viewManager, VIEW_MGR_ARGS);
           Arrays.fill(VIEW_MGR_ARGS, null);
         } else {
           VIEW_MGR_GROUP_ARGS[0] = viewToUpdate;
           VIEW_MGR_GROUP_ARGS[1] = mIndex;
-          VIEW_MGR_GROUP_ARGS[2] = getValueOrDefault(value);
+          VIEW_MGR_GROUP_ARGS[2] = getValueOrDefault(value, viewToUpdate.getContext());
           mSetter.invoke(viewManager, VIEW_MGR_GROUP_ARGS);
           Arrays.fill(VIEW_MGR_GROUP_ARGS, null);
         }
@@ -106,12 +112,12 @@ import java.util.Map;
     public void updateShadowNodeProp(ReactShadowNode nodeToUpdate, Object value) {
       try {
         if (mIndex == null) {
-          SHADOW_ARGS[0] = getValueOrDefault(value);
+          SHADOW_ARGS[0] = getValueOrDefault(value, nodeToUpdate.getThemedContext());
           mSetter.invoke(nodeToUpdate, SHADOW_ARGS);
           Arrays.fill(SHADOW_ARGS, null);
         } else {
           SHADOW_GROUP_ARGS[0] = mIndex;
-          SHADOW_GROUP_ARGS[1] = getValueOrDefault(value);
+          SHADOW_GROUP_ARGS[1] = getValueOrDefault(value, nodeToUpdate.getThemedContext());
           mSetter.invoke(nodeToUpdate, SHADOW_GROUP_ARGS);
           Arrays.fill(SHADOW_GROUP_ARGS, null);
         }
@@ -126,7 +132,7 @@ import java.util.Map;
       }
     }
 
-    protected abstract @Nullable Object getValueOrDefault(Object value);
+    protected abstract @Nullable Object getValueOrDefault(Object value, Context context);
   }
 
   private static class DynamicPropSetter extends PropSetter {
@@ -140,7 +146,7 @@ import java.util.Map;
     }
 
     @Override
-    protected Object getValueOrDefault(Object value) {
+    protected Object getValueOrDefault(Object value, Context context) {
       if (value instanceof Dynamic) {
         return value;
       } else {
@@ -164,7 +170,7 @@ import java.util.Map;
     }
 
     @Override
-    protected Object getValueOrDefault(Object value) {
+    protected Object getValueOrDefault(Object value, Context context) {
       // All numbers from JS are Doubles which can't be simply cast to Integer
       return value == null ? mDefaultValue : (Integer) ((Double) value).intValue();
     }
@@ -185,7 +191,7 @@ import java.util.Map;
     }
 
     @Override
-    protected Object getValueOrDefault(Object value) {
+    protected Object getValueOrDefault(Object value, Context context) {
       return value == null ? mDefaultValue : (Double) value;
     }
   }
@@ -204,13 +210,35 @@ import java.util.Map;
     }
 
     @Override
-    protected Object getValueOrDefault(Object value) {
+    protected Object getValueOrDefault(Object value, Context context) {
       if (value == null) {
         return new Integer(mDefaultValue);
       }
       if (value.getClass() == ReadableMap.class || value.getClass() == ReadableNativeMap.class) {
-        // TODO handle custom map
-        return new Integer(0xFF000000);
+        // handle custom map
+        if (context != null) {
+          // TODO parse out:
+          //  @[<package_name>:]<resource_type>/<resource_name>
+          //  ?[<package_name>:][<resource_type>/]<resource_name>
+          ReadableMap map = (ReadableMap)value;
+          ReadableArray resourceNames = map.getArray("hypothetical_android_color");
+          String resourceName = resourceNames.getString(0);
+          int resourceId = 0;
+          try {
+            resourceName = resourceName.split("/")[1];
+            Field resourceIdField = R.attr.class.getField(resourceName);
+            resourceId = resourceIdField.getInt(null);
+          } catch (Exception e) {
+          }
+
+          Resources.Theme themes = context.getTheme();
+          TypedValue storedValueInTheme = new TypedValue();
+          if (themes.resolveAttribute(resourceId, storedValueInTheme, true)) {
+            return storedValueInTheme.data;
+          }
+
+          return new Integer(0xFF000000);
+        }
       }
       if (value instanceof Double) {
         return ((Double) value).intValue();
@@ -229,7 +257,7 @@ import java.util.Map;
     }
 
     @Override
-    protected Object getValueOrDefault(Object value) {
+    protected Object getValueOrDefault(Object value, Context context) {
       boolean val = value == null ? mDefaultValue : (boolean) value;
       return val ? Boolean.TRUE : Boolean.FALSE;
     }
@@ -250,7 +278,7 @@ import java.util.Map;
     }
 
     @Override
-    protected Object getValueOrDefault(Object value) {
+    protected Object getValueOrDefault(Object value, Context context) {
       // All numbers from JS are Doubles which can't be simply cast to Float
       return value == null ? mDefaultValue : (Float) ((Double) value).floatValue();
     }
@@ -263,7 +291,7 @@ import java.util.Map;
     }
 
     @Override
-    protected @Nullable Object getValueOrDefault(Object value) {
+    protected @Nullable Object getValueOrDefault(Object value, Context context) {
       return (ReadableArray) value;
     }
   }
@@ -275,7 +303,7 @@ import java.util.Map;
     }
 
     @Override
-    protected @Nullable Object getValueOrDefault(Object value) {
+    protected @Nullable Object getValueOrDefault(Object value, Context context) {
       return (ReadableMap) value;
     }
   }
@@ -287,7 +315,7 @@ import java.util.Map;
     }
 
     @Override
-    protected @Nullable Object getValueOrDefault(Object value) {
+    protected @Nullable Object getValueOrDefault(Object value, Context context) {
       return (String) value;
     }
   }
@@ -299,7 +327,7 @@ import java.util.Map;
     }
 
     @Override
-    protected @Nullable Object getValueOrDefault(Object value) {
+    protected @Nullable Object getValueOrDefault(Object value, Context context) {
       if (value != null) {
         return (boolean) value ? Boolean.TRUE : Boolean.FALSE;
       }
@@ -318,7 +346,7 @@ import java.util.Map;
     }
 
     @Override
-    protected @Nullable Object getValueOrDefault(Object value) {
+    protected @Nullable Object getValueOrDefault(Object value, Context context) {
       if (value != null) {
         if (value instanceof Double) {
           return ((Double) value).intValue();

@@ -12,6 +12,7 @@
 
 const React = require('react');
 const ReactNative = require('react-native');
+import Platform from '../../../../Libraries/Utilities/Platform';
 const {PlatformColor, StyleSheet, Text, View} = ReactNative;
 import {IOSDynamicColor} from '../../../../Libraries/StyleSheet/NativeColorValueTypes';
 
@@ -21,56 +22,75 @@ class SemanticColorsExample extends React.Component<{}, State> {
   state: State;
 
   createTable() {
-    let colors = [
-      // https://developer.apple.com/documentation/uikit/uicolor/ui_element_colors
-      // Label Colors
-      'labelColor',
-      'secondaryLabelColor',
-      'tertiaryLabelColor',
-      'quaternaryLabelColor',
-      // Fill Colors
-      'systemFillColor',
-      'secondarySystemFillColor',
-      'tertiarySystemFillColor',
-      'quaternarySystemFillColor',
-      // Text Colors
-      'placeholderTextColor',
-      // Standard Content Background Colors
-      'systemBackgroundColor',
-      'secondarySystemBackgroundColor',
-      'tertiarySystemBackgroundColor',
-      // Grouped Content Background Colors
-      'systemGroupedBackgroundColor',
-      'secondarySystemGroupedBackgroundColor',
-      'tertiarySystemGroupedBackgroundColor',
-      // Separator Colors
-      'separatorColor',
-      'opaqueSeparatorColor',
-      // Link Color
-      'linkColor',
-      // Nonadaptable Colors
-      'darkTextColor',
-      'lightTextColor',
-      // https://developer.apple.com/documentation/uikit/uicolor/standard_colors
-      // Adaptable Colors
-      'systemBlueColor',
-      'systemBrownColor',
-      'systemGreenColor',
-      'systemIndigoColor',
-      'systemOrangeColor',
-      'systemPinkColor',
-      'systemPurpleColor',
-      'systemRedColor',
-      'systemTealColor',
-      'systemYellowColor',
-      // Adaptable Gray Colors
-      'systemGrayColor',
-      'systemGray2Color',
-      'systemGray3Color',
-      'systemGray4Color',
-      'systemGray5Color',
-      'systemGray6Color',
-    ];
+    let colors = [];
+    if (Platform.OS === 'ios') {
+      let colors = [
+        // https://developer.apple.com/documentation/uikit/uicolor/ui_element_colors
+        // Label Colors
+        'labelColor',
+        'secondaryLabelColor',
+        'tertiaryLabelColor',
+        'quaternaryLabelColor',
+        // Fill Colors
+        'systemFillColor',
+        'secondarySystemFillColor',
+        'tertiarySystemFillColor',
+        'quaternarySystemFillColor',
+        // Text Colors
+        'placeholderTextColor',
+        // Standard Content Background Colors
+        'systemBackgroundColor',
+        'secondarySystemBackgroundColor',
+        'tertiarySystemBackgroundColor',
+        // Grouped Content Background Colors
+        'systemGroupedBackgroundColor',
+        'secondarySystemGroupedBackgroundColor',
+        'tertiarySystemGroupedBackgroundColor',
+        // Separator Colors
+        'separatorColor',
+        'opaqueSeparatorColor',
+        // Link Color
+        'linkColor',
+        // Nonadaptable Colors
+        'darkTextColor',
+        'lightTextColor',
+        // https://developer.apple.com/documentation/uikit/uicolor/standard_colors
+        // Adaptable Colors
+        'systemBlueColor',
+        'systemBrownColor',
+        'systemGreenColor',
+        'systemIndigoColor',
+        'systemOrangeColor',
+        'systemPinkColor',
+        'systemPurpleColor',
+        'systemRedColor',
+        'systemTealColor',
+        'systemYellowColor',
+        // Adaptable Gray Colors
+        'systemGrayColor',
+        'systemGray2Color',
+        'systemGray3Color',
+        'systemGray4Color',
+        'systemGray5Color',
+        'systemGray6Color',
+      ];
+    } else if (Platform.OS === 'android') {
+      colors = [
+        // https://material.io/develop/android/theming/color/
+        '?attr/colorPrimary',
+        '?attr/colorPrimaryVariant',
+        '?attr/colorOnPrimary',
+        '?attr/colorSecondary',
+        '?attr/colorSecondaryVariant',
+        '?attr/colorOnSecondary',
+        '?android:attr/colorBackground',
+        '?attr/colorOnBackground',
+        '?attr/colorSurface',
+        '?attr/colorOnSurface',
+        '?attr/colorError',
+        '?attr/colorOnError',
+      ];
+    }
 
     let table = [];
     for (let color of colors) {
