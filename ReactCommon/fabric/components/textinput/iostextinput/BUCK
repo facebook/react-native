@@ -16,22 +16,22 @@ load(
 APPLE_COMPILER_FLAGS = get_apple_compiler_flags()
 
 rn_xplat_cxx_library(
-    name = "androidtextinput",
+    name = "iostextinput",
     srcs = glob(
-        ["androidtextinput/**/*.cpp"],
+        ["**/*.cpp"],
         exclude = glob(["tests/**/*.cpp"]),
     ),
     headers = glob(
-        ["androidtextinput/**/*.h"],
+        ["**/*.h"],
         exclude = glob(["tests/**/*.h"]),
     ),
     header_namespace = "",
     exported_headers = subdir_glob(
         [
             ("", "*.h"),
-            ("androidtextinput", "*.h"),
         ],
-        prefix = "react/components/androidtextinput",
+        # TODO(shergin) T26519801 Figure out better directories structure
+        prefix = "react/components/iostextinput",
     ),
     compiler_flags = [
         "-fexceptions",
@@ -94,6 +94,6 @@ fb_xplat_cxx_test(
     deps = [
         "fbsource//xplat/folly:molly",
         "fbsource//xplat/third-party/gmock:gtest",
-        ":androidtextinput",
+        ":iostextinput",
     ],
 )

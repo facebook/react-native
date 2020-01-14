@@ -98,6 +98,12 @@ static std::string componentNameByReactViewName(std::string viewName) {
     return "View";
   }
 
+  // iOS-only
+  if (viewName == "MultilineTextInputView" ||
+      viewName == "SinglelineTextInputView") {
+    return "TextInput";
+  }
+
   return viewName;
 }
 
