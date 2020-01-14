@@ -27,7 +27,7 @@ BlobCollector::BlobCollector(
 BlobCollector::~BlobCollector() {
   jni::ThreadScope::WithClassLoader([&] {
     static auto removeMethod = jni::findClassStatic(kBlobModuleJavaDescriptor)
-        ->getMethod<void(jstring)>("remove");
+                                   ->getMethod<void(jstring)>("remove");
     removeMethod(blobModule_, jni::make_jstring(blobId_).get());
   });
 }
@@ -36,7 +36,7 @@ void BlobCollector::nativeInstall(
     jni::alias_ref<jhybridobject> jThis,
     jni::alias_ref<jobject> blobModule,
     jlong jsContextNativePointer) {
-  auto &runtime = *((jsi::Runtime *) jsContextNativePointer);
+  auto &runtime = *((jsi::Runtime *)jsContextNativePointer);
   auto blobModuleRef = jni::make_global(blobModule);
   runtime.global().setProperty(
       runtime,
