@@ -20,6 +20,8 @@
 #import "RCTConversions.h"
 #import "RCTFabricComponentsPlugins.h"
 
+using namespace facebook::react;
+
 @interface RCTImageComponentView () <RCTImageResponseDelegate>
 @end
 
@@ -79,8 +81,7 @@
   [super updateProps:props oldProps:oldProps];
 }
 
-- (void)updateState:(facebook::react::State::Shared const &)state
-           oldState:(facebook::react::State::Shared const &)oldState
+- (void)updateState:(State::Shared const &)state oldState:(State::Shared const &)oldState
 {
   _state = std::static_pointer_cast<ImageShadowNode::ConcreteState const>(state);
   auto _oldState = std::static_pointer_cast<ImageShadowNode::ConcreteState const>(oldState);
