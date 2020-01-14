@@ -9,7 +9,6 @@
 
 #import <React/RCTAssert.h>
 #import <React/RCTConversions.h>
-#import <glog/logging.h>
 
 #import <better/map.h>
 #import <better/mutex.h>
@@ -59,11 +58,7 @@ static Class<RCTComponentViewProtocol> RCTComponentViewClassWithName(const char 
   [componentViewFactory registerComponentViewClass:[RCTTextInputComponentView class]];
 
   Class<RCTComponentViewProtocol> imageClass = RCTComponentViewClassWithName("Image");
-  if (imageClass) {
-    [componentViewFactory registerComponentViewClass:imageClass];
-  } else {
-    LOG(FATAL) << "Image component not found";
-  }
+  [componentViewFactory registerComponentViewClass:imageClass];
 
   auto providerRegistry = &componentViewFactory->_providerRegistry;
 
