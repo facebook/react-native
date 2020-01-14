@@ -13,11 +13,11 @@
 import type {ColorValue, ProcessedColorValue} from './ColorValueTypes';
 
 export opaque type NativeColorValue = {
-  hypothetical_android_color?: Array<string>,
+  resource_paths?: Array<string>,
 };
 
 export const PlatformColor = (...names: Array<string>): ColorValue => {
-  return {hypothetical_android_color: names};
+  return {resource_paths: names};
 };
 
 export const IOSDynamicColor = (
@@ -26,20 +26,10 @@ export const IOSDynamicColor = (
   return null;
 };
 
-export type AndroidColorTuple = {
-  hypothetical_android_color: string,
-};
-
-export const AndroidHypotheticalColor = (
-  tuple: AndroidColorTuple,
-): ColorValue => {
-  return {hypothetical_android_color: [tuple.hypothetical_android_color]};
-};
-
 export const normalizeColorObject = (
   color: NativeColorValue,
 ): ?ProcessedColorValue => {
-  if ('hypothetical_android_color' in color) {
+  if ('resource_paths' in color) {
     return color;
   }
   return null;

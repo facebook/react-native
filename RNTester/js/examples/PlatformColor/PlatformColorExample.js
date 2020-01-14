@@ -18,13 +18,13 @@ import {IOSDynamicColor} from '../../../../Libraries/StyleSheet/NativeColorValue
 
 type State = {};
 
-class SemanticColorsExample extends React.Component<{}, State> {
+class PlatformColorsExample extends React.Component<{}, State> {
   state: State;
 
   createTable() {
     let colors = [];
     if (Platform.OS === 'ios') {
-      let colors = [
+      colors = [
         // https://developer.apple.com/documentation/uikit/uicolor/ui_element_colors
         // Label Colors
         'labelColor',
@@ -76,19 +76,28 @@ class SemanticColorsExample extends React.Component<{}, State> {
       ];
     } else if (Platform.OS === 'android') {
       colors = [
-        // https://material.io/develop/android/theming/color/
-        '?attr/colorPrimary',
-        '?attr/colorPrimaryVariant',
-        '?attr/colorOnPrimary',
-        '?attr/colorSecondary',
-        '?attr/colorSecondaryVariant',
-        '?attr/colorOnSecondary',
-        '?android:attr/colorBackground',
-        '?attr/colorOnBackground',
-        '?attr/colorSurface',
-        '?attr/colorOnSurface',
+        // '?attr/color',
+        '?attr/colorAccent',
+        // '?attr/colorActivatedHighlight',
+        // '?attr/colorBackground',
+        // '?attr/colorBackgroundCacheHint',
+        '?attr/colorBackgroundFloating',
+        '?attr/colorButtonNormal',
+        '?attr/colorControlActivated',
+        '?attr/colorControlHighlight',
+        '?attr/colorControlNormal',
+        // '?attr/colorEdgeEffect',
         '?attr/colorError',
-        '?attr/colorOnError',
+        // '?attr/colorFocusedHighlight',
+        // '?attr/colorForeground',
+        // '?attr/colorForegroundInverse',
+        // '?attr/colorLongPressedHighlight',
+        // '?attr/colorMode',
+        // '?attr/colorMultiSelectHighlight',
+        // '?attr/colorPressedHighlight',
+        '?attr/colorPrimary',
+        '?attr/colorPrimaryDark',
+        // '?attr/colorSecondary',
       ];
     }
 
@@ -176,7 +185,10 @@ const styles = StyleSheet.create({
   labelCell: {
     flex: 1,
     alignItems: 'stretch',
-    color: PlatformColor('labelColor'),
+    ...Platform.select({
+      ios: {color: PlatformColor('labelColor')},
+      default: {color: 'black'}
+    })
   },
   colorCell: {flex: 0.25, alignItems: 'stretch'},
 });
@@ -186,21 +198,26 @@ exports.description =
   'Examples that show how PlatformColors may be used in an app.';
 exports.examples = [
   {
-    title: 'Semantic Colors',
+    title: 'Platform Colors',
     render: function(): React.Element<any> {
-      return <SemanticColorsExample />;
+      return <PlatformColorsExample />;
     },
-  },
-  {
-    title: 'Fallback Colors',
-    render: function(): React.Element<any> {
-      return <FallbackColorsExample />;
-    },
-  },
-  {
-    title: 'Dynamic Colors',
-    render: function(): React.Element<any> {
-      return <DynamicColorsExample />;
-    },
-  },
+  }
 ];
+if (Platform.OS !== 'android') {
+  exports.examples = [
+    ...exports.examples,
+    {
+      title: 'Fallback Colors',
+      render: function(): React.Element<any> {
+        return <FallbackColorsExample />;
+      },
+    },
+    {
+      title: 'Dynamic Colors',
+      render: function(): React.Element<any> {
+        return <DynamicColorsExample />;
+      },
+    },
+  ];
+}

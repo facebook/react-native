@@ -12,6 +12,8 @@ import android.content.res.Resources;
 import android.view.View;
 import android.util.TypedValue;
 import androidx.annotation.Nullable;
+import androidx.core.content.res.ResourcesCompat;
+
 import com.facebook.common.logging.FLog;
 import com.facebook.react.R;
 import com.facebook.react.bridge.Dynamic;
@@ -217,24 +219,75 @@ import java.util.Map;
       if (value.getClass() == ReadableMap.class || value.getClass() == ReadableNativeMap.class) {
         // handle custom map
         if (context != null) {
-          // TODO parse out:
-          //  @[<package_name>:]<resource_type>/<resource_name>
-          //  ?[<package_name>:][<resource_type>/]<resource_name>
           ReadableMap map = (ReadableMap)value;
-          ReadableArray resourceNames = map.getArray("hypothetical_android_color");
-          String resourceName = resourceNames.getString(0);
-          int resourceId = 0;
-          try {
-            resourceName = resourceName.split("/")[1];
-            Field resourceIdField = R.attr.class.getField(resourceName);
-            resourceId = resourceIdField.getInt(null);
-          } catch (Exception e) {
-          }
+          ReadableArray resourcePaths = map.getArray("resource_paths");
+          for (int i = 0; i < resourcePaths.size(); i++) {
+            String resourcePath = resourcePaths.getString(i);
+            // parse out:
+            //  @[<package_name>:]<resource_type>/<resource_name>
+            //  ?[<package_name>:][<resource_type>/]<resource_name>
 
-          Resources.Theme themes = context.getTheme();
-          TypedValue storedValueInTheme = new TypedValue();
-          if (themes.resolveAttribute(resourceId, storedValueInTheme, true)) {
-            return storedValueInTheme.data;
+            // parse '@' or '?'
+            boolean themed;
+            if (resourcePath.startsWith("@")) {
+              themed = false;
+            } else if (resourcePath.startsWith("?")) {
+              themed = true;
+            } else {
+              continue;
+            }
+            resourcePath = resourcePath.substring(1);
+
+            // parse [<package_name>:]
+            String packageName;
+            String packageNameTokens[] = resourcePath.split(":");
+            if (packageNameTokens.length == 2) {
+              packageName = packageNameTokens[0];
+              resourcePath = packageNameTokens[1];
+            }
+
+            // parse [<resource_type>/]
+            String resourceType = "attr"; // default to R.attr
+            String resourceTypeTokens[] = resourcePath.split("/");
+            if (resourceTypeTokens.length == 2) {
+              resourceType = resourceTypeTokens[0];
+              resourcePath = resourceTypeTokens[1];
+            }
+
+            // parse <resource_name>
+            String resourceName = resourcePath;
+
+            int resourceTypeId = 0;
+            int resourceId = 0;
+            try {
+              for (Class resourceTypeClass : R.class.getClasses()) {
+                if (resourceTypeClass.getName().endsWith(resourceType)) {
+
+                  Field resourceIdField = resourceTypeClass.getField(resourceName);
+                  resourceId = resourceIdField.getInt(null);
+
+                  break;
+                }
+              }
+              if (resourceId == 0) {
+                continue;
+              }
+            } catch (Exception e) {
+              continue;
+            }
+
+            if (themed) {
+              Resources.Theme themes = context.getTheme();
+              TypedValue storedValueInTheme = new TypedValue();
+              if (themes.resolveAttribute(resourceId, storedValueInTheme, true)) {
+                return storedValueInTheme.data;
+              } else {
+                continue;
+              }
+            } else {
+              int color = ResourcesCompat.getColor(context.getResources(), resourceId, null);
+              return color;
+            }
           }
 
           return new Integer(0xFF000000);

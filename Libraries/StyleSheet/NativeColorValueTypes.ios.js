@@ -33,12 +33,6 @@ export const IOSDynamicColor = (tuple: IOSDynamicColorTuple): ColorValue => {
   return {dynamic: {light: tuple.light, dark: tuple.dark}};
 };
 
-export const AndroidHypotheticalColor = (
-  object: Object, // flowlint-line unclear-type: off
-): ColorValue => {
-  return null;
-};
-
 export const normalizeColorObject = (
   color: NativeColorValue,
 ): ?ProcessedColorValue => {
