@@ -20,7 +20,7 @@ EventEmitterWrapper::initHybrid(jni::alias_ref<jclass>) {
 
 void EventEmitterWrapper::invokeEvent(
     std::string eventName,
-    NativeMap* payload) {
+    NativeMap *payload) {
   eventEmitter->dispatchEvent(
       eventName, payload->consume(), EventPriority::AsynchronousBatched);
 }

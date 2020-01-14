@@ -14,8 +14,8 @@ using namespace facebook::jni;
 namespace facebook {
 namespace react {
 
-jni::local_ref<NodeStateWrapper::jhybriddata>
-NodeStateWrapper::initHybrid(jni::alias_ref<jclass>) {
+jni::local_ref<NodeStateWrapper::jhybriddata> NodeStateWrapper::initHybrid(
+    jni::alias_ref<jclass>) {
   return makeCxxInstance();
 }
 
@@ -26,7 +26,7 @@ jni::local_ref<ReadableNativeMap::jhybridobject> NodeStateWrapper::getState() {
   return readableNativeMap;
 }
 
-void NodeStateWrapper::updateState(ReadableNativeMap* map) {
+void NodeStateWrapper::updateState(ReadableNativeMap *map) {
   // Get folly::dynamic from map
   auto dynamicMap = map->consume();
   // Set state

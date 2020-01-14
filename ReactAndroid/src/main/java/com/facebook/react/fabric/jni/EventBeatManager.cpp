@@ -13,8 +13,8 @@ namespace facebook {
 namespace react {
 
 EventBeatManager::EventBeatManager(
-  jni::alias_ref<EventBeatManager::jhybriddata> jhybridobject)
-  : jhybridobject_(jhybridobject) {}
+    jni::alias_ref<EventBeatManager::jhybriddata> jhybridobject)
+    : jhybridobject_(jhybridobject) {}
 
 jni::local_ref<EventBeatManager::jhybriddata> EventBeatManager::initHybrid(
     jni::alias_ref<EventBeatManager::jhybriddata> jhybridobject) {

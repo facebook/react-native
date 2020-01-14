@@ -7,23 +7,31 @@
 
 #pragma once
 
-#include <fb/fbjni.h>
-#include <ReactCommon/JavaTurboModule.h>
 #include <ReactCommon/CallInvoker.h>
-#include <string>
+#include <ReactCommon/JavaTurboModule.h>
+#include <fb/fbjni.h>
 #include <memory>
+#include <string>
 
 namespace facebook {
 namespace react {
 
-class TurboModuleManagerDelegate : public jni::HybridClass<TurboModuleManagerDelegate> {
-public:
-  static auto constexpr kJavaDescriptor = "Lcom/facebook/react/turbomodule/core/TurboModuleManagerDelegate;";
+class TurboModuleManagerDelegate
+    : public jni::HybridClass<TurboModuleManagerDelegate> {
+ public:
+  static auto constexpr kJavaDescriptor =
+      "Lcom/facebook/react/turbomodule/core/TurboModuleManagerDelegate;";
 
-  virtual std::shared_ptr<TurboModule> getTurboModule(std::string name, jni::alias_ref<JTurboModule> turboModule, std::shared_ptr<CallInvoker> jsInvoker, std::shared_ptr<CallInvoker> nativeInvoker) = 0;
-  virtual std::shared_ptr<TurboModule> getTurboModule(std::string name, std::shared_ptr<CallInvoker> jsInvoker) = 0;
+  virtual std::shared_ptr<TurboModule> getTurboModule(
+      std::string name,
+      jni::alias_ref<JTurboModule> turboModule,
+      std::shared_ptr<CallInvoker> jsInvoker,
+      std::shared_ptr<CallInvoker> nativeInvoker) = 0;
+  virtual std::shared_ptr<TurboModule> getTurboModule(
+      std::string name,
+      std::shared_ptr<CallInvoker> jsInvoker) = 0;
 
-private:
+ private:
   friend HybridBase;
 };
 

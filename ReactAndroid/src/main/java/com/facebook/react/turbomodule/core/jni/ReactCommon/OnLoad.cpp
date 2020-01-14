@@ -12,7 +12,8 @@
 
 JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM *vm, void *) {
   return facebook::xplat::initialize(vm, [] {
-    // TODO: dvacca ramanpreet unify this with the way "ComponentDescriptorFactory" is defined in Fabric
+    // TODO: dvacca ramanpreet unify this with the way
+    // "ComponentDescriptorFactory" is defined in Fabric
     facebook::react::TurboModuleManager::registerNatives();
   });
 }
