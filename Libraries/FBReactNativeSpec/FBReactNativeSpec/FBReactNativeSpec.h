@@ -1304,26 +1304,6 @@ namespace facebook {
     };
   } // namespace react
 } // namespace facebook
-@protocol NativeHeapCaptureSpec <RCTBridgeModule, RCTTurboModule>
-
-- (void)captureHeap:(NSString *)path;
-- (void)captureComplete:(NSString *)path
-                  error:(NSString * _Nullable)error;
-
-@end
-namespace facebook {
-  namespace react {
-    /**
-     * ObjC++ class for module 'HeapCapture'
-     */
-
-    class JSI_EXPORT NativeHeapCaptureSpecJSI : public ObjCTurboModule {
-    public:
-      NativeHeapCaptureSpecJSI(id<RCTTurboModule> instance, std::shared_ptr<CallInvoker> jsInvoker);
-
-    };
-  } // namespace react
-} // namespace facebook
 
 namespace JS {
   namespace NativeI18nManager {
@@ -1627,6 +1607,25 @@ namespace facebook {
     class JSI_EXPORT NativeImageStoreSpecJSI : public ObjCTurboModule {
     public:
       NativeImageStoreSpecJSI(id<RCTTurboModule> instance, std::shared_ptr<CallInvoker> jsInvoker);
+
+    };
+  } // namespace react
+} // namespace facebook
+@protocol NativeJSCHeapCaptureSpec <RCTBridgeModule, RCTTurboModule>
+
+- (void)captureComplete:(NSString *)path
+                  error:(NSString * _Nullable)error;
+
+@end
+namespace facebook {
+  namespace react {
+    /**
+     * ObjC++ class for module 'JSCHeapCapture'
+     */
+
+    class JSI_EXPORT NativeJSCHeapCaptureSpecJSI : public ObjCTurboModule {
+    public:
+      NativeJSCHeapCaptureSpecJSI(id<RCTTurboModule> instance, std::shared_ptr<CallInvoker> jsInvoker);
 
     };
   } // namespace react

@@ -1212,33 +1212,6 @@ namespace facebook {
   namespace react {
 
     
-    static facebook::jsi::Value __hostFunction_NativeHeapCaptureSpecJSI_captureHeap(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
-      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, VoidKind, "captureHeap", @selector(captureHeap:), args, count);
-    }
-
-    static facebook::jsi::Value __hostFunction_NativeHeapCaptureSpecJSI_captureComplete(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
-      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, VoidKind, "captureComplete", @selector(captureComplete:error:), args, count);
-    }
-
-
-    NativeHeapCaptureSpecJSI::NativeHeapCaptureSpecJSI(id<RCTTurboModule> instance, std::shared_ptr<CallInvoker> jsInvoker)
-      : ObjCTurboModule("HeapCapture", instance, jsInvoker) {
-        
-        methodMap_["captureHeap"] = MethodMetadata {1, __hostFunction_NativeHeapCaptureSpecJSI_captureHeap};
-        
-        
-        methodMap_["captureComplete"] = MethodMetadata {2, __hostFunction_NativeHeapCaptureSpecJSI_captureComplete};
-        
-        
-
-    }
-
-  } // namespace react
-} // namespace facebook
-namespace facebook {
-  namespace react {
-
-    
     static facebook::jsi::Value __hostFunction_NativeI18nManagerSpecJSI_allowRTL(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
       return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, VoidKind, "allowRTL", @selector(allowRTL:), args, count);
     }
@@ -1519,6 +1492,26 @@ namespace facebook {
         
         
         methodMap_["addImageFromBase64"] = MethodMetadata {3, __hostFunction_NativeImageStoreSpecJSI_addImageFromBase64};
+        
+        
+
+    }
+
+  } // namespace react
+} // namespace facebook
+namespace facebook {
+  namespace react {
+
+    
+    static facebook::jsi::Value __hostFunction_NativeJSCHeapCaptureSpecJSI_captureComplete(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, VoidKind, "captureComplete", @selector(captureComplete:error:), args, count);
+    }
+
+
+    NativeJSCHeapCaptureSpecJSI::NativeJSCHeapCaptureSpecJSI(id<RCTTurboModule> instance, std::shared_ptr<CallInvoker> jsInvoker)
+      : ObjCTurboModule("JSCHeapCapture", instance, jsInvoker) {
+        
+        methodMap_["captureComplete"] = MethodMetadata {2, __hostFunction_NativeJSCHeapCaptureSpecJSI_captureComplete};
         
         
 

@@ -14,11 +14,7 @@ import type {TurboModule} from '../TurboModule/RCTExport';
 import * as TurboModuleRegistry from '../TurboModule/TurboModuleRegistry';
 
 export interface Spec extends TurboModule {
-  // Common interface
-  +captureHeap: (path: string) => void;
-
-  // Android only
   +captureComplete: (path: string, error: ?string) => void;
 }
 
-export default (TurboModuleRegistry.get<Spec>('HeapCapture'): ?Spec);
+export default (TurboModuleRegistry.get<Spec>('JSCHeapCapture'): ?Spec);
