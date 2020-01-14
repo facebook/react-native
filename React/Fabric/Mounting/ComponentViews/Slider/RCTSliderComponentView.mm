@@ -309,11 +309,11 @@ using namespace facebook::react;
 
   if (continuous && _previousValue != value) {
     std::dynamic_pointer_cast<const SliderEventEmitter>(_eventEmitter)
-        ->onValueChange(SliderOnValueChangeStruct{.value = static_cast<Float>(value)});
+        ->onValueChange(SliderEventEmitter::OnValueChange{.value = static_cast<Float>(value)});
   }
   if (!continuous) {
     std::dynamic_pointer_cast<const SliderEventEmitter>(_eventEmitter)
-        ->onSlidingComplete(SliderOnSlidingCompleteStruct{.value = static_cast<Float>(value)});
+        ->onSlidingComplete(SliderEventEmitter::OnSlidingComplete{.value = static_cast<Float>(value)});
   }
 
   _previousValue = value;
