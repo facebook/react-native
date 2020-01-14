@@ -26,7 +26,6 @@ rn_apple_library(
         "WebKit",
     ],
     exported_preprocessor_flags = rn_extra_build_flags(),
-    extension_api_only = True,
     frameworks = [
         "Foundation",
         "UIKit",
