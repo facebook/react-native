@@ -30,6 +30,7 @@
 #import "RCTMountingTransactionObserving.h"
 #import "RCTParagraphComponentView.h"
 #import "RCTRootComponentView.h"
+#import "RCTTextInputComponentView.h"
 #import "RCTUnimplementedViewComponentView.h"
 #import "RCTViewComponentView.h"
 
@@ -55,6 +56,7 @@ static Class<RCTComponentViewProtocol> RCTComponentViewClassWithName(const char 
   [componentViewFactory registerComponentViewClass:[RCTRootComponentView class]];
   [componentViewFactory registerComponentViewClass:[RCTViewComponentView class]];
   [componentViewFactory registerComponentViewClass:[RCTParagraphComponentView class]];
+  [componentViewFactory registerComponentViewClass:[RCTTextInputComponentView class]];
 
   Class<RCTComponentViewProtocol> imageClass = RCTComponentViewClassWithName("Image");
   if (imageClass) {
