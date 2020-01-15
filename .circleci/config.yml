@@ -358,6 +358,9 @@ jobs:
       - run: yarn test-ios
       - store_test_results:
           path: ./reports/junit
+      - store_artifacts:
+          path: ./reports/failed_snapshots
+
 
   # Runs iOS end-to-end tests
   test_ios_e2e:

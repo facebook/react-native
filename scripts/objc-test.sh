@@ -62,7 +62,8 @@ runTests() {
     -scheme RNTester \
     -sdk iphonesimulator \
     -destination "platform=iOS Simulator,name=$IOS_DEVICE,OS=$IOS_TARGET_OS" \
-      "${SKIPPED_TESTS[@]}"
+    IMAGE_DIFF_DIR="~/react-native/reports/failed_snapshots/" \
+    "${SKIPPED_TESTS[@]}"
 }
 
 buildProject() {
