@@ -56,7 +56,6 @@
 		E7DB216622B2F3EC005AC45F /* RCTRootViewIntegrationTests.m in Sources */ = {isa = PBXBuildFile; fileRef = E7DB216122B2F3EC005AC45F /* RCTRootViewIntegrationTests.m */; };
 		E7DB216722B2F69F005AC45F /* JavaScriptCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E7DB213022B2C649005AC45F /* JavaScriptCore.framework */; };
 		E7DB218C22B41FCD005AC45F /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E7DB218B22B41FCD005AC45F /* XCTest.framework */; };
-		F895D9D523B83A0C004A9E9B /* Swift.swift in Sources */ = {isa = PBXBuildFile; fileRef = F895D9D423B83A0C004A9E9B /* Swift.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -165,7 +164,6 @@
 		E7DB218B22B41FCD005AC45F /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Platforms/iPhoneOS.platform/Developer/Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
 		E9618482EC8608D4872A6E28 /* Pods-RNTesterUnitTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RNTesterUnitTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-RNTesterUnitTests/Pods-RNTesterUnitTests.release.xcconfig"; sourceTree = "<group>"; };
 		EA4C77A9826FF02A56911142 /* libPods-RNTester.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-RNTester.a"; sourceTree = BUILT_PRODUCTS_DIR; };
-		F895D9D423B83A0C004A9E9B /* Swift.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Swift.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -223,7 +221,6 @@
 				680759612239798500290469 /* Fabric */,
 				272E6B3A1BEA846C001FCF37 /* NativeExampleViews */,
 				1323F18D1C04ABAC0091BED0 /* Supporting Files */,
-				F895D9D423B83A0C004A9E9B /* Swift.swift */,
 			);
 			name = RNTester;
 			sourceTree = "<group>";
@@ -454,9 +451,6 @@
 				LastUpgradeCheck = 0940;
 				ORGANIZATIONNAME = Facebook;
 				TargetAttributes = {
-					13B07F861A680F5B00A75B9A = {
-						LastSwiftMigration = 1130;
-					};
 					E7DB209E22B2BA84005AC45F = {
 						CreatedOnToolsVersion = 10.2.1;
 					};
@@ -615,7 +609,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				272E6B3F1BEA849E001FCF37 /* UpdatePropertiesExampleView.m in Sources */,
-				F895D9D523B83A0C004A9E9B /* Swift.swift in Sources */,
 				5CB07C9B226467E60039471C /* RNTesterTurboModuleProvider.mm in Sources */,
 				27F441EC1BEBE5030039B79C /* FlexibleSizeExampleView.m in Sources */,
 				5C60EB1C226440DB0018C04F /* AppDelegate.mm in Sources */,
@@ -697,10 +690,8 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 98233960D1D6A1977D1C7EAF /* Pods-RNTester.debug.xcconfig */;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = "$(inherited)";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_CXX_LANGUAGE_STANDARD = "c++14";
-				CLANG_ENABLE_MODULES = YES;
 				DEVELOPMENT_TEAM = "";
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
@@ -734,15 +725,8 @@
 				);
 				INFOPLIST_FILE = "$(SRCROOT)/RNTester/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-				);
 				LIBRARY_SEARCH_PATHS = "$(inherited)";
-				OTHER_CFLAGS = (
-					"$(inherited)",
-					"-DFB_SONARKIT_ENABLED=1",
-				);
+				OTHER_CFLAGS = "$(inherited)";
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
@@ -752,8 +736,6 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.facebook.react.uiapp;
 				PRODUCT_NAME = RNTester;
-				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
-				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
@@ -762,10 +744,8 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 5BEC8567F3741044B6A5EFC5 /* Pods-RNTester.release.xcconfig */;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = "$(inherited)";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_CXX_LANGUAGE_STANDARD = "c++14";
-				CLANG_ENABLE_MODULES = YES;
 				DEVELOPMENT_TEAM = "";
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
@@ -799,15 +779,8 @@
 				);
 				INFOPLIST_FILE = "$(SRCROOT)/RNTester/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-				);
 				LIBRARY_SEARCH_PATHS = "$(inherited)";
-				OTHER_CFLAGS = (
-					"$(inherited)",
-					"-DFB_SONARKIT_ENABLED=1",
-				);
+				OTHER_CFLAGS = "$(inherited)";
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
@@ -817,7 +790,6 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.facebook.react.uiapp;
 				PRODUCT_NAME = RNTester;
-				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
@@ -1002,10 +974,6 @@
 				);
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
-				OTHER_CFLAGS = (
-					"$(inherited)",
-					"-DFB_SONARKIT_ENABLED=1",
-				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.facebook.RNTesterUnitTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -1037,10 +1005,6 @@
 					"$(PROJECT_DIR)/RNTesterUnitTests",
 				);
 				MTL_FAST_MATH = YES;
-				OTHER_CFLAGS = (
-					"$(inherited)",
-					"-DFB_SONARKIT_ENABLED=1",
-				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.facebook.RNTesterUnitTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -1051,7 +1015,6 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 972A459EE6CF8CC63531A088 /* Pods-RNTesterIntegrationTests.debug.xcconfig */;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = "$(inherited)";
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
@@ -1074,10 +1037,6 @@
 				);
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
-				OTHER_CFLAGS = (
-					"$(inherited)",
-					"-DFB_SONARKIT_ENABLED=1",
-				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.facebook.RNTesterIntegrationTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -1089,7 +1048,6 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 7D51F73F0DA20287418D98BD /* Pods-RNTesterIntegrationTests.release.xcconfig */;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = "$(inherited)";
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
@@ -1108,10 +1066,6 @@
 					"@loader_path/Frameworks",
 				);
 				MTL_FAST_MATH = YES;
-				OTHER_CFLAGS = (
-					"$(inherited)",
-					"-DFB_SONARKIT_ENABLED=1",
-				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.facebook.RNTesterIntegrationTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TARGETED_DEVICE_FAMILY = "1,2";

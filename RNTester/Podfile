@@ -2,41 +2,6 @@ platform :ios, '10.0'
 
 require_relative '../scripts/autolink-ios'
 
-# Add Flipper Pods
-def flipper_pods()
-  flipperkit_version = '0.30.0'
-  pod 'FlipperKit', '~>' + flipperkit_version, :configuration => 'Debug'
-  pod 'FlipperKit/FlipperKitLayoutPlugin', '~>' + flipperkit_version, :configuration => 'Debug'
-  pod 'FlipperKit/SKIOSNetworkPlugin', '~>' + flipperkit_version, :configuration => 'Debug'
-  pod 'FlipperKit/FlipperKitUserDefaultsPlugin', '~>' + flipperkit_version, :configuration => 'Debug'
-  pod 'FlipperKit/FlipperKitReactPlugin', '~>' + flipperkit_version, :configuration => 'Debug'
-end
-
-# Post Install processing for Flipper
-def flipper_post_install(installer)
-  installer.pods_project.targets.each do |target|
-    if target.name == 'YogaKit'
-      target.build_configurations.each do |config|
-        config.build_settings['SWIFT_VERSION'] = '4.1'
-      end
-    end
-  end
-  file_name = Dir.glob("*.xcodeproj")[0]
-  app_project = Xcodeproj::Project.open(file_name)
-  app_project.native_targets.each do |target|
-    target.build_configurations.each do |config|
-      cflags = config.build_settings['OTHER_CFLAGS'] || '$(inherited) '
-      unless cflags.include? '-DFB_SONARKIT_ENABLED=1'
-        puts 'Adding -DFB_SONARKIT_ENABLED=1 in OTHER_CFLAGS...'
-        cflags << '-DFB_SONARKIT_ENABLED=1'
-      end
-      config.build_settings['OTHER_CFLAGS'] = cflags
-    end
-    app_project.save
-  end
-  installer.pods_project.save
-end
-
 if ENV['USE_FRAMEWORKS'] == '1'
   puts "Installing pods with use_frameworks!"
   use_frameworks!
@@ -52,12 +17,6 @@ def pods()
   # Additional Pods which aren't included in the default Podfile
   pod 'React-ART', :path => '../Libraries/ART'
   pod 'React-RCTPushNotification', :path => '../Libraries/PushNotificationIOS'
-  
-  # For enabling Flipper.
-  # Note that if you use_frameworks!, flipper will no work.
-  if ENV['USE_FRAMEWORKS'] != '1'
-    flipper_pods()
-  end
 
   # Additional Pods which are classed as unstable
   #
@@ -80,9 +39,6 @@ target 'RNTesterIntegrationTests' do
 end
 
 post_install do |installer|
-  if ENV['USE_FRAMEWORKS'] != '1'
-    flipper_post_install(installer)
-  end
   installer.pods_project.targets.each do |target|
     puts target.name
   end
