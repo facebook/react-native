@@ -519,6 +519,7 @@ jobs:
             find . -type f -regex ".*/outputs/androidTest-results/connected/.*xml" -exec cp {} ./reports/outputs/ \;
             find . -type f -regex ".*/buck-out/gen/ReactAndroid/src/test/.*/.*xml" -exec cp {} ./reports/buck/ \;
             if [ -f ~/react-native/reports/buck/all-results-raw.xml ]; then
+              cd ~/okbuck
               ./tooling/junit/buck_to_junit.sh ~/react-native/reports/buck/all-results-raw.xml ~/react-native/reports/junit/results.xml
             fi
           when: always
