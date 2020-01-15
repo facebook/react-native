@@ -363,13 +363,10 @@ RCT_ENUM_CONVERTER(UITextFieldViewMode, (@{
           // Added for Android compatibility
           @"numeric": @(UIKeyboardTypeDecimalPad),
         }];
-    // TODO: T56867629
-    if (@available(iOS 10.0, tvOS 10.0, *)) {
-      temporaryMapping[@"ascii-capable-number-pad"] = @(UIKeyboardTypeASCIICapableNumberPad);
-    }
+    temporaryMapping[@"ascii-capable-number-pad"] = @(UIKeyboardTypeASCIICapableNumberPad);
     mapping = temporaryMapping;
   });
-  
+
   UIKeyboardType type = RCTConvertEnumValue("UIKeyboardType", mapping, @(UIKeyboardTypeDefault), json).integerValue;
   return type;
 }
@@ -445,7 +442,7 @@ RCT_ENUM_CONVERTER(UIBarStyle, (@{
   @"default": @(UIBarStyleDefault),
   @"black": @(UIBarStyleBlack),
   @"blackOpaque": @(UIBarStyleBlackOpaque),
-  @"blackTranslucent": @(UIBarStyleBlackTranslucent),  
+  @"blackTranslucent": @(UIBarStyleBlackTranslucent),
 }), UIBarStyleDefault, integerValue)
 #endif
 
@@ -788,7 +785,7 @@ RCT_ENUM_CONVERTER(RCTAnimationType, (@{
     // This check is added here instead of being inside RCTImageFromLocalAssetURL, since
     // we don't want breaking changes to RCTImageFromLocalAssetURL, which is called in a lot of places
     // This is a deprecated method, and hence has the least impact on existing code. Basically,
-    // instead of crashing the app, it tries one more location for the image. 
+    // instead of crashing the app, it tries one more location for the image.
     if (!image) {
       image = RCTImageFromLocalBundleAssetURL(URL);
     }
