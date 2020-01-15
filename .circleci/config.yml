@@ -109,13 +109,13 @@ commands:
     steps:
       - restore_cache:
           keys:
-            - v2-brew
+            - v3-brew
       - steps: << parameters.steps >>
       - save_cache:
           paths:
             - /usr/local/Homebrew
             - ~/Library/Caches/Homebrew
-          key: v2-brew
+          key: v3-brew
 
   with_pods_cache_span:
     parameters:
