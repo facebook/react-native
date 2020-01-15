@@ -321,6 +321,12 @@ jobs:
           cd RNTester
           bundle check || bundle install
       - run:
+          name: Print Xcode environment
+          command: |
+            xcodebuild -version
+            instruments -s devices
+            xcrun simctl list
+      - run:
           name: Boot iPhone Simulator
           command: source scripts/.tests.env && xcrun simctl boot "$IOS_DEVICE" || true
 
