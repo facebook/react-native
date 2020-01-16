@@ -83,7 +83,6 @@ class Connection::Impl : public inspector::InspectorObserver,
   void handle(const m::debugger::StepOverRequest &req) override;
   void handle(const m::heapProfiler::TakeHeapSnapshotRequest &req) override;
   void handle(const m::runtime::EvaluateRequest &req) override;
-  void handle(const m::runtime::GetHeapUsageRequest &req) override;
   void handle(const m::runtime::GetPropertiesRequest &req) override;
 
  private:
@@ -256,11 +255,6 @@ void Connection::Impl::onContextCreated(Inspector &inspector) {
   m::runtime::ExecutionContextCreatedNotification note;
   note.context.id = 1;
   note.context.name = "hermes";
-
-  // isDefault and isPageContext are custom properties that the legacy RN to
-  // JSC adapter set for some unknown reason.
-  note.context.isDefault = true;
-  note.context.isPageContext = true;
 
   sendNotificationToClientViaExecutor(note);
 }
@@ -568,26 +562,6 @@ void Connection::Impl::handle(const m::debugger::StepOutRequest &req) {
 
 void Connection::Impl::handle(const m::debugger::StepOverRequest &req) {
   sendResponseToClientViaExecutor(inspector_->stepOver(), req.id);
-}
-
-void Connection::Impl::handle(const m::runtime::GetHeapUsageRequest &req) {
-  auto resp = std::make_shared<m::runtime::GetHeapUsageResponse>();
-  resp->id = req.id;
-
-  inspector_
-      ->executeIfEnabled(
-          "Runtime.getHeapUsage",
-          [this, resp](const debugger::ProgramState &state) {
-            HermesRuntime &rt = getRuntime();
-            jsi::Instrumentation &i = rt.instrumentation();
-            auto info = i.getHeapInfo(/* includeExpensive */ false);
-
-            resp->usedSize = info["hermes_allocatedBytes"];
-            resp->totalSize = info["hermes_heapSize"];
-          })
-      .via(executor_.get())
-      .thenValue([this, resp](auto &&) { sendResponseToClient(*resp); })
-      .thenError<std::exception>(sendErrorToClient(req.id));
 }
 
 std::vector<m::runtime::PropertyDescriptor>

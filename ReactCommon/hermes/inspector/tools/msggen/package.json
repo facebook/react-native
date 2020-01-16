@@ -32,6 +32,7 @@
     }
   },
   "dependencies": {
+    "devtools-protocol": "0.0.511679",
     "idx": "^2.1.0",
     "yargs": "^14.2.0"
   }
