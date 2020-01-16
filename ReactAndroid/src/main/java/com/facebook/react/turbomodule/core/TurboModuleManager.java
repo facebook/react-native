@@ -10,6 +10,7 @@ package com.facebook.react.turbomodule.core;
 import androidx.annotation.Nullable;
 import com.facebook.jni.HybridData;
 import com.facebook.proguard.annotations.DoNotStrip;
+import com.facebook.react.bridge.CxxModuleWrapper;
 import com.facebook.react.bridge.JSIModule;
 import com.facebook.react.bridge.JavaScriptContextHolder;
 import com.facebook.react.bridge.NativeModule;
@@ -55,9 +56,8 @@ public class TurboModuleManager implements JSIModule, TurboModuleRegistry {
     return mTurbomoduleManagerDelegate.getEagerInitModuleNames();
   }
 
-  @DoNotStrip
   @Nullable
-  protected TurboModule getJavaModule(String name) {
+  private TurboModule getJavaModule(String name) {
     if (!mTurboModules.containsKey(name)) {
       final TurboModule turboModule = mTurbomoduleManagerDelegate.getModule(name);
 
@@ -75,9 +75,33 @@ public class TurboModuleManager implements JSIModule, TurboModuleRegistry {
     return mTurboModules.get(name);
   }
 
+  @DoNotStrip
+  @Nullable
+  private TurboModule getLegacyCxxModule(String name) {
+    if (!mTurboModules.containsKey(name)) {
+      final CxxModuleWrapper turboModule = mTurbomoduleManagerDelegate.getLegacyCxxModule(name);
+
+      if (turboModule instanceof TurboModule) {
+        /**
+         * TurboModuleManager is initialized after ReactApplicationContext has been setup.
+         * Therefore, it's safe to call initialize on the TurboModule.
+         */
+        ((NativeModule) turboModule).initialize();
+
+        mTurboModules.put(name, (TurboModule) turboModule);
+      }
+    }
+
+    return mTurboModules.get(name);
+  }
+
   @Nullable
   public TurboModule getModule(String name) {
-    return getJavaModule(name);
+    TurboModule javaModule = getJavaModule(name);
+    if (javaModule != null) {
+      return javaModule;
+    }
+    return getLegacyCxxModule(name);
   }
 
   public Collection<TurboModule> getModules() {
