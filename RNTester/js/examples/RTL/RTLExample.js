@@ -7,6 +7,7 @@
  * @flow
  * @format
  */
+
 'use strict';
 
 const React = require('react');
@@ -31,16 +32,16 @@ type State = {
   pan: Object,
   linear: Object,
   isRTL: boolean,
+  ...
 };
 
-type RTLToggleState = {
-  isRTL: boolean,
-};
+type RTLToggleState = {isRTL: boolean, ...};
 
 type AnimationState = {
   toggleStatus: any,
   linear: Object,
   windowWidth: number,
+  ...
 };
 
 const SCALE = PixelRatio.get();

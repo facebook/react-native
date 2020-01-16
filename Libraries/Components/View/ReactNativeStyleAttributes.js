@@ -52,6 +52,7 @@ type StyleAttributesType = {
   tintColor: typeof colorAttributes | true,
   textShadowColor: typeof colorAttributes | true,
   overlayColor: typeof colorAttributes | true,
+  ...
 };
 
 const ReactNativeStyleAttributes: StyleAttributesType = {};

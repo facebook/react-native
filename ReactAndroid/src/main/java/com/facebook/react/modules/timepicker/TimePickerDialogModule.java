@@ -1,11 +1,13 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
- * directory of this source tree.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
+
 package com.facebook.react.modules.timepicker;
 
+import android.app.Activity;
 import android.app.TimePickerDialog.OnTimeSetListener;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnDismissListener;
@@ -15,11 +17,10 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
+import com.facebook.fbreact.specs.NativeTimePickerAndroidSpec;
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.bridge.ReactContextBaseJavaModule;
-import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.bridge.WritableNativeMap;
@@ -31,7 +32,7 @@ import com.facebook.react.module.annotations.ReactModule;
  * the user selects a time.
  */
 @ReactModule(name = TimePickerDialogModule.FRAGMENT_TAG)
-public class TimePickerDialogModule extends ReactContextBaseJavaModule {
+public class TimePickerDialogModule extends NativeTimePickerAndroidSpec {
 
   @VisibleForTesting public static final String FRAGMENT_TAG = "TimePickerAndroid";
 
@@ -85,15 +86,19 @@ public class TimePickerDialogModule extends ReactContextBaseJavaModule {
     }
   }
 
-  @ReactMethod
+  @Override
   public void open(@Nullable final ReadableMap options, Promise promise) {
 
-    FragmentActivity activity = (FragmentActivity) getCurrentActivity();
-    if (activity == null) {
+    Activity raw_activity = getCurrentActivity();
+    if (raw_activity == null || !(raw_activity instanceof FragmentActivity)) {
       promise.reject(
-          ERROR_NO_ACTIVITY, "Tried to open a TimePicker dialog while not attached to an Activity");
+          ERROR_NO_ACTIVITY,
+          "Tried to open a DatePicker dialog while not attached to a FragmentActivity");
       return;
     }
+
+    FragmentActivity activity = (FragmentActivity) raw_activity;
+
     // We want to support both android.app.Activity and the pre-Honeycomb FragmentActivity
     // (for apps that use it for legacy reasons). This unfortunately leads to some code duplication.
     FragmentManager fragmentManager = activity.getSupportFragmentManager();

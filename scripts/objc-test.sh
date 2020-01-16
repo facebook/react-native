@@ -3,7 +3,7 @@
 #
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
-#
+
 # Script used to run iOS tests.
 # If no arguments are passed to the script, it will only compile
 # the RNTester.
@@ -13,6 +13,11 @@
 
 SCRIPTS=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 ROOT=$(dirname "$SCRIPTS")
+
+SKIPPED_TESTS=()
+# TODO: T60408036 This test crashes iOS 13 for bad access, please investigate
+# and re-enable. See https://gist.github.com/0xced/56035d2f57254cf518b5.
+SKIPPED_TESTS+=("-skip-testing:RNTesterUnitTests/RCTJSONTests/testNotUTF8Convertible")
 
 # Create cleanup handler
 cleanup() {
@@ -56,7 +61,8 @@ runTests() {
     -workspace RNTester/RNTesterPods.xcworkspace \
     -scheme RNTester \
     -sdk iphonesimulator \
-    -destination "platform=iOS Simulator,name=$IOS_DEVICE,OS=$IOS_TARGET_OS"
+    -destination "platform=iOS Simulator,name=$IOS_DEVICE,OS=$IOS_TARGET_OS" \
+      "${SKIPPED_TESTS[@]}"
 }
 
 buildProject() {
@@ -69,7 +75,7 @@ buildProject() {
 xcprettyFormat() {
   if [ "$CI" ]; then
     # Circle CI expects JUnit reports to be available here
-    REPORTS_DIR="$HOME/react-native/reports"
+    REPORTS_DIR="$HOME/react-native/reports/junit"
   else
     THIS_DIR=$(cd -P "$(dirname "$(readlink "${BASH_SOURCE[0]}" || echo "${BASH_SOURCE[0]}")")" && pwd)
 
@@ -77,7 +83,7 @@ xcprettyFormat() {
     REPORTS_DIR="$THIS_DIR/../build/reports"
   fi
 
-  xcpretty --report junit --output "$REPORTS_DIR/junit/$TEST_NAME/results.xml"
+  xcpretty --report junit --output "$REPORTS_DIR/ios/results.xml"
 }
 
 preloadBundles() {

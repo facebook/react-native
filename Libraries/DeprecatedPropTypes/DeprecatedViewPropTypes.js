@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @flow
+ * @flow strict-local
  */
 
 'use strict';
@@ -13,7 +13,6 @@
 const DeprecatedEdgeInsetsPropType = require('./DeprecatedEdgeInsetsPropType');
 const DeprecatedStyleSheetPropType = require('./DeprecatedStyleSheetPropType');
 const DeprecatedViewStylePropTypes = require('./DeprecatedViewStylePropTypes');
-const PlatformViewPropTypes = require('../Components/View/PlatformViewPropTypes');
 const PropTypes = require('prop-types');
 
 const {DeprecatedAccessibilityRoles} = require('./DeprecatedViewAccessibility');
@@ -102,6 +101,7 @@ module.exports = {
   >),
 
   accessibilityState: PropTypes.object,
+  accessibilityValue: PropTypes.object,
   /**
    * Indicates to accessibility services whether the user should be notified
    * when this view changes. Works for Android API >= 19 only.
@@ -405,9 +405,4 @@ module.exports = {
    * See http://facebook.github.io/react-native/docs/view.html#needsoffscreenalphacompositing
    */
   needsOffscreenAlphaCompositing: PropTypes.bool,
-
-  /**
-   * Any additional platform-specific view prop types, or prop type overrides.
-   */
-  ...PlatformViewPropTypes,
 };

@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -8,6 +8,7 @@
 
 #import <mutex>
 
+#import <FBReactNativeSpec/FBReactNativeSpec.h>
 #import <React/RCTAssert.h>
 #import <React/RCTConvert.h>
 #import <React/RCTEventDispatcher.h>
@@ -18,11 +19,13 @@
 
 #import <React/RCTHTTPRequestHandler.h>
 
+#import "RCTNetworkPlugins.h"
+
 typedef RCTURLRequestCancellationBlock (^RCTHTTPQueryResult)(NSError *error, NSDictionary<NSString *, id> *result);
 
 NSString *const RCTNetworkingPHUploadHackScheme = @"ph-upload";
 
-@interface RCTNetworking ()
+@interface RCTNetworking () <NativeNetworkingIOSSpec>
 
 - (RCTURLRequestCancellationBlock)processDataForHTTPQuery:(NSDictionary<NSString *, id> *)data
                                                  callback:(RCTHTTPQueryResult)callback;
@@ -664,15 +667,26 @@ RCT_EXPORT_MODULE()
 
 #pragma mark - JS API
 
-RCT_EXPORT_METHOD(sendRequest:(NSDictionary *)query
-                  responseSender:(RCTResponseSenderBlock)responseSender)
+RCT_EXPORT_METHOD(sendRequest:(JS::NativeNetworkingIOS::SpecSendRequestQuery &)query
+                  callback:(RCTResponseSenderBlock)responseSender)
 {
+  NSDictionary *queryDict = @{
+    @"method": query.method(),
+    @"url": query.url(),
+    @"data": query.data(),
+    @"headers": query.headers(),
+    @"responseType": query.responseType(),
+    @"incrementalUpdates": @(query.incrementalUpdates()),
+    @"timeout": @(query.timeout()),
+    @"withCredentials": @(query.withCredentials()),
+  };
+  
   // TODO: buildRequest returns a cancellation block, but there's currently
   // no way to invoke it, if, for example the request is cancelled while
   // loading a large file to build the request body
-  [self buildRequest:query completionBlock:^(NSURLRequest *request) {
-    NSString *responseType = [RCTConvert NSString:query[@"responseType"]];
-    BOOL incrementalUpdates = [RCTConvert BOOL:query[@"incrementalUpdates"]];
+  [self buildRequest:queryDict completionBlock:^(NSURLRequest *request) {
+    NSString *responseType = [RCTConvert NSString:queryDict[@"responseType"]];
+    BOOL incrementalUpdates = [RCTConvert BOOL:queryDict[@"incrementalUpdates"]];
     [self sendRequest:request
          responseType:responseType
    incrementalUpdates:incrementalUpdates
@@ -680,10 +694,10 @@ RCT_EXPORT_METHOD(sendRequest:(NSDictionary *)query
   }];
 }
 
-RCT_EXPORT_METHOD(abortRequest:(nonnull NSNumber *)requestID)
+RCT_EXPORT_METHOD(abortRequest:(double)requestID)
 {
-  [_tasksByRequestID[requestID] cancel];
-  [_tasksByRequestID removeObjectForKey:requestID];
+  [_tasksByRequestID[[NSNumber numberWithDouble:requestID]] cancel];
+  [_tasksByRequestID removeObjectForKey:[NSNumber numberWithDouble:requestID]];
 }
 
 RCT_EXPORT_METHOD(clearCookies:(RCTResponseSenderBlock)responseSender)
@@ -700,6 +714,12 @@ RCT_EXPORT_METHOD(clearCookies:(RCTResponseSenderBlock)responseSender)
   responseSender(@[@YES]);
 }
 
+- (std::shared_ptr<facebook::react::TurboModule>)getTurboModuleWithJsInvoker:
+    (std::shared_ptr<facebook::react::CallInvoker>)jsInvoker
+{
+  return std::make_shared<facebook::react::NativeNetworkingIOSSpecJSI>(self, jsInvoker);
+}
+
 @end
 
 @implementation RCTBridge (RCTNetworking)
@@ -710,3 +730,7 @@ RCT_EXPORT_METHOD(clearCookies:(RCTResponseSenderBlock)responseSender)
 }
 
 @end
+
+Class RCTNetworkingCls(void) {
+  return RCTNetworking.class;
+}

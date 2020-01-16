@@ -1,9 +1,10 @@
-/**
- * Copyright (c) 2014-present, Facebook, Inc.
+/*
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
- * directory of this source tree.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
+
 package com.facebook.react.views.text;
 
 import android.graphics.Typeface;
@@ -12,6 +13,7 @@ import android.text.Layout;
 import android.view.Gravity;
 import androidx.annotation.Nullable;
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
+import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.ReactStylesDiffMap;
@@ -34,7 +36,6 @@ public class TextAttributeProps {
   private static final int DEFAULT_TEXT_SHADOW_COLOR = 0x55000000;
 
   protected float mLineHeight = Float.NaN;
-  protected float mLetterSpacing = Float.NaN;
   protected boolean mIsColorSet = false;
   protected boolean mAllowFontScaling = true;
   protected int mColor;
@@ -92,6 +93,11 @@ public class TextAttributeProps {
    */
   protected @Nullable String mFontFamily = null;
 
+  /**
+   * @see android.graphics.Paint#setFontFeatureSettings
+   */
+  protected @Nullable String mFontFeatureSettings = null;
+
   protected boolean mContainsImages = false;
   protected float mHeightOfTallestInlineImage = Float.NaN;
 
@@ -114,6 +120,7 @@ public class TextAttributeProps {
     setFontFamily(getStringProp(ViewProps.FONT_FAMILY));
     setFontWeight(getStringProp(ViewProps.FONT_WEIGHT));
     setFontStyle(getStringProp(ViewProps.FONT_STYLE));
+    setFontVariant(getArrayProp(ViewProps.FONT_VARIANT));
     setIncludeFontPadding(getBooleanProp(ViewProps.INCLUDE_FONT_PADDING, true));
     setTextDecorationLine(getStringProp(ViewProps.TEXT_DECORATION_LINE));
     setTextBreakStrategy(getStringProp(ViewProps.TEXT_BREAK_STRATEGY));
@@ -152,6 +159,14 @@ public class TextAttributeProps {
       return mProps.getFloat(name, defaultvalue);
     } else {
       return defaultvalue;
+    }
+  }
+
+  private @Nullable ReadableArray getArrayProp(String name) {
+    if (mProps.hasKey(name)) {
+      return mProps.getArray(name);
+    } else {
+      return null;
     }
   }
 
@@ -196,10 +211,21 @@ public class TextAttributeProps {
 
   public void setLetterSpacing(float letterSpacing) {
     mLetterSpacingInput = letterSpacing;
-    mLetterSpacing =
+  }
+
+  public float getLetterSpacing() {
+    float letterSpacingPixels =
         mAllowFontScaling
             ? PixelUtil.toPixelFromSP(mLetterSpacingInput)
             : PixelUtil.toPixelFromDIP(mLetterSpacingInput);
+
+    if (mFontSize <= 0) {
+      throw new IllegalArgumentException(
+          "FontSize should be a positive value. Current value: " + mFontSize);
+    }
+    // `letterSpacingPixels` and `mFontSize` are both in pixels,
+    // yielding an accurate em value.
+    return letterSpacingPixels / mFontSize;
   }
 
   public void setAllowFontScaling(boolean allowFontScaling) {
@@ -267,6 +293,10 @@ public class TextAttributeProps {
 
   public void setFontFamily(@Nullable String fontFamily) {
     mFontFamily = fontFamily;
+  }
+
+  public void setFontVariant(@Nullable ReadableArray fontVariant) {
+    mFontFeatureSettings = ReactTypefaceUtils.parseFontVariant(fontVariant);
   }
 
   /**

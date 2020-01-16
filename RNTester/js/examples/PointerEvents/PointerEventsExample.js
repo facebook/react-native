@@ -169,6 +169,7 @@ type ExampleClass = {
   Component: React.ComponentType<any>,
   title: string,
   description: string,
+  ...
 };
 
 const exampleClasses: Array<ExampleClass> = [

@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -9,7 +9,7 @@
 
 #import <React/RCTDefines.h>
 
-#if RCT_DEV && !TARGET_OS_UIKITFORMAC
+#if RCT_DEV
 
 NS_ASSUME_NONNULL_BEGIN
 

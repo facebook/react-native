@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -49,11 +49,6 @@ using namespace facebook::react;
   // Default implementation does nothing.
 }
 
-- (void)updateLocalData:(SharedLocalData)localData oldLocalData:(SharedLocalData)oldLocalData
-{
-  // Default implementation does nothing.
-}
-
 - (void)updateState:(facebook::react::State::Shared const &)state
            oldState:(facebook::react::State::Shared const &)oldState
 {
@@ -71,9 +66,8 @@ using namespace facebook::react;
   if (layoutMetrics.frame != oldLayoutMetrics.frame) {
     CGRect frame = RCTCGRectFromRect(layoutMetrics.frame);
 
-    if (std::isnan(frame.origin.x) || std::isnan(frame.origin.y) || std::isnan(frame.size.width) ||
-        std::isnan(frame.size.height) || std::isinf(frame.origin.x) || std::isinf(frame.origin.y) ||
-        std::isinf(frame.size.width) || std::isinf(frame.size.height)) {
+    if (!std::isfinite(frame.origin.x) || !std::isfinite(frame.origin.y) || !std::isfinite(frame.size.width) ||
+        !std::isfinite(frame.size.height)) {
       // CALayer will crash if we pass NaN or Inf values.
       // It's unclear how to detect this case on cross-platform manner holistically, so we have to do it on the mounting
       // layer as well. NaN/Inf is a kinda valid result of some math operations. Even if we can (and should) detect (and

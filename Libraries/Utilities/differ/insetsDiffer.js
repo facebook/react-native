@@ -15,6 +15,7 @@ type Inset = {
   left: ?number,
   right: ?number,
   bottom: ?number,
+  ...
 };
 
 const dummyInsets = {

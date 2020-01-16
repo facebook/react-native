@@ -12,6 +12,7 @@
 
 const React = require('react');
 const {PanResponder, StyleSheet, View} = require('react-native');
+const RNTesterPage = require('../../components/RNTesterPage');
 
 import type {
   PanResponderInstance,
@@ -23,13 +24,30 @@ type CircleStyles = {
   backgroundColor?: string,
   left?: number,
   top?: number,
+  ...
 };
 
 const CIRCLE_SIZE = 80;
 
 type Props = $ReadOnly<{||}>;
+type State = {|
+  left: number,
+  top: number,
+  pressed: boolean,
+|};
 
-class PanResponderExample extends React.Component<Props> {
+class PanResponderExample extends React.Component<Props, State> {
+  _previousLeft: number = 20;
+  _previousTop: number = 84;
+  _circleStyles: {|style: CircleStyles|} = {style: {}};
+  circle: ?React.ElementRef<typeof View> = null;
+
+  state: State = {
+    left: 20,
+    top: 84,
+    pressed: false,
+  };
+
   _handleStartShouldSetPanResponder = (
     event: PressEvent,
     gestureState: GestureState,
@@ -50,17 +68,22 @@ class PanResponderExample extends React.Component<Props> {
     event: PressEvent,
     gestureState: GestureState,
   ) => {
-    this._highlight();
+    this.setState({
+      pressed: true,
+    });
   };
 
   _handlePanResponderMove = (event: PressEvent, gestureState: GestureState) => {
-    this._circleStyles.style.left = this._previousLeft + gestureState.dx;
-    this._circleStyles.style.top = this._previousTop + gestureState.dy;
-    this._updateNativeStyles();
+    this.setState({
+      left: this._previousLeft + gestureState.dx,
+      top: this._previousTop + gestureState.dy,
+    });
   };
 
   _handlePanResponderEnd = (event: PressEvent, gestureState: GestureState) => {
-    this._unHighlight();
+    this.setState({
+      pressed: false,
+    });
     this._previousLeft += gestureState.dx;
     this._previousTop += gestureState.dy;
   };
@@ -74,52 +97,29 @@ class PanResponderExample extends React.Component<Props> {
     onPanResponderTerminate: this._handlePanResponderEnd,
   });
 
-  _previousLeft: number = 0;
-  _previousTop: number = 0;
-  _circleStyles: {|style: CircleStyles|} = {style: {}};
-  circle: ?React.ElementRef<typeof View> = null;
-
-  UNSAFE_componentWillMount() {
-    this._previousLeft = 20;
-    this._previousTop = 84;
-    this._circleStyles = {
-      style: {
-        left: this._previousLeft,
-        top: this._previousTop,
-        backgroundColor: 'green',
-      },
-    };
-  }
-
-  componentDidMount() {
-    this._updateNativeStyles();
-  }
-
-  _highlight() {
-    this._circleStyles.style.backgroundColor = 'blue';
-    this._updateNativeStyles();
-  }
-
-  _unHighlight() {
-    this._circleStyles.style.backgroundColor = 'green';
-    this._updateNativeStyles();
-  }
-
-  _updateNativeStyles() {
-    this.circle && this.circle.setNativeProps(this._circleStyles);
-  }
-
   render(): React.Node {
     return (
-      <View style={styles.container}>
-        <View
-          ref={circle => {
-            this.circle = circle;
-          }}
-          style={styles.circle}
-          {...this._panResponder.panHandlers}
-        />
-      </View>
+      <RNTesterPage
+        noSpacer={true}
+        noScroll={true}
+        title="Basic gesture handling">
+        <View style={styles.container}>
+          <View
+            ref={circle => {
+              this.circle = circle;
+            }}
+            style={[
+              styles.circle,
+              {
+                translateX: this.state.left,
+                translateY: this.state.top,
+                backgroundColor: this.state.pressed ? 'blue' : 'green',
+              },
+            ]}
+            {...this._panResponder.panHandlers}
+          />
+        </View>
+      </RNTesterPage>
     );
   }
 }
@@ -143,6 +143,7 @@ const styles = StyleSheet.create({
 exports.title = 'PanResponder Sample';
 exports.description =
   'Shows the Use of PanResponder to provide basic gesture handling';
+exports.simpleExampleContainer = true;
 exports.examples = [
   {
     title: 'Basic gesture handling',

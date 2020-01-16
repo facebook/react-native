@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -24,6 +24,7 @@
 #import <React/RCTPerformanceLogger.h>
 #import <React/RCTProfile.h>
 #import <React/RCTRedBox.h>
+#import <React/RCTReloadCommand.h>
 #import <React/RCTUtils.h>
 #import <React/RCTFollyConvert.h>
 #import <cxxreact/CxxNativeModule.h>
@@ -44,13 +45,9 @@
 #import <React/RCTFBSystrace.h>
 #endif
 
-#if RCT_DEV && __has_include(<React/RCTDevLoadingView.h>)
+#if (RCT_DEV | RCT_ENABLE_LOADING_VIEW) && __has_include(<React/RCTDevLoadingView.h>)
 #import <React/RCTDevLoadingView.h>
 #endif
-
-#define RCTAssertJSThread() \
-  RCTAssert(self.executorClass || self->_jsThread == [NSThread currentThread], \
-            @"This method must be called on JS thread")
 
 static NSString *const RCTJSThreadName = @"com.facebook.react.JavaScript";
 
@@ -375,7 +372,7 @@ struct RCTInstanceCallback : public InstanceCallback {
     sourceCode = source.data;
     dispatch_group_leave(prepareBridge);
   } onProgress:^(RCTLoadingProgress *progressData) {
-#if RCT_DEV && __has_include(<React/RCTDevLoadingView.h>)
+#if (RCT_DEV | RCT_ENABLE_LOADING_VIEW) && __has_include(<React/RCTDevLoadingView.h>)
     // Note: RCTDevLoadingView should have been loaded at this point, so no need to allow lazy loading.
     RCTDevLoadingView *loadingView = [weakSelf moduleForName:RCTBridgeModuleNameForClass([RCTDevLoadingView class])
                                        lazilyLoadIfNecessary:NO];
@@ -487,7 +484,7 @@ struct RCTInstanceCallback : public InstanceCallback {
     }
     return moduleData.instance;
   }
-  
+
   static NSSet<NSString *> *ignoredModuleLoadFailures = [NSSet setWithArray: @[@"UIManager"]];
 
   // Module may not be loaded yet, so attempt to force load it here.
@@ -556,7 +553,6 @@ struct RCTInstanceCallback : public InstanceCallback {
     return;
   }
 
-  RCTAssertJSThread();
   __weak RCTCxxBridge *weakSelf = self;
   _jsMessageThread = std::make_shared<RCTMessageThread>([NSRunLoop currentRunLoop], ^(NSError *error) {
     if (error) {
@@ -1009,7 +1005,15 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
   if (!_valid) {
     RCTLogWarn(@"Attempting to reload bridge before it's valid: %@. Try restarting the development server if connected.", self);
   }
-  [_parentBridge reload];
+  RCTTriggerReloadCommandListeners(@"Unknown from cxx bridge");
+}
+
+- (void)reloadWithReason:(NSString *)reason
+{
+  if (!_valid) {
+    RCTLogWarn(@"Attempting to reload bridge before it's valid: %@. Try restarting the development server if connected.", self);
+  }
+  RCTTriggerReloadCommandListeners(reason);
 }
 
 - (Class)executorClass
@@ -1280,8 +1284,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
  */
 - (void)_immediatelyCallTimer:(NSNumber *)timer
 {
-  RCTAssertJSThread();
-
   if (_reactInstance) {
     _reactInstance->callJSFunction("JSTimers", "callTimers",
                                    folly::dynamic::array(folly::dynamic::array([timer doubleValue])));

@@ -7,6 +7,7 @@
  * @flow
  * @format
  */
+
 'use strict';
 
 const binaryToBase64 = require('../Utilities/binaryToBase64');
@@ -18,7 +19,7 @@ export type RequestBody =
   | string
   | Blob
   | FormData
-  | {uri: string}
+  | {uri: string, ...}
   | ArrayBuffer
   | $ArrayBufferView;
 

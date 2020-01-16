@@ -1,9 +1,10 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
- * directory of this source tree.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
+
 package com.facebook.react.modules.blob;
 
 import android.content.res.Resources;
@@ -12,10 +13,10 @@ import android.net.Uri;
 import android.provider.MediaStore;
 import android.webkit.MimeTypeMap;
 import androidx.annotation.Nullable;
+import com.facebook.fbreact.specs.NativeBlobModuleSpec;
+import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.bridge.ReactContextBaseJavaModule;
-import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableMap;
@@ -41,7 +42,7 @@ import okhttp3.ResponseBody;
 import okio.ByteString;
 
 @ReactModule(name = BlobModule.NAME)
-public class BlobModule extends ReactContextBaseJavaModule {
+public class BlobModule extends NativeBlobModuleSpec {
 
   public static final String NAME = "BlobModule";
 
@@ -144,19 +145,24 @@ public class BlobModule extends ReactContextBaseJavaModule {
   }
 
   @Override
+  public void initialize() {
+    BlobCollector.install(getReactApplicationContext(), this);
+  }
+
+  @Override
   public String getName() {
     return NAME;
   }
 
   @Override
-  public @Nullable Map<String, Object> getConstants() {
+  public @Nullable Map<String, Object> getTypedExportedConstants() {
     // The application can register BlobProvider as a ContentProvider so that blobs are resolvable.
     // If it does, it needs to tell us what authority was used via this string resource.
     Resources resources = getReactApplicationContext().getResources();
     String packageName = getReactApplicationContext().getPackageName();
     int resourceId = resources.getIdentifier("blob_provider_authority", "string", packageName);
     if (resourceId == 0) {
-      return null;
+      return MapBuilder.<String, Object>of();
     }
 
     return MapBuilder.<String, Object>of(
@@ -170,11 +176,16 @@ public class BlobModule extends ReactContextBaseJavaModule {
   }
 
   public void store(byte[] data, String blobId) {
-    mBlobs.put(blobId, data);
+    synchronized (mBlobs) {
+      mBlobs.put(blobId, data);
+    }
   }
 
+  @DoNotStrip
   public void remove(String blobId) {
-    mBlobs.remove(blobId);
+    synchronized (mBlobs) {
+      mBlobs.remove(blobId);
+    }
   }
 
   public @Nullable byte[] resolve(Uri uri) {
@@ -193,17 +204,19 @@ public class BlobModule extends ReactContextBaseJavaModule {
   }
 
   public @Nullable byte[] resolve(String blobId, int offset, int size) {
-    byte[] data = mBlobs.get(blobId);
-    if (data == null) {
-      return null;
+    synchronized (mBlobs) {
+      byte[] data = mBlobs.get(blobId);
+      if (data == null) {
+        return null;
+      }
+      if (size == -1) {
+        size = data.length - offset;
+      }
+      if (offset > 0 || size != data.length) {
+        data = Arrays.copyOfRange(data, offset, offset + size);
+      }
+      return data;
     }
-    if (size == -1) {
-      size = data.length - offset;
-    }
-    if (offset > 0 || size != data.length) {
-      data = Arrays.copyOfRange(data, offset, offset + size);
-    }
-    return data;
   }
 
   public @Nullable byte[] resolve(ReadableMap blob) {
@@ -272,41 +285,69 @@ public class BlobModule extends ReactContextBaseJavaModule {
     return type;
   }
 
-  private WebSocketModule getWebSocketModule() {
-    return getReactApplicationContext().getNativeModule(WebSocketModule.class);
+  private WebSocketModule getWebSocketModule(String reason) {
+    ReactApplicationContext reactApplicationContext = getReactApplicationContextIfActiveOrWarn();
+
+    if (reactApplicationContext != null) {
+      return reactApplicationContext.getNativeModule(WebSocketModule.class);
+    }
+
+    return null;
   }
 
-  @ReactMethod
+  @Override
   public void addNetworkingHandler() {
-    NetworkingModule networkingModule =
-        getReactApplicationContext().getNativeModule(NetworkingModule.class);
-    networkingModule.addUriHandler(mNetworkingUriHandler);
-    networkingModule.addRequestBodyHandler(mNetworkingRequestBodyHandler);
-    networkingModule.addResponseHandler(mNetworkingResponseHandler);
-  }
+    ReactApplicationContext reactApplicationContext = getReactApplicationContextIfActiveOrWarn();
 
-  @ReactMethod
-  public void addWebSocketHandler(final int id) {
-    getWebSocketModule().setContentHandler(id, mWebSocketContentHandler);
-  }
-
-  @ReactMethod
-  public void removeWebSocketHandler(final int id) {
-    getWebSocketModule().setContentHandler(id, null);
-  }
-
-  @ReactMethod
-  public void sendOverSocket(ReadableMap blob, int id) {
-    byte[] data = resolve(blob.getString("blobId"), blob.getInt("offset"), blob.getInt("size"));
-
-    if (data != null) {
-      getWebSocketModule().sendBinary(ByteString.of(data), id);
-    } else {
-      getWebSocketModule().sendBinary((ByteString) null, id);
+    if (reactApplicationContext != null) {
+      NetworkingModule networkingModule =
+          reactApplicationContext.getNativeModule(NetworkingModule.class);
+      networkingModule.addUriHandler(mNetworkingUriHandler);
+      networkingModule.addRequestBodyHandler(mNetworkingRequestBodyHandler);
+      networkingModule.addResponseHandler(mNetworkingResponseHandler);
     }
   }
 
-  @ReactMethod
+  @Override
+  public void addWebSocketHandler(final double idDouble) {
+    final int id = (int) idDouble;
+
+    WebSocketModule webSocketModule = getWebSocketModule("addWebSocketHandler");
+
+    if (webSocketModule != null) {
+      webSocketModule.setContentHandler(id, mWebSocketContentHandler);
+    }
+  }
+
+  @Override
+  public void removeWebSocketHandler(final double idDouble) {
+    final int id = (int) idDouble;
+
+    WebSocketModule webSocketModule = getWebSocketModule("removeWebSocketHandler");
+
+    if (webSocketModule != null) {
+      webSocketModule.setContentHandler(id, null);
+    }
+  }
+
+  @Override
+  public void sendOverSocket(ReadableMap blob, double idDouble) {
+    int id = (int) idDouble;
+
+    WebSocketModule webSocketModule = getWebSocketModule("sendOverSocket");
+
+    if (webSocketModule != null) {
+      byte[] data = resolve(blob.getString("blobId"), blob.getInt("offset"), blob.getInt("size"));
+
+      if (data != null) {
+        webSocketModule.sendBinary(ByteString.of(data), id);
+      } else {
+        webSocketModule.sendBinary((ByteString) null, id);
+      }
+    }
+  }
+
+  @Override
   public void createFromParts(ReadableArray parts, String blobId) {
     int totalBlobSize = 0;
     ArrayList<byte[]> partList = new ArrayList<>(parts.size());
@@ -334,7 +375,7 @@ public class BlobModule extends ReactContextBaseJavaModule {
     store(buffer.array(), blobId);
   }
 
-  @ReactMethod
+  @Override
   public void release(String blobId) {
     remove(blobId);
   }

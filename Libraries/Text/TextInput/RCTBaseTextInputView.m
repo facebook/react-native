@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -67,7 +67,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
 - (void)enforceTextAttributesIfNeeded
 {
   id<RCTBackedTextInputViewProtocol> backedTextInputView = self.backedTextInputView;
-  backedTextInputView.reactTextAttributes = _textAttributes;
+  backedTextInputView.defaultTextAttributes = [_textAttributes effectiveTextAttributes];
 }
 
 - (void)setReactPaddingInsets:(UIEdgeInsets)reactPaddingInsets
@@ -194,68 +194,65 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
 
 - (void)setTextContentType:(NSString *)type
 {
-  #if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_10_0
-    if (@available(iOS 10.0, *)) {
+  #if defined(__IPHONE_OS_VERSION_MAX_ALLOWED)
+    static dispatch_once_t onceToken;
+    static NSDictionary<NSString *, NSString *> *contentTypeMap;
 
-        static dispatch_once_t onceToken;
-        static NSDictionary<NSString *, NSString *> *contentTypeMap;
+    dispatch_once(&onceToken, ^{
+      contentTypeMap = @{@"none": @"",
+                          @"URL": UITextContentTypeURL,
+                          @"addressCity": UITextContentTypeAddressCity,
+                          @"addressCityAndState":UITextContentTypeAddressCityAndState,
+                          @"addressState": UITextContentTypeAddressState,
+                          @"countryName": UITextContentTypeCountryName,
+                          @"creditCardNumber": UITextContentTypeCreditCardNumber,
+                          @"emailAddress": UITextContentTypeEmailAddress,
+                          @"familyName": UITextContentTypeFamilyName,
+                          @"fullStreetAddress": UITextContentTypeFullStreetAddress,
+                          @"givenName": UITextContentTypeGivenName,
+                          @"jobTitle": UITextContentTypeJobTitle,
+                          @"location": UITextContentTypeLocation,
+                          @"middleName": UITextContentTypeMiddleName,
+                          @"name": UITextContentTypeName,
+                          @"namePrefix": UITextContentTypeNamePrefix,
+                          @"nameSuffix": UITextContentTypeNameSuffix,
+                          @"nickname": UITextContentTypeNickname,
+                          @"organizationName": UITextContentTypeOrganizationName,
+                          @"postalCode": UITextContentTypePostalCode,
+                          @"streetAddressLine1": UITextContentTypeStreetAddressLine1,
+                          @"streetAddressLine2": UITextContentTypeStreetAddressLine2,
+                          @"sublocality": UITextContentTypeSublocality,
+                          @"telephoneNumber": UITextContentTypeTelephoneNumber,
+                          };
 
-        dispatch_once(&onceToken, ^{
-          contentTypeMap = @{@"none": @"",
-                             @"URL": UITextContentTypeURL,
-                             @"addressCity": UITextContentTypeAddressCity,
-                             @"addressCityAndState":UITextContentTypeAddressCityAndState,
-                             @"addressState": UITextContentTypeAddressState,
-                             @"countryName": UITextContentTypeCountryName,
-                             @"creditCardNumber": UITextContentTypeCreditCardNumber,
-                             @"emailAddress": UITextContentTypeEmailAddress,
-                             @"familyName": UITextContentTypeFamilyName,
-                             @"fullStreetAddress": UITextContentTypeFullStreetAddress,
-                             @"givenName": UITextContentTypeGivenName,
-                             @"jobTitle": UITextContentTypeJobTitle,
-                             @"location": UITextContentTypeLocation,
-                             @"middleName": UITextContentTypeMiddleName,
-                             @"name": UITextContentTypeName,
-                             @"namePrefix": UITextContentTypeNamePrefix,
-                             @"nameSuffix": UITextContentTypeNameSuffix,
-                             @"nickname": UITextContentTypeNickname,
-                             @"organizationName": UITextContentTypeOrganizationName,
-                             @"postalCode": UITextContentTypePostalCode,
-                             @"streetAddressLine1": UITextContentTypeStreetAddressLine1,
-                             @"streetAddressLine2": UITextContentTypeStreetAddressLine2,
-                             @"sublocality": UITextContentTypeSublocality,
-                             @"telephoneNumber": UITextContentTypeTelephoneNumber,
-                             };
+      #if __IPHONE_OS_VERSION_MAX_ALLOWED >= 110000 /* __IPHONE_11_0 */
+        if (@available(iOS 11.0, tvOS 11.0, *)) {
+          NSDictionary<NSString *, NSString *> * iOS11extras = @{@"username": UITextContentTypeUsername,
+                                                                  @"password": UITextContentTypePassword};
 
-          #if __IPHONE_OS_VERSION_MAX_ALLOWED >= 110000 /* __IPHONE_11_0 */
-            if (@available(iOS 11.0, tvOS 11.0, *)) {
-              NSDictionary<NSString *, NSString *> * iOS11extras = @{@"username": UITextContentTypeUsername,
-                                                                     @"password": UITextContentTypePassword};
+          NSMutableDictionary<NSString *, NSString *> * iOS11baseMap = [contentTypeMap mutableCopy];
+          [iOS11baseMap addEntriesFromDictionary:iOS11extras];
 
-              NSMutableDictionary<NSString *, NSString *> * iOS11baseMap = [contentTypeMap mutableCopy];
-              [iOS11baseMap addEntriesFromDictionary:iOS11extras];
+          contentTypeMap = [iOS11baseMap copy];
+        }
+      #endif
 
-              contentTypeMap = [iOS11baseMap copy];
-            }
-          #endif
+      #if __IPHONE_OS_VERSION_MAX_ALLOWED >= 120000 /* __IPHONE_12_0 */
+        if (@available(iOS 12.0, tvOS 12.0, *)) {
+          NSDictionary<NSString *, NSString *> * iOS12extras = @{@"newPassword": UITextContentTypeNewPassword,
+                                                                  @"oneTimeCode": UITextContentTypeOneTimeCode};
 
-          #if __IPHONE_OS_VERSION_MAX_ALLOWED >= 120000 /* __IPHONE_12_0 */
-            if (@available(iOS 12.0, tvOS 12.0, *)) {
-              NSDictionary<NSString *, NSString *> * iOS12extras = @{@"newPassword": UITextContentTypeNewPassword,
-                                                                     @"oneTimeCode": UITextContentTypeOneTimeCode};
+          NSMutableDictionary<NSString *, NSString *> * iOS12baseMap = [contentTypeMap mutableCopy];
+          [iOS12baseMap addEntriesFromDictionary:iOS12extras];
 
-              NSMutableDictionary<NSString *, NSString *> * iOS12baseMap = [contentTypeMap mutableCopy];
-              [iOS12baseMap addEntriesFromDictionary:iOS12extras];
+          contentTypeMap = [iOS12baseMap copy];
+        }
+      #endif
+    });
 
-              contentTypeMap = [iOS12baseMap copy];
-            }
-          #endif
-        });
-
-        // Setting textContentType to an empty string will disable any
-        // default behaviour, like the autofill bar for password inputs
-        self.backedTextInputView.textContentType = contentTypeMap[type] ?: type;
-    }
+    // Setting textContentType to an empty string will disable any
+    // default behaviour, like the autofill bar for password inputs
+    self.backedTextInputView.textContentType = contentTypeMap[type] ?: type;
   #endif
 }
 
@@ -284,24 +281,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
       [textInputView reloadInputViews];
     }
   }
-}
-
-- (BOOL)secureTextEntry {
-  return self.backedTextInputView.secureTextEntry;
-}
-
-- (void)setSecureTextEntry:(BOOL)secureTextEntry {
-  UIView<RCTBackedTextInputViewProtocol> *textInputView = self.backedTextInputView;
-
-  if (textInputView.secureTextEntry != secureTextEntry) {
-    textInputView.secureTextEntry = secureTextEntry;
-
-    // Fix #5859, see https://stackoverflow.com/questions/14220187/uitextfield-has-trailing-whitespace-after-securetextentry-toggle/22537788#22537788
-    NSAttributedString *originalText = [textInputView.attributedText copy];
-    self.backedTextInputView.attributedText = [NSAttributedString new];
-    self.backedTextInputView.attributedText = originalText;
-  }
-
 }
 
 #pragma mark - RCTBackedTextInputDelegate
@@ -369,7 +348,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
   // Does nothing.
 }
 
-- (BOOL)textInputShouldChangeTextInRange:(NSRange)range replacementText:(NSString *)text
+- (NSString *)textInputShouldChangeText:(NSString *)text inRange:(NSRange)range
 {
   id<RCTBackedTextInputViewProtocol> backedTextInputView = self.backedTextInputView;
 
@@ -408,7 +387,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
         [self textInputDidChange];
       }
 
-      return NO;
+      return nil; // Rejecting the change.
     }
   }
 
@@ -432,7 +411,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
     });
   }
 
-  return YES;
+  return text; // Accepting the change.
 }
 
 - (void)textInputDidChange
@@ -449,7 +428,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
   NSRange predictionRange;
   if (findMismatch(backedTextInputView.attributedText.string, _predictedText, &currentRange, &predictionRange)) {
     NSString *replacement = [backedTextInputView.attributedText.string substringWithRange:currentRange];
-    [self textInputShouldChangeTextInRange:predictionRange replacementText:replacement];
+    [self textInputShouldChangeText:replacement inRange:predictionRange];
     // JS will assume the selection changed based on the location of our shouldChangeTextInRange, so reset it.
     [self textInputDidChangeSelection];
   }

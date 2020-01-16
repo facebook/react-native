@@ -1,9 +1,10 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
- * directory of this source tree.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
+
 package com.facebook.react.modules.camera;
 
 import android.annotation.SuppressLint;
@@ -21,14 +22,13 @@ import android.provider.MediaStore;
 import android.text.TextUtils;
 import androidx.annotation.Nullable;
 import com.facebook.common.logging.FLog;
+import com.facebook.fbreact.specs.NativeImageEditorSpec;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.GuardedAsyncTask;
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContext;
-import com.facebook.react.bridge.ReactContextBaseJavaModule;
-import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.module.annotations.ReactModule;
@@ -41,13 +41,11 @@ import java.io.OutputStream;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 /** Native module that provides image cropping functionality. */
 @ReactModule(name = ImageEditingManager.NAME)
-public class ImageEditingManager extends ReactContextBaseJavaModule {
+public class ImageEditingManager extends NativeImageEditorSpec {
 
   public static final String NAME = "ImageEditingManager";
 
@@ -96,11 +94,6 @@ public class ImageEditingManager extends ReactContextBaseJavaModule {
   @Override
   public String getName() {
     return NAME;
-  }
-
-  @Override
-  public Map<String, Object> getConstants() {
-    return Collections.emptyMap();
   }
 
   @Override
@@ -160,7 +153,7 @@ public class ImageEditingManager extends ReactContextBaseJavaModule {
    *     is passed to this callback is the file:// URI of the new image
    * @param error callback to be invoked when an error occurs (e.g. can't create file etc.)
    */
-  @ReactMethod
+  @Override
   public void cropImage(
       String uri, ReadableMap options, final Callback success, final Callback error) {
     ReadableMap offset = options.hasKey("offset") ? options.getMap("offset") : null;

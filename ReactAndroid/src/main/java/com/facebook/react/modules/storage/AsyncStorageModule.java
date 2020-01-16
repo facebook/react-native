@@ -1,9 +1,10 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
- * directory of this source tree.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
+
 package com.facebook.react.modules.storage;
 
 import static com.facebook.react.modules.storage.ReactDatabaseSupplier.KEY_COLUMN;
@@ -14,12 +15,11 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteStatement;
 import android.os.AsyncTask;
 import com.facebook.common.logging.FLog;
+import com.facebook.fbreact.specs.NativeAsyncStorageSpec;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.GuardedAsyncTask;
 import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.bridge.ReactContextBaseJavaModule;
-import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
@@ -32,7 +32,7 @@ import java.util.HashSet;
 import java.util.concurrent.Executor;
 
 @ReactModule(name = AsyncStorageModule.NAME)
-public final class AsyncStorageModule extends ReactContextBaseJavaModule
+public final class AsyncStorageModule extends NativeAsyncStorageSpec
     implements ModuleDataCleaner.Cleanable {
 
   public static final String NAME = "AsyncSQLiteDBStorage";
@@ -119,7 +119,7 @@ public final class AsyncStorageModule extends ReactContextBaseJavaModule
    * Given an array of keys, this returns a map of (key, value) pairs for the keys found, and (key,
    * null) for the keys that haven't been found.
    */
-  @ReactMethod
+  @Override
   public void multiGet(final ReadableArray keys, final Callback callback) {
     if (keys == null) {
       callback.invoke(AsyncStorageErrorUtil.getInvalidKeyError(null), null);
@@ -195,7 +195,7 @@ public final class AsyncStorageModule extends ReactContextBaseJavaModule
    * return AsyncLocalStorageFailure, but all other pairs will have been inserted. The insertion
    * will replace conflicting (key, value) pairs.
    */
-  @ReactMethod
+  @Override
   public void multiSet(final ReadableArray keyValueArray, final Callback callback) {
     if (keyValueArray.size() == 0) {
       callback.invoke(AsyncStorageErrorUtil.getInvalidKeyError(null));
@@ -258,7 +258,7 @@ public final class AsyncStorageModule extends ReactContextBaseJavaModule
   }
 
   /** Removes all rows of the keys given. */
-  @ReactMethod
+  @Override
   public void multiRemove(final ReadableArray keys, final Callback callback) {
     if (keys.size() == 0) {
       callback.invoke(AsyncStorageErrorUtil.getInvalidKeyError(null));
@@ -312,7 +312,7 @@ public final class AsyncStorageModule extends ReactContextBaseJavaModule
    * Given an array of (key, value) pairs, this will merge the given values with the stored values
    * of the given keys, if they exist.
    */
-  @ReactMethod
+  @Override
   public void multiMerge(final ReadableArray keyValueArray, final Callback callback) {
     new GuardedAsyncTask<Void, Void>(getReactApplicationContext()) {
       @Override
@@ -372,7 +372,7 @@ public final class AsyncStorageModule extends ReactContextBaseJavaModule
   }
 
   /** Clears the database. */
-  @ReactMethod
+  @Override
   public void clear(final Callback callback) {
     new GuardedAsyncTask<Void, Void>(getReactApplicationContext()) {
       @Override
@@ -393,7 +393,7 @@ public final class AsyncStorageModule extends ReactContextBaseJavaModule
   }
 
   /** Returns an array with all keys from the database. */
-  @ReactMethod
+  @Override
   public void getAllKeys(final Callback callback) {
     new GuardedAsyncTask<Void, Void>(getReactApplicationContext()) {
       @Override

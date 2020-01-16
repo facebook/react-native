@@ -157,6 +157,10 @@ const APIExamples: Array<RNTesterExample> = [
     module: require('../examples/DatePicker/DatePickerAndroidExample'),
   },
   {
+    key: 'DevSettings',
+    module: require('../examples/DevSettings/DevSettingsExample'),
+  },
+  {
     key: 'Dimensions',
     module: require('../examples/Dimensions/DimensionsExample'),
   },
@@ -203,10 +207,6 @@ const APIExamples: Array<RNTesterExample> = [
   {
     key: 'ShareExample',
     module: require('../examples/Share/ShareExample'),
-  },
-  {
-    key: 'TimePickerAndroidExample',
-    module: require('../examples/TimePicker/TimePickerAndroidExample'),
   },
   {
     key: 'TimerExample',

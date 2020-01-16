@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -8,7 +8,10 @@
 #import "RCTScrollViewComponentView.h"
 
 #import <React/RCTAssert.h>
+#import <React/RCTBridge+Private.h>
+#import <React/RCTScrollEvent.h>
 
+#import <react/components/scrollview/RCTComponentViewHelpers.h>
 #import <react/components/scrollview/ScrollViewComponentDescriptor.h>
 #import <react/components/scrollview/ScrollViewEventEmitter.h>
 #import <react/components/scrollview/ScrollViewProps.h>
@@ -17,10 +20,26 @@
 
 #import "RCTConversions.h"
 #import "RCTEnhancedScrollView.h"
+#import "RCTFabricComponentsPlugins.h"
 
 using namespace facebook::react;
 
-@interface RCTScrollViewComponentView () <UIScrollViewDelegate>
+static void RCTSendPaperScrollEvent_DEPRECATED(UIScrollView *scrollView, NSInteger tag)
+{
+  static uint16_t coalescingKey = 0;
+  RCTScrollEvent *scrollEvent = [[RCTScrollEvent alloc] initWithEventName:@"onScroll"
+                                                                 reactTag:[NSNumber numberWithInt:tag]
+                                                  scrollViewContentOffset:scrollView.contentOffset
+                                                   scrollViewContentInset:scrollView.contentInset
+                                                    scrollViewContentSize:scrollView.contentSize
+                                                          scrollViewFrame:scrollView.frame
+                                                      scrollViewZoomScale:scrollView.zoomScale
+                                                                 userData:nil
+                                                            coalescingKey:coalescingKey];
+  [[RCTBridge currentBridge].eventDispatcher sendEvent:scrollEvent];
+}
+
+@interface RCTScrollViewComponentView () <UIScrollViewDelegate, RCTScrollViewProtocol, RCTScrollableProtocol>
 
 @end
 
@@ -53,17 +72,24 @@ using namespace facebook::react;
     _containerView = [[UIView alloc] initWithFrame:CGRectZero];
     [_scrollView addSubview:_containerView];
 
-    __weak __typeof(self) weakSelf = self;
-    _scrollViewDelegateSplitter = [[RCTGenericDelegateSplitter alloc] initWithDelegateUpdateBlock:^(id delegate) {
-      weakSelf.scrollView.delegate = delegate;
-    }];
-
-    [_scrollViewDelegateSplitter addDelegate:self];
+    [self.scrollViewDelegateSplitter addDelegate:self];
 
     _scrollEventThrottle = INFINITY;
   }
 
   return self;
+}
+
+- (void)dealloc
+{
+  // Removing all delegates from the splitter nils the actual delegate which prevents a crash on UIScrollView
+  // deallocation.
+  [self.scrollViewDelegateSplitter removeAllDelegates];
+}
+
+- (RCTGenericDelegateSplitter<id<UIScrollViewDelegate>> *)scrollViewDelegateSplitter
+{
+  return ((RCTEnhancedScrollView *)_scrollView).delegateSplitter;
 }
 
 #pragma mark - RCTComponentViewProtocol
@@ -114,10 +140,15 @@ using namespace facebook::react;
     // Zero means "send value only once per significant logical event".
     // Prop value is in milliseconds.
     // iOS implementation uses `NSTimeInterval` (in seconds).
-    // 16 ms is the minimum allowed value.
-    _scrollEventThrottle = newScrollViewProps.scrollEventThrottle <= 0
-        ? INFINITY
-        : std::max(newScrollViewProps.scrollEventThrottle / 1000.0, 1.0 / 60.0);
+    CGFloat throttleInSeconds = newScrollViewProps.scrollEventThrottle / 1000.0;
+    CGFloat msPerFrame = 1.0 / 60.0;
+    if (throttleInSeconds < 0) {
+      _scrollEventThrottle = INFINITY;
+    } else if (throttleInSeconds <= msPerFrame) {
+      _scrollEventThrottle = 0;
+    } else {
+      _scrollEventThrottle = throttleInSeconds;
+    }
   }
 
   MAP_SCROLL_VIEW_PROP(zoomScale);
@@ -185,6 +216,7 @@ using namespace facebook::react;
 - (void)prepareForRecycle
 {
   _scrollView.contentOffset = CGPointZero;
+  _state.reset();
   [super prepareForRecycle];
 }
 
@@ -200,6 +232,9 @@ using namespace facebook::react;
   if ((_lastScrollEventDispatchTime == 0) || (now - _lastScrollEventDispatchTime > _scrollEventThrottle)) {
     _lastScrollEventDispatchTime = now;
     std::static_pointer_cast<ScrollViewEventEmitter const>(_eventEmitter)->onScroll([self _scrollViewMetrics]);
+    // Once Fabric implements proper NativeAnimationDriver, this should be removed.
+    // This is just a workaround to allow animations based on onScroll event.
+    RCTSendPaperScrollEvent_DEPRECATED(scrollView, self.tag);
   }
 }
 
@@ -219,9 +254,7 @@ using namespace facebook::react;
   std::static_pointer_cast<ScrollViewEventEmitter const>(_eventEmitter)->onScrollBeginDrag([self _scrollViewMetrics]);
 }
 
-- (void)scrollViewWillEndDragging:(UIScrollView *)scrollView
-                     withVelocity:(CGPoint)velocity
-              targetContentOffset:(inout CGPoint *)targetContentOffset
+- (void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate
 {
   [self _forceDispatchNextScrollEvent];
 
@@ -230,6 +263,7 @@ using namespace facebook::react;
   }
 
   std::static_pointer_cast<ScrollViewEventEmitter const>(_eventEmitter)->onScrollEndDrag([self _scrollViewMetrics]);
+  [self _updateStateWithContentOffset];
 }
 
 - (void)scrollViewWillBeginDecelerating:(UIScrollView *)scrollView
@@ -298,9 +332,39 @@ using namespace facebook::react;
   _lastScrollEventDispatchTime = 0;
 }
 
-@end
+#pragma mark - Native commands
 
-@implementation RCTScrollViewComponentView (ScrollableProtocol)
+- (void)handleCommand:(const NSString *)commandName args:(const NSArray *)args
+{
+  RCTScrollViewHandleCommand(self, commandName, args);
+}
+
+- (void)flashScrollIndicators
+{
+  [_scrollView flashScrollIndicators];
+}
+
+- (void)scrollTo:(double)x y:(double)y animated:(BOOL)animated
+{
+  [_scrollView setContentOffset:CGPointMake(x, y) animated:animated];
+}
+
+- (void)scrollToEnd:(BOOL)animated
+{
+  BOOL isHorizontal = _scrollView.contentSize.width > self.frame.size.width;
+  CGPoint offset;
+  if (isHorizontal) {
+    CGFloat offsetX = _scrollView.contentSize.width - _scrollView.bounds.size.width + _scrollView.contentInset.right;
+    offset = CGPointMake(fmax(offsetX, 0), 0);
+  } else {
+    CGFloat offsetY = _scrollView.contentSize.height - _scrollView.bounds.size.height + _scrollView.contentInset.bottom;
+    offset = CGPointMake(0, fmax(offsetY, 0));
+  }
+
+  [_scrollView setContentOffset:offset animated:animated];
+}
+
+#pragma mark - RCTScrollableProtocol
 
 - (CGSize)contentSize
 {
@@ -319,11 +383,6 @@ using namespace facebook::react;
   [self.scrollView setContentOffset:offset animated:animated];
 }
 
-- (void)scrollToEnd:(BOOL)animated
-{
-  // Not implemented.
-}
-
 - (void)zoomToRect:(CGRect)rect animated:(BOOL)animated
 {
   // Not implemented.
@@ -340,3 +399,8 @@ using namespace facebook::react;
 }
 
 @end
+
+Class<RCTComponentViewProtocol> RCTScrollViewCls(void)
+{
+  return RCTScrollViewComponentView.class;
+}

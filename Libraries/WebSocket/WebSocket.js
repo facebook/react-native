@@ -85,7 +85,7 @@ class WebSocket extends (EventTarget(...WEBSOCKET_EVENTS): any) {
   constructor(
     url: string,
     protocols: ?string | ?Array<string>,
-    options: ?{headers?: {origin?: string}},
+    options: ?{headers?: {origin?: string, ...}, ...},
   ) {
     super();
     if (typeof protocols === 'string') {

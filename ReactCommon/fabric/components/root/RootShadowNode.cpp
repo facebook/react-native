@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -33,29 +33,34 @@ void RootShadowNode::layout(
   }
 }
 
-UnsharedRootShadowNode RootShadowNode::clone(
-    const LayoutConstraints &layoutConstraints,
-    const LayoutContext &layoutContext) const {
-  auto props = std::make_shared<const RootProps>(
+RootShadowNode::Unshared RootShadowNode::clone(
+    LayoutConstraints const &layoutConstraints,
+    LayoutContext const &layoutContext) const {
+  auto props = std::make_shared<RootProps const>(
       *getProps(), layoutConstraints, layoutContext);
   auto newRootShadowNode = std::make_shared<RootShadowNode>(
       *this,
       ShadowNodeFragment{
-          /* .tag = */ ShadowNodeFragment::tagPlaceholder(),
-          /* .surfaceId = */ ShadowNodeFragment::surfaceIdPlaceholder(),
           /* .props = */ props,
       });
   return newRootShadowNode;
 }
 
-UnsharedRootShadowNode RootShadowNode::clone(
-    SharedShadowNode const &oldShadowNode,
-    SharedShadowNode const &newShadowNode) const {
-  auto ancestors = oldShadowNode->getAncestors(*this);
+RootShadowNode::Unshared RootShadowNode::clone(
+    ShadowNode const &shadowNode,
+    std::function<ShadowNode::Unshared(ShadowNode const &oldShadowNode)>
+        callback) const {
+  auto ancestors = shadowNode.getAncestors(*this);
 
   if (ancestors.size() == 0) {
-    return UnsharedRootShadowNode{nullptr};
+    return RootShadowNode::Unshared{nullptr};
   }
+
+  auto &parent = ancestors.back();
+  auto &oldShadowNode = parent.first.get().getChildren().at(parent.second);
+
+  assert(ShadowNode::sameFamily(shadowNode, *oldShadowNode));
+  auto newShadowNode = callback(*oldShadowNode);
 
   auto childNode = newShadowNode;
 
@@ -68,10 +73,7 @@ UnsharedRootShadowNode RootShadowNode::clone(
     children[childIndex] = childNode;
 
     childNode = parentNode.clone({
-        ShadowNodeFragment::tagPlaceholder(),
-        ShadowNodeFragment::surfaceIdPlaceholder(),
         ShadowNodeFragment::propsPlaceholder(),
-        ShadowNodeFragment::eventEmitterPlaceholder(),
         std::make_shared<SharedShadowNodeList>(children),
     });
   }

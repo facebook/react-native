@@ -1,35 +1,46 @@
-/**
- * Copyright (c) 2014-present, Facebook, Inc.
+/*
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
- * directory of this source tree.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
+
 package com.facebook.react.fabric.mounting.mountitems;
 
+import static com.facebook.react.fabric.FabricUIManager.IS_DEVELOPMENT_ENVIRONMENT;
+
+import androidx.annotation.NonNull;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.fabric.mounting.MountingManager;
 
 public class UpdateLocalDataMountItem implements MountItem {
 
   private final int mReactTag;
-  private final ReadableMap mNewLocalData;
+  @NonNull private final ReadableMap mNewLocalData;
 
-  public UpdateLocalDataMountItem(int reactTag, ReadableMap newLocalData) {
+  public UpdateLocalDataMountItem(int reactTag, @NonNull ReadableMap newLocalData) {
     mReactTag = reactTag;
     mNewLocalData = newLocalData;
   }
 
   @Override
-  public void execute(MountingManager mountingManager) {
+  public void execute(@NonNull MountingManager mountingManager) {
     mountingManager.updateLocalData(mReactTag, mNewLocalData);
   }
 
-  public ReadableMap getNewLocalData() {
+  public @NonNull ReadableMap getNewLocalData() {
     return mNewLocalData;
   }
 
   @Override
   public String toString() {
-    return "UpdateLocalDataMountItem [" + mReactTag + "] - localData: " + mNewLocalData;
+    StringBuilder result =
+        new StringBuilder("UpdateLocalDataMountItem [").append(mReactTag).append("]");
+
+    if (IS_DEVELOPMENT_ENVIRONMENT) {
+      result.append(" localData: ").append(mNewLocalData);
+    }
+
+    return result.toString();
   }
 }

@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -40,7 +40,7 @@ class ScrollViewProps final : public ViewProps {
   const bool scrollsToTop{true};
   const bool showsHorizontalScrollIndicator{true};
   const bool showsVerticalScrollIndicator{true};
-  const int scrollEventThrottle{};
+  const Float scrollEventThrottle{};
   const Float zoomScale{1.0};
   const EdgeInsets contentInset{};
   const EdgeInsets scrollIndicatorInsets{};

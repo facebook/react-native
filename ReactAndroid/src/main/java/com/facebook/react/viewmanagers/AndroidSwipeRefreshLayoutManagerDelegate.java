@@ -24,7 +24,7 @@ public class AndroidSwipeRefreshLayoutManagerDelegate<T extends View, U extends 
   public void setProperty(T view, String propName, @Nullable Object value) {
     switch (propName) {
       case "enabled":
-        mViewManager.setEnabled(view, value == null ? false : (boolean) value);
+        mViewManager.setEnabled(view, value == null ? true : (boolean) value);
         break;
       case "colors":
         mViewManager.setColors(view, (ReadableArray) value);
@@ -43,6 +43,14 @@ public class AndroidSwipeRefreshLayoutManagerDelegate<T extends View, U extends 
         break;
       default:
         super.setProperty(view, propName, value);
+    }
+  }
+
+  public void receiveCommand(AndroidSwipeRefreshLayoutManagerInterface<T> viewManager, T view, String commandName, ReadableArray args) {
+    switch (commandName) {
+      case "setNativeRefreshing":
+        viewManager.setNativeRefreshing(view, args.getBoolean(0));
+        break;
     }
   }
 }

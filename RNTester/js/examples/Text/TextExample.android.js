@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @flow
+ * @flow strict-local
  */
 
 'use strict';
@@ -27,7 +27,7 @@ class Entity extends React.Component<{|children: React.Node|}> {
     );
   }
 }
-class AttributeToggler extends React.Component<{}, $FlowFixMeState> {
+class AttributeToggler extends React.Component<{...}, $FlowFixMeState> {
   state = {fontWeight: 'bold', fontSize: 15};
 
   toggleWeight = () => {
@@ -194,7 +194,7 @@ class AdjustingFontSize extends React.Component<
   }
 }
 
-class TextExample extends React.Component<{}> {
+class TextExample extends React.Component<{...}> {
   render(): React.Node {
     return (
       <RNTesterPage title="<Text>">
@@ -699,6 +699,33 @@ class TextExample extends React.Component<{}> {
           </Text>
           <Text ellipsizeMode="clip" numberOfLines={1}>
             This very long text should be clipped and this will not be visible.
+          </Text>
+        </RNTesterBlock>
+        <RNTesterBlock title="Font variants">
+          <Text style={{fontVariant: ['small-caps']}}>Small Caps{'\n'}</Text>
+          <Text
+            style={{
+              fontFamily: 'Roboto',
+              fontVariant: ['oldstyle-nums'],
+            }}>
+            Old Style nums 0123456789{'\n'}
+          </Text>
+          <Text
+            style={{
+              fontFamily: 'Roboto',
+              fontVariant: ['lining-nums'],
+            }}>
+            Lining nums 0123456789{'\n'}
+          </Text>
+          <Text style={{fontVariant: ['tabular-nums']}}>
+            Tabular nums{'\n'}
+            1111{'\n'}
+            2222{'\n'}
+          </Text>
+          <Text style={{fontVariant: ['proportional-nums']}}>
+            Proportional nums{'\n'}
+            1111{'\n'}
+            2222{'\n'}
           </Text>
         </RNTesterBlock>
         <RNTesterBlock title="Include Font Padding">

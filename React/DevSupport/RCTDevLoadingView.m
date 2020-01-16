@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -32,11 +32,6 @@ RCT_EXPORT_MODULE()
 + (void)setEnabled:(BOOL)enabled
 {
   isEnabled = enabled;
-}
-
-- (void)dealloc
-{
-  [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 + (BOOL)requiresMainQueueSetup

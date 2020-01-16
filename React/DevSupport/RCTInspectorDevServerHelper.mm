@@ -1,11 +1,13 @@
-// Copyright (c) Facebook, Inc. and its affiliates.
-//
-// This source code is licensed under the MIT license found in the
-// LICENSE file in the root directory of this source tree.
+/*
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
 
 #import <React/RCTInspectorDevServerHelper.h>
 
-#if RCT_DEV && !TARGET_OS_UIKITFORMAC
+#if RCT_DEV
 
 #import <React/RCTLog.h>
 #import <UIKit/UIKit.h>
@@ -126,7 +128,7 @@ static void displayErrorAlert(UIViewController *view, NSString *message)
 
   NSString *key = [inspectorURL absoluteString];
   RCTInspectorPackagerConnection *connection = socketConnections[key];
-  if (!connection) {
+  if (!connection || !connection.isConnected) {
     connection = [[RCTInspectorPackagerConnection alloc] initWithURL:inspectorURL];
     socketConnections[key] = connection;
     [connection connect];

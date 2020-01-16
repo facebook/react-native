@@ -1,5 +1,5 @@
 // Copyright 2004-present Facebook. All Rights Reserved.
-// @generated <<SignedSource::*O*zOeWoEQle#+L!plEphiEmie@IsG>>
+// @generated SignedSource<<633984dcfe87d2822ef0e80c1aab93ef>>
 
 #include "MessageTypes.h"
 
@@ -32,6 +32,7 @@ std::unique_ptr<Request> Request::fromJsonThrowOnError(const std::string &str) {
       {"Debugger.removeBreakpoint",
        makeUnique<debugger::RemoveBreakpointRequest>},
       {"Debugger.resume", makeUnique<debugger::ResumeRequest>},
+      {"Debugger.setBreakpoint", makeUnique<debugger::SetBreakpointRequest>},
       {"Debugger.setBreakpointByUrl",
        makeUnique<debugger::SetBreakpointByUrlRequest>},
       {"Debugger.setPauseOnExceptions",
@@ -39,6 +40,8 @@ std::unique_ptr<Request> Request::fromJsonThrowOnError(const std::string &str) {
       {"Debugger.stepInto", makeUnique<debugger::StepIntoRequest>},
       {"Debugger.stepOut", makeUnique<debugger::StepOutRequest>},
       {"Debugger.stepOver", makeUnique<debugger::StepOverRequest>},
+      {"HeapProfiler.takeHeapSnapshot",
+       makeUnique<heapProfiler::TakeHeapSnapshotRequest>},
       {"Runtime.evaluate", makeUnique<runtime::EvaluateRequest>},
       {"Runtime.getProperties", makeUnique<runtime::GetPropertiesRequest>},
   };
@@ -182,6 +185,7 @@ dynamic debugger::Scope::toDynamic() const {
 debugger::CallFrame::CallFrame(const dynamic &obj) {
   assign(callFrameId, obj, "callFrameId");
   assign(functionName, obj, "functionName");
+  assign(functionLocation, obj, "functionLocation");
   assign(location, obj, "location");
   assign(url, obj, "url");
   assign(scopeChain, obj, "scopeChain");
@@ -194,6 +198,7 @@ dynamic debugger::CallFrame::toDynamic() const {
 
   put(obj, "callFrameId", callFrameId);
   put(obj, "functionName", functionName);
+  put(obj, "functionLocation", functionLocation);
   put(obj, "location", location);
   put(obj, "url", url);
   put(obj, "scopeChain", scopeChain);
@@ -208,8 +213,6 @@ runtime::ExecutionContextDescription::ExecutionContextDescription(
   assign(origin, obj, "origin");
   assign(name, obj, "name");
   assign(auxData, obj, "auxData");
-  assign(isPageContext, obj, "isPageContext");
-  assign(isDefault, obj, "isDefault");
 }
 
 dynamic runtime::ExecutionContextDescription::toDynamic() const {
@@ -219,8 +222,6 @@ dynamic runtime::ExecutionContextDescription::toDynamic() const {
   put(obj, "origin", origin);
   put(obj, "name", name);
   put(obj, "auxData", auxData);
-  put(obj, "isPageContext", isPageContext);
-  put(obj, "isDefault", isDefault);
   return obj;
 }
 
@@ -342,6 +343,7 @@ debugger::EvaluateOnCallFrameRequest::EvaluateOnCallFrameRequest(
   assign(includeCommandLineAPI, params, "includeCommandLineAPI");
   assign(silent, params, "silent");
   assign(returnByValue, params, "returnByValue");
+  assign(throwOnSideEffect, params, "throwOnSideEffect");
 }
 
 dynamic debugger::EvaluateOnCallFrameRequest::toDynamic() const {
@@ -352,6 +354,7 @@ dynamic debugger::EvaluateOnCallFrameRequest::toDynamic() const {
   put(params, "includeCommandLineAPI", includeCommandLineAPI);
   put(params, "silent", silent);
   put(params, "returnByValue", returnByValue);
+  put(params, "throwOnSideEffect", throwOnSideEffect);
 
   dynamic obj = dynamic::object;
   put(obj, "id", id);
@@ -430,6 +433,35 @@ void debugger::ResumeRequest::accept(RequestHandler &handler) const {
   handler.handle(*this);
 }
 
+debugger::SetBreakpointRequest::SetBreakpointRequest()
+    : Request("Debugger.setBreakpoint") {}
+
+debugger::SetBreakpointRequest::SetBreakpointRequest(const dynamic &obj)
+    : Request("Debugger.setBreakpoint") {
+  assign(id, obj, "id");
+  assign(method, obj, "method");
+
+  dynamic params = obj.at("params");
+  assign(location, params, "location");
+  assign(condition, params, "condition");
+}
+
+dynamic debugger::SetBreakpointRequest::toDynamic() const {
+  dynamic params = dynamic::object;
+  put(params, "location", location);
+  put(params, "condition", condition);
+
+  dynamic obj = dynamic::object;
+  put(obj, "id", id);
+  put(obj, "method", method);
+  put(obj, "params", std::move(params));
+  return obj;
+}
+
+void debugger::SetBreakpointRequest::accept(RequestHandler &handler) const {
+  handler.handle(*this);
+}
+
 debugger::SetBreakpointByUrlRequest::SetBreakpointByUrlRequest()
     : Request("Debugger.setBreakpointByUrl") {}
 
@@ -443,6 +475,7 @@ debugger::SetBreakpointByUrlRequest::SetBreakpointByUrlRequest(
   assign(lineNumber, params, "lineNumber");
   assign(url, params, "url");
   assign(urlRegex, params, "urlRegex");
+  assign(scriptHash, params, "scriptHash");
   assign(columnNumber, params, "columnNumber");
   assign(condition, params, "condition");
 }
@@ -452,6 +485,7 @@ dynamic debugger::SetBreakpointByUrlRequest::toDynamic() const {
   put(params, "lineNumber", lineNumber);
   put(params, "url", url);
   put(params, "urlRegex", urlRegex);
+  put(params, "scriptHash", scriptHash);
   put(params, "columnNumber", columnNumber);
   put(params, "condition", condition);
 
@@ -553,6 +587,37 @@ void debugger::StepOverRequest::accept(RequestHandler &handler) const {
   handler.handle(*this);
 }
 
+heapProfiler::TakeHeapSnapshotRequest::TakeHeapSnapshotRequest()
+    : Request("HeapProfiler.takeHeapSnapshot") {}
+
+heapProfiler::TakeHeapSnapshotRequest::TakeHeapSnapshotRequest(
+    const dynamic &obj)
+    : Request("HeapProfiler.takeHeapSnapshot") {
+  assign(id, obj, "id");
+  assign(method, obj, "method");
+
+  dynamic params = obj.at("params");
+  assign(reportProgress, params, "reportProgress");
+  assign(treatGlobalObjectsAsRoots, params, "treatGlobalObjectsAsRoots");
+}
+
+dynamic heapProfiler::TakeHeapSnapshotRequest::toDynamic() const {
+  dynamic params = dynamic::object;
+  put(params, "reportProgress", reportProgress);
+  put(params, "treatGlobalObjectsAsRoots", treatGlobalObjectsAsRoots);
+
+  dynamic obj = dynamic::object;
+  put(obj, "id", id);
+  put(obj, "method", method);
+  put(obj, "params", std::move(params));
+  return obj;
+}
+
+void heapProfiler::TakeHeapSnapshotRequest::accept(
+    RequestHandler &handler) const {
+  handler.handle(*this);
+}
+
 runtime::EvaluateRequest::EvaluateRequest() : Request("Runtime.evaluate") {}
 
 runtime::EvaluateRequest::EvaluateRequest(const dynamic &obj)
@@ -567,6 +632,7 @@ runtime::EvaluateRequest::EvaluateRequest(const dynamic &obj)
   assign(silent, params, "silent");
   assign(contextId, params, "contextId");
   assign(returnByValue, params, "returnByValue");
+  assign(userGesture, params, "userGesture");
   assign(awaitPromise, params, "awaitPromise");
 }
 
@@ -578,6 +644,7 @@ dynamic runtime::EvaluateRequest::toDynamic() const {
   put(params, "silent", silent);
   put(params, "contextId", contextId);
   put(params, "returnByValue", returnByValue);
+  put(params, "userGesture", userGesture);
   put(params, "awaitPromise", awaitPromise);
 
   dynamic obj = dynamic::object;
@@ -668,6 +735,25 @@ dynamic debugger::EvaluateOnCallFrameResponse::toDynamic() const {
   dynamic res = dynamic::object;
   put(res, "result", result);
   put(res, "exceptionDetails", exceptionDetails);
+
+  dynamic obj = dynamic::object;
+  put(obj, "id", id);
+  put(obj, "result", std::move(res));
+  return obj;
+}
+
+debugger::SetBreakpointResponse::SetBreakpointResponse(const dynamic &obj) {
+  assign(id, obj, "id");
+
+  dynamic res = obj.at("result");
+  assign(breakpointId, res, "breakpointId");
+  assign(actualLocation, res, "actualLocation");
+}
+
+dynamic debugger::SetBreakpointResponse::toDynamic() const {
+  dynamic res = dynamic::object;
+  put(res, "breakpointId", breakpointId);
+  put(res, "actualLocation", actualLocation);
 
   dynamic obj = dynamic::object;
   put(obj, "id", id);
@@ -821,6 +907,9 @@ debugger::ScriptParsedNotification::ScriptParsedNotification(const dynamic &obj)
   assign(hash, params, "hash");
   assign(executionContextAuxData, params, "executionContextAuxData");
   assign(sourceMapURL, params, "sourceMapURL");
+  assign(hasSourceURL, params, "hasSourceURL");
+  assign(isModule, params, "isModule");
+  assign(length, params, "length");
 }
 
 dynamic debugger::ScriptParsedNotification::toDynamic() const {
@@ -835,6 +924,60 @@ dynamic debugger::ScriptParsedNotification::toDynamic() const {
   put(params, "hash", hash);
   put(params, "executionContextAuxData", executionContextAuxData);
   put(params, "sourceMapURL", sourceMapURL);
+  put(params, "hasSourceURL", hasSourceURL);
+  put(params, "isModule", isModule);
+  put(params, "length", length);
+
+  dynamic obj = dynamic::object;
+  put(obj, "method", method);
+  put(obj, "params", std::move(params));
+  return obj;
+}
+
+heapProfiler::AddHeapSnapshotChunkNotification::
+    AddHeapSnapshotChunkNotification()
+    : Notification("HeapProfiler.addHeapSnapshotChunk") {}
+
+heapProfiler::AddHeapSnapshotChunkNotification::
+    AddHeapSnapshotChunkNotification(const dynamic &obj)
+    : Notification("HeapProfiler.addHeapSnapshotChunk") {
+  assign(method, obj, "method");
+
+  dynamic params = obj.at("params");
+  assign(chunk, params, "chunk");
+}
+
+dynamic heapProfiler::AddHeapSnapshotChunkNotification::toDynamic() const {
+  dynamic params = dynamic::object;
+  put(params, "chunk", chunk);
+
+  dynamic obj = dynamic::object;
+  put(obj, "method", method);
+  put(obj, "params", std::move(params));
+  return obj;
+}
+
+heapProfiler::ReportHeapSnapshotProgressNotification::
+    ReportHeapSnapshotProgressNotification()
+    : Notification("HeapProfiler.reportHeapSnapshotProgress") {}
+
+heapProfiler::ReportHeapSnapshotProgressNotification::
+    ReportHeapSnapshotProgressNotification(const dynamic &obj)
+    : Notification("HeapProfiler.reportHeapSnapshotProgress") {
+  assign(method, obj, "method");
+
+  dynamic params = obj.at("params");
+  assign(done, params, "done");
+  assign(total, params, "total");
+  assign(finished, params, "finished");
+}
+
+dynamic heapProfiler::ReportHeapSnapshotProgressNotification::toDynamic()
+    const {
+  dynamic params = dynamic::object;
+  put(params, "done", done);
+  put(params, "total", total);
+  put(params, "finished", finished);
 
   dynamic obj = dynamic::object;
   put(obj, "method", method);

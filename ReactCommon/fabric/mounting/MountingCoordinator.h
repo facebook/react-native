@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -8,6 +8,7 @@
 #pragma once
 
 #include <better/optional.h>
+#include <chrono>
 
 #include <react/mounting/MountingTransaction.h>
 #include <react/mounting/ShadowTreeRevision.h>
@@ -48,9 +49,20 @@ class MountingCoordinator final {
    * mount.
    * The method is thread-safe and can be called from any thread.
    * However, a consumer should always call it on the same thread (e.g. on the
-   * main thread) or ensure sequentiality of mount transaction separately.
+   * main thread) or ensure sequentiality of mount transactions separately.
    */
   better::optional<MountingTransaction> pullTransaction() const;
+
+  /*
+   * Blocks the current thread until a new mounting transaction is available or
+   * after the specified `timeout` duration.
+   * Returns `false` if a timeout occurred before a new transaction available.
+   * Call `pullTransaction` right after the method to retrieve the transaction.
+   * Similarly to `pullTransaction` this method is thread-safe but the consumer
+   * should call it on the same thread (e.g. on the main thread) or ensure
+   * sequentiality of mount transactions separately.
+   */
+  bool waitForTransaction(std::chrono::duration<double> timeout) const;
 
  private:
   friend class ShadowTree;
@@ -60,6 +72,15 @@ class MountingCoordinator final {
    */
   void push(ShadowTreeRevision &&revision) const;
 
+  /*
+   * Revokes the last pushed `ShadowTreeRevision`.
+   * Generating a `MountingTransaction` requires some resources which the
+   * `MountingCoordinator` does not own (e.g. `ComponentDescriptor`s). Revoking
+   * committed revisions allows the owner (a Shadow Tree) to make sure that
+   * those resources will not be accessed (e.g. by the Mouting Layer).
+   */
+  void revoke() const;
+
  private:
   SurfaceId const surfaceId_;
 
@@ -67,6 +88,7 @@ class MountingCoordinator final {
   mutable ShadowTreeRevision baseRevision_;
   mutable better::optional<ShadowTreeRevision> lastRevision_{};
   mutable MountingTransaction::Number number_{0};
+  mutable std::condition_variable signal_;
 
 #ifdef RN_SHADOW_TREE_INTROSPECTION
   mutable StubViewTree stubViewTree_; // Protected by `mutex_`.

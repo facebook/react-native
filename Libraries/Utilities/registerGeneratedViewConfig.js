@@ -14,7 +14,7 @@ const ReactNativeViewConfigRegistry = require('../Renderer/shims/ReactNativeView
 const ReactNativeViewViewConfig = require('../Components/View/ReactNativeViewViewConfig');
 import verifyComponentAttributeEquivalence from './verifyComponentAttributeEquivalence';
 
-type GeneratedViewConfig = {
+export type GeneratedViewConfig = {
   uiViewClassName: string,
   bubblingEventTypes?: $ReadOnly<{
     [eventName: string]: $ReadOnly<{|
@@ -23,11 +23,13 @@ type GeneratedViewConfig = {
         bubbled: string,
       |}>,
     |}>,
+    ...,
   }>,
   directEventTypes?: $ReadOnly<{
     [eventName: string]: $ReadOnly<{|
       registrationName: string,
     |}>,
+    ...,
   }>,
   validAttributes?: {
     [propName: string]:
@@ -36,7 +38,9 @@ type GeneratedViewConfig = {
           diff?: <T>(arg1: any, arg2: any) => boolean,
           process?: (arg1: any) => any,
         |}>,
+    ...,
   },
+  ...
 };
 
 function registerGeneratedViewConfig(
@@ -48,14 +52,23 @@ function registerGeneratedViewConfig(
     Commands: {},
     bubblingEventTypes: {
       ...ReactNativeViewViewConfig.bubblingEventTypes,
+      /* $FlowFixMe(>=0.111.0 site=react_native_fb) This comment suppresses an
+       * error found when Flow v0.111 was deployed. To see the error, delete
+       * this comment and run Flow. */
       ...(viewConfig.bubblingEventTypes || {}),
     },
     directEventTypes: {
       ...ReactNativeViewViewConfig.directEventTypes,
+      /* $FlowFixMe(>=0.111.0 site=react_native_fb) This comment suppresses an
+       * error found when Flow v0.111 was deployed. To see the error, delete
+       * this comment and run Flow. */
       ...(viewConfig.directEventTypes || {}),
     },
     validAttributes: {
       ...ReactNativeViewViewConfig.validAttributes,
+      /* $FlowFixMe(>=0.111.0 site=react_native_fb) This comment suppresses an
+       * error found when Flow v0.111 was deployed. To see the error, delete
+       * this comment and run Flow. */
       ...(viewConfig.validAttributes || {}),
     },
   };

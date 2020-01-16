@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -10,6 +10,7 @@
 #import <FBReactNativeSpec/FBReactNativeSpec.h>
 #import <React/RCTAccessibilityManager.h>
 #import <React/RCTAssert.h>
+#import <React/RCTConstants.h>
 #import <React/RCTEventDispatcher.h>
 #import <React/RCTUIUtils.h>
 #import <React/RCTUtils.h>
@@ -61,9 +62,15 @@ RCT_EXPORT_MODULE()
   _currentInterfaceDimensions = RCTExportedDimensions(_bridge);
 
   [[NSNotificationCenter defaultCenter] addObserver:self
-                                           selector:@selector(interfaceFrameDidChange)
-                                               name:UIApplicationDidBecomeActiveNotification
-                                             object:nil];
+                                            selector:@selector(interfaceFrameDidChange)
+                                                name:UIApplicationDidBecomeActiveNotification
+                                              object:nil];
+
+  [[NSNotificationCenter defaultCenter] addObserver:self
+                                            selector:@selector(interfaceFrameDidChange)
+                                                name:RCTUserInterfaceStyleDidChangeNotification
+                                              object:nil];
+
 #endif
 }
 
@@ -110,19 +117,6 @@ static NSDictionary *RCTExportedDimensions(RCTBridge *bridge)
       @"window": dimsWindow,
       @"screen": dimsScreen
   };
-}
-
-- (void)dealloc
-{
-  [NSNotificationCenter.defaultCenter removeObserver:self];
-}
-
-- (void)invalidate
-{
-  RCTExecuteOnMainQueue(^{
-    self->_bridge = nil;
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
-  });
 }
 
 - (NSDictionary<NSString *, id> *)constantsToExport
@@ -212,7 +206,7 @@ static NSDictionary *RCTExportedDimensions(RCTBridge *bridge)
 
 #endif // TARGET_OS_TV
 
-- (std::shared_ptr<TurboModule>)getTurboModuleWithJsInvoker:(std::shared_ptr<JSCallInvoker>)jsInvoker
+- (std::shared_ptr<TurboModule>)getTurboModuleWithJsInvoker:(std::shared_ptr<CallInvoker>)jsInvoker
 {
   return std::make_shared<NativeDeviceInfoSpecJSI>(self, jsInvoker);
 }

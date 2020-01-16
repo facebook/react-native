@@ -15,7 +15,7 @@ const nullthrows = require('nullthrows');
 const {
   getCppTypeForAnnotation,
   toSafeCppString,
-  generateStructName,
+  generateEventStructName,
 } = require('./CppHelpers.js');
 
 import type {
@@ -31,6 +31,7 @@ type StructsMap = Map<string, string>;
 
 type ComponentCollection = $ReadOnly<{
   [component: string]: ComponentShape,
+  ...,
 }>;
 
 const template = `
@@ -54,31 +55,45 @@ namespace react {
 `;
 
 const componentTemplate = `
-::_STRUCTS_::
-
 class ::_CLASSNAME_::EventEmitter : public ViewEventEmitter {
  public:
   using ViewEventEmitter::ViewEventEmitter;
+
+  ::_STRUCTS_::
 
   ::_EVENTS_::
 };
 `.trim();
 
 const structTemplate = `
-struct ::_STRUCT_NAME_:: {
-  ::_FIELDS_::
-};
+  struct ::_STRUCT_NAME_:: {
+    ::_FIELDS_::
+  };
 `.trim();
 
 const enumTemplate = `enum class ::_ENUM_NAME_:: {
   ::_VALUES_::
 };
 
-inline char const *toString(const ::_ENUM_NAME_:: value) {
+static char const *toString(const ::_ENUM_NAME_:: value) {
   switch (value) {
     ::_TO_CASES_::
   }
-}`.trim();
+}
+`.trim();
+
+function indent(nice: string, spaces: number) {
+  return nice
+    .split('\n')
+    .map((line, index) => {
+      if (line.length === 0 || index === 0) {
+        return line;
+      }
+      const emptySpaces = new Array(spaces + 1).join(' ');
+      return emptySpaces + line;
+    })
+    .join('\n');
+}
 
 function getNativeTypeFromAnnotation(
   componentName: string,
@@ -95,22 +110,16 @@ function getNativeTypeFromAnnotation(
     case 'FloatTypeAnnotation':
       return getCppTypeForAnnotation(type);
     case 'StringEnumTypeAnnotation':
-      return generateStructName(
-        componentName,
-        nameParts.concat([eventProperty.name]),
-      );
+      return generateEventStructName(nameParts.concat([eventProperty.name]));
     case 'ObjectTypeAnnotation':
-      return generateStructName(
-        componentName,
-        nameParts.concat([eventProperty.name]),
-      );
+      return generateEventStructName(nameParts.concat([eventProperty.name]));
     default:
       (type: empty);
       throw new Error(`Received invalid event property type ${type}`);
   }
 }
-function generateEnum(structs, componentName, options, nameParts) {
-  const structName = generateStructName(componentName, nameParts);
+function generateEnum(structs, options, nameParts) {
+  const structName = generateEventStructName(nameParts);
   const fields = options
     .map((option, index) => `${toSafeCppString(option.name)}`)
     .join(',\n  ');
@@ -140,7 +149,7 @@ function generateStruct(
   properties: $ReadOnlyArray<ObjectPropertyType>,
 ): void {
   const structNameParts = nameParts;
-  const structName = generateStructName(componentName, structNameParts);
+  const structName = generateEventStructName(structNameParts);
 
   const fields = properties
     .map(property => {
@@ -170,12 +179,7 @@ function generateStruct(
         );
         return;
       case 'StringEnumTypeAnnotation':
-        generateEnum(
-          structs,
-          componentName,
-          property.options,
-          nameParts.concat([name]),
-        );
+        generateEnum(structs, property.options, nameParts.concat([name]));
         return;
       default:
         (property: empty);
@@ -212,7 +216,7 @@ function generateStructs(componentName: string, component): string {
 
 function generateEvent(componentName: string, event: EventTypeShape): string {
   if (event.typeAnnotation.argument) {
-    const structName = generateStructName(componentName, [event.name]);
+    const structName = generateEventStructName([event.name]);
 
     return `void ${event.name}(${structName} value) const;`;
   }
@@ -260,7 +264,7 @@ module.exports = {
                 .replace(/::_CLASSNAME_::/g, componentName)
                 .replace(
                   '::_STRUCTS_::',
-                  generateStructs(componentName, component),
+                  indent(generateStructs(componentName, component), 2),
                 )
                 .replace(
                   '::_EVENTS_::',

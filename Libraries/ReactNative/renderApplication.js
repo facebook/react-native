@@ -15,7 +15,6 @@ import GlobalPerformanceLogger from '../Utilities/GlobalPerformanceLogger';
 import type {IPerformanceLogger} from '../Utilities/createPerformanceLogger';
 import PerformanceLoggerContext from '../Utilities/PerformanceLoggerContext';
 const React = require('react');
-const ReactNativeArchitectureIndicator = require('./ReactNativeArchitectureIndicator');
 
 const invariant = require('invariant');
 
@@ -30,17 +29,20 @@ function renderApplication<Props: Object>(
   fabric?: boolean,
   showArchitectureIndicator?: boolean,
   scopedPerformanceLogger?: IPerformanceLogger,
+  isLogBox?: boolean,
 ) {
   invariant(rootTag, 'Expect to have a valid rootTag, instead got ', rootTag);
 
   const renderable = (
     <PerformanceLoggerContext.Provider
       value={scopedPerformanceLogger ?? GlobalPerformanceLogger}>
-      <AppContainer rootTag={rootTag} WrapperComponent={WrapperComponent}>
+      <AppContainer
+        rootTag={rootTag}
+        fabric={fabric}
+        showArchitectureIndicator={showArchitectureIndicator}
+        WrapperComponent={WrapperComponent}
+        internal_excludeLogBox={isLogBox}>
         <RootComponent {...initialProps} rootTag={rootTag} />
-        {showArchitectureIndicator === true ? (
-          <ReactNativeArchitectureIndicator fabric={!!fabric} />
-        ) : null}
       </AppContainer>
     </PerformanceLoggerContext.Provider>
   );

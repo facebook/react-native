@@ -1,4 +1,9 @@
-// Copyright 2004-present Facebook. All Rights Reserved.
+/*
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
 
 #include <hermes/inspector/chrome/MessageTypes.h>
 
@@ -391,6 +396,24 @@ TEST(MessageTests, TestRequestFromJson) {
   folly::Try<std::unique_ptr<Request>> invalidReq =
       Request::fromJson("invalid");
   EXPECT_TRUE(invalidReq.hasException());
+}
+
+TEST(MessageTests, TestBreakpointRequestFromJSON) {
+  std::unique_ptr<Request> baseReq = Request::fromJsonThrowOnError(R"({
+    "id": 1,
+    "method": "Debugger.setBreakpoint",
+    "params": {
+      "location": {
+        "scriptId": "23",
+        "lineNumber": 45,
+        "columnNumber": 67
+      }
+    }
+  })");
+  auto req = static_cast<debugger::SetBreakpointRequest *>(baseReq.get());
+  EXPECT_EQ(req->location.scriptId, "23");
+  EXPECT_EQ(req->location.lineNumber, 45);
+  EXPECT_EQ(req->location.columnNumber.value(), 67);
 }
 
 struct MyHandler : public NoopRequestHandler {

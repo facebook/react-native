@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -95,7 +95,7 @@ class RawValue {
     return castValue(dynamic_, (T *)nullptr);
   }
 
-  inline explicit operator folly::dynamic() const {
+  inline explicit operator folly::dynamic() const noexcept {
     return dynamic_;
   }
 

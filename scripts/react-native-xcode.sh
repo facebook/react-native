@@ -3,7 +3,7 @@
 #
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
-#
+
 # Bundle React Native app's code and image assets.
 # This script is supposed to be invoked as part of Xcode build process
 # and relies on environment variables (including PWD) set by Xcode
@@ -15,7 +15,7 @@ DEST=$CONFIGURATION_BUILD_DIR/$UNLOCALIZED_RESOURCES_FOLDER_PATH
 # Enables iOS devices to get the IP address of the machine running Metro
 if [[ "$CONFIGURATION" = *Debug* && ! "$PLATFORM_NAME" == *simulator ]]; then
   IP=$(ipconfig getifaddr en0)
-  if [ -z "$IP" ]; then
+  if [[ -z "$IP" || -n "`ifconfig $value | grep 'baseT'`" ]]; then
     IP=$(ipconfig getifaddr en1)
   fi
   if [ -z "$IP" ]; then

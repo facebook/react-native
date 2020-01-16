@@ -7,6 +7,7 @@
  * @flow
  * @format
  */
+
 'use strict';
 
 // This is to sync with ImageSourcePropTypes.js.
@@ -22,32 +23,27 @@ export type ImageURISource = $ReadOnly<{
    * function).
    */
   uri?: ?string,
-
   /**
    * `bundle` is the iOS asset bundle which the image is included in. This
    * will default to [NSBundle mainBundle] if not set.
    * @platform ios
    */
   bundle?: ?string,
-
   /**
    * `method` is the HTTP Method to use. Defaults to GET if not specified.
    */
   method?: ?string,
-
   /**
    * `headers` is an object representing the HTTP headers to send along with the
    * request for a remote image.
    */
   headers?: ?Object,
-
   /**
    * `body` is the HTTP body to send with the request. This must be a valid
    * UTF-8 string, and will be sent exactly as specified, with no
    * additional encoding (e.g. URL-escaping or base64) applied.
    */
   body?: ?string,
-
   /**
    * `cache` determines how the requests handles potentially cached
    * responses.
@@ -69,19 +65,18 @@ export type ImageURISource = $ReadOnly<{
    * @platform ios
    */
   cache?: ?('default' | 'reload' | 'force-cache' | 'only-if-cached'),
-
   /**
    * `width` and `height` can be specified if known at build time, in which case
    * these will be used to set the default `<Image/>` component dimensions.
    */
   width?: ?number,
   height?: ?number,
-
   /**
    * `scale` is used to indicate the scale factor of the image. Defaults to 1.0 if
    * unspecified, meaning that one image pixel equates to one display point / DIP.
    */
   scale?: ?number,
+  ...
 }>;
 
 // We have to export any because of an issue in Flow with objects that come from Relay:

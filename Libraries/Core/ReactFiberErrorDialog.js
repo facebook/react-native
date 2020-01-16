@@ -5,17 +5,18 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @flow
+ * @flow strict-local
  */
 
 export type CapturedError = {
   +componentName: ?string,
   +componentStack: string,
   +error: mixed,
-  +errorBoundary: ?{},
+  +errorBoundary: ?{...},
   +errorBoundaryFound: boolean,
   +errorBoundaryName: string | null,
   +willRetry: boolean,
+  ...
 };
 
 import type {ExtendedError} from './Devtools/parseErrorStack';
@@ -41,6 +42,7 @@ function showErrorDialog(capturedError: CapturedError): boolean {
   }
   try {
     errorToHandle.componentStack = componentStack;
+    errorToHandle.isComponentError = true;
   } catch (e) {}
   handleException(errorToHandle, false);
 

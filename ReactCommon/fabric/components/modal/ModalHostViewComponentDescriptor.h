@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -21,12 +21,7 @@ namespace react {
 class ModalHostViewComponentDescriptor final
     : public ConcreteComponentDescriptor<ModalHostViewShadowNode> {
  public:
-#ifdef ANDROID
-  ModalHostViewComponentDescriptor(EventDispatcher::Weak eventDispatcher)
-      : ConcreteComponentDescriptor(eventDispatcher) {}
-#else
   using ConcreteComponentDescriptor::ConcreteComponentDescriptor;
-#endif
 
   void adopt(UnsharedShadowNode shadowNode) const override {
     assert(std::dynamic_pointer_cast<ModalHostViewShadowNode>(shadowNode));

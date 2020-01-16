@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -9,7 +9,10 @@
 
 #ifdef RN_SHADOW_TREE_INTROSPECTION
 #include <glog/logging.h>
+#include <sstream>
 #endif
+
+#include <condition_variable>
 
 #include <react/mounting/Differentiator.h>
 #include <react/mounting/ShadowViewMutation.h>
@@ -31,17 +34,38 @@ SurfaceId MountingCoordinator::getSurfaceId() const {
 }
 
 void MountingCoordinator::push(ShadowTreeRevision &&revision) const {
-  std::lock_guard<std::mutex> lock(mutex_);
+  {
+    std::lock_guard<std::mutex> lock(mutex_);
 
-  assert(revision.getNumber() > baseRevision_.getNumber());
-  assert(
-      !lastRevision_.has_value() ||
-      revision.getNumber() != lastRevision_->getNumber());
+    assert(revision.getNumber() > baseRevision_.getNumber());
+    assert(
+        !lastRevision_.has_value() ||
+        revision.getNumber() != lastRevision_->getNumber());
 
-  if (!lastRevision_.has_value() ||
-      lastRevision_->getNumber() < revision.getNumber()) {
-    lastRevision_ = std::move(revision);
+    if (!lastRevision_.has_value() ||
+        lastRevision_->getNumber() < revision.getNumber()) {
+      lastRevision_ = std::move(revision);
+    }
   }
+
+  signal_.notify_all();
+}
+
+void MountingCoordinator::revoke() const {
+  std::lock_guard<std::mutex> lock(mutex_);
+  // We have two goals here.
+  // 1. We need to stop retaining `ShadowNode`s to not prolong their lifetime
+  // to prevent them from overliving `ComponentDescriptor`s.
+  // 2. A possible call to `pullTransaction()` should return empty optional.
+  baseRevision_.rootShadowNode_.reset();
+  lastRevision_.reset();
+}
+
+bool MountingCoordinator::waitForTransaction(
+    std::chrono::duration<double> timeout) const {
+  std::unique_lock<std::mutex> lock(mutex_);
+  return signal_.wait_for(
+      lock, timeout, [this]() { return lastRevision_.has_value(); });
 }
 
 better::optional<MountingTransaction> MountingCoordinator::pullTransaction()
@@ -66,20 +90,27 @@ better::optional<MountingTransaction> MountingCoordinator::pullTransaction()
   stubViewTree_.mutate(mutations);
   auto stubViewTree =
       stubViewTreeFromShadowNode(lastRevision_->getRootShadowNode());
-  if (stubViewTree_ != stubViewTree) {
-    LOG(ERROR) << "Old tree:"
-               << "\n"
-               << baseRevision_.getRootShadowNode().getDebugDescription()
-               << "\n";
-    LOG(ERROR) << "New tree:"
-               << "\n"
-               << lastRevision_->getRootShadowNode().getDebugDescription()
-               << "\n";
-    LOG(ERROR) << "Mutations:"
-               << "\n"
-               << getDebugDescription(mutations);
-    assert(false);
+
+  std::string line;
+
+  std::stringstream ssOldTree(
+      baseRevision_.getRootShadowNode().getDebugDescription());
+  while (std::getline(ssOldTree, line, '\n')) {
+    LOG(ERROR) << "Old tree:" << line;
   }
+
+  std::stringstream ssNewTree(
+      lastRevision_->getRootShadowNode().getDebugDescription());
+  while (std::getline(ssNewTree, line, '\n')) {
+    LOG(ERROR) << "New tree:" << line;
+  }
+
+  std::stringstream ssMutations(getDebugDescription(mutations, {}));
+  while (std::getline(ssMutations, line, '\n')) {
+    LOG(ERROR) << "Mutations:" << line;
+  }
+
+  assert(stubViewTree_ == stubViewTree);
 #endif
 
   baseRevision_ = std::move(*lastRevision_);

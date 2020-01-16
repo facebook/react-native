@@ -32,7 +32,7 @@ public class AndroidProgressBarManagerDelegate<T extends View, U extends BaseVie
         mViewManager.setIndeterminate(view, value == null ? false : (boolean) value);
         break;
       case "progress":
-        mViewManager.setProgress(view, value == null ? 0f : ((Double) value).floatValue());
+        mViewManager.setProgress(view, value == null ? 0f : ((Double) value).doubleValue());
         break;
       case "animating":
         mViewManager.setAnimating(view, value == null ? true : (boolean) value);

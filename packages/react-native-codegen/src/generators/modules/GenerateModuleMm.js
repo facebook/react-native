@@ -34,7 +34,7 @@ const proprertyDefTemplate =
 const moduleTemplate = `
 ::_TURBOMODULE_METHOD_INVOKERS_::
 
-Native::_MODULE_NAME_::SpecJSI::Native::_MODULE_NAME_::SpecJSI(id<RCTTurboModule> instance, std::shared_ptr<JSCallInvoker> jsInvoker)
+Native::_MODULE_NAME_::SpecJSI::Native::_MODULE_NAME_::SpecJSI(id<RCTTurboModule> instance, std::shared_ptr<CallInvoker> jsInvoker)
   : ObjCTurboModule("::_MODULE_NAME_::", instance, jsInvoker) {
 ::_PROPERTIES_MAP_::::_CONVERSION_SELECTORS_::
 }`.trim();
@@ -146,7 +146,7 @@ module.exports = {
     schema: SchemaType,
     moduleSpecName: string,
   ): FilesOutput {
-    const nativeModules: {[name: string]: NativeModuleShape} = Object.keys(
+    const nativeModules: {[name: string]: NativeModuleShape, ...} = Object.keys(
       schema.modules,
     )
       .map(moduleName => {

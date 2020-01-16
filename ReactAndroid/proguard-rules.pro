@@ -39,8 +39,8 @@
   *** get*();
 }
 
--keep class * extends com.facebook.react.bridge.JavaScriptModule { *; }
--keep class * extends com.facebook.react.bridge.NativeModule { *; }
+-keep class * implements com.facebook.react.bridge.JavaScriptModule { *; }
+-keep class * implements com.facebook.react.bridge.NativeModule { *; }
 -keepclassmembers,includedescriptorclasses class * { native <methods>; }
 -keepclassmembers class *  { @com.facebook.react.uimanager.annotations.ReactProp <methods>; }
 -keepclassmembers class *  { @com.facebook.react.uimanager.annotations.ReactPropGroup <methods>; }

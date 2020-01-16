@@ -16,8 +16,8 @@ import type {AppearancePreferences} from '../../../../Libraries/Utilities/Native
 import {RNTesterThemeContext, themes} from '../../components/RNTesterTheme';
 
 class ColorSchemeSubscription extends React.Component<
-  {},
-  {colorScheme: ?string},
+  {...},
+  {colorScheme: ?string, ...},
 > {
   state = {
     colorScheme: Appearance.getColorScheme(),

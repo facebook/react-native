@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -7,35 +7,42 @@
 
 #import "RCTImageComponentView.h"
 
+#import <React/RCTImageResponseDelegate.h>
 #import <React/RCTImageResponseObserverProxy.h>
 #import <react/components/image/ImageComponentDescriptor.h>
 #import <react/components/image/ImageEventEmitter.h>
-#import <react/components/image/ImageLocalData.h>
 #import <react/components/image/ImageProps.h>
+#import <react/imagemanager/ImageInstrumentation.h>
 #import <react/imagemanager/ImageRequest.h>
+#import <react/imagemanager/RCTImageInstrumentationProxy.h>
 #import <react/imagemanager/RCTImagePrimitivesConversions.h>
 
 #import "RCTConversions.h"
+#import "RCTFabricComponentsPlugins.h"
+
+using namespace facebook::react;
+
+@interface RCTImageComponentView () <RCTImageResponseDelegate>
+@end
 
 @implementation RCTImageComponentView {
   UIImageView *_imageView;
-  SharedImageLocalData _imageLocalData;
-  const ImageResponseObserverCoordinator *_coordinator;
-  std::unique_ptr<RCTImageResponseObserverProxy> _imageResponseObserverProxy;
+  ImageShadowNode::ConcreteState::Shared _state;
+  ImageResponseObserverCoordinator const *_coordinator;
+  RCTImageResponseObserverProxy _imageResponseObserverProxy;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame
 {
   if (self = [super initWithFrame:frame]) {
-    static const auto defaultProps = std::make_shared<const ImageProps>();
+    static auto const defaultProps = std::make_shared<ImageProps const>();
     _props = defaultProps;
 
     _imageView = [[UIImageView alloc] initWithFrame:self.bounds];
     _imageView.clipsToBounds = YES;
-
     _imageView.contentMode = (UIViewContentMode)RCTResizeModeFromImageResizeMode(defaultProps->resizeMode);
 
-    _imageResponseObserverProxy = std::make_unique<RCTImageResponseObserverProxy>((__bridge void *)self);
+    _imageResponseObserverProxy = RCTImageResponseObserverProxy(self);
 
     self.contentView = _imageView;
   }
@@ -52,8 +59,8 @@
 
 - (void)updateProps:(Props::Shared const &)props oldProps:(Props::Shared const &)oldProps
 {
-  const auto &oldImageProps = *std::static_pointer_cast<const ImageProps>(_props);
-  const auto &newImageProps = *std::static_pointer_cast<const ImageProps>(props);
+  auto const &oldImageProps = *std::static_pointer_cast<ImageProps const>(_props);
+  auto const &newImageProps = *std::static_pointer_cast<ImageProps const>(props);
 
   // `resizeMode`
   if (oldImageProps.resizeMode != newImageProps.resizeMode) {
@@ -74,40 +81,39 @@
   [super updateProps:props oldProps:oldProps];
 }
 
-- (void)updateLocalData:(SharedLocalData)localData oldLocalData:(SharedLocalData)oldLocalData
+- (void)updateState:(State::Shared const &)state oldState:(State::Shared const &)oldState
 {
-  auto imageLocalData = std::static_pointer_cast<const ImageLocalData>(localData);
+  _state = std::static_pointer_cast<ImageShadowNode::ConcreteState const>(state);
+  auto _oldState = std::static_pointer_cast<ImageShadowNode::ConcreteState const>(oldState);
+  auto data = _state->getData();
 
-  // This call (setting `coordinator`) must be unconditional (at the same block as setting `LocalData`)
-  // because the setter stores a raw pointer to object that `LocalData` owns.
-  self.coordinator = imageLocalData ? &imageLocalData->getImageRequest().getObserverCoordinator() : nullptr;
+  // This call (setting `coordinator`) must be unconditional (at the same block as setting `State`)
+  // because the setter stores a raw pointer to object that `State` owns.
+  self.coordinator = &data.getImageRequest().getObserverCoordinator();
 
-  auto previousData = _imageLocalData;
-  _imageLocalData = imageLocalData;
+  bool havePreviousData = _oldState && _oldState->getData().getImageSource() != ImageSource{};
 
-  if (!_imageLocalData) {
-    // This might happen in very rare cases (e.g. inside a subtree inside a node with `display: none`).
-    // That's quite normal.
-    return;
-  }
-
-  bool havePreviousData = previousData != nullptr;
-
-  if (!havePreviousData || _imageLocalData->getImageSource() != previousData->getImageSource()) {
+  if (!havePreviousData || data.getImageSource() != _oldState->getData().getImageSource()) {
     // Loading actually starts a little before this, but this is the first time we know
     // the image is loading and can fire an event from this component
-    std::static_pointer_cast<const ImageEventEmitter>(_eventEmitter)->onLoadStart();
+    std::static_pointer_cast<ImageEventEmitter const>(_eventEmitter)->onLoadStart();
+
+    // TODO (T58941612): Tracking for visibility should be done directly on this class.
+    // For now, we consolidate instrumentation logic in the image loader, so that pre-Fabric gets the same treatment.
+    auto instrumentation = std::static_pointer_cast<RCTImageInstrumentationProxy const>(
+        data.getImageRequest().getSharedImageInstrumentation());
+    instrumentation->trackNativeImageView(self);
   }
 }
 
-- (void)setCoordinator:(const ImageResponseObserverCoordinator *)coordinator
+- (void)setCoordinator:(ImageResponseObserverCoordinator const *)coordinator
 {
   if (_coordinator) {
-    _coordinator->removeObserver(_imageResponseObserverProxy.get());
+    _coordinator->removeObserver(_imageResponseObserverProxy);
   }
   _coordinator = coordinator;
   if (_coordinator != nullptr) {
-    _coordinator->addObserver(_imageResponseObserverProxy.get());
+    _coordinator->addObserver(_imageResponseObserverProxy);
   }
 }
 
@@ -116,18 +122,17 @@
   [super prepareForRecycle];
   self.coordinator = nullptr;
   _imageView.image = nil;
-  _imageLocalData.reset();
+  _state.reset();
 }
 
 - (void)dealloc
 {
   self.coordinator = nullptr;
-  _imageResponseObserverProxy.reset();
 }
 
 #pragma mark - RCTImageResponseDelegate
 
-- (void)didReceiveImage:(UIImage *)image fromObserver:(void *)observer
+- (void)didReceiveImage:(UIImage *)image fromObserver:(void const *)observer
 {
   if (!_eventEmitter) {
     // Notifications are delivered asynchronously and might arrive after the view is already recycled.
@@ -136,9 +141,10 @@
     return;
   }
 
-  std::static_pointer_cast<const ImageEventEmitter>(_eventEmitter)->onLoad();
+  std::static_pointer_cast<ImageEventEmitter const>(_eventEmitter)->onLoad();
+  std::static_pointer_cast<ImageEventEmitter const>(_eventEmitter)->onLoadEnd();
 
-  const auto &imageProps = *std::static_pointer_cast<const ImageProps>(_props);
+  const auto &imageProps = *std::static_pointer_cast<ImageProps const>(_props);
 
   if (imageProps.tintColor) {
     image = [image imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
@@ -159,27 +165,33 @@
   self->_imageView.layer.minificationFilter = kCAFilterTrilinear;
   self->_imageView.layer.magnificationFilter = kCAFilterTrilinear;
 
-  std::static_pointer_cast<const ImageEventEmitter>(self->_eventEmitter)->onLoadEnd();
+  _state->getData().getImageRequest().getImageInstrumentation().didSetImage();
 }
 
-- (void)didReceiveProgress:(float)progress fromObserver:(void *)observer
+- (void)didReceiveProgress:(float)progress fromObserver:(void const *)observer
 {
   if (!_eventEmitter) {
     return;
   }
 
-  std::static_pointer_cast<const ImageEventEmitter>(_eventEmitter)->onProgress(progress);
+  std::static_pointer_cast<ImageEventEmitter const>(_eventEmitter)->onProgress(progress);
 }
 
-- (void)didReceiveFailureFromObserver:(void *)observer
+- (void)didReceiveFailureFromObserver:(void const *)observer
 {
-  if (!_eventEmitter) {
-    return;
-  }
-
   _imageView.image = nil;
 
-  std::static_pointer_cast<const ImageEventEmitter>(_eventEmitter)->onError();
+  if (!_eventEmitter) {
+    return;
+  }
+
+  std::static_pointer_cast<ImageEventEmitter const>(_eventEmitter)->onError();
+  std::static_pointer_cast<ImageEventEmitter const>(_eventEmitter)->onLoadEnd();
 }
 
 @end
+
+Class<RCTComponentViewProtocol> RCTImageCls(void)
+{
+  return RCTImageComponentView.class;
+}

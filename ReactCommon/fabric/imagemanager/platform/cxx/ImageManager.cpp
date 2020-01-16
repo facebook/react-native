@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -20,9 +20,11 @@ ImageManager::~ImageManager() {
   // Not implemented.
 }
 
-ImageRequest ImageManager::requestImage(const ImageSource &imageSource) const {
+ImageRequest ImageManager::requestImage(
+    const ImageSource &imageSource,
+    SurfaceId surfaceId) const {
   // Not implemented.
-  return ImageRequest(imageSource);
+  return ImageRequest(imageSource, nullptr);
 }
 
 } // namespace react

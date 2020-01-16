@@ -18,13 +18,15 @@ const React = require('react');
 const ReactNative = require('../Renderer/shims/ReactNative');
 const StyleSheet = require('../StyleSheet/StyleSheet');
 const Touchable = require('../Components/Touchable/Touchable');
-const UIManager = require('../ReactNative/UIManager');
 const View = require('../Components/View/View');
 
 const invariant = require('invariant');
 
+import type {HostComponent} from '../Renderer/shims/ReactNativeTypes';
+
 export type ReactRenderer = {
   getInspectorDataForViewTag: (viewTag: number) => Object,
+  ...
 };
 
 const hook = window.__REACT_DEVTOOLS_GLOBAL_HOOK__;
@@ -64,10 +66,15 @@ function getInspectorDataForViewTag(touchedViewTag: number) {
   }
   throw new Error('Expected to find at least one React renderer.');
 }
+
+type HostRef = React.ElementRef<HostComponent<mixed>>;
+
 class Inspector extends React.Component<
   {
-    inspectedViewTag: ?number,
-    onRequestRerenderApp: (callback: (tag: ?number) => void) => void,
+    isFabric: boolean,
+    inspectedView: ?HostRef,
+    onRequestRerenderApp: (callback: (instance: ?HostRef) => void) => void,
+    ...
   },
   {
     devtoolsAgent: ?Object,
@@ -77,8 +84,9 @@ class Inspector extends React.Component<
     selection: ?number,
     perfing: boolean,
     inspected: any,
-    inspectedViewTag: any,
+    inspectedView: ?HostRef,
     networking: boolean,
+    ...
   },
 > {
   _hideTimeoutID: TimeoutID | null = null;
@@ -95,7 +103,7 @@ class Inspector extends React.Component<
       perfing: false,
       inspected: null,
       selection: null,
-      inspectedViewTag: this.props.inspectedViewTag,
+      inspectedView: this.props.inspectedView,
       networking: false,
     };
   }
@@ -116,7 +124,7 @@ class Inspector extends React.Component<
   }
 
   UNSAFE_componentWillReceiveProps(newProps: Object) {
-    this.setState({inspectedViewTag: newProps.inspectedViewTag});
+    this.setState({inspectedView: newProps.inspectedView});
   }
 
   _attachToDevtools = (agent: Object) => {
@@ -144,11 +152,7 @@ class Inspector extends React.Component<
   _onAgentShowNativeHighlight = node => {
     clearTimeout(this._hideTimeoutID);
 
-    if (typeof node !== 'number') {
-      node = ReactNative.findNodeHandle(node);
-    }
-
-    UIManager.measure(node, (x, y, width, height, left, top) => {
+    node.measure((x, y, width, height, left, top) => {
       this.setState({
         hierarchy: [],
         inspected: {
@@ -204,7 +208,6 @@ class Inspector extends React.Component<
 
     if (this.state.devtoolsAgent) {
       // Skip host leafs
-      const offsetFromLeaf = hierarchy.length - 1 - selection;
       this.state.devtoolsAgent.selectNode(touchedViewTag);
     }
 
@@ -239,8 +242,8 @@ class Inspector extends React.Component<
 
   setTouchTargeting(val: boolean) {
     Touchable.TOUCH_TARGET_DEBUG = val;
-    this.props.onRequestRerenderApp(inspectedViewTag => {
-      this.setState({inspectedViewTag});
+    this.props.onRequestRerenderApp(inspectedView => {
+      this.setState({inspectedView});
     });
   }
 
@@ -262,8 +265,9 @@ class Inspector extends React.Component<
       <View style={styles.container} pointerEvents="box-none">
         {this.state.inspecting && (
           <InspectorOverlay
+            isFabric={this.props.isFabric}
             inspected={this.state.inspected}
-            inspectedViewTag={this.state.inspectedViewTag}
+            inspectedView={this.state.inspectedView}
             onTouchViewTag={this.onTouchViewTag.bind(this)}
           />
         )}

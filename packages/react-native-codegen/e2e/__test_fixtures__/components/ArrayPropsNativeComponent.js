@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @flow
+ * @flow strict-local
  */
 
 'use strict';
@@ -13,6 +13,7 @@
 import type {
   PointValue,
   ColorValue,
+  EdgeInsetsValue,
 } from '../../../../../Libraries/StyleSheet/StyleSheetTypes';
 import type {ImageSource} from '../../../../../Libraries/Image/ImageSource';
 import type {
@@ -22,7 +23,7 @@ import type {
 } from '../../../../../Libraries/Types/CodegenTypes';
 import type {ViewProps} from '../../../../../Libraries/Components/View/ViewPropTypes';
 import codegenNativeComponent from '../../../../../Libraries/Utilities/codegenNativeComponent';
-import {type NativeComponentType} from '../../../../../Libraries/Utilities/codegenNativeComponent';
+import type {HostComponent} from '../../../../../Libraries/Renderer/shims/ReactNativeTypes';
 
 type NativeProps = $ReadOnly<{|
   ...ViewProps,
@@ -35,10 +36,11 @@ type NativeProps = $ReadOnly<{|
   colors?: $ReadOnlyArray<ColorValue>,
   srcs?: $ReadOnlyArray<ImageSource>,
   points?: $ReadOnlyArray<PointValue>,
+  edgeInsets?: $ReadOnlyArray<EdgeInsetsValue>,
   sizes?: WithDefault<$ReadOnlyArray<'small' | 'large'>, 'small'>,
   object?: $ReadOnlyArray<$ReadOnly<{|prop: string|}>>,
 |}>;
 
 export default (codegenNativeComponent<NativeProps>(
   'ArrayPropsNativeComponentView',
-): NativeComponentType<NativeProps>);
+): HostComponent<NativeProps>);

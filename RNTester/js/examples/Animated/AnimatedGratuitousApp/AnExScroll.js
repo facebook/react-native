@@ -33,6 +33,7 @@ class AnExScroll extends React.Component<$FlowFixMeProps, any> {
           scrollEventThrottle={16 /* get all events */}
           onScroll={Animated.event(
             [{nativeEvent: {contentOffset: {x: this.state.scrollX}}}], // nested event mapping
+            {useNativeDriver: false},
           )}
           contentContainerStyle={{flex: 1, padding: 10}}
           pagingEnabled={true}

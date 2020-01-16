@@ -16,11 +16,9 @@ const {Picker, StyleSheet, Text} = require('react-native');
 
 const Item = Picker.Item;
 
-type State = {
-  value: string | number,
-};
+type State = {value: string | number, ...};
 
-class BasicPickerExample extends React.Component<{}, State> {
+class BasicPickerExample extends React.Component<{...}, State> {
   state: State = {
     value: 'key1',
   };
@@ -39,7 +37,7 @@ class BasicPickerExample extends React.Component<{}, State> {
   }
 }
 
-class DisabledPickerExample extends React.Component<{}, State> {
+class DisabledPickerExample extends React.Component<{...}, State> {
   state: State = {
     value: 'key1',
   };
@@ -57,7 +55,7 @@ class DisabledPickerExample extends React.Component<{}, State> {
   }
 }
 
-class DropdownPickerExample extends React.Component<{}, State> {
+class DropdownPickerExample extends React.Component<{...}, State> {
   state: State = {
     value: 'key1',
   };
@@ -76,7 +74,7 @@ class DropdownPickerExample extends React.Component<{}, State> {
   }
 }
 
-class PromptPickerExample extends React.Component<{}, State> {
+class PromptPickerExample extends React.Component<{...}, State> {
   state: State = {
     value: 'key1',
   };
@@ -95,11 +93,9 @@ class PromptPickerExample extends React.Component<{}, State> {
   }
 }
 
-type ColorState = {
-  color: string | number,
-};
+type ColorState = {color: string | number, ...};
 
-class ColorPickerExample extends React.Component<{}, ColorState> {
+class ColorPickerExample extends React.Component<{...}, ColorState> {
   state: ColorState = {
     color: 'red',
   };
@@ -126,6 +122,25 @@ class ColorPickerExample extends React.Component<{}, ColorState> {
           <Item label="blue" color="blue" value="blue" />
         </Picker>
       </>
+    );
+  }
+}
+class AccessibilityLabelPickerExample extends React.Component<{}, State> {
+  state: State = {
+    value: '3',
+  };
+
+  render(): React.Node {
+    return (
+      <Picker
+        accessibilityLabel={this.state.value + 'Hours'}
+        style={styles.picker}
+        selectedValue={this.state.value}
+        onValueChange={v => this.setState({value: v})}>
+        <Item label="1" value="1" />
+        <Item label="2" value="2" />
+        <Item label="3" value="3" />
+      </Picker>
     );
   }
 }
@@ -165,6 +180,12 @@ exports.examples = [
     },
   },
   {
+    title: 'Accessibility Label pickers',
+    render: function(): React.Element<typeof AccessibilityLabelPickerExample> {
+      return <AccessibilityLabelPickerExample />;
+    },
+  },
+  {
     title: 'Picker with no listener',
     render: function(): React.Element<typeof PromptPickerExample> {
       return (
@@ -188,6 +209,12 @@ exports.examples = [
     title: 'Colorful pickers',
     render: function(): React.Element<typeof ColorPickerExample> {
       return <ColorPickerExample />;
+    },
+  },
+  {
+    title: 'AccessibilityLabel pickers',
+    render: function(): React.Element<typeof AccessibilityLabelPickerExample> {
+      return <AccessibilityLabelPickerExample />;
     },
   },
 ];

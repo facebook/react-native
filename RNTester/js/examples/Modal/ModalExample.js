@@ -71,7 +71,7 @@ const supportedOrientationsPickerValues = [
   [],
 ];
 
-class ModalExample extends React.Component<{}, $FlowFixMeState> {
+class ModalExample extends React.Component<{...}, $FlowFixMeState> {
   state = {
     animationType: 'none',
     modalVisible: false,

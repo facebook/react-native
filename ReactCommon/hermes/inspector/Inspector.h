@@ -1,4 +1,9 @@
-// Copyright 2004-present Facebook. All Rights Reserved.
+/*
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
 
 #pragma once
 
@@ -299,6 +304,17 @@ class Inspector : public facebook::hermes::debugger::EventObserver,
     bool notifiedClient;
   };
   std::unordered_map<int, LoadedScriptInfo> loadedScripts_;
+  std::unordered_map<std::string, int> loadedScriptIdByName_;
+
+  // Returns true if we are executing a file instance that has since been
+  // reloaded. I.e. we are running an old version of the file.
+  bool isExecutingSupersededFile();
+
+  // Allow the user to suppress warnings about superseded files.
+  bool shouldSuppressAlertAboutSupersededFiles();
+
+  // Trigger a fake console.log if we're currently in a superseded file.
+  void alertIfPausedInSupersededFile();
 };
 
 } // namespace inspector

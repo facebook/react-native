@@ -38,11 +38,11 @@ rn_xplat_cxx_library(
         "-fobjc-arc-exceptions",
     ],
     fbobjc_inherited_buck_flags = get_static_library_ios_flags(),
+    fbobjc_labels = ["supermodule:ios/isolation/infra.react_native"],
     fbobjc_preprocessor_flags = OBJC_ARC_PREPROCESSOR_FLAGS + get_debug_preprocessor_flags(),
     force_static = True,
     ios_deps = [
         "fbsource//xplat/FBBaseLite:FBBaseLite",
-        "fbsource//xplat/js/react-native-github:RCTCxxBridge",
         "fbsource//xplat/js/react-native-github:RCTCxxModule",
         "fbsource//xplat/js/react-native-github:ReactInternal",
     ],
@@ -78,7 +78,7 @@ rn_xplat_cxx_library(
         "fbsource//xplat/third-party/glog:glog",
         react_native_xplat_target("cxxreact:bridge"),
         react_native_xplat_target("cxxreact:module"),
-        react_native_xplat_target("jscallinvoker:jscallinvoker"),
+        react_native_xplat_target("callinvoker:callinvoker"),
     ],
     exported_deps = [
         "fbsource//xplat/jsi:jsi",

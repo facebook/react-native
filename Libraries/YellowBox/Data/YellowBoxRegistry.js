@@ -12,8 +12,8 @@
 
 const YellowBoxWarning = require('./YellowBoxWarning');
 
-import type {Category} from './YellowBoxCategory';
-
+import type {Category, Message} from './YellowBoxCategory';
+import type {Stack} from './YellowBoxSymbolication';
 export type Registry = Map<Category, $ReadOnlyArray<YellowBoxWarning>>;
 
 export type Observer = (registry: Registry) => void;
@@ -24,7 +24,7 @@ export type Subscription = $ReadOnly<{|
   unsubscribe: () => void,
 |}>;
 
-const observers: Set<{observer: Observer}> = new Set();
+const observers: Set<{observer: Observer, ...}> = new Set();
 const ignorePatterns: Set<IgnorePattern> = new Set();
 const registry: Registry = new Map();
 
@@ -32,25 +32,13 @@ let disabled = false;
 let projection = new Map();
 let updateTimeout = null;
 
-function isWarningIgnored(warning: YellowBoxWarning): boolean {
-  for (const pattern of ignorePatterns) {
-    if (pattern instanceof RegExp && pattern.test(warning.message.content)) {
-      return true;
-    } else if (
-      typeof pattern === 'string' &&
-      warning.message.content.includes(pattern)
-    ) {
-      return true;
-    }
-  }
-  return false;
-}
-
 function handleUpdate(): void {
   projection = new Map();
   if (!disabled) {
     for (const [category, warnings] of registry) {
-      const filtered = warnings.filter(warning => !isWarningIgnored(warning));
+      const filtered = warnings.filter(
+        warning => !YellowBoxRegistry.isWarningIgnored(warning.message),
+      );
       if (filtered.length > 0) {
         projection.set(category, filtered);
       }
@@ -67,21 +55,28 @@ function handleUpdate(): void {
 }
 
 const YellowBoxRegistry = {
-  add({
-    args,
-    framesToPop,
-  }: $ReadOnly<{|
-    args: $ReadOnlyArray<mixed>,
-    framesToPop: number,
-  |}>): void {
-    if (typeof args[0] === 'string' && args[0].startsWith('(ADVICE)')) {
-      return;
+  isWarningIgnored(message: Message): boolean {
+    for (const pattern of ignorePatterns) {
+      if (pattern instanceof RegExp && pattern.test(message.content)) {
+        return true;
+      } else if (
+        typeof pattern === 'string' &&
+        message.content.includes(pattern)
+      ) {
+        return true;
+      }
     }
-    const {category, message, stack} = YellowBoxWarning.parse({
-      args,
-      framesToPop: framesToPop + 1,
-    });
-
+    return false;
+  },
+  add({
+    category,
+    message,
+    stack,
+  }: $ReadOnly<{|
+    category: Category,
+    message: Message,
+    stack: Stack,
+  |}>): void {
     let warnings = registry.get(category);
     if (warnings == null) {
       warnings = [];

@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -10,11 +10,18 @@
 #import <react/components/rncore/ComponentDescriptors.h>
 #import <react/components/rncore/EventEmitters.h>
 #import <react/components/rncore/Props.h>
+#import <react/components/rncore/RCTComponentViewHelpers.h>
 
 #import <React/RCTConversions.h>
+#import <React/RCTRefreshableProtocol.h>
 #import <React/RCTScrollViewComponentView.h>
 
+#import "FBRCTFabricComponentsPlugins.h"
+
 using namespace facebook::react;
+
+@interface RCTPullToRefreshViewComponentView () <RCTPullToRefreshViewViewProtocol, RCTRefreshableProtocol>
+@end
 
 @implementation RCTPullToRefreshViewComponentView {
   UIRefreshControl *_refreshControl;
@@ -125,7 +132,9 @@ using namespace facebook::react;
     return;
   }
 
-  _scrollViewComponentView.scrollView.refreshControl = _refreshControl;
+  if (@available(macOS 13.0, *)) {
+    _scrollViewComponentView.scrollView.refreshControl = _refreshControl;
+  }
 }
 
 - (void)_detach
@@ -137,8 +146,45 @@ using namespace facebook::react;
   // iOS requires to end refreshing before unmounting.
   [_refreshControl endRefreshing];
 
-  _scrollViewComponentView.scrollView.refreshControl = nil;
+  if (@available(macOS 13.0, *)) {
+    _scrollViewComponentView.scrollView.refreshControl = nil;
+  }
   _scrollViewComponentView = nil;
 }
 
+#pragma mark - Native commands
+
+- (void)handleCommand:(const NSString *)commandName args:(const NSArray *)args
+{
+  RCTPullToRefreshViewHandleCommand(self, commandName, args);
+}
+
+- (void)setNativeRefreshing:(BOOL)refreshing
+{
+  if (refreshing) {
+    [_refreshControl beginRefreshing];
+  } else {
+    [_refreshControl endRefreshing];
+  }
+}
+
+#pragma mark - RCTRefreshableProtocol
+
+- (void)setRefreshing:(BOOL)refreshing
+{
+  [self setNativeRefreshing:refreshing];
+}
+
+#pragma mark -
+
+- (NSString *)componentViewName_DO_NOT_USE_THIS_IS_BROKEN
+{
+  return @"RefreshControl";
+}
+
 @end
+
+Class<RCTComponentViewProtocol> RCTPullToRefreshViewCls(void)
+{
+  return RCTPullToRefreshViewComponentView.class;
+}

@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -10,6 +10,8 @@
 #import <react/components/rncore/ComponentDescriptors.h>
 #import <react/components/rncore/EventEmitters.h>
 #import <react/components/rncore/Props.h>
+
+#import "FBRCTFabricComponentsPlugins.h"
 
 using namespace facebook::react;
 
@@ -88,3 +90,8 @@ static UIActivityIndicatorViewStyle convertActivityIndicatorViewStyle(const Acti
 }
 
 @end
+
+Class<RCTComponentViewProtocol> RCTActivityIndicatorViewCls(void)
+{
+  return RCTActivityIndicatorViewComponentView.class;
+}

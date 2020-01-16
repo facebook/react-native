@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -63,7 +63,7 @@
 #endif
 
 #ifndef ENABLE_PACKAGER_CONNECTION
-#if RCT_DEV && (__has_include("RCTPackagerConnection.h") || __has_include(<React/RCTPackagerConnection.h>)) && !TARGET_OS_UIKITFORMAC
+#if RCT_DEV && (__has_include("RCTPackagerConnection.h") || __has_include(<React/RCTPackagerConnection.h>))
 #define ENABLE_PACKAGER_CONNECTION 1
 #else
 #define ENABLE_PACKAGER_CONNECTION 0

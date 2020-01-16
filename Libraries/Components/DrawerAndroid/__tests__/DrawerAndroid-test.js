@@ -6,7 +6,7 @@
  *
  * @format
  * @emails oncall+react_native
- * @flow
+ * @flow strict-local
  */
 
 'use strict';
@@ -18,54 +18,22 @@ const React = require('react');
 const DrawerLayoutAndroid = require('../DrawerLayoutAndroid.android');
 const View = require('../../View/View');
 
-const render = require('../../../../jest/renderer');
+const ReactNativeTestTools = require('../../../Utilities/ReactNativeTestTools');
 
 describe('<DrawerLayoutAndroid />', () => {
-  it('should render as <DrawerLayoutAndroid> when mocked', () => {
-    const instance = render.create(
-      <DrawerLayoutAndroid
-        drawerWidth={300}
-        drawerPosition="left"
-        renderNavigationView={() => <View />}
-      />,
+  it('should render as expected', () => {
+    ReactNativeTestTools.expectRendersMatchingSnapshot(
+      'DrawerLayoutAndroid',
+      () => (
+        <DrawerLayoutAndroid
+          drawerWidth={300}
+          drawerPosition="left"
+          renderNavigationView={() => <View />}
+        />
+      ),
+      () => {
+        jest.dontMock('../DrawerLayoutAndroid');
+      },
     );
-    expect(instance).toMatchSnapshot();
-  });
-
-  it('should shallow render as <DrawerLayoutAndroid> when mocked', () => {
-    const output = render.shallow(
-      <DrawerLayoutAndroid
-        drawerWidth={300}
-        drawerPosition="left"
-        renderNavigationView={() => <View />}
-      />,
-    );
-    expect(output).toMatchSnapshot();
-  });
-
-  it('should shallow render as <DrawerLayoutAndroid> when not mocked', () => {
-    jest.dontMock('../DrawerLayoutAndroid');
-
-    const output = render.shallow(
-      <DrawerLayoutAndroid
-        drawerWidth={300}
-        drawerPosition="left"
-        renderNavigationView={() => <View />}
-      />,
-    );
-    expect(output).toMatchSnapshot();
-  });
-
-  it('should render as <DrawerLayoutAndroid> when not mocked', () => {
-    jest.dontMock('../DrawerLayoutAndroid');
-
-    const instance = render.create(
-      <DrawerLayoutAndroid
-        drawerWidth={300}
-        drawerPosition="left"
-        renderNavigationView={() => <View />}
-      />,
-    );
-    expect(instance).toMatchSnapshot();
   });
 });

@@ -65,10 +65,13 @@ class Circle extends React.Component<any, any> {
     this.setState(
       {
         panResponder: PanResponder.create({
-          onPanResponderMove: Animated.event([
-            null, // native event - ignore      (step1: uncomment)
-            {dx: this.state.pan.x, dy: this.state.pan.y}, // links pan to gestureState  (step1: uncomment)
-          ]),
+          onPanResponderMove: Animated.event(
+            [
+              null, // native event - ignore      (step1: uncomment)
+              {dx: this.state.pan.x, dy: this.state.pan.y}, // links pan to gestureState  (step1: uncomment)
+            ],
+            {useNativeDriver: false},
+          ),
           onPanResponderRelease: (e, gestureState) => {
             LayoutAnimation.easeInEaseOut(); // @flowfixme animates layout update as one batch (step3: uncomment)
             Animated.spring(this.state.pop, {
@@ -308,7 +311,11 @@ class AnExApp extends React.Component<any, any> {
   }
 }
 
-type Point = {x: number, y: number};
+type Point = {
+  x: number,
+  y: number,
+  ...
+};
 function distance(p1: Point, p2: Point): number {
   const dx = p1.x - p2.x;
   const dy = p1.y - p2.y;

@@ -21,18 +21,6 @@ import invariant from 'invariant';
 type AppearanceListener = (preferences: AppearancePreferences) => void;
 const eventEmitter = new EventEmitter();
 
-// TODO: (hramos) T52919652 Use ?ColorSchemeName once codegen supports union
-const nativeColorScheme: ?string =
-  NativeAppearance == null ? null : NativeAppearance.getColorScheme() || null;
-invariant(
-  nativeColorScheme === 'dark' ||
-    nativeColorScheme === 'light' ||
-    nativeColorScheme == null,
-  "Unrecognized color scheme. Did you mean 'dark' or 'light'?",
-);
-
-let currentColorScheme: ?ColorSchemeName = nativeColorScheme;
-
 if (NativeAppearance) {
   const nativeEventEmitter = new NativeEventEmitter(NativeAppearance);
   nativeEventEmitter.addListener(
@@ -45,7 +33,6 @@ if (NativeAppearance) {
           colorScheme == null,
         "Unrecognized color scheme. Did you mean 'dark' or 'light'?",
       );
-      currentColorScheme = colorScheme;
       eventEmitter.emit('change', {colorScheme});
     },
   );
@@ -63,7 +50,18 @@ module.exports = {
    * @returns {?ColorSchemeName} Value for the color scheme preference.
    */
   getColorScheme(): ?ColorSchemeName {
-    return currentColorScheme;
+    // TODO: (hramos) T52919652 Use ?ColorSchemeName once codegen supports union
+    const nativeColorScheme: ?string =
+      NativeAppearance == null
+        ? null
+        : NativeAppearance.getColorScheme() || null;
+    invariant(
+      nativeColorScheme === 'dark' ||
+        nativeColorScheme === 'light' ||
+        nativeColorScheme == null,
+      "Unrecognized color scheme. Did you mean 'dark' or 'light'?",
+    );
+    return nativeColorScheme;
   },
   /**
    * Add an event handler that is fired when appearance preferences change.

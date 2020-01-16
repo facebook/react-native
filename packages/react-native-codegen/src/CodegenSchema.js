@@ -91,7 +91,7 @@ export type ObjectPropertyType =
 type PropTypeTypeAnnotation =
   | $ReadOnly<{|
       type: 'BooleanTypeAnnotation',
-      default: boolean,
+      default: boolean | null,
     |}>
   | $ReadOnly<{|
       type: 'StringTypeAnnotation',
@@ -103,7 +103,7 @@ type PropTypeTypeAnnotation =
     |}>
   | $ReadOnly<{|
       type: 'FloatTypeAnnotation',
-      default: number,
+      default: number | null,
     |}>
   | $ReadOnly<{|
       type: 'Int32TypeAnnotation',
@@ -125,7 +125,11 @@ type PropTypeTypeAnnotation =
     |}>
   | $ReadOnly<{|
       type: 'NativePrimitiveTypeAnnotation',
-      name: 'ColorPrimitive' | 'ImageSourcePrimitive' | 'PointPrimitive',
+      name:
+        | 'ColorPrimitive'
+        | 'ImageSourcePrimitive'
+        | 'PointPrimitive'
+        | 'EdgeInsetsPrimitive',
     |}>
   | $ReadOnly<{|
       type: 'ObjectTypeAnnotation',
@@ -162,7 +166,11 @@ type PropTypeTypeAnnotation =
           |}>
         | $ReadOnly<{|
             type: 'NativePrimitiveTypeAnnotation',
-            name: 'ColorPrimitive' | 'ImageSourcePrimitive' | 'PointPrimitive',
+            name:
+              | 'ColorPrimitive'
+              | 'ImageSourcePrimitive'
+              | 'PointPrimitive'
+              | 'EdgeInsetsPrimitive',
           |}>
         | $ReadOnly<{|
             type: 'ArrayTypeAnnotation',
@@ -284,6 +292,9 @@ export type OptionsShape = $ReadOnly<{|
   // Does not check for new name
   paperComponentName?: string,
 
+  // Use for components that are not used on one or the other platform.
+  excludedPlatform?: 'iOS' | 'android',
+
   // Use for components currently being renamed in paper
   // Will use new name if it is available and fallback to this name
   paperComponentNameDeprecated?: string,
@@ -305,12 +316,12 @@ export type ComponentShape = $ReadOnly<{|
 export type SchemaType = $ReadOnly<{|
   modules: $ReadOnly<{
     [module: string]: $ReadOnly<{|
-      components?: $ReadOnly<{
-        [component: string]: ComponentShape,
-      }>,
+      components?: $ReadOnly<{[component: string]: ComponentShape, ...}>,
       nativeModules?: $ReadOnly<{
         [nativeModule: string]: NativeModuleShape,
+        ...,
       }>,
     |}>,
+    ...,
   }>,
 |}>;

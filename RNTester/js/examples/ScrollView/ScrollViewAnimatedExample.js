@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @flow
+ * @flow strict-local
  */
 
 'use strict';
@@ -23,7 +23,7 @@ const {
   Dimensions,
 } = ReactNative;
 
-class ScrollViewAnimatedExample extends Component<{}> {
+class ScrollViewAnimatedExample extends Component<{...}> {
   _scrollViewPos = new Animated.Value(0);
 
   startAnimation: () => void = () => {

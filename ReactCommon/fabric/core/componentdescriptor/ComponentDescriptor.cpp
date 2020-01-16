@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -11,9 +11,10 @@ namespace facebook {
 namespace react {
 
 ComponentDescriptor::ComponentDescriptor(
-    EventDispatcher::Weak const &eventDispatcher,
-    ContextContainer::Shared const &contextContainer)
-    : eventDispatcher_(eventDispatcher), contextContainer_(contextContainer) {}
+    ComponentDescriptorParameters const &parameters)
+    : eventDispatcher_(parameters.eventDispatcher),
+      contextContainer_(parameters.contextContainer),
+      flavor_(parameters.flavor) {}
 
 ContextContainer::Shared const &ComponentDescriptor::getContextContainer()
     const {

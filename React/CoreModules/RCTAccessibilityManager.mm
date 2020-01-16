@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -92,11 +92,6 @@ RCT_EXPORT_MODULE()
     _isVoiceOverEnabled = UIAccessibilityIsVoiceOverRunning();
   }
   return self;
-}
-
-- (void)dealloc
-{
-  [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 - (void)didReceiveNewContentSizeCategory:(NSNotification *)note
@@ -334,7 +329,7 @@ RCT_EXPORT_METHOD(getCurrentVoiceOverState:(RCTResponseSenderBlock)onSuccess
 
 
 - (std::shared_ptr<facebook::react::TurboModule>)getTurboModuleWithJsInvoker:
-(std::shared_ptr<facebook::react::JSCallInvoker>)jsInvoker
+(std::shared_ptr<facebook::react::CallInvoker>)jsInvoker
 {
   return std::make_shared<facebook::react::NativeAccessibilityManagerSpecJSI>(self, jsInvoker);
 }

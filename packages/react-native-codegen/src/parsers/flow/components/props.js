@@ -103,6 +103,11 @@ function getTypeAnnotationForArray(name, typeAnnotation, defaultValue, types) {
         type: 'NativePrimitiveTypeAnnotation',
         name: 'PointPrimitive',
       };
+    case 'EdgeInsetsValue':
+      return {
+        type: 'NativePrimitiveTypeAnnotation',
+        name: 'EdgeInsetsPrimitive',
+      };
     case 'Stringish':
       return {
         type: 'StringTypeAnnotation',
@@ -161,7 +166,13 @@ function getTypeAnnotationForArray(name, typeAnnotation, defaultValue, types) {
   }
 }
 
-function getTypeAnnotation(name, annotation, defaultValue, types) {
+function getTypeAnnotation(
+  name,
+  annotation,
+  defaultValue,
+  withNullDefault,
+  types,
+) {
   const typeAnnotation = getValueFromTypes(annotation, types);
 
   if (
@@ -223,6 +234,11 @@ function getTypeAnnotation(name, annotation, defaultValue, types) {
         type: 'NativePrimitiveTypeAnnotation',
         name: 'PointPrimitive',
       };
+    case 'EdgeInsetsValue':
+      return {
+        type: 'NativePrimitiveTypeAnnotation',
+        name: 'EdgeInsetsPrimitive',
+      };
     case 'Int32':
       return {
         type: 'Int32TypeAnnotation',
@@ -236,12 +252,16 @@ function getTypeAnnotation(name, annotation, defaultValue, types) {
     case 'Float':
       return {
         type: 'FloatTypeAnnotation',
-        default: ((defaultValue ? defaultValue : 0): number),
+        default: withNullDefault
+          ? (defaultValue: number | null)
+          : ((defaultValue ? defaultValue : 0): number),
       };
     case 'BooleanTypeAnnotation':
       return {
         type: 'BooleanTypeAnnotation',
-        default: ((defaultValue == null ? false : defaultValue): boolean),
+        default: withNullDefault
+          ? (defaultValue: boolean | null)
+          : ((defaultValue == null ? false : defaultValue): boolean),
       };
     case 'StringTypeAnnotation':
       if (typeof defaultValue !== 'undefined') {
@@ -349,6 +369,7 @@ function buildPropSchema(property, types: TypeMap): ?PropTypeShape {
   }
 
   let defaultValue = null;
+  let withNullDefault = false;
   if (
     type === 'GenericTypeAnnotation' &&
     typeAnnotation.id.name === 'WithDefault'
@@ -369,13 +390,8 @@ function buildPropSchema(property, types: TypeMap): ?PropTypeShape {
         : typeAnnotation.type;
 
     if (defaultValueType === 'NullLiteralTypeAnnotation') {
-      if (type !== 'StringTypeAnnotation' && type !== 'Stringish') {
-        throw new Error(
-          `WithDefault can only provide a 'null' default value for string types (see ${name})`,
-        );
-      }
-
       defaultValue = null;
+      withNullDefault = true;
     }
   }
 
@@ -386,6 +402,7 @@ function buildPropSchema(property, types: TypeMap): ?PropTypeShape {
       name,
       typeAnnotation,
       defaultValue,
+      withNullDefault,
       types,
     ),
   };

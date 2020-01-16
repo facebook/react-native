@@ -33,21 +33,6 @@ exports[`VirtualizedSectionList handles nested lists 1`] = `
   onScrollEndDrag={[Function]}
   renderItem={[Function]}
   scrollEventThrottle={50}
-  sections={
-    Array [
-      Object {
-        "data": Array [
-          Object {
-            "key": "outer0",
-          },
-          Object {
-            "key": "outer1",
-          },
-        ],
-        "title": "outer",
-      },
-    ]
-  }
   stickyHeaderIndices={Array []}
   updateCellsBatchingPeriod={50}
   windowSize={21}
@@ -93,21 +78,6 @@ exports[`VirtualizedSectionList handles nested lists 1`] = `
         onScrollEndDrag={[Function]}
         renderItem={[Function]}
         scrollEventThrottle={50}
-        sections={
-          Array [
-            Object {
-              "data": Array [
-                Object {
-                  "key": "outer0:inner0",
-                },
-                Object {
-                  "key": "outer0:inner1",
-                },
-              ],
-              "title": "inner",
-            },
-          ]
-        }
         stickyHeaderIndices={Array []}
         updateCellsBatchingPeriod={50}
         windowSize={21}
@@ -174,21 +144,6 @@ exports[`VirtualizedSectionList handles nested lists 1`] = `
         onScrollEndDrag={[Function]}
         renderItem={[Function]}
         scrollEventThrottle={50}
-        sections={
-          Array [
-            Object {
-              "data": Array [
-                Object {
-                  "key": "outer1:inner0",
-                },
-                Object {
-                  "key": "outer1:inner1",
-                },
-              ],
-              "title": "inner",
-            },
-          ]
-        }
         stickyHeaderIndices={Array []}
         updateCellsBatchingPeriod={50}
         windowSize={21}
@@ -293,24 +248,6 @@ exports[`VirtualizedSectionList handles separators correctly 1`] = `
   onScrollEndDrag={[Function]}
   renderItem={[Function]}
   scrollEventThrottle={50}
-  sections={
-    Array [
-      Object {
-        "data": Array [
-          Object {
-            "key": "i0",
-          },
-          Object {
-            "key": "i1",
-          },
-          Object {
-            "key": "i2",
-          },
-        ],
-        "title": "s0",
-      },
-    ]
-  }
   stickyHeaderIndices={Array []}
   updateCellsBatchingPeriod={50}
   windowSize={21}
@@ -450,24 +387,6 @@ exports[`VirtualizedSectionList handles separators correctly 2`] = `
   onScrollEndDrag={[Function]}
   renderItem={[Function]}
   scrollEventThrottle={50}
-  sections={
-    Array [
-      Object {
-        "data": Array [
-          Object {
-            "key": "i0",
-          },
-          Object {
-            "key": "i1",
-          },
-          Object {
-            "key": "i2",
-          },
-        ],
-        "title": "s0",
-      },
-    ]
-  }
   stickyHeaderIndices={Array []}
   updateCellsBatchingPeriod={50}
   windowSize={21}
@@ -607,24 +526,6 @@ exports[`VirtualizedSectionList handles separators correctly 3`] = `
   onScrollEndDrag={[Function]}
   renderItem={[Function]}
   scrollEventThrottle={50}
-  sections={
-    Array [
-      Object {
-        "data": Array [
-          Object {
-            "key": "i0",
-          },
-          Object {
-            "key": "i1",
-          },
-          Object {
-            "key": "i2",
-          },
-        ],
-        "title": "s0",
-      },
-    ]
-  }
   stickyHeaderIndices={Array []}
   updateCellsBatchingPeriod={50}
   windowSize={21}
@@ -785,30 +686,6 @@ exports[`VirtualizedSectionList renders all the bells and whistles 1`] = `
   refreshing={false}
   renderItem={[Function]}
   scrollEventThrottle={50}
-  sections={
-    Array [
-      Object {
-        "data": Array [
-          Object {
-            "id": "0",
-          },
-          Object {
-            "id": "1",
-          },
-          Object {
-            "id": "2",
-          },
-          Object {
-            "id": "3",
-          },
-          Object {
-            "id": "4",
-          },
-        ],
-        "title": "s1",
-      },
-    ]
-  }
   stickyHeaderIndices={Array []}
   style={
     Array [
@@ -874,10 +751,10 @@ exports[`VirtualizedSectionList renders all the bells and whistles 1`] = `
       }
     >
       <View>
+        <separator />
         <item
           value="0"
         />
-        <separator />
       </View>
     </View>
     <View
@@ -897,10 +774,10 @@ exports[`VirtualizedSectionList renders all the bells and whistles 1`] = `
       }
     >
       <View>
+        <separator />
         <item
           value="1"
         />
-        <separator />
       </View>
     </View>
     <View
@@ -920,10 +797,10 @@ exports[`VirtualizedSectionList renders all the bells and whistles 1`] = `
       }
     >
       <View>
+        <separator />
         <item
           value="2"
         />
-        <separator />
       </View>
     </View>
     <View
@@ -943,10 +820,10 @@ exports[`VirtualizedSectionList renders all the bells and whistles 1`] = `
       }
     >
       <View>
+        <separator />
         <item
           value="3"
         />
-        <separator />
       </View>
     </View>
     <View
@@ -1022,7 +899,6 @@ exports[`VirtualizedSectionList renders empty list 1`] = `
   onScrollEndDrag={[Function]}
   renderItem={[Function]}
   scrollEventThrottle={50}
-  sections={Array []}
   stickyHeaderIndices={Array []}
   updateCellsBatchingPeriod={50}
   windowSize={21}
@@ -1053,7 +929,6 @@ exports[`VirtualizedSectionList renders empty list with empty component 1`] = `
   onScrollEndDrag={[Function]}
   renderItem={[Function]}
   scrollEventThrottle={50}
-  sections={Array []}
   stickyHeaderIndices={Array []}
   updateCellsBatchingPeriod={50}
   windowSize={21}
@@ -1105,18 +980,6 @@ exports[`VirtualizedSectionList renders list with empty component 1`] = `
   onScrollEndDrag={[Function]}
   renderItem={[Function]}
   scrollEventThrottle={50}
-  sections={
-    Array [
-      Object {
-        "data": Array [
-          Object {
-            "key": "hello",
-          },
-        ],
-        "title": "s1",
-      },
-    ]
-  }
   stickyHeaderIndices={Array []}
   updateCellsBatchingPeriod={50}
   windowSize={21}
@@ -1204,24 +1067,6 @@ exports[`VirtualizedSectionList renders simple list 1`] = `
   onScrollEndDrag={[Function]}
   renderItem={[Function]}
   scrollEventThrottle={50}
-  sections={
-    Array [
-      Object {
-        "data": Array [
-          Object {
-            "key": "i1",
-          },
-          Object {
-            "key": "i2",
-          },
-          Object {
-            "key": "i3",
-          },
-        ],
-        "title": "s1",
-      },
-    ]
-  }
   stickyHeaderIndices={Array []}
   updateCellsBatchingPeriod={50}
   windowSize={21}

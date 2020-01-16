@@ -33,8 +33,10 @@ type Props = {
   list: {
     ComponentExamples: Array<RNTesterExample>,
     APIExamples: Array<RNTesterExample>,
+    ...
   },
   style?: ?ViewStyleProp,
+  ...
 };
 
 class RowComponent extends React.PureComponent<{
@@ -43,6 +45,7 @@ class RowComponent extends React.PureComponent<{
   onPress?: Function,
   onShowUnderlay?: Function,
   onHideUnderlay?: Function,
+  ...
 }> {
   _onPress = () => {
     if (this.props.onPress) {
@@ -147,16 +150,10 @@ class RNTesterExampleList extends React.Component<Props, $FlowFixMeState> {
                     style={{backgroundColor: theme.SystemBackgroundColor}}
                     sections={filteredSections}
                     renderItem={this._renderItem}
-                    enableEmptySections={true}
-                    itemShouldUpdate={this._itemShouldUpdate}
                     keyboardShouldPersistTaps="handled"
                     automaticallyAdjustContentInsets={false}
                     keyboardDismissMode="on-drag"
                     renderSectionHeader={renderSectionHeader}
-                    backgroundColor={Platform.select({
-                      ios: 'transparent',
-                      default: undefined,
-                    })}
                   />
                 )}
               />
@@ -165,10 +162,6 @@ class RNTesterExampleList extends React.Component<Props, $FlowFixMeState> {
         }}
       </RNTesterThemeContext.Consumer>
     );
-  }
-
-  _itemShouldUpdate(curr, prev) {
-    return curr.item !== prev.item;
   }
 
   _renderItem = ({item, separators}) => (

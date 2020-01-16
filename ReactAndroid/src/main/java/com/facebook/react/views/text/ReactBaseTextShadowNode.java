@@ -1,9 +1,10 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
- * directory of this source tree.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
+
 package com.facebook.react.views.text;
 
 import android.annotation.TargetApi;
@@ -17,7 +18,9 @@ import android.view.Gravity;
 import androidx.annotation.Nullable;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
+import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.react.uimanager.IllegalViewOperationException;
 import com.facebook.react.uimanager.LayoutShadowNode;
 import com.facebook.react.uimanager.NativeViewHierarchyOptimizer;
@@ -32,6 +35,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * {@link ReactShadowNode} abstract class for spannable text nodes.
@@ -133,12 +137,23 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
         YogaValue widthValue = child.getStyleWidth();
         YogaValue heightValue = child.getStyleHeight();
 
+        float width;
+        float height;
         if (widthValue.unit != YogaUnit.POINT || heightValue.unit != YogaUnit.POINT) {
-          throw new IllegalViewOperationException(
-              "Views nested within a <Text> must have a width and height");
+          if (ReactFeatureFlags.supportInlineViewsWithDynamicSize) {
+            // If the measurement of the child isn't calculated, we calculate the layout for the
+            // view using Yoga
+            child.calculateLayout();
+            width = child.getLayoutWidth();
+            height = child.getLayoutHeight();
+          } else {
+            throw new IllegalViewOperationException(
+                "Views nested within a <Text> must have a width and height");
+          }
+        } else {
+          width = widthValue.value;
+          height = heightValue.value;
         }
-        float width = widthValue.value;
-        float height = heightValue.value;
 
         // We make the inline view take up 1 character in the span and put a corresponding character
         // into
@@ -194,6 +209,7 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
                 new CustomStyleSpan(
                     textShadowNode.mFontStyle,
                     textShadowNode.mFontWeight,
+                    textShadowNode.mFontFeatureSettings,
                     textShadowNode.mFontFamily,
                     textShadowNode.getThemedContext().getAssets())));
       }
@@ -300,23 +316,6 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
     return sb;
   }
 
-  /**
-   * Return -1 if the input string is not a valid numeric fontWeight (100, 200, ..., 900), otherwise
-   * return the weight.
-   *
-   * <p>This code is duplicated in ReactTextInputManager TODO: Factor into a common place they can
-   * both use
-   */
-  private static int parseNumericFontWeight(String fontWeightString) {
-    // This should be much faster than using regex to verify input and Integer.parseInt
-    return fontWeightString.length() == 3
-            && fontWeightString.endsWith("00")
-            && fontWeightString.charAt(0) <= '9'
-            && fontWeightString.charAt(0) >= '1'
-        ? 100 * (fontWeightString.charAt(0) - '0')
-        : UNSET;
-  }
-
   protected TextAttributes mTextAttributes;
 
   protected boolean mIsColorSet = false;
@@ -373,6 +372,9 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
    * </pre>
    */
   protected @Nullable String mFontFamily = null;
+
+  /** @see android.graphics.Paint#setFontFeatureSettings */
+  protected @Nullable String mFontFeatureSettings = null;
 
   protected boolean mContainsImages = false;
   protected Map<Integer, ReactShadowNode> mInlineViews;
@@ -491,37 +493,28 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
     markUpdated();
   }
 
-  /**
-   * /* This code is duplicated in ReactTextInputManager /* TODO: Factor into a common place they
-   * can both use
-   */
   @ReactProp(name = ViewProps.FONT_WEIGHT)
   public void setFontWeight(@Nullable String fontWeightString) {
-    int fontWeightNumeric =
-        fontWeightString != null ? parseNumericFontWeight(fontWeightString) : UNSET;
-    int fontWeight = fontWeightNumeric != UNSET ? fontWeightNumeric : Typeface.NORMAL;
-
-    if (fontWeight == 700 || "bold".equals(fontWeightString)) fontWeight = Typeface.BOLD;
-    else if (fontWeight == 400 || "normal".equals(fontWeightString)) fontWeight = Typeface.NORMAL;
-
+    int fontWeight = ReactTypefaceUtils.parseFontWeight(fontWeightString);
     if (fontWeight != mFontWeight) {
       mFontWeight = fontWeight;
       markUpdated();
     }
   }
 
-  /**
-   * /* This code is duplicated in ReactTextInputManager /* TODO: Factor into a common place they
-   * can both use
-   */
+  @ReactProp(name = ViewProps.FONT_VARIANT)
+  public void setFontVariant(@Nullable ReadableArray fontVariantArray) {
+    String fontFeatureSettings = ReactTypefaceUtils.parseFontVariant(fontVariantArray);
+
+    if (!Objects.equals(fontFeatureSettings, mFontFeatureSettings)) {
+      mFontFeatureSettings = fontFeatureSettings;
+      markUpdated();
+    }
+  }
+
   @ReactProp(name = ViewProps.FONT_STYLE)
   public void setFontStyle(@Nullable String fontStyleString) {
-    int fontStyle = UNSET;
-    if ("italic".equals(fontStyleString)) {
-      fontStyle = Typeface.ITALIC;
-    } else if ("normal".equals(fontStyleString)) {
-      fontStyle = Typeface.NORMAL;
-    }
+    int fontStyle = ReactTypefaceUtils.parseFontStyle(fontStyleString);
     if (fontStyle != mFontStyle) {
       mFontStyle = fontStyle;
       markUpdated();

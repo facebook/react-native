@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -21,11 +21,9 @@ namespace react {
 class ImageComponentDescriptor final
     : public ConcreteComponentDescriptor<ImageShadowNode> {
  public:
-  ImageComponentDescriptor(
-      EventDispatcher::Weak eventDispatcher,
-      ContextContainer::Shared const &contextContainer)
-      : ConcreteComponentDescriptor(eventDispatcher),
-        imageManager_(std::make_shared<ImageManager>(contextContainer)){};
+  ImageComponentDescriptor(ComponentDescriptorParameters const &parameters)
+      : ConcreteComponentDescriptor(parameters),
+        imageManager_(std::make_shared<ImageManager>(contextContainer_)){};
 
   void adopt(UnsharedShadowNode shadowNode) const override {
     ConcreteComponentDescriptor::adopt(shadowNode);

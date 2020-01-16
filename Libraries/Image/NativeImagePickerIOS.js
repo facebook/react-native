@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @flow
+ * @flow strict-local
  * @format
  */
 
@@ -33,6 +33,8 @@ export interface Spec extends TurboModule {
     successCallback: (imageURL: string, height: number, width: number) => void,
     cancelCallback: () => void,
   ) => void;
+  +clearAllPendingVideos: () => void;
+  +removePendingVideo: (url: string) => void;
 }
 
 export default (TurboModuleRegistry.get<Spec>('ImagePickerIOS'): ?Spec);

@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -11,6 +11,7 @@
 
 #include <react/core/EventEmitter.h>
 #include <react/core/ReactPrimitives.h>
+#include <react/core/ShadowNodeFamilyFragment.h>
 
 namespace facebook {
 namespace react {
@@ -27,9 +28,7 @@ class ShadowNodeFamily {
   using Weak = std::weak_ptr<ShadowNodeFamily const>;
 
   ShadowNodeFamily(
-      Tag tag,
-      SurfaceId surfaceId,
-      SharedEventEmitter const &eventEmitter,
+      ShadowNodeFamilyFragment const &fragment,
       ComponentDescriptor const &componentDescriptor);
 
   /*
@@ -38,6 +37,12 @@ class ShadowNodeFamily {
    * only once (and the model enforces that this first call is not concurrent).
    */
   void setParent(ShadowNodeFamily::Shared const &parent) const;
+
+  /*
+   * Returns a handle (or name) associated with the component.
+   */
+  ComponentHandle getComponentHandle() const;
+  ComponentName getComponentName() const;
 
  private:
   friend ShadowNode;
@@ -62,6 +67,14 @@ class ShadowNodeFamily {
    * type.
    */
   ComponentDescriptor const &componentDescriptor_;
+
+  /*
+   * ComponentHandle and ComponentName must be stored (cached) inside the object
+   * to allow retrieving these values without accessing a `ComponentDescriptor`
+   * object (because it can be already deallocated).
+   */
+  ComponentHandle componentHandle_;
+  ComponentName componentName_;
 
   /*
    * Points to a family of all parent nodes of all nodes of the family.

@@ -1,9 +1,10 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
- * directory of this source tree.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
+
 package com.facebook.react.modules.fresco;
 
 import android.content.Context;
@@ -23,6 +24,7 @@ import com.facebook.react.modules.common.ModuleDataCleaner;
 import com.facebook.react.modules.network.CookieJarContainer;
 import com.facebook.react.modules.network.ForwardingCookieHandler;
 import com.facebook.react.modules.network.OkHttpClientProvider;
+import com.facebook.react.turbomodule.core.interfaces.TurboModule;
 import java.util.HashSet;
 import okhttp3.JavaNetCookieJar;
 import okhttp3.OkHttpClient;
@@ -34,7 +36,7 @@ import okhttp3.OkHttpClient;
  */
 @ReactModule(name = FrescoModule.NAME, needsEagerInit = true)
 public class FrescoModule extends ReactContextBaseJavaModule
-    implements ModuleDataCleaner.Cleanable, LifecycleEventListener {
+    implements ModuleDataCleaner.Cleanable, LifecycleEventListener, TurboModule {
 
   public static final String NAME = "FrescoModule";
   private final boolean mClearOnDestroy;

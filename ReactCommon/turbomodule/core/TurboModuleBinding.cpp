@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -44,13 +44,7 @@ void TurboModuleBinding::install(
 }
 
 void TurboModuleBinding::invalidate() const {
-  // TODO (T45804587): Revisit this invalidation logic.
-  // The issue was that Promise resolve/reject functions that are invoked in
-  // some distance future might end up accessing PromiseWrapper that was already
-  // destroyed, if the binding invalidation removed it from the
-  // LongLivedObjectCollection.
-
-  // LongLivedObjectCollection::get().clear();
+  LongLivedObjectCollection::get().clear();
 }
 
 std::shared_ptr<TurboModule> TurboModuleBinding::getModule(

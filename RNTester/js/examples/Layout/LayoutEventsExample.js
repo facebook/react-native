@@ -33,6 +33,7 @@ type State = {
   textLayout?: ViewLayout,
   viewLayout?: ViewLayout,
   viewStyle: {|margin: number|},
+  ...
 };
 
 class LayoutEventExample extends React.Component<Props, State> {

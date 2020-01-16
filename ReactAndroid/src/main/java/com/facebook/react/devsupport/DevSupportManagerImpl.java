@@ -1,9 +1,10 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
- * directory of this source tree.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
+
 package com.facebook.react.devsupport;
 
 import android.app.Activity;
@@ -18,6 +19,7 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.hardware.SensorManager;
 import android.util.Pair;
+import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 import androidx.annotation.Nullable;
@@ -46,6 +48,7 @@ import com.facebook.react.devsupport.interfaces.DevSupportManager;
 import com.facebook.react.devsupport.interfaces.ErrorCustomizer;
 import com.facebook.react.devsupport.interfaces.PackagerStatusCallback;
 import com.facebook.react.devsupport.interfaces.StackFrame;
+import com.facebook.react.modules.core.RCTNativeAppEventEmitter;
 import com.facebook.react.modules.debug.interfaces.DeveloperSettings;
 import com.facebook.react.packagerconnection.RequestHandler;
 import com.facebook.react.packagerconnection.Responder;
@@ -137,6 +140,7 @@ public class DevSupportManagerImpl
   private @Nullable ErrorType mLastErrorType;
   private @Nullable DevBundleDownloadListener mBundleDownloadListener;
   private @Nullable List<ErrorCustomizer> mErrorCustomizers;
+  private @Nullable PackagerLocationCustomizer mPackagerLocationCustomizer;
 
   private InspectorPackagerConnection.BundleStatus mBundleStatus;
 
@@ -373,6 +377,14 @@ public class DevSupportManagerImpl
       mRedBoxDialog.dismiss();
       mRedBoxDialog = null;
     }
+  }
+
+  public @Nullable View createRootView(String appKey) {
+    return mReactInstanceManagerHelper.createRootView(appKey);
+  }
+
+  public void destroyRootView(View rootView) {
+    mReactInstanceManagerHelper.destroyRootView(rootView);
   }
 
   private void hideDevOptionsDialog() {
@@ -620,6 +632,9 @@ public class DevSupportManagerImpl
                 })
             .create();
     mDevOptionsDialog.show();
+    if (mCurrentContext != null) {
+      mCurrentContext.getJSModule(RCTNativeAppEventEmitter.class).emit("RCTDevMenuShown", null);
+    }
   }
 
   /** Starts of stops the sampling profiler */
@@ -863,8 +878,19 @@ public class DevSupportManagerImpl
   }
 
   @Override
-  public void isPackagerRunning(PackagerStatusCallback callback) {
-    mDevServerHelper.isPackagerRunning(callback);
+  public void isPackagerRunning(final PackagerStatusCallback callback) {
+    Runnable checkPackagerRunning =
+        new Runnable() {
+          @Override
+          public void run() {
+            mDevServerHelper.isPackagerRunning(callback);
+          }
+        };
+    if (mPackagerLocationCustomizer != null) {
+      mPackagerLocationCustomizer.run(checkPackagerRunning);
+    } else {
+      checkPackagerRunning.run();
+    }
   }
 
   @Override
@@ -1225,5 +1251,10 @@ public class DevSupportManagerImpl
   /** Intent action for reloading the JS */
   private static String getReloadAppAction(Context context) {
     return context.getPackageName() + RELOAD_APP_ACTION_SUFFIX;
+  }
+
+  @Override
+  public void setPackagerLocationCustomizer(PackagerLocationCustomizer packagerLocationCustomizer) {
+    mPackagerLocationCustomizer = packagerLocationCustomizer;
   }
 }

@@ -97,6 +97,7 @@ const addPoolingTo = function<T>(
     ...args: $ReadOnlyArray<mixed>
   ): /* arguments of the constructor */ T,
   release(instance: mixed): void,
+  ...
 } {
   // Casting as any so that flow ignores the actual implementation and trusts
   // it to match the type we declared

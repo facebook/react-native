@@ -13,7 +13,7 @@
 import type {TurboModule} from '../../TurboModule/RCTExport';
 import * as TurboModuleRegistry from '../../TurboModule/TurboModuleRegistry';
 
-type EndResult = {finished: boolean};
+type EndResult = {finished: boolean, ...};
 type EndCallback = (result: EndResult) => void;
 
 export type EventMapping = {|
@@ -21,45 +21,41 @@ export type EventMapping = {|
   animatedValueTag: ?number,
 |};
 
-export type AnimatedNodeConfig = {|
-  // TODO: Type this with better enums.
-  type: string,
-|};
-
-export type AnimatingNodeConfig = {|
-  // TODO: Type this with better enums.
-  type: string,
-|};
+// The config has different keys depending on the type of the Node
+// TODO(T54896888): Make these types strict
+export type AnimatedNodeConfig = Object;
+export type AnimatingNodeConfig = Object;
 
 export interface Spec extends TurboModule {
-  +createAnimatedNode: (tag: ?number, config: AnimatedNodeConfig) => void;
-  +startListeningToAnimatedNodeValue: (tag: ?number) => void;
-  +stopListeningToAnimatedNodeValue: (tag: ?number) => void;
-  +connectAnimatedNodes: (parentTag: ?number, childTag: ?number) => void;
-  +disconnectAnimatedNodes: (parentTag: ?number, childTag: ?number) => void;
+  +createAnimatedNode: (tag: number, config: AnimatedNodeConfig) => void;
+  +startListeningToAnimatedNodeValue: (tag: number) => void;
+  +stopListeningToAnimatedNodeValue: (tag: number) => void;
+  +connectAnimatedNodes: (parentTag: number, childTag: number) => void;
+  +disconnectAnimatedNodes: (parentTag: number, childTag: number) => void;
   +startAnimatingNode: (
-    animationId: ?number,
-    nodeTag: ?number,
+    animationId: number,
+    nodeTag: number,
     config: AnimatingNodeConfig,
     endCallback: EndCallback,
   ) => void;
-  +stopAnimation: (animationId: ?number) => void;
-  +setAnimatedNodeValue: (nodeTag: ?number, value: ?number) => void;
-  +setAnimatedNodeOffset: (nodeTag: ?number, offset: ?number) => void;
-  +flattenAnimatedNodeOffset: (nodeTag: ?number) => void;
-  +extractAnimatedNodeOffset: (nodeTag: ?number) => void;
-  +connectAnimatedNodeToView: (nodeTag: ?number, viewTag: ?number) => void;
-  +disconnectAnimatedNodeFromView: (nodeTag: ?number, viewTag: ?number) => void;
-  +dropAnimatedNode: (tag: ?number) => void;
+  +stopAnimation: (animationId: number) => void;
+  +setAnimatedNodeValue: (nodeTag: number, value: number) => void;
+  +setAnimatedNodeOffset: (nodeTag: number, offset: number) => void;
+  +flattenAnimatedNodeOffset: (nodeTag: number) => void;
+  +extractAnimatedNodeOffset: (nodeTag: number) => void;
+  +connectAnimatedNodeToView: (nodeTag: number, viewTag: number) => void;
+  +disconnectAnimatedNodeFromView: (nodeTag: number, viewTag: number) => void;
+  +restoreDefaultValues: (nodeTag: number) => void;
+  +dropAnimatedNode: (tag: number) => void;
   +addAnimatedEventToView: (
-    viewTag: ?number,
+    viewTag: number,
     eventName: string,
     eventMapping: EventMapping,
   ) => void;
   +removeAnimatedEventFromView: (
-    viewTag: ?number,
+    viewTag: number,
     eventName: string,
-    animatedNodeTag: ?number,
+    animatedNodeTag: number,
   ) => void;
 
   // Events

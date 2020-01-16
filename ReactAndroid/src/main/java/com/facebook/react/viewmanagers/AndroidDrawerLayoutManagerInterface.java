@@ -16,7 +16,7 @@ public interface AndroidDrawerLayoutManagerInterface<T extends View> {
   void setKeyboardDismissMode(T view, @Nullable String value);
   void setDrawerBackgroundColor(T view, @Nullable Integer value);
   void setDrawerPosition(T view, @Nullable String value);
-  void setDrawerWidth(T view, float value);
+  void setDrawerWidth(T view, @Nullable Float value);
   void setDrawerLockMode(T view, @Nullable String value);
   void setStatusBarBackgroundColor(T view, @Nullable Integer value);
   void openDrawer(T view);

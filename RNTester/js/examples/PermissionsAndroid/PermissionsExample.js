@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @flow
+ * @flow strict-local
  */
 
 'use strict';
@@ -23,7 +23,7 @@ const {
 
 const Item = Picker.Item;
 
-class PermissionsExample extends React.Component<{}, $FlowFixMeState> {
+class PermissionsExample extends React.Component<{...}, $FlowFixMeState> {
   state = {
     permission: PermissionsAndroid.PERMISSIONS.CAMERA,
     hasPermission: 'Not Checked',

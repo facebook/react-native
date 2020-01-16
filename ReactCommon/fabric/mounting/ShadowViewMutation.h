@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -80,7 +80,7 @@ using ShadowViewMutationList = std::vector<ShadowViewMutation>;
 std::string getDebugName(ShadowViewMutation const &object);
 std::vector<DebugStringConvertibleObject> getDebugProps(
     ShadowViewMutation const &object,
-    DebugStringConvertibleOptions options = {});
+    DebugStringConvertibleOptions options);
 
 #endif
 

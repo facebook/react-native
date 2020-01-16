@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -76,7 +76,7 @@ T convertRawProp(
     RawProps const &rawProps,
     char const *name,
     T const &sourceValue,
-    U const &defaultValue = U(),
+    U const &defaultValue,
     char const *namePrefix = nullptr,
     char const *nameSuffix = nullptr) {
   const auto *rawValue = rawProps.at(name, namePrefix, nameSuffix);
@@ -101,7 +101,7 @@ static better::optional<T> convertRawProp(
     RawProps const &rawProps,
     char const *name,
     better::optional<T> const &sourceValue,
-    better::optional<T> const &defaultValue = {},
+    better::optional<T> const &defaultValue,
     char const *namePrefix = nullptr,
     char const *nameSuffix = nullptr) {
   const auto *rawValue = rawProps.at(name, namePrefix, nameSuffix);

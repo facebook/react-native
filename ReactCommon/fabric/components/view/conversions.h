@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -399,10 +399,17 @@ inline Float toRadians(const RawValue &value) {
 inline void fromRawValue(const RawValue &value, Transform &result) {
   assert(value.hasType<std::vector<RawValue>>());
   auto transformMatrix = Transform{};
-  auto configurations = (std::vector<RawValue>)value;
+  auto configurations = static_cast<std::vector<RawValue>>(value);
 
   for (const auto &configuration : configurations) {
-    auto configurationPair = (better::map<std::string, RawValue>)configuration;
+    if (!configuration.hasType<better::map<std::string, RawValue>>()) {
+      // TODO: The following checks have to be removed after codegen is shipped.
+      // See T45151459.
+      continue;
+    }
+
+    auto configurationPair =
+        static_cast<better::map<std::string, RawValue>>(configuration);
     auto pair = configurationPair.begin();
     auto operation = pair->first;
     auto &parameters = pair->second;
@@ -433,13 +440,13 @@ inline void fromRawValue(const RawValue &value, Transform &result) {
           transformMatrix * Transform::Scale(number, number, number);
     } else if (operation == "scaleX") {
       transformMatrix =
-          transformMatrix * Transform::Scale((Float)parameters, 0, 0);
+          transformMatrix * Transform::Scale((Float)parameters, 1, 1);
     } else if (operation == "scaleY") {
       transformMatrix =
-          transformMatrix * Transform::Scale(0, (Float)parameters, 0);
+          transformMatrix * Transform::Scale(1, (Float)parameters, 1);
     } else if (operation == "scaleZ") {
       transformMatrix =
-          transformMatrix * Transform::Scale(0, 0, (Float)parameters);
+          transformMatrix * Transform::Scale(1, 1, (Float)parameters);
     } else if (operation == "translate") {
       auto numbers = (std::vector<Float>)parameters;
       transformMatrix = transformMatrix *

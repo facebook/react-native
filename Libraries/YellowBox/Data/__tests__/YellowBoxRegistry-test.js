@@ -11,6 +11,7 @@
 
 'use strict';
 
+const YellowBoxWarning = require('../YellowBoxWarning');
 const YellowBoxCategory = require('../YellowBoxCategory');
 const YellowBoxRegistry = require('../YellowBoxRegistry');
 
@@ -34,7 +35,7 @@ describe('YellowBoxRegistry', () => {
   });
 
   it('adds and deletes warnings', () => {
-    YellowBoxRegistry.add({args: ['A'], framesToPop: 0});
+    YellowBoxRegistry.add(YellowBoxWarning.parse({args: ['A']}));
     const {category: categoryA} = YellowBoxCategory.parse(['A']);
 
     expect(registry().size).toBe(1);
@@ -46,9 +47,9 @@ describe('YellowBoxRegistry', () => {
   });
 
   it('clears all warnings', () => {
-    YellowBoxRegistry.add({args: ['A'], framesToPop: 0});
-    YellowBoxRegistry.add({args: ['B'], framesToPop: 0});
-    YellowBoxRegistry.add({args: ['C'], framesToPop: 0});
+    YellowBoxRegistry.add(YellowBoxWarning.parse({args: ['A']}));
+    YellowBoxRegistry.add(YellowBoxWarning.parse({args: ['B']}));
+    YellowBoxRegistry.add(YellowBoxWarning.parse({args: ['C']}));
 
     expect(registry().size).toBe(3);
 
@@ -57,9 +58,9 @@ describe('YellowBoxRegistry', () => {
   });
 
   it('sorts warnings in chronological order', () => {
-    YellowBoxRegistry.add({args: ['A'], framesToPop: 0});
-    YellowBoxRegistry.add({args: ['B'], framesToPop: 0});
-    YellowBoxRegistry.add({args: ['C'], framesToPop: 0});
+    YellowBoxRegistry.add(YellowBoxWarning.parse({args: ['A']}));
+    YellowBoxRegistry.add(YellowBoxWarning.parse({args: ['B']}));
+    YellowBoxRegistry.add(YellowBoxWarning.parse({args: ['C']}));
 
     const {category: categoryA} = YellowBoxCategory.parse(['A']);
     const {category: categoryB} = YellowBoxCategory.parse(['B']);
@@ -71,7 +72,7 @@ describe('YellowBoxRegistry', () => {
       categoryC,
     ]);
 
-    YellowBoxRegistry.add({args: ['A'], framesToPop: 0});
+    YellowBoxRegistry.add(YellowBoxWarning.parse({args: ['A']}));
 
     // Expect `A` to be hoisted to the end of the registry.
     expect(Array.from(registry().keys())).toEqual([
@@ -82,9 +83,9 @@ describe('YellowBoxRegistry', () => {
   });
 
   it('ignores warnings matching patterns', () => {
-    YellowBoxRegistry.add({args: ['A!'], framesToPop: 0});
-    YellowBoxRegistry.add({args: ['B?'], framesToPop: 0});
-    YellowBoxRegistry.add({args: ['C!'], framesToPop: 0});
+    YellowBoxRegistry.add(YellowBoxWarning.parse({args: ['A!']}));
+    YellowBoxRegistry.add(YellowBoxWarning.parse({args: ['B?']}));
+    YellowBoxRegistry.add(YellowBoxWarning.parse({args: ['C!']}));
     expect(registry().size).toBe(3);
 
     YellowBoxRegistry.addIgnorePatterns(['!']);
@@ -95,9 +96,9 @@ describe('YellowBoxRegistry', () => {
   });
 
   it('ignores warnings matching regexs or pattern', () => {
-    YellowBoxRegistry.add({args: ['There are 4 dogs'], framesToPop: 0});
-    YellowBoxRegistry.add({args: ['There are 3 cats'], framesToPop: 0});
-    YellowBoxRegistry.add({args: ['There are H cats'], framesToPop: 0});
+    YellowBoxRegistry.add(YellowBoxWarning.parse({args: ['There are 4 dogs']}));
+    YellowBoxRegistry.add(YellowBoxWarning.parse({args: ['There are 3 cats']}));
+    YellowBoxRegistry.add(YellowBoxWarning.parse({args: ['There are H cats']}));
     expect(registry().size).toBe(3);
 
     YellowBoxRegistry.addIgnorePatterns(['dogs']);
@@ -111,9 +112,9 @@ describe('YellowBoxRegistry', () => {
   });
 
   it('ignores all warnings when disabled', () => {
-    YellowBoxRegistry.add({args: ['A!'], framesToPop: 0});
-    YellowBoxRegistry.add({args: ['B?'], framesToPop: 0});
-    YellowBoxRegistry.add({args: ['C!'], framesToPop: 0});
+    YellowBoxRegistry.add(YellowBoxWarning.parse({args: ['A!']}));
+    YellowBoxRegistry.add(YellowBoxWarning.parse({args: ['B?']}));
+    YellowBoxRegistry.add(YellowBoxWarning.parse({args: ['C!']}));
     expect(registry().size).toBe(3);
 
     YellowBoxRegistry.setDisabled(true);
@@ -124,57 +125,54 @@ describe('YellowBoxRegistry', () => {
   });
 
   it('groups warnings by simple categories', () => {
-    YellowBoxRegistry.add({args: ['A'], framesToPop: 0});
+    YellowBoxRegistry.add(YellowBoxWarning.parse({args: ['A']}));
     expect(registry().size).toBe(1);
 
-    YellowBoxRegistry.add({args: ['A'], framesToPop: 0});
+    YellowBoxRegistry.add(YellowBoxWarning.parse({args: ['A']}));
     expect(registry().size).toBe(1);
 
-    YellowBoxRegistry.add({args: ['B'], framesToPop: 0});
+    YellowBoxRegistry.add(YellowBoxWarning.parse({args: ['B']}));
     expect(registry().size).toBe(2);
   });
 
   it('groups warnings by format string categories', () => {
-    YellowBoxRegistry.add({args: ['%s', 'A'], framesToPop: 0});
+    YellowBoxRegistry.add(YellowBoxWarning.parse({args: ['%s', 'A']}));
     expect(registry().size).toBe(1);
 
-    YellowBoxRegistry.add({args: ['%s', 'B'], framesToPop: 0});
+    YellowBoxRegistry.add(YellowBoxWarning.parse({args: ['%s', 'B']}));
     expect(registry().size).toBe(1);
 
-    YellowBoxRegistry.add({args: ['A'], framesToPop: 0});
+    YellowBoxRegistry.add(YellowBoxWarning.parse({args: ['A']}));
     expect(registry().size).toBe(2);
 
-    YellowBoxRegistry.add({args: ['B'], framesToPop: 0});
+    YellowBoxRegistry.add(YellowBoxWarning.parse({args: ['B']}));
     expect(registry().size).toBe(3);
   });
 
   it('groups warnings with consideration for arguments', () => {
-    YellowBoxRegistry.add({args: ['A', 'B'], framesToPop: 0});
+    YellowBoxRegistry.add(YellowBoxWarning.parse({args: ['A', 'B']}));
     expect(registry().size).toBe(1);
 
-    YellowBoxRegistry.add({args: ['A', 'B'], framesToPop: 0});
+    YellowBoxRegistry.add(YellowBoxWarning.parse({args: ['A', 'B']}));
     expect(registry().size).toBe(1);
 
-    YellowBoxRegistry.add({args: ['A', 'C'], framesToPop: 0});
+    YellowBoxRegistry.add(YellowBoxWarning.parse({args: ['A', 'C']}));
     expect(registry().size).toBe(2);
 
-    YellowBoxRegistry.add({args: ['%s', 'A', 'A'], framesToPop: 0});
+    YellowBoxRegistry.add(YellowBoxWarning.parse({args: ['%s', 'A', 'A']}));
     expect(registry().size).toBe(3);
 
-    YellowBoxRegistry.add({args: ['%s', 'B', 'A'], framesToPop: 0});
+    YellowBoxRegistry.add(YellowBoxWarning.parse({args: ['%s', 'B', 'A']}));
     expect(registry().size).toBe(3);
 
-    YellowBoxRegistry.add({args: ['%s', 'B', 'B'], framesToPop: 0});
+    YellowBoxRegistry.add(YellowBoxWarning.parse({args: ['%s', 'B', 'B']}));
     expect(registry().size).toBe(4);
   });
 
-  it('ignores warnings starting with "(ADVICE)"', () => {
-    YellowBoxRegistry.add({args: ['(ADVICE) ...'], framesToPop: 0});
-    expect(registry().size).toBe(0);
-  });
-
   it('does not ignore warnings formatted to start with "(ADVICE)"', () => {
-    YellowBoxRegistry.add({args: ['%s ...', '(ADVICE)'], framesToPop: 0});
+    YellowBoxRegistry.add(
+      YellowBoxWarning.parse({args: ['%s ...', '(ADVICE)']}),
+    );
     expect(registry().size).toBe(1);
   });
 
@@ -189,8 +187,8 @@ describe('YellowBoxRegistry', () => {
     const {observer} = observe();
     expect(observer.mock.calls.length).toBe(1);
 
-    YellowBoxRegistry.add({args: ['A'], framesToPop: 0});
-    YellowBoxRegistry.add({args: ['B'], framesToPop: 0});
+    YellowBoxRegistry.add(YellowBoxWarning.parse({args: ['A']}));
+    YellowBoxRegistry.add(YellowBoxWarning.parse({args: ['B']}));
     jest.runAllImmediates();
     expect(observer.mock.calls.length).toBe(2);
   });
@@ -207,7 +205,7 @@ describe('YellowBoxRegistry', () => {
     const {observer} = observe();
     expect(observer.mock.calls.length).toBe(1);
 
-    YellowBoxRegistry.add({args: ['A'], framesToPop: 0});
+    YellowBoxRegistry.add(YellowBoxWarning.parse({args: ['A']}));
     jest.runAllImmediates();
     expect(observer.mock.calls.length).toBe(2);
 
@@ -226,7 +224,7 @@ describe('YellowBoxRegistry', () => {
     const {observer} = observe();
     expect(observer.mock.calls.length).toBe(1);
 
-    YellowBoxRegistry.add({args: ['A'], framesToPop: 0});
+    YellowBoxRegistry.add(YellowBoxWarning.parse({args: ['A']}));
     jest.runAllImmediates();
     expect(observer.mock.calls.length).toBe(2);
 

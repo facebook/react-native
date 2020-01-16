@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @flow
+ * @flow strict-local
  * @format
  */
 
@@ -18,11 +18,13 @@ import type {
   Float,
   Int32,
   WithDefault,
-} from 'react-native/Libraries/Types/CodegenTypes';
-import type {NativeComponent} from '../../Renderer/shims/ReactNative';
+} from '../../Types/CodegenTypes';
+import type {HostComponent} from '../../Renderer/shims/ReactNativeTypes';
 import type {TextStyleProp, ViewStyleProp} from '../../StyleSheet/StyleSheet';
 import type {ColorValue} from '../../StyleSheet/StyleSheetTypes';
-import {requireNativeComponent} from 'react-native';
+import requireNativeComponent from '../../ReactNative/requireNativeComponent';
+import codegenNativeCommands from '../../Utilities/codegenNativeCommands';
+import * as React from 'react';
 
 export type KeyboardType =
   // Cross Platform
@@ -324,8 +326,7 @@ export type NativeProps = $ReadOnly<{|
   onContentSizeChange?: ?DirectEventHandler<
     $ReadOnly<{|
       target: Int32,
-      //      contentSize: $ReadOnly<{|width: Double, height: Double|}>,
-      contentSize: {|width: Double, height: Double|},
+      contentSize: $ReadOnly<{|width: Double, height: Double|}>,
     |}>,
   >,
 
@@ -334,8 +335,7 @@ export type NativeProps = $ReadOnly<{|
       target: Int32,
       text: string,
       previousText: string,
-      //      range: $ReadOnly<{|start: Double, end: Double|}>,
-      range: {|start: Double, end: Double|},
+      range: $ReadOnly<{|start: Double, end: Double|}>,
     |}>,
   >,
 
@@ -354,8 +354,7 @@ export type NativeProps = $ReadOnly<{|
   onSelectionChange?: ?DirectEventHandler<
     $ReadOnly<{|
       target: Int32,
-      //selection: $ReadOnly<{|start: Double, end: Double|}>,
-      selection: {|start: Double, end: Double|},
+      selection: $ReadOnly<{|start: Double, end: Double|}>,
     |}>,
   >,
 
@@ -385,33 +384,28 @@ export type NativeProps = $ReadOnly<{|
     $ReadOnly<{|
       target: Int32,
       responderIgnoreScroll: boolean,
-      contentInset: {|
-        //$ReadOnly<{|
+      contentInset: $ReadOnly<{|
         top: Double, // always 0 on Android
         bottom: Double, // always 0 on Android
         left: Double, // always 0 on Android
         right: Double, // always 0 on Android
-      |},
-      contentOffset: {|
-        //$ReadOnly<{|
+      |}>,
+      contentOffset: $ReadOnly<{|
         x: Double,
         y: Double,
-      |},
-      contentSize: {|
-        // $ReadOnly<{|
+      |}>,
+      contentSize: $ReadOnly<{|
         width: Double, // always 0 on Android
         height: Double, // always 0 on Android
-      |},
-      layoutMeasurement: {|
-        // $ReadOnly<{|
+      |}>,
+      layoutMeasurement: $ReadOnly<{|
         width: Double,
         height: Double,
-      |},
-      velocity: {|
-        // $ReadOnly<{|
+      |}>,
+      velocity: $ReadOnly<{|
         x: Double, // always 0 on Android
         y: Double, // always 0 on Android
-      |},
+      |}>,
     |}>,
   >,
 
@@ -542,8 +536,35 @@ export type NativeProps = $ReadOnly<{|
   text?: ?string,
 |}>;
 
-type AndroidTextInputComponentType = Class<NativeComponent<NativeProps>>;
+type NativeType = HostComponent<NativeProps>;
 
-export default ((requireNativeComponent(
+interface NativeCommands {
+  +focus: (viewRef: React.ElementRef<NativeType>) => void;
+  +blur: (viewRef: React.ElementRef<NativeType>) => void;
+  +setMostRecentEventCount: (
+    viewRef: React.ElementRef<NativeType>,
+    eventCount: Int32,
+  ) => void;
+  +setTextAndSelection: (
+    viewRef: React.ElementRef<NativeType>,
+    mostRecentEventCount: Int32,
+    value: ?string, // in theory this is nullable
+    start: Int32,
+    end: Int32,
+  ) => void;
+}
+
+export const Commands: NativeCommands = codegenNativeCommands<NativeCommands>({
+  supportedCommands: [
+    'focus',
+    'blur',
+    'setMostRecentEventCount',
+    'setTextAndSelection',
+  ],
+});
+
+const AndroidTextInputNativeComponent: HostComponent<NativeProps> = requireNativeComponent<NativeProps>(
   'AndroidTextInput',
-): any): AndroidTextInputComponentType);
+);
+
+export default AndroidTextInputNativeComponent;

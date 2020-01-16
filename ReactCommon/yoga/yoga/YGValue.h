@@ -1,9 +1,10 @@
 /*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the MIT license found in the LICENSE
- * file in the root directory of this source tree.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
+
 #pragma once
 
 #include <math.h>
@@ -25,9 +26,9 @@ typedef struct YGValue {
   YGUnit unit;
 } YGValue;
 
-extern const YGValue YGValueAuto;
-extern const YGValue YGValueUndefined;
-extern const YGValue YGValueZero;
+YOGA_EXPORT extern const YGValue YGValueAuto;
+YOGA_EXPORT extern const YGValue YGValueUndefined;
+YOGA_EXPORT extern const YGValue YGValueZero;
 
 YG_EXTERN_C_END
 

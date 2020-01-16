@@ -1,9 +1,10 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
- * directory of this source tree.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
+
 package com.facebook.react.devsupport;
 
 import android.app.Dialog;
@@ -185,6 +186,8 @@ import org.json.JSONObject;
         FrameViewHolder holder = (FrameViewHolder) convertView.getTag();
         holder.mMethodView.setText(frame.getMethod());
         holder.mFileView.setText(StackTraceHelper.formatFrameSource(frame));
+        holder.mMethodView.setTextColor(frame.isCollapsed() ? 0xFFAAAAAA : Color.WHITE);
+        holder.mFileView.setTextColor(frame.isCollapsed() ? 0xFF808080 : 0xFFB3B3B3);
         return convertView;
       }
     }

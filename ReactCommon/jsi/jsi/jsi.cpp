@@ -1,9 +1,10 @@
 /*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the MIT license found in the LICENSE
- * file in the root directory of this source tree.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
+
 #include <cassert>
 #include <cmath>
 #include <cstdlib>
@@ -34,6 +35,27 @@ std::string kindToString(const Value& v, Runtime* rt = nullptr) {
     return rt != nullptr && v.getObject(*rt).isFunction(*rt) ? "a function"
                                                              : "an object";
   }
+}
+
+// getPropertyAsFunction() will try to create a JSError.  If the
+// failure is in building a JSError, this will lead to infinite
+// recursion.  This function is used in place of getPropertyAsFunction
+// when building JSError, to avoid that infinite recursion.
+Value callGlobalFunction(Runtime& runtime, const char* name, const Value& arg) {
+  Value v = runtime.global().getProperty(runtime, name);
+  if (!v.isObject()) {
+    throw JSINativeException(
+        std::string("callGlobalFunction: JS global property '") + name +
+        "' is " + kindToString(v, &runtime) + ", expected a Function");
+  }
+  Object o = v.getObject(runtime);
+  if (!o.isFunction(runtime)) {
+    throw JSINativeException(
+        std::string("callGlobalFunction: JS global property '") + name +
+        "' is a non-callable Object, expected a Function");
+  }
+  Function f = std::move(o).getFunction(runtime);
+  return f.call(runtime, arg);
 }
 
 } // namespace
@@ -71,17 +93,17 @@ Instrumentation& Runtime::instrumentation() {
       return "";
     }
 
-    Value getHeapInfo(bool) override {
-      return Value::undefined();
+    std::unordered_map<std::string, int64_t> getHeapInfo(bool) override {
+      return std::unordered_map<std::string, int64_t>{};
     }
 
     void collectGarbage() override {}
 
-    bool createSnapshotToFile(const std::string&, bool) override {
+    bool createSnapshotToFile(const std::string&) override {
       return false;
     }
 
-    bool createSnapshotToStream(std::ostream&, bool) override {
+    bool createSnapshotToStream(std::ostream&) override {
       return false;
     }
 
@@ -100,6 +122,13 @@ Instrumentation& Runtime::instrumentation() {
 
   static NoInstrumentation sharedInstance;
   return sharedInstance;
+}
+
+Value Runtime::createValueFromJsonUtf8(const uint8_t* json, size_t length) {
+  Function parseJson = global()
+                           .getPropertyAsObject(*this, "JSON")
+                           .getPropertyAsFunction(*this, "parse");
+  return parseJson.call(*this, String::createFromUtf8(*this, json, length));
 }
 
 Pointer& Pointer::operator=(Pointer&& other) {
@@ -134,9 +163,7 @@ Function Object::getPropertyAsFunction(Runtime& runtime, const char* name)
             kindToString(std::move(obj), &runtime) + ", expected a Function");
   };
 
-  Runtime::PointerValue* value = obj.ptr_;
-  obj.ptr_ = nullptr;
-  return Function(value);
+  return std::move(obj).getFunction(runtime);
 }
 
 Array Object::asArray(Runtime& runtime) const& {
@@ -212,16 +239,6 @@ Value::~Value() {
   if (kind_ >= PointerKind) {
     data_.pointer.~Pointer();
   }
-}
-
-Value Value::createFromJsonUtf8(
-    Runtime& runtime,
-    const uint8_t* json,
-    size_t length) {
-  Function parseJson = runtime.global()
-                           .getPropertyAsObject(runtime, "JSON")
-                           .getPropertyAsFunction(runtime, "parse");
-  return parseJson.call(runtime, String::createFromUtf8(runtime, json, length));
 }
 
 bool Value::strictEquals(Runtime& runtime, const Value& a, const Value& b) {
@@ -349,7 +366,11 @@ JSError::JSError(Runtime& rt, Value&& value) {
 JSError::JSError(Runtime& rt, std::string msg) : message_(std::move(msg)) {
   try {
     setValue(
-        rt, rt.global().getPropertyAsFunction(rt, "Error").call(rt, message_));
+        rt,
+        callGlobalFunction(rt, "Error", String::createFromUtf8(rt, message_)));
+  } catch (const std::exception& ex) {
+    message_ = std::string(ex.what()) + " (while raising " + message_ + ")";
+    setValue(rt, String::createFromUtf8(rt, message_));
   } catch (...) {
     setValue(rt, Value());
   }
@@ -362,6 +383,8 @@ JSError::JSError(Runtime& rt, std::string msg, std::string stack)
     e.setProperty(rt, "message", String::createFromUtf8(rt, message_));
     e.setProperty(rt, "stack", String::createFromUtf8(rt, stack_));
     setValue(rt, std::move(e));
+  } catch (const std::exception& ex) {
+    setValue(rt, String::createFromUtf8(rt, ex.what()));
   } catch (...) {
     setValue(rt, Value());
   }
@@ -382,20 +405,23 @@ void JSError::setValue(Runtime& rt, Value&& value) {
       if (message_.empty()) {
         jsi::Value message = obj.getProperty(rt, "message");
         if (!message.isUndefined()) {
-          message_ = message.toString(rt).utf8(rt);
+          message_ =
+              callGlobalFunction(rt, "String", message).getString(rt).utf8(rt);
         }
       }
 
       if (stack_.empty()) {
         jsi::Value stack = obj.getProperty(rt, "stack");
         if (!stack.isUndefined()) {
-          stack_ = stack.toString(rt).utf8(rt);
+          stack_ =
+              callGlobalFunction(rt, "String", stack).getString(rt).utf8(rt);
         }
       }
     }
 
     if (message_.empty()) {
-      message_ = value_->toString(rt).utf8(rt);
+      message_ =
+          callGlobalFunction(rt, "String", *value_).getString(rt).utf8(rt);
     }
 
     if (stack_.empty()) {
@@ -405,6 +431,13 @@ void JSError::setValue(Runtime& rt, Value&& value) {
     if (what_.empty()) {
       what_ = message_ + "\n\n" + stack_;
     }
+  } catch (const std::exception& ex) {
+    message_ = std::string("[Exception while creating message string: ") +
+        ex.what() + "]";
+    stack_ = std::string("Exception while creating stack string: ") +
+        ex.what() + "]";
+    what_ =
+        std::string("Exception while getting value fields: ") + ex.what() + "]";
   } catch (...) {
     message_ = "[Exception caught creating message string]";
     stack_ = "[Exception caught creating stack string]";

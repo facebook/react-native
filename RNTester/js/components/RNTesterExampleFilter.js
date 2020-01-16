@@ -21,11 +21,10 @@ type Props = {
   sections: Object,
   disableSearch?: boolean,
   testID?: string,
+  ...
 };
 
-type State = {
-  filter: string,
-};
+type State = {filter: string, ...};
 
 class RNTesterExampleFilter extends React.Component<Props, State> {
   state: State = {filter: ''};

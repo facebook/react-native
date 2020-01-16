@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -7,9 +7,8 @@
 
 #import <UIKit/UIKit.h>
 
-#import "RCTBackedTextInputViewProtocol.h"
-
-#import "RCTBackedTextInputDelegate.h"
+#import <React/RCTBackedTextInputViewProtocol.h>
+#import <React/RCTBackedTextInputDelegate.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

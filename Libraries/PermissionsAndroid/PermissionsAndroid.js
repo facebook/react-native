@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @flow
+ * @flow strict-local
  */
 
 'use strict';
@@ -26,6 +26,7 @@ export type Rationale = {
   buttonPositive?: string,
   buttonNegative?: string,
   buttonNeutral?: string,
+  ...
 };
 
 const PERMISSION_REQUEST_RESULT = Object.freeze({
@@ -43,6 +44,7 @@ const PERMISSIONS = Object.freeze({
   GET_ACCOUNTS: 'android.permission.GET_ACCOUNTS',
   ACCESS_FINE_LOCATION: 'android.permission.ACCESS_FINE_LOCATION',
   ACCESS_COARSE_LOCATION: 'android.permission.ACCESS_COARSE_LOCATION',
+  ACCESS_BACKGROUND_LOCATION: 'android.permission.ACCESS_BACKGROUND_LOCATION',
   RECORD_AUDIO: 'android.permission.RECORD_AUDIO',
   READ_PHONE_STATE: 'android.permission.READ_PHONE_STATE',
   CALL_PHONE: 'android.permission.CALL_PHONE',
@@ -69,6 +71,7 @@ const PERMISSIONS = Object.freeze({
 
 class PermissionsAndroid {
   PERMISSIONS: {|
+    ACCESS_BACKGROUND_LOCATION: string,
     ACCESS_COARSE_LOCATION: string,
     ACCESS_FINE_LOCATION: string,
     ADD_VOICEMAIL: string,
@@ -214,6 +217,9 @@ class PermissionsAndroid {
             ...rationale,
           };
           NativeDialogManagerAndroid.showAlert(
+            /* $FlowFixMe(>=0.111.0 site=react_native_fb) This comment
+             * suppresses an error found when Flow v0.111 was deployed. To see
+             * the error, delete this comment and run Flow. */
             options,
             () => reject(new Error('Error showing rationale')),
             () =>
@@ -234,7 +240,7 @@ class PermissionsAndroid {
    */
   requestMultiple(
     permissions: Array<PermissionType>,
-  ): Promise<{[permission: PermissionType]: PermissionStatus}> {
+  ): Promise<{[permission: PermissionType]: PermissionStatus, ...}> {
     if (Platform.OS !== 'android') {
       console.warn(
         '"PermissionsAndroid" module works only for Android platform.',
@@ -251,6 +257,6 @@ class PermissionsAndroid {
   }
 }
 
-PermissionsAndroid = new PermissionsAndroid();
+const PermissionsAndroidInstance: PermissionsAndroid = new PermissionsAndroid();
 
-module.exports = PermissionsAndroid;
+module.exports = PermissionsAndroidInstance;

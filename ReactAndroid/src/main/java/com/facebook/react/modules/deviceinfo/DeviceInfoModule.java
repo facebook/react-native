@@ -1,16 +1,19 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
- * directory of this source tree.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
+
 package com.facebook.react.modules.deviceinfo;
 
 import android.content.Context;
 import androidx.annotation.Nullable;
-import com.facebook.react.bridge.BaseJavaModule;
 import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.ReactApplicationContext;
+import com.facebook.react.bridge.ReactContextBaseJavaModule;
+import com.facebook.react.bridge.ReactNoCrashSoftException;
+import com.facebook.react.bridge.ReactSoftException;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.facebook.react.turbomodule.core.interfaces.TurboModule;
@@ -20,7 +23,7 @@ import java.util.Map;
 
 /** Module that exposes Android Constants to JS. */
 @ReactModule(name = DeviceInfoModule.NAME)
-public class DeviceInfoModule extends BaseJavaModule
+public class DeviceInfoModule extends ReactContextBaseJavaModule
     implements LifecycleEventListener, TurboModule {
 
   public static final String NAME = "DeviceInfo";
@@ -29,12 +32,15 @@ public class DeviceInfoModule extends BaseJavaModule
   private float mFontScale;
 
   public DeviceInfoModule(ReactApplicationContext reactContext) {
-    this((Context) reactContext);
+    super(reactContext);
+    DisplayMetricsHolder.initDisplayMetricsIfNotInitialized(reactContext);
+    mFontScale = reactContext.getResources().getConfiguration().fontScale;
     mReactApplicationContext = reactContext;
     mReactApplicationContext.addLifecycleEventListener(this);
   }
 
   public DeviceInfoModule(Context context) {
+    super(null);
     mReactApplicationContext = null;
     DisplayMetricsHolder.initDisplayMetricsIfNotInitialized(context);
     mFontScale = context.getResources().getConfiguration().fontScale;
@@ -76,9 +82,16 @@ public class DeviceInfoModule extends BaseJavaModule
       return;
     }
 
-    mReactApplicationContext
-        .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
-        .emit("didUpdateDimensions", DisplayMetricsHolder.getDisplayMetricsNativeMap(mFontScale));
+    if (mReactApplicationContext.hasActiveCatalystInstance()) {
+      mReactApplicationContext
+          .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
+          .emit("didUpdateDimensions", DisplayMetricsHolder.getDisplayMetricsNativeMap(mFontScale));
+    } else {
+      ReactSoftException.logSoftException(
+          NAME,
+          new ReactNoCrashSoftException(
+              "No active CatalystInstance, cannot emitUpdateDimensionsEvent"));
+    }
   }
 
   @Override

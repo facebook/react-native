@@ -10,7 +10,7 @@
 
 'use strict';
 
-const normalizeColor = require('../../Color/normalizeColor');
+const normalizeColor = require('../normalizeColor');
 
 describe('normalizeColor', function() {
   it('should accept only spec compliant colors', function() {

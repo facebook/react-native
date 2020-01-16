@@ -63,6 +63,7 @@ class AnExChained extends React.Component<Object, any> {
       },
       onPanResponderMove: Animated.event(
         [null, {dx: this.state.stickers[0].x, dy: this.state.stickers[0].y}], // map gesture to leader
+        {useNativeDriver: false},
       ),
       onPanResponderRelease: releaseChain,
       onPanResponderTerminate: releaseChain,

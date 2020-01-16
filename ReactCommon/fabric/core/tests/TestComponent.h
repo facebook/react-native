@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -43,10 +43,13 @@ class TestProps : public Props {
  public:
   using Props::Props;
 };
+
 using SharedTestProps = std::shared_ptr<const TestProps>;
 
 class TestShadowNode;
+
 using SharedTestShadowNode = std::shared_ptr<const TestShadowNode>;
+
 class TestShadowNode : public ConcreteShadowNode<TestComponentName, TestProps> {
  public:
   using ConcreteShadowNode::ConcreteShadowNode;

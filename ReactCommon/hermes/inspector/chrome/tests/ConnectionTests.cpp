@@ -1,4 +1,9 @@
-// Copyright 2004-present Facebook. All Rights Reserved.
+/*
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
 
 #include "AsyncHermesRuntime.h"
 #include "SyncConnection.h"
@@ -181,14 +186,15 @@ void expectCallFrames(
   }
 }
 
-// Helper to send a request wait for an empty response containing the req id.
-template <typename RequestType>
-void send(SyncConnection &conn, int id) {
+// Helper to send a request with no params and wait for a response (defaults
+// to empty) containing the req id.
+template <typename RequestType, typename ResponseType = m::OkResponse>
+ResponseType send(SyncConnection &conn, int id) {
   RequestType req;
   req.id = id;
   conn.send(req.toJson());
 
-  expectResponse<m::OkResponse>(conn, id);
+  return expectResponse<ResponseType>(conn, id);
 }
 
 void sendRuntimeEvalRequest(
@@ -221,8 +227,6 @@ m::runtime::ExecutionContextCreatedNotification expectExecutionContextCreated(
   EXPECT_EQ(note.context.id, 1);
   EXPECT_EQ(note.context.origin, "");
   EXPECT_EQ(note.context.name, "hermes");
-  EXPECT_EQ(note.context.isDefault, true);
-  EXPECT_EQ(note.context.isPageContext, true);
 
   return note;
 }
@@ -704,6 +708,43 @@ TEST(ConnectionTests, testSetBreakpoint) {
   // [3] (line 6) resume
   expectPaused(conn, "other", {{"global", 6, 1}});
   send<m::debugger::ResumeRequest>(conn, msgId++);
+  expectNotification<m::debugger::ResumedNotification>(conn);
+}
+
+TEST(ConnectionTests, testSetBreakpointById) {
+  TestContext context;
+  AsyncHermesRuntime &asyncRuntime = context.runtime();
+  SyncConnection &conn = context.conn();
+  int msgId = 1;
+
+  asyncRuntime.executeScriptAsync(R"(
+    debugger;      // line 1
+    Math.random(); //      2
+  )");
+
+  send<m::debugger::EnableRequest>(conn, ++msgId);
+  expectExecutionContextCreated(conn);
+  auto script = expectNotification<m::debugger::ScriptParsedNotification>(conn);
+
+  expectPaused(conn, "other", {{"global", 1, 1}});
+
+  m::debugger::SetBreakpointRequest req;
+  req.id = ++msgId;
+  req.location.scriptId = script.scriptId;
+  req.location.lineNumber = 2;
+
+  conn.send(req.toJson());
+  auto resp = expectResponse<m::debugger::SetBreakpointResponse>(conn, req.id);
+  EXPECT_EQ(resp.actualLocation.scriptId, script.scriptId);
+  EXPECT_EQ(resp.actualLocation.lineNumber, 2);
+  EXPECT_EQ(resp.actualLocation.columnNumber.value(), 4);
+
+  send<m::debugger::ResumeRequest>(conn, ++msgId);
+  expectNotification<m::debugger::ResumedNotification>(conn);
+
+  expectPaused(conn, "other", {{"global", 2, 1}});
+
+  send<m::debugger::ResumeRequest>(conn, ++msgId);
   expectNotification<m::debugger::ResumedNotification>(conn);
 }
 
@@ -1291,7 +1332,8 @@ TEST(ConnectionTests, testGetProperties) {
       conn,
       msgId++,
       scopeObjId,
-      {{"num", PropInfo("number").setValue(123)},
+      {{"this", PropInfo("undefined")},
+       {"num", PropInfo("number").setValue(123)},
        {"obj", PropInfo("object")},
        {"arr", PropInfo("object").setSubtype("array")},
        {"bar", PropInfo("function")}});
@@ -1372,7 +1414,9 @@ TEST(ConnectionTests, testGetPropertiesOnlyOwnProperties) {
       conn,
       msgId++,
       scopeObject.objectId.value(),
-      {{"obj", PropInfo("object")}, {"protoObject", PropInfo("object")}});
+      {{"this", PropInfo("undefined")},
+       {"obj", PropInfo("object")},
+       {"protoObject", PropInfo("object")}});
   EXPECT_EQ(scopeChildren.count("obj"), 1);
   std::string objId = scopeChildren.at("obj");
 
@@ -1624,6 +1668,17 @@ TEST(ConnectionTests, testSetPauseOnExceptionsUncaught) {
   EXPECT_EQ(asyncRuntime.getLastThrownExceptionMessage(), "Uncaught exception");
 }
 
+TEST(ConnectionTests, invalidPauseModeGivesError) {
+  TestContext context;
+  SyncConnection &conn = context.conn();
+
+  m::debugger::SetPauseOnExceptionsRequest req;
+  req.id = 1;
+  req.state = "badgers";
+  conn.send(req.toJson());
+  expectResponse<m::ErrorResponse>(conn, req.id);
+}
+
 TEST(ConnectionTests, testShouldPauseOnThrow) {
   TestContext context;
   AsyncHermesRuntime &asyncRuntime = context.runtime();
@@ -1718,14 +1773,14 @@ TEST(ConnectionTests, testScopeVariables) {
   EXPECT_EQ(scopeChain.size(), 2);
 
   // [2] inspect local scope
-  EXPECT_EQ(scopeChain.at(0).name, "Scope 0");
   EXPECT_EQ(scopeChain.at(0).type, "local");
   auto localScopeObject = scopeChain.at(0).object;
   auto localScopeObjectChildren = expectProps(
       conn,
       msgId++,
       localScopeObject.objectId.value(),
-      {{"localString", PropInfo("string").setValue("local-string")},
+      {{"this", PropInfo("undefined")},
+       {"localString", PropInfo("string").setValue("local-string")},
        {"localObject", PropInfo("object")}});
   auto localObjectId = localScopeObjectChildren.at("localObject");
   expectProps(
@@ -1741,7 +1796,6 @@ TEST(ConnectionTests, testScopeVariables) {
   // in our test code and we can't use expectProps() method here.
   // As a workaround we create a Map of properties and check that
   // those global properties that we have defined are in the map.
-  EXPECT_EQ(scopeChain.at(1).name, "Global Scope");
   EXPECT_EQ(scopeChain.at(1).type, "global");
   auto globalScopeObject = scopeChain.at(1).object;
   m::runtime::GetPropertiesRequest req;

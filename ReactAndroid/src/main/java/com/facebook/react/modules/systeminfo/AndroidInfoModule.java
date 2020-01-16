@@ -1,9 +1,10 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
- * directory of this source tree.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
+
 package com.facebook.react.modules.systeminfo;
 
 import static android.content.Context.UI_MODE_SERVICE;
@@ -15,10 +16,9 @@ import android.content.res.Resources;
 import android.os.Build;
 import android.provider.Settings.Secure;
 import androidx.annotation.Nullable;
+import com.facebook.fbreact.specs.NativePlatformConstantsAndroidSpec;
 import com.facebook.react.R;
 import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.bridge.ReactContextBaseJavaModule;
-import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.common.build.ReactBuildConfig;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.turbomodule.core.interfaces.TurboModule;
@@ -28,7 +28,7 @@ import java.util.Map;
 /** Module that exposes Android Constants to JS. */
 @ReactModule(name = AndroidInfoModule.NAME)
 @SuppressLint("HardwareIds")
-public class AndroidInfoModule extends ReactContextBaseJavaModule implements TurboModule {
+public class AndroidInfoModule extends NativePlatformConstantsAndroidSpec implements TurboModule {
   public static final String NAME = "PlatformConstants";
   private static final String IS_TESTING = "IS_TESTING";
 
@@ -65,7 +65,7 @@ public class AndroidInfoModule extends ReactContextBaseJavaModule implements Tur
   }
 
   @Override
-  public @Nullable Map<String, Object> getConstants() {
+  public @Nullable Map<String, Object> getTypedExportedConstants() {
     HashMap<String, Object> constants = new HashMap<>();
     constants.put("Version", Build.VERSION.SDK_INT);
     constants.put("Release", Build.VERSION.RELEASE);
@@ -82,7 +82,7 @@ public class AndroidInfoModule extends ReactContextBaseJavaModule implements Tur
     return constants;
   }
 
-  @ReactMethod(isBlockingSynchronousMethod = true)
+  @Override
   public String getAndroidID() {
     return Secure.getString(getReactApplicationContext().getContentResolver(), Secure.ANDROID_ID);
   }
@@ -92,7 +92,7 @@ public class AndroidInfoModule extends ReactContextBaseJavaModule implements Tur
 
   private Boolean isRunningScreenshotTest() {
     try {
-      Class.forName("android.support.test.rule.ActivityTestRule");
+      Class.forName("com.facebook.testing.react.screenshots.ReactAppScreenshotTestActivity");
       return true;
     } catch (ClassNotFoundException ignored) {
       return false;

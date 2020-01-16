@@ -4,21 +4,27 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @flow
+ * @flow strict-local
  * @format
+ * @generate-docs
  */
 
 'use strict';
 
-const AndroidSwitchNativeComponent = require('./AndroidSwitchNativeComponent');
 const Platform = require('../../Utilities/Platform');
 const React = require('react');
 const StyleSheet = require('../../StyleSheet/StyleSheet');
 
+import AndroidSwitchNativeComponent, {
+  Commands as AndroidSwitchCommands,
+} from './AndroidSwitchNativeComponent';
+import SwitchNativeComponent, {
+  Commands as SwitchCommands,
+} from './SwitchNativeComponent';
+
 import type {ColorValue} from '../../StyleSheet/StyleSheetTypes';
 import type {SyntheticEvent} from '../../Types/CoreEventTypes';
 import type {ViewProps} from '../View/ViewPropTypes';
-import SwitchNativeComponent from './SwitchNativeComponent';
 
 type SwitchChangeEvent = SyntheticEvent<
   $ReadOnly<{|
@@ -92,6 +98,7 @@ class Switch extends React.Component<Props> {
   _nativeSwitchRef: ?React.ElementRef<
     typeof SwitchNativeComponent | typeof AndroidSwitchNativeComponent,
   >;
+  _lastNativeValue: ?boolean;
 
   render(): React.Node {
     const {
@@ -154,7 +161,7 @@ class Switch extends React.Component<Props> {
         <AndroidSwitchNativeComponent
           {...props}
           {...platformProps}
-          accessibilityRole={props.accessibilityRole ?? 'button'}
+          accessibilityRole={props.accessibilityRole ?? 'switch'}
           onChange={this._handleChange}
           onResponderTerminationRequest={returnsFalse}
           onStartShouldSetResponder={returnsTrue}
@@ -187,7 +194,7 @@ class Switch extends React.Component<Props> {
       <SwitchNativeComponent
         {...props}
         {...platformProps}
-        accessibilityRole={props.accessibilityRole ?? 'button'}
+        accessibilityRole={props.accessibilityRole ?? 'switch'}
         onChange={this._handleChange}
         onResponderTerminationRequest={returnsFalse}
         onStartShouldSetResponder={returnsTrue}
@@ -196,19 +203,34 @@ class Switch extends React.Component<Props> {
     );
   }
 
-  _handleChange = (event: SwitchChangeEvent) => {
-    if (this._nativeSwitchRef == null) {
-      return;
-    }
-
-    // Force value of native switch in order to control it.
+  componentDidUpdate() {
+    // This is necessary in case native updates the switch and JS decides
+    // that the update should be ignored and we should stick with the value
+    // that we have in JS.
+    const nativeProps = {};
     const value = this.props.value === true;
-    if (Platform.OS === 'android') {
-      this._nativeSwitchRef.setNativeProps({on: value});
-    } else {
-      this._nativeSwitchRef.setNativeProps({value});
+
+    if (this._lastNativeValue !== value) {
+      nativeProps.value = value;
     }
 
+    if (
+      Object.keys(nativeProps).length > 0 &&
+      this._nativeSwitchRef &&
+      this._nativeSwitchRef.setNativeProps
+    ) {
+      if (Platform.OS === 'android') {
+        AndroidSwitchCommands.setNativeValue(
+          this._nativeSwitchRef,
+          nativeProps.value,
+        );
+      } else {
+        SwitchCommands.setValue(this._nativeSwitchRef, nativeProps.value);
+      }
+    }
+  }
+
+  _handleChange = (event: SwitchChangeEvent) => {
     if (this.props.onChange != null) {
       this.props.onChange(event);
     }
@@ -216,6 +238,9 @@ class Switch extends React.Component<Props> {
     if (this.props.onValueChange != null) {
       this.props.onValueChange(event.nativeEvent.value);
     }
+
+    this._lastNativeValue = event.nativeEvent.value;
+    this.forceUpdate();
   };
 
   _handleSwitchNativeComponentRef = (

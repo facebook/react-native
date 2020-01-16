@@ -10,18 +10,8 @@
 
 'use strict';
 
-const ClassComponentMock = class {};
-ClassComponentMock.prototype.isReactComponent = true;
-
 jest
   .clearAllMocks()
-  .setMock('../../../Text/Text', ClassComponentMock)
-  .setMock('../../../Components/View/View', ClassComponentMock)
-  .setMock('../../../Image/Image', ClassComponentMock)
-  .setMock('../../../Components/ScrollView/ScrollView', ClassComponentMock)
-  .setMock('../../../Lists/FlatList', ClassComponentMock)
-  .setMock('../../../Lists/SectionList', ClassComponentMock)
-  .setMock('react', {Component: class {}})
   .mock('../../../BatchedBridge/NativeModules', () => ({
     NativeAnimatedModule: {},
     PlatformConstants: {
@@ -35,128 +25,108 @@ jest
   // findNodeHandle is imported from ReactNative so mock that whole module.
   .setMock('../../../Renderer/shims/ReactNative', {findNodeHandle: () => 1});
 
+import TestRenderer from 'react-test-renderer';
+import * as React from 'react';
+
 const Animated = require('../Animated');
 const NativeAnimatedHelper = require('../NativeAnimatedHelper');
 
-function createAndMountComponent(ComponentClass, props) {
-  const component = new ComponentClass();
-  component.props = props;
-  component.UNSAFE_componentWillMount();
-  // Simulate that refs were set.
-  component._component = {};
-  component.componentDidMount();
-  return component;
-}
-
 describe('Native Animated', () => {
-  const nativeAnimatedModule = require('../NativeAnimatedModule').default;
+  const NativeAnimatedModule = require('../NativeAnimatedModule').default;
 
   beforeEach(() => {
-    nativeAnimatedModule.addAnimatedEventToView = jest.fn();
-    nativeAnimatedModule.connectAnimatedNodes = jest.fn();
-    nativeAnimatedModule.connectAnimatedNodeToView = jest.fn();
-    nativeAnimatedModule.createAnimatedNode = jest.fn();
-    nativeAnimatedModule.disconnectAnimatedNodeFromView = jest.fn();
-    nativeAnimatedModule.disconnectAnimatedNodes = jest.fn();
-    nativeAnimatedModule.dropAnimatedNode = jest.fn();
-    nativeAnimatedModule.extractAnimatedNodeOffset = jest.fn();
-    nativeAnimatedModule.flattenAnimatedNodeOffset = jest.fn();
-    nativeAnimatedModule.removeAnimatedEventFromView = jest.fn();
-    nativeAnimatedModule.setAnimatedNodeOffset = jest.fn();
-    nativeAnimatedModule.setAnimatedNodeValue = jest.fn();
-    nativeAnimatedModule.startAnimatingNode = jest.fn();
-    nativeAnimatedModule.startListeningToAnimatedNodeValue = jest.fn();
-    nativeAnimatedModule.stopAnimation = jest.fn();
-    nativeAnimatedModule.stopListeningToAnimatedNodeValue = jest.fn();
+    Object.assign(NativeAnimatedModule, {
+      addAnimatedEventToView: jest.fn(),
+      connectAnimatedNodes: jest.fn(),
+      connectAnimatedNodeToView: jest.fn(),
+      createAnimatedNode: jest.fn(),
+      disconnectAnimatedNodeFromView: jest.fn(),
+      disconnectAnimatedNodes: jest.fn(),
+      dropAnimatedNode: jest.fn(),
+      extractAnimatedNodeOffset: jest.fn(),
+      flattenAnimatedNodeOffset: jest.fn(),
+      removeAnimatedEventFromView: jest.fn(),
+      restoreDefaultValues: jest.fn(),
+      setAnimatedNodeOffset: jest.fn(),
+      setAnimatedNodeValue: jest.fn(),
+      startAnimatingNode: jest.fn(),
+      startListeningToAnimatedNodeValue: jest.fn(),
+      stopAnimation: jest.fn(),
+      stopListeningToAnimatedNodeValue: jest.fn(),
+    });
   });
 
   describe('Animated Value', () => {
     it('proxies `setValue` correctly', () => {
-      const anim = new Animated.Value(0);
-      Animated.timing(anim, {
+      const opacity = new Animated.Value(0);
+      const ref = React.createRef(null);
+
+      Animated.timing(opacity, {
         toValue: 10,
         duration: 1000,
         useNativeDriver: true,
       }).start();
 
-      const c = createAndMountComponent(Animated.View, {
-        style: {
-          opacity: anim,
-        },
-      });
+      TestRenderer.create(<Animated.View ref={ref} style={{opacity}} />);
 
-      // We expect `setValue` not to propagate down to `setNativeProps`, otherwise it may try to access `setNativeProps`
-      // via component refs table that we override here.
-      c.refs = {
-        node: {
-          setNativeProps: jest.fn(),
-        },
-      };
+      expect(ref.current).not.toBeNull();
+      jest.spyOn(ref.current, 'setNativeProps');
 
-      anim.setValue(0.5);
+      opacity.setValue(0.5);
 
-      expect(nativeAnimatedModule.setAnimatedNodeValue).toBeCalledWith(
+      expect(NativeAnimatedModule.setAnimatedNodeValue).toBeCalledWith(
         expect.any(Number),
         0.5,
       );
-      expect(c.refs.node.setNativeProps).not.toHaveBeenCalled();
+      expect(ref.current.setNativeProps).not.toHaveBeenCalled();
     });
 
     it('should set offset', () => {
-      const anim = new Animated.Value(0);
-      anim.setOffset(10);
-      anim.__makeNative();
-      createAndMountComponent(Animated.View, {
-        style: {
-          opacity: anim,
-        },
-      });
+      const opacity = new Animated.Value(0);
+      opacity.setOffset(10);
+      opacity.__makeNative();
 
-      expect(nativeAnimatedModule.createAnimatedNode).toBeCalledWith(
+      TestRenderer.create(<Animated.View style={{opacity}} />);
+
+      expect(NativeAnimatedModule.createAnimatedNode).toBeCalledWith(
         expect.any(Number),
         {type: 'value', value: 0, offset: 10},
       );
-      anim.setOffset(20);
-      expect(nativeAnimatedModule.setAnimatedNodeOffset).toBeCalledWith(
+      opacity.setOffset(20);
+      expect(NativeAnimatedModule.setAnimatedNodeOffset).toBeCalledWith(
         expect.any(Number),
         20,
       );
     });
 
     it('should flatten offset', () => {
-      const anim = new Animated.Value(0);
-      anim.__makeNative();
-      createAndMountComponent(Animated.View, {
-        style: {
-          opacity: anim,
-        },
-      });
+      const opacity = new Animated.Value(0);
+      opacity.__makeNative();
 
-      expect(nativeAnimatedModule.createAnimatedNode).toBeCalledWith(
+      TestRenderer.create(<Animated.View style={{opacity}} />);
+
+      expect(NativeAnimatedModule.createAnimatedNode).toBeCalledWith(
         expect.any(Number),
         {type: 'value', value: 0, offset: 0},
       );
-      anim.flattenOffset();
-      expect(nativeAnimatedModule.flattenAnimatedNodeOffset).toBeCalledWith(
+      opacity.flattenOffset();
+      expect(NativeAnimatedModule.flattenAnimatedNodeOffset).toBeCalledWith(
         expect.any(Number),
       );
     });
 
     it('should extract offset', () => {
-      const anim = new Animated.Value(0);
-      anim.__makeNative();
-      createAndMountComponent(Animated.View, {
-        style: {
-          opacity: anim,
-        },
-      });
+      const opacity = new Animated.Value(0);
+      opacity.__makeNative();
 
-      expect(nativeAnimatedModule.createAnimatedNode).toBeCalledWith(
+      TestRenderer.create(<Animated.View style={{opacity}} />);
+
+      expect(NativeAnimatedModule.createAnimatedNode).toBeCalledWith(
         expect.any(Number),
         {type: 'value', value: 0, offset: 0},
       );
-      anim.extractOffset();
-      expect(nativeAnimatedModule.extractAnimatedNodeOffset).toBeCalledWith(
+      opacity.extractOffset();
+      expect(NativeAnimatedModule.extractAnimatedNodeOffset).toBeCalledWith(
         expect.any(Number),
       );
     });
@@ -169,7 +139,7 @@ describe('Native Animated', () => {
       const listener = jest.fn();
       const id = value1.addListener(listener);
       expect(
-        nativeAnimatedModule.startListeningToAnimatedNodeValue,
+        NativeAnimatedModule.startListeningToAnimatedNodeValue,
       ).toHaveBeenCalledWith(value1.__getNativeTag());
 
       NativeAnimatedHelper.nativeEventEmitter.emit('onAnimatedValueUpdate', {
@@ -190,7 +160,7 @@ describe('Native Animated', () => {
 
       value1.removeListener(id);
       expect(
-        nativeAnimatedModule.stopListeningToAnimatedNodeValue,
+        NativeAnimatedModule.stopListeningToAnimatedNodeValue,
       ).toHaveBeenCalledWith(value1.__getNativeTag());
 
       NativeAnimatedHelper.nativeEventEmitter.emit('onAnimatedValueUpdate', {
@@ -207,7 +177,7 @@ describe('Native Animated', () => {
       const listener = jest.fn();
       [1, 2, 3, 4].forEach(() => value1.addListener(listener));
       expect(
-        nativeAnimatedModule.startListeningToAnimatedNodeValue,
+        NativeAnimatedModule.startListeningToAnimatedNodeValue,
       ).toHaveBeenCalledWith(value1.__getNativeTag());
 
       NativeAnimatedHelper.nativeEventEmitter.emit('onAnimatedValueUpdate', {
@@ -219,7 +189,7 @@ describe('Native Animated', () => {
 
       value1.removeAllListeners();
       expect(
-        nativeAnimatedModule.stopListeningToAnimatedNodeValue,
+        NativeAnimatedModule.stopListeningToAnimatedNodeValue,
       ).toHaveBeenCalledWith(value1.__getNativeTag());
 
       NativeAnimatedHelper.nativeEventEmitter.emit('onAnimatedValueUpdate', {
@@ -237,8 +207,9 @@ describe('Native Animated', () => {
       const event = Animated.event([{nativeEvent: {state: {foo: value}}}], {
         useNativeDriver: true,
       });
-      const c = createAndMountComponent(Animated.View, {onTouchMove: event});
-      expect(nativeAnimatedModule.addAnimatedEventToView).toBeCalledWith(
+
+      const root = TestRenderer.create(<Animated.View onTouchMove={event} />);
+      expect(NativeAnimatedModule.addAnimatedEventToView).toBeCalledWith(
         expect.any(Number),
         'onTouchMove',
         {
@@ -247,8 +218,11 @@ describe('Native Animated', () => {
         },
       );
 
-      c.componentWillUnmount();
-      expect(nativeAnimatedModule.removeAnimatedEventFromView).toBeCalledWith(
+      expect(
+        NativeAnimatedModule.removeAnimatedEventFromView,
+      ).not.toHaveBeenCalled();
+      root.unmount();
+      expect(NativeAnimatedModule.removeAnimatedEventFromView).toBeCalledWith(
         expect.any(Number),
         'onTouchMove',
         value.__getNativeTag(),
@@ -261,10 +235,20 @@ describe('Native Animated', () => {
       const event = Animated.event([{notNativeEvent: {foo: value}}], {
         useNativeDriver: true,
       });
-      expect(() =>
-        createAndMountComponent(Animated.View, {onTouchMove: event}),
-      ).toThrowError(/nativeEvent/);
-      expect(nativeAnimatedModule.addAnimatedEventToView).not.toBeCalled();
+
+      jest.spyOn(console, 'error').mockImplementationOnce((...args) => {
+        if (args[0].startsWith('The above error occurred in the')) {
+          return;
+        }
+        console.errorDebug(...args);
+      });
+
+      expect(() => {
+        TestRenderer.create(<Animated.View onTouchMove={event} />);
+      }).toThrowError(/nativeEvent/);
+      expect(NativeAnimatedModule.addAnimatedEventToView).not.toBeCalled();
+
+      console.error.mockRestore();
     });
 
     it('should call listeners', () => {
@@ -284,27 +268,21 @@ describe('Native Animated', () => {
 
   describe('Animated Graph', () => {
     it('creates and detaches nodes', () => {
-      const anim = new Animated.Value(0);
-      const c = createAndMountComponent(Animated.View, {
-        style: {
-          opacity: anim,
-        },
-      });
+      const opacity = new Animated.Value(0);
+      const root = TestRenderer.create(<Animated.View style={{opacity}} />);
 
-      Animated.timing(anim, {
+      Animated.timing(opacity, {
         toValue: 10,
         duration: 1000,
         useNativeDriver: true,
       }).start();
 
-      c.componentWillUnmount();
-
-      expect(nativeAnimatedModule.createAnimatedNode).toHaveBeenCalledTimes(3);
-      expect(nativeAnimatedModule.connectAnimatedNodes).toHaveBeenCalledTimes(
+      expect(NativeAnimatedModule.createAnimatedNode).toHaveBeenCalledTimes(3);
+      expect(NativeAnimatedModule.connectAnimatedNodes).toHaveBeenCalledTimes(
         2,
       );
 
-      expect(nativeAnimatedModule.startAnimatingNode).toBeCalledWith(
+      expect(NativeAnimatedModule.startAnimatingNode).toBeCalledWith(
         expect.any(Number),
         expect.any(Number),
         {
@@ -317,34 +295,37 @@ describe('Native Animated', () => {
       );
 
       expect(
-        nativeAnimatedModule.disconnectAnimatedNodes,
+        NativeAnimatedModule.disconnectAnimatedNodes,
+      ).not.toHaveBeenCalled();
+      expect(NativeAnimatedModule.dropAnimatedNode).not.toHaveBeenCalled();
+
+      root.unmount();
+
+      expect(
+        NativeAnimatedModule.disconnectAnimatedNodes,
       ).toHaveBeenCalledTimes(2);
-      expect(nativeAnimatedModule.dropAnimatedNode).toHaveBeenCalledTimes(3);
+      expect(NativeAnimatedModule.dropAnimatedNode).toHaveBeenCalledTimes(3);
     });
 
     it('sends a valid description for value, style and props nodes', () => {
-      const anim = new Animated.Value(0);
-      createAndMountComponent(Animated.View, {
-        style: {
-          opacity: anim,
-        },
-      });
+      const opacity = new Animated.Value(0);
+      TestRenderer.create(<Animated.View style={{opacity}} />);
 
-      Animated.timing(anim, {
+      Animated.timing(opacity, {
         toValue: 10,
         duration: 1000,
         useNativeDriver: true,
       }).start();
 
-      expect(nativeAnimatedModule.createAnimatedNode).toBeCalledWith(
+      expect(NativeAnimatedModule.createAnimatedNode).toBeCalledWith(
         expect.any(Number),
         {type: 'value', value: 0, offset: 0},
       );
-      expect(nativeAnimatedModule.createAnimatedNode).toBeCalledWith(
+      expect(NativeAnimatedModule.createAnimatedNode).toBeCalledWith(
         expect.any(Number),
         {type: 'style', style: {opacity: expect.any(Number)}},
       );
-      expect(nativeAnimatedModule.createAnimatedNode).toBeCalledWith(
+      expect(NativeAnimatedModule.createAnimatedNode).toBeCalledWith(
         expect.any(Number),
         {type: 'props', props: {style: expect.any(Number)}},
       );
@@ -356,31 +337,29 @@ describe('Native Animated', () => {
       first.__makeNative();
       second.__makeNative();
 
-      createAndMountComponent(Animated.View, {
-        style: {
-          opacity: Animated.add(first, second),
-        },
-      });
+      TestRenderer.create(
+        <Animated.View style={{opacity: Animated.add(first, second)}} />,
+      );
 
-      expect(nativeAnimatedModule.createAnimatedNode).toBeCalledWith(
+      expect(NativeAnimatedModule.createAnimatedNode).toBeCalledWith(
         expect.any(Number),
         {type: 'addition', input: expect.any(Array)},
       );
-      const additionCalls = nativeAnimatedModule.createAnimatedNode.mock.calls.filter(
+      const additionCalls = NativeAnimatedModule.createAnimatedNode.mock.calls.filter(
         call => call[1].type === 'addition',
       );
       expect(additionCalls.length).toBe(1);
       const additionCall = additionCalls[0];
       const additionNodeTag = additionCall[0];
-      const additionConnectionCalls = nativeAnimatedModule.connectAnimatedNodes.mock.calls.filter(
+      const additionConnectionCalls = NativeAnimatedModule.connectAnimatedNodes.mock.calls.filter(
         call => call[1] === additionNodeTag,
       );
       expect(additionConnectionCalls.length).toBe(2);
-      expect(nativeAnimatedModule.createAnimatedNode).toBeCalledWith(
+      expect(NativeAnimatedModule.createAnimatedNode).toBeCalledWith(
         additionCall[1].input[0],
         {type: 'value', value: 1, offset: 0},
       );
-      expect(nativeAnimatedModule.createAnimatedNode).toBeCalledWith(
+      expect(NativeAnimatedModule.createAnimatedNode).toBeCalledWith(
         additionCall[1].input[1],
         {type: 'value', value: 2, offset: 0},
       );
@@ -392,31 +371,29 @@ describe('Native Animated', () => {
       first.__makeNative();
       second.__makeNative();
 
-      createAndMountComponent(Animated.View, {
-        style: {
-          opacity: Animated.subtract(first, second),
-        },
-      });
+      TestRenderer.create(
+        <Animated.View style={{opacity: Animated.subtract(first, second)}} />,
+      );
 
-      expect(nativeAnimatedModule.createAnimatedNode).toBeCalledWith(
+      expect(NativeAnimatedModule.createAnimatedNode).toBeCalledWith(
         expect.any(Number),
         {type: 'subtraction', input: expect.any(Array)},
       );
-      const subtractionCalls = nativeAnimatedModule.createAnimatedNode.mock.calls.filter(
+      const subtractionCalls = NativeAnimatedModule.createAnimatedNode.mock.calls.filter(
         call => call[1].type === 'subtraction',
       );
       expect(subtractionCalls.length).toBe(1);
       const subtractionCall = subtractionCalls[0];
       const subtractionNodeTag = subtractionCall[0];
-      const subtractionConnectionCalls = nativeAnimatedModule.connectAnimatedNodes.mock.calls.filter(
+      const subtractionConnectionCalls = NativeAnimatedModule.connectAnimatedNodes.mock.calls.filter(
         call => call[1] === subtractionNodeTag,
       );
       expect(subtractionConnectionCalls.length).toBe(2);
-      expect(nativeAnimatedModule.createAnimatedNode).toBeCalledWith(
+      expect(NativeAnimatedModule.createAnimatedNode).toBeCalledWith(
         subtractionCall[1].input[0],
         {type: 'value', value: 2, offset: 0},
       );
-      expect(nativeAnimatedModule.createAnimatedNode).toBeCalledWith(
+      expect(NativeAnimatedModule.createAnimatedNode).toBeCalledWith(
         subtractionCall[1].input[1],
         {type: 'value', value: 1, offset: 0},
       );
@@ -428,31 +405,29 @@ describe('Native Animated', () => {
       first.__makeNative();
       second.__makeNative();
 
-      createAndMountComponent(Animated.View, {
-        style: {
-          opacity: Animated.multiply(first, second),
-        },
-      });
+      TestRenderer.create(
+        <Animated.View style={{opacity: Animated.multiply(first, second)}} />,
+      );
 
-      expect(nativeAnimatedModule.createAnimatedNode).toBeCalledWith(
+      expect(NativeAnimatedModule.createAnimatedNode).toBeCalledWith(
         expect.any(Number),
         {type: 'multiplication', input: expect.any(Array)},
       );
-      const multiplicationCalls = nativeAnimatedModule.createAnimatedNode.mock.calls.filter(
+      const multiplicationCalls = NativeAnimatedModule.createAnimatedNode.mock.calls.filter(
         call => call[1].type === 'multiplication',
       );
       expect(multiplicationCalls.length).toBe(1);
       const multiplicationCall = multiplicationCalls[0];
       const multiplicationNodeTag = multiplicationCall[0];
-      const multiplicationConnectionCalls = nativeAnimatedModule.connectAnimatedNodes.mock.calls.filter(
+      const multiplicationConnectionCalls = NativeAnimatedModule.connectAnimatedNodes.mock.calls.filter(
         call => call[1] === multiplicationNodeTag,
       );
       expect(multiplicationConnectionCalls.length).toBe(2);
-      expect(nativeAnimatedModule.createAnimatedNode).toBeCalledWith(
+      expect(NativeAnimatedModule.createAnimatedNode).toBeCalledWith(
         multiplicationCall[1].input[0],
         {type: 'value', value: 2, offset: 0},
       );
-      expect(nativeAnimatedModule.createAnimatedNode).toBeCalledWith(
+      expect(NativeAnimatedModule.createAnimatedNode).toBeCalledWith(
         multiplicationCall[1].input[1],
         {type: 'value', value: 1, offset: 0},
       );
@@ -464,31 +439,29 @@ describe('Native Animated', () => {
       first.__makeNative();
       second.__makeNative();
 
-      createAndMountComponent(Animated.View, {
-        style: {
-          opacity: Animated.divide(first, second),
-        },
-      });
+      TestRenderer.create(
+        <Animated.View style={{opacity: Animated.divide(first, second)}} />,
+      );
 
-      expect(nativeAnimatedModule.createAnimatedNode).toBeCalledWith(
+      expect(NativeAnimatedModule.createAnimatedNode).toBeCalledWith(
         expect.any(Number),
         {type: 'division', input: expect.any(Array)},
       );
-      const divisionCalls = nativeAnimatedModule.createAnimatedNode.mock.calls.filter(
+      const divisionCalls = NativeAnimatedModule.createAnimatedNode.mock.calls.filter(
         call => call[1].type === 'division',
       );
       expect(divisionCalls.length).toBe(1);
       const divisionCall = divisionCalls[0];
       const divisionNodeTag = divisionCall[0];
-      const divisionConnectionCalls = nativeAnimatedModule.connectAnimatedNodes.mock.calls.filter(
+      const divisionConnectionCalls = NativeAnimatedModule.connectAnimatedNodes.mock.calls.filter(
         call => call[1] === divisionNodeTag,
       );
       expect(divisionConnectionCalls.length).toBe(2);
-      expect(nativeAnimatedModule.createAnimatedNode).toBeCalledWith(
+      expect(NativeAnimatedModule.createAnimatedNode).toBeCalledWith(
         divisionCall[1].input[0],
         {type: 'value', value: 4, offset: 0},
       );
-      expect(nativeAnimatedModule.createAnimatedNode).toBeCalledWith(
+      expect(NativeAnimatedModule.createAnimatedNode).toBeCalledWith(
         divisionCall[1].input[1],
         {type: 'value', value: 2, offset: 0},
       );
@@ -498,27 +471,25 @@ describe('Native Animated', () => {
       const value = new Animated.Value(4);
       value.__makeNative();
 
-      createAndMountComponent(Animated.View, {
-        style: {
-          opacity: Animated.modulo(value, 4),
-        },
-      });
+      TestRenderer.create(
+        <Animated.View style={{opacity: Animated.modulo(value, 4)}} />,
+      );
 
-      expect(nativeAnimatedModule.createAnimatedNode).toBeCalledWith(
+      expect(NativeAnimatedModule.createAnimatedNode).toBeCalledWith(
         expect.any(Number),
         {type: 'modulus', modulus: 4, input: expect.any(Number)},
       );
-      const moduloCalls = nativeAnimatedModule.createAnimatedNode.mock.calls.filter(
+      const moduloCalls = NativeAnimatedModule.createAnimatedNode.mock.calls.filter(
         call => call[1].type === 'modulus',
       );
       expect(moduloCalls.length).toBe(1);
       const moduloCall = moduloCalls[0];
       const moduloNodeTag = moduloCall[0];
-      const moduloConnectionCalls = nativeAnimatedModule.connectAnimatedNodes.mock.calls.filter(
+      const moduloConnectionCalls = NativeAnimatedModule.connectAnimatedNodes.mock.calls.filter(
         call => call[1] === moduloNodeTag,
       );
       expect(moduloConnectionCalls.length).toBe(1);
-      expect(nativeAnimatedModule.createAnimatedNode).toBeCalledWith(
+      expect(NativeAnimatedModule.createAnimatedNode).toBeCalledWith(
         moduloCall[1].input,
         {type: 'value', value: 4, offset: 0},
       );
@@ -528,20 +499,22 @@ describe('Native Animated', () => {
       const value = new Animated.Value(10);
       value.__makeNative();
 
-      createAndMountComponent(Animated.View, {
-        style: {
-          opacity: value.interpolate({
-            inputRange: [10, 20],
-            outputRange: [0, 1],
-          }),
-        },
-      });
+      TestRenderer.create(
+        <Animated.View
+          style={{
+            opacity: value.interpolate({
+              inputRange: [10, 20],
+              outputRange: [0, 1],
+            }),
+          }}
+        />,
+      );
 
-      expect(nativeAnimatedModule.createAnimatedNode).toBeCalledWith(
+      expect(NativeAnimatedModule.createAnimatedNode).toBeCalledWith(
         expect.any(Number),
         {type: 'value', value: 10, offset: 0},
       );
-      expect(nativeAnimatedModule.createAnimatedNode).toBeCalledWith(
+      expect(NativeAnimatedModule.createAnimatedNode).toBeCalledWith(
         expect.any(Number),
         {
           type: 'interpolation',
@@ -551,29 +524,27 @@ describe('Native Animated', () => {
           extrapolateRight: 'extend',
         },
       );
-      const interpolationNodeTag = nativeAnimatedModule.createAnimatedNode.mock.calls.find(
+      const interpolationNodeTag = NativeAnimatedModule.createAnimatedNode.mock.calls.find(
         call => call[1].type === 'interpolation',
       )[0];
-      const valueNodeTag = nativeAnimatedModule.createAnimatedNode.mock.calls.find(
+      const valueNodeTag = NativeAnimatedModule.createAnimatedNode.mock.calls.find(
         call => call[1].type === 'value',
       )[0];
-      expect(nativeAnimatedModule.connectAnimatedNodes).toBeCalledWith(
+      expect(NativeAnimatedModule.connectAnimatedNodes).toBeCalledWith(
         valueNodeTag,
         interpolationNodeTag,
       );
     });
 
     it('sends a valid graph description for transform nodes', () => {
-      const value = new Animated.Value(0);
-      value.__makeNative();
+      const translateX = new Animated.Value(0);
+      translateX.__makeNative();
 
-      createAndMountComponent(Animated.View, {
-        style: {
-          transform: [{translateX: value}, {scale: 2}],
-        },
-      });
+      TestRenderer.create(
+        <Animated.View style={{transform: [{translateX}, {scale: 2}]}} />,
+      );
 
-      expect(nativeAnimatedModule.createAnimatedNode).toBeCalledWith(
+      expect(NativeAnimatedModule.createAnimatedNode).toBeCalledWith(
         expect.any(Number),
         {
           type: 'transform',
@@ -597,86 +568,86 @@ describe('Native Animated', () => {
       const value = new Animated.Value(2);
       value.__makeNative();
 
-      createAndMountComponent(Animated.View, {
-        style: {
-          opacity: Animated.diffClamp(value, 0, 20),
-        },
-      });
+      TestRenderer.create(
+        <Animated.View style={{opacity: Animated.diffClamp(value, 0, 20)}} />,
+      );
 
-      expect(nativeAnimatedModule.createAnimatedNode).toBeCalledWith(
+      expect(NativeAnimatedModule.createAnimatedNode).toBeCalledWith(
         expect.any(Number),
         {type: 'diffclamp', input: expect.any(Number), max: 20, min: 0},
       );
-      const diffClampCalls = nativeAnimatedModule.createAnimatedNode.mock.calls.filter(
+      const diffClampCalls = NativeAnimatedModule.createAnimatedNode.mock.calls.filter(
         call => call[1].type === 'diffclamp',
       );
       expect(diffClampCalls.length).toBe(1);
       const diffClampCall = diffClampCalls[0];
       const diffClampNodeTag = diffClampCall[0];
-      const diffClampConnectionCalls = nativeAnimatedModule.connectAnimatedNodes.mock.calls.filter(
+      const diffClampConnectionCalls = NativeAnimatedModule.connectAnimatedNodes.mock.calls.filter(
         call => call[1] === diffClampNodeTag,
       );
       expect(diffClampConnectionCalls.length).toBe(1);
-      expect(nativeAnimatedModule.createAnimatedNode).toBeCalledWith(
+      expect(NativeAnimatedModule.createAnimatedNode).toBeCalledWith(
         diffClampCall[1].input,
         {type: 'value', value: 2, offset: 0},
       );
     });
 
     it("doesn't call into native API if useNativeDriver is set to false", () => {
-      const anim = new Animated.Value(0);
+      const opacity = new Animated.Value(0);
 
-      const c = createAndMountComponent(Animated.View, {
-        style: {
-          opacity: anim,
-        },
-      });
+      const root = TestRenderer.create(<Animated.View style={{opacity}} />);
 
-      Animated.timing(anim, {
+      Animated.timing(opacity, {
         toValue: 10,
         duration: 1000,
         useNativeDriver: false,
       }).start();
 
-      c.componentWillUnmount();
+      root.unmount();
 
-      expect(nativeAnimatedModule.createAnimatedNode).not.toBeCalled();
+      expect(NativeAnimatedModule.createAnimatedNode).not.toBeCalled();
     });
 
     it('fails when trying to run non-native animation on native node', () => {
-      const anim = new Animated.Value(0);
+      const opacity = new Animated.Value(0);
+      const ref = React.createRef(null);
 
-      createAndMountComponent(Animated.View, {
-        style: {
-          opacity: anim,
-        },
-      });
+      TestRenderer.create(<Animated.View ref={ref} style={{opacity}} />);
 
-      Animated.timing(anim, {
+      // Necessary to simulate the native animation.
+      expect(ref.current).not.toBeNull();
+      ref.current.setNativeProps = jest.fn();
+
+      Animated.timing(opacity, {
         toValue: 10,
         duration: 50,
         useNativeDriver: true,
       }).start();
       jest.runAllTimers();
 
-      Animated.timing(anim, {
+      Animated.timing(opacity, {
         toValue: 4,
         duration: 500,
         useNativeDriver: false,
       }).start();
-      expect(jest.runAllTimers).toThrow();
+      try {
+        process.env.NODE_ENV = 'development';
+        expect(jest.runAllTimers).toThrow(
+          'Attempting to run JS driven animation on animated node that has ' +
+            'been moved to "native" earlier by starting an animation with ' +
+            '`useNativeDriver: true`',
+        );
+      } finally {
+        process.env.NODE_ENV = 'test';
+      }
     });
 
     it('fails for unsupported styles', () => {
-      const anim = new Animated.Value(0);
+      const left = new Animated.Value(0);
 
-      createAndMountComponent(Animated.View, {
-        style: {
-          left: anim,
-        },
-      });
+      TestRenderer.create(<Animated.View style={{left}} />);
 
-      const animation = Animated.timing(anim, {
+      const animation = Animated.timing(left, {
         toValue: 10,
         duration: 50,
         useNativeDriver: true,
@@ -686,23 +657,21 @@ describe('Native Animated', () => {
 
     it('works for any `static` props and styles', () => {
       // Passing "unsupported" props should work just fine as long as they are not animated
-      const value = new Animated.Value(0);
-      value.__makeNative();
+      const opacity = new Animated.Value(0);
+      opacity.__makeNative();
 
-      createAndMountComponent(Animated.View, {
-        style: {
-          left: 10,
-          top: 20,
-          opacity: value,
-        },
-        removeClippedSubviews: true,
-      });
+      TestRenderer.create(
+        <Animated.View
+          removeClippedSubviews={true}
+          style={{left: 10, opacity, top: 20}}
+        />,
+      );
 
-      expect(nativeAnimatedModule.createAnimatedNode).toBeCalledWith(
+      expect(NativeAnimatedModule.createAnimatedNode).toBeCalledWith(
         expect.any(Number),
         {type: 'style', style: {opacity: expect.any(Number)}},
       );
-      expect(nativeAnimatedModule.createAnimatedNode).toBeCalledWith(
+      expect(NativeAnimatedModule.createAnimatedNode).toBeCalledWith(
         expect.any(Number),
         {type: 'props', props: {style: expect.any(Number)}},
       );
@@ -718,7 +687,7 @@ describe('Native Animated', () => {
         useNativeDriver: true,
       }).start();
 
-      expect(nativeAnimatedModule.startAnimatingNode).toBeCalledWith(
+      expect(NativeAnimatedModule.startAnimatingNode).toBeCalledWith(
         expect.any(Number),
         expect.any(Number),
         {
@@ -739,7 +708,7 @@ describe('Native Animated', () => {
         tension: 164,
         useNativeDriver: true,
       }).start();
-      expect(nativeAnimatedModule.startAnimatingNode).toBeCalledWith(
+      expect(NativeAnimatedModule.startAnimatingNode).toBeCalledWith(
         expect.any(Number),
         expect.any(Number),
         {
@@ -764,7 +733,7 @@ describe('Native Animated', () => {
         mass: 3,
         useNativeDriver: true,
       }).start();
-      expect(nativeAnimatedModule.startAnimatingNode).toBeCalledWith(
+      expect(NativeAnimatedModule.startAnimatingNode).toBeCalledWith(
         expect.any(Number),
         expect.any(Number),
         {
@@ -788,7 +757,7 @@ describe('Native Animated', () => {
         speed: 10,
         useNativeDriver: true,
       }).start();
-      expect(nativeAnimatedModule.startAnimatingNode).toBeCalledWith(
+      expect(NativeAnimatedModule.startAnimatingNode).toBeCalledWith(
         expect.any(Number),
         expect.any(Number),
         {
@@ -815,7 +784,7 @@ describe('Native Animated', () => {
         useNativeDriver: true,
       }).start();
 
-      expect(nativeAnimatedModule.startAnimatingNode).toBeCalledWith(
+      expect(NativeAnimatedModule.startAnimatingNode).toBeCalledWith(
         expect.any(Number),
         expect.any(Number),
         {type: 'decay', deceleration: 0.1, velocity: 10, iterations: 1},
@@ -834,7 +803,7 @@ describe('Native Animated', () => {
         {iterations: 10},
       ).start();
 
-      expect(nativeAnimatedModule.startAnimatingNode).toBeCalledWith(
+      expect(NativeAnimatedModule.startAnimatingNode).toBeCalledWith(
         expect.any(Number),
         expect.any(Number),
         {type: 'decay', deceleration: 0.1, velocity: 10, iterations: 10},
@@ -851,7 +820,7 @@ describe('Native Animated', () => {
       });
 
       animation.start();
-      expect(nativeAnimatedModule.startAnimatingNode).toBeCalledWith(
+      expect(NativeAnimatedModule.startAnimatingNode).toBeCalledWith(
         expect.any(Number),
         expect.any(Number),
         {
@@ -863,10 +832,31 @@ describe('Native Animated', () => {
         expect.any(Function),
       );
       const animationId =
-        nativeAnimatedModule.startAnimatingNode.mock.calls[0][0];
+        NativeAnimatedModule.startAnimatingNode.mock.calls[0][0];
 
       animation.stop();
-      expect(nativeAnimatedModule.stopAnimation).toBeCalledWith(animationId);
+      expect(NativeAnimatedModule.stopAnimation).toBeCalledWith(animationId);
+    });
+  });
+
+  describe('Animated Components', () => {
+    it('Should restore default values on prop updates only', () => {
+      const opacity = new Animated.Value(0);
+      opacity.__makeNative();
+
+      const root = TestRenderer.create(<Animated.View style={{opacity}} />);
+      expect(NativeAnimatedModule.restoreDefaultValues).not.toHaveBeenCalled();
+
+      root.update(<Animated.View style={{opacity}} />);
+      expect(NativeAnimatedModule.restoreDefaultValues).toHaveBeenCalledWith(
+        expect.any(Number),
+      );
+
+      root.unmount();
+      // Make sure it doesn't get called on unmount.
+      expect(NativeAnimatedModule.restoreDefaultValues).toHaveBeenCalledTimes(
+        1,
+      );
     });
   });
 });

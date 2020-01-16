@@ -32,9 +32,13 @@ project.xcworkspace
 # Buck
 .buckd
 buck-out
-/ReactAndroid/src/main/jni/prebuilt/lib/armeabi-v7a/
-/ReactAndroid/src/main/jni/prebuilt/lib/x86/
+/ReactAndroid/src/main/jni/prebuilt/lib/
 /ReactAndroid/src/main/gen
+
+# Android Studio
+.project
+.settings
+.classpath
 
 # Watchman
 .watchmanconfig
@@ -80,4 +84,16 @@ RNTester/build
 # CocoaPods
 /template/ios/Pods/
 /template/ios/Podfile.lock
-/RNTester/Pods/
+/RNTester/Gemfile.lock
+
+# Ignore RNTester specific Pods, but keep the __offline_mirrors__ here.
+RNTester/Pods/*
+!RNTester/Pods/__offline_mirrors
+
+# react-native-codegen
+/ReactCommon/fabric/components/rncore/
+/schema-rncore.json
+
+# Visual studio
+.vscode
+.vs

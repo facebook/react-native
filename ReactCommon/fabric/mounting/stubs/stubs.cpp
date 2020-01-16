@@ -1,7 +1,9 @@
-// Copyright (c) Facebook, Inc. and its affiliates.
-
-// This source code is licensed under the MIT license found in the
-// LICENSE file in the root directory of this source tree.
+/*
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
 
 #include "stubs.h"
 
@@ -48,10 +50,7 @@ StubViewTree stubViewTreeFromShadowNode(ShadowNode const &rootShadowNode) {
       sliceChildShadowNodeViewPairs(rootShadowNode));
 
   auto emptyRootShadowNode = rootShadowNode.clone(
-      ShadowNodeFragment{ShadowNodeFragment::tagPlaceholder(),
-                         ShadowNodeFragment::surfaceIdPlaceholder(),
-                         ShadowNodeFragment::propsPlaceholder(),
-                         ShadowNodeFragment::eventEmitterPlaceholder(),
+      ShadowNodeFragment{ShadowNodeFragment::propsPlaceholder(),
                          ShadowNode::emptySharedShadowNodeSharedList()});
 
   auto stubViewTree = StubViewTree(ShadowView(*emptyRootShadowNode));

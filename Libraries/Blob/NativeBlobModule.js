@@ -14,12 +14,12 @@ import type {TurboModule} from '../TurboModule/RCTExport';
 import * as TurboModuleRegistry from '../TurboModule/TurboModuleRegistry';
 
 export interface Spec extends TurboModule {
-  +getConstants: () => {|BLOB_URI_SCHEME: string, BLOB_URI_HOST: ?string|};
+  +getConstants: () => {|BLOB_URI_SCHEME: ?string, BLOB_URI_HOST: ?string|};
   +addNetworkingHandler: () => void;
   +addWebSocketHandler: (id: number) => void;
   +removeWebSocketHandler: (id: number) => void;
-  +sendOverSocket: (blob: Object, id: number) => void;
-  +createFromParts: (parts: Array<Object>, blobId: string) => void;
+  +sendOverSocket: (blob: Object, socketID: number) => void;
+  +createFromParts: (parts: Array<Object>, withId: string) => void;
   +release: (blobId: string) => void;
 }
 

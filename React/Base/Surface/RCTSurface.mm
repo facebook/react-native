@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -62,7 +62,7 @@
                     moduleName:(NSString *)moduleName
              initialProperties:(NSDictionary *)initialProperties
 {
-  RCTAssert(bridge.valid, @"Valid bridge is required to instanciate `RCTSurface`.");
+  RCTAssert(bridge.valid, @"Valid bridge is required to instantiate `RCTSurface`.");
 
   if (self = [super init]) {
     _bridge = bridge;
@@ -106,7 +106,6 @@
 - (void)dealloc
 {
   [self _stop];
-  [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 #pragma mark - Immutable Properties (no need to enforce synchronization)

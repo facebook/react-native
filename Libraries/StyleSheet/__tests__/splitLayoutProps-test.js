@@ -13,11 +13,14 @@
 const splitLayoutProps = require('../splitLayoutProps');
 
 test('splits style objects', () => {
-  const style = {width: 10, margin: 20, padding: 30};
+  const style = {width: 10, margin: 20, padding: 30, transform: {scaleY: -1}};
   const {outer, inner} = splitLayoutProps(style);
   expect(outer).toMatchInlineSnapshot(`
     Object {
       "margin": 20,
+      "transform": Object {
+        "scaleY": -1,
+      },
       "width": 10,
     }
   `);

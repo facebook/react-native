@@ -29,7 +29,11 @@ export type MethodType = 'async' | 'promise' | 'sync';
 function genModule(
   config: ?ModuleConfig,
   moduleID: number,
-): ?{name: string, module?: Object} {
+): ?{
+  name: string,
+  module?: Object,
+  ...
+} {
   if (!config) {
     return null;
   }
@@ -94,10 +98,9 @@ function loadModule(name: string, moduleID: number): ?Object {
 function genMethod(moduleID: number, methodID: number, type: MethodType) {
   let fn = null;
   if (type === 'promise') {
-    fn = function(...args: Array<any>) {
+    fn = function promiseMethodWrapper(...args: Array<any>) {
       // In case we reject, capture a useful stack trace here.
       const enqueueingFrameError: ExtendedError = new Error();
-      enqueueingFrameError.framesToPop = 1;
       return new Promise((resolve, reject) => {
         BatchedBridge.enqueueNativeCall(
           moduleID,
@@ -110,7 +113,7 @@ function genMethod(moduleID: number, methodID: number, type: MethodType) {
       });
     };
   } else {
-    fn = function(...args: Array<any>) {
+    fn = function nonPromiseMethodWrapper(...args: Array<any>) {
       const lastArg = args.length > 0 ? args[args.length - 1] : null;
       const secondLastArg = args.length > 1 ? args[args.length - 2] : null;
       const hasSuccessCallback = typeof lastArg === 'function';
@@ -152,13 +155,13 @@ function arrayContains<T>(array: $ReadOnlyArray<T>, value: T): boolean {
 }
 
 function updateErrorWithErrorData(
-  errorData: {message: string},
+  errorData: {message: string, ...},
   error: ExtendedError,
 ): ExtendedError {
   return Object.assign(error, errorData || {});
 }
 
-let NativeModules: {[moduleName: string]: Object} = {};
+let NativeModules: {[moduleName: string]: Object, ...} = {};
 if (global.nativeModuleProxy) {
   NativeModules = global.nativeModuleProxy;
 } else if (!global.nativeExtensions) {

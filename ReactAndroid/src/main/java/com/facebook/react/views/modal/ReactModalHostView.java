@@ -1,9 +1,10 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
- * directory of this source tree.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
+
 package com.facebook.react.views.modal;
 
 import android.annotation.TargetApi;
@@ -26,6 +27,7 @@ import com.facebook.react.R;
 import com.facebook.react.bridge.GuardedRunnable;
 import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.ReactContext;
+import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.bridge.WritableNativeMap;
 import com.facebook.react.common.annotations.VisibleForTesting;
@@ -66,6 +68,7 @@ public class ReactModalHostView extends ViewGroup implements LifecycleEventListe
   private DialogRootViewGroup mHostView;
   private @Nullable Dialog mDialog;
   private boolean mTransparent;
+  private boolean mStatusBarTranslucent;
   private String mAnimationType;
   private boolean mHardwareAccelerated;
   // Set this flag to true if changing a particular property on the view requires a new Dialog to
@@ -94,7 +97,15 @@ public class ReactModalHostView extends ViewGroup implements LifecycleEventListe
   }
 
   @Override
+  protected void onDetachedFromWindow() {
+    super.onDetachedFromWindow();
+    dismiss();
+  }
+
+  @Override
   public void addView(View child, int index) {
+    UiThreadUtil.assertOnUiThread();
+
     mHostView.addView(child, index);
   }
 
@@ -110,11 +121,15 @@ public class ReactModalHostView extends ViewGroup implements LifecycleEventListe
 
   @Override
   public void removeView(View child) {
+    UiThreadUtil.assertOnUiThread();
+
     mHostView.removeView(child);
   }
 
   @Override
   public void removeViewAt(int index) {
+    UiThreadUtil.assertOnUiThread();
+
     View child = getChildAt(index);
     mHostView.removeView(child);
   }
@@ -138,6 +153,8 @@ public class ReactModalHostView extends ViewGroup implements LifecycleEventListe
   }
 
   private void dismiss() {
+    UiThreadUtil.assertOnUiThread();
+
     if (mDialog != null) {
       if (mDialog.isShowing()) {
         Activity dialogContext =
@@ -165,6 +182,11 @@ public class ReactModalHostView extends ViewGroup implements LifecycleEventListe
 
   protected void setTransparent(boolean transparent) {
     mTransparent = transparent;
+  }
+
+  protected void setStatusBarTranslucent(boolean statusBarTranslucent) {
+    mStatusBarTranslucent = statusBarTranslucent;
+    mPropertyRequiresNewDialog = true;
   }
 
   protected void setAnimationType(String animationType) {
@@ -210,6 +232,8 @@ public class ReactModalHostView extends ViewGroup implements LifecycleEventListe
    * new Dialog.
    */
   protected void showOrUpdate() {
+    UiThreadUtil.assertOnUiThread();
+
     // If the existing Dialog is currently up, we may need to redraw it or we may be able to update
     // the property without having to recreate the dialog
     if (mDialog != null) {
@@ -306,7 +330,11 @@ public class ReactModalHostView extends ViewGroup implements LifecycleEventListe
   private View getContentView() {
     FrameLayout frameLayout = new FrameLayout(getContext());
     frameLayout.addView(mHostView);
-    frameLayout.setFitsSystemWindows(true);
+    if (mStatusBarTranslucent) {
+      frameLayout.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
+    } else {
+      frameLayout.setFitsSystemWindows(true);
+    }
     return frameLayout;
   }
 

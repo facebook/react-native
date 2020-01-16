@@ -7,15 +7,17 @@
  * @format
  * @flow
  */
+
 'use strict';
 
-const Platform = require('./Platform');
+const DevSettings = require('./DevSettings');
 const invariant = require('invariant');
-
 const MetroHMRClient = require('metro/src/lib/bundle-modules/HMRClient');
+const Platform = require('./Platform');
+const prettyFormat = require('pretty-format');
 
 import NativeRedBox from '../NativeModules/specs/NativeRedBox';
-
+import * as LogBoxData from '../LogBox/Data/LogBoxData';
 import type {ExtendedError} from '../Core/Devtools/parseErrorStack';
 
 const pendingEntryPoints = [];
@@ -23,6 +25,7 @@ let hmrClient = null;
 let hmrUnavailableReason: string | null = null;
 let currentCompileErrorMessage: string | null = null;
 let didConnect: boolean = false;
+let pendingLogs: Array<[LogLevel, Array<mixed>]> = [];
 
 type LogLevel =
   | 'trace'
@@ -101,39 +104,33 @@ const HMRClient: HMRClientNativeInterface = {
   },
 
   log(level: LogLevel, data: Array<mixed>) {
-    try {
-      if (hmrClient) {
-        let message;
-        if (global.Symbol) {
-          message = JSON.stringify({
-            type: 'log',
-            level,
-            data: data.map(item =>
-              typeof item === 'string'
-                ? item
-                : require('pretty-format')(item, {
-                    escapeString: true,
-                    highlight: true,
-                    maxDepth: 3,
-                    min: true,
-                    plugins: [require('pretty-format').plugins.ReactElement],
-                  }),
-            ),
-          });
-        } else {
-          try {
-            message = JSON.stringify({type: 'log', level, data});
-          } catch (error) {
-            message = JSON.stringify({
-              type: 'log',
-              level,
-              data: [error.message],
-            });
-          }
-        }
-
-        hmrClient.send(message);
+    if (!hmrClient) {
+      // Catch a reasonable number of early logs
+      // in case hmrClient gets initialized later.
+      pendingLogs.push([level, data]);
+      if (pendingLogs.length > 100) {
+        pendingLogs.shift();
       }
+      return;
+    }
+    try {
+      hmrClient.send(
+        JSON.stringify({
+          type: 'log',
+          level,
+          data: data.map(item =>
+            typeof item === 'string'
+              ? item
+              : prettyFormat(item, {
+                  escapeString: true,
+                  highlight: true,
+                  maxDepth: 3,
+                  min: true,
+                  plugins: [prettyFormat.plugins.ReactElement],
+                }),
+          ),
+        }),
+      );
     } catch (error) {
       // If sending logs causes any failures we want to silently ignore them
       // to ensure we do not cause infinite-logging loops.
@@ -150,8 +147,8 @@ const HMRClient: HMRClientNativeInterface = {
     isEnabled: boolean,
   ) {
     invariant(platform, 'Missing required parameter `platform`');
-    invariant(bundleEntry, 'Missing required paramenter `bundleEntry`');
-    invariant(host, 'Missing required paramenter `host`');
+    invariant(bundleEntry, 'Missing required parameter `bundleEntry`');
+    invariant(host, 'Missing required parameter `host`');
     invariant(!hmrClient, 'Cannot initialize hmrClient twice');
 
     // Moving to top gives errors due to NativeModules not being initialized
@@ -202,6 +199,7 @@ Error: ${e.message}`;
     client.on('update', ({isInitialUpdate}) => {
       if (client.isEnabled() && !isInitialUpdate) {
         dismissRedbox();
+        LogBoxData.clear();
       }
     });
 
@@ -232,9 +230,7 @@ Error: ${e.message}`;
 
     client.on('close', data => {
       LoadingView.hide();
-      setHMRUnavailableReason(
-        'Disconnected from the Metro server. Reload to reconnect.',
-      );
+      setHMRUnavailableReason('Disconnected from the Metro server.');
     });
 
     if (isEnabled) {
@@ -244,6 +240,7 @@ Error: ${e.message}`;
     }
 
     registerBundleEntryPoints(hmrClient);
+    flushEarlyLogs(hmrClient);
   },
 };
 
@@ -265,6 +262,11 @@ function setHMRUnavailableReason(reason) {
 }
 
 function registerBundleEntryPoints(client) {
+  if (hmrUnavailableReason) {
+    DevSettings.reload('Bundle Splitting – Metro disconnected');
+    return;
+  }
+
   if (pendingEntryPoints.length > 0) {
     client.send(
       JSON.stringify({
@@ -273,6 +275,16 @@ function registerBundleEntryPoints(client) {
       }),
     );
     pendingEntryPoints.length = 0;
+  }
+}
+
+function flushEarlyLogs(client) {
+  try {
+    pendingLogs.forEach(([level: LogLevel, data: Array<mixed>]) => {
+      HMRClient.log(level, data);
+    });
+  } finally {
+    pendingLogs.length = 0;
   }
 }
 

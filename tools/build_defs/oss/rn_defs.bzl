@@ -100,10 +100,7 @@ def react_native_dep(path):
 def react_native_xplat_dep(path):
     return "//ReactCommon/" + path
 
-def rn_debug_flags():
-    return []
-
-def rn_feature_flags():
+def rn_extra_build_flags():
     return []
 
 # React property preprocessor
@@ -170,10 +167,12 @@ def rn_android_prebuilt_aar(*args, **kwargs):
 def rn_apple_library(*args, **kwargs):
     kwargs.setdefault("link_whole", True)
     kwargs.setdefault("enable_exceptions", True)
+    kwargs.setdefault("target_sdk_version", "10.0")
     native.apple_library(*args, **kwargs)
 
 def rn_plugin_apple_library(**kwargs):
     kwargs.setdefault("link_whole", True)
+    kwargs.setdefault("target_sdk_version", "10.0")
 
     # This just an alias to apple_library for now.
     native.apple_library(**kwargs)

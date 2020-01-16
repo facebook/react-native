@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -15,7 +15,8 @@
 namespace facebook {
 namespace react {
 
-void RawPropsKey::render(char *buffer, RawPropsPropNameLength *length) const {
+void RawPropsKey::render(char *buffer, RawPropsPropNameLength *length) const
+    noexcept {
   *length = 0;
 
   // Prefix
@@ -39,7 +40,7 @@ void RawPropsKey::render(char *buffer, RawPropsPropNameLength *length) const {
   assert(*length < kPropNameLengthHardCap);
 }
 
-RawPropsKey::operator std::string() const {
+RawPropsKey::operator std::string() const noexcept {
   char buffer[kPropNameLengthHardCap];
   RawPropsPropNameLength length = 0;
   render(buffer, &length);
@@ -47,13 +48,13 @@ RawPropsKey::operator std::string() const {
   return std::string{buffer, length};
 }
 
-bool operator==(RawPropsKey const &lhs, RawPropsKey const &rhs) {
+bool operator==(RawPropsKey const &lhs, RawPropsKey const &rhs) noexcept {
   // Note: We check the name first.
   return lhs.name == rhs.name && lhs.prefix == rhs.prefix &&
       lhs.suffix == rhs.suffix;
 }
 
-bool operator!=(RawPropsKey const &lhs, RawPropsKey const &rhs) {
+bool operator!=(RawPropsKey const &lhs, RawPropsKey const &rhs) noexcept {
   return !(lhs == rhs);
 }
 
