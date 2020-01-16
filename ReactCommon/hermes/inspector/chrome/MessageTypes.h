@@ -1,5 +1,5 @@
 // Copyright 2004-present Facebook. All Rights Reserved.
-// @generated SignedSource<<e953c14d4ad54968903d223038ab3f85>>
+// @generated SignedSource<<16a6754d1896fef0cbab2a05800f6885>>
 
 #pragma once
 
@@ -195,6 +195,7 @@ struct debugger::CallFrame : public Serializable {
 
   debugger::CallFrameId callFrameId{};
   std::string functionName;
+  folly::Optional<debugger::Location> functionLocation;
   debugger::Location location{};
   std::string url;
   std::vector<debugger::Scope> scopeChain;
@@ -279,6 +280,7 @@ struct debugger::EvaluateOnCallFrameRequest : public Request {
   folly::Optional<bool> includeCommandLineAPI;
   folly::Optional<bool> silent;
   folly::Optional<bool> returnByValue;
+  folly::Optional<bool> throwOnSideEffect;
 };
 
 struct debugger::PauseRequest : public Request {
@@ -328,6 +330,7 @@ struct debugger::SetBreakpointByUrlRequest : public Request {
   int lineNumber{};
   folly::Optional<std::string> url;
   folly::Optional<std::string> urlRegex;
+  folly::Optional<std::string> scriptHash;
   folly::Optional<int> columnNumber;
   folly::Optional<std::string> condition;
 };
@@ -374,6 +377,7 @@ struct heapProfiler::TakeHeapSnapshotRequest : public Request {
   void accept(RequestHandler &handler) const override;
 
   folly::Optional<bool> reportProgress;
+  folly::Optional<bool> treatGlobalObjectsAsRoots;
 };
 
 struct runtime::EvaluateRequest : public Request {
@@ -389,6 +393,7 @@ struct runtime::EvaluateRequest : public Request {
   folly::Optional<bool> silent;
   folly::Optional<runtime::ExecutionContextId> contextId;
   folly::Optional<bool> returnByValue;
+  folly::Optional<bool> userGesture;
   folly::Optional<bool> awaitPromise;
 };
 
@@ -510,6 +515,9 @@ struct debugger::ScriptParsedNotification : public Notification {
   std::string hash;
   folly::Optional<folly::dynamic> executionContextAuxData;
   folly::Optional<std::string> sourceMapURL;
+  folly::Optional<bool> hasSourceURL;
+  folly::Optional<bool> isModule;
+  folly::Optional<int> length;
 };
 
 struct heapProfiler::AddHeapSnapshotChunkNotification : public Notification {

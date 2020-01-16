@@ -1,5 +1,5 @@
 // Copyright 2004-present Facebook. All Rights Reserved.
-// @generated SignedSource<<138b9ba90e2b7ed52d87874ad422df4b>>
+// @generated SignedSource<<633984dcfe87d2822ef0e80c1aab93ef>>
 
 #include "MessageTypes.h"
 
@@ -185,6 +185,7 @@ dynamic debugger::Scope::toDynamic() const {
 debugger::CallFrame::CallFrame(const dynamic &obj) {
   assign(callFrameId, obj, "callFrameId");
   assign(functionName, obj, "functionName");
+  assign(functionLocation, obj, "functionLocation");
   assign(location, obj, "location");
   assign(url, obj, "url");
   assign(scopeChain, obj, "scopeChain");
@@ -197,6 +198,7 @@ dynamic debugger::CallFrame::toDynamic() const {
 
   put(obj, "callFrameId", callFrameId);
   put(obj, "functionName", functionName);
+  put(obj, "functionLocation", functionLocation);
   put(obj, "location", location);
   put(obj, "url", url);
   put(obj, "scopeChain", scopeChain);
@@ -341,6 +343,7 @@ debugger::EvaluateOnCallFrameRequest::EvaluateOnCallFrameRequest(
   assign(includeCommandLineAPI, params, "includeCommandLineAPI");
   assign(silent, params, "silent");
   assign(returnByValue, params, "returnByValue");
+  assign(throwOnSideEffect, params, "throwOnSideEffect");
 }
 
 dynamic debugger::EvaluateOnCallFrameRequest::toDynamic() const {
@@ -351,6 +354,7 @@ dynamic debugger::EvaluateOnCallFrameRequest::toDynamic() const {
   put(params, "includeCommandLineAPI", includeCommandLineAPI);
   put(params, "silent", silent);
   put(params, "returnByValue", returnByValue);
+  put(params, "throwOnSideEffect", throwOnSideEffect);
 
   dynamic obj = dynamic::object;
   put(obj, "id", id);
@@ -471,6 +475,7 @@ debugger::SetBreakpointByUrlRequest::SetBreakpointByUrlRequest(
   assign(lineNumber, params, "lineNumber");
   assign(url, params, "url");
   assign(urlRegex, params, "urlRegex");
+  assign(scriptHash, params, "scriptHash");
   assign(columnNumber, params, "columnNumber");
   assign(condition, params, "condition");
 }
@@ -480,6 +485,7 @@ dynamic debugger::SetBreakpointByUrlRequest::toDynamic() const {
   put(params, "lineNumber", lineNumber);
   put(params, "url", url);
   put(params, "urlRegex", urlRegex);
+  put(params, "scriptHash", scriptHash);
   put(params, "columnNumber", columnNumber);
   put(params, "condition", condition);
 
@@ -592,11 +598,13 @@ heapProfiler::TakeHeapSnapshotRequest::TakeHeapSnapshotRequest(
 
   dynamic params = obj.at("params");
   assign(reportProgress, params, "reportProgress");
+  assign(treatGlobalObjectsAsRoots, params, "treatGlobalObjectsAsRoots");
 }
 
 dynamic heapProfiler::TakeHeapSnapshotRequest::toDynamic() const {
   dynamic params = dynamic::object;
   put(params, "reportProgress", reportProgress);
+  put(params, "treatGlobalObjectsAsRoots", treatGlobalObjectsAsRoots);
 
   dynamic obj = dynamic::object;
   put(obj, "id", id);
@@ -624,6 +632,7 @@ runtime::EvaluateRequest::EvaluateRequest(const dynamic &obj)
   assign(silent, params, "silent");
   assign(contextId, params, "contextId");
   assign(returnByValue, params, "returnByValue");
+  assign(userGesture, params, "userGesture");
   assign(awaitPromise, params, "awaitPromise");
 }
 
@@ -635,6 +644,7 @@ dynamic runtime::EvaluateRequest::toDynamic() const {
   put(params, "silent", silent);
   put(params, "contextId", contextId);
   put(params, "returnByValue", returnByValue);
+  put(params, "userGesture", userGesture);
   put(params, "awaitPromise", awaitPromise);
 
   dynamic obj = dynamic::object;
@@ -897,6 +907,9 @@ debugger::ScriptParsedNotification::ScriptParsedNotification(const dynamic &obj)
   assign(hash, params, "hash");
   assign(executionContextAuxData, params, "executionContextAuxData");
   assign(sourceMapURL, params, "sourceMapURL");
+  assign(hasSourceURL, params, "hasSourceURL");
+  assign(isModule, params, "isModule");
+  assign(length, params, "length");
 }
 
 dynamic debugger::ScriptParsedNotification::toDynamic() const {
@@ -911,6 +924,9 @@ dynamic debugger::ScriptParsedNotification::toDynamic() const {
   put(params, "hash", hash);
   put(params, "executionContextAuxData", executionContextAuxData);
   put(params, "sourceMapURL", sourceMapURL);
+  put(params, "hasSourceURL", hasSourceURL);
+  put(params, "isModule", isModule);
+  put(params, "length", length);
 
   dynamic obj = dynamic::object;
   put(obj, "method", method);
