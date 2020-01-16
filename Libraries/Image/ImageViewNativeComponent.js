@@ -52,4 +52,5 @@ if (global.RN$Bridgeless) {
   );
 }
 
-export default ((ImageViewNativeComponent: any): HostComponent<NativeProps>); // flowlint-line unclear-type:off
+// flowlint-next-line unclear-type:off
+export default ((ImageViewNativeComponent: any): HostComponent<NativeProps>);

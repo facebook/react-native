@@ -3382,10 +3382,10 @@ flat-cache@^1.2.1:
     rimraf "~2.6.2"
     write "^0.2.1"
 
-flow-bin@^0.115.0:
-  version "0.115.0"
-  resolved "https://registry.yarnpkg.com/flow-bin/-/flow-bin-0.115.0.tgz#22e3ad9e5c7198967de80138ba8a9154ff387960"
-  integrity sha512-xW+U2SrBaAr0EeLvKmXAmsdnrH6x0Io17P6yRJTNgrrV42G8KXhBAD00s6oGbTTqRyHD0nP47kyuU34zljZpaQ==
+flow-bin@^0.116.0:
+  version "0.116.0"
+  resolved "https://registry.yarnpkg.com/flow-bin/-/flow-bin-0.116.0.tgz#f2e5ef318838ceb760e3f588b66076bc8ee1dc87"
+  integrity sha512-6q1f84mhAzHlUp9eTpIIJqINFBXf2+HGQllYfrkdQ+DfOLkF2wEZNHpVlYX1DL0G3uS8D//XEfsN2seZAc7jiw==
 
 flow-parser@0.*:
   version "0.89.0"
