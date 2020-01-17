@@ -1808,23 +1808,6 @@ namespace facebook {
     };
   } // namespace react
 } // namespace facebook
-
-namespace JS {
-  namespace NativeNetworkingAndroid {
-    struct Header {
-      NSString *first() const;
-      NSString *second() const;
-
-      Header(NSArray *const v) : _v(v) {}
-    private:
-      NSArray *_v;
-    };
-  }
-}
-
-@interface RCTCxxConvert (NativeNetworkingAndroid_Header)
-+ (RCTManagedPointer *)JS_NativeNetworkingAndroid_Header:(id)json;
-@end
 @protocol NativeNetworkingAndroidSpec <RCTBridgeModule, RCTTurboModule>
 
 - (void)sendRequest:(NSString *)method
@@ -3550,16 +3533,6 @@ inline id<NSObject> JS::NativeLinking::SpecSendIntentExtrasElement::value() cons
 {
   id const p = _v[@"value"];
   return p;
-}
-inline NSString *JS::NativeNetworkingAndroid::Header::first() const
-{
-  id const p = _v[0];
-  return RCTBridgingToString(p);
-}
-inline NSString *JS::NativeNetworkingAndroid::Header::second() const
-{
-  id const p = _v[1];
-  return RCTBridgingToString(p);
 }
 inline NSString *JS::NativeNetworkingIOS::SpecSendRequestQuery::method() const
 {

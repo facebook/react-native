@@ -1722,12 +1722,6 @@ namespace facebook {
 
   } // namespace react
 } // namespace facebook
-@implementation RCTCxxConvert (NativeNetworkingAndroid_Header)
-+ (RCTManagedPointer *)JS_NativeNetworkingAndroid_Header:(id)json
-{
-  return facebook::react::managedPointer<JS::NativeNetworkingAndroid::Header>(json);
-}
-@end
 namespace facebook {
   namespace react {
 
