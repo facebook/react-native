@@ -17,17 +17,15 @@ LOCAL_C_INCLUDES := $(LOCAL_PATH)
 #   ./../ == react
 LOCAL_EXPORT_C_INCLUDES := $(LOCAL_PATH)/../..
 
-
 LOCAL_CFLAGS += -fexceptions -frtti -Wno-unused-lambda-capture
 
 LOCAL_LDLIBS += -landroid
 
 # The dynamic libraries (.so files) that this module depends on.
-
-LOCAL_SHARED_LIBRARIES := libfolly_json libfb libglog_init libyoga libprivatedata
+LOCAL_SHARED_LIBRARIES := libfolly_json libfb libglog_init libyoga
 
 # The static libraries (.a files) that this module depends on.
-LOCAL_STATIC_LIBRARIES := libreactnative jsi libjscallinvokerholder
+LOCAL_STATIC_LIBRARIES := libreactnative libjscallinvokerholder
 
 # Name of this module.
 #
@@ -35,39 +33,8 @@ LOCAL_STATIC_LIBRARIES := libreactnative jsi libjscallinvokerholder
 # LOCAL_SHARED_LIBRARIES variable.
 LOCAL_MODULE := reactnativejni
 
-LOCAL_SRC_FILES := \
-  CatalystInstanceImpl.cpp \
-  CxxModuleWrapper.cpp \
-  JavaModuleWrapper.cpp \
-  JReactMarker.cpp \
-  JSLogging.cpp \
-  JMessageQueueThread.cpp \
-  JSLoader.cpp \
-  JniJSModulesUnbundle.cpp \
-  MethodInvoker.cpp \
-  ModuleRegistryBuilder.cpp \
-  NativeArray.cpp \
-  NativeCommon.cpp \
-  NativeDeltaClient.cpp \
-  NativeMap.cpp \
-  OnLoad.cpp \
-  ProxyExecutor.cpp \
-  ReadableNativeArray.cpp \
-  ReadableNativeMap.cpp \
-  WritableNativeArray.cpp \
-  WritableNativeMap.cpp \
-
-LOCAL_V8_FILES := \
-  InstanceManager.cpp \
-  AndroidV8Factory.cpp
-  
-ifeq ($(JS_ENGINE), V8)
-  LOCAL_SRC_FILES += $(LOCAL_V8_FILES)
-  LOCAL_STATIC_LIBRARIES += v8runtime
-else ifeq ($(JS_ENGINE), JSC)
-  LOCAL_SHARED_LIBRARIES += libjsc
-  LOCAL_STATIC_LIBRARIES += jscruntime
-endif
+# Compile all local c++ files.
+LOCAL_SRC_FILES := $(wildcard *.cpp)
 
 # Build the files in this directory as a shared library
 include $(BUILD_SHARED_LIBRARY)
@@ -84,16 +51,11 @@ include $(BUILD_SHARED_LIBRARY)
 #   Whenever you encounter an include <dir>/<module-dir>/Android.mk, you
 #   tell andorid-ndk to compile the module in <dir>/<module-dir> according
 #   to the specification inside <dir>/<module-dir>/Android.mk.
-
-$(call import-module,cxxreact)
-$(call import-module,privatedata)
+$(call import-module,folly)
 $(call import-module,fb)
 $(call import-module,fbgloginit)
-$(call import-module,folly)
-ifeq ($(JS_ENGINE), JSC)
-  $(call import-module,jsc)
-endif
 $(call import-module,yogajni)
+$(call import-module,cxxreact)
 $(call import-module,jsi)
 $(call import-module,jsiexecutor)
 $(call import-module,jscallinvoker)
@@ -103,9 +65,4 @@ include $(REACT_SRC_DIR)/turbomodule/core/jni/Android.mk
 # TODO(ramanpreet):
 #   Why doesn't this import-module call generate a jscexecutor.so file?
 # $(call import-module,jscexecutor)
-
-ifeq ($(JS_ENGINE), JSC)
-  include $(REACT_SRC_DIR)/jscexecutor/Android.mk
-else ifeq ($(JS_ENGINE), V8)
-  include $(REACT_SRC_DIR)/v8executor/Android.mk
-endif
+include $(REACT_SRC_DIR)/v8executor/Android.mk

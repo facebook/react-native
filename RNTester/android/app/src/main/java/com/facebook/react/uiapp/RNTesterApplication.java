@@ -21,7 +21,6 @@ import com.facebook.react.bridge.ReactMarker;
 import com.facebook.react.bridge.ReactMarkerConstants;
 import com.facebook.react.shell.MainReactPackage;
 import com.facebook.react.v8executor.V8ExecutorFactory;
-import com.facebook.react.jscexecutor.JSCExecutorFactory;
 import com.facebook.react.views.text.ReactFontManager;
 
 
@@ -72,30 +71,6 @@ public class RNTesterApplication extends Application implements ReactApplication
       return Arrays.<ReactPackage>asList(
         new MainReactPackage()
       );
-    }
-
-    @Override
-    public JavaScriptExecutorFactory getJavaScriptExecutorFactory() {
-      ReactMarker.addListener(new RNTesterReactMarker());
-      // We use the name of the device and the app for debugging & metrics
-      String appName = getPackageName();
-      String deviceName = getFriendlyDeviceName();
-
-      File jseDir = getApplicationContext().getDir("jse", Context.MODE_PRIVATE);
-      File jsDataStore = new File(jseDir, JSE_CACHING_DIRECTORY_NAME);
-      String jseCacheDirectoryPath = "";
-      if ((jsDataStore.exists() && jsDataStore.isDirectory()) || jsDataStore.mkdirs()) {
-        jseCacheDirectoryPath = jsDataStore.getAbsolutePath();
-      }
-      if(BuildConfig.JS_ENGINE_USED.equals("V8")){
-        return new V8ExecutorFactory(appName, deviceName, new V8ExecutorFactory.V8ConfigParams(jseCacheDirectoryPath, V8ExecutorFactory.V8ConfigParams.CacheType.CodeCache, false));
-      }
-      else if(BuildConfig.JS_ENGINE_USED.equals("JSC")){
-        return new JSCExecutorFactory(appName, deviceName);
-      }
-      else{
-        return null;
-      }
     }
   };
 

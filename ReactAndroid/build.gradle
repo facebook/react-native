@@ -40,12 +40,7 @@ def boostPath = dependenciesPath ?: System.getenv("REACT_NATIVE_BOOST_PATH") ?: 
 def DoubleConversionPath = '../double-conversion'
 def FollyPath = '..'
 def GlogPath = '..'
-def JSCPath = '../jsc'
 def V8Path = 'packages/ReactNative.V8.Android.7.0.276.32-v1'
-
-
-// Set the value of JSEngineUsed as 'V8' or 'JSC' to enable the respective engine
-def JSEngineUsed = 'V8'
 
 task createNativeDepsDirectories {
     downloadsDir.mkdirs()
@@ -130,34 +125,30 @@ task prepareGlog(dependsOn: createNativeDepsDirectories, type: Copy) {
 
 // Create Android.mk library module based on jsc from npm
 task prepareJSC {
-	if (JSEngineUsed=='JSC'){
-		doLast {
-			def jscPackageRoot = file("$projectDir/../node_modules/jsc-android/dist")
-			if (!jscPackageRoot.exists()) {
-				// For an app to build from RN source, the jsc-android is located at /path/to/app/node_modules
-				// and $projectDir may located at /path/to/app/node_modules/react-native/ReactAndroid
-				jscPackageRoot = file("$projectDir/../../jsc-android/dist")
-			}
-			def jscAAR = fileTree(jscPackageRoot).matching({ it.include "**/android-jsc/**/*.aar" }).singleFile
-			def soFiles = zipTree(jscAAR).matching({ it.include "**/*.so" })
+    doLast {
+        def jscPackageRoot = file("$projectDir/../node_modules/jsc-android/dist")
+        if (!jscPackageRoot.exists()) {
+            // For an app to build from RN source, the jsc-android is located at /path/to/app/node_modules
+            // and $projectDir may located at /path/to/app/node_modules/react-native/ReactAndroid
+            jscPackageRoot = file("$projectDir/../../jsc-android/dist")
+        }
+        def jscAAR = fileTree(jscPackageRoot).matching({ it.include "**/android-jsc/**/*.aar" }).singleFile
+        def soFiles = zipTree(jscAAR).matching({ it.include "**/*.so" })
 
-			def headerFiles = fileTree(jscPackageRoot).matching({ it.include "**/include/*.h" })
+        def headerFiles = fileTree(jscPackageRoot).matching({ it.include "**/include/*.h" })
 
-			copy {
-				from(soFiles)
-				from(headerFiles)
-				from("src/main/jni/third-party/jsc/Android.mk")
+        copy {
+            from(soFiles)
+            from(headerFiles)
+            from("src/main/jni/third-party/jsc/Android.mk")
 
-				filesMatching("**/*.h", { it.path = "JavaScriptCore/${it.name}" })
+            filesMatching("**/*.h", { it.path = "JavaScriptCore/${it.name}" })
 
-				includeEmptyDirs(false)
-				into("$thirdPartyNdkDir/jsc")
-
-			}
-		}
-	}
+            includeEmptyDirs(false)
+            into("$thirdPartyNdkDir/jsc")
+        }
+    }
 }
-
 task downloadNdkBuildDependencies {
     if (!boostPath) {
         dependsOn(downloadBoost)
@@ -225,7 +216,7 @@ def getNdkBuildFullPath() {
     return ndkBuildFullPath
 }
 
-task buildReactNdkLib(dependsOn: [prepareJSC, prepareBoost, prepareDoubleConversion, prepareFolly, prepareGlog], type: Exec) {
+task buildReactNdkLib(dependsOn: [prepareBoost, prepareDoubleConversion, prepareFolly, prepareGlog], type: Exec) {
     inputs.dir("$projectDir/../ReactCommon")
     inputs.dir("src/main/jni")
     outputs.dir("$buildDir/react-ndk/all")
@@ -239,9 +230,8 @@ task buildReactNdkLib(dependsOn: [prepareJSC, prepareBoost, prepareDoubleConvers
             "V8_NUGET_DIR=$projectDir/$V8Path",
             "REACT_COMMON_DIR=$projectDir/../ReactCommon",
             "REACT_SRC_DIR=$projectDir/src/main/java/com/facebook/react",
-            "JS_ENGINE=$JSEngineUsed",
-            '-C', file("src/main/jni/react/jni").absolutePath,
-            '--jobs', project.findProperty("jobs") ?: Runtime.runtime.availableProcessors()
+            "-C", file("src/main/jni/react/jni").absolutePath,
+            "--jobs", project.findProperty("jobs") ?: Runtime.runtime.availableProcessors()
     )
 }
 
@@ -302,7 +292,6 @@ android {
         }
 
         buildConfigField("boolean", "IS_INTERNAL_BUILD", "false")
-        buildConfigField("String", "JS_ENGINE_USED", "\"$JSEngineUsed\"")
         buildConfigField("int", "EXOPACKAGE_FLAGS", "0")
 
         resValue "integer", "react_native_dev_server_port", reactNativeDevServerPort()

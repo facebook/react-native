@@ -37,11 +37,6 @@
     <file src="build\react-ndk\all\x86\libjsinspector.so" target="lib\droidx86"/>
     <file src="build\react-ndk\all\arm64-v8a\libjsinspector.so" target="lib\droidarm64"/>
 
-    <file src="build\react-ndk\all\x86_64\libprivatedata.so" target="lib\droidx64"/>
-    <file src="build\react-ndk\all\armeabi-v7a\libprivatedata.so" target="lib\droidarm"/>
-    <file src="build\react-ndk\all\x86\libprivatedata.so" target="lib\droidx86"/>
-    <file src="build\react-ndk\all\arm64-v8a\libprivatedata.so" target="lib\droidarm64"/>
-
     <file src="build\react-ndk\all\x86_64\libreactnativejni.so" target="lib\droidx64"/>
     <file src="build\react-ndk\all\armeabi-v7a\libreactnativejni.so" target="lib\droidarm"/>
     <file src="build\react-ndk\all\x86\libreactnativejni.so" target="lib\droidx86"/>
@@ -88,11 +83,6 @@
     <file src="build\tmp\buildReactNdkLib\local\x86\libjsinspector.so" target="lib\droidx86\unstripped"/>
     <file src="build\tmp\buildReactNdkLib\local\arm64-v8a\libjsinspector.so" target="lib\droidarm64\unstripped"/>
 
-    <file src="build\tmp\buildReactNdkLib\local\x86_64\libprivatedata.so" target="lib\droidx64\unstripped"/>
-    <file src="build\tmp\buildReactNdkLib\local\armeabi-v7a\libprivatedata.so" target="lib\droidarm\unstripped"/>
-    <file src="build\tmp\buildReactNdkLib\local\x86\libprivatedata.so" target="lib\droidx86\unstripped"/>
-    <file src="build\tmp\buildReactNdkLib\local\arm64-v8a\libprivatedata.so" target="lib\droidarm64\unstripped"/>
-
     <file src="build\tmp\buildReactNdkLib\local\x86_64\libreactnativejni.so" target="lib\droidx64\unstripped"/>
     <file src="build\tmp\buildReactNdkLib\local\armeabi-v7a\libreactnativejni.so" target="lib\droidarm\unstripped"/>
     <file src="build\tmp\buildReactNdkLib\local\x86\libreactnativejni.so" target="lib\droidx86\unstripped"/>
@@ -124,7 +114,6 @@
     <file src="..\ReactCommon\yoga\yoga\**\*.h" target="inc\Yoga"/>
     <file src="..\folly\**\*.*" target="inc" />
     <file src="..\glog\src\glog\*.h" target="inc\glog" />
-    <file src="..\ReactCommon\privatedata\PrivateDataBase.h" target="inc\privatedata" />
     <file src="..\jsc\jsc-headers\*.h" target="inc\jsc"/>
   </files>
 </package>
