@@ -56,6 +56,7 @@ public class TurboModuleManager implements JSIModule, TurboModuleRegistry {
     return mTurbomoduleManagerDelegate.getEagerInitModuleNames();
   }
 
+  @DoNotStrip
   @Nullable
   private TurboModule getJavaModule(String name) {
     if (!mTurboModules.containsKey(name)) {
