@@ -356,6 +356,7 @@ jobs:
       - run: touch .watchmanconfig
 
       - run: yarn test-ios
+      - run: cp ~/react-native/RNTester/RNTesterIntegrationTests/ReferenceImages/RNTester-js-RNTesterApp.ios/* ./reports/failed_snapshots
       - store_test_results:
           path: ./reports/junit
       - store_artifacts:
