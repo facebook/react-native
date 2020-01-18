@@ -34,7 +34,7 @@ executors:
   reactnativeios:
     <<: *defaults
     macos:
-      xcode: "11.2.1"
+      xcode: "11.3.0"
 
 # -------------------------
 #        COMMANDS
