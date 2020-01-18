@@ -455,31 +455,21 @@ class StatusBar extends React.Component<Props> {
           );
         }
       } else if (Platform.OS === 'android') {
-        if (
-          !oldProps ||
-          oldProps.barStyle.value !== mergedProps.barStyle.value
-        ) {
-          NativeStatusBarManagerAndroid.setStyle(mergedProps.barStyle.value);
-        }
-        if (
-          !oldProps ||
-          oldProps.backgroundColor.value !== mergedProps.backgroundColor.value
-        ) {
-          const processedColor = processColor(
-            mergedProps.backgroundColor.value,
+        //todo(T60684787): Add back optimization to only update bar style and
+        //background color if the new value is different from the old value.
+        NativeStatusBarManagerAndroid.setStyle(mergedProps.barStyle.value);
+        const processedColor = processColor(mergedProps.backgroundColor.value);
+        if (processedColor == null) {
+          console.warn(
+            `\`StatusBar._updatePropsStack\`: Color ${
+              mergedProps.backgroundColor.value
+            } parsed to null or undefined`,
           );
-          if (processedColor == null) {
-            console.warn(
-              `\`StatusBar._updatePropsStack\`: Color ${
-                mergedProps.backgroundColor.value
-              } parsed to null or undefined`,
-            );
-          } else {
-            NativeStatusBarManagerAndroid.setColor(
-              processedColor,
-              mergedProps.backgroundColor.animated,
-            );
-          }
+        } else {
+          NativeStatusBarManagerAndroid.setColor(
+            processedColor,
+            mergedProps.backgroundColor.animated,
+          );
         }
         if (!oldProps || oldProps.hidden.value !== mergedProps.hidden.value) {
           NativeStatusBarManagerAndroid.setHidden(mergedProps.hidden.value);
