@@ -15,10 +15,8 @@ import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Rect;
-import android.os.Build;
 import android.os.Bundle;
 import android.util.AttributeSet;
-import android.util.DisplayMetrics;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.Surface;
@@ -683,8 +681,6 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
 
     private int mKeyboardHeight = 0;
     private int mDeviceRotation = 0;
-    private DisplayMetrics mWindowMetrics = new DisplayMetrics();
-    private DisplayMetrics mScreenMetrics = new DisplayMetrics();
 
     /* package */ CustomGlobalLayoutListener() {
       DisplayMetricsHolder.initDisplayMetricsIfNotInitialized(getContext().getApplicationContext());
@@ -749,32 +745,8 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
     }
 
     private void checkForDeviceDimensionsChanges() {
-      // Get current display metrics.
-      DisplayMetricsHolder.initDisplayMetrics(getContext());
-      // Check changes to both window and screen display metrics since they may not update at the
-      // same time.
-      if (!areMetricsEqual(mWindowMetrics, DisplayMetricsHolder.getWindowDisplayMetrics())
-          || !areMetricsEqual(mScreenMetrics, DisplayMetricsHolder.getScreenDisplayMetrics())) {
-        mWindowMetrics.setTo(DisplayMetricsHolder.getWindowDisplayMetrics());
-        mScreenMetrics.setTo(DisplayMetricsHolder.getScreenDisplayMetrics());
-        emitUpdateDimensionsEvent();
-      }
-    }
-
-    private boolean areMetricsEqual(DisplayMetrics displayMetrics, DisplayMetrics otherMetrics) {
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-        return displayMetrics.equals(otherMetrics);
-      } else {
-        // DisplayMetrics didn't have an equals method before API 17.
-        // Check all public fields manually.
-        return displayMetrics.widthPixels == otherMetrics.widthPixels
-            && displayMetrics.heightPixels == otherMetrics.heightPixels
-            && displayMetrics.density == otherMetrics.density
-            && displayMetrics.densityDpi == otherMetrics.densityDpi
-            && displayMetrics.scaledDensity == otherMetrics.scaledDensity
-            && displayMetrics.xdpi == otherMetrics.xdpi
-            && displayMetrics.ydpi == otherMetrics.ydpi;
-      }
+      // DeviceInfoModule caches the last dimensions emitted to JS, so we don't need to check here.
+      emitUpdateDimensionsEvent();
     }
 
     private void emitOrientationChanged(final int newRotation) {

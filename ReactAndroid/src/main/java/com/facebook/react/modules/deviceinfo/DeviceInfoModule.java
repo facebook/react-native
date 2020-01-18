@@ -14,6 +14,8 @@ import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactNoCrashSoftException;
 import com.facebook.react.bridge.ReactSoftException;
+import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.bridge.WritableNativeMap;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.facebook.react.turbomodule.core.interfaces.TurboModule;
@@ -30,6 +32,7 @@ public class DeviceInfoModule extends ReactContextBaseJavaModule
 
   private @Nullable ReactApplicationContext mReactApplicationContext;
   private float mFontScale;
+  private @Nullable ReadableMap mPreviousDisplayMetrics;
 
   public DeviceInfoModule(ReactApplicationContext reactContext) {
     super(reactContext);
@@ -83,9 +86,15 @@ public class DeviceInfoModule extends ReactContextBaseJavaModule
     }
 
     if (mReactApplicationContext.hasActiveCatalystInstance()) {
-      mReactApplicationContext
-          .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
-          .emit("didUpdateDimensions", DisplayMetricsHolder.getDisplayMetricsNativeMap(mFontScale));
+      // Don't emit an event to JS if the dimensions haven't changed
+      WritableNativeMap displayMetrics =
+          DisplayMetricsHolder.getDisplayMetricsNativeMap(mFontScale);
+      if (!displayMetrics.equals(mPreviousDisplayMetrics)) {
+        mReactApplicationContext
+            .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
+            .emit("didUpdateDimensions", displayMetrics);
+        mPreviousDisplayMetrics = displayMetrics;
+      }
     } else {
       ReactSoftException.logSoftException(
           NAME,
