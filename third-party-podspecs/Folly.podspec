@@ -35,7 +35,8 @@ Pod::Spec.new do |spec|
                       'folly/lang/Assume.cpp',
                       'folly/lang/CString.cpp',
                       'folly/memory/detail/MallocImpl.cpp',
-                      'folly/net/NetOps.cpp'
+                      'folly/net/NetOps.cpp',
+                      'folly/portability/SysUio.cpp'
 
   # workaround for https://github.com/facebook/react-native/issues/14326
   spec.preserve_paths = 'folly/*.h',
