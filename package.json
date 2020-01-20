@@ -44,7 +44,6 @@
     "rn-get-polyfills.js",
     "scripts/compose-source-maps.js",
     "scripts/ios-configure-glog.sh",
-    "scripts/ios-install-third-party.sh",
     "scripts/launchPackager.bat",
     "scripts/launchPackager.command",
     "scripts/node-binary.sh",
