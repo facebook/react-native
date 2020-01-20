@@ -66,9 +66,6 @@ ShadowNode::ShadowNode(
       props_(fragment.props ? fragment.props : sourceShadowNode.props_),
       children_(
           fragment.children ? fragment.children : sourceShadowNode.children_),
-      localData_(
-          fragment.localData ? fragment.localData
-                             : sourceShadowNode.localData_),
       state_(
           fragment.state ? fragment.state
                          : sourceShadowNode.getMostRecentState()),

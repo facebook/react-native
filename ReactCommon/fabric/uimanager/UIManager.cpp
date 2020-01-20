@@ -49,7 +49,6 @@ SharedShadowNode UIManager::createNode(
                     props, RawProps(folly::dynamic::object("name", name)))
               : props,
           /* .children = */ ShadowNodeFragment::childrenPlaceholder(),
-          /* .localData = */ ShadowNodeFragment::localDataPlaceholder(),
           /* .state = */ state,
       },
       ShadowNodeFamilyFragment{tag, surfaceId, eventEmitter});
@@ -209,8 +208,6 @@ void UIManager::updateState(
                 return oldShadowNode.clone({
                     /* .props = */ ShadowNodeFragment::propsPlaceholder(),
                     /* .children = */ ShadowNodeFragment::childrenPlaceholder(),
-                    /* .localData = */
-                    ShadowNodeFragment::localDataPlaceholder(),
                     /* .state = */ state,
                 });
               });

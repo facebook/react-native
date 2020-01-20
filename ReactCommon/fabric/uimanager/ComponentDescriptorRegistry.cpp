@@ -183,7 +183,6 @@ SharedShadowNode ComponentDescriptorRegistry::createNode(
       {
           /* .props = */ props,
           /* .children = */ ShadowNodeFragment::childrenPlaceholder(),
-          /* .localData = */ ShadowNodeFragment::localDataPlaceholder(),
           /* .state = */ state,
       },
       {tag, surfaceId, eventEmitter});
