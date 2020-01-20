@@ -204,14 +204,6 @@ TEST_F(ShadowNodeTest, handleShadowNodeMutation) {
   EXPECT_TRUE(nodeAB_->getSealed());
   EXPECT_TRUE(nodeABArevision2->getSealed());
   EXPECT_TRUE(nodeABB_->getSealed());
-
-  // No more mutation after sealing.
-  EXPECT_THROW(nodeABArevision2->setLocalData(nullptr), std::runtime_error);
-
-  auto nodeABArevision3 =
-      std::make_shared<TestShadowNode>(*nodeABArevision2, ShadowNodeFragment{});
-  nodeABArevision3->setLocalData(nullptr);
-  EXPECT_EQ(nodeABArevision3->getLocalData(), nullptr);
 }
 
 TEST_F(ShadowNodeTest, handleCloneFunction) {
@@ -228,32 +220,6 @@ TEST_F(ShadowNodeTest, handleCloneFunction) {
   EXPECT_EQ(nodeAB_->getTag(), nodeABClone->getTag());
   EXPECT_EQ(nodeAB_->getSurfaceId(), nodeABClone->getSurfaceId());
   EXPECT_EQ(nodeAB_->getProps(), nodeABClone->getProps());
-}
-
-TEST_F(ShadowNodeTest, handleLocalData) {
-  auto localData42 = std::make_shared<TestLocalData>();
-  localData42->setNumber(42);
-
-  auto anotherLocalData42 = std::make_shared<TestLocalData>();
-  anotherLocalData42->setNumber(42);
-
-  auto localDataOver9000 = std::make_shared<TestLocalData>();
-  localDataOver9000->setNumber(9001);
-  auto props = std::make_shared<const TestProps>();
-
-  nodeAA_->setLocalData(localData42);
-  nodeAB_->setLocalData(localData42);
-  nodeAC_->setLocalData(localDataOver9000);
-
-  // LocalData object are compared by pointer, not by value.
-  EXPECT_EQ(nodeAA_->getLocalData(), nodeAB_->getLocalData());
-  EXPECT_NE(nodeAA_->getLocalData(), nodeAC_->getLocalData());
-  nodeAB_->setLocalData(anotherLocalData42);
-  EXPECT_NE(nodeAA_->getLocalData(), nodeAB_->getLocalData());
-
-  // LocalData cannot be changed for sealed shadow node.
-  nodeAB_->sealRecursive();
-  EXPECT_ANY_THROW(nodeAB_->setLocalData(localDataOver9000));
 }
 
 TEST_F(ShadowNodeTest, handleBacktracking) {

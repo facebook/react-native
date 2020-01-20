@@ -13,7 +13,6 @@
 
 #include <better/small_vector.h>
 #include <react/core/EventEmitter.h>
-#include <react/core/LocalData.h>
 #include <react/core/Props.h>
 #include <react/core/ReactPrimitives.h>
 #include <react/core/Sealable.h>
@@ -126,14 +125,6 @@ class ShadowNode : public virtual Sealable,
    */
   State::Shared getMostRecentState() const;
 
-  /*
-   * Returns a local data associated with the node.
-   * `LocalData` object might be used for data exchange between native view and
-   * shadow node instances.
-   * Concrete type of the object depends on concrete type of the `ShadowNode`.
-   */
-  SharedLocalData getLocalData() const;
-
   void sealRecursive() const;
 
 #pragma mark - Mutating Methods
@@ -143,12 +134,6 @@ class ShadowNode : public virtual Sealable,
       ShadowNode const &oldChild,
       ShadowNode::Shared const &newChild,
       int suggestedIndex = -1);
-
-  /*
-   * Sets local data associated with the node.
-   * The node must be unsealed at this point.
-   */
-  void setLocalData(const SharedLocalData &localData);
 
   /*
    * Performs all side effects associated with mounting/unmounting in one place.
@@ -187,7 +172,6 @@ class ShadowNode : public virtual Sealable,
  protected:
   SharedProps props_;
   SharedShadowNodeSharedList children_;
-  SharedLocalData localData_;
   State::Shared state_;
 
  private:

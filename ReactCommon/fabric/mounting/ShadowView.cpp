@@ -26,7 +26,7 @@ ShadowView::ShadowView(const ShadowNode &shadowNode)
       props(shadowNode.getProps()),
       eventEmitter(shadowNode.getEventEmitter()),
       layoutMetrics(layoutMetricsFromShadowNode(shadowNode)),
-      localData(shadowNode.getLocalData()),
+      localData({}),
       state(shadowNode.getState()) {}
 
 bool ShadowView::operator==(const ShadowView &rhs) const {
