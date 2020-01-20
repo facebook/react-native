@@ -10,8 +10,9 @@
 #include <memory>
 
 #include <folly/dynamic.h>
+#include <react/components/view/ConcreteViewShadowNode.h>
+#include <react/components/view/ViewProps.h>
 #include <react/core/ConcreteComponentDescriptor.h>
-#include <react/core/ConcreteShadowNode.h>
 #include <react/core/LocalData.h>
 #include <react/core/RawProps.h>
 #include <react/core/ShadowNode.h>
@@ -39,9 +40,12 @@ class TestLocalData : public LocalData {
 
 static const char TestComponentName[] = "Test";
 
-class TestProps : public Props {
+class TestProps : public ViewProps {
  public:
-  using Props::Props;
+  using ViewProps::ViewProps;
+
+  TestProps(const TestProps &sourceProps, const RawProps &rawProps)
+      : ViewProps(sourceProps, rawProps) {}
 };
 
 using SharedTestProps = std::shared_ptr<const TestProps>;
@@ -50,9 +54,14 @@ class TestShadowNode;
 
 using SharedTestShadowNode = std::shared_ptr<const TestShadowNode>;
 
-class TestShadowNode : public ConcreteShadowNode<TestComponentName, TestProps> {
+class TestShadowNode
+    : public ConcreteViewShadowNode<TestComponentName, TestProps> {
  public:
-  using ConcreteShadowNode::ConcreteShadowNode;
+  using ConcreteViewShadowNode::ConcreteViewShadowNode;
+
+  bool setLayoutMetrics(LayoutMetrics layoutMetrics) {
+    return YogaLayoutableShadowNode::setLayoutMetrics(layoutMetrics);
+  }
 };
 
 class TestComponentDescriptor
