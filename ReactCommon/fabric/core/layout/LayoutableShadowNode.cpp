@@ -17,6 +17,22 @@
 namespace facebook {
 namespace react {
 
+/*
+ * `shadowNode` might not be the newest revision of `ShadowNodeFamily`.
+ * This function looks at `parentNode`'s children and finds one that belongs
+ * to the same family as `shadowNode`.
+ */
+static ShadowNode const *findNewestChildInParent(
+    ShadowNode const &parentNode,
+    ShadowNode const &shadowNode) {
+  for (auto const &child : parentNode.getChildren()) {
+    if (ShadowNode::sameFamily(*child, shadowNode)) {
+      return child.get();
+    }
+  }
+  return nullptr;
+}
+
 LayoutMetrics LayoutableShadowNode::getLayoutMetrics() const {
   return layoutMetrics_;
 }
@@ -53,7 +69,15 @@ LayoutMetrics LayoutableShadowNode::getRelativeLayoutMetrics(
     return EmptyLayoutMetrics;
   }
 
-  auto layoutMetrics = getLayoutMetrics();
+  auto newestChild =
+      findNewestChildInParent(ancestors.rbegin()->first.get(), shadowNode);
+
+  if (!newestChild) {
+    return EmptyLayoutMetrics;
+  }
+
+  auto layoutMetrics = dynamic_cast<LayoutableShadowNode const *>(newestChild)
+                           ->getLayoutMetrics();
 
   // `AncestorList` starts from the given ancestor node and ends with the parent
   // node. We iterate from parent node (reverse iteration) and stop before the
