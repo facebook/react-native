@@ -34,16 +34,16 @@ TEST(ShadowNodeTest, handleShadowNodeCreation) {
       family,
       ShadowNodeTraits{});
 
-  ASSERT_FALSE(node->getSealed());
-  ASSERT_STREQ(node->getComponentName(), "Test");
-  ASSERT_EQ(node->getTag(), 9);
-  ASSERT_EQ(node->getSurfaceId(), 1);
-  ASSERT_EQ(node->getEventEmitter(), nullptr);
-  ASSERT_EQ(node->getChildren().size(), 0);
+  EXPECT_FALSE(node->getSealed());
+  EXPECT_STREQ(node->getComponentName(), "Test");
+  EXPECT_EQ(node->getTag(), 9);
+  EXPECT_EQ(node->getSurfaceId(), 1);
+  EXPECT_EQ(node->getEventEmitter(), nullptr);
+  EXPECT_EQ(node->getChildren().size(), 0);
 
   node->sealRecursive();
-  ASSERT_TRUE(node->getSealed());
-  ASSERT_TRUE(node->getProps()->getSealed());
+  EXPECT_TRUE(node->getSealed());
+  EXPECT_TRUE(node->getProps()->getSealed());
 }
 
 TEST(ShadowNodeTest, handleShadowNodeSimpleCloning) {
@@ -66,10 +66,10 @@ TEST(ShadowNodeTest, handleShadowNodeSimpleCloning) {
       ShadowNodeTraits{});
   auto node2 = std::make_shared<TestShadowNode>(*node, ShadowNodeFragment{});
 
-  ASSERT_STREQ(node->getComponentName(), "Test");
-  ASSERT_EQ(node->getTag(), 9);
-  ASSERT_EQ(node->getSurfaceId(), 1);
-  ASSERT_EQ(node->getEventEmitter(), nullptr);
+  EXPECT_STREQ(node->getComponentName(), "Test");
+  EXPECT_EQ(node->getTag(), 9);
+  EXPECT_EQ(node->getSurfaceId(), 1);
+  EXPECT_EQ(node->getEventEmitter(), nullptr);
 }
 
 TEST(ShadowNodeTest, handleShadowNodeMutation) {
@@ -123,29 +123,29 @@ TEST(ShadowNodeTest, handleShadowNodeMutation) {
   node1->appendChild(node2);
   node1->appendChild(node3);
   auto node1Children = node1->getChildren();
-  ASSERT_EQ(node1Children.size(), 2);
-  ASSERT_EQ(node1Children.at(0), node2);
-  ASSERT_EQ(node1Children.at(1), node3);
+  EXPECT_EQ(node1Children.size(), 2);
+  EXPECT_EQ(node1Children.at(0), node2);
+  EXPECT_EQ(node1Children.at(1), node3);
 
   auto node4 = std::make_shared<TestShadowNode>(*node2, ShadowNodeFragment{});
   node1->replaceChild(*node2, node4);
   node1Children = node1->getChildren();
-  ASSERT_EQ(node1Children.size(), 2);
-  ASSERT_EQ(node1Children.at(0), node4);
-  ASSERT_EQ(node1Children.at(1), node3);
+  EXPECT_EQ(node1Children.size(), 2);
+  EXPECT_EQ(node1Children.at(0), node4);
+  EXPECT_EQ(node1Children.at(1), node3);
 
   // Seal the entire tree.
   node1->sealRecursive();
-  ASSERT_TRUE(node1->getSealed());
-  ASSERT_TRUE(node3->getSealed());
-  ASSERT_TRUE(node4->getSealed());
+  EXPECT_TRUE(node1->getSealed());
+  EXPECT_TRUE(node3->getSealed());
+  EXPECT_TRUE(node4->getSealed());
 
   // No more mutation after sealing.
   EXPECT_THROW(node4->setLocalData(nullptr), std::runtime_error);
 
   auto node5 = std::make_shared<TestShadowNode>(*node4, ShadowNodeFragment{});
   node5->setLocalData(nullptr);
-  ASSERT_EQ(node5->getLocalData(), nullptr);
+  EXPECT_EQ(node5->getLocalData(), nullptr);
 }
 
 TEST(ShadowNodeTest, handleCloneFunction) {
@@ -171,16 +171,16 @@ TEST(ShadowNodeTest, handleCloneFunction) {
   auto firstNodeClone = firstNode->clone({});
 
   // Those two nodes are *not* same.
-  ASSERT_NE(firstNode, firstNodeClone);
+  EXPECT_NE(firstNode, firstNodeClone);
 
   // `secondNodeClone` is an instance of `TestShadowNode`.
-  ASSERT_NE(
+  EXPECT_NE(
       std::dynamic_pointer_cast<const TestShadowNode>(firstNodeClone), nullptr);
 
   // Both nodes have same content.
-  ASSERT_EQ(firstNode->getTag(), firstNodeClone->getTag());
-  ASSERT_EQ(firstNode->getSurfaceId(), firstNodeClone->getSurfaceId());
-  ASSERT_EQ(firstNode->getProps(), firstNodeClone->getProps());
+  EXPECT_EQ(firstNode->getTag(), firstNodeClone->getTag());
+  EXPECT_EQ(firstNode->getSurfaceId(), firstNodeClone->getSurfaceId());
+  EXPECT_EQ(firstNode->getProps(), firstNodeClone->getProps());
 }
 
 TEST(ShadowNodeTest, handleLocalData) {
@@ -230,14 +230,14 @@ TEST(ShadowNodeTest, handleLocalData) {
   thirdNode->setLocalData(localDataOver9000);
 
   // LocalData object are compared by pointer, not by value.
-  ASSERT_EQ(firstNode->getLocalData(), secondNode->getLocalData());
-  ASSERT_NE(firstNode->getLocalData(), thirdNode->getLocalData());
+  EXPECT_EQ(firstNode->getLocalData(), secondNode->getLocalData());
+  EXPECT_NE(firstNode->getLocalData(), thirdNode->getLocalData());
   secondNode->setLocalData(anotherLocalData42);
-  ASSERT_NE(firstNode->getLocalData(), secondNode->getLocalData());
+  EXPECT_NE(firstNode->getLocalData(), secondNode->getLocalData());
 
   // LocalData cannot be changed for sealed shadow node.
   secondNode->sealRecursive();
-  ASSERT_ANY_THROW(secondNode->setLocalData(localDataOver9000));
+  EXPECT_ANY_THROW(secondNode->setLocalData(localDataOver9000));
 }
 
 TEST(ShadowNodeTest, handleBacktracking) {
@@ -389,11 +389,11 @@ TEST(ShadowNodeTest, handleBacktracking) {
 
   // Negative case:
   auto ancestors1 = nodeZ->getAncestors(*nodeA);
-  ASSERT_EQ(ancestors1.size(), 0);
+  EXPECT_EQ(ancestors1.size(), 0);
 
   // Positive case:
   auto ancestors2 = nodeABC->getAncestors(*nodeA);
-  ASSERT_EQ(ancestors2.size(), 2);
-  ASSERT_EQ(&ancestors2[0].first.get(), nodeA.get());
-  ASSERT_EQ(&ancestors2[1].first.get(), nodeAB.get());
+  EXPECT_EQ(ancestors2.size(), 2);
+  EXPECT_EQ(&ancestors2[0].first.get(), nodeA.get());
+  EXPECT_EQ(&ancestors2[1].first.get(), nodeAB.get());
 }
