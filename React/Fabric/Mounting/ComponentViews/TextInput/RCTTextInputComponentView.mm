@@ -17,11 +17,12 @@
 #import <React/RCTUITextView.h>
 
 #import "RCTConversions.h"
+#import "RCTTextInputNativeCommands.h"
 #import "RCTTextInputUtils.h"
 
 using namespace facebook::react;
 
-@interface RCTTextInputComponentView () <RCTBackedTextInputDelegate>
+@interface RCTTextInputComponentView () <RCTBackedTextInputDelegate, RCTTextInputViewProtocol>
 @end
 
 @implementation RCTTextInputComponentView {
@@ -340,6 +341,23 @@ using namespace facebook::react;
   NSInteger end = [_backedTextInputView offsetFromPosition:_backedTextInputView.beginningOfDocument
                                                 toPosition:selectedTextRange.end];
   return AttributedString::Range{(int)start, (int)(end - start)};
+}
+
+#pragma mark - Native Commands
+
+- (void)handleCommand:(const NSString *)commandName args:(const NSArray *)args
+{
+  RCTTextInputHandleCommand(self, commandName, args);
+}
+
+- (void)focus
+{
+  [_backedTextInputView becomeFirstResponder];
+}
+
+- (void)blur
+{
+  [_backedTextInputView resignFirstResponder];
 }
 
 @end
