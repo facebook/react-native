@@ -11,9 +11,9 @@
 
 #include <folly/dynamic.h>
 #include <react/components/view/ConcreteViewShadowNode.h>
+#include <react/components/view/ViewEventEmitter.h>
 #include <react/components/view/ViewProps.h>
 #include <react/core/ConcreteComponentDescriptor.h>
-#include <react/core/LocalData.h>
 #include <react/core/RawProps.h>
 #include <react/core/ShadowNode.h>
 
@@ -24,18 +24,9 @@ using namespace facebook::react;
  * ComponentDescriptor. To be used for testing purpose.
  */
 
-class TestLocalData : public LocalData {
+class TestState {
  public:
-  void setNumber(const int &number) {
-    number_ = number;
-  }
-
-  int getNumber() const {
-    return number_;
-  }
-
- private:
-  int number_{0};
+  int number;
 };
 
 static const char TestComponentName[] = "Test";
@@ -54,8 +45,11 @@ class TestShadowNode;
 
 using SharedTestShadowNode = std::shared_ptr<const TestShadowNode>;
 
-class TestShadowNode
-    : public ConcreteViewShadowNode<TestComponentName, TestProps> {
+class TestShadowNode : public ConcreteViewShadowNode<
+                           TestComponentName,
+                           TestProps,
+                           ViewEventEmitter,
+                           TestState> {
  public:
   using ConcreteViewShadowNode::ConcreteViewShadowNode;
 

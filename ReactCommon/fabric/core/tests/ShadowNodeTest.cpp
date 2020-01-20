@@ -233,3 +233,60 @@ TEST_F(ShadowNodeTest, handleBacktracking) {
   EXPECT_EQ(&ancestors2[0].first.get(), nodeA_.get());
   EXPECT_EQ(&ancestors2[1].first.get(), nodeAB_.get());
 }
+
+TEST_F(ShadowNodeTest, handleState) {
+  auto family = std::make_shared<ShadowNodeFamily>(
+      ShadowNodeFamilyFragment{
+          /* .tag = */ 9,
+          /* .surfaceId = */ surfaceId_,
+          /* .eventEmitter = */ nullptr,
+      },
+      componentDescriptor_);
+
+  auto props = std::make_shared<const TestProps>();
+  auto fragment = ShadowNodeFragment{
+      /* .props = */ props,
+      /* .children = */ ShadowNode::emptySharedShadowNodeSharedList(),
+      /* .state = */ {}};
+
+  auto const initialState =
+      componentDescriptor_.createInitialState(fragment, surfaceId_);
+
+  auto firstNode = std::make_shared<TestShadowNode>(
+      ShadowNodeFragment{
+          /* .props = */ props,
+          /* .children = */ ShadowNode::emptySharedShadowNodeSharedList(),
+          /* .state = */ initialState},
+      family,
+      ShadowNodeTraits{});
+  auto secondNode = std::make_shared<TestShadowNode>(
+      ShadowNodeFragment{
+          /* .props = */ props,
+          /* .children = */ ShadowNode::emptySharedShadowNodeSharedList(),
+          /* .state = */ initialState},
+      family,
+      ShadowNodeTraits{});
+  auto thirdNode = std::make_shared<TestShadowNode>(
+      ShadowNodeFragment{
+          /* .props = */ props,
+          /* .children = */ ShadowNode::emptySharedShadowNodeSharedList(),
+          /* .state = */ initialState},
+      family,
+      ShadowNodeTraits{});
+
+  TestShadowNode::ConcreteState::Shared _state =
+      std::static_pointer_cast<TestShadowNode::ConcreteState const>(
+          initialState);
+  _state->updateState(TestState{42});
+
+  thirdNode->setStateData({9001});
+  // State object are compared by pointer, not by value.
+  EXPECT_EQ(firstNode->getState(), secondNode->getState());
+  EXPECT_NE(firstNode->getState(), thirdNode->getState());
+  secondNode->setStateData(TestState{42});
+  EXPECT_NE(firstNode->getState(), secondNode->getState());
+
+  // State cannot be changed for sealed shadow node.
+  secondNode->sealRecursive();
+  EXPECT_ANY_THROW(secondNode->setStateData(TestState{42}));
+}
