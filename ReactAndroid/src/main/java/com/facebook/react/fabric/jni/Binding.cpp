@@ -426,29 +426,6 @@ local_ref<JMountItem::javaobject> createInsertMountItem(
       mutation.index);
 }
 
-local_ref<JMountItem::javaobject> createUpdateLocalData(
-    const jni::global_ref<jobject> &javaUIManager,
-    const ShadowViewMutation &mutation) {
-  static auto updateLocalDataInstruction =
-      jni::findClassStatic(UIManagerJavaDescriptor)
-          ->getMethod<alias_ref<JMountItem>(jint, ReadableMap::javaobject)>(
-              "updateLocalDataMountItem");
-
-  auto localData = mutation.newChildShadowView.localData;
-
-  folly::dynamic newLocalData = folly::dynamic::object();
-  if (localData) {
-    newLocalData = localData->getDynamic();
-  }
-
-  local_ref<ReadableNativeMap::jhybridobject> readableNativeMap =
-      ReadableNativeMap::newObjectCxxArgs(newLocalData);
-  return updateLocalDataInstruction(
-      javaUIManager,
-      mutation.newChildShadowView.tag,
-      castReadableMap(readableNativeMap).get());
-}
-
 local_ref<JMountItem::javaobject> createUpdateStateMountItem(
     const jni::global_ref<jobject> &javaUIManager,
     const ShadowViewMutation &mutation) {
@@ -737,11 +714,6 @@ void Binding::schedulerDidFinishTransaction(
             mountItems[position++] =
                 createUpdatePropsMountItem(localJavaUIManager, mutation);
           }
-          if (mutation.oldChildShadowView.localData !=
-              mutation.newChildShadowView.localData) {
-            mountItems[position++] =
-                createUpdateLocalData(localJavaUIManager, mutation);
-          }
           if (mutation.oldChildShadowView.state !=
               mutation.newChildShadowView.state) {
             mountItems[position++] =
@@ -789,12 +761,6 @@ void Binding::schedulerDidFinishTransaction(
           if (mutation.newChildShadowView.state) {
             mountItems[position++] =
                 createUpdateStateMountItem(localJavaUIManager, mutation);
-          }
-
-          // LocalData
-          if (mutation.newChildShadowView.localData) {
-            mountItems[position++] =
-                createUpdateLocalData(localJavaUIManager, mutation);
           }
 
           // Layout
