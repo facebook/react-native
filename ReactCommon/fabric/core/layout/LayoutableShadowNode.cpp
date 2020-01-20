@@ -55,7 +55,10 @@ LayoutMetrics LayoutableShadowNode::getRelativeLayoutMetrics(
 
   auto layoutMetrics = getLayoutMetrics();
 
-  for (auto it = ancestors.rbegin(); it != ancestors.rend(); ++it) {
+  // `AncestorList` starts from the given ancestor node and ends with the parent
+  // node. We iterate from parent node (reverse iteration) and stop before the
+  // given ancestor (rend() - 1).
+  for (auto it = ancestors.rbegin(); it != ancestors.rend() - 1; ++it) {
     auto &currentShadowNode = it->first.get();
 
     auto layoutableCurrentShadowNode =
