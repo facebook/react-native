@@ -109,7 +109,7 @@ public final class WebSocketModule extends NativeWebSocketModuleSpec {
       ReadableMap headers = options.getMap("headers");
       ReadableMapKeySetIterator iterator = headers.keySetIterator();
 
-      if (!headers.hasKey("origin")) {
+      if (!headers.hasKey("origin") && !headers.hasKey("Origin" ) {
         builder.addHeader("origin", getDefaultOrigin(url));
       }
 
