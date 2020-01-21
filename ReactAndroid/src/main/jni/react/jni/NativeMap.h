@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include <fb/fbjni.h>
+#include <fbjni/fbjni.h>
 #include <folly/dynamic.h>
 
 #include "NativeCommon.h"

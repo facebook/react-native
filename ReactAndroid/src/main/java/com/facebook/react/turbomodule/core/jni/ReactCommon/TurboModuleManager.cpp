@@ -8,7 +8,7 @@
 #include <memory>
 #include <string>
 
-#include <fb/fbjni.h>
+#include <fbjni/fbjni.h>
 #include <jsi/jsi.h>
 
 #include <ReactCommon/TurboCxxModule.h>

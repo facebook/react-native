@@ -5,8 +5,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#include <fb/fbjni.h>
 #include <fb/xplat_init.h>
+#include <fbjni/fbjni.h>
 
 #include "TurboModuleManager.h"
 

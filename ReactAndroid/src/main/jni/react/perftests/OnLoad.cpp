@@ -7,8 +7,8 @@
 
 #include <cxxreact/CxxModule.h>
 #include <cxxreact/JsArgumentHelpers.h>
-#include <fb/fbjni.h>
 #include <fb/log.h>
+#include <fbjni/fbjni.h>
 
 #include <condition_variable>
 #include <mutex>

@@ -9,7 +9,7 @@
 
 #include <ReactCommon/CallInvoker.h>
 #include <ReactCommon/JavaTurboModule.h>
-#include <fb/fbjni.h>
+#include <fbjni/fbjni.h>
 #include <memory>
 #include <string>
 

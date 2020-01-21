@@ -8,9 +8,8 @@
 #pragma once
 
 #include <cxxreact/JSExecutor.h>
-#include <fb/fbjni.h>
+#include <fbjni/fbjni.h>
 #include <jni.h>
-#include <jni/GlobalReference.h>
 #include "OnLoad.h"
 
 namespace facebook {

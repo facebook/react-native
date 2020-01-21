@@ -10,8 +10,8 @@
 #include <condition_variable>
 #include <mutex>
 
-#include <fb/fbjni.h>
 #include <fb/log.h>
+#include <fbjni/fbjni.h>
 #include <jsi/jsi.h>
 
 #include "JNativeRunnable.h"

@@ -296,7 +296,8 @@ def getNdkBuildFullPath() {
 }
 
 def buildReactNdkLib = tasks.register("buildReactNdkLib", Exec) {
-    dependsOn(prepareJSC, prepareHermes, prepareBoost, prepareDoubleConversion, prepareFolly, prepareGlog)
+    dependsOn(prepareJSC, prepareHermes, prepareBoost, prepareDoubleConversion, prepareFolly, prepareGlog, extractAARHeaders, extractJNIFiles)
+
     inputs.dir("$projectDir/../ReactCommon")
     inputs.dir("src/main/jni")
     inputs.dir("src/main/java/com/facebook/react/modules/blob")
@@ -344,6 +345,34 @@ def packageReactNdkLibsForBuck = tasks.register("packageReactNdkLibsForBuck", Co
     into("src/main/jni/prebuilt/lib")
 }
 
+task extractAARHeaders {
+    doLast {
+        configurations.extractHeaders.files.each {
+            def file = it.absoluteFile
+            def packageName = file.name.tokenize('-')[0]
+            copy {
+                from zipTree(file)
+                into "$projectDir/src/main/jni/first-party/$packageName/headers"
+                include "**/*.h"
+            }
+        }
+    }
+}
+
+task extractJNIFiles {
+    doLast {
+        configurations.extractJNI.files.each {
+            def file = it.absoluteFile
+            def packageName = file.name.tokenize('-')[0]
+            copy {
+                from zipTree(file)
+                into "$projectDir/src/main/jni/first-party/$packageName/"
+                include "jni/**/*"
+            }
+        }
+    }
+}
+
 android {
     compileSdkVersion 28
 
@@ -386,7 +415,8 @@ android {
     }
 
     tasks.withType(JavaCompile) {
-        compileTask -> compileTask.dependsOn(packageReactNdkLibs)
+        compileTask ->
+            compileTask.dependsOn(packageReactNdkLibs)
     }
 
     clean.dependsOn(cleanReactNdkLib)
@@ -394,9 +424,15 @@ android {
     lintOptions {
         abortOnError(false)
     }
+
     packagingOptions {
         exclude("META-INF/NOTICE")
         exclude("META-INF/LICENSE")
+    }
+
+    configurations {
+        extractHeaders
+        extractJNI
     }
 }
 
@@ -412,6 +448,9 @@ dependencies {
     api("com.squareup.okhttp3:okhttp:${OKHTTP_VERSION}")
     api("com.squareup.okhttp3:okhttp-urlconnection:${OKHTTP_VERSION}")
     api("com.squareup.okio:okio:1.15.0")
+    api("com.facebook.fbjni:fbjni-java-only:0.0.3")
+    extractHeaders("com.facebook.fbjni:fbjni:0.0.2:headers")
+    extractJNI("com.facebook.fbjni:fbjni:0.0.2")
 
     testImplementation("junit:junit:${JUNIT_VERSION}")
     testImplementation("org.powermock:powermock-api-mockito:${POWERMOCK_VERSION}")

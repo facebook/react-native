@@ -17,7 +17,7 @@ LOCAL_CFLAGS += -fexceptions -frtti -std=c++14 -Wall
 
 LOCAL_STATIC_LIBRARIES = libcallinvoker
 
-LOCAL_SHARED_LIBRARIES = libfb
+LOCAL_SHARED_LIBRARIES = libfb libfbjni
 
 # Name of this module.
 LOCAL_MODULE := callinvokerholder
