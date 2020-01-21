@@ -1,0 +1,9 @@
+load("//tools/build_defs:fb_native_wrapper.bzl", "fb_native")
+
+fb_native.android_library(
+    name = "java",
+    exported_deps = [
+        "//ReactAndroid/src/main/libraries/fbjni/java/com/facebook/fbjni:fbjni",
+    ],
+    visibility = ["PUBLIC"],
+)
