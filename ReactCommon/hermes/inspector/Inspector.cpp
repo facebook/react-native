@@ -30,7 +30,7 @@ template class folly::Future<bool>;
 namespace folly {
 namespace futures {
 
-Future<Unit> sleep(Duration, Timekeeper *) {
+SemiFuture<Unit> sleep(Duration, Timekeeper *) {
   LOG(FATAL) << "folly::futures::sleep() not implemented";
 }
 
