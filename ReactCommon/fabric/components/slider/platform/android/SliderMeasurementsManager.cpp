@@ -7,7 +7,7 @@
 
 #include "SliderMeasurementsManager.h"
 
-#include <fb/fbjni.h>
+#include <fbjni/fbjni.h>
 #include <react/core/conversions.h>
 #include <react/jni/ReadableNativeMap.h>
 
