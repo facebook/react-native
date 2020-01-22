@@ -54,9 +54,13 @@ public:
 class RN_EXPORT JSExecutor {
 public:
   /**
+   * Sets all globals in the JS context.
+   */
+  virtual void initializeRuntime() = 0;
+  /**
    * Execute an application script bundle in the JS context.
    */
-  virtual void loadApplicationScript(std::unique_ptr<const JSBigString> script,
+  virtual void loadBundle(std::unique_ptr<const JSBigString> script,
                                      std::string sourceURL) = 0;
 
   /**

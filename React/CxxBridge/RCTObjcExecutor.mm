@@ -74,7 +74,11 @@ public:
       std::make_unique<JSBigStdString>(folly::toJson(config)));
   }
 
-  void loadApplicationScript(
+  void initializeRuntime() {
+    // We do nothing here since initialization is done in the constructor
+  }
+
+  void loadBundle(
       std::unique_ptr<const JSBigString> script,
       std::string sourceURL) override {
     RCTProfileBeginFlowEvent();

@@ -49,10 +49,10 @@ void JReactMarker::logPerfMarker(
       JReactMarker::logMarker("CREATE_REACT_CONTEXT_END");
       break;
     case ReactMarker::JS_BUNDLE_STRING_CONVERT_START:
-      JReactMarker::logMarker("loadApplicationScript_startStringConvert");
+      JReactMarker::logMarker("loadBundle_startStringConvert");
       break;
     case ReactMarker::JS_BUNDLE_STRING_CONVERT_STOP:
-      JReactMarker::logMarker("loadApplicationScript_endStringConvert");
+      JReactMarker::logMarker("loadBundle_endStringConvert");
       break;
     case ReactMarker::NATIVE_MODULE_SETUP_START:
       JReactMarker::logMarker("NATIVE_MODULE_SETUP_START", tag);
