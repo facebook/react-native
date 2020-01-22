@@ -89,7 +89,9 @@ public class DeviceInfoModule extends ReactContextBaseJavaModule
       // Don't emit an event to JS if the dimensions haven't changed
       WritableNativeMap displayMetrics =
           DisplayMetricsHolder.getDisplayMetricsNativeMap(mFontScale);
-      if (!displayMetrics.equals(mPreviousDisplayMetrics)) {
+      if (mPreviousDisplayMetrics == null) {
+        mPreviousDisplayMetrics = displayMetrics.copy();
+      } else if (!displayMetrics.equals(mPreviousDisplayMetrics)) {
         mPreviousDisplayMetrics = displayMetrics.copy();
         mReactApplicationContext
             .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
