@@ -56,7 +56,7 @@ class LayoutableShadowNodeTest : public ::testing::Test {
   TestComponentDescriptor componentDescriptor_;
 };
 
-TEST_F(LayoutableShadowNodeTest, relativeLayourMetrics) {
+TEST_F(LayoutableShadowNodeTest, relativeLayoutMetrics) {
   auto layoutMetrics = EmptyLayoutMetrics;
   layoutMetrics.frame.origin = {10, 20};
   layoutMetrics.frame.size = {100, 200};
@@ -70,6 +70,20 @@ TEST_F(LayoutableShadowNodeTest, relativeLayourMetrics) {
   // D19447900 has more about the issue.
   EXPECT_EQ(relativeLayoutMetrics.frame.origin.x, 10);
   EXPECT_EQ(relativeLayoutMetrics.frame.origin.y, 20);
+}
+
+TEST_F(LayoutableShadowNodeTest, relativeLayoutMetricsOnSameNode) {
+  auto layoutMetrics = EmptyLayoutMetrics;
+  layoutMetrics.frame.origin = {10, 20};
+  layoutMetrics.frame.size = {100, 200};
+  nodeA_->setLayoutMetrics(layoutMetrics);
+
+  auto relativeLayoutMetrics = nodeA_->getRelativeLayoutMetrics(*nodeA_, {});
+
+  EXPECT_EQ(relativeLayoutMetrics.frame.origin.x, 0);
+  EXPECT_EQ(relativeLayoutMetrics.frame.origin.y, 0);
+  EXPECT_EQ(relativeLayoutMetrics.frame.size.width, 100);
+  EXPECT_EQ(relativeLayoutMetrics.frame.size.height, 200);
 }
 
 TEST_F(LayoutableShadowNodeTest, relativeLayourMetricsOnClonedNode) {
