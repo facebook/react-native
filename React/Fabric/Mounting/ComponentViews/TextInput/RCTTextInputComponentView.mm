@@ -360,4 +360,37 @@ using namespace facebook::react;
   [_backedTextInputView resignFirstResponder];
 }
 
+- (void)setMostRecentEventCount:(NSInteger)eventCount
+{
+  // no-op. `eventCount` isn't used in Fabric's TextInput.
+  // We are keeping it so commands are backwards
+  // compatible with Paper's TextInput.
+}
+
+- (void)setTextAndSelection:(NSInteger)eventCount
+                      value:(NSString *__nullable)value
+                      start:(NSInteger)start
+                        end:(NSInteger)end
+{
+  // `eventCount` is ignored, isn't used in Fabric's TextInput.
+  // We are keeping it so commands are
+  // backwards compatible with Paper's TextInput.
+  UITextPosition *startPosition = [_backedTextInputView positionFromPosition:_backedTextInputView.beginningOfDocument
+                                                                      offset:start];
+  UITextPosition *endPosition = [_backedTextInputView positionFromPosition:_backedTextInputView.beginningOfDocument
+                                                                    offset:end];
+  UITextRange *range = [_backedTextInputView textRangeFromPosition:startPosition toPosition:endPosition];
+  [_backedTextInputView setSelectedTextRange:range notifyDelegate:NO];
+
+  NSMutableAttributedString *mutableString =
+      [[NSMutableAttributedString alloc] initWithAttributedString:_backedTextInputView.attributedText];
+
+  if (value) {
+    [mutableString replaceCharactersInRange:NSMakeRange(start, end - start) withString:value];
+  }
+
+  _backedTextInputView.attributedText = mutableString;
+  [self _updateState];
+}
+
 @end
