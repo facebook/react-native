@@ -52,7 +52,7 @@ rn_xplat_cxx_library(
     visibility = ["PUBLIC"],
     deps = [
         "fbsource//xplat/fbsystrace:fbsystrace",
-        "fbsource//xplat/folly:evicting_cache_map",
+        "fbsource//xplat/folly:container_evicting_cache_map",
         "fbsource//xplat/folly:headers_only",
         "fbsource//xplat/folly:memory",
         "fbsource//xplat/folly:molly",
