@@ -165,10 +165,9 @@ using namespace facebook::react;
     return;
   }
 
-  auto data = _state->getData();
-
-  if (data.revision != _stateRevision) {
-    _stateRevision = data.revision;
+  if (_state->getRevision() != _stateRevision) {
+    auto data = _state->getData();
+    _stateRevision = _state->getRevision();
     _backedTextInputView.attributedText = RCTNSAttributedStringFromAttributedStringBox(data.attributedStringBox);
   }
 }
@@ -327,10 +326,9 @@ using namespace facebook::react;
   }
 
   auto data = _state->getData();
-  data.revision++;
-  _stateRevision = data.revision;
   data.attributedStringBox = RCTAttributedStringBoxFromNSAttributedString(attributedString);
   _state->updateState(std::move(data), EventPriority::SynchronousUnbatched);
+  _stateRevision = _state->getRevision() + 1;
 }
 
 - (AttributedString::Range)_selectionRange

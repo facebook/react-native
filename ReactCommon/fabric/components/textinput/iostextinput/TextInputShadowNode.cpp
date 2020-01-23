@@ -19,7 +19,7 @@ namespace react {
 extern char const TextInputComponentName[] = "TextInput";
 
 AttributedStringBox TextInputShadowNode::attributedStringBoxToMeasure() const {
-  bool hasMeaningfulState = getState() && getStateData().revision != 0;
+  bool hasMeaningfulState = getState() && getState()->getRevision() != 0;
 
   if (hasMeaningfulState) {
     auto attributedStringBox = getStateData().attributedStringBox;
@@ -66,12 +66,11 @@ void TextInputShadowNode::setTextLayoutManager(
 void TextInputShadowNode::updateStateIfNeeded() {
   ensureUnsealed();
 
-  if (!getState() || getStateData().revision == 0) {
+  if (!getState() || getState()->getRevision() == 0) {
     auto state = TextInputState{};
     state.attributedStringBox = AttributedStringBox{getAttributedString()};
     state.paragraphAttributes = getProps()->paragraphAttributes;
     state.layoutManager = textLayoutManager_;
-    state.revision = 1;
     setStateData(std::move(state));
   }
 }
