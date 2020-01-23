@@ -195,16 +195,16 @@ LayoutMetrics UIManager::getRelativeLayoutMetrics(
 void UIManager::updateState(
     ShadowNode const &shadowNode,
     StateData::Shared const &rawStateData) const {
-  auto &componentDescriptor = shadowNode.getComponentDescriptor();
-  auto state =
-      componentDescriptor.createState(shadowNode.getState(), rawStateData);
-
   shadowTreeRegistry_.visit(
       shadowNode.getSurfaceId(), [&](ShadowTree const &shadowTree) {
         shadowTree.tryCommit([&](RootShadowNode::Shared const
                                      &oldRootShadowNode) {
           return oldRootShadowNode->clone(
               shadowNode, [&](ShadowNode const &oldShadowNode) {
+                auto &componentDescriptor =
+                    oldShadowNode.getComponentDescriptor();
+                auto state = componentDescriptor.createState(
+                    oldShadowNode.getState(), rawStateData);
                 return oldShadowNode.clone({
                     /* .props = */ ShadowNodeFragment::propsPlaceholder(),
                     /* .children = */ ShadowNodeFragment::childrenPlaceholder(),
