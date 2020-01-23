@@ -35,6 +35,16 @@ class State {
    */
   State::Shared getMostRecentState() const;
 
+  /*
+   * Returns a revision number of the `State` object.
+   * The number is being automatically assigned during the creation of `State`
+   * objects.
+   * Revision `0` represents a case when we don't have any info about state
+   * object (actual State instances cannot have it).
+   * Revision `1` represents a newly created initial state object.
+   */
+  size_t getRevision() const;
+
 #ifdef ANDROID
   virtual folly::dynamic getDynamic() const = 0;
   virtual void updateState(folly::dynamic data) const = 0;
@@ -55,6 +65,11 @@ class State {
    * Protected by mutex inside `StateCoordinator`.
    */
   mutable bool isObsolete_{false};
+
+  /*
+   * Revision of the State object.
+   */
+  size_t revision_;
 };
 
 } // namespace react
