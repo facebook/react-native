@@ -9,7 +9,7 @@
 #include <sstream>
 #include <string>
 
-#include <fb/fbjni.h>
+#include <fbjni/fbjni.h>
 #include <jsi/jsi.h>
 
 #include <ReactCommon/TurboModule.h>

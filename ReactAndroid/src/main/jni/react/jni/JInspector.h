@@ -11,7 +11,7 @@
 
 #include <jsinspector/InspectorInterfaces.h>
 
-#include <fb/fbjni.h>
+#include <fbjni/fbjni.h>
 
 #include <memory>
 

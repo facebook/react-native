@@ -8,6 +8,7 @@
 [maven_repositories]
   central = https://repo1.maven.org/maven2
   google = https://maven.google.com/
+  jcenter = https://jcenter.bintray.com/
 
 [alias]
   rntester = //RNTester/android/app:app

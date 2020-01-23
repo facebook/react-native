@@ -93,7 +93,9 @@ struct HermesDebugContext {
       folly::Future<Unit> &&finished)
       : runtime(makeHermesRuntime()),
         inspector(
-            std::make_shared<SharedRuntimeAdapter>(runtime),
+            std::make_shared<SharedRuntimeAdapter>(
+                runtime,
+                runtime->getDebugger()),
             observer,
             false),
         stopFlag(false),

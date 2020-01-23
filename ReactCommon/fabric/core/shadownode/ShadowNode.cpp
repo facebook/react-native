@@ -66,9 +66,6 @@ ShadowNode::ShadowNode(
       props_(fragment.props ? fragment.props : sourceShadowNode.props_),
       children_(
           fragment.children ? fragment.children : sourceShadowNode.children_),
-      localData_(
-          fragment.localData ? fragment.localData
-                             : sourceShadowNode.localData_),
       state_(
           fragment.state ? fragment.state
                          : sourceShadowNode.getMostRecentState()),
@@ -145,10 +142,6 @@ State::Shared ShadowNode::getMostRecentState() const {
   return ShadowNodeFragment::statePlaceholder();
 }
 
-SharedLocalData ShadowNode::getLocalData() const {
-  return localData_;
-}
-
 void ShadowNode::sealRecursive() const {
   if (getSealed()) {
     return;
@@ -207,11 +200,6 @@ void ShadowNode::replaceChild(
   }
 
   assert(false && "Child to replace was not found.");
-}
-
-void ShadowNode::setLocalData(const SharedLocalData &localData) {
-  ensureUnsealed();
-  localData_ = localData;
 }
 
 void ShadowNode::cloneChildrenIfShared() {

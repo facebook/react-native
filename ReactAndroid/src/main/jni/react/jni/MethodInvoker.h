@@ -10,7 +10,7 @@
 #include <vector>
 
 #include <cxxreact/JSExecutor.h>
-#include <fb/fbjni.h>
+#include <fbjni/fbjni.h>
 #include <folly/dynamic.h>
 
 namespace facebook {

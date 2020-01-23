@@ -34,14 +34,34 @@ public class UIManagerHelper {
   /** @return a {@link UIManager} that can handle the react tag received by parameter. */
   @Nullable
   public static UIManager getUIManager(ReactContext context, @UIManagerType int uiManagerType) {
+    return getUIManager(context, uiManagerType, true);
+  }
+
+  @Nullable
+  private static UIManager getUIManager(
+      ReactContext context,
+      @UIManagerType int uiManagerType,
+      boolean returnNullIfCatalystIsInactive) {
     if (context.isBridgeless()) {
       return (UIManager) context.getJSIModule(JSIModuleType.UIManager);
     } else {
+      if (!context.hasCatalystInstance()) {
+        ReactSoftException.logSoftException(
+            "UIManagerHelper",
+            new IllegalStateException(
+                "Cannot get UIManager because the context doesn't contain a CatalystInstance."));
+        return null;
+      }
+      // TODO T60461551: add tests to verify emission of events when the ReactContext is being turn
+      // down.
       if (!context.hasActiveCatalystInstance()) {
         ReactSoftException.logSoftException(
             "UIManagerHelper",
-            new RuntimeException("Cannot get UIManager: no active Catalyst instance"));
-        return null;
+            new IllegalStateException(
+                "Cannot get UIManager because the context doesn't contain an active CatalystInstance."));
+        if (returnNullIfCatalystIsInactive) {
+          return null;
+        }
       }
       CatalystInstance catalystInstance = context.getCatalystInstance();
       return uiManagerType == FABRIC
@@ -66,7 +86,7 @@ public class UIManagerHelper {
   @Nullable
   public static EventDispatcher getEventDispatcher(
       ReactContext context, @UIManagerType int uiManagerType) {
-    UIManager uiManager = getUIManager(context, uiManagerType);
+    UIManager uiManager = getUIManager(context, uiManagerType, false);
     return uiManager == null ? null : (EventDispatcher) uiManager.getEventDispatcher();
   }
 

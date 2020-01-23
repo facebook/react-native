@@ -125,7 +125,7 @@ class ColorPickerExample extends React.Component<{...}, ColorState> {
     );
   }
 }
-class AccessibilityLabelPickerExample extends React.Component<{}, State> {
+class AccessibilityLabelPickerExample extends React.Component<{||}, State> {
   state: State = {
     value: '3',
   };

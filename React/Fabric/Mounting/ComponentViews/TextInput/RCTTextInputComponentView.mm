@@ -17,11 +17,12 @@
 #import <React/RCTUITextView.h>
 
 #import "RCTConversions.h"
+#import "RCTTextInputNativeCommands.h"
 #import "RCTTextInputUtils.h"
 
 using namespace facebook::react;
 
-@interface RCTTextInputComponentView () <RCTBackedTextInputDelegate>
+@interface RCTTextInputComponentView () <RCTBackedTextInputDelegate, RCTTextInputViewProtocol>
 @end
 
 @implementation RCTTextInputComponentView {
@@ -164,10 +165,9 @@ using namespace facebook::react;
     return;
   }
 
-  auto data = _state->getData();
-
-  if (data.revision != _stateRevision) {
-    _stateRevision = data.revision;
+  if (_state->getRevision() != _stateRevision) {
+    auto data = _state->getData();
+    _stateRevision = _state->getRevision();
     _backedTextInputView.attributedText = RCTNSAttributedStringFromAttributedStringBox(data.attributedStringBox);
   }
 }
@@ -326,10 +326,9 @@ using namespace facebook::react;
   }
 
   auto data = _state->getData();
-  data.revision++;
-  _stateRevision = data.revision;
   data.attributedStringBox = RCTAttributedStringBoxFromNSAttributedString(attributedString);
   _state->updateState(std::move(data), EventPriority::SynchronousUnbatched);
+  _stateRevision = _state->getRevision() + 1;
 }
 
 - (AttributedString::Range)_selectionRange
@@ -340,6 +339,56 @@ using namespace facebook::react;
   NSInteger end = [_backedTextInputView offsetFromPosition:_backedTextInputView.beginningOfDocument
                                                 toPosition:selectedTextRange.end];
   return AttributedString::Range{(int)start, (int)(end - start)};
+}
+
+#pragma mark - Native Commands
+
+- (void)handleCommand:(const NSString *)commandName args:(const NSArray *)args
+{
+  RCTTextInputHandleCommand(self, commandName, args);
+}
+
+- (void)focus
+{
+  [_backedTextInputView becomeFirstResponder];
+}
+
+- (void)blur
+{
+  [_backedTextInputView resignFirstResponder];
+}
+
+- (void)setMostRecentEventCount:(NSInteger)eventCount
+{
+  // no-op. `eventCount` isn't used in Fabric's TextInput.
+  // We are keeping it so commands are backwards
+  // compatible with Paper's TextInput.
+}
+
+- (void)setTextAndSelection:(NSInteger)eventCount
+                      value:(NSString *__nullable)value
+                      start:(NSInteger)start
+                        end:(NSInteger)end
+{
+  // `eventCount` is ignored, isn't used in Fabric's TextInput.
+  // We are keeping it so commands are
+  // backwards compatible with Paper's TextInput.
+  UITextPosition *startPosition = [_backedTextInputView positionFromPosition:_backedTextInputView.beginningOfDocument
+                                                                      offset:start];
+  UITextPosition *endPosition = [_backedTextInputView positionFromPosition:_backedTextInputView.beginningOfDocument
+                                                                    offset:end];
+  UITextRange *range = [_backedTextInputView textRangeFromPosition:startPosition toPosition:endPosition];
+  [_backedTextInputView setSelectedTextRange:range notifyDelegate:NO];
+
+  NSMutableAttributedString *mutableString =
+      [[NSMutableAttributedString alloc] initWithAttributedString:_backedTextInputView.attributedText];
+
+  if (value) {
+    [mutableString replaceCharactersInRange:NSMakeRange(start, end - start) withString:value];
+  }
+
+  _backedTextInputView.attributedText = mutableString;
+  [self _updateState];
 }
 
 @end

@@ -213,12 +213,12 @@ try {
       // TODO: Get target OS and simulator from .tests.env
       tryExecNTimes(
         () => {
-          let destination = 'platform=iOS Simulator,name=iPhone 8,OS=13.2.2';
+          let destination = 'platform=iOS Simulator,name=iPhone 8,OS=13.3';
           let sdk = 'iphonesimulator';
           let scheme = 'HelloWorld';
 
           if (argv.tvos) {
-            destination = 'platform=tvOS Simulator,name=Apple TV,OS=13.2.2';
+            destination = 'platform=tvOS Simulator,name=Apple TV,OS=13.3';
             sdk = 'appletvsimulator';
             scheme = 'HelloWorld-tvOS';
           }

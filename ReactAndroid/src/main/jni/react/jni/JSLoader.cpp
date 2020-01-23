@@ -9,8 +9,8 @@
 
 #include <android/asset_manager_jni.h>
 #include <cxxreact/JSBigString.h>
-#include <fb/fbjni.h>
 #include <fb/log.h>
+#include <fbjni/fbjni.h>
 #include <folly/Conv.h>
 #include <fstream>
 #include <memory>

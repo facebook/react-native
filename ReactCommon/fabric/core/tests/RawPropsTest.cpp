@@ -118,7 +118,7 @@ class PropsMultiLookup : public Props {
   const float derivedFloatValue{40};
 };
 
-TEST(ShadowNodeTest, handleProps) {
+TEST(RawPropsTest, handleProps) {
   const auto &raw = RawProps(folly::dynamic::object("nativeID", "abc"));
   auto parser = RawPropsParser();
   parser.prepare<Props>();
@@ -127,12 +127,12 @@ TEST(ShadowNodeTest, handleProps) {
   auto props = std::make_shared<Props>(Props(), raw);
 
   // Props are not sealed after applying raw props.
-  ASSERT_FALSE(props->getSealed());
+  EXPECT_FALSE(props->getSealed());
 
-  ASSERT_STREQ(props->nativeId.c_str(), "abc");
+  EXPECT_STREQ(props->nativeId.c_str(), "abc");
 }
 
-TEST(ShadowNodeTest, handleRawPropsSingleString) {
+TEST(RawPropsTest, handleRawPropsSingleString) {
   const auto &raw = RawProps(folly::dynamic::object("nativeID", "abc"));
   auto parser = RawPropsParser();
   parser.prepare<Props>();
@@ -140,10 +140,10 @@ TEST(ShadowNodeTest, handleRawPropsSingleString) {
 
   std::string value = (std::string)*raw.at("nativeID", nullptr, nullptr);
 
-  ASSERT_STREQ(value.c_str(), "abc");
+  EXPECT_STREQ(value.c_str(), "abc");
 }
 
-TEST(ShadowNodeTest, handleRawPropsSingleFloat) {
+TEST(RawPropsTest, handleRawPropsSingleFloat) {
   const auto &raw =
       RawProps(folly::dynamic::object("floatValue", (float)42.42));
   auto parser = RawPropsParser();
@@ -152,10 +152,10 @@ TEST(ShadowNodeTest, handleRawPropsSingleFloat) {
 
   float value = (float)*raw.at("floatValue", nullptr, nullptr);
 
-  ASSERT_NEAR(value, 42.42, 0.00001);
+  EXPECT_NEAR(value, 42.42, 0.00001);
 }
 
-TEST(ShadowNodeTest, handleRawPropsSingleDouble) {
+TEST(RawPropsTest, handleRawPropsSingleDouble) {
   const auto &raw =
       RawProps(folly::dynamic::object("doubleValue", (double)42.42));
   auto parser = RawPropsParser();
@@ -164,10 +164,10 @@ TEST(ShadowNodeTest, handleRawPropsSingleDouble) {
 
   double value = (double)*raw.at("doubleValue", nullptr, nullptr);
 
-  ASSERT_NEAR(value, 42.42, 0.00001);
+  EXPECT_NEAR(value, 42.42, 0.00001);
 }
 
-TEST(ShadowNodeTest, handleRawPropsSingleInt) {
+TEST(RawPropsTest, handleRawPropsSingleInt) {
   const auto &raw = RawProps(folly::dynamic::object("intValue", (int)42.42));
   auto parser = RawPropsParser();
   parser.prepare<PropsSingleInt>();
@@ -175,21 +175,21 @@ TEST(ShadowNodeTest, handleRawPropsSingleInt) {
 
   int value = (int)*raw.at("intValue", nullptr, nullptr);
 
-  ASSERT_EQ(value, 42);
+  EXPECT_EQ(value, 42);
 }
 
-TEST(ShadowNodeTest, handleRawPropsSingleIntGetManyTimes) {
+TEST(RawPropsTest, handleRawPropsSingleIntGetManyTimes) {
   const auto &raw = RawProps(folly::dynamic::object("intValue", (int)42.42));
   auto parser = RawPropsParser();
   parser.prepare<PropsSingleInt>();
   raw.parse(parser);
 
-  ASSERT_EQ((int)*raw.at("intValue", nullptr, nullptr), 42);
-  ASSERT_EQ((int)*raw.at("intValue", nullptr, nullptr), 42);
-  ASSERT_EQ((int)*raw.at("intValue", nullptr, nullptr), 42);
+  EXPECT_EQ((int)*raw.at("intValue", nullptr, nullptr), 42);
+  EXPECT_EQ((int)*raw.at("intValue", nullptr, nullptr), 42);
+  EXPECT_EQ((int)*raw.at("intValue", nullptr, nullptr), 42);
 }
 
-TEST(ShadowNodeTest, handleRawPropsPrimitiveTypes) {
+TEST(RawPropsTest, handleRawPropsPrimitiveTypes) {
   const auto &raw = RawProps(folly::dynamic::object("intValue", (int)42)(
       "doubleValue", (double)17.42)("floatValue", (float)66.67)(
       "stringValue", "helloworld")("boolValue", true));
@@ -198,16 +198,16 @@ TEST(ShadowNodeTest, handleRawPropsPrimitiveTypes) {
   parser.prepare<PropsPrimitiveTypes>();
   raw.parse(parser);
 
-  ASSERT_EQ((int)*raw.at("intValue", nullptr, nullptr), 42);
-  ASSERT_NEAR((double)*raw.at("doubleValue", nullptr, nullptr), 17.42, 0.0001);
-  ASSERT_NEAR((float)*raw.at("floatValue", nullptr, nullptr), 66.67, 0.00001);
-  ASSERT_STREQ(
+  EXPECT_EQ((int)*raw.at("intValue", nullptr, nullptr), 42);
+  EXPECT_NEAR((double)*raw.at("doubleValue", nullptr, nullptr), 17.42, 0.0001);
+  EXPECT_NEAR((float)*raw.at("floatValue", nullptr, nullptr), 66.67, 0.00001);
+  EXPECT_STREQ(
       ((std::string)*raw.at("stringValue", nullptr, nullptr)).c_str(),
       "helloworld");
-  ASSERT_EQ((bool)*raw.at("boolValue", nullptr, nullptr), true);
+  EXPECT_EQ((bool)*raw.at("boolValue", nullptr, nullptr), true);
 }
 
-TEST(ShadowNodeTest, handleRawPropsPrimitiveTypesGetTwice) {
+TEST(RawPropsTest, handleRawPropsPrimitiveTypesGetTwice) {
   const auto &raw = RawProps(folly::dynamic::object("intValue", (int)42)(
       "doubleValue", (double)17.42)("floatValue", (float)66.67)(
       "stringValue", "helloworld")("boolValue", true));
@@ -216,24 +216,24 @@ TEST(ShadowNodeTest, handleRawPropsPrimitiveTypesGetTwice) {
   parser.prepare<PropsPrimitiveTypes>();
   raw.parse(parser);
 
-  ASSERT_EQ((int)*raw.at("intValue", nullptr, nullptr), 42);
-  ASSERT_NEAR((double)*raw.at("doubleValue", nullptr, nullptr), 17.42, 0.0001);
-  ASSERT_NEAR((float)*raw.at("floatValue", nullptr, nullptr), 66.67, 0.00001);
-  ASSERT_STREQ(
+  EXPECT_EQ((int)*raw.at("intValue", nullptr, nullptr), 42);
+  EXPECT_NEAR((double)*raw.at("doubleValue", nullptr, nullptr), 17.42, 0.0001);
+  EXPECT_NEAR((float)*raw.at("floatValue", nullptr, nullptr), 66.67, 0.00001);
+  EXPECT_STREQ(
       ((std::string)*raw.at("stringValue", nullptr, nullptr)).c_str(),
       "helloworld");
-  ASSERT_EQ((bool)*raw.at("boolValue", nullptr, nullptr), true);
+  EXPECT_EQ((bool)*raw.at("boolValue", nullptr, nullptr), true);
 
-  ASSERT_EQ((int)*raw.at("intValue", nullptr, nullptr), 42);
-  ASSERT_NEAR((double)*raw.at("doubleValue", nullptr, nullptr), 17.42, 0.0001);
-  ASSERT_NEAR((float)*raw.at("floatValue", nullptr, nullptr), 66.67, 0.00001);
-  ASSERT_STREQ(
+  EXPECT_EQ((int)*raw.at("intValue", nullptr, nullptr), 42);
+  EXPECT_NEAR((double)*raw.at("doubleValue", nullptr, nullptr), 17.42, 0.0001);
+  EXPECT_NEAR((float)*raw.at("floatValue", nullptr, nullptr), 66.67, 0.00001);
+  EXPECT_STREQ(
       ((std::string)*raw.at("stringValue", nullptr, nullptr)).c_str(),
       "helloworld");
-  ASSERT_EQ((bool)*raw.at("boolValue", nullptr, nullptr), true);
+  EXPECT_EQ((bool)*raw.at("boolValue", nullptr, nullptr), true);
 }
 
-TEST(ShadowNodeTest, handleRawPropsPrimitiveTypesGetOutOfOrder) {
+TEST(RawPropsTest, handleRawPropsPrimitiveTypesGetOutOfOrder) {
   const auto &raw = RawProps(folly::dynamic::object("intValue", (int)42)(
       "doubleValue", (double)17.42)("floatValue", (float)66.67)(
       "stringValue", "helloworld")("boolValue", true));
@@ -242,41 +242,41 @@ TEST(ShadowNodeTest, handleRawPropsPrimitiveTypesGetOutOfOrder) {
   parser.prepare<PropsPrimitiveTypes>();
   raw.parse(parser);
 
-  ASSERT_EQ((int)*raw.at("intValue", nullptr, nullptr), 42);
-  ASSERT_NEAR((double)*raw.at("doubleValue", nullptr, nullptr), 17.42, 0.0001);
-  ASSERT_NEAR((float)*raw.at("floatValue", nullptr, nullptr), 66.67, 0.00001);
-  ASSERT_STREQ(
+  EXPECT_EQ((int)*raw.at("intValue", nullptr, nullptr), 42);
+  EXPECT_NEAR((double)*raw.at("doubleValue", nullptr, nullptr), 17.42, 0.0001);
+  EXPECT_NEAR((float)*raw.at("floatValue", nullptr, nullptr), 66.67, 0.00001);
+  EXPECT_STREQ(
       ((std::string)*raw.at("stringValue", nullptr, nullptr)).c_str(),
       "helloworld");
-  ASSERT_EQ((bool)*raw.at("boolValue", nullptr, nullptr), true);
+  EXPECT_EQ((bool)*raw.at("boolValue", nullptr, nullptr), true);
 
-  ASSERT_NEAR((double)*raw.at("doubleValue", nullptr, nullptr), 17.42, 0.0001);
-  ASSERT_EQ((int)*raw.at("intValue", nullptr, nullptr), 42);
-  ASSERT_NEAR((float)*raw.at("floatValue", nullptr, nullptr), 66.67, 0.00001);
-  ASSERT_STREQ(
+  EXPECT_NEAR((double)*raw.at("doubleValue", nullptr, nullptr), 17.42, 0.0001);
+  EXPECT_EQ((int)*raw.at("intValue", nullptr, nullptr), 42);
+  EXPECT_NEAR((float)*raw.at("floatValue", nullptr, nullptr), 66.67, 0.00001);
+  EXPECT_STREQ(
       ((std::string)*raw.at("stringValue", nullptr, nullptr)).c_str(),
       "helloworld");
-  ASSERT_EQ((bool)*raw.at("boolValue", nullptr, nullptr), true);
+  EXPECT_EQ((bool)*raw.at("boolValue", nullptr, nullptr), true);
 }
 
-TEST(ShadowNodeTest, handleRawPropsPrimitiveTypesIncomplete) {
+TEST(RawPropsTest, handleRawPropsPrimitiveTypesIncomplete) {
   const auto &raw = RawProps(folly::dynamic::object("intValue", (int)42));
 
   auto parser = RawPropsParser();
   parser.prepare<PropsPrimitiveTypes>();
   raw.parse(parser);
 
-  ASSERT_EQ((int)*raw.at("intValue", nullptr, nullptr), 42);
-  ASSERT_EQ(raw.at("doubleValue", nullptr, nullptr), nullptr);
-  ASSERT_EQ(raw.at("floatValue", nullptr, nullptr), nullptr);
-  ASSERT_EQ((int)*raw.at("intValue", nullptr, nullptr), 42);
-  ASSERT_EQ(raw.at("stringValue", nullptr, nullptr), nullptr);
-  ASSERT_EQ(raw.at("boolValue", nullptr, nullptr), nullptr);
-  ASSERT_EQ((int)*raw.at("intValue", nullptr, nullptr), 42);
+  EXPECT_EQ((int)*raw.at("intValue", nullptr, nullptr), 42);
+  EXPECT_EQ(raw.at("doubleValue", nullptr, nullptr), nullptr);
+  EXPECT_EQ(raw.at("floatValue", nullptr, nullptr), nullptr);
+  EXPECT_EQ((int)*raw.at("intValue", nullptr, nullptr), 42);
+  EXPECT_EQ(raw.at("stringValue", nullptr, nullptr), nullptr);
+  EXPECT_EQ(raw.at("boolValue", nullptr, nullptr), nullptr);
+  EXPECT_EQ((int)*raw.at("intValue", nullptr, nullptr), 42);
 }
 
 #ifndef NDEBUG
-TEST(ShadowNodeTest, handleRawPropsPrimitiveTypesIncorrectLookup) {
+TEST(RawPropsTest, handleRawPropsPrimitiveTypesIncorrectLookup) {
   const auto &raw = RawProps(folly::dynamic::object("intValue", (int)42));
 
   auto parser = RawPropsParser();
@@ -286,12 +286,12 @@ TEST(ShadowNodeTest, handleRawPropsPrimitiveTypesIncorrectLookup) {
   // Before D18662135, looking up an invalid key would trigger
   // an infinite loop. This is out of contract, so we should only
   // test this in debug.
-  ASSERT_EQ(raw.at("flurb", nullptr, nullptr), nullptr);
-  ASSERT_EQ((int)*raw.at("intValue", nullptr, nullptr), 42);
+  EXPECT_EQ(raw.at("flurb", nullptr, nullptr), nullptr);
+  EXPECT_EQ((int)*raw.at("intValue", nullptr, nullptr), 42);
 }
 #endif
 
-TEST(ShadowNodeTest, handlePropsMultiLookup) {
+TEST(RawPropsTest, handlePropsMultiLookup) {
   const auto &raw = RawProps(folly::dynamic::object("floatValue", (float)10.0));
   auto parser = RawPropsParser();
   parser.prepare<PropsMultiLookup>();
@@ -300,8 +300,8 @@ TEST(ShadowNodeTest, handlePropsMultiLookup) {
   auto props = std::make_shared<PropsMultiLookup>(PropsMultiLookup(), raw);
 
   // Props are not sealed after applying raw props.
-  ASSERT_FALSE(props->getSealed());
+  EXPECT_FALSE(props->getSealed());
 
-  ASSERT_NEAR(props->floatValue, 10.0, 0.00001);
-  ASSERT_NEAR(props->derivedFloatValue, 20.0, 0.00001);
+  EXPECT_NEAR(props->floatValue, 10.0, 0.00001);
+  EXPECT_NEAR(props->derivedFloatValue, 20.0, 0.00001);
 }

@@ -14,7 +14,7 @@
 #include <glog/logging.h>
 
 #include <cxxreact/CxxNativeModule.h>
-#include <fb/fbjni.h>
+#include <fbjni/fbjni.h>
 
 #include "JCallback.h"
 #include "ReadableNativeArray.h"

@@ -8,7 +8,6 @@
 #pragma once
 
 #include <react/core/EventEmitter.h>
-#include <react/core/LocalData.h>
 #include <react/core/Props.h>
 #include <react/core/ReactPrimitives.h>
 #include <react/core/ShadowNode.h>
@@ -29,7 +28,6 @@ namespace react {
 struct ShadowNodeFragment {
   Props::Shared const &props = propsPlaceholder();
   ShadowNode::SharedListOfShared const &children = childrenPlaceholder();
-  LocalData::Shared const &localData = localDataPlaceholder();
   State::Shared const &state = statePlaceholder();
 
   /*
@@ -39,7 +37,6 @@ struct ShadowNodeFragment {
    */
   static Props::Shared const &propsPlaceholder();
   static ShadowNode::SharedListOfShared const &childrenPlaceholder();
-  static LocalData::Shared const &localDataPlaceholder();
   static State::Shared const &statePlaceholder();
 
   /*
@@ -62,7 +59,6 @@ struct ShadowNodeFragment {
    private:
     Props::Shared const props_;
     ShadowNode::SharedListOfShared const children_;
-    LocalData::Shared const localData_;
     State::Shared const state_;
   };
 };

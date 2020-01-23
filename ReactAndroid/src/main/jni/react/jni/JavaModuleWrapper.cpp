@@ -14,7 +14,7 @@
 #include <cxxreact/Instance.h>
 #include <cxxreact/JsArgumentHelpers.h>
 #include <cxxreact/NativeModule.h>
-#include <fb/fbjni.h>
+#include <fbjni/fbjni.h>
 #include <folly/json.h>
 
 #ifdef WITH_FBSYSTRACE

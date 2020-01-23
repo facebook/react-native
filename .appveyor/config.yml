@@ -2,7 +2,7 @@ environment:
   ANDROID_HOME: "C:\\android-sdk-windows"
   ANDROID_NDK: "C:\\android-sdk-windows\\android-ndk-r19c"
   ANDROID_BUILD_VERSION: 28
-  ANDROID_TOOLS_VERSION: 28.0.3
+  ANDROID_TOOLS_VERSION: 29.0.2
 
   GRADLE_OPTS: -Dorg.gradle.daemon=false
 

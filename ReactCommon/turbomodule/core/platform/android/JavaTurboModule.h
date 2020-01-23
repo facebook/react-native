@@ -12,7 +12,7 @@
 
 #include <ReactCommon/TurboModule.h>
 #include <ReactCommon/TurboModuleUtils.h>
-#include <fb/fbjni.h>
+#include <fbjni/fbjni.h>
 #include <jsi/jsi.h>
 #include <react/jni/JCallback.h>
 

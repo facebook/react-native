@@ -39,7 +39,8 @@ const ImageViewViewConfig = {
   validAttributes: {
     ...ReactNativeViewViewConfig.validAttributes,
     blurRadius: true,
-    capInsets: {diff: (require('../Utilities/differ/insetsDiffer'): any)}, // flowlint-line unclear-type:off
+    // flowlint-next-line unclear-type:off
+    capInsets: {diff: (require('../Utilities/differ/insetsDiffer'): any)},
     defaultSource: {
       process: require('./resolveAssetSource'),
     },

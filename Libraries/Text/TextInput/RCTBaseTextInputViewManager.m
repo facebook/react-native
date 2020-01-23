@@ -100,6 +100,22 @@ RCT_CUSTOM_VIEW_PROPERTY(multiline, BOOL, UIView)
                                                     lazilyLoadIfNecessary:YES]];
 }
 
+RCT_EXPORT_METHOD(focus : (nonnull NSNumber *)viewTag)
+{
+  [self.bridge.uiManager addUIBlock:^(RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry) {
+    UIView *view = viewRegistry[viewTag];
+    [view reactFocus];
+  }];
+}
+
+RCT_EXPORT_METHOD(blur : (nonnull NSNumber *)viewTag)
+{
+  [self.bridge.uiManager addUIBlock:^(RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry) {
+    UIView *view = viewRegistry[viewTag];
+    [view reactBlur];
+  }];
+}
+
 #pragma mark - RCTUIManagerObserver
 
 - (void)uiManagerWillPerformMounting:(__unused RCTUIManager *)uiManager

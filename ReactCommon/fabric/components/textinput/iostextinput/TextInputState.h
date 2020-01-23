@@ -40,11 +40,6 @@ class TextInputState final {
    * `AttributedString`.
    */
   SharedTextLayoutManager layoutManager;
-
-  /*
-   * Revision of the State object.
-   */
-  size_t revision{0};
 };
 
 } // namespace react

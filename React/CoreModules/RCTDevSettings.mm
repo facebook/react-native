@@ -113,7 +113,7 @@ void RCTDevSettingsSetEnabled(BOOL enabled) {
 
 @end
 
-@interface RCTDevSettings () <RCTBridgeModule, RCTInvalidating> {
+@interface RCTDevSettings () <RCTBridgeModule, RCTInvalidating, NativeDevSettingsSpec> {
   BOOL _isJSLoaded;
 #if ENABLE_PACKAGER_CONNECTION
   RCTHandlerToken _reloadToken;
@@ -129,14 +129,9 @@ void RCTDevSettingsSetEnabled(BOOL enabled) {
 
 RCT_EXPORT_MODULE()
 
-+ (BOOL)requiresMainQueueSetup
-{
-  return YES; // RCT_DEV-only
-}
-
 - (instancetype)init
 {
-  // default behavior is to use NSUserDefaults
+  // Default behavior is to use NSUserDefaults with shake and hot loading enabled.
   NSDictionary *defaultValues = @{
     kRCTDevSettingShakeToShowDevMenu : @YES,
     kRCTDevSettingHotLoadingEnabled : @YES,
@@ -177,11 +172,9 @@ RCT_EXPORT_MODULE()
 #endif
 
 #if RCT_ENABLE_INSPECTOR
-  // we need this dispatch back to the main thread because even though this
-  // is executed on the main thread, at this point the bridge is not yet
-  // finished with its initialisation. But it does finish by the time it
-  // relinquishes control of the main thread, so only queue on the JS thread
-  // after the current main thread operation is done.
+  // We need this dispatch to the main thread because the bridge is not yet
+  // finished with its initialisation. By the time it relinquishes control of
+  // the main thread, this operation can be performed.
   dispatch_async(dispatch_get_main_queue(), ^{
     [bridge
         dispatchBlock:^{
@@ -439,9 +432,17 @@ RCT_EXPORT_METHOD(addMenuItem:(NSString *)title)
   });
 }
 
+- (std::shared_ptr<facebook::react::TurboModule>)getTurboModuleWithJsInvoker:(std::shared_ptr<facebook::react::CallInvoker>)jsInvoker
+{
+  return std::make_shared<facebook::react::NativeDevSettingsSpecJSI>(self, jsInvoker);
+}
+
 @end
 
 #else // #if RCT_DEV
+
+@interface RCTDevSettings () <NativeDevSettingsSpec>
+@end
 
 @implementation RCTDevSettings
 
@@ -487,6 +488,11 @@ RCT_EXPORT_METHOD(addMenuItem:(NSString *)title)
 }
 - (void)setIsShakeToShowDevMenuEnabled:(BOOL)enabled
 {
+}
+
+- (std::shared_ptr<facebook::react::TurboModule>)getTurboModuleWithJsInvoker:(std::shared_ptr<facebook::react::CallInvoker>)jsInvoker
+{
+  return std::make_shared<facebook::react::NativeDevSettingsSpecJSI>(self, jsInvoker);
 }
 
 @end

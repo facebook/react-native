@@ -58,6 +58,93 @@ public class ReactTextShadowNode extends ReactBaseTextShadowNode {
 
   private boolean mShouldNotifyOnTextLayout;
 
+  private @Nullable ReactTextViewManagerCallback mReactTextViewManagerCallback = null;
+
+  private final YogaMeasureFunction mTextMeasureFunction =
+      new YogaMeasureFunction() {
+        @Override
+        public long measure(
+            YogaNode node,
+            float width,
+            YogaMeasureMode widthMode,
+            float height,
+            YogaMeasureMode heightMode) {
+          Spannable text =
+              Assertions.assertNotNull(
+                  mPreparedSpannableText,
+                  "Spannable element has not been prepared in onBeforeLayout");
+
+          Layout layout = measureSpannedText(text, width, widthMode);
+
+          if (mAdjustsFontSizeToFit) {
+            int initialFontSize = mTextAttributes.getEffectiveFontSize();
+            int currentFontSize = mTextAttributes.getEffectiveFontSize();
+            // Minimum font size is 4pts to match the iOS implementation.
+            int minimumFontSize = (int) Math.max(mMinimumFontScale * initialFontSize, PixelUtil.toPixelFromDIP(4));
+            while (
+              currentFontSize > minimumFontSize && (
+                mNumberOfLines != UNSET && layout.getLineCount() > mNumberOfLines ||
+                heightMode != YogaMeasureMode.UNDEFINED && layout.getHeight() > height)
+            ) {
+              // TODO: We could probably use a smarter algorithm here. This will require 0(n) measurements
+              // based on the number of points the font size needs to be reduced by.
+              currentFontSize = currentFontSize - (int) PixelUtil.toPixelFromDIP(1);
+
+              float ratio = (float) currentFontSize / (float) initialFontSize;
+              ReactAbsoluteSizeSpan[] sizeSpans = text.getSpans(0, text.length(), ReactAbsoluteSizeSpan.class);
+              for (ReactAbsoluteSizeSpan span : sizeSpans) {
+                text.setSpan(
+                    new ReactAbsoluteSizeSpan((int) Math.max((span.getSize() * ratio), minimumFontSize)),
+                    text.getSpanStart(span),
+                    text.getSpanEnd(span),
+                    text.getSpanFlags(span));
+                text.removeSpan(span);
+              }
+              layout = measureSpannedText(text, width, widthMode);
+            }
+          }
+
+          if (mShouldNotifyOnTextLayout) {
+            ThemedReactContext themedReactContext = getThemedContext();
+            WritableArray lines =
+                FontMetricsUtil.getFontMetrics(
+                    text, layout, sTextPaintInstance, themedReactContext);
+            WritableMap event = Arguments.createMap();
+            event.putArray("lines", lines);
+            if (themedReactContext.hasActiveCatalystInstance()) {
+              themedReactContext
+                  .getJSModule(RCTEventEmitter.class)
+                  .receiveEvent(getReactTag(), "topTextLayout", event);
+            } else {
+              ReactSoftException.logSoftException(
+                  "ReactTextShadowNode",
+                  new ReactNoCrashSoftException("Cannot get RCTEventEmitter, no CatalystInstance"));
+            }
+          }
+
+          if (mNumberOfLines != UNSET && mNumberOfLines < layout.getLineCount()) {
+            return YogaMeasureOutput.make(
+                layout.getWidth(), layout.getLineBottom(mNumberOfLines - 1));
+          } else {
+            return YogaMeasureOutput.make(layout.getWidth(), layout.getHeight());
+          }
+        }
+      };
+
+  public ReactTextShadowNode() {
+    initMeasureFunction();
+  }
+
+  private void initMeasureFunction() {
+    if (!isVirtual()) {
+      setMeasureFunction(mTextMeasureFunction);
+    }
+  }
+
+  public void setReactTextViewManagerCallback(ReactTextViewManagerCallback callback) {
+    mReactTextViewManagerCallback = callback;
+  }
+
   private Layout measureSpannedText(Spannable text, float width, YogaMeasureMode widthMode) {
     // TODO(5578671): Handle text direction (see View#getTextDirectionHeuristic)
     TextPaint textPaint = sTextPaintInstance;
@@ -149,87 +236,6 @@ public class ReactTextShadowNode extends ReactBaseTextShadowNode {
     return layout;
   }
 
-  private final YogaMeasureFunction mTextMeasureFunction =
-      new YogaMeasureFunction() {
-        @Override
-        public long measure(
-            YogaNode node,
-            float width,
-            YogaMeasureMode widthMode,
-            float height,
-            YogaMeasureMode heightMode) {
-          Spannable text =
-              Assertions.assertNotNull(
-                  mPreparedSpannableText,
-                  "Spannable element has not been prepared in onBeforeLayout");
-
-          Layout layout = measureSpannedText(text, width, widthMode);
-
-          if (mAdjustsFontSizeToFit) {
-            int initialFontSize = mTextAttributes.getEffectiveFontSize();
-            int currentFontSize = mTextAttributes.getEffectiveFontSize();
-            // Minimum font size is 4pts to match the iOS implementation.
-            int minimumFontSize = (int) Math.max(mMinimumFontScale * initialFontSize, PixelUtil.toPixelFromDIP(4));
-            while (
-              currentFontSize > minimumFontSize && (
-                mNumberOfLines != UNSET && layout.getLineCount() > mNumberOfLines ||
-                heightMode != YogaMeasureMode.UNDEFINED && layout.getHeight() > height)
-            ) {
-              // TODO: We could probably use a smarter algorithm here. This will require 0(n) measurements
-              // based on the number of points the font size needs to be reduced by.
-              currentFontSize = currentFontSize - (int) PixelUtil.toPixelFromDIP(1);
-
-              float ratio = (float) currentFontSize / (float) initialFontSize;
-              ReactAbsoluteSizeSpan[] sizeSpans = text.getSpans(0, text.length(), ReactAbsoluteSizeSpan.class);
-              for (ReactAbsoluteSizeSpan span : sizeSpans) {
-                text.setSpan(
-                    new ReactAbsoluteSizeSpan((int) Math.max((span.getSize() * ratio), minimumFontSize)),
-                    text.getSpanStart(span),
-                    text.getSpanEnd(span),
-                    text.getSpanFlags(span));
-                text.removeSpan(span);
-              }
-              layout = measureSpannedText(text, width, widthMode);
-            }
-          }
-
-          if (mShouldNotifyOnTextLayout) {
-            ThemedReactContext themedReactContext = getThemedContext();
-            WritableArray lines =
-                FontMetricsUtil.getFontMetrics(
-                    text, layout, sTextPaintInstance, themedReactContext);
-            WritableMap event = Arguments.createMap();
-            event.putArray("lines", lines);
-            if (themedReactContext.hasActiveCatalystInstance()) {
-              themedReactContext
-                  .getJSModule(RCTEventEmitter.class)
-                  .receiveEvent(getReactTag(), "topTextLayout", event);
-            } else {
-              ReactSoftException.logSoftException(
-                  "ReactTextShadowNode",
-                  new ReactNoCrashSoftException("Cannot get RCTEventEmitter, no CatalystInstance"));
-            }
-          }
-
-          if (mNumberOfLines != UNSET && mNumberOfLines < layout.getLineCount()) {
-            return YogaMeasureOutput.make(
-                layout.getWidth(), layout.getLineBottom(mNumberOfLines - 1));
-          } else {
-            return YogaMeasureOutput.make(layout.getWidth(), layout.getHeight());
-          }
-        }
-      };
-
-  public ReactTextShadowNode() {
-    initMeasureFunction();
-  }
-
-  private void initMeasureFunction() {
-    if (!isVirtual()) {
-      setMeasureFunction(mTextMeasureFunction);
-    }
-  }
-
   // Return text alignment according to LTR or RTL style
   private int getTextAlign() {
     int textAlign = mTextAlign;
@@ -251,6 +257,9 @@ public class ReactTextShadowNode extends ReactBaseTextShadowNode {
             /* text (e.g. from `value` prop): */ null,
             /* supportsInlineViews: */ true,
             nativeViewHierarchyOptimizer);
+    if (mReactTextViewManagerCallback != null) {
+      mReactTextViewManagerCallback.onPostProcessSpannable(mPreparedSpannableText);
+    }
     markUpdated();
   }
 
