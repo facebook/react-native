@@ -48,7 +48,7 @@ class Connection::Impl : public inspector::InspectorObserver,
       bool waitForDebugger);
   ~Impl();
 
-  HermesRuntime &getRuntime();
+  jsi::Runtime &getRuntime();
   std::string getTitle() const;
 
   bool connect(std::unique_ptr<IRemoteConnection> remoteConn);
@@ -151,7 +151,7 @@ Connection::Impl::Impl(
 
 Connection::Impl::~Impl() = default;
 
-HermesRuntime &Connection::Impl::getRuntime() {
+jsi::Runtime &Connection::Impl::getRuntime() {
   return runtimeAdapter_->getRuntime();
 }
 
@@ -617,7 +617,7 @@ Connection::Impl::makePropsFromValue(
   std::vector<m::runtime::PropertyDescriptor> result;
 
   if (value.isObject()) {
-    HermesRuntime &runtime = getRuntime();
+    jsi::Runtime &runtime = getRuntime();
     jsi::Object obj = value.getObject(runtime);
 
     // TODO(hypuk): obj.getPropertyNames only returns enumerable properties.
@@ -768,7 +768,7 @@ Connection::Connection(
 
 Connection::~Connection() = default;
 
-HermesRuntime &Connection::getRuntime() {
+jsi::Runtime &Connection::getRuntime() {
   return impl_->getRuntime();
 }
 

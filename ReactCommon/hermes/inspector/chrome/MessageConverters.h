@@ -98,13 +98,13 @@ CallFrame makeCallFrame(
     const facebook::hermes::debugger::CallFrameInfo &callFrameInfo,
     const facebook::hermes::debugger::LexicalInfo &lexicalInfo,
     facebook::hermes::inspector::chrome::RemoteObjectsTable &objTable,
-    HermesRuntime &runtime,
+    jsi::Runtime &runtime,
     const facebook::hermes::debugger::ProgramState &state);
 
 std::vector<CallFrame> makeCallFrames(
     const facebook::hermes::debugger::ProgramState &state,
     facebook::hermes::inspector::chrome::RemoteObjectsTable &objTable,
-    HermesRuntime &runtime);
+    jsi::Runtime &runtime);
 
 } // namespace debugger
 
