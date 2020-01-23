@@ -71,7 +71,7 @@ public:
   /**
    * Register a file path for an additional "RAM" bundle
    */
-  virtual void registerBundle(uint32_t bundleId, const std::string& bundlePath) = 0;
+  virtual void registerBundle(uint32_t bundleId, std::unique_ptr<JSModulesUnbundle> bundle) = 0;
 
   /**
    * Executes BatchedBridge.callFunctionReturnFlushedQueue with the module ID,

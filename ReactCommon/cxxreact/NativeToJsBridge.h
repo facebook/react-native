@@ -70,15 +70,13 @@ public:
    * Otherwise, the script is assumed to include all the modules.
    */
   void loadBundle(
-    std::unique_ptr<RAMBundleRegistry> bundleRegistry,
     std::unique_ptr<const JSBigString> startupCode,
     std::string sourceURL);
   void loadBundleSync(
-    std::unique_ptr<RAMBundleRegistry> bundleRegistry,
     std::unique_ptr<const JSBigString> startupCode,
     std::string sourceURL);
 
-  void registerBundle(uint32_t bundleId, const std::string& bundlePath);
+  void registerBundle(uint32_t bundleId, std::unique_ptr<JSModulesUnbundle> bundle);
   void setGlobalVariable(std::string propName, std::unique_ptr<const JSBigString> jsonValue);
   void* getJavaScriptContext();
   bool isInspectable();
