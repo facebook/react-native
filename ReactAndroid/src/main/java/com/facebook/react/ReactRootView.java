@@ -34,6 +34,7 @@ import com.facebook.react.bridge.CatalystInstance;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReactMarker;
 import com.facebook.react.bridge.ReactMarkerConstants;
+import com.facebook.react.bridge.UIManager;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.bridge.WritableNativeMap;
@@ -125,6 +126,7 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
 
   @Override
   protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+    // TODO: T60453649 - Add test automation to verify behavior of onMeasure
     setAllowImmediateUIOperationExecution(false);
 
     if (mUseSurface) {
@@ -441,8 +443,13 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
     final ReactContext reactApplicationContext = mReactInstanceManager.getCurrentReactContext();
 
     if (reactApplicationContext != null) {
-      UIManagerHelper.getUIManager(reactApplicationContext, getUIManagerType())
-          .updateRootLayoutSpecs(getRootViewTag(), widthMeasureSpec, heightMeasureSpec);
+      @Nullable
+      UIManager uiManager =
+          UIManagerHelper.getUIManager(reactApplicationContext, getUIManagerType());
+      // Ignore calling updateRootLayoutSpecs if UIManager is not properly initialized.
+      if (uiManager != null) {
+        uiManager.updateRootLayoutSpecs(getRootViewTag(), widthMeasureSpec, heightMeasureSpec);
+      }
     }
   }
 
@@ -474,8 +481,13 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
       return;
     }
 
-    UIManagerHelper.getUIManager(reactApplicationContext, getUIManagerType())
-        .setAllowImmediateUIOperationExecution(flag);
+    @Nullable
+    UIManager uiManager = UIManagerHelper.getUIManager(reactApplicationContext, getUIManagerType());
+    // Ignore calling setAllowImmediateUIOperationExecution if UIManager is not properly
+    // initialized.
+    if (uiManager != null) {
+      uiManager.setAllowImmediateUIOperationExecution(flag);
+    }
   }
 
   /**
