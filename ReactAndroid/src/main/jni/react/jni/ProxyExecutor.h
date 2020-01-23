@@ -43,7 +43,7 @@ class ProxyExecutor : public JSExecutor {
       std::string sourceURL) override;
   virtual void setBundleRegistry(
       std::unique_ptr<RAMBundleRegistry> bundle) override;
-  virtual void registerBundle(uint32_t bundleId, const std::string &bundlePath)
+  virtual void registerBundle(uint32_t bundleId, std::unique_ptr<JSModulesUnbundle> bundle)
       override;
   virtual void callFunction(
       const std::string &moduleId,

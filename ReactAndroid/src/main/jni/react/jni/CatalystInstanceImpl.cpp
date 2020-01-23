@@ -216,9 +216,8 @@ void CatalystInstanceImpl::jniLoadScriptFromAssets(
   auto script = loadScriptFromAssets(manager, sourceURL);
   if (JniJSModulesUnbundle::isUnbundle(manager, sourceURL)) {
     auto bundle = JniJSModulesUnbundle::fromEntryFile(manager, sourceURL);
-    auto registry = RAMBundleRegistry::singleBundleRegistry(std::move(bundle));
     instance_->loadRAMBundle(
-        std::move(registry), std::move(script), sourceURL, loadSynchronously);
+        std::move(bundle), std::move(script), sourceURL, loadSynchronously);
     return;
   } else if (Instance::isIndexedRAMBundle(&script)) {
     instance_->loadRAMBundleFromString(std::move(script), sourceURL);

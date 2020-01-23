@@ -26,28 +26,17 @@ class RN_EXPORT RAMBundleRegistry {
 public:
   constexpr static uint32_t MAIN_BUNDLE_ID = 0;
 
-  static std::unique_ptr<RAMBundleRegistry> singleBundleRegistry(
-      std::unique_ptr<JSModulesUnbundle> mainBundle);
-  static std::unique_ptr<RAMBundleRegistry> multipleBundlesRegistry(
-      std::unique_ptr<JSModulesUnbundle> mainBundle,
-      std::function<std::unique_ptr<JSModulesUnbundle>(std::string)> factory);
-
-  explicit RAMBundleRegistry(
-      std::unique_ptr<JSModulesUnbundle> mainBundle,
-      std::function<
-        std::unique_ptr<JSModulesUnbundle>(std::string)> factory = nullptr);
+  RAMBundleRegistry(std::unique_ptr<JSModulesUnbundle> mainBundle);
 
   RAMBundleRegistry(RAMBundleRegistry&&) = default;
   RAMBundleRegistry& operator=(RAMBundleRegistry&&) = default;
 
-  void registerBundle(uint32_t bundleId, std::string bundlePath);
+  void registerBundle(uint32_t bundleId, std::unique_ptr<JSModulesUnbundle> bundle);
   JSModulesUnbundle::Module getModule(uint32_t bundleId, uint32_t moduleId);
   virtual ~RAMBundleRegistry() {};
 private:
   JSModulesUnbundle* getBundle(uint32_t bundleId) const;
 
-  std::function<std::unique_ptr<JSModulesUnbundle>(std::string)> m_factory;
-  std::unordered_map<uint32_t, std::string> m_bundlePaths;
   std::unordered_map<uint32_t, std::unique_ptr<JSModulesUnbundle>> m_bundles;
 };
 

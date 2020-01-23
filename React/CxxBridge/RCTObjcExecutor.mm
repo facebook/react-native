@@ -101,7 +101,7 @@ public:
     RCTAssert(NO, @"RAM bundles are not supported in RCTObjcExecutor");
   }
 
-  void registerBundle(uint32_t __unused bundleId, const std::string __unused &bundlePath) override {
+  void registerBundle(uint32_t __unused bundleId, std::unique_ptr<JSModulesUnbundle> __unused) override {
     RCTAssert(NO, @"RAM bundles are not supported in RCTObjcExecutor");
   }
 
