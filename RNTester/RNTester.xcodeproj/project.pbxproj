@@ -3715,6 +3715,10 @@
 		13B07F941A680F5B00A75B9A /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = (
+					"$(ARCHS_STANDARD)",
+					arm64e,
+				);
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				BUNDLE_CONFIG = "$(SRCROOT)/../metro.config.js";
 				DEVELOPMENT_TEAM = VYK7DLU38Z;
@@ -3742,6 +3746,10 @@
 		13B07F951A680F5B00A75B9A /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = (
+					"$(ARCHS_STANDARD)",
+					arm64e,
+				);
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				BUNDLE_CONFIG = "$(SRCROOT)/../metro.config.js";
 				DEVELOPMENT_TEAM = VYK7DLU38Z;

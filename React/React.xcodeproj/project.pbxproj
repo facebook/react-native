@@ -7559,6 +7559,10 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 3D788F841EBD2D240063D616 /* third-party.xcconfig */;
 			buildSettings = {
+				ARCHS = (
+					"$(ARCHS_STANDARD)",
+					arm64e,
+				);
 				CLANG_CXX_LANGUAGE_STANDARD = "c++14";
 				CLANG_STATIC_ANALYZER_MODE = deep;
 				CLANG_WARN_COMMA = NO;
@@ -7574,6 +7578,10 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 3D788F841EBD2D240063D616 /* third-party.xcconfig */;
 			buildSettings = {
+				ARCHS = (
+					"$(ARCHS_STANDARD)",
+					arm64e,
+				);
 				CLANG_CXX_LANGUAGE_STANDARD = "c++14";
 				CLANG_STATIC_ANALYZER_MODE = deep;
 				CLANG_WARN_COMMA = NO;
@@ -7590,6 +7598,10 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 3D788F841EBD2D240063D616 /* third-party.xcconfig */;
 			buildSettings = {
+				ARCHS = (
+					"$(ARCHS_STANDARD)",
+					arm64e,
+				);
 				CLANG_CXX_LANGUAGE_STANDARD = "c++14";
 				CLANG_STATIC_ANALYZER_MODE = deep;
 				CLANG_WARN_COMMA = NO;
@@ -7605,6 +7617,10 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 3D788F841EBD2D240063D616 /* third-party.xcconfig */;
 			buildSettings = {
+				ARCHS = (
+					"$(ARCHS_STANDARD)",
+					arm64e,
+				);
 				CLANG_CXX_LANGUAGE_STANDARD = "c++14";
 				CLANG_STATIC_ANALYZER_MODE = deep;
 				CLANG_WARN_COMMA = NO;
