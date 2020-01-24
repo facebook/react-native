@@ -58,9 +58,9 @@ TEST(JSBigFileString, MapPartTest) {
   JSBigFileString bigStr {fd, needle.size(), offset};
 
   // Test
-  ASSERT_EQ(needle.length(), bigStr.size());
+  EXPECT_EQ(needle.length(), bigStr.size());
   for (unsigned int i = 0; i < needle.length(); ++i) {
-    ASSERT_EQ(needle[i], bigStr.c_str()[i]);
+    EXPECT_EQ(needle[i], bigStr.c_str()[i]);
   }
 }
 
@@ -96,13 +96,13 @@ TEST(JSBigFileString, RemapTest) {
   int fd = tempFileFromString(data);
   JSBigFileString bigStr {fd, data.size()};
 
-  ASSERT_EQ(pageSize * 2, bigStr.size());
+  EXPECT_EQ(pageSize * 2, bigStr.size());
   auto remapped = bigStr.c_str();
   size_t i = 0;
   for (; i < pageSize; ++i) {
-    ASSERT_EQ(0x22, remapped[i]);
+    EXPECT_EQ(0x22, remapped[i]);
   }
   for (; i < pageSize * 2; ++i) {
-    ASSERT_EQ(0x11, remapped[i]);
+    EXPECT_EQ(0x11, remapped[i]);
   }
 }
