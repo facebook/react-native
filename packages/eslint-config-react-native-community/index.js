@@ -97,6 +97,7 @@ module.exports = {
     fetch: false,
     FormData: false,
     global: false,
+    Headers: false,
     Intl: false,
     Map: true,
     module: false,
