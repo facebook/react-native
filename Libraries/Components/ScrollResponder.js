@@ -24,7 +24,10 @@ const invariant = require('invariant');
 const performanceNow = require('fbjs/lib/performanceNow');
 
 import type {PressEvent, ScrollEvent} from '../Types/CoreEventTypes';
-import type {Props as ScrollViewProps, ScrollViewType} from './ScrollView/ScrollView';
+import type {
+  Props as ScrollViewProps,
+  ScrollViewType,
+} from './ScrollView/ScrollView';
 import type {KeyboardEvent} from './Keyboard/Keyboard';
 import type EmitterSubscription from '../vendor/emitter/EmitterSubscription';
 import type {HostComponent} from '../Renderer/shims/ReactNativeTypes';
