@@ -18,14 +18,13 @@ const ReactNative = require('../Renderer/shims/ReactNative');
 const TextInputState = require('./TextInput/TextInputState');
 const UIManager = require('../ReactNative/UIManager');
 const Platform = require('../Utilities/Platform');
-const ScrollView = require('./ScrollView/ScrollView');
 import Commands from './ScrollView/ScrollViewCommands';
 
 const invariant = require('invariant');
 const performanceNow = require('fbjs/lib/performanceNow');
 
 import type {PressEvent, ScrollEvent} from '../Types/CoreEventTypes';
-import type {Props as ScrollViewProps} from './ScrollView/ScrollView';
+import type {Props as ScrollViewProps, ScrollViewType} from './ScrollView/ScrollView';
 import type {KeyboardEvent} from './Keyboard/Keyboard';
 import type EmitterSubscription from '../vendor/emitter/EmitterSubscription';
 import type {HostComponent} from '../Renderer/shims/ReactNativeTypes';
@@ -468,7 +467,7 @@ const ScrollResponderMixin = {
       ({x, y, animated} = x || {});
     }
 
-    const that: React.ElementRef<typeof ScrollView> = (this: any);
+    const that: React.ElementRef<ScrollViewType> = (this: any);
     invariant(
       that.getNativeScrollRef != null,
       'Expected scrollTo to be called on a scrollViewRef. If this exception occurs it is likely a bug in React Native',
@@ -492,7 +491,7 @@ const ScrollResponderMixin = {
     // Default to true
     const animated = (options && options.animated) !== false;
 
-    const that: React.ElementRef<typeof ScrollView> = (this: any);
+    const that: React.ElementRef<ScrollViewType> = (this: any);
     invariant(
       that.getNativeScrollRef != null,
       'Expected scrollToEnd to be called on a scrollViewRef. If this exception occurs it is likely a bug in React Native',
@@ -531,7 +530,7 @@ const ScrollResponderMixin = {
       );
     }
 
-    const that: React.ElementRef<typeof ScrollView> = this;
+    const that: React.ElementRef<ScrollViewType> = this;
     invariant(
       that.getNativeScrollRef != null,
       'Expected zoomToRect to be called on a scrollViewRef. If this exception occurs it is likely a bug in React Native',
@@ -547,7 +546,7 @@ const ScrollResponderMixin = {
    * Displays the scroll indicators momentarily.
    */
   scrollResponderFlashScrollIndicators: function() {
-    const that: React.ElementRef<typeof ScrollView> = (this: any);
+    const that: React.ElementRef<ScrollViewType> = (this: any);
     invariant(
       that.getNativeScrollRef != null,
       'Expected flashScrollIndicators to be called on a scrollViewRef. If this exception occurs it is likely a bug in React Native',

@@ -65,6 +65,8 @@ if (Platform.OS === 'android') {
   RCTScrollContentView = requireNativeComponent('RCTScrollContentView');
 }
 
+export type ScrollViewType = typeof ScrollView;
+
 export type ScrollResponderType = {
   // We'd like to do ...ScrollView here, however Flow doesn't seem
   // to see the imperative methods of ScrollView that way. Workaround the
