@@ -150,7 +150,7 @@ TEST(UITemplateProcessorTest, testConditionalBytecode) {
   auto children1 = root1->getChildren();
   EXPECT_EQ(children1.size(), 1);
   auto child_props1 =
-      std::dynamic_pointer_cast<const ViewProps>(children1.at(0)->getPros());
+      std::dynamic_pointer_cast<const ViewProps>(children1.at(0)->getProps());
   ASSERT_STREQ(child_props1->testId.c_str(), "cond_true");
 
   mockSimpleTestValue_ = false;
