@@ -111,6 +111,7 @@ module.exports = {
     setInterval: false,
     setTimeout: false,
     URL: false,
+    URLSearchParams: false,
     WebSocket: true,
     window: false,
     XMLHttpRequest: false,
