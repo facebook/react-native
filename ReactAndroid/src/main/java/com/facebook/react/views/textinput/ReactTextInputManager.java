@@ -239,6 +239,7 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
           // instead of calling setText, etc directly - doing that will definitely cause bugs.
           reactEditText.maybeSetTextFromJS(
               getReactTextUpdate(text, mostRecentEventCount, start, end));
+          reactEditText.maybeSetSelection(mostRecentEventCount, start, end);
         }
         break;
     }
@@ -281,8 +282,8 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
         TextInlineImageSpan.possiblyUpdateInlineImageSpans(spannable, view);
       }
       view.maybeSetTextFromState(update);
-      if (update.getSelectionStart() != UNSET && update.getSelectionEnd() != UNSET)
-        view.setSelection(update.getSelectionStart(), update.getSelectionEnd());
+      view.maybeSetSelection(
+          update.getJsEventCounter(), update.getSelectionStart(), update.getSelectionEnd());
     }
   }
 

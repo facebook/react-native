@@ -80,6 +80,8 @@ public class ReactEditText extends AppCompatEditText {
   /** The most recent event number acked by JavaScript. Should only be updated from JS, not C++. */
   protected int mMostRecentEventCount;
 
+  private static final int UNSET = -1;
+
   private @Nullable ArrayList<TextWatcher> mListeners;
   private @Nullable TextWatcherDelegator mTextWatcherDelegator;
   private int mStagedInputType;
@@ -296,6 +298,24 @@ public class ReactEditText extends AppCompatEditText {
     mScrollWatcher = scrollWatcher;
   }
 
+  /**
+   * Attempt to set a selection or fail silently. Intentionally meant to handle bad inputs.
+   * EventCounter is the same one used as with text.
+   *
+   * @param eventCounter
+   * @param start
+   * @param end
+   */
+  public void maybeSetSelection(int eventCounter, int start, int end) {
+    if (!canUpdateWithEventCount(eventCounter)) {
+      return;
+    }
+
+    if (start != UNSET && end != UNSET) {
+      setSelection(start, end);
+    }
+  }
+
   @Override
   public void setSelection(int start, int end) {
     // Skip setting the selection if the text wasn't set because of an out of date value.
@@ -465,6 +485,10 @@ public class ReactEditText extends AppCompatEditText {
     mIsSettingTextFromState = false;
   }
 
+  public boolean canUpdateWithEventCount(int eventCounter) {
+    return eventCounter >= mNativeEventCount;
+  }
+
   // VisibleForTesting from {@link TextInputEventsTestCase}.
   public void maybeSetText(ReactTextUpdate reactTextUpdate) {
     if (isSecureText() && TextUtils.equals(getText(), reactTextUpdate.getText())) {
@@ -473,7 +497,7 @@ public class ReactEditText extends AppCompatEditText {
 
     // Only set the text if it is up to date.
     mMostRecentEventCount = reactTextUpdate.getJsEventCounter();
-    if (mMostRecentEventCount < mNativeEventCount) {
+    if (!canUpdateWithEventCount(mMostRecentEventCount)) {
       return;
     }
 
