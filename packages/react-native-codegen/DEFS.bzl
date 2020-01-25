@@ -30,18 +30,21 @@ def rn_codegen_modules(
         srcs = native.glob(["src/generators/**/*.js"]),
         cmd = "$(exe fbsource//xplat/js/react-native-github/packages/react-native-codegen:rn_codegen) $(location {}) {} $OUT {}".format(schema_target, name, native_module_spec_name),
         out = "codegenfiles-{}".format(name),
+        labels = ["codegen_rule"],
     )
 
     fb_native.genrule(
         name = generate_module_hobjcpp_name,
         cmd = "cp $(location :{})/{}.h $OUT".format(generate_fixtures_rule_name, native_module_spec_name),
         out = "{}.h".format(native_module_spec_name),
+        labels = ["codegen_rule"],
     )
 
     fb_native.genrule(
         name = generate_module_mm_name,
         cmd = "cp $(location :{})/{}-generated.mm $OUT".format(generate_fixtures_rule_name, native_module_spec_name),
         out = "{}-generated.mm".format(native_module_spec_name),
+        labels = ["codegen_rule"],
     )
 
     rn_xplat_cxx_library(
@@ -75,6 +78,7 @@ def rn_codegen_modules(
         deps = [
             "fbsource//xplat/js:React",
         ],
+        labels = ["codegen_rule"],
     )
 
 def rn_codegen_components(
@@ -98,54 +102,63 @@ def rn_codegen_components(
         srcs = native.glob(["src/generators/**/*.js"]),
         cmd = "$(exe fbsource//xplat/js/react-native-github/packages/react-native-codegen:rn_codegen) $(location {}) {} $OUT {}".format(schema_target, name, name),
         out = "codegenfiles-{}".format(name),
+        labels = ["codegen_rule"],
     )
 
     fb_native.genrule(
         name = generate_component_descriptor_h_name,
         cmd = "cp $(location :{})/ComponentDescriptors.h $OUT".format(generate_fixtures_rule_name),
         out = "ComponentDescriptors.h",
+        labels = ["codegen_rule"],
     )
 
     fb_native.genrule(
         name = generate_component_hobjcpp_name,
         cmd = "cp $(location :{})/RCTComponentViewHelpers.h $OUT".format(generate_fixtures_rule_name),
         out = "RCTComponentViewHelpers.h",
+        labels = ["codegen_rule"],
     )
 
     fb_native.genrule(
         name = generate_event_emitter_cpp_name,
         cmd = "cp $(location :{})/EventEmitters.cpp $OUT".format(generate_fixtures_rule_name),
         out = "EventEmitters.cpp",
+        labels = ["codegen_rule"],
     )
 
     fb_native.genrule(
         name = generate_event_emitter_h_name,
         cmd = "cp $(location :{})/EventEmitters.h $OUT".format(generate_fixtures_rule_name),
         out = "EventEmitters.h",
+        labels = ["codegen_rule"],
     )
 
     fb_native.genrule(
         name = generate_props_cpp_name,
         cmd = "cp $(location :{})/Props.cpp $OUT".format(generate_fixtures_rule_name),
         out = "Props.cpp",
+        labels = ["codegen_rule"],
     )
 
     fb_native.genrule(
         name = generate_tests_cpp_name,
         cmd = "cp $(location :{})/Tests.cpp $OUT".format(generate_fixtures_rule_name),
         out = "Tests.cpp",
+        labels = ["codegen_rule"],
     )
 
     fb_native.genrule(
         name = generate_props_h_name,
         cmd = "cp $(location :{})/Props.h $OUT".format(generate_fixtures_rule_name),
         out = "Props.h",
+        labels = ["codegen_rule"],
     )
 
     fb_native.genrule(
         name = copy_generated_java_files,
         cmd = "mkdir $OUT && find $(location :{}) -name '*.java' -exec cp {{}} $OUT \;".format(generate_fixtures_rule_name),
         out = "java",
+        labels = ["codegen_rule"],
     )
 
     fb_native.zip_file(
@@ -159,12 +172,14 @@ def rn_codegen_components(
         name = generate_shadow_node_cpp_name,
         cmd = "cp $(location :{})/ShadowNodes.cpp $OUT".format(generate_fixtures_rule_name),
         out = "ShadowNodes.cpp",
+        labels = ["codegen_rule"],
     )
 
     fb_native.genrule(
         name = generate_shadow_node_h_name,
         cmd = "cp $(location :{})/ShadowNodes.h $OUT".format(generate_fixtures_rule_name),
         out = "ShadowNodes.h",
+        labels = ["codegen_rule"],
     )
 
     # libs
@@ -225,6 +240,7 @@ def rn_codegen_components(
             react_native_xplat_target("fabric/imagemanager:imagemanager"),
             react_native_xplat_target("fabric/components/view:view"),
         ],
+        labels = ["codegen_rule"],
     )
 
     rn_android_library(
@@ -238,6 +254,7 @@ def rn_codegen_components(
             react_native_target("java/com/facebook/react/bridge:bridge"),
             react_native_target("java/com/facebook/react/uimanager:uimanager"),
         ],
+        labels = ["codegen_rule"],
     )
 
     # Tests
@@ -259,6 +276,7 @@ def rn_codegen_components(
             "fbsource//xplat/third-party/gmock:gtest",
             ":generated_components-{}".format(name),
         ],
+        labels = ["codegen_rule"],
     )
 
 def rn_codegen_cxx_modules(
@@ -273,18 +291,21 @@ def rn_codegen_cxx_modules(
         srcs = native.glob(["src/generators/**/*.js"]),
         cmd = "$(exe fbsource//xplat/js/react-native-github/packages/react-native-codegen:rn_codegen) $(location {}) {} $OUT {}".format(schema_target, name, name),
         out = "codegenfiles-{}".format(name),
+        labels = ["codegen_rule"],
     )
 
     fb_native.genrule(
         name = generate_module_h_name,
         cmd = "cp $(location :{})/NativeModules.h $OUT".format(generate_fixtures_rule_name),
         out = "NativeModules.h",
+        labels = ["codegen_rule"],
     )
 
     fb_native.genrule(
         name = generate_module_cpp_name,
         cmd = "cp $(location :{})/NativeModules.cpp $OUT".format(generate_fixtures_rule_name),
         out = "NativeModules.cpp",
+        labels = ["codegen_rule"],
     )
 
     rn_xplat_cxx_library(
@@ -317,4 +338,5 @@ def rn_codegen_cxx_modules(
         exported_deps = [
             react_native_xplat_target("turbomodule/core:core"),
         ],
+        labels = ["codegen_rule"],
     )
