@@ -285,17 +285,21 @@ class JSCRuntime : public jsi::Runtime {
 // JSStringRef utilities
 namespace {
 std::string JSStringToSTLString(JSStringRef str) {
+  // Small string optimization: Avoid one heap allocation for strings that fit
+  // in stackBuffer.size() bytes of UTF-8 (including the null terminator).
+  std::array<char, 20> stackBuffer;
+  std::unique_ptr<char[]> heapBuffer;
+  char* buffer;
   size_t maxBytes = JSStringGetMaximumUTF8CStringSize(str);
-
-  if (maxBytes < 21) {
-    char buffer[20];
-    size_t actualBytes = JSStringGetUTF8CString(str, buffer, maxBytes);
-    return std::string(buffer, actualBytes - 1);
+  if (maxBytes <= stackBuffer.size()) {
+    buffer = stackBuffer.data();
+  } else {
+    heapBuffer = std::make_unique<char[]>(maxBytes);
+    buffer = heapBuffer.get();
   }
-
-  auto buffer = std::make_unique<char[]>(maxBytes);
-  size_t actualBytes = JSStringGetUTF8CString(str, buffer.get(), maxBytes);
-  return std::string(buffer.get(), actualBytes - 1);
+  size_t actualBytes = JSStringGetUTF8CString(str, buffer, maxBytes);
+  // NOTE: By definition, maxBytes >= actualBytes >= 1.
+  return std::string(buffer, actualBytes - 1);
 }
 
 JSStringRef getLengthString() {
