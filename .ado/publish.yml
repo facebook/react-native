@@ -139,3 +139,14 @@ jobs:
         inputs:
           PathtoPublish: '$(Build.StagingDirectory)\final'
           ArtifactName: 'ReactNative-Final'
+
+      - task: CmdLine@2
+        displayName: "Prepare package.json for npm publishing as react-native-macos"
+        inputs:
+          script: node .ado/renamePackageToMac.js
+
+      - task: Npm@1
+        displayName: "Publish react-native-macos to npmjs.org"
+        inputs:
+          command: 'publish'
+          publishEndpoint: 'npmjs'
