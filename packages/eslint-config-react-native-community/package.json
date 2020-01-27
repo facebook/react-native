@@ -1,6 +1,6 @@
 {
   "name": "@react-native-community/eslint-config",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "description": "ESLint config for React Native",
   "main": "index.js",
   "license": "MIT",
