@@ -384,7 +384,7 @@ struct RCTInstanceCallback : public InstanceCallback {
   dispatch_group_notify(prepareBridge, dispatch_get_global_queue(QOS_CLASS_USER_INTERACTIVE, 0), ^{
     RCTCxxBridge *strongSelf = weakSelf;
     if (sourceCode && strongSelf.loading) {
-      [strongSelf executeSourceCode:sourceCode sync:NO];
+      [strongSelf executeSourceCode:sourceCode bundleId:0 sync:NO];
     }
   });
   RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"");
@@ -880,7 +880,7 @@ struct RCTInstanceCallback : public InstanceCallback {
   [_displayLink registerModuleForFrameUpdates:module withModuleData:moduleData];
 }
 
-- (void)executeSourceCode:(NSData *)sourceCode sync:(BOOL)sync
+- (void)executeSourceCode:(NSData *)sourceCode bundleId:(int)bundleId sync:(BOOL)sync
 {
   // This will get called from whatever thread was actually executing JS.
   dispatch_block_t completion = ^{
@@ -905,10 +905,10 @@ struct RCTInstanceCallback : public InstanceCallback {
   };
 
   if (sync) {
-    [self executeApplicationScriptSync:sourceCode url:self.bundleURL];
+    [self executeApplicationScriptSync:sourceCode url:self.bundleURL bundleId:bundleId];
     completion();
   } else {
-    [self enqueueApplicationScript:sourceCode url:self.bundleURL onComplete:completion];
+    [self enqueueApplicationScript:sourceCode url:self.bundleURL bundleId:bundleId onComplete:completion];
   }
 
   if (self.devSettings.isHotLoadingAvailable) {
@@ -1292,11 +1292,12 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
 
 - (void)enqueueApplicationScript:(NSData *)script
                              url:(NSURL *)url
+                             bundleId:(uint32_t)bundleId
                       onComplete:(dispatch_block_t)onComplete
 {
   RCT_PROFILE_BEGIN_EVENT(RCTProfileTagAlways, @"-[RCTCxxBridge enqueueApplicationScript]", nil);
 
-  [self executeApplicationScript:script url:url async:YES];
+  [self executeApplicationScript:script url:url bundleId:bundleId async:YES];
 
   RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"");
 
@@ -1307,13 +1308,14 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
   }
 }
 
-- (void)executeApplicationScriptSync:(NSData *)script url:(NSURL *)url
+- (void)executeApplicationScriptSync:(NSData *)script url:(NSURL *)url bundleId:(uint32_t)bundleId
 {
-  [self executeApplicationScript:script url:url async:NO];
+  [self executeApplicationScript:script url:url bundleId:bundleId async:NO];
 }
 
 - (void)executeApplicationScript:(NSData *)script
                              url:(NSURL *)url
+                             bundleId:(uint32_t)bundleId
                            async:(BOOL)async
 {
   [self _tryAndHandleError:^{
@@ -1329,7 +1331,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
       [self->_performanceLogger setValue:scriptStr->size() forTag:RCTPLRAMStartupCodeSize];
       if (self->_reactInstance) {
         self->_reactInstance->loadRAMBundle(std::move(ramBundle), std::move(scriptStr),
-                                            sourceUrlStr.UTF8String, !async);
+                                            sourceUrlStr.UTF8String, bundleId, !async);
       }
     } else if (self->_reactInstance) {
       self->_reactInstance->loadScriptFromString(std::make_unique<NSDataBigString>(script),
@@ -1357,7 +1359,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
     NSData *sourceCode = source.data;
     __strong RCTCxxBridge *strongSelf = weakSelf;
     if (strongSelf->_reactInstance) {
-      [strongSelf executeApplicationScript:sourceCode url:pathURL async:YES];
+      [strongSelf executeApplicationScript:sourceCode url:pathURL bundleId:segmentId async:YES];
     }
     dispatch_group_leave(group);
         

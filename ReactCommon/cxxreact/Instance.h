@@ -52,13 +52,18 @@ public:
                             std::string sourceURL, bool loadSynchronously);
   static bool isIndexedRAMBundle(const char *sourcePath);
   static bool isIndexedRAMBundle(std::unique_ptr<const JSBigString>* string);
-  void loadRAMBundleFromString(std::unique_ptr<const JSBigString> script, const std::string& sourceURL);
+  void loadRAMBundleFromString(std::unique_ptr<const JSBigString> script,
+                               const std::string& sourceURL,
+                               uint32_t bundleId);
   void loadRAMBundleFromFile(const std::string& sourcePath,
                              const std::string& sourceURL,
+                             uint32_t bundleId,
                              bool loadSynchronously);
   void loadRAMBundle(std::unique_ptr<JSModulesUnbundle> bundle,
                      std::unique_ptr<const JSBigString> startupScript,
-                     std::string startupScriptSourceURL, bool loadSynchronously);
+                     std::string startupScriptSourceURL,
+                     uint32_t bundleId,
+                     bool loadSynchronously);
   bool supportsProfiling();
   void setGlobalVariable(std::string propName,
                          std::unique_ptr<const JSBigString> jsonValue);

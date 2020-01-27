@@ -77,15 +77,14 @@ class CatalystInstanceImpl : public jni::HybridClass<CatalystInstanceImpl> {
    *
    */
   void jniRegisterSegment(int segmentId, const std::string &path);
-
-  void jniLoadScriptFromAssets(
-      jni::alias_ref<JAssetManager::javaobject> assetManager,
-      const std::string &assetURL,
-      bool loadSynchronously);
-  void jniLoadScriptFromFile(
-      const std::string &fileName,
-      const std::string &sourceURL,
-      bool loadSynchronously);
+  void jniLoadScriptFromAssets(jni::alias_ref<JAssetManager::javaobject> assetManager,
+                               const std::string& assetURL,
+                               int bundleId,
+                               bool loadSynchronously);
+  void jniLoadScriptFromFile(const std::string& fileName,
+                             const std::string& sourceURL,
+                             int bundleId,
+                             bool loadSynchronously);
   void jniCallJSFunction(
       std::string module,
       std::string method,
