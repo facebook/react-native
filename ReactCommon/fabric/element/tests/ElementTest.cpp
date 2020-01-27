@@ -33,8 +33,8 @@ TEST(ElementTest, testNormalCases) {
   auto shadowNodeAB = std::shared_ptr<ViewShadowNode const>{};
   auto shadowNodeABA = std::shared_ptr<ViewShadowNode const>{};
 
-  auto propsAA = std::make_shared<ViewProps const>();
-  const_cast<std::string &>(propsAA->nativeId) = "node AA";
+  auto propsAA = std::make_shared<ViewProps>();
+  propsAA->nativeId = "node AA";
 
   // clang-format off
   auto element =
@@ -42,9 +42,9 @@ TEST(ElementTest, testNormalCases) {
         .reference(shadowNodeA)
         .tag(1)
         .props([]() {
-          auto props = std::make_shared<ViewProps const>();
-          const_cast<int &>(props->zIndex) = 42;
-          const_cast<std::string &>(props->nativeId) = "node A";
+          auto props = std::make_shared<ViewProps>();
+          props->zIndex = 42;
+          props->nativeId = "node A";
           return props;
         })
         .finalize([](ViewShadowNode &shadowNode){
@@ -59,8 +59,8 @@ TEST(ElementTest, testNormalCases) {
             .reference(shadowNodeAB)
             .tag(3)
             .props([]() {
-               auto props = std::make_shared<ViewProps const>();
-               const_cast<std::string &>(props->nativeId) = "node AB";
+               auto props = std::make_shared<ViewProps>();
+               props->nativeId = "node AB";
                return props;
             })
             .children({
@@ -68,8 +68,8 @@ TEST(ElementTest, testNormalCases) {
                 .reference(shadowNodeABA)
                 .tag(4)
                 .props([]() {
-                  auto props = std::make_shared<ViewProps const>();
-                  const_cast<std::string &>(props->nativeId) = "node ABA";
+                  auto props = std::make_shared<ViewProps>();
+                  props->nativeId = "node ABA";
                   return props;
                 })
             })
