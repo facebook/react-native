@@ -24,9 +24,8 @@ const invariant = require('invariant');
 const performanceNow = require('fbjs/lib/performanceNow');
 
 import type {PressEvent, ScrollEvent} from '../Types/CoreEventTypes';
-import type {
+import type ScrollView, {
   Props as ScrollViewProps,
-  ScrollViewType,
 } from './ScrollView/ScrollView';
 import type {KeyboardEvent} from './Keyboard/Keyboard';
 import type EmitterSubscription from '../vendor/emitter/EmitterSubscription';
@@ -470,7 +469,7 @@ const ScrollResponderMixin = {
       ({x, y, animated} = x || {});
     }
 
-    const that: React.ElementRef<ScrollViewType> = (this: any);
+    const that: React.ElementRef<ScrollView> = (this: any);
     invariant(
       that.getNativeScrollRef != null,
       'Expected scrollTo to be called on a scrollViewRef. If this exception occurs it is likely a bug in React Native',
@@ -494,7 +493,7 @@ const ScrollResponderMixin = {
     // Default to true
     const animated = (options && options.animated) !== false;
 
-    const that: React.ElementRef<ScrollViewType> = (this: any);
+    const that: React.ElementRef<ScrollView> = (this: any);
     invariant(
       that.getNativeScrollRef != null,
       'Expected scrollToEnd to be called on a scrollViewRef. If this exception occurs it is likely a bug in React Native',
@@ -533,7 +532,7 @@ const ScrollResponderMixin = {
       );
     }
 
-    const that: React.ElementRef<ScrollViewType> = this;
+    const that: React.ElementRef<ScrollView> = this;
     invariant(
       that.getNativeScrollRef != null,
       'Expected zoomToRect to be called on a scrollViewRef. If this exception occurs it is likely a bug in React Native',
@@ -549,7 +548,7 @@ const ScrollResponderMixin = {
    * Displays the scroll indicators momentarily.
    */
   scrollResponderFlashScrollIndicators: function() {
-    const that: React.ElementRef<ScrollViewType> = (this: any);
+    const that: React.ElementRef<ScrollView> = (this: any);
     invariant(
       that.getNativeScrollRef != null,
       'Expected flashScrollIndicators to be called on a scrollViewRef. If this exception occurs it is likely a bug in React Native',
