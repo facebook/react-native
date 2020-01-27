@@ -10,9 +10,15 @@
  */
 
 if (!global.performance) {
-  global.performance = {
-    now: function() {
-      return global.nativePerformanceNow();
-    },
+  global.performance = {};
+}
+
+/**
+ * Returns a double, measured in milliseconds.
+ * https://developer.mozilla.org/en-US/docs/Web/API/Performance/now
+ */
+if (typeof global.performance !== 'function') {
+  global.performance.now = function() {
+    return global.nativePerformanceNow();
   };
 }
