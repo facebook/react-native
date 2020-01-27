@@ -11,11 +11,24 @@
 #include <gtest/gtest.h>
 
 #include <react/mounting/MountingTelemetry.h>
+#include <react/utils/Telemetry.h>
 
 using namespace facebook::react;
 
 #define EXPECT_EQ_WITH_THRESHOLD(a, b, threshold) \
   EXPECT_TRUE((a >= b - threshold) && (a <= b + threshold))
+
+TEST(MountingTelemetryTest, timepoints) {
+  auto threshold = int64_t{30};
+
+  auto timepointA = telemetryTimePointNow();
+  std::this_thread::sleep_for(std::chrono::milliseconds(100));
+  auto timepointB = telemetryTimePointNow();
+
+  auto duration = telemetryDurationToMilliseconds(timepointB - timepointA);
+
+  EXPECT_EQ_WITH_THRESHOLD(duration, 100, threshold);
+}
 
 TEST(MountingTelemetryTest, normalUseCase) {
   auto threshold = int64_t{30};
@@ -35,12 +48,12 @@ TEST(MountingTelemetryTest, normalUseCase) {
   std::this_thread::sleep_for(std::chrono::milliseconds(100));
   telemetry.didMount();
 
-  auto commitDuration =
-      telemetry.getCommitEndTime() - telemetry.getCommitStartTime();
-  auto layoutDuration =
-      telemetry.getLayoutEndTime() - telemetry.getLayoutStartTime();
-  auto mountDuration =
-      telemetry.getMountEndTime() - telemetry.getMountStartTime();
+  auto commitDuration = telemetryDurationToMilliseconds(
+      telemetry.getCommitEndTime() - telemetry.getCommitStartTime());
+  auto layoutDuration = telemetryDurationToMilliseconds(
+      telemetry.getLayoutEndTime() - telemetry.getLayoutStartTime());
+  auto mountDuration = telemetryDurationToMilliseconds(
+      telemetry.getMountEndTime() - telemetry.getMountStartTime());
 
   EXPECT_EQ_WITH_THRESHOLD(commitDuration, 400, threshold);
   EXPECT_EQ_WITH_THRESHOLD(layoutDuration, 200, threshold);
