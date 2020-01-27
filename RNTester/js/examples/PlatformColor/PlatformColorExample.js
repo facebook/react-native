@@ -86,8 +86,8 @@ class PlatformColorsExample extends React.Component<{}, State> {
         '?attr/colorControlActivated',
         '?attr/colorControlHighlight',
         '?attr/colorControlNormal',
+        '?attr/colorControlNormal',
         // '?attr/colorEdgeEffect',
-        '?attr/colorError',
         // '?attr/colorFocusedHighlight',
         // '?attr/colorForeground',
         // '?attr/colorForegroundInverse',
@@ -95,9 +95,15 @@ class PlatformColorsExample extends React.Component<{}, State> {
         // '?attr/colorMode',
         // '?attr/colorMultiSelectHighlight',
         // '?attr/colorPressedHighlight',
+        '?android:colorError',
+        '?android:attr/colorError',
         '?attr/colorPrimary',
-        '?attr/colorPrimaryDark',
-        // '?attr/colorSecondary',
+        '?colorPrimaryDark',
+        '?attr/colorSecondary',
+        '@android:color/holo_purple',
+        '@android:color/holo_green_light',
+        '@color/catalyst_redbox_background',
+        '@color/catalyst_logbox_background',
       ];
     }
 
