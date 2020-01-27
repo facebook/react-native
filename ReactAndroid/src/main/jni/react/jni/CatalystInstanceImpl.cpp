@@ -208,6 +208,7 @@ void CatalystInstanceImpl::jniRegisterSegment(
 void CatalystInstanceImpl::jniLoadScriptFromAssets(
     jni::alias_ref<JAssetManager::javaobject> assetManager,
     const std::string &assetURL,
+    int bundleId,
     bool loadSynchronously) {
   const int kAssetsLength = 9; // strlen("assets://");
   auto sourceURL = assetURL.substr(kAssetsLength);
@@ -217,10 +218,10 @@ void CatalystInstanceImpl::jniLoadScriptFromAssets(
   if (JniJSModulesUnbundle::isUnbundle(manager, sourceURL)) {
     auto bundle = JniJSModulesUnbundle::fromEntryFile(manager, sourceURL);
     instance_->loadRAMBundle(
-        std::move(bundle), std::move(script), sourceURL, loadSynchronously);
+        std::move(bundle), std::move(script), sourceURL, (uint32_t)bundleId, loadSynchronously);
     return;
   } else if (Instance::isIndexedRAMBundle(&script)) {
-    instance_->loadRAMBundleFromString(std::move(script), sourceURL);
+    instance_->loadRAMBundleFromString(std::move(script), sourceURL, (uint32_t)bundleId);
   } else {
     instance_->loadScriptFromString(
         std::move(script), sourceURL, loadSynchronously);
@@ -230,9 +231,10 @@ void CatalystInstanceImpl::jniLoadScriptFromAssets(
 void CatalystInstanceImpl::jniLoadScriptFromFile(
     const std::string &fileName,
     const std::string &sourceURL,
+    int bundleId,
     bool loadSynchronously) {
   if (Instance::isIndexedRAMBundle(fileName.c_str())) {
-    instance_->loadRAMBundleFromFile(fileName, sourceURL, loadSynchronously);
+    instance_->loadRAMBundleFromFile(fileName, sourceURL, (uint32_t)bundleId, loadSynchronously);
   } else {
     std::unique_ptr<const JSBigFileString> script;
     RecoverableError::runRethrowingAsRecoverable<std::system_error>(

@@ -121,15 +121,22 @@ bool Instance::isIndexedRAMBundle(std::unique_ptr<const JSBigString> *script) {
 
 void Instance::loadRAMBundleFromString(
     std::unique_ptr<const JSBigString> script,
-    const std::string &sourceURL) {
+    const std::string& sourceURL,
+    uint32_t bundleId) {
   auto bundle = std::make_unique<JSIndexedRAMBundle>(std::move(script));
   auto startupScript = bundle->getStartupCode();
-  loadRAMBundle(std::move(bundle), std::move(startupScript), sourceURL, true);
+  loadRAMBundle(
+      std::move(bundle),
+      std::move(startupScript),
+      sourceURL,
+      bundleId,
+      true);
 }
 
 void Instance::loadRAMBundleFromFile(
     const std::string &sourcePath,
     const std::string &sourceURL,
+    uint32_t bundleId,
     bool loadSynchronously) {
   auto bundle = std::make_unique<JSIndexedRAMBundle>(sourcePath.c_str());
   auto startupScript = bundle->getStartupCode();
@@ -137,6 +144,7 @@ void Instance::loadRAMBundleFromFile(
       std::move(bundle),
       std::move(startupScript),
       sourceURL,
+      bundleId,
       loadSynchronously);
 }
 
@@ -144,8 +152,9 @@ void Instance::loadRAMBundle(
     std::unique_ptr<JSModulesUnbundle> bundle,
     std::unique_ptr<const JSBigString> startupScript,
     std::string startupScriptSourceURL,
+    uint32_t bundleId,
     bool loadSynchronously) {
-  nativeToJsBridge_->registerBundle(0, std::move(bundle));
+  nativeToJsBridge_->registerBundle(bundleId, std::move(bundle));
   if (loadSynchronously) {
     loadBundleSync(
         std::move(startupScript),

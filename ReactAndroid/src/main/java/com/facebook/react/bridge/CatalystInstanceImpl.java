@@ -230,15 +230,15 @@ public class CatalystInstanceImpl implements CatalystInstance {
 
   @Override
   public void loadScriptFromAssets(
-      AssetManager assetManager, String assetURL, boolean loadSynchronously) {
+      AssetManager assetManager, String assetURL, int bundleId, boolean loadSynchronously) {
     mSourceURL = assetURL;
-    jniLoadScriptFromAssets(assetManager, assetURL, loadSynchronously);
+    jniLoadScriptFromAssets(assetManager, assetURL, bundleId, loadSynchronously);
   }
 
   @Override
-  public void loadScriptFromFile(String fileName, String sourceURL, boolean loadSynchronously) {
+  public void loadScriptFromFile(String fileName, String sourceURL, int bundleId, boolean loadSynchronously) {
     mSourceURL = sourceURL;
-    jniLoadScriptFromFile(fileName, sourceURL, loadSynchronously);
+    jniLoadScriptFromFile(fileName, sourceURL, bundleId, loadSynchronously);
   }
 
   private native void jniSetSourceURL(String sourceURL);
@@ -246,10 +246,10 @@ public class CatalystInstanceImpl implements CatalystInstance {
   private native void jniRegisterSegment(int segmentId, String path);
 
   private native void jniLoadScriptFromAssets(
-      AssetManager assetManager, String assetURL, boolean loadSynchronously);
+      AssetManager assetManager, String assetURL, int bundleId, boolean loadSynchronously);
 
   private native void jniLoadScriptFromFile(
-      String fileName, String sourceURL, boolean loadSynchronously);
+      String fileName, String sourceURL, int bundleId, boolean loadSynchronously);
 
   @Override
   public void runJSBundle() {
