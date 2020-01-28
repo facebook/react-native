@@ -28,16 +28,29 @@ Pod::Spec.new do |s|
   s.homepage               = "http://facebook.github.io/react-native/"
   s.license                = package["license"]
   s.author                 = "Facebook, Inc. and its affiliates"
-  s.platforms              = { :ios => "9.0", :tvos => "9.2" }
+  s.platforms              = { :ios => "9.0", :tvos => "9.2", :osx => "10.14" } # TODO(macOS GH#214)
   s.source                 = source
   s.source_files           = "**/*.{c,h,m,mm,S,cpp}"
   s.exclude_files          = "DevSupport/**/*",
                              "Fabric/**/*",
                              "Inspector/**/*"
   s.ios.exclude_files      = "**/RCTTV*.*",
-# Microsoft CocoaPod Support
-														 "**/MacOS/*"
-# Microsoft CocoaPod Support
+
+# TODO(macOS GH#214)
+                             "**/MacOS/*"
+  s.osx.exclude_files      = "Modules/RCTRedBoxExtraDataViewController.{h,m}",
+                             "Modules/RCTStatusBarManager.*",
+                             "UIUtils/*",
+                             "Profiler/{RCTFPSGraph,RCTPerfMonitor}.*",
+                             "Profiler/RCTProfileTrampoline-{arm,arm64,i386}.S",
+                             "Base/{RCTPlatform,RCTKeyCommands}.*",
+                             "Base/Surface/SurfaceHostingView/*",
+                             "Base/Surface/RCTSurface{,Delegate,Root*}.*",
+                             "Base/RCTTV*.*",
+                             "Base/RCTReloadCommand.*",
+                             "Views/{RCTModal*,RCTMasked*,RCTTV*,RCTRefreshControl*,RCTWrapperViewController}.*",
+                             "Views/SafeAreaView/*"
+
   s.tvos.exclude_files     = "Modules/RCTClipboard*",
                              "Views/RCTDatePicker*",
                              "Views/RCTPicker*",

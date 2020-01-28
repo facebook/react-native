@@ -876,9 +876,13 @@ RCT_EXPORT_METHOD(setExtraData:(NSDictionary *)extraData forIdentifier:(NSString
 
 RCT_EXPORT_METHOD(dismiss)
 {
+#if TARGET_OS_OSX // [TODO(macOS ISS#2323203)
+    [self->_window performSelectorOnMainThread:@selector(dismiss) withObject:nil waitUntilDone:NO];
+#else // ]TODO(macOS ISS#2323203)
     dispatch_async(dispatch_get_main_queue(), ^{
         [self->_window dismiss];
     });
+#endif // TODO(macOS ISS#2323203)
 }
 
 - (void)invalidate
