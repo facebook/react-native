@@ -192,4 +192,4 @@ module.exports = [
       "ViewProps"
     ]
   }
-];
+]
