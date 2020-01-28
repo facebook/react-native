@@ -39,6 +39,10 @@ ComponentHandle ShadowNodeFamily::getComponentHandle() const {
   return componentHandle_;
 }
 
+SurfaceId ShadowNodeFamily::getSurfaceId() const {
+  return surfaceId_;
+}
+
 ComponentName ShadowNodeFamily::getComponentName() const {
   return componentName_;
 }

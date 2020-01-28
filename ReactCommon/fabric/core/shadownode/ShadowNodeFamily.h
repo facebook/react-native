@@ -62,6 +62,8 @@ class ShadowNodeFamily {
    */
   AncestorList getAncestors(ShadowNode const &ancestorShadowNode) const;
 
+  SurfaceId getSurfaceId() const;
+
  private:
   friend ShadowNode;
 

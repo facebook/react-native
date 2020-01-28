@@ -8,7 +8,11 @@
 #include <exception>
 
 #include <gtest/gtest.h>
-#include "TestComponent.h"
+
+#include <react/components/view/ViewComponentDescriptor.h>
+#include <react/element/ComponentBuilder.h>
+#include <react/element/Element.h>
+#include <react/uimanager/ComponentDescriptorProviderRegistry.h>
 
 using namespace facebook::react;
 
@@ -21,84 +25,55 @@ TEST(ShadowNodeFamilyTest, sealObjectCorrectly) {
    *  </AA>
    * </A>
    */
-  SurfaceId surfaceId = 1;
-  auto eventDispatcher = std::shared_ptr<EventDispatcher const>();
-  auto componentDescriptor = TestComponentDescriptor({eventDispatcher});
-  auto props = std::make_shared<const TestProps>();
+  ComponentDescriptorProviderRegistry componentDescriptorProviderRegistry{};
+  auto eventDispatcher = EventDispatcher::Shared{};
+  auto componentDescriptorRegistry =
+      componentDescriptorProviderRegistry.createComponentDescriptorRegistry(
+          ComponentDescriptorParameters{eventDispatcher, nullptr, nullptr});
 
-  auto familyAAA = std::make_shared<ShadowNodeFamily>(
-      ShadowNodeFamilyFragment{
-          /* .tag = */ 12,
-          /* .surfaceId = */ surfaceId,
-          /* .eventEmitter = */ nullptr,
-      },
-      componentDescriptor);
+  componentDescriptorProviderRegistry.add(
+      concreteComponentDescriptorProvider<ViewComponentDescriptor>());
 
-  auto nodeAAA = std::make_shared<TestShadowNode>(
-      ShadowNodeFragment{
-          /* .props = */ props,
-          /* .children = */ ShadowNode::emptySharedShadowNodeSharedList(),
-      },
-      familyAAA,
-      ShadowNodeTraits{});
+  auto builder = ComponentBuilder{componentDescriptorRegistry};
 
-  auto nodeAAChildren =
-      std::make_shared<SharedShadowNodeList>(SharedShadowNodeList{nodeAAA});
-  auto familyAA = std::make_shared<ShadowNodeFamily>(
-      ShadowNodeFamilyFragment{
-          /* .tag = */ 11,
-          /* .surfaceId = */ surfaceId,
-          /* .eventEmitter = */ nullptr,
-      },
-      componentDescriptor);
-  auto nodeAA = std::make_shared<TestShadowNode>(
-      ShadowNodeFragment{
-          /* .props = */ props,
-          /* .children = */ nodeAAChildren,
-      },
-      familyAA,
-      ShadowNodeTraits{});
+  auto shadowNodeAAA = std::shared_ptr<ViewShadowNode const>{};
+  auto shadowNodeAA = std::shared_ptr<ViewShadowNode const>{};
 
-  auto nodeAChildren =
-      std::make_shared<SharedShadowNodeList>(SharedShadowNodeList{nodeAA});
+  // clang-format off
+  auto elementA =
+      Element<ViewShadowNode>()
+        .tag(1)
+        .finalize([](ViewShadowNode &shadowNode){
+          shadowNode.sealRecursive();
+        })
+        .children({
+          Element<ViewShadowNode>()
+            .tag(2)
+            .reference(shadowNodeAA)
+            .children({
+              Element<ViewShadowNode>()
+                .reference(shadowNodeAAA)
+                .tag(3)
+            })
+        });
+  auto elementB =
+    Element<ViewShadowNode>()
+      .tag(1)
+      .finalize([](ViewShadowNode &shadowNode){
+        shadowNode.sealRecursive();
+      });
+  // clang-format on
 
-  auto familyA = std::make_shared<ShadowNodeFamily>(
-      ShadowNodeFamilyFragment{
-          /* .tag = */ 17,
-          /* .surfaceId = */ surfaceId,
-          /* .eventEmitter = */ nullptr,
-      },
-      componentDescriptor);
-  auto nodeA = std::make_shared<TestShadowNode>(
-      ShadowNodeFragment{
-          /* .props = */ props,
-          /* .children = */ nodeAChildren,
-      },
-      familyA,
-      ShadowNodeTraits{});
-
-  auto familyZ = std::make_shared<ShadowNodeFamily>(
-      ShadowNodeFamilyFragment{
-          /* .tag = */ 18,
-          /* .surfaceId = */ surfaceId,
-          /* .eventEmitter = */ nullptr,
-      },
-      componentDescriptor);
-  auto nodeZ = std::make_shared<TestShadowNode>(
-      ShadowNodeFragment{
-          /* .props = */ props,
-          /* .children = */ ShadowNode::emptySharedShadowNodeSharedList(),
-      },
-      familyZ,
-      ShadowNodeTraits{});
+  auto shadowNodeA = builder.build(elementA);
+  auto shadowNodeB = builder.build(elementB);
 
   // Negative case:
-  auto ancestors1 = nodeZ->getFamily().getAncestors(*nodeA);
+  auto ancestors1 = shadowNodeB->getFamily().getAncestors(*shadowNodeA);
   EXPECT_EQ(ancestors1.size(), 0);
 
   // Positive case:
-  auto ancestors2 = nodeAAA->getFamily().getAncestors(*nodeA);
+  auto ancestors2 = shadowNodeAAA->getFamily().getAncestors(*shadowNodeA);
   EXPECT_EQ(ancestors2.size(), 2);
-  EXPECT_EQ(&ancestors2[0].first.get(), nodeA.get());
-  EXPECT_EQ(&ancestors2[1].first.get(), nodeAA.get());
+  EXPECT_EQ(&ancestors2[0].first.get(), shadowNodeA.get());
+  EXPECT_EQ(&ancestors2[1].first.get(), shadowNodeAA.get());
 }

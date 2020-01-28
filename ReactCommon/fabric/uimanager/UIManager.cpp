@@ -33,8 +33,12 @@ SharedShadowNode UIManager::createNode(
   auto fallbackDescriptor =
       componentDescriptorRegistry_->getFallbackComponentDescriptor();
 
-  auto const eventEmitter =
-      componentDescriptor.createEventEmitter(std::move(eventTarget), tag);
+  auto family = std::make_shared<ShadowNodeFamily>(
+      ShadowNodeFamilyFragment{
+          tag,
+          surfaceId,
+          componentDescriptor.createEventEmitter(std::move(eventTarget), tag)},
+      componentDescriptor);
   auto const props = componentDescriptor.cloneProps(nullptr, rawProps);
   auto const state = componentDescriptor.createInitialState(
       ShadowNodeFragment{props}, surfaceId);
@@ -51,7 +55,7 @@ SharedShadowNode UIManager::createNode(
           /* .children = */ ShadowNodeFragment::childrenPlaceholder(),
           /* .state = */ state,
       },
-      ShadowNodeFamilyFragment{tag, surfaceId, eventEmitter});
+      family);
 
   // state->commit(x) associates a ShadowNode with the State object.
   // state->commit(x) must be called before calling updateState; updateState
