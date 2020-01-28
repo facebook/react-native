@@ -102,6 +102,8 @@ rn_xplat_cxx_library(
         "$SDKROOT/System/Library/Frameworks/JavaScriptCore.framework",
     ],
     fbobjc_labels = ["supermodule:ios/default/infra.react_native"],
+    # TODO (T55502220): Remove when iOS 9.0 deprecation is complete everywhere.
+    fbobjc_target_sdk_version = "9.0",
     visibility = ["PUBLIC"],
     xplat_mangled_args = {
         "soname": "libjscjsi.$(ext)",
