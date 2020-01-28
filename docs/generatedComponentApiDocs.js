@@ -22,25 +22,25 @@ module.exports = [
         "required": false,
         "flowType": {
           "name": "boolean",
-          "nullable": true,
+          "nullable": true
         },
-        "description": "Whether the switch is disabled. Defaults to false.",
+        "description": "Whether the switch is disabled. Defaults to false."
       },
       "value": {
         "required": false,
         "flowType": {
           "name": "boolean",
-          "nullable": true,
+          "nullable": true
         },
-        "description": "Boolean value of the switch. Defaults to false.",
+        "description": "Boolean value of the switch. Defaults to false."
       },
       "thumbColor": {
         "required": false,
         "flowType": {
           "name": "ColorValue",
-          "nullable": true,
+          "nullable": true
         },
-        "description": "Custom color for the switch thumb.",
+        "description": "Custom color for the switch thumb."
       },
       "trackColor": {
         "required": false,
@@ -58,33 +58,33 @@ module.exports = [
                     "value": {
                       "name": "ColorValue",
                       "nullable": true,
-                      "required": false,
-                    },
+                      "required": false
+                    }
                   },
                   {
                     "key": "true",
                     "value": {
                       "name": "ColorValue",
                       "nullable": true,
-                      "required": false,
-                    },
-                  },
-                ],
-              },
-            },
+                      "required": false
+                    }
+                  }
+                ]
+              }
+            }
           ],
           "raw": "$ReadOnly<{|\n  false?: ?ColorValue,\n  true?: ?ColorValue,\n|}>",
-          "nullable": true,
+          "nullable": true
         },
-        "description": "Custom colors for the switch track.\n\nNOTE: On iOS when the switch value is false, the track shrinks into the\nborder. If you want to change the color of the background exposed by the\nshrunken track, use `ios_backgroundColor`.",
+        "description": "Custom colors for the switch track.\n\nNOTE: On iOS when the switch value is false, the track shrinks into the\nborder. If you want to change the color of the background exposed by the\nshrunken track, use `ios_backgroundColor`."
       },
       "ios_backgroundColor": {
         "required": false,
         "flowType": {
           "name": "ColorValue",
-          "nullable": true,
+          "nullable": true
         },
-        "description": "On iOS, custom color for the background. This background color can be seen\neither when the switch value is false or when the switch is disabled (and\nthe switch is translucent).",
+        "description": "On iOS, custom color for the background. This background color can be seen\neither when the switch value is false or when the switch is disabled (and\nthe switch is translucent)."
       },
       "onChange": {
         "required": false,
@@ -112,19 +112,19 @@ module.exports = [
                                 "key": "value",
                                 "value": {
                                   "name": "boolean",
-                                  "required": true,
-                                },
-                              },
-                            ],
-                          },
-                        },
+                                  "required": true
+                                }
+                              }
+                            ]
+                          }
+                        }
                       ],
-                      "raw": "$ReadOnly<{|\n  value: boolean,\n|}>",
-                    },
+                      "raw": "$ReadOnly<{|\n  value: boolean,\n|}>"
+                    }
                   ],
-                  "raw": "SyntheticEvent<\n  $ReadOnly<{|\n    value: boolean,\n  |}>,\n>",
-                },
-              },
+                  "raw": "SyntheticEvent<\n  $ReadOnly<{|\n    value: boolean,\n  |}>,\n>"
+                }
+              }
             ],
             "return": {
               "name": "union",
@@ -134,20 +134,20 @@ module.exports = [
                   "name": "Promise",
                   "elements": [
                     {
-                      "name": "void",
-                    },
+                      "name": "void"
+                    }
                   ],
-                  "raw": "Promise<void>",
+                  "raw": "Promise<void>"
                 },
                 {
-                  "name": "void",
-                },
-              ],
-            },
+                  "name": "void"
+                }
+              ]
+            }
           },
-          "nullable": true,
+          "nullable": true
         },
-        "description": "Called when the user tries to change the value of the switch.\n\nReceives the change event as an argument. If you want to only receive the\nnew value, use `onValueChange` instead.",
+        "description": "Called when the user tries to change the value of the switch.\n\nReceives the change event as an argument. If you want to only receive the\nnew value, use `onValueChange` instead."
       },
       "onValueChange": {
         "required": false,
@@ -160,9 +160,9 @@ module.exports = [
               {
                 "name": "value",
                 "type": {
-                  "name": "boolean",
-                },
-              },
+                  "name": "boolean"
+                }
+              }
             ],
             "return": {
               "name": "union",
@@ -172,24 +172,24 @@ module.exports = [
                   "name": "Promise",
                   "elements": [
                     {
-                      "name": "void",
-                    },
+                      "name": "void"
+                    }
                   ],
-                  "raw": "Promise<void>",
+                  "raw": "Promise<void>"
                 },
                 {
-                  "name": "void",
-                },
-              ],
-            },
+                  "name": "void"
+                }
+              ]
+            }
           },
-          "nullable": true,
+          "nullable": true
         },
-        "description": "Called when the user tries to change the value of the switch.\n\nReceives the new value as an argument. If you want to instead receive an\nevent, use `onChange`.",
-      },
+        "description": "Called when the user tries to change the value of the switch.\n\nReceives the new value as an argument. If you want to instead receive an\nevent, use `onChange`."
+      }
     },
     "composes": [
-      "ViewProps",
-    ],
-  },
+      "ViewProps"
+    ]
+  }
 ];
