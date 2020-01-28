@@ -17,6 +17,8 @@ RCT_EXTERN void RCTEnableImageLoadingPerfInstrumentation(BOOL enabled);
 
 @protocol RCTImageLoaderWithAttributionProtocol<RCTImageLoaderProtocol>
 
+// TODO (T61325135): Remove C++ checks
+#ifdef __cplusplus
 /**
  * Same as the variant in RCTImageURLLoaderProtocol, but allows passing attribution
  * information that each image URL loader can process.
@@ -30,6 +32,8 @@ RCT_EXTERN void RCTEnableImageLoadingPerfInstrumentation(BOOL enabled);
                                         progressBlock:(RCTImageLoaderProgressBlock)progressBlock
                                      partialLoadBlock:(RCTImageLoaderPartialLoadBlock)partialLoadBlock
                                       completionBlock:(RCTImageLoaderCompletionBlock)completionBlock;
+#endif
+
 /**
  * Image instrumentation - notify that the image content (UIImage) has been set on the native view.
  */
