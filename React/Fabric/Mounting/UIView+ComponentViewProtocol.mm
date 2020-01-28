@@ -49,11 +49,6 @@ using namespace facebook::react;
   // Default implementation does nothing.
 }
 
-- (void)updateLocalData:(SharedLocalData)localData oldLocalData:(SharedLocalData)oldLocalData
-{
-  // Default implementation does nothing.
-}
-
 - (void)updateState:(facebook::react::State::Shared const &)state
            oldState:(facebook::react::State::Shared const &)oldState
 {

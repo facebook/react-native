@@ -6,7 +6,7 @@
  */
 
 #include "EventEmitterWrapper.h"
-#include <fb/fbjni.h>
+#include <fbjni/fbjni.h>
 
 using namespace facebook::jni;
 
@@ -20,7 +20,7 @@ EventEmitterWrapper::initHybrid(jni::alias_ref<jclass>) {
 
 void EventEmitterWrapper::invokeEvent(
     std::string eventName,
-    NativeMap* payload) {
+    NativeMap *payload) {
   eventEmitter->dispatchEvent(
       eventName, payload->consume(), EventPriority::AsynchronousBatched);
 }

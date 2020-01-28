@@ -7,6 +7,8 @@
 
 package com.facebook.react.views.textinput;
 
+import static com.facebook.react.uimanager.UIManagerHelper.getReactContext;
+
 import android.content.Context;
 import android.graphics.Rect;
 import android.graphics.Typeface;
@@ -78,6 +80,8 @@ public class ReactEditText extends AppCompatEditText {
   /** The most recent event number acked by JavaScript. Should only be updated from JS, not C++. */
   protected int mMostRecentEventCount;
 
+  private static final int UNSET = -1;
+
   private @Nullable ArrayList<TextWatcher> mListeners;
   private @Nullable TextWatcherDelegator mTextWatcherDelegator;
   private int mStagedInputType;
@@ -114,7 +118,7 @@ public class ReactEditText extends AppCompatEditText {
     mReactBackgroundManager = new ReactViewBackgroundManager(this);
     mInputMethodManager =
         (InputMethodManager)
-            Assertions.assertNotNull(getContext().getSystemService(Context.INPUT_METHOD_SERVICE));
+            Assertions.assertNotNull(context.getSystemService(Context.INPUT_METHOD_SERVICE));
     mDefaultGravityHorizontal =
         getGravity() & (Gravity.HORIZONTAL_GRAVITY_MASK | Gravity.RELATIVE_HORIZONTAL_GRAVITY_MASK);
     mDefaultGravityVertical = getGravity() & Gravity.VERTICAL_GRAVITY_MASK;
@@ -219,7 +223,7 @@ public class ReactEditText extends AppCompatEditText {
 
   @Override
   public InputConnection onCreateInputConnection(EditorInfo outAttrs) {
-    ReactContext reactContext = (ReactContext) getContext();
+    ReactContext reactContext = getReactContext(this);
     InputConnection inputConnection = super.onCreateInputConnection(outAttrs);
     if (inputConnection != null && mOnKeyPress) {
       inputConnection =
@@ -292,6 +296,24 @@ public class ReactEditText extends AppCompatEditText {
 
   public void setScrollWatcher(ScrollWatcher scrollWatcher) {
     mScrollWatcher = scrollWatcher;
+  }
+
+  /**
+   * Attempt to set a selection or fail silently. Intentionally meant to handle bad inputs.
+   * EventCounter is the same one used as with text.
+   *
+   * @param eventCounter
+   * @param start
+   * @param end
+   */
+  public void maybeSetSelection(int eventCounter, int start, int end) {
+    if (!canUpdateWithEventCount(eventCounter)) {
+      return;
+    }
+
+    if (start != UNSET && end != UNSET) {
+      setSelection(start, end);
+    }
   }
 
   @Override
@@ -463,6 +485,10 @@ public class ReactEditText extends AppCompatEditText {
     mIsSettingTextFromState = false;
   }
 
+  public boolean canUpdateWithEventCount(int eventCounter) {
+    return eventCounter >= mNativeEventCount;
+  }
+
   // VisibleForTesting from {@link TextInputEventsTestCase}.
   public void maybeSetText(ReactTextUpdate reactTextUpdate) {
     if (isSecureText() && TextUtils.equals(getText(), reactTextUpdate.getText())) {
@@ -471,7 +497,7 @@ public class ReactEditText extends AppCompatEditText {
 
     // Only set the text if it is up to date.
     mMostRecentEventCount = reactTextUpdate.getJsEventCounter();
-    if (mMostRecentEventCount < mNativeEventCount) {
+    if (!canUpdateWithEventCount(mMostRecentEventCount)) {
       return;
     }
 
@@ -601,7 +627,7 @@ public class ReactEditText extends AppCompatEditText {
     // Since the LocalData object is constructed by getting values from the underlying EditText
     // view, we don't need to construct one or apply it at all - it provides no use in Fabric.
     if (mStateWrapper == null) {
-      ReactContext reactContext = (ReactContext) getContext();
+      ReactContext reactContext = getReactContext(this);
       final ReactTextInputLocalData localData = new ReactTextInputLocalData(this);
       UIManagerModule uiManager = reactContext.getNativeModule(UIManagerModule.class);
       uiManager.setViewLocalData(getId(), localData);

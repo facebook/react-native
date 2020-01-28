@@ -1191,7 +1191,7 @@ class Scope {
 };
 
 /// Base class for jsi exceptions
-class JSIException : public std::exception {
+class JSI_EXPORT JSIException : public std::exception {
  protected:
   JSIException(){};
   JSIException(std::string what) : what_(std::move(what)){};
@@ -1207,7 +1207,7 @@ class JSIException : public std::exception {
 
 /// This exception will be thrown by API functions on errors not related to
 /// JavaScript execution.
-class JSINativeException : public JSIException {
+class JSI_EXPORT JSINativeException : public JSIException {
  public:
   JSINativeException(std::string what) : JSIException(std::move(what)) {}
 };
@@ -1215,7 +1215,7 @@ class JSINativeException : public JSIException {
 /// This exception will be thrown by API functions whenever a JS
 /// operation causes an exception as described by the spec, or as
 /// otherwise described.
-class JSError : public JSIException {
+class JSI_EXPORT JSError : public JSIException {
  public:
   /// Creates a JSError referring to provided \c value
   JSError(Runtime& r, Value&& value);

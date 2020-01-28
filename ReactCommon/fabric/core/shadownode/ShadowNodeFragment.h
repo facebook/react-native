@@ -8,7 +8,6 @@
 #pragma once
 
 #include <react/core/EventEmitter.h>
-#include <react/core/LocalData.h>
 #include <react/core/Props.h>
 #include <react/core/ReactPrimitives.h>
 #include <react/core/ShadowNode.h>
@@ -27,12 +26,8 @@ namespace react {
  * fragment content to store or pass the data asynchronously.
  */
 struct ShadowNodeFragment {
-  Tag const tag = tagPlaceholder();
-  SurfaceId const surfaceId = surfaceIdPlaceholder();
   Props::Shared const &props = propsPlaceholder();
-  EventEmitter::Shared const &eventEmitter = eventEmitterPlaceholder();
   ShadowNode::SharedListOfShared const &children = childrenPlaceholder();
-  LocalData::Shared const &localData = localDataPlaceholder();
   State::Shared const &state = statePlaceholder();
 
   /*
@@ -40,12 +35,8 @@ struct ShadowNodeFragment {
    * Use as default arguments as an indication that the field does not need to
    * be changed.
    */
-  static Tag const tagPlaceholder();
-  static SurfaceId const surfaceIdPlaceholder();
   static Props::Shared const &propsPlaceholder();
-  static EventEmitter::Shared const &eventEmitterPlaceholder();
   static ShadowNode::SharedListOfShared const &childrenPlaceholder();
-  static LocalData::Shared const &localDataPlaceholder();
   static State::Shared const &statePlaceholder();
 
   /*
@@ -66,12 +57,8 @@ struct ShadowNodeFragment {
     explicit operator ShadowNodeFragment() const;
 
    private:
-    Tag const tag_;
-    SurfaceId const surfaceId_;
     Props::Shared const props_;
-    EventEmitter::Shared const eventEmitter_;
     ShadowNode::SharedListOfShared const children_;
-    LocalData::Shared const localData_;
     State::Shared const state_;
   };
 };

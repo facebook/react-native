@@ -43,12 +43,10 @@ let RCTSinglelineTextInputView;
 if (Platform.OS === 'android') {
   AndroidTextInput = require('./AndroidTextInputNativeComponent').default;
 } else if (Platform.OS === 'ios') {
-  RCTMultilineTextInputView = requireNativeComponent(
-    'RCTMultilineTextInputView',
-  );
-  RCTSinglelineTextInputView = requireNativeComponent(
-    'RCTSinglelineTextInputView',
-  );
+  RCTMultilineTextInputView = require('./RCTMultilineTextInputNativeComponent.js')
+    .default;
+  RCTSinglelineTextInputView = require('./RCTSingelineTextInputNativeComponent.js')
+    .default;
 }
 
 export type ChangeEvent = SyntheticEvent<

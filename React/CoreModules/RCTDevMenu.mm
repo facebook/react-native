@@ -122,7 +122,7 @@ RCT_EXPORT_MODULE()
                                                object:nil];
     _extraMenuItems = [NSMutableArray new];
 
-#if TARGET_OS_SIMULATOR
+#if TARGET_OS_SIMULATOR || TARGET_OS_MACCATALYST
     RCTKeyCommands *commands = [RCTKeyCommands sharedInstance];
     __weak __typeof(self) weakSelf = self;
 
@@ -262,7 +262,7 @@ RCT_EXPORT_MODULE()
     if (devSettings.isNuclideDebuggingAvailable && !devSettings.isDebuggingRemotely) {
       [items addObject:[RCTDevMenuItem buttonItemWithTitle:@"Debug with Nuclide"
                                                    handler:^{
-#if RCT_ENABLE_INSPECTOR && !TARGET_OS_UIKITFORMAC
+#if RCT_ENABLE_INSPECTOR
                                                      [RCTInspectorDevServerHelper
                                                          attachDebugger:@"ReactNative"
                                                           withBundleURL:bridge.bundleURL

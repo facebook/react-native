@@ -335,7 +335,7 @@ describe('VirtualizedList', () => {
     expect(scrollRef.measureLayout).toBeInstanceOf(jest.fn().constructor);
     expect(scrollRef.measureInWindow).toBeInstanceOf(jest.fn().constructor);
   });
-  it("does not call onEndReached when it shouldn't", () => {
+  it('does not call onEndReached when onContentSizeChange happens after onLayout', () => {
     const ITEM_HEIGHT = 40;
     const layout = {width: 300, height: 600};
     let data = Array(20)
@@ -345,6 +345,8 @@ describe('VirtualizedList', () => {
     const props = {
       data,
       initialNumToRender: 10,
+      onEndReachedThreshold: 2,
+      windowSize: 21,
       renderItem: ({item}) => <item value={item.key} />,
       getItem: (items, index) => items[index],
       getItemCount: items => items.length,
@@ -362,9 +364,11 @@ describe('VirtualizedList', () => {
 
     instance._onLayout({nativeEvent: {layout}});
 
+    const initialContentHeight = props.initialNumToRender * ITEM_HEIGHT;
+
     // We want to test the unusual case of onContentSizeChange firing after
     // onLayout, which can cause https://github.com/facebook/react-native/issues/16067
-    instance._onContentSizeChange(300, props.initialNumToRender * ITEM_HEIGHT);
+    instance._onContentSizeChange(300, initialContentHeight);
     instance._onContentSizeChange(300, data.length * ITEM_HEIGHT);
     jest.runAllTimers();
 
@@ -373,7 +377,7 @@ describe('VirtualizedList', () => {
     instance._onScroll({
       timeStamp: 1000,
       nativeEvent: {
-        contentOffset: {y: 700, x: 0},
+        contentOffset: {y: initialContentHeight, x: 0},
         layoutMeasurement: layout,
         contentSize: {...layout, height: data.length * ITEM_HEIGHT},
         zoomScale: 1,
@@ -383,5 +387,73 @@ describe('VirtualizedList', () => {
     jest.runAllTimers();
 
     expect(onEndReached).toHaveBeenCalled();
+  });
+
+  it('provides a trace when a listKey collision occurs', () => {
+    const errors = [];
+    jest.spyOn(console, 'error').mockImplementation((...args) => {
+      // Silence the DEV-only React error boundary warning.
+      if ((args[0] || '').startsWith('The above error occured in the ')) {
+        return;
+      }
+      errors.push(args);
+    });
+    const commonProps = {
+      data: [{key: 'cell0'}],
+      getItem: (data, index) => data[index],
+      getItemCount: data => data.length,
+      renderItem: ({item}) => <item value={item.key} />,
+    };
+    try {
+      ReactTestRenderer.create(
+        <VirtualizedList
+          {...commonProps}
+          horizontal={false}
+          listKey="level0"
+          renderItem={() => (
+            <VirtualizedList
+              {...commonProps}
+              horizontal={true}
+              listKey="level1"
+              renderItem={() => (
+                <>
+                  {/* Force a collision */}
+                  <VirtualizedList
+                    {...commonProps}
+                    horizontal={true}
+                    listKey="level2"
+                  />
+                  <VirtualizedList
+                    {...commonProps}
+                    horizontal={true}
+                    listKey="level2"
+                  />
+                </>
+              )}
+            />
+          )}
+        />,
+      );
+      expect(errors).toMatchInlineSnapshot(`
+        Array [
+          Array [
+            "A VirtualizedList contains a cell which itself contains more than one VirtualizedList of the same orientation as the parent list. You must pass a unique listKey prop to each sibling list.
+        
+        VirtualizedList trace:
+          Child (horizontal):
+            listKey: level2
+            cellKey: cell0
+          Parent (horizontal):
+            listKey: level1
+            cellKey: cell0
+          Parent (vertical):
+            listKey: level0
+            cellKey: rootList",
+          ],
+        ]
+      `);
+    } finally {
+      console.error.mockRestore();
+    }
   });
 });

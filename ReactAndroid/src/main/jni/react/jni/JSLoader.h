@@ -11,7 +11,7 @@
 
 #include <android/asset_manager.h>
 #include <cxxreact/JSExecutor.h>
-#include <fb/fbjni.h>
+#include <fbjni/fbjni.h>
 
 namespace facebook {
 namespace react {
@@ -23,8 +23,12 @@ struct JAssetManager : jni::JavaClass<JAssetManager> {
 /**
  * Helper method for loading JS script from android asset
  */
-AAssetManager *extractAssetManager(jni::alias_ref<JAssetManager::javaobject> assetManager);
+AAssetManager *extractAssetManager(
+    jni::alias_ref<JAssetManager::javaobject> assetManager);
 
-std::unique_ptr<const JSBigString> loadScriptFromAssets(AAssetManager *assetManager, const std::string& assetName);
+std::unique_ptr<const JSBigString> loadScriptFromAssets(
+    AAssetManager *assetManager,
+    const std::string &assetName);
 
-} }
+} // namespace react
+} // namespace facebook

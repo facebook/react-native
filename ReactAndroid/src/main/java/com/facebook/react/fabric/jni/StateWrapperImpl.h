@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include <fb/fbjni.h>
+#include <fbjni/fbjni.h>
 #include <react/core/State.h>
 #include <react/jni/ReadableNativeMap.h>
 
@@ -18,7 +18,7 @@ class Instance;
 
 class StateWrapperImpl : public jni::HybridClass<StateWrapperImpl> {
  public:
-  constexpr static const char* const kJavaDescriptor =
+  constexpr static const char *const kJavaDescriptor =
       "Lcom/facebook/react/fabric/StateWrapperImpl;";
 
   static void registerNatives();
@@ -27,6 +27,7 @@ class StateWrapperImpl : public jni::HybridClass<StateWrapperImpl> {
   void updateStateImpl(NativeMap *map);
 
   State::Shared state_;
+
  private:
   jni::alias_ref<StateWrapperImpl::jhybriddata> jhybridobject_;
 

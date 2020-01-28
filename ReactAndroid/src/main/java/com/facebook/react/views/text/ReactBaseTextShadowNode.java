@@ -20,6 +20,7 @@ import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.react.uimanager.IllegalViewOperationException;
 import com.facebook.react.uimanager.LayoutShadowNode;
 import com.facebook.react.uimanager.NativeViewHierarchyOptimizer;
@@ -136,12 +137,23 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
         YogaValue widthValue = child.getStyleWidth();
         YogaValue heightValue = child.getStyleHeight();
 
+        float width;
+        float height;
         if (widthValue.unit != YogaUnit.POINT || heightValue.unit != YogaUnit.POINT) {
-          throw new IllegalViewOperationException(
-              "Views nested within a <Text> must have a width and height");
+          if (ReactFeatureFlags.supportInlineViewsWithDynamicSize) {
+            // If the measurement of the child isn't calculated, we calculate the layout for the
+            // view using Yoga
+            child.calculateLayout();
+            width = child.getLayoutWidth();
+            height = child.getLayoutHeight();
+          } else {
+            throw new IllegalViewOperationException(
+                "Views nested within a <Text> must have a width and height");
+          }
+        } else {
+          width = widthValue.value;
+          height = heightValue.value;
         }
-        float width = widthValue.value;
-        float height = heightValue.value;
 
         // We make the inline view take up 1 character in the span and put a corresponding character
         // into
@@ -360,9 +372,7 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
    */
   protected @Nullable String mFontFamily = null;
 
-  /**
-   * @see android.graphics.Paint#setFontFeatureSettings
-   */
+  /** @see android.graphics.Paint#setFontFeatureSettings */
   protected @Nullable String mFontFeatureSettings = null;
 
   protected boolean mContainsImages = false;

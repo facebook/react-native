@@ -27,7 +27,6 @@ import java.util.Map;
 @ReactModuleList(
     nativeModules = {
       JSCHeapCapture.class,
-      JSDevSupport.class,
     })
 public class DebugCorePackage extends TurboReactPackage {
   public DebugCorePackage() {}
@@ -37,8 +36,6 @@ public class DebugCorePackage extends TurboReactPackage {
     switch (name) {
       case JSCHeapCapture.TAG:
         return new JSCHeapCapture(reactContext);
-      case JSDevSupport.MODULE_NAME:
-        return new JSDevSupport(reactContext);
       default:
         throw new IllegalArgumentException(
             "In CoreModulesPackage, could not find Native module for " + name);

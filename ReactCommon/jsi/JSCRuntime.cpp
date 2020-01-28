@@ -9,6 +9,7 @@
 
 #include <JavaScriptCore/JavaScript.h>
 #include <atomic>
+#include <array>
 #include <condition_variable>
 #include <cstdlib>
 #include <jsi/jsilib.h>
@@ -285,10 +286,21 @@ class JSCRuntime : public jsi::Runtime {
 // JSStringRef utilities
 namespace {
 std::string JSStringToSTLString(JSStringRef str) {
+  // Small string optimization: Avoid one heap allocation for strings that fit
+  // in stackBuffer.size() bytes of UTF-8 (including the null terminator).
+  std::array<char, 20> stackBuffer;
+  std::unique_ptr<char[]> heapBuffer;
+  char *buffer;
   size_t maxBytes = JSStringGetMaximumUTF8CStringSize(str);
-  std::vector<char> buffer(maxBytes);
-  JSStringGetUTF8CString(str, buffer.data(), maxBytes);
-  return std::string(buffer.data());
+  if (maxBytes <= stackBuffer.size()) {
+    buffer = stackBuffer.data();
+  } else {
+    heapBuffer = std::make_unique<char[]>(maxBytes);
+    buffer = heapBuffer.get();
+  }
+  size_t actualBytes = JSStringGetUTF8CString(str, buffer, maxBytes);
+  // NOTE: By definition, maxBytes >= actualBytes >= 1.
+  return std::string(buffer, actualBytes - 1);
 }
 
 JSStringRef getLengthString() {

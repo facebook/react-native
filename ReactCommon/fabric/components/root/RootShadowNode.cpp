@@ -41,18 +41,16 @@ RootShadowNode::Unshared RootShadowNode::clone(
   auto newRootShadowNode = std::make_shared<RootShadowNode>(
       *this,
       ShadowNodeFragment{
-          /* .tag = */ ShadowNodeFragment::tagPlaceholder(),
-          /* .surfaceId = */ ShadowNodeFragment::surfaceIdPlaceholder(),
           /* .props = */ props,
       });
   return newRootShadowNode;
 }
 
 RootShadowNode::Unshared RootShadowNode::clone(
-    ShadowNode const &shadowNode,
+    ShadowNodeFamily const &shadowNodeFamily,
     std::function<ShadowNode::Unshared(ShadowNode const &oldShadowNode)>
         callback) const {
-  auto ancestors = shadowNode.getAncestors(*this);
+  auto ancestors = shadowNodeFamily.getAncestors(*this);
 
   if (ancestors.size() == 0) {
     return RootShadowNode::Unshared{nullptr};
@@ -61,7 +59,6 @@ RootShadowNode::Unshared RootShadowNode::clone(
   auto &parent = ancestors.back();
   auto &oldShadowNode = parent.first.get().getChildren().at(parent.second);
 
-  assert(ShadowNode::sameFamily(shadowNode, *oldShadowNode));
   auto newShadowNode = callback(*oldShadowNode);
 
   auto childNode = newShadowNode;
@@ -75,10 +72,7 @@ RootShadowNode::Unshared RootShadowNode::clone(
     children[childIndex] = childNode;
 
     childNode = parentNode.clone({
-        ShadowNodeFragment::tagPlaceholder(),
-        ShadowNodeFragment::surfaceIdPlaceholder(),
         ShadowNodeFragment::propsPlaceholder(),
-        ShadowNodeFragment::eventEmitterPlaceholder(),
         std::make_shared<SharedShadowNodeList>(children),
     });
   }

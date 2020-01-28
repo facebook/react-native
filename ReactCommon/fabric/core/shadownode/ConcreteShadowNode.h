@@ -75,6 +75,7 @@ class ConcreteShadowNode : public ShadowNode {
 
   static ConcreteStateData initialStateData(
       ShadowNodeFragment const &fragment,
+      SurfaceId const surfaceId,
       ComponentDescriptor const &componentDescriptor) {
     return {};
   }

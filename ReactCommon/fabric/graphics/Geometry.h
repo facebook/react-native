@@ -30,6 +30,12 @@ struct Point {
     return *this;
   }
 
+  Point &operator-=(const Point &point) {
+    x -= point.x;
+    y -= point.y;
+    return *this;
+  }
+
   Point &operator*=(const Point &point) {
     x *= point.x;
     y *= point.y;
@@ -38,6 +44,10 @@ struct Point {
 
   friend Point operator+(Point lhs, const Point &rhs) {
     return lhs += rhs;
+  }
+
+  friend Point operator-(Point lhs, const Point &rhs) {
+    return lhs -= rhs;
   }
 
   bool operator==(const Point &rhs) const {
@@ -113,6 +123,12 @@ struct Rect {
     auto y2 = std::max(getMaxY(), rect.getMaxY());
     origin = {x1, y1};
     size = {x2 - x1, y2 - y1};
+  }
+
+  bool containsPoint(Point point) {
+    return point.x >= origin.x && point.y >= origin.y &&
+        point.x <= (origin.x + size.width) &&
+        point.y <= (origin.y + size.height);
   }
 };
 

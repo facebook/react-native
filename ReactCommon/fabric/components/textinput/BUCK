@@ -18,11 +18,11 @@ APPLE_COMPILER_FLAGS = get_apple_compiler_flags()
 rn_xplat_cxx_library(
     name = "androidtextinput",
     srcs = glob(
-        ["**/*.cpp"],
+        ["androidtextinput/**/*.cpp"],
         exclude = glob(["tests/**/*.cpp"]),
     ),
     headers = glob(
-        ["**/*.h"],
+        ["androidtextinput/**/*.h"],
         exclude = glob(["tests/**/*.h"]),
     ),
     header_namespace = "",
@@ -41,7 +41,7 @@ rn_xplat_cxx_library(
     ],
     cxx_tests = [":tests"],
     fbobjc_compiler_flags = APPLE_COMPILER_FLAGS,
-    fbobjc_labels = ["supermodule:ios/isolation/infra.react_native"],
+    fbobjc_labels = ["supermodule:ios/default/infra.react_native"],
     fbobjc_preprocessor_flags = get_debug_preprocessor_flags() + get_apple_inspector_flags(),
     force_static = True,
     platforms = (ANDROID, APPLE, CXX),
@@ -52,7 +52,7 @@ rn_xplat_cxx_library(
     visibility = ["PUBLIC"],
     deps = [
         "fbsource//xplat/fbsystrace:fbsystrace",
-        "fbsource//xplat/folly:evicting_cache_map",
+        "fbsource//xplat/folly:container_evicting_cache_map",
         "fbsource//xplat/folly:headers_only",
         "fbsource//xplat/folly:memory",
         "fbsource//xplat/folly:molly",

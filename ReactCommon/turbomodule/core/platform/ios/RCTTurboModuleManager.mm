@@ -17,7 +17,6 @@
 #import <React/RCTLog.h>
 #import <React/RCTModuleData.h>
 #import <React/RCTPerformanceLogger.h>
-#import <ReactCommon/BridgeJSCallInvoker.h>
 #import <ReactCommon/TurboCxxModule.h>
 #import <ReactCommon/TurboModuleBinding.h>
 
@@ -63,10 +62,12 @@ static Class getFallbackClassFromName(const char *name)
   std::atomic<bool> _invalidating;
 }
 
-- (instancetype)initWithBridge:(RCTBridge *)bridge delegate:(id<RCTTurboModuleManagerDelegate>)delegate
+- (instancetype)initWithBridge:(RCTBridge *)bridge
+                      delegate:(id<RCTTurboModuleManagerDelegate>)delegate
+                     jsInvoker:(std::shared_ptr<facebook::react::CallInvoker>)jsInvoker
 {
   if (self = [super init]) {
-    _jsInvoker = std::make_shared<react::BridgeJSCallInvoker>(bridge.reactInstance);
+    _jsInvoker = jsInvoker;
     _delegate = delegate;
     _bridge = bridge;
     _invalidating = false;
@@ -353,10 +354,7 @@ static Class getFallbackClassFromName(const char *name)
     [[NSNotificationCenter defaultCenter]
         postNotificationName:RCTDidInitializeModuleNotification
                       object:strongBridge
-                    userInfo:@{
-                      @"module" : module,
-                      @"bridge" : RCTNullIfNil([strongBridge parentBridge])
-                    }];
+                    userInfo:@{@"module" : module, @"bridge" : RCTNullIfNil([strongBridge parentBridge])}];
   };
 
   if ([[module class] respondsToSelector:@selector(requiresMainQueueSetup)] &&
@@ -445,11 +443,11 @@ static Class getFallbackClassFromName(const char *name)
         if (methodQueue) {
           dispatch_group_enter(moduleInvalidationGroup);
           [bridge
-           dispatchBlock:^{
-            [((id<RCTInvalidating>)module) invalidate];
-            dispatch_group_leave(moduleInvalidationGroup);
-          }
-           queue:methodQueue];
+              dispatchBlock:^{
+                [((id<RCTInvalidating>)module) invalidate];
+                dispatch_group_leave(moduleInvalidationGroup);
+              }
+                      queue:methodQueue];
           continue;
         }
       }
@@ -481,10 +479,10 @@ static Class getFallbackClassFromName(const char *name)
 
   // Backward-compatibility: RCTInvalidating handling, but not adhering to desired methodQueue.
   for (const auto &p : rctCacheCopy) {
-     id<RCTTurboModule> module = p.second;
-     if ([module respondsToSelector:@selector(invalidate)]) {
-       [((id<RCTInvalidating>)module) invalidate];
-     }
+    id<RCTTurboModule> module = p.second;
+    if ([module respondsToSelector:@selector(invalidate)]) {
+      [((id<RCTInvalidating>)module) invalidate];
+    }
   }
 
   {

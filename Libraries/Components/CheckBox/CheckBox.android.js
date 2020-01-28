@@ -17,7 +17,9 @@ const processColor = require('../../StyleSheet/processColor');
 const nullthrows = require('nullthrows');
 const setAndForwardRef = require('../../Utilities/setAndForwardRef');
 
-import AndroidCheckBoxNativeComponent from './AndroidCheckBoxNativeComponent';
+import AndroidCheckBoxNativeComponent, {
+  Commands as AndroidCheckBoxCommands,
+} from './AndroidCheckBoxNativeComponent';
 
 import type {ViewProps} from '../View/ViewPropTypes';
 import type {SyntheticEvent} from '../../Types/CoreEventTypes';
@@ -141,7 +143,7 @@ class CheckBox extends React.Component<Props> {
 
   _onChange = (event: CheckBoxEvent) => {
     const value = this.props.value ?? false;
-    nullthrows(this._nativeRef).setNativeProps({value: value});
+    AndroidCheckBoxCommands.setNativeValue(nullthrows(this._nativeRef), value);
     // Change the props after the native props are set in case the props
     // change removes the component
     this.props.onChange && this.props.onChange(event);

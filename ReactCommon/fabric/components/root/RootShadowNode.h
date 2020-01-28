@@ -55,7 +55,7 @@ class RootShadowNode final
    * Returns `nullptr` if the operation cannot be performed successfully.
    */
   RootShadowNode::Unshared clone(
-      ShadowNode const &shadowNode,
+      ShadowNodeFamily const &shadowNodeFamily,
       std::function<ShadowNode::Unshared(ShadowNode const &oldShadowNode)>
           callback) const;
 

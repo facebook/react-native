@@ -7,7 +7,7 @@
 
 #include <../instrumentation/HermesMemoryDumper.h>
 #include <HermesExecutorFactory.h>
-#include <fb/fbjni.h>
+#include <fbjni/fbjni.h>
 #include <hermes/Public/GCConfig.h>
 #include <hermes/Public/RuntimeConfig.h>
 #include <jni.h>

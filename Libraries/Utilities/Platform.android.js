@@ -38,7 +38,7 @@ const Platform = {
     Serial: string,
     Fingerprint: string,
     Model: string,
-    ServerHost: string,
+    ServerHost?: string,
     uiMode: string,
   |} {
     if (this.__constants == null) {

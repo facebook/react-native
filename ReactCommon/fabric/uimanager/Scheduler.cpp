@@ -61,8 +61,8 @@ Scheduler::Scheduler(
   componentDescriptorRegistry_ = schedulerToolbox.componentRegistryFactory(
       eventDispatcher_, schedulerToolbox.contextContainer);
 
-  rootComponentDescriptor_ =
-      std::make_unique<const RootComponentDescriptor>(eventDispatcher_);
+  rootComponentDescriptor_ = std::make_unique<const RootComponentDescriptor>(
+      ComponentDescriptorParameters{eventDispatcher_, nullptr, nullptr});
 
   uiManager->setDelegate(this);
   uiManager->setComponentDescriptorRegistry(componentDescriptorRegistry_);
@@ -174,22 +174,17 @@ void Scheduler::renderTemplateToSurface(
 
     uiManager_->getShadowTreeRegistry().visit(
         surfaceId, [=](const ShadowTree &shadowTree) {
-          return shadowTree.tryCommit([&](RootShadowNode::Shared const
-                                              &oldRootShadowNode) {
-            return std::make_shared<RootShadowNode>(
-                *oldRootShadowNode,
-                ShadowNodeFragment{
-                    /* .tag = */ ShadowNodeFragment::tagPlaceholder(),
-                    /* .surfaceId = */
-                    ShadowNodeFragment::surfaceIdPlaceholder(),
-                    /* .props = */ ShadowNodeFragment::propsPlaceholder(),
-                    /* .eventEmitter = */
-                    ShadowNodeFragment::eventEmitterPlaceholder(),
-                    /* .children = */
-                    std::make_shared<SharedShadowNodeList>(
-                        SharedShadowNodeList{tree}),
-                });
-          });
+          return shadowTree.tryCommit(
+              [&](RootShadowNode::Shared const &oldRootShadowNode) {
+                return std::make_shared<RootShadowNode>(
+                    *oldRootShadowNode,
+                    ShadowNodeFragment{
+                        /* .props = */ ShadowNodeFragment::propsPlaceholder(),
+                        /* .children = */
+                        std::make_shared<SharedShadowNodeList>(
+                            SharedShadowNodeList{tree}),
+                    });
+              });
         });
   } catch (const std::exception &e) {
     LOG(ERROR) << "    >>>> EXCEPTION <<<  rendering uiTemplate in "

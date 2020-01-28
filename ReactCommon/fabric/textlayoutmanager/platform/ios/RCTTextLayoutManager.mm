@@ -97,6 +97,7 @@ static NSLineBreakMode RCTNSLineBreakModeFromEllipsizeMode(EllipsizeMode ellipsi
   textContainer.maximumNumberOfLines = paragraphAttributes.maximumNumberOfLines;
 
   NSLayoutManager *layoutManager = [NSLayoutManager new];
+  layoutManager.usesFontLeading = NO;
   [layoutManager addTextContainer:textContainer];
 
   NSTextStorage *textStorage =

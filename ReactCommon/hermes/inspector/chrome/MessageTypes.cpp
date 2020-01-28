@@ -1,5 +1,5 @@
 // Copyright 2004-present Facebook. All Rights Reserved.
-// @generated SignedSource<<986a7615a1af0edce2bf49c00b4ef623>>
+// @generated SignedSource<<633984dcfe87d2822ef0e80c1aab93ef>>
 
 #include "MessageTypes.h"
 
@@ -43,7 +43,6 @@ std::unique_ptr<Request> Request::fromJsonThrowOnError(const std::string &str) {
       {"HeapProfiler.takeHeapSnapshot",
        makeUnique<heapProfiler::TakeHeapSnapshotRequest>},
       {"Runtime.evaluate", makeUnique<runtime::EvaluateRequest>},
-      {"Runtime.getHeapUsage", makeUnique<runtime::GetHeapUsageRequest>},
       {"Runtime.getProperties", makeUnique<runtime::GetPropertiesRequest>},
   };
 
@@ -186,6 +185,7 @@ dynamic debugger::Scope::toDynamic() const {
 debugger::CallFrame::CallFrame(const dynamic &obj) {
   assign(callFrameId, obj, "callFrameId");
   assign(functionName, obj, "functionName");
+  assign(functionLocation, obj, "functionLocation");
   assign(location, obj, "location");
   assign(url, obj, "url");
   assign(scopeChain, obj, "scopeChain");
@@ -198,6 +198,7 @@ dynamic debugger::CallFrame::toDynamic() const {
 
   put(obj, "callFrameId", callFrameId);
   put(obj, "functionName", functionName);
+  put(obj, "functionLocation", functionLocation);
   put(obj, "location", location);
   put(obj, "url", url);
   put(obj, "scopeChain", scopeChain);
@@ -212,8 +213,6 @@ runtime::ExecutionContextDescription::ExecutionContextDescription(
   assign(origin, obj, "origin");
   assign(name, obj, "name");
   assign(auxData, obj, "auxData");
-  assign(isPageContext, obj, "isPageContext");
-  assign(isDefault, obj, "isDefault");
 }
 
 dynamic runtime::ExecutionContextDescription::toDynamic() const {
@@ -223,8 +222,6 @@ dynamic runtime::ExecutionContextDescription::toDynamic() const {
   put(obj, "origin", origin);
   put(obj, "name", name);
   put(obj, "auxData", auxData);
-  put(obj, "isPageContext", isPageContext);
-  put(obj, "isDefault", isDefault);
   return obj;
 }
 
@@ -346,6 +343,7 @@ debugger::EvaluateOnCallFrameRequest::EvaluateOnCallFrameRequest(
   assign(includeCommandLineAPI, params, "includeCommandLineAPI");
   assign(silent, params, "silent");
   assign(returnByValue, params, "returnByValue");
+  assign(throwOnSideEffect, params, "throwOnSideEffect");
 }
 
 dynamic debugger::EvaluateOnCallFrameRequest::toDynamic() const {
@@ -356,6 +354,7 @@ dynamic debugger::EvaluateOnCallFrameRequest::toDynamic() const {
   put(params, "includeCommandLineAPI", includeCommandLineAPI);
   put(params, "silent", silent);
   put(params, "returnByValue", returnByValue);
+  put(params, "throwOnSideEffect", throwOnSideEffect);
 
   dynamic obj = dynamic::object;
   put(obj, "id", id);
@@ -476,6 +475,7 @@ debugger::SetBreakpointByUrlRequest::SetBreakpointByUrlRequest(
   assign(lineNumber, params, "lineNumber");
   assign(url, params, "url");
   assign(urlRegex, params, "urlRegex");
+  assign(scriptHash, params, "scriptHash");
   assign(columnNumber, params, "columnNumber");
   assign(condition, params, "condition");
 }
@@ -485,6 +485,7 @@ dynamic debugger::SetBreakpointByUrlRequest::toDynamic() const {
   put(params, "lineNumber", lineNumber);
   put(params, "url", url);
   put(params, "urlRegex", urlRegex);
+  put(params, "scriptHash", scriptHash);
   put(params, "columnNumber", columnNumber);
   put(params, "condition", condition);
 
@@ -597,11 +598,13 @@ heapProfiler::TakeHeapSnapshotRequest::TakeHeapSnapshotRequest(
 
   dynamic params = obj.at("params");
   assign(reportProgress, params, "reportProgress");
+  assign(treatGlobalObjectsAsRoots, params, "treatGlobalObjectsAsRoots");
 }
 
 dynamic heapProfiler::TakeHeapSnapshotRequest::toDynamic() const {
   dynamic params = dynamic::object;
   put(params, "reportProgress", reportProgress);
+  put(params, "treatGlobalObjectsAsRoots", treatGlobalObjectsAsRoots);
 
   dynamic obj = dynamic::object;
   put(obj, "id", id);
@@ -629,6 +632,7 @@ runtime::EvaluateRequest::EvaluateRequest(const dynamic &obj)
   assign(silent, params, "silent");
   assign(contextId, params, "contextId");
   assign(returnByValue, params, "returnByValue");
+  assign(userGesture, params, "userGesture");
   assign(awaitPromise, params, "awaitPromise");
 }
 
@@ -640,6 +644,7 @@ dynamic runtime::EvaluateRequest::toDynamic() const {
   put(params, "silent", silent);
   put(params, "contextId", contextId);
   put(params, "returnByValue", returnByValue);
+  put(params, "userGesture", userGesture);
   put(params, "awaitPromise", awaitPromise);
 
   dynamic obj = dynamic::object;
@@ -650,26 +655,6 @@ dynamic runtime::EvaluateRequest::toDynamic() const {
 }
 
 void runtime::EvaluateRequest::accept(RequestHandler &handler) const {
-  handler.handle(*this);
-}
-
-runtime::GetHeapUsageRequest::GetHeapUsageRequest()
-    : Request("Runtime.getHeapUsage") {}
-
-runtime::GetHeapUsageRequest::GetHeapUsageRequest(const dynamic &obj)
-    : Request("Runtime.getHeapUsage") {
-  assign(id, obj, "id");
-  assign(method, obj, "method");
-}
-
-dynamic runtime::GetHeapUsageRequest::toDynamic() const {
-  dynamic obj = dynamic::object;
-  put(obj, "id", id);
-  put(obj, "method", method);
-  return obj;
-}
-
-void runtime::GetHeapUsageRequest::accept(RequestHandler &handler) const {
   handler.handle(*this);
 }
 
@@ -815,25 +800,6 @@ dynamic runtime::EvaluateResponse::toDynamic() const {
   return obj;
 }
 
-runtime::GetHeapUsageResponse::GetHeapUsageResponse(const dynamic &obj) {
-  assign(id, obj, "id");
-
-  dynamic res = obj.at("result");
-  assign(usedSize, res, "usedSize");
-  assign(totalSize, res, "totalSize");
-}
-
-dynamic runtime::GetHeapUsageResponse::toDynamic() const {
-  dynamic res = dynamic::object;
-  put(res, "usedSize", usedSize);
-  put(res, "totalSize", totalSize);
-
-  dynamic obj = dynamic::object;
-  put(obj, "id", id);
-  put(obj, "result", std::move(res));
-  return obj;
-}
-
 runtime::GetPropertiesResponse::GetPropertiesResponse(const dynamic &obj) {
   assign(id, obj, "id");
 
@@ -941,6 +907,9 @@ debugger::ScriptParsedNotification::ScriptParsedNotification(const dynamic &obj)
   assign(hash, params, "hash");
   assign(executionContextAuxData, params, "executionContextAuxData");
   assign(sourceMapURL, params, "sourceMapURL");
+  assign(hasSourceURL, params, "hasSourceURL");
+  assign(isModule, params, "isModule");
+  assign(length, params, "length");
 }
 
 dynamic debugger::ScriptParsedNotification::toDynamic() const {
@@ -955,6 +924,9 @@ dynamic debugger::ScriptParsedNotification::toDynamic() const {
   put(params, "hash", hash);
   put(params, "executionContextAuxData", executionContextAuxData);
   put(params, "sourceMapURL", sourceMapURL);
+  put(params, "hasSourceURL", hasSourceURL);
+  put(params, "isModule", isModule);
+  put(params, "length", length);
 
   dynamic obj = dynamic::object;
   put(obj, "method", method);

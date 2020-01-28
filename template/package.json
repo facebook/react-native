@@ -9,7 +9,7 @@
     "test": "jest"
   },
   "dependencies": {
-    "react": "16.11.0",
+    "react": "16.12.0",
     "react-native": "1000.0.0"
   },
   "devDependencies": {
@@ -19,7 +19,7 @@
     "babel-jest": "^24.9.0",
     "jest": "^24.9.0",
     "metro-react-native-babel-preset": "^0.56.0",
-    "react-test-renderer": "16.11.0"
+    "react-test-renderer": "16.12.0"
   },
   "jest": {
     "preset": "react-native"

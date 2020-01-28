@@ -11,7 +11,6 @@
 #include <folly/Hash.h>
 #include <react/core/EventEmitter.h>
 #include <react/core/LayoutMetrics.h>
-#include <react/core/LocalData.h>
 #include <react/core/Props.h>
 #include <react/core/ReactPrimitives.h>
 #include <react/core/ShadowNode.h>
@@ -44,7 +43,6 @@ struct ShadowView final {
   Props::Shared props{};
   EventEmitter::Shared eventEmitter{};
   LayoutMetrics layoutMetrics{EmptyLayoutMetrics};
-  LocalData::Shared localData{};
   State::Shared state{};
 };
 
@@ -88,7 +86,6 @@ struct hash<facebook::react::ShadowView> {
         shadowView.tag,
         shadowView.props,
         shadowView.eventEmitter,
-        shadowView.localData,
         shadowView.state);
   }
 };

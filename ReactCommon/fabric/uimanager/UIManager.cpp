@@ -9,6 +9,7 @@
 
 #include <react/core/ShadowNodeFragment.h>
 #include <react/debug/SystraceSection.h>
+#include <react/graphics/Geometry.h>
 
 #include <glog/logging.h>
 
@@ -32,27 +33,26 @@ SharedShadowNode UIManager::createNode(
   auto fallbackDescriptor =
       componentDescriptorRegistry_->getFallbackComponentDescriptor();
 
-  auto const eventEmitter =
-      componentDescriptor.createEventEmitter(std::move(eventTarget), tag);
+  auto family = componentDescriptor.createFamily(
+      ShadowNodeFamilyFragment{tag, surfaceId, nullptr},
+      std::move(eventTarget));
   auto const props = componentDescriptor.cloneProps(nullptr, rawProps);
   auto const state = componentDescriptor.createInitialState(
-      ShadowNodeFragment{tag, surfaceId, props, eventEmitter});
+      ShadowNodeFragment{props}, surfaceId);
 
-  auto shadowNode = componentDescriptor.createShadowNode({
-      /* .tag = */ tag,
-      /* .surfaceId = */ surfaceId,
-      /* .props = */
-      fallbackDescriptor != nullptr &&
-              fallbackDescriptor->getComponentHandle() ==
-                  componentDescriptor.getComponentHandle()
-          ? componentDescriptor.cloneProps(
-                props, RawProps(folly::dynamic::object("name", name)))
-          : props,
-      /* .eventEmitter = */ eventEmitter,
-      /* .children = */ ShadowNodeFragment::childrenPlaceholder(),
-      /* .localData = */ ShadowNodeFragment::localDataPlaceholder(),
-      /* .state = */ state,
-  });
+  auto shadowNode = componentDescriptor.createShadowNode(
+      ShadowNodeFragment{
+          /* .props = */
+          fallbackDescriptor != nullptr &&
+                  fallbackDescriptor->getComponentHandle() ==
+                      componentDescriptor.getComponentHandle()
+              ? componentDescriptor.cloneProps(
+                    props, RawProps(folly::dynamic::object("name", name)))
+              : props,
+          /* .children = */ ShadowNodeFragment::childrenPlaceholder(),
+          /* .state = */ state,
+      },
+      family);
 
   // state->commit(x) associates a ShadowNode with the State object.
   // state->commit(x) must be called before calling updateState; updateState
@@ -84,13 +84,10 @@ SharedShadowNode UIManager::cloneNode(
   auto clonedShadowNode = componentDescriptor.cloneShadowNode(
       *shadowNode,
       {
-          /* .tag = */ ShadowNodeFragment::tagPlaceholder(),
-          /* .surfaceId = */ ShadowNodeFragment::surfaceIdPlaceholder(),
           /* .props = */
           rawProps ? componentDescriptor.cloneProps(
                          shadowNode->getProps(), *rawProps)
                    : ShadowNodeFragment::propsPlaceholder(),
-          /* .eventEmitter = */ ShadowNodeFragment::eventEmitterPlaceholder(),
           /* .children = */ children,
       });
 
@@ -116,11 +113,7 @@ void UIManager::completeSurface(
       return std::make_shared<RootShadowNode>(
           *oldRootShadowNode,
           ShadowNodeFragment{
-              /* .tag = */ ShadowNodeFragment::tagPlaceholder(),
-              /* .surfaceId = */ ShadowNodeFragment::surfaceIdPlaceholder(),
               /* .props = */ ShadowNodeFragment::propsPlaceholder(),
-              /* .eventEmitter = */
-              ShadowNodeFragment::eventEmitterPlaceholder(),
               /* .children = */ rootChildren,
           });
     });
@@ -142,6 +135,12 @@ void UIManager::clearJSResponder() const {
   }
 }
 
+ShadowNode::Shared UIManager::findNodeAtPoint(
+    const ShadowNode::Shared &node,
+    Point point) const {
+  return LayoutableShadowNode::findNodeAtPoint(node, point);
+}
+
 void UIManager::setNativeProps(
     ShadowNode const &shadowNode,
     RawProps const &rawProps) const {
@@ -155,11 +154,8 @@ void UIManager::setNativeProps(
         shadowTree.tryCommit(
             [&](RootShadowNode::Shared const &oldRootShadowNode) {
               return oldRootShadowNode->clone(
-                  shadowNode, [&](ShadowNode const &oldShadowNode) {
+                  shadowNode.getFamily(), [&](ShadowNode const &oldShadowNode) {
                     return oldShadowNode.clone({
-                        /* .tag = */ ShadowNodeFragment::tagPlaceholder(),
-                        /* .surfaceId = */
-                        ShadowNodeFragment::surfaceIdPlaceholder(),
                         /* .props = */ props,
                     });
                   });
@@ -168,13 +164,14 @@ void UIManager::setNativeProps(
 }
 
 LayoutMetrics UIManager::getRelativeLayoutMetrics(
-    const ShadowNode &shadowNode,
-    const ShadowNode *ancestorShadowNode) const {
+    ShadowNode const &shadowNode,
+    ShadowNode const *ancestorShadowNode,
+    LayoutableShadowNode::LayoutInspectingPolicy policy) const {
   SystraceSection s("UIManager::getRelativeLayoutMetrics");
 
   if (!ancestorShadowNode) {
     shadowTreeRegistry_.visit(
-        shadowNode.getSurfaceId(), [&](const ShadowTree &shadowTree) {
+        shadowNode.getSurfaceId(), [&](ShadowTree const &shadowTree) {
           shadowTree.tryCommit(
               [&](RootShadowNode::Shared const &oldRootShadowNode) {
                 ancestorShadowNode = oldRootShadowNode.get();
@@ -193,32 +190,25 @@ LayoutMetrics UIManager::getRelativeLayoutMetrics(
   }
 
   return layoutableShadowNode->getRelativeLayoutMetrics(
-      *layoutableAncestorShadowNode);
+      *layoutableAncestorShadowNode, policy);
 }
 
 void UIManager::updateState(
     ShadowNode const &shadowNode,
     StateData::Shared const &rawStateData) const {
-  auto &componentDescriptor = shadowNode.getComponentDescriptor();
-  auto state =
-      componentDescriptor.createState(shadowNode.getState(), rawStateData);
-
   shadowTreeRegistry_.visit(
       shadowNode.getSurfaceId(), [&](ShadowTree const &shadowTree) {
         shadowTree.tryCommit([&](RootShadowNode::Shared const
                                      &oldRootShadowNode) {
           return oldRootShadowNode->clone(
-              shadowNode, [&](ShadowNode const &oldShadowNode) {
+              shadowNode.getFamily(), [&](ShadowNode const &oldShadowNode) {
+                auto &componentDescriptor =
+                    oldShadowNode.getComponentDescriptor();
+                auto state = componentDescriptor.createState(
+                    oldShadowNode.getState(), rawStateData);
                 return oldShadowNode.clone({
-                    /* .tag = */ ShadowNodeFragment::tagPlaceholder(),
-                    /* .surfaceId = */
-                    ShadowNodeFragment::surfaceIdPlaceholder(),
                     /* .props = */ ShadowNodeFragment::propsPlaceholder(),
-                    /* .eventEmitter = */
-                    ShadowNodeFragment::eventEmitterPlaceholder(),
                     /* .children = */ ShadowNodeFragment::childrenPlaceholder(),
-                    /* .localData = */
-                    ShadowNodeFragment::localDataPlaceholder(),
                     /* .state = */ state,
                 });
               });
@@ -233,47 +223,6 @@ void UIManager::dispatchCommand(
   if (delegate_) {
     delegate_->uiManagerDidDispatchCommand(shadowNode, commandName, args);
   }
-}
-
-static ShadowNode::Shared findShadowNodeByTagRecursively(
-    ShadowNode::Shared const &parentShadowNode,
-    Tag tag) {
-  if (parentShadowNode->getTag() == tag) {
-    return parentShadowNode;
-  }
-
-  for (ShadowNode::Shared const &shadowNode : parentShadowNode->getChildren()) {
-    auto result = findShadowNodeByTagRecursively(shadowNode, tag);
-    if (result) {
-      return result;
-    }
-  }
-
-  return nullptr;
-}
-
-ShadowNode::Shared UIManager::findShadowNodeByTag_DEPRECATED(Tag tag) const {
-  auto shadowNode = ShadowNode::Shared{};
-
-  shadowTreeRegistry_.enumerate([&](ShadowTree const &shadowTree, bool &stop) {
-    auto rootShadowNode = ShadowNode::Shared{};
-    // This is tricky.
-    // The public interface of `ShadowTree` discourages accessing a stored
-    // pointer to a root node because of the possible data race.
-    // To work around this, we ask for a commit and immediately cancel it
-    // returning `nullptr` instead of a new shadow tree.
-    shadowTree.tryCommit([&](RootShadowNode::Shared const &oldRootShadowNode) {
-      rootShadowNode = oldRootShadowNode;
-      return nullptr;
-    });
-
-    shadowNode = findShadowNodeByTagRecursively(rootShadowNode, tag);
-    if (shadowNode) {
-      stop = true;
-    }
-  });
-
-  return shadowNode;
 }
 
 void UIManager::setComponentDescriptorRegistry(

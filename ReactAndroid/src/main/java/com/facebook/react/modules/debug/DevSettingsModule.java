@@ -108,4 +108,14 @@ public class DevSettingsModule extends NativeDevSettingsSpec {
   public void setIsShakeToShowDevMenuEnabled(boolean enabled) {
     // iOS only
   }
+
+  @Override
+  public void addListener(String eventName) {
+    // iOS only
+  }
+
+  @Override
+  public void removeListeners(double count) {
+    // iOS only
+  }
 }

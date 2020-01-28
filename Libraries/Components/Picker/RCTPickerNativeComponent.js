@@ -40,6 +40,7 @@ type NativeProps = $ReadOnly<{|
   selectedIndex: number,
   style?: ?TextStyleProp,
   testID?: ?string,
+  accessibilityLabel?: ?string,
 |}>;
 
 type ComponentType = HostComponent<NativeProps>;

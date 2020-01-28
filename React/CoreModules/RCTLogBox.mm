@@ -48,8 +48,8 @@
     [_surface start];
     [_surface setSize:frame.size];
 
-    if (![_surface synchronouslyWaitForStage:RCTSurfaceStageSurfaceDidInitialMounting timeout:.5]) {
-      RCTLogInfo(@"Failed to mount LogBox within 500ms");
+    if (![_surface synchronouslyWaitForStage:RCTSurfaceStageSurfaceDidInitialMounting timeout:1]) {
+      RCTLogInfo(@"Failed to mount LogBox within 1s");
     }
 
     _rootViewController = [UIViewController new];
@@ -117,11 +117,7 @@ RCT_EXPORT_METHOD(hide)
 
 - (std::shared_ptr<facebook::react::TurboModule>)getTurboModuleWithJsInvoker:(std::shared_ptr<facebook::react::CallInvoker>)jsInvoker
 {
-  if (RCTRedBoxGetEnabled()) {
-    return std::make_shared<facebook::react::NativeLogBoxSpecJSI>(self, jsInvoker);
-  }
-
-  return nullptr;
+  return std::make_shared<facebook::react::NativeLogBoxSpecJSI>(self, jsInvoker);
 }
 
 @end

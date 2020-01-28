@@ -39,6 +39,27 @@
   super.selectedSegmentIndex = selectedIndex;
 }
 
+- (void)setBackgroundColor:(UIColor *)backgroundColor
+{
+    #if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && defined(__IPHONE_13_0) && \
+        __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_13_0
+    if (@available(iOS 13.0, *)) {
+      [super setBackgroundColor:backgroundColor];
+    }
+    #endif
+}
+
+- (void)setTextColor:(UIColor *)textColor
+{
+    #if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && defined(__IPHONE_13_0) && \
+        __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_13_0
+    if (@available(iOS 13.0, *)) {
+      [self setTitleTextAttributes:@{NSForegroundColorAttributeName: textColor}
+                  forState:UIControlStateNormal];
+    }
+    #endif
+}
+
 - (void)setTintColor:(UIColor *)tintColor
 {
   [super setTintColor:tintColor];

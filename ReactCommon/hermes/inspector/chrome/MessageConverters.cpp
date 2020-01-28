@@ -59,7 +59,7 @@ m::debugger::CallFrame m::debugger::makeCallFrame(
     const h::debugger::CallFrameInfo &callFrameInfo,
     const h::debugger::LexicalInfo &lexicalInfo,
     RemoteObjectsTable &objTable,
-    HermesRuntime &runtime,
+    jsi::Runtime &runtime,
     const facebook::hermes::debugger::ProgramState &state) {
   m::debugger::CallFrame result;
 
@@ -115,7 +115,7 @@ m::debugger::CallFrame m::debugger::makeCallFrame(
 std::vector<m::debugger::CallFrame> m::debugger::makeCallFrames(
     const h::debugger::ProgramState &state,
     RemoteObjectsTable &objTable,
-    HermesRuntime &runtime) {
+    jsi::Runtime &runtime) {
   const h::debugger::StackTrace &stackTrace = state.getStackTrace();
   uint32_t count = stackTrace.callFrameCount();
 

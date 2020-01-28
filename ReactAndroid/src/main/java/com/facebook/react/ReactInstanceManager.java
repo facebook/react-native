@@ -1104,11 +1104,15 @@ public class ReactInstanceManager {
     Log.d(ReactConstants.TAG, "ReactInstanceManager.attachRootViewToInstance()");
     Systrace.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "attachRootViewToInstance");
 
-    // UIManager is technically Nullable here, but if we can't get a UIManager
-    // at this point, something has probably gone horribly wrong so it's probably best
-    // to throw a NullPointerException.
+    @Nullable
     UIManager uiManager =
         UIManagerHelper.getUIManager(mCurrentReactContext, reactRoot.getUIManagerType());
+
+    // If we can't get a UIManager something has probably gone horribly wrong
+    if (uiManager == null) {
+      throw new IllegalStateException(
+          "Unable to attache a rootView to ReactInstance when UIManager is not properly initialized.");
+    }
 
     @Nullable Bundle initialProperties = reactRoot.getAppProperties();
 
@@ -1255,7 +1259,6 @@ public class ReactInstanceManager {
 
     ReactMarker.logMarker(PROCESS_PACKAGES_START);
 
-    // TODO(6818138): Solve use-case of native modules overriding
     synchronized (mPackages) {
       for (ReactPackage reactPackage : packages) {
         if (checkAndUpdatePackageMembership && mPackages.contains(reactPackage)) {

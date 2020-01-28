@@ -12,16 +12,15 @@ import android.view.View;
 import android.view.ViewGroup;
 import androidx.annotation.Nullable;
 import com.facebook.common.logging.FLog;
+import com.facebook.fbreact.specs.NativeLogBoxSpec;
 import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.bridge.ReactContextBaseJavaModule;
-import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.devsupport.interfaces.DevSupportManager;
 import com.facebook.react.module.annotations.ReactModule;
 
 @ReactModule(name = LogBoxModule.NAME)
-public class LogBoxModule extends ReactContextBaseJavaModule {
+public class LogBoxModule extends NativeLogBoxSpec {
 
   public static final String NAME = "LogBox";
 
@@ -54,7 +53,7 @@ public class LogBoxModule extends ReactContextBaseJavaModule {
     return NAME;
   }
 
-  @ReactMethod
+  @Override
   public void show() {
     UiThreadUtil.runOnUiThread(
         new Runnable() {
@@ -77,7 +76,7 @@ public class LogBoxModule extends ReactContextBaseJavaModule {
         });
   }
 
-  @ReactMethod
+  @Override
   public void hide() {
     UiThreadUtil.runOnUiThread(
         new Runnable() {

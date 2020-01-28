@@ -25,6 +25,8 @@ import type {ColorValue} from '../../StyleSheet/StyleSheetTypes';
 import requireNativeComponent from '../../ReactNative/requireNativeComponent';
 import codegenNativeCommands from '../../Utilities/codegenNativeCommands';
 import * as React from 'react';
+import AndroidTextInputViewConfig from './AndroidTextInputViewConfig';
+const ReactNativeViewConfigRegistry = require('../../Renderer/shims/ReactNativeViewConfigRegistry');
 
 export type KeyboardType =
   // Cross Platform
@@ -563,8 +565,17 @@ export const Commands: NativeCommands = codegenNativeCommands<NativeCommands>({
   ],
 });
 
-const AndroidTextInputNativeComponent: HostComponent<NativeProps> = requireNativeComponent<NativeProps>(
-  'AndroidTextInput',
-);
+let AndroidTextInputNativeComponent;
+if (global.RN$Bridgeless) {
+  ReactNativeViewConfigRegistry.register('AndroidTextInput', () => {
+    return AndroidTextInputViewConfig;
+  });
+  AndroidTextInputNativeComponent = 'AndroidTextInput';
+} else {
+  AndroidTextInputNativeComponent = requireNativeComponent<NativeProps>(
+    'AndroidTextInput',
+  );
+}
 
-export default AndroidTextInputNativeComponent;
+// flowlint-next-line unclear-type:off
+export default ((AndroidTextInputNativeComponent: any): HostComponent<NativeProps>);

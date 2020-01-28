@@ -116,7 +116,7 @@
         _stackTraceTableView.indicatorStyle = UIScrollViewIndicatorStyleWhite;
         [rootView addSubview:_stackTraceTableView];
 
-#if TARGET_OS_SIMULATOR
+#if TARGET_OS_SIMULATOR || TARGET_OS_MACCATALYST
         NSString *reloadText = @"Reload\n(\u2318R)";
         NSString *dismissText = @"Dismiss\n(ESC)";
         NSString *copyText = @"Copy\n(\u2325\u2318C)";
