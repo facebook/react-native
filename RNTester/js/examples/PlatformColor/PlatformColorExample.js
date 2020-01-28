@@ -86,7 +86,6 @@ class PlatformColorsExample extends React.Component<{}, State> {
         '?attr/colorControlActivated',
         '?attr/colorControlHighlight',
         '?attr/colorControlNormal',
-        '?attr/colorControlNormal',
         // '?attr/colorEdgeEffect',
         // '?attr/colorFocusedHighlight',
         // '?attr/colorForeground',
@@ -133,13 +132,13 @@ class FallbackColorsExample extends React.Component<{}, State> {
   state: State;
 
   getFallbackColor() {
-      if (Platform.OS === 'ios') {
-        return 'systemGreenColor';
-      } else if (Platform.OS === 'android') {
-        return '@color/catalyst_redbox_background';
-      }
+    if (Platform.OS === 'ios') {
+      return 'systemGreenColor';
+    } else if (Platform.OS === 'android') {
+      return '@color/catalyst_redbox_background';
+    }
 
-      throw "Unexpected Platform.OS: " + Platform.OS;
+    throw 'Unexpected Platform.OS: ' + Platform.OS;
   }
 
   render() {
@@ -164,7 +163,7 @@ class FallbackColorsExample extends React.Component<{}, State> {
 class DynamicColorsExample extends React.Component<{}, State> {
   state: State;
   render() {
-    return (
+    return Platform.OS === 'ios' ? (
       <View style={styles.column}>
         <View style={styles.row}>
           <Text style={styles.labelCell}>
@@ -192,6 +191,8 @@ class DynamicColorsExample extends React.Component<{}, State> {
           />
         </View>
       </View>
+    ) : (
+      <Text>Not applicable on this platform</Text>
     );
   }
 }
@@ -204,8 +205,8 @@ const styles = StyleSheet.create({
     alignItems: 'stretch',
     ...Platform.select({
       ios: {color: PlatformColor('labelColor')},
-      default: {color: 'black'}
-    })
+      default: {color: 'black'},
+    }),
   },
   colorCell: {flex: 0.25, alignItems: 'stretch'},
 });
@@ -225,16 +226,11 @@ exports.examples = [
     render: function(): React.Element<any> {
       return <FallbackColorsExample />;
     },
-  }
-];
-if (Platform.OS !== 'android') {
-  exports.examples = [
-    ...exports.examples,
-    {
-      title: 'Dynamic Colors',
-      render: function(): React.Element<any> {
-        return <DynamicColorsExample />;
-      },
+  },
+  {
+    title: 'Dynamic Colors',
+    render: function(): React.Element<any> {
+      return <DynamicColorsExample />;
     },
-  ];
-}
+  },
+];
