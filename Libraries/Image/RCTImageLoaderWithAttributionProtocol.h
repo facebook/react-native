@@ -12,6 +12,8 @@
 
 @protocol RCTImageLoaderWithAttributionProtocol<RCTImageLoaderProtocol>
 
+// TODO (T61325135): Remove C++ checks
+#ifdef __cplusplus
 /**
  * Same as the variant in RCTImageURLLoaderProtocol, but allows passing attribution
  * information that each image URL loader can process.
@@ -25,5 +27,6 @@
                                              progressBlock:(RCTImageLoaderProgressBlock)progressBlock
                                           partialLoadBlock:(RCTImageLoaderPartialLoadBlock)partialLoadBlock
                                            completionBlock:(RCTImageLoaderCompletionBlock)completionBlock;
+#endif
 
 @end
