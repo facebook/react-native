@@ -104,14 +104,6 @@ class ComponentDescriptor {
       const RawProps &rawProps) const = 0;
 
   /*
-   * Creates a new `EventEmitter` object compatible with particular type of
-   * shadow nodes.
-   */
-  virtual SharedEventEmitter createEventEmitter(
-      SharedEventTarget eventTarget,
-      const Tag &tag) const = 0;
-
-  /*
    * Create an initial State object that represents (and contains) an initial
    * State's data which can be constructed based on initial Props.
    */
@@ -126,6 +118,13 @@ class ComponentDescriptor {
   virtual State::Shared createState(
       const State::Shared &previousState,
       const StateData::Shared &data) const = 0;
+
+  /*
+   * Creates a shadow node family for particular node.
+   */
+  virtual ShadowNodeFamily::Shared createFamily(
+      ShadowNodeFamilyFragment const &fragment,
+      SharedEventTarget eventTarget) const = 0;
 
  protected:
   EventDispatcher::Weak eventDispatcher_;

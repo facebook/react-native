@@ -118,13 +118,6 @@ class ConcreteComponentDescriptor : public ComponentDescriptor {
     return ShadowNodeT::Props(rawProps, props);
   };
 
-  virtual SharedEventEmitter createEventEmitter(
-      SharedEventTarget eventTarget,
-      const Tag &tag) const override {
-    return std::make_shared<ConcreteEventEmitter>(
-        std::move(eventTarget), tag, eventDispatcher_);
-  }
-
   virtual State::Shared createInitialState(
       ShadowNodeFragment const &fragment,
       SurfaceId const surfaceId) const override {
@@ -155,6 +148,17 @@ class ConcreteComponentDescriptor : public ComponentDescriptor {
     return std::make_shared<const ConcreteState>(
         std::move(*std::static_pointer_cast<ConcreteStateData>(data)),
         *std::static_pointer_cast<const ConcreteState>(previousState));
+  }
+
+  virtual ShadowNodeFamily::Shared createFamily(
+      ShadowNodeFamilyFragment const &fragment,
+      SharedEventTarget eventTarget) const override {
+    auto eventEmitter = std::make_shared<ConcreteEventEmitter const>(
+        std::move(eventTarget), fragment.tag, eventDispatcher_);
+    return std::make_shared<ShadowNodeFamily>(
+        ShadowNodeFamilyFragment{
+            fragment.tag, fragment.surfaceId, eventEmitter},
+        *this);
   }
 
  protected:

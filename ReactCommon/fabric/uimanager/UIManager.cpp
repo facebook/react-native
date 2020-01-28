@@ -33,12 +33,9 @@ SharedShadowNode UIManager::createNode(
   auto fallbackDescriptor =
       componentDescriptorRegistry_->getFallbackComponentDescriptor();
 
-  auto family = std::make_shared<ShadowNodeFamily>(
-      ShadowNodeFamilyFragment{
-          tag,
-          surfaceId,
-          componentDescriptor.createEventEmitter(std::move(eventTarget), tag)},
-      componentDescriptor);
+  auto family = componentDescriptor.createFamily(
+      ShadowNodeFamilyFragment{tag, surfaceId, nullptr},
+      std::move(eventTarget));
   auto const props = componentDescriptor.cloneProps(nullptr, rawProps);
   auto const state = componentDescriptor.createInitialState(
       ShadowNodeFragment{props}, surfaceId);

@@ -102,9 +102,9 @@ ShadowTree::ShadowTree(
   const auto props = std::make_shared<const RootProps>(
       *RootShadowNode::defaultSharedProps(), layoutConstraints, layoutContext);
 
-  auto family = std::make_shared<ShadowNodeFamily>(
+  auto family = rootComponentDescriptor.createFamily(
       ShadowNodeFamilyFragment{surfaceId, surfaceId, noopEventEmitter},
-      rootComponentDescriptor);
+      nullptr);
   rootShadowNode_ = std::static_pointer_cast<const RootShadowNode>(
       rootComponentDescriptor.createShadowNode(
           ShadowNodeFragment{

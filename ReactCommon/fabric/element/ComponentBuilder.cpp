@@ -25,13 +25,10 @@ ShadowNode::Shared ComponentBuilder::build(
     children.push_back(build(childFragment));
   }
 
-  auto eventEmitter =
-      componentDescriptor.createEventEmitter(nullptr, elementFragment.tag);
-
-  auto family = std::make_shared<ShadowNodeFamily>(
+  auto family = componentDescriptor.createFamily(
       ShadowNodeFamilyFragment{
-          elementFragment.tag, elementFragment.surfaceId, eventEmitter},
-      componentDescriptor);
+          elementFragment.tag, elementFragment.surfaceId, nullptr},
+      nullptr);
 
   auto shadowNode = componentDescriptor.createShadowNode(
       ShadowNodeFragment{
