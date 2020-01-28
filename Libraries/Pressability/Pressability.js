@@ -147,7 +147,7 @@ export type PressabilityConfig = $ReadOnly<{|
   onStartShouldSetResponder_DEPRECATED?: ?() => boolean,
 |}>;
 
-type EventHandlers = $ReadOnly<{|
+export type EventHandlers = $ReadOnly<{|
   onBlur: (event: BlurEvent) => void,
   onClick: (event: PressEvent) => void,
   onFocus: (event: FocusEvent) => void,
