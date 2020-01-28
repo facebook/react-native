@@ -50,7 +50,7 @@ import com.facebook.react.uimanager.ReactStylesDiffMap;
 import com.facebook.react.uimanager.Spacing;
 import com.facebook.react.uimanager.StateWrapper;
 import com.facebook.react.uimanager.ThemedReactContext;
-import com.facebook.react.uimanager.UIManagerHelper;
+import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.ViewDefaults;
 import com.facebook.react.uimanager.ViewProps;
 import com.facebook.react.uimanager.annotations.ReactProp;
@@ -848,11 +848,6 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
     view.setStagedInputType((view.getStagedInputType() & ~flagsToUnset) | flagsToSet);
   }
 
-  private static EventDispatcher getEventDispatcher(
-      ReactContext reactContext, ReactEditText editText) {
-    return UIManagerHelper.getEventDispatcherForReactTag(reactContext, editText.getId());
-  }
-
   private class ReactTextInputTextWatcher implements TextWatcher {
 
     private EventDispatcher mEventDispatcher;
@@ -861,7 +856,7 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
 
     public ReactTextInputTextWatcher(
         final ReactContext reactContext, final ReactEditText editText) {
-      mEventDispatcher = getEventDispatcher(reactContext, editText);
+      mEventDispatcher = reactContext.getNativeModule(UIManagerModule.class).getEventDispatcher();
       mEditText = editText;
       mPreviousText = null;
     }
@@ -999,7 +994,8 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
     editText.setOnFocusChangeListener(
         new View.OnFocusChangeListener() {
           public void onFocusChange(View v, boolean hasFocus) {
-            EventDispatcher eventDispatcher = getEventDispatcher(reactContext, editText);
+            EventDispatcher eventDispatcher =
+                reactContext.getNativeModule(UIManagerModule.class).getEventDispatcher();
             if (hasFocus) {
               eventDispatcher.dispatchEvent(new ReactTextInputFocusEvent(editText.getId()));
             } else {
@@ -1029,7 +1025,8 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
               // * !blurOnSubmit && !isMultiline => Prevent default behaviour (return true).
               // Additionally we always generate a `submit` event.
 
-              EventDispatcher eventDispatcher = getEventDispatcher(reactContext, editText);
+              EventDispatcher eventDispatcher =
+                  reactContext.getNativeModule(UIManagerModule.class).getEventDispatcher();
 
               eventDispatcher.dispatchEvent(
                   new ReactTextInputSubmitEditingEvent(
@@ -1070,7 +1067,7 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
     public ReactContentSizeWatcher(ReactEditText editText) {
       mEditText = editText;
       ReactContext reactContext = getReactContext(editText);
-      mEventDispatcher = getEventDispatcher(reactContext, editText);
+      mEventDispatcher = reactContext.getNativeModule(UIManagerModule.class).getEventDispatcher();
     }
 
     @Override
@@ -1114,7 +1111,7 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
       mReactEditText = editText;
 
       ReactContext reactContext = getReactContext(editText);
-      mEventDispatcher = getEventDispatcher(reactContext, editText);
+      mEventDispatcher = reactContext.getNativeModule(UIManagerModule.class).getEventDispatcher();
     }
 
     @Override
@@ -1148,7 +1145,7 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
     public ReactScrollWatcher(ReactEditText editText) {
       mReactEditText = editText;
       ReactContext reactContext = getReactContext(editText);
-      mEventDispatcher = getEventDispatcher(reactContext, editText);
+      mEventDispatcher = reactContext.getNativeModule(UIManagerModule.class).getEventDispatcher();
     }
 
     @Override
