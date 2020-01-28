@@ -131,17 +131,28 @@ class PlatformColorsExample extends React.Component<{}, State> {
 
 class FallbackColorsExample extends React.Component<{}, State> {
   state: State;
+
+  getFallbackColor() {
+      if (Platform.OS === 'ios') {
+        return 'systemGreenColor';
+      } else if (Platform.OS === 'android') {
+        return '@color/catalyst_redbox_background';
+      }
+
+      throw "Unexpected Platform.OS: " + Platform.OS;
+  }
+
   render() {
     return (
       <View style={styles.column}>
         <View style={styles.row}>
           <Text style={styles.labelCell}>
-            First choice is 'bogus' so falls back to 'systemGreenColor'
+            First choice is 'bogus' so falls back to {this.getFallbackColor()}
           </Text>
           <View
             style={{
               ...styles.colorCell,
-              backgroundColor: PlatformColor('bogus', 'systemGreenColor'),
+              backgroundColor: PlatformColor('bogus', this.getFallbackColor()),
             }}
           />
         </View>
@@ -208,17 +219,17 @@ exports.examples = [
     render: function(): React.Element<any> {
       return <PlatformColorsExample />;
     },
+  },
+  {
+    title: 'Fallback Colors',
+    render: function(): React.Element<any> {
+      return <FallbackColorsExample />;
+    },
   }
 ];
 if (Platform.OS !== 'android') {
   exports.examples = [
     ...exports.examples,
-    {
-      title: 'Fallback Colors',
-      render: function(): React.Element<any> {
-        return <FallbackColorsExample />;
-      },
-    },
     {
       title: 'Dynamic Colors',
       render: function(): React.Element<any> {

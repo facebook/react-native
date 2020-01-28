@@ -247,10 +247,14 @@ import java.util.Map;
 
           resourcePath = resourcePath.substring(1);
 
-          if (isResource) {
-            return resolveResource(context, resourcePath);
-          } else if (isThemeAttribute) {
-            return resolveThemeAttribute(context, resourcePath);
+          try {
+            if (isResource) {
+              return resolveResource(context, resourcePath);
+            } else if (isThemeAttribute) {
+              return resolveThemeAttribute(context, resourcePath);
+            }
+          } catch (Resources.NotFoundException exception) {
+            exception.printStackTrace();
           }
         }
 
@@ -304,7 +308,7 @@ import java.util.Map;
         return outValue.data;
       }
 
-      return mDefaultValue;
+      throw new Resources.NotFoundException();
     }
   }
 
