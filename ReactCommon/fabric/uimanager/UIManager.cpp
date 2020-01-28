@@ -153,7 +153,7 @@ void UIManager::setNativeProps(
         shadowTree.tryCommit(
             [&](RootShadowNode::Shared const &oldRootShadowNode) {
               return oldRootShadowNode->clone(
-                  shadowNode, [&](ShadowNode const &oldShadowNode) {
+                  shadowNode.getFamily(), [&](ShadowNode const &oldShadowNode) {
                     return oldShadowNode.clone({
                         /* .props = */ props,
                     });
@@ -200,7 +200,7 @@ void UIManager::updateState(
         shadowTree.tryCommit([&](RootShadowNode::Shared const
                                      &oldRootShadowNode) {
           return oldRootShadowNode->clone(
-              shadowNode, [&](ShadowNode const &oldShadowNode) {
+              shadowNode.getFamily(), [&](ShadowNode const &oldShadowNode) {
                 auto &componentDescriptor =
                     oldShadowNode.getComponentDescriptor();
                 auto state = componentDescriptor.createState(

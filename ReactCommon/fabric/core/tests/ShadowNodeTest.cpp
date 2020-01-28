@@ -222,18 +222,6 @@ TEST_F(ShadowNodeTest, handleCloneFunction) {
   EXPECT_EQ(nodeAB_->getProps(), nodeABClone->getProps());
 }
 
-TEST_F(ShadowNodeTest, handleBacktracking) {
-  // Negative case:
-  auto ancestors1 = nodeZ_->getAncestors(*nodeA_);
-  EXPECT_EQ(ancestors1.size(), 0);
-
-  // Positive case:
-  auto ancestors2 = nodeABB_->getAncestors(*nodeA_);
-  EXPECT_EQ(ancestors2.size(), 2);
-  EXPECT_EQ(&ancestors2[0].first.get(), nodeA_.get());
-  EXPECT_EQ(&ancestors2[1].first.get(), nodeAB_.get());
-}
-
 TEST_F(ShadowNodeTest, handleState) {
   auto family = std::make_shared<ShadowNodeFamily>(
       ShadowNodeFamilyFragment{

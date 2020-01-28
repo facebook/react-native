@@ -99,7 +99,7 @@ LayoutMetrics LayoutableShadowNode::getRelativeLayoutMetrics(
     return layoutMetrics;
   }
 
-  auto ancestors = shadowNode.getAncestors(ancestorShadowNode);
+  auto ancestors = shadowNode.getFamily().getAncestors(ancestorShadowNode);
 
   if (ancestors.size() == 0) {
     return EmptyLayoutMetrics;

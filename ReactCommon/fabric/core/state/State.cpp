@@ -12,7 +12,6 @@
 #include <react/core/ShadowNodeFragment.h>
 #include <react/core/State.h>
 #include <react/core/StateTarget.h>
-#include <react/core/StateUpdate.h>
 
 #ifdef ANDROID
 #include <folly/dynamic.h>

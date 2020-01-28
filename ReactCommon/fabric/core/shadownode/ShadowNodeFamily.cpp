@@ -6,11 +6,14 @@
  */
 
 #include "ShadowNodeFamily.h"
+#include "ShadowNode.h"
 
 #include <react/core/ComponentDescriptor.h>
 
 namespace facebook {
 namespace react {
+
+using AncestorList = ShadowNode::AncestorList;
 
 ShadowNodeFamily::ShadowNodeFamily(
     ShadowNodeFamilyFragment const &fragment,
@@ -38,6 +41,46 @@ ComponentHandle ShadowNodeFamily::getComponentHandle() const {
 
 ComponentName ShadowNodeFamily::getComponentName() const {
   return componentName_;
+}
+
+AncestorList ShadowNodeFamily::getAncestors(
+    ShadowNode const &ancestorShadowNode) const {
+  auto families = better::small_vector<ShadowNodeFamily const *, 64>{};
+  auto ancestorFamily = ancestorShadowNode.family_.get();
+
+  auto family = this;
+  while (family && family != ancestorFamily) {
+    families.push_back(family);
+    family = family->parent_.lock().get();
+  }
+
+  if (family != ancestorFamily) {
+    return {};
+  }
+
+  auto ancestors = AncestorList{};
+  auto parentNode = &ancestorShadowNode;
+  for (auto it = families.rbegin(); it != families.rend(); it++) {
+    auto childFamily = *it;
+    auto found = false;
+    auto childIndex = 0;
+    for (const auto &childNode : *parentNode->children_) {
+      if (childNode->family_.get() == childFamily) {
+        ancestors.push_back({*parentNode, childIndex});
+        parentNode = childNode.get();
+        found = true;
+        break;
+      }
+      childIndex++;
+    }
+
+    if (!found) {
+      ancestors.clear();
+      return ancestors;
+    }
+  }
+
+  return ancestors;
 }
 
 } // namespace react
