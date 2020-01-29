@@ -17,12 +17,6 @@
 #include "Yoga.h"
 
 
-// Until we sync past this: https://github.com/facebook/react-native/commit/a7e4ce0f0d83b6162d77db7d680e838666f6d938#diff-140c478f1096be49a1b121931a7680ee
-// We have to turn off the bitfield usage for MSVC builds
-#ifdef _MSC_VER
-#define ENUM_BITFIELDS_NOT_SUPPORTED
-#endif
-
 #if !defined(ENUM_BITFIELDS_NOT_SUPPORTED)
 #define BITFIELD_ENUM_SIZED(num) : num
 #else
