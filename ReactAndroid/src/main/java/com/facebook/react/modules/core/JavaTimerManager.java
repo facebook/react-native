@@ -384,12 +384,26 @@ public class JavaTimerManager {
    */
   /* package */ boolean hasActiveTimersInRange(long rangeMs) {
     synchronized (mTimerGuard) {
+      Timer nextTimer = mTimers.peek();
+      if (nextTimer == null) {
+        // Timers queue is empty
+        return false;
+      }
+      if (isTimerInRange(nextTimer, rangeMs)) {
+        // First check the next timer, so we can avoid iterating over the entire queue if it's
+        // already within range.
+        return true;
+      }
       for (Timer timer : mTimers) {
-        if (!timer.mRepeat && timer.mInterval < rangeMs) {
+        if (isTimerInRange(timer, rangeMs)) {
           return true;
         }
       }
     }
     return false;
+  }
+
+  private static boolean isTimerInRange(Timer timer, long rangeMs) {
+    return !timer.mRepeat && timer.mInterval < rangeMs;
   }
 }
