@@ -24,7 +24,6 @@ const dismissKeyboard = require('../../Utilities/dismissKeyboard');
 const flattenStyle = require('../../StyleSheet/flattenStyle');
 const invariant = require('invariant');
 const processDecelerationRate = require('./processDecelerationRate');
-const requireNativeComponent = require('../../ReactNative/requireNativeComponent');
 const resolveAssetSource = require('../../Image/resolveAssetSource');
 const splitLayoutProps = require('../../StyleSheet/splitLayoutProps');
 
@@ -57,12 +56,9 @@ if (Platform.OS === 'android') {
   AndroidScrollView = ScrollViewNativeComponent;
   AndroidHorizontalScrollView = AndroidHorizontalScrollViewNativeComponent;
   AndroidHorizontalScrollContentView = AndroidHorizontalScrollContentViewNativeComponent;
-} else if (Platform.OS === 'ios') {
+} else {
   RCTScrollView = ScrollViewNativeComponent;
   RCTScrollContentView = ScrollContentViewNativeComponent;
-} else {
-  RCTScrollView = requireNativeComponent('RCTScrollView');
-  RCTScrollContentView = requireNativeComponent('RCTScrollContentView');
 }
 
 export type ScrollResponderType = {
