@@ -148,10 +148,6 @@ static void calculateShadowViewMutations(
   // The current version of the algorithm is optimized for simplicity,
   // not for performance or optimal result.
 
-  if (oldChildPairs == newChildPairs) {
-    return;
-  }
-
   if (oldChildPairs.size() == 0 && newChildPairs.size() == 0) {
     return;
   }
