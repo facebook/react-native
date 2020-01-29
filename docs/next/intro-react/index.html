@@ -208,22 +208,25 @@
           height: 514px;
           width: 100%;
         "
-      ></div></div></div><p>Any JavaScript will work between curly braces, including functions like <code>{fullName(&quot;Rum&quot;, Tum&quot;, &quot;Tugger&quot;)}</code>:</p>
+      ></div></div></div><p>Any JavaScript expression will work between curly braces, including function calls like <code>{getFullName(&quot;Rum&quot;, Tum&quot;, &quot;Tugger&quot;)}</code>:</p>
 <div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React <span class="hljs-keyword">from</span> <span class="hljs-string">'react'</span>;
 <span class="hljs-keyword">import</span> { Text } <span class="hljs-keyword">from</span> <span class="hljs-string">'react-native'</span>;
 
 <span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Cat</span>(<span class="hljs-params"></span>) </span>{
-  <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">fullName</span>(<span class="hljs-params">firstName, secondName, thirdName</span>) </span>{
+  <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">getFullName</span>(<span class="hljs-params">firstName, secondName, thirdName</span>) </span>{
     <span class="hljs-keyword">return</span> firstName + <span class="hljs-string">" "</span> + secondName + <span class="hljs-string">" "</span> + thirdName;
   }
+
   <span class="hljs-keyword">return</span> (
-    <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">Text</span>&gt;</span>Hello, I am {fullName("Rum", "Tum", "Tugger")}!<span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span></span>
+    <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">Text</span>&gt;</span>
+      Hello, I am {getFullName("Rum", "Tum", "Tugger")}!
+    <span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span></span>
   );
 }
 </code></pre></div><div class="desktop-friendly-snack" style="margin-top: 15px; margin-bottom: 15px"><div
         data-snack-name="Curly Braces"
         data-snack-description="Example usage"
-        data-snack-code="import%20React%20from%20'react'%3B%0Aimport%20%7B%20Text%20%7D%20from%20'react-native'%3B%0A%0Aexport%20default%20function%20Cat()%20%7B%0A%20%20function%20fullName(firstName%2C%20secondName%2C%20thirdName)%20%7B%0A%20%20%20%20return%20firstName%20%2B%20%22%20%22%20%2B%20secondName%20%2B%20%22%20%22%20%2B%20thirdName%3B%0A%20%20%7D%0A%20%20return%20(%0A%20%20%20%20%3CText%3EHello%2C%20I%20am%20%7BfullName(%22Rum%22%2C%20%22Tum%22%2C%20%22Tugger%22)%7D!%3C%2FText%3E%0A%20%20)%3B%0A%7D%0A"
+        data-snack-code="import%20React%20from%20'react'%3B%0Aimport%20%7B%20Text%20%7D%20from%20'react-native'%3B%0A%0Aexport%20default%20function%20Cat()%20%7B%0A%20%20function%20getFullName(firstName%2C%20secondName%2C%20thirdName)%20%7B%0A%20%20%20%20return%20firstName%20%2B%20%22%20%22%20%2B%20secondName%20%2B%20%22%20%22%20%2B%20thirdName%3B%0A%20%20%7D%0A%0A%20%20return%20(%0A%20%20%20%20%3CText%3E%0A%20%20%20%20%20%20Hello%2C%20I%20am%20%7BgetFullName(%22Rum%22%2C%20%22Tum%22%2C%20%22Tugger%22)%7D!%0A%20%20%20%20%3C%2FText%3E%0A%20%20)%3B%0A%7D%0A"
         data-snack-platform="web"
         data-snack-supported-platforms=ios,android,web
         data-snack-preview="true"
@@ -469,10 +472,10 @@ export default function Cafe() {
 <pre><code class="hljs css language-jsx"><span class="token keyword">import</span> React<span class="token punctuation">,</span> <span class="token punctuation">{</span>useState<span class="token punctuation">}</span> <span class="token keyword">from</span> <span class="token string">'react'</span><span class="token punctuation">;</span>
 </code></pre>
 <p>Then you declare the component’s state by calling <code>useState</code> inside its function. In this example, <code>useState</code> creates an <code>isHungry</code> state variable:</p>
-<pre><code class="hljs css language-JS"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Cat</span>(<span class="hljs-params">props</span>) </span>{
-  <span class="hljs-keyword">const</span> [isHungry, setIsHungry] = useState(<span class="hljs-literal">true</span>);
-  <span class="hljs-comment">// ...</span>
-}
+<pre><code class="hljs css language-jsx"><span class="token keyword">function</span> <span class="token function">Cat</span><span class="token punctuation">(</span><span class="token parameter">props</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token keyword">const</span> <span class="token punctuation">[</span>isHungry<span class="token punctuation">,</span> setIsHungry<span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token function">useState</span><span class="token punctuation">(</span><span class="token boolean">true</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token comment">// ...</span>
+<span class="token punctuation">}</span>
 </code></pre>
 <blockquote>
 <p>You can use <code>useState</code> to track any kind of data: strings, numbers, Booleans, arrays, objects. For example, you can track the number of times a cat has been petted with <code>const [timesPetted, setTimesPetted] = useState(0)</code>!</p>
@@ -484,32 +487,32 @@ export default function Cafe() {
 </ul>
 <p>It doesn’t matter what names you use. But it can be handy to think of the pattern as <code>[&lt;getter&gt;, &lt;setter&gt;] = useState(&lt;initialValue&gt;)</code>.</p>
 <p>Next you add the <a href="button"><code>Button</code></a> Core Component and give it an <code>onPress</code> prop:</p>
-<pre><code class="hljs css language-JSX">&lt;Button
-  onPress={() =&gt; {
-    setIsHungry(<span class="hljs-literal">false</span>);
-  }}
-  <span class="hljs-comment">//..</span>
-/&gt;
+<pre><code class="hljs css language-jsx"><span class="token operator">&lt;</span>Button
+  onPress<span class="token operator">=</span><span class="token punctuation">{</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">{</span>
+    <span class="token function">setIsHungry</span><span class="token punctuation">(</span><span class="token boolean">false</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span><span class="token punctuation">}</span>
+  <span class="token comment">//..</span>
+<span class="token operator">/</span><span class="token operator">></span>
 </code></pre>
 <p>Now, when someone presses the button, <code>onPress</code> will fire, calling the <code>setIsHungry(false)</code>. This sets the state variable <code>isHungry</code> to <code>false</code>. When <code>isHungry</code> is false, the <code>Button</code>’s <code>disabled</code> prop is set to <code>true</code> and its <code>title</code> also changes:</p>
-<pre><code class="hljs css language-JSX">&lt;Button
-  <span class="hljs-comment">//..</span>
-  disabled={!isHungry}
-  title={isHungry ? <span class="hljs-string">"Pour me some milk, please!"</span> : <span class="hljs-string">"Thank you!"</span>}
-/&gt;
+<pre><code class="hljs css language-jsx"><span class="token operator">&lt;</span>Button
+  <span class="token comment">//..</span>
+  disabled<span class="token operator">=</span><span class="token punctuation">{</span><span class="token operator">!</span>isHungry<span class="token punctuation">}</span>
+  title<span class="token operator">=</span><span class="token punctuation">{</span>isHungry <span class="token operator">?</span> <span class="token string">"Pour me some milk, please!"</span> <span class="token punctuation">:</span> <span class="token string">"Thank you!"</span><span class="token punctuation">}</span>
+<span class="token operator">/</span><span class="token operator">></span>
 </code></pre>
 <blockquote>
 <p>You might’ve noticed that although <code>isHungry</code> is a <a href="https://developer.mozilla.org/Web/JavaScript/Reference/Statements/const">const</a>, it is seemingly reassignable! What is happening is when a state-setting function like <code>setIsHungry</code> is called, its component will re-render. In this case <code>Cat</code> will re-render its <code>&lt;Cat&gt;</code>—discarding the old <code>isHungry</code> and running <code>setState</code> again with the new value in the process!</p>
 </blockquote>
 <p>Finally, put your cats inside a <code>Cafe</code> component:</p>
-<pre><code class="hljs css language-JSX"><span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Cafe</span>(<span class="hljs-params"></span>) </span>{
-  <span class="hljs-keyword">return</span> (
-    &lt;&gt;
-      &lt;Cat name="Munkustrap" /&gt;
-      &lt;Cat name="Spot" /&gt;
-    &lt;/&gt;
-  );
-}
+<pre><code class="hljs css language-jsx"><span class="token keyword">export</span> <span class="token keyword">default</span> <span class="token keyword">function</span> <span class="token function">Cafe</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token keyword">return</span> <span class="token punctuation">(</span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span></span><span class="token punctuation">></span></span><span class="token plain-text">
+      </span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span><span class="token class-name">Cat</span></span> <span class="token attr-name">name</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>Munkustrap<span class="token punctuation">"</span></span> <span class="token punctuation">/></span></span><span class="token plain-text">
+      </span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span><span class="token class-name">Cat</span></span> <span class="token attr-name">name</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>Spot<span class="token punctuation">"</span></span> <span class="token punctuation">/></span></span><span class="token plain-text">
+    </span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span></span><span class="token punctuation">></span></span>
+  <span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
 </code></pre>
 <p><block class="classical syntax" /></p>
 <p>The older class components approach is a little different when it comes to state.</p>
@@ -599,16 +602,16 @@ export default class Cafe extends Component {
 <span class="token operator">/</span><span class="token operator">></span>
 </code></pre>
 <p>Finally, put your cats inside a <code>Cafe</code> component:</p>
-<pre><code class="hljs css language-JSX"><span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Cafe</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">Component</span> </span>{
-  render() {
-    <span class="hljs-keyword">return</span> (
-      &lt;&gt;
-        &lt;Cat name="Munkustrap" /&gt;
-        &lt;Cat name="Spot" /&gt;
-      &lt;/&gt;
-    );
-  }
-}
+<pre><code class="hljs css language-jsx"><span class="token keyword">export</span> <span class="token keyword">default</span> <span class="token keyword">class</span> <span class="token class-name">Cafe</span> <span class="token keyword">extends</span> <span class="token class-name">Component</span> <span class="token punctuation">{</span>
+  <span class="token function">render</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">return</span> <span class="token punctuation">(</span>
+      <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span></span><span class="token punctuation">></span></span><span class="token plain-text">
+        </span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span><span class="token class-name">Cat</span></span> <span class="token attr-name">name</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>Munkustrap<span class="token punctuation">"</span></span> <span class="token punctuation">/></span></span><span class="token plain-text">
+        </span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span><span class="token class-name">Cat</span></span> <span class="token attr-name">name</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>Spot<span class="token punctuation">"</span></span> <span class="token punctuation">/></span></span><span class="token plain-text">
+      </span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span></span><span class="token punctuation">></span></span>
+    <span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
 </code></pre>
 <p><block class="endBlock syntax" /></p>
 <blockquote>
