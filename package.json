@@ -92,7 +92,6 @@
     "anser": "^1.4.9",
     "base64-js": "^1.1.2",
     "connect": "^3.6.5",
-    "create-react-class": "^15.6.3",
     "escape-string-regexp": "^1.0.5",
     "eslint-plugin-relay": "1.4.1",
     "event-target-shim": "^5.0.1",
