@@ -193,9 +193,15 @@ dependencies {
     implementation "com.facebook.react:react-native:+"  // From node_modules
 
     debugImplementation("com.facebook.flipper:flipper:${FLIPPER_VERSION}") {
-      exclude group:'com.facebook.yoga'
-      exclude group:'com.facebook.flipper', module: 'fbjni'
-      exclude group:'com.facebook.litho', module: 'litho-annotations'
+      exclude group:'com.facebook.fbjni'
+    }
+
+    debugImplementation("com.facebook.flipper:flipper-network-plugin:${FLIPPER_VERSION}") {
+        exclude group:'com.facebook.flipper'
+    }
+
+    debugImplementation("com.facebook.flipper:flipper-fresco-plugin:${FLIPPER_VERSION}") {
+        exclude group:'com.facebook.flipper'
     }
 
     if (enableHermes) {
