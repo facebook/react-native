@@ -76,29 +76,16 @@ class PlatformColorsExample extends React.Component<{}, State> {
       ];
     } else if (Platform.OS === 'android') {
       colors = [
-        // '?attr/color',
         '?attr/colorAccent',
-        // '?attr/colorActivatedHighlight',
-        // '?attr/colorBackground',
-        // '?attr/colorBackgroundCacheHint',
         '?attr/colorBackgroundFloating',
         '?attr/colorButtonNormal',
         '?attr/colorControlActivated',
         '?attr/colorControlHighlight',
         '?attr/colorControlNormal',
-        // '?attr/colorEdgeEffect',
-        // '?attr/colorFocusedHighlight',
-        // '?attr/colorForeground',
-        // '?attr/colorForegroundInverse',
-        // '?attr/colorLongPressedHighlight',
-        // '?attr/colorMode',
-        // '?attr/colorMultiSelectHighlight',
-        // '?attr/colorPressedHighlight',
         '?android:colorError',
         '?android:attr/colorError',
         '?attr/colorPrimary',
         '?colorPrimaryDark',
-        '?attr/colorSecondary',
         '@android:color/holo_purple',
         '@android:color/holo_green_light',
         '@color/catalyst_redbox_background',
@@ -146,7 +133,7 @@ class FallbackColorsExample extends React.Component<{}, State> {
       <View style={styles.column}>
         <View style={styles.row}>
           <Text style={styles.labelCell}>
-            First choice is 'bogus' so falls back to {this.getFallbackColor()}
+            PlatformColor('bogus', '{this.getFallbackColor()}')
           </Text>
           <View
             style={{
@@ -167,7 +154,9 @@ class DynamicColorsExample extends React.Component<{}, State> {
       <View style={styles.column}>
         <View style={styles.row}>
           <Text style={styles.labelCell}>
-            'red' or 'blue' depending on Light or Dark theme.
+            IOSDynamicColor({'{\n'}
+            {'  '}light: 'red', dark: 'blue'{'\n'}
+            {'}'})
           </Text>
           <View
             style={{
@@ -178,14 +167,17 @@ class DynamicColorsExample extends React.Component<{}, State> {
         </View>
         <View style={styles.row}>
           <Text style={styles.labelCell}>
-            'foo' with blue fallback or 'bar' with red fallback.
+            IOSDynamicColor({'{\n'}
+            {'  '}light: PlatformColor('systemBlueColor'),{'\n'}
+            {'  '}dark: PlatformColor('systemRedColor'),{'\n'}
+            {'}'})
           </Text>
           <View
             style={{
               ...styles.colorCell,
               backgroundColor: IOSDynamicColor({
-                light: PlatformColor('foo', 'systemBlueColor'),
-                dark: PlatformColor('bar', 'systemRedColor'),
+                light: PlatformColor('systemBlueColor'),
+                dark: PlatformColor('systemRedColor'),
               }),
             }}
           />

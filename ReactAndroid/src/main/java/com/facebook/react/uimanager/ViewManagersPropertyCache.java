@@ -18,6 +18,7 @@ import androidx.core.content.res.ResourcesCompat;
 import com.facebook.common.logging.FLog;
 import com.facebook.react.bridge.Dynamic;
 import com.facebook.react.bridge.DynamicFromObject;
+import com.facebook.react.bridge.JSApplicationCausedNativeException;
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
@@ -198,6 +199,7 @@ import java.util.Map;
   }
 
   private static class ColorPropSetter extends PropSetter {
+    private static final String JSON_KEY = "resource_paths";
     private static final String PREFIX_RESOURCE = "@";
     private static final String PREFIX_ATTR = "?";
     private static final String PACKAGE_DELIMITER = ":";
@@ -219,7 +221,7 @@ import java.util.Map;
 
     @Override
     protected Object getValueOrDefault(Object value, Context context) {
-      if (context == null || value == null) {
+      if (value == null) {
         return mDefaultValue;
       }
 
@@ -227,12 +229,16 @@ import java.util.Map;
         return ((Double) value).intValue();
       }
 
+      if (context == null) {
+        throw new RuntimeException("Context may not be null.");
+      }
+
       if (value.getClass() == ReadableMap.class || value.getClass() == ReadableNativeMap.class) {
         ReadableMap map = (ReadableMap) value;
-        ReadableArray resourcePaths = map.getArray("resource_paths");
+        ReadableArray resourcePaths = map.getArray(JSON_KEY);
 
         if (resourcePaths == null) {
-          return mDefaultValue;
+          throw new JSApplicationCausedNativeException("ColorValue: The `" + JSON_KEY + "` must be an array of color resource path strings.");
         }
 
         for (int i = 0; i < resourcePaths.size(); i++) {
@@ -258,10 +264,10 @@ import java.util.Map;
           }
         }
 
-        return mDefaultValue;
+        throw new JSApplicationCausedNativeException("ColorValue: None of the paths in the `" + JSON_KEY + "` array resolved to a color resource.");
       }
 
-      return null;
+      throw new JSApplicationCausedNativeException("ColorValue: if the value is an Object it must contain a `" + JSON_KEY + "` array of strings.");
     }
 
     private int resolveResource(Context context, String resourcePath) {
