@@ -17,7 +17,7 @@ steps:
       sdk: ${{ parameters.xcode_sdk }}
       xcWorkspacePath: ${{ parameters.xcode_workspacePath }}
       scheme: ${{ parameters.xcode_scheme }}
-      xcodeVersion: 11
+      xcodeVersion: default
       signingOption: auto
       packageApp: false
       teamId: '$(XCodeSigningMicrosoftTeamID)'
