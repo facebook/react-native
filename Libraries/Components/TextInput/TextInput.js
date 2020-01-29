@@ -22,7 +22,6 @@ const TouchableWithoutFeedback = require('../Touchable/TouchableWithoutFeedback'
 
 const invariant = require('invariant');
 const nullthrows = require('nullthrows');
-const requireNativeComponent = require('../../ReactNative/requireNativeComponent');
 const setAndForwardRef = require('../../Utilities/setAndForwardRef');
 
 import type {TextStyleProp, ViewStyleProp} from '../../StyleSheet/StyleSheet';
