@@ -485,19 +485,22 @@ struct RCTInstanceCallback : public InstanceCallback {
     return moduleData.instance;
   }
 
-  static NSSet<NSString *> *ignoredModuleLoadFailures = [NSSet setWithArray: @[@"UIManager"]];
-
   // Module may not be loaded yet, so attempt to force load it here.
   const BOOL result = [self.delegate respondsToSelector:@selector(bridge:didNotFindModule:)] &&
     [self.delegate bridge:self didNotFindModule:moduleName];
   if (result) {
     // Try again.
     moduleData = _moduleDataByName[moduleName];
-  } else if ([ignoredModuleLoadFailures containsObject: moduleName]) {
-    RCTLogWarn(@"Unable to find module for %@", moduleName);
+#if RCT_DEV
+  // If the `_moduleDataByName` is nil, it must have been cleared by the reload.
+  } else if (_moduleDataByName != nil) {
+    RCTLogError(@"Unable to find module for %@", moduleName);
+  }
+#else
   } else {
     RCTLogError(@"Unable to find module for %@", moduleName);
   }
+#endif
 
   return moduleData.instance;
 }
