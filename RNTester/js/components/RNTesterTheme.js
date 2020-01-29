@@ -11,9 +11,8 @@
 'use strict';
 
 import * as React from 'react';
-import {Appearance, Platform, PlatformColor} from 'react-native';
+import {Appearance} from 'react-native';
 import type {ColorValue} from '../../../Libraries/StyleSheet/StyleSheetTypes';
-import {IOSDynamicColor} from '../../../Libraries/StyleSheet/NativeColorValueTypes';
 
 export type RNTesterTheme = {
   LabelColor: ColorValue,
@@ -87,15 +86,5 @@ export const RNTesterDarkTheme = {
 
 export const themes = {light: RNTesterLightTheme, dark: RNTesterDarkTheme};
 export const RNTesterThemeContext: React.Context<RNTesterTheme> = React.createContext(
-  Platform.OS === 'ios'
-    ? {
-        ...(Appearance.getColorScheme() === 'dark'
-          ? themes.dark
-          : themes.light),
-        LabelColor: PlatformColor('labelColor'),
-        ToolbarColor: IOSDynamicColor({light: 'red', dark: 'blue'}),
-      }
-    : Appearance.getColorScheme() === 'dark'
-    ? themes.dark
-    : themes.light,
+  Appearance.getColorScheme() === 'dark' ? themes.dark : themes.light,
 );
