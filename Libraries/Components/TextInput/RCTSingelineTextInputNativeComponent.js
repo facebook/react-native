@@ -15,6 +15,8 @@ import requireNativeComponent from '../../ReactNative/requireNativeComponent';
 import codegenNativeCommands from '../../Utilities/codegenNativeCommands';
 import type {Int32} from '../../Types/CodegenTypes';
 import * as React from 'react';
+import RCTSinglelineTextInputViewConfig from './RCTSinglelineTextInputViewConfig';
+const ReactNativeViewConfigRegistry = require('../../Renderer/shims/ReactNativeViewConfigRegistry');
 
 type NativeType = HostComponent<mixed>;
 
@@ -43,8 +45,17 @@ export const Commands: NativeCommands = codegenNativeCommands<NativeCommands>({
   ],
 });
 
-const SinglelineTextInputNativeComponent: HostComponent<mixed> = requireNativeComponent<mixed>(
-  'RCTSinglelineTextInputView',
-);
+let SinglelineTextInputNativeComponent;
+if (global.RN$Bridgeless) {
+  ReactNativeViewConfigRegistry.register('RCTSinglelineTextInputView', () => {
+    return RCTSinglelineTextInputViewConfig;
+  });
+  SinglelineTextInputNativeComponent = 'RCTSinglelineTextInputView';
+} else {
+  SinglelineTextInputNativeComponent = requireNativeComponent<mixed>(
+    'RCTSinglelineTextInputView',
+  );
+}
 
-export default SinglelineTextInputNativeComponent;
+// flowlint-next-line unclear-type:off
+export default ((SinglelineTextInputNativeComponent: any): HostComponent<mixed>);
