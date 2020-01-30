@@ -124,6 +124,10 @@ Tag ShadowTree::getSurfaceId() const {
   return surfaceId_;
 }
 
+MountingCoordinator::Shared ShadowTree::getMountingCoordinator() const {
+  return mountingCoordinator_;
+}
+
 void ShadowTree::commit(ShadowTreeCommitTransaction transaction) const {
   SystraceSection s("ShadowTree::commit");
 

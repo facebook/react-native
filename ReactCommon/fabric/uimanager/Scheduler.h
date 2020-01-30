@@ -75,6 +75,9 @@ class Scheduler final : public UIManagerDelegate {
   findComponentDescriptorByHandle_DO_NOT_USE_THIS_IS_BROKEN(
       ComponentHandle handle) const;
 
+  MountingCoordinator::Shared findMountingCoordinator(
+      SurfaceId surfaceId) const;
+
 #pragma mark - Delegate
 
   /*

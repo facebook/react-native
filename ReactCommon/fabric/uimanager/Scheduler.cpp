@@ -242,6 +242,16 @@ Size Scheduler::measureSurface(
   return size;
 }
 
+MountingCoordinator::Shared Scheduler::findMountingCoordinator(
+    SurfaceId surfaceId) const {
+  MountingCoordinator::Shared mountingCoordinator = nullptr;
+  uiManager_->getShadowTreeRegistry().visit(
+      surfaceId, [&](const ShadowTree &shadowTree) {
+        mountingCoordinator = shadowTree.getMountingCoordinator();
+      });
+  return mountingCoordinator;
+}
+
 void Scheduler::constraintSurfaceLayout(
     SurfaceId surfaceId,
     const LayoutConstraints &layoutConstraints,
