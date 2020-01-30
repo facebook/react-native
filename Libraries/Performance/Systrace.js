@@ -87,11 +87,21 @@ const userTimingPolyfill = __DEV__
     }
   : null;
 
+function installPerformanceHooks(polyfill) {
+  if (polyfill) {
+    Object.keys(userTimingPolyfill).forEach(methodName => {
+      if (typeof global.performance[methodName] !== 'function') {
+        global.performance[methodName] = userTimingPolyfill[methodName];
+      }
+    });
+  }
+}
+
 const Systrace = {
   installReactHook() {
     if (_enabled) {
       if (__DEV__) {
-        global.performance = userTimingPolyfill;
+        installPerformanceHooks(userTimingPolyfill);
       }
     }
     _canInstallReactHook = true;
@@ -108,8 +118,8 @@ const Systrace = {
             global.nativeTraceEndLegacy(TRACE_TAG_JS_VM_CALLS);
         }
         if (_canInstallReactHook) {
-          if (enabled && global.performance === undefined) {
-            global.performance = userTimingPolyfill;
+          if (enabled) {
+            installPerformanceHooks(userTimingPolyfill);
           }
         }
       }

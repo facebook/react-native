@@ -17,8 +17,9 @@ if (!global.performance) {
  * Returns a double, measured in milliseconds.
  * https://developer.mozilla.org/en-US/docs/Web/API/Performance/now
  */
-if (typeof global.performance !== 'function') {
+if (typeof global.performance.now !== 'function') {
   global.performance.now = function() {
-    return global.nativePerformanceNow();
+    const performanceNow = global.nativePerformanceNow || Date.now;
+    return performanceNow();
   };
 }
