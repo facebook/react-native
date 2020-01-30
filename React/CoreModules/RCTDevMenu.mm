@@ -183,7 +183,7 @@ RCT_EXPORT_MODULE()
 
 - (BOOL)isActionSheetShown
 {
-  return _actionSheet != nil;
+  return _actionSheet.beingPresented;
 }
 
 - (void)addItem:(NSString *)title handler:(void (^)(void))handler
@@ -418,7 +418,7 @@ RCT_EXPORT_MODULE()
 
 RCT_EXPORT_METHOD(show)
 {
-  if (_actionSheet || !_bridge || RCTRunningInAppExtension()) {
+  if ([self isActionSheetShown] || !_bridge || RCTRunningInAppExtension()) {
     return;
   }
 
