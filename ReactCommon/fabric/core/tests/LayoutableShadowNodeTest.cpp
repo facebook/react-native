@@ -31,7 +31,7 @@ class LayoutableShadowNodeTest : public ::testing::Test {
         familyA,
         ShadowNodeTraits{});
 
-    auto familyB = std::make_shared<ShadowNodeFamily>(
+    auto familyAA = std::make_shared<ShadowNodeFamily>(
         ShadowNodeFamilyFragment{
             /* .tag = */ 10,
             /* .surfaceId = */ 1,
@@ -39,20 +39,41 @@ class LayoutableShadowNodeTest : public ::testing::Test {
         },
         componentDescriptor_);
 
-    nodeB_ = std::make_shared<TestShadowNode>(
+    auto traits = TestShadowNode::BaseTraits();
+    traits.set(ShadowNodeTraits::Trait::RootNodeKind);
+
+    nodeAA_ = std::make_shared<TestShadowNode>(
         ShadowNodeFragment{
             /* .props = */ std::make_shared<const TestProps>(),
             /* .children = */ ShadowNode::emptySharedShadowNodeSharedList(),
         },
-        familyB,
+        familyAA,
+        traits);
+
+    auto familyAAA = std::make_shared<ShadowNodeFamily>(
+        ShadowNodeFamilyFragment{
+            /* .tag = */ 11,
+            /* .surfaceId = */ 1,
+            /* .eventEmitter = */ nullptr,
+        },
+        componentDescriptor_);
+
+    nodeAAA_ = std::make_shared<TestShadowNode>(
+        ShadowNodeFragment{
+            /* .props = */ std::make_shared<const TestProps>(),
+            /* .children = */ ShadowNode::emptySharedShadowNodeSharedList(),
+        },
+        familyAAA,
         ShadowNodeTraits{});
 
-    nodeA_->appendChild(nodeB_);
+    nodeA_->appendChild(nodeAA_);
+    nodeAA_->appendChild(nodeAAA_);
   }
 
   std::shared_ptr<EventDispatcher const> eventDispatcher_;
   std::shared_ptr<TestShadowNode> nodeA_;
-  std::shared_ptr<TestShadowNode> nodeB_;
+  std::shared_ptr<TestShadowNode> nodeAA_;
+  std::shared_ptr<TestShadowNode> nodeAAA_;
   TestComponentDescriptor componentDescriptor_;
 };
 
@@ -61,9 +82,9 @@ TEST_F(LayoutableShadowNodeTest, relativeLayoutMetrics) {
   layoutMetrics.frame.origin = {10, 20};
   layoutMetrics.frame.size = {100, 200};
   nodeA_->setLayoutMetrics(layoutMetrics);
-  nodeB_->setLayoutMetrics(layoutMetrics);
+  nodeAA_->setLayoutMetrics(layoutMetrics);
 
-  auto relativeLayoutMetrics = nodeB_->getRelativeLayoutMetrics(*nodeA_, {});
+  auto relativeLayoutMetrics = nodeAA_->getRelativeLayoutMetrics(*nodeA_, {});
 
   // A is a parent to B, A has origin {10, 10}, B has origin {10, 10}.
   // B's relative origin to A should be {10, 10}.
@@ -89,15 +110,29 @@ TEST_F(LayoutableShadowNodeTest, relativeLayoutMetricsOnSameNode) {
 TEST_F(LayoutableShadowNodeTest, relativeLayourMetricsOnClonedNode) {
   // B is cloned and mutated.
   auto nodeBRevision2 = std::static_pointer_cast<TestShadowNode>(
-      componentDescriptor_.cloneShadowNode(*nodeB_, ShadowNodeFragment{}));
+      componentDescriptor_.cloneShadowNode(*nodeAA_, ShadowNodeFragment{}));
   auto layoutMetrics = EmptyLayoutMetrics;
   layoutMetrics.frame.size = {500, 600};
   nodeBRevision2->setLayoutMetrics(layoutMetrics);
-  nodeA_->replaceChild(*nodeB_, nodeBRevision2);
+  nodeA_->replaceChild(*nodeAA_, nodeBRevision2);
 
   // Even if we ask old ShadowNode for its relative layoutMetrics, it needs to
   // return correct, new layoutMetrics. D19433873 has more about the issue.
-  auto newRelativeLayoutMetrics = nodeB_->getRelativeLayoutMetrics(*nodeA_, {});
+  auto newRelativeLayoutMetrics =
+      nodeAA_->getRelativeLayoutMetrics(*nodeA_, {});
   EXPECT_EQ(newRelativeLayoutMetrics.frame.size.width, 500);
   EXPECT_EQ(newRelativeLayoutMetrics.frame.size.height, 600);
+}
+
+TEST_F(LayoutableShadowNodeTest, relativeLayoutMetricsOnSameNode2) {
+  auto layoutMetrics = EmptyLayoutMetrics;
+  nodeA_->setLayoutMetrics(layoutMetrics);
+  layoutMetrics.frame.origin = {10, 10};
+  nodeAA_->setLayoutMetrics(layoutMetrics);
+  nodeAAA_->setLayoutMetrics(layoutMetrics);
+
+  auto relativeLayoutMetrics = nodeAAA_->getRelativeLayoutMetrics(*nodeA_, {});
+
+  EXPECT_EQ(relativeLayoutMetrics.frame.origin.x, 10);
+  EXPECT_EQ(relativeLayoutMetrics.frame.origin.y, 10);
 }
