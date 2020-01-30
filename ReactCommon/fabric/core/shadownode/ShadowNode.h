@@ -30,6 +30,7 @@ class ComponentDescriptor;
 struct ShadowNodeFragment;
 class ShadowNode;
 
+// Deprecated: Use ShadowNode::Shared instead
 using SharedShadowNode = std::shared_ptr<const ShadowNode>;
 using WeakShadowNode = std::weak_ptr<const ShadowNode>;
 using UnsharedShadowNode = std::shared_ptr<ShadowNode>;
