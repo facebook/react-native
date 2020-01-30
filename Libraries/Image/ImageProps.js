@@ -75,7 +75,7 @@ export type ImageProps = {|
    *
    * See https://facebook.github.io/react-native/docs/image.html#accessibilitylabel
    */
-  accessibilityLabel?: ?Stringish,
+  accessibilityLabel?: ?string,
 
   /**
    * blurRadius: the blur radius of the blur filter added to the image
