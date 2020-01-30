@@ -5,17 +5,19 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#include <time.h>
+#include <chrono>
 #include "NativeTime.h"
 
 namespace facebook {
 namespace react {
 
 double reactAndroidNativePerformanceNowHook() {
-  struct timespec now;
-  clock_gettime(CLOCK_MONOTONIC, &now);
+  auto time = std::chrono::high_resolution_clock::now();
+  auto duration = std::chrono::duration_cast<std::chrono::nanoseconds>(time.time_since_epoch()).count();
 
-  return (now.tv_sec * 1000000000LL + now.tv_nsec) / 1000000.0;
+  constexpr double NANOSECONDS_IN_MILLISECOND = 1000000.0;
+
+  return duration / NANOSECONDS_IN_MILLISECOND;
 }
 
 } // namespace react
