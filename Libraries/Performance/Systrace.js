@@ -89,9 +89,9 @@ const userTimingPolyfill = __DEV__
 
 function installPerformanceHooks(polyfill) {
   if (polyfill) {
-    Object.keys(userTimingPolyfill).forEach(methodName => {
+    Object.keys(polyfill).forEach(methodName => {
       if (typeof global.performance[methodName] !== 'function') {
-        global.performance[methodName] = userTimingPolyfill[methodName];
+        global.performance[methodName] = polyfill[methodName];
       }
     });
   }
