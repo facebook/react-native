@@ -75,7 +75,7 @@ SharedShadowNode UIManager::createNode(
 }
 
 SharedShadowNode UIManager::cloneNode(
-    const SharedShadowNode &shadowNode,
+    const ShadowNode::Shared &shadowNode,
     const SharedShadowNodeSharedList &children,
     const RawProps *rawProps) const {
   SystraceSection s("UIManager::cloneNode");
@@ -95,8 +95,8 @@ SharedShadowNode UIManager::cloneNode(
 }
 
 void UIManager::appendChild(
-    const SharedShadowNode &parentShadowNode,
-    const SharedShadowNode &childShadowNode) const {
+    const ShadowNode::Shared &parentShadowNode,
+    const ShadowNode::Shared &childShadowNode) const {
   SystraceSection s("UIManager::appendChild");
 
   auto &componentDescriptor = parentShadowNode->getComponentDescriptor();
@@ -121,7 +121,7 @@ void UIManager::completeSurface(
 }
 
 void UIManager::setJSResponder(
-    const SharedShadowNode &shadowNode,
+    const ShadowNode::Shared &shadowNode,
     const bool blockNativeResponder) const {
   if (delegate_) {
     delegate_->uiManagerDidSetJSResponder(
@@ -217,7 +217,7 @@ void UIManager::updateState(
 }
 
 void UIManager::dispatchCommand(
-    const SharedShadowNode &shadowNode,
+    const ShadowNode::Shared &shadowNode,
     std::string const &commandName,
     folly::dynamic const args) const {
   if (delegate_) {

@@ -156,7 +156,7 @@ void ShadowNode::sealRecursive() const {
 
 #pragma mark - Mutating Methods
 
-void ShadowNode::appendChild(const SharedShadowNode &child) {
+void ShadowNode::appendChild(const ShadowNode::Shared &child) {
   ensureUnsealed();
 
   cloneChildrenIfShared();

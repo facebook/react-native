@@ -90,14 +90,14 @@ class Scheduler final : public UIManagerDelegate {
   void uiManagerDidFinishTransaction(
       MountingCoordinator::Shared const &mountingCoordinator) override;
   void uiManagerDidCreateShadowNode(
-      const SharedShadowNode &shadowNode) override;
+      const ShadowNode::Shared &shadowNode) override;
   void uiManagerDidDispatchCommand(
-      const SharedShadowNode &shadowNode,
+      const ShadowNode::Shared &shadowNode,
       std::string const &commandName,
       folly::dynamic const args) override;
   void uiManagerDidSetJSResponder(
       SurfaceId surfaceId,
-      const SharedShadowNode &shadowView,
+      const ShadowNode::Shared &shadowView,
       bool blockNativeResponder) override;
   void uiManagerDidClearJSResponder() override;
 

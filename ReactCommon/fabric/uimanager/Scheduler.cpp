@@ -285,7 +285,7 @@ void Scheduler::uiManagerDidFinishTransaction(
 }
 
 void Scheduler::uiManagerDidCreateShadowNode(
-    const SharedShadowNode &shadowNode) {
+    const ShadowNode::Shared &shadowNode) {
   SystraceSection s("Scheduler::uiManagerDidCreateShadowNode");
 
   if (delegate_) {
@@ -296,7 +296,7 @@ void Scheduler::uiManagerDidCreateShadowNode(
 }
 
 void Scheduler::uiManagerDidDispatchCommand(
-    const SharedShadowNode &shadowNode,
+    const ShadowNode::Shared &shadowNode,
     std::string const &commandName,
     folly::dynamic const args) {
   SystraceSection s("Scheduler::uiManagerDispatchCommand");
@@ -312,7 +312,7 @@ void Scheduler::uiManagerDidDispatchCommand(
  */
 void Scheduler::uiManagerDidSetJSResponder(
     SurfaceId surfaceId,
-    const SharedShadowNode &shadowNode,
+    const ShadowNode::Shared &shadowNode,
     bool blockNativeResponder) {
   if (delegate_) {
     // TODO: the first shadowView paramenter, should be the first parent that

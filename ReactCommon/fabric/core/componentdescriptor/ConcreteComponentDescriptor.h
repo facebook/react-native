@@ -88,8 +88,8 @@ class ConcreteComponentDescriptor : public ComponentDescriptor {
   }
 
   void appendChild(
-      const SharedShadowNode &parentShadowNode,
-      const SharedShadowNode &childShadowNode) const override {
+      const ShadowNode::Shared &parentShadowNode,
+      const ShadowNode::Shared &childShadowNode) const override {
     assert(
         dynamic_cast<ConcreteShadowNode const *>(parentShadowNode.get()) &&
         "Provided `parentShadowNode` has an incompatible type.");
