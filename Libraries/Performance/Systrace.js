@@ -121,10 +121,8 @@ const Systrace = {
           global.nativeTraceEndLegacy &&
             global.nativeTraceEndLegacy(TRACE_TAG_JS_VM_CALLS);
         }
-        if (_canInstallReactHook) {
-          if (enabled) {
-            installPerformanceHooks(userTimingPolyfill);
-          }
+        if (_canInstallReactHook && enabled) {
+          installPerformanceHooks(userTimingPolyfill);
         }
       }
       _enabled = enabled;
