@@ -45,26 +45,10 @@ class JSI_EXPORT JavaTurboModule : public TurboModule {
       const jsi::Value *args,
       size_t argCount);
 
-  /**
-   * This dtor must be called from the JS Thread, since it accesses
-   * callbackWrappers_, which createJavaCallbackFromJSIFunction also accesses
-   * from the JS Thread.
-   */
-  virtual ~JavaTurboModule();
-
  private:
   jni::global_ref<JTurboModule> instance_;
-  std::unordered_set<std::shared_ptr<CallbackWrapper>> callbackWrappers_;
   std::shared_ptr<CallInvoker> nativeInvoker_;
 
-  /**
-   * This method must be called from the JS Thread, since it accesses
-   * callbackWrappers_.
-   */
-  jni::local_ref<JCxxCallbackImpl::JavaPart> createJavaCallbackFromJSIFunction(
-      jsi::Function &function,
-      jsi::Runtime &rt,
-      std::shared_ptr<CallInvoker> jsInvoker);
   JNIArgs convertJSIArgsToJNIArgs(
       JNIEnv *env,
       jsi::Runtime &rt,
