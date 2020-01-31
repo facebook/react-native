@@ -42,16 +42,15 @@ class ComponentBuilder final {
    * `ComponentDescriptorRegistry`.
    */
   template <typename ShadowNodeT>
-  std::shared_ptr<ShadowNodeT const> build(Element<ShadowNodeT> element) const {
-    return std::static_pointer_cast<ShadowNodeT const>(
-        build(element.fragment_));
+  std::shared_ptr<ShadowNodeT> build(Element<ShadowNodeT> element) const {
+    return std::static_pointer_cast<ShadowNodeT>(build(element.fragment_));
   }
 
  private:
   /*
    * Internal, type-erased version of `build`.
    */
-  ShadowNode::Shared build(ElementFragment const &elementFragment) const;
+  ShadowNode::Unshared build(ElementFragment const &elementFragment) const;
 
   ComponentDescriptorRegistry::Shared componentDescriptorRegistry_;
 };

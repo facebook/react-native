@@ -21,10 +21,10 @@ using namespace facebook::react;
 TEST(ElementTest, testNormalCases) {
   auto builder = simpleComponentBuilder();
 
-  auto shadowNodeA = std::shared_ptr<RootShadowNode const>{};
-  auto shadowNodeAA = std::shared_ptr<ViewShadowNode const>{};
-  auto shadowNodeAB = std::shared_ptr<ViewShadowNode const>{};
-  auto shadowNodeABA = std::shared_ptr<ViewShadowNode const>{};
+  auto shadowNodeA = std::shared_ptr<RootShadowNode>{};
+  auto shadowNodeAA = std::shared_ptr<ViewShadowNode>{};
+  auto shadowNodeAB = std::shared_ptr<ViewShadowNode>{};
+  auto shadowNodeABA = std::shared_ptr<ViewShadowNode>{};
 
   auto propsAA = std::make_shared<ViewProps>();
   propsAA->nativeId = "node AA";

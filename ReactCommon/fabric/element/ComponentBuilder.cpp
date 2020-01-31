@@ -14,7 +14,7 @@ ComponentBuilder::ComponentBuilder(
     ComponentDescriptorRegistry::Shared const &componentDescriptorRegistry)
     : componentDescriptorRegistry_(componentDescriptorRegistry){};
 
-ShadowNode::Shared ComponentBuilder::build(
+ShadowNode::Unshared ComponentBuilder::build(
     ElementFragment const &elementFragment) const {
   auto &componentDescriptor =
       componentDescriptorRegistry_->at(elementFragment.componentHandle);
@@ -30,19 +30,21 @@ ShadowNode::Shared ComponentBuilder::build(
           elementFragment.tag, elementFragment.surfaceId, nullptr},
       nullptr);
 
-  auto shadowNode = componentDescriptor.createShadowNode(
+  auto constShadowNode = componentDescriptor.createShadowNode(
       ShadowNodeFragment{
           elementFragment.props,
           std::make_shared<ShadowNode::ListOfShared const>(children),
           elementFragment.state},
       family);
 
+  auto shadowNode = std::const_pointer_cast<ShadowNode>(constShadowNode);
+
   if (elementFragment.referenceCallback) {
     elementFragment.referenceCallback(shadowNode);
   }
 
   if (elementFragment.finalizeCallback) {
-    elementFragment.finalizeCallback(const_cast<ShadowNode &>(*shadowNode));
+    elementFragment.finalizeCallback(*shadowNode);
   }
 
   return shadowNode;
