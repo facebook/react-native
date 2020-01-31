@@ -1,6 +1,7 @@
 
 [android]
   target = android-28
+  compile_sdk_version = android-29
 
 [download]
   max_number_of_retries = 3
