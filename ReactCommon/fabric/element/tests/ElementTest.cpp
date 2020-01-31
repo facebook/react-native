@@ -9,6 +9,7 @@
 
 #include <gtest/gtest.h>
 
+#include <react/components/root/RootComponentDescriptor.h>
 #include <react/components/view/ViewComponentDescriptor.h>
 #include <react/element/ComponentBuilder.h>
 #include <react/element/Element.h>
@@ -20,7 +21,7 @@ using namespace facebook::react;
 TEST(ElementTest, testNormalCases) {
   auto builder = simpleComponentBuilder();
 
-  auto shadowNodeA = std::shared_ptr<ViewShadowNode const>{};
+  auto shadowNodeA = std::shared_ptr<RootShadowNode const>{};
   auto shadowNodeAA = std::shared_ptr<ViewShadowNode const>{};
   auto shadowNodeAB = std::shared_ptr<ViewShadowNode const>{};
   auto shadowNodeABA = std::shared_ptr<ViewShadowNode const>{};
@@ -30,16 +31,15 @@ TEST(ElementTest, testNormalCases) {
 
   // clang-format off
   auto element =
-      Element<ViewShadowNode>()
+      Element<RootShadowNode>()
         .reference(shadowNodeA)
         .tag(1)
         .props([]() {
-          auto props = std::make_shared<ViewProps>();
-          props->zIndex = 42;
+          auto props = std::make_shared<RootProps>();
           props->nativeId = "node A";
           return props;
         })
-        .finalize([](ViewShadowNode &shadowNode){
+        .finalize([](RootShadowNode &shadowNode){
           shadowNode.sealRecursive();
         })
         .children({

@@ -49,6 +49,13 @@ class Element final {
   }
 
   /*
+   * Converts to `ElementFragment` object.
+   */
+  operator ElementFragment() {
+    return fragment_;
+  }
+
+  /*
    * Sets `tag`.
    */
   Element &tag(Tag tag) {
@@ -83,11 +90,11 @@ class Element final {
   /*
    * Sets children.
    */
-  Element &children(std::vector<Element> children) {
+  Element &children(std::vector<ElementFragment> children) {
     auto fragments = ElementFragment::List{};
     fragments.reserve(children.size());
     for (auto const &child : children) {
-      fragments.push_back(child.fragment_);
+      fragments.push_back(child);
     }
     fragment_.children = fragments;
     return *this;
