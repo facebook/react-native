@@ -50,6 +50,7 @@ public class TurboModuleManager implements JSIModule, TurboModuleRegistry {
             (CallInvokerHolderImpl) nativeCallInvokerHolder,
             tmmDelegate);
     mTurbomoduleManagerDelegate = tmmDelegate;
+    installJSIBindings();
   }
 
   public List<String> getEagerInitModuleNames() {
@@ -120,10 +121,6 @@ public class TurboModuleManager implements JSIModule, TurboModuleRegistry {
       TurboModuleManagerDelegate tmmDelegate);
 
   private native void installJSIBindings();
-
-  public void installBindings() {
-    installJSIBindings();
-  }
 
   @Override
   public void initialize() {}
