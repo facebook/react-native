@@ -65,7 +65,6 @@ def rn_xplat_cxx_library(name, **kwargs):
         for k, v in kwargs.items()
         if k.startswith("exported_")
     }
-    new_kwargs.setdefault("fbobjc_target_sdk_version", "10.0")
 
     native.cxx_library(
         name = name,
