@@ -30,6 +30,14 @@ class ComponentBuilder final {
       ComponentDescriptorRegistry::Shared const &componentDescriptorRegistry);
 
   /*
+   * Copyable and movable.
+   */
+  ComponentBuilder(ComponentBuilder const &componentBuilder) = default;
+  ComponentBuilder(ComponentBuilder &&componentBuilder) noexcept = default;
+  ComponentBuilder &operator=(ComponentBuilder const &other) = default;
+  ComponentBuilder &operator=(ComponentBuilder &&other) = default;
+
+  /*
    * Builds a `ShadowNode` tree with given `Element` tree using stored
    * `ComponentDescriptorRegistry`.
    */

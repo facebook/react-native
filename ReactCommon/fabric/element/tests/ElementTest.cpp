@@ -12,21 +12,13 @@
 #include <react/components/view/ViewComponentDescriptor.h>
 #include <react/element/ComponentBuilder.h>
 #include <react/element/Element.h>
+#include <react/element/testUtils.h>
 #include <react/uimanager/ComponentDescriptorProviderRegistry.h>
 
 using namespace facebook::react;
 
 TEST(ElementTest, testNormalCases) {
-  ComponentDescriptorProviderRegistry componentDescriptorProviderRegistry{};
-  auto eventDispatcher = EventDispatcher::Shared{};
-  auto componentDescriptorRegistry =
-      componentDescriptorProviderRegistry.createComponentDescriptorRegistry(
-          ComponentDescriptorParameters{eventDispatcher, nullptr, nullptr});
-
-  componentDescriptorProviderRegistry.add(
-      concreteComponentDescriptorProvider<ViewComponentDescriptor>());
-
-  auto builder = ComponentBuilder{componentDescriptorRegistry};
+  auto builder = simpleComponentBuilder();
 
   auto shadowNodeA = std::shared_ptr<ViewShadowNode const>{};
   auto shadowNodeAA = std::shared_ptr<ViewShadowNode const>{};
