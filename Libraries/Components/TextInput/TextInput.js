@@ -695,11 +695,6 @@ function useFocusOnMount(
   const initialAutoFocusValue = useRef<?boolean>(initialAutoFocus);
 
   useEffect(() => {
-    // On iOS autoFocus is handled natively.
-    if (Platform.OS === 'ios') {
-      return;
-    }
-
     // We only want to autofocus on initial mount.
     // Since initialAutoFocusValue and inputRef will never change
     // this should match the expected behavior
@@ -710,9 +705,14 @@ function useFocusOnMount(
         }
       };
 
-      // On Android this needs to be executed in a rAF callback
-      // otherwise the keyboard opens then closes immediately.
-      const rafId = requestAnimationFrame(focus);
+      let rafId;
+      if (Platform.OS === 'android') {
+        // On Android this needs to be executed in a rAF callback
+        // otherwise the keyboard opens then closes immediately.
+        rafId = requestAnimationFrame(focus);
+      } else {
+        focus();
+      }
 
       return () => {
         if (rafId != null) {
