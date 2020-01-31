@@ -41,6 +41,7 @@ import com.facebook.react.modules.timepicker.TimePickerDialogModule;
 import com.facebook.react.modules.toast.ToastModule;
 import com.facebook.react.modules.vibration.VibrationModule;
 import com.facebook.react.modules.websocket.WebSocketModule;
+import com.facebook.react.turbomodule.core.interfaces.TurboModule;
 import com.facebook.react.uimanager.ViewManager;
 import com.facebook.react.views.art.ARTRenderableViewManager;
 import com.facebook.react.views.art.ARTSurfaceViewManager;
@@ -208,7 +209,7 @@ public class MainReactPackage extends TurboReactPackage {
   public ReactModuleInfoProvider getReactModuleInfoProvider() {
     try {
       Class<?> reactModuleInfoProviderClass =
-          Class.forName("com.facebook.react.MainReactPackage$$ReactModuleInfoProvider");
+          Class.forName("com.facebook.react.shell.MainReactPackage$$ReactModuleInfoProvider");
       return (ReactModuleInfoProvider) reactModuleInfoProviderClass.newInstance();
     } catch (ClassNotFoundException e) {
       // In OSS case, the annotation processor does not run. We fall back on creating this byhand
@@ -255,7 +256,7 @@ public class MainReactPackage extends TurboReactPackage {
                 reactModule.needsEagerInit(),
                 reactModule.hasConstants(),
                 reactModule.isCxxModule(),
-                false));
+                TurboModule.class.isAssignableFrom(moduleClass)));
       }
 
       return new ReactModuleInfoProvider() {

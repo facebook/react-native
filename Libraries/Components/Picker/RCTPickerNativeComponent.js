@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @flow
+ * @flow strict-local
  * @format
  */
 
@@ -39,6 +39,7 @@ type NativeProps = $ReadOnly<{|
   selectedIndex: number,
   style?: ?TextStyleProp,
   testID?: ?string,
+  accessibilityLabel?: ?string,
 |}>;
 
 type ComponentType = HostComponent<NativeProps>;

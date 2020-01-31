@@ -48,7 +48,7 @@ class Connection::Impl : public inspector::InspectorObserver,
       bool waitForDebugger);
   ~Impl();
 
-  HermesRuntime &getRuntime();
+  jsi::Runtime &getRuntime();
   std::string getTitle() const;
 
   bool connect(std::unique_ptr<IRemoteConnection> remoteConn);
@@ -83,7 +83,6 @@ class Connection::Impl : public inspector::InspectorObserver,
   void handle(const m::debugger::StepOverRequest &req) override;
   void handle(const m::heapProfiler::TakeHeapSnapshotRequest &req) override;
   void handle(const m::runtime::EvaluateRequest &req) override;
-  void handle(const m::runtime::GetHeapUsageRequest &req) override;
   void handle(const m::runtime::GetPropertiesRequest &req) override;
 
  private:
@@ -152,7 +151,7 @@ Connection::Impl::Impl(
 
 Connection::Impl::~Impl() = default;
 
-HermesRuntime &Connection::Impl::getRuntime() {
+jsi::Runtime &Connection::Impl::getRuntime() {
   return runtimeAdapter_->getRuntime();
 }
 
@@ -256,11 +255,6 @@ void Connection::Impl::onContextCreated(Inspector &inspector) {
   m::runtime::ExecutionContextCreatedNotification note;
   note.context.id = 1;
   note.context.name = "hermes";
-
-  // isDefault and isPageContext are custom properties that the legacy RN to
-  // JSC adapter set for some unknown reason.
-  note.context.isDefault = true;
-  note.context.isPageContext = true;
 
   sendNotificationToClientViaExecutor(note);
 }
@@ -570,31 +564,15 @@ void Connection::Impl::handle(const m::debugger::StepOverRequest &req) {
   sendResponseToClientViaExecutor(inspector_->stepOver(), req.id);
 }
 
-void Connection::Impl::handle(const m::runtime::GetHeapUsageRequest &req) {
-  auto resp = std::make_shared<m::runtime::GetHeapUsageResponse>();
-  resp->id = req.id;
-
-  inspector_
-      ->executeIfEnabled(
-          "Runtime.getHeapUsage",
-          [this, resp](const debugger::ProgramState &state) {
-            HermesRuntime &rt = getRuntime();
-            jsi::Instrumentation &i = rt.instrumentation();
-            auto info = i.getHeapInfo(/* includeExpensive */ false);
-
-            resp->usedSize = info["hermes_allocatedBytes"];
-            resp->totalSize = info["hermes_heapSize"];
-          })
-      .via(executor_.get())
-      .thenValue([this, resp](auto &&) { sendResponseToClient(*resp); })
-      .thenError<std::exception>(sendErrorToClient(req.id));
-}
-
 std::vector<m::runtime::PropertyDescriptor>
 Connection::Impl::makePropsFromScope(
     std::pair<uint32_t, uint32_t> frameAndScopeIndex,
     const std::string &objectGroup,
     const debugger::ProgramState &state) {
+  // Chrome represents variables in a scope as properties on a dummy object.
+  // We don't instantiate such dummy objects, we just pretended to have one.
+  // Chrome has now asked for its properties, so it's time to synthesize
+  // descriptions of the properties that the dummy object would have had.
   std::vector<m::runtime::PropertyDescriptor> result;
 
   uint32_t frameIndex = frameAndScopeIndex.first;
@@ -602,6 +580,19 @@ Connection::Impl::makePropsFromScope(
   debugger::LexicalInfo lexicalInfo = state.getLexicalInfo(frameIndex);
   uint32_t varCount = lexicalInfo.getVariablesCountInScope(scopeIndex);
 
+  // If this is the frame's local scope, include 'this'.
+  if (scopeIndex == 0) {
+    auto varInfo = state.getVariableInfoForThis(frameIndex);
+    m::runtime::PropertyDescriptor desc;
+    desc.name = varInfo.name;
+    desc.value = m::runtime::makeRemoteObject(
+        getRuntime(), varInfo.value, objTable_, objectGroup);
+    // Chrome only shows enumerable properties.
+    desc.enumerable = true;
+    result.emplace_back(std::move(desc));
+  }
+
+  // Then add each of the variables in this lexical scope.
   for (uint32_t varIndex = 0; varIndex < varCount; varIndex++) {
     debugger::VariableInfo varInfo =
         state.getVariableInfo(frameIndex, scopeIndex, varIndex);
@@ -610,6 +601,7 @@ Connection::Impl::makePropsFromScope(
     desc.name = varInfo.name;
     desc.value = m::runtime::makeRemoteObject(
         getRuntime(), varInfo.value, objTable_, objectGroup);
+    desc.enumerable = true;
 
     result.emplace_back(std::move(desc));
   }
@@ -625,7 +617,7 @@ Connection::Impl::makePropsFromValue(
   std::vector<m::runtime::PropertyDescriptor> result;
 
   if (value.isObject()) {
-    HermesRuntime &runtime = getRuntime();
+    jsi::Runtime &runtime = getRuntime();
     jsi::Object obj = value.getObject(runtime);
 
     // TODO(hypuk): obj.getPropertyNames only returns enumerable properties.
@@ -776,7 +768,7 @@ Connection::Connection(
 
 Connection::~Connection() = default;
 
-HermesRuntime &Connection::getRuntime() {
+jsi::Runtime &Connection::getRuntime() {
   return impl_->getRuntime();
 }
 

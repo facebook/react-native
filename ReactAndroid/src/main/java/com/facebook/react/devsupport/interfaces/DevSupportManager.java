@@ -7,6 +7,7 @@
 
 package com.facebook.react.devsupport.interfaces;
 
+import android.view.View;
 import androidx.annotation.Nullable;
 import com.facebook.react.bridge.NativeModuleCallExceptionHandler;
 import com.facebook.react.bridge.ReactContext;
@@ -24,6 +25,11 @@ public interface DevSupportManager extends NativeModuleCallExceptionHandler {
   void showNewJavaError(String message, Throwable e);
 
   void addCustomDevOption(String optionName, DevOptionHandler optionHandler);
+
+  @Nullable
+  View createRootView(String appKey);
+
+  void destroyRootView(View rootView);
 
   void showNewJSError(String message, ReadableArray details, int errorCookie);
 
@@ -83,4 +89,15 @@ public interface DevSupportManager extends NativeModuleCallExceptionHandler {
   StackFrame[] getLastErrorStack();
 
   void registerErrorCustomizer(ErrorCustomizer errorCustomizer);
+
+  /**
+   * The PackagerLocationCustomizer allows you to have a dynamic packager location that is
+   * determined right before loading the packager. Your customizer must call |callback|, as loading
+   * will be blocked waiting for it to resolve.
+   */
+  public interface PackagerLocationCustomizer {
+    void run(Runnable callback);
+  }
+
+  void setPackagerLocationCustomizer(PackagerLocationCustomizer packagerLocationCustomizer);
 }

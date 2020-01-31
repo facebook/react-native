@@ -54,6 +54,7 @@ import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.CatalystInstance;
 import com.facebook.react.bridge.CatalystInstanceImpl;
 import com.facebook.react.bridge.JSBundleLoader;
+import com.facebook.react.bridge.JSIModule;
 import com.facebook.react.bridge.JSIModulePackage;
 import com.facebook.react.bridge.JSIModuleType;
 import com.facebook.react.bridge.JavaJSExecutor;
@@ -92,6 +93,7 @@ import com.facebook.react.modules.debug.interfaces.DeveloperSettings;
 import com.facebook.react.modules.fabric.ReactFabric;
 import com.facebook.react.packagerconnection.RequestHandler;
 import com.facebook.react.surface.ReactStage;
+import com.facebook.react.turbomodule.core.interfaces.TurboModuleRegistry;
 import com.facebook.react.uimanager.DisplayMetricsHolder;
 import com.facebook.react.uimanager.ReactRoot;
 import com.facebook.react.uimanager.UIImplementationProvider;
@@ -301,6 +303,27 @@ public class ReactInstanceManager {
       @Override
       public JavaScriptExecutorFactory getJavaScriptExecutorFactory() {
         return ReactInstanceManager.this.getJSExecutorFactory();
+      }
+
+      @Override
+      public @Nullable View createRootView(String appKey) {
+        Activity currentActivity = getCurrentActivity();
+        if (currentActivity != null) {
+          ReactRootView rootView = new ReactRootView(currentActivity);
+
+          rootView.startReactApplication(ReactInstanceManager.this, appKey, null);
+
+          return rootView;
+        }
+
+        return null;
+      }
+
+      @Override
+      public void destroyRootView(View rootView) {
+        if (rootView instanceof ReactRootView) {
+          ((ReactRootView) rootView).unmountReactApplication();
+        }
       }
     };
   }
@@ -1081,11 +1104,15 @@ public class ReactInstanceManager {
     Log.d(ReactConstants.TAG, "ReactInstanceManager.attachRootViewToInstance()");
     Systrace.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "attachRootViewToInstance");
 
-    // UIManager is technically Nullable here, but if we can't get a UIManager
-    // at this point, something has probably gone horribly wrong so it's probably best
-    // to throw a NullPointerException.
+    @Nullable
     UIManager uiManager =
         UIManagerHelper.getUIManager(mCurrentReactContext, reactRoot.getUIManagerType());
+
+    // If we can't get a UIManager something has probably gone horribly wrong
+    if (uiManager == null) {
+      throw new IllegalStateException(
+          "Unable to attache a rootView to ReactInstance when UIManager is not properly initialized.");
+    }
 
     @Nullable Bundle initialProperties = reactRoot.getAppProperties();
 
@@ -1197,8 +1224,16 @@ public class ReactInstanceManager {
               reactContext, catalystInstance.getJavaScriptContextHolder()));
 
       if (ReactFeatureFlags.useTurboModules) {
-        catalystInstance.setTurboModuleManager(
-            catalystInstance.getJSIModule(JSIModuleType.TurboModuleManager));
+        JSIModule turboModuleManager =
+            catalystInstance.getJSIModule(JSIModuleType.TurboModuleManager);
+        catalystInstance.setTurboModuleManager(turboModuleManager);
+
+        TurboModuleRegistry registry = (TurboModuleRegistry) turboModuleManager;
+
+        // Eagerly initialize TurboModules
+        for (String moduleName : registry.getEagerInitModuleNames()) {
+          registry.getModule(moduleName);
+        }
       }
     }
     if (mBridgeIdleDebugListener != null) {
@@ -1224,7 +1259,6 @@ public class ReactInstanceManager {
 
     ReactMarker.logMarker(PROCESS_PACKAGES_START);
 
-    // TODO(6818138): Solve use-case of native modules overriding
     synchronized (mPackages) {
       for (ReactPackage reactPackage : packages) {
         if (checkAndUpdatePackageMembership && mPackages.contains(reactPackage)) {

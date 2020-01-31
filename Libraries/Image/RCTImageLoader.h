@@ -8,6 +8,7 @@
 #import <UIKit/UIKit.h>
 
 #import <React/RCTBridge.h>
+#import <React/RCTDefines.h>
 #import <React/RCTResizeMode.h>
 #import <React/RCTURLRequestHandler.h>
 #import <React/RCTImageDataDecoder.h>

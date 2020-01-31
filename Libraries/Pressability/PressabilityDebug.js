@@ -10,8 +10,9 @@
 
 'use strict';
 
-import normalizeColor from '../Color/normalizeColor.js';
-import {Touchable, View} from 'react-native';
+import normalizeColor from '../StyleSheet/normalizeColor.js';
+import Touchable from '../Components/Touchable/Touchable';
+import View from '../Components/View/View';
 import * as React from 'react';
 
 type Props = $ReadOnly<{|

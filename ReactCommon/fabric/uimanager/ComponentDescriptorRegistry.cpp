@@ -39,12 +39,6 @@ void ComponentDescriptorRegistry::add(
   _registryByHandle[componentDescriptorProvider.handle] =
       sharedComponentDescriptor;
   _registryByName[componentDescriptorProvider.name] = sharedComponentDescriptor;
-
-  if (strcmp(componentDescriptorProvider.name, "UnimplementedNativeView") ==
-      0) {
-    auto *self = const_cast<ComponentDescriptorRegistry *>(this);
-    self->setFallbackComponentDescriptor(sharedComponentDescriptor);
-  }
 }
 
 void ComponentDescriptorRegistry::registerComponentDescriptor(
@@ -104,6 +98,12 @@ static std::string componentNameByReactViewName(std::string viewName) {
     return "View";
   }
 
+  // iOS-only
+  if (viewName == "MultilineTextInputView" ||
+      viewName == "SinglelineTextInputView") {
+    return "TextInput";
+  }
+
   return viewName;
 }
 
@@ -143,6 +143,19 @@ ComponentDescriptor const &ComponentDescriptorRegistry::at(
   return *it->second;
 }
 
+ComponentDescriptor const *ComponentDescriptorRegistry::
+    findComponentDescriptorByHandle_DO_NOT_USE_THIS_IS_BROKEN(
+        ComponentHandle componentHandle) const {
+  std::shared_lock<better::shared_mutex> lock(mutex_);
+
+  auto iterator = _registryByHandle.find(componentHandle);
+  if (iterator == _registryByHandle.end()) {
+    return nullptr;
+  }
+
+  return iterator->second.get();
+}
+
 ComponentDescriptor const &ComponentDescriptorRegistry::at(
     ComponentHandle componentHandle) const {
   std::shared_lock<better::shared_mutex> lock(mutex_);
@@ -159,22 +172,21 @@ SharedShadowNode ComponentDescriptorRegistry::createNode(
   auto unifiedComponentName = componentNameByReactViewName(viewName);
   auto const &componentDescriptor = this->at(unifiedComponentName);
 
-  auto const eventEmitter =
-      componentDescriptor.createEventEmitter(std::move(eventTarget), tag);
+  auto family = componentDescriptor.createFamily(
+      ShadowNodeFamilyFragment{tag, surfaceId, nullptr},
+      std::move(eventTarget));
   auto const props =
       componentDescriptor.cloneProps(nullptr, RawProps(propsDynamic));
   auto const state = componentDescriptor.createInitialState(
-      ShadowNodeFragment{surfaceId, tag, props, eventEmitter});
+      ShadowNodeFragment{props}, surfaceId);
 
-  return componentDescriptor.createShadowNode({
-      /* .tag = */ tag,
-      /* .surfaceId = */ surfaceId,
-      /* .props = */ props,
-      /* .eventEmitter = */ eventEmitter,
-      /* .children = */ ShadowNodeFragment::childrenPlaceholder(),
-      /* .localData = */ ShadowNodeFragment::localDataPlaceholder(),
-      /* .state = */ state,
-  });
+  return componentDescriptor.createShadowNode(
+      {
+          /* .props = */ props,
+          /* .children = */ ShadowNodeFragment::childrenPlaceholder(),
+          /* .state = */ state,
+      },
+      family);
 }
 
 void ComponentDescriptorRegistry::setFallbackComponentDescriptor(

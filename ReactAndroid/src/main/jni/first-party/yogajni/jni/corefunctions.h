@@ -47,6 +47,8 @@ void logErrorMessageAndDie(const char* message);
  */
 void assertNoPendingJniException(JNIEnv* env);
 
+void assertNoPendingJniExceptionIf(JNIEnv* env, bool condition);
+
 } // namespace vanillajni
 } // namespace yoga
 } // namespace facebook

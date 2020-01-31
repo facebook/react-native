@@ -222,7 +222,7 @@ AndroidTextInputProps::AndroidTextInputProps(
           {0})),
       text(convertRawProp(rawProps, "text", sourceProps.text, {})),
       paragraphAttributes(
-          convertRawProp(rawProps, sourceProps.paragraphAttributes)) {}
+          convertRawProp(rawProps, sourceProps.paragraphAttributes, {})) {}
 
 // TODO T53300085: support this in codegen; this was hand-written
 folly::dynamic AndroidTextInputProps::getDynamic() const {
@@ -283,7 +283,7 @@ folly::dynamic AndroidTextInputProps::getDynamic() const {
 
 #if RN_DEBUG_STRING_CONVERTIBLE
 // TODO: codegen these
-SharedDebugStringConvertibleList TextProps::getDebugProps() const {
+SharedDebugStringConvertibleList AndroidTextInputProps::getDebugProps() const {
   return {};
 }
 #endif

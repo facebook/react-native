@@ -8,7 +8,7 @@
 #import <Foundation/Foundation.h>
 #import <React/RCTDefines.h>
 
-#if RCT_DEV && !TARGET_OS_UIKITFORMAC
+#if RCT_DEV
 
 @interface RCTBundleStatus : NSObject
 @property (atomic, assign) BOOL isLastBundleDownloadSuccess;
@@ -20,6 +20,7 @@ typedef RCTBundleStatus *(^RCTBundleStatusProvider)(void);
 @interface RCTInspectorPackagerConnection : NSObject
 - (instancetype)initWithURL:(NSURL *)url;
 
+- (bool)isConnected;
 - (void)connect;
 - (void)closeQuietly;
 - (void)sendEventToAllConnections:(NSString *)event;

@@ -11,8 +11,7 @@
 #import <React/RCTEventEmitter.h>
 
 RCT_EXTERN void RCTEnableAppearancePreference(BOOL enabled);
-
-NSString *const RCTUserInterfaceStyleDidChangeNotification = @"RCTUserInterfaceStyleDidChangeNotification";
+RCT_EXTERN void RCTOverrideAppearancePreference(NSString *const);
 
 @interface RCTAppearance : RCTEventEmitter <RCTBridgeModule>
 @end

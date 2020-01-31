@@ -7,6 +7,7 @@
 
 package com.facebook.react.modules.timing;
 
+import static org.fest.assertions.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
 import com.facebook.react.bridge.Arguments;
@@ -252,6 +253,19 @@ public class TimingModuleTest {
 
     stepChoreographerFrame();
     verify(mJSTimersMock).callIdleCallbacks(SystemClock.currentTimeMillis());
+  }
+
+  @Test
+  public void testActiveTimersInRange() {
+    mTimingModule.onHostResume();
+    assertThat(mTimingModule.hasActiveTimersInRange(100)).isFalse();
+
+    mTimingModule.createTimer(41, 1, 0, true);
+    assertThat(mTimingModule.hasActiveTimersInRange(100)).isFalse(); // Repeating
+
+    mTimingModule.createTimer(42, 150, 0, false);
+    assertThat(mTimingModule.hasActiveTimersInRange(100)).isFalse(); // Out of range
+    assertThat(mTimingModule.hasActiveTimersInRange(200)).isTrue(); // In range
   }
 
   private static class PostFrameIdleCallbackHandler implements Answer<Void> {

@@ -10,6 +10,7 @@
 #import <FBReactNativeSpec/FBReactNativeSpec.h>
 #import <React/RCTAccessibilityManager.h>
 #import <React/RCTAssert.h>
+#import <React/RCTConstants.h>
 #import <React/RCTEventDispatcher.h>
 #import <React/RCTUIUtils.h>
 #import <React/RCTUtils.h>
@@ -61,9 +62,15 @@ RCT_EXPORT_MODULE()
   _currentInterfaceDimensions = RCTExportedDimensions(_bridge);
 
   [[NSNotificationCenter defaultCenter] addObserver:self
-                                           selector:@selector(interfaceFrameDidChange)
-                                               name:UIApplicationDidBecomeActiveNotification
-                                             object:nil];
+                                            selector:@selector(interfaceFrameDidChange)
+                                                name:UIApplicationDidBecomeActiveNotification
+                                              object:nil];
+
+  [[NSNotificationCenter defaultCenter] addObserver:self
+                                            selector:@selector(interfaceFrameDidChange)
+                                                name:RCTUserInterfaceStyleDidChangeNotification
+                                              object:nil];
+
 #endif
 }
 

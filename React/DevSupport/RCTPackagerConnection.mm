@@ -21,7 +21,7 @@
 #import <React/RCTReconnectingWebSocket.h>
 #import <React/RCTUtils.h>
 
-#if RCT_DEV && !TARGET_OS_UIKITFORMAC
+#if RCT_DEV
 
 #import <React/RCTSRWebSocket.h>
 

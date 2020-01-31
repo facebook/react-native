@@ -11,6 +11,8 @@ import static com.facebook.react.views.text.TextAttributeProps.UNSET;
 
 import android.text.Layout;
 import android.text.Spannable;
+import androidx.annotation.Nullable;
+import com.facebook.react.bridge.ReadableMap;
 
 /**
  * Class that contains the data needed for a text update. Used by both <Text/> and <TextInput/>
@@ -30,6 +32,8 @@ public class ReactTextUpdate {
   private final int mSelectionStart;
   private final int mSelectionEnd;
   private final int mJustificationMode;
+
+  public @Nullable ReadableMap mAttributedString = null;
 
   /**
    * @deprecated Use a non-deprecated constructor for ReactTextUpdate instead. This one remains
@@ -133,6 +137,23 @@ public class ReactTextUpdate {
     mSelectionStart = selectionStart;
     mSelectionEnd = selectionEnd;
     mJustificationMode = justificationMode;
+  }
+
+  public static ReactTextUpdate buildReactTextUpdateFromState(
+      Spannable text,
+      int jsEventCounter,
+      boolean containsImages,
+      int textAlign,
+      int textBreakStrategy,
+      int justificationMode,
+      ReadableMap attributedString) {
+
+    ReactTextUpdate textUpdate =
+        new ReactTextUpdate(
+            text, jsEventCounter, containsImages, textAlign, textBreakStrategy, justificationMode);
+
+    textUpdate.mAttributedString = attributedString;
+    return textUpdate;
   }
 
   public Spannable getText() {

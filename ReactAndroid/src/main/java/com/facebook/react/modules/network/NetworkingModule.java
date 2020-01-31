@@ -12,10 +12,10 @@ import android.os.Bundle;
 import android.util.Base64;
 import androidx.annotation.Nullable;
 import com.facebook.common.logging.FLog;
+import com.facebook.fbreact.specs.NativeNetworkingAndroidSpec;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.GuardedAsyncTask;
 import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
@@ -51,7 +51,7 @@ import okio.Okio;
 
 /** Implements the XMLHttpRequest JavaScript interface. */
 @ReactModule(name = NetworkingModule.NAME)
-public final class NetworkingModule extends ReactContextBaseJavaModule {
+public final class NetworkingModule extends NativeNetworkingAndroidSpec {
 
   /**
    * Allows to implement a custom fetching process for specific URIs. It is the handler's job to
@@ -226,17 +226,19 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
     mResponseHandlers.remove(handler);
   }
 
-  @ReactMethod
+  @Override
   public void sendRequest(
       String method,
       String url,
-      final int requestId,
+      double requestIdAsDouble,
       ReadableArray headers,
       ReadableMap data,
-      final String responseType,
-      final boolean useIncrementalUpdates,
-      int timeout,
+      String responseType,
+      boolean useIncrementalUpdates,
+      double timeoutAsDouble,
       boolean withCredentials) {
+    int requestId = (int) requestIdAsDouble;
+    int timeout = (int) timeoutAsDouble;
     try {
       sendRequestInternal(
           method,
@@ -644,8 +646,9 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
     return Arguments.fromBundle(responseHeaders);
   }
 
-  @ReactMethod
-  public void abortRequest(final int requestId) {
+  @Override
+  public void abortRequest(double requestIdAsDouble) {
+    int requestId = (int) requestIdAsDouble;
     cancelRequest(requestId);
     removeRequest(requestId);
   }
@@ -665,6 +668,12 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
   public void clearCookies(com.facebook.react.bridge.Callback callback) {
     mCookieHandler.clearCookies(callback);
   }
+
+  @Override
+  public void addListener(String eventName) {}
+
+  @Override
+  public void removeListeners(double count) {}
 
   private @Nullable MultipartBody.Builder constructMultipartBody(
       ReadableArray body, String contentType, int requestId) {

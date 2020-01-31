@@ -26,8 +26,8 @@ bool Fragment::isAttachment() const {
 }
 
 bool Fragment::operator==(const Fragment &rhs) const {
-  return std::tie(string, textAttributes, parentShadowView) ==
-      std::tie(rhs.string, rhs.textAttributes, rhs.parentShadowView);
+  return std::tie(string, textAttributes, parentShadowView.tag) ==
+      std::tie(rhs.string, rhs.textAttributes, rhs.parentShadowView.tag);
 }
 
 bool Fragment::operator!=(const Fragment &rhs) const {

@@ -4,14 +4,15 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @flow
+ * @flow strict-local
  * @format
  */
 
 'use strict';
 
 import * as React from 'react';
-import {Platform, ScrollView} from 'react-native';
+import Platform from '../../Utilities/Platform';
+import ScrollView from '../../Components/ScrollView/ScrollView';
 import StyleSheet from '../../StyleSheet/StyleSheet';
 import Text from '../../Text/Text';
 import View from '../../Components/View/View';
@@ -86,9 +87,19 @@ function AppInfo() {
   }
 
   return (
-    <Text style={appInfoStyles.text}>
-      {appInfo.appVersion} ({appInfo.engine})
-    </Text>
+    <LogBoxButton
+      backgroundColor={{
+        default: 'transparent',
+        pressed: appInfo.onPress
+          ? LogBoxStyle.getBackgroundColor(1)
+          : 'transparent',
+      }}
+      style={appInfoStyles.buildButton}
+      onPress={appInfo.onPress}>
+      <Text style={appInfoStyles.text}>
+        {appInfo.appVersion} ({appInfo.engine})
+      </Text>
+    </LogBoxButton>
   );
 }
 
@@ -97,8 +108,14 @@ const appInfoStyles = StyleSheet.create({
     color: LogBoxStyle.getTextColor(0.4),
     fontSize: 12,
     lineHeight: 12,
+  },
+  buildButton: {
     flex: 0,
     flexGrow: 0,
+    paddingVertical: 4,
+    paddingHorizontal: 5,
+    borderRadius: 5,
+    marginRight: -8,
   },
 });
 

@@ -7,11 +7,11 @@
 
 #pragma once
 
-#include <fb/fbjni.h>
+#include <fbjni/fbjni.h>
 #include <jsi/jsi.h>
 #include <react/uimanager/ComponentDescriptorRegistry.h>
-#include <react/utils/ContextContainer.h>
 #include <react/uimanager/Scheduler.h>
+#include <react/utils/ContextContainer.h>
 #include <mutex>
 #include <unordered_set>
 
@@ -25,7 +25,7 @@ class Instance;
 class ComponentFactoryDelegate
     : public jni::HybridClass<ComponentFactoryDelegate> {
  public:
-  constexpr static const char* const kJavaDescriptor =
+  constexpr static const char *const kJavaDescriptor =
       "Lcom/facebook/react/fabric/ComponentFactoryDelegate;";
 
   static void registerNatives();

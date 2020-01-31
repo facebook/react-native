@@ -69,6 +69,8 @@ callStaticObjectMethod(JNIEnv* env, jclass clazz, jmethodID methodId, ...);
  * reference out of it. If any error happens, aborts the process.
  */
 ScopedGlobalRef<jobject> newGlobalRef(JNIEnv* env, jobject obj);
+
+ScopedGlobalRef<jthrowable> newGlobalRef(JNIEnv* env, jthrowable obj);
 } // namespace vanillajni
 } // namespace yoga
 } // namespace facebook

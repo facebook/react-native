@@ -10,19 +10,18 @@ package com.facebook.react.modules.core;
 import android.net.Uri;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import com.facebook.fbreact.specs.NativeDeviceEventManagerSpec;
 import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.JavaScriptModule;
 import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.bridge.ReactContextBaseJavaModule;
-import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.module.annotations.ReactModule;
 
 /** Native module that handles device hardware events like hardware back presses. */
 @ReactModule(name = DeviceEventManagerModule.NAME)
-public class DeviceEventManagerModule extends ReactContextBaseJavaModule {
+public class DeviceEventManagerModule extends NativeDeviceEventManagerSpec {
   public static final String NAME = "DeviceEventManager";
 
   @DoNotStrip
@@ -71,7 +70,7 @@ public class DeviceEventManagerModule extends ReactContextBaseJavaModule {
    * Invokes the default back handler for the host of this catalyst instance. This should be invoked
    * if JS does not want to handle the back press itself.
    */
-  @ReactMethod
+  @Override
   public void invokeDefaultBackPressHandler() {
     // There should be no need to check if the catalyst instance is alive. After initialization
     // the thread instances cannot be null, and scheduling on a thread after ReactApplicationContext

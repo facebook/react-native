@@ -66,14 +66,24 @@ class Scheduler final : public UIManagerDelegate {
       const LayoutConstraints &layoutConstraints,
       const LayoutContext &layoutContext) const;
 
-  const ComponentDescriptor &getComponentDescriptor(ComponentHandle handle);
+  /*
+   * This is broken. Please do not use.
+   * `ComponentDescriptor`s are not designed to be used outside of `UIManager`,
+   * there is no any garantees about their lifetime.
+   */
+  ComponentDescriptor const *
+  findComponentDescriptorByHandle_DO_NOT_USE_THIS_IS_BROKEN(
+      ComponentHandle handle) const;
+
+  MountingCoordinator::Shared findMountingCoordinator(
+      SurfaceId surfaceId) const;
 
 #pragma mark - Delegate
 
   /*
    * Sets and gets the Scheduler's delegate.
-   * The delegate is stored as a raw pointer, so the owner must null
-   * the pointer before being destroyed.
+   * If you requesting a ComponentDescriptor and unsure that it's there, you are
+   * doing something wrong.
    */
   void setDelegate(SchedulerDelegate *delegate);
   SchedulerDelegate *getDelegate() const;
@@ -83,14 +93,14 @@ class Scheduler final : public UIManagerDelegate {
   void uiManagerDidFinishTransaction(
       MountingCoordinator::Shared const &mountingCoordinator) override;
   void uiManagerDidCreateShadowNode(
-      const SharedShadowNode &shadowNode) override;
+      const ShadowNode::Shared &shadowNode) override;
   void uiManagerDidDispatchCommand(
-      const SharedShadowNode &shadowNode,
+      const ShadowNode::Shared &shadowNode,
       std::string const &commandName,
       folly::dynamic const args) override;
   void uiManagerDidSetJSResponder(
       SurfaceId surfaceId,
-      const SharedShadowNode &shadowView,
+      const ShadowNode::Shared &shadowView,
       bool blockNativeResponder) override;
   void uiManagerDidClearJSResponder() override;
 

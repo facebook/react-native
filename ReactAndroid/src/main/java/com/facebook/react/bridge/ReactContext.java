@@ -55,20 +55,9 @@ public class ReactContext extends ContextWrapper {
   private @Nullable NativeModuleCallExceptionHandler mNativeModuleCallExceptionHandler;
   private @Nullable NativeModuleCallExceptionHandler mExceptionHandlerWrapper;
   private @Nullable WeakReference<Activity> mCurrentActivity;
-  private final @Nullable String mInstanceKey;
 
   public ReactContext(Context base) {
     super(base);
-    mInstanceKey = null;
-  }
-
-  /**
-   * A constructor that takes a unique string identifier for the React instance. For bridgeless mode
-   * only - do not use.
-   */
-  /* package */ ReactContext(Context base, String instanceKey) {
-    super(base);
-    mInstanceKey = instanceKey;
   }
 
   /** Set and initialize CatalystInstance for this Context. This should be called exactly once. */
@@ -135,14 +124,14 @@ public class ReactContext extends ContextWrapper {
    */
   public <T extends JavaScriptModule> T getJSModule(Class<T> jsInterface) {
     if (mCatalystInstance == null) {
-      throw new RuntimeException(EARLY_JS_ACCESS_EXCEPTION_MESSAGE);
+      throw new IllegalStateException(EARLY_JS_ACCESS_EXCEPTION_MESSAGE);
     }
     return mCatalystInstance.getJSModule(jsInterface);
   }
 
   public <T extends NativeModule> boolean hasNativeModule(Class<T> nativeModuleInterface) {
     if (mCatalystInstance == null) {
-      throw new RuntimeException(
+      throw new IllegalStateException(
           "Trying to call native module before CatalystInstance has been set!");
     }
     return mCatalystInstance.hasNativeModule(nativeModuleInterface);
@@ -151,7 +140,7 @@ public class ReactContext extends ContextWrapper {
   /** @return the instance of the specified module interface associated with this ReactContext. */
   public <T extends NativeModule> T getNativeModule(Class<T> nativeModuleInterface) {
     if (mCatalystInstance == null) {
-      throw new RuntimeException(
+      throw new IllegalStateException(
           "Trying to call native module before CatalystInstance has been set!");
     }
     return mCatalystInstance.getNativeModule(nativeModuleInterface);
@@ -197,7 +186,7 @@ public class ReactContext extends ContextWrapper {
               });
           break;
         default:
-          throw new RuntimeException("Unhandled lifecycle state.");
+          throw new IllegalStateException("Unhandled lifecycle state.");
       }
     }
   }
@@ -378,7 +367,7 @@ public class ReactContext extends ContextWrapper {
               + " - hasExceptionHandler: "
               + hasExceptionHandler,
           e);
-      throw new RuntimeException(e);
+      throw new IllegalStateException(e);
     }
   }
 
@@ -424,6 +413,11 @@ public class ReactContext extends ContextWrapper {
     return mCurrentActivity.get();
   }
 
+  /** @deprecated DO NOT USE, this method will be removed in the near future. */
+  public boolean isBridgeless() {
+    return false;
+  }
+
   /**
    * Get the C pointer (as a long) to the JavaScriptCore context associated with this instance. Use
    * the following pattern to ensure that the JS context is not cleared while you are using it:
@@ -434,13 +428,11 @@ public class ReactContext extends ContextWrapper {
     return mCatalystInstance.getJavaScriptContextHolder();
   }
 
-  /**
-   * TODO T43898341 Make this package-private once we've consolidated the classes that need this in
-   * this package
-   *
-   * @return The key for the associated React instance
-   */
-  public @Nullable String getInstanceKey() {
-    return mInstanceKey;
+  public JSIModule getJSIModule(JSIModuleType moduleType) {
+    if (!hasActiveCatalystInstance()) {
+      throw new IllegalStateException(
+          "Unable to retrieve a JSIModule if CatalystInstance is not active.");
+    }
+    return mCatalystInstance.getJSIModule(moduleType);
   }
 }

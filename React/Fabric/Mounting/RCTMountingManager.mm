@@ -106,15 +106,6 @@ static void RNUpdateLayoutMetricsMountInstruction(
                                    oldLayoutMetrics:oldShadowView.layoutMetrics];
 }
 
-// `Update LocalData` instruction
-static void RNUpdateLocalDataMountInstruction(ShadowViewMutation const &mutation, RCTComponentViewRegistry *registry)
-{
-  auto const &oldShadowView = mutation.oldChildShadowView;
-  auto const &newShadowView = mutation.newChildShadowView;
-  auto const &componentViewDescriptor = [registry componentViewDescriptorWithTag:newShadowView.tag];
-  [componentViewDescriptor.view updateLocalData:newShadowView.localData oldLocalData:oldShadowView.localData];
-}
-
 // `Update State` instruction
 static void RNUpdateStateMountInstruction(ShadowViewMutation const &mutation, RCTComponentViewRegistry *registry)
 {
@@ -157,7 +148,6 @@ static void RNPerformMountInstructions(
       case ShadowViewMutation::Insert: {
         RNUpdatePropsMountInstruction(mutation, registry);
         RNUpdateEventEmitterMountInstruction(mutation, registry);
-        RNUpdateLocalDataMountInstruction(mutation, registry);
         RNUpdateStateMountInstruction(mutation, registry);
         RNUpdateLayoutMetricsMountInstruction(mutation, registry);
         RNFinalizeUpdatesMountInstruction(mutation, RNComponentViewUpdateMaskAll, registry);
@@ -181,10 +171,6 @@ static void RNPerformMountInstructions(
         if (oldChildShadowView.eventEmitter != newChildShadowView.eventEmitter) {
           RNUpdateEventEmitterMountInstruction(mutation, registry);
           mask |= RNComponentViewUpdateMaskEventEmitter;
-        }
-        if (oldChildShadowView.localData != newChildShadowView.localData) {
-          RNUpdateLocalDataMountInstruction(mutation, registry);
-          mask |= RNComponentViewUpdateMaskLocalData;
         }
         if (oldChildShadowView.state != newChildShadowView.state) {
           RNUpdateStateMountInstruction(mutation, registry);

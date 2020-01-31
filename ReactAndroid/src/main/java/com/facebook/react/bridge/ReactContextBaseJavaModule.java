@@ -10,7 +10,6 @@ package com.facebook.react.bridge;
 import static com.facebook.infer.annotation.ThreadConfined.ANY;
 
 import android.app.Activity;
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
@@ -28,7 +27,7 @@ public abstract class ReactContextBaseJavaModule extends BaseJavaModule {
     mReactApplicationContext = null;
   }
 
-  public ReactContextBaseJavaModule(@NonNull ReactApplicationContext reactContext) {
+  public ReactContextBaseJavaModule(@Nullable ReactApplicationContext reactContext) {
     mReactApplicationContext = reactContext;
   }
 
@@ -53,7 +52,8 @@ public abstract class ReactContextBaseJavaModule extends BaseJavaModule {
    */
   @ThreadConfined(ANY)
   protected @Nullable final ReactApplicationContext getReactApplicationContextIfActiveOrWarn() {
-    if (mReactApplicationContext.hasActiveCatalystInstance()) {
+    if (mReactApplicationContext.hasActiveCatalystInstance()
+        || mReactApplicationContext.isBridgeless()) {
       return mReactApplicationContext;
     }
 

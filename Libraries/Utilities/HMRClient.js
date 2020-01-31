@@ -10,10 +10,11 @@
 
 'use strict';
 
-const Platform = require('./Platform');
+const DevSettings = require('./DevSettings');
 const invariant = require('invariant');
-
 const MetroHMRClient = require('metro/src/lib/bundle-modules/HMRClient');
+const Platform = require('./Platform');
+const prettyFormat = require('pretty-format');
 
 import NativeRedBox from '../NativeModules/specs/NativeRedBox';
 import * as LogBoxData from '../LogBox/Data/LogBoxData';
@@ -113,36 +114,23 @@ const HMRClient: HMRClientNativeInterface = {
       return;
     }
     try {
-      let message;
-      if (global.Symbol) {
-        message = JSON.stringify({
+      hmrClient.send(
+        JSON.stringify({
           type: 'log',
           level,
           data: data.map(item =>
             typeof item === 'string'
               ? item
-              : require('pretty-format')(item, {
+              : prettyFormat(item, {
                   escapeString: true,
                   highlight: true,
                   maxDepth: 3,
                   min: true,
-                  plugins: [require('pretty-format').plugins.ReactElement],
+                  plugins: [prettyFormat.plugins.ReactElement],
                 }),
           ),
-        });
-      } else {
-        try {
-          message = JSON.stringify({type: 'log', level, data});
-        } catch (error) {
-          message = JSON.stringify({
-            type: 'log',
-            level,
-            data: [error.message],
-          });
-        }
-      }
-
-      hmrClient.send(message);
+        }),
+      );
     } catch (error) {
       // If sending logs causes any failures we want to silently ignore them
       // to ensure we do not cause infinite-logging loops.
@@ -159,8 +147,8 @@ const HMRClient: HMRClientNativeInterface = {
     isEnabled: boolean,
   ) {
     invariant(platform, 'Missing required parameter `platform`');
-    invariant(bundleEntry, 'Missing required paramenter `bundleEntry`');
-    invariant(host, 'Missing required paramenter `host`');
+    invariant(bundleEntry, 'Missing required parameter `bundleEntry`');
+    invariant(host, 'Missing required parameter `host`');
     invariant(!hmrClient, 'Cannot initialize hmrClient twice');
 
     // Moving to top gives errors due to NativeModules not being initialized
@@ -274,6 +262,11 @@ function setHMRUnavailableReason(reason) {
 }
 
 function registerBundleEntryPoints(client) {
+  if (hmrUnavailableReason) {
+    DevSettings.reload('Bundle Splitting – Metro disconnected');
+    return;
+  }
+
   if (pendingEntryPoints.length > 0) {
     client.send(
       JSON.stringify({

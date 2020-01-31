@@ -7,6 +7,7 @@
 
 #pragma once
 
+#include <folly/Conv.h>
 #include <folly/dynamic.h>
 #include <react/attributedstring/AttributedString.h>
 #include <react/attributedstring/ParagraphAttributes.h>
@@ -413,35 +414,62 @@ inline std::string toString(
 
 inline ParagraphAttributes convertRawProp(
     RawProps const &rawProps,
+    ParagraphAttributes const &sourceParagraphAttributes,
     ParagraphAttributes const &defaultParagraphAttributes) {
   auto paragraphAttributes = ParagraphAttributes{};
 
   paragraphAttributes.maximumNumberOfLines = convertRawProp(
       rawProps,
       "numberOfLines",
+      sourceParagraphAttributes.maximumNumberOfLines,
       defaultParagraphAttributes.maximumNumberOfLines);
   paragraphAttributes.ellipsizeMode = convertRawProp(
-      rawProps, "ellipsizeMode", defaultParagraphAttributes.ellipsizeMode);
+      rawProps,
+      "ellipsizeMode",
+      sourceParagraphAttributes.ellipsizeMode,
+      defaultParagraphAttributes.ellipsizeMode);
   paragraphAttributes.textBreakStrategy = convertRawProp(
       rawProps,
       "textBreakStrategy",
+      sourceParagraphAttributes.textBreakStrategy,
       defaultParagraphAttributes.textBreakStrategy);
   paragraphAttributes.adjustsFontSizeToFit = convertRawProp(
       rawProps,
       "adjustsFontSizeToFit",
+      sourceParagraphAttributes.adjustsFontSizeToFit,
       defaultParagraphAttributes.adjustsFontSizeToFit);
   paragraphAttributes.minimumFontSize = convertRawProp(
       rawProps,
       "minimumFontSize",
-      defaultParagraphAttributes.minimumFontSize,
-      std::numeric_limits<Float>::quiet_NaN());
+      sourceParagraphAttributes.minimumFontSize,
+      defaultParagraphAttributes.minimumFontSize);
   paragraphAttributes.maximumFontSize = convertRawProp(
       rawProps,
       "maximumFontSize",
-      defaultParagraphAttributes.maximumFontSize,
-      std::numeric_limits<Float>::quiet_NaN());
+      sourceParagraphAttributes.maximumFontSize,
+      defaultParagraphAttributes.maximumFontSize);
 
   return paragraphAttributes;
+}
+
+inline void fromRawValue(
+    RawValue const &value,
+    AttributedString::Range &result) {
+  auto map = (better::map<std::string, int>)value;
+
+  auto start = map.find("start");
+  if (start != map.end()) {
+    result.location = start->second;
+  }
+  auto end = map.find("end");
+  if (end != map.end()) {
+    result.length = start->second - result.location;
+  }
+}
+
+inline std::string toString(AttributedString::Range const &range) {
+  return "{location: " + folly::to<std::string>(range.location) +
+      ", length: " + folly::to<std::string>(range.length) + "}";
 }
 
 #ifdef ANDROID
@@ -560,6 +588,13 @@ inline folly::dynamic toDynamic(const AttributedString &attributedString) {
       "hash", std::hash<facebook::react::AttributedString>{}(attributedString));
   value("string", attributedString.getString());
   return value;
+}
+
+inline folly::dynamic toDynamic(AttributedString::Range const &range) {
+  folly::dynamic dynamicValue = folly::dynamic::object();
+  dynamicValue["location"] = range.location;
+  dynamicValue["length"] = range.length;
+  return dynamicValue;
 }
 
 #endif

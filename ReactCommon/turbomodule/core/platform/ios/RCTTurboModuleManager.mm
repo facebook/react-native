@@ -17,7 +17,6 @@
 #import <React/RCTLog.h>
 #import <React/RCTModuleData.h>
 #import <React/RCTPerformanceLogger.h>
-#import <ReactCommon/BridgeJSCallInvoker.h>
 #import <ReactCommon/TurboCxxModule.h>
 #import <ReactCommon/TurboModuleBinding.h>
 
@@ -37,7 +36,6 @@ static Class getFallbackClassFromName(const char *name)
 @implementation RCTTurboModuleManager {
   jsi::Runtime *_runtime;
   std::shared_ptr<facebook::react::CallInvoker> _jsInvoker;
-  std::shared_ptr<react::TurboModuleBinding> _binding;
   __weak id<RCTTurboModuleManagerDelegate> _delegate;
   __weak RCTBridge *_bridge;
   /**
@@ -63,10 +61,12 @@ static Class getFallbackClassFromName(const char *name)
   std::atomic<bool> _invalidating;
 }
 
-- (instancetype)initWithBridge:(RCTBridge *)bridge delegate:(id<RCTTurboModuleManagerDelegate>)delegate
+- (instancetype)initWithBridge:(RCTBridge *)bridge
+                      delegate:(id<RCTTurboModuleManagerDelegate>)delegate
+                     jsInvoker:(std::shared_ptr<facebook::react::CallInvoker>)jsInvoker
 {
   if (self = [super init]) {
-    _jsInvoker = std::make_shared<react::BridgeJSCallInvoker>(bridge.reactInstance);
+    _jsInvoker = jsInvoker;
     _delegate = delegate;
     _bridge = bridge;
     _invalidating = false;
@@ -82,38 +82,6 @@ static Class getFallbackClassFromName(const char *name)
                                              selector:@selector(bridgeDidInvalidateModules:)
                                                  name:RCTBridgeDidInvalidateModulesNotification
                                                object:_bridge.parentBridge];
-
-    __weak __typeof(self) weakSelf = self;
-
-    auto moduleProvider = [weakSelf](const std::string &name) -> std::shared_ptr<react::TurboModule> {
-      if (!weakSelf) {
-        return nullptr;
-      }
-
-      __strong __typeof(self) strongSelf = weakSelf;
-
-      auto moduleName = name.c_str();
-      auto moduleWasNotInitialized = ![strongSelf moduleIsInitialized:moduleName];
-      if (moduleWasNotInitialized) {
-        [strongSelf->_bridge.performanceLogger markStartForTag:RCTPLTurboModuleSetup];
-      }
-
-      /**
-       * By default, all TurboModules are long-lived.
-       * Additionally, if a TurboModule with the name `name` isn't found, then we
-       * trigger an assertion failure.
-       */
-      auto turboModule = [strongSelf provideTurboModule:moduleName];
-
-      if (moduleWasNotInitialized && [strongSelf moduleIsInitialized:moduleName]) {
-        [strongSelf->_bridge.performanceLogger markStopForTag:RCTPLTurboModuleSetup];
-        [strongSelf notifyAboutTurboModuleSetup:moduleName];
-      }
-
-      return turboModule;
-    };
-
-    _binding = std::make_shared<react::TurboModuleBinding>(moduleProvider);
   }
   return self;
 }
@@ -353,10 +321,7 @@ static Class getFallbackClassFromName(const char *name)
     [[NSNotificationCenter defaultCenter]
         postNotificationName:RCTDidInitializeModuleNotification
                       object:strongBridge
-                    userInfo:@{
-                      @"module" : module,
-                      @"bridge" : RCTNullIfNil([strongBridge parentBridge])
-                    }];
+                    userInfo:@{@"module" : module, @"bridge" : RCTNullIfNil([strongBridge parentBridge])}];
   };
 
   if ([[module class] respondsToSelector:@selector(requiresMainQueueSetup)] &&
@@ -378,12 +343,36 @@ static Class getFallbackClassFromName(const char *name)
     return;
   }
 
-  react::TurboModuleBinding::install(*_runtime, _binding);
-}
+  __weak __typeof(self) weakSelf = self;
 
-- (std::shared_ptr<facebook::react::TurboModule>)getModule:(const std::string &)name
-{
-  return _binding->getModule(name);
+  react::TurboModuleBinding::install(
+      *_runtime, [weakSelf](const std::string &name) -> std::shared_ptr<react::TurboModule> {
+        if (!weakSelf) {
+          return nullptr;
+        }
+
+        __strong __typeof(self) strongSelf = weakSelf;
+
+        auto moduleName = name.c_str();
+        auto moduleWasNotInitialized = ![strongSelf moduleIsInitialized:moduleName];
+        if (moduleWasNotInitialized) {
+          [strongSelf->_bridge.performanceLogger markStartForTag:RCTPLTurboModuleSetup];
+        }
+
+        /**
+         * By default, all TurboModules are long-lived.
+         * Additionally, if a TurboModule with the name `name` isn't found, then we
+         * trigger an assertion failure.
+         */
+        auto turboModule = [strongSelf provideTurboModule:moduleName];
+
+        if (moduleWasNotInitialized && [strongSelf moduleIsInitialized:moduleName]) {
+          [strongSelf->_bridge.performanceLogger markStopForTag:RCTPLTurboModuleSetup];
+          [strongSelf notifyAboutTurboModuleSetup:moduleName];
+        }
+
+        return turboModule;
+      });
 }
 
 #pragma mark RCTTurboModuleLookupDelegate
@@ -445,11 +434,11 @@ static Class getFallbackClassFromName(const char *name)
         if (methodQueue) {
           dispatch_group_enter(moduleInvalidationGroup);
           [bridge
-           dispatchBlock:^{
-            [((id<RCTInvalidating>)module) invalidate];
-            dispatch_group_leave(moduleInvalidationGroup);
-          }
-           queue:methodQueue];
+              dispatchBlock:^{
+                [((id<RCTInvalidating>)module) invalidate];
+                dispatch_group_leave(moduleInvalidationGroup);
+              }
+                      queue:methodQueue];
           continue;
         }
       }
@@ -467,8 +456,6 @@ static Class getFallbackClassFromName(const char *name)
   }
 
   _turboModuleCache.clear();
-
-  _binding->invalidate();
 }
 
 - (void)invalidate
@@ -481,10 +468,10 @@ static Class getFallbackClassFromName(const char *name)
 
   // Backward-compatibility: RCTInvalidating handling, but not adhering to desired methodQueue.
   for (const auto &p : rctCacheCopy) {
-     id<RCTTurboModule> module = p.second;
-     if ([module respondsToSelector:@selector(invalidate)]) {
-       [((id<RCTInvalidating>)module) invalidate];
-     }
+    id<RCTTurboModule> module = p.second;
+    if ([module respondsToSelector:@selector(invalidate)]) {
+      [((id<RCTInvalidating>)module) invalidate];
+    }
   }
 
   {
@@ -493,8 +480,6 @@ static Class getFallbackClassFromName(const char *name)
   }
 
   _turboModuleCache.clear();
-
-  _binding->invalidate();
 }
 
 @end

@@ -13,6 +13,7 @@
 #import <react/components/rncore/EventEmitters.h>
 #import <react/components/rncore/Props.h>
 
+#import "FBRCTFabricComponentsPlugins.h"
 #import "RCTConversions.h"
 #import "RCTFabricModalHostViewController.h"
 
@@ -84,10 +85,12 @@ static UIModalPresentationStyle presentationConfiguration(ModalHostViewProps con
   }
 }
 
-static ModalHostViewOnOrientationChangeStruct onOrientationChangeStruct(CGRect rect)
+static ModalHostViewEventEmitter::OnOrientationChange onOrientationChangeStruct(CGRect rect)
 {
-  auto orientation = rect.size.width < rect.size.height ? ModalHostViewOnOrientationChangeOrientationStruct::Portrait
-                                                        : ModalHostViewOnOrientationChangeOrientationStruct::Landscape;
+  ;
+  auto orientation = rect.size.width < rect.size.height
+      ? ModalHostViewEventEmitter::OnOrientationChangeOrientation::Portrait
+      : ModalHostViewEventEmitter::OnOrientationChangeOrientation::Landscape;
   return {orientation};
 }
 
@@ -135,7 +138,7 @@ static ModalHostViewOnOrientationChangeStruct onOrientationChangeStruct(CGRect r
 
                      assert(std::dynamic_pointer_cast<ModalHostViewEventEmitter const>(self->_eventEmitter));
                      auto eventEmitter = std::static_pointer_cast<ModalHostViewEventEmitter const>(self->_eventEmitter);
-                     eventEmitter->onShow(ModalHostViewOnShowStruct{});
+                     eventEmitter->onShow(ModalHostViewEventEmitter::OnShow{});
                    }];
   }
 
@@ -215,3 +218,8 @@ static ModalHostViewOnOrientationChangeStruct onOrientationChangeStruct(CGRect r
 }
 
 @end
+
+Class<RCTComponentViewProtocol> RCTModalHostViewCls(void)
+{
+  return RCTModalHostViewComponentView.class;
+}

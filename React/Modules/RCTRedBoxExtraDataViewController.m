@@ -106,7 +106,7 @@
         _tableView.rowHeight = UITableViewAutomaticDimension;
         _tableView.allowsSelection = NO;
 
-#if TARGET_OS_SIMULATOR
+#if TARGET_OS_SIMULATOR || TARGET_OS_MACCATALYST
         NSString *reloadText = @"Reload JS (\u2318R)";
         NSString *dismissText = @"Dismiss (ESC)";
 #else

@@ -210,14 +210,15 @@ try {
 
     describe('Test: ' + iosTestType + ' end-to-end test');
     if (
+      // TODO: Get target OS and simulator from .tests.env
       tryExecNTimes(
         () => {
-          let destination = 'platform=iOS Simulator,name=iPhone 6s,OS=12.2';
+          let destination = 'platform=iOS Simulator,name=iPhone 8,OS=13.3';
           let sdk = 'iphonesimulator';
           let scheme = 'HelloWorld';
 
           if (argv.tvos) {
-            destination = 'platform=tvOS Simulator,name=Apple TV,OS=11.4';
+            destination = 'platform=tvOS Simulator,name=Apple TV,OS=13.3';
             sdk = 'appletvsimulator';
             scheme = 'HelloWorld-tvOS';
           }
@@ -242,7 +243,7 @@ try {
                 '--report',
                 'junit',
                 '--output',
-                `"~/reports/junit/${iosTestType}-e2e/results.xml"`,
+                `"~/react-native/reports/junit/${iosTestType}-e2e/results.xml"`,
               ].join(' ') +
               ' && exit ${PIPESTATUS[0]}',
           ).code;

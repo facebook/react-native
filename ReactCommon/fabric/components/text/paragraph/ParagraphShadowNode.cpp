@@ -7,6 +7,7 @@
 
 #include "ParagraphShadowNode.h"
 
+#include <react/attributedstring/AttributedStringBox.h>
 #include "ParagraphState.h"
 
 namespace facebook {
@@ -58,11 +59,13 @@ Size ParagraphShadowNode::measure(LayoutConstraints layoutConstraints) const {
   AttributedString attributedString = getAttributedString();
 
   if (attributedString.isEmpty()) {
-    return {0, 0};
+    return layoutConstraints.clamp({0, 0});
   }
 
   return textLayoutManager_->measure(
-      attributedString, getProps()->paragraphAttributes, layoutConstraints);
+      AttributedStringBox{attributedString},
+      getProps()->paragraphAttributes,
+      layoutConstraints);
 }
 
 void ParagraphShadowNode::layout(LayoutContext layoutContext) {

@@ -22,7 +22,6 @@ const TouchableWithoutFeedback = require('../Touchable/TouchableWithoutFeedback'
 
 const invariant = require('invariant');
 const nullthrows = require('nullthrows');
-const requireNativeComponent = require('../../ReactNative/requireNativeComponent');
 const setAndForwardRef = require('../../Utilities/setAndForwardRef');
 
 import type {TextStyleProp, ViewStyleProp} from '../../StyleSheet/StyleSheet';
@@ -43,12 +42,10 @@ let RCTSinglelineTextInputView;
 if (Platform.OS === 'android') {
   AndroidTextInput = require('./AndroidTextInputNativeComponent').default;
 } else if (Platform.OS === 'ios') {
-  RCTMultilineTextInputView = requireNativeComponent(
-    'RCTMultilineTextInputView',
-  );
-  RCTSinglelineTextInputView = requireNativeComponent(
-    'RCTSinglelineTextInputView',
-  );
+  RCTMultilineTextInputView = require('./RCTMultilineTextInputNativeComponent.js')
+    .default;
+  RCTSinglelineTextInputView = require('./RCTSingelineTextInputNativeComponent.js')
+    .default;
 }
 
 export type ChangeEvent = SyntheticEvent<

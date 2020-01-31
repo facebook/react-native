@@ -8,15 +8,16 @@
 #include <memory>
 
 #include <cxxreact/JSExecutor.h>
-#include <fb/fbjni.h>
+#include <fbjni/fbjni.h>
 
 namespace facebook {
 namespace react {
 
-class JavaScriptExecutorHolder : public jni::HybridClass<JavaScriptExecutorHolder> {
+class JavaScriptExecutorHolder
+    : public jni::HybridClass<JavaScriptExecutorHolder> {
  public:
   static constexpr auto kJavaDescriptor =
-    "Lcom/facebook/react/bridge/JavaScriptExecutor;";
+      "Lcom/facebook/react/bridge/JavaScriptExecutor;";
 
   std::shared_ptr<JSExecutorFactory> getExecutorFactory() {
     return mExecutorFactory;
@@ -30,4 +31,5 @@ class JavaScriptExecutorHolder : public jni::HybridClass<JavaScriptExecutorHolde
   std::shared_ptr<JSExecutorFactory> mExecutorFactory;
 };
 
-}}
+} // namespace react
+} // namespace facebook

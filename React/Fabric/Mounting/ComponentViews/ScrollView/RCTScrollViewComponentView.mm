@@ -20,6 +20,7 @@
 
 #import "RCTConversions.h"
 #import "RCTEnhancedScrollView.h"
+#import "RCTFabricComponentsPlugins.h"
 
 using namespace facebook::react;
 
@@ -71,12 +72,7 @@ static void RCTSendPaperScrollEvent_DEPRECATED(UIScrollView *scrollView, NSInteg
     _containerView = [[UIView alloc] initWithFrame:CGRectZero];
     [_scrollView addSubview:_containerView];
 
-    __weak __typeof(self) weakSelf = self;
-    _scrollViewDelegateSplitter = [[RCTGenericDelegateSplitter alloc] initWithDelegateUpdateBlock:^(id delegate) {
-      weakSelf.scrollView.delegate = delegate;
-    }];
-
-    [_scrollViewDelegateSplitter addDelegate:self];
+    [self.scrollViewDelegateSplitter addDelegate:self];
 
     _scrollEventThrottle = INFINITY;
   }
@@ -86,8 +82,14 @@ static void RCTSendPaperScrollEvent_DEPRECATED(UIScrollView *scrollView, NSInteg
 
 - (void)dealloc
 {
-  // This is not strictly necessary but that prevents a crash caused by a bug in UIKit.
-  _scrollView.delegate = nil;
+  // Removing all delegates from the splitter nils the actual delegate which prevents a crash on UIScrollView
+  // deallocation.
+  [self.scrollViewDelegateSplitter removeAllDelegates];
+}
+
+- (RCTGenericDelegateSplitter<id<UIScrollViewDelegate>> *)scrollViewDelegateSplitter
+{
+  return ((RCTEnhancedScrollView *)_scrollView).delegateSplitter;
 }
 
 #pragma mark - RCTComponentViewProtocol
@@ -397,3 +399,8 @@ static void RCTSendPaperScrollEvent_DEPRECATED(UIScrollView *scrollView, NSInteg
 }
 
 @end
+
+Class<RCTComponentViewProtocol> RCTScrollViewCls(void)
+{
+  return RCTScrollViewComponentView.class;
+}

@@ -27,7 +27,7 @@ export interface Spec extends TurboModule {
     Serial: string,
     Fingerprint: string,
     Model: string,
-    ServerHost: string,
+    ServerHost?: string,
     uiMode: string,
   |};
   +getAndroidID: () => string;

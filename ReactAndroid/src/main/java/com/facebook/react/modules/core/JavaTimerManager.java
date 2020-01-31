@@ -373,4 +373,37 @@ public class JavaTimerManager {
           }
         });
   }
+
+  /**
+   * Returns a bool representing whether there are any active timers that will be fired within a
+   * certain period of time. Disregards repeating timers (setInterval). Used for testing to
+   * determine if RN is idle.
+   *
+   * @param rangeMs The time range, in ms, to check
+   * @return True if there are pending timers within the given range; false otherwise
+   */
+  /* package */ boolean hasActiveTimersInRange(long rangeMs) {
+    synchronized (mTimerGuard) {
+      Timer nextTimer = mTimers.peek();
+      if (nextTimer == null) {
+        // Timers queue is empty
+        return false;
+      }
+      if (isTimerInRange(nextTimer, rangeMs)) {
+        // First check the next timer, so we can avoid iterating over the entire queue if it's
+        // already within range.
+        return true;
+      }
+      for (Timer timer : mTimers) {
+        if (isTimerInRange(timer, rangeMs)) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+
+  private static boolean isTimerInRange(Timer timer, long rangeMs) {
+    return !timer.mRepeat && timer.mInterval < rangeMs;
+  }
 }

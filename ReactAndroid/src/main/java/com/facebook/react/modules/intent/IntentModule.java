@@ -15,11 +15,10 @@ import android.net.Uri;
 import android.nfc.NfcAdapter;
 import android.provider.Settings;
 import androidx.annotation.Nullable;
+import com.facebook.fbreact.specs.NativeLinkingSpec;
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.bridge.ReactContextBaseJavaModule;
-import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReadableType;
@@ -27,7 +26,7 @@ import com.facebook.react.module.annotations.ReactModule;
 
 /** Intent module. Launch other activities or open URLs. */
 @ReactModule(name = IntentModule.NAME)
-public class IntentModule extends ReactContextBaseJavaModule {
+public class IntentModule extends NativeLinkingSpec {
 
   public static final String NAME = "IntentAndroid";
 
@@ -45,7 +44,7 @@ public class IntentModule extends ReactContextBaseJavaModule {
    *
    * @param promise a promise which is resolved with the initial URL
    */
-  @ReactMethod
+  @Override
   public void getInitialURL(Promise promise) {
     try {
       Activity currentActivity = getCurrentActivity();
@@ -79,7 +78,7 @@ public class IntentModule extends ReactContextBaseJavaModule {
    *
    * @param url the URL to open
    */
-  @ReactMethod
+  @Override
   public void openURL(String url, Promise promise) {
     if (url == null || url.isEmpty()) {
       promise.reject(new JSApplicationIllegalArgumentException("Invalid URL: " + url));
@@ -121,7 +120,7 @@ public class IntentModule extends ReactContextBaseJavaModule {
    * @param url the URL to open
    * @param promise a promise that is always resolved with a boolean argument
    */
-  @ReactMethod
+  @Override
   public void canOpenURL(String url, Promise promise) {
     if (url == null || url.isEmpty()) {
       promise.reject(new JSApplicationIllegalArgumentException("Invalid URL: " + url));
@@ -148,7 +147,7 @@ public class IntentModule extends ReactContextBaseJavaModule {
    *
    * @param promise a promise which is resolved when the Settings is opened
    */
-  @ReactMethod
+  @Override
   public void openSettings(Promise promise) {
     try {
       Intent intent = new Intent();
@@ -182,7 +181,7 @@ public class IntentModule extends ReactContextBaseJavaModule {
    * @param action The general action to be performed
    * @param extras An array of extras [{ String, String | Number | Boolean }]
    */
-  @ReactMethod
+  @Override
   public void sendIntent(String action, @Nullable ReadableArray extras, Promise promise) {
     if (action == null || action.isEmpty()) {
       promise.reject(new JSApplicationIllegalArgumentException("Invalid Action: " + action + "."));
@@ -237,5 +236,15 @@ public class IntentModule extends ReactContextBaseJavaModule {
     }
 
     getReactApplicationContext().startActivity(intent);
+  }
+
+  @Override
+  public void addListener(String eventName) {
+    // iOS only
+  }
+
+  @Override
+  public void removeListeners(double count) {
+    // iOS only
   }
 }

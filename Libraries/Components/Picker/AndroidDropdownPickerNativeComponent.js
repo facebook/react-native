@@ -5,15 +5,15 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @flow
+ * @flow strict-local
  */
 
 'use strict';
 
 import * as React from 'react';
 
-import codegenNativeCommands from 'react-native/Libraries/Utilities/codegenNativeCommands';
-import {requireNativeComponent} from 'react-native';
+import codegenNativeCommands from '../../Utilities/codegenNativeCommands';
+import requireNativeComponent from '../../ReactNative/requireNativeComponent';
 
 import type {
   DirectEventHandler,

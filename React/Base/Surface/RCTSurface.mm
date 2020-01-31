@@ -62,7 +62,7 @@
                     moduleName:(NSString *)moduleName
              initialProperties:(NSDictionary *)initialProperties
 {
-  RCTAssert(bridge.valid, @"Valid bridge is required to instanciate `RCTSurface`.");
+  RCTAssert(bridge.valid, @"Valid bridge is required to instantiate `RCTSurface`.");
 
   if (self = [super init]) {
     _bridge = bridge;

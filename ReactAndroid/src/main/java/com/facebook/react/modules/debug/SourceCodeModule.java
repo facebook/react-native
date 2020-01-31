@@ -7,6 +7,7 @@
 
 package com.facebook.react.modules.debug;
 
+import com.facebook.fbreact.specs.NativeSourceCodeSpec;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.module.annotations.ReactModule;

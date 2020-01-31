@@ -124,7 +124,7 @@ public class ForwardingCookieHandler extends CookieHandler {
     }
   }
 
-  private void addCookies(final String url, final List<String> cookies) {
+  public void addCookies(final String url, final List<String> cookies) {
     final CookieManager cookieManager = getCookieManager();
     if (cookieManager == null) return;
 

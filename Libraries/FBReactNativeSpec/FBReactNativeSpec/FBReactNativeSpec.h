@@ -898,6 +898,8 @@ namespace facebook {
 - (void)setProfilingEnabled:(BOOL)isProfilingEnabled;
 - (void)toggleElementInspector;
 - (void)addMenuItem:(NSString *)title;
+- (void)addListener:(NSString *)eventName;
+- (void)removeListeners:(double)count;
 - (void)setIsShakeToShowDevMenuEnabled:(BOOL)enabled;
 
 @end
@@ -1304,26 +1306,6 @@ namespace facebook {
     };
   } // namespace react
 } // namespace facebook
-@protocol NativeHeapCaptureSpec <RCTBridgeModule, RCTTurboModule>
-
-- (void)captureHeap:(NSString *)path;
-- (void)captureComplete:(NSString *)path
-                  error:(NSString * _Nullable)error;
-
-@end
-namespace facebook {
-  namespace react {
-    /**
-     * ObjC++ class for module 'HeapCapture'
-     */
-
-    class JSI_EXPORT NativeHeapCaptureSpecJSI : public ObjCTurboModule {
-    public:
-      NativeHeapCaptureSpecJSI(id<RCTTurboModule> instance, std::shared_ptr<CallInvoker> jsInvoker);
-
-    };
-  } // namespace react
-} // namespace facebook
 
 namespace JS {
   namespace NativeI18nManager {
@@ -1631,6 +1613,25 @@ namespace facebook {
     };
   } // namespace react
 } // namespace facebook
+@protocol NativeJSCHeapCaptureSpec <RCTBridgeModule, RCTTurboModule>
+
+- (void)captureComplete:(NSString *)path
+                  error:(NSString * _Nullable)error;
+
+@end
+namespace facebook {
+  namespace react {
+    /**
+     * ObjC++ class for module 'JSCHeapCapture'
+     */
+
+    class JSI_EXPORT NativeJSCHeapCaptureSpecJSI : public ObjCTurboModule {
+    public:
+      NativeJSCHeapCaptureSpecJSI(id<RCTTurboModule> instance, std::shared_ptr<CallInvoker> jsInvoker);
+
+    };
+  } // namespace react
+} // namespace facebook
 @protocol NativeJSCSamplingProfilerSpec <RCTBridgeModule, RCTTurboModule>
 
 - (void)operationComplete:(double)token
@@ -1682,7 +1683,7 @@ namespace JS {
 }
 @protocol NativeJSDevSupportSpec <RCTBridgeModule, RCTTurboModule>
 
-- (void)onSuccess:(NSDictionary *)data;
+- (void)onSuccess:(NSString *)data;
 - (void)onFailure:(double)errorCode
             error:(NSString *)error;
 - (facebook::react::ModuleConstants<JS::NativeJSDevSupport::Constants::Builder>)constantsToExport;
@@ -1771,6 +1772,25 @@ namespace facebook {
     };
   } // namespace react
 } // namespace facebook
+@protocol NativeLogBoxSpec <RCTBridgeModule, RCTTurboModule>
+
+- (void)show;
+- (void)hide;
+
+@end
+namespace facebook {
+  namespace react {
+    /**
+     * ObjC++ class for module 'LogBox'
+     */
+
+    class JSI_EXPORT NativeLogBoxSpecJSI : public ObjCTurboModule {
+    public:
+      NativeLogBoxSpecJSI(id<RCTTurboModule> instance, std::shared_ptr<CallInvoker> jsInvoker);
+
+    };
+  } // namespace react
+} // namespace facebook
 @protocol NativeModalManagerSpec <RCTBridgeModule, RCTTurboModule>
 
 - (void)addListener:(NSString *)eventName;
@@ -1790,23 +1810,6 @@ namespace facebook {
     };
   } // namespace react
 } // namespace facebook
-
-namespace JS {
-  namespace NativeNetworkingAndroid {
-    struct Header {
-      NSString *first() const;
-      NSString *second() const;
-
-      Header(NSArray *const v) : _v(v) {}
-    private:
-      NSArray *_v;
-    };
-  }
-}
-
-@interface RCTCxxConvert (NativeNetworkingAndroid_Header)
-+ (RCTManagedPointer *)JS_NativeNetworkingAndroid_Header:(id)json;
-@end
 @protocol NativeNetworkingAndroidSpec <RCTBridgeModule, RCTTurboModule>
 
 - (void)sendRequest:(NSString *)method
@@ -1957,7 +1960,7 @@ namespace JS {
           RCTRequired<NSString *> Serial;
           RCTRequired<NSString *> Fingerprint;
           RCTRequired<NSString *> Model;
-          RCTRequired<NSString *> ServerHost;
+          NSString *ServerHost;
           RCTRequired<NSString *> uiMode;
         };
 
@@ -2519,6 +2522,63 @@ namespace facebook {
     };
   } // namespace react
 } // namespace facebook
+
+namespace JS {
+  namespace NativeTimePickerAndroid {
+    struct TimePickerOptions {
+      folly::Optional<double> hour() const;
+      folly::Optional<double> minute() const;
+      folly::Optional<bool> is24Hour() const;
+      NSString *mode() const;
+
+      TimePickerOptions(NSDictionary *const v) : _v(v) {}
+    private:
+      NSDictionary *_v;
+    };
+  }
+}
+
+@interface RCTCxxConvert (NativeTimePickerAndroid_TimePickerOptions)
++ (RCTManagedPointer *)JS_NativeTimePickerAndroid_TimePickerOptions:(id)json;
+@end
+@protocol NativeTimePickerAndroidSpec <RCTBridgeModule, RCTTurboModule>
+
+- (void)open:(JS::NativeTimePickerAndroid::TimePickerOptions &)options
+     resolve:(RCTPromiseResolveBlock)resolve
+      reject:(RCTPromiseRejectBlock)reject;
+
+@end
+namespace facebook {
+  namespace react {
+    /**
+     * ObjC++ class for module 'TimePickerAndroid'
+     */
+
+    class JSI_EXPORT NativeTimePickerAndroidSpecJSI : public ObjCTurboModule {
+    public:
+      NativeTimePickerAndroidSpecJSI(id<RCTTurboModule> instance, std::shared_ptr<CallInvoker> jsInvoker);
+
+    };
+  } // namespace react
+} // namespace facebook
+
+namespace JS {
+  namespace NativeTimePickerAndroid {
+    struct TimePickerResult {
+      NSString *action() const;
+      double hour() const;
+      double minute() const;
+
+      TimePickerResult(NSDictionary *const v) : _v(v) {}
+    private:
+      NSDictionary *_v;
+    };
+  }
+}
+
+@interface RCTCxxConvert (NativeTimePickerAndroid_TimePickerResult)
++ (RCTManagedPointer *)JS_NativeTimePickerAndroid_TimePickerResult:(id)json;
+@end
 @protocol NativeTimingSpec <RCTBridgeModule, RCTTurboModule>
 
 - (void)createTimer:(double)callbackID
@@ -3476,16 +3536,6 @@ inline id<NSObject> JS::NativeLinking::SpecSendIntentExtrasElement::value() cons
   id const p = _v[@"value"];
   return p;
 }
-inline NSString *JS::NativeNetworkingAndroid::Header::first() const
-{
-  id const p = _v[0];
-  return RCTBridgingToString(p);
-}
-inline NSString *JS::NativeNetworkingAndroid::Header::second() const
-{
-  id const p = _v[1];
-  return RCTBridgingToString(p);
-}
 inline NSString *JS::NativeNetworkingIOS::SpecSendRequestQuery::method() const
 {
   id const p = _v[@"method"];
@@ -3557,7 +3607,7 @@ inline JS::NativePlatformConstantsAndroid::Constants::Builder::Builder(const Inp
   d[@"Fingerprint"] = Fingerprint;
   auto Model = i.Model.get();
   d[@"Model"] = Model;
-  auto ServerHost = i.ServerHost.get();
+  auto ServerHost = i.ServerHost;
   d[@"ServerHost"] = ServerHost;
   auto uiMode = i.uiMode.get();
   d[@"uiMode"] = uiMode;
@@ -3730,6 +3780,41 @@ inline JS::NativeStatusBarManagerIOS::Constants::Builder::Builder(const Input i)
 inline JS::NativeStatusBarManagerIOS::Constants::Builder::Builder(Constants i) : _factory(^{
   return i.unsafeRawValue();
 }) {}
+inline folly::Optional<double> JS::NativeTimePickerAndroid::TimePickerOptions::hour() const
+{
+  id const p = _v[@"hour"];
+  return RCTBridgingToOptionalDouble(p);
+}
+inline folly::Optional<double> JS::NativeTimePickerAndroid::TimePickerOptions::minute() const
+{
+  id const p = _v[@"minute"];
+  return RCTBridgingToOptionalDouble(p);
+}
+inline folly::Optional<bool> JS::NativeTimePickerAndroid::TimePickerOptions::is24Hour() const
+{
+  id const p = _v[@"is24Hour"];
+  return RCTBridgingToOptionalBool(p);
+}
+inline NSString *JS::NativeTimePickerAndroid::TimePickerOptions::mode() const
+{
+  id const p = _v[@"mode"];
+  return RCTBridgingToString(p);
+}
+inline NSString *JS::NativeTimePickerAndroid::TimePickerResult::action() const
+{
+  id const p = _v[@"action"];
+  return RCTBridgingToString(p);
+}
+inline double JS::NativeTimePickerAndroid::TimePickerResult::hour() const
+{
+  id const p = _v[@"hour"];
+  return RCTBridgingToDouble(p);
+}
+inline double JS::NativeTimePickerAndroid::TimePickerResult::minute() const
+{
+  id const p = _v[@"minute"];
+  return RCTBridgingToDouble(p);
+}
 inline JS::NativeToastAndroid::Constants::Builder::Builder(const Input i) : _factory(^{
   NSMutableDictionary *d = [NSMutableDictionary new];
   auto SHORT = i.SHORT.get();

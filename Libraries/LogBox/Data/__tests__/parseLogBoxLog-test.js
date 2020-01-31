@@ -117,8 +117,16 @@ describe('parseLogBoxLog', () => {
       ]),
     ).toEqual({
       componentStack: [
-        {component: 'MyComponent', location: 'filename.js:1'},
-        {component: 'MyOtherComponent', location: 'filename2.js:1'},
+        {
+          content: 'MyComponent',
+          fileName: 'filename.js',
+          location: {column: -1, row: 1},
+        },
+        {
+          content: 'MyOtherComponent',
+          fileName: 'filename2.js',
+          location: {column: -1, row: 1},
+        },
       ],
       category:
         'Warning: Function components cannot be given refs. Attempts to access this ref will fail. Did you mean to use React.forwardRef()?﻿%s',
@@ -143,8 +151,16 @@ describe('parseLogBoxLog', () => {
       ]),
     ).toEqual({
       componentStack: [
-        {component: 'MyComponent', location: 'filename.js:1'},
-        {component: 'MyOtherComponent', location: 'filename2.js:1'},
+        {
+          content: 'MyComponent',
+          fileName: 'filename.js',
+          location: {column: -1, row: 1},
+        },
+        {
+          content: 'MyOtherComponent',
+          fileName: 'filename2.js',
+          location: {column: -1, row: 1},
+        },
       ],
       category: 'Some kind of message',
       message: {
@@ -164,8 +180,16 @@ describe('parseLogBoxLog', () => {
       ]),
     ).toEqual({
       componentStack: [
-        {component: 'MyComponent', location: 'filename.js:1'},
-        {component: 'MyOtherComponent', location: 'filename2.js:1'},
+        {
+          content: 'MyComponent',
+          fileName: 'filename.js',
+          location: {column: -1, row: 1},
+        },
+        {
+          content: 'MyOtherComponent',
+          fileName: 'filename2.js',
+          location: {column: -1, row: 1},
+        },
       ],
       category:
         'Some kind of message Some other kind of message Some third kind of message',
@@ -418,12 +442,14 @@ Please follow the instructions at: fburl.com/rn-remote-assets`,
       },
       componentStack: [
         {
-          component: 'MyComponent',
-          location: 'filename.js:1',
+          content: 'MyComponent',
+          fileName: 'filename.js',
+          location: {column: -1, row: 1},
         },
         {
-          component: 'MyOtherComponent',
-          location: 'filename2.js:1',
+          content: 'MyOtherComponent',
+          fileName: 'filename2.js',
+          location: {column: -1, row: 1},
         },
       ],
       stack: [

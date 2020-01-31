@@ -46,10 +46,13 @@ RCT_EXPORT_METHOD(setNativeDate : (nonnull NSNumber *)viewTag toDate : (NSDate *
 {
   [self.bridge.uiManager addUIBlock:^(RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry) {
     UIView *view = viewRegistry[viewTag];
-    
+
     if ([view isKindOfClass:[RCTDatePicker class]]) {
       [(RCTDatePicker *)view setDate:date];
     } else {
+      // This component is used in Fabric through LegacyInteropLayer.
+      // `RCTPicker` view is subview of `RCTLegacyViewManagerInteropComponentView`.
+      // `viewTag` passed as parameter to this method is tag of the `RCTLegacyViewManagerInteropComponentView`.
       UIView *subview = view.subviews.firstObject;
       if ([subview isKindOfClass:[RCTDatePicker class]]) {
         [(RCTDatePicker *)subview setDate:date];

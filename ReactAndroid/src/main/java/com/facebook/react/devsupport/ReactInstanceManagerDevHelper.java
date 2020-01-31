@@ -8,6 +8,7 @@
 package com.facebook.react.devsupport;
 
 import android.app.Activity;
+import android.view.View;
 import androidx.annotation.Nullable;
 import com.facebook.react.bridge.JavaJSExecutor;
 import com.facebook.react.bridge.JavaScriptExecutorFactory;
@@ -32,4 +33,9 @@ public interface ReactInstanceManagerDevHelper {
   Activity getCurrentActivity();
 
   JavaScriptExecutorFactory getJavaScriptExecutorFactory();
+
+  @Nullable
+  View createRootView(String appKey);
+
+  void destroyRootView(View rootView);
 }

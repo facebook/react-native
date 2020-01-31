@@ -9,6 +9,8 @@
 #import <react/uimanager/ComponentDescriptorProvider.h>
 #import "RCTARTSurfaceViewComponentDescriptor.h"
 
+#import "FBRCTFabricComponentsPlugins.h"
+
 using namespace facebook::react;
 
 @implementation RCTARTSurfaceViewComponentView {
@@ -32,3 +34,8 @@ using namespace facebook::react;
 }
 
 @end
+
+Class<RCTComponentViewProtocol> RCTARTSurfaceViewCls(void)
+{
+  return RCTARTSurfaceViewComponentView.class;
+}

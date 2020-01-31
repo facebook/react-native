@@ -15,6 +15,7 @@
 #include <yoga/log.h>
 #include <iostream>
 #include <memory>
+#include "YogaJniException.h"
 
 using namespace facebook::yoga::vanillajni;
 using facebook::yoga::detail::Log;
@@ -224,6 +225,16 @@ static void jni_YGNodeInsertChildJNI(
       _jlong2YGNodeRef(nativePointer), _jlong2YGNodeRef(childPointer), index);
 }
 
+static void jni_YGNodeSwapChildJNI(
+    JNIEnv* env,
+    jobject obj,
+    jlong nativePointer,
+    jlong childPointer,
+    jint index) {
+  YGNodeSwapChild(
+      _jlong2YGNodeRef(nativePointer), _jlong2YGNodeRef(childPointer), index);
+}
+
 static void jni_YGNodeSetIsReferenceBaselineJNI(
     JNIEnv* env,
     jobject obj,
@@ -372,8 +383,11 @@ static void jni_YGNodeCalculateLayoutJNI(
         YGNodeStyleGetDirection(_jlong2YGNodeRef(nativePointer)),
         layoutContext);
     YGTransferLayoutOutputsRecursive(env, obj, root, layoutContext);
-  } catch (jthrowable throwable) {
-    env->Throw(throwable);
+  } catch (const YogaJniException& jniException) {
+    ScopedLocalRef<jthrowable> throwable = jniException.getThrowable();
+    if (throwable.get()) {
+      env->Throw(throwable.get());
+    }
   }
 }
 
@@ -750,6 +764,7 @@ static JNINativeMethod methods[] = {
     {"jni_YGNodeFreeJNI", "(J)V", (void*) jni_YGNodeFreeJNI},
     {"jni_YGNodeResetJNI", "(J)V", (void*) jni_YGNodeResetJNI},
     {"jni_YGNodeInsertChildJNI", "(JJI)V", (void*) jni_YGNodeInsertChildJNI},
+    {"jni_YGNodeSwapChildJNI", "(JJI)V", (void*) jni_YGNodeSwapChildJNI},
     {"jni_YGNodeSetIsReferenceBaselineJNI",
      "(JZ)V",
      (void*) jni_YGNodeSetIsReferenceBaselineJNI},

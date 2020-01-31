@@ -4,13 +4,6 @@ rn_android_library(
     name = "textinput",
     srcs = glob(["*.java"]),
     is_androidx = True,
-    provided_deps = [
-        react_native_dep("third-party/android/androidx:annotation"),
-        react_native_dep("third-party/android/androidx:core"),
-        react_native_dep("third-party/android/androidx:fragment"),
-        react_native_dep("third-party/android/androidx:legacy-support-core-ui"),
-        react_native_dep("third-party/android/androidx:legacy-support-core-utils"),
-    ],
     required_for_source_only_abi = True,
     visibility = [
         "PUBLIC",
@@ -30,5 +23,8 @@ rn_android_library(
         react_native_target("java/com/facebook/react/views/scroll:scroll"),
         react_native_target("java/com/facebook/react/views/text:text"),
         react_native_target("java/com/facebook/react/views/view:view"),
+    ],
+    exported_deps = [
+        react_native_dep("third-party/android/androidx:appcompat"),
     ],
 )

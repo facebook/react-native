@@ -21,4 +21,5 @@ rn_android_library(
         react_native_target("java/com/facebook/react/common:common"),
         react_native_target("java/com/facebook/react/module/annotations:annotations"),
     ],
+    exported_deps = [react_native_target("java/com/facebook/fbreact/specs:FBReactNativeSpec")],
 )

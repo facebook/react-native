@@ -15,10 +15,8 @@ import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Rect;
-import android.os.Build;
 import android.os.Bundle;
 import android.util.AttributeSet;
-import android.util.DisplayMetrics;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.Surface;
@@ -36,6 +34,7 @@ import com.facebook.react.bridge.CatalystInstance;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReactMarker;
 import com.facebook.react.bridge.ReactMarkerConstants;
+import com.facebook.react.bridge.UIManager;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.bridge.WritableNativeMap;
@@ -127,6 +126,7 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
 
   @Override
   protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+    // TODO: T60453649 - Add test automation to verify behavior of onMeasure
     setAllowImmediateUIOperationExecution(false);
 
     if (mUseSurface) {
@@ -443,8 +443,13 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
     final ReactContext reactApplicationContext = mReactInstanceManager.getCurrentReactContext();
 
     if (reactApplicationContext != null) {
-      UIManagerHelper.getUIManager(reactApplicationContext, getUIManagerType())
-          .updateRootLayoutSpecs(getRootViewTag(), widthMeasureSpec, heightMeasureSpec);
+      @Nullable
+      UIManager uiManager =
+          UIManagerHelper.getUIManager(reactApplicationContext, getUIManagerType());
+      // Ignore calling updateRootLayoutSpecs if UIManager is not properly initialized.
+      if (uiManager != null) {
+        uiManager.updateRootLayoutSpecs(getRootViewTag(), widthMeasureSpec, heightMeasureSpec);
+      }
     }
   }
 
@@ -476,8 +481,13 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
       return;
     }
 
-    UIManagerHelper.getUIManager(reactApplicationContext, getUIManagerType())
-        .setAllowImmediateUIOperationExecution(flag);
+    @Nullable
+    UIManager uiManager = UIManagerHelper.getUIManager(reactApplicationContext, getUIManagerType());
+    // Ignore calling setAllowImmediateUIOperationExecution if UIManager is not properly
+    // initialized.
+    if (uiManager != null) {
+      uiManager.setAllowImmediateUIOperationExecution(flag);
+    }
   }
 
   /**
@@ -683,8 +693,6 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
 
     private int mKeyboardHeight = 0;
     private int mDeviceRotation = 0;
-    private DisplayMetrics mWindowMetrics = new DisplayMetrics();
-    private DisplayMetrics mScreenMetrics = new DisplayMetrics();
 
     /* package */ CustomGlobalLayoutListener() {
       DisplayMetricsHolder.initDisplayMetricsIfNotInitialized(getContext().getApplicationContext());
@@ -749,32 +757,8 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
     }
 
     private void checkForDeviceDimensionsChanges() {
-      // Get current display metrics.
-      DisplayMetricsHolder.initDisplayMetrics(getContext());
-      // Check changes to both window and screen display metrics since they may not update at the
-      // same time.
-      if (!areMetricsEqual(mWindowMetrics, DisplayMetricsHolder.getWindowDisplayMetrics())
-          || !areMetricsEqual(mScreenMetrics, DisplayMetricsHolder.getScreenDisplayMetrics())) {
-        mWindowMetrics.setTo(DisplayMetricsHolder.getWindowDisplayMetrics());
-        mScreenMetrics.setTo(DisplayMetricsHolder.getScreenDisplayMetrics());
-        emitUpdateDimensionsEvent();
-      }
-    }
-
-    private boolean areMetricsEqual(DisplayMetrics displayMetrics, DisplayMetrics otherMetrics) {
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-        return displayMetrics.equals(otherMetrics);
-      } else {
-        // DisplayMetrics didn't have an equals method before API 17.
-        // Check all public fields manually.
-        return displayMetrics.widthPixels == otherMetrics.widthPixels
-            && displayMetrics.heightPixels == otherMetrics.heightPixels
-            && displayMetrics.density == otherMetrics.density
-            && displayMetrics.densityDpi == otherMetrics.densityDpi
-            && displayMetrics.scaledDensity == otherMetrics.scaledDensity
-            && displayMetrics.xdpi == otherMetrics.xdpi
-            && displayMetrics.ydpi == otherMetrics.ydpi;
-      }
+      // DeviceInfoModule caches the last dimensions emitted to JS, so we don't need to check here.
+      emitUpdateDimensionsEvent();
     }
 
     private void emitOrientationChanged(final int newRotation) {

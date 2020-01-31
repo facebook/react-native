@@ -11,14 +11,14 @@
 #include <string>
 
 #include <cxxreact/CxxModule.h>
-#include <fb/fbjni.h>
+#include <fbjni/fbjni.h>
 
 namespace facebook {
 namespace react {
 
 struct JNativeModule : jni::JavaClass<JNativeModule> {
   constexpr static const char *const kJavaDescriptor =
-    "Lcom/facebook/react/bridge/NativeModule;";
+      "Lcom/facebook/react/bridge/NativeModule;";
 };
 
 /**
@@ -26,15 +26,14 @@ struct JNativeModule : jni::JavaClass<JNativeModule> {
  * must extend this base class.
  */
 class CxxModuleWrapperBase
-  : public jni::HybridClass<CxxModuleWrapperBase, JNativeModule> {
-public:
+    : public jni::HybridClass<CxxModuleWrapperBase, JNativeModule> {
+ public:
   constexpr static const char *const kJavaDescriptor =
-    "Lcom/facebook/react/bridge/CxxModuleWrapperBase;";
+      "Lcom/facebook/react/bridge/CxxModuleWrapperBase;";
 
   static void registerNatives() {
-    registerHybrid({
-      makeNativeMethod("getName", CxxModuleWrapperBase::getName)
-    });
+    registerHybrid(
+        {makeNativeMethod("getName", CxxModuleWrapperBase::getName)});
   }
 
   // JNI method
@@ -44,5 +43,5 @@ public:
   virtual std::unique_ptr<xplat::module::CxxModule> getModule() = 0;
 };
 
-}
-}
+} // namespace react
+} // namespace facebook

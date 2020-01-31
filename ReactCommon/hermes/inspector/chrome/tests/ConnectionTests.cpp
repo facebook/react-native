@@ -227,8 +227,6 @@ m::runtime::ExecutionContextCreatedNotification expectExecutionContextCreated(
   EXPECT_EQ(note.context.id, 1);
   EXPECT_EQ(note.context.origin, "");
   EXPECT_EQ(note.context.name, "hermes");
-  EXPECT_EQ(note.context.isDefault, true);
-  EXPECT_EQ(note.context.isPageContext, true);
 
   return note;
 }
@@ -1285,49 +1283,6 @@ TEST(ConnectionTests, testLoadMultipleScripts) {
   expectNotification<m::debugger::ResumedNotification>(conn);
 }
 
-TEST(ConnectionTests, testGetHeapUsage) {
-  using HUReq = m::runtime::GetHeapUsageRequest;
-  using HUResp = m::runtime::GetHeapUsageResponse;
-
-  TestContext context;
-  AsyncHermesRuntime &asyncRuntime = context.runtime();
-  SyncConnection &conn = context.conn();
-
-  int msgId = 1;
-
-  asyncRuntime.executeScriptAsync(R"(
-    debugger; // [1]
-    var a = [];
-    for (var i = 0; i < 100; ++i) {
-      a.push({b: i});
-    }
-    debugger; // [2]
-  )");
-
-  send<m::debugger::EnableRequest>(conn, msgId++);
-  expectExecutionContextCreated(conn);
-  expectNotification<m::debugger::ScriptParsedNotification>(conn);
-
-  // [1] (line 1) hit debugger statement, check heap usage, resume.
-  expectNotification<m::debugger::PausedNotification>(conn);
-  const auto before = send<HUReq, HUResp>(conn, msgId++);
-  send<m::debugger::ResumeRequest>(conn, msgId++);
-  expectNotification<m::debugger::ResumedNotification>(conn);
-
-  // [2] (line 6) hit debugger statement, check heap usage, resume;
-  expectNotification<m::debugger::PausedNotification>(conn);
-  const auto after = send<HUReq, HUResp>(conn, msgId++);
-  send<m::debugger::ResumeRequest>(conn, msgId++);
-  expectNotification<m::debugger::ResumedNotification>(conn);
-
-  // Sanity checks
-  EXPECT_LE(before.usedSize, before.totalSize);
-  EXPECT_LE(after.usedSize, after.totalSize);
-
-  // Check for growth
-  EXPECT_LT(before.usedSize, after.usedSize);
-}
-
 TEST(ConnectionTests, testGetProperties) {
   TestContext context;
   AsyncHermesRuntime &asyncRuntime = context.runtime();
@@ -1377,7 +1332,8 @@ TEST(ConnectionTests, testGetProperties) {
       conn,
       msgId++,
       scopeObjId,
-      {{"num", PropInfo("number").setValue(123)},
+      {{"this", PropInfo("undefined")},
+       {"num", PropInfo("number").setValue(123)},
        {"obj", PropInfo("object")},
        {"arr", PropInfo("object").setSubtype("array")},
        {"bar", PropInfo("function")}});
@@ -1458,7 +1414,9 @@ TEST(ConnectionTests, testGetPropertiesOnlyOwnProperties) {
       conn,
       msgId++,
       scopeObject.objectId.value(),
-      {{"obj", PropInfo("object")}, {"protoObject", PropInfo("object")}});
+      {{"this", PropInfo("undefined")},
+       {"obj", PropInfo("object")},
+       {"protoObject", PropInfo("object")}});
   EXPECT_EQ(scopeChildren.count("obj"), 1);
   std::string objId = scopeChildren.at("obj");
 
@@ -1815,14 +1773,14 @@ TEST(ConnectionTests, testScopeVariables) {
   EXPECT_EQ(scopeChain.size(), 2);
 
   // [2] inspect local scope
-  EXPECT_EQ(scopeChain.at(0).name, "Scope 0");
   EXPECT_EQ(scopeChain.at(0).type, "local");
   auto localScopeObject = scopeChain.at(0).object;
   auto localScopeObjectChildren = expectProps(
       conn,
       msgId++,
       localScopeObject.objectId.value(),
-      {{"localString", PropInfo("string").setValue("local-string")},
+      {{"this", PropInfo("undefined")},
+       {"localString", PropInfo("string").setValue("local-string")},
        {"localObject", PropInfo("object")}});
   auto localObjectId = localScopeObjectChildren.at("localObject");
   expectProps(
@@ -1838,7 +1796,6 @@ TEST(ConnectionTests, testScopeVariables) {
   // in our test code and we can't use expectProps() method here.
   // As a workaround we create a Map of properties and check that
   // those global properties that we have defined are in the map.
-  EXPECT_EQ(scopeChain.at(1).name, "Global Scope");
   EXPECT_EQ(scopeChain.at(1).type, "global");
   auto globalScopeObject = scopeChain.at(1).object;
   m::runtime::GetPropertiesRequest req;

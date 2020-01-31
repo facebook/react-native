@@ -23,9 +23,12 @@ ParagraphProps::ParagraphProps(
     : ViewProps(sourceProps, rawProps),
       BaseTextProps(sourceProps, rawProps),
       paragraphAttributes(
-          convertRawProp(rawProps, sourceProps.paragraphAttributes)),
-      isSelectable(
-          convertRawProp(rawProps, "selectable", sourceProps.isSelectable)){};
+          convertRawProp(rawProps, sourceProps.paragraphAttributes, {})),
+      isSelectable(convertRawProp(
+          rawProps,
+          "selectable",
+          sourceProps.isSelectable,
+          {})){};
 
 #pragma mark - DebugStringConvertible
 

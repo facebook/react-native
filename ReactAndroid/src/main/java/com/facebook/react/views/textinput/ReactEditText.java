@@ -7,6 +7,8 @@
 
 package com.facebook.react.views.textinput;
 
+import static com.facebook.react.uimanager.UIManagerHelper.getReactContext;
+
 import android.content.Context;
 import android.graphics.Rect;
 import android.graphics.Typeface;
@@ -30,14 +32,13 @@ import android.view.accessibility.AccessibilityNodeInfo;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputConnection;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.EditText;
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.AppCompatEditText;
 import androidx.core.view.AccessibilityDelegateCompat;
 import androidx.core.view.ViewCompat;
 import com.facebook.infer.annotation.Assertions;
+import com.facebook.react.bridge.JavaOnlyMap;
 import com.facebook.react.bridge.ReactContext;
-import com.facebook.react.bridge.WritableMap;
-import com.facebook.react.bridge.WritableNativeMap;
 import com.facebook.react.uimanager.StateWrapper;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.views.text.ReactSpan;
@@ -60,7 +61,7 @@ import java.util.ArrayList;
  * called this explicitly. This is the default behavior on other platforms as well.
  * VisibleForTesting from {@link TextInputEventsTestCase}.
  */
-public class ReactEditText extends EditText {
+public class ReactEditText extends AppCompatEditText {
 
   private final InputMethodManager mInputMethodManager;
   // This flag is set to true when we set the text of the EditText explicitly. In that case, no
@@ -72,8 +73,15 @@ public class ReactEditText extends EditText {
   private boolean mShouldAllowFocus;
   private int mDefaultGravityHorizontal;
   private int mDefaultGravityVertical;
+
+  /** A count of events sent to JS or C++. */
   protected int mNativeEventCount;
+
+  /** The most recent event number acked by JavaScript. Should only be updated from JS, not C++. */
   protected int mMostRecentEventCount;
+
+  private static final int UNSET = -1;
+
   private @Nullable ArrayList<TextWatcher> mListeners;
   private @Nullable TextWatcherDelegator mTextWatcherDelegator;
   private int mStagedInputType;
@@ -95,7 +103,11 @@ public class ReactEditText extends EditText {
 
   private ReactViewBackgroundManager mReactBackgroundManager;
 
+  protected @Nullable JavaOnlyMap mAttributedString = null;
   protected @Nullable StateWrapper mStateWrapper = null;
+  protected boolean mDisableTextDiffing = false;
+
+  protected boolean mIsSettingTextFromState = false;
 
   private static final KeyListener sKeyListener = QwertyKeyListener.getInstanceForFullKeyboard();
 
@@ -106,7 +118,7 @@ public class ReactEditText extends EditText {
     mReactBackgroundManager = new ReactViewBackgroundManager(this);
     mInputMethodManager =
         (InputMethodManager)
-            Assertions.assertNotNull(getContext().getSystemService(Context.INPUT_METHOD_SERVICE));
+            Assertions.assertNotNull(context.getSystemService(Context.INPUT_METHOD_SERVICE));
     mDefaultGravityHorizontal =
         getGravity() & (Gravity.HORIZONTAL_GRAVITY_MASK | Gravity.RELATIVE_HORIZONTAL_GRAVITY_MASK);
     mDefaultGravityVertical = getGravity() & Gravity.VERTICAL_GRAVITY_MASK;
@@ -211,7 +223,7 @@ public class ReactEditText extends EditText {
 
   @Override
   public InputConnection onCreateInputConnection(EditorInfo outAttrs) {
-    ReactContext reactContext = (ReactContext) getContext();
+    ReactContext reactContext = getReactContext(this);
     InputConnection inputConnection = super.onCreateInputConnection(outAttrs);
     if (inputConnection != null && mOnKeyPress) {
       inputConnection =
@@ -279,21 +291,29 @@ public class ReactEditText extends EditText {
   }
 
   public void setMostRecentEventCount(int mostRecentEventCount) {
-    if (mMostRecentEventCount == mostRecentEventCount) {
-      return;
-    }
-
     mMostRecentEventCount = mostRecentEventCount;
-
-    if (mStateWrapper != null) {
-      WritableMap map = new WritableNativeMap();
-      map.putInt("mostRecentEventCount", mMostRecentEventCount);
-      mStateWrapper.updateState(map);
-    }
   }
 
   public void setScrollWatcher(ScrollWatcher scrollWatcher) {
     mScrollWatcher = scrollWatcher;
+  }
+
+  /**
+   * Attempt to set a selection or fail silently. Intentionally meant to handle bad inputs.
+   * EventCounter is the same one used as with text.
+   *
+   * @param eventCounter
+   * @param start
+   * @param end
+   */
+  public void maybeSetSelection(int eventCounter, int start, int end) {
+    if (!canUpdateWithEventCount(eventCounter)) {
+      return;
+    }
+
+    if (start != UNSET && end != UNSET) {
+      setSelection(start, end);
+    }
   }
 
   @Override
@@ -453,6 +473,22 @@ public class ReactEditText extends EditText {
     return ++mNativeEventCount;
   }
 
+  public void maybeSetTextFromJS(ReactTextUpdate reactTextUpdate) {
+    mIsSettingTextFromJS = true;
+    maybeSetText(reactTextUpdate);
+    mIsSettingTextFromJS = false;
+  }
+
+  public void maybeSetTextFromState(ReactTextUpdate reactTextUpdate) {
+    mIsSettingTextFromState = true;
+    maybeSetText(reactTextUpdate);
+    mIsSettingTextFromState = false;
+  }
+
+  public boolean canUpdateWithEventCount(int eventCounter) {
+    return eventCounter >= mNativeEventCount;
+  }
+
   // VisibleForTesting from {@link TextInputEventsTestCase}.
   public void maybeSetText(ReactTextUpdate reactTextUpdate) {
     if (isSecureText() && TextUtils.equals(getText(), reactTextUpdate.getText())) {
@@ -461,8 +497,12 @@ public class ReactEditText extends EditText {
 
     // Only set the text if it is up to date.
     mMostRecentEventCount = reactTextUpdate.getJsEventCounter();
-    if (mMostRecentEventCount < mNativeEventCount) {
+    if (!canUpdateWithEventCount(mMostRecentEventCount)) {
       return;
+    }
+
+    if (reactTextUpdate.mAttributedString != null) {
+      mAttributedString = JavaOnlyMap.deepClone(reactTextUpdate.mAttributedString);
     }
 
     // The current text gets replaced with the text received from JS. However, the spans on the
@@ -473,17 +513,24 @@ public class ReactEditText extends EditText {
         new SpannableStringBuilder(reactTextUpdate.getText());
     manageSpans(spannableStringBuilder);
     mContainsImages = reactTextUpdate.containsImages();
-    mIsSettingTextFromJS = true;
+
+    // When we update text, we trigger onChangeText code that will
+    // try to update state if the wrapper is available. Temporarily disable
+    // to prevent an (asynchronous) infinite loop.
+    mDisableTextDiffing = true;
 
     // On some devices, when the text is cleared, buggy keyboards will not clear the composing
     // text so, we have to set text to null, which will clear the currently composing text.
     if (reactTextUpdate.getText().length() == 0) {
       setText(null);
     } else {
+      // When we update text, we trigger onChangeText code that will
+      // try to update state if the wrapper is available. Temporarily disable
+      // to prevent an infinite loop.
       getText().replace(0, length(), spannableStringBuilder);
     }
+    mDisableTextDiffing = false;
 
-    mIsSettingTextFromJS = false;
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
       if (getBreakStrategy() != reactTextUpdate.getTextBreakStrategy()) {
         setBreakStrategy(reactTextUpdate.getTextBreakStrategy());
@@ -572,11 +619,19 @@ public class ReactEditText extends EditText {
     setIntrinsicContentSize();
   }
 
+  // TODO T58784068: delete this method
   private void setIntrinsicContentSize() {
-    ReactContext reactContext = (ReactContext) getContext();
-    UIManagerModule uiManager = reactContext.getNativeModule(UIManagerModule.class);
-    final ReactTextInputLocalData localData = new ReactTextInputLocalData(this);
-    uiManager.setViewLocalData(getId(), localData);
+    // This serves as a check for whether we're running under Paper or Fabric.
+    // By the time this is called, in Fabric we will have a state
+    // wrapper 100% of the time.
+    // Since the LocalData object is constructed by getting values from the underlying EditText
+    // view, we don't need to construct one or apply it at all - it provides no use in Fabric.
+    if (mStateWrapper == null) {
+      ReactContext reactContext = getReactContext(this);
+      final ReactTextInputLocalData localData = new ReactTextInputLocalData(this);
+      UIManagerModule uiManager = reactContext.getNativeModule(UIManagerModule.class);
+      uiManager.setViewLocalData(getId(), localData);
+    }
   }
 
   /* package */ void setGravityHorizontal(int gravityHorizontal) {

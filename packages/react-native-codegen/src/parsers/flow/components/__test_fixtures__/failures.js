@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @flow
+ * @flow strict-local
  * @format
  */
 
@@ -18,7 +18,7 @@ const COMMANDS_DEFINED_INLINE = `
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @flow
+ * @flow strict-local
  */
 
 'use strict';
@@ -54,7 +54,7 @@ const COMMANDS_DEFINED_MULTIPLE_TIMES = `
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @flow
+ * @flow strict-local
  */
 
 'use strict';
@@ -95,7 +95,7 @@ const COMMANDS_DEFINED_WITHOUT_REF = `
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @flow
+ * @flow strict-local
  */
 
 'use strict';
@@ -133,7 +133,7 @@ const COMMANDS_DEFINED_WITH_NULLABLE_REF = `
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @flow
+ * @flow strict-local
  */
 
 'use strict';
@@ -171,7 +171,7 @@ const COMMANDS_DEFINED_WITH_MISMATCHED_METHOD_NAMES = `
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @flow
+ * @flow strict-local
  */
 
 'use strict';
@@ -214,7 +214,7 @@ const COMMANDS_DEFINED_WITHOUT_METHOD_NAMES = `
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @flow
+ * @flow strict-local
  */
 
 'use strict';
@@ -255,7 +255,7 @@ const NULLABLE_WITH_DEFAULT = `
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @flow
+ * @flow strict-local
  */
 
 'use strict';
@@ -284,7 +284,7 @@ const NON_OPTIONAL_KEY_WITH_DEFAULT_VALUE = `
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @flow
+ * @flow strict-local
  */
 
 'use strict';
@@ -313,7 +313,7 @@ const PROPS_CONFLICT_NAMES = `
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @flow
+ * @flow strict-local
  */
 
 'use strict';
@@ -343,7 +343,7 @@ const PROPS_CONFLICT_WITH_SPREAD_PROPS = `
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @flow
+ * @flow strict-local
  */
 
 'use strict';
@@ -377,7 +377,7 @@ const PROPS_SPREAD_CONFLICTS_WITH_PROPS = `
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @flow
+ * @flow strict-local
  */
 
 'use strict';
@@ -411,7 +411,7 @@ const PROP_NUMBER_TYPE = `
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @flow
+ * @flow strict-local
  */
 
 'use strict';
@@ -440,7 +440,7 @@ const PROP_MIXED_ENUM = `
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @flow
+ * @flow strict-local
  */
 
 'use strict';
@@ -469,7 +469,7 @@ const PROP_ENUM_BOOLEAN = `
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @flow
+ * @flow strict-local
  */
 
 'use strict';
@@ -498,7 +498,7 @@ const PROP_ARRAY_MIXED_ENUM = `
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @flow
+ * @flow strict-local
  */
 
 'use strict';
@@ -527,7 +527,7 @@ const PROP_ARRAY_ENUM_BOOLEAN = `
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @flow
+ * @flow strict-local
  */
 
 'use strict';
@@ -556,7 +556,7 @@ const PROP_ARRAY_ENUM_INT = `
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @flow
+ * @flow strict-local
  */
 
 'use strict';

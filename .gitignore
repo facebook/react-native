@@ -32,9 +32,13 @@ project.xcworkspace
 # Buck
 .buckd
 buck-out
-/ReactAndroid/src/main/jni/prebuilt/lib/armeabi-v7a/
-/ReactAndroid/src/main/jni/prebuilt/lib/x86/
+/ReactAndroid/src/main/jni/prebuilt/lib/
 /ReactAndroid/src/main/gen
+
+# Android Studio
+.project
+.settings
+.classpath
 
 # Watchman
 .watchmanconfig

@@ -47,7 +47,7 @@ struct TouchEvent {
 std::string getDebugName(TouchEvent const &touchEvent);
 std::vector<DebugStringConvertibleObject> getDebugProps(
     TouchEvent const &touchEvent,
-    DebugStringConvertibleOptions options = {});
+    DebugStringConvertibleOptions options);
 
 #endif
 

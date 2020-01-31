@@ -10,17 +10,21 @@
 namespace facebook {
 namespace react {
 
-ImageRequest::ImageRequest(const ImageSource &imageSource)
-    : imageSource_(imageSource) {
+ImageRequest::ImageRequest(
+    const ImageSource &imageSource,
+    std::shared_ptr<const ImageInstrumentation> instrumentation)
+    : imageSource_(imageSource), instrumentation_(instrumentation) {
   coordinator_ = std::make_shared<ImageResponseObserverCoordinator>();
 }
 
 ImageRequest::ImageRequest(ImageRequest &&other) noexcept
     : imageSource_(std::move(other.imageSource_)),
-      coordinator_(std::move(other.coordinator_)) {
+      coordinator_(std::move(other.coordinator_)),
+      instrumentation_(std::move(other.instrumentation_)) {
   other.moved_ = true;
   other.coordinator_ = nullptr;
   other.cancelRequest_ = nullptr;
+  other.instrumentation_ = nullptr;
 }
 
 ImageRequest::~ImageRequest() {
@@ -42,6 +46,15 @@ const ImageResponseObserverCoordinator &ImageRequest::getObserverCoordinator()
 const std::shared_ptr<const ImageResponseObserverCoordinator>
     &ImageRequest::getSharedObserverCoordinator() const {
   return coordinator_;
+}
+
+const std::shared_ptr<const ImageInstrumentation>
+    &ImageRequest::getSharedImageInstrumentation() const {
+  return instrumentation_;
+}
+
+const ImageInstrumentation &ImageRequest::getImageInstrumentation() const {
+  return *instrumentation_;
 }
 
 } // namespace react

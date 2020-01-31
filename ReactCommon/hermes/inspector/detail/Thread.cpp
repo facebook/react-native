@@ -8,7 +8,7 @@
 #ifdef __ANDROID__
 #include "Thread.h"
 
-#include <fb/fbjni/JThread.h>
+#include <fbjni/JThread.h>
 
 namespace facebook {
 namespace hermes {

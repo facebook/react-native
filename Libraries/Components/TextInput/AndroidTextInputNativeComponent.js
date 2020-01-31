@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @flow
+ * @flow strict-local
  * @format
  */
 
@@ -22,9 +22,11 @@ import type {
 import type {HostComponent} from '../../Renderer/shims/ReactNativeTypes';
 import type {TextStyleProp, ViewStyleProp} from '../../StyleSheet/StyleSheet';
 import type {ColorValue} from '../../StyleSheet/StyleSheetTypes';
-import {requireNativeComponent} from 'react-native';
+import requireNativeComponent from '../../ReactNative/requireNativeComponent';
 import codegenNativeCommands from '../../Utilities/codegenNativeCommands';
 import * as React from 'react';
+import AndroidTextInputViewConfig from './AndroidTextInputViewConfig';
+const ReactNativeViewConfigRegistry = require('../../Renderer/shims/ReactNativeViewConfigRegistry');
 
 export type KeyboardType =
   // Cross Platform
@@ -563,8 +565,17 @@ export const Commands: NativeCommands = codegenNativeCommands<NativeCommands>({
   ],
 });
 
-const AndroidTextInputNativeComponent: HostComponent<NativeProps> = requireNativeComponent<NativeProps>(
-  'AndroidTextInput',
-);
+let AndroidTextInputNativeComponent;
+if (global.RN$Bridgeless) {
+  ReactNativeViewConfigRegistry.register('AndroidTextInput', () => {
+    return AndroidTextInputViewConfig;
+  });
+  AndroidTextInputNativeComponent = 'AndroidTextInput';
+} else {
+  AndroidTextInputNativeComponent = requireNativeComponent<NativeProps>(
+    'AndroidTextInput',
+  );
+}
 
-export default AndroidTextInputNativeComponent;
+// flowlint-next-line unclear-type:off
+export default ((AndroidTextInputNativeComponent: any): HostComponent<NativeProps>);

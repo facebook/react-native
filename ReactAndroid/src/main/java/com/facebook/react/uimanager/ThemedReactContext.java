@@ -10,6 +10,8 @@ package com.facebook.react.uimanager;
 import android.app.Activity;
 import android.content.Context;
 import androidx.annotation.Nullable;
+import com.facebook.react.bridge.JSIModule;
+import com.facebook.react.bridge.JSIModuleType;
 import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContext;
@@ -61,17 +63,24 @@ public class ThemedReactContext extends ReactContext {
     return mReactApplicationContext.getCurrentActivity();
   }
 
-  @Nullable
-  @Override
-  public String getInstanceKey() {
-    return mReactApplicationContext.getInstanceKey();
-  }
-
   /**
    * @return a {@link String} that represents the ID of the js application that is being rendered
    *     with this {@link ThemedReactContext}
    */
   public @Nullable String getSurfaceID() {
     return mSurfaceID;
+  }
+
+  @Override
+  public boolean isBridgeless() {
+    return mReactApplicationContext.isBridgeless();
+  }
+
+  @Override
+  public JSIModule getJSIModule(JSIModuleType moduleType) {
+    if (isBridgeless()) {
+      return mReactApplicationContext.getJSIModule(moduleType);
+    }
+    return super.getJSIModule(moduleType);
   }
 }

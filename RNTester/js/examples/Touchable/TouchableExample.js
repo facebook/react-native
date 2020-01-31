@@ -582,7 +582,7 @@ exports.examples = [
   {
     title: '3D Touch / Force Touch',
     description:
-      'iPhone 6s and 6s plus support 3D touch, which adds a force property to touches',
+      'iPhone 8 and 8 plus support 3D touch, which adds a force property to touches',
     render: function(): React.Element<any> {
       return <ForceTouchExample />;
     },

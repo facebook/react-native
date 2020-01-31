@@ -40,13 +40,14 @@ using namespace facebook::react;
 @end
 
 @implementation RCTSurfacePresenter {
-  std::mutex _schedulerMutex;
-  RCTScheduler
-      *_Nullable _scheduler; // Thread-safe. Mutation of the instance variable is protected by `_schedulerMutex`.
-  ContextContainer::Shared _contextContainer;
-  RuntimeExecutor _runtimeExecutor;
   RCTMountingManager *_mountingManager; // Thread-safe.
   RCTSurfaceRegistry *_surfaceRegistry; // Thread-safe.
+
+  better::shared_mutex _schedulerMutex;
+  RCTScheduler *_Nullable _scheduler; // Thread-safe. Pointer is protected by `_schedulerMutex`.
+  ContextContainer::Shared _contextContainer; // Protected by `_schedulerMutex`.
+  RuntimeExecutor _runtimeExecutor; // Protected by `_schedulerMutex`.
+
   better::shared_mutex _observerListMutex;
   NSMutableArray<id<RCTSurfacePresenterObserver>> *_observers;
 }
@@ -72,40 +73,35 @@ using namespace facebook::react;
   return self;
 }
 
-- (RCTComponentViewFactory *)componentViewFactory
-{
-  return _mountingManager.componentViewRegistry.componentViewFactory;
-}
-
 - (ContextContainer::Shared)contextContainer
 {
-  std::lock_guard<std::mutex> lock(_schedulerMutex);
+  std::shared_lock<better::shared_mutex> lock(_schedulerMutex);
   return _contextContainer;
 }
 
 - (void)setContextContainer:(ContextContainer::Shared)contextContainer
 {
-  std::lock_guard<std::mutex> lock(_schedulerMutex);
+  std::unique_lock<better::shared_mutex> lock(_schedulerMutex);
   _contextContainer = contextContainer;
-}
-
-- (void)setRuntimeExecutor:(RuntimeExecutor)runtimeExecutor
-{
-  std::lock_guard<std::mutex> lock(_schedulerMutex);
-  _runtimeExecutor = runtimeExecutor;
 }
 
 - (RuntimeExecutor)runtimeExecutor
 {
-  std::lock_guard<std::mutex> lock(_schedulerMutex);
+  std::shared_lock<better::shared_mutex> lock(_schedulerMutex);
   return _runtimeExecutor;
+}
+
+- (void)setRuntimeExecutor:(RuntimeExecutor)runtimeExecutor
+{
+  std::unique_lock<better::shared_mutex> lock(_schedulerMutex);
+  _runtimeExecutor = runtimeExecutor;
 }
 
 #pragma mark - Internal Surface-dedicated Interface
 
 - (void)registerSurface:(RCTFabricSurface *)surface
 {
-  std::lock_guard<std::mutex> lock(_schedulerMutex);
+  std::shared_lock<better::shared_mutex> lock(_schedulerMutex);
   [_surfaceRegistry registerSurface:surface];
   if (_scheduler) {
     [self _startSurface:surface];
@@ -114,7 +110,7 @@ using namespace facebook::react;
 
 - (void)unregisterSurface:(RCTFabricSurface *)surface
 {
-  std::lock_guard<std::mutex> lock(_schedulerMutex);
+  std::shared_lock<better::shared_mutex> lock(_schedulerMutex);
   if (_scheduler) {
     [self _stopSurface:surface];
   }
@@ -123,7 +119,7 @@ using namespace facebook::react;
 
 - (void)setProps:(NSDictionary *)props surface:(RCTFabricSurface *)surface
 {
-  std::lock_guard<std::mutex> lock(_schedulerMutex);
+  std::shared_lock<better::shared_mutex> lock(_schedulerMutex);
   // This implementation is suboptimal indeed but still better than nothing for now.
   [self _stopSurface:surface];
   [self _startSurface:surface];
@@ -138,7 +134,7 @@ using namespace facebook::react;
                       maximumSize:(CGSize)maximumSize
                           surface:(RCTFabricSurface *)surface
 {
-  std::lock_guard<std::mutex> lock(_schedulerMutex);
+  std::shared_lock<better::shared_mutex> lock(_schedulerMutex);
   LayoutContext layoutContext = {.pointScaleFactor = RCTScreenScale()};
   LayoutConstraints layoutConstraints = {.minimumSize = RCTSizeFromCGSize(minimumSize),
                                          .maximumSize = RCTSizeFromCGSize(maximumSize)};
@@ -149,7 +145,7 @@ using namespace facebook::react;
 
 - (void)setMinimumSize:(CGSize)minimumSize maximumSize:(CGSize)maximumSize surface:(RCTFabricSurface *)surface
 {
-  std::lock_guard<std::mutex> lock(_schedulerMutex);
+  std::shared_lock<better::shared_mutex> lock(_schedulerMutex);
   LayoutContext layoutContext = {.pointScaleFactor = RCTScreenScale()};
   LayoutConstraints layoutConstraints = {.minimumSize = RCTSizeFromCGSize(minimumSize),
                                          .maximumSize = RCTSizeFromCGSize(maximumSize)};
@@ -160,7 +156,7 @@ using namespace facebook::react;
 
 - (BOOL)synchronouslyUpdateViewOnUIThread:(NSNumber *)reactTag props:(NSDictionary *)props
 {
-  std::lock_guard<std::mutex> lock(_schedulerMutex);
+  std::shared_lock<better::shared_mutex> lock(_schedulerMutex);
   ReactTag tag = [reactTag integerValue];
   UIView<RCTComponentViewProtocol> *componentView =
       [_mountingManager.componentViewRegistry findComponentViewWithTag:tag];
@@ -168,14 +164,32 @@ using namespace facebook::react;
     return NO; // This view probably isn't managed by Fabric
   }
   ComponentHandle handle = [[componentView class] componentDescriptorProvider].handle;
-  ComponentDescriptor const &componentDescriptor = [_scheduler getComponentDescriptor:handle];
-  [_mountingManager synchronouslyUpdateViewOnUIThread:tag changedProps:props componentDescriptor:componentDescriptor];
+  auto *componentDescriptor = [_scheduler findComponentDescriptorByHandle_DO_NOT_USE_THIS_IS_BROKEN:handle];
+
+  if (!componentDescriptor) {
+    return YES;
+  }
+
+  [_mountingManager synchronouslyUpdateViewOnUIThread:tag changedProps:props componentDescriptor:*componentDescriptor];
+  return YES;
+}
+
+- (BOOL)synchronouslyWaitSurface:(RCTFabricSurface *)surface timeout:(NSTimeInterval)timeout
+{
+  auto mountingCoordinator = [_scheduler mountingCoordinatorWithSurfaceId:surface.rootTag];
+
+  if (!mountingCoordinator->waitForTransaction(std::chrono::duration<NSTimeInterval>(timeout))) {
+    return NO;
+  }
+
+  [_mountingManager scheduleTransaction:mountingCoordinator];
+
   return YES;
 }
 
 - (BOOL)suspend
 {
-  std::lock_guard<std::mutex> lock(_schedulerMutex);
+  std::unique_lock<better::shared_mutex> lock(_schedulerMutex);
 
   if (!_scheduler) {
     return NO;
@@ -189,7 +203,7 @@ using namespace facebook::react;
 
 - (BOOL)resume
 {
-  std::lock_guard<std::mutex> lock(_schedulerMutex);
+  std::unique_lock<better::shared_mutex> lock(_schedulerMutex);
 
   if (_scheduler) {
     return NO;
@@ -205,12 +219,12 @@ using namespace facebook::react;
 
 - (RCTScheduler *)_createScheduler
 {
-  auto componentRegistryFactory = [factory = wrapManagedObject(self.componentViewFactory)](
-                                      EventDispatcher::Weak const &eventDispatcher,
-                                      ContextContainer::Shared const &contextContainer) {
-    return [(RCTComponentViewFactory *)unwrapManagedObject(factory)
-        createComponentDescriptorRegistryWithParameters:{eventDispatcher, contextContainer}];
-  };
+  auto componentRegistryFactory =
+      [factory = wrapManagedObject(_mountingManager.componentViewRegistry.componentViewFactory)](
+          EventDispatcher::Weak const &eventDispatcher, ContextContainer::Shared const &contextContainer) {
+        return [(RCTComponentViewFactory *)unwrapManagedObject(factory)
+            createComponentDescriptorRegistryWithParameters:{eventDispatcher, contextContainer}];
+      };
 
   auto runtimeExecutor = _runtimeExecutor;
 

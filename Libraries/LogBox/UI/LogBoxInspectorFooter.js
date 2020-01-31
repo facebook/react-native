@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @flow
+ * @flow strict-local
  * @format
  */
 
@@ -101,9 +101,11 @@ const styles = StyleSheet.create({
   syntaxErrorText: {
     textAlign: 'center',
     width: '100%',
+    height: 48,
     fontSize: 14,
-    paddingTop: 15,
-    paddingBottom: 15,
+    lineHeight: 20,
+    paddingTop: 20,
+    paddingBottom: 50,
     fontStyle: 'italic',
     color: LogBoxStyle.getTextColor(0.6),
   },
