@@ -15,7 +15,7 @@
 namespace facebook {
 namespace react {
 
-extern ComponentBuilder simpleComponentBuilder() {
+inline ComponentBuilder simpleComponentBuilder() {
   ComponentDescriptorProviderRegistry componentDescriptorProviderRegistry{};
   auto eventDispatcher = EventDispatcher::Shared{};
   auto componentDescriptorRegistry =

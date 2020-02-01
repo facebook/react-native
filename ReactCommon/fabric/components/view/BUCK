@@ -80,8 +80,9 @@ fb_xplat_cxx_test(
     contacts = ["oncall+react_native@xmail.facebook.com"],
     platforms = (ANDROID, APPLE, CXX),
     deps = [
-        "fbsource//xplat/folly:molly",
         "fbsource//xplat/third-party/gmock:gtest",
-        ":view",
+        react_native_xplat_target("fabric/element:element"),
+        react_native_xplat_target("fabric/components/root:root"),
+        react_native_xplat_target("fabric/components/view:view"),
     ],
 )
