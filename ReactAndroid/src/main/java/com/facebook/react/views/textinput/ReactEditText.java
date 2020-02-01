@@ -100,6 +100,8 @@ public class ReactEditText extends AppCompatEditText {
   private @Nullable String mFontFamily = null;
   private int mFontWeight = ReactTypefaceUtils.UNSET;
   private int mFontStyle = ReactTypefaceUtils.UNSET;
+  private boolean mAutoFocus = false;
+  private boolean mDidAttachToWindow = false;
 
   private ReactViewBackgroundManager mReactBackgroundManager;
 
@@ -750,6 +752,14 @@ public class ReactEditText extends AppCompatEditText {
         span.onAttachedToWindow();
       }
     }
+
+    if (mAutoFocus && !mDidAttachToWindow) {
+      mShouldAllowFocus = true;
+      requestFocus();
+      mShouldAllowFocus = false;
+    }
+
+    mDidAttachToWindow = true;
   }
 
   @Override
@@ -811,6 +821,10 @@ public class ReactEditText extends AppCompatEditText {
       mTextAttributes.setMaxFontSizeMultiplier(maxFontSizeMultiplier);
       applyTextAttributes();
     }
+  }
+
+  public void setAutoFocus(boolean autoFocus) {
+    mAutoFocus = autoFocus;
   }
 
   protected void applyTextAttributes() {
