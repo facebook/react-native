@@ -99,7 +99,7 @@ using namespace facebook::react;
   }
 
   std::dynamic_pointer_cast<const SwitchEventEmitter>(_eventEmitter)
-      ->onChange(SwitchOnChangeStruct{.value = static_cast<bool>(sender.on)});
+      ->onChange(SwitchEventEmitter::OnChange{.value = static_cast<bool>(sender.on)});
 }
 
 #pragma mark - Native Commands

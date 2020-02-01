@@ -24,11 +24,9 @@
 #include <cxxreact/ModuleRegistry.h>
 #include <cxxreact/RAMBundleRegistry.h>
 #include <cxxreact/RecoverableError.h>
-#include <fb/fbjni/ByteBuffer.h>
 #include <fb/log.h>
+#include <fbjni/ByteBuffer.h>
 #include <folly/dynamic.h>
-#include <jni/Countable.h>
-#include <jni/LocalReference.h>
 
 #include "CxxModuleWrapper.h"
 #include "JNativeRunnable.h"
@@ -290,8 +288,8 @@ void CatalystInstanceImpl::handleMemoryPressure(int pressureLevel) {
 jni::alias_ref<CallInvokerHolder::javaobject>
 CatalystInstanceImpl::getJSCallInvokerHolder() {
   if (!jsCallInvokerHolder_) {
-    jsCallInvokerHolder_ =
-        jni::make_global(CallInvokerHolder::newObjectCxxArgs(std::make_shared<BridgeJSCallInvoker>(instance_)));
+    jsCallInvokerHolder_ = jni::make_global(CallInvokerHolder::newObjectCxxArgs(
+        std::make_shared<BridgeJSCallInvoker>(instance_)));
   }
 
   return jsCallInvokerHolder_;
@@ -301,7 +299,9 @@ jni::alias_ref<CallInvokerHolder::javaobject>
 CatalystInstanceImpl::getNativeCallInvokerHolder() {
   if (!nativeCallInvokerHolder_) {
     nativeCallInvokerHolder_ =
-        jni::make_global(CallInvokerHolder::newObjectCxxArgs(std::make_shared<MessageQueueThreadCallInvoker>(moduleMessageQueue_)));
+        jni::make_global(CallInvokerHolder::newObjectCxxArgs(
+            std::make_shared<MessageQueueThreadCallInvoker>(
+                moduleMessageQueue_)));
   }
 
   return nativeCallInvokerHolder_;

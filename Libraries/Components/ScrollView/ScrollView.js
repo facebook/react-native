@@ -24,7 +24,6 @@ const dismissKeyboard = require('../../Utilities/dismissKeyboard');
 const flattenStyle = require('../../StyleSheet/flattenStyle');
 const invariant = require('invariant');
 const processDecelerationRate = require('./processDecelerationRate');
-const requireNativeComponent = require('../../ReactNative/requireNativeComponent');
 const resolveAssetSource = require('../../Image/resolveAssetSource');
 const splitLayoutProps = require('../../StyleSheet/splitLayoutProps');
 
@@ -57,12 +56,9 @@ if (Platform.OS === 'android') {
   AndroidScrollView = ScrollViewNativeComponent;
   AndroidHorizontalScrollView = AndroidHorizontalScrollViewNativeComponent;
   AndroidHorizontalScrollContentView = AndroidHorizontalScrollContentViewNativeComponent;
-} else if (Platform.OS === 'ios') {
+} else {
   RCTScrollView = ScrollViewNativeComponent;
   RCTScrollContentView = ScrollContentViewNativeComponent;
-} else {
-  RCTScrollView = requireNativeComponent('RCTScrollView');
-  RCTScrollContentView = requireNativeComponent('RCTScrollContentView');
 }
 
 export type ScrollResponderType = {
@@ -401,8 +397,8 @@ export type Props = $ReadOnly<{|
   /**
    * When true, the scroll view stops on the next index (in relation to scroll
    * position at release) regardless of how fast the gesture is. This can be
-   * used for horizontal pagination when the page is less than the width of
-   * the ScrollView. The default value is false.
+   * used for pagination when the page is less than the width of the
+   * horizontal ScrollView or the height of the vertical ScrollView. The default value is false.
    */
   disableIntervalMomentum?: ?boolean,
   /**
@@ -1168,6 +1164,9 @@ class ScrollView extends React.Component<Props, State> {
         // On iOS the RefreshControl is a child of the ScrollView.
         // tvOS lacks native support for RefreshControl, so don't include it in that case
         return (
+          /* $FlowFixMe(>=0.117.0 site=react_native_fb) This comment suppresses
+           * an error found when Flow v0.117 was deployed. To see the error,
+           * delete this comment and run Flow. */
           <ScrollViewClass {...props} ref={this._setScrollViewRef}>
             {Platform.isTV ? null : refreshControl}
             {contentContainer}

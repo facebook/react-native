@@ -57,6 +57,8 @@ public class ReactTextShadowNode extends ReactBaseTextShadowNode {
 
   private boolean mShouldNotifyOnTextLayout;
 
+  private @Nullable ReactTextViewManagerCallback mReactTextViewManagerCallback = null;
+
   private final YogaMeasureFunction mTextMeasureFunction =
       new YogaMeasureFunction() {
         @Override
@@ -196,6 +198,10 @@ public class ReactTextShadowNode extends ReactBaseTextShadowNode {
     }
   }
 
+  public void setReactTextViewManagerCallback(ReactTextViewManagerCallback callback) {
+    mReactTextViewManagerCallback = callback;
+  }
+
   // Return text alignment according to LTR or RTL style
   private int getTextAlign() {
     int textAlign = mTextAlign;
@@ -217,6 +223,9 @@ public class ReactTextShadowNode extends ReactBaseTextShadowNode {
             /* text (e.g. from `value` prop): */ null,
             /* supportsInlineViews: */ true,
             nativeViewHierarchyOptimizer);
+    if (mReactTextViewManagerCallback != null) {
+      mReactTextViewManagerCallback.onPostProcessSpannable(mPreparedSpannableText);
+    }
     markUpdated();
   }
 

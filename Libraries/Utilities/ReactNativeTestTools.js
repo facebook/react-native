@@ -18,7 +18,13 @@ const ReactTestRenderer = require('react-test-renderer');
 const ShallowRenderer = require('react-test-renderer/shallow');
 const shallowRenderer = new ShallowRenderer();
 
-const {Switch, Text, TextInput, VirtualizedList} = require('react-native');
+const {
+  Switch,
+  Text,
+  TextInput,
+  View,
+  VirtualizedList,
+} = require('react-native');
 
 import type {
   ReactTestInstance,
@@ -36,6 +42,8 @@ function byClickable(): Predicate {
         typeof node.props.onPress === 'function') ||
       // note: Special casing <Switch /> since it doesn't use touchable
       (node.type === Switch && node.props && node.props.disabled !== true) ||
+      (node.type === View &&
+        node?.props?.onStartShouldSetResponder?.testOnly_pressabilityConfig) ||
       // HACK: Find components that use `Pressability`.
       node.instance?.state?.pressability != null ||
       // TODO: Remove this after deleting `Touchable`.
@@ -177,6 +185,16 @@ function tap(instance: ReactTestInstance) {
     const {onChange, onValueChange} = touchable.props;
     onChange && onChange({nativeEvent: {value}});
     onValueChange && onValueChange(value);
+  } else if (
+    touchable?.props?.onStartShouldSetResponder?.testOnly_pressabilityConfig
+  ) {
+    const {
+      onPress,
+      disabled,
+    } = touchable.props.onStartShouldSetResponder.testOnly_pressabilityConfig();
+    if (!disabled) {
+      onPress({nativeEvent: {}});
+    }
   } else {
     // Only tap when props.disabled isn't set (or there aren't any props)
     if (!touchable.props || !touchable.props.disabled) {

@@ -21,11 +21,6 @@ ShadowNodeFragment::childrenPlaceholder() {
   return instance;
 }
 
-LocalData::Shared const &ShadowNodeFragment::localDataPlaceholder() {
-  static auto &instance = *new LocalData::Shared();
-  return instance;
-}
-
 State::Shared const &ShadowNodeFragment::statePlaceholder() {
   static auto &instance = *new State::Shared();
   return instance;
@@ -36,11 +31,10 @@ using Value = ShadowNodeFragment::Value;
 Value::Value(ShadowNodeFragment const &fragment)
     : props_(fragment.props),
       children_(fragment.children),
-      localData_(fragment.localData),
       state_(fragment.state) {}
 
 Value::operator ShadowNodeFragment() const {
-  return ShadowNodeFragment{props_, children_, localData_, state_};
+  return ShadowNodeFragment{props_, children_, state_};
 }
 
 } // namespace react

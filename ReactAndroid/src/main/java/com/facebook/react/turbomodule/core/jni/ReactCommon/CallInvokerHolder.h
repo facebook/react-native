@@ -7,15 +7,14 @@
 
 #pragma once
 
-#include <fb/fbjni.h>
 #include <ReactCommon/CallInvoker.h>
+#include <fbjni/fbjni.h>
 #include <memory>
 
 namespace facebook {
 namespace react {
 
-class CallInvokerHolder
-    : public jni::HybridClass<CallInvokerHolder> {
+class CallInvokerHolder : public jni::HybridClass<CallInvokerHolder> {
  public:
   static auto constexpr kJavaDescriptor =
       "Lcom/facebook/react/turbomodule/core/CallInvokerHolderImpl;";

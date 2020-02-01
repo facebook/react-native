@@ -11,10 +11,10 @@
 'use strict';
 
 const DevSettings = require('./DevSettings');
-const Platform = require('./Platform');
 const invariant = require('invariant');
-
 const MetroHMRClient = require('metro/src/lib/bundle-modules/HMRClient');
+const Platform = require('./Platform');
+const prettyFormat = require('pretty-format');
 
 import NativeRedBox from '../NativeModules/specs/NativeRedBox';
 import * as LogBoxData from '../LogBox/Data/LogBoxData';
@@ -114,36 +114,23 @@ const HMRClient: HMRClientNativeInterface = {
       return;
     }
     try {
-      let message;
-      if (global.Symbol) {
-        message = JSON.stringify({
+      hmrClient.send(
+        JSON.stringify({
           type: 'log',
           level,
           data: data.map(item =>
             typeof item === 'string'
               ? item
-              : require('pretty-format')(item, {
+              : prettyFormat(item, {
                   escapeString: true,
                   highlight: true,
                   maxDepth: 3,
                   min: true,
-                  plugins: [require('pretty-format').plugins.ReactElement],
+                  plugins: [prettyFormat.plugins.ReactElement],
                 }),
           ),
-        });
-      } else {
-        try {
-          message = JSON.stringify({type: 'log', level, data});
-        } catch (error) {
-          message = JSON.stringify({
-            type: 'log',
-            level,
-            data: [error.message],
-          });
-        }
-      }
-
-      hmrClient.send(message);
+        }),
+      );
     } catch (error) {
       // If sending logs causes any failures we want to silently ignore them
       // to ensure we do not cause infinite-logging loops.

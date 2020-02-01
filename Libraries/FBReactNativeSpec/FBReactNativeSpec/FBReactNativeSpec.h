@@ -898,6 +898,8 @@ namespace facebook {
 - (void)setProfilingEnabled:(BOOL)isProfilingEnabled;
 - (void)toggleElementInspector;
 - (void)addMenuItem:(NSString *)title;
+- (void)addListener:(NSString *)eventName;
+- (void)removeListeners:(double)count;
 - (void)setIsShakeToShowDevMenuEnabled:(BOOL)enabled;
 
 @end
@@ -1304,26 +1306,6 @@ namespace facebook {
     };
   } // namespace react
 } // namespace facebook
-@protocol NativeHeapCaptureSpec <RCTBridgeModule, RCTTurboModule>
-
-- (void)captureHeap:(NSString *)path;
-- (void)captureComplete:(NSString *)path
-                  error:(NSString * _Nullable)error;
-
-@end
-namespace facebook {
-  namespace react {
-    /**
-     * ObjC++ class for module 'HeapCapture'
-     */
-
-    class JSI_EXPORT NativeHeapCaptureSpecJSI : public ObjCTurboModule {
-    public:
-      NativeHeapCaptureSpecJSI(id<RCTTurboModule> instance, std::shared_ptr<CallInvoker> jsInvoker);
-
-    };
-  } // namespace react
-} // namespace facebook
 
 namespace JS {
   namespace NativeI18nManager {
@@ -1631,6 +1613,25 @@ namespace facebook {
     };
   } // namespace react
 } // namespace facebook
+@protocol NativeJSCHeapCaptureSpec <RCTBridgeModule, RCTTurboModule>
+
+- (void)captureComplete:(NSString *)path
+                  error:(NSString * _Nullable)error;
+
+@end
+namespace facebook {
+  namespace react {
+    /**
+     * ObjC++ class for module 'JSCHeapCapture'
+     */
+
+    class JSI_EXPORT NativeJSCHeapCaptureSpecJSI : public ObjCTurboModule {
+    public:
+      NativeJSCHeapCaptureSpecJSI(id<RCTTurboModule> instance, std::shared_ptr<CallInvoker> jsInvoker);
+
+    };
+  } // namespace react
+} // namespace facebook
 @protocol NativeJSCSamplingProfilerSpec <RCTBridgeModule, RCTTurboModule>
 
 - (void)operationComplete:(double)token
@@ -1809,23 +1810,6 @@ namespace facebook {
     };
   } // namespace react
 } // namespace facebook
-
-namespace JS {
-  namespace NativeNetworkingAndroid {
-    struct Header {
-      NSString *first() const;
-      NSString *second() const;
-
-      Header(NSArray *const v) : _v(v) {}
-    private:
-      NSArray *_v;
-    };
-  }
-}
-
-@interface RCTCxxConvert (NativeNetworkingAndroid_Header)
-+ (RCTManagedPointer *)JS_NativeNetworkingAndroid_Header:(id)json;
-@end
 @protocol NativeNetworkingAndroidSpec <RCTBridgeModule, RCTTurboModule>
 
 - (void)sendRequest:(NSString *)method
@@ -3551,16 +3535,6 @@ inline id<NSObject> JS::NativeLinking::SpecSendIntentExtrasElement::value() cons
 {
   id const p = _v[@"value"];
   return p;
-}
-inline NSString *JS::NativeNetworkingAndroid::Header::first() const
-{
-  id const p = _v[0];
-  return RCTBridgingToString(p);
-}
-inline NSString *JS::NativeNetworkingAndroid::Header::second() const
-{
-  id const p = _v[1];
-  return RCTBridgingToString(p);
 }
 inline NSString *JS::NativeNetworkingIOS::SpecSendRequestQuery::method() const
 {

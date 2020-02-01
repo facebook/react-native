@@ -7,7 +7,6 @@
 
 #pragma once
 
-
 #include <better/mutex.h>
 #include <memory>
 
@@ -65,6 +64,8 @@ class ShadowTree final {
    * Commit an empty tree (a new `RootShadowNode` with no children).
    */
   void commitEmptyTree() const;
+
+  MountingCoordinator::Shared getMountingCoordinator() const;
 
  private:
   RootShadowNode::Unshared cloneRootShadowNode(

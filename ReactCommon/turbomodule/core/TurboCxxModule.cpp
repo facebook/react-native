@@ -18,23 +18,44 @@ using namespace facebook::xplat::module;
 namespace facebook {
 namespace react {
 
-static CxxModule::Callback makeTurboCxxModuleCallback(
+namespace {
+CxxModule::Callback makeTurboCxxModuleCallback(
     jsi::Runtime &runtime,
-    std::shared_ptr<CallbackWrapper> callbackWrapper) {
-  return [callbackWrapper](std::vector<folly::dynamic> args) {
-    callbackWrapper->jsInvoker().invokeAsync([callbackWrapper, args]() {
+    std::weak_ptr<CallbackWrapper> weakWrapper) {
+  return [weakWrapper,
+          wrapperWasCalled = false](std::vector<folly::dynamic> args) mutable {
+    if (wrapperWasCalled) {
+      throw std::runtime_error("callback arg cannot be called more than once");
+    }
+
+    auto strongWrapper = weakWrapper.lock();
+    if (!strongWrapper) {
+      return;
+    }
+
+    strongWrapper->jsInvoker().invokeAsync([weakWrapper, args]() {
+      auto strongWrapper2 = weakWrapper.lock();
+      if (!strongWrapper2) {
+        return;
+      }
+
       std::vector<jsi::Value> innerArgs;
       for (auto &a : args) {
         innerArgs.push_back(
-            jsi::valueFromDynamic(callbackWrapper->runtime(), a));
+            jsi::valueFromDynamic(strongWrapper2->runtime(), a));
       }
-      callbackWrapper->callback().call(
-          callbackWrapper->runtime(),
+      strongWrapper2->callback().call(
+          strongWrapper2->runtime(),
           (const jsi::Value *)innerArgs.data(),
           innerArgs.size());
+
+      strongWrapper2->destroy();
     });
+
+    wrapperWasCalled = true;
   };
 }
+} // namespace
 
 TurboCxxModule::TurboCxxModule(
     std::unique_ptr<CxxModule> cxxModule,
@@ -132,17 +153,17 @@ jsi::Value TurboCxxModule::invokeMethod(
     }
 
     if (method.callbacks == 1) {
-      auto wrapper = std::make_shared<CallbackWrapper>(
+      auto wrapper = CallbackWrapper::createWeak(
           args[count - 1].getObject(runtime).getFunction(runtime),
           runtime,
           jsInvoker_);
       first = makeTurboCxxModuleCallback(runtime, wrapper);
     } else if (method.callbacks == 2) {
-      auto wrapper1 = std::make_shared<CallbackWrapper>(
+      auto wrapper1 = CallbackWrapper::createWeak(
           args[count - 2].getObject(runtime).getFunction(runtime),
           runtime,
           jsInvoker_);
-      auto wrapper2 = std::make_shared<CallbackWrapper>(
+      auto wrapper2 = CallbackWrapper::createWeak(
           args[count - 1].getObject(runtime).getFunction(runtime),
           runtime,
           jsInvoker_);
@@ -161,9 +182,9 @@ jsi::Value TurboCxxModule::invokeMethod(
         runtime,
         [method, args, count, this](
             jsi::Runtime &rt, std::shared_ptr<Promise> promise) {
-          auto resolveWrapper = std::make_shared<CallbackWrapper>(
+          auto resolveWrapper = CallbackWrapper::createWeak(
               promise->resolve_.getFunction(rt), rt, jsInvoker_);
-          auto rejectWrapper = std::make_shared<CallbackWrapper>(
+          auto rejectWrapper = CallbackWrapper::createWeak(
               promise->reject_.getFunction(rt), rt, jsInvoker_);
           CxxModule::Callback resolve =
               makeTurboCxxModuleCallback(rt, resolveWrapper);

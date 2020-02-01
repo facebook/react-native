@@ -92,7 +92,7 @@ public class AndroidInfoModule extends NativePlatformConstantsAndroidSpec implem
 
   private Boolean isRunningScreenshotTest() {
     try {
-      Class.forName("android.support.test.rule.ActivityTestRule");
+      Class.forName("com.facebook.testing.react.screenshots.ReactAppScreenshotTestActivity");
       return true;
     } catch (ClassNotFoundException ignored) {
       return false;

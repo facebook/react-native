@@ -308,7 +308,7 @@ public class UIManagerModule extends ReactContextBaseJavaModule
   }
 
   @ReactMethod(isBlockingSynchronousMethod = true)
-  public @Nullable WritableMap getConstantsForViewManager(final String viewManagerName) {
+  public @Nullable WritableMap getConstantsForViewManager(@Nullable String viewManagerName) {
     if (mViewManagerConstantsCache != null
         && mViewManagerConstantsCache.containsKey(viewManagerName)) {
       WritableMap constants = mViewManagerConstantsCache.get(viewManagerName);
@@ -322,7 +322,7 @@ public class UIManagerModule extends ReactContextBaseJavaModule
     }
   }
 
-  private @Nullable WritableMap computeConstantsForViewManager(final String viewManagerName) {
+  private @Nullable WritableMap computeConstantsForViewManager(@Nullable String viewManagerName) {
     ViewManager targetView =
         viewManagerName != null ? mUIImplementation.resolveViewManager(viewManagerName) : null;
     if (targetView == null) {
@@ -680,22 +680,18 @@ public class UIManagerModule extends ReactContextBaseJavaModule
       int reactTag, Dynamic commandId, @Nullable ReadableArray commandArgs) {
     // TODO: this is a temporary approach to support ViewManagerCommands in Fabric until
     // the dispatchViewManagerCommand() method is supported by Fabric JS API.
+    @Nullable
+    UIManager uiManager =
+        UIManagerHelper.getUIManager(
+            getReactApplicationContext(), ViewUtil.getUIManagerType(reactTag));
+    if (uiManager == null) {
+      return;
+    }
+
     if (commandId.getType() == ReadableType.Number) {
-      final int commandIdNum = commandId.asInt();
-      UIManager uiManager =
-          UIManagerHelper.getUIManager(
-              getReactApplicationContext(), ViewUtil.getUIManagerType(reactTag));
-      if (uiManager != null) {
-        uiManager.dispatchCommand(reactTag, commandIdNum, commandArgs);
-      }
+      uiManager.dispatchCommand(reactTag, commandId.asInt(), commandArgs);
     } else if (commandId.getType() == ReadableType.String) {
-      final String commandIdStr = commandId.asString();
-      UIManager uiManager =
-          UIManagerHelper.getUIManager(
-              getReactApplicationContext(), ViewUtil.getUIManagerType(reactTag));
-      if (uiManager != null) {
-        uiManager.dispatchCommand(reactTag, commandIdStr, commandArgs);
-      }
+      uiManager.dispatchCommand(reactTag, commandId.asString(), commandArgs);
     }
   }
 

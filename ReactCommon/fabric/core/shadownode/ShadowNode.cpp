@@ -17,8 +17,6 @@
 namespace facebook {
 namespace react {
 
-using AncestorList = ShadowNode::AncestorList;
-
 SharedShadowNodeSharedList ShadowNode::emptySharedShadowNodeSharedList() {
   static const auto emptySharedShadowNodeSharedList =
       std::make_shared<SharedShadowNodeList>();
@@ -66,9 +64,6 @@ ShadowNode::ShadowNode(
       props_(fragment.props ? fragment.props : sourceShadowNode.props_),
       children_(
           fragment.children ? fragment.children : sourceShadowNode.children_),
-      localData_(
-          fragment.localData ? fragment.localData
-                             : sourceShadowNode.localData_),
       state_(
           fragment.state ? fragment.state
                          : sourceShadowNode.getMostRecentState()),
@@ -145,10 +140,6 @@ State::Shared ShadowNode::getMostRecentState() const {
   return ShadowNodeFragment::statePlaceholder();
 }
 
-SharedLocalData ShadowNode::getLocalData() const {
-  return localData_;
-}
-
 void ShadowNode::sealRecursive() const {
   if (getSealed()) {
     return;
@@ -165,7 +156,7 @@ void ShadowNode::sealRecursive() const {
 
 #pragma mark - Mutating Methods
 
-void ShadowNode::appendChild(const SharedShadowNode &child) {
+void ShadowNode::appendChild(const ShadowNode::Shared &child) {
   ensureUnsealed();
 
   cloneChildrenIfShared();
@@ -209,11 +200,6 @@ void ShadowNode::replaceChild(
   assert(false && "Child to replace was not found.");
 }
 
-void ShadowNode::setLocalData(const SharedLocalData &localData) {
-  ensureUnsealed();
-  localData_ = localData;
-}
-
 void ShadowNode::cloneChildrenIfShared() {
   if (!traits_.check(ShadowNodeTraits::Trait::ChildrenAreShared)) {
     return;
@@ -227,44 +213,8 @@ void ShadowNode::setMounted(bool mounted) const {
   family_->eventEmitter_->setEnabled(mounted);
 }
 
-AncestorList ShadowNode::getAncestors(
-    ShadowNode const &ancestorShadowNode) const {
-  auto families = better::small_vector<ShadowNodeFamily const *, 64>{};
-  auto ancestorFamily = ancestorShadowNode.family_.get();
-
-  auto family = family_.get();
-  while (family && family != ancestorFamily) {
-    families.push_back(family);
-    family = family->parent_.lock().get();
-  }
-
-  if (family != ancestorFamily) {
-    return {};
-  }
-
-  auto ancestors = AncestorList{};
-  auto parentNode = &ancestorShadowNode;
-  for (auto it = families.rbegin(); it != families.rend(); it++) {
-    auto childFamily = *it;
-    auto found = false;
-    auto childIndex = 0;
-    for (const auto &childNode : *parentNode->children_) {
-      if (childNode->family_.get() == childFamily) {
-        ancestors.push_back({*parentNode, childIndex});
-        parentNode = childNode.get();
-        found = true;
-        break;
-      }
-      childIndex++;
-    }
-
-    if (!found) {
-      ancestors.clear();
-      return ancestors;
-    }
-  }
-
-  return ancestors;
+ShadowNodeFamily const &ShadowNode::getFamily() const {
+  return *family_;
 }
 
 #pragma mark - DebugStringConvertible

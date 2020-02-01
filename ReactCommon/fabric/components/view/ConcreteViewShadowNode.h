@@ -84,7 +84,7 @@ class ConcreteViewShadowNode : public ConcreteShadowNode<
     }
   };
 
-  void appendChild(const SharedShadowNode &child) {
+  void appendChild(const ShadowNode::Shared &child) {
     ensureUnsealed();
 
     ShadowNode::appendChild(child);

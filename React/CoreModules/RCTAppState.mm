@@ -97,11 +97,18 @@ RCT_EXPORT_MODULE()
   [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
+- (void)invalidate
+{
+  [self stopObserving];
+}
+
 #pragma mark - App Notification Methods
 
 - (void)handleMemoryWarning
 {
-  [self sendEventWithName:@"memoryWarning" body:nil];
+  if (self.bridge) {
+    [self sendEventWithName:@"memoryWarning" body:nil];
+  }
 }
 
 - (void)handleAppStateDidChange:(NSNotification *)notification
@@ -118,8 +125,10 @@ RCT_EXPORT_MODULE()
 
   if (![newState isEqualToString:_lastKnownState]) {
     _lastKnownState = newState;
-    [self sendEventWithName:@"appStateDidChange"
-                       body:@{@"app_state": _lastKnownState}];
+    if (self.bridge) {
+      [self sendEventWithName:@"appStateDidChange"
+      body:@{@"app_state": _lastKnownState}];
+    }
   }
 }
 

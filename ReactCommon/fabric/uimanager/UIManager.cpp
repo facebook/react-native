@@ -33,8 +33,9 @@ SharedShadowNode UIManager::createNode(
   auto fallbackDescriptor =
       componentDescriptorRegistry_->getFallbackComponentDescriptor();
 
-  auto const eventEmitter =
-      componentDescriptor.createEventEmitter(std::move(eventTarget), tag);
+  auto family = componentDescriptor.createFamily(
+      ShadowNodeFamilyFragment{tag, surfaceId, nullptr},
+      std::move(eventTarget));
   auto const props = componentDescriptor.cloneProps(nullptr, rawProps);
   auto const state = componentDescriptor.createInitialState(
       ShadowNodeFragment{props}, surfaceId);
@@ -49,10 +50,9 @@ SharedShadowNode UIManager::createNode(
                     props, RawProps(folly::dynamic::object("name", name)))
               : props,
           /* .children = */ ShadowNodeFragment::childrenPlaceholder(),
-          /* .localData = */ ShadowNodeFragment::localDataPlaceholder(),
           /* .state = */ state,
       },
-      ShadowNodeFamilyFragment{tag, surfaceId, eventEmitter});
+      family);
 
   // state->commit(x) associates a ShadowNode with the State object.
   // state->commit(x) must be called before calling updateState; updateState
@@ -75,7 +75,7 @@ SharedShadowNode UIManager::createNode(
 }
 
 SharedShadowNode UIManager::cloneNode(
-    const SharedShadowNode &shadowNode,
+    const ShadowNode::Shared &shadowNode,
     const SharedShadowNodeSharedList &children,
     const RawProps *rawProps) const {
   SystraceSection s("UIManager::cloneNode");
@@ -95,8 +95,8 @@ SharedShadowNode UIManager::cloneNode(
 }
 
 void UIManager::appendChild(
-    const SharedShadowNode &parentShadowNode,
-    const SharedShadowNode &childShadowNode) const {
+    const ShadowNode::Shared &parentShadowNode,
+    const ShadowNode::Shared &childShadowNode) const {
   SystraceSection s("UIManager::appendChild");
 
   auto &componentDescriptor = parentShadowNode->getComponentDescriptor();
@@ -121,7 +121,7 @@ void UIManager::completeSurface(
 }
 
 void UIManager::setJSResponder(
-    const SharedShadowNode &shadowNode,
+    const ShadowNode::Shared &shadowNode,
     const bool blockNativeResponder) const {
   if (delegate_) {
     delegate_->uiManagerDidSetJSResponder(
@@ -154,7 +154,7 @@ void UIManager::setNativeProps(
         shadowTree.tryCommit(
             [&](RootShadowNode::Shared const &oldRootShadowNode) {
               return oldRootShadowNode->clone(
-                  shadowNode, [&](ShadowNode const &oldShadowNode) {
+                  shadowNode.getFamily(), [&](ShadowNode const &oldShadowNode) {
                     return oldShadowNode.clone({
                         /* .props = */ props,
                     });
@@ -196,21 +196,19 @@ LayoutMetrics UIManager::getRelativeLayoutMetrics(
 void UIManager::updateState(
     ShadowNode const &shadowNode,
     StateData::Shared const &rawStateData) const {
-  auto &componentDescriptor = shadowNode.getComponentDescriptor();
-  auto state =
-      componentDescriptor.createState(shadowNode.getState(), rawStateData);
-
   shadowTreeRegistry_.visit(
       shadowNode.getSurfaceId(), [&](ShadowTree const &shadowTree) {
         shadowTree.tryCommit([&](RootShadowNode::Shared const
                                      &oldRootShadowNode) {
           return oldRootShadowNode->clone(
-              shadowNode, [&](ShadowNode const &oldShadowNode) {
+              shadowNode.getFamily(), [&](ShadowNode const &oldShadowNode) {
+                auto &componentDescriptor =
+                    oldShadowNode.getComponentDescriptor();
+                auto state = componentDescriptor.createState(
+                    oldShadowNode.getState(), rawStateData);
                 return oldShadowNode.clone({
                     /* .props = */ ShadowNodeFragment::propsPlaceholder(),
                     /* .children = */ ShadowNodeFragment::childrenPlaceholder(),
-                    /* .localData = */
-                    ShadowNodeFragment::localDataPlaceholder(),
                     /* .state = */ state,
                 });
               });
@@ -219,7 +217,7 @@ void UIManager::updateState(
 }
 
 void UIManager::dispatchCommand(
-    const SharedShadowNode &shadowNode,
+    const ShadowNode::Shared &shadowNode,
     std::string const &commandName,
     folly::dynamic const args) const {
   if (delegate_) {

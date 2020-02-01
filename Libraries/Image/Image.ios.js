@@ -23,7 +23,7 @@ import type {ImageProps as ImagePropsType} from './ImageProps';
 import type {ImageStyleProp} from '../StyleSheet/StyleSheet';
 import NativeImageLoaderIOS from './NativeImageLoaderIOS';
 
-const RCTImageView = require('./ImageViewNativeComponent');
+import ImageViewNativeComponent from './ImageViewNativeComponent';
 
 function getSize(
   uri: string,
@@ -124,7 +124,7 @@ let Image = (props: ImagePropsType, forwardedRef) => {
   }
 
   return (
-    <RCTImageView
+    <ImageViewNativeComponent
       {...props}
       ref={forwardedRef}
       style={style}
@@ -135,9 +135,10 @@ let Image = (props: ImagePropsType, forwardedRef) => {
   );
 };
 
-Image = React.forwardRef<ImagePropsType, React.ElementRef<typeof RCTImageView>>(
-  Image,
-);
+Image = React.forwardRef<
+  ImagePropsType,
+  React.ElementRef<typeof ImageViewNativeComponent>,
+>(Image);
 Image.displayName = 'Image';
 
 /**
@@ -205,6 +206,6 @@ const styles = StyleSheet.create({
 
 module.exports = ((Image: any): React.AbstractComponent<
   ImagePropsType,
-  React.ElementRef<typeof RCTImageView>,
+  React.ElementRef<typeof ImageViewNativeComponent>,
 > &
   ImageComponentStatics);

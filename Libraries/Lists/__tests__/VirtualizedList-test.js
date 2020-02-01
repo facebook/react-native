@@ -388,4 +388,72 @@ describe('VirtualizedList', () => {
 
     expect(onEndReached).toHaveBeenCalled();
   });
+
+  it('provides a trace when a listKey collision occurs', () => {
+    const errors = [];
+    jest.spyOn(console, 'error').mockImplementation((...args) => {
+      // Silence the DEV-only React error boundary warning.
+      if ((args[0] || '').startsWith('The above error occured in the ')) {
+        return;
+      }
+      errors.push(args);
+    });
+    const commonProps = {
+      data: [{key: 'cell0'}],
+      getItem: (data, index) => data[index],
+      getItemCount: data => data.length,
+      renderItem: ({item}) => <item value={item.key} />,
+    };
+    try {
+      ReactTestRenderer.create(
+        <VirtualizedList
+          {...commonProps}
+          horizontal={false}
+          listKey="level0"
+          renderItem={() => (
+            <VirtualizedList
+              {...commonProps}
+              horizontal={true}
+              listKey="level1"
+              renderItem={() => (
+                <>
+                  {/* Force a collision */}
+                  <VirtualizedList
+                    {...commonProps}
+                    horizontal={true}
+                    listKey="level2"
+                  />
+                  <VirtualizedList
+                    {...commonProps}
+                    horizontal={true}
+                    listKey="level2"
+                  />
+                </>
+              )}
+            />
+          )}
+        />,
+      );
+      expect(errors).toMatchInlineSnapshot(`
+        Array [
+          Array [
+            "A VirtualizedList contains a cell which itself contains more than one VirtualizedList of the same orientation as the parent list. You must pass a unique listKey prop to each sibling list.
+        
+        VirtualizedList trace:
+          Child (horizontal):
+            listKey: level2
+            cellKey: cell0
+          Parent (horizontal):
+            listKey: level1
+            cellKey: cell0
+          Parent (vertical):
+            listKey: level0
+            cellKey: rootList",
+          ],
+        ]
+      `);
+    } finally {
+      console.error.mockRestore();
+    }
+  });
 });

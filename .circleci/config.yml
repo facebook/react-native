@@ -23,7 +23,7 @@ executors:
   reactnativeandroid:
     <<: *defaults
     docker:
-      - image: reactnativecommunity/react-native-android:2019-9-4
+      - image: reactnativecommunity/react-native-android:2019-10-18
     resource_class: "large"
     environment:
       - TERM: "dumb"
@@ -34,7 +34,7 @@ executors:
   reactnativeios:
     <<: *defaults
     macos:
-      xcode: "10.3.0"
+      xcode: "11.3.0"
 
 # -------------------------
 #        COMMANDS
@@ -109,13 +109,13 @@ commands:
     steps:
       - restore_cache:
           keys:
-            - v2-brew
+            - v3-brew
       - steps: << parameters.steps >>
       - save_cache:
           paths:
             - /usr/local/Homebrew
             - ~/Library/Caches/Homebrew
-          key: v2-brew
+          key: v3-brew
 
   with_pods_cache_span:
     parameters:
@@ -519,6 +519,7 @@ jobs:
             find . -type f -regex ".*/outputs/androidTest-results/connected/.*xml" -exec cp {} ./reports/outputs/ \;
             find . -type f -regex ".*/buck-out/gen/ReactAndroid/src/test/.*/.*xml" -exec cp {} ./reports/buck/ \;
             if [ -f ~/react-native/reports/buck/all-results-raw.xml ]; then
+              cd ~/okbuck
               ./tooling/junit/buck_to_junit.sh ~/react-native/reports/buck/all-results-raw.xml ~/react-native/reports/junit/results.xml
             fi
           when: always

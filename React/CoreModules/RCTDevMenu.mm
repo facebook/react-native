@@ -122,7 +122,7 @@ RCT_EXPORT_MODULE()
                                                object:nil];
     _extraMenuItems = [NSMutableArray new];
 
-#if TARGET_OS_SIMULATOR
+#if TARGET_OS_SIMULATOR || TARGET_OS_MACCATALYST
     RCTKeyCommands *commands = [RCTKeyCommands sharedInstance];
     __weak __typeof(self) weakSelf = self;
 

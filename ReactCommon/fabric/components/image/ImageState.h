@@ -24,8 +24,6 @@ class ImageState final {
         imageRequest_(
             std::make_shared<ImageRequest>(std::move(imageRequest))){};
 
-  ImageState() = default;
-
   /*
    * Returns stored ImageSource object.
    */

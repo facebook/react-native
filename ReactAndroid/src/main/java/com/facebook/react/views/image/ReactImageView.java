@@ -51,7 +51,7 @@ import com.facebook.react.common.build.ReactBuildConfig;
 import com.facebook.react.modules.fresco.ReactNetworkImageRequest;
 import com.facebook.react.uimanager.FloatUtil;
 import com.facebook.react.uimanager.PixelUtil;
-import com.facebook.react.uimanager.UIManagerModule;
+import com.facebook.react.uimanager.UIManagerHelper;
 import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.react.views.imagehelper.ImageSource;
 import com.facebook.react.views.imagehelper.MultiSourceHelper;
@@ -229,7 +229,7 @@ public class ReactImageView extends GenericDraweeView {
       mControllerListener = null;
     } else {
       final EventDispatcher mEventDispatcher =
-          ((ReactContext) getContext()).getNativeModule(UIManagerModule.class).getEventDispatcher();
+          UIManagerHelper.getEventDispatcherForReactTag((ReactContext) getContext(), getId());
 
       mControllerListener =
           new BaseControllerListener<ImageInfo>() {

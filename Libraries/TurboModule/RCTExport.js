@@ -33,5 +33,4 @@ export interface DEPRECATED_RCTExport<T: void = void> {
   +getConstants?: () => {...};
 }
 
-// eslint-disable-next-line lint/react-native-modules
 export interface TurboModule extends DEPRECATED_RCTExport<void> {}

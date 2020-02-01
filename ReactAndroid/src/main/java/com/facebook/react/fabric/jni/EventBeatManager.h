@@ -10,7 +10,7 @@
 #include <mutex>
 #include <unordered_set>
 
-#include <fb/fbjni.h>
+#include <fbjni/fbjni.h>
 #include <react/core/EventBeat.h>
 #include <react/utils/RuntimeExecutor.h>
 

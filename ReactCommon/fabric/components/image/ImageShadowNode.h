@@ -35,6 +35,14 @@ class ImageShadowNode final : public ConcreteViewShadowNode<
    */
   void setImageManager(const SharedImageManager &imageManager);
 
+  static ImageState initialStateData(
+      ShadowNodeFragment const &fragment,
+      SurfaceId const surfaceId,
+      ComponentDescriptor const &componentDescriptor) {
+    auto imageSource = ImageSource{ImageSource::Type::Invalid};
+    return {imageSource, {imageSource, nullptr}};
+  }
+
 #pragma mark - LayoutableShadowNode
 
   void layout(LayoutContext layoutContext) override;

@@ -50,6 +50,7 @@ import com.facebook.react.uimanager.ReactStylesDiffMap;
 import com.facebook.react.uimanager.Spacing;
 import com.facebook.react.uimanager.StateWrapper;
 import com.facebook.react.uimanager.ThemedReactContext;
+import com.facebook.react.uimanager.UIManagerHelper;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.ViewDefaults;
 import com.facebook.react.uimanager.ViewProps;
@@ -98,6 +99,10 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
           | InputType.TYPE_CLASS_TEXT
           | InputType.TYPE_CLASS_PHONE
           | PASSWORD_VISIBILITY_FLAG;
+  private static final int AUTOCAPITALIZE_FLAGS =
+      InputType.TYPE_TEXT_FLAG_CAP_SENTENCES
+          | InputType.TYPE_TEXT_FLAG_CAP_WORDS
+          | InputType.TYPE_TEXT_FLAG_CAP_CHARACTERS;
 
   private static final String KEYBOARD_TYPE_EMAIL_ADDRESS = "email-address";
   private static final String KEYBOARD_TYPE_NUMERIC = "numeric";
@@ -235,6 +240,7 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
           // instead of calling setText, etc directly - doing that will definitely cause bugs.
           reactEditText.maybeSetTextFromJS(
               getReactTextUpdate(text, mostRecentEventCount, start, end));
+          reactEditText.maybeSetSelection(mostRecentEventCount, start, end);
         }
         break;
     }
@@ -277,8 +283,8 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
         TextInlineImageSpan.possiblyUpdateInlineImageSpans(spannable, view);
       }
       view.maybeSetTextFromState(update);
-      if (update.getSelectionStart() != UNSET && update.getSelectionEnd() != UNSET)
-        view.setSelection(update.getSelectionStart(), update.getSelectionEnd());
+      view.maybeSetSelection(
+          update.getJsEventCounter(), update.getSelectionStart(), update.getSelectionEnd());
     }
   }
 
@@ -708,17 +714,13 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
       }
     }
 
-    updateStagedInputTypeFlag(
-        view,
-        InputType.TYPE_TEXT_FLAG_CAP_SENTENCES
-            | InputType.TYPE_TEXT_FLAG_CAP_WORDS
-            | InputType.TYPE_TEXT_FLAG_CAP_CHARACTERS,
-        autoCapitalizeValue);
+    updateStagedInputTypeFlag(view, AUTOCAPITALIZE_FLAGS, autoCapitalizeValue);
   }
 
   @ReactProp(name = "keyboardType")
   public void setKeyboardType(ReactEditText view, @Nullable String keyboardType) {
     int flagsToSet = InputType.TYPE_CLASS_TEXT;
+    boolean unsettingFlagsBreaksAutocomplete = false;
     if (KEYBOARD_TYPE_NUMERIC.equalsIgnoreCase(keyboardType)) {
       flagsToSet = INPUT_TYPE_KEYBOARD_NUMBERED;
     } else if (KEYBOARD_TYPE_NUMBER_PAD.equalsIgnoreCase(keyboardType)) {
@@ -733,8 +735,15 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
       // This will supercede secureTextEntry={false}. If it doesn't, due to the way
       //  the flags work out, the underlying field will end up a URI-type field.
       flagsToSet = InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD;
+    } else if ((view.getStagedInputType() & AUTOCAPITALIZE_FLAGS) != 0) {
+      // This prevents KEYBOARD_TYPE_FLAGS from being unset when the keyboardType is
+      // default, null, or unsupported, and autocapitalize is on.
+      // Unsetting these flags breaks the autoCapitalize functionality.
+      unsettingFlagsBreaksAutocomplete = true;
     }
-    updateStagedInputTypeFlag(view, KEYBOARD_TYPE_FLAGS, flagsToSet);
+
+    updateStagedInputTypeFlag(
+        view, (unsettingFlagsBreaksAutocomplete ? 0 : KEYBOARD_TYPE_FLAGS), flagsToSet);
     checkPasswordType(view);
   }
 
@@ -784,6 +793,11 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
   @ReactProp(name = "showSoftInputOnFocus", defaultBoolean = true)
   public void showKeyboardOnFocus(ReactEditText view, boolean showKeyboardOnFocus) {
     view.setShowSoftInputOnFocus(showKeyboardOnFocus);
+  }
+
+  @ReactProp(name = "autoFocus", defaultBoolean = false)
+  public void setAutoFocus(ReactEditText view, boolean autoFocus) {
+    view.setAutoFocus(autoFocus);
   }
 
   @ReactPropGroup(
@@ -840,6 +854,11 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
     view.setStagedInputType((view.getStagedInputType() & ~flagsToUnset) | flagsToSet);
   }
 
+  private static EventDispatcher getEventDispatcher(
+      ReactContext reactContext, ReactEditText editText) {
+    return UIManagerHelper.getEventDispatcherForReactTag(reactContext, editText.getId());
+  }
+
   private class ReactTextInputTextWatcher implements TextWatcher {
 
     private EventDispatcher mEventDispatcher;
@@ -848,7 +867,7 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
 
     public ReactTextInputTextWatcher(
         final ReactContext reactContext, final ReactEditText editText) {
-      mEventDispatcher = reactContext.getNativeModule(UIManagerModule.class).getEventDispatcher();
+      mEventDispatcher = getEventDispatcher(reactContext, editText);
       mEditText = editText;
       mPreviousText = null;
     }
@@ -986,8 +1005,7 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
     editText.setOnFocusChangeListener(
         new View.OnFocusChangeListener() {
           public void onFocusChange(View v, boolean hasFocus) {
-            EventDispatcher eventDispatcher =
-                reactContext.getNativeModule(UIManagerModule.class).getEventDispatcher();
+            EventDispatcher eventDispatcher = getEventDispatcher(reactContext, editText);
             if (hasFocus) {
               eventDispatcher.dispatchEvent(new ReactTextInputFocusEvent(editText.getId()));
             } else {
@@ -1017,9 +1035,7 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
               // * !blurOnSubmit && !isMultiline => Prevent default behaviour (return true).
               // Additionally we always generate a `submit` event.
 
-              EventDispatcher eventDispatcher =
-                  reactContext.getNativeModule(UIManagerModule.class).getEventDispatcher();
-
+              EventDispatcher eventDispatcher = getEventDispatcher(reactContext, editText);
               eventDispatcher.dispatchEvent(
                   new ReactTextInputSubmitEditingEvent(
                       editText.getId(), editText.getText().toString()));
@@ -1103,7 +1119,7 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
       mReactEditText = editText;
 
       ReactContext reactContext = getReactContext(editText);
-      mEventDispatcher = reactContext.getNativeModule(UIManagerModule.class).getEventDispatcher();
+      mEventDispatcher = getEventDispatcher(reactContext, editText);
     }
 
     @Override
@@ -1137,7 +1153,7 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
     public ReactScrollWatcher(ReactEditText editText) {
       mReactEditText = editText;
       ReactContext reactContext = getReactContext(editText);
-      mEventDispatcher = reactContext.getNativeModule(UIManagerModule.class).getEventDispatcher();
+      mEventDispatcher = getEventDispatcher(reactContext, editText);
     }
 
     @Override

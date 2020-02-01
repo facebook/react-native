@@ -69,6 +69,11 @@ WIN_EXPORT void YGNodeInsertChild(
     YGNodeRef child,
     uint32_t index);
 
+WIN_EXPORT void YGNodeSwapChild(
+    YGNodeRef node,
+    YGNodeRef child,
+    uint32_t index);
+
 WIN_EXPORT void YGNodeRemoveChild(YGNodeRef node, YGNodeRef child);
 WIN_EXPORT void YGNodeRemoveAllChildren(YGNodeRef node);
 WIN_EXPORT YGNodeRef YGNodeGetChild(YGNodeRef node, uint32_t index);

@@ -98,6 +98,12 @@ static std::string componentNameByReactViewName(std::string viewName) {
     return "View";
   }
 
+  // iOS-only
+  if (viewName == "MultilineTextInputView" ||
+      viewName == "SinglelineTextInputView") {
+    return "TextInput";
+  }
+
   return viewName;
 }
 
@@ -166,8 +172,9 @@ SharedShadowNode ComponentDescriptorRegistry::createNode(
   auto unifiedComponentName = componentNameByReactViewName(viewName);
   auto const &componentDescriptor = this->at(unifiedComponentName);
 
-  auto const eventEmitter =
-      componentDescriptor.createEventEmitter(std::move(eventTarget), tag);
+  auto family = componentDescriptor.createFamily(
+      ShadowNodeFamilyFragment{tag, surfaceId, nullptr},
+      std::move(eventTarget));
   auto const props =
       componentDescriptor.cloneProps(nullptr, RawProps(propsDynamic));
   auto const state = componentDescriptor.createInitialState(
@@ -177,10 +184,9 @@ SharedShadowNode ComponentDescriptorRegistry::createNode(
       {
           /* .props = */ props,
           /* .children = */ ShadowNodeFragment::childrenPlaceholder(),
-          /* .localData = */ ShadowNodeFragment::localDataPlaceholder(),
           /* .state = */ state,
       },
-      {tag, surfaceId, eventEmitter});
+      family);
 }
 
 void ComponentDescriptorRegistry::setFallbackComponentDescriptor(

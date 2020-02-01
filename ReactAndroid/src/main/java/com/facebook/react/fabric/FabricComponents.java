@@ -38,6 +38,7 @@ public class FabricComponents {
     sComponentNames.put("Video", "RCTVideo");
     sComponentNames.put("StickerInputView", "RCTStickerInputView");
     sComponentNames.put("Map", "RCTMap");
+    sComponentNames.put("WebView", "RCTWebView");
   }
 
   /** @return the name of component in the Fabric environment */

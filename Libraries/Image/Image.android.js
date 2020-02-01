@@ -13,7 +13,7 @@
 const DeprecatedImageStylePropTypes = require('../DeprecatedPropTypes/DeprecatedImageStylePropTypes');
 const DeprecatedStyleSheetPropType = require('../DeprecatedPropTypes/DeprecatedStyleSheetPropType');
 const DeprecatedViewPropTypes = require('../DeprecatedPropTypes/DeprecatedViewPropTypes');
-const ImageViewNativeComponent = require('./ImageViewNativeComponent');
+import ImageViewNativeComponent from './ImageViewNativeComponent';
 const PropTypes = require('prop-types');
 const React = require('react');
 const ReactNative = require('../Renderer/shims/ReactNative'); // eslint-disable-line no-unused-vars
@@ -263,12 +263,8 @@ let Image = (props: ImagePropsType, forwardedRef) => {
   let style;
   let sources;
   if (source?.uri != null) {
-    /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was found
-     * when making Flow check .android.js files. */
     const {width, height} = source;
     style = flattenStyle([{width, height}, styles.base, props.style]);
-    /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was found
-     * when making Flow check .android.js files. */
     sources = [{uri: source.uri}];
   } else {
     style = flattenStyle([styles.base, props.style]);

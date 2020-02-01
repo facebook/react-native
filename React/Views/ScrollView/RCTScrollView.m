@@ -738,6 +738,8 @@ RCT_SCROLL_EVENT_HANDLER(scrollViewDidScrollToTop, onScrollToTop)
     if (isHorizontal) {
       // Use current scroll offset to determine the next index to snap to when momentum disabled
       targetContentOffsetAlongAxis = self.disableIntervalMomentum ? scrollView.contentOffset.x : targetContentOffset->x;
+    } else {
+      targetContentOffsetAlongAxis = self.disableIntervalMomentum ? scrollView.contentOffset.y : targetContentOffset->y;
     }
 
     // Offset based on desired alignment
