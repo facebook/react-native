@@ -25,6 +25,7 @@
   BOOL _hasInputAccesoryView;
   NSString *_Nullable _predictedText;
   NSInteger _nativeEventCount;
+  BOOL _didMoveToWindow;
 }
 
 - (instancetype)initWithBridge:(RCTBridge *)bridge
@@ -519,7 +520,13 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
 
 - (void)didMoveToWindow
 {
-  [self.backedTextInputView reactFocusIfNeeded];
+  if (self.autoFocus && !_didMoveToWindow) {
+    [self.backedTextInputView reactFocus];
+  } else {
+    [self.backedTextInputView reactFocusIfNeeded];
+  }
+
+  _didMoveToWindow = YES;
 }
 
 #pragma mark - Custom Input Accessory View
