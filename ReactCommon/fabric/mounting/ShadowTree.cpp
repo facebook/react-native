@@ -169,7 +169,7 @@ bool ShadowTree::tryCommit(ShadowTreeCommitTransaction transaction) const {
   affectedLayoutableNodes.reserve(1024);
 
   telemetry.willLayout();
-  newRootShadowNode->layout(&affectedLayoutableNodes);
+  newRootShadowNode->layoutIfNeeded(&affectedLayoutableNodes);
   telemetry.didLayout();
 
   newRootShadowNode->sealRecursive();

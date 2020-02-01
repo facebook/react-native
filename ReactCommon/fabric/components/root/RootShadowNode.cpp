@@ -15,9 +15,14 @@ namespace react {
 
 const char RootComponentName[] = "RootView";
 
-void RootShadowNode::layout(
+bool RootShadowNode::layoutIfNeeded(
     std::vector<LayoutableShadowNode const *> *affectedNodes) {
   SystraceSection s("RootShadowNode::layout");
+
+  if (getIsLayoutClean()) {
+    return false;
+  }
+
   ensureUnsealed();
 
   auto layoutContext = getProps()->layoutContext;
@@ -31,6 +36,8 @@ void RootShadowNode::layout(
     setLayoutMetrics(layoutMetricsFromYogaNode(yogaNode_));
     setHasNewLayout(false);
   }
+
+  return true;
 }
 
 RootShadowNode::Unshared RootShadowNode::clone(

@@ -234,7 +234,7 @@ Size Scheduler::measureSurface(
             [&](RootShadowNode::Shared const &oldRootShadowNode) {
               auto rootShadowNode =
                   oldRootShadowNode->clone(layoutConstraints, layoutContext);
-              rootShadowNode->layout();
+              rootShadowNode->layoutIfNeeded();
               size = rootShadowNode->getLayoutMetrics().frame.size;
               return nullptr;
             });
