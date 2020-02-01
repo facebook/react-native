@@ -795,6 +795,11 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
     view.setShowSoftInputOnFocus(showKeyboardOnFocus);
   }
 
+  @ReactProp(name = "autoFocus", defaultBoolean = false)
+  public void setAutoFocus(ReactEditText view, boolean autoFocus) {
+    view.setAutoFocus(autoFocus);
+  }
+
   @ReactPropGroup(
       names = {
         ViewProps.BORDER_WIDTH,
