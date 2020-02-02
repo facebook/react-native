@@ -99,8 +99,8 @@ describe('processColorArray', () => {
           PlatformColorAndroid('?colorPrimaryDark'),
         ]);
         const expectedColorValueArray = [
-          {semantic: ['?attr/colorPrimary']},
-          {semantic: ['?colorPrimaryDark']},
+          {resource_paths: ['?attr/colorPrimary']},
+          {resource_paths: ['?colorPrimaryDark']},
         ];
         expect(colorFromArray).toEqual(expectedColorValueArray);
       });
