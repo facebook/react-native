@@ -13,6 +13,11 @@
 const {OS} = require('../../Utilities/Platform');
 const processColor = require('../processColor');
 
+const PlatformColorIOS = require('../NativeColorValueTypes.ios').PlatformColor;
+const IOSDynamicColor = require('../NativeColorValueTypes.ios').IOSDynamicColor;
+const PlatformColorAndroid = require('../NativeColorValueTypes.android')
+  .PlatformColor;
+
 const platformSpecific =
   OS === 'android'
     ? unsigned => unsigned | 0 //eslint-disable-line no-bitwise
@@ -83,5 +88,34 @@ describe('processColor', () => {
       const expectedInt = 0xff1e83c9;
       expect(colorFromString).toEqual(platformSpecific(expectedInt));
     });
+  });
+
+  describe('iOS', () => {
+    if (OS === 'ios') {
+      it('should process iOS PlatformColor colors', () => {
+        const color = PlatformColorIOS('systemRedColor');
+        const processedColor = processColor(color);
+        const expectedColor = {semantic: ['systemRedColor']};
+        expect(processedColor).toEqual(expectedColor);
+      });
+
+      it('should process iOS Dynamic colors', () => {
+        const color = IOSDynamicColor({light: 'black', dark: 'white'});
+        const processedColor = processColor(color);
+        const expectedColor = {dynamic: {light: 0xff000000, dark: 0xffffffff}};
+        expect(processedColor).toEqual(expectedColor);
+      });
+    }
+  });
+
+  describe('Android', () => {
+    if (OS === 'android') {
+      it('should process Android PlatformColor colors', () => {
+        const color = PlatformColorAndroid('?attr/colorPrimary');
+        const processedColor = processColor(color);
+        const expectedColor = {resource_paths: ['?attr/colorPrimary']};
+        expect(processedColor).toEqual(expectedColor);
+      });
+    }
   });
 });
