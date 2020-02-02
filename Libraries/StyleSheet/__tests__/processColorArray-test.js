@@ -13,6 +13,11 @@
 const {OS} = require('../../Utilities/Platform');
 const processColorArray = require('../processColorArray');
 
+const PlatformColorIOS = require('../NativeColorValueTypes.ios').PlatformColor;
+const IOSDynamicColor = require('../NativeColorValueTypes.ios').IOSDynamicColor;
+const PlatformColorAndroid = require('../NativeColorValueTypes.android')
+  .PlatformColor;
+
 const platformSpecific =
   OS === 'android'
     ? unsigned => unsigned | 0 //eslint-disable-line no-bitwise
@@ -56,5 +61,49 @@ describe('processColorArray', () => {
       const colorFromNoArray = processColorArray(null);
       expect(colorFromNoArray).toEqual(null);
     });
+  });
+
+  describe('iOS', () => {
+    if (OS === 'ios') {
+      it('should convert array of iOS PlatformColor colors', () => {
+        const colorFromArray = processColorArray([
+          PlatformColorIOS('systemColorWhite'),
+          PlatformColorIOS('systemColorBlack'),
+        ]);
+        const expectedColorValueArray = [
+          {semantic: ['systemColorWhite']},
+          {semantic: ['systemColorBlack']},
+        ];
+        expect(colorFromArray).toEqual(expectedColorValueArray);
+      });
+
+      it('should process iOS Dynamic colors', () => {
+        const colorFromArray = processColorArray([
+          IOSDynamicColor({light: 'black', dark: 'white'}),
+          IOSDynamicColor({light: 'white', dark: 'black'}),
+        ]);
+        const expectedColorValueArray = [
+          {dynamic: {light: 0xff000000, dark: 0xffffffff}},
+          {dynamic: {light: 0xffffffff, dark: 0xff000000}},
+        ];
+        expect(colorFromArray).toEqual(expectedColorValueArray);
+      });
+    }
+  });
+
+  describe('Android', () => {
+    if (OS === 'android') {
+      it('should convert array of Android PlatformColor colors', () => {
+        const colorFromArray = processColorArray([
+          PlatformColorAndroid('?attr/colorPrimary'),
+          PlatformColorAndroid('?colorPrimaryDark'),
+        ]);
+        const expectedColorValueArray = [
+          {semantic: ['?attr/colorPrimary']},
+          {semantic: ['?colorPrimaryDark']},
+        ];
+        expect(colorFromArray).toEqual(expectedColorValueArray);
+      });
+    }
   });
 });
