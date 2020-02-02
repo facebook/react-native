@@ -144,7 +144,7 @@ describe('resolveAssetSource', () => {
       );
     });
 
-    it('resolves an image with relative a path outside of root', () => {
+    it('resolves an image with a relative path outside of root', () => {
       expectResolvesAsset(
         {
           __packager_asset: true,
@@ -199,7 +199,7 @@ describe('resolveAssetSource', () => {
       );
     });
 
-    it('resolves an image with relative a path outside of root', () => {
+    it('resolves an image with a relative path outside of root', () => {
       expectResolvesAsset(
         {
           __packager_asset: true,
