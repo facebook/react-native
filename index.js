@@ -576,7 +576,7 @@ if (__DEV__) {
     },
   });
 
-  // $FlowFixMe This is intentional: Flow will error when attempting to access ART.
+  // $FlowFixMe This is intentional: Flow will error when attempting to access ToolbarAndroid.
   Object.defineProperty(module.exports, 'ToolbarAndroid', {
     configurable: true,
     get() {
