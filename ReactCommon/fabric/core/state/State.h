@@ -8,6 +8,7 @@
 #pragma once
 
 #include <folly/dynamic.h>
+#include <react/core/ShadowNodeFamily.h>
 #include <react/core/StateCoordinator.h>
 
 namespace facebook {
@@ -25,7 +26,7 @@ class State {
   using Shared = std::shared_ptr<const State>;
 
   explicit State(State const &state);
-  explicit State(StateCoordinator::Shared const &stateCoordinator);
+  explicit State(ShadowNodeFamily::Shared const &family);
   virtual ~State() = default;
 
   /*
@@ -53,10 +54,11 @@ class State {
   void commit(std::shared_ptr<ShadowNode const> const &shadowNode) const;
 
  protected:
-  StateCoordinator::Shared stateCoordinator_;
+  ShadowNodeFamily::Shared family_;
 
  private:
   friend class StateCoordinator;
+  friend class ShadowNodeFamily;
 
   /*
    * Indicates that the state was committed once and then was replaced by a

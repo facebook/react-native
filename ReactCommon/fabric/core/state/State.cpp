@@ -21,18 +21,17 @@ namespace facebook {
 namespace react {
 
 State::State(State const &state)
-    : stateCoordinator_(state.stateCoordinator_),
-      revision_(state.revision_ + 1){};
+    : family_(state.family_), revision_(state.revision_ + 1){};
 
-State::State(StateCoordinator::Shared const &stateCoordinator)
-    : stateCoordinator_(stateCoordinator), revision_{1} {};
+State::State(ShadowNodeFamily::Shared const &family)
+    : family_(family), revision_{1} {};
 
 void State::commit(std::shared_ptr<ShadowNode const> const &shadowNode) const {
-  stateCoordinator_->setTarget(StateTarget{shadowNode});
+  family_->setTarget(StateTarget{shadowNode});
 }
 
 State::Shared State::getMostRecentState() const {
-  auto target = stateCoordinator_->getTarget();
+  auto target = family_->getTarget();
   return target ? target.getShadowNode().getState()
                 : ShadowNodeFragment::statePlaceholder();
 }

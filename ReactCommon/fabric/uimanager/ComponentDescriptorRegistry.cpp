@@ -177,8 +177,8 @@ SharedShadowNode ComponentDescriptorRegistry::createNode(
       std::move(eventTarget));
   auto const props =
       componentDescriptor.cloneProps(nullptr, RawProps(propsDynamic));
-  auto const state = componentDescriptor.createInitialState(
-      ShadowNodeFragment{props}, surfaceId);
+  auto const state =
+      componentDescriptor.createInitialState(ShadowNodeFragment{props}, family);
 
   return componentDescriptor.createShadowNode(
       {

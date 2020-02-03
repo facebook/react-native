@@ -32,9 +32,12 @@ void StateCoordinator::setTarget(StateTarget &&target) const {
     auto &nextState = target.getShadowNode().getState();
 
     /*
-     * Checking and setting `isObsolete_` prevents old states to be recommitted
-     * on top of fresher states. It's okay to commit a tree with "older" Shadow
-     * Nodes (the evolution of nodes is not linear), however, we never back out
+     * Checking and setting `isObsolete_` prevents old states to be
+     recommitted
+     * on top of fresher states. It's okay to commit a tree with "older"
+     Shadow
+     * Nodes (the evolution of nodes is not linear), however, we never back
+     out
      * states (they progress linearly).
      */
     if (nextState->isObsolete_) {

@@ -21,6 +21,7 @@ class LayoutableShadowNodeTest : public ::testing::Test {
             /* .surfaceId = */ 1,
             /* .eventEmitter = */ nullptr,
         },
+        eventDispatcher_,
         componentDescriptor_);
 
     nodeA_ = std::make_shared<TestShadowNode>(
@@ -37,6 +38,7 @@ class LayoutableShadowNodeTest : public ::testing::Test {
             /* .surfaceId = */ 1,
             /* .eventEmitter = */ nullptr,
         },
+        eventDispatcher_,
         componentDescriptor_);
 
     auto traits = TestShadowNode::BaseTraits();
@@ -56,6 +58,7 @@ class LayoutableShadowNodeTest : public ::testing::Test {
             /* .surfaceId = */ 1,
             /* .eventEmitter = */ nullptr,
         },
+        eventDispatcher_,
         componentDescriptor_);
 
     nodeAAA_ = std::make_shared<TestShadowNode>(

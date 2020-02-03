@@ -9,6 +9,8 @@
 
 #include <memory>
 
+#include <better/mutex.h>
+
 #include <react/core/EventEmitter.h>
 #include <react/core/ReactPrimitives.h>
 #include <react/core/ShadowNodeFamilyFragment.h>
@@ -36,6 +38,7 @@ class ShadowNodeFamily {
 
   ShadowNodeFamily(
       ShadowNodeFamilyFragment const &fragment,
+      EventDispatcher::Weak eventDispatcher,
       ComponentDescriptor const &componentDescriptor);
 
   /*
@@ -64,8 +67,25 @@ class ShadowNodeFamily {
 
   SurfaceId getSurfaceId() const;
 
+  /*
+   * Sets and gets a state target.
+   */
+  const StateTarget &getTarget() const;
+  void setTarget(StateTarget &&target) const;
+
+  /*
+   * Dispatches a state update with given priority.
+   */
+  void dispatchRawState(
+      std::function<StateData::Shared()> &&stateData,
+      EventPriority priority) const;
+
  private:
   friend ShadowNode;
+
+  EventDispatcher::Weak eventDispatcher_;
+  mutable StateTarget target_{}; // Protected by `mutex_`.
+  mutable better::shared_mutex mutex_;
 
   /*
    * Deprecated.

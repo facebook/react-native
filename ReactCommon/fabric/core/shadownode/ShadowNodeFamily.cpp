@@ -17,8 +17,10 @@ using AncestorList = ShadowNode::AncestorList;
 
 ShadowNodeFamily::ShadowNodeFamily(
     ShadowNodeFamilyFragment const &fragment,
+    EventDispatcher::Weak eventDispatcher,
     ComponentDescriptor const &componentDescriptor)
-    : tag_(fragment.tag),
+    : eventDispatcher_(eventDispatcher),
+      tag_(fragment.tag),
       surfaceId_(fragment.surfaceId),
       eventEmitter_(fragment.eventEmitter),
       componentDescriptor_(componentDescriptor),
@@ -85,6 +87,52 @@ AncestorList ShadowNodeFamily::getAncestors(
   }
 
   return ancestors;
+}
+
+const StateTarget &ShadowNodeFamily::getTarget() const {
+  std::shared_lock<better::shared_mutex> lock(mutex_);
+  return target_;
+}
+
+void ShadowNodeFamily::setTarget(StateTarget &&target) const {
+  std::unique_lock<better::shared_mutex> lock(mutex_);
+
+  assert(target && "`StateTarget` must not be empty.");
+
+  if (target_) {
+    auto &previousState = target_.getShadowNode().getState();
+    auto &nextState = target.getShadowNode().getState();
+
+    /*
+     * Checking and setting `isObsolete_` prevents old states to be recommitted
+     * on top of fresher states. It's okay to commit a tree with "older" Shadow
+     * Nodes (the evolution of nodes is not linear), however, we never back out
+     * states (they progress linearly).
+     */
+    if (nextState->isObsolete_) {
+      return;
+    }
+
+    previousState->isObsolete_ = true;
+  }
+
+  target_ = std::move(target);
+}
+
+void ShadowNodeFamily::dispatchRawState(
+    std::function<StateData::Shared()> &&stateData,
+    EventPriority priority) const {
+  auto eventDispatcher = eventDispatcher_.lock();
+  if (!eventDispatcher || !target_) { // why do we check !target_ here?
+    return;
+  }
+
+  eventDispatcher->dispatchStateUpdate(
+      {[=]() -> std::pair<StateTarget, StateData::Shared> {
+        auto target = getTarget();
+        return {std::move(target), stateData()};
+      }},
+      priority);
 }
 
 } // namespace react

@@ -27,10 +27,8 @@ class ConcreteState : public State {
   using Shared = std::shared_ptr<const ConcreteState>;
   using Data = DataT;
 
-  explicit ConcreteState(
-      Data &&data,
-      StateCoordinator::Shared const &stateCoordinator)
-      : State(stateCoordinator), data_(std::move(data)) {}
+  explicit ConcreteState(Data &&data, ShadowNodeFamily::Shared const &family)
+      : State(family), data_(std::move(data)) {}
 
   explicit ConcreteState(Data &&data, State const &other)
       : State(other), data_(std::move(data)) {}
@@ -71,16 +69,15 @@ class ConcreteState : public State {
   void updateState(
       std::function<Data(const Data &oldData)> callback,
       EventPriority priority = EventPriority::AsynchronousBatched) const {
-    stateCoordinator_->dispatchRawState(
-        {[stateCoordinator = stateCoordinator_,
-          callback = std::move(
-              callback)]() -> std::pair<StateTarget, StateData::Shared> {
-          auto target = stateCoordinator->getTarget();
+    family_->dispatchRawState(
+        {[family = family_,
+          callback = std::move(callback)]() -> StateData::Shared {
+          auto target = family->getTarget();
           auto oldState = target.getShadowNode().getState();
           auto oldData = std::static_pointer_cast<const ConcreteState>(oldState)
                              ->getData();
           auto newData = std::make_shared<Data>(callback(oldData));
-          return {std::move(target), std::move(newData)};
+          return newData;
         }},
         priority);
   }
