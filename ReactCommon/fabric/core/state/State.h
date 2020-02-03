@@ -9,7 +9,6 @@
 
 #include <folly/dynamic.h>
 #include <react/core/ShadowNodeFamily.h>
-#include <react/core/StateCoordinator.h>
 
 namespace facebook {
 namespace react {

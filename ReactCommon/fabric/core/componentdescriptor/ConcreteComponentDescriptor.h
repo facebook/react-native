@@ -16,7 +16,6 @@
 #include <react/core/ShadowNode.h>
 #include <react/core/ShadowNodeFragment.h>
 #include <react/core/State.h>
-#include <react/core/StateCoordinator.h>
 
 namespace facebook {
 namespace react {
