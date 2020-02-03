@@ -183,9 +183,21 @@ module.exports = {
     return require('./Libraries/Components/Picker/PickerIOS');
   },
   get ProgressBarAndroid(): ProgressBarAndroid {
+    warnOnce(
+      'progress-bar-android-moved',
+      'ProgressBarAndroid has been extracted from react-native core and will be removed in a future release. ' +
+        "It can now be installed and imported from '@react-native-community/progress-bar-android' instead of 'react-native'. " +
+        'See https://github.com/react-native-community/react-native-progress-bar-android',
+    );
     return require('./Libraries/Components/ProgressBarAndroid/ProgressBarAndroid');
   },
   get ProgressViewIOS(): ProgressViewIOS {
+    warnOnce(
+      'progress-view-ios-moved',
+      'ProgressViewIOS has been extracted from react-native core and will be removed in a future release. ' +
+        "It can now be installed and imported from '@react-native-community/progress-view' instead of 'react-native'. " +
+        'See https://github.com/react-native-community/react-native-progress-view',
+    );
     return require('./Libraries/Components/ProgressViewIOS/ProgressViewIOS');
   },
   get SafeAreaView(): SafeAreaView {
@@ -198,6 +210,12 @@ module.exports = {
     return require('./Libraries/Lists/SectionList');
   },
   get SegmentedControlIOS(): SegmentedControlIOS {
+    warnOnce(
+      'segmented-control-ios-moved',
+      'SegmentedControlIOS has been extracted from react-native core and will be removed in a future release. ' +
+        "It can now be installed and imported from '@react-native-community/segmented-control' instead of 'react-native'. " +
+        'See https://github.com/react-native-community/react-native-segmented-control',
+    );
     return require('./Libraries/Components/SegmentedControlIOS/SegmentedControlIOS');
   },
   get Slider(): Slider {
@@ -281,6 +299,12 @@ module.exports = {
     return require('./Libraries/Utilities/BackHandler');
   },
   get Clipboard(): Clipboard {
+    warnOnce(
+      'clipboard-moved',
+      'Clipboard has been extracted from react-native core and will be removed in a future release. ' +
+        "It can now be installed and imported from '@react-native-community/clipboard' instead of 'react-native'. " +
+        'See https://github.com/react-native-community/react-native-clipboard',
+    );
     return require('./Libraries/Components/Clipboard/Clipboard');
   },
   get DatePickerAndroid(): DatePickerAndroid {
