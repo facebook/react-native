@@ -576,6 +576,19 @@ if (__DEV__) {
     },
   });
 
+  // $FlowFixMe This is intentional: Flow will error when attempting to access ToolbarAndroid.
+  Object.defineProperty(module.exports, 'ToolbarAndroid', {
+    configurable: true,
+    get() {
+      invariant(
+        false,
+        'ToolbarAndroid has been removed from React Native. ' +
+          "It can now be installed and imported from '@react-native-community/toolbar-android' instead of 'react-native'. " +
+          'See https://github.com/react-native-community/toolbar-android',
+      );
+    },
+  });
+
   // $FlowFixMe This is intentional: Flow will error when attempting to access ViewPagerAndroid.
   Object.defineProperty(module.exports, 'ViewPagerAndroid', {
     configurable: true,
