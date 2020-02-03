@@ -132,22 +132,17 @@ class ConcreteComponentDescriptor : public ComponentDescriptor {
   }
 
   virtual State::Shared createState(
-      const State::Shared &previousState,
+      ShadowNodeFamily::Shared const &family,
       const StateData::Shared &data) const override {
     if (std::is_same<ConcreteStateData, StateData>::value) {
       // Default case: Returning `null` for nodes that don't use `State`.
       return nullptr;
     }
 
-    assert(previousState && "Provided `previousState` is nullptr.");
     assert(data && "Provided `data` is nullptr.");
-    assert(
-        dynamic_cast<ConcreteState const *>(previousState.get()) &&
-        "Provided `previousState` has an incompatible type.");
 
     return std::make_shared<const ConcreteState>(
-        std::move(*std::static_pointer_cast<ConcreteStateData>(data)),
-        *std::static_pointer_cast<const ConcreteState>(previousState));
+        std::move(*std::static_pointer_cast<ConcreteStateData>(data)), family);
   }
 
   virtual ShadowNodeFamily::Shared createFamily(

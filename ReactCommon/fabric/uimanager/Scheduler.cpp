@@ -45,8 +45,8 @@ Scheduler::Scheduler(
 
   auto statePipe = [uiManager](
                        const StateData::Shared &data,
-                       const StateTarget &stateTarget) {
-    uiManager->updateState(stateTarget.getShadowNode(), data);
+                       SharedShadowNodeFamily const &family) {
+    uiManager->updateState(family, data);
   };
 
   eventDispatcher_ = std::make_shared<EventDispatcher>(

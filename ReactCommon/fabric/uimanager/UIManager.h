@@ -107,7 +107,7 @@ class UIManager final : public ShadowTreeDelegate {
    * and performs a commit.
    */
   void updateState(
-      ShadowNode const &shadowNode,
+      ShadowNodeFamily::Shared const &family,
       StateData::Shared const &rawStateData) const;
 
   void dispatchCommand(

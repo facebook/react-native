@@ -49,6 +49,10 @@ ComponentName ShadowNodeFamily::getComponentName() const {
   return componentName_;
 }
 
+const ComponentDescriptor &ShadowNodeFamily::getComponentDescriptor() const {
+  return componentDescriptor_;
+}
+
 AncestorList ShadowNodeFamily::getAncestors(
     ShadowNode const &ancestorShadowNode) const {
   auto families = better::small_vector<ShadowNodeFamily const *, 64>{};
@@ -120,19 +124,14 @@ void ShadowNodeFamily::setTarget(StateTarget &&target) const {
 }
 
 void ShadowNodeFamily::dispatchRawState(
-    std::function<StateData::Shared()> &&stateData,
+    StateUpdate &&stateUpdate,
     EventPriority priority) const {
   auto eventDispatcher = eventDispatcher_.lock();
-  if (!eventDispatcher || !target_) { // why do we check !target_ here?
+  if (!eventDispatcher) {
     return;
   }
 
-  eventDispatcher->dispatchStateUpdate(
-      {[=]() -> std::pair<StateTarget, StateData::Shared> {
-        auto target = getTarget();
-        return {std::move(target), stateData()};
-      }},
-      priority);
+  eventDispatcher->dispatchStateUpdate(std::move(stateUpdate), priority);
 }
 
 } // namespace react

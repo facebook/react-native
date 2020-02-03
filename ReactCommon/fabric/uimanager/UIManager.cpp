@@ -194,18 +194,17 @@ LayoutMetrics UIManager::getRelativeLayoutMetrics(
 }
 
 void UIManager::updateState(
-    ShadowNode const &shadowNode,
+    ShadowNodeFamily::Shared const &family,
     StateData::Shared const &rawStateData) const {
+  auto &componentDescriptor = family->getComponentDescriptor();
+  auto state = componentDescriptor.createState(family, rawStateData);
+
   shadowTreeRegistry_.visit(
-      shadowNode.getSurfaceId(), [&](ShadowTree const &shadowTree) {
+      family->getSurfaceId(), [&](ShadowTree const &shadowTree) {
         shadowTree.tryCommit([&](RootShadowNode::Shared const
                                      &oldRootShadowNode) {
           return oldRootShadowNode->clone(
-              shadowNode.getFamily(), [&](ShadowNode const &oldShadowNode) {
-                auto &componentDescriptor =
-                    oldShadowNode.getComponentDescriptor();
-                auto state = componentDescriptor.createState(
-                    oldShadowNode.getState(), rawStateData);
+              *family, [&](ShadowNode const &oldShadowNode) {
                 return oldShadowNode.clone({
                     /* .props = */ ShadowNodeFragment::propsPlaceholder(),
                     /* .children = */ ShadowNodeFragment::childrenPlaceholder(),

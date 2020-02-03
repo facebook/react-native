@@ -55,6 +55,11 @@ class ShadowNodeFamily {
   ComponentName getComponentName() const;
 
   /*
+   * Returns a concrete `ComponentDescriptor` that manages nodes of this type.
+   */
+  const ComponentDescriptor &getComponentDescriptor() const;
+
+  /*
    * Returns a list of all ancestors of the node relative to the given ancestor.
    * The list starts from the given ancestor node and ends with the parent node
    * of `this` node. The elements of the list have a reference to some parent
@@ -76,9 +81,8 @@ class ShadowNodeFamily {
   /*
    * Dispatches a state update with given priority.
    */
-  void dispatchRawState(
-      std::function<StateData::Shared()> &&stateData,
-      EventPriority priority) const;
+  void dispatchRawState(StateUpdate &&stateUpdate, EventPriority priority)
+      const;
 
  private:
   friend ShadowNode;

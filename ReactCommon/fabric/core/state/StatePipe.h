@@ -15,8 +15,11 @@
 namespace facebook {
 namespace react {
 
+class ShadowNodeFamily;
+using SharedShadowNodeFamily = std::shared_ptr<ShadowNodeFamily const>;
+
 using StatePipe = std::function<
-    void(const StateData::Shared &data, const StateTarget &target)>;
+    void(const StateData::Shared &data, SharedShadowNodeFamily const &family)>;
 
 } // namespace react
 } // namespace facebook

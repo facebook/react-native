@@ -70,14 +70,14 @@ class ConcreteState : public State {
       std::function<Data(const Data &oldData)> callback,
       EventPriority priority = EventPriority::AsynchronousBatched) const {
     family_->dispatchRawState(
-        {[family = family_,
-          callback = std::move(callback)]() -> StateData::Shared {
+        {[family = family_, callback = std::move(callback)]()
+             -> std::pair<SharedShadowNodeFamily const &, StateData::Shared> {
           auto target = family->getTarget();
           auto oldState = target.getShadowNode().getState();
           auto oldData = std::static_pointer_cast<const ConcreteState>(oldState)
                              ->getData();
           auto newData = std::make_shared<Data>(callback(oldData));
-          return newData;
+          return {family, newData};
         }},
         priority);
   }
