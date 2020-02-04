@@ -21,8 +21,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 import com.facebook.react.ReactRootView;
-import com.facebook.react.animation.Animation;
-import com.facebook.react.animation.AnimationPropertyUpdater;
+//import com.facebook.react.animation.Animation;
+//import com.facebook.react.animation.AnimationPropertyUpdater;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.CatalystInstance;
@@ -460,6 +460,7 @@ public class UIManagerModuleTest {
     assertThat(view0.getLeft()).isEqualTo(1);
   }
 
+  /*
   private static class AnimationStub extends Animation {
 
     public AnimationStub(int animationID, AnimationPropertyUpdater propertyUpdater) {
@@ -497,6 +498,7 @@ public class UIManagerModuleTest {
     verify(mockAnimation).run();
     verify(mockAnimation).cancel();
   }
+  */
 
   /**
    * Makes sure replaceExistingNonRootView by replacing a view with a new view that has a background

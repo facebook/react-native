@@ -25,6 +25,8 @@ import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.modules.junit4.rule.PowerMockRule;
 import org.robolectric.RobolectricTestRunner;
 
+import androidx.annotation.Nullable;
+
 /**
  * Test {@link ReactProp} annotation for {@link ReactShadowNode}. More comprehensive test of this
  * annotation can be found in {@link ReactPropAnnotationSetterTest} where we test all possible types
