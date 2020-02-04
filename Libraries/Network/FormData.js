@@ -68,7 +68,7 @@ class FormData {
     return this._parts.map(([name, value]) => {
       const contentDisposition = 'form-data; name="' + name + '"';
 
-      const headers: Headers = {'content-disposition': contentDisposition};
+      const headers: Headers = {'Content-Disposition': contentDisposition};
 
       // The body part is a "blob", which in React Native just means
       // an object with a `uri` attribute. Optionally, it can also
@@ -76,10 +76,10 @@ class FormData {
       // content type (cf. web Blob interface.)
       if (typeof value === 'object' && value) {
         if (typeof value.name === 'string') {
-          headers['content-disposition'] += '; filename="' + value.name + '"';
+          headers['Content-Disposition'] += '; filename="' + value.name + '"';
         }
         if (typeof value.type === 'string') {
-          headers['content-type'] = value.type;
+          headers['Content-Type'] = value.type;
         }
         return {...value, headers, fieldName: name};
       }
