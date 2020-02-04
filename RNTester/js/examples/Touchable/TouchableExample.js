@@ -56,7 +56,7 @@ class TouchableHighlightBox extends React.Component<{...}, $FlowFixMeState> {
             style={styles.wrapper}
             testID="touchable_highlight_image_button"
             onPress={this.touchableOnPress}>
-            <Image source={heartImage} style={styles.image} />
+            <Image source={remoteImage} style={styles.image} />
           </TouchableHighlight>
           <TouchableHighlight
             style={styles.wrapper}
@@ -430,8 +430,8 @@ class TouchableDisabled extends React.Component<{...}> {
   }
 }
 
-const heartImage = {
-  uri: 'https://pbs.twimg.com/media/BlXBfT3CQAA6cVZ.png:small',
+const remoteImage = {
+  uri: 'https://www.facebook.com/favicon.ico',
 };
 
 const styles = StyleSheet.create({
