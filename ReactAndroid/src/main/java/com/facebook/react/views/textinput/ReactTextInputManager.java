@@ -1238,7 +1238,8 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
     ReadableMap paragraphAttributes = state.getMap("paragraphAttributes");
 
     Spannable spanned =
-        TextLayoutManager.getOrCreateSpannableForText(view.getContext(), attributedString);
+        TextLayoutManager.getOrCreateSpannableForText(
+            view.getContext(), attributedString, mReactTextViewManagerCallback);
 
     TextAttributeProps textViewProps = new TextAttributeProps(props);
 
