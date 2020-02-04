@@ -61,7 +61,9 @@ import com.facebook.react.views.imagehelper.ResourceDrawableIdHelper;
 import com.facebook.react.views.scroll.ScrollEvent;
 import com.facebook.react.views.scroll.ScrollEventType;
 import com.facebook.react.views.text.DefaultStyleValuesUtil;
+import com.facebook.react.views.text.ReactBaseTextShadowNode;
 import com.facebook.react.views.text.ReactTextUpdate;
+import com.facebook.react.views.text.ReactTextViewManagerCallback;
 import com.facebook.react.views.text.TextAttributeProps;
 import com.facebook.react.views.text.TextInlineImageSpan;
 import com.facebook.react.views.text.TextLayoutManager;
@@ -113,6 +115,8 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
   private static final InputFilter[] EMPTY_FILTERS = new InputFilter[0];
   private static final int UNSET = -1;
 
+  protected @Nullable ReactTextViewManagerCallback mReactTextViewManagerCallback;
+
   @Override
   public String getName() {
     return REACT_CLASS;
@@ -128,8 +132,13 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
   }
 
   @Override
-  public LayoutShadowNode createShadowNodeInstance() {
+  public ReactBaseTextShadowNode createShadowNodeInstance() {
     return new ReactTextInputShadowNode();
+  }
+
+  public ReactBaseTextShadowNode createShadowNodeInstance(
+      @Nullable ReactTextViewManagerCallback reactTextViewManagerCallback) {
+    return new ReactTextInputShadowNode(reactTextViewManagerCallback);
   }
 
   @Override
