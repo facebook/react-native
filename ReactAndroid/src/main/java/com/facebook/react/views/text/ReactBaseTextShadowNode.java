@@ -66,6 +66,8 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
 
   public static final int DEFAULT_TEXT_SHADOW_COLOR = 0x55000000;
 
+  protected @Nullable ReactTextViewManagerCallback mReactTextViewManagerCallback;
+
   private static class SetSpanOperation {
     protected int start, end;
     protected ReactSpan what;
@@ -313,6 +315,10 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
     textShadowNode.mTextAttributes.setHeightOfTallestInlineViewOrImage(
         heightOfTallestInlineViewOrImage);
 
+    if (mReactTextViewManagerCallback != null) {
+      mReactTextViewManagerCallback.onPostProcessSpannable(sb);
+    }
+
     return sb;
   }
 
@@ -379,7 +385,13 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
   protected Map<Integer, ReactShadowNode> mInlineViews;
 
   public ReactBaseTextShadowNode() {
+    this(null);
+  }
+
+  public ReactBaseTextShadowNode(
+      @Nullable ReactTextViewManagerCallback reactTextViewManagerCallback) {
     mTextAttributes = new TextAttributes();
+    mReactTextViewManagerCallback = reactTextViewManagerCallback;
   }
 
   // Return text alignment according to LTR or RTL style
