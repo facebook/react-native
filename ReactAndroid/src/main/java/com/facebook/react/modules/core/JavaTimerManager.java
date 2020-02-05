@@ -345,6 +345,7 @@ public class JavaTimerManager {
     createTimer(callbackID, adjustedDuration, repeat);
   }
 
+  @DoNotStrip
   public void deleteTimer(int timerId) {
     synchronized (mTimerGuard) {
       Timer timer = mTimerIdsToTimers.get(timerId);
@@ -356,6 +357,7 @@ public class JavaTimerManager {
     }
   }
 
+  @DoNotStrip
   public void setSendIdleEvents(final boolean sendIdleEvents) {
     synchronized (mIdleCallbackGuard) {
       mSendIdleEvents = sendIdleEvents;
