@@ -7,6 +7,7 @@
 
 #pragma once
 
+#include <atomic>
 #include <memory>
 
 #include <react/core/LayoutMetrics.h>
@@ -35,6 +36,9 @@ class ViewEventEmitter : public TouchEventEmitter {
 #pragma mark - Layout
 
   void onLayout(const LayoutMetrics &layoutMetrics) const;
+
+ private:
+  mutable std::atomic<LayoutMetrics> lastLayoutMetrics_;
 };
 
 } // namespace react

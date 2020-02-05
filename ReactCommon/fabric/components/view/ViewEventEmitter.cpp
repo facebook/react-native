@@ -35,6 +35,17 @@ void ViewEventEmitter::onAccessibilityEscape() const {
 #pragma mark - Layout
 
 void ViewEventEmitter::onLayout(const LayoutMetrics &layoutMetrics) const {
+  // Due to State Reconciliation, `onLayout` can be called potentially many
+  // times with identical layoutMetrics. Ensure that the JS event is only
+  // dispatched when the value changes.
+  auto lastLayoutMetricsValue = lastLayoutMetrics_.load();
+  // compare_exchange_strong atomically swap the values if they're different, or
+  // return false if the values are the same.
+  if (!lastLayoutMetrics_.compare_exchange_strong(
+          lastLayoutMetricsValue, layoutMetrics)) {
+    return;
+  }
+
   dispatchEvent("layout", [frame = layoutMetrics.frame](jsi::Runtime &runtime) {
     auto layout = jsi::Object(runtime);
     layout.setProperty(runtime, "x", frame.origin.x);
