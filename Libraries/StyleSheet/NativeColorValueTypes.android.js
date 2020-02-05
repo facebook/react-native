@@ -20,12 +20,6 @@ export const PlatformColor = (...names: Array<string>): ColorValue => {
   return {resource_paths: names};
 };
 
-export const IOSDynamicColor = (
-  object: Object, // flowlint-line unclear-type: off
-): ColorValue => {
-  return null;
-};
-
 export const normalizeColorObject = (
   color: NativeColorValue,
 ): ?ProcessedColorValue => {

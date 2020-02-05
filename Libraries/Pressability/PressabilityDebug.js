@@ -11,12 +11,14 @@
 'use strict';
 
 import normalizeColor from '../StyleSheet/normalizeColor.js';
+import type {ColorValue} from '../StyleSheet/StyleSheetTypes';
+
 import Touchable from '../Components/Touchable/Touchable';
 import View from '../Components/View/View';
 import * as React from 'react';
 
 type Props = $ReadOnly<{|
-  color: string,
+  color: ColorValue,
   hitSlop: ?$ReadOnly<{|
     bottom?: ?number,
     left?: ?number,
