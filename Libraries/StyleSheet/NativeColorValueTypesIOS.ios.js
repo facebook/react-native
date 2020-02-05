@@ -11,7 +11,6 @@
 'use strict';
 
 import type {ColorValue} from './ColorValueTypes';
-import type {IOSDynamicColorTuplePrivate} from './NativeColorValueTypes';
 import {IOSDynamicColorPrivate} from './NativeColorValueTypes';
 
 export type IOSDynamicColorTuple = {

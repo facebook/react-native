@@ -10,7 +10,7 @@
 
 'use strict';
 
-import type {ColorValue, ProcessedColorValue} from './ColorValueTypes';
+import type {ColorValue} from './ColorValueTypes';
 
 export type IOSDynamicColorTuple = {
   light: ColorValue,
