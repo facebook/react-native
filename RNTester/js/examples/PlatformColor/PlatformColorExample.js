@@ -14,7 +14,7 @@ const React = require('react');
 const ReactNative = require('react-native');
 import Platform from '../../../../Libraries/Utilities/Platform';
 const {PlatformColor, StyleSheet, Text, View} = ReactNative;
-import {IOSDynamicColor} from '../../../../Libraries/StyleSheet/NativeColorValueTypes';
+import {IOSDynamicColor} from '../../../../Libraries/StyleSheet/NativeColorValueTypesIOS';
 
 type State = {};
 

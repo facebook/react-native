@@ -14,7 +14,8 @@ const {OS} = require('../../Utilities/Platform');
 const processColor = require('../processColor');
 
 const PlatformColorIOS = require('../NativeColorValueTypes.ios').PlatformColor;
-const IOSDynamicColor = require('../NativeColorValueTypes.ios').IOSDynamicColor;
+const IOSDynamicColor = require('../NativeColorValueTypesIOS.ios')
+  .IOSDynamicColor;
 const PlatformColorAndroid = require('../NativeColorValueTypes.android')
   .PlatformColor;
 
