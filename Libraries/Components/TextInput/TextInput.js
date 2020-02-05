@@ -198,26 +198,6 @@ type PasswordRules = string;
 
 type IOSProps = $ReadOnly<{|
   /**
-   * If `false`, disables spell-check style (i.e. red underlines).
-   * The default value is inherited from `autoCorrect`.
-   * @platform ios
-   */
-  spellCheck?: ?boolean,
-
-  /**
-   * Determines the color of the keyboard.
-   * @platform ios
-   */
-  keyboardAppearance?: ?('default' | 'light' | 'dark'),
-
-  /**
-   * If `true`, the keyboard disables the return key when there is no text and
-   * automatically enables it when there is text. The default value is `false`.
-   * @platform ios
-   */
-  enablesReturnKeyAutomatically?: ?boolean,
-
-  /**
    * When the clear button should appear on the right side of the text view.
    * This property is supported only for single-line TextInput component.
    * @platform ios
@@ -253,6 +233,13 @@ type IOSProps = $ReadOnly<{|
     | $ReadOnlyArray<DataDetectorTypesType>,
 
   /**
+   * If `true`, the keyboard disables the return key when there is no text and
+   * automatically enables it when there is text. The default value is `false`.
+   * @platform ios
+   */
+  enablesReturnKeyAutomatically?: ?boolean,
+
+  /**
    * An optional identifier which links a custom InputAccessoryView to
    * this text input. The InputAccessoryView is rendered above the
    * keyboard when this text input is focused.
@@ -261,15 +248,24 @@ type IOSProps = $ReadOnly<{|
   inputAccessoryViewID?: ?string,
 
   /**
-   * Give the keyboard and the system information about the
-   * expected semantic meaning for the content that users enter.
+   * Determines the color of the keyboard.
    * @platform ios
    */
-  textContentType?: ?TextContentType,
+  keyboardAppearance?: ?('default' | 'light' | 'dark'),
 
-  PasswordRules?: ?PasswordRules,
+  /**
+   * Provide rules for your password.
+   * For example, say you want to require a password with at least eight characters consisting of a mix of uppercase and lowercase letters, at least one number, and at most two consecutive characters.
+   * "required: upper; required: lower; required: digit; max-consecutive: 2; minlength: 8;"
+   * @platform ios
+   */
+  passwordRules?: ?PasswordRules,
 
   /*
+   * If `true`, allows TextInput to pass touch events to the parent component.
+   * This allows components such as SwipeableListView to be swipeable from the TextInput on iOS, as is the case on Android by default.
+   * If `false`, TextInput always asks to handle the input (except when disabled).
+   * The default value is `true`.
    * @platform ios
    */
   rejectResponderTermination?: ?boolean,
@@ -280,6 +276,20 @@ type IOSProps = $ReadOnly<{|
    * @platform ios
    */
   scrollEnabled?: ?boolean,
+
+  /**
+   * If `false`, disables spell-check style (i.e. red underlines).
+   * The default value is inherited from `autoCorrect`.
+   * @platform ios
+   */
+  spellCheck?: ?boolean,
+
+  /**
+   * Give the keyboard and the system information about the
+   * expected semantic meaning for the content that users enter.
+   * @platform ios
+   */
+  textContentType?: ?TextContentType,
 |}>;
 
 type AndroidProps = $ReadOnly<{|
@@ -324,19 +334,6 @@ type AndroidProps = $ReadOnly<{|
   ),
 
   /**
-   * Sets the return key to the label. Use it instead of `returnKeyType`.
-   * @platform android
-   */
-  returnKeyLabel?: ?string,
-
-  /**
-   * Sets the number of lines for a `TextInput`. Use it with multiline set to
-   * `true` to be able to fill the lines.
-   * @platform android
-   */
-  numberOfLines?: ?number,
-
-  /**
    * When `false`, if there is a small amount of space available around a text input
    * (e.g. landscape orientation on a phone), the OS may choose to have the user edit
    * the text inside of a full screen text input mode. When `true`, this feature is
@@ -347,17 +344,22 @@ type AndroidProps = $ReadOnly<{|
   disableFullscreenUI?: ?boolean,
 
   /**
-   * Set text break strategy on Android API Level 23+, possible values are `simple`, `highQuality`, `balanced`
-   * The default value is `simple`.
+   * Say the system whether the individual fields in your app should be included in a view structure for autofill purposes on Android API Level 26+, possible values are `auto`, `no`, `noExcludeDescendants`, `yes`, `yesExcludeDescendants`. The default value is `auto`.
+   *
+   * - `auto`: Let the Android System use its heuristics to determine if the view is important for autofill.
+   * - `no`: This view isn't important for autofill.
+   * - `noExcludeDescendants`: This view and its children aren't important for autofill.
+   * - `yes`: This view is important for autofill.
+   * - `yesExcludeDescendants`: This view is important for autofill, but its children aren't important for autofill.
    * @platform android
    */
-  textBreakStrategy?: ?('simple' | 'highQuality' | 'balanced'),
-
-  /**
-   * The color of the `TextInput` underline.
-   * @platform android
-   */
-  underlineColorAndroid?: ?ColorValue,
+  importantForAutofill?: ?(
+    | 'auto'
+    | 'no'
+    | 'noExcludeDescendants'
+    | 'yes'
+    | 'yesExcludeDescendants'
+  ),
 
   /**
    * If defined, the provided image resource will be rendered on the left.
@@ -378,13 +380,18 @@ type AndroidProps = $ReadOnly<{|
    */
   inlineImagePadding?: ?number,
 
-  importantForAutofill?: ?(
-    | 'auto'
-    | 'no'
-    | 'noExcludeDescendants'
-    | 'yes'
-    | 'yesExcludeDescendants'
-  ),
+  /**
+   * Sets the number of lines for a `TextInput`. Use it with multiline set to
+   * `true` to be able to fill the lines.
+   * @platform android
+   */
+  numberOfLines?: ?number,
+
+  /**
+   * Sets the return key to the label. Use it instead of `returnKeyType`.
+   * @platform android
+   */
+  returnKeyLabel?: ?string,
 
   /**
    * When `false`, it will prevent the soft keyboard from showing when the field is focused.
@@ -392,12 +399,31 @@ type AndroidProps = $ReadOnly<{|
    * @platform android
    */
   showSoftInputOnFocus?: ?boolean,
+
+  /**
+   * Set text break strategy on Android API Level 23+, possible values are `simple`, `highQuality`, `balanced`
+   * The default value is `simple`.
+   * @platform android
+   */
+  textBreakStrategy?: ?('simple' | 'highQuality' | 'balanced'),
+
+  /**
+   * The color of the `TextInput` underline.
+   * @platform android
+   */
+  underlineColorAndroid?: ?ColorValue,
 |}>;
 
 export type Props = $ReadOnly<{|
   ...$Diff<ViewProps, $ReadOnly<{|style: ?ViewStyleProp|}>>,
   ...IOSProps,
   ...AndroidProps,
+
+  /**
+   * Specifies whether fonts should scale to respect Text Size accessibility settings. The
+   * default is `true`.
+   */
+  allowFontScaling?: ?boolean,
 
   /**
    * Can tell `TextInput` to automatically capitalize certain characters.
@@ -421,19 +447,31 @@ export type Props = $ReadOnly<{|
   autoFocus?: ?boolean,
 
   /**
-   * Specifies whether fonts should scale to respect Text Size accessibility settings. The
-   * default is `true`.
+   * If `true`, the text field will blur when submitted.
+   * The default value is true for single-line fields and false for
+   * multiline fields. Note that for multiline fields, setting `blurOnSubmit`
+   * to `true` means that pressing return will blur the field and trigger the
+   * `onSubmitEditing` event instead of inserting a newline into the field.
    */
-  allowFontScaling?: ?boolean,
+  blurOnSubmit?: ?boolean,
 
   /**
-   * Specifies largest possible scale a font can reach when `allowFontScaling` is enabled.
-   * Possible values:
-   * `null/undefined` (default): inherit from the parent node or the global default (0)
-   * `0`: no max, ignore parent/global default
-   * `>= 1`: sets the maxFontSizeMultiplier of this node to this value
+   * If `true`, caret is hidden. The default value is `false`.
+   * This property is supported only for single-line TextInput component on iOS.
    */
-  maxFontSizeMultiplier?: ?number,
+  caretHidden?: ?boolean,
+
+  /*
+   * If `true`, contextMenuHidden is hidden. The default value is `false`.
+   */
+  contextMenuHidden?: ?boolean,
+
+  /**
+   * Provides an initial value that will change when the user starts typing.
+   * Useful for simple use-cases where you do not want to deal with listening
+   * to events and updating the value prop to keep the controlled state in sync.
+   */
+  defaultValue?: ?Stringish,
 
   /**
    * If `false`, text is not editable. The default value is `true`.
@@ -472,6 +510,101 @@ export type Props = $ReadOnly<{|
   keyboardType?: ?KeyboardType,
 
   /**
+   * Specifies largest possible scale a font can reach when `allowFontScaling` is enabled.
+   * Possible values:
+   * `null/undefined` (default): inherit from the parent node or the global default (0)
+   * `0`: no max, ignore parent/global default
+   * `>= 1`: sets the maxFontSizeMultiplier of this node to this value
+   */
+  maxFontSizeMultiplier?: ?number,
+
+  /**
+   * Limits the maximum number of characters that can be entered. Use this
+   * instead of implementing the logic in JS to avoid flicker.
+   */
+  maxLength?: ?number,
+
+  /**
+   * If `true`, the text input can be multiple lines.
+   * The default value is `false`.
+   */
+  multiline?: ?boolean,
+
+  /**
+   * Callback that is called when the text input is blurred.
+   */
+  onBlur?: ?(e: BlurEvent) => mixed,
+
+  /**
+   * Callback that is called when the text input's text changes.
+   */
+  onChange?: ?(e: ChangeEvent) => mixed,
+
+  /**
+   * Callback that is called when the text input's text changes.
+   * Changed text is passed as an argument to the callback handler.
+   */
+  onChangeText?: ?(text: string) => mixed,
+
+  /**
+   * Callback that is called when the text input's content size changes.
+   * This will be called with
+   * `{ nativeEvent: { contentSize: { width, height } } }`.
+   *
+   * Only called for multiline text inputs.
+   */
+  onContentSizeChange?: ?(e: ContentSizeChangeEvent) => mixed,
+
+  /**
+   * Callback that is called when text input ends.
+   */
+  onEndEditing?: ?(e: EditingEvent) => mixed,
+
+  /**
+   * Callback that is called when the text input is focused.
+   */
+  onFocus?: ?(e: FocusEvent) => mixed,
+
+  /**
+   * Callback that is called when a key is pressed.
+   * This will be called with `{ nativeEvent: { key: keyValue } }`
+   * where `keyValue` is `'Enter'` or `'Backspace'` for respective keys and
+   * the typed-in character otherwise including `' '` for space.
+   * Fires before `onChange` callbacks.
+   */
+  onKeyPress?: ?(e: KeyPressEvent) => mixed,
+
+  /**
+   * Invoked on content scroll with `{ nativeEvent: { contentOffset: { x, y } } }`.
+   * May also contain other properties from ScrollEvent but on Android contentSize
+   * is not provided for performance reasons.
+   */
+  onScroll?: ?(e: ScrollEvent) => mixed,
+
+  /**
+   * Callback that is called when the text input selection is changed.
+   * This will be called with
+   * `{ nativeEvent: { selection: { start, end } } }`.
+   */
+  onSelectionChange?: ?(e: SelectionChangeEvent) => mixed,
+
+  /**
+   * Callback that is called when the text input's submit button is pressed.
+   * Invalid if `multiline={true}` is specified.
+   */
+  onSubmitEditing?: ?(e: EditingEvent) => mixed,
+
+  /**
+   * The string that will be rendered before text input has been entered.
+   */
+  placeholder?: ?Stringish,
+
+  /**
+   * The text color of the placeholder string.
+   */
+  placeholderTextColor?: ?ColorValue,
+
+  /**
    * Determines how the return key should look. On Android you can also use
    * `returnKeyLabel`.
    *
@@ -506,101 +639,10 @@ export type Props = $ReadOnly<{|
   returnKeyType?: ?ReturnKeyType,
 
   /**
-   * Limits the maximum number of characters that can be entered. Use this
-   * instead of implementing the logic in JS to avoid flicker.
-   */
-  maxLength?: ?number,
-
-  /**
-   * If `true`, the text input can be multiple lines.
-   * The default value is `false`.
-   */
-  multiline?: ?boolean,
-
-  /**
-   * Callback that is called when the text input is blurred.
-   */
-  onBlur?: ?(e: BlurEvent) => mixed,
-
-  /**
-   * Callback that is called when the text input is focused.
-   */
-  onFocus?: ?(e: FocusEvent) => mixed,
-
-  /**
-   * Callback that is called when the text input's text changes.
-   */
-  onChange?: ?(e: ChangeEvent) => mixed,
-
-  /**
-   * Callback that is called when the text input's text changes.
-   * Changed text is passed as an argument to the callback handler.
-   */
-  onChangeText?: ?(text: string) => mixed,
-
-  /**
-   * Callback that is called when the text input's content size changes.
-   * This will be called with
-   * `{ nativeEvent: { contentSize: { width, height } } }`.
-   *
-   * Only called for multiline text inputs.
-   */
-  onContentSizeChange?: ?(e: ContentSizeChangeEvent) => mixed,
-
-  /**
-   * Callback that is called when text input ends.
-   */
-  onEndEditing?: ?(e: EditingEvent) => mixed,
-
-  /**
-   * Callback that is called when the text input selection is changed.
-   * This will be called with
-   * `{ nativeEvent: { selection: { start, end } } }`.
-   */
-  onSelectionChange?: ?(e: SelectionChangeEvent) => mixed,
-
-  /**
-   * Callback that is called when the text input's submit button is pressed.
-   * Invalid if `multiline={true}` is specified.
-   */
-  onSubmitEditing?: ?(e: EditingEvent) => mixed,
-
-  /**
-   * Callback that is called when a key is pressed.
-   * This will be called with `{ nativeEvent: { key: keyValue } }`
-   * where `keyValue` is `'Enter'` or `'Backspace'` for respective keys and
-   * the typed-in character otherwise including `' '` for space.
-   * Fires before `onChange` callbacks.
-   */
-  onKeyPress?: ?(e: KeyPressEvent) => mixed,
-
-  /**
-   * Invoked on content scroll with `{ nativeEvent: { contentOffset: { x, y } } }`.
-   * May also contain other properties from ScrollEvent but on Android contentSize
-   * is not provided for performance reasons.
-   */
-  onScroll?: ?(e: ScrollEvent) => mixed,
-
-  /**
-   * The string that will be rendered before text input has been entered.
-   */
-  placeholder?: ?Stringish,
-
-  /**
-   * The text color of the placeholder string.
-   */
-  placeholderTextColor?: ?ColorValue,
-
-  /**
    * If `true`, the text input obscures the text entered so that sensitive text
    * like passwords stay secure. The default value is `false`. Does not work with 'multiline={true}'.
    */
   secureTextEntry?: ?boolean,
-
-  /**
-   * The highlight and cursor color of the text input.
-   */
-  selectionColor?: ?ColorValue,
 
   /**
    * The start and end of the text input's selection. Set start and end to
@@ -612,36 +654,14 @@ export type Props = $ReadOnly<{|
   |}>,
 
   /**
-   * The value to show for the text input. `TextInput` is a controlled
-   * component, which means the native value will be forced to match this
-   * value prop if provided. For most uses, this works great, but in some
-   * cases this may cause flickering - one common cause is preventing edits
-   * by keeping value the same. In addition to simply setting the same value,
-   * either set `editable={false}`, or set/update `maxLength` to prevent
-   * unwanted edits without flicker.
+   * The highlight and cursor color of the text input.
    */
-  value?: ?Stringish,
-
-  /**
-   * Provides an initial value that will change when the user starts typing.
-   * Useful for simple use-cases where you do not want to deal with listening
-   * to events and updating the value prop to keep the controlled state in sync.
-   */
-  defaultValue?: ?Stringish,
+  selectionColor?: ?ColorValue,
 
   /**
    * If `true`, all text will automatically be selected on focus.
    */
   selectTextOnFocus?: ?boolean,
-
-  /**
-   * If `true`, the text field will blur when submitted.
-   * The default value is true for single-line fields and false for
-   * multiline fields. Note that for multiline fields, setting `blurOnSubmit`
-   * to `true` means that pressing return will blur the field and trigger the
-   * `onSubmitEditing` event instead of inserting a newline into the field.
-   */
-  blurOnSubmit?: ?boolean,
 
   /**
    * Note that not all Text styles are supported, an incomplete list of what is not supported includes:
@@ -663,15 +683,15 @@ export type Props = $ReadOnly<{|
   style?: ?TextStyleProp,
 
   /**
-   * If `true`, caret is hidden. The default value is `false`.
-   * This property is supported only for single-line TextInput component on iOS.
+   * The value to show for the text input. `TextInput` is a controlled
+   * component, which means the native value will be forced to match this
+   * value prop if provided. For most uses, this works great, but in some
+   * cases this may cause flickering - one common cause is preventing edits
+   * by keeping value the same. In addition to simply setting the same value,
+   * either set `editable={false}`, or set/update `maxLength` to prevent
+   * unwanted edits without flicker.
    */
-  caretHidden?: ?boolean,
-
-  /*
-   * If `true`, contextMenuHidden is hidden. The default value is `false`.
-   */
-  contextMenuHidden?: ?boolean,
+  value?: ?Stringish,
 
   forwardedRef?: ?ReactRefSetter<
     React.ElementRef<HostComponent<mixed>> & ImperativeMethods,
