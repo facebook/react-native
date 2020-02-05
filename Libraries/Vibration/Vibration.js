@@ -86,7 +86,7 @@ const Vibration = {
         return;
       }
       if (typeof pattern === 'number') {
-        NativeVibration.vibrate();
+        NativeVibration.vibrate(pattern);
       } else if (Array.isArray(pattern)) {
         vibrateByPattern(pattern, repeat);
       } else {
