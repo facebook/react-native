@@ -71,17 +71,8 @@ public final class JavaScriptModuleRegistry {
 
     private String getJSModuleName() {
       if (mName == null) {
-        // With proguard obfuscation turned on, proguard apparently (poorly) emulates inner
-        // classes or something because Class#getSimpleName() no longer strips the outer
-        // class name. We manually strip it here if necessary.
-        String name = mModuleInterface.getSimpleName();
-        int dollarSignIndex = name.lastIndexOf('$');
-        if (dollarSignIndex != -1) {
-          name = name.substring(dollarSignIndex + 1);
-        }
-
-        // getting the class name every call is expensive, so cache it
-        mName = name;
+        // Getting the class name every call is expensive, so cache it
+        mName = JavaScriptModuleRegistry.getJSModuleName(mModuleInterface);
       }
       return mName;
     }
@@ -93,5 +84,17 @@ public final class JavaScriptModuleRegistry {
       mCatalystInstance.callFunction(getJSModuleName(), method.getName(), jsArgs);
       return null;
     }
+  }
+
+  public static String getJSModuleName(Class<? extends JavaScriptModule> jsModuleInterface) {
+    // With proguard obfuscation turned on, proguard apparently (poorly) emulates inner
+    // classes or something because Class#getSimpleName() no longer strips the outer
+    // class name. We manually strip it here if necessary.
+    String name = jsModuleInterface.getSimpleName();
+    int dollarSignIndex = name.lastIndexOf('$');
+    if (dollarSignIndex != -1) {
+      name = name.substring(dollarSignIndex + 1);
+    }
+    return name;
   }
 }
