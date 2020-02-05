@@ -74,9 +74,6 @@ class MessageQueue {
     (this: any).callFunctionReturnFlushedQueue = this.callFunctionReturnFlushedQueue.bind(
       this,
     );
-    (this: any).callFunctionReturnResultAndFlushedQueue = this.callFunctionReturnResultAndFlushedQueue.bind(
-      this,
-    );
     (this: any).flushedQueue = this.flushedQueue.bind(this);
     (this: any).invokeCallbackAndReturnFlushedQueue = this.invokeCallbackAndReturnFlushedQueue.bind(
       this,
@@ -113,19 +110,6 @@ class MessageQueue {
     });
 
     return this.flushedQueue();
-  }
-
-  callFunctionReturnResultAndFlushedQueue(
-    module: string,
-    method: string,
-    args: any[],
-  ): $TEMPORARY$array<?[Array<number>, Array<number>, Array<any>, number]> {
-    let result;
-    this.__guard(() => {
-      result = this.__callFunction(module, method, args);
-    });
-
-    return [result, this.flushedQueue()];
   }
 
   invokeCallbackAndReturnFlushedQueue(
@@ -398,7 +382,7 @@ class MessageQueue {
     Systrace.endEvent();
   }
 
-  __callFunction(module: string, method: string, args: any[]): any {
+  __callFunction(module: string, method: string, args: any[]): void {
     this._lastFlush = Date.now();
     this._eventLoopStartTime = this._lastFlush;
     if (__DEV__ || this.__spy) {
@@ -422,9 +406,8 @@ class MessageQueue {
       method,
       module,
     );
-    const result = moduleMethods[method].apply(moduleMethods, args);
+    moduleMethods[method].apply(moduleMethods, args);
     Systrace.endEvent();
-    return result;
   }
 
   __invokeCallback(cbID: number, args: any[]) {

@@ -290,9 +290,6 @@ void JSIExecutor::bindBridge() {
         *runtime_, "invokeCallbackAndReturnFlushedQueue");
     flushedQueue_ =
         batchedBridge.getPropertyAsFunction(*runtime_, "flushedQueue");
-    callFunctionReturnResultAndFlushedQueue_ =
-        batchedBridge.getPropertyAsFunction(
-            *runtime_, "callFunctionReturnResultAndFlushedQueue");
   });
 }
 
