@@ -18,6 +18,7 @@ import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
+import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.react.bridge.ReactNoCrashSoftException;
@@ -113,6 +114,17 @@ public class MountingManager {
   public void addViewAt(int parentTag, int tag, int index) {
     UiThreadUtil.assertOnUiThread();
     ViewState parentViewState = getViewState(parentTag);
+    if (!(parentViewState.mView instanceof ViewGroup)) {
+      String message =
+          "Unable to add a view into a view that is not a ViewGroup. ParentTag: "
+              + parentTag
+              + " - Tag: "
+              + tag
+              + " - Index: "
+              + index;
+      FLog.e(TAG, message);
+      throw new IllegalStateException(message);
+    }
     final ViewGroup parentView = (ViewGroup) parentViewState.mView;
     ViewState viewState = getViewState(tag);
     final View view = viewState.mView;
