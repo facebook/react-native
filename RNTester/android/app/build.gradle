@@ -166,6 +166,8 @@ dependencies {
     // Build React Native from source
     implementation project(':ReactAndroid')
 
+    implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.0.0"
+
     def hermesPath = '$projectDir/../../../../node_modules/hermes-engine/android/'
     debugImplementation files(hermesPath + "hermes-debug.aar")
     releaseImplementation files(hermesPath + "hermes-release.aar")
