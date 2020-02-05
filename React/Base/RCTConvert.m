@@ -690,7 +690,7 @@ static UIColor *RCTColorFromSemanticColorName(NSString *semanticColorName)
   return color;
 }
 
-/** Returns a comma seperated list of the valid semantic color names
+/** Returns an alphabetically sorted comma seperated list of the valid semantic color names
  */
 static NSString *RCTSemanticColorNames()
 {
@@ -759,7 +759,7 @@ static NSString *RCTSemanticColorNames()
 #if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 130000
         if (@available(iOS 13.0, *)) {
           UIColor *color = [UIColor colorWithDynamicProvider:^UIColor * _Nonnull(UITraitCollection * _Nonnull collection) {
-            return collection.userInterfaceStyle == UIUserInterfaceStyleLight ? lightColor : darkColor;
+            return collection.userInterfaceStyle == UIUserInterfaceStyleDark ? darkColor : lightColor;
           }];
           return color;
         } else {

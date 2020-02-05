@@ -14,6 +14,19 @@
 
 @end
 
+static BOOL CGColorsAreEqual(CGColorRef color1, CGColorRef color2) {
+  CGFloat rgba1[4];
+  CGFloat rgba2[4];
+  RCTGetRGBAColorComponents(color1, rgba1);
+  RCTGetRGBAColorComponents(color2, rgba2);
+  for (int i = 0; i < 4; i++) {
+    if (rgba1[i] != rgba2[i]) {
+      return NO;
+    }
+  }
+  return YES;
+}
+
 @implementation RCTConvert_NSColorTests
 
 - (void)testColor
@@ -92,23 +105,11 @@
 
     [UITraitCollection setCurrentTraitCollection:[UITraitCollection traitCollectionWithUserInterfaceStyle:UIUserInterfaceStyleLight]];
 
-    CGFloat rgba1[4];
-    CGFloat rgba2[4];
-    RCTGetRGBAColorComponents([value CGColor], rgba1);
-    RCTGetRGBAColorComponents([[UIColor systemRedColor] CGColor], rgba2);
-    XCTAssertEqual(rgba1[0], rgba2[0]);
-    XCTAssertEqual(rgba1[1], rgba2[1]);
-    XCTAssertEqual(rgba1[2], rgba2[2]);
-    XCTAssertEqual(rgba1[3], rgba2[3]);
+    XCTAssertTrue(CGColorsAreEqual([value CGColor], [[UIColor systemRedColor] CGColor]));
 
     [UITraitCollection setCurrentTraitCollection:[UITraitCollection traitCollectionWithUserInterfaceStyle:UIUserInterfaceStyleDark]];
 
-    RCTGetRGBAColorComponents([value CGColor], rgba1);
-    RCTGetRGBAColorComponents([[UIColor systemBlueColor] CGColor], rgba2);
-    XCTAssertEqual(rgba1[0], rgba2[0]);
-    XCTAssertEqual(rgba1[1], rgba2[1]);
-    XCTAssertEqual(rgba1[2], rgba2[2]);
-    XCTAssertEqual(rgba1[3], rgba2[3]);
+    XCTAssertTrue(CGColorsAreEqual([value CGColor], [[UIColor systemBlueColor] CGColor]));
 
     [UITraitCollection setCurrentTraitCollection:savedTraitCollection];
   }
