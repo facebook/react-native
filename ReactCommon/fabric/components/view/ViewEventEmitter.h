@@ -7,8 +7,8 @@
 
 #pragma once
 
-#include <atomic>
 #include <memory>
+#include <mutex>
 
 #include <react/core/LayoutMetrics.h>
 #include <react/core/ReactPrimitives.h>
@@ -38,7 +38,8 @@ class ViewEventEmitter : public TouchEventEmitter {
   void onLayout(const LayoutMetrics &layoutMetrics) const;
 
  private:
-  mutable std::atomic<LayoutMetrics> lastLayoutMetrics_;
+  mutable std::mutex layoutMetricsMutex_;
+  mutable LayoutMetrics lastLayoutMetrics_;
 };
 
 } // namespace react
