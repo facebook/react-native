@@ -20,10 +20,6 @@
 #import "RCTTVRemoteHandler.h"
 #endif
 
-@interface RCTModalHostView () <UIAdaptivePresentationControllerDelegate>
-
-@end
-
 @implementation RCTModalHostView
 {
   __weak RCTBridge *_bridge;
@@ -50,7 +46,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:coder)
     UIView *containerView = [UIView new];
     containerView.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
     _modalViewController.view = containerView;
-    _modalViewController.presentationController.delegate = self;
     _touchHandler = [[RCTTouchHandler alloc] initWithBridge:bridge];
 #if TARGET_OS_TV
     _menuButtonGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(menuButtonPressed:)];
@@ -75,12 +70,10 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:coder)
         _onRequestClose(nil);
     }
 }
-#endif
 
 - (void)setOnRequestClose:(RCTDirectEventBlock)onRequestClose
 {
   _onRequestClose = onRequestClose;
-  #if TARGET_OS_TV
   if (_reactSubview) {
     if (_onRequestClose && _menuButtonGestureRecognizer) {
       [_reactSubview addGestureRecognizer:_menuButtonGestureRecognizer];
@@ -88,8 +81,8 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:coder)
       [_reactSubview removeGestureRecognizer:_menuButtonGestureRecognizer];
     }
   }
-  #endif
 }
+#endif
 
 - (void)notifyForBoundsChange:(CGRect)newBounds
 {
@@ -263,12 +256,5 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:coder)
   return supportedOrientations;
 }
 #endif
-
-- (void)presentationControllerDidDismiss:(UIPresentationController *)presentationController
-{
-  if (_onRequestClose) {
-    _onRequestClose(nil);
-  }
-}
 
 @end
