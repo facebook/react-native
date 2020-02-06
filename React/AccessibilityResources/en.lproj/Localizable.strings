@@ -1,0 +1,26 @@
+/*
+  Localizable.strings
+  React
+*/
+"alert"="alert";
+"checkbox"="checkbox";
+"combobox"="combo box";
+"menu"="menu";
+"menubar"="menu bar";
+"menuitem"="menu item";
+"progressbar"="progress bar";
+"radio"="radio button";
+"radiogroup"="radio group";
+"scrollbar"="scroll bar";
+"spinbutton"="spin button";
+"switch"="switch";
+"tab"="tab description";
+"tablist"="tab list";
+"timer"="timer";
+"toolbar"="tool bar";
+"checked"="checked";
+"unchecked"="not checked";
+"busy"="busy";
+"expanded"="expanded";
+"collapsed"="collapsed";
+"mixed"="mixed";
