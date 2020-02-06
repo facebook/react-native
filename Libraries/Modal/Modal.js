@@ -121,11 +121,6 @@ export type Props = $ReadOnly<{|
   onDismiss?: ?() => mixed,
 
   /**
-   * Deprecated. Use the `animationType` prop instead.
-   */
-  animated?: ?boolean,
-
-  /**
    * The `supportedOrientations` prop allows the modal to be rotated to any of the specified orientations.
    *
    * See https://facebook.github.io/react-native/docs/modal.html#supportedorientations
@@ -212,14 +207,7 @@ class Modal extends React.Component<Props> {
       backgroundColor: this.props.transparent ? 'transparent' : 'white',
     };
 
-    let animationType = this.props.animationType;
-    if (!animationType) {
-      // manually setting default prop here to keep support for the deprecated 'animated' prop
-      animationType = 'none';
-      if (this.props.animated) {
-        animationType = 'slide';
-      }
-    }
+    let animationType = this.props.animationType || 'none';
 
     let presentationStyle = this.props.presentationStyle;
     if (!presentationStyle) {
