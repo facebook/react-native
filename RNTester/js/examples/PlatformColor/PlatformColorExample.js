@@ -15,6 +15,7 @@ const ReactNative = require('react-native');
 import Platform from '../../../../Libraries/Utilities/Platform';
 const {PlatformColor, StyleSheet, Text, View} = ReactNative;
 import {IOSDynamicColor} from '../../../../Libraries/StyleSheet/NativeColorValueTypesIOS';
+import {AndroidColor} from '../../../../Libraries/StyleSheet/NativeColorValueTypesAndroid';
 
 type State = {};
 
@@ -189,6 +190,29 @@ class DynamicColorsExample extends React.Component<{}, State> {
   }
 }
 
+class AndroidColorsExample extends React.Component<{}, State> {
+  state: State;
+  render() {
+    return Platform.OS === 'android' ? (
+      <View style={styles.column}>
+        <View style={styles.row}>
+          <Text style={styles.labelCell}>
+            AndroidColor('?attr/colorAccent')
+          </Text>
+          <View
+            style={{
+              ...styles.colorCell,
+              backgroundColor: AndroidColor('?attr/colorAccent'),
+            }}
+          />
+        </View>
+      </View>
+    ) : (
+      <Text>Not applicable on this platform</Text>
+    );
+  }
+}
+
 const styles = StyleSheet.create({
   column: {flex: 1, flexDirection: 'column'},
   row: {flex: 0.75, flexDirection: 'row'},
@@ -220,9 +244,15 @@ exports.examples = [
     },
   },
   {
-    title: 'Dynamic Colors',
+    title: 'iOS Dynamic Colors',
     render: function(): React.Element<any> {
       return <DynamicColorsExample />;
+    },
+  },
+  {
+    title: 'Android Colors',
+    render: function(): React.Element<any> {
+      return <AndroidColorsExample />;
     },
   },
 ];

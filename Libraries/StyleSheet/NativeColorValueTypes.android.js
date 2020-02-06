@@ -20,6 +20,10 @@ export const PlatformColor = (...names: Array<string>): ColorValue => {
   return {resource_paths: names};
 };
 
+export const AndroidColorPrivate = (color: string): ColorValue => {
+  return {resource_paths: [color]};
+};
+
 export const normalizeColorObject = (
   color: NativeColorValue,
 ): ?ProcessedColorValue => {
