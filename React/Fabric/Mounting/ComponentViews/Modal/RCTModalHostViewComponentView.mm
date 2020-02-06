@@ -91,9 +91,7 @@ static ModalHostViewOnOrientationChangeStruct onOrientationChangeStruct(CGRect r
   return {orientation};
 }
 
-@interface RCTModalHostViewComponentView () <
-    RCTFabricModalHostViewControllerDelegate,
-    UIAdaptivePresentationControllerDelegate>
+@interface RCTModalHostViewComponentView () <RCTFabricModalHostViewControllerDelegate>
 
 @end
 
@@ -112,7 +110,6 @@ static ModalHostViewOnOrientationChangeStruct onOrientationChangeStruct(CGRect r
     _viewController = [RCTFabricModalHostViewController new];
     _viewController.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
     _viewController.delegate = self;
-    _viewController.presentationController.delegate = self;
   }
 
   return self;
@@ -215,19 +212,6 @@ static ModalHostViewOnOrientationChangeStruct onOrientationChangeStruct(CGRect r
 - (void)unmountChildComponentView:(UIView<RCTComponentViewProtocol> *)childComponentView index:(NSInteger)index
 {
   [childComponentView removeFromSuperview];
-}
-
-#pragma mark - UIAdaptivePresentationControllerDelegate
-
-- (void)presentationControllerDidDismiss:(UIPresentationController *)presentationController
-{
-  if (!_eventEmitter) {
-    return;
-  }
-
-  assert(std::dynamic_pointer_cast<ModalHostViewEventEmitter const>(_eventEmitter));
-  auto eventEmitter = std::static_pointer_cast<ModalHostViewEventEmitter const>(_eventEmitter);
-  eventEmitter->onRequestClose({});
 }
 
 @end
