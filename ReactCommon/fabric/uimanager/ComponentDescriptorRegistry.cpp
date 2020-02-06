@@ -172,12 +172,13 @@ SharedShadowNode ComponentDescriptorRegistry::createNode(
   auto unifiedComponentName = componentNameByReactViewName(viewName);
   auto const &componentDescriptor = this->at(unifiedComponentName);
 
-  auto const eventEmitter =
-      componentDescriptor.createEventEmitter(std::move(eventTarget), tag);
+  auto family = componentDescriptor.createFamily(
+      ShadowNodeFamilyFragment{tag, surfaceId, nullptr},
+      std::move(eventTarget));
   auto const props =
       componentDescriptor.cloneProps(nullptr, RawProps(propsDynamic));
-  auto const state = componentDescriptor.createInitialState(
-      ShadowNodeFragment{props}, surfaceId);
+  auto const state =
+      componentDescriptor.createInitialState(ShadowNodeFragment{props}, family);
 
   return componentDescriptor.createShadowNode(
       {
@@ -185,7 +186,7 @@ SharedShadowNode ComponentDescriptorRegistry::createNode(
           /* .children = */ ShadowNodeFragment::childrenPlaceholder(),
           /* .state = */ state,
       },
-      {tag, surfaceId, eventEmitter});
+      family);
 }
 
 void ComponentDescriptorRegistry::setFallbackComponentDescriptor(

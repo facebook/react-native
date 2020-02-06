@@ -11,8 +11,68 @@
 #import <React/RCTEventDispatcher.h>
 #import <React/RCTLog.h>
 #import <React/RCTUIManager.h>
+#import <ReactCommon/RCTTurboModule.h>
 
 #import "FBSnapshotTestController.h"
+
+#import "RCTTestPlugins.h"
+
+@protocol NativeTestModuleSpec <RCTBridgeModule, RCTTurboModule>
+
+- (void)markTestCompleted;
+- (void)markTestPassed:(BOOL)success;
+- (void)verifySnapshot:(RCTResponseSenderBlock)callback;
+
+@end
+
+namespace facebook {
+  namespace react {
+    /**
+     * ObjC++ class for module 'TestModule'
+     */
+
+    class JSI_EXPORT NativeTestModuleSpecJSI : public ObjCTurboModule {
+    public:
+      NativeTestModuleSpecJSI(id<RCTTurboModule> instance, std::shared_ptr<CallInvoker> jsInvoker);
+
+    };
+  } // namespace react
+} // namespace facebook
+
+namespace facebook {
+  namespace react {
+
+
+  static facebook::jsi::Value __hostFunction_NativeTestModuleSpecJSI_markTestCompleted(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+    return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, VoidKind, "markTestCompleted", @selector(markTestCompleted), args, count);
+  }
+
+  static facebook::jsi::Value __hostFunction_NativeTestModuleSpecJSI_markTestPassed(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+    return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, VoidKind, "markTestPassed", @selector(markTestPassed:), args, count);
+  }
+
+  static facebook::jsi::Value __hostFunction_NativeTestModuleSpecJSI_verifySnapshot(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+    return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, VoidKind, "verifySnapshot", @selector(verifySnapshot:), args, count);
+  }
+
+
+  NativeTestModuleSpecJSI::NativeTestModuleSpecJSI(id<RCTTurboModule> instance, std::shared_ptr<CallInvoker> jsInvoker)
+    : ObjCTurboModule("TestModule", instance, jsInvoker) {
+
+      methodMap_["markTestCompleted"] = MethodMetadata {0, __hostFunction_NativeTestModuleSpecJSI_markTestCompleted};
+
+
+      methodMap_["markTestPassed"] = MethodMetadata {1, __hostFunction_NativeTestModuleSpecJSI_markTestPassed};
+
+
+      methodMap_["verifySnapshot"] = MethodMetadata {1, __hostFunction_NativeTestModuleSpecJSI_verifySnapshot};
+  }
+
+  } // namespace react
+} // namespace facebook
+
+@interface RCTTestModule() <NativeTestModuleSpec>
+@end
 
 @implementation RCTTestModule {
   NSMutableDictionary<NSString *, NSNumber *> *_snapshotCounter;
@@ -86,4 +146,13 @@ RCT_EXPORT_METHOD(markTestPassed:(BOOL)success)
   }];
 }
 
+- (std::shared_ptr<facebook::react::TurboModule>)getTurboModuleWithJsInvoker:(std::shared_ptr<facebook::react::CallInvoker>)jsInvoker
+{
+  return std::make_shared<facebook::react::NativeTestModuleSpecJSI>(self, jsInvoker);
+}
+
 @end
+
+Class RCTTestModuleCls(void) {
+  return RCTTestModule.class;
+}

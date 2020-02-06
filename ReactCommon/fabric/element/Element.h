@@ -31,10 +31,10 @@ template <typename ShadowNodeT>
 class Element final {
  public:
   using ConcreteProps = typename ShadowNodeT::ConcreteProps;
-  using SharedConcreteProps = typename ShadowNodeT::SharedConcreteProps;
-  using ConcreteEventEmitter = typename ShadowNodeT::ConcreteEventEmitter;
+  using SharedConcreteProps = std::shared_ptr<ConcreteProps const>;
+  using UnsharedConcreteProps = std::shared_ptr<ConcreteProps>;
   using ConcreteShadowNode = ShadowNodeT;
-  using ConcreteSharedShadowNode = std::shared_ptr<ConcreteShadowNode const>;
+  using ConcreteUnsharedShadowNode = std::shared_ptr<ConcreteShadowNode>;
 
   using ConcreteReferenceCallback =
       std::function<void(std::shared_ptr<ShadowNodeT const> const &shadowNode)>;
@@ -46,6 +46,13 @@ class Element final {
     fragment_.componentHandle = ShadowNodeT::Handle();
     fragment_.componentName = ShadowNodeT::Name();
     fragment_.props = ShadowNodeT::defaultSharedProps();
+  }
+
+  /*
+   * Converts to `ElementFragment` object.
+   */
+  operator ElementFragment() {
+    return fragment_;
   }
 
   /*
@@ -83,11 +90,11 @@ class Element final {
   /*
    * Sets children.
    */
-  Element &children(std::vector<Element> children) {
+  Element &children(std::vector<ElementFragment> children) {
     auto fragments = ElementFragment::List{};
     fragments.reserve(children.size());
     for (auto const &child : children) {
-      fragments.push_back(child.fragment_);
+      fragments.push_back(child);
     }
     fragment_.children = fragments;
     return *this;
@@ -98,7 +105,7 @@ class Element final {
    * component which is being constructed.
    */
   Element &reference(
-      std::function<void(ConcreteSharedShadowNode const &shadowNode)>
+      std::function<void(ConcreteUnsharedShadowNode const &shadowNode)>
           callback) {
     fragment_.referenceCallback = callback;
     return *this;
@@ -108,10 +115,10 @@ class Element final {
    * During component construction, assigns a given pointer to a component
    * that is being constructed.
    */
-  Element &reference(ConcreteSharedShadowNode &inShadowNode) {
+  Element &reference(ConcreteUnsharedShadowNode &outShadowNode) {
     fragment_.referenceCallback = [&](ShadowNode::Shared const &shadowNode) {
-      inShadowNode =
-          std::static_pointer_cast<ConcreteShadowNode const>(shadowNode);
+      outShadowNode = std::const_pointer_cast<ConcreteShadowNode>(
+          std::static_pointer_cast<ConcreteShadowNode const>(shadowNode));
     };
     return *this;
   }

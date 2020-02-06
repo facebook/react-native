@@ -60,6 +60,7 @@ export type WarningFilter = (format: string) => WarningInfo;
 type AppInfo = $ReadOnly<{|
   appVersion: string,
   engine: string,
+  onPress?: ?() => void,
 |}>;
 
 const observers: Set<{observer: Observer, ...}> = new Set();

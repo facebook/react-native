@@ -7,6 +7,8 @@
 
 #import <React/RCTImageURLLoader.h>
 
+// TODO (T61325135): Remove C++ checks
+#ifdef __cplusplus
 namespace facebook {
 namespace react {
 
@@ -17,6 +19,7 @@ struct ImageURLLoaderAttribution {
 
 } // namespace react
 } // namespace facebook
+#endif
 
 @interface RCTImageURLLoaderRequest : NSObject
 
@@ -35,6 +38,8 @@ struct ImageURLLoaderAttribution {
  */
 @protocol RCTImageURLLoaderWithAttribution <RCTImageURLLoader>
 
+// TODO (T61325135): Remove C++ checks
+#ifdef __cplusplus
 /**
  * Same as the RCTImageURLLoader variant above, but allows optional `attribution` information.
  * Caller may also specify a preferred requestId for tracking purpose.
@@ -48,6 +53,7 @@ struct ImageURLLoaderAttribution {
                               progressHandler:(RCTImageLoaderProgressBlock)progressHandler
                            partialLoadHandler:(RCTImageLoaderPartialLoadBlock)partialLoadHandler
                             completionHandler:(RCTImageLoaderCompletionBlock)completionHandler;
+#endif
 
 /**
  * Image instrumentation - notify that the image content (UIImage) has been set on the native view.

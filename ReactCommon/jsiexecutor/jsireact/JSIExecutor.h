@@ -129,7 +129,6 @@ class JSIExecutor : public JSExecutor {
   folly::Optional<jsi::Function> callFunctionReturnFlushedQueue_;
   folly::Optional<jsi::Function> invokeCallbackAndReturnFlushedQueue_;
   folly::Optional<jsi::Function> flushedQueue_;
-  folly::Optional<jsi::Function> callFunctionReturnResultAndFlushedQueue_;
 };
 
 using Logger =

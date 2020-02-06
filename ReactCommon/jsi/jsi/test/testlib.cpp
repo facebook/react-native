@@ -559,11 +559,11 @@ TEST_P(JSITest, FunctionConstructorTest) {
       .getObject(rt)
       .setProperty(rt, "pika", "chu");
   auto empty = ctor.callAsConstructor(rt);
-  ASSERT_TRUE(empty.isObject());
+  EXPECT_TRUE(empty.isObject());
   auto emptyObj = std::move(empty).getObject(rt);
   EXPECT_EQ(emptyObj.getProperty(rt, "pika").getString(rt).utf8(rt), "chu");
   auto who = ctor.callAsConstructor(rt, "who");
-  ASSERT_TRUE(who.isObject());
+  EXPECT_TRUE(who.isObject());
   auto whoObj = std::move(who).getObject(rt);
   EXPECT_EQ(whoObj.getProperty(rt, "pika").getString(rt).utf8(rt), "who");
 

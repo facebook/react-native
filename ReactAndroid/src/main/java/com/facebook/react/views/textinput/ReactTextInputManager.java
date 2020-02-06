@@ -50,6 +50,7 @@ import com.facebook.react.uimanager.ReactStylesDiffMap;
 import com.facebook.react.uimanager.Spacing;
 import com.facebook.react.uimanager.StateWrapper;
 import com.facebook.react.uimanager.ThemedReactContext;
+import com.facebook.react.uimanager.UIManagerHelper;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.ViewDefaults;
 import com.facebook.react.uimanager.ViewProps;
@@ -60,7 +61,9 @@ import com.facebook.react.views.imagehelper.ResourceDrawableIdHelper;
 import com.facebook.react.views.scroll.ScrollEvent;
 import com.facebook.react.views.scroll.ScrollEventType;
 import com.facebook.react.views.text.DefaultStyleValuesUtil;
+import com.facebook.react.views.text.ReactBaseTextShadowNode;
 import com.facebook.react.views.text.ReactTextUpdate;
+import com.facebook.react.views.text.ReactTextViewManagerCallback;
 import com.facebook.react.views.text.TextAttributeProps;
 import com.facebook.react.views.text.TextInlineImageSpan;
 import com.facebook.react.views.text.TextLayoutManager;
@@ -112,6 +115,8 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
   private static final InputFilter[] EMPTY_FILTERS = new InputFilter[0];
   private static final int UNSET = -1;
 
+  protected @Nullable ReactTextViewManagerCallback mReactTextViewManagerCallback;
+
   @Override
   public String getName() {
     return REACT_CLASS;
@@ -127,8 +132,13 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
   }
 
   @Override
-  public LayoutShadowNode createShadowNodeInstance() {
+  public ReactBaseTextShadowNode createShadowNodeInstance() {
     return new ReactTextInputShadowNode();
+  }
+
+  public ReactBaseTextShadowNode createShadowNodeInstance(
+      @Nullable ReactTextViewManagerCallback reactTextViewManagerCallback) {
+    return new ReactTextInputShadowNode(reactTextViewManagerCallback);
   }
 
   @Override
@@ -239,6 +249,7 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
           // instead of calling setText, etc directly - doing that will definitely cause bugs.
           reactEditText.maybeSetTextFromJS(
               getReactTextUpdate(text, mostRecentEventCount, start, end));
+          reactEditText.maybeSetSelection(mostRecentEventCount, start, end);
         }
         break;
     }
@@ -281,8 +292,8 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
         TextInlineImageSpan.possiblyUpdateInlineImageSpans(spannable, view);
       }
       view.maybeSetTextFromState(update);
-      if (update.getSelectionStart() != UNSET && update.getSelectionEnd() != UNSET)
-        view.setSelection(update.getSelectionStart(), update.getSelectionEnd());
+      view.maybeSetSelection(
+          update.getJsEventCounter(), update.getSelectionStart(), update.getSelectionEnd());
     }
   }
 
@@ -793,6 +804,11 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
     view.setShowSoftInputOnFocus(showKeyboardOnFocus);
   }
 
+  @ReactProp(name = "autoFocus", defaultBoolean = false)
+  public void setAutoFocus(ReactEditText view, boolean autoFocus) {
+    view.setAutoFocus(autoFocus);
+  }
+
   @ReactPropGroup(
       names = {
         ViewProps.BORDER_WIDTH,
@@ -847,6 +863,11 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
     view.setStagedInputType((view.getStagedInputType() & ~flagsToUnset) | flagsToSet);
   }
 
+  private static EventDispatcher getEventDispatcher(
+      ReactContext reactContext, ReactEditText editText) {
+    return UIManagerHelper.getEventDispatcherForReactTag(reactContext, editText.getId());
+  }
+
   private class ReactTextInputTextWatcher implements TextWatcher {
 
     private EventDispatcher mEventDispatcher;
@@ -855,7 +876,7 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
 
     public ReactTextInputTextWatcher(
         final ReactContext reactContext, final ReactEditText editText) {
-      mEventDispatcher = reactContext.getNativeModule(UIManagerModule.class).getEventDispatcher();
+      mEventDispatcher = getEventDispatcher(reactContext, editText);
       mEditText = editText;
       mPreviousText = null;
     }
@@ -993,8 +1014,7 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
     editText.setOnFocusChangeListener(
         new View.OnFocusChangeListener() {
           public void onFocusChange(View v, boolean hasFocus) {
-            EventDispatcher eventDispatcher =
-                reactContext.getNativeModule(UIManagerModule.class).getEventDispatcher();
+            EventDispatcher eventDispatcher = getEventDispatcher(reactContext, editText);
             if (hasFocus) {
               eventDispatcher.dispatchEvent(new ReactTextInputFocusEvent(editText.getId()));
             } else {
@@ -1024,9 +1044,7 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
               // * !blurOnSubmit && !isMultiline => Prevent default behaviour (return true).
               // Additionally we always generate a `submit` event.
 
-              EventDispatcher eventDispatcher =
-                  reactContext.getNativeModule(UIManagerModule.class).getEventDispatcher();
-
+              EventDispatcher eventDispatcher = getEventDispatcher(reactContext, editText);
               eventDispatcher.dispatchEvent(
                   new ReactTextInputSubmitEditingEvent(
                       editText.getId(), editText.getText().toString()));
@@ -1110,7 +1128,7 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
       mReactEditText = editText;
 
       ReactContext reactContext = getReactContext(editText);
-      mEventDispatcher = reactContext.getNativeModule(UIManagerModule.class).getEventDispatcher();
+      mEventDispatcher = getEventDispatcher(reactContext, editText);
     }
 
     @Override
@@ -1144,7 +1162,7 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
     public ReactScrollWatcher(ReactEditText editText) {
       mReactEditText = editText;
       ReactContext reactContext = getReactContext(editText);
-      mEventDispatcher = reactContext.getNativeModule(UIManagerModule.class).getEventDispatcher();
+      mEventDispatcher = getEventDispatcher(reactContext, editText);
     }
 
     @Override
@@ -1220,8 +1238,8 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
     ReadableMap paragraphAttributes = state.getMap("paragraphAttributes");
 
     Spannable spanned =
-        TextLayoutManager.getOrCreateSpannableForText(view.getContext(), attributedString);
-    //    view.setSpanned(spanned);
+        TextLayoutManager.getOrCreateSpannableForText(
+            view.getContext(), attributedString, mReactTextViewManagerCallback);
 
     TextAttributeProps textViewProps = new TextAttributeProps(props);
 

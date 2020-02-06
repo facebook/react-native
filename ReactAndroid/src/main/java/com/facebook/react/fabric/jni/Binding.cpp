@@ -560,7 +560,7 @@ void Binding::schedulerDidFinishTransaction(
   std::lock_guard<std::recursive_mutex> lock(commitMutex_);
 
   SystraceSection s("FabricUIManagerBinding::schedulerDidFinishTransaction");
-  long finishTransactionStartTime = monotonicTimeInMilliseconds();
+  auto finishTransactionStartTime = telemetryTimePointNow();
 
   jni::global_ref<jobject> localJavaUIManager = getJavaUIManager();
   if (!localJavaUIManager) {
@@ -827,19 +827,19 @@ void Binding::schedulerDidFinishTransaction(
                                           jlong,
                                           jlong)>("scheduleMountItem");
 
-  long finishTransactionEndTime = monotonicTimeInMilliseconds();
+  auto finishTransactionEndTime = telemetryTimePointNow();
 
   scheduleMountItem(
       localJavaUIManager,
       batch.get(),
       telemetry.getCommitNumber(),
-      telemetry.getCommitStartTime(),
-      telemetry.getDiffStartTime(),
-      telemetry.getDiffEndTime(),
-      telemetry.getLayoutStartTime(),
-      telemetry.getLayoutEndTime(),
-      finishTransactionStartTime,
-      finishTransactionEndTime);
+      telemetryTimePointToMilliseconds(telemetry.getCommitStartTime()),
+      telemetryTimePointToMilliseconds(telemetry.getDiffStartTime()),
+      telemetryTimePointToMilliseconds(telemetry.getDiffEndTime()),
+      telemetryTimePointToMilliseconds(telemetry.getLayoutStartTime()),
+      telemetryTimePointToMilliseconds(telemetry.getLayoutEndTime()),
+      telemetryTimePointToMilliseconds(finishTransactionStartTime),
+      telemetryTimePointToMilliseconds(finishTransactionEndTime));
 }
 
 void Binding::setPixelDensity(float pointScaleFactor) {

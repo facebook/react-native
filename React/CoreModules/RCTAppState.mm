@@ -125,8 +125,10 @@ RCT_EXPORT_MODULE()
 
   if (![newState isEqualToString:_lastKnownState]) {
     _lastKnownState = newState;
-    [self sendEventWithName:@"appStateDidChange"
-                       body:@{@"app_state": _lastKnownState}];
+    if (self.bridge) {
+      [self sendEventWithName:@"appStateDidChange"
+      body:@{@"app_state": _lastKnownState}];
+    }
   }
 }
 

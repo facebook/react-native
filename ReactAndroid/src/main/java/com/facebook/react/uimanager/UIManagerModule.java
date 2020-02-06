@@ -308,7 +308,7 @@ public class UIManagerModule extends ReactContextBaseJavaModule
   }
 
   @ReactMethod(isBlockingSynchronousMethod = true)
-  public @Nullable WritableMap getConstantsForViewManager(final String viewManagerName) {
+  public @Nullable WritableMap getConstantsForViewManager(@Nullable String viewManagerName) {
     if (mViewManagerConstantsCache != null
         && mViewManagerConstantsCache.containsKey(viewManagerName)) {
       WritableMap constants = mViewManagerConstantsCache.get(viewManagerName);
@@ -322,7 +322,7 @@ public class UIManagerModule extends ReactContextBaseJavaModule
     }
   }
 
-  private @Nullable WritableMap computeConstantsForViewManager(final String viewManagerName) {
+  private @Nullable WritableMap computeConstantsForViewManager(@Nullable String viewManagerName) {
     ViewManager targetView =
         viewManagerName != null ? mUIImplementation.resolveViewManager(viewManagerName) : null;
     if (targetView == null) {

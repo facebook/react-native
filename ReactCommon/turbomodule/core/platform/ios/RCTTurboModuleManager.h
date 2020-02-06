@@ -44,8 +44,6 @@
 
 - (void)installJSBindingWithRuntime:(facebook::jsi::Runtime *)runtime;
 
-- (std::shared_ptr<facebook::react::TurboModule>)getModule:(const std::string &)name;
-
 - (void)invalidate;
 
 @end

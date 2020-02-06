@@ -102,12 +102,15 @@ ShadowTree::ShadowTree(
   const auto props = std::make_shared<const RootProps>(
       *RootShadowNode::defaultSharedProps(), layoutConstraints, layoutContext);
 
+  auto family = rootComponentDescriptor.createFamily(
+      ShadowNodeFamilyFragment{surfaceId, surfaceId, noopEventEmitter},
+      nullptr);
   rootShadowNode_ = std::static_pointer_cast<const RootShadowNode>(
       rootComponentDescriptor.createShadowNode(
           ShadowNodeFragment{
               /* .props = */ props,
           },
-          {surfaceId, surfaceId, noopEventEmitter}));
+          family));
 
   mountingCoordinator_ = std::make_shared<MountingCoordinator const>(
       ShadowTreeRevision{rootShadowNode_, 0, {}});
@@ -119,6 +122,10 @@ ShadowTree::~ShadowTree() {
 
 Tag ShadowTree::getSurfaceId() const {
   return surfaceId_;
+}
+
+MountingCoordinator::Shared ShadowTree::getMountingCoordinator() const {
+  return mountingCoordinator_;
 }
 
 void ShadowTree::commit(ShadowTreeCommitTransaction transaction) const {
@@ -162,7 +169,7 @@ bool ShadowTree::tryCommit(ShadowTreeCommitTransaction transaction) const {
   affectedLayoutableNodes.reserve(1024);
 
   telemetry.willLayout();
-  newRootShadowNode->layout(&affectedLayoutableNodes);
+  newRootShadowNode->layoutIfNeeded(&affectedLayoutableNodes);
   telemetry.didLayout();
 
   newRootShadowNode->sealRecursive();

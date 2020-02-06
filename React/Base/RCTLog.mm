@@ -10,6 +10,7 @@
 #include <cxxabi.h>
 
 #import <objc/message.h>
+#import <os/log.h>
 
 #import "RCTRedBoxSetEnabled.h"
 #import "RCTAssert.h"
@@ -28,11 +29,8 @@ const char *RCTLogLevels[] = {
   "fatal",
 };
 
-#if RCT_DEBUG
+/* os log will discard debug and info messages if they are not needed */
 static const RCTLogLevel RCTDefaultLogThreshold = (RCTLogLevel)(RCTLogLevelInfo - 1);
-#else
-static const RCTLogLevel RCTDefaultLogThreshold = RCTLogLevelError;
-#endif
 
 static RCTLogFunction RCTCurrentLogFunction;
 static RCTLogLevel RCTCurrentLogThreshold = RCTDefaultLogThreshold;
@@ -46,17 +44,48 @@ void RCTSetLogThreshold(RCTLogLevel threshold) {
   RCTCurrentLogThreshold = threshold;
 }
 
+static os_log_type_t RCTLogTypeForLogLevel(RCTLogLevel logLevel)
+{
+  if (logLevel < RCTLogLevelInfo) {
+    return OS_LOG_TYPE_DEBUG;
+  } else if (logLevel <= RCTLogLevelWarning) {
+    return OS_LOG_TYPE_INFO;
+  } else {
+    return OS_LOG_TYPE_ERROR;
+  }
+}
+
+static os_log_t RCTLogForLogSource(RCTLogSource source)
+{
+  switch (source) {
+    case RCTLogSourceNative: {
+      static os_log_t nativeLog;
+      static dispatch_once_t onceToken;
+      dispatch_once(&onceToken, ^{
+        nativeLog = os_log_create("com.facebook.react.log", "native");
+      });
+      return nativeLog;
+    }
+    case RCTLogSourceJavaScript: {
+      static os_log_t javaScriptLog;
+      static dispatch_once_t onceToken;
+      dispatch_once(&onceToken, ^{
+        javaScriptLog = os_log_create("com.facebook.react.log", "javascript");
+      });
+      return javaScriptLog;
+    }
+  }
+}
+
 RCTLogFunction RCTDefaultLogFunction = ^(
   RCTLogLevel level,
-  __unused RCTLogSource source,
-  NSString *fileName,
-  NSNumber *lineNumber,
+  RCTLogSource source,
+  __unused NSString *fileName,
+  __unused NSNumber *lineNumber,
   NSString *message
 )
 {
-  NSString *log = RCTFormatLog([NSDate date], level, fileName, lineNumber, message);
-  fprintf(stderr, "%s\n", log.UTF8String);
-  fflush(stderr);
+  os_log_with_type(RCTLogForLogSource(source), RCTLogTypeForLogLevel(level), "%{public}s", message.UTF8String);
 };
 
 void RCTSetLogFunction(RCTLogFunction logFunction)

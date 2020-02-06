@@ -88,6 +88,18 @@ void AndroidTextInputShadowNode::setTextLayoutManager(
   textLayoutManager_ = textLayoutManager;
 }
 
+AttributedString AndroidTextInputShadowNode::getMostRecentAttributedString()
+    const {
+  auto const &state = getStateData();
+
+  auto reactTreeAttributedString = getAttributedString();
+
+  return (
+      state.reactTreeAttributedString == reactTreeAttributedString
+          ? state.attributedString
+          : reactTreeAttributedString);
+}
+
 void AndroidTextInputShadowNode::updateStateIfNeeded() {
   ensureUnsealed();
 
@@ -115,32 +127,36 @@ void AndroidTextInputShadowNode::updateStateIfNeeded() {
   auto defaultTextAttributes = TextAttributes::defaultTextAttributes();
   defaultTextAttributes.apply(getProps()->textAttributes);
 
+  auto newEventCount =
+      (state.reactTreeAttributedString == reactTreeAttributedString
+           ? 0
+           : getProps()->mostRecentEventCount);
+  auto newAttributedString = getMostRecentAttributedString();
+
   // Even if we're here and updating state, it may be only to update the layout
   // manager If that is the case, make sure we don't update text: pass in the
   // current attributedString unchanged, and pass in zero for the "event count"
   // so no changes are applied There's no way to prevent a state update from
   // flowing to Java, so we just ensure it's a noop in those cases.
-  setStateData(AndroidTextInputState{
-      (state.reactTreeAttributedString == reactTreeAttributedString
-           ? 0
-           : getProps()->mostRecentEventCount),
-      (state.reactTreeAttributedString == reactTreeAttributedString
-           ? state.attributedString
-           : reactTreeAttributedString),
-      reactTreeAttributedString,
-      getProps()->paragraphAttributes,
-      defaultTextAttributes,
-      ShadowView(*this),
-      textLayoutManager_});
+  setStateData(AndroidTextInputState{newEventCount,
+                                     newAttributedString,
+                                     reactTreeAttributedString,
+                                     getProps()->paragraphAttributes,
+                                     defaultTextAttributes,
+                                     ShadowView(*this),
+                                     textLayoutManager_});
 }
 
 #pragma mark - LayoutableShadowNode
 
 Size AndroidTextInputShadowNode::measure(
     LayoutConstraints layoutConstraints) const {
-  auto const &state = getStateData();
-
-  AttributedString attributedString = state.attributedString;
+  // Layout is called right after measure.
+  // Measure is marked as `const`, and `layout` is not; so State can be updated
+  // during layout, but not during `measure`. If State is out-of-date in layout,
+  // it's too late: measure will have already operated on old State. Thus, we
+  // use the same value here that we *will* use in layout to update the state.
+  AttributedString attributedString = getMostRecentAttributedString();
 
   if (attributedString.isEmpty()) {
     attributedString = getPlaceholderAttributedString();

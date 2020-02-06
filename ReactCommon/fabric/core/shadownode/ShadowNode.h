@@ -28,9 +28,9 @@ static constexpr const int kShadowNodeChildrenSmallVectorSize = 8;
 
 class ComponentDescriptor;
 struct ShadowNodeFragment;
-
 class ShadowNode;
 
+// Deprecated: Use ShadowNode::Shared instead
 using SharedShadowNode = std::shared_ptr<const ShadowNode>;
 using WeakShadowNode = std::weak_ptr<const ShadowNode>;
 using UnsharedShadowNode = std::shared_ptr<ShadowNode>;
@@ -127,6 +127,8 @@ class ShadowNode : public virtual Sealable,
 
   void sealRecursive() const;
 
+  ShadowNodeFamily const &getFamily() const;
+
 #pragma mark - Mutating Methods
 
   void appendChild(ShadowNode::Shared const &child);
@@ -141,17 +143,6 @@ class ShadowNode : public virtual Sealable,
    * `EventEmitter::DispatchMutex()` must be acquired before calling.
    */
   void setMounted(bool mounted) const;
-
-  /*
-   * Returns a list of all ancestors of the node relative to the given ancestor.
-   * The list starts from the given ancestor node and ends with the parent node
-   * of `this` node. The elements of the list have a reference to some parent
-   * node and an index of the child of the parent node.
-   * Returns an empty array if there is no ancestor-descendant relationship.
-   * Can be called from any thread.
-   * The theoretical complexity of the algorithm is `O(ln(n))`. Use it wisely.
-   */
-  AncestorList getAncestors(ShadowNode const &ancestorShadowNode) const;
 
 #pragma mark - DebugStringConvertible
 
@@ -175,6 +166,7 @@ class ShadowNode : public virtual Sealable,
   State::Shared state_;
 
  private:
+  friend ShadowNodeFamily;
   /*
    * Clones the list of children (and creates a new `shared_ptr` to it) if
    * `childrenAreShared_` flag is `true`.

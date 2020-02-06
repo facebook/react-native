@@ -24,15 +24,19 @@ TEST(ComponentDescriptorTest, createShadowNode) {
   const auto &raw = RawProps(folly::dynamic::object("nativeID", "abc"));
   SharedProps props = descriptor->cloneProps(nullptr, raw);
 
+  auto family = descriptor->createFamily(
+      ShadowNodeFamilyFragment{
+          /* .tag = */ 9,
+          /* .surfaceId = */ 1,
+          /* .eventEmitter = */ nullptr,
+      },
+      nullptr);
+
   SharedShadowNode node = descriptor->createShadowNode(
       ShadowNodeFragment{
           /* .props = */ props,
       },
-      ShadowNodeFamilyFragment{
-          /* .tag = */ 9,
-          /* .surfaceId = */ 1,
-          /* .eventEmitter = */ descriptor->createEventEmitter(0, 9),
-      });
+      family);
 
   EXPECT_EQ(node->getComponentHandle(), TestShadowNode::Handle());
   EXPECT_STREQ(node->getComponentName(), TestShadowNode::Name());
@@ -50,15 +54,18 @@ TEST(ComponentDescriptorTest, cloneShadowNode) {
 
   const auto &raw = RawProps(folly::dynamic::object("nativeID", "abc"));
   SharedProps props = descriptor->cloneProps(nullptr, raw);
+  auto family = descriptor->createFamily(
+      ShadowNodeFamilyFragment{
+          /* .tag = */ 9,
+          /* .surfaceId = */ 1,
+          /* .eventEmitter = */ nullptr,
+      },
+      nullptr);
   SharedShadowNode node = descriptor->createShadowNode(
       ShadowNodeFragment{
           /* .props = */ props,
       },
-      ShadowNodeFamilyFragment{
-          /* .tag = */ 9,
-          /* .surfaceId = */ 1,
-          /* .eventEmitter = */ descriptor->createEventEmitter(0, 9),
-      });
+      family);
   SharedShadowNode cloned = descriptor->cloneShadowNode(*node, {});
 
   EXPECT_STREQ(cloned->getComponentName(), "Test");
@@ -75,34 +82,42 @@ TEST(ComponentDescriptorTest, appendChild) {
 
   const auto &raw = RawProps(folly::dynamic::object("nativeID", "abc"));
   SharedProps props = descriptor->cloneProps(nullptr, raw);
-
+  auto family1 = descriptor->createFamily(
+      ShadowNodeFamilyFragment{
+          /* .tag = */ 1,
+          /* .surfaceId = */ 1,
+          /* .eventEmitter = */ nullptr,
+      },
+      nullptr);
   SharedShadowNode node1 = descriptor->createShadowNode(
       ShadowNodeFragment{
           /* .props = */ props,
       },
+      family1);
+  auto family2 = descriptor->createFamily(
       ShadowNodeFamilyFragment{
-          /* .tag = */ 1,
+          /* .tag = */ 2,
           /* .surfaceId = */ 1,
-          /* .eventEmitter = */ descriptor->createEventEmitter(0, 9),
-      });
+          /* .eventEmitter = */ nullptr,
+      },
+      nullptr);
   SharedShadowNode node2 = descriptor->createShadowNode(
       ShadowNodeFragment{
           /* .props = */ props,
       },
+      family2);
+  auto family3 = descriptor->createFamily(
       ShadowNodeFamilyFragment{
-          /* .tag = */ 2,
+          /* .tag = */ 3,
           /* .surfaceId = */ 1,
-          /* .eventEmitter = */ descriptor->createEventEmitter(0, 9),
-      });
+          /* .eventEmitter = */ nullptr,
+      },
+      nullptr);
   SharedShadowNode node3 = descriptor->createShadowNode(
       ShadowNodeFragment{
           /* .props = */ props,
       },
-      ShadowNodeFamilyFragment{
-          /* .tag = */ 3,
-          /* .surfaceId = */ 1,
-          /* .eventEmitter = */ descriptor->createEventEmitter(0, 9),
-      });
+      family3);
 
   descriptor->appendChild(node1, node2);
   descriptor->appendChild(node1, node3);

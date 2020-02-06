@@ -12,7 +12,6 @@
 
 import fs from 'fs';
 
-// $FlowFixMe
 import yargs from 'yargs';
 
 import {Command} from './Command';

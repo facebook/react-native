@@ -174,6 +174,19 @@ using namespace facebook::react;
   return YES;
 }
 
+- (BOOL)synchronouslyWaitSurface:(RCTFabricSurface *)surface timeout:(NSTimeInterval)timeout
+{
+  auto mountingCoordinator = [_scheduler mountingCoordinatorWithSurfaceId:surface.rootTag];
+
+  if (!mountingCoordinator->waitForTransaction(std::chrono::duration<NSTimeInterval>(timeout))) {
+    return NO;
+  }
+
+  [_mountingManager scheduleTransaction:mountingCoordinator];
+
+  return YES;
+}
+
 - (BOOL)suspend
 {
   std::unique_lock<better::shared_mutex> lock(_schedulerMutex);

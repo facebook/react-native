@@ -54,6 +54,14 @@ TextInputProps::TextInputProps(
 TextAttributes TextInputProps::getEffectiveTextAttributes() const {
   auto result = TextAttributes::defaultTextAttributes();
   result.apply(textAttributes);
+
+  /*
+   * These props are applied to `View`, therefore they must not be a part of
+   * base text attributes.
+   */
+  result.backgroundColor = clearColor();
+  result.opacity = 1;
+
   return result;
 }
 

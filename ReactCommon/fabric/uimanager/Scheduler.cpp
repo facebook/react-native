@@ -45,8 +45,8 @@ Scheduler::Scheduler(
 
   auto statePipe = [uiManager](
                        const StateData::Shared &data,
-                       const StateTarget &stateTarget) {
-    uiManager->updateState(stateTarget.getShadowNode(), data);
+                       SharedShadowNodeFamily const &family) {
+    uiManager->updateState(family, data);
   };
 
   eventDispatcher_ = std::make_shared<EventDispatcher>(
@@ -234,12 +234,22 @@ Size Scheduler::measureSurface(
             [&](RootShadowNode::Shared const &oldRootShadowNode) {
               auto rootShadowNode =
                   oldRootShadowNode->clone(layoutConstraints, layoutContext);
-              rootShadowNode->layout();
+              rootShadowNode->layoutIfNeeded();
               size = rootShadowNode->getLayoutMetrics().frame.size;
               return nullptr;
             });
       });
   return size;
+}
+
+MountingCoordinator::Shared Scheduler::findMountingCoordinator(
+    SurfaceId surfaceId) const {
+  MountingCoordinator::Shared mountingCoordinator = nullptr;
+  uiManager_->getShadowTreeRegistry().visit(
+      surfaceId, [&](const ShadowTree &shadowTree) {
+        mountingCoordinator = shadowTree.getMountingCoordinator();
+      });
+  return mountingCoordinator;
 }
 
 void Scheduler::constraintSurfaceLayout(
@@ -285,7 +295,7 @@ void Scheduler::uiManagerDidFinishTransaction(
 }
 
 void Scheduler::uiManagerDidCreateShadowNode(
-    const SharedShadowNode &shadowNode) {
+    const ShadowNode::Shared &shadowNode) {
   SystraceSection s("Scheduler::uiManagerDidCreateShadowNode");
 
   if (delegate_) {
@@ -296,7 +306,7 @@ void Scheduler::uiManagerDidCreateShadowNode(
 }
 
 void Scheduler::uiManagerDidDispatchCommand(
-    const SharedShadowNode &shadowNode,
+    const ShadowNode::Shared &shadowNode,
     std::string const &commandName,
     folly::dynamic const args) {
   SystraceSection s("Scheduler::uiManagerDispatchCommand");
@@ -312,7 +322,7 @@ void Scheduler::uiManagerDidDispatchCommand(
  */
 void Scheduler::uiManagerDidSetJSResponder(
     SurfaceId surfaceId,
-    const SharedShadowNode &shadowNode,
+    const ShadowNode::Shared &shadowNode,
     bool blockNativeResponder) {
   if (delegate_) {
     // TODO: the first shadowView paramenter, should be the first parent that

@@ -10,7 +10,6 @@
 #include <functional>
 
 #include <react/core/StateData.h>
-#include <react/core/StateTarget.h>
 
 namespace facebook {
 namespace react {
@@ -18,16 +17,20 @@ namespace react {
 /*
  * Carries some logic and additional information about state update transaction.
  */
+class ShadowNodeFamily;
+using SharedShadowNodeFamily = std::shared_ptr<ShadowNodeFamily const>;
 class StateUpdate {
  public:
-  std::pair<StateTarget, StateData::Shared> operator()() const;
+  std::pair<SharedShadowNodeFamily const &, StateData::Shared> operator()()
+      const;
 
   /*
    * The current implementation simply uses `std::function` inside that captures
    * everything which is needed to perform state update. That will be probably
    * changed in the future.
    */
-  std::function<std::pair<StateTarget, StateData::Shared>()> callback_;
+  std::function<std::pair<SharedShadowNodeFamily const &, StateData::Shared>()>
+      callback_;
 };
 
 } // namespace react

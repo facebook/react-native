@@ -172,6 +172,7 @@ const STYLES_WHITELIST = {
   borderTopRightRadius: true,
   borderTopStartRadius: true,
   elevation: true,
+  zIndex: true,
   /* ios styles */
   shadowOpacity: true,
   shadowRadius: true,

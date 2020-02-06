@@ -1,6 +1,6 @@
 ---
 name: "🤔 Questions and Help"
-about: The issue tracker is not for questions. Please ask questions on https://stackoverflow.com/questions/tagged/react-native.
+about: Please ask questions at https://stackoverflow.com/questions/tagged/react-native.
 title: 'Question: '
 labels: 'Type: Question'
 

@@ -79,7 +79,28 @@ function createAnimatedComponent<Props: {+[string]: mixed, ...}, Instance>(
         typeof this._component.setNativeProps !== 'function' ||
         // In Fabric, force animations to go through forceUpdate and skip setNativeProps
         // eslint-disable-next-line dot-notation
-        this._component['_internalInstanceHandle']?.stateNode?.canonical != null
+        this._component['_internalInstanceHandle']?.stateNode?.canonical !=
+          null ||
+        // Some components have a setNativeProps function but aren't a host component
+        // such as lists like FlatList and SectionList. These should also use
+        // forceUpdate in Fabric since setNativeProps doesn't exist on the underlying
+        // host component. This crazy hack is essentially special casing those lists and
+        // ScrollView itself to use forceUpdate in Fabric.
+        // If these components end up using forwardRef then these hacks can go away
+        // as this._component would actually be the underlying host component and the above check
+        // would be sufficient.
+        (this._component.getNativeScrollRef != null &&
+          this._component.getNativeScrollRef() != null &&
+          // eslint-disable-next-line dot-notation
+          this._component.getNativeScrollRef()['_internalInstanceHandle']
+            ?.stateNode?.canonical != null) ||
+        (this._component.getScrollResponder != null &&
+          this._component.getScrollResponder().getNativeScrollRef != null &&
+          this._component.getScrollResponder().getNativeScrollRef() != null &&
+          this._component.getScrollResponder().getNativeScrollRef()[
+            // eslint-disable-next-line dot-notation
+            '_internalInstanceHandle'
+          ]?.stateNode?.canonical != null)
       ) {
         this.forceUpdate();
       } else if (!this._propsAnimated.__isNative) {

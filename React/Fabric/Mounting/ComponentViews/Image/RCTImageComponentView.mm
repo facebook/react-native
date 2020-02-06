@@ -136,7 +136,7 @@ using namespace facebook::react;
 
 - (void)didReceiveImage:(UIImage *)image fromObserver:(void const *)observer
 {
-  if (!_eventEmitter) {
+  if (!_eventEmitter || !_state) {
     // Notifications are delivered asynchronously and might arrive after the view is already recycled.
     // In the future, we should incorporate an `EventEmitter` into a separate object owned by `ImageRequest` or `State`.
     // See for more info: T46311063.
@@ -167,7 +167,12 @@ using namespace facebook::react;
   self->_imageView.layer.minificationFilter = kCAFilterTrilinear;
   self->_imageView.layer.magnificationFilter = kCAFilterTrilinear;
 
-  _state->getData().getImageRequest().getImageInstrumentation().didSetImage();
+  auto data = _state->getData();
+  auto instrumentation = std::static_pointer_cast<RCTImageInstrumentationProxy const>(
+      data.getImageRequest().getSharedImageInstrumentation());
+  if (instrumentation) {
+    instrumentation->didSetImage();
+  }
 }
 
 - (void)didReceiveProgress:(float)progress fromObserver:(void const *)observer

@@ -244,7 +244,7 @@ class XMLHttpRequest extends (EventTarget(...XHR_EVENTS): any) {
         if (typeof this._response === 'object' && this._response) {
           this._cachedResponse = BlobManager.createFromOptions(this._response);
         } else if (this._response === '') {
-          this._cachedResponse = null;
+          this._cachedResponse = BlobManager.createFromParts([]);
         } else {
           throw new Error(`Invalid response for blob: ${this._response}`);
         }

@@ -42,65 +42,46 @@ jsi::Value createPromiseAsJSIValue(
     const PromiseSetupFunctionType func);
 
 // Helper for passing jsi::Function arg to other methods.
-// TODO (ramanpreet): Simplify with weak_ptr<>
 class CallbackWrapper : public LongLivedObject {
  private:
-  struct Data {
-    Data(
-        jsi::Function callback,
-        jsi::Runtime &runtime,
-        std::shared_ptr<react::CallInvoker> jsInvoker)
-        : callback(std::move(callback)),
-          runtime(runtime),
-          jsInvoker(std::move(jsInvoker)) {}
+  CallbackWrapper(
+      jsi::Function &&callback,
+      jsi::Runtime &runtime,
+      std::shared_ptr<CallInvoker> jsInvoker)
+      : callback_(std::move(callback)),
+        runtime_(runtime),
+        jsInvoker_(std::move(jsInvoker)) {}
 
-    jsi::Function callback;
-    jsi::Runtime &runtime;
-    std::shared_ptr<react::CallInvoker> jsInvoker;
-  };
-
-  folly::Optional<Data> data_;
+  jsi::Function callback_;
+  jsi::Runtime &runtime_;
+  std::shared_ptr<CallInvoker> jsInvoker_;
 
  public:
   static std::weak_ptr<CallbackWrapper> createWeak(
-      jsi::Function callback,
+      jsi::Function &&callback,
       jsi::Runtime &runtime,
-      std::shared_ptr<react::CallInvoker> jsInvoker) {
-    auto wrapper = std::make_shared<CallbackWrapper>(
-        std::move(callback), runtime, jsInvoker);
+      std::shared_ptr<CallInvoker> jsInvoker) {
+    auto wrapper = std::shared_ptr<CallbackWrapper>(
+        new CallbackWrapper(std::move(callback), runtime, jsInvoker));
     LongLivedObjectCollection::get().add(wrapper);
     return wrapper;
   }
 
-  CallbackWrapper(
-      jsi::Function callback,
-      jsi::Runtime &runtime,
-      std::shared_ptr<react::CallInvoker> jsInvoker)
-      : data_(Data{std::move(callback), runtime, jsInvoker}) {}
-
   // Delete the enclosed jsi::Function
   void destroy() {
-    data_ = folly::none;
     allowRelease();
   }
 
-  bool isDestroyed() {
-    return !data_.hasValue();
-  }
-
   jsi::Function &callback() {
-    assert(!isDestroyed());
-    return data_->callback;
+    return callback_;
   }
 
   jsi::Runtime &runtime() {
-    assert(!isDestroyed());
-    return data_->runtime;
+    return runtime_;
   }
 
-  react::CallInvoker &jsInvoker() {
-    assert(!isDestroyed());
-    return *(data_->jsInvoker);
+  CallInvoker &jsInvoker() {
+    return *(jsInvoker_);
   }
 };
 

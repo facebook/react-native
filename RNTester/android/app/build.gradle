@@ -166,14 +166,22 @@ dependencies {
     // Build React Native from source
     implementation project(':ReactAndroid')
 
+    implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.0.0"
+
     def hermesPath = '$projectDir/../../../../node_modules/hermes-engine/android/'
     debugImplementation files(hermesPath + "hermes-debug.aar")
     releaseImplementation files(hermesPath + "hermes-release.aar")
 
-    debugImplementation("com.facebook.flipper:flipper:0.23.4") {
-        exclude group:'com.facebook.yoga'
-        exclude group:'com.facebook.flipper', module: 'fbjni'
-        exclude group:'com.facebook.litho', module: 'litho-annotations'
+    debugImplementation("com.facebook.flipper:flipper:${FLIPPER_VERSION}") {
+        exclude group:'com.facebook.fbjni'
+    }
+
+    debugImplementation("com.facebook.flipper:flipper-network-plugin:${FLIPPER_VERSION}") {
+        exclude group:'com.facebook.flipper'
+    }
+
+    debugImplementation("com.facebook.flipper:flipper-fresco-plugin:${FLIPPER_VERSION}") {
+        exclude group:'com.facebook.flipper'
     }
 
     if (useIntlJsc) {

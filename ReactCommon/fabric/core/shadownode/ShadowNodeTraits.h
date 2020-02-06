@@ -41,6 +41,12 @@ class ShadowNodeTraits {
     // Inherits `BaseTextShadowNode`.
     TextKind = 1 << 3,
 
+    // Used when calculating relative layout in
+    // LayoutableShadowNode::getRelativeLayoutMetrics. This trait marks node as
+    // root, so when calculating relative layout, the calculation will not
+    // traverse beyond this node. See T61257516 for details.
+    RootNodeKind = 1 << 4,
+
     // Inherits `YogaLayoutableShadowNode` and enforces that the `YGNode` is a
     // leaf.
     LeafYogaNode = 1 << 10,

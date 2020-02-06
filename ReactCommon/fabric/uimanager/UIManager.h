@@ -59,21 +59,21 @@ class UIManager final : public ShadowTreeDelegate {
   friend class UIManagerBinding;
   friend class Scheduler;
 
-  SharedShadowNode createNode(
+  ShadowNode::Shared createNode(
       Tag tag,
       std::string const &componentName,
       SurfaceId surfaceId,
       const RawProps &props,
       SharedEventTarget eventTarget) const;
 
-  SharedShadowNode cloneNode(
-      const SharedShadowNode &shadowNode,
+  ShadowNode::Shared cloneNode(
+      const ShadowNode::Shared &shadowNode,
       const SharedShadowNodeSharedList &children = nullptr,
       const RawProps *rawProps = nullptr) const;
 
   void appendChild(
-      const SharedShadowNode &parentShadowNode,
-      const SharedShadowNode &childShadowNode) const;
+      const ShadowNode::Shared &parentShadowNode,
+      const ShadowNode::Shared &childShadowNode) const;
 
   void completeSurface(
       SurfaceId surfaceId,
@@ -83,7 +83,7 @@ class UIManager final : public ShadowTreeDelegate {
       const;
 
   void setJSResponder(
-      const SharedShadowNode &shadowNode,
+      const ShadowNode::Shared &shadowNode,
       const bool blockNativeResponder) const;
 
   void clearJSResponder() const;
@@ -107,11 +107,11 @@ class UIManager final : public ShadowTreeDelegate {
    * and performs a commit.
    */
   void updateState(
-      ShadowNode const &shadowNode,
+      ShadowNodeFamily::Shared const &family,
       StateData::Shared const &rawStateData) const;
 
   void dispatchCommand(
-      const SharedShadowNode &shadowNode,
+      const ShadowNode::Shared &shadowNode,
       std::string const &commandName,
       folly::dynamic const args) const;
 

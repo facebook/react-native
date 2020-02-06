@@ -13,7 +13,7 @@
 import {isHoverEnabled} from './HoverState.js';
 import invariant from 'invariant';
 import SoundManager from '../Components/Sound/SoundManager.js';
-import type {EdgeInsetsProp} from '../StyleSheet/EdgeInsetsPropType.js';
+import {normalizeRect, type RectOrSize} from '../StyleSheet/Rect.js';
 import type {
   BlurEvent,
   FocusEvent,
@@ -40,12 +40,12 @@ export type PressabilityConfig = $ReadOnly<{|
   /**
    * Amount to extend the `VisualRect` by to create `HitRect`.
    */
-  hitSlop?: ?EdgeInsetsProp,
+  hitSlop?: ?RectOrSize,
 
   /**
    * Amount to extend the `HitRect` by to create `PressRect`.
    */
-  pressRectOffset?: ?EdgeInsetsProp,
+  pressRectOffset?: ?RectOrSize,
 
   /**
    * Whether to disable the systemm sound when `onPress` fires on Android.
@@ -147,7 +147,7 @@ export type PressabilityConfig = $ReadOnly<{|
   onStartShouldSetResponder_DEPRECATED?: ?() => boolean,
 |}>;
 
-type EventHandlers = $ReadOnly<{|
+export type EventHandlers = $ReadOnly<{|
   onBlur: (event: BlurEvent) => void,
   onClick: (event: PressEvent) => void,
   onFocus: (event: FocusEvent) => void,
@@ -546,6 +546,12 @@ export default class Pressability {
       },
     };
 
+    if (process.env.NODE_ENV === 'test') {
+      // We are setting this in order to find this node in ReactNativeTestTools
+      responderEventHandlers.onStartShouldSetResponder.testOnly_pressabilityConfig = () =>
+        this._config;
+    }
+
     const mouseEventHandlers =
       Platform.OS === 'ios' || Platform.OS === 'android'
         ? null
@@ -747,7 +753,8 @@ export default class Pressability {
       top: number,
     |}>,
   ): boolean {
-    const {hitSlop, pressRectOffset} = this._config;
+    const hitSlop = normalizeRect(this._config.hitSlop);
+    const pressRectOffset = normalizeRect(this._config.pressRectOffset);
 
     let regionBottom = responderRegion.bottom;
     let regionLeft = responderRegion.left;

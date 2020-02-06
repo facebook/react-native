@@ -9,6 +9,8 @@
 
 #include <memory>
 
+#include <better/mutex.h>
+
 #include <react/core/EventEmitter.h>
 #include <react/core/ReactPrimitives.h>
 #include <react/core/ShadowNodeFamilyFragment.h>
@@ -17,6 +19,7 @@ namespace facebook {
 namespace react {
 
 class ComponentDescriptor;
+class ShadowNode;
 
 /*
  * Represents all things that shadow nodes from the same family have in common.
@@ -27,8 +30,15 @@ class ShadowNodeFamily {
   using Shared = std::shared_ptr<ShadowNodeFamily const>;
   using Weak = std::weak_ptr<ShadowNodeFamily const>;
 
+  using AncestorList = better::small_vector<
+      std::pair<
+          std::reference_wrapper<ShadowNode const> /* parentNode */,
+          int /* childIndex */>,
+      64>;
+
   ShadowNodeFamily(
       ShadowNodeFamilyFragment const &fragment,
+      EventDispatcher::Weak eventDispatcher,
       ComponentDescriptor const &componentDescriptor);
 
   /*
@@ -44,8 +54,42 @@ class ShadowNodeFamily {
   ComponentHandle getComponentHandle() const;
   ComponentName getComponentName() const;
 
+  /*
+   * Returns a concrete `ComponentDescriptor` that manages nodes of this type.
+   */
+  const ComponentDescriptor &getComponentDescriptor() const;
+
+  /*
+   * Returns a list of all ancestors of the node relative to the given ancestor.
+   * The list starts from the given ancestor node and ends with the parent node
+   * of `this` node. The elements of the list have a reference to some parent
+   * node and an index of the child of the parent node.
+   * Returns an empty array if there is no ancestor-descendant relationship.
+   * Can be called from any thread.
+   * The theoretical complexity of the algorithm is `O(ln(n))`. Use it wisely.
+   */
+  AncestorList getAncestors(ShadowNode const &ancestorShadowNode) const;
+
+  SurfaceId getSurfaceId() const;
+
+  /*
+   * Sets and gets a state target.
+   */
+  const StateTarget &getTarget() const;
+  void setTarget(StateTarget &&target) const;
+
+  /*
+   * Dispatches a state update with given priority.
+   */
+  void dispatchRawState(StateUpdate &&stateUpdate, EventPriority priority)
+      const;
+
  private:
   friend ShadowNode;
+
+  EventDispatcher::Weak eventDispatcher_;
+  mutable StateTarget target_{}; // Protected by `mutex_`.
+  mutable better::shared_mutex mutex_;
 
   /*
    * Deprecated.

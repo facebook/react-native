@@ -30,12 +30,12 @@ end
 
 target 'RNTesterUnitTests' do
   pods()
-  pod 'React-RCTTest', :path => "RCTTest"
+  pod 'React-RCTTest', :path => "./RCTTest"
 end
 
 target 'RNTesterIntegrationTests' do
   pods()
-  pod 'React-RCTTest', :path => "RCTTest"
+  pod 'React-RCTTest', :path => "./RCTTest"
 end
 
 post_install do |installer|

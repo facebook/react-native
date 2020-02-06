@@ -16,7 +16,7 @@ rn_xplat_cxx_library(
         "-std=c++14",
         "-Wall",
     ],
-    fbobjc_labels = ["supermodule:ios/isolation/infra.react_native"],
+    fbobjc_labels = ["supermodule:ios/default/infra.react_native"],
     platforms = (ANDROID, APPLE),
     preferred_linkage = "static",
     preprocessor_flags = [

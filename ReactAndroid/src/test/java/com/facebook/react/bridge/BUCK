@@ -25,8 +25,7 @@ rn_android_library(
 rn_robolectric_test(
     name = "bridge",
     srcs = glob(STANDARD_TEST_SRCS),
-    # Please change the contact to the oncall of your team
-    contacts = ["oncall+fbandroid_sheriff@xmail.facebook.com"],
+    contacts = ["oncall+react_native@xmail.facebook.com"],
     visibility = [
         "PUBLIC",
     ],
