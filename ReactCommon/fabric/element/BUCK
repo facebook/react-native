@@ -45,8 +45,7 @@ rn_xplat_cxx_library(
     platforms = (ANDROID, APPLE, CXX),
     preprocessor_flags = [
         "-DLOG_TAG=\"ReactNative\"",
-        # Systraces are temporary disabled.
-        # "-DWITH_FBSYSTRACE=1",
+        "-DWITH_FBSYSTRACE=1",
     ],
     tests = [":tests"],
     visibility = ["PUBLIC"],
