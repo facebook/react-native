@@ -168,7 +168,11 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   if (_titleColor) {
     attributes[NSForegroundColorAttributeName] = _titleColor;
   }
-
+    
+  UIFont *font = [self titleFont];
+  if (font) {
+    attributes[NSFontAttributeName] = font;
+  }
   self.attributedTitle = [[NSAttributedString alloc] initWithString:_title attributes:attributes];
 }
 
