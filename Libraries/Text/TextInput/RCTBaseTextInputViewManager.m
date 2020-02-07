@@ -125,6 +125,19 @@ RCT_EXPORT_METHOD(setMostRecentEventCount : (nonnull NSNumber *)viewTag eventCou
   }];
 }
 
+RCT_EXPORT_METHOD(setTextAndSelection : (nonnull NSNumber *)viewTag
+                 mostRecentEventCount : (NSInteger)mostRecentEventCount
+                                value : (NSString *)value
+                                start : (NSInteger)start
+                                  end : (NSInteger)end)
+{
+  [self.bridge.uiManager addUIBlock:^(RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry) {
+    RCTBaseTextInputView *view = (RCTBaseTextInputView *)viewRegistry[viewTag];
+    view.mostRecentEventCount = mostRecentEventCount;
+    [view setText:value selectionStart:start selectionEnd:end];
+  }];
+}
+
 #pragma mark - RCTUIManagerObserver
 
 - (void)uiManagerWillPerformMounting:(__unused RCTUIManager *)uiManager

@@ -193,6 +193,25 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
   }
 }
 
+- (void)setText:(NSString *__nullable)text
+ selectionStart:(NSInteger)start
+   selectionEnd:(NSInteger)end
+{
+  if (text) {
+    NSMutableAttributedString *mutableString =
+    [[NSMutableAttributedString alloc] initWithAttributedString:self.backedTextInputView.attributedText];
+    [mutableString replaceCharactersInRange:NSMakeRange(0, mutableString.string.length) withString:text];
+    self.backedTextInputView.attributedText = mutableString;
+  }
+
+  UITextPosition *startPosition = [self.backedTextInputView positionFromPosition:self.backedTextInputView.beginningOfDocument
+                                                                          offset:start];
+  UITextPosition *endPosition = [self.backedTextInputView positionFromPosition:self.backedTextInputView.beginningOfDocument
+                                                                        offset:end];
+  UITextRange *range = [self.backedTextInputView textRangeFromPosition:startPosition toPosition:endPosition];
+  [self.backedTextInputView setSelectedTextRange:range notifyDelegate:NO];
+}
+
 - (void)setTextContentType:(NSString *)type
 {
   #if defined(__IPHONE_OS_VERSION_MAX_ALLOWED)
