@@ -42,6 +42,7 @@
     "ReactCommon",
     "README.md",
     "rn-get-polyfills.js",
+    "scripts/autolink-ios.rb",
     "scripts/compose-source-maps.js",
     "scripts/ios-configure-glog.sh",
     "scripts/launchPackager.bat",
