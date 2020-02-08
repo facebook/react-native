@@ -267,7 +267,13 @@ type IOSProps = $ReadOnly<{|
    */
   textContentType?: ?TextContentType,
 
-  PasswordRules?: ?PasswordRules,
+  /**
+   * Provide rules for your password.
+   * For example, say you want to require a password with at least eight characters consisting of a mix of uppercase and lowercase letters, at least one number, and at most two consecutive characters.
+   * "required: upper; required: lower; required: digit; max-consecutive: 2; minlength: 8;"
+   * @platform ios
+   */
+  passwordRules?: ?PasswordRules,
 
   /*
    * @platform ios
