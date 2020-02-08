@@ -267,6 +267,12 @@ type IOSProps = $ReadOnly<{|
    */
   textContentType?: ?TextContentType,
 
+  /**
+   * When using `textContentType` as `newPassword` on iOS we can let the OS know the
+   * minimum requirements of the password so that it can generate one that will
+   * satisfy them. In order to create a valid string for `PasswordRules` take
+   * a look to the [Apple Docs](https://developer.apple.com/password-rules/).
+   */
   PasswordRules?: ?PasswordRules,
 
   /*
