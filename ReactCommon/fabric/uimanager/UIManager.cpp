@@ -109,15 +109,21 @@ void UIManager::completeSurface(
   SystraceSection s("UIManager::completeSurface");
 
   shadowTreeRegistry_.visit(surfaceId, [&](ShadowTree const &shadowTree) {
-    shadowTree.commit([&](RootShadowNode::Shared const &oldRootShadowNode) {
-      return std::make_shared<RootShadowNode>(
-          *oldRootShadowNode,
-          ShadowNodeFragment{
-              /* .props = */ ShadowNodeFragment::propsPlaceholder(),
-              /* .children = */ rootChildren,
-          });
-    });
+    shadowTree.commit(
+        [&](RootShadowNode::Shared const &oldRootShadowNode) {
+          return std::make_shared<RootShadowNode>(
+              *oldRootShadowNode,
+              ShadowNodeFragment{
+                  /* .props = */ ShadowNodeFragment::propsPlaceholder(),
+                  /* .children = */ rootChildren,
+              });
+        },
+        true && stateReconciliationEnabled_);
   });
+}
+
+void UIManager::setStateReconciliationEnabled(bool enabled) {
+  stateReconciliationEnabled_ = enabled;
 }
 
 void UIManager::setJSResponder(
@@ -159,7 +165,8 @@ void UIManager::setNativeProps(
                         /* .props = */ props,
                     });
                   });
-            });
+            },
+            true && stateReconciliationEnabled_);
       });
 }
 
@@ -176,7 +183,8 @@ LayoutMetrics UIManager::getRelativeLayoutMetrics(
               [&](RootShadowNode::Shared const &oldRootShadowNode) {
                 ancestorShadowNode = oldRootShadowNode.get();
                 return nullptr;
-              });
+              },
+              true && stateReconciliationEnabled_);
         });
   }
 

@@ -67,6 +67,15 @@ Scheduler::Scheduler(
   uiManager->setDelegate(this);
   uiManager->setComponentDescriptorRegistry(componentDescriptorRegistry_);
 
+#ifdef ANDROID
+  bool stateReconciliationEnabled = reactNativeConfig_->getBool(
+      "react_fabric:enabled_state_reconciliation_android");
+#else
+  bool stateReconciliationEnabled = reactNativeConfig_->getBool(
+      "react_fabric:enabled_state_reconciliation_ios");
+#endif
+  uiManager->setStateReconciliationEnabled(stateReconciliationEnabled);
+
   runtimeExecutor_([=](jsi::Runtime &runtime) {
     auto uiManagerBinding = UIManagerBinding::createAndInstallIfNeeded(runtime);
     uiManagerBinding->attach(uiManager);

@@ -129,14 +129,16 @@ MountingCoordinator::Shared ShadowTree::getMountingCoordinator() const {
   return mountingCoordinator_;
 }
 
-void ShadowTree::commit(ShadowTreeCommitTransaction transaction) const {
+void ShadowTree::commit(
+    ShadowTreeCommitTransaction transaction,
+    bool enableStateReconciliation) const {
   SystraceSection s("ShadowTree::commit");
 
   int attempts = 0;
 
   while (true) {
     attempts++;
-    if (tryCommit(transaction)) {
+    if (tryCommit(transaction, enableStateReconciliation)) {
       return;
     }
 
@@ -146,7 +148,9 @@ void ShadowTree::commit(ShadowTreeCommitTransaction transaction) const {
   }
 }
 
-bool ShadowTree::tryCommit(ShadowTreeCommitTransaction transaction) const {
+bool ShadowTree::tryCommit(
+    ShadowTreeCommitTransaction transaction,
+    bool enableStateReconciliation) const {
   SystraceSection s("ShadowTree::tryCommit");
 
   auto telemetry = MountingTelemetry{};
@@ -168,11 +172,13 @@ bool ShadowTree::tryCommit(ShadowTreeCommitTransaction transaction) const {
 
   // Compare state revisions of old and new root
   // Children of the root node may be mutated in-place
-  UnsharedShadowNode reconciledNode =
-      reconcileStateWithTree(newRootShadowNode.get(), oldRootShadowNode);
-  if (reconciledNode != nullptr) {
-    newRootShadowNode =
-        std::make_shared<RootShadowNode>(*reconciledNode, ShadowNodeFragment{});
+  if (enableStateReconciliation) {
+    UnsharedShadowNode reconciledNode =
+        reconcileStateWithTree(newRootShadowNode.get(), oldRootShadowNode);
+    if (reconciledNode != nullptr) {
+      newRootShadowNode = std::make_shared<RootShadowNode>(
+          *reconciledNode, ShadowNodeFragment{});
+    }
   }
 
   // Layout nodes
