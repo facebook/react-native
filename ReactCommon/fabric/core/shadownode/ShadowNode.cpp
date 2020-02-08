@@ -6,6 +6,7 @@
  */
 
 #include "ShadowNode.h"
+#include "ShadowNodeFragment.h"
 
 #include <better/small_vector.h>
 
@@ -29,6 +30,21 @@ bool ShadowNode::sameFamily(const ShadowNode &first, const ShadowNode &second) {
 
 #pragma mark - Constructors
 
+static int computeStateRevision(
+    const State::Shared &state,
+    const SharedShadowNodeSharedList &children) {
+  int fragmentStateRevision = state ? state->getRevision() : 0;
+  int childrenSum = 0;
+
+  if (children) {
+    for (const auto &child : *children) {
+      childrenSum += child->getStateRevision();
+    }
+  }
+
+  return fragmentStateRevision + childrenSum;
+}
+
 ShadowNode::ShadowNode(
     ShadowNodeFragment const &fragment,
     ShadowNodeFamily::Shared const &family,
@@ -42,6 +58,7 @@ ShadowNode::ShadowNode(
           fragment.children ? fragment.children
                             : emptySharedShadowNodeSharedList()),
       state_(fragment.state),
+      stateRevision_(computeStateRevision(state_, children_)),
       family_(family),
       traits_(traits) {
   assert(props_);
@@ -67,6 +84,7 @@ ShadowNode::ShadowNode(
       state_(
           fragment.state ? fragment.state
                          : sourceShadowNode.getMostRecentState()),
+      stateRevision_(computeStateRevision(state_, children_)),
       family_(sourceShadowNode.family_),
       traits_(sourceShadowNode.traits_) {
 
@@ -217,6 +235,10 @@ ShadowNodeFamily const &ShadowNode::getFamily() const {
   return *family_;
 }
 
+int ShadowNode::getStateRevision() const {
+  return stateRevision_;
+}
+
 #pragma mark - DebugStringConvertible
 
 #if RN_DEBUG_STRING_CONVERTIBLE
@@ -225,7 +247,9 @@ std::string ShadowNode::getDebugName() const {
 }
 
 std::string ShadowNode::getDebugValue() const {
-  return "r" + folly::to<std::string>(revision_) +
+  return "r" + folly::to<std::string>(revision_) + "/sr" +
+      folly::to<std::string>(stateRevision_) + "/s" +
+      folly::to<std::string>(state_ ? state_->getRevision() : 0) +
       (getSealed() ? "/sealed" : "");
 }
 

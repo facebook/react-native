@@ -17,6 +17,7 @@
 #include <react/mounting/ShadowViewMutation.h>
 
 #include "ShadowTreeDelegate.h"
+#include "TreeStateReconciliation.h"
 
 namespace facebook {
 namespace react {
@@ -165,6 +166,16 @@ bool ShadowTree::tryCommit(ShadowTreeCommitTransaction transaction) const {
     return false;
   }
 
+  // Compare state revisions of old and new root
+  // Children of the root node may be mutated in-place
+  UnsharedShadowNode reconciledNode =
+      reconcileStateWithTree(newRootShadowNode.get(), oldRootShadowNode);
+  if (reconciledNode != nullptr) {
+    newRootShadowNode =
+        std::make_shared<RootShadowNode>(*reconciledNode, ShadowNodeFragment{});
+  }
+
+  // Layout nodes
   std::vector<LayoutableShadowNode const *> affectedLayoutableNodes{};
   affectedLayoutableNodes.reserve(1024);
 
@@ -172,6 +183,7 @@ bool ShadowTree::tryCommit(ShadowTreeCommitTransaction transaction) const {
   newRootShadowNode->layoutIfNeeded(&affectedLayoutableNodes);
   telemetry.didLayout();
 
+  // Seal the shadow node so it can no longer be mutated
   newRootShadowNode->sealRecursive();
 
   auto revisionNumber = ShadowTreeRevision::Number{};

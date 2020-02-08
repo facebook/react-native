@@ -144,6 +144,8 @@ class ShadowNode : public virtual Sealable,
    */
   void setMounted(bool mounted) const;
 
+  int getStateRevision() const;
+
 #pragma mark - DebugStringConvertible
 
 #if RN_DEBUG_STRING_CONVERTIBLE
@@ -167,6 +169,15 @@ class ShadowNode : public virtual Sealable,
 
  private:
   friend ShadowNodeFamily;
+
+  /**
+   * This number is deterministically, statelessly recomputable (it's dependent
+   * only on the immutable properties stored in this class). It tells us the
+   * version of the state of the entire subtree, including this component and
+   * all descendants.
+   */
+  int const stateRevision_;
+
   /*
    * Clones the list of children (and creates a new `shared_ptr` to it) if
    * `childrenAreShared_` flag is `true`.
