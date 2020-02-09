@@ -213,6 +213,32 @@ class AndroidColorsExample extends React.Component<{}, State> {
   }
 }
 
+class VariantColorsExample extends React.Component<{}, State> {
+  state: State;
+  render() {
+    return (
+      <View style={styles.column}>
+        <View style={styles.row}>
+          <Text style={styles.labelCell}>
+            {Platform.OS === 'ios'
+              ? "IOSDynamicColor({light: 'red', dark: 'blue'})"
+              : "AndroidColor('?attr/colorAccent')"}
+          </Text>
+          <View
+            style={{
+              ...styles.colorCell,
+              backgroundColor:
+                Platform.OS === 'ios'
+                  ? IOSDynamicColor({light: 'red', dark: 'blue'})
+                  : AndroidColor('?attr/colorAccent'),
+            }}
+          />
+        </View>
+      </View>
+    );
+  }
+}
+
 const styles = StyleSheet.create({
   column: {flex: 1, flexDirection: 'column'},
   row: {flex: 0.75, flexDirection: 'row'},
@@ -253,6 +279,12 @@ exports.examples = [
     title: 'Android Colors',
     render: function(): React.Element<any> {
       return <AndroidColorsExample />;
+    },
+  },
+  {
+    title: 'Variant Colors',
+    render: function(): React.Element<any> {
+      return <VariantColorsExample />;
     },
   },
 ];
