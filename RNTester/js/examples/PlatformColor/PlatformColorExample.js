@@ -28,81 +28,159 @@ class PlatformColorsExample extends React.Component<{}, State> {
       colors = [
         // https://developer.apple.com/documentation/uikit/uicolor/ui_element_colors
         // Label Colors
-        'labelColor',
-        'secondaryLabelColor',
-        'tertiaryLabelColor',
-        'quaternaryLabelColor',
+        {label: 'labelColor', color: PlatformColor('labelColor')},
+        {
+          label: 'secondaryLabelColor',
+          color: PlatformColor('secondaryLabelColor'),
+        },
+        {
+          label: 'tertiaryLabelColor',
+          color: PlatformColor('tertiaryLabelColor'),
+        },
+        {
+          label: 'quaternaryLabelColor',
+          color: PlatformColor('quaternaryLabelColor'),
+        },
         // Fill Colors
-        'systemFillColor',
-        'secondarySystemFillColor',
-        'tertiarySystemFillColor',
-        'quaternarySystemFillColor',
+        {label: 'systemFillColor', color: PlatformColor('systemFillColor')},
+        {
+          label: 'secondarySystemFillColor',
+          color: PlatformColor('secondarySystemFillColor'),
+        },
+        {
+          label: 'tertiarySystemFillColor',
+          color: PlatformColor('tertiarySystemFillColor'),
+        },
+        {
+          label: 'quaternarySystemFillColor',
+          color: PlatformColor('quaternarySystemFillColor'),
+        },
         // Text Colors
-        'placeholderTextColor',
+        {
+          label: 'placeholderTextColor',
+          color: PlatformColor('placeholderTextColor'),
+        },
         // Standard Content Background Colors
-        'systemBackgroundColor',
-        'secondarySystemBackgroundColor',
-        'tertiarySystemBackgroundColor',
+        {
+          label: 'systemBackgroundColor',
+          color: PlatformColor('systemBackgroundColor'),
+        },
+        {
+          label: 'secondarySystemBackgroundColor',
+          color: PlatformColor('secondarySystemBackgroundColor'),
+        },
+        {
+          label: 'tertiarySystemBackgroundColor',
+          color: PlatformColor('tertiarySystemBackgroundColor'),
+        },
         // Grouped Content Background Colors
-        'systemGroupedBackgroundColor',
-        'secondarySystemGroupedBackgroundColor',
-        'tertiarySystemGroupedBackgroundColor',
+        {
+          label: 'systemGroupedBackgroundColor',
+          color: PlatformColor('systemGroupedBackgroundColor'),
+        },
+        {
+          label: 'secondarySystemGroupedBackgroundColor',
+          color: PlatformColor('secondarySystemGroupedBackgroundColor'),
+        },
+        {
+          label: 'tertiarySystemGroupedBackgroundColor',
+          color: PlatformColor('tertiarySystemGroupedBackgroundColor'),
+        },
         // Separator Colors
-        'separatorColor',
-        'opaqueSeparatorColor',
+        {label: 'separatorColor', color: PlatformColor('separatorColor')},
+        {
+          label: 'opaqueSeparatorColor',
+          color: PlatformColor('opaqueSeparatorColor'),
+        },
         // Link Color
-        'linkColor',
+        {label: 'linkColor', color: PlatformColor('linkColor')},
         // Nonadaptable Colors
-        'darkTextColor',
-        'lightTextColor',
+        {label: 'darkTextColor', color: PlatformColor('darkTextColor')},
+        {label: 'lightTextColor', color: PlatformColor('lightTextColor')},
         // https://developer.apple.com/documentation/uikit/uicolor/standard_colors
         // Adaptable Colors
-        'systemBlueColor',
-        'systemBrownColor',
-        'systemGreenColor',
-        'systemIndigoColor',
-        'systemOrangeColor',
-        'systemPinkColor',
-        'systemPurpleColor',
-        'systemRedColor',
-        'systemTealColor',
-        'systemYellowColor',
+        {label: 'systemBlueColor', color: PlatformColor('systemBlueColor')},
+        {label: 'systemBrownColor', color: PlatformColor('systemBrownColor')},
+        {label: 'systemGreenColor', color: PlatformColor('systemGreenColor')},
+        {label: 'systemIndigoColor', color: PlatformColor('systemIndigoColor')},
+        {label: 'systemOrangeColor', color: PlatformColor('systemOrangeColor')},
+        {label: 'systemPinkColor', color: PlatformColor('systemPinkColor')},
+        {label: 'systemPurpleColor', color: PlatformColor('systemPurpleColor')},
+        {label: 'systemRedColor', color: PlatformColor('systemRedColor')},
+        {label: 'systemTealColor', color: PlatformColor('systemTealColor')},
+        {label: 'systemYellowColor', color: PlatformColor('systemYellowColor')},
         // Adaptable Gray Colors
-        'systemGrayColor',
-        'systemGray2Color',
-        'systemGray3Color',
-        'systemGray4Color',
-        'systemGray5Color',
-        'systemGray6Color',
+        {label: 'systemGrayColor', color: PlatformColor('systemGrayColor')},
+        {label: 'systemGray2Color', color: PlatformColor('systemGray2Color')},
+        {label: 'systemGray3Color', color: PlatformColor('systemGray3Color')},
+        {label: 'systemGray4Color', color: PlatformColor('systemGray4Color')},
+        {label: 'systemGray5Color', color: PlatformColor('systemGray5Color')},
+        {label: 'systemGray6Color', color: PlatformColor('systemGray6Color')},
       ];
     } else if (Platform.OS === 'android') {
       colors = [
-        '?attr/colorAccent',
-        '?attr/colorBackgroundFloating',
-        '?attr/colorButtonNormal',
-        '?attr/colorControlActivated',
-        '?attr/colorControlHighlight',
-        '?attr/colorControlNormal',
-        '?android:colorError',
-        '?android:attr/colorError',
-        '?attr/colorPrimary',
-        '?colorPrimaryDark',
-        '@android:color/holo_purple',
-        '@android:color/holo_green_light',
-        '@color/catalyst_redbox_background',
-        '@color/catalyst_logbox_background',
+        {label: '?attr/colorAccent', color: PlatformColor('?attr/colorAccent')},
+        {
+          label: '?attr/colorBackgroundFloating',
+          color: PlatformColor('?attr/colorBackgroundFloating'),
+        },
+        {
+          label: '?attr/colorButtonNormal',
+          color: PlatformColor('?attr/colorButtonNormal'),
+        },
+        {
+          label: '?attr/colorControlActivated',
+          color: PlatformColor('?attr/colorControlActivated'),
+        },
+        {
+          label: '?attr/colorControlHighlight',
+          color: PlatformColor('?attr/colorControlHighlight'),
+        },
+        {
+          label: '?attr/colorControlNormal',
+          color: PlatformColor('?attr/colorControlNormal'),
+        },
+        {
+          label: '?android:colorError',
+          color: PlatformColor('?android:colorError'),
+        },
+        {
+          label: '?android:attr/colorError',
+          color: PlatformColor('?android:attr/colorError'),
+        },
+        {
+          label: '?attr/colorPrimary',
+          color: PlatformColor('?attr/colorPrimary'),
+        },
+        {label: '?colorPrimaryDark', color: PlatformColor('?colorPrimaryDark')},
+        {
+          label: '@android:color/holo_purple',
+          color: PlatformColor('@android:color/holo_purple'),
+        },
+        {
+          label: '@android:color/holo_green_light',
+          color: PlatformColor('@android:color/holo_green_light'),
+        },
+        {
+          label: '@color/catalyst_redbox_background',
+          color: PlatformColor('@color/catalyst_redbox_background'),
+        },
+        {
+          label: '@color/catalyst_logbox_background',
+          color: PlatformColor('@color/catalyst_logbox_background'),
+        },
       ];
     }
 
     let table = [];
     for (let color of colors) {
       table.push(
-        <View style={styles.row} key={color}>
-          <Text style={styles.labelCell}>{color}</Text>
+        <View style={styles.row} key={color.label}>
+          <Text style={styles.labelCell}>{color.label}</Text>
           <View
             style={{
               ...styles.colorCell,
-              backgroundColor: PlatformColor(`${color}`),
+              backgroundColor: color.color,
             }}
           />
         </View>,
@@ -121,25 +199,30 @@ class FallbackColorsExample extends React.Component<{}, State> {
 
   getFallbackColor() {
     if (Platform.OS === 'ios') {
-      return 'systemGreenColor';
+      return {
+        label: "PlatformColor('bogus', 'systemGreenColor')",
+        color: PlatformColor('bogus', 'systemGreenColor'),
+      };
     } else if (Platform.OS === 'android') {
-      return '@color/catalyst_redbox_background';
+      return {
+        label: "PlatformColor('bogus', '@color/catalyst_redbox_background')",
+        color: PlatformColor('bogus', '@color/catalyst_redbox_background'),
+      };
     }
 
     throw 'Unexpected Platform.OS: ' + Platform.OS;
   }
 
   render() {
+    const color = this.getFallbackColor();
     return (
       <View style={styles.column}>
         <View style={styles.row}>
-          <Text style={styles.labelCell}>
-            PlatformColor('bogus', '{this.getFallbackColor()}')
-          </Text>
+          <Text style={styles.labelCell}>{color.label}</Text>
           <View
             style={{
               ...styles.colorCell,
-              backgroundColor: PlatformColor('bogus', this.getFallbackColor()),
+              backgroundColor: color.color,
             }}
           />
         </View>
