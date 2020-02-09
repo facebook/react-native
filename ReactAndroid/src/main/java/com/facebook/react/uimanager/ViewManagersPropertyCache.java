@@ -210,8 +210,7 @@ import java.util.Map;
     private final int mDefaultValue;
 
     public ColorPropSetter(ReactProp prop, Method setter) {
-      super(prop, "mixed", setter);
-      mDefaultValue = 0;
+      this(prop, setter, 0);
     }
 
     public ColorPropSetter(ReactProp prop, Method setter, int defaultValue) {
@@ -233,7 +232,7 @@ import java.util.Map;
         throw new RuntimeException("Context may not be null.");
       }
 
-      if (value.getClass() == ReadableMap.class || value.getClass() == ReadableNativeMap.class) {
+      if (value instanceof ReadableMap) {
         ReadableMap map = (ReadableMap) value;
         ReadableArray resourcePaths = map.getArray(JSON_KEY);
 
@@ -260,6 +259,9 @@ import java.util.Map;
               return resolveThemeAttribute(context, resourcePath);
             }
           } catch (Resources.NotFoundException exception) {
+            // The resource could not be found so do nothing to allow the for loop to continue and
+            // try the next fallback resource in the array.  If none of the fallbacks are
+            // found then the exception immediately after the for loop will be thrown.
             exception.printStackTrace();
           }
         }
@@ -267,7 +269,7 @@ import java.util.Map;
         throw new JSApplicationCausedNativeException("ColorValue: None of the paths in the `" + JSON_KEY + "` array resolved to a color resource.");
       }
 
-      throw new JSApplicationCausedNativeException("ColorValue: if the value is an Object it must contain a `" + JSON_KEY + "` array of strings.");
+      throw new JSApplicationCausedNativeException("ColorValue: the value must be a number or Object.");
     }
 
     private int resolveResource(Context context, String resourcePath) {
