@@ -316,6 +316,7 @@ type AndroidProps = $ReadOnly<{|
     | 'email'
     | 'name'
     | 'password'
+    | 'password-new'
     | 'postal-code'
     | 'street-address'
     | 'tel'
