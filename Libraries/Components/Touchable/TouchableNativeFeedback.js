@@ -40,11 +40,13 @@ type Props = $ReadOnly<{|
         attribute:
           | 'selectableItemBackground'
           | 'selectableItemBackgroundBorderless',
+        rippleRadius: ?number,
       |}>
     | $ReadOnly<{|
         type: 'RippleAndroid',
         color: ?number,
         borderless: boolean,
+        rippleRadius: ?number,
       |}>
   ),
 
