@@ -508,7 +508,7 @@ import java.util.Map;
     } else if (propTypeClass == boolean.class) {
       return new BooleanPropSetter(annotation, method, annotation.defaultBoolean());
     } else if (propTypeClass == int.class) {
-      if (annotation.customType() == "Color") {
+      if ("Color".equals(annotation.customType())) {
         return new ColorPropSetter(annotation, method, annotation.defaultInt());
       }
       return new IntPropSetter(annotation, method, annotation.defaultInt());
@@ -521,7 +521,7 @@ import java.util.Map;
     } else if (propTypeClass == Boolean.class) {
       return new BoxedBooleanPropSetter(annotation, method);
     } else if (propTypeClass == Integer.class) {
-      if (annotation.customType() == "Color") {
+      if ("Color".equals(annotation.customType())) {
         return new ColorPropSetter(annotation, method);
       }
       return new BoxedIntPropSetter(annotation, method);
