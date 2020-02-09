@@ -17,12 +17,8 @@ const {PlatformColor, StyleSheet, Text, View} = ReactNative;
 import {IOSDynamicColor} from '../../../../Libraries/StyleSheet/NativeColorValueTypesIOS';
 import {AndroidColor} from '../../../../Libraries/StyleSheet/NativeColorValueTypesAndroid';
 
-type State = {};
-
-class PlatformColorsExample extends React.Component<{}, State> {
-  state: State;
-
-  createTable() {
+function PlatformColorsExample() {
+  function createTable() {
     let colors = [];
     if (Platform.OS === 'ios') {
       colors = [
@@ -189,137 +185,118 @@ class PlatformColorsExample extends React.Component<{}, State> {
     return table;
   }
 
-  render() {
-    return <View style={styles.column}>{this.createTable()}</View>;
-  }
+  return <View style={styles.column}>{createTable()}</View>;
 }
 
-class FallbackColorsExample extends React.Component<{}, State> {
-  state: State;
-
-  getFallbackColor() {
-    if (Platform.OS === 'ios') {
-      return {
-        label: "PlatformColor('bogus', 'systemGreenColor')",
-        color: PlatformColor('bogus', 'systemGreenColor'),
-      };
-    } else if (Platform.OS === 'android') {
-      return {
-        label: "PlatformColor('bogus', '@color/catalyst_redbox_background')",
-        color: PlatformColor('bogus', '@color/catalyst_redbox_background'),
-      };
-    }
-
+function FallbackColorsExample() {
+  let color = {};
+  if (Platform.OS === 'ios') {
+    color = {
+      label: "PlatformColor('bogus', 'systemGreenColor')",
+      color: PlatformColor('bogus', 'systemGreenColor'),
+    };
+  } else if (Platform.OS === 'android') {
+    color = {
+      label: "PlatformColor('bogus', '@color/catalyst_redbox_background')",
+      color: PlatformColor('bogus', '@color/catalyst_redbox_background'),
+    };
+  } else {
     throw 'Unexpected Platform.OS: ' + Platform.OS;
   }
 
-  render() {
-    const color = this.getFallbackColor();
-    return (
-      <View style={styles.column}>
-        <View style={styles.row}>
-          <Text style={styles.labelCell}>{color.label}</Text>
-          <View
-            style={{
-              ...styles.colorCell,
-              backgroundColor: color.color,
-            }}
-          />
-        </View>
+  return (
+    <View style={styles.column}>
+      <View style={styles.row}>
+        <Text style={styles.labelCell}>{color.label}</Text>
+        <View
+          style={{
+            ...styles.colorCell,
+            backgroundColor: color.color,
+          }}
+        />
       </View>
-    );
-  }
+    </View>
+  );
 }
 
-class DynamicColorsExample extends React.Component<{}, State> {
-  state: State;
-  render() {
-    return Platform.OS === 'ios' ? (
-      <View style={styles.column}>
-        <View style={styles.row}>
-          <Text style={styles.labelCell}>
-            IOSDynamicColor({'{\n'}
-            {'  '}light: 'red', dark: 'blue'{'\n'}
-            {'}'})
-          </Text>
-          <View
-            style={{
-              ...styles.colorCell,
-              backgroundColor: IOSDynamicColor({light: 'red', dark: 'blue'}),
-            }}
-          />
-        </View>
-        <View style={styles.row}>
-          <Text style={styles.labelCell}>
-            IOSDynamicColor({'{\n'}
-            {'  '}light: PlatformColor('systemBlueColor'),{'\n'}
-            {'  '}dark: PlatformColor('systemRedColor'),{'\n'}
-            {'}'})
-          </Text>
-          <View
-            style={{
-              ...styles.colorCell,
-              backgroundColor: IOSDynamicColor({
-                light: PlatformColor('systemBlueColor'),
-                dark: PlatformColor('systemRedColor'),
-              }),
-            }}
-          />
-        </View>
+function DynamicColorsExample() {
+  return Platform.OS === 'ios' ? (
+    <View style={styles.column}>
+      <View style={styles.row}>
+        <Text style={styles.labelCell}>
+          IOSDynamicColor({'{\n'}
+          {'  '}light: 'red', dark: 'blue'{'\n'}
+          {'}'})
+        </Text>
+        <View
+          style={{
+            ...styles.colorCell,
+            backgroundColor: IOSDynamicColor({light: 'red', dark: 'blue'}),
+          }}
+        />
       </View>
-    ) : (
-      <Text>Not applicable on this platform</Text>
-    );
-  }
+      <View style={styles.row}>
+        <Text style={styles.labelCell}>
+          IOSDynamicColor({'{\n'}
+          {'  '}light: PlatformColor('systemBlueColor'),{'\n'}
+          {'  '}dark: PlatformColor('systemRedColor'),{'\n'}
+          {'}'})
+        </Text>
+        <View
+          style={{
+            ...styles.colorCell,
+            backgroundColor: IOSDynamicColor({
+              light: PlatformColor('systemBlueColor'),
+              dark: PlatformColor('systemRedColor'),
+            }),
+          }}
+        />
+      </View>
+    </View>
+  ) : (
+    <Text>Not applicable on this platform</Text>
+  );
 }
 
-class AndroidColorsExample extends React.Component<{}, State> {
-  state: State;
-  render() {
-    return Platform.OS === 'android' ? (
-      <View style={styles.column}>
-        <View style={styles.row}>
-          <Text style={styles.labelCell}>
-            AndroidColor('?attr/colorAccent')
-          </Text>
-          <View
-            style={{
-              ...styles.colorCell,
-              backgroundColor: AndroidColor('?attr/colorAccent'),
-            }}
-          />
-        </View>
+function AndroidColorsExample() {
+  return Platform.OS === 'android' ? (
+    <View style={styles.column}>
+      <View style={styles.row}>
+        <Text style={styles.labelCell}>AndroidColor('?attr/colorAccent')</Text>
+        <View
+          style={{
+            ...styles.colorCell,
+            backgroundColor: AndroidColor('?attr/colorAccent'),
+          }}
+        />
       </View>
-    ) : (
-      <Text>Not applicable on this platform</Text>
-    );
-  }
+    </View>
+  ) : (
+    <Text>Not applicable on this platform</Text>
+  );
 }
 
-class VariantColorsExample extends React.Component<{}, State> {
-  state: State;
-  render() {
-    return (
-      <View style={styles.column}>
-        <View style={styles.row}>
-          <Text style={styles.labelCell}>
-            {Platform.OS === 'ios'
-              ? "IOSDynamicColor({light: 'red', dark: 'blue'})"
-              : "AndroidColor('?attr/colorAccent')"}
-          </Text>
-          <View
-            style={{
-              ...styles.colorCell,
-              backgroundColor:
-                Platform.OS === 'ios'
-                  ? IOSDynamicColor({light: 'red', dark: 'blue'})
-                  : AndroidColor('?attr/colorAccent'),
-            }}
-          />
-        </View>
+function VariantColorsExample() {
+  return (
+    <View style={styles.column}>
+      <View style={styles.row}>
+        <Text style={styles.labelCell}>
+          {Platform.OS === 'ios'
+            ? "IOSDynamicColor({light: 'red', dark: 'blue'})"
+            : "AndroidColor('?attr/colorAccent')"}
+        </Text>
+        <View
+          style={{
+            ...styles.colorCell,
+            backgroundColor:
+              Platform.OS === 'ios'
+                ? IOSDynamicColor({light: 'red', dark: 'blue'})
+                : AndroidColor('?attr/colorAccent'),
+          }}
+        />
       </View>
-    );
-  }
+    </View>
+  );
 }
 
 const styles = StyleSheet.create({
@@ -342,31 +319,31 @@ exports.description =
 exports.examples = [
   {
     title: 'Platform Colors',
-    render: function(): React.Element<any> {
+    render(): React.Element<any> {
       return <PlatformColorsExample />;
     },
   },
   {
     title: 'Fallback Colors',
-    render: function(): React.Element<any> {
+    render(): React.Element<any> {
       return <FallbackColorsExample />;
     },
   },
   {
     title: 'iOS Dynamic Colors',
-    render: function(): React.Element<any> {
+    render(): React.Element<any> {
       return <DynamicColorsExample />;
     },
   },
   {
     title: 'Android Colors',
-    render: function(): React.Element<any> {
+    render(): React.Element<any> {
       return <AndroidColorsExample />;
     },
   },
   {
     title: 'Variant Colors',
-    render: function(): React.Element<any> {
+    render(): React.Element<any> {
       return <VariantColorsExample />;
     },
   },
