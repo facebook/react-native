@@ -178,6 +178,8 @@ void ShadowNode::appendChild(const ShadowNode::Shared &child) {
   nonConstChildren->push_back(child);
 
   child->family_->setParent(family_);
+
+  stateRevision_ += child->getStateRevision();
 }
 
 void ShadowNode::replaceChild(
@@ -185,6 +187,8 @@ void ShadowNode::replaceChild(
     ShadowNode::Shared const &newChild,
     int suggestedIndex) {
   ensureUnsealed();
+
+  stateRevision_ += newChild->getStateRevision() - oldChild.getStateRevision();
 
   cloneChildrenIfShared();
 
