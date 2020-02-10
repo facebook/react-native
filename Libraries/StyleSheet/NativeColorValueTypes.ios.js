@@ -41,7 +41,7 @@ export const normalizeColorObject = (
   if ('semantic' in color) {
     // an ios semantic color
     return color;
-  } else if ('dynamic' in color && color.dynamic != undefined) {
+  } else if ('dynamic' in color && color.dynamic !== undefined) {
     const normalizeColor = require('./normalizeColor');
 
     // a dynamic, appearance aware color
