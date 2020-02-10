@@ -26,20 +26,30 @@ class ConcreteState : public State {
  public:
   using Shared = std::shared_ptr<const ConcreteState>;
   using Data = DataT;
+  using SharedData = std::shared_ptr<Data const>;
 
-  explicit ConcreteState(Data &&data, ShadowNodeFamily::Shared const &family)
-      : State(family), data_(std::move(data)) {}
+  /*
+   * Creates an updated `State` object with given previous one and `data`.
+   */
+  explicit ConcreteState(SharedData const &data, State const &state)
+      : State(data, state) {}
 
-  explicit ConcreteState(Data &&data, State const &other)
-      : State(other), data_(std::move(data)) {}
+  /*
+   * Creates a first-of-its-family `State` object with given `family` and
+   * `data`.
+   */
+  explicit ConcreteState(
+      SharedData const &data,
+      ShadowNodeFamily::Shared const &family)
+      : State(data, family) {}
 
   virtual ~ConcreteState() = default;
 
   /*
    * Returns stored data.
    */
-  const Data &getData() const {
-    return data_;
+  Data const &getData() const {
+    return *std::static_pointer_cast<Data const>(data_);
   }
 
   /*
@@ -67,7 +77,7 @@ class ConcreteState : public State {
    * of conflict.
    */
   void updateState(
-      std::function<Data(const Data &oldData)> callback,
+      std::function<Data(Data const &oldData)> callback,
       EventPriority priority = EventPriority::AsynchronousBatched) const {
     family_->dispatchRawState(
         {[family = family_, callback = std::move(callback)]()
@@ -84,16 +94,13 @@ class ConcreteState : public State {
 
 #ifdef ANDROID
   folly::dynamic getDynamic() const override {
-    return data_.getDynamic();
+    return getData().getDynamic();
   }
 
   void updateState(folly::dynamic data) const override {
-    updateState(std::move(Data(data_, data)));
+    updateState(std::move(Data(getData(), data)));
   }
 #endif
-
- private:
-  DataT data_;
 };
 
 } // namespace react

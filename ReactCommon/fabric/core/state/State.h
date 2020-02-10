@@ -24,8 +24,17 @@ class State {
  public:
   using Shared = std::shared_ptr<const State>;
 
-  explicit State(State const &state);
-  explicit State(ShadowNodeFamily::Shared const &family);
+ protected:
+  /*
+   * Constructors are protected to make calling them directly with
+   * type-erasured arguments impossible.
+   */
+  explicit State(StateData::Shared const &data, State const &state);
+  explicit State(
+      StateData::Shared const &data,
+      ShadowNodeFamily::Shared const &family);
+
+ public:
   virtual ~State() = default;
 
   /*
@@ -53,11 +62,16 @@ class State {
   void commit(std::shared_ptr<ShadowNode const> const &shadowNode) const;
 
  protected:
-  ShadowNodeFamily::Shared family_;
-
- private:
   friend class StateCoordinator;
   friend class ShadowNodeFamily;
+
+  ShadowNodeFamily::Shared family_;
+
+  /*
+   * Type-erasured pointer to arbitrary component-specific data held by the
+   * `State`.
+   */
+  StateData::Shared data_;
 
   /*
    * Indicates that the state was committed once and then was replaced by a

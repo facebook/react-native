@@ -106,7 +106,8 @@ class ConcreteShadowNode : public ShadowNode {
    */
   void setStateData(ConcreteStateData &&data) {
     ensureUnsealed();
-    state_ = std::make_shared<ConcreteState const>(std::move(data), *state_);
+    state_ = std::make_shared<ConcreteState const>(
+        std::make_shared<ConcreteStateData const>(std::move(data)), *state_);
   }
 
   /*
