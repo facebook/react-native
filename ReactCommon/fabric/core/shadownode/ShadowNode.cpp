@@ -28,22 +28,22 @@ bool ShadowNode::sameFamily(const ShadowNode &first, const ShadowNode &second) {
   return first.family_ == second.family_;
 }
 
-#pragma mark - Constructors
-
 static int computeStateRevision(
-    const State::Shared &state,
-    const SharedShadowNodeSharedList &children) {
+    State::Shared const &state,
+    SharedShadowNodeSharedList const &children) {
   int fragmentStateRevision = state ? state->getRevision() : 0;
   int childrenSum = 0;
 
   if (children) {
-    for (const auto &child : *children) {
+    for (auto const &child : *children) {
       childrenSum += child->getStateRevision();
     }
   }
 
   return fragmentStateRevision + childrenSum;
 }
+
+#pragma mark - Constructors
 
 ShadowNode::ShadowNode(
     ShadowNodeFragment const &fragment,

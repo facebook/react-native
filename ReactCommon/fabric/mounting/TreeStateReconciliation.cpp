@@ -10,23 +10,17 @@
 namespace facebook {
 namespace react {
 
-using ChangedShadowNodePairs =
-    std::vector<std::pair<SharedShadowNode, UnsharedShadowNode>>;
+using ChangedShadowNodePairs = std::vector<
+    std::pair<ShadowNode::Shared const &, ShadowNode::Unshared const &>>;
 
 /**
  * Clones any children in the subtree that need to be cloned, and adds those to
  * the `changedPairs` vector argument.
- *
- * @param parent
- * @param newChildren
- * @param oldChildren
- * @param changedPairs
  */
-static void reconcileStateWithChildren(
-    ShadowNode const *parent,
-    const SharedShadowNodeList &newChildren,
-    const SharedShadowNodeList &oldChildren,
-    ChangedShadowNodePairs &changedPairs) {
+static ChangedShadowNodePairs reconcileStateWithChildren(
+    SharedShadowNodeList const &newChildren,
+    SharedShadowNodeList const &oldChildren) {
+  ChangedShadowNodePairs changedPairs;
   // Find children that are the same family in both trees.
   // We only want to find nodes that existing in the new tree - if they
   // don't exist in the new tree, they're being deleted; if they don't exist
@@ -35,19 +29,22 @@ static void reconcileStateWithChildren(
   // Currently we use a naive double loop - this could be improved, but we need
   // to be able to handle cases where nodes are entirely reordered, for
   // instance.
-  for (int i = 0; i < newChildren.size(); i++) {
-    bool found = false;
-    for (int j = 0; j < oldChildren.size() && !found; j++) {
-      if (ShadowNode::sameFamily(*newChildren[i], *oldChildren[j])) {
-        UnsharedShadowNode newChild =
-            reconcileStateWithTree(newChildren[i].get(), oldChildren[j]);
-        if (newChild != nullptr) {
-          changedPairs.push_back(std::make_pair(newChildren[i], newChild));
-        }
-        found = true;
+  for (auto const &child : newChildren) {
+    auto const oldChild = std::find_if(
+        oldChildren.begin(), oldChildren.end(), [&](const auto &el) {
+          return ShadowNode::sameFamily(*child, *el);
+        });
+
+    if (oldChild != oldChildren.end()) {
+      UnsharedShadowNode newChild =
+          reconcileStateWithTree(child.get(), *oldChild);
+      if (newChild != nullptr) {
+        changedPairs.push_back(std::make_pair(child, newChild));
       }
     }
-  }
+  };
+
+  return changedPairs;
 }
 
 UnsharedShadowNode reconcileStateWithTree(
@@ -63,10 +60,10 @@ UnsharedShadowNode reconcileStateWithTree(
   // and/or 2) some descendant node is out-of-date and must be reconciled.
   // This requires traversing all children, and we must at *least* clone
   // this node, whether or not we clone and update any children.
-  const auto &newChildren = newNode->getChildren();
-  const auto &oldChildren = committedNode->getChildren();
-  ChangedShadowNodePairs changedPairs;
-  reconcileStateWithChildren(newNode, newChildren, oldChildren, changedPairs);
+  auto const &newChildren = newNode->getChildren();
+  auto const &oldChildren = committedNode->getChildren();
+  auto const changedPairs =
+      reconcileStateWithChildren(newChildren, oldChildren);
 
   ShadowNode::SharedListOfShared clonedChildren =
       ShadowNodeFragment::childrenPlaceholder();
@@ -74,13 +71,13 @@ UnsharedShadowNode reconcileStateWithTree(
   // If any children were cloned, we need to recreate the child list.
   // This won't cause any children to be cloned that weren't already cloned -
   // it just collects all children, cloned or uncloned, into a new list.
-  if (changedPairs.size() > 0) {
+  if (!changedPairs.empty()) {
     ShadowNode::UnsharedListOfShared newList =
         std::make_shared<ShadowNode::ListOfShared>();
-    for (int i = 0, j = 0; i < newChildren.size(); i++) {
+    for (std::size_t i = 0, j = 0; i < newChildren.size(); ++i) {
       if (j < changedPairs.size() && changedPairs[j].first == newChildren[i]) {
         newList->push_back(changedPairs[j].second);
-        j++;
+        ++j;
       } else {
         newList->push_back(newChildren[i]);
       }
