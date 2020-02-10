@@ -276,6 +276,10 @@ type IOSProps = $ReadOnly<{|
   passwordRules?: ?PasswordRules,
 
   /*
+   * If `true`, allows TextInput to pass touch events to the parent component.
+   * This allows components to be swipeable from the TextInput on iOS,
+   * as is the case on Android by default.
+   * If `false`, TextInput always asks to handle the input (except when disabled).
    * @platform ios
    */
   rejectResponderTermination?: ?boolean,
