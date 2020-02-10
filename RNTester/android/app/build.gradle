@@ -160,6 +160,11 @@ android {
     }
 }
 
+configurations {
+  hermesDebugImplementation {}
+  hermesReleaseImplementation {}
+}
+
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
@@ -169,8 +174,8 @@ dependencies {
     implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.0.0"
 
     def hermesPath = '$projectDir/../../../../node_modules/hermes-engine/android/'
-    debugImplementation files(hermesPath + "hermes-debug.aar")
-    releaseImplementation files(hermesPath + "hermes-release.aar")
+    hermesDebugImplementation files(hermesPath + "hermes-debug.aar")
+    hermesReleaseImplementation files(hermesPath + "hermes-release.aar")
 
     debugImplementation("com.facebook.flipper:flipper:${FLIPPER_VERSION}") {
         exclude group:'com.facebook.fbjni'
@@ -185,8 +190,8 @@ dependencies {
     }
 
     if (useIntlJsc) {
-        implementation 'org.webkit:android-jsc-intl:+'
+        jscImplementation 'org.webkit:android-jsc-intl:+'
     } else {
-        implementation 'org.webkit:android-jsc:+'
+        jscImplementation 'org.webkit:android-jsc:+'
     }
 }
