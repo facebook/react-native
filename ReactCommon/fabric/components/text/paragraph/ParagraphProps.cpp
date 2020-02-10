@@ -6,13 +6,13 @@
  */
 
 #include "ParagraphProps.h"
-#include "../../../attributedstring/primitives.h"
 
 #include <react/attributedstring/conversions.h>
+#include <react/attributedstring/primitives.h>
 #include <react/core/propsConversions.h>
 #include <react/debug/debugStringConvertibleUtils.h>
 
-#include <Glog/logging.h>
+#include <glog/logging.h>
 
 namespace facebook {
 namespace react {
