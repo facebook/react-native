@@ -52,6 +52,9 @@ rn_xplat_cxx_library(
     deps = [
         "fbsource//xplat/fbsystrace:fbsystrace",
         react_native_xplat_target("fabric/components/view:view"),
+        react_native_xplat_target("fabric/components/root:root"),
+        react_native_xplat_target("fabric/components/view:view"),
+        react_native_xplat_target("fabric/components/scrollview:scrollview"),
         react_native_xplat_target("fabric/uimanager:uimanager"),
         react_native_xplat_target("fabric/core:core"),
         react_native_xplat_target("fabric/debug:debug"),
@@ -76,5 +79,6 @@ fb_xplat_cxx_test(
         ":element",
         react_native_xplat_target("fabric/components/root:root"),
         react_native_xplat_target("fabric/components/view:view"),
+        react_native_xplat_target("fabric/components/scrollview:scrollview"),
     ],
 )

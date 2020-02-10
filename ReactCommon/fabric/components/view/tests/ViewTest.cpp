@@ -11,6 +11,7 @@
 #include <gtest/gtest.h>
 
 #include <react/components/root/RootComponentDescriptor.h>
+#include <react/components/scrollview/ScrollViewComponentDescriptor.h>
 #include <react/components/view/ViewComponentDescriptor.h>
 #include <react/element/ComponentBuilder.h>
 #include <react/element/Element.h>
@@ -55,7 +56,9 @@ TEST(ElementTest, testYogaDirtyFlag) {
                 .tag(5),
               Element<ViewShadowNode>()
                 .tag(6)
-            })
+            }),
+          Element<ScrollViewShadowNode>()
+            .tag(9)
         });
   // clang-format on
 

@@ -32,7 +32,8 @@ class Element final {
  public:
   using ConcreteProps = typename ShadowNodeT::ConcreteProps;
   using SharedConcreteProps = std::shared_ptr<ConcreteProps const>;
-  using UnsharedConcreteProps = std::shared_ptr<ConcreteProps>;
+  using ConcreteState = typename ShadowNodeT::ConcreteState;
+  using SharedConcreteState = std::shared_ptr<ConcreteState const>;
   using ConcreteShadowNode = ShadowNodeT;
   using ConcreteUnsharedShadowNode = std::shared_ptr<ConcreteShadowNode>;
 
@@ -84,6 +85,22 @@ class Element final {
    */
   Element &props(std::function<SharedConcreteProps()> callback) {
     fragment_.props = callback();
+    return *this;
+  }
+
+  /*
+   * Sets `state`.
+   */
+  Element &state(SharedConcreteState state) {
+    fragment_.state = state;
+    return *this;
+  }
+
+  /*
+   * Sets `state` using callback.
+   */
+  Element &state(std::function<SharedConcreteState()> callback) {
+    fragment_.state = state();
     return *this;
   }
 
