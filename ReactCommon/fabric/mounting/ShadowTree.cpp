@@ -22,13 +22,6 @@
 namespace facebook {
 namespace react {
 
-static void CommitState(ShadowNode::Shared const &shadowNode) {
-  auto state = shadowNode->getState();
-  if (state) {
-    state->commit(shadowNode);
-  }
-}
-
 static void updateMountedFlag(
     const SharedShadowNodeList &oldChildren,
     const SharedShadowNodeList &newChildren) {
@@ -66,7 +59,6 @@ static void updateMountedFlag(
     }
 
     newChild->setMounted(true);
-    CommitState(newChild);
     oldChild->setMounted(false);
 
     updateMountedFlag(oldChild->getChildren(), newChild->getChildren());
@@ -78,7 +70,6 @@ static void updateMountedFlag(
   for (index = lastIndexAfterFirstStage; index < newChildren.size(); index++) {
     const auto &newChild = newChildren[index];
     newChild->setMounted(true);
-    CommitState(newChild);
     updateMountedFlag({}, newChild->getChildren());
   }
 

@@ -66,9 +66,12 @@ ShadowNode::ShadowNode(
 
   traits_.set(ShadowNodeTraits::Trait::ChildrenAreShared);
 
-  for (const auto &child : *children_) {
+  for (auto const &child : *children_) {
     child->family_->setParent(family_);
   }
+
+  // The first node of the family gets its state committed automatically.
+  family_->setMostRecentState(state_);
 }
 
 ShadowNode::ShadowNode(
@@ -147,15 +150,7 @@ const State::Shared &ShadowNode::getState() const {
 }
 
 State::Shared ShadowNode::getMostRecentState() const {
-  if (state_) {
-    auto committedState = state_->getMostRecentState();
-
-    // Committed state can be `null` in case if no one node was committed yet;
-    // in this case we return own `state`.
-    return committedState ? committedState : state_;
-  }
-
-  return ShadowNodeFragment::statePlaceholder();
+  return family_->getMostRecentState();
 }
 
 void ShadowNode::sealRecursive() const {
@@ -228,6 +223,10 @@ void ShadowNode::cloneChildrenIfShared() {
 }
 
 void ShadowNode::setMounted(bool mounted) const {
+  if (mounted) {
+    family_->setMostRecentState(getState());
+  }
+
   family_->eventEmitter_->setEnabled(mounted);
 }
 

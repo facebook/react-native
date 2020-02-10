@@ -7,13 +7,14 @@
 
 #pragma once
 
+#ifdef ANDROID
 #include <folly/dynamic.h>
+#endif
+
 #include <react/core/ShadowNodeFamily.h>
 
 namespace facebook {
 namespace react {
-
-class ShadowNode;
 
 /*
  * An abstract interface of State.
@@ -59,13 +60,24 @@ class State {
   virtual void updateState(folly::dynamic data) const = 0;
 #endif
 
-  void commit(std::shared_ptr<ShadowNode const> const &shadowNode) const;
-
  protected:
-  friend class StateCoordinator;
   friend class ShadowNodeFamily;
+  friend class UIManager;
 
-  ShadowNodeFamily::Shared family_;
+  /*
+   * Returns a shared pointer to data.
+   * To be used by `UIManager` only.
+   */
+  StateData::Shared const &getDataPointer() const {
+    return data_;
+  }
+
+  /*
+   * A family of a node with this state is associated.
+   * Must be a weak pointer to avoid retain cycle among `State`, `ShadowNode`,
+   * and `ShadowNodeFamily` instances.
+   */
+  ShadowNodeFamily::Weak family_;
 
   /*
    * Type-erasured pointer to arbitrary component-specific data held by the

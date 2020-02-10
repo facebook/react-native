@@ -43,10 +43,8 @@ Scheduler::Scheduler(
     });
   };
 
-  auto statePipe = [uiManager](
-                       const StateData::Shared &data,
-                       SharedShadowNodeFamily const &family) {
-    uiManager->updateState(family, data);
+  auto statePipe = [uiManager](StateUpdate const &stateUpdate) {
+    uiManager->updateState(stateUpdate);
   };
 
   eventDispatcher_ = std::make_shared<EventDispatcher>(

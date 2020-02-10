@@ -108,9 +108,7 @@ class UIManager final : public ShadowTreeDelegate {
    * Creates a new shadow node with given state data, clones what's necessary
    * and performs a commit.
    */
-  void updateState(
-      ShadowNodeFamily::Shared const &family,
-      StateData::Shared const &rawStateData) const;
+  void updateState(StateUpdate const &stateUpdate) const;
 
   void dispatchCommand(
       const ShadowNode::Shared &shadowNode,

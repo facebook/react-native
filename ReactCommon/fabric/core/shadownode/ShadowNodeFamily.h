@@ -20,6 +20,7 @@ namespace react {
 
 class ComponentDescriptor;
 class ShadowNode;
+class State;
 
 /*
  * Represents all things that shadow nodes from the same family have in common.
@@ -73,10 +74,10 @@ class ShadowNodeFamily {
   SurfaceId getSurfaceId() const;
 
   /*
-   * Sets and gets a state target.
+   * Sets and gets the most recent state.
    */
-  const StateTarget &getTarget() const;
-  void setTarget(StateTarget &&target) const;
+  std::shared_ptr<State const> getMostRecentState() const;
+  void setMostRecentState(std::shared_ptr<State const> const &state) const;
 
   /*
    * Dispatches a state update with given priority.
@@ -88,7 +89,7 @@ class ShadowNodeFamily {
   friend ShadowNode;
 
   EventDispatcher::Weak eventDispatcher_;
-  mutable StateTarget target_{}; // Protected by `mutex_`.
+  mutable std::shared_ptr<State const> mostRecentState_;
   mutable better::shared_mutex mutex_;
 
   /*

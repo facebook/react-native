@@ -24,7 +24,7 @@ namespace react {
 template <typename DataT>
 class ConcreteState : public State {
  public:
-  using Shared = std::shared_ptr<const ConcreteState>;
+  using Shared = std::shared_ptr<ConcreteState const>;
   using Data = DataT;
   using SharedData = std::shared_ptr<Data const>;
 
@@ -62,7 +62,7 @@ class ConcreteState : public State {
       Data &&newData,
       EventPriority priority = EventPriority::AsynchronousUnbatched) const {
     updateState(
-        [data = std::move(newData)](const Data &oldData) mutable -> Data && {
+        [data = std::move(newData)](Data const &oldData) mutable -> Data && {
           return std::move(data);
         },
         priority);
@@ -79,17 +79,22 @@ class ConcreteState : public State {
   void updateState(
       std::function<Data(Data const &oldData)> callback,
       EventPriority priority = EventPriority::AsynchronousBatched) const {
-    family_->dispatchRawState(
-        {[family = family_, callback = std::move(callback)]()
-             -> std::pair<SharedShadowNodeFamily const &, StateData::Shared> {
-          auto target = family->getTarget();
-          auto oldState = target.getShadowNode().getState();
-          auto oldData = std::static_pointer_cast<const ConcreteState>(oldState)
-                             ->getData();
-          auto newData = std::make_shared<Data>(callback(oldData));
-          return {family, newData};
-        }},
-        priority);
+    auto family = family_.lock();
+
+    if (!family) {
+      // No more nodes of this family exist anymore,
+      // updating state is impossible.
+      return;
+    }
+
+    auto stateUpdate = StateUpdate{
+        family, [=](StateData::Shared const &oldData) -> StateData::Shared {
+          assert(oldData);
+          return std::make_shared<Data const>(
+              callback(*std::static_pointer_cast<Data const>(oldData)));
+        }};
+
+    family->dispatchRawState(std::move(stateUpdate), priority);
   }
 
 #ifdef ANDROID

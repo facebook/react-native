@@ -6,14 +6,3 @@
  */
 
 #include "StateUpdate.h"
-
-namespace facebook {
-namespace react {
-
-std::pair<SharedShadowNodeFamily const &, StateData::Shared> StateUpdate::
-operator()() const {
-  return callback_();
-}
-
-} // namespace react
-} // namespace facebook
