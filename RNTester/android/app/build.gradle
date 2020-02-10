@@ -169,8 +169,12 @@ dependencies {
     implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.0.0"
 
     def hermesPath = '$projectDir/../../../../node_modules/hermes-engine/android/'
-    debugImplementation files(hermesPath + "hermes-debug.aar")
-    releaseImplementation files(hermesPath + "hermes-release.aar")
+
+    if(gradle.startParameter.taskNames.contains("Release")) {
+        implementation files(hermesPath + "hermes-release.aar")
+    } else {
+        implementation files(hermesPath + "hermes-debug.aar")
+    }
 
     debugImplementation("com.facebook.flipper:flipper:${FLIPPER_VERSION}") {
         exclude group:'com.facebook.fbjni'
