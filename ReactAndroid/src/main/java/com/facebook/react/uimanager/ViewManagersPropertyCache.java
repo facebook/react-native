@@ -262,7 +262,6 @@ import java.util.Map;
             // The resource could not be found so do nothing to allow the for loop to continue and
             // try the next fallback resource in the array.  If none of the fallbacks are
             // found then the exception immediately after the for loop will be thrown.
-            exception.printStackTrace();
           }
         }
 

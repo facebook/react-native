@@ -93,6 +93,8 @@ import typeof NativeModules from './Libraries/BatchedBridge/NativeModules';
 import typeof Platform from './Libraries/Utilities/Platform';
 import typeof processColor from './Libraries/StyleSheet/processColor';
 import typeof {PlatformColor} from './Libraries/StyleSheet/ColorValueTypes';
+import typeof {IOSDynamicColor} from './Libraries/StyleSheet/NativeColorValueTypesIOS';
+import typeof {AndroidColor} from './Libraries/StyleSheet/NativeColorValueTypesAndroid';
 import typeof RootTagContext from './Libraries/ReactNative/RootTagContext';
 import typeof DeprecatedColorPropType from './Libraries/DeprecatedPropTypes/DeprecatedColorPropType';
 import typeof DeprecatedEdgeInsetsPropType from './Libraries/DeprecatedPropTypes/DeprecatedEdgeInsetsPropType';
@@ -433,6 +435,14 @@ module.exports = {
   },
   get PlatformColor(): PlatformColor {
     return require('./Libraries/StyleSheet/ColorValueTypes').PlatformColor;
+  },
+  get IOSDynamicColor(): IOSDynamicColor {
+    return require('./Libraries/StyleSheet/NativeColorValueTypesIOS')
+      .IOSDynamicColor;
+  },
+  get AndroidColor(): AndroidColor {
+    return require('./Libraries/StyleSheet/NativeColorValueTypesAndroid')
+      .AndroidColor;
   },
   get requireNativeComponent(): <T>(
     uiViewClassName: string,

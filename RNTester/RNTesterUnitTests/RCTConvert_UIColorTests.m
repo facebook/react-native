@@ -58,7 +58,7 @@ static BOOL CGColorsAreEqual(CGColorRef color1, CGColorRef color2) {
 {
   id json = RCTJSONParse(@"{ \"semantic\": \"unitTestFallbackColorIOS\" }", nil);
   UIColor *value = [RCTConvert UIColor:json];
-  XCTAssertEqualObjects(value, [UIColor blueColor]);
+  XCTAssertTrue(CGColorsAreEqual([value CGColor], [[UIColor blueColor] CGColor]));
 }
 
 - (void)testDynamicColor

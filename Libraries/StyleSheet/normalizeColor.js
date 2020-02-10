@@ -27,13 +27,13 @@ function normalizeColor(
     return null;
   }
 
-  if (typeof color === 'object' && color !== null) {
+  if (typeof color === 'object' && color != null) {
     const normalizeColorObject = require('./NativeColorValueTypes')
       .normalizeColorObject;
 
     const normalizedColorObj = normalizeColorObject(color);
 
-    if (normalizedColorObj !== null) {
+    if (normalizedColorObj != null) {
       return color;
     }
   }

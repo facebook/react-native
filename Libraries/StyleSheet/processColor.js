@@ -32,7 +32,7 @@ function processColor(color?: ?(number | ColorValue)): ?ProcessedColorValue {
 
     const processedColorObj = processColorObject(normalizedColor);
 
-    if (processedColorObj !== null) {
+    if (processedColorObj != null) {
       return processedColorObj;
     }
   }
