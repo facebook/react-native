@@ -61,7 +61,7 @@ export const normalizeColorObject = (
 export const processColorObject = (
   color: NativeColorValue,
 ): ?NativeColorValue => {
-  if ('dynamic' in color && color.dynamic !== undefined) {
+  if ('dynamic' in color && color.dynamic != null) {
     const processColor = require('./processColor');
     const dynamic = color.dynamic;
     const dynamicColor: NativeColorValue = {
