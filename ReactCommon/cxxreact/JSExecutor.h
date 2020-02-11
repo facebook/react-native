@@ -54,7 +54,8 @@ public:
 class RN_EXPORT JSExecutor {
 public:
   /**
-   * Sets all globals in the JS context.
+   * Prepares the JS runtime for React Native by installing global variables.
+   * Called once before any JS is evaluated.
    */
   virtual void initializeRuntime() = 0;
   /**
