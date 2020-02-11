@@ -69,10 +69,12 @@ const ActionSheetIOS = {
       destructiveButtonIndices = [destructiveButtonIndex];
     }
 
+    const processedTintColor = processColor(tintColor);
+    invariant(typeof processedTintColor === 'number', 'tintColor must be a simple RGBA value');
     RCTActionSheetManager.showActionSheetWithOptions(
       {
         ...remainingOptions,
-        tintColor: processColor(tintColor),
+        tintColor: processedTintColor,
         destructiveButtonIndices,
       },
       callback,

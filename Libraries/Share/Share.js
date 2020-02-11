@@ -114,13 +114,14 @@ class Share {
           'NativeActionSheetManager is not registered on iOS, but it should be.',
         );
 
+        const processedTintColor = processColor(tintColor);
         NativeActionSheetManager.showShareActionSheetWithOptions(
           {
             message:
               typeof content.message === 'string' ? content.message : undefined,
             url: typeof content.url === 'string' ? content.url : undefined,
             subject: options.subject,
-            tintColor: tintColor != null ? tintColor : undefined,
+            tintColor: typeof processedTintColor === 'number' ? processedTintColor : undefined,
             excludedActivityTypes: options.excludedActivityTypes,
           },
           error => reject(error),
