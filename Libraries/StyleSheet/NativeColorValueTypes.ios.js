@@ -24,13 +24,13 @@ export const PlatformColor = (...names: Array<string>): ColorValue => {
   return {semantic: names};
 };
 
-export type IOSDynamicColorTuplePrivate = {
+export type DynamicColorIOSTuplePrivate = {
   light: ColorValue,
   dark: ColorValue,
 };
 
-export const IOSDynamicColorPrivate = (
-  tuple: IOSDynamicColorTuplePrivate,
+export const DynamicColorIOSPrivate = (
+  tuple: DynamicColorIOSTuplePrivate,
 ): ColorValue => {
   return {dynamic: {light: tuple.light, dark: tuple.dark}};
 };

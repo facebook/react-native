@@ -12,6 +12,6 @@
 
 import type {ColorValue} from './ColorValueTypes';
 
-export const AndroidColor = (color: string): ColorValue => {
-  throw new Error('AndroidColor is not available on this platform.');
+export const ColorAndroid = (color: string): ColorValue => {
+  throw new Error('ColorAndroid is not available on this platform.');
 };

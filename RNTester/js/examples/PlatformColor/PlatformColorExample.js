@@ -14,8 +14,8 @@ const React = require('react');
 const ReactNative = require('react-native');
 import Platform from '../../../../Libraries/Utilities/Platform';
 const {
-  AndroidColor,
-  IOSDynamicColor,
+  ColorAndroid,
+  DynamicColorIOS,
   PlatformColor,
   StyleSheet,
   Text,
@@ -229,20 +229,20 @@ function DynamicColorsExample() {
     <View style={styles.column}>
       <View style={styles.row}>
         <Text style={styles.labelCell}>
-          IOSDynamicColor({'{\n'}
+          DynamicColorIOS({'{\n'}
           {'  '}light: 'red', dark: 'blue'{'\n'}
           {'}'})
         </Text>
         <View
           style={{
             ...styles.colorCell,
-            backgroundColor: IOSDynamicColor({light: 'red', dark: 'blue'}),
+            backgroundColor: DynamicColorIOS({light: 'red', dark: 'blue'}),
           }}
         />
       </View>
       <View style={styles.row}>
         <Text style={styles.labelCell}>
-          IOSDynamicColor({'{\n'}
+          DynamicColorIOS({'{\n'}
           {'  '}light: PlatformColor('systemBlueColor'),{'\n'}
           {'  '}dark: PlatformColor('systemRedColor'),{'\n'}
           {'}'})
@@ -250,7 +250,7 @@ function DynamicColorsExample() {
         <View
           style={{
             ...styles.colorCell,
-            backgroundColor: IOSDynamicColor({
+            backgroundColor: DynamicColorIOS({
               light: PlatformColor('systemBlueColor'),
               dark: PlatformColor('systemRedColor'),
             }),
@@ -267,11 +267,11 @@ function AndroidColorsExample() {
   return Platform.OS === 'android' ? (
     <View style={styles.column}>
       <View style={styles.row}>
-        <Text style={styles.labelCell}>AndroidColor('?attr/colorAccent')</Text>
+        <Text style={styles.labelCell}>ColorAndroid('?attr/colorAccent')</Text>
         <View
           style={{
             ...styles.colorCell,
-            backgroundColor: AndroidColor('?attr/colorAccent'),
+            backgroundColor: ColorAndroid('?attr/colorAccent'),
           }}
         />
       </View>
@@ -287,16 +287,16 @@ function VariantColorsExample() {
       <View style={styles.row}>
         <Text style={styles.labelCell}>
           {Platform.OS === 'ios'
-            ? "IOSDynamicColor({light: 'red', dark: 'blue'})"
-            : "AndroidColor('?attr/colorAccent')"}
+            ? "DynamicColorIOS({light: 'red', dark: 'blue'})"
+            : "ColorAndroid('?attr/colorAccent')"}
         </Text>
         <View
           style={{
             ...styles.colorCell,
             backgroundColor:
               Platform.OS === 'ios'
-                ? IOSDynamicColor({light: 'red', dark: 'blue'})
-                : AndroidColor('?attr/colorAccent'),
+                ? DynamicColorIOS({light: 'red', dark: 'blue'})
+                : ColorAndroid('?attr/colorAccent'),
           }}
         />
       </View>

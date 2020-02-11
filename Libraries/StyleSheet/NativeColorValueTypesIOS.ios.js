@@ -11,13 +11,13 @@
 'use strict';
 
 import type {ColorValue} from './ColorValueTypes';
-import {IOSDynamicColorPrivate} from './NativeColorValueTypes';
+import {DynamicColorIOSPrivate} from './NativeColorValueTypes';
 
-export type IOSDynamicColorTuple = {
+export type DynamicColorIOSTuple = {
   light: ColorValue,
   dark: ColorValue,
 };
 
-export const IOSDynamicColor = (tuple: IOSDynamicColorTuple): ColorValue => {
-  return IOSDynamicColorPrivate({light: tuple.light, dark: tuple.dark});
+export const DynamicColorIOS = (tuple: DynamicColorIOSTuple): ColorValue => {
+  return DynamicColorIOSPrivate({light: tuple.light, dark: tuple.dark});
 };

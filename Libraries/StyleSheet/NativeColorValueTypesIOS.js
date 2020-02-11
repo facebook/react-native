@@ -12,11 +12,11 @@
 
 import type {ColorValue} from './ColorValueTypes';
 
-export type IOSDynamicColorTuple = {
+export type DynamicColorIOSTuple = {
   light: ColorValue,
   dark: ColorValue,
 };
 
-export const IOSDynamicColor = (tuple: IOSDynamicColorTuple): ColorValue => {
-  throw new Error('IOSDynamicColor is not available on this platform.');
+export const DynamicColorIOS = (tuple: DynamicColorIOSTuple): ColorValue => {
+  throw new Error('DynamicColorIOS is not available on this platform.');
 };

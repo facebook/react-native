@@ -20,7 +20,7 @@ export const PlatformColor = (...names: Array<string>): ColorValue => {
   return {resource_paths: names};
 };
 
-export const AndroidColorPrivate = (color: string): ColorValue => {
+export const ColorAndroidPrivate = (color: string): ColorValue => {
   return {resource_paths: [color]};
 };
 
