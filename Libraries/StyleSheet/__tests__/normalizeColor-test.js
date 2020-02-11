@@ -14,8 +14,8 @@ const {OS} = require('../../Utilities/Platform');
 const normalizeColor = require('../normalizeColor');
 
 const PlatformColorIOS = require('../NativeColorValueTypes.ios').PlatformColor;
-const IOSDynamicColor = require('../NativeColorValueTypesIOS.ios')
-  .IOSDynamicColor;
+const DynamicColorIOS = require('../NativeColorValueTypesIOS.ios')
+  .DynamicColorIOS;
 const PlatformColorAndroid = require('../NativeColorValueTypes.android')
   .PlatformColor;
 
@@ -146,14 +146,14 @@ describe('normalizeColor', function() {
       });
 
       it('should normalize iOS Dynamic colors with named colors', () => {
-        const color = IOSDynamicColor({light: 'black', dark: 'white'});
+        const color = DynamicColorIOS({light: 'black', dark: 'white'});
         const normalizedColor = normalizeColor(color);
         const expectedColor = {dynamic: {light: 'black', dark: 'white'}};
         expect(normalizedColor).toEqual(expectedColor);
       });
 
       it('should normalize iOS Dynamic colors with PlatformColor colors', () => {
-        const color = IOSDynamicColor({
+        const color = DynamicColorIOS({
           light: PlatformColorIOS('systemBlackColor'),
           dark: PlatformColorIOS('systemWhiteColor'),
         });
