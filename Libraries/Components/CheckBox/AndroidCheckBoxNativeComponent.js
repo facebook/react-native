@@ -53,8 +53,8 @@ type NativeProps = $ReadOnly<{|
   enabled?: boolean,
   tintColors:
     | {|
-        true: ?(ColorValue | ProcessedColorValue),
-        false: ?(ColorValue | ProcessedColorValue),
+        true: ?ProcessedColorValue,
+        false: ?ProcessedColorValue,
       |}
     | typeof undefined,
 |}>;
