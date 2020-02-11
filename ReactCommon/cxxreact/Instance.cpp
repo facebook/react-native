@@ -48,7 +48,6 @@ void Instance::initializeBridge(
   jsQueue->runOnQueueSync([this, &jsef, jsQueue]() mutable {
     nativeToJsBridge_ = std::make_unique<NativeToJsBridge>(
         jsef.get(), moduleRegistry_, jsQueue, callback_);
-    // TODO investigate why it has to be async
     nativeToJsBridge_->initializeRuntime();
     std::lock_guard<std::mutex> lock(m_syncMutex);
     m_syncReady = true;
