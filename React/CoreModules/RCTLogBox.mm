@@ -70,8 +70,12 @@
 
 - (void)show
 {
+  __weak __typeof(self) weakSelf = self;
   [RCTSharedApplication().delegate.window.rootViewController presentViewController:_rootViewController animated:NO completion:^{
-    [self->_rootViewController.view becomeFirstResponder];
+    __strong __typeof(self) strongSelf = weakSelf;
+    if (strongSelf) {
+      [strongSelf->_rootViewController.view becomeFirstResponder];
+    }
   }];
 }
 
