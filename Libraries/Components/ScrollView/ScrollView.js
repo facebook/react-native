@@ -26,6 +26,7 @@ const invariant = require('invariant');
 const processDecelerationRate = require('./processDecelerationRate');
 const resolveAssetSource = require('../../Image/resolveAssetSource');
 const splitLayoutProps = require('../../StyleSheet/splitLayoutProps');
+const setAndForwardRef = require('../../Utilities/setAndForwardRef');
 
 import type {EdgeInsetsProp} from '../../StyleSheet/EdgeInsetsPropType';
 import type {PointProp} from '../../StyleSheet/PointPropType';
@@ -575,6 +576,11 @@ export type Props = $ReadOnly<{|
   // $FlowFixMe - how to handle generic type without existential operator?
   refreshControl?: ?React.Element<any>,
   children?: React.Node,
+  /**
+   * A ref to the inner View element of the ScrollView. This should be used
+   * instead of calling `getInnerViewRef`.
+   */
+  innerViewRef?: React.Ref<typeof View>,
 |}>;
 
 type State = {|
@@ -766,10 +772,18 @@ class ScrollView extends React.Component<Props, State> {
   }
 
   getInnerViewNode(): ?number {
+    console.warn(
+      '`getInnerViewNode()` is deprecated. This will be removed in a future release. ' +
+        'Use <ScrollView innerViewRef={myRef} /> instead.',
+    );
     return ReactNative.findNodeHandle(this._innerViewRef);
   }
 
-  getInnerViewRef(): ?React.ElementRef<HostComponent<mixed>> {
+  getInnerViewRef(): ?React.ElementRef<typeof View> {
+    console.warn(
+      '`getInnerViewRef()` is deprecated. This will be removed in a future release. ' +
+        'Use <ScrollView innerViewRef={myRef} /> instead.',
+    );
     return this._innerViewRef;
   }
 
@@ -951,10 +965,13 @@ class ScrollView extends React.Component<Props, State> {
     this._scrollViewRef = ref;
   };
 
-  _innerViewRef: ?React.ElementRef<HostComponent<mixed>> = null;
-  _setInnerViewRef = (ref: ?React.ElementRef<HostComponent<mixed>>) => {
-    this._innerViewRef = ref;
-  };
+  _innerViewRef: ?React.ElementRef<typeof View> = null;
+  _setInnerViewRef = setAndForwardRef({
+    getForwardedRef: () => this.props.innerViewRef,
+    setLocalRef: ref => {
+      this._innerViewRef = ref;
+    },
+  });
 
   render(): React.Node | React.Element<string> {
     let ScrollViewClass;
