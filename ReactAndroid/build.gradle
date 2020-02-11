@@ -345,14 +345,7 @@ android {
 }
 
 dependencies {
-    if (System.getenv("BUCK_BUILD") != "1") {
-        if (isSDXPlatform()) {
-            annotationProcessor project(':react-native:processor');
-        }
-        else {
-            annotationProcessor project(':processor');
-        }
-    }
+    annotationProcessor project(':processor');
     api("com.facebook.infer.annotation:infer-annotation:0.11.2")
     api("javax.inject:javax.inject:1")
     api("androidx.appcompat:appcompat:1.0.2")

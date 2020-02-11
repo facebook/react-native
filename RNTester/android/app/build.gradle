@@ -68,7 +68,7 @@ project.ext.react = [
     bundleAssetName: "RNTesterApp.android.bundle",
     entryFile: file("../../js/RNTesterApp.android.js"),
     root: "$rootDir",
-    inputExcludes: ["android/**", "./**", ".gradle/**"],
+    inputExcludes: ["android/**", "./**", ".gradle/**"]
 ]
 
 apply from: "../../../react.gradle"
@@ -138,24 +138,11 @@ android {
             signingConfig signingConfigs.release
         }
     }
-    packagingOptions {
-        pickFirst '**/armeabi-v7a/libc++_shared.so'
-        pickFirst '**/x86/libc++_shared.so'
-        pickFirst '**/x86_64/libc++_shared.so'
-        pickFirst '**/arm64-v8a/libc++_shared.so'
-    }
 }
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-
-    // Build React Native from source
-    if (isSDXPlatform()) {
-        implementation project(':react-native:ReactAndroid')
-    }
-    else {
-        implementation project(':ReactAndroid')
-    }
+    implementation project(':ReactAndroid')
 
     if (useIntlJsc) {
         implementation 'org.webkit:android-jsc-intl:+'

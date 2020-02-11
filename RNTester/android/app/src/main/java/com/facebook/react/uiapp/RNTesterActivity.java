@@ -9,17 +9,9 @@
 package com.facebook.react.uiapp;
 
 import android.os.Bundle;
-import android.system.ErrnoException;
-import android.system.Os;
-import android.util.Log;
 
 import com.facebook.react.ReactActivity;
 import com.facebook.react.ReactActivityDelegate;
-import com.facebook.react.ReactInstanceManager;
-import com.facebook.react.bridge.CatalystInstance;
-import com.facebook.react.bridge.ReactContext;
-
-import java.io.File;
 
 import javax.annotation.Nullable;
 

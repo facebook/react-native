@@ -18,15 +18,6 @@ buildscript {
     }
 }
 
-def isSDXPlatform() {
-    if (parent == null) {
-        return false;
-    }
-
-    return true;
-}
-
-
 allprojects {
     repositories {
         maven {
