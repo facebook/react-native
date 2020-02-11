@@ -120,10 +120,12 @@ android {
 
     defaultConfig {
         applicationId "com.facebook.react.uiapp"
-        minSdkVersion 16
+        minSdkVersion 18
         targetSdkVersion 29
         versionCode 1
         versionName "1.0"
+        testBuildType System.getProperty('testBuildType', 'debug')  // This will later be used to control the test apk build type
+        testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
     }
     signingConfigs {
         release {
@@ -149,6 +151,8 @@ android {
             minifyEnabled enableProguardInReleaseBuilds
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             signingConfig signingConfigs.release
+            // Detox-specific additions to pro-guard
+            proguardFile "${rootProject.projectDir}/../node_modules/detox/android/detox/proguard-rules-app.pro"
         }
     }
 }
@@ -187,4 +191,8 @@ dependencies {
     } else {
         jscImplementation 'org.webkit:android-jsc:+'
     }
+
+    // Use detox test library
+    androidTestImplementation('com.wix:detox:+') { transitive = true }
+    androidTestImplementation 'junit:junit:4.12'
 }

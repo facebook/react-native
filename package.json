@@ -159,6 +159,25 @@
     "runner-config": "RNTester/e2e/config.json",
     "specs": "",
     "configurations": {
+      "android.emu.release": {
+        "binaryPath":     "RNTester/android/app/build/outputs/apk/hermes/release/app-hermes-x86-release.apk",
+        "testBinaryPath": "RNTester/android/app/build/outputs/apk/androidTest/hermes/release/app-hermes-release-androidTest.apk",
+        "build":
+        "./gradlew RNTester:android:app:assembleRelease RNTester:android:app:assembleAndroidTest -DtestBuildType=release",
+        "type": "android.emulator",
+        "device": {
+          "avdName": "Nexus_6_API_29"
+        }
+      },
+      "android.emu.debug": {
+        "binaryPath": "RNTester/android/app/build/outputs/apk/hermes/debug/app-hermes-x86-debug.apk",
+        "testBinaryPath": "RNTester/android/app/build/outputs/apk/androidTest/hermes/debug/app-hermes-debug-androidTest.apk",
+        "build": "./gradlew RNTester:android:app:assembleDebug RNTester:android:app:assembleAndroidTest -DtestBuildType=debug",
+        "type": "android.emulator",
+        "device": {
+          "avdName": "Nexus_6_API_29"
+        }
+    },
       "ios.sim.release": {
         "binaryPath": "RNTester/build/Build/Products/Release-iphonesimulator/RNTester.app/",
         "build": "xcodebuild -workspace RNTester/RNTesterPods.xcworkspace -scheme RNTester -configuration Release -sdk iphonesimulator -derivedDataPath RNTester/build -UseModernBuildSystem=NO -quiet",
