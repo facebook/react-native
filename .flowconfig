@@ -73,6 +73,7 @@ unsafe-getters-setters=warn
 unnecessary-invariant=warn
 signature-verification-failure=warn
 deprecated-utility=error
+unsafe-addition=error
 
 [strict]
 deprecated-type
