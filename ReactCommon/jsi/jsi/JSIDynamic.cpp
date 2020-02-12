@@ -76,7 +76,10 @@ folly::dynamic dynamicFromValue(Runtime& runtime, const Value& value) {
       }
       return ret;
     } else if (obj.isFunction(runtime)) {
-      throw JSError(runtime, "JS Functions are not convertible to dynamic");
+      // The JSC conversion uses JSON.stringify, which substitutes
+      // null for a function, so we do the same here.  Just dropping
+      // the pair might also work, but would require more testing.
+      return nullptr;
     } else {
       folly::dynamic ret = folly::dynamic::object();
       Array names = obj.getPropertyNames(runtime);
