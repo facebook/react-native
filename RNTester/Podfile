@@ -17,15 +17,62 @@ def pods()
   # Additional Pods which aren't included in the default Podfile
   pod 'React-ART', :path => '../Libraries/ART'
   pod 'React-RCTPushNotification', :path => '../Libraries/PushNotificationIOS'
-
+  pod 'Yoga',:path => '../ReactCommon/yoga', :modular_headers => true
   # Additional Pods which are classed as unstable
   #
   # To use fabric: add `fabric_enabled` option to the use_react_native method above, like below
   # use_react_native!(path: "..", fabric_enabled: true)
 end
 
+  
+def flipper_pods()
+  flipperkit_version = '0.30.1'
+  pod 'FlipperKit', '~>' + flipperkit_version, :configuration => 'Debug'
+  pod 'FlipperKit/FlipperKitLayoutPlugin', '~>' + flipperkit_version, :configuration => 'Debug'
+  pod 'FlipperKit/SKIOSNetworkPlugin', '~>' + flipperkit_version, :configuration => 'Debug'
+  pod 'FlipperKit/FlipperKitUserDefaultsPlugin', '~>' + flipperkit_version, :configuration => 'Debug'
+  pod 'FlipperKit/FlipperKitReactPlugin', '~>' + flipperkit_version, :configuration => 'Debug'
+
+  if ENV['USE_FRAMEWORKS'] == '1'
+    $static_framework = ['FlipperKit', 'Flipper', 'Flipper-Folly',
+        'CocoaAsyncSocket', 'ComponentKit', 'Flipper-DoubleConversion',
+        'Flipper-Glog', 'Flipper-PeerTalk', 'Flipper-RSocket',
+        'CocoaLibEvent', 'OpenSSL-Universal', 'boost-for-react-native']
+
+    pre_install do |installer|
+      Pod::Installer::Xcode::TargetValidator.send(:define_method, :verify_no_static_framework_transitive_dependencies) {}
+      installer.pod_targets.each do |pod|
+          if $static_framework.include?(pod.name)
+            def pod.build_type;
+              Pod::Target::BuildType.static_library
+            end
+          end
+        end
+    end
+  end
+end
+
+# Post Install processing for Flipper
+def flipper_post_install(installer)
+  file_name = Dir.glob("*.xcodeproj")[0]
+  app_project = Xcodeproj::Project.open(file_name)
+  app_project.native_targets.each do |target|
+    target.build_configurations.each do |config|
+      cflags = config.build_settings['OTHER_CFLAGS'] || '$(inherited) '
+      unless cflags.include? '-DFB_SONARKIT_ENABLED=1'
+        puts 'Adding -DFB_SONARKIT_ENABLED=1 in OTHER_CFLAGS...'
+        cflags << ' -DFB_SONARKIT_ENABLED=1 '
+      end
+      config.build_settings['OTHER_CFLAGS'] = cflags
+    end
+    app_project.save
+  end
+  installer.pods_project.save
+end
+
 target 'RNTester' do
   pods()
+  flipper_pods()
 end
 
 target 'RNTesterUnitTests' do
@@ -39,6 +86,7 @@ target 'RNTesterIntegrationTests' do
 end
 
 post_install do |installer|
+  flipper_post_install(installer)
   installer.pods_project.targets.each do |target|
     puts target.name
   end
