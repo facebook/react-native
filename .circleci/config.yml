@@ -94,6 +94,12 @@ commands:
             - ~/okbuck
           key: v3-buck-v2019.01.10.01-{{ checksum "scripts/circleci/buck_fetch.sh" }}
 
+  install_github_bot_deps:
+    steps:
+      - run:
+          name: Install GitHub bot dependencies
+          command: cd bots && yarn install --non-interactive --cache-folder ~/.cache/yarn
+
   brew_install:
     parameters:
       package:
@@ -217,11 +223,11 @@ jobs:
           checkout_type: node
       - run_yarn
 
+      - install_github_bot_deps
+
       - run:
-          name: Install dependencies
-          command: |
-            sudo apt update && sudo apt install -y shellcheck jq
-            cd bots && yarn install --non-interactive --cache-folder ~/.cache/yarn
+          name: Install additional GitHub bot dependencies
+          command: sudo apt update && sudo apt install -y shellcheck jq
 
       - run:
           name: Run linters against modified files (analysis-bot)
@@ -385,6 +391,7 @@ jobs:
                 package: applesimutils
             - brew_install:
                 package: watchman
+
       # Configure Watchman
       - run: touch .watchmanconfig
 
@@ -404,6 +411,7 @@ jobs:
           command: yarn run build-ios-e2e && yarn run test-ios-e2e
           when: always
 
+      - install_github_bot_deps
       - run:
           name: Report size of RNTester.app
           command: GITHUB_TOKEN="$PUBLIC_GITHUB_TOKEN_A""$PUBLIC_GITHUB_TOKEN_B" scripts/circleci/report-bundle-size.sh ios
@@ -524,6 +532,7 @@ jobs:
           name: Build Android RNTester App
           command: ./gradlew RNTester:android:app:assembleRelease
 
+      - install_github_bot_deps
       - run:
           name: Report size of RNTester.apk
           command: GITHUB_TOKEN="$PUBLIC_GITHUB_TOKEN_A""$PUBLIC_GITHUB_TOKEN_B" scripts/circleci/report-bundle-size.sh android
