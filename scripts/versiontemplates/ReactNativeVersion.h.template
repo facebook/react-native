@@ -14,7 +14,6 @@
 
 namespace facebook::react {
 
-// These constants are auto-generated from a template
 constexpr struct {
   int32_t Major = ${major};
   int32_t Minor = ${minor};
