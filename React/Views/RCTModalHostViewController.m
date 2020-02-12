@@ -24,11 +24,7 @@
   if (!(self = [super init])) {
     return nil;
   }
-    
-  if (@available(iOS 13.0, *)) {
-    self.modalInPresentation = YES;
-  }
-    
+
 #if !TARGET_OS_TV
   _preferredStatusBarStyle = [RCTSharedApplication() statusBarStyle];
   _preferredStatusBarHidden = [RCTSharedApplication() isStatusBarHidden];
