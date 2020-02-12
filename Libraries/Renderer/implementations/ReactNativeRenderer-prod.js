@@ -349,8 +349,8 @@ function SyntheticEvent(
       ((targetInst = dispatchConfig[propName])
         ? (this[propName] = targetInst(nativeEvent))
         : "target" === propName
-          ? (this.target = nativeEventTarget)
-          : (this[propName] = nativeEvent[propName]));
+        ? (this.target = nativeEventTarget)
+        : (this[propName] = nativeEvent[propName]));
   this.isDefaultPrevented = (null != nativeEvent.defaultPrevented
   ? nativeEvent.defaultPrevented
   : !1 === nativeEvent.returnValue)
@@ -563,10 +563,10 @@ function accumulate(current, next) {
   return null == current
     ? next
     : Array.isArray(current)
-      ? current.concat(next)
-      : Array.isArray(next)
-        ? [current].concat(next)
-        : [current, next];
+    ? current.concat(next)
+    : Array.isArray(next)
+    ? [current].concat(next)
+    : [current, next];
 }
 var responderInst = null,
   trackedTouchCount = 0;
@@ -668,10 +668,10 @@ var eventTypes = {
         var shouldSetEventType = isStartish(topLevelType)
           ? eventTypes.startShouldSetResponder
           : isMoveish(topLevelType)
-            ? eventTypes.moveShouldSetResponder
-            : "topSelectionChange" === topLevelType
-              ? eventTypes.selectionChangeShouldSetResponder
-              : eventTypes.scrollShouldSetResponder;
+          ? eventTypes.moveShouldSetResponder
+          : "topSelectionChange" === topLevelType
+          ? eventTypes.selectionChangeShouldSetResponder
+          : eventTypes.scrollShouldSetResponder;
         if (responderInst)
           b: {
             var JSCompiler_temp = responderInst;
@@ -825,10 +825,10 @@ var eventTypes = {
         (shouldSetEventType = shouldSetEventType
           ? eventTypes.responderStart
           : JSCompiler_temp
-            ? eventTypes.responderMove
-            : targetInst
-              ? eventTypes.responderEnd
-              : null)
+          ? eventTypes.responderMove
+          : targetInst
+          ? eventTypes.responderEnd
+          : null)
       )
         (shouldSetEventType = ResponderSyntheticEvent.getPooled(
           shouldSetEventType,
@@ -891,8 +891,8 @@ var eventTypes = {
         (topLevelType = shouldSetEventType
           ? eventTypes.responderTerminate
           : topLevelType
-            ? eventTypes.responderRelease
-            : null)
+          ? eventTypes.responderRelease
+          : null)
       )
         (nativeEvent = ResponderSyntheticEvent.getPooled(
           topLevelType,
@@ -1365,8 +1365,8 @@ function diffNestedProperty(
     return nextProp
       ? addNestedProperty(updatePayload, nextProp, validAttributes)
       : prevProp
-        ? clearNestedProperty(updatePayload, prevProp, validAttributes)
-        : updatePayload;
+      ? clearNestedProperty(updatePayload, prevProp, validAttributes)
+      : updatePayload;
   if (!Array.isArray(prevProp) && !Array.isArray(nextProp))
     return diffProperties(updatePayload, prevProp, nextProp, validAttributes);
   if (Array.isArray(prevProp) && Array.isArray(nextProp)) {
@@ -1877,10 +1877,10 @@ function flushSyncCallbackQueueImpl() {
 function is(x, y) {
   return (x === y && (0 !== x || 1 / x === 1 / y)) || (x !== x && y !== y);
 }
-var is$1 = "function" === typeof Object.is ? Object.is : is,
+var objectIs = "function" === typeof Object.is ? Object.is : is,
   hasOwnProperty = Object.prototype.hasOwnProperty;
 function shallowEqual(objA, objB) {
-  if (is$1(objA, objB)) return !0;
+  if (objectIs(objA, objB)) return !0;
   if (
     "object" !== typeof objA ||
     null === objA ||
@@ -1894,7 +1894,7 @@ function shallowEqual(objA, objB) {
   for (keysB = 0; keysB < keysA.length; keysB++)
     if (
       !hasOwnProperty.call(objB, keysA[keysB]) ||
-      !is$1(objA[keysA[keysB]], objB[keysA[keysB]])
+      !objectIs(objA[keysA[keysB]], objB[keysA[keysB]])
     )
       return !1;
   return !0;
@@ -2246,8 +2246,8 @@ function checkShouldComponentUpdate(
   return "function" === typeof workInProgress.shouldComponentUpdate
     ? workInProgress.shouldComponentUpdate(newProps, newState, nextContext)
     : ctor.prototype && ctor.prototype.isPureReactComponent
-      ? !shallowEqual(oldProps, newProps) || !shallowEqual(oldState, newState)
-      : !0;
+    ? !shallowEqual(oldProps, newProps) || !shallowEqual(oldState, newState)
+    : !0;
 }
 function constructClassInstance(workInProgress, ctor, props) {
   var isLegacyContextConsumer = !1,
@@ -3142,9 +3142,7 @@ var ReactCurrentDispatcher$1 = ReactSharedInternals.ReactCurrentDispatcher,
   currentlyRenderingFiber$1 = null,
   currentHook = null,
   workInProgressHook = null,
-  didScheduleRenderPhaseUpdate = !1,
-  renderPhaseUpdates = null,
-  numberOfReRenders = 0;
+  didScheduleRenderPhaseUpdate = !1;
 function throwInvalidHookError() {
   throw Error(
     "Invalid hook call. Hooks can only be called inside of the body of a function component. This could happen for one of the following reasons:\n1. You might have mismatching versions of React and the renderer (such as React DOM)\n2. You might be breaking the Rules of Hooks\n3. You might have more than one copy of React in the same app\nSee https://fb.me/react-invalid-hook-call for tips about how to debug and fix this problem."
@@ -3153,7 +3151,7 @@ function throwInvalidHookError() {
 function areHookInputsEqual(nextDeps, prevDeps) {
   if (null === prevDeps) return !1;
   for (var i = 0; i < prevDeps.length && i < nextDeps.length; i++)
-    if (!is$1(nextDeps[i], prevDeps[i])) return !1;
+    if (!objectIs(nextDeps[i], prevDeps[i])) return !1;
   return !0;
 }
 function renderWithHooks(
@@ -3174,35 +3172,31 @@ function renderWithHooks(
       ? HooksDispatcherOnMount
       : HooksDispatcherOnUpdate;
   current = Component(props, secondArg);
-  if (didScheduleRenderPhaseUpdate) {
-    do
-      (didScheduleRenderPhaseUpdate = !1),
-        (numberOfReRenders += 1),
-        (workInProgressHook = currentHook = null),
-        (workInProgress.updateQueue = null),
-        (ReactCurrentDispatcher$1.current = HooksDispatcherOnUpdate),
-        (current = Component(props, secondArg));
-    while (didScheduleRenderPhaseUpdate);
-    renderPhaseUpdates = null;
-    numberOfReRenders = 0;
+  if (workInProgress.expirationTime === renderExpirationTime$1) {
+    nextRenderExpirationTime = 0;
+    do {
+      workInProgress.expirationTime = 0;
+      if (!(25 > nextRenderExpirationTime))
+        throw Error(
+          "Too many re-renders. React limits the number of renders to prevent an infinite loop."
+        );
+      nextRenderExpirationTime += 1;
+      workInProgressHook = currentHook = null;
+      workInProgress.updateQueue = null;
+      ReactCurrentDispatcher$1.current = HooksDispatcherOnRerender;
+      current = Component(props, secondArg);
+    } while (workInProgress.expirationTime === renderExpirationTime$1);
   }
   ReactCurrentDispatcher$1.current = ContextOnlyDispatcher;
   workInProgress = null !== currentHook && null !== currentHook.next;
   renderExpirationTime$1 = 0;
   workInProgressHook = currentHook = currentlyRenderingFiber$1 = null;
+  didScheduleRenderPhaseUpdate = !1;
   if (workInProgress)
     throw Error(
       "Rendered fewer hooks than expected. This may be caused by an accidental early return statement."
     );
   return current;
-}
-function resetHooks() {
-  ReactCurrentDispatcher$1.current = ContextOnlyDispatcher;
-  renderExpirationTime$1 = 0;
-  workInProgressHook = currentHook = currentlyRenderingFiber$1 = null;
-  didScheduleRenderPhaseUpdate = !1;
-  renderPhaseUpdates = null;
-  numberOfReRenders = 0;
 }
 function mountWorkInProgressHook() {
   var hook = {
@@ -3258,57 +3252,36 @@ function updateReducer(reducer) {
       "Should have a queue. This is likely a bug in React. Please file an issue."
     );
   queue.lastRenderedReducer = reducer;
-  if (0 < numberOfReRenders) {
-    var _dispatch = queue.dispatch;
-    if (null !== renderPhaseUpdates) {
-      var firstRenderPhaseUpdate = renderPhaseUpdates.get(queue);
-      if (void 0 !== firstRenderPhaseUpdate) {
-        renderPhaseUpdates.delete(queue);
-        var newState = hook.memoizedState;
-        do
-          (newState = reducer(newState, firstRenderPhaseUpdate.action)),
-            (firstRenderPhaseUpdate = firstRenderPhaseUpdate.next);
-        while (null !== firstRenderPhaseUpdate);
-        is$1(newState, hook.memoizedState) || (didReceiveUpdate = !0);
-        hook.memoizedState = newState;
-        null === hook.baseQueue && (hook.baseState = newState);
-        queue.lastRenderedState = newState;
-        return [newState, _dispatch];
-      }
+  var current = currentHook,
+    baseQueue = current.baseQueue,
+    pendingQueue = queue.pending;
+  if (null !== pendingQueue) {
+    if (null !== baseQueue) {
+      var baseFirst = baseQueue.next;
+      baseQueue.next = pendingQueue.next;
+      pendingQueue.next = baseFirst;
     }
-    return [hook.memoizedState, _dispatch];
-  }
-  newState = currentHook;
-  _dispatch = newState.baseQueue;
-  firstRenderPhaseUpdate = queue.pending;
-  if (null !== firstRenderPhaseUpdate) {
-    if (null !== _dispatch) {
-      var baseFirst = _dispatch.next;
-      _dispatch.next = firstRenderPhaseUpdate.next;
-      firstRenderPhaseUpdate.next = baseFirst;
-    }
-    newState.baseQueue = _dispatch = firstRenderPhaseUpdate;
+    current.baseQueue = baseQueue = pendingQueue;
     queue.pending = null;
   }
-  if (null !== _dispatch) {
-    _dispatch = _dispatch.next;
-    newState = newState.baseState;
-    var newBaseQueueLast = (baseFirst = firstRenderPhaseUpdate = null),
-      _update = _dispatch;
+  if (null !== baseQueue) {
+    baseQueue = baseQueue.next;
+    current = current.baseState;
+    var newBaseQueueLast = (baseFirst = pendingQueue = null),
+      update = baseQueue;
     do {
-      var updateExpirationTime = _update.expirationTime;
+      var updateExpirationTime = update.expirationTime;
       if (updateExpirationTime < renderExpirationTime$1) {
         var clone = {
-          expirationTime: _update.expirationTime,
-          suspenseConfig: _update.suspenseConfig,
-          action: _update.action,
-          eagerReducer: _update.eagerReducer,
-          eagerState: _update.eagerState,
+          expirationTime: update.expirationTime,
+          suspenseConfig: update.suspenseConfig,
+          action: update.action,
+          eagerReducer: update.eagerReducer,
+          eagerState: update.eagerState,
           next: null
         };
         null === newBaseQueueLast
-          ? ((baseFirst = newBaseQueueLast = clone),
-            (firstRenderPhaseUpdate = newState))
+          ? ((baseFirst = newBaseQueueLast = clone), (pendingQueue = current))
           : (newBaseQueueLast = newBaseQueueLast.next = clone);
         updateExpirationTime > currentlyRenderingFiber$1.expirationTime &&
           ((currentlyRenderingFiber$1.expirationTime = updateExpirationTime),
@@ -3317,32 +3290,55 @@ function updateReducer(reducer) {
         null !== newBaseQueueLast &&
           (newBaseQueueLast = newBaseQueueLast.next = {
             expirationTime: 1073741823,
-            suspenseConfig: _update.suspenseConfig,
-            action: _update.action,
-            eagerReducer: _update.eagerReducer,
-            eagerState: _update.eagerState,
+            suspenseConfig: update.suspenseConfig,
+            action: update.action,
+            eagerReducer: update.eagerReducer,
+            eagerState: update.eagerState,
             next: null
           }),
           markRenderEventTimeAndConfig(
             updateExpirationTime,
-            _update.suspenseConfig
+            update.suspenseConfig
           ),
-          (newState =
-            _update.eagerReducer === reducer
-              ? _update.eagerState
-              : reducer(newState, _update.action));
-      _update = _update.next;
-    } while (null !== _update && _update !== _dispatch);
+          (current =
+            update.eagerReducer === reducer
+              ? update.eagerState
+              : reducer(current, update.action));
+      update = update.next;
+    } while (null !== update && update !== baseQueue);
     null === newBaseQueueLast
-      ? (firstRenderPhaseUpdate = newState)
+      ? (pendingQueue = current)
       : (newBaseQueueLast.next = baseFirst);
-    is$1(newState, hook.memoizedState) || (didReceiveUpdate = !0);
-    hook.memoizedState = newState;
-    hook.baseState = firstRenderPhaseUpdate;
+    objectIs(current, hook.memoizedState) || (didReceiveUpdate = !0);
+    hook.memoizedState = current;
+    hook.baseState = pendingQueue;
     hook.baseQueue = newBaseQueueLast;
-    queue.lastRenderedState = newState;
+    queue.lastRenderedState = current;
   }
   return [hook.memoizedState, queue.dispatch];
+}
+function rerenderReducer(reducer) {
+  var hook = updateWorkInProgressHook(),
+    queue = hook.queue;
+  if (null === queue)
+    throw Error(
+      "Should have a queue. This is likely a bug in React. Please file an issue."
+    );
+  queue.lastRenderedReducer = reducer;
+  var dispatch = queue.dispatch,
+    lastRenderPhaseUpdate = queue.pending,
+    newState = hook.memoizedState;
+  if (null !== lastRenderPhaseUpdate) {
+    queue.pending = null;
+    var update = (lastRenderPhaseUpdate = lastRenderPhaseUpdate.next);
+    do (newState = reducer(newState, update.action)), (update = update.next);
+    while (update !== lastRenderPhaseUpdate);
+    objectIs(newState, hook.memoizedState) || (didReceiveUpdate = !0);
+    hook.memoizedState = newState;
+    null === hook.baseQueue && (hook.baseState = newState);
+    queue.lastRenderedState = newState;
+  }
+  return [newState, dispatch];
 }
 function mountState(initialState) {
   var hook = mountWorkInProgressHook();
@@ -3364,6 +3360,9 @@ function mountState(initialState) {
 function updateState(initialState) {
   return updateReducer(basicStateReducer, initialState);
 }
+function rerenderState(initialState) {
+  return rerenderReducer(basicStateReducer, initialState);
+}
 function pushEffect(tag, create, destroy, deps) {
   tag = { tag: tag, create: create, destroy: destroy, deps: deps, next: null };
   create = currentlyRenderingFiber$1.updateQueue;
@@ -3379,6 +3378,9 @@ function pushEffect(tag, create, destroy, deps) {
           (tag.next = deps),
           (create.lastEffect = tag)));
   return tag;
+}
+function updateRef() {
+  return updateWorkInProgressHook().memoizedState;
 }
 function mountEffectImpl(fiberEffectTag, hookEffectTag, create, deps) {
   var hook = mountWorkInProgressHook();
@@ -3411,6 +3413,9 @@ function mountEffect(create, deps) {
 function updateEffect(create, deps) {
   return updateEffectImpl(516, 192, create, deps);
 }
+function updateLayoutEffect(create, deps) {
+  return updateEffectImpl(4, 36, create, deps);
+}
 function imperativeHandleEffect(create, ref) {
   if ("function" === typeof ref)
     return (
@@ -3428,6 +3433,15 @@ function imperativeHandleEffect(create, ref) {
         ref.current = null;
       }
     );
+}
+function updateImperativeHandle(ref, create, deps) {
+  deps = null !== deps && void 0 !== deps ? deps.concat([ref]) : null;
+  return updateEffectImpl(
+    4,
+    36,
+    imperativeHandleEffect.bind(null, create, ref),
+    deps
+  );
 }
 function mountDebugValue() {}
 function mountCallback(callback, deps) {
@@ -3450,6 +3464,20 @@ function updateCallback(callback, deps) {
   hook.memoizedState = [callback, deps];
   return callback;
 }
+function updateMemo(nextCreate, deps) {
+  var hook = updateWorkInProgressHook();
+  deps = void 0 === deps ? null : deps;
+  var prevState = hook.memoizedState;
+  if (
+    null !== prevState &&
+    null !== deps &&
+    areHookInputsEqual(deps, prevState[1])
+  )
+    return prevState[0];
+  nextCreate = nextCreate();
+  hook.memoizedState = [nextCreate, deps];
+  return nextCreate;
+}
 function startTransition(setPending, config, callback) {
   var priorityLevel = getCurrentPriorityLevel();
   runWithPriority(98 > priorityLevel ? 98 : priorityLevel, function() {
@@ -3466,62 +3494,42 @@ function startTransition(setPending, config, callback) {
   });
 }
 function dispatchAction(fiber, queue, action) {
-  if (!(25 > numberOfReRenders))
-    throw Error(
-      "Too many re-renders. React limits the number of renders to prevent an infinite loop."
-    );
-  var alternate = fiber.alternate;
+  var currentTime = requestCurrentTimeForUpdate(),
+    suspenseConfig = ReactCurrentBatchConfig.suspense;
+  currentTime = computeExpirationForFiber(currentTime, fiber, suspenseConfig);
+  suspenseConfig = {
+    expirationTime: currentTime,
+    suspenseConfig: suspenseConfig,
+    action: action,
+    eagerReducer: null,
+    eagerState: null,
+    next: null
+  };
+  var pending = queue.pending;
+  null === pending
+    ? (suspenseConfig.next = suspenseConfig)
+    : ((suspenseConfig.next = pending.next), (pending.next = suspenseConfig));
+  queue.pending = suspenseConfig;
+  pending = fiber.alternate;
   if (
     fiber === currentlyRenderingFiber$1 ||
-    (null !== alternate && alternate === currentlyRenderingFiber$1)
+    (null !== pending && pending === currentlyRenderingFiber$1)
   )
-    if (
-      ((didScheduleRenderPhaseUpdate = !0),
-      (fiber = {
-        expirationTime: renderExpirationTime$1,
-        suspenseConfig: null,
-        action: action,
-        eagerReducer: null,
-        eagerState: null,
-        next: null
-      }),
-      null === renderPhaseUpdates && (renderPhaseUpdates = new Map()),
-      (action = renderPhaseUpdates.get(queue)),
-      void 0 === action)
-    )
-      renderPhaseUpdates.set(queue, fiber);
-    else {
-      for (queue = action; null !== queue.next; ) queue = queue.next;
-      queue.next = fiber;
-    }
+    (didScheduleRenderPhaseUpdate = !0),
+      (suspenseConfig.expirationTime = renderExpirationTime$1),
+      (currentlyRenderingFiber$1.expirationTime = renderExpirationTime$1);
   else {
-    var currentTime = requestCurrentTimeForUpdate(),
-      suspenseConfig = ReactCurrentBatchConfig.suspense;
-    currentTime = computeExpirationForFiber(currentTime, fiber, suspenseConfig);
-    suspenseConfig = {
-      expirationTime: currentTime,
-      suspenseConfig: suspenseConfig,
-      action: action,
-      eagerReducer: null,
-      eagerState: null,
-      next: null
-    };
-    var pending = queue.pending;
-    null === pending
-      ? (suspenseConfig.next = suspenseConfig)
-      : ((suspenseConfig.next = pending.next), (pending.next = suspenseConfig));
-    queue.pending = suspenseConfig;
     if (
       0 === fiber.expirationTime &&
-      (null === alternate || 0 === alternate.expirationTime) &&
-      ((alternate = queue.lastRenderedReducer), null !== alternate)
+      (null === pending || 0 === pending.expirationTime) &&
+      ((pending = queue.lastRenderedReducer), null !== pending)
     )
       try {
         var currentState = queue.lastRenderedState,
-          eagerState = alternate(currentState, action);
-        suspenseConfig.eagerReducer = alternate;
+          eagerState = pending(currentState, action);
+        suspenseConfig.eagerReducer = pending;
         suspenseConfig.eagerState = eagerState;
-        if (is$1(eagerState, currentState)) return;
+        if (objectIs(eagerState, currentState)) return;
       } catch (error) {
       } finally {
       }
@@ -3630,36 +3638,11 @@ var ContextOnlyDispatcher = {
     useCallback: updateCallback,
     useContext: readContext,
     useEffect: updateEffect,
-    useImperativeHandle: function(ref, create, deps) {
-      deps = null !== deps && void 0 !== deps ? deps.concat([ref]) : null;
-      return updateEffectImpl(
-        4,
-        36,
-        imperativeHandleEffect.bind(null, create, ref),
-        deps
-      );
-    },
-    useLayoutEffect: function(create, deps) {
-      return updateEffectImpl(4, 36, create, deps);
-    },
-    useMemo: function(nextCreate, deps) {
-      var hook = updateWorkInProgressHook();
-      deps = void 0 === deps ? null : deps;
-      var prevState = hook.memoizedState;
-      if (
-        null !== prevState &&
-        null !== deps &&
-        areHookInputsEqual(deps, prevState[1])
-      )
-        return prevState[0];
-      nextCreate = nextCreate();
-      hook.memoizedState = [nextCreate, deps];
-      return nextCreate;
-    },
+    useImperativeHandle: updateImperativeHandle,
+    useLayoutEffect: updateLayoutEffect,
+    useMemo: updateMemo,
     useReducer: updateReducer,
-    useRef: function() {
-      return updateWorkInProgressHook().memoizedState;
-    },
+    useRef: updateRef,
     useState: updateState,
     useDebugValue: mountDebugValue,
     useResponder: createDeprecatedResponderListener,
@@ -3689,6 +3672,51 @@ var ContextOnlyDispatcher = {
       return [
         updateCallback(startTransition.bind(null, _updateState2, config), [
           _updateState2,
+          config
+        ]),
+        isPending
+      ];
+    }
+  },
+  HooksDispatcherOnRerender = {
+    readContext: readContext,
+    useCallback: updateCallback,
+    useContext: readContext,
+    useEffect: updateEffect,
+    useImperativeHandle: updateImperativeHandle,
+    useLayoutEffect: updateLayoutEffect,
+    useMemo: updateMemo,
+    useReducer: rerenderReducer,
+    useRef: updateRef,
+    useState: rerenderState,
+    useDebugValue: mountDebugValue,
+    useResponder: createDeprecatedResponderListener,
+    useDeferredValue: function(value, config) {
+      var _rerenderState = rerenderState(value),
+        prevValue = _rerenderState[0],
+        setValue = _rerenderState[1];
+      updateEffect(
+        function() {
+          var previousConfig = ReactCurrentBatchConfig$1.suspense;
+          ReactCurrentBatchConfig$1.suspense =
+            void 0 === config ? null : config;
+          try {
+            setValue(value);
+          } finally {
+            ReactCurrentBatchConfig$1.suspense = previousConfig;
+          }
+        },
+        [value, config]
+      );
+      return prevValue;
+    },
+    useTransition: function(config) {
+      var _rerenderState2 = rerenderState(!1),
+        isPending = _rerenderState2[0];
+      _rerenderState2 = _rerenderState2[1];
+      return [
+        updateCallback(startTransition.bind(null, _rerenderState2, config), [
+          _rerenderState2,
           config
         ]),
         isPending
@@ -5713,8 +5741,8 @@ function requestCurrentTimeForUpdate() {
   return (executionContext & (RenderContext | CommitContext)) !== NoContext
     ? 1073741821 - ((now() / 10) | 0)
     : 0 !== currentEventTime
-      ? currentEventTime
-      : (currentEventTime = 1073741821 - ((now() / 10) | 0));
+    ? currentEventTime
+    : (currentEventTime = 1073741821 - ((now() / 10) | 0));
 }
 function computeExpirationForFiber(currentTime, fiber, suspenseConfig) {
   fiber = fiber.mode;
@@ -5821,9 +5849,10 @@ function getNextRootExpirationTimeToWorkOn(root) {
   if (0 !== lastExpiredTime) return lastExpiredTime;
   lastExpiredTime = root.firstPendingTime;
   if (!isRootSuspendedAtTime(root, lastExpiredTime)) return lastExpiredTime;
-  lastExpiredTime = root.lastPingedTime;
+  var lastPingedTime = root.lastPingedTime;
   root = root.nextKnownPendingLevel;
-  return lastExpiredTime > root ? lastExpiredTime : root;
+  root = lastPingedTime > root ? lastPingedTime : root;
+  return 2 >= root && lastExpiredTime !== root ? 0 : root;
 }
 function ensureRootIsScheduled(root) {
   if (0 !== root.lastExpiredTime)
@@ -5845,18 +5874,18 @@ function ensureRootIsScheduled(root) {
       1073741823 === expirationTime
         ? (priorityLevel = 99)
         : 1 === expirationTime || 2 === expirationTime
-          ? (priorityLevel = 95)
-          : ((priorityLevel =
-              10 * (1073741821 - expirationTime) -
-              10 * (1073741821 - priorityLevel)),
-            (priorityLevel =
-              0 >= priorityLevel
-                ? 99
-                : 250 >= priorityLevel
-                  ? 98
-                  : 5250 >= priorityLevel
-                    ? 97
-                    : 95));
+        ? (priorityLevel = 95)
+        : ((priorityLevel =
+            10 * (1073741821 - expirationTime) -
+            10 * (1073741821 - priorityLevel)),
+          (priorityLevel =
+            0 >= priorityLevel
+              ? 99
+              : 250 >= priorityLevel
+              ? 98
+              : 5250 >= priorityLevel
+              ? 97
+              : 95));
       if (null !== existingCallbackNode) {
         var existingCallbackPriority = root.callbackPriority;
         if (
@@ -6006,35 +6035,34 @@ function performConcurrentWorkOnRoot(root, didTimeout) {
                   10 * (1073741821 - workInProgressRootLatestSuspenseTimeout) -
                   now())
               : 1073741823 === workInProgressRootLatestProcessedExpirationTime
-                ? (prevExecutionContext = 0)
-                : ((prevExecutionContext =
-                    10 *
-                      (1073741821 -
-                        workInProgressRootLatestProcessedExpirationTime) -
-                    5e3),
-                  (prevDispatcher = now()),
-                  (expirationTime =
-                    10 * (1073741821 - expirationTime) - prevDispatcher),
-                  (prevExecutionContext =
-                    prevDispatcher - prevExecutionContext),
-                  0 > prevExecutionContext && (prevExecutionContext = 0),
-                  (prevExecutionContext =
-                    (120 > prevExecutionContext
-                      ? 120
-                      : 480 > prevExecutionContext
-                        ? 480
-                        : 1080 > prevExecutionContext
-                          ? 1080
-                          : 1920 > prevExecutionContext
-                            ? 1920
-                            : 3e3 > prevExecutionContext
-                              ? 3e3
-                              : 4320 > prevExecutionContext
-                                ? 4320
-                                : 1960 * ceil(prevExecutionContext / 1960)) -
-                    prevExecutionContext),
-                  expirationTime < prevExecutionContext &&
-                    (prevExecutionContext = expirationTime));
+              ? (prevExecutionContext = 0)
+              : ((prevExecutionContext =
+                  10 *
+                    (1073741821 -
+                      workInProgressRootLatestProcessedExpirationTime) -
+                  5e3),
+                (prevDispatcher = now()),
+                (expirationTime =
+                  10 * (1073741821 - expirationTime) - prevDispatcher),
+                (prevExecutionContext = prevDispatcher - prevExecutionContext),
+                0 > prevExecutionContext && (prevExecutionContext = 0),
+                (prevExecutionContext =
+                  (120 > prevExecutionContext
+                    ? 120
+                    : 480 > prevExecutionContext
+                    ? 480
+                    : 1080 > prevExecutionContext
+                    ? 1080
+                    : 1920 > prevExecutionContext
+                    ? 1920
+                    : 3e3 > prevExecutionContext
+                    ? 3e3
+                    : 4320 > prevExecutionContext
+                    ? 4320
+                    : 1960 * ceil(prevExecutionContext / 1960)) -
+                  prevExecutionContext),
+                expirationTime < prevExecutionContext &&
+                  (prevExecutionContext = expirationTime));
             if (10 < prevExecutionContext) {
               root.timeoutHandle = scheduleTimeout(
                 commitRoot.bind(null, root),
@@ -6189,7 +6217,20 @@ function handleError(root$jscomp$0, thrownValue) {
   do {
     try {
       resetContextDependencies();
-      resetHooks();
+      ReactCurrentDispatcher$1.current = ContextOnlyDispatcher;
+      if (didScheduleRenderPhaseUpdate)
+        for (
+          var hook = currentlyRenderingFiber$1.memoizedState;
+          null !== hook;
+
+        ) {
+          var queue = hook.queue;
+          null !== queue && (queue.pending = null);
+          hook = hook.next;
+        }
+      renderExpirationTime$1 = 0;
+      workInProgressHook = currentHook = currentlyRenderingFiber$1 = null;
+      didScheduleRenderPhaseUpdate = !1;
       if (null === workInProgress || null === workInProgress.return)
         return (
           (workInProgressRootExitStatus = RootFatalErrored),
@@ -6232,10 +6273,10 @@ function handleError(root$jscomp$0, thrownValue) {
                   void 0 === props.fallback
                     ? !1
                     : !0 !== props.unstable_avoidThisFallback
-                      ? !0
-                      : hasInvisibleParentBoundary
-                        ? !1
-                        : !0;
+                    ? !0
+                    : hasInvisibleParentBoundary
+                    ? !1
+                    : !0;
               }
             }
             if (JSCompiler_temp) {
@@ -6742,10 +6783,7 @@ function pingSuspendedRoot(root, thenable, suspendedTime) {
     : isRootSuspendedAtTime(root, suspendedTime) &&
       ((thenable = root.lastPingedTime),
       (0 !== thenable && thenable < suspendedTime) ||
-        ((root.lastPingedTime = suspendedTime),
-        root.finishedExpirationTime === suspendedTime &&
-          ((root.finishedExpirationTime = 0), (root.finishedWork = null)),
-        ensureRootIsScheduled(root)));
+        ((root.lastPingedTime = suspendedTime), ensureRootIsScheduled(root)));
 }
 function resolveRetryThenable(boundaryFiber, thenable) {
   var retryCache = boundaryFiber.stateNode;
@@ -6880,7 +6918,8 @@ beginWork$$1 = function(current$$1, workInProgress, renderExpirationTime) {
         void 0 === renderState.$$typeof
       ) {
         workInProgress.tag = 1;
-        resetHooks();
+        workInProgress.memoizedState = null;
+        workInProgress.updateQueue = null;
         if (isContextProvider(updateExpirationTime)) {
           var hasContext = !0;
           pushContextProvider(workInProgress);
@@ -7153,7 +7192,7 @@ beginWork$$1 = function(current$$1, workInProgress, renderExpirationTime) {
         pushProvider(workInProgress, hasContext);
         if (null !== getDerivedStateFromProps) {
           var oldValue = getDerivedStateFromProps.value;
-          hasContext = is$1(oldValue, hasContext)
+          hasContext = objectIs(oldValue, hasContext)
             ? 0
             : ("function" === typeof updateExpirationTime._calculateChangedBits
                 ? updateExpirationTime._calculateChangedBits(
@@ -7708,8 +7747,8 @@ function findNodeHandle(componentOrHandle) {
   return null == componentOrHandle
     ? componentOrHandle
     : componentOrHandle.canonical
-      ? componentOrHandle.canonical._nativeTag
-      : componentOrHandle._nativeTag;
+    ? componentOrHandle.canonical._nativeTag
+    : componentOrHandle._nativeTag;
 }
 batchedUpdatesImpl = function(fn, a) {
   var prevExecutionContext = executionContext;
@@ -7832,8 +7871,8 @@ var roots = new Map(),
       return null == componentOrHandle
         ? componentOrHandle
         : componentOrHandle.canonical
-          ? componentOrHandle.canonical
-          : componentOrHandle;
+        ? componentOrHandle.canonical
+        : componentOrHandle;
     },
     findNodeHandle: findNodeHandle,
     dispatchCommand: function(handle, command, args) {
@@ -8017,7 +8056,7 @@ var roots = new Map(),
     throw Error("getInspectorDataForViewTag() is not available in production");
   },
   bundleType: 0,
-  version: "16.12.0-19f6fe170",
+  version: "16.12.0-241c4467e",
   rendererPackageName: "react-native-renderer"
 });
 var ReactNativeRenderer$2 = { default: ReactNativeRenderer },
