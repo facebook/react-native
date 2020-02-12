@@ -1,6 +1,6 @@
 # eslint-plugin-react-native-community
 
-This plugin is intended to be used in `@react-native-community/eslint-plugin`. You probably want to install that package instead.
+This plugin is intended to be used in `@react-native-community/eslint-config`. You probably want to install that package instead.
 
 ## Installation
 
