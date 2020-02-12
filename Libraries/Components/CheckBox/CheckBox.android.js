@@ -164,7 +164,7 @@ class CheckBox extends React.Component<Props> {
       invariant(
         processedTextColorFalse == null ||
           typeof processedTextColorFalse === 'number',
-        'Unexpected color given for tintColors.true',
+        'Unexpected color given for tintColors.false',
       );
       return {
         true: processedTextColorTrue,
