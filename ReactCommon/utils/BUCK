@@ -41,7 +41,7 @@ rn_xplat_cxx_library(
     ],
     fbobjc_compiler_flags = APPLE_COMPILER_FLAGS,
     fbobjc_frameworks = ["Foundation"],
-    fbobjc_labels = ["supermodule:ios/default/infra.react_native"],
+    fbobjc_labels = ["supermodule:ios/default/react_native.infra"],
     fbobjc_preprocessor_flags = get_debug_preprocessor_flags() + get_apple_inspector_flags(),
     force_static = True,
     macosx_tests_override = [],

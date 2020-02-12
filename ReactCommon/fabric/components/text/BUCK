@@ -44,7 +44,7 @@ rn_xplat_cxx_library(
     ],
     cxx_tests = [":tests"],
     fbobjc_compiler_flags = APPLE_COMPILER_FLAGS,
-    fbobjc_labels = ["supermodule:ios/default/infra.react_native"],
+    fbobjc_labels = ["supermodule:ios/default/react_native.infra"],
     fbobjc_preprocessor_flags = get_debug_preprocessor_flags() + get_apple_inspector_flags(),
     force_static = True,
     platforms = (ANDROID, APPLE, CXX),
