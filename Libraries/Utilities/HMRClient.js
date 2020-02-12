@@ -31,6 +31,7 @@ type LogLevel =
   | 'trace'
   | 'info'
   | 'warn'
+  | 'error'
   | 'log'
   | 'group'
   | 'groupCollapsed'
