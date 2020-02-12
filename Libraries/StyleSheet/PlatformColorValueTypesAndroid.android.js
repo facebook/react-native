@@ -11,7 +11,7 @@
 'use strict';
 
 import type {ColorValue} from './ColorValueTypes';
-import {ColorAndroidPrivate} from './NativeColorValueTypes';
+import {ColorAndroidPrivate} from './PlatformColorValueTypes';
 
 export const ColorAndroid = (color: string): ColorValue => {
   return ColorAndroidPrivate(color);

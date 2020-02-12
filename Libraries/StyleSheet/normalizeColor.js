@@ -28,7 +28,7 @@ function normalizeColor(
   }
 
   if (typeof color === 'object' && color != null) {
-    const normalizeColorObject = require('./NativeColorValueTypes')
+    const normalizeColorObject = require('./PlatformColorValueTypes')
       .normalizeColorObject;
 
     const normalizedColorObj = normalizeColorObject(color);

@@ -13,10 +13,11 @@
 const {OS} = require('../../Utilities/Platform');
 const normalizeColor = require('../normalizeColor');
 
-const PlatformColorIOS = require('../NativeColorValueTypes.ios').PlatformColor;
-const DynamicColorIOS = require('../NativeColorValueTypesIOS.ios')
+const PlatformColorIOS = require('../PlatformColorValueTypes.ios')
+  .PlatformColor;
+const DynamicColorIOS = require('../PlatformColorValueTypesIOS.ios')
   .DynamicColorIOS;
-const PlatformColorAndroid = require('../NativeColorValueTypes.android')
+const PlatformColorAndroid = require('../PlatformColorValueTypes.android')
   .PlatformColor;
 
 describe('normalizeColor', function() {

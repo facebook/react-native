@@ -10,12 +10,12 @@
 
 'use strict';
 
-import type {NativeColorValue} from './NativeColorValueTypes';
+import type {NativeColorValue} from './PlatformColorValueTypes';
 import {
   PlatformColor,
   normalizeColorObject,
   processColorObject,
-} from './NativeColorValueTypes';
+} from './PlatformColorValueTypes';
 
 export type {NativeColorValue};
 export {PlatformColor, normalizeColorObject, processColorObject};

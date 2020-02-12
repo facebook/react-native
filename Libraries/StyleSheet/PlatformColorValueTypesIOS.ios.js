@@ -11,7 +11,7 @@
 'use strict';
 
 import type {ColorValue} from './ColorValueTypes';
-import {DynamicColorIOSPrivate} from './NativeColorValueTypes';
+import {DynamicColorIOSPrivate} from './PlatformColorValueTypes';
 
 export type DynamicColorIOSTuple = {
   light: ColorValue,

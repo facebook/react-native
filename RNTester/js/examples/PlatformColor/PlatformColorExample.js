@@ -259,7 +259,7 @@ function DynamicColorsExample() {
       </View>
     </View>
   ) : (
-    <Text>Not applicable on this platform</Text>
+    <Text style={styles.labelCell}>Not applicable on this platform</Text>
   );
 }
 
@@ -277,7 +277,7 @@ function AndroidColorsExample() {
       </View>
     </View>
   ) : (
-    <Text>Not applicable on this platform</Text>
+    <Text style={styles.labelCell}>Not applicable on this platform</Text>
   );
 }
 
