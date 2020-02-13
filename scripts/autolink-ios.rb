@@ -4,7 +4,6 @@
 # LICENSE file in the root directory of this source tree.
 
 def use_react_native! (options={})
-
   # The prefix to the react-native
   prefix = options[:path] ||= "../node_modules/react-native"
 
@@ -56,5 +55,24 @@ def use_react_native! (options={})
     pod 'React-RCTFabric', :path => "#{prefix}/React"
     pod 'Folly/Fabric', :podspec => "#{prefix}/third-party-podspecs/Folly.podspec"
   end
+end
 
+def add_flipper_pods!
+  version = '~> 0.30.0'
+  pod 'FlipperKit', version, :configuration => 'Debug'
+  pod 'FlipperKit/FlipperKitLayoutPlugin', version, :configuration => 'Debug'
+  pod 'FlipperKit/SKIOSNetworkPlugin', version, :configuration => 'Debug'
+  pod 'FlipperKit/FlipperKitUserDefaultsPlugin', version, :configuration => 'Debug'
+  pod 'FlipperKit/FlipperKitReactPlugin', version, :configuration => 'Debug'
+end
+
+# Post Install processing for Flipper
+def flipper_post_install(installer)
+  installer.pods_project.targets.each do |target|
+    if target.name == 'YogaKit'
+      target.build_configurations.each do |config|
+        config.build_settings['SWIFT_VERSION'] = '4.1'
+      end
+    end
+  end
 end
