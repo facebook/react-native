@@ -35,10 +35,9 @@ if (!body) {
   process.exit(0);
 }
 
-const octokit = require('@octokit/rest')();
-octokit.authenticate({
-  type: 'oauth',
-  token: GITHUB_TOKEN,
+const {Octokit} = require('@octokit/rest');
+const octokit = new Octokit({
+  auth: GITHUB_TOKEN,
 });
 octokit.issues.createComment({
   owner: GITHUB_OWNER,
