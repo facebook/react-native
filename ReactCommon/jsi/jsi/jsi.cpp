@@ -109,7 +109,7 @@ Instrumentation& Runtime::instrumentation() {
           "Default instrumentation cannot create a heap snapshot");
     }
 
-    void writeBridgeTrafficTraceToFile(const std::string&) const override {
+    std::string flushAndDisableBridgeTrafficTrace() override {
       std::abort();
     }
 
