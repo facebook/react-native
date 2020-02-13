@@ -99,12 +99,14 @@ Instrumentation& Runtime::instrumentation() {
 
     void collectGarbage() override {}
 
-    bool createSnapshotToFile(const std::string&) override {
-      return false;
+    void createSnapshotToFile(const std::string&) override {
+      throw JSINativeException(
+          "Default instrumentation cannot create a heap snapshot");
     }
 
-    bool createSnapshotToStream(std::ostream&) override {
-      return false;
+    void createSnapshotToStream(std::ostream&) override {
+      throw JSINativeException(
+          "Default instrumentation cannot create a heap snapshot");
     }
 
     void writeBridgeTrafficTraceToFile(const std::string&) const override {
