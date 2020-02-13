@@ -28,7 +28,7 @@ std::string startupCode(const folly::dynamic *pre, const folly::dynamic *post) {
 } // namespace
 
 void JSDeltaBundleClient::patchModules(const folly::dynamic *modules) {
-  for (const folly::dynamic pair : *modules) {
+  for (const folly::dynamic &pair : *modules) {
     auto id = pair[0].getInt();
     auto module = pair[1];
     modules_[id] = std::move(module.getString());
@@ -53,7 +53,7 @@ void JSDeltaBundleClient::patch(const folly::dynamic &delta) {
   } else {
     const folly::dynamic *deleted = delta.get_ptr("deleted");
     if (deleted != nullptr) {
-      for (const folly::dynamic id : *deleted) {
+      for (const folly::dynamic &id : *deleted) {
         modules_.erase(id.getInt());
       }
     }
