@@ -79,7 +79,7 @@ The process of proposing a change to React Native can be summarized as follows:
 1. Fork the React Native repository and create your branch from `master`.
 2. Make the desired changes to React Native sources. Use the RNTester app to test them out.
 3. If you've added code that should be tested, add tests.
-4. If you've changed APIs, update the documentation, which lives in [another repo](https://github.com/facebook/react-native-website/pull/1469).
+4. If you've changed APIs, update the documentation, which lives in [another repo](https://github.com/facebook/react-native-website/).
 5. Ensure the test suite passes, either locally or on CI once you opened a pull request.
 6. Make sure your code lints (for example via `yarn lint --fix`).
 7. Push the changes to your fork.
