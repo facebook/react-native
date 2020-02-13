@@ -150,7 +150,6 @@ jest
         .NativeMethodsMixin;
 
     Object.assign(NativeMethodsMixin, MockNativeMethods);
-    Object.assign(ReactNative.NativeComponent.prototype, MockNativeMethods);
 
     return ReactNative;
   })

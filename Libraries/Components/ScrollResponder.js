@@ -570,10 +570,7 @@ const ScrollResponderMixin = {
    *        down to make it meet the keyboard's top. Default is false.
    */
   scrollResponderScrollNativeHandleToKeyboard: function<T>(
-    nodeHandle:
-      | number
-      | React.ElementRef<HostComponent<T>>
-      | React.ElementRef<Class<ReactNative.NativeComponent<T>>>,
+    nodeHandle: number | React.ElementRef<HostComponent<T>>,
     additionalOffset?: number,
     preventNegativeScrollOffset?: boolean,
   ) {
