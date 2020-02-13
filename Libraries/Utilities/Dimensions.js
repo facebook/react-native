@@ -134,8 +134,6 @@ if (!initialDims) {
       Dimensions.set(update);
     },
   );
-  // Can't use NativeDeviceInfo in ComponentScript because it does not support NativeModules,
-  // but has nativeExtensions instead.
   initialDims = NativeDeviceInfo.getConstants().Dimensions;
 }
 
