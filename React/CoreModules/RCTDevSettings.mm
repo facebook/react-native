@@ -388,8 +388,6 @@ RCT_EXPORT_METHOD(addMenuItem:(NSString *)title)
   }
 }
 
-#if RCT_DEV_MENU
-
 - (void)addHandler:(id<RCTPackagerClientMethod>)handler forPackagerMethod:(NSString *)name
 {
 #if ENABLE_PACKAGER_CONNECTION
@@ -397,7 +395,22 @@ RCT_EXPORT_METHOD(addMenuItem:(NSString *)title)
 #endif
 }
 
-#endif
+- (void)setupHotModuleReloadClientIfApplicableForURL:(NSURL *)bundleURL
+{
+  if (bundleURL && !bundleURL.fileURL) { // isHotLoadingAvailable check
+    NSString *const path = [bundleURL.path substringFromIndex:1]; // Strip initial slash.
+    NSString *const host = bundleURL.host;
+    NSNumber *const port = bundleURL.port;
+    if (self.bridge) {
+      [self.bridge enqueueJSCall:@"HMRClient"
+                          method:@"setup"
+                            args:@[@"ios", path, host, RCTNullIfNil(port), @(YES)]
+                      completion:NULL];
+    } else {
+      self.invokeJS(@"HMRClient", @"setup", @[@"ios", path, host, RCTNullIfNil(port), @(YES)]);
+    }
+  }
+}
 
 #pragma mark - Internal
 
@@ -439,7 +452,7 @@ RCT_EXPORT_METHOD(addMenuItem:(NSString *)title)
 
 @end
 
-#else // #if RCT_DEV
+#else // #if RCT_DEV_MENU
 
 @interface RCTDevSettings () <NativeDevSettingsSpec>
 @end
@@ -483,6 +496,9 @@ RCT_EXPORT_METHOD(addMenuItem:(NSString *)title)
 - (void)toggleElementInspector
 {
 }
+- (void)setupHotModuleReloadClientIfApplicableForURL:(NSURL *)bundleURL
+{
+}
 - (void)addMenuItem:(NSString *)title
 {
 }
@@ -497,7 +513,7 @@ RCT_EXPORT_METHOD(addMenuItem:(NSString *)title)
 
 @end
 
-#endif
+#endif // #if RCT_DEV_MENU
 
 @implementation RCTBridge (RCTDevSettings)
 

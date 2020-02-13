@@ -914,16 +914,7 @@ struct RCTInstanceCallback : public InstanceCallback {
     [self enqueueApplicationScript:sourceCode url:self.bundleURL onComplete:completion];
   }
 
-  if (self.devSettings.isHotLoadingAvailable) {
-    NSString *path = [self.bundleURL.path substringFromIndex:1]; // strip initial slash
-    NSString *host = self.bundleURL.host;
-    NSNumber *port = self.bundleURL.port;
-    BOOL isHotLoadingEnabled = self.devSettings.isHotLoadingEnabled;
-    [self enqueueJSCall:@"HMRClient"
-                 method:@"setup"
-                   args:@[@"ios", path, host, RCTNullIfNil(port), @(isHotLoadingEnabled)]
-             completion:NULL];
-  }
+  [self.devSettings setupHotModuleReloadClientIfApplicableForURL:self.bundleURL];
 }
 
 - (void)handleError:(NSError *)error

@@ -62,11 +62,6 @@
 @property (nonatomic, assign, setter=setHotLoadingEnabled:) BOOL isHotLoadingEnabled;
 
 /**
- * Toggle the element inspector.
- */
-- (void)toggleElementInspector;
-
-/**
  * Enables starting of profiling sampler on launch
  */
 @property (nonatomic, assign) BOOL startSamplingProfilerOnLaunch;
@@ -80,6 +75,16 @@
  * Whether the performance monitor is visible.
  */
 @property (nonatomic, assign) BOOL isPerfMonitorShown;
+
+/**
+ * Toggle the element inspector.
+ */
+- (void)toggleElementInspector;
+
+/**
+ * If loading bundle from metro, sets up HMRClient.
+ */
+- (void)setupHotModuleReloadClientIfApplicableForURL:(NSURL *)bundleURL;
 
 #if RCT_DEV_MENU
 - (void)addHandler:(id<RCTPackagerClientMethod>)handler
