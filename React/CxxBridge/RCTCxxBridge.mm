@@ -1344,7 +1344,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
 - (void)registerSegmentWithId:(NSUInteger)segmentId path:(NSString *)path
 {
   if (_reactInstance) {
-    /* _reactInstance->registerBundle(static_cast<uint32_t>(segmentId), path.UTF8String); */
+    _reactInstance->registerBundle(static_cast<uint32_t>(segmentId), path.UTF8String);
   }
 }
 
