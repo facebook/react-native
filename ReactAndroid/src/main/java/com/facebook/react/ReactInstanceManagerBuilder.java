@@ -13,7 +13,6 @@ import static com.facebook.react.modules.systeminfo.AndroidInfoHelpers.getFriend
 import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
-
 import androidx.annotation.Nullable;
 import com.facebook.hermes.reactexecutor.HermesExecutorFactory;
 import com.facebook.infer.annotation.Assertions;
@@ -290,7 +289,8 @@ public class ReactInstanceManagerBuilder {
         mCustomPackagerCommandHandlers);
   }
 
-  private JavaScriptExecutorFactory getDefaultJSExecutorFactory(String appName, String deviceName, Context applicationContext) {
+  private JavaScriptExecutorFactory getDefaultJSExecutorFactory(
+      String appName, String deviceName, Context applicationContext) {
     try {
       // If JSC is included, use it as normal
       initializeSoLoaderIfNecessary(applicationContext);
