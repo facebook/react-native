@@ -200,7 +200,7 @@ public class ReactScrollView extends ScrollView
   @Override
   protected void onLayout(boolean changed, int l, int t, int r, int b) {
     // Call with the present values in order to re-layout if necessary
-    scrollTo(getScrollX(), getScrollY());
+    reactScrollTo(getScrollX(), getScrollY());
   }
 
   @Override
@@ -597,7 +597,7 @@ public class ReactScrollView extends ScrollView
     targetOffset = currentPage * interval;
     if (targetOffset != currentOffset) {
       mActivelyScrolling = true;
-      smoothScrollTo(getScrollX(), (int) targetOffset);
+      reactSmoothScrollTo(getScrollX(), (int) targetOffset);
     }
   }
 
@@ -715,7 +715,7 @@ public class ReactScrollView extends ScrollView
 
       postInvalidateOnAnimation();
     } else {
-      smoothScrollTo(getScrollX(), targetOffset);
+      reactSmoothScrollTo(getScrollX(), targetOffset);
     }
   }
 
@@ -769,6 +769,28 @@ public class ReactScrollView extends ScrollView
   }
 
   /**
+   * Calls `smoothScrollTo` and updates state.
+   *
+   * <p>`smoothScrollTo` changes `contentOffset` and we need to keep `contentOffset` in sync between
+   * scroll view and state. Calling raw `smoothScrollTo` doesn't update state.
+   */
+  public void reactSmoothScrollTo(int x, int y) {
+    smoothScrollTo(x, y);
+    updateStateOnScroll();
+  }
+
+  /**
+   * Calls `reactScrollTo` and updates state.
+   *
+   * <p>`reactScrollTo` changes `contentOffset` and we need to keep `contentOffset` in sync between
+   * scroll view and state. Calling raw `reactScrollTo` doesn't update state.
+   */
+  public void reactScrollTo(int x, int y) {
+    scrollTo(x, y);
+    updateStateOnScroll();
+  }
+
+  /**
    * Called when a mContentView's layout has changed. Fixes the scroll position if it's too large
    * after the content resizes. Without this, the user would see a blank ScrollView when the scroll
    * position is larger than the ScrollView's max scroll position after the content shrinks.
@@ -791,7 +813,7 @@ public class ReactScrollView extends ScrollView
     int currentScrollY = getScrollY();
     int maxScrollY = getMaxScrollY();
     if (currentScrollY > maxScrollY) {
-      scrollTo(getScrollX(), maxScrollY);
+      reactScrollTo(getScrollX(), maxScrollY);
     }
   }
 

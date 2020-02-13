@@ -201,9 +201,9 @@ public class ReactScrollViewManager extends ViewGroupManager<ReactScrollView>
   public void scrollTo(
       ReactScrollView scrollView, ReactScrollViewCommandHelper.ScrollToCommandData data) {
     if (data.mAnimated) {
-      scrollView.smoothScrollTo(data.mDestX, data.mDestY);
+      scrollView.reactSmoothScrollTo(data.mDestX, data.mDestY);
     } else {
-      scrollView.scrollTo(data.mDestX, data.mDestY);
+      scrollView.reactScrollTo(data.mDestX, data.mDestY);
     }
   }
 
@@ -275,9 +275,9 @@ public class ReactScrollViewManager extends ViewGroupManager<ReactScrollView>
     // ScrollView always has one child - the scrollable area
     int bottom = scrollView.getChildAt(0).getHeight() + scrollView.getPaddingBottom();
     if (data.mAnimated) {
-      scrollView.smoothScrollTo(scrollView.getScrollX(), bottom);
+      scrollView.reactSmoothScrollTo(scrollView.getScrollX(), bottom);
     } else {
-      scrollView.scrollTo(scrollView.getScrollX(), bottom);
+      scrollView.reactScrollTo(scrollView.getScrollX(), bottom);
     }
   }
 
