@@ -12,7 +12,6 @@ import android.graphics.Color;
 import android.graphics.Rect;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
@@ -21,6 +20,7 @@ import android.widget.OverScroller;
 import android.widget.ScrollView;
 import androidx.annotation.Nullable;
 import androidx.core.view.ViewCompat;
+import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.WritableMap;
@@ -107,7 +107,7 @@ public class ReactScrollView extends ScrollView
         sScrollerField = ScrollView.class.getDeclaredField("mScroller");
         sScrollerField.setAccessible(true);
       } catch (NoSuchFieldException e) {
-        Log.w(
+        FLog.w(
             ReactConstants.TAG,
             "Failed to get mScroller field for ScrollView! "
                 + "This app will exhibit the bounce-back scrolling bug :(");
@@ -120,7 +120,7 @@ public class ReactScrollView extends ScrollView
         if (scrollerValue instanceof OverScroller) {
           scroller = (OverScroller) scrollerValue;
         } else {
-          Log.w(
+          FLog.w(
               ReactConstants.TAG,
               "Failed to cast mScroller field in ScrollView (probably due to OEM changes to AOSP)! "
                   + "This app will exhibit the bounce-back scrolling bug :(");
@@ -284,7 +284,7 @@ public class ReactScrollView extends ScrollView
       // Log and ignore the error. This seems to be a bug in the android SDK and
       // this is the commonly accepted workaround.
       // https://tinyurl.com/mw6qkod (Stack Overflow)
-      Log.w(ReactConstants.TAG, "Error intercepting touch event.", e);
+      FLog.w(ReactConstants.TAG, "Error intercepting touch event.", e);
     }
 
     return false;
