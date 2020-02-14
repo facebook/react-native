@@ -20,7 +20,6 @@
 #include <cxxreact/ModuleRegistry.h>
 #include <cxxreact/RecoverableError.h>
 #include <cxxreact/RAMBundleRegistry.h>
-#include <cxxreact/Platform.h>
 #include <fb/Environment.h>
 #include <fb/log.h>
 #include <fb/fbjni/ByteBuffer.h>
