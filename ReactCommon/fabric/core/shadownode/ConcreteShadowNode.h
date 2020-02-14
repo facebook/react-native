@@ -35,10 +35,10 @@ class ConcreteShadowNode : public ShadowNode {
   using ShadowNode::ShadowNode;
 
   using ConcreteProps = PropsT;
-  using SharedConcreteProps = std::shared_ptr<const PropsT>;
+  using SharedConcreteProps = std::shared_ptr<PropsT const>;
   using ConcreteEventEmitter = EventEmitterT;
-  using SharedConcreteEventEmitter = std::shared_ptr<const EventEmitterT>;
-  using SharedConcreteShadowNode = std::shared_ptr<const ConcreteShadowNode>;
+  using SharedConcreteEventEmitter = std::shared_ptr<EventEmitterT const>;
+  using SharedConcreteShadowNode = std::shared_ptr<ConcreteShadowNode const>;
   using ConcreteState = ConcreteState<StateDataT>;
   using ConcreteStateData = StateDataT;
 
@@ -59,11 +59,10 @@ class ConcreteShadowNode : public ShadowNode {
   }
 
   static SharedConcreteProps Props(
-      const RawProps &rawProps,
-      const SharedProps &baseProps = nullptr) {
-    return std::make_shared<const PropsT>(
-        baseProps ? *std::static_pointer_cast<const PropsT>(baseProps)
-                  : PropsT(),
+      RawProps const &rawProps,
+      SharedProps const &baseProps = nullptr) {
+    return std::make_shared<PropsT const>(
+        baseProps ? static_cast<PropsT const &>(*baseProps) : PropsT(),
         rawProps);
   }
 
@@ -89,7 +88,7 @@ class ConcreteShadowNode : public ShadowNode {
     assert(
         std::dynamic_pointer_cast<ConcreteProps const>(props_) &&
         "Props must be an instance of ConcreteProps class.");
-    return *static_cast<ConcreteProps const *>(props_.get());
+    return static_cast<ConcreteProps const &>(*props_);
   }
 
   /*
@@ -101,7 +100,7 @@ class ConcreteShadowNode : public ShadowNode {
     assert(
         std::dynamic_pointer_cast<ConcreteState const>(state_) &&
         "State must be an instance of ConcreteState class.");
-    return std::static_pointer_cast<ConcreteState const>(state_)->getData();
+    return static_cast<ConcreteState const *>(state_.get())->getData();
   }
 
   /*
@@ -124,9 +123,9 @@ class ConcreteShadowNode : public ShadowNode {
     better::
         small_vector<SpecificShadowNodeT *, kShadowNodeChildrenSmallVectorSize>
             children;
-    for (const auto &childShadowNode : getChildren()) {
+    for (auto const &childShadowNode : getChildren()) {
       auto specificChildShadowNode =
-          dynamic_cast<const SpecificShadowNodeT *>(childShadowNode.get());
+          dynamic_cast<SpecificShadowNodeT const *>(childShadowNode.get());
       if (specificChildShadowNode) {
         children.push_back(
             const_cast<SpecificShadowNodeT *>(specificChildShadowNode));
