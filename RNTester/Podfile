@@ -1,5 +1,6 @@
 require_relative '../scripts/react_native_pods'
 
+source 'https://cdn.cocoapods.org/'
 platform :ios, '10.0'
 
 if ENV['USE_FRAMEWORKS'] == '1'
