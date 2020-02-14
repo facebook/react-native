@@ -1,6 +1,6 @@
-platform :ios, '10.0'
+require_relative '../scripts/react_native_pods'
 
-require_relative '../scripts/autolink-ios'
+platform :ios, '10.0'
 
 if ENV['USE_FRAMEWORKS'] == '1'
   puts "Installing pods with use_frameworks!"
