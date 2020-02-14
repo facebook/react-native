@@ -23,6 +23,7 @@ global.performance = {
 
 global.Promise = jest.requireActual('promise');
 global.regeneratorRuntime = jest.requireActual('regenerator-runtime/runtime');
+global.window = global;
 
 global.requestAnimationFrame = function(callback) {
   return setTimeout(callback, 0);
