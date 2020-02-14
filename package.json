@@ -98,7 +98,7 @@
     "event-target-shim": "^5.0.1",
     "fbjs": "^1.0.0",
     "fbjs-scripts": "^1.1.0",
-    "hermes-engine": "~0.3.0",
+    "hermes-engine": "~0.4.0",
     "invariant": "^2.2.4",
     "jsc-android": "^245459.0.0",
     "metro-babel-register": "0.58.0",
