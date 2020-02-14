@@ -737,10 +737,10 @@ workflows:
   nightly:
     triggers:
       - schedule:
-          cron: "30 8 * * *"
+          cron: "37 8 * * *"
           filters:
             branches:
               only:
-                - sweggersen/nightly-ci
+                - pull/28066
     jobs:
       - nightly_job
