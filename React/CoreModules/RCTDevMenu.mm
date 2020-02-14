@@ -241,7 +241,7 @@ RCT_EXPORT_MODULE()
                                                                                  dismissViewControllerAnimated:YES
                                                                                                     completion:nil];
                                                                            }]];
-                                      [RCTPresentedViewController() presentViewController:alertController
+                                      [RCTPresentedViewController(nil) presentViewController:alertController
                                                                                  animated:YES
                                                                                completion:NULL];
                                     }]];
@@ -266,7 +266,7 @@ RCT_EXPORT_MODULE()
                                                      [RCTInspectorDevServerHelper
                                                          attachDebugger:@"ReactNative"
                                                           withBundleURL:bridge.bundleURL
-                                                               withView:RCTPresentedViewController()];
+                                                               withView:RCTPresentedViewController(nil)];
 #endif
                                                    }]];
     }
@@ -313,7 +313,7 @@ RCT_EXPORT_MODULE()
                                                                         dismissViewControllerAnimated:YES
                                                                                            completion:nil];
                                                                   }]];
-                             [RCTPresentedViewController() presentViewController:alertController
+                             [RCTPresentedViewController(nil) presentViewController:alertController
                                                                         animated:YES
                                                                       completion:NULL];
                            } else {
@@ -388,7 +388,7 @@ RCT_EXPORT_MODULE()
                                                                         handler:^(__unused UIAlertAction *action) {
                                                                           return;
                                                                         }]];
-                      [RCTPresentedViewController() presentViewController:alertController animated:YES completion:NULL];
+                      [RCTPresentedViewController(nil) presentViewController:alertController animated:YES completion:NULL];
                     }]];
 
   [items addObjectsFromArray:_extraMenuItems];
@@ -425,7 +425,7 @@ RCT_EXPORT_METHOD(show)
                                                  handler:[self alertActionHandlerForDevItem:nil]]];
 
   _presentedItems = items;
-  [RCTPresentedViewController() presentViewController:_actionSheet animated:YES completion:nil];
+  [RCTPresentedViewController(nil) presentViewController:_actionSheet animated:YES completion:nil];
 
   [_bridge enqueueJSCall:@"RCTNativeAppEventEmitter"
                   method:@"emit"

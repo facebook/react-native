@@ -31,11 +31,19 @@ export interface Spec extends TurboModule {
    *    - 'dark-content'
    *    - 'light-content'
    */
-  +setStyle: (statusBarStyle?: ?string, animated: boolean) => void;
+  +setStyle: (
+    statusBarStyle?: ?string,
+    animated: boolean,
+    reactTag?: number,
+  ) => void;
   /**
    *  - withAnimation can be: 'none' | 'fade' | 'slide'
    */
-  +setHidden: (hidden: boolean, withAnimation: string) => void;
+  +setHidden: (
+    hidden: boolean,
+    withAnimation: string,
+    reactTag?: number,
+  ) => void;
 }
 
 export default (TurboModuleRegistry.getEnforcing<Spec>(

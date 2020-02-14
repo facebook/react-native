@@ -80,7 +80,10 @@ RCT_EXPORT_METHOD(showActionSheetWithOptions:(JS::NativeActionSheetManager::Spec
     destructiveButtonIndices = @[destructiveButtonIndex];
   }
 
-  UIViewController *controller = RCTPresentedViewController();
+  NSNumber *reactTag = options[@"reactTag"] ? [RCTConvert NSNumber:options[@"reactTag"]] : @-1;
+  UIView *view = [self.bridge.uiManager viewForReactTag:reactTag];
+  UIViewController *controller = RCTPresentedViewController(view.window);
+
   NSNumber *anchor = [RCTConvert NSNumber:options.anchor() ? @(*options.anchor()) : nil];
   UIColor *tintColor = [RCTConvert UIColor:options.tintColor() ? @(*options.tintColor()) : nil];
 
@@ -179,7 +182,10 @@ RCT_EXPORT_METHOD(showShareActionSheetWithOptions:(JS::NativeActionSheetManager:
     shareController.excludedActivityTypes = excludedActivityTypes;
   }
 
-  UIViewController *controller = RCTPresentedViewController();
+  NSNumber *reactTag = options[@"reactTag"] ? [RCTConvert NSNumber:options[@"reactTag"]] : @-1;
+  UIView *view = [self.bridge.uiManager viewForReactTag:reactTag];
+  UIViewController *controller = RCTPresentedViewController(view.window);
+
   shareController.completionWithItemsHandler = ^(NSString *activityType, BOOL completed, __unused NSArray *returnedItems, NSError *activityError) {
     if (activityError) {
       failureCallback(@[RCTJSErrorFromNSError(activityError)]);

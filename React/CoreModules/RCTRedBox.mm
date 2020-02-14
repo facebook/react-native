@@ -246,6 +246,8 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 {
     self.hidden = YES;
     [self resignFirstResponder];
+    // TODO (T62270251): We shouldn't rely on UIApplicationDelegate window -- it's not guaranteed to be there
+    // and it's deprecated in iOS 13
     [RCTSharedApplication().delegate.window makeKeyWindow];
 }
 

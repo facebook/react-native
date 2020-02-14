@@ -11,6 +11,7 @@
 'use strict';
 
 import RCTActionSheetManager from './NativeActionSheetManager';
+import ReactNative from '../Renderer/shims/ReactNative';
 
 const invariant = require('invariant');
 const processColor = require('../StyleSheet/processColor');
@@ -41,11 +42,12 @@ const ActionSheetIOS = {
     options: {|
       +title?: ?string,
       +message?: ?string,
-      +options: Array<string>,
+      +options: ?Array<string>,
       +destructiveButtonIndex?: ?number | ?Array<number>,
       +cancelButtonIndex?: ?number,
       +anchor?: ?number,
       +tintColor?: number | string,
+      +surface?: mixed,
     |},
     callback: (buttonIndex: number) => void,
   ) {
@@ -56,7 +58,13 @@ const ActionSheetIOS = {
     invariant(typeof callback === 'function', 'Must provide a valid callback');
     invariant(RCTActionSheetManager, "ActionSheetManager does't exist");
 
-    const {tintColor, destructiveButtonIndex, ...remainingOptions} = options;
+    const {
+      tintColor,
+      destructiveButtonIndex,
+      surface,
+      ...remainingOptions
+    } = options;
+    const reactTag = ReactNative.findNodeHandle(surface) ?? -1;
     let destructiveButtonIndices = null;
 
     if (Array.isArray(destructiveButtonIndex)) {
@@ -68,6 +76,7 @@ const ActionSheetIOS = {
     RCTActionSheetManager.showActionSheetWithOptions(
       {
         ...remainingOptions,
+        reactTag,
         tintColor: processColor(tintColor),
         destructiveButtonIndices,
       },
@@ -99,9 +108,17 @@ const ActionSheetIOS = {
    * See http://facebook.github.io/react-native/docs/actionsheetios.html#showshareactionsheetwithoptions
    */
   showShareActionSheetWithOptions(
-    options: Object,
+    options: {|
+      +message?: ?string,
+      +url?: ?string,
+      +subject?: ?string,
+      +anchor?: ?number,
+      +tintColor?: ?number | string,
+      +excludedActivityTypes?: ?Array<string>,
+      +surface?: mixed,
+    |},
     failureCallback: Function,
-    successCallback: Function,
+    successCallback: (completed: boolean, activityType: ?string) => void,
   ) {
     invariant(
       typeof options === 'object' && options !== null,
@@ -116,8 +133,16 @@ const ActionSheetIOS = {
       'Must provide a valid successCallback',
     );
     invariant(RCTActionSheetManager, "ActionSheetManager does't exist");
+
+    const {tintColor, surface, ...remainingOptions} = options;
+    const reactTag = ReactNative.findNodeHandle(surface) ?? -1;
+
     RCTActionSheetManager.showShareActionSheetWithOptions(
-      {...options, tintColor: processColor(options.tintColor)},
+      {
+        ...remainingOptions,
+        reactTag,
+        tintColor: processColor(options.tintColor),
+      },
       failureCallback,
       successCallback,
     );

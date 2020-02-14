@@ -24,6 +24,7 @@ export interface Spec extends TurboModule {
       +cancelButtonIndex?: ?number,
       +anchor?: ?number,
       +tintColor?: ?number,
+      +reactTag?: number,
     |},
     callback: (buttonIndex: number) => void,
   ) => void;
@@ -35,6 +36,7 @@ export interface Spec extends TurboModule {
       +anchor?: ?number,
       +tintColor?: ?number,
       +excludedActivityTypes?: ?Array<string>,
+      +reactTag?: number,
     |},
     failureCallback: (error: {|
       +domain: string,
