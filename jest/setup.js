@@ -141,18 +141,6 @@ jest
     removeEventListener: jest.fn(),
     sendIntent: jest.fn(),
   }))
-  .mock('../Libraries/Renderer/shims/ReactNative', () => {
-    const ReactNative = jest.requireActual(
-      '../Libraries/Renderer/shims/ReactNative',
-    );
-    const NativeMethodsMixin =
-      ReactNative.__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED
-        .NativeMethodsMixin;
-
-    Object.assign(NativeMethodsMixin, MockNativeMethods);
-
-    return ReactNative;
-  })
   // Mock modules defined by the native layer (ex: Objective-C, Java)
   .mock('../Libraries/BatchedBridge/NativeModules', () => ({
     AlertManager: {

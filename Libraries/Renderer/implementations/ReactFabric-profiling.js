@@ -7789,24 +7789,6 @@ function createPortal(children, containerInfo, implementation) {
     implementation: implementation
   };
 }
-function _inheritsLoose(subClass, superClass) {
-  subClass.prototype = Object.create(superClass.prototype);
-  subClass.prototype.constructor = subClass;
-  subClass.__proto__ = superClass;
-}
-function findNodeHandle(componentOrHandle) {
-  if (null == componentOrHandle) return null;
-  if ("number" === typeof componentOrHandle) return componentOrHandle;
-  if (componentOrHandle._nativeTag) return componentOrHandle._nativeTag;
-  if (componentOrHandle.canonical && componentOrHandle.canonical._nativeTag)
-    return componentOrHandle.canonical._nativeTag;
-  componentOrHandle = findHostInstance(componentOrHandle);
-  return null == componentOrHandle
-    ? componentOrHandle
-    : componentOrHandle.canonical
-    ? componentOrHandle.canonical._nativeTag
-    : componentOrHandle._nativeTag;
-}
 batchedUpdatesImpl = function(fn, a) {
   var prevExecutionContext = executionContext;
   executionContext |= 1;
@@ -7823,102 +7805,6 @@ flushDiscreteUpdatesImpl = function() {
 };
 var roots = new Map(),
   ReactFabric = {
-    NativeComponent: (function(findNodeHandle, findHostInstance) {
-      return (function(_React$Component) {
-        function ReactNativeComponent() {
-          return _React$Component.apply(this, arguments) || this;
-        }
-        _inheritsLoose(ReactNativeComponent, _React$Component);
-        var _proto = ReactNativeComponent.prototype;
-        _proto.blur = function() {
-          ReactNativePrivateInterface.TextInputState.blurTextInput(
-            findNodeHandle(this)
-          );
-        };
-        _proto.focus = function() {
-          ReactNativePrivateInterface.TextInputState.focusTextInput(
-            findNodeHandle(this)
-          );
-        };
-        _proto.measure = function(callback) {
-          try {
-            var maybeInstance = findHostInstance(this);
-          } catch (error) {}
-          null != maybeInstance &&
-            (maybeInstance.canonical
-              ? nativeFabricUIManager.measure(
-                  maybeInstance.node,
-                  mountSafeCallback_NOT_REALLY_SAFE(this, callback)
-                )
-              : ReactNativePrivateInterface.UIManager.measure(
-                  findNodeHandle(this),
-                  mountSafeCallback_NOT_REALLY_SAFE(this, callback)
-                ));
-        };
-        _proto.measureInWindow = function(callback) {
-          try {
-            var maybeInstance = findHostInstance(this);
-          } catch (error) {}
-          null != maybeInstance &&
-            (maybeInstance.canonical
-              ? nativeFabricUIManager.measureInWindow(
-                  maybeInstance.node,
-                  mountSafeCallback_NOT_REALLY_SAFE(this, callback)
-                )
-              : ReactNativePrivateInterface.UIManager.measureInWindow(
-                  findNodeHandle(this),
-                  mountSafeCallback_NOT_REALLY_SAFE(this, callback)
-                ));
-        };
-        _proto.measureLayout = function(
-          relativeToNativeNode,
-          onSuccess,
-          onFail
-        ) {
-          try {
-            var maybeInstance = findHostInstance(this);
-          } catch (error) {}
-          if (null != maybeInstance && !maybeInstance.canonical) {
-            if ("number" === typeof relativeToNativeNode)
-              var relativeNode = relativeToNativeNode;
-            else
-              relativeToNativeNode._nativeTag &&
-                (relativeNode = relativeToNativeNode._nativeTag);
-            null != relativeNode &&
-              ReactNativePrivateInterface.UIManager.measureLayout(
-                findNodeHandle(this),
-                relativeNode,
-                mountSafeCallback_NOT_REALLY_SAFE(this, onFail),
-                mountSafeCallback_NOT_REALLY_SAFE(this, onSuccess)
-              );
-          }
-        };
-        _proto.setNativeProps = function(nativeProps) {
-          try {
-            var maybeInstance = findHostInstance(this);
-          } catch (error) {}
-          if (null != maybeInstance && !maybeInstance.canonical) {
-            var nativeTag =
-              maybeInstance._nativeTag || maybeInstance.canonical._nativeTag;
-            maybeInstance =
-              maybeInstance.viewConfig || maybeInstance.canonical.viewConfig;
-            nativeProps = diffProperties(
-              null,
-              emptyObject,
-              nativeProps,
-              maybeInstance.validAttributes
-            );
-            null != nativeProps &&
-              ReactNativePrivateInterface.UIManager.updateView(
-                nativeTag,
-                maybeInstance.uiViewClassName,
-                nativeProps
-              );
-          }
-        };
-        return ReactNativeComponent;
-      })(React.Component);
-    })(findNodeHandle, findHostInstance),
     findHostInstance_DEPRECATED: function(componentOrHandle) {
       if (null == componentOrHandle) return null;
       if (componentOrHandle._nativeTag) return componentOrHandle;
@@ -7931,7 +7817,19 @@ var roots = new Map(),
         ? componentOrHandle.canonical
         : componentOrHandle;
     },
-    findNodeHandle: findNodeHandle,
+    findNodeHandle: function(componentOrHandle) {
+      if (null == componentOrHandle) return null;
+      if ("number" === typeof componentOrHandle) return componentOrHandle;
+      if (componentOrHandle._nativeTag) return componentOrHandle._nativeTag;
+      if (componentOrHandle.canonical && componentOrHandle.canonical._nativeTag)
+        return componentOrHandle.canonical._nativeTag;
+      componentOrHandle = findHostInstance(componentOrHandle);
+      return null == componentOrHandle
+        ? componentOrHandle
+        : componentOrHandle.canonical
+        ? componentOrHandle.canonical._nativeTag
+        : componentOrHandle._nativeTag;
+    },
     dispatchCommand: function(handle, command, args) {
       null != handle._nativeTag &&
         (handle._internalInstanceHandle
@@ -7988,94 +7886,7 @@ var roots = new Map(),
         2 < arguments.length && void 0 !== arguments[2] ? arguments[2] : null
       );
     },
-    __SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED: {
-      NativeMethodsMixin: (function(findNodeHandle, findHostInstance) {
-        return {
-          measure: function(callback) {
-            try {
-              var maybeInstance = findHostInstance(this);
-            } catch (error) {}
-            null != maybeInstance &&
-              (maybeInstance.canonical
-                ? nativeFabricUIManager.measure(
-                    maybeInstance.node,
-                    mountSafeCallback_NOT_REALLY_SAFE(this, callback)
-                  )
-                : ReactNativePrivateInterface.UIManager.measure(
-                    findNodeHandle(this),
-                    mountSafeCallback_NOT_REALLY_SAFE(this, callback)
-                  ));
-          },
-          measureInWindow: function(callback) {
-            try {
-              var maybeInstance = findHostInstance(this);
-            } catch (error) {}
-            null != maybeInstance &&
-              (maybeInstance.canonical
-                ? nativeFabricUIManager.measureInWindow(
-                    maybeInstance.node,
-                    mountSafeCallback_NOT_REALLY_SAFE(this, callback)
-                  )
-                : ReactNativePrivateInterface.UIManager.measureInWindow(
-                    findNodeHandle(this),
-                    mountSafeCallback_NOT_REALLY_SAFE(this, callback)
-                  ));
-          },
-          measureLayout: function(relativeToNativeNode, onSuccess, onFail) {
-            try {
-              var maybeInstance = findHostInstance(this);
-            } catch (error) {}
-            if (null != maybeInstance && !maybeInstance.canonical) {
-              if ("number" === typeof relativeToNativeNode)
-                var relativeNode = relativeToNativeNode;
-              else
-                relativeToNativeNode._nativeTag &&
-                  (relativeNode = relativeToNativeNode._nativeTag);
-              null != relativeNode &&
-                ReactNativePrivateInterface.UIManager.measureLayout(
-                  findNodeHandle(this),
-                  relativeNode,
-                  mountSafeCallback_NOT_REALLY_SAFE(this, onFail),
-                  mountSafeCallback_NOT_REALLY_SAFE(this, onSuccess)
-                );
-            }
-          },
-          setNativeProps: function(nativeProps) {
-            try {
-              var maybeInstance = findHostInstance(this);
-            } catch (error) {}
-            if (null != maybeInstance && !maybeInstance.canonical) {
-              var nativeTag =
-                maybeInstance._nativeTag || maybeInstance.canonical._nativeTag;
-              maybeInstance =
-                maybeInstance.viewConfig || maybeInstance.canonical.viewConfig;
-              nativeProps = diffProperties(
-                null,
-                emptyObject,
-                nativeProps,
-                maybeInstance.validAttributes
-              );
-              null != nativeProps &&
-                ReactNativePrivateInterface.UIManager.updateView(
-                  nativeTag,
-                  maybeInstance.uiViewClassName,
-                  nativeProps
-                );
-            }
-          },
-          focus: function() {
-            ReactNativePrivateInterface.TextInputState.focusTextInput(
-              findNodeHandle(this)
-            );
-          },
-          blur: function() {
-            ReactNativePrivateInterface.TextInputState.blurTextInput(
-              findNodeHandle(this)
-            );
-          }
-        };
-      })(findNodeHandle, findHostInstance)
-    }
+    __SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED: {}
   };
 (function(devToolsConfig) {
   var findFiberByHostInstance = devToolsConfig.findFiberByHostInstance;
@@ -8108,7 +7919,7 @@ var roots = new Map(),
     throw Error("getInspectorDataForViewTag() is not available in production");
   },
   bundleType: 0,
-  version: "16.12.0-241c4467e",
+  version: "16.12.0",
   rendererPackageName: "react-native-renderer"
 });
 var ReactFabric$2 = { default: ReactFabric },
