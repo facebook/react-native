@@ -12,14 +12,14 @@ defaults: &defaults
 #        EXECUTORS
 # -------------------------
 executors:
-  node8:
-    <<: *defaults
-    docker:
-      - image: circleci/node:8
   nodelts:
     <<: *defaults
     docker:
-      - image: circleci/node:lts
+      - image: circleci/node:12
+  nodeprevlts:
+    <<: *defaults
+    docker:
+      - image: circleci/node:10
   reactnativeandroid:
     <<: *defaults
     docker:
@@ -191,7 +191,7 @@ jobs:
     parameters:
         executor:
           type: executor
-          default: node8
+          default: nodelts
         checkout_type:
           type: string
           default: node
@@ -246,7 +246,7 @@ jobs:
   #    JOBS: Analyze Code
   # -------------------------
   analyze_code:
-    executor: node8
+    executor: nodelts
     steps:
       - restore_cache_checkout:
           checkout_type: node
@@ -291,7 +291,7 @@ jobs:
     parameters:
       executor:
         type: executor
-        default: node8
+        default: nodelts
     executor: << parameters.executor >>
     steps:
       - restore_cache_checkout:
@@ -436,7 +436,7 @@ jobs:
           path: ./reports/junit
 
   test_js_e2e:
-    executor: node8
+    executor: nodelts
     steps:
       - restore_cache_checkout:
           checkout_type: node
@@ -575,7 +575,7 @@ jobs:
   # -------------------------
   # Collect JavaScript test coverage
   js_coverage:
-    executor: node8
+    executor: nodelts
     environment:
       - CI_BRANCH: $CIRCLE_BRANCH
       - CI_PULL_REQUEST: $CIRCLE_PULL_REQUEST
@@ -665,8 +665,8 @@ workflows:
             - setup_ios
             - test_js
       - test_js:
-          name: test_js_lts
-          executor: nodelts
+          name: test_js_prev_lts
+          executor: nodeprevlts
           requires:
             - setup_js
       - test_docker:
