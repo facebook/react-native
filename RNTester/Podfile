@@ -27,7 +27,7 @@ end
 
 target 'RNTester' do
   pods()
-  add_flipper_pods!
+  use_flipper!
 end
 
 target 'RNTesterUnitTests' do
