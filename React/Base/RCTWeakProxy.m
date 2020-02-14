@@ -27,4 +27,16 @@
   return _target;
 }
 
+- (void)forwardInvocation:(NSInvocation *)invocation
+{
+    void *nullPointer = NULL;
+    [invocation setReturnValue:&nullPointer];
+}
+
+
+- (NSMethodSignature *)methodSignatureForSelector:(SEL)selector
+{
+    return [NSObject instanceMethodSignatureForSelector:@selector(init)];
+}
+
 @end
