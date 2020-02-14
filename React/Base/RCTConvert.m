@@ -146,7 +146,7 @@ RCT_ENUM_CONVERTER(NSURLRequestCachePolicy, (@{
       URLString = [NSString stringWithFormat:@"%@.bundle/%@", bundleName, URLString];
     }
 
-    URL = [self NSURL:URLString];
+    URL = [self NSURL:RCTNilIfNull(URLString)];
     if (!URL) {
       return nil;
     }
