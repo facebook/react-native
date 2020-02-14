@@ -294,6 +294,7 @@ std::string JSStringToSTLString(JSStringRef str) {
   std::array<char, 20> stackBuffer;
   std::unique_ptr<char[]> heapBuffer;
   char *buffer;
+  // NOTE: By definition, maxBytes >= 1 since the null terminator is included.
   size_t maxBytes = JSStringGetMaximumUTF8CStringSize(str);
   if (maxBytes <= stackBuffer.size()) {
     buffer = stackBuffer.data();
@@ -302,7 +303,18 @@ std::string JSStringToSTLString(JSStringRef str) {
     buffer = heapBuffer.get();
   }
   size_t actualBytes = JSStringGetUTF8CString(str, buffer, maxBytes);
-  // NOTE: By definition, maxBytes >= actualBytes >= 1.
+  if (!actualBytes) {
+    // Happens if maxBytes == 0 (never the case here) or if str contains
+    // invalid UTF-16 data, since JSStringGetUTF8CString attempts a strict
+    // conversion.
+    // When converting an invalid string, JSStringGetUTF8CString writes a null
+    // terminator before returning. So we can reliably treat our buffer as a C
+    // string and return the truncated data to our caller. This is slightly
+    // slower than if we knew the length (like below) but better than crashing.
+    // TODO(T62295565): Perform a non-strict, best effort conversion of the
+    // full string instead, like we did before the JSI migration.
+    return std::string(buffer);
+  }
   return std::string(buffer, actualBytes - 1);
 }
 
