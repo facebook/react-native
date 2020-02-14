@@ -80,12 +80,16 @@ class ConcreteShadowNode : public ShadowNode {
     return {};
   }
 
-  const SharedConcreteProps getProps() const {
+  /*
+   * Returns a concrete props object associated with the node.
+   * Thread-safe after the node is sealed.
+   */
+  ConcreteProps const &getConcreteProps() const {
     assert(props_ && "Props must not be `nullptr`.");
     assert(
         std::dynamic_pointer_cast<ConcreteProps const>(props_) &&
         "Props must be an instance of ConcreteProps class.");
-    return std::static_pointer_cast<ConcreteProps const>(props_);
+    return *static_cast<ConcreteProps const *>(props_.get());
   }
 
   /*

@@ -28,7 +28,7 @@ AttributedString BaseTextShadowNode::getAttributedString(
         std::dynamic_pointer_cast<const RawTextShadowNode>(childNode);
     if (rawTextShadowNode) {
       auto fragment = AttributedString::Fragment{};
-      fragment.string = rawTextShadowNode->getProps()->text;
+      fragment.string = rawTextShadowNode->getConcreteProps().text;
       fragment.textAttributes = textAttributes;
 
       // Storing a retaining pointer to `ParagraphShadowNode` inside
@@ -45,7 +45,8 @@ AttributedString BaseTextShadowNode::getAttributedString(
         std::dynamic_pointer_cast<const TextShadowNode>(childNode);
     if (textShadowNode) {
       auto localTextAttributes = textAttributes;
-      localTextAttributes.apply(textShadowNode->getProps()->textAttributes);
+      localTextAttributes.apply(
+          textShadowNode->getConcreteProps().textAttributes);
       attributedString.appendAttributedString(
           textShadowNode->getAttributedString(
               localTextAttributes, *textShadowNode));

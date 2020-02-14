@@ -25,7 +25,7 @@ bool RootShadowNode::layoutIfNeeded(
 
   ensureUnsealed();
 
-  auto layoutContext = getProps()->layoutContext;
+  auto layoutContext = getConcreteProps().layoutContext;
   layoutContext.affectedNodes = affectedNodes;
 
   layout(layoutContext);
@@ -44,7 +44,7 @@ RootShadowNode::Unshared RootShadowNode::clone(
     LayoutConstraints const &layoutConstraints,
     LayoutContext const &layoutContext) const {
   auto props = std::make_shared<RootProps const>(
-      *getProps(), layoutConstraints, layoutContext);
+      getConcreteProps(), layoutConstraints, layoutContext);
   auto newRootShadowNode = std::make_shared<RootShadowNode>(
       *this,
       ShadowNodeFragment{
