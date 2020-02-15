@@ -1,0 +1,7 @@
+contact_links:
+    - name: 📃 Documentation Issue
+      url: https://github.com/facebook/react-native-website/issues
+      about: This issue tracker is not for documentation issues. Please file documentation issues here.
+    - name: 🤔 Questions and Help
+      url: https://github.com/facebook/react-native/blob/master/.github/SUPPORT.md
+      about: This issue tracker is not for support questions. Please find support from the links depending on your needs.
