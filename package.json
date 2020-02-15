@@ -116,6 +116,9 @@
     "use-subscription": "^1.0.0",
     "whatwg-fetch": "^3.0.0"
   },
+  "resolutions": {
+    "lodash": "^4.17.12"
+  },
   "devDependencies": {
     "@babel/core": "^7.0.0",
     "@babel/generator": "^7.5.0",
