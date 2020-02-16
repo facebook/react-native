@@ -211,7 +211,12 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:unused)
 
     if (bundle) {
       NSURL *url = [bundle URLForResource:@"Localizable" withExtension:@"strings"];
-      rolesAndStatesDescription = [NSDictionary dictionaryWithContentsOfURL:url];
+      if (@available(iOS 11.0, *)) {
+        rolesAndStatesDescription = [NSDictionary dictionaryWithContentsOfURL:url error:nil];
+      } else {
+        // Fallback on earlier versions
+        rolesAndStatesDescription = [NSDictionary dictionaryWithContentsOfURL:url];
+      }
     }
     if (rolesAndStatesDescription == nil) {
       NSLog(@"Cannot load localized accessibility strings.");
