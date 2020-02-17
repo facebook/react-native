@@ -632,6 +632,8 @@ jobs:
 #        WORK FLOWS
 # -------------------------
 workflows:
+  version: 2
+
   tests:
     jobs:
       - setup:
