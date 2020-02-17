@@ -80,7 +80,7 @@
 <ol>
 <li><p>Let's start by removing <code>READ_PHONE_STATE</code>, <code>WRITE_EXTERNAL_STORAGE</code>, and <code>READ_EXTERNAL_STORAGE</code> from both production and debug APKs, as it is not required in either. These storage permissions are still not needed if <code>AsyncStorage</code> module is in use, so it is safe to remove from both production and debug.</p></li>
 <li><p>Open your <code>android/app/src/main/AndroidManifest.xml</code> file.</p></li>
-<li><p>Even though these three permissions are not listed in the manifest they get added in. We add the three permissions with <code>tools:node=&quot;remove&quot;</code> attribute, to make sure it gets removed during build. Note that the package identifier will be different, for below it is &quot;com.myapp&quot; because the project was created with <code>react-native init myapp</code>.</p>
+<li><p>Even though these three permissions are not listed in the manifest they get added in. We add the three permissions with <code>tools:node=&quot;remove&quot;</code> attribute, to make sure it gets removed during build. Note that the package identifier will be different, for below it is &quot;com.myapp&quot; because the project was created with <code>npx react-native init myapp</code>.</p>
 <pre><code class="hljs css language-diff">&lt;manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.myappid"
 <span class="hljs-addition">+   xmlns:tools="http://schemas.android.com/tools"</span>
@@ -114,7 +114,7 @@
 &lt;/manifest&gt;
 </code></pre></li>
 </ol>
-<p>That's it. We did not remove the <code>INTERNET</code> permission as pretty much all apps use it. Now whenever you create a production APK, these 3 permissions will be removed. When you create a debug APK (<code>react-native run-android</code>) it will install the APK with these permissions added.</p>
+<p>That's it. We did not remove the <code>INTERNET</code> permission as pretty much all apps use it. Now whenever you create a production APK, these 3 permissions will be removed. When you create a debug APK (<code>npx react-native run-android</code>) it will install the APK with these permissions added.</p>
 <p>##Hint
 If your App is free to use in the App-Store and there is no &quot;In-App-Purchase&quot; possible in your App, you also can remove:
 - android.vending.CHECK_LICENSE</p>

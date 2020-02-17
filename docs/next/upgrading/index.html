@@ -81,10 +81,10 @@
 <p>The <code>upgrade</code> command works on top of Git by using <code>git apply</code> with 3-way merge, therefore it's required to use Git in order for this to work, if you don't use Git but still want to use this solution then you can check out how to do it in the <a href="#i-want-to-upgrade-with-react-native-cli-but-i-don-t-use-git">Troubleshooting</a> section.</p>
 </blockquote>
 <p>Run the following command to start the process of upgrading to the latest version:</p>
-<pre><code class="hljs css language-sh">react-native upgrade
+<pre><code class="hljs css language-sh">npx react-native upgrade
 </code></pre>
 <p>You may specify a React Native version by passing an argument, e.g. to upgrade to <code>0.61.0-rc.0</code> run:</p>
-<pre><code class="hljs css language-sh">react-native upgrade 0.61.0-rc.0
+<pre><code class="hljs css language-sh">npx react-native upgrade 0.61.0-rc.0
 </code></pre>
 <p>The project is upgraded using <code>git apply</code> with 3-way merge, it may happen that you'll need to resolve a few conflicts after it's finished.</p>
 <h4><a class="anchor" aria-hidden="true" id="2-resolve-the-conflicts"></a><a href="#2-resolve-the-conflicts" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>2. Resolve the conflicts</h4>
@@ -123,9 +123,9 @@ yarn add react-native@{{VERSION}}
 yarn add react@{{REACT_VERSION}}
 </code></pre>
 <h4><a class="anchor" aria-hidden="true" id="3-upgrade-your-project-files"></a><a href="#3-upgrade-your-project-files" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>3. Upgrade your project files</h4>
-<p>The new release may contain updates to other files that are generated when you run <code>react-native init</code>, those files are listed after the <code>package.json</code> in the Upgrade Helper page. If there aren't other changes then you only need to rebuild the project to continue developing.</p>
+<p>The new release may contain updates to other files that are generated when you run <code>npx react-native init</code>, those files are listed after the <code>package.json</code> in the Upgrade Helper page. If there aren't other changes then you only need to rebuild the project to continue developing.</p>
 <p>In case there are changes then you can either update them manually by copying and pasting from the changes in the page or you can do it with the React Native CLI upgrade command by running:</p>
-<pre><code class="hljs css language-sh">react-native upgrade
+<pre><code class="hljs css language-sh">npx react-native upgrade
 </code></pre>
 <p>This will check your files against the latest template and perform the following:</p>
 <ul>
@@ -138,7 +138,7 @@ yarn add react@{{REACT_VERSION}}
 </blockquote>
 <h3><a class="anchor" aria-hidden="true" id="troubleshooting"></a><a href="#troubleshooting" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Troubleshooting</h3>
 <h4><a class="anchor" aria-hidden="true" id="i-want-to-upgrade-with-react-native-cli-but-i-dont-use-git"></a><a href="#i-want-to-upgrade-with-react-native-cli-but-i-dont-use-git" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>I want to upgrade with React Native CLI but I don't use Git</h4>
-<p>While your project does not have to be handled by the Git versioning system -- you can use Mercurial, SVN, or nothing -- you will still need to <a href="https://git-scm.com/downloads">install Git</a> on your system in order to use <code>react-native upgrade</code>. Git will also need to be available in the <code>PATH</code>. If your project doesn't use Git, initialize it and commit:</p>
+<p>While your project does not have to be handled by the Git versioning system -- you can use Mercurial, SVN, or nothing -- you will still need to <a href="https://git-scm.com/downloads">install Git</a> on your system in order to use <code>npx react-native upgrade</code>. Git will also need to be available in the <code>PATH</code>. If your project doesn't use Git, initialize it and commit:</p>
 <pre><code class="hljs css language-sh">git init <span class="hljs-comment"># Initialize a Git repository</span>
 git add . <span class="hljs-comment"># Stage all the current files</span>
 git commit -m <span class="hljs-string">"Upgrade react-native"</span> <span class="hljs-comment"># Save the current files in a commit</span>
