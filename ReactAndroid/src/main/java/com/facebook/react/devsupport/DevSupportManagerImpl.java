@@ -443,10 +443,21 @@ public class DevSupportManagerImpl
     }
   }
 
+  // @tsapeta This method can be removed once we fully remove support for ExpoKit,
+  // then our React Native fork will be used only in managed workflow and standalone builds have dev support disabled anyway.
+  public boolean isExpoStandaloneApp() {
+    try {
+      return (boolean) Class.forName("host.exp.exponent.Constants").getMethod("isStandaloneApp").invoke(null);
+    } catch (Exception e) {
+      // This shouldn't ever happen, but `false` as a fallback seems to be better than `true`.
+      FLog.e("Expo", "Unable to find host.exp.exponent.Constants#isStandaloneApp method.");
+      return false;
+    }
+  }
 
   @Override
   public void showDevOptionsDialog() {
-    if (mDevOptionsDialog != null || !mIsDevSupportEnabled || ActivityManager.isUserAMonkey()) {
+    if (mDevOptionsDialog != null || !mIsDevSupportEnabled || ActivityManager.isUserAMonkey() || !isExpoStandaloneApp()) {
       return;
     }
     LinkedHashMap<String, DevOptionHandler> options = new LinkedHashMap<>();
