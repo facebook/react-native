@@ -17,7 +17,6 @@ import StyleSheet from '../../StyleSheet/StyleSheet';
 import Text from '../../Text/Text';
 import View from '../../Components/View/View';
 import StatusBar from '../../Components/StatusBar/StatusBar';
-import LogBoxImageSource from './LogBoxImageSource';
 import LogBoxButton from './LogBoxButton';
 import * as LogBoxStyle from './LogBoxStyle';
 import type {LogLevel} from '../Data/LogBoxLog';
@@ -54,7 +53,7 @@ function LogBoxInspectorHeader(props: Props): React.Node {
         <LogBoxInspectorHeaderButton
           disabled={props.total <= 1}
           level={props.level}
-          image={LogBoxImageSource.chevronLeft}
+          image={require('./LogBoxImages/chevron-left.png')}
           onPress={() => props.onSelectIndex(prevIndex)}
         />
         <View style={styles.title}>
@@ -63,7 +62,7 @@ function LogBoxInspectorHeader(props: Props): React.Node {
         <LogBoxInspectorHeaderButton
           disabled={props.total <= 1}
           level={props.level}
-          image={LogBoxImageSource.chevronRight}
+          image={require('./LogBoxImages/chevron-right.png')}
           onPress={() => props.onSelectIndex(nextIndex)}
         />
       </View>
@@ -94,7 +93,7 @@ const backgroundForLevel = (level: LogLevel) =>
 function LogBoxInspectorHeaderButton(
   props: $ReadOnly<{|
     disabled: boolean,
-    image: string,
+    image: number,
     level: LogLevel,
     onPress?: ?() => void,
   |}>,
@@ -105,10 +104,7 @@ function LogBoxInspectorHeaderButton(
       onPress={props.disabled ? null : props.onPress}
       style={headerStyles.button}>
       {props.disabled ? null : (
-        <Image
-          source={{height: 16, uri: props.image, width: 16}}
-          style={headerStyles.buttonImage}
-        />
+        <Image source={props.image} style={headerStyles.buttonImage} />
       )}
     </LogBoxButton>
   );
@@ -126,6 +122,8 @@ const headerStyles = StyleSheet.create({
     borderRadius: 3,
   },
   buttonImage: {
+    height: 14,
+    width: 8,
     tintColor: LogBoxStyle.getTextColor(),
   },
 });

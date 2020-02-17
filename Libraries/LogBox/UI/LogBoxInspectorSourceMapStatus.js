@@ -15,7 +15,6 @@ import Easing from '../../Animated/src/Easing';
 import * as React from 'react';
 import StyleSheet from '../../StyleSheet/StyleSheet';
 import Text from '../../Text/Text';
-import LogBoxImageSource from './LogBoxImageSource';
 import LogBoxButton from './LogBoxButton';
 import * as LogBoxStyle from './LogBoxStyle';
 
@@ -74,11 +73,11 @@ function LogBoxInspectorSourceMapStatus(props: Props): React.Node {
   let color;
   switch (props.status) {
     case 'FAILED':
-      image = LogBoxImageSource.alertTriangle;
+      image = require('./LogBoxImages/alert-triangle.png');
       color = LogBoxStyle.getErrorColor(1);
       break;
     case 'PENDING':
-      image = LogBoxImageSource.loader;
+      image = require('./LogBoxImages/loader.png');
       color = LogBoxStyle.getWarningColor(1);
       break;
   }
@@ -97,7 +96,7 @@ function LogBoxInspectorSourceMapStatus(props: Props): React.Node {
       onPress={props.onPress}
       style={styles.root}>
       <Animated.Image
-        source={{height: 16, uri: image, width: 16}}
+        source={image}
         style={[
           styles.image,
           {tintColor: color},
@@ -120,6 +119,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: 8,
   },
   image: {
+    height: 14,
+    width: 16,
     marginEnd: 4,
     tintColor: LogBoxStyle.getTextColor(0.4),
   },
