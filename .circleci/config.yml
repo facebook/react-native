@@ -737,10 +737,10 @@ workflows:
   nightly:
     triggers:
       - schedule:
-          cron: "37 8 * * *"
+          cron: "0 * * * *"
           filters:
             branches:
               only:
-                - pull/28066
+                - master
     jobs:
       - nightly_job
