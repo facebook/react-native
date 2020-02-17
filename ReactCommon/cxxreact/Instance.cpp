@@ -194,7 +194,7 @@ void Instance::callJSCallback(uint64_t callbackId, folly::dynamic &&params) {
 void Instance::registerBundle(
     uint32_t bundleId,
     const std::string &bundlePath) {
-  loadRAMBundleFromFile(bundlePath, bundlePath, true);
+  loadRAMBundleFromFile(bundlePath, bundlePath, bundleId, true);
 }
 
 const ModuleRegistry &Instance::getModuleRegistry() const {
