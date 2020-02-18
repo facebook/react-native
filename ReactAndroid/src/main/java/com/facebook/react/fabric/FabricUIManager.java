@@ -41,7 +41,6 @@ import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.UIManager;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.bridge.WritableMap;
-import com.facebook.react.common.ReactConstants;
 import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.react.fabric.events.EventBeatManager;
 import com.facebook.react.fabric.events.EventEmitterWrapper;
@@ -813,9 +812,7 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
     @ThreadConfined(UI)
     public void doFrameGuarded(long frameTimeNanos) {
       if (!mIsMountingEnabled || mDestroyed) {
-        FLog.w(
-            ReactConstants.TAG,
-            "Not flushing pending UI operations because of previously thrown Exception");
+        FLog.w(TAG, "Not flushing pending UI operations because of previously thrown Exception");
         return;
       }
 
@@ -826,7 +823,7 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
         dispatchMountItems();
 
       } catch (Exception ex) {
-        FLog.i(ReactConstants.TAG, "Exception thrown when executing UIFrameGuarded", ex);
+        FLog.i(TAG, "Exception thrown when executing UIFrameGuarded", ex);
         stop();
         throw ex;
       } finally {
