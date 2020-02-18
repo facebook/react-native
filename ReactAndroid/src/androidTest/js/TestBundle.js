@@ -10,7 +10,7 @@
 'use strict';
 
 // Disable LogBox so we do not have to mock its dependencies.
-require('react-native/Libraries/LogBox/LogBox').ignoreAllLogs(true);
+require('react-native').LogBox.ignoreAllLogs(true);
 
 // Include callable JS modules first, in case one of the other ones below throws
 require('./ProgressBarTestModule');

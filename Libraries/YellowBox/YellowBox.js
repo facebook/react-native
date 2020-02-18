@@ -38,9 +38,9 @@ let YellowBox;
  *
  * Ignore specific warnings by calling:
  *
- *   YellowBox.ignoreWarnings(['Warning: ...']);
+ *   LogBox.ignoreLogs(['Warning: ...']);
  *
- * Strings supplied to `YellowBox.ignoreWarnings` only need to be a substring of
+ * Strings supplied to `LogBox.ignoreLogs` only need to be a substring of
  * the ignored warning messages.
  */
 if (__DEV__) {
