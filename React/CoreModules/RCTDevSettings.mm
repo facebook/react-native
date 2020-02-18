@@ -67,6 +67,11 @@ void RCTDevSettingsSetEnabled(BOOL enabled) {
   return [self initWithDefaultValues:nil];
 }
 
++ (BOOL)requiresMainQueueSetup
+{
+  return NO;
+}
+
 - (instancetype)initWithDefaultValues:(NSDictionary *)defaultValues
 {
   if (self = [super init]) {
