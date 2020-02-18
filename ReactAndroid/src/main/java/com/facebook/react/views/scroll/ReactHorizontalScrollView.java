@@ -17,6 +17,7 @@ import android.view.FocusFinder;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.HorizontalScrollView;
 import android.widget.OverScroller;
 import androidx.annotation.Nullable;
@@ -34,8 +35,10 @@ import com.facebook.react.uimanager.events.NativeGestureUtil;
 import com.facebook.react.views.view.ReactViewBackgroundManager;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Queue;
 
 /** Similar to {@link ReactScrollView} but only supports horizontal scrolling. */
 public class ReactHorizontalScrollView extends HorizontalScrollView
@@ -308,9 +311,53 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
     }
   }
 
+  private HorizontalScrollView findNestedScrollViewForMotionEvent(MotionEvent ev) {
+    Queue<ViewGroup> viewsToSearch = new LinkedList<>();
+    viewsToSearch.add(this);
+
+    HorizontalScrollView foundScrollView = null;
+    ViewGroup view;
+    Rect rectOnScreen = new Rect();
+
+    while ((view = viewsToSearch.poll()) != null) {
+
+      for (int j = 0, len = view.getChildCount(); j < len; j++) {
+        View child = view.getChildAt(j);
+
+        child.getGlobalVisibleRect(rectOnScreen);
+
+        if (!rectOnScreen.contains((int)ev.getRawX(), (int)ev.getRawY())) {
+          continue;
+        }
+
+        if (child instanceof ViewGroup) {
+          viewsToSearch.offer((ViewGroup)child);
+        }
+
+        if (child instanceof ReactHorizontalScrollView) {
+          ReactHorizontalScrollView scrollView = (ReactHorizontalScrollView)child;
+
+          if (!scrollView.mScrollEnabled) {
+            continue;
+          }
+        }
+
+        if (child instanceof HorizontalScrollView) {
+          foundScrollView = (HorizontalScrollView)child;
+        }
+      }
+    }
+
+    return foundScrollView;
+  }
+
   @Override
   public boolean onInterceptTouchEvent(MotionEvent ev) {
     if (!mScrollEnabled) {
+      return false;
+    }
+
+    if (ev.getAction() == MotionEvent.ACTION_DOWN && findNestedScrollViewForMotionEvent(ev) != null) {
       return false;
     }
 
