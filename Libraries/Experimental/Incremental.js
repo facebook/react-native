@@ -94,6 +94,11 @@ export type Props = {
 };
 type State = {doIncrementalRender: boolean, ...};
 
+const IncrementalContext = React.createContext<Context>({
+  incrementalGroupEnabled: true,
+  incrementalGroup: {},
+});
+
 class Incremental extends React.Component<Props, State> {
   props: Props;
   state: State;
@@ -101,6 +106,8 @@ class Incremental extends React.Component<Props, State> {
   _incrementId: number;
   _mounted: boolean;
   _rendered: boolean;
+
+  static Context: React$Context<Context> = IncrementalContext;
 
   static defaultProps: {|name: string|} = {
     name: '',
