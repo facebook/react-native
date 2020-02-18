@@ -11,14 +11,11 @@
 'use strict';
 
 const EmitterSubscription = require('../vendor/emitter/EmitterSubscription');
-const PropTypes = require('prop-types');
 const RCTDeviceEventEmitter = require('../EventEmitter/RCTDeviceEventEmitter');
 const React = require('react');
 const RootTagContext = require('./RootTagContext');
 const StyleSheet = require('../StyleSheet/StyleSheet');
 const View = require('../Components/View/View');
-
-type Context = {rootTag: number, ...};
 
 type Props = $ReadOnly<{|
   children?: React.Node,
@@ -35,6 +32,9 @@ type State = {|
   hasError: boolean,
 |};
 
+type ContextType = {rootTag: number, ...};
+const Context = React.createContext<ContextType>({ rootTag: 0 });
+
 class AppContainer extends React.Component<Props, State> {
   state: State = {
     inspector: null,
@@ -46,17 +46,7 @@ class AppContainer extends React.Component<Props, State> {
 
   static getDerivedStateFromError: any = undefined;
 
-  static childContextTypes:
-    | any
-    | {|rootTag: React$PropType$Primitive<number>|} = {
-    rootTag: PropTypes.number,
-  };
-
-  getChildContext(): Context {
-    return {
-      rootTag: this.props.rootTag,
-    };
-  }
+  static Context: React$Context<ContextType> = Context;
 
   componentDidMount(): void {
     if (__DEV__) {
@@ -129,11 +119,13 @@ class AppContainer extends React.Component<Props, State> {
     }
     return (
       <RootTagContext.Provider value={this.props.rootTag}>
-        <View style={styles.appContainer} pointerEvents="box-none">
-          {!this.state.hasError && innerView}
-          {this.state.inspector}
-          {yellowBox}
-        </View>
+        <Context.Provider value={{ rootTag: this.props.rootTag }}>
+          <View style={styles.appContainer} pointerEvents="box-none">
+            {!this.state.hasError && innerView}
+            {this.state.inspector}
+            {yellowBox}
+          </View>
+        </Context.Provider>
       </RootTagContext.Provider>
     );
   }
