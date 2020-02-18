@@ -13,8 +13,8 @@
 
 @implementation RCTBridge (Cxx)
 
-- (std::shared_ptr<facebook::react::Instance>)reactInstance {
-	std::shared_ptr<facebook::react::Instance> instance;
+- (std::weak_ptr<facebook::react::Instance>)reactInstance {
+	std::weak_ptr<facebook::react::Instance> instance;
 	RCTBridge *batchBridge = [self batchedBridge];
 	if ([batchBridge isKindOfClass:[RCTCxxBridge class]]) {
 		RCTCxxBridge *cxxBridge = (RCTCxxBridge *)batchBridge;
