@@ -101,7 +101,9 @@ class AppContainer extends React.Component<Props, State> {
         ref={ref => {
           this._mainRef = ref;
         }}>
-        {this.props.children}
+        <Context.Provider value={{ rootTag: this.props.rootTag }}>
+          {this.props.children}
+        </Context.Provider>
       </View>
     );
 
@@ -119,13 +121,11 @@ class AppContainer extends React.Component<Props, State> {
     }
     return (
       <RootTagContext.Provider value={this.props.rootTag}>
-        <Context.Provider value={{ rootTag: this.props.rootTag }}>
-          <View style={styles.appContainer} pointerEvents="box-none">
-            {!this.state.hasError && innerView}
-            {this.state.inspector}
-            {yellowBox}
-          </View>
-        </Context.Provider>
+        <View style={styles.appContainer} pointerEvents="box-none">
+          {!this.state.hasError && innerView}
+          {this.state.inspector}
+          {yellowBox}
+        </View>
       </RootTagContext.Provider>
     );
   }
