@@ -33,7 +33,7 @@ type State = {|
 |};
 
 type ContextType = {rootTag: number, ...};
-const Context = React.createContext<ContextType>({ rootTag: 0 });
+const Context = React.createContext<ContextType>({rootTag: 0});
 
 class AppContainer extends React.Component<Props, State> {
   state: State = {
@@ -101,7 +101,7 @@ class AppContainer extends React.Component<Props, State> {
         ref={ref => {
           this._mainRef = ref;
         }}>
-        <Context.Provider value={{ rootTag: this.props.rootTag }}>
+        <Context.Provider value={{rootTag: this.props.rootTag}}>
           {this.props.children}
         </Context.Provider>
       </View>
