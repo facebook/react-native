@@ -18,6 +18,7 @@ const React = require('react');
 const Platform = require('../../Utilities/Platform');
 const UIManager = require('../../ReactNative/UIManager');
 const {findNodeHandle} = require('../../Renderer/shims/ReactNative');
+import {Commands as AndroidTextInputCommands} from '../../Components/TextInput/AndroidTextInputNativeComponent';
 
 import type {HostComponent} from '../../Renderer/shims/ReactNativeTypes';
 type ComponentRef = React.ElementRef<HostComponent<mixed>>;
@@ -93,12 +94,7 @@ function focusTextInput(textField: ?ComponentRef) {
     if (Platform.OS === 'ios') {
       UIManager.focus(textFieldID);
     } else if (Platform.OS === 'android') {
-      UIManager.dispatchViewManagerCommand(
-        textFieldID,
-        UIManager.getViewManagerConfig('AndroidTextInput').Commands
-          .focusTextInput,
-        null,
-      );
+      AndroidTextInputCommands.focus(textField);
     }
   }
 }
@@ -125,12 +121,7 @@ function blurTextInput(textField: ?ComponentRef) {
     if (Platform.OS === 'ios') {
       UIManager.blur(textFieldID);
     } else if (Platform.OS === 'android') {
-      UIManager.dispatchViewManagerCommand(
-        textFieldID,
-        UIManager.getViewManagerConfig('AndroidTextInput').Commands
-          .blurTextInput,
-        null,
-      );
+      AndroidTextInputCommands.blur(textField);
     }
   }
 }
