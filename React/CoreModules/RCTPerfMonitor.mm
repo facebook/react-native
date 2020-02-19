@@ -215,6 +215,7 @@ RCT_EXPORT_MODULE()
     _memory.font = [UIFont systemFontOfSize:12];
     _memory.numberOfLines = 3;
     _memory.textAlignment = NSTextAlignmentCenter;
+    _memory.textColor = UIColor.blackColor;
   }
 
   return _memory;
@@ -227,6 +228,7 @@ RCT_EXPORT_MODULE()
     _heap.font = [UIFont systemFontOfSize:12];
     _heap.numberOfLines = 3;
     _heap.textAlignment = NSTextAlignmentCenter;
+    _heap.textColor = UIColor.blackColor;
   }
 
   return _heap;
@@ -239,6 +241,7 @@ RCT_EXPORT_MODULE()
     _views.font = [UIFont systemFontOfSize:12];
     _views.numberOfLines = 3;
     _views.textAlignment = NSTextAlignmentCenter;
+    _views.textColor = UIColor.blackColor;
   }
 
   return _views;
@@ -269,6 +272,7 @@ RCT_EXPORT_MODULE()
     _uiGraphLabel.font = [UIFont systemFontOfSize:11];
     _uiGraphLabel.textAlignment = NSTextAlignmentCenter;
     _uiGraphLabel.text = @"UI";
+    _uiGraphLabel.textColor = UIColor.blackColor;
   }
 
   return _uiGraphLabel;
@@ -281,6 +285,7 @@ RCT_EXPORT_MODULE()
     _jsGraphLabel.font = [UIFont systemFontOfSize:11];
     _jsGraphLabel.textAlignment = NSTextAlignmentCenter;
     _jsGraphLabel.text = @"JS";
+    _jsGraphLabel.textColor = UIColor.blackColor;
   }
 
   return _jsGraphLabel;

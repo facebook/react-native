@@ -79,6 +79,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
     _label = [[UILabel alloc] initWithFrame:self.bounds];
     _label.font = [UIFont boldSystemFontOfSize:13];
     _label.textAlignment = NSTextAlignmentCenter;
+    _label.textColor = UIColor.blackColor;
   }
 
   return _label;
