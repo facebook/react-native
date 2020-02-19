@@ -69,6 +69,14 @@ export type Props = $ReadOnly<{|
   transparent?: ?boolean,
 
   /**
+   * The `backgroundColor` prop controls the background color of the modal if
+   * the transparent property is set.
+   *
+   * See https://facebook.github.io/react-native/docs/modal.html#backgroundColor
+   */
+  backgroundColor?: ?string,
+
+  /**
    * The `statusBarTranslucent` prop determines whether your modal should go under
    * the system statusbar.
    *
@@ -203,7 +211,7 @@ class Modal extends React.Component<Props> {
     }
 
     const containerStyles = {
-      backgroundColor: this.props.transparent ? 'transparent' : 'white',
+      backgroundColor: this.props.transparent ? 'transparent' : this.props.backgroundColor,
     };
 
     let animationType = this.props.animationType || 'none';
@@ -229,6 +237,7 @@ class Modal extends React.Component<Props> {
         animationType={animationType}
         presentationStyle={presentationStyle}
         transparent={this.props.transparent}
+        backgroundColor={this.props.backgroundColor}
         hardwareAccelerated={this.props.hardwareAccelerated}
         onRequestClose={this.props.onRequestClose}
         onShow={this.props.onShow}
