@@ -87,6 +87,7 @@ import typeof useWindowDimensions from './Libraries/Utilities/useWindowDimension
 import typeof UTFSequence from './Libraries/UTFSequence';
 import typeof Vibration from './Libraries/Vibration/Vibration';
 import typeof YellowBox from './Libraries/YellowBox/YellowBox';
+import typeof LogBox from './Libraries/LogBox/LogBox';
 import typeof RCTDeviceEventEmitter from './Libraries/EventEmitter/RCTDeviceEventEmitter';
 import typeof RCTNativeAppEventEmitter from './Libraries/EventEmitter/RCTNativeAppEventEmitter';
 import typeof NativeModules from './Libraries/BatchedBridge/NativeModules';
@@ -355,6 +356,9 @@ module.exports = {
   },
   get Linking(): Linking {
     return require('./Libraries/Linking/Linking');
+  },
+  get LogBox(): LogBox {
+    return require('./Libraries/LogBox/LogBox');
   },
   get NativeDialogManagerAndroid(): NativeDialogManagerAndroid {
     return require('./Libraries/NativeModules/specs/NativeDialogManagerAndroid')

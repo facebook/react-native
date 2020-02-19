@@ -68,9 +68,6 @@ public class ReactEditText extends AppCompatEditText {
   // *TextChanged events should be triggered. This is less expensive than removing the text
   // listeners and adding them back again after the text change is completed.
   protected boolean mIsSettingTextFromJS;
-  // This component is controlled, so we want it to get focused only when JS ask it to do so.
-  // Whenever android requests focus, except for accessibility click, it will be ignored.
-  private boolean mShouldAllowFocus;
   private int mDefaultGravityHorizontal;
   private int mDefaultGravityVertical;
 
@@ -127,7 +124,6 @@ public class ReactEditText extends AppCompatEditText {
     mNativeEventCount = 0;
     mMostRecentEventCount = 0;
     mIsSettingTextFromJS = false;
-    mShouldAllowFocus = false;
     mBlurOnSubmit = null;
     mDisableFullscreen = false;
     mListeners = null;
@@ -152,10 +148,7 @@ public class ReactEditText extends AppCompatEditText {
           @Override
           public boolean performAccessibilityAction(View host, int action, Bundle args) {
             if (action == AccessibilityNodeInfo.ACTION_CLICK) {
-              mShouldAllowFocus = true;
-              requestFocus();
-              mShouldAllowFocus = false;
-              return true;
+              return requestFocusInternal();
             }
             return super.performAccessibilityAction(host, action, args);
           }
@@ -248,18 +241,18 @@ public class ReactEditText extends AppCompatEditText {
 
   @Override
   public boolean requestFocus(int direction, Rect previouslyFocusedRect) {
-    // Always return true if we are already focused. This is used by android in certain places,
-    // such as text selection.
-    if (isFocused()) {
-      return true;
-    }
+    // This is a no-op so that when the OS calls requestFocus(), nothing will happen. ReactEditText
+    // is a controlled component, which means its focus is controlled by JS, with two exceptions:
+    // autofocus when it's attached to the window, and responding to accessibility events. In both
+    // of these cases, we call requestFocusInternal() directly.
+    return isFocused();
+  }
 
-    if (!mShouldAllowFocus) {
-      return false;
-    }
-
+  private boolean requestFocusInternal() {
     setFocusableInTouchMode(true);
-    boolean focused = super.requestFocus(direction, previouslyFocusedRect);
+    // We must explicitly call this method on the super class; if we call requestFocus() without
+    // any arguments, it will call into the overridden requestFocus(int, Rect) above, which no-ops.
+    boolean focused = super.requestFocus(View.FOCUS_DOWN, null);
     if (getShowSoftInputOnFocus()) {
       showSoftKeyboard();
     }
@@ -461,9 +454,7 @@ public class ReactEditText extends AppCompatEditText {
 
   // VisibleForTesting from {@link TextInputEventsTestCase}.
   public void requestFocusFromJS() {
-    mShouldAllowFocus = true;
-    requestFocus();
-    mShouldAllowFocus = false;
+    requestFocusInternal();
   }
 
   /* package */ void clearFocusFromJS() {
@@ -754,9 +745,7 @@ public class ReactEditText extends AppCompatEditText {
     }
 
     if (mAutoFocus && !mDidAttachToWindow) {
-      mShouldAllowFocus = true;
-      requestFocus();
-      mShouldAllowFocus = false;
+      requestFocusInternal();
     }
 
     mDidAttachToWindow = true;

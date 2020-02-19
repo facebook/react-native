@@ -1,0 +1,11 @@
+blank_issues_enabled: false
+contact_links:
+    - name: 📃 Documentation Issue
+      url: https://github.com/facebook/react-native-website/issues
+      about: Please report documentation issues in the React Native website repository.
+    - name: 🤔 Questions and Help
+      url: https://facebook.github.io/react-native/help
+      about: Looking for help with your app? Please refer to the React Native community's support resources.
+    - name: 🚀 Discussions and Proposals
+      url: https://github.com/react-native-community/discussions-and-proposals
+      about: Discuss the future of React Native in the React Native community's discussions and proposals repository.

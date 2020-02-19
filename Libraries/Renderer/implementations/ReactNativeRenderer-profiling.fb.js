@@ -6321,7 +6321,7 @@ function handleError(root$jscomp$0, thrownValue) {
         return (
           (workInProgressRootExitStatus = RootFatalErrored),
           (workInProgressRootFatalError = thrownValue),
-          null
+          (workInProgress = null)
         );
       workInProgress.mode & 8 &&
         stopProfilerTimerIfRunningAndRecordDelta(workInProgress, !0);
