@@ -16,9 +16,9 @@
 
 const React = require('react');
 const Platform = require('../../Utilities/Platform');
-const UIManager = require('../../ReactNative/UIManager');
 const {findNodeHandle} = require('../../Renderer/shims/ReactNative');
 import {Commands as AndroidTextInputCommands} from '../../Components/TextInput/AndroidTextInputNativeComponent';
+import {Commands as iOSTextInputCommands} from '../../Components/TextInput/RCTSingelineTextInputNativeComponent';
 
 import type {HostComponent} from '../../Renderer/shims/ReactNativeTypes';
 type ComponentRef = React.ElementRef<HostComponent<mixed>>;
@@ -89,10 +89,14 @@ function focusTextInput(textField: ?ComponentRef) {
   }
 
   if (currentlyFocusedInputRef !== textField && textField != null) {
-    const textFieldID = findNodeHandle(textField);
     focusInput(textField);
     if (Platform.OS === 'ios') {
-      UIManager.focus(textFieldID);
+      // This isn't necessarily a single line text input
+      // But commands don't actually care as long as the thing being passed in
+      // actually has a command with that name. So this should work with single
+      // and multiline text inputs. Ideally we'll merge them into one component
+      // in the future.
+      iOSTextInputCommands.focus(textField);
     } else if (Platform.OS === 'android') {
       AndroidTextInputCommands.focus(textField);
     }
@@ -116,10 +120,14 @@ function blurTextInput(textField: ?ComponentRef) {
   }
 
   if (currentlyFocusedInputRef === textField && textField != null) {
-    const textFieldID = findNodeHandle(textField);
     blurInput(textField);
     if (Platform.OS === 'ios') {
-      UIManager.blur(textFieldID);
+      // This isn't necessarily a single line text input
+      // But commands don't actually care as long as the thing being passed in
+      // actually has a command with that name. So this should work with single
+      // and multiline text inputs. Ideally we'll merge them into one component
+      // in the future.
+      iOSTextInputCommands.blur(textField);
     } else if (Platform.OS === 'android') {
       AndroidTextInputCommands.blur(textField);
     }
