@@ -888,12 +888,13 @@ function InternalTextInput(props: Props): React.Node {
   useFocusOnMount(props.autoFocus, inputRef);
 
   useEffect(() => {
-    const tag = ReactNative.findNodeHandle(inputRef.current);
-    if (tag != null) {
-      TextInputState.registerInput(tag);
+    const inputRefValue = inputRef.current;
+
+    if (inputRefValue != null) {
+      TextInputState.registerInput(inputRefValue);
 
       return () => {
-        TextInputState.unregisterInput(tag);
+        TextInputState.unregisterInput(inputRefValue);
       };
     }
   }, [inputRef]);
@@ -915,10 +916,7 @@ function InternalTextInput(props: Props): React.Node {
 
   // TODO: Fix this returning true on null === null, when no input is focused
   function isFocused(): boolean {
-    return (
-      TextInputState.currentlyFocusedField() ===
-      ReactNative.findNodeHandle(inputRef.current)
-    );
+    return TextInputState.currentlyFocusedInput() === inputRef.current;
   }
 
   function getNativeRef(): ?React.ElementRef<HostComponent<mixed>> {
@@ -1009,14 +1007,14 @@ function InternalTextInput(props: Props): React.Node {
   };
 
   const _onFocus = (event: FocusEvent) => {
-    TextInputState.focusField(ReactNative.findNodeHandle(inputRef.current));
+    TextInputState.focusInput(inputRef.current);
     if (props.onFocus) {
       props.onFocus(event);
     }
   };
 
   const _onBlur = (event: BlurEvent) => {
-    TextInputState.blurField(ReactNative.findNodeHandle(inputRef.current));
+    TextInputState.blurInput(inputRef.current);
     if (props.onBlur) {
       props.onBlur(event);
     }
@@ -1143,6 +1141,8 @@ ExportedForwardRef.propTypes = DeprecatedTextInputPropTypes;
 
 // $FlowFixMe
 ExportedForwardRef.State = {
+  currentlyFocusedInput: TextInputState.currentlyFocusedInput,
+
   currentlyFocusedField: TextInputState.currentlyFocusedField,
   focusTextInput: TextInputState.focusTextInput,
   blurTextInput: TextInputState.blurTextInput,
@@ -1150,6 +1150,7 @@ ExportedForwardRef.State = {
 
 type TextInputComponentStatics = $ReadOnly<{|
   State: $ReadOnly<{|
+    currentlyFocusedInput: typeof TextInputState.currentlyFocusedInput,
     currentlyFocusedField: typeof TextInputState.currentlyFocusedField,
     focusTextInput: typeof TextInputState.focusTextInput,
     blurTextInput: typeof TextInputState.blurTextInput,
