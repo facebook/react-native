@@ -12,6 +12,7 @@
 
 const EmitterSubscription = require('../vendor/emitter/EmitterSubscription');
 const RCTDeviceEventEmitter = require('../EventEmitter/RCTDeviceEventEmitter');
+const PropTypes = require('prop-types');
 const React = require('react');
 const RootTagContext = require('./RootTagContext');
 const StyleSheet = require('../StyleSheet/StyleSheet');
@@ -32,8 +33,9 @@ type State = {|
   hasError: boolean,
 |};
 
-type ContextType = {rootTag: number, ...};
-const Context = React.createContext<ContextType>({rootTag: 0});
+type Context = {rootTag: number, ...};
+
+const AppContainerContext = React.createContext<Context>({rootTag: 0});
 
 class AppContainer extends React.Component<Props, State> {
   state: State = {
@@ -46,7 +48,23 @@ class AppContainer extends React.Component<Props, State> {
 
   static getDerivedStateFromError: any = undefined;
 
-  static Context: React$Context<ContextType> = Context;
+  static AppContainerContext: React$Context<Context> = AppContainerContext;
+
+  static childContextTypes:
+     | any		
+     | {|rootTag: React$PropType$Primitive<number>|} = {		
+     rootTag: PropTypes.number,		
+   };		
+
+    getChildContext(): Context {
+     console.warn(
+        'AppConntainer has been migrated to the new Context API. ' +
+        'It is recommended to use AppContainerContext.Consumer to consume the context.'
+      );
+     return {		
+       rootTag: this.props.rootTag,		
+     };		
+   }
 
   componentDidMount(): void {
     if (__DEV__) {
@@ -101,9 +119,9 @@ class AppContainer extends React.Component<Props, State> {
         ref={ref => {
           this._mainRef = ref;
         }}>
-        <Context.Provider value={{rootTag: this.props.rootTag}}>
+        <AppContainerContext.Provider value={{rootTag: this.props.rootTag}}>
           {this.props.children}
-        </Context.Provider>
+        </AppContainerContext.Provider>
       </View>
     );
 
