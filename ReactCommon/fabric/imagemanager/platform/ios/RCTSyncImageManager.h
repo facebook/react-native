@@ -16,7 +16,7 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  * iOS-specific ImageManager.
  */
-@interface RCTImageManager : NSObject <RCTImageManagerProtocol>
+@interface RCTSyncImageManager : NSObject <RCTImageManagerProtocol>
 
 - (instancetype)initWithImageLoader:(id<RCTImageLoaderWithAttributionProtocol>)imageLoader;
 

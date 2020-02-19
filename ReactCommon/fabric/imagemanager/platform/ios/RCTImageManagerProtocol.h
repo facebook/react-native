@@ -5,24 +5,12 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#import <UIKit/UIKit.h>
+#import <Foundation/Foundation.h>
+#import <react/core/ReactPrimitives.h>
+#import <react/imagemanager/ImageRequest.h>
 
-#import <RCTImageManagerProtocol.h>
-
-NS_ASSUME_NONNULL_BEGIN
-
-@protocol RCTImageLoaderWithAttributionProtocol;
-
-/**
- * iOS-specific ImageManager.
- */
-@interface RCTImageManager : NSObject <RCTImageManagerProtocol>
-
-- (instancetype)initWithImageLoader:(id<RCTImageLoaderWithAttributionProtocol>)imageLoader;
+@protocol RCTImageManagerProtocol <NSObject>
 
 - (facebook::react::ImageRequest)requestImage:(facebook::react::ImageSource)imageSource
                                     surfaceId:(facebook::react::SurfaceId)surfaceId;
-
 @end
-
-NS_ASSUME_NONNULL_END
