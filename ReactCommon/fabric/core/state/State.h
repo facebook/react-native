@@ -25,6 +25,8 @@ class State {
  public:
   using Shared = std::shared_ptr<const State>;
 
+  static size_t constexpr initialRevisionValue = 1;
+
  protected:
   /*
    * Constructors are protected to make calling them directly with
