@@ -10,8 +10,8 @@
 namespace facebook {
 namespace react {
 
-using ChangedShadowNodePairs = std::vector<
-    std::pair<ShadowNode::Shared const &, ShadowNode::Unshared const &>>;
+using ChangedShadowNodePairs =
+    std::vector<std::pair<ShadowNode::Shared, ShadowNode::Unshared>>;
 
 /**
  * Clones any children in the subtree that need to be cloned, and adds those to
