@@ -461,6 +461,7 @@ jobs:
     environment:
       - PUBLIC_GITHUB_TOKEN_A: "78a72af35445ca3f8180"
       - PUBLIC_GITHUB_TOKEN_B: "b1a98e0bbd56ff1ccba1"
+      - GITHUB_PR_NUMBER: $CIRCLE_PR_NUMBER
     steps:
       - restore_cache_checkout:
           checkout_type: android
