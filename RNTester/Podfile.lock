@@ -338,11 +338,11 @@ DEPENDENCIES:
   - DoubleConversion (from `../third-party-podspecs/DoubleConversion.podspec`)
   - FBLazyVector (from `../Libraries/FBLazyVector`)
   - FBReactNativeSpec (from `../Libraries/FBReactNativeSpec`)
-  - FlipperKit (~> 0.30.1)
-  - FlipperKit/FlipperKitLayoutPlugin (~> 0.30.1)
-  - FlipperKit/FlipperKitReactPlugin (~> 0.30.1)
-  - FlipperKit/FlipperKitUserDefaultsPlugin (~> 0.30.1)
-  - FlipperKit/SKIOSNetworkPlugin (~> 0.30.1)
+  - FlipperKit (~> 0.30.2)
+  - FlipperKit/FlipperKitLayoutPlugin (~> 0.30.2)
+  - FlipperKit/FlipperKitReactPlugin (~> 0.30.2)
+  - FlipperKit/FlipperKitUserDefaultsPlugin (~> 0.30.2)
+  - FlipperKit/SKIOSNetworkPlugin (~> 0.30.2)
   - Folly (from `../third-party-podspecs/Folly.podspec`)
   - glog (from `../third-party-podspecs/glog.podspec`)
   - RCTRequired (from `../Libraries/RCTRequired`)
@@ -488,6 +488,6 @@ SPEC CHECKSUMS:
   Yoga: f7fa200d8c49f97b54c9421079e781fb900b5cae
   YogaKit: f782866e155069a2cca2517aafea43200b01fd5a
 
-PODFILE CHECKSUM: 317625c4a1217b69f61b4979b58e9ef2f376f583
+PODFILE CHECKSUM: 5f0be4be03d6934478b9dd621bfbab4383b8c85d
 
 COCOAPODS: 1.8.4
