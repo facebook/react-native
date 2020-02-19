@@ -22,6 +22,9 @@ import android.view.accessibility.AccessibilityEvent;
 import android.widget.FrameLayout;
 import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
+import androidx.fragment.app.FragmentActivity;
+import androidx.fragment.app.FragmentManager;
+
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.R;
 import com.facebook.react.bridge.GuardedRunnable;
@@ -304,7 +307,9 @@ public class ReactModalHostView extends ViewGroup implements LifecycleEventListe
       mDialog.getWindow().addFlags(WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED);
     }
     if (currentActivity != null && !currentActivity.isFinishing()) {
-      mDialog.show();
+      ModalHostFragment hostFragment = new ModalHostFragment(mDialog);
+      FragmentManager fragmentManager = ((FragmentActivity) currentActivity).getSupportFragmentManager();
+      hostFragment.show(fragmentManager,  "modal");
       if (context instanceof Activity) {
         mDialog
             .getWindow()
