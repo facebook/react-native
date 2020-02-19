@@ -70,52 +70,54 @@
             });
         </script></nav></div><div class="container mainContainer docsContainer"><div class="wrapper"><div class="post"><header class="postHeader"><a class="edit-page-link button" href="https://github.com/facebook/react-native-website/blob/master/docs/using-a-scrollview.md" target="_blank" rel="noreferrer noopener">Edit</a><h1 id="__docusaurus" class="postHeaderTitle">Using a ScrollView</h1></header><article><div><span><p>The <a href="/react-native/docs/next/scrollview">ScrollView</a> is a generic scrolling container that can contain multiple components and views. The scrollable items need not be homogeneous, and you can scroll both vertically and horizontally (by setting the <code>horizontal</code> property).</p>
 <p>This example creates a vertical <code>ScrollView</code> with both images and text mixed together.</p>
-<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React, { Component } <span class="hljs-keyword">from</span> <span class="hljs-string">'react'</span>;
-<span class="hljs-keyword">import</span> { ScrollView, Image, Text } <span class="hljs-keyword">from</span> <span class="hljs-string">'react-native'</span>;
+<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React <span class="hljs-keyword">from</span> <span class="hljs-string">'react'</span>;
+<span class="hljs-keyword">import</span> { Image, ScrollView, Text } <span class="hljs-keyword">from</span> <span class="hljs-string">'react-native'</span>;
 
-<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">IScrolledDownAndWhatHappenedNextShockedMe</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">Component</span> </span>{
-  render() {
-      <span class="hljs-keyword">return</span> (
-        &lt;ScrollView&gt;
-          &lt;Text style={{fontSize:96}}&gt;Scroll me plz&lt;/Text&gt;
-          &lt;Image source={{uri: "https://facebook.github.io/react-native/img/tiny_logo.png", width: 64, height: 64}} /&gt;
-          &lt;Image source={{uri: "https://facebook.github.io/react-native/img/tiny_logo.png", width: 64, height: 64}} /&gt;
-          &lt;Image source={{uri: "https://facebook.github.io/react-native/img/tiny_logo.png", width: 64, height: 64}} /&gt;
-          &lt;Image source={{uri: "https://facebook.github.io/react-native/img/tiny_logo.png", width: 64, height: 64}} /&gt;
-          &lt;Image source={{uri: "https://facebook.github.io/react-native/img/tiny_logo.png", width: 64, height: 64}} /&gt;
-          &lt;Text style={{fontSize:96}}&gt;If you like&lt;/Text&gt;
-          &lt;Image source={{uri: "https://facebook.github.io/react-native/img/tiny_logo.png", width: 64, height: 64}} /&gt;
-          &lt;Image source={{uri: "https://facebook.github.io/react-native/img/tiny_logo.png", width: 64, height: 64}} /&gt;
-          &lt;Image source={{uri: "https://facebook.github.io/react-native/img/tiny_logo.png", width: 64, height: 64}} /&gt;
-          &lt;Image source={{uri: "https://facebook.github.io/react-native/img/tiny_logo.png", width: 64, height: 64}} /&gt;
-          &lt;Image source={{uri: "https://facebook.github.io/react-native/img/tiny_logo.png", width: 64, height: 64}} /&gt;
-          &lt;Text style={{fontSize:96}}&gt;Scrolling down&lt;/Text&gt;
-          &lt;Image source={{uri: "https://facebook.github.io/react-native/img/tiny_logo.png", width: 64, height: 64}} /&gt;
-          &lt;Image source={{uri: "https://facebook.github.io/react-native/img/tiny_logo.png", width: 64, height: 64}} /&gt;
-          &lt;Image source={{uri: "https://facebook.github.io/react-native/img/tiny_logo.png", width: 64, height: 64}} /&gt;
-          &lt;Image source={{uri: "https://facebook.github.io/react-native/img/tiny_logo.png", width: 64, height: 64}} /&gt;
-          &lt;Image source={{uri: "https://facebook.github.io/react-native/img/tiny_logo.png", width: 64, height: 64}} /&gt;
-          &lt;Text style={{fontSize:96}}&gt;What's the best&lt;/Text&gt;
-          &lt;Image source={{uri: "https://facebook.github.io/react-native/img/tiny_logo.png", width: 64, height: 64}} /&gt;
-          &lt;Image source={{uri: "https://facebook.github.io/react-native/img/tiny_logo.png", width: 64, height: 64}} /&gt;
-          &lt;Image source={{uri: "https://facebook.github.io/react-native/img/tiny_logo.png", width: 64, height: 64}} /&gt;
-          &lt;Image source={{uri: "https://facebook.github.io/react-native/img/tiny_logo.png", width: 64, height: 64}} /&gt;
-          &lt;Image source={{uri: "https://facebook.github.io/react-native/img/tiny_logo.png", width: 64, height: 64}} /&gt;
-          &lt;Text style={{fontSize:96}}&gt;Framework around?&lt;/Text&gt;
-          &lt;Image source={{uri: "https://facebook.github.io/react-native/img/tiny_logo.png", width: 64, height: 64}} /&gt;
-          &lt;Image source={{uri: "https://facebook.github.io/react-native/img/tiny_logo.png", width: 64, height: 64}} /&gt;
-          &lt;Image source={{uri: "https://facebook.github.io/react-native/img/tiny_logo.png", width: 64, height: 64}} /&gt;
-          &lt;Image source={{uri: "https://facebook.github.io/react-native/img/tiny_logo.png", width: 64, height: 64}} /&gt;
-          &lt;Image source={{uri: "https://facebook.github.io/react-native/img/tiny_logo.png", width: 64, height: 64}} /&gt;
-          &lt;Text style={{fontSize:80}}&gt;React Native&lt;/Text&gt;
-        &lt;/ScrollView&gt;
-    );
-  }
-}
+<span class="hljs-keyword">const</span> logo = {
+  <span class="hljs-attr">uri</span>: <span class="hljs-string">'https://facebook.github.io/react-native/img/tiny_logo.png'</span>, 
+  <span class="hljs-attr">width</span>: <span class="hljs-number">64</span>, 
+  <span class="hljs-attr">height</span>: <span class="hljs-number">64</span>
+};
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> App = <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> (
+  &lt;ScrollView&gt;
+    &lt;Text style={{ fontSize: 96 }}&gt;Scroll me plz&lt;/Text&gt;
+    &lt;Image source={logo} /&gt;
+    &lt;Image source={logo} /&gt;
+    &lt;Image source={logo} /&gt;
+    &lt;Image source={logo} /&gt;
+    &lt;Image source={logo} /&gt;
+    &lt;Text style={{ fontSize: 96 }}&gt;If you like&lt;/Text&gt;
+    &lt;Image source={logo} /&gt;
+    &lt;Image source={logo} /&gt;
+    &lt;Image source={logo} /&gt;
+    &lt;Image source={logo} /&gt;
+    &lt;Image source={logo} /&gt;
+    &lt;Text style={{ fontSize: 96 }}&gt;Scrolling down&lt;/Text&gt;
+    &lt;Image source={logo} /&gt;
+    &lt;Image source={logo} /&gt;
+    &lt;Image source={logo} /&gt;
+    &lt;Image source={logo} /&gt;
+    &lt;Image source={logo} /&gt;
+    &lt;Text style={{ fontSize: 96 }}&gt;What's the best&lt;/Text&gt;
+    &lt;Image source={logo} /&gt;
+    &lt;Image source={logo} /&gt;
+    &lt;Image source={logo} /&gt;
+    &lt;Image source={logo} /&gt;
+    &lt;Image source={logo} /&gt;
+    &lt;Text style={{ fontSize: 96 }}&gt;Framework around?&lt;/Text&gt;
+    &lt;Image source={logo} /&gt;
+    &lt;Image source={logo} /&gt;
+    &lt;Image source={logo} /&gt;
+    &lt;Image source={logo} /&gt;
+    &lt;Image source={logo} /&gt;
+    &lt;Text style={{ fontSize: 80 }}&gt;React Native&lt;/Text&gt;
+  &lt;/ScrollView&gt;
+);
 </code></pre></div><div class="desktop-friendly-snack" style="margin-top: 15px; margin-bottom: 15px"><div
         data-snack-name="Using ScrollView"
         data-snack-description="Example usage"
-        data-snack-code="import%20React%2C%20%7B%20Component%20%7D%20from%20'react'%3B%0Aimport%20%7B%20ScrollView%2C%20Image%2C%20Text%20%7D%20from%20'react-native'%3B%0A%0Aexport%20default%20class%20IScrolledDownAndWhatHappenedNextShockedMe%20extends%20Component%20%7B%0A%20%20render()%20%7B%0A%20%20%20%20%20%20return%20(%0A%20%20%20%20%20%20%20%20%3CScrollView%3E%0A%20%20%20%20%20%20%20%20%20%20%3CText%20style%3D%7B%7BfontSize%3A96%7D%7D%3EScroll%20me%20plz%3C%2FText%3E%0A%20%20%20%20%20%20%20%20%20%20%3CImage%20source%3D%7B%7Buri%3A%20%22https%3A%2F%2Ffacebook.github.io%2Freact-native%2Fimg%2Ftiny_logo.png%22%2C%20width%3A%2064%2C%20height%3A%2064%7D%7D%20%2F%3E%0A%20%20%20%20%20%20%20%20%20%20%3CImage%20source%3D%7B%7Buri%3A%20%22https%3A%2F%2Ffacebook.github.io%2Freact-native%2Fimg%2Ftiny_logo.png%22%2C%20width%3A%2064%2C%20height%3A%2064%7D%7D%20%2F%3E%0A%20%20%20%20%20%20%20%20%20%20%3CImage%20source%3D%7B%7Buri%3A%20%22https%3A%2F%2Ffacebook.github.io%2Freact-native%2Fimg%2Ftiny_logo.png%22%2C%20width%3A%2064%2C%20height%3A%2064%7D%7D%20%2F%3E%0A%20%20%20%20%20%20%20%20%20%20%3CImage%20source%3D%7B%7Buri%3A%20%22https%3A%2F%2Ffacebook.github.io%2Freact-native%2Fimg%2Ftiny_logo.png%22%2C%20width%3A%2064%2C%20height%3A%2064%7D%7D%20%2F%3E%0A%20%20%20%20%20%20%20%20%20%20%3CImage%20source%3D%7B%7Buri%3A%20%22https%3A%2F%2Ffacebook.github.io%2Freact-native%2Fimg%2Ftiny_logo.png%22%2C%20width%3A%2064%2C%20height%3A%2064%7D%7D%20%2F%3E%0A%20%20%20%20%20%20%20%20%20%20%3CText%20style%3D%7B%7BfontSize%3A96%7D%7D%3EIf%20you%20like%3C%2FText%3E%0A%20%20%20%20%20%20%20%20%20%20%3CImage%20source%3D%7B%7Buri%3A%20%22https%3A%2F%2Ffacebook.github.io%2Freact-native%2Fimg%2Ftiny_logo.png%22%2C%20width%3A%2064%2C%20height%3A%2064%7D%7D%20%2F%3E%0A%20%20%20%20%20%20%20%20%20%20%3CImage%20source%3D%7B%7Buri%3A%20%22https%3A%2F%2Ffacebook.github.io%2Freact-native%2Fimg%2Ftiny_logo.png%22%2C%20width%3A%2064%2C%20height%3A%2064%7D%7D%20%2F%3E%0A%20%20%20%20%20%20%20%20%20%20%3CImage%20source%3D%7B%7Buri%3A%20%22https%3A%2F%2Ffacebook.github.io%2Freact-native%2Fimg%2Ftiny_logo.png%22%2C%20width%3A%2064%2C%20height%3A%2064%7D%7D%20%2F%3E%0A%20%20%20%20%20%20%20%20%20%20%3CImage%20source%3D%7B%7Buri%3A%20%22https%3A%2F%2Ffacebook.github.io%2Freact-native%2Fimg%2Ftiny_logo.png%22%2C%20width%3A%2064%2C%20height%3A%2064%7D%7D%20%2F%3E%0A%20%20%20%20%20%20%20%20%20%20%3CImage%20source%3D%7B%7Buri%3A%20%22https%3A%2F%2Ffacebook.github.io%2Freact-native%2Fimg%2Ftiny_logo.png%22%2C%20width%3A%2064%2C%20height%3A%2064%7D%7D%20%2F%3E%0A%20%20%20%20%20%20%20%20%20%20%3CText%20style%3D%7B%7BfontSize%3A96%7D%7D%3EScrolling%20down%3C%2FText%3E%0A%20%20%20%20%20%20%20%20%20%20%3CImage%20source%3D%7B%7Buri%3A%20%22https%3A%2F%2Ffacebook.github.io%2Freact-native%2Fimg%2Ftiny_logo.png%22%2C%20width%3A%2064%2C%20height%3A%2064%7D%7D%20%2F%3E%0A%20%20%20%20%20%20%20%20%20%20%3CImage%20source%3D%7B%7Buri%3A%20%22https%3A%2F%2Ffacebook.github.io%2Freact-native%2Fimg%2Ftiny_logo.png%22%2C%20width%3A%2064%2C%20height%3A%2064%7D%7D%20%2F%3E%0A%20%20%20%20%20%20%20%20%20%20%3CImage%20source%3D%7B%7Buri%3A%20%22https%3A%2F%2Ffacebook.github.io%2Freact-native%2Fimg%2Ftiny_logo.png%22%2C%20width%3A%2064%2C%20height%3A%2064%7D%7D%20%2F%3E%0A%20%20%20%20%20%20%20%20%20%20%3CImage%20source%3D%7B%7Buri%3A%20%22https%3A%2F%2Ffacebook.github.io%2Freact-native%2Fimg%2Ftiny_logo.png%22%2C%20width%3A%2064%2C%20height%3A%2064%7D%7D%20%2F%3E%0A%20%20%20%20%20%20%20%20%20%20%3CImage%20source%3D%7B%7Buri%3A%20%22https%3A%2F%2Ffacebook.github.io%2Freact-native%2Fimg%2Ftiny_logo.png%22%2C%20width%3A%2064%2C%20height%3A%2064%7D%7D%20%2F%3E%0A%20%20%20%20%20%20%20%20%20%20%3CText%20style%3D%7B%7BfontSize%3A96%7D%7D%3EWhat's%20the%20best%3C%2FText%3E%0A%20%20%20%20%20%20%20%20%20%20%3CImage%20source%3D%7B%7Buri%3A%20%22https%3A%2F%2Ffacebook.github.io%2Freact-native%2Fimg%2Ftiny_logo.png%22%2C%20width%3A%2064%2C%20height%3A%2064%7D%7D%20%2F%3E%0A%20%20%20%20%20%20%20%20%20%20%3CImage%20source%3D%7B%7Buri%3A%20%22https%3A%2F%2Ffacebook.github.io%2Freact-native%2Fimg%2Ftiny_logo.png%22%2C%20width%3A%2064%2C%20height%3A%2064%7D%7D%20%2F%3E%0A%20%20%20%20%20%20%20%20%20%20%3CImage%20source%3D%7B%7Buri%3A%20%22https%3A%2F%2Ffacebook.github.io%2Freact-native%2Fimg%2Ftiny_logo.png%22%2C%20width%3A%2064%2C%20height%3A%2064%7D%7D%20%2F%3E%0A%20%20%20%20%20%20%20%20%20%20%3CImage%20source%3D%7B%7Buri%3A%20%22https%3A%2F%2Ffacebook.github.io%2Freact-native%2Fimg%2Ftiny_logo.png%22%2C%20width%3A%2064%2C%20height%3A%2064%7D%7D%20%2F%3E%0A%20%20%20%20%20%20%20%20%20%20%3CImage%20source%3D%7B%7Buri%3A%20%22https%3A%2F%2Ffacebook.github.io%2Freact-native%2Fimg%2Ftiny_logo.png%22%2C%20width%3A%2064%2C%20height%3A%2064%7D%7D%20%2F%3E%0A%20%20%20%20%20%20%20%20%20%20%3CText%20style%3D%7B%7BfontSize%3A96%7D%7D%3EFramework%20around%3F%3C%2FText%3E%0A%20%20%20%20%20%20%20%20%20%20%3CImage%20source%3D%7B%7Buri%3A%20%22https%3A%2F%2Ffacebook.github.io%2Freact-native%2Fimg%2Ftiny_logo.png%22%2C%20width%3A%2064%2C%20height%3A%2064%7D%7D%20%2F%3E%0A%20%20%20%20%20%20%20%20%20%20%3CImage%20source%3D%7B%7Buri%3A%20%22https%3A%2F%2Ffacebook.github.io%2Freact-native%2Fimg%2Ftiny_logo.png%22%2C%20width%3A%2064%2C%20height%3A%2064%7D%7D%20%2F%3E%0A%20%20%20%20%20%20%20%20%20%20%3CImage%20source%3D%7B%7Buri%3A%20%22https%3A%2F%2Ffacebook.github.io%2Freact-native%2Fimg%2Ftiny_logo.png%22%2C%20width%3A%2064%2C%20height%3A%2064%7D%7D%20%2F%3E%0A%20%20%20%20%20%20%20%20%20%20%3CImage%20source%3D%7B%7Buri%3A%20%22https%3A%2F%2Ffacebook.github.io%2Freact-native%2Fimg%2Ftiny_logo.png%22%2C%20width%3A%2064%2C%20height%3A%2064%7D%7D%20%2F%3E%0A%20%20%20%20%20%20%20%20%20%20%3CImage%20source%3D%7B%7Buri%3A%20%22https%3A%2F%2Ffacebook.github.io%2Freact-native%2Fimg%2Ftiny_logo.png%22%2C%20width%3A%2064%2C%20height%3A%2064%7D%7D%20%2F%3E%0A%20%20%20%20%20%20%20%20%20%20%3CText%20style%3D%7B%7BfontSize%3A80%7D%7D%3EReact%20Native%3C%2FText%3E%0A%20%20%20%20%20%20%20%20%3C%2FScrollView%3E%0A%20%20%20%20)%3B%0A%20%20%7D%0A%7D%0A"
+        data-snack-code="import%20React%20from%20'react'%3B%0Aimport%20%7B%20Image%2C%20ScrollView%2C%20Text%20%7D%20from%20'react-native'%3B%0A%0Aconst%20logo%20%3D%20%7B%0A%20%20uri%3A%20'https%3A%2F%2Ffacebook.github.io%2Freact-native%2Fimg%2Ftiny_logo.png'%2C%20%0A%20%20width%3A%2064%2C%20%0A%20%20height%3A%2064%0A%7D%3B%0A%0Aexport%20default%20App%20%3D%20()%20%3D%3E%20(%0A%20%20%3CScrollView%3E%0A%20%20%20%20%3CText%20style%3D%7B%7B%20fontSize%3A%2096%20%7D%7D%3EScroll%20me%20plz%3C%2FText%3E%0A%20%20%20%20%3CImage%20source%3D%7Blogo%7D%20%2F%3E%0A%20%20%20%20%3CImage%20source%3D%7Blogo%7D%20%2F%3E%0A%20%20%20%20%3CImage%20source%3D%7Blogo%7D%20%2F%3E%0A%20%20%20%20%3CImage%20source%3D%7Blogo%7D%20%2F%3E%0A%20%20%20%20%3CImage%20source%3D%7Blogo%7D%20%2F%3E%0A%20%20%20%20%3CText%20style%3D%7B%7B%20fontSize%3A%2096%20%7D%7D%3EIf%20you%20like%3C%2FText%3E%0A%20%20%20%20%3CImage%20source%3D%7Blogo%7D%20%2F%3E%0A%20%20%20%20%3CImage%20source%3D%7Blogo%7D%20%2F%3E%0A%20%20%20%20%3CImage%20source%3D%7Blogo%7D%20%2F%3E%0A%20%20%20%20%3CImage%20source%3D%7Blogo%7D%20%2F%3E%0A%20%20%20%20%3CImage%20source%3D%7Blogo%7D%20%2F%3E%0A%20%20%20%20%3CText%20style%3D%7B%7B%20fontSize%3A%2096%20%7D%7D%3EScrolling%20down%3C%2FText%3E%0A%20%20%20%20%3CImage%20source%3D%7Blogo%7D%20%2F%3E%0A%20%20%20%20%3CImage%20source%3D%7Blogo%7D%20%2F%3E%0A%20%20%20%20%3CImage%20source%3D%7Blogo%7D%20%2F%3E%0A%20%20%20%20%3CImage%20source%3D%7Blogo%7D%20%2F%3E%0A%20%20%20%20%3CImage%20source%3D%7Blogo%7D%20%2F%3E%0A%20%20%20%20%3CText%20style%3D%7B%7B%20fontSize%3A%2096%20%7D%7D%3EWhat's%20the%20best%3C%2FText%3E%0A%20%20%20%20%3CImage%20source%3D%7Blogo%7D%20%2F%3E%0A%20%20%20%20%3CImage%20source%3D%7Blogo%7D%20%2F%3E%0A%20%20%20%20%3CImage%20source%3D%7Blogo%7D%20%2F%3E%0A%20%20%20%20%3CImage%20source%3D%7Blogo%7D%20%2F%3E%0A%20%20%20%20%3CImage%20source%3D%7Blogo%7D%20%2F%3E%0A%20%20%20%20%3CText%20style%3D%7B%7B%20fontSize%3A%2096%20%7D%7D%3EFramework%20around%3F%3C%2FText%3E%0A%20%20%20%20%3CImage%20source%3D%7Blogo%7D%20%2F%3E%0A%20%20%20%20%3CImage%20source%3D%7Blogo%7D%20%2F%3E%0A%20%20%20%20%3CImage%20source%3D%7Blogo%7D%20%2F%3E%0A%20%20%20%20%3CImage%20source%3D%7Blogo%7D%20%2F%3E%0A%20%20%20%20%3CImage%20source%3D%7Blogo%7D%20%2F%3E%0A%20%20%20%20%3CText%20style%3D%7B%7B%20fontSize%3A%2080%20%7D%7D%3EReact%20Native%3C%2FText%3E%0A%20%20%3C%2FScrollView%3E%0A)%3B%0A"
         data-snack-platform="web"
         data-snack-supported-platforms=ios,android,web
         data-snack-preview="true"
