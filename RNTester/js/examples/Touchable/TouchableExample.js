@@ -435,7 +435,11 @@ function CustomRippleRadius() {
     return null;
   }
   return (
-    <View style={[styles.row, styles.block, {justifyContent: 'space-around'}]}>
+    <View
+      style={[
+        styles.row,
+        {justifyContent: 'space-around', alignItems: 'center'},
+      ]}>
       <TouchableNativeFeedback
         onPress={() => console.log('custom TNF has been clicked')}
         background={TouchableNativeFeedback.Ripple('orange', true, 30)}>
@@ -445,12 +449,23 @@ function CustomRippleRadius() {
           </Text>
         </View>
       </TouchableNativeFeedback>
+
       <TouchableNativeFeedback
         onPress={() => console.log('custom TNF has been clicked')}
         background={TouchableNativeFeedback.SelectableBackgroundBorderless(50)}>
         <View>
           <Text style={[styles.button, styles.nativeFeedbackButton]}>
             radius 50
+          </Text>
+        </View>
+      </TouchableNativeFeedback>
+
+      <TouchableNativeFeedback
+        onPress={() => console.log('custom TNF has been clicked')}
+        background={TouchableNativeFeedback.SelectableBackground(70)}>
+        <View style={styles.block}>
+          <Text style={[styles.button, styles.nativeFeedbackButton]}>
+            radius 70, with border
           </Text>
         </View>
       </TouchableNativeFeedback>
