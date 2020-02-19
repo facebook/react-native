@@ -6015,7 +6015,7 @@ function handleError(root$jscomp$0, thrownValue) {
         return (
           (workInProgressRootExitStatus = RootFatalErrored),
           (workInProgressRootFatalError = thrownValue),
-          null
+          (workInProgress = null)
         );
       a: {
         var root = root$jscomp$0,

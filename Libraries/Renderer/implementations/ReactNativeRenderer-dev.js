@@ -20789,7 +20789,14 @@ function handleError(root, thrownValue) {
         // supposed to capture all errors that weren't caught by an error
         // boundary.
         workInProgressRootExitStatus = RootFatalErrored;
-        workInProgressRootFatalError = thrownValue;
+        workInProgressRootFatalError = thrownValue; // Set `workInProgress` to null. This represents advancing to the next
+        // sibling, or the parent if there are no siblings. But since the root
+        // has no siblings nor a parent, we set it to null. Usually this is
+        // handled by `completeUnitOfWork` or `unwindWork`, but since we're
+        // interntionally not calling those, we need set it here.
+        // TODO: Consider calling `unwindWork` to pop the contexts.
+
+        workInProgress = null;
         return null;
       }
 
