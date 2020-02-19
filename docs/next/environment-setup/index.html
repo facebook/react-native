@@ -271,14 +271,14 @@ brew install watchman
 <p>Open the System pane under <strong>System and Security</strong> in the Windows Control Panel, then click on <strong>Change settings...</strong>. Open the <strong>Advanced</strong> tab and click on <strong>Environment Variables...</strong>. Click on <strong>New...</strong> to create a new <code>ANDROID_HOME</code> user variable that points to the path to your Android SDK:</p>
 <p><img src="/react-native/docs/assets/GettingStartedAndroidEnvironmentVariableANDROID_HOME.png" alt="ANDROID_HOME Environment Variable"></p>
 <p>The SDK is installed, by default, at the following location:</p>
-<pre><code class="hljs css language-powershell">c:\Users\YOUR_USERNAME\AppData\Local\Android\Sdk
+<pre><code class="hljs css language-powershell">c:\Android\tools\bin
 </code></pre>
 <p>You can find the actual location of the SDK in the Android Studio &quot;Preferences&quot; dialog, under <strong>Appearance &amp; Behavior</strong> → <strong>System Settings</strong> → <strong>Android SDK</strong>.</p>
 <p>Open a new Command Prompt window to ensure the new environment variable is loaded before proceeding to the next step.</p>
 <p><h4>4. Add platform-tools to Path</h4></p>
 <p>Open the System pane under <strong>System and Security</strong> in the Windows Control Panel, then click on <strong>Change settings...</strong>. Open the <strong>Advanced</strong> tab and click on <strong>Environment Variables...</strong>. Select the <strong>Path</strong> variable, then click <strong>Edit</strong>. Click <strong>New</strong> and add the path to platform-tools to the list.</p>
 <p>The default location for this folder is:</p>
-<pre><code class="hljs css language-powershell">c:\Users\YOUR_USERNAME\AppData\Local\Android\Sdk\platform<span class="hljs-literal">-tools</span>
+<pre><code class="hljs css language-powershell">C:\Android\tools\bin\platform<span class="hljs-literal">-tools</span>
 </code></pre>
 <p><block class="native linux android" /></p>
 <p><h3>Watchman</h3></p>
