@@ -4045,13 +4045,11 @@ var ReactNativeFiberHostComponent =
     var _proto = ReactNativeFiberHostComponent.prototype;
 
     _proto.blur = function blur() {
-      ReactNativePrivateInterface.TextInputState.blurTextInput(this._nativeTag);
+      ReactNativePrivateInterface.TextInputState.blurTextInput(this);
     };
 
     _proto.focus = function focus() {
-      ReactNativePrivateInterface.TextInputState.focusTextInput(
-        this._nativeTag
-      );
+      ReactNativePrivateInterface.TextInputState.focusTextInput(this);
     };
 
     _proto.measure = function measure(callback) {

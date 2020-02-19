@@ -1540,10 +1540,10 @@ var ReactFabricHostComponent = (function() {
   }
   var _proto = ReactFabricHostComponent.prototype;
   _proto.blur = function() {
-    ReactNativePrivateInterface.TextInputState.blurTextInput(this._nativeTag);
+    ReactNativePrivateInterface.TextInputState.blurTextInput(this);
   };
   _proto.focus = function() {
-    ReactNativePrivateInterface.TextInputState.focusTextInput(this._nativeTag);
+    ReactNativePrivateInterface.TextInputState.focusTextInput(this);
   };
   _proto.measure = function(callback) {
     fabricMeasure(
