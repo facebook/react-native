@@ -40,11 +40,13 @@ type Props = $ReadOnly<{|
         attribute:
           | 'selectableItemBackground'
           | 'selectableItemBackgroundBorderless',
+        rippleRadius: ?number,
       |}>
     | $ReadOnly<{|
         type: 'RippleAndroid',
         color: ?number,
         borderless: boolean,
+        rippleRadius: ?number,
       |}>
   ),
 
@@ -100,24 +102,32 @@ class TouchableNativeFeedback extends React.Component<Props, State> {
    * Creates a value for the `background` prop that uses the Android theme's
    * default background for selectable elements.
    */
-  static SelectableBackground: () => $ReadOnly<{|
+  static SelectableBackground: (
+    rippleRadius: ?number,
+  ) => $ReadOnly<{|
     attribute: 'selectableItemBackground',
     type: 'ThemeAttrAndroid',
-  |}> = () => ({
+    rippleRadius: ?number,
+  |}> = (rippleRadius: ?number) => ({
     type: 'ThemeAttrAndroid',
     attribute: 'selectableItemBackground',
+    rippleRadius,
   });
 
   /**
    * Creates a value for the `background` prop that uses the Android theme's
    * default background for borderless selectable elements. Requires API 21+.
    */
-  static SelectableBackgroundBorderless: () => $ReadOnly<{|
+  static SelectableBackgroundBorderless: (
+    rippleRadius: ?number,
+  ) => $ReadOnly<{|
     attribute: 'selectableItemBackgroundBorderless',
     type: 'ThemeAttrAndroid',
-  |}> = () => ({
+    rippleRadius: ?number,
+  |}> = (rippleRadius: ?number) => ({
     type: 'ThemeAttrAndroid',
     attribute: 'selectableItemBackgroundBorderless',
+    rippleRadius,
   });
 
   /**
@@ -128,11 +138,13 @@ class TouchableNativeFeedback extends React.Component<Props, State> {
   static Ripple: (
     color: string,
     borderless: boolean,
+    rippleRadius: ?number,
   ) => $ReadOnly<{|
     borderless: boolean,
     color: ?number,
+    rippleRadius: ?number,
     type: 'RippleAndroid',
-  |}> = (color: string, borderless: boolean) => {
+  |}> = (color: string, borderless: boolean, rippleRadius: ?number) => {
     const processedColor = processColor(color);
     invariant(
       processedColor == null || typeof processedColor === 'number',
@@ -142,6 +154,7 @@ class TouchableNativeFeedback extends React.Component<Props, State> {
       type: 'RippleAndroid',
       color: processedColor,
       borderless,
+      rippleRadius,
     };
   };
 
