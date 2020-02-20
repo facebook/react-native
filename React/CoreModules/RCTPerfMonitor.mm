@@ -565,8 +565,6 @@ RCT_EXPORT_MODULE()
 
   cell.textLabel.text = _perfLoggerMarks[indexPath.row];
   cell.textLabel.font = [UIFont systemFontOfSize:12];
-  cell.textLabel.textColor = UIColor.blackColor;
-  cell.backgroundColor = UIColor.whiteColor;
 
   return cell;
 }
