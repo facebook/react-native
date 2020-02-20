@@ -37,11 +37,6 @@ if (__DEV__) {
   };
 
   LogBox = {
-    // TODO: deprecated, replace with ignoreLogs
-    ignoreWarnings: (patterns: $ReadOnlyArray<IgnorePattern>): void => {
-      LogBox.ignoreLogs(patterns);
-    },
-
     ignoreLogs: (patterns: $ReadOnlyArray<IgnorePattern>): void => {
       LogBoxData.addIgnorePatterns(patterns);
     },
@@ -174,11 +169,6 @@ if (__DEV__) {
   };
 } else {
   LogBox = {
-    // TODO: deprecated, replace with ignoreLogs
-    ignoreWarnings: (patterns: $ReadOnlyArray<IgnorePattern>): void => {
-      // Do nothing.
-    },
-
     ignoreLogs: (patterns: $ReadOnlyArray<IgnorePattern>): void => {
       // Do nothing.
     },
@@ -198,8 +188,6 @@ if (__DEV__) {
 }
 
 module.exports = (LogBox: {
-  // TODO: deprecated, replace with ignoreLogs
-  ignoreWarnings($ReadOnlyArray<IgnorePattern>): void,
   ignoreLogs($ReadOnlyArray<IgnorePattern>): void,
   ignoreAllLogs(?boolean): void,
   install(): void,
