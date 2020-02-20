@@ -43,7 +43,6 @@ public abstract class ViewManager<T extends View, C extends ReactShadowNode>
    * @param props
    */
   public void updateProperties(@Nonnull T viewToUpdate, ReactStylesDiffMap props) {
-
     ViewManagerPropertyUpdater.updateProps(this, viewToUpdate, props);
     onAfterUpdateTransaction(viewToUpdate);
   }

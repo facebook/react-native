@@ -15,7 +15,6 @@ import java.util.List;
 import java.util.Map;
 
 /** A set of Java APIs to expose to a particular JavaScript instance. */
-
 public class NativeModuleRegistry {
 
   private final ReactApplicationContext mReactApplicationContext;

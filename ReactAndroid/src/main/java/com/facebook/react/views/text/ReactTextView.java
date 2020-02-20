@@ -12,7 +12,6 @@ import android.graphics.drawable.Drawable;
 import android.os.Build;
 import androidx.appcompat.widget.AppCompatTextView;
 import androidx.appcompat.widget.TintContextWrapper;
-
 import android.text.Layout;
 import android.text.Spannable;
 import android.text.Spanned;

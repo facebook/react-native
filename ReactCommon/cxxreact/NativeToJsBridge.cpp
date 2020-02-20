@@ -58,7 +58,7 @@ public:
     if (isEndOfBatch) {
       // onBatchComplete will be called on the native (module) queue, but
       // decrementPendingJSCalls will be called sync. Be aware that the bridge may still
-      // be processing native calls when the bridge idle signaler fires.
+      // be processing native calls when the birdge idle signaler fires.
       if (m_batchHadNativeModuleCalls) {
         m_callback->onBatchComplete();
         m_batchHadNativeModuleCalls = false;
@@ -88,11 +88,10 @@ NativeToJsBridge::NativeToJsBridge(
     std::shared_ptr<ExecutorDelegate> delegate, // TODO(OSS Candidate ISS#2710739)
     std::shared_ptr<ModuleRegistry> registry,
     std::shared_ptr<MessageQueueThread> jsQueue,
-    std::shared_ptr<InstanceCallback> callback,
-    std::shared_ptr<JSEConfigParams> jseConfigParams)
+    std::shared_ptr<InstanceCallback> callback)
     : m_destroyed(std::make_shared<bool>(false)),
       m_delegate(delegate ? delegate : (std::make_shared<JsToNativeBridge>(registry, callback))),
-      m_executor(jsExecutorFactory->createJSExecutor(m_delegate, jsQueue, std::move(jseConfigParams))),
+      m_executor(jsExecutorFactory->createJSExecutor(m_delegate, jsQueue)),
       m_executorMessageQueueThread(std::move(jsQueue)),
       m_inspectable(m_executor->isInspectable()) {}
 
@@ -118,8 +117,8 @@ void NativeToJsBridge::loadApplication(
       executor->setBundleRegistry(std::move(bundleRegistry));
     }
     try {
-      executor->loadApplicationScript(
-          std::move(*startupScript), std::move(startupScriptSourceURL));
+      executor->loadApplicationScript(std::move(*startupScript),
+                                      std::move(startupScriptSourceURL));
     } catch (...) {
       m_applicationScriptHasFailure = true;
       throw;
@@ -135,8 +134,8 @@ void NativeToJsBridge::loadApplicationSync(
     m_executor->setBundleRegistry(std::move(bundleRegistry));
   }
   try {
-    m_executor->loadApplicationScript(
-        std::move(startupScript), std::move(startupScriptSourceURL));
+    m_executor->loadApplicationScript(std::move(startupScript),
+                                          std::move(startupScriptSourceURL));
   } catch (...) {
     m_applicationScriptHasFailure = true;
     throw;

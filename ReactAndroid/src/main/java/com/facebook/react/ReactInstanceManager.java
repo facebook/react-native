@@ -56,7 +56,6 @@ import com.facebook.react.bridge.JSIModulePackage;
 import com.facebook.react.bridge.JavaJSExecutor;
 import com.facebook.react.bridge.JavaScriptExecutor;
 import com.facebook.react.bridge.JavaScriptExecutorFactory;
-import com.facebook.react.bridge.NativeArray;
 import com.facebook.react.bridge.NativeDeltaClient;
 import com.facebook.react.bridge.NativeModuleCallExceptionHandler;
 import com.facebook.react.bridge.NativeModuleRegistry;
@@ -170,18 +169,8 @@ public class ReactInstanceManager {
   private final @Nullable NativeModuleCallExceptionHandler mNativeModuleCallExceptionHandler;
   private final @Nullable JSIModulePackage mJSIModulePackage;
   private List<ViewManager> mViewManagers;
-  private final int mMinNumShakes;
-  private final int mMinTimeLeftInFrameForNonBatchedOperationMs;
   private boolean mIsContextCreatedOnUIThread;
   private @Nullable CatalystInstanceEventListener mCatalystInstanceEventListener;
-
-  private final DefaultHardwareBackBtnHandler mBackBtnHandler =
-      new DefaultHardwareBackBtnHandler() {
-        @Override
-        public void invokeDefaultOnBackPressed() {
-          ReactInstanceManager.this.invokeDefaultOnBackPressed();
-        }
-      };
 
   private class ReactContextInitParams {
     private final JavaScriptExecutorFactory mJsExecutorFactory;
@@ -260,8 +249,6 @@ public class ReactInstanceManager {
     mLifecycleState = initialLifecycleState;
     mMemoryPressureRouter = new MemoryPressureRouter(applicationContext);
     mNativeModuleCallExceptionHandler = nativeModuleCallExceptionHandler;
-    mMinTimeLeftInFrameForNonBatchedOperationMs = minTimeLeftInFrameForNonBatchedOperationMs;
-    mMinNumShakes = minNumShakes;
     synchronized (mPackages) {
       PrinterHolder.getPrinter()
           .logMessage(ReactDebugOverlayTags.RN_CORE, "RNCore: Use Split Packages");
@@ -356,39 +343,10 @@ public class ReactInstanceManager {
     recreateReactContextInBackgroundInner();
   }
 
-  @ThreadConfined(UI)
-  public void registerAdditionalPackages(List<ReactPackage> packages) {
-    if (packages == null || packages.isEmpty()) {
-      return;
-    }
-
-    // CatalystInstance hasn't been created, so add packages for later evaluation
-    if (!hasStartedCreatingInitialContext()) {
-      synchronized (mPackages) {
-        for (ReactPackage p : packages) {
-          if (!mPackages.contains(p)) {
-            mPackages.add(p);
-          }
-        }
-      }
-      return;
-    }
-
-    ReactContext context = getCurrentReactContext();
-    CatalystInstance catalystInstance = context != null ? context.getCatalystInstance() : null;
-
-    Assertions.assertNotNull(catalystInstance, "CatalystInstance null after hasStartedCreatingInitialContext true.");
-
-    // Do not create the new context but use the one we have already avaialable else NativeModuleRegistry will complain.
-    final ReactApplicationContext reactContext =  (ReactApplicationContext)context;
-
-    NativeModuleRegistry nativeModuleRegistry = processPackages(reactContext, packages, true);
-    catalystInstance.extendNativeModules(nativeModuleRegistry);
-  }
-
   /**
    *
    * Register CatalystInstanceEventListener
+   * This methods is called from Office ReactNativeHost
    */
   public void setCatalystInstanceEventListener(CatalystInstanceEventListener catalystInstanceEventListener) {
     mCatalystInstanceEventListener = catalystInstanceEventListener;
@@ -1041,6 +999,10 @@ public class ReactInstanceManager {
     mCreateReactContextThread.start();
   }
 
+/**
+   *
+   * This method was added for Office ReactNativeHost consumption. But currently is not being used. Candidate for deletion.
+   */
   @ThreadConfined(UI)
   public ReactContext createReactContextOnUIThread() {
     Log.d(ReactConstants.TAG, "ReactInstanceManager.createReactContextOnUIThread()");
@@ -1103,8 +1065,8 @@ public class ReactInstanceManager {
     if (!mIsContextCreatedOnUIThread) {
       ReactMarker.logMarker(ATTACH_MEASURED_ROOT_VIEWS_START);
       synchronized (mAttachedReactRoots) {
-        for (ReactRoot mAttachedReactRoots : mAttachedReactRoots) {
-          attachRootViewToInstance(mAttachedReactRoots);
+        for (ReactRoot reactRoot : mAttachedReactRoots) {
+          attachRootViewToInstance(reactRoot);
         }
       }
       ReactMarker.logMarker(ATTACH_MEASURED_ROOT_VIEWS_END);

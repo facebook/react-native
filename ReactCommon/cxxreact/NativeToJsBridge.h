@@ -44,8 +44,7 @@ public:
     std::shared_ptr<ExecutorDelegate> delegate, // TODO(OSS Candidate ISS#2710739)
     std::shared_ptr<ModuleRegistry> registry,
     std::shared_ptr<MessageQueueThread> jsQueue,
-    std::shared_ptr<InstanceCallback> callback,
-    std::shared_ptr<JSEConfigParams> jseConfigParams);
+    std::shared_ptr<InstanceCallback> callback);
   virtual ~NativeToJsBridge();
 
   /**
@@ -66,12 +65,12 @@ public:
    */
   void loadApplication(
     std::unique_ptr<RAMBundleRegistry> bundleRegistry,
-    std::unique_ptr<const JSBigString> bundle,
-    std::string bundleURL);
+    std::unique_ptr<const JSBigString> startupCode,
+    std::string sourceURL);
   void loadApplicationSync(
     std::unique_ptr<RAMBundleRegistry> bundleRegistry,
-    std::unique_ptr<const JSBigString> bundle,
-    std::string bundleURL);
+    std::unique_ptr<const JSBigString> startupCode,
+    std::string sourceURL);
 
   void registerBundle(uint32_t bundleId, const std::string& bundlePath);
   void setGlobalVariable(std::string propName, std::unique_ptr<const JSBigString> jsonValue);

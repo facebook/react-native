@@ -69,7 +69,7 @@ std::vector<MethodCall> parseMethodCalls(folly::dynamic&& jsonData) {
       std::move(params[i]),
       callId);
 
-    // only increment callid if contains valid callid as callid is optional
+    // only incremement callid if contains valid callid as callid is optional
     callId += (callId != -1) ? 1 : 0;
   }
 

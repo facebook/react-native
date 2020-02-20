@@ -7,7 +7,6 @@
 
 #include <memory>
 #include <string>
-#include <cassert>
 
 #include <cxxreact/ModuleRegistry.h>
 #include <cxxreact/NativeModule.h>
@@ -25,9 +24,9 @@ class ExecutorDelegate;
 class JSExecutor;
 class JSModulesUnbundle;
 class MessageQueueThread;
+class ModuleRegistry;
 class RAMBundleRegistry;
 struct InstanceCallback;
-struct JSEConfigParams;
 
 class ExecutorDelegateFactory {
 public:
@@ -60,14 +59,6 @@ public:
   virtual std::unique_ptr<JSExecutor> createJSExecutor(
     std::shared_ptr<ExecutorDelegate> delegate,
     std::shared_ptr<MessageQueueThread> jsQueue) = 0;
-
-  virtual std::unique_ptr<JSExecutor> createJSExecutor(
-    std::shared_ptr<ExecutorDelegate> delegate,
-    std::shared_ptr<MessageQueueThread> jsQueue,
-    std::shared_ptr<JSEConfigParams> /*jseConfigParams*/) {
-      return createJSExecutor(std::move(delegate),std::move(jsQueue));
-  }
-
   virtual ~JSExecutorFactory() {}
 };
 

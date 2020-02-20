@@ -8,10 +8,11 @@
 #include <memory>
 #include <unordered_set>
 #include <vector>
-
-#include <cxxreact/NativeModule.h>
+#include <cxxreact/JSExecutor.h>
 #include <folly/Optional.h>
 #include <folly/dynamic.h>
+
+#include <cxxreact/NativeModule.h>
 
 #ifndef RN_EXPORT
 #define RN_EXPORT __attribute__((visibility("default")))

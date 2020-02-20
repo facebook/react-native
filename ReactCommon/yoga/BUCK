@@ -12,7 +12,6 @@ cxx_library(
         "-Werror",
         "-std=c++1y",
         "-O3",
-		"-DANDROIDPLAT",
     ],
     force_static = True,
     visibility = ["PUBLIC"],

@@ -12,7 +12,6 @@ oss_cxx_library(
         "-Werror",
         "-O3",
         "-std=c++11",
-        '-DANDROIDPLAT',
     ],
     soname = "libyoga.$(ext)",
     visibility = ["PUBLIC"],

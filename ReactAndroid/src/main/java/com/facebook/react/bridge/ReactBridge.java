@@ -18,6 +18,7 @@ public class ReactBridge {
   private static volatile long sLoadEndTime = 0;
 
   private static boolean sDidInit = false;
+
   public synchronized static void staticInit() {
     if (sDidInit) {
       return;

@@ -51,7 +51,7 @@ public:
 // instance.
 class JSBigStdString : public JSBigString {
 public:
-  JSBigStdString(std::string str, bool isAscii = false)
+  JSBigStdString(std::string str, bool isAscii=false)
   : m_isAscii(isAscii)
   , m_str(std::move(str)) {}
 
@@ -90,8 +90,7 @@ public:
     delete[] m_data;
   }
 
-  bool isAscii() const override
-  {
+  bool isAscii() const override {
     return true;
   }
 
@@ -115,6 +114,7 @@ private:
 // JSBigString interface implemented by a file-backed mmap region.
 class RN_EXPORT JSBigFileString : public JSBigString {
 public:
+
   JSBigFileString(int fd, size_t size, off_t offset = 0);
   ~JSBigFileString();
 
@@ -129,12 +129,12 @@ public:
 
   static std::unique_ptr<const JSBigFileString> fromPath(const std::string& sourceURL);
 
-private :
+private:
   int m_fd;                     // The file descriptor being mmaped
   size_t m_size;                // The size of the mmaped region
   mutable off_t m_pageOff;      // The offset in the mmaped region to the data.
   off_t m_mapOff;               // The offset in the file to the mmaped region.
-  mutable const char* m_data;   // Pointer to the mmaped region.
+  mutable const char *m_data;   // Pointer to the mmaped region.
 };
 
 } }

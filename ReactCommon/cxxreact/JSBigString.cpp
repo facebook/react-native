@@ -7,14 +7,13 @@
 
 #include <fcntl.h>
 #include <sys/stat.h>
+#include <unistd.h>
 
 #include <glog/logging.h>
 
 #include <folly/Memory.h>
 #include <folly/portability/SysMman.h>
 #include <folly/ScopeGuard.h>
-
-#include <unistd.h> // ISS for `dup` that we don't pull in otherwise
 
 namespace facebook {
 namespace react {

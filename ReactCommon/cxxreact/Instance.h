@@ -52,9 +52,9 @@ class RN_EXPORT Instance {
 public:
   virtual ~Instance();
 
-  virtual void setModuleRegistry(std::shared_ptr<ModuleRegistry> moduleRegistry);
+  void setModuleRegistry(std::shared_ptr<ModuleRegistry> moduleRegistry);
 
-  virtual void initializeBridge(std::unique_ptr<InstanceCallback> callback,
+  void initializeBridge(std::unique_ptr<InstanceCallback> callback,
                         std::shared_ptr<ExecutorDelegateFactory> edf, // if nullptr, will use default delegate (JsToNativeBridge) // TODO(OSS Candidate ISS#2710739)
                         std::shared_ptr<JSExecutorFactory> jsef,
                         std::shared_ptr<MessageQueueThread> jsQueue,
@@ -62,10 +62,8 @@ public:
 
   void setSourceURL(std::string sourceURL);
 
-  virtual void loadScriptFromString(
-      std::unique_ptr<const JSBigString> bundleString,
-      std::string bundleURL,
-      bool loadSynchronously);
+  void loadScriptFromString(std::unique_ptr<const JSBigString> string,
+                            std::string sourceURL, bool loadSynchronously);
   static bool isIndexedRAMBundle(const char *sourcePath);
   static bool isIndexedRAMBundle(std::unique_ptr<const JSBigString>* string);
   void loadRAMBundleFromString(std::unique_ptr<const JSBigString> script, const std::string& sourceURL);
@@ -105,12 +103,12 @@ public:
 
 private:
   void callNativeModules(folly::dynamic &&calls, bool isEndOfBatch);
-  virtual void loadApplication(std::unique_ptr<RAMBundleRegistry> bundleRegistry,
-                       std::unique_ptr<const JSBigString> bundle,
-                       std::string bundleURL);
-  virtual void loadApplicationSync(std::unique_ptr<RAMBundleRegistry> bundleRegistry,
-                           std::unique_ptr<const JSBigString> bundle,
-                           std::string bundleURL);
+  void loadApplication(std::unique_ptr<RAMBundleRegistry> bundleRegistry,
+                       std::unique_ptr<const JSBigString> startupScript,
+                       std::string startupScriptSourceURL);
+  void loadApplicationSync(std::unique_ptr<RAMBundleRegistry> bundleRegistry,
+                           std::unique_ptr<const JSBigString> startupScript,
+                           std::string startupScriptSourceURL);
 
   std::shared_ptr<InstanceCallback> callback_;
   std::unique_ptr<NativeToJsBridge> nativeToJsBridge_;

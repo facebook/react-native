@@ -46,8 +46,6 @@ class CatalystInstanceImpl : public jni::HybridClass<CatalystInstanceImpl> {
 
   CatalystInstanceImpl();
 
-  static bool isIndexedRAMBundle(const char *sourcePath);
-
   void createModuleRegistry(
      jni::alias_ref<JavaMessageQueueThread::javaobject> nativeModulesQueue,
      jni::alias_ref<jni::JCollection<JavaModuleWrapper::javaobject>::javaobject> javaModules,

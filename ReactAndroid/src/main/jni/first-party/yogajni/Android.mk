@@ -15,7 +15,7 @@ LOCAL_SRC_FILES := \
 
 LOCAL_C_INCLUDES := $(LOCAL_PATH)/jni
 
-LOCAL_CFLAGS += -fvisibility=hidden -frtti -fexceptions -O3
+LOCAL_CFLAGS += -fvisibility=hidden -fexceptions -frtti -O3
 
 LOCAL_LDLIBS += -landroid -llog
 LOCAL_STATIC_LIBRARIES := libyogacore

@@ -57,7 +57,7 @@ void Instance::initializeBridge(
 
   jsQueue->runOnQueueSync([this, delegate, &jsef, jsQueue]() mutable {
     nativeToJsBridge_ = folly::make_unique<NativeToJsBridge>(
-        jsef.get(), delegate, moduleRegistry_, jsQueue, callback_, jseConfigParams_);
+        jsef.get(), delegate, moduleRegistry_, jsQueue, callback_);
 
     std::lock_guard<std::mutex> lock(m_syncMutex);
     m_syncReady = true;
@@ -68,23 +68,25 @@ void Instance::initializeBridge(
 }
 
 void Instance::loadApplication(std::unique_ptr<RAMBundleRegistry> bundleRegistry,
-                               std::unique_ptr<const JSBigString> bundle,
-                               std::string bundleURL) { // TODO(OSS Candidate ISS#2710739)
+                               std::unique_ptr<const JSBigString> string,
+                               std::string sourceURL) {
   callback_->incrementPendingJSCalls();
-  SystraceSection s("Instance::loadApplication", "bundleURL", bundleURL);
-  nativeToJsBridge_->loadApplication(
-      std::move(bundleRegistry), std::move(bundle), std::move(bundleURL));
+  SystraceSection s("Instance::loadApplication", "sourceURL",
+                    sourceURL);
+  nativeToJsBridge_->loadApplication(std::move(bundleRegistry), std::move(string),
+                                     std::move(sourceURL));
 }
 
 void Instance::loadApplicationSync(std::unique_ptr<RAMBundleRegistry> bundleRegistry,
-                                   std::unique_ptr<const JSBigString> bundle,
-                                   std::string bundleURL) {
+                                   std::unique_ptr<const JSBigString> string,
+                                   std::string sourceURL) {
   std::unique_lock<std::mutex> lock(m_syncMutex);
   m_syncCV.wait(lock, [this] { return m_syncReady; });
 
-  SystraceSection s("Instance::loadApplicationSync", "bundleURL", bundleURL);
-  nativeToJsBridge_->loadApplicationSync(
-      std::move(bundleRegistry), std::move(bundle), std::move(bundleURL));
+  SystraceSection s("Instance::loadApplicationSync", "sourceURL",
+                    sourceURL);
+  nativeToJsBridge_->loadApplicationSync(std::move(bundleRegistry), std::move(string),
+                                         std::move(sourceURL));
 }
 
 void Instance::setSourceURL(std::string sourceURL) {
@@ -94,14 +96,15 @@ void Instance::setSourceURL(std::string sourceURL) {
   nativeToJsBridge_->loadApplication(nullptr, nullptr, std::move(sourceURL));
 }
 
-void Instance::loadScriptFromString(std::unique_ptr<const JSBigString> bundleString,
-                                    std::string bundleURL, // TODO(OSS Candidate ISS#2710739)
+void Instance::loadScriptFromString(std::unique_ptr<const JSBigString> string,
+                                    std::string sourceURL,
                                     bool loadSynchronously) {
-  SystraceSection s("Instance::loadScriptFromString", "bundleURL", bundleURL); // TODO(OSS Candidate ISS#2710739)
+  SystraceSection s("Instance::loadScriptFromString", "sourceURL",
+                    sourceURL);
   if (loadSynchronously) {
-    loadApplicationSync(nullptr, std::move(bundleString), std::move(bundleURL));
+    loadApplicationSync(nullptr, std::move(string), std::move(sourceURL));
   } else {
-    loadApplication(nullptr, std::move(bundleString), std::move(bundleURL));
+    loadApplication(nullptr, std::move(string), std::move(sourceURL));
   }
 }
 
