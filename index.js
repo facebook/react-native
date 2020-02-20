@@ -86,7 +86,7 @@ import typeof useColorScheme from './Libraries/Utilities/useColorScheme';
 import typeof useWindowDimensions from './Libraries/Utilities/useWindowDimensions';
 import typeof UTFSequence from './Libraries/UTFSequence';
 import typeof Vibration from './Libraries/Vibration/Vibration';
-import typeof YellowBox from './Libraries/YellowBox/YellowBox';
+import typeof YellowBox from './Libraries/YellowBox/YellowBoxDeprecated';
 import typeof LogBox from './Libraries/LogBox/LogBox';
 import typeof RCTDeviceEventEmitter from './Libraries/EventEmitter/RCTDeviceEventEmitter';
 import typeof RCTNativeAppEventEmitter from './Libraries/EventEmitter/RCTNativeAppEventEmitter';
@@ -439,7 +439,7 @@ module.exports = {
     return require('./Libraries/Vibration/Vibration');
   },
   get YellowBox(): YellowBox {
-    return require('./Libraries/YellowBox/YellowBox');
+    return require('./Libraries/YellowBox/YellowBoxDeprecated');
   },
 
   // Plugins
@@ -467,9 +467,11 @@ module.exports = {
     return require('./Libraries/ReactNative/RootTagContext');
   },
   get unstable_enableLogBox(): () => void {
-    return require('./Libraries/YellowBox/YellowBox').__unstable_enableLogBox;
+    return () =>
+      console.warn(
+        'LogBox is enabled by default so there is no need to call unstable_enableLogBox() anymore. This is a no op and will be removed in the next version.',
+      );
   },
-
   // Prop Types
   get ColorPropType(): DeprecatedColorPropType {
     return require('./Libraries/DeprecatedPropTypes/DeprecatedColorPropType');
