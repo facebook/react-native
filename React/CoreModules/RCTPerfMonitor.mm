@@ -197,7 +197,9 @@ RCT_EXPORT_MODULE()
 {
   if (!_container) {
     _container = [[UIView alloc] initWithFrame:CGRectMake(10, 25, 180, RCTPerfMonitorBarHeight)];
-    _container.backgroundColor = UIColor.whiteColor;
+    if (@available(iOS 13.0, *)) {
+      _container.backgroundColor = UIColor.systemBackgroundColor;
+    }
     _container.layer.borderWidth = 2;
     _container.layer.borderColor = [UIColor lightGrayColor].CGColor;
     [_container addGestureRecognizer:self.gestureRecognizer];
