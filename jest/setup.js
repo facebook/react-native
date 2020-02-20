@@ -109,7 +109,7 @@ jest
     isInvertColorsEnabled: jest.fn(),
     isReduceMotionEnabled: jest.fn(),
     isReduceTransparencyEnabled: jest.fn(),
-    isScreenReaderEnabled: jest.fn(),
+    isScreenReaderEnabled: jest.fn(() => Promise.resolve(false)),
     removeEventListener: jest.fn(),
     setAccessibilityFocus: jest.fn(),
   }))
