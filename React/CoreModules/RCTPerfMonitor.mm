@@ -302,7 +302,6 @@ RCT_EXPORT_MODULE()
     )];
     _metrics.dataSource = self;
     _metrics.delegate = self;
-    _metrics.backgroundColor = UIColor.whiteColor;
     _metrics.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
     [_metrics registerClass:[UITableViewCell class] forCellReuseIdentifier:RCTPerfMonitorCellIdentifier];
   }
