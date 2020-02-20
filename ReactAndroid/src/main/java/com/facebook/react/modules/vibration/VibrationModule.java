@@ -8,6 +8,7 @@
 package com.facebook.react.modules.vibration;
 
 import android.annotation.SuppressLint;
+import androidx.annotation.NonNull;
 import android.content.Context;
 import android.os.Vibrator;
 import com.facebook.fbreact.specs.NativeVibrationSpec;
@@ -31,7 +32,7 @@ public class VibrationModule extends NativeVibrationSpec {
   }
 
   @Override
-  public void vibrate(Double durationDouble) {
+  public void vibrate(@NonNull Double durationDouble) {
     int duration = (int) durationDouble.doubleValue();
 
     Vibrator v = (Vibrator) getReactApplicationContext().getSystemService(Context.VIBRATOR_SERVICE);
