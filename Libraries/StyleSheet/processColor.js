@@ -14,8 +14,15 @@ const Platform = require('../Utilities/Platform');
 
 const normalizeColor = require('./normalizeColor');
 
+// TODO: This is an empty object for now, just to enforce that everything using this
+// downstream is correct. This will be replaced with an import to other files
+// with a platform specific implementation. See the PR for more information
+// https://github.com/facebook/react-native/pull/27908
+opaque type NativeColorType = {};
+export type ProcessedColorValue = ?number | NativeColorType;
+
 /* eslint no-bitwise: 0 */
-function processColor(color?: ?(string | number)): ?number {
+function processColor(color?: ?(string | number)): ProcessedColorValue {
   if (color === undefined || color === null) {
     return color;
   }
