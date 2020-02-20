@@ -76,8 +76,7 @@ function reportException(
     message =
       e.jsEngine == null ? message : `${message}, js engine: ${e.jsEngine}`;
 
-    const isHandledByLogBox =
-      e.forceRedbox !== true && global.__unstable_isLogBoxEnabled === true;
+    const isHandledByLogBox = e.forceRedbox !== true;
 
     const data = preprocessException({
       message,
