@@ -18,6 +18,7 @@ import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReactModuleWithSpec;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.turbomodule.core.interfaces.TurboModule;
+import javax.annotation.Nonnull;
 
 public abstract class NativeVibrationSpec extends ReactContextBaseJavaModule implements ReactModuleWithSpec, TurboModule {
   public NativeVibrationSpec(ReactApplicationContext reactContext) {
@@ -31,5 +32,5 @@ public abstract class NativeVibrationSpec extends ReactContextBaseJavaModule imp
   public abstract void vibrateByPattern(ReadableArray pattern, double repeat);
 
   @ReactMethod
-  public abstract void vibrate(Double pattern);
+  public abstract void vibrate(@Nonnull Double pattern);
 }
