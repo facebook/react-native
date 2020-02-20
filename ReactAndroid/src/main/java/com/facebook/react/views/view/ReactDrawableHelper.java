@@ -16,6 +16,9 @@ import android.graphics.drawable.Drawable;
 import android.graphics.drawable.RippleDrawable;
 import android.os.Build;
 import android.util.TypedValue;
+
+import androidx.annotation.Nullable;
+
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.SoftAssertions;
@@ -49,7 +52,8 @@ public class ReactDrawableHelper {
       Drawable drawable = getDefaultThemeDrawable(context);
       return setRadius(drawableDescriptionDict, drawable);
     } else if ("RippleAndroid".equals(type)) {
-      return getRippleDrawable(context, drawableDescriptionDict);
+      RippleDrawable rd = getRippleDrawable(context, drawableDescriptionDict);
+      return setRadius(drawableDescriptionDict, rd);
     } else {
       throw new JSApplicationIllegalArgumentException("Invalid type for android drawable: " + type);
     }
@@ -75,9 +79,7 @@ public class ReactDrawableHelper {
     ColorStateList colorStateList =
         new ColorStateList(new int[][] {new int[] {}}, new int[] {color});
 
-    RippleDrawable rd = new RippleDrawable(colorStateList, null, mask);
-    setRadius(drawableDescriptionDict, rd);
-    return rd;
+    return new RippleDrawable(colorStateList, null, mask);
   }
 
   private static Drawable setRadius(ReadableMap drawableDescriptionDict, Drawable drawable) {
@@ -107,7 +109,7 @@ public class ReactDrawableHelper {
     }
   }
 
-  private static Drawable getMask(ReadableMap drawableDescriptionDict) {
+  private static @Nullable Drawable getMask(ReadableMap drawableDescriptionDict) {
     if (!drawableDescriptionDict.hasKey("borderless")
         || drawableDescriptionDict.isNull("borderless")
         || !drawableDescriptionDict.getBoolean("borderless")) {
