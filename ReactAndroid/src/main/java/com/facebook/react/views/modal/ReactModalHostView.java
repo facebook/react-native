@@ -268,7 +268,6 @@ public class ReactModalHostView extends ViewGroup implements LifecycleEventListe
             WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
             WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE);
 
-    mDialog.setContentView(getContentView());
     updateProperties();
 
     mDialog.setOnShowListener(mOnShowListener);
@@ -310,7 +309,7 @@ public class ReactModalHostView extends ViewGroup implements LifecycleEventListe
       mDialog.getWindow().addFlags(WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED);
     }
     if (currentActivity != null && !currentActivity.isFinishing()) {
-      ModalHostFragment hostFragment = new ModalHostFragment(mDialog);
+      ModalHostFragment hostFragment = new ModalHostFragment(mDialog, getContentView());
       FragmentManager fragmentManager = ((FragmentActivity) currentActivity).getSupportFragmentManager();
       hostFragment.show(fragmentManager, FRAGMENT_TAG);
       mHostView.mHostFragment = hostFragment;
