@@ -81,6 +81,7 @@ public class ReactModalHostView extends ViewGroup implements LifecycleEventListe
   private boolean mPropertyRequiresNewDialog;
   private @Nullable DialogInterface.OnShowListener mOnShowListener;
   private @Nullable OnRequestCloseListener mOnRequestCloseListener;
+  private static final String FRAGMENT_TAG = "ModalAndroid";
 
   public ReactModalHostView(Context context) {
     super(context);
@@ -311,7 +312,7 @@ public class ReactModalHostView extends ViewGroup implements LifecycleEventListe
     if (currentActivity != null && !currentActivity.isFinishing()) {
       ModalHostFragment hostFragment = new ModalHostFragment(mDialog);
       FragmentManager fragmentManager = ((FragmentActivity) currentActivity).getSupportFragmentManager();
-      hostFragment.show(fragmentManager,  "modalHost");
+      hostFragment.show(fragmentManager, FRAGMENT_TAG);
       mHostView.mHostFragment = hostFragment;
       if (context instanceof Activity) {
         mDialog
