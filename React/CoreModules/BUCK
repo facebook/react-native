@@ -32,7 +32,7 @@ rn_apple_library(
         "UIKit",
     ],
     header_path_prefix = "React",
-    labels = ["supermodule:ios/default/react_native.infra"],
+    labels = ["supermodule:ios/default/private.react_native.infra"],
     lang_compiler_flags = get_fbobjc_enable_exception_lang_compiler_flags_DEPRECATED(),
     link_whole = True,
     platform_preprocessor_flags = [(

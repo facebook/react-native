@@ -16,7 +16,7 @@ cxx_library(
         "-fexceptions",
         "-fno-data-sections",
     ],
-    fbobjc_labels = ["supermodule:ios/default/react_native.infra"],
+    fbobjc_labels = ["supermodule:ios/default/private.react_native.infra"],
     force_static = True,
     visibility = [
         "PUBLIC",

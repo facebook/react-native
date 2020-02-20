@@ -219,7 +219,7 @@ def rn_codegen_components(
         ],
         fbobjc_compiler_flags = get_apple_compiler_flags(),
         fbobjc_preprocessor_flags = get_debug_preprocessor_flags() + get_apple_inspector_flags(),
-        fbobjc_labels = ["supermodule:ios/default/react_native.infra"],
+        fbobjc_labels = ["supermodule:ios/default/private.react_native.infra"],
         platforms = (ANDROID, APPLE, CXX),
         preprocessor_flags = [
             "-DLOG_TAG=\"ReactNative\"",
