@@ -22,6 +22,7 @@ import android.view.accessibility.AccessibilityEvent;
 import android.widget.FrameLayout;
 import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
+import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
 
@@ -172,6 +173,7 @@ public class ReactModalHostView extends ViewGroup implements LifecycleEventListe
       // It is possible we are dismissing this dialog and reattaching the hostView to another
       ViewGroup parent = (ViewGroup) mHostView.getParent();
       parent.removeViewAt(0);
+      mHostView.mHostFragment = null;
     }
   }
 
@@ -310,6 +312,7 @@ public class ReactModalHostView extends ViewGroup implements LifecycleEventListe
       ModalHostFragment hostFragment = new ModalHostFragment(mDialog);
       FragmentManager fragmentManager = ((FragmentActivity) currentActivity).getSupportFragmentManager();
       hostFragment.show(fragmentManager,  "modal");
+      mHostView.mHostFragment = hostFragment;
       if (context instanceof Activity) {
         mDialog
             .getWindow()
@@ -388,6 +391,7 @@ public class ReactModalHostView extends ViewGroup implements LifecycleEventListe
     private boolean hasAdjustedSize = false;
     private int viewWidth;
     private int viewHeight;
+    private ModalHostFragment mHostFragment;
 
     private @Nullable StateWrapper mStateWrapper;
 
@@ -450,6 +454,11 @@ public class ReactModalHostView extends ViewGroup implements LifecycleEventListe
     @Override
     public void handleException(Throwable t) {
       getReactContext().handleException(new RuntimeException(t));
+    }
+
+    @Override
+    public Fragment getFragment() {
+      return mHostFragment;
     }
 
     private ReactContext getReactContext() {

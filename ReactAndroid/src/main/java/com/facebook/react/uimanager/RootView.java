@@ -9,6 +9,8 @@ package com.facebook.react.uimanager;
 
 import android.view.MotionEvent;
 
+import androidx.fragment.app.Fragment;
+
 /** Interface for the root native view of a React native application. */
 public interface RootView {
 
@@ -19,4 +21,6 @@ public interface RootView {
   void onChildStartedNativeGesture(MotionEvent androidEvent);
 
   void handleException(Throwable t);
+
+  Fragment getFragment();
 }
