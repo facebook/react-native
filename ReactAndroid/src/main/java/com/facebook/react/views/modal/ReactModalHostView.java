@@ -311,7 +311,7 @@ public class ReactModalHostView extends ViewGroup implements LifecycleEventListe
     if (currentActivity != null && !currentActivity.isFinishing()) {
       ModalHostFragment hostFragment = new ModalHostFragment(mDialog);
       FragmentManager fragmentManager = ((FragmentActivity) currentActivity).getSupportFragmentManager();
-      hostFragment.show(fragmentManager,  "modal");
+      hostFragment.show(fragmentManager,  "modalHost");
       mHostView.mHostFragment = hostFragment;
       if (context instanceof Activity) {
         mDialog
