@@ -43,6 +43,11 @@ static LayoutMetrics calculateOffsetForLayoutMetrics(
   for (auto it = ancestors.rbegin(); it != ancestors.rend() - 1; ++it) {
     auto &currentShadowNode = it->first.get();
 
+    if (currentShadowNode.getTraits().check(
+            ShadowNodeTraits::Trait::RootNodeKind)) {
+      break;
+    }
+
     auto layoutableCurrentShadowNode =
         dynamic_cast<LayoutableShadowNode const *>(&currentShadowNode);
 

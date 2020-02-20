@@ -21,7 +21,6 @@ NSString *const RCTRemoteNotificationReceived = @"RemoteNotificationReceived";
 
 static NSString *const kLocalNotificationReceived = @"LocalNotificationReceived";
 static NSString *const kRemoteNotificationsRegistered = @"RemoteNotificationsRegistered";
-static NSString *const kRegisterUserNotificationSettings = @"RegisterUserNotificationSettings";
 static NSString *const kRemoteNotificationRegistrationFailed = @"RemoteNotificationRegistrationFailed";
 
 static NSString *const kErrorUnableToRequestPermissions = @"E_UNABLE_TO_REQUEST_PERMISSIONS";
@@ -83,9 +82,6 @@ RCT_ENUM_CONVERTER(UIBackgroundFetchResult, (@{
 #endif //TARGET_OS_TV / TARGET_OS_UIKITFORMAC
 
 @implementation RCTPushNotificationManager
-{
-  RCTPromiseResolveBlock _requestPermissionsResolveBlock;
-}
 
 #if !TARGET_OS_TV && !TARGET_OS_UIKITFORMAC
 
@@ -153,10 +149,6 @@ RCT_EXPORT_MODULE()
                                                name:RCTRemoteNotificationReceived
                                              object:nil];
   [[NSNotificationCenter defaultCenter] addObserver:self
-                                           selector:@selector(handleRegisterUserNotificationSettings:)
-                                               name:kRegisterUserNotificationSettings
-                                             object:nil];
-  [[NSNotificationCenter defaultCenter] addObserver:self
                                            selector:@selector(handleRemoteNotificationsRegistered:)
                                                name:kRemoteNotificationsRegistered
                                              object:nil];
@@ -181,12 +173,6 @@ RCT_EXPORT_MODULE()
 
 + (void)didRegisterUserNotificationSettings:(__unused UIUserNotificationSettings *)notificationSettings
 {
-  if ([UIApplication instancesRespondToSelector:@selector(registerForRemoteNotifications)]) {
-    [RCTSharedApplication() registerForRemoteNotifications];
-    [[NSNotificationCenter defaultCenter] postNotificationName:kRegisterUserNotificationSettings
-                                                        object:self
-                                                      userInfo:@{@"notificationSettings": notificationSettings}];
-  }
 }
 
 + (void)didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken
@@ -272,25 +258,6 @@ RCT_EXPORT_MODULE()
   [self sendEventWithName:@"remoteNotificationRegistrationError" body:errorDetails];
 }
 
-- (void)handleRegisterUserNotificationSettings:(NSNotification *)notification
-{
-  if (_requestPermissionsResolveBlock == nil) {
-    return;
-  }
-
-  UIUserNotificationSettings *notificationSettings = notification.userInfo[@"notificationSettings"];
-  NSDictionary *notificationTypes = @{
-    @"alert": @((notificationSettings.types & UIUserNotificationTypeAlert) > 0),
-    @"sound": @((notificationSettings.types & UIUserNotificationTypeSound) > 0),
-    @"badge": @((notificationSettings.types & UIUserNotificationTypeBadge) > 0),
-  };
-
-  _requestPermissionsResolveBlock(notificationTypes);
-  // Clean up listener added in requestPermissions
-  [self removeListeners:1];
-  _requestPermissionsResolveBlock = nil;
-}
-
 RCT_EXPORT_METHOD(onFinishRemoteNotification:(NSString *)notificationId fetchResult:(NSString *)fetchResult) {
   UIBackgroundFetchResult result = [RCTConvert UIBackgroundFetchResult:fetchResult];
   RCTRemoteNotificationCallback completionHandler = self.remoteNotificationCallbacks[notificationId];
@@ -322,19 +289,13 @@ RCT_EXPORT_METHOD(requestPermissions:(JS::NativePushNotificationManagerIOS::Spec
                  resolve:(RCTPromiseResolveBlock)resolve
                  reject:(RCTPromiseRejectBlock)reject)
 {
-  if (RCTRunningInAppExtension()) {
-    reject(kErrorUnableToRequestPermissions, nil, RCTErrorWithMessage(@"Requesting push notifications is currently unavailable in an app extension"));
-    return;
-  }
-
-  if (_requestPermissionsResolveBlock != nil) {
-    RCTLogError(@"Cannot call requestPermissions twice before the first has returned.");
-    return;
-  }
+   if (RCTRunningInAppExtension()) {
+     reject(kErrorUnableToRequestPermissions, nil, RCTErrorWithMessage(@"Requesting push notifications is currently unavailable in an app extension"));
+     return;
+   }
 
   // Add a listener to make sure that startObserving has been called
   [self addListener:@"remoteNotificationsRegistered"];
-  _requestPermissionsResolveBlock = resolve;
 
   UIUserNotificationType types = UIUserNotificationTypeNone;
 
@@ -348,9 +309,18 @@ RCT_EXPORT_METHOD(requestPermissions:(JS::NativePushNotificationManagerIOS::Spec
     types |= UIUserNotificationTypeSound;
   }
 
-  UIUserNotificationSettings *notificationSettings =
-    [UIUserNotificationSettings settingsForTypes:types categories:nil];
-  [RCTSharedApplication() registerUserNotificationSettings:notificationSettings];
+  [UNUserNotificationCenter.currentNotificationCenter
+   requestAuthorizationWithOptions:types
+   completionHandler:^(BOOL granted, NSError *_Nullable error) {
+    if (error != NULL) {
+      reject(@"-1", @"Error - Push authorization request failed.", error);
+    } else {
+      [RCTSharedApplication() registerForRemoteNotifications];
+      [UNUserNotificationCenter.currentNotificationCenter getNotificationSettingsWithCompletionHandler:^(UNNotificationSettings * _Nonnull settings) {
+         resolve(RCTPromiseResolveValueForUNNotificationSettings(settings));
+      }];
+    }
+  }];
 }
 
 RCT_EXPORT_METHOD(abandonPermissions)
@@ -361,16 +331,23 @@ RCT_EXPORT_METHOD(abandonPermissions)
 RCT_EXPORT_METHOD(checkPermissions:(RCTResponseSenderBlock)callback)
 {
   if (RCTRunningInAppExtension()) {
-    callback(@[@{@"alert": @NO, @"badge": @NO, @"sound": @NO}]);
+    callback(@[RCTSettingsDictForUNNotificationSettings(NO, NO, NO)]);
     return;
   }
 
-  NSUInteger types = [RCTSharedApplication() currentUserNotificationSettings].types;
-  callback(@[@{
-    @"alert": @((types & UIUserNotificationTypeAlert) > 0),
-    @"badge": @((types & UIUserNotificationTypeBadge) > 0),
-    @"sound": @((types & UIUserNotificationTypeSound) > 0),
-  }]);
+  [UNUserNotificationCenter.currentNotificationCenter getNotificationSettingsWithCompletionHandler:^(UNNotificationSettings * _Nonnull settings) {
+    callback(@[RCTPromiseResolveValueForUNNotificationSettings(settings)]);
+  }];
+}
+
+static inline NSDictionary *RCTPromiseResolveValueForUNNotificationSettings(UNNotificationSettings* _Nonnull settings) {
+  return RCTSettingsDictForUNNotificationSettings(settings.alertSetting == UNNotificationSettingEnabled,
+                                                  settings.badgeSetting == UNNotificationSettingEnabled,
+                                                  settings.soundSetting == UNNotificationSettingEnabled);
+}
+
+static inline NSDictionary *RCTSettingsDictForUNNotificationSettings(BOOL alert, BOOL badge, BOOL sound) {
+  return @{@"alert": @(alert), @"badge": @(badge), @"sound": @(sound)};
 }
 
 RCT_EXPORT_METHOD(presentLocalNotification:(JS::NativePushNotificationManagerIOS::Notification &)notification)

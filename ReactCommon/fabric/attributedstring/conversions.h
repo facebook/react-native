@@ -22,7 +22,7 @@
 #include <react/graphics/conversions.h>
 #include <cmath>
 
-#include <Glog/logging.h>
+#include <glog/logging.h>
 
 namespace facebook {
 namespace react {

@@ -438,7 +438,7 @@ describe('VirtualizedList', () => {
         Array [
           Array [
             "A VirtualizedList contains a cell which itself contains more than one VirtualizedList of the same orientation as the parent list. You must pass a unique listKey prop to each sibling list.
-        
+
         VirtualizedList trace:
           Child (horizontal):
             listKey: level2

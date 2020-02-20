@@ -34,6 +34,8 @@ public class ReactTextViewManager
 
   @VisibleForTesting public static final String REACT_CLASS = "RCTText";
 
+  protected @Nullable ReactTextViewManagerCallback mReactTextViewManagerCallback;
+
   @Override
   public String getName() {
     return REACT_CLASS;
@@ -57,6 +59,11 @@ public class ReactTextViewManager
   @Override
   public ReactTextShadowNode createShadowNodeInstance() {
     return new ReactTextShadowNode();
+  }
+
+  public ReactTextShadowNode createShadowNodeInstance(
+      @Nullable ReactTextViewManagerCallback reactTextViewManagerCallback) {
+    return new ReactTextShadowNode(reactTextViewManagerCallback);
   }
 
   @Override
@@ -83,7 +90,8 @@ public class ReactTextViewManager
     ReadableMap paragraphAttributes = state.getMap("paragraphAttributes");
 
     Spannable spanned =
-        TextLayoutManager.getOrCreateSpannableForText(view.getContext(), attributedString);
+        TextLayoutManager.getOrCreateSpannableForText(
+            view.getContext(), attributedString, mReactTextViewManagerCallback);
     view.setSpanned(spanned);
 
     TextAttributeProps textViewProps = new TextAttributeProps(props);
@@ -140,7 +148,14 @@ public class ReactTextViewManager
       YogaMeasureMode heightMode) {
 
     return TextLayoutManager.measureText(
-        context, localData, props, width, widthMode, height, heightMode);
+        context,
+        localData,
+        props,
+        width,
+        widthMode,
+        height,
+        heightMode,
+        mReactTextViewManagerCallback);
   }
 
   @Override

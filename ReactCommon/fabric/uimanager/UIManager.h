@@ -55,25 +55,27 @@ class UIManager final : public ShadowTreeDelegate {
       ShadowTree const &shadowTree,
       MountingCoordinator::Shared const &mountingCoordinator) const override;
 
+  void setStateReconciliationEnabled(bool enabled);
+
  private:
   friend class UIManagerBinding;
   friend class Scheduler;
 
-  SharedShadowNode createNode(
+  ShadowNode::Shared createNode(
       Tag tag,
       std::string const &componentName,
       SurfaceId surfaceId,
       const RawProps &props,
       SharedEventTarget eventTarget) const;
 
-  SharedShadowNode cloneNode(
-      const SharedShadowNode &shadowNode,
+  ShadowNode::Shared cloneNode(
+      const ShadowNode::Shared &shadowNode,
       const SharedShadowNodeSharedList &children = nullptr,
       const RawProps *rawProps = nullptr) const;
 
   void appendChild(
-      const SharedShadowNode &parentShadowNode,
-      const SharedShadowNode &childShadowNode) const;
+      const ShadowNode::Shared &parentShadowNode,
+      const ShadowNode::Shared &childShadowNode) const;
 
   void completeSurface(
       SurfaceId surfaceId,
@@ -83,7 +85,7 @@ class UIManager final : public ShadowTreeDelegate {
       const;
 
   void setJSResponder(
-      const SharedShadowNode &shadowNode,
+      const ShadowNode::Shared &shadowNode,
       const bool blockNativeResponder) const;
 
   void clearJSResponder() const;
@@ -106,12 +108,10 @@ class UIManager final : public ShadowTreeDelegate {
    * Creates a new shadow node with given state data, clones what's necessary
    * and performs a commit.
    */
-  void updateState(
-      ShadowNode const &shadowNode,
-      StateData::Shared const &rawStateData) const;
+  void updateState(StateUpdate const &stateUpdate) const;
 
   void dispatchCommand(
-      const SharedShadowNode &shadowNode,
+      const ShadowNode::Shared &shadowNode,
       std::string const &commandName,
       folly::dynamic const args) const;
 
@@ -121,6 +121,7 @@ class UIManager final : public ShadowTreeDelegate {
   UIManagerDelegate *delegate_;
   UIManagerBinding *uiManagerBinding_;
   ShadowTreeRegistry shadowTreeRegistry_{};
+  bool stateReconciliationEnabled_{false};
 };
 
 } // namespace react

@@ -22,12 +22,10 @@ namespace react {
 
 static ::hermes::vm::RuntimeConfig makeRuntimeConfig(
     jlong heapSizeMB,
-    bool es6Symbol,
-    jint bytecodeWarmupPercent) {
+    bool es6Proxy) {
   namespace vm = ::hermes::vm;
   auto gcConfigBuilder =
       vm::GCConfig::Builder()
-          .withMaxHeapSize(heapSizeMB << 20)
           .withName("RN")
           // For the next two arguments: avoid GC before TTI by initializing the
           // runtime to allocate directly in the old generation, but revert to
@@ -35,10 +33,13 @@ static ::hermes::vm::RuntimeConfig makeRuntimeConfig(
           .withAllocInYoung(false)
           .withRevertToYGAtTTI(true);
 
+  if (heapSizeMB > 0) {
+    gcConfigBuilder.withMaxHeapSize(heapSizeMB << 20);
+  }
+
   return vm::RuntimeConfig::Builder()
       .withGCConfig(gcConfigBuilder.build())
-      .withES6Symbol(es6Symbol)
-      .withBytecodeWarmupPercent(bytecodeWarmupPercent)
+      .withES6Proxy(es6Proxy)
       .build();
 }
 
@@ -63,14 +64,10 @@ class HermesExecutorHolder
         std::make_unique<HermesExecutorFactory>(installBindings));
   }
 
-  static jni::local_ref<jhybriddata> initHybrid(
-      jni::alias_ref<jclass>,
-      jlong heapSizeMB,
-      bool es6Symbol,
-      jint bytecodeWarmupPercent) {
+  static jni::local_ref<jhybriddata>
+  initHybrid(jni::alias_ref<jclass>, jlong heapSizeMB, bool es6Proxy) {
     JReactMarker::setLogPerfMarkerIfNeeded();
-    auto runtimeConfig =
-        makeRuntimeConfig(heapSizeMB, es6Symbol, bytecodeWarmupPercent);
+    auto runtimeConfig = makeRuntimeConfig(heapSizeMB, es6Proxy);
     return makeCxxInstance(std::make_unique<HermesExecutorFactory>(
         installBindings, JSIExecutor::defaultTimeoutInvoker, runtimeConfig));
   }

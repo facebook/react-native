@@ -36,8 +36,8 @@ TEST(ShadowNodeFamilyTest, sealObjectCorrectly) {
 
   auto builder = ComponentBuilder{componentDescriptorRegistry};
 
-  auto shadowNodeAAA = std::shared_ptr<ViewShadowNode const>{};
-  auto shadowNodeAA = std::shared_ptr<ViewShadowNode const>{};
+  auto shadowNodeAAA = std::shared_ptr<ViewShadowNode>{};
+  auto shadowNodeAA = std::shared_ptr<ViewShadowNode>{};
 
   // clang-format off
   auto elementA =

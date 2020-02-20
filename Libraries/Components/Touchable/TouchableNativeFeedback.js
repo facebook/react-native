@@ -24,6 +24,7 @@ import View from '../../Components/View/View';
 import processColor from '../../StyleSheet/processColor';
 import type {ProcessedColorValue} from '../../StyleSheet/StyleSheetTypes';
 import * as React from 'react';
+import invariant from 'invariant';
 
 type Props = $ReadOnly<{|
   ...React.ElementConfig<TouchableWithoutFeedback>,
@@ -132,11 +133,18 @@ class TouchableNativeFeedback extends React.Component<Props, State> {
     borderless: boolean,
     color: ?ProcessedColorValue,
     type: 'RippleAndroid',
-  |}> = (color: string, borderless: boolean) => ({
-    type: 'RippleAndroid',
-    color: processColor(color),
-    borderless,
-  });
+  |}> = (color: string, borderless: boolean) => {
+    const processedColor = processColor(color);
+    invariant(
+      processedColor == null || typeof processedColor === 'number',
+      'Unexpected color given for Ripple color',
+    );
+    return {
+      type: 'RippleAndroid',
+      color: processedColor,
+      borderless,
+    };
+  };
 
   /**
    * Whether `useForeground` is supported.

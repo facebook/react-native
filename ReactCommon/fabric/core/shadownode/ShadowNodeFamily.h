@@ -9,6 +9,8 @@
 
 #include <memory>
 
+#include <better/mutex.h>
+
 #include <react/core/EventEmitter.h>
 #include <react/core/ReactPrimitives.h>
 #include <react/core/ShadowNodeFamilyFragment.h>
@@ -18,6 +20,7 @@ namespace react {
 
 class ComponentDescriptor;
 class ShadowNode;
+class State;
 
 /*
  * Represents all things that shadow nodes from the same family have in common.
@@ -36,6 +39,7 @@ class ShadowNodeFamily {
 
   ShadowNodeFamily(
       ShadowNodeFamilyFragment const &fragment,
+      EventDispatcher::Weak eventDispatcher,
       ComponentDescriptor const &componentDescriptor);
 
   /*
@@ -52,6 +56,11 @@ class ShadowNodeFamily {
   ComponentName getComponentName() const;
 
   /*
+   * Returns a concrete `ComponentDescriptor` that manages nodes of this type.
+   */
+  const ComponentDescriptor &getComponentDescriptor() const;
+
+  /*
    * Returns a list of all ancestors of the node relative to the given ancestor.
    * The list starts from the given ancestor node and ends with the parent node
    * of `this` node. The elements of the list have a reference to some parent
@@ -64,8 +73,24 @@ class ShadowNodeFamily {
 
   SurfaceId getSurfaceId() const;
 
+  /*
+   * Sets and gets the most recent state.
+   */
+  std::shared_ptr<State const> getMostRecentState() const;
+  void setMostRecentState(std::shared_ptr<State const> const &state) const;
+
+  /*
+   * Dispatches a state update with given priority.
+   */
+  void dispatchRawState(StateUpdate &&stateUpdate, EventPriority priority)
+      const;
+
  private:
   friend ShadowNode;
+
+  EventDispatcher::Weak eventDispatcher_;
+  mutable std::shared_ptr<State const> mostRecentState_;
+  mutable better::shared_mutex mutex_;
 
   /*
    * Deprecated.

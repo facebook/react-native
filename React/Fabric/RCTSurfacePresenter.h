@@ -9,7 +9,7 @@
 
 #import <React/RCTPrimitives.h>
 #import <React/RCTSurfacePresenterStub.h>
-
+#import <React/RCTSurfaceStage.h>
 #import <react/utils/ContextContainer.h>
 #import <react/utils/RuntimeExecutor.h>
 
@@ -68,6 +68,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)setMinimumSize:(CGSize)minimumSize maximumSize:(CGSize)maximumSize surface:(RCTFabricSurface *)surface;
 
 - (BOOL)synchronouslyUpdateViewOnUIThread:(NSNumber *)reactTag props:(NSDictionary *)props;
+
+- (BOOL)synchronouslyWaitSurface:(RCTFabricSurface *)surface timeout:(NSTimeInterval)timeout;
 
 - (void)addObserver:(id<RCTSurfacePresenterObserver>)observer;
 

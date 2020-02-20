@@ -52,8 +52,8 @@ class StringBuffer : public Buffer {
   std::string s_;
 };
 
-/// PreparedJavaScript is a base class representing JavaScript which is in a form
-/// optimized for execution, in a runtime-specific way. Construct one via
+/// PreparedJavaScript is a base class representing JavaScript which is in a
+/// form optimized for execution, in a runtime-specific way. Construct one via
 /// jsi::Runtime::prepareJavaScript().
 /// ** This is an experimental API that is subject to change. **
 class PreparedJavaScript {
@@ -827,7 +827,7 @@ class Function : public Object {
   Value call(Runtime& runtime, Args&&... args) const;
 
   /// Calls the function with \c count \c args and \c jsThis value passed
-  /// as this value.
+  /// as the \c this value.
   Value callWithThis(
       Runtime& Runtime,
       const Object& jsThis,
@@ -835,16 +835,14 @@ class Function : public Object {
       size_t count) const;
 
   /// Calls the function with a \c std::initializer_list of Value
-  /// arguments. The \c this value of the JS function will be
-  /// undefined.
+  /// arguments and \c jsThis passed as the \c this value.
   Value callWithThis(
       Runtime& runtime,
       const Object& jsThis,
       std::initializer_list<Value> args) const;
 
   /// Calls the function with any number of arguments similarly to
-  /// Object::setProperty().  The \c this value of the JS function
-  /// will be undefined.
+  /// Object::setProperty(), and with \c jsThis passed as the \c this value.
   template <typename... Args>
   Value callWithThis(Runtime& runtime, const Object& jsThis, Args&&... args)
       const;

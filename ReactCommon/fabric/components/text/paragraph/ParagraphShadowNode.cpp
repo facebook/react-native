@@ -18,7 +18,7 @@ char const ParagraphComponentName[] = "Paragraph";
 AttributedString ParagraphShadowNode::getAttributedString() const {
   if (!cachedAttributedString_.has_value()) {
     auto textAttributes = TextAttributes::defaultTextAttributes();
-    textAttributes.apply(getProps()->textAttributes);
+    textAttributes.apply(getConcreteProps().textAttributes);
 
     cachedAttributedString_ =
         BaseTextShadowNode::getAttributedString(textAttributes, *this);
@@ -49,8 +49,9 @@ void ParagraphShadowNode::updateStateIfNeeded() {
     return;
   }
 
-  setStateData(ParagraphState{
-      attributedString, getProps()->paragraphAttributes, textLayoutManager_});
+  setStateData(ParagraphState{attributedString,
+                              getConcreteProps().paragraphAttributes,
+                              textLayoutManager_});
 }
 
 #pragma mark - LayoutableShadowNode
@@ -64,7 +65,7 @@ Size ParagraphShadowNode::measure(LayoutConstraints layoutConstraints) const {
 
   return textLayoutManager_->measure(
       AttributedStringBox{attributedString},
-      getProps()->paragraphAttributes,
+      getConcreteProps().paragraphAttributes,
       layoutConstraints);
 }
 

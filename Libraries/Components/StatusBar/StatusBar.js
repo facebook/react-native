@@ -13,6 +13,7 @@
 const Platform = require('../../Utilities/Platform');
 const React = require('react');
 
+const invariant = require('invariant');
 const processColor = require('../../StyleSheet/processColor');
 import type {ColorValue} from '../../StyleSheet/StyleSheetTypes';
 
@@ -323,6 +324,10 @@ class StatusBar extends React.Component<Props> {
       );
       return;
     }
+    invariant(
+      typeof processedColor === 'number',
+      'Unexpected color given for StatusBar.setBackgroundColor',
+    );
 
     NativeStatusBarManagerAndroid.setColor(processedColor, animated);
   }
@@ -467,6 +472,10 @@ class StatusBar extends React.Component<Props> {
             } parsed to null or undefined`,
           );
         } else {
+          invariant(
+            typeof processedColor === 'number',
+            'Unexpected color given in StatusBar._updatePropsStack',
+          );
           NativeStatusBarManagerAndroid.setColor(
             processedColor,
             mergedProps.backgroundColor.animated,

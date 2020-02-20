@@ -128,8 +128,8 @@ public class UIImplementation {
     return mShadowNodeRegistry.getNode(reactTag);
   }
 
-  protected final ViewManager resolveViewManager(String className) {
-    return mViewManagers.get(className);
+  protected final @Nullable ViewManager resolveViewManager(String className) {
+    return mViewManagers.getViewManagerIfExists(className);
   }
 
   /*package*/ UIViewOperationQueue getUIViewOperationQueue() {

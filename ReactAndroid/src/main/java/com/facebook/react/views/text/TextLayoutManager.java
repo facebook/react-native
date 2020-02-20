@@ -19,6 +19,7 @@ import android.text.Spanned;
 import android.text.StaticLayout;
 import android.text.TextPaint;
 import android.util.LruCache;
+import androidx.annotation.Nullable;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.uimanager.PixelUtil;
@@ -127,7 +128,9 @@ public class TextLayoutManager {
 
   // public because both ReactTextViewManager and ReactTextInputManager need to use this
   public static Spannable getOrCreateSpannableForText(
-      Context context, ReadableMap attributedString) {
+      Context context,
+      ReadableMap attributedString,
+      @Nullable ReactTextViewManagerCallback reactTextViewManagerCallback) {
 
     Spannable preparedSpannableText;
     String attributedStringPayload = attributedString.toString();
@@ -139,7 +142,9 @@ public class TextLayoutManager {
       }
     }
 
-    preparedSpannableText = createSpannableFromAttributedString(context, attributedString);
+    preparedSpannableText =
+        createSpannableFromAttributedString(
+            context, attributedString, reactTextViewManagerCallback);
     synchronized (sSpannableCacheLock) {
       sSpannableCache.put(attributedStringPayload, preparedSpannableText);
     }
@@ -147,7 +152,9 @@ public class TextLayoutManager {
   }
 
   private static Spannable createSpannableFromAttributedString(
-      Context context, ReadableMap attributedString) {
+      Context context,
+      ReadableMap attributedString,
+      @Nullable ReactTextViewManagerCallback reactTextViewManagerCallback) {
 
     SpannableStringBuilder sb = new SpannableStringBuilder();
 
@@ -168,6 +175,9 @@ public class TextLayoutManager {
       priority++;
     }
 
+    if (reactTextViewManagerCallback != null) {
+      reactTextViewManagerCallback.onPostProcessSpannable(sb);
+    }
     return sb;
   }
 
@@ -178,11 +188,13 @@ public class TextLayoutManager {
       float width,
       YogaMeasureMode widthYogaMeasureMode,
       float height,
-      YogaMeasureMode heightYogaMeasureMode) {
+      YogaMeasureMode heightYogaMeasureMode,
+      ReactTextViewManagerCallback reactTextViewManagerCallback) {
 
     // TODO(5578671): Handle text direction (see View#getTextDirectionHeuristic)
     TextPaint textPaint = sTextPaintInstance;
-    Spannable preparedSpannableText = getOrCreateSpannableForText(context, attributedString);
+    Spannable preparedSpannableText =
+        getOrCreateSpannableForText(context, attributedString, reactTextViewManagerCallback);
 
     // TODO add these props to paragraph attributes
     int textBreakStrategy = Layout.BREAK_STRATEGY_HIGH_QUALITY;

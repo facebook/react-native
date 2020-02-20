@@ -158,6 +158,10 @@ class AndroidTextInputProps final : public ViewProps, public BaseTextProps {
    * paragraph.
    */
   ParagraphAttributes const paragraphAttributes{};
+
+#if RN_DEBUG_STRING_CONVERTIBLE
+  SharedDebugStringConvertibleList getDebugProps() const;
+#endif
 };
 
 } // namespace react

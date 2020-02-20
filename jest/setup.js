@@ -109,7 +109,7 @@ jest
     isInvertColorsEnabled: jest.fn(),
     isReduceMotionEnabled: jest.fn(),
     isReduceTransparencyEnabled: jest.fn(),
-    isScreenReaderEnabled: jest.fn(),
+    isScreenReaderEnabled: jest.fn(() => Promise.resolve(false)),
     removeEventListener: jest.fn(),
     setAccessibilityFocus: jest.fn(),
   }))
@@ -141,19 +141,6 @@ jest
     removeEventListener: jest.fn(),
     sendIntent: jest.fn(),
   }))
-  .mock('../Libraries/Renderer/shims/ReactNative', () => {
-    const ReactNative = jest.requireActual(
-      '../Libraries/Renderer/shims/ReactNative',
-    );
-    const NativeMethodsMixin =
-      ReactNative.__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED
-        .NativeMethodsMixin;
-
-    Object.assign(NativeMethodsMixin, MockNativeMethods);
-    Object.assign(ReactNative.NativeComponent.prototype, MockNativeMethods);
-
-    return ReactNative;
-  })
   // Mock modules defined by the native layer (ex: Objective-C, Java)
   .mock('../Libraries/BatchedBridge/NativeModules', () => ({
     AlertManager: {

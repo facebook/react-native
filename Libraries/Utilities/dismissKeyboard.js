@@ -15,7 +15,7 @@
 const TextInputState = require('../Components/TextInput/TextInputState');
 
 function dismissKeyboard() {
-  TextInputState.blurTextInput(TextInputState.currentlyFocusedField());
+  TextInputState.blurTextInput(TextInputState.currentlyFocusedInput());
 }
 
 module.exports = dismissKeyboard;

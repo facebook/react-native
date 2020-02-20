@@ -91,14 +91,15 @@ class AppContainer extends React.Component<Props, State> {
   }
 
   render(): React.Node {
-    let yellowBox = null;
+    let logBox = null;
     if (__DEV__) {
       if (
         !global.__RCTProfileIsProfiling &&
         !this.props.internal_excludeLogBox
       ) {
-        const YellowBox = require('../YellowBox/YellowBox');
-        yellowBox = <YellowBox />;
+        const LogBoxNotificationContainer = require('../LogBox/LogBoxNotificationContainer')
+          .default;
+        logBox = <LogBoxNotificationContainer />;
       }
     }
 
@@ -132,7 +133,7 @@ class AppContainer extends React.Component<Props, State> {
         <View style={styles.appContainer} pointerEvents="box-none">
           {!this.state.hasError && innerView}
           {this.state.inspector}
-          {yellowBox}
+          {logBox}
         </View>
       </RootTagContext.Provider>
     );
@@ -147,8 +148,8 @@ const styles = StyleSheet.create({
 
 if (__DEV__) {
   if (!global.__RCTProfileIsProfiling) {
-    const YellowBox = require('../YellowBox/YellowBox');
-    YellowBox.install();
+    const LogBox = require('../LogBox/LogBox');
+    LogBox.install();
   }
 }
 

@@ -9,45 +9,37 @@
 
 #include <gtest/gtest.h>
 
+#include <react/components/root/RootComponentDescriptor.h>
 #include <react/components/view/ViewComponentDescriptor.h>
 #include <react/element/ComponentBuilder.h>
 #include <react/element/Element.h>
+#include <react/element/testUtils.h>
 #include <react/uimanager/ComponentDescriptorProviderRegistry.h>
 
 using namespace facebook::react;
 
 TEST(ElementTest, testNormalCases) {
-  ComponentDescriptorProviderRegistry componentDescriptorProviderRegistry{};
-  auto eventDispatcher = EventDispatcher::Shared{};
-  auto componentDescriptorRegistry =
-      componentDescriptorProviderRegistry.createComponentDescriptorRegistry(
-          ComponentDescriptorParameters{eventDispatcher, nullptr, nullptr});
+  auto builder = simpleComponentBuilder();
 
-  componentDescriptorProviderRegistry.add(
-      concreteComponentDescriptorProvider<ViewComponentDescriptor>());
-
-  auto builder = ComponentBuilder{componentDescriptorRegistry};
-
-  auto shadowNodeA = std::shared_ptr<ViewShadowNode const>{};
-  auto shadowNodeAA = std::shared_ptr<ViewShadowNode const>{};
-  auto shadowNodeAB = std::shared_ptr<ViewShadowNode const>{};
-  auto shadowNodeABA = std::shared_ptr<ViewShadowNode const>{};
+  auto shadowNodeA = std::shared_ptr<RootShadowNode>{};
+  auto shadowNodeAA = std::shared_ptr<ViewShadowNode>{};
+  auto shadowNodeAB = std::shared_ptr<ViewShadowNode>{};
+  auto shadowNodeABA = std::shared_ptr<ViewShadowNode>{};
 
   auto propsAA = std::make_shared<ViewProps>();
   propsAA->nativeId = "node AA";
 
   // clang-format off
   auto element =
-      Element<ViewShadowNode>()
+      Element<RootShadowNode>()
         .reference(shadowNodeA)
         .tag(1)
         .props([]() {
-          auto props = std::make_shared<ViewProps>();
-          props->zIndex = 42;
+          auto props = std::make_shared<RootProps>();
           props->nativeId = "node A";
           return props;
         })
-        .finalize([](ViewShadowNode &shadowNode){
+        .finalize([](RootShadowNode &shadowNode){
           shadowNode.sealRecursive();
         })
         .children({

@@ -13,9 +13,7 @@ import android.util.DisplayMetrics;
 import android.view.Display;
 import android.view.WindowManager;
 import androidx.annotation.Nullable;
-import androidx.annotation.UiThread;
 import com.facebook.infer.annotation.Assertions;
-import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.bridge.WritableNativeMap;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -39,9 +37,7 @@ public class DisplayMetricsHolder {
    * @deprecated Use {@link #setScreenDisplayMetrics(DisplayMetrics)} instead. See comment above as
    *     to why this is not correct to use.
    */
-  @UiThread
   public static void setWindowDisplayMetrics(DisplayMetrics displayMetrics) {
-    UiThreadUtil.assertOnUiThread();
     sWindowDisplayMetrics = displayMetrics;
   }
 
@@ -52,9 +48,7 @@ public class DisplayMetricsHolder {
     initDisplayMetrics(context);
   }
 
-  @UiThread
   public static void initDisplayMetrics(Context context) {
-    UiThreadUtil.assertOnUiThread();
     DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();
     DisplayMetricsHolder.setWindowDisplayMetrics(displayMetrics);
 
@@ -101,9 +95,7 @@ public class DisplayMetricsHolder {
     return sWindowDisplayMetrics;
   }
 
-  @UiThread
   public static void setScreenDisplayMetrics(DisplayMetrics screenDisplayMetrics) {
-    UiThreadUtil.assertOnUiThread();
     sScreenDisplayMetrics = screenDisplayMetrics;
   }
 

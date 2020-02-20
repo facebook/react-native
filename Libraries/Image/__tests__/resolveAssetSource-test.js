@@ -143,6 +143,29 @@ describe('resolveAssetSource', () => {
         },
       );
     });
+
+    it('resolves an image with a relative path outside of root', () => {
+      expectResolvesAsset(
+        {
+          __packager_asset: true,
+          fileSystemLocation: '/module/a',
+          httpServerLocation: '/assets/../../module/a',
+          width: 100,
+          height: 200,
+          scales: [1],
+          hash: '5b6f00f',
+          name: 'logo',
+          type: 'png',
+        },
+        {
+          __packager_asset: true,
+          width: 100,
+          height: 200,
+          uri: 'file:///Path/To/Sample.app/assets/__module/a/logo.png',
+          scale: 1,
+        },
+      );
+    });
   });
 
   describe('bundle was loaded from assets on Android', () => {
@@ -171,6 +194,29 @@ describe('resolveAssetSource', () => {
           width: 100,
           height: 200,
           uri: 'awesomemodule_subdir_logo1_',
+          scale: 1,
+        },
+      );
+    });
+
+    it('resolves an image with a relative path outside of root', () => {
+      expectResolvesAsset(
+        {
+          __packager_asset: true,
+          fileSystemLocation: '/module/a',
+          httpServerLocation: '/assets/../../module/a',
+          width: 100,
+          height: 200,
+          scales: [1],
+          hash: '5b6f00f',
+          name: 'logo',
+          type: 'png',
+        },
+        {
+          __packager_asset: true,
+          width: 100,
+          height: 200,
+          uri: '__module_a_logo',
           scale: 1,
         },
       );

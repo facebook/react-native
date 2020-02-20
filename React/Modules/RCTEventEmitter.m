@@ -24,6 +24,7 @@
 
 + (void)initialize
 {
+  [super initialize];
   if (self != [RCTEventEmitter class]) {
     RCTAssert(RCTClassOverridesInstanceMethod(self, @selector(supportedEvents)),
               @"You must override the `supportedEvents` method of %@", self);

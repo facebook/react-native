@@ -7,7 +7,6 @@
 
 package com.facebook.react.devsupport;
 
-import android.util.Log;
 import androidx.annotation.Nullable;
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
@@ -58,7 +57,7 @@ public class BundleDownloader {
         info.mUrl = obj.getString("url");
         info.mFilesChangedCount = obj.getInt("filesChangedCount");
       } catch (JSONException e) {
-        Log.e(TAG, "Invalid bundle info: ", e);
+        FLog.e(TAG, "Invalid bundle info: ", e);
         return null;
       }
 
@@ -72,7 +71,7 @@ public class BundleDownloader {
         obj.put("url", mUrl);
         obj.put("filesChangedCount", mFilesChangedCount);
       } catch (JSONException e) {
-        Log.e(TAG, "Can't serialize bundle info: ", e);
+        FLog.e(TAG, "Can't serialize bundle info: ", e);
         return null;
       }
 

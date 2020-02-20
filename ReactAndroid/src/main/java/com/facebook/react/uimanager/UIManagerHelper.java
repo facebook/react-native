@@ -17,6 +17,7 @@ import androidx.annotation.Nullable;
 import com.facebook.react.bridge.CatalystInstance;
 import com.facebook.react.bridge.JSIModuleType;
 import com.facebook.react.bridge.ReactContext;
+import com.facebook.react.bridge.ReactNoCrashSoftException;
 import com.facebook.react.bridge.ReactSoftException;
 import com.facebook.react.bridge.UIManager;
 import com.facebook.react.uimanager.common.UIManagerType;
@@ -48,7 +49,7 @@ public class UIManagerHelper {
       if (!context.hasCatalystInstance()) {
         ReactSoftException.logSoftException(
             "UIManagerHelper",
-            new IllegalStateException(
+            new ReactNoCrashSoftException(
                 "Cannot get UIManager because the context doesn't contain a CatalystInstance."));
         return null;
       }
@@ -57,7 +58,7 @@ public class UIManagerHelper {
       if (!context.hasActiveCatalystInstance()) {
         ReactSoftException.logSoftException(
             "UIManagerHelper",
-            new IllegalStateException(
+            new ReactNoCrashSoftException(
                 "Cannot get UIManager because the context doesn't contain an active CatalystInstance."));
         if (returnNullIfCatalystIsInactive) {
           return null;

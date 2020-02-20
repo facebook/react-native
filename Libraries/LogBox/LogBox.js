@@ -37,13 +37,12 @@ if (__DEV__) {
   };
 
   LogBox = {
-    // TODO: deprecated, replace with ignoreLogs
-    ignoreWarnings: (patterns: $ReadOnlyArray<IgnorePattern>): void => {
-      LogBox.ignoreLogs(patterns);
-    },
-
     ignoreLogs: (patterns: $ReadOnlyArray<IgnorePattern>): void => {
       LogBoxData.addIgnorePatterns(patterns);
+    },
+
+    ignoreAllLogs: (value?: ?boolean): void => {
+      LogBoxData.setDisabled(!!value);
     },
 
     uninstall: (): void => {
@@ -64,18 +63,26 @@ if (__DEV__) {
         registerWarning(...args);
       };
 
-      if ((console: any).disableLogBox === true) {
+      if ((console: any).disableYellowBox === true) {
         LogBoxData.setDisabled(true);
+        console.warn(
+          'console.disableYellowBox has been deprecated and will be removed in a future release. Please use LogBox.ignoreAllLogs(value) instead.',
+        );
       }
 
-      (Object.defineProperty: any)(console, 'disableLogBox', {
+      (Object.defineProperty: any)(console, 'disableYellowBox', {
         configurable: true,
         get: () => LogBoxData.isDisabled(),
-        set: value => LogBoxData.setDisabled(value),
+        set: value => {
+          LogBoxData.setDisabled(value);
+          console.warn(
+            'console.disableYellowBox has been deprecated and will be removed in a future release. Please use LogBox.ignoreAllLogs(value) instead.',
+          );
+        },
       });
 
       if (Platform.isTesting) {
-        (console: any).disableLogBox = true;
+        LogBoxData.setDisabled(true);
       }
 
       RCTLog.setWarningHandler((...args) => {
@@ -162,12 +169,11 @@ if (__DEV__) {
   };
 } else {
   LogBox = {
-    // TODO: deprecated, replace with ignoreLogs
-    ignoreWarnings: (patterns: $ReadOnlyArray<IgnorePattern>): void => {
+    ignoreLogs: (patterns: $ReadOnlyArray<IgnorePattern>): void => {
       // Do nothing.
     },
 
-    ignoreLogs: (patterns: $ReadOnlyArray<IgnorePattern>): void => {
+    ignoreAllLogs: (value?: ?boolean): void => {
       // Do nothing.
     },
 
@@ -182,9 +188,8 @@ if (__DEV__) {
 }
 
 module.exports = (LogBox: {
-  // TODO: deprecated, replace with ignoreLogs
-  ignoreWarnings($ReadOnlyArray<IgnorePattern>): void,
   ignoreLogs($ReadOnlyArray<IgnorePattern>): void,
+  ignoreAllLogs(?boolean): void,
   install(): void,
   uninstall(): void,
   ...

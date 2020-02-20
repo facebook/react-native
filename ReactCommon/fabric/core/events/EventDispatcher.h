@@ -15,12 +15,12 @@
 #include <react/core/EventPriority.h>
 #include <react/core/EventQueue.h>
 #include <react/core/StatePipe.h>
+#include <react/core/StateUpdate.h>
 
 namespace facebook {
 namespace react {
 
 class RawEvent;
-class StateUpdate;
 
 /*
  * Represents event-delivery infrastructure.

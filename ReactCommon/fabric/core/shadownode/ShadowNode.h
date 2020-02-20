@@ -30,6 +30,7 @@ class ComponentDescriptor;
 struct ShadowNodeFragment;
 class ShadowNode;
 
+// Deprecated: Use ShadowNode::Shared instead
 using SharedShadowNode = std::shared_ptr<const ShadowNode>;
 using WeakShadowNode = std::weak_ptr<const ShadowNode>;
 using UnsharedShadowNode = std::shared_ptr<ShadowNode>;
@@ -143,6 +144,8 @@ class ShadowNode : public virtual Sealable,
    */
   void setMounted(bool mounted) const;
 
+  int getStateRevision() const;
+
 #pragma mark - DebugStringConvertible
 
 #if RN_DEBUG_STRING_CONVERTIBLE
@@ -166,6 +169,14 @@ class ShadowNode : public virtual Sealable,
 
  private:
   friend ShadowNodeFamily;
+
+  /**
+   * This number is deterministically, statelessly recomputable . It tells us
+   * the version of the state of the entire subtree, including this component
+   * and all descendants.
+   */
+  int stateRevision_;
+
   /*
    * Clones the list of children (and creates a new `shared_ptr` to it) if
    * `childrenAreShared_` flag is `true`.

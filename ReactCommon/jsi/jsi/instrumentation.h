@@ -55,20 +55,18 @@ class Instrumentation {
   /// Captures the heap to a file
   ///
   /// \param path to save the heap capture
-  ///
-  /// \return true iff the heap capture succeeded
-  virtual bool createSnapshotToFile(const std::string& path) = 0;
+  virtual void createSnapshotToFile(const std::string& path) = 0;
 
   /// Captures the heap to an output stream
   ///
   /// \param os output stream to write to.
-  ///
-  /// \return true iff the heap capture succeeded.
-  virtual bool createSnapshotToStream(std::ostream& os) = 0;
+  virtual void createSnapshotToStream(std::ostream& os) = 0;
 
-  /// Write a trace of bridge traffic to the given file name.
-  virtual void writeBridgeTrafficTraceToFile(
-      const std::string& fileName) const = 0;
+  /// If the runtime has been created to trace to a temp file, flush
+  /// any unwritten parts of the trace of bridge traffic to the file,
+  /// and return the name of  the file.  Otherwise, return the empty string.
+  /// Tracing is disabled after this call.
+  virtual std::string flushAndDisableBridgeTrafficTrace() = 0;
 
   /// Write basic block profile trace to the given file name.
   virtual void writeBasicBlockProfileTraceToFile(
