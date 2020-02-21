@@ -20,11 +20,12 @@ import com.facebook.react.bridge.ReadableType;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.uimanager.ThemedReactContext;
-import com.facebook.react.uimanager.UIManagerModule;
+import com.facebook.react.uimanager.UIManagerHelper;
 import com.facebook.react.uimanager.ViewGroupManager;
 import com.facebook.react.uimanager.ViewManagerDelegate;
 import com.facebook.react.uimanager.ViewProps;
 import com.facebook.react.uimanager.annotations.ReactProp;
+import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.react.viewmanagers.AndroidSwipeRefreshLayoutManagerDelegate;
 import com.facebook.react.viewmanagers.AndroidSwipeRefreshLayoutManagerInterface;
 import java.util.Map;
@@ -135,10 +136,11 @@ public class SwipeRefreshLayoutManager extends ViewGroupManager<ReactSwipeRefres
         new OnRefreshListener() {
           @Override
           public void onRefresh() {
-            reactContext
-                .getNativeModule(UIManagerModule.class)
-                .getEventDispatcher()
-                .dispatchEvent(new RefreshEvent(view.getId()));
+            EventDispatcher eventDispatcher =
+                UIManagerHelper.getEventDispatcherForReactTag(reactContext, view.getId());
+            if (eventDispatcher != null) {
+              eventDispatcher.dispatchEvent(new RefreshEvent(view.getId()));
+            }
           }
         });
   }
