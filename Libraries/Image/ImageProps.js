@@ -149,10 +149,6 @@ export type ImageProps = {|
    */
   style?: ?ImageStyleProp,
 
-  // Can be set via props or style, for now
-  height?: ?DimensionValue,
-  width?: ?DimensionValue,
-
   /**
    * Determines how to resize the image when the frame doesn't match the raw
    * image dimensions.
