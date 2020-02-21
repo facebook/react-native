@@ -54,15 +54,20 @@ typedef void(^RCTDevMenuAlertActionHandler)(UIAlertAction *action);
 
 - (void)testClosingActionSheetAfterAction
 {
+  XCTAssertNil([_bridge.devMenu alertController]);
+  XCTAssertFalse([_bridge.devMenu isActionSheetShown]);
+
+  [_bridge.devMenu show];
+
   for (RCTDevMenuItem *item in _bridge.devMenu.presentedItems) {
     RCTDevMenuAlertActionHandler handler = [_bridge.devMenu alertActionHandlerForDevItem:item];
-    XCTAssertTrue([_bridge.devMenu isActionSheetShown]);
+    XCTAssertNotNil([_bridge.devMenu alertController]);
 
     handler(nil);
-    XCTAssertFalse([_bridge.devMenu isActionSheetShown]);
+    XCTAssertNil([_bridge.devMenu alertController]);
 
     [_bridge.devMenu show];
-    XCTAssertTrue([_bridge.devMenu isActionSheetShown]);
+    XCTAssertNotNil([_bridge.devMenu alertController]);
   }
 }
 
