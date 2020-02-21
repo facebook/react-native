@@ -149,6 +149,11 @@ RCT_EXPORT_MODULE()
   return self;
 }
 
+- (UIAlertController *)alertController
+{
+  return _actionSheet;
+}
+
 - (dispatch_queue_t)methodQueue
 {
   return dispatch_get_main_queue();
