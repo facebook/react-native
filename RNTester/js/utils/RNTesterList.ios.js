@@ -88,6 +88,11 @@ const ComponentExamples: Array<RNTesterExample> = [
     supportsTVOS: false,
   },
   {
+    key: 'PressableExample',
+    module: require('../examples/Pressable/PressableExample'),
+    supportsTVOS: true,
+  },
+  {
     key: 'ProgressViewIOSExample',
     module: require('../examples/ProgressViewIOS/ProgressViewIOSExample'),
     supportsTVOS: true,

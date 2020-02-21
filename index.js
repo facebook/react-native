@@ -25,6 +25,7 @@ import typeof MaskedViewIOS from './Libraries/Components/MaskedView/MaskedViewIO
 import typeof Modal from './Libraries/Modal/Modal';
 import typeof Picker from './Libraries/Components/Picker/Picker';
 import typeof PickerIOS from './Libraries/Components/Picker/PickerIOS';
+import typeof Pressable from './Libraries/Components/Pressable/Pressable';
 import typeof ProgressBarAndroid from './Libraries/Components/ProgressBarAndroid/ProgressBarAndroid';
 import typeof ProgressViewIOS from './Libraries/Components/ProgressViewIOS/ProgressViewIOS';
 import typeof SafeAreaView from './Libraries/Components/SafeAreaView/SafeAreaView';
@@ -182,6 +183,9 @@ module.exports = {
         'See https://github.com/react-native-community/react-native-picker',
     );
     return require('./Libraries/Components/Picker/PickerIOS');
+  },
+  get Pressable(): Pressable {
+    return require('./Libraries/Components/Pressable/Pressable').default;
   },
   get ProgressBarAndroid(): ProgressBarAndroid {
     warnOnce(
