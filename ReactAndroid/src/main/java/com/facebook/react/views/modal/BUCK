@@ -6,6 +6,7 @@ rn_android_library(
     is_androidx = True,
     provided_deps = [
         react_native_dep("third-party/android/androidx:annotation"),
+        react_native_dep("third-party/android/androidx:fragment"),
     ],
     required_for_source_only_abi = True,
     visibility = [
