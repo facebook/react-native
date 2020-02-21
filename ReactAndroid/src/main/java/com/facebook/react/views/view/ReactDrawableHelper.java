@@ -16,9 +16,7 @@ import android.graphics.drawable.Drawable;
 import android.graphics.drawable.RippleDrawable;
 import android.os.Build;
 import android.util.TypedValue;
-
 import androidx.annotation.Nullable;
-
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.SoftAssertions;
@@ -47,7 +45,7 @@ public class ReactDrawableHelper {
       }
       if (!context.getTheme().resolveAttribute(attrID, sResolveOutValue, true)) {
         throw new JSApplicationIllegalArgumentException(
-                "Attribute " + attr + " couldn't be resolved into a drawable");
+            "Attribute " + attr + " couldn't be resolved into a drawable");
       }
       Drawable drawable = getDefaultThemeDrawable(context);
       return setRadius(drawableDescriptionDict, drawable);
@@ -61,18 +59,17 @@ public class ReactDrawableHelper {
 
   private static Drawable getDefaultThemeDrawable(Context context) {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      return context
-              .getResources()
-              .getDrawable(sResolveOutValue.resourceId, context.getTheme());
+      return context.getResources().getDrawable(sResolveOutValue.resourceId, context.getTheme());
     } else {
       return context.getResources().getDrawable(sResolveOutValue.resourceId);
     }
   }
 
-  private static RippleDrawable getRippleDrawable(Context context, ReadableMap drawableDescriptionDict) {
+  private static RippleDrawable getRippleDrawable(
+      Context context, ReadableMap drawableDescriptionDict) {
     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
       throw new JSApplicationIllegalArgumentException(
-              "Ripple drawable is not available on " + "android API <21");
+          "Ripple drawable is not available on " + "android API <21");
     }
     int color = getColor(context, drawableDescriptionDict);
     Drawable mask = getMask(drawableDescriptionDict);
@@ -84,8 +81,8 @@ public class ReactDrawableHelper {
 
   private static Drawable setRadius(ReadableMap drawableDescriptionDict, Drawable drawable) {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
-            && drawableDescriptionDict.hasKey("rippleRadius")
-            && drawable instanceof RippleDrawable) {
+        && drawableDescriptionDict.hasKey("rippleRadius")
+        && drawable instanceof RippleDrawable) {
       RippleDrawable rippleDrawable = (RippleDrawable) drawable;
       double rippleRadius = drawableDescriptionDict.getDouble("rippleRadius");
       rippleDrawable.setRadius((int) PixelUtil.toPixelFromDIP(rippleRadius));
@@ -95,16 +92,16 @@ public class ReactDrawableHelper {
 
   private static int getColor(Context context, ReadableMap drawableDescriptionDict) {
     if (drawableDescriptionDict.hasKey(ViewProps.COLOR)
-            && !drawableDescriptionDict.isNull(ViewProps.COLOR)) {
+        && !drawableDescriptionDict.isNull(ViewProps.COLOR)) {
       return drawableDescriptionDict.getInt(ViewProps.COLOR);
     } else {
       if (context
-              .getTheme()
-              .resolveAttribute(android.R.attr.colorControlHighlight, sResolveOutValue, true)) {
+          .getTheme()
+          .resolveAttribute(android.R.attr.colorControlHighlight, sResolveOutValue, true)) {
         return context.getResources().getColor(sResolveOutValue.resourceId);
       } else {
         throw new JSApplicationIllegalArgumentException(
-                "Attribute colorControlHighlight " + "couldn't be resolved into a drawable");
+            "Attribute colorControlHighlight " + "couldn't be resolved into a drawable");
       }
     }
   }
