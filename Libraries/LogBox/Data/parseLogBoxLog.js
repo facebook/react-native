@@ -46,7 +46,7 @@ export type ComponentStack = $ReadOnlyArray<CodeFrame>;
 
 const SUBSTITUTION = UTFSequence.BOM + '%s';
 
-export function parseCategory(
+export function parseInterpolation(
   args: $ReadOnlyArray<mixed>,
 ): $ReadOnly<{|
   category: Category,
@@ -220,7 +220,7 @@ export function parseLogBoxException(
       error.componentStack != null
         ? parseComponentStack(error.componentStack)
         : [],
-    ...parseCategory([message]),
+    ...parseInterpolation([message]),
   };
 }
 
@@ -262,7 +262,7 @@ export function parseLogBoxLog(
   }
 
   return {
-    ...parseCategory(argsWithoutComponentStack),
+    ...parseInterpolation(argsWithoutComponentStack),
     componentStack,
   };
 }
