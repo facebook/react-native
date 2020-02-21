@@ -22,7 +22,5 @@ public interface RootView {
 
   void handleException(Throwable t);
 
-  default Fragment getFragment() {
-    return null;
-  }
+  Fragment getFragment();
 }

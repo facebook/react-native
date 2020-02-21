@@ -26,6 +26,8 @@ import android.view.ViewTreeObserver;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
 import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.infer.annotation.ThreadConfined;
@@ -662,6 +664,11 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
 
     Exception e = new IllegalViewOperationException(t.getMessage(), this, t);
     mReactInstanceManager.getCurrentReactContext().handleException(e);
+  }
+
+  @Override
+  public Fragment getFragment() {
+    return null;
   }
 
   public void setIsFabric(boolean isFabric) {
