@@ -38,7 +38,6 @@ import com.facebook.react.bridge.UIManager;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.bridge.WritableNativeMap;
-import com.facebook.react.common.ReactConstants;
 import com.facebook.react.common.annotations.VisibleForTesting;
 import com.facebook.react.modules.appregistry.AppRegistry;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
@@ -76,6 +75,7 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
     void onAttachedToReactInstance(ReactRootView rootView);
   }
 
+  private static final String TAG = "ReactRootView";
   private @Nullable ReactInstanceManager mReactInstanceManager;
   private @Nullable String mJSModuleName;
   private @Nullable Bundle mAppProperties;
@@ -195,14 +195,11 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
     if (mReactInstanceManager == null
         || !mIsAttachedToInstance
         || mReactInstanceManager.getCurrentReactContext() == null) {
-      FLog.w(
-          ReactConstants.TAG,
-          "Unable to dispatch touch to JS as the catalyst instance has not been attached");
+      FLog.w(TAG, "Unable to dispatch touch to JS as the catalyst instance has not been attached");
       return;
     }
     if (mJSTouchDispatcher == null) {
-      FLog.w(
-          ReactConstants.TAG, "Unable to dispatch touch to JS before the dispatcher is available");
+      FLog.w(TAG, "Unable to dispatch touch to JS before the dispatcher is available");
       return;
     }
     ReactContext reactContext = mReactInstanceManager.getCurrentReactContext();
@@ -242,9 +239,7 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
     if (mReactInstanceManager == null
         || !mIsAttachedToInstance
         || mReactInstanceManager.getCurrentReactContext() == null) {
-      FLog.w(
-          ReactConstants.TAG,
-          "Unable to handle key event as the catalyst instance has not been attached");
+      FLog.w(TAG, "Unable to handle key event as the catalyst instance has not been attached");
       return super.dispatchKeyEvent(ev);
     }
     mAndroidHWInputDeviceHelper.handleKeyEvent(ev);
@@ -257,7 +252,7 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
         || !mIsAttachedToInstance
         || mReactInstanceManager.getCurrentReactContext() == null) {
       FLog.w(
-          ReactConstants.TAG,
+          TAG,
           "Unable to handle focus changed event as the catalyst instance has not been attached");
       super.onFocusChanged(gainFocus, direction, previouslyFocusedRect);
       return;
@@ -272,7 +267,7 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
         || !mIsAttachedToInstance
         || mReactInstanceManager.getCurrentReactContext() == null) {
       FLog.w(
-          ReactConstants.TAG,
+          TAG,
           "Unable to handle child focus changed event as the catalyst instance has not been attached");
       super.requestChildFocus(child, focused);
       return;
@@ -285,14 +280,11 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
     if (mReactInstanceManager == null
         || !mIsAttachedToInstance
         || mReactInstanceManager.getCurrentReactContext() == null) {
-      FLog.w(
-          ReactConstants.TAG,
-          "Unable to dispatch touch to JS as the catalyst instance has not been attached");
+      FLog.w(TAG, "Unable to dispatch touch to JS as the catalyst instance has not been attached");
       return;
     }
     if (mJSTouchDispatcher == null) {
-      FLog.w(
-          ReactConstants.TAG, "Unable to dispatch touch to JS before the dispatcher is available");
+      FLog.w(TAG, "Unable to dispatch touch to JS before the dispatcher is available");
       return;
     }
     ReactContext reactContext = mReactInstanceManager.getCurrentReactContext();
@@ -435,9 +427,7 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
 
   private void updateRootLayoutSpecs(final int widthMeasureSpec, final int heightMeasureSpec) {
     if (mReactInstanceManager == null) {
-      FLog.w(
-          ReactConstants.TAG,
-          "Unable to update root layout specs for uninitialized ReactInstanceManager");
+      FLog.w(TAG, "Unable to update root layout specs for uninitialized ReactInstanceManager");
       return;
     }
     final ReactContext reactApplicationContext = mReactInstanceManager.getCurrentReactContext();
@@ -594,6 +584,8 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
 
         mShouldLogContentAppeared = true;
 
+        // TODO T62192299: remove this
+        FLog.e(TAG, "runApplication: call AppRegistry.runApplication");
         catalystInstance.getJSModule(AppRegistry.class).runApplication(jsAppModuleName, appParams);
       }
     } finally {
