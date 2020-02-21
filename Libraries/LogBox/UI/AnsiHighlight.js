@@ -58,7 +58,7 @@ export default function Ansi({
     // We are looking for the least amount of common whitespace to trim all lines.
     // Example: Array [" ", " 96 |", "     text", ...]
     const match = lines[2] && lines[2]?.content?.match(/^ +/);
-    const whitespaceLength = (match && match[0]?.length) || Infinity;
+    const whitespaceLength = (match && match[0]?.length) || 0;
     if (whitespaceLength < commonWhitespaceLength) {
       commonWhitespaceLength = whitespaceLength;
     }
