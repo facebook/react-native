@@ -444,10 +444,18 @@ bool JSCRuntime::isInspectable() {
 namespace {
 
 bool smellsLikeES6Symbol(JSGlobalContextRef ctx, JSValueRef ref) {
-  // Empirically, an es6 Symbol is not an object, but its type is
+  // Since iOS 13, JSValueGetType will return kJSTypeSymbol
+  // Before: Empirically, an es6 Symbol is not an object, but its type is
   // object.  This makes no sense, but we'll run with it.
-  return (
-      !JSValueIsObject(ctx, ref) && JSValueGetType(ctx, ref) == kJSTypeObject);
+  // https://github.com/WebKit/webkit/blob/master/Source/JavaScriptCore/API/JSValueRef.cpp#L79-L82
+
+  JSType type = JSValueGetType(ctx, ref);
+
+  if (type == /* kJSTypeSymbol */ 6) {
+    return true;
+  }
+
+  return (!JSValueIsObject(ctx, ref) && type == kJSTypeObject);
 }
 
 } // namespace
@@ -1339,27 +1347,37 @@ jsi::Object JSCRuntime::createObject(JSObjectRef obj) const {
 }
 
 jsi::Value JSCRuntime::createValue(JSValueRef value) const {
-  if (JSValueIsNumber(ctx_, value)) {
-    return jsi::Value(JSValueToNumber(ctx_, value, nullptr));
-  } else if (JSValueIsBoolean(ctx_, value)) {
-    return jsi::Value(JSValueToBoolean(ctx_, value));
-  } else if (JSValueIsNull(ctx_, value)) {
-    return jsi::Value(nullptr);
-  } else if (JSValueIsUndefined(ctx_, value)) {
-    return jsi::Value();
-  } else if (JSValueIsString(ctx_, value)) {
-    JSStringRef str = JSValueToStringCopy(ctx_, value, nullptr);
-    auto result = jsi::Value(createString(str));
-    JSStringRelease(str);
-    return result;
-  } else if (JSValueIsObject(ctx_, value)) {
-    JSObjectRef objRef = JSValueToObject(ctx_, value, nullptr);
-    return jsi::Value(createObject(objRef));
-  } else if (smellsLikeES6Symbol(ctx_, value)) {
-    return jsi::Value(createSymbol(value));
-  } else {
-    // WHAT ARE YOU
-    abort();
+  JSType type = JSValueGetType(ctx_, value);
+
+  switch (type) {
+    case kJSTypeNumber:
+      return jsi::Value(JSValueToNumber(ctx_, value, nullptr));
+    case kJSTypeBoolean:
+      return jsi::Value(JSValueToBoolean(ctx_, value));
+    case kJSTypeNull:
+      return jsi::Value(nullptr);
+    case kJSTypeUndefined:
+      return jsi::Value();
+    case kJSTypeString: {
+      JSStringRef str = JSValueToStringCopy(ctx_, value, nullptr);
+      auto result = jsi::Value(createString(str));
+      JSStringRelease(str);
+      return result;
+    }
+    case kJSTypeObject: {
+      JSObjectRef objRef = JSValueToObject(ctx_, value, nullptr);
+      return jsi::Value(createObject(objRef));
+    }
+// TODO: Uncomment this when all supported JSC versions have this symbol
+//    case kJSTypeSymbol:
+    default: {
+      if (smellsLikeES6Symbol(ctx_, value)) {
+        return jsi::Value(createSymbol(value));
+      } else {
+        // WHAT ARE YOU
+        abort();
+      }
+    }
   }
 }
 
