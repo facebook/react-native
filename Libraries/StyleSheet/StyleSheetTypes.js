@@ -12,11 +12,9 @@
 
 const AnimatedNode = require('../Animated/src/nodes/AnimatedNode');
 
-import type {ColorValue, ProcessedColorValue} from './ColorValueTypes';
-import {PlatformColor} from './ColorValueTypes';
+import type {NativeColorValue} from './PlatformColorValueTypes';
 
-export type {ColorValue, ProcessedColorValue};
-export {PlatformColor};
+export type ColorValue = null | string | NativeColorValue;
 
 export type ColorArrayValue = null | $ReadOnlyArray<ColorValue>;
 export type PointValue = {|

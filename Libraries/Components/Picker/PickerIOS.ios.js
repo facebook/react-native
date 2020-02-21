@@ -23,10 +23,8 @@ import RCTPickerNativeComponent, {
   Commands as PickerCommands,
 } from './RCTPickerNativeComponent';
 import type {TextStyleProp} from '../../StyleSheet/StyleSheet';
-import type {
-  ColorValue,
-  ProcessedColorValue,
-} from '../../StyleSheet/StyleSheetTypes';
+import type {ColorValue} from '../../StyleSheet/StyleSheetTypes';
+import type {ProcessedColorValue} from '../../StyleSheet/processColor';
 import type {SyntheticEvent} from '../../Types/CoreEventTypes';
 import type {ViewProps} from '../View/ViewPropTypes';
 

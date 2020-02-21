@@ -13,7 +13,11 @@
 const Platform = require('../Utilities/Platform');
 
 const normalizeColor = require('./normalizeColor');
-import type {ColorValue, ProcessedColorValue} from './ColorValueTypes';
+
+import type {ColorValue} from './StyleSheetTypes';
+import type {NativeColorValue} from './PlatformColorValueTypes';
+
+export type ProcessedColorValue = number | NativeColorValue;
 
 /* eslint no-bitwise: 0 */
 function processColor(color?: ?(number | ColorValue)): ?ProcessedColorValue {

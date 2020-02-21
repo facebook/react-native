@@ -10,7 +10,7 @@
 
 'use strict';
 
-import type {ColorValue} from './ColorValueTypes';
+import type {ColorValue} from './StyleSheetTypes';
 import {DynamicColorIOSPrivate} from './PlatformColorValueTypes';
 
 export type DynamicColorIOSTuple = {

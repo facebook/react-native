@@ -22,10 +22,8 @@ import type {
 } from '../../Types/CodegenTypes';
 import type {HostComponent} from '../../Renderer/shims/ReactNativeTypes';
 import type {TextStyleProp} from '../../StyleSheet/StyleSheet';
-import type {
-  ColorValue,
-  ProcessedColorValue,
-} from '../../StyleSheet/StyleSheetTypes';
+import type {ColorValue} from '../../StyleSheet/StyleSheetTypes';
+import type {ProcessedColorValue} from '../../StyleSheet/processColor';
 import type {ViewProps} from '../../Components/View/ViewPropTypes';
 
 type PickerItem = $ReadOnly<{|

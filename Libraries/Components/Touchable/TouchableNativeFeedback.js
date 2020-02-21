@@ -22,7 +22,6 @@ import type {PressEvent} from 'react-native/Libraries/Types/CoreEventTypes';
 import Platform from '../../Utilities/Platform';
 import View from '../../Components/View/View';
 import processColor from '../../StyleSheet/processColor';
-import type {ProcessedColorValue} from '../../StyleSheet/StyleSheetTypes';
 import * as React from 'react';
 import invariant from 'invariant';
 

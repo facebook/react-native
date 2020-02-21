@@ -10,7 +10,7 @@
 
 'use strict';
 
-import type {ColorValue} from './ColorValueTypes';
+import type {ColorValue} from './StyleSheetTypes';
 import {ColorAndroidPrivate} from './PlatformColorValueTypes';
 
 export const ColorAndroid = (color: string): ColorValue => {

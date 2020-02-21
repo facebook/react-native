@@ -10,7 +10,8 @@
 
 'use strict';
 
-import type {ColorValue, ProcessedColorValue} from './ColorValueTypes';
+import type {ColorValue} from './StyleSheetTypes';
+import type {ProcessedColorValue} from './processColor';
 
 export opaque type NativeColorValue = {
   semantic?: Array<string>,

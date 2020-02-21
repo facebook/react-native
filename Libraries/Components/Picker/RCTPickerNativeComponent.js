@@ -15,7 +15,7 @@ const requireNativeComponent = require('../../ReactNative/requireNativeComponent
 import type {HostComponent} from '../../Renderer/shims/ReactNativeTypes';
 import type {SyntheticEvent} from '../../Types/CoreEventTypes';
 import type {TextStyleProp} from '../../StyleSheet/StyleSheet';
-import type {ProcessedColorValue} from '../../StyleSheet/StyleSheetTypes';
+import type {ProcessedColorValue} from '../../StyleSheet/processColor';
 import codegenNativeCommands from '../../Utilities/codegenNativeCommands';
 import * as React from 'react';
 

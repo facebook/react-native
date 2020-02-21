@@ -10,7 +10,7 @@
 
 'use strict';
 
-import type {ColorValue} from './ColorValueTypes';
+import type {ColorValue} from './StyleSheetTypes';
 
 export const ColorAndroid = (color: string): ColorValue => {
   throw new Error('ColorAndroid is not available on this platform.');

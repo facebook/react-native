@@ -10,7 +10,7 @@
 
 'use strict';
 
-import type {ColorValue} from './ColorValueTypes';
+import type {ColorValue} from './StyleSheetTypes';
 
 export type DynamicColorIOSTuple = {
   light: ColorValue,

@@ -11,7 +11,9 @@
 'use strict';
 
 const processColor = require('./processColor');
-import type {ColorValue, ProcessedColorValue} from './ColorValueTypes';
+
+import type {ColorValue} from './StyleSheetTypes';
+import type {ProcessedColorValue} from './processColor';
 
 function processColorArray(
   colors: ?Array<ColorValue>,
