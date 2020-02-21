@@ -90,9 +90,4 @@ public class ReactFeatureFlags {
    * <p>The react flag is disabled by default because this is increasing ANRs (T57363204)
    */
   public static boolean clipChildRectsIfOverflowIsHidden = false;
-
-  /**
-   * This react flag enables the rendering of <View>s with no fixed size within a <Text> component.
-   */
-  public static boolean supportInlineViewsWithDynamicSize = true;
 }
