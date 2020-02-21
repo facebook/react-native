@@ -22,17 +22,16 @@ const normalizeColor = require('../../../StyleSheet/normalizeColor');
 type ExtrapolateType = 'extend' | 'identity' | 'clamp';
 
 export type InterpolationConfigType = {
-  inputRange: Array<number>,
+  inputRange: $ReadOnlyArray<number>,
   /* $FlowFixMe(>=0.38.0 site=react_native_fb,react_native_oss) - Flow error
    * detected during the deployment of v0.38.0. To see the error, remove this
    * comment and run flow
    */
-  outputRange: Array<number> | Array<string>,
+  outputRange: $ReadOnlyArray<number> | $ReadOnlyArray<string>,
   easing?: (input: number) => number,
   extrapolate?: ExtrapolateType,
   extrapolateLeft?: ExtrapolateType,
   extrapolateRight?: ExtrapolateType,
-  ...
 };
 
 const linear = t => t;
@@ -258,7 +257,7 @@ function isRgbOrRgba(range) {
   return typeof range === 'string' && range.startsWith('rgb');
 }
 
-function checkPattern(arr: Array<string>) {
+function checkPattern(arr: $ReadOnlyArray<string>) {
   const pattern = arr[0].replace(stringShapeRegex, '');
   for (let i = 1; i < arr.length; ++i) {
     invariant(
@@ -268,7 +267,7 @@ function checkPattern(arr: Array<string>) {
   }
 }
 
-function findRange(input: number, inputRange: Array<number>) {
+function findRange(input: number, inputRange: $ReadOnlyArray<number>) {
   let i;
   for (i = 1; i < inputRange.length - 1; ++i) {
     if (inputRange[i] >= input) {
@@ -278,7 +277,7 @@ function findRange(input: number, inputRange: Array<number>) {
   return i - 1;
 }
 
-function checkValidInputRange(arr: Array<number>) {
+function checkValidInputRange(arr: $ReadOnlyArray<number>) {
   invariant(arr.length >= 2, 'inputRange must have at least 2 elements');
   for (let i = 1; i < arr.length; ++i) {
     invariant(
@@ -294,7 +293,7 @@ function checkValidInputRange(arr: Array<number>) {
   }
 }
 
-function checkInfiniteRange(name: string, arr: Array<number>) {
+function checkInfiniteRange(name: string, arr: $ReadOnlyArray<number>) {
   invariant(arr.length >= 2, name + ' must have at least 2 elements');
   invariant(
     arr.length !== 2 || arr[0] !== -Infinity || arr[1] !== Infinity,
