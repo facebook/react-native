@@ -1132,7 +1132,7 @@ public class ReactInstanceManager {
     // If we can't get a UIManager something has probably gone horribly wrong
     if (uiManager == null) {
       throw new IllegalStateException(
-          "Unable to attache a rootView to ReactInstance when UIManager is not properly initialized.");
+          "Unable to attach a rootView to ReactInstance when UIManager is not properly initialized.");
     }
 
     @Nullable Bundle initialProperties = reactRoot.getAppProperties();
