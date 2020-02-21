@@ -12,14 +12,13 @@
 
 import type {TurboModule} from '../../TurboModule/RCTExport';
 import * as TurboModuleRegistry from '../../TurboModule/TurboModuleRegistry';
-import type {ProcessedColorValue} from '../../StyleSheet/StyleSheetTypes';
 
 export interface Spec extends TurboModule {
   +getConstants: () => {|
     +HEIGHT: number,
     +DEFAULT_BACKGROUND_COLOR: number,
   |};
-  +setColor: (color: ProcessedColorValue, animated: boolean) => void;
+  +setColor: (color: number, animated: boolean) => void;
   +setTranslucent: (translucent: boolean) => void;
 
   /**

@@ -783,7 +783,12 @@ static CGFloat RCTDefaultIfNegativeTo(CGFloat defaultValue, CGFloat x) {
   // solve this, we'll need to add a container view inside the main view to
   // correctly clip the subviews.
 
-  CGColorRef backgroundColor = [_backgroundColor resolvedColorWithTraitCollection:self.traitCollection].CGColor;
+  CGColorRef backgroundColor;
+  if (@available(iOS 13.0, *)) {
+    backgroundColor = [_backgroundColor resolvedColorWithTraitCollection:self.traitCollection].CGColor;
+  } else {
+    backgroundColor = _backgroundColor.CGColor;
+  }
 
   if (useIOSBorderRendering) {
     layer.cornerRadius = cornerRadii.topLeft;
