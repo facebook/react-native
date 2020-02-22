@@ -649,18 +649,18 @@ exports.examples = [
     },
   },
   {
+    title: 'Custom Ripple Radius (Android-only)',
+    description: ('Ripple radius on TouchableNativeFeedback can be controlled': string),
+    render: function(): React.Element<any> {
+      return <CustomRippleRadius />;
+    },
+  },
+  {
     title: 'Disabled Touchable*',
     description: ('<Touchable*> components accept disabled prop which prevents ' +
       'any interaction with component': string),
     render: function(): React.Element<any> {
       return <TouchableDisabled />;
-    },
-  },
-  {
-    title: 'Custom Ripple Radius (Android-only)',
-    description: ('Ripple radius on TouchableNativeFeedback can be controlled': string),
-    render: function(): React.Element<any> {
-      return <CustomRippleRadius />;
     },
   },
 ];
