@@ -93,11 +93,11 @@
     <span class="hljs-attr">paddingTop</span>: <span class="hljs-number">50</span>,
   },
   <span class="hljs-attr">tinyLogo</span>: {
-    <span class="hljs-attr">width</span>: <span class="hljs-number">50</span>, 
+    <span class="hljs-attr">width</span>: <span class="hljs-number">50</span>,
     <span class="hljs-attr">height</span>: <span class="hljs-number">50</span>,
   },
   <span class="hljs-attr">logo</span>: {
-    <span class="hljs-attr">width</span>: <span class="hljs-number">66</span>, 
+    <span class="hljs-attr">width</span>: <span class="hljs-number">66</span>,
     <span class="hljs-attr">height</span>: <span class="hljs-number">58</span>,
   },
 });
@@ -130,7 +130,7 @@ export default DisplayAnImage;
 </code></pre></div><div class="desktop-friendly-snack" style="margin-top: 15px; margin-bottom: 15px"><div
         data-snack-name="Function Component Example"
         data-snack-description="Example usage"
-        data-snack-code="%0Aimport%20React%20from%20'react'%3B%0Aimport%20%7B%20View%2C%20Image%2C%20StyleSheet%20%7D%20from%20'react-native'%3B%0A%0Aconst%20styles%20%3D%20StyleSheet.create(%7B%0A%20%20container%3A%20%7B%0A%20%20%20%20paddingTop%3A%2050%2C%0A%20%20%7D%2C%0A%20%20tinyLogo%3A%20%7B%0A%20%20%20%20width%3A%2050%2C%20%0A%20%20%20%20height%3A%2050%2C%0A%20%20%7D%2C%0A%20%20logo%3A%20%7B%0A%20%20%20%20width%3A%2066%2C%20%0A%20%20%20%20height%3A%2058%2C%0A%20%20%7D%2C%0A%7D)%3B%0A%0Aconst%20DisplayAnImage%20%3D%20()%20%3D%3E%20%7B%0A%20%20return%20(%0A%20%20%20%20%3CView%20style%3D%7Bstyles.container%7D%3E%0A%20%20%20%20%20%20%3CImage%0A%20%20%20%20%20%20%20%20style%3D%7Bstyles.tinyLogo%7D%0A%20%20%20%20%20%20%20%20source%3D%7Brequire('%40expo%2Fsnack-static%2Freact-native-logo.png')%7D%0A%20%20%20%20%20%20%2F%3E%0A%20%20%20%20%20%20%3CImage%0A%20%20%20%20%20%20%20%20style%3D%7Bstyles.tinyLogo%7D%0A%20%20%20%20%20%20%20%20source%3D%7B%7B%0A%20%20%20%20%20%20%20%20%20%20uri%3A%20'https%3A%2F%2Ffacebook.github.io%2Freact-native%2Fimg%2Ftiny_logo.png'%2C%0A%20%20%20%20%20%20%20%20%7D%7D%0A%20%20%20%20%20%20%2F%3E%0A%20%20%20%20%20%20%3CImage%0A%20%20%20%20%20%20%20%20style%3D%7Bstyles.logo%7D%0A%20%20%20%20%20%20%20%20source%3D%7B%7B%0A%20%20%20%20%20%20%20%20%20%20uri%3A%0A%20%20%20%20%20%20%20%20%20%20%20%20'data%3Aimage%2Fpng%3Bbase64%2CiVBORw0KGgoAAAANSUhEUgAAADMAAAAzCAYAAAA6oTAqAAAAEXRFWHRTb2Z0d2FyZQBwbmdjcnVzaEB1SfMAAABQSURBVGje7dSxCQBACARB%2B2%2Fab8BEeQNhFi6WSYzYLYudDQYGBgYGBgYGBgYGBgYGBgZmcvDqYGBgmhivGQYGBgYGBgYGBgYGBgYGBgbmQw%2BP%2FeMrC5UTVAAAAABJRU5ErkJggg%3D%3D'%2C%0A%20%20%20%20%20%20%20%20%7D%7D%0A%20%20%20%20%20%20%2F%3E%0A%20%20%20%20%3C%2FView%3E%0A%20%20)%3B%0A%7D%0A%0Aexport%20default%20DisplayAnImage%3B%0A"
+        data-snack-code="%0Aimport%20React%20from%20'react'%3B%0Aimport%20%7B%20View%2C%20Image%2C%20StyleSheet%20%7D%20from%20'react-native'%3B%0A%0Aconst%20styles%20%3D%20StyleSheet.create(%7B%0A%20%20container%3A%20%7B%0A%20%20%20%20paddingTop%3A%2050%2C%0A%20%20%7D%2C%0A%20%20tinyLogo%3A%20%7B%0A%20%20%20%20width%3A%2050%2C%0A%20%20%20%20height%3A%2050%2C%0A%20%20%7D%2C%0A%20%20logo%3A%20%7B%0A%20%20%20%20width%3A%2066%2C%0A%20%20%20%20height%3A%2058%2C%0A%20%20%7D%2C%0A%7D)%3B%0A%0Aconst%20DisplayAnImage%20%3D%20()%20%3D%3E%20%7B%0A%20%20return%20(%0A%20%20%20%20%3CView%20style%3D%7Bstyles.container%7D%3E%0A%20%20%20%20%20%20%3CImage%0A%20%20%20%20%20%20%20%20style%3D%7Bstyles.tinyLogo%7D%0A%20%20%20%20%20%20%20%20source%3D%7Brequire('%40expo%2Fsnack-static%2Freact-native-logo.png')%7D%0A%20%20%20%20%20%20%2F%3E%0A%20%20%20%20%20%20%3CImage%0A%20%20%20%20%20%20%20%20style%3D%7Bstyles.tinyLogo%7D%0A%20%20%20%20%20%20%20%20source%3D%7B%7B%0A%20%20%20%20%20%20%20%20%20%20uri%3A%20'https%3A%2F%2Ffacebook.github.io%2Freact-native%2Fimg%2Ftiny_logo.png'%2C%0A%20%20%20%20%20%20%20%20%7D%7D%0A%20%20%20%20%20%20%2F%3E%0A%20%20%20%20%20%20%3CImage%0A%20%20%20%20%20%20%20%20style%3D%7Bstyles.logo%7D%0A%20%20%20%20%20%20%20%20source%3D%7B%7B%0A%20%20%20%20%20%20%20%20%20%20uri%3A%0A%20%20%20%20%20%20%20%20%20%20%20%20'data%3Aimage%2Fpng%3Bbase64%2CiVBORw0KGgoAAAANSUhEUgAAADMAAAAzCAYAAAA6oTAqAAAAEXRFWHRTb2Z0d2FyZQBwbmdjcnVzaEB1SfMAAABQSURBVGje7dSxCQBACARB%2B2%2Fab8BEeQNhFi6WSYzYLYudDQYGBgYGBgYGBgYGBgYGBgZmcvDqYGBgmhivGQYGBgYGBgYGBgYGBgYGBgbmQw%2BP%2FeMrC5UTVAAAAABJRU5ErkJggg%3D%3D'%2C%0A%20%20%20%20%20%20%20%20%7D%7D%0A%20%20%20%20%20%20%2F%3E%0A%20%20%20%20%3C%2FView%3E%0A%20%20)%3B%0A%7D%0A%0Aexport%20default%20DisplayAnImage%3B%0A"
         data-snack-platform="web"
         data-snack-supported-platforms=ios,android,web
         data-snack-preview="true"
@@ -152,11 +152,11 @@ export default DisplayAnImage;
     <span class="hljs-attr">paddingTop</span>: <span class="hljs-number">50</span>,
   },
   <span class="hljs-attr">tinyLogo</span>: {
-    <span class="hljs-attr">width</span>: <span class="hljs-number">50</span>, 
+    <span class="hljs-attr">width</span>: <span class="hljs-number">50</span>,
     <span class="hljs-attr">height</span>: <span class="hljs-number">50</span>,
   },
   <span class="hljs-attr">logo</span>: {
-    <span class="hljs-attr">width</span>: <span class="hljs-number">66</span>, 
+    <span class="hljs-attr">width</span>: <span class="hljs-number">66</span>,
     <span class="hljs-attr">height</span>: <span class="hljs-number">58</span>,
   },
 });
@@ -185,7 +185,7 @@ export default DisplayAnImage;
 </code></pre></div><div class="desktop-friendly-snack" style="margin-top: 15px; margin-bottom: 15px"><div
         data-snack-name="Class Component Example"
         data-snack-description="Example usage"
-        data-snack-code="%0Aimport%20React%2C%20%7B%20Component%20%7D%20from%20'react'%3B%0Aimport%20%7B%20AppRegistry%2C%20View%2C%20Image%2C%20StyleSheet%20%7D%20from%20'react-native'%3B%0A%0Aconst%20styles%20%3D%20StyleSheet.create(%7B%0A%20%20container%3A%20%7B%0A%20%20%20%20paddingTop%3A%2050%2C%0A%20%20%7D%2C%0A%20%20tinyLogo%3A%20%7B%0A%20%20%20%20width%3A%2050%2C%20%0A%20%20%20%20height%3A%2050%2C%0A%20%20%7D%2C%0A%20%20logo%3A%20%7B%0A%20%20%20%20width%3A%2066%2C%20%0A%20%20%20%20height%3A%2058%2C%0A%20%20%7D%2C%0A%7D)%3B%0A%0Aexport%20default%20class%20DisplayAnImage%20extends%20Component%20%7B%0A%20%20render()%20%7B%0A%20%20%20%20return%20(%0A%20%20%20%20%20%20%3CView%20style%3D%7Bstyles.container%7D%3E%0A%20%20%20%20%20%20%20%20%3CImage%0A%20%20%20%20%20%20%20%20%20%20style%3D%7Bstyles.tinyLogo%7D%0A%20%20%20%20%20%20%20%20%20%20source%3D%7Brequire('%40expo%2Fsnack-static%2Freact-native-logo.png')%7D%0A%20%20%20%20%20%20%20%20%2F%3E%0A%20%20%20%20%20%20%20%20%3CImage%0A%20%20%20%20%20%20%20%20%20%20style%3D%7Bstyles.tinyLogo%7D%0A%20%20%20%20%20%20%20%20%20%20source%3D%7B%7Buri%3A%20'https%3A%2F%2Ffacebook.github.io%2Freact-native%2Fimg%2Ftiny_logo.png'%7D%7D%0A%20%20%20%20%20%20%20%20%2F%3E%0A%20%20%20%20%20%20%20%20%3CImage%0A%20%20%20%20%20%20%20%20%20%20style%3D%7Bstyles.logo%7D%0A%20%20%20%20%20%20%20%20%20%20source%3D%7B%7Buri%3A%20'data%3Aimage%2Fpng%3Bbase64%2CiVBORw0KGgoAAAANSUhEUgAAADMAAAAzCAYAAAA6oTAqAAAAEXRFWHRTb2Z0d2FyZQBwbmdjcnVzaEB1SfMAAABQSURBVGje7dSxCQBACARB%2B2%2Fab8BEeQNhFi6WSYzYLYudDQYGBgYGBgYGBgYGBgYGBgZmcvDqYGBgmhivGQYGBgYGBgYGBgYGBgYGBgbmQw%2BP%2FeMrC5UTVAAAAABJRU5ErkJggg%3D%3D'%7D%7D%0A%20%20%20%20%20%20%20%20%2F%3E%0A%20%20%20%20%20%20%3C%2FView%3E%0A%20%20%20%20)%3B%0A%20%20%7D%0A%7D%0A%0A"
+        data-snack-code="%0Aimport%20React%2C%20%7B%20Component%20%7D%20from%20'react'%3B%0Aimport%20%7B%20AppRegistry%2C%20View%2C%20Image%2C%20StyleSheet%20%7D%20from%20'react-native'%3B%0A%0Aconst%20styles%20%3D%20StyleSheet.create(%7B%0A%20%20container%3A%20%7B%0A%20%20%20%20paddingTop%3A%2050%2C%0A%20%20%7D%2C%0A%20%20tinyLogo%3A%20%7B%0A%20%20%20%20width%3A%2050%2C%0A%20%20%20%20height%3A%2050%2C%0A%20%20%7D%2C%0A%20%20logo%3A%20%7B%0A%20%20%20%20width%3A%2066%2C%0A%20%20%20%20height%3A%2058%2C%0A%20%20%7D%2C%0A%7D)%3B%0A%0Aexport%20default%20class%20DisplayAnImage%20extends%20Component%20%7B%0A%20%20render()%20%7B%0A%20%20%20%20return%20(%0A%20%20%20%20%20%20%3CView%20style%3D%7Bstyles.container%7D%3E%0A%20%20%20%20%20%20%20%20%3CImage%0A%20%20%20%20%20%20%20%20%20%20style%3D%7Bstyles.tinyLogo%7D%0A%20%20%20%20%20%20%20%20%20%20source%3D%7Brequire('%40expo%2Fsnack-static%2Freact-native-logo.png')%7D%0A%20%20%20%20%20%20%20%20%2F%3E%0A%20%20%20%20%20%20%20%20%3CImage%0A%20%20%20%20%20%20%20%20%20%20style%3D%7Bstyles.tinyLogo%7D%0A%20%20%20%20%20%20%20%20%20%20source%3D%7B%7Buri%3A%20'https%3A%2F%2Ffacebook.github.io%2Freact-native%2Fimg%2Ftiny_logo.png'%7D%7D%0A%20%20%20%20%20%20%20%20%2F%3E%0A%20%20%20%20%20%20%20%20%3CImage%0A%20%20%20%20%20%20%20%20%20%20style%3D%7Bstyles.logo%7D%0A%20%20%20%20%20%20%20%20%20%20source%3D%7B%7Buri%3A%20'data%3Aimage%2Fpng%3Bbase64%2CiVBORw0KGgoAAAANSUhEUgAAADMAAAAzCAYAAAA6oTAqAAAAEXRFWHRTb2Z0d2FyZQBwbmdjcnVzaEB1SfMAAABQSURBVGje7dSxCQBACARB%2B2%2Fab8BEeQNhFi6WSYzYLYudDQYGBgYGBgYGBgYGBgYGBgZmcvDqYGBgmhivGQYGBgYGBgYGBgYGBgYGBgbmQw%2BP%2FeMrC5UTVAAAAABJRU5ErkJggg%3D%3D'%7D%7D%0A%20%20%20%20%20%20%20%20%2F%3E%0A%20%20%20%20%20%20%3C%2FView%3E%0A%20%20%20%20)%3B%0A%20%20%7D%0A%7D%0A%0A"
         data-snack-platform="web"
         data-snack-supported-platforms=ios,android,web
         data-snack-preview="true"
@@ -353,6 +353,28 @@ export default DisplayAnImageWithStyle;
 <p>For details of how this works under the hood, see <a href="http://frescolib.org/docs/rounded-corners-and-circles.html">http://frescolib.org/docs/rounded-corners-and-circles.html</a></p></li>
 </ul>
 <hr>
+<h3><a class="anchor" aria-hidden="true" id="accessible"></a><a href="#accessible" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>accessible</code></h3>
+<p>When true, indicates the image is an accessibility element.</p>
+<table>
+<thead>
+<tr><th>Type</th><th>Required</th><th>Platform</th></tr>
+</thead>
+<tbody>
+<tr><td>bool</td><td>No</td><td>iOS</td></tr>
+</tbody>
+</table>
+<hr>
+<h3><a class="anchor" aria-hidden="true" id="accessibilitylabel"></a><a href="#accessibilitylabel" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>accessibilityLabel</code></h3>
+<p>The text that's read by the screen reader when the user interacts with the image.</p>
+<table>
+<thead>
+<tr><th>Type</th><th>Required</th><th>Platform</th></tr>
+</thead>
+<tbody>
+<tr><td>string</td><td>No</td><td>iOS</td></tr>
+</tbody>
+</table>
+<hr>
 <h3><a class="anchor" aria-hidden="true" id="blurradius"></a><a href="#blurradius" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>blurRadius</code></h3>
 <p>blurRadius: the blur radius of the blur filter added to the image</p>
 <table>
@@ -366,6 +388,78 @@ export default DisplayAnImageWithStyle;
 <blockquote>
 <p>Tip : IOS you will need to increase <code>blurRadius</code> more than <code>5</code></p>
 </blockquote>
+<hr>
+<h3><a class="anchor" aria-hidden="true" id="capinsets"></a><a href="#capinsets" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>capInsets</code></h3>
+<p>When the image is resized, the corners of the size specified by <code>capInsets</code> will stay a fixed size, but the center content and borders of the image will be stretched. This is useful for creating resizable rounded buttons, shadows, and other resizable assets. More info in the <a href="https://developer.apple.com/library/ios/documentation/UIKit/Reference/UIImage_Class/index.html#//apple_ref/occ/instm/UIImage/resizableImageWithCapInsets">official Apple documentation</a>.</p>
+<table>
+<thead>
+<tr><th>Type</th><th>Required</th><th>Platform</th></tr>
+</thead>
+<tbody>
+<tr><td>object: {top: number, left: number, bottom: number, right: number}</td><td>No</td><td>iOS</td></tr>
+</tbody>
+</table>
+<hr>
+<h3><a class="anchor" aria-hidden="true" id="defaultsource"></a><a href="#defaultsource" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>defaultSource</code></h3>
+<p>A static image to display while loading the image source.</p>
+<table>
+<thead>
+<tr><th>Type</th><th>Required</th><th>Platform</th></tr>
+</thead>
+<tbody>
+<tr><td>object, number</td><td>No</td><td>iOS</td></tr>
+<tr><td>number</td><td>No</td><td>Android</td></tr>
+</tbody>
+</table>
+<p>If passing an object, the general shape is <code>{uri: string, width: number, height: number, scale: number}</code>:</p>
+<ul>
+<li><code>uri</code> - a string representing the resource identifier for the image, which should be either a local file path or the name of a static image resource (which should be wrapped in the <code>require('./path/to/image.png')</code> function).</li>
+<li><code>width</code>, <code>height</code> - can be specified if known at build time, in which case these will be used to set the default <code>&lt;Image/&gt;</code> component dimensions.</li>
+<li><code>scale</code> - used to indicate the scale factor of the image. Defaults to 1.0 if unspecified, meaning that one image pixel equates to one display point / DIP.</li>
+</ul>
+<p>If passing a number:</p>
+<ul>
+<li><code>number</code> - Opaque type returned by something like <code>require('./image.jpg')</code>.</li>
+</ul>
+<blockquote>
+<p><strong>Note:</strong> On Android, the default source prop is ignored on debug builds.</p>
+</blockquote>
+<hr>
+<h3><a class="anchor" aria-hidden="true" id="fadeduration"></a><a href="#fadeduration" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>fadeDuration</code></h3>
+<p>Android only. By default, it is 300ms.</p>
+<table>
+<thead>
+<tr><th>Type</th><th>Required</th><th>Platform</th></tr>
+</thead>
+<tbody>
+<tr><td>number</td><td>No</td><td>Android</td></tr>
+</tbody>
+</table>
+<hr>
+<h3><a class="anchor" aria-hidden="true" id="loadingindicatorsource"></a><a href="#loadingindicatorsource" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>loadingIndicatorSource</code></h3>
+<p>Similarly to <code>source</code>, this property represents the resource used to render the loading indicator for the image, displayed until image is ready to be displayed, typically after when it got downloaded from network.</p>
+<table>
+<thead>
+<tr><th>Type</th><th>Required</th></tr>
+</thead>
+<tbody>
+<tr><td>array of ImageSourcePropTypes, number</td><td>No</td></tr>
+</tbody>
+</table>
+<blockquote>
+<p>Can accept a number as returned by <code>require('./image.jpg')</code></p>
+</blockquote>
+<hr>
+<h3><a class="anchor" aria-hidden="true" id="onerror"></a><a href="#onerror" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>onError</code></h3>
+<p>Invoked on load error with <code>{nativeEvent: {error}}</code>.</p>
+<table>
+<thead>
+<tr><th>Type</th><th>Required</th></tr>
+</thead>
+<tbody>
+<tr><td>function</td><td>No</td></tr>
+</tbody>
+</table>
 <hr>
 <h3><a class="anchor" aria-hidden="true" id="onlayout"></a><a href="#onlayout" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>onLayout</code></h3>
 <p>Invoked on mount and layout changes with <code>{nativeEvent: {layout: {x, y, width, height}}}</code>.</p>
@@ -412,6 +506,56 @@ export default DisplayAnImageWithStyle;
 </tbody>
 </table>
 <hr>
+<h3><a class="anchor" aria-hidden="true" id="onpartialload"></a><a href="#onpartialload" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>onPartialLoad</code></h3>
+<p>Invoked when a partial load of the image is complete. The definition of what constitutes a &quot;partial load&quot; is loader specific though this is meant for progressive JPEG loads.</p>
+<table>
+<thead>
+<tr><th>Type</th><th>Required</th><th>Platform</th></tr>
+</thead>
+<tbody>
+<tr><td>function</td><td>No</td><td>iOS</td></tr>
+</tbody>
+</table>
+<hr>
+<h3><a class="anchor" aria-hidden="true" id="onprogress"></a><a href="#onprogress" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>onProgress</code></h3>
+<p>Invoked on download progress with <code>{nativeEvent: {loaded, total}}</code>.</p>
+<table>
+<thead>
+<tr><th>Type</th><th>Required</th><th>Platform</th></tr>
+</thead>
+<tbody>
+<tr><td>function</td><td>No</td><td>iOS</td></tr>
+</tbody>
+</table>
+<hr>
+<h3><a class="anchor" aria-hidden="true" id="progressiverenderingenabled"></a><a href="#progressiverenderingenabled" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>progressiveRenderingEnabled</code></h3>
+<p>Android only. When true, enables progressive jpeg streaming. <a href="https://frescolib.org/docs/progressive-jpegs.html">https://frescolib.org/docs/progressive-jpegs.html</a></p>
+<table>
+<thead>
+<tr><th>Type</th><th>Required</th><th>Platform</th></tr>
+</thead>
+<tbody>
+<tr><td>bool</td><td>No</td><td>Android</td></tr>
+</tbody>
+</table>
+<hr>
+<h3><a class="anchor" aria-hidden="true" id="resizemethod"></a><a href="#resizemethod" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>resizeMethod</code></h3>
+<p>The mechanism that should be used to resize the image when the image's dimensions differ from the image view's dimensions. Defaults to <code>auto</code>.</p>
+<ul>
+<li><p><code>auto</code>: Use heuristics to pick between <code>resize</code> and <code>scale</code>.</p></li>
+<li><p><code>resize</code>: A software operation which changes the encoded image in memory before it gets decoded. This should be used instead of <code>scale</code> when the image is much larger than the view.</p></li>
+<li><p><code>scale</code>: The image gets drawn downscaled or upscaled. Compared to <code>resize</code>, <code>scale</code> is faster (usually hardware accelerated) and produces higher quality images. This should be used if the image is smaller than the view. It should also be used if the image is slightly bigger than the view.</p></li>
+</ul>
+<p>More details about <code>resize</code> and <code>scale</code> can be found at <a href="http://frescolib.org/docs/resizing.html">http://frescolib.org/docs/resizing.html</a>.</p>
+<table>
+<thead>
+<tr><th>Type</th><th>Required</th><th>Platform</th></tr>
+</thead>
+<tbody>
+<tr><td>enum('auto', 'resize', 'scale')</td><td>No</td><td>Android</td></tr>
+</tbody>
+</table>
+<hr>
 <h3><a class="anchor" aria-hidden="true" id="resizemode"></a><a href="#resizemode" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>resizeMode</code></h3>
 <p>Determines how to resize the image when the frame doesn't match the raw image dimensions. Defaults to <code>cover</code>.</p>
 <ul>
@@ -443,31 +587,6 @@ export default DisplayAnImageWithStyle;
 </tbody>
 </table>
 <hr>
-<h3><a class="anchor" aria-hidden="true" id="loadingindicatorsource"></a><a href="#loadingindicatorsource" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>loadingIndicatorSource</code></h3>
-<p>Similarly to <code>source</code>, this property represents the resource used to render the loading indicator for the image, displayed until image is ready to be displayed, typically after when it got downloaded from network.</p>
-<table>
-<thead>
-<tr><th>Type</th><th>Required</th></tr>
-</thead>
-<tbody>
-<tr><td>array of ImageSourcePropTypes, number</td><td>No</td></tr>
-</tbody>
-</table>
-<blockquote>
-<p>Can accept a number as returned by <code>require('./image.jpg')</code></p>
-</blockquote>
-<hr>
-<h3><a class="anchor" aria-hidden="true" id="onerror"></a><a href="#onerror" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>onError</code></h3>
-<p>Invoked on load error with <code>{nativeEvent: {error}}</code>.</p>
-<table>
-<thead>
-<tr><th>Type</th><th>Required</th></tr>
-</thead>
-<tbody>
-<tr><td>function</td><td>No</td></tr>
-</tbody>
-</table>
-<hr>
 <h3><a class="anchor" aria-hidden="true" id="testid"></a><a href="#testid" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>testID</code></h3>
 <p>A unique identifier for this element to be used in UI Automation testing scripts.</p>
 <table>
@@ -476,125 +595,6 @@ export default DisplayAnImageWithStyle;
 </thead>
 <tbody>
 <tr><td>string</td><td>No</td></tr>
-</tbody>
-</table>
-<hr>
-<h3><a class="anchor" aria-hidden="true" id="resizemethod"></a><a href="#resizemethod" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>resizeMethod</code></h3>
-<p>The mechanism that should be used to resize the image when the image's dimensions differ from the image view's dimensions. Defaults to <code>auto</code>.</p>
-<ul>
-<li><p><code>auto</code>: Use heuristics to pick between <code>resize</code> and <code>scale</code>.</p></li>
-<li><p><code>resize</code>: A software operation which changes the encoded image in memory before it gets decoded. This should be used instead of <code>scale</code> when the image is much larger than the view.</p></li>
-<li><p><code>scale</code>: The image gets drawn downscaled or upscaled. Compared to <code>resize</code>, <code>scale</code> is faster (usually hardware accelerated) and produces higher quality images. This should be used if the image is smaller than the view. It should also be used if the image is slightly bigger than the view.</p></li>
-</ul>
-<p>More details about <code>resize</code> and <code>scale</code> can be found at <a href="http://frescolib.org/docs/resizing.html">http://frescolib.org/docs/resizing.html</a>.</p>
-<table>
-<thead>
-<tr><th>Type</th><th>Required</th><th>Platform</th></tr>
-</thead>
-<tbody>
-<tr><td>enum('auto', 'resize', 'scale')</td><td>No</td><td>Android</td></tr>
-</tbody>
-</table>
-<hr>
-<h3><a class="anchor" aria-hidden="true" id="accessibilitylabel"></a><a href="#accessibilitylabel" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>accessibilityLabel</code></h3>
-<p>The text that's read by the screen reader when the user interacts with the image.</p>
-<table>
-<thead>
-<tr><th>Type</th><th>Required</th><th>Platform</th></tr>
-</thead>
-<tbody>
-<tr><td>string</td><td>No</td><td>iOS</td></tr>
-</tbody>
-</table>
-<hr>
-<h3><a class="anchor" aria-hidden="true" id="accessible"></a><a href="#accessible" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>accessible</code></h3>
-<p>When true, indicates the image is an accessibility element.</p>
-<table>
-<thead>
-<tr><th>Type</th><th>Required</th><th>Platform</th></tr>
-</thead>
-<tbody>
-<tr><td>bool</td><td>No</td><td>iOS</td></tr>
-</tbody>
-</table>
-<hr>
-<h3><a class="anchor" aria-hidden="true" id="capinsets"></a><a href="#capinsets" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>capInsets</code></h3>
-<p>When the image is resized, the corners of the size specified by <code>capInsets</code> will stay a fixed size, but the center content and borders of the image will be stretched. This is useful for creating resizable rounded buttons, shadows, and other resizable assets. More info in the <a href="https://developer.apple.com/library/ios/documentation/UIKit/Reference/UIImage_Class/index.html#//apple_ref/occ/instm/UIImage/resizableImageWithCapInsets">official Apple documentation</a>.</p>
-<table>
-<thead>
-<tr><th>Type</th><th>Required</th><th>Platform</th></tr>
-</thead>
-<tbody>
-<tr><td>object: {top: number, left: number, bottom: number, right: number}</td><td>No</td><td>iOS</td></tr>
-</tbody>
-</table>
-<hr>
-<h3><a class="anchor" aria-hidden="true" id="defaultsource"></a><a href="#defaultsource" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>defaultSource</code></h3>
-<p>A static image to display while loading the image source.</p>
-<table>
-<thead>
-<tr><th>Type</th><th>Required</th><th>Platform</th></tr>
-</thead>
-<tbody>
-<tr><td>object, number</td><td>No</td><td>iOS</td></tr>
-<tr><td>number</td><td>No</td><td>Android</td></tr>
-</tbody>
-</table>
-<p>If passing an object, the general shape is <code>{uri: string, width: number, height: number, scale: number}</code>:</p>
-<ul>
-<li><code>uri</code> - a string representing the resource identifier for the image, which should be either a local file path or the name of a static image resource (which should be wrapped in the <code>require('./path/to/image.png')</code> function).</li>
-<li><code>width</code>, <code>height</code> - can be specified if known at build time, in which case these will be used to set the default <code>&lt;Image/&gt;</code> component dimensions.</li>
-<li><code>scale</code> - used to indicate the scale factor of the image. Defaults to 1.0 if unspecified, meaning that one image pixel equates to one display point / DIP.</li>
-</ul>
-<p>If passing a number:</p>
-<ul>
-<li><code>number</code> - Opaque type returned by something like <code>require('./image.jpg')</code>.</li>
-</ul>
-<blockquote>
-<p><strong>Note:</strong> On Android, the default source prop is ignored on debug builds.</p>
-</blockquote>
-<hr>
-<h3><a class="anchor" aria-hidden="true" id="onpartialload"></a><a href="#onpartialload" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>onPartialLoad</code></h3>
-<p>Invoked when a partial load of the image is complete. The definition of what constitutes a &quot;partial load&quot; is loader specific though this is meant for progressive JPEG loads.</p>
-<table>
-<thead>
-<tr><th>Type</th><th>Required</th><th>Platform</th></tr>
-</thead>
-<tbody>
-<tr><td>function</td><td>No</td><td>iOS</td></tr>
-</tbody>
-</table>
-<hr>
-<h3><a class="anchor" aria-hidden="true" id="onprogress"></a><a href="#onprogress" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>onProgress</code></h3>
-<p>Invoked on download progress with <code>{nativeEvent: {loaded, total}}</code>.</p>
-<table>
-<thead>
-<tr><th>Type</th><th>Required</th><th>Platform</th></tr>
-</thead>
-<tbody>
-<tr><td>function</td><td>No</td><td>iOS</td></tr>
-</tbody>
-</table>
-<hr>
-<h3><a class="anchor" aria-hidden="true" id="fadeduration"></a><a href="#fadeduration" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>fadeDuration</code></h3>
-<p>Android only. By default, it is 300ms.</p>
-<table>
-<thead>
-<tr><th>Type</th><th>Required</th><th>Platform</th></tr>
-</thead>
-<tbody>
-<tr><td>number</td><td>No</td><td>Android</td></tr>
-</tbody>
-</table>
-<hr>
-<h3><a class="anchor" aria-hidden="true" id="progressiverenderingenabled"></a><a href="#progressiverenderingenabled" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>progressiveRenderingEnabled</code></h3>
-<p>Android only. When true, enables progressive jpeg streaming. <a href="https://frescolib.org/docs/progressive-jpegs.html">https://frescolib.org/docs/progressive-jpegs.html</a></p>
-<table>
-<thead>
-<tr><th>Type</th><th>Required</th><th>Platform</th></tr>
-</thead>
-<tbody>
-<tr><td>bool</td><td>No</td><td>Android</td></tr>
 </tbody>
 </table>
 <h2><a class="anchor" aria-hidden="true" id="methods"></a><a href="#methods" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Methods</h2>
@@ -692,7 +692,7 @@ export default DisplayAnImageWithStyle;
 <blockquote>
 <p><code>ImageSource</code> is an object like <code>{ uri: '&lt;http location || file path&gt;' }</code></p>
 </blockquote>
-</span></div></article></div><div class="docs-prevnext"><a class="docs-prev button" href="/react-native/docs/next/flatlist"><span class="arrow-prev">← </span><span class="function-name-prevnext">FlatList</span></a><a class="docs-next button" href="/react-native/docs/next/imagebackground"><span class="function-name-prevnext">ImageBackground</span><span class="arrow-next"> →</span></a></div></div></div><nav class="onPageNav"><ul class="toc-headings"><li><a href="#props">Props</a><ul class="toc-headings"><li><a href="#style"><code>style</code></a></li><li><a href="#blurradius"><code>blurRadius</code></a></li><li><a href="#onlayout"><code>onLayout</code></a></li><li><a href="#onload"><code>onLoad</code></a></li><li><a href="#onloadend"><code>onLoadEnd</code></a></li><li><a href="#onloadstart"><code>onLoadStart</code></a></li><li><a href="#resizemode"><code>resizeMode</code></a></li><li><a href="#source"><code>source</code></a></li><li><a href="#loadingindicatorsource"><code>loadingIndicatorSource</code></a></li><li><a href="#onerror"><code>onError</code></a></li><li><a href="#testid"><code>testID</code></a></li><li><a href="#resizemethod"><code>resizeMethod</code></a></li><li><a href="#accessibilitylabel"><code>accessibilityLabel</code></a></li><li><a href="#accessible"><code>accessible</code></a></li><li><a href="#capinsets"><code>capInsets</code></a></li><li><a href="#defaultsource"><code>defaultSource</code></a></li><li><a href="#onpartialload"><code>onPartialLoad</code></a></li><li><a href="#onprogress"><code>onProgress</code></a></li><li><a href="#fadeduration"><code>fadeDuration</code></a></li><li><a href="#progressiverenderingenabled"><code>progressiveRenderingEnabled</code></a></li></ul></li><li><a href="#methods">Methods</a><ul class="toc-headings"><li><a href="#getsize"><code>getSize()</code></a></li><li><a href="#getsizewithheaders"><code>getSizeWithHeaders()</code></a></li><li><a href="#prefetch"><code>prefetch()</code></a></li><li><a href="#abortprefetch"><code>abortPrefetch()</code></a></li><li><a href="#querycache"><code>queryCache()</code></a></li><li><a href="#resolveassetsource"><code>resolveAssetSource()</code></a></li></ul></li></ul></nav></div><footer class="nav-footer" id="footer"><section class="sitemap"><div><h5>Docs</h5><a href="/react-native/docs/getting-started.html">Getting Started</a><a href="/react-native/docs/tutorial.html">Tutorial</a><a href="/react-native/docs/components-and-apis.html">Components and APIs</a><a href="/react-native/docs/more-resources.html">More Resources</a></div><div><h5>Community</h5><a href="/react-native/help.html">The React Native Community</a><a href="/react-native/showcase.html">Who&#x27;s using React Native?</a><a href="http://stackoverflow.com/questions/tagged/react-native" target="_blank">Ask Questions on Stack Overflow</a><a href="https://github.com/facebook/react-native/blob/master/CONTRIBUTING.md">Contributor Guide</a><a href="https://dev.to/t/reactnative" target="_blank">DEV Community</a></div><div><h5>More Resources</h5><a href="/react-native/blog/">Blog</a><a href="https://twitter.com/reactnative" target="_blank">Twitter</a><a href="https://github.com/facebook/react-native" target="_blank">GitHub</a><a href="http://reactjs.org" target="_blank">React</a></div></section><a href="https://code.facebook.com/projects/" target="_blank" class="fbOpenSource"><img src="/react-native/img/oss_logo.png" alt="Facebook Open Source" width="170" height="45"/></a><section class="copyright">Copyright © 2020 Facebook Inc.</section></footer></div><script type="text/javascript" src="https://cdn.jsdelivr.net/docsearch.js/1/docsearch.min.js"></script><script>window.fbAsyncInit = function() {FB.init({appId:'1677033832619985',xfbml:true,version:'v2.7'});};(function(d, s, id){var js, fjs = d.getElementsByTagName(s)[0];if (d.getElementById(id)) {return;}js = d.createElement(s); js.id = id;js.src = '//connect.facebook.net/en_US/sdk.js';fjs.parentNode.insertBefore(js, fjs);}(document, 'script','facebook-jssdk'));
+</span></div></article></div><div class="docs-prevnext"><a class="docs-prev button" href="/react-native/docs/next/flatlist"><span class="arrow-prev">← </span><span class="function-name-prevnext">FlatList</span></a><a class="docs-next button" href="/react-native/docs/next/imagebackground"><span class="function-name-prevnext">ImageBackground</span><span class="arrow-next"> →</span></a></div></div></div><nav class="onPageNav"><ul class="toc-headings"><li><a href="#props">Props</a><ul class="toc-headings"><li><a href="#style"><code>style</code></a></li><li><a href="#accessible"><code>accessible</code></a></li><li><a href="#accessibilitylabel"><code>accessibilityLabel</code></a></li><li><a href="#blurradius"><code>blurRadius</code></a></li><li><a href="#capinsets"><code>capInsets</code></a></li><li><a href="#defaultsource"><code>defaultSource</code></a></li><li><a href="#fadeduration"><code>fadeDuration</code></a></li><li><a href="#loadingindicatorsource"><code>loadingIndicatorSource</code></a></li><li><a href="#onerror"><code>onError</code></a></li><li><a href="#onlayout"><code>onLayout</code></a></li><li><a href="#onload"><code>onLoad</code></a></li><li><a href="#onloadend"><code>onLoadEnd</code></a></li><li><a href="#onloadstart"><code>onLoadStart</code></a></li><li><a href="#onpartialload"><code>onPartialLoad</code></a></li><li><a href="#onprogress"><code>onProgress</code></a></li><li><a href="#progressiverenderingenabled"><code>progressiveRenderingEnabled</code></a></li><li><a href="#resizemethod"><code>resizeMethod</code></a></li><li><a href="#resizemode"><code>resizeMode</code></a></li><li><a href="#source"><code>source</code></a></li><li><a href="#testid"><code>testID</code></a></li></ul></li><li><a href="#methods">Methods</a><ul class="toc-headings"><li><a href="#getsize"><code>getSize()</code></a></li><li><a href="#getsizewithheaders"><code>getSizeWithHeaders()</code></a></li><li><a href="#prefetch"><code>prefetch()</code></a></li><li><a href="#abortprefetch"><code>abortPrefetch()</code></a></li><li><a href="#querycache"><code>queryCache()</code></a></li><li><a href="#resolveassetsource"><code>resolveAssetSource()</code></a></li></ul></li></ul></nav></div><footer class="nav-footer" id="footer"><section class="sitemap"><div><h5>Docs</h5><a href="/react-native/docs/getting-started.html">Getting Started</a><a href="/react-native/docs/tutorial.html">Tutorial</a><a href="/react-native/docs/components-and-apis.html">Components and APIs</a><a href="/react-native/docs/more-resources.html">More Resources</a></div><div><h5>Community</h5><a href="/react-native/help.html">The React Native Community</a><a href="/react-native/showcase.html">Who&#x27;s using React Native?</a><a href="http://stackoverflow.com/questions/tagged/react-native" target="_blank">Ask Questions on Stack Overflow</a><a href="https://github.com/facebook/react-native/blob/master/CONTRIBUTING.md">Contributor Guide</a><a href="https://dev.to/t/reactnative" target="_blank">DEV Community</a></div><div><h5>More Resources</h5><a href="/react-native/blog/">Blog</a><a href="https://twitter.com/reactnative" target="_blank">Twitter</a><a href="https://github.com/facebook/react-native" target="_blank">GitHub</a><a href="http://reactjs.org" target="_blank">React</a></div></section><a href="https://code.facebook.com/projects/" target="_blank" class="fbOpenSource"><img src="/react-native/img/oss_logo.png" alt="Facebook Open Source" width="170" height="45"/></a><section class="copyright">Copyright © 2020 Facebook Inc.</section></footer></div><script type="text/javascript" src="https://cdn.jsdelivr.net/docsearch.js/1/docsearch.min.js"></script><script>window.fbAsyncInit = function() {FB.init({appId:'1677033832619985',xfbml:true,version:'v2.7'});};(function(d, s, id){var js, fjs = d.getElementsByTagName(s)[0];if (d.getElementById(id)) {return;}js = d.createElement(s); js.id = id;js.src = '//connect.facebook.net/en_US/sdk.js';fjs.parentNode.insertBefore(js, fjs);}(document, 'script','facebook-jssdk'));
                 </script><script>window.twttr=(function(d,s, id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return t;js=d.createElement(s);js.id=id;js.src='https://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js, fjs);t._e = [];t.ready = function(f) {t._e.push(f);};return t;}(document, 'script', 'twitter-wjs'));</script><script>
                 document.addEventListener('keyup', function(e) {
                   if (e.target !== document.body) {
