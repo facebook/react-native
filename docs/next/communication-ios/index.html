@@ -133,7 +133,7 @@ rootView.appProperties = @{<span class="hljs-string">@"images"</span> : imageLis
 <p>Native modules are Objective-C classes that are available in JS. Typically one instance of each module is created per JS bridge. They can export arbitrary functions and constants to React Native. They have been covered in detail in <a href="/react-native/docs/next/native-modules-ios#content">this article</a>.</p>
 <p>The fact that native modules are singletons limits the mechanism in the context of embedding. Let's say we have a React Native component embedded in a native view and we want to update the native, parent view. Using the native module mechanism, we would export a function that not only takes expected arguments, but also an identifier of the parent native view. The identifier would be used to retrieve a reference to the parent view to update. That said, we would need to keep a mapping from identifiers to native views in the module.</p>
 <p>Although this solution is complex, it is used in <code>RCTUIManager</code>, which is an internal React Native class that manages all React Native views.</p>
-<p>Native modules can also be used to expose existing native libraries to JS. The <a href="https://github.com/facebook/react-native/tree/master/Libraries/Geolocation">Geolocation library</a> is a living example of the idea.</p>
+<p>Native modules can also be used to expose existing native libraries to JS. The <a href="https://github.com/react-native-community/react-native-geolocation">Geolocation library</a> is a living example of the idea.</p>
 <blockquote>
 <p><strong><em>Warning</em></strong>: All native modules share the same namespace. Watch out for name collisions when creating new ones.</p>
 </blockquote>
