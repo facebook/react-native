@@ -445,7 +445,13 @@ public class MountingManager {
   @UiThread
   public void updateEventEmitter(int reactTag, @NonNull EventEmitterWrapper eventEmitter) {
     UiThreadUtil.assertOnUiThread();
-    ViewState viewState = getViewState(reactTag);
+    ViewState viewState = mTagToViewState.get(reactTag);
+    if (viewState == null) {
+      // TODO T62717437 - Use a flag to determine that these event emitters belong to virtual nodes
+      // only.
+      viewState = new ViewState(reactTag, null, null);
+      mTagToViewState.put(reactTag, viewState);
+    }
     viewState.mEventEmitter = eventEmitter;
   }
 
