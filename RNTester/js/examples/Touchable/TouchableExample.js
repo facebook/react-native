@@ -452,10 +452,12 @@ function CustomRippleRadius() {
 
       <TouchableNativeFeedback
         onPress={() => console.log('custom TNF has been clicked')}
-        background={TouchableNativeFeedback.SelectableBackgroundBorderless(50)}>
+        background={TouchableNativeFeedback.SelectableBackgroundBorderless(
+          150,
+        )}>
         <View>
           <Text style={[styles.button, styles.nativeFeedbackButton]}>
-            radius 50
+            radius 150
           </Text>
         </View>
       </TouchableNativeFeedback>

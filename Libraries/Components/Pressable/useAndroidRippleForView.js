@@ -22,14 +22,21 @@ type NativeBackgroundProp = $ReadOnly<{|
   type: 'RippleAndroid',
   color: ?number,
   borderless: boolean,
+  rippleRadius: ?number,
 |}>;
+
+export type RippleConfig = {|
+  color?: ?ColorValue,
+  borderless?: ?boolean,
+  radius?: ?number,
+|};
 
 /**
  * Provides the event handlers and props for configuring the ripple effect on
  * supported versions of Android.
  */
 export default function useAndroidRippleForView(
-  rippleColor: ?ColorValue,
+  rippleConfig: ?RippleConfig,
   viewRef: {|current: null | React.ElementRef<typeof View>|},
 ): ?$ReadOnly<{|
   onPressIn: (event: PressEvent) => void,
@@ -43,9 +50,10 @@ export default function useAndroidRippleForView(
     if (
       Platform.OS === 'android' &&
       Platform.Version >= 21 &&
-      rippleColor != null
+      rippleConfig != null
     ) {
-      const processedColor = processColor(rippleColor);
+      const {color, borderless, radius} = rippleConfig;
+      const processedColor = processColor(color);
       invariant(
         processedColor == null || typeof processedColor === 'number',
         'Unexpected color given for Ripple color',
@@ -53,11 +61,12 @@ export default function useAndroidRippleForView(
 
       return {
         viewProps: {
-          // Consider supporting `nativeForegroundAndroid` and `borderless`.
+          // Consider supporting `nativeForegroundAndroid`
           nativeBackgroundAndroid: {
             type: 'RippleAndroid',
             color: processedColor,
-            borderless: false,
+            borderless: !!borderless,
+            rippleRadius: radius,
           },
         },
         onPressIn(event: PressEvent): void {
@@ -90,5 +99,5 @@ export default function useAndroidRippleForView(
       };
     }
     return null;
-  }, [rippleColor, viewRef]);
+  }, [rippleConfig, viewRef]);
 }

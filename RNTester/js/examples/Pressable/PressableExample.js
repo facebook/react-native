@@ -369,8 +369,51 @@ exports.examples = [
       };
       return (
         <View style={styles.row}>
-          <Pressable android_rippleColor="green">
+          <Pressable android_ripple={{color: 'green'}}>
             <Animated.View style={style} />
+          </Pressable>
+        </View>
+      );
+    },
+  },
+  {
+    title: 'Pressable with custom Ripple',
+    description: ("Pressable can specify ripple's radius and borderless params": string),
+    platform: 'android',
+    render: function(): React.Node {
+      const nativeFeedbackButton = {
+        textAlign: 'center',
+        margin: 10,
+      };
+      return (
+        <View
+          style={[
+            styles.row,
+            {justifyContent: 'space-around', alignItems: 'center'},
+          ]}>
+          <Pressable
+            android_ripple={{color: 'orange', borderless: true, radius: 30}}>
+            <View>
+              <Text style={[styles.button, nativeFeedbackButton]}>
+                radius 30
+              </Text>
+            </View>
+          </Pressable>
+
+          <Pressable android_ripple={{borderless: true, radius: 150}}>
+            <View>
+              <Text style={[styles.button, nativeFeedbackButton]}>
+                radius 150
+              </Text>
+            </View>
+          </Pressable>
+
+          <Pressable android_ripple={{borderless: false, radius: 70}}>
+            <View style={styles.block}>
+              <Text style={[styles.button, nativeFeedbackButton]}>
+                radius 70, with border
+              </Text>
+            </View>
           </Pressable>
         </View>
       );

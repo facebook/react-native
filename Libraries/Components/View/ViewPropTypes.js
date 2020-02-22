@@ -230,6 +230,7 @@ type AndroidDrawableRipple = $ReadOnly<{|
   type: 'RippleAndroid',
   color?: ?number,
   borderless?: ?boolean,
+  rippleRadius?: ?number,
 |}>;
 
 type AndroidDrawable = AndroidDrawableThemeAttr | AndroidDrawableRipple;
