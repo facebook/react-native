@@ -70,6 +70,83 @@
             });
         </script></nav></div><div class="container mainContainer docsContainer"><div class="wrapper"><div class="post"><header class="postHeader"><a class="edit-page-link button" href="https://github.com/facebook/react-native-website/blob/master/docs/virtualizedlist.md" target="_blank" rel="noreferrer noopener">Edit</a><h1 id="__docusaurus" class="postHeaderTitle">VirtualizedList</h1></header><article><div><span><p>Base implementation for the more convenient <a href="/react-native/docs/next/flatlist"><code>&lt;FlatList&gt;</code></a> and <a href="/react-native/docs/next/sectionlist"><code>&lt;SectionList&gt;</code></a> components, which are also better documented. In general, this should only really be used if you need more flexibility than <a href="/react-native/docs/next/flatlist"><code>FlatList</code></a> provides, e.g. for use with immutable data instead of plain arrays.</p>
 <p>Virtualization massively improves memory consumption and performance of large lists by maintaining a finite render window of active items and replacing all items outside of the render window with appropriately sized blank space. The window adapts to scrolling behavior, and items are rendered incrementally with low-pri (after any running interactions) if they are far from the visible area, or with hi-pri otherwise to minimize the potential of seeing blank space.</p>
+<hr>
+<h3><a class="anchor" aria-hidden="true" id="example-usage"></a><a href="#example-usage" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Example usage</h3>
+<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React <span class="hljs-keyword">from</span> <span class="hljs-string">'react'</span>;
+<span class="hljs-keyword">import</span> { SafeAreaView, View, VirtualizedList, StyleSheet, Text } <span class="hljs-keyword">from</span> <span class="hljs-string">'react-native'</span>;
+<span class="hljs-keyword">import</span> Constants <span class="hljs-keyword">from</span> <span class="hljs-string">'expo-constants'</span>;
+
+<span class="hljs-keyword">const</span> DATA = [];
+
+<span class="hljs-keyword">const</span> getItem = <span class="hljs-function">(<span class="hljs-params">data, index</span>) =&gt;</span> {
+  <span class="hljs-keyword">return</span> {
+    <span class="hljs-attr">id</span>: <span class="hljs-built_in">Math</span>.random().toString(<span class="hljs-number">12</span>).substring(<span class="hljs-number">0</span>),
+    <span class="hljs-attr">title</span>: <span class="hljs-string">`Item <span class="hljs-subst">${index+<span class="hljs-number">1</span>}</span>`</span>
+  }
+}
+
+<span class="hljs-keyword">const</span> getItemCount = <span class="hljs-function">(<span class="hljs-params">data</span>) =&gt;</span> {
+  <span class="hljs-keyword">return</span> <span class="hljs-number">50</span>;
+}
+
+<span class="hljs-keyword">const</span> Item = <span class="hljs-function">(<span class="hljs-params">{ title }</span>)=&gt;</span> {
+  <span class="hljs-keyword">return</span> (
+    <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">View</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.item}</span>&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">Text</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.title}</span>&gt;</span>{title}<span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span>
+    <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span></span>
+  );
+}
+
+<span class="hljs-keyword">const</span> VirtualizedListExample = <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
+  <span class="hljs-keyword">return</span> (
+    &lt;SafeAreaView style={styles.container}&gt;
+      &lt;VirtualizedList
+        data={DATA}
+        initialNumToRender={4}
+        renderItem={({ item }) =&gt; &lt;Item title={item.title} /&gt;}
+        keyExtractor={item =&gt; item.key}
+        getItemCount={getItemCount}
+        getItem={getItem}
+      /&gt;
+    &lt;/SafeAreaView&gt;
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    marginTop: Constants.statusBarHeight,
+  },
+  item: {
+    backgroundColor: '#f9c2ff',
+    height: 150,
+    justifyContent: 'center',
+    marginVertical: 8,
+    marginHorizontal: 16,
+    padding: 20,
+  },
+  title: {
+    fontSize: 32,
+  },
+});
+
+export default VirtualizedListExample;
+</code></pre></div><div class="desktop-friendly-snack" style="margin-top: 15px; margin-bottom: 15px"><div
+        data-snack-name="VirtualizedListExample"
+        data-snack-description="Example usage"
+        data-snack-code="import%20React%20from%20'react'%3B%0Aimport%20%7B%20SafeAreaView%2C%20View%2C%20VirtualizedList%2C%20StyleSheet%2C%20Text%20%7D%20from%20'react-native'%3B%0Aimport%20Constants%20from%20'expo-constants'%3B%0A%0Aconst%20DATA%20%3D%20%5B%5D%3B%0A%0Aconst%20getItem%20%3D%20(data%2C%20index)%20%3D%3E%20%7B%0A%20%20return%20%7B%0A%20%20%20%20id%3A%20Math.random().toString(12).substring(0)%2C%0A%20%20%20%20title%3A%20%60Item%20%24%7Bindex%2B1%7D%60%0A%20%20%7D%0A%7D%0A%0Aconst%20getItemCount%20%3D%20(data)%20%3D%3E%20%7B%0A%20%20return%2050%3B%0A%7D%0A%0Aconst%20Item%20%3D%20(%7B%20title%20%7D)%3D%3E%20%7B%0A%20%20return%20(%0A%20%20%20%20%3CView%20style%3D%7Bstyles.item%7D%3E%0A%20%20%20%20%20%20%3CText%20style%3D%7Bstyles.title%7D%3E%7Btitle%7D%3C%2FText%3E%0A%20%20%20%20%3C%2FView%3E%0A%20%20)%3B%0A%7D%0A%0Aconst%20VirtualizedListExample%20%3D%20()%20%3D%3E%20%7B%0A%20%20return%20(%0A%20%20%20%20%3CSafeAreaView%20style%3D%7Bstyles.container%7D%3E%0A%20%20%20%20%20%20%3CVirtualizedList%0A%20%20%20%20%20%20%20%20data%3D%7BDATA%7D%0A%20%20%20%20%20%20%20%20initialNumToRender%3D%7B4%7D%0A%20%20%20%20%20%20%20%20renderItem%3D%7B(%7B%20item%20%7D)%20%3D%3E%20%3CItem%20title%3D%7Bitem.title%7D%20%2F%3E%7D%0A%20%20%20%20%20%20%20%20keyExtractor%3D%7Bitem%20%3D%3E%20item.key%7D%0A%20%20%20%20%20%20%20%20getItemCount%3D%7BgetItemCount%7D%0A%20%20%20%20%20%20%20%20getItem%3D%7BgetItem%7D%0A%20%20%20%20%20%20%2F%3E%0A%20%20%20%20%3C%2FSafeAreaView%3E%0A%20%20)%3B%0A%7D%0A%0Aconst%20styles%20%3D%20StyleSheet.create(%7B%0A%20%20container%3A%20%7B%0A%20%20%20%20flex%3A%201%2C%0A%20%20%20%20marginTop%3A%20Constants.statusBarHeight%2C%0A%20%20%7D%2C%0A%20%20item%3A%20%7B%0A%20%20%20%20backgroundColor%3A%20'%23f9c2ff'%2C%0A%20%20%20%20height%3A%20150%2C%0A%20%20%20%20justifyContent%3A%20'center'%2C%0A%20%20%20%20marginVertical%3A%208%2C%0A%20%20%20%20marginHorizontal%3A%2016%2C%0A%20%20%20%20padding%3A%2020%2C%0A%20%20%7D%2C%0A%20%20title%3A%20%7B%0A%20%20%20%20fontSize%3A%2032%2C%0A%20%20%7D%2C%0A%7D)%3B%0A%0Aexport%20default%20VirtualizedListExample%3B%0A"
+        data-snack-platform="web"
+        data-snack-supported-platforms=ios,android,web
+        data-snack-preview="true"
+        style="
+          overflow: hidden;
+          background: #fafafa;
+          border: 1px solid rgba(0,0,0,.16);
+          border-radius: 4px;
+          height: 514px;
+          width: 100%;
+        "
+      ></div></div></div><hr>
 <p>Some caveats:</p>
 <ul>
 <li>Internal state is not preserved when content scrolls out of the render window. Make sure all your data is captured in the item data or external stores like Flux, Redux, or Relay.</li>
