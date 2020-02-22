@@ -107,6 +107,7 @@ class Binding : public jni::HybridClass<Binding>, public SchedulerDelegate {
   bool shouldCollateRemovesAndDeletes_{false};
   bool collapseDeleteCreateMountingInstructions_{false};
   bool disablePreallocateViews_{false};
+  bool disableVirtualNodePreallocation_{false};
 };
 
 } // namespace react
