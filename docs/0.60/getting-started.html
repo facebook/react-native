@@ -287,12 +287,15 @@ brew cask install adoptopenjdk8
 <blockquote>
 <p><a href="https://facebook.github.io/watchman/docs/install.html">Watchman</a> is a tool by Facebook for watching changes in the filesystem. It is highly recommended you install it for better performance and increased compatibility in certain edge cases (translation: you may be able to get by without installing this, but your mileage may vary; installing this now may save you from a headache later).</p>
 </blockquote>
+<p><block class="native mac windows linux ios android" /></p>
+<p><h3>React Native Command Line Interface</h3></p>
+<p>React Native has a built-in command line interface. Rather than install and manage a specific version of the CLI globally, we recommend you access the current version at runtime using <code>npx</code>, which ships with Node.js. With <code>npx react-native &lt;command&gt;</code>, the current stable version of the CLI will be downloaded and executed at the time the command is run.</p>
 <p><block class="native mac ios" /></p>
 <p><h2>Creating a new application</h2></p>
 <blockquote>
 <p>If you previously installed a global <code>react-native-cli</code> package, please remove it as it may cause unexpected issues.</p>
 </blockquote>
-<p>React Native has a built-in command line interface, which you can use to generate a new project. You can access it without installing anything globally using <code>npx</code>, which ships with Node.js. Let's create a new React Native project called &quot;AwesomeProject&quot;:</p>
+<p>You can use React Native's built-in command line interface to generate a new project. Let's create a new React Native project called &quot;AwesomeProject&quot;:</p>
 <pre><code class="hljs css language-sh">npx react-native init AwesomeProject
 </code></pre>
 <p>This is not necessary if you are integrating React Native into an existing application, if you &quot;ejected&quot; from Expo, or if you're adding iOS support to an existing React Native project (see <a href="/react-native/docs/0.60/platform-specific-code">Platform Specific Code</a>). You can also use a third-party CLI to init your React Native app, such as <a href="https://github.com/infinitered/ignite">Ignite CLI</a>.</p>
