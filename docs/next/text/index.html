@@ -71,15 +71,77 @@
         </script></nav></div><div class="container mainContainer docsContainer"><div class="wrapper"><div class="post"><header class="postHeader"><a class="edit-page-link button" href="https://github.com/facebook/react-native-website/blob/master/docs/text.md" target="_blank" rel="noreferrer noopener">Edit</a><h1 id="__docusaurus" class="postHeaderTitle">Text</h1></header><article><div><span><p>A React component for displaying text.</p>
 <p><code>Text</code> supports nesting, styling, and touch handling.</p>
 <p>In the following example, the nested title and body text will inherit the <code>fontFamily</code> from <code>styles.baseText</code>, but the title provides its own additional styles. The title and body will stack on top of each other on account of the literal newlines:</p>
-<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React, { Component } <span class="hljs-keyword">from</span> <span class="hljs-string">'react'</span>;
-<span class="hljs-keyword">import</span> { Text, StyleSheet } <span class="hljs-keyword">from</span> <span class="hljs-string">'react-native'</span>;
+<div class="toggler">
+  <ul role="tablist" class="toggle-syntax">
+    <li id="functional" class="button-functional" aria-selected="false" role="tab" tabindex="0" aria-controls="functionaltab" onclick="displayTabs('syntax', 'functional')">
+      Function Component Example
+    </li>
+    <li id="classical" class="button-classical" aria-selected="false" role="tab" tabindex="0" aria-controls="classicaltab" onclick="displayTabs('syntax', 'classical')">
+      Class Component Example
+    </li>
+  </ul>
+</div>
+<p><block class="functional syntax" /></p>
+<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React, { useState } <span class="hljs-keyword">from</span> <span class="hljs-string">"react"</span>;
+<span class="hljs-keyword">import</span> { Text, StyleSheet } <span class="hljs-keyword">from</span> <span class="hljs-string">"react-native"</span>;
+
+<span class="hljs-keyword">const</span> onPressTitle = <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
+  <span class="hljs-built_in">console</span>.log(<span class="hljs-string">"title pressed"</span>);
+};
+
+<span class="hljs-keyword">const</span> TextInANest = <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
+  <span class="hljs-keyword">const</span> titleText = useState(<span class="hljs-string">"Bird's Nest"</span>);
+  <span class="hljs-keyword">const</span> bodyText = useState(<span class="hljs-string">"This is not really a bird nest."</span>);
+
+  <span class="hljs-keyword">return</span> (
+    <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">Text</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.baseText}</span>&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">Text</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.titleText}</span> <span class="hljs-attr">onPress</span>=<span class="hljs-string">{onPressTitle}</span>&gt;</span>
+        {titleText}
+        {"\n"}
+        {"\n"}
+      <span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">Text</span> <span class="hljs-attr">numberOfLines</span>=<span class="hljs-string">{5}</span>&gt;</span>{bodyText}<span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span>
+    <span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span></span>
+  );
+};
+
+<span class="hljs-keyword">const</span> styles = StyleSheet.create({
+  <span class="hljs-attr">baseText</span>: {
+    <span class="hljs-attr">fontFamily</span>: <span class="hljs-string">"Cochin"</span>
+  },
+  <span class="hljs-attr">titleText</span>: {
+    <span class="hljs-attr">fontSize</span>: <span class="hljs-number">20</span>,
+    <span class="hljs-attr">fontWeight</span>: <span class="hljs-string">"bold"</span>
+  }
+});
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> TextInANest;
+
+</code></pre></div><div class="desktop-friendly-snack" style="margin-top: 15px; margin-bottom: 15px"><div
+        data-snack-name="Text Functional Component Example"
+        data-snack-description="Example usage"
+        data-snack-code="import%20React%2C%20%7B%20useState%20%7D%20from%20%22react%22%3B%0Aimport%20%7B%20Text%2C%20StyleSheet%20%7D%20from%20%22react-native%22%3B%0A%0Aconst%20onPressTitle%20%3D%20()%20%3D%3E%20%7B%0A%20%20console.log(%22title%20pressed%22)%3B%0A%7D%3B%0A%0Aconst%20TextInANest%20%3D%20()%20%3D%3E%20%7B%0A%20%20const%20titleText%20%3D%20useState(%22Bird's%20Nest%22)%3B%0A%20%20const%20bodyText%20%3D%20useState(%22This%20is%20not%20really%20a%20bird%20nest.%22)%3B%0A%0A%20%20return%20(%0A%20%20%20%20%3CText%20style%3D%7Bstyles.baseText%7D%3E%0A%20%20%20%20%20%20%3CText%20style%3D%7Bstyles.titleText%7D%20onPress%3D%7BonPressTitle%7D%3E%0A%20%20%20%20%20%20%20%20%7BtitleText%7D%0A%20%20%20%20%20%20%20%20%7B%22%5Cn%22%7D%0A%20%20%20%20%20%20%20%20%7B%22%5Cn%22%7D%0A%20%20%20%20%20%20%3C%2FText%3E%0A%20%20%20%20%20%20%3CText%20numberOfLines%3D%7B5%7D%3E%7BbodyText%7D%3C%2FText%3E%0A%20%20%20%20%3C%2FText%3E%0A%20%20)%3B%0A%7D%3B%0A%0Aconst%20styles%20%3D%20StyleSheet.create(%7B%0A%20%20baseText%3A%20%7B%0A%20%20%20%20fontFamily%3A%20%22Cochin%22%0A%20%20%7D%2C%0A%20%20titleText%3A%20%7B%0A%20%20%20%20fontSize%3A%2020%2C%0A%20%20%20%20fontWeight%3A%20%22bold%22%0A%20%20%7D%0A%7D)%3B%0A%0Aexport%20default%20TextInANest%3B%0A%0A"
+        data-snack-platform="web"
+        data-snack-supported-platforms=ios,android,web
+        data-snack-preview="true"
+        style="
+          overflow: hidden;
+          background: #fafafa;
+          border: 1px solid rgba(0,0,0,.16);
+          border-radius: 4px;
+          height: 514px;
+          width: 100%;
+        "
+      ></div></div></div><p><block class="classical syntax" /></p>
+<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React, { Component } <span class="hljs-keyword">from</span> <span class="hljs-string">"react"</span>;
+<span class="hljs-keyword">import</span> { Text, StyleSheet } <span class="hljs-keyword">from</span> <span class="hljs-string">"react-native"</span>;
 
 <span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">TextInANest</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">Component</span> </span>{
   <span class="hljs-keyword">constructor</span>(props) {
     <span class="hljs-keyword">super</span>(props);
     <span class="hljs-keyword">this</span>.state = {
       <span class="hljs-attr">titleText</span>: <span class="hljs-string">"Bird's Nest"</span>,
-      <span class="hljs-attr">bodyText</span>: <span class="hljs-string">'This is not really a bird nest.'</span>
+      <span class="hljs-attr">bodyText</span>: <span class="hljs-string">"This is not really a bird nest."</span>
     };
   }
 
@@ -87,11 +149,11 @@
     <span class="hljs-keyword">return</span> (
       <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">Text</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.baseText}</span>&gt;</span>
         <span class="hljs-tag">&lt;<span class="hljs-name">Text</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.titleText}</span> <span class="hljs-attr">onPress</span>=<span class="hljs-string">{this.onPressTitle}</span>&gt;</span>
-          {this.state.titleText}{'\n'}{'\n'}
+          {this.state.titleText}
+          {"\n"}
+          {"\n"}
         <span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span>
-        <span class="hljs-tag">&lt;<span class="hljs-name">Text</span> <span class="hljs-attr">numberOfLines</span>=<span class="hljs-string">{5}</span>&gt;</span>
-          {this.state.bodyText}
-        <span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">Text</span> <span class="hljs-attr">numberOfLines</span>=<span class="hljs-string">{5}</span>&gt;</span>{this.state.bodyText}<span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span>
       <span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span></span>
     );
   }
@@ -99,17 +161,17 @@
 
 <span class="hljs-keyword">const</span> styles = StyleSheet.create({
   <span class="hljs-attr">baseText</span>: {
-    <span class="hljs-attr">fontFamily</span>: <span class="hljs-string">'Cochin'</span>,
+    <span class="hljs-attr">fontFamily</span>: <span class="hljs-string">"Cochin"</span>
   },
   <span class="hljs-attr">titleText</span>: {
     <span class="hljs-attr">fontSize</span>: <span class="hljs-number">20</span>,
-    <span class="hljs-attr">fontWeight</span>: <span class="hljs-string">'bold'</span>,
-  },
+    <span class="hljs-attr">fontWeight</span>: <span class="hljs-string">"bold"</span>
+  }
 });
 </code></pre></div><div class="desktop-friendly-snack" style="margin-top: 15px; margin-bottom: 15px"><div
-        data-snack-name="Text"
+        data-snack-name="Text Class Component Example"
         data-snack-description="Example usage"
-        data-snack-code="import%20React%2C%20%7B%20Component%20%7D%20from%20'react'%3B%0Aimport%20%7B%20Text%2C%20StyleSheet%20%7D%20from%20'react-native'%3B%0A%0Aexport%20default%20class%20TextInANest%20extends%20Component%20%7B%0A%20%20constructor(props)%20%7B%0A%20%20%20%20super(props)%3B%0A%20%20%20%20this.state%20%3D%20%7B%0A%20%20%20%20%20%20titleText%3A%20%22Bird's%20Nest%22%2C%0A%20%20%20%20%20%20bodyText%3A%20'This%20is%20not%20really%20a%20bird%20nest.'%0A%20%20%20%20%7D%3B%0A%20%20%7D%0A%0A%20%20render()%20%7B%0A%20%20%20%20return%20(%0A%20%20%20%20%20%20%3CText%20style%3D%7Bstyles.baseText%7D%3E%0A%20%20%20%20%20%20%20%20%3CText%20style%3D%7Bstyles.titleText%7D%20onPress%3D%7Bthis.onPressTitle%7D%3E%0A%20%20%20%20%20%20%20%20%20%20%7Bthis.state.titleText%7D%7B'%5Cn'%7D%7B'%5Cn'%7D%0A%20%20%20%20%20%20%20%20%3C%2FText%3E%0A%20%20%20%20%20%20%20%20%3CText%20numberOfLines%3D%7B5%7D%3E%0A%20%20%20%20%20%20%20%20%20%20%7Bthis.state.bodyText%7D%0A%20%20%20%20%20%20%20%20%3C%2FText%3E%0A%20%20%20%20%20%20%3C%2FText%3E%0A%20%20%20%20)%3B%0A%20%20%7D%0A%7D%0A%0Aconst%20styles%20%3D%20StyleSheet.create(%7B%0A%20%20baseText%3A%20%7B%0A%20%20%20%20fontFamily%3A%20'Cochin'%2C%0A%20%20%7D%2C%0A%20%20titleText%3A%20%7B%0A%20%20%20%20fontSize%3A%2020%2C%0A%20%20%20%20fontWeight%3A%20'bold'%2C%0A%20%20%7D%2C%0A%7D)%3B%0A"
+        data-snack-code="import%20React%2C%20%7B%20Component%20%7D%20from%20%22react%22%3B%0Aimport%20%7B%20Text%2C%20StyleSheet%20%7D%20from%20%22react-native%22%3B%0A%0Aexport%20default%20class%20TextInANest%20extends%20Component%20%7B%0A%20%20constructor(props)%20%7B%0A%20%20%20%20super(props)%3B%0A%20%20%20%20this.state%20%3D%20%7B%0A%20%20%20%20%20%20titleText%3A%20%22Bird's%20Nest%22%2C%0A%20%20%20%20%20%20bodyText%3A%20%22This%20is%20not%20really%20a%20bird%20nest.%22%0A%20%20%20%20%7D%3B%0A%20%20%7D%0A%0A%20%20render()%20%7B%0A%20%20%20%20return%20(%0A%20%20%20%20%20%20%3CText%20style%3D%7Bstyles.baseText%7D%3E%0A%20%20%20%20%20%20%20%20%3CText%20style%3D%7Bstyles.titleText%7D%20onPress%3D%7Bthis.onPressTitle%7D%3E%0A%20%20%20%20%20%20%20%20%20%20%7Bthis.state.titleText%7D%0A%20%20%20%20%20%20%20%20%20%20%7B%22%5Cn%22%7D%0A%20%20%20%20%20%20%20%20%20%20%7B%22%5Cn%22%7D%0A%20%20%20%20%20%20%20%20%3C%2FText%3E%0A%20%20%20%20%20%20%20%20%3CText%20numberOfLines%3D%7B5%7D%3E%7Bthis.state.bodyText%7D%3C%2FText%3E%0A%20%20%20%20%20%20%3C%2FText%3E%0A%20%20%20%20)%3B%0A%20%20%7D%0A%7D%0A%0Aconst%20styles%20%3D%20StyleSheet.create(%7B%0A%20%20baseText%3A%20%7B%0A%20%20%20%20fontFamily%3A%20%22Cochin%22%0A%20%20%7D%2C%0A%20%20titleText%3A%20%7B%0A%20%20%20%20fontSize%3A%2020%2C%0A%20%20%20%20fontWeight%3A%20%22bold%22%0A%20%20%7D%0A%7D)%3B%0A"
         data-snack-platform="web"
         data-snack-supported-platforms=ios,android,web
         data-snack-preview="true"
@@ -123,25 +185,32 @@
         "
       ></div></div></div><h2><a class="anchor" aria-hidden="true" id="nested-text"></a><a href="#nested-text" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Nested text</h2>
 <p>Both Android and iOS allow you to display formatted text by annotating ranges of a string with specific formatting like bold or colored text (<code>NSAttributedString</code> on iOS, <code>SpannableString</code> on Android). In practice, this is very tedious. For React Native, we decided to use web paradigm for this where you can nest text to achieve the same effect.</p>
-<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React, { Component } <span class="hljs-keyword">from</span> <span class="hljs-string">'react'</span>;
-<span class="hljs-keyword">import</span> { Text } <span class="hljs-keyword">from</span> <span class="hljs-string">'react-native'</span>;
+<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React <span class="hljs-keyword">from</span> <span class="hljs-string">'react'</span>;
+<span class="hljs-keyword">import</span> { Text, StyleSheet } <span class="hljs-keyword">from</span> <span class="hljs-string">'react-native'</span>;
 
-<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">BoldAndBeautiful</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">Component</span> </span>{
-  render() {
-    <span class="hljs-keyword">return</span> (
-      <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">Text</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{{fontWeight:</span> '<span class="hljs-attr">bold</span>'}}&gt;</span>
-        I am bold
-        <span class="hljs-tag">&lt;<span class="hljs-name">Text</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{{color:</span> '<span class="hljs-attr">red</span>'}}&gt;</span>
-          and red
-        <span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span>
-      <span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span></span>
-    );
+<span class="hljs-keyword">const</span> BoldAndBeautiful = <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
+  <span class="hljs-keyword">return</span> (
+    <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">Text</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.baseText}</span>&gt;</span>
+      I am bold
+      <span class="hljs-tag">&lt;<span class="hljs-name">Text</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.innerText}</span>&gt;</span> and red<span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span>
+    <span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span></span>
+  );
+};
+
+<span class="hljs-keyword">const</span> styles = StyleSheet.create({
+  <span class="hljs-attr">baseText</span>: {
+    <span class="hljs-attr">fontWeight</span>: <span class="hljs-string">'bold'</span>
+  },
+  <span class="hljs-attr">innerText</span>: {
+    <span class="hljs-attr">color</span>: <span class="hljs-string">'red'</span>
   }
-}
+});
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> BoldAndBeautiful;
 </code></pre></div><div class="desktop-friendly-snack" style="margin-top: 15px; margin-bottom: 15px"><div
-        data-snack-name="Nested"
+        data-snack-name="Nested Text Example"
         data-snack-description="Example usage"
-        data-snack-code="import%20React%2C%20%7B%20Component%20%7D%20from%20'react'%3B%0Aimport%20%7B%20Text%20%7D%20from%20'react-native'%3B%0A%0Aexport%20default%20class%20BoldAndBeautiful%20extends%20Component%20%7B%0A%20%20render()%20%7B%0A%20%20%20%20return%20(%0A%20%20%20%20%20%20%3CText%20style%3D%7B%7BfontWeight%3A%20'bold'%7D%7D%3E%0A%20%20%20%20%20%20%20%20I%20am%20bold%0A%20%20%20%20%20%20%20%20%3CText%20style%3D%7B%7Bcolor%3A%20'red'%7D%7D%3E%0A%20%20%20%20%20%20%20%20%20%20and%20red%0A%20%20%20%20%20%20%20%20%3C%2FText%3E%0A%20%20%20%20%20%20%3C%2FText%3E%0A%20%20%20%20)%3B%0A%20%20%7D%0A%7D%0A"
+        data-snack-code="import%20React%20from%20'react'%3B%0Aimport%20%7B%20Text%2C%20StyleSheet%20%7D%20from%20'react-native'%3B%0A%0Aconst%20BoldAndBeautiful%20%3D%20()%20%3D%3E%20%7B%0A%20%20return%20(%0A%20%20%20%20%3CText%20style%3D%7Bstyles.baseText%7D%3E%0A%20%20%20%20%20%20I%20am%20bold%0A%20%20%20%20%20%20%3CText%20style%3D%7Bstyles.innerText%7D%3E%20and%20red%3C%2FText%3E%0A%20%20%20%20%3C%2FText%3E%0A%20%20)%3B%0A%7D%3B%0A%0Aconst%20styles%20%3D%20StyleSheet.create(%7B%0A%20%20baseText%3A%20%7B%0A%20%20%20%20fontWeight%3A%20'bold'%0A%20%20%7D%2C%0A%20%20innerText%3A%20%7B%0A%20%20%20%20color%3A%20'red'%0A%20%20%7D%0A%7D)%3B%0A%0Aexport%20default%20BoldAndBeautiful%3B%0A"
         data-snack-platform="web"
         data-snack-supported-platforms=ios,android,web
         data-snack-preview="true"
@@ -153,7 +222,8 @@
           height: 514px;
           width: 100%;
         "
-      ></div></div></div><p>Behind the scenes, React Native converts this to a flat <code>NSAttributedString</code> or <code>SpannableString</code> that contains the following information:</p>
+      ></div></div></div><p><block class="endBlock syntax" /></p>
+<p>Behind the scenes, React Native converts this to a flat <code>NSAttributedString</code> or <code>SpannableString</code> that contains the following information:</p>
 <pre><code class="hljs css language-jsx"><span class="token string">"I am bold and red"</span>
 <span class="token number">0</span><span class="token operator">-</span><span class="token number">9</span><span class="token punctuation">:</span> bold
 <span class="token number">9</span><span class="token operator">-</span><span class="token number">17</span><span class="token punctuation">:</span> bold<span class="token punctuation">,</span> red
