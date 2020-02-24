@@ -46,13 +46,14 @@ export default function useAndroidRippleForView(
     nativeBackgroundAndroid: NativeBackgroundProp,
   |}>,
 |}> {
+  const {color, borderless, radius} = rippleConfig != null ? rippleConfig : {};
+
   return useMemo(() => {
     if (
       Platform.OS === 'android' &&
       Platform.Version >= 21 &&
-      rippleConfig != null
+      (color != null || borderless != null || radius != null)
     ) {
-      const {color, borderless, radius} = rippleConfig;
       const processedColor = processColor(color);
       invariant(
         processedColor == null || typeof processedColor === 'number',
@@ -99,5 +100,5 @@ export default function useAndroidRippleForView(
       };
     }
     return null;
-  }, [rippleConfig, viewRef]);
+  }, [color, borderless, radius, viewRef]);
 }
