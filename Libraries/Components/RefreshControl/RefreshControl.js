@@ -83,7 +83,7 @@ export type RefreshControlProps = $ReadOnly<{|
   /**
    * Called when the view starts refreshing.
    */
-  onRefresh?: ?() => any,
+  onRefresh?: ?() => void | Promise<void>,
 
   /**
    * Whether the view should be indicating an active refresh.
