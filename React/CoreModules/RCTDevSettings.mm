@@ -67,11 +67,6 @@ void RCTDevSettingsSetEnabled(BOOL enabled) {
   return [self initWithDefaultValues:nil];
 }
 
-+ (BOOL)requiresMainQueueSetup
-{
-  return NO;
-}
-
 - (instancetype)initWithDefaultValues:(NSDictionary *)defaultValues
 {
   if (self = [super init]) {
@@ -144,6 +139,11 @@ RCT_EXPORT_MODULE()
   RCTDevSettingsUserDefaultsDataSource *dataSource =
       [[RCTDevSettingsUserDefaultsDataSource alloc] initWithDefaultValues:defaultValues];
   return [self initWithDataSource:dataSource];
+}
+
++ (BOOL)requiresMainQueueSetup
+{
+  return NO;
 }
 
 - (instancetype)initWithDataSource:(id<RCTDevSettingsDataSource>)dataSource
@@ -473,6 +473,10 @@ RCT_EXPORT_METHOD(addMenuItem:(NSString *)title)
   return NO;
 }
 - (BOOL)isRemoteDebuggingAvailable
+{
+  return NO;
+}
++ (BOOL)requiresMainQueueSetup
 {
   return NO;
 }
