@@ -69,28 +69,50 @@
               }
             });
         </script></nav></div><div class="container mainContainer docsContainer"><div class="wrapper"><div class="post"><header class="postHeader"><a class="edit-page-link button" href="https://github.com/facebook/react-native-website/blob/master/docs/stylesheet.md" target="_blank" rel="noreferrer noopener">Edit</a><h1 id="__docusaurus" class="postHeaderTitle">StyleSheet</h1></header><article><div><span><p>A StyleSheet is an abstraction similar to CSS StyleSheets</p>
-<p>Create a new StyleSheet:</p>
-<pre><code class="hljs css language-jsx"><span class="token keyword">const</span> styles <span class="token operator">=</span> StyleSheet<span class="token punctuation">.</span><span class="token function">create</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
-  container<span class="token punctuation">:</span> <span class="token punctuation">{</span>
-    borderRadius<span class="token punctuation">:</span> <span class="token number">4</span><span class="token punctuation">,</span>
-    borderWidth<span class="token punctuation">:</span> <span class="token number">0.5</span><span class="token punctuation">,</span>
-    borderColor<span class="token punctuation">:</span> <span class="token string">'#d6d7da'</span><span class="token punctuation">,</span>
-  <span class="token punctuation">}</span><span class="token punctuation">,</span>
-  title<span class="token punctuation">:</span> <span class="token punctuation">{</span>
-    fontSize<span class="token punctuation">:</span> <span class="token number">19</span><span class="token punctuation">,</span>
-    fontWeight<span class="token punctuation">:</span> <span class="token string">'bold'</span><span class="token punctuation">,</span>
-  <span class="token punctuation">}</span><span class="token punctuation">,</span>
-  activeTitle<span class="token punctuation">:</span> <span class="token punctuation">{</span>
-    color<span class="token punctuation">:</span> <span class="token string">'red'</span><span class="token punctuation">,</span>
-  <span class="token punctuation">}</span><span class="token punctuation">,</span>
-<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-</code></pre>
-<p>Use a StyleSheet:</p>
-<pre><code class="hljs css language-jsx"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span><span class="token class-name">View</span></span> <span class="token attr-name">style</span><span class="token script language-javascript"><span class="token script-punctuation punctuation">=</span><span class="token punctuation">{</span>styles<span class="token punctuation">.</span>container<span class="token punctuation">}</span></span><span class="token punctuation">></span></span><span class="token plain-text">
-  </span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span><span class="token class-name">Text</span></span> <span class="token attr-name">style</span><span class="token script language-javascript"><span class="token script-punctuation punctuation">=</span><span class="token punctuation">{</span><span class="token punctuation">[</span>styles<span class="token punctuation">.</span>title<span class="token punctuation">,</span> <span class="token keyword">this</span><span class="token punctuation">.</span>props<span class="token punctuation">.</span>isActive <span class="token operator">&amp;&amp;</span> styles<span class="token punctuation">.</span>activeTitle<span class="token punctuation">]</span><span class="token punctuation">}</span></span> <span class="token punctuation">/></span></span><span class="token plain-text">
-</span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span><span class="token class-name">View</span></span><span class="token punctuation">></span></span>
-</code></pre>
-<p>Code quality:</p>
+<p>Creates a StyleSheet style reference from the given object:</p>
+<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React <span class="hljs-keyword">from</span> <span class="hljs-string">'react'</span>;
+<span class="hljs-keyword">import</span> { StyleSheet, Text, View } <span class="hljs-keyword">from</span> <span class="hljs-string">'react-native'</span>;
+
+<span class="hljs-keyword">const</span> isActive = <span class="hljs-literal">true</span>;
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> App = <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> (
+  <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">View</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.container}</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">Text</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{[styles.title,</span> <span class="hljs-attr">isActive</span> &amp;&amp; <span class="hljs-attr">styles.activeTitle</span>]}&gt;</span>Inside<span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span>
+  <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span></span>
+);
+
+<span class="hljs-keyword">const</span> styles = StyleSheet.create({
+  <span class="hljs-attr">container</span>: {
+    <span class="hljs-attr">borderRadius</span>: <span class="hljs-number">4</span>,
+    <span class="hljs-attr">borderWidth</span>: <span class="hljs-number">2</span>,
+    <span class="hljs-attr">borderColor</span>: <span class="hljs-string">'#d6d7da'</span>,
+    <span class="hljs-attr">padding</span>: <span class="hljs-number">4</span>,
+    <span class="hljs-attr">backgroundColor</span>: <span class="hljs-string">'#eaeaea'</span>
+  },
+  <span class="hljs-attr">title</span>: {
+    <span class="hljs-attr">fontSize</span>: <span class="hljs-number">19</span>,
+    <span class="hljs-attr">fontWeight</span>: <span class="hljs-string">'bold'</span>,
+  },
+  <span class="hljs-attr">activeTitle</span>: {
+    <span class="hljs-attr">color</span>: <span class="hljs-string">'red'</span>,
+  },
+});
+</code></pre></div><div class="desktop-friendly-snack" style="margin-top: 15px; margin-bottom: 15px"><div
+        data-snack-name="Create"
+        data-snack-description="Example usage"
+        data-snack-code="import%20React%20from%20'react'%3B%0Aimport%20%7B%20StyleSheet%2C%20Text%2C%20View%20%7D%20from%20'react-native'%3B%0A%0Aconst%20isActive%20%3D%20true%3B%0A%0Aexport%20default%20App%20%3D%20()%20%3D%3E%20(%0A%20%20%3CView%20style%3D%7Bstyles.container%7D%3E%0A%20%20%20%20%3CText%20style%3D%7B%5Bstyles.title%2C%20isActive%20%26%26%20styles.activeTitle%5D%7D%3EInside%3C%2FText%3E%0A%20%20%3C%2FView%3E%0A)%3B%0A%0Aconst%20styles%20%3D%20StyleSheet.create(%7B%0A%20%20container%3A%20%7B%0A%20%20%20%20borderRadius%3A%204%2C%0A%20%20%20%20borderWidth%3A%202%2C%0A%20%20%20%20borderColor%3A%20'%23d6d7da'%2C%0A%20%20%20%20padding%3A%204%2C%0A%20%20%20%20backgroundColor%3A%20'%23eaeaea'%0A%20%20%7D%2C%0A%20%20title%3A%20%7B%0A%20%20%20%20fontSize%3A%2019%2C%0A%20%20%20%20fontWeight%3A%20'bold'%2C%0A%20%20%7D%2C%0A%20%20activeTitle%3A%20%7B%0A%20%20%20%20color%3A%20'red'%2C%0A%20%20%7D%2C%0A%7D)%3B%0A"
+        data-snack-platform="web"
+        data-snack-supported-platforms=ios,android,web
+        data-snack-preview="true"
+        style="
+          overflow: hidden;
+          background: #fafafa;
+          border: 1px solid rgba(0,0,0,.16);
+          border-radius: 4px;
+          height: 514px;
+          width: 100%;
+        "
+      ></div></div></div><p>Code quality:</p>
 <ul>
 <li>By moving styles away from the render function, you're making the code easier to understand.</li>
 <li>Naming the styles is a good way to add meaning to the low level components in the render function.</li>
@@ -103,90 +125,293 @@
 </code></pre>
 <p>WARNING: EXPERIMENTAL. Breaking changes will probably happen a lot and will not be reliably announced. The whole thing might be deleted, who knows? Use at your own risk.</p>
 <p>Sets a function to use to pre-process a style property value. This is used internally to process color and transform values. You should not use this unless you really know what you are doing and have exhausted other options.</p>
-<hr>
-<h3><a class="anchor" aria-hidden="true" id="create"></a><a href="#create" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>create()</code></h3>
-<pre><code class="hljs css language-jsx"><span class="token keyword">static</span> <span class="token function">create</span><span class="token punctuation">(</span>obj<span class="token punctuation">)</span>
-</code></pre>
-<p>Creates a StyleSheet style reference from the given object.</p>
-<hr>
 <h3><a class="anchor" aria-hidden="true" id="flatten"></a><a href="#flatten" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>flatten</code></h3>
-<pre><code class="hljs css language-jsx"><span class="token keyword">static</span> <span class="token function">flatten</span><span class="token punctuation">(</span>style<span class="token punctuation">)</span>
-</code></pre>
 <p>Flattens an array of style objects, into one aggregated style object. Alternatively, this method can be used to lookup IDs, returned by <code>StyleSheet.register</code>.</p>
 <blockquote>
 <p><em>NOTE</em>: Exercise caution as abusing this can tax you in terms of optimizations. IDs enable optimizations through the bridge and memory in general. Refering to style objects directly will deprive you of these optimizations.</p>
 </blockquote>
 <p>Example:</p>
-<pre><code class="hljs css language-jsx"><span class="token keyword">const</span> styles <span class="token operator">=</span> StyleSheet<span class="token punctuation">.</span><span class="token function">create</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
-  listItem<span class="token punctuation">:</span> <span class="token punctuation">{</span>
-    flex<span class="token punctuation">:</span> <span class="token number">1</span><span class="token punctuation">,</span>
-    fontSize<span class="token punctuation">:</span> <span class="token number">16</span><span class="token punctuation">,</span>
-    color<span class="token punctuation">:</span> <span class="token string">'white'</span><span class="token punctuation">,</span>
-  <span class="token punctuation">}</span><span class="token punctuation">,</span>
-  selectedListItem<span class="token punctuation">:</span> <span class="token punctuation">{</span>
-    color<span class="token punctuation">:</span> <span class="token string">'green'</span><span class="token punctuation">,</span>
-  <span class="token punctuation">}</span><span class="token punctuation">,</span>
-<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React <span class="hljs-keyword">from</span> <span class="hljs-string">'react'</span>;
+<span class="hljs-keyword">import</span> { StyleSheet, Text, View } <span class="hljs-keyword">from</span> <span class="hljs-string">'react-native'</span>;
 
-StyleSheet<span class="token punctuation">.</span><span class="token function">flatten</span><span class="token punctuation">(</span><span class="token punctuation">[</span>styles<span class="token punctuation">.</span>listItem<span class="token punctuation">,</span> styles<span class="token punctuation">.</span>selectedListItem<span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-<span class="token comment">// returns { flex: 1, fontSize: 16, color: 'green' }</span>
-</code></pre>
-<p>Alternative use:</p>
-<pre><code class="hljs css language-jsx"><span class="token keyword">const</span> styles <span class="token operator">=</span> StyleSheet<span class="token punctuation">.</span><span class="token function">create</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
-  listItem<span class="token punctuation">:</span> <span class="token punctuation">{</span>
-    flex<span class="token punctuation">:</span> <span class="token number">1</span><span class="token punctuation">,</span>
-    fontSize<span class="token punctuation">:</span> <span class="token number">16</span><span class="token punctuation">,</span>
-    color<span class="token punctuation">:</span> <span class="token string">'white'</span><span class="token punctuation">,</span>
-  <span class="token punctuation">}</span><span class="token punctuation">,</span>
-  selectedListItem<span class="token punctuation">:</span> <span class="token punctuation">{</span>
-    color<span class="token punctuation">:</span> <span class="token string">'green'</span><span class="token punctuation">,</span>
-  <span class="token punctuation">}</span><span class="token punctuation">,</span>
-<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> App = <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> (
+  <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">View</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">Text</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{styles}</span>&gt;</span>Inside<span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span>
+  <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span></span>
+);
 
-StyleSheet<span class="token punctuation">.</span><span class="token function">flatten</span><span class="token punctuation">(</span>styles<span class="token punctuation">.</span>listItem<span class="token punctuation">)</span><span class="token punctuation">;</span>
-<span class="token comment">// returns { flex: 1, fontSize: 16, color: 'white' }</span>
-<span class="token comment">// Simply styles.listItem would return its ID (number)</span>
-</code></pre>
-<p>This method internally uses <code>StyleSheetRegistry.getStyleByID(style)</code> to resolve style objects represented by IDs. Thus, an array of style objects (instances of <code>StyleSheet.create()</code>), are individually resolved to, their respective objects, merged as one and then returned. This also explains the alternative use.</p>
+<span class="hljs-keyword">const</span> page = StyleSheet.create({
+  <span class="hljs-attr">container</span>: {
+    <span class="hljs-attr">flex</span>: <span class="hljs-number">1</span>,
+    <span class="hljs-attr">backgroundColor</span>: <span class="hljs-string">'#000000'</span>,
+    <span class="hljs-attr">flexDirection</span>: <span class="hljs-string">'column'</span>,
+  },
+  <span class="hljs-attr">text</span>: {
+    <span class="hljs-attr">fontSize</span>: <span class="hljs-number">30</span>,
+    <span class="hljs-attr">fontWeight</span>: <span class="hljs-string">'bold'</span>,
+    <span class="hljs-attr">color</span>: <span class="hljs-string">'#FFFFFF'</span>
+  },
+
+});
+
+<span class="hljs-keyword">const</span> lists = StyleSheet.create({
+  <span class="hljs-attr">listItem</span>: {
+    <span class="hljs-attr">flex</span>: <span class="hljs-number">1</span>,
+    <span class="hljs-attr">fontSize</span>: <span class="hljs-number">16</span>,
+    <span class="hljs-attr">color</span>: <span class="hljs-string">'white'</span>,
+  },
+  <span class="hljs-attr">selectedListItem</span>: {
+    <span class="hljs-attr">color</span>: <span class="hljs-string">'green'</span>,
+  },
+});
+
+<span class="hljs-keyword">const</span> styles = StyleSheet.flatten([page.text, lists.selectedListItem]);
+<span class="hljs-comment">// returns { flex: 1, fontSize: 16, color: 'green' }</span>
+</code></pre></div><div class="desktop-friendly-snack" style="margin-top: 15px; margin-bottom: 15px"><div
+        data-snack-name="Flatten"
+        data-snack-description="Example usage"
+        data-snack-code="import%20React%20from%20'react'%3B%0Aimport%20%7B%20StyleSheet%2C%20Text%2C%20View%20%7D%20from%20'react-native'%3B%0A%0Aexport%20default%20App%20%3D%20()%20%3D%3E%20(%0A%20%20%3CView%3E%0A%20%20%20%20%3CText%20style%3D%7Bstyles%7D%3EInside%3C%2FText%3E%0A%20%20%3C%2FView%3E%0A)%3B%0A%0Aconst%20page%20%3D%20StyleSheet.create(%7B%0A%20%20container%3A%20%7B%0A%20%20%20%20flex%3A%201%2C%0A%20%20%20%20backgroundColor%3A%20'%23000000'%2C%0A%20%20%20%20flexDirection%3A%20'column'%2C%0A%20%20%7D%2C%0A%20%20text%3A%20%7B%0A%20%20%20%20fontSize%3A%2030%2C%0A%20%20%20%20fontWeight%3A%20'bold'%2C%0A%20%20%20%20color%3A%20'%23FFFFFF'%0A%20%20%7D%2C%0A%0A%7D)%3B%0A%0Aconst%20lists%20%3D%20StyleSheet.create(%7B%0A%20%20listItem%3A%20%7B%0A%20%20%20%20flex%3A%201%2C%0A%20%20%20%20fontSize%3A%2016%2C%0A%20%20%20%20color%3A%20'white'%2C%0A%20%20%7D%2C%0A%20%20selectedListItem%3A%20%7B%0A%20%20%20%20color%3A%20'green'%2C%0A%20%20%7D%2C%0A%7D)%3B%0A%0Aconst%20styles%20%3D%20StyleSheet.flatten(%5Bpage.text%2C%20lists.selectedListItem%5D)%3B%0A%2F%2F%20returns%20%7B%20flex%3A%201%2C%20fontSize%3A%2016%2C%20color%3A%20'green'%20%7D%0A"
+        data-snack-platform="web"
+        data-snack-supported-platforms=ios,android,web
+        data-snack-preview="true"
+        style="
+          overflow: hidden;
+          background: #fafafa;
+          border: 1px solid rgba(0,0,0,.16);
+          border-radius: 4px;
+          height: 514px;
+          width: 100%;
+        "
+      ></div></div></div><p>This method internally uses <code>StyleSheetRegistry.getStyleByID(style)</code> to resolve style objects represented by IDs. Thus, an array of style objects (instances of <code>StyleSheet.create()</code>), are individually resolved to, their respective objects, merged as one and then returned. This also explains the alternative use.</p>
 <hr>
 <h3><a class="anchor" aria-hidden="true" id="compose"></a><a href="#compose" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>compose</code></h3>
 <p>Combines two styles such that <code>style2</code> will override any styles in <code>style1</code>. If either style is falsy, the other one is returned without allocating an array, saving allocations and maintaining reference equality for PureComponent checks.</p>
-<pre><code class="hljs css language-jsx"><span class="token keyword">static</span> <span class="token function">compose</span><span class="token punctuation">(</span>style1<span class="token punctuation">,</span> style2<span class="token punctuation">)</span>
-</code></pre>
-<h2><a class="anchor" aria-hidden="true" id="properties"></a><a href="#properties" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Properties</h2>
+<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React <span class="hljs-keyword">from</span> <span class="hljs-string">'react'</span>;
+<span class="hljs-keyword">import</span> { StyleSheet, Text, View } <span class="hljs-keyword">from</span> <span class="hljs-string">'react-native'</span>;
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> App = <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> (
+  <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">View</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{container}</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">Text</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{text}</span>&gt;</span>Inside<span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span>
+  <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span></span>
+);
+
+<span class="hljs-keyword">const</span> page = StyleSheet.create({
+  <span class="hljs-attr">container</span>: {
+    <span class="hljs-attr">flex</span>: <span class="hljs-number">1</span>,
+    <span class="hljs-attr">backgroundColor</span>: <span class="hljs-string">'#000000'</span>,
+    <span class="hljs-attr">flexDirection</span>: <span class="hljs-string">'column'</span>,
+  },
+  <span class="hljs-attr">text</span>: {
+    <span class="hljs-attr">fontSize</span>: <span class="hljs-number">30</span>,
+    <span class="hljs-attr">fontWeight</span>: <span class="hljs-string">'bold'</span>,
+    <span class="hljs-attr">color</span>: <span class="hljs-string">'#FFFFFF'</span>
+  },
+});
+
+<span class="hljs-keyword">const</span> lists = StyleSheet.create({
+  <span class="hljs-attr">listItem</span>: {
+    <span class="hljs-attr">flex</span>: <span class="hljs-number">1</span>,
+    <span class="hljs-attr">fontSize</span>: <span class="hljs-number">16</span>,
+    <span class="hljs-attr">color</span>: <span class="hljs-string">'white'</span>,
+    <span class="hljs-attr">backgroundColor</span>: <span class="hljs-string">'yellow'</span>,
+  },
+  <span class="hljs-attr">selectedListItem</span>: {
+    <span class="hljs-attr">fontStyle</span>: <span class="hljs-string">'italic'</span>,
+    <span class="hljs-attr">color</span>: <span class="hljs-string">'green'</span>,
+  },
+});
+
+<span class="hljs-keyword">const</span> container = StyleSheet.compose(page.container, lists.listItem);
+<span class="hljs-keyword">const</span> text = StyleSheet.compose(page.text, lists.selectedListItem);
+</code></pre></div><div class="desktop-friendly-snack" style="margin-top: 15px; margin-bottom: 15px"><div
+        data-snack-name="Compose"
+        data-snack-description="Example usage"
+        data-snack-code="import%20React%20from%20'react'%3B%0Aimport%20%7B%20StyleSheet%2C%20Text%2C%20View%20%7D%20from%20'react-native'%3B%0A%0Aexport%20default%20App%20%3D%20()%20%3D%3E%20(%0A%20%20%3CView%20style%3D%7Bcontainer%7D%3E%0A%20%20%20%20%3CText%20style%3D%7Btext%7D%3EInside%3C%2FText%3E%0A%20%20%3C%2FView%3E%0A)%3B%0A%0Aconst%20page%20%3D%20StyleSheet.create(%7B%0A%20%20container%3A%20%7B%0A%20%20%20%20flex%3A%201%2C%0A%20%20%20%20backgroundColor%3A%20'%23000000'%2C%0A%20%20%20%20flexDirection%3A%20'column'%2C%0A%20%20%7D%2C%0A%20%20text%3A%20%7B%0A%20%20%20%20fontSize%3A%2030%2C%0A%20%20%20%20fontWeight%3A%20'bold'%2C%0A%20%20%20%20color%3A%20'%23FFFFFF'%0A%20%20%7D%2C%0A%7D)%3B%0A%0Aconst%20lists%20%3D%20StyleSheet.create(%7B%0A%20%20listItem%3A%20%7B%0A%20%20%20%20flex%3A%201%2C%0A%20%20%20%20fontSize%3A%2016%2C%0A%20%20%20%20color%3A%20'white'%2C%0A%20%20%20%20backgroundColor%3A%20'yellow'%2C%0A%20%20%7D%2C%0A%20%20selectedListItem%3A%20%7B%0A%20%20%20%20fontStyle%3A%20'italic'%2C%0A%20%20%20%20color%3A%20'green'%2C%0A%20%20%7D%2C%0A%7D)%3B%0A%0Aconst%20container%20%3D%20StyleSheet.compose(page.container%2C%20lists.listItem)%3B%0Aconst%20text%20%3D%20StyleSheet.compose(page.text%2C%20lists.selectedListItem)%3B%0A"
+        data-snack-platform="web"
+        data-snack-supported-platforms=ios,android,web
+        data-snack-preview="true"
+        style="
+          overflow: hidden;
+          background: #fafafa;
+          border: 1px solid rgba(0,0,0,.16);
+          border-radius: 4px;
+          height: 514px;
+          width: 100%;
+        "
+      ></div></div></div><h2><a class="anchor" aria-hidden="true" id="properties"></a><a href="#properties" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Properties</h2>
 <h3><a class="anchor" aria-hidden="true" id="hairlinewidth"></a><a href="#hairlinewidth" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>hairlineWidth</code></h3>
 <p>This is defined as the width of a thin line on the platform. It can be used as the thickness of a border or division between two elements. Example:</p>
-<pre><code class="hljs css language-jsx"><span class="token keyword">const</span> styles <span class="token operator">=</span> StyleSheet<span class="token punctuation">.</span><span class="token function">create</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
-  separator<span class="token punctuation">:</span> <span class="token punctuation">{</span>
-    borderBottomColor<span class="token punctuation">:</span> <span class="token string">'#bbb'</span><span class="token punctuation">,</span>
-    borderBottomWidth<span class="token punctuation">:</span> StyleSheet<span class="token punctuation">.</span>hairlineWidth<span class="token punctuation">,</span>
-  <span class="token punctuation">}</span><span class="token punctuation">,</span>
-<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-</code></pre>
-<p>This constant will always be a round number of pixels (so a line defined by it can look crisp) and will try to match the standard width of a thin line on the underlying platform. However, you should not rely on it being a constant size, because on different platforms and screen densities its value may be calculated differently.</p>
+<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React <span class="hljs-keyword">from</span> <span class="hljs-string">'react'</span>;
+<span class="hljs-keyword">import</span> { StyleSheet, Text, View } <span class="hljs-keyword">from</span> <span class="hljs-string">'react-native'</span>;
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> App = <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> (
+  <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">View</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">Text</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{space.separator}</span>&gt;</span>Inside<span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span>
+  <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span></span>
+);
+
+<span class="hljs-keyword">const</span> space = StyleSheet.create({
+  <span class="hljs-attr">separator</span>: {
+    <span class="hljs-attr">borderBottomColor</span>: <span class="hljs-string">'red'</span>,
+    <span class="hljs-attr">borderBottomWidth</span>: StyleSheet.hairlineWidth,
+  },
+});
+</code></pre></div><div class="desktop-friendly-snack" style="margin-top: 15px; margin-bottom: 15px"><div
+        data-snack-name="hairlineWidth"
+        data-snack-description="Example usage"
+        data-snack-code="import%20React%20from%20'react'%3B%0Aimport%20%7B%20StyleSheet%2C%20Text%2C%20View%20%7D%20from%20'react-native'%3B%0A%0Aexport%20default%20App%20%3D%20()%20%3D%3E%20(%0A%20%20%3CView%3E%0A%20%20%20%20%3CText%20style%3D%7Bspace.separator%7D%3EInside%3C%2FText%3E%0A%20%20%3C%2FView%3E%0A)%3B%0A%0Aconst%20space%20%3D%20StyleSheet.create(%7B%0A%20%20separator%3A%20%7B%0A%20%20%20%20borderBottomColor%3A%20'red'%2C%0A%20%20%20%20borderBottomWidth%3A%20StyleSheet.hairlineWidth%2C%0A%20%20%7D%2C%0A%7D)%3B%0A"
+        data-snack-platform="web"
+        data-snack-supported-platforms=ios,android,web
+        data-snack-preview="true"
+        style="
+          overflow: hidden;
+          background: #fafafa;
+          border: 1px solid rgba(0,0,0,.16);
+          border-radius: 4px;
+          height: 514px;
+          width: 100%;
+        "
+      ></div></div></div><p>This constant will always be a round number of pixels (so a line defined by it can look crisp) and will try to match the standard width of a thin line on the underlying platform. However, you should not rely on it being a constant size, because on different platforms and screen densities its value may be calculated differently.</p>
 <p>A line with hairline width may not be visible if your simulator is downscaled.</p>
 <hr>
 <h3><a class="anchor" aria-hidden="true" id="absolutefill"></a><a href="#absolutefill" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>absoluteFill</code></h3>
 <p>A very common pattern is to create overlays with position absolute and zero positioning (<code>position: 'absolute', left: 0, right: 0, top: 0, bottom: 0</code>), so <code>absoluteFill</code> can be used for convenience and to reduce duplication of these repeated styles. If you want, absoluteFill can be used to create a customized entry in a StyleSheet, e.g.:</p>
-<pre><code class="hljs css language-jsx"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span><span class="token class-name">View</span></span> <span class="token attr-name">style</span><span class="token script language-javascript"><span class="token script-punctuation punctuation">=</span><span class="token punctuation">{</span>StyleSheet<span class="token punctuation">.</span>absoluteFill<span class="token punctuation">}</span></span><span class="token punctuation">></span></span><span class="token plain-text">
-  </span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span><span class="token class-name">SomeOtherView</span></span> <span class="token punctuation">/></span></span><span class="token plain-text">
-</span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span><span class="token class-name">View</span></span><span class="token punctuation">></span></span>
-</code></pre>
-<hr>
+<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React <span class="hljs-keyword">from</span> <span class="hljs-string">'react'</span>;
+<span class="hljs-keyword">import</span> { StyleSheet, Text, View } <span class="hljs-keyword">from</span> <span class="hljs-string">'react-native'</span>;
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> App = <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> (
+  <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">View</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.container}</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">View</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.box1}</span>&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">Text</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.text}</span>&gt;</span>1<span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span>
+    <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">View</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.box2}</span>&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">Text</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.text}</span>&gt;</span>2<span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span>
+    <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">View</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.box3}</span>&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">Text</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.text}</span>&gt;</span>3<span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span>
+    <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span>
+  <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span></span>
+);
+
+<span class="hljs-keyword">const</span> styles = StyleSheet.create({
+  <span class="hljs-attr">container</span>: {
+    <span class="hljs-attr">flex</span>: <span class="hljs-number">1</span>
+  },
+  <span class="hljs-attr">box1</span>: {
+    <span class="hljs-attr">position</span>: <span class="hljs-string">'absolute'</span>,
+    <span class="hljs-attr">top</span>: <span class="hljs-number">40</span>,
+    <span class="hljs-attr">left</span>: <span class="hljs-number">40</span>,
+    <span class="hljs-attr">width</span>: <span class="hljs-number">100</span>,
+    <span class="hljs-attr">height</span>: <span class="hljs-number">100</span>,
+    <span class="hljs-attr">backgroundColor</span>: <span class="hljs-string">'red'</span>
+  },
+  <span class="hljs-attr">box2</span>: {
+    ...StyleSheet.absoluteFill,
+    <span class="hljs-attr">width</span>: <span class="hljs-number">100</span>,
+    <span class="hljs-attr">height</span>: <span class="hljs-number">100</span>,
+    <span class="hljs-attr">backgroundColor</span>: <span class="hljs-string">'blue'</span>
+  },
+  <span class="hljs-attr">box3</span>: {
+    <span class="hljs-attr">position</span>: <span class="hljs-string">'absolute'</span>,
+    <span class="hljs-attr">top</span>: <span class="hljs-number">120</span>,
+    <span class="hljs-attr">left</span>: <span class="hljs-number">120</span>,
+    <span class="hljs-attr">width</span>: <span class="hljs-number">100</span>,
+    <span class="hljs-attr">height</span>: <span class="hljs-number">100</span>,
+    <span class="hljs-attr">backgroundColor</span>: <span class="hljs-string">'green'</span>
+  },
+  <span class="hljs-attr">text</span>: {
+    <span class="hljs-attr">color</span>: <span class="hljs-string">'#FFF'</span>,
+    <span class="hljs-attr">fontSize</span>: <span class="hljs-number">80</span>
+  }
+});
+
+</code></pre></div><div class="desktop-friendly-snack" style="margin-top: 15px; margin-bottom: 15px"><div
+        data-snack-name="absoluteFill"
+        data-snack-description="Example usage"
+        data-snack-code="import%20React%20from%20'react'%3B%0Aimport%20%7B%20StyleSheet%2C%20Text%2C%20View%20%7D%20from%20'react-native'%3B%0A%0Aexport%20default%20App%20%3D%20()%20%3D%3E%20(%0A%20%20%3CView%20style%3D%7Bstyles.container%7D%3E%0A%20%20%20%20%3CView%20style%3D%7Bstyles.box1%7D%3E%0A%20%20%20%20%20%20%3CText%20style%3D%7Bstyles.text%7D%3E1%3C%2FText%3E%0A%20%20%20%20%3C%2FView%3E%0A%20%20%20%20%3CView%20style%3D%7Bstyles.box2%7D%3E%0A%20%20%20%20%20%20%3CText%20style%3D%7Bstyles.text%7D%3E2%3C%2FText%3E%0A%20%20%20%20%3C%2FView%3E%0A%20%20%20%20%3CView%20style%3D%7Bstyles.box3%7D%3E%0A%20%20%20%20%20%20%3CText%20style%3D%7Bstyles.text%7D%3E3%3C%2FText%3E%0A%20%20%20%20%3C%2FView%3E%0A%20%20%3C%2FView%3E%0A)%3B%0A%0Aconst%20styles%20%3D%20StyleSheet.create(%7B%0A%20%20container%3A%20%7B%0A%20%20%20%20flex%3A%201%0A%20%20%7D%2C%0A%20%20box1%3A%20%7B%0A%20%20%20%20position%3A%20'absolute'%2C%0A%20%20%20%20top%3A%2040%2C%0A%20%20%20%20left%3A%2040%2C%0A%20%20%20%20width%3A%20100%2C%0A%20%20%20%20height%3A%20100%2C%0A%20%20%20%20backgroundColor%3A%20'red'%0A%20%20%7D%2C%0A%20%20box2%3A%20%7B%0A%20%20%20%20...StyleSheet.absoluteFill%2C%0A%20%20%20%20width%3A%20100%2C%0A%20%20%20%20height%3A%20100%2C%0A%20%20%20%20backgroundColor%3A%20'blue'%0A%20%20%7D%2C%0A%20%20box3%3A%20%7B%0A%20%20%20%20position%3A%20'absolute'%2C%0A%20%20%20%20top%3A%20120%2C%0A%20%20%20%20left%3A%20120%2C%0A%20%20%20%20width%3A%20100%2C%0A%20%20%20%20height%3A%20100%2C%0A%20%20%20%20backgroundColor%3A%20'green'%0A%20%20%7D%2C%0A%20%20text%3A%20%7B%0A%20%20%20%20color%3A%20'%23FFF'%2C%0A%20%20%20%20fontSize%3A%2080%0A%20%20%7D%0A%7D)%3B%0A%0A"
+        data-snack-platform="web"
+        data-snack-supported-platforms=ios,android,web
+        data-snack-preview="true"
+        style="
+          overflow: hidden;
+          background: #fafafa;
+          border: 1px solid rgba(0,0,0,.16);
+          border-radius: 4px;
+          height: 514px;
+          width: 100%;
+        "
+      ></div></div></div><hr>
 <h3><a class="anchor" aria-hidden="true" id="absolutefillobject"></a><a href="#absolutefillobject" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>absoluteFillObject</code></h3>
 <p>Sometimes you may want <code>absoluteFill</code> but with a couple tweaks - <code>absoluteFillObject</code> can be used to create a customized entry in a <code>StyleSheet</code>, e.g.:</p>
-<pre><code class="hljs css language-jsx"><span class="token keyword">const</span> styles <span class="token operator">=</span> StyleSheet<span class="token punctuation">.</span><span class="token function">create</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
-  wrapper<span class="token punctuation">:</span> <span class="token punctuation">{</span>
-    <span class="token operator">...</span>StyleSheet<span class="token punctuation">.</span>absoluteFillObject<span class="token punctuation">,</span>
-    top<span class="token punctuation">:</span> <span class="token number">10</span><span class="token punctuation">,</span>
-    backgroundColor<span class="token punctuation">:</span> <span class="token string">'transparent'</span><span class="token punctuation">,</span>
-  <span class="token punctuation">}</span><span class="token punctuation">,</span>
-<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-</code></pre>
-<hr>
+<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React <span class="hljs-keyword">from</span> <span class="hljs-string">'react'</span>;
+<span class="hljs-keyword">import</span> { StyleSheet, Text, View } <span class="hljs-keyword">from</span> <span class="hljs-string">'react-native'</span>;
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> App = <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> (
+  <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">View</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.container}</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">View</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.box1}</span>&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">Text</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.text}</span>&gt;</span>1<span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span>
+    <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">View</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.box2}</span>&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">Text</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.text}</span>&gt;</span>2<span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span>
+    <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">View</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.box3}</span>&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">Text</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.text}</span>&gt;</span>3<span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span>
+    <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span>
+  <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span></span>
+);
+
+<span class="hljs-keyword">const</span> styles = StyleSheet.create({
+  <span class="hljs-attr">container</span>: {
+    <span class="hljs-attr">flex</span>: <span class="hljs-number">1</span>
+  },
+  <span class="hljs-attr">box1</span>: {
+    <span class="hljs-attr">position</span>: <span class="hljs-string">'absolute'</span>,
+    <span class="hljs-attr">top</span>: <span class="hljs-number">40</span>,
+    <span class="hljs-attr">left</span>: <span class="hljs-number">40</span>,
+    <span class="hljs-attr">width</span>: <span class="hljs-number">100</span>,
+    <span class="hljs-attr">height</span>: <span class="hljs-number">100</span>,
+    <span class="hljs-attr">backgroundColor</span>: <span class="hljs-string">'red'</span>
+  },
+  <span class="hljs-attr">box2</span>: {
+    ...StyleSheet.absoluteFill,
+    <span class="hljs-attr">top</span>: <span class="hljs-number">120</span>,
+    <span class="hljs-attr">left</span>: <span class="hljs-number">50</span>,
+    <span class="hljs-attr">width</span>: <span class="hljs-number">100</span>,
+    <span class="hljs-attr">height</span>: <span class="hljs-number">100</span>,
+    <span class="hljs-attr">backgroundColor</span>: <span class="hljs-string">'blue'</span>
+  },
+  <span class="hljs-attr">box3</span>: {
+    ...StyleSheet.absoluteFillObject,
+    <span class="hljs-attr">top</span>: <span class="hljs-number">120</span>,
+    <span class="hljs-attr">left</span>: <span class="hljs-number">120</span>,
+    <span class="hljs-attr">width</span>: <span class="hljs-number">100</span>,
+    <span class="hljs-attr">height</span>: <span class="hljs-number">100</span>,
+    <span class="hljs-attr">backgroundColor</span>: <span class="hljs-string">'green'</span>
+  },
+  <span class="hljs-attr">text</span>: {
+    <span class="hljs-attr">color</span>: <span class="hljs-string">'#FFF'</span>,
+    <span class="hljs-attr">fontSize</span>: <span class="hljs-number">80</span>
+  }
+});
+</code></pre></div><div class="desktop-friendly-snack" style="margin-top: 15px; margin-bottom: 15px"><div
+        data-snack-name="absoluteFillObject"
+        data-snack-description="Example usage"
+        data-snack-code="import%20React%20from%20'react'%3B%0Aimport%20%7B%20StyleSheet%2C%20Text%2C%20View%20%7D%20from%20'react-native'%3B%0A%0Aexport%20default%20App%20%3D%20()%20%3D%3E%20(%0A%20%20%3CView%20style%3D%7Bstyles.container%7D%3E%0A%20%20%20%20%3CView%20style%3D%7Bstyles.box1%7D%3E%0A%20%20%20%20%20%20%3CText%20style%3D%7Bstyles.text%7D%3E1%3C%2FText%3E%0A%20%20%20%20%3C%2FView%3E%0A%20%20%20%20%3CView%20style%3D%7Bstyles.box2%7D%3E%0A%20%20%20%20%20%20%3CText%20style%3D%7Bstyles.text%7D%3E2%3C%2FText%3E%0A%20%20%20%20%3C%2FView%3E%0A%20%20%20%20%3CView%20style%3D%7Bstyles.box3%7D%3E%0A%20%20%20%20%20%20%3CText%20style%3D%7Bstyles.text%7D%3E3%3C%2FText%3E%0A%20%20%20%20%3C%2FView%3E%0A%20%20%3C%2FView%3E%0A)%3B%0A%0Aconst%20styles%20%3D%20StyleSheet.create(%7B%0A%20%20container%3A%20%7B%0A%20%20%20%20flex%3A%201%0A%20%20%7D%2C%0A%20%20box1%3A%20%7B%0A%20%20%20%20position%3A%20'absolute'%2C%0A%20%20%20%20top%3A%2040%2C%0A%20%20%20%20left%3A%2040%2C%0A%20%20%20%20width%3A%20100%2C%0A%20%20%20%20height%3A%20100%2C%0A%20%20%20%20backgroundColor%3A%20'red'%0A%20%20%7D%2C%0A%20%20box2%3A%20%7B%0A%20%20%20%20...StyleSheet.absoluteFill%2C%0A%20%20%20%20top%3A%20120%2C%0A%20%20%20%20left%3A%2050%2C%0A%20%20%20%20width%3A%20100%2C%0A%20%20%20%20height%3A%20100%2C%0A%20%20%20%20backgroundColor%3A%20'blue'%0A%20%20%7D%2C%0A%20%20box3%3A%20%7B%0A%20%20%20%20...StyleSheet.absoluteFillObject%2C%0A%20%20%20%20top%3A%20120%2C%0A%20%20%20%20left%3A%20120%2C%0A%20%20%20%20width%3A%20100%2C%0A%20%20%20%20height%3A%20100%2C%0A%20%20%20%20backgroundColor%3A%20'green'%0A%20%20%7D%2C%0A%20%20text%3A%20%7B%0A%20%20%20%20color%3A%20'%23FFF'%2C%0A%20%20%20%20fontSize%3A%2080%0A%20%20%7D%0A%7D)%3B%0A"
+        data-snack-platform="web"
+        data-snack-supported-platforms=ios,android,web
+        data-snack-preview="true"
+        style="
+          overflow: hidden;
+          background: #fafafa;
+          border: 1px solid rgba(0,0,0,.16);
+          border-radius: 4px;
+          height: 514px;
+          width: 100%;
+        "
+      ></div></div></div><hr>
 <h3><a class="anchor" aria-hidden="true" id="absolutefill-vs-absolutefillobject"></a><a href="#absolutefill-vs-absolutefillobject" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>absoluteFill</code> vs. <code>absoluteFillObject</code></h3>
-<p>Currently, there is no difference between using <code>absoluteFill</code> vs. <code>absoluteFillObject</code> as you can see in the <a href="https://github.com/facebook/react-native/blob/master/Libraries/StyleSheet/StyleSheet.js#L255">source code</a></p>
-</span></div></article></div><div class="docs-prevnext"><a class="docs-prev button" href="/react-native/docs/next/statusbar"><span class="arrow-prev">← </span><span class="function-name-prevnext">StatusBar</span></a><a class="docs-next button" href="/react-native/docs/next/switch"><span>Switch</span><span class="arrow-next"> →</span></a></div></div></div><nav class="onPageNav"><ul class="toc-headings"><li><a href="#methods">Methods</a><ul class="toc-headings"><li><a href="#setstyleattributepreprocessor"><code>setStyleAttributePreprocessor()</code></a></li><li><a href="#create"><code>create()</code></a></li><li><a href="#flatten"><code>flatten</code></a></li><li><a href="#compose"><code>compose</code></a></li></ul></li><li><a href="#properties">Properties</a><ul class="toc-headings"><li><a href="#hairlinewidth"><code>hairlineWidth</code></a></li><li><a href="#absolutefill"><code>absoluteFill</code></a></li><li><a href="#absolutefillobject"><code>absoluteFillObject</code></a></li><li><a href="#absolutefill-vs-absolutefillobject"><code>absoluteFill</code> vs. <code>absoluteFillObject</code></a></li></ul></li></ul></nav></div><footer class="nav-footer" id="footer"><section class="sitemap"><div><h5>Docs</h5><a href="/react-native/docs/getting-started.html">Getting Started</a><a href="/react-native/docs/tutorial.html">Tutorial</a><a href="/react-native/docs/components-and-apis.html">Components and APIs</a><a href="/react-native/docs/more-resources.html">More Resources</a></div><div><h5>Community</h5><a href="/react-native/help.html">The React Native Community</a><a href="/react-native/showcase.html">Who&#x27;s using React Native?</a><a href="http://stackoverflow.com/questions/tagged/react-native" target="_blank">Ask Questions on Stack Overflow</a><a href="https://github.com/facebook/react-native/blob/master/CONTRIBUTING.md">Contributor Guide</a><a href="https://dev.to/t/reactnative" target="_blank">DEV Community</a></div><div><h5>More Resources</h5><a href="/react-native/blog/">Blog</a><a href="https://twitter.com/reactnative" target="_blank">Twitter</a><a href="https://github.com/facebook/react-native" target="_blank">GitHub</a><a href="http://reactjs.org" target="_blank">React</a></div></section><a href="https://code.facebook.com/projects/" target="_blank" class="fbOpenSource"><img src="/react-native/img/oss_logo.png" alt="Facebook Open Source" width="170" height="45"/></a><section class="copyright">Copyright © 2020 Facebook Inc.</section></footer></div><script type="text/javascript" src="https://cdn.jsdelivr.net/docsearch.js/1/docsearch.min.js"></script><script>window.fbAsyncInit = function() {FB.init({appId:'1677033832619985',xfbml:true,version:'v2.7'});};(function(d, s, id){var js, fjs = d.getElementsByTagName(s)[0];if (d.getElementById(id)) {return;}js = d.createElement(s); js.id = id;js.src = '//connect.facebook.net/en_US/sdk.js';fjs.parentNode.insertBefore(js, fjs);}(document, 'script','facebook-jssdk'));
+<p>Currently, there is no difference between using <code>absoluteFill</code> vs. <code>absoluteFillObject</code>.</p>
+</span></div></article></div><div class="docs-prevnext"><a class="docs-prev button" href="/react-native/docs/next/statusbar"><span class="arrow-prev">← </span><span class="function-name-prevnext">StatusBar</span></a><a class="docs-next button" href="/react-native/docs/next/switch"><span>Switch</span><span class="arrow-next"> →</span></a></div></div></div><nav class="onPageNav"><ul class="toc-headings"><li><a href="#methods">Methods</a><ul class="toc-headings"><li><a href="#setstyleattributepreprocessor"><code>setStyleAttributePreprocessor()</code></a></li><li><a href="#flatten"><code>flatten</code></a></li><li><a href="#compose"><code>compose</code></a></li></ul></li><li><a href="#properties">Properties</a><ul class="toc-headings"><li><a href="#hairlinewidth"><code>hairlineWidth</code></a></li><li><a href="#absolutefill"><code>absoluteFill</code></a></li><li><a href="#absolutefillobject"><code>absoluteFillObject</code></a></li><li><a href="#absolutefill-vs-absolutefillobject"><code>absoluteFill</code> vs. <code>absoluteFillObject</code></a></li></ul></li></ul></nav></div><footer class="nav-footer" id="footer"><section class="sitemap"><div><h5>Docs</h5><a href="/react-native/docs/getting-started.html">Getting Started</a><a href="/react-native/docs/tutorial.html">Tutorial</a><a href="/react-native/docs/components-and-apis.html">Components and APIs</a><a href="/react-native/docs/more-resources.html">More Resources</a></div><div><h5>Community</h5><a href="/react-native/help.html">The React Native Community</a><a href="/react-native/showcase.html">Who&#x27;s using React Native?</a><a href="http://stackoverflow.com/questions/tagged/react-native" target="_blank">Ask Questions on Stack Overflow</a><a href="https://github.com/facebook/react-native/blob/master/CONTRIBUTING.md">Contributor Guide</a><a href="https://dev.to/t/reactnative" target="_blank">DEV Community</a></div><div><h5>More Resources</h5><a href="/react-native/blog/">Blog</a><a href="https://twitter.com/reactnative" target="_blank">Twitter</a><a href="https://github.com/facebook/react-native" target="_blank">GitHub</a><a href="http://reactjs.org" target="_blank">React</a></div></section><a href="https://code.facebook.com/projects/" target="_blank" class="fbOpenSource"><img src="/react-native/img/oss_logo.png" alt="Facebook Open Source" width="170" height="45"/></a><section class="copyright">Copyright © 2020 Facebook Inc.</section></footer></div><script type="text/javascript" src="https://cdn.jsdelivr.net/docsearch.js/1/docsearch.min.js"></script><script>window.fbAsyncInit = function() {FB.init({appId:'1677033832619985',xfbml:true,version:'v2.7'});};(function(d, s, id){var js, fjs = d.getElementsByTagName(s)[0];if (d.getElementById(id)) {return;}js = d.createElement(s); js.id = id;js.src = '//connect.facebook.net/en_US/sdk.js';fjs.parentNode.insertBefore(js, fjs);}(document, 'script','facebook-jssdk'));
                 </script><script>window.twttr=(function(d,s, id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return t;js=d.createElement(s);js.id=id;js.src='https://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js, fjs);t._e = [];t.ready = function(f) {t._e.push(f);};return t;}(document, 'script', 'twitter-wjs'));</script><script>
                 document.addEventListener('keyup', function(e) {
                   if (e.target !== document.body) {
