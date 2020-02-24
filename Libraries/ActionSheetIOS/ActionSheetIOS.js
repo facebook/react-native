@@ -18,7 +18,7 @@ const processColor = require('../StyleSheet/processColor');
 /**
  * Display action sheets and share sheets on iOS.
  *
- * See http://facebook.github.io/react-native/docs/actionsheetios.html
+ * See https://reactnative.dev/docs/actionsheetios.html
  */
 const ActionSheetIOS = {
   /**
@@ -35,7 +35,7 @@ const ActionSheetIOS = {
    * The 'callback' function takes one parameter, the zero-based index
    * of the selected item.
    *
-   * See http://facebook.github.io/react-native/docs/actionsheetios.html#showactionsheetwithoptions
+   * See https://reactnative.dev/docs/actionsheetios.html#showactionsheetwithoptions
    */
   showActionSheetWithOptions(
     options: {|
@@ -101,7 +101,7 @@ const ActionSheetIOS = {
    * - a boolean value signifying success or failure
    * - a string that, in the case of success, indicates the method of sharing
    *
-   * See http://facebook.github.io/react-native/docs/actionsheetios.html#showshareactionsheetwithoptions
+   * See https://reactnative.dev/docs/actionsheetios.html#showshareactionsheetwithoptions
    */
   showShareActionSheetWithOptions(
     options: Object,

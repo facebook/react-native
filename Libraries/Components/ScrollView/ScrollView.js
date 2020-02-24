@@ -625,7 +625,7 @@ const standardVerticalContext: ContextType = Object.freeze({horizontal: false});
  * view from becoming the responder.
  *
  *
- * `<ScrollView>` vs [`<FlatList>`](/react-native/docs/flatlist.html) - which one to use?
+ * `<ScrollView>` vs [`<FlatList>`](https://reactnative.dev/docs/flatlist.html) - which one to use?
  *
  * `ScrollView` simply renders all its react child components at once. That
  * makes it very easy to understand and use.

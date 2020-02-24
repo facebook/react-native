@@ -51,7 +51,7 @@ RCTDefineImageDecoder(RCTImageLoaderTestsDecoder2)
 
   NS_VALID_UNTIL_END_OF_SCOPE RCTBridge *bridge = [[RCTBridge alloc] initWithBundleURL:_bundleURL moduleProvider:^{ return @[loader]; } launchOptions:nil];
 
-  NSURLRequest *urlRequest = [NSURLRequest requestWithURL:[NSURL URLWithString:@"https://facebook.github.io/react-native/img/opengraph.png"]];
+  NSURLRequest *urlRequest = [NSURLRequest requestWithURL:[NSURL URLWithString:@"https://reactnative.dev/img/opengraph.png"]];
   [[bridge moduleForClass:[RCTImageLoader class]]
    loadImageWithURLRequest:urlRequest
    size:CGSizeMake(100, 100)
@@ -89,7 +89,7 @@ RCTDefineImageDecoder(RCTImageLoaderTestsDecoder2)
 
   NS_VALID_UNTIL_END_OF_SCOPE RCTBridge *bridge = [[RCTBridge alloc] initWithBundleURL:_bundleURL moduleProvider:^{ return @[loader1, loader2]; } launchOptions:nil];
 
-  NSURLRequest *urlRequest = [NSURLRequest requestWithURL:[NSURL URLWithString:@"https://facebook.github.io/react-native/img/opengraph.png"]];
+  NSURLRequest *urlRequest = [NSURLRequest requestWithURL:[NSURL URLWithString:@"https://reactnative.dev/img/opengraph.png"]];
   [[bridge moduleForClass:[RCTImageLoader class]]
    loadImageWithURLRequest:urlRequest
    size:CGSizeMake(100, 100)

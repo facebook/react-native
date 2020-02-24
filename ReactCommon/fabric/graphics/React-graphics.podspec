@@ -23,7 +23,7 @@ Pod::Spec.new do |s|
   s.name                   = "React-graphics"
   s.version                = version
   s.summary                = "Fabric for React Native."
-  s.homepage               = "http://facebook.github.io/react-native/"
+  s.homepage               = "https://reactnative.dev/"
   s.license                = package["license"]
   s.author                 = "Facebook, Inc. and its affiliates"
   s.platforms              = { :ios => "9.0", :tvos => "10.0" }

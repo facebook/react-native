@@ -23,7 +23,7 @@ Pod::Spec.new do |s|
   s.name                   = "React-RCTAnimation"
   s.version                = version
   s.summary                = "A native driver for the Animated API."
-  s.homepage               = "http://facebook.github.io/react-native/"
+  s.homepage               = "https://reactnative.dev/"
   s.license                = package["license"]
   s.author                 = "Facebook, Inc. and its affiliates"
   s.platforms              = { :ios => "10.0", :tvos => "10.0" }

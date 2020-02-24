@@ -82,7 +82,7 @@ type ImageComponentStatics = $ReadOnly<{|
  * including network images, static resources, temporary local images, and
  * images from local disk, such as the camera roll.
  *
- * See https://facebook.github.io/react-native/docs/image.html
+ * See https://reactnative.dev/docs/image.html
  */
 let Image = (props: ImagePropsType, forwardedRef) => {
   const source = resolveAssetSource(props.source) || {
@@ -144,7 +144,7 @@ Image.displayName = 'Image';
 /**
  * Retrieve the width and height (in pixels) of an image prior to displaying it.
  *
- * See https://facebook.github.io/react-native/docs/image.html#getsize
+ * See https://reactnative.dev/docs/image.html#getsize
  */
 /* $FlowFixMe(>=0.89.0 site=react_native_ios_fb) This comment suppresses an
  * error found when Flow v0.89 was deployed. To see the error, delete this
@@ -155,7 +155,7 @@ Image.getSize = getSize;
  * Retrieve the width and height (in pixels) of an image prior to displaying it
  * with the ability to provide the headers for the request.
  *
- * See https://facebook.github.io/react-native/docs/image.html#getsizewithheaders
+ * See https://reactnative.dev/docs/image.html#getsizewithheaders
  */
 /* $FlowFixMe(>=0.89.0 site=react_native_ios_fb) This comment suppresses an
  * error found when Flow v0.89 was deployed. To see the error, delete this
@@ -166,7 +166,7 @@ Image.getSizeWithHeaders = getSizeWithHeaders;
  * Prefetches a remote image for later use by downloading it to the disk
  * cache.
  *
- * See https://facebook.github.io/react-native/docs/image.html#prefetch
+ * See https://reactnative.dev/docs/image.html#prefetch
  */
 /* $FlowFixMe(>=0.89.0 site=react_native_ios_fb) This comment suppresses an
  * error found when Flow v0.89 was deployed. To see the error, delete this
@@ -176,7 +176,7 @@ Image.prefetch = prefetch;
 /**
  * Performs cache interrogation.
  *
- *  See https://facebook.github.io/react-native/docs/image.html#querycache
+ *  See https://reactnative.dev/docs/image.html#querycache
  */
 /* $FlowFixMe(>=0.89.0 site=react_native_ios_fb) This comment suppresses an
  * error found when Flow v0.89 was deployed. To see the error, delete this
@@ -186,7 +186,7 @@ Image.queryCache = queryCache;
 /**
  * Resolves an asset reference into an object.
  *
- * See https://facebook.github.io/react-native/docs/image.html#resolveassetsource
+ * See https://reactnative.dev/docs/image.html#resolveassetsource
  */
 /* $FlowFixMe(>=0.89.0 site=react_native_ios_fb) This comment suppresses an
  * error found when Flow v0.89 was deployed. To see the error, delete this

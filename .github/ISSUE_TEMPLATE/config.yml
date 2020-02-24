@@ -4,7 +4,7 @@ contact_links:
       url: https://github.com/facebook/react-native-website/issues
       about: Please report documentation issues in the React Native website repository.
     - name: 🤔 Questions and Help
-      url: https://facebook.github.io/react-native/help
+      url: https://reactnative.dev/help
       about: Looking for help with your app? Please refer to the React Native community's support resources.
     - name: 🚀 Discussions and Proposals
       url: https://github.com/react-native-community/discussions-and-proposals
