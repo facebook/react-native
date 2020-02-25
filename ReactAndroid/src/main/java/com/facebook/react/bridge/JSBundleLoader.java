@@ -26,7 +26,7 @@ public abstract class JSBundleLoader {
     return new JSBundleLoader() {
       @Override
       public String loadScript(JSBundleLoaderDelegate delegate) {
-        delegate.loadScriptFromAssets(context.getAssets(), assetUrl, loadSynchronously);
+        delegate.loadScriptFromAssets(context.getAssets(), assetUrl, 0, loadSynchronously);
         return assetUrl;
       }
     };
@@ -45,7 +45,7 @@ public abstract class JSBundleLoader {
     return new JSBundleLoader() {
       @Override
       public String loadScript(JSBundleLoaderDelegate delegate) {
-        delegate.loadScriptFromFile(fileName, assetUrl, loadSynchronously);
+        delegate.loadScriptFromFile(fileName, assetUrl, 0, loadSynchronously);
         return fileName;
       }
     };
@@ -64,7 +64,7 @@ public abstract class JSBundleLoader {
       @Override
       public String loadScript(JSBundleLoaderDelegate delegate) {
         try {
-          delegate.loadScriptFromFile(cachedFileLocation, sourceURL, false);
+          delegate.loadScriptFromFile(cachedFileLocation, sourceURL, 0, false);
           return sourceURL;
         } catch (Exception e) {
           throw DebugServerException.makeGeneric(sourceURL, e.getMessage(), e);

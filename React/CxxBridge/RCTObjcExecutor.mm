@@ -74,7 +74,11 @@ public:
       std::make_unique<JSBigStdString>(folly::toJson(config)));
   }
 
-  void loadApplicationScript(
+  void initializeRuntime() {
+    // We do nothing here since initialization is done in the constructor
+  }
+
+  void loadBundle(
       std::unique_ptr<const JSBigString> script,
       std::string sourceURL) override {
     RCTProfileBeginFlowEvent();
@@ -97,7 +101,7 @@ public:
     RCTAssert(NO, @"RAM bundles are not supported in RCTObjcExecutor");
   }
 
-  void registerBundle(uint32_t __unused bundleId, const std::string __unused &bundlePath) override {
+  void registerBundle(uint32_t __unused bundleId, std::unique_ptr<JSModulesUnbundle> __unused) override {
     RCTAssert(NO, @"RAM bundles are not supported in RCTObjcExecutor");
   }
 

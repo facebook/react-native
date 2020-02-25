@@ -19,9 +19,10 @@ public interface JSBundleLoaderDelegate {
    *
    * @param assetManager
    * @param assetURL
+   * @param bundleId
    * @param loadSynchronously
    */
-  void loadScriptFromAssets(AssetManager assetManager, String assetURL, boolean loadSynchronously);
+  void loadScriptFromAssets(AssetManager assetManager, String assetURL, int bundleId, boolean loadSynchronously);
 
   /**
    * Load a JS bundle from the filesystem. See {@link JSBundleLoader#createFileLoader(String)} and
@@ -29,9 +30,10 @@ public interface JSBundleLoaderDelegate {
    *
    * @param fileName
    * @param sourceURL
+   * @param bundleId
    * @param loadSynchronously
    */
-  void loadScriptFromFile(String fileName, String sourceURL, boolean loadSynchronously);
+  void loadScriptFromFile(String fileName, String sourceURL, int bundleId, boolean loadSynchronously);
 
   /**
    * This API is used in situations where the JS bundle is being executed not on the device, but on

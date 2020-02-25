@@ -16,58 +16,30 @@ namespace react {
 
 constexpr uint32_t RAMBundleRegistry::MAIN_BUNDLE_ID;
 
-std::unique_ptr<RAMBundleRegistry> RAMBundleRegistry::singleBundleRegistry(
-    std::unique_ptr<JSModulesUnbundle> mainBundle) {
-  return std::make_unique<RAMBundleRegistry>(std::move(mainBundle));
-}
-
-std::unique_ptr<RAMBundleRegistry> RAMBundleRegistry::multipleBundlesRegistry(
-    std::unique_ptr<JSModulesUnbundle> mainBundle,
-    std::function<std::unique_ptr<JSModulesUnbundle>(std::string)> factory) {
-  return std::make_unique<RAMBundleRegistry>(
-      std::move(mainBundle), std::move(factory));
-}
-
-RAMBundleRegistry::RAMBundleRegistry(
-    std::unique_ptr<JSModulesUnbundle> mainBundle,
-    std::function<std::unique_ptr<JSModulesUnbundle>(std::string)> factory)
-    : m_factory(std::move(factory)) {
+RAMBundleRegistry::RAMBundleRegistry(std::unique_ptr<JSModulesUnbundle> mainBundle) {
   m_bundles.emplace(MAIN_BUNDLE_ID, std::move(mainBundle));
 }
 
 void RAMBundleRegistry::registerBundle(
     uint32_t bundleId,
-    std::string bundlePath) {
-  m_bundlePaths.emplace(bundleId, std::move(bundlePath));
+    std::unique_ptr<JSModulesUnbundle> bundle) {
+  if (m_bundles.find(bundleId) != m_bundles.end()) {
+    throw std::runtime_error(
+      folly::to<std::string>("Bundle with id -  ", bundleId, " already exists")
+    );
+  }
+  m_bundles.emplace(bundleId, std::move(bundle));
 }
 
 JSModulesUnbundle::Module RAMBundleRegistry::getModule(
     uint32_t bundleId,
     uint32_t moduleId) {
   if (m_bundles.find(bundleId) == m_bundles.end()) {
-    if (!m_factory) {
-      throw std::runtime_error(
-          "You need to register factory function in order to "
-          "support multiple RAM bundles.");
-    }
-
-    auto bundlePath = m_bundlePaths.find(bundleId);
-    if (bundlePath == m_bundlePaths.end()) {
-      throw std::runtime_error(
-          "In order to fetch RAM bundle from the registry, its file "
-          "path needs to be registered first.");
-    }
-    m_bundles.emplace(bundleId, m_factory(bundlePath->second));
+    throw std::runtime_error(
+      folly::to<std::string>("Couldn't find bundle with id - ", bundleId)
+    );
   }
-
-  auto module = getBundle(bundleId)->getModule(moduleId);
-  if (bundleId == MAIN_BUNDLE_ID) {
-    return module;
-  }
-  return {
-      folly::to<std::string>("seg-", bundleId, '_', std::move(module.name)),
-      std::move(module.code),
-  };
+  return getBundle(bundleId)->getModule(moduleId);
 }
 
 JSModulesUnbundle *RAMBundleRegistry::getBundle(uint32_t bundleId) const {

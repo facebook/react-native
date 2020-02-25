@@ -44,19 +44,26 @@ public:
                         std::shared_ptr<MessageQueueThread> jsQueue,
                         std::shared_ptr<ModuleRegistry> moduleRegistry);
 
+  void initializeRuntime();
+
   void setSourceURL(std::string sourceURL);
 
   void loadScriptFromString(std::unique_ptr<const JSBigString> string,
                             std::string sourceURL, bool loadSynchronously);
   static bool isIndexedRAMBundle(const char *sourcePath);
   static bool isIndexedRAMBundle(std::unique_ptr<const JSBigString>* string);
-  void loadRAMBundleFromString(std::unique_ptr<const JSBigString> script, const std::string& sourceURL);
+  void loadRAMBundleFromString(std::unique_ptr<const JSBigString> script,
+                               const std::string& sourceURL,
+                               uint32_t bundleId);
   void loadRAMBundleFromFile(const std::string& sourcePath,
                              const std::string& sourceURL,
+                             uint32_t bundleId,
                              bool loadSynchronously);
-  void loadRAMBundle(std::unique_ptr<RAMBundleRegistry> bundleRegistry,
+  void loadRAMBundle(std::unique_ptr<JSModulesUnbundle> bundle,
                      std::unique_ptr<const JSBigString> startupScript,
-                     std::string startupScriptSourceURL, bool loadSynchronously);
+                     std::string startupScriptSourceURL,
+                     uint32_t bundleId,
+                     bool loadSynchronously);
   bool supportsProfiling();
   void setGlobalVariable(std::string propName,
                          std::unique_ptr<const JSBigString> jsonValue);
@@ -79,11 +86,9 @@ public:
 
 private:
   void callNativeModules(folly::dynamic &&calls, bool isEndOfBatch);
-  void loadApplication(std::unique_ptr<RAMBundleRegistry> bundleRegistry,
-                       std::unique_ptr<const JSBigString> startupScript,
+  void loadBundle(std::unique_ptr<const JSBigString> startupScript,
                        std::string startupScriptSourceURL);
-  void loadApplicationSync(std::unique_ptr<RAMBundleRegistry> bundleRegistry,
-                           std::unique_ptr<const JSBigString> startupScript,
+  void loadBundleSync(std::unique_ptr<const JSBigString> startupScript,
                            std::string startupScriptSourceURL);
 
   std::shared_ptr<InstanceCallback> callback_;
