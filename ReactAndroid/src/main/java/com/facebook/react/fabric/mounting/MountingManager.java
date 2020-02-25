@@ -518,11 +518,21 @@ public class MountingManager {
       float width,
       @NonNull YogaMeasureMode widthMode,
       float height,
-      @NonNull YogaMeasureMode heightMode) {
+      @NonNull YogaMeasureMode heightMode,
+      @Nullable int[] attachmentsPositions) {
 
     return mViewManagerRegistry
         .get(componentName)
-        .measure(context, localData, props, state, width, widthMode, height, heightMode);
+        .measure(
+            context,
+            localData,
+            props,
+            state,
+            width,
+            widthMode,
+            height,
+            heightMode,
+            attachmentsPositions);
   }
 
   @AnyThread
