@@ -9,7 +9,7 @@
     "url": "git@github.com:facebook/react-native.git"
   },
   "engines": {
-    "node": ">=8.3"
+    "node": ">=10"
   },
   "jest-junit": {
     "outputDirectory": "reports/junit",
