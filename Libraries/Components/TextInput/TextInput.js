@@ -846,7 +846,15 @@ function useFocusOnMount(
 function InternalTextInput(props: Props): React.Node {
   const inputRef = useRef<null | React.ElementRef<HostComponent<mixed>>>(null);
 
-  const selection: ?Selection =
+  // Android sends a "onTextChanged" event followed by a "onSelectionChanged" event, for
+  // the same "most recent event count".
+  // For controlled selection, that means that immediately after text is updated,
+  // a controlled component will pass in the *previous* selection, even if the controlled
+  // component didn't mean to modify the selection at all.
+  // Therefore, we ignore selections and pass them through until the selection event has
+  // been sent.
+  // Note that this mitigation is NOT needed for Fabric.
+  let selection: ?Selection =
     props.selection == null
       ? null
       : {
@@ -854,10 +862,21 @@ function InternalTextInput(props: Props): React.Node {
           end: props.selection.end ?? props.selection.start,
         };
 
+  const [mostRecentEventCount, setMostRecentEventCount] = useState<number>(0);
+
   const [lastNativeText, setLastNativeText] = useState<?Stringish>(props.value);
-  const [lastNativeSelection, setLastNativeSelection] = useState<?Selection>(
-    selection,
-  );
+  const [lastNativeSelectionState, setLastNativeSelection] = useState<{|
+    selection: ?Selection,
+    mostRecentEventCount: number,
+  |}>({selection, mostRecentEventCount});
+
+  const lastNativeSelection = lastNativeSelectionState.selection;
+  const lastNativeSelectionEventCount =
+    lastNativeSelectionState.mostRecentEventCount;
+
+  if (lastNativeSelectionEventCount < mostRecentEventCount) {
+    selection = null;
+  }
 
   // This is necessary in case native updates the text and JS decides
   // that the update should be ignored and we should stick with the value
@@ -877,13 +896,20 @@ function InternalTextInput(props: Props): React.Node {
         lastNativeSelection.end !== selection.end)
     ) {
       nativeUpdate.selection = selection;
-      setLastNativeSelection(selection);
+      setLastNativeSelection({selection, mostRecentEventCount});
     }
 
     if (Object.keys(nativeUpdate).length > 0 && inputRef.current) {
       inputRef.current.setNativeProps(nativeUpdate);
     }
-  }, [inputRef, props.value, lastNativeText, selection, lastNativeSelection]);
+  }, [
+    inputRef,
+    props.value,
+    lastNativeText,
+    selection,
+    lastNativeSelection,
+    mostRecentEventCount,
+  ]);
 
   useFocusOnMount(props.autoFocus, inputRef);
 
@@ -1003,7 +1029,10 @@ function InternalTextInput(props: Props): React.Node {
       return;
     }
 
-    setLastNativeSelection(event.nativeEvent.selection);
+    setLastNativeSelection({
+      selection: event.nativeEvent.selection,
+      mostRecentEventCount,
+    });
   };
 
   const _onFocus = (event: FocusEvent) => {
