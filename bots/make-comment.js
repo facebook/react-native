@@ -79,8 +79,6 @@ async function main(body, replacePattern) {
   }
 
   // We found no comments to replace, so we'll create a new one.
-  console.log('new comment');
-  process.exit(0);
 
   octokit.issues.createComment({
     ...issueParams,
