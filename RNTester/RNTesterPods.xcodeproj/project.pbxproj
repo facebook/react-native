@@ -3,12 +3,13 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 50;
+	objectVersion = 51;
 	objects = {
 
 /* Begin PBXBuildFile section */
 		13B07FBD1A68108700A75B9A /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB11A68108700A75B9A /* LaunchScreen.xib */; };
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
+		192008DE2405673F0048B8C4 /* RCTMemoryFootprintTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 192008DD2405673F0048B8C4 /* RCTMemoryFootprintTests.m */; };
 		272E6B3F1BEA849E001FCF37 /* UpdatePropertiesExampleView.m in Sources */ = {isa = PBXBuildFile; fileRef = 272E6B3C1BEA849E001FCF37 /* UpdatePropertiesExampleView.m */; };
 		27F441EC1BEBE5030039B79C /* FlexibleSizeExampleView.m in Sources */ = {isa = PBXBuildFile; fileRef = 27F441E81BEBE5030039B79C /* FlexibleSizeExampleView.m */; };
 		2DDEF0101F84BF7B00DBDF73 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2DDEF00F1F84BF7B00DBDF73 /* Images.xcassets */; };
@@ -75,6 +76,7 @@
 		13B07FB21A68108700A75B9A /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/LaunchScreen.xib; sourceTree = "<group>"; };
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = RNTester/Info.plist; sourceTree = "<group>"; };
 		13B07FB71A68108700A75B9A /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = RNTester/main.m; sourceTree = "<group>"; };
+		192008DD2405673F0048B8C4 /* RCTMemoryFootprintTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RCTMemoryFootprintTests.m; sourceTree = "<group>"; };
 		272E6B3B1BEA849E001FCF37 /* UpdatePropertiesExampleView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = UpdatePropertiesExampleView.h; path = RNTester/NativeExampleViews/UpdatePropertiesExampleView.h; sourceTree = "<group>"; };
 		272E6B3C1BEA849E001FCF37 /* UpdatePropertiesExampleView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = UpdatePropertiesExampleView.m; path = RNTester/NativeExampleViews/UpdatePropertiesExampleView.m; sourceTree = "<group>"; };
 		27F441E81BEBE5030039B79C /* FlexibleSizeExampleView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = FlexibleSizeExampleView.m; path = RNTester/NativeExampleViews/FlexibleSizeExampleView.m; sourceTree = "<group>"; };
@@ -334,6 +336,7 @@
 				E7DB20C222B2BAA4005AC45F /* RCTImageLoaderTests.m */,
 				E7DB20CD22B2BAA5005AC45F /* RCTImageUtilTests.m */,
 				E7DB20B122B2BAA4005AC45F /* RCTJSONTests.m */,
+				192008DD2405673F0048B8C4 /* RCTMemoryFootprintTests.m */,
 				E7DB20C322B2BAA4005AC45F /* RCTMethodArgumentTests.m */,
 				E7DB20AA22B2BAA3005AC45F /* RCTModuleInitNotificationRaceTests.m */,
 				E7DB20B022B2BAA4005AC45F /* RCTModuleInitTests.m */,
@@ -679,6 +682,7 @@
 				E7DB20D922B2BAA6005AC45F /* RCTAnimationUtilsTests.m in Sources */,
 				E7DB20D122B2BAA6005AC45F /* RCTBundleURLProviderTests.m in Sources */,
 				E7DB20EC22B2BAA6005AC45F /* RCTMultipartStreamReaderTests.m in Sources */,
+				192008DE2405673F0048B8C4 /* RCTMemoryFootprintTests.m in Sources */,
 				E7DB20E022B2BAA6005AC45F /* RCTMethodArgumentTests.m in Sources */,
 				E7DB20E822B2BAA6005AC45F /* RCTModuleMethodTests.mm in Sources */,
 				E7DB20E222B2BAA6005AC45F /* RCTGzipTests.m in Sources */,
