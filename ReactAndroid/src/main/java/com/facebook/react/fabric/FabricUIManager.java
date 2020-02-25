@@ -429,31 +429,10 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
       float maxWidth,
       float minHeight,
       float maxHeight) {
+    ReactContext context =
+        rootTag < 0 ? mReactApplicationContext : mReactContextForRootTag.get(rootTag);
     return mMountingManager.measure(
-        mReactContextForRootTag.get(rootTag),
-        componentName,
-        localData,
-        props,
-        state,
-        getYogaSize(minWidth, maxWidth),
-        getYogaMeasureMode(minWidth, maxWidth),
-        getYogaSize(minHeight, maxHeight),
-        getYogaMeasureMode(minHeight, maxHeight));
-  }
-
-  @DoNotStrip
-  @SuppressWarnings("unused")
-  private long measure(
-      String componentName,
-      @NonNull ReadableMap localData,
-      @NonNull ReadableMap props,
-      @NonNull ReadableMap state,
-      float minWidth,
-      float maxWidth,
-      float minHeight,
-      float maxHeight) {
-    return mMountingManager.measure(
-        mReactApplicationContext,
+        context,
         componentName,
         localData,
         props,
