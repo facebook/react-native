@@ -41,13 +41,13 @@ async function updateComment(octokit, issueParams, body, replacePattern) {
     return false;
   }
 
-  const authedUserId = authenticatedUser.data.id;
   const comments = await octokit.issues.listComments(issueParams);
   if (comments.status !== 200 || !comments.data) {
     console.warn(comments);
     return false;
   }
 
+  const authedUserId = authenticatedUser.data.id;
   const pattern = new RegExp(replacePattern, 'g');
   const comment = comments.data.find(
     ({user, body}) => user.id === authedUserId && pattern.test(body),
