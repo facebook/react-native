@@ -267,6 +267,7 @@ using namespace facebook::react;
 
 - (void)finalizeUpdates:(RNComponentViewUpdateMask)updateMask
 {
+  [super finalizeUpdates:updateMask];
   if (!_needsInvalidateLayer) {
     return;
   }
@@ -399,6 +400,7 @@ static RCTBorderStyle RCTBorderStyleFromBorderStyle(BorderStyle borderStyle)
           colorComponentsFromColor(borderMetrics.borderColors.left).alpha == 0 || self.clipsToBounds);
 
   if (useCoreAnimationBorderRendering) {
+    layer.mask = nil;
     if (_borderLayer) {
       [_borderLayer removeFromSuperlayer];
       _borderLayer = nil;
