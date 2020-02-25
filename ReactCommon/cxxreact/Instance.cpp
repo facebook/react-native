@@ -48,7 +48,7 @@ void Instance::initializeBridge(
   jsQueue->runOnQueueSync([this, &jsef, jsQueue]() mutable {
     nativeToJsBridge_ = std::make_unique<NativeToJsBridge>(
         jsef.get(), moduleRegistry_, jsQueue, callback_);
-
+    nativeToJsBridge_->initializeRuntime();
     std::lock_guard<std::mutex> lock(m_syncMutex);
     m_syncReady = true;
     m_syncCV.notify_all();
@@ -57,33 +57,31 @@ void Instance::initializeBridge(
   CHECK(nativeToJsBridge_);
 }
 
-void Instance::loadApplication(
-    std::unique_ptr<RAMBundleRegistry> bundleRegistry,
+void Instance::loadBundle(
     std::unique_ptr<const JSBigString> string,
     std::string sourceURL) {
   callback_->incrementPendingJSCalls();
-  SystraceSection s("Instance::loadApplication", "sourceURL", sourceURL);
-  nativeToJsBridge_->loadApplication(
-      std::move(bundleRegistry), std::move(string), std::move(sourceURL));
+  SystraceSection s("Instance::loadBundle", "sourceURL", sourceURL);
+  nativeToJsBridge_->loadBundle(
+      std::move(string), std::move(sourceURL));
 }
 
-void Instance::loadApplicationSync(
-    std::unique_ptr<RAMBundleRegistry> bundleRegistry,
+void Instance::loadBundleSync(
     std::unique_ptr<const JSBigString> string,
     std::string sourceURL) {
   std::unique_lock<std::mutex> lock(m_syncMutex);
   m_syncCV.wait(lock, [this] { return m_syncReady; });
 
-  SystraceSection s("Instance::loadApplicationSync", "sourceURL", sourceURL);
-  nativeToJsBridge_->loadApplicationSync(
-      std::move(bundleRegistry), std::move(string), std::move(sourceURL));
+  SystraceSection s("Instance::loadBundleSync", "sourceURL", sourceURL);
+  nativeToJsBridge_->loadBundleSync(
+      std::move(string), std::move(sourceURL));
 }
 
 void Instance::setSourceURL(std::string sourceURL) {
   callback_->incrementPendingJSCalls();
   SystraceSection s("Instance::setSourceURL", "sourceURL", sourceURL);
 
-  nativeToJsBridge_->loadApplication(nullptr, nullptr, std::move(sourceURL));
+  nativeToJsBridge_->loadBundle(nullptr, std::move(sourceURL));
 }
 
 void Instance::loadScriptFromString(
@@ -92,9 +90,9 @@ void Instance::loadScriptFromString(
     bool loadSynchronously) {
   SystraceSection s("Instance::loadScriptFromString", "sourceURL", sourceURL);
   if (loadSynchronously) {
-    loadApplicationSync(nullptr, std::move(string), std::move(sourceURL));
+    loadBundleSync(std::move(string), std::move(sourceURL));
   } else {
-    loadApplication(nullptr, std::move(string), std::move(sourceURL));
+    loadBundle(std::move(string), std::move(sourceURL));
   }
 }
 
@@ -125,8 +123,7 @@ void Instance::loadRAMBundleFromString(
     const std::string &sourceURL) {
   auto bundle = std::make_unique<JSIndexedRAMBundle>(std::move(script));
   auto startupScript = bundle->getStartupCode();
-  auto registry = RAMBundleRegistry::singleBundleRegistry(std::move(bundle));
-  loadRAMBundle(std::move(registry), std::move(startupScript), sourceURL, true);
+  loadRAMBundle(std::move(bundle), std::move(startupScript), sourceURL, true);
 }
 
 void Instance::loadRAMBundleFromFile(
@@ -135,28 +132,25 @@ void Instance::loadRAMBundleFromFile(
     bool loadSynchronously) {
   auto bundle = std::make_unique<JSIndexedRAMBundle>(sourcePath.c_str());
   auto startupScript = bundle->getStartupCode();
-  auto registry = RAMBundleRegistry::multipleBundlesRegistry(
-      std::move(bundle), JSIndexedRAMBundle::buildFactory());
   loadRAMBundle(
-      std::move(registry),
+      std::move(bundle),
       std::move(startupScript),
       sourceURL,
       loadSynchronously);
 }
 
 void Instance::loadRAMBundle(
-    std::unique_ptr<RAMBundleRegistry> bundleRegistry,
+    std::unique_ptr<JSModulesUnbundle> bundle,
     std::unique_ptr<const JSBigString> startupScript,
     std::string startupScriptSourceURL,
     bool loadSynchronously) {
+  nativeToJsBridge_->registerBundle(0, std::move(bundle));
   if (loadSynchronously) {
-    loadApplicationSync(
-        std::move(bundleRegistry),
+    loadBundleSync(
         std::move(startupScript),
         std::move(startupScriptSourceURL));
   } else {
-    loadApplication(
-        std::move(bundleRegistry),
+    loadBundle(
         std::move(startupScript),
         std::move(startupScriptSourceURL));
   }
@@ -200,7 +194,7 @@ void Instance::callJSCallback(uint64_t callbackId, folly::dynamic &&params) {
 void Instance::registerBundle(
     uint32_t bundleId,
     const std::string &bundlePath) {
-  nativeToJsBridge_->registerBundle(bundleId, bundlePath);
+  loadRAMBundleFromFile(bundlePath, bundlePath, true);
 }
 
 const ModuleRegistry &Instance::getModuleRegistry() const {

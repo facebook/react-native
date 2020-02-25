@@ -69,13 +69,8 @@ JSIExecutor::JSIExecutor(
       *runtime, "__jsiExecutorDescription", runtime->description());
 }
 
-void JSIExecutor::loadApplicationScript(
-    std::unique_ptr<const JSBigString> script,
-    std::string sourceURL) {
-  SystraceSection s("JSIExecutor::loadApplicationScript");
-
-  // TODO: check for and use precompiled HBC
-
+void JSIExecutor::initializeRuntime() {
+  SystraceSection s("JSIExecutor::initializeRuntime");
   runtime_->global().setProperty(
       *runtime_,
       "nativeModuleProxy",
@@ -133,6 +128,18 @@ void JSIExecutor::loadApplicationScript(
   if (runtimeInstaller_) {
     runtimeInstaller_(*runtime_);
   }
+  bool hasLogger(ReactMarker::logTaggedMarker);
+  if (hasLogger) {
+    ReactMarker::logMarker(ReactMarker::CREATE_REACT_CONTEXT_STOP);
+  }
+}
+
+void JSIExecutor::loadBundle(
+    std::unique_ptr<const JSBigString> script,
+    std::string sourceURL) {
+  SystraceSection s("JSIExecutor::loadBundle");
+
+  // TODO: check for and use precompiled HBC
 
   bool hasLogger(ReactMarker::logTaggedMarker);
   std::string scriptName = simpleBasename(sourceURL);
@@ -144,7 +151,6 @@ void JSIExecutor::loadApplicationScript(
       std::make_unique<BigStringBuffer>(std::move(script)), sourceURL);
   flush();
   if (hasLogger) {
-    ReactMarker::logMarker(ReactMarker::CREATE_REACT_CONTEXT_STOP);
     ReactMarker::logTaggedMarker(
         ReactMarker::RUN_JS_BUNDLE_STOP, scriptName.c_str());
   }
@@ -170,21 +176,14 @@ void JSIExecutor::setBundleRegistry(std::unique_ptr<RAMBundleRegistry> r) {
 
 void JSIExecutor::registerBundle(
     uint32_t bundleId,
-    const std::string &bundlePath) {
+    std::unique_ptr<JSModulesUnbundle> bundle) {
   const auto tag = folly::to<std::string>(bundleId);
   ReactMarker::logTaggedMarker(
       ReactMarker::REGISTER_JS_SEGMENT_START, tag.c_str());
   if (bundleRegistry_) {
-    bundleRegistry_->registerBundle(bundleId, bundlePath);
+    bundleRegistry_->registerBundle(bundleId, std::move(bundle));
   } else {
-    auto script = JSBigFileString::fromPath(bundlePath);
-    if (script->size() == 0) {
-      throw std::invalid_argument(
-          "Empty bundle registered with ID " + tag + " from " + bundlePath);
-    }
-    runtime_->evaluateJavaScript(
-        std::make_unique<BigStringBuffer>(std::move(script)),
-        JSExecutor::getSyntheticBundlePath(bundleId, bundlePath));
+    setBundleRegistry(std::make_unique<RAMBundleRegistry>(std::move(bundle)));
   }
   ReactMarker::logTaggedMarker(
       ReactMarker::REGISTER_JS_SEGMENT_STOP, tag.c_str());

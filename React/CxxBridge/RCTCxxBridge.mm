@@ -1322,15 +1322,14 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
       [self->_performanceLogger markStopForTag:RCTPLRAMBundleLoad];
       [self->_performanceLogger setValue:scriptStr->size() forTag:RCTPLRAMStartupCodeSize];
       if (self->_reactInstance) {
-        auto registry = RAMBundleRegistry::multipleBundlesRegistry(std::move(ramBundle), JSIndexedRAMBundle::buildFactory());
-        self->_reactInstance->loadRAMBundle(std::move(registry), std::move(scriptStr),
+        self->_reactInstance->loadRAMBundle(std::move(ramBundle), std::move(scriptStr),
                                             sourceUrlStr.UTF8String, !async);
       }
     } else if (self->_reactInstance) {
       self->_reactInstance->loadScriptFromString(std::make_unique<NSDataBigString>(script),
                                                  sourceUrlStr.UTF8String, !async);
     } else {
-      std::string methodName = async ? "loadApplicationScript" : "loadApplicationScriptSync";
+      std::string methodName = async ? "loadBundle" : "loadBundleSync";
       throw std::logic_error("Attempt to call " + methodName + ": on uninitialized bridge");
     }
   }];
@@ -1338,9 +1337,27 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
 
 - (void)registerSegmentWithId:(NSUInteger)segmentId path:(NSString *)path
 {
-  if (_reactInstance) {
-    _reactInstance->registerBundle(static_cast<uint32_t>(segmentId), path.UTF8String);
-  }
+    __weak RCTCxxBridge *weakSelf = self;
+    NSURL *pathURL = [NSURL URLWithString:path];
+    dispatch_group_t group = dispatch_group_create();
+    
+    dispatch_group_enter(group);
+    [RCTJavaScriptLoader loadBundleAtURL:pathURL onProgress:^(RCTLoadingProgress *progressData) {} onComplete:^(NSError *error, RCTSource *source) {
+    if (error) {
+      [weakSelf handleError:error];
+      return;
+    }
+    
+    NSData *sourceCode = source.data;
+    __strong RCTCxxBridge *strongSelf = weakSelf;
+    if (strongSelf->_reactInstance) {
+      [strongSelf executeApplicationScript:sourceCode url:pathURL async:NO];
+    }
+    dispatch_group_leave(group);
+        
+    }];
+    
+    dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
 }
 
 #pragma mark - Payload Processing

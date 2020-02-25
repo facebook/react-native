@@ -40,7 +40,7 @@ public class JSDebuggerWebSocketClientTest {
   }
 
   @Test
-  public void test_loadApplicationScript_ShouldSendCorrectMessage() throws Exception {
+  public void test_loadBundle_ShouldSendCorrectMessage() throws Exception {
     final JSDebuggerWebSocketClient.JSDebuggerCallback cb =
         PowerMockito.mock(JSDebuggerWebSocketClient.JSDebuggerCallback.class);
 
@@ -49,7 +49,7 @@ public class JSDebuggerWebSocketClientTest {
     injectedObjects.put("key1", "value1");
     injectedObjects.put("key2", "value2");
 
-    client.loadApplicationScript("http://localhost:8080/index.js", injectedObjects, cb);
+    client.loadBundle("http://localhost:8080/index.js", injectedObjects, cb);
     PowerMockito.verifyPrivate(client)
         .invoke(
             "sendMessage",
