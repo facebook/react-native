@@ -65,6 +65,10 @@ async function updateComment(octokit, issueParams, body, replacePattern) {
 }
 
 async function main(body, replacePattern) {
+  if (!body) {
+    return;
+  }
+
   const {Octokit} = require('@octokit/rest');
   const octokit = new Octokit({auth: GITHUB_TOKEN});
 
@@ -87,6 +91,4 @@ async function main(body, replacePattern) {
 }
 
 const {[2]: body, [3]: replacePattern} = process.argv;
-if (body) {
-  main(body, replacePattern);
-}
+main(body, replacePattern);
