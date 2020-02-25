@@ -36,11 +36,14 @@ const {useEffect, useRef, useState} = React;
 type ReactRefSetter<T> = {current: null | T, ...} | ((ref: null | T) => mixed);
 
 let AndroidTextInput;
+let AndroidTextInputCommands;
 let RCTMultilineTextInputView;
 let RCTSinglelineTextInputView;
 
 if (Platform.OS === 'android') {
   AndroidTextInput = require('./AndroidTextInputNativeComponent').default;
+  AndroidTextInputCommands = require('./AndroidTextInputNativeComponent')
+    .Commands;
 } else if (Platform.OS === 'ios') {
   RCTMultilineTextInputView = require('./RCTMultilineTextInputNativeComponent.js')
     .default;
@@ -878,6 +881,13 @@ function InternalTextInput(props: Props): React.Node {
     selection = null;
   }
 
+  const text =
+    typeof props.value === 'string'
+      ? props.value
+      : typeof props.defaultValue === 'string'
+      ? props.defaultValue
+      : '';
+
   // This is necessary in case native updates the text and JS decides
   // that the update should be ignored and we should stick with the value
   // that we have in JS.
@@ -899,16 +909,30 @@ function InternalTextInput(props: Props): React.Node {
       setLastNativeSelection({selection, mostRecentEventCount});
     }
 
-    if (Object.keys(nativeUpdate).length > 0 && inputRef.current) {
+    if (Object.keys(nativeUpdate).length === 0) {
+      return;
+    }
+
+    if (AndroidTextInputCommands && inputRef.current != null) {
+      AndroidTextInputCommands.setTextAndSelection(
+        inputRef.current,
+        mostRecentEventCount,
+        text,
+        selection?.start ?? -1,
+        selection?.end ?? -1,
+      );
+    } else if (inputRef.current != null) {
       inputRef.current.setNativeProps(nativeUpdate);
     }
   }, [
+    mostRecentEventCount,
     inputRef,
     props.value,
+    props.defaultValue,
     lastNativeText,
     selection,
     lastNativeSelection,
-    mostRecentEventCount,
+    text,
   ]);
 
   useFocusOnMount(props.autoFocus, inputRef);
@@ -935,7 +959,15 @@ function InternalTextInput(props: Props): React.Node {
   }, [inputRef]);
 
   function clear(): void {
-    if (inputRef.current != null) {
+    if (AndroidTextInputCommands && inputRef.current != null) {
+      AndroidTextInputCommands.setTextAndSelection(
+        inputRef.current,
+        mostRecentEventCount,
+        '',
+        0,
+        0,
+      );
+    } else if (inputRef.current != null) {
       inputRef.current.setNativeProps({text: ''});
     }
   }
@@ -947,14 +979,6 @@ function InternalTextInput(props: Props): React.Node {
 
   function getNativeRef(): ?React.ElementRef<HostComponent<mixed>> {
     return inputRef.current;
-  }
-
-  function _getText(): ?string {
-    return typeof props.value === 'string'
-      ? props.value
-      : typeof props.defaultValue === 'string'
-      ? props.defaultValue
-      : '';
   }
 
   const _setNativeRef = setAndForwardRef({
@@ -1001,7 +1025,12 @@ function InternalTextInput(props: Props): React.Node {
   const _onChange = (event: ChangeEvent) => {
     // Make sure to fire the mostRecentEventCount first so it is already set on
     // native when the text value is set.
-    if (inputRef.current) {
+    if (AndroidTextInputCommands && inputRef.current != null) {
+      AndroidTextInputCommands.setMostRecentEventCount(
+        inputRef.current,
+        event.nativeEvent.eventCount,
+      );
+    } else if (inputRef.current != null) {
       inputRef.current.setNativeProps({
         mostRecentEventCount: event.nativeEvent.eventCount,
       });
@@ -1011,19 +1040,24 @@ function InternalTextInput(props: Props): React.Node {
     props.onChange && props.onChange(event);
     props.onChangeText && props.onChangeText(text);
 
-    if (!inputRef.current) {
+    if (inputRef.current == null) {
       // calling `props.onChange` or `props.onChangeText`
       // may clean up the input itself. Exits here.
       return;
     }
 
     setLastNativeText(text);
+    // This must happen last, after we call setLastNativeText.
+    // Different ordering can cause bugs when editing AndroidTextInputs
+    // with multiple Fragments.
+    // We must update this so that controlled input updates work.
+    setMostRecentEventCount(event.nativeEvent.eventCount);
   };
 
   const _onSelectionChange = (event: SelectionChangeEvent) => {
     props.onSelectionChange && props.onSelectionChange(event);
 
-    if (!inputRef.current) {
+    if (inputRef.current == null) {
       // calling `props.onSelectionChange`
       // may clean up the input itself. Exits here.
       return;
@@ -1088,7 +1122,7 @@ function InternalTextInput(props: Props): React.Node {
         onSelectionChangeShouldSetResponder={emptyFunctionThatReturnsTrue}
         selection={selection}
         style={style}
-        text={_getText()}
+        text={text}
       />
     );
   } else if (Platform.OS === 'android') {
@@ -1114,7 +1148,7 @@ function InternalTextInput(props: Props): React.Node {
         autoCapitalize={autoCapitalize}
         children={children}
         disableFullscreenUI={props.disableFullscreenUI}
-        mostRecentEventCount={0}
+        mostRecentEventCount={mostRecentEventCount}
         onBlur={_onBlur}
         onChange={_onChange}
         onFocus={_onFocus}
@@ -1122,7 +1156,7 @@ function InternalTextInput(props: Props): React.Node {
         onSelectionChange={_onSelectionChange}
         selection={selection}
         style={style}
-        text={_getText()}
+        text={text}
         textBreakStrategy={props.textBreakStrategy}
       />
     );
