@@ -199,6 +199,8 @@ RCT_EXPORT_MODULE()
     _container = [[UIView alloc] initWithFrame:CGRectMake(10, 25, 180, RCTPerfMonitorBarHeight)];
     if (@available(iOS 13.0, *)) {
       _container.backgroundColor = UIColor.systemBackgroundColor;
+    } else {
+      _container.backgroundColor = UIColor.whiteColor;
     }
     _container.layer.borderWidth = 2;
     _container.layer.borderColor = [UIColor lightGrayColor].CGColor;
