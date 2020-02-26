@@ -340,6 +340,7 @@ type AndroidProps = $ReadOnly<{|
     | 'street-address'
     | 'tel'
     | 'username'
+    | 'username-new'
     | 'off'
   ),
 
