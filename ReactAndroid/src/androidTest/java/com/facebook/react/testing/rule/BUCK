@@ -16,7 +16,7 @@ rn_android_library(
         "PUBLIC",
     ],
     deps = ([
-        react_native_dep("third-party/java/espresso:espresso"),
+        react_native_dep("third-party/android/androidx:test-espresso-core"),
         react_native_dep("third-party/java/jsr-305:jsr-305"),
         react_native_dep("third-party/java/junit:junit"),
         react_native_dep("third-party/java/testing-support-lib:testing-support-lib"),

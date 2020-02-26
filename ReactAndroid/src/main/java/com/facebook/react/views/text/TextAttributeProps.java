@@ -93,9 +93,7 @@ public class TextAttributeProps {
    */
   protected @Nullable String mFontFamily = null;
 
-  /**
-   * @see android.graphics.Paint#setFontFeatureSettings
-   */
+  /** @see android.graphics.Paint#setFontFeatureSettings */
   protected @Nullable String mFontFeatureSettings = null;
 
   protected boolean mContainsImages = false;

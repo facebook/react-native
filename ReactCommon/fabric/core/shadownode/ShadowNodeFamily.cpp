@@ -9,6 +9,7 @@
 #include "ShadowNode.h"
 
 #include <react/core/ComponentDescriptor.h>
+#include <react/core/State.h>
 
 namespace facebook {
 namespace react {
@@ -93,34 +94,29 @@ AncestorList ShadowNodeFamily::getAncestors(
   return ancestors;
 }
 
-const StateTarget &ShadowNodeFamily::getTarget() const {
-  std::shared_lock<better::shared_mutex> lock(mutex_);
-  return target_;
+State::Shared ShadowNodeFamily::getMostRecentState() const {
+  std::unique_lock<better::shared_mutex> lock(mutex_);
+  return mostRecentState_;
 }
 
-void ShadowNodeFamily::setTarget(StateTarget &&target) const {
+void ShadowNodeFamily::setMostRecentState(State::Shared const &state) const {
   std::unique_lock<better::shared_mutex> lock(mutex_);
 
-  assert(target && "`StateTarget` must not be empty.");
-
-  if (target_) {
-    auto &previousState = target_.getShadowNode().getState();
-    auto &nextState = target.getShadowNode().getState();
-
-    /*
-     * Checking and setting `isObsolete_` prevents old states to be recommitted
-     * on top of fresher states. It's okay to commit a tree with "older" Shadow
-     * Nodes (the evolution of nodes is not linear), however, we never back out
-     * states (they progress linearly).
-     */
-    if (nextState->isObsolete_) {
-      return;
-    }
-
-    previousState->isObsolete_ = true;
+  /*
+   * Checking and setting `isObsolete_` prevents old states to be recommitted
+   * on top of fresher states. It's okay to commit a tree with "older" Shadow
+   * Nodes (the evolution of nodes is not linear), however, we never back out
+   * states (they progress linearly).
+   */
+  if (state && state->isObsolete_) {
+    return;
   }
 
-  target_ = std::move(target);
+  if (mostRecentState_) {
+    mostRecentState_->isObsolete_ = true;
+  }
+
+  mostRecentState_ = state;
 }
 
 void ShadowNodeFamily::dispatchRawState(

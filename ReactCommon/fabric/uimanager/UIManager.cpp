@@ -54,19 +54,6 @@ SharedShadowNode UIManager::createNode(
       },
       family);
 
-  // state->commit(x) associates a ShadowNode with the State object.
-  // state->commit(x) must be called before calling updateState; updateState
-  // fails silently otherwise. In between "now", when this node is created, and
-  // when this node is actually committed, the State object would otherwise not
-  // have any reference back to the ShadowNode that owns it. On platforms that
-  // do view preallocation (like Android), this State would be sent to the
-  // mounting layer with valid data but without an update mechanism. We
-  // explicitly associate the ShadowNode with the State here so that updateState
-  // is always safe and effectful.
-  if (state) {
-    state->commit(shadowNode);
-  }
-
   if (delegate_) {
     delegate_->uiManagerDidCreateShadowNode(shadowNode);
   }
@@ -201,11 +188,10 @@ LayoutMetrics UIManager::getRelativeLayoutMetrics(
       *layoutableAncestorShadowNode, policy);
 }
 
-void UIManager::updateState(
-    ShadowNodeFamily::Shared const &family,
-    StateData::Shared const &rawStateData) const {
+void UIManager::updateState(StateUpdate const &stateUpdate) const {
+  auto &callback = stateUpdate.callback;
+  auto &family = stateUpdate.family;
   auto &componentDescriptor = family->getComponentDescriptor();
-  auto state = componentDescriptor.createState(family, rawStateData);
 
   shadowTreeRegistry_.visit(
       family->getSurfaceId(), [&](ShadowTree const &shadowTree) {
@@ -213,10 +199,15 @@ void UIManager::updateState(
                                      &oldRootShadowNode) {
           return oldRootShadowNode->clone(
               *family, [&](ShadowNode const &oldShadowNode) {
+                auto newData =
+                    callback(oldShadowNode.getState()->getDataPointer());
+                auto newState =
+                    componentDescriptor.createState(family, newData);
+
                 return oldShadowNode.clone({
                     /* .props = */ ShadowNodeFragment::propsPlaceholder(),
                     /* .children = */ ShadowNodeFragment::childrenPlaceholder(),
-                    /* .state = */ state,
+                    /* .state = */ newState,
                 });
               });
         });

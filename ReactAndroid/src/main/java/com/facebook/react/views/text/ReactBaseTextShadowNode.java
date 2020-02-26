@@ -20,7 +20,6 @@ import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
-import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.react.uimanager.IllegalViewOperationException;
 import com.facebook.react.uimanager.LayoutShadowNode;
 import com.facebook.react.uimanager.NativeViewHierarchyOptimizer;
@@ -142,16 +141,11 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
         float width;
         float height;
         if (widthValue.unit != YogaUnit.POINT || heightValue.unit != YogaUnit.POINT) {
-          if (ReactFeatureFlags.supportInlineViewsWithDynamicSize) {
-            // If the measurement of the child isn't calculated, we calculate the layout for the
-            // view using Yoga
-            child.calculateLayout();
-            width = child.getLayoutWidth();
-            height = child.getLayoutHeight();
-          } else {
-            throw new IllegalViewOperationException(
-                "Views nested within a <Text> must have a width and height");
-          }
+          // If the measurement of the child isn't calculated, we calculate the layout for the
+          // view using Yoga
+          child.calculateLayout();
+          width = child.getLayoutWidth();
+          height = child.getLayoutHeight();
         } else {
           width = widthValue.value;
           height = heightValue.value;
@@ -337,7 +331,6 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
       (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) ? 0 : Layout.HYPHENATION_FREQUENCY_NONE;
   protected int mJustificationMode =
       (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) ? 0 : Layout.JUSTIFICATION_MODE_NONE;
-  protected TextTransform mTextTransform = TextTransform.UNSET;
 
   protected float mTextShadowOffsetDx = 0;
   protected float mTextShadowOffsetDy = 0;
@@ -347,6 +340,8 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
   protected boolean mIsUnderlineTextDecorationSet = false;
   protected boolean mIsLineThroughTextDecorationSet = false;
   protected boolean mIncludeFontPadding = true;
+  protected boolean mAdjustsFontSizeToFit = false;
+  protected float mMinimumFontScale = 0;
 
   /**
    * mFontStyle can be {@link Typeface#NORMAL} or {@link Typeface#ITALIC}. mFontWeight can be {@link
@@ -626,5 +621,21 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
       throw new JSApplicationIllegalArgumentException("Invalid textTransform: " + textTransform);
     }
     markUpdated();
+  }
+
+  @ReactProp(name = ViewProps.ADJUSTS_FONT_SIZE_TO_FIT)
+  public void setAdjustFontSizeToFit(boolean adjustsFontSizeToFit) {
+    if (adjustsFontSizeToFit != mAdjustsFontSizeToFit) {
+      mAdjustsFontSizeToFit = adjustsFontSizeToFit;
+      markUpdated();
+    }
+  }
+
+  @ReactProp(name = ViewProps.MINIMUM_FONT_SCALE)
+  public void setMinimumFontScale(float minimumFontScale) {
+    if (minimumFontScale != mMinimumFontScale) {
+      mMinimumFontScale = minimumFontScale;
+      markUpdated();
+    }
   }
 }

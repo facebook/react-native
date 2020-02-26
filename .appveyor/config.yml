@@ -10,8 +10,8 @@ environment:
   NDK_TOOLS_URL: https://dl.google.com/android/repository/android-ndk-r19c-windows-x86_64.zip
 
   matrix:
-    - nodejs_version: 8
     - nodejs_version: 10
+    - nodejs_version: 12
 
 install:
   # Install Android SDK Tools

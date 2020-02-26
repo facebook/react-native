@@ -111,7 +111,7 @@ class ConcreteViewShadowNode : public ConcreteShadowNode<
   }
 
   Transform getTransform() const override {
-    return BaseShadowNode::getProps()->transform;
+    return BaseShadowNode::getConcreteProps().transform;
   }
 
 #pragma mark - DebugStringConvertible

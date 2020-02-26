@@ -11,8 +11,11 @@
 'use strict';
 
 const processColor = require('./processColor');
+import type {ProcessedColorValue} from './processColor';
 
-function processColorArray(colors: ?Array<string>): ?Array<?number> {
+function processColorArray(
+  colors: ?Array<string>,
+): ?Array<ProcessedColorValue> {
   return colors == null ? null : colors.map(processColor);
 }
 

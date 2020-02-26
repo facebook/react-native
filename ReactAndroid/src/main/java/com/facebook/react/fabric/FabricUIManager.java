@@ -41,7 +41,6 @@ import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.UIManager;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.bridge.WritableMap;
-import com.facebook.react.common.ReactConstants;
 import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.react.fabric.events.EventBeatManager;
 import com.facebook.react.fabric.events.EventEmitterWrapper;
@@ -430,31 +429,36 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
       float maxWidth,
       float minHeight,
       float maxHeight) {
-    return mMountingManager.measure(
-        mReactContextForRootTag.get(rootTag),
+    return measure(
+        rootTag,
         componentName,
         localData,
         props,
         state,
-        getYogaSize(minWidth, maxWidth),
-        getYogaMeasureMode(minWidth, maxWidth),
-        getYogaSize(minHeight, maxHeight),
-        getYogaMeasureMode(minHeight, maxHeight));
+        minWidth,
+        maxWidth,
+        minHeight,
+        maxHeight,
+        null);
   }
 
   @DoNotStrip
   @SuppressWarnings("unused")
   private long measure(
+      int rootTag,
       String componentName,
-      @NonNull ReadableMap localData,
-      @NonNull ReadableMap props,
-      @NonNull ReadableMap state,
+      ReadableMap localData,
+      ReadableMap props,
+      ReadableMap state,
       float minWidth,
       float maxWidth,
       float minHeight,
-      float maxHeight) {
+      float maxHeight,
+      @Nullable int[] attachmentsPositions) {
+    ReactContext context =
+        rootTag < 0 ? mReactApplicationContext : mReactContextForRootTag.get(rootTag);
     return mMountingManager.measure(
-        mReactApplicationContext,
+        context,
         componentName,
         localData,
         props,
@@ -462,7 +466,8 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
         getYogaSize(minWidth, maxWidth),
         getYogaMeasureMode(minWidth, maxWidth),
         getYogaSize(minHeight, maxHeight),
-        getYogaMeasureMode(minHeight, maxHeight));
+        getYogaMeasureMode(minHeight, maxHeight),
+        attachmentsPositions);
   }
 
   @Override
@@ -813,9 +818,7 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
     @ThreadConfined(UI)
     public void doFrameGuarded(long frameTimeNanos) {
       if (!mIsMountingEnabled || mDestroyed) {
-        FLog.w(
-            ReactConstants.TAG,
-            "Not flushing pending UI operations because of previously thrown Exception");
+        FLog.w(TAG, "Not flushing pending UI operations because of previously thrown Exception");
         return;
       }
 
@@ -826,7 +829,7 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
         dispatchMountItems();
 
       } catch (Exception ex) {
-        FLog.i(ReactConstants.TAG, "Exception thrown when executing UIFrameGuarded", ex);
+        FLog.i(TAG, "Exception thrown when executing UIFrameGuarded", ex);
         stop();
         throw ex;
       } finally {

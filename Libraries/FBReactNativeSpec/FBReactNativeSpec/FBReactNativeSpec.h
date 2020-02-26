@@ -1416,6 +1416,7 @@ namespace JS {
       JS::NativeImageEditor::OptionsSize size() const;
       folly::Optional<JS::NativeImageEditor::OptionsDisplaySize> displaySize() const;
       NSString *resizeMode() const;
+      folly::Optional<bool> allowExternalStorage() const;
 
       Options(NSDictionary *const v) : _v(v) {}
     private:
@@ -3489,6 +3490,11 @@ inline NSString *JS::NativeImageEditor::Options::resizeMode() const
 {
   id const p = _v[@"resizeMode"];
   return RCTBridgingToString(p);
+}
+inline folly::Optional<bool> JS::NativeImageEditor::Options::allowExternalStorage() const
+{
+  id const p = _v[@"allowExternalStorage"];
+  return RCTBridgingToOptionalBool(p);
 }
 inline bool JS::NativeImagePickerIOS::SpecOpenCameraDialogConfig::unmirrorFrontFacingCamera() const
 {

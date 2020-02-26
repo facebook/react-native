@@ -42,7 +42,7 @@
     "ReactCommon",
     "README.md",
     "rn-get-polyfills.js",
-    "scripts/autolink-ios.rb",
+    "scripts/react_native_pods.rb",
     "scripts/compose-source-maps.js",
     "scripts/ios-configure-glog.sh",
     "scripts/launchPackager.bat",
@@ -94,11 +94,11 @@
     "base64-js": "^1.1.2",
     "connect": "^3.6.5",
     "escape-string-regexp": "^1.0.5",
-    "eslint-plugin-relay": "1.4.1",
+    "eslint-plugin-relay": "1.7.0",
     "event-target-shim": "^5.0.1",
     "fbjs": "^1.0.0",
     "fbjs-scripts": "^1.1.0",
-    "hermes-engine": "~0.3.0",
+    "hermes-engine": "~0.4.0",
     "invariant": "^2.2.4",
     "jsc-android": "^245459.0.0",
     "metro-babel-register": "0.58.0",
@@ -139,7 +139,7 @@
     "eslint-plugin-react": "7.12.4",
     "eslint-plugin-react-hooks": "^2.0.1",
     "eslint-plugin-react-native": "3.8.1",
-    "eslint-plugin-relay": "1.4.1",
+    "eslint-plugin-relay": "1.7.0",
     "flow-bin": "^0.118.0",
     "flow-remove-types": "1.2.3",
     "jest": "^24.9.0",
@@ -159,6 +159,24 @@
     "runner-config": "RNTester/e2e/config.json",
     "specs": "",
     "configurations": {
+      "android.emu.release": {
+        "binaryPath": "RNTester/android/app/build/outputs/apk/hermes/release/app-hermes-x86-release.apk",
+        "testBinaryPath": "RNTester/android/app/build/outputs/apk/androidTest/hermes/release/app-hermes-release-androidTest.apk",
+        "build": "./gradlew RNTester:android:app:assembleRelease RNTester:android:app:assembleAndroidTest -DtestBuildType=release",
+        "type": "android.emulator",
+        "device": {
+          "avdName": "Nexus_6_API_29"
+        }
+      },
+      "android.emu.debug": {
+        "binaryPath": "RNTester/android/app/build/outputs/apk/hermes/debug/app-hermes-x86-debug.apk",
+        "testBinaryPath": "RNTester/android/app/build/outputs/apk/androidTest/hermes/debug/app-hermes-debug-androidTest.apk",
+        "build": "./gradlew RNTester:android:app:assembleDebug RNTester:android:app:assembleAndroidTest -DtestBuildType=debug",
+        "type": "android.emulator",
+        "device": {
+          "avdName": "Nexus_6_API_29"
+        }
+      },
       "ios.sim.release": {
         "binaryPath": "RNTester/build/Build/Products/Release-iphonesimulator/RNTester.app/",
         "build": "xcodebuild -workspace RNTester/RNTesterPods.xcworkspace -scheme RNTester -configuration Release -sdk iphonesimulator -derivedDataPath RNTester/build -UseModernBuildSystem=NO -quiet",

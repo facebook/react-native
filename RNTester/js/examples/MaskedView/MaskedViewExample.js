@@ -35,12 +35,12 @@ class AnimatedMaskExample extends React.Component<Props> {
       Animated.sequence([
         Animated.timing(this._maskScaleAnimatedValue, {
           toValue: 1.3,
-          timing: 750,
+          duration: 750,
           useNativeDriver: true,
         }),
         Animated.timing(this._maskScaleAnimatedValue, {
           toValue: 1,
-          timing: 750,
+          duration: 750,
           useNativeDriver: true,
         }),
       ]),
@@ -49,7 +49,7 @@ class AnimatedMaskExample extends React.Component<Props> {
     Animated.loop(
       Animated.timing(this._maskRotateAnimatedValue, {
         toValue: 360,
-        timing: 2000,
+        duration: 2000,
         useNativeDriver: true,
       }),
     ).start();

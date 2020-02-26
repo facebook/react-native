@@ -10,6 +10,7 @@
 #include <memory>
 
 #include <react/attributedstring/AttributedString.h>
+#include <react/attributedstring/AttributedStringBox.h>
 #include <react/attributedstring/ParagraphAttributes.h>
 #include <react/core/LayoutConstraints.h>
 #include <react/utils/ContextContainer.h>
@@ -31,10 +32,10 @@ class TextLayoutManager {
   ~TextLayoutManager();
 
   /*
-   * Measures `attributedString` using native text rendering infrastructure.
+   * Measures `attributedStringBox` using native text rendering infrastructure.
    */
   Size measure(
-      AttributedString attributedString,
+      AttributedStringBox attributedStringBox,
       ParagraphAttributes paragraphAttributes,
       LayoutConstraints layoutConstraints) const;
 

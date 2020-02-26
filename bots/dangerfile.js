@@ -86,6 +86,6 @@ if (!isMergeRefMaster && isMergeRefStable) {
 } else if (!isMergeRefMaster && !isMergeRefStable) {
   const title = ':exclamation: Base Branch';
   const idea =
-    'The base branch for this PR is something other than `master`. [Are you sure you want to target something other than the `master` branch?](http://facebook.github.io/react-native/docs/contributing.html#pull-requests)';
+    'The base branch for this PR is something other than `master`. [Are you sure you want to target something other than the `master` branch?](https://reactnative.dev/docs/contributing.html#pull-requests)';
   fail(`${title} - <i>${idea}</i>`);
 }

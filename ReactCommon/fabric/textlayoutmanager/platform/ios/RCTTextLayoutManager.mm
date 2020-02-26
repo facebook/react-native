@@ -69,7 +69,8 @@ static NSLineBreakMode RCTNSLineBreakModeFromEllipsizeMode(EllipsizeMode ellipsi
 
 - (void)drawAttributedString:(AttributedString)attributedString
          paragraphAttributes:(ParagraphAttributes)paragraphAttributes
-                       frame:(CGRect)frame {
+                       frame:(CGRect)frame
+{
   NSTextStorage *textStorage = [self
       _textStorageAndLayoutManagerWithAttributesString:[self _nsAttributedStringFromAttributedString:attributedString]
                                    paragraphAttributes:paragraphAttributes
@@ -82,12 +83,10 @@ static NSLineBreakMode RCTNSLineBreakModeFromEllipsizeMode(EllipsizeMode ellipsi
   [layoutManager drawGlyphsForGlyphRange:glyphRange atPoint:frame.origin];
 }
 
-- (NSTextStorage *)
-    _textStorageAndLayoutManagerWithAttributesString:
-        (NSAttributedString *)attributedString
-                                 paragraphAttributes:
-                                     (ParagraphAttributes)paragraphAttributes
-                                                size:(CGSize)size {
+- (NSTextStorage *)_textStorageAndLayoutManagerWithAttributesString:(NSAttributedString *)attributedString
+                                                paragraphAttributes:(ParagraphAttributes)paragraphAttributes
+                                                               size:(CGSize)size
+{
   NSTextContainer *textContainer = [[NSTextContainer alloc] initWithSize:size];
 
   textContainer.lineFragmentPadding = 0.0; // Note, the default value is 5.
@@ -100,31 +99,24 @@ static NSLineBreakMode RCTNSLineBreakModeFromEllipsizeMode(EllipsizeMode ellipsi
   layoutManager.usesFontLeading = NO;
   [layoutManager addTextContainer:textContainer];
 
-  NSTextStorage *textStorage =
-      [[NSTextStorage alloc] initWithAttributedString:attributedString];
+  NSTextStorage *textStorage = [[NSTextStorage alloc] initWithAttributedString:attributedString];
 
   [textStorage addLayoutManager:layoutManager];
 
   if (paragraphAttributes.adjustsFontSizeToFit) {
-    CGFloat minimumFontSize = !isnan(paragraphAttributes.minimumFontSize)
-        ? paragraphAttributes.minimumFontSize
-        : 4.0;
-    CGFloat maximumFontSize = !isnan(paragraphAttributes.maximumFontSize)
-        ? paragraphAttributes.maximumFontSize
-        : 96.0;
-    [textStorage scaleFontSizeToFitSize:size
-                        minimumFontSize:minimumFontSize
-                        maximumFontSize:maximumFontSize];
+    CGFloat minimumFontSize = !isnan(paragraphAttributes.minimumFontSize) ? paragraphAttributes.minimumFontSize : 4.0;
+    CGFloat maximumFontSize = !isnan(paragraphAttributes.maximumFontSize) ? paragraphAttributes.maximumFontSize : 96.0;
+    [textStorage scaleFontSizeToFitSize:size minimumFontSize:minimumFontSize maximumFontSize:maximumFontSize];
   }
 
   return textStorage;
 }
 
-- (SharedEventEmitter)
-    getEventEmitterWithAttributeString:(AttributedString)attributedString
-                   paragraphAttributes:(ParagraphAttributes)paragraphAttributes
-                                 frame:(CGRect)frame
-                               atPoint:(CGPoint)point {
+- (SharedEventEmitter)getEventEmitterWithAttributeString:(AttributedString)attributedString
+                                     paragraphAttributes:(ParagraphAttributes)paragraphAttributes
+                                                   frame:(CGRect)frame
+                                                 atPoint:(CGPoint)point
+{
   NSTextStorage *textStorage = [self
       _textStorageAndLayoutManagerWithAttributesString:[self _nsAttributedStringFromAttributedString:attributedString]
                                    paragraphAttributes:paragraphAttributes
@@ -133,20 +125,18 @@ static NSLineBreakMode RCTNSLineBreakModeFromEllipsizeMode(EllipsizeMode ellipsi
   NSTextContainer *textContainer = layoutManager.textContainers.firstObject;
 
   CGFloat fraction;
-  NSUInteger characterIndex =
-      [layoutManager characterIndexForPoint:point
-                                   inTextContainer:textContainer
-          fractionOfDistanceBetweenInsertionPoints:&fraction];
+  NSUInteger characterIndex = [layoutManager characterIndexForPoint:point
+                                                    inTextContainer:textContainer
+                           fractionOfDistanceBetweenInsertionPoints:&fraction];
 
   // If the point is not before (fraction == 0.0) the first character and not
   // after (fraction == 1.0) the last character, then the attribute is valid.
   if (textStorage.length > 0 && (fraction > 0 || characterIndex > 0) &&
       (fraction < 1 || characterIndex < textStorage.length - 1)) {
     RCTWeakEventEmitterWrapper *eventEmitterWrapper =
-        (RCTWeakEventEmitterWrapper *)[textStorage
-                 attribute:RCTAttributedStringEventEmitterKey
-                   atIndex:characterIndex
-            effectiveRange:NULL];
+        (RCTWeakEventEmitterWrapper *)[textStorage attribute:RCTAttributedStringEventEmitterKey
+                                                     atIndex:characterIndex
+                                              effectiveRange:NULL];
     return eventEmitterWrapper.eventEmitter;
   }
 

@@ -228,7 +228,7 @@ NSAttributedString *RCTNSAttributedStringFromAttributedString(const AttributedSt
   [nsAttributedString beginEditing];
 
   for (auto fragment : attributedString.getFragments()) {
-    NSAttributedString *nsAttributedStringFragment;
+    NSMutableAttributedString *nsAttributedStringFragment;
 
     if (fragment.isAttachment()) {
       auto layoutMetrics = fragment.parentShadowView.layoutMetrics;
@@ -239,17 +239,14 @@ NSAttributedString *RCTNSAttributedStringFromAttributedString(const AttributedSt
       attachment.image = placeholderImage;
       attachment.bounds = bounds;
 
-      nsAttributedStringFragment = [NSAttributedString attributedStringWithAttachment:attachment];
+      nsAttributedStringFragment = [[NSMutableAttributedString attributedStringWithAttachment:attachment] mutableCopy];
     } else {
       NSString *string = [NSString stringWithCString:fragment.string.c_str() encoding:NSUTF8StringEncoding];
 
-      nsAttributedStringFragment =
-          [[NSAttributedString alloc] initWithString:string
-                                          attributes:RCTNSTextAttributesFromTextAttributes(fragment.textAttributes)];
+      nsAttributedStringFragment = [[NSMutableAttributedString alloc]
+          initWithString:string
+              attributes:RCTNSTextAttributesFromTextAttributes(fragment.textAttributes)];
     }
-
-    NSMutableAttributedString *nsMutableAttributedStringFragment =
-        [[NSMutableAttributedString alloc] initWithAttributedString:nsAttributedStringFragment];
 
     if (fragment.parentShadowView.componentHandle) {
       RCTWeakEventEmitterWrapper *eventEmitterWrapper = [RCTWeakEventEmitterWrapper new];
@@ -258,11 +255,11 @@ NSAttributedString *RCTNSAttributedStringFromAttributedString(const AttributedSt
       NSDictionary<NSAttributedStringKey, id> *additionalTextAttributes =
           @{RCTAttributedStringEventEmitterKey : eventEmitterWrapper};
 
-      [nsMutableAttributedStringFragment addAttributes:additionalTextAttributes
-                                                 range:NSMakeRange(0, nsMutableAttributedStringFragment.length)];
+      [nsAttributedStringFragment addAttributes:additionalTextAttributes
+                                          range:NSMakeRange(0, nsAttributedStringFragment.length)];
     }
 
-    [nsAttributedString appendAttributedString:nsMutableAttributedStringFragment];
+    [nsAttributedString appendAttributedString:nsAttributedStringFragment];
   }
 
   [nsAttributedString endEditing];

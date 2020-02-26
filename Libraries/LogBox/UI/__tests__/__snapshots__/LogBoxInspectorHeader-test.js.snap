@@ -23,7 +23,11 @@ exports[`LogBoxInspectorHeader should render both buttons for two total 1`] = `
   >
     <LogBoxInspectorHeaderButton
       disabled={false}
-      image="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACQAAAAkCAYAAADhAJiYAAAAaUlEQVRYhe3WsQ2AMAwAwRcs5LEYg3HpYANoQKKgcEEUI/6adM5LbgySfmZsNDeACdiApdEfaQGswH6+Xd1jugc9xYQxxhjz9RhaxwxvDuul3MrAqDyjsozKKnWgXUqdsJcAZgqsTFJ5B7gjUNw0n0HHAAAAAElFTkSuQmCC"
+      image={
+        Object {
+          "testUri": "../Libraries/LogBox/UI/LogBoxImages/chevron-left.png",
+        }
+      }
       level="warn"
       onPress={[Function]}
     />
@@ -52,7 +56,11 @@ exports[`LogBoxInspectorHeader should render both buttons for two total 1`] = `
     </View>
     <LogBoxInspectorHeaderButton
       disabled={false}
-      image="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACQAAAAkCAYAAADhAJiYAAAAZElEQVRYhe3WsQmAQAxA0Y8ulLEcw3HtdANtBNvzCJjD/5pUgQ9pApJ+Zu7YCWABDmDLzemzA+c94+MW4AkqExUY1caoVka1GibqlSm7qJJSJzPGGGMylYqBgi9sACtFYiQN7wKC6VDcJ7tlpQAAAABJRU5ErkJggg=="
+      image={
+        Object {
+          "testUri": "../Libraries/LogBox/UI/LogBoxImages/chevron-right.png",
+        }
+      }
       level="warn"
       onPress={[Function]}
     />
@@ -83,7 +91,11 @@ exports[`LogBoxInspectorHeader should render no buttons for one total 1`] = `
   >
     <LogBoxInspectorHeaderButton
       disabled={true}
-      image="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACQAAAAkCAYAAADhAJiYAAAAaUlEQVRYhe3WsQ2AMAwAwRcs5LEYg3HpYANoQKKgcEEUI/6adM5LbgySfmZsNDeACdiApdEfaQGswH6+Xd1jugc9xYQxxhjz9RhaxwxvDuul3MrAqDyjsozKKnWgXUqdsJcAZgqsTFJ5B7gjUNw0n0HHAAAAAElFTkSuQmCC"
+      image={
+        Object {
+          "testUri": "../Libraries/LogBox/UI/LogBoxImages/chevron-left.png",
+        }
+      }
       level="warn"
       onPress={[Function]}
     />
@@ -112,7 +124,11 @@ exports[`LogBoxInspectorHeader should render no buttons for one total 1`] = `
     </View>
     <LogBoxInspectorHeaderButton
       disabled={true}
-      image="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACQAAAAkCAYAAADhAJiYAAAAZElEQVRYhe3WsQmAQAxA0Y8ulLEcw3HtdANtBNvzCJjD/5pUgQ9pApJ+Zu7YCWABDmDLzemzA+c94+MW4AkqExUY1caoVka1GibqlSm7qJJSJzPGGGMylYqBgi9sACtFYiQN7wKC6VDcJ7tlpQAAAABJRU5ErkJggg=="
+      image={
+        Object {
+          "testUri": "../Libraries/LogBox/UI/LogBoxImages/chevron-right.png",
+        }
+      }
       level="warn"
       onPress={[Function]}
     />
@@ -191,7 +207,11 @@ exports[`LogBoxInspectorHeader should render two buttons for three or more total
   >
     <LogBoxInspectorHeaderButton
       disabled={true}
-      image="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACQAAAAkCAYAAADhAJiYAAAAaUlEQVRYhe3WsQ2AMAwAwRcs5LEYg3HpYANoQKKgcEEUI/6adM5LbgySfmZsNDeACdiApdEfaQGswH6+Xd1jugc9xYQxxhjz9RhaxwxvDuul3MrAqDyjsozKKnWgXUqdsJcAZgqsTFJ5B7gjUNw0n0HHAAAAAElFTkSuQmCC"
+      image={
+        Object {
+          "testUri": "../Libraries/LogBox/UI/LogBoxImages/chevron-left.png",
+        }
+      }
       level="warn"
       onPress={[Function]}
     />
@@ -220,7 +240,11 @@ exports[`LogBoxInspectorHeader should render two buttons for three or more total
     </View>
     <LogBoxInspectorHeaderButton
       disabled={true}
-      image="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACQAAAAkCAYAAADhAJiYAAAAZElEQVRYhe3WsQmAQAxA0Y8ulLEcw3HtdANtBNvzCJjD/5pUgQ9pApJ+Zu7YCWABDmDLzemzA+c94+MW4AkqExUY1caoVka1GibqlSm7qJJSJzPGGGMylYqBgi9sACtFYiQN7wKC6VDcJ7tlpQAAAABJRU5ErkJggg=="
+      image={
+        Object {
+          "testUri": "../Libraries/LogBox/UI/LogBoxImages/chevron-right.png",
+        }
+      }
       level="warn"
       onPress={[Function]}
     />

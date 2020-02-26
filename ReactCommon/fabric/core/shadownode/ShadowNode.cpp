@@ -28,22 +28,22 @@ bool ShadowNode::sameFamily(const ShadowNode &first, const ShadowNode &second) {
   return first.family_ == second.family_;
 }
 
-#pragma mark - Constructors
-
 static int computeStateRevision(
-    const State::Shared &state,
-    const SharedShadowNodeSharedList &children) {
+    State::Shared const &state,
+    SharedShadowNodeSharedList const &children) {
   int fragmentStateRevision = state ? state->getRevision() : 0;
   int childrenSum = 0;
 
   if (children) {
-    for (const auto &child : *children) {
+    for (auto const &child : *children) {
       childrenSum += child->getStateRevision();
     }
   }
 
   return fragmentStateRevision + childrenSum;
 }
+
+#pragma mark - Constructors
 
 ShadowNode::ShadowNode(
     ShadowNodeFragment const &fragment,
@@ -66,9 +66,12 @@ ShadowNode::ShadowNode(
 
   traits_.set(ShadowNodeTraits::Trait::ChildrenAreShared);
 
-  for (const auto &child : *children_) {
+  for (auto const &child : *children_) {
     child->family_->setParent(family_);
   }
+
+  // The first node of the family gets its state committed automatically.
+  family_->setMostRecentState(state_);
 }
 
 ShadowNode::ShadowNode(
@@ -147,15 +150,7 @@ const State::Shared &ShadowNode::getState() const {
 }
 
 State::Shared ShadowNode::getMostRecentState() const {
-  if (state_) {
-    auto committedState = state_->getMostRecentState();
-
-    // Committed state can be `null` in case if no one node was committed yet;
-    // in this case we return own `state`.
-    return committedState ? committedState : state_;
-  }
-
-  return ShadowNodeFragment::statePlaceholder();
+  return family_->getMostRecentState();
 }
 
 void ShadowNode::sealRecursive() const {
@@ -183,6 +178,8 @@ void ShadowNode::appendChild(const ShadowNode::Shared &child) {
   nonConstChildren->push_back(child);
 
   child->family_->setParent(family_);
+
+  stateRevision_ += child->getStateRevision();
 }
 
 void ShadowNode::replaceChild(
@@ -190,6 +187,8 @@ void ShadowNode::replaceChild(
     ShadowNode::Shared const &newChild,
     int suggestedIndex) {
   ensureUnsealed();
+
+  stateRevision_ += newChild->getStateRevision() - oldChild.getStateRevision();
 
   cloneChildrenIfShared();
 
@@ -228,6 +227,10 @@ void ShadowNode::cloneChildrenIfShared() {
 }
 
 void ShadowNode::setMounted(bool mounted) const {
+  if (mounted) {
+    family_->setMostRecentState(getState());
+  }
+
   family_->eventEmitter_->setEnabled(mounted);
 }
 

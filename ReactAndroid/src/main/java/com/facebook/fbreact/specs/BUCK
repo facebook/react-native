@@ -1,4 +1,5 @@
-load("//tools/build_defs/oss:rn_defs.bzl", "react_native_dep", "react_native_target", "rn_android_library")
+load("@fbsource//tools/build_defs:platform_defs.bzl", "ANDROID")
+load("@fbsource//tools/build_defs/oss:rn_defs.bzl", "FBJNI_TARGET", "react_native_dep", "react_native_target", "react_native_xplat_target", "rn_android_library", "rn_xplat_cxx_library")
 
 rn_android_library(
     name = "FBReactNativeSpec",
@@ -9,8 +10,49 @@ rn_android_library(
         react_native_dep("third-party/java/jsr-330:jsr-330"),
         react_native_target("java/com/facebook/react/bridge:bridge"),
         react_native_target("java/com/facebook/react/common:common"),
+        ":FBReactNativeSpec-jni",
     ],
     exported_deps = [
         react_native_target("java/com/facebook/react/turbomodule/core/interfaces:interfaces"),
+    ],
+)
+
+rn_xplat_cxx_library(
+    name = "FBReactNativeSpec-jni",
+    srcs = [
+        "jni/FBReactNativeSpec-generated.cpp",
+    ],
+    headers = {
+        "FBReactNativeSpec/FBReactNativeSpec.h": "jni/FBReactNativeSpec.h",
+    },
+    header_namespace = "",
+    exported_headers = {
+        "FBReactNativeSpec/FBReactNativeSpec.h": "jni/FBReactNativeSpec.h",
+    },
+    compiler_flags = [
+        "-fexceptions",
+        "-frtti",
+        "-std=c++14",
+        "-Wall",
+    ],
+    labels = ["supermodule:android/default/public.react_native"],
+    platforms = (ANDROID,),
+    preprocessor_flags = [
+        "-DLOG_TAG=\"ReactNative\"",
+        "-DWITH_FBSYSTRACE=1",
+    ],
+    visibility = [
+        "PUBLIC",
+    ],
+    deps = [
+        FBJNI_TARGET,
+        "fbsource//xplat/folly:molly",
+        "fbsource//xplat/jsi:JSIDynamic",
+        react_native_target("jni/react/jni:jni"),
+        react_native_xplat_target("cxxreact:bridge"),
+    ],
+    exported_deps = [
+        "fbsource//xplat/jsi:jsi",
+        react_native_xplat_target("turbomodule/core:core"),
     ],
 )

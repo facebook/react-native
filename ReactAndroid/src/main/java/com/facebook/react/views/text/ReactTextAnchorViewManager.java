@@ -60,6 +60,11 @@ public abstract class ReactTextAnchorViewManager<T extends View, C extends React
     }
   }
 
+  @ReactProp(name = ViewProps.ADJUSTS_FONT_SIZE_TO_FIT)
+  public void setAdjustFontSizeToFit(ReactTextView view, boolean adjustsFontSizeToFit) {
+    view.setAdjustFontSizeToFit(adjustsFontSizeToFit);
+  }
+
   @ReactProp(name = ViewProps.TEXT_ALIGN_VERTICAL)
   public void setTextAlignVertical(ReactTextView view, @Nullable String textAlignVertical) {
     if (textAlignVertical == null || "auto".equals(textAlignVertical)) {

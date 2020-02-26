@@ -14,23 +14,16 @@
 namespace facebook {
 namespace react {
 
-/*
- * Carries some logic and additional information about state update transaction.
- */
 class ShadowNodeFamily;
 using SharedShadowNodeFamily = std::shared_ptr<ShadowNodeFamily const>;
+
 class StateUpdate {
  public:
-  std::pair<SharedShadowNodeFamily const &, StateData::Shared> operator()()
-      const;
+  using Callback =
+      std::function<StateData::Shared(StateData::Shared const &data)>;
 
-  /*
-   * The current implementation simply uses `std::function` inside that captures
-   * everything which is needed to perform state update. That will be probably
-   * changed in the future.
-   */
-  std::function<std::pair<SharedShadowNodeFamily const &, StateData::Shared>()>
-      callback_;
+  SharedShadowNodeFamily family;
+  Callback callback;
 };
 
 } // namespace react

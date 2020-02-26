@@ -255,7 +255,9 @@ void Binding::installFabricUIManager(
       "react_fabric:enable_removedelete_collation_android");
   collapseDeleteCreateMountingInstructions_ = reactNativeConfig_->getBool(
       "react_fabric:enabled_collapse_delete_create_mounting_instructions");
-  ;
+
+  disableVirtualNodePreallocation_ = reactNativeConfig_->getBool(
+    "react_fabric:disable_virtual_node_preallocation");
 
   disablePreallocateViews_ = reactNativeConfig_->getBool(
       "react_fabric:disabled_view_preallocation_android");
@@ -861,6 +863,10 @@ void Binding::schedulerDidRequestPreliminaryViewAllocation(
   }
 
   bool isLayoutableShadowNode = shadowView.layoutMetrics != EmptyLayoutMetrics;
+
+  if (disableVirtualNodePreallocation_ && !isLayoutableShadowNode) {
+    return;
+  }
 
   static auto preallocateView =
       jni::findClassStatic(UIManagerJavaDescriptor)

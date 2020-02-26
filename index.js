@@ -25,6 +25,7 @@ import typeof MaskedViewIOS from './Libraries/Components/MaskedView/MaskedViewIO
 import typeof Modal from './Libraries/Modal/Modal';
 import typeof Picker from './Libraries/Components/Picker/Picker';
 import typeof PickerIOS from './Libraries/Components/Picker/PickerIOS';
+import typeof Pressable from './Libraries/Components/Pressable/Pressable';
 import typeof ProgressBarAndroid from './Libraries/Components/ProgressBarAndroid/ProgressBarAndroid';
 import typeof ProgressViewIOS from './Libraries/Components/ProgressViewIOS/ProgressViewIOS';
 import typeof SafeAreaView from './Libraries/Components/SafeAreaView/SafeAreaView';
@@ -86,7 +87,8 @@ import typeof useColorScheme from './Libraries/Utilities/useColorScheme';
 import typeof useWindowDimensions from './Libraries/Utilities/useWindowDimensions';
 import typeof UTFSequence from './Libraries/UTFSequence';
 import typeof Vibration from './Libraries/Vibration/Vibration';
-import typeof YellowBox from './Libraries/YellowBox/YellowBox';
+import typeof YellowBox from './Libraries/YellowBox/YellowBoxDeprecated';
+import typeof LogBox from './Libraries/LogBox/LogBox';
 import typeof RCTDeviceEventEmitter from './Libraries/EventEmitter/RCTDeviceEventEmitter';
 import typeof RCTNativeAppEventEmitter from './Libraries/EventEmitter/RCTNativeAppEventEmitter';
 import typeof NativeModules from './Libraries/BatchedBridge/NativeModules';
@@ -181,6 +183,9 @@ module.exports = {
         'See https://github.com/react-native-community/react-native-picker',
     );
     return require('./Libraries/Components/Picker/PickerIOS');
+  },
+  get Pressable(): Pressable {
+    return require('./Libraries/Components/Pressable/Pressable').default;
   },
   get ProgressBarAndroid(): ProgressBarAndroid {
     warnOnce(
@@ -356,6 +361,9 @@ module.exports = {
   get Linking(): Linking {
     return require('./Libraries/Linking/Linking');
   },
+  get LogBox(): LogBox {
+    return require('./Libraries/LogBox/LogBox');
+  },
   get NativeDialogManagerAndroid(): NativeDialogManagerAndroid {
     return require('./Libraries/NativeModules/specs/NativeDialogManagerAndroid')
       .default;
@@ -435,7 +443,7 @@ module.exports = {
     return require('./Libraries/Vibration/Vibration');
   },
   get YellowBox(): YellowBox {
-    return require('./Libraries/YellowBox/YellowBox');
+    return require('./Libraries/YellowBox/YellowBoxDeprecated');
   },
 
   // Plugins
@@ -463,9 +471,11 @@ module.exports = {
     return require('./Libraries/ReactNative/RootTagContext');
   },
   get unstable_enableLogBox(): () => void {
-    return require('./Libraries/YellowBox/YellowBox').__unstable_enableLogBox;
+    return () =>
+      console.warn(
+        'LogBox is enabled by default so there is no need to call unstable_enableLogBox() anymore. This is a no op and will be removed in the next version.',
+      );
   },
-
   // Prop Types
   get ColorPropType(): DeprecatedColorPropType {
     return require('./Libraries/DeprecatedPropTypes/DeprecatedColorPropType');

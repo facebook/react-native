@@ -23,8 +23,8 @@ Pod::Spec.new do |s|
   s.name                   = "React-RCTImage"
   s.version                = version
   s.summary                = "A React component for displaying different types of images."
-  s.homepage               = "http://facebook.github.io/react-native/"
-  s.documentation_url      = "https://facebook.github.io/react-native/docs/image"
+  s.homepage               = "https://reactnative.dev/"
+  s.documentation_url      = "https://reactnative.dev/docs/image"
   s.license                = package["license"]
   s.author                 = "Facebook, Inc. and its affiliates"
   s.platforms              = { :ios => "10.0", :tvos => "10.0" }

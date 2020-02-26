@@ -28,15 +28,12 @@ NS_ASSUME_NONNULL_BEGIN
                                  layoutConstraints:(facebook::react::LayoutConstraints)layoutConstraints;
 
 - (void)drawAttributedString:(facebook::react::AttributedString)attributedString
-         paragraphAttributes:
-             (facebook::react::ParagraphAttributes)paragraphAttributes
+         paragraphAttributes:(facebook::react::ParagraphAttributes)paragraphAttributes
                        frame:(CGRect)frame;
 
 - (facebook::react::SharedEventEmitter)
-    getEventEmitterWithAttributeString:
-        (facebook::react::AttributedString)attributedString
-                   paragraphAttributes:
-                       (facebook::react::ParagraphAttributes)paragraphAttributes
+    getEventEmitterWithAttributeString:(facebook::react::AttributedString)attributedString
+                   paragraphAttributes:(facebook::react::ParagraphAttributes)paragraphAttributes
                                  frame:(CGRect)frame
                                atPoint:(CGPoint)point;
 

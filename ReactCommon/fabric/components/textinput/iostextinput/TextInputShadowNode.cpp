@@ -19,7 +19,8 @@ namespace react {
 extern char const TextInputComponentName[] = "TextInput";
 
 AttributedStringBox TextInputShadowNode::attributedStringBoxToMeasure() const {
-  bool hasMeaningfulState = getState() && getState()->getRevision() != 0;
+  bool hasMeaningfulState =
+      getState() && getState()->getRevision() != State::initialRevisionValue;
 
   if (hasMeaningfulState) {
     auto attributedStringBox = getStateData().attributedStringBox;
@@ -34,11 +35,11 @@ AttributedStringBox TextInputShadowNode::attributedStringBoxToMeasure() const {
       hasMeaningfulState ? AttributedString{} : getAttributedString();
 
   if (attributedString.isEmpty()) {
-    auto placeholder = getProps()->placeholder;
+    auto placeholder = getConcreteProps().placeholder;
     // Note: `zero-width space` is insufficient in some cases (e.g. when we need
     // to measure the "hight" of the font).
     auto string = !placeholder.empty() ? placeholder : "I";
-    auto textAttributes = getProps()->getEffectiveTextAttributes();
+    auto textAttributes = getConcreteProps().getEffectiveTextAttributes();
     attributedString.appendFragment({string, textAttributes, {}});
   }
 
@@ -46,11 +47,11 @@ AttributedStringBox TextInputShadowNode::attributedStringBoxToMeasure() const {
 }
 
 AttributedString TextInputShadowNode::getAttributedString() const {
-  auto textAttributes = getProps()->getEffectiveTextAttributes();
+  auto textAttributes = getConcreteProps().getEffectiveTextAttributes();
   auto attributedString = AttributedString{};
 
   attributedString.appendFragment(
-      AttributedString::Fragment{getProps()->text, textAttributes});
+      AttributedString::Fragment{getConcreteProps().text, textAttributes});
 
   attributedString.appendAttributedString(
       BaseTextShadowNode::getAttributedString(textAttributes, *this));
@@ -66,10 +67,10 @@ void TextInputShadowNode::setTextLayoutManager(
 void TextInputShadowNode::updateStateIfNeeded() {
   ensureUnsealed();
 
-  if (!getState() || getState()->getRevision() == 0) {
+  if (!getState() || getState()->getRevision() == State::initialRevisionValue) {
     auto state = TextInputState{};
     state.attributedStringBox = AttributedStringBox{getAttributedString()};
-    state.paragraphAttributes = getProps()->paragraphAttributes;
+    state.paragraphAttributes = getConcreteProps().paragraphAttributes;
     state.layoutManager = textLayoutManager_;
     setStateData(std::move(state));
   }
@@ -80,7 +81,7 @@ void TextInputShadowNode::updateStateIfNeeded() {
 Size TextInputShadowNode::measure(LayoutConstraints layoutConstraints) const {
   return textLayoutManager_->measure(
       attributedStringBoxToMeasure(),
-      getProps()->getEffectiveParagraphAttributes(),
+      getConcreteProps().getEffectiveParagraphAttributes(),
       layoutConstraints);
 }
 
