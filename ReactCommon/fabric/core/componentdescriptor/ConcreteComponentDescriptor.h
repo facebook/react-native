@@ -143,7 +143,7 @@ class ConcreteComponentDescriptor : public ComponentDescriptor {
     assert(data && "Provided `data` is nullptr.");
 
     return std::make_shared<ConcreteState const>(
-        std::static_pointer_cast<ConcreteStateData const>(data), family);
+        std::static_pointer_cast<ConcreteStateData const>(data), *family->getMostRecentState());
   }
 
   virtual ShadowNodeFamily::Shared createFamily(
