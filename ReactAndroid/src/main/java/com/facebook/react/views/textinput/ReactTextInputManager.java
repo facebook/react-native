@@ -637,6 +637,14 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
   public void setTextContentType(ReactEditText view, @Nullable String autoCompleteType) {
     if (autoCompleteType == null) {
       setImportantForAutofill(view, View.IMPORTANT_FOR_AUTOFILL_NO);
+    } else if ("birthdate-day".equals(autoCompleteType)) {
+      setAutofillHints(view, HintConstants.AUTOFILL_HINT_BIRTH_DATE_DAY);
+    } else if ("birthdate-full".equals(autoCompleteType)) {
+      setAutofillHints(view, HintConstants.AUTOFILL_HINT_BIRTH_DATE_FULL);
+    } else if ("birthdate-month".equals(autoCompleteType)) {
+      setAutofillHints(view, HintConstants.AUTOFILL_HINT_BIRTH_DATE_MONTH);
+    } else if ("birthdate-year".equals(autoCompleteType)) {
+      setAutofillHints(view, HintConstants.AUTOFILL_HINT_BIRTH_DATE_YEAR);
     } else if ("username".equals(autoCompleteType)) {
       setAutofillHints(view, HintConstants.AUTOFILL_HINT_USERNAME);
     } else if ("password".equals(autoCompleteType)) {
