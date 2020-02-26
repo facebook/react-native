@@ -58,7 +58,7 @@ class AppContainer extends React.Component<Props, State> {
 
     getChildContext(): Context {
      console.warn(
-        'AppConntainer has been migrated to the new Context API. ' +
+        'AppContainer has been migrated to the new Context API. ' +
         'It is recommended to use AppContainerContext.Consumer to consume the context.'
       );
      return {		

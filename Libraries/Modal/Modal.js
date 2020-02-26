@@ -146,10 +146,6 @@ class Modal extends React.Component<Props> {
     hardwareAccelerated: false,
   };
 
-  static contextTypes: any | {|rootTag: React$PropType$Primitive<number>|} = {
-    rootTag: PropTypes.number,
-  };
-
   _identifier: number;
   _eventSubscription: ?EmitterSubscription;
 
