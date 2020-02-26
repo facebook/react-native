@@ -695,6 +695,8 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
       setAutofillHints(view, HintConstants.AUTOFILL_HINT_POSTAL_CODE);
     } else if ("cc-number".equals(autoCompleteType)) {
       setAutofillHints(view, HintConstants.AUTOFILL_HINT_CREDIT_CARD_NUMBER);
+    } else if ("sms-otp".equals(autoCompleteType)) {
+      setAutofillHints(view, HintConstants.AUTOFILL_HINT_SMS_OTP);
     } else if ("cc-csc".equals(autoCompleteType)) {
       setAutofillHints(view, HintConstants.AUTOFILL_HINT_CREDIT_CARD_SECURITY_CODE);
     } else if ("cc-exp".equals(autoCompleteType)) {

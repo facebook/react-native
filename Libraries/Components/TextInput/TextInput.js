@@ -350,6 +350,7 @@ type AndroidProps = $ReadOnly<{|
     | 'postal-address-region'
     | 'postal-address-street-address'
     | 'postal-code'
+    | 'sms-otp'
     | 'tel'
     | 'tel-country-code'
     | 'tel-national'
