@@ -1368,8 +1368,8 @@ jsi::Value JSCRuntime::createValue(JSValueRef value) const {
       JSObjectRef objRef = JSValueToObject(ctx_, value, nullptr);
       return jsi::Value(createObject(objRef));
     }
-// TODO: Uncomment this when all supported JSC versions have this symbol
-//    case kJSTypeSymbol:
+      // TODO: Uncomment this when all supported JSC versions have this symbol
+      //    case kJSTypeSymbol:
     default: {
       if (smellsLikeES6Symbol(ctx_, value)) {
         return jsi::Value(createSymbol(value));

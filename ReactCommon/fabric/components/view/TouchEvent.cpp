@@ -19,10 +19,10 @@ std::string getDebugName(TouchEvent const &touchEvent) {
 std::vector<DebugStringConvertibleObject> getDebugProps(
     TouchEvent const &touchEvent,
     DebugStringConvertibleOptions options) {
-
   return {
       {"touches", getDebugDescription(touchEvent.touches, options)},
-      {"changedTouches", getDebugDescription(touchEvent.changedTouches, options)},
+      {"changedTouches",
+       getDebugDescription(touchEvent.changedTouches, options)},
       {"targetTouches", getDebugDescription(touchEvent.targetTouches, options)},
   };
 }

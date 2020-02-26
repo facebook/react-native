@@ -22,14 +22,15 @@ struct MethodCall {
   folly::dynamic arguments;
   int callId;
 
-  MethodCall(int mod, int meth, folly::dynamic&& args, int cid)
-    : moduleId(mod)
-    , methodId(meth)
-    , arguments(std::move(args))
-    , callId(cid) {}
+  MethodCall(int mod, int meth, folly::dynamic &&args, int cid)
+      : moduleId(mod),
+        methodId(meth),
+        arguments(std::move(args)),
+        callId(cid) {}
 };
 
 /// \throws std::invalid_argument
-std::vector<MethodCall> parseMethodCalls(folly::dynamic&& calls);
+std::vector<MethodCall> parseMethodCalls(folly::dynamic &&calls);
 
-} }
+} // namespace react
+} // namespace facebook
