@@ -667,6 +667,8 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
       setAutofillHints(view, HintConstants.AUTOFILL_HINT_CREDIT_CARD_SECURITY_CODE);
     } else if ("cc-exp".equals(autoCompleteType)) {
       setAutofillHints(view, HintConstants.AUTOFILL_HINT_CREDIT_CARD_EXPIRATION_DATE);
+    } else if ("cc-exp-day".equals(autoCompleteType)) {
+      setAutofillHints(view, HintConstants.AUTOFILL_HINT_CREDIT_CARD_EXPIRATION_DAY);
     } else if ("cc-exp-month".equals(autoCompleteType)) {
       setAutofillHints(view, HintConstants.AUTOFILL_HINT_CREDIT_CARD_EXPIRATION_MONTH);
     } else if ("cc-exp-year".equals(autoCompleteType)) {
