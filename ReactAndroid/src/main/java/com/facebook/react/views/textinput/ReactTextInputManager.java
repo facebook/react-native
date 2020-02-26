@@ -659,6 +659,16 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
       setAutofillHints(view, HintConstants.AUTOFILL_HINT_GENDER);
     } else if ("name".equals(autoCompleteType)) {
       setAutofillHints(view, HintConstants.AUTOFILL_HINT_PERSON_NAME);
+    } else if ("name-given".equals(autoCompleteType)) {
+      setAutofillHints(view, HintConstants.AUTOFILL_HINT_PERSON_NAME_GIVEN);
+    } else if ("name-middle".equals(autoCompleteType)) {
+      setAutofillHints(view, HintConstants.AUTOFILL_HINT_PERSON_NAME_MIDDLE);
+    } else if ("name-middile-initial".equals(autoCompleteType)) {
+      setAutofillHints(view, HintConstants.AUTOFILL_HINT_PERSON_NAME_MIDDLE_INITIAL);
+    } else if ("name-prefix".equals(autoCompleteType)) {
+      setAutofillHints(view, HintConstants.AUTOFILL_HINT_PERSON_NAME_PREFIX);
+    } else if ("name-suffix".equals(autoCompleteType)) {
+      setAutofillHints(view, HintConstants.AUTOFILL_HINT_PERSON_NAME_SUFFIX);
     } else if ("tel".equals(autoCompleteType)) {
       setAutofillHints(view, HintConstants.AUTOFILL_HINT_PHONE_NUMBER);
     } else if ("street-address".equals(autoCompleteType)) {
