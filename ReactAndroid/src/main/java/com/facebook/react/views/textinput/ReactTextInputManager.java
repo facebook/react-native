@@ -671,6 +671,12 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
       setAutofillHints(view, HintConstants.AUTOFILL_HINT_PERSON_NAME_SUFFIX);
     } else if ("tel".equals(autoCompleteType)) {
       setAutofillHints(view, HintConstants.AUTOFILL_HINT_PHONE_NUMBER);
+    } else if ("tel-country-code".equals(autoCompleteType)) {
+      setAutofillHints(view, HintConstants.AUTOFILL_HINT_PHONE_COUNTRY_CODE);
+    } else if ("tel-national".equals(autoCompleteType)) {
+      setAutofillHints(view, HintConstants.AUTOFILL_HINT_PHONE_NATIONAL);
+    } else if ("tel-device".equals(autoCompleteType)) {
+      setAutofillHints(view, HintConstants.AUTOFILL_HINT_PHONE_NUMBER_DEVICE);
     } else if ("street-address".equals(autoCompleteType)) {
       setAutofillHints(view, HintConstants.AUTOFILL_HINT_POSTAL_ADDRESS);
     } else if ("postal-code".equals(autoCompleteType)) {
