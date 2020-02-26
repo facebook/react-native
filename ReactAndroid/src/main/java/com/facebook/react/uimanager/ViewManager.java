@@ -74,7 +74,7 @@ public abstract class ViewManager<T extends View, C extends ReactShadowNode>
     return createView(reactContext, null, null, jsResponderHandler);
   }
 
-  /** Creates a view with knowledge of props. */
+  /** Creates a view with knowledge of props and state. */
   public @NonNull T createView(
       @NonNull ThemedReactContext reactContext,
       @Nullable ReactStylesDiffMap props,
