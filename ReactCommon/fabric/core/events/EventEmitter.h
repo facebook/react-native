@@ -81,8 +81,6 @@ class EventEmitter {
  private:
   void toggleEventTargetOwnership_() const;
 
-  friend class UIManagerBinding;
-
   mutable SharedEventTarget eventTarget_;
 
   EventDispatcher::Weak eventDispatcher_;
