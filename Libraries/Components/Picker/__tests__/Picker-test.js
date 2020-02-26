@@ -21,7 +21,10 @@ describe('<Picker />', () => {
     ReactNativeTestTools.expectRendersMatchingSnapshot(
       'Picker',
       () => (
-        <Picker selectedValue="foo" onValueChange={jest.fn()}>
+        <Picker
+          selectedValue="foo"
+          onValueChange={jest.fn()}
+          onTouch={jest.fn()}>
           <Picker.Item label="foo" value="foo" />
           <Picker.Item label="bar" value="bar" />
         </Picker>
