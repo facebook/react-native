@@ -30,6 +30,12 @@ type PickerItemSelectSyntheticEvent = SyntheticEvent<
   |}>,
 >;
 
+type AndroidOnTouchEvent = SyntheticEvent<
+  $ReadOnly<{
+    hasBeenTouched: boolean,
+  }>,
+>;
+
 type PickerItemValue = number | string;
 
 type Props = $ReadOnly<{|
@@ -40,6 +46,7 @@ type Props = $ReadOnly<{|
   enabled?: ?boolean,
   mode?: ?('dialog' | 'dropdown'),
   onValueChange?: ?(itemValue: ?PickerItemValue, itemIndex: number) => mixed,
+  onTouch?: ?(event: AndroidOnTouchEvent) => boolean,
   prompt?: ?string,
   testID?: string,
 |}>;

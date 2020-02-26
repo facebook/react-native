@@ -25,6 +25,12 @@ type PickerIOSChangeEvent = SyntheticEvent<
   |}>,
 >;
 
+type AndroidOnTouchEvent = SyntheticEvent<
+  $ReadOnly<{
+    hasBeenTouched: boolean,
+  }>,
+>;
+
 type RCTPickerIOSItemType = $ReadOnly<{|
   label: ?Label,
   value: ?(number | string),
@@ -40,6 +46,7 @@ type NativeProps = $ReadOnly<{|
   style?: ?TextStyleProp,
   testID?: ?string,
   accessibilityLabel?: ?string,
+  onTouch?: ?(event: AndroidOnTouchEvent) => boolean,
 |}>;
 
 type ComponentType = HostComponent<NativeProps>;

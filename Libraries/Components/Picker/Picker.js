@@ -18,6 +18,7 @@ const UnimplementedView = require('../UnimplementedViews/UnimplementedView');
 
 import type {TextStyleProp} from '../../StyleSheet/StyleSheet';
 import type {ColorValue} from '../../StyleSheet/StyleSheetTypes';
+import type {PressEvent} from '../../Types/CoreEventTypes.js';
 
 const MODE_DIALOG = 'dialog';
 const MODE_DROPDOWN = 'dropdown';
@@ -110,6 +111,11 @@ type PickerProps = $ReadOnly<{|
    * The string used for the accessibility label. Will be read once focused on the picker but not on change.
    */
   accessibilityLabel?: ?string,
+  /**
+   * Used to emit onTouch events.
+   * @platform android
+   */
+  onTouch?: ?(event: PressEvent) => boolean,
 |}>;
 
 /**
