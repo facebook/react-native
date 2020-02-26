@@ -33,9 +33,9 @@ type State = {|
   hasError: boolean,
 |};
 
-type Context = {rootTag: number, ...};
+type ContextType = {rootTag: number, ...};
 
-const AppContainerContext = React.createContext<Context>({rootTag: 0});
+const AppContainerContext = React.createContext<ContextType>({rootTag: 0});
 
 class AppContainer extends React.Component<Props, State> {
   state: State = {
@@ -48,7 +48,7 @@ class AppContainer extends React.Component<Props, State> {
 
   static getDerivedStateFromError: any = undefined;
 
-  static AppContainerContext: React$Context<Context> = AppContainerContext;
+  static Context: React$Context<ContextType> = AppContainerContext;
 
   static childContextTypes:
      | any		
@@ -56,10 +56,10 @@ class AppContainer extends React.Component<Props, State> {
      rootTag: PropTypes.number,		
    };		
 
-    getChildContext(): Context {
+    getChildContext(): ContextType {
      console.warn(
         'AppContainer has been migrated to the new Context API. ' +
-        'It is recommended to use AppContainerContext.Consumer to consume the context.'
+        'It is recommended to use AppContainer.Context.Consumer to consume the context.'
       );
      return {		
        rootTag: this.props.rootTag,		
@@ -119,9 +119,9 @@ class AppContainer extends React.Component<Props, State> {
         ref={ref => {
           this._mainRef = ref;
         }}>
-        <AppContainerContext.Provider value={{rootTag: this.props.rootTag}}>
+        <AppContainer.Context.Provider value={{rootTag: this.props.rootTag}}>
           {this.props.children}
-        </AppContainerContext.Provider>
+        </AppContainer.Context.Provider>
       </View>
     );
 
