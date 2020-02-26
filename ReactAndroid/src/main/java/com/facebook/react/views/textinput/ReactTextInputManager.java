@@ -23,9 +23,11 @@ import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
+import android.widget.EditText;
 import android.widget.TextView;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
+import androidx.core.view.ViewCompat;
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.Dynamic;
@@ -1229,11 +1231,42 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
     return androidTextBreakStrategy;
   }
 
+  /**
+   * May be overriden by subclasses that would like to provide their own instance of the internal
+   * {@code EditText} this class uses to determine the expected size of the view.
+   */
+  protected EditText createInternalEditText(ThemedReactContext themedReactContext) {
+    return new EditText(themedReactContext);
+  }
+
   @Override
   public Object updateState(
       ReactEditText view, ReactStylesDiffMap props, @Nullable StateWrapper stateWrapper) {
-    // TODO T55794595: Add support for updating state with null stateWrapper
     ReadableNativeMap state = stateWrapper.getState();
+
+    // Do we need to communicate theme back to C++?
+    // If so, this should only need to be done once per surface.
+    if (!state.getBoolean("hasThemeData")) {
+      WritableNativeMap update = new WritableNativeMap();
+
+      EditText editText = createInternalEditText((ThemedReactContext) view.getContext());
+
+      // Even though we check `data["textChanged"].empty()` before using the value in C++,
+      // state updates crash without this value on key exception. It's unintuitive why
+      // folly::dynamic is crashing there and if there's any way to fix on the native side,
+      // so leave this here until we can figure out a better way of key-existence-checking in C++.
+      update.putNull("textChanged");
+
+      update.putDouble(
+          "themePaddingStart", PixelUtil.toDIPFromPixel(ViewCompat.getPaddingStart(editText)));
+      update.putDouble(
+          "themePaddingEnd", PixelUtil.toDIPFromPixel(ViewCompat.getPaddingEnd(editText)));
+      update.putDouble("themePaddingTop", PixelUtil.toDIPFromPixel(editText.getPaddingTop()));
+      update.putDouble("themePaddingBottom", PixelUtil.toDIPFromPixel(editText.getPaddingBottom()));
+
+      stateWrapper.updateState(update);
+    }
+
     ReadableMap attributedString = state.getMap("attributedString");
     ReadableMap paragraphAttributes = state.getMap("paragraphAttributes");
 

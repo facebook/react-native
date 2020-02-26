@@ -144,7 +144,11 @@ void AndroidTextInputShadowNode::updateStateIfNeeded() {
                                      getConcreteProps().paragraphAttributes,
                                      defaultTextAttributes,
                                      ShadowView(*this),
-                                     textLayoutManager_});
+                                     textLayoutManager_,
+                                     state.defaultThemePaddingStart,
+                                     state.defaultThemePaddingEnd,
+                                     state.defaultThemePaddingTop,
+                                     state.defaultThemePaddingBottom});
 }
 
 #pragma mark - LayoutableShadowNode

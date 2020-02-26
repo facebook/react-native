@@ -222,7 +222,16 @@ AndroidTextInputProps::AndroidTextInputProps(
           {0})),
       text(convertRawProp(rawProps, "text", sourceProps.text, {})),
       paragraphAttributes(
-          convertRawProp(rawProps, sourceProps.paragraphAttributes, {})) {}
+          convertRawProp(rawProps, sourceProps.paragraphAttributes, {})),
+      // See AndroidTextInputComponentDescriptor for usage
+      // TODO T63008435: can these, and this feature, be removed entirely?
+      hasPaddingLeft(rawProps.at("", "padding", "") != nullptr || rawProps.at("Left", "padding", "") != nullptr),
+      hasPaddingTop(rawProps.at("", "padding", "") != nullptr || rawProps.at("Top", "padding", "") != nullptr),
+      hasPaddingRight(rawProps.at("", "padding", "") != nullptr || rawProps.at("Right", "padding", "") != nullptr),
+      hasPaddingBottom(rawProps.at("", "padding", "") != nullptr || rawProps.at("Bottom", "padding", "") != nullptr),
+      hasPaddingStart(rawProps.at("", "padding", "") != nullptr || rawProps.at("Start", "padding", "") != nullptr),
+      hasPaddingEnd(rawProps.at("", "padding", "") != nullptr || rawProps.at("End", "padding", "") != nullptr)
+      { }
 
 // TODO T53300085: support this in codegen; this was hand-written
 folly::dynamic AndroidTextInputProps::getDynamic() const {
@@ -276,6 +285,14 @@ folly::dynamic AndroidTextInputProps::getDynamic() const {
   props["cursorColor"] = toDynamic(cursorColor);
   props["mostRecentEventCount"] = mostRecentEventCount;
   props["text"] = text;
+
+  props["hasPaddingStart"] = hasPaddingStart;
+  props["hasPaddingEnd"] = hasPaddingEnd;
+  props["hasPaddingLeft"] = hasPaddingLeft;
+  props["hasPaddingRight"] = hasPaddingRight;
+  props["hasPaddingTop"] = hasPaddingTop;
+  props["hasPaddingBottom"] = hasPaddingBottom;
+
   return props;
 }
 
