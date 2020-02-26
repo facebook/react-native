@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charSet="utf-8"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><title>Shadow Props · React Native</title><meta name="viewport" content="width=device-width"/><meta name="generator" content="Docusaurus"/><meta name="description" content="# Reference"/><meta name="docsearch:version" content="next"/><meta name="docsearch:language" content="en"/><meta property="og:title" content="Shadow Props · React Native"/><meta property="og:type" content="website"/><meta property="og:url" content="https://reactnative.dev/"/><meta property="og:description" content="# Reference"/><meta name="twitter:card" content="summary"/><link rel="shortcut icon" href="/img/favicon.ico"/><link rel="stylesheet" href="https://cdn.jsdelivr.net/docsearch.js/1/docsearch.min.css"/><link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/solarized-dark.min.css"/><link rel="alternate" type="application/atom+xml" href="https://reactnative.dev/blog/atom.xml" title="React Native Blog ATOM Feed"/><link rel="alternate" type="application/rss+xml" href="https://reactnative.dev/blog/feed.xml" title="React Native Blog RSS Feed"/><script>
+<!DOCTYPE html><html lang="en"><head><meta charSet="utf-8"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><title>Shadow Props · React Native</title><meta name="viewport" content="width=device-width"/><meta name="generator" content="Docusaurus"/><meta name="description" content="```SnackPlayer name=Shadow%20Props&amp;supportedPlatforms=ios"/><meta name="docsearch:version" content="next"/><meta name="docsearch:language" content="en"/><meta property="og:title" content="Shadow Props · React Native"/><meta property="og:type" content="website"/><meta property="og:url" content="https://reactnative.dev/"/><meta property="og:description" content="```SnackPlayer name=Shadow%20Props&amp;supportedPlatforms=ios"/><meta name="twitter:card" content="summary"/><link rel="shortcut icon" href="/img/favicon.ico"/><link rel="stylesheet" href="https://cdn.jsdelivr.net/docsearch.js/1/docsearch.min.css"/><link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/solarized-dark.min.css"/><link rel="alternate" type="application/atom+xml" href="https://reactnative.dev/blog/atom.xml" title="React Native Blog ATOM Feed"/><link rel="alternate" type="application/rss+xml" href="https://reactnative.dev/blog/feed.xml" title="React Native Blog RSS Feed"/><script>
               (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
               (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
               m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
@@ -68,7 +68,112 @@
                 };
               }
             });
-        </script></nav></div><div class="container mainContainer docsContainer"><div class="wrapper"><div class="post"><header class="postHeader"><a class="edit-page-link button" href="https://github.com/facebook/react-native-website/blob/master/docs/shadow-props.md" target="_blank" rel="noreferrer noopener">Edit</a><h1 id="__docusaurus" class="postHeaderTitle">Shadow Props</h1></header><article><div><span><h1><a class="anchor" aria-hidden="true" id="reference"></a><a href="#reference" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Reference</h1>
+        </script></nav></div><div class="container mainContainer docsContainer"><div class="wrapper"><div class="post"><header class="postHeader"><a class="edit-page-link button" href="https://github.com/facebook/react-native-website/blob/master/docs/shadow-props.md" target="_blank" rel="noreferrer noopener">Edit</a><h1 id="__docusaurus" class="postHeaderTitle">Shadow Props</h1></header><article><div><span><div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React, { useState } <span class="hljs-keyword">from</span> <span class="hljs-string">"react"</span>;
+<span class="hljs-keyword">import</span> { Text, View, StyleSheet, Slider } <span class="hljs-keyword">from</span> <span class="hljs-string">"react-native"</span>;
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">ShadowPropSlider</span>(<span class="hljs-params">{ label, value, ...props }</span>) </span>{
+  <span class="hljs-keyword">return</span> (
+    &lt;&gt;
+      &lt;Text&gt;
+        {label} ({value.toFixed(2)})
+      &lt;/Text&gt;
+      &lt;Slider step={1} value={value} {...props} /&gt;
+    &lt;/&gt;
+  );
+}
+
+export default function App() {
+  const [shadowOffsetWidth, setShadowOffsetWidth] = useState(0);
+  const [shadowOffsetHeight, setShadowOffsetHeight] = useState(0);
+  const [shadowRadius, setShadowRadius] = useState(0);
+  const [shadowOpacity, setShadowOpacity] = useState(0.1);
+
+  return (
+    &lt;View style={styles.container}&gt;
+      &lt;View
+        style={[
+          styles.square,
+          {
+            shadowOffset: {
+              width: shadowOffsetWidth,
+              height: -shadowOffsetHeight
+            },
+            shadowOpacity,
+            shadowRadius
+          }
+        ]}
+      /&gt;
+      &lt;View style={styles.controls}&gt;
+        &lt;ShadowPropSlider
+          label="shadowOffset - X"
+          minimumValue={-50}
+          maximumValue={50}
+          value={shadowOffsetWidth}
+          onValueChange={val =&gt; setShadowOffsetWidth(val)}
+        /&gt;
+        &lt;ShadowPropSlider
+          label="shadowOffset - Y"
+          minimumValue={-50}
+          maximumValue={50}
+          value={shadowOffsetHeight}
+          onValueChange={val =&gt; setShadowOffsetHeight(val)}
+        /&gt;
+        &lt;ShadowPropSlider
+          label="shadowRadius"
+          minimumValue={0}
+          maximumValue={100}
+          value={shadowRadius}
+          onValueChange={val =&gt; setShadowRadius(val)}
+        /&gt;
+        &lt;ShadowPropSlider
+          label="shadowOpacity"
+          minimumValue={0}
+          maximumValue={1}
+          step={0.05}
+          value={shadowOpacity}
+          onValueChange={val =&gt; setShadowOpacity(val)}
+        /&gt;
+      &lt;/View&gt;
+    &lt;/View&gt;
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: "space-around",
+    backgroundColor: "#ecf0f1",
+    padding: 8
+  },
+  square: {
+    alignSelf: "center",
+    backgroundColor: "white",
+    borderRadius: 4,
+    height: 150,
+    shadowColor: "black",
+    width: 150
+  },
+  controls: {
+    paddingHorizontal: 12
+  }
+});
+</code></pre></div><div class="desktop-friendly-snack" style="margin-top: 15px; margin-bottom: 15px"><div
+        data-snack-name="Shadow Props"
+        data-snack-description="Example usage"
+        data-snack-code="import%20React%2C%20%7B%20useState%20%7D%20from%20%22react%22%3B%0Aimport%20%7B%20Text%2C%20View%2C%20StyleSheet%2C%20Slider%20%7D%20from%20%22react-native%22%3B%0A%0Afunction%20ShadowPropSlider(%7B%20label%2C%20value%2C%20...props%20%7D)%20%7B%0A%20%20return%20(%0A%20%20%20%20%3C%3E%0A%20%20%20%20%20%20%3CText%3E%0A%20%20%20%20%20%20%20%20%7Blabel%7D%20(%7Bvalue.toFixed(2)%7D)%0A%20%20%20%20%20%20%3C%2FText%3E%0A%20%20%20%20%20%20%3CSlider%20step%3D%7B1%7D%20value%3D%7Bvalue%7D%20%7B...props%7D%20%2F%3E%0A%20%20%20%20%3C%2F%3E%0A%20%20)%3B%0A%7D%0A%0Aexport%20default%20function%20App()%20%7B%0A%20%20const%20%5BshadowOffsetWidth%2C%20setShadowOffsetWidth%5D%20%3D%20useState(0)%3B%0A%20%20const%20%5BshadowOffsetHeight%2C%20setShadowOffsetHeight%5D%20%3D%20useState(0)%3B%0A%20%20const%20%5BshadowRadius%2C%20setShadowRadius%5D%20%3D%20useState(0)%3B%0A%20%20const%20%5BshadowOpacity%2C%20setShadowOpacity%5D%20%3D%20useState(0.1)%3B%0A%0A%20%20return%20(%0A%20%20%20%20%3CView%20style%3D%7Bstyles.container%7D%3E%0A%20%20%20%20%20%20%3CView%0A%20%20%20%20%20%20%20%20style%3D%7B%5B%0A%20%20%20%20%20%20%20%20%20%20styles.square%2C%0A%20%20%20%20%20%20%20%20%20%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20shadowOffset%3A%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20width%3A%20shadowOffsetWidth%2C%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20height%3A%20-shadowOffsetHeight%0A%20%20%20%20%20%20%20%20%20%20%20%20%7D%2C%0A%20%20%20%20%20%20%20%20%20%20%20%20shadowOpacity%2C%0A%20%20%20%20%20%20%20%20%20%20%20%20shadowRadius%0A%20%20%20%20%20%20%20%20%20%20%7D%0A%20%20%20%20%20%20%20%20%5D%7D%0A%20%20%20%20%20%20%2F%3E%0A%20%20%20%20%20%20%3CView%20style%3D%7Bstyles.controls%7D%3E%0A%20%20%20%20%20%20%20%20%3CShadowPropSlider%0A%20%20%20%20%20%20%20%20%20%20label%3D%22shadowOffset%20-%20X%22%0A%20%20%20%20%20%20%20%20%20%20minimumValue%3D%7B-50%7D%0A%20%20%20%20%20%20%20%20%20%20maximumValue%3D%7B50%7D%0A%20%20%20%20%20%20%20%20%20%20value%3D%7BshadowOffsetWidth%7D%0A%20%20%20%20%20%20%20%20%20%20onValueChange%3D%7Bval%20%3D%3E%20setShadowOffsetWidth(val)%7D%0A%20%20%20%20%20%20%20%20%2F%3E%0A%20%20%20%20%20%20%20%20%3CShadowPropSlider%0A%20%20%20%20%20%20%20%20%20%20label%3D%22shadowOffset%20-%20Y%22%0A%20%20%20%20%20%20%20%20%20%20minimumValue%3D%7B-50%7D%0A%20%20%20%20%20%20%20%20%20%20maximumValue%3D%7B50%7D%0A%20%20%20%20%20%20%20%20%20%20value%3D%7BshadowOffsetHeight%7D%0A%20%20%20%20%20%20%20%20%20%20onValueChange%3D%7Bval%20%3D%3E%20setShadowOffsetHeight(val)%7D%0A%20%20%20%20%20%20%20%20%2F%3E%0A%20%20%20%20%20%20%20%20%3CShadowPropSlider%0A%20%20%20%20%20%20%20%20%20%20label%3D%22shadowRadius%22%0A%20%20%20%20%20%20%20%20%20%20minimumValue%3D%7B0%7D%0A%20%20%20%20%20%20%20%20%20%20maximumValue%3D%7B100%7D%0A%20%20%20%20%20%20%20%20%20%20value%3D%7BshadowRadius%7D%0A%20%20%20%20%20%20%20%20%20%20onValueChange%3D%7Bval%20%3D%3E%20setShadowRadius(val)%7D%0A%20%20%20%20%20%20%20%20%2F%3E%0A%20%20%20%20%20%20%20%20%3CShadowPropSlider%0A%20%20%20%20%20%20%20%20%20%20label%3D%22shadowOpacity%22%0A%20%20%20%20%20%20%20%20%20%20minimumValue%3D%7B0%7D%0A%20%20%20%20%20%20%20%20%20%20maximumValue%3D%7B1%7D%0A%20%20%20%20%20%20%20%20%20%20step%3D%7B0.05%7D%0A%20%20%20%20%20%20%20%20%20%20value%3D%7BshadowOpacity%7D%0A%20%20%20%20%20%20%20%20%20%20onValueChange%3D%7Bval%20%3D%3E%20setShadowOpacity(val)%7D%0A%20%20%20%20%20%20%20%20%2F%3E%0A%20%20%20%20%20%20%3C%2FView%3E%0A%20%20%20%20%3C%2FView%3E%0A%20%20)%3B%0A%7D%0A%0Aconst%20styles%20%3D%20StyleSheet.create(%7B%0A%20%20container%3A%20%7B%0A%20%20%20%20flex%3A%201%2C%0A%20%20%20%20justifyContent%3A%20%22space-around%22%2C%0A%20%20%20%20backgroundColor%3A%20%22%23ecf0f1%22%2C%0A%20%20%20%20padding%3A%208%0A%20%20%7D%2C%0A%20%20square%3A%20%7B%0A%20%20%20%20alignSelf%3A%20%22center%22%2C%0A%20%20%20%20backgroundColor%3A%20%22white%22%2C%0A%20%20%20%20borderRadius%3A%204%2C%0A%20%20%20%20height%3A%20150%2C%0A%20%20%20%20shadowColor%3A%20%22black%22%2C%0A%20%20%20%20width%3A%20150%0A%20%20%7D%2C%0A%20%20controls%3A%20%7B%0A%20%20%20%20paddingHorizontal%3A%2012%0A%20%20%7D%0A%7D)%3B%0A"
+        data-snack-platform="web"
+        data-snack-supported-platforms=ios
+        data-snack-preview="true"
+        style="
+          overflow: hidden;
+          background: #fafafa;
+          border: 1px solid rgba(0,0,0,.16);
+          border-radius: 4px;
+          height: 514px;
+          width: 100%;
+        "
+      ></div></div></div><h1><a class="anchor" aria-hidden="true" id="reference"></a><a href="#reference" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Reference</h1>
+<p>These properties are iOS only - for similar functionality on Android, use the <a href="view-style-props#elevation"><code>elevation</code> property</a>.</p>
 <h2><a class="anchor" aria-hidden="true" id="props"></a><a href="#props" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Props</h2>
 <h3><a class="anchor" aria-hidden="true" id="shadowcolor"></a><a href="#shadowcolor" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>shadowColor</code></h3>
 <p>Sets the drop shadow color</p>
