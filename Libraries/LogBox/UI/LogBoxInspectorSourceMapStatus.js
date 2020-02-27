@@ -47,6 +47,9 @@ function LogBoxInspectorSourceMapStatus(props: Props): React.Node {
           animation,
           rotate: animated.interpolate({
             inputRange: [0, 1],
+            /* $FlowFixMe(>=0.38.0) - Flow error detected during the deployment
+             * of v0.38.0. To see the error, remove this comment and run flow
+             */
             outputRange: ['0deg', '360deg'],
           }),
         });

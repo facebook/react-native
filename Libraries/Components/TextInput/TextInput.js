@@ -1152,6 +1152,8 @@ function InternalTextInput(props: Props): React.Node {
         onBlur={_onBlur}
         onChange={_onChange}
         onFocus={_onFocus}
+        /* $FlowFixMe the types for AndroidTextInput don't match up exactly
+         * with the props for TextInput. This will need to get fixed */
         onScroll={_onScroll}
         onSelectionChange={_onSelectionChange}
         selection={selection}
