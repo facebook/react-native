@@ -19,8 +19,7 @@ namespace facebook {
 namespace react {
 
 ViewProps::ViewProps(ViewProps const &sourceProps, RawProps const &rawProps)
-    : Props(sourceProps, rawProps),
-      YogaStylableProps(sourceProps, rawProps),
+    : YogaStylableProps(sourceProps, rawProps),
       AccessibilityProps(sourceProps, rawProps),
       opacity(
           convertRawProp(rawProps, "opacity", sourceProps.opacity, (Float)1.0)),

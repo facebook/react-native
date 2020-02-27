@@ -36,7 +36,7 @@ YogaLayoutableShadowNode::YogaLayoutableShadowNode(
       yogaNode_(&initializeYogaConfig(yogaConfig_)) {
   yogaNode_.setContext(this);
 
-  setProps(dynamic_cast<YogaStylableProps const &>(*fragment.props));
+  setProps(static_cast<YogaStylableProps const &>(*fragment.props));
   setChildren(YogaLayoutableShadowNode::getYogaLayoutableChildren());
 }
 
