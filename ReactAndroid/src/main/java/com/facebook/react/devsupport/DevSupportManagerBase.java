@@ -1012,6 +1012,27 @@ public abstract class DevSupportManagerBase
   }
 
   public void reloadJSFromServer(final String bundleURL) {
+    reloadJSFromServer(
+        bundleURL,
+        new BundleLoadCallback() {
+          @Override
+          public void onSuccess() {
+            UiThreadUtil.runOnUiThread(
+                new Runnable() {
+                  @Override
+                  public void run() {
+                    mReactInstanceManagerHelper.onJSBundleLoadedFromServer();
+                  }
+                });
+          }
+        });
+  }
+
+  protected interface BundleLoadCallback {
+    void onSuccess();
+  }
+
+  protected void reloadJSFromServer(final String bundleURL, final BundleLoadCallback callback) {
     ReactMarker.logMarker(ReactMarkerConstants.DOWNLOAD_START);
 
     mDevLoadingViewController.showForUrl(bundleURL);
@@ -1032,15 +1053,8 @@ public abstract class DevSupportManagerBase
             if (mBundleDownloadListener != null) {
               mBundleDownloadListener.onSuccess();
             }
-            UiThreadUtil.runOnUiThread(
-                new Runnable() {
-                  @Override
-                  public void run() {
-                    ReactMarker.logMarker(
-                        ReactMarkerConstants.DOWNLOAD_END, bundleInfo.toJSONString());
-                    mReactInstanceManagerHelper.onJSBundleLoadedFromServer();
-                  }
-                });
+            ReactMarker.logMarker(ReactMarkerConstants.DOWNLOAD_END, bundleInfo.toJSONString());
+            callback.onSuccess();
           }
 
           @Override
