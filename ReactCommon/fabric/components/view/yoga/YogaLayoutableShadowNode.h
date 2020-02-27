@@ -59,9 +59,9 @@ class YogaLayoutableShadowNode : public LayoutableShadowNode {
   void setChildren(YogaLayoutableShadowNode::UnsharedList children);
 
   /*
-   * Sets Yoga styles based on given `YogaStylableProps`.
+   *
    */
-  void setProps(const YogaStylableProps &props);
+  void updateYogaProps();
 
   /*
    * Sets layoutable size of node.

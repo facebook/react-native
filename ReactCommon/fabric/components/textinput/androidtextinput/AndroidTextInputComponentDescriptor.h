@@ -118,7 +118,7 @@ protected:
         // Set new props on node
         const_cast<AndroidTextInputProps&>(textInputShadowNode->getConcreteProps()).yogaStyle.padding() = result;
         // Communicate new props to Yoga part of the node
-        textInputShadowNode->setProps((YogaStylableProps)textInputShadowNode->getConcreteProps());
+        textInputShadowNode->updateYogaProps();
       }
     }
 
