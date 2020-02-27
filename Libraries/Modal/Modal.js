@@ -12,12 +12,11 @@
 
 const AppContainer = require('../ReactNative/AppContainer');
 const I18nManager = require('../ReactNative/I18nManager');
-const PropTypes = require('prop-types');
-const React = require('react');
 const ScrollView = require('../Components/ScrollView/ScrollView');
 const StyleSheet = require('../StyleSheet/StyleSheet');
 const View = require('../Components/View/View');
 
+import * as React from 'react';
 import type {ViewProps} from '../Components/View/ViewPropTypes';
 import type {DirectEventHandler} from '../Types/CodegenTypes';
 import type EmitterSubscription from '../vendor/emitter/EmitterSubscription';
@@ -140,14 +139,14 @@ export type Props = $ReadOnly<{|
   onOrientationChange?: ?DirectEventHandler<OrientationChangeEvent>,
 |}>;
 
+type ContextType = {virtualizedList: ?Object};
+
+const ModalContext = React.createContext<ContextType>({virtualizedList: null});
+
 class Modal extends React.Component<Props> {
   static defaultProps: {|hardwareAccelerated: boolean, visible: boolean|} = {
     visible: true,
     hardwareAccelerated: false,
-  };
-
-  static contextTypes: any | {|rootTag: React$PropType$Primitive<number>|} = {
-    rootTag: PropTypes.number,
   };
 
   _identifier: number;
@@ -159,19 +158,7 @@ class Modal extends React.Component<Props> {
     this._identifier = uniqueModalIdentifier++;
   }
 
-  static childContextTypes:
-    | any
-    | {|virtualizedList: React$PropType$Primitive<any>|} = {
-    virtualizedList: PropTypes.object,
-  };
-
-  getChildContext(): {|virtualizedList: null|} {
-    // Reset the context so VirtualizedList doesn't get confused by nesting
-    // in the React tree that doesn't reflect the native component hierarchy.
-    return {
-      virtualizedList: null,
-    };
-  }
+  static Context: React.Context<ContextType> = ModalContext;
 
   componentWillUnmount() {
     if (this.props.onDismiss != null) {
@@ -218,7 +205,12 @@ class Modal extends React.Component<Props> {
 
     const innerChildren = __DEV__ ? (
       <AppContainer rootTag={this.context.rootTag}>
-        {this.props.children}
+        <Modal.Context.Provider
+          // Reset the context so VirtualizedList doesn't get confused by nesting
+          // in the React tree that doesn't reflect the native component hierarchy.
+          value={{virtualizedList: null}}>
+          {this.props.children}
+        </Modal.Context.Provider>
       </AppContainer>
     ) : (
       this.props.children
