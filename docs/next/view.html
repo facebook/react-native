@@ -71,6 +71,17 @@
         </script></nav></div><div class="container mainContainer docsContainer"><div class="wrapper"><div class="post"><header class="postHeader"><a class="edit-page-link button" href="https://github.com/facebook/react-native-website/blob/master/docs/view.md" target="_blank" rel="noreferrer noopener">Edit</a><h1 id="__docusaurus" class="postHeaderTitle">View</h1></header><article><div><span><p>The most fundamental component for building a UI, <code>View</code> is a container that supports layout with <a href="/docs/next/flexbox">flexbox</a>, <a href="/docs/next/style">style</a>, <a href="/docs/next/handling-touches">some touch handling</a>, and <a href="/docs/next/accessibility">accessibility</a> controls. <code>View</code> maps directly to the native view equivalent on whatever platform React Native is running on, whether that is a <code>UIView</code>, <code>&lt;div&gt;</code>, <code>android.view</code>, etc.</p>
 <p><code>View</code> is designed to be nested inside other views and can have 0 to many children of any type.</p>
 <p>This example creates a <code>View</code> that wraps two boxes with color and a text component in a row with padding.</p>
+<div class="toggler">
+  <ul role="tablist" class="toggle-syntax">
+    <li id="functional" class="button-functional" aria-selected="false" role="tab" tabindex="0" aria-controls="functionaltab" onclick="displayTabs('syntax', 'functional')">
+      Function Component Example
+    </li>
+    <li id="classical" class="button-classical" aria-selected="false" role="tab" tabindex="0" aria-controls="classicaltab" onclick="displayTabs('syntax', 'classical')">
+      Class Component Example
+    </li>
+  </ul>
+</div>
+<p><block class="functional syntax" /></p>
 <div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React <span class="hljs-keyword">from</span> <span class="hljs-string">"react"</span>;
 <span class="hljs-keyword">import</span> { View, Text } <span class="hljs-keyword">from</span> <span class="hljs-string">"react-native"</span>;
 
@@ -92,7 +103,7 @@
 
 export default ViewBoxesWithColorAndText;
 </code></pre></div><div class="desktop-friendly-snack" style="margin-top: 15px; margin-bottom: 15px"><div
-        data-snack-name="Example Code"
+        data-snack-name="View Function Component Example"
         data-snack-description="Example usage"
         data-snack-code="import%20React%20from%20%22react%22%3B%0Aimport%20%7B%20View%2C%20Text%20%7D%20from%20%22react-native%22%3B%0A%0Aconst%20ViewBoxesWithColorAndText%20%3D%20()%20%3D%3E%20%7B%0A%20%20return%20(%0A%20%20%20%20%3CView%0A%20%20%20%20%20%20style%3D%7B%7B%0A%20%20%20%20%20%20%20%20flexDirection%3A%20%22row%22%2C%0A%20%20%20%20%20%20%20%20height%3A%20100%2C%0A%20%20%20%20%20%20%20%20padding%3A%2020%0A%20%20%20%20%20%20%7D%7D%0A%20%20%20%20%3E%0A%20%20%20%20%20%20%3CView%20style%3D%7B%7B%20backgroundColor%3A%20%22blue%22%2C%20flex%3A%200.3%20%7D%7D%20%2F%3E%0A%20%20%20%20%20%20%3CView%20style%3D%7B%7B%20backgroundColor%3A%20%22red%22%2C%20flex%3A%200.5%20%7D%7D%20%2F%3E%0A%20%20%20%20%20%20%3CText%3EHello%20World!%3C%2FText%3E%0A%20%20%20%20%3C%2FView%3E%0A%20%20)%3B%0A%7D%3B%0A%0Aexport%20default%20ViewBoxesWithColorAndText%3B%0A"
         data-snack-platform="web"
@@ -106,7 +117,44 @@ export default ViewBoxesWithColorAndText;
           height: 514px;
           width: 100%;
         "
-      ></div></div></div><blockquote>
+      ></div></div></div><p><block class="classical syntax" /></p>
+<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React, { Component } <span class="hljs-keyword">from</span> <span class="hljs-string">"react"</span>;
+<span class="hljs-keyword">import</span> { View, Text } <span class="hljs-keyword">from</span> <span class="hljs-string">"react-native"</span>;
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">App</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">Component</span> </span>{
+  render() {
+    <span class="hljs-keyword">return</span> (
+      &lt;View
+        style={{
+          flexDirection: "row",
+          height: 100,
+          padding: 20
+        }}
+      &gt;
+        &lt;View style={{ backgroundColor: "blue", flex: 0.3 }} /&gt;
+        &lt;View style={{ backgroundColor: "red", flex: 0.5 }} /&gt;
+        &lt;Text&gt;Hello World!&lt;/Text&gt;
+      &lt;/View&gt;
+    );
+  }
+}
+</code></pre></div><div class="desktop-friendly-snack" style="margin-top: 15px; margin-bottom: 15px"><div
+        data-snack-name="View Class Component Example"
+        data-snack-description="Example usage"
+        data-snack-code="import%20React%2C%20%7B%20Component%20%7D%20from%20%22react%22%3B%0Aimport%20%7B%20View%2C%20Text%20%7D%20from%20%22react-native%22%3B%0A%0Aexport%20default%20class%20App%20extends%20Component%20%7B%0A%20%20render()%20%7B%0A%20%20%20%20return%20(%0A%20%20%20%20%20%20%3CView%0A%20%20%20%20%20%20%20%20style%3D%7B%7B%0A%20%20%20%20%20%20%20%20%20%20flexDirection%3A%20%22row%22%2C%0A%20%20%20%20%20%20%20%20%20%20height%3A%20100%2C%0A%20%20%20%20%20%20%20%20%20%20padding%3A%2020%0A%20%20%20%20%20%20%20%20%7D%7D%0A%20%20%20%20%20%20%3E%0A%20%20%20%20%20%20%20%20%3CView%20style%3D%7B%7B%20backgroundColor%3A%20%22blue%22%2C%20flex%3A%200.3%20%7D%7D%20%2F%3E%0A%20%20%20%20%20%20%20%20%3CView%20style%3D%7B%7B%20backgroundColor%3A%20%22red%22%2C%20flex%3A%200.5%20%7D%7D%20%2F%3E%0A%20%20%20%20%20%20%20%20%3CText%3EHello%20World!%3C%2FText%3E%0A%20%20%20%20%20%20%3C%2FView%3E%0A%20%20%20%20)%3B%0A%20%20%7D%0A%7D%0A"
+        data-snack-platform="web"
+        data-snack-supported-platforms=ios,android,web
+        data-snack-preview="true"
+        style="
+          overflow: hidden;
+          background: #fafafa;
+          border: 1px solid rgba(0,0,0,.16);
+          border-radius: 4px;
+          height: 514px;
+          width: 100%;
+        "
+      ></div></div></div><p><block class="endBlock syntax" /></p>
+<blockquote>
 <p><code>View</code>s are designed to be used with <a href="/docs/next/style"><code>StyleSheet</code></a> for clarity and performance, although inline styles are also supported.</p>
 </blockquote>
 <h3><a class="anchor" aria-hidden="true" id="synthetic-touch-events"></a><a href="#synthetic-touch-events" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Synthetic Touch Events</h3>
