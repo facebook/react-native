@@ -90,6 +90,8 @@ class YogaLayoutableShadowNode : public LayoutableShadowNode {
 
   void layoutChildren(LayoutContext layoutContext) override;
 
+  YogaLayoutableShadowNode::UnsharedList getYogaLayoutableChildren() const;
+
   LayoutableShadowNode::UnsharedList getLayoutableChildNodes() const override;
 
  protected:

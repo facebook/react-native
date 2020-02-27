@@ -62,7 +62,7 @@ class ConcreteViewShadowNode : public ConcreteShadowNode<
     YogaLayoutableShadowNode::setProps(
         *std::static_pointer_cast<const ConcreteViewProps>(fragment.props));
     YogaLayoutableShadowNode::setChildren(
-        BaseShadowNode::template getChildrenSlice<YogaLayoutableShadowNode>());
+        YogaLayoutableShadowNode::getYogaLayoutableChildren());
   }
 
   ConcreteViewShadowNode(
@@ -76,8 +76,7 @@ class ConcreteViewShadowNode : public ConcreteShadowNode<
 
     if (fragment.children) {
       YogaLayoutableShadowNode::setChildren(
-          BaseShadowNode::template getChildrenSlice<
-              YogaLayoutableShadowNode>());
+          YogaLayoutableShadowNode::getYogaLayoutableChildren());
     }
   }
 

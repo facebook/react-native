@@ -123,6 +123,20 @@ void YogaLayoutableShadowNode::appendChildYogaNode(
       childYogaNodeRawPtr, yogaNodeRawPtr->getChildren().size());
 }
 
+YogaLayoutableShadowNode::UnsharedList
+YogaLayoutableShadowNode::getYogaLayoutableChildren() const {
+  YogaLayoutableShadowNode::UnsharedList layoutableChildren;
+  for (auto const &childShadowNode : getChildren()) {
+    auto layoutableChildShadowNode =
+        traitCast<YogaLayoutableShadowNode const *>(childShadowNode.get());
+    if (layoutableChildShadowNode) {
+      layoutableChildren.push_back(
+          const_cast<YogaLayoutableShadowNode *>(layoutableChildShadowNode));
+    }
+  }
+  return layoutableChildren;
+}
+
 void YogaLayoutableShadowNode::setChildren(
     YogaLayoutableShadowNode::UnsharedList children) {
   if (getTraits().check(ShadowNodeTraits::Trait::LeafYogaNode)) {
