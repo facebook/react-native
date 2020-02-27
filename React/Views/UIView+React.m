@@ -35,12 +35,12 @@
   objc_setAssociatedObject(self, @selector(rootTag), rootTag, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 }
 
-- (NSNumber *)nativeID
+- (NSString *)nativeID
 {
   return objc_getAssociatedObject(self, _cmd);
 }
 
-- (void)setNativeID:(NSNumber *)nativeID
+- (void)setNativeID:(NSString *)nativeID
 {
   objc_setAssociatedObject(self, @selector(nativeID), nativeID, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 }
@@ -369,4 +369,3 @@
 }
 
 @end
-
