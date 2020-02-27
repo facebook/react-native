@@ -37,7 +37,7 @@ YogaLayoutableShadowNode::YogaLayoutableShadowNode(
   yogaNode_.setContext(this);
 
   updateYogaProps();
-  setChildren(YogaLayoutableShadowNode::getYogaLayoutableChildren());
+  updateYogaChildren();
 }
 
 YogaLayoutableShadowNode::YogaLayoutableShadowNode(
@@ -62,7 +62,7 @@ YogaLayoutableShadowNode::YogaLayoutableShadowNode(
   }
 
   if (fragment.children) {
-    setChildren(YogaLayoutableShadowNode::getYogaLayoutableChildren());
+    updateYogaChildren();
   }
 }
 
@@ -103,13 +103,12 @@ void YogaLayoutableShadowNode::appendChild(ShadowNode::Shared const &child) {
   auto yogaLayoutableChild =
       traitCast<YogaLayoutableShadowNode const *>(child.get());
   if (yogaLayoutableChild) {
-    appendChildYogaNode(
-        *const_cast<YogaLayoutableShadowNode *>(yogaLayoutableChild));
+    appendChildYogaNode(*yogaLayoutableChild);
   }
 }
 
 void YogaLayoutableShadowNode::appendChildYogaNode(
-    YogaLayoutableShadowNode &child) {
+    YogaLayoutableShadowNode const &child) {
   ensureUnsealed();
 
   if (getTraits().check(ShadowNodeTraits::Trait::LeafYogaNode)) {
@@ -122,7 +121,7 @@ void YogaLayoutableShadowNode::appendChildYogaNode(
 
   auto yogaNodeRawPtr = &yogaNode_;
   auto childYogaNodeRawPtr = &child.yogaNode_;
-  auto childNodePtr = &child;
+  auto childNodePtr = const_cast<YogaLayoutableShadowNode *>(&child);
 
   if (childYogaNodeRawPtr->getOwner() != nullptr) {
     childNodePtr =
@@ -154,13 +153,14 @@ YogaLayoutableShadowNode::getYogaLayoutableChildren() const {
   return layoutableChildren;
 }
 
-void YogaLayoutableShadowNode::setChildren(
-    YogaLayoutableShadowNode::UnsharedList children) {
+void YogaLayoutableShadowNode::updateYogaChildren() {
   if (getTraits().check(ShadowNodeTraits::Trait::LeafYogaNode)) {
     return;
   }
 
   ensureUnsealed();
+
+  auto &children = getChildren();
 
   // Optimization:
   // If the new list of child nodes consists of clean nodes, and if their styles
@@ -173,10 +173,18 @@ void YogaLayoutableShadowNode::setChildren(
 
   auto i = int{0};
   for (auto const &child : children) {
-    appendChildYogaNode(*child);
+    auto yogaLayoutableChild =
+        traitCast<YogaLayoutableShadowNode const *>(child.get());
 
-    isClean = isClean && !child->yogaNode_.isDirty() &&
-        child->yogaNode_.getStyle() == oldChildren[i++]->getStyle();
+    if (!yogaLayoutableChild) {
+      continue;
+    }
+
+    appendChildYogaNode(*yogaLayoutableChild);
+
+    isClean = isClean && !yogaLayoutableChild->yogaNode_.isDirty() &&
+        yogaLayoutableChild->yogaNode_.getStyle() ==
+            oldChildren[i++]->getStyle();
   }
 
   yogaNode_.setDirty(!isClean);

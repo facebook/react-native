@@ -51,16 +51,8 @@ class YogaLayoutableShadowNode : public LayoutableShadowNode {
 
   void appendChild(ShadowNode::Shared const &child);
 
-  /*
-   * Sets Yoga children based on collection of `YogaLayoutableShadowNode`
-   * instances. Complements `ShadowNode::setChildren(...)` functionality from
-   * Yoga perspective.
-   */
-  void setChildren(YogaLayoutableShadowNode::UnsharedList children);
+  void updateYogaChildren();
 
-  /*
-   *
-   */
   void updateYogaProps();
 
   /*
@@ -113,7 +105,7 @@ class YogaLayoutableShadowNode : public LayoutableShadowNode {
    * Complements `ShadowNode::appendChild(...)` functionality from Yoga
    * perspective.
    */
-  void appendChildYogaNode(YogaLayoutableShadowNode &child);
+  void appendChildYogaNode(YogaLayoutableShadowNode const &child);
 
   YogaLayoutableShadowNode &cloneAndReplaceChild(
       YogaLayoutableShadowNode &child,
