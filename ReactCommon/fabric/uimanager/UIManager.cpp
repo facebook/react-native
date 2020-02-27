@@ -105,7 +105,7 @@ void UIManager::completeSurface(
                   /* .children = */ rootChildren,
               });
         },
-        true && stateReconciliationEnabled_);
+        stateReconciliationEnabled_);
   });
 }
 
@@ -155,7 +155,7 @@ void UIManager::setNativeProps(
                         });
                       }));
             },
-            true && stateReconciliationEnabled_);
+            stateReconciliationEnabled_);
       });
 }
 
@@ -173,7 +173,7 @@ LayoutMetrics UIManager::getRelativeLayoutMetrics(
                 ancestorShadowNode = oldRootShadowNode.get();
                 return nullptr;
               },
-              true && stateReconciliationEnabled_);
+              stateReconciliationEnabled_);
         });
   }
 
