@@ -15,6 +15,7 @@
 #include <better/small_vector.h>
 #include <react/core/LayoutMetrics.h>
 #include <react/core/ShadowNode.h>
+#include <react/core/ShadowNodeFragment.h>
 #include <react/debug/DebugStringConvertible.h>
 #include <react/graphics/Geometry.h>
 #include <react/graphics/Transform.h>
@@ -135,14 +136,6 @@ class LayoutableShadowNode : public ShadowNode {
    */
   virtual LayoutableShadowNode::UnsharedList getLayoutableChildNodes()
       const = 0;
-
-  /*
-   * In case layout algorithm needs to mutate this (probably sealed) node,
-   * it has to clone and replace it in the hierarchy before to do so.
-   */
-  virtual LayoutableShadowNode *cloneAndReplaceChild(
-      LayoutableShadowNode *child,
-      int suggestedIndex = -1) = 0;
 
   /*
    * Sets layout metrics for the shadow node.

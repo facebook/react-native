@@ -89,32 +89,6 @@ class ConcreteViewShadowNode : public ConcreteShadowNode<
     return traits;
   }
 
-  void appendChild(const ShadowNode::Shared &child) {
-    BaseShadowNode::ensureUnsealed();
-
-    ShadowNode::appendChild(child);
-
-    auto nonConstChild = const_cast<ShadowNode *>(child.get());
-    auto yogaLayoutableChild =
-        dynamic_cast<YogaLayoutableShadowNode *>(nonConstChild);
-    if (yogaLayoutableChild) {
-      YogaLayoutableShadowNode::appendChild(yogaLayoutableChild);
-    }
-  }
-
-  LayoutableShadowNode *cloneAndReplaceChild(
-      LayoutableShadowNode *child,
-      int suggestedIndex = -1) override {
-    Sealable::ensureUnsealed();
-    auto childShadowNode = static_cast<const ConcreteViewShadowNode *>(child);
-    auto clonedChildShadowNode =
-        std::static_pointer_cast<ConcreteViewShadowNode>(
-            childShadowNode->clone({}));
-    ShadowNode::replaceChild(
-        *childShadowNode, clonedChildShadowNode, suggestedIndex);
-    return clonedChildShadowNode.get();
-  }
-
   Transform getTransform() const override {
     return BaseShadowNode::getConcreteProps().transform;
   }

@@ -78,28 +78,45 @@ void YogaLayoutableShadowNode::enableMeasurement() {
       YogaLayoutableShadowNode::yogaNodeMeasureCallbackConnector);
 }
 
-void YogaLayoutableShadowNode::appendChild(YogaLayoutableShadowNode *child) {
+void YogaLayoutableShadowNode::appendChild(ShadowNode::Shared const &child) {
+  ensureUnsealed();
+
+  LayoutableShadowNode::appendChild(child);
+
+  auto yogaLayoutableChild =
+      traitCast<YogaLayoutableShadowNode const *>(child.get());
+  if (yogaLayoutableChild) {
+    appendChildYogaNode(
+        *const_cast<YogaLayoutableShadowNode *>(yogaLayoutableChild));
+  }
+}
+
+void YogaLayoutableShadowNode::appendChildYogaNode(
+    YogaLayoutableShadowNode &child) {
+  ensureUnsealed();
+
   if (getTraits().check(ShadowNodeTraits::Trait::LeafYogaNode)) {
+    // This node is a declared leaf, therefore we must not add the Yoga node as
+    // a child.
     return;
   }
-
-  ensureUnsealed();
 
   yogaNode_.setDirty(true);
 
   auto yogaNodeRawPtr = &yogaNode_;
-  auto childYogaNodeRawPtr = &child->yogaNode_;
+  auto childYogaNodeRawPtr = &child.yogaNode_;
+  auto childNodePtr = &child;
 
   if (childYogaNodeRawPtr->getOwner() != nullptr) {
-    child = static_cast<YogaLayoutableShadowNode *>(
-        cloneAndReplaceChild(child, yogaNode_.getChildren().size()));
-    childYogaNodeRawPtr = &child->yogaNode_;
+    childNodePtr =
+        &cloneAndReplaceChild(*childNodePtr, yogaNode_.getChildren().size());
+    childYogaNodeRawPtr = &childNodePtr->yogaNode_;
   }
 
   // Inserted node must have a clear owner (must not be shared).
   assert(childYogaNodeRawPtr->getOwner() == nullptr);
 
-  child->ensureUnsealed();
+  childNodePtr->ensureUnsealed();
   childYogaNodeRawPtr->setOwner(yogaNodeRawPtr);
 
   yogaNodeRawPtr->insertChild(
@@ -125,7 +142,7 @@ void YogaLayoutableShadowNode::setChildren(
 
   auto i = int{0};
   for (auto const &child : children) {
-    appendChild(child);
+    appendChildYogaNode(*child);
 
     isClean = isClean && !child->yogaNode_.isDirty() &&
         child->yogaNode_.getStyle() == oldChildren[i++]->getStyle();
@@ -246,6 +263,15 @@ YogaLayoutableShadowNode::getLayoutableChildNodes() const {
   return yogaLayoutableChildNodes;
 }
 
+YogaLayoutableShadowNode &YogaLayoutableShadowNode::cloneAndReplaceChild(
+    YogaLayoutableShadowNode &child,
+    int suggestedIndex) {
+  auto clonedChildShadowNode = child.clone({});
+  replaceChild(child, clonedChildShadowNode, suggestedIndex);
+
+  return static_cast<YogaLayoutableShadowNode &>(*clonedChildShadowNode);
+}
+
 #pragma mark - Yoga Connectors
 
 YGNode *YogaLayoutableShadowNode::yogaNodeCloneCallbackConnector(
@@ -260,8 +286,7 @@ YGNode *YogaLayoutableShadowNode::yogaNodeCloneCallbackConnector(
       static_cast<YogaLayoutableShadowNode *>(parentYogaNode->getContext());
   auto oldNode =
       static_cast<YogaLayoutableShadowNode *>(oldYogaNode->getContext());
-  auto clonedNode = static_cast<YogaLayoutableShadowNode *>(
-      parentNode->cloneAndReplaceChild(oldNode, childIndex));
+  auto clonedNode = &parentNode->cloneAndReplaceChild(*oldNode, childIndex);
   return &clonedNode->yogaNode_;
 }
 

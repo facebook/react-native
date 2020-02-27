@@ -47,12 +47,7 @@ class YogaLayoutableShadowNode : public LayoutableShadowNode {
    */
   void enableMeasurement();
 
-  /*
-   * Appends `child`'s Yoga node to the own Yoga node.
-   * Complements `ShadowNode::appendChild(...)` functionality from Yoga
-   * perspective.
-   */
-  void appendChild(YogaLayoutableShadowNode *child);
+  void appendChild(ShadowNode::Shared const &child);
 
   /*
    * Sets Yoga children based on collection of `YogaLayoutableShadowNode`
@@ -111,6 +106,17 @@ class YogaLayoutableShadowNode : public LayoutableShadowNode {
   mutable YGNode yogaNode_;
 
  private:
+  /*
+   * Appends `child`'s Yoga node to the own Yoga node.
+   * Complements `ShadowNode::appendChild(...)` functionality from Yoga
+   * perspective.
+   */
+  void appendChildYogaNode(YogaLayoutableShadowNode &child);
+
+  YogaLayoutableShadowNode &cloneAndReplaceChild(
+      YogaLayoutableShadowNode &child,
+      int suggestedIndex);
+
   static YGConfig &initializeYogaConfig(YGConfig &config);
   static YGNode *yogaNodeCloneCallbackConnector(
       YGNode *oldYogaNode,
