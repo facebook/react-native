@@ -176,9 +176,9 @@ LayoutMetrics UIManager::getRelativeLayoutMetrics(
   }
 
   auto layoutableShadowNode =
-      dynamic_cast<const LayoutableShadowNode *>(&shadowNode);
+      traitCast<LayoutableShadowNode const *>(&shadowNode);
   auto layoutableAncestorShadowNode =
-      dynamic_cast<const LayoutableShadowNode *>(ancestorShadowNode);
+      traitCast<LayoutableShadowNode const *>(ancestorShadowNode);
 
   if (!layoutableShadowNode || !layoutableAncestorShadowNode) {
     return EmptyLayoutMetrics;
