@@ -28,8 +28,8 @@ function normalizeColor(color: string | number): ?number {
     return parseInt(match[1] + 'ff', 16) >>> 0;
   }
 
-  if (names.hasOwnProperty(color)) {
-    return names[color];
+  if (names.hasOwnProperty(color.toLowerCase())) {
+    return names[color.toLowerCase()];
   }
 
   if ((match = matchers.rgb.exec(color))) {
