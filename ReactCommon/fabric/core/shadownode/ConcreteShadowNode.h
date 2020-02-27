@@ -23,16 +23,24 @@ namespace react {
  */
 template <
     ComponentName concreteComponentName,
+    typename BaseShadowNodeT,
     typename PropsT,
     typename EventEmitterT = EventEmitter,
     typename StateDataT = StateData>
-class ConcreteShadowNode : public ShadowNode {
+class ConcreteShadowNode : public BaseShadowNodeT {
+  static_assert(
+      std::is_base_of<ShadowNode, BaseShadowNodeT>::value,
+      "BaseShadowNodeT must be a descendant of ShadowNode");
   static_assert(
       std::is_base_of<Props, PropsT>::value,
       "PropsT must be a descendant of Props");
 
+ protected:
+  using ShadowNode::props_;
+  using ShadowNode::state_;
+
  public:
-  using ShadowNode::ShadowNode;
+  using BaseShadowNodeT::BaseShadowNodeT;
 
   using ConcreteProps = PropsT;
   using SharedConcreteProps = std::shared_ptr<PropsT const>;
@@ -84,7 +92,7 @@ class ConcreteShadowNode : public ShadowNode {
    * Thread-safe after the node is sealed.
    */
   ConcreteProps const &getConcreteProps() const {
-    assert(props_ && "Props must not be `nullptr`.");
+    assert(BaseShadowNodeT::props_ && "Props must not be `nullptr`.");
     assert(
         std::dynamic_pointer_cast<ConcreteProps const>(props_) &&
         "Props must be an instance of ConcreteProps class.");
@@ -108,7 +116,7 @@ class ConcreteShadowNode : public ShadowNode {
    * Can be called only before the node is sealed (usually during construction).
    */
   void setStateData(ConcreteStateData &&data) {
-    ensureUnsealed();
+    Sealable::ensureUnsealed();
     state_ = std::make_shared<ConcreteState const>(
         std::make_shared<ConcreteStateData const>(std::move(data)), *state_);
   }
@@ -123,7 +131,7 @@ class ConcreteShadowNode : public ShadowNode {
     better::
         small_vector<SpecificShadowNodeT *, kShadowNodeChildrenSmallVectorSize>
             children;
-    for (auto const &childShadowNode : getChildren()) {
+    for (auto const &childShadowNode : ShadowNode::getChildren()) {
       auto specificChildShadowNode =
           dynamic_cast<SpecificShadowNodeT const *>(childShadowNode.get());
       if (specificChildShadowNode) {

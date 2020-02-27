@@ -68,6 +68,19 @@ static LayoutMetrics calculateOffsetForLayoutMetrics(
   return layoutMetrics;
 }
 
+LayoutableShadowNode::LayoutableShadowNode(
+    ShadowNodeFragment const &fragment,
+    ShadowNodeFamily::Shared const &family,
+    ShadowNodeTraits traits)
+    : ShadowNode(fragment, family, traits), layoutMetrics_({}) {}
+
+LayoutableShadowNode::LayoutableShadowNode(
+    ShadowNode const &sourceShadowNode,
+    ShadowNodeFragment const &fragment)
+    : ShadowNode(sourceShadowNode, fragment),
+      layoutMetrics_(static_cast<LayoutableShadowNode const &>(sourceShadowNode)
+                         .layoutMetrics_) {}
+
 LayoutMetrics LayoutableShadowNode::getLayoutMetrics() const {
   return layoutMetrics_;
 }

@@ -31,10 +31,10 @@ template <
     typename... Ts>
 class ConcreteViewShadowNode : public ConcreteShadowNode<
                                    concreteComponentName,
+                                   YogaLayoutableShadowNode,
                                    ViewPropsT,
                                    ViewEventEmitterT,
-                                   Ts...>,
-                               public YogaLayoutableShadowNode {
+                                   Ts...> {
   static_assert(
       std::is_base_of<ViewProps, ViewPropsT>::value,
       "ViewPropsT must be a descendant of ViewProps");
@@ -48,6 +48,7 @@ class ConcreteViewShadowNode : public ConcreteShadowNode<
  public:
   using BaseShadowNode = ConcreteShadowNode<
       concreteComponentName,
+      YogaLayoutableShadowNode,
       ViewPropsT,
       ViewEventEmitterT,
       Ts...>;
@@ -57,21 +58,17 @@ class ConcreteViewShadowNode : public ConcreteShadowNode<
       ShadowNodeFragment const &fragment,
       ShadowNodeFamily::Shared const &family,
       ShadowNodeTraits traits)
-      : BaseShadowNode(fragment, family, traits),
-        YogaLayoutableShadowNode(
-            traits.check(ShadowNodeTraits::Trait::LeafYogaNode)) {
+      : BaseShadowNode(fragment, family, traits) {
     YogaLayoutableShadowNode::setProps(
         *std::static_pointer_cast<const ConcreteViewProps>(fragment.props));
     YogaLayoutableShadowNode::setChildren(
         BaseShadowNode::template getChildrenSlice<YogaLayoutableShadowNode>());
-  };
+  }
 
   ConcreteViewShadowNode(
       ShadowNode const &sourceShadowNode,
       ShadowNodeFragment const &fragment)
-      : BaseShadowNode(sourceShadowNode, fragment),
-        YogaLayoutableShadowNode(
-            static_cast<const ConcreteViewShadowNode &>(sourceShadowNode)) {
+      : BaseShadowNode(sourceShadowNode, fragment) {
     if (fragment.props) {
       YogaLayoutableShadowNode::setProps(
           *std::static_pointer_cast<const ConcreteViewProps>(fragment.props));
@@ -82,10 +79,18 @@ class ConcreteViewShadowNode : public ConcreteShadowNode<
           BaseShadowNode::template getChildrenSlice<
               YogaLayoutableShadowNode>());
     }
-  };
+  }
+
+  static ShadowNodeTraits BaseTraits() {
+    auto traits = BaseShadowNode::BaseTraits();
+    traits.set(ShadowNodeTraits::Trait::LayoutableKind);
+    traits.set(ShadowNodeTraits::Trait::YogaLayoutableKind);
+    traits.set(ShadowNodeTraits::Trait::ViewKind);
+    return traits;
+  }
 
   void appendChild(const ShadowNode::Shared &child) {
-    ensureUnsealed();
+    BaseShadowNode::ensureUnsealed();
 
     ShadowNode::appendChild(child);
 
@@ -100,7 +105,7 @@ class ConcreteViewShadowNode : public ConcreteShadowNode<
   LayoutableShadowNode *cloneAndReplaceChild(
       LayoutableShadowNode *child,
       int suggestedIndex = -1) override {
-    ensureUnsealed();
+    Sealable::ensureUnsealed();
     auto childShadowNode = static_cast<const ConcreteViewShadowNode *>(child);
     auto clonedChildShadowNode =
         std::static_pointer_cast<ConcreteViewShadowNode>(

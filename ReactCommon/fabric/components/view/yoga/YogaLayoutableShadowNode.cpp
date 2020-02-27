@@ -21,26 +21,32 @@
 namespace facebook {
 namespace react {
 
-YogaLayoutableShadowNode::YogaLayoutableShadowNode(bool isLeaf)
-    : yogaConfig_(nullptr),
-      yogaNode_(&initializeYogaConfig(yogaConfig_)),
-      isLeaf_(isLeaf) {
+YogaLayoutableShadowNode::YogaLayoutableShadowNode(
+    ShadowNodeFragment const &fragment,
+    ShadowNodeFamily::Shared const &family,
+    ShadowNodeTraits traits)
+    : LayoutableShadowNode(fragment, family, traits),
+      yogaConfig_(nullptr),
+      yogaNode_(&initializeYogaConfig(yogaConfig_)) {
   yogaNode_.setContext(this);
 }
 
 YogaLayoutableShadowNode::YogaLayoutableShadowNode(
-    YogaLayoutableShadowNode const &layoutableShadowNode)
-    : LayoutableShadowNode(layoutableShadowNode),
+    ShadowNode const &sourceShadowNode,
+    ShadowNodeFragment const &fragment)
+    : LayoutableShadowNode(sourceShadowNode, fragment),
       yogaConfig_(nullptr),
       yogaNode_(
-          layoutableShadowNode.yogaNode_,
-          &initializeYogaConfig(yogaConfig_)),
-      isLeaf_(layoutableShadowNode.isLeaf_) {
+          static_cast<YogaLayoutableShadowNode const &>(sourceShadowNode)
+              .yogaNode_,
+          &initializeYogaConfig(yogaConfig_)) {
   yogaNode_.setContext(this);
   yogaNode_.setOwner(nullptr);
 
   // Yoga node must inherit dirty flag.
-  assert(layoutableShadowNode.yogaNode_.isDirty() == yogaNode_.isDirty());
+  assert(
+      static_cast<YogaLayoutableShadowNode const &>(sourceShadowNode)
+          .yogaNode_.isDirty() == yogaNode_.isDirty());
 }
 
 void YogaLayoutableShadowNode::cleanLayout() {
@@ -73,7 +79,7 @@ void YogaLayoutableShadowNode::enableMeasurement() {
 }
 
 void YogaLayoutableShadowNode::appendChild(YogaLayoutableShadowNode *child) {
-  if (isLeaf_) {
+  if (getTraits().check(ShadowNodeTraits::Trait::LeafYogaNode)) {
     return;
   }
 
@@ -102,7 +108,7 @@ void YogaLayoutableShadowNode::appendChild(YogaLayoutableShadowNode *child) {
 
 void YogaLayoutableShadowNode::setChildren(
     YogaLayoutableShadowNode::UnsharedList children) {
-  if (isLeaf_) {
+  if (getTraits().check(ShadowNodeTraits::Trait::LeafYogaNode)) {
     return;
   }
 

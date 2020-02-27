@@ -22,9 +22,7 @@
 namespace facebook {
 namespace react {
 
-class YogaLayoutableShadowNode : public LayoutableShadowNode,
-                                 public virtual DebugStringConvertible,
-                                 public virtual Sealable {
+class YogaLayoutableShadowNode : public LayoutableShadowNode {
  public:
   using UnsharedList = better::small_vector<
       YogaLayoutableShadowNode *,
@@ -32,10 +30,14 @@ class YogaLayoutableShadowNode : public LayoutableShadowNode,
 
 #pragma mark - Constructors
 
-  YogaLayoutableShadowNode(bool isLeaf);
+  YogaLayoutableShadowNode(
+      ShadowNodeFragment const &fragment,
+      ShadowNodeFamily::Shared const &family,
+      ShadowNodeTraits traits);
 
   YogaLayoutableShadowNode(
-      YogaLayoutableShadowNode const &layoutableShadowNode);
+      ShadowNode const &sourceShadowNode,
+      ShadowNodeFragment const &fragment);
 
 #pragma mark - Mutating Methods
 
@@ -107,13 +109,6 @@ class YogaLayoutableShadowNode : public LayoutableShadowNode,
    * all the time.
    */
   mutable YGNode yogaNode_;
-
-  /*
-   * Forces associated YGNode to be a leaf.
-   * Adding a child `ShadowNode` will not add `YGNode` associated with it as a
-   * child to the stored `YGNode`.
-   */
-  bool const isLeaf_;
 
  private:
   static YGConfig &initializeYogaConfig(YGConfig &config);

@@ -14,7 +14,6 @@
 
 #include <better/small_vector.h>
 #include <react/core/LayoutMetrics.h>
-#include <react/core/Sealable.h>
 #include <react/core/ShadowNode.h>
 #include <react/debug/DebugStringConvertible.h>
 #include <react/graphics/Geometry.h>
@@ -30,8 +29,17 @@ struct LayoutContext;
  * Describes all sufficient layout API (in approach-agnostic way)
  * which makes a concurrent layout possible.
  */
-class LayoutableShadowNode : public virtual Sealable {
+class LayoutableShadowNode : public ShadowNode {
  public:
+  LayoutableShadowNode(
+      ShadowNodeFragment const &fragment,
+      ShadowNodeFamily::Shared const &family,
+      ShadowNodeTraits traits);
+
+  LayoutableShadowNode(
+      ShadowNode const &sourceShadowNode,
+      ShadowNodeFragment const &fragment);
+
   class LayoutInspectingPolicy final {
    public:
     bool includeTransform{true};
@@ -40,8 +48,6 @@ class LayoutableShadowNode : public virtual Sealable {
 
   using UnsharedList = better::
       small_vector<LayoutableShadowNode *, kShadowNodeChildrenSmallVectorSize>;
-
-  virtual ~LayoutableShadowNode() noexcept = default;
 
   /*
    * Measures the node (and node content, probably recursively) with
@@ -151,7 +157,7 @@ class LayoutableShadowNode : public virtual Sealable {
 #endif
 
  private:
-  LayoutMetrics layoutMetrics_{};
+  LayoutMetrics layoutMetrics_;
 };
 
 } // namespace react
