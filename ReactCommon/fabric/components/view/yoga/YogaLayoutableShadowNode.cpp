@@ -29,6 +29,9 @@ YogaLayoutableShadowNode::YogaLayoutableShadowNode(
       yogaConfig_(nullptr),
       yogaNode_(&initializeYogaConfig(yogaConfig_)) {
   yogaNode_.setContext(this);
+
+  setProps(dynamic_cast<YogaStylableProps const &>(*fragment.props));
+  setChildren(YogaLayoutableShadowNode::getYogaLayoutableChildren());
 }
 
 YogaLayoutableShadowNode::YogaLayoutableShadowNode(
@@ -47,6 +50,14 @@ YogaLayoutableShadowNode::YogaLayoutableShadowNode(
   assert(
       static_cast<YogaLayoutableShadowNode const &>(sourceShadowNode)
           .yogaNode_.isDirty() == yogaNode_.isDirty());
+
+  if (fragment.props) {
+    setProps(dynamic_cast<YogaStylableProps const &>(*fragment.props));
+  }
+
+  if (fragment.children) {
+    setChildren(YogaLayoutableShadowNode::getYogaLayoutableChildren());
+  }
 }
 
 void YogaLayoutableShadowNode::cleanLayout() {
@@ -165,7 +176,7 @@ void YogaLayoutableShadowNode::setChildren(
   yogaNode_.setDirty(!isClean);
 }
 
-void YogaLayoutableShadowNode::setProps(const YogaStylableProps &props) {
+void YogaLayoutableShadowNode::setProps(YogaStylableProps const &props) {
   ensureUnsealed();
 
   // Resetting `dirty` flag only if `yogaStyle` portion of `Props` was changed.

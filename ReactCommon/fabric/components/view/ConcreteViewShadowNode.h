@@ -54,31 +54,7 @@ class ConcreteViewShadowNode : public ConcreteShadowNode<
       Ts...>;
   using ConcreteViewProps = ViewPropsT;
 
-  ConcreteViewShadowNode(
-      ShadowNodeFragment const &fragment,
-      ShadowNodeFamily::Shared const &family,
-      ShadowNodeTraits traits)
-      : BaseShadowNode(fragment, family, traits) {
-    YogaLayoutableShadowNode::setProps(
-        *std::static_pointer_cast<const ConcreteViewProps>(fragment.props));
-    YogaLayoutableShadowNode::setChildren(
-        YogaLayoutableShadowNode::getYogaLayoutableChildren());
-  }
-
-  ConcreteViewShadowNode(
-      ShadowNode const &sourceShadowNode,
-      ShadowNodeFragment const &fragment)
-      : BaseShadowNode(sourceShadowNode, fragment) {
-    if (fragment.props) {
-      YogaLayoutableShadowNode::setProps(
-          *std::static_pointer_cast<const ConcreteViewProps>(fragment.props));
-    }
-
-    if (fragment.children) {
-      YogaLayoutableShadowNode::setChildren(
-          YogaLayoutableShadowNode::getYogaLayoutableChildren());
-    }
-  }
+  using BaseShadowNode::BaseShadowNode;
 
   static ShadowNodeTraits BaseTraits() {
     auto traits = BaseShadowNode::BaseTraits();
