@@ -617,10 +617,23 @@ jobs:
           echo "machine github.com login react-native-bot password $GITHUB_TOKEN" > ~/.netrc
       - run: node ./scripts/publish-npm.js
 
+  # -------------------------
+  #    JOBS: Nightly
+  # -------------------------
+  nightly_job:
+    machine: true
+    steps:
+      - run:
+          name: Nightly
+          command: |
+            echo "Nightly build run"
+
 # -------------------------
 #        WORK FLOWS
 # -------------------------
 workflows:
+  version: 2
+
   tests:
     jobs:
       - setup:
@@ -722,3 +735,14 @@ workflows:
       - js_coverage:
           requires:
             - setup
+
+  nightly:
+    triggers:
+      - schedule:
+          cron: "0 * * * *"
+          filters:
+            branches:
+              only:
+                - master
+    jobs:
+      - nightly_job
