@@ -94,6 +94,11 @@ RCT_EXPORT_METHOD(showMessage:(NSString *)message color:(UIColor *)color backgro
     self->_label.textColor = color;
     self->_window.backgroundColor = backgroundColor;
     self->_window.hidden = NO;
+
+    if (@available(iOS 13.0, *)) {
+      id scene = [[RCTSharedApplication() valueForKey:@"connectedScenes"] anyObject];
+      [self->_window setValue:scene forKey:@"windowScene"];
+    }
   });
 }
 
