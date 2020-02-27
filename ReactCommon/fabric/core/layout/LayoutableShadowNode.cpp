@@ -81,6 +81,12 @@ LayoutableShadowNode::LayoutableShadowNode(
       layoutMetrics_(static_cast<LayoutableShadowNode const &>(sourceShadowNode)
                          .layoutMetrics_) {}
 
+ShadowNodeTraits LayoutableShadowNode::BaseTraits() {
+  auto traits = ShadowNodeTraits{};
+  traits.set(ShadowNodeTraits::Trait::LayoutableKind);
+  return traits;
+}
+
 LayoutMetrics LayoutableShadowNode::getLayoutMetrics() const {
   return layoutMetrics_;
 }

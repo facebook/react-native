@@ -63,7 +63,7 @@ class ConcreteShadowNode : public BaseShadowNodeT {
    * Reimplement in subclasses to declare class-specific traits.
    */
   static ShadowNodeTraits BaseTraits() {
-    return ShadowNodeTraits{};
+    return BaseShadowNodeT::BaseTraits();
   }
 
   static SharedConcreteProps Props(

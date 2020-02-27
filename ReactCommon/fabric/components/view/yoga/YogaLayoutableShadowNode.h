@@ -28,6 +28,8 @@ class YogaLayoutableShadowNode : public LayoutableShadowNode {
       YogaLayoutableShadowNode *,
       kShadowNodeChildrenSmallVectorSize>;
 
+  static ShadowNodeTraits BaseTraits();
+
 #pragma mark - Constructors
 
   YogaLayoutableShadowNode(

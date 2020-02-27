@@ -41,6 +41,8 @@ class LayoutableShadowNode : public ShadowNode {
       ShadowNode const &sourceShadowNode,
       ShadowNodeFragment const &fragment);
 
+  static ShadowNodeTraits BaseTraits();
+
   class LayoutInspectingPolicy final {
    public:
     bool includeTransform{true};

@@ -58,8 +58,6 @@ class ConcreteViewShadowNode : public ConcreteShadowNode<
 
   static ShadowNodeTraits BaseTraits() {
     auto traits = BaseShadowNode::BaseTraits();
-    traits.set(ShadowNodeTraits::Trait::LayoutableKind);
-    traits.set(ShadowNodeTraits::Trait::YogaLayoutableKind);
     traits.set(ShadowNodeTraits::Trait::ViewKind);
     return traits;
   }

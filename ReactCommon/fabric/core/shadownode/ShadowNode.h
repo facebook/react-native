@@ -63,6 +63,14 @@ class ShadowNode : public Sealable, public DebugStringConvertible {
    */
   static bool sameFamily(const ShadowNode &first, const ShadowNode &second);
 
+  /*
+   * A set of traits associated with a particular class.
+   * Reimplement in subclasses to declare class-specific traits.
+   */
+  static ShadowNodeTraits BaseTraits() {
+    return ShadowNodeTraits{};
+  }
+
 #pragma mark - Constructors
 
   /*

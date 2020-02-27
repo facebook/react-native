@@ -21,6 +21,12 @@
 namespace facebook {
 namespace react {
 
+ShadowNodeTraits YogaLayoutableShadowNode::BaseTraits() {
+  auto traits = LayoutableShadowNode::BaseTraits();
+  traits.set(ShadowNodeTraits::Trait::YogaLayoutableKind);
+  return traits;
+}
+
 YogaLayoutableShadowNode::YogaLayoutableShadowNode(
     ShadowNodeFragment const &fragment,
     ShadowNodeFamily::Shared const &family,
