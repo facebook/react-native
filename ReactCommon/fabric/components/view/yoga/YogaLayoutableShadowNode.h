@@ -92,8 +92,6 @@ class YogaLayoutableShadowNode : public LayoutableShadowNode {
 
   YogaLayoutableShadowNode::UnsharedList getYogaLayoutableChildren() const;
 
-  LayoutableShadowNode::UnsharedList getLayoutableChildNodes() const override;
-
  protected:
   /*
    * Yoga config associated (only) with this particular node.

@@ -134,8 +134,7 @@ class LayoutableShadowNode : public ShadowNode {
   /*
    * Returns layoutable children to interate on.
    */
-  virtual LayoutableShadowNode::UnsharedList getLayoutableChildNodes()
-      const = 0;
+  LayoutableShadowNode::UnsharedList getLayoutableChildNodes() const;
 
   /*
    * Sets layout metrics for the shadow node.

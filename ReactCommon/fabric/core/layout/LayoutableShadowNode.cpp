@@ -136,6 +136,20 @@ LayoutMetrics LayoutableShadowNode::getRelativeLayoutMetrics(
   return calculateOffsetForLayoutMetrics(layoutMetrics, ancestors, policy);
 }
 
+LayoutableShadowNode::UnsharedList
+LayoutableShadowNode::getLayoutableChildNodes() const {
+  LayoutableShadowNode::UnsharedList layoutableChildren;
+  for (const auto &childShadowNode : getChildren()) {
+    auto layoutableChildShadowNode =
+        traitCast<LayoutableShadowNode const *>(childShadowNode.get());
+    if (layoutableChildShadowNode) {
+      layoutableChildren.push_back(
+          const_cast<LayoutableShadowNode *>(layoutableChildShadowNode));
+    }
+  }
+  return layoutableChildren;
+}
+
 Size LayoutableShadowNode::measure(LayoutConstraints layoutConstraints) const {
   return Size();
 }

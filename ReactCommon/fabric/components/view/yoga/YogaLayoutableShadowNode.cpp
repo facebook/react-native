@@ -263,20 +263,6 @@ void YogaLayoutableShadowNode::layoutChildren(LayoutContext layoutContext) {
   }
 }
 
-LayoutableShadowNode::UnsharedList
-YogaLayoutableShadowNode::getLayoutableChildNodes() const {
-  LayoutableShadowNode::UnsharedList yogaLayoutableChildNodes;
-  yogaLayoutableChildNodes.reserve(yogaNode_.getChildren().size());
-
-  for (const auto &childYogaNode : yogaNode_.getChildren()) {
-    auto childNode =
-        static_cast<YogaLayoutableShadowNode *>(childYogaNode->getContext());
-    yogaLayoutableChildNodes.push_back(childNode);
-  }
-
-  return yogaLayoutableChildNodes;
-}
-
 YogaLayoutableShadowNode &YogaLayoutableShadowNode::cloneAndReplaceChild(
     YogaLayoutableShadowNode &child,
     int suggestedIndex) {
