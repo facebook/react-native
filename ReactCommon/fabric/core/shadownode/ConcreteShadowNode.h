@@ -120,27 +120,6 @@ class ConcreteShadowNode : public BaseShadowNodeT {
     state_ = std::make_shared<ConcreteState const>(
         std::make_shared<ConcreteStateData const>(std::move(data)), *state_);
   }
-
-  /*
-   * Returns subset of children that are inherited from `SpecificShadowNodeT`.
-   */
-  template <typename SpecificShadowNodeT>
-  better::
-      small_vector<SpecificShadowNodeT *, kShadowNodeChildrenSmallVectorSize>
-      getChildrenSlice() const {
-    better::
-        small_vector<SpecificShadowNodeT *, kShadowNodeChildrenSmallVectorSize>
-            children;
-    for (auto const &childShadowNode : ShadowNode::getChildren()) {
-      auto specificChildShadowNode =
-          dynamic_cast<SpecificShadowNodeT const *>(childShadowNode.get());
-      if (specificChildShadowNode) {
-        children.push_back(
-            const_cast<SpecificShadowNodeT *>(specificChildShadowNode));
-      }
-    }
-    return children;
-  }
 };
 
 } // namespace react
