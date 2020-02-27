@@ -146,12 +146,14 @@ void UIManager::setNativeProps(
       shadowNode.getSurfaceId(), [&](ShadowTree const &shadowTree) {
         shadowTree.tryCommit(
             [&](RootShadowNode::Shared const &oldRootShadowNode) {
-              return oldRootShadowNode->clone(
-                  shadowNode.getFamily(), [&](ShadowNode const &oldShadowNode) {
-                    return oldShadowNode.clone({
-                        /* .props = */ props,
-                    });
-                  });
+              return std::static_pointer_cast<RootShadowNode>(
+                  oldRootShadowNode->cloneTree(
+                      shadowNode.getFamily(),
+                      [&](ShadowNode const &oldShadowNode) {
+                        return oldShadowNode.clone({
+                            /* .props = */ props,
+                        });
+                      }));
             },
             true && stateReconciliationEnabled_);
       });
@@ -197,7 +199,8 @@ void UIManager::updateState(StateUpdate const &stateUpdate) const {
       family->getSurfaceId(), [&](ShadowTree const &shadowTree) {
         shadowTree.tryCommit([&](RootShadowNode::Shared const
                                      &oldRootShadowNode) {
-          return oldRootShadowNode->clone(
+          return std::static_pointer_cast<
+              RootShadowNode>(oldRootShadowNode->cloneTree(
               *family, [&](ShadowNode const &oldShadowNode) {
                 auto newData =
                     callback(oldShadowNode.getState()->getDataPointer());
@@ -209,7 +212,7 @@ void UIManager::updateState(StateUpdate const &stateUpdate) const {
                     /* .children = */ ShadowNodeFragment::childrenPlaceholder(),
                     /* .state = */ newState,
                 });
-              });
+              }));
         });
       });
 }

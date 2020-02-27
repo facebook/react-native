@@ -78,13 +78,15 @@ TEST(ElementTest, testYogaDirtyFlag) {
     /*
      * Cloning props without changing them must *not* dirty Yoga nodes.
      */
-    auto newRootShadowNode = rootShadowNode->clone(
-        innerShadowNode->getFamily(), [](ShadowNode const &oldShadowNode) {
-          auto &componentDescriptor = oldShadowNode.getComponentDescriptor();
-          auto props = componentDescriptor.cloneProps(
-              oldShadowNode.getProps(), RawProps());
-          return oldShadowNode.clone(ShadowNodeFragment{props});
-        });
+    auto newRootShadowNode =
+        std::static_pointer_cast<RootShadowNode>(rootShadowNode->cloneTree(
+            innerShadowNode->getFamily(), [](ShadowNode const &oldShadowNode) {
+              auto &componentDescriptor =
+                  oldShadowNode.getComponentDescriptor();
+              auto props = componentDescriptor.cloneProps(
+                  oldShadowNode.getProps(), RawProps());
+              return oldShadowNode.clone(ShadowNodeFragment{props});
+            }));
 
     EXPECT_FALSE(newRootShadowNode->layoutIfNeeded());
   }
@@ -93,21 +95,22 @@ TEST(ElementTest, testYogaDirtyFlag) {
     /*
      * Changing *non-layout* sub-props must *not* dirty Yoga nodes.
      */
-    auto newRootShadowNode = rootShadowNode->clone(
-        innerShadowNode->getFamily(), [](ShadowNode const &oldShadowNode) {
-          auto viewProps = std::make_shared<ViewProps>();
-          auto &props = *viewProps;
+    auto newRootShadowNode =
+        std::static_pointer_cast<RootShadowNode>(rootShadowNode->cloneTree(
+            innerShadowNode->getFamily(), [](ShadowNode const &oldShadowNode) {
+              auto viewProps = std::make_shared<ViewProps>();
+              auto &props = *viewProps;
 
-          props.nativeId = "some new native Id";
-          props.foregroundColor = whiteColor();
-          props.backgroundColor = blackColor();
-          props.opacity = props.opacity + 0.042;
-          props.zIndex = props.zIndex + 42;
-          props.shouldRasterize = !props.shouldRasterize;
-          props.collapsable = !props.collapsable;
+              props.nativeId = "some new native Id";
+              props.foregroundColor = whiteColor();
+              props.backgroundColor = blackColor();
+              props.opacity = props.opacity + 0.042;
+              props.zIndex = props.zIndex + 42;
+              props.shouldRasterize = !props.shouldRasterize;
+              props.collapsable = !props.collapsable;
 
-          return oldShadowNode.clone(ShadowNodeFragment{viewProps});
-        });
+              return oldShadowNode.clone(ShadowNodeFragment{viewProps});
+            }));
 
     EXPECT_FALSE(newRootShadowNode->layoutIfNeeded());
   }
@@ -116,16 +119,17 @@ TEST(ElementTest, testYogaDirtyFlag) {
     /*
      * Changing *layout* sub-props *must* dirty Yoga nodes.
      */
-    auto newRootShadowNode = rootShadowNode->clone(
-        innerShadowNode->getFamily(), [](ShadowNode const &oldShadowNode) {
-          auto viewProps = std::make_shared<ViewProps>();
-          auto &props = *viewProps;
+    auto newRootShadowNode =
+        std::static_pointer_cast<RootShadowNode>(rootShadowNode->cloneTree(
+            innerShadowNode->getFamily(), [](ShadowNode const &oldShadowNode) {
+              auto viewProps = std::make_shared<ViewProps>();
+              auto &props = *viewProps;
 
-          props.yogaStyle.alignContent() = YGAlignBaseline;
-          props.yogaStyle.display() = YGDisplayNone;
+              props.yogaStyle.alignContent() = YGAlignBaseline;
+              props.yogaStyle.display() = YGDisplayNone;
 
-          return oldShadowNode.clone(ShadowNodeFragment{viewProps});
-        });
+              return oldShadowNode.clone(ShadowNodeFragment{viewProps});
+            }));
 
     EXPECT_TRUE(newRootShadowNode->layoutIfNeeded());
   }
@@ -134,12 +138,13 @@ TEST(ElementTest, testYogaDirtyFlag) {
     /*
      * Removing all children *must* dirty Yoga nodes.
      */
-    auto newRootShadowNode = rootShadowNode->clone(
-        innerShadowNode->getFamily(), [](ShadowNode const &oldShadowNode) {
-          return oldShadowNode.clone(
-              {ShadowNodeFragment::propsPlaceholder(),
-               ShadowNode::emptySharedShadowNodeSharedList()});
-        });
+    auto newRootShadowNode =
+        std::static_pointer_cast<RootShadowNode>(rootShadowNode->cloneTree(
+            innerShadowNode->getFamily(), [](ShadowNode const &oldShadowNode) {
+              return oldShadowNode.clone(
+                  {ShadowNodeFragment::propsPlaceholder(),
+                   ShadowNode::emptySharedShadowNodeSharedList()});
+            }));
 
     EXPECT_TRUE(newRootShadowNode->layoutIfNeeded());
   }
@@ -148,17 +153,18 @@ TEST(ElementTest, testYogaDirtyFlag) {
     /*
      * Removing the last child *must* dirty Yoga nodes.
      */
-    auto newRootShadowNode = rootShadowNode->clone(
-        innerShadowNode->getFamily(), [](ShadowNode const &oldShadowNode) {
-          auto children = oldShadowNode.getChildren();
-          children.pop_back();
+    auto newRootShadowNode =
+        std::static_pointer_cast<RootShadowNode>(rootShadowNode->cloneTree(
+            innerShadowNode->getFamily(), [](ShadowNode const &oldShadowNode) {
+              auto children = oldShadowNode.getChildren();
+              children.pop_back();
 
-          std::reverse(children.begin(), children.end());
+              std::reverse(children.begin(), children.end());
 
-          return oldShadowNode.clone(
-              {ShadowNodeFragment::propsPlaceholder(),
-               std::make_shared<ShadowNode::ListOfShared const>(children)});
-        });
+              return oldShadowNode.clone(
+                  {ShadowNodeFragment::propsPlaceholder(),
+                   std::make_shared<ShadowNode::ListOfShared const>(children)});
+            }));
 
     EXPECT_TRUE(newRootShadowNode->layoutIfNeeded());
   }
@@ -167,16 +173,17 @@ TEST(ElementTest, testYogaDirtyFlag) {
     /*
      * Reversing a list of children *must* dirty Yoga nodes.
      */
-    auto newRootShadowNode = rootShadowNode->clone(
-        innerShadowNode->getFamily(), [](ShadowNode const &oldShadowNode) {
-          auto children = oldShadowNode.getChildren();
+    auto newRootShadowNode =
+        std::static_pointer_cast<RootShadowNode>(rootShadowNode->cloneTree(
+            innerShadowNode->getFamily(), [](ShadowNode const &oldShadowNode) {
+              auto children = oldShadowNode.getChildren();
 
-          std::reverse(children.begin(), children.end());
+              std::reverse(children.begin(), children.end());
 
-          return oldShadowNode.clone(
-              {ShadowNodeFragment::propsPlaceholder(),
-               std::make_shared<ShadowNode::ListOfShared const>(children)});
-        });
+              return oldShadowNode.clone(
+                  {ShadowNodeFragment::propsPlaceholder(),
+                   std::make_shared<ShadowNode::ListOfShared const>(children)});
+            }));
 
     EXPECT_TRUE(newRootShadowNode->layoutIfNeeded());
   }

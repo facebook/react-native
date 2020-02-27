@@ -97,6 +97,18 @@ class ShadowNode : public Sealable, public DebugStringConvertible {
    */
   UnsharedShadowNode clone(const ShadowNodeFragment &fragment) const;
 
+  /*
+   * Clones the node (and partially the tree starting from the node) by
+   * replacing a `oldShadowNode` (which corresponds to a given
+   * `shadowNodeFamily`) with a node that `callback` returns.
+   *
+   * Returns `nullptr` if the operation cannot be performed successfully.
+   */
+  ShadowNode::Unshared cloneTree(
+      ShadowNodeFamily const &shadowNodeFamily,
+      std::function<ShadowNode::Unshared(ShadowNode const &oldShadowNode)>
+          callback) const;
+
 #pragma mark - Getters
 
   ComponentName getComponentName() const;
