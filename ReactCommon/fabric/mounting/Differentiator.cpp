@@ -83,11 +83,13 @@ static void sliceChildShadowNodeViewPairsRecursively(
     ShadowViewNodePair::List &pairList,
     Point layoutOffset,
     ShadowNode const &shadowNode) {
-  for (auto const &childShadowNode : shadowNode.getChildren()) {
-    auto shadowView = ShadowView(*childShadowNode);
+  for (auto const &sharedChildShadowNode : shadowNode.getChildren()) {
+    auto &childShadowNode = *sharedChildShadowNode;
+    auto shadowView = ShadowView(childShadowNode);
 
-    auto const layoutableShadowNode =
-        dynamic_cast<LayoutableShadowNode const *>(childShadowNode.get());
+    auto layoutableShadowNode =
+        traitCast<LayoutableShadowNode const *>(&childShadowNode);
+
 #ifndef ANDROID
     // New approach (iOS):
     // Non-view components are treated as layout-only views (they aren't
@@ -102,10 +104,10 @@ static void sliceChildShadowNodeViewPairsRecursively(
       sliceChildShadowNodeViewPairsRecursively(
           pairList,
           layoutOffset + shadowView.layoutMetrics.frame.origin,
-          *childShadowNode);
+          childShadowNode);
     } else {
       shadowView.layoutMetrics.frame.origin += layoutOffset;
-      pairList.push_back({shadowView, childShadowNode.get()});
+      pairList.push_back({shadowView, &childShadowNode});
     }
   }
 }
