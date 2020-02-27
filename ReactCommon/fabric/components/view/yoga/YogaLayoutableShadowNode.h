@@ -80,7 +80,9 @@ class YogaLayoutableShadowNode : public LayoutableShadowNode {
    * Computes layout using Yoga layout engine.
    * See `LayoutableShadowNode` for more details.
    */
-  void layout(LayoutContext layoutContext) override;
+  void layoutTree(
+      LayoutContext layoutContext,
+      LayoutConstraints layoutConstraints) override;
 
   void layoutChildren(LayoutContext layoutContext) override;
 

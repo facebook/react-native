@@ -28,14 +28,7 @@ bool RootShadowNode::layoutIfNeeded(
   auto layoutContext = getConcreteProps().layoutContext;
   layoutContext.affectedNodes = affectedNodes;
 
-  layout(layoutContext);
-
-  // This is the rare place where shadow node must layout (set `layoutMetrics`)
-  // itself because there is no a parent node which usually should do it.
-  if (getHasNewLayout()) {
-    setLayoutMetrics(layoutMetricsFromYogaNode(yogaNode_));
-    setHasNewLayout(false);
-  }
+  layoutTree(layoutContext, getConcreteProps().layoutConstraints);
 
   return true;
 }

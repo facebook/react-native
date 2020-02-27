@@ -53,6 +53,15 @@ class LayoutableShadowNode : public ShadowNode {
       small_vector<LayoutableShadowNode *, kShadowNodeChildrenSmallVectorSize>;
 
   /*
+   * Performs layout of the tree starting from this node. Usually is being
+   * called on the root node.
+   * Default implementation does nothing.
+   */
+  virtual void layoutTree(
+      LayoutContext layoutContext,
+      LayoutConstraints layoutConstraints);
+
+  /*
    * Measures the node (and node content, probably recursively) with
    * given constrains and relying on possible layout.
    * Default implementation returns zero size.

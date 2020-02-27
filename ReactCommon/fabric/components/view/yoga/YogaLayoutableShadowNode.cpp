@@ -221,30 +221,39 @@ void YogaLayoutableShadowNode::setPositionType(
   yogaNode_.setDirty(true);
 }
 
-void YogaLayoutableShadowNode::layout(LayoutContext layoutContext) {
-  if (!getIsLayoutClean()) {
-    ensureUnsealed();
+void YogaLayoutableShadowNode::layoutTree(
+    LayoutContext layoutContext,
+    LayoutConstraints layoutConstraints) {
+  ensureUnsealed();
 
-    /*
-     * In Yoga, every single Yoga Node has to have a (non-null) pointer to
-     * Yoga Config (this config can be shared between many nodes),
-     * so every node can be individually configured. This does *not* mean
-     * however that Yoga consults with every single Yoga Node Config for every
-     * config parameter. Especially in case of `pointScaleFactor`,
-     * the only value in the config of the root node is taken into account
-     * (and this is by design).
-     */
-    yogaConfig_.pointScaleFactor = layoutContext.pointScaleFactor;
+  /*
+   * In Yoga, every single Yoga Node has to have a (non-null) pointer to
+   * Yoga Config (this config can be shared between many nodes),
+   * so every node can be individually configured. This does *not* mean
+   * however that Yoga consults with every single Yoga Node Config for every
+   * config parameter. Especially in case of `pointScaleFactor`,
+   * the only value in the config of the root node is taken into account
+   * (and this is by design).
+   */
+  yogaConfig_.pointScaleFactor = layoutContext.pointScaleFactor;
 
-    {
-      SystraceSection s("YogaLayoutableShadowNode::YGNodeCalculateLayout");
+  auto maximumSize = layoutConstraints.maximumSize;
+  auto availableWidth = yogaFloatFromFloat(maximumSize.width);
+  auto availableHeight = yogaFloatFromFloat(maximumSize.height);
 
-      YGNodeCalculateLayout(
-          &yogaNode_, YGUndefined, YGUndefined, YGDirectionInherit);
-    }
+  {
+    SystraceSection s("YogaLayoutableShadowNode::YGNodeCalculateLayout");
+
+    YGNodeCalculateLayout(
+        &yogaNode_, availableWidth, availableHeight, YGDirectionInherit);
   }
 
-  LayoutableShadowNode::layout(layoutContext);
+  layout(layoutContext);
+
+  if (getHasNewLayout()) {
+    setLayoutMetrics(layoutMetricsFromYogaNode(yogaNode_));
+    setHasNewLayout(false);
+  }
 }
 
 void YogaLayoutableShadowNode::layoutChildren(LayoutContext layoutContext) {

@@ -168,6 +168,12 @@ Float LayoutableShadowNode::lastBaseline(Size size) const {
   return 0;
 }
 
+void LayoutableShadowNode::layoutTree(
+    LayoutContext layoutContext,
+    LayoutConstraints layoutConstraints) {
+  // Default implementation does nothing.
+}
+
 void LayoutableShadowNode::layout(LayoutContext layoutContext) {
   layoutChildren(layoutContext);
 
