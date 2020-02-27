@@ -153,7 +153,7 @@ public class DisabledDevSupportManager implements DevSupportManager {
 
   @Override
   public void setPackagerLocationCustomizer(
-      PackagerLocationCustomizer packagerLocationCustomizer) {}
+      DevSupportManager.PackagerLocationCustomizer packagerLocationCustomizer) {}
 
   @Override
   public void handleException(Exception e) {

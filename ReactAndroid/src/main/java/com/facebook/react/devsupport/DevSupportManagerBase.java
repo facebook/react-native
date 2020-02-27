@@ -1227,7 +1227,8 @@ public abstract class DevSupportManagerBase
   }
 
   @Override
-  public void setPackagerLocationCustomizer(PackagerLocationCustomizer packagerLocationCustomizer) {
+  public void setPackagerLocationCustomizer(
+      DevSupportManager.PackagerLocationCustomizer packagerLocationCustomizer) {
     mPackagerLocationCustomizer = packagerLocationCustomizer;
   }
 }
