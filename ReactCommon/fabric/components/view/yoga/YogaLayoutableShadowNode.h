@@ -124,5 +124,32 @@ class YogaLayoutableShadowNode : public LayoutableShadowNode {
       YGMeasureMode heightMode);
 };
 
+template <>
+inline YogaLayoutableShadowNode const &
+traitCast<YogaLayoutableShadowNode const &>(ShadowNode const &shadowNode) {
+  bool castable =
+      shadowNode.getTraits().check(ShadowNodeTraits::Trait::YogaLayoutableKind);
+  assert(
+      castable ==
+      (dynamic_cast<YogaLayoutableShadowNode const *>(&shadowNode) != nullptr));
+  assert(castable);
+  (void)castable;
+  return static_cast<YogaLayoutableShadowNode const &>(shadowNode);
+}
+
+template <>
+inline YogaLayoutableShadowNode const *
+traitCast<YogaLayoutableShadowNode const *>(ShadowNode const *shadowNode) {
+  bool castable = shadowNode->getTraits().check(
+      ShadowNodeTraits::Trait::YogaLayoutableKind);
+  assert(
+      castable ==
+      (dynamic_cast<YogaLayoutableShadowNode const *>(shadowNode) != nullptr));
+  if (!castable) {
+    return nullptr;
+  }
+  return static_cast<YogaLayoutableShadowNode const *>(shadowNode);
+}
+
 } // namespace react
 } // namespace facebook

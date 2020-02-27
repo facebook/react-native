@@ -160,5 +160,32 @@ class LayoutableShadowNode : public ShadowNode {
   LayoutMetrics layoutMetrics_;
 };
 
+template <>
+inline LayoutableShadowNode const &traitCast<LayoutableShadowNode const &>(
+    ShadowNode const &shadowNode) {
+  bool castable =
+      shadowNode.getTraits().check(ShadowNodeTraits::Trait::LayoutableKind);
+  assert(
+      castable ==
+      (dynamic_cast<LayoutableShadowNode const *>(&shadowNode) != nullptr));
+  assert(castable);
+  (void)castable;
+  return static_cast<LayoutableShadowNode const &>(shadowNode);
+}
+
+template <>
+inline LayoutableShadowNode const *traitCast<LayoutableShadowNode const *>(
+    ShadowNode const *shadowNode) {
+  bool castable =
+      shadowNode->getTraits().check(ShadowNodeTraits::Trait::LayoutableKind);
+  assert(
+      castable ==
+      (dynamic_cast<LayoutableShadowNode const *>(shadowNode) != nullptr));
+  if (!castable) {
+    return nullptr;
+  }
+  return static_cast<LayoutableShadowNode const *>(shadowNode);
+}
+
 } // namespace react
 } // namespace facebook

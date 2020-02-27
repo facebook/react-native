@@ -15,6 +15,9 @@ class LayoutableShadowNodeTest : public ::testing::Test {
   LayoutableShadowNodeTest()
       : eventDispatcher_(std::shared_ptr<EventDispatcher const>()),
         componentDescriptor_(TestComponentDescriptor({eventDispatcher_})) {
+
+    auto traits = TestShadowNode::BaseTraits();
+
     auto familyA = std::make_shared<ShadowNodeFamily>(
         ShadowNodeFamilyFragment{
             /* .tag = */ 9,
@@ -30,7 +33,7 @@ class LayoutableShadowNodeTest : public ::testing::Test {
             /* .children = */ ShadowNode::emptySharedShadowNodeSharedList(),
         },
         familyA,
-        ShadowNodeTraits{});
+        traits);
 
     auto familyAA = std::make_shared<ShadowNodeFamily>(
         ShadowNodeFamilyFragment{
@@ -41,8 +44,8 @@ class LayoutableShadowNodeTest : public ::testing::Test {
         eventDispatcher_,
         componentDescriptor_);
 
-    auto traits = TestShadowNode::BaseTraits();
-    traits.set(ShadowNodeTraits::Trait::RootNodeKind);
+    auto rootTraits = traits;
+    rootTraits.set(ShadowNodeTraits::Trait::RootNodeKind);
 
     nodeAA_ = std::make_shared<TestShadowNode>(
         ShadowNodeFragment{
@@ -50,7 +53,7 @@ class LayoutableShadowNodeTest : public ::testing::Test {
             /* .children = */ ShadowNode::emptySharedShadowNodeSharedList(),
         },
         familyAA,
-        traits);
+        rootTraits);
 
     auto familyAAA = std::make_shared<ShadowNodeFamily>(
         ShadowNodeFamilyFragment{
@@ -67,7 +70,7 @@ class LayoutableShadowNodeTest : public ::testing::Test {
             /* .children = */ ShadowNode::emptySharedShadowNodeSharedList(),
         },
         familyAAA,
-        ShadowNodeTraits{});
+        traits);
 
     nodeA_->appendChild(nodeAA_);
     nodeAA_->appendChild(nodeAAA_);
