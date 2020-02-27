@@ -18,7 +18,6 @@ namespace react {
 class YogaStylableProps {
  public:
   YogaStylableProps() = default;
-  YogaStylableProps(YGStyle const &yogaStyle);
   YogaStylableProps(
       YogaStylableProps const &sourceProps,
       RawProps const &rawProps);

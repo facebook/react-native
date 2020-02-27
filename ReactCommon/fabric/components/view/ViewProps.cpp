@@ -18,8 +18,6 @@
 namespace facebook {
 namespace react {
 
-ViewProps::ViewProps(YGStyle const &yogaStyle) : YogaStylableProps(yogaStyle) {}
-
 ViewProps::ViewProps(ViewProps const &sourceProps, RawProps const &rawProps)
     : Props(sourceProps, rawProps),
       YogaStylableProps(sourceProps, rawProps),

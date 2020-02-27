@@ -28,7 +28,6 @@ class ViewProps : public Props,
                   public AccessibilityProps {
  public:
   ViewProps() = default;
-  ViewProps(YGStyle const &yogaStyle);
   ViewProps(ViewProps const &sourceProps, RawProps const &rawProps);
 
 #pragma mark - Props

@@ -19,9 +19,6 @@
 namespace facebook {
 namespace react {
 
-YogaStylableProps::YogaStylableProps(YGStyle const &yogaStyle)
-    : yogaStyle(yogaStyle) {}
-
 YogaStylableProps::YogaStylableProps(
     YogaStylableProps const &sourceProps,
     RawProps const &rawProps)
