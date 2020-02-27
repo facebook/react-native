@@ -30,18 +30,65 @@ if (!GITHUB_TOKEN || !GITHUB_OWNER || !GITHUB_REPO || !GITHUB_PR_NUMBER) {
   process.exit(1);
 }
 
-const {[2]: body} = process.argv;
-if (!body) {
-  process.exit(0);
+async function updateComment(octokit, issueParams, body, replacePattern) {
+  if (!replacePattern) {
+    return false;
+  }
+
+  const authenticatedUser = await octokit.users.getAuthenticated();
+  if (authenticatedUser.status !== 200 || !authenticatedUser.data) {
+    console.warn(authenticatedUser);
+    return false;
+  }
+
+  const comments = await octokit.issues.listComments(issueParams);
+  if (comments.status !== 200 || !comments.data) {
+    console.warn(comments);
+    return false;
+  }
+
+  const authedUserId = authenticatedUser.data.id;
+  const pattern = new RegExp(replacePattern, 'g');
+  const comment = comments.data.find(
+    ({user, body}) => user.id === authedUserId && pattern.test(body),
+  );
+  if (!comment) {
+    return false;
+  }
+
+  octokit.issues.updateComment({
+    ...issueParams,
+    comment_id: comment.id,
+    body,
+  });
+  return true;
 }
 
-const {Octokit} = require('@octokit/rest');
-const octokit = new Octokit({
-  auth: GITHUB_TOKEN,
-});
-octokit.issues.createComment({
-  owner: GITHUB_OWNER,
-  repo: GITHUB_REPO,
-  issue_number: GITHUB_PR_NUMBER,
-  body,
-});
+async function main(body, replacePattern) {
+  if (!body) {
+    return;
+  }
+
+  const {Octokit} = require('@octokit/rest');
+  const octokit = new Octokit({auth: GITHUB_TOKEN});
+
+  const issueParams = {
+    owner: GITHUB_OWNER,
+    repo: GITHUB_REPO,
+    issue_number: GITHUB_PR_NUMBER,
+  };
+
+  if (await updateComment(octokit, issueParams, body, replacePattern)) {
+    return;
+  }
+
+  // We found no comments to replace, so we'll create a new one.
+
+  octokit.issues.createComment({
+    ...issueParams,
+    body,
+  });
+}
+
+const {[2]: body, [3]: replacePattern} = process.argv;
+main(body, replacePattern);
