@@ -19,7 +19,7 @@ class HermesExecutorFactory : public JSExecutorFactory {
  public:
   explicit HermesExecutorFactory(
       JSIExecutor::RuntimeInstaller runtimeInstaller,
-      const JSIScopedTimeoutInvoker& timeoutInvoker =
+      const JSIScopedTimeoutInvoker &timeoutInvoker =
           JSIExecutor::defaultTimeoutInvoker,
       ::hermes::vm::RuntimeConfig runtimeConfig = ::hermes::vm::RuntimeConfig())
       : runtimeInstaller_(runtimeInstaller),
@@ -44,7 +44,7 @@ class HermesExecutor : public JSIExecutor {
       std::shared_ptr<jsi::Runtime> runtime,
       std::shared_ptr<ExecutorDelegate> delegate,
       std::shared_ptr<MessageQueueThread> jsQueue,
-      const JSIScopedTimeoutInvoker& timeoutInvoker,
+      const JSIScopedTimeoutInvoker &timeoutInvoker,
       RuntimeInstaller runtimeInstaller);
 
  private:

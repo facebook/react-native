@@ -62,13 +62,10 @@ inline static int64_t monotonicTimeInMilliseconds() {
 
 #else
 
-  It's Unix *without* MONOTONIC_CLOCK support or Microsoft Windows. If you
-      run this on Microsoft Windows,
-      could you please implement the function using some Windows -
-      specific APIs,
-      and submit a PR
-      ? https
-      : // stackoverflow.com/questions/5404277/porting-clock-gettime-to-windows
+  // It's Unix *without* MONOTONIC_CLOCK support or Microsoft Windows.
+  // If you run this on Microsoft Windows, could you please implement the
+  // function using some Windows-specific APIs, and submit a PR?
+  // https://stackoverflow.com/questions/5404277/porting-clock-gettime-to-windows
 
 #endif
 }
