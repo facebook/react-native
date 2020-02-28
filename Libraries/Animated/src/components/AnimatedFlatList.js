@@ -13,8 +13,9 @@
 import * as React from 'react';
 
 const FlatList = require('../../../Lists/FlatList');
-
 const createAnimatedComponent = require('../createAnimatedComponent');
+
+import type {AnimatedComponentType} from '../createAnimatedComponent';
 
 /**
  * @see https://github.com/facebook/react-native/commit/b8c8562
@@ -25,4 +26,7 @@ const FlatListWithEventThrottle = React.forwardRef((props, ref) => (
 
 module.exports = (createAnimatedComponent(
   FlatListWithEventThrottle,
-): $FlowFixMe);
+): AnimatedComponentType<
+  React.ElementConfig<typeof FlatList>,
+  React.ElementRef<typeof FlatList>,
+>);
