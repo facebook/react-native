@@ -61,9 +61,10 @@ YogaLayoutableShadowNode::YogaLayoutableShadowNode(
     updateYogaProps();
   }
 
-  if (fragment.children) {
-    updateYogaChildren();
-  }
+  // Yoga children have `yogaNode_` set as owner. At this point that yogaNode_
+  // is from previous `YogaLayoutableShadowNode` that is being cloned here.
+  // Calling `updateYogaChildren` is needed in order to update owner of children.
+  updateYogaChildren();
 }
 
 void YogaLayoutableShadowNode::cleanLayout() {
