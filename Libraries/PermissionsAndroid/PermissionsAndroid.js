@@ -216,14 +216,20 @@ class PermissionsAndroid {
           const options = {
             ...rationale,
           };
+          const constants = NativeDialogManagerAndroid.getConstants();
           NativeDialogManagerAndroid.showAlert(
             /* $FlowFixMe(>=0.111.0 site=react_native_fb) This comment
              * suppresses an error found when Flow v0.111 was deployed. To see
              * the error, delete this comment and run Flow. */
             options,
             () => reject(new Error('Error showing rationale')),
-            () =>
-              resolve(NativePermissionsAndroid.requestPermission(permission)),
+            (action, buttonKey) => {
+              if (action === constants.buttonClicked && buttonKey === constants.buttonPositive) {
+                resolve(NativePermissionsAndroid.requestPermission(permission));
+              } else {
+                resolve(this.RESULTS.DENIED);
+              }
+            },
           );
         });
       }
