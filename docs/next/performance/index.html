@@ -314,7 +314,7 @@ export <span class="hljs-keyword">default</span> <span class="hljs-class"><span 
 );
 
 <span class="hljs-comment">// grab this text blob, and put it in a file named packager/modulePaths.js</span>
-<span class="hljs-built_in">console</span>.log(<span class="hljs-string">`module.exports = <span class="hljs-subst">${<span class="hljs-built_in">JSON</span>.stringify(loadedModuleNames.sort())}</span>;`</span>);
+<span class="hljs-built_in">console</span>.log(<span class="hljs-string">`module.exports = <span class="hljs-subst">${<span class="hljs-built_in">JSON</span>.stringify(loadedModuleNames.sort(), <span class="hljs-literal">null</span>, <span class="hljs-number">2</span>)}</span>;`</span>);
 </code></pre>
 <p>When you run your app, you can look in the console and see how many modules have been loaded, and how many are waiting. You may want to read the moduleNames and see if there are any surprises. Note that inline requires are invoked the first time the imports are referenced. You may need to investigate and refactor to ensure only the modules you want are loaded on startup. Note that you can change the Systrace object on require to help debug problematic requires.</p>
 <pre><code class="hljs"><span class="hljs-built_in">require</span>.Systrace.beginEvent = <span class="hljs-function"><span class="hljs-params">(message)</span> =&gt;</span> {
