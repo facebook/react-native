@@ -41,6 +41,7 @@ using namespace facebook::react;
     _backedTextInputView = props.traits.multiline ? [[RCTUITextView alloc] init] : [[RCTUITextField alloc] init];
     _backedTextInputView.frame = self.bounds;
     _backedTextInputView.textInputDelegate = self;
+    _stateRevision = State::initialRevisionValue;
     [self addSubview:_backedTextInputView];
   }
 
@@ -188,7 +189,7 @@ using namespace facebook::react;
   [super prepareForRecycle];
   _backedTextInputView.attributedText = [[NSAttributedString alloc] init];
   _state.reset();
-  _stateRevision = 0;
+  _stateRevision = State::initialRevisionValue;
 }
 
 #pragma mark - RCTComponentViewProtocol

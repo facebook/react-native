@@ -16,7 +16,6 @@ import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReactModuleWithSpec;
-import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.turbomodule.core.interfaces.TurboModule;
 
 public abstract class NativeDevLoadingViewSpec extends ReactContextBaseJavaModule implements ReactModuleWithSpec, TurboModule {
@@ -28,5 +27,5 @@ public abstract class NativeDevLoadingViewSpec extends ReactContextBaseJavaModul
   public abstract void hide();
 
   @ReactMethod
-  public abstract void showMessage(String message, ReadableMap color, ReadableMap backgroundColor);
+  public abstract void showMessage(String message, Double withColor, Double withBackgroundColor);
 }

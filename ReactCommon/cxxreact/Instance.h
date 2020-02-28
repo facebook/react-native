@@ -37,54 +37,67 @@ struct InstanceCallback {
 };
 
 class RN_EXPORT Instance {
-public:
+ public:
   ~Instance();
-  void initializeBridge(std::unique_ptr<InstanceCallback> callback,
-                        std::shared_ptr<JSExecutorFactory> jsef,
-                        std::shared_ptr<MessageQueueThread> jsQueue,
-                        std::shared_ptr<ModuleRegistry> moduleRegistry);
+  void initializeBridge(
+      std::unique_ptr<InstanceCallback> callback,
+      std::shared_ptr<JSExecutorFactory> jsef,
+      std::shared_ptr<MessageQueueThread> jsQueue,
+      std::shared_ptr<ModuleRegistry> moduleRegistry);
 
   void setSourceURL(std::string sourceURL);
 
-  void loadScriptFromString(std::unique_ptr<const JSBigString> string,
-                            std::string sourceURL, bool loadSynchronously);
+  void loadScriptFromString(
+      std::unique_ptr<const JSBigString> string,
+      std::string sourceURL,
+      bool loadSynchronously);
   static bool isIndexedRAMBundle(const char *sourcePath);
-  static bool isIndexedRAMBundle(std::unique_ptr<const JSBigString>* string);
-  void loadRAMBundleFromString(std::unique_ptr<const JSBigString> script, const std::string& sourceURL);
-  void loadRAMBundleFromFile(const std::string& sourcePath,
-                             const std::string& sourceURL,
-                             bool loadSynchronously);
-  void loadRAMBundle(std::unique_ptr<RAMBundleRegistry> bundleRegistry,
-                     std::unique_ptr<const JSBigString> startupScript,
-                     std::string startupScriptSourceURL, bool loadSynchronously);
+  static bool isIndexedRAMBundle(std::unique_ptr<const JSBigString> *string);
+  void loadRAMBundleFromString(
+      std::unique_ptr<const JSBigString> script,
+      const std::string &sourceURL);
+  void loadRAMBundleFromFile(
+      const std::string &sourcePath,
+      const std::string &sourceURL,
+      bool loadSynchronously);
+  void loadRAMBundle(
+      std::unique_ptr<RAMBundleRegistry> bundleRegistry,
+      std::unique_ptr<const JSBigString> startupScript,
+      std::string startupScriptSourceURL,
+      bool loadSynchronously);
   bool supportsProfiling();
-  void setGlobalVariable(std::string propName,
-                         std::unique_ptr<const JSBigString> jsonValue);
+  void setGlobalVariable(
+      std::string propName,
+      std::unique_ptr<const JSBigString> jsonValue);
   void *getJavaScriptContext();
   bool isInspectable();
   bool isBatchActive();
-  void callJSFunction(std::string &&module, std::string &&method,
-                      folly::dynamic &&params);
+  void callJSFunction(
+      std::string &&module,
+      std::string &&method,
+      folly::dynamic &&params);
   void callJSCallback(uint64_t callbackId, folly::dynamic &&params);
 
   // This method is experimental, and may be modified or removed.
-  void registerBundle(uint32_t bundleId, const std::string& bundlePath);
+  void registerBundle(uint32_t bundleId, const std::string &bundlePath);
 
   const ModuleRegistry &getModuleRegistry() const;
   ModuleRegistry &getModuleRegistry();
 
   void handleMemoryPressure(int pressureLevel);
 
-  void invokeAsync(std::function<void()>&& func);
+  void invokeAsync(std::function<void()> &&func);
 
-private:
+ private:
   void callNativeModules(folly::dynamic &&calls, bool isEndOfBatch);
-  void loadApplication(std::unique_ptr<RAMBundleRegistry> bundleRegistry,
-                       std::unique_ptr<const JSBigString> startupScript,
-                       std::string startupScriptSourceURL);
-  void loadApplicationSync(std::unique_ptr<RAMBundleRegistry> bundleRegistry,
-                           std::unique_ptr<const JSBigString> startupScript,
-                           std::string startupScriptSourceURL);
+  void loadApplication(
+      std::unique_ptr<RAMBundleRegistry> bundleRegistry,
+      std::unique_ptr<const JSBigString> startupScript,
+      std::string startupScriptSourceURL);
+  void loadApplicationSync(
+      std::unique_ptr<RAMBundleRegistry> bundleRegistry,
+      std::unique_ptr<const JSBigString> startupScript,
+      std::string startupScriptSourceURL);
 
   std::shared_ptr<InstanceCallback> callback_;
   std::unique_ptr<NativeToJsBridge> nativeToJsBridge_;

@@ -70,7 +70,8 @@
 
 @end
 
-@interface RCTRedBoxWindow : UIWindow <UITableViewDelegate, UITableViewDataSource>
+@interface RCTRedBoxWindow : NSObject <UITableViewDelegate, UITableViewDataSource>
+@property (nonatomic, strong) UIViewController *rootViewController;
 @property (nonatomic, weak) id<RCTRedBoxWindowActionDelegate> actionDelegate;
 @end
 
@@ -82,22 +83,17 @@
     int _lastErrorCookie;
 }
 
-- (instancetype)initWithFrame:(CGRect)frame customButtonTitles:(NSArray<NSString *>*)customButtonTitles customButtonHandlers:(NSArray<RCTRedBoxButtonPressHandler> *)customButtonHandlers
+- (instancetype)initWithFrame:(CGRect)frame
+           customButtonTitles:(NSArray<NSString *>*)customButtonTitles
+         customButtonHandlers:(NSArray<RCTRedBoxButtonPressHandler> *)customButtonHandlers
 {
-    _lastErrorCookie = -1;
-    if ((self = [super initWithFrame:frame])) {
-#if TARGET_OS_TV
-        self.windowLevel = UIWindowLevelAlert + 1000;
-#else
-        self.windowLevel = UIWindowLevelStatusBar - 1;
-#endif
-        self.backgroundColor = [UIColor colorWithRed:0.1 green:0.1 blue:0.1 alpha:1];
-        self.hidden = YES;
+    if (self = [super init]) {
+        _lastErrorCookie = -1;
 
-        UIViewController *rootController = [UIViewController new];
-        self.rootViewController = rootController;
-        UIView *rootView = rootController.view;
-        rootView.backgroundColor = [UIColor clearColor];
+        _rootViewController = [UIViewController new];
+        UIView *rootView = _rootViewController.view;
+        rootView.frame = frame;
+        rootView.backgroundColor = [UIColor blackColor];
 
         const CGFloat buttonHeight = 60;
 
@@ -133,8 +129,8 @@
         UIButton *copyButton = [self redBoxButton:copyText accessibilityIdentifier:@"redbox-copy" selector:@selector(copyStack) block:nil];
         UIButton *extraButton = [self redBoxButton:extraText accessibilityIdentifier:@"redbox-extra" selector:@selector(showExtraDataViewController) block:nil];
 
-        CGFloat buttonWidth = self.bounds.size.width / (4 + [customButtonTitles count]);
-        CGFloat bottomButtonHeight = self.bounds.size.height - buttonHeight - [self bottomSafeViewHeight];
+        CGFloat buttonWidth = frame.size.width / (4 + [customButtonTitles count]);
+        CGFloat bottomButtonHeight = frame.size.height - buttonHeight - [self bottomSafeViewHeight];
         dismissButton.frame = CGRectMake(0, bottomButtonHeight, buttonWidth, buttonHeight);
         reloadButton.frame = CGRectMake(buttonWidth, bottomButtonHeight, buttonWidth, buttonHeight);
         copyButton.frame = CGRectMake(buttonWidth * 2, bottomButtonHeight, buttonWidth, buttonHeight);
@@ -158,7 +154,7 @@
 
         UIView *bottomSafeView = [UIView new];
         bottomSafeView.backgroundColor = [UIColor colorWithRed:0.1 green:0.1 blue:0.1 alpha:1];
-        bottomSafeView.frame = CGRectMake(0, self.bounds.size.height - [self bottomSafeViewHeight], self.bounds.size.width, [self bottomSafeViewHeight]);
+        bottomSafeView.frame = CGRectMake(0, frame.size.height - [self bottomSafeViewHeight], frame.size.width, [self bottomSafeViewHeight]);
 
         [rootView addSubview:bottomSafeView];
     }
@@ -209,15 +205,18 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
     return [regex stringByReplacingMatchesInString:text options:0 range:NSMakeRange(0, [text length]) withTemplate:@""];
 }
 
-- (void)showErrorMessage:(NSString *)message withStack:(NSArray<RCTJSStackFrame *> *)stack isUpdate:(BOOL)isUpdate errorCookie:(int)errorCookie
+- (void)showErrorMessage:(NSString *)message
+               withStack:(NSArray<RCTJSStackFrame *> *)stack
+                isUpdate:(BOOL)isUpdate
+             errorCookie:(int)errorCookie
 {
     // Remove ANSI color codes from the message
     NSString *messageWithoutAnsi = [self stripAnsi:message];
 
     // Show if this is a new message, or if we're updating the previous message
-    BOOL isNew = self.hidden && !isUpdate;
+    BOOL isNew = !self.rootViewController.isBeingPresented && !isUpdate;
     BOOL isUpdateForSameMessage = !isNew && (
-      !self.hidden && isUpdate && (
+      self.rootViewController.isBeingPresented && isUpdate && (
         (errorCookie == -1 && [_lastErrorMessage isEqualToString:messageWithoutAnsi]) ||
         (errorCookie == _lastErrorCookie)
       )
@@ -231,22 +230,20 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 
         [_stackTraceTableView reloadData];
 
-        if (self.hidden) {
+        if (!self.rootViewController.isBeingPresented) {
             [_stackTraceTableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]
                                         atScrollPosition:UITableViewScrollPositionTop
                                                 animated:NO];
+            [RCTKeyWindow().rootViewController presentViewController:self.rootViewController
+                                                            animated:YES
+                                                          completion:nil];
         }
-
-        [self makeKeyAndVisible];
-        [self becomeFirstResponder];
     }
 }
 
 - (void)dismiss
 {
-    self.hidden = YES;
-    [self resignFirstResponder];
-    [RCTSharedApplication().delegate.window makeKeyWindow];
+    [self.rootViewController dismissViewControllerAnimated:YES completion:nil];
 }
 
 - (void)reload

@@ -9,7 +9,7 @@
     "url": "git@github.com:facebook/react-native.git"
   },
   "engines": {
-    "node": ">=8.3"
+    "node": ">=10"
   },
   "jest-junit": {
     "outputDirectory": "reports/junit",
@@ -86,15 +86,12 @@
   },
   "dependencies": {
     "@babel/runtime": "^7.0.0",
-    "@react-native-community/cli": "^4.0.0",
-    "@react-native-community/cli-platform-android": "^4.0.0",
-    "@react-native-community/cli-platform-ios": "^4.0.0",
+    "@react-native-community/cli": "^4.2.0",
+    "@react-native-community/cli-platform-android": "^4.2.0",
+    "@react-native-community/cli-platform-ios": "^4.2.0",
     "abort-controller": "^3.0.0",
     "anser": "^1.4.9",
     "base64-js": "^1.1.2",
-    "connect": "^3.6.5",
-    "escape-string-regexp": "^1.0.5",
-    "eslint-plugin-relay": "1.7.0",
     "event-target-shim": "^5.0.1",
     "fbjs": "^1.0.0",
     "fbjs-scripts": "^1.1.0",
@@ -124,8 +121,9 @@
     "async": "^2.4.0",
     "babel-eslint": "10.0.1",
     "clang-format": "^1.2.4",
+    "connect": "^3.6.5",
     "coveralls": "^3.0.2",
-    "detox": "15.1.4",
+    "detox": "15.4.0",
     "eslint": "5.1.0",
     "eslint-config-fb-strict": "^24.9.0",
     "eslint-config-fbjs": "2.1.0",
@@ -140,7 +138,7 @@
     "eslint-plugin-react-hooks": "^2.0.1",
     "eslint-plugin-react-native": "3.8.1",
     "eslint-plugin-relay": "1.7.0",
-    "flow-bin": "^0.118.0",
+    "flow-bin": "^0.119.1",
     "flow-remove-types": "1.2.3",
     "jest": "^24.9.0",
     "jest-junit": "^6.3.0",

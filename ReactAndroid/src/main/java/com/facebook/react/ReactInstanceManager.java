@@ -1121,7 +1121,8 @@ public class ReactInstanceManager {
   }
 
   private void attachRootViewToInstance(final ReactRoot reactRoot) {
-    FLog.d(ReactConstants.TAG, "ReactInstanceManager.attachRootViewToInstance()");
+    // TODO: downgrade back to FLog.d once T62192299 is resolved.
+    FLog.e(ReactConstants.TAG, "ReactInstanceManager.attachRootViewToInstance()");
     Systrace.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "attachRootViewToInstance");
 
     @Nullable
@@ -1131,7 +1132,7 @@ public class ReactInstanceManager {
     // If we can't get a UIManager something has probably gone horribly wrong
     if (uiManager == null) {
       throw new IllegalStateException(
-          "Unable to attache a rootView to ReactInstance when UIManager is not properly initialized.");
+          "Unable to attach a rootView to ReactInstance when UIManager is not properly initialized.");
     }
 
     @Nullable Bundle initialProperties = reactRoot.getAppProperties();

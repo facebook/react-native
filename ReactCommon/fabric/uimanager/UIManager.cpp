@@ -105,7 +105,7 @@ void UIManager::completeSurface(
                   /* .children = */ rootChildren,
               });
         },
-        true && stateReconciliationEnabled_);
+        stateReconciliationEnabled_);
   });
 }
 
@@ -146,14 +146,16 @@ void UIManager::setNativeProps(
       shadowNode.getSurfaceId(), [&](ShadowTree const &shadowTree) {
         shadowTree.tryCommit(
             [&](RootShadowNode::Shared const &oldRootShadowNode) {
-              return oldRootShadowNode->clone(
-                  shadowNode.getFamily(), [&](ShadowNode const &oldShadowNode) {
-                    return oldShadowNode.clone({
-                        /* .props = */ props,
-                    });
-                  });
+              return std::static_pointer_cast<RootShadowNode>(
+                  oldRootShadowNode->cloneTree(
+                      shadowNode.getFamily(),
+                      [&](ShadowNode const &oldShadowNode) {
+                        return oldShadowNode.clone({
+                            /* .props = */ props,
+                        });
+                      }));
             },
-            true && stateReconciliationEnabled_);
+            stateReconciliationEnabled_);
       });
 }
 
@@ -171,14 +173,14 @@ LayoutMetrics UIManager::getRelativeLayoutMetrics(
                 ancestorShadowNode = oldRootShadowNode.get();
                 return nullptr;
               },
-              true && stateReconciliationEnabled_);
+              stateReconciliationEnabled_);
         });
   }
 
   auto layoutableShadowNode =
-      dynamic_cast<const LayoutableShadowNode *>(&shadowNode);
+      traitCast<LayoutableShadowNode const *>(&shadowNode);
   auto layoutableAncestorShadowNode =
-      dynamic_cast<const LayoutableShadowNode *>(ancestorShadowNode);
+      traitCast<LayoutableShadowNode const *>(ancestorShadowNode);
 
   if (!layoutableShadowNode || !layoutableAncestorShadowNode) {
     return EmptyLayoutMetrics;
@@ -197,7 +199,8 @@ void UIManager::updateState(StateUpdate const &stateUpdate) const {
       family->getSurfaceId(), [&](ShadowTree const &shadowTree) {
         shadowTree.tryCommit([&](RootShadowNode::Shared const
                                      &oldRootShadowNode) {
-          return oldRootShadowNode->clone(
+          return std::static_pointer_cast<
+              RootShadowNode>(oldRootShadowNode->cloneTree(
               *family, [&](ShadowNode const &oldShadowNode) {
                 auto newData =
                     callback(oldShadowNode.getState()->getDataPointer());
@@ -209,7 +212,7 @@ void UIManager::updateState(StateUpdate const &stateUpdate) const {
                     /* .children = */ ShadowNodeFragment::childrenPlaceholder(),
                     /* .state = */ newState,
                 });
-              });
+              }));
         });
       });
 }

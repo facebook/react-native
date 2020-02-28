@@ -68,6 +68,25 @@ static LayoutMetrics calculateOffsetForLayoutMetrics(
   return layoutMetrics;
 }
 
+LayoutableShadowNode::LayoutableShadowNode(
+    ShadowNodeFragment const &fragment,
+    ShadowNodeFamily::Shared const &family,
+    ShadowNodeTraits traits)
+    : ShadowNode(fragment, family, traits), layoutMetrics_({}) {}
+
+LayoutableShadowNode::LayoutableShadowNode(
+    ShadowNode const &sourceShadowNode,
+    ShadowNodeFragment const &fragment)
+    : ShadowNode(sourceShadowNode, fragment),
+      layoutMetrics_(static_cast<LayoutableShadowNode const &>(sourceShadowNode)
+                         .layoutMetrics_) {}
+
+ShadowNodeTraits LayoutableShadowNode::BaseTraits() {
+  auto traits = ShadowNodeTraits{};
+  traits.set(ShadowNodeTraits::Trait::LayoutableKind);
+  return traits;
+}
+
 LayoutMetrics LayoutableShadowNode::getLayoutMetrics() const {
   return layoutMetrics_;
 }
@@ -123,6 +142,20 @@ LayoutMetrics LayoutableShadowNode::getRelativeLayoutMetrics(
   return calculateOffsetForLayoutMetrics(layoutMetrics, ancestors, policy);
 }
 
+LayoutableShadowNode::UnsharedList
+LayoutableShadowNode::getLayoutableChildNodes() const {
+  LayoutableShadowNode::UnsharedList layoutableChildren;
+  for (const auto &childShadowNode : getChildren()) {
+    auto layoutableChildShadowNode =
+        traitCast<LayoutableShadowNode const *>(childShadowNode.get());
+    if (layoutableChildShadowNode) {
+      layoutableChildren.push_back(
+          const_cast<LayoutableShadowNode *>(layoutableChildShadowNode));
+    }
+  }
+  return layoutableChildren;
+}
+
 Size LayoutableShadowNode::measure(LayoutConstraints layoutConstraints) const {
   return Size();
 }
@@ -133,6 +166,12 @@ Float LayoutableShadowNode::firstBaseline(Size size) const {
 
 Float LayoutableShadowNode::lastBaseline(Size size) const {
   return 0;
+}
+
+void LayoutableShadowNode::layoutTree(
+    LayoutContext layoutContext,
+    LayoutConstraints layoutConstraints) {
+  // Default implementation does nothing.
 }
 
 void LayoutableShadowNode::layout(LayoutContext layoutContext) {

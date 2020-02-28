@@ -18,9 +18,9 @@ namespace react {
 /*
  * Simple thread-safe LRU cache.
  */
-template<typename KeyT, typename ValueT, int maxSize>
+template <typename KeyT, typename ValueT, int maxSize>
 class SimpleThreadSafeCache {
-public:
+ public:
   SimpleThreadSafeCache() : map_{maxSize} {}
 
   /*
@@ -29,7 +29,8 @@ public:
    * generator function, stores it inside a cache and returns it.
    * Can be called from any thread.
    */
-  ValueT get(const KeyT &key, std::function<ValueT(const KeyT &key)> generator) const {
+  ValueT get(const KeyT &key, std::function<ValueT(const KeyT &key)> generator)
+      const {
     std::lock_guard<std::mutex> lock(mutex_);
     auto iterator = map_.find(key);
     if (iterator == map_.end()) {
@@ -65,7 +66,7 @@ public:
     map_.set(std::move(key), std::move(value));
   }
 
-private:
+ private:
   mutable folly::EvictingCacheMap<KeyT, ValueT> map_;
   mutable std::mutex mutex_;
 };

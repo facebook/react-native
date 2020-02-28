@@ -59,7 +59,7 @@ public class LogBoxModule extends NativeLogBoxSpec {
         new Runnable() {
           @Override
           public void run() {
-            if (mLogBoxDialog == null) {
+            if (mLogBoxDialog == null && mReactRootView != null) {
               Activity context = getCurrentActivity();
               if (context == null || context.isFinishing()) {
                 FLog.e(

@@ -197,12 +197,19 @@ RCT_EXPORT_MODULE()
 {
   if (!_container) {
     _container = [[UIView alloc] initWithFrame:CGRectMake(10, 25, 180, RCTPerfMonitorBarHeight)];
-    _container.backgroundColor = UIColor.whiteColor;
     _container.layer.borderWidth = 2;
     _container.layer.borderColor = [UIColor lightGrayColor].CGColor;
     [_container addGestureRecognizer:self.gestureRecognizer];
     [_container addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self
                                                                              action:@selector(tap)]];
+    
+    _container.backgroundColor = [UIColor whiteColor];
+    #if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && defined(__IPHONE_13_0) && \
+    __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_13_0
+    if (@available(iOS 13.0, *)) {
+      _container.backgroundColor = [UIColor systemBackgroundColor];
+    }
+    #endif
   }
 
   return _container;

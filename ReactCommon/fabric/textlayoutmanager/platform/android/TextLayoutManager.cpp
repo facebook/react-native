@@ -46,6 +46,7 @@ Size TextLayoutManager::doMeasure(
   static auto measure =
       jni::findClassStatic("com/facebook/react/fabric/FabricUIManager")
           ->getMethod<jlong(
+              jint,
               jstring,
               ReadableMap::javaobject,
               ReadableMap::javaobject,
@@ -70,6 +71,7 @@ Size TextLayoutManager::doMeasure(
       reinterpret_cast<ReadableMap::javaobject>(paragraphAttributesRNM.get()));
   return yogaMeassureToSize(measure(
       fabricUIManager,
+      -1,
       componentName.get(),
       attributedStringRM.get(),
       paragraphAttributesRM.get(),

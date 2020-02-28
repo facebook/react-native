@@ -171,10 +171,11 @@ static void alterShadowTree(
     ShadowNodeAlteration alteration) {
   auto edge = findRandomShadowNode(entropy, rootShadowNode);
 
-  rootShadowNode = rootShadowNode->clone(
-      edge.shadowNode->getFamily(), [&](ShadowNode const &oldShadowNode) {
-        return alteration(entropy, oldShadowNode);
-      });
+  rootShadowNode =
+      std::static_pointer_cast<RootShadowNode>(rootShadowNode->cloneTree(
+          edge.shadowNode->getFamily(), [&](ShadowNode const &oldShadowNode) {
+            return alteration(entropy, oldShadowNode);
+          }));
 }
 
 static void alterShadowTree(

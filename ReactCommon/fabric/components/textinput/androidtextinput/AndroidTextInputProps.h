@@ -159,6 +159,18 @@ class AndroidTextInputProps final : public ViewProps, public BaseTextProps {
    */
   ParagraphAttributes const paragraphAttributes{};
 
+  /**
+   * Auxiliary information to detect if these props are set or not.
+   * See AndroidTextInputComponentDescriptor for usage.
+   * TODO T63008435: can these, and this feature, be removed entirely?
+   */
+  const bool hasPaddingLeft{};
+  const bool hasPaddingTop{};
+  const bool hasPaddingRight{};
+  const bool hasPaddingBottom{};
+  const bool hasPaddingStart{};
+  const bool hasPaddingEnd{};
+
 #if RN_DEBUG_STRING_CONVERTIBLE
   SharedDebugStringConvertibleList getDebugProps() const;
 #endif

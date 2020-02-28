@@ -316,6 +316,8 @@ class RNTesterApp extends React.Component<Props, RNTesterNavigationState> {
       /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was found
        * when making Flow check .android.js files. */
       this._exampleRef &&
+      /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was found
+       * when making Flow check .android.js files. */
       this._exampleRef.handleBackAction &&
       /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was found
        * when making Flow check .android.js files. */

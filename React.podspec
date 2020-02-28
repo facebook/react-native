@@ -33,7 +33,7 @@ Pod::Spec.new do |s|
                                beautiful and fast products with no compromises in
                                quality or capability.
                              DESC
-  s.homepage               = "http://facebook.github.io/react-native/"
+  s.homepage               = "https://reactnative.dev/"
   s.license                = package["license"]
   s.author                 = "Facebook, Inc. and its affiliates"
   s.platforms              = { :ios => "10.0", :tvos => "10.0" }

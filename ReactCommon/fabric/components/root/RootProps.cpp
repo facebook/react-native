@@ -39,9 +39,11 @@ RootProps::RootProps(
     RootProps const &sourceProps,
     LayoutConstraints const &layoutConstraints,
     LayoutContext const &layoutContext)
-    : ViewProps(yogaStyleFromLayoutConstraints(layoutConstraints)),
+    : ViewProps(),
       layoutConstraints(layoutConstraints),
-      layoutContext(layoutContext){};
+      layoutContext(layoutContext) {
+  yogaStyle = yogaStyleFromLayoutConstraints(layoutConstraints);
+};
 
 } // namespace react
 } // namespace facebook

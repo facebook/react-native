@@ -109,10 +109,7 @@ struct hash<facebook::react::AttributedString::Fragment> {
   size_t operator()(
       const facebook::react::AttributedString::Fragment &fragment) const {
     return folly::hash::hash_combine(
-        0,
-        fragment.string,
-        fragment.textAttributes,
-        fragment.parentShadowView);
+        0, fragment.string, fragment.textAttributes, fragment.parentShadowView);
   }
 };
 

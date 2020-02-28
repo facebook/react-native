@@ -7,11 +7,11 @@
 
 #pragma once
 
+#include <react/components/view/TouchEvent.h>
 #include <react/core/EventEmitter.h>
 #include <react/core/LayoutMetrics.h>
 #include <react/core/ReactPrimitives.h>
 #include <react/debug/DebugStringConvertible.h>
-#include <react/components/view/TouchEvent.h>
 
 namespace facebook {
 namespace react {

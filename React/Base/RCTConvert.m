@@ -75,7 +75,7 @@ RCT_CUSTOM_CONVERTER(NSData *, NSData, [json dataUsingEncoding:NSUTF8StringEncod
 
 + (NSURL *)NSURL:(id)json
 {
-  NSString *path = [self NSString:json];
+  NSString *path = [self NSString:RCTNilIfNull(json)];
   if (!path) {
     return nil;
   }

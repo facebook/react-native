@@ -14,8 +14,8 @@
 
 #include <better/small_vector.h>
 #include <react/core/LayoutMetrics.h>
-#include <react/core/Sealable.h>
 #include <react/core/ShadowNode.h>
+#include <react/core/ShadowNodeFragment.h>
 #include <react/debug/DebugStringConvertible.h>
 #include <react/graphics/Geometry.h>
 #include <react/graphics/Transform.h>
@@ -30,8 +30,19 @@ struct LayoutContext;
  * Describes all sufficient layout API (in approach-agnostic way)
  * which makes a concurrent layout possible.
  */
-class LayoutableShadowNode : public virtual Sealable {
+class LayoutableShadowNode : public ShadowNode {
  public:
+  LayoutableShadowNode(
+      ShadowNodeFragment const &fragment,
+      ShadowNodeFamily::Shared const &family,
+      ShadowNodeTraits traits);
+
+  LayoutableShadowNode(
+      ShadowNode const &sourceShadowNode,
+      ShadowNodeFragment const &fragment);
+
+  static ShadowNodeTraits BaseTraits();
+
   class LayoutInspectingPolicy final {
    public:
     bool includeTransform{true};
@@ -41,7 +52,14 @@ class LayoutableShadowNode : public virtual Sealable {
   using UnsharedList = better::
       small_vector<LayoutableShadowNode *, kShadowNodeChildrenSmallVectorSize>;
 
-  virtual ~LayoutableShadowNode() noexcept = default;
+  /*
+   * Performs layout of the tree starting from this node. Usually is being
+   * called on the root node.
+   * Default implementation does nothing.
+   */
+  virtual void layoutTree(
+      LayoutContext layoutContext,
+      LayoutConstraints layoutConstraints);
 
   /*
    * Measures the node (and node content, probably recursively) with
@@ -127,16 +145,7 @@ class LayoutableShadowNode : public virtual Sealable {
   /*
    * Returns layoutable children to interate on.
    */
-  virtual LayoutableShadowNode::UnsharedList getLayoutableChildNodes()
-      const = 0;
-
-  /*
-   * In case layout algorithm needs to mutate this (probably sealed) node,
-   * it has to clone and replace it in the hierarchy before to do so.
-   */
-  virtual LayoutableShadowNode *cloneAndReplaceChild(
-      LayoutableShadowNode *child,
-      int suggestedIndex = -1) = 0;
+  LayoutableShadowNode::UnsharedList getLayoutableChildNodes() const;
 
   /*
    * Sets layout metrics for the shadow node.
@@ -151,8 +160,35 @@ class LayoutableShadowNode : public virtual Sealable {
 #endif
 
  private:
-  LayoutMetrics layoutMetrics_{};
+  LayoutMetrics layoutMetrics_;
 };
+
+template <>
+inline LayoutableShadowNode const &traitCast<LayoutableShadowNode const &>(
+    ShadowNode const &shadowNode) {
+  bool castable =
+      shadowNode.getTraits().check(ShadowNodeTraits::Trait::LayoutableKind);
+  assert(
+      castable ==
+      (dynamic_cast<LayoutableShadowNode const *>(&shadowNode) != nullptr));
+  assert(castable);
+  (void)castable;
+  return static_cast<LayoutableShadowNode const &>(shadowNode);
+}
+
+template <>
+inline LayoutableShadowNode const *traitCast<LayoutableShadowNode const *>(
+    ShadowNode const *shadowNode) {
+  bool castable =
+      shadowNode->getTraits().check(ShadowNodeTraits::Trait::LayoutableKind);
+  assert(
+      castable ==
+      (dynamic_cast<LayoutableShadowNode const *>(shadowNode) != nullptr));
+  if (!castable) {
+    return nullptr;
+  }
+  return static_cast<LayoutableShadowNode const *>(shadowNode);
+}
 
 } // namespace react
 } // namespace facebook

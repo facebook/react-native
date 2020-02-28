@@ -47,6 +47,9 @@ class ShadowNodeTraits {
     // traverse beyond this node. See T61257516 for details.
     RootNodeKind = 1 << 4,
 
+    // `ViewShadowNode` (exact!) class.
+    View = 1 << 5,
+
     // Inherits `YogaLayoutableShadowNode` and enforces that the `YGNode` is a
     // leaf.
     LeafYogaNode = 1 << 10,

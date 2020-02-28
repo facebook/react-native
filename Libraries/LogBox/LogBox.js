@@ -13,7 +13,7 @@
 import Platform from '../Utilities/Platform';
 import RCTLog from '../Utilities/RCTLog';
 import * as LogBoxData from './Data/LogBoxData';
-import {parseLogBoxLog} from './Data/parseLogBoxLog';
+import {parseLogBoxLog, parseInterpolation} from './Data/parseLogBoxLog';
 
 import type {IgnorePattern} from './Data/LogBoxData';
 
@@ -151,9 +151,12 @@ if (__DEV__) {
       const {category, message, componentStack} = parseLogBoxLog(args);
 
       if (!LogBoxData.isMessageIgnored(message.content)) {
-        // Be sure to pass LogBox errors through.
-        error.call(console, ...args);
+        // Interpolate the message so they are formatted for adb and other CLIs.
+        // This is different than the message.content above because it includes component stacks.
+        const interpolated = parseInterpolation(args);
+        error.call(console, interpolated.message.content);
 
+        // Only display errors outside of LogBox, not in LogBox itself.
         if (!LogBoxData.isLogBoxErrorMessage(message.content)) {
           LogBoxData.addLog({
             level,

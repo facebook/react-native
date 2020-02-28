@@ -85,6 +85,19 @@ fs.writeFileSync(
 );
 
 fs.writeFileSync(
+  'ReactCommon/cxxreact/ReactNativeVersion.h',
+  cat('scripts/versiontemplates/ReactNativeVersion.h.template')
+    .replace('${major}', major)
+    .replace('${minor}', minor)
+    .replace('${patch}', patch)
+    .replace(
+      '${prerelease}',
+      prerelease !== undefined ? `"${prerelease}"` : '""',
+    ),
+  'utf-8',
+);
+
+fs.writeFileSync(
   'Libraries/Core/ReactNativeVersion.js',
   cat('scripts/versiontemplates/ReactNativeVersion.js.template')
     .replace('${major}', major)

@@ -497,7 +497,12 @@ UIWindow *__nullable RCTKeyWindow(void)
   }
 
   // TODO: replace with a more robust solution
-  return RCTSharedApplication().keyWindow;
+  for (UIWindow *window in RCTSharedApplication().windows) {
+    if (window.keyWindow) {
+      return window;
+    }
+  }
+  return nil;
 }
 
 UIViewController *__nullable RCTPresentedViewController(void)

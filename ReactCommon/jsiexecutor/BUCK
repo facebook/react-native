@@ -22,7 +22,7 @@ cxx_library(
     ],
     fbobjc_force_static = True,
     fbobjc_header_path_prefix = "",
-    fbobjc_labels = ["supermodule:ios/default/private.react_native.infra"],
+    fbobjc_labels = ["supermodule:ios/default/public.react_native.infra"],
     platforms = (ANDROID, APPLE),
     preprocessor_flags = [
         "-DLOG_TAG=\"ReactNative\"",

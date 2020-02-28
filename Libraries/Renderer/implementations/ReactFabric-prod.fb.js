@@ -1467,9 +1467,12 @@ function batchedUpdates(fn, bookkeeping) {
 }
 function dispatchEvent(target, topLevelType, nativeEvent) {
   var eventTarget = null;
-  enableNativeTargetAsInstance
-    ? null != target && (eventTarget = target.stateNode.canonical)
-    : (eventTarget = nativeEvent.target);
+  if (enableNativeTargetAsInstance) {
+    if (null != target) {
+      var stateNode = target.stateNode;
+      null != stateNode && (eventTarget = stateNode.canonical);
+    }
+  } else eventTarget = nativeEvent.target;
   batchedUpdates(function() {
     var events = eventTarget;
     for (var events$jscomp$0 = null, i = 0; i < plugins.length; i++) {

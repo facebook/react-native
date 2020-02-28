@@ -22,7 +22,6 @@ export type Mapping = {[key: string]: Mapping, ...} | AnimatedValue;
 export type EventConfig = {
   listener?: ?Function,
   useNativeDriver: boolean,
-  ...
 };
 
 function attachNativeEvent(
@@ -140,7 +139,7 @@ class AnimatedEvent {
 
     if (config == null) {
       console.warn('Animated.event now requires a second argument for options');
-      config = {};
+      config = {useNativeDriver: false};
     }
 
     if (config.listener) {

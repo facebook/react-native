@@ -83,7 +83,7 @@ const viewConfig = {
 /**
  * A React component for displaying text.
  *
- * See https://facebook.github.io/react-native/docs/text.html
+ * See https://reactnative.dev/docs/text.html
  */
 class TouchableText extends React.Component<Props, State> {
   static defaultProps = {

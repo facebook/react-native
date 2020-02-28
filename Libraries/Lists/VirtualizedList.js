@@ -349,8 +349,8 @@ type ListDebugInfo = {
 };
 
 /**
- * Base implementation for the more convenient [`<FlatList>`](/react-native/docs/flatlist.html)
- * and [`<SectionList>`](/react-native/docs/sectionlist.html) components, which are also better
+ * Base implementation for the more convenient [`<FlatList>`](https://reactnative.dev/docs/flatlist.html)
+ * and [`<SectionList>`](https://reactnative.dev/docs/sectionlist.html) components, which are also better
  * documented. In general, this should only really be used if you need more flexibility than
  * `FlatList` provides, e.g. for use with immutable data instead of plain arrays.
  *

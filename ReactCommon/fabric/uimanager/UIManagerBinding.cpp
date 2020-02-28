@@ -268,15 +268,8 @@ jsi::Value UIManagerBinding::get(
               arguments[3].getObject(runtime).getFunction(runtime);
           auto targetNode =
               uiManager->findNodeAtPoint(node, Point{locationX, locationY});
-          auto &eventTarget = targetNode->getEventEmitter()->eventTarget_;
-
-          EventEmitter::DispatchMutex().lock();
-          eventTarget->retain(runtime);
-          auto instanceHandle = eventTarget->getInstanceHandle(runtime);
-          eventTarget->release(runtime);
-          EventEmitter::DispatchMutex().unlock();
-
-          onSuccessFunction.call(runtime, std::move(instanceHandle));
+  
+          onSuccessFunction.call(runtime, valueFromShadowNode(runtime, targetNode));
           return jsi::Value::undefined();
         });
   }

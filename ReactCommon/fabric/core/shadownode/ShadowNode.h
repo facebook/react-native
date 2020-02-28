@@ -39,8 +39,7 @@ using SharedShadowNodeList =
 using SharedShadowNodeSharedList = std::shared_ptr<const SharedShadowNodeList>;
 using SharedShadowNodeUnsharedList = std::shared_ptr<SharedShadowNodeList>;
 
-class ShadowNode : public virtual Sealable,
-                   public virtual DebugStringConvertible {
+class ShadowNode : public Sealable, public DebugStringConvertible {
  public:
   using Shared = std::shared_ptr<ShadowNode const>;
   using Weak = std::weak_ptr<ShadowNode const>;
@@ -63,6 +62,14 @@ class ShadowNode : public virtual Sealable,
    * from each other or from the same source node).
    */
   static bool sameFamily(const ShadowNode &first, const ShadowNode &second);
+
+  /*
+   * A set of traits associated with a particular class.
+   * Reimplement in subclasses to declare class-specific traits.
+   */
+  static ShadowNodeTraits BaseTraits() {
+    return ShadowNodeTraits{};
+  }
 
 #pragma mark - Constructors
 
@@ -89,6 +96,18 @@ class ShadowNode : public virtual Sealable,
    * Clones the shadow node using stored `cloneFunction`.
    */
   UnsharedShadowNode clone(const ShadowNodeFragment &fragment) const;
+
+  /*
+   * Clones the node (and partially the tree starting from the node) by
+   * replacing a `oldShadowNode` (which corresponds to a given
+   * `shadowNodeFamily`) with a node that `callback` returns.
+   *
+   * Returns `nullptr` if the operation cannot be performed successfully.
+   */
+  ShadowNode::Unshared cloneTree(
+      ShadowNodeFamily const &shadowNodeFamily,
+      std::function<ShadowNode::Unshared(ShadowNode const &oldShadowNode)>
+          callback) const;
 
 #pragma mark - Getters
 
@@ -194,6 +213,18 @@ class ShadowNode : public virtual Sealable,
    */
   ShadowNodeTraits traits_;
 };
+
+/*
+ * Template declarations for future specializations in concrete classes.
+ * `traitCast` checks for a trait that corresponds to the provided type and
+ * performs `static_cast`. Practically, the behavior is identical to
+ * `dynamic_cast` with very little runtime overhead.
+ */
+template <typename ShadowNodeReferenceT>
+ShadowNodeReferenceT traitCast(ShadowNode const &shadowNode);
+
+template <typename ShadowNodePointerT>
+ShadowNodePointerT traitCast(ShadowNode const *shadowNode);
 
 } // namespace react
 } // namespace facebook
