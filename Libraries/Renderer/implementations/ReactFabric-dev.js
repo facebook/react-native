@@ -3826,7 +3826,11 @@ function dispatchEvent(target, topLevelType, nativeEvent) {
 
   if (enableNativeTargetAsInstance) {
     if (targetFiber != null) {
-      eventTarget = targetFiber.stateNode.canonical;
+      var stateNode = targetFiber.stateNode; // Guard against Fiber being unmounted
+
+      if (stateNode != null) {
+        eventTarget = stateNode.canonical;
+      }
     }
   } else {
     eventTarget = nativeEvent.target;
