@@ -35,7 +35,7 @@ rn_xplat_cxx_library(
         "-std=c++14",
         "-Wall",
     ],
-    labels = ["supermodule:android/default/public.react_native"],
+    labels = ["supermodule:android/default/public.react_native.infra"],
     platforms = (ANDROID,),
     preprocessor_flags = [
         "-DLOG_TAG=\"ReactNative\"",

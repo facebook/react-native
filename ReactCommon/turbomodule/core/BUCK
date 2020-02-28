@@ -38,7 +38,7 @@ rn_xplat_cxx_library(
         "-fobjc-arc-exceptions",
     ],
     fbobjc_inherited_buck_flags = get_static_library_ios_flags(),
-    fbobjc_labels = ["supermodule:ios/default/private.react_native.infra"],
+    fbobjc_labels = ["supermodule:ios/default/public.react_native.infra"],
     fbobjc_preprocessor_flags = OBJC_ARC_PREPROCESSOR_FLAGS + get_debug_preprocessor_flags(),
     force_static = True,
     ios_deps = [
