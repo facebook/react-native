@@ -251,7 +251,9 @@ void YogaLayoutableShadowNode::layoutTree(
   layout(layoutContext);
 
   if (getHasNewLayout()) {
-    setLayoutMetrics(layoutMetricsFromYogaNode(yogaNode_));
+    auto layoutMetrics = layoutMetricsFromYogaNode(yogaNode_);
+    layoutMetrics.pointScaleFactor = layoutContext.pointScaleFactor;
+    setLayoutMetrics(layoutMetrics);
     setHasNewLayout(false);
   }
 }
