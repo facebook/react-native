@@ -103,10 +103,13 @@ RCT_EXPORT_MODULE()
     self->_window.backgroundColor = backgroundColor;
     self->_window.hidden = NO;
 
+#if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && defined(__IPHONE_13_0) && \
+__IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_13_0
     if (@available(iOS 13.0, *)) {
-      id scene = [[RCTSharedApplication() valueForKey:@"connectedScenes"] anyObject];
-      [self->_window setValue:scene forKey:@"windowScene"];
+      UIWindowScene *scene = (UIWindowScene *)RCTSharedApplication().connectedScenes.anyObject;
+      self->_window.windowScene = scene;
     }
+#endif
   });
 }
 
