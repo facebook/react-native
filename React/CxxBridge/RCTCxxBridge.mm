@@ -45,8 +45,8 @@
 #import <React/RCTFBSystrace.h>
 #endif
 
-#if (RCT_DEV | RCT_ENABLE_LOADING_VIEW) && __has_include(<React/RCTDevLoadingView.h>)
-#import <React/RCTDevLoadingView.h>
+#if (RCT_DEV | RCT_ENABLE_LOADING_VIEW) && __has_include(<React/RCTDevLoadingViewProtocol.h>)
+#import <React/RCTDevLoadingViewProtocol.h>
 #endif
 
 static NSString *const RCTJSThreadName = @"com.facebook.react.JavaScript";
@@ -372,10 +372,9 @@ struct RCTInstanceCallback : public InstanceCallback {
     sourceCode = source.data;
     dispatch_group_leave(prepareBridge);
   } onProgress:^(RCTLoadingProgress *progressData) {
-#if (RCT_DEV | RCT_ENABLE_LOADING_VIEW) && __has_include(<React/RCTDevLoadingView.h>)
+#if (RCT_DEV | RCT_ENABLE_LOADING_VIEW) && __has_include(<React/RCTDevLoadingViewProtocol.h>)
     // Note: RCTDevLoadingView should have been loaded at this point, so no need to allow lazy loading.
-    RCTDevLoadingView *loadingView = [weakSelf moduleForName:RCTBridgeModuleNameForClass([RCTDevLoadingView class])
-                                       lazilyLoadIfNecessary:NO];
+    id<RCTDevLoadingViewProtocol> loadingView = [weakSelf moduleForName:@"DevLoadingView" lazilyLoadIfNecessary:NO];
     [loadingView updateProgress:progressData];
 #endif
   }];

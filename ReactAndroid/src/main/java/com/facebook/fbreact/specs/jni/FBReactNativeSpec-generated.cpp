@@ -663,7 +663,7 @@ namespace facebook {
 
     
     static facebook::jsi::Value __hostFunction_NativeDevLoadingViewSpecJSI_showMessage(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
-      return static_cast<JavaTurboModule&>(turboModule).invokeJavaMethod(rt, VoidKind, "showMessage", "(Ljava/lang/String;Lcom/facebook/react/bridge/ReadableMap;Lcom/facebook/react/bridge/ReadableMap;)V", args, count);
+      return static_cast<JavaTurboModule&>(turboModule).invokeJavaMethod(rt, VoidKind, "showMessage", "(Ljava/lang/String;Ljava/lang/Double;Ljava/lang/Double;)V", args, count);
     }
 
     static facebook::jsi::Value __hostFunction_NativeDevLoadingViewSpecJSI_hide(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {

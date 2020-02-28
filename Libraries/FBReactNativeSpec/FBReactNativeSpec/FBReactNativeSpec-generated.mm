@@ -825,7 +825,7 @@ namespace facebook {
 
     
     static facebook::jsi::Value __hostFunction_NativeDevLoadingViewSpecJSI_showMessage(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
-      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, VoidKind, "showMessage", @selector(showMessage:color:backgroundColor:), args, count);
+      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, VoidKind, "showMessage", @selector(showMessage:withColor:withBackgroundColor:), args, count);
     }
 
     static facebook::jsi::Value __hostFunction_NativeDevLoadingViewSpecJSI_hide(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {

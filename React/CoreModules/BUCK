@@ -109,6 +109,9 @@ rn_apple_library(
         ) + react_module_plugin_providers(
             name = "WebSocketModule",
             native_class_func = "RCTWebSocketModuleCls",
+        ) + react_module_plugin_providers(
+            name = "DevLoadingView",
+            native_class_func = "RCTDevLoadingViewCls",
         ),
     plugins_header = "FBCoreModulesPlugins.h",
     preprocessor_flags = OBJC_ARC_PREPROCESSOR_FLAGS + get_debug_preprocessor_flags() + rn_extra_build_flags() + [

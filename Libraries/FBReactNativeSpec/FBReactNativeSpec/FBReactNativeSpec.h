@@ -848,8 +848,8 @@ namespace facebook {
 @protocol NativeDevLoadingViewSpec <RCTBridgeModule, RCTTurboModule>
 
 - (void)showMessage:(NSString *)message
-              color:(NSDictionary *)color
-    backgroundColor:(NSDictionary *)backgroundColor;
+          withColor:(NSNumber *)withColor
+withBackgroundColor:(NSNumber *)withBackgroundColor;
 - (void)hide;
 
 @end
