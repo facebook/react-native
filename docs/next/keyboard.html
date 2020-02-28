@@ -71,39 +71,129 @@
         </script></nav></div><div class="container mainContainer docsContainer"><div class="wrapper"><div class="post"><header class="postHeader"><a class="edit-page-link button" href="https://github.com/facebook/react-native-website/blob/master/docs/keyboard.md" target="_blank" rel="noreferrer noopener">Edit</a><h1 id="__docusaurus" class="postHeaderTitle">Keyboard</h1></header><article><div><span><p><code>Keyboard</code> module to control keyboard events.</p>
 <h3><a class="anchor" aria-hidden="true" id="usage"></a><a href="#usage" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Usage</h3>
 <p>The Keyboard module allows you to listen for native events and react to them, as well as make changes to the keyboard, like dismissing it.</p>
-<pre><code class="hljs css language-jsx"><span class="token keyword">import</span> React<span class="token punctuation">,</span> <span class="token punctuation">{</span>Component<span class="token punctuation">}</span> <span class="token keyword">from</span> <span class="token string">'react'</span><span class="token punctuation">;</span>
-<span class="token keyword">import</span> <span class="token punctuation">{</span>Keyboard<span class="token punctuation">,</span> TextInput<span class="token punctuation">}</span> <span class="token keyword">from</span> <span class="token string">'react-native'</span><span class="token punctuation">;</span>
+<div class="toggler">
+  <ul role="tablist" class="toggle-syntax">
+    <li id="functional" class="button-functional" aria-selected="false" role="tab" tabindex="0" aria-controls="functionaltab" onclick="displayTabs('syntax', 'functional')">
+      Function Component Example
+    </li>
+    <li id="classical" class="button-classical" aria-selected="false" role="tab" tabindex="0" aria-controls="classicaltab" onclick="displayTabs('syntax', 'classical')">
+      Class Component Example
+    </li>
+  </ul>
+</div>
+<p><block class="functional syntax" /></p>
+<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript">
+<span class="hljs-keyword">import</span> React, { useEffect } <span class="hljs-keyword">from</span> <span class="hljs-string">"react"</span>;
+<span class="hljs-keyword">import</span> { Keyboard, TextInput, StyleSheet } <span class="hljs-keyword">from</span> <span class="hljs-string">"react-native"</span>;
 
-<span class="token keyword">class</span> <span class="token class-name">Example</span> <span class="token keyword">extends</span> <span class="token class-name">Component</span> <span class="token punctuation">{</span>
-  <span class="token function">componentDidMount</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
-    <span class="token keyword">this</span><span class="token punctuation">.</span>keyboardDidShowListener <span class="token operator">=</span> Keyboard<span class="token punctuation">.</span><span class="token function">addListener</span><span class="token punctuation">(</span>
-      <span class="token string">'keyboardDidShow'</span><span class="token punctuation">,</span>
-      <span class="token keyword">this</span><span class="token punctuation">.</span>_keyboardDidShow<span class="token punctuation">,</span>
-    <span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token keyword">this</span><span class="token punctuation">.</span>keyboardDidHideListener <span class="token operator">=</span> Keyboard<span class="token punctuation">.</span><span class="token function">addListener</span><span class="token punctuation">(</span>
-      <span class="token string">'keyboardDidHide'</span><span class="token punctuation">,</span>
-      <span class="token keyword">this</span><span class="token punctuation">.</span>_keyboardDidHide<span class="token punctuation">,</span>
-    <span class="token punctuation">)</span><span class="token punctuation">;</span>
-  <span class="token punctuation">}</span>
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Example</span>(<span class="hljs-params"></span>) </span>{
 
-  <span class="token function">componentWillUnmount</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
-    <span class="token keyword">this</span><span class="token punctuation">.</span>keyboardDidShowListener<span class="token punctuation">.</span><span class="token function">remove</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token keyword">this</span><span class="token punctuation">.</span>keyboardDidHideListener<span class="token punctuation">.</span><span class="token function">remove</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-  <span class="token punctuation">}</span>
+  useEffect(<span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
+    Keyboard.addListener(<span class="hljs-string">"keyboardDidShow"</span>, _keyboardDidShow);
+    Keyboard.addListener(<span class="hljs-string">"keyboardDidHide"</span>, _keyboardDidHide);
 
-  <span class="token function">_keyboardDidShow</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
-    <span class="token function">alert</span><span class="token punctuation">(</span><span class="token string">'Keyboard Shown'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-  <span class="token punctuation">}</span>
+    <span class="hljs-comment">// cleanup function</span>
+    <span class="hljs-keyword">return</span> <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
+      Keyboard.removeListener(<span class="hljs-string">"keyboardDidShow"</span>, _keyboardDidShow);
+      Keyboard.removeListener(<span class="hljs-string">"keyboardDidHide"</span>, _keyboardDidHide);
+    };
+  }, []);
 
-  <span class="token function">_keyboardDidHide</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
-    <span class="token function">alert</span><span class="token punctuation">(</span><span class="token string">'Keyboard Hidden'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-  <span class="token punctuation">}</span>
+  <span class="hljs-keyword">const</span> _keyboardDidShow = <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
+    alert(<span class="hljs-string">"Keyboard Shown"</span>);
+  };
 
-  <span class="token function">render</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
-    <span class="token keyword">return</span> <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span><span class="token class-name">TextInput</span></span> <span class="token attr-name">onSubmitEditing</span><span class="token script language-javascript"><span class="token script-punctuation punctuation">=</span><span class="token punctuation">{</span>Keyboard<span class="token punctuation">.</span>dismiss<span class="token punctuation">}</span></span> <span class="token punctuation">/></span></span><span class="token punctuation">;</span>
-  <span class="token punctuation">}</span>
-<span class="token punctuation">}</span>
-</code></pre>
+  <span class="hljs-keyword">const</span> _keyboardDidHide = <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
+    alert(<span class="hljs-string">"Keyboard Hidden"</span>);
+  };
+
+  <span class="hljs-keyword">return</span> <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">TextInput</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{s.input}</span> <span class="hljs-attr">placeholder</span>=<span class="hljs-string">'Click here ...'</span> <span class="hljs-attr">onSubmitEditing</span>=<span class="hljs-string">{Keyboard.dismiss}</span> /&gt;</span>;
+}
+
+const s = StyleSheet.create({
+   input:{
+    margin:60,
+    padding: 10,
+    borderWidth: 0.5,
+    borderRadius: 4,
+    backgroundColor: "#fff"
+   }
+})
+
+</span></code></pre></div><div class="desktop-friendly-snack" style="margin-top: 15px; margin-bottom: 15px"><div
+        data-snack-name="Keyboard Function Component Example"
+        data-snack-description="Example usage"
+        data-snack-code="%0Aimport%20React%2C%20%7B%20useEffect%20%7D%20from%20%22react%22%3B%0Aimport%20%7B%20Keyboard%2C%20TextInput%2C%20StyleSheet%20%7D%20from%20%22react-native%22%3B%0A%0Aexport%20default%20function%20Example()%20%7B%0A%0A%20%20useEffect(()%20%3D%3E%20%7B%0A%20%20%20%20Keyboard.addListener(%22keyboardDidShow%22%2C%20_keyboardDidShow)%3B%0A%20%20%20%20Keyboard.addListener(%22keyboardDidHide%22%2C%20_keyboardDidHide)%3B%0A%0A%20%20%20%20%2F%2F%20cleanup%20function%0A%20%20%20%20return%20()%20%3D%3E%20%7B%0A%20%20%20%20%20%20Keyboard.removeListener(%22keyboardDidShow%22%2C%20_keyboardDidShow)%3B%0A%20%20%20%20%20%20Keyboard.removeListener(%22keyboardDidHide%22%2C%20_keyboardDidHide)%3B%0A%20%20%20%20%7D%3B%0A%20%20%7D%2C%20%5B%5D)%3B%0A%0A%20%20const%20_keyboardDidShow%20%3D%20()%20%3D%3E%20%7B%0A%20%20%20%20alert(%22Keyboard%20Shown%22)%3B%0A%20%20%7D%3B%0A%0A%20%20const%20_keyboardDidHide%20%3D%20()%20%3D%3E%20%7B%0A%20%20%20%20alert(%22Keyboard%20Hidden%22)%3B%0A%20%20%7D%3B%0A%0A%20%20return%20%3CTextInput%20style%3D%7Bs.input%7D%20placeholder%3D'Click%20here%20...'%20onSubmitEditing%3D%7BKeyboard.dismiss%7D%20%2F%3E%3B%0A%7D%0A%0Aconst%20s%20%3D%20StyleSheet.create(%7B%0A%20%20%20input%3A%7B%0A%20%20%20%20margin%3A60%2C%0A%20%20%20%20padding%3A%2010%2C%0A%20%20%20%20borderWidth%3A%200.5%2C%0A%20%20%20%20borderRadius%3A%204%2C%0A%20%20%20%20backgroundColor%3A%20%22%23fff%22%0A%20%20%20%7D%0A%7D)%0A%0A"
+        data-snack-platform="web"
+        data-snack-supported-platforms=ios,android,web
+        data-snack-preview="true"
+        style="
+          overflow: hidden;
+          background: #fafafa;
+          border: 1px solid rgba(0,0,0,.16);
+          border-radius: 4px;
+          height: 514px;
+          width: 100%;
+        "
+      ></div></div></div><p><block class="classical syntax" /></p>
+<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React, {Component} <span class="hljs-keyword">from</span> <span class="hljs-string">'react'</span>;
+<span class="hljs-keyword">import</span> {Keyboard, TextInput , StyleSheet} <span class="hljs-keyword">from</span> <span class="hljs-string">'react-native'</span>;
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Example</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">Component</span> </span>{
+  componentDidMount() {
+    <span class="hljs-keyword">this</span>.keyboardDidShowListener = Keyboard.addListener(
+      <span class="hljs-string">'keyboardDidShow'</span>,
+      <span class="hljs-keyword">this</span>._keyboardDidShow,
+    );
+    <span class="hljs-keyword">this</span>.keyboardDidHideListener = Keyboard.addListener(
+      <span class="hljs-string">'keyboardDidHide'</span>,
+      <span class="hljs-keyword">this</span>._keyboardDidHide,
+    );
+  }
+
+  componentWillUnmount() {
+    <span class="hljs-keyword">this</span>.keyboardDidShowListener.remove();
+    <span class="hljs-keyword">this</span>.keyboardDidHideListener.remove();
+  }
+
+  _keyboardDidShow() {
+    alert(<span class="hljs-string">'Keyboard Shown'</span>);
+  }
+
+  _keyboardDidHide() {
+    alert(<span class="hljs-string">'Keyboard Hidden'</span>);
+  }
+
+  render() {
+    <span class="hljs-keyword">return</span> <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">TextInput</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{s.input}</span> <span class="hljs-attr">placeholder</span>=<span class="hljs-string">'Click here ...'</span> <span class="hljs-attr">onSubmitEditing</span>=<span class="hljs-string">{Keyboard.dismiss}</span> /&gt;</span>;
+  }
+}
+
+const s = StyleSheet.create({
+   input:{
+    margin:60,
+    padding: 10,
+    borderWidth: 0.5,
+    borderRadius: 4,
+    backgroundColor: "#fff"
+   }
+})
+</span></code></pre></div><div class="desktop-friendly-snack" style="margin-top: 15px; margin-bottom: 15px"><div
+        data-snack-name="Keyboard Class Component Example"
+        data-snack-description="Example usage"
+        data-snack-code="import%20React%2C%20%7BComponent%7D%20from%20'react'%3B%0Aimport%20%7BKeyboard%2C%20TextInput%20%2C%20StyleSheet%7D%20from%20'react-native'%3B%0A%0Aexport%20default%20class%20Example%20extends%20Component%20%7B%0A%20%20componentDidMount()%20%7B%0A%20%20%20%20this.keyboardDidShowListener%20%3D%20Keyboard.addListener(%0A%20%20%20%20%20%20'keyboardDidShow'%2C%0A%20%20%20%20%20%20this._keyboardDidShow%2C%0A%20%20%20%20)%3B%0A%20%20%20%20this.keyboardDidHideListener%20%3D%20Keyboard.addListener(%0A%20%20%20%20%20%20'keyboardDidHide'%2C%0A%20%20%20%20%20%20this._keyboardDidHide%2C%0A%20%20%20%20)%3B%0A%20%20%7D%0A%0A%20%20componentWillUnmount()%20%7B%0A%20%20%20%20this.keyboardDidShowListener.remove()%3B%0A%20%20%20%20this.keyboardDidHideListener.remove()%3B%0A%20%20%7D%0A%0A%20%20_keyboardDidShow()%20%7B%0A%20%20%20%20alert('Keyboard%20Shown')%3B%0A%20%20%7D%0A%0A%20%20_keyboardDidHide()%20%7B%0A%20%20%20%20alert('Keyboard%20Hidden')%3B%0A%20%20%7D%0A%0A%20%20render()%20%7B%0A%20%20%20%20return%20%3CTextInput%20style%3D%7Bs.input%7D%20placeholder%3D'Click%20here%20...'%20onSubmitEditing%3D%7BKeyboard.dismiss%7D%20%2F%3E%3B%0A%20%20%7D%0A%7D%0A%0Aconst%20s%20%3D%20StyleSheet.create(%7B%0A%20%20%20input%3A%7B%0A%20%20%20%20margin%3A60%2C%0A%20%20%20%20padding%3A%2010%2C%0A%20%20%20%20borderWidth%3A%200.5%2C%0A%20%20%20%20borderRadius%3A%204%2C%0A%20%20%20%20backgroundColor%3A%20%22%23fff%22%0A%20%20%20%7D%0A%7D)%0A"
+        data-snack-platform="web"
+        data-snack-supported-platforms=ios,android,web
+        data-snack-preview="true"
+        style="
+          overflow: hidden;
+          background: #fafafa;
+          border: 1px solid rgba(0,0,0,.16);
+          border-radius: 4px;
+          height: 514px;
+          width: 100%;
+        "
+      ></div></div></div><p><block class="endBlock syntax" /></p>
 <hr>
 <h1><a class="anchor" aria-hidden="true" id="reference"></a><a href="#reference" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Reference</h1>
 <h2><a class="anchor" aria-hidden="true" id="methods"></a><a href="#methods" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Methods</h2>
@@ -167,7 +257,12 @@
 <pre><code class="hljs css language-jsx"><span class="token keyword">static</span> <span class="token function">dismiss</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
 </code></pre>
 <p>Dismisses the active keyboard and removes focus.</p>
-</span></div></article></div><div class="docs-prevnext"><a class="docs-prev button" href="/docs/next/interactionmanager"><span class="arrow-prev">← </span><span class="function-name-prevnext">InteractionManager</span></a><a class="docs-next button" href="/docs/next/layoutanimation"><span class="function-name-prevnext">LayoutAnimation</span><span class="arrow-next"> →</span></a></div></div></div><nav class="onPageNav"><ul class="toc-headings"><li><a href="#methods">Methods</a><ul class="toc-headings"><li><a href="#addlistener"><code>addListener()</code></a></li><li><a href="#removelistener"><code>removeListener()</code></a></li><li><a href="#removealllisteners"><code>removeAllListeners()</code></a></li><li><a href="#dismiss"><code>dismiss()</code></a></li></ul></li></ul></nav></div><footer class="nav-footer" id="footer"><section class="sitemap"><div><h5>Docs</h5><a href="/docs/getting-started.html">Getting Started</a><a href="/docs/tutorial.html">Tutorial</a><a href="/docs/components-and-apis.html">Components and APIs</a><a href="/docs/more-resources.html">More Resources</a></div><div><h5>Community</h5><a href="/help.html">The React Native Community</a><a href="/showcase.html">Who&#x27;s using React Native?</a><a href="http://stackoverflow.com/questions/tagged/react-native" target="_blank">Ask Questions on Stack Overflow</a><a href="https://github.com/facebook/react-native/blob/master/CONTRIBUTING.md">Contributor Guide</a><a href="https://dev.to/t/reactnative" target="_blank">DEV Community</a></div><div><h5>More Resources</h5><a href="/blog/">Blog</a><a href="https://twitter.com/reactnative" target="_blank">Twitter</a><a href="https://github.com/facebook/react-native" target="_blank">GitHub</a><a href="http://reactjs.org" target="_blank">React</a></div></section><a href="https://code.facebook.com/projects/" target="_blank" class="fbOpenSource"><img src="/img/oss_logo.png" alt="Facebook Open Source" width="170" height="45"/></a><section class="copyright">Copyright © 2020 Facebook Inc.</section></footer></div><script type="text/javascript" src="https://cdn.jsdelivr.net/docsearch.js/1/docsearch.min.js"></script><script>window.fbAsyncInit = function() {FB.init({appId:'1677033832619985',xfbml:true,version:'v2.7'});};(function(d, s, id){var js, fjs = d.getElementsByTagName(s)[0];if (d.getElementById(id)) {return;}js = d.createElement(s); js.id = id;js.src = '//connect.facebook.net/en_US/sdk.js';fjs.parentNode.insertBefore(js, fjs);}(document, 'script','facebook-jssdk'));
+<hr>
+<h3><a class="anchor" aria-hidden="true" id="schedulelayoutanimation"></a><a href="#schedulelayoutanimation" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>scheduleLayoutAnimation</code></h3>
+<pre><code class="hljs css language-jsx"><span class="token keyword">static</span> <span class="token function">scheduleLayoutAnimation</span><span class="token punctuation">(</span>event<span class="token punctuation">)</span>
+</code></pre>
+<p>Useful for syncing TextInput (or other keyboard accessory view) size of position changes with keyboard movements.</p>
+</span></div></article></div><div class="docs-prevnext"><a class="docs-prev button" href="/docs/next/interactionmanager"><span class="arrow-prev">← </span><span class="function-name-prevnext">InteractionManager</span></a><a class="docs-next button" href="/docs/next/layoutanimation"><span class="function-name-prevnext">LayoutAnimation</span><span class="arrow-next"> →</span></a></div></div></div><nav class="onPageNav"><ul class="toc-headings"><li><a href="#methods">Methods</a><ul class="toc-headings"><li><a href="#addlistener"><code>addListener()</code></a></li><li><a href="#removelistener"><code>removeListener()</code></a></li><li><a href="#removealllisteners"><code>removeAllListeners()</code></a></li><li><a href="#dismiss"><code>dismiss()</code></a></li><li><a href="#schedulelayoutanimation"><code>scheduleLayoutAnimation</code></a></li></ul></li></ul></nav></div><footer class="nav-footer" id="footer"><section class="sitemap"><div><h5>Docs</h5><a href="/docs/getting-started.html">Getting Started</a><a href="/docs/tutorial.html">Tutorial</a><a href="/docs/components-and-apis.html">Components and APIs</a><a href="/docs/more-resources.html">More Resources</a></div><div><h5>Community</h5><a href="/help.html">The React Native Community</a><a href="/showcase.html">Who&#x27;s using React Native?</a><a href="http://stackoverflow.com/questions/tagged/react-native" target="_blank">Ask Questions on Stack Overflow</a><a href="https://github.com/facebook/react-native/blob/master/CONTRIBUTING.md">Contributor Guide</a><a href="https://dev.to/t/reactnative" target="_blank">DEV Community</a></div><div><h5>More Resources</h5><a href="/blog/">Blog</a><a href="https://twitter.com/reactnative" target="_blank">Twitter</a><a href="https://github.com/facebook/react-native" target="_blank">GitHub</a><a href="http://reactjs.org" target="_blank">React</a></div></section><a href="https://code.facebook.com/projects/" target="_blank" class="fbOpenSource"><img src="/img/oss_logo.png" alt="Facebook Open Source" width="170" height="45"/></a><section class="copyright">Copyright © 2020 Facebook Inc.</section></footer></div><script type="text/javascript" src="https://cdn.jsdelivr.net/docsearch.js/1/docsearch.min.js"></script><script>window.fbAsyncInit = function() {FB.init({appId:'1677033832619985',xfbml:true,version:'v2.7'});};(function(d, s, id){var js, fjs = d.getElementsByTagName(s)[0];if (d.getElementById(id)) {return;}js = d.createElement(s); js.id = id;js.src = '//connect.facebook.net/en_US/sdk.js';fjs.parentNode.insertBefore(js, fjs);}(document, 'script','facebook-jssdk'));
                 </script><script>window.twttr=(function(d,s, id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return t;js=d.createElement(s);js.id=id;js.src='https://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js, fjs);t._e = [];t.ready = function(f) {t._e.push(f);};return t;}(document, 'script', 'twitter-wjs'));</script><script>
                 document.addEventListener('keyup', function(e) {
                   if (e.target !== document.body) {
