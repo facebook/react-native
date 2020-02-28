@@ -11,8 +11,6 @@ package com.facebook.react.viewmanagers;
 
 import android.view.View;
 import androidx.annotation.Nullable;
-
-import com.facebook.react.bridge.ColorPropConverter;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.uimanager.BaseViewManagerDelegate;
 import com.facebook.react.uimanager.BaseViewManagerInterface;
@@ -35,13 +33,13 @@ public class SegmentedControlManagerDelegate<T extends View, U extends BaseViewM
         mViewManager.setEnabled(view, value == null ? true : (boolean) value);
         break;
       case "tintColor":
-        mViewManager.setTintColor(view, ColorPropConverter.getColor(value, view.getContext()));
+        mViewManager.setTintColor(view, value == null ? null : ((Double) value).intValue());
         break;
       case "textColor":
-        mViewManager.setTextColor(view, ColorPropConverter.getColor(value, view.getContext()));
+        mViewManager.setTextColor(view, value == null ? null : ((Double) value).intValue());
         break;
       case "backgroundColor":
-        mViewManager.setBackgroundColor(view, ColorPropConverter.getColor(value, view.getContext()));
+        mViewManager.setBackgroundColor(view, value == null ? null : ((Double) value).intValue());
         break;
       case "momentary":
         mViewManager.setMomentary(view, value == null ? false : (boolean) value);

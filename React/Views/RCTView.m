@@ -795,11 +795,15 @@ static CGFloat RCTDefaultIfNegativeTo(CGFloat defaultValue, CGFloat x) {
   // correctly clip the subviews.
 
   CGColorRef backgroundColor;
+#if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 130000
   if (@available(iOS 13.0, *)) {
     backgroundColor = [_backgroundColor resolvedColorWithTraitCollection:self.traitCollection].CGColor;
   } else {
     backgroundColor = _backgroundColor.CGColor;
   }
+#else
+  backgroundColor = _backgroundColor.CGColor;
+#endif
 
   if (useIOSBorderRendering) {
     layer.cornerRadius = cornerRadii.topLeft;

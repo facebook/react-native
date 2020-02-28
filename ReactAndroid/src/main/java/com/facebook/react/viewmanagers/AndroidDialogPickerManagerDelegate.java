@@ -11,8 +11,6 @@ package com.facebook.react.viewmanagers;
 
 import android.view.View;
 import androidx.annotation.Nullable;
-
-import com.facebook.react.bridge.ColorPropConverter;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.uimanager.BaseViewManagerDelegate;
 import com.facebook.react.uimanager.BaseViewManagerInterface;
@@ -26,7 +24,7 @@ public class AndroidDialogPickerManagerDelegate<T extends View, U extends BaseVi
   public void setProperty(T view, String propName, @Nullable Object value) {
     switch (propName) {
       case "color":
-        mViewManager.setColor(view, ColorPropConverter.getColor(value, view.getContext()));
+        mViewManager.setColor(view, value == null ? null : ((Double) value).intValue());
         break;
       case "enabled":
         mViewManager.setEnabled(view, value == null ? true : (boolean) value);
