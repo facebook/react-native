@@ -35,6 +35,9 @@ public class TextAttributeProps {
 
   private static final int DEFAULT_TEXT_SHADOW_COLOR = 0x55000000;
 
+  protected boolean mIsAttachment = false;
+  protected float mAttachmentWidth;
+  protected float mAttachmentHeight;
   protected float mLineHeight = Float.NaN;
   protected boolean mIsColorSet = false;
   protected boolean mAllowFontScaling = true;
@@ -126,6 +129,21 @@ public class TextAttributeProps {
     setTextShadowRadius(getIntProp(PROP_SHADOW_RADIUS, 1));
     setTextShadowColor(getIntProp(PROP_SHADOW_COLOR, DEFAULT_TEXT_SHADOW_COLOR));
     setTextTransform(getStringProp(PROP_TEXT_TRANSFORM));
+    setAttachmentHeight(getFloatProp(ViewProps.HEIGHT, UNSET));
+    setAttachmentWidth(getFloatProp(ViewProps.WIDTH, UNSET));
+    setIsAttachment(getBooleanProp(ViewProps.IS_ATTACHMENT, false));
+  }
+
+  private void setIsAttachment(boolean isAttachment) {
+    mIsAttachment = isAttachment;
+  }
+
+  private void setAttachmentWidth(float attachmentWidth) {
+    mAttachmentWidth = attachmentWidth;
+  }
+
+  private void setAttachmentHeight(float attachmentHeight) {
+    mAttachmentHeight = attachmentHeight;
   }
 
   private boolean getBooleanProp(String name, boolean defaultValue) {
