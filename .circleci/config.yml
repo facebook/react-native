@@ -378,14 +378,14 @@ jobs:
       - run:
           name: Configure Environment Variables
           command: |
-            echo 'export PATH=/usr/local/opt/node@8/bin:$PATH' >> $BASH_ENV
+            echo 'export PATH=/usr/local/opt/node@10/bin:$PATH' >> $BASH_ENV
             source $BASH_ENV
 
       # Brew
       - with_brew_cache_span:
           steps:
             - brew_install:
-                package: node@8
+                package: node@10
             - run: HOMEBREW_NO_AUTO_UPDATE=1 brew tap wix/brew >/dev/null
             - brew_install:
                 package: applesimutils
