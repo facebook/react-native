@@ -17,6 +17,15 @@
 namespace facebook {
 namespace react {
 
+inline ShadowView shadowViewFromShadowNode(ShadowNode const &shadowNode) {
+  auto shadowView = ShadowView{shadowNode};
+  // Clearing `props` and `state` (which we don't use) allows avoiding retain
+  // cycles.
+  shadowView.props = nullptr;
+  shadowView.state = nullptr;
+  return shadowView;
+}
+
 AttributedString BaseTextShadowNode::getAttributedString(
     TextAttributes const &textAttributes,
     ShadowNode const &parentNode) {
@@ -35,7 +44,7 @@ AttributedString BaseTextShadowNode::getAttributedString(
       // `attributedString` causes a retain cycle (besides that fact that we
       // don't need it at all). Storing a `ShadowView` instance instead of
       // `ShadowNode` should properly fix this problem.
-      fragment.parentShadowView = ShadowView(parentNode);
+      fragment.parentShadowView = shadowViewFromShadowNode(parentNode);
       attributedString.appendFragment(fragment);
       continue;
     }
@@ -56,7 +65,7 @@ AttributedString BaseTextShadowNode::getAttributedString(
     // Any other kind of ShadowNode
     auto fragment = AttributedString::Fragment{};
     fragment.string = AttributedString::Fragment::AttachmentCharacter();
-    fragment.parentShadowView = ShadowView(*childNode);
+    fragment.parentShadowView = shadowViewFromShadowNode(*childNode);
     fragment.textAttributes = textAttributes;
     attributedString.appendFragment(fragment);
   }
