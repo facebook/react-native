@@ -1357,7 +1357,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
     NSData *sourceCode = source.data;
     __strong RCTCxxBridge *strongSelf = weakSelf;
     if (strongSelf->_reactInstance) {
-      [strongSelf executeApplicationScript:sourceCode url:pathURL async:NO];
+      [strongSelf executeApplicationScript:sourceCode url:pathURL async:YES];
     }
     dispatch_group_leave(group);
         
