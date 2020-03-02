@@ -100,7 +100,163 @@
 <li><a href="/docs/next/easing#inout"><code>inOut</code></a> makes any easing function symmetrical</li>
 <li><a href="/docs/next/easing#out"><code>out</code></a> runs an easing function backwards</li>
 </ul>
-<hr>
+<h3><a class="anchor" aria-hidden="true" id="example"></a><a href="#example" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Example</h3>
+<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React <span class="hljs-keyword">from</span> <span class="hljs-string">"react"</span>;
+<span class="hljs-keyword">import</span> { Animated, Easing, SectionList, StatusBar, StyleSheet, Text, TouchableOpacity, View } <span class="hljs-keyword">from</span> <span class="hljs-string">"react-native"</span>;
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> App = <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
+  <span class="hljs-keyword">let</span> opacity = <span class="hljs-keyword">new</span> Animated.Value(<span class="hljs-number">0</span>);
+
+  <span class="hljs-keyword">const</span> animate = <span class="hljs-function"><span class="hljs-params">easing</span> =&gt;</span> {
+    opacity.setValue(<span class="hljs-number">0</span>);
+    Animated.timing(opacity, {
+      <span class="hljs-attr">toValue</span>: <span class="hljs-number">1</span>,
+      <span class="hljs-attr">duration</span>: <span class="hljs-number">1200</span>,
+      easing
+    }).start();
+  };
+
+  <span class="hljs-keyword">const</span> size = opacity.interpolate({
+    <span class="hljs-attr">inputRange</span>: [<span class="hljs-number">0</span>, <span class="hljs-number">1</span>],
+    <span class="hljs-attr">outputRange</span>: [<span class="hljs-number">0</span>, <span class="hljs-number">80</span>]
+  });
+
+  <span class="hljs-keyword">const</span> animatedStyles = [
+    styles.box,
+    {
+      opacity,
+      <span class="hljs-attr">width</span>: size,
+      <span class="hljs-attr">height</span>: size
+    }
+  ];
+
+  <span class="hljs-keyword">return</span> (
+    &lt;View style={styles.container}&gt;
+      &lt;StatusBar hidden={true} /&gt;
+      &lt;Text style={styles.title}&gt;
+        Press rows below to preview the Easing!
+      &lt;/Text&gt;
+      &lt;View style={styles.boxContainer}&gt;
+        &lt;Animated.View style={animatedStyles} /&gt;
+      &lt;/View&gt;
+      &lt;SectionList
+        style={styles.list}
+        sections={SECTIONS}
+        keyExtractor={(item) =&gt; item.title}
+        renderItem={({ item }) =&gt; (
+          &lt;TouchableOpacity 
+            onPress={() =&gt; animate(item.easing)} 
+            style={styles.listRow}
+          &gt;
+            &lt;Text&gt;{item.title}&lt;/Text&gt;
+          &lt;/TouchableOpacity&gt;
+        )}
+        renderSectionHeader={({ section: { title } }) =&gt; (
+          &lt;Text style={styles.listHeader}&gt;{title}&lt;/Text&gt;
+        )}
+      /&gt;
+    &lt;/View&gt;
+  );
+};
+
+const SECTIONS = [
+  {
+    title: "Predefined animations",
+    data: [
+      { title: "Bounce", easing: Easing.bounce },
+      { title: "Ease", easing: Easing.ease },
+      { title: "Elastic", easing: Easing.elastic(4) }
+    ]
+  },
+  {
+    title: "Standard functions",
+    data: [
+      { title: "Linear", easing: Easing.linear },
+      { title: "Quad", easing: Easing.quad },
+      { title: "Cubic", easing: Easing.cubic }
+    ]
+  },
+  {
+    title: "Additional functions",
+    data: [
+      {
+        title: "Bezier",
+        easing: Easing.bezier(0, 2, 1, -1)
+      },
+      { title: "Circle", easing: Easing.circle },
+      { title: "Sin", easing: Easing.sin },
+      { title: "Exp", easing: Easing.exp }
+    ]
+  },
+  {
+    title: "Combinations",
+    data: [
+      {
+        title: "In + Bounce",
+        easing: Easing.in(Easing.bounce)
+      },
+      {
+        title: "Out + Exp",
+        easing: Easing.out(Easing.exp)
+      },
+      {
+        title: "InOut + Elastic",
+        easing: Easing.inOut(Easing.elastic(1))
+      }
+    ]
+  }
+];
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: "#20232a"
+  },
+  title: {
+    marginTop: 10,
+    textAlign: "center",
+    color: "#61dafb"
+  },
+  boxContainer: {
+    height: 160,
+    alignItems: "center"
+  },
+  box: {
+    marginTop: 32,
+    borderRadius: 4,
+    backgroundColor: "#61dafb"
+  },
+  list: {
+    backgroundColor: "#fff"
+  },
+  listHeader: {
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    backgroundColor: "#f4f4f4",
+    color: "#999",
+    fontSize: 12,
+    textTransform: "uppercase"
+  },
+  listRow: {
+    padding: 8
+  }
+});
+</code></pre></div><div class="desktop-friendly-snack" style="margin-top: 15px; margin-bottom: 15px"><div
+        data-snack-name="Easing Demo"
+        data-snack-description="Example usage"
+        data-snack-code="import%20React%20from%20%22react%22%3B%0Aimport%20%7B%20Animated%2C%20Easing%2C%20SectionList%2C%20StatusBar%2C%20StyleSheet%2C%20Text%2C%20TouchableOpacity%2C%20View%20%7D%20from%20%22react-native%22%3B%0A%0Aexport%20default%20App%20%3D%20()%20%3D%3E%20%7B%0A%20%20let%20opacity%20%3D%20new%20Animated.Value(0)%3B%0A%0A%20%20const%20animate%20%3D%20easing%20%3D%3E%20%7B%0A%20%20%20%20opacity.setValue(0)%3B%0A%20%20%20%20Animated.timing(opacity%2C%20%7B%0A%20%20%20%20%20%20toValue%3A%201%2C%0A%20%20%20%20%20%20duration%3A%201200%2C%0A%20%20%20%20%20%20easing%0A%20%20%20%20%7D).start()%3B%0A%20%20%7D%3B%0A%0A%20%20const%20size%20%3D%20opacity.interpolate(%7B%0A%20%20%20%20inputRange%3A%20%5B0%2C%201%5D%2C%0A%20%20%20%20outputRange%3A%20%5B0%2C%2080%5D%0A%20%20%7D)%3B%0A%0A%20%20const%20animatedStyles%20%3D%20%5B%0A%20%20%20%20styles.box%2C%0A%20%20%20%20%7B%0A%20%20%20%20%20%20opacity%2C%0A%20%20%20%20%20%20width%3A%20size%2C%0A%20%20%20%20%20%20height%3A%20size%0A%20%20%20%20%7D%0A%20%20%5D%3B%0A%0A%20%20return%20(%0A%20%20%20%20%3CView%20style%3D%7Bstyles.container%7D%3E%0A%20%20%20%20%20%20%3CStatusBar%20hidden%3D%7Btrue%7D%20%2F%3E%0A%20%20%20%20%20%20%3CText%20style%3D%7Bstyles.title%7D%3E%0A%20%20%20%20%20%20%20%20Press%20rows%20below%20to%20preview%20the%20Easing!%0A%20%20%20%20%20%20%3C%2FText%3E%0A%20%20%20%20%20%20%3CView%20style%3D%7Bstyles.boxContainer%7D%3E%0A%20%20%20%20%20%20%20%20%3CAnimated.View%20style%3D%7BanimatedStyles%7D%20%2F%3E%0A%20%20%20%20%20%20%3C%2FView%3E%0A%20%20%20%20%20%20%3CSectionList%0A%20%20%20%20%20%20%20%20style%3D%7Bstyles.list%7D%0A%20%20%20%20%20%20%20%20sections%3D%7BSECTIONS%7D%0A%20%20%20%20%20%20%20%20keyExtractor%3D%7B(item)%20%3D%3E%20item.title%7D%0A%20%20%20%20%20%20%20%20renderItem%3D%7B(%7B%20item%20%7D)%20%3D%3E%20(%0A%20%20%20%20%20%20%20%20%20%20%3CTouchableOpacity%20%0A%20%20%20%20%20%20%20%20%20%20%20%20onPress%3D%7B()%20%3D%3E%20animate(item.easing)%7D%20%0A%20%20%20%20%20%20%20%20%20%20%20%20style%3D%7Bstyles.listRow%7D%0A%20%20%20%20%20%20%20%20%20%20%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%3CText%3E%7Bitem.title%7D%3C%2FText%3E%0A%20%20%20%20%20%20%20%20%20%20%3C%2FTouchableOpacity%3E%0A%20%20%20%20%20%20%20%20)%7D%0A%20%20%20%20%20%20%20%20renderSectionHeader%3D%7B(%7B%20section%3A%20%7B%20title%20%7D%20%7D)%20%3D%3E%20(%0A%20%20%20%20%20%20%20%20%20%20%3CText%20style%3D%7Bstyles.listHeader%7D%3E%7Btitle%7D%3C%2FText%3E%0A%20%20%20%20%20%20%20%20)%7D%0A%20%20%20%20%20%20%2F%3E%0A%20%20%20%20%3C%2FView%3E%0A%20%20)%3B%0A%7D%3B%0A%0Aconst%20SECTIONS%20%3D%20%5B%0A%20%20%7B%0A%20%20%20%20title%3A%20%22Predefined%20animations%22%2C%0A%20%20%20%20data%3A%20%5B%0A%20%20%20%20%20%20%7B%20title%3A%20%22Bounce%22%2C%20easing%3A%20Easing.bounce%20%7D%2C%0A%20%20%20%20%20%20%7B%20title%3A%20%22Ease%22%2C%20easing%3A%20Easing.ease%20%7D%2C%0A%20%20%20%20%20%20%7B%20title%3A%20%22Elastic%22%2C%20easing%3A%20Easing.elastic(4)%20%7D%0A%20%20%20%20%5D%0A%20%20%7D%2C%0A%20%20%7B%0A%20%20%20%20title%3A%20%22Standard%20functions%22%2C%0A%20%20%20%20data%3A%20%5B%0A%20%20%20%20%20%20%7B%20title%3A%20%22Linear%22%2C%20easing%3A%20Easing.linear%20%7D%2C%0A%20%20%20%20%20%20%7B%20title%3A%20%22Quad%22%2C%20easing%3A%20Easing.quad%20%7D%2C%0A%20%20%20%20%20%20%7B%20title%3A%20%22Cubic%22%2C%20easing%3A%20Easing.cubic%20%7D%0A%20%20%20%20%5D%0A%20%20%7D%2C%0A%20%20%7B%0A%20%20%20%20title%3A%20%22Additional%20functions%22%2C%0A%20%20%20%20data%3A%20%5B%0A%20%20%20%20%20%20%7B%0A%20%20%20%20%20%20%20%20title%3A%20%22Bezier%22%2C%0A%20%20%20%20%20%20%20%20easing%3A%20Easing.bezier(0%2C%202%2C%201%2C%20-1)%0A%20%20%20%20%20%20%7D%2C%0A%20%20%20%20%20%20%7B%20title%3A%20%22Circle%22%2C%20easing%3A%20Easing.circle%20%7D%2C%0A%20%20%20%20%20%20%7B%20title%3A%20%22Sin%22%2C%20easing%3A%20Easing.sin%20%7D%2C%0A%20%20%20%20%20%20%7B%20title%3A%20%22Exp%22%2C%20easing%3A%20Easing.exp%20%7D%0A%20%20%20%20%5D%0A%20%20%7D%2C%0A%20%20%7B%0A%20%20%20%20title%3A%20%22Combinations%22%2C%0A%20%20%20%20data%3A%20%5B%0A%20%20%20%20%20%20%7B%0A%20%20%20%20%20%20%20%20title%3A%20%22In%20%2B%20Bounce%22%2C%0A%20%20%20%20%20%20%20%20easing%3A%20Easing.in(Easing.bounce)%0A%20%20%20%20%20%20%7D%2C%0A%20%20%20%20%20%20%7B%0A%20%20%20%20%20%20%20%20title%3A%20%22Out%20%2B%20Exp%22%2C%0A%20%20%20%20%20%20%20%20easing%3A%20Easing.out(Easing.exp)%0A%20%20%20%20%20%20%7D%2C%0A%20%20%20%20%20%20%7B%0A%20%20%20%20%20%20%20%20title%3A%20%22InOut%20%2B%20Elastic%22%2C%0A%20%20%20%20%20%20%20%20easing%3A%20Easing.inOut(Easing.elastic(1))%0A%20%20%20%20%20%20%7D%0A%20%20%20%20%5D%0A%20%20%7D%0A%5D%3B%0A%0Aconst%20styles%20%3D%20StyleSheet.create(%7B%0A%20%20container%3A%20%7B%0A%20%20%20%20flex%3A%201%2C%0A%20%20%20%20backgroundColor%3A%20%22%2320232a%22%0A%20%20%7D%2C%0A%20%20title%3A%20%7B%0A%20%20%20%20marginTop%3A%2010%2C%0A%20%20%20%20textAlign%3A%20%22center%22%2C%0A%20%20%20%20color%3A%20%22%2361dafb%22%0A%20%20%7D%2C%0A%20%20boxContainer%3A%20%7B%0A%20%20%20%20height%3A%20160%2C%0A%20%20%20%20alignItems%3A%20%22center%22%0A%20%20%7D%2C%0A%20%20box%3A%20%7B%0A%20%20%20%20marginTop%3A%2032%2C%0A%20%20%20%20borderRadius%3A%204%2C%0A%20%20%20%20backgroundColor%3A%20%22%2361dafb%22%0A%20%20%7D%2C%0A%20%20list%3A%20%7B%0A%20%20%20%20backgroundColor%3A%20%22%23fff%22%0A%20%20%7D%2C%0A%20%20listHeader%3A%20%7B%0A%20%20%20%20paddingHorizontal%3A%208%2C%0A%20%20%20%20paddingVertical%3A%204%2C%0A%20%20%20%20backgroundColor%3A%20%22%23f4f4f4%22%2C%0A%20%20%20%20color%3A%20%22%23999%22%2C%0A%20%20%20%20fontSize%3A%2012%2C%0A%20%20%20%20textTransform%3A%20%22uppercase%22%0A%20%20%7D%2C%0A%20%20listRow%3A%20%7B%0A%20%20%20%20padding%3A%208%0A%20%20%7D%0A%7D)%3B%0A"
+        data-snack-platform="web"
+        data-snack-supported-platforms=ios,android,web
+        data-snack-preview="true"
+        style="
+          overflow: hidden;
+          background: #fafafa;
+          border: 1px solid rgba(0,0,0,.16);
+          border-radius: 4px;
+          height: 514px;
+          width: 100%;
+        "
+      ></div></div></div><hr>
 <h1><a class="anchor" aria-hidden="true" id="reference"></a><a href="#reference" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Reference</h1>
 <h2><a class="anchor" aria-hidden="true" id="methods"></a><a href="#methods" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Methods</h2>
 <h3><a class="anchor" aria-hidden="true" id="step0"></a><a href="#step0" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>step0()</code></h3>
