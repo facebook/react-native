@@ -699,42 +699,6 @@ type ImperativeMethods = $ReadOnly<{|
 
 const emptyFunctionThatReturnsTrue = () => true;
 
-function useFocusOnMount(
-  initialAutoFocus: ?boolean,
-  inputRef: {|
-    current: null | React.ElementRef<HostComponent<mixed>>,
-  |},
-) {
-  const initialAutoFocusValue = useRef<?boolean>(initialAutoFocus);
-
-  useEffect(() => {
-    // We only want to autofocus on initial mount.
-    // Since initialAutoFocusValue and inputRef will never change
-    // this should match the expected behavior
-    if (initialAutoFocusValue.current) {
-      const focus = () => {
-        if (inputRef.current != null) {
-          inputRef.current.focus();
-        }
-      };
-
-      let rafId;
-      if (Platform.OS === 'android') {
-        // On Android this needs to be executed in a rAF callback
-        // otherwise the keyboard opens then closes immediately.
-        rafId = requestAnimationFrame(focus);
-      } else {
-        focus();
-      }
-
-      return () => {
-        if (rafId != null) {
-          cancelAnimationFrame(rafId);
-        }
-      };
-    }
-  }, [initialAutoFocusValue, inputRef]);
-}
 /**
  * A foundational component for inputting text into the app via a
  * keyboard. Props provide configurability for several features, such as
@@ -934,8 +898,6 @@ function InternalTextInput(props: Props): React.Node {
     lastNativeSelection,
     text,
   ]);
-
-  useFocusOnMount(props.autoFocus, inputRef);
 
   useEffect(() => {
     const inputRefValue = inputRef.current;
