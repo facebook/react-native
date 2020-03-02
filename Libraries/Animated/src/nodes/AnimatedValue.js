@@ -239,6 +239,10 @@ class AnimatedValue extends AnimatedWithChildren {
   }
 
   _updateValue(value: number, flush: boolean): void {
+    if (value === undefined) {
+      throw new Error('Attempting to set value to undefined');
+    }
+
     this._value = value;
     if (flush) {
       _flush(this);
