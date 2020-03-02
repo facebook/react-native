@@ -103,7 +103,7 @@
     "metro-source-map": "0.58.0",
     "nullthrows": "^1.1.1",
     "pretty-format": "^24.9.0",
-    "promise": "^7.1.1",
+    "promise": "^8.0.3",
     "prop-types": "^15.7.2",
     "react-devtools-core": "^4.0.6",
     "react-refresh": "^0.4.0",
