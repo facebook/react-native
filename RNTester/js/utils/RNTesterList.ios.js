@@ -280,6 +280,11 @@ const APIExamples: Array<RNTesterExample> = [
     supportsTVOS: false,
   },
   {
+    key: 'PlatformColorExample',
+    module: require('../examples/PlatformColor/PlatformColorExample'),
+    supportsTVOS: true,
+  },
+  {
     key: 'PointerEventsExample',
     module: require('../examples/PointerEvents/PointerEventsExample'),
     supportsTVOS: false,

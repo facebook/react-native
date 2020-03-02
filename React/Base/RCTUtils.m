@@ -832,7 +832,7 @@ RCT_EXTERN NSString *__nullable RCTTempFilePath(NSString *extension, NSError **e
   return [directory stringByAppendingPathComponent:filename];
 }
 
-static void RCTGetRGBAColorComponents(CGColorRef color, CGFloat rgba[4])
+RCT_EXTERN void RCTGetRGBAColorComponents(CGColorRef color, CGFloat rgba[4])
 {
   CGColorSpaceModel model = CGColorSpaceGetModel(CGColorGetColorSpace(color));
   const CGFloat *components = CGColorGetComponents(color);

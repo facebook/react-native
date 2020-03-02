@@ -201,6 +201,10 @@ const APIExamples: Array<RNTesterExample> = [
     module: require('../examples/PermissionsAndroid/PermissionsExample'),
   },
   {
+    key: 'PlatformColorExample',
+    module: require('../examples/PlatformColor/PlatformColorExample'),
+  },
+  {
     key: 'PointerEventsExample',
     module: require('../examples/PointerEvents/PointerEventsExample'),
   },

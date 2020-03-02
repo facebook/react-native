@@ -94,6 +94,9 @@ import typeof RCTNativeAppEventEmitter from './Libraries/EventEmitter/RCTNativeA
 import typeof NativeModules from './Libraries/BatchedBridge/NativeModules';
 import typeof Platform from './Libraries/Utilities/Platform';
 import typeof processColor from './Libraries/StyleSheet/processColor';
+import typeof {PlatformColor} from './Libraries/StyleSheet/PlatformColorValueTypes';
+import typeof {DynamicColorIOS} from './Libraries/StyleSheet/PlatformColorValueTypesIOS';
+import typeof {ColorAndroid} from './Libraries/StyleSheet/PlatformColorValueTypesAndroid';
 import typeof RootTagContext from './Libraries/ReactNative/RootTagContext';
 import typeof DeprecatedColorPropType from './Libraries/DeprecatedPropTypes/DeprecatedColorPropType';
 import typeof DeprecatedEdgeInsetsPropType from './Libraries/DeprecatedPropTypes/DeprecatedEdgeInsetsPropType';
@@ -461,6 +464,18 @@ module.exports = {
   },
   get processColor(): processColor {
     return require('./Libraries/StyleSheet/processColor');
+  },
+  get PlatformColor(): PlatformColor {
+    return require('./Libraries/StyleSheet/PlatformColorValueTypes')
+      .PlatformColor;
+  },
+  get DynamicColorIOS(): DynamicColorIOS {
+    return require('./Libraries/StyleSheet/PlatformColorValueTypesIOS')
+      .DynamicColorIOS;
+  },
+  get ColorAndroid(): ColorAndroid {
+    return require('./Libraries/StyleSheet/PlatformColorValueTypesAndroid')
+      .ColorAndroid;
   },
   get requireNativeComponent(): <T>(
     uiViewClassName: string,

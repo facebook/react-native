@@ -506,6 +506,207 @@ RCT_CGSTRUCT_CONVERTER(CGAffineTransform, (@[
   @"a", @"b", @"c", @"d", @"tx", @"ty"
 ]))
 
+static NSString *const RCTFallback = @"fallback";
+static NSString *const RCTFallbackARGB = @"fallback-argb";
+static NSString *const RCTSelector = @"selector";
+static NSString *const RCTIndex = @"index";
+
+/** The following dictionary defines the react-native semantic colors for ios.
+ *  If the value for a given name is empty then the name itself
+ *  is used as the UIColor selector.
+ *  If the RCTSelector key is present then that value is used for a selector instead
+ *  of the key name.
+ *  If the given selector is not available on the running OS version then
+ *  the RCTFallback selector is used instead.
+ *  If the RCTIndex key is present then object returned from UIColor is an
+ *  NSArray and the object at index RCTIndex is to be used.
+ */
+static NSDictionary<NSString *, NSDictionary *>* RCTSemanticColorsMap()
+{
+  static NSDictionary<NSString *, NSDictionary *> *colorMap = nil;
+  if (colorMap == nil) {
+    colorMap = @{
+      // https://developer.apple.com/documentation/uikit/uicolor/ui_element_colors
+      // Label Colors
+      @"labelColor": @{ // iOS 13.0
+        RCTFallbackARGB: @(0xFF000000) // fallback for iOS<=12: RGBA returned by this semantic color in light mode on iOS 13
+      },
+      @"secondaryLabelColor": @{ // iOS 13.0
+        RCTFallbackARGB: @(0x993c3c43)
+      },
+      @"tertiaryLabelColor": @{ // iOS 13.0
+        RCTFallbackARGB: @(0x4c3c3c43)
+      },
+      @"quaternaryLabelColor": @{ // iOS 13.0
+        RCTFallbackARGB: @(0x2d3c3c43)
+      },
+      // Fill Colors
+      @"systemFillColor": @{ // iOS 13.0
+        RCTFallbackARGB: @(0x33787880)
+      },
+      @"secondarySystemFillColor": @{ // iOS 13.0
+        RCTFallbackARGB: @(0x28787880)
+      },
+      @"tertiarySystemFillColor": @{ // iOS 13.0
+        RCTFallbackARGB: @(0x1e767680)
+      },
+      @"quaternarySystemFillColor": @{ // iOS 13.0
+        RCTFallbackARGB: @(0x14747480)
+      },
+      // Text Colors
+      @"placeholderTextColor": @{ // iOS 13.0
+        RCTFallbackARGB: @(0x4c3c3c43)
+      },
+      // Standard Content Background Colors
+      @"systemBackgroundColor": @{ // iOS 13.0
+        RCTFallbackARGB: @(0xFFffffff)
+      },
+      @"secondarySystemBackgroundColor": @{ // iOS 13.0
+        RCTFallbackARGB: @(0xFFf2f2f7)
+      },
+      @"tertiarySystemBackgroundColor": @{ // iOS 13.0
+        RCTFallbackARGB: @(0xFFffffff)
+      },
+      // Grouped Content Background Colors
+      @"systemGroupedBackgroundColor": @{ // iOS 13.0
+        RCTFallbackARGB: @(0xFFf2f2f7)
+      },
+      @"secondarySystemGroupedBackgroundColor": @{ // iOS 13.0
+        RCTFallbackARGB: @(0xFFffffff)
+      },
+      @"tertiarySystemGroupedBackgroundColor": @{ // iOS 13.0
+        RCTFallbackARGB: @(0xFFf2f2f7)
+      },
+      // Separator Colors
+      @"separatorColor": @{ // iOS 13.0
+        RCTFallbackARGB: @(0x493c3c43)
+      },
+      @"opaqueSeparatorColor": @{ // iOS 13.0
+        RCTFallbackARGB: @(0xFFc6c6c8)
+      },
+      // Link Color
+      @"linkColor": @{ // iOS 13.0
+        RCTFallbackARGB: @(0xFF007aff)
+      },
+      // Nonadaptable Colors
+      @"darkTextColor": @{},
+      @"lightTextColor": @{},
+      // https://developer.apple.com/documentation/uikit/uicolor/standard_colors
+      // Adaptable Colors
+      @"systemBlueColor": @{},
+      @"systemBrownColor": @{ // iOS 13.0
+        RCTFallbackARGB: @(0xFFa2845e)
+      },
+      @"systemGreenColor": @{},
+      @"systemIndigoColor": @{ // iOS 13.0
+        RCTFallbackARGB: @(0xFF5856d6)
+      },
+      @"systemOrangeColor": @{},
+      @"systemPinkColor": @{},
+      @"systemPurpleColor": @{},
+      @"systemRedColor": @{},
+      @"systemTealColor": @{},
+      @"systemYellowColor": @{},
+      // Adaptable Gray Colors
+      @"systemGrayColor": @{},
+      @"systemGray2Color": @{ // iOS 13.0
+        RCTFallbackARGB: @(0xFFaeaeb2)
+      },
+      @"systemGray3Color": @{ // iOS 13.0
+        RCTFallbackARGB: @(0xFFc7c7cc)
+      },
+      @"systemGray4Color": @{ // iOS 13.0
+        RCTFallbackARGB: @(0xFFd1d1d6)
+      },
+      @"systemGray5Color": @{ // iOS 13.0
+        RCTFallbackARGB: @(0xFFe5e5ea)
+      },
+      @"systemGray6Color": @{ // iOS 13.0
+        RCTFallbackARGB: @(0xFFf2f2f7)
+      },
+#if DEBUG
+      // The follow exist for Unit Tests
+      @"unitTestFallbackColor": @{
+        RCTFallback: @"gridColor"
+      },
+      @"unitTestFallbackColorIOS": @{
+        RCTFallback: @"blueColor"
+      },
+      @"unitTestFallbackColorEven": @{
+        RCTSelector: @"unitTestFallbackColorEven",
+        RCTIndex: @0,
+        RCTFallback: @"controlAlternatingRowBackgroundColors"
+      },
+      @"unitTestFallbackColorOdd": @{
+        RCTSelector: @"unitTestFallbackColorOdd",
+        RCTIndex: @1,
+        RCTFallback: @"controlAlternatingRowBackgroundColors"
+      },
+#endif
+    };
+  }
+  return colorMap;
+}
+
+/** Returns a UIColor based on a semantic color name.
+ *  Returns nil if the semantic color name is invalid.
+ */
+static UIColor *RCTColorFromSemanticColorName(NSString *semanticColorName)
+{
+  NSDictionary<NSString *, NSDictionary *> *colorMap = RCTSemanticColorsMap();
+  UIColor *color = nil;
+  NSDictionary<NSString *, id> *colorInfo = colorMap[semanticColorName];
+  if (colorInfo) {
+    NSString *semanticColorSelector = colorInfo[RCTSelector];
+    if (semanticColorSelector == nil) {
+      semanticColorSelector = semanticColorName;
+    }
+    SEL selector = NSSelectorFromString(semanticColorSelector);
+    if (![UIColor respondsToSelector:selector]) {
+      NSNumber *fallbackRGB = colorInfo[RCTFallbackARGB];
+      if (fallbackRGB != nil) {
+        RCTAssert([fallbackRGB isKindOfClass:[NSNumber class]], @"fallback ARGB is not a number");
+        return [RCTConvert UIColor:fallbackRGB];
+      }
+      semanticColorSelector = colorInfo[RCTFallback];
+      selector = NSSelectorFromString(semanticColorSelector);
+    }
+    RCTAssert ([UIColor respondsToSelector:selector], @"RCTUIColor does not respond to a semantic color selector.");
+    Class klass = [UIColor class];
+    IMP imp = [klass methodForSelector:selector];
+    id (*getSemanticColorObject)(id, SEL) = (void *)imp;
+    id colorObject = getSemanticColorObject(klass, selector);
+    if ([colorObject isKindOfClass:[UIColor class]]) {
+      color = colorObject;
+    } else if ([colorObject isKindOfClass:[NSArray class]]) {
+      NSArray *colors = colorObject;
+      NSNumber *index = colorInfo[RCTIndex];
+      RCTAssert(index, @"index should not be null");
+      color = colors[[index unsignedIntegerValue]];
+    } else {
+      RCTAssert(false, @"selector return an unknown object type");
+    }
+  }
+  return color;
+}
+
+/** Returns an alphabetically sorted comma seperated list of the valid semantic color names
+ */
+static NSString *RCTSemanticColorNames()
+{
+  NSMutableString *names = [[NSMutableString alloc] init];
+  NSDictionary<NSString *, NSDictionary *> *colorMap = RCTSemanticColorsMap();
+  NSArray *allKeys = [[[colorMap allKeys] mutableCopy] sortedArrayUsingSelector:@selector(localizedCaseInsensitiveCompare:)];
+
+  for(id key in allKeys) {
+    if ([names length]) {
+      [names appendString:@", "];
+    }
+    [names appendString:key];
+  }
+  return names;
+}
+
 + (UIColor *)UIColor:(id)json
 {
   if (!json) {
@@ -525,6 +726,56 @@ RCT_CGSTRUCT_CONVERTER(CGAffineTransform, (@[
     CGFloat g = ((argb >> 8) & 0xFF) / 255.0;
     CGFloat b = (argb & 0xFF) / 255.0;
     return [UIColor colorWithRed:r green:g blue:b alpha:a];
+  } else if ([json isKindOfClass:[NSDictionary class]]) {
+    NSDictionary *dictionary = json;
+    id value = nil;
+    if ((value = [dictionary objectForKey:@"semantic"])) {
+      if ([value isKindOfClass:[NSString class]]) {
+        NSString *semanticName = value;
+        UIColor *color = RCTColorFromSemanticColorName(semanticName);
+        if (color == nil) {
+          RCTLogConvertError(json, [@"a UIColor.  Expected one of the following values: " stringByAppendingString:RCTSemanticColorNames()]);
+        }
+        return color;
+      } else if ([value isKindOfClass:[NSArray class]]) {
+        for (id name in value) {
+          UIColor *color = RCTColorFromSemanticColorName(name);
+          if (color != nil) {
+            return color;
+          }
+        }
+        RCTLogConvertError(json, [@"a UIColor.  None of the names in the array were one of the following values: " stringByAppendingString:RCTSemanticColorNames()]);
+        return nil;
+      }
+      RCTLogConvertError(json, @"a UIColor.  Expected either a single name or an array of names but got something else.");
+      return nil;
+    } else if ((value = [dictionary objectForKey:@"dynamic"])) {
+      NSDictionary *appearances = value;
+      id light = [appearances objectForKey:@"light"];
+      UIColor *lightColor = [RCTConvert UIColor:light];
+      id dark = [appearances objectForKey:@"dark"];
+      UIColor *darkColor = [RCTConvert UIColor:dark];
+      if (lightColor != nil && darkColor != nil) {
+#if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 130000
+        if (@available(iOS 13.0, *)) {
+          UIColor *color = [UIColor colorWithDynamicProvider:^UIColor * _Nonnull(UITraitCollection * _Nonnull collection) {
+            return collection.userInterfaceStyle == UIUserInterfaceStyleDark ? darkColor : lightColor;
+          }];
+          return color;
+        } else {
+#endif
+          return lightColor;
+#if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 130000
+        }
+#endif
+      } else {
+        RCTLogConvertError(json, @"a UIColor. Expected an iOS dynamic appearance aware color.");
+        return nil;
+      }
+    } else {
+      RCTLogConvertError(json, @"a UIColor. Expected an iOS semantic color or dynamic appearance aware color.");
+      return nil;
+    }
   } else {
     RCTLogConvertError(json, @"a UIColor. Did you forget to call processColor() on the JS side?");
     return nil;
