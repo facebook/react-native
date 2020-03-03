@@ -10,10 +10,10 @@
 
 'use strict';
 
+import * as React from 'react';
 const EmitterSubscription = require('../vendor/emitter/EmitterSubscription');
 const RCTDeviceEventEmitter = require('../EventEmitter/RCTDeviceEventEmitter');
 const PropTypes = require('prop-types');
-const React = require('react');
 const RootTagContext = require('./RootTagContext');
 const StyleSheet = require('../StyleSheet/StyleSheet');
 const View = require('../Components/View/View');
@@ -33,7 +33,7 @@ type State = {|
   hasError: boolean,
 |};
 
-type ContextType = {rootTag: number, ...};
+type ContextType = $ReadOnly<{|rootTag: number|}>;
 
 const AppContainerContext = React.createContext<ContextType>({rootTag: 0});
 
@@ -48,7 +48,7 @@ class AppContainer extends React.Component<Props, State> {
 
   static getDerivedStateFromError: any = undefined;
 
-  static Context: React$Context<ContextType> = AppContainerContext;
+  static Context: React.Context<ContextType> = AppContainerContext;
 
   static childContextTypes:
      | any		
@@ -59,7 +59,7 @@ class AppContainer extends React.Component<Props, State> {
     getChildContext(): ContextType {
      console.warn(
         'AppContainer has been migrated to the new Context API. ' +
-        'It is recommended to use AppContainer.Context.Consumer to consume the context.'
+        'It is recommended to use AppContainer.Context.Consumer to consume the rootTag.'
       );
      return {		
        rootTag: this.props.rootTag,		
