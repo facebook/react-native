@@ -11,6 +11,7 @@
 
 #import <RCTTest/RCTTestRunner.h>
 #import <React/RCTBridge.h>
+#import <React/RCTDevSettings.h>
 
 typedef struct {
   mach_vm_size_t mean;
@@ -35,6 +36,7 @@ mach_vm_size_t memoryFootprint(void);
 
 - (void)setUp
 {
+  RCTDevSettingsSetEnabled(NO);
   NSNotificationCenter *notificationCenter = NSNotificationCenter.defaultCenter;
   [notificationCenter addObserver:self
                          selector:@selector(javaScriptWillStartLoading:)
@@ -53,6 +55,7 @@ mach_vm_size_t memoryFootprint(void);
 - (void)tearDown
 {
   [NSNotificationCenter.defaultCenter removeObserver:self];
+  RCTDevSettingsSetEnabled(YES);
 }
 
 - (void)testStartupPerformance
