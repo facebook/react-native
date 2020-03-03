@@ -57,12 +57,16 @@ class AppContainer extends React.Component<Props, State> {
    };		
 
     getChildContext(): ContextType {
-     console.warn(
-        'AppContainer has been migrated to the new Context API. ' +
-        'It is recommended to use AppContainer.Context.Consumer to consume the rootTag.'
-      );
-     return {		
-       rootTag: this.props.rootTag,		
+      const that = this;
+
+      return {		
+       get rootTag() {
+         console.warn(
+          'AppContainer has been migrated to the new Context API. ' +
+          'It is recommended to use AppContainer.Context.Consumer to consume the rootTag.'
+         );
+         return that.props.rootTag;
+       } 
      };		
    }
 
