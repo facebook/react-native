@@ -54,7 +54,7 @@ class ShadowNodeTraits {
     // leaf.
     LeafYogaNode = 1 << 10,
 
-    // Inherits `LayoutableShadowNode` and calls `measure()`.
+    // Inherits `LayoutableShadowNode` and calls `measureContent()`.
     HasMeasure = 1 << 11,
 
     // Internal to `ShadowNode`; do not use it outside.

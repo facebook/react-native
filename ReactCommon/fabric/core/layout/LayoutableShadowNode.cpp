@@ -156,7 +156,7 @@ LayoutableShadowNode::getLayoutableChildNodes() const {
   return layoutableChildren;
 }
 
-Size LayoutableShadowNode::measure(LayoutConstraints layoutConstraints) const {
+Size LayoutableShadowNode::measureContent(LayoutConstraints layoutConstraints, LayoutContext layoutContext) const {
   return Size();
 }
 

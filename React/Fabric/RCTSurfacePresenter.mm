@@ -36,6 +36,12 @@
 
 using namespace facebook::react;
 
+static LayoutContext RCTCurrentLayoutContext() {
+  return {
+    .pointScaleFactor = RCTScreenScale(),
+  };
+}
+
 @interface RCTSurfacePresenter () <RCTSchedulerDelegate, RCTMountingManagerDelegate>
 @end
 
@@ -68,6 +74,7 @@ using namespace facebook::react;
     _observers = [NSMutableArray array];
 
     _scheduler = [self _createScheduler];
+
   }
 
   return self;
@@ -135,7 +142,7 @@ using namespace facebook::react;
                           surface:(RCTFabricSurface *)surface
 {
   std::shared_lock<better::shared_mutex> lock(_schedulerMutex);
-  LayoutContext layoutContext = {.pointScaleFactor = RCTScreenScale()};
+  LayoutContext layoutContext = RCTCurrentLayoutContext();
   LayoutConstraints layoutConstraints = {.minimumSize = RCTSizeFromCGSize(minimumSize),
                                          .maximumSize = RCTSizeFromCGSize(maximumSize)};
   return [_scheduler measureSurfaceWithLayoutConstraints:layoutConstraints
@@ -146,7 +153,7 @@ using namespace facebook::react;
 - (void)setMinimumSize:(CGSize)minimumSize maximumSize:(CGSize)maximumSize surface:(RCTFabricSurface *)surface
 {
   std::shared_lock<better::shared_mutex> lock(_schedulerMutex);
-  LayoutContext layoutContext = {.pointScaleFactor = RCTScreenScale()};
+  LayoutContext layoutContext = RCTCurrentLayoutContext();
   LayoutConstraints layoutConstraints = {.minimumSize = RCTSizeFromCGSize(minimumSize),
                                          .maximumSize = RCTSizeFromCGSize(maximumSize)};
   [_scheduler constraintSurfaceLayoutWithLayoutConstraints:layoutConstraints
@@ -255,7 +262,7 @@ using namespace facebook::react;
                                                                                tag:surface.rootTag];
   });
 
-  LayoutContext layoutContext = {.pointScaleFactor = RCTScreenScale()};
+  LayoutContext layoutContext = RCTCurrentLayoutContext();
 
   LayoutConstraints layoutConstraints = {.minimumSize = RCTSizeFromCGSize(surface.minimumSize),
                                          .maximumSize = RCTSizeFromCGSize(surface.maximumSize)};

@@ -359,7 +359,8 @@ YGSize YogaLayoutableShadowNode::yogaNodeMeasureCallbackConnector(
       break;
   }
 
-  auto size = shadowNodeRawPtr->measure({minimumSize, maximumSize});
+  auto size = shadowNodeRawPtr->measureContent({minimumSize, maximumSize},
+                                               *static_cast<LayoutContext *>(layoutContext));
 
   return YGSize{yogaFloatFromFloat(size.width),
                 yogaFloatFromFloat(size.height)};

@@ -55,6 +55,7 @@ AttributedString TextInputShadowNode::getAttributedString() const {
 
   attributedString.appendAttributedString(
       BaseTextShadowNode::getAttributedString(textAttributes, *this));
+
   return attributedString;
 }
 
@@ -78,7 +79,7 @@ void TextInputShadowNode::updateStateIfNeeded() {
 
 #pragma mark - LayoutableShadowNode
 
-Size TextInputShadowNode::measure(LayoutConstraints layoutConstraints) const {
+Size TextInputShadowNode::measureContent(LayoutConstraints layoutConstraints, LayoutContext layoutContext) const {
   return textLayoutManager_->measure(
       attributedStringBoxToMeasure(),
       getConcreteProps().getEffectiveParagraphAttributes(),

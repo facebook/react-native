@@ -83,7 +83,7 @@ ImageSource SliderShadowNode::getThumbImageSource() const {
 
 #pragma mark - LayoutableShadowNode
 
-Size SliderShadowNode::measure(LayoutConstraints layoutConstraints) const {
+Size SliderShadowNode::measureContent(LayoutConstraints layoutConstraints, LayoutContext layoutContext) const {
   if (SliderMeasurementsManager::shouldMeasureSlider()) {
     return measurementsManager_->measure(getSurfaceId(), layoutConstraints);
   }
