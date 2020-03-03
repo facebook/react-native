@@ -39,6 +39,7 @@ using namespace facebook::react;
 static LayoutContext RCTCurrentLayoutContext() {
   return {
     .pointScaleFactor = RCTScreenScale(),
+    .fontSizeMultiplier = RCTFontSizeMultiplier()
   };
 }
 

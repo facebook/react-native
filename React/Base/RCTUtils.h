@@ -44,6 +44,8 @@ RCT_EXTERN void RCTUnsafeExecuteOnMainQueueSync(dispatch_block_t block);
 RCT_EXTERN CGFloat RCTScreenScale(void);
 RCT_EXTERN CGSize RCTScreenSize(void);
 
+RCT_EXTERN CGFloat RCTFontSizeMultiplier(void);
+
 // Round float coordinates to nearest whole screen pixel (not point)
 RCT_EXTERN CGFloat RCTRoundPixelValue(CGFloat value);
 RCT_EXTERN CGFloat RCTCeilPixelValue(CGFloat value);
