@@ -45,11 +45,11 @@ class TinyMap final {
   using Iterator = Pair *;
 
   inline Iterator begin() {
-    return (Pair *)vector_;
+    return &vector_.front();
   }
 
   inline Iterator end() {
-    return nullptr;
+    return &vector_.back() + 1;
   }
 
   inline Iterator find(KeyT key) {
@@ -68,11 +68,8 @@ class TinyMap final {
   }
 
   inline void erase(Iterator iterator) {
-    static_assert(
-        std::is_same<KeyT, Tag>::value,
-        "The collection is designed to store only `Tag`s as keys.");
-    // Zero is a invalid tag.
-    iterator->first = 0;
+    *iterator = vector_.at(vector_.size() - 1);
+    vector_.pop_back();
   }
 
  private:
