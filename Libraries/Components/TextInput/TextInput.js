@@ -982,6 +982,10 @@ function InternalTextInput(props: Props): React.Node {
     if (props.editable || props.editable === undefined) {
       nullthrows(inputRef.current).focus();
     }
+
+    if (props.onPress) {
+      props.onPress(event);
+    }
   };
 
   const _onChange = (event: ChangeEvent) => {
