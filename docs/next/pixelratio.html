@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charSet="utf-8"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><title>PixelRatio · React Native</title><meta name="viewport" content="width=device-width"/><meta name="generator" content="Docusaurus"/><meta name="description" content="PixelRatio class gives access to the device pixel density."/><meta name="docsearch:version" content="next"/><meta name="docsearch:language" content="en"/><meta property="og:title" content="PixelRatio · React Native"/><meta property="og:type" content="website"/><meta property="og:url" content="https://reactnative.dev/"/><meta property="og:description" content="PixelRatio class gives access to the device pixel density."/><meta name="twitter:card" content="summary"/><link rel="shortcut icon" href="/img/favicon.ico"/><link rel="stylesheet" href="https://cdn.jsdelivr.net/docsearch.js/1/docsearch.min.css"/><link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/solarized-dark.min.css"/><link rel="alternate" type="application/atom+xml" href="https://reactnative.dev/blog/atom.xml" title="React Native Blog ATOM Feed"/><link rel="alternate" type="application/rss+xml" href="https://reactnative.dev/blog/feed.xml" title="React Native Blog RSS Feed"/><script>
+<!DOCTYPE html><html lang="en"><head><meta charSet="utf-8"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><title>PixelRatio · React Native</title><meta name="viewport" content="width=device-width"/><meta name="generator" content="Docusaurus"/><meta name="description" content="`PixelRatio` gives you access to the device&#x27;s pixel density and font scale."/><meta name="docsearch:version" content="next"/><meta name="docsearch:language" content="en"/><meta property="og:title" content="PixelRatio · React Native"/><meta property="og:type" content="website"/><meta property="og:url" content="https://reactnative.dev/"/><meta property="og:description" content="`PixelRatio` gives you access to the device&#x27;s pixel density and font scale."/><meta name="twitter:card" content="summary"/><link rel="shortcut icon" href="/img/favicon.ico"/><link rel="stylesheet" href="https://cdn.jsdelivr.net/docsearch.js/1/docsearch.min.css"/><link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/solarized-dark.min.css"/><link rel="alternate" type="application/atom+xml" href="https://reactnative.dev/blog/atom.xml" title="React Native Blog ATOM Feed"/><link rel="alternate" type="application/rss+xml" href="https://reactnative.dev/blog/feed.xml" title="React Native Blog RSS Feed"/><script>
               (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
               (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
               m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
@@ -68,7 +68,7 @@
                 };
               }
             });
-        </script></nav></div><div class="container mainContainer docsContainer"><div class="wrapper"><div class="post"><header class="postHeader"><a class="edit-page-link button" href="https://github.com/facebook/react-native-website/blob/master/docs/pixelratio.md" target="_blank" rel="noreferrer noopener">Edit</a><h1 id="__docusaurus" class="postHeaderTitle">PixelRatio</h1></header><article><div><span><p>PixelRatio class gives access to the device pixel density.</p>
+        </script></nav></div><div class="container mainContainer docsContainer"><div class="wrapper"><div class="post"><header class="postHeader"><a class="edit-page-link button" href="https://github.com/facebook/react-native-website/blob/master/docs/pixelratio.md" target="_blank" rel="noreferrer noopener">Edit</a><h1 id="__docusaurus" class="postHeaderTitle">PixelRatio</h1></header><article><div><span><p><code>PixelRatio</code> gives you access to the device's pixel density and font scale.</p>
 <h2><a class="anchor" aria-hidden="true" id="fetching-a-correctly-sized-image"></a><a href="#fetching-a-correctly-sized-image" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Fetching a correctly sized image</h2>
 <p>You should get a higher resolution image if you are on a high pixel density device. A good rule of thumb is to multiply the size of the image you display by the pixel ratio.</p>
 <pre><code class="hljs css language-jsx"><span class="token keyword">var</span> image <span class="token operator">=</span> <span class="token function">getImage</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
@@ -82,7 +82,80 @@
 <p>In practice, we found out that developers do not want this feature and they have to work around it by doing manual rounding in order to avoid having blurry elements. In React Native, we are rounding all the pixels automatically.</p>
 <p>We have to be careful when to do this rounding. You never want to work with rounded and unrounded values at the same time as you're going to accumulate rounding errors. Having even one rounding error is deadly because a one pixel border may vanish or be twice as big.</p>
 <p>In React Native, everything in JavaScript and within the layout engine works with arbitrary precision numbers. It's only when we set the position and dimensions of the native element on the main thread that we round. Also, rounding is done relative to the root rather than the parent, again to avoid accumulating rounding errors.</p>
-<hr>
+<h3><a class="anchor" aria-hidden="true" id="example"></a><a href="#example" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Example</h3>
+<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React <span class="hljs-keyword">from</span> <span class="hljs-string">"react"</span>;
+<span class="hljs-keyword">import</span> { Image, PixelRatio, ScrollView, StyleSheet, Text, TextInput, View } <span class="hljs-keyword">from</span> <span class="hljs-string">"react-native"</span>;
+
+<span class="hljs-keyword">const</span> size = <span class="hljs-number">50</span>;
+<span class="hljs-keyword">const</span> cat = {
+  <span class="hljs-attr">uri</span>: <span class="hljs-string">"https://reactnative.dev/docs/assets/p_cat1.png"</span>,
+  <span class="hljs-attr">width</span>: size,
+  <span class="hljs-attr">height</span>: size
+};
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> App = <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> (
+  &lt;ScrollView style={styles.scrollContainer}&gt;
+    &lt;View style={styles.container}&gt;
+      &lt;Text&gt;Current Pixel Ratio is:&lt;/Text&gt;
+      &lt;Text style={styles.value}&gt;{PixelRatio.get()}&lt;/Text&gt;
+    &lt;/View&gt;
+    &lt;View style={styles.container}&gt;
+      &lt;Text&gt;Current Font Scale is:&lt;/Text&gt;
+      &lt;Text style={styles.value}&gt;{PixelRatio.getFontScale()}&lt;/Text&gt;
+    &lt;/View&gt;
+    &lt;View style={styles.container}&gt;
+      &lt;Text&gt;On this device images with a layout width of&lt;/Text&gt;
+      &lt;Text style={styles.value}&gt;{size} px&lt;/Text&gt;
+      &lt;Image source={cat} /&gt;
+    &lt;/View&gt;
+    &lt;View style={styles.container}&gt;
+      &lt;Text&gt;require images with a pixel width of&lt;/Text&gt;
+      &lt;Text style={styles.value}&gt;
+        {PixelRatio.getPixelSizeForLayoutSize(size)} px
+      &lt;/Text&gt;
+      &lt;Image
+        source={cat}
+        style={{
+          width: PixelRatio.getPixelSizeForLayoutSize(size),
+          height: PixelRatio.getPixelSizeForLayoutSize(size)
+        }}
+      /&gt;
+    &lt;/View&gt;
+  &lt;/ScrollView&gt;
+);
+
+const styles = StyleSheet.create({
+  scrollContainer: {
+    flext: 1,
+    marginTop: "2em",
+    justifyContent: "center",
+  },
+  container: {
+    justifyContent: "center",
+    alignItems: "center"
+  },
+  value: {
+    fontSize: 24,
+    marginBottom: 12,
+    marginTop: 4
+  }
+});
+</code></pre></div><div class="desktop-friendly-snack" style="margin-top: 15px; margin-bottom: 15px"><div
+        data-snack-name="PixelRatio Example"
+        data-snack-description="Example usage"
+        data-snack-code="import%20React%20from%20%22react%22%3B%0Aimport%20%7B%20Image%2C%20PixelRatio%2C%20ScrollView%2C%20StyleSheet%2C%20Text%2C%20TextInput%2C%20View%20%7D%20from%20%22react-native%22%3B%0A%0Aconst%20size%20%3D%2050%3B%0Aconst%20cat%20%3D%20%7B%0A%20%20uri%3A%20%22https%3A%2F%2Freactnative.dev%2Fdocs%2Fassets%2Fp_cat1.png%22%2C%0A%20%20width%3A%20size%2C%0A%20%20height%3A%20size%0A%7D%3B%0A%0Aexport%20default%20App%20%3D%20()%20%3D%3E%20(%0A%20%20%3CScrollView%20style%3D%7Bstyles.scrollContainer%7D%3E%0A%20%20%20%20%3CView%20style%3D%7Bstyles.container%7D%3E%0A%20%20%20%20%20%20%3CText%3ECurrent%20Pixel%20Ratio%20is%3A%3C%2FText%3E%0A%20%20%20%20%20%20%3CText%20style%3D%7Bstyles.value%7D%3E%7BPixelRatio.get()%7D%3C%2FText%3E%0A%20%20%20%20%3C%2FView%3E%0A%20%20%20%20%3CView%20style%3D%7Bstyles.container%7D%3E%0A%20%20%20%20%20%20%3CText%3ECurrent%20Font%20Scale%20is%3A%3C%2FText%3E%0A%20%20%20%20%20%20%3CText%20style%3D%7Bstyles.value%7D%3E%7BPixelRatio.getFontScale()%7D%3C%2FText%3E%0A%20%20%20%20%3C%2FView%3E%0A%20%20%20%20%3CView%20style%3D%7Bstyles.container%7D%3E%0A%20%20%20%20%20%20%3CText%3EOn%20this%20device%20images%20with%20a%20layout%20width%20of%3C%2FText%3E%0A%20%20%20%20%20%20%3CText%20style%3D%7Bstyles.value%7D%3E%7Bsize%7D%20px%3C%2FText%3E%0A%20%20%20%20%20%20%3CImage%20source%3D%7Bcat%7D%20%2F%3E%0A%20%20%20%20%3C%2FView%3E%0A%20%20%20%20%3CView%20style%3D%7Bstyles.container%7D%3E%0A%20%20%20%20%20%20%3CText%3Erequire%20images%20with%20a%20pixel%20width%20of%3C%2FText%3E%0A%20%20%20%20%20%20%3CText%20style%3D%7Bstyles.value%7D%3E%0A%20%20%20%20%20%20%20%20%7BPixelRatio.getPixelSizeForLayoutSize(size)%7D%20px%0A%20%20%20%20%20%20%3C%2FText%3E%0A%20%20%20%20%20%20%3CImage%0A%20%20%20%20%20%20%20%20source%3D%7Bcat%7D%0A%20%20%20%20%20%20%20%20style%3D%7B%7B%0A%20%20%20%20%20%20%20%20%20%20width%3A%20PixelRatio.getPixelSizeForLayoutSize(size)%2C%0A%20%20%20%20%20%20%20%20%20%20height%3A%20PixelRatio.getPixelSizeForLayoutSize(size)%0A%20%20%20%20%20%20%20%20%7D%7D%0A%20%20%20%20%20%20%2F%3E%0A%20%20%20%20%3C%2FView%3E%0A%20%20%3C%2FScrollView%3E%0A)%3B%0A%0Aconst%20styles%20%3D%20StyleSheet.create(%7B%0A%20%20scrollContainer%3A%20%7B%0A%20%20%20%20flext%3A%201%2C%0A%20%20%20%20marginTop%3A%20%222em%22%2C%0A%20%20%20%20justifyContent%3A%20%22center%22%2C%0A%20%20%7D%2C%0A%20%20container%3A%20%7B%0A%20%20%20%20justifyContent%3A%20%22center%22%2C%0A%20%20%20%20alignItems%3A%20%22center%22%0A%20%20%7D%2C%0A%20%20value%3A%20%7B%0A%20%20%20%20fontSize%3A%2024%2C%0A%20%20%20%20marginBottom%3A%2012%2C%0A%20%20%20%20marginTop%3A%204%0A%20%20%7D%0A%7D)%3B%0A"
+        data-snack-platform="web"
+        data-snack-supported-platforms=ios,android,web
+        data-snack-preview="true"
+        style="
+          overflow: hidden;
+          background: #fafafa;
+          border: 1px solid rgba(0,0,0,.16);
+          border-radius: 4px;
+          height: 514px;
+          width: 100%;
+        "
+      ></div></div></div><hr>
 <h1><a class="anchor" aria-hidden="true" id="reference"></a><a href="#reference" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Reference</h1>
 <h2><a class="anchor" aria-hidden="true" id="methods"></a><a href="#methods" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Methods</h2>
 <h3><a class="anchor" aria-hidden="true" id="get"></a><a href="#get" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>get()</code></h3>
@@ -90,30 +163,30 @@
 </code></pre>
 <p>Returns the device pixel density. Some examples:</p>
 <ul>
-<li>PixelRatio.get() === 1
+<li><code>PixelRatio.get() === 1</code>
 <ul>
 <li><a href="https://material.io/tools/devices/">mdpi Android devices</a></li>
 </ul></li>
-<li>PixelRatio.get() === 1.5
+<li><code>PixelRatio.get() === 1.5</code>
 <ul>
 <li><a href="https://material.io/tools/devices/">hdpi Android devices</a></li>
 </ul></li>
-<li>PixelRatio.get() === 2
+<li><code>PixelRatio.get() === 2</code>
 <ul>
-<li>iPhone 4, 4S</li>
-<li>iPhone 5, 5C, 5S</li>
-<li>iPhone 6, 7, 8</li>
+<li>iPhone SE, 6S, 7, 8</li>
 <li>iPhone XR</li>
+<li>iPhone 11</li>
 <li><a href="https://material.io/tools/devices/">xhdpi Android devices</a></li>
 </ul></li>
-<li>PixelRatio.get() === 3
+<li><code>PixelRatio.get() === 3</code>
 <ul>
-<li>iPhone 6 Plus, 7 Plus, 8 Plus</li>
+<li>iPhone 6S Plus, 7 Plus, 8 Plus</li>
 <li>iPhone X, XS, XS Max</li>
+<li>iPhone 11 Pro, 11 Pro Max</li>
 <li>Pixel, Pixel 2</li>
 <li><a href="https://material.io/tools/devices/">xxhdpi Android devices</a></li>
 </ul></li>
-<li>PixelRatio.get() === 3.5
+<li><code>PixelRatio.get() === 3.5</code>
 <ul>
 <li>Nexus 6</li>
 <li>Pixel XL, Pixel 2 XL</li>
@@ -122,23 +195,26 @@
 </ul>
 <hr>
 <h3><a class="anchor" aria-hidden="true" id="getfontscale"></a><a href="#getfontscale" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>getFontScale()</code></h3>
-<pre><code class="hljs css language-jsx"><span class="token keyword">static</span> <span class="token function">getFontScale</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+<pre><code class="hljs css language-jsx"><span class="token keyword">static</span> <span class="token function">getFontScale</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">:</span> number
 </code></pre>
 <p>Returns the scaling factor for font sizes. This is the ratio that is used to calculate the absolute font size, so any elements that heavily depend on that should use this to do calculations.</p>
+<ul>
+<li>on Android value reflects the user preference set in Settings &gt; Display &gt; Font size,</li>
+<li>on iOS it will always return the default pixel ratio.</li>
+</ul>
 <p>If a font scale is not set, this returns the device pixel ratio.</p>
-<p>Currently this is only implemented on Android and reflects the user preference set in Settings &gt; Display &gt; Font size, on iOS it will always return the default pixel ratio. @platform android</p>
 <hr>
 <h3><a class="anchor" aria-hidden="true" id="getpixelsizeforlayoutsize"></a><a href="#getpixelsizeforlayoutsize" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>getPixelSizeForLayoutSize()</code></h3>
-<pre><code class="hljs css language-jsx"><span class="token keyword">static</span> <span class="token function">getPixelSizeForLayoutSize</span><span class="token punctuation">(</span>layoutSize<span class="token punctuation">)</span>
+<pre><code class="hljs css language-jsx"><span class="token keyword">static</span> <span class="token function">getPixelSizeForLayoutSize</span><span class="token punctuation">(</span>layoutSize<span class="token punctuation">:</span> number<span class="token punctuation">)</span><span class="token punctuation">:</span> number
 </code></pre>
 <p>Converts a layout size (dp) to pixel size (px).</p>
 <p>Guaranteed to return an integer number.</p>
 <hr>
 <h3><a class="anchor" aria-hidden="true" id="roundtonearestpixel"></a><a href="#roundtonearestpixel" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>roundToNearestPixel()</code></h3>
-<pre><code class="hljs css language-jsx"><span class="token keyword">static</span> <span class="token function">roundToNearestPixel</span><span class="token punctuation">(</span>layoutSize<span class="token punctuation">)</span>
+<pre><code class="hljs css language-jsx"><span class="token keyword">static</span> <span class="token function">roundToNearestPixel</span><span class="token punctuation">(</span>layoutSize<span class="token punctuation">:</span> number<span class="token punctuation">)</span><span class="token punctuation">:</span> number
 </code></pre>
 <p>Rounds a layout size (dp) to the nearest layout size that corresponds to an integer number of pixels. For example, on a device with a PixelRatio of 3, <code>PixelRatio.roundToNearestPixel(8.4) = 8.33</code>, which corresponds to exactly (8.33 * 3) = 25 pixels.</p>
-</span></div></article></div><div class="docs-prevnext"><a class="docs-prev button" href="/docs/next/permissionsandroid"><span class="arrow-prev">← </span><span class="function-name-prevnext">PermissionsAndroid</span></a><a class="docs-next button" href="/docs/next/pushnotificationios"><span class="function-name-prevnext">🚧 PushNotificationIOS</span><span class="arrow-next"> →</span></a></div></div></div><nav class="onPageNav"><ul class="toc-headings"><li><a href="#fetching-a-correctly-sized-image">Fetching a correctly sized image</a></li><li><a href="#pixel-grid-snapping">Pixel grid snapping</a></li><li><a href="#methods">Methods</a><ul class="toc-headings"><li><a href="#get"><code>get()</code></a></li><li><a href="#getfontscale"><code>getFontScale()</code></a></li><li><a href="#getpixelsizeforlayoutsize"><code>getPixelSizeForLayoutSize()</code></a></li><li><a href="#roundtonearestpixel"><code>roundToNearestPixel()</code></a></li></ul></li></ul></nav></div><footer class="nav-footer" id="footer"><section class="sitemap"><div><h5>Docs</h5><a href="/docs/getting-started.html">Getting Started</a><a href="/docs/tutorial.html">Tutorial</a><a href="/docs/components-and-apis.html">Components and APIs</a><a href="/docs/more-resources.html">More Resources</a></div><div><h5>Community</h5><a href="/help.html">The React Native Community</a><a href="/showcase.html">Who&#x27;s using React Native?</a><a href="http://stackoverflow.com/questions/tagged/react-native" target="_blank">Ask Questions on Stack Overflow</a><a href="https://github.com/facebook/react-native/blob/master/CONTRIBUTING.md">Contributor Guide</a><a href="https://dev.to/t/reactnative" target="_blank">DEV Community</a></div><div><h5>More Resources</h5><a href="/blog/">Blog</a><a href="https://twitter.com/reactnative" target="_blank">Twitter</a><a href="https://github.com/facebook/react-native" target="_blank">GitHub</a><a href="http://reactjs.org" target="_blank">React</a></div></section><a href="https://code.facebook.com/projects/" target="_blank" class="fbOpenSource"><img src="/img/oss_logo.png" alt="Facebook Open Source" width="170" height="45"/></a><section class="copyright">Copyright © 2020 Facebook Inc.</section></footer></div><script type="text/javascript" src="https://cdn.jsdelivr.net/docsearch.js/1/docsearch.min.js"></script><script>window.fbAsyncInit = function() {FB.init({appId:'1677033832619985',xfbml:true,version:'v2.7'});};(function(d, s, id){var js, fjs = d.getElementsByTagName(s)[0];if (d.getElementById(id)) {return;}js = d.createElement(s); js.id = id;js.src = '//connect.facebook.net/en_US/sdk.js';fjs.parentNode.insertBefore(js, fjs);}(document, 'script','facebook-jssdk'));
+</span></div></article></div><div class="docs-prevnext"><a class="docs-prev button" href="/docs/next/permissionsandroid"><span class="arrow-prev">← </span><span class="function-name-prevnext">PermissionsAndroid</span></a><a class="docs-next button" href="/docs/next/pushnotificationios"><span class="function-name-prevnext">🚧 PushNotificationIOS</span><span class="arrow-next"> →</span></a></div></div></div><nav class="onPageNav"><ul class="toc-headings"><li><a href="#fetching-a-correctly-sized-image">Fetching a correctly sized image</a></li><li><a href="#pixel-grid-snapping">Pixel grid snapping</a><ul class="toc-headings"><li><a href="#example">Example</a></li></ul></li><li><a href="#methods">Methods</a><ul class="toc-headings"><li><a href="#get"><code>get()</code></a></li><li><a href="#getfontscale"><code>getFontScale()</code></a></li><li><a href="#getpixelsizeforlayoutsize"><code>getPixelSizeForLayoutSize()</code></a></li><li><a href="#roundtonearestpixel"><code>roundToNearestPixel()</code></a></li></ul></li></ul></nav></div><footer class="nav-footer" id="footer"><section class="sitemap"><div><h5>Docs</h5><a href="/docs/getting-started.html">Getting Started</a><a href="/docs/tutorial.html">Tutorial</a><a href="/docs/components-and-apis.html">Components and APIs</a><a href="/docs/more-resources.html">More Resources</a></div><div><h5>Community</h5><a href="/help.html">The React Native Community</a><a href="/showcase.html">Who&#x27;s using React Native?</a><a href="http://stackoverflow.com/questions/tagged/react-native" target="_blank">Ask Questions on Stack Overflow</a><a href="https://github.com/facebook/react-native/blob/master/CONTRIBUTING.md">Contributor Guide</a><a href="https://dev.to/t/reactnative" target="_blank">DEV Community</a></div><div><h5>More Resources</h5><a href="/blog/">Blog</a><a href="https://twitter.com/reactnative" target="_blank">Twitter</a><a href="https://github.com/facebook/react-native" target="_blank">GitHub</a><a href="http://reactjs.org" target="_blank">React</a></div></section><a href="https://code.facebook.com/projects/" target="_blank" class="fbOpenSource"><img src="/img/oss_logo.png" alt="Facebook Open Source" width="170" height="45"/></a><section class="copyright">Copyright © 2020 Facebook Inc.</section></footer></div><script type="text/javascript" src="https://cdn.jsdelivr.net/docsearch.js/1/docsearch.min.js"></script><script>window.fbAsyncInit = function() {FB.init({appId:'1677033832619985',xfbml:true,version:'v2.7'});};(function(d, s, id){var js, fjs = d.getElementsByTagName(s)[0];if (d.getElementById(id)) {return;}js = d.createElement(s); js.id = id;js.src = '//connect.facebook.net/en_US/sdk.js';fjs.parentNode.insertBefore(js, fjs);}(document, 'script','facebook-jssdk'));
                 </script><script>window.twttr=(function(d,s, id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return t;js=d.createElement(s);js.id=id;js.src='https://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js, fjs);t._e = [];t.ready = function(f) {t._e.push(f);};return t;}(document, 'script', 'twitter-wjs'));</script><script>
                 document.addEventListener('keyup', function(e) {
                   if (e.target !== document.body) {
