@@ -398,11 +398,13 @@ public class ReactPropertyProcessor extends AbstractProcessor {
       switch (classInfo.getType()) {
         case VIEW_MANAGER:
           return builder.add(
-              "$T.getColor(value, view.getContext())",
+              "value == null ? $L : $T.getColor(value, view.getContext())",
+              info.mProperty.defaultInt(),
               com.facebook.react.bridge.ColorPropConverter.class);
         case SHADOW_NODE:
           return builder.add(
-              "$T.getColor(value, node.getThemedContext())",
+              "value == null ? $L : $T.getColor(value, node.getThemedContext())",
+              info.mProperty.defaultInt(),
               com.facebook.react.bridge.ColorPropConverter.class);
       }
     } else if (propertyType.equals(TypeName.INT)) {
