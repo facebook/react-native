@@ -245,8 +245,11 @@ void YogaLayoutableShadowNode::layoutTree(
   {
     SystraceSection s("YogaLayoutableShadowNode::YGNodeCalculateLayout");
 
-    YGNodeCalculateLayout(
-        &yogaNode_, availableWidth, availableHeight, YGDirectionInherit);
+    YGNodeCalculateLayoutWithContext(&yogaNode_,
+                                     availableWidth,
+                                     availableHeight,
+                                     YGDirectionInherit,
+                                     &layoutContext);
   }
 
   layout(layoutContext);
@@ -320,7 +323,8 @@ YGSize YogaLayoutableShadowNode::yogaNodeMeasureCallbackConnector(
     float width,
     YGMeasureMode widthMode,
     float height,
-    YGMeasureMode heightMode) {
+    YGMeasureMode heightMode,
+    void *layoutContext) {
   SystraceSection s(
       "YogaLayoutableShadowNode::yogaNodeMeasureCallbackConnector");
 

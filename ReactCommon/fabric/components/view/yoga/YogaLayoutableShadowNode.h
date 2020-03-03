@@ -121,7 +121,8 @@ class YogaLayoutableShadowNode : public LayoutableShadowNode {
       float width,
       YGMeasureMode widthMode,
       float height,
-      YGMeasureMode heightMode);
+      YGMeasureMode heightMode,
+      void *layoutContext);
 };
 
 template <>
