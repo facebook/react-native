@@ -26,7 +26,6 @@
 #include <react/uimanager/SchedulerToolbox.h>
 #include <react/uimanager/primitives.h>
 #include <react/utils/ContextContainer.h>
-#include <react/utils/TimeUtils.h>
 
 #include <Glog/logging.h>
 
