@@ -35,6 +35,7 @@ import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReactMarker;
 import com.facebook.react.bridge.ReactMarkerConstants;
+import com.facebook.react.bridge.ReactNoCrashSoftException;
 import com.facebook.react.bridge.ReactSoftException;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
@@ -110,6 +111,10 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
   @NonNull private final EventBeatManager mEventBeatManager;
   @NonNull private final Object mMountItemsLock = new Object();
   @NonNull private final Object mPreMountItemsLock = new Object();
+
+  private boolean mInDispatch = false;
+  private boolean mShouldDispatchAgain = false;
+  private int mReDispatchCounter = 0;
 
   @GuardedBy("mMountItemsLock")
   @NonNull
@@ -486,8 +491,11 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
       scheduleMountItem(
           updatePropsMountItem(reactTag, props), commitNumber, time, 0, 0, 0, 0, 0, 0);
     } catch (Exception ex) {
-      // ignore exceptions for now
       // TODO T42943890: Fix animations in Fabric and remove this try/catch
+      ReactSoftException.logSoftException(
+          TAG,
+          new ReactNoCrashSoftException(
+              "Caught exception in synchronouslyUpdateViewOnUIThread", ex));
     } finally {
       ReactMarker.logFabricMarker(
           ReactMarkerConstants.FABRIC_UPDATE_UI_MAIN_THREAD_END, null, commitNumber);
@@ -547,7 +555,11 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
           !ReactFeatureFlags.allowDisablingImmediateExecutionOfScheduleMountItems
               || mImmediatelyExecutedMountItemsOnUI;
       if (immediateExecutionEnabled) {
-        dispatchMountItems();
+        try {
+          dispatchMountItems();
+        } finally {
+          mInDispatch = false;
+        }
       }
     }
 
@@ -579,12 +591,30 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
 
   @UiThread
   @ThreadConfined(UI)
+  /**
+   * Anything that calls dispatchMountItems must call `mInDispatch = false` in a `finally` block
+   * after calling it. dispatchMountItems will do its best to clean up, but we don't try to recover
+   * from all failures here.
+   */
   private void dispatchMountItems() {
+    // Prevent re-dispatching in the middle of another dispatch call - this would cause mount
+    // items to execute out of order. No need to synchronize, this is all happening on the UI
+    // thread. TODO T63186801: refactor this
+    if (mInDispatch) {
+      mShouldDispatchAgain = true;
+      return;
+    }
+    if (mReDispatchCounter == 0) {
+      mBatchedExecutionTime = 0;
+    }
+    mInDispatch = true;
+
     mRunStartTime = SystemClock.uptimeMillis();
 
     List<MountItem> mountItemsToDispatch;
     synchronized (mMountItemsLock) {
       if (mMountItems.isEmpty()) {
+        dispatchMountItemsCleanup();
         return;
       }
       mountItemsToDispatch = mMountItems;
@@ -628,14 +658,56 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
       }
       mountItem.execute(mMountingManager);
     }
-    mBatchedExecutionTime = SystemClock.uptimeMillis() - batchedExecutionStartTime;
+    mBatchedExecutionTime += SystemClock.uptimeMillis() - batchedExecutionStartTime;
     Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
+
+    dispatchMountItemsCleanup();
+  }
+
+  /** Should be called at the end of every dispatchMountItems call. */
+  @UiThread
+  @ThreadConfined(UI)
+  private void dispatchMountItemsCleanup() {
+    // Should we dispatch again? We do this up to 10 times. This is a magic number subject to
+    // change. TODO T63181639: pick a better magic number.
+    // Reentrance into dispatchMountItems can potentially happen a lot on Android in Fabric because
+    // `updateState` from the
+    // mounting layer causes mount items to be dispatched synchronously. We want to 1) make sure
+    // we don't reenter in those cases, but 2) still execute those queued instructions
+    // synchronously.
+    // This is a pretty blunt tool, but we might not have better options since we really don't want
+    // to execute anything out-of-order.
+    mInDispatch = false;
+    if (mShouldDispatchAgain) {
+      mReDispatchCounter++;
+      mShouldDispatchAgain = false;
+      ReactSoftException.logSoftException(
+          TAG,
+          new ReactNoCrashSoftException(
+              "Re-dispatched "
+                  + mReDispatchCounter
+                  + " times. This indicates setState (?) is likely being called too many times during mounting."));
+
+      // If we reach this point, we just wait for the next UI tick to execute mount instructions.
+      if (mReDispatchCounter < 10) {
+        dispatchMountItems();
+      }
+    }
+    mReDispatchCounter = 0;
   }
 
   @UiThread
   @ThreadConfined(UI)
   private void dispatchPreMountItems(long frameTimeNanos) {
+    // Just set the flag, don't try to do any retries here. Allow `dispatchMountItems` to handle
+    // that.
+    if (mInDispatch) {
+      return;
+    }
+
     Systrace.beginSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "FabricUIManager::premountViews");
+
+    mInDispatch = true;
 
     while (true) {
       long timeLeftInFrame = FRAME_TIME_MS - ((System.nanoTime() - frameTimeNanos) / 1000000);
@@ -653,6 +725,8 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
 
       preMountItemsToDispatch.execute(mMountingManager);
     }
+
+    mInDispatch = false;
     Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
   }
 
@@ -823,16 +897,22 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
       }
 
       try {
-
         dispatchPreMountItems(frameTimeNanos);
 
         dispatchMountItems();
 
       } catch (Exception ex) {
-        FLog.i(TAG, "Exception thrown when executing UIFrameGuarded", ex);
+        FLog.e(TAG, "Exception thrown when executing UIFrameGuarded", ex);
         stop();
         throw ex;
       } finally {
+        // In case a catastrophic exception is thrown in either dispatch/preDispatch, and cleanup
+        // doesn't run. In case of any other cleanup screwup, resetting this flag here will ensure
+        // that we *never* skip more than a single frame of mount instructions (that would be very
+        // bad,
+        // but skipping more than one frame would be even more very bad).
+        mInDispatch = false;
+
         ReactChoreographer.getInstance()
             .postFrameCallback(
                 ReactChoreographer.CallbackType.DISPATCH_UI, mDispatchUIFrameCallback);
