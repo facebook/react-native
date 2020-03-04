@@ -119,17 +119,50 @@ static ShadowNode::Unshared messWithChildren(
 static ShadowNode::Unshared messWithLayotableOnlyFlag(
     Entropy const &entropy,
     ShadowNode const &shadowNode) {
-  folly::dynamic dynamic = folly::dynamic::object();
-
-  if (entropy.random<bool>()) {
-    dynamic["collapsable"] = folly::dynamic{true};
-  } else {
-    dynamic["collapsable"] = folly::dynamic{};
-  }
-
   auto oldProps = shadowNode.getProps();
   auto newProps = shadowNode.getComponentDescriptor().cloneProps(
-      oldProps, RawProps(dynamic));
+      oldProps, RawProps(folly::dynamic::object()));
+
+  auto &viewProps =
+      const_cast<ViewProps &>(static_cast<ViewProps const &>(*newProps));
+
+  if (entropy.random<bool>(0.1)) {
+    viewProps.nativeId = entropy.random<bool>() ? "42" : "";
+  }
+
+  if (entropy.random<bool>(0.1)) {
+    viewProps.backgroundColor =
+        entropy.random<bool>() ? SharedColor() : whiteColor();
+  }
+
+  if (entropy.random<bool>(0.1)) {
+    viewProps.foregroundColor =
+        entropy.random<bool>() ? SharedColor() : blackColor();
+  }
+
+  if (entropy.random<bool>(0.1)) {
+    viewProps.shadowColor =
+        entropy.random<bool>() ? SharedColor() : blackColor();
+  }
+
+  if (entropy.random<bool>(0.1)) {
+    viewProps.accessible = entropy.random<bool>();
+  }
+
+  if (entropy.random<bool>(0.1)) {
+    viewProps.zIndex = entropy.random<bool>() ? 1 : 0;
+  }
+
+  if (entropy.random<bool>(0.1)) {
+    viewProps.pointerEvents = entropy.random<bool>() ? PointerEventsMode::Auto
+                                                     : PointerEventsMode::None;
+  }
+
+  if (entropy.random<bool>(0.1)) {
+    viewProps.transform = entropy.random<bool>() ? Transform::Identity()
+                                                 : Transform::Perspective(42);
+  }
+
   return shadowNode.clone({newProps});
 }
 
