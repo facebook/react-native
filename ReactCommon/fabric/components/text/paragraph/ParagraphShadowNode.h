@@ -41,6 +41,7 @@ class ParagraphShadowNode : public ConcreteViewShadowNode<
   static ShadowNodeTraits BaseTraits() {
     auto traits = ConcreteViewShadowNode::BaseTraits();
     traits.set(ShadowNodeTraits::Trait::LeafYogaNode);
+
     return traits;
   }
 

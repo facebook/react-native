@@ -59,6 +59,8 @@ class ConcreteViewShadowNode : public ConcreteShadowNode<
   static ShadowNodeTraits BaseTraits() {
     auto traits = BaseShadowNode::BaseTraits();
     traits.set(ShadowNodeTraits::Trait::ViewKind);
+    traits.set(ShadowNodeTraits::Trait::FormsStackingContext);
+    traits.set(ShadowNodeTraits::Trait::FormsView);
     return traits;
   }
 

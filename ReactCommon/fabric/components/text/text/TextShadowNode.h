@@ -26,6 +26,17 @@ class TextShadowNode : public ConcreteShadowNode<
                            TextEventEmitter>,
                        public BaseTextShadowNode {
  public:
+  static ShadowNodeTraits BaseTraits() {
+    auto traits = ConcreteShadowNode::BaseTraits();
+
+#ifdef ANDROID
+    traits.set(ShadowNodeTraits::Trait::FormsView);
+    traits.set(ShadowNodeTraits::Trait::FormsStackingContext);
+#endif
+
+    return traits;
+  }
+
   using ConcreteShadowNode::ConcreteShadowNode;
 };
 

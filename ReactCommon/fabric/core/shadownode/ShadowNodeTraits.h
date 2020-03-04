@@ -57,6 +57,14 @@ class ShadowNodeTraits {
     // Inherits `LayoutableShadowNode` and calls `measure()`.
     HasMeasure = 1 << 11,
 
+    // Indicates that the `ShadowNode` must form a stacking context (a level
+    // of the hierarchy; `ShadowView`s formed by descendants the node will be
+    // descendants of a `ShadowView` formed by the node).
+    FormsStackingContext = 1 << 13,
+
+    // Indicates that the node must form a `ShadowView`.
+    FormsView = 1 << 14,
+
     // Internal to `ShadowNode`; do not use it outside.
     // Indicates that `children` list is shared between nodes and need
     // to be cloned before the first mutation.

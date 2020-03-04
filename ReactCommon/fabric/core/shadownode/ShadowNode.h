@@ -207,6 +207,7 @@ class ShadowNode : public Sealable, public DebugStringConvertible {
    */
   ShadowNodeFamily::Shared family_;
 
+ protected:
   /*
    * Traits associated with the particular `ShadowNode` class and an instance of
    * that class.
