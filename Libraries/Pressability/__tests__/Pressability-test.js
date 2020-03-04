@@ -354,7 +354,7 @@ describe('Pressability', () => {
       expect(config.onLongPress).toBeCalled();
     });
 
-    it('is called if pressed for 500ms after the press delay', () => {
+    it('is called if pressed for 370ms after the press delay', () => {
       const {config, handlers} = createMockPressability({
         delayPressIn: 100,
       });
@@ -363,7 +363,7 @@ describe('Pressability', () => {
       handlers.onResponderGrant(createMockPressEvent('onResponderGrant'));
       handlers.onResponderMove(createMockPressEvent('onResponderMove'));
 
-      jest.advanceTimersByTime(599);
+      jest.advanceTimersByTime(469);
       expect(config.onLongPress).not.toBeCalled();
       jest.advanceTimersByTime(1);
       expect(config.onLongPress).toBeCalled();
@@ -392,7 +392,7 @@ describe('Pressability', () => {
       handlers.onResponderGrant(createMockPressEvent('onResponderGrant'));
       handlers.onResponderMove(createMockPressEvent('onResponderMove'));
 
-      jest.advanceTimersByTime(9);
+      jest.advanceTimersByTime(139);
       expect(config.onLongPress).not.toBeCalled();
       jest.advanceTimersByTime(1);
       expect(config.onLongPress).toBeCalled();
@@ -432,7 +432,7 @@ describe('Pressability', () => {
       expect(config.onPressIn).toBeCalled();
     });
 
-    it('is called after no delay by default', () => {
+    it('is called after the default delay by default', () => {
       const {config, handlers} = createMockPressability({
         delayPressIn: null,
       });
@@ -441,10 +441,13 @@ describe('Pressability', () => {
       handlers.onResponderGrant(createMockPressEvent('onResponderGrant'));
       handlers.onResponderMove(createMockPressEvent('onResponderMove'));
 
+      jest.advanceTimersByTime(129);
+      expect(config.onPressIn).not.toBeCalled();
+      jest.advanceTimersByTime(1);
       expect(config.onPressIn).toBeCalled();
     });
 
-    it('falls back to no delay if `delayPressIn` is omitted', () => {
+    it('falls back to the default delay if `delayPressIn` is omitted', () => {
       const {config, handlers} = createMockPressability({
         delayPressIn: null,
       });
@@ -453,6 +456,9 @@ describe('Pressability', () => {
       handlers.onResponderGrant(createMockPressEvent('onResponderGrant'));
       handlers.onResponderMove(createMockPressEvent('onResponderMove'));
 
+      jest.advanceTimersByTime(129);
+      expect(config.onPressIn).not.toBeCalled();
+      jest.advanceTimersByTime(1);
       expect(config.onPressIn).toBeCalled();
     });
 
@@ -561,7 +567,9 @@ describe('Pressability', () => {
     describe('beyond bounds of hit rect', () => {
       it('`onPress` only is not called when no delay', () => {
         mockUIManagerMeasure();
-        const {config, handlers} = createMockPressability();
+        const {config, handlers} = createMockPressability({
+          delayPressIn: 0,
+        });
 
         handlers.onStartShouldSetResponder();
         handlers.onResponderGrant(createMockPressEvent('onResponderGrant'));

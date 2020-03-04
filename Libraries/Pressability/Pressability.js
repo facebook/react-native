@@ -271,8 +271,8 @@ const isPressInSignal = signal =>
 const isTerminalSignal = signal =>
   signal === 'RESPONDER_TERMINATED' || signal === 'RESPONDER_RELEASE';
 
-const DEFAULT_LONG_PRESS_DELAY_MS = 500;
-const DEFAULT_PRESS_DELAY_MS = 0;
+const DEFAULT_LONG_PRESS_DELAY_MS = 370; // 500 - 130
+const DEFAULT_PRESS_DELAY_MS = 130;
 const DEFAULT_PRESS_RECT_OFFSETS = {
   bottom: 30,
   left: 20,
