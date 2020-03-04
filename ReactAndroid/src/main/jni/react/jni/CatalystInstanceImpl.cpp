@@ -221,7 +221,7 @@ void CatalystInstanceImpl::jniLoadScriptFromAssets(
         std::move(bundle), std::move(script), sourceURL, (uint32_t)bundleId, loadSynchronously);
     return;
   } else if (Instance::isIndexedRAMBundle(&script)) {
-    instance_->loadRAMBundleFromString(std::move(script), sourceURL, (uint32_t)bundleId);
+    instance_->loadRAMBundleFromString(std::move(script), sourceURL, (uint32_t)bundleId, loadSynchronously);
   } else {
     instance_->loadScriptFromString(
         std::move(script), sourceURL, loadSynchronously);

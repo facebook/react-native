@@ -54,7 +54,8 @@ public:
   static bool isIndexedRAMBundle(std::unique_ptr<const JSBigString>* string);
   void loadRAMBundleFromString(std::unique_ptr<const JSBigString> script,
                                const std::string& sourceURL,
-                               uint32_t bundleId);
+                               uint32_t bundleId,
+                               bool loadSynchronously);
   void loadRAMBundleFromFile(const std::string& sourcePath,
                              const std::string& sourceURL,
                              uint32_t bundleId,

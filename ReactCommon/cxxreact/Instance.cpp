@@ -121,7 +121,8 @@ bool Instance::isIndexedRAMBundle(std::unique_ptr<const JSBigString> *script) {
 void Instance::loadRAMBundleFromString(
     std::unique_ptr<const JSBigString> script,
     const std::string& sourceURL,
-    uint32_t bundleId) {
+    uint32_t bundleId,
+    bool loadSynchronously) {
   auto bundle = std::make_unique<JSIndexedRAMBundle>(std::move(script));
   auto startupScript = bundle->getStartupCode();
   loadRAMBundle(
@@ -129,7 +130,7 @@ void Instance::loadRAMBundleFromString(
       std::move(startupScript),
       sourceURL,
       bundleId,
-      true);
+      loadSynchronously);
 }
 
 void Instance::loadRAMBundleFromFile(
