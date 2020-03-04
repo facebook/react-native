@@ -299,7 +299,7 @@ public class ReactScrollView extends ScrollView
     mVelocityHelper.calculateVelocity(ev);
     int action = ev.getAction() & MotionEvent.ACTION_MASK;
     if (action == MotionEvent.ACTION_UP && mDragging) {
-      updateStateOnScroll();
+      updateStateOnScroll(getScrollX(), getScrollY());
 
       float velocityX = mVelocityHelper.getXVelocity();
       float velocityY = mVelocityHelper.getYVelocity();
@@ -502,7 +502,7 @@ public class ReactScrollView extends ScrollView
               ViewCompat.postOnAnimationDelayed(
                   ReactScrollView.this, this, ReactScrollViewHelper.MOMENTUM_DELAY);
             } else {
-              updateStateOnScroll();
+              updateStateOnScroll(getScrollX(), getScrollY());
 
               if (mPagingEnabled && !mSnappingToPage) {
                 // Only if we have pagingEnabled and we have not snapped to the page do we
@@ -776,7 +776,7 @@ public class ReactScrollView extends ScrollView
    */
   public void reactSmoothScrollTo(int x, int y) {
     smoothScrollTo(x, y);
-    updateStateOnScroll();
+    updateStateOnScroll(x, y);
   }
 
   /**
@@ -787,7 +787,7 @@ public class ReactScrollView extends ScrollView
    */
   public void reactScrollTo(int x, int y) {
     scrollTo(x, y);
-    updateStateOnScroll();
+    updateStateOnScroll(x, y);
   }
 
   /**
@@ -849,14 +849,14 @@ public class ReactScrollView extends ScrollView
   /**
    * Called on any stabilized onScroll change to propagate content offset value to a Shadow Node.
    */
-  private void updateStateOnScroll() {
+  private void updateStateOnScroll(int scrollX, int scrollY) {
     if (mStateWrapper == null) {
       return;
     }
 
     WritableMap map = new WritableNativeMap();
-    map.putDouble(CONTENT_OFFSET_LEFT, PixelUtil.toDIPFromPixel(getScrollX()));
-    map.putDouble(CONTENT_OFFSET_TOP, PixelUtil.toDIPFromPixel(getScrollY()));
+    map.putDouble(CONTENT_OFFSET_LEFT, PixelUtil.toDIPFromPixel(scrollX));
+    map.putDouble(CONTENT_OFFSET_TOP, PixelUtil.toDIPFromPixel(scrollY));
 
     mStateWrapper.updateState(map);
   }
