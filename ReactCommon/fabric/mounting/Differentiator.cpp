@@ -86,28 +86,19 @@ static void sliceChildShadowNodeViewPairsRecursively(
   for (auto const &sharedChildShadowNode : shadowNode.getChildren()) {
     auto &childShadowNode = *sharedChildShadowNode;
     auto shadowView = ShadowView(childShadowNode);
+    shadowView.layoutMetrics.frame.origin += layoutOffset;
 
-    auto layoutableShadowNode =
-        traitCast<LayoutableShadowNode const *>(&childShadowNode);
-
-#ifndef ANDROID
-    // New approach (iOS):
-    // Non-view components are treated as layout-only views (they aren't
-    // represented as `ShadowView`s).
-    if (!layoutableShadowNode || layoutableShadowNode->isLayoutOnly()) {
-#else
-    // Previous approach (Android):
-    // Non-view components are treated as normal views with an empty layout
-    // (they are represented as `ShadowView`s).
-    if (layoutableShadowNode && layoutableShadowNode->isLayoutOnly()) {
-#endif
-      sliceChildShadowNodeViewPairsRecursively(
-          pairList,
-          layoutOffset + shadowView.layoutMetrics.frame.origin,
-          childShadowNode);
-    } else {
-      shadowView.layoutMetrics.frame.origin += layoutOffset;
+    if (childShadowNode.getTraits().check(
+            ShadowNodeTraits::Trait::FormsStackingContext)) {
       pairList.push_back({shadowView, &childShadowNode});
+    } else {
+      if (childShadowNode.getTraits().check(
+              ShadowNodeTraits::Trait::FormsView)) {
+        pairList.push_back({shadowView, &childShadowNode});
+      }
+
+      sliceChildShadowNodeViewPairsRecursively(
+          pairList, shadowView.layoutMetrics.frame.origin, childShadowNode);
     }
   }
 }
@@ -115,7 +106,15 @@ static void sliceChildShadowNodeViewPairsRecursively(
 ShadowViewNodePair::List sliceChildShadowNodeViewPairs(
     ShadowNode const &shadowNode) {
   auto pairList = ShadowViewNodePair::List{};
+
+  if (!shadowNode.getTraits().check(
+          ShadowNodeTraits::Trait::FormsStackingContext) &&
+      shadowNode.getTraits().check(ShadowNodeTraits::Trait::FormsView)) {
+    return pairList;
+  }
+
   sliceChildShadowNodeViewPairsRecursively(pairList, {0, 0}, shadowNode);
+
   return pairList;
 }
 

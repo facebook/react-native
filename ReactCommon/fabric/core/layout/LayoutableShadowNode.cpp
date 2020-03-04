@@ -102,10 +102,6 @@ bool LayoutableShadowNode::setLayoutMetrics(LayoutMetrics layoutMetrics) {
   return true;
 }
 
-bool LayoutableShadowNode::LayoutableShadowNode::isLayoutOnly() const {
-  return false;
-}
-
 Transform LayoutableShadowNode::getTransform() const {
   return Transform::Identity();
 }
