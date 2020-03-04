@@ -11,6 +11,7 @@
 'use strict';
 
 const AppContainer = require('../ReactNative/AppContainer');
+const RootTagContext = require('../ReactNative/RootTagContext');
 const I18nManager = require('../ReactNative/I18nManager');
 const PropTypes = require('prop-types');
 const React = require('react');
@@ -146,10 +147,6 @@ class Modal extends React.Component<Props> {
     hardwareAccelerated: false,
   };
 
-  static contextTypes: any | {|rootTag: React$PropType$Primitive<number>|} = {
-    rootTag: PropTypes.number,
-  };
-
   _identifier: number;
   _eventSubscription: ?EmitterSubscription;
 
@@ -217,9 +214,11 @@ class Modal extends React.Component<Props> {
     }
 
     const innerChildren = __DEV__ ? (
-      <AppContainer rootTag={this.context.rootTag}>
-        {this.props.children}
-      </AppContainer>
+      <RootTagContext.Consumer>
+        {rootTag => (
+          <AppContainer rootTag={rootTag}>{this.props.children}</AppContainer>
+        )}
+      </RootTagContext.Consumer>
     ) : (
       this.props.children
     );

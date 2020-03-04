@@ -8,8 +8,10 @@
 #import "RCTStatusBarManager.h"
 #import "CoreModulesPlugins.h"
 
+#import <React/RCTBridge.h>
 #import <React/RCTEventDispatcher.h>
 #import <React/RCTLog.h>
+#import <React/RCTUIManager.h>
 #import <React/RCTUtils.h>
 
 #if !TARGET_OS_TV
@@ -149,37 +151,50 @@ RCT_EXPORT_METHOD(getHeight : (RCTResponseSenderBlock)callback)
   } ]);
 }
 
-RCT_EXPORT_METHOD(setStyle : (NSString *)style animated : (BOOL)animated)
+RCT_EXPORT_METHOD(setStyle:(NSString *)style
+                  animated:(BOOL)animated
+                  reactTag:(double)reactTag)
 {
   UIStatusBarStyle statusBarStyle = [RCTConvert UIStatusBarStyle:style];
   if (RCTViewControllerBasedStatusBarAppearance()) {
     RCTLogError(@"RCTStatusBarManager module requires that the \
                 UIViewControllerBasedStatusBarAppearance key in the Info.plist is set to NO");
-  } else {
+    return;
+  }
+
+  // TODO (T62270453): Add proper support for UIScenes (this requires view controller based status bar management)
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
-    [RCTSharedApplication() setStatusBarStyle:statusBarStyle animated:animated];
-  }
+  [RCTSharedApplication() setStatusBarStyle:statusBarStyle
+                                   animated:animated];
 #pragma clang diagnostic pop
 }
 
-RCT_EXPORT_METHOD(setHidden : (BOOL)hidden withAnimation : (NSString *)withAnimation)
+RCT_EXPORT_METHOD(setHidden:(BOOL)hidden
+                  withAnimation:(NSString *)withAnimation
+                  reactTag:(double)reactTag)
 {
   UIStatusBarAnimation animation = [RCTConvert UIStatusBarAnimation:withAnimation];
   if (RCTViewControllerBasedStatusBarAppearance()) {
     RCTLogError(@"RCTStatusBarManager module requires that the \
                 UIViewControllerBasedStatusBarAppearance key in the Info.plist is set to NO");
-  } else {
+    return;
+  }
+
+  // TODO (T62270453): Add proper support for UIScenes (this requires view controller based status bar management)
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
-    [RCTSharedApplication() setStatusBarHidden:hidden withAnimation:animation];
+  [RCTSharedApplication() setStatusBarHidden:hidden
+                               withAnimation:animation];
 #pragma clang diagnostic pop
-  }
 }
 
 RCT_EXPORT_METHOD(setNetworkActivityIndicatorVisible : (BOOL)visible)
 {
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
   RCTSharedApplication().networkActivityIndicatorVisible = visible;
+#pragma clang diagnostic pop
 }
 
 - (facebook::react::ModuleConstants<JS::NativeStatusBarManagerIOS::Constants>)getConstants

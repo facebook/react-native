@@ -2310,11 +2310,11 @@ namespace facebook {
     }
 
     static facebook::jsi::Value __hostFunction_NativeStatusBarManagerIOSSpecJSI_setStyle(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
-      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, VoidKind, "setStyle", @selector(setStyle:animated:), args, count);
+      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, VoidKind, "setStyle", @selector(setStyle:animated:reactTag:), args, count);
     }
 
     static facebook::jsi::Value __hostFunction_NativeStatusBarManagerIOSSpecJSI_setHidden(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
-      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, VoidKind, "setHidden", @selector(setHidden:withAnimation:), args, count);
+      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, VoidKind, "setHidden", @selector(setHidden:withAnimation:reactTag:), args, count);
     }
 
     static facebook::jsi::Value __hostFunction_NativeStatusBarManagerIOSSpecJSI_getConstants(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
@@ -2337,10 +2337,10 @@ namespace facebook {
         methodMap_["removeListeners"] = MethodMetadata {1, __hostFunction_NativeStatusBarManagerIOSSpecJSI_removeListeners};
         
         
-        methodMap_["setStyle"] = MethodMetadata {2, __hostFunction_NativeStatusBarManagerIOSSpecJSI_setStyle};
+        methodMap_["setStyle"] = MethodMetadata {3, __hostFunction_NativeStatusBarManagerIOSSpecJSI_setStyle};
         
         
-        methodMap_["setHidden"] = MethodMetadata {2, __hostFunction_NativeStatusBarManagerIOSSpecJSI_setHidden};
+        methodMap_["setHidden"] = MethodMetadata {3, __hostFunction_NativeStatusBarManagerIOSSpecJSI_setHidden};
         
         
         methodMap_["getConstants"] = MethodMetadata {0, __hostFunction_NativeStatusBarManagerIOSSpecJSI_getConstants};

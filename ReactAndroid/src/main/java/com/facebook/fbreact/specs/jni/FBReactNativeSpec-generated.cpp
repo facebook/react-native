@@ -2029,11 +2029,11 @@ namespace facebook {
     }
 
     static facebook::jsi::Value __hostFunction_NativeStatusBarManagerIOSSpecJSI_setStyle(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
-      return static_cast<JavaTurboModule&>(turboModule).invokeJavaMethod(rt, VoidKind, "setStyle", "(Ljava/lang/String;Z)V", args, count);
+      return static_cast<JavaTurboModule&>(turboModule).invokeJavaMethod(rt, VoidKind, "setStyle", "(Ljava/lang/String;ZD)V", args, count);
     }
 
     static facebook::jsi::Value __hostFunction_NativeStatusBarManagerIOSSpecJSI_setHidden(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
-      return static_cast<JavaTurboModule&>(turboModule).invokeJavaMethod(rt, VoidKind, "setHidden", "(ZLjava/lang/String;)V", args, count);
+      return static_cast<JavaTurboModule&>(turboModule).invokeJavaMethod(rt, VoidKind, "setHidden", "(ZLjava/lang/String;D)V", args, count);
     }
 
     static facebook::jsi::Value __hostFunction_NativeStatusBarManagerIOSSpecJSI_getConstants(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
@@ -2056,10 +2056,10 @@ namespace facebook {
         methodMap_["removeListeners"] = MethodMetadata {1, __hostFunction_NativeStatusBarManagerIOSSpecJSI_removeListeners};
         
         
-        methodMap_["setStyle"] = MethodMetadata {2, __hostFunction_NativeStatusBarManagerIOSSpecJSI_setStyle};
+        methodMap_["setStyle"] = MethodMetadata {3, __hostFunction_NativeStatusBarManagerIOSSpecJSI_setStyle};
         
         
-        methodMap_["setHidden"] = MethodMetadata {2, __hostFunction_NativeStatusBarManagerIOSSpecJSI_setHidden};
+        methodMap_["setHidden"] = MethodMetadata {3, __hostFunction_NativeStatusBarManagerIOSSpecJSI_setHidden};
         
         
         methodMap_["getConstants"] = MethodMetadata {0, __hostFunction_NativeStatusBarManagerIOSSpecJSI_getConstants};

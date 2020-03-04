@@ -11,6 +11,7 @@
 'use strict';
 
 import RCTActionSheetManager from './NativeActionSheetManager';
+import ReactNative from '../Renderer/shims/ReactNative';
 
 const invariant = require('invariant');
 const processColor = require('../StyleSheet/processColor');
@@ -43,12 +44,13 @@ const ActionSheetIOS = {
     options: {|
       +title?: ?string,
       +message?: ?string,
-      +options: Array<string>,
+      +options: ?Array<string>,
       +destructiveButtonIndex?: ?number | ?Array<number>,
       +cancelButtonIndex?: ?number,
       +anchor?: ?number,
       +tintColor?: ColorValue | ProcessedColorValue,
       +userInterfaceStyle?: string,
+      +surface?: mixed,
     |},
     callback: (buttonIndex: number) => void,
   ) {
@@ -59,7 +61,13 @@ const ActionSheetIOS = {
     invariant(typeof callback === 'function', 'Must provide a valid callback');
     invariant(RCTActionSheetManager, "ActionSheetManager does't exist");
 
-    const {tintColor, destructiveButtonIndex, ...remainingOptions} = options;
+    const {
+      tintColor,
+      destructiveButtonIndex,
+      surface,
+      ...remainingOptions
+    } = options;
+    const reactTag = ReactNative.findNodeHandle(surface) ?? -1;
     let destructiveButtonIndices = null;
 
     if (Array.isArray(destructiveButtonIndex)) {
@@ -76,6 +84,7 @@ const ActionSheetIOS = {
     RCTActionSheetManager.showActionSheetWithOptions(
       {
         ...remainingOptions,
+        reactTag,
         tintColor: processedTintColor,
         destructiveButtonIndices,
       },
@@ -124,8 +133,16 @@ const ActionSheetIOS = {
       'Must provide a valid successCallback',
     );
     invariant(RCTActionSheetManager, "ActionSheetManager does't exist");
+
+    const {tintColor, surface, ...remainingOptions} = options;
+    const reactTag = ReactNative.findNodeHandle(surface) ?? -1;
+
     RCTActionSheetManager.showShareActionSheetWithOptions(
-      {...options, tintColor: processColor(options.tintColor)},
+      {
+        ...remainingOptions,
+        reactTag,
+        tintColor: processColor(options.tintColor),
+      },
       failureCallback,
       successCallback,
     );

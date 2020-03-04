@@ -401,9 +401,9 @@ void RCTProfileUnhookModules(RCTBridge *bridge)
       };
       RCTProfileControlsWindow.hidden = YES;
       dispatch_async(dispatch_get_main_queue(), ^{
-        [[[[RCTSharedApplication() delegate] window] rootViewController] presentViewController:activityViewController
-                                                                                                 animated:YES
-                                                                                               completion:nil];
+        [RCTPresentedViewController(nil) presentViewController:activityViewController
+                                                      animated:YES
+                                                    completion:nil];
       });
 #endif
     });
@@ -777,7 +777,7 @@ void RCTProfileSendResult(RCTBridge *bridge, NSString *route, NSData *data)
             [alertController addAction:[UIAlertAction actionWithTitle:@"OK"
                                                       style:UIAlertActionStyleCancel
                                                       handler:nil]];
-            [RCTPresentedViewController() presentViewController:alertController animated:YES completion:nil];
+            [RCTPresentedViewController(nil) presentViewController:alertController animated:YES completion:nil];
          });
 #endif
        }
