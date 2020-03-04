@@ -40,7 +40,7 @@ class SliderShadowNode final : public ConcreteViewShadowNode<
 
 #pragma mark - LayoutableShadowNode
 
-  Size measureContent(LayoutConstraints layoutConstraints, LayoutContext layoutContext) const override;
+  Size measure(LayoutConstraints layoutConstraints) const override;
   void layout(LayoutContext layoutContext) override;
 
  private:

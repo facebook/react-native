@@ -153,9 +153,8 @@ void AndroidTextInputShadowNode::updateStateIfNeeded() {
 
 #pragma mark - LayoutableShadowNode
 
-Size AndroidTextInputShadowNode::measureContent(
-    LayoutConstraints layoutConstraints,
-    LayoutContext layoutContext) const {
+Size AndroidTextInputShadowNode::measure(
+    LayoutConstraints layoutConstraints) const {
   // Layout is called right after measure.
   // Measure is marked as `const`, and `layout` is not; so State can be updated
   // during layout, but not during `measure`. If State is out-of-date in layout,

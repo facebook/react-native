@@ -11,7 +11,6 @@
 
 #include <react/components/rncore/EventEmitters.h>
 #include <react/components/rncore/Props.h>
-#include <react/core/LayoutContext.h>
 #include <react/components/view/ConcreteViewShadowNode.h>
 
 namespace facebook {
@@ -36,7 +35,7 @@ class AndroidSwitchShadowNode final : public ConcreteViewShadowNode<
 
 #pragma mark - LayoutableShadowNode
 
-  Size measureContent(LayoutConstraints layoutConstraints, LayoutContext layoutContext) const override;
+  Size measure(LayoutConstraints layoutConstraints) const override;
 
  private:
   std::shared_ptr<AndroidSwitchMeasurementsManager> measurementsManager_;
