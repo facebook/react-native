@@ -47,7 +47,7 @@ class ParagraphShadowNode : public ConcreteViewShadowNode<
   /*
    * Returns a `AttributedString` which represents text content of the node.
    */
-  AttributedString getAttributedString(Float fontSizeMultiplier) const;
+  AttributedString getAttributedString() const;
 
   /*
    * Associates a shared TextLayoutManager with the node.
@@ -66,7 +66,7 @@ class ParagraphShadowNode : public ConcreteViewShadowNode<
    * Creates a `State` object (with `AttributedText` and
    * `TextLayoutManager`) if needed.
    */
-  void updateStateIfNeeded(LayoutContext layoutContext);
+  void updateStateIfNeeded();
 
   SharedTextLayoutManager textLayoutManager_;
 

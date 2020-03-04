@@ -15,10 +15,9 @@ namespace react {
 
 char const ParagraphComponentName[] = "Paragraph";
 
-AttributedString ParagraphShadowNode::getAttributedString(Float fontSizeMultiplier) const {
+AttributedString ParagraphShadowNode::getAttributedString() const {
   if (!cachedAttributedString_.has_value()) {
     auto textAttributes = TextAttributes::defaultTextAttributes();
-    textAttributes.fontSizeMultiplier = fontSizeMultiplier;
     textAttributes.apply(getConcreteProps().textAttributes);
 
     cachedAttributedString_ =
@@ -34,10 +33,10 @@ void ParagraphShadowNode::setTextLayoutManager(
   textLayoutManager_ = textLayoutManager;
 }
 
-void ParagraphShadowNode::updateStateIfNeeded(LayoutContext layoutContext) {
+void ParagraphShadowNode::updateStateIfNeeded() {
   ensureUnsealed();
 
-  auto attributedString = getAttributedString(layoutContext.fontSizeMultiplier);
+  auto attributedString = getAttributedString();
   auto const &state = getStateData();
 
   assert(textLayoutManager_);
@@ -58,8 +57,7 @@ void ParagraphShadowNode::updateStateIfNeeded(LayoutContext layoutContext) {
 #pragma mark - LayoutableShadowNode
 
 Size ParagraphShadowNode::measureContent(LayoutConstraints layoutConstraints, LayoutContext layoutContext) const {
-  AttributedString attributedString = getAttributedString(layoutContext.fontSizeMultiplier);
-
+  AttributedString attributedString = getAttributedString();
   if (attributedString.isEmpty()) {
     return layoutConstraints.clamp({0, 0});
   }
@@ -71,7 +69,7 @@ Size ParagraphShadowNode::measureContent(LayoutConstraints layoutConstraints, La
 }
 
 void ParagraphShadowNode::layout(LayoutContext layoutContext) {
-  updateStateIfNeeded(layoutContext);
+  updateStateIfNeeded();
   ConcreteViewShadowNode::layout(layoutContext);
 }
 

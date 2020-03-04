@@ -34,11 +34,6 @@ struct LayoutContext {
   Float pointScaleFactor{1.0};
 
   /*
-   * Multiplier used to change size of the font in surface.
-   */
-  Float fontSizeMultiplier{1.0};
-
-  /*
    * A raw pointer to list of raw pointers to `LayoutableShadowNode`s that were
    * affected by the re-layout pass. If the field is not `nullptr`, a particular
    * `LayoutableShadowNode` implementation should add mutated nodes to this
