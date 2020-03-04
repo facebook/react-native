@@ -22,7 +22,8 @@ bool ViewShadowNode::isLayoutOnly() const {
       // Accessibility Props
       !viewProps.accessible &&
       // Pointer events Props
-      (viewProps.pointerEvents == PointerEventsMode::Auto || viewProps.pointerEvents == PointerEventsMode::BoxNone) &&
+      (viewProps.pointerEvents == PointerEventsMode::Auto ||
+       viewProps.pointerEvents == PointerEventsMode::BoxNone) &&
       // Style Props
       viewProps.opacity == 1.0 && !viewProps.backgroundColor &&
       !viewProps.foregroundColor && !viewProps.shadowColor &&

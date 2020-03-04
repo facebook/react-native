@@ -15,7 +15,6 @@ class LayoutableShadowNodeTest : public ::testing::Test {
   LayoutableShadowNodeTest()
       : eventDispatcher_(std::shared_ptr<EventDispatcher const>()),
         componentDescriptor_(TestComponentDescriptor({eventDispatcher_})) {
-
     auto traits = TestShadowNode::BaseTraits();
 
     auto familyA = std::make_shared<ShadowNodeFamily>(

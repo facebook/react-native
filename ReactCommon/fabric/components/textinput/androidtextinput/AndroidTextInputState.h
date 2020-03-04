@@ -68,7 +68,8 @@ class AndroidTextInputState final {
   SharedTextLayoutManager layoutManager{};
 
   /**
-   * Communicates Android theme padding back to the ShadowNode / Component Descriptor for layout.
+   * Communicates Android theme padding back to the ShadowNode / Component
+   * Descriptor for layout.
    */
   float defaultThemePaddingStart{NAN};
   float defaultThemePaddingEnd{NAN};
@@ -145,7 +146,10 @@ class AndroidTextInputState final {
   AndroidTextInputState(
       AndroidTextInputState const &previousState,
       folly::dynamic const &data)
-      : mostRecentEventCount(data.getDefault("mostRecentEventCount", previousState.mostRecentEventCount).getInt()),
+      : mostRecentEventCount(data.getDefault(
+                                     "mostRecentEventCount",
+                                     previousState.mostRecentEventCount)
+                                 .getInt()),
         attributedString(updateAttributedString(
             previousState.defaultTextAttributes,
             previousState.defaultParentShadowView,
@@ -156,10 +160,23 @@ class AndroidTextInputState final {
         defaultTextAttributes(previousState.defaultTextAttributes),
         defaultParentShadowView(previousState.defaultParentShadowView),
         layoutManager(previousState.layoutManager),
-        defaultThemePaddingStart(data.getDefault("themePaddingStart", previousState.defaultThemePaddingStart).getDouble()),
-        defaultThemePaddingEnd(data.getDefault("themePaddingEnd", previousState.defaultThemePaddingEnd).getDouble()),
-        defaultThemePaddingTop(data.getDefault("themePaddingTop", previousState.defaultThemePaddingTop).getDouble()),
-        defaultThemePaddingBottom(data.getDefault("themePaddingBottom", previousState.defaultThemePaddingBottom).getDouble()) {};
+        defaultThemePaddingStart(data.getDefault(
+                                         "themePaddingStart",
+                                         previousState.defaultThemePaddingStart)
+                                     .getDouble()),
+        defaultThemePaddingEnd(data.getDefault(
+                                       "themePaddingEnd",
+                                       previousState.defaultThemePaddingEnd)
+                                   .getDouble()),
+        defaultThemePaddingTop(data.getDefault(
+                                       "themePaddingTop",
+                                       previousState.defaultThemePaddingTop)
+                                   .getDouble()),
+        defaultThemePaddingBottom(
+            data.getDefault(
+                    "themePaddingBottom",
+                    previousState.defaultThemePaddingBottom)
+                .getDouble()){};
   folly::dynamic getDynamic() const;
 #endif
 };

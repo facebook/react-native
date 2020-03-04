@@ -582,8 +582,10 @@ inline folly::dynamic toDynamic(const AttributedString &attributedString) {
     }
     if (fragment.isAttachment()) {
       dynamicFragment["isAttachment"] = true;
-      dynamicFragment["width"] = (int) fragment.parentShadowView.layoutMetrics.frame.size.width;
-      dynamicFragment["height"] = (int) fragment.parentShadowView.layoutMetrics.frame.size.height;
+      dynamicFragment["width"] =
+          (int)fragment.parentShadowView.layoutMetrics.frame.size.width;
+      dynamicFragment["height"] =
+          (int)fragment.parentShadowView.layoutMetrics.frame.size.height;
     }
     dynamicFragment["textAttributes"] = toDynamic(fragment.textAttributes);
     fragments.push_back(dynamicFragment);

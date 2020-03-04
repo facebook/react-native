@@ -197,9 +197,7 @@ std::unique_ptr<JSExecutor> HermesExecutorFactory::createJSExecutor(
       makeHermesRuntimeSystraced(runtimeConfig_);
   HermesRuntime &hermesRuntimeRef = *hermesRuntime;
   auto decoratedRuntime = std::make_shared<DecoratedRuntime>(
-      std::move(hermesRuntime),
-      hermesRuntimeRef,
-      jsQueue);
+      std::move(hermesRuntime), hermesRuntimeRef, jsQueue);
 
   // So what do we have now?
   // DecoratedRuntime -> HermesRuntime

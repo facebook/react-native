@@ -256,7 +256,7 @@ void Binding::installFabricUIManager(
       "react_fabric:enabled_collapse_delete_create_mounting_instructions");
 
   disableVirtualNodePreallocation_ = reactNativeConfig_->getBool(
-    "react_fabric:disable_virtual_node_preallocation");
+      "react_fabric:disable_virtual_node_preallocation");
 
   disablePreallocateViews_ = reactNativeConfig_->getBool(
       "react_fabric:disabled_view_preallocation_android");

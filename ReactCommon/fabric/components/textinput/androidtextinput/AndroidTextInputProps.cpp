@@ -225,13 +225,24 @@ AndroidTextInputProps::AndroidTextInputProps(
           convertRawProp(rawProps, sourceProps.paragraphAttributes, {})),
       // See AndroidTextInputComponentDescriptor for usage
       // TODO T63008435: can these, and this feature, be removed entirely?
-      hasPaddingLeft(rawProps.at("", "padding", "") != nullptr || rawProps.at("Left", "padding", "") != nullptr),
-      hasPaddingTop(rawProps.at("", "padding", "") != nullptr || rawProps.at("Top", "padding", "") != nullptr),
-      hasPaddingRight(rawProps.at("", "padding", "") != nullptr || rawProps.at("Right", "padding", "") != nullptr),
-      hasPaddingBottom(rawProps.at("", "padding", "") != nullptr || rawProps.at("Bottom", "padding", "") != nullptr),
-      hasPaddingStart(rawProps.at("", "padding", "") != nullptr || rawProps.at("Start", "padding", "") != nullptr),
-      hasPaddingEnd(rawProps.at("", "padding", "") != nullptr || rawProps.at("End", "padding", "") != nullptr)
-      { }
+      hasPaddingLeft(
+          rawProps.at("", "padding", "") != nullptr ||
+          rawProps.at("Left", "padding", "") != nullptr),
+      hasPaddingTop(
+          rawProps.at("", "padding", "") != nullptr ||
+          rawProps.at("Top", "padding", "") != nullptr),
+      hasPaddingRight(
+          rawProps.at("", "padding", "") != nullptr ||
+          rawProps.at("Right", "padding", "") != nullptr),
+      hasPaddingBottom(
+          rawProps.at("", "padding", "") != nullptr ||
+          rawProps.at("Bottom", "padding", "") != nullptr),
+      hasPaddingStart(
+          rawProps.at("", "padding", "") != nullptr ||
+          rawProps.at("Start", "padding", "") != nullptr),
+      hasPaddingEnd(
+          rawProps.at("", "padding", "") != nullptr ||
+          rawProps.at("End", "padding", "") != nullptr) {}
 
 // TODO T53300085: support this in codegen; this was hand-written
 folly::dynamic AndroidTextInputProps::getDynamic() const {
