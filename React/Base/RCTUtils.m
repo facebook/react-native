@@ -505,14 +505,13 @@ UIWindow *__nullable RCTKeyWindow(void)
   return nil;
 }
 
-UIViewController *__nullable RCTPresentedViewController(UIWindow* _Nullable window)
+UIViewController *__nullable RCTPresentedViewController(void)
 {
   if ([RCTUtilsUIOverride hasPresentedViewController]) {
     return [RCTUtilsUIOverride presentedViewController];
   }
 
-  UIWindow *keyWindow = window ?: RCTKeyWindow();
-  UIViewController *controller = keyWindow.rootViewController;
+  UIViewController *controller = RCTKeyWindow().rootViewController;
   UIViewController *presentedController = controller.presentedViewController;
   while (presentedController && ![presentedController isBeingDismissed]) {
     controller = presentedController;

@@ -12,7 +12,6 @@
 #import <React/RCTAssert.h>
 #import <React/RCTConvert.h>
 #import <React/RCTLog.h>
-#import <React/RCTUIManager.h>
 #import <React/RCTUtils.h>
 
 #import "CoreModulesPlugins.h"
@@ -36,8 +35,6 @@ RCT_ENUM_CONVERTER(RCTAlertViewStyle, (@{
 {
   NSHashTable *_alertControllers;
 }
-
-@synthesize bridge = _bridge;
 
 RCT_EXPORT_MODULE()
 
@@ -78,7 +75,6 @@ RCT_EXPORT_METHOD(alertWithArgs:(JS::NativeAlertManager::Args &)args
   NSString *cancelButtonKey = [RCTConvert NSString:args.cancelButtonKey()];
   NSString *destructiveButtonKey = [RCTConvert NSString:args.destructiveButtonKey()];
   UIKeyboardType keyboardType = [RCTConvert UIKeyboardType:args.keyboardType()];
-  NSNumber *reactTag = [RCTConvert NSNumber:args.reactTag() ? @(*args.reactTag()) : @-1];
 
   if (!title && !message) {
     RCTLogError(@"Must specify either an alert title, or message, or both");
@@ -96,6 +92,21 @@ RCT_EXPORT_METHOD(alertWithArgs:(JS::NativeAlertManager::Args &)args
       ];
       cancelButtonKey = @"1";
     }
+  }
+
+  UIViewController *presentingController = RCTPresentedViewController();
+  if (presentingController == nil) {
+    RCTLogError(@"Tried to display alert view but there is no application window. args: %@", @{
+      @"title": args.title() ?: [NSNull null],
+      @"message": args.message() ?: [NSNull null],
+      @"buttons": RCTConvertOptionalVecToArray(args.buttons(), ^id(id<NSObject> element) { return element; }) ?: [NSNull null],
+      @"type": args.type() ?: [NSNull null],
+      @"defaultValue": args.defaultValue() ?: [NSNull null],
+      @"cancelButtonKey": args.cancelButtonKey() ?: [NSNull null],
+      @"destructiveButtonKey": args.destructiveButtonKey() ?: [NSNull null],
+      @"keyboardType": args.keyboardType() ?: [NSNull null],
+    });
+    return;
   }
 
   UIAlertController *alertController = [UIAlertController
@@ -180,23 +191,6 @@ RCT_EXPORT_METHOD(alertWithArgs:(JS::NativeAlertManager::Args &)args
   [_alertControllers addObject:alertController];
 
   dispatch_async(dispatch_get_main_queue(), ^{
-    UIView *view = [self.bridge.uiManager viewForReactTag:reactTag];
-    UIViewController *presentingController = RCTPresentedViewController(view.window);
-
-    if (presentingController == nil) {
-      RCTLogError(@"Tried to display alert view but there is no application window. args: %@", @{
-        @"title": args.title() ?: [NSNull null],
-        @"message": args.message() ?: [NSNull null],
-        @"buttons": RCTConvertOptionalVecToArray(args.buttons(), ^id(id<NSObject> element) { return element; }) ?: [NSNull null],
-        @"type": args.type() ?: [NSNull null],
-        @"defaultValue": args.defaultValue() ?: [NSNull null],
-        @"cancelButtonKey": args.cancelButtonKey() ?: [NSNull null],
-        @"destructiveButtonKey": args.destructiveButtonKey() ?: [NSNull null],
-        @"keyboardType": args.keyboardType() ?: [NSNull null],
-      });
-      return;
-    }
-
     [presentingController presentViewController:alertController animated:YES completion:nil];
   });
 }

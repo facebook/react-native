@@ -11,8 +11,6 @@
 'use strict';
 
 const Platform = require('../../Utilities/Platform');
-const RootTagContext = require('../../ReactNative/RootTagContext');
-import ReactNative from '../../Renderer/shims/ReactNative';
 const React = require('react');
 
 const invariant = require('invariant');
@@ -266,19 +264,11 @@ class StatusBar extends React.Component<Props> {
    * @param animation Optional animation when
    *    changing the status bar hidden property.
    */
-  static setHidden(
-    hidden: boolean,
-    animation?: StatusBarAnimation,
-    surface?: mixed,
-  ) {
+  static setHidden(hidden: boolean, animation?: StatusBarAnimation) {
     animation = animation || 'none';
     StatusBar._defaultProps.hidden.value = hidden;
     if (Platform.OS === 'ios') {
-      NativeStatusBarManagerIOS.setHidden(
-        hidden,
-        animation,
-        ReactNative.findNodeHandle(surface) ?? -1,
-      );
+      NativeStatusBarManagerIOS.setHidden(hidden, animation);
     } else if (Platform.OS === 'android') {
       NativeStatusBarManagerAndroid.setHidden(hidden);
     }
@@ -289,19 +279,11 @@ class StatusBar extends React.Component<Props> {
    * @param style Status bar style to set
    * @param animated Animate the style change.
    */
-  static setBarStyle(
-    style: StatusBarStyle,
-    animated?: boolean,
-    surface?: mixed,
-  ) {
+  static setBarStyle(style: StatusBarStyle, animated?: boolean) {
     animated = animated || false;
     StatusBar._defaultProps.barStyle.value = style;
     if (Platform.OS === 'ios') {
-      NativeStatusBarManagerIOS.setStyle(
-        style,
-        animated,
-        ReactNative.findNodeHandle(surface) ?? -1,
-      );
+      NativeStatusBarManagerIOS.setStyle(style, animated);
     } else if (Platform.OS === 'android') {
       NativeStatusBarManagerAndroid.setStyle(style);
     }
@@ -310,7 +292,6 @@ class StatusBar extends React.Component<Props> {
   /**
    * Control the visibility of the network activity indicator
    * @param visible Show the indicator.
-   * @platform ios
    */
   static setNetworkActivityIndicatorVisible(visible: boolean) {
     if (Platform.OS !== 'ios') {
@@ -327,7 +308,6 @@ class StatusBar extends React.Component<Props> {
    * Set the background color for the status bar
    * @param color Background color.
    * @param animated Animate the style change.
-   * @platform android
    */
   static setBackgroundColor(color: string, animated?: boolean) {
     if (Platform.OS !== 'android') {
@@ -355,7 +335,6 @@ class StatusBar extends React.Component<Props> {
   /**
    * Control the translucency of the status bar
    * @param translucent Set as translucent.
-   * @platform android
    */
   static setTranslucent(translucent: boolean) {
     if (Platform.OS !== 'android') {
@@ -372,10 +351,10 @@ class StatusBar extends React.Component<Props> {
    *
    * @param props Object containing the StatusBar props to use in the stack entry.
    */
-  static pushStackEntry(props: any, surface?: mixed): any {
+  static pushStackEntry(props: any): any {
     const entry = createStackEntry(props);
     StatusBar._propsStack.push(entry);
-    StatusBar._updatePropsStack(surface);
+    StatusBar._updatePropsStack();
     return entry;
   }
 
@@ -384,12 +363,12 @@ class StatusBar extends React.Component<Props> {
    *
    * @param entry Entry returned from `pushStackEntry`.
    */
-  static popStackEntry(entry: any, surface?: mixed) {
+  static popStackEntry(entry: any) {
     const index = StatusBar._propsStack.indexOf(entry);
     if (index !== -1) {
       StatusBar._propsStack.splice(index, 1);
     }
-    StatusBar._updatePropsStack(surface);
+    StatusBar._updatePropsStack();
   }
 
   /**
@@ -398,13 +377,13 @@ class StatusBar extends React.Component<Props> {
    * @param entry Entry returned from `pushStackEntry` to replace.
    * @param props Object containing the StatusBar props to use in the replacement stack entry.
    */
-  static replaceStackEntry(entry: any, props: any, surface?: mixed): any {
+  static replaceStackEntry(entry: any, props: any): any {
     const newEntry = createStackEntry(props);
     const index = StatusBar._propsStack.indexOf(entry);
     if (index !== -1) {
       StatusBar._propsStack[index] = newEntry;
     }
-    StatusBar._updatePropsStack(surface);
+    StatusBar._updatePropsStack();
     return newEntry;
   }
 
@@ -416,9 +395,6 @@ class StatusBar extends React.Component<Props> {
     showHideTransition: 'fade',
   };
 
-  // $FlowFixMe (signature-verification-failure)
-  static contextType = RootTagContext;
-
   _stackEntry = null;
 
   componentDidMount() {
@@ -426,27 +402,26 @@ class StatusBar extends React.Component<Props> {
     // and always update the native status bar with the props from the top of then
     // stack. This allows having multiple StatusBar components and the one that is
     // added last or is deeper in the view hierarchy will have priority.
-    this._stackEntry = StatusBar.pushStackEntry(this.props, this.context);
+    this._stackEntry = StatusBar.pushStackEntry(this.props);
   }
 
   componentWillUnmount() {
     // When a StatusBar is unmounted, remove itself from the stack and update
     // the native bar with the next props.
-    StatusBar.popStackEntry(this._stackEntry, this.context);
+    StatusBar.popStackEntry(this._stackEntry);
   }
 
   componentDidUpdate() {
     this._stackEntry = StatusBar.replaceStackEntry(
       this._stackEntry,
       this.props,
-      this.context,
     );
   }
 
   /**
    * Updates the native status bar with the props from the stack.
    */
-  static _updatePropsStack = (surface?: mixed) => {
+  static _updatePropsStack = () => {
     // Send the update to the native module only once at the end of the frame.
     clearImmediate(StatusBar._updateImmediate);
     StatusBar._updateImmediate = setImmediate(() => {
@@ -465,7 +440,6 @@ class StatusBar extends React.Component<Props> {
           NativeStatusBarManagerIOS.setStyle(
             mergedProps.barStyle.value,
             mergedProps.barStyle.animated || false,
-            ReactNative.findNodeHandle(surface) ?? -1,
           );
         }
         if (!oldProps || oldProps.hidden.value !== mergedProps.hidden.value) {
@@ -474,7 +448,6 @@ class StatusBar extends React.Component<Props> {
             mergedProps.hidden.animated
               ? mergedProps.hidden.transition
               : 'none',
-            ReactNative.findNodeHandle(surface) ?? -1,
           );
         }
 

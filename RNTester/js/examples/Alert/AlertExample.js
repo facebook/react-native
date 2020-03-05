@@ -31,13 +31,9 @@ const alertMessage =
 type Props = $ReadOnly<{||}>;
 
 class SimpleAlertExampleBlock extends React.Component<Props> {
-  viewRef: React.MutableRefObject<React.ElementRef<
-    typeof View,
-  > | void> = React.createRef();
-
   render() {
     return (
-      <View ref={this.viewRef}>
+      <View>
         <TouchableHighlight
           style={styles.wrapper}
           onPress={() => Alert.alert('Alert Title', alertMessage)}>
@@ -122,17 +118,6 @@ class SimpleAlertExampleBlock extends React.Component<Props> {
           }>
           <View style={styles.button}>
             <Text>Alert without title</Text>
-          </View>
-        </TouchableHighlight>
-        <TouchableHighlight
-          style={styles.wrapper}
-          onPress={() =>
-            Alert.alert('Surfaced!', alertMessage, null, {
-              surface: this.viewRef.current,
-            })
-          }>
-          <View style={styles.button}>
-            <Text>Alert with surface passed</Text>
           </View>
         </TouchableHighlight>
       </View>
