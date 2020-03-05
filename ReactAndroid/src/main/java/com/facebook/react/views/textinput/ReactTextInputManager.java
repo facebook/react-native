@@ -97,12 +97,6 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
       INPUT_TYPE_KEYBOARD_DECIMAL_PAD | InputType.TYPE_NUMBER_FLAG_SIGNED;
   private static final int PASSWORD_VISIBILITY_FLAG =
       InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD & ~InputType.TYPE_TEXT_VARIATION_PASSWORD;
-  private static final int KEYBOARD_TYPE_FLAGS =
-      INPUT_TYPE_KEYBOARD_NUMBERED
-          | InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS
-          | InputType.TYPE_CLASS_TEXT
-          | InputType.TYPE_CLASS_PHONE
-          | PASSWORD_VISIBILITY_FLAG;
   private static final int AUTOCAPITALIZE_FLAGS =
       InputType.TYPE_TEXT_FLAG_CAP_SENTENCES
           | InputType.TYPE_TEXT_FLAG_CAP_WORDS
@@ -731,7 +725,6 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
   @ReactProp(name = "keyboardType")
   public void setKeyboardType(ReactEditText view, @Nullable String keyboardType) {
     int flagsToSet = InputType.TYPE_CLASS_TEXT;
-    boolean unsettingFlagsBreaksAutocomplete = false;
     if (KEYBOARD_TYPE_NUMERIC.equalsIgnoreCase(keyboardType)) {
       flagsToSet = INPUT_TYPE_KEYBOARD_NUMBERED;
     } else if (KEYBOARD_TYPE_NUMBER_PAD.equalsIgnoreCase(keyboardType)) {
@@ -746,15 +739,9 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
       // This will supercede secureTextEntry={false}. If it doesn't, due to the way
       //  the flags work out, the underlying field will end up a URI-type field.
       flagsToSet = InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD;
-    } else if ((view.getStagedInputType() & AUTOCAPITALIZE_FLAGS) != 0) {
-      // This prevents KEYBOARD_TYPE_FLAGS from being unset when the keyboardType is
-      // default, null, or unsupported, and autocapitalize is on.
-      // Unsetting these flags breaks the autoCapitalize functionality.
-      unsettingFlagsBreaksAutocomplete = true;
     }
 
-    updateStagedInputTypeFlag(
-        view, (unsettingFlagsBreaksAutocomplete ? 0 : KEYBOARD_TYPE_FLAGS), flagsToSet);
+    updateStagedInputTypeFlag(view, InputType.TYPE_MASK_CLASS, flagsToSet);
     checkPasswordType(view);
   }
 
