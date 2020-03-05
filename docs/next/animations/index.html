@@ -74,11 +74,11 @@
 <p>The <a href="animated"><code>Animated</code></a> API is designed to concisely express a wide variety of interesting animation and interaction patterns in a very performant way. <code>Animated</code> focuses on declarative relationships between inputs and outputs, with configurable transforms in between, and <code>start</code>/<code>stop</code> methods to control time-based animation execution.</p>
 <p><code>Animated</code> exports six animatable component types: <code>View</code>, <code>Text</code>, <code>Image</code>, <code>ScrollView</code>, <code>FlatList</code> and <code>SectionList</code>, but you can also create your own using <code>Animated.createAnimatedComponent()</code>.</p>
 <p>For example, a container view that fades in when it is mounted may look like this:</p>
-<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React, { useState, useEffect } <span class="hljs-keyword">from</span> <span class="hljs-string">'react'</span>;
+<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React, { useRef, useEffect } <span class="hljs-keyword">from</span> <span class="hljs-string">'react'</span>;
 <span class="hljs-keyword">import</span> { Animated, Text, View } <span class="hljs-keyword">from</span> <span class="hljs-string">'react-native'</span>;
 
 <span class="hljs-keyword">const</span> FadeInView = <span class="hljs-function">(<span class="hljs-params">props</span>) =&gt;</span> {
-  <span class="hljs-keyword">const</span> [fadeAnim] = useState(<span class="hljs-keyword">new</span> Animated.Value(<span class="hljs-number">0</span>))  <span class="hljs-comment">// Initial value for opacity: 0</span>
+  <span class="hljs-keyword">const</span> fadeAnim = useRef(<span class="hljs-keyword">new</span> Animated.Value(<span class="hljs-number">0</span>)).current  <span class="hljs-comment">// Initial value for opacity: 0</span>
 
   React.useEffect(<span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
     Animated.timing(
@@ -115,7 +115,7 @@
 </code></pre></div><div class="desktop-friendly-snack" style="margin-top: 15px; margin-bottom: 15px"><div
         data-snack-name="Example"
         data-snack-description="Example usage"
-        data-snack-code="import%20React%2C%20%7B%20useState%2C%20useEffect%20%7D%20from%20'react'%3B%0Aimport%20%7B%20Animated%2C%20Text%2C%20View%20%7D%20from%20'react-native'%3B%0A%0Aconst%20FadeInView%20%3D%20(props)%20%3D%3E%20%7B%0A%20%20const%20%5BfadeAnim%5D%20%3D%20useState(new%20Animated.Value(0))%20%20%2F%2F%20Initial%20value%20for%20opacity%3A%200%0A%0A%20%20React.useEffect(()%20%3D%3E%20%7B%0A%20%20%20%20Animated.timing(%0A%20%20%20%20%20%20fadeAnim%2C%0A%20%20%20%20%20%20%7B%0A%20%20%20%20%20%20%20%20toValue%3A%201%2C%0A%20%20%20%20%20%20%20%20duration%3A%2010000%2C%0A%20%20%20%20%20%20%7D%0A%20%20%20%20).start()%3B%0A%20%20%7D%2C%20%5B%5D)%0A%0A%20%20return%20(%0A%20%20%20%20%3CAnimated.View%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%2F%2F%20Special%20animatable%20View%0A%20%20%20%20%20%20style%3D%7B%7B%0A%20%20%20%20%20%20%20%20...props.style%2C%0A%20%20%20%20%20%20%20%20opacity%3A%20fadeAnim%2C%20%20%20%20%20%20%20%20%20%2F%2F%20Bind%20opacity%20to%20animated%20value%0A%20%20%20%20%20%20%7D%7D%0A%20%20%20%20%3E%0A%20%20%20%20%20%20%7Bprops.children%7D%0A%20%20%20%20%3C%2FAnimated.View%3E%0A%20%20)%3B%0A%7D%0A%0A%2F%2F%20You%20can%20then%20use%20your%20%60FadeInView%60%20in%20place%20of%20a%20%60View%60%20in%20your%20components%3A%0Aexport%20default%20()%20%3D%3E%20%7B%0A%20%20return%20(%0A%20%20%20%20%3CView%20style%3D%7B%7Bflex%3A%201%2C%20alignItems%3A%20'center'%2C%20justifyContent%3A%20'center'%7D%7D%3E%0A%20%20%20%20%20%20%3CFadeInView%20style%3D%7B%7Bwidth%3A%20250%2C%20height%3A%2050%2C%20backgroundColor%3A%20'powderblue'%7D%7D%3E%0A%20%20%20%20%20%20%20%20%3CText%20style%3D%7B%7BfontSize%3A%2028%2C%20textAlign%3A%20'center'%2C%20margin%3A%2010%7D%7D%3EFading%20in%3C%2FText%3E%0A%20%20%20%20%20%20%3C%2FFadeInView%3E%0A%20%20%20%20%3C%2FView%3E%0A%20%20)%0A%7D%0A"
+        data-snack-code="import%20React%2C%20%7B%20useRef%2C%20useEffect%20%7D%20from%20'react'%3B%0Aimport%20%7B%20Animated%2C%20Text%2C%20View%20%7D%20from%20'react-native'%3B%0A%0Aconst%20FadeInView%20%3D%20(props)%20%3D%3E%20%7B%0A%20%20const%20fadeAnim%20%3D%20useRef(new%20Animated.Value(0)).current%20%20%2F%2F%20Initial%20value%20for%20opacity%3A%200%0A%0A%20%20React.useEffect(()%20%3D%3E%20%7B%0A%20%20%20%20Animated.timing(%0A%20%20%20%20%20%20fadeAnim%2C%0A%20%20%20%20%20%20%7B%0A%20%20%20%20%20%20%20%20toValue%3A%201%2C%0A%20%20%20%20%20%20%20%20duration%3A%2010000%2C%0A%20%20%20%20%20%20%7D%0A%20%20%20%20).start()%3B%0A%20%20%7D%2C%20%5B%5D)%0A%0A%20%20return%20(%0A%20%20%20%20%3CAnimated.View%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%2F%2F%20Special%20animatable%20View%0A%20%20%20%20%20%20style%3D%7B%7B%0A%20%20%20%20%20%20%20%20...props.style%2C%0A%20%20%20%20%20%20%20%20opacity%3A%20fadeAnim%2C%20%20%20%20%20%20%20%20%20%2F%2F%20Bind%20opacity%20to%20animated%20value%0A%20%20%20%20%20%20%7D%7D%0A%20%20%20%20%3E%0A%20%20%20%20%20%20%7Bprops.children%7D%0A%20%20%20%20%3C%2FAnimated.View%3E%0A%20%20)%3B%0A%7D%0A%0A%2F%2F%20You%20can%20then%20use%20your%20%60FadeInView%60%20in%20place%20of%20a%20%60View%60%20in%20your%20components%3A%0Aexport%20default%20()%20%3D%3E%20%7B%0A%20%20return%20(%0A%20%20%20%20%3CView%20style%3D%7B%7Bflex%3A%201%2C%20alignItems%3A%20'center'%2C%20justifyContent%3A%20'center'%7D%7D%3E%0A%20%20%20%20%20%20%3CFadeInView%20style%3D%7B%7Bwidth%3A%20250%2C%20height%3A%2050%2C%20backgroundColor%3A%20'powderblue'%7D%7D%3E%0A%20%20%20%20%20%20%20%20%3CText%20style%3D%7B%7BfontSize%3A%2028%2C%20textAlign%3A%20'center'%2C%20margin%3A%2010%7D%7D%3EFading%20in%3C%2FText%3E%0A%20%20%20%20%20%20%3C%2FFadeInView%3E%0A%20%20%20%20%3C%2FView%3E%0A%20%20)%0A%7D%0A"
         data-snack-platform="web"
         data-snack-supported-platforms=ios,android,web
         data-snack-preview="true"
@@ -246,6 +246,336 @@ Animated<span class="token punctuation">.</span><span class="token function">tim
     <span class="token punctuation">}</span><span class="token punctuation">]</span>
  <span class="token punctuation">)</span><span class="token punctuation">}</span>
 </code></pre>
+<p>The following example implements a horizontal scrolling carousel where the scroll position indicators are animated using the <code>Animated.event</code> used in the <code>ScrollView</code></p>
+<h4><a class="anchor" aria-hidden="true" id="scrollview-with-animated-event-example"></a><a href="#scrollview-with-animated-event-example" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>ScrollView with Animated Event Example</h4>
+<div class="toggler">
+  <ul role="tablist" class="toggle-syntax">
+    <li id="functional" class="button-functional" aria-selected="false" role="tab" tabindex="0" aria-controls="functionaltab" onclick="displayTabs('syntax', 'functional')">
+      Function Component Example
+    </li>
+    <li id="classical" class="button-classical" aria-selected="false" role="tab" tabindex="0" aria-controls="classicaltab" onclick="displayTabs('syntax', 'classical')">
+      Class Component Example
+    </li>
+  </ul>
+</div>
+<p><block class="functional syntax" /></p>
+<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React, { useRef } <span class="hljs-keyword">from</span> <span class="hljs-string">"react"</span>;
+<span class="hljs-keyword">import</span> {
+  SafeAreaView,
+  ScrollView,
+  Text,
+  StyleSheet,
+  View,
+  ImageBackground,
+  Animated,
+  useWindowDimensions
+} <span class="hljs-keyword">from</span> <span class="hljs-string">"react-native"</span>;
+
+<span class="hljs-keyword">const</span> images = [
+  <span class="hljs-string">"https://images.unsplash.com/photo-1556740749-887f6717d7e4"</span>,
+  <span class="hljs-string">"https://images.unsplash.com/photo-1556740749-887f6717d7e4"</span>,
+  <span class="hljs-string">"https://images.unsplash.com/photo-1556740749-887f6717d7e4"</span>,
+  <span class="hljs-string">"https://images.unsplash.com/photo-1556740749-887f6717d7e4"</span>,
+  <span class="hljs-string">"https://images.unsplash.com/photo-1556740749-887f6717d7e4"</span>,
+  <span class="hljs-string">"https://images.unsplash.com/photo-1556740749-887f6717d7e4"</span>
+];
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">App</span>(<span class="hljs-params"></span>) </span>{
+  <span class="hljs-keyword">const</span> scrollX = useRef(<span class="hljs-keyword">new</span> Animated.Value(<span class="hljs-number">0</span>)).current;
+
+  <span class="hljs-keyword">const</span> { <span class="hljs-attr">width</span>: windowWidth } = useWindowDimensions();
+
+  <span class="hljs-keyword">return</span> (
+    <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">SafeAreaView</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.container}</span>&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">View</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.scrollContainer}</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">ScrollView</span>
+          <span class="hljs-attr">horizontal</span>=<span class="hljs-string">{true}</span>
+          <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.scrollViewStyle}</span>
+          <span class="hljs-attr">pagingEnabled</span>
+          <span class="hljs-attr">showsHorizontalScrollIndicator</span>=<span class="hljs-string">{false}</span>
+          <span class="hljs-attr">onScroll</span>=<span class="hljs-string">{Animated.event([</span>
+            {
+              <span class="hljs-attr">nativeEvent:</span> {
+                <span class="hljs-attr">contentOffset:</span> {
+                  <span class="hljs-attr">x:</span> <span class="hljs-attr">scrollX</span>
+                }
+              }
+            }
+          ])}
+          <span class="hljs-attr">scrollEventThrottle</span>=<span class="hljs-string">{1}</span>
+        &gt;</span>
+          {images.map((image, imageIndex) =&gt; {
+            return (
+              <span class="hljs-tag">&lt;<span class="hljs-name">View</span>
+                <span class="hljs-attr">style</span>=<span class="hljs-string">{{</span> <span class="hljs-attr">width:</span> <span class="hljs-attr">windowWidth</span>, <span class="hljs-attr">height:</span> <span class="hljs-attr">250</span> }}
+                <span class="hljs-attr">key</span>=<span class="hljs-string">{imageIndex}</span>
+              &gt;</span>
+                <span class="hljs-tag">&lt;<span class="hljs-name">ImageBackground</span> <span class="hljs-attr">source</span>=<span class="hljs-string">{{</span> <span class="hljs-attr">uri:</span> <span class="hljs-attr">image</span> }} <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.card}</span>&gt;</span>
+                  <span class="hljs-tag">&lt;<span class="hljs-name">View</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.textContainer}</span>&gt;</span>
+                    <span class="hljs-tag">&lt;<span class="hljs-name">Text</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.infoText}</span>&gt;</span>
+                      {"Image - " + imageIndex}
+                    <span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span>
+                  <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span>
+                <span class="hljs-tag">&lt;/<span class="hljs-name">ImageBackground</span>&gt;</span>
+              <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span>
+            );
+          })}
+        <span class="hljs-tag">&lt;/<span class="hljs-name">ScrollView</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">View</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.indicatorContainer}</span>&gt;</span>
+          {images.map((image, imageIndex) =&gt; {
+            const width = scrollX.interpolate({
+              inputRange: [
+                windowWidth * (imageIndex - 1),
+                windowWidth * imageIndex,
+                windowWidth * (imageIndex + 1)
+              ],
+              outputRange: [8, 16, 8],
+              extrapolate: "clamp"
+            });
+            return (
+              <span class="hljs-tag">&lt;<span class="hljs-name">Animated.View</span>
+                <span class="hljs-attr">key</span>=<span class="hljs-string">{imageIndex}</span>
+                <span class="hljs-attr">style</span>=<span class="hljs-string">{[styles.normalDot,</span> { <span class="hljs-attr">width</span> }]}
+              /&gt;</span>
+            );
+          })}
+        <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span>
+      <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span>
+    <span class="hljs-tag">&lt;/<span class="hljs-name">SafeAreaView</span>&gt;</span>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center"
+  },
+  scrollContainer: {
+    height: 300,
+    alignItems: "center",
+    justifyContent: "center"
+  },
+  card: {
+    flex: 1,
+    marginVertical: 4,
+    marginHorizontal: 16,
+    borderRadius: 5,
+    overflow: "hidden",
+    alignItems: "center",
+    justifyContent: "center"
+  },
+  textContainer: {
+    backgroundColor: "rgba(0,0,0, 0.7)",
+    paddingHorizontal: 24,
+    paddingVertical: 8,
+    borderRadius: 5
+  },
+  infoText: {
+    color: "white",
+    fontSize: 16,
+    fontWeight: "bold"
+  },
+  normalDot: {
+    height: 8,
+    width: 8,
+    borderRadius: 4,
+    backgroundColor: "silver",
+    marginHorizontal: 4
+  },
+  indicatorContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center"
+  }
+});
+</span></code></pre></div><div class="desktop-friendly-snack" style="margin-top: 15px; margin-bottom: 15px"><div
+        data-snack-name="Animated"
+        data-snack-description="Example usage"
+        data-snack-code="import%20React%2C%20%7B%20useRef%20%7D%20from%20%22react%22%3B%0Aimport%20%7B%0A%20%20SafeAreaView%2C%0A%20%20ScrollView%2C%0A%20%20Text%2C%0A%20%20StyleSheet%2C%0A%20%20View%2C%0A%20%20ImageBackground%2C%0A%20%20Animated%2C%0A%20%20useWindowDimensions%0A%7D%20from%20%22react-native%22%3B%0A%0Aconst%20images%20%3D%20%5B%0A%20%20%22https%3A%2F%2Fimages.unsplash.com%2Fphoto-1556740749-887f6717d7e4%22%2C%0A%20%20%22https%3A%2F%2Fimages.unsplash.com%2Fphoto-1556740749-887f6717d7e4%22%2C%0A%20%20%22https%3A%2F%2Fimages.unsplash.com%2Fphoto-1556740749-887f6717d7e4%22%2C%0A%20%20%22https%3A%2F%2Fimages.unsplash.com%2Fphoto-1556740749-887f6717d7e4%22%2C%0A%20%20%22https%3A%2F%2Fimages.unsplash.com%2Fphoto-1556740749-887f6717d7e4%22%2C%0A%20%20%22https%3A%2F%2Fimages.unsplash.com%2Fphoto-1556740749-887f6717d7e4%22%0A%5D%3B%0A%0Aexport%20default%20function%20App()%20%7B%0A%20%20const%20scrollX%20%3D%20useRef(new%20Animated.Value(0)).current%3B%0A%0A%20%20const%20%7B%20width%3A%20windowWidth%20%7D%20%3D%20useWindowDimensions()%3B%0A%0A%20%20return%20(%0A%20%20%20%20%3CSafeAreaView%20style%3D%7Bstyles.container%7D%3E%0A%20%20%20%20%20%20%3CView%20style%3D%7Bstyles.scrollContainer%7D%3E%0A%20%20%20%20%20%20%20%20%3CScrollView%0A%20%20%20%20%20%20%20%20%20%20horizontal%3D%7Btrue%7D%0A%20%20%20%20%20%20%20%20%20%20style%3D%7Bstyles.scrollViewStyle%7D%0A%20%20%20%20%20%20%20%20%20%20pagingEnabled%0A%20%20%20%20%20%20%20%20%20%20showsHorizontalScrollIndicator%3D%7Bfalse%7D%0A%20%20%20%20%20%20%20%20%20%20onScroll%3D%7BAnimated.event(%5B%0A%20%20%20%20%20%20%20%20%20%20%20%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20nativeEvent%3A%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20contentOffset%3A%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20x%3A%20scrollX%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%7D%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%7D%0A%20%20%20%20%20%20%20%20%20%20%20%20%7D%0A%20%20%20%20%20%20%20%20%20%20%5D)%7D%0A%20%20%20%20%20%20%20%20%20%20scrollEventThrottle%3D%7B1%7D%0A%20%20%20%20%20%20%20%20%3E%0A%20%20%20%20%20%20%20%20%20%20%7Bimages.map((image%2C%20imageIndex)%20%3D%3E%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20return%20(%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3CView%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20style%3D%7B%7B%20width%3A%20windowWidth%2C%20height%3A%20250%20%7D%7D%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20key%3D%7BimageIndex%7D%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3CImageBackground%20source%3D%7B%7B%20uri%3A%20image%20%7D%7D%20style%3D%7Bstyles.card%7D%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3CView%20style%3D%7Bstyles.textContainer%7D%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3CText%20style%3D%7Bstyles.infoText%7D%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%7B%22Image%20-%20%22%20%2B%20imageIndex%7D%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3C%2FText%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3C%2FView%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3C%2FImageBackground%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3C%2FView%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20)%3B%0A%20%20%20%20%20%20%20%20%20%20%7D)%7D%0A%20%20%20%20%20%20%20%20%3C%2FScrollView%3E%0A%20%20%20%20%20%20%20%20%3CView%20style%3D%7Bstyles.indicatorContainer%7D%3E%0A%20%20%20%20%20%20%20%20%20%20%7Bimages.map((image%2C%20imageIndex)%20%3D%3E%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20const%20width%20%3D%20scrollX.interpolate(%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20inputRange%3A%20%5B%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20windowWidth%20*%20(imageIndex%20-%201)%2C%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20windowWidth%20*%20imageIndex%2C%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20windowWidth%20*%20(imageIndex%20%2B%201)%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%5D%2C%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20outputRange%3A%20%5B8%2C%2016%2C%208%5D%2C%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20extrapolate%3A%20%22clamp%22%0A%20%20%20%20%20%20%20%20%20%20%20%20%7D)%3B%0A%20%20%20%20%20%20%20%20%20%20%20%20return%20(%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3CAnimated.View%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20key%3D%7BimageIndex%7D%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20style%3D%7B%5Bstyles.normalDot%2C%20%7B%20width%20%7D%5D%7D%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%2F%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20)%3B%0A%20%20%20%20%20%20%20%20%20%20%7D)%7D%0A%20%20%20%20%20%20%20%20%3C%2FView%3E%0A%20%20%20%20%20%20%3C%2FView%3E%0A%20%20%20%20%3C%2FSafeAreaView%3E%0A%20%20)%3B%0A%7D%0A%0Aconst%20styles%20%3D%20StyleSheet.create(%7B%0A%20%20container%3A%20%7B%0A%20%20%20%20flex%3A%201%2C%0A%20%20%20%20alignItems%3A%20%22center%22%2C%0A%20%20%20%20justifyContent%3A%20%22center%22%0A%20%20%7D%2C%0A%20%20scrollContainer%3A%20%7B%0A%20%20%20%20height%3A%20300%2C%0A%20%20%20%20alignItems%3A%20%22center%22%2C%0A%20%20%20%20justifyContent%3A%20%22center%22%0A%20%20%7D%2C%0A%20%20card%3A%20%7B%0A%20%20%20%20flex%3A%201%2C%0A%20%20%20%20marginVertical%3A%204%2C%0A%20%20%20%20marginHorizontal%3A%2016%2C%0A%20%20%20%20borderRadius%3A%205%2C%0A%20%20%20%20overflow%3A%20%22hidden%22%2C%0A%20%20%20%20alignItems%3A%20%22center%22%2C%0A%20%20%20%20justifyContent%3A%20%22center%22%0A%20%20%7D%2C%0A%20%20textContainer%3A%20%7B%0A%20%20%20%20backgroundColor%3A%20%22rgba(0%2C0%2C0%2C%200.7)%22%2C%0A%20%20%20%20paddingHorizontal%3A%2024%2C%0A%20%20%20%20paddingVertical%3A%208%2C%0A%20%20%20%20borderRadius%3A%205%0A%20%20%7D%2C%0A%20%20infoText%3A%20%7B%0A%20%20%20%20color%3A%20%22white%22%2C%0A%20%20%20%20fontSize%3A%2016%2C%0A%20%20%20%20fontWeight%3A%20%22bold%22%0A%20%20%7D%2C%0A%20%20normalDot%3A%20%7B%0A%20%20%20%20height%3A%208%2C%0A%20%20%20%20width%3A%208%2C%0A%20%20%20%20borderRadius%3A%204%2C%0A%20%20%20%20backgroundColor%3A%20%22silver%22%2C%0A%20%20%20%20marginHorizontal%3A%204%0A%20%20%7D%2C%0A%20%20indicatorContainer%3A%20%7B%0A%20%20%20%20flexDirection%3A%20%22row%22%2C%0A%20%20%20%20alignItems%3A%20%22center%22%2C%0A%20%20%20%20justifyContent%3A%20%22center%22%0A%20%20%7D%0A%7D)%3B%0A"
+        data-snack-platform="web"
+        data-snack-supported-platforms=ios,android
+        data-snack-preview="true"
+        style="
+          overflow: hidden;
+          background: #fafafa;
+          border: 1px solid rgba(0,0,0,.16);
+          border-radius: 4px;
+          height: 514px;
+          width: 100%;
+        "
+      ></div></div></div><p><block class="classical syntax" /></p>
+<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React, { Component } <span class="hljs-keyword">from</span> <span class="hljs-string">"react"</span>;
+<span class="hljs-keyword">import</span> {
+  SafeAreaView,
+  ScrollView,
+  Text,
+  StyleSheet,
+  View,
+  ImageBackground,
+  Animated,
+  Dimensions
+} <span class="hljs-keyword">from</span> <span class="hljs-string">"react-native"</span>;
+
+<span class="hljs-keyword">const</span> images = [
+  <span class="hljs-string">"https://images.unsplash.com/photo-1556740749-887f6717d7e4"</span>,
+  <span class="hljs-string">"https://images.unsplash.com/photo-1556740749-887f6717d7e4"</span>,
+  <span class="hljs-string">"https://images.unsplash.com/photo-1556740749-887f6717d7e4"</span>,
+  <span class="hljs-string">"https://images.unsplash.com/photo-1556740749-887f6717d7e4"</span>,
+  <span class="hljs-string">"https://images.unsplash.com/photo-1556740749-887f6717d7e4"</span>,
+  <span class="hljs-string">"https://images.unsplash.com/photo-1556740749-887f6717d7e4"</span>
+];
+
+<span class="hljs-keyword">const</span> <span class="hljs-built_in">window</span> = Dimensions.get(<span class="hljs-string">"window"</span>);
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">App</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">Component</span> </span>{
+  scrollX = <span class="hljs-keyword">new</span> Animated.Value(<span class="hljs-number">0</span>);
+
+  state = {
+    <span class="hljs-attr">dimensions</span>: {
+      <span class="hljs-built_in">window</span>
+    }
+  };
+
+  onDimensionsChange = <span class="hljs-function">(<span class="hljs-params">{ <span class="hljs-built_in">window</span> }</span>) =&gt;</span> {
+    <span class="hljs-keyword">this</span>.setState({ <span class="hljs-attr">dimensions</span>: { <span class="hljs-built_in">window</span> } });
+  };
+
+  componentDidMount() {
+    Dimensions.addEventListener(<span class="hljs-string">"change"</span>, <span class="hljs-keyword">this</span>.onDimensionsChange);
+  }
+
+  componentWillUnmount() {
+    Dimensions.removeEventListener(<span class="hljs-string">"change"</span>, <span class="hljs-keyword">this</span>.onDimensionsChange);
+  }
+
+  render() {
+    <span class="hljs-keyword">const</span> windowWidth = <span class="hljs-keyword">this</span>.state.dimensions.window.width;
+
+    <span class="hljs-keyword">return</span> (
+      <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">SafeAreaView</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.container}</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">View</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.scrollContainer}</span>&gt;</span>
+          <span class="hljs-tag">&lt;<span class="hljs-name">ScrollView</span>
+            <span class="hljs-attr">horizontal</span>=<span class="hljs-string">{true}</span>
+            <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.scrollViewStyle}</span>
+            <span class="hljs-attr">pagingEnabled</span>
+            <span class="hljs-attr">showsHorizontalScrollIndicator</span>=<span class="hljs-string">{false}</span>
+            <span class="hljs-attr">onScroll</span>=<span class="hljs-string">{Animated.event([</span>
+              {
+                <span class="hljs-attr">nativeEvent:</span> {
+                  <span class="hljs-attr">contentOffset:</span> {
+                    <span class="hljs-attr">x:</span> <span class="hljs-attr">this.scrollX</span>
+                  }
+                }
+              }
+            ])}
+            <span class="hljs-attr">scrollEventThrottle</span>=<span class="hljs-string">{1}</span>
+          &gt;</span>
+            {images.map((image, imageIndex) =&gt; {
+              return (
+                <span class="hljs-tag">&lt;<span class="hljs-name">View</span>
+                  <span class="hljs-attr">style</span>=<span class="hljs-string">{{</span>
+                    <span class="hljs-attr">width:</span> <span class="hljs-attr">windowWidth</span>,
+                    <span class="hljs-attr">height:</span> <span class="hljs-attr">250</span>
+                  }}
+                  <span class="hljs-attr">key</span>=<span class="hljs-string">{imageIndex}</span>
+                &gt;</span>
+                  <span class="hljs-tag">&lt;<span class="hljs-name">ImageBackground</span> <span class="hljs-attr">source</span>=<span class="hljs-string">{{</span> <span class="hljs-attr">uri:</span> <span class="hljs-attr">image</span> }} <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.card}</span>&gt;</span>
+                    <span class="hljs-tag">&lt;<span class="hljs-name">View</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.textContainer}</span>&gt;</span>
+                      <span class="hljs-tag">&lt;<span class="hljs-name">Text</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.infoText}</span>&gt;</span>
+                        {"Image - " + imageIndex}
+                      <span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span>
+                    <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span>
+                  <span class="hljs-tag">&lt;/<span class="hljs-name">ImageBackground</span>&gt;</span>
+                <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span>
+              );
+            })}
+          <span class="hljs-tag">&lt;/<span class="hljs-name">ScrollView</span>&gt;</span>
+          <span class="hljs-tag">&lt;<span class="hljs-name">View</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.indicatorContainer}</span>&gt;</span>
+            {images.map((image, imageIndex) =&gt; {
+              const width = this.scrollX.interpolate({
+                inputRange: [
+                  windowWidth * (imageIndex - 1),
+                  windowWidth * imageIndex,
+                  windowWidth * (imageIndex + 1)
+                ],
+                outputRange: [8, 16, 8],
+                extrapolate: "clamp"
+              });
+              return (
+                <span class="hljs-tag">&lt;<span class="hljs-name">Animated.View</span>
+                  <span class="hljs-attr">key</span>=<span class="hljs-string">{imageIndex}</span>
+                  <span class="hljs-attr">style</span>=<span class="hljs-string">{[styles.normalDot,</span> { <span class="hljs-attr">width</span> }]}
+                /&gt;</span>
+              );
+            })}
+          <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span>
+        <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span>
+      <span class="hljs-tag">&lt;/<span class="hljs-name">SafeAreaView</span>&gt;</span>
+    );
+  }
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center"
+  },
+  scrollContainer: {
+    height: 300,
+    alignItems: "center",
+    justifyContent: "center"
+  },
+  card: {
+    flex: 1,
+    marginVertical: 4,
+    marginHorizontal: 16,
+    borderRadius: 5,
+    overflow: "hidden",
+    alignItems: "center",
+    justifyContent: "center"
+  },
+  textContainer: {
+    backgroundColor: "rgba(0,0,0, 0.7)",
+    paddingHorizontal: 24,
+    paddingVertical: 8,
+    borderRadius: 5
+  },
+  infoText: {
+    color: "white",
+    fontSize: 16,
+    fontWeight: "bold"
+  },
+  normalDot: {
+    height: 8,
+    width: 8,
+    borderRadius: 4,
+    backgroundColor: "silver",
+    marginHorizontal: 4
+  },
+  indicatorContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center"
+  }
+});
+</span></code></pre></div><div class="desktop-friendly-snack" style="margin-top: 15px; margin-bottom: 15px"><div
+        data-snack-name="Animated"
+        data-snack-description="Example usage"
+        data-snack-code="import%20React%2C%20%7B%20Component%20%7D%20from%20%22react%22%3B%0Aimport%20%7B%0A%20%20SafeAreaView%2C%0A%20%20ScrollView%2C%0A%20%20Text%2C%0A%20%20StyleSheet%2C%0A%20%20View%2C%0A%20%20ImageBackground%2C%0A%20%20Animated%2C%0A%20%20Dimensions%0A%7D%20from%20%22react-native%22%3B%0A%0Aconst%20images%20%3D%20%5B%0A%20%20%22https%3A%2F%2Fimages.unsplash.com%2Fphoto-1556740749-887f6717d7e4%22%2C%0A%20%20%22https%3A%2F%2Fimages.unsplash.com%2Fphoto-1556740749-887f6717d7e4%22%2C%0A%20%20%22https%3A%2F%2Fimages.unsplash.com%2Fphoto-1556740749-887f6717d7e4%22%2C%0A%20%20%22https%3A%2F%2Fimages.unsplash.com%2Fphoto-1556740749-887f6717d7e4%22%2C%0A%20%20%22https%3A%2F%2Fimages.unsplash.com%2Fphoto-1556740749-887f6717d7e4%22%2C%0A%20%20%22https%3A%2F%2Fimages.unsplash.com%2Fphoto-1556740749-887f6717d7e4%22%0A%5D%3B%0A%0Aconst%20window%20%3D%20Dimensions.get(%22window%22)%3B%0A%0Aexport%20default%20class%20App%20extends%20Component%20%7B%0A%20%20scrollX%20%3D%20new%20Animated.Value(0)%3B%0A%0A%20%20state%20%3D%20%7B%0A%20%20%20%20dimensions%3A%20%7B%0A%20%20%20%20%20%20window%0A%20%20%20%20%7D%0A%20%20%7D%3B%0A%0A%20%20onDimensionsChange%20%3D%20(%7B%20window%20%7D)%20%3D%3E%20%7B%0A%20%20%20%20this.setState(%7B%20dimensions%3A%20%7B%20window%20%7D%20%7D)%3B%0A%20%20%7D%3B%0A%0A%20%20componentDidMount()%20%7B%0A%20%20%20%20Dimensions.addEventListener(%22change%22%2C%20this.onDimensionsChange)%3B%0A%20%20%7D%0A%0A%20%20componentWillUnmount()%20%7B%0A%20%20%20%20Dimensions.removeEventListener(%22change%22%2C%20this.onDimensionsChange)%3B%0A%20%20%7D%0A%0A%20%20render()%20%7B%0A%20%20%20%20const%20windowWidth%20%3D%20this.state.dimensions.window.width%3B%0A%0A%20%20%20%20return%20(%0A%20%20%20%20%20%20%3CSafeAreaView%20style%3D%7Bstyles.container%7D%3E%0A%20%20%20%20%20%20%20%20%3CView%20style%3D%7Bstyles.scrollContainer%7D%3E%0A%20%20%20%20%20%20%20%20%20%20%3CScrollView%0A%20%20%20%20%20%20%20%20%20%20%20%20horizontal%3D%7Btrue%7D%0A%20%20%20%20%20%20%20%20%20%20%20%20style%3D%7Bstyles.scrollViewStyle%7D%0A%20%20%20%20%20%20%20%20%20%20%20%20pagingEnabled%0A%20%20%20%20%20%20%20%20%20%20%20%20showsHorizontalScrollIndicator%3D%7Bfalse%7D%0A%20%20%20%20%20%20%20%20%20%20%20%20onScroll%3D%7BAnimated.event(%5B%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20nativeEvent%3A%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20contentOffset%3A%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20x%3A%20this.scrollX%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%7D%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%7D%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%7D%0A%20%20%20%20%20%20%20%20%20%20%20%20%5D)%7D%0A%20%20%20%20%20%20%20%20%20%20%20%20scrollEventThrottle%3D%7B1%7D%0A%20%20%20%20%20%20%20%20%20%20%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%7Bimages.map((image%2C%20imageIndex)%20%3D%3E%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20return%20(%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3CView%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20style%3D%7B%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20width%3A%20windowWidth%2C%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20height%3A%20250%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%7D%7D%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20key%3D%7BimageIndex%7D%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3CImageBackground%20source%3D%7B%7B%20uri%3A%20image%20%7D%7D%20style%3D%7Bstyles.card%7D%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3CView%20style%3D%7Bstyles.textContainer%7D%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3CText%20style%3D%7Bstyles.infoText%7D%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%7B%22Image%20-%20%22%20%2B%20imageIndex%7D%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3C%2FText%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3C%2FView%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3C%2FImageBackground%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3C%2FView%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20)%3B%0A%20%20%20%20%20%20%20%20%20%20%20%20%7D)%7D%0A%20%20%20%20%20%20%20%20%20%20%3C%2FScrollView%3E%0A%20%20%20%20%20%20%20%20%20%20%3CView%20style%3D%7Bstyles.indicatorContainer%7D%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%7Bimages.map((image%2C%20imageIndex)%20%3D%3E%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20const%20width%20%3D%20this.scrollX.interpolate(%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20inputRange%3A%20%5B%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20windowWidth%20*%20(imageIndex%20-%201)%2C%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20windowWidth%20*%20imageIndex%2C%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20windowWidth%20*%20(imageIndex%20%2B%201)%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%5D%2C%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20outputRange%3A%20%5B8%2C%2016%2C%208%5D%2C%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20extrapolate%3A%20%22clamp%22%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%7D)%3B%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20return%20(%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3CAnimated.View%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20key%3D%7BimageIndex%7D%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20style%3D%7B%5Bstyles.normalDot%2C%20%7B%20width%20%7D%5D%7D%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%2F%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20)%3B%0A%20%20%20%20%20%20%20%20%20%20%20%20%7D)%7D%0A%20%20%20%20%20%20%20%20%20%20%3C%2FView%3E%0A%20%20%20%20%20%20%20%20%3C%2FView%3E%0A%20%20%20%20%20%20%3C%2FSafeAreaView%3E%0A%20%20%20%20)%3B%0A%20%20%7D%0A%7D%0A%0Aconst%20styles%20%3D%20StyleSheet.create(%7B%0A%20%20container%3A%20%7B%0A%20%20%20%20flex%3A%201%2C%0A%20%20%20%20alignItems%3A%20%22center%22%2C%0A%20%20%20%20justifyContent%3A%20%22center%22%0A%20%20%7D%2C%0A%20%20scrollContainer%3A%20%7B%0A%20%20%20%20height%3A%20300%2C%0A%20%20%20%20alignItems%3A%20%22center%22%2C%0A%20%20%20%20justifyContent%3A%20%22center%22%0A%20%20%7D%2C%0A%20%20card%3A%20%7B%0A%20%20%20%20flex%3A%201%2C%0A%20%20%20%20marginVertical%3A%204%2C%0A%20%20%20%20marginHorizontal%3A%2016%2C%0A%20%20%20%20borderRadius%3A%205%2C%0A%20%20%20%20overflow%3A%20%22hidden%22%2C%0A%20%20%20%20alignItems%3A%20%22center%22%2C%0A%20%20%20%20justifyContent%3A%20%22center%22%0A%20%20%7D%2C%0A%20%20textContainer%3A%20%7B%0A%20%20%20%20backgroundColor%3A%20%22rgba(0%2C0%2C0%2C%200.7)%22%2C%0A%20%20%20%20paddingHorizontal%3A%2024%2C%0A%20%20%20%20paddingVertical%3A%208%2C%0A%20%20%20%20borderRadius%3A%205%0A%20%20%7D%2C%0A%20%20infoText%3A%20%7B%0A%20%20%20%20color%3A%20%22white%22%2C%0A%20%20%20%20fontSize%3A%2016%2C%0A%20%20%20%20fontWeight%3A%20%22bold%22%0A%20%20%7D%2C%0A%20%20normalDot%3A%20%7B%0A%20%20%20%20height%3A%208%2C%0A%20%20%20%20width%3A%208%2C%0A%20%20%20%20borderRadius%3A%204%2C%0A%20%20%20%20backgroundColor%3A%20%22silver%22%2C%0A%20%20%20%20marginHorizontal%3A%204%0A%20%20%7D%2C%0A%20%20indicatorContainer%3A%20%7B%0A%20%20%20%20flexDirection%3A%20%22row%22%2C%0A%20%20%20%20alignItems%3A%20%22center%22%2C%0A%20%20%20%20justifyContent%3A%20%22center%22%0A%20%20%7D%0A%7D)%3B%0A"
+        data-snack-platform="web"
+        data-snack-supported-platforms=ios,android
+        data-snack-preview="true"
+        style="
+          overflow: hidden;
+          background: #fafafa;
+          border: 1px solid rgba(0,0,0,.16);
+          border-radius: 4px;
+          height: 514px;
+          width: 100%;
+        "
+      ></div></div></div><p><block class="endBlock syntax" /></p>
 <p>When using <code>PanResponder</code>, you could use the following code to extract the x and y positions from <code>gestureState.dx</code> and <code>gestureState.dy</code>. We use a <code>null</code> in the first position of the array, as we are only interested in the second argument passed to the <code>PanResponder</code> handler, which is the <code>gestureState</code>.</p>
 <pre><code class="hljs css language-jsx">onPanResponderMove<span class="token operator">=</span><span class="token punctuation">{</span>Animated<span class="token punctuation">.</span><span class="token function">event</span><span class="token punctuation">(</span>
   <span class="token punctuation">[</span><span class="token keyword">null</span><span class="token punctuation">,</span> <span class="token comment">// ignore the native event</span>
@@ -254,6 +584,152 @@ Animated<span class="token punctuation">.</span><span class="token function">tim
   <span class="token punctuation">{</span>dx<span class="token punctuation">:</span> pan<span class="token punctuation">.</span>x<span class="token punctuation">,</span> dy<span class="token punctuation">:</span> pan<span class="token punctuation">.</span>y<span class="token punctuation">}</span>
 <span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">}</span>
 </code></pre>
+<h4><a class="anchor" aria-hidden="true" id="panresponder-with-animated-event-example"></a><a href="#panresponder-with-animated-event-example" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>PanResponder with Animated Event Example</h4>
+<div class="toggler">
+  <ul role="tablist" class="toggle-syntax">
+    <li id="functional" class="button-functional" aria-selected="false" role="tab" tabindex="0" aria-controls="functionaltab" onclick="displayTabs('syntax', 'functional')">
+      Function Component Example
+    </li>
+    <li id="classical" class="button-classical" aria-selected="false" role="tab" tabindex="0" aria-controls="classicaltab" onclick="displayTabs('syntax', 'classical')">
+      Class Component Example
+    </li>
+  </ul>
+</div>
+<p><block class="functional syntax" /></p>
+<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React, { useRef } <span class="hljs-keyword">from</span> <span class="hljs-string">"react"</span>;
+<span class="hljs-keyword">import</span> { Animated, View, StyleSheet, PanResponder, Text } <span class="hljs-keyword">from</span> <span class="hljs-string">"react-native"</span>;
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">App</span>(<span class="hljs-params"></span>) </span>{
+  <span class="hljs-keyword">const</span> pan = useRef(<span class="hljs-keyword">new</span> Animated.ValueXY()).current;
+  <span class="hljs-keyword">const</span> panResponder = useRef(
+    PanResponder.create({
+      <span class="hljs-attr">onMoveShouldSetPanResponder</span>: <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> <span class="hljs-literal">true</span>,
+      <span class="hljs-attr">onPanResponderMove</span>: Animated.event([
+        <span class="hljs-literal">null</span>,
+        { <span class="hljs-attr">dx</span>: pan.x, <span class="hljs-attr">dy</span>: pan.y }
+      ]),
+      <span class="hljs-attr">onPanResponderRelease</span>: <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
+        Animated.spring(pan, { <span class="hljs-attr">toValue</span>: { <span class="hljs-attr">x</span>: <span class="hljs-number">0</span>, <span class="hljs-attr">y</span>: <span class="hljs-number">0</span> } }).start();
+      }
+    })
+  ).current;
+
+  <span class="hljs-keyword">return</span> (
+    <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">View</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.container}</span>&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">Text</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.titleText}</span>&gt;</span>Drag &amp; Release this box!<span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">Animated.View</span>
+        <span class="hljs-attr">style</span>=<span class="hljs-string">{{</span>
+          <span class="hljs-attr">transform:</span> [{ <span class="hljs-attr">translateX:</span> <span class="hljs-attr">pan.x</span> }, { <span class="hljs-attr">translateY:</span> <span class="hljs-attr">pan.y</span> }]
+        }}
+        {<span class="hljs-attr">...panResponder.panHandlers</span>}
+      &gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">View</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.box}</span> /&gt;</span>
+      <span class="hljs-tag">&lt;/<span class="hljs-name">Animated.View</span>&gt;</span>
+    <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center"
+  },
+  titleText: {
+    fontSize: 14,
+    lineHeight: 24,
+    fontWeight: "bold"
+  },
+  box: {
+    height: 150,
+    width: 150,
+    backgroundColor: "blue",
+    borderRadius: 5
+  }
+});
+</span></code></pre></div><div class="desktop-friendly-snack" style="margin-top: 15px; margin-bottom: 15px"><div
+        data-snack-name="Animated"
+        data-snack-description="Example usage"
+        data-snack-code="import%20React%2C%20%7B%20useRef%20%7D%20from%20%22react%22%3B%0Aimport%20%7B%20Animated%2C%20View%2C%20StyleSheet%2C%20PanResponder%2C%20Text%20%7D%20from%20%22react-native%22%3B%0A%0Aexport%20default%20function%20App()%20%7B%0A%20%20const%20pan%20%3D%20useRef(new%20Animated.ValueXY()).current%3B%0A%20%20const%20panResponder%20%3D%20useRef(%0A%20%20%20%20PanResponder.create(%7B%0A%20%20%20%20%20%20onMoveShouldSetPanResponder%3A%20()%20%3D%3E%20true%2C%0A%20%20%20%20%20%20onPanResponderMove%3A%20Animated.event(%5B%0A%20%20%20%20%20%20%20%20null%2C%0A%20%20%20%20%20%20%20%20%7B%20dx%3A%20pan.x%2C%20dy%3A%20pan.y%20%7D%0A%20%20%20%20%20%20%5D)%2C%0A%20%20%20%20%20%20onPanResponderRelease%3A%20()%20%3D%3E%20%7B%0A%20%20%20%20%20%20%20%20Animated.spring(pan%2C%20%7B%20toValue%3A%20%7B%20x%3A%200%2C%20y%3A%200%20%7D%20%7D).start()%3B%0A%20%20%20%20%20%20%7D%0A%20%20%20%20%7D)%0A%20%20).current%3B%0A%0A%20%20return%20(%0A%20%20%20%20%3CView%20style%3D%7Bstyles.container%7D%3E%0A%20%20%20%20%20%20%3CText%20style%3D%7Bstyles.titleText%7D%3EDrag%20%26%20Release%20this%20box!%3C%2FText%3E%0A%20%20%20%20%20%20%3CAnimated.View%0A%20%20%20%20%20%20%20%20style%3D%7B%7B%0A%20%20%20%20%20%20%20%20%20%20transform%3A%20%5B%7B%20translateX%3A%20pan.x%20%7D%2C%20%7B%20translateY%3A%20pan.y%20%7D%5D%0A%20%20%20%20%20%20%20%20%7D%7D%0A%20%20%20%20%20%20%20%20%7B...panResponder.panHandlers%7D%0A%20%20%20%20%20%20%3E%0A%20%20%20%20%20%20%20%20%3CView%20style%3D%7Bstyles.box%7D%20%2F%3E%0A%20%20%20%20%20%20%3C%2FAnimated.View%3E%0A%20%20%20%20%3C%2FView%3E%0A%20%20)%3B%0A%7D%0A%0Aconst%20styles%20%3D%20StyleSheet.create(%7B%0A%20%20container%3A%20%7B%0A%20%20%20%20flex%3A%201%2C%0A%20%20%20%20alignItems%3A%20%22center%22%2C%0A%20%20%20%20justifyContent%3A%20%22center%22%0A%20%20%7D%2C%0A%20%20titleText%3A%20%7B%0A%20%20%20%20fontSize%3A%2014%2C%0A%20%20%20%20lineHeight%3A%2024%2C%0A%20%20%20%20fontWeight%3A%20%22bold%22%0A%20%20%7D%2C%0A%20%20box%3A%20%7B%0A%20%20%20%20height%3A%20150%2C%0A%20%20%20%20width%3A%20150%2C%0A%20%20%20%20backgroundColor%3A%20%22blue%22%2C%0A%20%20%20%20borderRadius%3A%205%0A%20%20%7D%0A%7D)%3B%0A"
+        data-snack-platform="web"
+        data-snack-supported-platforms=ios,android,web
+        data-snack-preview="true"
+        style="
+          overflow: hidden;
+          background: #fafafa;
+          border: 1px solid rgba(0,0,0,.16);
+          border-radius: 4px;
+          height: 514px;
+          width: 100%;
+        "
+      ></div></div></div><p><block class="classical syntax" /></p>
+<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React, { Component } <span class="hljs-keyword">from</span> <span class="hljs-string">"react"</span>;
+<span class="hljs-keyword">import</span> { Animated, View, StyleSheet, PanResponder, Text } <span class="hljs-keyword">from</span> <span class="hljs-string">"react-native"</span>;
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">App</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">Component</span> </span>{
+  pan = <span class="hljs-keyword">new</span> Animated.ValueXY();
+  panResponder = PanResponder.create({
+    <span class="hljs-attr">onMoveShouldSetPanResponder</span>: <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> <span class="hljs-literal">true</span>,
+    <span class="hljs-attr">onPanResponderMove</span>: Animated.event([
+      <span class="hljs-literal">null</span>,
+      { <span class="hljs-attr">dx</span>: <span class="hljs-keyword">this</span>.pan.x, <span class="hljs-attr">dy</span>: <span class="hljs-keyword">this</span>.pan.y }
+    ]),
+    <span class="hljs-attr">onPanResponderRelease</span>: <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
+      Animated.spring(<span class="hljs-keyword">this</span>.pan, { <span class="hljs-attr">toValue</span>: { <span class="hljs-attr">x</span>: <span class="hljs-number">0</span>, <span class="hljs-attr">y</span>: <span class="hljs-number">0</span> } }).start();
+    }
+  });
+
+  render() {
+    <span class="hljs-keyword">return</span> (
+      <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">View</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.container}</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">Text</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.titleText}</span>&gt;</span>Drag &amp; Release this box!<span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">Animated.View</span>
+          <span class="hljs-attr">style</span>=<span class="hljs-string">{{</span>
+            <span class="hljs-attr">transform:</span> [{ <span class="hljs-attr">translateX:</span> <span class="hljs-attr">this.pan.x</span> }, { <span class="hljs-attr">translateY:</span> <span class="hljs-attr">this.pan.y</span> }]
+          }}
+          {<span class="hljs-attr">...this.panResponder.panHandlers</span>}
+        &gt;</span>
+          <span class="hljs-tag">&lt;<span class="hljs-name">View</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.box}</span> /&gt;</span>
+        <span class="hljs-tag">&lt;/<span class="hljs-name">Animated.View</span>&gt;</span>
+      <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span>
+    );
+  }
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center"
+  },
+  titleText: {
+    fontSize: 14,
+    lineHeight: 24,
+    fontWeight: "bold"
+  },
+  box: {
+    height: 150,
+    width: 150,
+    backgroundColor: "blue",
+    borderRadius: 5
+  }
+});
+</span></code></pre></div><div class="desktop-friendly-snack" style="margin-top: 15px; margin-bottom: 15px"><div
+        data-snack-name="Animated"
+        data-snack-description="Example usage"
+        data-snack-code="import%20React%2C%20%7B%20Component%20%7D%20from%20%22react%22%3B%0Aimport%20%7B%20Animated%2C%20View%2C%20StyleSheet%2C%20PanResponder%2C%20Text%20%7D%20from%20%22react-native%22%3B%0A%0Aexport%20default%20class%20App%20extends%20Component%20%7B%0A%20%20pan%20%3D%20new%20Animated.ValueXY()%3B%0A%20%20panResponder%20%3D%20PanResponder.create(%7B%0A%20%20%20%20onMoveShouldSetPanResponder%3A%20()%20%3D%3E%20true%2C%0A%20%20%20%20onPanResponderMove%3A%20Animated.event(%5B%0A%20%20%20%20%20%20null%2C%0A%20%20%20%20%20%20%7B%20dx%3A%20this.pan.x%2C%20dy%3A%20this.pan.y%20%7D%0A%20%20%20%20%5D)%2C%0A%20%20%20%20onPanResponderRelease%3A%20()%20%3D%3E%20%7B%0A%20%20%20%20%20%20Animated.spring(this.pan%2C%20%7B%20toValue%3A%20%7B%20x%3A%200%2C%20y%3A%200%20%7D%20%7D).start()%3B%0A%20%20%20%20%7D%0A%20%20%7D)%3B%0A%0A%20%20render()%20%7B%0A%20%20%20%20return%20(%0A%20%20%20%20%20%20%3CView%20style%3D%7Bstyles.container%7D%3E%0A%20%20%20%20%20%20%20%20%3CText%20style%3D%7Bstyles.titleText%7D%3EDrag%20%26%20Release%20this%20box!%3C%2FText%3E%0A%20%20%20%20%20%20%20%20%3CAnimated.View%0A%20%20%20%20%20%20%20%20%20%20style%3D%7B%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20transform%3A%20%5B%7B%20translateX%3A%20this.pan.x%20%7D%2C%20%7B%20translateY%3A%20this.pan.y%20%7D%5D%0A%20%20%20%20%20%20%20%20%20%20%7D%7D%0A%20%20%20%20%20%20%20%20%20%20%7B...this.panResponder.panHandlers%7D%0A%20%20%20%20%20%20%20%20%3E%0A%20%20%20%20%20%20%20%20%20%20%3CView%20style%3D%7Bstyles.box%7D%20%2F%3E%0A%20%20%20%20%20%20%20%20%3C%2FAnimated.View%3E%0A%20%20%20%20%20%20%3C%2FView%3E%0A%20%20%20%20)%3B%0A%20%20%7D%0A%7D%0A%0Aconst%20styles%20%3D%20StyleSheet.create(%7B%0A%20%20container%3A%20%7B%0A%20%20%20%20flex%3A%201%2C%0A%20%20%20%20alignItems%3A%20%22center%22%2C%0A%20%20%20%20justifyContent%3A%20%22center%22%0A%20%20%7D%2C%0A%20%20titleText%3A%20%7B%0A%20%20%20%20fontSize%3A%2014%2C%0A%20%20%20%20lineHeight%3A%2024%2C%0A%20%20%20%20fontWeight%3A%20%22bold%22%0A%20%20%7D%2C%0A%20%20box%3A%20%7B%0A%20%20%20%20height%3A%20150%2C%0A%20%20%20%20width%3A%20150%2C%0A%20%20%20%20backgroundColor%3A%20%22blue%22%2C%0A%20%20%20%20borderRadius%3A%205%0A%20%20%7D%0A%7D)%3B%0A"
+        data-snack-platform="web"
+        data-snack-supported-platforms=ios,android,web
+        data-snack-preview="true"
+        style="
+          overflow: hidden;
+          background: #fafafa;
+          border: 1px solid rgba(0,0,0,.16);
+          border-radius: 4px;
+          height: 514px;
+          width: 100%;
+        "
+      ></div></div></div><p><block class="endBlock syntax" /></p>
 <h3><a class="anchor" aria-hidden="true" id="responding-to-the-current-animation-value"></a><a href="#responding-to-the-current-animation-value" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Responding to the current animation value</h3>
 <p>You may notice that there is no clear way to read the current value while animating. This is because the value may only be known in the native runtime due to optimizations. If you need to run JavaScript in response to the current value, there are two approaches:</p>
 <ul>
@@ -380,11 +856,11 @@ const styles = StyleSheet.create({
   },
 });
 </span></code></pre></div><div class="desktop-friendly-snack" style="margin-top: 15px; margin-bottom: 15px"><div
-        data-snack-name="Example"
+        data-snack-name="LayoutAnimations"
         data-snack-description="Example usage"
         data-snack-code="import%20React%20from%20'react'%3B%0Aimport%20%7B%0A%20%20NativeModules%2C%0A%20%20LayoutAnimation%2C%0A%20%20Text%2C%0A%20%20TouchableOpacity%2C%0A%20%20StyleSheet%2C%0A%20%20View%2C%0A%7D%20from%20'react-native'%3B%0A%0Aconst%20%7B%20UIManager%20%7D%20%3D%20NativeModules%3B%0A%0AUIManager.setLayoutAnimationEnabledExperimental%20%26%26%0A%20%20UIManager.setLayoutAnimationEnabledExperimental(true)%3B%0A%0Aexport%20default%20class%20App%20extends%20React.Component%20%7B%0A%20%20state%20%3D%20%7B%0A%20%20%20%20w%3A%20100%2C%0A%20%20%20%20h%3A%20100%2C%0A%20%20%7D%3B%0A%0A%20%20_onPress%20%3D%20()%20%3D%3E%20%7B%0A%20%20%20%20%2F%2F%20Animate%20the%20update%0A%20%20%20%20LayoutAnimation.spring()%3B%0A%20%20%20%20this.setState(%7Bw%3A%20this.state.w%20%2B%2015%2C%20h%3A%20this.state.h%20%2B%2015%7D)%0A%20%20%7D%0A%0A%20%20render()%20%7B%0A%20%20%20%20return%20(%0A%20%20%20%20%20%20%3CView%20style%3D%7Bstyles.container%7D%3E%0A%20%20%20%20%20%20%20%20%3CView%20style%3D%7B%5Bstyles.box%2C%20%7Bwidth%3A%20this.state.w%2C%20height%3A%20this.state.h%7D%5D%7D%20%2F%3E%0A%20%20%20%20%20%20%20%20%3CTouchableOpacity%20onPress%3D%7Bthis._onPress%7D%3E%0A%20%20%20%20%20%20%20%20%20%20%3CView%20style%3D%7Bstyles.button%7D%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%3CText%20style%3D%7Bstyles.buttonText%7D%3EPress%20me!%3C%2FText%3E%0A%20%20%20%20%20%20%20%20%20%20%3C%2FView%3E%0A%20%20%20%20%20%20%20%20%3C%2FTouchableOpacity%3E%0A%20%20%20%20%20%20%3C%2FView%3E%0A%20%20%20%20)%3B%0A%20%20%7D%0A%7D%0A%0Aconst%20styles%20%3D%20StyleSheet.create(%7B%0A%20%20container%3A%20%7B%0A%20%20%20%20flex%3A%201%2C%0A%20%20%20%20alignItems%3A%20'center'%2C%0A%20%20%20%20justifyContent%3A%20'center'%2C%0A%20%20%7D%2C%0A%20%20box%3A%20%7B%0A%20%20%20%20width%3A%20200%2C%0A%20%20%20%20height%3A%20200%2C%0A%20%20%20%20backgroundColor%3A%20'red'%2C%0A%20%20%7D%2C%0A%20%20button%3A%20%7B%0A%20%20%20%20backgroundColor%3A%20'black'%2C%0A%20%20%20%20paddingHorizontal%3A%2020%2C%0A%20%20%20%20paddingVertical%3A%2015%2C%0A%20%20%20%20marginTop%3A%2015%2C%0A%20%20%7D%2C%0A%20%20buttonText%3A%20%7B%0A%20%20%20%20color%3A%20'%23fff'%2C%0A%20%20%20%20fontWeight%3A%20'bold'%2C%0A%20%20%7D%2C%0A%7D)%3B%0A"
         data-snack-platform="web"
-        data-snack-supported-platforms=ios,android,web
+        data-snack-supported-platforms=ios,android
         data-snack-preview="true"
         style="
           overflow: hidden;
