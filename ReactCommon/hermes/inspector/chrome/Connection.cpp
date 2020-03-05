@@ -358,14 +358,18 @@ void Connection::Impl::handle(
       ->evaluate(
           atoi(req.callFrameId.c_str()),
           req.expression,
-          [this, remoteObjPtr, objectGroup = req.objectGroup](
+          [this,
+           remoteObjPtr,
+           objectGroup = req.objectGroup,
+           byValue = req.returnByValue.value_or(false)](
               const facebook::hermes::debugger::EvalResult
                   &evalResult) mutable {
             *remoteObjPtr = m::runtime::makeRemoteObject(
                 getRuntime(),
                 evalResult.value,
                 objTable_,
-                objectGroup.value_or(""));
+                objectGroup.value_or(""),
+                byValue);
           })
       .via(executor_.get())
       .thenValue(
@@ -431,14 +435,18 @@ void Connection::Impl::handle(const m::runtime::EvaluateRequest &req) {
       ->evaluate(
           0, // Top of the stackframe
           req.expression,
-          [this, remoteObjPtr, objectGroup = req.objectGroup](
+          [this,
+           remoteObjPtr,
+           objectGroup = req.objectGroup,
+           byValue = req.returnByValue.value_or(false)](
               const facebook::hermes::debugger::EvalResult
                   &evalResult) mutable {
             *remoteObjPtr = m::runtime::makeRemoteObject(
                 getRuntime(),
                 evalResult.value,
                 objTable_,
-                objectGroup.value_or("ConsoleObjectGroup"));
+                objectGroup.value_or("ConsoleObjectGroup"),
+                byValue);
           })
       .via(executor_.get())
       .thenValue(
