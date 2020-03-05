@@ -66,7 +66,7 @@ export default function useAndroidRippleForView(
           nativeBackgroundAndroid: {
             type: 'RippleAndroid',
             color: processedColor,
-            borderless: !!borderless,
+            borderless: borderless === true,
             rippleRadius: radius,
           },
         },
