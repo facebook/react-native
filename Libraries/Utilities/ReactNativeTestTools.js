@@ -16,7 +16,19 @@ const React = require('react');
 
 const ReactTestRenderer = require('react-test-renderer');
 const ShallowRenderer = require('react-test-renderer/shallow');
+// $FlowFixMe - error revealed when flow-typing ReactTestRenderer
 const shallowRenderer = new ShallowRenderer();
+
+import type {ReactTestRenderer as ReactTestRendererType} from 'react-test-renderer';
+
+export type ReactTestInstance = $PropertyType<ReactTestRendererType, 'root'>;
+
+// $FlowFixMe - error revealed when flow-typing ReactTestRenderer
+export type Predicate = (node: ReactTestInstance) => boolean;
+
+type $ReturnType<Fn> = $Call<<Ret, A>((...A) => Ret) => Ret, Fn>;
+// $FlowFixMe - error revealed when flow-typing ReactTestRenderer
+export type ReactTestRendererJSON = $ReturnType<ReactTestRenderer.create.toJSON>;
 
 const {
   Switch,
@@ -25,12 +37,6 @@ const {
   View,
   VirtualizedList,
 } = require('react-native');
-
-import type {
-  ReactTestInstance,
-  ReactTestRendererNode,
-  Predicate,
-} from 'react-test-renderer';
 
 function byClickable(): Predicate {
   return withMessage(
@@ -48,6 +54,7 @@ function byClickable(): Predicate {
       node.instance?.state?.pressability != null ||
       // TODO: Remove this after deleting `Touchable`.
       (node.instance &&
+        // $FlowFixMe - error revealed when flow-typing ReactTestRenderer
         typeof node.instance.touchableHandlePress === 'function'),
     'is clickable',
   );
@@ -75,7 +82,7 @@ function enter(instance: ReactTestInstance, text: string) {
 
 // Returns null if there is no error, otherwise returns an error message string.
 function maximumDepthError(
-  tree: {toJSON: () => ReactTestRendererNode, ...},
+  tree: ReactTestRendererType,
   maxDepthLimit: number,
 ): ?string {
   const maxDepth = maximumDepthOfJSON(tree.toJSON());
@@ -147,7 +154,7 @@ function expectRendersMatchingSnapshot(
 }
 
 // Takes a node from toJSON()
-function maximumDepthOfJSON(node: ReactTestRendererNode): number {
+function maximumDepthOfJSON(node: ?ReactTestRendererJSON): number {
   if (node == null) {
     return 0;
   } else if (typeof node === 'string' || node.children == null) {
@@ -166,7 +173,7 @@ function renderAndEnforceStrictMode(element: React.Node): any {
   return renderWithStrictMode(element);
 }
 
-function renderWithStrictMode(element: React.Node): any {
+function renderWithStrictMode(element: React.Node): ReactTestRendererType {
   const WorkAroundBugWithStrictModeInTestRenderer = prps => prps.children;
   const StrictMode = (React: $FlowFixMe).StrictMode;
   return ReactTestRenderer.create(

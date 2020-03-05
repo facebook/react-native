@@ -15,6 +15,7 @@ const React = require('react');
 const ShallowRenderer = require('react-test-renderer/shallow');
 const TestRenderer = require('react-test-renderer');
 
+// $FlowFixMe - error revealed when flow-typing ReactTestRenderer
 const renderer = new ShallowRenderer();
 
 export const shallow = (Component: React.Element<any>): any => {
