@@ -226,23 +226,35 @@ AndroidTextInputProps::AndroidTextInputProps(
       // See AndroidTextInputComponentDescriptor for usage
       // TODO T63008435: can these, and this feature, be removed entirely?
       hasPaddingLeft(
+          sourceProps.hasPaddingLeft ||
           rawProps.at("", "padding", "") != nullptr ||
-          rawProps.at("Left", "padding", "") != nullptr),
+          rawProps.at("Left", "padding", "") != nullptr ||
+          rawProps.at("Horizontal", "padding", "") != nullptr),
       hasPaddingTop(
+          sourceProps.hasPaddingTop ||
           rawProps.at("", "padding", "") != nullptr ||
-          rawProps.at("Top", "padding", "") != nullptr),
+          rawProps.at("Top", "padding", "") != nullptr ||
+          rawProps.at("Vertical", "padding", "") != nullptr),
       hasPaddingRight(
+          sourceProps.hasPaddingRight ||
           rawProps.at("", "padding", "") != nullptr ||
-          rawProps.at("Right", "padding", "") != nullptr),
+          rawProps.at("Right", "padding", "") != nullptr ||
+          rawProps.at("Horizontal", "padding", "") != nullptr),
       hasPaddingBottom(
+          sourceProps.hasPaddingBottom ||
           rawProps.at("", "padding", "") != nullptr ||
-          rawProps.at("Bottom", "padding", "") != nullptr),
+          rawProps.at("Bottom", "padding", "") != nullptr ||
+          rawProps.at("Vertical", "padding", "") != nullptr),
       hasPaddingStart(
+          sourceProps.hasPaddingStart ||
           rawProps.at("", "padding", "") != nullptr ||
-          rawProps.at("Start", "padding", "") != nullptr),
+          rawProps.at("Start", "padding", "") != nullptr ||
+          rawProps.at("Horizontal", "padding", "") != nullptr),
       hasPaddingEnd(
+          sourceProps.hasPaddingEnd ||
           rawProps.at("", "padding", "") != nullptr ||
-          rawProps.at("End", "padding", "") != nullptr) {}
+          rawProps.at("End", "padding", "") != nullptr ||
+          rawProps.at("Horizontal", "padding", "") != nullptr) {}
 
 // TODO T53300085: support this in codegen; this was hand-written
 folly::dynamic AndroidTextInputProps::getDynamic() const {
