@@ -671,7 +671,13 @@ jobs:
       - NDK_TOOLS_URL: https://dl.google.com/android/repository/android-ndk-r19c-windows-x86_64.zip
     steps:
       - restore_cache_checkout:
-          checkout_type: windows
+          checkout_type: windows 
+      - run:
+          name: Install Curl
+          command: choco install curl
+      - run:
+          name: Install 7zip
+          command: choco install curl
       - run:
           name: Install Android SDK Tools
           command: |
@@ -687,6 +693,9 @@ jobs:
               yes 2> nul | sdkmanager "extras;android;m2repository"
               curl -fsS -o "%TMP%/ndk.zip" "%NDK_TOOLS_URL%"
               7z x "%TMP%/ndk.zip" -o"%ANDROID_HOME%" > nul
+      - run:
+          name: Install Yarn
+          command: choco install yarn
       - run:
           name: Get Env info
           command: npx envinfo@latest
@@ -810,6 +819,10 @@ workflows:
             - setup
   windows:
     jobs:
+      - setup:
+          name: setup_windows
+          checkout_type: windows
+          executor: win/default
       - windows_job
   nightly:
     triggers:
