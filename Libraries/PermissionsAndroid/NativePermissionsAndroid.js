@@ -30,7 +30,6 @@ export type PermissionType =
   | 'android.permission.ACCESS_COARSE_LOCATION'
   | 'android.permission.RECORD_AUDIO'
   | 'android.permission.READ_PHONE_STATE'
-  | 'android.permission.READ_PRIVILEGED_PHONE_STATE'
   | 'android.permission.CALL_PHONE'
   | 'android.permission.READ_CALL_LOG'
   | 'android.permission.WRITE_CALL_LOG'
