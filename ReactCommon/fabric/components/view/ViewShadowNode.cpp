@@ -53,6 +53,13 @@ void ViewShadowNode::updateTraits() {
 
   formsView = formsView || formsStackingContext;
 
+#ifdef ANDROID
+  // Force `formsStackingContext` trait for nodes which have .
+  // TODO: T63560216 Investigate why/how `formsView` entangled with
+  // `formsStackingContext`.
+  formsStackingContext = formsStackingContext || formsView;
+#endif
+
   if (formsView) {
     traits_.set(ShadowNodeTraits::Trait::FormsView);
   } else {
