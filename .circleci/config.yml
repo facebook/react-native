@@ -82,25 +82,6 @@ commands:
             - ~/.cache/yarn
           key: v4-yarn-cache-{{ arch }}-{{ checksum "yarn.lock" }}
 
-  run_yarn_windows:
-    steps:
-      - restore_cache:
-          keys:
-            - v4-yarn-cache-{{ arch }}-{{ checksum "yarn.lock" }}
-            - v4-yarn-cache-{{ arch }}
-      - run:
-          name: Run Yarn
-          command: |
-            # Skip yarn install on metro bump commits as the package is not yet
-            # available on npm
-            if [[ $(echo "$GIT_COMMIT_DESC" | grep -c "Bump metro@") -eq 0 ]]; then
-              yarn install --non-interactive --cache-folder "%LOCALAPPDATA%/Yarn"
-            fi
-      - save_cache:
-          paths:
-            - "%LOCALAPPDATA%/Yarn"
-          key: v4-yarn-cache-{{ arch }}-{{ checksum "yarn.lock" }}
-
   install_buck_tooling:
     steps:
       - restore_cache:
@@ -673,33 +654,37 @@ jobs:
       - restore_cache_checkout:
           checkout_type: windows 
       - run:
-          name: Install Curl
-          command: choco install curl
+          name: Install Android SDK Tools
+          command: choco install android-sdk
       - run:
-          name: Install 7zip
-          command: choco install curl
+          name: Setup SDK
+          command: sdkmanager --licenses > nul
+      - run: sdkmanager "system-images;android-19;google_apis;armeabi-v7a"
+      - run: sdkmanager "platforms;android-%ANDROID_BUILD_VERSION%"
+      - run: sdkmanager "build-tools;%ANDROID_TOOLS_VERSION%"
+      - run: sdkmanager "add-ons;addon-google_apis-google-23"
+      - run: sdkmanager "extras;android;m2repository"
       - run:
           name: Install Android SDK Tools
-          command: |
-              mkdir "%ANDROID_HOME%"
-              curl -fsS -o "%TMP%/sdk-tools.zip" "%SDK_TOOLS_URL%"
-              7z x "%TMP%/sdk-tools.zip" -o"%ANDROID_HOME%" > nul
-              set PATH=%PATH%;"%ANDROID_HOME%\tools\bin"
-              yes 2> nul | sdkmanager --licenses > nul
-              yes 2> nul | sdkmanager "system-images;android-19;google_apis;armeabi-v7a"
-              yes 2> nul | sdkmanager "platforms;android-%ANDROID_BUILD_VERSION%"
-              yes 2> nul | sdkmanager "build-tools;%ANDROID_TOOLS_VERSION%"
-              yes 2> nul | sdkmanager "add-ons;addon-google_apis-google-23"
-              yes 2> nul | sdkmanager "extras;android;m2repository"
-              curl -fsS -o "%TMP%/ndk.zip" "%NDK_TOOLS_URL%"
-              7z x "%TMP%/ndk.zip" -o"%ANDROID_HOME%" > nul
+          command: choco install android-ndk
+      - restore_cache:
+          keys:
+            - v5-win-node-{{ arch }}-{{ .Branch }}-{{ checksum "yarn.lock" }}
+            - v5-win-node-{{ arch }}-{{ .Branch }}-
+            - v5-win-node-{{ arch }}-
       - run:
           name: Install Yarn
           command: choco install yarn
       - run:
           name: Get Env info
           command: npx envinfo@latest
-      - run_yarn_windows
+      - run:
+          name: Install Dependencies
+          command: yarn install --frozen-lockfile --non-interactive
+      - save_cache:
+          key: v5-win-node-{{ arch }}-{{ .Branch }}-{{ checksum "yarn.lock" }}
+          paths:
+            - C:\Users\circleci\AppData\Local\Yarn
       - run:
           name: Flow Check Android
           command: yarn flow-check-android
@@ -709,6 +694,11 @@ jobs:
       - run:
           name: Run Test
           command: yarn test
+      - save_cache:
+          key: v5-win-node-{{ arch }}-{{ .Branch }}-{{ checksum ".gradle" }}
+          paths:
+            - "%USERPROFILE%/.gradle/caches"
+            - "%USERPROFILE%/.gradle/wrapper" 
 
 # -------------------------
 #        WORK FLOWS
@@ -834,4 +824,3 @@ workflows:
                 - master
     jobs:
       - nightly_job
-  
