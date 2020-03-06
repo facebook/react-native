@@ -47,6 +47,7 @@ const PERMISSIONS = Object.freeze({
   ACCESS_BACKGROUND_LOCATION: 'android.permission.ACCESS_BACKGROUND_LOCATION',
   RECORD_AUDIO: 'android.permission.RECORD_AUDIO',
   READ_PHONE_STATE: 'android.permission.READ_PHONE_STATE',
+  READ_PRIVILEGED_PHONE_STATE: 'android.permission.READ_PRIVILEGED_PHONE_STATE',
   CALL_PHONE: 'android.permission.CALL_PHONE',
   READ_CALL_LOG: 'android.permission.READ_CALL_LOG',
   WRITE_CALL_LOG: 'android.permission.WRITE_CALL_LOG',
@@ -61,6 +62,7 @@ const PERMISSIONS = Object.freeze({
   RECEIVE_MMS: 'android.permission.RECEIVE_MMS',
   READ_EXTERNAL_STORAGE: 'android.permission.READ_EXTERNAL_STORAGE',
   WRITE_EXTERNAL_STORAGE: 'android.permission.WRITE_EXTERNAL_STORAGE',
+  ACTIVITY_RECOGNITION: 'android.permission.ACTIVITY_RECOGNITION',
 });
 
 /**
@@ -85,6 +87,7 @@ class PermissionsAndroid {
     READ_CONTACTS: string,
     READ_EXTERNAL_STORAGE: string,
     READ_PHONE_STATE: string,
+    READ_PRIVILEGED_PHONE_STATE: string,
     READ_SMS: string,
     RECEIVE_MMS: string,
     RECEIVE_SMS: string,
@@ -96,6 +99,7 @@ class PermissionsAndroid {
     WRITE_CALL_LOG: string,
     WRITE_CONTACTS: string,
     WRITE_EXTERNAL_STORAGE: string,
+    ACTIVITY_RECOGNITION: string,
   |} = PERMISSIONS;
   RESULTS: {|
     DENIED: $TEMPORARY$string<'denied'>,

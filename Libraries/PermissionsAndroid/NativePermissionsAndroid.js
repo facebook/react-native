@@ -30,6 +30,7 @@ export type PermissionType =
   | 'android.permission.ACCESS_COARSE_LOCATION'
   | 'android.permission.RECORD_AUDIO'
   | 'android.permission.READ_PHONE_STATE'
+  | 'android.permission.READ_PRIVILEGED_PHONE_STATE'
   | 'android.permission.CALL_PHONE'
   | 'android.permission.READ_CALL_LOG'
   | 'android.permission.WRITE_CALL_LOG'
@@ -43,7 +44,8 @@ export type PermissionType =
   | 'android.permission.RECEIVE_WAP_PUSH'
   | 'android.permission.RECEIVE_MMS'
   | 'android.permission.READ_EXTERNAL_STORAGE'
-  | 'android.permission.WRITE_EXTERNAL_STORAGE';
+  | 'android.permission.WRITE_EXTERNAL_STORAGE'
+  | 'android.permission.ACTIVITY_RECOGNITION';
 */
 
 export interface Spec extends TurboModule {
