@@ -808,7 +808,9 @@ workflows:
       - js_coverage:
           requires:
             - setup
-
+  windows:
+    jobs:
+      - windows_job
   nightly:
     triggers:
       - schedule:
@@ -819,3 +821,4 @@ workflows:
                 - master
     jobs:
       - nightly_job
+  
