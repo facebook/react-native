@@ -15,7 +15,8 @@ const React = require('react');
 const ShallowRenderer = require('react-test-renderer/shallow');
 const TestRenderer = require('react-test-renderer');
 
-// $FlowFixMe - error revealed when flow-typing ReactTestRenderer
+/* $FlowFixMe(>=0.120.0) This comment suppresses an error found when Flow
+ * v0.120 was deployed. To see the error, delete this comment and run Flow. */
 const renderer = new ShallowRenderer();
 
 export const shallow = (Component: React.Element<any>): any => {
