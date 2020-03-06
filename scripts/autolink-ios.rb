@@ -58,7 +58,7 @@ def use_react_native! (options={})
 end
 
 def add_flipper_pods!
-  version = '~> 0.32.2'
+  version = '~> 0.30.0'
   pod 'FlipperKit', version, :configuration => 'Debug'
   pod 'FlipperKit/FlipperKitLayoutPlugin', version, :configuration => 'Debug'
   pod 'FlipperKit/SKIOSNetworkPlugin', version, :configuration => 'Debug'
