@@ -113,7 +113,7 @@ __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_13_0
   });
 }
 
-RCT_EXPORT_METHOD(showMessage:(NSString *)message withColor:(NSNumber *)color withBackgroundColor:(NSNumber *)backgroundColor)
+RCT_EXPORT_METHOD(showMessage:(NSString *)message withColor:(NSNumber * __nonnull)color withBackgroundColor:(NSNumber * __nonnull)backgroundColor)
 {
   [self showMessage:message color:[RCTConvert UIColor:color] backgroundColor:[RCTConvert UIColor:backgroundColor]];
 }
