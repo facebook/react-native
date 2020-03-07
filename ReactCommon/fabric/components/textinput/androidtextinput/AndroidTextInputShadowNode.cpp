@@ -94,10 +94,17 @@ AttributedString AndroidTextInputShadowNode::getMostRecentAttributedString()
 
   auto reactTreeAttributedString = getAttributedString();
 
+  // Sometimes the treeAttributedString will only differ from the state
+  // not by inherent properties (string or prop attributes), but by the frame of
+  // the parent which has changed Thus, we can't directly compare the entire
+  // AttributedString
+  bool treeAttributedStringChanged =
+      !state.reactTreeAttributedString.compareTextAttributesWithoutFrame(
+          reactTreeAttributedString);
+
   return (
-      state.reactTreeAttributedString == reactTreeAttributedString
-          ? state.attributedString
-          : reactTreeAttributedString);
+      !treeAttributedStringChanged ? state.attributedString
+                                   : reactTreeAttributedString);
 }
 
 void AndroidTextInputShadowNode::updateStateIfNeeded() {
