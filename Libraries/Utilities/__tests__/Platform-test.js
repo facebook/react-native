@@ -40,4 +40,10 @@ describe('Platform', () => {
       expect(PlatformAndroid.select(obj)).toEqual(obj.default);
     });
   });
+
+  describe('isMac', () => {
+    it('should return false for android', () => {
+      expect(PlatformAndroid.isMac).toBe(false);
+    });
+  });
 });

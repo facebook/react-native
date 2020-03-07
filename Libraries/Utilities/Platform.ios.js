@@ -37,6 +37,7 @@ const Platform = {
       prerelease: ?number,
     |},
     systemName: string,
+    isMac: boolean,
   |} {
     if (this.__constants == null) {
       this.__constants = NativePlatformConstantsIOS.getConstants();
@@ -60,6 +61,9 @@ const Platform = {
       return this.constants.isTesting;
     }
     return false;
+  },
+  get isMac(): boolean {
+    return this.constants.isMac;
   },
   select: <D, N, I>(spec: PlatformSelectSpec<D, N, I>): D | N | I =>
     'ios' in spec ? spec.ios : 'native' in spec ? spec.native : spec.default,
