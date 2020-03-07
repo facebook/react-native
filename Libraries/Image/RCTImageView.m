@@ -162,9 +162,11 @@ static NSDictionary *onLoadParamsForSource(RCTImageSource *source)
                    name:UIApplicationDidEnterBackgroundNotification
                  object:nil];
     _imageView = [[UIImageView alloc] init];
+#else
+    _imageView = [[NSImageView alloc] init];
+#endif // TODO(macOS ISS#2323203)
     _imageView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     [self addSubview:_imageView];
-#endif // TODO(macOS ISS#2323203)
   }
   return self;
 }

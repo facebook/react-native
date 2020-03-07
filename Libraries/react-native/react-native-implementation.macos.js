@@ -187,16 +187,14 @@ module.exports = {
   get VirtualizedList() {
     return require('VirtualizedList');
   },
-  /*
   get VirtualizedSectionList() {
     return require('VirtualizedSectionList');
-  },*/
+  },
 
   // APIs
-  /*
   get ActionSheetIOS() {
     return require('ActionSheetIOS');
-  },*/
+  },
   get Alert() {
     return require('Alert');
   },

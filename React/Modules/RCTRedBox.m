@@ -29,7 +29,8 @@
 @end
 
 #if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
-@interface RCTRedBoxWindow : UIWindow <UITableViewDelegate, UITableViewDataSource>
+@interface RCTRedBoxWindow : NSObject <UITableViewDelegate, UITableViewDataSource>
+@property (nonatomic, strong) UIViewController *rootViewController;
 @property (nonatomic, weak) id<RCTRedBoxWindowActionDelegate> actionDelegate;
 @end
 
@@ -42,19 +43,11 @@
 
 - (instancetype)initWithFrame:(CGRect)frame
 {
-    if ((self = [super initWithFrame:frame])) {
-#if TARGET_OS_TV
-        self.windowLevel = UIWindowLevelAlert + 1000;
-#else
-        self.windowLevel = UIWindowLevelStatusBar - 1;
-#endif
-        self.backgroundColor = [UIColor colorWithRed:0.1 green:0.1 blue:0.1 alpha:1];
-        self.hidden = YES;
-
-        UIViewController *rootController = [UIViewController new];
-        self.rootViewController = rootController;
-        UIView *rootView = rootController.view;
-        rootView.backgroundColor = [UIColor clearColor];
+    if ((self = [super init])) {
+        _rootViewController = [UIViewController new];
+        UIView *rootView = _rootViewController.view;
+        rootView.frame = frame;
+        rootView.backgroundColor = [UIColor blackColor];
 
         const CGFloat buttonHeight = 60;
 
@@ -133,8 +126,8 @@
         [extraButton setTitleColor:[UIColor colorWithWhite:1 alpha:0.5] forState:UIControlStateHighlighted];
         [extraButton addTarget:self action:@selector(showExtraDataViewController) forControlEvents:UIControlEventTouchUpInside];
 
-        CGFloat buttonWidth = self.bounds.size.width / 4;
-        CGFloat bottomButtonHeight = self.bounds.size.height - buttonHeight - [self bottomSafeViewHeight];
+        CGFloat buttonWidth = frame.size.width / 4;
+        CGFloat bottomButtonHeight = frame.size.height - buttonHeight - [self bottomSafeViewHeight];
 
         dismissButton.frame = CGRectMake(0, bottomButtonHeight, buttonWidth, buttonHeight);
         reloadButton.frame = CGRectMake(buttonWidth, bottomButtonHeight, buttonWidth, buttonHeight);
@@ -152,7 +145,7 @@
 
         UIView *bottomSafeView = [UIView new];
         bottomSafeView.backgroundColor = [UIColor colorWithRed:0.1 green:0.1 blue:0.1 alpha:1];
-        bottomSafeView.frame = CGRectMake(0, self.bounds.size.height - [self bottomSafeViewHeight], self.bounds.size.width, [self bottomSafeViewHeight]);
+        bottomSafeView.frame = CGRectMake(0, frame.size.height - [self bottomSafeViewHeight], frame.size.width, [self bottomSafeViewHeight]);
 
         [rootView addSubview:bottomSafeView];
     }
@@ -190,7 +183,8 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
     NSString *messageWithoutAnsi = [self stripAnsi:message];
 
     // Show if this is a new message, or if we're updating the previous message
-    if ((self.hidden && !isUpdate) || (!self.hidden && isUpdate && [_lastErrorMessage isEqualToString:messageWithoutAnsi])) {
+    BOOL hidden = !self.rootViewController.isBeingPresented;
+    if ((hidden && !isUpdate) || (!hidden && isUpdate && [_lastErrorMessage isEqualToString:messageWithoutAnsi])) {
         _lastStackTrace = stack;
         // message is displayed using UILabel, which is unable to render text of
         // unlimited length, so we truncate it
@@ -198,22 +192,20 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 
         [_stackTraceTableView reloadData];
 
-        if (self.hidden) {
+        if (hidden) {
             [_stackTraceTableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]
                                         atScrollPosition:UITableViewScrollPositionTop
                                                 animated:NO];
+            [RCTKeyWindow().rootViewController presentViewController:self.rootViewController
+                                                            animated:YES
+                                                          completion:nil];
         }
-
-        [self makeKeyAndVisible];
-        [self becomeFirstResponder];
     }
 }
 
 - (void)dismiss
 {
-    self.hidden = YES;
-    [self resignFirstResponder];
-    [RCTSharedApplication().delegate.window makeKeyWindow];
+    [self.rootViewController dismissViewControllerAnimated:YES completion:nil];
 }
 
 - (void)reload
@@ -554,13 +546,13 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
     if (!_visible) {
       _visible = YES;
       [_window center];
-			if (!RCTRunningInTestEnvironment()) {
-				[NSApp runModalForWindow:_window];
-			}
-			else {
-				[NSApp activateIgnoringOtherApps:YES];
-				[[NSApp mainWindow] makeKeyAndOrderFront:_window];
-			}
+      if (!RCTRunningInTestEnvironment()) {
+        [NSApp runModalForWindow:_window];
+      }
+      else {
+        [NSApp activateIgnoringOtherApps:YES];
+        [[NSApp mainWindow] makeKeyAndOrderFront:_window];
+      }
     }
   }
 }
@@ -881,6 +873,7 @@ RCT_EXPORT_METHOD(dismiss)
 #else // ]TODO(macOS ISS#2323203)
     dispatch_async(dispatch_get_main_queue(), ^{
         [self->_window dismiss];
+        self->_window = nil; // TODO(OSS Candidate ISS#2710739): release _window now to ensure its UIKit ivars are dealloc'd on the main thread as the RCTRedBox can be dealloc'd on a background thread.
     });
 #endif // TODO(macOS ISS#2323203)
 }

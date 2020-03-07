@@ -524,7 +524,12 @@ UIWindow *__nullable RCTKeyWindow(void)
   }
 
   // TODO: replace with a more robust solution
-  return RCTSharedApplication().keyWindow;
+  for (UIWindow *window in RCTSharedApplication().windows) {
+    if (window.keyWindow) {
+      return window;
+    }
+  }
+  return nil;
 }
 
 UIViewController *__nullable RCTPresentedViewController(void)
@@ -835,7 +840,7 @@ UIImage *__nullable RCTImageFromLocalAssetURL(NSURL *imageURL)
 #if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
       image = [UIImage imageNamed:imageName inBundle:bundle compatibleWithTraitCollection:nil];
 #else // [TODO(macOS ISS#2323203)
-			image = [bundle imageForResource:imageName];
+      image = [bundle imageForResource:imageName];
 #endif // ]TODO(macOS ISS#2323203)
       if (image) {
         RCTLogWarn(@"Image %@ not found in mainBundle, but found in %@", imageName, bundle);
