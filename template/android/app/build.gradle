@@ -178,6 +178,17 @@ android {
 
         }
     }
+
+    // Remove Flipper for release build
+    sourceSets {
+        release {
+            main {
+                java {
+                    exclude '**/ReactNativeFlipper.java'
+                }
+            }
+        }
+    }
 }
 
 dependencies {
