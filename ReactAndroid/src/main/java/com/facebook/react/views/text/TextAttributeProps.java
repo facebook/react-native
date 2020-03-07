@@ -20,6 +20,9 @@ import com.facebook.react.uimanager.ReactStylesDiffMap;
 import com.facebook.react.uimanager.ViewProps;
 import com.facebook.yoga.YogaDirection;
 
+// TODO: T63643819 refactor naming of TextAttributeProps to make explicit that this represents
+// TextAttributes and not TextProps. As part of this refactor extract methods that don't belong to
+// TextAttributeProps (e.g. TextAlign)
 public class TextAttributeProps {
 
   private static final String INLINE_IMAGE_PLACEHOLDER = "I";
@@ -36,8 +39,8 @@ public class TextAttributeProps {
   private static final int DEFAULT_TEXT_SHADOW_COLOR = 0x55000000;
 
   protected boolean mIsAttachment = false;
-  protected float mAttachmentWidth;
-  protected float mAttachmentHeight;
+  protected float mAttachmentWidth = Float.NaN;
+  protected float mAttachmentHeight = Float.NaN;
   protected float mLineHeight = Float.NaN;
   protected boolean mIsColorSet = false;
   protected boolean mAllowFontScaling = true;
@@ -110,7 +113,6 @@ public class TextAttributeProps {
     setLineHeight(getFloatProp(ViewProps.LINE_HEIGHT, UNSET));
     setLetterSpacing(getFloatProp(ViewProps.LETTER_SPACING, Float.NaN));
     setAllowFontScaling(getBooleanProp(ViewProps.ALLOW_FONT_SCALING, true));
-    setTextAlign(getStringProp(ViewProps.TEXT_ALIGN));
     setFontSize(getFloatProp(ViewProps.FONT_SIZE, UNSET));
     setColor(props.hasKey(ViewProps.COLOR) ? props.getInt(ViewProps.COLOR, 0) : null);
     setColor(props.hasKey("foregroundColor") ? props.getInt("foregroundColor", 0) : null);
@@ -132,6 +134,31 @@ public class TextAttributeProps {
     setAttachmentHeight(getFloatProp(ViewProps.HEIGHT, UNSET));
     setAttachmentWidth(getFloatProp(ViewProps.WIDTH, UNSET));
     setIsAttachment(getBooleanProp(ViewProps.IS_ATTACHMENT, false));
+  }
+
+  // TODO T63645393 add support for RTL
+  public static int getTextAlignment(ReactStylesDiffMap props) {
+    @Nullable
+    String textAlignPropValue =
+        props.hasKey(ViewProps.TEXT_ALIGN) ? props.getString(ViewProps.TEXT_ALIGN) : null;
+    int textAlignment;
+
+    if ("justify".equals(textAlignPropValue)) {
+      textAlignment = Gravity.LEFT;
+    } else {
+      if (textAlignPropValue == null || "auto".equals(textAlignPropValue)) {
+        textAlignment = Gravity.NO_GRAVITY;
+      } else if ("left".equals(textAlignPropValue)) {
+        textAlignment = Gravity.LEFT;
+      } else if ("right".equals(textAlignPropValue)) {
+        textAlignment = Gravity.RIGHT;
+      } else if ("center".equals(textAlignPropValue)) {
+        textAlignment = Gravity.CENTER_HORIZONTAL;
+      } else {
+        throw new JSApplicationIllegalArgumentException("Invalid textAlign: " + textAlignPropValue);
+      }
+    }
+    return textAlignment;
   }
 
   private void setIsAttachment(boolean isAttachment) {
@@ -196,19 +223,6 @@ public class TextAttributeProps {
     return useInlineViewHeight ? mHeightOfTallestInlineImage : mLineHeight;
   }
 
-  // Return text alignment according to LTR or RTL style
-  public int getTextAlign() {
-    int textAlign = mTextAlign;
-    if (getLayoutDirection() == YogaDirection.RTL) {
-      if (textAlign == Gravity.RIGHT) {
-        textAlign = Gravity.LEFT;
-      } else if (textAlign == Gravity.LEFT) {
-        textAlign = Gravity.RIGHT;
-      }
-    }
-    return textAlign;
-  }
-
   public void setNumberOfLines(int numberOfLines) {
     mNumberOfLines = numberOfLines == 0 ? UNSET : numberOfLines;
   }
@@ -250,31 +264,6 @@ public class TextAttributeProps {
       setFontSize(mFontSizeInput);
       setLineHeight(mLineHeightInput);
       setLetterSpacing(mLetterSpacingInput);
-    }
-  }
-
-  public void setTextAlign(@Nullable String textAlign) {
-    if ("justify".equals(textAlign)) {
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-        mJustificationMode = Layout.JUSTIFICATION_MODE_INTER_WORD;
-      }
-      mTextAlign = Gravity.LEFT;
-    } else {
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-        mJustificationMode = Layout.JUSTIFICATION_MODE_NONE;
-      }
-
-      if (textAlign == null || "auto".equals(textAlign)) {
-        mTextAlign = Gravity.NO_GRAVITY;
-      } else if ("left".equals(textAlign)) {
-        mTextAlign = Gravity.LEFT;
-      } else if ("right".equals(textAlign)) {
-        mTextAlign = Gravity.RIGHT;
-      } else if ("center".equals(textAlign)) {
-        mTextAlign = Gravity.CENTER_HORIZONTAL;
-      } else {
-        throw new JSApplicationIllegalArgumentException("Invalid textAlign: " + textAlign);
-      }
     }
   }
 
@@ -446,7 +435,7 @@ public class TextAttributeProps {
         : -1;
   }
 
-  // TODO T31905686 remove this from here and add support to RTL
+  // TODO T63645393 remove this from here and add support to RTL
   private YogaDirection getLayoutDirection() {
     return YogaDirection.LTR;
   }
