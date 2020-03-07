@@ -80,7 +80,13 @@ using namespace facebook::react;
     return;
   }
 
-  SharedTextLayoutManager textLayoutManager = _state->getData().layoutManager;
+  auto textLayoutManager = _state->getData().layoutManager;
+  assert(textLayoutManager && "TextLayoutManager must not be `nullptr`.");
+
+  if (!textLayoutManager) {
+    return;
+  }
+
   RCTTextLayoutManager *nativeTextLayoutManager =
       (__bridge RCTTextLayoutManager *)textLayoutManager->getNativeTextLayoutManager();
 
@@ -113,16 +119,22 @@ using namespace facebook::react;
     return _eventEmitter;
   }
 
-  SharedTextLayoutManager textLayoutManager = _state->getData().layoutManager;
+  auto textLayoutManager = _state->getData().layoutManager;
+
+  assert(textLayoutManager && "TextLayoutManager must not be `nullptr`.");
+
+  if (!textLayoutManager) {
+    return _eventEmitter;
+  }
+
   RCTTextLayoutManager *nativeTextLayoutManager =
       (__bridge RCTTextLayoutManager *)textLayoutManager->getNativeTextLayoutManager();
   CGRect frame = RCTCGRectFromRect(_layoutMetrics.getContentFrame());
 
-  SharedEventEmitter eventEmitter =
-      [nativeTextLayoutManager getEventEmitterWithAttributeString:_state->getData().attributedString
-                                              paragraphAttributes:_paragraphAttributes
-                                                            frame:frame
-                                                          atPoint:point];
+  auto eventEmitter = [nativeTextLayoutManager getEventEmitterWithAttributeString:_state->getData().attributedString
+                                                              paragraphAttributes:_paragraphAttributes
+                                                                            frame:frame
+                                                                          atPoint:point];
 
   if (!eventEmitter) {
     return _eventEmitter;
