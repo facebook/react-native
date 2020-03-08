@@ -335,6 +335,7 @@
   objc_setAssociatedObject(self, @selector(accessibilityActions), accessibilityActions, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 }
 
+#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
 - (NSString *)accessibilityRole
 {
   return objc_getAssociatedObject(self, _cmd);
@@ -344,6 +345,7 @@
 {
   objc_setAssociatedObject(self, @selector(accessibilityRole), accessibilityRole, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 }
+#endif // TODO(macOS ISS#2323203)
 
 - (NSArray<NSString *> *)accessibilityStates
 {
