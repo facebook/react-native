@@ -52,9 +52,20 @@ public class MultiPostprocessor implements Postprocessor {
   public CacheKey getPostprocessorCacheKey() {
     LinkedList<CacheKey> keys = new LinkedList<>();
     for (Postprocessor p : mPostprocessors) {
-      keys.push(p.getPostprocessorCacheKey());
+      CacheKey cacheKey = p.getPostprocessorCacheKey();
+      if (cacheKey != null) {
+        keys.push(cacheKey);
+      }
     }
-    return new MultiCacheKey(keys);
+
+    switch (postprocessors.size()) {
+      case 0:
+        return null;
+      case 1:
+        return keys.get(0);
+      default:
+        return new MultiCacheKey(keys);
+    }
   }
 
   @Override
