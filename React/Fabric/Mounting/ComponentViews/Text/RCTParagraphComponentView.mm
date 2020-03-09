@@ -15,6 +15,8 @@
 #import <react/graphics/Geometry.h>
 #import <react/textlayoutmanager/RCTTextLayoutManager.h>
 #import <react/textlayoutmanager/TextLayoutManager.h>
+#import <react/utils/ManagedObjectWrapper.h>
+
 #import "RCTConversions.h"
 
 using namespace facebook::react;
@@ -88,7 +90,7 @@ using namespace facebook::react;
   }
 
   RCTTextLayoutManager *nativeTextLayoutManager =
-      (__bridge RCTTextLayoutManager *)textLayoutManager->getNativeTextLayoutManager();
+      (RCTTextLayoutManager *)unwrapManagedObject(textLayoutManager->getNativeTextLayoutManager());
 
   CGRect frame = RCTCGRectFromRect(_layoutMetrics.getContentFrame());
 
@@ -128,7 +130,7 @@ using namespace facebook::react;
   }
 
   RCTTextLayoutManager *nativeTextLayoutManager =
-      (__bridge RCTTextLayoutManager *)textLayoutManager->getNativeTextLayoutManager();
+      (RCTTextLayoutManager *)unwrapManagedObject(textLayoutManager->getNativeTextLayoutManager());
   CGRect frame = RCTCGRectFromRect(_layoutMetrics.getContentFrame());
 
   auto eventEmitter = [nativeTextLayoutManager getEventEmitterWithAttributeString:_state->getData().attributedString
