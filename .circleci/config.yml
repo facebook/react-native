@@ -605,7 +605,7 @@ jobs:
     parameters:
       publish_npm_args:
         type: string
-        default:
+        default: --nonightly
     executor: reactnativeandroid
     steps:
       - restore_cache_checkout:
@@ -705,7 +705,6 @@ workflows:
             tags:
               only: /v[0-9]+(\.[0-9]+)*(\-rc(\.[0-9]+)?)?/
       - publish_npm_package:
-          publish_npm_args:
           requires:
             - setup_android
           filters:
