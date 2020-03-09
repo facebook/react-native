@@ -33,8 +33,11 @@ AttributedString AndroidTextInputShadowNode::getAttributedString() const {
   // Use BaseTextShadowNode to get attributed string from children
   auto childTextAttributes = TextAttributes::defaultTextAttributes();
   childTextAttributes.apply(getConcreteProps().textAttributes);
-  auto attributedString =
-      BaseTextShadowNode::getAttributedString(childTextAttributes, *this);
+
+  auto attributedString = AttributedString{};
+  auto attachments = BaseTextShadowNode::Attachments{};
+  BaseTextShadowNode::buildAttributedString(
+      childTextAttributes, *this, attributedString, attachments);
 
   // BaseTextShadowNode only gets children. We must detect and prepend text
   // value attributes manually.

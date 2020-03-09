@@ -53,8 +53,10 @@ AttributedString TextInputShadowNode::getAttributedString() const {
   attributedString.appendFragment(
       AttributedString::Fragment{getConcreteProps().text, textAttributes});
 
-  attributedString.appendAttributedString(
-      BaseTextShadowNode::getAttributedString(textAttributes, *this));
+  auto attachments = Attachments{};
+  BaseTextShadowNode::buildAttributedString(
+      textAttributes, *this, attributedString, attachments);
+
   return attributedString;
 }
 

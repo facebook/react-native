@@ -20,8 +20,12 @@ AttributedString ParagraphShadowNode::getAttributedString() const {
     auto textAttributes = TextAttributes::defaultTextAttributes();
     textAttributes.apply(getConcreteProps().textAttributes);
 
-    cachedAttributedString_ =
-        BaseTextShadowNode::getAttributedString(textAttributes, *this);
+    auto attributedString = AttributedString{};
+    auto attachments = Attachments{};
+    BaseTextShadowNode::buildAttributedString(
+        textAttributes, *this, attributedString, attachments);
+
+    cachedAttributedString_ = attributedString;
   }
 
   return cachedAttributedString_.value();
