@@ -69,6 +69,15 @@ class LayoutableShadowNode : public ShadowNode {
   virtual Size measure(LayoutConstraints layoutConstraints) const;
 
   /*
+   * Measures the node with given `layoutContext` and `layoutConstraints`.
+   * The size of nested content and the padding should be included, the margin
+   * should *not* be included. Default implementation returns zero size.
+   */
+  virtual Size measure(
+      LayoutContext const &layoutContext,
+      LayoutConstraints const &layoutConstraints) const;
+
+  /*
    * Computes layout recursively.
    * Additional environmental constraints might be provided via `layoutContext`
    * argument.

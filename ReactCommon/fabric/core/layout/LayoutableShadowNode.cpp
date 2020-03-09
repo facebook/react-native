@@ -156,6 +156,21 @@ Size LayoutableShadowNode::measure(LayoutConstraints layoutConstraints) const {
   return Size();
 }
 
+Size LayoutableShadowNode::measure(
+    LayoutContext const &layoutContext,
+    LayoutConstraints const &layoutConstraints) const {
+  auto clonedShadowNode = clone({});
+  auto &layoutableShadowNode =
+      static_cast<LayoutableShadowNode &>(*clonedShadowNode);
+
+  auto localLayoutContext = layoutContext;
+  localLayoutContext.affectedNodes = nullptr;
+
+  layoutableShadowNode.layoutTree(localLayoutContext, layoutConstraints);
+
+  return layoutableShadowNode.getLayoutMetrics().frame.size;
+}
+
 Float LayoutableShadowNode::firstBaseline(Size size) const {
   return 0;
 }
