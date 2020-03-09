@@ -118,7 +118,7 @@
  */
 @property (nonatomic, copy) NSString *accessibilityRole;
 @property (nonatomic, copy) NSDictionary<NSString *, id> *accessibilityState;
-@property (nonatomic, copy) NSArray <NSDictionary *> *accessibilityActions;
+@property (nonatomic, copy) NSArray<NSDictionary *> *accessibilityActions;
 @property (nonatomic, copy) NSDictionary *accessibilityValueInternal;
 
 /**

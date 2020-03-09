@@ -7,7 +7,6 @@
 
 #import <UIKit/UIKit.h>
 
-
 extern NSString *const RCTTVRemoteEventMenu;
 extern NSString *const RCTTVRemoteEventPlayPause;
 extern NSString *const RCTTVRemoteEventSelect;

@@ -16,16 +16,10 @@ namespace react {
 
 TextLayoutManager::TextLayoutManager(ContextContainer::Shared const &contextContainer)
 {
-  self_ = (__bridge_retained void *)[RCTTextLayoutManager new];
+  self_ = wrapManagedObject([RCTTextLayoutManager new]);
 }
 
-TextLayoutManager::~TextLayoutManager()
-{
-  CFRelease(self_);
-  self_ = nullptr;
-}
-
-void *TextLayoutManager::getNativeTextLayoutManager() const
+std::shared_ptr<void> TextLayoutManager::getNativeTextLayoutManager() const
 {
   assert(self_ && "Stored NativeTextLayoutManager must not be null.");
   return self_;
@@ -36,7 +30,7 @@ Size TextLayoutManager::measure(
     ParagraphAttributes paragraphAttributes,
     LayoutConstraints layoutConstraints) const
 {
-  RCTTextLayoutManager *textLayoutManager = (__bridge RCTTextLayoutManager *)self_;
+  RCTTextLayoutManager *textLayoutManager = (RCTTextLayoutManager *)unwrapManagedObject(self_);
 
   auto size = Size{};
 

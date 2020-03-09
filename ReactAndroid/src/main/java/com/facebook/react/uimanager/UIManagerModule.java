@@ -867,9 +867,13 @@ public class UIManagerModule extends ReactContextBaseJavaModule
    * Given a reactTag from a component, find its root node tag, if possible. Otherwise, this will
    * return 0. If the reactTag belongs to a root node, this will return the same reactTag.
    *
+   * @deprecated this method is not going to be supported in the near future, use {@link
+   *     ViewUtil#isRootTag(int)} to verify if a react Tag is a root or not
+   *     <p>TODO: T63569137 Delete the method UIManagerModule.resolveRootTagFromReactTag
    * @param reactTag the component tag
    * @return the rootTag
    */
+  @Deprecated
   public int resolveRootTagFromReactTag(int reactTag) {
     return ViewUtil.isRootTag(reactTag)
         ? reactTag

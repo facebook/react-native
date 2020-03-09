@@ -19,9 +19,11 @@ namespace react {
 class Instance;
 class NativeModule;
 
-std::vector<std::unique_ptr<NativeModule>> createNativeModules(NSArray<RCTModuleData *> *modules, RCTBridge *bridge, const std::shared_ptr<Instance> &instance);
+std::vector<std::unique_ptr<NativeModule>>
+createNativeModules(NSArray<RCTModuleData *> *modules, RCTBridge *bridge, const std::shared_ptr<Instance> &instance);
 
-NSError *tryAndReturnError(const std::function<void()>& func);
+NSError *tryAndReturnError(const std::function<void()> &func);
 NSString *deriveSourceURL(NSURL *url);
 
-} }
+}
+}

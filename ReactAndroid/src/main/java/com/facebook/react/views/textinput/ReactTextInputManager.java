@@ -1261,8 +1261,6 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
         TextLayoutManager.getOrCreateSpannableForText(
             view.getContext(), attributedString, mReactTextViewManagerCallback);
 
-    TextAttributeProps textViewProps = new TextAttributeProps(props);
-
     int textBreakStrategy =
         getTextBreakStrategy(paragraphAttributes.getString("textBreakStrategy"));
 
@@ -1275,7 +1273,7 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
         spanned,
         state.getInt("mostRecentEventCount"),
         false, // TODO add this into local Data
-        textViewProps.getTextAlign(),
+        TextAttributeProps.getTextAlignment(props),
         textBreakStrategy,
         justificationMode,
         attributedString);

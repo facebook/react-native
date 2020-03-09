@@ -35,7 +35,7 @@
   return self;
 }
 
-RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
+RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (NSCoder *)aDecoder)
 
 - (void)layoutSubviews
 {
@@ -43,9 +43,9 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 
   // If the control is refreshing when mounted we need to call
   // beginRefreshing in layoutSubview or it doesn't work.
- if (_currentRefreshingState && _isInitialRender) {
+  if (_currentRefreshingState && _isInitialRender) {
     [self beginRefreshingProgrammatically];
- }
+  }
   _isInitialRender = false;
 }
 
@@ -62,16 +62,17 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   // `beginRefreshing` must be called after the animation is done. This is why it is impossible
   // to use `setContentOffset` with `animated:YES`.
   [UIView animateWithDuration:0.25
-                          delay:0
-                        options:UIViewAnimationOptionBeginFromCurrentState
-                     animations:^(void) {
-                       [scrollView setContentOffset:offset];
-                     } completion:^(__unused BOOL finished) {
-                       if(beginRefreshingTimestamp == self->_currentRefreshingStateTimestamp) {
-                         [super beginRefreshing];
-                         [self setCurrentRefreshingState:super.refreshing];
-                       }
-                     }];
+      delay:0
+      options:UIViewAnimationOptionBeginFromCurrentState
+      animations:^(void) {
+        [scrollView setContentOffset:offset];
+      }
+      completion:^(__unused BOOL finished) {
+        if (beginRefreshingTimestamp == self->_currentRefreshingStateTimestamp) {
+          [super beginRefreshing];
+          [self setCurrentRefreshingState:super.refreshing];
+        }
+      }];
 }
 
 - (void)endRefreshingProgrammatically
@@ -83,16 +84,17 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
     UInt64 endRefreshingTimestamp = _currentRefreshingStateTimestamp;
     CGPoint offset = {scrollView.contentOffset.x, -scrollView.contentInset.top};
     [UIView animateWithDuration:0.25
-                          delay:0
-                        options:UIViewAnimationOptionBeginFromCurrentState
-                     animations:^(void) {
-                       [scrollView setContentOffset:offset];
-                     } completion:^(__unused BOOL finished) {
-                       if(endRefreshingTimestamp == self->_currentRefreshingStateTimestamp) {
-                         [super endRefreshing];
-                         [self setCurrentRefreshingState:super.refreshing];
-                       }
-                     }];
+        delay:0
+        options:UIViewAnimationOptionBeginFromCurrentState
+        animations:^(void) {
+          [scrollView setContentOffset:offset];
+        }
+        completion:^(__unused BOOL finished) {
+          if (endRefreshingTimestamp == self->_currentRefreshingStateTimestamp) {
+            [super endRefreshing];
+            [self setCurrentRefreshingState:super.refreshing];
+          }
+        }];
   } else {
     [super endRefreshing];
   }

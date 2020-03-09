@@ -21,7 +21,6 @@
 #import <React/RCTDataRequestHandler.h>
 #import <React/RCTFileRequestHandler.h>
 #import <React/RCTRootView.h>
-#import <React/RCTRootViewController.h>
 #import <ReactCommon/BridgeJSCallInvoker.h>
 
 #import <cxxreact/JSExecutor.h>
@@ -90,13 +89,12 @@
 
   UIView *rootView = [[RCTFabricSurfaceHostingProxyRootView alloc] initWithBridge:_bridge moduleName:@"RNTesterApp" initialProperties:initProps];
 #else
-  RCTRootView *rootView = [[RCTRootView alloc] initWithBridge:_bridge
-                                                   moduleName:@"RNTesterApp"
-                                            initialProperties:initProps];
+  UIView *rootView = [[RCTRootView alloc] initWithBridge:_bridge moduleName:@"RNTesterApp" initialProperties:initProps];
 #endif
 
   self.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
-  RCTRootViewController *rootViewController = [[RCTRootViewController alloc] initWithRootView:rootView];
+  UIViewController *rootViewController = [UIViewController new];
+  rootViewController.view = rootView;
   self.window.rootViewController = rootViewController;
   [self.window makeKeyAndVisible];
   [self initializeFlipper:application];

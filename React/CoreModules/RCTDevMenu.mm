@@ -160,7 +160,8 @@ RCT_EXPORT_MODULE()
 {
   _presentedItems = nil;
   [_actionSheet dismissViewControllerAnimated:YES
-                                   completion:^(void){}];
+                                   completion:^(void){
+                                   }];
 }
 
 - (void)showOnShake
@@ -241,7 +242,7 @@ RCT_EXPORT_MODULE()
                                                                                  dismissViewControllerAnimated:YES
                                                                                                     completion:nil];
                                                                            }]];
-                                      [RCTPresentedViewController(nil) presentViewController:alertController
+                                      [RCTPresentedViewController() presentViewController:alertController
                                                                                  animated:YES
                                                                                completion:NULL];
                                     }]];
@@ -266,7 +267,7 @@ RCT_EXPORT_MODULE()
                                                      [RCTInspectorDevServerHelper
                                                          attachDebugger:@"ReactNative"
                                                           withBundleURL:bridge.bundleURL
-                                                               withView:RCTPresentedViewController(nil)];
+                                                               withView:RCTPresentedViewController()];
 #endif
                                                    }]];
     }
@@ -313,7 +314,7 @@ RCT_EXPORT_MODULE()
                                                                         dismissViewControllerAnimated:YES
                                                                                            completion:nil];
                                                                   }]];
-                             [RCTPresentedViewController(nil) presentViewController:alertController
+                             [RCTPresentedViewController() presentViewController:alertController
                                                                         animated:YES
                                                                       completion:NULL];
                            } else {
@@ -388,7 +389,7 @@ RCT_EXPORT_MODULE()
                                                                         handler:^(__unused UIAlertAction *action) {
                                                                           return;
                                                                         }]];
-                      [RCTPresentedViewController(nil) presentViewController:alertController animated:YES completion:NULL];
+                      [RCTPresentedViewController() presentViewController:alertController animated:YES completion:NULL];
                     }]];
 
   [items addObjectsFromArray:_extraMenuItems];
@@ -425,12 +426,9 @@ RCT_EXPORT_METHOD(show)
                                                  handler:[self alertActionHandlerForDevItem:nil]]];
 
   _presentedItems = items;
-  [RCTPresentedViewController(nil) presentViewController:_actionSheet animated:YES completion:nil];
+  [RCTPresentedViewController() presentViewController:_actionSheet animated:YES completion:nil];
 
-  [_bridge enqueueJSCall:@"RCTNativeAppEventEmitter"
-                  method:@"emit"
-                    args:@[@"RCTDevMenuShown"]
-              completion:NULL];
+  [_bridge enqueueJSCall:@"RCTNativeAppEventEmitter" method:@"emit" args:@[ @"RCTDevMenuShown" ] completion:NULL];
 }
 
 - (RCTDevMenuAlertActionHandler)alertActionHandlerForDevItem:(RCTDevMenuItem *__nullable)item
@@ -493,7 +491,8 @@ RCT_EXPORT_METHOD(setHotLoadingEnabled : (BOOL)enabled)
   return _bridge.devSettings.isHotLoadingEnabled;
 }
 
-- (std::shared_ptr<facebook::react::TurboModule>)getTurboModuleWithJsInvoker:(std::shared_ptr<facebook::react::CallInvoker>)jsInvoker
+- (std::shared_ptr<facebook::react::TurboModule>)getTurboModuleWithJsInvoker:
+    (std::shared_ptr<facebook::react::CallInvoker>)jsInvoker
 {
   return std::make_shared<facebook::react::NativeDevMenuSpecJSI>(self, jsInvoker);
 }
@@ -502,7 +501,7 @@ RCT_EXPORT_METHOD(setHotLoadingEnabled : (BOOL)enabled)
 
 #else // Unavailable when not in dev mode
 
-@interface RCTDevMenu() <NativeDevMenuSpec>
+@interface RCTDevMenu () <NativeDevMenuSpec>
 @end
 
 @implementation RCTDevMenu
@@ -520,7 +519,7 @@ RCT_EXPORT_METHOD(setHotLoadingEnabled : (BOOL)enabled)
 {
 }
 
-- (void)debugRemotely : (BOOL)enableDebug
+- (void)debugRemotely:(BOOL)enableDebug
 {
 }
 
@@ -533,7 +532,8 @@ RCT_EXPORT_METHOD(setHotLoadingEnabled : (BOOL)enabled)
   return @"DevMenu";
 }
 
-- (std::shared_ptr<facebook::react::TurboModule>)getTurboModuleWithJsInvoker:(std::shared_ptr<facebook::react::CallInvoker>)jsInvoker
+- (std::shared_ptr<facebook::react::TurboModule>)getTurboModuleWithJsInvoker:
+    (std::shared_ptr<facebook::react::CallInvoker>)jsInvoker
 {
   return std::make_shared<facebook::react::NativeDevMenuSpecJSI>(self, jsInvoker);
 }
@@ -568,6 +568,7 @@ RCT_EXPORT_METHOD(setHotLoadingEnabled : (BOOL)enabled)
 
 @end
 
-Class RCTDevMenuCls(void) {
+Class RCTDevMenuCls(void)
+{
   return RCTDevMenu.class;
 }

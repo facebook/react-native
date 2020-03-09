@@ -23,8 +23,7 @@
 
 @implementation RCTKeyCommand
 
-- (instancetype)initWithKeyCommand:(UIKeyCommand *)keyCommand
-                             block:(void (^)(UIKeyCommand *))block
+- (instancetype)initWithKeyCommand:(UIKeyCommand *)keyCommand block:(void (^)(UIKeyCommand *))block
 {
   if ((self = [super init])) {
     _keyCommand = keyCommand;
@@ -33,7 +32,7 @@
   return self;
 }
 
-RCT_NOT_IMPLEMENTED(- (instancetype)init)
+RCT_NOT_IMPLEMENTED(-(instancetype)init)
 
 - (id)copyWithZone:(__unused NSZone *)zone
 {
@@ -50,8 +49,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   if (![object isKindOfClass:[RCTKeyCommand class]]) {
     return NO;
   }
-  return [self matchesInput:object.keyCommand.input
-                      flags:object.keyCommand.modifierFlags];
+  return [self matchesInput:object.keyCommand.input flags:object.keyCommand.modifierFlags];
 }
 
 - (BOOL)matchesInput:(NSString *)input flags:(UIKeyModifierFlags)flags
@@ -62,8 +60,11 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 - (NSString *)description
 {
   return [NSString stringWithFormat:@"<%@:%p input=\"%@\" flags=%lld hasBlock=%@>",
-          [self class], self, _keyCommand.input, (long long)_keyCommand.modifierFlags,
-          _block ? @"YES" : @"NO"];
+                                    [self class],
+                                    self,
+                                    _keyCommand.input,
+                                    (long long)_keyCommand.modifierFlags,
+                                    _block ? @"YES" : @"NO"];
 }
 
 @end
@@ -84,12 +85,12 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
     return view;
   } else if ([view isKindOfClass:[UIViewController class]]) {
     if ([(UIViewController *)view parentViewController]) {
-      firstResponder = [UIResponder RCT_getFirstResponder: [(UIViewController *)view parentViewController]];
+      firstResponder = [UIResponder RCT_getFirstResponder:[(UIViewController *)view parentViewController]];
     }
-    return firstResponder ? firstResponder : [UIResponder RCT_getFirstResponder: [(UIViewController *)view view]];
+    return firstResponder ? firstResponder : [UIResponder RCT_getFirstResponder:[(UIViewController *)view view]];
   } else if ([view isKindOfClass:[UIView class]]) {
     for (UIView *subview in [(UIView *)view subviews]) {
-      firstResponder = [UIResponder RCT_getFirstResponder: subview];
+      firstResponder = [UIResponder RCT_getFirstResponder:subview];
       if (firstResponder) {
         return firstResponder;
       }
@@ -142,9 +143,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   if (firstPress) {
     for (RCTKeyCommand *command in [RCTKeyCommands sharedInstance].commands) {
       if ([command.keyCommand.input isEqualToString:key.input] &&
-          command.keyCommand.modifierFlags == key.modifierFlags &&
-          command.block) {
-
+          command.keyCommand.modifierFlags == key.modifierFlags && command.block) {
         firstPress = NO;
         lastCommand = CACurrentMediaTime();
         lastInput = key.input;
@@ -155,15 +154,10 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   } else {
     // Second keyevent within 0.2 second,
     // with the same key as the first one.
-    if (CACurrentMediaTime() - lastCommand < 0.2 &&
-        lastInput == key.input &&
-        lastModifierFlags == key.modifierFlags) {
-
+    if (CACurrentMediaTime() - lastCommand < 0.2 && lastInput == key.input && lastModifierFlags == key.modifierFlags) {
       for (RCTKeyCommand *command in [RCTKeyCommands sharedInstance].commands) {
         if ([command.keyCommand.input isEqualToString:key.input] &&
-            command.keyCommand.modifierFlags == key.modifierFlags &&
-            command.block) {
-
+            command.keyCommand.modifierFlags == key.modifierFlags && command.block) {
           // NOTE: throttle the key handler because on iOS 9 the handleKeyCommand:
           // method gets called repeatedly if the command key is held down.
           if (CACurrentMediaTime() - lastDoubleCommand > 0.5) {
@@ -189,9 +183,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 + (void)initialize
 {
   // swizzle UIResponder
-  RCTSwapInstanceMethods([UIResponder class],
-                         @selector(keyCommands),
-                         @selector(RCT_keyCommands));
+  RCTSwapInstanceMethods([UIResponder class], @selector(keyCommands), @selector(RCT_keyCommands));
 }
 
 + (instancetype)sharedInstance
@@ -228,8 +220,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   [_commands addObject:keyCommand];
 }
 
-- (void)unregisterKeyCommandWithInput:(NSString *)input
-                        modifierFlags:(UIKeyModifierFlags)flags
+- (void)unregisterKeyCommandWithInput:(NSString *)input modifierFlags:(UIKeyModifierFlags)flags
 {
   RCTAssertMainQueue();
 
@@ -241,8 +232,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   }
 }
 
-- (BOOL)isKeyCommandRegisteredForInput:(NSString *)input
-                         modifierFlags:(UIKeyModifierFlags)flags
+- (BOOL)isKeyCommandRegisteredForInput:(NSString *)input modifierFlags:(UIKeyModifierFlags)flags
 {
   RCTAssertMainQueue();
 
@@ -255,8 +245,8 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 }
 
 - (void)registerDoublePressKeyCommandWithInput:(NSString *)input
-                      modifierFlags:(UIKeyModifierFlags)flags
-                             action:(void (^)(UIKeyCommand *))block
+                                 modifierFlags:(UIKeyModifierFlags)flags
+                                        action:(void (^)(UIKeyCommand *))block
 {
   RCTAssertMainQueue();
 
@@ -269,8 +259,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   [_commands addObject:keyCommand];
 }
 
-- (void)unregisterDoublePressKeyCommandWithInput:(NSString *)input
-                        modifierFlags:(UIKeyModifierFlags)flags
+- (void)unregisterDoublePressKeyCommandWithInput:(NSString *)input modifierFlags:(UIKeyModifierFlags)flags
 {
   RCTAssertMainQueue();
 
@@ -282,8 +271,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   }
 }
 
-- (BOOL)isDoublePressKeyCommandRegisteredForInput:(NSString *)input
-                         modifierFlags:(UIKeyModifierFlags)flags
+- (BOOL)isDoublePressKeyCommandRegisteredForInput:(NSString *)input modifierFlags:(UIKeyModifierFlags)flags
 {
   RCTAssertMainQueue();
 
@@ -308,26 +296,30 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
 - (void)registerKeyCommandWithInput:(NSString *)input
                       modifierFlags:(UIKeyModifierFlags)flags
-                             action:(void (^)(UIKeyCommand *))block {}
+                             action:(void (^)(UIKeyCommand *))block
+{
+}
 
-- (void)unregisterKeyCommandWithInput:(NSString *)input
-                        modifierFlags:(UIKeyModifierFlags)flags {}
+- (void)unregisterKeyCommandWithInput:(NSString *)input modifierFlags:(UIKeyModifierFlags)flags
+{
+}
 
-- (BOOL)isKeyCommandRegisteredForInput:(NSString *)input
-                         modifierFlags:(UIKeyModifierFlags)flags
+- (BOOL)isKeyCommandRegisteredForInput:(NSString *)input modifierFlags:(UIKeyModifierFlags)flags
 {
   return NO;
 }
 
 - (void)registerDoublePressKeyCommandWithInput:(NSString *)input
-                      modifierFlags:(UIKeyModifierFlags)flags
-                             action:(void (^)(UIKeyCommand *))block {}
+                                 modifierFlags:(UIKeyModifierFlags)flags
+                                        action:(void (^)(UIKeyCommand *))block
+{
+}
 
-- (void)unregisterDoublePressKeyCommandWithInput:(NSString *)input
-                        modifierFlags:(UIKeyModifierFlags)flags {}
+- (void)unregisterDoublePressKeyCommandWithInput:(NSString *)input modifierFlags:(UIKeyModifierFlags)flags
+{
+}
 
-- (BOOL)isDoublePressKeyCommandRegisteredForInput:(NSString *)input
-                         modifierFlags:(UIKeyModifierFlags)flags
+- (BOOL)isDoublePressKeyCommandRegisteredForInput:(NSString *)input modifierFlags:(UIKeyModifierFlags)flags
 {
   return NO;
 }

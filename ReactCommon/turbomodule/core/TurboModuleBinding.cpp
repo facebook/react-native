@@ -7,6 +7,7 @@
 
 #include "TurboModuleBinding.h"
 
+#include <stdexcept>
 #include <string>
 
 #include <ReactCommon/LongLivedObject.h>

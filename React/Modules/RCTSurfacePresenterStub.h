@@ -15,7 +15,6 @@ NS_ASSUME_NONNULL_BEGIN
 // that pulls in all of fabric which doesn't compile in open source yet, so we mirror the protocol
 // and duplicate the category here for now.
 
-
 @protocol RCTSurfacePresenterObserver <NSObject>
 
 @optional

@@ -169,7 +169,7 @@ class ShareActionSheetExample extends React.Component<
       (completed, method) => {
         let text;
         if (completed) {
-          text = `Shared via ${method || 'null'}`;
+          text = `Shared via ${method}`;
         } else {
           text = "You didn't share";
         }
@@ -212,7 +212,7 @@ class ShareScreenshotExample extends React.Component<
           (completed, method) => {
             let text;
             if (completed) {
-              text = `Shared via ${method || 'null'}`;
+              text = `Shared via ${method}`;
             } else {
               text = "You didn't share";
             }
@@ -270,7 +270,7 @@ class ShareScreenshotAnchorExample extends React.Component<
           (completed, method) => {
             let text;
             if (completed) {
-              text = `Shared via ${method || 'null'}`;
+              text = `Shared via ${method}`;
             } else {
               text = "You didn't share";
             }

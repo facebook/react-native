@@ -11,6 +11,7 @@
 'use strict';
 
 const React = require('react');
+
 const {
   StatusBar,
   StyleSheet,
@@ -257,14 +258,9 @@ class StatusBarTranslucentExample extends React.Component<
 }
 
 class StatusBarStaticIOSExample extends React.Component<{...}> {
-  // $FlowFixMe
-  viewRef: React.MutableRefObject<React.ElementRef<
-    typeof View,
-  > | void> = React.createRef();
-
   render() {
     return (
-      <View ref={this.viewRef}>
+      <View>
         <TouchableHighlight
           style={styles.wrapper}
           onPress={() => {
@@ -286,15 +282,6 @@ class StatusBarStaticIOSExample extends React.Component<{...}> {
         <TouchableHighlight
           style={styles.wrapper}
           onPress={() => {
-            StatusBar.setHidden(true, 'fade', this.viewRef.current);
-          }}>
-          <View style={styles.button}>
-            <Text>setHidden(true, 'fade', componentRef)</Text>
-          </View>
-        </TouchableHighlight>
-        <TouchableHighlight
-          style={styles.wrapper}
-          onPress={() => {
             StatusBar.setBarStyle('default', true);
           }}>
           <View style={styles.button}>
@@ -308,15 +295,6 @@ class StatusBarStaticIOSExample extends React.Component<{...}> {
           }}>
           <View style={styles.button}>
             <Text>setBarStyle('light-content', true)</Text>
-          </View>
-        </TouchableHighlight>
-        <TouchableHighlight
-          style={styles.wrapper}
-          onPress={() => {
-            StatusBar.setBarStyle('default', false, this.viewRef.current);
-          }}>
-          <View style={styles.button}>
-            <Text>setBarStyle('default', false, componentRef)</Text>
           </View>
         </TouchableHighlight>
         <TouchableHighlight

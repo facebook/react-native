@@ -118,7 +118,6 @@ namespace JS {
       folly::Optional<double> anchor() const;
       folly::Optional<double> tintColor() const;
       NSString *userInterfaceStyle() const;
-      folly::Optional<double> reactTag() const;
 
       SpecShowActionSheetWithOptionsOptions(NSDictionary *const v) : _v(v) {}
     private:
@@ -141,7 +140,6 @@ namespace JS {
       folly::Optional<double> tintColor() const;
       folly::Optional<facebook::react::LazyVector<NSString *>> excludedActivityTypes() const;
       NSString *userInterfaceStyle() const;
-      folly::Optional<double> reactTag() const;
 
       SpecShowShareActionSheetWithOptionsOptions(NSDictionary *const v) : _v(v) {}
     private:
@@ -206,7 +204,6 @@ namespace JS {
       NSString *cancelButtonKey() const;
       NSString *destructiveButtonKey() const;
       NSString *keyboardType() const;
-      folly::Optional<double> reactTag() const;
 
       Args(NSDictionary *const v) : _v(v) {}
     private:
@@ -2489,11 +2486,9 @@ namespace JS {
 - (void)addListener:(NSString *)eventType;
 - (void)removeListeners:(double)count;
 - (void)setStyle:(NSString * _Nullable)statusBarStyle
-        animated:(BOOL)animated
-        reactTag:(double)reactTag;
+        animated:(BOOL)animated;
 - (void)setHidden:(BOOL)hidden
-    withAnimation:(NSString *)withAnimation
-         reactTag:(double)reactTag;
+    withAnimation:(NSString *)withAnimation;
 - (facebook::react::ModuleConstants<JS::NativeStatusBarManagerIOS::Constants::Builder>)constantsToExport;
 - (facebook::react::ModuleConstants<JS::NativeStatusBarManagerIOS::Constants::Builder>)getConstants;
 
@@ -2947,11 +2942,6 @@ inline NSString *JS::NativeActionSheetManager::SpecShowActionSheetWithOptionsOpt
   id const p = _v[@"userInterfaceStyle"];
   return RCTBridgingToString(p);
 }
-inline folly::Optional<double> JS::NativeActionSheetManager::SpecShowActionSheetWithOptionsOptions::reactTag() const
-{
-  id const p = _v[@"reactTag"];
-  return RCTBridgingToOptionalDouble(p);
-}
 inline NSString *JS::NativeActionSheetManager::SpecShowShareActionSheetWithOptionsOptions::message() const
 {
   id const p = _v[@"message"];
@@ -2986,11 +2976,6 @@ inline NSString *JS::NativeActionSheetManager::SpecShowShareActionSheetWithOptio
 {
   id const p = _v[@"userInterfaceStyle"];
   return RCTBridgingToString(p);
-}
-inline folly::Optional<double> JS::NativeActionSheetManager::SpecShowShareActionSheetWithOptionsOptions::reactTag() const
-{
-  id const p = _v[@"reactTag"];
-  return RCTBridgingToOptionalDouble(p);
 }
 inline NSString *JS::NativeActionSheetManager::SpecShowShareActionSheetWithOptionsFailureCallbackError::domain() const
 {
@@ -3051,11 +3036,6 @@ inline NSString *JS::NativeAlertManager::Args::keyboardType() const
 {
   id const p = _v[@"keyboardType"];
   return RCTBridgingToString(p);
-}
-inline folly::Optional<double> JS::NativeAlertManager::Args::reactTag() const
-{
-  id const p = _v[@"reactTag"];
-  return RCTBridgingToOptionalDouble(p);
 }
 inline bool JS::NativeAnimatedModule::EndResult::finished() const
 {

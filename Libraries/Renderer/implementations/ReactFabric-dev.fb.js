@@ -2787,7 +2787,7 @@ function initializeLazyComponentType(lazyComponent) {
               error(
                 "lazy: Expected the result of a dynamic import() call. " +
                   "Instead received: %s\n\nYour code should look like: \n  " +
-                  "const MyComponent = lazy(() => import('./MyComponent'))",
+                  "const MyComponent = lazy(() => imp" + "ort('./MyComponent'))",
                 moduleObject
               );
             }
@@ -21918,11 +21918,13 @@ function warnIfNotScopedWithMatchingAct(fiber) {
         "It looks like you're using the wrong act() around your test interactions.\n" +
           "Be sure to use the matching version of act() corresponding to your renderer:\n\n" +
           "// for react-dom:\n" +
-          "import {act} from 'react-dom/test-utils';\n" +
+          "import {act} fr" +
+          "om 'react-dom/test-utils';\n" +
           "// ...\n" +
           "act(() => ...);\n\n" +
           "// for react-test-renderer:\n" +
-          "import TestRenderer from 'react-test-renderer';\n" +
+          "import TestRenderer fr" +
+          "om react-test-renderer';\n" +
           "const {act} = TestRenderer;\n" +
           "// ...\n" +
           "act(() => ...);" +
@@ -22006,7 +22008,7 @@ function warnIfUnmockedScheduler(fiber) {
           'In Concurrent or Sync modes, the "scheduler" module needs to be mocked ' +
             "to guarantee consistent behaviour across tests and browsers. " +
             "For example, with jest: \n" +
-            "jest.mock('scheduler', () => require('scheduler/unstable_mock'));\n\n" +
+            "jest.mock('scheduler', () => require" + "('scheduler/unstable_mock'));\n\n" +
             "For more info, visit https://fb.me/react-mock-scheduler"
         );
       } else if (warnAboutUnmockedScheduler === true) {
@@ -22016,7 +22018,7 @@ function warnIfUnmockedScheduler(fiber) {
           'Starting from React v17, the "scheduler" module will need to be mocked ' +
             "to guarantee consistent behaviour across tests and browsers. " +
             "For example, with jest: \n" +
-            "jest.mock('scheduler', () => require('scheduler/unstable_mock'));\n\n" +
+            "jest.mock('scheduler', () => require" + "('scheduler/unstable_mock'));\n\n" +
             "For more info, visit https://fb.me/react-mock-scheduler"
         );
       }

@@ -40,10 +40,10 @@ public abstract class NativeStatusBarManagerIOSSpec extends ReactContextBaseJava
   public abstract void removeListeners(double count);
 
   @ReactMethod
-  public abstract void setHidden(boolean hidden, String withAnimation, double reactTag);
+  public abstract void setHidden(boolean hidden, String withAnimation);
 
   @ReactMethod
-  public abstract void setStyle(@Nullable String statusBarStyle, boolean animated, double reactTag);
+  public abstract void setStyle(@Nullable String statusBarStyle, boolean animated);
 
   @ReactMethod
   public abstract void addListener(String eventType);

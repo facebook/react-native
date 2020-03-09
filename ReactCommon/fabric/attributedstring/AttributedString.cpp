@@ -98,6 +98,22 @@ bool AttributedString::isEmpty() const {
   return fragments_.empty();
 }
 
+bool AttributedString::compareTextAttributesWithoutFrame(
+    const AttributedString &rhs) const {
+  if (fragments_.size() != rhs.fragments_.size()) {
+    return false;
+  }
+
+  for (unsigned i = 0; i < fragments_.size(); i++) {
+    if (fragments_[i].textAttributes != rhs.fragments_[i].textAttributes ||
+        fragments_[i].string != rhs.fragments_[i].string) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
 bool AttributedString::operator==(const AttributedString &rhs) const {
   return fragments_ == rhs.fragments_;
 }

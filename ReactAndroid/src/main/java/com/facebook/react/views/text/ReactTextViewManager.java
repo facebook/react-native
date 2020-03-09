@@ -94,8 +94,6 @@ public class ReactTextViewManager
             view.getContext(), attributedString, mReactTextViewManagerCallback);
     view.setSpanned(spanned);
 
-    TextAttributeProps textViewProps = new TextAttributeProps(props);
-
     int textBreakStrategy =
         getTextBreakStrategy(paragraphAttributes.getString("textBreakStrategy"));
 
@@ -106,7 +104,7 @@ public class ReactTextViewManager
         spanned,
         state.hasKey("mostRecentEventCount") ? state.getInt("mostRecentEventCount") : -1,
         false, // TODO add this into local Data
-        textViewProps.getTextAlign(),
+        TextAttributeProps.getTextAlignment(props),
         textBreakStrategy,
         justificationMode);
   }

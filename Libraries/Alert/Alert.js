@@ -15,7 +15,6 @@ import NativeDialogManagerAndroid, {
   type DialogOptions,
 } from '../NativeModules/specs/NativeDialogManagerAndroid';
 import RCTAlertManager from './RCTAlertManager';
-import ReactNative from '../Renderer/shims/ReactNative';
 
 export type AlertType =
   | 'default'
@@ -33,12 +32,7 @@ export type Buttons = Array<{
 type Options = {
   cancelable?: ?boolean,
   onDismiss?: ?() => void,
-  surface?: mixed,
   ...
-};
-
-type PromptOptions = {
-  surface?: mixed,
 };
 
 /**
@@ -51,12 +45,10 @@ class Alert {
     title: ?string,
     message?: ?string,
     buttons?: Buttons,
-    options?: Options = {},
+    options?: Options,
   ): void {
     if (Platform.OS === 'ios') {
-      Alert.prompt(title, message, buttons, 'default', undefined, undefined, {
-        surface: options.surface,
-      });
+      Alert.prompt(title, message, buttons, 'default');
     } else if (Platform.OS === 'android') {
       if (!NativeDialogManagerAndroid) {
         return;
@@ -69,7 +61,7 @@ class Alert {
         cancelable: false,
       };
 
-      if (options.cancelable) {
+      if (options && options.cancelable) {
         config.cancelable = options.cancelable;
       }
       // At most three buttons (neutral, negative, positive). Ignore rest.
@@ -102,7 +94,7 @@ class Alert {
             buttonPositive.onPress && buttonPositive.onPress();
           }
         } else if (action === constants.dismissed) {
-          options.onDismiss && options.onDismiss();
+          options && options.onDismiss && options.onDismiss();
         }
       };
       const onError = errorMessage => console.warn(errorMessage);
@@ -117,7 +109,6 @@ class Alert {
     type?: ?AlertType = 'plain-text',
     defaultValue?: string,
     keyboardType?: string,
-    options?: PromptOptions = {surface: undefined},
   ): void {
     if (Platform.OS === 'ios') {
       let callbacks = [];
@@ -152,7 +143,6 @@ class Alert {
           cancelButtonKey,
           destructiveButtonKey,
           keyboardType,
-          reactTag: ReactNative.findNodeHandle(options.surface) ?? -1,
         },
         (id, value) => {
           const cb = callbacks[id];

@@ -32,10 +32,10 @@ const int RCT_PACKAGER_CLIENT_PROTOCOL_VERSION = 2;
 - (void)respondWithResult:(id)result
 {
   NSDictionary<NSString *, id> *msg = @{
-                                        @"version": @(RCT_PACKAGER_CLIENT_PROTOCOL_VERSION),
-                                        @"id": _msgId,
-                                        @"result": result,
-                                        };
+    @"version" : @(RCT_PACKAGER_CLIENT_PROTOCOL_VERSION),
+    @"id" : _msgId,
+    @"result" : result,
+  };
   NSError *jsError = nil;
   NSString *message = RCTJSONStringify(msg, &jsError);
   if (jsError) {
@@ -48,10 +48,10 @@ const int RCT_PACKAGER_CLIENT_PROTOCOL_VERSION = 2;
 - (void)respondWithError:(id)error
 {
   NSDictionary<NSString *, id> *msg = @{
-                                        @"version": @(RCT_PACKAGER_CLIENT_PROTOCOL_VERSION),
-                                        @"id": _msgId,
-                                        @"error": error,
-                                        };
+    @"version" : @(RCT_PACKAGER_CLIENT_PROTOCOL_VERSION),
+    @"id" : _msgId,
+    @"error" : error,
+  };
   NSError *jsError = nil;
   NSString *message = RCTJSONStringify(msg, &jsError);
   if (jsError) {
