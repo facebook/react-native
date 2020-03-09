@@ -58,7 +58,7 @@ import java.util.ArrayList;
  * stores a mapping from the view properties to the corresponding animated values (so it's actually
  * also a node with connections to the value nodes).
  *
- * <p>Last "special" elements of the the graph are "animation drivers". Those are objects
+ * <p>Last "special" elements of the graph are "animation drivers". Those are objects
  * (represented as a graph nodes too) that based on some criteria updates attached values every
  * frame (we have few types of those, e.g., spring, timing, decay). Animation objects can be
  * "started" and "stopped". Those are like "pulse generators" for the rest of the nodes graph. Those
