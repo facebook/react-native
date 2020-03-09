@@ -203,13 +203,14 @@ ShadowNode::Shared LayoutableShadowNode::findNodeAtPoint(
     return nullptr;
   }
   auto frame = layoutableShadowNode->getLayoutMetrics().frame;
-  auto isPointInside = frame.containsPoint(point);
+  auto transformedFrame = frame * layoutableShadowNode->getTransform();
+  auto isPointInside = transformedFrame.containsPoint(point);
 
   if (!isPointInside) {
     return nullptr;
   }
 
-  auto newPoint = point - frame.origin;
+  auto newPoint = point - transformedFrame.origin;
   for (const auto &childShadowNode : node->getChildren()) {
     auto hitView = findNodeAtPoint(childShadowNode, newPoint);
     if (hitView) {
