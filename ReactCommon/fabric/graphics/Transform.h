@@ -79,6 +79,17 @@ struct Transform {
  */
 Point operator*(Point const &point, Transform const &transform);
 
+/*
+ * Applies tranformation to the given size.
+ */
+Size operator*(Size const &size, Transform const &transform);
+
+/*
+ * Applies tranformation to the given rect.
+ * ONLY SUPPORTS scale transformation.
+ */
+Rect operator*(Rect const &rect, Transform const &transform);
+
 } // namespace react
 } // namespace facebook
 

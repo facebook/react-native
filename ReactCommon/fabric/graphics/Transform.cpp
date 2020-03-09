@@ -180,5 +180,25 @@ Point operator*(Point const &point, Transform const &transform) {
   return result;
 }
 
+Rect operator*(Rect const &rect, Transform const &transform) {
+  auto transformedSize = rect.size * transform;
+  auto pointAdjustment = Point{(rect.size.width - transformedSize.width) / 2,
+                               (rect.size.height - transformedSize.height) / 2};
+
+  return {rect.origin + pointAdjustment, transformedSize};
+}
+
+Size operator*(Size const &size, Transform const &transform) {
+  if (transform == Transform::Identity()) {
+    return size;
+  }
+
+  auto result = Size{};
+  result.width = transform.at(0, 0) * size.width;
+  result.height = transform.at(1, 1) * size.height;
+
+  return result;
+}
+
 } // namespace react
 } // namespace facebook
