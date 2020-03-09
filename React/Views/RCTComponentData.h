@@ -21,15 +21,15 @@
 @property (nonatomic, copy, readonly) NSString *name;
 @property (nonatomic, weak, readonly) RCTViewManager *manager;
 
-- (instancetype)initWithManagerClass:(Class)managerClass
-                              bridge:(RCTBridge *)bridge NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithManagerClass:(Class)managerClass bridge:(RCTBridge *)bridge NS_DESIGNATED_INITIALIZER;
 
 - (UIView *)createViewWithTag:(NSNumber *)tag rootTag:(NSNumber *)rootTag;
 - (RCTShadowView *)createShadowViewWithTag:(NSNumber *)tag;
 - (void)setProps:(NSDictionary<NSString *, id> *)props forView:(id<RCTComponent>)view;
 - (void)setProps:(NSDictionary<NSString *, id> *)props forShadowView:(RCTShadowView *)shadowView;
 
-@property (nonatomic, copy, nullable) void (^eventInterceptor)(NSString *eventName, NSDictionary *event, NSNumber *reactTag);
+@property (nonatomic, copy, nullable) void (^eventInterceptor)
+    (NSString *eventName, NSDictionary *event, NSNumber *reactTag);
 
 - (NSDictionary<NSString *, id> *)viewConfig;
 

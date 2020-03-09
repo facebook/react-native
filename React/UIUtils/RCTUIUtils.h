@@ -21,12 +21,11 @@ typedef struct {
     CGFloat width, height, scale, fontScale;
   } window, screen;
 } RCTDimensions;
-extern __attribute__((visibility("default")))
-RCTDimensions RCTGetDimensions(CGFloat fontScale);
+extern __attribute__((visibility("default"))) RCTDimensions RCTGetDimensions(CGFloat fontScale);
 
 // Get font size multiplier for font base size (Large) by content size category
-extern __attribute__((visibility("default")))
-CGFloat RCTGetMultiplierForContentSizeCategory(UIContentSizeCategory category);
+extern __attribute__((visibility("default"))) CGFloat RCTGetMultiplierForContentSizeCategory(
+    UIContentSizeCategory category);
 
 #ifdef __cplusplus
 }

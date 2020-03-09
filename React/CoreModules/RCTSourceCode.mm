@@ -37,7 +37,7 @@ RCT_EXPORT_MODULE()
 - (NSDictionary<NSString *, id> *)getConstants
 {
   return @{
-    @"scriptURL": self.bridge.bundleURL.absoluteString ?: @"",
+    @"scriptURL" : self.bridge.bundleURL.absoluteString ?: @"",
   };
 }
 
@@ -48,6 +48,7 @@ RCT_EXPORT_MODULE()
 
 @end
 
-Class RCTSourceCodeCls(void) {
+Class RCTSourceCodeCls(void)
+{
   return RCTSourceCode.class;
 }

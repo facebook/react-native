@@ -11,37 +11,37 @@
 #import "RCTUtils.h"
 
 /**
-* The RegEx used to parse Error.stack.
-*
-* JavaScriptCore has the following format:
-*
-*   Exception: Error: argh
-*     func1@/path/to/file.js:2:18
-*     func2@/path/to/file.js:6:8
-*     eval@[native code]
-*     global code@/path/to/file.js:13:5
-*
-* Another supported format:
-*
-*  Error: argh
-*   at func1 (/path/to/file.js:2:18)
-*   at func2 (/path/to/file.js:6:8)
-*   at eval (native)
-*   at global (/path/to/file.js:13:5)
-*/
+ * The RegEx used to parse Error.stack.
+ *
+ * JavaScriptCore has the following format:
+ *
+ *   Exception: Error: argh
+ *     func1@/path/to/file.js:2:18
+ *     func2@/path/to/file.js:6:8
+ *     eval@[native code]
+ *     global code@/path/to/file.js:13:5
+ *
+ * Another supported format:
+ *
+ *  Error: argh
+ *   at func1 (/path/to/file.js:2:18)
+ *   at func2 (/path/to/file.js:6:8)
+ *   at eval (native)
+ *   at global (/path/to/file.js:13:5)
+ */
 static NSRegularExpression *RCTJSStackFrameRegex()
 {
   static dispatch_once_t onceToken;
   static NSRegularExpression *_regex;
   dispatch_once(&onceToken, ^{
     NSString *pattern =
-      @"\\s*(?:at)?\\s*" // Skip leading "at" and whitespace, noncapturing
-      @"(.+?)"           // Capture the function name (group 1)
-      @"\\s*[@(]"        // Skip whitespace, then @ or (
-      @"(.*):"           // Capture the file name (group 2), then colon
-      @"(\\d+):(\\d+)"   // Line and column number (groups 3 and 4)
-      @"\\)?$"           // Optional closing paren and EOL
-    ;
+        @"\\s*(?:at)?\\s*" // Skip leading "at" and whitespace, noncapturing
+        @"(.+?)" // Capture the function name (group 1)
+        @"\\s*[@(]" // Skip whitespace, then @ or (
+        @"(.*):" // Capture the file name (group 2), then colon
+        @"(\\d+):(\\d+)" // Line and column number (groups 3 and 4)
+        @"\\)?$" // Optional closing paren and EOL
+        ;
     NSError *regexError;
     _regex = [NSRegularExpression regularExpressionWithPattern:pattern options:0 error:&regexError];
     if (regexError) {
@@ -53,7 +53,11 @@ static NSRegularExpression *RCTJSStackFrameRegex()
 
 @implementation RCTJSStackFrame
 
-- (instancetype)initWithMethodName:(NSString *)methodName file:(NSString *)file lineNumber:(NSInteger)lineNumber column:(NSInteger)column collapse:(NSInteger)collapse
+- (instancetype)initWithMethodName:(NSString *)methodName
+                              file:(NSString *)file
+                        lineNumber:(NSInteger)lineNumber
+                            column:(NSInteger)column
+                          collapse:(NSInteger)collapse
 {
   if (self = [super init]) {
     _methodName = methodName;
@@ -68,17 +72,19 @@ static NSRegularExpression *RCTJSStackFrameRegex()
 - (NSDictionary *)toDictionary
 {
   return @{
-     @"methodName": RCTNullIfNil(self.methodName),
-     @"file": RCTNullIfNil(self.file),
-     @"lineNumber": @(self.lineNumber),
-     @"column": @(self.column),
-     @"collapse": @(self.collapse)
+    @"methodName" : RCTNullIfNil(self.methodName),
+    @"file" : RCTNullIfNil(self.file),
+    @"lineNumber" : @(self.lineNumber),
+    @"column" : @(self.column),
+    @"collapse" : @(self.collapse)
   };
 }
 
 + (instancetype)stackFrameWithLine:(NSString *)line
 {
-  NSTextCheckingResult *match = [RCTJSStackFrameRegex() firstMatchInString:line options:0 range:NSMakeRange(0, line.length)];
+  NSTextCheckingResult *match = [RCTJSStackFrameRegex() firstMatchInString:line
+                                                                   options:0
+                                                                     range:NSMakeRange(0, line.length)];
   if (!match) {
     return nil;
   }
@@ -130,14 +136,15 @@ static NSRegularExpression *RCTJSStackFrameRegex()
   return stack;
 }
 
-- (NSString *)description {
+- (NSString *)description
+{
   return [NSString stringWithFormat:@"<%@: %p method name: %@; file name: %@; line: %ld; column: %ld>",
-          self.class,
-          self,
-          self.methodName,
-          self.file,
-          (long)self.lineNumber,
-          (long)self.column];
+                                    self.class,
+                                    self,
+                                    self.methodName,
+                                    self.file,
+                                    (long)self.lineNumber,
+                                    (long)self.column];
 }
 
 @end

@@ -39,4 +39,5 @@ NSDataBigString::NSDataBigString(NSData *data)
   m_data = ensureNullTerminated(data);
 }
 
-} }
+}
+}

@@ -47,7 +47,8 @@ static BOOL devSettingsMenuEnabled = YES;
 static BOOL devSettingsMenuEnabled = NO;
 #endif
 
-void RCTDevSettingsSetEnabled(BOOL enabled) {
+void RCTDevSettingsSetEnabled(BOOL enabled)
+{
   devSettingsMenuEnabled = enabled;
 }
 
@@ -208,7 +209,7 @@ RCT_EXPORT_MODULE()
 
 - (NSArray<NSString *> *)supportedEvents
 {
-  return @[@"didPressMenuItem"];
+  return @[ @"didPressMenuItem" ];
 }
 
 - (void)_updateSettingWithValue:(id)value forKey:(NSString *)key
@@ -249,14 +250,14 @@ RCT_EXPORT_METHOD(reload)
   RCTTriggerReloadCommandListeners(@"Unknown From JS");
 }
 
-RCT_EXPORT_METHOD(reloadWithReason : (NSString *) reason)
+RCT_EXPORT_METHOD(reloadWithReason : (NSString *)reason)
 {
   RCTTriggerReloadCommandListeners(reason);
 }
 
 RCT_EXPORT_METHOD(onFastRefresh)
 {
-    [self.bridge onFastRefresh];
+  [self.bridge onFastRefresh];
 }
 
 RCT_EXPORT_METHOD(setIsShakeToShowDevMenuEnabled : (BOOL)enabled)
@@ -353,12 +354,14 @@ RCT_EXPORT_METHOD(toggleElementInspector)
   }
 }
 
-RCT_EXPORT_METHOD(addMenuItem:(NSString *)title)
+RCT_EXPORT_METHOD(addMenuItem : (NSString *)title)
 {
   __weak __typeof(self) weakSelf = self;
-  [self.bridge.devMenu addItem:[RCTDevMenuItem buttonItemWithTitle:title handler:^{
-    [weakSelf sendEventWithName:@"didPressMenuItem" body:@{@"title": title}];
-  }]];
+  [self.bridge.devMenu addItem:[RCTDevMenuItem buttonItemWithTitle:title
+                                                           handler:^{
+                                                             [weakSelf sendEventWithName:@"didPressMenuItem"
+                                                                                    body:@{@"title" : title}];
+                                                           }]];
 }
 
 - (BOOL)isElementInspectorShown
@@ -409,10 +412,10 @@ RCT_EXPORT_METHOD(addMenuItem:(NSString *)title)
     if (self.bridge) {
       [self.bridge enqueueJSCall:@"HMRClient"
                           method:@"setup"
-                            args:@[@"ios", path, host, RCTNullIfNil(port), @(YES)]
+                            args:@[ @"ios", path, host, RCTNullIfNil(port), @(YES) ]
                       completion:NULL];
     } else {
-      self.invokeJS(@"HMRClient", @"setup", @[@"ios", path, host, RCTNullIfNil(port), @(YES)]);
+      self.invokeJS(@"HMRClient", @"setup", @[ @"ios", path, host, RCTNullIfNil(port), @(YES) ]);
     }
   }
 }
@@ -450,7 +453,8 @@ RCT_EXPORT_METHOD(addMenuItem:(NSString *)title)
   });
 }
 
-- (std::shared_ptr<facebook::react::TurboModule>)getTurboModuleWithJsInvoker:(std::shared_ptr<facebook::react::CallInvoker>)jsInvoker
+- (std::shared_ptr<facebook::react::TurboModule>)getTurboModuleWithJsInvoker:
+    (std::shared_ptr<facebook::react::CallInvoker>)jsInvoker
 {
   return std::make_shared<facebook::react::NativeDevSettingsSpecJSI>(self, jsInvoker);
 }
@@ -515,7 +519,8 @@ RCT_EXPORT_METHOD(addMenuItem:(NSString *)title)
 {
 }
 
-- (std::shared_ptr<facebook::react::TurboModule>)getTurboModuleWithJsInvoker:(std::shared_ptr<facebook::react::CallInvoker>)jsInvoker
+- (std::shared_ptr<facebook::react::TurboModule>)getTurboModuleWithJsInvoker:
+    (std::shared_ptr<facebook::react::CallInvoker>)jsInvoker
 {
   return std::make_shared<facebook::react::NativeDevSettingsSpecJSI>(self, jsInvoker);
 }
@@ -537,6 +542,7 @@ RCT_EXPORT_METHOD(addMenuItem:(NSString *)title)
 
 @end
 
-Class RCTDevSettingsCls(void) {
+Class RCTDevSettingsCls(void)
+{
   return RCTDevSettings.class;
 }
