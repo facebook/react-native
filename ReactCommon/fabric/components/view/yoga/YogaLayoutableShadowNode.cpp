@@ -21,6 +21,23 @@
 namespace facebook {
 namespace react {
 
+static void applyLayoutConstraints(
+    YGStyle &yogaStyle,
+    LayoutConstraints const &layoutConstraints) {
+  yogaStyle.minDimensions()[YGDimensionWidth] =
+      yogaStyleValueFromFloat(layoutConstraints.minimumSize.width);
+  yogaStyle.minDimensions()[YGDimensionHeight] =
+      yogaStyleValueFromFloat(layoutConstraints.minimumSize.height);
+
+  yogaStyle.maxDimensions()[YGDimensionWidth] =
+      yogaStyleValueFromFloat(layoutConstraints.maximumSize.width);
+  yogaStyle.maxDimensions()[YGDimensionHeight] =
+      yogaStyleValueFromFloat(layoutConstraints.maximumSize.height);
+
+  yogaStyle.direction() =
+      yogaDirectionFromLayoutDirection(layoutConstraints.layoutDirection);
+}
+
 ShadowNodeTraits YogaLayoutableShadowNode::BaseTraits() {
   auto traits = LayoutableShadowNode::BaseTraits();
   traits.set(ShadowNodeTraits::Trait::YogaLayoutableKind);
@@ -239,18 +256,14 @@ void YogaLayoutableShadowNode::layoutTree(
    */
   yogaConfig_.pointScaleFactor = layoutContext.pointScaleFactor;
 
-  auto maximumSize = layoutConstraints.maximumSize;
-  auto availableWidth = yogaFloatFromFloat(maximumSize.width);
-  auto availableHeight = yogaFloatFromFloat(maximumSize.height);
+  applyLayoutConstraints(yogaNode_.getStyle(), layoutConstraints);
 
   {
     SystraceSection s("YogaLayoutableShadowNode::YGNodeCalculateLayout");
 
     YGNodeCalculateLayout(
-        &yogaNode_, availableWidth, availableHeight, YGDirectionInherit);
+        &yogaNode_, YGUndefined, YGUndefined, YGDirectionInherit);
   }
-
-  layout(layoutContext);
 
   if (getHasNewLayout()) {
     auto layoutMetrics = layoutMetricsFromYogaNode(yogaNode_);
@@ -258,6 +271,8 @@ void YogaLayoutableShadowNode::layoutTree(
     setLayoutMetrics(layoutMetrics);
     setHasNewLayout(false);
   }
+
+  layout(layoutContext);
 }
 
 void YogaLayoutableShadowNode::layoutChildren(LayoutContext layoutContext) {
