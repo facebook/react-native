@@ -752,11 +752,11 @@ workflows:
       - nightly_job
 
       - setup:
-        name: setup_android
-        checkout_type: android
-        executor: reactnativeandroid
+          name: setup_android
+          checkout_type: android
+          executor: reactnativeandroid
 
       - publish_npm_package:
-        publish_npm_args: --nightly
-        requires:
-          - setup_android
+          publish_npm_args: --nightly
+          requires:
+            - setup_android
