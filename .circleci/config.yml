@@ -705,6 +705,7 @@ workflows:
             tags:
               only: /v[0-9]+(\.[0-9]+)*(\-rc(\.[0-9]+)?)?/
       - publish_npm_package:
+          publish_npm_args:
           requires:
             - setup_android
           filters:
