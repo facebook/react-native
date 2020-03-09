@@ -363,6 +363,8 @@ public class NativeViewHierarchyManager {
       @Nullable int[] tagsToDelete) {
     UiThreadUtil.assertOnUiThread();
 
+    mLayoutAnimator.cancelAnimationsForViewTag(tag);
+
     final ViewGroup viewToManage = (ViewGroup) mTagsToViews.get(tag);
     final ViewGroupManager viewManager = (ViewGroupManager) resolveViewManager(tag);
     if (viewToManage == null) {
@@ -445,6 +447,7 @@ public class NativeViewHierarchyManager {
 
         if (mLayoutAnimationEnabled && mLayoutAnimator.shouldAnimateLayout(viewToDestroy)) {
           mLayoutAnimator.deleteView(
+              tag,
               viewToDestroy,
               new LayoutAnimationListener() {
                 @Override

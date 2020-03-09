@@ -17,6 +17,7 @@ import androidx.annotation.Nullable;
 import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.UiThreadUtil;
+import java.util.ArrayList;
 import javax.annotation.concurrent.NotThreadSafe;
 
 /**
@@ -31,6 +32,8 @@ public class LayoutAnimationController {
   private final AbstractLayoutAnimation mLayoutUpdateAnimation = new LayoutUpdateAnimation();
   private final AbstractLayoutAnimation mLayoutDeleteAnimation = new LayoutDeleteAnimation();
   private final SparseArray<LayoutHandlingAnimation> mLayoutHandlers = new SparseArray<>(0);
+  private final SparseArray<ArrayList<Animation>> mDeleteAnimationsByParentTag =
+      new SparseArray<>();
 
   private boolean mShouldAnimateLayout;
   private long mMaxAnimationDuration = -1;
@@ -113,6 +116,7 @@ public class LayoutAnimationController {
 
     // Update an ongoing animation if possible, otherwise the layout update would be ignored as
     // the existing animation would still animate to the old layout.
+    // Note the view is already inserted into the view hierarchy.
     LayoutHandlingAnimation existingAnimation = mLayoutHandlers.get(reactTag);
     if (existingAnimation != null) {
       existingAnimation.onLayoutUpdate(x, y, width, height);
@@ -164,11 +168,14 @@ public class LayoutAnimationController {
    * Animate a view deletion using the layout animation configuration supplied during
    * initialization.
    *
+   * @param parentReactTag tag of parent view of @param view. used to associate animation with for
+   *     canceling
    * @param view The view to animate.
    * @param listener Called once the animation is finished, should be used to completely remove the
    *     view.
    */
-  public void deleteView(final View view, final LayoutAnimationListener listener) {
+  public void deleteView(
+      final int parentReactTag, final View view, final LayoutAnimationListener listener) {
     UiThreadUtil.assertOnUiThread();
 
     Animation animation =
@@ -188,6 +195,10 @@ public class LayoutAnimationController {
 
             @Override
             public void onAnimationEnd(Animation anim) {
+              ArrayList<Animation> animations = mDeleteAnimationsByParentTag.get(parentReactTag);
+              if (animations != null) {
+                animations.remove(anim);
+              }
               listener.onAnimationEnd();
             }
           });
@@ -198,7 +209,16 @@ public class LayoutAnimationController {
         mMaxAnimationDuration = animationDuration;
       }
 
+      // Update our tracking list of delete animations
+      ArrayList<Animation> deleteAnimations = mDeleteAnimationsByParentTag.get(parentReactTag);
+      if (deleteAnimations == null) {
+        deleteAnimations = new ArrayList<>();
+        mDeleteAnimationsByParentTag.put(parentReactTag, deleteAnimations);
+      }
+      deleteAnimations.add(animation);
+
       view.startAnimation(animation);
+
     } else {
       listener.onAnimationEnd();
     }
@@ -224,5 +244,24 @@ public class LayoutAnimationController {
       sCompletionHandler.removeCallbacks(mCompletionRunnable);
       sCompletionHandler.postDelayed(mCompletionRunnable, delayMillis);
     }
+  }
+
+  /**
+   * Animate a view deletion using the layout animation configuration supplied during
+   * initialization.
+   *
+   * @param viewTag tag of parent view that we're going to cancel all child animations.
+   */
+  public void cancelAnimationsForViewTag(int viewTag) {
+    ArrayList<Animation> animations = mDeleteAnimationsByParentTag.get(viewTag);
+    if (animations == null) {
+      return;
+    }
+
+    for (int i = 0; i < animations.size(); i++) {
+      animations.get(i).cancel();
+    }
+
+    mDeleteAnimationsByParentTag.remove(viewTag);
   }
 }
