@@ -59,4 +59,16 @@ describe('TextInput', () => {
 
     await expect(element(by.id('rewrite_clear_input'))).toHaveText('');
   });
+
+  if ('When keyboardType is set to default, autoCapitalize should work correctly', async () => {
+    await openExampleWithTitle('Auto-capitalize');
+
+    await element(by.id('autocapitalize_with_default_keyboardtype')).typeText(
+      'this text should be all in capitals!!'
+    );
+
+    await expect(element(by.id('autocapitalize_with_default_keyboardtype'))).toHaveText(
+      'THIS TEXT SHOULD BE ALL IN CAPITALS!!',
+    );
+  })
 });

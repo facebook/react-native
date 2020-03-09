@@ -489,7 +489,7 @@ module.exports = ([
             <TextInput autoCapitalize="words" style={styles.default} />
           </WithLabel>
           <WithLabel label="characters">
-            <TextInput autoCapitalize="characters" style={styles.default} />
+            <TextInput testID="autocapitalize_with_default_keyboardtype" autoCapitalize="characters" keyboardType="default" style={styles.default} />
           </WithLabel>
         </View>
       );
