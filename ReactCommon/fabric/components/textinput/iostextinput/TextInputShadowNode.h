@@ -33,6 +33,12 @@ class TextInputShadowNode : public ConcreteViewShadowNode<
  public:
   using ConcreteViewShadowNode::ConcreteViewShadowNode;
 
+  static ShadowNodeTraits BaseTraits() {
+    auto traits = ConcreteViewShadowNode::BaseTraits();
+    traits.set(ShadowNodeTraits::Trait::TextKind);
+    return traits;
+  }
+
   /*
    * Returns a `AttributedString` which represents text content of the node.
    */
