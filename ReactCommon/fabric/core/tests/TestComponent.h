@@ -55,10 +55,6 @@ class TestShadowNode : public ConcreteViewShadowNode<
 
   Transform _transform{Transform::Identity()};
 
-  bool setLayoutMetrics(LayoutMetrics layoutMetrics) override {
-    return YogaLayoutableShadowNode::setLayoutMetrics(layoutMetrics);
-  }
-
   Transform getTransform() const override {
     return _transform;
   }

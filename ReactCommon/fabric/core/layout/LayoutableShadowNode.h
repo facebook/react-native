@@ -99,6 +99,12 @@ class LayoutableShadowNode : public ShadowNode {
       LayoutInspectingPolicy policy) const;
 
   /*
+   * Sets layout metrics for the shadow node.
+   * Returns true if the metrics are different from previous ones.
+   */
+  bool setLayoutMetrics(LayoutMetrics layoutMetrics);
+
+  /*
    * Returns the ShadowNode that is rendered at the Point received as a
    * parameter.
    */
@@ -139,12 +145,6 @@ class LayoutableShadowNode : public ShadowNode {
    * Returns layoutable children to interate on.
    */
   LayoutableShadowNode::UnsharedList getLayoutableChildNodes() const;
-
-  /*
-   * Sets layout metrics for the shadow node.
-   * Returns true if the metrics are different from previous ones.
-   */
-  virtual bool setLayoutMetrics(LayoutMetrics layoutMetrics);
 
 #pragma mark - DebugStringConvertible
 
