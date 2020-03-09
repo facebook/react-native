@@ -261,10 +261,14 @@ void YogaLayoutableShadowNode::layoutTree(
 }
 
 void YogaLayoutableShadowNode::layoutChildren(LayoutContext layoutContext) {
+  assert(!yogaNode_.isDirty());
+
   for (const auto &childYogaNode : yogaNode_.getChildren()) {
     if (!childYogaNode->getHasNewLayout()) {
       continue;
     }
+
+    assert(!childYogaNode->isDirty());
 
     auto childNode =
         static_cast<YogaLayoutableShadowNode *>(childYogaNode->getContext());
