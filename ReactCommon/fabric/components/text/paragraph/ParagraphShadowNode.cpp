@@ -15,20 +15,24 @@ namespace react {
 
 char const ParagraphComponentName[] = "Paragraph";
 
-AttributedString ParagraphShadowNode::getAttributedString() const {
-  if (!cachedAttributedString_.has_value()) {
-    auto textAttributes = TextAttributes::defaultTextAttributes();
-    textAttributes.apply(getConcreteProps().textAttributes);
-
-    auto attributedString = AttributedString{};
-    auto attachments = Attachments{};
-    BaseTextShadowNode::buildAttributedString(
-        textAttributes, *this, attributedString, attachments);
-
-    cachedAttributedString_ = attributedString;
+ParagraphShadowNode::Content const &ParagraphShadowNode::getContent() const {
+  if (content_.has_value()) {
+    return content_.value();
   }
 
-  return cachedAttributedString_.value();
+  ensureUnsealed();
+
+  auto textAttributes = TextAttributes::defaultTextAttributes();
+  textAttributes.apply(getConcreteProps().textAttributes);
+
+  auto attributedString = AttributedString{};
+  auto attachments = Attachments{};
+  buildAttributedString(textAttributes, *this, attributedString, attachments);
+
+  content_ = Content{
+      attributedString, getConcreteProps().paragraphAttributes, attachments};
+
+  return content_.value();
 }
 
 void ParagraphShadowNode::setTextLayoutManager(
@@ -37,44 +41,43 @@ void ParagraphShadowNode::setTextLayoutManager(
   textLayoutManager_ = textLayoutManager;
 }
 
-void ParagraphShadowNode::updateStateIfNeeded() {
+void ParagraphShadowNode::updateStateIfNeeded(Content const &content) {
   ensureUnsealed();
 
-  auto attributedString = getAttributedString();
-  auto const &state = getStateData();
+  auto &state = getStateData();
 
   assert(textLayoutManager_);
   assert(
       (!state.layoutManager || state.layoutManager == textLayoutManager_) &&
       "`StateData` refers to a different `TextLayoutManager`");
 
-  if (state.attributedString == attributedString &&
+  if (state.attributedString == content.attributedString &&
       state.layoutManager == textLayoutManager_) {
     return;
   }
 
-  setStateData(ParagraphState{attributedString,
-                              getConcreteProps().paragraphAttributes,
+  setStateData(ParagraphState{content.attributedString,
+                              content.paragraphAttributes,
                               textLayoutManager_});
 }
 
 #pragma mark - LayoutableShadowNode
 
 Size ParagraphShadowNode::measure(LayoutConstraints layoutConstraints) const {
-  AttributedString attributedString = getAttributedString();
+  auto content = getContent();
 
-  if (attributedString.isEmpty()) {
+  if (content.attributedString.isEmpty()) {
     return layoutConstraints.clamp({0, 0});
   }
 
   return textLayoutManager_->measure(
-      AttributedStringBox{attributedString},
-      getConcreteProps().paragraphAttributes,
+      AttributedStringBox{content.attributedString},
+      content.paragraphAttributes,
       layoutConstraints);
 }
 
 void ParagraphShadowNode::layout(LayoutContext layoutContext) {
-  updateStateIfNeeded();
+  updateStateIfNeeded(getContent());
   ConcreteViewShadowNode::layout(layoutContext);
 }
 

@@ -46,11 +46,6 @@ class ParagraphShadowNode : public ConcreteViewShadowNode<
   }
 
   /*
-   * Returns a `AttributedString` which represents text content of the node.
-   */
-  AttributedString getAttributedString() const;
-
-  /*
    * Associates a shared TextLayoutManager with the node.
    * `ParagraphShadowNode` uses the manager to measure text content
    * and construct `ParagraphState` objects.
@@ -64,18 +59,33 @@ class ParagraphShadowNode : public ConcreteViewShadowNode<
 
  private:
   /*
+   * Internal representation of the nested content of the node in a format
+   * suitable for future processing.
+   */
+  class Content final {
+   public:
+    AttributedString attributedString;
+    ParagraphAttributes paragraphAttributes;
+    Attachments attachments;
+  };
+
+  /*
+   * Builds (if needed) and returns a reference to a `Content` object.
+   */
+  Content const &getContent() const;
+
+  /*
    * Creates a `State` object (with `AttributedText` and
    * `TextLayoutManager`) if needed.
    */
-  void updateStateIfNeeded();
+  void updateStateIfNeeded(Content const &content);
 
   SharedTextLayoutManager textLayoutManager_;
 
   /*
-   * Cached attributed string that represents the content of the subtree started
-   * from the node.
+   * Cached content of the subtree started from the node.
    */
-  mutable folly::Optional<AttributedString> cachedAttributedString_{};
+  mutable better::optional<Content> content_{};
 };
 
 } // namespace react
