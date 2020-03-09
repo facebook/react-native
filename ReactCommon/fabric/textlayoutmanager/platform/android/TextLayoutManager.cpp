@@ -22,7 +22,7 @@ void *TextLayoutManager::getNativeTextLayoutManager() const {
   return self_;
 }
 
-Size TextLayoutManager::measure(
+TextMeasurement TextLayoutManager::measure(
     AttributedStringBox attributedStringBox,
     ParagraphAttributes paragraphAttributes,
     LayoutConstraints layoutConstraints) const {
@@ -36,7 +36,7 @@ Size TextLayoutManager::measure(
       });
 }
 
-Size TextLayoutManager::doMeasure(
+TextMeasurement TextLayoutManager::doMeasure(
     AttributedString attributedString,
     ParagraphAttributes paragraphAttributes,
     LayoutConstraints layoutConstraints) const {
@@ -69,7 +69,7 @@ Size TextLayoutManager::doMeasure(
       reinterpret_cast<ReadableMap::javaobject>(attributedStringRNM.get()));
   local_ref<ReadableMap::javaobject> paragraphAttributesRM = make_local(
       reinterpret_cast<ReadableMap::javaobject>(paragraphAttributesRNM.get()));
-  return yogaMeassureToSize(measure(
+  auto size = yogaMeassureToSize(measure(
       fabricUIManager,
       -1,
       componentName.get(),
@@ -80,6 +80,8 @@ Size TextLayoutManager::doMeasure(
       maximumSize.width,
       minimumSize.height,
       maximumSize.height));
+
+  return TextMeasurement{size, {}};
 }
 
 } // namespace react

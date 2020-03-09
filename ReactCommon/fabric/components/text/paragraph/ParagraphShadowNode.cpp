@@ -70,10 +70,12 @@ Size ParagraphShadowNode::measure(LayoutConstraints layoutConstraints) const {
     return layoutConstraints.clamp({0, 0});
   }
 
-  return textLayoutManager_->measure(
-      AttributedStringBox{content.attributedString},
-      content.paragraphAttributes,
-      layoutConstraints);
+  return textLayoutManager_
+      ->measure(
+          AttributedStringBox{content.attributedString},
+          content.paragraphAttributes,
+          layoutConstraints)
+      .size;
 }
 
 void ParagraphShadowNode::layout(LayoutContext layoutContext) {

@@ -180,10 +180,12 @@ Size AndroidTextInputShadowNode::measure(
     return {0, 0};
   }
 
-  return textLayoutManager_->measure(
-      AttributedStringBox{attributedString},
-      getConcreteProps().paragraphAttributes,
-      layoutConstraints);
+  return textLayoutManager_
+      ->measure(
+          AttributedStringBox{attributedString},
+          getConcreteProps().paragraphAttributes,
+          layoutConstraints)
+      .size;
 }
 
 void AndroidTextInputShadowNode::layout(LayoutContext layoutContext) {
