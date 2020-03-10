@@ -30,6 +30,13 @@ if (!GITHUB_TOKEN || !GITHUB_OWNER || !GITHUB_REPO || !GITHUB_PR_NUMBER) {
   process.exit(1);
 }
 
+/**
+ * Updates the comment matching specified pattern.
+ * @param {import('@octokit/rest').Octokit} octokit Octokit instance
+ * @param {{ owner: string; repo: string; issue_number: string; }} issueParams
+ * @param {string} body
+ * @param {string} replacePattern
+ */
 async function updateComment(octokit, issueParams, body, replacePattern) {
   if (!replacePattern) {
     return false;
@@ -64,7 +71,12 @@ async function updateComment(octokit, issueParams, body, replacePattern) {
   return true;
 }
 
-async function main(body, replacePattern) {
+/**
+ * Creates or updates a comment with specified pattern.
+ * @param {string} body Comment body
+ * @param {string} replacePattern Pattern for finding the comment to update
+ */
+async function createOrUpdateComment(body, replacePattern) {
   if (!body) {
     return;
   }
@@ -90,5 +102,6 @@ async function main(body, replacePattern) {
   });
 }
 
-const {[2]: body, [3]: replacePattern} = process.argv;
-main(body, replacePattern);
+module.exports = {
+  createOrUpdateComment,
+};
