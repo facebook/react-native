@@ -1,6 +1,6 @@
 load("@fbsource//tools/build_defs:fb_native_wrapper.bzl", "fb_native")
 load("@fbsource//tools/build_defs:platform_defs.bzl", "IOS", "MACOSX")
-load("@fbsource//tools/build_defs/apple:flag_defs.bzl", "get_debug_preprocessor_flags")
+load("@fbsource//tools/build_defs/apple:flag_defs.bzl", "get_preprocessor_flags_for_build_mode")
 load(
     "//tools/build_defs/oss:rn_defs.bzl",
     "ANDROID",
@@ -67,7 +67,7 @@ def rn_codegen_modules(
             "-Wall",
         ],
         fbobjc_compiler_flags = get_apple_compiler_flags(),
-        fbobjc_preprocessor_flags = get_debug_preprocessor_flags() + get_apple_inspector_flags(),
+        fbobjc_preprocessor_flags = get_preprocessor_flags_for_build_mode() + get_apple_inspector_flags(),
         platforms = (APPLE),
         apple_sdks = (IOS),
         preprocessor_flags = [
@@ -218,7 +218,7 @@ def rn_codegen_components(
             "-Wall",
         ],
         fbobjc_compiler_flags = get_apple_compiler_flags(),
-        fbobjc_preprocessor_flags = get_debug_preprocessor_flags() + get_apple_inspector_flags(),
+        fbobjc_preprocessor_flags = get_preprocessor_flags_for_build_mode() + get_apple_inspector_flags(),
         fbobjc_labels = ["supermodule:ios/default/public.react_native.infra"],
         platforms = (ANDROID, APPLE, CXX),
         preprocessor_flags = [
@@ -328,7 +328,7 @@ def rn_codegen_cxx_modules(
             "-Wall",
         ],
         fbobjc_compiler_flags = get_apple_compiler_flags(),
-        fbobjc_preprocessor_flags = get_debug_preprocessor_flags() + get_apple_inspector_flags(),
+        fbobjc_preprocessor_flags = get_preprocessor_flags_for_build_mode() + get_apple_inspector_flags(),
         platforms = (ANDROID, APPLE),
         preprocessor_flags = [
             "-DLOG_TAG=\"ReactNative\"",
