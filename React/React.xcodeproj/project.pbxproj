@@ -587,7 +587,6 @@
 		18B8F97E21431D6900CE911A /* RCTPlatform.m in Sources */ = {isa = PBXBuildFile; fileRef = 6B7049C81EDF81E3005670F5 /* RCTPlatform.m */; };
 		18B8F97F21431D6F00CE911A /* RCTUIKit.m in Sources */ = {isa = PBXBuildFile; fileRef = 6BDE7A171ECA38AC00CC951F /* RCTUIKit.m */; };
 		18B8F9CA214335C800CE911A /* RCTLayout.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 591F78D9202ADB22004A668C /* RCTLayout.h */; };
-		18C2C6682141C86E004314E0 /* JSException.h in Headers */ = {isa = PBXBuildFile; fileRef = 18C2C6662141C86E004314E0 /* JSException.h */; };
 		18C2C6712141C955004314E0 /* RCTPlatformDisplayLink.h in Headers */ = {isa = PBXBuildFile; fileRef = 18C2C6702141C955004314E0 /* RCTPlatformDisplayLink.h */; };
 		18C2C6722141C955004314E0 /* RCTPlatformDisplayLink.h in Headers */ = {isa = PBXBuildFile; fileRef = 18C2C6702141C955004314E0 /* RCTPlatformDisplayLink.h */; };
 		18C2C6732141C955004314E0 /* RCTPlatformDisplayLink.h in Headers */ = {isa = PBXBuildFile; fileRef = 18C2C6702141C955004314E0 /* RCTPlatformDisplayLink.h */; };
@@ -2897,9 +2896,7 @@
 		1893C5051FB0D9A300D66838 /* RCTBridge+Cxx.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "RCTBridge+Cxx.h"; sourceTree = "<group>"; };
 		1893C5061FB0D9A300D66838 /* RCTBridge+Cxx.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = "RCTBridge+Cxx.mm"; sourceTree = "<group>"; };
 		18B8F97C21431D5F00CE911A /* RCTPlatformDisplayLink.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTPlatformDisplayLink.m; sourceTree = "<group>"; };
-		18C2C6662141C86E004314E0 /* JSException.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JSException.h; sourceTree = "<group>"; };
 		18C2C6702141C955004314E0 /* RCTPlatformDisplayLink.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTPlatformDisplayLink.h; sourceTree = "<group>"; };
-		18F3BA0E2142F4DB00AD247D /* RCTWebView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTWebView.m; sourceTree = "<group>"; };
 		191E3EBC1C29D9AF00C180A6 /* RCTRefreshControlManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTRefreshControlManager.h; sourceTree = "<group>"; };
 		191E3EBD1C29D9AF00C180A6 /* RCTRefreshControlManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTRefreshControlManager.m; sourceTree = "<group>"; };
 		191E3EBF1C29DC3800C180A6 /* RCTRefreshControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTRefreshControl.h; sourceTree = "<group>"; };
@@ -3947,11 +3944,9 @@
 		9F2AC95C2239D788005C9C14 /* Recovered References */ = {
 			isa = PBXGroup;
 			children = (
-				18C2C6662141C86E004314E0 /* JSException.h */,
 				6B857F421EC51FCF00A9D063 /* libcxxreact.a */,
 				1882027C1EF48B7E00C9B354 /* libdouble-conversion.a */,
 				188202A21EF48CF700C9B354 /* libthird-party.a */,
-				18F3BA0E2142F4DB00AD247D /* RCTWebView.m */,
 			);
 			name = "Recovered References";
 			sourceTree = "<group>";
@@ -4193,7 +4188,6 @@
 				1854FE2C1EF484130008DADC /* RCTDefines.h in Headers */,
 				1854FE2A1EF484130008DADC /* RCTConvert.h in Headers */,
 				1854FF111EF484760008DADC /* (null) in Headers */,
-				18C2C6682141C86E004314E0 /* JSException.h in Headers */,
 				1854FF1B1EF484760008DADC /* UIView+React.h in Headers */,
 				1854FE2F1EF484130008DADC /* RCTErrorCustomizer.h in Headers */,
 				1854FE741EF484300008DADC /* RCTCxxModule.h in Headers */,
