@@ -85,8 +85,9 @@
 <span class="hljs-addition">+     enableHermes: true  // clean and rebuild if changing</span>
   ]
 </code></pre>
-<p>Also, if you're using ProGuard, you will need to add this rule in <code>proguard-rules.pro</code> :</p>
+<p>Also, if you're using ProGuard, you will need to add these rules in <code>proguard-rules.pro</code> :</p>
 <pre><code class="hljs">-<span class="ruby">keep <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">com</span>.<span class="hljs-title">facebook</span>.<span class="hljs-title">hermes</span>.<span class="hljs-title">unicode</span>.** { *;</span> }
+</span>-<span class="ruby">keep <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">com</span>.<span class="hljs-title">facebook</span>.<span class="hljs-title">jni</span>.** { *;</span> }
 </span></code></pre>
 <p>Next, if you've already built your app at least once, clean the build:</p>
 <pre><code class="hljs css language-shell"><span class="hljs-meta">$</span><span class="bash"> <span class="hljs-built_in">cd</span> android &amp;&amp; ./gradlew clean</span>
