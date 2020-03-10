@@ -1247,6 +1247,88 @@ TEST_P(JSITest, SymbolTest) {
   EXPECT_FALSE(Value::strictEquals(rt, eval("Symbol('a')"), eval("'a'")));
 }
 
+//----------------------------------------------------------------------
+// Test that multiple levels of delegation in DecoratedHostObjects works.
+
+class RD1 : public RuntimeDecorator<Runtime, Runtime> {
+ public:
+  RD1(Runtime& plain) : RuntimeDecorator(plain) {}
+
+  Object createObject(std::shared_ptr<HostObject> ho) {
+    class DHO1 : public DecoratedHostObject {
+     public:
+      using DecoratedHostObject::DecoratedHostObject;
+
+      Value get(Runtime& rt, const PropNameID& name) override {
+        numGets++;
+        return DecoratedHostObject::get(rt, name);
+      }
+    };
+    return Object::createFromHostObject(
+        plain(), std::make_shared<DHO1>(*this, ho));
+  }
+
+  static unsigned numGets;
+};
+
+class RD2 : public RuntimeDecorator<Runtime, Runtime> {
+ public:
+  RD2(Runtime& plain) : RuntimeDecorator(plain) {}
+
+  Object createObject(std::shared_ptr<HostObject> ho) {
+    class DHO2 : public DecoratedHostObject {
+     public:
+      using DecoratedHostObject::DecoratedHostObject;
+
+      Value get(Runtime& rt, const PropNameID& name) override {
+        numGets++;
+        return DecoratedHostObject::get(rt, name);
+      }
+    };
+    return Object::createFromHostObject(
+        plain(), std::make_shared<DHO2>(*this, ho));
+  }
+
+  static unsigned numGets;
+};
+
+class HO : public HostObject {
+ public:
+  explicit HO(Runtime* expectedRT) : expectedRT_(expectedRT) {}
+
+  Value get(Runtime& rt, const PropNameID& name) override {
+    EXPECT_EQ(expectedRT_, &rt);
+    return Value(17.0);
+  }
+
+ private:
+  // The runtime we expect to be called with.
+  Runtime* expectedRT_;
+};
+
+unsigned RD1::numGets = 0;
+unsigned RD2::numGets = 0;
+
+TEST_P(JSITest, MultilevelDecoratedHostObject) {
+  // This test will be run for various test instantiations, so initialize these
+  // counters.
+  RD1::numGets = 0;
+  RD2::numGets = 0;
+
+  RD1 rd1(rt);
+  RD2 rd2(rd1);
+  // We expect the "get" operation of ho to be called with rd2.
+  auto ho = std::make_shared<HO>(&rd2);
+  auto obj = Object::createFromHostObject(rd2, ho);
+  Value v = obj.getProperty(rd2, "p");
+  EXPECT_TRUE(v.isNumber());
+  EXPECT_EQ(17.0, v.asNumber());
+  auto ho2 = obj.getHostObject(rd2);
+  EXPECT_EQ(ho, ho2);
+  EXPECT_EQ(1, RD1::numGets);
+  EXPECT_EQ(1, RD2::numGets);
+}
+
 INSTANTIATE_TEST_CASE_P(
     Runtimes,
     JSITest,
