@@ -57,7 +57,6 @@ class ParagraphShadowNode : public ConcreteViewShadowNode<
   void layout(LayoutContext layoutContext) override;
   Size measure(LayoutConstraints layoutConstraints) const override;
 
- private:
   /*
    * Internal representation of the nested content of the node in a format
    * suitable for future processing.
@@ -69,10 +68,18 @@ class ParagraphShadowNode : public ConcreteViewShadowNode<
     Attachments attachments;
   };
 
+ private:
   /*
    * Builds (if needed) and returns a reference to a `Content` object.
    */
   Content const &getContent() const;
+
+  /*
+   * Builds and returns a `Content` object with given `layoutConstraints`.
+   */
+  Content getContentWithMeasuredAttachments(
+      LayoutContext const &layoutContext,
+      LayoutConstraints const &layoutConstraints) const;
 
   /*
    * Creates a `State` object (with `AttributedText` and
