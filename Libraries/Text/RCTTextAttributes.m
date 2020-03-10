@@ -131,9 +131,7 @@ NSString *const RCTTextAttributesTagAttributeName = @"RCTTextAttributesTagAttrib
   // Colors
   UIColor *effectiveForegroundColor = self.effectiveForegroundColor;
 
-  if (_foregroundColor || !isnan(_opacity)) {
-    attributes[NSForegroundColorAttributeName] = effectiveForegroundColor;
-  }
+  attributes[NSForegroundColorAttributeName] = effectiveForegroundColor;
 
   if (_backgroundColor || !isnan(_opacity)) {
     attributes[NSBackgroundColorAttributeName] = self.effectiveBackgroundColor;
