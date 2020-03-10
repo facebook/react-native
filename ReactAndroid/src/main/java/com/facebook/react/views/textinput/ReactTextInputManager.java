@@ -1251,22 +1251,33 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
     if (!state.getBoolean("hasThemeData")) {
       WritableNativeMap update = new WritableNativeMap();
 
-      EditText editText = createInternalEditText((ThemedReactContext) view.getContext());
+      ReactContext reactContext = UIManagerHelper.getReactContext(view);
+      if (reactContext instanceof ThemedReactContext) {
+        ThemedReactContext themedReactContext = (ThemedReactContext) reactContext;
+        EditText editText = createInternalEditText(themedReactContext);
 
-      // Even though we check `data["textChanged"].empty()` before using the value in C++,
-      // state updates crash without this value on key exception. It's unintuitive why
-      // folly::dynamic is crashing there and if there's any way to fix on the native side,
-      // so leave this here until we can figure out a better way of key-existence-checking in C++.
-      update.putNull("textChanged");
+        // Even though we check `data["textChanged"].empty()` before using the value in C++,
+        // state updates crash without this value on key exception. It's unintuitive why
+        // folly::dynamic is crashing there and if there's any way to fix on the native side,
+        // so leave this here until we can figure out a better way of key-existence-checking in C++.
+        update.putNull("textChanged");
 
-      update.putDouble(
-          "themePaddingStart", PixelUtil.toDIPFromPixel(ViewCompat.getPaddingStart(editText)));
-      update.putDouble(
-          "themePaddingEnd", PixelUtil.toDIPFromPixel(ViewCompat.getPaddingEnd(editText)));
-      update.putDouble("themePaddingTop", PixelUtil.toDIPFromPixel(editText.getPaddingTop()));
-      update.putDouble("themePaddingBottom", PixelUtil.toDIPFromPixel(editText.getPaddingBottom()));
+        update.putDouble(
+            "themePaddingStart", PixelUtil.toDIPFromPixel(ViewCompat.getPaddingStart(editText)));
+        update.putDouble(
+            "themePaddingEnd", PixelUtil.toDIPFromPixel(ViewCompat.getPaddingEnd(editText)));
+        update.putDouble("themePaddingTop", PixelUtil.toDIPFromPixel(editText.getPaddingTop()));
+        update.putDouble(
+            "themePaddingBottom", PixelUtil.toDIPFromPixel(editText.getPaddingBottom()));
 
-      stateWrapper.updateState(update);
+        stateWrapper.updateState(update);
+      } else {
+        ReactSoftException.logSoftException(
+            TAG,
+            new IllegalStateException(
+                "ReactContext is not a ThemedReactContent: "
+                    + (reactContext != null ? reactContext.getClass().getName() : "null")));
+      }
     }
 
     ReadableMap attributedString = state.getMap("attributedString");
