@@ -2,7 +2,7 @@ platform :ios, '9.0'
 require_relative '../node_modules/@react-native-community/cli-platform-ios/native_modules'
 
 def add_flipper_pods!
-  version = '~> 0.30.2'
+  version = '~> 0.33.1'
   pod 'FlipperKit', version, :configuration => 'Debug'
   pod 'FlipperKit/FlipperKitLayoutPlugin', version, :configuration => 'Debug'
   pod 'FlipperKit/SKIOSNetworkPlugin', version, :configuration => 'Debug'
