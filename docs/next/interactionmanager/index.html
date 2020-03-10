@@ -91,6 +91,176 @@ InteractionManager<span class="token punctuation">.</span><span class="token fun
 <p><code>runAfterInteractions</code> takes either a plain callback function, or a <code>PromiseTask</code> object with a <code>gen</code> method that returns a <code>Promise</code>. If a <code>PromiseTask</code> is supplied, then it is fully resolved (including asynchronous dependencies that also schedule more tasks via <code>runAfterInteractions</code>) before starting on the next task that might have been queued up synchronously earlier.</p>
 <p>By default, queued tasks are executed together in a loop in one <code>setImmediate</code> batch. If <code>setDeadline</code> is called with a positive number, then tasks will only be executed until the deadline (in terms of js event loop run time) approaches, at which point execution will yield via setTimeout, allowing events such as touches to start interactions and block queued tasks from executing, making apps more responsive.</p>
 <hr>
+<h2><a class="anchor" aria-hidden="true" id="example"></a><a href="#example" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Example</h2>
+<h3><a class="anchor" aria-hidden="true" id="basic"></a><a href="#basic" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Basic</h3>
+<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React, { useState, useEffect } <span class="hljs-keyword">from</span> <span class="hljs-string">"react"</span>;
+<span class="hljs-keyword">import</span> {
+  Alert,
+  Animated,
+  InteractionManager,
+  Platform,
+  StyleSheet,
+  Text,
+  View,
+} <span class="hljs-keyword">from</span> <span class="hljs-string">"react-native"</span>;
+
+<span class="hljs-keyword">const</span> instructions = Platform.select({
+  <span class="hljs-attr">ios</span>: <span class="hljs-string">"Press Cmd+R to reload,\n"</span> + <span class="hljs-string">"Cmd+D or shake for dev menu"</span>,
+  <span class="hljs-attr">android</span>:
+    <span class="hljs-string">"Double tap R on your keyboard to reload,\n"</span> +
+    <span class="hljs-string">"Shake or press menu button for dev menu"</span>,
+});
+
+<span class="hljs-keyword">const</span> useMount = <span class="hljs-function"><span class="hljs-params">func</span> =&gt;</span> useEffect(<span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> func(), []);
+
+<span class="hljs-keyword">const</span> useFadeIn = <span class="hljs-function">(<span class="hljs-params">duration = <span class="hljs-number">5000</span></span>) =&gt;</span> {
+  <span class="hljs-keyword">const</span> [opacity] = useState(<span class="hljs-keyword">new</span> Animated.Value(<span class="hljs-number">0</span>));
+
+  <span class="hljs-comment">// Running the animation when the component is mounted</span>
+  useMount(<span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
+    <span class="hljs-comment">// Animated.timing() create a interaction handle by default, if you want to disabled that</span>
+    <span class="hljs-comment">// behaviour you can set isInteraction to false to disabled that.</span>
+    Animated.timing(opacity, {
+      <span class="hljs-attr">toValue</span>: <span class="hljs-number">1</span>,
+      duration,
+    }).start();
+  });
+
+  <span class="hljs-keyword">return</span> opacity;
+};
+
+<span class="hljs-keyword">const</span> Ball = <span class="hljs-function">(<span class="hljs-params">{ onShown }</span>) =&gt;</span> {
+  <span class="hljs-keyword">const</span> opacity = useFadeIn();
+
+  <span class="hljs-comment">// Running a method after the animation</span>
+  useMount(<span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
+    InteractionManager.runAfterInteractions(<span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> onShown());
+  });
+
+  <span class="hljs-keyword">return</span> &lt;Animated.View style={[styles.ball, { opacity }]} /&gt;;
+};
+
+const App = () =&gt; {
+  return (
+    &lt;View style={styles.container}&gt;
+      &lt;Text&gt;{instructions}&lt;/Text&gt;
+      &lt;Ball onShown={() =&gt; Alert.alert("Animation is done")} /&gt;
+    &lt;/View&gt;
+  );
+};
+
+export default App;
+
+const styles = StyleSheet.create({
+  container: { flex: 1, justifyContent: "center", alignItems: "center" },
+  ball: {
+    width: 100,
+    height: 100,
+    backgroundColor: "salmon",
+    borderRadius: 100,
+  },
+});
+
+</code></pre></div><div class="desktop-friendly-snack" style="margin-top: 15px; margin-bottom: 15px"><div
+        data-snack-name="InteractionManager Function Component Basic Example"
+        data-snack-description="Example usage"
+        data-snack-code="import%20React%2C%20%7B%20useState%2C%20useEffect%20%7D%20from%20%22react%22%3B%0Aimport%20%7B%0A%20%20Alert%2C%0A%20%20Animated%2C%0A%20%20InteractionManager%2C%0A%20%20Platform%2C%0A%20%20StyleSheet%2C%0A%20%20Text%2C%0A%20%20View%2C%0A%7D%20from%20%22react-native%22%3B%0A%0Aconst%20instructions%20%3D%20Platform.select(%7B%0A%20%20ios%3A%20%22Press%20Cmd%2BR%20to%20reload%2C%5Cn%22%20%2B%20%22Cmd%2BD%20or%20shake%20for%20dev%20menu%22%2C%0A%20%20android%3A%0A%20%20%20%20%22Double%20tap%20R%20on%20your%20keyboard%20to%20reload%2C%5Cn%22%20%2B%0A%20%20%20%20%22Shake%20or%20press%20menu%20button%20for%20dev%20menu%22%2C%0A%7D)%3B%0A%0Aconst%20useMount%20%3D%20func%20%3D%3E%20useEffect(()%20%3D%3E%20func()%2C%20%5B%5D)%3B%0A%0Aconst%20useFadeIn%20%3D%20(duration%20%3D%205000)%20%3D%3E%20%7B%0A%20%20const%20%5Bopacity%5D%20%3D%20useState(new%20Animated.Value(0))%3B%0A%0A%20%20%2F%2F%20Running%20the%20animation%20when%20the%20component%20is%20mounted%0A%20%20useMount(()%20%3D%3E%20%7B%0A%20%20%20%20%2F%2F%20Animated.timing()%20create%20a%20interaction%20handle%20by%20default%2C%20if%20you%20want%20to%20disabled%20that%0A%20%20%20%20%2F%2F%20behaviour%20you%20can%20set%20isInteraction%20to%20false%20to%20disabled%20that.%0A%20%20%20%20Animated.timing(opacity%2C%20%7B%0A%20%20%20%20%20%20toValue%3A%201%2C%0A%20%20%20%20%20%20duration%2C%0A%20%20%20%20%7D).start()%3B%0A%20%20%7D)%3B%0A%0A%20%20return%20opacity%3B%0A%7D%3B%0A%0Aconst%20Ball%20%3D%20(%7B%20onShown%20%7D)%20%3D%3E%20%7B%0A%20%20const%20opacity%20%3D%20useFadeIn()%3B%0A%0A%20%20%2F%2F%20Running%20a%20method%20after%20the%20animation%0A%20%20useMount(()%20%3D%3E%20%7B%0A%20%20%20%20InteractionManager.runAfterInteractions(()%20%3D%3E%20onShown())%3B%0A%20%20%7D)%3B%0A%0A%20%20return%20%3CAnimated.View%20style%3D%7B%5Bstyles.ball%2C%20%7B%20opacity%20%7D%5D%7D%20%2F%3E%3B%0A%7D%3B%0A%0Aconst%20App%20%3D%20()%20%3D%3E%20%7B%0A%20%20return%20(%0A%20%20%20%20%3CView%20style%3D%7Bstyles.container%7D%3E%0A%20%20%20%20%20%20%3CText%3E%7Binstructions%7D%3C%2FText%3E%0A%20%20%20%20%20%20%3CBall%20onShown%3D%7B()%20%3D%3E%20Alert.alert(%22Animation%20is%20done%22)%7D%20%2F%3E%0A%20%20%20%20%3C%2FView%3E%0A%20%20)%3B%0A%7D%3B%0A%0Aexport%20default%20App%3B%0A%0Aconst%20styles%20%3D%20StyleSheet.create(%7B%0A%20%20container%3A%20%7B%20flex%3A%201%2C%20justifyContent%3A%20%22center%22%2C%20alignItems%3A%20%22center%22%20%7D%2C%0A%20%20ball%3A%20%7B%0A%20%20%20%20width%3A%20100%2C%0A%20%20%20%20height%3A%20100%2C%0A%20%20%20%20backgroundColor%3A%20%22salmon%22%2C%0A%20%20%20%20borderRadius%3A%20100%2C%0A%20%20%7D%2C%0A%7D)%3B%0A%0A"
+        data-snack-platform="web"
+        data-snack-supported-platforms=ios,android
+        data-snack-preview="true"
+        style="
+          overflow: hidden;
+          background: #fafafa;
+          border: 1px solid rgba(0,0,0,.16);
+          border-radius: 4px;
+          height: 514px;
+          width: 100%;
+        "
+      ></div></div></div><h3><a class="anchor" aria-hidden="true" id="advanced"></a><a href="#advanced" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Advanced</h3>
+<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React, { useEffect } <span class="hljs-keyword">from</span> <span class="hljs-string">"react"</span>;
+<span class="hljs-keyword">import</span> {
+  Alert,
+  Animated,
+  InteractionManager,
+  Platform,
+  StyleSheet,
+  Text,
+  View,
+} <span class="hljs-keyword">from</span> <span class="hljs-string">"react-native"</span>;
+
+<span class="hljs-keyword">const</span> instructions = Platform.select({
+  <span class="hljs-attr">ios</span>: <span class="hljs-string">"Press Cmd+R to reload,\n"</span> + <span class="hljs-string">"Cmd+D or shake for dev menu"</span>,
+  <span class="hljs-attr">android</span>:
+    <span class="hljs-string">"Double tap R on your keyboard to reload,\n"</span> +
+    <span class="hljs-string">"Shake or press menu button for dev menu"</span>,
+});
+
+<span class="hljs-keyword">const</span> useMount = <span class="hljs-function"><span class="hljs-params">func</span> =&gt;</span> useEffect(<span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> func(), []);
+
+<span class="hljs-comment">// You can create a custom interaction/animation and add</span>
+<span class="hljs-comment">// support for InteractionManager</span>
+<span class="hljs-keyword">const</span> useCustomInteraction = <span class="hljs-function">(<span class="hljs-params">timeLocked = <span class="hljs-number">2000</span></span>) =&gt;</span> {
+  useMount(<span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
+    <span class="hljs-keyword">const</span> handle = InteractionManager.createInteractionHandle();
+
+    setTimeout(
+      <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> InteractionManager.clearInteractionHandle(handle),
+      timeLocked
+    );
+
+    <span class="hljs-keyword">return</span> <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> InteractionManager.clearInteractionHandle(handle);
+  });
+};
+
+<span class="hljs-keyword">const</span> Ball = <span class="hljs-function">(<span class="hljs-params">{ onInteractionIsDone }</span>) =&gt;</span> {
+  useCustomInteraction();
+
+  <span class="hljs-comment">// Running a method after the interaction</span>
+  useMount(<span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
+    InteractionManager.runAfterInteractions(<span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> onInteractionIsDone());
+  });
+
+  <span class="hljs-keyword">return</span> &lt;Animated.View style={[styles.ball]} /&gt;;
+};
+
+const App = () =&gt; {
+  return (
+    &lt;View style={styles.container}&gt;
+      &lt;Text&gt;{instructions}&lt;/Text&gt;
+      &lt;Ball onInteractionIsDone={() =&gt; Alert.alert("Interaction is done")} /&gt;
+    &lt;/View&gt;
+  );
+};
+
+export default App;
+
+const styles = StyleSheet.create({
+  container: { flex: 1, justifyContent: "center", alignItems: "center" },
+  ball: {
+    width: 100,
+    height: 100,
+    backgroundColor: "salmon",
+    borderRadius: 100,
+  },
+});
+</code></pre></div><div class="desktop-friendly-snack" style="margin-top: 15px; margin-bottom: 15px"><div
+        data-snack-name="InteractionManager Function Component Advanced Example"
+        data-snack-description="Example usage"
+        data-snack-code="import%20React%2C%20%7B%20useEffect%20%7D%20from%20%22react%22%3B%0Aimport%20%7B%0A%20%20Alert%2C%0A%20%20Animated%2C%0A%20%20InteractionManager%2C%0A%20%20Platform%2C%0A%20%20StyleSheet%2C%0A%20%20Text%2C%0A%20%20View%2C%0A%7D%20from%20%22react-native%22%3B%0A%0Aconst%20instructions%20%3D%20Platform.select(%7B%0A%20%20ios%3A%20%22Press%20Cmd%2BR%20to%20reload%2C%5Cn%22%20%2B%20%22Cmd%2BD%20or%20shake%20for%20dev%20menu%22%2C%0A%20%20android%3A%0A%20%20%20%20%22Double%20tap%20R%20on%20your%20keyboard%20to%20reload%2C%5Cn%22%20%2B%0A%20%20%20%20%22Shake%20or%20press%20menu%20button%20for%20dev%20menu%22%2C%0A%7D)%3B%0A%0Aconst%20useMount%20%3D%20func%20%3D%3E%20useEffect(()%20%3D%3E%20func()%2C%20%5B%5D)%3B%0A%0A%2F%2F%20You%20can%20create%20a%20custom%20interaction%2Fanimation%20and%20add%0A%2F%2F%20support%20for%20InteractionManager%0Aconst%20useCustomInteraction%20%3D%20(timeLocked%20%3D%202000)%20%3D%3E%20%7B%0A%20%20useMount(()%20%3D%3E%20%7B%0A%20%20%20%20const%20handle%20%3D%20InteractionManager.createInteractionHandle()%3B%0A%0A%20%20%20%20setTimeout(%0A%20%20%20%20%20%20()%20%3D%3E%20InteractionManager.clearInteractionHandle(handle)%2C%0A%20%20%20%20%20%20timeLocked%0A%20%20%20%20)%3B%0A%0A%20%20%20%20return%20()%20%3D%3E%20InteractionManager.clearInteractionHandle(handle)%3B%0A%20%20%7D)%3B%0A%7D%3B%0A%0Aconst%20Ball%20%3D%20(%7B%20onInteractionIsDone%20%7D)%20%3D%3E%20%7B%0A%20%20useCustomInteraction()%3B%0A%0A%20%20%2F%2F%20Running%20a%20method%20after%20the%20interaction%0A%20%20useMount(()%20%3D%3E%20%7B%0A%20%20%20%20InteractionManager.runAfterInteractions(()%20%3D%3E%20onInteractionIsDone())%3B%0A%20%20%7D)%3B%0A%0A%20%20return%20%3CAnimated.View%20style%3D%7B%5Bstyles.ball%5D%7D%20%2F%3E%3B%0A%7D%3B%0A%0Aconst%20App%20%3D%20()%20%3D%3E%20%7B%0A%20%20return%20(%0A%20%20%20%20%3CView%20style%3D%7Bstyles.container%7D%3E%0A%20%20%20%20%20%20%3CText%3E%7Binstructions%7D%3C%2FText%3E%0A%20%20%20%20%20%20%3CBall%20onInteractionIsDone%3D%7B()%20%3D%3E%20Alert.alert(%22Interaction%20is%20done%22)%7D%20%2F%3E%0A%20%20%20%20%3C%2FView%3E%0A%20%20)%3B%0A%7D%3B%0A%0Aexport%20default%20App%3B%0A%0Aconst%20styles%20%3D%20StyleSheet.create(%7B%0A%20%20container%3A%20%7B%20flex%3A%201%2C%20justifyContent%3A%20%22center%22%2C%20alignItems%3A%20%22center%22%20%7D%2C%0A%20%20ball%3A%20%7B%0A%20%20%20%20width%3A%20100%2C%0A%20%20%20%20height%3A%20100%2C%0A%20%20%20%20backgroundColor%3A%20%22salmon%22%2C%0A%20%20%20%20borderRadius%3A%20100%2C%0A%20%20%7D%2C%0A%7D)%3B%0A"
+        data-snack-platform="web"
+        data-snack-supported-platforms=ios,android
+        data-snack-preview="true"
+        style="
+          overflow: hidden;
+          background: #fafafa;
+          border: 1px solid rgba(0,0,0,.16);
+          border-radius: 4px;
+          height: 514px;
+          width: 100%;
+        "
+      ></div></div></div><blockquote>
+<p><strong>Note</strong>: <code>InteractionManager.runAfterInteractions()</code> is not working properly on web. It triggers immediately without waiting until the interaction is finished.</p>
+</blockquote>
 <h1><a class="anchor" aria-hidden="true" id="reference"></a><a href="#reference" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Reference</h1>
 <h2><a class="anchor" aria-hidden="true" id="methods"></a><a href="#methods" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Methods</h2>
 <h3><a class="anchor" aria-hidden="true" id="runafterinteractions"></a><a href="#runafterinteractions" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>runAfterInteractions()</code></h3>
@@ -114,7 +284,7 @@ InteractionManager<span class="token punctuation">.</span><span class="token fun
 <p>A positive number will use setTimeout to schedule any tasks after the eventLoopRunningTime hits the deadline value, otherwise all tasks will be executed in one setImmediate batch (default).</p>
 <h2><a class="anchor" aria-hidden="true" id="properties"></a><a href="#properties" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Properties</h2>
 <hr>
-</span></div></article></div><div class="docs-prevnext"><a class="docs-prev button" href="/docs/next/imagepickerios"><span class="arrow-prev">← </span><span class="function-name-prevnext">🚧 ImagePickerIOS</span></a><a class="docs-next button" href="/docs/next/keyboard"><span>Keyboard</span><span class="arrow-next"> →</span></a></div></div></div><nav class="onPageNav"><ul class="toc-headings"><li><a href="#methods">Methods</a><ul class="toc-headings"><li><a href="#runafterinteractions"><code>runAfterInteractions()</code></a></li><li><a href="#createinteractionhandle"><code>createInteractionHandle()</code></a></li><li><a href="#clearinteractionhandle"><code>clearInteractionHandle()</code></a></li><li><a href="#setdeadline"><code>setDeadline()</code></a></li></ul></li><li><a href="#properties">Properties</a></li></ul></nav></div><footer class="nav-footer" id="footer"><section class="sitemap"><div><h5>Docs</h5><a href="/docs/getting-started.html">Getting Started</a><a href="/docs/tutorial.html">Tutorial</a><a href="/docs/components-and-apis.html">Components and APIs</a><a href="/docs/more-resources.html">More Resources</a></div><div><h5>Community</h5><a href="/help.html">The React Native Community</a><a href="/showcase.html">Who&#x27;s using React Native?</a><a href="http://stackoverflow.com/questions/tagged/react-native" target="_blank">Ask Questions on Stack Overflow</a><a href="https://github.com/facebook/react-native/blob/master/CONTRIBUTING.md">Contributor Guide</a><a href="https://dev.to/t/reactnative" target="_blank">DEV Community</a></div><div><h5>More Resources</h5><a href="/blog/">Blog</a><a href="https://twitter.com/reactnative" target="_blank">Twitter</a><a href="https://github.com/facebook/react-native" target="_blank">GitHub</a><a href="http://reactjs.org" target="_blank">React</a></div></section><a href="https://code.facebook.com/projects/" target="_blank" class="fbOpenSource"><img src="/img/oss_logo.png" alt="Facebook Open Source" width="170" height="45"/></a><section class="copyright">Copyright © 2020 Facebook Inc.</section></footer></div><script type="text/javascript" src="https://cdn.jsdelivr.net/docsearch.js/1/docsearch.min.js"></script><script>window.fbAsyncInit = function() {FB.init({appId:'1677033832619985',xfbml:true,version:'v2.7'});};(function(d, s, id){var js, fjs = d.getElementsByTagName(s)[0];if (d.getElementById(id)) {return;}js = d.createElement(s); js.id = id;js.src = '//connect.facebook.net/en_US/sdk.js';fjs.parentNode.insertBefore(js, fjs);}(document, 'script','facebook-jssdk'));
+</span></div></article></div><div class="docs-prevnext"><a class="docs-prev button" href="/docs/next/imagepickerios"><span class="arrow-prev">← </span><span class="function-name-prevnext">🚧 ImagePickerIOS</span></a><a class="docs-next button" href="/docs/next/keyboard"><span>Keyboard</span><span class="arrow-next"> →</span></a></div></div></div><nav class="onPageNav"><ul class="toc-headings"><li><a href="#example">Example</a><ul class="toc-headings"><li><a href="#basic">Basic</a></li><li><a href="#advanced">Advanced</a></li></ul></li><li><a href="#methods">Methods</a><ul class="toc-headings"><li><a href="#runafterinteractions"><code>runAfterInteractions()</code></a></li><li><a href="#createinteractionhandle"><code>createInteractionHandle()</code></a></li><li><a href="#clearinteractionhandle"><code>clearInteractionHandle()</code></a></li><li><a href="#setdeadline"><code>setDeadline()</code></a></li></ul></li><li><a href="#properties">Properties</a></li></ul></nav></div><footer class="nav-footer" id="footer"><section class="sitemap"><div><h5>Docs</h5><a href="/docs/getting-started.html">Getting Started</a><a href="/docs/tutorial.html">Tutorial</a><a href="/docs/components-and-apis.html">Components and APIs</a><a href="/docs/more-resources.html">More Resources</a></div><div><h5>Community</h5><a href="/help.html">The React Native Community</a><a href="/showcase.html">Who&#x27;s using React Native?</a><a href="http://stackoverflow.com/questions/tagged/react-native" target="_blank">Ask Questions on Stack Overflow</a><a href="https://github.com/facebook/react-native/blob/master/CONTRIBUTING.md">Contributor Guide</a><a href="https://dev.to/t/reactnative" target="_blank">DEV Community</a></div><div><h5>More Resources</h5><a href="/blog/">Blog</a><a href="https://twitter.com/reactnative" target="_blank">Twitter</a><a href="https://github.com/facebook/react-native" target="_blank">GitHub</a><a href="http://reactjs.org" target="_blank">React</a></div></section><a href="https://code.facebook.com/projects/" target="_blank" class="fbOpenSource"><img src="/img/oss_logo.png" alt="Facebook Open Source" width="170" height="45"/></a><section class="copyright">Copyright © 2020 Facebook Inc.</section></footer></div><script type="text/javascript" src="https://cdn.jsdelivr.net/docsearch.js/1/docsearch.min.js"></script><script>window.fbAsyncInit = function() {FB.init({appId:'1677033832619985',xfbml:true,version:'v2.7'});};(function(d, s, id){var js, fjs = d.getElementsByTagName(s)[0];if (d.getElementById(id)) {return;}js = d.createElement(s); js.id = id;js.src = '//connect.facebook.net/en_US/sdk.js';fjs.parentNode.insertBefore(js, fjs);}(document, 'script','facebook-jssdk'));
                 </script><script>window.twttr=(function(d,s, id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return t;js=d.createElement(s);js.id=id;js.src='https://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js, fjs);t._e = [];t.ready = function(f) {t._e.push(f);};return t;}(document, 'script', 'twitter-wjs'));</script><script>
                 document.addEventListener('keyup', function(e) {
                   if (e.target !== document.body) {
