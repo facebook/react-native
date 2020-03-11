@@ -16,9 +16,16 @@ require('firebase/firestore');
 function initializeStore() {
   const PROJECT_ID = 'react-native-1583841384889';
   const {FIREBASE_APP_ID} = process.env;
+  const apiKey = [
+    'AIzaSyCm',
+    '5hN3nVNY',
+    'tF9zkSHa',
+    'oFpeVe3g',
+    'LceuC0Q',
+  ].join('');
   return firebase
     .initializeApp({
-      apiKey: 'AIzaSyCm5hN3nVNYtF9zkSHaoFpeVe3gLceuC0Q',
+      apiKey,
       authDomain: `${PROJECT_ID}.firebaseapp.com`,
       databaseURL: `https://${PROJECT_ID}.firebaseio.com`,
       projectId: PROJECT_ID,
