@@ -649,10 +649,8 @@ jobs:
       - ANDROID_TOOLS_VERSION: 29.0.2
       - GRADLE_OPTS: -Dorg.gradle.daemon=false
       - NDK_VERSION: 20.0.5594570
-      
     steps:
-      - restore_cache_checkout:
-          checkout_type: windows 
+      - checkout
       - run:
           name: Install Android SDK Tools
           command: choco install android-sdk
@@ -810,10 +808,6 @@ workflows:
             - setup
   windows:
     jobs:
-      - setup:
-          name: setup_windows
-          checkout_type: windows
-          executor: win/default
       - windows_job
   nightly:
     triggers:
