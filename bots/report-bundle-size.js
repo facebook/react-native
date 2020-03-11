@@ -9,12 +9,24 @@
 
 'use strict';
 
+const {GITHUB_REF, GITHUB_SHA} = process.env;
+if (!GITHUB_REF || !GITHUB_SHA) {
+  if (!GITHUB_REF) {
+    console.error("Missing GITHUB_REF. This should've been set by the CI.");
+  }
+  if (!GITHUB_SHA) {
+    console.error("Missing GITHUB_SHA. This should've been set by the CI.");
+  }
+  process.exit(1);
+}
+
 const fs = require('fs');
 const datastore = require('./datastore');
 const {createOrUpdateComment} = require('./make-comment');
 
 /**
- * Generates and submits a comment.
+ * Generates and submits a comment. If this is run on master branch, data is
+ * committed to the store instead.
  * @param {{
       'android-hermes-arm64-v8a'?: number;
       'android-hermes-armeabi-v7a'?: number;
@@ -28,58 +40,61 @@ const {createOrUpdateComment} = require('./make-comment');
     }} stats
  */
 async function reportSizeStats(stats, replacePattern) {
-  const diffFormatter = new Intl.NumberFormat('en', {
-    signDisplay: 'always',
-  });
-  const sizeFormatter = new Intl.NumberFormat('en', {});
-
   const store = datastore.initializeStore();
   const collection = datastore.getBinarySizesCollection(store);
-  const document = await datastore.getLatestDocument(collection);
+
+  if (GITHUB_REF === 'master') {
+    await datastore.createOrUpdateDocument(collection, GITHUB_SHA, stats);
+  } else {
+    const document = await datastore.getLatestDocument(collection);
+
+    const diffFormatter = new Intl.NumberFormat('en', {signDisplay: 'always'});
+    const sizeFormatter = new Intl.NumberFormat('en', {});
+
+    // | Platform | Engine | Arch        | Size (bytes) | Diff |
+    // |:---------|:-------|:------------|-------------:|-----:|
+    // | android  | hermes | arm64-v8a   |      9437184 |   ±0 |
+    // | android  | hermes | armeabi-v7a |      9015296 |   ±0 |
+    // | android  | hermes | x86         |      9498624 |   ±0 |
+    // | android  | hermes | x86_64      |      9965568 |   ±0 |
+    // | android  | jsc    | arm64-v8a   |      9236480 |   ±0 |
+    // | android  | jsc    | armeabi-v7a |      8814592 |   ±0 |
+    // | android  | jsc    | x86         |      9297920 |   ±0 |
+    // | android  | jsc    | x86_64      |      9764864 |   ±0 |
+    // | android  | jsc    | x86_64      |      9764864 |   ±0 |
+    // | ios      | -      | universal   |     10715136 |   ±0 |
+    const comment = [
+      '| Platform | Engine | Arch | Size (bytes) | Diff |',
+      '|:---------|:-------|:-----|-------------:|-----:|',
+      ...Object.keys(stats).map(identifier => {
+        const [size, diff] = (() => {
+          const size = stats[identifier];
+          if (!size) {
+            return ['n/a', '--'];
+          } else if (!(identifier in document)) {
+            return [size, 'n/a'];
+          } else {
+            return [
+              sizeFormatter.format(size),
+              diffFormatter.format(size - document[identifier]),
+            ];
+          }
+        })();
+
+        const [platform, engineOrArch, ...archParts] = identifier.split('-');
+        const arch = archParts.join('-') || engineOrArch;
+        const engine = arch === engineOrArch ? '-' : engineOrArch; // e.g. 'ios-universal'
+        return `| ${platform} | ${engine} | ${arch} | ${size} | ${diff} |`;
+      }),
+      '',
+      `Base commit: ${document.commit}`,
+    ].join('\n');
+    createOrUpdateComment(comment, replacePattern);
+  }
 
   // Documentation says that we don't need to call `terminate()` but the script
   // will just hang around until the connection times out if we don't.
   store.terminate();
-
-  // | Platform | Engine | Arch        | Size (bytes) | Diff |
-  // |:---------|:-------|:------------|-------------:|-----:|
-  // | android  | hermes | arm64-v8a   |      9437184 |   ±0 |
-  // | android  | hermes | armeabi-v7a |      9015296 |   ±0 |
-  // | android  | hermes | x86         |      9498624 |   ±0 |
-  // | android  | hermes | x86_64      |      9965568 |   ±0 |
-  // | android  | jsc    | arm64-v8a   |      9236480 |   ±0 |
-  // | android  | jsc    | armeabi-v7a |      8814592 |   ±0 |
-  // | android  | jsc    | x86         |      9297920 |   ±0 |
-  // | android  | jsc    | x86_64      |      9764864 |   ±0 |
-  // | android  | jsc    | x86_64      |      9764864 |   ±0 |
-  // | ios      | -      | universal   |     10715136 |   ±0 |
-  const comment = [
-    '| Platform | Engine | Arch | Size (bytes) | Diff |',
-    '|:---------|:-------|:-----|-------------:|-----:|',
-    ...Object.keys(stats).map(identifier => {
-      const [size, diff] = (() => {
-        const size = stats[identifier];
-        if (!size) {
-          return ['n/a', '--'];
-        } else if (!(identifier in document)) {
-          return [size, 'n/a'];
-        } else {
-          return [
-            sizeFormatter.format(size),
-            diffFormatter.format(size - document[identifier]),
-          ];
-        }
-      })();
-
-      const [platform, engineOrArch, ...archParts] = identifier.split('-');
-      const arch = archParts.join('-') || engineOrArch;
-      const engine = arch === engineOrArch ? '-' : engineOrArch; // e.g. 'ios-universal'
-      return `| ${platform} | ${engine} | ${arch} | ${size} | ${diff} |`;
-    }),
-    '',
-    `Base commit: ${document.commit}`,
-  ].join('\n');
-  createOrUpdateComment(comment, replacePattern);
 }
 
 /**

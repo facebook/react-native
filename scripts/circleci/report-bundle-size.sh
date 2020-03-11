@@ -9,6 +9,8 @@ case $1 in
     GITHUB_OWNER=${CIRCLE_PROJECT_USERNAME:-facebook} \
     GITHUB_REPO=${CIRCLE_PROJECT_REPONAME:-react-native} \
     GITHUB_PR_NUMBER="$CIRCLE_PR_NUMBER" \
+    GITHUB_REF=${CIRCLE_BRANCH} \
+    GITHUB_SHA=${CIRCLE_SHA1} \
     node bots/report-bundle-size.js $1
     ;;
   *)

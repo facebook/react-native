@@ -34,8 +34,8 @@ if (!GITHUB_TOKEN || !GITHUB_OWNER || !GITHUB_REPO || !GITHUB_PR_NUMBER) {
  * Updates the comment matching specified pattern.
  * @param {import('@octokit/rest').Octokit} octokit Octokit instance
  * @param {{ owner: string; repo: string; issue_number: string; }} issueParams
- * @param {string} body
- * @param {string} replacePattern
+ * @param {string} body Comment body
+ * @param {string} replacePattern Pattern for finding the comment to update
  */
 async function updateComment(octokit, issueParams, body, replacePattern) {
   if (!replacePattern) {
