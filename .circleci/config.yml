@@ -689,7 +689,7 @@ jobs:
           command: yarn flow-check-ios
       - run:
           name: Test Android Build
-          command: gradlew.bat RNTester:android:app:assembleRelease
+          command: ./gradlew.bat RNTester:android:app:assembleRelease
       - run:
           name: Run Test
           command: yarn test
