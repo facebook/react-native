@@ -643,8 +643,8 @@ jobs:
     executor: 
       name: win/default
     environment:
-      - ANDROID_HOME: "C:\\android-sdk-windows"
-      - ANDROID_NDK: "C:\\android-sdk-windows\\android-ndk-r19c"
+      - ANDROID_HOME: "C:\\Android\\android-sdk"
+      - ANDROID_NDK: "C:\\Android\\android-sdk\\android-ndk-r20"
       - ANDROID_BUILD_VERSION: 28
       - ANDROID_TOOLS_VERSION: 29.0.2
       - GRADLE_OPTS: -Dorg.gradle.daemon=false
@@ -653,7 +653,7 @@ jobs:
       - checkout
       - run:
           name: Install Android SDK Tools
-          command: "choco install android-sdk --install-directory=%ANDROID_HOME%"
+          command: "choco install android-sdk
       - run:
           name: Setup SDK
           command: sdkmanager --licenses
