@@ -1334,19 +1334,23 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithBundleURL
     [[NSNotificationCenter defaultCenter] postNotificationName:RCTJavaScriptWillStartExecutingNotification
                                                         object:self->_parentBridge
                                                       userInfo:@{@"bridge" : self}];
+    
+    // hold a local reference to reactInstance in case a parallel thread
+    // resets it between null check and usage
+    auto reactInstance = self->_reactInstance;
     if (isRAMBundle(script)) {
       [self->_performanceLogger markStartForTag:RCTPLRAMBundleLoad];
       auto ramBundle = std::make_unique<JSIndexedRAMBundle>(sourceUrlStr.UTF8String);
       std::unique_ptr<const JSBigString> scriptStr = ramBundle->getStartupCode();
       [self->_performanceLogger markStopForTag:RCTPLRAMBundleLoad];
       [self->_performanceLogger setValue:scriptStr->size() forTag:RCTPLRAMStartupCodeSize];
-      if (self->_reactInstance) {
+      if (reactInstance) {
         auto registry =
             RAMBundleRegistry::multipleBundlesRegistry(std::move(ramBundle), JSIndexedRAMBundle::buildFactory());
-        self->_reactInstance->loadRAMBundle(std::move(registry), std::move(scriptStr), sourceUrlStr.UTF8String, !async);
+        reactInstance->loadRAMBundle(std::move(registry), std::move(scriptStr), sourceUrlStr.UTF8String, !async);
       }
-    } else if (self->_reactInstance) {
-      self->_reactInstance->loadScriptFromString(
+    } else if (reactInstance) {
+      reactInstance->loadScriptFromString(
           std::make_unique<NSDataBigString>(script), sourceUrlStr.UTF8String, !async);
     } else {
       std::string methodName = async ? "loadApplicationScript" : "loadApplicationScriptSync";
