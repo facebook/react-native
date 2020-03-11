@@ -21,6 +21,7 @@ import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.SoftAssertions;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.common.ReactConstants;
+import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.react.modules.core.ReactChoreographer;
 import com.facebook.react.uimanager.debug.NotThreadSafeViewHierarchyUpdateDebugListener;
 import com.facebook.systrace.Systrace;
@@ -518,6 +519,9 @@ public class UIViewOperationQueue {
   private final DispatchUIFrameCallback mDispatchUIFrameCallback;
   private final ReactApplicationContext mReactApplicationContext;
 
+  private final boolean mAllowViewCommandsQueue;
+  private ArrayList<UIOperation> mViewCommandOperations = new ArrayList<>();
+
   // Only called from the UIManager queue?
   private ArrayList<UIOperation> mOperations = new ArrayList<>();
 
@@ -556,6 +560,7 @@ public class UIViewOperationQueue {
                 ? DEFAULT_MIN_TIME_LEFT_IN_FRAME_FOR_NONBATCHED_OPERATION_MS
                 : minTimeLeftInFrameForNonBatchedOperationMs);
     mReactApplicationContext = reactContext;
+    mAllowViewCommandsQueue = ReactFeatureFlags.allowEarlyViewCommandExecution;
   }
 
   /*package*/ NativeViewHierarchyManager getNativeViewHierarchyManager() {
@@ -591,7 +596,7 @@ public class UIViewOperationQueue {
   }
 
   public boolean isEmpty() {
-    return mOperations.isEmpty();
+    return mOperations.isEmpty() && mViewCommandOperations.isEmpty();
   }
 
   public void addRootView(final int tag, final View rootView) {
@@ -625,12 +630,24 @@ public class UIViewOperationQueue {
   @Deprecated
   public void enqueueDispatchCommand(
       int reactTag, int commandId, @Nullable ReadableArray commandArgs) {
-    mOperations.add(new DispatchCommandOperation(reactTag, commandId, commandArgs));
+    final DispatchCommandOperation command =
+        new DispatchCommandOperation(reactTag, commandId, commandArgs);
+    if (mAllowViewCommandsQueue) {
+      mViewCommandOperations.add(command);
+    } else {
+      mOperations.add(command);
+    }
   }
 
   public void enqueueDispatchCommand(
       int reactTag, String commandId, @Nullable ReadableArray commandArgs) {
-    mOperations.add(new DispatchStringCommandOperation(reactTag, commandId, commandArgs));
+    final DispatchStringCommandOperation command =
+        new DispatchStringCommandOperation(reactTag, commandId, commandArgs);
+    if (mAllowViewCommandsQueue) {
+      mViewCommandOperations.add(command);
+    } else {
+      mOperations.add(command);
+    }
   }
 
   public void enqueueUpdateExtraData(int reactTag, Object extraData) {
@@ -742,6 +759,14 @@ public class UIViewOperationQueue {
 
       // Store the current operation queues to dispatch and create new empty ones to continue
       // receiving new operations
+      final ArrayList<UIOperation> viewCommandOperations;
+      if (!mViewCommandOperations.isEmpty()) {
+        viewCommandOperations = mViewCommandOperations;
+        mViewCommandOperations = new ArrayList<>();
+      } else {
+        viewCommandOperations = null;
+      }
+
       final ArrayList<UIOperation> batchedOperations;
       if (!mOperations.isEmpty()) {
         batchedOperations = mOperations;
@@ -773,6 +798,13 @@ public class UIViewOperationQueue {
                   .flush();
               try {
                 long runStartTime = SystemClock.uptimeMillis();
+
+                // All ViewCommands should be executed first as a perf optimization
+                if (mViewCommandOperations != null) {
+                  for (UIOperation viewCommandOp : mViewCommandOperations) {
+                    viewCommandOp.execute();
+                  }
+                }
 
                 // All nonBatchedOperations should be executed before regular operations as
                 // regular operations may depend on them
