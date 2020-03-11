@@ -145,7 +145,7 @@ function report(target) {
 
     default: {
       const path = require('path');
-      console.log(`Syntax: ${path.basename(__filename)} [android | ios]`);
+      console.log(`Syntax: ${path.basename(process.argv[1])} [android | ios]`);
       break;
     }
   }
