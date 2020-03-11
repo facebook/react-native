@@ -131,6 +131,7 @@ function getLatestDocument(collection) {
  */
 module.exports = {
   initializeStore,
+  initializeBinarySizesCollection,
   getBinarySizesCollection,
   createOrUpdateDocument,
   getLatestDocument,

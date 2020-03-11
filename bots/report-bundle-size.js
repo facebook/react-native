@@ -90,7 +90,7 @@ async function reportSizeStats(stats, replacePattern) {
 function getFileSize(path) {
   try {
     const stats = fs.statSync(path);
-    return stats['size'];
+    return stats.size;
   } catch {
     return 0;
   }
