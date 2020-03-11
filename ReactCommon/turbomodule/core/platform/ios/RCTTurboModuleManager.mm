@@ -17,6 +17,7 @@
 #import <React/RCTLog.h>
 #import <React/RCTModuleData.h>
 #import <React/RCTPerformanceLogger.h>
+#import <React/RCTUtils.h>
 #import <ReactCommon/TurboCxxModule.h>
 #import <ReactCommon/TurboModuleBinding.h>
 
@@ -326,7 +327,14 @@ static Class getFallbackClassFromName(const char *name)
 
   if ([[module class] respondsToSelector:@selector(requiresMainQueueSetup)] &&
       [[module class] requiresMainQueueSetup]) {
-    dispatch_async(dispatch_get_main_queue(), setupTurboModule);
+    /**
+     * If the main thread synchronously calls into JS that creates a TurboModule,
+     * we could deadlock. This behaviour is migrated over from the legacy NativeModule
+     * system.
+     *
+     * TODO(T63807674): Investigate the right migration plan off of this
+     */
+    RCTUnsafeExecuteOnMainQueueSync(setupTurboModule);
   } else {
     setupTurboModule();
   }
