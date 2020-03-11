@@ -77,6 +77,9 @@ class AnimatedValue extends AnimatedWithChildren {
 
   constructor(value: number) {
     super();
+    if (typeof value !== 'number') {
+      throw new Error('AnimatedValue: Attempting to set value to undefined');
+    }
     this._startingValue = this._value = value;
     this._offset = 0;
     this._animation = null;
@@ -240,7 +243,7 @@ class AnimatedValue extends AnimatedWithChildren {
 
   _updateValue(value: number, flush: boolean): void {
     if (value === undefined) {
-      throw new Error('Attempting to set value to undefined');
+      throw new Error('AnimatedValue: Attempting to set value to undefined');
     }
 
     this._value = value;
