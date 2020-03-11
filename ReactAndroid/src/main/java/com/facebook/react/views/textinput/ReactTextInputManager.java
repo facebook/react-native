@@ -208,7 +208,7 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
         this.receiveCommand(reactEditText, "blur", args);
         break;
       case SET_MOST_RECENT_EVENT_COUNT:
-        this.receiveCommand(reactEditText, "setMostRecentEventCount", args);
+        // TODO: delete, this is no longer used from JS
         break;
       case SET_TEXT_AND_SELECTION:
         this.receiveCommand(reactEditText, "setTextAndSelection", args);
@@ -229,27 +229,25 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
         reactEditText.clearFocusFromJS();
         break;
       case "setMostRecentEventCount":
-        reactEditText.setMostRecentEventCount(args.getInt(0));
+        // TODO: delete, this is no longer used from JS
         break;
       case "setTextAndSelection":
         int mostRecentEventCount = args.getInt(0);
-        reactEditText.setMostRecentEventCount(mostRecentEventCount);
-
-        if (mostRecentEventCount != UNSET) {
-          String text = args.getString(1);
-
-          int start = args.getInt(2);
-          int end = args.getInt(3);
-          if (end == UNSET) {
-            end = start;
-          }
-
-          // TODO: construct a ReactTextUpdate and use that with maybeSetText
-          // instead of calling setText, etc directly - doing that will definitely cause bugs.
-          reactEditText.maybeSetTextFromJS(
-              getReactTextUpdate(text, mostRecentEventCount, start, end));
-          reactEditText.maybeSetSelection(mostRecentEventCount, start, end);
+        if (mostRecentEventCount == UNSET) {
+          return;
         }
+
+        String text = args.getString(1);
+
+        int start = args.getInt(2);
+        int end = args.getInt(3);
+        if (end == UNSET) {
+          end = start;
+        }
+
+        reactEditText.maybeSetTextFromJS(
+            getReactTextUpdate(text, mostRecentEventCount, start, end));
+        reactEditText.maybeSetSelection(mostRecentEventCount, start, end);
         break;
     }
   }
@@ -468,11 +466,6 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
       // or future android versions.
     } catch (IllegalAccessException ex) {
     }
-  }
-
-  @ReactProp(name = "mostRecentEventCount", defaultInt = 0)
-  public void setMostRecentEventCount(ReactEditText view, int mostRecentEventCount) {
-    view.setMostRecentEventCount(mostRecentEventCount);
   }
 
   @ReactProp(name = "caretHidden", defaultBoolean = false)
