@@ -653,7 +653,7 @@ jobs:
       - checkout
       - run:
           name: Install Android SDK Tools
-          command: "choco install android-sdk
+          command: choco install android-sdk
       - run:
           name: Setup SDK
           command: sdkmanager --licenses
