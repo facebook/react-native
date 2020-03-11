@@ -294,6 +294,7 @@ std::string JSStringToSTLString(JSStringRef str) {
   std::array<char, 20> stackBuffer;
   std::unique_ptr<char[]> heapBuffer;
   char *buffer;
+  // NOTE: By definition, maxBytes >= 1 since the null terminator is included.
   size_t maxBytes = JSStringGetMaximumUTF8CStringSize(str);
   if (maxBytes <= stackBuffer.size()) {
     buffer = stackBuffer.data();
@@ -302,7 +303,18 @@ std::string JSStringToSTLString(JSStringRef str) {
     buffer = heapBuffer.get();
   }
   size_t actualBytes = JSStringGetUTF8CString(str, buffer, maxBytes);
-  // NOTE: By definition, maxBytes >= actualBytes >= 1.
+  if (!actualBytes) {
+    // Happens if maxBytes == 0 (never the case here) or if str contains
+    // invalid UTF-16 data, since JSStringGetUTF8CString attempts a strict
+    // conversion.
+    // When converting an invalid string, JSStringGetUTF8CString writes a null
+    // terminator before returning. So we can reliably treat our buffer as a C
+    // string and return the truncated data to our caller. This is slightly
+    // slower than if we knew the length (like below) but better than crashing.
+    // TODO(T62295565): Perform a non-strict, best effort conversion of the
+    // full string instead, like we did before the JSI migration.
+    return std::string(buffer);
+  }
   return std::string(buffer, actualBytes - 1);
 }
 
@@ -432,10 +444,18 @@ bool JSCRuntime::isInspectable() {
 namespace {
 
 bool smellsLikeES6Symbol(JSGlobalContextRef ctx, JSValueRef ref) {
-  // Empirically, an es6 Symbol is not an object, but its type is
+  // Since iOS 13, JSValueGetType will return kJSTypeSymbol
+  // Before: Empirically, an es6 Symbol is not an object, but its type is
   // object.  This makes no sense, but we'll run with it.
-  return (
-      !JSValueIsObject(ctx, ref) && JSValueGetType(ctx, ref) == kJSTypeObject);
+  // https://github.com/WebKit/webkit/blob/master/Source/JavaScriptCore/API/JSValueRef.cpp#L79-L82
+
+  JSType type = JSValueGetType(ctx, ref);
+
+  if (type == /* kJSTypeSymbol */ 6) {
+    return true;
+  }
+
+  return (!JSValueIsObject(ctx, ref) && type == kJSTypeObject);
 }
 
 } // namespace
@@ -1327,27 +1347,37 @@ jsi::Object JSCRuntime::createObject(JSObjectRef obj) const {
 }
 
 jsi::Value JSCRuntime::createValue(JSValueRef value) const {
-  if (JSValueIsNumber(ctx_, value)) {
-    return jsi::Value(JSValueToNumber(ctx_, value, nullptr));
-  } else if (JSValueIsBoolean(ctx_, value)) {
-    return jsi::Value(JSValueToBoolean(ctx_, value));
-  } else if (JSValueIsNull(ctx_, value)) {
-    return jsi::Value(nullptr);
-  } else if (JSValueIsUndefined(ctx_, value)) {
-    return jsi::Value();
-  } else if (JSValueIsString(ctx_, value)) {
-    JSStringRef str = JSValueToStringCopy(ctx_, value, nullptr);
-    auto result = jsi::Value(createString(str));
-    JSStringRelease(str);
-    return result;
-  } else if (JSValueIsObject(ctx_, value)) {
-    JSObjectRef objRef = JSValueToObject(ctx_, value, nullptr);
-    return jsi::Value(createObject(objRef));
-  } else if (smellsLikeES6Symbol(ctx_, value)) {
-    return jsi::Value(createSymbol(value));
-  } else {
-    // WHAT ARE YOU
-    abort();
+  JSType type = JSValueGetType(ctx_, value);
+
+  switch (type) {
+    case kJSTypeNumber:
+      return jsi::Value(JSValueToNumber(ctx_, value, nullptr));
+    case kJSTypeBoolean:
+      return jsi::Value(JSValueToBoolean(ctx_, value));
+    case kJSTypeNull:
+      return jsi::Value(nullptr);
+    case kJSTypeUndefined:
+      return jsi::Value();
+    case kJSTypeString: {
+      JSStringRef str = JSValueToStringCopy(ctx_, value, nullptr);
+      auto result = jsi::Value(createString(str));
+      JSStringRelease(str);
+      return result;
+    }
+    case kJSTypeObject: {
+      JSObjectRef objRef = JSValueToObject(ctx_, value, nullptr);
+      return jsi::Value(createObject(objRef));
+    }
+      // TODO: Uncomment this when all supported JSC versions have this symbol
+      //    case kJSTypeSymbol:
+    default: {
+      if (smellsLikeES6Symbol(ctx_, value)) {
+        return jsi::Value(createSymbol(value));
+      } else {
+        // WHAT ARE YOU
+        abort();
+      }
+    }
   }
 }
 

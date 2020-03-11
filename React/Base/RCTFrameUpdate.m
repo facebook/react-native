@@ -13,7 +13,7 @@
 
 @implementation RCTFrameUpdate
 
-RCT_NOT_IMPLEMENTED(- (instancetype)init)
+RCT_NOT_IMPLEMENTED(-(instancetype)init)
 
 - (instancetype)initWithDisplayLink:(CADisplayLink *)displayLink
 {

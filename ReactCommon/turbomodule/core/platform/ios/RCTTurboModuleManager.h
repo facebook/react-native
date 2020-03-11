@@ -42,6 +42,11 @@
                       delegate:(id<RCTTurboModuleManagerDelegate>)delegate
                      jsInvoker:(std::shared_ptr<facebook::react::CallInvoker>)jsInvoker;
 
+- (instancetype)initWithBridge:(RCTBridge *)bridge
+                      delegate:(id<RCTTurboModuleManagerDelegate>)delegate
+                     jsInvoker:(std::shared_ptr<facebook::react::CallInvoker>)jsInvoker
+             performanceLogger:(id<RCTTurboModulePerformanceLogger>)performanceLogger;
+
 - (void)installJSBindingWithRuntime:(facebook::jsi::Runtime *)runtime;
 
 - (void)invalidate;

@@ -21,6 +21,7 @@ folly::dynamic AndroidTextInputState::getDynamic() const {
   newState["attributedString"] = toDynamic(attributedString);
   newState["paragraphAttributes"] = toDynamic(paragraphAttributes);
   newState["hash"] = newState["attributedString"]["hash"];
+  newState["hasThemeData"] = !isnan(defaultThemePaddingStart);
   return newState;
 }
 #endif

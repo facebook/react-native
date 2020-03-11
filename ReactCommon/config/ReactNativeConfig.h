@@ -17,7 +17,7 @@ namespace react {
  * Provide a sub-class implementation to allow app specific customization.
  */
 class ReactNativeConfig {
-public:
+ public:
   ReactNativeConfig();
   virtual ~ReactNativeConfig();
 
@@ -31,7 +31,7 @@ public:
  * Empty configuration that will always provide "falsy" values.
  */
 class EmptyReactNativeConfig : public ReactNativeConfig {
-public:
+ public:
   EmptyReactNativeConfig();
 
   bool getBool(const std::string &param) const override;

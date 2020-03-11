@@ -62,6 +62,7 @@ fb_xplat_cxx_library(
         "fbsource//xplat/folly:futures",
         "fbsource//xplat/folly:molly",
         "fbsource//xplat/hermes/API:HermesAPI",
+        "fbsource//xplat/jsi:JSIDynamic",
         "fbsource//xplat/jsi:jsi",
         "fbsource//xplat/third-party/glog:glog",
         ":detail",

@@ -7,8 +7,8 @@
 
 #import <FBReactNativeSpec/FBReactNativeSpec.h>
 
-#import "RCTI18nManager.h"
 #import <React/RCTI18nUtil.h>
+#import "RCTI18nManager.h"
 
 #import "CoreModulesPlugins.h"
 
@@ -26,17 +26,17 @@ RCT_EXPORT_MODULE()
   return NO;
 }
 
-RCT_EXPORT_METHOD(allowRTL:(BOOL)value)
+RCT_EXPORT_METHOD(allowRTL : (BOOL)value)
 {
   [[RCTI18nUtil sharedInstance] allowRTL:value];
 }
 
-RCT_EXPORT_METHOD(forceRTL:(BOOL)value)
+RCT_EXPORT_METHOD(forceRTL : (BOOL)value)
 {
   [[RCTI18nUtil sharedInstance] forceRTL:value];
 }
 
-RCT_EXPORT_METHOD(swapLeftAndRightInRTL:(BOOL)value)
+RCT_EXPORT_METHOD(swapLeftAndRightInRTL : (BOOL)value)
 {
   [[RCTI18nUtil sharedInstance] swapLeftAndRightInRTL:value];
 }
@@ -49,8 +49,8 @@ RCT_EXPORT_METHOD(swapLeftAndRightInRTL:(BOOL)value)
 - (NSDictionary *)getConstants
 {
   return @{
-    @"isRTL": @([[RCTI18nUtil sharedInstance] isRTL]),
-    @"doLeftAndRightSwapInRTL": @([[RCTI18nUtil sharedInstance] doLeftAndRightSwapInRTL])
+    @"isRTL" : @([[RCTI18nUtil sharedInstance] isRTL]),
+    @"doLeftAndRightSwapInRTL" : @([[RCTI18nUtil sharedInstance] doLeftAndRightSwapInRTL])
   };
 }
 
@@ -61,6 +61,7 @@ RCT_EXPORT_METHOD(swapLeftAndRightInRTL:(BOOL)value)
 
 @end
 
-Class RCTI18nManagerCls(void) {
+Class RCTI18nManagerCls(void)
+{
   return RCTI18nManager.class;
 }

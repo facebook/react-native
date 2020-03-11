@@ -41,6 +41,7 @@ using namespace facebook::react;
     _backedTextInputView = props.traits.multiline ? [[RCTUITextView alloc] init] : [[RCTUITextField alloc] init];
     _backedTextInputView.frame = self.bounds;
     _backedTextInputView.textInputDelegate = self;
+    _stateRevision = State::initialRevisionValue;
     [self addSubview:_backedTextInputView];
   }
 
@@ -188,7 +189,7 @@ using namespace facebook::react;
   [super prepareForRecycle];
   _backedTextInputView.attributedText = [[NSAttributedString alloc] init];
   _state.reset();
-  _stateRevision = 0;
+  _stateRevision = State::initialRevisionValue;
 }
 
 #pragma mark - RCTComponentViewProtocol
@@ -373,22 +374,21 @@ using namespace facebook::react;
   // `eventCount` is ignored, isn't used in Fabric's TextInput.
   // We are keeping it so commands are
   // backwards compatible with Paper's TextInput.
+  if (value) {
+    NSMutableAttributedString *mutableString =
+        [[NSMutableAttributedString alloc] initWithAttributedString:_backedTextInputView.attributedText];
+    [mutableString replaceCharactersInRange:NSMakeRange(0, _backedTextInputView.attributedText.length)
+                                 withString:value];
+    _backedTextInputView.attributedText = mutableString;
+    [self _updateState];
+  }
+
   UITextPosition *startPosition = [_backedTextInputView positionFromPosition:_backedTextInputView.beginningOfDocument
                                                                       offset:start];
   UITextPosition *endPosition = [_backedTextInputView positionFromPosition:_backedTextInputView.beginningOfDocument
                                                                     offset:end];
   UITextRange *range = [_backedTextInputView textRangeFromPosition:startPosition toPosition:endPosition];
   [_backedTextInputView setSelectedTextRange:range notifyDelegate:NO];
-
-  NSMutableAttributedString *mutableString =
-      [[NSMutableAttributedString alloc] initWithAttributedString:_backedTextInputView.attributedText];
-
-  if (value) {
-    [mutableString replaceCharactersInRange:NSMakeRange(start, end - start) withString:value];
-  }
-
-  _backedTextInputView.attributedText = mutableString;
-  [self _updateState];
 }
 
 @end

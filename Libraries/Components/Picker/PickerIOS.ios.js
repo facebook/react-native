@@ -16,6 +16,7 @@ const React = require('react');
 const StyleSheet = require('../../StyleSheet/StyleSheet');
 const View = require('../View/View');
 
+const invariant = require('invariant');
 const processColor = require('../../StyleSheet/processColor');
 
 import RCTPickerNativeComponent, {
@@ -23,6 +24,7 @@ import RCTPickerNativeComponent, {
 } from './RCTPickerNativeComponent';
 import type {TextStyleProp} from '../../StyleSheet/StyleSheet';
 import type {ColorValue} from '../../StyleSheet/StyleSheetTypes';
+import type {ProcessedColorValue} from '../../StyleSheet/processColor';
 import type {SyntheticEvent} from '../../Types/CoreEventTypes';
 import type {ViewProps} from '../View/ViewPropTypes';
 
@@ -36,7 +38,7 @@ type PickerIOSChangeEvent = SyntheticEvent<
 type RCTPickerIOSItemType = $ReadOnly<{|
   label: ?Label,
   value: ?(number | string),
-  textColor: ?number,
+  textColor: ?ProcessedColorValue,
 |}>;
 
 type Label = Stringish | number;
@@ -86,10 +88,15 @@ class PickerIOS extends React.Component<Props, State> {
         if (child.props.value === props.selectedValue) {
           selectedIndex = index;
         }
+        const processedTextColor = processColor(child.props.color);
+        invariant(
+          processedTextColor == null || typeof processedTextColor === 'number',
+          'Unexpected color given for PickerIOSItem color',
+        );
         items.push({
           value: child.props.value,
           label: child.props.label,
-          textColor: processColor(child.props.color),
+          textColor: processedTextColor,
         });
       });
     return {selectedIndex, items};

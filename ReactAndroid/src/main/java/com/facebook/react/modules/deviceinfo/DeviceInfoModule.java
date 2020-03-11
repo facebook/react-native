@@ -9,24 +9,22 @@ package com.facebook.react.modules.deviceinfo;
 
 import android.content.Context;
 import androidx.annotation.Nullable;
+import com.facebook.fbreact.specs.NativeDeviceInfoSpec;
 import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactNoCrashSoftException;
 import com.facebook.react.bridge.ReactSoftException;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableNativeMap;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
-import com.facebook.react.turbomodule.core.interfaces.TurboModule;
 import com.facebook.react.uimanager.DisplayMetricsHolder;
 import java.util.HashMap;
 import java.util.Map;
 
 /** Module that exposes Android Constants to JS. */
 @ReactModule(name = DeviceInfoModule.NAME)
-public class DeviceInfoModule extends ReactContextBaseJavaModule
-    implements LifecycleEventListener, TurboModule {
+public class DeviceInfoModule extends NativeDeviceInfoSpec implements LifecycleEventListener {
 
   public static final String NAME = "DeviceInfo";
 
@@ -55,7 +53,7 @@ public class DeviceInfoModule extends ReactContextBaseJavaModule
   }
 
   @Override
-  public @Nullable Map<String, Object> getConstants() {
+  public @Nullable Map<String, Object> getTypedExportedConstants() {
     HashMap<String, Object> constants = new HashMap<>();
     constants.put("Dimensions", DisplayMetricsHolder.getDisplayMetricsMap(mFontScale));
     return constants;

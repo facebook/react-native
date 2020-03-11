@@ -218,7 +218,7 @@ module.exports = {
           const className = getInterfaceJavaClassName(componentName);
           const fileName = `${className}.java`;
 
-          const imports = getImports(component);
+          const imports = getImports(component, 'interface');
           const propsString = generatePropsString(component, imports);
           const commandsString = generateCommandsString(
             component,

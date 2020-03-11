@@ -12,17 +12,17 @@ using namespace facebook::jni;
 namespace facebook {
 namespace react {
 
-WritableNativeMap::WritableNativeMap()
-  : HybridBase(folly::dynamic::object()) {}
+WritableNativeMap::WritableNativeMap() : HybridBase(folly::dynamic::object()) {}
 
-WritableNativeMap::WritableNativeMap(folly::dynamic&& val)
+WritableNativeMap::WritableNativeMap(folly::dynamic &&val)
     : HybridBase(std::move(val)) {
   if (!map_.isObject()) {
     throw std::runtime_error("WritableNativeMap value must be an object.");
   }
 }
 
-local_ref<WritableNativeMap::jhybriddata> WritableNativeMap::initHybrid(alias_ref<jclass>) {
+local_ref<WritableNativeMap::jhybriddata> WritableNativeMap::initHybrid(
+    alias_ref<jclass>) {
   return makeCxxInstance();
 }
 
@@ -55,7 +55,9 @@ void WritableNativeMap::putString(std::string key, alias_ref<jstring> val) {
   map_.insert(std::move(key), val->toString());
 }
 
-void WritableNativeMap::putNativeArray(std::string key, WritableNativeArray* otherArray) {
+void WritableNativeMap::putNativeArray(
+    std::string key,
+    WritableNativeArray *otherArray) {
   if (!otherArray) {
     putNull(std::move(key));
     return;
@@ -64,7 +66,9 @@ void WritableNativeMap::putNativeArray(std::string key, WritableNativeArray* oth
   map_.insert(key, otherArray->consume());
 }
 
-void WritableNativeMap::putNativeMap(std::string key, WritableNativeMap *otherMap) {
+void WritableNativeMap::putNativeMap(
+    std::string key,
+    WritableNativeMap *otherMap) {
   if (!otherMap) {
     putNull(std::move(key));
     return;
@@ -73,7 +77,7 @@ void WritableNativeMap::putNativeMap(std::string key, WritableNativeMap *otherMa
   map_.insert(std::move(key), otherMap->consume());
 }
 
-void WritableNativeMap::mergeNativeMap(ReadableNativeMap* other) {
+void WritableNativeMap::mergeNativeMap(ReadableNativeMap *other) {
   throwIfConsumed();
   other->throwIfConsumed();
 
@@ -93,7 +97,7 @@ void WritableNativeMap::registerNatives() {
       makeNativeMethod("putNativeMap", WritableNativeMap::putNativeMap),
       makeNativeMethod("mergeNativeMap", WritableNativeMap::mergeNativeMap),
       makeNativeMethod("initHybrid", WritableNativeMap::initHybrid),
-    });
+  });
 }
 
 } // namespace react

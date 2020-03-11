@@ -18,6 +18,7 @@ import AndroidDialogPickerNativeComponent, {
 } from './AndroidDialogPickerNativeComponent';
 import * as React from 'react';
 import StyleSheet from '../../StyleSheet/StyleSheet';
+import invariant from 'invariant';
 import processColor from '../../StyleSheet/processColor';
 
 import type {SyntheticEvent} from '../../Types/CoreEventTypes';
@@ -61,8 +62,13 @@ function PickerAndroid(props: Props): React.Node {
         selected = index;
       }
       const {color, label} = child.props;
+      const processedColor = processColor(color);
+      invariant(
+        processedColor == null || typeof processedColor === 'number',
+        'Unexpected color given for PickerAndroid color prop',
+      );
       return {
-        color: color == null ? null : processColor(color),
+        color: color == null ? null : processedColor,
         label,
       };
     });

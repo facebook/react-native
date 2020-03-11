@@ -14,11 +14,13 @@ import RCTActionSheetManager from './NativeActionSheetManager';
 
 const invariant = require('invariant');
 const processColor = require('../StyleSheet/processColor');
+import type {ColorValue} from '../StyleSheet/StyleSheetTypes';
+import type {ProcessedColorValue} from '../StyleSheet/processColor';
 
 /**
  * Display action sheets and share sheets on iOS.
  *
- * See http://facebook.github.io/react-native/docs/actionsheetios.html
+ * See https://reactnative.dev/docs/actionsheetios.html
  */
 const ActionSheetIOS = {
   /**
@@ -35,7 +37,7 @@ const ActionSheetIOS = {
    * The 'callback' function takes one parameter, the zero-based index
    * of the selected item.
    *
-   * See http://facebook.github.io/react-native/docs/actionsheetios.html#showactionsheetwithoptions
+   * See https://reactnative.dev/docs/actionsheetios.html#showactionsheetwithoptions
    */
   showActionSheetWithOptions(
     options: {|
@@ -45,7 +47,8 @@ const ActionSheetIOS = {
       +destructiveButtonIndex?: ?number | ?Array<number>,
       +cancelButtonIndex?: ?number,
       +anchor?: ?number,
-      +tintColor?: number | string,
+      +tintColor?: ColorValue | ProcessedColorValue,
+      +userInterfaceStyle?: string,
     |},
     callback: (buttonIndex: number) => void,
   ) {
@@ -65,10 +68,15 @@ const ActionSheetIOS = {
       destructiveButtonIndices = [destructiveButtonIndex];
     }
 
+    const processedTintColor = processColor(tintColor);
+    invariant(
+      processedTintColor == null || typeof processedTintColor === 'number',
+      'Unexpected color given for ActionSheetIOS.showActionSheetWithOptions tintColor',
+    );
     RCTActionSheetManager.showActionSheetWithOptions(
       {
         ...remainingOptions,
-        tintColor: processColor(tintColor),
+        tintColor: processedTintColor,
         destructiveButtonIndices,
       },
       callback,
@@ -96,7 +104,7 @@ const ActionSheetIOS = {
    * - a boolean value signifying success or failure
    * - a string that, in the case of success, indicates the method of sharing
    *
-   * See http://facebook.github.io/react-native/docs/actionsheetios.html#showshareactionsheetwithoptions
+   * See https://reactnative.dev/docs/actionsheetios.html#showshareactionsheetwithoptions
    */
   showShareActionSheetWithOptions(
     options: Object,

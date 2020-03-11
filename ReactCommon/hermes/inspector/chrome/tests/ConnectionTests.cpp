@@ -1168,6 +1168,38 @@ TEST(ConnectionTests, testRuntimeEvaluate) {
   asyncRuntime.stop();
 }
 
+TEST(ConnectionTests, testRuntimeEvaluateReturnByValue) {
+  TestContext context;
+  AsyncHermesRuntime &asyncRuntime = context.runtime();
+  SyncConnection &conn = context.conn();
+  int msgId = 1;
+
+  asyncRuntime.executeScriptAsync("while(!shouldStop());");
+
+  send<m::debugger::EnableRequest>(conn, msgId++);
+  expectExecutionContextCreated(conn);
+  expectNotification<m::debugger::ScriptParsedNotification>(conn);
+
+  // We expect this JSON object to be evaluated and return by value, so
+  // that JSON encoding the result will give the same string.
+  auto object = "{\"key\":[1,\"two\"]}";
+
+  m::runtime::EvaluateRequest req;
+  req.id = msgId;
+  req.expression = std::string("(") + object + ")";
+  req.returnByValue = true;
+  conn.send(req.toJson());
+
+  auto resp =
+      expectResponse<m::debugger::EvaluateOnCallFrameResponse>(conn, msgId);
+  EXPECT_EQ(resp.result.type, "object");
+  ASSERT_TRUE(resp.result.value.hasValue());
+  EXPECT_EQ(folly::toJson(resp.result.value.value()), object);
+
+  // [3] exit run loop
+  asyncRuntime.stop();
+}
+
 TEST(ConnectionTests, testEvalOnCallFrameException) {
   TestContext context;
   AsyncHermesRuntime &asyncRuntime = context.runtime();

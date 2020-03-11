@@ -349,8 +349,8 @@ type ListDebugInfo = {
 };
 
 /**
- * Base implementation for the more convenient [`<FlatList>`](/react-native/docs/flatlist.html)
- * and [`<SectionList>`](/react-native/docs/sectionlist.html) components, which are also better
+ * Base implementation for the more convenient [`<FlatList>`](https://reactnative.dev/docs/flatlist.html)
+ * and [`<SectionList>`](https://reactnative.dev/docs/sectionlist.html) components, which are also better
  * documented. In general, this should only really be used if you need more flexibility than
  * `FlatList` provides, e.g. for use with immutable data instead of plain arrays.
  *
@@ -1133,7 +1133,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       );
       cells.push(
         <VirtualizedCellWrapper
-          cellKey={this._getCellKey() + '-footer'}
+          cellKey={this._getFooterCellKey()}
           key="$footer">
           <View
             onLayout={this._onLayoutFooter}
@@ -1362,15 +1362,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       this._frames[cellKey].inLayout = true;
     }
 
-    const childListKeys = this._cellKeysToChildListKeys.get(cellKey);
-    if (childListKeys) {
-      for (let childKey of childListKeys) {
-        const childList = this._nestedChildLists.get(childKey);
-        childList &&
-          childList.ref &&
-          childList.ref.measureLayoutRelativeToContainingList();
-      }
-    }
+    this._triggerRemeasureForChildListsInCell(cellKey);
 
     this._computeBlankness();
     this._updateViewableItems(this.props.data);
@@ -1382,6 +1374,18 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       this._frames[cellKey] = {...curr, inLayout: false};
     }
   };
+
+  _triggerRemeasureForChildListsInCell(cellKey: string): void {
+    const childListKeys = this._cellKeysToChildListKeys.get(cellKey);
+    if (childListKeys) {
+      for (let childKey of childListKeys) {
+        const childList = this._nestedChildLists.get(childKey);
+        childList &&
+          childList.ref &&
+          childList.ref.measureLayoutRelativeToContainingList();
+      }
+    }
+  }
 
   measureLayoutRelativeToContainingList(): void {
     // TODO (T35574538): findNodeHandle sometimes crashes with "Unable to find
@@ -1443,7 +1447,12 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     this.props.onLayout && this.props.onLayout(e);
   };
 
+  _getFooterCellKey(): string {
+    return this._getCellKey() + '-footer';
+  }
+
   _onLayoutFooter = e => {
+    this._triggerRemeasureForChildListsInCell(this._getFooterCellKey());
     this._footerLength = this._selectLength(e.nativeEvent.layout);
   };
 

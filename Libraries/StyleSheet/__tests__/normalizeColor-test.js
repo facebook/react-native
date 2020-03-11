@@ -10,7 +10,15 @@
 
 'use strict';
 
+const {OS} = require('../../Utilities/Platform');
 const normalizeColor = require('../normalizeColor');
+
+const PlatformColorIOS = require('../PlatformColorValueTypes.ios')
+  .PlatformColor;
+const DynamicColorIOS = require('../PlatformColorValueTypesIOS.ios')
+  .DynamicColorIOS;
+const PlatformColorAndroid = require('../PlatformColorValueTypes.android')
+  .PlatformColor;
 
 describe('normalizeColor', function() {
   it('should accept only spec compliant colors', function() {
@@ -127,5 +135,49 @@ describe('normalizeColor', function() {
   it("should return the same color when it's already normalized", function() {
     const normalizedColor = normalizeColor('red') || 0;
     expect(normalizeColor(normalizedColor)).toBe(normalizedColor);
+  });
+
+  describe('iOS', () => {
+    if (OS === 'ios') {
+      it('should normalize iOS PlatformColor colors', () => {
+        const color = PlatformColorIOS('systemRedColor');
+        const normalizedColor = normalizeColor(color);
+        const expectedColor = {semantic: ['systemRedColor']};
+        expect(normalizedColor).toEqual(expectedColor);
+      });
+
+      it('should normalize iOS Dynamic colors with named colors', () => {
+        const color = DynamicColorIOS({light: 'black', dark: 'white'});
+        const normalizedColor = normalizeColor(color);
+        const expectedColor = {dynamic: {light: 'black', dark: 'white'}};
+        expect(normalizedColor).toEqual(expectedColor);
+      });
+
+      it('should normalize iOS Dynamic colors with PlatformColor colors', () => {
+        const color = DynamicColorIOS({
+          light: PlatformColorIOS('systemBlackColor'),
+          dark: PlatformColorIOS('systemWhiteColor'),
+        });
+        const normalizedColor = normalizeColor(color);
+        const expectedColor = {
+          dynamic: {
+            light: {semantic: ['systemBlackColor']},
+            dark: {semantic: ['systemWhiteColor']},
+          },
+        };
+        expect(normalizedColor).toEqual(expectedColor);
+      });
+    }
+  });
+
+  describe('Android', () => {
+    if (OS === 'android') {
+      it('should normalize Android PlatformColor colors', () => {
+        const color = PlatformColorAndroid('?attr/colorPrimary');
+        const normalizedColor = normalizeColor(color);
+        const expectedColor = {resource_paths: ['?attr/colorPrimary']};
+        expect(normalizedColor).toEqual(expectedColor);
+      });
+    }
   });
 });

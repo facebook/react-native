@@ -19,10 +19,24 @@ extern const char TextComponentName[];
 
 using TextEventEmitter = TouchEventEmitter;
 
-class TextShadowNode
-    : public ConcreteShadowNode<TextComponentName, TextProps, TextEventEmitter>,
-      public BaseTextShadowNode {
+class TextShadowNode : public ConcreteShadowNode<
+                           TextComponentName,
+                           ShadowNode,
+                           TextProps,
+                           TextEventEmitter>,
+                       public BaseTextShadowNode {
  public:
+  static ShadowNodeTraits BaseTraits() {
+    auto traits = ConcreteShadowNode::BaseTraits();
+
+#ifdef ANDROID
+    traits.set(ShadowNodeTraits::Trait::FormsView);
+    traits.set(ShadowNodeTraits::Trait::FormsStackingContext);
+#endif
+
+    return traits;
+  }
+
   using ConcreteShadowNode::ConcreteShadowNode;
 };
 

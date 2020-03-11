@@ -13,7 +13,9 @@
 const Platform = require('../../Utilities/Platform');
 const React = require('react');
 
+const invariant = require('invariant');
 const processColor = require('../../StyleSheet/processColor');
+import type {ColorValue} from '../../StyleSheet/StyleSheetTypes';
 
 import NativeStatusBarManagerAndroid from './NativeStatusBarManagerAndroid';
 import NativeStatusBarManagerIOS from './NativeStatusBarManagerIOS';
@@ -61,7 +63,7 @@ type AndroidProps = $ReadOnly<{|
    * The background color of the status bar.
    * @platform android
    */
-  backgroundColor?: ?string,
+  backgroundColor?: ?ColorValue,
   /**
    * If the status bar is translucent.
    * When translucent is set to true, the app will draw under the status bar.
@@ -322,6 +324,10 @@ class StatusBar extends React.Component<Props> {
       );
       return;
     }
+    invariant(
+      typeof processedColor === 'number',
+      'Unexpected color given for StatusBar.setBackgroundColor',
+    );
 
     NativeStatusBarManagerAndroid.setColor(processedColor, animated);
   }
@@ -466,6 +472,10 @@ class StatusBar extends React.Component<Props> {
             } parsed to null or undefined`,
           );
         } else {
+          invariant(
+            typeof processedColor === 'number',
+            'Unexpected color given in StatusBar._updatePropsStack',
+          );
           NativeStatusBarManagerAndroid.setColor(
             processedColor,
             mergedProps.backgroundColor.animated,

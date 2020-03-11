@@ -128,8 +128,8 @@ public class UIImplementation {
     return mShadowNodeRegistry.getNode(reactTag);
   }
 
-  protected final ViewManager resolveViewManager(String className) {
-    return mViewManagers.get(className);
+  protected final @Nullable ViewManager resolveViewManager(String className) {
+    return mViewManagers.getViewManagerIfExists(className);
   }
 
   /*package*/ UIViewOperationQueue getUIViewOperationQueue() {
@@ -333,7 +333,6 @@ public class UIImplementation {
       int[] indicesToRemove = new int[numToMove + numToRemove];
       int[] tagsToRemove = new int[indicesToRemove.length];
       int[] tagsToDelete = new int[numToRemove];
-      int[] indicesToDelete = new int[numToRemove];
 
       if (numToMove > 0) {
         Assertions.assertNotNull(moveFrom);
@@ -365,7 +364,6 @@ public class UIImplementation {
           indicesToRemove[numToMove + i] = indexToRemove;
           tagsToRemove[numToMove + i] = tagToRemove;
           tagsToDelete[i] = tagToRemove;
-          indicesToDelete[i] = indexToRemove;
         }
       }
 
@@ -405,12 +403,7 @@ public class UIImplementation {
       }
 
       mNativeViewHierarchyOptimizer.handleManageChildren(
-          cssNodeToManage,
-          indicesToRemove,
-          tagsToRemove,
-          viewsToAdd,
-          tagsToDelete,
-          indicesToDelete);
+          cssNodeToManage, indicesToRemove, tagsToRemove, viewsToAdd, tagsToDelete);
 
       for (int i = 0; i < tagsToDelete.length; i++) {
         removeShadowNode(mShadowNodeRegistry.getNode(tagsToDelete[i]));

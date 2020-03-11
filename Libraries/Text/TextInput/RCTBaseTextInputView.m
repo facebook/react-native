@@ -25,6 +25,7 @@
   BOOL _hasInputAccesoryView;
   NSString *_Nullable _predictedText;
   NSInteger _nativeEventCount;
+  BOOL _didMoveToWindow;
 }
 
 - (instancetype)initWithBridge:(RCTBridge *)bridge
@@ -190,6 +191,25 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
   } else if (eventLag > RCTTextUpdateLagWarningThreshold) {
     RCTLog(@"Native TextInput(%@) is %lld events ahead of JS - try to make your JS faster.", backedTextInputView.attributedText.string, (long long)eventLag);
   }
+}
+
+- (void)setText:(NSString *__nullable)text
+ selectionStart:(NSInteger)start
+   selectionEnd:(NSInteger)end
+{
+  if (text) {
+    NSMutableAttributedString *mutableString =
+    [[NSMutableAttributedString alloc] initWithAttributedString:self.backedTextInputView.attributedText];
+    [mutableString replaceCharactersInRange:NSMakeRange(0, mutableString.string.length) withString:text];
+    self.backedTextInputView.attributedText = mutableString;
+  }
+
+  UITextPosition *startPosition = [self.backedTextInputView positionFromPosition:self.backedTextInputView.beginningOfDocument
+                                                                          offset:start];
+  UITextPosition *endPosition = [self.backedTextInputView positionFromPosition:self.backedTextInputView.beginningOfDocument
+                                                                        offset:end];
+  UITextRange *range = [self.backedTextInputView textRangeFromPosition:startPosition toPosition:endPosition];
+  [self.backedTextInputView setSelectedTextRange:range notifyDelegate:NO];
 }
 
 - (void)setTextContentType:(NSString *)type
@@ -519,7 +539,13 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
 
 - (void)didMoveToWindow
 {
-  [self.backedTextInputView reactFocusIfNeeded];
+  if (self.autoFocus && !_didMoveToWindow) {
+    [self.backedTextInputView reactFocus];
+  } else {
+    [self.backedTextInputView reactFocusIfNeeded];
+  }
+
+  _didMoveToWindow = YES;
 }
 
 #pragma mark - Custom Input Accessory View
@@ -559,14 +585,25 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
 
   // These keyboard types (all are number pads) don't have a "Done" button by default,
   // so we create an `inputAccessoryView` with this button for them.
-  BOOL shouldHaveInputAccesoryView =
-    (
-      keyboardType == UIKeyboardTypeNumberPad ||
-      keyboardType == UIKeyboardTypePhonePad ||
-      keyboardType == UIKeyboardTypeDecimalPad ||
-      keyboardType == UIKeyboardTypeASCIICapableNumberPad
-    ) &&
-    textInputView.returnKeyType == UIReturnKeyDone;
+  BOOL shouldHaveInputAccesoryView;
+  if (@available(iOS 10.0, *)) {
+      shouldHaveInputAccesoryView =
+      (
+       keyboardType == UIKeyboardTypeNumberPad ||
+       keyboardType == UIKeyboardTypePhonePad ||
+       keyboardType == UIKeyboardTypeDecimalPad ||
+       keyboardType == UIKeyboardTypeASCIICapableNumberPad
+      ) &&
+      textInputView.returnKeyType == UIReturnKeyDone;
+  } else {
+      shouldHaveInputAccesoryView =
+      (
+       keyboardType == UIKeyboardTypeNumberPad ||
+       keyboardType == UIKeyboardTypePhonePad ||
+       keyboardType == UIKeyboardTypeDecimalPad
+      ) &&
+      textInputView.returnKeyType == UIReturnKeyDone;
+  }
 
   if (_hasInputAccesoryView == shouldHaveInputAccesoryView) {
     return;

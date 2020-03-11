@@ -13,7 +13,7 @@
 
 @property (nonatomic, readonly) NSTimeInterval duration;
 @property (nonatomic, readonly) NSTimeInterval delay;
-@property (nonatomic, readonly, copy) NSString *property;
+@property (nonatomic, readonly, copy) NSString *property ;
 @property (nonatomic, readonly) CGFloat springDamping;
 @property (nonatomic, readonly) CGFloat initialVelocity;
 @property (nonatomic, readonly) RCTAnimationType animationType;
@@ -27,10 +27,8 @@
                  initialVelocity:(CGFloat)initialVelocity
                    animationType:(RCTAnimationType)animationType;
 
-- (instancetype)initWithDuration:(NSTimeInterval)duration
-                          config:(NSDictionary *)config;
+- (instancetype)initWithDuration:(NSTimeInterval)duration config:(NSDictionary *)config;
 
-- (void)performAnimations:(void (^)(void))animations
-      withCompletionBlock:(void (^)(BOOL completed))completionBlock;
+- (void)performAnimations:(void (^)(void))animations withCompletionBlock:(void (^)(BOOL completed))completionBlock;
 
 @end

@@ -30,9 +30,10 @@ enum ReactMarkerId {
 };
 
 #ifdef __APPLE__
-using LogTaggedMarker = std::function<void(const ReactMarkerId, const char* tag)>;
+using LogTaggedMarker =
+    std::function<void(const ReactMarkerId, const char *tag)>;
 #else
-typedef void(*LogTaggedMarker)(const ReactMarkerId, const char* tag);
+typedef void (*LogTaggedMarker)(const ReactMarkerId, const char *tag);
 #endif
 
 #ifndef RN_EXPORT
@@ -43,6 +44,6 @@ extern RN_EXPORT LogTaggedMarker logTaggedMarker;
 
 extern RN_EXPORT void logMarker(const ReactMarkerId markerId);
 
-}
-}
-}
+} // namespace ReactMarker
+} // namespace react
+} // namespace facebook

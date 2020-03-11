@@ -55,6 +55,7 @@ rn_xplat_cxx_library(
     deps = ([
         "fbsource//xplat/third-party/linker_lib:android",
         "fbsource//xplat/third-party/linker_lib:atomic",
+        "fbsource//xplat/third-party/glog:glog",
         "fbsource//xplat/folly:molly",
         "//fbandroid/xplat/fbgloginit:fbgloginit",
         "fbsource//xplat/fbsystrace:fbsystrace",

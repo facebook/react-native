@@ -16,8 +16,6 @@
 @property (nonatomic, copy, readonly) NSString *errorMessage;
 @property (nonatomic, copy, readonly) NSArray<RCTJSStackFrame *> *stack;
 
-
-- (instancetype)initWithErrorMessage:(NSString *)errorMessage
-                               stack:(NSArray<RCTJSStackFrame *> *)stack;
+- (instancetype)initWithErrorMessage:(NSString *)errorMessage stack:(NSArray<RCTJSStackFrame *> *)stack;
 
 @end

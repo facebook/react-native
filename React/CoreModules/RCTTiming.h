@@ -21,7 +21,7 @@
 
 @interface RCTTiming : NSObject <RCTBridgeModule, RCTInvalidating, RCTFrameUpdateObserver>
 
-- (instancetype)initWithDelegate:(id<RCTTimingDelegate>) delegate;
+- (instancetype)initWithDelegate:(id<RCTTimingDelegate>)delegate;
 - (void)createTimerForNextFrame:(nonnull NSNumber *)callbackID
                        duration:(NSTimeInterval)jsDuration
                jsSchedulingTime:(NSDate *)jsSchedulingTime
@@ -29,4 +29,3 @@
 - (void)deleteTimer:(double)timerID;
 
 @end
-

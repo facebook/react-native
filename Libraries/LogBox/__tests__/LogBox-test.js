@@ -36,6 +36,7 @@ describe('LogBox', () => {
     jest.resetModules();
     console.error = jest.fn();
     console.warn = jest.fn();
+    console.disableYellowBox = false;
   });
 
   afterEach(() => {
@@ -44,27 +45,27 @@ describe('LogBox', () => {
     console.warn = warn;
   });
 
-  it('can set `disableLogBox` after installing', () => {
-    expect(console.disableLogBox).toBe(undefined);
+  it('can call `ignoreAllLogs` after installing', () => {
+    expect(LogBoxData.isDisabled()).toBe(false);
 
     LogBox.install();
 
-    expect(console.disableLogBox).toBe(false);
     expect(LogBoxData.isDisabled()).toBe(false);
 
-    console.disableLogBox = true;
+    LogBox.ignoreAllLogs(true);
 
-    expect(console.disableLogBox).toBe(true);
     expect(LogBoxData.isDisabled()).toBe(true);
   });
 
-  it('can set `disableLogBox` before installing', () => {
-    expect(console.disableLogBox).toBe(undefined);
+  it('can call `ignoreAllLogs` before installing', () => {
+    expect(LogBoxData.isDisabled()).toBe(false);
 
-    console.disableLogBox = true;
+    LogBox.ignoreAllLogs(true);
+
+    expect(LogBoxData.isDisabled()).toBe(true);
+
     LogBox.install();
 
-    expect(console.disableLogBox).toBe(true);
     expect(LogBoxData.isDisabled()).toBe(true);
   });
 

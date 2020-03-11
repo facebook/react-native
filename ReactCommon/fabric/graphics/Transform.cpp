@@ -165,14 +165,37 @@ Point operator*(Point const &point, Transform const &transform) {
   }
 
   auto result = Point{};
-  result.x = transform.at(3, 0) + point.x * transform.at(0, 0) + point.y * transform.at(1, 0);
-  result.y = transform.at(3, 1) + point.x * transform.at(0, 1) + point.y * transform.at(1, 1);
-  auto w = transform.at(3, 3) + point.x * transform.at(0, 3) + point.y * transform.at(1, 3);
+  result.x = transform.at(3, 0) + point.x * transform.at(0, 0) +
+      point.y * transform.at(1, 0);
+  result.y = transform.at(3, 1) + point.x * transform.at(0, 1) +
+      point.y * transform.at(1, 1);
+  auto w = transform.at(3, 3) + point.x * transform.at(0, 3) +
+      point.y * transform.at(1, 3);
 
   if (w != 1 && w != 0) {
     result.x /= w;
     result.y /= w;
   }
+
+  return result;
+}
+
+Rect operator*(Rect const &rect, Transform const &transform) {
+  auto transformedSize = rect.size * transform;
+  auto pointAdjustment = Point{(rect.size.width - transformedSize.width) / 2,
+                               (rect.size.height - transformedSize.height) / 2};
+
+  return {rect.origin + pointAdjustment, transformedSize};
+}
+
+Size operator*(Size const &size, Transform const &transform) {
+  if (transform == Transform::Identity()) {
+    return size;
+  }
+
+  auto result = Size{};
+  result.width = transform.at(0, 0) * size.width;
+  result.height = transform.at(1, 1) * size.height;
 
   return result;
 }

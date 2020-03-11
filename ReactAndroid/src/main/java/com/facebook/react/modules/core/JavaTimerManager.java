@@ -9,6 +9,7 @@ package com.facebook.react.modules.core;
 
 import android.util.SparseArray;
 import androidx.annotation.Nullable;
+import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.UiThreadUtil;
@@ -293,6 +294,7 @@ public class JavaTimerManager {
    * @param delay The time in ms before the callback should be invoked.
    * @param repeat Whether the timer should be repeated (used for setInterval).
    */
+  @DoNotStrip
   public void createTimer(final int callbackID, final long delay, final boolean repeat) {
     long initialTargetTime = SystemClock.nanoTime() / 1000000 + delay;
     Timer timer = new Timer(callbackID, initialTargetTime, (int) delay, repeat);
@@ -343,6 +345,7 @@ public class JavaTimerManager {
     createTimer(callbackID, adjustedDuration, repeat);
   }
 
+  @DoNotStrip
   public void deleteTimer(int timerId) {
     synchronized (mTimerGuard) {
       Timer timer = mTimerIdsToTimers.get(timerId);
@@ -354,6 +357,7 @@ public class JavaTimerManager {
     }
   }
 
+  @DoNotStrip
   public void setSendIdleEvents(final boolean sendIdleEvents) {
     synchronized (mIdleCallbackGuard) {
       mSendIdleEvents = sendIdleEvents;

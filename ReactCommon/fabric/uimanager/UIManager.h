@@ -55,6 +55,8 @@ class UIManager final : public ShadowTreeDelegate {
       ShadowTree const &shadowTree,
       MountingCoordinator::Shared const &mountingCoordinator) const override;
 
+  void setStateReconciliationEnabled(bool enabled);
+
  private:
   friend class UIManagerBinding;
   friend class Scheduler;
@@ -89,8 +91,11 @@ class UIManager final : public ShadowTreeDelegate {
   void clearJSResponder() const;
 
   ShadowNode::Shared findNodeAtPoint(
-      const ShadowNode::Shared &shadowNode,
+      ShadowNode::Shared const &shadowNode,
       Point point) const;
+
+  ShadowNode::Shared const *getNewestCloneOfShadowNode(
+      ShadowNode::Shared const &shadowNode) const;
 
   /*
    * Returns layout metrics of given `shadowNode` relative to
@@ -106,9 +111,7 @@ class UIManager final : public ShadowTreeDelegate {
    * Creates a new shadow node with given state data, clones what's necessary
    * and performs a commit.
    */
-  void updateState(
-      ShadowNode const &shadowNode,
-      StateData::Shared const &rawStateData) const;
+  void updateState(StateUpdate const &stateUpdate) const;
 
   void dispatchCommand(
       const ShadowNode::Shared &shadowNode,
@@ -121,6 +124,7 @@ class UIManager final : public ShadowTreeDelegate {
   UIManagerDelegate *delegate_;
   UIManagerBinding *uiManagerBinding_;
   ShadowTreeRegistry shadowTreeRegistry_{};
+  bool stateReconciliationEnabled_{false};
 };
 
 } // namespace react

@@ -109,14 +109,14 @@ class ComponentDescriptor {
    */
   virtual State::Shared createInitialState(
       ShadowNodeFragment const &fragment,
-      SurfaceId const surfaceId) const = 0;
+      ShadowNodeFamily::Shared const &family) const = 0;
 
   /*
    * Creates a new State object that represents (and contains) a new version of
    * State's data.
    */
   virtual State::Shared createState(
-      const State::Shared &previousState,
+      ShadowNodeFamily::Shared const &family,
       const StateData::Shared &data) const = 0;
 
   /*

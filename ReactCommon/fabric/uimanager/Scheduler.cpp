@@ -43,10 +43,8 @@ Scheduler::Scheduler(
     });
   };
 
-  auto statePipe = [uiManager](
-                       const StateData::Shared &data,
-                       const StateTarget &stateTarget) {
-    uiManager->updateState(stateTarget.getShadowNode(), data);
+  auto statePipe = [uiManager](StateUpdate const &stateUpdate) {
+    uiManager->updateState(stateUpdate);
   };
 
   eventDispatcher_ = std::make_shared<EventDispatcher>(
@@ -66,6 +64,15 @@ Scheduler::Scheduler(
 
   uiManager->setDelegate(this);
   uiManager->setComponentDescriptorRegistry(componentDescriptorRegistry_);
+
+#ifdef ANDROID
+  bool stateReconciliationEnabled = reactNativeConfig_->getBool(
+      "react_fabric:enabled_state_reconciliation_android");
+#else
+  bool stateReconciliationEnabled = reactNativeConfig_->getBool(
+      "react_fabric:enabled_state_reconciliation_ios");
+#endif
+  uiManager->setStateReconciliationEnabled(stateReconciliationEnabled);
 
   runtimeExecutor_([=](jsi::Runtime &runtime) {
     auto uiManagerBinding = UIManagerBinding::createAndInstallIfNeeded(runtime);
@@ -234,7 +241,7 @@ Size Scheduler::measureSurface(
             [&](RootShadowNode::Shared const &oldRootShadowNode) {
               auto rootShadowNode =
                   oldRootShadowNode->clone(layoutConstraints, layoutContext);
-              rootShadowNode->layout();
+              rootShadowNode->layoutIfNeeded();
               size = rootShadowNode->getLayoutMetrics().frame.size;
               return nullptr;
             });

@@ -114,6 +114,8 @@ class AutogrowingTextInputExample extends React.Component<{...}> {
              * found when making Flow check .android.js files. */
             this.setState({contentSize: event.nativeEvent.contentSize})
           }
+          /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was
+           * found when making Flow check .android.js files. */
           {...props}
         />
         <Text>Plain text value representation:</Text>

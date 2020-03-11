@@ -12,7 +12,8 @@
 namespace facebook {
 namespace react {
 
-id convertFollyDynamicToId(const folly::dynamic &dyn) {
+id convertFollyDynamicToId(const folly::dynamic &dyn)
+{
   // I could imagine an implementation which avoids copies by wrapping the
   // dynamic in a derived class of NSDictionary.  We can do that if profiling
   // implies it will help.
@@ -27,8 +28,7 @@ id convertFollyDynamicToId(const folly::dynamic &dyn) {
     case folly::dynamic::DOUBLE:
       return @(dyn.getDouble());
     case folly::dynamic::STRING:
-      return [[NSString alloc] initWithBytes:dyn.c_str() length:dyn.size()
-                                   encoding:NSUTF8StringEncoding];
+      return [[NSString alloc] initWithBytes:dyn.c_str() length:dyn.size() encoding:NSUTF8StringEncoding];
     case folly::dynamic::ARRAY: {
       NSMutableArray *array = [[NSMutableArray alloc] initWithCapacity:dyn.size()];
       for (auto &elem : dyn) {
@@ -55,14 +55,14 @@ folly::dynamic convertIdToFollyDynamic(id json)
     switch (objCType[0]) {
       // This is a c++ bool or C99 _Bool.  On some platforms, BOOL is a bool.
       case _C_BOOL:
-        return (bool) [json boolValue];
+        return (bool)[json boolValue];
       case _C_CHR:
         // On some platforms, objc BOOL is a signed char, but it
         // might also be a small number.  Use the same hack JSC uses
         // to distinguish them:
         // https://phabricator.intern.facebook.com/diffusion/FBS/browse/master/fbobjc/xplat/third-party/jsc/safari-600-1-4-17/JavaScriptCore/API/JSValue.mm;b8ee03916489f8b12143cd5c0bca546da5014fc9$901
         if ([json isKindOfClass:[@YES class]]) {
-          return (bool) [json boolValue];
+          return (bool)[json boolValue];
         } else {
           return [json longLongValue];
         }
@@ -81,13 +81,12 @@ folly::dynamic convertIdToFollyDynamic(id json)
       case _C_DBL:
         return [json doubleValue];
 
-      // default:
-      //   fall through
+        // default:
+        //   fall through
     }
   } else if ([json isKindOfClass:[NSString class]]) {
     NSData *data = [json dataUsingEncoding:NSUTF8StringEncoding];
-    return std::string(reinterpret_cast<const char*>(data.bytes),
-                       data.length);
+    return std::string(reinterpret_cast<const char *>(data.bytes), data.length);
   } else if ([json isKindOfClass:[NSArray class]]) {
     folly::dynamic array = folly::dynamic::array;
     for (id element in json) {
@@ -98,9 +97,8 @@ folly::dynamic convertIdToFollyDynamic(id json)
     __block folly::dynamic object = folly::dynamic::object();
 
     [json enumerateKeysAndObjectsUsingBlock:^(NSString *key, NSString *value, __unused BOOL *stop) {
-      object.insert(convertIdToFollyDynamic(key),
-                    convertIdToFollyDynamic(value));
-      }];
+      object.insert(convertIdToFollyDynamic(key), convertIdToFollyDynamic(value));
+    }];
 
     return object;
   }
@@ -108,4 +106,5 @@ folly::dynamic convertIdToFollyDynamic(id json)
   return nil;
 }
 
-} }
+}
+}

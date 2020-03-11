@@ -16,7 +16,8 @@ import type {ExceptionData} from '../../Core/NativeExceptionsManager';
 import type {LogBoxLogData} from './LogBoxLog';
 
 const BABEL_TRANSFORM_ERROR_FORMAT = /^(?:TransformError )?(?:SyntaxError: |ReferenceError: )(.*): (.*) \((\d+):(\d+)\)\n\n([\s\S]+)/;
-const BABEL_CODE_FRAME_ERROR_FORMAT = /^(?:TransformError )?(?:.*): (.*): ([\s\S]+?)\n([ >]{2}[\d\s]+ \|[\s\S]+|\u{001b}[\s\S]+)/u;
+const BABEL_CODE_FRAME_ERROR_FORMAT = /^(?:TransformError )?(?:.*):? (?:.*?)(\/.*): ([\s\S]+?)\n([ >]{2}[\d\s]+ \|[\s\S]+|\u{001b}[\s\S]+)/u;
+const METRO_ERROR_FORMAT = /^(?:InternalError Metro has encountered an error:) (.*): (.*) \((\d+):(\d+)\)\n\n([\s\S]+)/u;
 
 export type ExtendedExceptionData = ExceptionData & {
   isComponentError: boolean,
@@ -46,7 +47,7 @@ export type ComponentStack = $ReadOnlyArray<CodeFrame>;
 
 const SUBSTITUTION = UTFSequence.BOM + '%s';
 
-export function parseCategory(
+export function parseInterpolation(
   args: $ReadOnlyArray<mixed>,
 ): $ReadOnly<{|
   category: Category,
@@ -151,6 +152,38 @@ export function parseLogBoxException(
   const message =
     error.originalMessage != null ? error.originalMessage : 'Unknown';
 
+  const metroInternalError = message.match(METRO_ERROR_FORMAT);
+  if (metroInternalError) {
+    const [
+      content,
+      fileName,
+      row,
+      column,
+      codeFrame,
+    ] = metroInternalError.slice(1);
+
+    return {
+      level: 'fatal',
+      type: 'Metro Error',
+      stack: [],
+      isComponentError: false,
+      componentStack: [],
+      codeFrame: {
+        fileName,
+        location: {
+          row: parseInt(row, 10),
+          column: parseInt(column, 10),
+        },
+        content: codeFrame,
+      },
+      message: {
+        content,
+        substitutions: [],
+      },
+      category: `${fileName}-${row}-${column}`,
+    };
+  }
+
   const babelTransformError = message.match(BABEL_TRANSFORM_ERROR_FORMAT);
   if (babelTransformError) {
     // Transform errors are thrown from inside the Babel transformer.
@@ -220,7 +253,7 @@ export function parseLogBoxException(
       error.componentStack != null
         ? parseComponentStack(error.componentStack)
         : [],
-    ...parseCategory([message]),
+    ...parseInterpolation([message]),
   };
 }
 
@@ -262,7 +295,7 @@ export function parseLogBoxLog(
   }
 
   return {
-    ...parseCategory(argsWithoutComponentStack),
+    ...parseInterpolation(argsWithoutComponentStack),
     componentStack,
   };
 }

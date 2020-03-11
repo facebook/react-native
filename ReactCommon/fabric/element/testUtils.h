@@ -8,6 +8,7 @@
 #pragma once
 
 #include <react/components/root/RootComponentDescriptor.h>
+#include <react/components/scrollview/ScrollViewComponentDescriptor.h>
 #include <react/components/view/ViewComponentDescriptor.h>
 #include <react/element/ComponentBuilder.h>
 #include <react/uimanager/ComponentDescriptorProviderRegistry.h>
@@ -15,7 +16,7 @@
 namespace facebook {
 namespace react {
 
-extern ComponentBuilder simpleComponentBuilder() {
+inline ComponentBuilder simpleComponentBuilder() {
   ComponentDescriptorProviderRegistry componentDescriptorProviderRegistry{};
   auto eventDispatcher = EventDispatcher::Shared{};
   auto componentDescriptorRegistry =
@@ -26,6 +27,8 @@ extern ComponentBuilder simpleComponentBuilder() {
       concreteComponentDescriptorProvider<RootComponentDescriptor>());
   componentDescriptorProviderRegistry.add(
       concreteComponentDescriptorProvider<ViewComponentDescriptor>());
+  componentDescriptorProviderRegistry.add(
+      concreteComponentDescriptorProvider<ScrollViewComponentDescriptor>());
 
   return ComponentBuilder{componentDescriptorRegistry};
 }

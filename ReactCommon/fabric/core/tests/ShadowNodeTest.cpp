@@ -35,12 +35,15 @@ class ShadowNodeTest : public ::testing::Test {
 
     auto props = std::make_shared<const TestProps>();
 
+    auto traits = TestShadowNode::BaseTraits();
+
     auto familyAA = std::make_shared<ShadowNodeFamily>(
         ShadowNodeFamilyFragment{
             /* .tag = */ 11,
             /* .surfaceId = */ surfaceId_,
             /* .eventEmitter = */ nullptr,
         },
+        eventDispatcher_,
         componentDescriptor_);
     nodeAA_ = std::make_shared<TestShadowNode>(
         ShadowNodeFragment{
@@ -48,7 +51,7 @@ class ShadowNodeTest : public ::testing::Test {
             /* .children = */ ShadowNode::emptySharedShadowNodeSharedList(),
         },
         familyAA,
-        ShadowNodeTraits{});
+        traits);
 
     auto familyABA = std::make_shared<ShadowNodeFamily>(
         ShadowNodeFamilyFragment{
@@ -56,6 +59,7 @@ class ShadowNodeTest : public ::testing::Test {
             /* .surfaceId = */ surfaceId_,
             /* .eventEmitter = */ nullptr,
         },
+        eventDispatcher_,
         componentDescriptor_);
     nodeABA_ = std::make_shared<TestShadowNode>(
         ShadowNodeFragment{
@@ -63,7 +67,7 @@ class ShadowNodeTest : public ::testing::Test {
             /* .children = */ ShadowNode::emptySharedShadowNodeSharedList(),
         },
         familyABA,
-        ShadowNodeTraits{});
+        traits);
 
     auto familyABB = std::make_shared<ShadowNodeFamily>(
         ShadowNodeFamilyFragment{
@@ -71,6 +75,7 @@ class ShadowNodeTest : public ::testing::Test {
             /* .surfaceId = */ surfaceId_,
             /* .eventEmitter = */ nullptr,
         },
+        eventDispatcher_,
         componentDescriptor_);
     nodeABB_ = std::make_shared<TestShadowNode>(
         ShadowNodeFragment{
@@ -78,7 +83,7 @@ class ShadowNodeTest : public ::testing::Test {
             /* .children = */ ShadowNode::emptySharedShadowNodeSharedList(),
         },
         familyABB,
-        ShadowNodeTraits{});
+        traits);
 
     auto nodeABChildren = std::make_shared<SharedShadowNodeList>(
         SharedShadowNodeList{nodeABA_, nodeABB_});
@@ -89,6 +94,7 @@ class ShadowNodeTest : public ::testing::Test {
             /* .surfaceId = */ surfaceId_,
             /* .eventEmitter = */ nullptr,
         },
+        eventDispatcher_,
         componentDescriptor_);
     nodeAB_ = std::make_shared<TestShadowNode>(
         ShadowNodeFragment{
@@ -96,7 +102,7 @@ class ShadowNodeTest : public ::testing::Test {
             /* .children = */ nodeABChildren,
         },
         familyAB,
-        ShadowNodeTraits{});
+        traits);
 
     auto familyAC = std::make_shared<ShadowNodeFamily>(
         ShadowNodeFamilyFragment{
@@ -104,6 +110,7 @@ class ShadowNodeTest : public ::testing::Test {
             /* .surfaceId = */ surfaceId_,
             /* .eventEmitter = */ nullptr,
         },
+        eventDispatcher_,
         componentDescriptor_);
     nodeAC_ = std::make_shared<TestShadowNode>(
         ShadowNodeFragment{
@@ -111,7 +118,7 @@ class ShadowNodeTest : public ::testing::Test {
             /* .children = */ ShadowNode::emptySharedShadowNodeSharedList(),
         },
         familyAC,
-        ShadowNodeTraits{});
+        traits);
 
     auto nodeAChildren = std::make_shared<SharedShadowNodeList>(
         SharedShadowNodeList{nodeAA_, nodeAB_, nodeAC_});
@@ -122,6 +129,7 @@ class ShadowNodeTest : public ::testing::Test {
             /* .surfaceId = */ surfaceId_,
             /* .eventEmitter = */ nullptr,
         },
+        eventDispatcher_,
         componentDescriptor_);
     nodeA_ = std::make_shared<TestShadowNode>(
         ShadowNodeFragment{
@@ -129,7 +137,7 @@ class ShadowNodeTest : public ::testing::Test {
             /* .children = */ nodeAChildren,
         },
         familyA,
-        ShadowNodeTraits{});
+        traits);
 
     auto familyZ = std::make_shared<ShadowNodeFamily>(
         ShadowNodeFamilyFragment{
@@ -137,6 +145,7 @@ class ShadowNodeTest : public ::testing::Test {
             /* .surfaceId = */ surfaceId_,
             /* .eventEmitter = */ nullptr,
         },
+        eventDispatcher_,
         componentDescriptor_);
     nodeZ_ = std::make_shared<TestShadowNode>(
         ShadowNodeFragment{
@@ -144,7 +153,7 @@ class ShadowNodeTest : public ::testing::Test {
             /* .children = */ ShadowNode::emptySharedShadowNodeSharedList(),
         },
         familyZ,
-        ShadowNodeTraits{});
+        traits);
   }
 
   std::shared_ptr<EventDispatcher const> eventDispatcher_;
@@ -229,7 +238,10 @@ TEST_F(ShadowNodeTest, handleState) {
           /* .surfaceId = */ surfaceId_,
           /* .eventEmitter = */ nullptr,
       },
+      eventDispatcher_,
       componentDescriptor_);
+
+  auto traits = TestShadowNode::BaseTraits();
 
   auto props = std::make_shared<const TestProps>();
   auto fragment = ShadowNodeFragment{
@@ -238,7 +250,7 @@ TEST_F(ShadowNodeTest, handleState) {
       /* .state = */ {}};
 
   auto const initialState =
-      componentDescriptor_.createInitialState(fragment, surfaceId_);
+      componentDescriptor_.createInitialState(fragment, family);
 
   auto firstNode = std::make_shared<TestShadowNode>(
       ShadowNodeFragment{
@@ -246,21 +258,21 @@ TEST_F(ShadowNodeTest, handleState) {
           /* .children = */ ShadowNode::emptySharedShadowNodeSharedList(),
           /* .state = */ initialState},
       family,
-      ShadowNodeTraits{});
+      traits);
   auto secondNode = std::make_shared<TestShadowNode>(
       ShadowNodeFragment{
           /* .props = */ props,
           /* .children = */ ShadowNode::emptySharedShadowNodeSharedList(),
           /* .state = */ initialState},
       family,
-      ShadowNodeTraits{});
+      traits);
   auto thirdNode = std::make_shared<TestShadowNode>(
       ShadowNodeFragment{
           /* .props = */ props,
           /* .children = */ ShadowNode::emptySharedShadowNodeSharedList(),
           /* .state = */ initialState},
       family,
-      ShadowNodeTraits{});
+      traits);
 
   TestShadowNode::ConcreteState::Shared _state =
       std::static_pointer_cast<TestShadowNode::ConcreteState const>(

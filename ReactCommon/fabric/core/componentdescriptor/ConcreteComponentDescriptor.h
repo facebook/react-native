@@ -16,7 +16,6 @@
 #include <react/core/ShadowNode.h>
 #include <react/core/ShadowNodeFragment.h>
 #include <react/core/State.h>
-#include <react/core/StateCoordinator.h>
 
 namespace facebook {
 namespace react {
@@ -120,34 +119,32 @@ class ConcreteComponentDescriptor : public ComponentDescriptor {
 
   virtual State::Shared createInitialState(
       ShadowNodeFragment const &fragment,
-      SurfaceId const surfaceId) const override {
+      ShadowNodeFamily::Shared const &family) const override {
     if (std::is_same<ConcreteStateData, StateData>::value) {
       // Default case: Returning `null` for nodes that don't use `State`.
       return nullptr;
     }
 
     return std::make_shared<ConcreteState>(
-        ConcreteShadowNode::initialStateData(fragment, surfaceId, *this),
-        std::make_shared<StateCoordinator>(eventDispatcher_));
+        std::make_shared<ConcreteStateData const>(
+            ConcreteShadowNode::initialStateData(
+                fragment, family->getSurfaceId(), *this)),
+        family);
   }
 
   virtual State::Shared createState(
-      const State::Shared &previousState,
-      const StateData::Shared &data) const override {
+      ShadowNodeFamily::Shared const &family,
+      StateData::Shared const &data) const override {
     if (std::is_same<ConcreteStateData, StateData>::value) {
       // Default case: Returning `null` for nodes that don't use `State`.
       return nullptr;
     }
 
-    assert(previousState && "Provided `previousState` is nullptr.");
     assert(data && "Provided `data` is nullptr.");
-    assert(
-        dynamic_cast<ConcreteState const *>(previousState.get()) &&
-        "Provided `previousState` has an incompatible type.");
 
-    return std::make_shared<const ConcreteState>(
-        std::move(*std::static_pointer_cast<ConcreteStateData>(data)),
-        *std::static_pointer_cast<const ConcreteState>(previousState));
+    return std::make_shared<ConcreteState const>(
+        std::static_pointer_cast<ConcreteStateData const>(data),
+        *family->getMostRecentState());
   }
 
   virtual ShadowNodeFamily::Shared createFamily(
@@ -158,6 +155,7 @@ class ConcreteComponentDescriptor : public ComponentDescriptor {
     return std::make_shared<ShadowNodeFamily>(
         ShadowNodeFamilyFragment{
             fragment.tag, fragment.surfaceId, eventEmitter},
+        eventDispatcher_,
         *this);
   }
 

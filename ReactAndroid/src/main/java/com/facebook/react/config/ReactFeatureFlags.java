@@ -80,6 +80,12 @@ public class ReactFeatureFlags {
   public static boolean allowDisablingImmediateExecutionOfScheduleMountItems = false;
 
   /**
+   * Temporary flag. See UIImplementation: if this flag is enabled, ViewCommands will be queued and
+   * executed before any other types of UI operations.
+   */
+  public static boolean allowEarlyViewCommandExecution = false;
+
+  /**
    * This react flag enables a custom algorithm for the getChildVisibleRect() method in the classes
    * ReactViewGroup, ReactHorizontalScrollView and ReactScrollView.
    *
@@ -90,9 +96,4 @@ public class ReactFeatureFlags {
    * <p>The react flag is disabled by default because this is increasing ANRs (T57363204)
    */
   public static boolean clipChildRectsIfOverflowIsHidden = false;
-
-  /**
-   * This react flag enables the rendering of <View>s with no fixed size within a <Text> component.
-   */
-  public static boolean supportInlineViewsWithDynamicSize = true;
 }

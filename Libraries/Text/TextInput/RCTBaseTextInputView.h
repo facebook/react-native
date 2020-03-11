@@ -40,6 +40,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, copy, nullable) RCTDirectEventBlock onScroll;
 
 @property (nonatomic, assign) NSInteger mostRecentEventCount;
+@property (nonatomic, assign) BOOL autoFocus;
 @property (nonatomic, assign) BOOL blurOnSubmit;
 @property (nonatomic, assign) BOOL selectTextOnFocus;
 @property (nonatomic, assign) BOOL clearTextOnFocus;
@@ -49,6 +50,10 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, copy, nullable) NSAttributedString *attributedText;
 @property (nonatomic, copy) NSString *inputAccessoryViewID;
 @property (nonatomic, assign) UIKeyboardType keyboardType;
+
+- (void)setText:(NSString *__nullable)text
+ selectionStart:(NSInteger)start
+   selectionEnd:(NSInteger)end;
 
 @end
 

@@ -117,6 +117,7 @@ namespace JS {
       folly::Optional<double> cancelButtonIndex() const;
       folly::Optional<double> anchor() const;
       folly::Optional<double> tintColor() const;
+      NSString *userInterfaceStyle() const;
 
       SpecShowActionSheetWithOptionsOptions(NSDictionary *const v) : _v(v) {}
     private:
@@ -138,6 +139,7 @@ namespace JS {
       folly::Optional<double> anchor() const;
       folly::Optional<double> tintColor() const;
       folly::Optional<facebook::react::LazyVector<NSString *>> excludedActivityTypes() const;
+      NSString *userInterfaceStyle() const;
 
       SpecShowShareActionSheetWithOptionsOptions(NSDictionary *const v) : _v(v) {}
     private:
@@ -848,8 +850,8 @@ namespace facebook {
 @protocol NativeDevLoadingViewSpec <RCTBridgeModule, RCTTurboModule>
 
 - (void)showMessage:(NSString *)message
-              color:(NSDictionary *)color
-    backgroundColor:(NSDictionary *)backgroundColor;
+          withColor:(NSNumber *)withColor
+withBackgroundColor:(NSNumber *)withBackgroundColor;
 - (void)hide;
 
 @end
@@ -1416,6 +1418,7 @@ namespace JS {
       JS::NativeImageEditor::OptionsSize size() const;
       folly::Optional<JS::NativeImageEditor::OptionsDisplaySize> displaySize() const;
       NSString *resizeMode() const;
+      folly::Optional<bool> allowExternalStorage() const;
 
       Options(NSDictionary *const v) : _v(v) {}
     private:
@@ -2934,6 +2937,11 @@ inline folly::Optional<double> JS::NativeActionSheetManager::SpecShowActionSheet
   id const p = _v[@"tintColor"];
   return RCTBridgingToOptionalDouble(p);
 }
+inline NSString *JS::NativeActionSheetManager::SpecShowActionSheetWithOptionsOptions::userInterfaceStyle() const
+{
+  id const p = _v[@"userInterfaceStyle"];
+  return RCTBridgingToString(p);
+}
 inline NSString *JS::NativeActionSheetManager::SpecShowShareActionSheetWithOptionsOptions::message() const
 {
   id const p = _v[@"message"];
@@ -2963,6 +2971,11 @@ inline folly::Optional<facebook::react::LazyVector<NSString *>> JS::NativeAction
 {
   id const p = _v[@"excludedActivityTypes"];
   return RCTBridgingToOptionalVec(p, ^NSString *(id itemValue_0) { return RCTBridgingToString(itemValue_0); });
+}
+inline NSString *JS::NativeActionSheetManager::SpecShowShareActionSheetWithOptionsOptions::userInterfaceStyle() const
+{
+  id const p = _v[@"userInterfaceStyle"];
+  return RCTBridgingToString(p);
 }
 inline NSString *JS::NativeActionSheetManager::SpecShowShareActionSheetWithOptionsFailureCallbackError::domain() const
 {
@@ -3489,6 +3502,11 @@ inline NSString *JS::NativeImageEditor::Options::resizeMode() const
 {
   id const p = _v[@"resizeMode"];
   return RCTBridgingToString(p);
+}
+inline folly::Optional<bool> JS::NativeImageEditor::Options::allowExternalStorage() const
+{
+  id const p = _v[@"allowExternalStorage"];
+  return RCTBridgingToOptionalBool(p);
 }
 inline bool JS::NativeImagePickerIOS::SpecOpenCameraDialogConfig::unmirrorFrontFacingCamera() const
 {

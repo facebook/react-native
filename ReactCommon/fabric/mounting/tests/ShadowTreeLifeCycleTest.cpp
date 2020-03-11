@@ -92,7 +92,7 @@ static void testShadowNodeTreeLifeCycle(
 
       // Laying out the tree.
       std::const_pointer_cast<RootShadowNode>(nextRootNode)
-          ->layout(&affectedLayoutableNodes);
+          ->layoutIfNeeded(&affectedLayoutableNodes);
 
       nextRootNode->sealRecursive();
       allNodes.push_back(nextRootNode);

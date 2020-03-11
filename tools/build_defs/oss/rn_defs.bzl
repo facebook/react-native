@@ -15,7 +15,7 @@ _DEBUG_PREPROCESSOR_FLAGS = []
 
 _APPLE_COMPILER_FLAGS = []
 
-def get_debug_preprocessor_flags():
+def get_preprocessor_flags_for_build_mode():
     return _DEBUG_PREPROCESSOR_FLAGS
 
 def get_apple_compiler_flags():

@@ -16,7 +16,6 @@
 
 #include <react/mounting/Differentiator.h>
 #include <react/mounting/ShadowViewMutation.h>
-#include <react/utils/TimeUtils.h>
 
 namespace facebook {
 namespace react {

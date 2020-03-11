@@ -15,6 +15,8 @@
 #import <react/graphics/Geometry.h>
 #import <react/textlayoutmanager/RCTTextLayoutManager.h>
 #import <react/textlayoutmanager/TextLayoutManager.h>
+#import <react/utils/ManagedObjectWrapper.h>
+
 #import "RCTConversions.h"
 
 using namespace facebook::react;
@@ -80,9 +82,15 @@ using namespace facebook::react;
     return;
   }
 
-  SharedTextLayoutManager textLayoutManager = _state->getData().layoutManager;
+  auto textLayoutManager = _state->getData().layoutManager;
+  assert(textLayoutManager && "TextLayoutManager must not be `nullptr`.");
+
+  if (!textLayoutManager) {
+    return;
+  }
+
   RCTTextLayoutManager *nativeTextLayoutManager =
-      (__bridge RCTTextLayoutManager *)textLayoutManager->getNativeTextLayoutManager();
+      (RCTTextLayoutManager *)unwrapManagedObject(textLayoutManager->getNativeTextLayoutManager());
 
   CGRect frame = RCTCGRectFromRect(_layoutMetrics.getContentFrame());
 
@@ -113,16 +121,22 @@ using namespace facebook::react;
     return _eventEmitter;
   }
 
-  SharedTextLayoutManager textLayoutManager = _state->getData().layoutManager;
+  auto textLayoutManager = _state->getData().layoutManager;
+
+  assert(textLayoutManager && "TextLayoutManager must not be `nullptr`.");
+
+  if (!textLayoutManager) {
+    return _eventEmitter;
+  }
+
   RCTTextLayoutManager *nativeTextLayoutManager =
-      (__bridge RCTTextLayoutManager *)textLayoutManager->getNativeTextLayoutManager();
+      (RCTTextLayoutManager *)unwrapManagedObject(textLayoutManager->getNativeTextLayoutManager());
   CGRect frame = RCTCGRectFromRect(_layoutMetrics.getContentFrame());
 
-  SharedEventEmitter eventEmitter =
-      [nativeTextLayoutManager getEventEmitterWithAttributeString:_state->getData().attributedString
-                                              paragraphAttributes:_paragraphAttributes
-                                                            frame:frame
-                                                          atPoint:point];
+  auto eventEmitter = [nativeTextLayoutManager getEventEmitterWithAttributeString:_state->getData().attributedString
+                                                              paragraphAttributes:_paragraphAttributes
+                                                                            frame:frame
+                                                                          atPoint:point];
 
   if (!eventEmitter) {
     return _eventEmitter;

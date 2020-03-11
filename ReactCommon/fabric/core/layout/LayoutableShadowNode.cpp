@@ -68,6 +68,25 @@ static LayoutMetrics calculateOffsetForLayoutMetrics(
   return layoutMetrics;
 }
 
+LayoutableShadowNode::LayoutableShadowNode(
+    ShadowNodeFragment const &fragment,
+    ShadowNodeFamily::Shared const &family,
+    ShadowNodeTraits traits)
+    : ShadowNode(fragment, family, traits), layoutMetrics_({}) {}
+
+LayoutableShadowNode::LayoutableShadowNode(
+    ShadowNode const &sourceShadowNode,
+    ShadowNodeFragment const &fragment)
+    : ShadowNode(sourceShadowNode, fragment),
+      layoutMetrics_(static_cast<LayoutableShadowNode const &>(sourceShadowNode)
+                         .layoutMetrics_) {}
+
+ShadowNodeTraits LayoutableShadowNode::BaseTraits() {
+  auto traits = ShadowNodeTraits{};
+  traits.set(ShadowNodeTraits::Trait::LayoutableKind);
+  return traits;
+}
+
 LayoutMetrics LayoutableShadowNode::getLayoutMetrics() const {
   return layoutMetrics_;
 }
@@ -81,10 +100,6 @@ bool LayoutableShadowNode::setLayoutMetrics(LayoutMetrics layoutMetrics) {
 
   layoutMetrics_ = layoutMetrics;
   return true;
-}
-
-bool LayoutableShadowNode::LayoutableShadowNode::isLayoutOnly() const {
-  return false;
 }
 
 Transform LayoutableShadowNode::getTransform() const {
@@ -123,8 +138,37 @@ LayoutMetrics LayoutableShadowNode::getRelativeLayoutMetrics(
   return calculateOffsetForLayoutMetrics(layoutMetrics, ancestors, policy);
 }
 
+LayoutableShadowNode::UnsharedList
+LayoutableShadowNode::getLayoutableChildNodes() const {
+  LayoutableShadowNode::UnsharedList layoutableChildren;
+  for (const auto &childShadowNode : getChildren()) {
+    auto layoutableChildShadowNode =
+        traitCast<LayoutableShadowNode const *>(childShadowNode.get());
+    if (layoutableChildShadowNode) {
+      layoutableChildren.push_back(
+          const_cast<LayoutableShadowNode *>(layoutableChildShadowNode));
+    }
+  }
+  return layoutableChildren;
+}
+
 Size LayoutableShadowNode::measure(LayoutConstraints layoutConstraints) const {
   return Size();
+}
+
+Size LayoutableShadowNode::measure(
+    LayoutContext const &layoutContext,
+    LayoutConstraints const &layoutConstraints) const {
+  auto clonedShadowNode = clone({});
+  auto &layoutableShadowNode =
+      static_cast<LayoutableShadowNode &>(*clonedShadowNode);
+
+  auto localLayoutContext = layoutContext;
+  localLayoutContext.affectedNodes = nullptr;
+
+  layoutableShadowNode.layoutTree(localLayoutContext, layoutConstraints);
+
+  return layoutableShadowNode.getLayoutMetrics().frame.size;
 }
 
 Float LayoutableShadowNode::firstBaseline(Size size) const {
@@ -133,6 +177,12 @@ Float LayoutableShadowNode::firstBaseline(Size size) const {
 
 Float LayoutableShadowNode::lastBaseline(Size size) const {
   return 0;
+}
+
+void LayoutableShadowNode::layoutTree(
+    LayoutContext layoutContext,
+    LayoutConstraints layoutConstraints) {
+  // Default implementation does nothing.
 }
 
 void LayoutableShadowNode::layout(LayoutContext layoutContext) {
@@ -168,13 +218,14 @@ ShadowNode::Shared LayoutableShadowNode::findNodeAtPoint(
     return nullptr;
   }
   auto frame = layoutableShadowNode->getLayoutMetrics().frame;
-  auto isPointInside = frame.containsPoint(point);
+  auto transformedFrame = frame * layoutableShadowNode->getTransform();
+  auto isPointInside = transformedFrame.containsPoint(point);
 
   if (!isPointInside) {
     return nullptr;
   }
 
-  auto newPoint = point - frame.origin;
+  auto newPoint = point - transformedFrame.origin;
   for (const auto &childShadowNode : node->getChildren()) {
     auto hitView = findNodeAtPoint(childShadowNode, newPoint);
     if (hitView) {

@@ -9,6 +9,7 @@
 #include "ShadowNode.h"
 
 #include <react/core/ComponentDescriptor.h>
+#include <react/core/State.h>
 
 namespace facebook {
 namespace react {
@@ -17,8 +18,10 @@ using AncestorList = ShadowNode::AncestorList;
 
 ShadowNodeFamily::ShadowNodeFamily(
     ShadowNodeFamilyFragment const &fragment,
+    EventDispatcher::Weak eventDispatcher,
     ComponentDescriptor const &componentDescriptor)
-    : tag_(fragment.tag),
+    : eventDispatcher_(eventDispatcher),
+      tag_(fragment.tag),
       surfaceId_(fragment.surfaceId),
       eventEmitter_(fragment.eventEmitter),
       componentDescriptor_(componentDescriptor),
@@ -45,6 +48,10 @@ SurfaceId ShadowNodeFamily::getSurfaceId() const {
 
 ComponentName ShadowNodeFamily::getComponentName() const {
   return componentName_;
+}
+
+const ComponentDescriptor &ShadowNodeFamily::getComponentDescriptor() const {
+  return componentDescriptor_;
 }
 
 AncestorList ShadowNodeFamily::getAncestors(
@@ -85,6 +92,42 @@ AncestorList ShadowNodeFamily::getAncestors(
   }
 
   return ancestors;
+}
+
+State::Shared ShadowNodeFamily::getMostRecentState() const {
+  std::unique_lock<better::shared_mutex> lock(mutex_);
+  return mostRecentState_;
+}
+
+void ShadowNodeFamily::setMostRecentState(State::Shared const &state) const {
+  std::unique_lock<better::shared_mutex> lock(mutex_);
+
+  /*
+   * Checking and setting `isObsolete_` prevents old states to be recommitted
+   * on top of fresher states. It's okay to commit a tree with "older" Shadow
+   * Nodes (the evolution of nodes is not linear), however, we never back out
+   * states (they progress linearly).
+   */
+  if (state && state->isObsolete_) {
+    return;
+  }
+
+  if (mostRecentState_) {
+    mostRecentState_->isObsolete_ = true;
+  }
+
+  mostRecentState_ = state;
+}
+
+void ShadowNodeFamily::dispatchRawState(
+    StateUpdate &&stateUpdate,
+    EventPriority priority) const {
+  auto eventDispatcher = eventDispatcher_.lock();
+  if (!eventDispatcher) {
+    return;
+  }
+
+  eventDispatcher->dispatchStateUpdate(std::move(stateUpdate), priority);
 }
 
 } // namespace react

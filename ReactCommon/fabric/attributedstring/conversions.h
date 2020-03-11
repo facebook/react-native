@@ -22,7 +22,7 @@
 #include <react/graphics/conversions.h>
 #include <cmath>
 
-#include <Glog/logging.h>
+#include <glog/logging.h>
 
 namespace facebook {
 namespace react {
@@ -579,6 +579,13 @@ inline folly::dynamic toDynamic(const AttributedString &attributedString) {
     dynamicFragment["string"] = fragment.string;
     if (fragment.parentShadowView.componentHandle) {
       dynamicFragment["reactTag"] = fragment.parentShadowView.tag;
+    }
+    if (fragment.isAttachment()) {
+      dynamicFragment["isAttachment"] = true;
+      dynamicFragment["width"] =
+          (int)fragment.parentShadowView.layoutMetrics.frame.size.width;
+      dynamicFragment["height"] =
+          (int)fragment.parentShadowView.layoutMetrics.frame.size.height;
     }
     dynamicFragment["textAttributes"] = toDynamic(fragment.textAttributes);
     fragments.push_back(dynamicFragment);

@@ -12,6 +12,7 @@
 
 const BlobManager = require('../Blob/BlobManager');
 const EventTarget = require('event-target-shim');
+const GlobalPerformanceLogger = require('react-native/Libraries/Utilities/GlobalPerformanceLogger');
 const RCTNetworking = require('./RCTNetworking');
 
 const base64 = require('base64-js');
@@ -132,6 +133,7 @@ class XMLHttpRequest extends (EventTarget(...XHR_EVENTS): any) {
   _headers: Object;
   _lowerCaseResponseHeaders: Object;
   _method: ?string = null;
+  _perfKey: ?string = null;
   _response: string | ?Object;
   _responseType: ResponseType;
   _response: string = '';
@@ -301,6 +303,8 @@ class XMLHttpRequest extends (EventTarget(...XHR_EVENTS): any) {
     responseURL: ?string,
   ): void {
     if (requestId === this._requestId) {
+      this._perfKey != null &&
+        GlobalPerformanceLogger.stopTimespan(this._perfKey);
       this.status = status;
       this.setResponseHeaders(responseHeaders);
       this.setReadyState(this.HEADERS_RECEIVED);
@@ -514,8 +518,20 @@ class XMLHttpRequest extends (EventTarget(...XHR_EVENTS): any) {
     }
 
     const doSend = () => {
-      invariant(this._method, 'Request method needs to be defined.');
-      invariant(this._url, 'Request URL needs to be defined.');
+      const friendlyName =
+        this._trackingName !== 'unknown' ? this._trackingName : this._url;
+      this._perfKey = 'network_XMLHttpRequest_' + String(friendlyName);
+      GlobalPerformanceLogger.startTimespan(this._perfKey);
+      invariant(
+        this._method,
+        'XMLHttpRequest method needs to be defined (%s).',
+        friendlyName,
+      );
+      invariant(
+        this._url,
+        'XMLHttpRequest URL needs to be defined (%s).',
+        friendlyName,
+      );
       RCTNetworking.sendRequest(
         this._method,
         this._trackingName,

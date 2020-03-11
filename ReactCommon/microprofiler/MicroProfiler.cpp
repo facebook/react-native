@@ -5,19 +5,19 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+#include <time.h>
 #include <algorithm>
 #include <chrono>
 #include <mutex>
 #include <sstream>
 #include <vector>
-#include <time.h>
 
 #include <glog/logging.h>
 
 #include "MicroProfiler.h"
 
-// iOS doesn't support 'thread_local'. If we reimplement this to use pthread_setspecific
-// we can get rid of this
+// iOS doesn't support 'thread_local'. If we reimplement this to use
+// pthread_setspecific we can get rid of this
 #if defined(__APPLE__)
 #define MICRO_PROFILER_STUB_IMPLEMENTATION 1
 #elif !defined(MICRO_PROFILER_STUB_IMPLEMENTATION)
@@ -32,18 +32,22 @@ struct TraceData {
   TraceData();
   ~TraceData();
 
-  void addTime(MicroProfilerName name, uint_fast64_t time, uint_fast32_t internalClockCalls);
+  void addTime(
+      MicroProfilerName name,
+      uint_fast64_t time,
+      uint_fast32_t internalClockCalls);
 
   std::thread::id threadId_;
   uint_fast64_t startTime_;
   std::atomic_uint_fast64_t times_[MicroProfilerName::__LENGTH__] = {};
   std::atomic_uint_fast32_t calls_[MicroProfilerName::__LENGTH__] = {};
-  std::atomic_uint_fast32_t childProfileSections_[MicroProfilerName::__LENGTH__] = {};
+  std::atomic_uint_fast32_t
+      childProfileSections_[MicroProfilerName::__LENGTH__] = {};
 };
 
 struct ProfilingImpl {
   std::mutex mutex_;
-  std::vector<TraceData*> allTraceData_;
+  std::vector<TraceData *> allTraceData_;
   bool isProfiling_ = false;
   uint_fast64_t startTime_;
   uint_fast64_t endTime_;
@@ -78,10 +82,10 @@ static std::string formatTimeNs(uint_fast64_t timeNs) {
   return out.str();
 }
 
-MicroProfilerSection::MicroProfilerSection(MicroProfilerName name) :
-    isProfiling_(profiling.isProfiling_),
-    name_(name),
-    startNumProfileSections_(profileSections) {
+MicroProfilerSection::MicroProfilerSection(MicroProfilerName name)
+    : isProfiling_(profiling.isProfiling_),
+      name_(name),
+      startNumProfileSections_(profileSections) {
   if (!isProfiling_) {
     return;
   }
@@ -94,22 +98,27 @@ MicroProfilerSection::~MicroProfilerSection() {
   }
   auto endTime = nowNs();
   auto endNumProfileSections = profileSections;
-  myTraceData.addTime(name_, endTime - startTime_, endNumProfileSections - startNumProfileSections_ - 1);
+  myTraceData.addTime(
+      name_,
+      endTime - startTime_,
+      endNumProfileSections - startNumProfileSections_ - 1);
 }
 
-TraceData::TraceData() :
-    threadId_(std::this_thread::get_id()) {
+TraceData::TraceData() : threadId_(std::this_thread::get_id()) {
   std::lock_guard<std::mutex> lock(profiling.mutex_);
   profiling.allTraceData_.push_back(this);
 }
 
 TraceData::~TraceData() {
   std::lock_guard<std::mutex> lock(profiling.mutex_);
-  auto& infos = profiling.allTraceData_;
+  auto &infos = profiling.allTraceData_;
   infos.erase(std::remove(infos.begin(), infos.end(), this), infos.end());
 }
 
-void TraceData::addTime(MicroProfilerName name, uint_fast64_t time, uint_fast32_t childprofileSections) {
+void TraceData::addTime(
+    MicroProfilerName name,
+    uint_fast64_t time,
+    uint_fast32_t childprofileSections) {
   times_[name] += time;
   calls_[name]++;
   childProfileSections_[name] += childprofileSections;
@@ -117,24 +126,36 @@ void TraceData::addTime(MicroProfilerName name, uint_fast64_t time, uint_fast32_
 
 static void printReport() {
   LOG(ERROR) << "======= MICRO PROFILER REPORT =======";
-  LOG(ERROR) << "- Total Time: " << formatTimeNs(diffNs(profiling.startTime_, profiling.endTime_));
+  LOG(ERROR) << "- Total Time: "
+             << formatTimeNs(diffNs(profiling.startTime_, profiling.endTime_));
   LOG(ERROR) << "- Clock Overhead: " << formatTimeNs(profiling.clockOverhead_);
-  LOG(ERROR) << "- Profiler Section Overhead: " << formatTimeNs(profiling.profileSectionOverhead_);
+  LOG(ERROR) << "- Profiler Section Overhead: "
+             << formatTimeNs(profiling.profileSectionOverhead_);
   for (auto info : profiling.allTraceData_) {
     LOG(ERROR) << "--- Thread ID 0x" << std::hex << info->threadId_ << " ---";
     for (int i = 0; i < MicroProfilerName::__LENGTH__; i++) {
       if (info->times_[i] > 0) {
         auto totalTime = info->times_[i].load();
         auto calls = info->calls_[i].load();
-        auto clockOverhead = profiling.clockOverhead_ * calls + profiling.profileSectionOverhead_ * info->childProfileSections_[i].load();
+        auto clockOverhead = profiling.clockOverhead_ * calls +
+            profiling.profileSectionOverhead_ *
+                info->childProfileSections_[i].load();
         if (totalTime < clockOverhead) {
-          LOG(ERROR) << "- " << MicroProfiler::profilingNameToString(static_cast<MicroProfilerName>(i)) << ": "
-              << "ERROR: Total time was " << totalTime << "ns but clock overhead was calculated to be " << clockOverhead << "ns!";
+          LOG(ERROR) << "- "
+                     << MicroProfiler::profilingNameToString(
+                            static_cast<MicroProfilerName>(i))
+                     << ": "
+                     << "ERROR: Total time was " << totalTime
+                     << "ns but clock overhead was calculated to be "
+                     << clockOverhead << "ns!";
         } else {
           auto correctedTime = totalTime - clockOverhead;
           auto timePerCall = correctedTime / calls;
-          LOG(ERROR) << "- " << MicroProfiler::profilingNameToString(static_cast<MicroProfilerName>(i)) << ": "
-              << formatTimeNs(correctedTime) << " (" << calls << " calls, " << formatTimeNs(timePerCall) << "/call)";
+          LOG(ERROR) << "- "
+                     << MicroProfiler::profilingNameToString(
+                            static_cast<MicroProfilerName>(i))
+                     << ": " << formatTimeNs(correctedTime) << " (" << calls
+                     << " calls, " << formatTimeNs(timePerCall) << "/call)";
         }
       }
     }
@@ -142,7 +163,8 @@ static void printReport() {
 }
 
 static void clearProfiling() {
-  CHECK(!profiling.isProfiling_) << "Trying to clear profiling but profiling was already started!";
+  CHECK(!profiling.isProfiling_)
+      << "Trying to clear profiling but profiling was already started!";
   for (auto info : profiling.allTraceData_) {
     for (unsigned int i = 0; i < MicroProfilerName::__LENGTH__; i++) {
       info->times_[i] = 0;
@@ -175,7 +197,8 @@ static uint_fast64_t calculateProfileSectionOverhead() {
 }
 
 void MicroProfiler::startProfiling() {
-  CHECK(!profiling.isProfiling_) << "Trying to start profiling but profiling was already started!";
+  CHECK(!profiling.isProfiling_)
+      << "Trying to start profiling but profiling was already started!";
 
   profiling.clockOverhead_ = calculateClockOverhead();
   profiling.profileSectionOverhead_ = calculateProfileSectionOverhead();
@@ -188,7 +211,8 @@ void MicroProfiler::startProfiling() {
 }
 
 void MicroProfiler::stopProfiling() {
-  CHECK(profiling.isProfiling_) << "Trying to stop profiling but profiling hasn't been started!";
+  CHECK(profiling.isProfiling_)
+      << "Trying to stop profiling but profiling hasn't been started!";
 
   profiling.isProfiling_ = false;
   profiling.endTime_ = nowNs();
@@ -208,23 +232,21 @@ void MicroProfiler::runInternalBenchmark() {
   MicroProfiler::startProfiling();
   for (int i = 0; i < 1000000; i++) {
     MICRO_PROFILER_SECTION_NAMED(outer, __INTERNAL_BENCHMARK_OUTER);
-    {
-      MICRO_PROFILER_SECTION_NAMED(inner, __INTERNAL_BENCHMARK_INNER);
-    }
+    { MICRO_PROFILER_SECTION_NAMED(inner, __INTERNAL_BENCHMARK_INNER); }
   }
   MicroProfiler::stopProfiling();
 }
 #else
 void MicroProfiler::startProfiling() {
-  CHECK(false) << "This platform has a stub implementation of the micro profiler and cannot collect traces";
+  CHECK(false)
+      << "This platform has a stub implementation of the micro profiler and cannot collect traces";
 }
-void MicroProfiler::stopProfiling() {
-}
+void MicroProfiler::stopProfiling() {}
 bool MicroProfiler::isProfiling() {
   return false;
 }
-void MicroProfiler::runInternalBenchmark() {
-}
+void MicroProfiler::runInternalBenchmark() {}
 #endif
 
-} }
+} // namespace react
+} // namespace facebook

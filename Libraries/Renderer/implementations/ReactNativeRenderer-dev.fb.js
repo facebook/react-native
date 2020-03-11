@@ -687,14 +687,14 @@ var validateEventDispatches;
     var listenersLen = listenersIsArr
       ? dispatchListeners.length
       : dispatchListeners
-        ? 1
-        : 0;
+      ? 1
+      : 0;
     var instancesIsArr = Array.isArray(dispatchInstances);
     var instancesLen = instancesIsArr
       ? dispatchInstances.length
       : dispatchInstances
-        ? 1
-        : 0;
+      ? 1
+      : 0;
 
     if (instancesIsArr !== listenersIsArr || instancesLen !== listenersLen) {
       error("EventPluginUtils: Invalid `event`.");
@@ -2262,10 +2262,10 @@ function setResponderAndExtractTransfer(
   var shouldSetEventType = isStartish(topLevelType)
     ? eventTypes.startShouldSetResponder
     : isMoveish(topLevelType)
-      ? eventTypes.moveShouldSetResponder
-      : topLevelType === TOP_SELECTION_CHANGE
-        ? eventTypes.selectionChangeShouldSetResponder
-        : eventTypes.scrollShouldSetResponder; // TODO: stop one short of the current responder.
+    ? eventTypes.moveShouldSetResponder
+    : topLevelType === TOP_SELECTION_CHANGE
+    ? eventTypes.selectionChangeShouldSetResponder
+    : eventTypes.scrollShouldSetResponder; // TODO: stop one short of the current responder.
 
   var bubbleShouldSetFrom = !responderInst
     ? targetInst
@@ -2469,10 +2469,10 @@ var ResponderEventPlugin = {
     var incrementalTouch = isResponderTouchStart
       ? eventTypes.responderStart
       : isResponderTouchMove
-        ? eventTypes.responderMove
-        : isResponderTouchEnd
-          ? eventTypes.responderEnd
-          : null;
+      ? eventTypes.responderMove
+      : isResponderTouchEnd
+      ? eventTypes.responderEnd
+      : null;
 
     if (incrementalTouch) {
       var gesture = ResponderSyntheticEvent.getPooled(
@@ -2496,8 +2496,8 @@ var ResponderEventPlugin = {
     var finalTouch = isResponderTerminate
       ? eventTypes.responderTerminate
       : isResponderRelease
-        ? eventTypes.responderRelease
-        : null;
+      ? eventTypes.responderRelease
+      : null;
 
     if (finalTouch) {
       var finalEvent = ResponderSyntheticEvent.getPooled(
@@ -2632,7 +2632,8 @@ var warnAboutDefaultPropsOnFunctionComponents = false;
 var warnAboutStringRefs = false;
 var disableLegacyContext = false;
 var disableSchedulerTimeoutBasedOnReactExpirationTime = false;
-var enableTrainModelFix = false;
+var enableTrainModelFix = true;
+
 // Only used in www builds.
 
 // Flow magic to verify the exports of this file match the original version.
@@ -3089,7 +3090,7 @@ function initializeLazyComponentType(lazyComponent) {
               error(
                 "lazy: Expected the result of a dynamic import() call. " +
                   "Instead received: %s\n\nYour code should look like: \n  " +
-                  "const MyComponent = lazy(() => import('./MyComponent'))",
+                  "const MyComponent = lazy(() => imp" + "ort('./MyComponent'))",
                 moduleObject
               );
             }
@@ -4014,27 +4015,7 @@ function mountSafeCallback_NOT_REALLY_SAFE(context, callback) {
     return callback.apply(context, arguments);
   };
 }
-function throwOnStylesProp(component, props) {
-  if (props.styles !== undefined) {
-    var owner = component._owner || null;
-    var name = component.constructor.displayName;
-    var msg =
-      "`styles` is not a supported property of `" +
-      name +
-      "`, did " +
-      "you mean `style` (singular)?";
 
-    if (owner && owner.constructor && owner.constructor.displayName) {
-      msg +=
-        "\n\nCheck the `" +
-        owner.constructor.displayName +
-        "` parent " +
-        " component.";
-    }
-
-    throw new Error(msg);
-  }
-}
 function warnForStyleProps(props, validAttributes) {
   {
     for (var key in validAttributes.style) {
@@ -4054,14 +4035,6 @@ function warnForStyleProps(props, validAttributes) {
 }
 
 // Modules provided by RN:
-/**
- * This component defines the same methods as NativeMethodsMixin but without the
- * findNodeHandle wrapper. This wrapper is unnecessary for HostComponent views
- * and would also result in a circular require.js dependency (since
- * ReactNativeFiber depends on this component and NativeMethodsMixin depends on
- * ReactNativeFiber).
- */
-
 var ReactNativeFiberHostComponent =
   /*#__PURE__*/
   (function() {
@@ -4074,13 +4047,11 @@ var ReactNativeFiberHostComponent =
     var _proto = ReactNativeFiberHostComponent.prototype;
 
     _proto.blur = function blur() {
-      ReactNativePrivateInterface.TextInputState.blurTextInput(this._nativeTag);
+      ReactNativePrivateInterface.TextInputState.blurTextInput(this);
     };
 
     _proto.focus = function focus() {
-      ReactNativePrivateInterface.TextInputState.focusTextInput(
-        this._nativeTag
-      );
+      ReactNativePrivateInterface.TextInputState.focusTextInput(this);
     };
 
     _proto.measure = function measure(callback) {
@@ -5855,7 +5826,7 @@ function is(x, y) {
   );
 }
 
-var is$1 = typeof Object.is === "function" ? Object.is : is;
+var objectIs = typeof Object.is === "function" ? Object.is : is;
 
 var hasOwnProperty = Object.prototype.hasOwnProperty;
 /**
@@ -5865,7 +5836,7 @@ var hasOwnProperty = Object.prototype.hasOwnProperty;
  */
 
 function shallowEqual(objA, objB) {
-  if (is$1(objA, objB)) {
+  if (objectIs(objA, objB)) {
     return true;
   }
 
@@ -5888,7 +5859,7 @@ function shallowEqual(objA, objB) {
   for (var i = 0; i < keysA.length; i++) {
     if (
       !hasOwnProperty.call(objB, keysA[i]) ||
-      !is$1(objA[keysA[i]], objB[keysA[i]])
+      !objectIs(objA[keysA[i]], objB[keysA[i]])
     ) {
       return false;
     }
@@ -6205,13 +6176,18 @@ var ReactStrictModeWarnings = {
 
   ReactStrictModeWarnings.flushLegacyContextWarning = function() {
     pendingLegacyContextWarning.forEach(function(fiberArray, strictRoot) {
+      if (fiberArray.length === 0) {
+        return;
+      }
+
+      var firstFiber = fiberArray[0];
       var uniqueNames = new Set();
       fiberArray.forEach(function(fiber) {
         uniqueNames.add(getComponentName(fiber.type) || "Component");
         didWarnAboutLegacyContext.add(fiber.type);
       });
       var sortedNames = setToSortedString(uniqueNames);
-      var strictRootComponentStack = getStackByFiberInDevAndProd(strictRoot);
+      var firstComponentStack = getStackByFiberInDevAndProd(firstFiber);
 
       error(
         "Legacy context API has been detected within a strict-mode tree." +
@@ -6221,7 +6197,7 @@ var ReactStrictModeWarnings = {
           "\n\nLearn more about this warning here: https://fb.me/react-legacy-context" +
           "%s",
         sortedNames,
-        strictRootComponentStack
+        firstComponentStack
       );
     });
   };
@@ -6791,7 +6767,7 @@ function popProvider(providerFiber) {
   }
 }
 function calculateChangedBits(context, newValue, oldValue) {
-  if (is$1(oldValue, newValue)) {
+  if (objectIs(oldValue, newValue)) {
     // No change
     return 0;
   } else {
@@ -8752,7 +8728,16 @@ function coerceRef(returnFiber, current$$1, element) {
     {
       // TODO: Clean this up once we turn on the string ref warning for
       // everyone, because the strict mode case will no longer be relevant
-      if (returnFiber.mode & StrictMode || warnAboutStringRefs) {
+      if (
+        (returnFiber.mode & StrictMode || warnAboutStringRefs) && // We warn in ReactElement.js if owner and self are equal for string refs
+        // because these cannot be automatically converted to an arrow function
+        // using a codemod. Therefore, we don't have to warn about string refs again.
+        !(
+          element._owner &&
+          element._self &&
+          element._owner.stateNode !== element._self
+        )
+      ) {
         var componentName = getComponentName(returnFiber.type) || "Component";
 
         if (!didWarnAboutStringRefs[componentName]) {
@@ -10614,20 +10599,12 @@ var currentlyRenderingFiber$1 = null; // Hooks are stored as a linked list on th
 // work-in-progress fiber.
 
 var currentHook = null;
-var workInProgressHook = null; // Updates scheduled during render will trigger an immediate re-render at the
-// end of the current pass. We can't store these updates on the normal queue,
-// because if the work is aborted, they should be discarded. Because this is
-// a relatively rare case, we also don't want to add an additional field to
-// either the hook or queue object types. So we store them in a lazily create
-// map of queue -> render-phase updates, which are discarded once the component
-// completes without re-rendering.
-// Whether an update was scheduled during the currently executing render pass.
+var workInProgressHook = null; // Whether an update was scheduled at any point during the render phase. This
+// does not get reset if we do another render pass; only when we're completely
+// finished evaluating this component. This is an optimization so we know
+// whether we need to clear render phase updates after a throw.
 
-var didScheduleRenderPhaseUpdate = false; // Lazily created map of render-phase updates
-
-var renderPhaseUpdates = null; // Counter to prevent infinite loops.
-
-var numberOfReRenders = 0;
+var didScheduleRenderPhaseUpdate = false;
 var RE_RENDER_LIMIT = 25; // In DEV, this is the name of the currently executing primitive hook
 
 var currentHookNameInDev = null; // In DEV, this list ensures that hooks are called in the same order between renders.
@@ -10770,7 +10747,7 @@ function areHookInputsEqual(nextDeps, prevDeps) {
   }
 
   for (var i = 0; i < prevDeps.length && i < nextDeps.length; i++) {
-    if (is$1(nextDeps[i], prevDeps[i])) {
+    if (objectIs(nextDeps[i], prevDeps[i])) {
       continue;
     }
 
@@ -10805,8 +10782,6 @@ function renderWithHooks(
   // currentHook = null;
   // workInProgressHook = null;
   // didScheduleRenderPhaseUpdate = false;
-  // renderPhaseUpdates = null;
-  // numberOfReRenders = 0;
   // TODO Warn if no hooks are used at all during mount, then some are used during update.
   // Currently we will identify the update render as a mount because memoizedState === null.
   // This is tricky because it's valid for certain types of components (e.g. React.lazy)
@@ -10829,11 +10804,22 @@ function renderWithHooks(
     }
   }
 
-  var children = Component(props, secondArg);
+  var children = Component(props, secondArg); // Check if there was a render phase update
 
-  if (didScheduleRenderPhaseUpdate) {
+  if (workInProgress.expirationTime === renderExpirationTime$1) {
+    // Keep rendering in a loop for as long as render phase updates continue to
+    // be scheduled. Use a counter to prevent infinite loops.
+    var numberOfReRenders = 0;
+
     do {
-      didScheduleRenderPhaseUpdate = false;
+      workInProgress.expirationTime = NoWork;
+
+      if (!(numberOfReRenders < RE_RENDER_LIMIT)) {
+        throw Error(
+          "Too many re-renders. React limits the number of renders to prevent an infinite loop."
+        );
+      }
+
       numberOfReRenders += 1;
 
       {
@@ -10851,12 +10837,9 @@ function renderWithHooks(
         hookTypesUpdateIndexDev = -1;
       }
 
-      ReactCurrentDispatcher$1.current = HooksDispatcherOnUpdateInDEV;
+      ReactCurrentDispatcher$1.current = HooksDispatcherOnRerenderInDEV;
       children = Component(props, secondArg);
-    } while (didScheduleRenderPhaseUpdate);
-
-    renderPhaseUpdates = null;
-    numberOfReRenders = 0;
+    } while (workInProgress.expirationTime === renderExpirationTime$1);
   } // We can assume the previous dispatcher is always this one, since we set it
   // at the beginning of the render phase and there's no re-entrancy.
 
@@ -10877,10 +10860,9 @@ function renderWithHooks(
     currentHookNameInDev = null;
     hookTypesDev = null;
     hookTypesUpdateIndexDev = -1;
-  } // These were reset above
-  // didScheduleRenderPhaseUpdate = false;
-  // renderPhaseUpdates = null;
-  // numberOfReRenders = 0;
+  }
+
+  didScheduleRenderPhaseUpdate = false;
 
   if (!!didRenderTooFewHooks) {
     throw Error(
@@ -10898,12 +10880,32 @@ function bailoutHooks(current, workInProgress, expirationTime) {
     current.expirationTime = NoWork;
   }
 }
-function resetHooks() {
+function resetHooksAfterThrow() {
   // We can assume the previous dispatcher is always this one, since we set it
   // at the beginning of the render phase and there's no re-entrancy.
-  ReactCurrentDispatcher$1.current = ContextOnlyDispatcher; // This is used to reset the state of this module when a component throws.
-  // It's also called inside mountIndeterminateComponent if we determine the
-  // component is a module-style component.
+  ReactCurrentDispatcher$1.current = ContextOnlyDispatcher;
+
+  if (didScheduleRenderPhaseUpdate) {
+    // There were render phase updates. These are only valid for this render
+    // phase, which we are now aborting. Remove the updates from the queues so
+    // they do not persist to the next render. Do not remove updates from hooks
+    // that weren't processed.
+    //
+    // Only reset the updates from the queue if it has a clone. If it does
+    // not have a clone, that means it wasn't processed, and the updates were
+    // scheduled before we entered the render phase.
+    var hook = currentlyRenderingFiber$1.memoizedState;
+
+    while (hook !== null) {
+      var queue = hook.queue;
+
+      if (queue !== null) {
+        queue.pending = null;
+      }
+
+      hook = hook.next;
+    }
+  }
 
   renderExpirationTime$1 = NoWork;
   currentlyRenderingFiber$1 = null;
@@ -10917,8 +10919,6 @@ function resetHooks() {
   }
 
   didScheduleRenderPhaseUpdate = false;
-  renderPhaseUpdates = null;
-  numberOfReRenders = 0;
 }
 
 function mountWorkInProgressHook() {
@@ -11008,6 +11008,7 @@ function createFunctionComponentUpdateQueue() {
 }
 
 function basicStateReducer(state, action) {
+  // $FlowFixMe: Flow doesn't like mixed types
   return typeof action === "function" ? action(state) : action;
 }
 
@@ -11047,52 +11048,6 @@ function updateReducer(reducer, initialArg, init) {
   }
 
   queue.lastRenderedReducer = reducer;
-
-  if (numberOfReRenders > 0) {
-    // This is a re-render. Apply the new render phase updates to the previous
-    // work-in-progress hook.
-    var _dispatch = queue.dispatch;
-
-    if (renderPhaseUpdates !== null) {
-      // Render phase updates are stored in a map of queue -> linked list
-      var firstRenderPhaseUpdate = renderPhaseUpdates.get(queue);
-
-      if (firstRenderPhaseUpdate !== undefined) {
-        renderPhaseUpdates.delete(queue);
-        var newState = hook.memoizedState;
-        var update = firstRenderPhaseUpdate;
-
-        do {
-          // Process this render phase update. We don't have to check the
-          // priority because it will always be the same as the current
-          // render's.
-          var action = update.action;
-          newState = reducer(newState, action);
-          update = update.next;
-        } while (update !== null); // Mark that the fiber performed work, but only if the new state is
-        // different from the current state.
-
-        if (!is$1(newState, hook.memoizedState)) {
-          markWorkInProgressReceivedUpdate();
-        }
-
-        hook.memoizedState = newState; // Don't persist the state accumulated from the render phase updates to
-        // the base state unless the queue is empty.
-        // TODO: Not sure if this is the desired semantics, but it's what we
-        // do for gDSFP. I can't remember why.
-
-        if (hook.baseQueue === null) {
-          hook.baseState = newState;
-        }
-
-        queue.lastRenderedState = newState;
-        return [newState, _dispatch];
-      }
-    }
-
-    return [hook.memoizedState, _dispatch];
-  }
-
   var current = currentHook; // The last rebase update that is NOT part of the base state.
 
   var baseQueue = current.baseQueue; // The last pending update that hasn't been processed yet.
@@ -11117,31 +11072,31 @@ function updateReducer(reducer, initialArg, init) {
   if (baseQueue !== null) {
     // We have a queue to process.
     var first = baseQueue.next;
-    var _newState = current.baseState;
+    var newState = current.baseState;
     var newBaseState = null;
     var newBaseQueueFirst = null;
     var newBaseQueueLast = null;
-    var _update = first;
+    var update = first;
 
     do {
-      var updateExpirationTime = _update.expirationTime;
+      var updateExpirationTime = update.expirationTime;
 
       if (updateExpirationTime < renderExpirationTime$1) {
         // Priority is insufficient. Skip this update. If this is the first
         // skipped update, the previous update/state is the new base
         // update/state.
         var clone = {
-          expirationTime: _update.expirationTime,
-          suspenseConfig: _update.suspenseConfig,
-          action: _update.action,
-          eagerReducer: _update.eagerReducer,
-          eagerState: _update.eagerState,
+          expirationTime: update.expirationTime,
+          suspenseConfig: update.suspenseConfig,
+          action: update.action,
+          eagerReducer: update.eagerReducer,
+          eagerState: update.eagerState,
           next: null
         };
 
         if (newBaseQueueLast === null) {
           newBaseQueueFirst = newBaseQueueLast = clone;
-          newBaseState = _newState;
+          newBaseState = newState;
         } else {
           newBaseQueueLast = newBaseQueueLast.next = clone;
         } // Update the remaining priority in the queue.
@@ -11156,10 +11111,10 @@ function updateReducer(reducer, initialArg, init) {
           var _clone = {
             expirationTime: Sync,
             // This update is going to be committed so we never want uncommit it.
-            suspenseConfig: _update.suspenseConfig,
-            action: _update.action,
-            eagerReducer: _update.eagerReducer,
-            eagerState: _update.eagerState,
+            suspenseConfig: update.suspenseConfig,
+            action: update.action,
+            eagerReducer: update.eagerReducer,
+            eagerState: update.eagerState,
             next: null
           };
           newBaseQueueLast = newBaseQueueLast.next = _clone;
@@ -11172,47 +11127,100 @@ function updateReducer(reducer, initialArg, init) {
 
         markRenderEventTimeAndConfig(
           updateExpirationTime,
-          _update.suspenseConfig
+          update.suspenseConfig
         ); // Process this update.
 
-        if (_update.eagerReducer === reducer) {
+        if (update.eagerReducer === reducer) {
           // If this update was processed eagerly, and its reducer matches the
           // current reducer, we can use the eagerly computed state.
-          _newState = _update.eagerState;
+          newState = update.eagerState;
         } else {
-          var _action = _update.action;
-          _newState = reducer(_newState, _action);
+          var action = update.action;
+          newState = reducer(newState, action);
         }
       }
 
-      _update = _update.next;
-    } while (_update !== null && _update !== first);
+      update = update.next;
+    } while (update !== null && update !== first);
 
     if (newBaseQueueLast === null) {
-      newBaseState = _newState;
+      newBaseState = newState;
     } else {
       newBaseQueueLast.next = newBaseQueueFirst;
     } // Mark that the fiber performed work, but only if the new state is
     // different from the current state.
 
-    if (!is$1(_newState, hook.memoizedState)) {
+    if (!objectIs(newState, hook.memoizedState)) {
       markWorkInProgressReceivedUpdate();
     }
 
-    hook.memoizedState = _newState;
+    hook.memoizedState = newState;
     hook.baseState = newBaseState;
     hook.baseQueue = newBaseQueueLast;
-    queue.lastRenderedState = _newState;
+    queue.lastRenderedState = newState;
   }
 
   var dispatch = queue.dispatch;
   return [hook.memoizedState, dispatch];
 }
 
+function rerenderReducer(reducer, initialArg, init) {
+  var hook = updateWorkInProgressHook();
+  var queue = hook.queue;
+
+  if (!(queue !== null)) {
+    throw Error(
+      "Should have a queue. This is likely a bug in React. Please file an issue."
+    );
+  }
+
+  queue.lastRenderedReducer = reducer; // This is a re-render. Apply the new render phase updates to the previous
+  // work-in-progress hook.
+
+  var dispatch = queue.dispatch;
+  var lastRenderPhaseUpdate = queue.pending;
+  var newState = hook.memoizedState;
+
+  if (lastRenderPhaseUpdate !== null) {
+    // The queue doesn't persist past this render pass.
+    queue.pending = null;
+    var firstRenderPhaseUpdate = lastRenderPhaseUpdate.next;
+    var update = firstRenderPhaseUpdate;
+
+    do {
+      // Process this render phase update. We don't have to check the
+      // priority because it will always be the same as the current
+      // render's.
+      var action = update.action;
+      newState = reducer(newState, action);
+      update = update.next;
+    } while (update !== firstRenderPhaseUpdate); // Mark that the fiber performed work, but only if the new state is
+    // different from the current state.
+
+    if (!objectIs(newState, hook.memoizedState)) {
+      markWorkInProgressReceivedUpdate();
+    }
+
+    hook.memoizedState = newState; // Don't persist the state accumulated from the render phase updates to
+    // the base state unless the queue is empty.
+    // TODO: Not sure if this is the desired semantics, but it's what we
+    // do for gDSFP. I can't remember why.
+
+    if (hook.baseQueue === null) {
+      hook.baseState = newState;
+    }
+
+    queue.lastRenderedState = newState;
+  }
+
+  return [newState, dispatch];
+}
+
 function mountState(initialState) {
   var hook = mountWorkInProgressHook();
 
   if (typeof initialState === "function") {
+    // $FlowFixMe: Flow doesn't like mixed types
     initialState = initialState();
   }
 
@@ -11233,6 +11241,10 @@ function mountState(initialState) {
 
 function updateState(initialState) {
   return updateReducer(basicStateReducer, initialState);
+}
+
+function rerenderState(initialState) {
+  return rerenderReducer(basicStateReducer, initialState);
 }
 
 function pushEffect(tag, create, destroy, deps) {
@@ -11534,6 +11546,27 @@ function updateDeferredValue(value, config) {
   return prevValue;
 }
 
+function rerenderDeferredValue(value, config) {
+  var _rerenderState = rerenderState(value),
+    prevValue = _rerenderState[0],
+    setValue = _rerenderState[1];
+
+  updateEffect(
+    function() {
+      var previousConfig = ReactCurrentBatchConfig$1.suspense;
+      ReactCurrentBatchConfig$1.suspense = config === undefined ? null : config;
+
+      try {
+        setValue(value);
+      } finally {
+        ReactCurrentBatchConfig$1.suspense = previousConfig;
+      }
+    },
+    [value, config]
+  );
+  return prevValue;
+}
+
 function startTransition(setPending, config, callback) {
   var priorityLevel = getCurrentPriorityLevel();
   runWithPriority(
@@ -11582,13 +11615,19 @@ function updateTransition(config) {
   return [start, isPending];
 }
 
-function dispatchAction(fiber, queue, action) {
-  if (!(numberOfReRenders < RE_RENDER_LIMIT)) {
-    throw Error(
-      "Too many re-renders. React limits the number of renders to prevent an infinite loop."
-    );
-  }
+function rerenderTransition(config) {
+  var _rerenderState2 = rerenderState(false),
+    isPending = _rerenderState2[0],
+    setPending = _rerenderState2[1];
 
+  var start = updateCallback(startTransition.bind(null, setPending, config), [
+    setPending,
+    config
+  ]);
+  return [start, isPending];
+}
+
+function dispatchAction(fiber, queue, action) {
   {
     if (typeof arguments[3] === "function") {
       error(
@@ -11599,6 +11638,37 @@ function dispatchAction(fiber, queue, action) {
     }
   }
 
+  var currentTime = requestCurrentTimeForUpdate();
+  var suspenseConfig = requestCurrentSuspenseConfig();
+  var expirationTime = computeExpirationForFiber(
+    currentTime,
+    fiber,
+    suspenseConfig
+  );
+  var update = {
+    expirationTime: expirationTime,
+    suspenseConfig: suspenseConfig,
+    action: action,
+    eagerReducer: null,
+    eagerState: null,
+    next: null
+  };
+
+  {
+    update.priority = getCurrentPriorityLevel();
+  } // Append the update to the end of the list.
+
+  var pending = queue.pending;
+
+  if (pending === null) {
+    // This is the first update. Create a circular list.
+    update.next = update;
+  } else {
+    update.next = pending.next;
+    pending.next = update;
+  }
+
+  queue.pending = update;
   var alternate = fiber.alternate;
 
   if (
@@ -11609,70 +11679,9 @@ function dispatchAction(fiber, queue, action) {
     // queue -> linked list of updates. After this render pass, we'll restart
     // and apply the stashed updates on top of the work-in-progress hook.
     didScheduleRenderPhaseUpdate = true;
-    var update = {
-      expirationTime: renderExpirationTime$1,
-      suspenseConfig: null,
-      action: action,
-      eagerReducer: null,
-      eagerState: null,
-      next: null
-    };
-
-    {
-      update.priority = getCurrentPriorityLevel();
-    }
-
-    if (renderPhaseUpdates === null) {
-      renderPhaseUpdates = new Map();
-    }
-
-    var firstRenderPhaseUpdate = renderPhaseUpdates.get(queue);
-
-    if (firstRenderPhaseUpdate === undefined) {
-      renderPhaseUpdates.set(queue, update);
-    } else {
-      // Append the update to the end of the list.
-      var lastRenderPhaseUpdate = firstRenderPhaseUpdate;
-
-      while (lastRenderPhaseUpdate.next !== null) {
-        lastRenderPhaseUpdate = lastRenderPhaseUpdate.next;
-      }
-
-      lastRenderPhaseUpdate.next = update;
-    }
+    update.expirationTime = renderExpirationTime$1;
+    currentlyRenderingFiber$1.expirationTime = renderExpirationTime$1;
   } else {
-    var currentTime = requestCurrentTimeForUpdate();
-    var suspenseConfig = requestCurrentSuspenseConfig();
-    var expirationTime = computeExpirationForFiber(
-      currentTime,
-      fiber,
-      suspenseConfig
-    );
-    var _update2 = {
-      expirationTime: expirationTime,
-      suspenseConfig: suspenseConfig,
-      action: action,
-      eagerReducer: null,
-      eagerState: null,
-      next: null
-    };
-
-    {
-      _update2.priority = getCurrentPriorityLevel();
-    } // Append the update to the end of the list.
-
-    var pending = queue.pending;
-
-    if (pending === null) {
-      // This is the first update. Create a circular list.
-      _update2.next = _update2;
-    } else {
-      _update2.next = pending.next;
-      pending.next = _update2;
-    }
-
-    queue.pending = _update2;
-
     if (
       fiber.expirationTime === NoWork &&
       (alternate === null || alternate.expirationTime === NoWork)
@@ -11697,10 +11706,10 @@ function dispatchAction(fiber, queue, action) {
           // time we enter the render phase, then the eager state can be used
           // without calling the reducer again.
 
-          _update2.eagerReducer = lastRenderedReducer;
-          _update2.eagerState = eagerState;
+          update.eagerReducer = lastRenderedReducer;
+          update.eagerState = eagerState;
 
-          if (is$1(eagerState, currentState)) {
+          if (objectIs(eagerState, currentState)) {
             // Fast path. We can bail out without scheduling React to re-render.
             // It's still possible that we'll need to rebase this update later,
             // if the component re-renders for a different reason and by that
@@ -11748,8 +11757,10 @@ var ContextOnlyDispatcher = {
 var HooksDispatcherOnMountInDEV = null;
 var HooksDispatcherOnMountWithHookTypesInDEV = null;
 var HooksDispatcherOnUpdateInDEV = null;
+var HooksDispatcherOnRerenderInDEV = null;
 var InvalidNestedHooksDispatcherOnMountInDEV = null;
 var InvalidNestedHooksDispatcherOnUpdateInDEV = null;
+var InvalidNestedHooksDispatcherOnRerenderInDEV = null;
 
 {
   var warnInvalidContextAccess = function() {
@@ -12048,6 +12059,97 @@ var InvalidNestedHooksDispatcherOnUpdateInDEV = null;
       return updateTransition(config);
     }
   };
+  HooksDispatcherOnRerenderInDEV = {
+    readContext: function(context, observedBits) {
+      return readContext(context, observedBits);
+    },
+    useCallback: function(callback, deps) {
+      currentHookNameInDev = "useCallback";
+      updateHookTypesDev();
+      return updateCallback(callback, deps);
+    },
+    useContext: function(context, observedBits) {
+      currentHookNameInDev = "useContext";
+      updateHookTypesDev();
+      return readContext(context, observedBits);
+    },
+    useEffect: function(create, deps) {
+      currentHookNameInDev = "useEffect";
+      updateHookTypesDev();
+      return updateEffect(create, deps);
+    },
+    useImperativeHandle: function(ref, create, deps) {
+      currentHookNameInDev = "useImperativeHandle";
+      updateHookTypesDev();
+      return updateImperativeHandle(ref, create, deps);
+    },
+    useLayoutEffect: function(create, deps) {
+      currentHookNameInDev = "useLayoutEffect";
+      updateHookTypesDev();
+      return updateLayoutEffect(create, deps);
+    },
+    useMemo: function(create, deps) {
+      currentHookNameInDev = "useMemo";
+      updateHookTypesDev();
+      var prevDispatcher = ReactCurrentDispatcher$1.current;
+      ReactCurrentDispatcher$1.current = InvalidNestedHooksDispatcherOnRerenderInDEV;
+
+      try {
+        return updateMemo(create, deps);
+      } finally {
+        ReactCurrentDispatcher$1.current = prevDispatcher;
+      }
+    },
+    useReducer: function(reducer, initialArg, init) {
+      currentHookNameInDev = "useReducer";
+      updateHookTypesDev();
+      var prevDispatcher = ReactCurrentDispatcher$1.current;
+      ReactCurrentDispatcher$1.current = InvalidNestedHooksDispatcherOnRerenderInDEV;
+
+      try {
+        return rerenderReducer(reducer, initialArg, init);
+      } finally {
+        ReactCurrentDispatcher$1.current = prevDispatcher;
+      }
+    },
+    useRef: function(initialValue) {
+      currentHookNameInDev = "useRef";
+      updateHookTypesDev();
+      return updateRef(initialValue);
+    },
+    useState: function(initialState) {
+      currentHookNameInDev = "useState";
+      updateHookTypesDev();
+      var prevDispatcher = ReactCurrentDispatcher$1.current;
+      ReactCurrentDispatcher$1.current = InvalidNestedHooksDispatcherOnRerenderInDEV;
+
+      try {
+        return rerenderState(initialState);
+      } finally {
+        ReactCurrentDispatcher$1.current = prevDispatcher;
+      }
+    },
+    useDebugValue: function(value, formatterFn) {
+      currentHookNameInDev = "useDebugValue";
+      updateHookTypesDev();
+      return updateDebugValue(value, formatterFn);
+    },
+    useResponder: function(responder, props) {
+      currentHookNameInDev = "useResponder";
+      updateHookTypesDev();
+      return createDeprecatedResponderListener(responder, props);
+    },
+    useDeferredValue: function(value, config) {
+      currentHookNameInDev = "useDeferredValue";
+      updateHookTypesDev();
+      return rerenderDeferredValue(value, config);
+    },
+    useTransition: function(config) {
+      currentHookNameInDev = "useTransition";
+      updateHookTypesDev();
+      return rerenderTransition(config);
+    }
+  };
   InvalidNestedHooksDispatcherOnMountInDEV = {
     readContext: function(context, observedBits) {
       warnInvalidContextAccess();
@@ -12256,6 +12358,111 @@ var InvalidNestedHooksDispatcherOnUpdateInDEV = null;
       warnInvalidHookAccess();
       updateHookTypesDev();
       return updateTransition(config);
+    }
+  };
+  InvalidNestedHooksDispatcherOnRerenderInDEV = {
+    readContext: function(context, observedBits) {
+      warnInvalidContextAccess();
+      return readContext(context, observedBits);
+    },
+    useCallback: function(callback, deps) {
+      currentHookNameInDev = "useCallback";
+      warnInvalidHookAccess();
+      updateHookTypesDev();
+      return updateCallback(callback, deps);
+    },
+    useContext: function(context, observedBits) {
+      currentHookNameInDev = "useContext";
+      warnInvalidHookAccess();
+      updateHookTypesDev();
+      return readContext(context, observedBits);
+    },
+    useEffect: function(create, deps) {
+      currentHookNameInDev = "useEffect";
+      warnInvalidHookAccess();
+      updateHookTypesDev();
+      return updateEffect(create, deps);
+    },
+    useImperativeHandle: function(ref, create, deps) {
+      currentHookNameInDev = "useImperativeHandle";
+      warnInvalidHookAccess();
+      updateHookTypesDev();
+      return updateImperativeHandle(ref, create, deps);
+    },
+    useLayoutEffect: function(create, deps) {
+      currentHookNameInDev = "useLayoutEffect";
+      warnInvalidHookAccess();
+      updateHookTypesDev();
+      return updateLayoutEffect(create, deps);
+    },
+    useMemo: function(create, deps) {
+      currentHookNameInDev = "useMemo";
+      warnInvalidHookAccess();
+      updateHookTypesDev();
+      var prevDispatcher = ReactCurrentDispatcher$1.current;
+      ReactCurrentDispatcher$1.current = InvalidNestedHooksDispatcherOnUpdateInDEV;
+
+      try {
+        return updateMemo(create, deps);
+      } finally {
+        ReactCurrentDispatcher$1.current = prevDispatcher;
+      }
+    },
+    useReducer: function(reducer, initialArg, init) {
+      currentHookNameInDev = "useReducer";
+      warnInvalidHookAccess();
+      updateHookTypesDev();
+      var prevDispatcher = ReactCurrentDispatcher$1.current;
+      ReactCurrentDispatcher$1.current = InvalidNestedHooksDispatcherOnUpdateInDEV;
+
+      try {
+        return rerenderReducer(reducer, initialArg, init);
+      } finally {
+        ReactCurrentDispatcher$1.current = prevDispatcher;
+      }
+    },
+    useRef: function(initialValue) {
+      currentHookNameInDev = "useRef";
+      warnInvalidHookAccess();
+      updateHookTypesDev();
+      return updateRef(initialValue);
+    },
+    useState: function(initialState) {
+      currentHookNameInDev = "useState";
+      warnInvalidHookAccess();
+      updateHookTypesDev();
+      var prevDispatcher = ReactCurrentDispatcher$1.current;
+      ReactCurrentDispatcher$1.current = InvalidNestedHooksDispatcherOnUpdateInDEV;
+
+      try {
+        return rerenderState(initialState);
+      } finally {
+        ReactCurrentDispatcher$1.current = prevDispatcher;
+      }
+    },
+    useDebugValue: function(value, formatterFn) {
+      currentHookNameInDev = "useDebugValue";
+      warnInvalidHookAccess();
+      updateHookTypesDev();
+      return updateDebugValue(value, formatterFn);
+    },
+    useResponder: function(responder, props) {
+      currentHookNameInDev = "useResponder";
+      warnInvalidHookAccess();
+      updateHookTypesDev();
+      return createDeprecatedResponderListener(responder, props);
+    },
+    useDeferredValue: function(value, config) {
+      currentHookNameInDev = "useDeferredValue";
+      warnInvalidHookAccess();
+      updateHookTypesDev();
+      return rerenderDeferredValue(value, config);
+    },
+    useTransition: function(config) {
+      currentHookNameInDev = "useTransition";
+      warnInvalidHookAccess();
+      updateHookTypesDev();
+      return rerenderTransition(config);
     }
   };
 }
@@ -13990,7 +14197,8 @@ function mountIndeterminateComponent(
 
     workInProgress.tag = ClassComponent; // Throw out any hooks that were used.
 
-    resetHooks(); // Push context providers early to prevent context stack mismatches.
+    workInProgress.memoizedState = null;
+    workInProgress.updateQueue = null; // Push context providers early to prevent context stack mismatches.
     // During mounting we don't know the child context yet as the instance doesn't exist.
     // We will invalidate the child context in finishClassComponent() right after rendering.
 
@@ -16018,17 +16226,16 @@ var emptyObject$2 = {};
 function collectScopedNodes(node, fn, scopedNodes) {
   if (enableScopeAPI) {
     if (node.tag === HostComponent) {
-      var _type = node.type,
+      var type = node.type,
         memoizedProps = node.memoizedProps,
         stateNode = node.stateNode;
-
-      var _instance = getPublicInstance(stateNode);
+      var instance = getPublicInstance(stateNode);
 
       if (
-        _instance !== null &&
-        fn(_type, memoizedProps || emptyObject$2, _instance) === true
+        instance !== null &&
+        fn(type, memoizedProps || emptyObject$2, instance) === true
       ) {
-        scopedNodes.push(_instance);
+        scopedNodes.push(instance);
       }
     }
 
@@ -16047,17 +16254,13 @@ function collectScopedNodes(node, fn, scopedNodes) {
 function collectFirstScopedNode(node, fn) {
   if (enableScopeAPI) {
     if (node.tag === HostComponent) {
-      var _type2 = node.type,
+      var type = node.type,
         memoizedProps = node.memoizedProps,
         stateNode = node.stateNode;
+      var instance = getPublicInstance(stateNode);
 
-      var _instance2 = getPublicInstance(stateNode);
-
-      if (
-        _instance2 !== null &&
-        fn(_type2, memoizedProps, _instance2) === true
-      ) {
-        return _instance2;
+      if (instance !== null && fn(type, memoizedProps, instance) === true) {
+        return instance;
       }
     }
 
@@ -16100,9 +16303,10 @@ function collectFirstScopedNodeFromChildren(startingChild, fn) {
   return null;
 }
 
-function collectNearestScopeMethods(node, scope, childrenScopes) {
-  if (isValidScopeNode(node, scope)) {
-    childrenScopes.push(node.stateNode.methods);
+function collectNearestContextValues(node, context, childContextValues) {
+  if (node.tag === ContextProvider && node.type._context === context) {
+    var contextValue = node.memoizedProps.value;
+    childContextValues.push(contextValue);
   } else {
     var child = node.child;
 
@@ -16111,81 +16315,27 @@ function collectNearestScopeMethods(node, scope, childrenScopes) {
     }
 
     if (child !== null) {
-      collectNearestChildScopeMethods(child, scope, childrenScopes);
+      collectNearestChildContextValues(child, context, childContextValues);
     }
   }
 }
 
-function collectNearestChildScopeMethods(startingChild, scope, childrenScopes) {
+function collectNearestChildContextValues(
+  startingChild,
+  context,
+  childContextValues
+) {
   var child = startingChild;
 
   while (child !== null) {
-    collectNearestScopeMethods(child, scope, childrenScopes);
+    collectNearestContextValues(child, context, childContextValues);
     child = child.sibling;
   }
 }
 
-function isValidScopeNode(node, scope) {
-  return (
-    node.tag === ScopeComponent &&
-    node.type === scope &&
-    node.stateNode !== null
-  );
-}
-
 function createScopeMethods(scope, instance) {
   return {
-    getChildren: function() {
-      var currentFiber = instance.fiber;
-      var child = currentFiber.child;
-      var childrenScopes = [];
-
-      if (child !== null) {
-        collectNearestChildScopeMethods(child, scope, childrenScopes);
-      }
-
-      return childrenScopes.length === 0 ? null : childrenScopes;
-    },
-    getChildrenFromRoot: function() {
-      var currentFiber = instance.fiber;
-      var node = currentFiber;
-
-      while (node !== null) {
-        var parent = node.return;
-
-        if (parent === null) {
-          break;
-        }
-
-        node = parent;
-
-        if (node.tag === ScopeComponent && node.type === scope) {
-          break;
-        }
-      }
-
-      var childrenScopes = [];
-      collectNearestChildScopeMethods(node.child, scope, childrenScopes);
-      return childrenScopes.length === 0 ? null : childrenScopes;
-    },
-    getParent: function() {
-      var node = instance.fiber.return;
-
-      while (node !== null) {
-        if (node.tag === ScopeComponent && node.type === scope) {
-          return node.stateNode.methods;
-        }
-
-        node = node.return;
-      }
-
-      return null;
-    },
-    getProps: function() {
-      var currentFiber = instance.fiber;
-      return currentFiber.memoizedProps;
-    },
-    queryAllNodes: function(fn) {
+    DO_NOT_USE_queryAllNodes: function(fn) {
       var currentFiber = instance.fiber;
       var child = currentFiber.child;
       var scopedNodes = [];
@@ -16196,7 +16346,7 @@ function createScopeMethods(scope, instance) {
 
       return scopedNodes.length === 0 ? null : scopedNodes;
     },
-    queryFirstNode: function(fn) {
+    DO_NOT_USE_queryFirstNode: function(fn) {
       var currentFiber = instance.fiber;
       var child = currentFiber.child;
 
@@ -16222,6 +16372,17 @@ function createScopeMethods(scope, instance) {
       }
 
       return false;
+    },
+    getChildContextValues: function(context) {
+      var currentFiber = instance.fiber;
+      var child = currentFiber.child;
+      var childContextValues = [];
+
+      if (child !== null) {
+        collectNearestChildContextValues(child, context, childContextValues);
+      }
+
+      return childContextValues;
     }
   };
 }
@@ -20619,7 +20780,7 @@ function handleError(root, thrownValue) {
     try {
       // Reset module-level state that was set during the render phase.
       resetContextDependencies();
-      resetHooks();
+      resetHooksAfterThrow();
       resetCurrentFiber();
 
       if (workInProgress === null || workInProgress.return === null) {
@@ -20628,7 +20789,14 @@ function handleError(root, thrownValue) {
         // supposed to capture all errors that weren't caught by an error
         // boundary.
         workInProgressRootExitStatus = RootFatalErrored;
-        workInProgressRootFatalError = thrownValue;
+        workInProgressRootFatalError = thrownValue; // Set `workInProgress` to null. This represents advancing to the next
+        // sibling, or the parent if there are no siblings. But since the root
+        // has no siblings nor a parent, we set it to null. Usually this is
+        // handled by `completeUnitOfWork` or `unwindWork`, but since we're
+        // interntionally not calling those, we need set it here.
+        // TODO: Consider calling `unwindWork` to pop the contexts.
+
+        workInProgress = null;
         return null;
       }
 
@@ -21785,16 +21953,16 @@ function jnd(timeElapsed) {
   return timeElapsed < 120
     ? 120
     : timeElapsed < 480
-      ? 480
-      : timeElapsed < 1080
-        ? 1080
-        : timeElapsed < 1920
-          ? 1920
-          : timeElapsed < 3000
-            ? 3000
-            : timeElapsed < 4320
-              ? 4320
-              : ceil(timeElapsed / 1960) * 1960;
+    ? 480
+    : timeElapsed < 1080
+    ? 1080
+    : timeElapsed < 1920
+    ? 1920
+    : timeElapsed < 3000
+    ? 3000
+    : timeElapsed < 4320
+    ? 4320
+    : ceil(timeElapsed / 1960) * 1960;
 }
 
 function computeMsUntilSuspenseLoadingDelay(
@@ -21961,7 +22129,7 @@ if (true && replayFailedUnitOfWorkWithInvokeGuardedCallback) {
       // corresponding changes there.
 
       resetContextDependencies();
-      resetHooks(); // Don't reset current debug fiber, since we're about to work on the
+      resetHooksAfterThrow(); // Don't reset current debug fiber, since we're about to work on the
       // same fiber again.
       // Unwind the failed stack frame
 
@@ -22049,11 +22217,13 @@ function warnIfNotScopedWithMatchingAct(fiber) {
         "It looks like you're using the wrong act() around your test interactions.\n" +
           "Be sure to use the matching version of act() corresponding to your renderer:\n\n" +
           "// for react-dom:\n" +
-          "import {act} from 'react-dom/test-utils';\n" +
+          "import {act} fr" +
+          "om 'react-dom/test-utils';\n" +
           "// ...\n" +
           "act(() => ...);\n\n" +
           "// for react-test-renderer:\n" +
-          "import TestRenderer from 'react-test-renderer';\n" +
+          "import TestRenderer fr" +
+          "om 'react-test-renderer';\n" +
           "const {act} = TestRenderer;\n" +
           "// ...\n" +
           "act(() => ...);" +
@@ -22137,7 +22307,7 @@ function warnIfUnmockedScheduler(fiber) {
           'In Concurrent or Sync modes, the "scheduler" module needs to be mocked ' +
             "to guarantee consistent behaviour across tests and browsers. " +
             "For example, with jest: \n" +
-            "jest.mock('scheduler', () => require('scheduler/unstable_mock'));\n\n" +
+            "jest.mock('scheduler', () => require" + "('scheduler/unstable_mock'));\n\n" +
             "For more info, visit https://fb.me/react-mock-scheduler"
         );
       } else if (warnAboutUnmockedScheduler === true) {
@@ -22147,7 +22317,7 @@ function warnIfUnmockedScheduler(fiber) {
           'Starting from React v17, the "scheduler" module will need to be mocked ' +
             "to guarantee consistent behaviour across tests and browsers. " +
             "For example, with jest: \n" +
-            "jest.mock('scheduler', () => require('scheduler/unstable_mock'));\n\n" +
+            "jest.mock('scheduler', () => require" + "('scheduler/unstable_mock'));\n\n" +
             "For more info, visit https://fb.me/react-mock-scheduler"
         );
       }
@@ -23710,571 +23880,7 @@ function createPortal(
 
 // TODO: this is special because it gets imported during build.
 
-var ReactVersion = "16.12.0-experimental-19f6fe170";
-
-var NativeMethodsMixin = function(findNodeHandle, findHostInstance) {
-  /**
-   * `NativeMethodsMixin` provides methods to access the underlying native
-   * component directly. This can be useful in cases when you want to focus
-   * a view or measure its on-screen dimensions, for example.
-   *
-   * The methods described here are available on most of the default components
-   * provided by React Native. Note, however, that they are *not* available on
-   * composite components that aren't directly backed by a native view. This will
-   * generally include most components that you define in your own app. For more
-   * information, see [Direct
-   * Manipulation](docs/direct-manipulation.html).
-   *
-   * Note the Flow $Exact<> syntax is required to support mixins.
-   * React createClass mixins can only be used with exact types.
-   */
-  var NativeMethodsMixin = {
-    /**
-     * Determines the location on screen, width, and height of the given view and
-     * returns the values via an async callback. If successful, the callback will
-     * be called with the following arguments:
-     *
-     *  - x
-     *  - y
-     *  - width
-     *  - height
-     *  - pageX
-     *  - pageY
-     *
-     * Note that these measurements are not available until after the rendering
-     * has been completed in native. If you need the measurements as soon as
-     * possible, consider using the [`onLayout`
-     * prop](docs/view.html#onlayout) instead.
-     */
-    measure: function(callback) {
-      var maybeInstance; // Fiber errors if findNodeHandle is called for an umounted component.
-      // Tests using ReactTestRenderer will trigger this case indirectly.
-      // Mimicking stack behavior, we should silently ignore this case.
-      // TODO Fix ReactTestRenderer so we can remove this try/catch.
-
-      try {
-        maybeInstance = findHostInstance(this);
-      } catch (error$$1) {} // If there is no host component beneath this we should fail silently.
-      // This is not an error; it could mean a class component rendered null.
-
-      if (maybeInstance == null) {
-        return;
-      }
-
-      if (maybeInstance.canonical) {
-        // We can't call FabricUIManager here because it won't be loaded in paper
-        // at initialization time. See https://github.com/facebook/react/pull/15490
-        // for more info.
-        nativeFabricUIManager.measure(
-          maybeInstance.node,
-          mountSafeCallback_NOT_REALLY_SAFE(this, callback)
-        );
-      } else {
-        ReactNativePrivateInterface.UIManager.measure(
-          findNodeHandle(this),
-          mountSafeCallback_NOT_REALLY_SAFE(this, callback)
-        );
-      }
-    },
-
-    /**
-     * Determines the location of the given view in the window and returns the
-     * values via an async callback. If the React root view is embedded in
-     * another native view, this will give you the absolute coordinates. If
-     * successful, the callback will be called with the following
-     * arguments:
-     *
-     *  - x
-     *  - y
-     *  - width
-     *  - height
-     *
-     * Note that these measurements are not available until after the rendering
-     * has been completed in native.
-     */
-    measureInWindow: function(callback) {
-      var maybeInstance; // Fiber errors if findNodeHandle is called for an umounted component.
-      // Tests using ReactTestRenderer will trigger this case indirectly.
-      // Mimicking stack behavior, we should silently ignore this case.
-      // TODO Fix ReactTestRenderer so we can remove this try/catch.
-
-      try {
-        maybeInstance = findHostInstance(this);
-      } catch (error$$1) {} // If there is no host component beneath this we should fail silently.
-      // This is not an error; it could mean a class component rendered null.
-
-      if (maybeInstance == null) {
-        return;
-      }
-
-      if (maybeInstance.canonical) {
-        // We can't call FabricUIManager here because it won't be loaded in paper
-        // at initialization time. See https://github.com/facebook/react/pull/15490
-        // for more info.
-        nativeFabricUIManager.measureInWindow(
-          maybeInstance.node,
-          mountSafeCallback_NOT_REALLY_SAFE(this, callback)
-        );
-      } else {
-        ReactNativePrivateInterface.UIManager.measureInWindow(
-          findNodeHandle(this),
-          mountSafeCallback_NOT_REALLY_SAFE(this, callback)
-        );
-      }
-    },
-
-    /**
-     * Like [`measure()`](#measure), but measures the view relative an ancestor,
-     * specified as `relativeToNativeNode`. This means that the returned x, y
-     * are relative to the origin x, y of the ancestor view.
-     *
-     * As always, to obtain a native node handle for a component, you can use
-     * `findNodeHandle(component)`.
-     */
-    measureLayout: function(
-      relativeToNativeNode,
-      onSuccess,
-      onFail
-    ) /* currently unused */
-    {
-      var maybeInstance; // Fiber errors if findNodeHandle is called for an umounted component.
-      // Tests using ReactTestRenderer will trigger this case indirectly.
-      // Mimicking stack behavior, we should silently ignore this case.
-      // TODO Fix ReactTestRenderer so we can remove this try/catch.
-
-      try {
-        maybeInstance = findHostInstance(this);
-      } catch (error$$1) {} // If there is no host component beneath this we should fail silently.
-      // This is not an error; it could mean a class component rendered null.
-
-      if (maybeInstance == null) {
-        return;
-      }
-
-      if (maybeInstance.canonical) {
-        {
-          error(
-            "Warning: measureLayout on components using NativeMethodsMixin " +
-              "or ReactNative.NativeComponent is not currently supported in Fabric. " +
-              "measureLayout must be called on a native ref. Consider using forwardRef."
-          );
-        }
-
-        return;
-      } else {
-        var relativeNode;
-
-        if (typeof relativeToNativeNode === "number") {
-          // Already a node handle
-          relativeNode = relativeToNativeNode;
-        } else if (relativeToNativeNode._nativeTag) {
-          relativeNode = relativeToNativeNode._nativeTag;
-        }
-
-        if (relativeNode == null) {
-          {
-            error(
-              "Warning: ref.measureLayout must be called with a node handle or a ref to a native component."
-            );
-          }
-
-          return;
-        }
-
-        ReactNativePrivateInterface.UIManager.measureLayout(
-          findNodeHandle(this),
-          relativeNode,
-          mountSafeCallback_NOT_REALLY_SAFE(this, onFail),
-          mountSafeCallback_NOT_REALLY_SAFE(this, onSuccess)
-        );
-      }
-    },
-
-    /**
-     * This function sends props straight to native. They will not participate in
-     * future diff process - this means that if you do not include them in the
-     * next render, they will remain active (see [Direct
-     * Manipulation](docs/direct-manipulation.html)).
-     */
-    setNativeProps: function(nativeProps) {
-      // Class components don't have viewConfig -> validateAttributes.
-      // Nor does it make sense to set native props on a non-native component.
-      // Instead, find the nearest host component and set props on it.
-      // Use findNodeHandle() rather than findNodeHandle() because
-      // We want the instance/wrapper (not the native tag).
-      var maybeInstance; // Fiber errors if findNodeHandle is called for an umounted component.
-      // Tests using ReactTestRenderer will trigger this case indirectly.
-      // Mimicking stack behavior, we should silently ignore this case.
-      // TODO Fix ReactTestRenderer so we can remove this try/catch.
-
-      try {
-        maybeInstance = findHostInstance(this);
-      } catch (error$$1) {} // If there is no host component beneath this we should fail silently.
-      // This is not an error; it could mean a class component rendered null.
-
-      if (maybeInstance == null) {
-        return;
-      }
-
-      if (maybeInstance.canonical) {
-        {
-          error("Warning: setNativeProps is not currently supported in Fabric");
-        }
-
-        return;
-      }
-
-      var nativeTag =
-        maybeInstance._nativeTag || maybeInstance.canonical._nativeTag;
-      var viewConfig =
-        maybeInstance.viewConfig || maybeInstance.canonical.viewConfig;
-
-      {
-        warnForStyleProps(nativeProps, viewConfig.validAttributes);
-      }
-
-      var updatePayload = create(nativeProps, viewConfig.validAttributes); // Avoid the overhead of bridge calls if there's no update.
-      // This is an expensive no-op for Android, and causes an unnecessary
-      // view invalidation for certain components (eg RCTTextInput) on iOS.
-
-      if (updatePayload != null) {
-        ReactNativePrivateInterface.UIManager.updateView(
-          nativeTag,
-          viewConfig.uiViewClassName,
-          updatePayload
-        );
-      }
-    },
-
-    /**
-     * Requests focus for the given input or view. The exact behavior triggered
-     * will depend on the platform and type of view.
-     */
-    focus: function() {
-      ReactNativePrivateInterface.TextInputState.focusTextInput(
-        findNodeHandle(this)
-      );
-    },
-
-    /**
-     * Removes focus from an input or view. This is the opposite of `focus()`.
-     */
-    blur: function() {
-      ReactNativePrivateInterface.TextInputState.blurTextInput(
-        findNodeHandle(this)
-      );
-    }
-  };
-
-  {
-    // hide this from Flow since we can't define these properties outside of
-    // true without actually implementing them (setting them to undefined
-    // isn't allowed by ReactClass)
-    var NativeMethodsMixin_DEV = NativeMethodsMixin;
-
-    if (
-      !(
-        !NativeMethodsMixin_DEV.componentWillMount &&
-        !NativeMethodsMixin_DEV.componentWillReceiveProps &&
-        !NativeMethodsMixin_DEV.UNSAFE_componentWillMount &&
-        !NativeMethodsMixin_DEV.UNSAFE_componentWillReceiveProps
-      )
-    ) {
-      throw Error("Do not override existing functions.");
-    } // TODO (bvaughn) Remove cWM and cWRP in a future version of React Native,
-    // Once these lifecycles have been remove from the reconciler.
-
-    NativeMethodsMixin_DEV.componentWillMount = function() {
-      throwOnStylesProp(this, this.props);
-    };
-
-    NativeMethodsMixin_DEV.componentWillReceiveProps = function(newProps) {
-      throwOnStylesProp(this, newProps);
-    };
-
-    NativeMethodsMixin_DEV.UNSAFE_componentWillMount = function() {
-      throwOnStylesProp(this, this.props);
-    };
-
-    NativeMethodsMixin_DEV.UNSAFE_componentWillReceiveProps = function(
-      newProps
-    ) {
-      throwOnStylesProp(this, newProps);
-    }; // React may warn about cWM/cWRP/cWU methods being deprecated.
-    // Add a flag to suppress these warnings for this special case.
-    // TODO (bvaughn) Remove this flag once the above methods have been removed.
-
-    NativeMethodsMixin_DEV.componentWillMount.__suppressDeprecationWarning = true;
-    NativeMethodsMixin_DEV.componentWillReceiveProps.__suppressDeprecationWarning = true;
-  }
-
-  return NativeMethodsMixin;
-};
-
-function _inheritsLoose(subClass, superClass) {
-  subClass.prototype = Object.create(superClass.prototype);
-  subClass.prototype.constructor = subClass;
-  subClass.__proto__ = superClass;
-}
-
-var ReactNativeComponent = function(findNodeHandle, findHostInstance) {
-  /**
-   * Superclass that provides methods to access the underlying native component.
-   * This can be useful when you want to focus a view or measure its dimensions.
-   *
-   * Methods implemented by this class are available on most default components
-   * provided by React Native. However, they are *not* available on composite
-   * components that are not directly backed by a native view. For more
-   * information, see [Direct Manipulation](docs/direct-manipulation.html).
-   *
-   * @abstract
-   */
-  var ReactNativeComponent =
-    /*#__PURE__*/
-    (function(_React$Component) {
-      _inheritsLoose(ReactNativeComponent, _React$Component);
-
-      function ReactNativeComponent() {
-        return _React$Component.apply(this, arguments) || this;
-      }
-
-      var _proto = ReactNativeComponent.prototype;
-
-      /**
-       * Due to bugs in Flow's handling of React.createClass, some fields already
-       * declared in the base class need to be redeclared below.
-       */
-
-      /**
-       * Removes focus. This is the opposite of `focus()`.
-       */
-      _proto.blur = function blur() {
-        ReactNativePrivateInterface.TextInputState.blurTextInput(
-          findNodeHandle(this)
-        );
-      };
-      /**
-       * Requests focus. The exact behavior depends on the platform and view.
-       */
-
-      _proto.focus = function focus() {
-        ReactNativePrivateInterface.TextInputState.focusTextInput(
-          findNodeHandle(this)
-        );
-      };
-      /**
-       * Measures the on-screen location and dimensions. If successful, the callback
-       * will be called asynchronously with the following arguments:
-       *
-       *  - x
-       *  - y
-       *  - width
-       *  - height
-       *  - pageX
-       *  - pageY
-       *
-       * These values are not available until after natives rendering completes. If
-       * you need the measurements as soon as possible, consider using the
-       * [`onLayout` prop](docs/view.html#onlayout) instead.
-       */
-
-      _proto.measure = function measure(callback) {
-        var maybeInstance; // Fiber errors if findNodeHandle is called for an umounted component.
-        // Tests using ReactTestRenderer will trigger this case indirectly.
-        // Mimicking stack behavior, we should silently ignore this case.
-        // TODO Fix ReactTestRenderer so we can remove this try/catch.
-
-        try {
-          maybeInstance = findHostInstance(this);
-        } catch (error$$1) {} // If there is no host component beneath this we should fail silently.
-        // This is not an error; it could mean a class component rendered null.
-
-        if (maybeInstance == null) {
-          return;
-        }
-
-        if (maybeInstance.canonical) {
-          // We can't call FabricUIManager here because it won't be loaded in paper
-          // at initialization time. See https://github.com/facebook/react/pull/15490
-          // for more info.
-          nativeFabricUIManager.measure(
-            maybeInstance.node,
-            mountSafeCallback_NOT_REALLY_SAFE(this, callback)
-          );
-        } else {
-          ReactNativePrivateInterface.UIManager.measure(
-            findNodeHandle(this),
-            mountSafeCallback_NOT_REALLY_SAFE(this, callback)
-          );
-        }
-      };
-      /**
-       * Measures the on-screen location and dimensions. Even if the React Native
-       * root view is embedded within another native view, this method will give you
-       * the absolute coordinates measured from the window. If successful, the
-       * callback will be called asynchronously with the following arguments:
-       *
-       *  - x
-       *  - y
-       *  - width
-       *  - height
-       *
-       * These values are not available until after natives rendering completes.
-       */
-
-      _proto.measureInWindow = function measureInWindow(callback) {
-        var maybeInstance; // Fiber errors if findNodeHandle is called for an umounted component.
-        // Tests using ReactTestRenderer will trigger this case indirectly.
-        // Mimicking stack behavior, we should silently ignore this case.
-        // TODO Fix ReactTestRenderer so we can remove this try/catch.
-
-        try {
-          maybeInstance = findHostInstance(this);
-        } catch (error$$1) {} // If there is no host component beneath this we should fail silently.
-        // This is not an error; it could mean a class component rendered null.
-
-        if (maybeInstance == null) {
-          return;
-        }
-
-        if (maybeInstance.canonical) {
-          // We can't call FabricUIManager here because it won't be loaded in paper
-          // at initialization time. See https://github.com/facebook/react/pull/15490
-          // for more info.
-          nativeFabricUIManager.measureInWindow(
-            maybeInstance.node,
-            mountSafeCallback_NOT_REALLY_SAFE(this, callback)
-          );
-        } else {
-          ReactNativePrivateInterface.UIManager.measureInWindow(
-            findNodeHandle(this),
-            mountSafeCallback_NOT_REALLY_SAFE(this, callback)
-          );
-        }
-      };
-      /**
-       * Similar to [`measure()`](#measure), but the resulting location will be
-       * relative to the supplied ancestor's location.
-       *
-       * Obtain a native node handle with `ReactNative.findNodeHandle(component)`.
-       */
-
-      _proto.measureLayout = function measureLayout(
-        relativeToNativeNode,
-        onSuccess,
-        onFail
-      ) {
-        var maybeInstance; // Fiber errors if findNodeHandle is called for an umounted component.
-        // Tests using ReactTestRenderer will trigger this case indirectly.
-        // Mimicking stack behavior, we should silently ignore this case.
-        // TODO Fix ReactTestRenderer so we can remove this try/catch.
-
-        try {
-          maybeInstance = findHostInstance(this);
-        } catch (error$$1) {} // If there is no host component beneath this we should fail silently.
-        // This is not an error; it could mean a class component rendered null.
-
-        if (maybeInstance == null) {
-          return;
-        }
-
-        if (maybeInstance.canonical) {
-          {
-            error(
-              "Warning: measureLayout on components using NativeMethodsMixin " +
-                "or ReactNative.NativeComponent is not currently supported in Fabric. " +
-                "measureLayout must be called on a native ref. Consider using forwardRef."
-            );
-          }
-
-          return;
-        } else {
-          var relativeNode;
-
-          if (typeof relativeToNativeNode === "number") {
-            // Already a node handle
-            relativeNode = relativeToNativeNode;
-          } else if (relativeToNativeNode._nativeTag) {
-            relativeNode = relativeToNativeNode._nativeTag;
-          }
-
-          if (relativeNode == null) {
-            {
-              error(
-                "Warning: ref.measureLayout must be called with a node handle or a ref to a native component."
-              );
-            }
-
-            return;
-          }
-
-          ReactNativePrivateInterface.UIManager.measureLayout(
-            findNodeHandle(this),
-            relativeNode,
-            mountSafeCallback_NOT_REALLY_SAFE(this, onFail),
-            mountSafeCallback_NOT_REALLY_SAFE(this, onSuccess)
-          );
-        }
-      };
-      /**
-       * This function sends props straight to native. They will not participate in
-       * future diff process - this means that if you do not include them in the
-       * next render, they will remain active (see [Direct
-       * Manipulation](docs/direct-manipulation.html)).
-       */
-
-      _proto.setNativeProps = function setNativeProps(nativeProps) {
-        // Class components don't have viewConfig -> validateAttributes.
-        // Nor does it make sense to set native props on a non-native component.
-        // Instead, find the nearest host component and set props on it.
-        // Use findNodeHandle() rather than ReactNative.findNodeHandle() because
-        // We want the instance/wrapper (not the native tag).
-        var maybeInstance; // Fiber errors if findNodeHandle is called for an umounted component.
-        // Tests using ReactTestRenderer will trigger this case indirectly.
-        // Mimicking stack behavior, we should silently ignore this case.
-        // TODO Fix ReactTestRenderer so we can remove this try/catch.
-
-        try {
-          maybeInstance = findHostInstance(this);
-        } catch (error$$1) {} // If there is no host component beneath this we should fail silently.
-        // This is not an error; it could mean a class component rendered null.
-
-        if (maybeInstance == null) {
-          return;
-        }
-
-        if (maybeInstance.canonical) {
-          {
-            error(
-              "Warning: setNativeProps is not currently supported in Fabric"
-            );
-          }
-
-          return;
-        }
-
-        var nativeTag =
-          maybeInstance._nativeTag || maybeInstance.canonical._nativeTag;
-        var viewConfig =
-          maybeInstance.viewConfig || maybeInstance.canonical.viewConfig;
-        var updatePayload = create(nativeProps, viewConfig.validAttributes); // Avoid the overhead of bridge calls if there's no update.
-        // This is an expensive no-op for Android, and causes an unnecessary
-        // view invalidation for certain components (eg RCTTextInput) on iOS.
-
-        if (updatePayload != null) {
-          ReactNativePrivateInterface.UIManager.updateView(
-            nativeTag,
-            viewConfig.uiViewClassName,
-            updatePayload
-          );
-        }
-      };
-
-      return ReactNativeComponent;
-    })(React.Component); // eslint-disable-next-line no-unused-expressions
-
-  return ReactNativeComponent;
-};
+var ReactVersion = "16.12.0";
 
 var emptyObject$3 = {};
 
@@ -24519,7 +24125,6 @@ function computeComponentStackForErrorReporting(reactTag) {
 
 var roots = new Map();
 var ReactNativeRenderer = {
-  NativeComponent: ReactNativeComponent(findNodeHandle, findHostInstance),
   // This is needed for implementation details of TouchableNativeFeedback
   // Remove this once TouchableNativeFeedback doesn't use cloneElement
   findHostInstance_DEPRECATED: findHostInstance_DEPRECATED,
@@ -24585,8 +24190,6 @@ var ReactNativeRenderer = {
   },
   unstable_batchedUpdates: batchedUpdates,
   __SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED: {
-    // Used as a mixin in many createClass-based components
-    NativeMethodsMixin: NativeMethodsMixin(findNodeHandle, findHostInstance),
     computeComponentStackForErrorReporting: computeComponentStackForErrorReporting
   }
 };

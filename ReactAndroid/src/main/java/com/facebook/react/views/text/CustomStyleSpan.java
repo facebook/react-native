@@ -81,8 +81,8 @@ public class CustomStyleSpan extends MetricAffectingSpan implements ReactSpan {
       @Nullable String fontFeatureSettings,
       @Nullable String family,
       AssetManager assetManager) {
-    Typeface typeface = ReactTypefaceUtils.applyStyles(
-      paint.getTypeface(), style, weight, family, assetManager);
+    Typeface typeface =
+        ReactTypefaceUtils.applyStyles(paint.getTypeface(), style, weight, family, assetManager);
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
       paint.setFontFeatureSettings(fontFeatureSettings);
     }

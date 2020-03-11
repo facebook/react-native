@@ -36,11 +36,14 @@ const {useEffect, useRef, useState} = React;
 type ReactRefSetter<T> = {current: null | T, ...} | ((ref: null | T) => mixed);
 
 let AndroidTextInput;
+let AndroidTextInputCommands;
 let RCTMultilineTextInputView;
 let RCTSinglelineTextInputView;
 
 if (Platform.OS === 'android') {
   AndroidTextInput = require('./AndroidTextInputNativeComponent').default;
+  AndroidTextInputCommands = require('./AndroidTextInputNativeComponent')
+    .Commands;
 } else if (Platform.OS === 'ios') {
   RCTMultilineTextInputView = require('./RCTMultilineTextInputNativeComponent.js')
     .default;
@@ -267,9 +270,19 @@ type IOSProps = $ReadOnly<{|
    */
   textContentType?: ?TextContentType,
 
-  PasswordRules?: ?PasswordRules,
+  /**
+   * Provide rules for your password.
+   * For example, say you want to require a password with at least eight characters consisting of a mix of uppercase and lowercase letters, at least one number, and at most two consecutive characters.
+   * "required: upper; required: lower; required: digit; max-consecutive: 2; minlength: 8;"
+   * @platform ios
+   */
+  passwordRules?: ?PasswordRules,
 
   /*
+   * If `true`, allows TextInput to pass touch events to the parent component.
+   * This allows components to be swipeable from the TextInput on iOS,
+   * as is the case on Android by default.
+   * If `false`, TextInput always asks to handle the input (except when disabled).
    * @platform ios
    */
   rejectResponderTermination?: ?boolean,
@@ -686,42 +699,6 @@ type ImperativeMethods = $ReadOnly<{|
 
 const emptyFunctionThatReturnsTrue = () => true;
 
-function useFocusOnMount(
-  initialAutoFocus: ?boolean,
-  inputRef: {|
-    current: null | React.ElementRef<HostComponent<mixed>>,
-  |},
-) {
-  const initialAutoFocusValue = useRef<?boolean>(initialAutoFocus);
-
-  useEffect(() => {
-    // We only want to autofocus on initial mount.
-    // Since initialAutoFocusValue and inputRef will never change
-    // this should match the expected behavior
-    if (initialAutoFocusValue.current) {
-      const focus = () => {
-        if (inputRef.current != null) {
-          inputRef.current.focus();
-        }
-      };
-
-      let rafId;
-      if (Platform.OS === 'android') {
-        // On Android this needs to be executed in a rAF callback
-        // otherwise the keyboard opens then closes immediately.
-        rafId = requestAnimationFrame(focus);
-      } else {
-        focus();
-      }
-
-      return () => {
-        if (rafId != null) {
-          cancelAnimationFrame(rafId);
-        }
-      };
-    }
-  }, [initialAutoFocusValue, inputRef]);
-}
 /**
  * A foundational component for inputting text into the app via a
  * keyboard. Props provide configurability for several features, such as
@@ -836,7 +813,15 @@ function useFocusOnMount(
 function InternalTextInput(props: Props): React.Node {
   const inputRef = useRef<null | React.ElementRef<HostComponent<mixed>>>(null);
 
-  const selection: ?Selection =
+  // Android sends a "onTextChanged" event followed by a "onSelectionChanged" event, for
+  // the same "most recent event count".
+  // For controlled selection, that means that immediately after text is updated,
+  // a controlled component will pass in the *previous* selection, even if the controlled
+  // component didn't mean to modify the selection at all.
+  // Therefore, we ignore selections and pass them through until the selection event has
+  // been sent.
+  // Note that this mitigation is NOT needed for Fabric.
+  let selection: ?Selection =
     props.selection == null
       ? null
       : {
@@ -844,10 +829,28 @@ function InternalTextInput(props: Props): React.Node {
           end: props.selection.end ?? props.selection.start,
         };
 
+  const [mostRecentEventCount, setMostRecentEventCount] = useState<number>(0);
+
   const [lastNativeText, setLastNativeText] = useState<?Stringish>(props.value);
-  const [lastNativeSelection, setLastNativeSelection] = useState<?Selection>(
-    selection,
-  );
+  const [lastNativeSelectionState, setLastNativeSelection] = useState<{|
+    selection: ?Selection,
+    mostRecentEventCount: number,
+  |}>({selection, mostRecentEventCount});
+
+  const lastNativeSelection = lastNativeSelectionState.selection;
+  const lastNativeSelectionEventCount =
+    lastNativeSelectionState.mostRecentEventCount;
+
+  if (lastNativeSelectionEventCount < mostRecentEventCount) {
+    selection = null;
+  }
+
+  const text =
+    typeof props.value === 'string'
+      ? props.value
+      : typeof props.defaultValue === 'string'
+      ? props.defaultValue
+      : '';
 
   // This is necessary in case native updates the text and JS decides
   // that the update should be ignored and we should stick with the value
@@ -867,23 +870,43 @@ function InternalTextInput(props: Props): React.Node {
         lastNativeSelection.end !== selection.end)
     ) {
       nativeUpdate.selection = selection;
-      setLastNativeSelection(selection);
+      setLastNativeSelection({selection, mostRecentEventCount});
     }
 
-    if (Object.keys(nativeUpdate).length > 0 && inputRef.current) {
+    if (Object.keys(nativeUpdate).length === 0) {
+      return;
+    }
+
+    if (AndroidTextInputCommands && inputRef.current != null) {
+      AndroidTextInputCommands.setTextAndSelection(
+        inputRef.current,
+        mostRecentEventCount,
+        text,
+        selection?.start ?? -1,
+        selection?.end ?? -1,
+      );
+    } else if (inputRef.current != null) {
       inputRef.current.setNativeProps(nativeUpdate);
     }
-  }, [inputRef, props.value, lastNativeText, selection, lastNativeSelection]);
-
-  useFocusOnMount(props.autoFocus, inputRef);
+  }, [
+    mostRecentEventCount,
+    inputRef,
+    props.value,
+    props.defaultValue,
+    lastNativeText,
+    selection,
+    lastNativeSelection,
+    text,
+  ]);
 
   useEffect(() => {
-    const tag = ReactNative.findNodeHandle(inputRef.current);
-    if (tag != null) {
-      TextInputState.registerInput(tag);
+    const inputRefValue = inputRef.current;
+
+    if (inputRefValue != null) {
+      TextInputState.registerInput(inputRefValue);
 
       return () => {
-        TextInputState.unregisterInput(tag);
+        TextInputState.unregisterInput(inputRefValue);
       };
     }
   }, [inputRef]);
@@ -898,29 +921,26 @@ function InternalTextInput(props: Props): React.Node {
   }, [inputRef]);
 
   function clear(): void {
-    if (inputRef.current != null) {
+    if (AndroidTextInputCommands && inputRef.current != null) {
+      AndroidTextInputCommands.setTextAndSelection(
+        inputRef.current,
+        mostRecentEventCount,
+        '',
+        0,
+        0,
+      );
+    } else if (inputRef.current != null) {
       inputRef.current.setNativeProps({text: ''});
     }
   }
 
   // TODO: Fix this returning true on null === null, when no input is focused
   function isFocused(): boolean {
-    return (
-      TextInputState.currentlyFocusedField() ===
-      ReactNative.findNodeHandle(inputRef.current)
-    );
+    return TextInputState.currentlyFocusedInput() === inputRef.current;
   }
 
   function getNativeRef(): ?React.ElementRef<HostComponent<mixed>> {
     return inputRef.current;
-  }
-
-  function _getText(): ?string {
-    return typeof props.value === 'string'
-      ? props.value
-      : typeof props.defaultValue === 'string'
-      ? props.defaultValue
-      : '';
   }
 
   const _setNativeRef = setAndForwardRef({
@@ -967,7 +987,12 @@ function InternalTextInput(props: Props): React.Node {
   const _onChange = (event: ChangeEvent) => {
     // Make sure to fire the mostRecentEventCount first so it is already set on
     // native when the text value is set.
-    if (inputRef.current) {
+    if (AndroidTextInputCommands && inputRef.current != null) {
+      AndroidTextInputCommands.setMostRecentEventCount(
+        inputRef.current,
+        event.nativeEvent.eventCount,
+      );
+    } else if (inputRef.current != null) {
       inputRef.current.setNativeProps({
         mostRecentEventCount: event.nativeEvent.eventCount,
       });
@@ -977,36 +1002,44 @@ function InternalTextInput(props: Props): React.Node {
     props.onChange && props.onChange(event);
     props.onChangeText && props.onChangeText(text);
 
-    if (!inputRef.current) {
+    if (inputRef.current == null) {
       // calling `props.onChange` or `props.onChangeText`
       // may clean up the input itself. Exits here.
       return;
     }
 
     setLastNativeText(text);
+    // This must happen last, after we call setLastNativeText.
+    // Different ordering can cause bugs when editing AndroidTextInputs
+    // with multiple Fragments.
+    // We must update this so that controlled input updates work.
+    setMostRecentEventCount(event.nativeEvent.eventCount);
   };
 
   const _onSelectionChange = (event: SelectionChangeEvent) => {
     props.onSelectionChange && props.onSelectionChange(event);
 
-    if (!inputRef.current) {
+    if (inputRef.current == null) {
       // calling `props.onSelectionChange`
       // may clean up the input itself. Exits here.
       return;
     }
 
-    setLastNativeSelection(event.nativeEvent.selection);
+    setLastNativeSelection({
+      selection: event.nativeEvent.selection,
+      mostRecentEventCount,
+    });
   };
 
   const _onFocus = (event: FocusEvent) => {
-    TextInputState.focusField(ReactNative.findNodeHandle(inputRef.current));
+    TextInputState.focusInput(inputRef.current);
     if (props.onFocus) {
       props.onFocus(event);
     }
   };
 
   const _onBlur = (event: BlurEvent) => {
-    TextInputState.blurField(ReactNative.findNodeHandle(inputRef.current));
+    TextInputState.blurInput(inputRef.current);
     if (props.onBlur) {
       props.onBlur(event);
     }
@@ -1051,7 +1084,7 @@ function InternalTextInput(props: Props): React.Node {
         onSelectionChangeShouldSetResponder={emptyFunctionThatReturnsTrue}
         selection={selection}
         style={style}
-        text={_getText()}
+        text={text}
       />
     );
   } else if (Platform.OS === 'android') {
@@ -1077,15 +1110,17 @@ function InternalTextInput(props: Props): React.Node {
         autoCapitalize={autoCapitalize}
         children={children}
         disableFullscreenUI={props.disableFullscreenUI}
-        mostRecentEventCount={0}
+        mostRecentEventCount={mostRecentEventCount}
         onBlur={_onBlur}
         onChange={_onChange}
         onFocus={_onFocus}
+        /* $FlowFixMe the types for AndroidTextInput don't match up exactly
+         * with the props for TextInput. This will need to get fixed */
         onScroll={_onScroll}
         onSelectionChange={_onSelectionChange}
         selection={selection}
         style={style}
-        text={_getText()}
+        text={text}
         textBreakStrategy={props.textBreakStrategy}
       />
     );
@@ -1133,6 +1168,8 @@ ExportedForwardRef.propTypes = DeprecatedTextInputPropTypes;
 
 // $FlowFixMe
 ExportedForwardRef.State = {
+  currentlyFocusedInput: TextInputState.currentlyFocusedInput,
+
   currentlyFocusedField: TextInputState.currentlyFocusedField,
   focusTextInput: TextInputState.focusTextInput,
   blurTextInput: TextInputState.blurTextInput,
@@ -1140,6 +1177,7 @@ ExportedForwardRef.State = {
 
 type TextInputComponentStatics = $ReadOnly<{|
   State: $ReadOnly<{|
+    currentlyFocusedInput: typeof TextInputState.currentlyFocusedInput,
     currentlyFocusedField: typeof TextInputState.currentlyFocusedField,
     focusTextInput: typeof TextInputState.focusTextInput,
     blurTextInput: typeof TextInputState.blurTextInput,

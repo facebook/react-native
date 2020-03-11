@@ -15,7 +15,7 @@
 @property (atomic, assign) NSTimeInterval bundleUpdateTimestamp;
 @end
 
-typedef RCTBundleStatus *(^RCTBundleStatusProvider)(void);
+typedef RCTBundleStatus * (^RCTBundleStatusProvider)(void);
 
 @interface RCTInspectorPackagerConnection : NSObject
 - (instancetype)initWithURL:(NSURL *)url;

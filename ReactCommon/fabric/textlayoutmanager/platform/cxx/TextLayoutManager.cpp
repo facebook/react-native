@@ -17,7 +17,7 @@ void *TextLayoutManager::getNativeTextLayoutManager() const {
 }
 
 Size TextLayoutManager::measure(
-    AttributedString attributedString,
+    AttributedStringBox attributedStringBox,
     ParagraphAttributes paragraphAttributes,
     LayoutConstraints layoutConstraints) const {
   return Size{0, 0};

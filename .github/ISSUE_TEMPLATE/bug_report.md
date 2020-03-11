@@ -9,7 +9,7 @@ labels: 'Needs: Triage :mag:'
 Description:
 
     Please provide a clear and concise description of what the bug is. Include screenshots if needed.
-    Please test using the latest React Native release to make sure your issue has not already been fixed: http://facebook.github.io/react-native/docs/upgrading.html
+    Please test using the latest React Native release to make sure your issue has not already been fixed: https://reactnative.dev/docs/upgrading.html
 
 
 React Native version:

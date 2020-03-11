@@ -20,21 +20,25 @@ RCT_EXTERN BOOL RCTIsMainQueue(void);
  * assert handler through `RCTSetAssertFunction`.
  */
 #ifndef NS_BLOCK_ASSERTIONS
-#define RCTAssert(condition, ...) do { \
-  if ((condition) == 0) { \
-    _RCTAssertFormat(#condition, __FILE__, __LINE__, __func__, __VA_ARGS__); \
-    if (RCT_NSASSERT) { \
-      [[NSAssertionHandler currentHandler] handleFailureInFunction:(NSString * _Nonnull)@(__func__) \
-        file:(NSString * _Nonnull)@(__FILE__) lineNumber:__LINE__ description:__VA_ARGS__]; \
-    } \
-  } \
-} while (false)
+#define RCTAssert(condition, ...)                                                                      \
+  do {                                                                                                 \
+    if ((condition) == 0) {                                                                            \
+      _RCTAssertFormat(#condition, __FILE__, __LINE__, __func__, __VA_ARGS__);                         \
+      if (RCT_NSASSERT) {                                                                              \
+        [[NSAssertionHandler currentHandler] handleFailureInFunction:(NSString * _Nonnull) @(__func__) \
+                                                                file:(NSString * _Nonnull) @(__FILE__) \
+                                                          lineNumber:__LINE__                          \
+                                                         description:__VA_ARGS__];                     \
+      }                                                                                                \
+    }                                                                                                  \
+  } while (false)
 #else
-#define RCTAssert(condition, ...) do {} while (false)
+#define RCTAssert(condition, ...) \
+  do {                            \
+  } while (false)
 #endif
-RCT_EXTERN void _RCTAssertFormat(
-  const char *, const char *, int, const char *, NSString *, ...
-) NS_FORMAT_FUNCTION(5,6);
+RCT_EXTERN void _RCTAssertFormat(const char *, const char *, int, const char *, NSString *, ...)
+    NS_FORMAT_FUNCTION(5, 6);
 
 /**
  * Report a fatal condition when executing. These calls will _NOT_ be compiled out
@@ -68,11 +72,12 @@ RCT_EXTERN NSString *const RCTFatalExceptionName;
 /**
  * A block signature to be used for custom assertion handling.
  */
-typedef void (^RCTAssertFunction)(NSString *condition,
-                                  NSString *fileName,
-                                  NSNumber *lineNumber,
-                                  NSString *function,
-                                  NSString *message);
+typedef void (^RCTAssertFunction)(
+    NSString *condition,
+    NSString *fileName,
+    NSNumber *lineNumber,
+    NSString *function,
+    NSString *message);
 
 typedef void (^RCTFatalHandler)(NSError *error);
 typedef void (^RCTFatalExceptionHandler)(NSException *exception);
@@ -85,14 +90,12 @@ typedef void (^RCTFatalExceptionHandler)(NSException *exception);
 /**
  * Convenience macro for asserting that we're running on main queue.
  */
-#define RCTAssertMainQueue() RCTAssert(RCTIsMainQueue(), \
-  @"This function must be called on the main queue")
+#define RCTAssertMainQueue() RCTAssert(RCTIsMainQueue(), @"This function must be called on the main queue")
 
 /**
  * Convenience macro for asserting that we're running off the main queue.
  */
-#define RCTAssertNotMainQueue() RCTAssert(!RCTIsMainQueue(), \
-@"This function must not be called on the main queue")
+#define RCTAssertNotMainQueue() RCTAssert(!RCTIsMainQueue(), @"This function must not be called on the main queue")
 
 /**
  * These methods get and set the current assert function called by the RCTAssert
@@ -133,7 +136,8 @@ RCT_EXTERN NSString *RCTCurrentThreadName(void);
 /**
  * Helper to get generate exception message from NSError
  */
-RCT_EXTERN NSString *RCTFormatError(NSString *message, NSArray<NSDictionary<NSString *, id> *> *stacktrace, NSUInteger maxMessageLength);
+RCT_EXTERN NSString *
+RCTFormatError(NSString *message, NSArray<NSDictionary<NSString *, id> *> *stacktrace, NSUInteger maxMessageLength);
 
 /**
  * Formats a JS stack trace for logging.
@@ -145,20 +149,19 @@ RCT_EXTERN NSString *RCTFormatStackTrace(NSArray<NSDictionary<NSString *, id> *>
  */
 #if DEBUG
 
-#define RCTAssertThread(thread, format...) \
-_Pragma("clang diagnostic push") \
-_Pragma("clang diagnostic ignored \"-Wdeprecated-declarations\"") \
-RCTAssert( \
-  [(id)thread isKindOfClass:[NSString class]] ? \
-    [RCTCurrentThreadName() isEqualToString:(NSString *)thread] : \
-    [(id)thread isKindOfClass:[NSThread class]] ? \
-      [NSThread currentThread] ==  (NSThread *)thread : \
-      dispatch_get_current_queue() == (dispatch_queue_t)thread, \
-  format); \
-_Pragma("clang diagnostic pop")
+#define RCTAssertThread(thread, format...)                                                                          \
+  _Pragma("clang diagnostic push") _Pragma("clang diagnostic ignored \"-Wdeprecated-declarations\"") RCTAssert(     \
+      [(id)thread isKindOfClass:[NSString class]]                                                                   \
+          ? [RCTCurrentThreadName() isEqualToString:(NSString *)thread]                                             \
+          : [(id)thread isKindOfClass:[NSThread class]] ? [NSThread currentThread] == (NSThread *)thread            \
+                                                        : dispatch_get_current_queue() == (dispatch_queue_t)thread, \
+      format);                                                                                                      \
+  _Pragma("clang diagnostic pop")
 
 #else
 
-#define RCTAssertThread(thread, format...) do { } while (0)
+#define RCTAssertThread(thread, format...) \
+  do {                                     \
+  } while (0)
 
 #endif

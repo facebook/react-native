@@ -12,6 +12,7 @@
 
 const React = require('react');
 const StyleSheet = require('../../StyleSheet/StyleSheet');
+const invariant = require('invariant');
 const processColor = require('../../StyleSheet/processColor');
 
 const nullthrows = require('nullthrows');
@@ -152,12 +153,26 @@ class CheckBox extends React.Component<Props> {
   };
 
   _getTintColors(tintColors) {
-    return tintColors
-      ? {
-          true: processColor(tintColors.true),
-          false: processColor(tintColors.false),
-        }
-      : undefined;
+    if (tintColors) {
+      const processedTextColorTrue = processColor(tintColors.true);
+      invariant(
+        processedTextColorTrue == null ||
+          typeof processedTextColorTrue === 'number',
+        'Unexpected color given for tintColors.true',
+      );
+      const processedTextColorFalse = processColor(tintColors.true);
+      invariant(
+        processedTextColorFalse == null ||
+          typeof processedTextColorFalse === 'number',
+        'Unexpected color given for tintColors.false',
+      );
+      return {
+        true: processedTextColorTrue,
+        false: processedTextColorFalse,
+      };
+    } else {
+      return undefined;
+    }
   }
 
   render() {

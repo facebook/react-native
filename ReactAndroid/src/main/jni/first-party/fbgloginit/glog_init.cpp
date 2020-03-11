@@ -19,16 +19,16 @@
 
 static int toAndroidLevel(google::LogSeverity severity) {
   switch (severity) {
-  case google::GLOG_INFO:
-    return ANDROID_LOG_INFO;
-  case google::GLOG_WARNING:
-    return ANDROID_LOG_WARN;
-  case google::GLOG_ERROR:
-    return ANDROID_LOG_ERROR;
-  case google::GLOG_FATAL:
-    return ANDROID_LOG_FATAL;
-  default:
-    return ANDROID_LOG_FATAL;
+    case google::GLOG_INFO:
+      return ANDROID_LOG_INFO;
+    case google::GLOG_WARNING:
+      return ANDROID_LOG_WARN;
+    case google::GLOG_ERROR:
+      return ANDROID_LOG_ERROR;
+    case google::GLOG_FATAL:
+      return ANDROID_LOG_FATAL;
+    default:
+      return ANDROID_LOG_FATAL;
   }
 }
 
@@ -39,19 +39,15 @@ class LogcatSink : public google::LogSink {
  public:
   void send(
       google::LogSeverity severity,
-      const char* full_filename,
-      const char* base_filename,
+      const char *full_filename,
+      const char *base_filename,
       int line,
-      const struct ::tm* tm_time,
-      const char* message,
+      const struct ::tm *tm_time,
+      const char *message,
       size_t message_len) override {
     auto level = toAndroidLevel(severity);
     __android_log_print(
-        level,
-        base_filename,
-        "%.*s",
-        (int)message_len,
-        message);
+        level, base_filename, "%.*s", (int)message_len, message);
   }
 };
 
@@ -66,23 +62,18 @@ class TaggedLogcatSink : public google::LogSink {
 
   void send(
       google::LogSeverity severity,
-      const char* full_filename,
-      const char* base_filename,
+      const char *full_filename,
+      const char *base_filename,
       int line,
-      const struct ::tm* tm_time,
-      const char* message,
+      const struct ::tm *tm_time,
+      const char *message,
       size_t message_len) override {
     auto level = toAndroidLevel(severity);
-    __android_log_print(
-      level,
-      tag_.c_str(),
-      "%.*s",
-      (int)message_len,
-      message);
+    __android_log_print(level, tag_.c_str(), "%.*s", (int)message_len, message);
   }
 };
 
-static google::LogSink* make_sink(const std::string& tag) {
+static google::LogSink *make_sink(const std::string &tag) {
   if (tag.empty()) {
     return new LogcatSink{};
   } else {
@@ -90,7 +81,7 @@ static google::LogSink* make_sink(const std::string& tag) {
   }
 }
 
-static void sendGlogOutputToLogcat(const char* tag) {
+static void sendGlogOutputToLogcat(const char *tag) {
   google::AddLogSink(make_sink(tag));
 
   // Disable logging to files
@@ -101,7 +92,8 @@ static void sendGlogOutputToLogcat(const char* tag) {
 
 #endif // __ANDROID__
 
-static void lastResort(const char* tag, const char* msg, const char* arg = nullptr) {
+static void
+lastResort(const char *tag, const char *msg, const char *arg = nullptr) {
 #ifdef __ANDROID__
   if (!arg) {
     __android_log_write(ANDROID_LOG_ERROR, tag, msg);
@@ -117,9 +109,10 @@ static void lastResort(const char* tag, const char* msg, const char* arg = nullp
 #endif
 }
 
-namespace facebook { namespace gloginit {
+namespace facebook {
+namespace gloginit {
 
-void initialize(const char* tag) {
+void initialize(const char *tag) {
   static std::once_flag flag{};
   static auto failed = false;
 
@@ -130,7 +123,7 @@ void initialize(const char* tag) {
 #ifdef __ANDROID__
       sendGlogOutputToLogcat(tag);
 #endif
-    } catch (std::exception& ex) {
+    } catch (std::exception &ex) {
       lastResort(tag, "Failed to initialize glog", ex.what());
       failed = true;
     } catch (...) {
@@ -144,4 +137,5 @@ void initialize(const char* tag) {
   }
 }
 
-}}
+} // namespace gloginit
+} // namespace facebook

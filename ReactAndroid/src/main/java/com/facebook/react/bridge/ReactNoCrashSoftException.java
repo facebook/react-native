@@ -16,4 +16,8 @@ public class ReactNoCrashSoftException extends RuntimeException {
   public ReactNoCrashSoftException(String detailMessage) {
     super(detailMessage);
   }
+
+  public ReactNoCrashSoftException(String detailMessage, Throwable ex) {
+    super(detailMessage, ex);
+  }
 }

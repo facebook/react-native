@@ -43,7 +43,8 @@
     }
   });
   return _RCT_CAST(
-      UIStatusBarStyle, [RCTConvertEnumValue("UIStatusBarStyle", mapping, @(UIStatusBarStyleDefault), json) integerValue]);
+      UIStatusBarStyle,
+      [RCTConvertEnumValue("UIStatusBarStyle", mapping, @(UIStatusBarStyleDefault), json) integerValue]);
 }
 
 RCT_ENUM_CONVERTER(
@@ -61,7 +62,7 @@ RCT_ENUM_CONVERTER(
 
 #if !TARGET_OS_TV
 
-@interface RCTStatusBarManager() <NativeStatusBarManagerIOSSpec>
+@interface RCTStatusBarManager () <NativeStatusBarManagerIOSSpec>
 @end
 
 #endif
@@ -185,8 +186,8 @@ RCT_EXPORT_METHOD(setNetworkActivityIndicatorVisible : (BOOL)visible)
 - (facebook::react::ModuleConstants<JS::NativeStatusBarManagerIOS::Constants>)getConstants
 {
   return facebook::react::typedConstants<JS::NativeStatusBarManagerIOS::Constants>({
-    .HEIGHT = RCTSharedApplication().statusBarFrame.size.height,
-    .DEFAULT_BACKGROUND_COLOR = folly::none,
+      .HEIGHT = RCTSharedApplication().statusBarFrame.size.height,
+      .DEFAULT_BACKGROUND_COLOR = folly::none,
   });
 }
 
@@ -195,7 +196,8 @@ RCT_EXPORT_METHOD(setNetworkActivityIndicatorVisible : (BOOL)visible)
   return (facebook::react::ModuleConstants<JS::NativeStatusBarManagerIOS::Constants>)[self getConstants];
 }
 
-- (std::shared_ptr<facebook::react::TurboModule>)getTurboModuleWithJsInvoker:(std::shared_ptr<facebook::react::CallInvoker>)jsInvoker
+- (std::shared_ptr<facebook::react::TurboModule>)getTurboModuleWithJsInvoker:
+    (std::shared_ptr<facebook::react::CallInvoker>)jsInvoker
 {
   return std::make_shared<facebook::react::NativeStatusBarManagerIOSSpecJSI>(self, jsInvoker);
 }
@@ -204,6 +206,7 @@ RCT_EXPORT_METHOD(setNetworkActivityIndicatorVisible : (BOOL)visible)
 
 @end
 
-Class RCTStatusBarManagerCls(void) {
+Class RCTStatusBarManagerCls(void)
+{
   return RCTStatusBarManager.class;
 }

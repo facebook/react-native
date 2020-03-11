@@ -95,6 +95,7 @@ class JSIExecutor : public JSExecutor {
   std::string getDescription() override;
   void *getJavaScriptContext() override;
   bool isInspectable() override;
+  void handleMemoryPressure(int pressureLevel) override;
 
   // An implementation of JSIScopedTimeoutInvoker that simply runs the
   // invokee, with no timeout.
@@ -129,7 +130,6 @@ class JSIExecutor : public JSExecutor {
   folly::Optional<jsi::Function> callFunctionReturnFlushedQueue_;
   folly::Optional<jsi::Function> invokeCallbackAndReturnFlushedQueue_;
   folly::Optional<jsi::Function> flushedQueue_;
-  folly::Optional<jsi::Function> callFunctionReturnResultAndFlushedQueue_;
 };
 
 using Logger =

@@ -1,0 +1,49 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`<Pressable /> should render as expected: should deep render when mocked (please verify output manually) 1`] = `
+<View
+  accessible={true}
+  focusable={true}
+  onBlur={[Function]}
+  onClick={[Function]}
+  onFocus={[Function]}
+  onResponderGrant={[Function]}
+  onResponderMove={[Function]}
+  onResponderRelease={[Function]}
+  onResponderTerminate={[Function]}
+  onResponderTerminationRequest={[Function]}
+  onStartShouldSetResponder={[Function]}
+>
+  <View />
+</View>
+`;
+
+exports[`<Pressable /> should render as expected: should deep render when not mocked (please verify output manually) 1`] = `
+<View
+  accessible={true}
+  focusable={true}
+  onBlur={[Function]}
+  onClick={[Function]}
+  onFocus={[Function]}
+  onResponderGrant={[Function]}
+  onResponderMove={[Function]}
+  onResponderRelease={[Function]}
+  onResponderTerminate={[Function]}
+  onResponderTerminationRequest={[Function]}
+  onStartShouldSetResponder={[Function]}
+>
+  <View />
+</View>
+`;
+
+exports[`<Pressable /> should render as expected: should shallow render as <Pressable /> when mocked 1`] = `
+<Memo(Pressable)>
+  <View />
+</Memo(Pressable)>
+`;
+
+exports[`<Pressable /> should render as expected: should shallow render as <Pressable /> when not mocked 1`] = `
+<Memo(Pressable)>
+  <View />
+</Memo(Pressable)>
+`;
