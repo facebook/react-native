@@ -640,6 +640,7 @@ export default class Pressability {
     event: PressEvent,
   ): void {
     if (isTerminalSignal(signal)) {
+      this._touchActivatePosition = null;
       this._cancelLongPressDelayTimeout();
     }
 

@@ -397,9 +397,97 @@ describe('Pressability', () => {
       jest.advanceTimersByTime(1);
       expect(config.onLongPress).toBeCalled();
     });
-  });
 
-  // TODO: onLongPressShouldCancelPress tests
+    it('is called if touch moves within 10dp', () => {
+      mockUIManagerMeasure();
+      const {config, handlers} = createMockPressability();
+
+      handlers.onStartShouldSetResponder();
+      handlers.onResponderGrant(createMockPressEvent('onResponderGrant'));
+      handlers.onResponderMove(
+        createMockPressEvent({
+          registrationName: 'onResponderMove',
+          pageX: 0,
+          pageY: 0,
+        }),
+      );
+
+      jest.advanceTimersByTime(130);
+      handlers.onResponderMove(
+        // NOTE: Delta from (0, 0) is ~9.9 < 10.
+        createMockPressEvent({
+          registrationName: 'onResponderMove',
+          pageX: 7,
+          pageY: 7,
+        }),
+      );
+
+      jest.advanceTimersByTime(370);
+      expect(config.onLongPress).toBeCalled();
+    });
+
+    it('is not called if touch moves beyond 10dp', () => {
+      mockUIManagerMeasure();
+      const {config, handlers} = createMockPressability();
+
+      handlers.onStartShouldSetResponder();
+      handlers.onResponderGrant(createMockPressEvent('onResponderGrant'));
+      handlers.onResponderMove(
+        createMockPressEvent({
+          registrationName: 'onResponderMove',
+          pageX: 0,
+          pageY: 0,
+        }),
+      );
+
+      jest.advanceTimersByTime(130);
+      handlers.onResponderMove(
+        createMockPressEvent({
+          registrationName: 'onResponderMove',
+          // NOTE: Delta from (0, 0) is ~10.6 > 10.
+          pageX: 7,
+          pageY: 8,
+        }),
+      );
+
+      jest.advanceTimersByTime(370);
+      expect(config.onLongPress).not.toBeCalled();
+    });
+
+    it('is called independent of preceding long touch gesture', () => {
+      mockUIManagerMeasure();
+      const {config, handlers} = createMockPressability();
+
+      handlers.onStartShouldSetResponder();
+      handlers.onResponderGrant(createMockPressEvent('onResponderGrant'));
+      handlers.onResponderMove(
+        createMockPressEvent({
+          registrationName: 'onResponderMove',
+          pageX: 0,
+          pageY: 0,
+        }),
+      );
+
+      jest.advanceTimersByTime(500);
+      expect(config.onLongPress).toHaveBeenCalledTimes(1);
+      handlers.onResponderRelease(createMockPressEvent('onResponderRelease'));
+
+      // Subsequent long touch gesture should not carry over previous state.
+      handlers.onStartShouldSetResponder();
+      handlers.onResponderGrant(createMockPressEvent('onResponderGrant'));
+      handlers.onResponderMove(
+        // NOTE: Delta from (0, 0) is ~10.6 > 10, but should not matter.
+        createMockPressEvent({
+          registrationName: 'onResponderMove',
+          pageX: 7,
+          pageY: 8,
+        }),
+      );
+
+      jest.advanceTimersByTime(500);
+      expect(config.onLongPress).toHaveBeenCalledTimes(2);
+    });
+  });
 
   describe('onPress', () => {
     it('is called even when `measure` does not finish', () => {
