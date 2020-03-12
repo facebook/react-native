@@ -83,81 +83,90 @@
 </ul>
 <p>If you don't need section support and want a simpler interface, use <a href="/docs/next/flatlist"><code>&lt;FlatList&gt;</code></a>.</p>
 <h2><a class="anchor" aria-hidden="true" id="example"></a><a href="#example" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Example</h2>
-<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React <span class="hljs-keyword">from</span> <span class="hljs-string">'react'</span>;
+<div class="toggler">
+  <ul role="tablist" class="toggle-syntax">
+    <li id="functional" class="button-functional" aria-selected="false" role="tab" tabindex="0" aria-controls="functionaltab" onclick="displayTabs('syntax', 'functional')">
+      Function Component Example
+    </li>
+    <li id="classical" class="button-classical" aria-selected="false" role="tab" tabindex="0" aria-controls="classicaltab" onclick="displayTabs('syntax', 'classical')">
+      Class Component Example
+    </li>
+  </ul>
+</div>
+<p><block class="functional syntax" /></p>
+<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React <span class="hljs-keyword">from</span> <span class="hljs-string">"react"</span>;
 <span class="hljs-keyword">import</span> {
   StyleSheet,
   Text,
   View,
   SafeAreaView,
-  SectionList,
-} <span class="hljs-keyword">from</span> <span class="hljs-string">'react-native'</span>;
-<span class="hljs-keyword">import</span> Constants <span class="hljs-keyword">from</span> <span class="hljs-string">'expo-constants'</span>;
+  SectionList
+} <span class="hljs-keyword">from</span> <span class="hljs-string">"react-native"</span>;
+<span class="hljs-keyword">import</span> Constants <span class="hljs-keyword">from</span> <span class="hljs-string">"expo-constants"</span>;
 
 <span class="hljs-keyword">const</span> DATA = [
   {
-    <span class="hljs-attr">title</span>: <span class="hljs-string">'Main dishes'</span>,
-    <span class="hljs-attr">data</span>: [<span class="hljs-string">'Pizza'</span>, <span class="hljs-string">'Burger'</span>, <span class="hljs-string">'Risotto'</span>],
+    <span class="hljs-attr">title</span>: <span class="hljs-string">"Main dishes"</span>,
+    <span class="hljs-attr">data</span>: [<span class="hljs-string">"Pizza"</span>, <span class="hljs-string">"Burger"</span>, <span class="hljs-string">"Risotto"</span>]
   },
   {
-    <span class="hljs-attr">title</span>: <span class="hljs-string">'Sides'</span>,
-    <span class="hljs-attr">data</span>: [<span class="hljs-string">'French Fries'</span>, <span class="hljs-string">'Onion Rings'</span>, <span class="hljs-string">'Fried Shrimps'</span>],
+    <span class="hljs-attr">title</span>: <span class="hljs-string">"Sides"</span>,
+    <span class="hljs-attr">data</span>: [<span class="hljs-string">"French Fries"</span>, <span class="hljs-string">"Onion Rings"</span>, <span class="hljs-string">"Fried Shrimps"</span>]
   },
   {
-    <span class="hljs-attr">title</span>: <span class="hljs-string">'Drinks'</span>,
-    <span class="hljs-attr">data</span>: [<span class="hljs-string">'Water'</span>, <span class="hljs-string">'Coke'</span>, <span class="hljs-string">'Beer'</span>],
+    <span class="hljs-attr">title</span>: <span class="hljs-string">"Drinks"</span>,
+    <span class="hljs-attr">data</span>: [<span class="hljs-string">"Water"</span>, <span class="hljs-string">"Coke"</span>, <span class="hljs-string">"Beer"</span>]
   },
   {
-    <span class="hljs-attr">title</span>: <span class="hljs-string">'Desserts'</span>,
-    <span class="hljs-attr">data</span>: [<span class="hljs-string">'Cheese Cake'</span>, <span class="hljs-string">'Ice Cream'</span>],
-  },
+    <span class="hljs-attr">title</span>: <span class="hljs-string">"Desserts"</span>,
+    <span class="hljs-attr">data</span>: [<span class="hljs-string">"Cheese Cake"</span>, <span class="hljs-string">"Ice Cream"</span>]
+  }
 ];
 
-<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Item</span>(<span class="hljs-params">{ title }</span>) </span>{
-  <span class="hljs-keyword">return</span> (
-    <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">View</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.item}</span>&gt;</span>
-      <span class="hljs-tag">&lt;<span class="hljs-name">Text</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.title}</span>&gt;</span>{title}<span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span>
-    <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span></span>
-  );
-}
+<span class="hljs-keyword">const</span> Item = <span class="hljs-function">(<span class="hljs-params">{ title }</span>) =&gt;</span> (
+  <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">View</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.item}</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">Text</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.title}</span>&gt;</span>{title}<span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span>
+  <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span></span>
+);
 
-<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">App</span>(<span class="hljs-params"></span>) </span>{
-  <span class="hljs-keyword">return</span> (
-    &lt;SafeAreaView style={styles.container}&gt;
-      &lt;SectionList
-        sections={DATA}
-        keyExtractor={(item, index) =&gt; item + index}
-        renderItem={({ item }) =&gt; &lt;Item title={item} /&gt;}
-        renderSectionHeader={({ section: { title } }) =&gt; (
-          &lt;Text style={styles.header}&gt;{title}&lt;/Text&gt;
-        )}
-      /&gt;
-    &lt;/SafeAreaView&gt;
-  );
-}
+<span class="hljs-keyword">const</span> App = <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> (
+  &lt;SafeAreaView style={styles.container}&gt;
+    &lt;SectionList
+      sections={DATA}
+      keyExtractor={(item, index) =&gt; item + index}
+      renderItem={({ item }) =&gt; &lt;Item title={item} /&gt;}
+      renderSectionHeader={({ section: { title } }) =&gt; (
+        &lt;Text style={styles.header}&gt;{title}&lt;/Text&gt;
+      )}
+    /&gt;
+  &lt;/SafeAreaView&gt;
+);
+
+export default App;
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     marginTop: Constants.statusBarHeight,
-    marginHorizontal: 16,
+    marginHorizontal: 16
   },
   item: {
-    backgroundColor: '#f9c2ff',
+    backgroundColor: "#f9c2ff",
     padding: 20,
-    marginVertical: 8,
+    marginVertical: 8
   },
   header: {
     fontSize: 32,
-    backgroundColor: '#fff'
+    backgroundColor: "#fff"
   },
   title: {
-    fontSize: 24,
-  },
+    fontSize: 24
+  }
 });
 </code></pre></div><div class="desktop-friendly-snack" style="margin-top: 15px; margin-bottom: 15px"><div
-        data-snack-name="SectionList"
+        data-snack-name="SectionList Example"
         data-snack-description="Example usage"
-        data-snack-code="import%20React%20from%20'react'%3B%0Aimport%20%7B%0A%20%20StyleSheet%2C%0A%20%20Text%2C%0A%20%20View%2C%0A%20%20SafeAreaView%2C%0A%20%20SectionList%2C%0A%7D%20from%20'react-native'%3B%0Aimport%20Constants%20from%20'expo-constants'%3B%0A%0Aconst%20DATA%20%3D%20%5B%0A%20%20%7B%0A%20%20%20%20title%3A%20'Main%20dishes'%2C%0A%20%20%20%20data%3A%20%5B'Pizza'%2C%20'Burger'%2C%20'Risotto'%5D%2C%0A%20%20%7D%2C%0A%20%20%7B%0A%20%20%20%20title%3A%20'Sides'%2C%0A%20%20%20%20data%3A%20%5B'French%20Fries'%2C%20'Onion%20Rings'%2C%20'Fried%20Shrimps'%5D%2C%0A%20%20%7D%2C%0A%20%20%7B%0A%20%20%20%20title%3A%20'Drinks'%2C%0A%20%20%20%20data%3A%20%5B'Water'%2C%20'Coke'%2C%20'Beer'%5D%2C%0A%20%20%7D%2C%0A%20%20%7B%0A%20%20%20%20title%3A%20'Desserts'%2C%0A%20%20%20%20data%3A%20%5B'Cheese%20Cake'%2C%20'Ice%20Cream'%5D%2C%0A%20%20%7D%2C%0A%5D%3B%0A%0Afunction%20Item(%7B%20title%20%7D)%20%7B%0A%20%20return%20(%0A%20%20%20%20%3CView%20style%3D%7Bstyles.item%7D%3E%0A%20%20%20%20%20%20%3CText%20style%3D%7Bstyles.title%7D%3E%7Btitle%7D%3C%2FText%3E%0A%20%20%20%20%3C%2FView%3E%0A%20%20)%3B%0A%7D%0A%0Aexport%20default%20function%20App()%20%7B%0A%20%20return%20(%0A%20%20%20%20%3CSafeAreaView%20style%3D%7Bstyles.container%7D%3E%0A%20%20%20%20%20%20%3CSectionList%0A%20%20%20%20%20%20%20%20sections%3D%7BDATA%7D%0A%20%20%20%20%20%20%20%20keyExtractor%3D%7B(item%2C%20index)%20%3D%3E%20item%20%2B%20index%7D%0A%20%20%20%20%20%20%20%20renderItem%3D%7B(%7B%20item%20%7D)%20%3D%3E%20%3CItem%20title%3D%7Bitem%7D%20%2F%3E%7D%0A%20%20%20%20%20%20%20%20renderSectionHeader%3D%7B(%7B%20section%3A%20%7B%20title%20%7D%20%7D)%20%3D%3E%20(%0A%20%20%20%20%20%20%20%20%20%20%3CText%20style%3D%7Bstyles.header%7D%3E%7Btitle%7D%3C%2FText%3E%0A%20%20%20%20%20%20%20%20)%7D%0A%20%20%20%20%20%20%2F%3E%0A%20%20%20%20%3C%2FSafeAreaView%3E%0A%20%20)%3B%0A%7D%0A%0Aconst%20styles%20%3D%20StyleSheet.create(%7B%0A%20%20container%3A%20%7B%0A%20%20%20%20flex%3A%201%2C%0A%20%20%20%20marginTop%3A%20Constants.statusBarHeight%2C%0A%20%20%20%20marginHorizontal%3A%2016%2C%0A%20%20%7D%2C%0A%20%20item%3A%20%7B%0A%20%20%20%20backgroundColor%3A%20'%23f9c2ff'%2C%0A%20%20%20%20padding%3A%2020%2C%0A%20%20%20%20marginVertical%3A%208%2C%0A%20%20%7D%2C%0A%20%20header%3A%20%7B%0A%20%20%20%20fontSize%3A%2032%2C%0A%20%20%20%20backgroundColor%3A%20'%23fff'%0A%20%20%7D%2C%0A%20%20title%3A%20%7B%0A%20%20%20%20fontSize%3A%2024%2C%0A%20%20%7D%2C%0A%7D)%3B%0A"
+        data-snack-code="import%20React%20from%20%22react%22%3B%0Aimport%20%7B%0A%20%20StyleSheet%2C%0A%20%20Text%2C%0A%20%20View%2C%0A%20%20SafeAreaView%2C%0A%20%20SectionList%0A%7D%20from%20%22react-native%22%3B%0Aimport%20Constants%20from%20%22expo-constants%22%3B%0A%0Aconst%20DATA%20%3D%20%5B%0A%20%20%7B%0A%20%20%20%20title%3A%20%22Main%20dishes%22%2C%0A%20%20%20%20data%3A%20%5B%22Pizza%22%2C%20%22Burger%22%2C%20%22Risotto%22%5D%0A%20%20%7D%2C%0A%20%20%7B%0A%20%20%20%20title%3A%20%22Sides%22%2C%0A%20%20%20%20data%3A%20%5B%22French%20Fries%22%2C%20%22Onion%20Rings%22%2C%20%22Fried%20Shrimps%22%5D%0A%20%20%7D%2C%0A%20%20%7B%0A%20%20%20%20title%3A%20%22Drinks%22%2C%0A%20%20%20%20data%3A%20%5B%22Water%22%2C%20%22Coke%22%2C%20%22Beer%22%5D%0A%20%20%7D%2C%0A%20%20%7B%0A%20%20%20%20title%3A%20%22Desserts%22%2C%0A%20%20%20%20data%3A%20%5B%22Cheese%20Cake%22%2C%20%22Ice%20Cream%22%5D%0A%20%20%7D%0A%5D%3B%0A%0Aconst%20Item%20%3D%20(%7B%20title%20%7D)%20%3D%3E%20(%0A%20%20%3CView%20style%3D%7Bstyles.item%7D%3E%0A%20%20%20%20%3CText%20style%3D%7Bstyles.title%7D%3E%7Btitle%7D%3C%2FText%3E%0A%20%20%3C%2FView%3E%0A)%3B%0A%0Aconst%20App%20%3D%20()%20%3D%3E%20(%0A%20%20%3CSafeAreaView%20style%3D%7Bstyles.container%7D%3E%0A%20%20%20%20%3CSectionList%0A%20%20%20%20%20%20sections%3D%7BDATA%7D%0A%20%20%20%20%20%20keyExtractor%3D%7B(item%2C%20index)%20%3D%3E%20item%20%2B%20index%7D%0A%20%20%20%20%20%20renderItem%3D%7B(%7B%20item%20%7D)%20%3D%3E%20%3CItem%20title%3D%7Bitem%7D%20%2F%3E%7D%0A%20%20%20%20%20%20renderSectionHeader%3D%7B(%7B%20section%3A%20%7B%20title%20%7D%20%7D)%20%3D%3E%20(%0A%20%20%20%20%20%20%20%20%3CText%20style%3D%7Bstyles.header%7D%3E%7Btitle%7D%3C%2FText%3E%0A%20%20%20%20%20%20)%7D%0A%20%20%20%20%2F%3E%0A%20%20%3C%2FSafeAreaView%3E%0A)%3B%0A%0Aexport%20default%20App%3B%0A%0Aconst%20styles%20%3D%20StyleSheet.create(%7B%0A%20%20container%3A%20%7B%0A%20%20%20%20flex%3A%201%2C%0A%20%20%20%20marginTop%3A%20Constants.statusBarHeight%2C%0A%20%20%20%20marginHorizontal%3A%2016%0A%20%20%7D%2C%0A%20%20item%3A%20%7B%0A%20%20%20%20backgroundColor%3A%20%22%23f9c2ff%22%2C%0A%20%20%20%20padding%3A%2020%2C%0A%20%20%20%20marginVertical%3A%208%0A%20%20%7D%2C%0A%20%20header%3A%20%7B%0A%20%20%20%20fontSize%3A%2032%2C%0A%20%20%20%20backgroundColor%3A%20%22%23fff%22%0A%20%20%7D%2C%0A%20%20title%3A%20%7B%0A%20%20%20%20fontSize%3A%2024%0A%20%20%7D%0A%7D)%3B%0A"
         data-snack-platform="web"
         data-snack-supported-platforms=ios,android,web
         data-snack-preview="true"
@@ -169,7 +178,98 @@ const styles = StyleSheet.create({
           height: 514px;
           width: 100%;
         "
-      ></div></div></div><p>This is a convenience wrapper around <a href="/docs/next/virtualizedlist"><code>&lt;VirtualizedList&gt;</code></a>, and thus inherits its props (as well as those of <a href="/docs/next/scrollview"><code>&lt;ScrollView&gt;</code></a> that aren't explicitly listed here, along with the following caveats:</p>
+      ></div></div></div><p><block class="classical syntax" /></p>
+<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React, { Component } <span class="hljs-keyword">from</span> <span class="hljs-string">"react"</span>;
+<span class="hljs-keyword">import</span> {
+  StyleSheet,
+  Text,
+  View,
+  SafeAreaView,
+  SectionList
+} <span class="hljs-keyword">from</span> <span class="hljs-string">"react-native"</span>;
+<span class="hljs-keyword">import</span> Constants <span class="hljs-keyword">from</span> <span class="hljs-string">"expo-constants"</span>;
+
+<span class="hljs-keyword">const</span> DATA = [
+  {
+    <span class="hljs-attr">title</span>: <span class="hljs-string">"Main dishes"</span>,
+    <span class="hljs-attr">data</span>: [<span class="hljs-string">"Pizza"</span>, <span class="hljs-string">"Burger"</span>, <span class="hljs-string">"Risotto"</span>]
+  },
+  {
+    <span class="hljs-attr">title</span>: <span class="hljs-string">"Sides"</span>,
+    <span class="hljs-attr">data</span>: [<span class="hljs-string">"French Fries"</span>, <span class="hljs-string">"Onion Rings"</span>, <span class="hljs-string">"Fried Shrimps"</span>]
+  },
+  {
+    <span class="hljs-attr">title</span>: <span class="hljs-string">"Drinks"</span>,
+    <span class="hljs-attr">data</span>: [<span class="hljs-string">"Water"</span>, <span class="hljs-string">"Coke"</span>, <span class="hljs-string">"Beer"</span>]
+  },
+  {
+    <span class="hljs-attr">title</span>: <span class="hljs-string">"Desserts"</span>,
+    <span class="hljs-attr">data</span>: [<span class="hljs-string">"Cheese Cake"</span>, <span class="hljs-string">"Ice Cream"</span>]
+  }
+];
+
+Item = <span class="hljs-function">(<span class="hljs-params">{ title }</span>) =&gt;</span> (
+  <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">View</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.item}</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">Text</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.title}</span>&gt;</span>{title}<span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span>
+  <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span></span>
+);
+
+<span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">App</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">Component</span> </span>{
+  render() {
+    <span class="hljs-keyword">return</span> (
+      &lt;SafeAreaView style={styles.container}&gt;
+        &lt;SectionList
+          sections={DATA}
+          keyExtractor={(item, index) =&gt; item + index}
+          renderItem={({ item }) =&gt; &lt;Item title={item} /&gt;}
+          renderSectionHeader={({ section: { title } }) =&gt; (
+            &lt;Text style={styles.header}&gt;{title}&lt;/Text&gt;
+          )}
+        /&gt;
+      &lt;/SafeAreaView&gt;
+    );
+  }
+}
+
+export default App;
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    marginTop: Constants.statusBarHeight,
+    marginHorizontal: 16
+  },
+  item: {
+    backgroundColor: "#f9c2ff",
+    padding: 20,
+    marginVertical: 8
+  },
+  header: {
+    fontSize: 32,
+    backgroundColor: "#fff"
+  },
+  title: {
+    fontSize: 24
+  }
+});
+]
+</code></pre></div><div class="desktop-friendly-snack" style="margin-top: 15px; margin-bottom: 15px"><div
+        data-snack-name="SectionList Example"
+        data-snack-description="Example usage"
+        data-snack-code="import%20React%2C%20%7B%20Component%20%7D%20from%20%22react%22%3B%0Aimport%20%7B%0A%20%20StyleSheet%2C%0A%20%20Text%2C%0A%20%20View%2C%0A%20%20SafeAreaView%2C%0A%20%20SectionList%0A%7D%20from%20%22react-native%22%3B%0Aimport%20Constants%20from%20%22expo-constants%22%3B%0A%0Aconst%20DATA%20%3D%20%5B%0A%20%20%7B%0A%20%20%20%20title%3A%20%22Main%20dishes%22%2C%0A%20%20%20%20data%3A%20%5B%22Pizza%22%2C%20%22Burger%22%2C%20%22Risotto%22%5D%0A%20%20%7D%2C%0A%20%20%7B%0A%20%20%20%20title%3A%20%22Sides%22%2C%0A%20%20%20%20data%3A%20%5B%22French%20Fries%22%2C%20%22Onion%20Rings%22%2C%20%22Fried%20Shrimps%22%5D%0A%20%20%7D%2C%0A%20%20%7B%0A%20%20%20%20title%3A%20%22Drinks%22%2C%0A%20%20%20%20data%3A%20%5B%22Water%22%2C%20%22Coke%22%2C%20%22Beer%22%5D%0A%20%20%7D%2C%0A%20%20%7B%0A%20%20%20%20title%3A%20%22Desserts%22%2C%0A%20%20%20%20data%3A%20%5B%22Cheese%20Cake%22%2C%20%22Ice%20Cream%22%5D%0A%20%20%7D%0A%5D%3B%0A%0AItem%20%3D%20(%7B%20title%20%7D)%20%3D%3E%20(%0A%20%20%3CView%20style%3D%7Bstyles.item%7D%3E%0A%20%20%20%20%3CText%20style%3D%7Bstyles.title%7D%3E%7Btitle%7D%3C%2FText%3E%0A%20%20%3C%2FView%3E%0A)%3B%0A%0Aclass%20App%20extends%20Component%20%7B%0A%20%20render()%20%7B%0A%20%20%20%20return%20(%0A%20%20%20%20%20%20%3CSafeAreaView%20style%3D%7Bstyles.container%7D%3E%0A%20%20%20%20%20%20%20%20%3CSectionList%0A%20%20%20%20%20%20%20%20%20%20sections%3D%7BDATA%7D%0A%20%20%20%20%20%20%20%20%20%20keyExtractor%3D%7B(item%2C%20index)%20%3D%3E%20item%20%2B%20index%7D%0A%20%20%20%20%20%20%20%20%20%20renderItem%3D%7B(%7B%20item%20%7D)%20%3D%3E%20%3CItem%20title%3D%7Bitem%7D%20%2F%3E%7D%0A%20%20%20%20%20%20%20%20%20%20renderSectionHeader%3D%7B(%7B%20section%3A%20%7B%20title%20%7D%20%7D)%20%3D%3E%20(%0A%20%20%20%20%20%20%20%20%20%20%20%20%3CText%20style%3D%7Bstyles.header%7D%3E%7Btitle%7D%3C%2FText%3E%0A%20%20%20%20%20%20%20%20%20%20)%7D%0A%20%20%20%20%20%20%20%20%2F%3E%0A%20%20%20%20%20%20%3C%2FSafeAreaView%3E%0A%20%20%20%20)%3B%0A%20%20%7D%0A%7D%0A%0Aexport%20default%20App%3B%0A%0Aconst%20styles%20%3D%20StyleSheet.create(%7B%0A%20%20container%3A%20%7B%0A%20%20%20%20flex%3A%201%2C%0A%20%20%20%20marginTop%3A%20Constants.statusBarHeight%2C%0A%20%20%20%20marginHorizontal%3A%2016%0A%20%20%7D%2C%0A%20%20item%3A%20%7B%0A%20%20%20%20backgroundColor%3A%20%22%23f9c2ff%22%2C%0A%20%20%20%20padding%3A%2020%2C%0A%20%20%20%20marginVertical%3A%208%0A%20%20%7D%2C%0A%20%20header%3A%20%7B%0A%20%20%20%20fontSize%3A%2032%2C%0A%20%20%20%20backgroundColor%3A%20%22%23fff%22%0A%20%20%7D%2C%0A%20%20title%3A%20%7B%0A%20%20%20%20fontSize%3A%2024%0A%20%20%7D%0A%7D)%3B%0A%5D%0A"
+        data-snack-platform="web"
+        data-snack-supported-platforms=ios,android,web
+        data-snack-preview="true"
+        style="
+          overflow: hidden;
+          background: #fafafa;
+          border: 1px solid rgba(0,0,0,.16);
+          border-radius: 4px;
+          height: 514px;
+          width: 100%;
+        "
+      ></div></div></div><p><block class="endBlock syntax" /></p>
+<p>This is a convenience wrapper around <a href="/docs/next/virtualizedlist"><code>&lt;VirtualizedList&gt;</code></a>, and thus inherits its props (as well as those of <a href="/docs/next/scrollview"><code>&lt;ScrollView&gt;</code></a> that aren't explicitly listed here, along with the following caveats:</p>
 <ul>
 <li>Internal state is not preserved when content scrolls out of the render window. Make sure all your data is captured in the item data or external stores like Flux, Redux, or Relay.</li>
 <li>This is a <code>PureComponent</code> which means that it will not re-render if <code>props</code> remain shallow-equal. Make sure that everything your <code>renderItem</code> function depends on is passed as a prop (e.g. <code>extraData</code>) that is not <code>===</code> after updates, otherwise your UI may not update on changes. This includes the <code>data</code> prop and parent component state.</li>
