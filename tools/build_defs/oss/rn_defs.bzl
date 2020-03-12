@@ -27,15 +27,6 @@ GLOG_DEP = "//ReactAndroid/build/third-party-ndk/glog:glog"
 
 INSPECTOR_FLAGS = []
 
-APPLE_JSC_DEPS = []
-
-ANDROID_JSC_INTERNAL_DEPS = [
-    "//native/third-party/jsc:jsc",
-    "//native/third-party/jsc:jsc_legacy_profiler",
-]
-
-ANDROID_JSC_DEPS = ANDROID_JSC_INTERNAL_DEPS
-
 ANDROID = "Android"
 
 APPLE = ""

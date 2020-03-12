@@ -72,31 +72,6 @@ rn_xplat_cxx_library(
         "JSCRuntime.h",
     ],
     apple_sdks = (IOS, MACOSX),
-    cxx_exported_platform_linker_flags = [
-        (
-            "macosx-x86_64",
-            [
-                "-framework",
-                "JavaScriptCore",
-            ],
-        ),
-    ],
-    cxx_platform_deps = [
-        (
-            "^(linux|gcc|platform)",
-            [
-                "fbsource//xplat/jsc:jsc",
-            ],
-        ),
-    ],
-    fbandroid_compiler_flags = [
-        "-fexceptions",
-        "-frtti",
-        "-O3",
-    ],
-    fbandroid_deps = [
-        "fbsource//xplat/jsc:jsc",
-    ],
     fbobjc_compiler_flags = [
         "-Os",
     ],
