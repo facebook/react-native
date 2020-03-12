@@ -113,29 +113,25 @@
 <div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React <span class="hljs-keyword">from</span> <span class="hljs-string">'react'</span>;
 <span class="hljs-keyword">import</span> { Text, TouchableOpacity, View } <span class="hljs-keyword">from</span> <span class="hljs-string">'react-native'</span>;
 
-<span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">MyButton</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">React</span>.<span class="hljs-title">Component</span> </span>{
-  render() {
+<span class="hljs-keyword">const</span> MyButton = <span class="hljs-function">(<span class="hljs-params">props</span>) =&gt;</span> {
     <span class="hljs-keyword">return</span> (
-      <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">View</span>&gt;</span>
-        <span class="hljs-tag">&lt;<span class="hljs-name">Text</span>&gt;</span>{this.props.label}<span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span>
+      <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">View</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{{marginTop:</span> <span class="hljs-attr">50</span>}}&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">Text</span>&gt;</span>{props.label}<span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span>
       <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span></span>
     )
-  }
 }
 
-<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">App</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">React</span>.<span class="hljs-title">Component</span> </span>{
-  render() {
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> App = <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
     <span class="hljs-keyword">return</span> (
       <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">TouchableOpacity</span>&gt;</span>
         <span class="hljs-tag">&lt;<span class="hljs-name">MyButton</span> <span class="hljs-attr">label</span>=<span class="hljs-string">"Press me!"</span> /&gt;</span>
       <span class="hljs-tag">&lt;/<span class="hljs-name">TouchableOpacity</span>&gt;</span>
     )
-  }
 }
 </span></code></pre></div><div class="desktop-friendly-snack" style="margin-top: 15px; margin-bottom: 15px"><div
         data-snack-name="setNativeProps with Composite Components"
         data-snack-description="Example usage"
-        data-snack-code="import%20React%20from%20'react'%3B%0Aimport%20%7B%20Text%2C%20TouchableOpacity%2C%20View%20%7D%20from%20'react-native'%3B%0A%0Aclass%20MyButton%20extends%20React.Component%20%7B%0A%20%20render()%20%7B%0A%20%20%20%20return%20(%0A%20%20%20%20%20%20%3CView%3E%0A%20%20%20%20%20%20%20%20%3CText%3E%7Bthis.props.label%7D%3C%2FText%3E%0A%20%20%20%20%20%20%3C%2FView%3E%0A%20%20%20%20)%0A%20%20%7D%0A%7D%0A%0Aexport%20default%20class%20App%20extends%20React.Component%20%7B%0A%20%20render()%20%7B%0A%20%20%20%20return%20(%0A%20%20%20%20%20%20%3CTouchableOpacity%3E%0A%20%20%20%20%20%20%20%20%3CMyButton%20label%3D%22Press%20me!%22%20%2F%3E%0A%20%20%20%20%20%20%3C%2FTouchableOpacity%3E%0A%20%20%20%20)%0A%20%20%7D%0A%7D%0A"
+        data-snack-code="import%20React%20from%20'react'%3B%0Aimport%20%7B%20Text%2C%20TouchableOpacity%2C%20View%20%7D%20from%20'react-native'%3B%0A%0Aconst%20MyButton%20%3D%20(props)%20%3D%3E%20%7B%0A%20%20%20%20return%20(%0A%20%20%20%20%20%20%3CView%20style%3D%7B%7BmarginTop%3A%2050%7D%7D%3E%0A%20%20%20%20%20%20%20%20%3CText%3E%7Bprops.label%7D%3C%2FText%3E%0A%20%20%20%20%20%20%3C%2FView%3E%0A%20%20%20%20)%0A%7D%0A%0Aexport%20default%20App%20%3D%20()%20%3D%3E%20%7B%0A%20%20%20%20return%20(%0A%20%20%20%20%20%20%3CTouchableOpacity%3E%0A%20%20%20%20%20%20%20%20%3CMyButton%20label%3D%22Press%20me!%22%20%2F%3E%0A%20%20%20%20%20%20%3C%2FTouchableOpacity%3E%0A%20%20%20%20)%0A%7D%0A"
         data-snack-platform="web"
         data-snack-supported-platforms=ios,android,web
         data-snack-preview="true"
@@ -153,33 +149,29 @@
 <div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React <span class="hljs-keyword">from</span> <span class="hljs-string">'react'</span>;
 <span class="hljs-keyword">import</span> { Text, TouchableOpacity, View } <span class="hljs-keyword">from</span> <span class="hljs-string">'react-native'</span>;
 
-<span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">MyButton</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">React</span>.<span class="hljs-title">Component</span> </span>{
+<span class="hljs-keyword">const</span> MyButton = <span class="hljs-function">(<span class="hljs-params">props</span>) =&gt;</span> {
   setNativeProps = <span class="hljs-function">(<span class="hljs-params">nativeProps</span>) =&gt;</span> {
-    <span class="hljs-keyword">this</span>._root.setNativeProps(nativeProps);
+    _root.setNativeProps(nativeProps);
   }
 
-  render() {
     <span class="hljs-keyword">return</span> (
-      <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">View</span> <span class="hljs-attr">ref</span>=<span class="hljs-string">{component</span> =&gt;</span> this._root = component} {...this.props}&gt;
-        <span class="hljs-tag">&lt;<span class="hljs-name">Text</span>&gt;</span>{this.props.label}<span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span>
+      <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">View</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{{marginTop:</span> <span class="hljs-attr">50</span>}} <span class="hljs-attr">ref</span>=<span class="hljs-string">{component</span> =&gt;</span> _root = component} {...props}&gt;
+        <span class="hljs-tag">&lt;<span class="hljs-name">Text</span>&gt;</span>{props.label}<span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span>
       <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span></span>
     )
-  }
 }
 
-<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">App</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">React</span>.<span class="hljs-title">Component</span> </span>{
-  render() {
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> App = <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
     <span class="hljs-keyword">return</span> (
       <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">TouchableOpacity</span>&gt;</span>
         <span class="hljs-tag">&lt;<span class="hljs-name">MyButton</span> <span class="hljs-attr">label</span>=<span class="hljs-string">"Press me!"</span> /&gt;</span>
       <span class="hljs-tag">&lt;/<span class="hljs-name">TouchableOpacity</span>&gt;</span>
     )
-  }
 }
 </span></code></pre></div><div class="desktop-friendly-snack" style="margin-top: 15px; margin-bottom: 15px"><div
         data-snack-name="Forwarding setNativeProps"
         data-snack-description="Example usage"
-        data-snack-code="import%20React%20from%20'react'%3B%0Aimport%20%7B%20Text%2C%20TouchableOpacity%2C%20View%20%7D%20from%20'react-native'%3B%0A%0Aclass%20MyButton%20extends%20React.Component%20%7B%0A%20%20setNativeProps%20%3D%20(nativeProps)%20%3D%3E%20%7B%0A%20%20%20%20this._root.setNativeProps(nativeProps)%3B%0A%20%20%7D%0A%0A%20%20render()%20%7B%0A%20%20%20%20return%20(%0A%20%20%20%20%20%20%3CView%20ref%3D%7Bcomponent%20%3D%3E%20this._root%20%3D%20component%7D%20%7B...this.props%7D%3E%0A%20%20%20%20%20%20%20%20%3CText%3E%7Bthis.props.label%7D%3C%2FText%3E%0A%20%20%20%20%20%20%3C%2FView%3E%0A%20%20%20%20)%0A%20%20%7D%0A%7D%0A%0Aexport%20default%20class%20App%20extends%20React.Component%20%7B%0A%20%20render()%20%7B%0A%20%20%20%20return%20(%0A%20%20%20%20%20%20%3CTouchableOpacity%3E%0A%20%20%20%20%20%20%20%20%3CMyButton%20label%3D%22Press%20me!%22%20%2F%3E%0A%20%20%20%20%20%20%3C%2FTouchableOpacity%3E%0A%20%20%20%20)%0A%20%20%7D%0A%7D%0A"
+        data-snack-code="import%20React%20from%20'react'%3B%0Aimport%20%7B%20Text%2C%20TouchableOpacity%2C%20View%20%7D%20from%20'react-native'%3B%0A%0Aconst%20MyButton%20%3D%20(props)%20%3D%3E%20%7B%0A%20%20setNativeProps%20%3D%20(nativeProps)%20%3D%3E%20%7B%0A%20%20%20%20_root.setNativeProps(nativeProps)%3B%0A%20%20%7D%0A%0A%20%20%20%20return%20(%0A%20%20%20%20%20%20%3CView%20style%3D%7B%7BmarginTop%3A%2050%7D%7D%20ref%3D%7Bcomponent%20%3D%3E%20_root%20%3D%20component%7D%20%7B...props%7D%3E%0A%20%20%20%20%20%20%20%20%3CText%3E%7Bprops.label%7D%3C%2FText%3E%0A%20%20%20%20%20%20%3C%2FView%3E%0A%20%20%20%20)%0A%7D%0A%0Aexport%20default%20App%20%3D%20()%20%3D%3E%20%7B%0A%20%20%20%20return%20(%0A%20%20%20%20%20%20%3CTouchableOpacity%3E%0A%20%20%20%20%20%20%20%20%3CMyButton%20label%3D%22Press%20me!%22%20%2F%3E%0A%20%20%20%20%20%20%3C%2FTouchableOpacity%3E%0A%20%20%20%20)%0A%7D%0A"
         data-snack-platform="web"
         data-snack-supported-platforms=ios,android,web
         data-snack-preview="true"
@@ -198,29 +190,27 @@
 <div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React <span class="hljs-keyword">from</span> <span class="hljs-string">'react'</span>;
 <span class="hljs-keyword">import</span> { TextInput, Text, TouchableOpacity, View } <span class="hljs-keyword">from</span> <span class="hljs-string">'react-native'</span>;
 
-<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">App</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">React</span>.<span class="hljs-title">Component</span> </span>{
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> App = <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
   clearText = <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
-    <span class="hljs-keyword">this</span>._textInput.setNativeProps({<span class="hljs-attr">text</span>: <span class="hljs-string">''</span>});
+     _textInput.setNativeProps({<span class="hljs-attr">text</span>: <span class="hljs-string">''</span>});
   }
 
-  render() {
     <span class="hljs-keyword">return</span> (
       <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">View</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{{flex:</span> <span class="hljs-attr">1</span>, <span class="hljs-attr">alignItems:</span> '<span class="hljs-attr">center</span>', <span class="hljs-attr">justifyContent:</span> '<span class="hljs-attr">center</span>'}}&gt;</span>
         <span class="hljs-tag">&lt;<span class="hljs-name">TextInput</span>
-          <span class="hljs-attr">ref</span>=<span class="hljs-string">{component</span> =&gt;</span> this._textInput = component}
+          <span class="hljs-attr">ref</span>=<span class="hljs-string">{component</span> =&gt;</span> _textInput = component}
           style={{height: 50, width: 200, marginHorizontal: 20, borderWidth: 1, borderColor: '#ccc'}}
         /&gt;
-        <span class="hljs-tag">&lt;<span class="hljs-name">TouchableOpacity</span> <span class="hljs-attr">onPress</span>=<span class="hljs-string">{this.clearText}</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">TouchableOpacity</span> <span class="hljs-attr">onPress</span>=<span class="hljs-string">{clearText}</span>&gt;</span>
           <span class="hljs-tag">&lt;<span class="hljs-name">Text</span>&gt;</span>Clear text<span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span>
         <span class="hljs-tag">&lt;/<span class="hljs-name">TouchableOpacity</span>&gt;</span>
       <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span>
     );
-  }
 }
 </span></code></pre></div><div class="desktop-friendly-snack" style="margin-top: 15px; margin-bottom: 15px"><div
         data-snack-name="Clear text"
         data-snack-description="Example usage"
-        data-snack-code="import%20React%20from%20'react'%3B%0Aimport%20%7B%20TextInput%2C%20Text%2C%20TouchableOpacity%2C%20View%20%7D%20from%20'react-native'%3B%0A%0Aexport%20default%20class%20App%20extends%20React.Component%20%7B%0A%20%20clearText%20%3D%20()%20%3D%3E%20%7B%0A%20%20%20%20this._textInput.setNativeProps(%7Btext%3A%20''%7D)%3B%0A%20%20%7D%0A%0A%20%20render()%20%7B%0A%20%20%20%20return%20(%0A%20%20%20%20%20%20%3CView%20style%3D%7B%7Bflex%3A%201%2C%20alignItems%3A%20'center'%2C%20justifyContent%3A%20'center'%7D%7D%3E%0A%20%20%20%20%20%20%20%20%3CTextInput%0A%20%20%20%20%20%20%20%20%20%20ref%3D%7Bcomponent%20%3D%3E%20this._textInput%20%3D%20component%7D%0A%20%20%20%20%20%20%20%20%20%20style%3D%7B%7Bheight%3A%2050%2C%20width%3A%20200%2C%20marginHorizontal%3A%2020%2C%20borderWidth%3A%201%2C%20borderColor%3A%20'%23ccc'%7D%7D%0A%20%20%20%20%20%20%20%20%2F%3E%0A%20%20%20%20%20%20%20%20%3CTouchableOpacity%20onPress%3D%7Bthis.clearText%7D%3E%0A%20%20%20%20%20%20%20%20%20%20%3CText%3EClear%20text%3C%2FText%3E%0A%20%20%20%20%20%20%20%20%3C%2FTouchableOpacity%3E%0A%20%20%20%20%20%20%3C%2FView%3E%0A%20%20%20%20)%3B%0A%20%20%7D%0A%7D%0A"
+        data-snack-code="import%20React%20from%20'react'%3B%0Aimport%20%7B%20TextInput%2C%20Text%2C%20TouchableOpacity%2C%20View%20%7D%20from%20'react-native'%3B%0A%0Aexport%20default%20App%20%3D%20()%20%3D%3E%20%7B%0A%20%20clearText%20%3D%20()%20%3D%3E%20%7B%0A%20%20%20%20%20_textInput.setNativeProps(%7Btext%3A%20''%7D)%3B%0A%20%20%7D%0A%0A%20%20%20%20return%20(%0A%20%20%20%20%20%20%3CView%20style%3D%7B%7Bflex%3A%201%2C%20alignItems%3A%20'center'%2C%20justifyContent%3A%20'center'%7D%7D%3E%0A%20%20%20%20%20%20%20%20%3CTextInput%0A%20%20%20%20%20%20%20%20%20%20ref%3D%7Bcomponent%20%3D%3E%20_textInput%20%3D%20component%7D%0A%20%20%20%20%20%20%20%20%20%20style%3D%7B%7Bheight%3A%2050%2C%20width%3A%20200%2C%20marginHorizontal%3A%2020%2C%20borderWidth%3A%201%2C%20borderColor%3A%20'%23ccc'%7D%7D%0A%20%20%20%20%20%20%20%20%2F%3E%0A%20%20%20%20%20%20%20%20%3CTouchableOpacity%20onPress%3D%7BclearText%7D%3E%0A%20%20%20%20%20%20%20%20%20%20%3CText%3EClear%20text%3C%2FText%3E%0A%20%20%20%20%20%20%20%20%3C%2FTouchableOpacity%3E%0A%20%20%20%20%20%20%3C%2FView%3E%0A%20%20%20%20)%3B%0A%7D%0A"
         data-snack-platform="web"
         data-snack-supported-platforms=ios,android,web
         data-snack-preview="true"
