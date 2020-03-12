@@ -59,8 +59,7 @@ struct LayoutMetrics {
  * The value is comparable by equality with any other `LayoutMetrics` value.
  */
 static LayoutMetrics const EmptyLayoutMetrics = {
-    /* .frame = */ {{0, 0}, {-1.0, -1.0}}
-};
+    /* .frame = */ {{0, 0}, {-1.0, -1.0}}};
 
 } // namespace react
 } // namespace facebook

@@ -1334,7 +1334,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithBundleURL
     [[NSNotificationCenter defaultCenter] postNotificationName:RCTJavaScriptWillStartExecutingNotification
                                                         object:self->_parentBridge
                                                       userInfo:@{@"bridge" : self}];
-    
+
     // hold a local reference to reactInstance in case a parallel thread
     // resets it between null check and usage
     auto reactInstance = self->_reactInstance;
@@ -1350,8 +1350,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithBundleURL
         reactInstance->loadRAMBundle(std::move(registry), std::move(scriptStr), sourceUrlStr.UTF8String, !async);
       }
     } else if (reactInstance) {
-      reactInstance->loadScriptFromString(
-          std::make_unique<NSDataBigString>(script), sourceUrlStr.UTF8String, !async);
+      reactInstance->loadScriptFromString(std::make_unique<NSDataBigString>(script), sourceUrlStr.UTF8String, !async);
     } else {
       std::string methodName = async ? "loadApplicationScript" : "loadApplicationScriptSync";
       throw std::logic_error("Attempt to call " + methodName + ": on uninitialized bridge");
