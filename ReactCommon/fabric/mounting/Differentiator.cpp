@@ -79,6 +79,39 @@ class TinyMap final {
   better::small_vector<Pair, DefaultSize> vector_;
 };
 
+/*
+ * Sorting comparator for `reorderInPlaceIfNeeded`.
+ */
+static bool shouldFirstPairComesBeforeSecondOne(
+    ShadowViewNodePair const &lhs,
+    ShadowViewNodePair const &rhs) noexcept {
+  return lhs.shadowNode->getOrderIndex() < rhs.shadowNode->getOrderIndex();
+}
+
+/*
+ * Reorders pairs in-place based on `orderIndex` using a stable sort algorithm.
+ */
+static void reorderInPlaceIfNeeded(ShadowViewNodePair::List &pairs) noexcept {
+  if (pairs.size() < 2) {
+    return;
+  }
+
+  auto isReorderNeeded = false;
+  for (auto const &pair : pairs) {
+    if (pair.shadowNode->getOrderIndex() != 0) {
+      isReorderNeeded = true;
+      break;
+    }
+  }
+
+  if (!isReorderNeeded) {
+    return;
+  }
+
+  std::stable_sort(
+      pairs.begin(), pairs.end(), &shouldFirstPairComesBeforeSecondOne);
+}
+
 static void sliceChildShadowNodeViewPairsRecursively(
     ShadowViewNodePair::List &pairList,
     Point layoutOffset,
@@ -159,6 +192,10 @@ static void calculateShadowViewMutations(
   if (oldChildPairs.size() == 0 && newChildPairs.size() == 0) {
     return;
   }
+
+  // Sorting pairs based on `orderIndex` if needed.
+  reorderInPlaceIfNeeded(oldChildPairs);
+  reorderInPlaceIfNeeded(newChildPairs);
 
   auto index = int{0};
 

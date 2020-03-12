@@ -144,6 +144,13 @@ class ShadowNode : public Sealable, public DebugStringConvertible {
    */
   State::Shared getMostRecentState() const;
 
+  /*
+   * Returns a number that specifies the order of the node.
+   * A view generated from a node with a greater order index is placed before a
+   * view generated from a node with a lower order index.
+   */
+  int getOrderIndex() const;
+
   void sealRecursive() const;
 
   ShadowNodeFamily const &getFamily() const;
@@ -185,6 +192,7 @@ class ShadowNode : public Sealable, public DebugStringConvertible {
   SharedProps props_;
   SharedShadowNodeSharedList children_;
   State::Shared state_;
+  int orderIndex_;
 
  private:
   friend ShadowNodeFamily;
