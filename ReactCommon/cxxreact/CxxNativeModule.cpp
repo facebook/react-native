@@ -148,7 +148,7 @@ void CxxNativeModule::invoke(
   // mhorowitz #7128529: convert C++ exceptions to Java
 
   messageQueueThread_->runOnQueue(
-      [method, params = std::move(params), first, second, callId]() {
+      [method, params = std::move(params), first, second, callId]() mutable {
 #ifdef WITH_FBSYSTRACE
         if (callId != -1) {
           fbsystrace_end_async_flow(TRACE_TAG_REACT_APPS, "native", callId);
