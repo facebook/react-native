@@ -644,7 +644,7 @@ jobs:
       name: win/default
     environment:
       - ANDROID_HOME: "C:\\Android\\android-sdk"
-      - ANDROID_NDK: "C:\\Android\\android-sdk\\android-ndk-r20"
+      - ANDROID_NDK: "C:\\Android\\android-sdk\\ndk\\20.0.5594570"
       - ANDROID_BUILD_VERSION: 28
       - ANDROID_TOOLS_VERSION: 29.0.2
       - GRADLE_OPTS: -Dorg.gradle.daemon=false
