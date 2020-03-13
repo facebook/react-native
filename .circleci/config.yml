@@ -604,6 +604,9 @@ jobs:
   publish_npm_package:
     executor: reactnativeandroid
     steps:
+      - add_ssh_keys:
+        fingerprints:
+          - "SHA256:nThbg6kXUpJWGl7E1IGOCspRomTxdCARLviKw6E5SY8"
       - restore_cache_checkout:
           checkout_type: android
       - run_yarn
