@@ -13,9 +13,14 @@ const firebase = require('firebase/app');
 require('firebase/auth');
 require('firebase/firestore');
 
-function initializeStore() {
+/**
+ * Initializes store, and optionally authenticates current user.
+ * @param {string?} email
+ * @param {string?} password
+ * @returns {Promise<firebase.firestore.Firestore>} Reference to store instance
+ */
+async function initializeStore(email, password) {
   const PROJECT_ID = 'react-native-1583841384889';
-  const {FIREBASE_APP_ID} = process.env;
   const apiKey = [
     'AIzaSyCm',
     '5hN3nVNY',
@@ -23,23 +28,30 @@ function initializeStore() {
     'oFpeVe3g',
     'LceuC0Q',
   ].join('');
-  return firebase
-    .initializeApp({
-      apiKey,
-      authDomain: `${PROJECT_ID}.firebaseapp.com`,
-      databaseURL: `https://${PROJECT_ID}.firebaseio.com`,
-      projectId: PROJECT_ID,
-      storageBucket: `${PROJECT_ID}.appspot.com`,
-      messagingSenderId: '329254200967',
-      appId: FIREBASE_APP_ID || '1:329254200967:web:c465681d024115bc303a22',
-      measurementId: 'G-ZKSZ7SCLHK',
-    })
-    .firestore();
+  const app = firebase.initializeApp({
+    apiKey,
+    authDomain: `${PROJECT_ID}.firebaseapp.com`,
+    databaseURL: `https://${PROJECT_ID}.firebaseio.com`,
+    projectId: PROJECT_ID,
+    storageBucket: `${PROJECT_ID}.appspot.com`,
+    messagingSenderId: '329254200967',
+    appId: '1:329254200967:web:c465681d024115bc303a22',
+    measurementId: 'G-ZKSZ7SCLHK',
+  });
+
+  if (email && password) {
+    await app
+      .auth()
+      .signInWithEmailAndPassword(email, password)
+      .catch(error => console.log(error));
+  }
+
+  return app.firestore();
 }
 
 /**
  * Initializes 'binary-sizes' collection using the initial commit's data.
- * @param {firebase.firestore.Firestore} firestore
+ * @param {firebase.firestore.Firestore} firestore Reference to store instance
  */
 function initializeBinarySizesCollection(firestore) {
   return getBinarySizesCollection(firestore)
@@ -60,7 +72,7 @@ function initializeBinarySizesCollection(firestore) {
 
 /**
  * Returns 'binary-sizes' collection.
- * @param {firebase.firestore.Firestore} firestore
+ * @param {firebase.firestore.Firestore} firestore Reference to store instance
  */
 function getBinarySizesCollection(firestore) {
   const BINARY_SIZES_COLLECTION = 'binary-sizes';

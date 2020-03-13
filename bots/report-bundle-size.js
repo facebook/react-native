@@ -40,11 +40,31 @@ const {createOrUpdateComment} = require('./make-comment');
     }} stats
  */
 async function reportSizeStats(stats, replacePattern) {
-  const store = datastore.initializeStore();
+  const {FIREBASE_APP_EMAIL, FIREBASE_APP_PASS} = process.env;
+  const store = await datastore.initializeStore(
+    FIREBASE_APP_EMAIL,
+    FIREBASE_APP_PASS,
+  );
   const collection = datastore.getBinarySizesCollection(store);
 
   if (GITHUB_REF === 'master') {
-    await datastore.createOrUpdateDocument(collection, GITHUB_SHA, stats);
+    // Ensure we only store numbers greater than zero.
+    const validatedStats = Object.keys(stats).reduce((validated, key) => {
+      const value = stats[key];
+      if (typeof value !== 'number' || value <= 0) {
+        return validated;
+      }
+
+      validated[key] = value;
+      return validated;
+    }, {});
+    if (Object.keys(validatedStats).length > 0) {
+      await datastore.createOrUpdateDocument(
+        collection,
+        GITHUB_SHA,
+        validatedStats,
+      );
+    }
   } else {
     const document = await datastore.getLatestDocument(collection);
 
