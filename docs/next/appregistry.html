@@ -83,77 +83,250 @@
 <h3><a class="anchor" aria-hidden="true" id="setwrappercomponentprovider"></a><a href="#setwrappercomponentprovider" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>setWrapperComponentProvider()</code></h3>
 <pre><code class="hljs css language-jsx"><span class="token keyword">static</span> <span class="token function">setWrapperComponentProvider</span><span class="token punctuation">(</span>provider<span class="token punctuation">)</span>
 </code></pre>
+<p><strong>Parameters:</strong></p>
+<table>
+<thead>
+<tr><th>Name</th><th>Type</th><th>Required</th></tr>
+</thead>
+<tbody>
+<tr><td>provider</td><td>ComponentProvider</td><td>yes</td></tr>
+</tbody>
+</table>
+<hr>
+<h3><a class="anchor" aria-hidden="true" id="enablearchitectureindicator"></a><a href="#enablearchitectureindicator" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>enableArchitectureIndicator()</code></h3>
+<pre><code class="hljs css language-jsx"><span class="token keyword">static</span> <span class="token function">enableArchitectureIndicator</span><span class="token punctuation">(</span>enabled<span class="token punctuation">)</span>
+</code></pre>
+<p><strong>Parameters:</strong></p>
+<table>
+<thead>
+<tr><th>Name</th><th>Type</th><th>Required</th></tr>
+</thead>
+<tbody>
+<tr><td>enabled</td><td>boolean</td><td>yes</td></tr>
+</tbody>
+</table>
 <hr>
 <h3><a class="anchor" aria-hidden="true" id="registerconfig"></a><a href="#registerconfig" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>registerConfig()</code></h3>
-<pre><code class="hljs css language-jsx"><span class="token keyword">static</span> <span class="token function">registerConfig</span><span class="token punctuation">(</span>config<span class="token punctuation">)</span>
+<pre><code class="hljs css language-jsx"><span class="token keyword">static</span> <span class="token function">registerConfig</span><span class="token punctuation">(</span><span class="token punctuation">[</span>config<span class="token punctuation">]</span><span class="token punctuation">)</span>
 </code></pre>
+<p><strong>Parameters:</strong></p>
+<table>
+<thead>
+<tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td>config</td><td>AppConfig</td><td>yes</td><td>See below.</td></tr>
+</tbody>
+</table>
+<p>Valid <code>AppConfig</code> keys are:</p>
+<ul>
+<li>'appKey' (string)- Required.</li>
+<li>'component' (ComponentProvider) - Optional.</li>
+<li>'run' (Function) - Optional.</li>
+<li>'section' (boolean) - Optional.</li>
+</ul>
 <hr>
 <h3><a class="anchor" aria-hidden="true" id="registercomponent"></a><a href="#registercomponent" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>registerComponent()</code></h3>
 <pre><code class="hljs css language-jsx"><span class="token keyword">static</span> <span class="token function">registerComponent</span><span class="token punctuation">(</span>appKey<span class="token punctuation">,</span> componentProvider<span class="token punctuation">,</span> section<span class="token operator">?</span><span class="token punctuation">)</span>
 </code></pre>
+<p><strong>Parameters:</strong></p>
+<table>
+<thead>
+<tr><th>Name</th><th>Type</th><th>Required</th></tr>
+</thead>
+<tbody>
+<tr><td>appKey</td><td>string</td><td>yes</td></tr>
+<tr><td>componentProvider</td><td>ComponentProvider</td><td>yes</td></tr>
+<tr><td>section</td><td>boolean</td><td>no</td></tr>
+</tbody>
+</table>
 <hr>
 <h3><a class="anchor" aria-hidden="true" id="registerrunnable"></a><a href="#registerrunnable" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>registerRunnable()</code></h3>
 <pre><code class="hljs css language-jsx"><span class="token keyword">static</span> <span class="token function">registerRunnable</span><span class="token punctuation">(</span>appKey<span class="token punctuation">,</span> run<span class="token punctuation">)</span>
 </code></pre>
+<p><strong>Parameters:</strong></p>
+<table>
+<thead>
+<tr><th>Name</th><th>Type</th><th>Required</th></tr>
+</thead>
+<tbody>
+<tr><td>appKey</td><td>string</td><td>yes</td></tr>
+<tr><td>run</td><td>Function</td><td>yes</td></tr>
+</tbody>
+</table>
 <hr>
 <h3><a class="anchor" aria-hidden="true" id="registersection"></a><a href="#registersection" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>registerSection()</code></h3>
 <pre><code class="hljs css language-jsx"><span class="token keyword">static</span> <span class="token function">registerSection</span><span class="token punctuation">(</span>appKey<span class="token punctuation">,</span> component<span class="token punctuation">)</span>
 </code></pre>
+<p><strong>Parameters:</strong></p>
+<table>
+<thead>
+<tr><th>Name</th><th>Type</th><th>Required</th></tr>
+</thead>
+<tbody>
+<tr><td>appKey</td><td>string</td><td>yes</td></tr>
+<tr><td>component</td><td>ComponentProvider</td><td>yes</td></tr>
+</tbody>
+</table>
 <hr>
 <h3><a class="anchor" aria-hidden="true" id="getappkeys"></a><a href="#getappkeys" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>getAppKeys()</code></h3>
 <pre><code class="hljs css language-jsx"><span class="token keyword">static</span> <span class="token function">getAppKeys</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
 </code></pre>
-<hr>
+<p>Returns an Array of AppKeys</p>
 <h3><a class="anchor" aria-hidden="true" id="getsectionkeys"></a><a href="#getsectionkeys" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>getSectionKeys()</code></h3>
 <pre><code class="hljs css language-jsx"><span class="token keyword">static</span> <span class="token function">getSectionKeys</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
 </code></pre>
+<p>Returns an Array of SectionKeys</p>
 <hr>
 <h3><a class="anchor" aria-hidden="true" id="getsections"></a><a href="#getsections" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>getSections()</code></h3>
 <pre><code class="hljs css language-jsx"><span class="token keyword">static</span> <span class="token function">getSections</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
 </code></pre>
+<p>Returns all Runnables which is an object with key of <code>AppKeys</code> and value of type of <code>Runnable</code> which consist of:</p>
+<ul>
+<li>'component' (ComponentProvider).</li>
+<li>'run' (Function).</li>
+</ul>
 <hr>
 <h3><a class="anchor" aria-hidden="true" id="getrunnable"></a><a href="#getrunnable" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>getRunnable()</code></h3>
 <pre><code class="hljs css language-jsx"><span class="token keyword">static</span> <span class="token function">getRunnable</span><span class="token punctuation">(</span>appKey<span class="token punctuation">)</span>
 </code></pre>
+<p>Returns a <code>Runnable</code> object which consist of:</p>
+<ul>
+<li>'component' (ComponentProvider).</li>
+<li>'run' (Function).</li>
+</ul>
 <hr>
 <h3><a class="anchor" aria-hidden="true" id="getregistry"></a><a href="#getregistry" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>getRegistry()</code></h3>
 <pre><code class="hljs css language-jsx"><span class="token keyword">static</span> <span class="token function">getRegistry</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
 </code></pre>
+<p>Returns a type <code>Registry</code> which consist of:</p>
+<ul>
+<li>'sections' (Array of strings).</li>
+<li>'runnables' (Runnables).</li>
+</ul>
 <hr>
 <h3><a class="anchor" aria-hidden="true" id="setcomponentproviderinstrumentationhook"></a><a href="#setcomponentproviderinstrumentationhook" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>setComponentProviderInstrumentationHook()</code></h3>
 <pre><code class="hljs css language-jsx"><span class="token keyword">static</span> <span class="token function">setComponentProviderInstrumentationHook</span><span class="token punctuation">(</span>hook<span class="token punctuation">)</span>
 </code></pre>
+<p><strong>Parameters:</strong></p>
+<table>
+<thead>
+<tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td>hook</td><td>Function</td><td>yes</td><td>See below.</td></tr>
+</tbody>
+</table>
+<p>A valid <code>hook</code> accepts the following as arguments:</p>
+<ul>
+<li>'component' (ComponentProvider)- Required.</li>
+<li>'scopedPerformanceLogger' (IPerformanceLogger)- Required.</li>
+</ul>
+<p>The <code>hook</code> function returns a React Component</p>
 <hr>
 <h3><a class="anchor" aria-hidden="true" id="runapplication"></a><a href="#runapplication" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>runApplication()</code></h3>
 <pre><code class="hljs css language-jsx"><span class="token keyword">static</span> <span class="token function">runApplication</span><span class="token punctuation">(</span>appKey<span class="token punctuation">,</span> appParameters<span class="token punctuation">)</span>
 </code></pre>
+<p>Loads the JavaScript bundle and runs the app.</p>
+<p><strong>Parameters:</strong></p>
+<table>
+<thead>
+<tr><th>Name</th><th>Type</th><th>Required</th></tr>
+</thead>
+<tbody>
+<tr><td>appKey</td><td>string</td><td>yes</td></tr>
+<tr><td>appParameters</td><td>any</td><td>yes</td></tr>
+</tbody>
+</table>
 <hr>
 <h3><a class="anchor" aria-hidden="true" id="unmountapplicationcomponentatroottag"></a><a href="#unmountapplicationcomponentatroottag" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>unmountApplicationComponentAtRootTag()</code></h3>
 <pre><code class="hljs css language-jsx"><span class="token keyword">static</span> <span class="token function">unmountApplicationComponentAtRootTag</span><span class="token punctuation">(</span>rootTag<span class="token punctuation">)</span>
 </code></pre>
+<p>Stops an application when a view should be destroyed.</p>
+<p><strong>Parameters:</strong></p>
+<table>
+<thead>
+<tr><th>Name</th><th>Type</th><th>Required</th></tr>
+</thead>
+<tbody>
+<tr><td>rootTag</td><td>number</td><td>yes</td></tr>
+</tbody>
+</table>
 <hr>
 <h3><a class="anchor" aria-hidden="true" id="registerheadlesstask"></a><a href="#registerheadlesstask" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>registerHeadlessTask()</code></h3>
 <pre><code class="hljs css language-jsx"><span class="token keyword">static</span> <span class="token function">registerHeadlessTask</span><span class="token punctuation">(</span>taskKey<span class="token punctuation">,</span> taskProvider<span class="token punctuation">)</span>
 </code></pre>
 <p>Register a headless task. A headless task is a bit of code that runs without a UI. @param taskKey the key associated with this task @param taskProvider a promise returning function that takes some data passed from the native side as the only argument; when the promise is resolved or rejected the native side is notified of this event and it may decide to destroy the JS context.</p>
+<p><strong>Parameters:</strong></p>
+<table>
+<thead>
+<tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td>taskKey</td><td>String</td><td>yes</td><td>See below.</td></tr>
+<tr><td>taskProvider</td><td>TaskProvider</td><td>yes</td><td>See below.</td></tr>
+</tbody>
+</table>
+<ul>
+<li>A valid <code>TaskProvider</code> is a function that returns a <code>Task</code>.</li>
+<li>A <code>Task</code> is a function that accepts any data as argument and returns a Promise that resolves to undefined.</li>
+</ul>
 <hr>
 <h3><a class="anchor" aria-hidden="true" id="registercancellableheadlesstask"></a><a href="#registercancellableheadlesstask" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>registerCancellableHeadlessTask()</code></h3>
 <pre><code class="hljs css language-jsx"><span class="token keyword">static</span> <span class="token function">registerCancellableHeadlessTask</span><span class="token punctuation">(</span>taskKey<span class="token punctuation">,</span> taskProvider<span class="token punctuation">,</span> taskCancelProvider<span class="token punctuation">)</span>
 </code></pre>
 <p>Register a headless task which can be cancelled. A headless task is a bit of code that runs without a UI. @param taskKey the key associated with this task @param taskProvider a promise returning function that takes some data passed from the native side as the only argument; when the promise is resolved or rejected the native side is notified of this event and it may decide to destroy the JS context. @param taskCancelProvider a void returning function that takes no arguments; when a cancellation is requested, the function being executed by taskProvider should wrap up and return ASAP.</p>
+<p><strong>Parameters:</strong></p>
+<table>
+<thead>
+<tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td>taskKey</td><td>String</td><td>yes</td><td>See below.</td></tr>
+<tr><td>taskProvider</td><td>TaskProvider</td><td>yes</td><td>See below.</td></tr>
+<tr><td>taskCancelProvider</td><td>TaskCancelProvider</td><td>yes</td><td>See below.</td></tr>
+</tbody>
+</table>
+<ul>
+<li>A valid <code>TaskProvider</code> is a function that returns a <code>Task</code>.</li>
+<li>A <code>Task</code> is a function that accepts any data as argument and returns a Promise that resolves to undefined.</li>
+<li>A valid <code>TaskCancelProvider</code> is a function that returns a <code>TaskCanceller</code>.</li>
+<li>A <code>TaskCanceller</code> is a function that accepts no argument and returns void.</li>
+</ul>
 <hr>
 <h3><a class="anchor" aria-hidden="true" id="startheadlesstask"></a><a href="#startheadlesstask" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>startHeadlessTask()</code></h3>
 <pre><code class="hljs css language-jsx"><span class="token keyword">static</span> <span class="token function">startHeadlessTask</span><span class="token punctuation">(</span>taskId<span class="token punctuation">,</span> taskKey<span class="token punctuation">,</span> data<span class="token punctuation">)</span>
 </code></pre>
 <p>Only called from native code. Starts a headless task.</p>
 <p>@param taskId the native id for this task instance to keep track of its execution @param taskKey the key for the task to start @param data the data to pass to the task</p>
+<p><strong>Parameters:</strong></p>
+<table>
+<thead>
+<tr><th>Name</th><th>Type</th><th>Required</th></tr>
+</thead>
+<tbody>
+<tr><td>taskId</td><td>number</td><td>yes</td></tr>
+<tr><td>taskKey</td><td>string</td><td>yes</td></tr>
+<tr><td>data</td><td>any</td><td>yes</td></tr>
+</tbody>
+</table>
 <hr>
 <h3><a class="anchor" aria-hidden="true" id="cancelheadlesstask"></a><a href="#cancelheadlesstask" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>cancelHeadlessTask()</code></h3>
 <pre><code class="hljs css language-jsx"><span class="token keyword">static</span> <span class="token function">cancelHeadlessTask</span><span class="token punctuation">(</span>taskId<span class="token punctuation">,</span> taskKey<span class="token punctuation">)</span>
 </code></pre>
 <p>Only called from native code. Cancels a headless task.</p>
 <p>@param taskId the native id for this task instance that was used when startHeadlessTask was called @param taskKey the key for the task that was used when startHeadlessTask was called</p>
-</span></div></article></div><div class="docs-prevnext"><a class="docs-prev button" href="/docs/next/appearance"><span class="arrow-prev">← </span><span>Appearance</span></a><a class="docs-next button" href="/docs/next/appstate"><span class="function-name-prevnext">AppState</span><span class="arrow-next"> →</span></a></div></div></div><nav class="onPageNav"><ul class="toc-headings"><li><a href="#methods">Methods</a><ul class="toc-headings"><li><a href="#setwrappercomponentprovider"><code>setWrapperComponentProvider()</code></a></li><li><a href="#registerconfig"><code>registerConfig()</code></a></li><li><a href="#registercomponent"><code>registerComponent()</code></a></li><li><a href="#registerrunnable"><code>registerRunnable()</code></a></li><li><a href="#registersection"><code>registerSection()</code></a></li><li><a href="#getappkeys"><code>getAppKeys()</code></a></li><li><a href="#getsectionkeys"><code>getSectionKeys()</code></a></li><li><a href="#getsections"><code>getSections()</code></a></li><li><a href="#getrunnable"><code>getRunnable()</code></a></li><li><a href="#getregistry"><code>getRegistry()</code></a></li><li><a href="#setcomponentproviderinstrumentationhook"><code>setComponentProviderInstrumentationHook()</code></a></li><li><a href="#runapplication"><code>runApplication()</code></a></li><li><a href="#unmountapplicationcomponentatroottag"><code>unmountApplicationComponentAtRootTag()</code></a></li><li><a href="#registerheadlesstask"><code>registerHeadlessTask()</code></a></li><li><a href="#registercancellableheadlesstask"><code>registerCancellableHeadlessTask()</code></a></li><li><a href="#startheadlesstask"><code>startHeadlessTask()</code></a></li><li><a href="#cancelheadlesstask"><code>cancelHeadlessTask()</code></a></li></ul></li></ul></nav></div><footer class="nav-footer" id="footer"><section class="sitemap"><div><h5>Docs</h5><a href="/docs/getting-started.html">Getting Started</a><a href="/docs/tutorial.html">Tutorial</a><a href="/docs/components-and-apis.html">Components and APIs</a><a href="/docs/more-resources.html">More Resources</a></div><div><h5>Community</h5><a href="/help.html">The React Native Community</a><a href="/showcase.html">Who&#x27;s using React Native?</a><a href="http://stackoverflow.com/questions/tagged/react-native" target="_blank">Ask Questions on Stack Overflow</a><a href="https://github.com/facebook/react-native/blob/master/CONTRIBUTING.md">Contributor Guide</a><a href="https://dev.to/t/reactnative" target="_blank">DEV Community</a></div><div><h5>More Resources</h5><a href="/blog/">Blog</a><a href="https://twitter.com/reactnative" target="_blank">Twitter</a><a href="https://github.com/facebook/react-native" target="_blank">GitHub</a><a href="https://reactjs.org" target="_blank">React</a></div></section><a href="https://code.facebook.com/projects/" target="_blank" class="fbOpenSource"><img src="/img/oss_logo.png" alt="Facebook Open Source" width="170" height="45"/></a><section class="copyright">Copyright © 2020 Facebook Inc.</section></footer></div><script type="text/javascript" src="https://cdn.jsdelivr.net/docsearch.js/1/docsearch.min.js"></script><script>window.fbAsyncInit = function() {FB.init({appId:'1677033832619985',xfbml:true,version:'v2.7'});};(function(d, s, id){var js, fjs = d.getElementsByTagName(s)[0];if (d.getElementById(id)) {return;}js = d.createElement(s); js.id = id;js.src = '//connect.facebook.net/en_US/sdk.js';fjs.parentNode.insertBefore(js, fjs);}(document, 'script','facebook-jssdk'));
+<p><strong>Parameters:</strong></p>
+<table>
+<thead>
+<tr><th>Name</th><th>Type</th><th>Required</th></tr>
+</thead>
+<tbody>
+<tr><td>taskId</td><td>number</td><td>yes</td></tr>
+<tr><td>taskKey</td><td>string</td><td>yes</td></tr>
+</tbody>
+</table>
+</span></div></article></div><div class="docs-prevnext"><a class="docs-prev button" href="/docs/next/appearance"><span class="arrow-prev">← </span><span>Appearance</span></a><a class="docs-next button" href="/docs/next/appstate"><span class="function-name-prevnext">AppState</span><span class="arrow-next"> →</span></a></div></div></div><nav class="onPageNav"><ul class="toc-headings"><li><a href="#methods">Methods</a><ul class="toc-headings"><li><a href="#setwrappercomponentprovider"><code>setWrapperComponentProvider()</code></a></li><li><a href="#enablearchitectureindicator"><code>enableArchitectureIndicator()</code></a></li><li><a href="#registerconfig"><code>registerConfig()</code></a></li><li><a href="#registercomponent"><code>registerComponent()</code></a></li><li><a href="#registerrunnable"><code>registerRunnable()</code></a></li><li><a href="#registersection"><code>registerSection()</code></a></li><li><a href="#getappkeys"><code>getAppKeys()</code></a></li><li><a href="#getsectionkeys"><code>getSectionKeys()</code></a></li><li><a href="#getsections"><code>getSections()</code></a></li><li><a href="#getrunnable"><code>getRunnable()</code></a></li><li><a href="#getregistry"><code>getRegistry()</code></a></li><li><a href="#setcomponentproviderinstrumentationhook"><code>setComponentProviderInstrumentationHook()</code></a></li><li><a href="#runapplication"><code>runApplication()</code></a></li><li><a href="#unmountapplicationcomponentatroottag"><code>unmountApplicationComponentAtRootTag()</code></a></li><li><a href="#registerheadlesstask"><code>registerHeadlessTask()</code></a></li><li><a href="#registercancellableheadlesstask"><code>registerCancellableHeadlessTask()</code></a></li><li><a href="#startheadlesstask"><code>startHeadlessTask()</code></a></li><li><a href="#cancelheadlesstask"><code>cancelHeadlessTask()</code></a></li></ul></li></ul></nav></div><footer class="nav-footer" id="footer"><section class="sitemap"><div><h5>Docs</h5><a href="/docs/getting-started.html">Getting Started</a><a href="/docs/tutorial.html">Tutorial</a><a href="/docs/components-and-apis.html">Components and APIs</a><a href="/docs/more-resources.html">More Resources</a></div><div><h5>Community</h5><a href="/help.html">The React Native Community</a><a href="/showcase.html">Who&#x27;s using React Native?</a><a href="http://stackoverflow.com/questions/tagged/react-native" target="_blank">Ask Questions on Stack Overflow</a><a href="https://github.com/facebook/react-native/blob/master/CONTRIBUTING.md">Contributor Guide</a><a href="https://dev.to/t/reactnative" target="_blank">DEV Community</a></div><div><h5>More Resources</h5><a href="/blog/">Blog</a><a href="https://twitter.com/reactnative" target="_blank">Twitter</a><a href="https://github.com/facebook/react-native" target="_blank">GitHub</a><a href="https://reactjs.org" target="_blank">React</a></div></section><a href="https://code.facebook.com/projects/" target="_blank" class="fbOpenSource"><img src="/img/oss_logo.png" alt="Facebook Open Source" width="170" height="45"/></a><section class="copyright">Copyright © 2020 Facebook Inc.</section></footer></div><script type="text/javascript" src="https://cdn.jsdelivr.net/docsearch.js/1/docsearch.min.js"></script><script>window.fbAsyncInit = function() {FB.init({appId:'1677033832619985',xfbml:true,version:'v2.7'});};(function(d, s, id){var js, fjs = d.getElementsByTagName(s)[0];if (d.getElementById(id)) {return;}js = d.createElement(s); js.id = id;js.src = '//connect.facebook.net/en_US/sdk.js';fjs.parentNode.insertBefore(js, fjs);}(document, 'script','facebook-jssdk'));
                 </script><script>window.twttr=(function(d,s, id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return t;js=d.createElement(s);js.id=id;js.src='https://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js, fjs);t._e = [];t.ready = function(f) {t._e.push(f);};return t;}(document, 'script', 'twitter-wjs'));</script><script>
                 document.addEventListener('keyup', function(e) {
                   if (e.target !== document.body) {
