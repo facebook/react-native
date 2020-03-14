@@ -225,7 +225,7 @@ ShadowNode::Shared LayoutableShadowNode::findNodeAtPoint(
     return nullptr;
   }
 
-  auto newPoint = point - transformedFrame.origin;
+  auto newPoint = point - frame.origin * layoutableShadowNode->getTransform();
   for (const auto &childShadowNode : node->getChildren()) {
     auto hitView = findNodeAtPoint(childShadowNode, newPoint);
     if (hitView) {

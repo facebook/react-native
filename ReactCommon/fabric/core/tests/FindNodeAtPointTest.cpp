@@ -106,12 +106,14 @@ TEST_F(FindNodeAtPointTest, viewIsTranslated) {
   nodeA_->_transform =
       Transform::Identity() * Transform::Translate(-100, -100, 0);
 
-  EXPECT_EQ(LayoutableShadowNode::findNodeAtPoint(nodeA_, {15, 15}), nodeAAA_);
+  EXPECT_EQ(
+      LayoutableShadowNode::findNodeAtPoint(nodeA_, {15, 15})->getTag(),
+      nodeAAA_->getTag());
   EXPECT_EQ(LayoutableShadowNode::findNodeAtPoint(nodeA_, {5, 5}), nodeAA_);
 }
 
 TEST_F(FindNodeAtPointTest, viewIsScaled) {
   nodeAAA_->_transform = Transform::Identity() * Transform::Scale(0.5, 0.5, 0);
 
-  EXPECT_EQ(LayoutableShadowNode::findNodeAtPoint(nodeA_, {116, 116}), nodeAA_);
+  EXPECT_EQ(LayoutableShadowNode::findNodeAtPoint(nodeA_, {119, 119}), nodeAA_);
 }
