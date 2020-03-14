@@ -1206,26 +1206,6 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
     view.setPadding(left, top, right, bottom);
   }
 
-  // This is copied from ReactTextViewManager
-  // TODO: this should be from a common class or a static method somewhere
-  private int getTextBreakStrategy(@Nullable String textBreakStrategy) {
-    int androidTextBreakStrategy = Layout.BREAK_STRATEGY_HIGH_QUALITY;
-    if (textBreakStrategy != null) {
-      switch (textBreakStrategy) {
-        case "simple":
-          androidTextBreakStrategy = Layout.BREAK_STRATEGY_SIMPLE;
-          break;
-        case "balanced":
-          androidTextBreakStrategy = Layout.BREAK_STRATEGY_BALANCED;
-          break;
-        default:
-          androidTextBreakStrategy = Layout.BREAK_STRATEGY_HIGH_QUALITY;
-          break;
-      }
-    }
-    return androidTextBreakStrategy;
-  }
-
   /**
    * May be overriden by subclasses that would like to provide their own instance of the internal
    * {@code EditText} this class uses to determine the expected size of the view.
@@ -1281,10 +1261,7 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
             view.getContext(), attributedString, mReactTextViewManagerCallback);
 
     int textBreakStrategy =
-        getTextBreakStrategy(paragraphAttributes.getString("textBreakStrategy"));
-
-    // TODO add justificationMode prop into local Data
-    int justificationMode = Layout.JUSTIFICATION_MODE_NONE;
+        TextAttributeProps.getTextBreakStrategy(paragraphAttributes.getString("textBreakStrategy"));
 
     view.mStateWrapper = stateWrapper;
 
@@ -1294,7 +1271,7 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
         false, // TODO add this into local Data
         TextAttributeProps.getTextAlignment(props),
         textBreakStrategy,
-        justificationMode,
+        TextAttributeProps.getJustificationMode(props),
         attributedString);
   }
 }

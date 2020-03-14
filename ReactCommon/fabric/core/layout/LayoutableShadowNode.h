@@ -181,6 +181,9 @@ inline LayoutableShadowNode const &traitCast<LayoutableShadowNode const &>(
 template <>
 inline LayoutableShadowNode const *traitCast<LayoutableShadowNode const *>(
     ShadowNode const *shadowNode) {
+  if (!shadowNode) {
+    return nullptr;
+  }
   bool castable =
       shadowNode->getTraits().check(ShadowNodeTraits::Trait::LayoutableKind);
   assert(

@@ -429,10 +429,11 @@ static Class getFallbackClassFromName(const char *name)
         /**
          * TODO(T63718299): Move this setter into the ObjCTurboModule constructor
          */
-        if (std::shared_ptr<facebook::react::ObjCTurboModule> objCTurboModule =
-                std::dynamic_pointer_cast<facebook::react::ObjCTurboModule>(turboModule)) {
-          objCTurboModule->setRCTTurboModulePerformanceLogger(performanceLogger);
-        };
+        if (performanceLogger) {
+          if (auto objCTurboModule = std::dynamic_pointer_cast<facebook::react::ObjCTurboModule>(turboModule)) {
+            objCTurboModule->setRCTTurboModulePerformanceLogger(performanceLogger);
+          };
+        }
 
         [performanceLogger createTurboModuleEnd:moduleName];
 

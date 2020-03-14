@@ -602,6 +602,10 @@ jobs:
   # Publishes new version onto npm
   # Only works on stable branches when a properly tagged commit is pushed
   publish_npm_package:
+    parameters:
+      publish_npm_args:
+        type: string
+        default: --nonightly
     executor: reactnativeandroid
     steps:
       - restore_cache_checkout:
@@ -615,7 +619,7 @@ jobs:
           git config --global user.email "react-native-bot@users.noreply.github.com"
           git config --global user.name "npm Deployment Script"
           echo "machine github.com login react-native-bot password $GITHUB_TOKEN" > ~/.netrc
-      - run: node ./scripts/publish-npm.js
+      - run: node ./scripts/publish-npm.js << parameters.publish_npm_args >>
 
   # -------------------------
   #    JOBS: Nightly
@@ -746,3 +750,13 @@ workflows:
                 - master
     jobs:
       - nightly_job
+
+      - setup:
+          name: setup_android
+          checkout_type: android
+          executor: reactnativeandroid
+
+      - publish_npm_package:
+          publish_npm_args: --nightly
+          requires:
+            - setup_android

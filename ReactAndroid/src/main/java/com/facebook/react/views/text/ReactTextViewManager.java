@@ -8,7 +8,6 @@
 package com.facebook.react.views.text;
 
 import android.content.Context;
-import android.text.Layout;
 import android.text.Spannable;
 import androidx.annotation.Nullable;
 import com.facebook.react.bridge.ReadableMap;
@@ -95,10 +94,7 @@ public class ReactTextViewManager
     view.setSpanned(spanned);
 
     int textBreakStrategy =
-        getTextBreakStrategy(paragraphAttributes.getString("textBreakStrategy"));
-
-    // TODO add justificationMode prop into local Data
-    int justificationMode = Layout.JUSTIFICATION_MODE_NONE;
+        TextAttributeProps.getTextBreakStrategy(paragraphAttributes.getString("textBreakStrategy"));
 
     return new ReactTextUpdate(
         spanned,
@@ -106,25 +102,7 @@ public class ReactTextViewManager
         false, // TODO add this into local Data
         TextAttributeProps.getTextAlignment(props),
         textBreakStrategy,
-        justificationMode);
-  }
-
-  private int getTextBreakStrategy(@Nullable String textBreakStrategy) {
-    int androidTextBreakStrategy = Layout.BREAK_STRATEGY_HIGH_QUALITY;
-    if (textBreakStrategy != null) {
-      switch (textBreakStrategy) {
-        case "simple":
-          androidTextBreakStrategy = Layout.BREAK_STRATEGY_SIMPLE;
-          break;
-        case "balanced":
-          androidTextBreakStrategy = Layout.BREAK_STRATEGY_BALANCED;
-          break;
-        default:
-          androidTextBreakStrategy = Layout.BREAK_STRATEGY_HIGH_QUALITY;
-          break;
-      }
-    }
-    return androidTextBreakStrategy;
+        TextAttributeProps.getJustificationMode(props));
   }
 
   @Override
@@ -154,7 +132,8 @@ public class ReactTextViewManager
         widthMode,
         height,
         heightMode,
-        mReactTextViewManagerCallback);
+        mReactTextViewManagerCallback,
+        attachmentsPositions);
   }
 
   @Override
