@@ -1,7 +1,6 @@
-# Force correct line endings.
-# On Windows the git default is CR+LF and on macOS/*nix the git default is LF.
-# Regardless of OS, bash scripts should have LF endings (handled by Cygwin on Windows),
-# and bat files should have CR+LF (only used on Windows).
+# Force LF line endings for Bash scripts.   On Windows the rest of the source
+# files will typically have CR+LF endings (Git default on Windows), but Bash
+# scripts need to have LF endings to work (under Cygwin), thus override to force
+# that.
 gradlew text eol=lf
 *.sh text eol=lf
-*.bat text eol=crlf
