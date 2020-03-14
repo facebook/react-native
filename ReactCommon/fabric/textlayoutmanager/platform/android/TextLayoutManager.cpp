@@ -43,6 +43,15 @@ TextMeasurement TextLayoutManager::doMeasure(
   const jni::global_ref<jobject> &fabricUIManager =
       contextContainer_->at<jni::global_ref<jobject>>("FabricUIManager");
 
+  int attachmentsCount = 0;
+  for (auto fragment : attributedString.getFragments()) {
+    if (fragment.isAttachment()) {
+      attachmentsCount++;
+    }
+  }
+  auto env = Environment::current();
+  auto attachmentPositions = env->NewIntArray(attachmentsCount * 2);
+
   static auto measure =
       jni::findClassStatic("com/facebook/react/fabric/FabricUIManager")
           ->getMethod<jlong(
@@ -54,14 +63,16 @@ TextMeasurement TextLayoutManager::doMeasure(
               jfloat,
               jfloat,
               jfloat,
-              jfloat)>("measure");
+              jfloat,
+              jintArray)>("measure");
 
   auto minimumSize = layoutConstraints.minimumSize;
   auto maximumSize = layoutConstraints.maximumSize;
 
+  auto serializedAttributedString = toDynamic(attributedString);
   local_ref<JString> componentName = make_jstring("RCTText");
   local_ref<ReadableNativeMap::javaobject> attributedStringRNM =
-      ReadableNativeMap::newObjectCxxArgs(toDynamic(attributedString));
+      ReadableNativeMap::newObjectCxxArgs(serializedAttributedString);
   local_ref<ReadableNativeMap::javaobject> paragraphAttributesRNM =
       ReadableNativeMap::newObjectCxxArgs(toDynamic(paragraphAttributes));
 
@@ -79,9 +90,33 @@ TextMeasurement TextLayoutManager::doMeasure(
       minimumSize.width,
       maximumSize.width,
       minimumSize.height,
-      maximumSize.height));
+      maximumSize.height,
+      attachmentPositions));
 
-  return TextMeasurement{size, {}};
+  jint *attachmentData = env->GetIntArrayElements(attachmentPositions, 0);
+
+  auto attachments = TextMeasurement::Attachments{};
+  if (attachmentsCount > 0) {
+    folly::dynamic fragments = serializedAttributedString["fragments"];
+    int attachmentIndex = 0;
+    for (int i = 0; i < fragments.size(); i++) {
+      folly::dynamic fragment = fragments[i];
+      if (fragment["isAttachment"] == true) {
+        float top = attachmentData[attachmentIndex * 2];
+        float left = attachmentData[attachmentIndex * 2 + 1];
+        float width = fragment["width"].getInt();
+        float height = fragment["height"].getInt();
+
+        auto rect = facebook::react::Rect{{left, top},
+                                          facebook::react::Size{width, height}};
+        attachments.push_back(TextMeasurement::Attachment{rect, false});
+        attachmentIndex++;
+      }
+    }
+  }
+  // DELETE REF
+  env->DeleteLocalRef(attachmentPositions);
+  return TextMeasurement{size, attachments};
 }
 
 } // namespace react

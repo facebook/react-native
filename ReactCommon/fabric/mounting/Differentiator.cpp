@@ -119,7 +119,9 @@ static void sliceChildShadowNodeViewPairsRecursively(
   for (auto const &sharedChildShadowNode : shadowNode.getChildren()) {
     auto &childShadowNode = *sharedChildShadowNode;
     auto shadowView = ShadowView(childShadowNode);
-    shadowView.layoutMetrics.frame.origin += layoutOffset;
+    if (shadowView.layoutMetrics != EmptyLayoutMetrics) {
+      shadowView.layoutMetrics.frame.origin += layoutOffset;
+    }
 
     if (childShadowNode.getTraits().check(
             ShadowNodeTraits::Trait::FormsStackingContext)) {

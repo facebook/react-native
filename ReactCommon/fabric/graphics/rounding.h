@@ -49,7 +49,6 @@ Rect roundToPixel(Rect value, Float scaleFactor) {
 /*
  * GCC-based Android NDK does not have rounding functions as part of STL.
  */
-#include <math.h>
 
 inline float round(float value) noexcept {
   return ::roundf(value);

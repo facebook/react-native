@@ -800,8 +800,8 @@ public class UIViewOperationQueue {
                 long runStartTime = SystemClock.uptimeMillis();
 
                 // All ViewCommands should be executed first as a perf optimization
-                if (mViewCommandOperations != null) {
-                  for (UIOperation viewCommandOp : mViewCommandOperations) {
+                if (viewCommandOperations != null) {
+                  for (UIOperation viewCommandOp : viewCommandOperations) {
                     viewCommandOp.execute();
                   }
                 }
