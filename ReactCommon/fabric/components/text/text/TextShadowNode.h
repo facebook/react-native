@@ -33,7 +33,6 @@ class TextShadowNode : public ConcreteShadowNode<
 
 #ifdef ANDROID
     traits.set(ShadowNodeTraits::Trait::FormsView);
-    traits.set(ShadowNodeTraits::Trait::FormsStackingContext);
 #endif
 
     return traits;
