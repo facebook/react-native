@@ -22,7 +22,7 @@ const invariant = require('invariant');
 import ScrollView, {
   type ScrollResponderType,
 } from '../Components/ScrollView/ScrollView';
-import type {ScrollViewNativeComponentType} from '../Components/ScrollView/ScrollViewNativeComponentType.js';
+import type {ScrollViewNativeComponentType} from '../Components/ScrollView/ScrollViewNativeComponentType';
 import type {ViewStyleProp} from '../StyleSheet/StyleSheet';
 import type {
   ViewToken,

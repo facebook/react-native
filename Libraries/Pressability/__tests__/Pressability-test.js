@@ -11,9 +11,9 @@
 
 'use strict';
 
-import type {PressEvent} from '../../Types/CoreEventTypes.js';
-import * as HoverState from '../HoverState.js';
-import Pressability from '../Pressability.js';
+import type {PressEvent} from '../../Types/CoreEventTypes';
+import * as HoverState from '../HoverState';
+import Pressability from '../Pressability';
 import invariant from 'invariant';
 import nullthrows from 'nullthrows';
 import Platform from '../../Utilities/Platform';
