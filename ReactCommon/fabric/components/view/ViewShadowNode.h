@@ -33,7 +33,7 @@ class ViewShadowNode final : public ConcreteViewShadowNode<
       ShadowNodeFragment const &fragment);
 
  private:
-  void updateTraits();
+  void initialize() noexcept;
 };
 
 } // namespace react
