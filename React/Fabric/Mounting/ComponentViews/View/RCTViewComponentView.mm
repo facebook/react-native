@@ -188,11 +188,6 @@ using namespace facebook::react;
     needsInvalidateLayer = YES;
   }
 
-  // `zIndex`
-  if (oldViewProps.zIndex != newViewProps.zIndex) {
-    self.layer.zPosition = (CGFloat)newViewProps.zIndex;
-  }
-
   // `border`
   if (oldViewProps.borderStyles != newViewProps.borderStyles || oldViewProps.borderRadii != newViewProps.borderRadii ||
       oldViewProps.borderColors != newViewProps.borderColors) {
