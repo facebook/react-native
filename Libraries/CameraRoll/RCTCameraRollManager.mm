@@ -8,7 +8,6 @@
 #import "RCTCameraRollManager.h"
 
 #import <FBReactNativeSpec/FBReactNativeSpec.h>
-#import <CoreLocation/CoreLocation.h>
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
 #import <Photos/Photos.h>
