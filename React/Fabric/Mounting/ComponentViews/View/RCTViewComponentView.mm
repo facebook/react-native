@@ -280,9 +280,10 @@ using namespace facebook::react;
 - (UIView *)betterHitTest:(CGPoint)point withEvent:(UIEvent *)event
 {
   // This is a classic textbook implementation of `hitTest:` with a couple of improvements:
-  //   * It takes layers' `zIndex` property into an account;
   //   * It does not stop algorithm if some touch is outside the view
   //     which does not have `clipToBounds` enabled.
+  //   * Taking `layer.zIndex` field into an account is not required because
+  //     lists of `ShadowView`s are already sorted based on `zIndex` prop.
 
   if (!self.userInteractionEnabled || self.hidden || self.alpha < 0.01) {
     return nil;
@@ -294,14 +295,7 @@ using namespace facebook::react;
     return nil;
   }
 
-  NSArray<__kindof UIView *> *sortedSubviews =
-      [self.subviews sortedArrayUsingComparator:^NSComparisonResult(UIView *a, UIView *b) {
-        // Ensure sorting is stable by treating equal `zIndex` as ascending so
-        // that original order is preserved.
-        return a.layer.zPosition > b.layer.zPosition ? NSOrderedDescending : NSOrderedAscending;
-      }];
-
-  for (UIView *subview in [sortedSubviews reverseObjectEnumerator]) {
+  for (UIView *subview in [self.subviews reverseObjectEnumerator]) {
     UIView *hitView = [subview hitTest:[subview convertPoint:point fromView:self] withEvent:event];
     if (hitView) {
       return hitView;
