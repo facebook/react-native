@@ -85,6 +85,9 @@ fb_xplat_cxx_test(
     deps = [
         "fbsource//xplat/folly:molly",
         "fbsource//xplat/js/react-native-github/ReactCommon/fabric/element:element",
+        react_native_xplat_target("fabric/components/view:view"),
+        react_native_xplat_target("fabric/components/scrollview:scrollview"),
+        react_native_xplat_target("fabric/components/text:text"),
         "fbsource//xplat/third-party/gmock:gtest",
         react_native_xplat_target("fabric/components/view:view"),
         ":core",
