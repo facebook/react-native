@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charSet="utf-8"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><title>Layout Props · React Native</title><meta name="viewport" content="width=device-width"/><meta name="generator" content="Docusaurus"/><meta name="description" content="## Example"/><meta name="docsearch:version" content="next"/><meta name="docsearch:language" content="en"/><meta property="og:title" content="Layout Props · React Native"/><meta property="og:type" content="website"/><meta property="og:url" content="https://reactnative.dev/"/><meta property="og:description" content="## Example"/><meta name="twitter:card" content="summary"/><link rel="shortcut icon" href="/img/favicon.ico"/><link rel="stylesheet" href="https://cdn.jsdelivr.net/docsearch.js/1/docsearch.min.css"/><link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/solarized-dark.min.css"/><link rel="alternate" type="application/atom+xml" href="https://reactnative.dev/blog/atom.xml" title="React Native Blog ATOM Feed"/><link rel="alternate" type="application/rss+xml" href="https://reactnative.dev/blog/feed.xml" title="React Native Blog RSS Feed"/><script>
+<!DOCTYPE html><html lang="en"><head><meta charSet="utf-8"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><title>Layout Props · React Native</title><meta name="viewport" content="width=device-width"/><meta name="generator" content="Docusaurus"/><meta name="description" content="# Reference"/><meta name="docsearch:version" content="next"/><meta name="docsearch:language" content="en"/><meta property="og:title" content="Layout Props · React Native"/><meta property="og:type" content="website"/><meta property="og:url" content="https://reactnative.dev/"/><meta property="og:description" content="# Reference"/><meta name="twitter:card" content="summary"/><link rel="shortcut icon" href="/img/favicon.ico"/><link rel="stylesheet" href="https://cdn.jsdelivr.net/docsearch.js/1/docsearch.min.css"/><link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/solarized-dark.min.css"/><link rel="alternate" type="application/atom+xml" href="https://reactnative.dev/blog/atom.xml" title="React Native Blog ATOM Feed"/><link rel="alternate" type="application/rss+xml" href="https://reactnative.dev/blog/feed.xml" title="React Native Blog RSS Feed"/><script>
               (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
               (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
               m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
@@ -68,182 +68,7 @@
                 };
               }
             });
-        </script></nav></div><div class="container mainContainer docsContainer"><div class="wrapper"><div class="post"><header class="postHeader"><a class="edit-page-link button" href="https://github.com/facebook/react-native-website/blob/master/docs/layout-props.md" target="_blank" rel="noreferrer noopener">Edit</a><h1 id="__docusaurus" class="postHeaderTitle">Layout Props</h1></header><article><div><span><h2><a class="anchor" aria-hidden="true" id="example"></a><a href="#example" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Example</h2>
-<p>The following example shows how different properties can affect or shape a React Native layout.
-You can try for example to add or remove squares from the UI while changing the values of the property <code>flexWrap</code>.
-Find more detailed examples about this properties in the <a href="flexbox">Layout with Flexbox</a> docs page.</p>
-<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React, { useState } <span class="hljs-keyword">from</span> <span class="hljs-string">'react'</span>;
-<span class="hljs-keyword">import</span> { Button, ScrollView, StyleSheet, Text, View } <span class="hljs-keyword">from</span> <span class="hljs-string">'react-native'</span>;
-<span class="hljs-keyword">import</span> Constants <span class="hljs-keyword">from</span> <span class="hljs-string">'expo-constants'</span>;
-
-<span class="hljs-keyword">const</span> App = <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
-  <span class="hljs-keyword">const</span> flexDirections = [<span class="hljs-string">'row'</span>, <span class="hljs-string">'row-reverse'</span>, <span class="hljs-string">'column'</span>, <span class="hljs-string">'column-reverse'</span>];
-  <span class="hljs-keyword">const</span> justifyContents = [
-    <span class="hljs-string">'flex-start'</span>,
-    <span class="hljs-string">'flex-end'</span>,
-    <span class="hljs-string">'center'</span>,
-    <span class="hljs-string">'space-between'</span>,
-    <span class="hljs-string">'space-around'</span>,
-    <span class="hljs-string">'space-evenly'</span>,
-  ];
-  <span class="hljs-keyword">const</span> alignItemsArr = [
-    <span class="hljs-string">'flex-start'</span>,
-    <span class="hljs-string">'flex-end'</span>,
-    <span class="hljs-string">'center'</span>,
-    <span class="hljs-string">'stretch'</span>,
-    <span class="hljs-string">'baseline'</span>,
-  ];
-  <span class="hljs-keyword">const</span> wraps = [<span class="hljs-string">'nowrap'</span>, <span class="hljs-string">'wrap'</span>, <span class="hljs-string">'wrap-reverse'</span>];
-  <span class="hljs-keyword">const</span> directions = [<span class="hljs-string">'inherit'</span>, <span class="hljs-string">'ltr'</span>, <span class="hljs-string">'rtl'</span>];
-  <span class="hljs-keyword">const</span> [flexDirection, setFlexDirection] = useState(<span class="hljs-number">0</span>);
-  <span class="hljs-keyword">const</span> [justifyContent, setJustifyContent] = useState(<span class="hljs-number">0</span>);
-  <span class="hljs-keyword">const</span> [alignItems, setAlignItems] = useState(<span class="hljs-number">0</span>);
-  <span class="hljs-keyword">const</span> [direction, setDirection] = useState(<span class="hljs-number">0</span>);
-  <span class="hljs-keyword">const</span> [wrap, setWrap] = useState(<span class="hljs-number">0</span>);
-
-  <span class="hljs-keyword">const</span> hookedStyles = {
-    <span class="hljs-attr">flexDirection</span>: flexDirections[flexDirection],
-    <span class="hljs-attr">justifyContent</span>: justifyContents[justifyContent],
-    <span class="hljs-attr">alignItems</span>: alignItemsArr[alignItems],
-    <span class="hljs-attr">direction</span>: directions[direction],
-    <span class="hljs-attr">flexWrap</span>: wraps[wrap],
-  };
-
-  <span class="hljs-keyword">const</span> changeSetting = <span class="hljs-function">(<span class="hljs-params">value, options, setterFunction</span>) =&gt;</span> {
-    <span class="hljs-keyword">if</span> (value == options.length - <span class="hljs-number">1</span>) {
-      setterFunction(<span class="hljs-number">0</span>);
-      <span class="hljs-keyword">return</span>;
-    }
-    setterFunction(value + <span class="hljs-number">1</span>);
-  };
-
-  <span class="hljs-keyword">const</span> Square = <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
-    <span class="hljs-keyword">const</span> sqStyle = {
-      <span class="hljs-attr">width</span>: <span class="hljs-number">50</span>,
-      <span class="hljs-attr">height</span>: <span class="hljs-number">50</span>,
-      <span class="hljs-attr">backgroundColor</span>: randomHexColor(),
-    };
-    <span class="hljs-keyword">return</span> &lt;View style={sqStyle} /&gt;;
-  };
-  const [squares, setSquares] = useState([Square(), Square(), Square()]);
-  return (
-    &lt;&gt;
-      &lt;View style={{ paddingTop: Constants.statusBarHeight }} /&gt;
-      &lt;View style={[styles.container, styles.playingSpace, hookedStyles]}&gt;
-        {squares.map(elem =&gt; elem)}
-      &lt;/View&gt;
-      &lt;ScrollView style={[styles.container]}&gt;
-        &lt;View style={[styles.controlSpace]}&gt;
-          &lt;View style={styles.buttonView}&gt;
-            &lt;Button
-              title="Change Flex Direction"
-              onPress={() =&gt;
-                changeSetting(flexDirection, flexDirections, setFlexDirection)
-              }
-            /&gt;
-            &lt;Text style={styles.text}&gt;{flexDirections[flexDirection]}&lt;/Text&gt;
-          &lt;/View&gt;
-          &lt;View style={styles.buttonView}&gt;
-            &lt;Button
-              title="Change Justify Content"
-              onPress={() =&gt;
-                changeSetting(
-                  justifyContent,
-                  justifyContents,
-                  setJustifyContent
-                )
-              }
-            /&gt;
-            &lt;Text style={styles.text}&gt;{justifyContents[justifyContent]}&lt;/Text&gt;
-          &lt;/View&gt;
-          &lt;View style={styles.buttonView}&gt;
-            &lt;Button
-              title="Change Align Items"
-              onPress={() =&gt;
-                changeSetting(alignItems, alignItemsArr, setAlignItems)
-              }
-            /&gt;
-            &lt;Text style={styles.text}&gt;{alignItemsArr[alignItems]}&lt;/Text&gt;
-          &lt;/View&gt;
-          &lt;View style={styles.buttonView}&gt;
-            &lt;Button
-              title="Change Direction"
-              onPress={() =&gt; changeSetting(direction, directions, setDirection)}
-            /&gt;
-            &lt;Text style={styles.text}&gt;{directions[direction]}&lt;/Text&gt;
-          &lt;/View&gt;
-          &lt;View style={styles.buttonView}&gt;
-            &lt;Button
-              title="Change Flex Wrap"
-              onPress={() =&gt; changeSetting(wrap, wraps, setWrap)}
-            /&gt;
-            &lt;Text style={styles.text}&gt;{wraps[wrap]}&lt;/Text&gt;
-          &lt;/View&gt;
-          &lt;View style={styles.buttonView}&gt;
-            &lt;Button
-              title="Add Square"
-              onPress={() =&gt; setSquares([...squares, Square()])}
-            /&gt;
-          &lt;/View&gt;
-          &lt;View style={styles.buttonView}&gt;
-            &lt;Button
-              title="Delete Square"
-              onPress={() =&gt;
-                setSquares(squares.filter((v, i) =&gt; i != squares.length - 1))
-              }
-            /&gt;
-          &lt;/View&gt;
-        &lt;/View&gt;
-      &lt;/ScrollView&gt;
-    &lt;/&gt;
-  );
-};
-
-const styles = StyleSheet.create({
-  container: {
-    height: '50%',
-  },
-  playingSpace: {
-    backgroundColor: 'white',
-    borderColor: 'blue',
-    borderWidth: 3,
-  },
-  controlSpace: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    backgroundColor: '#F5F5F5',
-  },
-  buttonView: {
-    width: '50%',
-    padding: 10,
-  },
-  text: { textAlign: 'center' },
-});
-
-const randomHexColor = () =&gt; {
-  return '#000000'.replace(/0/g, function() {
-    return (~~(Math.random() * 16)).toString(16);
-  });
-};
-
-export default App;
-</code></pre></div><div class="desktop-friendly-snack" style="margin-top: 15px; margin-bottom: 15px"><div
-        data-snack-name="LayoutProps Example"
-        data-snack-description="Example usage"
-        data-snack-code="import%20React%2C%20%7B%20useState%20%7D%20from%20'react'%3B%0Aimport%20%7B%20Button%2C%20ScrollView%2C%20StyleSheet%2C%20Text%2C%20View%20%7D%20from%20'react-native'%3B%0Aimport%20Constants%20from%20'expo-constants'%3B%0A%0Aconst%20App%20%3D%20()%20%3D%3E%20%7B%0A%20%20const%20flexDirections%20%3D%20%5B'row'%2C%20'row-reverse'%2C%20'column'%2C%20'column-reverse'%5D%3B%0A%20%20const%20justifyContents%20%3D%20%5B%0A%20%20%20%20'flex-start'%2C%0A%20%20%20%20'flex-end'%2C%0A%20%20%20%20'center'%2C%0A%20%20%20%20'space-between'%2C%0A%20%20%20%20'space-around'%2C%0A%20%20%20%20'space-evenly'%2C%0A%20%20%5D%3B%0A%20%20const%20alignItemsArr%20%3D%20%5B%0A%20%20%20%20'flex-start'%2C%0A%20%20%20%20'flex-end'%2C%0A%20%20%20%20'center'%2C%0A%20%20%20%20'stretch'%2C%0A%20%20%20%20'baseline'%2C%0A%20%20%5D%3B%0A%20%20const%20wraps%20%3D%20%5B'nowrap'%2C%20'wrap'%2C%20'wrap-reverse'%5D%3B%0A%20%20const%20directions%20%3D%20%5B'inherit'%2C%20'ltr'%2C%20'rtl'%5D%3B%0A%20%20const%20%5BflexDirection%2C%20setFlexDirection%5D%20%3D%20useState(0)%3B%0A%20%20const%20%5BjustifyContent%2C%20setJustifyContent%5D%20%3D%20useState(0)%3B%0A%20%20const%20%5BalignItems%2C%20setAlignItems%5D%20%3D%20useState(0)%3B%0A%20%20const%20%5Bdirection%2C%20setDirection%5D%20%3D%20useState(0)%3B%0A%20%20const%20%5Bwrap%2C%20setWrap%5D%20%3D%20useState(0)%3B%0A%0A%20%20const%20hookedStyles%20%3D%20%7B%0A%20%20%20%20flexDirection%3A%20flexDirections%5BflexDirection%5D%2C%0A%20%20%20%20justifyContent%3A%20justifyContents%5BjustifyContent%5D%2C%0A%20%20%20%20alignItems%3A%20alignItemsArr%5BalignItems%5D%2C%0A%20%20%20%20direction%3A%20directions%5Bdirection%5D%2C%0A%20%20%20%20flexWrap%3A%20wraps%5Bwrap%5D%2C%0A%20%20%7D%3B%0A%0A%20%20const%20changeSetting%20%3D%20(value%2C%20options%2C%20setterFunction)%20%3D%3E%20%7B%0A%20%20%20%20if%20(value%20%3D%3D%20options.length%20-%201)%20%7B%0A%20%20%20%20%20%20setterFunction(0)%3B%0A%20%20%20%20%20%20return%3B%0A%20%20%20%20%7D%0A%20%20%20%20setterFunction(value%20%2B%201)%3B%0A%20%20%7D%3B%0A%0A%20%20const%20Square%20%3D%20()%20%3D%3E%20%7B%0A%20%20%20%20const%20sqStyle%20%3D%20%7B%0A%20%20%20%20%20%20width%3A%2050%2C%0A%20%20%20%20%20%20height%3A%2050%2C%0A%20%20%20%20%20%20backgroundColor%3A%20randomHexColor()%2C%0A%20%20%20%20%7D%3B%0A%20%20%20%20return%20%3CView%20style%3D%7BsqStyle%7D%20%2F%3E%3B%0A%20%20%7D%3B%0A%20%20const%20%5Bsquares%2C%20setSquares%5D%20%3D%20useState(%5BSquare()%2C%20Square()%2C%20Square()%5D)%3B%0A%20%20return%20(%0A%20%20%20%20%3C%3E%0A%20%20%20%20%20%20%3CView%20style%3D%7B%7B%20paddingTop%3A%20Constants.statusBarHeight%20%7D%7D%20%2F%3E%0A%20%20%20%20%20%20%3CView%20style%3D%7B%5Bstyles.container%2C%20styles.playingSpace%2C%20hookedStyles%5D%7D%3E%0A%20%20%20%20%20%20%20%20%7Bsquares.map(elem%20%3D%3E%20elem)%7D%0A%20%20%20%20%20%20%3C%2FView%3E%0A%20%20%20%20%20%20%3CScrollView%20style%3D%7B%5Bstyles.container%5D%7D%3E%0A%20%20%20%20%20%20%20%20%3CView%20style%3D%7B%5Bstyles.controlSpace%5D%7D%3E%0A%20%20%20%20%20%20%20%20%20%20%3CView%20style%3D%7Bstyles.buttonView%7D%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%3CButton%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20title%3D%22Change%20Flex%20Direction%22%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20onPress%3D%7B()%20%3D%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20changeSetting(flexDirection%2C%20flexDirections%2C%20setFlexDirection)%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%7D%0A%20%20%20%20%20%20%20%20%20%20%20%20%2F%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%3CText%20style%3D%7Bstyles.text%7D%3E%7BflexDirections%5BflexDirection%5D%7D%3C%2FText%3E%0A%20%20%20%20%20%20%20%20%20%20%3C%2FView%3E%0A%20%20%20%20%20%20%20%20%20%20%3CView%20style%3D%7Bstyles.buttonView%7D%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%3CButton%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20title%3D%22Change%20Justify%20Content%22%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20onPress%3D%7B()%20%3D%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20changeSetting(%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20justifyContent%2C%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20justifyContents%2C%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20setJustifyContent%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20)%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%7D%0A%20%20%20%20%20%20%20%20%20%20%20%20%2F%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%3CText%20style%3D%7Bstyles.text%7D%3E%7BjustifyContents%5BjustifyContent%5D%7D%3C%2FText%3E%0A%20%20%20%20%20%20%20%20%20%20%3C%2FView%3E%0A%20%20%20%20%20%20%20%20%20%20%3CView%20style%3D%7Bstyles.buttonView%7D%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%3CButton%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20title%3D%22Change%20Align%20Items%22%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20onPress%3D%7B()%20%3D%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20changeSetting(alignItems%2C%20alignItemsArr%2C%20setAlignItems)%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%7D%0A%20%20%20%20%20%20%20%20%20%20%20%20%2F%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%3CText%20style%3D%7Bstyles.text%7D%3E%7BalignItemsArr%5BalignItems%5D%7D%3C%2FText%3E%0A%20%20%20%20%20%20%20%20%20%20%3C%2FView%3E%0A%20%20%20%20%20%20%20%20%20%20%3CView%20style%3D%7Bstyles.buttonView%7D%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%3CButton%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20title%3D%22Change%20Direction%22%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20onPress%3D%7B()%20%3D%3E%20changeSetting(direction%2C%20directions%2C%20setDirection)%7D%0A%20%20%20%20%20%20%20%20%20%20%20%20%2F%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%3CText%20style%3D%7Bstyles.text%7D%3E%7Bdirections%5Bdirection%5D%7D%3C%2FText%3E%0A%20%20%20%20%20%20%20%20%20%20%3C%2FView%3E%0A%20%20%20%20%20%20%20%20%20%20%3CView%20style%3D%7Bstyles.buttonView%7D%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%3CButton%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20title%3D%22Change%20Flex%20Wrap%22%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20onPress%3D%7B()%20%3D%3E%20changeSetting(wrap%2C%20wraps%2C%20setWrap)%7D%0A%20%20%20%20%20%20%20%20%20%20%20%20%2F%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%3CText%20style%3D%7Bstyles.text%7D%3E%7Bwraps%5Bwrap%5D%7D%3C%2FText%3E%0A%20%20%20%20%20%20%20%20%20%20%3C%2FView%3E%0A%20%20%20%20%20%20%20%20%20%20%3CView%20style%3D%7Bstyles.buttonView%7D%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%3CButton%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20title%3D%22Add%20Square%22%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20onPress%3D%7B()%20%3D%3E%20setSquares(%5B...squares%2C%20Square()%5D)%7D%0A%20%20%20%20%20%20%20%20%20%20%20%20%2F%3E%0A%20%20%20%20%20%20%20%20%20%20%3C%2FView%3E%0A%20%20%20%20%20%20%20%20%20%20%3CView%20style%3D%7Bstyles.buttonView%7D%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%3CButton%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20title%3D%22Delete%20Square%22%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20onPress%3D%7B()%20%3D%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20setSquares(squares.filter((v%2C%20i)%20%3D%3E%20i%20!%3D%20squares.length%20-%201))%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%7D%0A%20%20%20%20%20%20%20%20%20%20%20%20%2F%3E%0A%20%20%20%20%20%20%20%20%20%20%3C%2FView%3E%0A%20%20%20%20%20%20%20%20%3C%2FView%3E%0A%20%20%20%20%20%20%3C%2FScrollView%3E%0A%20%20%20%20%3C%2F%3E%0A%20%20)%3B%0A%7D%3B%0A%0Aconst%20styles%20%3D%20StyleSheet.create(%7B%0A%20%20container%3A%20%7B%0A%20%20%20%20height%3A%20'50%25'%2C%0A%20%20%7D%2C%0A%20%20playingSpace%3A%20%7B%0A%20%20%20%20backgroundColor%3A%20'white'%2C%0A%20%20%20%20borderColor%3A%20'blue'%2C%0A%20%20%20%20borderWidth%3A%203%2C%0A%20%20%7D%2C%0A%20%20controlSpace%3A%20%7B%0A%20%20%20%20flexDirection%3A%20'row'%2C%0A%20%20%20%20flexWrap%3A%20'wrap'%2C%0A%20%20%20%20backgroundColor%3A%20'%23F5F5F5'%2C%0A%20%20%7D%2C%0A%20%20buttonView%3A%20%7B%0A%20%20%20%20width%3A%20'50%25'%2C%0A%20%20%20%20padding%3A%2010%2C%0A%20%20%7D%2C%0A%20%20text%3A%20%7B%20textAlign%3A%20'center'%20%7D%2C%0A%7D)%3B%0A%0Aconst%20randomHexColor%20%3D%20()%20%3D%3E%20%7B%0A%20%20return%20'%23000000'.replace(%2F0%2Fg%2C%20function()%20%7B%0A%20%20%20%20return%20(~~(Math.random()%20*%2016)).toString(16)%3B%0A%20%20%7D)%3B%0A%7D%3B%0A%0Aexport%20default%20App%3B%0A"
-        data-snack-platform="web"
-        data-snack-supported-platforms=ios,android,web
-        data-snack-preview="true"
-        style="
-          overflow: hidden;
-          background: #fafafa;
-          border: 1px solid rgba(0,0,0,.16);
-          border-radius: 4px;
-          height: 514px;
-          width: 100%;
-        "
-      ></div></div></div><hr>
-<h1><a class="anchor" aria-hidden="true" id="reference"></a><a href="#reference" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Reference</h1>
+        </script></nav></div><div class="container mainContainer docsContainer"><div class="wrapper"><div class="post"><header class="postHeader"><a class="edit-page-link button" href="https://github.com/facebook/react-native-website/blob/master/docs/layout-props.md" target="_blank" rel="noreferrer noopener">Edit</a><h1 id="__docusaurus" class="postHeaderTitle">Layout Props</h1></header><article><div><span><h1><a class="anchor" aria-hidden="true" id="reference"></a><a href="#reference" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Reference</h1>
 <h2><a class="anchor" aria-hidden="true" id="props"></a><a href="#props" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Props</h2>
 <h3><a class="anchor" aria-hidden="true" id="aligncontent"></a><a href="#aligncontent" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>alignContent</code></h3>
 <p><code>alignContent</code> controls how rows align in the cross direction, overriding the <code>alignContent</code> of the parent. See <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/align-content">https://developer.mozilla.org/en-US/docs/Web/CSS/align-content</a> for more details.</p>
@@ -484,7 +309,7 @@ export default App;
 <tr><th>Type</th><th>Required</th></tr>
 </thead>
 <tbody>
-<tr><td>enum('wrap', 'nowrap', 'wrap-reverse')</td><td>No</td></tr>
+<tr><td>enum('wrap', 'nowrap')</td><td>No</td></tr>
 </tbody>
 </table>
 <hr>
@@ -862,7 +687,7 @@ export default App;
 </tbody>
 </table>
 <hr>
-</span></div></article></div><div class="docs-prevnext"><a class="docs-prev button" href="/docs/next/image-style-props"><span class="arrow-prev">← </span><span>Image Style Props</span></a><a class="docs-next button" href="/docs/next/shadow-props"><span>Shadow Props</span><span class="arrow-next"> →</span></a></div></div></div><nav class="onPageNav"><ul class="toc-headings"><li><a href="#example">Example</a></li><li><a href="#props">Props</a><ul class="toc-headings"><li><a href="#aligncontent"><code>alignContent</code></a></li><li><a href="#alignitems"><code>alignItems</code></a></li><li><a href="#alignself"><code>alignSelf</code></a></li><li><a href="#aspectratio"><code>aspectRatio</code></a></li><li><a href="#borderbottomwidth"><code>borderBottomWidth</code></a></li><li><a href="#borderendwidth"><code>borderEndWidth</code></a></li><li><a href="#borderleftwidth"><code>borderLeftWidth</code></a></li><li><a href="#borderrightwidth"><code>borderRightWidth</code></a></li><li><a href="#borderstartwidth"><code>borderStartWidth</code></a></li><li><a href="#bordertopwidth"><code>borderTopWidth</code></a></li><li><a href="#borderwidth"><code>borderWidth</code></a></li><li><a href="#bottom"><code>bottom</code></a></li><li><a href="#direction"><code>direction</code></a></li><li><a href="#display"><code>display</code></a></li><li><a href="#end"><code>end</code></a></li><li><a href="#flex"><code>flex</code></a></li><li><a href="#flexbasis"><code>flexBasis</code></a></li><li><a href="#flexdirection"><code>flexDirection</code></a></li><li><a href="#flexgrow"><code>flexGrow</code></a></li><li><a href="#flexshrink"><code>flexShrink</code></a></li><li><a href="#flexwrap"><code>flexWrap</code></a></li><li><a href="#height"><code>height</code></a></li><li><a href="#justifycontent"><code>justifyContent</code></a></li><li><a href="#left"><code>left</code></a></li><li><a href="#margin"><code>margin</code></a></li><li><a href="#marginbottom"><code>marginBottom</code></a></li><li><a href="#marginend"><code>marginEnd</code></a></li><li><a href="#marginhorizontal"><code>marginHorizontal</code></a></li><li><a href="#marginleft"><code>marginLeft</code></a></li><li><a href="#marginright"><code>marginRight</code></a></li><li><a href="#marginstart"><code>marginStart</code></a></li><li><a href="#margintop"><code>marginTop</code></a></li><li><a href="#marginvertical"><code>marginVertical</code></a></li><li><a href="#maxheight"><code>maxHeight</code></a></li><li><a href="#maxwidth"><code>maxWidth</code></a></li><li><a href="#minheight"><code>minHeight</code></a></li><li><a href="#minwidth"><code>minWidth</code></a></li><li><a href="#overflow"><code>overflow</code></a></li><li><a href="#padding"><code>padding</code></a></li><li><a href="#paddingbottom"><code>paddingBottom</code></a></li><li><a href="#paddingend"><code>paddingEnd</code></a></li><li><a href="#paddinghorizontal"><code>paddingHorizontal</code></a></li><li><a href="#paddingleft"><code>paddingLeft</code></a></li><li><a href="#paddingright"><code>paddingRight</code></a></li><li><a href="#paddingstart"><code>paddingStart</code></a></li><li><a href="#paddingtop"><code>paddingTop</code></a></li><li><a href="#paddingvertical"><code>paddingVertical</code></a></li><li><a href="#position"><code>position</code></a></li><li><a href="#right"><code>right</code></a></li><li><a href="#start"><code>start</code></a></li><li><a href="#top"><code>top</code></a></li><li><a href="#width"><code>width</code></a></li><li><a href="#zindex"><code>zIndex</code></a></li></ul></li></ul></nav></div><footer class="nav-footer" id="footer"><section class="sitemap"><div><h5>Docs</h5><a href="/docs/getting-started.html">Getting Started</a><a href="/docs/tutorial.html">Tutorial</a><a href="/docs/components-and-apis.html">Components and APIs</a><a href="/docs/more-resources.html">More Resources</a></div><div><h5>Community</h5><a href="/help.html">The React Native Community</a><a href="/showcase.html">Who&#x27;s using React Native?</a><a href="http://stackoverflow.com/questions/tagged/react-native" target="_blank">Ask Questions on Stack Overflow</a><a href="https://github.com/facebook/react-native/blob/master/CONTRIBUTING.md">Contributor Guide</a><a href="https://dev.to/t/reactnative" target="_blank">DEV Community</a></div><div><h5>More Resources</h5><a href="/blog/">Blog</a><a href="https://twitter.com/reactnative" target="_blank">Twitter</a><a href="https://github.com/facebook/react-native" target="_blank">GitHub</a><a href="https://reactjs.org" target="_blank">React</a></div></section><a href="https://code.facebook.com/projects/" target="_blank" class="fbOpenSource"><img src="/img/oss_logo.png" alt="Facebook Open Source" width="170" height="45"/></a><section class="copyright">Copyright © 2020 Facebook Inc.</section></footer></div><script type="text/javascript" src="https://cdn.jsdelivr.net/docsearch.js/1/docsearch.min.js"></script><script>window.fbAsyncInit = function() {FB.init({appId:'1677033832619985',xfbml:true,version:'v2.7'});};(function(d, s, id){var js, fjs = d.getElementsByTagName(s)[0];if (d.getElementById(id)) {return;}js = d.createElement(s); js.id = id;js.src = '//connect.facebook.net/en_US/sdk.js';fjs.parentNode.insertBefore(js, fjs);}(document, 'script','facebook-jssdk'));
+</span></div></article></div><div class="docs-prevnext"><a class="docs-prev button" href="/docs/next/image-style-props"><span class="arrow-prev">← </span><span>Image Style Props</span></a><a class="docs-next button" href="/docs/next/shadow-props"><span>Shadow Props</span><span class="arrow-next"> →</span></a></div></div></div><nav class="onPageNav"><ul class="toc-headings"><li><a href="#props">Props</a><ul class="toc-headings"><li><a href="#aligncontent"><code>alignContent</code></a></li><li><a href="#alignitems"><code>alignItems</code></a></li><li><a href="#alignself"><code>alignSelf</code></a></li><li><a href="#aspectratio"><code>aspectRatio</code></a></li><li><a href="#borderbottomwidth"><code>borderBottomWidth</code></a></li><li><a href="#borderendwidth"><code>borderEndWidth</code></a></li><li><a href="#borderleftwidth"><code>borderLeftWidth</code></a></li><li><a href="#borderrightwidth"><code>borderRightWidth</code></a></li><li><a href="#borderstartwidth"><code>borderStartWidth</code></a></li><li><a href="#bordertopwidth"><code>borderTopWidth</code></a></li><li><a href="#borderwidth"><code>borderWidth</code></a></li><li><a href="#bottom"><code>bottom</code></a></li><li><a href="#direction"><code>direction</code></a></li><li><a href="#display"><code>display</code></a></li><li><a href="#end"><code>end</code></a></li><li><a href="#flex"><code>flex</code></a></li><li><a href="#flexbasis"><code>flexBasis</code></a></li><li><a href="#flexdirection"><code>flexDirection</code></a></li><li><a href="#flexgrow"><code>flexGrow</code></a></li><li><a href="#flexshrink"><code>flexShrink</code></a></li><li><a href="#flexwrap"><code>flexWrap</code></a></li><li><a href="#height"><code>height</code></a></li><li><a href="#justifycontent"><code>justifyContent</code></a></li><li><a href="#left"><code>left</code></a></li><li><a href="#margin"><code>margin</code></a></li><li><a href="#marginbottom"><code>marginBottom</code></a></li><li><a href="#marginend"><code>marginEnd</code></a></li><li><a href="#marginhorizontal"><code>marginHorizontal</code></a></li><li><a href="#marginleft"><code>marginLeft</code></a></li><li><a href="#marginright"><code>marginRight</code></a></li><li><a href="#marginstart"><code>marginStart</code></a></li><li><a href="#margintop"><code>marginTop</code></a></li><li><a href="#marginvertical"><code>marginVertical</code></a></li><li><a href="#maxheight"><code>maxHeight</code></a></li><li><a href="#maxwidth"><code>maxWidth</code></a></li><li><a href="#minheight"><code>minHeight</code></a></li><li><a href="#minwidth"><code>minWidth</code></a></li><li><a href="#overflow"><code>overflow</code></a></li><li><a href="#padding"><code>padding</code></a></li><li><a href="#paddingbottom"><code>paddingBottom</code></a></li><li><a href="#paddingend"><code>paddingEnd</code></a></li><li><a href="#paddinghorizontal"><code>paddingHorizontal</code></a></li><li><a href="#paddingleft"><code>paddingLeft</code></a></li><li><a href="#paddingright"><code>paddingRight</code></a></li><li><a href="#paddingstart"><code>paddingStart</code></a></li><li><a href="#paddingtop"><code>paddingTop</code></a></li><li><a href="#paddingvertical"><code>paddingVertical</code></a></li><li><a href="#position"><code>position</code></a></li><li><a href="#right"><code>right</code></a></li><li><a href="#start"><code>start</code></a></li><li><a href="#top"><code>top</code></a></li><li><a href="#width"><code>width</code></a></li><li><a href="#zindex"><code>zIndex</code></a></li></ul></li></ul></nav></div><footer class="nav-footer" id="footer"><section class="sitemap"><div><h5>Docs</h5><a href="/docs/getting-started.html">Getting Started</a><a href="/docs/tutorial.html">Tutorial</a><a href="/docs/components-and-apis.html">Components and APIs</a><a href="/docs/more-resources.html">More Resources</a></div><div><h5>Community</h5><a href="/help.html">The React Native Community</a><a href="/showcase.html">Who&#x27;s using React Native?</a><a href="http://stackoverflow.com/questions/tagged/react-native" target="_blank">Ask Questions on Stack Overflow</a><a href="https://github.com/facebook/react-native/blob/master/CONTRIBUTING.md">Contributor Guide</a><a href="https://dev.to/t/reactnative" target="_blank">DEV Community</a></div><div><h5>More Resources</h5><a href="/blog/">Blog</a><a href="https://twitter.com/reactnative" target="_blank">Twitter</a><a href="https://github.com/facebook/react-native" target="_blank">GitHub</a><a href="https://reactjs.org" target="_blank">React</a></div></section><a href="https://code.facebook.com/projects/" target="_blank" class="fbOpenSource"><img src="/img/oss_logo.png" alt="Facebook Open Source" width="170" height="45"/></a><section class="copyright">Copyright © 2020 Facebook Inc.</section></footer></div><script type="text/javascript" src="https://cdn.jsdelivr.net/docsearch.js/1/docsearch.min.js"></script><script>window.fbAsyncInit = function() {FB.init({appId:'1677033832619985',xfbml:true,version:'v2.7'});};(function(d, s, id){var js, fjs = d.getElementsByTagName(s)[0];if (d.getElementById(id)) {return;}js = d.createElement(s); js.id = id;js.src = '//connect.facebook.net/en_US/sdk.js';fjs.parentNode.insertBefore(js, fjs);}(document, 'script','facebook-jssdk'));
                 </script><script>window.twttr=(function(d,s, id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return t;js=d.createElement(s);js.id=id;js.src='https://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js, fjs);t._e = [];t.ready = function(f) {t._e.push(f);};return t;}(document, 'script', 'twitter-wjs'));</script><script>
                 document.addEventListener('keyup', function(e) {
                   if (e.target !== document.body) {
