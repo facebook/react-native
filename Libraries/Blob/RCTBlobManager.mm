@@ -142,6 +142,12 @@ RCT_EXPORT_METHOD(addNetworkingHandler)
 {
   RCTNetworking *const networking = _bridge ? _bridge.networking : [_turboModuleLookupDelegate moduleForName:"RCTNetworking"];
 
+  // TODO(T63516227): Why can methodQueue be nil here? 
+  // We don't want to do anything when methodQueue is nil.
+  if (!networking.methodQueue) {
+    return;
+  }
+
   dispatch_async(networking.methodQueue, ^{
     [networking addRequestHandler:self];
     [networking addResponseHandler:self];
