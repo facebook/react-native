@@ -14,6 +14,7 @@
 #import <React/RCTComponentViewRegistry.h>
 #import <React/RCTFabricSurface.h>
 #import <React/RCTFollyConvert.h>
+#import <React/RCTI18nUtil.h>
 #import <React/RCTMountingManager.h>
 #import <React/RCTMountingManagerDelegate.h>
 #import <React/RCTScheduler.h>
@@ -137,7 +138,8 @@ using namespace facebook::react;
   std::shared_lock<better::shared_mutex> lock(_schedulerMutex);
   LayoutContext layoutContext = {.pointScaleFactor = RCTScreenScale()};
   LayoutConstraints layoutConstraints = {.minimumSize = RCTSizeFromCGSize(minimumSize),
-                                         .maximumSize = RCTSizeFromCGSize(maximumSize)};
+                                         .maximumSize = RCTSizeFromCGSize(maximumSize),
+                                         .layoutDirection = RCTLayoutDirection([[RCTI18nUtil sharedInstance] isRTL])};
   return [_scheduler measureSurfaceWithLayoutConstraints:layoutConstraints
                                            layoutContext:layoutContext
                                                surfaceId:surface.rootTag];
@@ -148,7 +150,8 @@ using namespace facebook::react;
   std::shared_lock<better::shared_mutex> lock(_schedulerMutex);
   LayoutContext layoutContext = {.pointScaleFactor = RCTScreenScale()};
   LayoutConstraints layoutConstraints = {.minimumSize = RCTSizeFromCGSize(minimumSize),
-                                         .maximumSize = RCTSizeFromCGSize(maximumSize)};
+                                         .maximumSize = RCTSizeFromCGSize(maximumSize),
+                                         .layoutDirection = RCTLayoutDirection([[RCTI18nUtil sharedInstance] isRTL])};
   [_scheduler constraintSurfaceLayoutWithLayoutConstraints:layoutConstraints
                                              layoutContext:layoutContext
                                                  surfaceId:surface.rootTag];
@@ -258,7 +261,8 @@ using namespace facebook::react;
   LayoutContext layoutContext = {.pointScaleFactor = RCTScreenScale()};
 
   LayoutConstraints layoutConstraints = {.minimumSize = RCTSizeFromCGSize(surface.minimumSize),
-                                         .maximumSize = RCTSizeFromCGSize(surface.maximumSize)};
+                                         .maximumSize = RCTSizeFromCGSize(surface.maximumSize),
+                                         .layoutDirection = RCTLayoutDirection([[RCTI18nUtil sharedInstance] isRTL])};
 
   [_scheduler startSurfaceWithSurfaceId:surface.rootTag
                              moduleName:surface.moduleName

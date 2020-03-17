@@ -32,7 +32,10 @@ Content const &ParagraphShadowNode::getContent() const {
 
   auto textAttributes = TextAttributes::defaultTextAttributes();
   textAttributes.apply(getConcreteProps().textAttributes);
-
+  textAttributes.layoutDirection =
+      YGNodeLayoutGetDirection(&yogaNode_) == YGDirectionRTL
+      ? LayoutDirection::RightToLeft
+      : LayoutDirection::LeftToRight;
   auto attributedString = AttributedString{};
   auto attachments = Attachments{};
   buildAttributedString(textAttributes, *this, attributedString, attachments);
