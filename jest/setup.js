@@ -89,10 +89,10 @@ jest
     mockComponent('../Libraries/Text/Text', MockNativeMethods),
   )
   .mock('../Libraries/Components/TextInput/TextInput', () =>
-    mockComponent(
-      '../Libraries/Components/TextInput/TextInput',
-      MockNativeMethods,
-    ),
+    mockComponent('../Libraries/Components/TextInput/TextInput', {
+      ...MockNativeMethods,
+      isFocused: jest.fn(),
+    }),
   )
   .mock('../Libraries/Modal/Modal', () =>
     mockComponent('../Libraries/Modal/Modal'),
