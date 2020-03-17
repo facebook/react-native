@@ -24,7 +24,6 @@ import com.facebook.react.R;
 import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 import com.facebook.react.bridge.ReactContext;
-import com.facebook.react.bridge.ReactSoftException;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.SoftAssertions;
@@ -766,13 +765,12 @@ public class NativeViewHierarchyManager {
     UiThreadUtil.assertOnUiThread();
     View view = mTagsToViews.get(reactTag);
     if (view == null) {
-      ReactSoftException.logSoftException(
-          TAG,
-          new IllegalViewOperationException(
-              "Trying to send command to a non-existing view " + "with tag " + reactTag));
-      return;
+      throw new IllegalViewOperationException(
+          "Trying to send command to a non-existing view with tag ["
+              + reactTag
+              + "] and command "
+              + commandId);
     }
-
     ViewManager viewManager = resolveViewManager(reactTag);
     viewManager.receiveCommand(view, commandId, args);
   }
@@ -782,13 +780,12 @@ public class NativeViewHierarchyManager {
     UiThreadUtil.assertOnUiThread();
     View view = mTagsToViews.get(reactTag);
     if (view == null) {
-      ReactSoftException.logSoftException(
-          TAG,
-          new IllegalViewOperationException(
-              "Trying to send command to a non-existing view " + "with tag " + reactTag));
-      return;
+      throw new IllegalViewOperationException(
+          "Trying to send command to a non-existing view with tag ["
+              + reactTag
+              + "] and command "
+              + commandId);
     }
-
     ViewManager viewManager = resolveViewManager(reactTag);
     viewManager.receiveCommand(view, commandId, args);
   }
