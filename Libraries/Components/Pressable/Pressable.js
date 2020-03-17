@@ -12,18 +12,18 @@
 
 import * as React from 'react';
 import {useMemo, useState, useRef, useImperativeHandle} from 'react';
-import useAndroidRippleForView from './useAndroidRippleForView.js';
+import useAndroidRippleForView from './useAndroidRippleForView';
 import type {
   AccessibilityActionEvent,
   AccessibilityActionInfo,
   AccessibilityRole,
   AccessibilityState,
   AccessibilityValue,
-} from '../View/ViewAccessibility.js';
-import usePressability from '../../Pressability/usePressability.js';
-import {normalizeRect, type RectOrSize} from '../../StyleSheet/Rect.js';
-import type {ColorValue} from '../../StyleSheet/StyleSheetTypes.js';
-import type {LayoutEvent, PressEvent} from '../../Types/CoreEventTypes.js';
+} from '../View/ViewAccessibility';
+import usePressability from '../../Pressability/usePressability';
+import {normalizeRect, type RectOrSize} from '../../StyleSheet/Rect';
+import type {ColorValue} from '../../StyleSheet/StyleSheetTypes';
+import type {LayoutEvent, PressEvent} from '../../Types/CoreEventTypes';
 import View from '../View/View';
 
 type ViewStyleProp = $ElementType<React.ElementConfig<typeof View>, 'style'>;

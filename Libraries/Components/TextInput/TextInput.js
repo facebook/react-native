@@ -45,9 +45,9 @@ if (Platform.OS === 'android') {
   AndroidTextInputCommands = require('./AndroidTextInputNativeComponent')
     .Commands;
 } else if (Platform.OS === 'ios') {
-  RCTMultilineTextInputView = require('./RCTMultilineTextInputNativeComponent.js')
+  RCTMultilineTextInputView = require('./RCTMultilineTextInputNativeComponent')
     .default;
-  RCTSinglelineTextInputView = require('./RCTSingelineTextInputNativeComponent.js')
+  RCTSinglelineTextInputView = require('./RCTSingelineTextInputNativeComponent')
     .default;
 }
 
