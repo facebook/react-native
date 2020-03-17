@@ -75,6 +75,16 @@
   </p>
 </div>
 <p><code>AppRegistry</code> is the JS entry point to running all React Native apps. App root components should register themselves with <code>AppRegistry.registerComponent</code>, then the native system can load the bundle for the app and then actually run the app when it's ready by invoking <code>AppRegistry.runApplication</code>.</p>
+<pre><code class="hljs css language-jsx"><span class="token keyword">import</span> <span class="token punctuation">{</span>Text<span class="token punctuation">,</span> AppRegistry<span class="token punctuation">}</span> <span class="token keyword">from</span> <span class="token string">'react-native'</span><span class="token punctuation">;</span>
+
+<span class="token keyword">const</span> <span class="token function-variable function">App</span> <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token parameter">props</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">(</span>
+  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span><span class="token class-name">View</span></span><span class="token punctuation">></span></span><span class="token plain-text">
+    </span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span><span class="token class-name">Text</span></span><span class="token punctuation">></span></span><span class="token plain-text">App1</span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span><span class="token class-name">Text</span></span><span class="token punctuation">></span></span><span class="token plain-text">
+  </span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span><span class="token class-name">View</span></span><span class="token punctuation">></span></span>
+<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+AppRegistry<span class="token punctuation">.</span><span class="token function">registerComponent</span><span class="token punctuation">(</span><span class="token string">'Appname'</span><span class="token punctuation">,</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=></span> App<span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre>
 <p>To &quot;stop&quot; an application when a view should be destroyed, call <code>AppRegistry.unmountApplicationComponentAtRootTag</code> with the tag that was passed into <code>runApplication</code>. These should always be used as a pair.</p>
 <p><code>AppRegistry</code> should be required early in the <code>require</code> sequence to make sure the JS execution environment is setup before other modules are required.</p>
 <hr>
@@ -257,6 +267,7 @@
 <pre><code class="hljs css language-jsx"><span class="token keyword">static</span> <span class="token function">registerHeadlessTask</span><span class="token punctuation">(</span>taskKey<span class="token punctuation">,</span> taskProvider<span class="token punctuation">)</span>
 </code></pre>
 <p>Register a headless task. A headless task is a bit of code that runs without a UI. @param taskKey the key associated with this task @param taskProvider a promise returning function that takes some data passed from the native side as the only argument; when the promise is resolved or rejected the native side is notified of this event and it may decide to destroy the JS context.</p>
+<p>This is a way to run tasks in JavaScript while your app is in the background. It can be used, for example, to sync fresh data, handle push notifications, or play music.</p>
 <p><strong>Parameters:</strong></p>
 <table>
 <thead>
