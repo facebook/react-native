@@ -225,4 +225,4 @@ class Switch extends React.Component<Props> {
 const returnsFalse = () => false;
 const returnsTrue = () => true;
 
-export default Switch;
+module.exports = Switch;
