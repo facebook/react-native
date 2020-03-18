@@ -109,10 +109,11 @@ RCT_EXPORT_METHOD(hide)
   }
 }
 
-- (std::shared_ptr<facebook::react::TurboModule>)getTurboModuleWithJsInvoker:
-    (std::shared_ptr<facebook::react::CallInvoker>)jsInvoker
+- (std::shared_ptr<facebook::react::TurboModule>)
+    getTurboModuleWithJsInvoker:(std::shared_ptr<facebook::react::CallInvoker>)jsInvoker
+                     perfLogger:(id<RCTTurboModulePerformanceLogger>)perfLogger
 {
-  return std::make_shared<facebook::react::NativeLogBoxSpecJSI>(self, jsInvoker);
+  return std::make_shared<facebook::react::NativeLogBoxSpecJSI>(self, jsInvoker, perfLogger);
 }
 
 @end
@@ -139,10 +140,11 @@ RCT_EXPORT_METHOD(hide)
   // noop
 }
 
-- (std::shared_ptr<facebook::react::TurboModule>)getTurboModuleWithJsInvoker:
-    (std::shared_ptr<facebook::react::CallInvoker>)jsInvoker
+- (std::shared_ptr<facebook::react::TurboModule>)
+    getTurboModuleWithJsInvoker:(std::shared_ptr<facebook::react::CallInvoker>)jsInvoker
+                     perfLogger:(id<RCTTurboModulePerformanceLogger>)perfLogger
 {
-  return std::make_shared<facebook::react::NativeLogBoxSpecJSI>(self, jsInvoker);
+  return std::make_shared<facebook::react::NativeLogBoxSpecJSI>(self, jsInvoker, perfLogger);
 }
 @end
 

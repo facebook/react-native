@@ -233,8 +233,9 @@ RCT_EXPORT_METHOD(showShareActionSheetWithOptions
 }
 
 - (std::shared_ptr<TurboModule>)getTurboModuleWithJsInvoker:(std::shared_ptr<CallInvoker>)jsInvoker
+                                                 perfLogger:(id<RCTTurboModulePerformanceLogger>)perfLogger
 {
-  return std::make_shared<NativeActionSheetManagerSpecJSI>(self, jsInvoker);
+  return std::make_shared<NativeActionSheetManagerSpecJSI>(self, jsInvoker, perfLogger);
 }
 
 @end

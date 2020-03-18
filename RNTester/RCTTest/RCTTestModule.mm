@@ -146,9 +146,11 @@ RCT_EXPORT_METHOD(markTestPassed:(BOOL)success)
   }];
 }
 
-- (std::shared_ptr<facebook::react::TurboModule>)getTurboModuleWithJsInvoker:(std::shared_ptr<facebook::react::CallInvoker>)jsInvoker
+- (std::shared_ptr<facebook::react::TurboModule>)
+    getTurboModuleWithJsInvoker:(std::shared_ptr<facebook::react::CallInvoker>)jsInvoker
+                     perfLogger:(id<RCTTurboModulePerformanceLogger>)perfLogger
 {
-  return std::make_shared<facebook::react::NativeTestModuleSpecJSI>(self, jsInvoker);
+  return std::make_shared<facebook::react::NativeTestModuleSpecJSI>(self, jsInvoker, perfLogger);
 }
 
 @end
