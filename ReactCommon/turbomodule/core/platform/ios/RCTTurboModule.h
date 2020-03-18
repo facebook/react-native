@@ -127,7 +127,11 @@ class Instance;
  */
 class JSI_EXPORT ObjCTurboModule : public TurboModule {
  public:
-  ObjCTurboModule(const std::string &name, id<RCTTurboModule> instance, std::shared_ptr<CallInvoker> jsInvoker);
+  ObjCTurboModule(
+      const std::string &name,
+      id<RCTTurboModule> instance,
+      std::shared_ptr<CallInvoker> jsInvoker,
+      id<RCTTurboModulePerformanceLogger> perfLogger);
 
   jsi::Value invokeObjCMethod(
       jsi::Runtime &runtime,
@@ -138,11 +142,6 @@ class JSI_EXPORT ObjCTurboModule : public TurboModule {
       size_t count);
 
   id<RCTTurboModule> instance_;
-
-  /**
-   * TODO(T63718299): Move this into the ObjCTurboModule constructor
-   */
-  void setRCTTurboModulePerformanceLogger(id<RCTTurboModulePerformanceLogger> performanceLogger);
 
  protected:
   void setMethodArgConversionSelector(NSString *methodName, int argIndex, NSString *fnName);
@@ -207,8 +206,9 @@ class JSI_EXPORT ObjCTurboModule : public TurboModule {
 
 @optional
 // This should be required, after migration is done.
-- (std::shared_ptr<facebook::react::TurboModule>)getTurboModuleWithJsInvoker:
-    (std::shared_ptr<facebook::react::CallInvoker>)jsInvoker;
+- (std::shared_ptr<facebook::react::TurboModule>)
+    getTurboModuleWithJsInvoker:(std::shared_ptr<facebook::react::CallInvoker>)jsInvoker
+                     perfLogger:(id<RCTTurboModulePerformanceLogger>)perfLogger;
 
 @end
 
