@@ -33,7 +33,7 @@ namespace facebook {
 
     class JSI_EXPORT NativeTestModuleSpecJSI : public ObjCTurboModule {
     public:
-      NativeTestModuleSpecJSI(id<RCTTurboModule> instance, std::shared_ptr<CallInvoker> jsInvoker);
+      NativeTestModuleSpecJSI(id<RCTTurboModule> instance, std::shared_ptr<CallInvoker> jsInvoker, id<RCTTurboModulePerformanceLogger> perfLogger);
 
     };
   } // namespace react
@@ -56,8 +56,8 @@ namespace facebook {
   }
 
 
-  NativeTestModuleSpecJSI::NativeTestModuleSpecJSI(id<RCTTurboModule> instance, std::shared_ptr<CallInvoker> jsInvoker)
-    : ObjCTurboModule("TestModule", instance, jsInvoker) {
+  NativeTestModuleSpecJSI::NativeTestModuleSpecJSI(id<RCTTurboModule> instance, std::shared_ptr<CallInvoker> jsInvoker, id<RCTTurboModulePerformanceLogger> perfLogger)
+    : ObjCTurboModule("TestModule", instance, jsInvoker, perfLogger) {
 
       methodMap_["markTestCompleted"] = MethodMetadata {0, __hostFunction_NativeTestModuleSpecJSI_markTestCompleted};
 
