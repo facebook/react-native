@@ -644,11 +644,11 @@ jobs:
       name: win/default
     environment:
       - ANDROID_HOME: "C:\\Android\\android-sdk"
-      - ANDROID_NDK: "C:\\Android\\android-sdk\\ndk\\20.0.5594570"
+      - ANDROID_NDK: "C:\\Android\\android-sdk\\ndk\\19.2.5345600"
       - ANDROID_BUILD_VERSION: 28
       - ANDROID_TOOLS_VERSION: 29.0.2
       - GRADLE_OPTS: -Dorg.gradle.daemon=false
-      - NDK_VERSION: 20.0.5594570
+      - NDK_VERSION: 19.2.5345600
     steps:
       - checkout
       - run:
