@@ -92,6 +92,8 @@ jest
     mockComponent('../Libraries/Components/TextInput/TextInput', {
       ...MockNativeMethods,
       isFocused: jest.fn(),
+      clear: jest.fn(),
+      getNativeRef: jest.fn(),
     }),
   )
   .mock('../Libraries/Modal/Modal', () =>
