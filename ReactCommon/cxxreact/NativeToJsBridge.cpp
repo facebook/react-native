@@ -38,7 +38,7 @@ public:
     return m_registry;
   }
   
-  virtual bool isBatchActive() override {
+  bool isBatchActive() {
     return m_batchHadNativeModuleCalls;
   }
 
@@ -85,12 +85,11 @@ private:
 
 NativeToJsBridge::NativeToJsBridge(
     JSExecutorFactory *jsExecutorFactory,
-    std::shared_ptr<ExecutorDelegate> delegate, // TODO(OSS Candidate ISS#2710739)
     std::shared_ptr<ModuleRegistry> registry,
     std::shared_ptr<MessageQueueThread> jsQueue,
     std::shared_ptr<InstanceCallback> callback)
     : m_destroyed(std::make_shared<bool>(false)),
-      m_delegate(delegate ? delegate : (std::make_shared<JsToNativeBridge>(registry, callback))),
+      m_delegate(std::make_shared<JsToNativeBridge>(registry, callback)),
       m_executor(jsExecutorFactory->createJSExecutor(m_delegate, jsQueue)),
       m_executorMessageQueueThread(std::move(jsQueue)),
       m_inspectable(m_executor->isInspectable()) {}
@@ -238,10 +237,6 @@ void NativeToJsBridge::handleMemoryPressure(int pressureLevel) {
   runOnExecutorQueue([=] (JSExecutor* executor) {
     executor->handleMemoryPressure(pressureLevel);
   });
-}
-
-int64_t NativeToJsBridge::getPeakJsMemoryUsage() const noexcept {
-  return m_executor->getPeakJsMemoryUsage();
 }
 
 void NativeToJsBridge::destroy() {

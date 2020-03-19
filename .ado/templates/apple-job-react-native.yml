@@ -6,6 +6,7 @@ parameters:
   xcode_actions_debug: ''
   xcode_actions_release: ''
   xcode_destination: ''
+  apply_office_patches: ''
 
 steps:
   # Clean DerivedData
@@ -21,6 +22,10 @@ steps:
 
   # Task Group: XCode select proper version
   - template: apple-xcode-select.yml
+
+  - template: apple-droid-node-patching.yml
+    parameters:
+      apply_office_patches: $(apply_office_patches)
 
   - task: CmdLine@2
     displayName: yarn install

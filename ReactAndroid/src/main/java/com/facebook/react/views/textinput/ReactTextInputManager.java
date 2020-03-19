@@ -71,9 +71,6 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
       Spacing.ALL, Spacing.LEFT, Spacing.RIGHT, Spacing.TOP, Spacing.BOTTOM,
   };
 
-  // Focus or blur call on native components (through NativeMethodsMixin) redirects to TextInputState.js
-  // which dispatches focusTextInput or blurTextInput commands. These commands are mapped to FOCUS_TEXT_INPUT=1
-  // and BLUR_TEXT_INPUT=2 in ReactTextInputManager, hence these constants value should be in sync with other ViewManagers.
   private static final int FOCUS_TEXT_INPUT = 1;
   private static final int BLUR_TEXT_INPUT = 2;
 
@@ -716,11 +713,6 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
   @ReactProp(name = "borderStyle")
   public void setBorderStyle(ReactEditText view, @Nullable String borderStyle) {
     view.setBorderStyle(borderStyle);
-  }
-
-  @ReactProp(name = "showSoftInputOnFocus", defaultBoolean = true)
-  public void showKeyboardOnFocus(ReactEditText view, boolean showKeyboardOnFocus) {
-    view.setShowSoftInputOnFocus(showKeyboardOnFocus);
   }
 
   @ReactPropGroup(names = {

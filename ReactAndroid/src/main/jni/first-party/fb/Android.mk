@@ -21,7 +21,6 @@ LOCAL_SRC_FILES:= \
        jni/ReadableByteChannel.cpp \
        jni/References.cpp \
        jni/WeakReference.cpp \
-       CRTSafeAPIs.cpp \
        log.cpp \
        lyra/lyra.cpp \
        onload.cpp \

@@ -36,28 +36,16 @@ Instance::~Instance() {
   }
 }
 
-void Instance::setModuleRegistry(
-    std::shared_ptr<ModuleRegistry> moduleRegistry) {
-  moduleRegistry_ = std::move(moduleRegistry);
-}
-
 void Instance::initializeBridge(
     std::unique_ptr<InstanceCallback> callback,
-    std::shared_ptr<ExecutorDelegateFactory> edf,
     std::shared_ptr<JSExecutorFactory> jsef,
     std::shared_ptr<MessageQueueThread> jsQueue,
     std::shared_ptr<ModuleRegistry> moduleRegistry) {
   callback_ = std::move(callback);
   moduleRegistry_ = std::move(moduleRegistry);
-  
-  std::shared_ptr<ExecutorDelegate> delegate;
-  if (edf) {
-    delegate = edf->createExecutorDelegate(moduleRegistry_, callback_);
-  }
-
-  jsQueue->runOnQueueSync([this, delegate, &jsef, jsQueue]() mutable {
+  jsQueue->runOnQueueSync([this, &jsef, jsQueue]() mutable {
     nativeToJsBridge_ = folly::make_unique<NativeToJsBridge>(
-        jsef.get(), delegate, moduleRegistry_, jsQueue, callback_);
+        jsef.get(), moduleRegistry_, jsQueue, callback_);
 
     std::lock_guard<std::mutex> lock(m_syncMutex);
     m_syncReady = true;
@@ -196,10 +184,6 @@ void Instance::callJSCallback(uint64_t callbackId, folly::dynamic &&params) {
   nativeToJsBridge_->invokeCallback((double)callbackId, std::move(params));
 }
 
-void Instance::setJSEConfigParams(std::shared_ptr<JSEConfigParams>&& jseConfigParams) {
-  jseConfigParams_ = std::move(jseConfigParams);
-}
-
 void Instance::registerBundle(uint32_t bundleId, const std::string& bundlePath) {
   nativeToJsBridge_->registerBundle(bundleId, bundlePath);
 }
@@ -212,10 +196,6 @@ ModuleRegistry &Instance::getModuleRegistry() { return *moduleRegistry_; }
 
 void Instance::handleMemoryPressure(int pressureLevel) {
   nativeToJsBridge_->handleMemoryPressure(pressureLevel);
-}
-
-int64_t Instance::getPeakJsMemoryUsage() const noexcept {
-  return nativeToJsBridge_->getPeakJsMemoryUsage();
 }
 
 void Instance::invokeAsync(std::function<void()>&& func) {

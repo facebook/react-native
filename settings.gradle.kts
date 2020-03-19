@@ -5,6 +5,5 @@
 
 include(
     ":ReactAndroid",
-     ":processor",
     ":RNTester:android:app"
 )

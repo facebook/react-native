@@ -53,6 +53,7 @@ include $(BUILD_SHARED_LIBRARY)
 #   to the specification inside <dir>/<module-dir>/Android.mk.
 $(call import-module,folly)
 $(call import-module,fb)
+$(call import-module,jsc)
 $(call import-module,fbgloginit)
 $(call import-module,yogajni)
 $(call import-module,cxxreact)
@@ -65,4 +66,5 @@ include $(REACT_SRC_DIR)/turbomodule/core/jni/Android.mk
 # TODO(ramanpreet):
 #   Why doesn't this import-module call generate a jscexecutor.so file?
 # $(call import-module,jscexecutor)
-include $(REACT_SRC_DIR)/v8executor/Android.mk
+
+include $(REACT_SRC_DIR)/jscexecutor/Android.mk

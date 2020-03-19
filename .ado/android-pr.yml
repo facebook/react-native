@@ -22,10 +22,14 @@ jobs:
         submodules: recursive # set to 'true' for a single level of submodules or 'recursive' to get submodules of submodules
         persistCredentials: false # set to 'true' to leave the OAuth token in the Git config after the initial fetch
 
+      - template: templates/apple-droid-node-patching.yml
+        parameters:
+          apply_office_patches: true
+
       - task: UseNode@1
         inputs:
           version: '10.x'
-      
+
       # Install NuGet v4.6.4+
       - task: NuGetToolInstaller@1
         inputs:

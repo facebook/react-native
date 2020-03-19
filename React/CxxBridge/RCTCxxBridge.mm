@@ -596,7 +596,6 @@ struct RCTInstanceCallback : public InstanceCallback {
     // This is async, but any calls into JS are blocked by the m_syncReady CV in Instance
   _reactInstance->initializeBridge(
       std::make_unique<RCTInstanceCallback>(self),
-      nullptr,  // use default executor delegate // TODO(OSS Candidate ISS#2710739)
       executorFactory,
       _jsMessageThread,
       [self _buildModuleRegistryUnlocked]);

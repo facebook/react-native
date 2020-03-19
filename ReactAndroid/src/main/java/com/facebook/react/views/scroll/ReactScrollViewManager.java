@@ -70,10 +70,6 @@ public class ReactScrollViewManager
   @ReactProp(name = "scrollEnabled", defaultBoolean = true)
   public void setScrollEnabled(ReactScrollView view, boolean value) {
     view.setScrollEnabled(value);
-
-    // Set focusable to match whether scroll is enabled. This improves keyboarding
-    // experience by not making scrollview a tab stop when you cannot interact with it.
-    view.setFocusable(value);
   }
 
   @ReactProp(name = "showsVerticalScrollIndicator")

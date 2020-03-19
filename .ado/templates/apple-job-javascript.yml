@@ -1,3 +1,6 @@
+parameters:
+  apply_office_patches: ''
+
 steps:
   - script: 'brew bundle'
     displayName: 'brew bundle'
@@ -6,6 +9,10 @@ steps:
     displayName: 'ensure node 10'
 
   - template: apple-xcode-select.yml
+
+  - template: apple-droid-node-patching.yml
+    parameters:
+      apply_office_patches: $(apply_office_patches)
 
   - script: 'yarn install'
     displayName: 'yarn install'

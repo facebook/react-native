@@ -46,16 +46,14 @@ class CatalystInstanceImpl : public jni::HybridClass<CatalystInstanceImpl> {
 
   CatalystInstanceImpl();
 
-  void createModuleRegistry(
-     jni::alias_ref<JavaMessageQueueThread::javaobject> nativeModulesQueue,
-     jni::alias_ref<jni::JCollection<JavaModuleWrapper::javaobject>::javaobject> javaModules,
-     jni::alias_ref<jni::JCollection<ModuleHolder::javaobject>::javaobject> cxxModules);
-
   void initializeBridge(
       jni::alias_ref<ReactCallback::javaobject> callback,
       // This executor is actually a factory holder.
       JavaScriptExecutorHolder* jseh,
-      jni::alias_ref<JavaMessageQueueThread::javaobject> jsQueue);
+      jni::alias_ref<JavaMessageQueueThread::javaobject> jsQueue,
+      jni::alias_ref<JavaMessageQueueThread::javaobject> moduleQueue,
+      jni::alias_ref<jni::JCollection<JavaModuleWrapper::javaobject>::javaobject> javaModules,
+      jni::alias_ref<jni::JCollection<ModuleHolder::javaobject>::javaobject> cxxModules);
 
   void extendNativeModules(
     jni::alias_ref<jni::JCollection<JavaModuleWrapper::javaobject>::javaobject> javaModules,
@@ -82,7 +80,6 @@ class CatalystInstanceImpl : public jni::HybridClass<CatalystInstanceImpl> {
                          std::string&& jsonValue);
   jlong getJavaScriptContext();
   void handleMemoryPressure(int pressureLevel);
-  jlong getPointerOfInstancePointer();
 
   // This should be the only long-lived strong reference, but every C++ class
   // will have a weak reference.

@@ -771,14 +771,6 @@ public class UIImplementation {
     mOperationsQueue.enqueueSendAccessibilityEvent(tag, eventType);
   }
 
-   public void performAccessibilityAction(int tag, int action) {
-    mOperationsQueue.enqueuePerformAccessibilityAction(tag, action);
-  }
-
-  public void announceForAccessibility(int tag, String announcement) {
-    mOperationsQueue.enqueueAnnounceForAccessibility(tag, announcement);
-  }
-
   public void onHostResume() {
     mOperationsQueue.resumeFrameCallback();
   }

@@ -105,18 +105,9 @@ public interface CatalystInstance
 
   void addJSIModules(List<JSIModuleSpec> jsiModules);
 
-   /**
+  /**
    * Returns a hybrid object that contains a pointer to JSCallInvoker.
    * Required for TurboModuleManager initialization.
    */
   JSCallInvokerHolder getJSCallInvokerHolder();
-
-  /**
-   * Get the C pointer (as a long) of the underneath Instance.
-   */
-  long getPointerOfInstancePointer();
-
-  public interface CatalystInstanceEventListener {
-    void onModuleRegistryCreated(CatalystInstance catalystInstance);
-  }
 }
