@@ -13,6 +13,7 @@
 #import <react/components/text/RawTextComponentDescriptor.h>
 #import <react/components/text/TextComponentDescriptor.h>
 #import <react/graphics/Geometry.h>
+#import <react/textlayoutmanager/RCTAttributedTextUtils.h>
 #import <react/textlayoutmanager/RCTTextLayoutManager.h>
 #import <react/textlayoutmanager/TextLayoutManager.h>
 #import <react/utils/ManagedObjectWrapper.h>
@@ -39,6 +40,27 @@ using namespace facebook::react;
   }
 
   return self;
+}
+
+- (NSString *)description
+{
+  NSString *superDescription = [super description];
+
+  // Cutting the last `>` character.
+  if (superDescription.length > 0 && [superDescription characterAtIndex:superDescription.length - 1] == '>') {
+    superDescription = [superDescription substringToIndex:superDescription.length - 1];
+  }
+
+  return [NSString stringWithFormat:@"%@; attributedText = %@>", superDescription, self.attributedText];
+}
+
+- (NSAttributedString *_Nullable)attributedText
+{
+  if (!_state) {
+    return nil;
+  }
+
+  return RCTNSAttributedStringFromAttributedString(_state->getData().attributedString);
 }
 
 #pragma mark - RCTComponentViewProtocol
