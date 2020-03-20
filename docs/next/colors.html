@@ -69,183 +69,188 @@
               }
             });
         </script></nav></div><div class="container mainContainer docsContainer"><div class="wrapper"><div class="post"><header class="postHeader"><a class="edit-page-link button" href="https://github.com/facebook/react-native-website/blob/master/docs/colors.md" target="_blank" rel="noreferrer noopener">Edit</a><h1 id="__docusaurus" class="postHeaderTitle">Color Reference</h1></header><article><div><span><p>Components in React Native are <a href="style">styled using JavaScript</a>. Color properties usually match how <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/color_value">CSS works on the web</a>.</p>
-<h3><a class="anchor" aria-hidden="true" id="red-green-blue"></a><a href="#red-green-blue" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Red-green-blue</h3>
+<h2><a class="anchor" aria-hidden="true" id="red-green-blue-rgb"></a><a href="#red-green-blue-rgb" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Red Green Blue (RGB)</h2>
 <p>React Native supports <code>rgb()</code> and <code>rgba()</code> in both hexadecimal and functional notation:</p>
 <ul>
-<li><p><code>'#f0f'</code> (#rgb)</p></li>
-<li><p><code>'#ff00ff'</code> (#rrggbb)</p></li>
-<li><p><code>'rgb(255, 0, 255)'</code></p></li>
-<li><p><code>'rgba(255, 255, 255, 1.0)'</code></p></li>
-<li><p><code>'#f0ff'</code> (#rgba)</p></li>
-<li><p><code>'#ff00ff00'</code> (#rrggbbaa)</p></li>
+<li><code>'#f0f'</code> (#rgb)</li>
+<li><code>'#ff00ff'</code> (#rrggbb)</li>
+<li><code>'#f0ff'</code> (#rgba)</li>
+<li><code>'#ff00ff00'</code> (#rrggbbaa)</li>
+<li><code>'rgb(255, 0, 255)'</code></li>
+<li><code>'rgba(255, 0, 255, 1.0)'</code></li>
 </ul>
-<h3><a class="anchor" aria-hidden="true" id="hue-saturation-lightness"></a><a href="#hue-saturation-lightness" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Hue-saturation-lightness</h3>
-<p><code>hsl()</code> and <code>hsla()</code> is supported in functional notation:</p>
+<h2><a class="anchor" aria-hidden="true" id="hue-saturation-lightness-hsl"></a><a href="#hue-saturation-lightness-hsl" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Hue Saturation Lightness (HSL)</h2>
+<p>React Native supports <code>hsl()</code> and <code>hsla()</code> in functional notation:</p>
 <ul>
 <li><code>'hsl(360, 100%, 100%)'</code></li>
 <li><code>'hsla(360, 100%, 100%, 1.0)'</code></li>
 </ul>
-<h3><a class="anchor" aria-hidden="true" id="transparent"></a><a href="#transparent" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>transparent</code></h3>
-<p>This is a shortcut for <code>rgba(0,0,0,0)</code>:</p>
+<h2><a class="anchor" aria-hidden="true" id="color-ints"></a><a href="#color-ints" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Color ints</h2>
+<p>React Native supports also colors as an <code>int</code> values (in RGB color mode):</p>
 <ul>
-<li><code>'transparent'</code></li>
+<li><code>0xff00ff00</code> (0xrrggbbaa)</li>
 </ul>
-<h3><a class="anchor" aria-hidden="true" id="named-colors"></a><a href="#named-colors" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Named colors</h3>
-<p>You can also use color names as values. React Native follows the <a href="http://www.w3.org/TR/css3-color/#svg-color">CSS3 specification</a>:</p>
 <blockquote>
-<p>Beware that React Native only supports lowercase color names. Uppercase color names are not supported.</p>
+<p><strong><em>Note:</em></strong> This might appear similar to the Android <a href="https://developer.android.com/reference/android/graphics/Color">Color</a> ints representation but on Android values are stored in SRGB color mode (0xaarrggbb).</p>
 </blockquote>
-<!-- alex disable black white -->
+<h2><a class="anchor" aria-hidden="true" id="named-colors"></a><a href="#named-colors" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Named colors</h2>
+<p>In React Native you can also use color name strings as values.</p>
+<blockquote>
+<p><strong><em>Note:</em></strong> React Native only supports lowercase color names. Uppercase color names are not supported.</p>
+</blockquote>
+<h3><a class="anchor" aria-hidden="true" id="transparent"></a><a href="#transparent" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>transparent</code></h3>
+<p>This is a shortcut for <code>rgba(0,0,0,0)</code>, same like in <a href="https://www.w3.org/TR/css-color-3/#transparent">CSS3</a>.</p>
+<h3><a class="anchor" aria-hidden="true" id="color-keywords"></a><a href="#color-keywords" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Color keywords</h3>
+<p>Named colors implementation follows the <a href="https://www.w3.org/TR/css-color-3/#svg-color">CSS3/SVG specification</a>:</p>
+<!-- alex ignore black white -->
 <ul>
-<li><img src="https://placehold.it/15/f0f8ff/000000?text=+" alt="#f0f8ff"> <color aliceblue /> aliceblue (#f0f8ff)</li>
-<li><img src="https://placehold.it/15/faebd7/000000?text=+" alt="#faebd7"> <color antiquewhite /> antiquewhite (#faebd7)</li>
-<li><img src="https://placehold.it/15/00ffff/000000?text=+" alt="#00ffff"> <color aqua /> aqua (#00ffff)</li>
-<li><img src="https://placehold.it/15/7fffd4/000000?text=+" alt="#7fffd4"> <color aquamarine /> aquamarine (#7fffd4)</li>
-<li><img src="https://placehold.it/15/f0ffff/000000?text=+" alt="#f0ffff"> <color azure /> azure (#f0ffff)</li>
-<li><img src="https://placehold.it/15/f5f5dc/000000?text=+" alt="#f5f5dc"> <color beige /> beige (#f5f5dc)</li>
-<li><img src="https://placehold.it/15/ffe4c4/000000?text=+" alt="#ffe4c4"> <color bisque /> bisque (#ffe4c4)</li>
-<li><img src="https://placehold.it/15/000000/000000?text=+" alt="#000000"> <color black /> black (#000000)</li>
-<li><img src="https://placehold.it/15/ffebcd/000000?text=+" alt="#ffebcd"> <color blanchedalmond /> blanchedalmond (#ffebcd)</li>
-<li><img src="https://placehold.it/15/0000ff/000000?text=+" alt="#0000ff"> <color blue /> blue (#0000ff)</li>
-<li><img src="https://placehold.it/15/8a2be2/000000?text=+" alt="#8a2be2"> <color blueviolet /> blueviolet (#8a2be2)</li>
-<li><img src="https://placehold.it/15/a52a2a/000000?text=+" alt="#a52a2a"> <color brown /> brown (#a52a2a)</li>
-<li><img src="https://placehold.it/15/deb887/000000?text=+" alt="#deb887"> <color burlywood /> burlywood (#deb887)</li>
-<li><img src="https://placehold.it/15/5f9ea0/000000?text=+" alt="#5f9ea0"> <color cadetblue /> cadetblue (#5f9ea0)</li>
-<li><img src="https://placehold.it/15/7fff00/000000?text=+" alt="#7fff00"> <color chartreuse /> chartreuse (#7fff00)</li>
-<li><img src="https://placehold.it/15/d2691e/000000?text=+" alt="#d2691e"> <color chocolate /> chocolate (#d2691e)</li>
-<li><img src="https://placehold.it/15/ff7f50/000000?text=+" alt="#ff7f50"> <color coral /> coral (#ff7f50)</li>
-<li><img src="https://placehold.it/15/6495ed/000000?text=+" alt="#6495ed"> <color cornflowerblue /> cornflowerblue (#6495ed)</li>
-<li><img src="https://placehold.it/15/fff8dc/000000?text=+" alt="#fff8dc"> <color cornsilk /> cornsilk (#fff8dc)</li>
-<li><img src="https://placehold.it/15/dc143c/000000?text=+" alt="#dc143c"> <color crimson /> crimson (#dc143c)</li>
-<li><img src="https://placehold.it/15/00ffff/000000?text=+" alt="#00ffff"> <color cyan /> cyan (#00ffff)</li>
-<li><img src="https://placehold.it/15/00008b/000000?text=+" alt="#00008b"> <color darkblue /> darkblue (#00008b)</li>
-<li><img src="https://placehold.it/15/008b8b/000000?text=+" alt="#008b8b"> <color darkcyan /> darkcyan (#008b8b)</li>
-<li><img src="https://placehold.it/15/b8860b/000000?text=+" alt="#b8860b"> <color darkgoldenrod /> darkgoldenrod (#b8860b)</li>
-<li><img src="https://placehold.it/15/a9a9a9/000000?text=+" alt="#a9a9a9"> <color darkgray /> darkgray (#a9a9a9)</li>
-<li><img src="https://placehold.it/15/006400/000000?text=+" alt="#006400"> <color darkgreen /> darkgreen (#006400)</li>
-<li><img src="https://placehold.it/15/a9a9a9/000000?text=+" alt="#a9a9a9"> <color darkgrey /> darkgrey (#a9a9a9)</li>
-<li><img src="https://placehold.it/15/bdb76b/000000?text=+" alt="#bdb76b"> <color darkkhaki /> darkkhaki (#bdb76b)</li>
-<li><img src="https://placehold.it/15/8b008b/000000?text=+" alt="#8b008b"> <color darkmagenta /> darkmagenta (#8b008b)</li>
-<li><img src="https://placehold.it/15/556b2f/000000?text=+" alt="#556b2f"> <color darkolivegreen /> darkolivegreen (#556b2f)</li>
-<li><img src="https://placehold.it/15/ff8c00/000000?text=+" alt="#ff8c00"> <color darkorange /> darkorange (#ff8c00)</li>
-<li><img src="https://placehold.it/15/9932cc/000000?text=+" alt="#9932cc"> <color darkorchid /> darkorchid (#9932cc)</li>
-<li><img src="https://placehold.it/15/8b0000/000000?text=+" alt="#8b0000"> <color darkred /> darkred (#8b0000)</li>
-<li><img src="https://placehold.it/15/e9967a/000000?text=+" alt="#e9967a"> <color darksalmon /> darksalmon (#e9967a)</li>
-<li><img src="https://placehold.it/15/8fbc8f/000000?text=+" alt="#8fbc8f"> <color darkseagreen /> darkseagreen (#8fbc8f)</li>
-<li><img src="https://placehold.it/15/483d8b/000000?text=+" alt="#483d8b"> <color darkslateblue /> darkslateblue (#483d8b)</li>
-<li><img src="https://placehold.it/15/2f4f4f/000000?text=+" alt="#2f4f4f"> <color darkslategrey /> darkslategrey (#2f4f4f)</li>
-<li><img src="https://placehold.it/15/00ced1/000000?text=+" alt="#00ced1"> <color darkturquoise /> darkturquoise (#00ced1)</li>
-<li><img src="https://placehold.it/15/9400d3/000000?text=+" alt="#9400d3"> <color darkviolet /> darkviolet (#9400d3)</li>
-<li><img src="https://placehold.it/15/ff1493/000000?text=+" alt="#ff1493"> <color deeppink /> deeppink (#ff1493)</li>
-<li><img src="https://placehold.it/15/00bfff/000000?text=+" alt="#00bfff"> <color deepskyblue /> deepskyblue (#00bfff)</li>
-<li><img src="https://placehold.it/15/696969/000000?text=+" alt="#696969"> <color dimgray /> dimgray (#696969)</li>
-<li><img src="https://placehold.it/15/696969/000000?text=+" alt="#696969"> <color dimgrey /> dimgrey (#696969)</li>
-<li><img src="https://placehold.it/15/1e90ff/000000?text=+" alt="#1e90ff"> <color dodgerblue /> dodgerblue (#1e90ff)</li>
-<li><img src="https://placehold.it/15/b22222/000000?text=+" alt="#b22222"> <color firebrick /> firebrick (#b22222)</li>
-<li><img src="https://placehold.it/15/fffaf0/000000?text=+" alt="#fffaf0"> <color floralwhite /> floralwhite (#fffaf0)</li>
-<li><img src="https://placehold.it/15/228b22/000000?text=+" alt="#228b22"> <color forestgreen /> forestgreen (#228b22)</li>
-<li><img src="https://placehold.it/15/ff00ff/000000?text=+" alt="#ff00ff"> <color fuchsia /> fuchsia (#ff00ff)</li>
-<li><img src="https://placehold.it/15/dcdcdc/000000?text=+" alt="#dcdcdc"> <color gainsboro /> gainsboro (#dcdcdc)</li>
-<li><img src="https://placehold.it/15/f8f8ff/000000?text=+" alt="#f8f8ff"> <color ghostwhite /> ghostwhite (#f8f8ff)</li>
-<li><img src="https://placehold.it/15/ffd700/000000?text=+" alt="#ffd700"> <color gold /> gold (#ffd700)</li>
-<li><img src="https://placehold.it/15/daa520/000000?text=+" alt="#daa520"> <color goldenrod /> goldenrod (#daa520)</li>
-<li><img src="https://placehold.it/15/808080/000000?text=+" alt="#808080"> <color gray /> gray (#808080)</li>
-<li><img src="https://placehold.it/15/008000/000000?text=+" alt="#008000"> <color green /> green (#008000)</li>
-<li><img src="https://placehold.it/15/adff2f/000000?text=+" alt="#adff2f"> <color greenyellow /> greenyellow (#adff2f)</li>
-<li><img src="https://placehold.it/15/808080/000000?text=+" alt="#808080"> <color grey /> grey (#808080)</li>
-<li><img src="https://placehold.it/15/f0fff0/000000?text=+" alt="#f0fff0"> <color honeydew /> honeydew (#f0fff0)</li>
-<li><img src="https://placehold.it/15/ff69b4/000000?text=+" alt="#ff69b4"> <color hotpink /> hotpink (#ff69b4)</li>
-<li><img src="https://placehold.it/15/cd5c5c/000000?text=+" alt="#cd5c5c"> <color indianred /> indianred (#cd5c5c)</li>
-<li><img src="https://placehold.it/15/4b0082/000000?text=+" alt="#4b0082"> <color indigo /> indigo (#4b0082)</li>
-<li><img src="https://placehold.it/15/fffff0/000000?text=+" alt="#fffff0"> <color ivory /> ivory (#fffff0)</li>
-<li><img src="https://placehold.it/15/f0e68c/000000?text=+" alt="#f0e68c"> <color khaki /> khaki (#f0e68c)</li>
-<li><img src="https://placehold.it/15/e6e6fa/000000?text=+" alt="#e6e6fa"> <color lavender /> lavender (#e6e6fa)</li>
-<li><img src="https://placehold.it/15/fff0f5/000000?text=+" alt="#fff0f5"> <color lavenderblush /> lavenderblush (#fff0f5)</li>
-<li><img src="https://placehold.it/15/7cfc00/000000?text=+" alt="#7cfc00"> <color lawngreen /> lawngreen (#7cfc00)</li>
-<li><img src="https://placehold.it/15/fffacd/000000?text=+" alt="#fffacd"> <color lemonchiffon /> lemonchiffon (#fffacd)</li>
-<li><img src="https://placehold.it/15/add8e6/000000?text=+" alt="#add8e6"> <color lightblue /> lightblue (#add8e6)</li>
-<li><img src="https://placehold.it/15/f08080/000000?text=+" alt="#f08080"> <color lightcoral /> lightcoral (#f08080)</li>
-<li><img src="https://placehold.it/15/e0ffff/000000?text=+" alt="#e0ffff"> <color lightcyan /> lightcyan (#e0ffff)</li>
-<li><img src="https://placehold.it/15/fafad2/000000?text=+" alt="#fafad2"> <color lightgoldenrodyellow /> lightgoldenrodyellow (#fafad2)</li>
-<li><img src="https://placehold.it/15/d3d3d3/000000?text=+" alt="#d3d3d3"> <color lightgray /> lightgray (#d3d3d3)</li>
-<li><img src="https://placehold.it/15/90ee90/000000?text=+" alt="#90ee90"> <color lightgreen /> lightgreen (#90ee90)</li>
-<li><img src="https://placehold.it/15/d3d3d3/000000?text=+" alt="#d3d3d3"> <color lightgrey /> lightgrey (#d3d3d3)</li>
-<li><img src="https://placehold.it/15/ffb6c1/000000?text=+" alt="#ffb6c1"> <color lightpink /> lightpink (#ffb6c1)</li>
-<li><img src="https://placehold.it/15/ffa07a/000000?text=+" alt="#ffa07a"> <color lightsalmon /> lightsalmon (#ffa07a)</li>
-<li><img src="https://placehold.it/15/20b2aa/000000?text=+" alt="#20b2aa"> <color lightseagreen /> lightseagreen (#20b2aa)</li>
-<li><img src="https://placehold.it/15/87cefa/000000?text=+" alt="#87cefa"> <color lightskyblue /> lightskyblue (#87cefa)</li>
-<li><img src="https://placehold.it/15/778899/000000?text=+" alt="#778899"> <color lightslategrey /> lightslategrey (#778899)</li>
-<li><img src="https://placehold.it/15/b0c4de/000000?text=+" alt="#b0c4de"> <color lightsteelblue /> lightsteelblue (#b0c4de)</li>
-<li><img src="https://placehold.it/15/ffffe0/000000?text=+" alt="#ffffe0"> <color lightyellow /> lightyellow (#ffffe0)</li>
-<li><img src="https://placehold.it/15/00ff00/000000?text=+" alt="#00ff00"> <color lime /> lime (#00ff00)</li>
-<li><img src="https://placehold.it/15/32cd32/000000?text=+" alt="#32cd32"> <color limegreen /> limegreen (#32cd32)</li>
-<li><img src="https://placehold.it/15/faf0e6/000000?text=+" alt="#faf0e6"> <color linen /> linen (#faf0e6)</li>
-<li><img src="https://placehold.it/15/ff00ff/000000?text=+" alt="#ff00ff"> <color magenta /> magenta (#ff00ff)</li>
-<li><img src="https://placehold.it/15/800000/000000?text=+" alt="#800000"> <color maroon /> maroon (#800000)</li>
-<li><img src="https://placehold.it/15/66cdaa/000000?text=+" alt="#66cdaa"> <color mediumaquamarine /> mediumaquamarine (#66cdaa)</li>
-<li><img src="https://placehold.it/15/0000cd/000000?text=+" alt="#0000cd"> <color mediumblue /> mediumblue (#0000cd)</li>
-<li><img src="https://placehold.it/15/ba55d3/000000?text=+" alt="#ba55d3"> <color mediumorchid /> mediumorchid (#ba55d3)</li>
-<li><img src="https://placehold.it/15/9370db/000000?text=+" alt="#9370db"> <color mediumpurple /> mediumpurple (#9370db)</li>
-<li><img src="https://placehold.it/15/3cb371/000000?text=+" alt="#3cb371"> <color mediumseagreen /> mediumseagreen (#3cb371)</li>
-<li><img src="https://placehold.it/15/7b68ee/000000?text=+" alt="#7b68ee"> <color mediumslateblue /> mediumslateblue (#7b68ee)</li>
-<li><img src="https://placehold.it/15/00fa9a/000000?text=+" alt="#00fa9a"> <color mediumspringgreen /> mediumspringgreen (#00fa9a)</li>
-<li><img src="https://placehold.it/15/48d1cc/000000?text=+" alt="#48d1cc"> <color mediumturquoise /> mediumturquoise (#48d1cc)</li>
-<li><img src="https://placehold.it/15/c71585/000000?text=+" alt="#c71585"> <color mediumvioletred /> mediumvioletred (#c71585)</li>
-<li><img src="https://placehold.it/15/191970/000000?text=+" alt="#191970"> <color midnightblue /> midnightblue (#191970)</li>
-<li><img src="https://placehold.it/15/f5fffa/000000?text=+" alt="#f5fffa"> <color mintcream /> mintcream (#f5fffa)</li>
-<li><img src="https://placehold.it/15/ffe4e1/000000?text=+" alt="#ffe4e1"> <color mistyrose /> mistyrose (#ffe4e1)</li>
-<li><img src="https://placehold.it/15/ffe4b5/000000?text=+" alt="#ffe4b5"> <color moccasin /> moccasin (#ffe4b5)</li>
-<li><img src="https://placehold.it/15/ffdead/000000?text=+" alt="#ffdead"> <color navajowhite /> navajowhite (#ffdead)</li>
-<li><img src="https://placehold.it/15/000080/000000?text=+" alt="#000080"> <color navy /> navy (#000080)</li>
-<li><img src="https://placehold.it/15/fdf5e6/000000?text=+" alt="#fdf5e6"> <color oldlace /> oldlace (#fdf5e6)</li>
-<li><img src="https://placehold.it/15/808000/000000?text=+" alt="#808000"> <color olive /> olive (#808000)</li>
-<li><img src="https://placehold.it/15/6b8e23/000000?text=+" alt="#6b8e23"> <color olivedrab /> olivedrab (#6b8e23)</li>
-<li><img src="https://placehold.it/15/ffa500/000000?text=+" alt="#ffa500"> <color orange /> orange (#ffa500)</li>
-<li><img src="https://placehold.it/15/ff4500/000000?text=+" alt="#ff4500"> <color orangered /> orangered (#ff4500)</li>
-<li><img src="https://placehold.it/15/da70d6/000000?text=+" alt="#da70d6"> <color orchid /> orchid (#da70d6)</li>
-<li><img src="https://placehold.it/15/eee8aa/000000?text=+" alt="#eee8aa"> <color palegoldenrod /> palegoldenrod (#eee8aa)</li>
-<li><img src="https://placehold.it/15/98fb98/000000?text=+" alt="#98fb98"> <color palegreen /> palegreen (#98fb98)</li>
-<li><img src="https://placehold.it/15/afeeee/000000?text=+" alt="#afeeee"> <color paleturquoise /> paleturquoise (#afeeee)</li>
-<li><img src="https://placehold.it/15/db7093/000000?text=+" alt="#db7093"> <color palevioletred /> palevioletred (#db7093)</li>
-<li><img src="https://placehold.it/15/ffefd5/000000?text=+" alt="#ffefd5"> <color papayawhip /> papayawhip (#ffefd5)</li>
-<li><img src="https://placehold.it/15/ffdab9/000000?text=+" alt="#ffdab9"> <color peachpuff /> peachpuff (#ffdab9)</li>
-<li><img src="https://placehold.it/15/cd853f/000000?text=+" alt="#cd853f"> <color peru /> peru (#cd853f)</li>
-<li><img src="https://placehold.it/15/ffc0cb/000000?text=+" alt="#ffc0cb"> <color pink /> pink (#ffc0cb)</li>
-<li><img src="https://placehold.it/15/dda0dd/000000?text=+" alt="#dda0dd"> <color plum /> plum (#dda0dd)</li>
-<li><img src="https://placehold.it/15/b0e0e6/000000?text=+" alt="#b0e0e6"> <color powderblue /> powderblue (#b0e0e6)</li>
-<li><img src="https://placehold.it/15/800080/000000?text=+" alt="#800080"> <color purple /> purple (#800080)</li>
-<li><img src="https://placehold.it/15/663399/000000?text=+" alt="#663399"> <color rebeccapurple /> rebeccapurple (#663399)</li>
-<li><img src="https://placehold.it/15/ff0000/000000?text=+" alt="#ff0000"> <color red /> red (#ff0000)</li>
-<li><img src="https://placehold.it/15/bc8f8f/000000?text=+" alt="#bc8f8f"> <color rosybrown /> rosybrown (#bc8f8f)</li>
-<li><img src="https://placehold.it/15/4169e1/000000?text=+" alt="#4169e1"> <color royalblue /> royalblue (#4169e1)</li>
-<li><img src="https://placehold.it/15/8b4513/000000?text=+" alt="#8b4513"> <color saddlebrown /> saddlebrown (#8b4513)</li>
-<li><img src="https://placehold.it/15/fa8072/000000?text=+" alt="#fa8072"> <color salmon /> salmon (#fa8072)</li>
-<li><img src="https://placehold.it/15/f4a460/000000?text=+" alt="#f4a460"> <color sandybrown /> sandybrown (#f4a460)</li>
-<li><img src="https://placehold.it/15/2e8b57/000000?text=+" alt="#2e8b57"> <color seagreen /> seagreen (#2e8b57)</li>
-<li><img src="https://placehold.it/15/fff5ee/000000?text=+" alt="#fff5ee"> <color seashell /> seashell (#fff5ee)</li>
-<li><img src="https://placehold.it/15/a0522d/000000?text=+" alt="#a0522d"> <color sienna /> sienna (#a0522d)</li>
-<li><img src="https://placehold.it/15/c0c0c0/000000?text=+" alt="#c0c0c0"> <color silver /> silver (#c0c0c0)</li>
-<li><img src="https://placehold.it/15/87ceeb/000000?text=+" alt="#87ceeb"> <color skyblue /> skyblue (#87ceeb)</li>
-<li><img src="https://placehold.it/15/6a5acd/000000?text=+" alt="#6a5acd"> <color slateblue /> slateblue (#6a5acd)</li>
-<li><img src="https://placehold.it/15/708090/000000?text=+" alt="#708090"> <color slategray /> slategray (#708090)</li>
-<li><img src="https://placehold.it/15/fffafa/000000?text=+" alt="#fffafa"> <color snow /> snow (#fffafa)</li>
-<li><img src="https://placehold.it/15/00ff7f/000000?text=+" alt="#00ff7f"> <color springgreen /> springgreen (#00ff7f)</li>
-<li><img src="https://placehold.it/15/4682b4/000000?text=+" alt="#4682b4"> <color steelblue /> steelblue (#4682b4)</li>
-<li><img src="https://placehold.it/15/d2b48c/000000?text=+" alt="#d2b48c"> <color tan /> tan (#d2b48c)</li>
-<li><img src="https://placehold.it/15/008080/000000?text=+" alt="#008080"> <color teal /> teal (#008080)</li>
-<li><img src="https://placehold.it/15/d8bfd8/000000?text=+" alt="#d8bfd8"> <color thistle /> thistle (#d8bfd8)</li>
-<li><img src="https://placehold.it/15/ff6347/000000?text=+" alt="#ff6347"> <color tomato /> tomato (#ff6347)</li>
-<li><img src="https://placehold.it/15/40e0d0/000000?text=+" alt="#40e0d0"> <color turquoise /> turquoise (#40e0d0)</li>
-<li><img src="https://placehold.it/15/ee82ee/000000?text=+" alt="#ee82ee"> <color violet /> violet (#ee82ee)</li>
-<li><img src="https://placehold.it/15/f5deb3/000000?text=+" alt="#f5deb3"> <color wheat /> wheat (#f5deb3)</li>
-<li><img src="https://placehold.it/15/ffffff/000000?text=+" alt="#ffffff"> <color white /> white (#ffffff)</li>
-<li><img src="https://placehold.it/15/f5f5f5/000000?text=+" alt="#f5f5f5"> <color whitesmoke /> whitesmoke (#f5f5f5)</li>
-<li><img src="https://placehold.it/15/ffff00/000000?text=+" alt="#ffff00"> <color yellow /> yellow (#ffff00)</li>
-<li><img src="https://placehold.it/15/9acd32/000000?text=+" alt="#9acd32"> <color yellowgreen /> yellowgreen (#9acd32)
-  <!-- alex enable black white -->
-</li>
+<li><ins style="background: #f0f8ff" class="color-box"></ins> aliceblue (<code>#f0f8ff</code>)</li>
+<li><ins style="background: #faebd7" class="color-box"></ins> antiquewhite (<code>#faebd7</code>)</li>
+<li><ins style="background: #00ffff" class="color-box"></ins> aqua (<code>#00ffff</code>)</li>
+<li><ins style="background: #7fffd4" class="color-box"></ins> aquamarine (<code>#7fffd4</code>)</li>
+<li><ins style="background: #f0ffff" class="color-box"></ins> azure (<code>#f0ffff</code>)</li>
+<li><ins style="background: #f5f5dc" class="color-box"></ins> beige (<code>#f5f5dc</code>)</li>
+<li><ins style="background: #ffe4c4" class="color-box"></ins> bisque (<code>#ffe4c4</code>)</li>
+<li><ins style="background: #000000" class="color-box"></ins> black (<code>#000000</code>)</li>
+<li><ins style="background: #ffebcd" class="color-box"></ins> blanchedalmond (<code>#ffebcd</code>)</li>
+<li><ins style="background: #0000ff" class="color-box"></ins> blue (<code>#0000ff</code>)</li>
+<li><ins style="background: #8a2be2" class="color-box"></ins> blueviolet (<code>#8a2be2</code>)</li>
+<li><ins style="background: #a52a2a" class="color-box"></ins> brown (<code>#a52a2a</code>)</li>
+<li><ins style="background: #deb887" class="color-box"></ins> burlywood (<code>#deb887</code>)</li>
+<li><ins style="background: #5f9ea0" class="color-box"></ins> cadetblue (<code>#5f9ea0</code>)</li>
+<li><ins style="background: #7fff00" class="color-box"></ins> chartreuse (<code>#7fff00</code>)</li>
+<li><ins style="background: #d2691e" class="color-box"></ins> chocolate (<code>#d2691e</code>)</li>
+<li><ins style="background: #ff7f50" class="color-box"></ins> coral (<code>#ff7f50</code>)</li>
+<li><ins style="background: #6495ed" class="color-box"></ins> cornflowerblue (<code>#6495ed</code>)</li>
+<li><ins style="background: #fff8dc" class="color-box"></ins> cornsilk (<code>#fff8dc</code>)</li>
+<li><ins style="background: #dc143c" class="color-box"></ins> crimson (<code>#dc143c</code>)</li>
+<li><ins style="background: #00ffff" class="color-box"></ins> cyan (<code>#00ffff</code>)</li>
+<li><ins style="background: #00008b" class="color-box"></ins> darkblue (<code>#00008b</code>)</li>
+<li><ins style="background: #008b8b" class="color-box"></ins> darkcyan (<code>#008b8b</code>)</li>
+<li><ins style="background: #b8860b" class="color-box"></ins> darkgoldenrod (<code>#b8860b</code>)</li>
+<li><ins style="background: #a9a9a9" class="color-box"></ins> darkgray (<code>#a9a9a9</code>)</li>
+<li><ins style="background: #006400" class="color-box"></ins> darkgreen (<code>#006400</code>)</li>
+<li><ins style="background: #a9a9a9" class="color-box"></ins> darkgrey (<code>#a9a9a9</code>)</li>
+<li><ins style="background: #bdb76b" class="color-box"></ins> darkkhaki (<code>#bdb76b</code>)</li>
+<li><ins style="background: #8b008b" class="color-box"></ins> darkmagenta (<code>#8b008b</code>)</li>
+<li><ins style="background: #556b2f" class="color-box"></ins> darkolivegreen (<code>#556b2f</code>)</li>
+<li><ins style="background: #ff8c00" class="color-box"></ins> darkorange (<code>#ff8c00</code>)</li>
+<li><ins style="background: #9932cc" class="color-box"></ins> darkorchid (<code>#9932cc</code>)</li>
+<li><ins style="background: #8b0000" class="color-box"></ins> darkred (<code>#8b0000</code>)</li>
+<li><ins style="background: #e9967a" class="color-box"></ins> darksalmon (<code>#e9967a</code>)</li>
+<li><ins style="background: #8fbc8f" class="color-box"></ins> darkseagreen (<code>#8fbc8f</code>)</li>
+<li><ins style="background: #483d8b" class="color-box"></ins> darkslateblue (<code>#483d8b</code>)</li>
+<li><ins style="background: #2f4f4f" class="color-box"></ins> darkslategrey (<code>#2f4f4f</code>)</li>
+<li><ins style="background: #00ced1" class="color-box"></ins> darkturquoise (<code>#00ced1</code>)</li>
+<li><ins style="background: #9400d3" class="color-box"></ins> darkviolet (<code>#9400d3</code>)</li>
+<li><ins style="background: #ff1493" class="color-box"></ins> deeppink (<code>#ff1493</code>)</li>
+<li><ins style="background: #00bfff" class="color-box"></ins> deepskyblue (<code>#00bfff</code>)</li>
+<li><ins style="background: #696969" class="color-box"></ins> dimgray (<code>#696969</code>)</li>
+<li><ins style="background: #696969" class="color-box"></ins> dimgrey (<code>#696969</code>)</li>
+<li><ins style="background: #1e90ff" class="color-box"></ins> dodgerblue (<code>#1e90ff</code>)</li>
+<li><ins style="background: #b22222" class="color-box"></ins> firebrick (<code>#b22222</code>)</li>
+<li><ins style="background: #fffaf0" class="color-box"></ins> floralwhite (<code>#fffaf0</code>)</li>
+<li><ins style="background: #228b22" class="color-box"></ins> forestgreen (<code>#228b22</code>)</li>
+<li><ins style="background: #ff00ff" class="color-box"></ins> fuchsia (<code>#ff00ff</code>)</li>
+<li><ins style="background: #dcdcdc" class="color-box"></ins> gainsboro (<code>#dcdcdc</code>)</li>
+<li><ins style="background: #f8f8ff" class="color-box"></ins> ghostwhite (<code>#f8f8ff</code>)</li>
+<li><ins style="background: #ffd700" class="color-box"></ins> gold (<code>#ffd700</code>)</li>
+<li><ins style="background: #daa520" class="color-box"></ins> goldenrod (<code>#daa520</code>)</li>
+<li><ins style="background: #808080" class="color-box"></ins> gray (<code>#808080</code>)</li>
+<li><ins style="background: #008000" class="color-box"></ins> green (<code>#008000</code>)</li>
+<li><ins style="background: #adff2f" class="color-box"></ins> greenyellow (<code>#adff2f</code>)</li>
+<li><ins style="background: #808080" class="color-box"></ins> grey (<code>#808080</code>)</li>
+<li><ins style="background: #f0fff0" class="color-box"></ins> honeydew (<code>#f0fff0</code>)</li>
+<li><ins style="background: #ff69b4" class="color-box"></ins> hotpink (<code>#ff69b4</code>)</li>
+<li><ins style="background: #cd5c5c" class="color-box"></ins> indianred (<code>#cd5c5c</code>)</li>
+<li><ins style="background: #4b0082" class="color-box"></ins> indigo (<code>#4b0082</code>)</li>
+<li><ins style="background: #fffff0" class="color-box"></ins> ivory (<code>#fffff0</code>)</li>
+<li><ins style="background: #f0e68c" class="color-box"></ins> khaki (<code>#f0e68c</code>)</li>
+<li><ins style="background: #e6e6fa" class="color-box"></ins> lavender (<code>#e6e6fa</code>)</li>
+<li><ins style="background: #fff0f5" class="color-box"></ins> lavenderblush (<code>#fff0f5</code>)</li>
+<li><ins style="background: #7cfc00" class="color-box"></ins> lawngreen (<code>#7cfc00</code>)</li>
+<li><ins style="background: #fffacd" class="color-box"></ins> lemonchiffon (<code>#fffacd</code>)</li>
+<li><ins style="background: #add8e6" class="color-box"></ins> lightblue (<code>#add8e6</code>)</li>
+<li><ins style="background: #f08080" class="color-box"></ins> lightcoral (<code>#f08080</code>)</li>
+<li><ins style="background: #e0ffff" class="color-box"></ins> lightcyan (<code>#e0ffff</code>)</li>
+<li><ins style="background: #fafad2" class="color-box"></ins> lightgoldenrodyellow (<code>#fafad2</code>)</li>
+<li><ins style="background: #d3d3d3" class="color-box"></ins> lightgray (<code>#d3d3d3</code>)</li>
+<li><ins style="background: #90ee90" class="color-box"></ins> lightgreen (<code>#90ee90</code>)</li>
+<li><ins style="background: #d3d3d3" class="color-box"></ins> lightgrey (<code>#d3d3d3</code>)</li>
+<li><ins style="background: #ffb6c1" class="color-box"></ins> lightpink (<code>#ffb6c1</code>)</li>
+<li><ins style="background: #ffa07a" class="color-box"></ins> lightsalmon (<code>#ffa07a</code>)</li>
+<li><ins style="background: #20b2aa" class="color-box"></ins> lightseagreen (<code>#20b2aa</code>)</li>
+<li><ins style="background: #87cefa" class="color-box"></ins> lightskyblue (<code>#87cefa</code>)</li>
+<li><ins style="background: #778899" class="color-box"></ins> lightslategrey (<code>#778899</code>)</li>
+<li><ins style="background: #b0c4de" class="color-box"></ins> lightsteelblue (<code>#b0c4de</code>)</li>
+<li><ins style="background: #ffffe0" class="color-box"></ins> lightyellow (<code>#ffffe0</code>)</li>
+<li><ins style="background: #00ff00" class="color-box"></ins> lime (<code>#00ff00</code>)</li>
+<li><ins style="background: #32cd32" class="color-box"></ins> limegreen (<code>#32cd32</code>)</li>
+<li><ins style="background: #faf0e6" class="color-box"></ins> linen (<code>#faf0e6</code>)</li>
+<li><ins style="background: #ff00ff" class="color-box"></ins> magenta (<code>#ff00ff</code>)</li>
+<li><ins style="background: #800000" class="color-box"></ins> maroon (<code>#800000</code>)</li>
+<li><ins style="background: #66cdaa" class="color-box"></ins> mediumaquamarine (<code>#66cdaa</code>)</li>
+<li><ins style="background: #0000cd" class="color-box"></ins> mediumblue (<code>#0000cd</code>)</li>
+<li><ins style="background: #ba55d3" class="color-box"></ins> mediumorchid (<code>#ba55d3</code>)</li>
+<li><ins style="background: #9370db" class="color-box"></ins> mediumpurple (<code>#9370db</code>)</li>
+<li><ins style="background: #3cb371" class="color-box"></ins> mediumseagreen (<code>#3cb371</code>)</li>
+<li><ins style="background: #7b68ee" class="color-box"></ins> mediumslateblue (<code>#7b68ee</code>)</li>
+<li><ins style="background: #00fa9a" class="color-box"></ins> mediumspringgreen (<code>#00fa9a</code>)</li>
+<li><ins style="background: #48d1cc" class="color-box"></ins> mediumturquoise (<code>#48d1cc</code>)</li>
+<li><ins style="background: #c71585" class="color-box"></ins> mediumvioletred (<code>#c71585</code>)</li>
+<li><ins style="background: #191970" class="color-box"></ins> midnightblue (<code>#191970</code>)</li>
+<li><ins style="background: #f5fffa" class="color-box"></ins> mintcream (<code>#f5fffa</code>)</li>
+<li><ins style="background: #ffe4e1" class="color-box"></ins> mistyrose (<code>#ffe4e1</code>)</li>
+<li><ins style="background: #ffe4b5" class="color-box"></ins> moccasin (<code>#ffe4b5</code>)</li>
+<li><ins style="background: #ffdead" class="color-box"></ins> navajowhite (<code>#ffdead</code>)</li>
+<li><ins style="background: #000080" class="color-box"></ins> navy (<code>#000080</code>)</li>
+<li><ins style="background: #fdf5e6" class="color-box"></ins> oldlace (<code>#fdf5e6</code>)</li>
+<li><ins style="background: #808000" class="color-box"></ins> olive (<code>#808000</code>)</li>
+<li><ins style="background: #6b8e23" class="color-box"></ins> olivedrab (<code>#6b8e23</code>)</li>
+<li><ins style="background: #ffa500" class="color-box"></ins> orange (<code>#ffa500</code>)</li>
+<li><ins style="background: #ff4500" class="color-box"></ins> orangered (<code>#ff4500</code>)</li>
+<li><ins style="background: #da70d6" class="color-box"></ins> orchid (<code>#da70d6</code>)</li>
+<li><ins style="background: #eee8aa" class="color-box"></ins> palegoldenrod (<code>#eee8aa</code>)</li>
+<li><ins style="background: #98fb98" class="color-box"></ins> palegreen (<code>#98fb98</code>)</li>
+<li><ins style="background: #afeeee" class="color-box"></ins> paleturquoise (<code>#afeeee</code>)</li>
+<li><ins style="background: #db7093" class="color-box"></ins> palevioletred (<code>#db7093</code>)</li>
+<li><ins style="background: #ffefd5" class="color-box"></ins> papayawhip (<code>#ffefd5</code>)</li>
+<li><ins style="background: #ffdab9" class="color-box"></ins> peachpuff (<code>#ffdab9</code>)</li>
+<li><ins style="background: #cd853f" class="color-box"></ins> peru (<code>#cd853f</code>)</li>
+<li><ins style="background: #ffc0cb" class="color-box"></ins> pink (<code>#ffc0cb</code>)</li>
+<li><ins style="background: #dda0dd" class="color-box"></ins> plum (<code>#dda0dd</code>)</li>
+<li><ins style="background: #b0e0e6" class="color-box"></ins> powderblue (<code>#b0e0e6</code>)</li>
+<li><ins style="background: #800080" class="color-box"></ins> purple (<code>#800080</code>)</li>
+<li><ins style="background: #663399" class="color-box"></ins> rebeccapurple (<code>#663399</code>)</li>
+<li><ins style="background: #ff0000" class="color-box"></ins> red (<code>#ff0000</code>)</li>
+<li><ins style="background: #bc8f8f" class="color-box"></ins> rosybrown (<code>#bc8f8f</code>)</li>
+<li><ins style="background: #4169e1" class="color-box"></ins> royalblue (<code>#4169e1</code>)</li>
+<li><ins style="background: #8b4513" class="color-box"></ins> saddlebrown (<code>#8b4513</code>)</li>
+<li><ins style="background: #fa8072" class="color-box"></ins> salmon (<code>#fa8072</code>)</li>
+<li><ins style="background: #f4a460" class="color-box"></ins> sandybrown (<code>#f4a460</code>)</li>
+<li><ins style="background: #2e8b57" class="color-box"></ins> seagreen (<code>#2e8b57</code>)</li>
+<li><ins style="background: #fff5ee" class="color-box"></ins> seashell (<code>#fff5ee</code>)</li>
+<li><ins style="background: #a0522d" class="color-box"></ins> sienna (<code>#a0522d</code>)</li>
+<li><ins style="background: #c0c0c0" class="color-box"></ins> silver (<code>#c0c0c0</code>)</li>
+<li><ins style="background: #87ceeb" class="color-box"></ins> skyblue (<code>#87ceeb</code>)</li>
+<li><ins style="background: #6a5acd" class="color-box"></ins> slateblue (<code>#6a5acd</code>)</li>
+<li><ins style="background: #708090" class="color-box"></ins> slategray (<code>#708090</code>)</li>
+<li><ins style="background: #fffafa" class="color-box"></ins> snow (<code>#fffafa</code>)</li>
+<li><ins style="background: #00ff7f" class="color-box"></ins> springgreen (<code>#00ff7f</code>)</li>
+<li><ins style="background: #4682b4" class="color-box"></ins> steelblue (<code>#4682b4</code>)</li>
+<li><ins style="background: #d2b48c" class="color-box"></ins> tan (<code>#d2b48c</code>)</li>
+<li><ins style="background: #008080" class="color-box"></ins> teal (<code>#008080</code>)</li>
+<li><ins style="background: #d8bfd8" class="color-box"></ins> thistle (<code>#d8bfd8</code>)</li>
+<li><ins style="background: #ff6347" class="color-box"></ins> tomato (<code>#ff6347</code>)</li>
+<li><ins style="background: #40e0d0" class="color-box"></ins> turquoise (<code>#40e0d0</code>)</li>
+<li><ins style="background: #ee82ee" class="color-box"></ins> violet (<code>#ee82ee</code>)</li>
+<li><ins style="background: #f5deb3" class="color-box"></ins> wheat (<code>#f5deb3</code>)</li>
+<li><ins style="background: #ffffff" class="color-box"></ins> white (<code>#ffffff</code>)</li>
+<li><ins style="background: #f5f5f5" class="color-box"></ins> whitesmoke (<code>#f5f5f5</code>)</li>
+<li><ins style="background: #ffff00" class="color-box"></ins> yellow (<code>#ffff00</code>)</li>
+<li><ins style="background: #9acd32" class="color-box"></ins> yellowgreen (<code>#9acd32</code>)</li>
 </ul>
-</span></div></article></div><div class="docs-prevnext"><a class="docs-prev button" href="/docs/next/images"><span class="arrow-prev">← </span><span>Images</span></a><a class="docs-next button" href="/docs/next/handling-touches"><span>Handling Touches</span><span class="arrow-next"> →</span></a></div></div></div><nav class="onPageNav"></nav></div><footer class="nav-footer" id="footer"><section class="sitemap"><div><h5>Docs</h5><a href="/docs/getting-started.html">Getting Started</a><a href="/docs/tutorial.html">Tutorial</a><a href="/docs/components-and-apis.html">Components and APIs</a><a href="/docs/more-resources.html">More Resources</a></div><div><h5>Community</h5><a href="/help.html">The React Native Community</a><a href="/showcase.html">Who&#x27;s using React Native?</a><a href="http://stackoverflow.com/questions/tagged/react-native" target="_blank">Ask Questions on Stack Overflow</a><a href="https://github.com/facebook/react-native/blob/master/CONTRIBUTING.md">Contributor Guide</a><a href="https://dev.to/t/reactnative" target="_blank">DEV Community</a></div><div><h5>More Resources</h5><a href="/blog/">Blog</a><a href="https://twitter.com/reactnative" target="_blank">Twitter</a><a href="https://github.com/facebook/react-native" target="_blank">GitHub</a><a href="https://reactjs.org" target="_blank">React</a></div></section><a href="https://code.facebook.com/projects/" target="_blank" class="fbOpenSource"><img src="/img/oss_logo.png" alt="Facebook Open Source" width="170" height="45"/></a><section class="copyright">Copyright © 2020 Facebook Inc.</section></footer></div><script type="text/javascript" src="https://cdn.jsdelivr.net/docsearch.js/1/docsearch.min.js"></script><script>window.fbAsyncInit = function() {FB.init({appId:'1677033832619985',xfbml:true,version:'v2.7'});};(function(d, s, id){var js, fjs = d.getElementsByTagName(s)[0];if (d.getElementById(id)) {return;}js = d.createElement(s); js.id = id;js.src = '//connect.facebook.net/en_US/sdk.js';fjs.parentNode.insertBefore(js, fjs);}(document, 'script','facebook-jssdk'));
+</span></div></article></div><div class="docs-prevnext"><a class="docs-prev button" href="/docs/next/images"><span class="arrow-prev">← </span><span>Images</span></a><a class="docs-next button" href="/docs/next/handling-touches"><span>Handling Touches</span><span class="arrow-next"> →</span></a></div></div></div><nav class="onPageNav"><ul class="toc-headings"><li><a href="#red-green-blue-rgb">Red Green Blue (RGB)</a></li><li><a href="#hue-saturation-lightness-hsl">Hue Saturation Lightness (HSL)</a></li><li><a href="#color-ints">Color ints</a></li><li><a href="#named-colors">Named colors</a><ul class="toc-headings"><li><a href="#transparent"><code>transparent</code></a></li><li><a href="#color-keywords">Color keywords</a></li></ul></li></ul></nav></div><footer class="nav-footer" id="footer"><section class="sitemap"><div><h5>Docs</h5><a href="/docs/getting-started.html">Getting Started</a><a href="/docs/tutorial.html">Tutorial</a><a href="/docs/components-and-apis.html">Components and APIs</a><a href="/docs/more-resources.html">More Resources</a></div><div><h5>Community</h5><a href="/help.html">The React Native Community</a><a href="/showcase.html">Who&#x27;s using React Native?</a><a href="http://stackoverflow.com/questions/tagged/react-native" target="_blank">Ask Questions on Stack Overflow</a><a href="https://github.com/facebook/react-native/blob/master/CONTRIBUTING.md">Contributor Guide</a><a href="https://dev.to/t/reactnative" target="_blank">DEV Community</a></div><div><h5>More Resources</h5><a href="/blog/">Blog</a><a href="https://twitter.com/reactnative" target="_blank">Twitter</a><a href="https://github.com/facebook/react-native" target="_blank">GitHub</a><a href="https://reactjs.org" target="_blank">React</a></div></section><a href="https://code.facebook.com/projects/" target="_blank" class="fbOpenSource"><img src="/img/oss_logo.png" alt="Facebook Open Source" width="170" height="45"/></a><section class="copyright">Copyright © 2020 Facebook Inc.</section></footer></div><script type="text/javascript" src="https://cdn.jsdelivr.net/docsearch.js/1/docsearch.min.js"></script><script>window.fbAsyncInit = function() {FB.init({appId:'1677033832619985',xfbml:true,version:'v2.7'});};(function(d, s, id){var js, fjs = d.getElementsByTagName(s)[0];if (d.getElementById(id)) {return;}js = d.createElement(s); js.id = id;js.src = '//connect.facebook.net/en_US/sdk.js';fjs.parentNode.insertBefore(js, fjs);}(document, 'script','facebook-jssdk'));
                 </script><script>window.twttr=(function(d,s, id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return t;js=d.createElement(s);js.id=id;js.src='https://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js, fjs);t._e = [];t.ready = function(f) {t._e.push(f);};return t;}(document, 'script', 'twitter-wjs'));</script><script>
                 document.addEventListener('keyup', function(e) {
                   if (e.target !== document.body) {
