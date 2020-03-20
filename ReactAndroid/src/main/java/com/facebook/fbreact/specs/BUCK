@@ -1,5 +1,4 @@
-load("@fbsource//tools/build_defs:platform_defs.bzl", "ANDROID")
-load("@fbsource//tools/build_defs/oss:rn_defs.bzl", "FBJNI_TARGET", "react_native_dep", "react_native_target", "react_native_xplat_target", "rn_android_library", "rn_xplat_cxx_library")
+load("//tools/build_defs/oss:rn_defs.bzl", "ANDROID", "FBJNI_TARGET", "IS_OSS_BUILD", "react_native_dep", "react_native_target", "react_native_xplat_target", "rn_android_library", "rn_xplat_cxx_library")
 
 rn_android_library(
     name = "FBReactNativeSpec",
@@ -45,13 +44,14 @@ rn_xplat_cxx_library(
     ],
     deps = [
         FBJNI_TARGET,
-        "fbsource//xplat/folly:molly",
-        "fbsource//xplat/jsi:JSIDynamic",
+        "//xplat/folly:molly",
+        "//xplat/jsi:JSIDynamic",
         react_native_target("jni/react/jni:jni"),
         react_native_xplat_target("cxxreact:bridge"),
     ],
-    exported_deps = [
-        "fbsource//xplat/jsi:jsi",
+    exported_deps = ([
         react_native_xplat_target("turbomodule/core:core"),
-    ],
+    ]) + ([
+        "//xplat/jsi:jsi"        
+    ]) if not IS_OSS_BUILD else [],
 )
