@@ -15,6 +15,7 @@ var {
   StyleSheet,
   Text,
   View,
+  findNodeHandle,
 } = ReactNative;
 
 var BUTTONS = [
@@ -32,10 +33,12 @@ class ActionSheetExample extends React.Component<{}, $FlowFixMeState> {
     clicked: 'none',
   };
 
+  anchorRef = React.createRef();
+
   render() {
     return (
       <View>
-        <Text onPress={this.showActionSheet} style={style.button}>
+        <Text onPress={this.showActionSheet} style={style.button} ref={this.anchorRef}>
           Click to show the ActionSheet
         </Text>
         <Text>
@@ -49,6 +52,9 @@ class ActionSheetExample extends React.Component<{}, $FlowFixMeState> {
     ActionSheetIOS.showActionSheetWithOptions({
       options: BUTTONS,
       cancelButtonIndex: CANCEL_INDEX,
+      anchor: this.anchorRef.current
+      ? findNodeHandle(this.anchorRef.current)
+      : undefined,
       destructiveButtonIndex: DESTRUCTIVE_INDEX,
     },
     (buttonIndex) => {
