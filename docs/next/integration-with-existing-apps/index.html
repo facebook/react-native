@@ -129,14 +129,14 @@
 </code></pre>
 <p>Next, make sure you have <a href="https://yarnpkg.com/lang/en/docs/install/">installed the yarn package manager</a>.</p>
 <p>Install the <code>react</code> and <code>react-native</code> packages. Open a terminal or command prompt, then navigate to the directory with your <code>package.json</code> file and run:</p>
-<pre><code class="hljs">$ yarn <span class="hljs-keyword">add</span><span class="bash"> react-native</span>
+<pre><code class="hljs css language-sh">$ <span class="token function">yarn</span> <span class="token function">add</span> react-native
 </code></pre>
 <p>This will print a message similar to the following (scroll up in the yarn output to see it):</p>
 <blockquote>
 <p>warning &quot;react-native@0.52.2&quot; has unmet peer dependency &quot;react@16.2.0&quot;.</p>
 </blockquote>
 <p>This is OK, it means we also need to install React:</p>
-<pre><code class="hljs">$ yarn <span class="hljs-keyword">add</span><span class="bash"> react@version_printed_above</span>
+<pre><code class="hljs css language-sh">$ <span class="token function">yarn</span> <span class="token function">add</span> react@version_printed_above
 </code></pre>
 <p>Yarn has created a new <code>/node_modules</code> folder. This folder stores all the JavaScript dependencies required to build your project.</p>
 <p>Add <code>node_modules/</code> to your <code>.gitignore</code> file.</p>
@@ -144,7 +144,7 @@
 <h3><a class="anchor" aria-hidden="true" id="3-install-cocoapods"></a><a href="#3-install-cocoapods" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>3. Install CocoaPods</h3>
 <p><a href="http://cocoapods.org">CocoaPods</a> is a package management tool for iOS and macOS development. We use it to add the actual React Native framework code locally into your current project.</p>
 <p>We recommend installing CocoaPods using <a href="http://brew.sh/">Homebrew</a>.</p>
-<pre><code class="hljs">$ <span class="hljs-keyword">brew </span><span class="hljs-keyword">install </span>cocoapods
+<pre><code class="hljs css language-sh">$ brew <span class="token function">install</span> cocoapods
 </code></pre>
 <blockquote>
 <p>It is technically possible not to use CocoaPods, but that would require manual library and linker additions that would overly complicate this process.</p>
@@ -164,7 +164,7 @@
 <p>Before you integrate React Native into your application, you will want to decide what parts of the React Native framework you would like to integrate. We will use CocoaPods to specify which of these &quot;subspecs&quot; your app will depend on.</p>
 <p>The list of supported <code>subspec</code>s is available in <a href="https://github.com/facebook/react-native/blob/master/React.podspec"><code>/node_modules/react-native/React.podspec</code></a>. They are generally named by functionality. For example, you will generally always want the <code>Core</code> <code>subspec</code>. That will get you the <code>AppRegistry</code>, <code>StyleSheet</code>, <code>View</code> and other core React Native libraries. If you want to add the React Native <code>Text</code> library (e.g., for <code>&lt;Text&gt;</code> elements), then you will need the <code>RCTText</code> <code>subspec</code>. If you want the <code>Image</code> library (e.g., for <code>&lt;Image&gt;</code> elements), then you will need the <code>RCTImage</code> <code>subspec</code>.</p>
 <p>You can specify which <code>subspec</code>s your app will depend on in a <code>Podfile</code> file. The easiest way to create a <code>Podfile</code> is by running the CocoaPods <code>init</code> command in the <code>/ios</code> subfolder of your project:</p>
-<pre><code class="hljs"><span class="hljs-variable">$ </span>pod init
+<pre><code class="hljs css language-sh">$ pod init
 </code></pre>
 <p>The <code>Podfile</code> will contain a boilerplate setup that you will tweak for your integration purposes.</p>
 <blockquote>
@@ -243,7 +243,7 @@ target <span class="hljs-string">'swift-2048'</span> <span class="hljs-keyword">
 </code></pre>
 <p><block class="objc swift" /></p>
 <p>After you have created your <code>Podfile</code>, you are ready to install the React Native pod.</p>
-<pre><code class="hljs">$ pod <span class="hljs-keyword">install</span>
+<pre><code class="hljs css language-sh">$ pod <span class="token function">install</span>
 </code></pre>
 <p>You should see output such as:</p>
 <pre><code class="hljs">Analyzing dependencies
@@ -430,7 +430,7 @@ AppRegistry<span class="token punctuation">.</span><span class="token function">
 </blockquote>
 <h5><a class="anchor" aria-hidden="true" id="2-run-the-packager"></a><a href="#2-run-the-packager" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>2. Run the packager</h5>
 <p>To run your app, you need to first start the development server. To do this, run the following command in the root directory of your React Native project:</p>
-<pre><code class="hljs">$ <span class="hljs-built_in">npm</span> start
+<pre><code class="hljs css language-sh">$ <span class="token function">npm</span> start
 </code></pre>
 <h5><a class="anchor" aria-hidden="true" id="3-run-the-app"></a><a href="#3-run-the-app" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>3. Run the app</h5>
 <p>If you are using Xcode or your favorite editor, build and run your native iOS application as normal. Alternatively, you can run the app from the command line using:</p>
@@ -669,7 +669,7 @@ AppRegistry<span class="token punctuation">.</span><span class="token function">
 <p>You have now done all the basic steps to integrate React Native with your current application. Now we will start the React Native packager to build the <code>index.bundle</code> package and the server running on localhost to serve it.</p>
 <h5><a class="anchor" aria-hidden="true" id="1-run-the-packager"></a><a href="#1-run-the-packager" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>1. Run the packager</h5>
 <p>To run your app, you need to first start the development server. To do this, run the following command in the root directory of your React Native project:</p>
-<pre><code class="hljs">$ yarn <span class="hljs-literal">start</span>
+<pre><code class="hljs css language-sh">$ <span class="token function">yarn</span> start
 </code></pre>
 <h5><a class="anchor" aria-hidden="true" id="2-run-the-app"></a><a href="#2-run-the-app" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>2. Run the app</h5>
 <p>Now build and run your Android app as normal.</p>
@@ -677,7 +677,7 @@ AppRegistry<span class="token punctuation">.</span><span class="token function">
 <p><img src="/docs/assets/EmbeddedAppAndroid.png" alt="Screenshot"></p>
 <h3><a class="anchor" aria-hidden="true" id="creating-a-release-build-in-android-studio"></a><a href="#creating-a-release-build-in-android-studio" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Creating a release build in Android Studio</h3>
 <p>You can use Android Studio to create your release builds too! It’s as quick as creating release builds of your previously-existing native Android app. There’s one additional step, which you’ll have to do before every release build. You need to execute the following to create a React Native bundle, which will be included with your native Android app:</p>
-<pre><code class="hljs">$ npx react-<span class="hljs-keyword">native</span> bundle --platform android --dev <span class="hljs-keyword">false</span> --entry-<span class="hljs-keyword">file</span> index.js --bundle-output android<span class="hljs-regexp">/com/y</span>our-company-name<span class="hljs-regexp">/app-package-name/</span>src<span class="hljs-regexp">/main/</span>assets<span class="hljs-regexp">/index.android.bundle --assets-dest android/</span>com<span class="hljs-regexp">/your-company-name/</span>app-<span class="hljs-keyword">package</span>-name<span class="hljs-regexp">/src/m</span>ain<span class="hljs-regexp">/res/</span>
+<pre><code class="hljs css language-sh">$ npx react-native bundle --platform android --dev <span class="token boolean">false</span> --entry-file index.js --bundle-output android/com/your-company-name/app-package-name/src/main/assets/index.android.bundle --assets-dest android/com/your-company-name/app-package-name/src/main/res/
 </code></pre>
 <blockquote>
 <p>Don’t forget to replace the paths with correct ones and create the assets folder if it doesn’t exist.</p>

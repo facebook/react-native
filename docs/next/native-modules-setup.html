@@ -70,11 +70,11 @@
             });
         </script></nav></div><div class="container mainContainer docsContainer"><div class="wrapper"><div class="post"><header class="postHeader"><a class="edit-page-link button" href="https://github.com/facebook/react-native-website/blob/master/docs/native-modules-setup.md" target="_blank" rel="noreferrer noopener">Edit</a><h1 id="__docusaurus" class="postHeaderTitle">Native Modules Setup</h1></header><article><div><span><p>Native modules are usually distributed as npm packages, except that on top of the usual Javascript they will include some native code per platform. To understand more about npm packages you may find <a href="https://docs.npmjs.com/getting-started/publishing-npm-packages">this guide</a> useful.</p>
 <p>To get set up with the basic project structure for a native module we will use a third party tool <a href="https://github.com/brodybits/create-react-native-module">create-react-native-module</a>. You can go ahead further and dive deep into how that library works, for our needs we will only need:</p>
-<pre><code class="hljs">$ <span class="hljs-string">yarn </span><span class="hljs-string">global </span><span class="hljs-string">add </span><span class="hljs-built_in">create-react-native-module</span>
-$ <span class="hljs-built_in">create-react-native-module</span> <span class="hljs-string">MyLibrary
-</span></code></pre>
+<pre><code class="hljs css language-sh">$ <span class="token function">yarn</span> global <span class="token function">add</span> create-react-native-module
+$ create-react-native-module MyLibrary
+</code></pre>
 <p>Where MyLibrary is the name you would like for the new module. After doing this you will navigate into <code>MyLibrary</code> folder and install the npm package to be locally available for your computer by doing:</p>
-<pre><code class="hljs">$ yarn <span class="hljs-keyword">install</span>
+<pre><code class="hljs css language-sh">$ <span class="token function">yarn</span> <span class="token function">install</span>
 </code></pre>
 <p>After this is done you can go to your main react app folder (which you created by doing <code>npx react-native init MyApp</code>)</p>
 <ul>

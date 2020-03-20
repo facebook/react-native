@@ -143,7 +143,7 @@ Bus 003 Device 001: ID 1d6b:0002 Linux Foundation 2.0 root hub
 <p><code>22b8:2e76</code></p>
 <p>In this case, it's <code>22b8</code>. That's the identifier for Motorola.</p>
 <p>You'll need to input this into your udev rules in order to get up and running:</p>
-<pre><code class="hljs css language-sh"><span class="hljs-built_in">echo</span> <span class="hljs-string">'SUBSYSTEM=="usb", ATTR{idVendor}=="22b8", MODE="0666", GROUP="plugdev"'</span> | sudo tee /etc/udev/rules.d/51-android-usb.rules
+<pre><code class="hljs css language-sh"><span class="token builtin class-name">echo</span> <span class="token string">'SUBSYSTEM=="usb", ATTR{idVendor}=="22b8", MODE="0666", GROUP="plugdev"'</span> <span class="token operator">|</span> <span class="token function">sudo</span> <span class="token function">tee</span> /etc/udev/rules.d/51-android-usb.rules
 </code></pre>
 <p>Make sure that you replace <code>22b8</code> with the identifier you get in the above command.</p>
 <p><block class="mac windows linux android" /></p>

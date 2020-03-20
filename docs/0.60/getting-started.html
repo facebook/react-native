@@ -83,13 +83,13 @@
 </div>
 <p><block class="quickstart mac windows linux ios android" /></p>
 <p>Assuming that you have <a href="https://nodejs.org/en/download/">Node 10 LTS</a> or greater installed, you can use npm to install the Expo CLI command line utility:</p>
-<pre><code class="hljs css language-sh">npm install -g expo-cli
+<pre><code class="hljs css language-sh"><span class="token function">npm</span> <span class="token function">install</span> -g expo-cli
 </code></pre>
 <p>Then run the following commands to create a new React Native project called &quot;AwesomeProject&quot;:</p>
 <pre><code class="hljs css language-sh">expo init AwesomeProject
 
-<span class="hljs-built_in">cd</span> AwesomeProject
-npm start <span class="hljs-comment"># you can also use: expo start</span>
+<span class="token builtin class-name">cd</span> AwesomeProject
+<span class="token function">npm</span> start <span class="token comment"># you can also use: expo start</span>
 </code></pre>
 <p>This will start a development server for you.</p>
 <p><h2>Running your React Native application</h2></p>
@@ -155,8 +155,8 @@ npm start <span class="hljs-comment"># you can also use: expo start</span>
 <p><block class="native mac ios android" /></p>
 <p><h3>Node &amp; Watchman</h3></p>
 <p>We recommend installing Node and Watchman using <a href="http://brew.sh/">Homebrew</a>. Run the following commands in a Terminal after installing Homebrew:</p>
-<pre><code class="hljs css language-sh">brew install node
-brew install watchman
+<pre><code class="hljs css language-sh">brew <span class="token function">install</span> node
+brew <span class="token function">install</span> watchman
 </code></pre>
 <p>If you have already installed Node on your system, make sure it is Node 8.3 or newer.</p>
 <p><a href="https://facebook.github.io/watchman">Watchman</a> is a tool by Facebook for watching changes in the filesystem. It is highly recommended you install it for better performance.</p>
@@ -164,7 +164,7 @@ brew install watchman
 <p><h3>Java Development Kit</h3></p>
 <p>We recommend installing JDK using <a href="http://brew.sh/">Homebrew</a>. Run the following commands in a Terminal after installing Homebrew:</p>
 <pre><code class="hljs css language-sh">brew tap AdoptOpenJDK/openjdk
-brew cask install adoptopenjdk8
+brew cask <span class="token function">install</span> adoptopenjdk8
 </code></pre>
 <p>If you have already installed JDK on your system, make sure it is JDK 8 or newer.</p>
 <p><block class="native linux android" /></p>
@@ -193,7 +193,7 @@ brew cask install adoptopenjdk8
 <p><h4>CocoaPods</h4></p>
 <p><a href="https://cocoapods.org/">CocoaPods</a> is built with Ruby and it will be installable with the default Ruby available on macOS. You can use a Ruby Version manager, however we recommend that you use the standard Ruby available on macOS unless you know what you're doing.</p>
 <p>Using the default Ruby install will require you to use <code>sudo</code> when installing gems. (This is only an issue for the duration of the gem installation, though.)</p>
-<pre><code class="hljs css language-sh">sudo gem install cocoapods
+<pre><code class="hljs css language-sh"><span class="token function">sudo</span> gem <span class="token function">install</span> cocoapods
 </code></pre>
 <p>For more information, please visit <a href="https://guides.cocoapods.org/using/getting-started.html">CocoaPods Getting Started guide</a>.</p>
 <p><block class="native linux android" /></p>
@@ -247,18 +247,18 @@ brew cask install adoptopenjdk8
 <p><block class="native mac linux android" /></p>
 <p>Add the following lines to your <code>$HOME/.bash_profile</code> or <code>$HOME/.bashrc</code> config file:</p>
 <p><block class="native mac android" /></p>
-<pre><code class="hljs css language-sh"><span class="hljs-built_in">export</span> ANDROID_HOME=<span class="hljs-variable">$HOME</span>/Library/Android/sdk
-<span class="hljs-built_in">export</span> PATH=<span class="hljs-variable">$PATH</span>:<span class="hljs-variable">$ANDROID_HOME</span>/emulator
-<span class="hljs-built_in">export</span> PATH=<span class="hljs-variable">$PATH</span>:<span class="hljs-variable">$ANDROID_HOME</span>/tools
-<span class="hljs-built_in">export</span> PATH=<span class="hljs-variable">$PATH</span>:<span class="hljs-variable">$ANDROID_HOME</span>/tools/bin
-<span class="hljs-built_in">export</span> PATH=<span class="hljs-variable">$PATH</span>:<span class="hljs-variable">$ANDROID_HOME</span>/platform-tools
+<pre><code class="hljs css language-sh"><span class="token builtin class-name">export</span> <span class="token assign-left variable">ANDROID_HOME</span><span class="token operator">=</span><span class="token environment constant">$HOME</span>/Library/Android/sdk
+<span class="token builtin class-name">export</span> <span class="token assign-left variable"><span class="token environment constant">PATH</span></span><span class="token operator">=</span><span class="token environment constant">$PATH</span><span class="token builtin class-name">:</span><span class="token variable">$ANDROID_HOME</span>/emulator
+<span class="token builtin class-name">export</span> <span class="token assign-left variable"><span class="token environment constant">PATH</span></span><span class="token operator">=</span><span class="token environment constant">$PATH</span><span class="token builtin class-name">:</span><span class="token variable">$ANDROID_HOME</span>/tools
+<span class="token builtin class-name">export</span> <span class="token assign-left variable"><span class="token environment constant">PATH</span></span><span class="token operator">=</span><span class="token environment constant">$PATH</span><span class="token builtin class-name">:</span><span class="token variable">$ANDROID_HOME</span>/tools/bin
+<span class="token builtin class-name">export</span> <span class="token assign-left variable"><span class="token environment constant">PATH</span></span><span class="token operator">=</span><span class="token environment constant">$PATH</span><span class="token builtin class-name">:</span><span class="token variable">$ANDROID_HOME</span>/platform-tools
 </code></pre>
 <p><block class="native linux android" /></p>
-<pre><code class="hljs css language-sh"><span class="hljs-built_in">export</span> ANDROID_HOME=<span class="hljs-variable">$HOME</span>/Android/Sdk
-<span class="hljs-built_in">export</span> PATH=<span class="hljs-variable">$PATH</span>:<span class="hljs-variable">$ANDROID_HOME</span>/emulator
-<span class="hljs-built_in">export</span> PATH=<span class="hljs-variable">$PATH</span>:<span class="hljs-variable">$ANDROID_HOME</span>/tools
-<span class="hljs-built_in">export</span> PATH=<span class="hljs-variable">$PATH</span>:<span class="hljs-variable">$ANDROID_HOME</span>/tools/bin
-<span class="hljs-built_in">export</span> PATH=<span class="hljs-variable">$PATH</span>:<span class="hljs-variable">$ANDROID_HOME</span>/platform-tools
+<pre><code class="hljs css language-sh"><span class="token builtin class-name">export</span> <span class="token assign-left variable">ANDROID_HOME</span><span class="token operator">=</span><span class="token environment constant">$HOME</span>/Android/Sdk
+<span class="token builtin class-name">export</span> <span class="token assign-left variable"><span class="token environment constant">PATH</span></span><span class="token operator">=</span><span class="token environment constant">$PATH</span><span class="token builtin class-name">:</span><span class="token variable">$ANDROID_HOME</span>/emulator
+<span class="token builtin class-name">export</span> <span class="token assign-left variable"><span class="token environment constant">PATH</span></span><span class="token operator">=</span><span class="token environment constant">$PATH</span><span class="token builtin class-name">:</span><span class="token variable">$ANDROID_HOME</span>/tools
+<span class="token builtin class-name">export</span> <span class="token assign-left variable"><span class="token environment constant">PATH</span></span><span class="token operator">=</span><span class="token environment constant">$PATH</span><span class="token builtin class-name">:</span><span class="token variable">$ANDROID_HOME</span>/tools/bin
+<span class="token builtin class-name">export</span> <span class="token assign-left variable"><span class="token environment constant">PATH</span></span><span class="token operator">=</span><span class="token environment constant">$PATH</span><span class="token builtin class-name">:</span><span class="token variable">$ANDROID_HOME</span>/platform-tools
 </code></pre>
 <p><block class="native mac linux android" /></p>
 <blockquote>
@@ -352,7 +352,7 @@ brew cask install adoptopenjdk8
 <p>If you use the Yarn package manager, you can use <code>yarn</code> instead of <code>npx</code> when running React Native commands inside an existing project.</p>
 </blockquote>
 <p>Run <code>npx react-native run-ios</code> inside your React Native project folder:</p>
-<pre><code class="hljs css language-sh"><span class="hljs-built_in">cd</span> AwesomeProject
+<pre><code class="hljs css language-sh"><span class="token builtin class-name">cd</span> AwesomeProject
 npx react-native run-ios
 </code></pre>
 <p>You should see your new app running in the iOS Simulator shortly.</p>
@@ -369,7 +369,7 @@ npx react-native run-ios
 <p>If you use the Yarn package manager, you can use <code>yarn</code> instead of <code>npx</code> when running React Native commands inside an existing project.</p>
 </blockquote>
 <p>Run <code>npx react-native run-android</code> inside your React Native project folder:</p>
-<pre><code class="hljs css language-sh"><span class="hljs-built_in">cd</span> AwesomeProject
+<pre><code class="hljs css language-sh"><span class="token builtin class-name">cd</span> AwesomeProject
 npx react-native run-android
 </code></pre>
 <p>If everything is set up correctly, you should see your new app running in your Android emulator shortly.</p>

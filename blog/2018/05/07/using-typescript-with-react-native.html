@@ -81,7 +81,7 @@
 <h2><a class="anchor" aria-hidden="true" id="initializing"></a><a href="#initializing" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Initializing</h2>
 <p>Once you've tried scaffolding out an ordinary React Native project, you'll be ready to start adding TypeScript. Let's go ahead and do that.</p>
 <pre><code class="hljs css language-sh">react-native init MyAwesomeProject
-<span class="hljs-built_in">cd</span> MyAwesomeProject
+<span class="token builtin class-name">cd</span> MyAwesomeProject
 </code></pre>
 <h2><a class="anchor" aria-hidden="true" id="adding-typescript"></a><a href="#adding-typescript" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Adding TypeScript</h2>
 <p>The next step is to add TypeScript to your project. The following commands will:</p>
@@ -93,11 +93,11 @@
 <li>adds <a href="https://github.com/DefinitelyTyped/DefinitelyTyped">typings</a> for React and React Native</li>
 </ul>
 <p>Okay, let's go ahead and run these.</p>
-<pre><code class="hljs css language-sh">yarn add --dev typescript
-yarn add --dev react-native-typescript-transformer
-yarn tsc --init --pretty --jsx react
-touch rn-cli.config.js
-yarn add --dev @types/react @types/react-native
+<pre><code class="hljs css language-sh"><span class="token function">yarn</span> <span class="token function">add</span> --dev typescript
+<span class="token function">yarn</span> <span class="token function">add</span> --dev react-native-typescript-transformer
+<span class="token function">yarn</span> tsc --init --pretty --jsx react
+<span class="token function">touch</span> rn-cli.config.js
+<span class="token function">yarn</span> <span class="token function">add</span> --dev @types/react @types/react-native
 </code></pre>
 <p>The <code>tsconfig.json</code> file contains all the settings for the TypeScript compiler. The defaults created by the command above are mostly fine, but open the file and uncomment the following line:</p>
 <pre><code class="hljs css language-js"><span class="token punctuation">{</span>
@@ -126,7 +126,7 @@ yarn add --dev @types/react @types/react-native
 <p>At this point, you should be able to run the React Native app.</p>
 <h2><a class="anchor" aria-hidden="true" id="adding-typescript-testing-infrastructure"></a><a href="#adding-typescript-testing-infrastructure" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Adding TypeScript Testing Infrastructure</h2>
 <p>React Native ships with <a href="https://github.com/facebook/jest">Jest</a>, so for testing a React Native app with TypeScript, we'll want to add <a href="https://www.npmjs.com/package/ts-jest">ts-jest</a> to our <code>devDependencies</code>.</p>
-<pre><code class="hljs css language-sh">yarn add --dev ts-jest
+<pre><code class="hljs css language-sh"><span class="token function">yarn</span> <span class="token function">add</span> --dev ts-jest
 </code></pre>
 <p>Then, we'll open up our <code>package.json</code> and replace the <code>jest</code> field with the following:</p>
 <pre><code class="hljs css language-js"><span class="token punctuation">{</span>
@@ -165,10 +165,10 @@ yarn add --dev @types/react @types/react-native
 .jest/
 </code></pre>
 <p>As a checkpoint, consider committing your files into version control.</p>
-<pre><code class="hljs css language-sh">git init
-git add .gitignore <span class="hljs-comment"># import to do this first, to ignore our files</span>
-git add .
-git commit -am <span class="hljs-string">"Initial commit."</span>
+<pre><code class="hljs css language-sh"><span class="token function">git</span> init
+<span class="token function">git</span> <span class="token function">add</span> .gitignore <span class="token comment"># import to do this first, to ignore our files</span>
+<span class="token function">git</span> <span class="token function">add</span> <span class="token builtin class-name">.</span>
+<span class="token function">git</span> commit -am <span class="token string">"Initial commit."</span>
 </code></pre>
 <h2><a class="anchor" aria-hidden="true" id="adding-a-component"></a><a href="#adding-a-component" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Adding a Component</h2>
 <p>Let's add a component to our app. Let's go ahead and create a <code>Hello.tsx</code> component. It's a pedagogical component, not something that you'd actually write in an app, but something nontrivial that shows off how to use TypeScript in React Native.</p>
@@ -269,7 +269,7 @@ const styles = StyleSheet.create({
 <h2><a class="anchor" aria-hidden="true" id="adding-a-component-test"></a><a href="#adding-a-component-test" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Adding a Component Test</h2>
 <p>Now that we've got a component, let's try testing it.</p>
 <p>We already have Jest installed as a test runner. We're going to write snapshot tests for our components, let's add the required add-on for snapshot tests:</p>
-<pre><code class="hljs css language-sh">yarn add --dev react-addons-test-utils
+<pre><code class="hljs css language-sh"><span class="token function">yarn</span> <span class="token function">add</span> --dev react-addons-test-utils
 </code></pre>
 <p>Now let's create a <code>__tests__</code> folder in the <code>components</code> directory and add a test for <code>Hello.tsx</code>:</p>
 <pre><code class="hljs css language-ts"><span class="hljs-comment">// components/__tests__/Hello.tsx</span>

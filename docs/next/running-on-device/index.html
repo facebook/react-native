@@ -143,20 +143,20 @@ Bus 003 Device 001: ID 1d6b:0002 Linux Foundation 2.0 root hub
 <p><code>22b8:2e76</code></p>
 <p>In this case, it's <code>22b8</code>. That's the identifier for Motorola.</p>
 <p>You'll need to input this into your udev rules in order to get up and running:</p>
-<pre><code class="hljs css language-sh"><span class="hljs-built_in">echo</span> <span class="hljs-string">'SUBSYSTEM=="usb", ATTR{idVendor}=="22b8", MODE="0666", GROUP="plugdev"'</span> | sudo tee /etc/udev/rules.d/51-android-usb.rules
+<pre><code class="hljs css language-sh"><span class="token builtin class-name">echo</span> <span class="token string">'SUBSYSTEM=="usb", ATTR{idVendor}=="22b8", MODE="0666", GROUP="plugdev"'</span> <span class="token operator">|</span> <span class="token function">sudo</span> <span class="token function">tee</span> /etc/udev/rules.d/51-android-usb.rules
 </code></pre>
 <p>Make sure that you replace <code>22b8</code> with the identifier you get in the above command.</p>
 <p><block class="mac windows linux android" /></p>
 <p>Now check that your device is properly connecting to ADB, the Android Debug Bridge, by running <code>adb devices</code>.</p>
-<pre><code class="hljs">$ adb devices
-<span class="hljs-built_in">List</span> <span class="hljs-keyword">of</span> devices attached
-emulator-<span class="hljs-number">5554</span> offline   <span class="hljs-comment"># Google emulator</span>
-<span class="hljs-number">14</span>ed2fcc device         <span class="hljs-comment"># Physical device</span>
+<pre><code class="hljs css language-sh">$ adb devices
+List of devices attached
+emulator-5554 offline   <span class="token comment"># Google emulator</span>
+14ed2fcc device         <span class="token comment"># Physical device</span>
 </code></pre>
 <p>Seeing <code>device</code> in the right column means the device is connected. You must have <strong>only one device connected</strong> at a time.</p>
 <h3><a class="anchor" aria-hidden="true" id="3-run-your-app"></a><a href="#3-run-your-app" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>3. Run your app</h3>
 <p>Type the following in your command prompt to install and launch your app on the device:</p>
-<pre><code class="hljs">$ npx react-native <span class="hljs-keyword">run</span><span class="bash">-android</span>
+<pre><code class="hljs css language-sh">$ npx react-native run-android
 </code></pre>
 <blockquote>
 <p>If you get a &quot;bridge configuration isn't available&quot; error, see <a href="/docs/next/running-on-device#method-1-using-adb-reverse-recommended">Using adb reverse</a>.</p>
@@ -204,10 +204,10 @@ emulator-<span class="hljs-number">5554</span> offline   <span class="hljs-comme
 <p>You can use this method if your device is running Android 5.0 (Lollipop) or newer, it has USB debugging enabled, and it is connected via USB to your development machine.</p>
 <p><block class="mac windows linux android" /></p>
 <p>Run the following in a command prompt:</p>
-<pre><code class="hljs">$ adb -s &lt;device name&gt; reverse tcp:<span class="hljs-number">8081</span> tcp:<span class="hljs-number">8081</span>
+<pre><code class="hljs css language-sh">$ adb -s <span class="token operator">&lt;</span>device name<span class="token operator">></span> reverse tcp:8081 tcp:8081
 </code></pre>
 <p>To find the device name, run the following adb command:</p>
-<pre><code class="hljs"><span class="hljs-variable">$ </span>adb devices
+<pre><code class="hljs css language-sh">$ adb devices
 </code></pre>
 <p>You can now enable Live reloading from the <a href="/docs/next/debugging#accessing-the-in-app-developer-menu">Developer menu</a>. Your app will reload whenever your JavaScript code has changed.</p>
 <h3><a class="anchor" aria-hidden="true" id="method-2-connect-via-wi-fi"></a><a href="#method-2-connect-via-wi-fi" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Method 2: Connect via Wi-Fi</h3>
@@ -249,15 +249,15 @@ emulator-<span class="hljs-number">5554</span> offline   <span class="hljs-comme
 <p><img src="/docs/assets/ConfigureReleaseScheme.png" alt=""></p>
 <h4><a class="anchor" aria-hidden="true" id="pro-tips"></a><a href="#pro-tips" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Pro Tips</h4>
 <p>As your App Bundle grows in size, you may start to see a blank screen flash between your splash screen and the display of your root application view. If this is the case, you can add the following code to <code>AppDelegate.m</code> in order to keep your splash screen displayed during the transition.</p>
-<pre><code class="hljs css language-objc">  <span class="hljs-comment">// Place this code after "[self.window makeKeyAndVisible]" and before "return YES;"</span>
+<pre><code class="hljs css language-objectivec">  <span class="hljs-comment">// Place this code after "[self.window makeKeyAndVisible]" and before "return YES;"</span>
   <span class="hljs-built_in">UIView</span>* launchScreenView = [[[<span class="hljs-built_in">NSBundle</span> mainBundle] loadNibNamed:<span class="hljs-string">@"LaunchScreen"</span> owner:<span class="hljs-keyword">self</span> options:<span class="hljs-literal">nil</span>] objectAtIndex:<span class="hljs-number">0</span>];
   launchScreenView.frame = <span class="hljs-keyword">self</span>.window.bounds;
   rootView.loadingView = launchScreenView;
 </code></pre>
 <p>The static bundle is built every time you target a physical device, even in Debug. If you want to save time, turn off bundle generation in Debug by adding the following to your shell script in the Xcode Build Phase <code>Bundle React Native code and images</code>:</p>
-<pre><code class="hljs css language-shell"> if [ "${CONFIGURATION}" == "Debug" ]; then
-  export SKIP_BUNDLING=true
- fi
+<pre><code class="hljs css language-sh"> <span class="token keyword">if</span> <span class="token punctuation">[</span> <span class="token string">"<span class="token variable">${CONFIGURATION}</span>"</span> <span class="token operator">==</span> <span class="token string">"Debug"</span> <span class="token punctuation">]</span><span class="token punctuation">;</span> <span class="token keyword">then</span>
+  <span class="token builtin class-name">export</span> <span class="token assign-left variable">SKIP_BUNDLING</span><span class="token operator">=</span>true
+ <span class="token keyword">fi</span>
 </code></pre>
 <h3><a class="anchor" aria-hidden="true" id="3-build-app-for-release"></a><a href="#3-build-app-for-release" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>3. Build app for release</h3>
 <p>You can now build your app for release by tapping <code>⌘B</code> or selecting <strong>Product</strong> → <strong>Build</strong> from the menu bar. Once built for release, you'll be able to distribute the app to beta testers and submit the app to the App Store.</p>

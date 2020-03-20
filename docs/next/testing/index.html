@@ -149,7 +149,7 @@
 <p>For testing React components, there are two things you may want to test:</p>
 <ul>
 <li>Interaction: to ensure the component behaves correctly when interacted with by a user (eg. when user presses a button)</li>
-<li>Rendering: to ensure the component render output used by React is correct (eg. the button's appearance and placementin the UI)</li>
+<li>Rendering: to ensure the component render output used by React is correct (eg. the button's appearance and placement in the UI)</li>
 </ul>
 <p>For example, if you have a button that has an <code>onPress</code> listener, you want to test that the button both appears correctly and that tapping the button is correctly handled by the component.</p>
 <p>There are several libraries that can help you testing these:</p>
@@ -188,11 +188,21 @@
   <span class="token punctuation">)</span><span class="token punctuation">;</span>
 <span class="token punctuation">}</span>
 </code></pre>
-<p>When testing user interactions, test the component from the user perspective—what's on the page? What changes when interacted with? Avoid testing implementation details like objects or state—while such tests work, they are not oriented toward how users will interact with the component and tend to break by refactoring (for example when you'd like to rename some things or rewrite class component using hooks).</p>
+<p>When testing user interactions, test the component from the user perspective—what's on the page? What changes when interacted with?</p>
+<p>As a rule of thumb, prefer using things users can see or hear:</p>
+<ul>
+<li>make assertions using rendered text or <a href="https://reactnative.dev/docs/accessibility#accessibility-properties">accessibility helpers</a></li>
+</ul>
+<p>Conversely, you should avoid:</p>
+<ul>
+<li>making assertions on component props or state</li>
+<li>testID queries</li>
+</ul>
+<p>Avoid testing implementation details like props or state—while such tests work, they are not oriented toward how users will interact with the component and tend to break by refactoring (for example when you'd like to rename some things or rewrite class component using hooks).</p>
 <blockquote>
-<p>React class components are especially prone to testing their implementation details such as internal state or event handlers. To avoid testing implementation details, prefer using function components with Hooks, which make relying on component internals <em>harder</em>.</p>
+<p>React class components are especially prone to testing their implementation details such as internal state, props or event handlers. To avoid testing implementation details, prefer using function components with Hooks, which make relying on component internals <em>harder</em>.</p>
 </blockquote>
-<p>Component testing libraries such as <a href="https://github.com/callstack/react-native-testing-library"><code>react-native-testing-library</code></a> facilitate writing user-centric tests by careful choice of provided APIs. The following example uses <code>fireEvent</code> methods <code>changeText</code> and <code>press</code> that simulate a user interacting with the component and a query function <code>getAllByText</code> that finds matching nodes in the rendered output.</p>
+<p>Component testing libraries such as <a href="https://github.com/callstack/react-native-testing-library"><code>react-native-testing-library</code></a> facilitate writing user-centric tests by careful choice of provided APIs. The following example uses <code>fireEvent</code> methods <code>changeText</code> and <code>press</code> that simulate a user interacting with the component and a query function <code>getAllByText</code> that finds matching <code>Text</code> nodes in the rendered output.</p>
 <pre><code class="hljs css language-jsx"><span class="token function">test</span><span class="token punctuation">(</span><span class="token string">'given empty GroceryShoppingList, user can add an item to it'</span><span class="token punctuation">,</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">{</span>
   <span class="token keyword">const</span> <span class="token punctuation">{</span>getByPlaceholder<span class="token punctuation">,</span> getByText<span class="token punctuation">,</span> getAllByText<span class="token punctuation">}</span> <span class="token operator">=</span> <span class="token function">render</span><span class="token punctuation">(</span>
     <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span><span class="token class-name">GroceryShoppingList</span></span> <span class="token punctuation">/></span></span><span class="token punctuation">,</span>
