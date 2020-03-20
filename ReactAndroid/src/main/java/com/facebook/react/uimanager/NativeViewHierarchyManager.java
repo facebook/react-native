@@ -26,6 +26,7 @@ import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.bridge.RetryableMountingLayerException;
 import com.facebook.react.bridge.SoftAssertions;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.config.ReactFeatureFlags;
@@ -762,7 +763,7 @@ public class NativeViewHierarchyManager {
     UiThreadUtil.assertOnUiThread();
     View view = mTagsToViews.get(reactTag);
     if (view == null) {
-      throw new IllegalViewOperationException(
+      throw new RetryableMountingLayerException(
           "Trying to send command to a non-existing view with tag ["
               + reactTag
               + "] and command "
@@ -777,7 +778,7 @@ public class NativeViewHierarchyManager {
     UiThreadUtil.assertOnUiThread();
     View view = mTagsToViews.get(reactTag);
     if (view == null) {
-      throw new IllegalViewOperationException(
+      throw new RetryableMountingLayerException(
           "Trying to send command to a non-existing view with tag ["
               + reactTag
               + "] and command "
