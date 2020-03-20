@@ -35,6 +35,12 @@ jest.setMock(
 
 jest
   .mock('../Libraries/Core/InitializeCore', () => {})
+  .mock('../Libraries/Core/NativeExceptionsManager', () => ({
+    __esModule: true,
+    default: {
+      reportException: jest.fn(),
+    },
+  }))
   .mock('../Libraries/ReactNative/UIManager', () => ({
     AndroidViewPager: {
       Commands: {
