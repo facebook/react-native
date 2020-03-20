@@ -777,7 +777,7 @@ struct RCTInstanceCallback : public InstanceCallback {
 #endif
 }
 
-- (NSArray<RCTModuleData *> *)_initializeModules:(NSArray<id<RCTBridgeModule>> *)modules
+- (NSArray<RCTModuleData *> *)_initializeModules:(NSArray<Class> *)modules
                                withDispatchGroup:(dispatch_group_t)dispatchGroup
                                 lazilyDiscovered:(BOOL)lazilyDiscovered
 {
