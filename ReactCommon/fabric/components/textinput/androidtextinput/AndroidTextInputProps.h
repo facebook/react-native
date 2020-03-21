@@ -164,6 +164,9 @@ class AndroidTextInputProps final : public ViewProps, public BaseTextProps {
    * See AndroidTextInputComponentDescriptor for usage.
    * TODO T63008435: can these, and this feature, be removed entirely?
    */
+  const bool hasPadding{};
+  const bool hasPaddingHorizontal{};
+  const bool hasPaddingVertical{};
   const bool hasPaddingLeft{};
   const bool hasPaddingTop{};
   const bool hasPaddingRight{};
