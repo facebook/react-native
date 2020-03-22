@@ -387,8 +387,11 @@ using namespace facebook::react;
                                                                       offset:start];
   UITextPosition *endPosition = [_backedTextInputView positionFromPosition:_backedTextInputView.beginningOfDocument
                                                                     offset:end];
-  UITextRange *range = [_backedTextInputView textRangeFromPosition:startPosition toPosition:endPosition];
-  [_backedTextInputView setSelectedTextRange:range notifyDelegate:NO];
+
+  if (startPosition && endPosition) {
+    UITextRange *range = [_backedTextInputView textRangeFromPosition:startPosition toPosition:endPosition];
+    [_backedTextInputView setSelectedTextRange:range notifyDelegate:NO];
+  }
 }
 
 @end
