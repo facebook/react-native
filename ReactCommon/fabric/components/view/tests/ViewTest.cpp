@@ -18,7 +18,8 @@
 #include <react/element/testUtils.h>
 #include <react/uimanager/ComponentDescriptorProviderRegistry.h>
 
-using namespace facebook::react;
+namespace facebook {
+namespace react {
 
 class YogaDirtyFlagTest : public ::testing::Test {
  protected:
@@ -191,3 +192,30 @@ TEST_F(YogaDirtyFlagTest, reversingListOfChildrenMustDirtyYogaNode) {
   EXPECT_TRUE(
       static_cast<RootShadowNode &>(*newRootShadowNode).layoutIfNeeded());
 }
+
+TEST_F(YogaDirtyFlagTest, updatingStateForScrollViewMistNotDirtyYogaNode) {
+  /*
+   * Updating a state for *some* (not all!) components must *not* dirty Yoga
+   * nodes.
+   */
+  auto newRootShadowNode = rootShadowNode_->cloneTree(
+      scrollViewShadowNode_->getFamily(), [](ShadowNode const &oldShadowNode) {
+        auto state = ScrollViewState{};
+        state.contentOffset = Point{42, 9000};
+
+        auto &componentDescriptor = oldShadowNode.getComponentDescriptor();
+        auto newState = componentDescriptor.createState(
+            oldShadowNode.getFamily(),
+            std::make_shared<ScrollViewState>(state));
+
+        return oldShadowNode.clone({ShadowNodeFragment::propsPlaceholder(),
+                                    ShadowNodeFragment::childrenPlaceholder(),
+                                    newState});
+      });
+
+  EXPECT_FALSE(
+      static_cast<RootShadowNode &>(*newRootShadowNode).layoutIfNeeded());
+}
+
+} // namespace react
+} // namespace facebook
