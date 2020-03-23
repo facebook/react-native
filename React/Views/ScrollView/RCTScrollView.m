@@ -32,7 +32,7 @@
 
 @property (nonatomic, assign) BOOL centerContent;
 #if !TARGET_OS_TV
-@property (nonatomic, strong) UIView<RCTCustomRefreshContolProtocol> *customRefreshControl;
+@property (nonatomic, strong) UIRefreshControl<RCTCustomRefreshContolProtocol> *customRefreshControl;
 @property (nonatomic, assign) BOOL pinchGestureEnabled;
 #endif
 
@@ -224,7 +224,7 @@
 }
 
 #if !TARGET_OS_TV
-- (void)setCustomRefreshControl:(UIView<RCTCustomRefreshContolProtocol> *)refreshControl
+- (void)setCustomRefreshControl:(UIRefreshControl<RCTCustomRefreshContolProtocol> *)refreshControl
 {
   if (_customRefreshControl) {
     [_customRefreshControl removeFromSuperview];
@@ -344,7 +344,7 @@ static inline void RCTApplyTransformationAccordingLayoutDirection(
   [super insertReactSubview:view atIndex:atIndex];
 #if !TARGET_OS_TV
   if ([view conformsToProtocol:@protocol(RCTCustomRefreshContolProtocol)]) {
-    [_scrollView setCustomRefreshControl:(UIView<RCTCustomRefreshContolProtocol> *)view];
+    [_scrollView setCustomRefreshControl:(UIRefreshControl<RCTCustomRefreshContolProtocol> *)view];
     if (![view isKindOfClass:[UIRefreshControl class]] && [view conformsToProtocol:@protocol(UIScrollViewDelegate)]) {
       [self addScrollListener:(UIView<UIScrollViewDelegate> *)view];
     }
