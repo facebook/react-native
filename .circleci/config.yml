@@ -599,7 +599,7 @@ jobs:
   # -------------------------
   #      JOBS: Releases
   # -------------------------
-  # Publishes new version onto npm
+  # Publishes a new version onto npm
   publish_npm_package:
     parameters:
       publish_npm_args:
