@@ -304,7 +304,7 @@ static Class getFallbackClassFromName(const char *name)
             @"%@ has no setter or ivar for its bridge, which is not "
              "permitted. You must either @synthesize the bridge property, "
              "or provide your own setter method.",
-            RCTBridgeModuleNameForClass(strongModule));
+            RCTBridgeModuleNameForClass([strongModule class]));
       }
     }
 
