@@ -89,7 +89,7 @@ function getBinarySizesCollection(firestore) {
 function createOrUpdateDocument(collection, sha, data) {
   const stampedData = {
     ...data,
-    timestamp: Date.now(),
+    timestamp: firebase.firestore.Timestamp.now(),
   };
   const docRef = collection.doc(sha);
   return docRef.update(stampedData).catch(async error => {
