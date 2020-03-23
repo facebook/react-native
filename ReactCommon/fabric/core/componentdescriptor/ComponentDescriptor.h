@@ -116,7 +116,7 @@ class ComponentDescriptor {
    * State's data.
    */
   virtual State::Shared createState(
-      ShadowNodeFamily::Shared const &family,
+      ShadowNodeFamily const &family,
       const StateData::Shared &data) const = 0;
 
   /*

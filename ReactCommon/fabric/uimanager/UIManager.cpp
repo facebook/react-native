@@ -234,7 +234,7 @@ void UIManager::updateState(StateUpdate const &stateUpdate) const {
                 auto newData =
                     callback(oldShadowNode.getState()->getDataPointer());
                 auto newState =
-                    componentDescriptor.createState(family, newData);
+                    componentDescriptor.createState(*family, newData);
 
                 return oldShadowNode.clone({
                     /* .props = */ ShadowNodeFragment::propsPlaceholder(),
