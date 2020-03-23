@@ -58,12 +58,18 @@ type DirectEventProps = $ReadOnly<{|
   onDoubleClick?: ?(event: SyntheticEvent<{}>) => mixed, // TODO(macOS ISS#2323203)
 
   /**
+   * This event is fired when the system's preferred scroller style changes.
+   * The `preferredScrollerStyle` key will be `legacy` or `overlay`.
+   */
+  onPreferredScrollerStyleDidChange?: ?(event: ScrollEvent) => mixed, // TODO(macOS ISS#2323203)
+
+  /**
    * When `acceptsKeyboardFocus` is true, the system will try to invoke this function
    * when the user performs accessibility key down gesture.
    */
   onScrollKeyDown?: ?(event: ScrollEvent) => mixed, // TODO(macOS ISS#2323203)
 
-  onMouseEnter?: (event: SyntheticEvent<{}>) => mixed, // [TODO(macOS ISS#2323203)
+  onMouseEnter?: (event: SyntheticEvent<{}>) => mixed, // TODO(macOS ISS#2323203)
 
   /**
    * Invoked on mount and layout changes with:

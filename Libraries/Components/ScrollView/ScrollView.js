@@ -569,6 +569,7 @@ export type Props = $ReadOnly<{|
 |}>;
 
 type State = {|
+  contentKey: number, // TODO(macOS ISS#2323203)
   layoutHeight: ?number,
   ...ScrollResponderState,
 |};
@@ -683,6 +684,7 @@ class ScrollView extends React.Component<Props, State> {
   _headerLayoutYs: Map<string, number> = new Map();
 
   state = {
+    contentKey: 1, // TODO(macOS ISS#2323203)
     layoutHeight: null,
     ...ScrollResponder.Mixin.scrollResponderMixinGetInitialState(),
   };
@@ -956,6 +958,10 @@ class ScrollView extends React.Component<Props, State> {
       x: Math.max(0, Math.min(maxX, newOffset.x)),
       y: Math.max(0, Math.min(maxY, newOffset.y)),
     });
+  };
+
+  _handlePreferredScrollerStyleDidChange = (event: ScrollEvent) => {
+    this.setState({contentKey: this.state.contentKey + 1});
   }; // ]TODO(macOS ISS#2323203)
 
   _handleScroll = (e: ScrollEvent) => {
@@ -1107,6 +1113,7 @@ class ScrollView extends React.Component<Props, State> {
             ? false
             : this.props.removeClippedSubviews
         }
+        key={this.state.contentKey} // TODO(macOS ISS#2323203)
         collapsable={false}>
         {children}
       </ScrollContentContainerViewClass>
@@ -1138,6 +1145,8 @@ class ScrollView extends React.Component<Props, State> {
       // bubble up from TextInputs
       onContentSizeChange: null,
       onScrollKeyDown: this._handleKeyDown, // TODO(macOS ISS#2323203)
+      onPreferredScrollerStyleDidChange: this
+        ._handlePreferredScrollerStyleDidChange, // TODO(macOS ISS#2323203)
       onLayout: this._handleLayout,
       onMomentumScrollBegin: this._scrollResponder
         .scrollResponderHandleMomentumScrollBegin,

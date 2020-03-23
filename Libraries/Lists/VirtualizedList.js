@@ -1104,7 +1104,9 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       keyEventHandler = this.props.enableSelectionOnKeyPress
         ? this._handleKeyDown
         : null;
-    } // ]TODO(macOS ISS#2323203)
+    }
+    const preferredScrollerStyleDidChangeHandler = this.props
+      .onPreferredScrollerStyleDidChange; // ]TODO(macOS ISS#2323203)
     const onRefresh = props.onRefresh;
     if (this._isNestedWithSameOrientation()) {
       // $FlowFixMe - Typing ReactNativeComponent revealed errors
@@ -1121,6 +1123,9 @@ class VirtualizedList extends React.PureComponent<Props, State> {
         <ScrollView
           {...props}
           onScrollKeyDown={keyEventHandler} // TODO(macOS ISS#2323203)
+          onPreferredScrollerStyleDidChange={
+            preferredScrollerStyleDidChangeHandler
+          } // TODO(macOS ISS#2323203)
           refreshControl={
             props.refreshControl == null ? (
               <RefreshControl
@@ -1135,11 +1140,18 @@ class VirtualizedList extends React.PureComponent<Props, State> {
         />
       );
     } else {
-      // $FlowFixMe Invalid prop usage
-      return <ScrollView {...props} onScrollKeyDown={keyEventHandler} />; // TODO(macOS ISS#2323203)
+      return (
+        // $FlowFixMe Invalid prop usage
+        <ScrollView
+          {...props}
+          onScrollKeyDown={keyEventHandler}
+          onPreferredScrollerStyleDidChange={
+            preferredScrollerStyleDidChangeHandler
+          }
+        />
+      ); // TODO(macOS ISS#2323203)
     }
   };
-
   _onCellLayout(e, cellKey, index) {
     const layout = e.nativeEvent.layout;
     const next = {

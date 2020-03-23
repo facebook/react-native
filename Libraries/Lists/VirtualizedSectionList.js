@@ -345,12 +345,17 @@ class VirtualizedSectionList<
       keyEventHandler = this.props.enableSelectionOnKeyPress
         ? this._handleKeyDown
         : null;
-    } // ]TODO(macOS ISS#2323203)
+    }
+    const preferredScrollerStyleDidChangeHandler = this.props
+      .onPreferredScrollerStyleDidChange; // ]TODO(macOS ISS#2323203)
     return (
       <VirtualizedList
         {...this.state.childProps}
         ref={this._captureRef}
         onScrollKeyDown={keyEventHandler}
+        onPreferredScrollerStyleDidChange={
+          preferredScrollerStyleDidChangeHandler
+        }
         {...this.state.selectedRowIndexPath}
       /> // TODO(macOS ISS#2323203)
     );
