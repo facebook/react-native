@@ -28,7 +28,7 @@ using namespace facebook::react;
 @implementation RCTTextInputComponentView {
   TextInputShadowNode::ConcreteState::Shared _state;
   UIView<RCTBackedTextInputViewProtocol> *_backedTextInputView;
-  size_t _stateRevision;
+  BOOL _ignoreStateUpdate;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame
@@ -41,7 +41,7 @@ using namespace facebook::react;
     _backedTextInputView = props.traits.multiline ? [[RCTUITextView alloc] init] : [[RCTUITextField alloc] init];
     _backedTextInputView.frame = self.bounds;
     _backedTextInputView.textInputDelegate = self;
-    _stateRevision = State::initialRevisionValue;
+    _ignoreStateUpdate = NO;
     [self addSubview:_backedTextInputView];
   }
 
@@ -166,10 +166,9 @@ using namespace facebook::react;
     return;
   }
 
-  if (_state->getRevision() != _stateRevision) {
+  if (!_ignoreStateUpdate) {
     auto data = _state->getData();
-    _stateRevision = _state->getRevision();
-    _backedTextInputView.attributedText = RCTNSAttributedStringFromAttributedStringBox(data.attributedStringBox);
+    [self _setAttributedString:RCTNSAttributedStringFromAttributedStringBox(data.attributedStringBox)];
   }
 }
 
@@ -184,12 +183,18 @@ using namespace facebook::react;
       RCTUIEdgeInsetsFromEdgeInsets(layoutMetrics.contentInsets - layoutMetrics.borderWidth);
 }
 
+- (void)_setAttributedString:(NSAttributedString *)attributedString
+{
+  UITextRange *selectedRange = [_backedTextInputView selectedTextRange];
+  _backedTextInputView.attributedText = attributedString;
+  [_backedTextInputView setSelectedTextRange:selectedRange notifyDelegate:NO];
+}
+
 - (void)prepareForRecycle
 {
   [super prepareForRecycle];
   _backedTextInputView.attributedText = [[NSAttributedString alloc] init];
   _state.reset();
-  _stateRevision = State::initialRevisionValue;
 }
 
 #pragma mark - RCTComponentViewProtocol
@@ -328,8 +333,9 @@ using namespace facebook::react;
 
   auto data = _state->getData();
   data.attributedStringBox = RCTAttributedStringBoxFromNSAttributedString(attributedString);
+  _ignoreStateUpdate = YES;
   _state->updateState(std::move(data), EventPriority::SynchronousUnbatched);
-  _stateRevision = _state->getRevision() + 1;
+  _ignoreStateUpdate = NO;
 }
 
 - (AttributedString::Range)_selectionRange
@@ -379,7 +385,7 @@ using namespace facebook::react;
         [[NSMutableAttributedString alloc] initWithAttributedString:_backedTextInputView.attributedText];
     [mutableString replaceCharactersInRange:NSMakeRange(0, _backedTextInputView.attributedText.length)
                                  withString:value];
-    _backedTextInputView.attributedText = mutableString;
+    [self _setAttributedString:mutableString];
     [self _updateState];
   }
 
