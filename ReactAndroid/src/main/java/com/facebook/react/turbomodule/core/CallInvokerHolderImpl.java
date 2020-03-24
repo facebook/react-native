@@ -17,13 +17,20 @@ import com.facebook.soloader.SoLoader;
  * pass it from CatalystInstance, through Java, to TurboModuleManager::initHybrid.
  */
 public class CallInvokerHolderImpl implements CallInvokerHolder {
-  static {
-    SoLoader.loadLibrary("turbomodulejsijni");
-  }
+  private static volatile boolean sIsSoLibraryLoaded;
 
   private final HybridData mHybridData;
 
   private CallInvokerHolderImpl(HybridData hd) {
+    maybeLoadSoLibrary();
     mHybridData = hd;
+  }
+
+  // Prevents issues with initializer interruptions. See T38996825 and D13793825 for more context.
+  private static synchronized void maybeLoadSoLibrary() {
+    if (!sIsSoLibraryLoaded) {
+      SoLoader.loadLibrary("turbomodulejsijni");
+      sIsSoLibraryLoaded = true;
+    }
   }
 }
