@@ -19,21 +19,22 @@ issues:
       close: true
     "Needs: Issue Template":
       comment: >
-        <table><tbody><tr><th width="50">⚠️</th><th width="100%">
+        <table><tbody><tr><th width="50">:warning:</th><th width="100%">
         Missing Required Fields
-        </th></tr><tr><td>ℹ️</td><td>
-        It looks like your issue may be missing some necessary information. GitHub provides an example template whenever a [new issue is created](https://github.com/facebook/react-native/issues/new?template=bug_report.md). Could you go back and make sure to fill out the template? You may edit this issue, or close it and open a new one.
+        </th></tr><tr><td>:information_source:</td><td>
+        It looks like your issue may be missing some necessary information. GitHub provides an example template whenever a <a href="https://github.com/facebook/react-native/issues/new?template=bug_report.md">new issue is created</a>. Could you go back and make sure to fill out the template? You may edit this issue, or close it and open a new one.
         </td></tr></tbody></table>
+    "Needs: Environment Info":
       comment: >
-        <table><tbody><tr><th width="50">⚠️</th><th width="100%">
+        <table><tbody><tr><th width="50">:warning:</th><th width="100%">
         Missing Environment Information
-        </th></tr><tr><td>ℹ️</td><td>
+        </th></tr><tr><td>:information_source:</td><td>
         Your issue may be missing information about your development environment. You can obtain the missing information by running <code>react-native info</code> in a console.
         </td></tr></tbody></table>
     "Needs: Verify on Latest Version":
       comment: >
-        <table><tbody><tr><th width="50">⚠️</th><th width="100%">
+        <table><tbody><tr><th width="50">:warning:</th><th width="100%">
         Using Old Version
-        </th></tr><tr><td>ℹ️</td><td>
-        It looks like you are using an older version of React Native. Please [upgrade](https://reactnative.dev/docs/upgrading) to the latest version, and verify if the issue persists. If it does not, please let us know so we can close out this issue. This helps us ensure we are looking at issues that still exist in the current release.
+        </th></tr><tr><td>:information_source:</td><td>
+        It looks like you are using an older version of React Native. Please <a href="https://reactnative.dev/docs/upgrading">upgrade</a> to the latest version, and verify if the issue persists. If it does not, please let us know so we can close out this issue. This helps us ensure we are looking at issues that still exist in the current release.
         </td></tr></tbody></table>
