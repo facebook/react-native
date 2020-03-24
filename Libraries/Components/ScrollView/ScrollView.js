@@ -716,11 +716,9 @@ class ScrollView extends React.Component<Props, State> {
   UNSAFE_componentWillMount() {
     this._scrollResponder.UNSAFE_componentWillMount();
     this._scrollAnimatedValue = new AnimatedImplementation.Value(
-      this.props.contentOffset ? this.props.contentOffset.y : 0,
+      this.props.contentOffset?.y ?? 0,
     );
-    this._scrollAnimatedValue.setOffset(
-      this.props.contentInset ? this.props.contentInset.top || 0 : 0,
-    );
+    this._scrollAnimatedValue.setOffset(this.props.contentInset?.top ?? 0);
     this._stickyHeaderRefs = new Map();
     this._headerLayoutYs = new Map();
   }
