@@ -44,7 +44,7 @@ PACKAGE_VERSION=$(cat package.json \
 {
     info "Preparing version $PACKAGE_VERSION"
 
-    npm install
+    yarn install
 
     rm -rf android
     ./gradlew :ReactAndroid:installArchives || error "Couldn't generate artifacts"
