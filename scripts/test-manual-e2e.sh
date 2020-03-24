@@ -126,7 +126,7 @@ PACKAGE_VERSION=$(cat package.json \
             info "Press any key to run the sample in Android emulator/device"
             info ""
             read -n 1
-            npx react-native run-android
+            node "$CLI_PATH" run-android
         }
 
         # iOS
@@ -142,7 +142,7 @@ PACKAGE_VERSION=$(cat package.json \
             info "Press any key to open the project in Xcode"
             info ""
             read -n 1
-            open "ios/${project_name}.xcodeproj"
+            node "$CLI_PATH" run-ios
         }
     }
     popd
