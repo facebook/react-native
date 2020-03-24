@@ -40,9 +40,15 @@ PACKAGE_VERSION=$(cat package.json \
   | sed 's/[",]//g' \
   | tr -d '[[:space:]]')
 
+ANDROID_EMULATOR_NAME=${ANDROID_EMULATOR_NAME:-$(emulator -list-avds | awk '{print $1}')}
+
 # Prepare
 {
     info "Preparing version $PACKAGE_VERSION"
+
+    # Do this as early as possible, so there's a bit of time for the emulator to launch before we interact with it
+    info "Launching Android emulator: $ANDROID_EMULATOR_NAME"
+    emulator -no-boot-anim -avd "$ANDROID_EMULATOR_NAME" &
 
     yarn install
 
@@ -60,6 +66,9 @@ PACKAGE_VERSION=$(cat package.json \
     # Android
     {
         ./gradlew :RNTester:android:app:installJscDebug || error "Couldn't build RNTester Android"
+
+        info "Deleting previously installed Android RNTester app"
+        adb uninstall com.facebook.react.uiapp
 
         info "Press any key to run RNTester in an already running Android emulator/device"
         info ""
@@ -117,6 +126,9 @@ PACKAGE_VERSION=$(cat package.json \
     {
         # Android
         {
+            info "Deleting previously installed Android $project_name app"
+            adb uninstall com.$(echo $project_name | awk '{print tolower($0)}')
+
             info "Test the following on Android:"
             info "   - Disable Fast Refresh. It might be enabled from last time (the setting is stored on the device)"
             info "   - Verify 'Reload JS' works"
