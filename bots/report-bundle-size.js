@@ -163,7 +163,7 @@ function report(target) {
           'android-jsc-x86': android_getApkSize('jsc', 'x86'),
           'android-jsc-x86_64': android_getApkSize('jsc', 'x86_64'),
         },
-        '| android | hermes | arm',
+        '\\| android \\| hermes \\| arm',
       );
       break;
 
@@ -174,7 +174,7 @@ function report(target) {
             'RNTester/build/Build/Products/Release-iphonesimulator/RNTester.app/RNTester',
           ),
         },
-        '| ios | - | universal |',
+        '\\| ios \\| - \\| universal \\|',
       );
       break;
 
