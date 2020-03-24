@@ -54,10 +54,8 @@ PACKAGE_VERSION=$(cat package.json \
 
 # Test RNTester
 {
-    info "Start the packager in another terminal by running 'npm start' from the root"
-    info "and then press any key."
-    info ""
-    read -n 1
+    info "Starting the packager in the background"
+    node "$CLI_PATH" start &
 
     # Android
     {
