@@ -10,4 +10,5 @@
 exports.rules = {
   'error-subclass-name': require('./error-subclass-name'),
   'no-haste-imports': require('./no-haste-imports'),
+  'require-platformcolor': require('./require-platformcolor'),
 };
