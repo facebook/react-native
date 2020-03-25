@@ -11,7 +11,7 @@
 'use strict';
 
 const SamplingProfiler = {
-  poke: function (token: number): void {
+  poke: function(token: number): void {
     let error = null;
     let result = null;
     try {

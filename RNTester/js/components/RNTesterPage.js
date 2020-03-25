@@ -40,7 +40,7 @@ class RNTesterPage extends React.Component<Props> {
     const spacer = this.props.noSpacer ? null : <View style={styles.spacer} />;
     return (
       <RNTesterThemeContext.Consumer>
-        {(theme) => {
+        {theme => {
           return (
             <View
               style={[

@@ -33,7 +33,7 @@ function getCommandOptions(
         options[prop.key.name] = (
           (prop && prop.value && prop.value.elements) ||
           []
-        ).map((element) => element && element.value);
+        ).map(element => element && element.value);
         return options;
       },
       {},

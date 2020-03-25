@@ -89,7 +89,7 @@ class XHRExampleDownload extends React.Component<{...}, Object> {
         });
       }
     };
-    const onprogress = (event) => {
+    const onprogress = event => {
       this.setState({
         progressTotal: event.total,
         progressLoaded: event.loaded,
@@ -112,9 +112,13 @@ class XHRExampleDownload extends React.Component<{...}, Object> {
         return;
       }
       if (xhr.status === 200) {
-        let responseType = `Response is a string, ${xhr.response.length} characters long.`;
+        let responseType = `Response is a string, ${
+          xhr.response.length
+        } characters long.`;
         if (xhr.response instanceof ArrayBuffer) {
-          responseType = `Response is an ArrayBuffer, ${xhr.response.byteLength} bytes long.`;
+          responseType = `Response is an ArrayBuffer, ${
+            xhr.response.byteLength
+          } bytes long.`;
         }
         Alert.alert('Download complete!', responseType);
       } else if (xhr.status !== 0) {
@@ -187,7 +191,7 @@ class XHRExampleDownload extends React.Component<{...}, Object> {
           <Text>onreadystatechange handler</Text>
           <Switch
             value={this.state.readystateHandler}
-            onValueChange={(readystateHandler) =>
+            onValueChange={readystateHandler =>
               this.setState({readystateHandler})
             }
           />
@@ -196,16 +200,14 @@ class XHRExampleDownload extends React.Component<{...}, Object> {
           <Text>onprogress handler</Text>
           <Switch
             value={this.state.progressHandler}
-            onValueChange={(progressHandler) =>
-              this.setState({progressHandler})
-            }
+            onValueChange={progressHandler => this.setState({progressHandler})}
           />
         </View>
         <View style={styles.configRow}>
           <Text>download as arraybuffer</Text>
           <Switch
             value={this.state.arraybuffer}
-            onValueChange={(arraybuffer) => this.setState({arraybuffer})}
+            onValueChange={arraybuffer => this.setState({arraybuffer})}
           />
         </View>
         {button}

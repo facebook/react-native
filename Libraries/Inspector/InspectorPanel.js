@@ -34,7 +34,7 @@ type Props = $ReadOnly<{|
   setNetworking: (val: boolean) => void,
   hierarchy?: ?Array<{|name: string|}>,
   selection?: ?number,
-  setSelection: (number) => mixed,
+  setSelection: number => mixed,
   inspected?: ?$ReadOnly<{|
     style?: ?ViewStyleProp,
     frame?: ?$ReadOnly<{|

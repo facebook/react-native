@@ -137,7 +137,7 @@ class CheckBox extends React.Component<Props> {
   _nativeRef: ?React.ElementRef<typeof AndroidCheckBoxNativeComponent> = null;
   _setNativeRef = setAndForwardRef({
     getForwardedRef: () => this.props.forwardedRef,
-    setLocalRef: (ref) => {
+    setLocalRef: ref => {
       this._nativeRef = ref;
     },
   });

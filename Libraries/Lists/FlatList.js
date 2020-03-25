@@ -405,7 +405,7 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
     this._checkProps(this.props);
     if (this.props.viewabilityConfigCallbackPairs) {
       this._virtualizedListPairs = this.props.viewabilityConfigCallbackPairs.map(
-        (pair) => ({
+        pair => ({
           viewabilityConfig: pair.viewabilityConfig,
           onViewableItemsChanged: this._createOnViewableItemsChanged(
             pair.onViewableItemsChanged,
@@ -451,7 +451,7 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
   _listRef: ?React.ElementRef<typeof VirtualizedList>;
   _virtualizedListPairs: Array<ViewabilityConfigCallbackPair> = [];
 
-  _captureRef = (ref) => {
+  _captureRef = ref => {
     this._listRef = ref;
   };
 
@@ -555,12 +555,10 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
         if (numColumns > 1) {
           const changed = [];
           const viewableItems = [];
-          info.viewableItems.forEach((v) =>
+          info.viewableItems.forEach(v =>
             this._pushMultiColumnViewable(viewableItems, v),
           );
-          info.changed.forEach((v) =>
-            this._pushMultiColumnViewable(changed, v),
-          );
+          info.changed.forEach(v => this._pushMultiColumnViewable(changed, v));
           onViewableItemsChanged({viewableItems, changed});
         } else {
           onViewableItemsChanged(info);
@@ -604,7 +602,11 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
             'Expected array of items with numColumns > 1',
           );
           return (
-            <View style={StyleSheet.compose(styles.row, columnWrapperStyle)}>
+            <View
+              style={StyleSheet.compose(
+                styles.row,
+                columnWrapperStyle,
+              )}>
               {item.map((it, kk) => {
                 const element = renderer({
                   item: it,

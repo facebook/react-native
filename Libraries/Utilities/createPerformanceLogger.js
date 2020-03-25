@@ -163,7 +163,7 @@ function createPerformanceLogger(): IPerformanceLogger {
     },
 
     clearExceptTimespans(keys: Array<string>) {
-      this._timespans = Object.keys(this._timespans).reduce(function (
+      this._timespans = Object.keys(this._timespans).reduce(function(
         previous,
         key,
       ) {

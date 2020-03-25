@@ -94,7 +94,7 @@ const InteractionManager = {
     ...
   } {
     const tasks = [];
-    const promise = new Promise((resolve) => {
+    const promise = new Promise(resolve => {
       _scheduleUpdate();
       if (task) {
         tasks.push(task);
@@ -116,7 +116,7 @@ const InteractionManager = {
           );
         }
       },
-      cancel: function () {
+      cancel: function() {
         _taskQueue.cancelTasks(tasks);
       },
     };
@@ -189,8 +189,8 @@ function _processUpdate() {
   _nextUpdateHandle = 0;
 
   const interactionCount = _interactionSet.size;
-  _addInteractionSet.forEach((handle) => _interactionSet.add(handle));
-  _deleteInteractionSet.forEach((handle) => _interactionSet.delete(handle));
+  _addInteractionSet.forEach(handle => _interactionSet.add(handle));
+  _deleteInteractionSet.forEach(handle => _interactionSet.delete(handle));
   const nextInteractionCount = _interactionSet.size;
 
   if (interactionCount !== 0 && nextInteractionCount === 0) {

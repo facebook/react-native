@@ -47,9 +47,11 @@ const componentTemplate = `
 
 function generatePropsString(componentName: string, component: ComponentShape) {
   return component.props
-    .map((prop) => {
+    .map(prop => {
       const defaultValue = convertDefaultTypeToString(componentName, prop);
-      return `${prop.name}(convertRawProp(rawProps, "${prop.name}", sourceProps.${prop.name}, {${defaultValue}}))`;
+      return `${prop.name}(convertRawProp(rawProps, "${
+        prop.name
+      }", sourceProps.${prop.name}, {${defaultValue}}))`;
     })
     .join(',\n' + '    ');
 }
@@ -58,7 +60,7 @@ function getClassExtendString(component): string {
   const extendString =
     ' ' +
     component.extendsProps
-      .map((extendProps) => {
+      .map(extendProps => {
         switch (extendProps.type) {
           case 'ReactNativeBuiltInType':
             switch (extendProps.knownTypeName) {
@@ -91,7 +93,7 @@ module.exports = {
     ]);
 
     const componentProps = Object.keys(schema.modules)
-      .map((moduleName) => {
+      .map(moduleName => {
         const components = schema.modules[moduleName].components;
         // No components in this module
         if (components == null) {
@@ -99,11 +101,11 @@ module.exports = {
         }
 
         return Object.keys(components)
-          .filter((componentName) => {
+          .filter(componentName => {
             const component = components[componentName];
             return component.excludedPlatform !== 'iOS';
           })
-          .map((componentName) => {
+          .map(componentName => {
             const component = components[componentName];
             const newName = `${componentName}Props`;
 
@@ -131,7 +133,10 @@ module.exports = {
       .replace(
         '::_IMPORTS_::',
 
-        Array.from(allImports).sort().join('\n').trim(),
+        Array.from(allImports)
+          .sort()
+          .join('\n')
+          .trim(),
       );
 
     return new Map([[fileName, replacedTemplate]]);

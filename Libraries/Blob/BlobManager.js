@@ -25,7 +25,7 @@ import invariant from 'invariant';
  * http://stackoverflow.com/questions/105034
  */
 function uuidv4(): string {
-  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
     const r = (Math.random() * 16) | 0,
       v = c == 'x' ? r : (r & 0x3) | 0x8;
     return v.toString(16);
@@ -66,7 +66,7 @@ class BlobManager {
     invariant(NativeBlobModule, 'NativeBlobModule is available.');
 
     const blobId = uuidv4();
-    const items = parts.map((part) => {
+    const items = parts.map(part => {
       if (
         part instanceof ArrayBuffer ||
         (global.ArrayBufferView && part instanceof global.ArrayBufferView)

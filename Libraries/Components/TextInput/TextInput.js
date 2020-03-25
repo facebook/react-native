@@ -945,7 +945,7 @@ function InternalTextInput(props: Props): React.Node {
 
   const _setNativeRef = setAndForwardRef({
     getForwardedRef: () => props.forwardedRef,
-    setLocalRef: (ref) => {
+    setLocalRef: ref => {
       inputRef.current = ref;
 
       /*

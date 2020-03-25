@@ -102,13 +102,13 @@ describe('FlatList', () => {
     ReactTestRenderer.create(
       <FlatList
         data={[{key: 'outer0'}, {key: 'outer1'}]}
-        renderItem={(outerInfo) => (
+        renderItem={outerInfo => (
           <FlatList
             data={[
               {key: outerInfo.item.key + ':inner0'},
               {key: outerInfo.item.key + ':inner1'},
             ]}
-            renderItem={(innerInfo) => {
+            renderItem={innerInfo => {
               return <item title={innerInfo.item.key} />;
             }}
             ref={listRef}

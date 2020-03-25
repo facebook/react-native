@@ -40,7 +40,7 @@ class ImageCachePolicyTest extends React.Component<Props, $FlowFixMeState> {
   state: $FlowFixMe | {...} = {};
 
   shouldComponentUpdate(nextProps: Props, nextState: State): boolean {
-    const results: Array<?boolean> = TESTS.map((x) => nextState[x]);
+    const results: Array<?boolean> = TESTS.map(x => nextState[x]);
 
     if (!results.includes(undefined)) {
       const result: boolean = results.reduce(

@@ -43,7 +43,7 @@ exports.examples = [
     description: ('Uses a simple timing animation to ' +
       'bring opacity from 0 to 1 when the component ' +
       'mounts.': string),
-    render: function (): React.Node {
+    render: function(): React.Node {
       class FadeInView extends React.Component<$FlowFixMeProps, any> {
         constructor(props) {
           super(props);
@@ -92,7 +92,7 @@ exports.examples = [
             <View>
               <RNTesterButton
                 onPress={() => {
-                  this.setState((state) => ({show: !state.show}));
+                  this.setState(state => ({show: !state.show}));
                 }}>
                 Press to {this.state.show ? 'Hide' : 'Show'}
               </RNTesterButton>
@@ -117,7 +117,7 @@ exports.examples = [
       'ordered set of transforms.  Each transform has ' +
       'an interpolation to convert the value into the ' +
       'right range and units.': string),
-    render: function (): React.Node {
+    render: function(): React.Node {
       this.anim = this.anim || new Animated.Value(0);
       return (
         <View>
@@ -181,7 +181,7 @@ exports.examples = [
     title: 'Composite Animations with Easing',
     description: ('Sequence, parallel, delay, and ' +
       'stagger with different easing functions.': string),
-    render: function (): React.Node {
+    render: function(): React.Node {
       this.anims = this.anims || [1, 2, 3].map(() => new Animated.Value(0));
       return (
         <View>
@@ -208,14 +208,14 @@ exports.examples = [
                 Animated.stagger(
                   200,
                   this.anims
-                    .map((anim) =>
+                    .map(anim =>
                       timing(anim, {
                         toValue: 200,
                         useNativeDriver: false,
                       }),
                     )
                     .concat(
-                      this.anims.map((anim) =>
+                      this.anims.map(anim =>
                         timing(anim, {
                           toValue: 0,
                           useNativeDriver: false,
@@ -241,7 +241,7 @@ exports.examples = [
                 Animated.delay(400),
                 Animated.stagger(
                   200,
-                  this.anims.map((anim) =>
+                  this.anims.map(anim =>
                     timing(anim, {
                       toValue: 0,
 
@@ -276,7 +276,7 @@ exports.examples = [
   {
     title: 'Rotating Images',
     description: 'Simple Animated.Image rotation.',
-    render: function (): React.Node {
+    render: function(): React.Node {
       this.anim = this.anim || new Animated.Value(0);
       return (
         <View>

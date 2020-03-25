@@ -37,7 +37,7 @@ function buildCommandSchema(property, types: TypeMap) {
     );
   }
 
-  const params = value.params.slice(1).map((param) => {
+  const params = value.params.slice(1).map(param => {
     const paramName = param.name.name;
     const paramValue = getValueFromTypes(param.typeAnnotation, types);
     const type =
@@ -95,8 +95,8 @@ function getCommands(
   types: TypeMap,
 ): $ReadOnlyArray<CommandTypeShape> {
   return commandTypeAST
-    .filter((property) => property.type === 'ObjectTypeProperty')
-    .map((property) => buildCommandSchema(property, types))
+    .filter(property => property.type === 'ObjectTypeProperty')
+    .map(property => buildCommandSchema(property, types))
     .filter(Boolean);
 }
 

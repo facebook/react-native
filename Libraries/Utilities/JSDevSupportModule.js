@@ -14,7 +14,7 @@ import NativeJSDevSupport from './NativeJSDevSupport';
 const ReactNative = require('../Renderer/shims/ReactNative');
 
 const JSDevSupportModule = {
-  getJSHierarchy: function (tag: number) {
+  getJSHierarchy: function(tag: number) {
     if (NativeJSDevSupport) {
       const constants = NativeJSDevSupport.getConstants();
       try {

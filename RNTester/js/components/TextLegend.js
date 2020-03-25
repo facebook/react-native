@@ -60,20 +60,20 @@ class TextLegend extends React.Component<*, *> {
       <View>
         <Text
           onPress={() =>
-            this.setState((prevState) => ({fontSize: prevState.fontSize + 3}))
+            this.setState(prevState => ({fontSize: prevState.fontSize + 3}))
           }>
           Increase size
         </Text>
         <Text
           onPress={() =>
-            this.setState((prevState) => ({fontSize: prevState.fontSize - 3}))
+            this.setState(prevState => ({fontSize: prevState.fontSize - 3}))
           }>
           Decrease size
         </Text>
         <Picker
           selectedValue={this.state.language}
-          onValueChange={(itemValue) => this.setState({language: itemValue})}>
-          {Object.keys(PANGRAMS).map((x) => (
+          onValueChange={itemValue => this.setState({language: itemValue})}>
+          {Object.keys(PANGRAMS).map(x => (
             <Picker.Item
               label={x[0].toUpperCase() + x.substring(1)}
               key={x}
@@ -224,7 +224,7 @@ class TextLegend extends React.Component<*, *> {
             },
           )}
           <Text
-            onTextLayout={(event) => {
+            onTextLayout={event => {
               this.setState({textMetrics: event.nativeEvent.lines});
             }}
             style={{
@@ -236,7 +236,7 @@ class TextLegend extends React.Component<*, *> {
         </View>
         <Picker
           selectedValue={this.state.alignment}
-          onValueChange={(itemValue) => this.setState({alignment: itemValue})}>
+          onValueChange={itemValue => this.setState({alignment: itemValue})}>
           <Picker.Item label="Left align" value="left" />
           <Picker.Item label="Center align" value="center" />
           <Picker.Item label="Right align" value="right" />

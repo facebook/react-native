@@ -64,7 +64,7 @@ function getPropertyType(name, optional, typeAnnotation) {
         type: 'StringEnumTypeAnnotation',
         name,
         optional,
-        options: typeAnnotation.types.map((option) => ({name: option.value})),
+        options: typeAnnotation.types.map(option => ({name: option.value})),
       };
     default:
       (type: empty);
@@ -220,8 +220,8 @@ function getEvents(
   types: TypeMap,
 ): $ReadOnlyArray<EventTypeShape> {
   return eventTypeAST
-    .filter((property) => property.type === 'ObjectTypeProperty')
-    .map((property) => buildEventSchema(types, property))
+    .filter(property => property.type === 'ObjectTypeProperty')
+    .map(property => buildEventSchema(types, property))
     .filter(Boolean);
 }
 

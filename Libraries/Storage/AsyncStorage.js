@@ -35,13 +35,13 @@ const AsyncStorage = {
    *
    * See https://reactnative.dev/docs/asyncstorage.html#getitem
    */
-  getItem: function (
+  getItem: function(
     key: string,
     callback?: ?(error: ?Error, result: ?string) => void,
   ): Promise {
     invariant(RCTAsyncStorage, 'RCTAsyncStorage not available');
     return new Promise((resolve, reject) => {
-      RCTAsyncStorage.multiGet([key], function (errors, result) {
+      RCTAsyncStorage.multiGet([key], function(errors, result) {
         // Unpack result to get value from [[key,value]]
         const value = result && result[0] && result[0][1] ? result[0][1] : null;
         const errs = convertErrors(errors);
@@ -60,14 +60,14 @@ const AsyncStorage = {
    *
    * See https://reactnative.dev/docs/asyncstorage.html#setitem
    */
-  setItem: function (
+  setItem: function(
     key: string,
     value: string,
     callback?: ?(error: ?Error) => void,
   ): Promise {
     invariant(RCTAsyncStorage, 'RCTAsyncStorage not available');
     return new Promise((resolve, reject) => {
-      RCTAsyncStorage.multiSet([[key, value]], function (errors) {
+      RCTAsyncStorage.multiSet([[key, value]], function(errors) {
         const errs = convertErrors(errors);
         callback && callback(errs && errs[0]);
         if (errs) {
@@ -84,13 +84,13 @@ const AsyncStorage = {
    *
    * See https://reactnative.dev/docs/asyncstorage.html#removeitem
    */
-  removeItem: function (
+  removeItem: function(
     key: string,
     callback?: ?(error: ?Error) => void,
   ): Promise {
     invariant(RCTAsyncStorage, 'RCTAsyncStorage not available');
     return new Promise((resolve, reject) => {
-      RCTAsyncStorage.multiRemove([key], function (errors) {
+      RCTAsyncStorage.multiRemove([key], function(errors) {
         const errs = convertErrors(errors);
         callback && callback(errs && errs[0]);
         if (errs) {
@@ -110,14 +110,14 @@ const AsyncStorage = {
    *
    * See https://reactnative.dev/docs/asyncstorage.html#mergeitem
    */
-  mergeItem: function (
+  mergeItem: function(
     key: string,
     value: string,
     callback?: ?(error: ?Error) => void,
   ): Promise {
     invariant(RCTAsyncStorage, 'RCTAsyncStorage not available');
     return new Promise((resolve, reject) => {
-      RCTAsyncStorage.multiMerge([[key, value]], function (errors) {
+      RCTAsyncStorage.multiMerge([[key, value]], function(errors) {
         const errs = convertErrors(errors);
         callback && callback(errs && errs[0]);
         if (errs) {
@@ -136,10 +136,10 @@ const AsyncStorage = {
    *
    * See https://reactnative.dev/docs/asyncstorage.html#clear
    */
-  clear: function (callback?: ?(error: ?Error) => void): Promise {
+  clear: function(callback?: ?(error: ?Error) => void): Promise {
     invariant(RCTAsyncStorage, 'RCTAsyncStorage not available');
     return new Promise((resolve, reject) => {
-      RCTAsyncStorage.clear(function (error) {
+      RCTAsyncStorage.clear(function(error) {
         callback && callback(convertError(error));
         if (error && convertError(error)) {
           reject(convertError(error));
@@ -155,12 +155,12 @@ const AsyncStorage = {
    *
    * See https://reactnative.dev/docs/asyncstorage.html#getallkeys
    */
-  getAllKeys: function (
+  getAllKeys: function(
     callback?: ?(error: ?Error, keys: ?Array<string>) => void,
   ): Promise {
     invariant(RCTAsyncStorage, 'RCTAsyncStorage not available');
     return new Promise((resolve, reject) => {
-      RCTAsyncStorage.getAllKeys(function (error, keys) {
+      RCTAsyncStorage.getAllKeys(function(error, keys) {
         callback && callback(convertError(error), keys);
         if (error) {
           reject(convertError(error));
@@ -186,7 +186,7 @@ const AsyncStorage = {
    *
    * See https://reactnative.dev/docs/asyncstorage.html#flushgetrequests
    * */
-  flushGetRequests: function (): void {
+  flushGetRequests: function(): void {
     const getRequests = this._getRequests;
     const getKeys = this._getKeys;
 
@@ -194,7 +194,7 @@ const AsyncStorage = {
     this._getKeys = [];
 
     invariant(RCTAsyncStorage, 'RCTAsyncStorage not available');
-    RCTAsyncStorage.multiGet(getKeys, function (errors, result) {
+    RCTAsyncStorage.multiGet(getKeys, function(errors, result) {
       // Even though the runtime complexity of this is theoretically worse vs if we used a map,
       // it's much, much faster in practice for the data sets we deal with (we avoid
       // allocating result pair arrays). This was heavily benchmarked.
@@ -211,7 +211,7 @@ const AsyncStorage = {
       for (let i = 0; i < reqLength; i++) {
         const request = getRequests[i];
         const requestKeys = request.keys;
-        const requestResult = requestKeys.map((key) => [key, map[key]]);
+        const requestResult = requestKeys.map(key => [key, map[key]]);
         request.callback && request.callback(null, requestResult);
         request.resolve && request.resolve(requestResult);
       }
@@ -225,7 +225,7 @@ const AsyncStorage = {
    *
    * See https://reactnative.dev/docs/asyncstorage.html#multiget
    */
-  multiGet: function (
+  multiGet: function(
     keys: Array<string>,
     callback?: ?(errors: ?Array<Error>, result: ?Array<Array<string>>) => void,
   ): Promise {
@@ -252,7 +252,7 @@ const AsyncStorage = {
 
     this._getRequests.push(getRequest);
     // avoid fetching duplicates
-    keys.forEach((key) => {
+    keys.forEach(key => {
       if (this._getKeys.indexOf(key) === -1) {
         this._getKeys.push(key);
       }
@@ -267,13 +267,13 @@ const AsyncStorage = {
    *
    * See https://reactnative.dev/docs/asyncstorage.html#multiset
    */
-  multiSet: function (
+  multiSet: function(
     keyValuePairs: Array<Array<string>>,
     callback?: ?(errors: ?Array<Error>) => void,
   ): Promise {
     invariant(RCTAsyncStorage, 'RCTAsyncStorage not available');
     return new Promise((resolve, reject) => {
-      RCTAsyncStorage.multiSet(keyValuePairs, function (errors) {
+      RCTAsyncStorage.multiSet(keyValuePairs, function(errors) {
         const error = convertErrors(errors);
         callback && callback(error);
         if (error) {
@@ -290,13 +290,13 @@ const AsyncStorage = {
    *
    * See https://reactnative.dev/docs/asyncstorage.html#multiremove
    */
-  multiRemove: function (
+  multiRemove: function(
     keys: Array<string>,
     callback?: ?(errors: ?Array<Error>) => void,
   ): Promise {
     invariant(RCTAsyncStorage, 'RCTAsyncStorage not available');
     return new Promise((resolve, reject) => {
-      RCTAsyncStorage.multiRemove(keys, function (errors) {
+      RCTAsyncStorage.multiRemove(keys, function(errors) {
         const error = convertErrors(errors);
         callback && callback(error);
         if (error) {
@@ -316,13 +316,13 @@ const AsyncStorage = {
    *
    * See https://reactnative.dev/docs/asyncstorage.html#multimerge
    */
-  multiMerge: function (
+  multiMerge: function(
     keyValuePairs: Array<Array<string>>,
     callback?: ?(errors: ?Array<Error>) => void,
   ): Promise {
     invariant(RCTAsyncStorage, 'RCTAsyncStorage not available');
     return new Promise((resolve, reject) => {
-      RCTAsyncStorage.multiMerge(keyValuePairs, function (errors) {
+      RCTAsyncStorage.multiMerge(keyValuePairs, function(errors) {
         const error = convertErrors(errors);
         callback && callback(error);
         if (error) {
@@ -345,7 +345,7 @@ function convertErrors(errs) {
   if (!errs) {
     return null;
   }
-  return (Array.isArray(errs) ? errs : [errs]).map((e) => convertError(e));
+  return (Array.isArray(errs) ? errs : [errs]).map(e => convertError(e));
 }
 
 function convertError(error) {

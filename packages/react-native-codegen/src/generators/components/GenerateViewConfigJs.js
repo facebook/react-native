@@ -78,7 +78,9 @@ function getReactDiffProcessValue(typeAnnotation) {
             return j.literal(true);
           default:
             throw new Error(
-              `Received unknown array native typeAnnotation: "${typeAnnotation.elementType.name}"`,
+              `Received unknown array native typeAnnotation: "${
+                typeAnnotation.elementType.name
+              }"`,
             );
         }
       }
@@ -126,7 +128,7 @@ function normalizeInputEventName(name) {
 
 // Replicates the behavior of viewConfig in RCTComponentData.m
 function getValidAttributesForEvents(events) {
-  return events.map((eventType) => {
+  return events.map(eventType => {
     return j.property('init', j.identifier(eventType.name), j.literal(true));
   });
 }
@@ -175,7 +177,7 @@ function buildViewConfig(
   const componentProps = component.props;
   const componentEvents = component.events;
 
-  component.extendsProps.forEach((extendProps) => {
+  component.extendsProps.forEach(extendProps => {
     switch (extendProps.type) {
       case 'ReactNativeBuiltInType':
         switch (extendProps.knownTypeName) {
@@ -196,7 +198,7 @@ function buildViewConfig(
   });
 
   const validAttributes = j.objectExpression([
-    ...componentProps.map((schemaProp) => {
+    ...componentProps.map(schemaProp => {
       return j.property(
         'init',
         j.identifier(schemaProp.name),
@@ -207,7 +209,7 @@ function buildViewConfig(
   ]);
 
   const bubblingEventNames = component.events
-    .filter((event) => event.bubblingType === 'bubble')
+    .filter(event => event.bubblingType === 'bubble')
     .reduce((bubblingEvents, event) => {
       // We add in the deprecated paper name so that it is in the view config.
       // This means either the old event name or the new event name can fire
@@ -231,7 +233,7 @@ function buildViewConfig(
       : null;
 
   const directEventNames = component.events
-    .filter((event) => event.bubblingType === 'direct')
+    .filter(event => event.bubblingType === 'direct')
     .reduce((directEvents, event) => {
       // We add in the deprecated paper name so that it is in the view config.
       // This means either the old event name or the new event name can fire
@@ -284,14 +286,14 @@ function buildCommands(
     'const {dispatchCommand} = require("react-native/Libraries/Renderer/shims/ReactNative");',
   );
 
-  const properties = commands.map((command) => {
+  const properties = commands.map(command => {
     const commandName = command.name;
     const params = command.typeAnnotation.params;
 
     const commandNameLiteral = j.literal(commandName);
     const commandNameIdentifier = j.identifier(commandName);
     const arrayParams = j.arrayExpression(
-      params.map((param) => {
+      params.map(param => {
         return j.identifier(param.name);
       }),
     );
@@ -299,7 +301,7 @@ function buildCommands(
     const expression = j.template
       .expression`dispatchCommand(ref, ${commandNameLiteral}, ${arrayParams})`;
 
-    const functionParams = params.map((param) => {
+    const functionParams = params.map(param => {
       return j.identifier(param.name);
     });
 
@@ -334,7 +336,7 @@ module.exports = {
       const imports: Set<string> = new Set();
 
       const moduleResults = Object.keys(schema.modules)
-        .map((moduleName) => {
+        .map(moduleName => {
           const components = schema.modules[moduleName].components;
           // No components in this module
           if (components == null) {
@@ -342,7 +344,7 @@ module.exports = {
           }
 
           return Object.keys(components)
-            .map((componentName) => {
+            .map(componentName => {
               const component = components[componentName];
 
               const paperComponentName = component.paperComponentName
@@ -411,7 +413,12 @@ module.exports = {
 
       const replacedTemplate = template
         .replace(/::_COMPONENT_CONFIG_::/g, moduleResults)
-        .replace('::_IMPORTS_::', Array.from(imports).sort().join('\n'));
+        .replace(
+          '::_IMPORTS_::',
+          Array.from(imports)
+            .sort()
+            .join('\n'),
+        );
 
       return new Map([[fileName, replacedTemplate]]);
     } catch (error) {

@@ -20,10 +20,10 @@ function traverse(t) {
   return t
     .replace(/\).invoke/g, ')\n.invoke') // in old codegen it was in one line
     .split('\n')
-    .map((l) => l.trim()) // no whitespaces
+    .map(l => l.trim()) // no whitespaces
     .filter(Boolean) // no empty lines
     .filter(
-      (l) =>
+      l =>
         !l.startsWith('namespace') && // no namespaces
         !l.startsWith('}') && // after removing openign namespaces we need to remove all closings
         !l.startsWith('/**') && // all comments
@@ -32,7 +32,7 @@ function traverse(t) {
         !l.startsWith('importing it, you must change') && // comment in old codegen
         !l.startsWith('*'), //comments
     )
-    .map((l) => l.replace(/ /g, '')) // remove rest whitespaces
+    .map(l => l.replace(/ /g, '')) // remove rest whitespaces
     .sort(); // sort alphabetically lines
 }
 
@@ -45,7 +45,9 @@ if (t1.length !== t2.length) {
   for (let i = 0; i < t1.length; i++) {
     if (t1[i] !== t2[i]) {
       throw new Error(
-        `Old and new codegen does not produce similar output! ${i}  ${t1[i]} | ${t2[i]}`,
+        `Old and new codegen does not produce similar output! ${i}  ${
+          t1[i]
+        } | ${t2[i]}`,
       );
     }
   }

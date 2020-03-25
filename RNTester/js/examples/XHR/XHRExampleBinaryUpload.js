@@ -111,8 +111,8 @@ class XHRExampleBinaryUpload extends React.Component<{...}, $FlowFixMeState> {
         <Text>Upload 255 bytes as...</Text>
         <Picker
           selectedValue={this.state.type}
-          onValueChange={(type) => this.setState({type})}>
-          {Object.keys(BINARY_TYPES).map((type) => (
+          onValueChange={type => this.setState({type})}>
+          {Object.keys(BINARY_TYPES).map(type => (
             <Picker.Item key={type} label={type} value={type} />
           ))}
         </Picker>

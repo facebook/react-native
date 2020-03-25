@@ -53,7 +53,7 @@ class BasicSwitchExample extends React.Component<
         <ExampleRow>
           <Switch
             testID="on-off-initial-off"
-            onValueChange={(value) => this.setState({falseSwitchIsOn: value})}
+            onValueChange={value => this.setState({falseSwitchIsOn: value})}
             trackColor={{
               true: 'yellow',
               false: 'purple',
@@ -68,7 +68,7 @@ class BasicSwitchExample extends React.Component<
         <ExampleRow>
           <Switch
             testID="on-off-initial-on"
-            onValueChange={(value) => this.setState({trueSwitchIsOn: value})}
+            onValueChange={value => this.setState({trueSwitchIsOn: value})}
             value={this.state.trueSwitchIsOn}
           />
           <OnOffIndicator
@@ -97,7 +97,7 @@ class DisabledSwitchExample extends React.Component<
           <Switch
             testID="disabled-initial-off"
             disabled={true}
-            onValueChange={(value) => this.setState({falseSwitchIsOn: value})}
+            onValueChange={value => this.setState({falseSwitchIsOn: value})}
             value={this.state.falseSwitchIsOn}
           />
 
@@ -111,7 +111,7 @@ class DisabledSwitchExample extends React.Component<
           <Switch
             testID="disabled-initial-on"
             disabled={true}
-            onValueChange={(value) => this.setState({trueSwitchIsOn: value})}
+            onValueChange={value => this.setState({trueSwitchIsOn: value})}
             value={this.state.trueSwitchIsOn}
           />
 
@@ -135,9 +135,7 @@ class ColorSwitchExample extends React.Component<{...}, $FlowFixMeState> {
     return (
       <View>
         <Switch
-          onValueChange={(value) =>
-            this.setState({colorFalseSwitchIsOn: value})
-          }
+          onValueChange={value => this.setState({colorFalseSwitchIsOn: value})}
           style={{marginBottom: 10}}
           thumbColor="#0000ff"
           trackColor={{
@@ -147,7 +145,7 @@ class ColorSwitchExample extends React.Component<{...}, $FlowFixMeState> {
           value={this.state.colorFalseSwitchIsOn}
         />
         <Switch
-          onValueChange={(value) => this.setState({colorTrueSwitchIsOn: value})}
+          onValueChange={value => this.setState({colorTrueSwitchIsOn: value})}
           thumbColor="#0000ff"
           trackColor={{
             false: '#ff0000',
@@ -171,12 +169,12 @@ class EventSwitchExample extends React.Component<{...}, $FlowFixMeState> {
       <View style={{flexDirection: 'row', justifyContent: 'space-around'}}>
         <View>
           <Switch
-            onValueChange={(value) => this.setState({eventSwitchIsOn: value})}
+            onValueChange={value => this.setState({eventSwitchIsOn: value})}
             style={{marginBottom: 10}}
             value={this.state.eventSwitchIsOn}
           />
           <Switch
-            onValueChange={(value) => this.setState({eventSwitchIsOn: value})}
+            onValueChange={value => this.setState({eventSwitchIsOn: value})}
             style={{marginBottom: 10}}
             value={this.state.eventSwitchIsOn}
           />
@@ -184,14 +182,14 @@ class EventSwitchExample extends React.Component<{...}, $FlowFixMeState> {
         </View>
         <View>
           <Switch
-            onValueChange={(value) =>
+            onValueChange={value =>
               this.setState({eventSwitchRegressionIsOn: value})
             }
             style={{marginBottom: 10}}
             value={this.state.eventSwitchRegressionIsOn}
           />
           <Switch
-            onValueChange={(value) =>
+            onValueChange={value =>
               this.setState({eventSwitchRegressionIsOn: value})
             }
             style={{marginBottom: 10}}

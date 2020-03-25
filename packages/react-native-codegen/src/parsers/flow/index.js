@@ -38,7 +38,7 @@ function getTypes(ast) {
 
 function getConfigType(ast, types): 'module' | 'component' {
   const defaultExports = ast.body.filter(
-    (node) => node.type === 'ExportDefaultDeclaration',
+    node => node.type === 'ExportDefaultDeclaration',
   );
 
   let isComponent = false;
@@ -58,9 +58,9 @@ function getConfigType(ast, types): 'module' | 'component' {
   }
 
   const typesExtendingTurboModule = Object.keys(types)
-    .map((typeName) => types[typeName])
+    .map(typeName => types[typeName])
     .filter(
-      (type) =>
+      type =>
         type.extends &&
         type.extends[0] &&
         type.extends[0].id.name === 'TurboModule',

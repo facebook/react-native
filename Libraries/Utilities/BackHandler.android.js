@@ -19,7 +19,7 @@ type BackPressEventName = 'backPress' | 'hardwareBackPress';
 
 const _backPressSubscriptions = [];
 
-RCTDeviceEventEmitter.addListener(DEVICE_BACK_EVENT, function () {
+RCTDeviceEventEmitter.addListener(DEVICE_BACK_EVENT, function() {
   for (let i = _backPressSubscriptions.length - 1; i >= 0; i--) {
     if (_backPressSubscriptions[i]()) {
       return;
@@ -71,7 +71,7 @@ type TBackHandler = {|
   ) => void,
 |};
 const BackHandler: TBackHandler = {
-  exitApp: function (): void {
+  exitApp: function(): void {
     if (!NativeDeviceEventManager) {
       return;
     }
@@ -85,7 +85,7 @@ const BackHandler: TBackHandler = {
    * - `hardwareBackPress`: Fires when the Android hardware back button is pressed or when the
    * tvOS menu button is pressed.
    */
-  addEventListener: function (
+  addEventListener: function(
     eventName: BackPressEventName,
     handler: Function,
   ): {remove: () => void, ...} {
@@ -100,7 +100,7 @@ const BackHandler: TBackHandler = {
   /**
    * Removes the event handler.
    */
-  removeEventListener: function (
+  removeEventListener: function(
     eventName: BackPressEventName,
     handler: Function,
   ): void {

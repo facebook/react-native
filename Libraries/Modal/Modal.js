@@ -190,7 +190,9 @@ class Modal extends React.Component<Props> {
       props.transparent
     ) {
       console.warn(
-        `Modal with '${props.presentationStyle}' presentation style and 'transparent' value is not supported.`,
+        `Modal with '${
+          props.presentationStyle
+        }' presentation style and 'transparent' value is not supported.`,
       );
     }
   }

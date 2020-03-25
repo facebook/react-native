@@ -20,7 +20,10 @@ function upperCaseFirst(inString: string): string {
 }
 
 function toSafeCppString(input: string): string {
-  return input.split('-').map(upperCaseFirst).join('');
+  return input
+    .split('-')
+    .map(upperCaseFirst)
+    .join('');
 }
 
 function toIntEnumValueName(propName: string, value: number): string {
@@ -72,7 +75,7 @@ function getImports(properties: $ReadOnlyArray<PropTypeShape>): Set<string> {
     }
   }
 
-  properties.forEach((prop) => {
+  properties.forEach(prop => {
     const typeAnnotation = prop.typeAnnotation;
 
     if (typeAnnotation.type === 'NativePrimitiveTypeAnnotation') {

@@ -30,10 +30,10 @@ exports.examples = [
     description: ('The title and onPress handler are required. It is ' +
       'recommended to set accessibilityLabel to help make your app usable by ' +
       'everyone.': string),
-    render: function (): React.Node {
+    render: function(): React.Node {
       return (
         <RNTesterThemeContext.Consumer>
-          {(theme) => {
+          {theme => {
             return (
               <Button
                 onPress={() => onButtonPress('Simple')}
@@ -53,10 +53,10 @@ exports.examples = [
     description: ('Adjusts the color in a way that looks standard on each ' +
       'platform. On iOS, the color prop controls the color of the text. On ' +
       'Android, the color adjusts the background color of the button.': string),
-    render: function (): React.Node {
+    render: function(): React.Node {
       return (
         <RNTesterThemeContext.Consumer>
-          {(theme) => {
+          {theme => {
             return (
               <Button
                 onPress={() => onButtonPress('Purple')}
@@ -75,10 +75,10 @@ exports.examples = [
     title: 'Fit to text layout',
     description: ('This layout strategy lets the title define the width of ' +
       'the button': string),
-    render: function (): React.Node {
+    render: function(): React.Node {
       return (
         <RNTesterThemeContext.Consumer>
-          {(theme) => {
+          {theme => {
             return (
               <View style={styles.container}>
                 <Button
@@ -105,7 +105,7 @@ exports.examples = [
   {
     title: 'Disabled Button',
     description: 'All interactions for the component are disabled.',
-    render: function (): React.Node {
+    render: function(): React.Node {
       return (
         <Button
           disabled

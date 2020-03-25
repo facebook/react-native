@@ -198,7 +198,10 @@ const Slider = (
   props: Props,
   forwardedRef?: ?React.Ref<typeof SliderNativeComponent>,
 ) => {
-  const style = StyleSheet.compose(styles.slider, props.style);
+  const style = StyleSheet.compose(
+    styles.slider,
+    props.style,
+  );
 
   const {
     disabled = false,

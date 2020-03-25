@@ -149,7 +149,7 @@ function withRTLState(Component) {
     }
 
     render() {
-      const setRTL = (isRTL) => this.setState({isRTL: isRTL});
+      const setRTL = isRTL => this.setState({isRTL: isRTL});
       return (
         <Component isRTL={this.state.isRTL} setRTL={setRTL} {...this.props} />
       );
@@ -520,7 +520,7 @@ const BorderExample = withRTLState(({isRTL, setRTL}) => {
   );
 });
 
-const directionStyle = (isRTL) =>
+const directionStyle = isRTL =>
   Platform.OS === 'ios' ? {direction: isRTL ? 'rtl' : 'ltr'} : null;
 
 const styles = StyleSheet.create({
@@ -647,13 +647,13 @@ exports.description = 'Examples to show how to apply components to RTL layout.';
 exports.examples = [
   {
     title: 'Current Layout Direction',
-    render: function (): React.Element<any> {
+    render: function(): React.Element<any> {
       return <RTLToggleExample />;
     },
   },
   {
     title: 'A Simple List Item Layout',
-    render: function (): React.Element<any> {
+    render: function(): React.Element<any> {
       return <SimpleListItemExample />;
     },
   },
@@ -661,7 +661,7 @@ exports.examples = [
     title: 'Default Text Alignment',
     description: ('In iOS, it depends on active language. ' +
       'In Android, it depends on the text content.': string),
-    render: function (): React.Element<any> {
+    render: function(): React.Element<any> {
       return <TextAlignmentExample style={styles.fontSizeSmall} />;
     },
   },
@@ -669,7 +669,7 @@ exports.examples = [
     title: "Using textAlign: 'left'",
     description: ('In iOS/Android, text alignment flips regardless of ' +
       'languages or text content.': string),
-    render: function (): React.Element<any> {
+    render: function(): React.Element<any> {
       return (
         <TextAlignmentExample
           style={[styles.fontSizeSmall, styles.textAlignLeft]}
@@ -681,7 +681,7 @@ exports.examples = [
     title: "Using textAlign: 'right'",
     description: ('In iOS/Android, text alignment flips regardless of ' +
       'languages or text content.': string),
-    render: function (): React.Element<any> {
+    render: function(): React.Element<any> {
       return (
         <TextAlignmentExample
           style={[styles.fontSizeSmall, styles.textAlignRight]}
@@ -691,56 +691,56 @@ exports.examples = [
   },
   {
     title: 'Working With Icons',
-    render: function (): React.Element<any> {
+    render: function(): React.Element<any> {
       return <IconsExample />;
     },
   },
   {
     title: 'Controlling Animation',
     description: 'Animation direction according to layout',
-    render: function (): React.Element<any> {
+    render: function(): React.Element<any> {
       return <AnimationContainer />;
     },
   },
   {
     title: 'Padding Start/End',
-    render: function (): React.Element<any> {
+    render: function(): React.Element<any> {
       return <PaddingExample />;
     },
   },
   {
     title: 'Margin Start/End',
-    render: function (): React.Element<any> {
+    render: function(): React.Element<any> {
       return <MarginExample />;
     },
   },
   {
     title: 'Position Start/End',
-    render: function (): React.Element<any> {
+    render: function(): React.Element<any> {
       return <PositionExample />;
     },
   },
   {
     title: 'Border Width Start/End',
-    render: function (): React.Element<any> {
+    render: function(): React.Element<any> {
       return <BorderWidthExample />;
     },
   },
   {
     title: 'Border Color Start/End',
-    render: function (): React.Element<any> {
+    render: function(): React.Element<any> {
       return <BorderColorExample />;
     },
   },
   {
     title: 'Border Radii Start/End',
-    render: function (): React.Element<any> {
+    render: function(): React.Element<any> {
       return <BorderRadiiExample />;
     },
   },
   {
     title: 'Border',
-    render: function (): React.Element<any> {
+    render: function(): React.Element<any> {
       return <BorderExample />;
     },
   },

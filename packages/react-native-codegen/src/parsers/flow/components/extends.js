@@ -41,7 +41,7 @@ function removeKnownExtends(
   types: TypeMap,
 ): $ReadOnlyArray<PropsAST> {
   return typeDefinition.filter(
-    (prop) =>
+    prop =>
       prop.type !== 'ObjectTypeSpreadProperty' ||
       extendsForProp(prop, types) === null,
   );
@@ -55,8 +55,8 @@ function getExtendsProps(
   types: TypeMap,
 ): $ReadOnlyArray<ExtendsPropsShape> {
   return typeDefinition
-    .filter((prop) => prop.type === 'ObjectTypeSpreadProperty')
-    .map((prop) => extendsForProp(prop, types))
+    .filter(prop => prop.type === 'ObjectTypeSpreadProperty')
+    .map(prop => extendsForProp(prop, types))
     .filter(Boolean);
 }
 

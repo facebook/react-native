@@ -43,7 +43,7 @@ async function initializeStore(email, password) {
     await app
       .auth()
       .signInWithEmailAndPassword(email, password)
-      .catch((error) => console.log(error));
+      .catch(error => console.log(error));
   }
 
   return app.firestore();
@@ -92,9 +92,9 @@ function createOrUpdateDocument(collection, sha, data) {
     timestamp: firebase.firestore.Timestamp.now(),
   };
   const docRef = collection.doc(sha);
-  return docRef.update(stampedData).catch(async (error) => {
+  return docRef.update(stampedData).catch(async error => {
     if (error.code === 'not-found') {
-      await docRef.set(stampedData).catch((setError) => console.log(setError));
+      await docRef.set(stampedData).catch(setError => console.log(setError));
     } else {
       console.log(error);
     }
@@ -111,7 +111,7 @@ function getLatestDocument(collection) {
     .orderBy('timestamp', 'desc')
     .limit(1)
     .get()
-    .then((snapshot) => {
+    .then(snapshot => {
       if (snapshot.empty) {
         return undefined;
       }
@@ -122,7 +122,7 @@ function getLatestDocument(collection) {
         commit: doc.id,
       };
     })
-    .catch((error) => {
+    .catch(error => {
       console.log(error);
       return undefined;
     });

@@ -74,7 +74,7 @@ class StyleSheetValidation {
   }
 }
 
-const styleError = function (message1, style, caller?, message2?) {
+const styleError = function(message1, style, caller?, message2?) {
   invariant(
     false,
     message1 +

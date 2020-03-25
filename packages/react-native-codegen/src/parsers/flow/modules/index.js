@@ -24,9 +24,9 @@ function getModuleProperties(types, interfaceName) {
 
 function findInterfaceName(types) {
   return Object.keys(types)
-    .map((typeName) => types[typeName])
+    .map(typeName => types[typeName])
     .filter(
-      (type) =>
+      type =>
         type.extends &&
         type.extends[0] &&
         type.extends[0].id.name === 'TurboModule',

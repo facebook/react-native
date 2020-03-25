@@ -51,8 +51,8 @@ const observe = () => {
   };
 };
 
-const addLogs = (logs) => {
-  logs.forEach((message) => {
+const addLogs = logs => {
+  logs.forEach(message => {
     LogBoxData.addLog({
       level: 'warn',
       message: {
@@ -65,8 +65,8 @@ const addLogs = (logs) => {
   });
 };
 
-const addSoftErrors = (errors) => {
-  errors.forEach((error) => {
+const addSoftErrors = errors => {
+  errors.forEach(error => {
     LogBoxData.addException(
       Object.assign(
         {},
@@ -88,8 +88,8 @@ const addSoftErrors = (errors) => {
   });
 };
 
-const addFatalErrors = (errors) => {
-  errors.forEach((error) => {
+const addFatalErrors = errors => {
+  errors.forEach(error => {
     LogBoxData.addException(
       Object.assign(
         {},

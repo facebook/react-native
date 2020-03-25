@@ -105,7 +105,7 @@ class PanResponderExample extends React.Component<Props, State> {
         title="Basic gesture handling">
         <View style={styles.container}>
           <View
-            ref={(circle) => {
+            ref={circle => {
               this.circle = circle;
             }}
             style={[
@@ -147,7 +147,7 @@ exports.simpleExampleContainer = true;
 exports.examples = [
   {
     title: 'Basic gesture handling',
-    render: function (): React.Element<typeof PanResponderExample> {
+    render: function(): React.Element<typeof PanResponderExample> {
       return <PanResponderExample />;
     },
   },

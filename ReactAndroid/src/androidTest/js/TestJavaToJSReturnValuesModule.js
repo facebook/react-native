@@ -16,13 +16,13 @@ const {assertEquals, assertTrue} = require('./Asserts');
 const {TestModule} = NativeModules;
 
 const TestJavaToJSReturnValuesModule = {
-  callMethod: function (methodName, expectedType, expectedJSON) {
+  callMethod: function(methodName, expectedType, expectedJSON) {
     const result = TestModule[methodName]();
     assertEquals(expectedType, typeof result);
     assertEquals(expectedJSON, JSON.stringify(result));
   },
 
-  triggerException: function () {
+  triggerException: function() {
     try {
       TestModule.triggerException();
     } catch (ex) {

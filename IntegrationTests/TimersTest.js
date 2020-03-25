@@ -153,7 +153,7 @@ class TimersTest extends React.Component<Props, State> {
     fails.push(this.setTimeout(() => this._fail('testClearMulti-4'), 0));
     fails.push(this.setTimeout(() => this._fail('testClearMulti-5'), 10));
 
-    fails.forEach((timeout) => this.clearTimeout(timeout));
+    fails.forEach(timeout => this.clearTimeout(timeout));
     this.setTimeout(() => this.clearTimeout(delayClear), 20);
 
     this.setTimeout(this.testOrdering, 50);

@@ -86,7 +86,7 @@ async function reportSizeStats(stats, replacePattern) {
     const comment = [
       '| Platform | Engine | Arch | Size (bytes) | Diff |',
       '|:---------|:-------|:-----|-------------:|-----:|',
-      ...Object.keys(stats).map((identifier) => {
+      ...Object.keys(stats).map(identifier => {
         const [size, diff] = (() => {
           const statSize = stats[identifier];
           if (!statSize) {

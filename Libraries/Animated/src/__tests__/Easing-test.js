@@ -449,8 +449,8 @@ describe('Easing', () => {
     ],
   };
 
-  Object.keys(Samples).forEach(function (type) {
-    it('should ease ' + type, function () {
+  Object.keys(Samples).forEach(function(type) {
+    it('should ease ' + type, function() {
       const [modeName, easingName, isFunction] = type.split('_');
       let easing = Easing[easingName];
       if (isFunction !== undefined) {

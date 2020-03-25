@@ -30,7 +30,7 @@ export type InterpolationConfigType = {
   extrapolateRight?: ExtrapolateType,
 };
 
-const linear = (t) => t;
+const linear = t => t;
 
 /**
  * Very handy helper to map input ranges to output ranges with an easing
@@ -75,7 +75,7 @@ function createInterpolation(
     extrapolateRight = config.extrapolate;
   }
 
-  return (input) => {
+  return input => {
     invariant(
       typeof input === 'number',
       'Cannot interpolation an input which is not a number',
@@ -209,7 +209,7 @@ function createInterpolationFromStringOutputRange(
    * guard against this possibility.
    */
   const outputRanges = outputRange[0].match(stringShapeRegex).map(() => []);
-  outputRange.forEach((value) => {
+  outputRange.forEach(value => {
     /* $FlowFixMe(>=0.18.0): `value.match()` can return `null`. Need to guard
      * against this possibility.
      */
@@ -233,7 +233,7 @@ function createInterpolationFromStringOutputRange(
   // round the opacity (4th column).
   const shouldRound = isRgbOrRgba(outputRange[0]);
 
-  return (input) => {
+  return input => {
     let i = 0;
     // 'rgba(0, 100, 200, 0)'
     // ->

@@ -148,7 +148,7 @@ class TouchableOpacity extends React.Component<Props, State> {
       delayPressIn: this.props.delayPressIn,
       delayPressOut: this.props.delayPressOut,
       pressRectOffset: this.props.pressRetentionOffset,
-      onBlur: (event) => {
+      onBlur: event => {
         if (Platform.isTV) {
           this._opacityInactive(250);
         }
@@ -156,7 +156,7 @@ class TouchableOpacity extends React.Component<Props, State> {
           this.props.onBlur(event);
         }
       },
-      onFocus: (event) => {
+      onFocus: event => {
         if (Platform.isTV) {
           this._opacityActive(150);
         }
@@ -166,7 +166,7 @@ class TouchableOpacity extends React.Component<Props, State> {
       },
       onLongPress: this.props.onLongPress,
       onPress: this.props.onPress,
-      onPressIn: (event) => {
+      onPressIn: event => {
         this._opacityActive(
           event.dispatchConfig.registrationName === 'onResponderGrant'
             ? 0
@@ -176,7 +176,7 @@ class TouchableOpacity extends React.Component<Props, State> {
           this.props.onPressIn(event);
         }
       },
-      onPressOut: (event) => {
+      onPressOut: event => {
         this._opacityInactive(250);
         if (this.props.onPressOut != null) {
           this.props.onPressOut(event);
@@ -261,17 +261,17 @@ class TouchableOpacity extends React.Component<Props, State> {
     if (Platform.isTV) {
       this._tvTouchable = new TVTouchable(this, {
         getDisabled: () => this.props.disabled === true,
-        onBlur: (event) => {
+        onBlur: event => {
           if (this.props.onBlur != null) {
             this.props.onBlur(event);
           }
         },
-        onFocus: (event) => {
+        onFocus: event => {
           if (this.props.onFocus != null) {
             this.props.onFocus(event);
           }
         },
-        onPress: (event) => {
+        onPress: event => {
           if (this.props.onPress != null) {
             this.props.onPress(event);
           }

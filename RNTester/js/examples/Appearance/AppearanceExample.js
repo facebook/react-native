@@ -39,7 +39,7 @@ class ColorSchemeSubscription extends React.Component<
   render() {
     return (
       <RNTesterThemeContext.Consumer>
-        {(theme) => {
+        {theme => {
           return (
             <ThemedContainer>
               <ThemedText>{this.state.colorScheme}</ThemedText>
@@ -51,9 +51,9 @@ class ColorSchemeSubscription extends React.Component<
   }
 }
 
-const ThemedContainer = (props) => (
+const ThemedContainer = props => (
   <RNTesterThemeContext.Consumer>
-    {(theme) => {
+    {theme => {
       return (
         <View
           style={{
@@ -68,9 +68,9 @@ const ThemedContainer = (props) => (
   </RNTesterThemeContext.Consumer>
 );
 
-const ThemedText = (props) => (
+const ThemedText = props => (
   <RNTesterThemeContext.Consumer>
-    {(theme) => {
+    {theme => {
       return <Text style={{color: theme.LabelColor}}>{props.children}</Text>;
     }}
   </RNTesterThemeContext.Consumer>
@@ -107,7 +107,7 @@ exports.examples = [
     render(): React.Element<any> {
       return (
         <RNTesterThemeContext.Consumer>
-          {(theme) => {
+          {theme => {
             return (
               <ThemedContainer>
                 <ThemedText>
@@ -152,9 +152,9 @@ exports.examples = [
     title: 'RNTester App Colors',
     description: 'A light and a dark theme based on standard iOS 13 colors.',
     render(): React.Element<any> {
-      const ColorShowcase = (props) => (
+      const ColorShowcase = props => (
         <RNTesterThemeContext.Consumer>
-          {(theme) => {
+          {theme => {
             return (
               <View
                 style={{
@@ -164,7 +164,7 @@ exports.examples = [
                 <Text style={{fontWeight: '700', color: theme.LabelColor}}>
                   {props.themeName}
                 </Text>
-                {Object.keys(theme).map((key) => (
+                {Object.keys(theme).map(key => (
                   <View style={{flexDirection: 'row'}} key={key}>
                     <View
                       style={{

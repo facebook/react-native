@@ -43,7 +43,7 @@ class TextInputBar extends React.PureComponent<TextInputProps, TextInputState> {
       <View style={styles.textInputContainer}>
         <TextInput
           style={styles.textInput}
-          onChangeText={(text) => {
+          onChangeText={text => {
             this.setState({text});
           }}
           value={this.state.text}
@@ -114,7 +114,7 @@ exports.description =
 exports.examples = [
   {
     title: 'Simple view with sticky input',
-    render: function (): React.Node {
+    render: function(): React.Node {
       return <InputAccessoryViewExample />;
     },
   },

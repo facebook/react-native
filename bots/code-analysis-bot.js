@@ -49,35 +49,35 @@ const converterSummary = {
  * is an array of objects of the shape message and line.
  */
 const converters = {
-  raw: function (output, input) {
+  raw: function(output, input) {
     for (let key in input) {
-      input[key].forEach(function (message) {
+      input[key].forEach(function(message) {
         push(output, key, message);
       });
     }
   },
 
-  flow: function (output, input) {
+  flow: function(output, input) {
     if (!input || !input.errors) {
       return;
     }
 
-    input.errors.forEach(function (error) {
+    input.errors.forEach(function(error) {
       push(output, error.message[0].path, {
-        message: error.message.map((message) => message.descr).join(' '),
+        message: error.message.map(message => message.descr).join(' '),
         line: error.message[0].line,
         converter: 'flow',
       });
     });
   },
 
-  eslint: function (output, input) {
+  eslint: function(output, input) {
     if (!input) {
       return;
     }
 
-    input.forEach(function (file) {
-      file.messages.forEach(function (message) {
+    input.forEach(function(file) {
+      file.messages.forEach(function(message) {
         push(output, file.filePath, {
           message: message.ruleId + ': ' + message.message,
           line: message.line,
@@ -87,12 +87,12 @@ const converters = {
     });
   },
 
-  shellcheck: function (output, input) {
+  shellcheck: function(output, input) {
     if (!input) {
       return;
     }
 
-    input.forEach(function (report) {
+    input.forEach(function(report) {
       push(output, report.file, {
         message:
           '**[SC' +
@@ -148,7 +148,7 @@ function getLineMapFromPatch(patchString) {
   let fileLineIndex = 0;
   let lineMap = {};
 
-  patchString.split('\n').forEach((line) => {
+  patchString.split('\n').forEach(line => {
     if (line.match(/^@@/)) {
       fileLineIndex = line.match(/\+([0-9]+)/)[1] - 1;
       return;
@@ -188,7 +188,7 @@ function sendReview(octokit, owner, repo, number, commit_id, body, comments) {
       comments,
     };
 
-    octokit.pullRequests.createReview(opts, function (error, res) {
+    octokit.pullRequests.createReview(opts, function(error, res) {
       if (error) {
         console.error(error);
         return;
@@ -208,7 +208,7 @@ function sendReview(octokit, owner, repo, number, commit_id, body, comments) {
     }
 
     let results = body + '\n';
-    comments.forEach((comment) => {
+    comments.forEach(comment => {
       results +=
         comment.path + ':' + comment.position + ': ' + comment.body + '\n';
     });
@@ -234,19 +234,19 @@ function main(messages, owner, repo, number) {
     auth: process.env.GITHUB_TOKEN,
   });
 
-  getShaFromPullRequest(octokit, owner, repo, number, (sha) => {
-    getFilesFromPullRequest(octokit, owner, repo, number, (files) => {
+  getShaFromPullRequest(octokit, owner, repo, number, sha => {
+    getFilesFromPullRequest(octokit, owner, repo, number, files => {
       let comments = [];
       let convertersUsed = [];
       files
-        .filter((file) => messages[file.filename])
-        .forEach((file) => {
+        .filter(file => messages[file.filename])
+        .forEach(file => {
           // github api sometimes does not return a patch on large commits
           if (!file.patch) {
             return;
           }
           const lineMap = getLineMapFromPatch(file.patch);
-          messages[file.filename].forEach((message) => {
+          messages[file.filename].forEach(message => {
             if (lineMap[message.line]) {
               const comment = {
                 path: file.filename,
@@ -261,7 +261,7 @@ function main(messages, owner, repo, number) {
 
       let body = '**Code analysis results:**\n\n';
       const uniqueconvertersUsed = [...new Set(convertersUsed)];
-      uniqueconvertersUsed.forEach((converter) => {
+      uniqueconvertersUsed.forEach(converter => {
         body += '* ' + converterSummary[converter] + '\n';
       });
 
@@ -272,10 +272,10 @@ function main(messages, owner, repo, number) {
 
 let content = '';
 process.stdin.resume();
-process.stdin.on('data', function (buf) {
+process.stdin.on('data', function(buf) {
   content += buf.toString();
 });
-process.stdin.on('end', function () {
+process.stdin.on('end', function() {
   let messages = {};
 
   // Since we send a few http requests to setup the process, we don't want

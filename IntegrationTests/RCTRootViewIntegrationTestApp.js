@@ -28,7 +28,7 @@ const TESTS = [
   require('./SizeFlexibilityUpdateTest'),
 ];
 
-TESTS.forEach((test) =>
+TESTS.forEach(test =>
   AppRegistry.registerComponent(test.displayName, () => test),
 );
 
@@ -54,7 +54,7 @@ class RCTRootViewIntegrationTestApp extends React.Component {
         </Text>
         <View style={styles.separator} />
         <ScrollView>
-          {TESTS.map((test) => [
+          {TESTS.map(test => [
             <TouchableOpacity
               onPress={() => this.setState({test})}
               style={styles.row}>

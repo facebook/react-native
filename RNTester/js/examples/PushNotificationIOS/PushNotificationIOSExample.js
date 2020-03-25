@@ -184,7 +184,7 @@ class NotificationPermissionExample extends React.Component<
 
   _requestPermissions = () => {
     PushNotificationIOS.requestPermissions().then(
-      (onFulfill) => {
+      onFulfill => {
         this._showAlert(
           'Successfully requested permissions -- ' +
             'Alert: ' +
@@ -204,7 +204,7 @@ class NotificationPermissionExample extends React.Component<
   };
 
   _checkPermissions = () => {
-    PushNotificationIOS.checkPermissions((permissions) => {
+    PushNotificationIOS.checkPermissions(permissions => {
       this.setState({permissions});
     });
   };

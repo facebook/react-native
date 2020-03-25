@@ -112,7 +112,7 @@ module.exports = {
     moduleSpecName: string,
   ): FilesOutput {
     const nativeModules = Object.keys(schema.modules)
-      .map((moduleName) => {
+      .map(moduleName => {
         const modules = schema.modules[moduleName].nativeModules;
         if (modules == null) {
           return null;
@@ -124,10 +124,10 @@ module.exports = {
       .reduce((acc, modules) => Object.assign(acc, modules), {});
 
     const modules = Object.keys(nativeModules)
-      .map((name) => {
+      .map(name => {
         const {properties} = nativeModules[name];
         const traversedProperties = properties
-          .map((property) => traverseProprety(property))
+          .map(property => traverseProprety(property))
           .join('\n');
         return moduleTemplate
           .replace(/::_MODULE_PROPERTIES_::/g, traversedProperties)

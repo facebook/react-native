@@ -67,7 +67,7 @@ describe('Keyboard', () => {
     });
 
     describe('animation update type', () => {
-      const assertAnimationUpdateType = (type) =>
+      const assertAnimationUpdateType = type =>
         expect(LayoutAnimation.configureNext).toHaveBeenCalledWith(
           expect.objectContaining({
             duration: expect.anything(),

@@ -113,7 +113,7 @@ exports.description =
 exports.examples = [
   {
     title: 'Simple keyboard view',
-    render: function (): React.Element<typeof KeyboardAvoidingViewExample> {
+    render: function(): React.Element<typeof KeyboardAvoidingViewExample> {
       return <KeyboardAvoidingViewExample />;
     },
   },

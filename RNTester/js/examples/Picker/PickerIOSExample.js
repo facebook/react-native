@@ -112,8 +112,8 @@ class PickerExample extends React.Component<{...}, $FlowFixMeState> {
         <Text>Please choose a make for your car:</Text>
         <PickerIOS
           selectedValue={this.state.carMake}
-          onValueChange={(carMake) => this.setState({carMake, modelIndex: 0})}>
-          {Object.keys(CAR_MAKES_AND_MODELS).map((carMake) => (
+          onValueChange={carMake => this.setState({carMake, modelIndex: 0})}>
+          {Object.keys(CAR_MAKES_AND_MODELS).map(carMake => (
             <PickerItemIOS
               key={carMake}
               value={carMake}
@@ -125,7 +125,7 @@ class PickerExample extends React.Component<{...}, $FlowFixMeState> {
         <PickerIOS
           selectedValue={this.state.modelIndex}
           key={this.state.carMake}
-          onValueChange={(modelIndex) => this.setState({modelIndex})}>
+          onValueChange={modelIndex => this.setState({modelIndex})}>
           {CAR_MAKES_AND_MODELS[this.state.carMake].models.map(
             (modelName, modelIndex) => (
               <PickerItemIOS
@@ -158,8 +158,8 @@ class PickerStyleExample extends React.Component<{...}, $FlowFixMeState> {
           fontWeight: 'bold',
         }}
         selectedValue={this.state.carMake}
-        onValueChange={(carMake) => this.setState({carMake, modelIndex: 0})}>
-        {Object.keys(CAR_MAKES_AND_MODELS).map((carMake) => (
+        onValueChange={carMake => this.setState({carMake, modelIndex: 0})}>
+        {Object.keys(CAR_MAKES_AND_MODELS).map(carMake => (
           <PickerItemIOS
             key={carMake}
             value={carMake}
@@ -177,13 +177,13 @@ exports.description = 'Render lists of selectable options with UIPickerView.';
 exports.examples = [
   {
     title: '<PickerIOS>',
-    render: function (): React.Element<any> {
+    render: function(): React.Element<any> {
       return <PickerExample />;
     },
   },
   {
     title: '<PickerIOS> with custom styling',
-    render: function (): React.Element<any> {
+    render: function(): React.Element<any> {
       return <PickerStyleExample />;
     },
   },

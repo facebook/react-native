@@ -40,7 +40,7 @@ class ProgressBarSampleApp extends React.Component {
 }
 
 const ProgressBarTestModule = {
-  renderProgressBarApplication: function (rootTag) {
+  renderProgressBarApplication: function(rootTag) {
     renderApplication(ProgressBarSampleApp, {}, rootTag);
   },
 };

@@ -246,14 +246,14 @@ class SectionList<SectionT: SectionBase<any>> extends React.PureComponent<
       <VirtualizedSectionList
         {...this.props}
         ref={this._captureRef}
-        getItemCount={(items) => items.length}
+        getItemCount={items => items.length}
         getItem={(items, index) => items[index]}
       />
     );
   }
 
   _wrapperListRef: ?React.ElementRef<typeof VirtualizedSectionList>;
-  _captureRef = (ref) => {
+  _captureRef = ref => {
     /* $FlowFixMe(>=0.99.0 site=react_native_fb) This comment suppresses an
      * error found when Flow v0.99 was deployed. To see the error, delete this
      * comment and run Flow. */

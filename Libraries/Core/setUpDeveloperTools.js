@@ -60,9 +60,9 @@ if (__DEV__) {
           'groupCollapsed',
           'groupEnd',
           'debug',
-        ].forEach((level) => {
+        ].forEach(level => {
           const originalFunction = console[level];
-          console[level] = function (...args) {
+          console[level] = function(...args) {
             HMRClient.log(level, args);
             originalFunction.apply(console, args);
           };

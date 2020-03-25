@@ -39,8 +39,8 @@ class PureComponentDebug<
       console.warn(
         'PureComponentDebug: different prop keys',
         tag,
-        prevPropsKeys.filter((key) => !nextPropsKeys.includes(key)),
-        nextPropsKeys.filter((key) => !prevPropsKeys.includes(key)),
+        prevPropsKeys.filter(key => !nextPropsKeys.includes(key)),
+        nextPropsKeys.filter(key => !prevPropsKeys.includes(key)),
       );
     }
     const prevStateKeys = Object.keys(this.state || {});
@@ -50,8 +50,8 @@ class PureComponentDebug<
       console.warn(
         'PureComponentDebug: different state keys',
         tag,
-        prevStateKeys.filter((key) => !nextStateKeys.includes(key)),
-        nextStateKeys.filter((key) => !prevStateKeys.includes(key)),
+        prevStateKeys.filter(key => !nextStateKeys.includes(key)),
+        nextStateKeys.filter(key => !prevStateKeys.includes(key)),
       );
     }
     for (const key in this.props) {

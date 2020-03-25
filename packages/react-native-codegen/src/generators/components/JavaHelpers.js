@@ -43,7 +43,7 @@ function getImports(
 ): Set<string> {
   const imports: Set<string> = new Set();
 
-  component.extendsProps.forEach((extendProps) => {
+  component.extendsProps.forEach(extendProps => {
     switch (extendProps.type) {
       case 'ReactNativeBuiltInType':
         switch (extendProps.knownTypeName) {
@@ -84,7 +84,7 @@ function getImports(
     }
   }
 
-  component.props.forEach((prop) => {
+  component.props.forEach(prop => {
     const typeAnnotation = prop.typeAnnotation;
 
     if (typeAnnotation.type === 'NativePrimitiveTypeAnnotation') {

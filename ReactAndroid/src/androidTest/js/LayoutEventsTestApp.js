@@ -30,7 +30,7 @@ class LayoutEventsTestApp extends React.Component {
     this.numParentLayouts = 0;
   }
 
-  handleOnLayout = (e) => {
+  handleOnLayout = e => {
     const layout = e.nativeEvent.layout;
     RecordingModule.record(
       layout.x + ',' + layout.y + '-' + layout.width + 'x' + layout.height,
@@ -46,7 +46,7 @@ class LayoutEventsTestApp extends React.Component {
     }
   };
 
-  handleParentOnLayout = (e) => {
+  handleParentOnLayout = e => {
     if (this.numParentLayouts > 0) {
       // This will cause the test to fail - the parent's layout doesn't change
       // so we should only get the event once.

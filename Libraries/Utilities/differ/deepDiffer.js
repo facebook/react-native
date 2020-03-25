@@ -25,7 +25,7 @@ function unstable_setLogListeners(listeners: ?LogListeners) {
 /*
  * @returns {bool} true if different, false if equal
  */
-const deepDiffer = function (
+const deepDiffer = function(
   one: any,
   two: any,
   maxDepthOrOptions: Options | number = -1,

@@ -346,30 +346,22 @@ describe('Native Animated', () => {
         {type: 'addition', input: expect.any(Array)},
       );
       const additionCalls = NativeAnimatedModule.createAnimatedNode.mock.calls.filter(
-        (call) => call[1].type === 'addition',
+        call => call[1].type === 'addition',
       );
       expect(additionCalls.length).toBe(1);
       const additionCall = additionCalls[0];
       const additionNodeTag = additionCall[0];
       const additionConnectionCalls = NativeAnimatedModule.connectAnimatedNodes.mock.calls.filter(
-        (call) => call[1] === additionNodeTag,
+        call => call[1] === additionNodeTag,
       );
       expect(additionConnectionCalls.length).toBe(2);
       expect(NativeAnimatedModule.createAnimatedNode).toBeCalledWith(
         additionCall[1].input[0],
-        {
-          type: 'value',
-          value: 1,
-          offset: 0,
-        },
+        {type: 'value', value: 1, offset: 0},
       );
       expect(NativeAnimatedModule.createAnimatedNode).toBeCalledWith(
         additionCall[1].input[1],
-        {
-          type: 'value',
-          value: 2,
-          offset: 0,
-        },
+        {type: 'value', value: 2, offset: 0},
       );
     });
 
@@ -388,30 +380,22 @@ describe('Native Animated', () => {
         {type: 'subtraction', input: expect.any(Array)},
       );
       const subtractionCalls = NativeAnimatedModule.createAnimatedNode.mock.calls.filter(
-        (call) => call[1].type === 'subtraction',
+        call => call[1].type === 'subtraction',
       );
       expect(subtractionCalls.length).toBe(1);
       const subtractionCall = subtractionCalls[0];
       const subtractionNodeTag = subtractionCall[0];
       const subtractionConnectionCalls = NativeAnimatedModule.connectAnimatedNodes.mock.calls.filter(
-        (call) => call[1] === subtractionNodeTag,
+        call => call[1] === subtractionNodeTag,
       );
       expect(subtractionConnectionCalls.length).toBe(2);
       expect(NativeAnimatedModule.createAnimatedNode).toBeCalledWith(
         subtractionCall[1].input[0],
-        {
-          type: 'value',
-          value: 2,
-          offset: 0,
-        },
+        {type: 'value', value: 2, offset: 0},
       );
       expect(NativeAnimatedModule.createAnimatedNode).toBeCalledWith(
         subtractionCall[1].input[1],
-        {
-          type: 'value',
-          value: 1,
-          offset: 0,
-        },
+        {type: 'value', value: 1, offset: 0},
       );
     });
 
@@ -430,30 +414,22 @@ describe('Native Animated', () => {
         {type: 'multiplication', input: expect.any(Array)},
       );
       const multiplicationCalls = NativeAnimatedModule.createAnimatedNode.mock.calls.filter(
-        (call) => call[1].type === 'multiplication',
+        call => call[1].type === 'multiplication',
       );
       expect(multiplicationCalls.length).toBe(1);
       const multiplicationCall = multiplicationCalls[0];
       const multiplicationNodeTag = multiplicationCall[0];
       const multiplicationConnectionCalls = NativeAnimatedModule.connectAnimatedNodes.mock.calls.filter(
-        (call) => call[1] === multiplicationNodeTag,
+        call => call[1] === multiplicationNodeTag,
       );
       expect(multiplicationConnectionCalls.length).toBe(2);
       expect(NativeAnimatedModule.createAnimatedNode).toBeCalledWith(
         multiplicationCall[1].input[0],
-        {
-          type: 'value',
-          value: 2,
-          offset: 0,
-        },
+        {type: 'value', value: 2, offset: 0},
       );
       expect(NativeAnimatedModule.createAnimatedNode).toBeCalledWith(
         multiplicationCall[1].input[1],
-        {
-          type: 'value',
-          value: 1,
-          offset: 0,
-        },
+        {type: 'value', value: 1, offset: 0},
       );
     });
 
@@ -472,30 +448,22 @@ describe('Native Animated', () => {
         {type: 'division', input: expect.any(Array)},
       );
       const divisionCalls = NativeAnimatedModule.createAnimatedNode.mock.calls.filter(
-        (call) => call[1].type === 'division',
+        call => call[1].type === 'division',
       );
       expect(divisionCalls.length).toBe(1);
       const divisionCall = divisionCalls[0];
       const divisionNodeTag = divisionCall[0];
       const divisionConnectionCalls = NativeAnimatedModule.connectAnimatedNodes.mock.calls.filter(
-        (call) => call[1] === divisionNodeTag,
+        call => call[1] === divisionNodeTag,
       );
       expect(divisionConnectionCalls.length).toBe(2);
       expect(NativeAnimatedModule.createAnimatedNode).toBeCalledWith(
         divisionCall[1].input[0],
-        {
-          type: 'value',
-          value: 4,
-          offset: 0,
-        },
+        {type: 'value', value: 4, offset: 0},
       );
       expect(NativeAnimatedModule.createAnimatedNode).toBeCalledWith(
         divisionCall[1].input[1],
-        {
-          type: 'value',
-          value: 2,
-          offset: 0,
-        },
+        {type: 'value', value: 2, offset: 0},
       );
     });
 
@@ -512,22 +480,18 @@ describe('Native Animated', () => {
         {type: 'modulus', modulus: 4, input: expect.any(Number)},
       );
       const moduloCalls = NativeAnimatedModule.createAnimatedNode.mock.calls.filter(
-        (call) => call[1].type === 'modulus',
+        call => call[1].type === 'modulus',
       );
       expect(moduloCalls.length).toBe(1);
       const moduloCall = moduloCalls[0];
       const moduloNodeTag = moduloCall[0];
       const moduloConnectionCalls = NativeAnimatedModule.connectAnimatedNodes.mock.calls.filter(
-        (call) => call[1] === moduloNodeTag,
+        call => call[1] === moduloNodeTag,
       );
       expect(moduloConnectionCalls.length).toBe(1);
       expect(NativeAnimatedModule.createAnimatedNode).toBeCalledWith(
         moduloCall[1].input,
-        {
-          type: 'value',
-          value: 4,
-          offset: 0,
-        },
+        {type: 'value', value: 4, offset: 0},
       );
     });
 
@@ -561,10 +525,10 @@ describe('Native Animated', () => {
         },
       );
       const interpolationNodeTag = NativeAnimatedModule.createAnimatedNode.mock.calls.find(
-        (call) => call[1].type === 'interpolation',
+        call => call[1].type === 'interpolation',
       )[0];
       const valueNodeTag = NativeAnimatedModule.createAnimatedNode.mock.calls.find(
-        (call) => call[1].type === 'value',
+        call => call[1].type === 'value',
       )[0];
       expect(NativeAnimatedModule.connectAnimatedNodes).toBeCalledWith(
         valueNodeTag,
@@ -613,22 +577,18 @@ describe('Native Animated', () => {
         {type: 'diffclamp', input: expect.any(Number), max: 20, min: 0},
       );
       const diffClampCalls = NativeAnimatedModule.createAnimatedNode.mock.calls.filter(
-        (call) => call[1].type === 'diffclamp',
+        call => call[1].type === 'diffclamp',
       );
       expect(diffClampCalls.length).toBe(1);
       const diffClampCall = diffClampCalls[0];
       const diffClampNodeTag = diffClampCall[0];
       const diffClampConnectionCalls = NativeAnimatedModule.connectAnimatedNodes.mock.calls.filter(
-        (call) => call[1] === diffClampNodeTag,
+        call => call[1] === diffClampNodeTag,
       );
       expect(diffClampConnectionCalls.length).toBe(1);
       expect(NativeAnimatedModule.createAnimatedNode).toBeCalledWith(
         diffClampCall[1].input,
-        {
-          type: 'value',
-          value: 2,
-          offset: 0,
-        },
+        {type: 'value', value: 2, offset: 0},
       );
     });
 

@@ -12,7 +12,7 @@
 
 const deepDiffer = require('../deepDiffer');
 
-describe('deepDiffer', function () {
+describe('deepDiffer', function() {
   it('should diff primitives of the same type', () => {
     expect(deepDiffer(1, 2)).toBe(true);
     expect(deepDiffer(42, 42)).toBe(false);
@@ -129,23 +129,13 @@ describe('deepDiffer', function () {
     ).toBe(false);
   });
   it('should consider all functions equal', () => {
-    expect(
-      deepDiffer(
-        () => {},
-        (x) => x,
-      ),
-    ).toBe(false);
+    expect(deepDiffer(() => {}, x => x)).toBe(false);
     const f = () => {};
     expect(deepDiffer(f, f)).toBe(false);
   });
   it('should compare functions if unsafelyIgnoreFunctions is false', () => {
     expect(
-      deepDiffer(
-        () => {},
-        (x) => x,
-        undefined,
-        {unsafelyIgnoreFunctions: false},
-      ),
+      deepDiffer(() => {}, x => x, undefined, {unsafelyIgnoreFunctions: false}),
     ).toBe(true);
     const f = () => {};
     expect(deepDiffer(f, f, undefined, {unsafelyIgnoreFunctions: false})).toBe(
@@ -153,13 +143,9 @@ describe('deepDiffer', function () {
     );
 
     // shorthand, omitting maxDepth
-    expect(
-      deepDiffer(
-        () => {},
-        (x) => x,
-        {unsafelyIgnoreFunctions: false},
-      ),
-    ).toBe(true);
+    expect(deepDiffer(() => {}, x => x, {unsafelyIgnoreFunctions: false})).toBe(
+      true,
+    );
     expect(deepDiffer(f, f, {unsafelyIgnoreFunctions: false})).toBe(false);
   });
   it('should log when implicitly considering two different functions equal', () => {

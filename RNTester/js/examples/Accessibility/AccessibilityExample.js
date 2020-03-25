@@ -520,7 +520,7 @@ class AccessibilityActionsExample extends React.Component {
           <View
             accessible={true}
             accessibilityActions={[{name: 'activate'}]}
-            onAccessibilityAction={(event) => {
+            onAccessibilityAction={event => {
               switch (event.nativeEvent.actionName) {
                 case 'activate':
                   Alert.alert('Alert', 'View is clicked');
@@ -539,7 +539,7 @@ class AccessibilityActionsExample extends React.Component {
               {name: 'copy', label: 'copy label'},
               {name: 'paste', label: 'paste label'},
             ]}
-            onAccessibilityAction={(event) => {
+            onAccessibilityAction={event => {
               switch (event.nativeEvent.actionName) {
                 case 'cut':
                   Alert.alert('Alert', 'cut action success');
@@ -561,7 +561,7 @@ class AccessibilityActionsExample extends React.Component {
             accessible={true}
             accessibilityRole="adjustable"
             accessibilityActions={[{name: 'increment'}, {name: 'decrement'}]}
-            onAccessibilityAction={(event) => {
+            onAccessibilityAction={event => {
               switch (event.nativeEvent.actionName) {
                 case 'increment':
                   Alert.alert('Alert', 'increment action success');
@@ -583,7 +583,7 @@ class AccessibilityActionsExample extends React.Component {
               {name: 'copy', label: 'copy label'},
               {name: 'paste', label: 'paste label'},
             ]}
-            onAccessibilityAction={(event) => {
+            onAccessibilityAction={event => {
               switch (event.nativeEvent.actionName) {
                 case 'cut':
                   Alert.alert('Alert', 'cut action success');
@@ -642,7 +642,7 @@ class FakeSliderExample extends React.Component {
           accessibilityLabel="Fake Slider"
           accessibilityRole="adjustable"
           accessibilityActions={[{name: 'increment'}, {name: 'decrement'}]}
-          onAccessibilityAction={(event) => {
+          onAccessibilityAction={event => {
             switch (event.nativeEvent.actionName) {
               case 'increment':
                 this.increment();
@@ -664,7 +664,7 @@ class FakeSliderExample extends React.Component {
           accessibilityLabel="Equalizer"
           accessibilityRole="adjustable"
           accessibilityActions={[{name: 'increment'}, {name: 'decrement'}]}
-          onAccessibilityAction={(event) => {
+          onAccessibilityAction={event => {
             switch (event.nativeEvent.actionName) {
               case 'increment':
                 if (this.state.textualValue === 'center') {
@@ -702,7 +702,7 @@ class ScreenReaderStatusExample extends React.Component<{}> {
       'change',
       this._handleScreenReaderToggled,
     );
-    AccessibilityInfo.fetch().done((isEnabled) => {
+    AccessibilityInfo.fetch().done(isEnabled => {
       this.setState({
         screenReaderEnabled: isEnabled,
       });
@@ -716,7 +716,7 @@ class ScreenReaderStatusExample extends React.Component<{}> {
     );
   }
 
-  _handleScreenReaderToggled = (isEnabled) => {
+  _handleScreenReaderToggled = isEnabled => {
     this.setState({
       screenReaderEnabled: isEnabled,
     });

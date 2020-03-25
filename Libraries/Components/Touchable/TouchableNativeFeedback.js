@@ -182,7 +182,7 @@ class TouchableNativeFeedback extends React.Component<Props, State> {
       android_disableSound: this.props.touchSoundDisabled,
       onLongPress: this.props.onLongPress,
       onPress: this.props.onPress,
-      onPressIn: (event) => {
+      onPressIn: event => {
         if (Platform.OS === 'android') {
           this._dispatchPressedStateChange(true);
           this._dispatchHotspotUpdate(event);
@@ -191,12 +191,12 @@ class TouchableNativeFeedback extends React.Component<Props, State> {
           this.props.onPressIn(event);
         }
       },
-      onPressMove: (event) => {
+      onPressMove: event => {
         if (Platform.OS === 'android') {
           this._dispatchHotspotUpdate(event);
         }
       },
-      onPressOut: (event) => {
+      onPressOut: event => {
         if (Platform.OS === 'android') {
           this._dispatchPressedStateChange(false);
         }
@@ -303,17 +303,17 @@ class TouchableNativeFeedback extends React.Component<Props, State> {
     if (Platform.isTV) {
       this._tvTouchable = new TVTouchable(this, {
         getDisabled: () => this.props.disabled === true,
-        onBlur: (event) => {
+        onBlur: event => {
           if (this.props.onBlur != null) {
             this.props.onBlur(event);
           }
         },
-        onFocus: (event) => {
+        onFocus: event => {
           if (this.props.onFocus != null) {
             this.props.onFocus(event);
           }
         },
-        onPress: (event) => {
+        onPress: event => {
           if (this.props.onPress != null) {
             this.props.onPress(event);
           }

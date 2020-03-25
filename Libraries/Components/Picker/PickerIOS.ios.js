@@ -83,8 +83,8 @@ class PickerIOS extends React.Component<Props, State> {
     let selectedIndex = 0;
     const items = [];
     React.Children.toArray(props.children)
-      .filter((child) => child !== null)
-      .forEach(function (child, index) {
+      .filter(child => child !== null)
+      .forEach(function(child, index) {
         if (child.props.value === props.selectedValue) {
           selectedIndex = index;
         }
@@ -106,7 +106,7 @@ class PickerIOS extends React.Component<Props, State> {
     return (
       <View style={this.props.style}>
         <RCTPickerNativeComponent
-          ref={(picker) => {
+          ref={picker => {
             this._picker = picker;
           }}
           testID={this.props.testID}
@@ -136,7 +136,7 @@ class PickerIOS extends React.Component<Props, State> {
     }
   }
 
-  _onChange = (event) => {
+  _onChange = event => {
     if (this.props.onChange) {
       this.props.onChange(event);
     }

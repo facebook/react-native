@@ -163,7 +163,7 @@ exports.description = 'Standard Android date picker dialog';
 exports.examples = [
   {
     title: 'Simple date picker',
-    render: function (): React.Element<typeof DatePickerAndroidExample> {
+    render: function(): React.Element<typeof DatePickerAndroidExample> {
       return <DatePickerAndroidExample />;
     },
   },

@@ -10,6 +10,6 @@
 'use strict';
 
 module.exports = {
-  createInteractionHandle: function () {},
-  clearInteractionHandle: function () {},
+  createInteractionHandle: function() {},
+  clearInteractionHandle: function() {},
 };

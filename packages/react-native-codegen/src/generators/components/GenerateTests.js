@@ -53,7 +53,7 @@ TEST(::_COMPONENT_NAME_::_::_TEST_NAME_::, etc) {
 function getTestCasesForProp(propName, typeAnnotation) {
   const cases = [];
   if (typeAnnotation.type === 'StringEnumTypeAnnotation') {
-    typeAnnotation.options.forEach((option) =>
+    typeAnnotation.options.forEach(option =>
       cases.push({
         propName,
         testName: `${propName}_${toSafeCppString(option.name)}`,
@@ -146,14 +146,14 @@ module.exports = {
     ]);
 
     const componentTests = Object.keys(schema.modules)
-      .map((moduleName) => {
+      .map(moduleName => {
         const components = schema.modules[moduleName].components;
         if (components == null) {
           return null;
         }
 
         return Object.keys(components)
-          .map((componentName) => {
+          .map(componentName => {
             const component = components[componentName];
             const name = `${componentName}Props`;
 
@@ -167,7 +167,10 @@ module.exports = {
       .filter(Boolean)
       .join('');
 
-    const imports = Array.from(allImports).sort().join('\n').trim();
+    const imports = Array.from(allImports)
+      .sort()
+      .join('\n')
+      .trim();
 
     const replacedTemplate = fileTemplate
       .replace(/::_IMPORTS_::/g, imports)

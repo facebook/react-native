@@ -31,7 +31,7 @@ class RNTesterBlock extends React.Component<Props, State> {
   render(): React.Node {
     const description = this.props.description ? (
       <RNTesterThemeContext.Consumer>
-        {(theme) => {
+        {theme => {
           return (
             <Text style={[styles.descriptionText, {color: theme.LabelColor}]}>
               {this.props.description}
@@ -43,7 +43,7 @@ class RNTesterBlock extends React.Component<Props, State> {
 
     return (
       <RNTesterThemeContext.Consumer>
-        {(theme) => {
+        {theme => {
           return (
             <View
               style={[

@@ -482,7 +482,7 @@ describe('ExceptionsManager', () => {
 
     test('modifying the exception data', () => {
       const error = new Error('Some error happened');
-      const decorator = jest.fn().mockImplementation((data) => ({
+      const decorator = jest.fn().mockImplementation(data => ({
         ...data,
         message: 'decorated: ' + data.message,
       }));
@@ -515,7 +515,7 @@ describe('ExceptionsManager', () => {
 
     test('clearing a decorator', () => {
       const error = new Error('Some error happened');
-      const decorator = jest.fn().mockImplementation((data) => ({
+      const decorator = jest.fn().mockImplementation(data => ({
         ...data,
         message: 'decorated: ' + data.message,
       }));
@@ -530,7 +530,7 @@ describe('ExceptionsManager', () => {
 
     test('prevents decorator recursion from error handler', () => {
       const error = new Error('Some error happened');
-      const decorator = jest.fn().mockImplementation((data) => {
+      const decorator = jest.fn().mockImplementation(data => {
         console.error('Logging an error within the decorator');
         return {
           ...data,
@@ -556,7 +556,7 @@ describe('ExceptionsManager', () => {
 
     test('prevents decorator recursion from console.error', () => {
       const error = new Error('Some error happened');
-      const decorator = jest.fn().mockImplementation((data) => {
+      const decorator = jest.fn().mockImplementation(data => {
         console.error('Logging an error within the decorator');
         return {
           ...data,
@@ -586,7 +586,7 @@ describe('ExceptionsManager', () => {
 
     test('can handle throwing decorators recursion when exception is thrown', () => {
       const error = new Error('Some error happened');
-      const decorator = jest.fn().mockImplementation((data) => {
+      const decorator = jest.fn().mockImplementation(data => {
         throw new Error('Throwing an error within the decorator');
       });
 
@@ -604,7 +604,7 @@ describe('ExceptionsManager', () => {
 
     test('can handle throwing decorators recursion when exception is logged', () => {
       const error = new Error('Some error happened');
-      const decorator = jest.fn().mockImplementation((data) => {
+      const decorator = jest.fn().mockImplementation(data => {
         throw new Error('Throwing an error within the decorator');
       });
 

@@ -39,9 +39,9 @@ export class Property {
     elements: Array<any>,
     ignoreExperimental: boolean,
   ): Array<Property> {
-    let props = elements.map((elem) => Property.create(domain, elem));
+    let props = elements.map(elem => Property.create(domain, elem));
     if (ignoreExperimental) {
-      props = props.filter((prop) => !prop.experimental);
+      props = props.filter(prop => !prop.experimental);
     }
     return props;
   }

@@ -64,7 +64,7 @@ class RefreshControlExample extends React.Component {
     })),
   };
 
-  _onClick = (row) => {
+  _onClick = row => {
     row.clicks++;
     this.setState({
       rowData: this.state.rowData,
@@ -120,7 +120,7 @@ exports.simpleExampleContainer = true;
 exports.examples = [
   {
     title: 'Simple refresh',
-    render: function (): React.Element<typeof RefreshControlExample> {
+    render: function(): React.Element<typeof RefreshControlExample> {
       return <RefreshControlExample />;
     },
   },

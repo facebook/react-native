@@ -86,7 +86,7 @@ class MessageQueue {
 
   static spy(spyOrToggle: boolean | ((data: SpyData) => void)) {
     if (spyOrToggle === true) {
-      MessageQueue.prototype.__spy = (info) => {
+      MessageQueue.prototype.__spy = info => {
         console.log(
           `${info.type === TO_JS ? 'N->JS' : 'JS->N'} : ` +
             `${info.module ? info.module + '.' : ''}${info.method}` +
@@ -148,7 +148,7 @@ class MessageQueue {
     this._lazyCallableModules[name] = () => module;
   }
 
-  registerLazyCallableModule(name: string, factory: (void) => Object) {
+  registerLazyCallableModule(name: string, factory: void => Object) {
     let module: Object;
     let getValue: ?(void) => Object = factory;
     this._lazyCallableModules[name] = () => {
@@ -253,7 +253,7 @@ class MessageQueue {
       // folly-convertible.  As a special case, if a prop value is a
       // function it is permitted here, and special-cased in the
       // conversion.
-      const isValidArgument = (val) => {
+      const isValidArgument = val => {
         const t = typeof val;
         if (
           t === 'undefined' ||

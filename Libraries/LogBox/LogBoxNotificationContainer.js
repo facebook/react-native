@@ -51,9 +51,9 @@ export function _LogBoxNotificationContainer(props: Props): React.Node {
     return null;
   }
 
-  const warnings = logs.filter((log) => log.level === 'warn');
+  const warnings = logs.filter(log => log.level === 'warn');
   const errors = logs.filter(
-    (log) => log.level === 'error' || log.level === 'fatal',
+    log => log.level === 'error' || log.level === 'fatal',
   );
   return (
     <View style={styles.list}>

@@ -151,7 +151,7 @@ class TouchableText extends React.Component<Props, State> {
     }
     return (
       <TextAncestor.Consumer>
-        {(hasTextAncestor) =>
+        {hasTextAncestor =>
           hasTextAncestor ? (
             <RCTVirtualText {...props} ref={props.forwardedRef} />
           ) : (

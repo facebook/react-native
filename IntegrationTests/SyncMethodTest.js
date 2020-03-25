@@ -27,7 +27,7 @@ class SyncMethodTest extends React.Component<{...}> {
       throw new Error('Something wrong with methodThatReturnsNil sync method');
     }
     let response;
-    RNTesterTestModule.methodThatCallsCallbackWithString('test', (echo) => {
+    RNTesterTestModule.methodThatCallsCallbackWithString('test', echo => {
       response = echo;
     });
     requestAnimationFrame(() => {

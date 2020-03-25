@@ -35,7 +35,7 @@ beforeAll(async () => {
   });
 });
 
-beforeEach(async function () {
+beforeEach(async function() {
   await adapter.beforeEach();
 });
 

@@ -101,7 +101,7 @@ class RewriteExample extends React.Component<$FlowFixMeProps, any> {
           autoCorrect={false}
           multiline={false}
           maxLength={limit}
-          onChangeText={(text) => {
+          onChangeText={text => {
             text = text.replace(/ /g, '_');
             this.setState({text});
           }}
@@ -131,7 +131,7 @@ class RewriteExampleInvalidCharacters extends React.Component<
           testID="rewrite_no_sp_input"
           autoCorrect={false}
           multiline={false}
-          onChangeText={(text) => {
+          onChangeText={text => {
             this.setState({text: text.replace(/\s/g, '')});
           }}
           style={styles.default}
@@ -158,11 +158,11 @@ class RewriteInvalidCharactersAndClearExample extends React.Component<
         <TextInput
           testID="rewrite_clear_input"
           autoCorrect={false}
-          ref={(ref) => {
+          ref={ref => {
             this.inputRef = ref;
           }}
           multiline={false}
-          onChangeText={(text) => {
+          onChangeText={text => {
             this.setState({text: text.replace(/\s/g, '')});
           }}
           style={styles.default}
@@ -183,7 +183,7 @@ class RewriteInvalidCharactersAndClearExample extends React.Component<
 }
 
 class BlurOnSubmitExample extends React.Component<{...}> {
-  focusNextField = (nextField) => {
+  focusNextField = nextField => {
     this.refs[nextField].focus();
   };
 
@@ -244,8 +244,8 @@ class TextEventsExample extends React.Component<{...}, $FlowFixMeState> {
     prev3Text: '<No Event>',
   };
 
-  updateText = (text) => {
-    this.setState((state) => {
+  updateText = text => {
+    this.setState(state => {
       return {
         curText: text,
         prevText: state.curText,
@@ -265,22 +265,22 @@ class TextEventsExample extends React.Component<{...}, $FlowFixMeState> {
           multiline
           onFocus={() => this.updateText('onFocus')}
           onBlur={() => this.updateText('onBlur')}
-          onChange={(event) =>
+          onChange={event =>
             this.updateText('onChange text: ' + event.nativeEvent.text)
           }
-          onContentSizeChange={(event) =>
+          onContentSizeChange={event =>
             this.updateText(
               'onContentSizeChange size: ' +
                 JSON.stringify(event.nativeEvent.contentSize),
             )
           }
-          onEndEditing={(event) =>
+          onEndEditing={event =>
             this.updateText('onEndEditing text: ' + event.nativeEvent.text)
           }
-          onSubmitEditing={(event) =>
+          onSubmitEditing={event =>
             this.updateText('onSubmitEditing text: ' + event.nativeEvent.text)
           }
-          onKeyPress={(event) =>
+          onKeyPress={event =>
             this.updateText('onKeyPress key: ' + event.nativeEvent.key)
           }
           style={styles.singleLine}
@@ -332,7 +332,7 @@ class TokenizedTextExample extends React.Component<
     parts.push(_text);
 
     //highlight hashtags
-    parts = parts.map((text) => {
+    parts = parts.map(text => {
       if (/^#/.test(text)) {
         return (
           <Text key={text} style={styles.hashtag}>
@@ -349,7 +349,7 @@ class TokenizedTextExample extends React.Component<
         <TextInput
           multiline={true}
           style={styles.multiline}
-          onChangeText={(text) => {
+          onChangeText={text => {
             this.setState({text});
           }}>
           <Text>{parts}</Text>
@@ -419,9 +419,9 @@ class SelectionExample extends React.Component<
       <View>
         <TextInput
           multiline={this.props.multiline}
-          onChangeText={(value) => this.setState({value})}
+          onChangeText={value => this.setState({value})}
           onSelectionChange={this.onSelectionChange.bind(this)}
-          ref={(textInput) => (this._textInput = textInput)}
+          ref={textInput => (this._textInput = textInput)}
           selection={this.state.selection}
           style={this.props.style}
           value={this.state.value}
@@ -446,7 +446,7 @@ class SelectionExample extends React.Component<
 module.exports = ([
   {
     title: 'Auto-focus',
-    render: function (): React.Node {
+    render: function(): React.Node {
       return (
         <TextInput
           autoFocus={true}
@@ -458,25 +458,25 @@ module.exports = ([
   },
   {
     title: "Live Re-Write (<sp>  ->  '_') + maxLength",
-    render: function (): React.Node {
+    render: function(): React.Node {
       return <RewriteExample />;
     },
   },
   {
     title: 'Live Re-Write (no spaces allowed)',
-    render: function (): React.Node {
+    render: function(): React.Node {
       return <RewriteExampleInvalidCharacters />;
     },
   },
   {
     title: 'Live Re-Write (no spaces allowed) and clear',
-    render: function (): React.Node {
+    render: function(): React.Node {
       return <RewriteInvalidCharactersAndClearExample />;
     },
   },
   {
     title: 'Auto-capitalize',
-    render: function (): React.Node {
+    render: function(): React.Node {
       return (
         <View>
           <WithLabel label="none">
@@ -497,7 +497,7 @@ module.exports = ([
   },
   {
     title: 'Auto-correct',
-    render: function (): React.Node {
+    render: function(): React.Node {
       return (
         <View>
           <WithLabel label="true">
@@ -512,7 +512,7 @@ module.exports = ([
   },
   {
     title: 'Keyboard types',
-    render: function (): React.Node {
+    render: function(): React.Node {
       const keyboardTypes = [
         'default',
         'ascii-capable',
@@ -528,7 +528,7 @@ module.exports = ([
         'ascii-capable-number-pad',
         'numeric',
       ];
-      const examples = keyboardTypes.map((type) => {
+      const examples = keyboardTypes.map(type => {
         return (
           <WithLabel key={type} label={type}>
             <TextInput keyboardType={type} style={styles.default} />
@@ -540,19 +540,19 @@ module.exports = ([
   },
   {
     title: 'Blur on submit',
-    render: function (): React.Element<any> {
+    render: function(): React.Element<any> {
       return <BlurOnSubmitExample />;
     },
   },
   {
     title: 'Event handling',
-    render: function (): React.Element<any> {
+    render: function(): React.Element<any> {
       return <TextEventsExample />;
     },
   },
   {
     title: 'fontFamily, fontWeight and fontStyle',
-    render: function (): React.Node {
+    render: function(): React.Node {
       const fontFamilyA = Platform.OS === 'ios' ? 'Cochin' : 'sans-serif';
       const fontFamilyB = Platform.OS === 'ios' ? 'Courier' : 'serif';
 
@@ -593,13 +593,13 @@ module.exports = ([
   },
   {
     title: 'Attributed text',
-    render: function (): React.Node {
+    render: function(): React.Node {
       return <TokenizedTextExample />;
     },
   },
   {
     title: 'Text selection & cursor placement',
-    render: function (): React.Node {
+    render: function(): React.Node {
       return (
         <View>
           <SelectionExample

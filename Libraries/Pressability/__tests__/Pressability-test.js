@@ -29,7 +29,7 @@ function getMock<TArguments: $ReadOnlyArray<mixed>, TReturn>(
   return (fn: $FlowFixMe);
 }
 
-const createMockPressability = (overrides) => {
+const createMockPressability = overrides => {
   const config = {
     cancelable: null,
     disabled: null,
@@ -106,7 +106,7 @@ const mockUIManagerMeasure = (options?: {|delay: number|}) => {
   });
 };
 
-const createMockTargetEvent = (registrationName) => {
+const createMockTargetEvent = registrationName => {
   const nativeEvent = {
     target: 42,
   };
@@ -133,7 +133,7 @@ const createMockTargetEvent = (registrationName) => {
   };
 };
 
-const createMockMouseEvent = (registrationName) => {
+const createMockMouseEvent = registrationName => {
   const nativeEvent = {
     clientX: 0,
     clientY: 0,

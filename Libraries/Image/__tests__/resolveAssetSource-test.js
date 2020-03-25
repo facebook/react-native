@@ -298,7 +298,7 @@ describe('resolveAssetSource', () => {
     });
 
     it('uses bundled source, event when js is sideloaded', () => {
-      resolveAssetSource.setCustomSourceTransformer((resolver) =>
+      resolveAssetSource.setCustomSourceTransformer(resolver =>
         resolver.resourceIdentifierWithoutScale(),
       );
       expectResolvesAsset(
@@ -324,7 +324,7 @@ describe('resolveAssetSource', () => {
     });
 
     it('allows any customization', () => {
-      resolveAssetSource.setCustomSourceTransformer((resolver) =>
+      resolveAssetSource.setCustomSourceTransformer(resolver =>
         resolver.fromSource('TEST'),
       );
       expectResolvesAsset(

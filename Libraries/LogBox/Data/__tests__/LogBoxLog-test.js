@@ -19,7 +19,7 @@ jest.mock('../LogBoxSymbolication', () => {
 });
 
 function getLogBoxLog() {
-  return new (require('../LogBoxLog').default)({
+  return new (require('../LogBoxLog')).default({
     level: 'warn',
     isComponentError: false,
     message: {content: '...', substitutions: []},
@@ -49,8 +49,8 @@ function getLogBoxSymbolication(): {|
   return (require('../LogBoxSymbolication'): any);
 }
 
-const createStack = (methodNames) =>
-  methodNames.map((methodName) => ({
+const createStack = methodNames =>
+  methodNames.map(methodName => ({
     column: null,
     file: 'file://path/to/file.js',
     lineNumber: 1,
@@ -61,8 +61,8 @@ describe('LogBoxLog', () => {
   beforeEach(() => {
     jest.resetModules();
 
-    getLogBoxSymbolication().symbolicate.mockImplementation(async (stack) => ({
-      stack: createStack(stack.map((frame) => `S(${frame.methodName})`)),
+    getLogBoxSymbolication().symbolicate.mockImplementation(async stack => ({
+      stack: createStack(stack.map(frame => `S(${frame.methodName})`)),
       codeFrame: null,
     }));
   });
@@ -164,7 +164,7 @@ describe('LogBoxLog', () => {
 
   it('updates when symbolication fails', () => {
     const error = new Error('...');
-    getLogBoxSymbolication().symbolicate.mockImplementation(async (stack) => {
+    getLogBoxSymbolication().symbolicate.mockImplementation(async stack => {
       throw error;
     });
 
@@ -253,7 +253,7 @@ describe('LogBoxLog', () => {
 
   it('retry updates when symbolication fails', () => {
     const error = new Error('...');
-    getLogBoxSymbolication().symbolicate.mockImplementation(async (stack) => {
+    getLogBoxSymbolication().symbolicate.mockImplementation(async stack => {
       throw error;
     });
 
@@ -278,8 +278,8 @@ describe('LogBoxLog', () => {
     // Retry to symbolicate again.
     callback.mockClear();
     getLogBoxSymbolication().symbolicate.mockClear();
-    getLogBoxSymbolication().symbolicate.mockImplementation(async (stack) => ({
-      stack: createStack(stack.map((frame) => `S(${frame.methodName})`)),
+    getLogBoxSymbolication().symbolicate.mockImplementation(async stack => ({
+      stack: createStack(stack.map(frame => `S(${frame.methodName})`)),
       codeFrame: null,
     }));
 

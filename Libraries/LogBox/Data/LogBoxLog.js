@@ -94,10 +94,10 @@ class LogBoxLog {
     if (this.symbolicated.status !== 'PENDING') {
       this.updateStatus(null, null, null, callback);
       LogBoxSymbolication.symbolicate(this.stack).then(
-        (data) => {
+        data => {
           this.updateStatus(null, data?.stack, data?.codeFrame, callback);
         },
-        (error) => {
+        error => {
           this.updateStatus(error, null, null, callback);
         },
       );

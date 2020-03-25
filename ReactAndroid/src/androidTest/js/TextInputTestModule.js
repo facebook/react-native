@@ -55,7 +55,7 @@ class TokenizedTextExample extends React.Component {
     parts.push(_text);
 
     //highlight hashtags
-    parts = parts.map((text) => {
+    parts = parts.map(text => {
       if (/^#/.test(text)) {
         return (
           <Text key={text} style={styles.hashtag}>
@@ -74,7 +74,7 @@ class TokenizedTextExample extends React.Component {
           testID="tokenizedInput"
           multiline={true}
           style={styles.multiline}
-          onChangeText={(text) => {
+          onChangeText={text => {
             this.setState({text});
           }}>
           <Text>{parts}</Text>
@@ -89,7 +89,7 @@ class TextInputTestApp extends React.Component {
     app = this;
   }
 
-  handleOnSubmitEditing = (record) => {
+  handleOnSubmitEditing = record => {
     Recording.record(record);
   };
 
@@ -176,7 +176,7 @@ const styles = StyleSheet.create({
 
 const TextInputTestModule = {
   TextInputTestApp,
-  setValueRef: function (ref, value) {
+  setValueRef: function(ref, value) {
     app.refs[ref].setNativeProps({
       text: value,
     });

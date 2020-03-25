@@ -23,7 +23,7 @@ class AnimatedTransform extends AnimatedWithChildren {
   }
 
   __makeNative() {
-    this._transforms.forEach((transform) => {
+    this._transforms.forEach(transform => {
       for (const key in transform) {
         const value = transform[key];
         if (value instanceof AnimatedNode) {
@@ -35,7 +35,7 @@ class AnimatedTransform extends AnimatedWithChildren {
   }
 
   __getValue(): $ReadOnlyArray<Object> {
-    return this._transforms.map((transform) => {
+    return this._transforms.map(transform => {
       const result = {};
       for (const key in transform) {
         const value = transform[key];
@@ -50,7 +50,7 @@ class AnimatedTransform extends AnimatedWithChildren {
   }
 
   __getAnimatedValue(): $ReadOnlyArray<Object> {
-    return this._transforms.map((transform) => {
+    return this._transforms.map(transform => {
       const result = {};
       for (const key in transform) {
         const value = transform[key];
@@ -66,7 +66,7 @@ class AnimatedTransform extends AnimatedWithChildren {
   }
 
   __attach(): void {
-    this._transforms.forEach((transform) => {
+    this._transforms.forEach(transform => {
       for (const key in transform) {
         const value = transform[key];
         if (value instanceof AnimatedNode) {
@@ -77,7 +77,7 @@ class AnimatedTransform extends AnimatedWithChildren {
   }
 
   __detach(): void {
-    this._transforms.forEach((transform) => {
+    this._transforms.forEach(transform => {
       for (const key in transform) {
         const value = transform[key];
         if (value instanceof AnimatedNode) {
@@ -91,7 +91,7 @@ class AnimatedTransform extends AnimatedWithChildren {
   __getNativeConfig(): any {
     const transConfigs = [];
 
-    this._transforms.forEach((transform) => {
+    this._transforms.forEach(transform => {
       for (const key in transform) {
         const value = transform[key];
         if (value instanceof AnimatedNode) {

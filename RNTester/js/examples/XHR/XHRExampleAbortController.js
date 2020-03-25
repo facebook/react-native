@@ -23,9 +23,9 @@ class XHRExampleAbortController extends React.Component<{...}, {...}> {
     fetch('https://reactnative.dev/', {
       signal: abortController.signal,
     })
-      .then((res) => res.text())
-      .then((res) => Alert.alert(res))
-      .catch((err) => Alert.alert(err.message));
+      .then(res => res.text())
+      .then(res => Alert.alert(res))
+      .catch(err => Alert.alert(err.message));
     this._timeout = setTimeout(() => {
       abortController.abort();
     }, abortDelay);

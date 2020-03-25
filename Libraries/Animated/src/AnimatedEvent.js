@@ -58,7 +58,7 @@ function attachNativeEvent(
 
   const viewTag = ReactNative.findNodeHandle(viewRef);
   if (viewTag != null) {
-    eventMappings.forEach((mapping) => {
+    eventMappings.forEach(mapping => {
       NativeAnimatedHelper.API.addAnimatedEventToView(
         viewTag,
         eventName,
@@ -70,7 +70,7 @@ function attachNativeEvent(
   return {
     detach() {
       if (viewTag != null) {
-        eventMappings.forEach((mapping) => {
+        eventMappings.forEach(mapping => {
           NativeAnimatedHelper.API.removeAnimatedEventFromView(
             viewTag,
             eventName,
@@ -155,9 +155,7 @@ class AnimatedEvent {
   }
 
   __removeListener(callback: Function): void {
-    this._listeners = this._listeners.filter(
-      (listener) => listener !== callback,
-    );
+    this._listeners = this._listeners.filter(listener => listener !== callback);
   }
 
   __attach(viewRef: any, eventName: string) {
@@ -228,7 +226,7 @@ class AnimatedEvent {
   }
 
   _callListeners(...args: any) {
-    this._listeners.forEach((listener) => listener(...args));
+    this._listeners.forEach(listener => listener(...args));
   }
 }
 

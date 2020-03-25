@@ -39,21 +39,21 @@ describe('SectionList', () => {
     const component = ReactTestRenderer.create(
       <SectionList
         initialNumToRender={Infinity}
-        ItemSeparatorComponent={(props) => (
+        ItemSeparatorComponent={props => (
           <defaultItemSeparator v={propStr(props)} />
         )}
-        ListEmptyComponent={(props) => <empty v={propStr(props)} />}
-        ListFooterComponent={(props) => <footer v={propStr(props)} />}
-        ListHeaderComponent={(props) => <header v={propStr(props)} />}
-        SectionSeparatorComponent={(props) => (
+        ListEmptyComponent={props => <empty v={propStr(props)} />}
+        ListFooterComponent={props => <footer v={propStr(props)} />}
+        ListHeaderComponent={props => <header v={propStr(props)} />}
+        SectionSeparatorComponent={props => (
           <sectionSeparator v={propStr(props)} />
         )}
         sections={[
           {
-            renderItem: (props) => <itemForSection1 v={propStr(props)} />,
+            renderItem: props => <itemForSection1 v={propStr(props)} />,
             key: 's1',
             keyExtractor: (item, index) => item.id,
-            ItemSeparatorComponent: (props) => (
+            ItemSeparatorComponent: props => (
               <itemSeparatorForSection1 v={propStr(props)} />
             ),
             data: [{id: 'i1s1'}, {id: 'i2s1'}],
@@ -69,9 +69,9 @@ describe('SectionList', () => {
         ]}
         refreshing={false}
         onRefresh={jest.fn()}
-        renderItem={(props) => <defaultItem v={propStr(props)} />}
-        renderSectionHeader={(props) => <sectionHeader v={propStr(props)} />}
-        renderSectionFooter={(props) => <sectionFooter v={propStr(props)} />}
+        renderItem={props => <defaultItem v={propStr(props)} />}
+        renderSectionHeader={props => <sectionHeader v={propStr(props)} />}
+        renderSectionFooter={props => <sectionFooter v={propStr(props)} />}
       />,
     );
     expect(component).toMatchSnapshot();
@@ -81,8 +81,8 @@ describe('SectionList', () => {
       <SectionList
         sections={[{key: 's1', data: []}]}
         renderItem={({item}) => <item v={item.key} />}
-        renderSectionHeader={(props) => <sectionHeader v={propStr(props)} />}
-        renderSectionFooter={(props) => <sectionFooter v={propStr(props)} />}
+        renderSectionHeader={props => <sectionHeader v={propStr(props)} />}
+        renderSectionFooter={props => <sectionFooter v={propStr(props)} />}
       />,
     );
     expect(component).toMatchSnapshot();
@@ -92,7 +92,7 @@ describe('SectionList', () => {
       <SectionList
         sections={[{key: 's1', data: []}]}
         renderItem={({item}) => <item v={item.key} />}
-        renderSectionFooter={(props) => <sectionFooter v={propStr(props)} />}
+        renderSectionFooter={props => <sectionFooter v={propStr(props)} />}
       />,
     );
     expect(component).toMatchSnapshot();
@@ -101,7 +101,7 @@ describe('SectionList', () => {
 
 function propStr(props) {
   return Object.keys(props)
-    .map((k) => {
+    .map(k => {
       const propObj = props[k] || {};
       return `${k}:${propObj.key || propObj.id || props[k]}`;
     })

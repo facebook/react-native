@@ -22,8 +22,8 @@ const PlatformColorAndroid = require('../PlatformColorValueTypes.android')
 
 const platformSpecific =
   OS === 'android'
-    ? (unsigned) => unsigned | 0 //eslint-disable-line no-bitwise
-    : (x) => x;
+    ? unsigned => unsigned | 0 //eslint-disable-line no-bitwise
+    : x => x;
 
 describe('processColor', () => {
   describe('predefined color names', () => {

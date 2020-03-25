@@ -376,7 +376,7 @@ class VirtualizedSectionList<
           leadingSection={info.leadingSection}
           onUpdateSeparator={this._onUpdateSeparator}
           prevCellKey={(this._subExtractor(index - 1) || {}).key}
-          ref={(ref) => {
+          ref={ref => {
             this._cellRefs[info.key] = ref;
           }}
           renderItem={renderItem}
@@ -419,7 +419,7 @@ class VirtualizedSectionList<
 
   _cellRefs = {};
   _listRef: VirtualizedList;
-  _captureRef = (ref) => {
+  _captureRef = ref => {
     /* $FlowFixMe(>=0.53.0 site=react_native_fb,react_native_oss) This comment
      * suppresses an error when upgrading Flow's support for React. To see the
      * error delete this comment and run Flow. */
@@ -485,19 +485,19 @@ class ItemWithSeparator extends React.Component<
 
   _separators = {
     highlight: () => {
-      ['leading', 'trailing'].forEach((s) =>
+      ['leading', 'trailing'].forEach(s =>
         this._separators.updateProps(s, {highlighted: true}),
       );
     },
     unhighlight: () => {
-      ['leading', 'trailing'].forEach((s) =>
+      ['leading', 'trailing'].forEach(s =>
         this._separators.updateProps(s, {highlighted: false}),
       );
     },
     updateProps: (select: 'leading' | 'trailing', newProps: Object) => {
       const {LeadingSeparatorComponent, cellKey, prevCellKey} = this.props;
       if (select === 'leading' && LeadingSeparatorComponent != null) {
-        this.setState((state) => ({
+        this.setState(state => ({
           leadingSeparatorProps: {...state.leadingSeparatorProps, ...newProps},
         }));
       } else {
@@ -534,7 +534,7 @@ class ItemWithSeparator extends React.Component<
   }
 
   updateSeparatorProps(newProps: Object) {
-    this.setState((state) => ({
+    this.setState(state => ({
       separatorProps: {...state.separatorProps, ...newProps},
     }));
   }

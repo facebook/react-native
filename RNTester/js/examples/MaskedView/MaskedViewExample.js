@@ -103,7 +103,7 @@ class ChangingChildrenMaskExample extends React.Component<
 
   componentDidMount() {
     setInterval(() => {
-      this.setState((state) => ({
+      this.setState(state => ({
         alternateChildren: !state.alternateChildren,
       }));
     }, 1000);
@@ -174,7 +174,7 @@ exports.description =
 exports.examples = [
   {
     title: 'Basic Mask',
-    render: function (): React.Element<typeof View> {
+    render: function(): React.Element<typeof View> {
       return (
         <View style={styles.exampleWrapperStyle}>
           <MaskedViewIOS
@@ -193,7 +193,7 @@ exports.examples = [
   },
   {
     title: 'Image Mask',
-    render: function (): React.Element<typeof View> {
+    render: function(): React.Element<typeof View> {
       return (
         <View style={[styles.exampleWrapperStyle, styles.grayStyle]}>
           <MaskedViewIOS
@@ -223,13 +223,13 @@ exports.examples = [
   },
   {
     title: 'Animated Mask',
-    render: function (): React.Element<typeof AnimatedMaskExample> {
+    render: function(): React.Element<typeof AnimatedMaskExample> {
       return <AnimatedMaskExample />;
     },
   },
   {
     title: 'Mask w/ Changing Children',
-    render: function (): React.Element<typeof ChangingChildrenMaskExample> {
+    render: function(): React.Element<typeof ChangingChildrenMaskExample> {
       return <ChangingChildrenMaskExample />;
     },
   },

@@ -56,7 +56,7 @@ function createAnimatedComponent<Props: {+[string]: mixed, ...}, Instance>(
     }
 
     _detachNativeEvents() {
-      this._eventDetachers.forEach((remove) => remove());
+      this._eventDetachers.forEach(remove => remove());
       this._eventDetachers = [];
     }
 
@@ -140,7 +140,7 @@ function createAnimatedComponent<Props: {+[string]: mixed, ...}, Instance>(
 
     _setComponentRef = setAndForwardRef({
       getForwardedRef: () => this.props.forwardedRef,
-      setLocalRef: (ref) => {
+      setLocalRef: ref => {
         this._prevComponent = this._component;
         this._component = ref;
 

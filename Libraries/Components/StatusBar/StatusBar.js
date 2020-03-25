@@ -467,7 +467,9 @@ class StatusBar extends React.Component<Props> {
         const processedColor = processColor(mergedProps.backgroundColor.value);
         if (processedColor == null) {
           console.warn(
-            `\`StatusBar._updatePropsStack\`: Color ${mergedProps.backgroundColor.value} parsed to null or undefined`,
+            `\`StatusBar._updatePropsStack\`: Color ${
+              mergedProps.backgroundColor.value
+            } parsed to null or undefined`,
           );
         } else {
           invariant(

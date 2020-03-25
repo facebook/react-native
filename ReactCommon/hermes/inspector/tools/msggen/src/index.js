@@ -77,7 +77,7 @@ function buildGraph(desc: Descriptor): Graph {
   const commands = desc.commands;
   const events = desc.events;
 
-  const maybeAddPropEdges = function (nodeId: string, props: ?Array<Property>) {
+  const maybeAddPropEdges = function(nodeId: string, props: ?Array<Property>) {
     if (props) {
       for (const prop of props) {
         const refId = prop.getRefDebuggerName();
@@ -169,12 +169,8 @@ function filterReachableFromRoots(
   // Commands and events don't depend on each other, so just emit them in the
   // order we got them from the JSON file.
   const ids = new Set(topoSortedIds);
-  const commands = desc.commands.filter((cmd) =>
-    ids.has(cmd.getDebuggerName()),
-  );
-  const events = desc.events.filter((event) =>
-    ids.has(event.getDebuggerName()),
-  );
+  const commands = desc.commands.filter(cmd => ids.has(cmd.getDebuggerName()));
+  const events = desc.events.filter(event => ids.has(event.getDebuggerName()));
 
   // Sort commands and events so the code is easier to read. Types have to be
   // topologically sorted as explained above.

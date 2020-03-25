@@ -47,7 +47,7 @@ module.exports = {
     const fileName = 'ShadowNodes.cpp';
 
     const componentNames = Object.keys(schema.modules)
-      .map((moduleName) => {
+      .map(moduleName => {
         const components = schema.modules[moduleName].components;
         // No components in this module
         if (components == null) {
@@ -55,7 +55,7 @@ module.exports = {
         }
 
         return Object.keys(components)
-          .map((componentName) => {
+          .map(componentName => {
             if (components[componentName].interfaceOnly === true) {
               return;
             }

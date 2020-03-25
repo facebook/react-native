@@ -106,7 +106,7 @@ export function parseInterpolation(
     contentParts.push(contentString);
   }
 
-  const remainingArgs = remaining.map((arg) => {
+  const remainingArgs = remaining.map(arg => {
     // Don't stringify a string type.
     // It adds quotation mark wrappers around the string,
     // which causes the LogBox to look odd.
@@ -127,7 +127,7 @@ export function parseInterpolation(
 export function parseComponentStack(message: string): ComponentStack {
   return message
     .split(/\n {4}in /g)
-    .map((s) => {
+    .map(s => {
       if (!s) {
         return null;
       }

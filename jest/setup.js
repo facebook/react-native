@@ -20,10 +20,10 @@ global.__DEV__ = true;
 global.Promise = jest.requireActual('promise');
 global.regeneratorRuntime = jest.requireActual('regenerator-runtime/runtime');
 
-global.requestAnimationFrame = function (callback) {
+global.requestAnimationFrame = function(callback) {
   return setTimeout(callback, 0);
 };
-global.cancelAnimationFrame = function (id) {
+global.cancelAnimationFrame = function(id) {
   clearTimeout(id);
 };
 
@@ -54,7 +54,7 @@ jest
     customDirectEventTypes: {},
     dispatchViewManagerCommand: jest.fn(),
     focus: jest.fn(),
-    getViewManagerConfig: jest.fn((name) => {
+    getViewManagerConfig: jest.fn(name => {
       if (name === 'AndroidDrawerLayout') {
         return {
           Constants: {
@@ -167,8 +167,8 @@ jest
       multiMerge: jest.fn((entries, callback) =>
         process.nextTick(() => callback(null)),
       ),
-      clear: jest.fn((callback) => process.nextTick(() => callback(null))),
-      getAllKeys: jest.fn((callback) =>
+      clear: jest.fn(callback => process.nextTick(() => callback(null))),
+      getAllKeys: jest.fn(callback =>
         process.nextTick(() => callback(null, [])),
       ),
     },
@@ -197,7 +197,7 @@ jest
       },
     },
     ImageLoader: {
-      getSize: jest.fn((url) => Promise.resolve({width: 320, height: 240})),
+      getSize: jest.fn(url => Promise.resolve({width: 320, height: 240})),
       prefetchImage: jest.fn(),
     },
     ImageViewManager: {
@@ -226,23 +226,23 @@ jest
       scheduleLocalNotification: jest.fn(),
       cancelAllLocalNotifications: jest.fn(),
       removeAllDeliveredNotifications: jest.fn(),
-      getDeliveredNotifications: jest.fn((callback) =>
+      getDeliveredNotifications: jest.fn(callback =>
         process.nextTick(() => []),
       ),
       removeDeliveredNotifications: jest.fn(),
       setApplicationIconBadgeNumber: jest.fn(),
-      getApplicationIconBadgeNumber: jest.fn((callback) =>
+      getApplicationIconBadgeNumber: jest.fn(callback =>
         process.nextTick(() => callback(0)),
       ),
       cancelLocalNotifications: jest.fn(),
-      getScheduledLocalNotifications: jest.fn((callback) =>
+      getScheduledLocalNotifications: jest.fn(callback =>
         process.nextTick(() => callback()),
       ),
       requestPermissions: jest.fn(() =>
         Promise.resolve({alert: true, badge: true, sound: true}),
       ),
       abandonPermissions: jest.fn(),
-      checkPermissions: jest.fn((callback) =>
+      checkPermissions: jest.fn(callback =>
         process.nextTick(() =>
           callback({alert: true, badge: true, sound: true}),
         ),
@@ -305,7 +305,7 @@ jest
   .mock('../Libraries/ReactNative/requireNativeComponent', () => {
     const React = require('react');
 
-    return (viewName) => {
+    return viewName => {
       const Component = class extends React.Component {
         render() {
           return React.createElement(viewName, this.props, this.props.children);
@@ -331,7 +331,7 @@ jest
   })
   .mock(
     '../Libraries/Utilities/verifyComponentAttributeEquivalence',
-    () => function () {},
+    () => function() {},
   )
   .mock('../Libraries/Components/View/ViewNativeComponent', () => {
     const React = require('react');

@@ -237,7 +237,7 @@ class DrawerLayoutAndroid extends React.Component<Props, State> {
     );
   }
 
-  _onDrawerSlide = (event) => {
+  _onDrawerSlide = event => {
     if (this.props.onDrawerSlide) {
       this.props.onDrawerSlide(event);
     }
@@ -258,7 +258,7 @@ class DrawerLayoutAndroid extends React.Component<Props, State> {
     }
   };
 
-  _onDrawerStateChanged = (event) => {
+  _onDrawerStateChanged = event => {
     if (this.props.onDrawerStateChanged) {
       this.props.onDrawerStateChanged(
         DRAWER_STATES[event.nativeEvent.drawerState],

@@ -83,7 +83,7 @@ function generateSetters(
   propertyParts: $ReadOnlyArray<string>,
 ): string {
   const propSetters = properties
-    .map((eventProperty) => {
+    .map(eventProperty => {
       switch (eventProperty.type) {
         case 'BooleanTypeAnnotation':
         case 'StringTypeAnnotation':
@@ -168,7 +168,7 @@ module.exports = {
     moduleSpecName: string,
   ): FilesOutput {
     const moduleComponents: ComponentCollection = Object.keys(schema.modules)
-      .map((moduleName) => {
+      .map(moduleName => {
         const components = schema.modules[moduleName].components;
         // No components in this module
         if (components == null) {
@@ -183,11 +183,11 @@ module.exports = {
     const fileName = 'EventEmitters.cpp';
 
     const componentEmitters = Object.keys(moduleComponents)
-      .map((componentName) => {
+      .map(componentName => {
         const component = moduleComponents[componentName];
 
         return component.events
-          .map((event) => {
+          .map(event => {
             return generateEvent(componentName, event);
           })
           .join('\n');

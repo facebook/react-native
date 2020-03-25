@@ -29,13 +29,13 @@ class BasicCheckBoxExample extends React.Component<BasicProps, BasicState> {
     return (
       <View>
         <CheckBox
-          onValueChange={(value) => this.setState({falseCheckBoxIsOn: value})}
+          onValueChange={value => this.setState({falseCheckBoxIsOn: value})}
           style={styles.checkbox}
           value={this.state.falseCheckBoxIsOn}
           tintColors={{false: 'red'}}
         />
         <CheckBox
-          onValueChange={(value) => this.setState({trueCheckBoxIsOn: value})}
+          onValueChange={value => this.setState({trueCheckBoxIsOn: value})}
           value={this.state.trueCheckBoxIsOn}
           tintColors={{true: 'green'}}
         />
@@ -73,12 +73,12 @@ class EventCheckBoxExample extends React.Component<EventProps, EventState> {
       <View style={styles.container}>
         <View>
           <CheckBox
-            onValueChange={(value) => this.setState({eventCheckBoxIsOn: value})}
+            onValueChange={value => this.setState({eventCheckBoxIsOn: value})}
             style={styles.checkbox}
             value={this.state.eventCheckBoxIsOn}
           />
           <CheckBox
-            onValueChange={(value) => this.setState({eventCheckBoxIsOn: value})}
+            onValueChange={value => this.setState({eventCheckBoxIsOn: value})}
             style={styles.checkbox}
             value={this.state.eventCheckBoxIsOn}
           />
@@ -86,14 +86,14 @@ class EventCheckBoxExample extends React.Component<EventProps, EventState> {
         </View>
         <View>
           <CheckBox
-            onValueChange={(value) =>
+            onValueChange={value =>
               this.setState({eventCheckBoxRegressionIsOn: value})
             }
             style={styles.checkbox}
             value={this.state.eventCheckBoxRegressionIsOn}
           />
           <CheckBox
-            onValueChange={(value) =>
+            onValueChange={value =>
               this.setState({eventCheckBoxRegressionIsOn: value})
             }
             style={styles.checkbox}

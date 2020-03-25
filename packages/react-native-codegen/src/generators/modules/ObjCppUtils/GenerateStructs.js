@@ -66,7 +66,9 @@ function getInlineMethodSignature(
     case 'AnyTypeAnnotation':
       return `id<NSObject> ${property.name}() const;`;
     case 'ArrayTypeAnnotation':
-      return `facebook::react::LazyVector<id<NSObject>> ${property.name}() const;`;
+      return `facebook::react::LazyVector<id<NSObject>> ${
+        property.name
+      }() const;`;
     case 'FunctionTypeAnnotation':
     default:
       throw new Error(`Unknown prop type, found: ${typeAnnotation.type}"`);
@@ -145,7 +147,7 @@ function translateObjectsForStructs(
     .reduce(
       (acc, object) =>
         acc.concat(
-          object.properties.map((property) =>
+          object.properties.map(property =>
             getInlineMethodImplementation(property, object.name)
               .replace(/::_PROPERTY_NAME_::/g, property.name)
               .replace(/::_STRUCT_NAME_::/g, object.name),
@@ -156,12 +158,12 @@ function translateObjectsForStructs(
     .join('\n');
 
   const translatedStructs = flattenObjects
-    .map((object) =>
+    .map(object =>
       structTemplate
         .replace(
           /::_STRUCT_PROPERTIES_::/g,
           object.properties
-            .map((property) => getInlineMethodSignature(property, object.name))
+            .map(property => getInlineMethodSignature(property, object.name))
             .join('\n      '),
         )
         .replace(/::_STRUCT_NAME_::/g, object.name),

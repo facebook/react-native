@@ -69,7 +69,7 @@ const Vibration = {
    *
    * See https://reactnative.dev/docs/vibration.html#vibrate
    */
-  vibrate: function (
+  vibrate: function(
     pattern: number | Array<number> = 400,
     repeat: boolean = false,
   ) {
@@ -99,7 +99,7 @@ const Vibration = {
    *
    * See https://reactnative.dev/docs/vibration.html#cancel
    */
-  cancel: function () {
+  cancel: function() {
     if (Platform.OS === 'ios') {
       _vibrating = false;
     } else {

@@ -24,7 +24,7 @@ function reportError(error) {
 const ErrorUtils = {
   apply: jest.fn(execute),
   applyWithGuard: jest.fn(execute),
-  guard: jest.fn((callback) => callback),
+  guard: jest.fn(callback => callback),
   inGuard: jest.fn().mockReturnValue(true),
   reportError: jest.fn(reportError),
   setGlobalHandler: jest.fn(),

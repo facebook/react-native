@@ -67,7 +67,7 @@ class WebSocketImage extends React.Component {
   componentDidMount() {
     let ws = (this.ws = new WebSocket(this.props.url));
     ws.binaryType = 'blob';
-    ws.onmessage = (event) => {
+    ws.onmessage = event => {
       if (event.data instanceof Blob) {
         const blob = event.data;
         if (this.state.blob) {
@@ -76,7 +76,7 @@ class WebSocketImage extends React.Component {
         this.setState({blob});
       }
     };
-    ws.onopen = (event) => {
+    ws.onopen = event => {
       ws.send('getImage');
     };
   }
@@ -138,7 +138,7 @@ class WebSocketExample extends React.Component<any, any, State> {
 
   _connect = () => {
     const socket = new WebSocket(this.state.url);
-    WS_EVENTS.forEach((ev) => socket.addEventListener(ev, this._onSocketEvent));
+    WS_EVENTS.forEach(ev => socket.addEventListener(ev, this._onSocketEvent));
     this.setState({
       socket,
       socketState: socket.readyState,
@@ -175,7 +175,7 @@ class WebSocketExample extends React.Component<any, any, State> {
     this.setState({
       fetchStatus: 'fetching',
     });
-    fetch(this.state.httpUrl).then((response) => {
+    fetch(this.state.httpUrl).then(response => {
       if (response.status >= 200 && response.status < 400) {
         this.setState({
           fetchStatus: 'OK',
@@ -230,7 +230,7 @@ class WebSocketExample extends React.Component<any, any, State> {
           style={styles.textInput}
           autoCorrect={false}
           placeholder="Server URL..."
-          onChangeText={(url) => this.setState({url})}
+          onChangeText={url => this.setState({url})}
           value={this.state.url}
         />
         <View style={styles.buttonRow}>
@@ -249,7 +249,7 @@ class WebSocketExample extends React.Component<any, any, State> {
           style={styles.textInput}
           autoCorrect={false}
           placeholder="Type message here..."
-          onChangeText={(outgoingMessage) => this.setState({outgoingMessage})}
+          onChangeText={outgoingMessage => this.setState({outgoingMessage})}
           value={this.state.outgoingMessage}
         />
         <View style={styles.buttonRow}>
@@ -274,7 +274,7 @@ class WebSocketExample extends React.Component<any, any, State> {
           style={styles.textInput}
           autoCorrect={false}
           placeholder="HTTP URL..."
-          onChangeText={(httpUrl) => this.setState({httpUrl})}
+          onChangeText={httpUrl => this.setState({httpUrl})}
           value={this.state.httpUrl}
         />
         <View style={styles.buttonRow}>

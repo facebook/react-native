@@ -187,7 +187,7 @@ function getClassExtendString(component): string {
   const extendString =
     ' : ' +
     component.extendsProps
-      .map((extendProps) => {
+      .map(extendProps => {
         switch (extendProps.type) {
           case 'ReactNativeBuiltInType':
             switch (extendProps.knownTypeName) {
@@ -275,7 +275,9 @@ function getNativeTypeFromAnnotation(
     default:
       (typeAnnotation: empty);
       throw new Error(
-        `Received invalid typeAnnotation for ${componentName} prop ${prop.name}, received ${typeAnnotation.type}`,
+        `Received invalid typeAnnotation for ${componentName} prop ${
+          prop.name
+        }, received ${typeAnnotation.type}`,
       );
   }
 }
@@ -289,7 +291,7 @@ function generateArrayEnumString(
   name: string,
   enumOptions,
 ): string {
-  const options = enumOptions.map((option) => option.name);
+  const options = enumOptions.map(option => option.name);
   const enumName = getEnumName(componentName, name);
 
   const values = options
@@ -298,7 +300,7 @@ function generateArrayEnumString(
 
   const fromCases = options
     .map(
-      (option) =>
+      option =>
         `if (item == "${option}") {
       result |= ${enumName}::${toSafeCppString(option)};
       continue;
@@ -308,7 +310,7 @@ function generateArrayEnumString(
 
   const toCases = options
     .map(
-      (option) =>
+      option =>
         `if (value & ${enumName}::${toSafeCppString(option)}) {
       result += "${option}" + separator;
     }`,
@@ -327,13 +329,13 @@ function generateStringEnum(componentName, prop) {
   const typeAnnotation = prop.typeAnnotation;
   if (typeAnnotation.type === 'StringEnumTypeAnnotation') {
     const values: $ReadOnlyArray<string> = typeAnnotation.options.map(
-      (option) => option.name,
+      option => option.name,
     );
     const enumName = getEnumName(componentName, prop.name);
 
     const fromCases = values
       .map(
-        (value) =>
+        value =>
           `if (string == "${value}") { result = ${enumName}::${convertValueToEnumOption(
             value,
           )}; return; }`,
@@ -342,7 +344,7 @@ function generateStringEnum(componentName, prop) {
 
     const toCases = values
       .map(
-        (value) =>
+        value =>
           `case ${enumName}::${convertValueToEnumOption(
             value,
           )}: return "${value}";`,
@@ -363,13 +365,13 @@ function generateIntEnum(componentName, prop) {
   const typeAnnotation = prop.typeAnnotation;
   if (typeAnnotation.type === 'Int32EnumTypeAnnotation') {
     const values: $ReadOnlyArray<number> = typeAnnotation.options.map(
-      (option) => option.value,
+      option => option.value,
     );
     const enumName = getEnumName(componentName, prop.name);
 
     const fromCases = values
       .map(
-        (value) =>
+        value =>
           `
     case ${value}:
       result = ${enumName}::${toIntEnumValueName(prop.name, value)};
@@ -379,7 +381,7 @@ function generateIntEnum(componentName, prop) {
 
     const toCases = values
       .map(
-        (value) =>
+        value =>
           `case ${enumName}::${toIntEnumValueName(
             prop.name,
             value,
@@ -388,7 +390,7 @@ function generateIntEnum(componentName, prop) {
       .join('\n' + '    ');
 
     const valueVariables = values
-      .map((val) => `${toIntEnumValueName(prop.name, val)} = ${val}`)
+      .map(val => `${toIntEnumValueName(prop.name, val)} = ${val}`)
       .join(', ');
 
     return intEnumTemplate
@@ -403,7 +405,7 @@ function generateIntEnum(componentName, prop) {
 
 function generateEnumString(componentName: string, component): string {
   return component.props
-    .map((prop) => {
+    .map(prop => {
       if (
         prop.typeAnnotation.type === 'ArrayTypeAnnotation' &&
         prop.typeAnnotation.elementType.type === 'StringEnumTypeAnnotation'
@@ -425,7 +427,7 @@ function generateEnumString(componentName: string, component): string {
 
       if (prop.typeAnnotation.type === 'ObjectTypeAnnotation') {
         return prop.typeAnnotation.properties
-          .map((property) => {
+          .map(property => {
             if (property.typeAnnotation.type === 'StringEnumTypeAnnotation') {
               return generateStringEnum(componentName, property);
             } else if (
@@ -448,7 +450,7 @@ function generatePropsString(
   props: $ReadOnlyArray<PropTypeShape>,
 ) {
   return props
-    .map((prop) => {
+    .map(prop => {
       const nativeType = getNativeTypeFromAnnotation(componentName, prop, []);
       const defaultValue = convertDefaultTypeToString(componentName, prop);
 
@@ -462,7 +464,7 @@ function getExtendsImports(
 ): Set<string> {
   const imports: Set<string> = new Set();
 
-  extendsProps.forEach((extendProps) => {
+  extendsProps.forEach(extendProps => {
     switch (extendProps.type) {
       case 'ReactNativeBuiltInType':
         switch (extendProps.knownTypeName) {
@@ -509,7 +511,7 @@ function getLocalImports(
     }
   }
 
-  properties.forEach((prop) => {
+  properties.forEach(prop => {
     const typeAnnotation = prop.typeAnnotation;
 
     if (typeAnnotation.type === 'NativePrimitiveTypeAnnotation') {
@@ -568,7 +570,7 @@ function generateStructs(
   nameParts,
 ): StructsMap {
   const structs: StructsMap = new Map();
-  properties.forEach((prop) => {
+  properties.forEach(prop => {
     const typeAnnotation = prop.typeAnnotation;
     if (typeAnnotation.type === 'ObjectTypeAnnotation') {
       // Recursively visit all of the object properties.
@@ -579,7 +581,7 @@ function generateStructs(
         elementProperties,
         nameParts.concat([prop.name]),
       );
-      nestedStructs.forEach(function (value, key) {
+      nestedStructs.forEach(function(value, key) {
         structs.set(key, value);
       });
 
@@ -603,7 +605,7 @@ function generateStructs(
         elementProperties,
         nameParts.concat([prop.name]),
       );
-      nestedStructs.forEach(function (value, key) {
+      nestedStructs.forEach(function(value, key) {
         structs.set(key, value);
       });
 
@@ -642,7 +644,7 @@ function generateStructs(
         elementProperties,
         nameParts.concat([prop.name]),
       );
-      nestedStructs.forEach(function (value, key) {
+      nestedStructs.forEach(function(value, key) {
         structs.set(key, value);
       });
 
@@ -681,7 +683,7 @@ function generateStruct(
   const structName = generateStructName(componentName, structNameParts);
 
   const fields = properties
-    .map((property) => {
+    .map(property => {
       return `${getNativeTypeFromAnnotation(
         componentName,
         property,
@@ -725,13 +727,15 @@ function generateStruct(
       default:
         (property.typeAnnotation.type: empty);
         throw new Error(
-          `Received invalid component property type ${property.typeAnnotation.type}`,
+          `Received invalid component property type ${
+            property.typeAnnotation.type
+          }`,
         );
     }
   });
 
   const fromCases = properties
-    .map((property) => {
+    .map(property => {
       const variable = property.name;
       return `auto ${variable} = map.find("${property.name}");
   if (${variable} != map.end()) {
@@ -760,7 +764,7 @@ module.exports = {
     const allImports: Set<string> = new Set();
 
     const componentClasses = Object.keys(schema.modules)
-      .map((moduleName) => {
+      .map(moduleName => {
         const components = schema.modules[moduleName].components;
         // No components in this module
         if (components == null) {
@@ -768,11 +772,11 @@ module.exports = {
         }
 
         return Object.keys(components)
-          .filter((componentName) => {
+          .filter(componentName => {
             const component = components[componentName];
             return component.excludedPlatform !== 'iOS';
           })
-          .map((componentName) => {
+          .map(componentName => {
             const component = components[componentName];
 
             const newName = `${componentName}Props`;
@@ -809,7 +813,12 @@ module.exports = {
 
     const replacedTemplate = template
       .replace(/::_COMPONENT_CLASSES_::/g, componentClasses)
-      .replace('::_IMPORTS_::', Array.from(allImports).sort().join('\n'));
+      .replace(
+        '::_IMPORTS_::',
+        Array.from(allImports)
+          .sort()
+          .join('\n'),
+      );
 
     return new Map([[fileName, replacedTemplate]]);
   },

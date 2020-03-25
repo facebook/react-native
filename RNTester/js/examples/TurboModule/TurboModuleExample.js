@@ -19,7 +19,7 @@ exports.description = 'Usage of TurboModule';
 exports.examples = [
   {
     title: 'SampleTurboModule',
-    render: function (): React.Element<any> {
+    render: function(): React.Element<any> {
       return <SampleTurboModuleExample />;
     },
   },

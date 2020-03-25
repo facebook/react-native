@@ -14,7 +14,7 @@ const ReactPropTypes = require('prop-types');
 
 const deprecatedPropType = require('../Utilities/deprecatedPropType');
 
-const TransformMatrixPropType = function (
+const TransformMatrixPropType = function(
   props: Object,
   propName: string,
   componentName: string,
@@ -27,7 +27,7 @@ const TransformMatrixPropType = function (
   }
 };
 
-const DecomposedMatrixPropType = function (
+const DecomposedMatrixPropType = function(
   props: Object,
   propName: string,
   componentName: string,

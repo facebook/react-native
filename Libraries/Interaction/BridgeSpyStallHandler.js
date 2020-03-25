@@ -16,9 +16,9 @@ const MessageQueue = require('../BatchedBridge/MessageQueue');
 const infoLog = require('../Utilities/infoLog');
 
 const BridgeSpyStallHandler = {
-  register: function () {
+  register: function() {
     let spyBuffer = [];
-    MessageQueue.spy((data) => {
+    MessageQueue.spy(data => {
       spyBuffer.push(data);
     });
     const TO_JS = 0;
@@ -26,13 +26,13 @@ const BridgeSpyStallHandler = {
       onStall: () => {
         infoLog(
           spyBuffer.length + ' bridge messages during stall: ',
-          spyBuffer.map((info) => {
+          spyBuffer.map(info => {
             let args = '<args>';
             try {
               args = JSON.stringify(info.args);
             } catch (e1) {
               if (Array.isArray(info.args)) {
-                args = info.args.map((arg) => {
+                args = info.args.map(arg => {
                   try {
                     return JSON.stringify(arg);
                   } catch (e2) {

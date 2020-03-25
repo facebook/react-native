@@ -66,15 +66,15 @@ class TaskQueue {
   }
 
   enqueueTasks(tasks: Array<Task>): void {
-    tasks.forEach((task) => this.enqueue(task));
+    tasks.forEach(task => this.enqueue(task));
   }
 
   cancelTasks(tasksToCancel: Array<Task>): void {
     // search through all tasks and remove them.
     this._queueStack = this._queueStack
-      .map((queue) => ({
+      .map(queue => ({
         ...queue,
-        tasks: queue.tasks.filter((task) => tasksToCancel.indexOf(task) === -1),
+        tasks: queue.tasks.filter(task => tasksToCancel.indexOf(task) === -1),
       }))
       .filter((queue, idx) => queue.tasks.length > 0 || idx === 0);
   }
@@ -171,8 +171,10 @@ class TaskQueue {
         this._queueStack[stackIdx].popable = true;
         this.hasTasksToProcess() && this._onMoreTasks();
       })
-      .catch((ex) => {
-        ex.message = `TaskQueue: Error resolving Promise in task ${task.name}: ${ex.message}`;
+      .catch(ex => {
+        ex.message = `TaskQueue: Error resolving Promise in task ${
+          task.name
+        }: ${ex.message}`;
         throw ex;
       })
       .done();

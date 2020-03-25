@@ -58,7 +58,7 @@ class FillRateHelper {
   _samplesStartTime = (null: ?number);
 
   static addListener(
-    callback: (FillRateInfo) => void,
+    callback: FillRateInfo => void,
   ): {remove: () => void, ...} {
     warning(
       _sampleRate !== null,
@@ -67,7 +67,7 @@ class FillRateHelper {
     _listeners.push(callback);
     return {
       remove: () => {
-        _listeners = _listeners.filter((listener) => callback !== listener);
+        _listeners = _listeners.filter(listener => callback !== listener);
       },
     };
   }
@@ -131,7 +131,7 @@ class FillRateHelper {
       }
       console.debug('FillRateHelper deactivateAndFlush: ', {derived, info});
     }
-    _listeners.forEach((listener) => listener(info));
+    _listeners.forEach(listener => listener(info));
     this._resetData();
   }
 

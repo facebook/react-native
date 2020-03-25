@@ -18,7 +18,7 @@ if (!global.RN$Bridgeless) {
    * Set up timers.
    * You can use this module directly, or just require InitializeCore.
    */
-  const defineLazyTimer = (name) => {
+  const defineLazyTimer = name => {
     polyfillGlobal(name, () => require('./Timers/JSTimers')[name]);
   };
   defineLazyTimer('setTimeout');

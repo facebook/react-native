@@ -41,11 +41,11 @@ describe('TextInput tests', () => {
           <TextInput
             ref={inputRef}
             value={state.text}
-            onChangeText={(text) => {
+            onChangeText={text => {
               onChangeTextListener(text);
               setState({text});
             }}
-            onChange={(event) => {
+            onChange={event => {
               onChangeListener(event);
             }}
           />
@@ -86,7 +86,7 @@ describe('TextInput tests', () => {
     ReactTestRenderer.create(<TextInput ref={textInputRef} value="value1" />);
 
     expect(textInputRef.current.isFocused()).toBe(false);
-    ReactNative.findNodeHandle = jest.fn().mockImplementation((ref) => {
+    ReactNative.findNodeHandle = jest.fn().mockImplementation(ref => {
       if (ref == null) {
         return null;
       }
@@ -125,7 +125,7 @@ describe('TextInput tests', () => {
         <TextInput ref={textInputRe2} value="value2" />
       </>,
     );
-    ReactNative.findNodeHandle = jest.fn().mockImplementation((ref) => {
+    ReactNative.findNodeHandle = jest.fn().mockImplementation(ref => {
       if (
         ref === textInputRe1.current ||
         ref === textInputRe1.current.getNativeRef()

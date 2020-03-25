@@ -34,12 +34,12 @@ exports.examples = [
     title: '<ScrollView>\n',
     description:
       'To make content scrollable, wrap it within a <ScrollView> component',
-    render: function (): React.Node {
+    render: function(): React.Node {
       let _scrollView: ?React.ElementRef<typeof ScrollView>;
       return (
         <View>
           <ScrollView
-            ref={(scrollView) => {
+            ref={scrollView => {
               _scrollView = scrollView;
             }}
             automaticallyAdjustContentInsets={false}
@@ -76,7 +76,7 @@ exports.examples = [
     title: '<ScrollView> (horizontal = true)\n',
     description:
       "You can display <ScrollView>'s child components horizontally rather than vertically",
-    render: function (): React.Node {
+    render: function(): React.Node {
       function renderScrollView(
         title: string,
         additionalStyles: ViewStyleProp,
@@ -86,7 +86,7 @@ exports.examples = [
           <View style={additionalStyles}>
             <Text style={styles.text}>{title}</Text>
             <ScrollView
-              ref={(scrollView) => {
+              ref={scrollView => {
                 _scrollView = scrollView;
               }}
               automaticallyAdjustContentInsets={false}
@@ -127,7 +127,7 @@ exports.examples = [
   {
     title: '<ScrollView> enable & disable\n',
     description: 'ScrollView scrolling behaviour can be disabled and enabled',
-    render: function (): React.Node {
+    render: function(): React.Node {
       class EnableDisableList extends React.Component<{...}, *> {
         state = {
           scrollEnabled: true,
@@ -170,7 +170,7 @@ if (Platform.OS === 'ios') {
     description:
       'The `maintainVisibleContentPosition` prop allows insertions to either end of the content ' +
       'without causing the visible content to jump. Re-ordering is not supported.',
-    render: function () {
+    render: function() {
       let itemCount = 6;
       class AppendingList extends React.Component<{...}, *> {
         state = {
@@ -191,7 +191,7 @@ if (Platform.OS === 'ios') {
                   autoscrollToTopThreshold: 10,
                 }}
                 style={styles.scrollView}>
-                {this.state.items.map((item) =>
+                {this.state.items.map(item =>
                   React.cloneElement(item, {key: item.props.msg}),
                 )}
               </ScrollView>
@@ -203,7 +203,7 @@ if (Platform.OS === 'ios') {
                   autoscrollToTopThreshold: 10,
                 }}
                 style={[styles.scrollView, styles.horizontalScrollView]}>
-                {this.state.items.map((item) =>
+                {this.state.items.map(item =>
                   React.cloneElement(item, {key: item.props.msg, style: null}),
                 )}
               </ScrollView>
@@ -211,7 +211,7 @@ if (Platform.OS === 'ios') {
                 <Button
                   label="Add to top"
                   onPress={() => {
-                    this.setState((state) => {
+                    this.setState(state => {
                       const idx = itemCount++;
                       return {
                         items: [
@@ -227,7 +227,7 @@ if (Platform.OS === 'ios') {
                 <Button
                   label="Remove top"
                   onPress={() => {
-                    this.setState((state) => ({
+                    this.setState(state => ({
                       items: state.items.slice(1),
                     }));
                   }}
@@ -235,7 +235,7 @@ if (Platform.OS === 'ios') {
                 <Button
                   label="Change height top"
                   onPress={() => {
-                    this.setState((state) => ({
+                    this.setState(state => ({
                       items: [
                         React.cloneElement(state.items[0], {
                           style: {paddingBottom: Math.random() * 40},
@@ -249,7 +249,7 @@ if (Platform.OS === 'ios') {
                 <Button
                   label="Add to end"
                   onPress={() => {
-                    this.setState((state) => ({
+                    this.setState(state => ({
                       items: state.items.concat(
                         <Item msg={`Item ${itemCount++}`} />,
                       ),
@@ -259,7 +259,7 @@ if (Platform.OS === 'ios') {
                 <Button
                   label="Remove end"
                   onPress={() => {
-                    this.setState((state) => ({
+                    this.setState(state => ({
                       items: state.items.slice(0, -1),
                     }));
                   }}
@@ -267,7 +267,7 @@ if (Platform.OS === 'ios') {
                 <Button
                   label="Change height end"
                   onPress={() => {
-                    this.setState((state) => ({
+                    this.setState(state => ({
                       items: state.items.slice(0, -1).concat(
                         React.cloneElement(
                           state.items[state.items.length - 1],

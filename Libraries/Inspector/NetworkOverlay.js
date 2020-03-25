@@ -360,7 +360,7 @@ class NetworkOverlay extends React.Component<Props, State> {
 
   _renderItemDetail(id) {
     const requestItem = this.state.requests[id];
-    const details = Object.keys(requestItem).map((key) => {
+    const details = Object.keys(requestItem).map(key => {
       if (key === 'id') {
         return;
       }
@@ -387,7 +387,7 @@ class NetworkOverlay extends React.Component<Props, State> {
         </TouchableHighlight>
         <ScrollView
           style={styles.detailScrollView}
-          ref={(scrollRef) => (this._detailScrollView = scrollRef)}>
+          ref={scrollRef => (this._detailScrollView = scrollRef)}>
           {details}
         </ScrollView>
       </View>

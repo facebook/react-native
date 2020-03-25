@@ -28,7 +28,7 @@ type Props = $ReadOnly<{|
 
 class OpenURLButton extends React.Component<Props> {
   handleClick = () => {
-    Linking.canOpenURL(this.props.url).then((supported) => {
+    Linking.canOpenURL(this.props.url).then(supported => {
       if (supported) {
         Linking.openURL(this.props.url);
       } else {
@@ -121,7 +121,7 @@ exports.description = 'Shows how to use Linking to open URLs.';
 exports.examples = [
   {
     title: 'Simple list of items',
-    render: function (): React.Element<typeof IntentAndroidExample> {
+    render: function(): React.Element<typeof IntentAndroidExample> {
       return <IntentAndroidExample />;
     },
   },

@@ -29,7 +29,7 @@ class TVEventHandlerView extends React.Component<Props, State> {
 
   _enableTVEventHandler() {
     this._tvEventHandler = new TVEventHandler();
-    this._tvEventHandler.enable(this, function (cmp, evt) {
+    this._tvEventHandler.enable(this, function(cmp, evt) {
       cmp.setState({
         lastEventType: evt.eventType,
       });

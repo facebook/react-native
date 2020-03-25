@@ -132,7 +132,7 @@ function _callTimer(timerID: number, frameTime: number, didTimeout: ?boolean) {
       callback(performanceNow());
     } else if (type === 'requestIdleCallback') {
       callback({
-        timeRemaining: function () {
+        timeRemaining: function() {
           // TODO: Optimisation: allow running for longer than one frame if
           // there are no pending JS calls on the bridge from native. This
           // would require a way to check the bridge queue synchronously.
@@ -221,11 +221,7 @@ const JSTimers = {
    * @param {function} func Callback to be invoked after `duration` ms.
    * @param {number} duration Number of milliseconds.
    */
-  setTimeout: function (
-    func: Function,
-    duration: number,
-    ...args: any
-  ): number {
+  setTimeout: function(func: Function, duration: number, ...args: any): number {
     if (__DEV__ && IS_ANDROID && duration > MAX_TIMER_DURATION_MS) {
       console.warn(
         ANDROID_LONG_TIMER_MESSAGE +
@@ -247,7 +243,7 @@ const JSTimers = {
    * @param {function} func Callback to be invoked every `duration` ms.
    * @param {number} duration Number of milliseconds.
    */
-  setInterval: function (
+  setInterval: function(
     func: Function,
     duration: number,
     ...args: any
@@ -273,7 +269,7 @@ const JSTimers = {
    * @param {function} func Callback to be invoked before the end of the
    * current JavaScript execution loop.
    */
-  setImmediate: function (func: Function, ...args: any) {
+  setImmediate: function(func: Function, ...args: any) {
     const id = _allocateCallback(
       () => func.apply(undefined, args),
       'setImmediate',
@@ -285,7 +281,7 @@ const JSTimers = {
   /**
    * @param {function} func Callback to be invoked every frame.
    */
-  requestAnimationFrame: function (func: Function) {
+  requestAnimationFrame: function(func: Function) {
     const id = _allocateCallback(func, 'requestAnimationFrame');
     createTimer(id, 1, Date.now(), /* recurring */ false);
     return id;
@@ -296,7 +292,7 @@ const JSTimers = {
    * with time remaining in frame.
    * @param {?object} options
    */
-  requestIdleCallback: function (func: Function, options: ?Object) {
+  requestIdleCallback: function(func: Function, options: ?Object) {
     if (requestIdleCallbacks.length === 0) {
       setSendIdleEvents(true);
     }
@@ -304,7 +300,7 @@ const JSTimers = {
     const timeout = options && options.timeout;
     const id = _allocateCallback(
       timeout != null
-        ? (deadline) => {
+        ? deadline => {
             const timeoutId = requestIdleCallbackTimeouts[id];
             if (timeoutId) {
               JSTimers.clearTimeout(timeoutId);
@@ -334,7 +330,7 @@ const JSTimers = {
     return id;
   },
 
-  cancelIdleCallback: function (timerID: number) {
+  cancelIdleCallback: function(timerID: number) {
     _freeCallback(timerID);
     const index = requestIdleCallbacks.indexOf(timerID);
     if (index !== -1) {
@@ -352,15 +348,15 @@ const JSTimers = {
     }
   },
 
-  clearTimeout: function (timerID: number) {
+  clearTimeout: function(timerID: number) {
     _freeCallback(timerID);
   },
 
-  clearInterval: function (timerID: number) {
+  clearInterval: function(timerID: number) {
     _freeCallback(timerID);
   },
 
-  clearImmediate: function (timerID: number) {
+  clearImmediate: function(timerID: number) {
     _freeCallback(timerID);
     const index = immediates.indexOf(timerID);
     if (index !== -1) {
@@ -368,7 +364,7 @@ const JSTimers = {
     }
   },
 
-  cancelAnimationFrame: function (timerID: number) {
+  cancelAnimationFrame: function(timerID: number) {
     _freeCallback(timerID);
   },
 
@@ -376,7 +372,7 @@ const JSTimers = {
    * This is called from the native side. We are passed an array of timerIDs,
    * and
    */
-  callTimers: function (timersToCall: Array<number>) {
+  callTimers: function(timersToCall: Array<number>) {
     invariant(
       timersToCall.length !== 0,
       'Cannot call `callTimers` with an empty list of IDs.',
@@ -394,7 +390,7 @@ const JSTimers = {
         // error one at a time
         for (let ii = 1; ii < errorCount; ii++) {
           JSTimers.setTimeout(
-            ((error) => {
+            (error => {
               throw error;
             }).bind(null, errors[ii]),
             0,
@@ -405,7 +401,7 @@ const JSTimers = {
     }
   },
 
-  callIdleCallbacks: function (frameTime: number) {
+  callIdleCallbacks: function(frameTime: number) {
     if (
       FRAME_DURATION - (performanceNow() - frameTime) <
       IDLE_CALLBACK_FRAME_DEADLINE
@@ -428,7 +424,7 @@ const JSTimers = {
     }
 
     if (errors) {
-      errors.forEach((error) =>
+      errors.forEach(error =>
         JSTimers.setTimeout(() => {
           throw error;
         }, 0),
@@ -444,7 +440,7 @@ const JSTimers = {
     errors = (null: ?Array<Error>);
     while (_callImmediatesPass()) {}
     if (errors) {
-      errors.forEach((error) =>
+      errors.forEach(error =>
         JSTimers.setTimeout(() => {
           throw error;
         }, 0),

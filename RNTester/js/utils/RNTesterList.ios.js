@@ -353,7 +353,7 @@ const APIExamples: Array<RNTesterExample> = [
 
 const Modules: {...} = {};
 
-APIExamples.concat(ComponentExamples).forEach((Example) => {
+APIExamples.concat(ComponentExamples).forEach(Example => {
   Modules[Example.key] = Example.module;
 });
 

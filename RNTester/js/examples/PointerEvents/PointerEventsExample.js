@@ -19,7 +19,7 @@ class ExampleBox extends React.Component<$FlowFixMeProps, $FlowFixMeState> {
     log: [],
   };
 
-  handleLog = (msg) => {
+  handleLog = msg => {
     this.state.log = this.state.log.concat([msg]);
   };
 
@@ -193,11 +193,11 @@ const exampleClasses: Array<ExampleClass> = [
   },
 ];
 
-const infoToExample = (info) => {
+const infoToExample = info => {
   return {
     title: info.title,
     description: info.description,
-    render: function () {
+    render: function() {
       return <ExampleBox key={info.title} Component={info.Component} />;
     },
   };

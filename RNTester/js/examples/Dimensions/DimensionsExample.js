@@ -29,7 +29,7 @@ class DimensionsSubscription extends React.Component<
     Dimensions.removeEventListener('change', this._handleDimensionsChange);
   }
 
-  _handleDimensionsChange = (dimensions) => {
+  _handleDimensionsChange = dimensions => {
     this.setState({
       dims: dimensions[this.props.dim],
     });

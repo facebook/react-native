@@ -47,7 +47,7 @@ class AppState extends NativeEventEmitter {
     // prop is up to date, we have to register an observer that updates it
     // whenever the state changes, even if nobody cares. We should just
     // deprecate the `currentState` property and get rid of this.
-    this.addListener('appStateDidChange', (appStateData) => {
+    this.addListener('appStateDidChange', appStateData => {
       eventUpdated = true;
       this.currentState = appStateData.app_state;
     });
@@ -55,7 +55,7 @@ class AppState extends NativeEventEmitter {
     // TODO: see above - this request just populates the value of `currentState`
     // when the module is first initialized. Would be better to get rid of the
     // prop and expose `getCurrentAppState` method directly.
-    NativeAppState.getCurrentAppState((appStateData) => {
+    NativeAppState.getCurrentAppState(appStateData => {
       // It's possible that the state will have changed here & listeners need to be notified
       if (!eventUpdated && this.currentState !== appStateData.app_state) {
         this.currentState = appStateData.app_state;
@@ -86,7 +86,7 @@ class AppState extends NativeEventEmitter {
       case 'change': {
         this._eventHandlers[type].set(
           handler,
-          this.addListener('appStateDidChange', (appStateData) => {
+          this.addListener('appStateDidChange', appStateData => {
             handler(appStateData.app_state);
           }),
         );
@@ -104,7 +104,7 @@ class AppState extends NativeEventEmitter {
       case 'focus': {
         this._eventHandlers[type].set(
           handler,
-          this.addListener('appStateFocusChange', (hasFocus) => {
+          this.addListener('appStateFocusChange', hasFocus => {
             if (type === 'blur' && !hasFocus) {
               handler();
             }

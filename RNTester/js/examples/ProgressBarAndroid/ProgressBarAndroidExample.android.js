@@ -87,7 +87,7 @@ exports.description = 'Horizontal bar to show the progress of some operation.';
 exports.examples = [
   {
     title: 'Simple progress bar',
-    render: function (): React.Element<typeof ProgressBarAndroidExample> {
+    render: function(): React.Element<typeof ProgressBarAndroidExample> {
       return <ProgressBarAndroidExample />;
     },
   },

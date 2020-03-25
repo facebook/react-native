@@ -56,7 +56,7 @@ class AnExChained extends React.Component<Object, any> {
     this.state.chainResponder = PanResponder.create({
       onStartShouldSetPanResponder: () => true,
       onPanResponderGrant: () => {
-        this.state.stickers[0].stopAnimation((value) => {
+        this.state.stickers[0].stopAnimation(value => {
           this.state.stickers[0].setOffset(value); // start where sticker animated to
           this.state.stickers[0].setValue({x: 0, y: 0}); // avoid flicker before next event
         });
