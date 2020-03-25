@@ -679,13 +679,6 @@ struct RCTInstanceCallback : public InstanceCallback {
 
   RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"");
 
-#if RCT_DEBUG
-  static dispatch_once_t onceToken;
-  dispatch_once(&onceToken, ^{
-    RCTVerifyAllModulesExported(extraModules);
-  });
-#endif
-
   RCT_PROFILE_BEGIN_EVENT(
       RCTProfileTagAlways, @"-[RCTCxxBridge initModulesWithDispatchGroup:] preinitialized moduleData", nil);
   // Set up moduleData for pre-initialized module instances

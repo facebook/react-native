@@ -113,53 +113,6 @@ void RCTEnableTurboModule(BOOL enabled)
   turboModuleEnabled = enabled;
 }
 
-#if RCT_DEBUG
-void RCTVerifyAllModulesExported(NSArray *extraModules)
-{
-  // Check for unexported modules
-  unsigned int classCount;
-  Class *classes = objc_copyClassList(&classCount);
-
-  NSMutableSet *moduleClasses = [NSMutableSet new];
-  [moduleClasses addObjectsFromArray:RCTGetModuleClasses()];
-  [moduleClasses addObjectsFromArray:[extraModules valueForKeyPath:@"class"]];
-
-  for (unsigned int i = 0; i < classCount; i++) {
-    Class cls = classes[i];
-    if (strncmp(class_getName(cls), "RCTCxxModule", strlen("RCTCxxModule")) == 0) {
-      continue;
-    }
-    Class superclass = cls;
-    while (superclass) {
-      if (class_conformsToProtocol(superclass, @protocol(RCTBridgeModule))) {
-        if ([moduleClasses containsObject:cls]) {
-          break;
-        }
-
-        // Verify it's not a super-class of one of our moduleClasses
-        BOOL isModuleSuperClass = NO;
-        for (Class moduleClass in moduleClasses) {
-          if ([moduleClass isSubclassOfClass:cls]) {
-            isModuleSuperClass = YES;
-            break;
-          }
-        }
-        if (isModuleSuperClass) {
-          break;
-        }
-
-        // Note: Some modules may be lazily loaded and not exported up front, so this message is no longer a warning.
-        RCTLogInfo(@"Class %@ was not exported. Did you forget to use RCT_EXPORT_MODULE()?", cls);
-        break;
-      }
-      superclass = class_getSuperclass(superclass);
-    }
-  }
-
-  free(classes);
-}
-#endif
-
 @interface RCTBridge () <RCTReloadListener>
 @end
 
