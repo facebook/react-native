@@ -426,7 +426,7 @@ jobs:
       - run:
           name: Report size of RNTester.app (analysis-bot)
           command: GITHUB_TOKEN="$PUBLIC_ANALYSISBOT_GITHUB_TOKEN_A""$PUBLIC_ANALYSISBOT_GITHUB_TOKEN_B" scripts/circleci/report-bundle-size.sh ios
-          when: always
+
       - store_test_results:
           path: ./reports/junit
 
@@ -464,7 +464,7 @@ jobs:
 
       - run:
           name: Install rsync
-          command: sudo apt-get install rsync
+          command: apt-get install -y rsync
 
       # Install Buck
       - install_buck_tooling
