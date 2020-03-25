@@ -1,0 +1,263 @@
+<!DOCTYPE html><html lang="en"><head><meta charSet="utf-8"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><title>Color Reference · React Native</title><meta name="viewport" content="width=device-width"/><meta name="generator" content="Docusaurus"/><meta name="description" content="Components in React Native are [styled using JavaScript](/docs/0.61/style). Color properties usually match how [CSS works on the web](https://developer.mozilla.org/en-US/docs/Web/CSS/color_value)."/><meta name="docsearch:version" content="0.61"/><meta name="docsearch:language" content="en"/><meta property="og:title" content="Color Reference · React Native"/><meta property="og:type" content="website"/><meta property="og:url" content="https://reactnative.dev/"/><meta property="og:description" content="Components in React Native are [styled using JavaScript](/docs/0.61/style). Color properties usually match how [CSS works on the web](https://developer.mozilla.org/en-US/docs/Web/CSS/color_value)."/><meta name="twitter:card" content="summary"/><link rel="shortcut icon" href="/img/favicon.ico"/><link rel="stylesheet" href="https://cdn.jsdelivr.net/docsearch.js/1/docsearch.min.css"/><link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/solarized-dark.min.css"/><link rel="alternate" type="application/atom+xml" href="https://reactnative.dev/blog/atom.xml" title="React Native Blog ATOM Feed"/><link rel="alternate" type="application/rss+xml" href="https://reactnative.dev/blog/feed.xml" title="React Native Blog RSS Feed"/><script>
+              (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+              (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+              m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+              })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+              ga('create', 'UA-41298772-2', 'auto');
+              ga('send', 'pageview');
+            </script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/focus-visible@5.0.2/dist/focus-visible.min.js"></script><script type="text/javascript" src="https://snack.expo.io/embed.js"></script><script type="text/javascript" src="https://platform.twitter.com/widgets.js"></script><script type="text/javascript" src="https://buttons.github.io/buttons.js"></script><script type="text/javascript" src="/js/codeblocks.js"></script><script type="text/javascript" src="/js/tabs.js"></script><script type="text/javascript" src="/js/docs-rating.js"></script><script src="https://unpkg.com/vanilla-back-to-top@7.1.14/dist/vanilla-back-to-top.min.js"></script><script>
+        document.addEventListener('DOMContentLoaded', function() {
+          addBackToTop(
+            {"zIndex":100}
+          )
+        });
+        </script><script src="/js/scrollSpy.js"></script><link rel="stylesheet" href="/css/prism.css"/><link rel="stylesheet" href="/css/main.css"/><script src="/js/codetabs.js"></script></head><body class="sideNavVisible separateOnPageNav"><div class="fixedHeaderContainer"><div class="headerWrapper wrapper"><header><a href="/"><img class="logo" src="/img/header_logo.svg" alt="React Native"/><h2 class="headerTitleWithLogo">React Native</h2></a><a href="/versions"><h3>0.61</h3></a><div class="navigationWrapper navigationSlider"><nav class="slidingNav"><ul class="nav-site nav-site-internal"><li class="siteNavGroupActive"><a href="/docs/0.61/getting-started" target="_self">Docs</a></li><li class=""><a href="/docs/0.61/activityindicator" target="_self">API</a></li><li class=""><a href="/help" target="_self">Community</a></li><li class=""><a href="/blog/" target="_self">Blog</a></li><li class="navSearchWrapper reactNavSearchWrapper"><input type="text" id="search_input_react" placeholder="Search" title="Search"/></li><li class=""><a href="https://github.com/facebook/react-native" target="_self">GitHub</a></li></ul></nav></div></header></div></div><div class="navPusher"><div class="docMainWrapper wrapper"><div class="docsNavContainer" id="docsNav"><nav class="toc"><div class="toggleNav"><section class="navWrapper wrapper"><div class="navBreadcrumb wrapper"><div class="navToggle" id="navToggler"><div class="hamburger-menu"><div class="line1"></div><div class="line2"></div><div class="line3"></div></div></div><h2><i>›</i><span>Guides</span></h2><div class="tocToggler" id="tocToggler"><i class="icon-toc"></i></div></div><div class="navGroups"><div class="navGroup"><h3 class="navGroupCategoryTitle collapsible">The Basics<span class="arrow"><svg width="24" height="24" viewBox="0 0 24 24"><path fill="#565656" d="M7.41 15.41L12 10.83l4.59 4.58L18 14l-6-6-6 6z"></path><path d="M0 0h24v24H0z" fill="none"></path></svg></span></h3><ul class="hide"><li class="navListItem"><a class="navItem" href="/docs/0.61/getting-started">Getting Started</a></li><li class="navListItem"><a class="navItem" href="/docs/0.61/tutorial">Learn the Basics</a></li><li class="navListItem"><a class="navItem" href="/docs/0.61/props">Props</a></li><li class="navListItem"><a class="navItem" href="/docs/0.61/state">State</a></li><li class="navListItem"><a class="navItem" href="/docs/0.61/style">Style</a></li><li class="navListItem"><a class="navItem" href="/docs/0.61/height-and-width">Height and Width</a></li><li class="navListItem"><a class="navItem" href="/docs/0.61/flexbox">Layout with Flexbox</a></li><li class="navListItem"><a class="navItem" href="/docs/0.61/handling-text-input">Handling Text Input</a></li><li class="navListItem"><a class="navItem" href="/docs/0.61/handling-touches">Handling Touches</a></li><li class="navListItem"><a class="navItem" href="/docs/0.61/using-a-scrollview">Using a ScrollView</a></li><li class="navListItem"><a class="navItem" href="/docs/0.61/using-a-listview">Using List Views</a></li><li class="navListItem"><a class="navItem" href="/docs/0.61/network">Networking</a></li><li class="navListItem"><a class="navItem" href="/docs/0.61/more-resources">More Resources</a></li></ul></div><div class="navGroup"><h3 class="navGroupCategoryTitle collapsible">Guides<span class="arrow"><svg width="24" height="24" viewBox="0 0 24 24"><path fill="#565656" d="M7.41 15.41L12 10.83l4.59 4.58L18 14l-6-6-6 6z"></path><path d="M0 0h24v24H0z" fill="none"></path></svg></span></h3><ul class="hide"><li class="navListItem"><a class="navItem" href="/docs/0.61/fast-refresh">Fast Refresh</a></li><li class="navListItem"><a class="navItem" href="/docs/0.61/components-and-apis">Components and APIs</a></li><li class="navListItem"><a class="navItem" href="/docs/0.61/platform-specific-code">Platform Specific Code</a></li><li class="navListItem"><a class="navItem" href="/docs/0.61/navigation">Navigating Between Screens</a></li><li class="navListItem"><a class="navItem" href="/docs/0.61/images">Images</a></li><li class="navListItem"><a class="navItem" href="/docs/0.61/animations">Animations</a></li><li class="navListItem"><a class="navItem" href="/docs/0.61/accessibility">Accessibility</a></li><li class="navListItem"><a class="navItem" href="/docs/0.61/improvingux">Improving User Experience</a></li><li class="navListItem"><a class="navItem" href="/docs/0.61/optimizing-flatlist-configuration">Optimizing Flatlist Configuration</a></li><li class="navListItem"><a class="navItem" href="/docs/0.61/timers">Timers</a></li><li class="navListItem"><a class="navItem" href="/docs/0.61/debugging">Debugging</a></li><li class="navListItem"><a class="navItem" href="/docs/0.61/performance">Performance</a></li><li class="navListItem"><a class="navItem" href="/docs/0.61/gesture-responder-system">Gesture Responder System</a></li><li class="navListItem"><a class="navItem" href="/docs/0.61/javascript-environment">JavaScript Environment</a></li><li class="navListItem"><a class="navItem" href="/docs/0.61/typescript">Using TypeScript with React Native</a></li><li class="navListItem"><a class="navItem" href="/docs/0.61/direct-manipulation">Direct Manipulation</a></li><li class="navListItem navListItemActive"><a class="navItem" href="/docs/0.61/colors">Color Reference</a></li><li class="navListItem"><a class="navItem" href="/docs/0.61/integration-with-existing-apps">Integration with Existing Apps</a></li><li class="navListItem"><a class="navItem" href="/docs/0.61/building-for-apple-tv">Building For TV Devices</a></li><li class="navListItem"><a class="navItem" href="/docs/0.61/running-on-device">Running On Device</a></li><li class="navListItem"><a class="navItem" href="/docs/0.61/upgrading">Upgrading to new React Native versions</a></li><li class="navListItem"><a class="navItem" href="/docs/0.61/troubleshooting">Troubleshooting</a></li><li class="navListItem"><a class="navItem" href="/docs/0.61/native-modules-setup">Native Modules Setup</a></li><li class="navListItem"><a class="navItem" href="/docs/0.61/out-of-tree-platforms">Out-of-Tree Platforms</a></li></ul></div><div class="navGroup"><h3 class="navGroupCategoryTitle collapsible">Guides (iOS)<span class="arrow"><svg width="24" height="24" viewBox="0 0 24 24"><path fill="#565656" d="M7.41 15.41L12 10.83l4.59 4.58L18 14l-6-6-6 6z"></path><path d="M0 0h24v24H0z" fill="none"></path></svg></span></h3><ul class="hide"><li class="navListItem"><a class="navItem" href="/docs/0.61/native-modules-ios">Native Modules</a></li><li class="navListItem"><a class="navItem" href="/docs/0.61/native-components-ios">Native UI Components</a></li><li class="navListItem"><a class="navItem" href="/docs/0.61/linking-libraries-ios">Linking Libraries</a></li><li class="navListItem"><a class="navItem" href="/docs/0.61/running-on-simulator-ios">Running On Simulator</a></li><li class="navListItem"><a class="navItem" href="/docs/0.61/communication-ios">Communication between native and React Native</a></li><li class="navListItem"><a class="navItem" href="/docs/0.61/app-extensions">App Extensions</a></li></ul></div><div class="navGroup"><h3 class="navGroupCategoryTitle collapsible">Guides (Android)<span class="arrow"><svg width="24" height="24" viewBox="0 0 24 24"><path fill="#565656" d="M7.41 15.41L12 10.83l4.59 4.58L18 14l-6-6-6 6z"></path><path d="M0 0h24v24H0z" fill="none"></path></svg></span></h3><ul class="hide"><li class="navListItem"><a class="navItem" href="/docs/0.61/native-modules-android">Native Modules</a></li><li class="navListItem"><a class="navItem" href="/docs/0.61/native-components-android">Native UI Components</a></li><li class="navListItem"><a class="navItem" href="/docs/0.61/headless-js-android">Headless JS</a></li><li class="navListItem"><a class="navItem" href="/docs/0.61/signed-apk-android">Publishing to Google Play Store</a></li><li class="navListItem"><a class="navItem" href="/docs/0.61/removing-default-permissions">Removing Default Permissions</a></li><li class="navListItem"><a class="navItem" href="/docs/0.61/hermes">Using Hermes</a></li></ul></div></div></section></div><script>
+            var coll = document.getElementsByClassName('collapsible');
+            var checkActiveCategory = true;
+            for (var i = 0; i < coll.length; i++) {
+              var links = coll[i].nextElementSibling.getElementsByTagName('*');
+              if (checkActiveCategory){
+                for (var j = 0; j < links.length; j++) {
+                  if (links[j].classList.contains('navListItemActive')){
+                    coll[i].nextElementSibling.classList.toggle('hide');
+                    coll[i].childNodes[1].classList.toggle('rotate');
+                    checkActiveCategory = false;
+                    break;
+                  }
+                }
+              }
+
+              coll[i].addEventListener('click', function() {
+                var arrow = this.childNodes[1];
+                arrow.classList.toggle('rotate');
+                var content = this.nextElementSibling;
+                content.classList.toggle('hide');
+              });
+            }
+
+            document.addEventListener('DOMContentLoaded', function() {
+              createToggler('#navToggler', '#docsNav', 'docsSliderActive');
+              createToggler('#tocToggler', 'body', 'tocActive');
+
+              var headings = document.querySelector('.toc-headings');
+              headings && headings.addEventListener('click', function(event) {
+                var el = event.target;
+                while(el !== headings){
+                  if (el.tagName === 'A') {
+                    document.body.classList.remove('tocActive');
+                    break;
+                  } else{
+                    el = el.parentNode;
+                  }
+                }
+              }, false);
+
+              function createToggler(togglerSelector, targetSelector, className) {
+                var toggler = document.querySelector(togglerSelector);
+                var target = document.querySelector(targetSelector);
+
+                if (!toggler) {
+                  return;
+                }
+
+                toggler.onclick = function(event) {
+                  event.preventDefault();
+
+                  target.classList.toggle(className);
+                };
+              }
+            });
+        </script></nav></div><div class="container mainContainer docsContainer"><div class="wrapper"><div class="post"><header class="postHeader"><a class="edit-page-link button" href="https://github.com/facebook/react-native-website/blob/master/docs/colors.md" target="_blank" rel="noreferrer noopener">Edit</a><h1 id="__docusaurus" class="postHeaderTitle">Color Reference</h1></header><article><div><span><p>Components in React Native are <a href="/docs/0.61/style">styled using JavaScript</a>. Color properties usually match how <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/color_value">CSS works on the web</a>.</p>
+<h3><a class="anchor" aria-hidden="true" id="red-green-blue"></a><a href="#red-green-blue" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Red-green-blue</h3>
+<p>React Native supports <code>rgb()</code> and <code>rgba()</code> in both hexadecimal and functional notation:</p>
+<ul>
+<li><p><code>'#f0f'</code> (#rgb)</p></li>
+<li><p><code>'#ff00ff'</code> (#rrggbb)</p></li>
+<li><p><code>'rgb(255, 0, 255)'</code></p></li>
+<li><p><code>'rgba(255, 255, 255, 1.0)'</code></p></li>
+<li><p><code>'#f0ff'</code> (#rgba)</p></li>
+<li><p><code>'#ff00ff00'</code> (#rrggbbaa)</p></li>
+</ul>
+<h3><a class="anchor" aria-hidden="true" id="hue-saturation-lightness"></a><a href="#hue-saturation-lightness" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Hue-saturation-lightness</h3>
+<p><code>hsl()</code> and <code>hsla()</code> is supported in functional notation:</p>
+<ul>
+<li><code>'hsl(360, 100%, 100%)'</code></li>
+<li><code>'hsla(360, 100%, 100%, 1.0)'</code></li>
+</ul>
+<h3><a class="anchor" aria-hidden="true" id="transparent"></a><a href="#transparent" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>transparent</code></h3>
+<p>This is a shortcut for <code>rgba(0,0,0,0)</code>:</p>
+<ul>
+<li><code>'transparent'</code></li>
+</ul>
+<h3><a class="anchor" aria-hidden="true" id="named-colors"></a><a href="#named-colors" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Named colors</h3>
+<p>You can also use color names as values. React Native follows the <a href="http://www.w3.org/TR/css3-color/#svg-color">CSS3 specification</a>:</p>
+<!-- alex ignore white -->
+<ul>
+<li><img src="https://placehold.it/15/f0f8ff/000000?text=+" alt="#f0f8ff"> <color aliceblue /> aliceblue (#f0f8ff)</li>
+<li><img src="https://placehold.it/15/faebd7/000000?text=+" alt="#faebd7"> <color antiquewhite /> antiquewhite (#faebd7)</li>
+<li><img src="https://placehold.it/15/00ffff/000000?text=+" alt="#00ffff"> <color aqua /> aqua (#00ffff)</li>
+<li><img src="https://placehold.it/15/7fffd4/000000?text=+" alt="#7fffd4"> <color aquamarine /> aquamarine (#7fffd4)</li>
+<li><img src="https://placehold.it/15/f0ffff/000000?text=+" alt="#f0ffff"> <color azure /> azure (#f0ffff)</li>
+<li><img src="https://placehold.it/15/f5f5dc/000000?text=+" alt="#f5f5dc"> <color beige /> beige (#f5f5dc)</li>
+<li><img src="https://placehold.it/15/ffe4c4/000000?text=+" alt="#ffe4c4"> <color bisque /> bisque (#ffe4c4)</li>
+<li><img src="https://placehold.it/15/000000/000000?text=+" alt="#000000"> <color black /> black (#000000)</li>
+<li><img src="https://placehold.it/15/ffebcd/000000?text=+" alt="#ffebcd"> <color blanchedalmond /> blanchedalmond (#ffebcd)</li>
+<li><img src="https://placehold.it/15/0000ff/000000?text=+" alt="#0000ff"> <color blue /> blue (#0000ff)</li>
+<li><img src="https://placehold.it/15/8a2be2/000000?text=+" alt="#8a2be2"> <color blueviolet /> blueviolet (#8a2be2)</li>
+<li><img src="https://placehold.it/15/a52a2a/000000?text=+" alt="#a52a2a"> <color brown /> brown (#a52a2a)</li>
+<li><img src="https://placehold.it/15/deb887/000000?text=+" alt="#deb887"> <color burlywood /> burlywood (#deb887)</li>
+<li><img src="https://placehold.it/15/5f9ea0/000000?text=+" alt="#5f9ea0"> <color cadetblue /> cadetblue (#5f9ea0)</li>
+<li><img src="https://placehold.it/15/7fff00/000000?text=+" alt="#7fff00"> <color chartreuse /> chartreuse (#7fff00)</li>
+<li><img src="https://placehold.it/15/d2691e/000000?text=+" alt="#d2691e"> <color chocolate /> chocolate (#d2691e)</li>
+<li><img src="https://placehold.it/15/ff7f50/000000?text=+" alt="#ff7f50"> <color coral /> coral (#ff7f50)</li>
+<li><img src="https://placehold.it/15/6495ed/000000?text=+" alt="#6495ed"> <color cornflowerblue /> cornflowerblue (#6495ed)</li>
+<li><img src="https://placehold.it/15/fff8dc/000000?text=+" alt="#fff8dc"> <color cornsilk /> cornsilk (#fff8dc)</li>
+<li><img src="https://placehold.it/15/dc143c/000000?text=+" alt="#dc143c"> <color crimson /> crimson (#dc143c)</li>
+<li><img src="https://placehold.it/15/00ffff/000000?text=+" alt="#00ffff"> <color cyan /> cyan (#00ffff)</li>
+<li><img src="https://placehold.it/15/00008b/000000?text=+" alt="#00008b"> <color darkblue /> darkblue (#00008b)</li>
+<li><img src="https://placehold.it/15/008b8b/000000?text=+" alt="#008b8b"> <color darkcyan /> darkcyan (#008b8b)</li>
+<li><img src="https://placehold.it/15/b8860b/000000?text=+" alt="#b8860b"> <color darkgoldenrod /> darkgoldenrod (#b8860b)</li>
+<li><img src="https://placehold.it/15/a9a9a9/000000?text=+" alt="#a9a9a9"> <color darkgray /> darkgray (#a9a9a9)</li>
+<li><img src="https://placehold.it/15/006400/000000?text=+" alt="#006400"> <color darkgreen /> darkgreen (#006400)</li>
+<li><img src="https://placehold.it/15/a9a9a9/000000?text=+" alt="#a9a9a9"> <color darkgrey /> darkgrey (#a9a9a9)</li>
+<li><img src="https://placehold.it/15/bdb76b/000000?text=+" alt="#bdb76b"> <color darkkhaki /> darkkhaki (#bdb76b)</li>
+<li><img src="https://placehold.it/15/8b008b/000000?text=+" alt="#8b008b"> <color darkmagenta /> darkmagenta (#8b008b)</li>
+<li><img src="https://placehold.it/15/556b2f/000000?text=+" alt="#556b2f"> <color darkolivegreen /> darkolivegreen (#556b2f)</li>
+<li><img src="https://placehold.it/15/ff8c00/000000?text=+" alt="#ff8c00"> <color darkorange /> darkorange (#ff8c00)</li>
+<li><img src="https://placehold.it/15/9932cc/000000?text=+" alt="#9932cc"> <color darkorchid /> darkorchid (#9932cc)</li>
+<li><img src="https://placehold.it/15/8b0000/000000?text=+" alt="#8b0000"> <color darkred /> darkred (#8b0000)</li>
+<li><img src="https://placehold.it/15/e9967a/000000?text=+" alt="#e9967a"> <color darksalmon /> darksalmon (#e9967a)</li>
+<li><img src="https://placehold.it/15/8fbc8f/000000?text=+" alt="#8fbc8f"> <color darkseagreen /> darkseagreen (#8fbc8f)</li>
+<li><img src="https://placehold.it/15/483d8b/000000?text=+" alt="#483d8b"> <color darkslateblue /> darkslateblue (#483d8b)</li>
+<li><img src="https://placehold.it/15/2f4f4f/000000?text=+" alt="#2f4f4f"> <color darkslategrey /> darkslategrey (#2f4f4f)</li>
+<li><img src="https://placehold.it/15/00ced1/000000?text=+" alt="#00ced1"> <color darkturquoise /> darkturquoise (#00ced1)</li>
+<li><img src="https://placehold.it/15/9400d3/000000?text=+" alt="#9400d3"> <color darkviolet /> darkviolet (#9400d3)</li>
+<li><img src="https://placehold.it/15/ff1493/000000?text=+" alt="#ff1493"> <color deeppink /> deeppink (#ff1493)</li>
+<li><img src="https://placehold.it/15/00bfff/000000?text=+" alt="#00bfff"> <color deepskyblue /> deepskyblue (#00bfff)</li>
+<li><img src="https://placehold.it/15/696969/000000?text=+" alt="#696969"> <color dimgray /> dimgray (#696969)</li>
+<li><img src="https://placehold.it/15/696969/000000?text=+" alt="#696969"> <color dimgrey /> dimgrey (#696969)</li>
+<li><img src="https://placehold.it/15/1e90ff/000000?text=+" alt="#1e90ff"> <color dodgerblue /> dodgerblue (#1e90ff)</li>
+<li><img src="https://placehold.it/15/b22222/000000?text=+" alt="#b22222"> <color firebrick /> firebrick (#b22222)</li>
+<li><img src="https://placehold.it/15/fffaf0/000000?text=+" alt="#fffaf0"> <color floralwhite /> floralwhite (#fffaf0)</li>
+<li><img src="https://placehold.it/15/228b22/000000?text=+" alt="#228b22"> <color forestgreen /> forestgreen (#228b22)</li>
+<li><img src="https://placehold.it/15/ff00ff/000000?text=+" alt="#ff00ff"> <color fuchsia /> fuchsia (#ff00ff)</li>
+<li><img src="https://placehold.it/15/dcdcdc/000000?text=+" alt="#dcdcdc"> <color gainsboro /> gainsboro (#dcdcdc)</li>
+<li><img src="https://placehold.it/15/f8f8ff/000000?text=+" alt="#f8f8ff"> <color ghostwhite /> ghostwhite (#f8f8ff)</li>
+<li><img src="https://placehold.it/15/ffd700/000000?text=+" alt="#ffd700"> <color gold /> gold (#ffd700)</li>
+<li><img src="https://placehold.it/15/daa520/000000?text=+" alt="#daa520"> <color goldenrod /> goldenrod (#daa520)</li>
+<li><img src="https://placehold.it/15/808080/000000?text=+" alt="#808080"> <color gray /> gray (#808080)</li>
+<li><img src="https://placehold.it/15/008000/000000?text=+" alt="#008000"> <color green /> green (#008000)</li>
+<li><img src="https://placehold.it/15/adff2f/000000?text=+" alt="#adff2f"> <color greenyellow /> greenyellow (#adff2f)</li>
+<li><img src="https://placehold.it/15/808080/000000?text=+" alt="#808080"> <color grey /> grey (#808080)</li>
+<li><img src="https://placehold.it/15/f0fff0/000000?text=+" alt="#f0fff0"> <color honeydew /> honeydew (#f0fff0)</li>
+<li><img src="https://placehold.it/15/ff69b4/000000?text=+" alt="#ff69b4"> <color hotpink /> hotpink (#ff69b4)</li>
+<li><img src="https://placehold.it/15/cd5c5c/000000?text=+" alt="#cd5c5c"> <color indianred /> indianred (#cd5c5c)</li>
+<li><img src="https://placehold.it/15/4b0082/000000?text=+" alt="#4b0082"> <color indigo /> indigo (#4b0082)</li>
+<li><img src="https://placehold.it/15/fffff0/000000?text=+" alt="#fffff0"> <color ivory /> ivory (#fffff0)</li>
+<li><img src="https://placehold.it/15/f0e68c/000000?text=+" alt="#f0e68c"> <color khaki /> khaki (#f0e68c)</li>
+<li><img src="https://placehold.it/15/e6e6fa/000000?text=+" alt="#e6e6fa"> <color lavender /> lavender (#e6e6fa)</li>
+<li><img src="https://placehold.it/15/fff0f5/000000?text=+" alt="#fff0f5"> <color lavenderblush /> lavenderblush (#fff0f5)</li>
+<li><img src="https://placehold.it/15/7cfc00/000000?text=+" alt="#7cfc00"> <color lawngreen /> lawngreen (#7cfc00)</li>
+<li><img src="https://placehold.it/15/fffacd/000000?text=+" alt="#fffacd"> <color lemonchiffon /> lemonchiffon (#fffacd)</li>
+<li><img src="https://placehold.it/15/add8e6/000000?text=+" alt="#add8e6"> <color lightblue /> lightblue (#add8e6)</li>
+<li><img src="https://placehold.it/15/f08080/000000?text=+" alt="#f08080"> <color lightcoral /> lightcoral (#f08080)</li>
+<li><img src="https://placehold.it/15/e0ffff/000000?text=+" alt="#e0ffff"> <color lightcyan /> lightcyan (#e0ffff)</li>
+<li><img src="https://placehold.it/15/fafad2/000000?text=+" alt="#fafad2"> <color lightgoldenrodyellow /> lightgoldenrodyellow (#fafad2)</li>
+<li><img src="https://placehold.it/15/d3d3d3/000000?text=+" alt="#d3d3d3"> <color lightgray /> lightgray (#d3d3d3)</li>
+<li><img src="https://placehold.it/15/90ee90/000000?text=+" alt="#90ee90"> <color lightgreen /> lightgreen (#90ee90)</li>
+<li><img src="https://placehold.it/15/d3d3d3/000000?text=+" alt="#d3d3d3"> <color lightgrey /> lightgrey (#d3d3d3)</li>
+<li><img src="https://placehold.it/15/ffb6c1/000000?text=+" alt="#ffb6c1"> <color lightpink /> lightpink (#ffb6c1)</li>
+<li><img src="https://placehold.it/15/ffa07a/000000?text=+" alt="#ffa07a"> <color lightsalmon /> lightsalmon (#ffa07a)</li>
+<li><img src="https://placehold.it/15/20b2aa/000000?text=+" alt="#20b2aa"> <color lightseagreen /> lightseagreen (#20b2aa)</li>
+<li><img src="https://placehold.it/15/87cefa/000000?text=+" alt="#87cefa"> <color lightskyblue /> lightskyblue (#87cefa)</li>
+<li><img src="https://placehold.it/15/778899/000000?text=+" alt="#778899"> <color lightslategrey /> lightslategrey (#778899)</li>
+<li><img src="https://placehold.it/15/b0c4de/000000?text=+" alt="#b0c4de"> <color lightsteelblue /> lightsteelblue (#b0c4de)</li>
+<li><img src="https://placehold.it/15/ffffe0/000000?text=+" alt="#ffffe0"> <color lightyellow /> lightyellow (#ffffe0)</li>
+<li><img src="https://placehold.it/15/00ff00/000000?text=+" alt="#00ff00"> <color lime /> lime (#00ff00)</li>
+<li><img src="https://placehold.it/15/32cd32/000000?text=+" alt="#32cd32"> <color limegreen /> limegreen (#32cd32)</li>
+<li><img src="https://placehold.it/15/faf0e6/000000?text=+" alt="#faf0e6"> <color linen /> linen (#faf0e6)</li>
+<li><img src="https://placehold.it/15/ff00ff/000000?text=+" alt="#ff00ff"> <color magenta /> magenta (#ff00ff)</li>
+<li><img src="https://placehold.it/15/800000/000000?text=+" alt="#800000"> <color maroon /> maroon (#800000)</li>
+<li><img src="https://placehold.it/15/66cdaa/000000?text=+" alt="#66cdaa"> <color mediumaquamarine /> mediumaquamarine (#66cdaa)</li>
+<li><img src="https://placehold.it/15/0000cd/000000?text=+" alt="#0000cd"> <color mediumblue /> mediumblue (#0000cd)</li>
+<li><img src="https://placehold.it/15/ba55d3/000000?text=+" alt="#ba55d3"> <color mediumorchid /> mediumorchid (#ba55d3)</li>
+<li><img src="https://placehold.it/15/9370db/000000?text=+" alt="#9370db"> <color mediumpurple /> mediumpurple (#9370db)</li>
+<li><img src="https://placehold.it/15/3cb371/000000?text=+" alt="#3cb371"> <color mediumseagreen /> mediumseagreen (#3cb371)</li>
+<li><img src="https://placehold.it/15/7b68ee/000000?text=+" alt="#7b68ee"> <color mediumslateblue /> mediumslateblue (#7b68ee)</li>
+<li><img src="https://placehold.it/15/00fa9a/000000?text=+" alt="#00fa9a"> <color mediumspringgreen /> mediumspringgreen (#00fa9a)</li>
+<li><img src="https://placehold.it/15/48d1cc/000000?text=+" alt="#48d1cc"> <color mediumturquoise /> mediumturquoise (#48d1cc)</li>
+<li><img src="https://placehold.it/15/c71585/000000?text=+" alt="#c71585"> <color mediumvioletred /> mediumvioletred (#c71585)</li>
+<li><img src="https://placehold.it/15/191970/000000?text=+" alt="#191970"> <color midnightblue /> midnightblue (#191970)</li>
+<li><img src="https://placehold.it/15/f5fffa/000000?text=+" alt="#f5fffa"> <color mintcream /> mintcream (#f5fffa)</li>
+<li><img src="https://placehold.it/15/ffe4e1/000000?text=+" alt="#ffe4e1"> <color mistyrose /> mistyrose (#ffe4e1)</li>
+<li><img src="https://placehold.it/15/ffe4b5/000000?text=+" alt="#ffe4b5"> <color moccasin /> moccasin (#ffe4b5)</li>
+<li><img src="https://placehold.it/15/ffdead/000000?text=+" alt="#ffdead"> <color navajowhite /> navajowhite (#ffdead)</li>
+<li><img src="https://placehold.it/15/000080/000000?text=+" alt="#000080"> <color navy /> navy (#000080)</li>
+<li><img src="https://placehold.it/15/fdf5e6/000000?text=+" alt="#fdf5e6"> <color oldlace /> oldlace (#fdf5e6)</li>
+<li><img src="https://placehold.it/15/808000/000000?text=+" alt="#808000"> <color olive /> olive (#808000)</li>
+<li><img src="https://placehold.it/15/6b8e23/000000?text=+" alt="#6b8e23"> <color olivedrab /> olivedrab (#6b8e23)</li>
+<li><img src="https://placehold.it/15/ffa500/000000?text=+" alt="#ffa500"> <color orange /> orange (#ffa500)</li>
+<li><img src="https://placehold.it/15/ff4500/000000?text=+" alt="#ff4500"> <color orangered /> orangered (#ff4500)</li>
+<li><img src="https://placehold.it/15/da70d6/000000?text=+" alt="#da70d6"> <color orchid /> orchid (#da70d6)</li>
+<li><img src="https://placehold.it/15/eee8aa/000000?text=+" alt="#eee8aa"> <color palegoldenrod /> palegoldenrod (#eee8aa)</li>
+<li><img src="https://placehold.it/15/98fb98/000000?text=+" alt="#98fb98"> <color palegreen /> palegreen (#98fb98)</li>
+<li><img src="https://placehold.it/15/afeeee/000000?text=+" alt="#afeeee"> <color paleturquoise /> paleturquoise (#afeeee)</li>
+<li><img src="https://placehold.it/15/db7093/000000?text=+" alt="#db7093"> <color palevioletred /> palevioletred (#db7093)</li>
+<li><img src="https://placehold.it/15/ffefd5/000000?text=+" alt="#ffefd5"> <color papayawhip /> papayawhip (#ffefd5)</li>
+<li><img src="https://placehold.it/15/ffdab9/000000?text=+" alt="#ffdab9"> <color peachpuff /> peachpuff (#ffdab9)</li>
+<li><img src="https://placehold.it/15/cd853f/000000?text=+" alt="#cd853f"> <color peru /> peru (#cd853f)</li>
+<li><img src="https://placehold.it/15/ffc0cb/000000?text=+" alt="#ffc0cb"> <color pink /> pink (#ffc0cb)</li>
+<li><img src="https://placehold.it/15/dda0dd/000000?text=+" alt="#dda0dd"> <color plum /> plum (#dda0dd)</li>
+<li><img src="https://placehold.it/15/b0e0e6/000000?text=+" alt="#b0e0e6"> <color powderblue /> powderblue (#b0e0e6)</li>
+<li><img src="https://placehold.it/15/800080/000000?text=+" alt="#800080"> <color purple /> purple (#800080)</li>
+<li><img src="https://placehold.it/15/663399/000000?text=+" alt="#663399"> <color rebeccapurple /> rebeccapurple (#663399)</li>
+<li><img src="https://placehold.it/15/ff0000/000000?text=+" alt="#ff0000"> <color red /> red (#ff0000)</li>
+<li><img src="https://placehold.it/15/bc8f8f/000000?text=+" alt="#bc8f8f"> <color rosybrown /> rosybrown (#bc8f8f)</li>
+<li><img src="https://placehold.it/15/4169e1/000000?text=+" alt="#4169e1"> <color royalblue /> royalblue (#4169e1)</li>
+<li><img src="https://placehold.it/15/8b4513/000000?text=+" alt="#8b4513"> <color saddlebrown /> saddlebrown (#8b4513)</li>
+<li><img src="https://placehold.it/15/fa8072/000000?text=+" alt="#fa8072"> <color salmon /> salmon (#fa8072)</li>
+<li><img src="https://placehold.it/15/f4a460/000000?text=+" alt="#f4a460"> <color sandybrown /> sandybrown (#f4a460)</li>
+<li><img src="https://placehold.it/15/2e8b57/000000?text=+" alt="#2e8b57"> <color seagreen /> seagreen (#2e8b57)</li>
+<li><img src="https://placehold.it/15/fff5ee/000000?text=+" alt="#fff5ee"> <color seashell /> seashell (#fff5ee)</li>
+<li><img src="https://placehold.it/15/a0522d/000000?text=+" alt="#a0522d"> <color sienna /> sienna (#a0522d)</li>
+<li><img src="https://placehold.it/15/c0c0c0/000000?text=+" alt="#c0c0c0"> <color silver /> silver (#c0c0c0)</li>
+<li><img src="https://placehold.it/15/87ceeb/000000?text=+" alt="#87ceeb"> <color skyblue /> skyblue (#87ceeb)</li>
+<li><img src="https://placehold.it/15/6a5acd/000000?text=+" alt="#6a5acd"> <color slateblue /> slateblue (#6a5acd)</li>
+<li><img src="https://placehold.it/15/708090/000000?text=+" alt="#708090"> <color slategray /> slategray (#708090)</li>
+<li><img src="https://placehold.it/15/fffafa/000000?text=+" alt="#fffafa"> <color snow /> snow (#fffafa)</li>
+<li><img src="https://placehold.it/15/00ff7f/000000?text=+" alt="#00ff7f"> <color springgreen /> springgreen (#00ff7f)</li>
+<li><img src="https://placehold.it/15/4682b4/000000?text=+" alt="#4682b4"> <color steelblue /> steelblue (#4682b4)</li>
+<li><img src="https://placehold.it/15/d2b48c/000000?text=+" alt="#d2b48c"> <color tan /> tan (#d2b48c)</li>
+<li><img src="https://placehold.it/15/008080/000000?text=+" alt="#008080"> <color teal /> teal (#008080)</li>
+<li><img src="https://placehold.it/15/d8bfd8/000000?text=+" alt="#d8bfd8"> <color thistle /> thistle (#d8bfd8)</li>
+<li><img src="https://placehold.it/15/ff6347/000000?text=+" alt="#ff6347"> <color tomato /> tomato (#ff6347)</li>
+<li><img src="https://placehold.it/15/40e0d0/000000?text=+" alt="#40e0d0"> <color turquoise /> turquoise (#40e0d0)</li>
+<li><img src="https://placehold.it/15/ee82ee/000000?text=+" alt="#ee82ee"> <color violet /> violet (#ee82ee)</li>
+<li><img src="https://placehold.it/15/f5deb3/000000?text=+" alt="#f5deb3"> <color wheat /> wheat (#f5deb3)</li>
+<li><img src="https://placehold.it/15/ffffff/000000?text=+" alt="#ffffff"> <color white /> white (#ffffff)</li>
+<li><img src="https://placehold.it/15/f5f5f5/000000?text=+" alt="#f5f5f5"> <color whitesmoke /> whitesmoke (#f5f5f5)</li>
+<li><img src="https://placehold.it/15/ffff00/000000?text=+" alt="#ffff00"> <color yellow /> yellow (#ffff00)</li>
+<li><img src="https://placehold.it/15/9acd32/000000?text=+" alt="#9acd32"> <color yellowgreen /> yellowgreen (#9acd32)</li>
+</ul>
+</span></div></article></div><div class="docs-prevnext"><a class="docs-prev button" href="/docs/0.61/direct-manipulation"><span class="arrow-prev">← </span><span>Direct Manipulation</span></a><a class="docs-next button" href="/docs/0.61/integration-with-existing-apps"><span>Integration with Existing Apps</span><span class="arrow-next"> →</span></a></div></div></div><nav class="onPageNav"></nav></div><footer class="nav-footer" id="footer"><section class="sitemap"><div><h5>Docs</h5><a href="/docs/getting-started.html">Getting Started</a><a href="/docs/tutorial.html">Tutorial</a><a href="/docs/components-and-apis.html">Components and APIs</a><a href="/docs/more-resources.html">More Resources</a></div><div><h5>Community</h5><a href="/help.html">The React Native Community</a><a href="/showcase.html">Who&#x27;s using React Native?</a><a href="http://stackoverflow.com/questions/tagged/react-native" target="_blank">Ask Questions on Stack Overflow</a><a href="https://github.com/facebook/react-native/blob/master/CONTRIBUTING.md">Contributor Guide</a><a href="https://dev.to/t/reactnative" target="_blank">DEV Community</a></div><div><h5>More Resources</h5><a href="/blog/">Blog</a><a href="https://twitter.com/reactnative" target="_blank">Twitter</a><a href="https://github.com/facebook/react-native" target="_blank">GitHub</a><a href="https://reactjs.org" target="_blank">React</a></div></section><a href="https://code.facebook.com/projects/" target="_blank" class="fbOpenSource"><img src="/img/oss_logo.png" alt="Facebook Open Source" width="170" height="45"/></a><section class="copyright">Copyright © 2020 Facebook Inc.</section></footer></div><script type="text/javascript" src="https://cdn.jsdelivr.net/docsearch.js/1/docsearch.min.js"></script><script>window.fbAsyncInit = function() {FB.init({appId:'1677033832619985',xfbml:true,version:'v2.7'});};(function(d, s, id){var js, fjs = d.getElementsByTagName(s)[0];if (d.getElementById(id)) {return;}js = d.createElement(s); js.id = id;js.src = '//connect.facebook.net/en_US/sdk.js';fjs.parentNode.insertBefore(js, fjs);}(document, 'script','facebook-jssdk'));
+                </script><script>window.twttr=(function(d,s, id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return t;js=d.createElement(s);js.id=id;js.src='https://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js, fjs);t._e = [];t.ready = function(f) {t._e.push(f);};return t;}(document, 'script', 'twitter-wjs'));</script><script>
+                document.addEventListener('keyup', function(e) {
+                  if (e.target !== document.body) {
+                    return;
+                  }
+                  // keyCode for '/' (slash)
+                  if (e.keyCode === 191) {
+                    const search = document.getElementById('search_input_react');
+                    search && search.focus();
+                  }
+                });
+              </script><script>
+              var search = docsearch({
+                
+                apiKey: '2c98749b4a1e588efec53b2acec13025',
+                indexName: 'react-native-versions',
+                inputSelector: '#search_input_react',
+                algoliaOptions: {"facetFilters":["tags:0.61"],"hitsPerPage":5}
+              });
+            </script></body></html>

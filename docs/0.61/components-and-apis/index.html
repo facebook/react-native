@@ -1,0 +1,359 @@
+<!DOCTYPE html><html lang="en"><head><meta charSet="utf-8"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><title>Components and APIs · React Native</title><meta name="viewport" content="width=device-width"/><meta name="generator" content="Docusaurus"/><meta name="description" content="React Native provides a number of [Core Components](intro-react-native-components). You will find a full list of components and APIs on the sidebar to the left. If you&#x27;re not sure where to get started, take a look at the following categories:"/><meta name="docsearch:version" content="0.61"/><meta name="docsearch:language" content="en"/><meta property="og:title" content="Components and APIs · React Native"/><meta property="og:type" content="website"/><meta property="og:url" content="https://reactnative.dev/"/><meta property="og:description" content="React Native provides a number of [Core Components](intro-react-native-components). You will find a full list of components and APIs on the sidebar to the left. If you&#x27;re not sure where to get started, take a look at the following categories:"/><meta name="twitter:card" content="summary"/><link rel="shortcut icon" href="/img/favicon.ico"/><link rel="stylesheet" href="https://cdn.jsdelivr.net/docsearch.js/1/docsearch.min.css"/><link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/solarized-dark.min.css"/><link rel="alternate" type="application/atom+xml" href="https://reactnative.dev/blog/atom.xml" title="React Native Blog ATOM Feed"/><link rel="alternate" type="application/rss+xml" href="https://reactnative.dev/blog/feed.xml" title="React Native Blog RSS Feed"/><script>
+              (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+              (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+              m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+              })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+              ga('create', 'UA-41298772-2', 'auto');
+              ga('send', 'pageview');
+            </script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/focus-visible@5.0.2/dist/focus-visible.min.js"></script><script type="text/javascript" src="https://snack.expo.io/embed.js"></script><script type="text/javascript" src="https://platform.twitter.com/widgets.js"></script><script type="text/javascript" src="https://buttons.github.io/buttons.js"></script><script type="text/javascript" src="/js/codeblocks.js"></script><script type="text/javascript" src="/js/tabs.js"></script><script type="text/javascript" src="/js/docs-rating.js"></script><script src="https://unpkg.com/vanilla-back-to-top@7.1.14/dist/vanilla-back-to-top.min.js"></script><script>
+        document.addEventListener('DOMContentLoaded', function() {
+          addBackToTop(
+            {"zIndex":100}
+          )
+        });
+        </script><script src="/js/scrollSpy.js"></script><link rel="stylesheet" href="/css/prism.css"/><link rel="stylesheet" href="/css/main.css"/><script src="/js/codetabs.js"></script></head><body class="sideNavVisible separateOnPageNav"><div class="fixedHeaderContainer"><div class="headerWrapper wrapper"><header><a href="/"><img class="logo" src="/img/header_logo.svg" alt="React Native"/><h2 class="headerTitleWithLogo">React Native</h2></a><a href="/versions"><h3>0.61</h3></a><div class="navigationWrapper navigationSlider"><nav class="slidingNav"><ul class="nav-site nav-site-internal"><li class="siteNavGroupActive"><a href="/docs/0.61/getting-started" target="_self">Docs</a></li><li class=""><a href="/docs/0.61/activityindicator" target="_self">API</a></li><li class=""><a href="/help" target="_self">Community</a></li><li class=""><a href="/blog/" target="_self">Blog</a></li><li class="navSearchWrapper reactNavSearchWrapper"><input type="text" id="search_input_react" placeholder="Search" title="Search"/></li><li class=""><a href="https://github.com/facebook/react-native" target="_self">GitHub</a></li></ul></nav></div></header></div></div><div class="navPusher"><div class="docMainWrapper wrapper"><div class="docsNavContainer" id="docsNav"><nav class="toc"><div class="toggleNav"><section class="navWrapper wrapper"><div class="navBreadcrumb wrapper"><div class="navToggle" id="navToggler"><div class="hamburger-menu"><div class="line1"></div><div class="line2"></div><div class="line3"></div></div></div><h2><i>›</i><span>Guides</span></h2><div class="tocToggler" id="tocToggler"><i class="icon-toc"></i></div></div><div class="navGroups"><div class="navGroup"><h3 class="navGroupCategoryTitle collapsible">The Basics<span class="arrow"><svg width="24" height="24" viewBox="0 0 24 24"><path fill="#565656" d="M7.41 15.41L12 10.83l4.59 4.58L18 14l-6-6-6 6z"></path><path d="M0 0h24v24H0z" fill="none"></path></svg></span></h3><ul class="hide"><li class="navListItem"><a class="navItem" href="/docs/0.61/getting-started">Getting Started</a></li><li class="navListItem"><a class="navItem" href="/docs/0.61/tutorial">Learn the Basics</a></li><li class="navListItem"><a class="navItem" href="/docs/0.61/props">Props</a></li><li class="navListItem"><a class="navItem" href="/docs/0.61/state">State</a></li><li class="navListItem"><a class="navItem" href="/docs/0.61/style">Style</a></li><li class="navListItem"><a class="navItem" href="/docs/0.61/height-and-width">Height and Width</a></li><li class="navListItem"><a class="navItem" href="/docs/0.61/flexbox">Layout with Flexbox</a></li><li class="navListItem"><a class="navItem" href="/docs/0.61/handling-text-input">Handling Text Input</a></li><li class="navListItem"><a class="navItem" href="/docs/0.61/handling-touches">Handling Touches</a></li><li class="navListItem"><a class="navItem" href="/docs/0.61/using-a-scrollview">Using a ScrollView</a></li><li class="navListItem"><a class="navItem" href="/docs/0.61/using-a-listview">Using List Views</a></li><li class="navListItem"><a class="navItem" href="/docs/0.61/network">Networking</a></li><li class="navListItem"><a class="navItem" href="/docs/0.61/more-resources">More Resources</a></li></ul></div><div class="navGroup"><h3 class="navGroupCategoryTitle collapsible">Guides<span class="arrow"><svg width="24" height="24" viewBox="0 0 24 24"><path fill="#565656" d="M7.41 15.41L12 10.83l4.59 4.58L18 14l-6-6-6 6z"></path><path d="M0 0h24v24H0z" fill="none"></path></svg></span></h3><ul class="hide"><li class="navListItem"><a class="navItem" href="/docs/0.61/fast-refresh">Fast Refresh</a></li><li class="navListItem navListItemActive"><a class="navItem" href="/docs/0.61/components-and-apis">Components and APIs</a></li><li class="navListItem"><a class="navItem" href="/docs/0.61/platform-specific-code">Platform Specific Code</a></li><li class="navListItem"><a class="navItem" href="/docs/0.61/navigation">Navigating Between Screens</a></li><li class="navListItem"><a class="navItem" href="/docs/0.61/images">Images</a></li><li class="navListItem"><a class="navItem" href="/docs/0.61/animations">Animations</a></li><li class="navListItem"><a class="navItem" href="/docs/0.61/accessibility">Accessibility</a></li><li class="navListItem"><a class="navItem" href="/docs/0.61/improvingux">Improving User Experience</a></li><li class="navListItem"><a class="navItem" href="/docs/0.61/optimizing-flatlist-configuration">Optimizing Flatlist Configuration</a></li><li class="navListItem"><a class="navItem" href="/docs/0.61/timers">Timers</a></li><li class="navListItem"><a class="navItem" href="/docs/0.61/debugging">Debugging</a></li><li class="navListItem"><a class="navItem" href="/docs/0.61/performance">Performance</a></li><li class="navListItem"><a class="navItem" href="/docs/0.61/gesture-responder-system">Gesture Responder System</a></li><li class="navListItem"><a class="navItem" href="/docs/0.61/javascript-environment">JavaScript Environment</a></li><li class="navListItem"><a class="navItem" href="/docs/0.61/typescript">Using TypeScript with React Native</a></li><li class="navListItem"><a class="navItem" href="/docs/0.61/direct-manipulation">Direct Manipulation</a></li><li class="navListItem"><a class="navItem" href="/docs/0.61/colors">Color Reference</a></li><li class="navListItem"><a class="navItem" href="/docs/0.61/integration-with-existing-apps">Integration with Existing Apps</a></li><li class="navListItem"><a class="navItem" href="/docs/0.61/building-for-apple-tv">Building For TV Devices</a></li><li class="navListItem"><a class="navItem" href="/docs/0.61/running-on-device">Running On Device</a></li><li class="navListItem"><a class="navItem" href="/docs/0.61/upgrading">Upgrading to new React Native versions</a></li><li class="navListItem"><a class="navItem" href="/docs/0.61/troubleshooting">Troubleshooting</a></li><li class="navListItem"><a class="navItem" href="/docs/0.61/native-modules-setup">Native Modules Setup</a></li><li class="navListItem"><a class="navItem" href="/docs/0.61/out-of-tree-platforms">Out-of-Tree Platforms</a></li></ul></div><div class="navGroup"><h3 class="navGroupCategoryTitle collapsible">Guides (iOS)<span class="arrow"><svg width="24" height="24" viewBox="0 0 24 24"><path fill="#565656" d="M7.41 15.41L12 10.83l4.59 4.58L18 14l-6-6-6 6z"></path><path d="M0 0h24v24H0z" fill="none"></path></svg></span></h3><ul class="hide"><li class="navListItem"><a class="navItem" href="/docs/0.61/native-modules-ios">Native Modules</a></li><li class="navListItem"><a class="navItem" href="/docs/0.61/native-components-ios">Native UI Components</a></li><li class="navListItem"><a class="navItem" href="/docs/0.61/linking-libraries-ios">Linking Libraries</a></li><li class="navListItem"><a class="navItem" href="/docs/0.61/running-on-simulator-ios">Running On Simulator</a></li><li class="navListItem"><a class="navItem" href="/docs/0.61/communication-ios">Communication between native and React Native</a></li><li class="navListItem"><a class="navItem" href="/docs/0.61/app-extensions">App Extensions</a></li></ul></div><div class="navGroup"><h3 class="navGroupCategoryTitle collapsible">Guides (Android)<span class="arrow"><svg width="24" height="24" viewBox="0 0 24 24"><path fill="#565656" d="M7.41 15.41L12 10.83l4.59 4.58L18 14l-6-6-6 6z"></path><path d="M0 0h24v24H0z" fill="none"></path></svg></span></h3><ul class="hide"><li class="navListItem"><a class="navItem" href="/docs/0.61/native-modules-android">Native Modules</a></li><li class="navListItem"><a class="navItem" href="/docs/0.61/native-components-android">Native UI Components</a></li><li class="navListItem"><a class="navItem" href="/docs/0.61/headless-js-android">Headless JS</a></li><li class="navListItem"><a class="navItem" href="/docs/0.61/signed-apk-android">Publishing to Google Play Store</a></li><li class="navListItem"><a class="navItem" href="/docs/0.61/removing-default-permissions">Removing Default Permissions</a></li><li class="navListItem"><a class="navItem" href="/docs/0.61/hermes">Using Hermes</a></li></ul></div></div></section></div><script>
+            var coll = document.getElementsByClassName('collapsible');
+            var checkActiveCategory = true;
+            for (var i = 0; i < coll.length; i++) {
+              var links = coll[i].nextElementSibling.getElementsByTagName('*');
+              if (checkActiveCategory){
+                for (var j = 0; j < links.length; j++) {
+                  if (links[j].classList.contains('navListItemActive')){
+                    coll[i].nextElementSibling.classList.toggle('hide');
+                    coll[i].childNodes[1].classList.toggle('rotate');
+                    checkActiveCategory = false;
+                    break;
+                  }
+                }
+              }
+
+              coll[i].addEventListener('click', function() {
+                var arrow = this.childNodes[1];
+                arrow.classList.toggle('rotate');
+                var content = this.nextElementSibling;
+                content.classList.toggle('hide');
+              });
+            }
+
+            document.addEventListener('DOMContentLoaded', function() {
+              createToggler('#navToggler', '#docsNav', 'docsSliderActive');
+              createToggler('#tocToggler', 'body', 'tocActive');
+
+              var headings = document.querySelector('.toc-headings');
+              headings && headings.addEventListener('click', function(event) {
+                var el = event.target;
+                while(el !== headings){
+                  if (el.tagName === 'A') {
+                    document.body.classList.remove('tocActive');
+                    break;
+                  } else{
+                    el = el.parentNode;
+                  }
+                }
+              }, false);
+
+              function createToggler(togglerSelector, targetSelector, className) {
+                var toggler = document.querySelector(togglerSelector);
+                var target = document.querySelector(targetSelector);
+
+                if (!toggler) {
+                  return;
+                }
+
+                toggler.onclick = function(event) {
+                  event.preventDefault();
+
+                  target.classList.toggle(className);
+                };
+              }
+            });
+        </script></nav></div><div class="container mainContainer docsContainer"><div class="wrapper"><div class="post"><header class="postHeader"><a class="edit-page-link button" href="https://github.com/facebook/react-native-website/blob/master/docs/components-and-apis.md" target="_blank" rel="noreferrer noopener">Edit</a><h1 id="__docusaurus" class="postHeaderTitle">Components and APIs</h1></header><article><div><span><p>React Native provides a number of <a href="intro-react-native-components">Core Components</a>. You will find a full list of components and APIs on the sidebar to the left. If you're not sure where to get started, take a look at the following categories:</p>
+<ul>
+<li><a href="/docs/0.61/components-and-apis#basic-components">Basic Components</a></li>
+<li><a href="/docs/0.61/components-and-apis#user-interface">User Interface</a></li>
+<li><a href="/docs/0.61/components-and-apis#list-views">List Views</a></li>
+<li><a href="/docs/0.61/components-and-apis#ios-components-and-apis">iOS-specific</a></li>
+<li><a href="/docs/0.61/components-and-apis#android-components-and-apis">Android-specific</a></li>
+<li><a href="/docs/0.61/components-and-apis#others">Others</a></li>
+</ul>
+<p>You're not limited to the components and APIs bundled with React Native. React Native is a community of thousands of developers. If you're looking for a library that does something specific, search the npm registry for packages mentioning <a href="https://www.npmjs.com/search?q=react-native&amp;page=1&amp;ranking=optimal">react-native</a>, or check out <a href="http://www.awesome-react-native.com/">Awesome React Native</a> for a curated list.</p>
+<h2><a class="anchor" aria-hidden="true" id="basic-components"></a><a href="#basic-components" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Basic Components</h2>
+<p>Most apps will end up using one of these basic components. You'll want to get yourself familiarized with all of these if you're new to React Native.</p>
+<div class="component-grid component-grid-border">
+  <div class="component">
+    <a href="./view">
+      <h3>View</h3>
+      <p>The most fundamental component for building a UI.</p>
+    </a>
+  </div>
+  <div class="component">
+    <a href="./text">
+      <h3>Text</h3>
+      <p>A component for displaying text.</p>
+    </a>
+  </div>
+  <div class="component">
+    <a href="./image">
+      <h3>Image</h3>
+      <p>A component for displaying images.</p>
+    </a>
+  </div>
+  <div class="component">
+    <a href="./textinput">
+      <h3>TextInput</h3>
+      <p>A component for inputting text into the app via a keyboard.</p>
+    </a>
+  </div>
+  <div class="component">
+    <a href="./scrollview">
+      <h3>ScrollView</h3>
+      <p>Provides a scrolling container that can host multiple components and views.</p>
+    </a>
+  </div>
+  <div class="component">
+    <a href="./stylesheet">
+      <h3>StyleSheet</h3>
+      <p>Provides an abstraction layer similar to CSS stylesheets.</p>
+    </a>
+  </div>
+</div>
+<h2><a class="anchor" aria-hidden="true" id="user-interface"></a><a href="#user-interface" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>User Interface</h2>
+<p>Render common user interface controls on any platform using the following components. For platform specific components, keep reading.</p>
+<div class="component-grid component-grid-border">
+  <div class="component">
+    <a href="./button">
+      <h3>Button</h3>
+      <p>A basic button component for handling touches that should render nicely on any platform.</p>
+    </a>
+  </div>
+  <div class="component">
+    <a href="./picker">
+      <h3>Picker</h3>
+      <p>Renders the native picker component on Android and iOS.</p>
+    </a>
+  </div>
+  <div class="component">
+    <a href="./slider">
+      <h3>Slider</h3>
+      <p>A component used to select a single value from a range of values.</p>
+    </a>
+  </div>
+  <div class="component">
+    <a href="./switch">
+      <h3>Switch</h3>
+      <p>Renders a boolean input.</p>
+    </a>
+  </div>
+</div>
+<h2><a class="anchor" aria-hidden="true" id="list-views"></a><a href="#list-views" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>List Views</h2>
+<p>Unlike the more generic <a href="/docs/0.61/scrollview"><code>ScrollView</code></a>, the following list view components only render elements that are currently showing on the screen. This makes them a great choice for displaying long lists of data.</p>
+<div class="component-grid component-grid-border">
+  <div class="component">
+    <a href="./flatlist">
+      <h3>FlatList</h3>
+      <p>A component for rendering performant scrollable lists.</p>
+    </a>
+  </div>
+  <div class="component">
+    <a href="./sectionlist">
+      <h3>SectionList</h3>
+      <p>Like <code>FlatList</code>, but for sectioned lists.</p>
+    </a>
+  </div>
+</div>
+<h2><a class="anchor" aria-hidden="true" id="ios-components-and-apis"></a><a href="#ios-components-and-apis" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>iOS Components and APIs</h2>
+<p>Many of the following components provide wrappers for commonly used UIKit classes.</p>
+<div class="component-grid component-grid-border">
+  <div class="component">
+    <a href="./actionsheetios">
+      <h3>ActionSheetIOS</h3>
+      <p>API to display an iOS action sheet or share sheet.</p>
+    </a>
+  </div>
+  <div class="component">
+    <a href="./alertios">
+      <h3>AlertIOS</h3>
+      <p>Create an iOS alert dialog with a message or create a prompt for user input.</p>
+    </a>
+  </div>
+  <div class="component">
+    <a href="./datepickerios">
+      <h3>DatePickerIOS</h3>
+      <p>Renders a date/time picker (selector) on iOS.</p>
+    </a>
+  </div>
+  <div class="component">
+    <a href="./imagepickerios">
+      <h3>ImagePickerIOS</h3>
+      <p>Renders a image picker on iOS.</p>
+    </a>
+  </div>
+  <div class="component">
+    <a href="./progressviewios">
+      <h3>ProgressViewIOS</h3>
+      <p>Renders a <code>UIProgressView</code> on iOS.</p>
+    </a>
+  </div>
+  <div class="component">
+    <a href="./pushnotificationios">
+      <h3>PushNotificationIOS</h3>
+      <p>Handle push notifications for your app, including permission handling and icon badge number.</p>
+    </a>
+  </div>
+  <div class="component">
+    <a href="./segmentedcontrolios">
+      <h3>SegmentedControlIOS</h3>
+      <p>Renders a <code>UISegmentedControl</code> on iOS.</p>
+    </a>
+  </div>
+</div>
+<h2><a class="anchor" aria-hidden="true" id="android-components-and-apis"></a><a href="#android-components-and-apis" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Android Components and APIs</h2>
+<p>Many of the following components provide wrappers for commonly used Android classes.</p>
+<div class="component-grid component-grid-border">
+  <div class="component">
+    <a href="./backhandler">
+      <h3>BackHandler</a></h3>
+      <p>Detect hardware button presses for back navigation.</p>
+    </a>
+  </div>
+  <div class="component">
+    <a href="./datepickerandroid">
+      <h3>DatePickerAndroid</h3>
+      <p>Opens the standard Android date picker dialog.</p>
+    </a>
+  </div>
+  <div class="component">
+    <a href="./drawerlayoutandroid">
+      <h3>DrawerLayoutAndroid</h3>
+      <p>Renders a <code>DrawerLayout</code> on Android.</p>
+    </a>
+  </div>
+  <div class="component">
+    <a href="./permissionsandroid">
+      <h3>PermissionsAndroid</a></h3>
+      <p>Provides access to the permissions model introduced in Android M.</p>
+    </a>
+  </div>
+  <div class="component">
+    <a href="./progressbarandroid">
+      <h3>ProgressBarAndroid</h3>
+      <p>Renders a <code>ProgressBar</code> on Android.</p>
+    </a>
+  </div>
+  <div class="component">
+    <a href="./timepickerandroid">
+      <h3>TimePickerAndroid</h3>
+      <p>Opens the standard Android time picker dialog.</p>
+    </a>
+  </div>
+  <div class="component">
+    <a href="./toastandroid">
+      <h3>ToastAndroid</h3>
+      <p>Create an Android Toast alert.</p>
+    </a>
+  </div>
+  <div class="component">
+    <a href="./toolbarandroid">
+      <h3>ToolbarAndroid</h3>
+      <p>Renders a <code>Toolbar</code> on Android.</p>
+    </a>
+  </div>
+  <div class="component">
+    <a href="./viewpagerandroid">
+      <h3>ViewPagerAndroid</h3>
+      <p>Container that allows to flip left and right between child views.</p>
+    </a>
+  </div>
+</div>
+<h2><a class="anchor" aria-hidden="true" id="others"></a><a href="#others" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Others</h2>
+<p>These components may come in handy for certain applications. For an exhaustive list of components and APIs, check out the sidebar to the left.</p>
+<div class="component-grid">
+  <div class="component">
+    <a href="./activityindicator">
+      <h3>ActivityIndicator</h3>
+      <p>Displays a circular loading indicator.</p>
+    </a>
+  </div>
+  <div class="component">
+    <a href="./alert">
+      <h3>Alert</h3>
+      <p>Launches an alert dialog with the specified title and message.</p>
+    </a>
+  </div>
+  <div class="component">
+    <a href="./animated">
+      <h3>Animated</h3>
+      <p>A library for creating fluid, powerful animations that are easy to build and maintain.</p>
+    </a>
+  </div>
+  <div class="component">
+    <a href="./clipboard">
+      <h3>Clipboard</h3>
+      <p>Provides an interface for setting and getting content from the clipboard on both Android and iOS.</p>
+    </a>
+  </div>
+  <div class="component">
+    <a href="./dimensions">
+      <h3>Dimensions</h3>
+      <p>Provides an interface for getting device dimensions.</p>
+    </a>
+  </div>
+  <div class="component">
+    <a href="./keyboardavoidingview">
+      <h3>KeyboardAvoidingView</h3>
+      <p>Provides a view that moves out of the way of the virtual keyboard automatically.</p>
+    </a>
+  </div>
+  <div class="component">
+    <a href="./linking">
+      <h3>Linking</h3>
+      <p>Provides a general interface to interact with both incoming and outgoing app links.</p>
+    </a>
+  </div>
+  <div class="component">
+    <a href="./modal">
+      <h3>Modal</h3>
+      <p>Provides a simple way to present content above an enclosing view.</p>
+    </a>
+  </div>
+  <div class="component">
+    <a href="./pixelratio">
+      <h3>PixelRatio</h3>
+      <p>Provides access to the device pixel density.</p>
+    </a>
+  </div>
+  <div class="component">
+    <a href="./refreshcontrol">
+      <h3>RefreshControl</h3>
+      <p>This component is used inside a <code>ScrollView</code> to add pull to refresh functionality.</p>
+    </a>
+  </div>
+  <div class="component">
+    <a href="./statusbar">
+      <h3>StatusBar</h3>
+      <p>Component to control the app status bar.</p>
+    </a>
+  </div>
+</div>
+</span></div></article></div><div class="docs-prevnext"><a class="docs-prev button" href="/docs/0.61/fast-refresh"><span class="arrow-prev">← </span><span>Fast Refresh</span></a><a class="docs-next button" href="/docs/0.61/platform-specific-code"><span>Platform Specific Code</span><span class="arrow-next"> →</span></a></div></div></div><nav class="onPageNav"><ul class="toc-headings"><li><a href="#basic-components">Basic Components</a></li><li><a href="#user-interface">User Interface</a></li><li><a href="#list-views">List Views</a></li><li><a href="#ios-components-and-apis">iOS Components and APIs</a></li><li><a href="#android-components-and-apis">Android Components and APIs</a></li><li><a href="#others">Others</a></li></ul></nav></div><footer class="nav-footer" id="footer"><section class="sitemap"><div><h5>Docs</h5><a href="/docs/getting-started.html">Getting Started</a><a href="/docs/tutorial.html">Tutorial</a><a href="/docs/components-and-apis.html">Components and APIs</a><a href="/docs/more-resources.html">More Resources</a></div><div><h5>Community</h5><a href="/help.html">The React Native Community</a><a href="/showcase.html">Who&#x27;s using React Native?</a><a href="http://stackoverflow.com/questions/tagged/react-native" target="_blank">Ask Questions on Stack Overflow</a><a href="https://github.com/facebook/react-native/blob/master/CONTRIBUTING.md">Contributor Guide</a><a href="https://dev.to/t/reactnative" target="_blank">DEV Community</a></div><div><h5>More Resources</h5><a href="/blog/">Blog</a><a href="https://twitter.com/reactnative" target="_blank">Twitter</a><a href="https://github.com/facebook/react-native" target="_blank">GitHub</a><a href="https://reactjs.org" target="_blank">React</a></div></section><a href="https://code.facebook.com/projects/" target="_blank" class="fbOpenSource"><img src="/img/oss_logo.png" alt="Facebook Open Source" width="170" height="45"/></a><section class="copyright">Copyright © 2020 Facebook Inc.</section></footer></div><script type="text/javascript" src="https://cdn.jsdelivr.net/docsearch.js/1/docsearch.min.js"></script><script>window.fbAsyncInit = function() {FB.init({appId:'1677033832619985',xfbml:true,version:'v2.7'});};(function(d, s, id){var js, fjs = d.getElementsByTagName(s)[0];if (d.getElementById(id)) {return;}js = d.createElement(s); js.id = id;js.src = '//connect.facebook.net/en_US/sdk.js';fjs.parentNode.insertBefore(js, fjs);}(document, 'script','facebook-jssdk'));
+                </script><script>window.twttr=(function(d,s, id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return t;js=d.createElement(s);js.id=id;js.src='https://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js, fjs);t._e = [];t.ready = function(f) {t._e.push(f);};return t;}(document, 'script', 'twitter-wjs'));</script><script>
+                document.addEventListener('keyup', function(e) {
+                  if (e.target !== document.body) {
+                    return;
+                  }
+                  // keyCode for '/' (slash)
+                  if (e.keyCode === 191) {
+                    const search = document.getElementById('search_input_react');
+                    search && search.focus();
+                  }
+                });
+              </script><script>
+              var search = docsearch({
+                
+                apiKey: '2c98749b4a1e588efec53b2acec13025',
+                indexName: 'react-native-versions',
+                inputSelector: '#search_input_react',
+                algoliaOptions: {"facetFilters":["tags:0.61"],"hitsPerPage":5}
+              });
+            </script></body></html>

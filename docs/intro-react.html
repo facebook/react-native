@@ -1,0 +1,643 @@
+<!DOCTYPE html><html lang="en"><head><meta charSet="utf-8"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><title>React Fundamentals · React Native</title><meta name="viewport" content="width=device-width"/><meta name="generator" content="Docusaurus"/><meta name="description" content="To understand React Native fully, you need a solid foundation in React. This short introduction to React can help you get started or get refreshed."/><meta name="docsearch:version" content="0.62"/><meta name="docsearch:language" content="en"/><meta property="og:title" content="React Fundamentals · React Native"/><meta property="og:type" content="website"/><meta property="og:url" content="https://reactnative.dev/"/><meta property="og:description" content="To understand React Native fully, you need a solid foundation in React. This short introduction to React can help you get started or get refreshed."/><meta name="twitter:card" content="summary"/><link rel="shortcut icon" href="/img/favicon.ico"/><link rel="stylesheet" href="https://cdn.jsdelivr.net/docsearch.js/1/docsearch.min.css"/><link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/solarized-dark.min.css"/><link rel="alternate" type="application/atom+xml" href="https://reactnative.dev/blog/atom.xml" title="React Native Blog ATOM Feed"/><link rel="alternate" type="application/rss+xml" href="https://reactnative.dev/blog/feed.xml" title="React Native Blog RSS Feed"/><script>
+              (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+              (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+              m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+              })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+              ga('create', 'UA-41298772-2', 'auto');
+              ga('send', 'pageview');
+            </script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/focus-visible@5.0.2/dist/focus-visible.min.js"></script><script type="text/javascript" src="https://snack.expo.io/embed.js"></script><script type="text/javascript" src="https://platform.twitter.com/widgets.js"></script><script type="text/javascript" src="https://buttons.github.io/buttons.js"></script><script type="text/javascript" src="/js/codeblocks.js"></script><script type="text/javascript" src="/js/tabs.js"></script><script type="text/javascript" src="/js/docs-rating.js"></script><script src="https://unpkg.com/vanilla-back-to-top@7.1.14/dist/vanilla-back-to-top.min.js"></script><script>
+        document.addEventListener('DOMContentLoaded', function() {
+          addBackToTop(
+            {"zIndex":100}
+          )
+        });
+        </script><script src="/js/scrollSpy.js"></script><link rel="stylesheet" href="/css/prism.css"/><link rel="stylesheet" href="/css/main.css"/><script src="/js/codetabs.js"></script></head><body class="sideNavVisible separateOnPageNav"><div class="fixedHeaderContainer"><div class="headerWrapper wrapper"><header><a href="/"><img class="logo" src="/img/header_logo.svg" alt="React Native"/><h2 class="headerTitleWithLogo">React Native</h2></a><a href="/versions"><h3>0.62</h3></a><div class="navigationWrapper navigationSlider"><nav class="slidingNav"><ul class="nav-site nav-site-internal"><li class="siteNavGroupActive"><a href="/docs/getting-started" target="_self">Docs</a></li><li class=""><a href="/docs/activityindicator" target="_self">API</a></li><li class=""><a href="/help" target="_self">Community</a></li><li class=""><a href="/blog/" target="_self">Blog</a></li><li class="navSearchWrapper reactNavSearchWrapper"><input type="text" id="search_input_react" placeholder="Search" title="Search"/></li><li class=""><a href="https://github.com/facebook/react-native" target="_self">GitHub</a></li></ul></nav></div></header></div></div><div class="navPusher"><div class="docMainWrapper wrapper"><div class="docsNavContainer" id="docsNav"><nav class="toc"><div class="toggleNav"><section class="navWrapper wrapper"><div class="navBreadcrumb wrapper"><div class="navToggle" id="navToggler"><div class="hamburger-menu"><div class="line1"></div><div class="line2"></div><div class="line3"></div></div></div><h2><i>›</i><span>The Basics</span></h2><div class="tocToggler" id="tocToggler"><i class="icon-toc"></i></div></div><div class="navGroups"><div class="navGroup"><h3 class="navGroupCategoryTitle collapsible">The Basics<span class="arrow"><svg width="24" height="24" viewBox="0 0 24 24"><path fill="#565656" d="M7.41 15.41L12 10.83l4.59 4.58L18 14l-6-6-6 6z"></path><path d="M0 0h24v24H0z" fill="none"></path></svg></span></h3><ul class="hide"><li class="navListItem"><a class="navItem" href="/docs/getting-started">Introduction</a></li><li class="navListItem"><a class="navItem" href="/docs/intro-react-native-components">Core Components and Native Components</a></li><li class="navListItem navListItemActive"><a class="navItem" href="/docs/intro-react">React Fundamentals</a></li><li class="navListItem"><a class="navItem" href="/docs/handling-text-input">Handling Text Input</a></li><li class="navListItem"><a class="navItem" href="/docs/using-a-scrollview">Using a ScrollView</a></li><li class="navListItem"><a class="navItem" href="/docs/using-a-listview">Using List Views</a></li><li class="navListItem"><a class="navItem" href="/docs/troubleshooting">Troubleshooting</a></li><li class="navListItem"><a class="navItem" href="/docs/platform-specific-code">Platform Specific Code</a></li><li class="navListItem"><a class="navItem" href="/docs/more-resources">More Resources</a></li></ul></div><div class="navGroup"><h3 class="navGroupCategoryTitle collapsible">Environment setup<span class="arrow"><svg width="24" height="24" viewBox="0 0 24 24"><path fill="#565656" d="M7.41 15.41L12 10.83l4.59 4.58L18 14l-6-6-6 6z"></path><path d="M0 0h24v24H0z" fill="none"></path></svg></span></h3><ul class="hide"><li class="navListItem"><a class="navItem" href="/docs/environment-setup">Setting up the development environment</a></li><li class="navListItem"><a class="navItem" href="/docs/integration-with-existing-apps">Integration with Existing Apps</a></li><li class="navListItem"><a class="navItem" href="/docs/building-for-apple-tv">Building For TV Devices</a></li><li class="navListItem"><a class="navItem" href="/docs/out-of-tree-platforms">Out-of-Tree Platforms</a></li></ul></div><div class="navGroup"><h3 class="navGroupCategoryTitle collapsible">Workflow<span class="arrow"><svg width="24" height="24" viewBox="0 0 24 24"><path fill="#565656" d="M7.41 15.41L12 10.83l4.59 4.58L18 14l-6-6-6 6z"></path><path d="M0 0h24v24H0z" fill="none"></path></svg></span></h3><ul class="hide"><li class="navListItem"><a class="navItem" href="/docs/running-on-device">Running On Device</a></li><li class="navListItem"><a class="navItem" href="/docs/fast-refresh">Fast Refresh</a></li><li class="navListItem"><a class="navItem" href="/docs/debugging">Debugging</a></li><li class="navListItem"><a class="navItem" href="/docs/testing">Testing</a></li><li class="navListItem"><a class="navItem" href="/docs/typescript">Using TypeScript with React Native</a></li><li class="navListItem"><a class="navItem" href="/docs/upgrading">Upgrading to new React Native versions</a></li></ul></div><div class="navGroup"><h3 class="navGroupCategoryTitle collapsible">Design<span class="arrow"><svg width="24" height="24" viewBox="0 0 24 24"><path fill="#565656" d="M7.41 15.41L12 10.83l4.59 4.58L18 14l-6-6-6 6z"></path><path d="M0 0h24v24H0z" fill="none"></path></svg></span></h3><ul class="hide"><li class="navListItem"><a class="navItem" href="/docs/style">Style</a></li><li class="navListItem"><a class="navItem" href="/docs/height-and-width">Height and Width</a></li><li class="navListItem"><a class="navItem" href="/docs/flexbox">Layout with Flexbox</a></li><li class="navListItem"><a class="navItem" href="/docs/images">Images</a></li><li class="navListItem"><a class="navItem" href="/docs/colors">Color Reference</a></li></ul></div><div class="navGroup"><h3 class="navGroupCategoryTitle collapsible">Interaction<span class="arrow"><svg width="24" height="24" viewBox="0 0 24 24"><path fill="#565656" d="M7.41 15.41L12 10.83l4.59 4.58L18 14l-6-6-6 6z"></path><path d="M0 0h24v24H0z" fill="none"></path></svg></span></h3><ul class="hide"><li class="navListItem"><a class="navItem" href="/docs/handling-touches">Handling Touches</a></li><li class="navListItem"><a class="navItem" href="/docs/navigation">Navigating Between Screens</a></li><li class="navListItem"><a class="navItem" href="/docs/animations">Animations</a></li><li class="navListItem"><a class="navItem" href="/docs/gesture-responder-system">Gesture Responder System</a></li></ul></div><div class="navGroup"><h3 class="navGroupCategoryTitle collapsible">Inclusion<span class="arrow"><svg width="24" height="24" viewBox="0 0 24 24"><path fill="#565656" d="M7.41 15.41L12 10.83l4.59 4.58L18 14l-6-6-6 6z"></path><path d="M0 0h24v24H0z" fill="none"></path></svg></span></h3><ul class="hide"><li class="navListItem"><a class="navItem" href="/docs/accessibility">Accessibility</a></li></ul></div><div class="navGroup"><h3 class="navGroupCategoryTitle collapsible">Performance<span class="arrow"><svg width="24" height="24" viewBox="0 0 24 24"><path fill="#565656" d="M7.41 15.41L12 10.83l4.59 4.58L18 14l-6-6-6 6z"></path><path d="M0 0h24v24H0z" fill="none"></path></svg></span></h3><ul class="hide"><li class="navListItem"><a class="navItem" href="/docs/performance">Performance Overview</a></li><li class="navListItem"><a class="navItem" href="/docs/optimizing-flatlist-configuration">Optimizing Flatlist Configuration</a></li><li class="navListItem"><a class="navItem" href="/docs/ram-bundles-inline-requires">RAM Bundles and Inline Requires</a></li><li class="navListItem"><a class="navItem" href="/docs/profiling">Profiling</a></li></ul></div><div class="navGroup"><h3 class="navGroupCategoryTitle collapsible">JavaScript Runtime<span class="arrow"><svg width="24" height="24" viewBox="0 0 24 24"><path fill="#565656" d="M7.41 15.41L12 10.83l4.59 4.58L18 14l-6-6-6 6z"></path><path d="M0 0h24v24H0z" fill="none"></path></svg></span></h3><ul class="hide"><li class="navListItem"><a class="navItem" href="/docs/javascript-environment">JavaScript Environment</a></li><li class="navListItem"><a class="navItem" href="/docs/timers">Timers</a></li><li class="navListItem"><a class="navItem" href="/docs/hermes">Using Hermes</a></li></ul></div><div class="navGroup"><h3 class="navGroupCategoryTitle collapsible">Connectivity<span class="arrow"><svg width="24" height="24" viewBox="0 0 24 24"><path fill="#565656" d="M7.41 15.41L12 10.83l4.59 4.58L18 14l-6-6-6 6z"></path><path d="M0 0h24v24H0z" fill="none"></path></svg></span></h3><ul class="hide"><li class="navListItem"><a class="navItem" href="/docs/network">Networking</a></li><li class="navListItem"><a class="navItem" href="/docs/security">Security</a></li></ul></div><div class="navGroup"><h3 class="navGroupCategoryTitle collapsible">Native Components and Modules<span class="arrow"><svg width="24" height="24" viewBox="0 0 24 24"><path fill="#565656" d="M7.41 15.41L12 10.83l4.59 4.58L18 14l-6-6-6 6z"></path><path d="M0 0h24v24H0z" fill="none"></path></svg></span></h3><ul class="hide"><li class="navListItem"><a class="navItem" href="/docs/native-modules-setup">Native Modules Setup</a></li><li class="navListItem"><a class="navItem" href="/docs/direct-manipulation">Direct Manipulation</a></li></ul></div><div class="navGroup"><h3 class="navGroupCategoryTitle collapsible">Guides (Android)<span class="arrow"><svg width="24" height="24" viewBox="0 0 24 24"><path fill="#565656" d="M7.41 15.41L12 10.83l4.59 4.58L18 14l-6-6-6 6z"></path><path d="M0 0h24v24H0z" fill="none"></path></svg></span></h3><ul class="hide"><li class="navListItem"><a class="navItem" href="/docs/native-modules-android">Native Modules</a></li><li class="navListItem"><a class="navItem" href="/docs/native-components-android">Native UI Components</a></li><li class="navListItem"><a class="navItem" href="/docs/headless-js-android">Headless JS</a></li><li class="navListItem"><a class="navItem" href="/docs/signed-apk-android">Publishing to Google Play Store</a></li><li class="navListItem"><a class="navItem" href="/docs/removing-default-permissions">Removing Default Permissions</a></li></ul></div><div class="navGroup"><h3 class="navGroupCategoryTitle collapsible">Guides (iOS)<span class="arrow"><svg width="24" height="24" viewBox="0 0 24 24"><path fill="#565656" d="M7.41 15.41L12 10.83l4.59 4.58L18 14l-6-6-6 6z"></path><path d="M0 0h24v24H0z" fill="none"></path></svg></span></h3><ul class="hide"><li class="navListItem"><a class="navItem" href="/docs/native-modules-ios">Native Modules</a></li><li class="navListItem"><a class="navItem" href="/docs/native-components-ios">Native UI Components</a></li><li class="navListItem"><a class="navItem" href="/docs/linking-libraries-ios">Linking Libraries</a></li><li class="navListItem"><a class="navItem" href="/docs/running-on-simulator-ios">Running On Simulator</a></li><li class="navListItem"><a class="navItem" href="/docs/communication-ios">Communication between native and React Native</a></li><li class="navListItem"><a class="navItem" href="/docs/app-extensions">App Extensions</a></li></ul></div></div></section></div><script>
+            var coll = document.getElementsByClassName('collapsible');
+            var checkActiveCategory = true;
+            for (var i = 0; i < coll.length; i++) {
+              var links = coll[i].nextElementSibling.getElementsByTagName('*');
+              if (checkActiveCategory){
+                for (var j = 0; j < links.length; j++) {
+                  if (links[j].classList.contains('navListItemActive')){
+                    coll[i].nextElementSibling.classList.toggle('hide');
+                    coll[i].childNodes[1].classList.toggle('rotate');
+                    checkActiveCategory = false;
+                    break;
+                  }
+                }
+              }
+
+              coll[i].addEventListener('click', function() {
+                var arrow = this.childNodes[1];
+                arrow.classList.toggle('rotate');
+                var content = this.nextElementSibling;
+                content.classList.toggle('hide');
+              });
+            }
+
+            document.addEventListener('DOMContentLoaded', function() {
+              createToggler('#navToggler', '#docsNav', 'docsSliderActive');
+              createToggler('#tocToggler', 'body', 'tocActive');
+
+              var headings = document.querySelector('.toc-headings');
+              headings && headings.addEventListener('click', function(event) {
+                var el = event.target;
+                while(el !== headings){
+                  if (el.tagName === 'A') {
+                    document.body.classList.remove('tocActive');
+                    break;
+                  } else{
+                    el = el.parentNode;
+                  }
+                }
+              }, false);
+
+              function createToggler(togglerSelector, targetSelector, className) {
+                var toggler = document.querySelector(togglerSelector);
+                var target = document.querySelector(targetSelector);
+
+                if (!toggler) {
+                  return;
+                }
+
+                toggler.onclick = function(event) {
+                  event.preventDefault();
+
+                  target.classList.toggle(className);
+                };
+              }
+            });
+        </script></nav></div><div class="container mainContainer docsContainer"><div class="wrapper"><div class="post"><header class="postHeader"><a class="edit-page-link button" href="https://github.com/facebook/react-native-website/blob/master/docs/intro-react.md" target="_blank" rel="noreferrer noopener">Edit</a><h1 id="__docusaurus" class="postHeaderTitle">React Fundamentals</h1></header><article><div><span><p>React Native runs on <a href="https://reactjs.org/">React</a>, a popular open source library for building user interfaces with JavaScript. To make the most of React Native, it helps to understand React itself. This section can get you started or can serve as a refresher course.</p>
+<p>We’re going to cover the core concepts behind React:</p>
+<ul>
+<li>components</li>
+<li>JSX</li>
+<li>props</li>
+<li>state</li>
+</ul>
+<p>If you want to dig deeper, we encourage you to check out <a href="https://reactjs.org/docs/getting-started.html">React’s official documentation</a>.</p>
+<h2><a class="anchor" aria-hidden="true" id="your-first-component"></a><a href="#your-first-component" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Your first component</h2>
+<p>The rest of this introduction to React uses cats in its examples: friendly, approachable creatures that need names and a cafe to work in. Here is your very first Cat component:</p>
+<div class="toggler">
+  <ul role="tablist" class="toggle-syntax">
+    <li id="functional" class="button-functional" aria-selected="false" role="tab" tabindex="0" aria-controls="functionaltab" onclick="displayTabs('syntax', 'functional')">
+      Function Component Example
+    </li>
+    <li id="classical" class="button-classical" aria-selected="false" role="tab" tabindex="0" aria-controls="classicaltab" onclick="displayTabs('syntax', 'classical')">
+      Class Component Example
+    </li>
+  </ul>
+</div>
+<p><block class="functional syntax" /></p>
+<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React <span class="hljs-keyword">from</span> <span class="hljs-string">'react'</span>;
+<span class="hljs-keyword">import</span> { Text } <span class="hljs-keyword">from</span> <span class="hljs-string">'react-native'</span>;
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Cat</span>(<span class="hljs-params"></span>) </span>{
+  <span class="hljs-keyword">return</span> (
+    <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">Text</span>&gt;</span>Hello, I am your cat!<span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span></span>
+  );
+}
+</code></pre></div><div class="desktop-friendly-snack" style="margin-top: 15px; margin-bottom: 15px"><div
+        data-snack-name="Your Cat"
+        data-snack-description="Example usage"
+        data-snack-code="import%20React%20from%20'react'%3B%0Aimport%20%7B%20Text%20%7D%20from%20'react-native'%3B%0A%0Aexport%20default%20function%20Cat()%20%7B%0A%20%20return%20(%0A%20%20%20%20%3CText%3EHello%2C%20I%20am%20your%20cat!%3C%2FText%3E%0A%20%20)%3B%0A%7D%0A"
+        data-snack-platform="web"
+        data-snack-supported-platforms=ios,android,web
+        data-snack-preview="true"
+        style="
+          overflow: hidden;
+          background: #fafafa;
+          border: 1px solid rgba(0,0,0,.16);
+          border-radius: 4px;
+          height: 514px;
+          width: 100%;
+        "
+      ></div></div></div><p>Here is how you do it: To define your <code>Cat</code> component, first use JavaScript’s <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/import"><code>import</code></a> to import React and React Native’s <a href="/docs/next/text"><code>Text</code></a> Core Component:</p>
+<pre><code class="hljs css language-jsx"><span class="token keyword">import</span> React <span class="token keyword">from</span> <span class="token string">'react'</span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token punctuation">{</span>Text<span class="token punctuation">}</span> <span class="token keyword">from</span> <span class="token string">'react-native'</span><span class="token punctuation">;</span>
+</code></pre>
+<p>Your component starts as a function:</p>
+<pre><code class="hljs css language-jsx"><span class="token keyword">function</span> <span class="token function">Cat</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span><span class="token punctuation">}</span>
+</code></pre>
+<p>You can think of components as blueprints. Whatever a function component returns is rendered as a <strong>React element.</strong> React elements let you describe what you want to see on the screen.</p>
+<p>Here the <code>Cat</code> component will render a <code>&lt;Text&gt;</code> element:</p>
+<pre><code class="hljs css language-jsx"><span class="token keyword">function</span> <span class="token function">Cat</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token keyword">return</span> <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span><span class="token class-name">Text</span></span><span class="token punctuation">></span></span><span class="token plain-text">Hello, I am your cat!</span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span><span class="token class-name">Text</span></span><span class="token punctuation">></span></span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+</code></pre>
+<p>You can export your function component with JavaScript’s <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/export"><code>export default</code></a> for use throughout your app like so:</p>
+<pre><code class="hljs css language-jsx"><span class="token keyword">export</span> <span class="token keyword">default</span> <span class="token keyword">function</span> <span class="token function">Cat</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token keyword">return</span> <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span><span class="token class-name">Text</span></span><span class="token punctuation">></span></span><span class="token plain-text">Hello, I am your cat!</span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span><span class="token class-name">Text</span></span><span class="token punctuation">></span></span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+</code></pre>
+<p><block class="classical syntax" /></p>
+<p>Class components tend to be a bit more verbose than function components.</p>
+<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React, { Component } <span class="hljs-keyword">from</span> <span class="hljs-string">'react'</span>;
+<span class="hljs-keyword">import</span> { Text } <span class="hljs-keyword">from</span> <span class="hljs-string">'react-native'</span>;
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Cat</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">Component</span> </span>{
+  render() {
+    <span class="hljs-keyword">return</span> (
+      <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">Text</span>&gt;</span>Hello, I am your cat!<span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span></span>
+    );
+  }
+}
+</code></pre></div><div class="desktop-friendly-snack" style="margin-top: 15px; margin-bottom: 15px"><div
+        data-snack-name="Your Cat"
+        data-snack-description="Example usage"
+        data-snack-code="import%20React%2C%20%7B%20Component%20%7D%20from%20'react'%3B%0Aimport%20%7B%20Text%20%7D%20from%20'react-native'%3B%0A%0Aexport%20default%20class%20Cat%20extends%20Component%20%7B%0A%20%20render()%20%7B%0A%20%20%20%20return%20(%0A%20%20%20%20%20%20%3CText%3EHello%2C%20I%20am%20your%20cat!%3C%2FText%3E%0A%20%20%20%20)%3B%0A%20%20%7D%0A%7D%0A"
+        data-snack-platform="web"
+        data-snack-supported-platforms=ios,android,web
+        data-snack-preview="true"
+        style="
+          overflow: hidden;
+          background: #fafafa;
+          border: 1px solid rgba(0,0,0,.16);
+          border-radius: 4px;
+          height: 514px;
+          width: 100%;
+        "
+      ></div></div></div><p>You additionally import <code>Component</code> from React:</p>
+<pre><code class="hljs css language-jsx"><span class="token keyword">import</span> React<span class="token punctuation">,</span> <span class="token punctuation">{</span>Component<span class="token punctuation">}</span> <span class="token keyword">from</span> <span class="token string">'react'</span><span class="token punctuation">;</span>
+</code></pre>
+<p>Your component starts as a class extending <code>Component</code> instead of as a function:</p>
+<pre><code class="hljs css language-jsx"><span class="token keyword">class</span> <span class="token class-name">Cat</span> <span class="token keyword">extends</span> <span class="token class-name">Component</span> <span class="token punctuation">{</span><span class="token punctuation">}</span>
+</code></pre>
+<p>Class components have a <code>render()</code> function. Whatever is returned inside it is rendered as a React element:</p>
+<pre><code class="hljs css language-jsx"><span class="token keyword">class</span> <span class="token class-name">Cat</span> <span class="token keyword">extends</span> <span class="token class-name">Component</span> <span class="token punctuation">{</span>
+  <span class="token function">render</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">return</span> <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span><span class="token class-name">Text</span></span><span class="token punctuation">></span></span><span class="token plain-text">Hello, I am your cat!</span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span><span class="token class-name">Text</span></span><span class="token punctuation">></span></span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+</code></pre>
+<p>And as with function components, you can export your class component:</p>
+<pre><code class="hljs css language-jsx"><span class="token keyword">export</span> <span class="token keyword">default</span> <span class="token keyword">class</span> <span class="token class-name">Cat</span> <span class="token keyword">extends</span> <span class="token class-name">Component</span> <span class="token punctuation">{</span>
+  <span class="token function">render</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">return</span> <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span><span class="token class-name">Text</span></span><span class="token punctuation">></span></span><span class="token plain-text">Hello, I am your cat!</span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span><span class="token class-name">Text</span></span><span class="token punctuation">></span></span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+</code></pre>
+<p><block class="endBlock syntax" /></p>
+<blockquote>
+<p>This is one of many ways to export your component. This kind of export works well with the Snack Player. However, depending on your app’s file structure, you might need to use a different convention. This <a href="https://medium.com/dailyjs/javascript-module-cheatsheet-7bd474f1d829">handy cheatsheet on JavaScript imports and exports</a> can help.</p>
+</blockquote>
+<p>Now take a closer look at that <code>return</code> statement. <code>&lt;Text&gt;Hello, I am your cat!&lt;/Text&gt;</code> is using a kind of JavaScript syntax that makes writing elements convenient: JSX.</p>
+<h2><a class="anchor" aria-hidden="true" id="jsx"></a><a href="#jsx" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>JSX</h2>
+<p>React and React Native use <strong>JSX,</strong> a syntax that lets you write elements inside JavaScript like so: <code>&lt;Text&gt;Hello, I am your cat!&lt;/Text&gt;</code>. The React docs have <a href="https://reactjs.org/docs/jsx-in-depth.html">a comprehensive guide to JSX</a> you can reference to learn even more. Because JSX is JavaScript, you can use variables inside it. Here you are declaring a name for the cat, <code>name</code>, and embedding it with curly braces inside <code>&lt;Text&gt;</code>.</p>
+<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React <span class="hljs-keyword">from</span> <span class="hljs-string">'react'</span>;
+<span class="hljs-keyword">import</span> { Text } <span class="hljs-keyword">from</span> <span class="hljs-string">'react-native'</span>;
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Cat</span>(<span class="hljs-params"></span>) </span>{
+  <span class="hljs-keyword">const</span> name = <span class="hljs-string">"Maru"</span>;
+  <span class="hljs-keyword">return</span> (
+    <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">Text</span>&gt;</span>Hello, I am {name}!<span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span></span>
+  );
+}
+</code></pre></div><div class="desktop-friendly-snack" style="margin-top: 15px; margin-bottom: 15px"><div
+        data-snack-name="Curly Braces"
+        data-snack-description="Example usage"
+        data-snack-code="import%20React%20from%20'react'%3B%0Aimport%20%7B%20Text%20%7D%20from%20'react-native'%3B%0A%0Aexport%20default%20function%20Cat()%20%7B%0A%20%20const%20name%20%3D%20%22Maru%22%3B%0A%20%20return%20(%0A%20%20%20%20%3CText%3EHello%2C%20I%20am%20%7Bname%7D!%3C%2FText%3E%0A%20%20)%3B%0A%7D%0A"
+        data-snack-platform="web"
+        data-snack-supported-platforms=ios,android,web
+        data-snack-preview="true"
+        style="
+          overflow: hidden;
+          background: #fafafa;
+          border: 1px solid rgba(0,0,0,.16);
+          border-radius: 4px;
+          height: 514px;
+          width: 100%;
+        "
+      ></div></div></div><p>Any JavaScript expression will work between curly braces, including function calls like <code>{getFullName(&quot;Rum&quot;, Tum&quot;, &quot;Tugger&quot;)}</code>:</p>
+<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React <span class="hljs-keyword">from</span> <span class="hljs-string">'react'</span>;
+<span class="hljs-keyword">import</span> { Text } <span class="hljs-keyword">from</span> <span class="hljs-string">'react-native'</span>;
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Cat</span>(<span class="hljs-params"></span>) </span>{
+  <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">getFullName</span>(<span class="hljs-params">firstName, secondName, thirdName</span>) </span>{
+    <span class="hljs-keyword">return</span> firstName + <span class="hljs-string">" "</span> + secondName + <span class="hljs-string">" "</span> + thirdName;
+  }
+
+  <span class="hljs-keyword">return</span> (
+    <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">Text</span>&gt;</span>
+      Hello, I am {getFullName("Rum", "Tum", "Tugger")}!
+    <span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span></span>
+  );
+}
+</code></pre></div><div class="desktop-friendly-snack" style="margin-top: 15px; margin-bottom: 15px"><div
+        data-snack-name="Curly Braces"
+        data-snack-description="Example usage"
+        data-snack-code="import%20React%20from%20'react'%3B%0Aimport%20%7B%20Text%20%7D%20from%20'react-native'%3B%0A%0Aexport%20default%20function%20Cat()%20%7B%0A%20%20function%20getFullName(firstName%2C%20secondName%2C%20thirdName)%20%7B%0A%20%20%20%20return%20firstName%20%2B%20%22%20%22%20%2B%20secondName%20%2B%20%22%20%22%20%2B%20thirdName%3B%0A%20%20%7D%0A%0A%20%20return%20(%0A%20%20%20%20%3CText%3E%0A%20%20%20%20%20%20Hello%2C%20I%20am%20%7BgetFullName(%22Rum%22%2C%20%22Tum%22%2C%20%22Tugger%22)%7D!%0A%20%20%20%20%3C%2FText%3E%0A%20%20)%3B%0A%7D%0A"
+        data-snack-platform="web"
+        data-snack-supported-platforms=ios,android,web
+        data-snack-preview="true"
+        style="
+          overflow: hidden;
+          background: #fafafa;
+          border: 1px solid rgba(0,0,0,.16);
+          border-radius: 4px;
+          height: 514px;
+          width: 100%;
+        "
+      ></div></div></div><p>You can think of curly braces as creating a portal into JS functionality in your JSX!</p>
+<blockquote>
+<p>Because JSX is included in the React library, it won’t work if you don’t have <code>import React from 'react'</code> at the top of your file!</p>
+</blockquote>
+<h2><a class="anchor" aria-hidden="true" id="custom-components"></a><a href="#custom-components" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Custom Components</h2>
+<p>You’ve already met <a href="intro-react-native-components">React Native’s Core Components</a>. React lets you nest these components inside each other to create new components. These nestable, reusable components are at the heart of the React paradigm.</p>
+<p>For example, you can nest <a href="text"><code>Text</code></a> and <a href="textinput"><code>TextInput</code></a> inside a <a href="view"><code>View</code></a> below, and React Native will render them together:</p>
+<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React <span class="hljs-keyword">from</span> <span class="hljs-string">'react'</span>;
+<span class="hljs-keyword">import</span> { Text, TextInput, View } <span class="hljs-keyword">from</span> <span class="hljs-string">'react-native'</span>;
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Cat</span>(<span class="hljs-params"></span>) </span>{
+  <span class="hljs-keyword">return</span> (
+    <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">View</span>&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">Text</span>&gt;</span>Hello, I am...<span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">TextInput</span>
+        <span class="hljs-attr">style</span>=<span class="hljs-string">{{</span>
+          <span class="hljs-attr">height:</span> <span class="hljs-attr">40</span>,
+          <span class="hljs-attr">borderColor:</span> '<span class="hljs-attr">gray</span>',
+          <span class="hljs-attr">borderWidth:</span> <span class="hljs-attr">1</span>
+        }}
+        <span class="hljs-attr">defaultValue</span>=<span class="hljs-string">"Name me!"</span>
+      /&gt;</span>
+    <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span>
+  );
+}
+</span></code></pre></div><div class="desktop-friendly-snack" style="margin-top: 15px; margin-bottom: 15px"><div
+        data-snack-name="Custom Components"
+        data-snack-description="Example usage"
+        data-snack-code="import%20React%20from%20'react'%3B%0Aimport%20%7B%20Text%2C%20TextInput%2C%20View%20%7D%20from%20'react-native'%3B%0A%0Aexport%20default%20function%20Cat()%20%7B%0A%20%20return%20(%0A%20%20%20%20%3CView%3E%0A%20%20%20%20%20%20%3CText%3EHello%2C%20I%20am...%3C%2FText%3E%0A%20%20%20%20%20%20%3CTextInput%0A%20%20%20%20%20%20%20%20style%3D%7B%7B%0A%20%20%20%20%20%20%20%20%20%20height%3A%2040%2C%0A%20%20%20%20%20%20%20%20%20%20borderColor%3A%20'gray'%2C%0A%20%20%20%20%20%20%20%20%20%20borderWidth%3A%201%0A%20%20%20%20%20%20%20%20%7D%7D%0A%20%20%20%20%20%20%20%20defaultValue%3D%22Name%20me!%22%0A%20%20%20%20%20%20%2F%3E%0A%20%20%20%20%3C%2FView%3E%0A%20%20)%3B%0A%7D%0A"
+        data-snack-platform="web"
+        data-snack-supported-platforms=ios,android,web
+        data-snack-preview="true"
+        style="
+          overflow: hidden;
+          background: #fafafa;
+          border: 1px solid rgba(0,0,0,.16);
+          border-radius: 4px;
+          height: 514px;
+          width: 100%;
+        "
+      ></div></div></div><div class="toggler">
+  <span>Developer Notes</span>
+  <span role="tablist" class="toggle-devNotes">
+    <button role="tab" class="button-webNote" onclick="displayTabs('devNotes', 'webNote')">Web</button>
+    <button role="tab" class="button-androidNote" onclick="displayTabs('devNotes', 'androidNote')">Android</button>
+  </span>
+</div>
+<p><block class="webNote devNotes" /></p>
+<blockquote>
+<p>If you’re familiar with web development, <code>&lt;View&gt;</code> and <code>&lt;Text&gt;</code> might remind you of HTML! You can think of them as the <code>&lt;div&gt;</code> and <code>&lt;p&gt;</code> tags of application development.</p>
+</blockquote>
+<p><block class="androidNote devNotes" /></p>
+<blockquote>
+<p>On Android, you usually put your views inside <code>LinearLayout</code>, <code>FrameLayout</code>, <code>RelativeLayout</code>, etc. to define how the view’s children will be arranged on the screen. In React Native, <code>View</code> uses Flexbox for its children’s layout. You can learn more in <a href="flexbox">our guide to layout with Flexbox</a>.</p>
+</blockquote>
+<p><block class="endBlock devNotes" /></p>
+<p>You can render this component multiple times and multiple places without repeating your code by using <code>&lt;Cat&gt;</code>:</p>
+<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React <span class="hljs-keyword">from</span> <span class="hljs-string">'react'</span>;
+<span class="hljs-keyword">import</span> { Text, TextInput, View } <span class="hljs-keyword">from</span> <span class="hljs-string">'react-native'</span>;
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Cat</span>(<span class="hljs-params"></span>) </span>{
+  <span class="hljs-keyword">return</span> (
+    <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">View</span>&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">Text</span>&gt;</span>I am a also cat!<span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span>
+    <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span></span>
+  );
+}
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Cafe</span>(<span class="hljs-params"></span>) </span>{
+  <span class="hljs-keyword">return</span> (
+    <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">View</span>&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">Text</span>&gt;</span>Welcome!<span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">Cat</span> /&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">Cat</span> /&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">Cat</span> /&gt;</span>
+    <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span></span>
+  );
+}
+</code></pre></div><div class="desktop-friendly-snack" style="margin-top: 15px; margin-bottom: 15px"><div
+        data-snack-name="Multiple Components"
+        data-snack-description="Example usage"
+        data-snack-code="import%20React%20from%20'react'%3B%0Aimport%20%7B%20Text%2C%20TextInput%2C%20View%20%7D%20from%20'react-native'%3B%0A%0Afunction%20Cat()%20%7B%0A%20%20return%20(%0A%20%20%20%20%3CView%3E%0A%20%20%20%20%20%20%3CText%3EI%20am%20a%20also%20cat!%3C%2FText%3E%0A%20%20%20%20%3C%2FView%3E%0A%20%20)%3B%0A%7D%0A%0Aexport%20default%20function%20Cafe()%20%7B%0A%20%20return%20(%0A%20%20%20%20%3CView%3E%0A%20%20%20%20%20%20%3CText%3EWelcome!%3C%2FText%3E%0A%20%20%20%20%20%20%3CCat%20%2F%3E%0A%20%20%20%20%20%20%3CCat%20%2F%3E%0A%20%20%20%20%20%20%3CCat%20%2F%3E%0A%20%20%20%20%3C%2FView%3E%0A%20%20)%3B%0A%7D%0A"
+        data-snack-platform="web"
+        data-snack-supported-platforms=ios,android,web
+        data-snack-preview="true"
+        style="
+          overflow: hidden;
+          background: #fafafa;
+          border: 1px solid rgba(0,0,0,.16);
+          border-radius: 4px;
+          height: 514px;
+          width: 100%;
+        "
+      ></div></div></div><p>Any component that renders other components is a <strong>parent component.</strong> Here, <code>Cafe</code> is the parent component and each <code>Cat</code> is a <strong>child component.</strong></p>
+<p>You can put as many cats in your cafe as you like. Each <code>&lt;Cat&gt;</code> renders a unique element—which you can customize with props.</p>
+<h2><a class="anchor" aria-hidden="true" id="props"></a><a href="#props" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Props</h2>
+<p><strong>Props</strong> is short for “properties.” Props let you customize React components. For example, here you pass each <code>&lt;Cat&gt;</code> a different <code>name</code> for <code>Cat</code> to render:</p>
+<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React <span class="hljs-keyword">from</span> <span class="hljs-string">'react'</span>;
+<span class="hljs-keyword">import</span> { Text, View } <span class="hljs-keyword">from</span> <span class="hljs-string">'react-native'</span>;
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Cat</span>(<span class="hljs-params">props</span>) </span>{
+  <span class="hljs-keyword">return</span> (
+    <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">View</span>&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">Text</span>&gt;</span>Hello, I am {props.name}!<span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span>
+    <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span></span>
+  );
+}
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Cafe</span>(<span class="hljs-params"></span>) </span>{
+  <span class="hljs-keyword">return</span> (
+    &lt;View&gt;
+      &lt;Cat name="Maru" /&gt;
+      &lt;Cat name="Jellylorum" /&gt;
+      &lt;Cat name="Spot" /&gt;
+    &lt;/View&gt;
+  );
+}
+</code></pre></div><div class="desktop-friendly-snack" style="margin-top: 15px; margin-bottom: 15px"><div
+        data-snack-name="Multiple Props"
+        data-snack-description="Example usage"
+        data-snack-code="import%20React%20from%20'react'%3B%0Aimport%20%7B%20Text%2C%20View%20%7D%20from%20'react-native'%3B%0A%0Afunction%20Cat(props)%20%7B%0A%20%20return%20(%0A%20%20%20%20%3CView%3E%0A%20%20%20%20%20%20%3CText%3EHello%2C%20I%20am%20%7Bprops.name%7D!%3C%2FText%3E%0A%20%20%20%20%3C%2FView%3E%0A%20%20)%3B%0A%7D%0A%0Aexport%20default%20function%20Cafe()%20%7B%0A%20%20return%20(%0A%20%20%20%20%3CView%3E%0A%20%20%20%20%20%20%3CCat%20name%3D%22Maru%22%20%2F%3E%0A%20%20%20%20%20%20%3CCat%20name%3D%22Jellylorum%22%20%2F%3E%0A%20%20%20%20%20%20%3CCat%20name%3D%22Spot%22%20%2F%3E%0A%20%20%20%20%3C%2FView%3E%0A%20%20)%3B%0A%7D%0A"
+        data-snack-platform="web"
+        data-snack-supported-platforms=ios,android,web
+        data-snack-preview="true"
+        style="
+          overflow: hidden;
+          background: #fafafa;
+          border: 1px solid rgba(0,0,0,.16);
+          border-radius: 4px;
+          height: 514px;
+          width: 100%;
+        "
+      ></div></div></div><p>Most of React Native’s Core Components can be customized with props, too. For example, when using <a href="image"><code>Image</code></a>, you pass it a prop named <a href="image#source"><code>source</code></a> to define what image it shows:</p>
+<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React <span class="hljs-keyword">from</span> <span class="hljs-string">'react'</span>;
+<span class="hljs-keyword">import</span> { Text, View, Image } <span class="hljs-keyword">from</span> <span class="hljs-string">'react-native'</span>;
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">CatApp</span>(<span class="hljs-params"></span>) </span>{
+  <span class="hljs-keyword">return</span> (
+    <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">View</span>&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">Image</span>
+        <span class="hljs-attr">source</span>=<span class="hljs-string">"https://reactnative.dev/docs/assets/p_cat1.png"</span>
+        <span class="hljs-attr">style</span>=<span class="hljs-string">{{width:</span> <span class="hljs-attr">200</span>, <span class="hljs-attr">height:</span> <span class="hljs-attr">200</span>}}
+      /&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">Text</span>&gt;</span>Hello, I am your cat!<span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span>
+    <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span>
+  );
+}
+</span></code></pre></div><div class="desktop-friendly-snack" style="margin-top: 15px; margin-bottom: 15px"><div
+        data-snack-name="Props"
+        data-snack-description="Example usage"
+        data-snack-code="import%20React%20from%20'react'%3B%0Aimport%20%7B%20Text%2C%20View%2C%20Image%20%7D%20from%20'react-native'%3B%0A%0Aexport%20default%20function%20CatApp()%20%7B%0A%20%20return%20(%0A%20%20%20%20%3CView%3E%0A%20%20%20%20%20%20%3CImage%0A%20%20%20%20%20%20%20%20source%3D%22https%3A%2F%2Freactnative.dev%2Fdocs%2Fassets%2Fp_cat1.png%22%0A%20%20%20%20%20%20%20%20style%3D%7B%7Bwidth%3A%20200%2C%20height%3A%20200%7D%7D%0A%20%20%20%20%20%20%2F%3E%0A%20%20%20%20%20%20%3CText%3EHello%2C%20I%20am%20your%20cat!%3C%2FText%3E%0A%20%20%20%20%3C%2FView%3E%0A%20%20)%3B%0A%7D%0A"
+        data-snack-platform="web"
+        data-snack-supported-platforms=ios,android,web
+        data-snack-preview="true"
+        style="
+          overflow: hidden;
+          background: #fafafa;
+          border: 1px solid rgba(0,0,0,.16);
+          border-radius: 4px;
+          height: 514px;
+          width: 100%;
+        "
+      ></div></div></div><p><code>Image</code> has <a href="image#props">many different props</a>, including <a href="image#style"><code>style</code></a>, which accepts a JS object of design and layout related property-value pairs.</p>
+<blockquote>
+<p>Notice the double curly braces <code>{{ }}</code> surrounding <code>style</code>‘s width and height. In JSX, JavaScript values are referenced with <code>{}</code>. This is handy if you are passing something other than a string as props, like an array or number: <code>&lt;Cat food={[&quot;fish&quot;, &quot;kibble&quot;]} /&gt; age={2}</code>. However, JS objects are <strong><em>also</em></strong> denoted with curly braces: <code>{width: 200, height: 200}</code>. Therefore, to pass a JS object in JSX, you must wrap the object in <strong>another pair</strong> of curly braces: <code>{{width: 200, height: 200}}</code></p>
+</blockquote>
+<p>You can build many things with props and the Core Components <a href="text"><code>Text</code></a>, <a href="image"><code>Image</code></a>, and <a href="view"><code>View</code></a>! But to build something interactive, you’ll need state.</p>
+<h2><a class="anchor" aria-hidden="true" id="state"></a><a href="#state" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>State</h2>
+<p>While you can think of props as arguments you use to configure how components render, <strong>state</strong> is like a component’s personal data storage. Sate is useful for handling data that changes over time or that comes from user interaction. State gives your components memory!</p>
+<blockquote>
+<p>As a general rule, use props to configure a component when it renders. Use state to keep track of any component data that you expect to change over time.</p>
+</blockquote>
+<p>The following example takes place in a cat cafe where two hungry cats are waiting to be fed. Their hunger, which we expect to change over time (unlike their names), is stored as state. To feed the cats, press their buttons—which will update their state.</p>
+<div class="toggler">
+  <ul role="tablist" class="toggle-syntax">
+    <li id="functional" class="button-functional" aria-selected="false" role="tab" tabindex="0" aria-controls="functionaltab" onclick="displayTabs('syntax', 'functional')">
+      State with Function Components
+    </li>
+    <li id="classical" class="button-classical" aria-selected="false" role="tab" tabindex="0" aria-controls="classicaltab" onclick="displayTabs('syntax', 'classical')">
+      State with Class Components
+    </li>
+  </ul>
+</div>
+<p><block class="functional syntax" /></p>
+<p>You can add state to a component by calling <a href="https://reactjs.org/docs/hooks-state.html">React’s <code>useState</code> Hook</a>. A Hook is a kind of function that lets you “hook into” React features. For example, <code>useState</code> is a Hook that lets you add state to function components. You can learn more about <a href="https://reactjs.org/docs/hooks-intro.html">other kinds of Hooks in the React documentation.</a></p>
+<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React, { useState } <span class="hljs-keyword">from</span> <span class="hljs-string">"react"</span>;
+<span class="hljs-keyword">import</span> { Button, Text, View } <span class="hljs-keyword">from</span> <span class="hljs-string">"react-native"</span>;
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Cat</span>(<span class="hljs-params">props</span>) </span>{
+  <span class="hljs-keyword">const</span> [isHungry, setIsHungry] = useState(<span class="hljs-literal">true</span>);
+
+  <span class="hljs-keyword">return</span> (
+    &lt;View&gt;
+      &lt;Text&gt;
+        I am {props.name}, and I am {isHungry ? "hungry" : "full"}!
+      &lt;/Text&gt;
+      &lt;Button
+        onPress={() =&gt; {
+          setIsHungry(false);
+        }}
+        disabled={!isHungry}
+        title={isHungry ? "Pour me some milk, please!" : "Thank you!"}
+      /&gt;
+    &lt;/View&gt;
+  );
+}
+
+export default function Cafe() {
+  return (
+    &lt;&gt;
+      &lt;Cat name="Munkustrap" /&gt;
+      &lt;Cat name="Spot" /&gt;
+    &lt;/&gt;
+  );
+}
+</code></pre></div><div class="desktop-friendly-snack" style="margin-top: 15px; margin-bottom: 15px"><div
+        data-snack-name="State"
+        data-snack-description="Example usage"
+        data-snack-code="import%20React%2C%20%7B%20useState%20%7D%20from%20%22react%22%3B%0Aimport%20%7B%20Button%2C%20Text%2C%20View%20%7D%20from%20%22react-native%22%3B%0A%0Afunction%20Cat(props)%20%7B%0A%20%20const%20%5BisHungry%2C%20setIsHungry%5D%20%3D%20useState(true)%3B%0A%0A%20%20return%20(%0A%20%20%20%20%3CView%3E%0A%20%20%20%20%20%20%3CText%3E%0A%20%20%20%20%20%20%20%20I%20am%20%7Bprops.name%7D%2C%20and%20I%20am%20%7BisHungry%20%3F%20%22hungry%22%20%3A%20%22full%22%7D!%0A%20%20%20%20%20%20%3C%2FText%3E%0A%20%20%20%20%20%20%3CButton%0A%20%20%20%20%20%20%20%20onPress%3D%7B()%20%3D%3E%20%7B%0A%20%20%20%20%20%20%20%20%20%20setIsHungry(false)%3B%0A%20%20%20%20%20%20%20%20%7D%7D%0A%20%20%20%20%20%20%20%20disabled%3D%7B!isHungry%7D%0A%20%20%20%20%20%20%20%20title%3D%7BisHungry%20%3F%20%22Pour%20me%20some%20milk%2C%20please!%22%20%3A%20%22Thank%20you!%22%7D%0A%20%20%20%20%20%20%2F%3E%0A%20%20%20%20%3C%2FView%3E%0A%20%20)%3B%0A%7D%0A%0Aexport%20default%20function%20Cafe()%20%7B%0A%20%20return%20(%0A%20%20%20%20%3C%3E%0A%20%20%20%20%20%20%3CCat%20name%3D%22Munkustrap%22%20%2F%3E%0A%20%20%20%20%20%20%3CCat%20name%3D%22Spot%22%20%2F%3E%0A%20%20%20%20%3C%2F%3E%0A%20%20)%3B%0A%7D%0A"
+        data-snack-platform="web"
+        data-snack-supported-platforms=ios,android,web
+        data-snack-preview="true"
+        style="
+          overflow: hidden;
+          background: #fafafa;
+          border: 1px solid rgba(0,0,0,.16);
+          border-radius: 4px;
+          height: 514px;
+          width: 100%;
+        "
+      ></div></div></div><p>First, you will want to import <code>useState</code> from React like so:</p>
+<pre><code class="hljs css language-jsx"><span class="token keyword">import</span> React<span class="token punctuation">,</span> <span class="token punctuation">{</span>useState<span class="token punctuation">}</span> <span class="token keyword">from</span> <span class="token string">'react'</span><span class="token punctuation">;</span>
+</code></pre>
+<p>Then you declare the component’s state by calling <code>useState</code> inside its function. In this example, <code>useState</code> creates an <code>isHungry</code> state variable:</p>
+<pre><code class="hljs css language-jsx"><span class="token keyword">function</span> <span class="token function">Cat</span><span class="token punctuation">(</span><span class="token parameter">props</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token keyword">const</span> <span class="token punctuation">[</span>isHungry<span class="token punctuation">,</span> setIsHungry<span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token function">useState</span><span class="token punctuation">(</span><span class="token boolean">true</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token comment">// ...</span>
+<span class="token punctuation">}</span>
+</code></pre>
+<blockquote>
+<p>You can use <code>useState</code> to track any kind of data: strings, numbers, Booleans, arrays, objects. For example, you can track the number of times a cat has been petted with <code>const [timesPetted, setTimesPetted] = useState(0)</code>!</p>
+</blockquote>
+<p>Calling <code>useState</code> does two things:</p>
+<ul>
+<li>it creates a “state variable” with an initial value—in this case the state variable is <code>isHungry</code> and its initial value is <code>true</code></li>
+<li>it creates a function to set that state variable’s value—<code>setIsHungry</code></li>
+</ul>
+<p>It doesn’t matter what names you use. But it can be handy to think of the pattern as <code>[&lt;getter&gt;, &lt;setter&gt;] = useState(&lt;initialValue&gt;)</code>.</p>
+<p>Next you add the <a href="button"><code>Button</code></a> Core Component and give it an <code>onPress</code> prop:</p>
+<pre><code class="hljs css language-jsx"><span class="token operator">&lt;</span>Button
+  onPress<span class="token operator">=</span><span class="token punctuation">{</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">{</span>
+    <span class="token function">setIsHungry</span><span class="token punctuation">(</span><span class="token boolean">false</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span><span class="token punctuation">}</span>
+  <span class="token comment">//..</span>
+<span class="token operator">/</span><span class="token operator">></span>
+</code></pre>
+<p>Now, when someone presses the button, <code>onPress</code> will fire, calling the <code>setIsHungry(false)</code>. This sets the state variable <code>isHungry</code> to <code>false</code>. When <code>isHungry</code> is false, the <code>Button</code>’s <code>disabled</code> prop is set to <code>true</code> and its <code>title</code> also changes:</p>
+<pre><code class="hljs css language-jsx"><span class="token operator">&lt;</span>Button
+  <span class="token comment">//..</span>
+  disabled<span class="token operator">=</span><span class="token punctuation">{</span><span class="token operator">!</span>isHungry<span class="token punctuation">}</span>
+  title<span class="token operator">=</span><span class="token punctuation">{</span>isHungry <span class="token operator">?</span> <span class="token string">'Pour me some milk, please!'</span> <span class="token punctuation">:</span> <span class="token string">'Thank you!'</span><span class="token punctuation">}</span>
+<span class="token operator">/</span><span class="token operator">></span>
+</code></pre>
+<blockquote>
+<p>You might’ve noticed that although <code>isHungry</code> is a <a href="https://developer.mozilla.org/Web/JavaScript/Reference/Statements/const">const</a>, it is seemingly reassignable! What is happening is when a state-setting function like <code>setIsHungry</code> is called, its component will re-render. In this case the <code>Cat</code> function will run again—and this time, <code>useState</code> will give us the next value of <code>isHungry</code>.</p>
+</blockquote>
+<p>Finally, put your cats inside a <code>Cafe</code> component:</p>
+<pre><code class="hljs css language-jsx"><span class="token keyword">export</span> <span class="token keyword">default</span> <span class="token keyword">function</span> <span class="token function">Cafe</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token keyword">return</span> <span class="token punctuation">(</span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span></span><span class="token punctuation">></span></span><span class="token plain-text">
+      </span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span><span class="token class-name">Cat</span></span> <span class="token attr-name">name</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>Munkustrap<span class="token punctuation">"</span></span> <span class="token punctuation">/></span></span><span class="token plain-text">
+      </span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span><span class="token class-name">Cat</span></span> <span class="token attr-name">name</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>Spot<span class="token punctuation">"</span></span> <span class="token punctuation">/></span></span><span class="token plain-text">
+    </span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span></span><span class="token punctuation">></span></span>
+  <span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+</code></pre>
+<p><block class="classical syntax" /></p>
+<p>The older class components approach is a little different when it comes to state.</p>
+<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React, { Component } <span class="hljs-keyword">from</span> <span class="hljs-string">"react"</span>;
+<span class="hljs-keyword">import</span> { Button, Text, View } <span class="hljs-keyword">from</span> <span class="hljs-string">"react-native"</span>;
+
+<span class="hljs-keyword">export</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Cat</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">Component</span> </span>{
+  state = { <span class="hljs-attr">isHungry</span>: <span class="hljs-literal">true</span> };
+
+  render(props) {
+    <span class="hljs-keyword">return</span> (
+      &lt;View&gt;
+        &lt;Text&gt;
+          I am {this.props.name}, and I am
+          {this.state.isHungry ? " hungry" : " full"}!
+        &lt;/Text&gt;
+        &lt;Button
+          onPress={() =&gt; {
+            this.setState({ isHungry: false });
+          }}
+          disabled={!this.state.isHungry}
+          title={
+            this.state.isHungry ? "Pour me some milk, please!" : "Thank you!"
+          }
+        /&gt;
+      &lt;/View&gt;
+    );
+  }
+}
+
+export default class Cafe extends Component {
+  render() {
+    return (
+      &lt;&gt;
+        &lt;Cat name="Munkustrap" /&gt;
+        &lt;Cat name="Spot" /&gt;
+      &lt;/&gt;
+    );
+  }
+}
+</code></pre></div><div class="desktop-friendly-snack" style="margin-top: 15px; margin-bottom: 15px"><div
+        data-snack-name="State and Class Components"
+        data-snack-description="Example usage"
+        data-snack-code="import%20React%2C%20%7B%20Component%20%7D%20from%20%22react%22%3B%0Aimport%20%7B%20Button%2C%20Text%2C%20View%20%7D%20from%20%22react-native%22%3B%0A%0Aexport%20class%20Cat%20extends%20Component%20%7B%0A%20%20state%20%3D%20%7B%20isHungry%3A%20true%20%7D%3B%0A%0A%20%20render(props)%20%7B%0A%20%20%20%20return%20(%0A%20%20%20%20%20%20%3CView%3E%0A%20%20%20%20%20%20%20%20%3CText%3E%0A%20%20%20%20%20%20%20%20%20%20I%20am%20%7Bthis.props.name%7D%2C%20and%20I%20am%0A%20%20%20%20%20%20%20%20%20%20%7Bthis.state.isHungry%20%3F%20%22%20hungry%22%20%3A%20%22%20full%22%7D!%0A%20%20%20%20%20%20%20%20%3C%2FText%3E%0A%20%20%20%20%20%20%20%20%3CButton%0A%20%20%20%20%20%20%20%20%20%20onPress%3D%7B()%20%3D%3E%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20this.setState(%7B%20isHungry%3A%20false%20%7D)%3B%0A%20%20%20%20%20%20%20%20%20%20%7D%7D%0A%20%20%20%20%20%20%20%20%20%20disabled%3D%7B!this.state.isHungry%7D%0A%20%20%20%20%20%20%20%20%20%20title%3D%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20this.state.isHungry%20%3F%20%22Pour%20me%20some%20milk%2C%20please!%22%20%3A%20%22Thank%20you!%22%0A%20%20%20%20%20%20%20%20%20%20%7D%0A%20%20%20%20%20%20%20%20%2F%3E%0A%20%20%20%20%20%20%3C%2FView%3E%0A%20%20%20%20)%3B%0A%20%20%7D%0A%7D%0A%0Aexport%20default%20class%20Cafe%20extends%20Component%20%7B%0A%20%20render()%20%7B%0A%20%20%20%20return%20(%0A%20%20%20%20%20%20%3C%3E%0A%20%20%20%20%20%20%20%20%3CCat%20name%3D%22Munkustrap%22%20%2F%3E%0A%20%20%20%20%20%20%20%20%3CCat%20name%3D%22Spot%22%20%2F%3E%0A%20%20%20%20%20%20%3C%2F%3E%0A%20%20%20%20)%3B%0A%20%20%7D%0A%7D%0A"
+        data-snack-platform="web"
+        data-snack-supported-platforms=ios,android,web
+        data-snack-preview="true"
+        style="
+          overflow: hidden;
+          background: #fafafa;
+          border: 1px solid rgba(0,0,0,.16);
+          border-radius: 4px;
+          height: 514px;
+          width: 100%;
+        "
+      ></div></div></div><p>As always with class components, you must import the <code>Component</code> class from React:</p>
+<pre><code class="hljs css language-jsx"><span class="token keyword">import</span> React<span class="token punctuation">,</span> <span class="token punctuation">{</span>Component<span class="token punctuation">}</span> <span class="token keyword">from</span> <span class="token string">'react'</span><span class="token punctuation">;</span>
+</code></pre>
+<p>In class components, state is stored in a state object:</p>
+<pre><code class="hljs css language-jsx"><span class="token keyword">export</span> <span class="token keyword">class</span> <span class="token class-name">Cat</span> <span class="token keyword">extends</span> <span class="token class-name">Component</span> <span class="token punctuation">{</span>
+  state <span class="token operator">=</span> <span class="token punctuation">{</span>isHungry<span class="token punctuation">:</span> <span class="token boolean">true</span><span class="token punctuation">}</span><span class="token punctuation">;</span>
+  <span class="token comment">//..</span>
+<span class="token punctuation">}</span>
+</code></pre>
+<p>As with accessing props with <code>this.props</code>, you access this object inside your component with <code>this.state</code>:</p>
+<pre><code class="hljs css language-jsx"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span><span class="token class-name">Text</span></span><span class="token punctuation">></span></span><span class="token plain-text">
+  I am </span><span class="token punctuation">{</span><span class="token keyword">this</span><span class="token punctuation">.</span>props<span class="token punctuation">.</span>name<span class="token punctuation">}</span><span class="token plain-text">, and I am
+  </span><span class="token punctuation">{</span><span class="token keyword">this</span><span class="token punctuation">.</span>state<span class="token punctuation">.</span>isHungry <span class="token operator">?</span> <span class="token string">' hungry'</span> <span class="token punctuation">:</span> <span class="token string">' full'</span><span class="token punctuation">}</span><span class="token plain-text">!
+</span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span><span class="token class-name">Text</span></span><span class="token punctuation">></span></span>
+</code></pre>
+<p>And you set individual values inside the state object by passing an object with the key value pair for state and its new value to <code>this.setState()</code>:</p>
+<pre><code class="hljs css language-jsx"><span class="token operator">&lt;</span>Button
+  onPress<span class="token operator">=</span><span class="token punctuation">{</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">{</span>
+    <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">setState</span><span class="token punctuation">(</span><span class="token punctuation">{</span> isHungry<span class="token punctuation">:</span> <span class="token boolean">false</span> <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span><span class="token punctuation">}</span>
+  <span class="token comment">// ..</span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span><span class="token class-name">Button</span></span><span class="token punctuation">></span></span>
+</code></pre>
+<blockquote>
+<p>Do not change your component's state directly by assigning it a new value with <code>this.state.hunger = false</code>. Calling <code>this.setState()</code> allows React to track changes made to state that trigger rerendering. Setting state directly can break your app's reactivity!</p>
+</blockquote>
+<p>When <code>this.state.isHungry</code> is false, the <code>Button</code>’s <code>disabled</code> prop is set to <code>false</code> and its <code>title</code> also changes:</p>
+<pre><code class="hljs css language-jsx"><span class="token operator">&lt;</span>Button
+  <span class="token comment">// ..</span>
+  disabled<span class="token operator">=</span><span class="token punctuation">{</span><span class="token operator">!</span><span class="token keyword">this</span><span class="token punctuation">.</span>state<span class="token punctuation">.</span>isHungry<span class="token punctuation">}</span>
+  title<span class="token operator">=</span><span class="token punctuation">{</span><span class="token keyword">this</span><span class="token punctuation">.</span>state<span class="token punctuation">.</span>isHungry <span class="token operator">?</span> <span class="token string">'Pour me some milk, please!'</span> <span class="token punctuation">:</span> <span class="token string">'Thank you!'</span><span class="token punctuation">}</span>
+<span class="token operator">/</span><span class="token operator">></span>
+</code></pre>
+<p>Finally, put your cats inside a <code>Cafe</code> component:</p>
+<pre><code class="hljs css language-jsx"><span class="token keyword">export</span> <span class="token keyword">default</span> <span class="token keyword">class</span> <span class="token class-name">Cafe</span> <span class="token keyword">extends</span> <span class="token class-name">Component</span> <span class="token punctuation">{</span>
+  <span class="token function">render</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">return</span> <span class="token punctuation">(</span>
+      <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span></span><span class="token punctuation">></span></span><span class="token plain-text">
+        </span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span><span class="token class-name">Cat</span></span> <span class="token attr-name">name</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>Munkustrap<span class="token punctuation">"</span></span> <span class="token punctuation">/></span></span><span class="token plain-text">
+        </span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span><span class="token class-name">Cat</span></span> <span class="token attr-name">name</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>Spot<span class="token punctuation">"</span></span> <span class="token punctuation">/></span></span><span class="token plain-text">
+      </span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span></span><span class="token punctuation">></span></span>
+    <span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+</code></pre>
+<p><block class="endBlock syntax" /></p>
+<blockquote>
+<p>See the <code>&lt;&gt;</code> and <code>&lt;/&gt;</code> above? These bits of JSX are <a href="https://reactjs.org/docs/fragments.html">fragments</a>. Adjacent JSX elements must be wrapped in an enclosing tag. Fragments let you do that without nesting an extra, unnecessary wrapping element like <code>View</code>.</p>
+</blockquote>
+<hr>
+<p>Now that you’ve covered both React and React Native’s Core Components, let’s dive deeper on some of these core components by looking at <a href="handling-text-input">handling <code>&lt;TextInput&gt;</code></a>.</p>
+</span></div></article></div><div class="docs-prevnext"><a class="docs-prev button" href="/docs/intro-react-native-components"><span class="arrow-prev">← </span><span>Core Components and Native Components</span></a><a class="docs-next button" href="/docs/handling-text-input"><span>Handling Text Input</span><span class="arrow-next"> →</span></a></div></div></div><nav class="onPageNav"><ul class="toc-headings"><li><a href="#your-first-component">Your first component</a></li><li><a href="#jsx">JSX</a></li><li><a href="#custom-components">Custom Components</a></li><li><a href="#props">Props</a></li><li><a href="#state">State</a></li></ul></nav></div><footer class="nav-footer" id="footer"><section class="sitemap"><div><h5>Docs</h5><a href="/docs/getting-started.html">Getting Started</a><a href="/docs/tutorial.html">Tutorial</a><a href="/docs/components-and-apis.html">Components and APIs</a><a href="/docs/more-resources.html">More Resources</a></div><div><h5>Community</h5><a href="/help.html">The React Native Community</a><a href="/showcase.html">Who&#x27;s using React Native?</a><a href="http://stackoverflow.com/questions/tagged/react-native" target="_blank">Ask Questions on Stack Overflow</a><a href="https://github.com/facebook/react-native/blob/master/CONTRIBUTING.md">Contributor Guide</a><a href="https://dev.to/t/reactnative" target="_blank">DEV Community</a></div><div><h5>More Resources</h5><a href="/blog/">Blog</a><a href="https://twitter.com/reactnative" target="_blank">Twitter</a><a href="https://github.com/facebook/react-native" target="_blank">GitHub</a><a href="https://reactjs.org" target="_blank">React</a></div></section><a href="https://code.facebook.com/projects/" target="_blank" class="fbOpenSource"><img src="/img/oss_logo.png" alt="Facebook Open Source" width="170" height="45"/></a><section class="copyright">Copyright © 2020 Facebook Inc.</section></footer></div><script type="text/javascript" src="https://cdn.jsdelivr.net/docsearch.js/1/docsearch.min.js"></script><script>window.fbAsyncInit = function() {FB.init({appId:'1677033832619985',xfbml:true,version:'v2.7'});};(function(d, s, id){var js, fjs = d.getElementsByTagName(s)[0];if (d.getElementById(id)) {return;}js = d.createElement(s); js.id = id;js.src = '//connect.facebook.net/en_US/sdk.js';fjs.parentNode.insertBefore(js, fjs);}(document, 'script','facebook-jssdk'));
+                </script><script>window.twttr=(function(d,s, id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return t;js=d.createElement(s);js.id=id;js.src='https://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js, fjs);t._e = [];t.ready = function(f) {t._e.push(f);};return t;}(document, 'script', 'twitter-wjs'));</script><script>
+                document.addEventListener('keyup', function(e) {
+                  if (e.target !== document.body) {
+                    return;
+                  }
+                  // keyCode for '/' (slash)
+                  if (e.keyCode === 191) {
+                    const search = document.getElementById('search_input_react');
+                    search && search.focus();
+                  }
+                });
+              </script><script>
+              var search = docsearch({
+                
+                apiKey: '2c98749b4a1e588efec53b2acec13025',
+                indexName: 'react-native-versions',
+                inputSelector: '#search_input_react',
+                algoliaOptions: {"facetFilters":["tags:0.62"],"hitsPerPage":5}
+              });
+            </script></body></html>
