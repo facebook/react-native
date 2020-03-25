@@ -16,7 +16,7 @@ import NativeDevLoadingView from './NativeDevLoadingView';
 module.exports = {
   showMessage(message: string, type: 'load' | 'refresh') {
     if (NativeDevLoadingView) {
-      const green = processColor('#275714');
+      const green = processColor('#005a00');
       const blue = processColor('#2584e8');
       const white = processColor('#ffffff');
 
