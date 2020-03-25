@@ -43,7 +43,7 @@ TESTS.forEach(
   /* $FlowFixMe(>=0.54.0 site=react_native_fb,react_native_oss) This comment
    * suppresses an error found when Flow v0.54 was deployed. To see the error
    * delete this comment and run Flow. */
-  test => AppRegistry.registerComponent(test.displayName, () => test),
+  (test) => AppRegistry.registerComponent(test.displayName, () => test),
 );
 
 // Modules required for integration tests
@@ -76,7 +76,7 @@ class IntegrationTestsApp extends React.Component<{...}, $FlowFixMeState> {
         </Text>
         <View style={styles.separator} />
         <ScrollView>
-          {TESTS.map(test => [
+          {TESTS.map((test) => [
             <TouchableOpacity
               onPress={() => this.setState({test})}
               /* $FlowFixMe(>=0.115.0 site=react_native_fb) This comment

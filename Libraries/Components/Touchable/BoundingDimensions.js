@@ -25,7 +25,7 @@ function BoundingDimensions(width, height) {
   this.height = height;
 }
 
-BoundingDimensions.prototype.destructor = function() {
+BoundingDimensions.prototype.destructor = function () {
   this.width = null;
   this.height = null;
 };
@@ -34,7 +34,7 @@ BoundingDimensions.prototype.destructor = function() {
  * @param {HTMLElement} element Element to return `BoundingDimensions` for.
  * @return {BoundingDimensions} Bounding dimensions of `element`.
  */
-BoundingDimensions.getPooledFromElement = function(element) {
+BoundingDimensions.getPooledFromElement = function (element) {
   return BoundingDimensions.getPooled(
     element.offsetWidth,
     element.offsetHeight,

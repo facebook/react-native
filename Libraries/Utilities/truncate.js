@@ -24,7 +24,7 @@ const defaultOptions = {
 };
 
 // maxChars (including ellipsis)
-const truncate = function(
+const truncate = function (
   str: ?string,
   maxChars: number,
   options?: truncateOptions,

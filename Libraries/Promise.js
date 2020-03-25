@@ -40,7 +40,7 @@ if (__DEV__) {
         (stack == null ? '' : stack);
       console.warn(warning);
     },
-    onHandled: id => {
+    onHandled: (id) => {
       const warning =
         `Promise Rejection Handled (id: ${id})\n` +
         'This means you can ignore any previous messages of the form ' +

@@ -30,7 +30,7 @@ class TVEventHandler {
     );
     this.__nativeTVNavigationEventListener = this.__nativeTVNavigationEventEmitter.addListener(
       'onHWKeyEvent',
-      data => {
+      (data) => {
         if (callback) {
           callback(component, data);
         }

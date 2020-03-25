@@ -41,11 +41,11 @@ const ToastAndroid = {
   BOTTOM: (NativeToastAndroid.getConstants().BOTTOM: number),
   CENTER: (NativeToastAndroid.getConstants().CENTER: number),
 
-  show: function(message: string, duration: number): void {
+  show: function (message: string, duration: number): void {
     NativeToastAndroid.show(message, duration);
   },
 
-  showWithGravity: function(
+  showWithGravity: function (
     message: string,
     duration: number,
     gravity: number,
@@ -53,7 +53,7 @@ const ToastAndroid = {
     NativeToastAndroid.showWithGravity(message, duration, gravity);
   },
 
-  showWithGravityAndOffset: function(
+  showWithGravityAndOffset: function (
     message: string,
     duration: number,
     gravity: number,

@@ -18,7 +18,7 @@ class SyntheticError extends Error {
   name: string = '';
 }
 
-type ExceptionDecorator = ExceptionData => ExceptionData;
+type ExceptionDecorator = (ExceptionData) => ExceptionData;
 
 let userExceptionDecorator: ?ExceptionDecorator;
 let inUserExceptionDecorator = false;
@@ -130,7 +130,7 @@ function reportException(
             throw new Error('The stack is null');
           }
         })
-        .catch(error => {
+        .catch((error) => {
           console.log('Unable to symbolicate stack trace: ' + error.message);
         });
     }
@@ -222,7 +222,7 @@ function reactConsoleErrorHandler() {
   } else {
     const stringifySafe = require('../Utilities/stringifySafe').default;
     const str = Array.prototype.map
-      .call(arguments, value =>
+      .call(arguments, (value) =>
         typeof value === 'string' ? value : stringifySafe(value),
       )
       .join(' ');

@@ -17,7 +17,7 @@ const generator = require('../ObjCppUtils/GenerateStructs.js');
 describe('GenerateStructs', () => {
   Object.keys(fixtures)
     .sort()
-    .forEach(fixtureName => {
+    .forEach((fixtureName) => {
       const fixture = fixtures[fixtureName];
 
       it(`can generate fixture ${fixtureName}`, () => {

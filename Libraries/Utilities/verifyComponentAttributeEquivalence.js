@@ -47,7 +47,7 @@ function verifyComponentAttributeEquivalence(
     const nativeAttributes = getNativeComponentAttributes(componentName);
 
     ['validAttributes', 'bubblingEventTypes', 'directEventTypes'].forEach(
-      prop => {
+      (prop) => {
         const diffKeys = Object.keys(
           lefthandObjectDiff(nativeAttributes[prop], config[prop]),
         );
@@ -111,7 +111,7 @@ export function getConfigWithoutViewProps(
   }
 
   return Object.keys(viewConfig[propName])
-    .filter(prop => !ReactNativeViewViewConfig[propName][prop])
+    .filter((prop) => !ReactNativeViewViewConfig[propName][prop])
     .reduce((obj, prop) => {
       obj[prop] = viewConfig[propName][prop];
       return obj;

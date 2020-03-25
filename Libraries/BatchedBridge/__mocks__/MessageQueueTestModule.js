@@ -15,8 +15,8 @@
  * cases.
  */
 const MessageQueueTestModule = {
-  testHook1: function() {},
-  testHook2: function() {},
+  testHook1: function () {},
+  testHook2: function () {},
 };
 
 module.exports = MessageQueueTestModule;

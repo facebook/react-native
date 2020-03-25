@@ -29,12 +29,12 @@ class XHRExampleFetch extends React.Component<any, any> {
 
   submit(uri: string) {
     fetch(uri)
-      .then(response => {
+      .then((response) => {
         this.responseURL = response.url;
         this.responseHeaders = response.headers;
         return response.text();
       })
-      .then(body => {
+      .then((body) => {
         this.setState({responseText: body});
       });
   }
@@ -91,7 +91,7 @@ class XHRExampleFetch extends React.Component<any, any> {
         <TextInput
           returnKeyType="go"
           defaultValue="http://www.posttestserver.com/post.php"
-          onSubmitEditing={event => {
+          onSubmitEditing={(event) => {
             this.submit(event.nativeEvent.text);
           }}
           style={styles.textInput}

@@ -106,8 +106,8 @@ function genMethod(moduleID: number, methodID: number, type: MethodType) {
           moduleID,
           methodID,
           args,
-          data => resolve(data),
-          errorData =>
+          (data) => resolve(data),
+          (errorData) =>
             reject(updateErrorWithErrorData(errorData, enqueueingFrameError)),
         );
       });

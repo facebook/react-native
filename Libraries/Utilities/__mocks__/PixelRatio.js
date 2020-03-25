@@ -12,10 +12,10 @@
 const PixelRatio = {
   get: jest.fn().mockReturnValue(2),
   getFontScale: jest.fn(() => PixelRatio.get()),
-  getPixelSizeForLayoutSize: jest.fn(layoutSize =>
+  getPixelSizeForLayoutSize: jest.fn((layoutSize) =>
     Math.round(layoutSize * PixelRatio.get()),
   ),
-  roundToNearestPixel: jest.fn(layoutSize => {
+  roundToNearestPixel: jest.fn((layoutSize) => {
     const ratio = PixelRatio.get();
     return Math.round(layoutSize * ratio) / ratio;
   }),

@@ -55,7 +55,7 @@ function isCodegenDeclaration(declaration) {
   return false;
 }
 
-module.exports = function(context) {
+module.exports = function (context) {
   return {
     pre(state) {
       this.code = state.code;
@@ -105,7 +105,7 @@ module.exports = function(context) {
           nodePath.node.specifiers &&
           nodePath.node.specifiers.length > 0
         ) {
-          nodePath.node.specifiers.forEach(specifier => {
+          nodePath.node.specifiers.forEach((specifier) => {
             if (
               specifier.type === 'ExportSpecifier' &&
               specifier.local.type === 'Identifier' &&

@@ -57,7 +57,7 @@ function parseErrorStack(e: ExtendedError): Array<StackFrame> {
     ? e.stack
     : global.HermesInternal
     ? convertHermesStack(parseHermesStack(e.stack))
-    : stacktraceParser.parse(e.stack).map(frame => ({
+    : stacktraceParser.parse(e.stack).map((frame) => ({
         ...frame,
         column: frame.column != null ? frame.column - 1 : null,
       }));

@@ -54,7 +54,7 @@ class TextInputAccessoryViewExample extends React.Component<{...}, *> {
         <TextInput
           style={styles.default}
           inputAccessoryViewID={inputAccessoryViewID}
-          onChangeText={text => this.setState({text})}
+          onChangeText={(text) => this.setState({text})}
           value={this.state.text}
         />
         <InputAccessoryView nativeID={inputAccessoryViewID}>
@@ -80,7 +80,7 @@ class RewriteExampleKana extends React.Component<$FlowFixMeProps, any> {
       <View style={styles.rewriteContainer}>
         <TextInput
           multiline={false}
-          onChangeText={text => {
+          onChangeText={(text) => {
             this.setState({text: text.replace(/ひ/g, '日')});
           }}
           style={styles.default}
@@ -107,7 +107,7 @@ class SecureEntryExample extends React.Component<$FlowFixMeProps, any> {
           secureTextEntry={true}
           style={styles.default}
           defaultValue="abc"
-          onChangeText={text => this.setState({text})}
+          onChangeText={(text) => this.setState({text})}
           value={this.state.text}
         />
         <Text>Current text is: {this.state.text}</Text>
@@ -119,12 +119,12 @@ class SecureEntryExample extends React.Component<$FlowFixMeProps, any> {
           <TextInput
             style={styles.default}
             defaultValue="cde"
-            onChangeText={text => this.setState({password: text})}
+            onChangeText={(text) => this.setState({password: text})}
             secureTextEntry={this.state.isSecureTextEntry}
             value={this.state.password}
           />
           <Switch
-            onValueChange={value => {
+            onValueChange={(value) => {
               this.setState({isSecureTextEntry: value});
             }}
             style={{marginLeft: 4}}
@@ -170,20 +170,20 @@ class AutogrowingTextInputExample extends React.Component<
           minimumValue={0}
           maximumValue={100}
           step={10}
-          onValueChange={value => this.setState({width: value})}
+          onValueChange={(value) => this.setState({width: value})}
         />
         <Text>Multiline:</Text>
         <Switch
           value={this.state.multiline}
-          onValueChange={value => this.setState({multiline: value})}
+          onValueChange={(value) => this.setState({multiline: value})}
         />
         <Text>TextInput:</Text>
         <TextInput
           value="prop"
           multiline={this.state.multiline}
           style={[style, {width: this.state.width + '%'}]}
-          onChangeText={value => this.setState({text: value})}
-          onContentSizeChange={event =>
+          onChangeText={(value) => this.setState({text: value})}
+          onContentSizeChange={(event) =>
             this.setState({contentSize: event.nativeEvent.contentSize})
           }
           {...props}
@@ -261,19 +261,19 @@ exports.examples = ([
   ...TextInputSharedExamples,
   {
     title: 'Live Re-Write (ひ -> 日)',
-    render: function(): React.Node {
+    render: function (): React.Node {
       return <RewriteExampleKana />;
     },
   },
   {
     title: 'Keyboard Accessory View',
-    render: function(): React.Node {
+    render: function (): React.Node {
       return <TextInputAccessoryViewExample />;
     },
   },
   {
     title: 'Nested content and `value` property',
-    render: function(): React.Node {
+    render: function (): React.Node {
       return (
         <View>
           <WithLabel label="singleline">
@@ -299,9 +299,9 @@ exports.examples = ([
   },
   {
     title: 'Keyboard appearance',
-    render: function(): React.Node {
+    render: function (): React.Node {
       const keyboardAppearance = ['default', 'light', 'dark'];
-      const examples = keyboardAppearance.map(type => {
+      const examples = keyboardAppearance.map((type) => {
         return (
           <WithLabel key={type} label={type}>
             <TextInput keyboardAppearance={type} style={styles.default} />
@@ -313,7 +313,7 @@ exports.examples = ([
   },
   {
     title: 'Return key types',
-    render: function(): React.Node {
+    render: function (): React.Node {
       const returnKeyTypes = [
         'default',
         'go',
@@ -327,7 +327,7 @@ exports.examples = ([
         'done',
         'emergency-call',
       ];
-      const examples = returnKeyTypes.map(type => {
+      const examples = returnKeyTypes.map((type) => {
         return (
           <WithLabel key={type} label={type}>
             <TextInput returnKeyType={type} style={styles.default} />
@@ -339,7 +339,7 @@ exports.examples = ([
   },
   {
     title: 'Enable return key automatically',
-    render: function(): React.Node {
+    render: function (): React.Node {
       return (
         <View>
           <WithLabel label="true">
@@ -354,13 +354,13 @@ exports.examples = ([
   },
   {
     title: 'Secure text entry',
-    render: function(): React.Node {
+    render: function (): React.Node {
       return <SecureEntryExample />;
     },
   },
   {
     title: 'Colored input text',
-    render: function(): React.Node {
+    render: function (): React.Node {
       return (
         <View>
           <TextInput
@@ -377,7 +377,7 @@ exports.examples = ([
   },
   {
     title: 'Colored highlight/cursor for text input',
-    render: function(): React.Node {
+    render: function (): React.Node {
       return (
         <View>
           <TextInput
@@ -396,14 +396,14 @@ exports.examples = ([
   },
   {
     title: 'Clear button mode',
-    render: function(): React.Node {
+    render: function (): React.Node {
       const clearButtonModes = [
         'never',
         'while-editing',
         'unless-editing',
         'always',
       ];
-      const examples = clearButtonModes.map(mode => {
+      const examples = clearButtonModes.map((mode) => {
         return (
           <WithLabel key={mode} label={mode}>
             <TextInput
@@ -419,7 +419,7 @@ exports.examples = ([
   },
   {
     title: 'Clear and select',
-    render: function(): React.Node {
+    render: function (): React.Node {
       return (
         <View>
           <WithLabel label="clearTextOnFocus">
@@ -462,7 +462,7 @@ exports.examples = ([
   },
   {
     title: 'Multiline blur on submit',
-    render: function(): React.Node {
+    render: function (): React.Node {
       return (
         <View>
           <TextInput
@@ -471,7 +471,7 @@ exports.examples = ([
             returnKeyType="next"
             blurOnSubmit={true}
             multiline={true}
-            onSubmitEditing={event =>
+            onSubmitEditing={(event) =>
               Alert.alert('Alert', event.nativeEvent.text)
             }
           />
@@ -481,7 +481,7 @@ exports.examples = ([
   },
   {
     title: 'Multiline',
-    render: function(): React.Node {
+    render: function (): React.Node {
       return (
         <View>
           <TextInput
@@ -524,7 +524,7 @@ exports.examples = ([
   },
   {
     title: 'TextInput Intrinsic Size',
-    render: function(): React.Node {
+    render: function (): React.Node {
       return (
         <View>
           <Text>Singleline TextInput</Text>
@@ -591,7 +591,7 @@ exports.examples = ([
   },
   {
     title: 'Auto-expanding',
-    render: function(): React.Node {
+    render: function (): React.Node {
       return (
         <View>
           <TextInput
@@ -608,7 +608,7 @@ exports.examples = ([
   },
   {
     title: 'Auto-expanding',
-    render: function(): React.Node {
+    render: function (): React.Node {
       return (
         <View>
           <AutogrowingTextInputExample
@@ -639,7 +639,7 @@ exports.examples = ([
   },
   {
     title: 'TextInput maxLength',
-    render: function(): React.Node {
+    render: function (): React.Node {
       return (
         <View>
           <WithLabel label="maxLength: 5">
@@ -672,7 +672,7 @@ exports.examples = ([
   },
   {
     title: 'Text Content Type',
-    render: function(): React.Node {
+    render: function (): React.Node {
       return (
         <View>
           <WithLabel label="emailAddress">
@@ -687,7 +687,7 @@ exports.examples = ([
   },
   {
     title: 'TextInput Placeholder Styles',
-    render: function(): React.Node {
+    render: function (): React.Node {
       return (
         <View>
           <WithLabel label="letterSpacing: 10 lineHeight: 20 textAlign: 'center'">

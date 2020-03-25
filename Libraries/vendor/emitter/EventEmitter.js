@@ -159,7 +159,7 @@ class EventEmitter {
           // exist; it is not called for missing elements of the array."
           // https://www.ecma-international.org/ecma-262/9.0/index.html#sec-array.prototype.filter
           .filter(sparseFilterPredicate)
-          .map(subscription => subscription.listener)
+          .map((subscription) => subscription.listener)
       : [];
   }
 

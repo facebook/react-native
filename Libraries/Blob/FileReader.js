@@ -62,7 +62,7 @@ class FileReader extends (EventTarget(...READER_EVENTS): any) {
   }
 
   _clearSubscriptions(): void {
-    this._subscriptions.forEach(sub => sub.remove());
+    this._subscriptions.forEach((sub) => sub.remove());
     this._subscriptions = [];
   }
 
@@ -102,7 +102,7 @@ class FileReader extends (EventTarget(...READER_EVENTS): any) {
         this._result = text;
         this._setReadyState(DONE);
       },
-      error => {
+      (error) => {
         if (this._aborted) {
           return;
         }
@@ -129,7 +129,7 @@ class FileReader extends (EventTarget(...READER_EVENTS): any) {
         this._result = text;
         this._setReadyState(DONE);
       },
-      error => {
+      (error) => {
         if (this._aborted) {
           return;
         }

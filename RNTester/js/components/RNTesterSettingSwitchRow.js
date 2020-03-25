@@ -32,7 +32,7 @@ class RNTesterSettingSwitchRow extends React.Component<
         <Text>{label}</Text>
         <Switch
           value={persister.state}
-          onValueChange={value => {
+          onValueChange={(value) => {
             persister.setState(() => value);
           }}
         />

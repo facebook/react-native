@@ -40,20 +40,20 @@ require('colors');
 // value in ms to print out screen contents, set this value in CI to debug if tests are failing
 const appiumDebugInterval = process.env.APPIUM_DEBUG_INTERVAL;
 
-describe('Android Test App', function() {
+describe('Android Test App', function () {
   this.timeout(600000);
   let driver;
   let debugIntervalId;
 
-  before(function() {
+  before(function () {
     driver = wd.promiseChainRemote({
       host: 'localhost',
       port: 4723,
     });
-    driver.on('status', function(info) {
+    driver.on('status', function (info) {
       console.log(info.cyan);
     });
-    driver.on('command', function(method, command, data) {
+    driver.on('command', function (method, command, data) {
       if (command === 'source()' && data) {
         console.log(
           ' > ' + method.yellow,
@@ -65,7 +65,7 @@ describe('Android Test App', function() {
         console.log(' > ' + method.yellow, command.grey, data || '');
       }
     });
-    driver.on('http', function(method, urlPath, data) {
+    driver.on('http', function (method, urlPath, data) {
       console.log(' > ' + method.magenta, urlPath, (data || '').grey);
     });
 
@@ -90,24 +90,24 @@ describe('Android Test App', function() {
       .setImplicitWaitTimeout(5000)
       .waitForElementByXPath('//android.widget.Button[@text="Reload JS"]')
       .then(
-        elem => {
+        (elem) => {
           elem.click();
           driver.sleep(2000);
         },
-        err => {
+        (err) => {
           // ignoring if Reload JS button can't be located
         },
       );
   });
 
-  after(function() {
+  after(function () {
     if (debugIntervalId) {
       clearInterval(debugIntervalId);
     }
     return driver.quit();
   });
 
-  it('should display new content after a refresh', function() {
+  it('should display new content after a refresh', function () {
     const androidAppCode = fs.readFileSync('App.js', 'utf-8');
     let intervalToUpdate;
     return (
@@ -133,15 +133,12 @@ describe('Android Test App', function() {
         .finally(() => {
           clearInterval(intervalToUpdate);
           fs.writeFileSync('App.js', androidAppCode, 'utf-8');
-          driver
-            .pressDeviceKey(46)
-            .pressDeviceKey(46)
-            .sleep(2000);
+          driver.pressDeviceKey(46).pressDeviceKey(46).sleep(2000);
         })
     );
   });
 
-  it('should have the menu available', function() {
+  it('should have the menu available', function () {
     return (
       driver
         .waitForElementByXPath(

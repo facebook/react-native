@@ -121,7 +121,7 @@ class AnimatedNode {
     NativeAnimatedAPI.startListeningToAnimatedNodeValue(this.__getNativeTag());
     this.__nativeAnimatedValueListener = NativeAnimatedHelper.nativeEventEmitter.addListener(
       'onAnimatedValueUpdate',
-      data => {
+      (data) => {
         if (data.tag !== this.__getNativeTag()) {
           return;
         }

@@ -29,33 +29,33 @@ jest
 
 const JSTimers = require('../JSTimers');
 
-describe('JSTimers', function() {
-  const firstArgumentOfTheLastCallTo = function(func) {
+describe('JSTimers', function () {
+  const firstArgumentOfTheLastCallTo = function (func) {
     return func.mock.calls[func.mock.calls.length - 1][0];
   };
 
-  beforeEach(function() {
+  beforeEach(function () {
     global.setTimeout = JSTimers.setTimeout;
   });
 
-  it('should call function with setTimeout', function() {
+  it('should call function with setTimeout', function () {
     let didCall = false;
-    const id = JSTimers.setTimeout(function() {
+    const id = JSTimers.setTimeout(function () {
       didCall = true;
     });
     JSTimers.callTimers([id]);
     expect(didCall).toBe(true);
   });
 
-  it('should call nested setTimeout when cleared', function() {
+  it('should call nested setTimeout when cleared', function () {
     let id1, id2, id3;
     let callCount = 0;
 
-    id1 = JSTimers.setTimeout(function() {
+    id1 = JSTimers.setTimeout(function () {
       JSTimers.clearTimeout(id1);
-      id2 = JSTimers.setTimeout(function() {
+      id2 = JSTimers.setTimeout(function () {
         JSTimers.clearTimeout(id2);
-        id3 = JSTimers.setTimeout(function() {
+        id3 = JSTimers.setTimeout(function () {
           callCount += 1;
         });
       });
@@ -67,15 +67,15 @@ describe('JSTimers', function() {
     expect(callCount).toBe(1);
   });
 
-  it('should call nested setImmediate when cleared', function() {
+  it('should call nested setImmediate when cleared', function () {
     let id1, id2, id3;
     let callCount = 0;
 
-    id1 = JSTimers.setImmediate(function() {
+    id1 = JSTimers.setImmediate(function () {
       JSTimers.clearImmediate(id1);
-      id2 = JSTimers.setImmediate(function() {
+      id2 = JSTimers.setImmediate(function () {
         JSTimers.clearImmediate(id2);
-        id3 = JSTimers.setImmediate(function() {
+        id3 = JSTimers.setImmediate(function () {
           callCount += 1;
         });
       });
@@ -87,15 +87,15 @@ describe('JSTimers', function() {
     expect(callCount).toBe(1);
   });
 
-  it('should call nested requestAnimationFrame when cleared', function() {
+  it('should call nested requestAnimationFrame when cleared', function () {
     let id1, id2, id3;
     let callCount = 0;
 
-    id1 = JSTimers.requestAnimationFrame(function() {
+    id1 = JSTimers.requestAnimationFrame(function () {
       JSTimers.cancelAnimationFrame(id1);
-      id2 = JSTimers.requestAnimationFrame(function() {
+      id2 = JSTimers.requestAnimationFrame(function () {
         JSTimers.cancelAnimationFrame(id2);
-        id3 = JSTimers.requestAnimationFrame(function() {
+        id3 = JSTimers.requestAnimationFrame(function () {
           callCount += 1;
         });
       });
@@ -107,15 +107,15 @@ describe('JSTimers', function() {
     expect(callCount).toBe(1);
   });
 
-  it('should call nested setInterval when cleared', function() {
+  it('should call nested setInterval when cleared', function () {
     let id1, id2, id3;
     let callCount = 0;
 
-    id1 = JSTimers.setInterval(function() {
+    id1 = JSTimers.setInterval(function () {
       JSTimers.clearInterval(id1);
-      id2 = JSTimers.setInterval(function() {
+      id2 = JSTimers.setInterval(function () {
         JSTimers.clearInterval(id2);
-        id3 = JSTimers.setInterval(function() {
+        id3 = JSTimers.setInterval(function () {
           callCount += 1;
         });
       });
@@ -127,21 +127,21 @@ describe('JSTimers', function() {
     expect(callCount).toBe(1);
   });
 
-  it('should call function with setInterval', function() {
+  it('should call function with setInterval', function () {
     const callback = jest.fn();
     const id = JSTimers.setInterval(callback);
     JSTimers.callTimers([id]);
     expect(callback).toBeCalledTimes(1);
   });
 
-  it('should call function with setImmediate', function() {
+  it('should call function with setImmediate', function () {
     const callback = jest.fn();
     JSTimers.setImmediate(callback);
     JSTimers.callImmediates();
     expect(callback).toBeCalledTimes(1);
   });
 
-  it('should not call function with clearImmediate', function() {
+  it('should not call function with clearImmediate', function () {
     const callback = jest.fn();
     const id = JSTimers.setImmediate(callback);
     JSTimers.clearImmediate(id);
@@ -149,14 +149,14 @@ describe('JSTimers', function() {
     expect(callback).not.toBeCalled();
   });
 
-  it('should call functions in the right order with setImmediate', function() {
+  it('should call functions in the right order with setImmediate', function () {
     let count = 0;
     let firstCalled = null;
     let secondCalled = null;
-    JSTimers.setImmediate(function() {
+    JSTimers.setImmediate(function () {
       firstCalled = count++;
     });
-    JSTimers.setImmediate(function() {
+    JSTimers.setImmediate(function () {
       secondCalled = count++;
     });
     JSTimers.callImmediates();
@@ -164,14 +164,14 @@ describe('JSTimers', function() {
     expect(secondCalled).toBe(1);
   });
 
-  it('should call functions in the right order with nested setImmediate', function() {
+  it('should call functions in the right order with nested setImmediate', function () {
     let count = 0;
     let firstCalled = null;
     let secondCalled = null;
     let thirdCalled = null;
-    JSTimers.setImmediate(function() {
+    JSTimers.setImmediate(function () {
       firstCalled = count++;
-      JSTimers.setImmediate(function() {
+      JSTimers.setImmediate(function () {
         thirdCalled = count++;
       });
       secondCalled = count++;
@@ -182,12 +182,12 @@ describe('JSTimers', function() {
     expect(thirdCalled).toBe(2);
   });
 
-  it('should call nested setImmediate', function() {
+  it('should call nested setImmediate', function () {
     let firstCalled = false;
     let secondCalled = false;
-    JSTimers.setImmediate(function() {
+    JSTimers.setImmediate(function () {
       firstCalled = true;
-      JSTimers.setImmediate(function() {
+      JSTimers.setImmediate(function () {
         secondCalled = true;
       });
     });
@@ -196,14 +196,14 @@ describe('JSTimers', function() {
     expect(secondCalled).toBe(true);
   });
 
-  it('should call function with requestAnimationFrame', function() {
+  it('should call function with requestAnimationFrame', function () {
     const callback = jest.fn();
     const id = JSTimers.requestAnimationFrame(callback);
     JSTimers.callTimers([id]);
     expect(callback).toBeCalledTimes(1);
   });
 
-  it("should not call function if we don't callTimers", function() {
+  it("should not call function if we don't callTimers", function () {
     const callback = jest.fn();
     JSTimers.setTimeout(callback, 10);
     expect(callback).not.toBeCalled();
@@ -213,7 +213,7 @@ describe('JSTimers', function() {
     expect(callback).not.toBeCalled();
   });
 
-  it('should call setInterval as many times as callTimers is called', function() {
+  it('should call setInterval as many times as callTimers is called', function () {
     const callback = jest.fn();
     const id = JSTimers.setInterval(callback, 10);
     JSTimers.callTimers([id]);
@@ -223,13 +223,13 @@ describe('JSTimers', function() {
     expect(callback).toBeCalledTimes(4);
   });
 
-  it("should only call the function who's id we pass in", function() {
+  it("should only call the function who's id we pass in", function () {
     let firstCalled = false;
     let secondCalled = false;
-    JSTimers.setTimeout(function() {
+    JSTimers.setTimeout(function () {
       firstCalled = true;
     });
-    const secondID = JSTimers.setTimeout(function() {
+    const secondID = JSTimers.setTimeout(function () {
       secondCalled = true;
     });
     JSTimers.callTimers([secondID]);
@@ -237,13 +237,13 @@ describe('JSTimers', function() {
     expect(secondCalled).toBe(true);
   });
 
-  it('should work with calling multiple timers', function() {
+  it('should work with calling multiple timers', function () {
     let firstCalled = false;
     let secondCalled = false;
-    const firstID = JSTimers.setTimeout(function() {
+    const firstID = JSTimers.setTimeout(function () {
       firstCalled = true;
     });
-    const secondID = JSTimers.setTimeout(function() {
+    const secondID = JSTimers.setTimeout(function () {
       secondCalled = true;
     });
     JSTimers.callTimers([firstID, secondID]);
@@ -251,27 +251,27 @@ describe('JSTimers', function() {
     expect(secondCalled).toBe(true);
   });
 
-  it('should still execute all callbacks even if one throws', function() {
-    const firstID = JSTimers.setTimeout(function() {
+  it('should still execute all callbacks even if one throws', function () {
+    const firstID = JSTimers.setTimeout(function () {
       throw new Error('error');
     }, 10);
     let secondCalled = false;
-    const secondID = JSTimers.setTimeout(function() {
+    const secondID = JSTimers.setTimeout(function () {
       secondCalled = true;
     }, 10);
     expect(JSTimers.callTimers.bind(null, [firstID, secondID])).toThrow();
     expect(secondCalled).toBe(true);
   });
 
-  it('should clear timers even if callback throws', function() {
-    const timerID = JSTimers.setTimeout(function() {
+  it('should clear timers even if callback throws', function () {
+    const timerID = JSTimers.setTimeout(function () {
       throw new Error('error');
     }, 10);
     expect(JSTimers.callTimers.bind(null, [timerID])).toThrow('error');
     JSTimers.callTimers.bind(null, [timerID]);
   });
 
-  it('should not warn if callback is called on cancelled timer', function() {
+  it('should not warn if callback is called on cancelled timer', function () {
     const callback = jest.fn();
     const timerID = JSTimers.setTimeout(callback, 10);
     JSTimers.clearTimeout(timerID);
@@ -280,12 +280,12 @@ describe('JSTimers', function() {
     expect(firstArgumentOfTheLastCallTo(warning)).toBe(true);
   });
 
-  it('should warn when callTimers is called with garbage timer id', function() {
+  it('should warn when callTimers is called with garbage timer id', function () {
     JSTimers.callTimers([1337]);
     expect(firstArgumentOfTheLastCallTo(warning)).toBe(false);
   });
 
-  it('should only call callback once for setTimeout', function() {
+  it('should only call callback once for setTimeout', function () {
     const callback = jest.fn();
     const timerID = JSTimers.setTimeout(callback, 10);
     // First time the timer fires, should call callback
@@ -297,7 +297,7 @@ describe('JSTimers', function() {
     expect(firstArgumentOfTheLastCallTo(warning)).toBe(true);
   });
 
-  it('should only call callback once for requestAnimationFrame', function() {
+  it('should only call callback once for requestAnimationFrame', function () {
     const callback = jest.fn();
     const timerID = JSTimers.requestAnimationFrame(callback, 10);
     // First time the timer fires, should call callback
@@ -309,11 +309,11 @@ describe('JSTimers', function() {
     expect(firstArgumentOfTheLastCallTo(warning)).toBe(true);
   });
 
-  it('should re-throw first exception', function() {
-    const timerID1 = JSTimers.setTimeout(function() {
+  it('should re-throw first exception', function () {
+    const timerID1 = JSTimers.setTimeout(function () {
       throw new Error('first error');
     });
-    const timerID2 = JSTimers.setTimeout(function() {
+    const timerID2 = JSTimers.setTimeout(function () {
       throw new Error('second error');
     });
     expect(JSTimers.callTimers.bind(null, [timerID1, timerID2])).toThrowError(
@@ -321,8 +321,8 @@ describe('JSTimers', function() {
     );
   });
 
-  it('should pass along errors thrown from setImmediate', function() {
-    JSTimers.setImmediate(function() {
+  it('should pass along errors thrown from setImmediate', function () {
+    JSTimers.setImmediate(function () {
       throw new Error('error within setImmediate');
     });
 
@@ -338,12 +338,12 @@ describe('JSTimers', function() {
     );
   });
 
-  it('should throw all errors from setImmediate', function() {
-    JSTimers.setImmediate(function() {
+  it('should throw all errors from setImmediate', function () {
+    JSTimers.setImmediate(function () {
       throw new Error('first error');
     });
 
-    JSTimers.setImmediate(function() {
+    JSTimers.setImmediate(function () {
       throw new Error('second error');
     });
 
@@ -363,8 +363,8 @@ describe('JSTimers', function() {
     );
   });
 
-  it('should pass along errors thrown from setTimeout', function() {
-    const timerID = JSTimers.setTimeout(function() {
+  it('should pass along errors thrown from setTimeout', function () {
+    const timerID = JSTimers.setTimeout(function () {
       throw new Error('error within setTimeout');
     });
 
@@ -373,11 +373,11 @@ describe('JSTimers', function() {
     );
   });
 
-  it('should throw all errors from setTimeout', function() {
-    const firstTimerID = JSTimers.setTimeout(function() {
+  it('should throw all errors from setTimeout', function () {
+    const firstTimerID = JSTimers.setTimeout(function () {
       throw new Error('first error');
     });
-    const secondTimerID = JSTimers.setTimeout(function() {
+    const secondTimerID = JSTimers.setTimeout(function () {
       throw new Error('second error');
     });
 
@@ -393,8 +393,8 @@ describe('JSTimers', function() {
     );
   });
 
-  it('should pass along errors thrown from setInterval', function() {
-    const timerID = JSTimers.setInterval(function() {
+  it('should pass along errors thrown from setInterval', function () {
+    const timerID = JSTimers.setInterval(function () {
       throw new Error('error within setInterval');
     });
     expect(JSTimers.callTimers.bind(null, [timerID])).toThrowError(
@@ -402,7 +402,7 @@ describe('JSTimers', function() {
     );
   });
 
-  it('should not call to native when clearing a null timer', function() {
+  it('should not call to native when clearing a null timer', function () {
     const timerID = JSTimers.setTimeout(() => {});
     JSTimers.clearTimeout(timerID);
     NativeTiming.deleteTimer = jest.fn();

@@ -82,14 +82,10 @@ function getJavaValueForProp(
           : `"${typeAnnotation.default}"`;
       return `value == null ? ${defaultValueString} : (String) value`;
     case 'Int32TypeAnnotation':
-      return `value == null ? ${
-        typeAnnotation.default
-      } : ((Double) value).intValue()`;
+      return `value == null ? ${typeAnnotation.default} : ((Double) value).intValue()`;
     case 'DoubleTypeAnnotation':
       if (prop.optional) {
-        return `value == null ? ${
-          typeAnnotation.default
-        }f : ((Double) value).doubleValue()`;
+        return `value == null ? ${typeAnnotation.default}f : ((Double) value).doubleValue()`;
       } else {
         return 'value == null ? Double.NaN : ((Double) value).doubleValue()';
       }
@@ -97,9 +93,7 @@ function getJavaValueForProp(
       if (typeAnnotation.default === null) {
         return 'value == null ? null : ((Double) value).floatValue()';
       } else if (prop.optional) {
-        return `value == null ? ${
-          typeAnnotation.default
-        }f : ((Double) value).floatValue()`;
+        return `value == null ? ${typeAnnotation.default}f : ((Double) value).floatValue()`;
       } else {
         return 'value == null ? Float.NaN : ((Double) value).floatValue()';
       }
@@ -126,9 +120,7 @@ function getJavaValueForProp(
     case 'StringEnumTypeAnnotation':
       return '(String) value';
     case 'Int32EnumTypeAnnotation':
-      return `value == null ? ${
-        typeAnnotation.default
-      } : ((Double) value).intValue()`;
+      return `value == null ? ${typeAnnotation.default} : ((Double) value).intValue()`;
     default:
       (typeAnnotation: empty);
       throw new Error('Received invalid typeAnnotation');
@@ -144,7 +136,7 @@ function generatePropCasesString(
   }
 
   const cases = component.props
-    .map(prop => {
+    .map((prop) => {
       return `case "${prop.name}":
         mViewManager.set${toSafeJavaString(
           prop.name,
@@ -194,7 +186,7 @@ function generateCommandCasesString(
   }
 
   const commandMethods = component.commands
-    .map(command => {
+    .map((command) => {
       return `case "${command.name}":
         viewManager.${toSafeJavaString(
           command.name,
@@ -209,7 +201,7 @@ function generateCommandCasesString(
 
 function getClassExtendString(component): string {
   const extendString = component.extendsProps
-    .map(extendProps => {
+    .map((extendProps) => {
       switch (extendProps.type) {
         case 'ReactNativeBuiltInType':
           switch (extendProps.knownTypeName) {
@@ -262,7 +254,7 @@ module.exports = {
     moduleSpecName: string,
   ): FilesOutput {
     const files = new Map();
-    Object.keys(schema.modules).forEach(moduleName => {
+    Object.keys(schema.modules).forEach((moduleName) => {
       const components = schema.modules[moduleName].components;
       // No components in this module
       if (components == null) {
@@ -270,11 +262,11 @@ module.exports = {
       }
 
       return Object.keys(components)
-        .filter(componentName => {
+        .filter((componentName) => {
           const component = components[componentName];
           return component.excludedPlatform !== 'android';
         })
-        .forEach(componentName => {
+        .forEach((componentName) => {
           const component = components[componentName];
           const className = getDelegateJavaClassName(componentName);
           const interfaceClassName = getInterfaceJavaClassName(componentName);
@@ -289,12 +281,7 @@ module.exports = {
           const extendString = getClassExtendString(component);
 
           const replacedTemplate = template
-            .replace(
-              /::_IMPORTS_::/g,
-              Array.from(imports)
-                .sort()
-                .join('\n'),
-            )
+            .replace(/::_IMPORTS_::/g, Array.from(imports).sort().join('\n'))
             .replace(/::_CLASSNAME_::/g, className)
             .replace('::_EXTEND_CLASSES_::', extendString)
             .replace('::_PROP_CASES_::', propsString)

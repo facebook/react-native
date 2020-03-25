@@ -57,13 +57,13 @@ const Settings = {
   },
 
   _sendObservations(body: Object) {
-    Object.keys(body).forEach(key => {
+    Object.keys(body).forEach((key) => {
       const newValue = body[key];
       const didChange = this._settings[key] !== newValue;
       this._settings[key] = newValue;
 
       if (didChange) {
-        subscriptions.forEach(sub => {
+        subscriptions.forEach((sub) => {
           if (sub.keys.indexOf(key) !== -1 && sub.callback) {
             sub.callback();
           }

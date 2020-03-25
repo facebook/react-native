@@ -228,7 +228,7 @@ function getItemLayout(
 function pressItem(context: Object, key: string) {
   const index = Number(key);
   const pressed = !context.state.data[index].pressed;
-  context.setState(state => {
+  context.setState((state) => {
     const newData = [...state.data];
     newData[index] = {
       ...state.data[index],
@@ -252,7 +252,7 @@ function renderSmallSwitchOption(
       <Switch
         style={styles.smallSwitch}
         value={context.state[key]}
-        onValueChange={value => context.setState({[key]: value})}
+        onValueChange={(value) => context.setState({[key]: value})}
       />
     </View>
   );

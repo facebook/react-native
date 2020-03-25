@@ -51,7 +51,7 @@ class ActionSheetExample extends React.Component<Props, State> {
         cancelButtonIndex: CANCEL_INDEX,
         destructiveButtonIndex: DESTRUCTIVE_INDEX,
       },
-      buttonIndex => {
+      (buttonIndex) => {
         this.setState({clicked: BUTTONS[buttonIndex]});
       },
     );
@@ -85,7 +85,7 @@ class ActionSheetTintExample extends React.Component<
         destructiveButtonIndex: DESTRUCTIVE_INDEX,
         tintColor: 'green',
       },
-      buttonIndex => {
+      (buttonIndex) => {
         this.setState({clicked: BUTTONS[buttonIndex]});
       },
     );
@@ -131,7 +131,7 @@ class ActionSheetAnchorExample extends React.Component<
           ? findNodeHandle(this.anchorRef.current)
           : undefined,
       },
-      buttonIndex => {
+      (buttonIndex) => {
         this.setState({clicked: BUTTONS[buttonIndex]});
       },
     );
@@ -165,7 +165,7 @@ class ShareActionSheetExample extends React.Component<
         subject: 'a subject to go in the email heading',
         excludedActivityTypes: ['com.apple.UIKit.activity.PostToTwitter'],
       },
-      error => Alert.alert('Error', error),
+      (error) => Alert.alert('Error', error),
       (completed, method) => {
         let text;
         if (completed) {
@@ -201,14 +201,14 @@ class ShareScreenshotExample extends React.Component<
   showShareActionSheet = () => {
     // Take the snapshot (returns a temp file uri)
     ScreenshotManager.takeScreenshot('window')
-      .then(uri => {
+      .then((uri) => {
         // Share image data
         ActionSheetIOS.showShareActionSheetWithOptions(
           {
             url: uri,
             excludedActivityTypes: ['com.apple.UIKit.activity.PostToTwitter'],
           },
-          error => Alert.alert('Error', error),
+          (error) => Alert.alert('Error', error),
           (completed, method) => {
             let text;
             if (completed) {
@@ -220,7 +220,7 @@ class ShareScreenshotExample extends React.Component<
           },
         );
       })
-      .catch(error => Alert.alert('Error', error));
+      .catch((error) => Alert.alert('Error', error));
   };
 }
 
@@ -256,7 +256,7 @@ class ShareScreenshotAnchorExample extends React.Component<
   showShareActionSheet = () => {
     // Take the snapshot (returns a temp file uri)
     ScreenshotManager.takeScreenshot('window')
-      .then(uri => {
+      .then((uri) => {
         // Share image data
         ActionSheetIOS.showShareActionSheetWithOptions(
           {
@@ -266,7 +266,7 @@ class ShareScreenshotAnchorExample extends React.Component<
               ? findNodeHandle(this.anchorRef.current)
               : undefined,
           },
-          error => Alert.alert('Error', error),
+          (error) => Alert.alert('Error', error),
           (completed, method) => {
             let text;
             if (completed) {
@@ -278,7 +278,7 @@ class ShareScreenshotAnchorExample extends React.Component<
           },
         );
       })
-      .catch(error => Alert.alert('Error', error));
+      .catch((error) => Alert.alert('Error', error));
   };
 }
 

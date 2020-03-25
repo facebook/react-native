@@ -19,7 +19,7 @@ let _activeScene = {name: 'default'};
 const SceneTracker = {
   setActiveScene(scene: Scene) {
     _activeScene = scene;
-    _listeners.forEach(listener => listener(_activeScene));
+    _listeners.forEach((listener) => listener(_activeScene));
   },
 
   getActiveScene(): Scene {
@@ -32,7 +32,7 @@ const SceneTracker = {
     _listeners.push(callback);
     return {
       remove: () => {
-        _listeners = _listeners.filter(listener => callback !== listener);
+        _listeners = _listeners.filter((listener) => callback !== listener);
       },
     };
   },

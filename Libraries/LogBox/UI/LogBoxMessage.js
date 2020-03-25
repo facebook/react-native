@@ -24,7 +24,7 @@ type Props = {
   ...
 };
 
-const cleanContent = content =>
+const cleanContent = (content) =>
   content.replace(/^(TransformError |Warning: (Warning: )?|Error: )/g, '');
 
 function LogBoxMessage(props: Props): React.Node {

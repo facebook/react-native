@@ -19,7 +19,7 @@ import {type Handle} from './InteractionManager';
  * once per start, even if the component is unmounted.
  */
 const InteractionMixin = {
-  componentWillUnmount: function() {
+  componentWillUnmount: function () {
     while (this._interactionMixinHandles.length) {
       InteractionManager.clearInteractionHandle(
         this._interactionMixinHandles.pop(),
@@ -29,16 +29,16 @@ const InteractionMixin = {
 
   _interactionMixinHandles: ([]: Array<number>),
 
-  createInteractionHandle: function(): Handle {
+  createInteractionHandle: function (): Handle {
     const handle = InteractionManager.createInteractionHandle();
     this._interactionMixinHandles.push(handle);
     return handle;
   },
 
-  clearInteractionHandle: function(clearHandle: number): void {
+  clearInteractionHandle: function (clearHandle: number): void {
     InteractionManager.clearInteractionHandle(clearHandle);
     this._interactionMixinHandles = this._interactionMixinHandles.filter(
-      handle => handle !== clearHandle,
+      (handle) => handle !== clearHandle,
     );
   },
 
@@ -47,7 +47,7 @@ const InteractionMixin = {
    *
    * @param {function} callback
    */
-  runAfterInteractions: function(callback: Function): void {
+  runAfterInteractions: function (callback: Function): void {
     InteractionManager.runAfterInteractions(callback);
   },
 };

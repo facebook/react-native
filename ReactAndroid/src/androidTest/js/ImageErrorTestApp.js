@@ -15,7 +15,7 @@ const {Image, NativeModules, StyleSheet, View} = require('react-native');
 const {Recording: RecordingModule} = NativeModules;
 
 class ImageErrorTestApp extends React.Component {
-  onError = e => {
+  onError = (e) => {
     RecordingModule.record('Got error: ' + e.nativeEvent.error);
   };
 

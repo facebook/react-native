@@ -45,7 +45,7 @@ export default function Ansi({
   ...
 }): React.Node {
   let commonWhitespaceLength = Infinity;
-  const parsedLines = text.split(/\n/).map(line =>
+  const parsedLines = text.split(/\n/).map((line) =>
     ansiToJson(line, {
       json: true,
       remove_empty: true,
@@ -53,7 +53,7 @@ export default function Ansi({
     }),
   );
 
-  parsedLines.map(lines => {
+  parsedLines.map((lines) => {
     // The third item on each line includes the whitespace of the source code.
     // We are looking for the least amount of common whitespace to trim all lines.
     // Example: Array [" ", " 96 |", "     text", ...]

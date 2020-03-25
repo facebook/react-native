@@ -128,7 +128,7 @@ class Share {
             tintColor: typeof tintColor === 'number' ? tintColor : undefined,
             excludedActivityTypes: options.excludedActivityTypes,
           },
-          error => reject(error),
+          (error) => reject(error),
           (success, activityType) => {
             if (success) {
               resolve({

@@ -41,25 +41,25 @@ const AccessibilityInfo = {
   /**
    * iOS only
    */
-  isBoldTextEnabled: function(): Promise<boolean> {
+  isBoldTextEnabled: function (): Promise<boolean> {
     return Promise.resolve(false);
   },
 
   /**
    * iOS only
    */
-  isGrayscaleEnabled: function(): Promise<boolean> {
+  isGrayscaleEnabled: function (): Promise<boolean> {
     return Promise.resolve(false);
   },
 
   /**
    * iOS only
    */
-  isInvertColorsEnabled: function(): Promise<boolean> {
+  isInvertColorsEnabled: function (): Promise<boolean> {
     return Promise.resolve(false);
   },
 
-  isReduceMotionEnabled: function(): Promise<boolean> {
+  isReduceMotionEnabled: function (): Promise<boolean> {
     return new Promise((resolve, reject) => {
       if (NativeAccessibilityInfo) {
         NativeAccessibilityInfo.isReduceMotionEnabled(resolve);
@@ -72,11 +72,11 @@ const AccessibilityInfo = {
   /**
    * iOS only
    */
-  isReduceTransparencyEnabled: function(): Promise<boolean> {
+  isReduceTransparencyEnabled: function (): Promise<boolean> {
     return Promise.resolve(false);
   },
 
-  isScreenReaderEnabled: function(): Promise<boolean> {
+  isScreenReaderEnabled: function (): Promise<boolean> {
     return new Promise((resolve, reject) => {
       if (NativeAccessibilityInfo) {
         NativeAccessibilityInfo.isTouchExplorationEnabled(resolve);
@@ -98,7 +98,7 @@ const AccessibilityInfo = {
     return this.isScreenReaderEnabled;
   },
 
-  addEventListener: function(
+  addEventListener: function (
     eventName: ChangeEventName,
     handler: Function,
   ): void {
@@ -107,14 +107,14 @@ const AccessibilityInfo = {
     if (eventName === 'change' || eventName === 'screenReaderChanged') {
       listener = RCTDeviceEventEmitter.addListener(
         TOUCH_EXPLORATION_EVENT,
-        enabled => {
+        (enabled) => {
           handler(enabled);
         },
       );
     } else if (eventName === 'reduceMotionChanged') {
       listener = RCTDeviceEventEmitter.addListener(
         REDUCE_MOTION_EVENT,
-        enabled => {
+        (enabled) => {
           handler(enabled);
         },
       );
@@ -123,7 +123,7 @@ const AccessibilityInfo = {
     _subscriptions.set(handler, listener);
   },
 
-  removeEventListener: function(
+  removeEventListener: function (
     eventName: ChangeEventName,
     handler: Function,
   ): void {
@@ -140,7 +140,7 @@ const AccessibilityInfo = {
    *
    * See https://reactnative.dev/docs/accessibilityinfo.html#setaccessibilityfocus
    */
-  setAccessibilityFocus: function(reactTag: number): void {
+  setAccessibilityFocus: function (reactTag: number): void {
     UIManager.sendAccessibilityEvent(
       reactTag,
       UIManager.getConstants().AccessibilityEventTypes.typeViewFocused,
@@ -152,7 +152,7 @@ const AccessibilityInfo = {
    *
    * See https://reactnative.dev/docs/accessibilityinfo.html#announceforaccessibility
    */
-  announceForAccessibility: function(announcement: string): void {
+  announceForAccessibility: function (announcement: string): void {
     if (NativeAccessibilityInfo) {
       NativeAccessibilityInfo.announceForAccessibility(announcement);
     }

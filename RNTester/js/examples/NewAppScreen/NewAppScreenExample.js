@@ -48,7 +48,7 @@ exports.examples = [
     render(): React.Element<any> {
       return (
         <View style={{flexDirection: 'row'}}>
-          {Object.keys(Colors).map(key => (
+          {Object.keys(Colors).map((key) => (
             <View
               key={`color-${key}`}
               style={{width: 50, height: 50, backgroundColor: Colors[key]}}

@@ -23,7 +23,7 @@ class DatePickerDialogTestApp extends React.Component {
 
 const DatePickerDialogTestModule = {
   DatePickerDialogTestApp: DatePickerDialogTestApp,
-  showDatePickerDialog: function(options) {
+  showDatePickerDialog: function (options) {
     DatePickerAndroid.open(options).then(
       ({action, year, month, day}) => {
         if (action === DatePickerAndroid.dateSetAction) {

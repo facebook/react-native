@@ -98,7 +98,7 @@ exports.description =
 exports.examples = [
   {
     title: 'Simple scroll view',
-    render: function(): React.Element<typeof ScrollViewSimpleExample> {
+    render: function (): React.Element<typeof ScrollViewSimpleExample> {
       return <ScrollViewSimpleExample />;
     },
   },

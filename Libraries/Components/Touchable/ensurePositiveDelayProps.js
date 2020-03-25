@@ -12,7 +12,7 @@
 
 const invariant = require('invariant');
 
-const ensurePositiveDelayProps = function(props: any) {
+const ensurePositiveDelayProps = function (props: any) {
   invariant(
     !(
       props.delayPressIn < 0 ||

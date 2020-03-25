@@ -52,7 +52,7 @@ export type Registry = {
   runnables: Runnables,
   ...
 };
-export type WrapperComponentProvider = any => React$ComponentType<*>;
+export type WrapperComponentProvider = (any) => React$ComponentType<*>;
 
 const runnables: Runnables = {};
 let runCount = 1;
@@ -81,7 +81,7 @@ const AppRegistry = {
   },
 
   registerConfig(config: Array<AppConfig>): void {
-    config.forEach(appConfig => {
+    config.forEach((appConfig) => {
       if (appConfig.run) {
         AppRegistry.registerRunnable(appConfig.appKey, appConfig.run);
       } else {
@@ -113,7 +113,7 @@ const AppRegistry = {
     let scopedPerformanceLogger = createPerformanceLogger();
     runnables[appKey] = {
       componentProvider,
-      run: appParameters => {
+      run: (appParameters) => {
         renderApplication(
           componentProviderInstrumentationHook(
             componentProvider,
@@ -261,7 +261,7 @@ const AppRegistry = {
           NativeHeadlessJsTaskSupport.notifyTaskFinished(taskId);
         }
       })
-      .catch(reason => {
+      .catch((reason) => {
         console.error(reason);
 
         if (
@@ -269,7 +269,7 @@ const AppRegistry = {
           reason instanceof HeadlessJsTaskError
         ) {
           NativeHeadlessJsTaskSupport.notifyTaskRetry(taskId).then(
-            retryPosted => {
+            (retryPosted) => {
               if (!retryPosted) {
                 NativeHeadlessJsTaskSupport.notifyTaskFinished(taskId);
               }

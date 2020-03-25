@@ -116,7 +116,7 @@ function generatePropsString(component: ComponentShape, imports) {
   }
 
   return component.props
-    .map(prop => {
+    .map((prop) => {
       return `void set${toSafeJavaString(
         prop.name,
       )}(T view, ${getJavaValueForProp(prop, imports)});`;
@@ -148,7 +148,7 @@ function getCommandArguments(
 ): string {
   return [
     'T view',
-    ...command.typeAnnotation.params.map(param => {
+    ...command.typeAnnotation.params.map((param) => {
       const commandArgJavaType = getCommandArgJavaType(param);
 
       return `${commandArgJavaType} ${param.name}`;
@@ -161,7 +161,7 @@ function generateCommandsString(
   componentName: string,
 ) {
   return component.commands
-    .map(command => {
+    .map((command) => {
       const safeJavaName = toSafeJavaString(command.name, false);
 
       return `void ${safeJavaName}(${getCommandArguments(
@@ -174,7 +174,7 @@ function generateCommandsString(
 
 function getClassExtendString(component): string {
   const extendString = component.extendsProps
-    .map(extendProps => {
+    .map((extendProps) => {
       switch (extendProps.type) {
         case 'ReactNativeBuiltInType':
           switch (extendProps.knownTypeName) {
@@ -201,7 +201,7 @@ module.exports = {
     moduleSpecName: string,
   ): FilesOutput {
     const files = new Map();
-    Object.keys(schema.modules).forEach(moduleName => {
+    Object.keys(schema.modules).forEach((moduleName) => {
       const components = schema.modules[moduleName].components;
       // No components in this module
       if (components == null) {
@@ -209,11 +209,11 @@ module.exports = {
       }
 
       return Object.keys(components)
-        .filter(componentName => {
+        .filter((componentName) => {
           const component = components[componentName];
           return component.excludedPlatform !== 'android';
         })
-        .forEach(componentName => {
+        .forEach((componentName) => {
           const component = components[componentName];
           const className = getInterfaceJavaClassName(componentName);
           const fileName = `${className}.java`;
@@ -227,12 +227,7 @@ module.exports = {
           const extendString = getClassExtendString(component);
 
           const replacedTemplate = template
-            .replace(
-              /::_IMPORTS_::/g,
-              Array.from(imports)
-                .sort()
-                .join('\n'),
-            )
+            .replace(/::_IMPORTS_::/g, Array.from(imports).sort().join('\n'))
             .replace(/::_CLASSNAME_::/g, className)
             .replace('::_EXTEND_CLASSES_::', extendString)
             .replace(

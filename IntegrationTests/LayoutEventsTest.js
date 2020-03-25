@@ -141,13 +141,13 @@ class LayoutEventsTest extends React.Component<Props, State> {
     return (
       <View style={[styles.container, this.state.containerStyle]}>
         <View
-          ref={ref => {
+          ref={(ref) => {
             this._view = ref;
           }}
           onLayout={this.onViewLayout}
           style={viewStyle}>
           <Image
-            ref={ref => {
+            ref={(ref) => {
               this._img = ref;
             }}
             onLayout={this.onImageLayout}
@@ -155,7 +155,7 @@ class LayoutEventsTest extends React.Component<Props, State> {
             source={{uri: 'uie_thumb_big.png'}}
           />
           <Text
-            ref={ref => {
+            ref={(ref) => {
               this._txt = ref;
             }}
             onLayout={this.onTextLayout}

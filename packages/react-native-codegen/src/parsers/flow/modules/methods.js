@@ -30,7 +30,7 @@ function getObjectProperties(
   paramName: string,
   types: TypeMap,
 ): $ReadOnlyArray<ObjectParamTypeAnnotation> {
-  return objectParam.properties.map(objectTypeProperty => {
+  return objectParam.properties.map((objectTypeProperty) => {
     let optional = objectTypeProperty.optional;
     let value = objectTypeProperty.value;
     if (value.type === 'NullableTypeAnnotation') {
@@ -406,12 +406,10 @@ function buildMethodSchema(
   const value = getValueFromTypes(property.value, types);
   if (value.type !== 'FunctionTypeAnnotation') {
     throw new Error(
-      `Only methods are supported as module properties. Found ${
-        value.type
-      } in ${property.key.name}`,
+      `Only methods are supported as module properties. Found ${value.type} in ${property.key.name}`,
     );
   }
-  const params = value.params.map(param =>
+  const params = value.params.map((param) =>
     getTypeAnnotationForParam(name, param, types),
   );
 
@@ -436,8 +434,8 @@ function getMethods(
   types: TypeMap,
 ): $ReadOnlyArray<MethodTypeShape> {
   return typeDefinition
-    .filter(property => property.type === 'ObjectTypeProperty')
-    .map(property => buildMethodSchema(property, types))
+    .filter((property) => property.type === 'ObjectTypeProperty')
+    .map((property) => buildMethodSchema(property, types))
     .filter(Boolean);
 }
 

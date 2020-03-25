@@ -90,13 +90,13 @@ const tagsWithVersion = exec(`git ls-remote origin | grep ${currentCommit}`, {
   .stdout.split(/\s/)
   // ['refs/tags/v0.33.0', 'refs/tags/v0.33.0-rc', 'refs/tags/v0.33.0-rc1', 'refs/tags/v0.33.0-rc2', 'refs/tags/v0.34.0']
   .filter(
-    version =>
+    (version) =>
       !!version && version.indexOf(`refs/tags/v${branchVersion}`) === 0,
   )
   // ['refs/tags/v0.33.0', 'refs/tags/v0.33.0-rc', 'refs/tags/v0.33.0-rc1', 'refs/tags/v0.33.0-rc2']
-  .filter(version => version.indexOf(branchVersion) !== -1)
+  .filter((version) => version.indexOf(branchVersion) !== -1)
   // ['v0.33.0', 'v0.33.0-rc', 'v0.33.0-rc1', 'v0.33.0-rc2']
-  .map(version => version.slice('refs/tags/'.length));
+  .map((version) => version.slice('refs/tags/'.length));
 
 if (!nightlyBuild && tagsWithVersion.length === 0) {
   echo(
@@ -137,11 +137,13 @@ exec('git checkout ReactAndroid/gradle.properties');
 
 echo('Generated artifacts for Maven');
 
-let artifacts = ['-javadoc.jar', '-sources.jar', '.aar', '.pom'].map(suffix => {
-  return `react-native-${releaseVersion}${suffix}`;
-});
+let artifacts = ['-javadoc.jar', '-sources.jar', '.aar', '.pom'].map(
+  (suffix) => {
+    return `react-native-${releaseVersion}${suffix}`;
+  },
+);
 
-artifacts.forEach(name => {
+artifacts.forEach((name) => {
   if (
     !test(
       '-e',

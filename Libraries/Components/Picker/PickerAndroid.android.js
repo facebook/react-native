@@ -85,7 +85,7 @@ function PickerAndroid(props: Props): React.Node {
       if (onValueChange != null) {
         if (position >= 0) {
           const children = React.Children.toArray(props.children).filter(
-            item => item != null,
+            (item) => item != null,
           );
           const value = children[position].props.value;
           if (props.selectedValue !== value) {
@@ -121,10 +121,7 @@ function PickerAndroid(props: Props): React.Node {
     prompt: props.prompt,
     ref: pickerRef,
     selected,
-    style: StyleSheet.compose(
-      styles.pickerAndroid,
-      props.style,
-    ),
+    style: StyleSheet.compose(styles.pickerAndroid, props.style),
     backgroundColor: props.backgroundColor,
     testID: props.testID,
   };

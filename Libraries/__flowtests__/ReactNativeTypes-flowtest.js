@@ -20,7 +20,7 @@ function takesHostComponentInstance(
 const MyHostComponent = (('Host': any): HostComponent<mixed>);
 
 <MyHostComponent
-  ref={hostComponentRef => {
+  ref={(hostComponentRef) => {
     takesHostComponentInstance(hostComponentRef);
 
     if (hostComponentRef == null) {

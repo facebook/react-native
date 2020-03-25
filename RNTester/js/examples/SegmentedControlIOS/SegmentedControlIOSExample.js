@@ -118,13 +118,13 @@ class EventSegmentedControlExample extends React.Component<
     );
   }
 
-  _onChange = event => {
+  _onChange = (event) => {
     this.setState({
       selectedIndex: event.nativeEvent.selectedSegmentIndex,
     });
   };
 
-  _onValueChange = value => {
+  _onValueChange = (value) => {
     this.setState({
       value: value,
     });

@@ -20,7 +20,7 @@ const {} = require('../LogBoxInspectorStackFrames');
 const LogBoxLog = require('../../Data/LogBoxLog').default;
 const render = require('../../../../jest/renderer');
 
-const createLogWithFrames = collapsedOptions => {
+const createLogWithFrames = (collapsedOptions) => {
   return new LogBoxLog({
     level: 'warn',
     isComponentError: false,
@@ -34,8 +34,8 @@ const createLogWithFrames = collapsedOptions => {
   });
 };
 
-const createCollapsedFrames = collapsedOptions => {
-  return collapsedOptions.map(option => ({
+const createCollapsedFrames = (collapsedOptions) => {
+  return collapsedOptions.map((option) => ({
     column: 1,
     file: 'dependency.js',
     lineNumber: 1,
@@ -85,7 +85,7 @@ describe('LogBoxInspectorStackFrame', () => {
       expect(
         getCollapseMessage(
           createCollapsedFrames(
-            [stackOne, stackTwo, stackThree].filter(i => i != null),
+            [stackOne, stackTwo, stackThree].filter((i) => i != null),
           ),
           collapsed,
         ),

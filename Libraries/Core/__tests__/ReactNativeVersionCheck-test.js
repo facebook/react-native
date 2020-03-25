@@ -45,7 +45,7 @@ function _defineCheckVersionTests() {
   beforeEach(() => {
     consoleOutput = '';
     console.error = jest.fn();
-    global.console = {error: jest.fn(error => (consoleOutput += error))};
+    global.console = {error: jest.fn((error) => (consoleOutput += error))};
     spyOnConsoleError = jest.spyOn(global.console, 'error');
   });
 

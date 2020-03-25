@@ -20,11 +20,11 @@ const {UIManager} = require('react-native');
 jest.unmock('../../ReactNative/requireNativeComponent');
 jest.mock(
   '../../Renderer/shims/createReactNativeComponentClass',
-  () => componentName => componentName,
+  () => (componentName) => componentName,
 );
 jest
   .spyOn(UIManager, 'getViewManagerConfig')
-  .mockImplementation(componentName =>
+  .mockImplementation((componentName) =>
     componentName.includes('ComponentNameDoesNotExist') ? false : true,
   );
 

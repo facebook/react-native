@@ -69,9 +69,9 @@ class AppContainer extends React.Component<Props, State> {
               <Inspector
                 isFabric={this.props.fabric === true}
                 inspectedView={this._mainRef}
-                onRequestRerenderApp={updateInspectedView => {
+                onRequestRerenderApp={(updateInspectedView) => {
                   this.setState(
-                    s => ({mainKey: s.mainKey + 1}),
+                    (s) => ({mainKey: s.mainKey + 1}),
                     () => updateInspectedView(this._mainRef),
                   );
                 }}
@@ -109,7 +109,7 @@ class AppContainer extends React.Component<Props, State> {
         key={this.state.mainKey}
         pointerEvents="box-none"
         style={styles.appContainer}
-        ref={ref => {
+        ref={(ref) => {
           this._mainRef = ref;
         }}>
         {this.props.children}

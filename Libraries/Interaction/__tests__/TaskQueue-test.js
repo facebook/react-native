@@ -51,7 +51,7 @@ describe('TaskQueue', () => {
 
   it('should handle blocking promise task', () => {
     const task1 = jest.fn(() => {
-      return new Promise(resolve => {
+      return new Promise((resolve) => {
         setTimeout(() => {
           expect(++sequenceId).toBe(1);
           resolve();
@@ -94,7 +94,7 @@ describe('TaskQueue', () => {
 
   it('should handle nested promises', () => {
     const task1 = jest.fn(() => {
-      return new Promise(resolve => {
+      return new Promise((resolve) => {
         setTimeout(() => {
           expect(++sequenceId).toBe(1);
           taskQueue.enqueue({gen: task2, name: 'gen2'});
@@ -103,7 +103,7 @@ describe('TaskQueue', () => {
       });
     });
     const task2 = jest.fn(() => {
-      return new Promise(resolve => {
+      return new Promise((resolve) => {
         setTimeout(() => {
           expect(++sequenceId).toBe(2);
           taskQueue.enqueue({run: task3, name: 'run3'});

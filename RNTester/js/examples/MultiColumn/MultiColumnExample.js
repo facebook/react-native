@@ -50,15 +50,15 @@ class MultiColumnExample extends React.PureComponent<
     numColumns: 2,
     virtualized: true,
   };
-  _onChangeFilterText = filterText => {
+  _onChangeFilterText = (filterText) => {
     this.setState(() => ({filterText}));
   };
-  _onChangeNumColumns = numColumns => {
+  _onChangeNumColumns = (numColumns) => {
     this.setState(() => ({numColumns: Number(numColumns)}));
   };
   render(): React.Node {
     const filterRegex = new RegExp(String(this.state.filterText), 'i');
-    const filter = item =>
+    const filter = (item) =>
       filterRegex.test(item.text) || filterRegex.test(item.title);
     const filteredData = this.state.data.filter(filter);
     return (
@@ -147,7 +147,7 @@ class MultiColumnExample extends React.PureComponent<
     if (this.state.logViewable) {
       infoLog(
         'onViewableItemsChanged: ',
-        info.changed.map(v => ({...v, item: '...'})),
+        info.changed.map((v) => ({...v, item: '...'})),
       );
     }
   };
@@ -182,7 +182,7 @@ exports.description = 'Performant, scrollable grid of data.';
 exports.examples = [
   {
     title: 'Simple flat list multi column',
-    render: function(): React.Element<typeof MultiColumnExample> {
+    render: function (): React.Element<typeof MultiColumnExample> {
       return <MultiColumnExample />;
     },
   },

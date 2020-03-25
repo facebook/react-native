@@ -17,7 +17,7 @@ const generator = require('../GenerateComponentDescriptorH.js');
 describe('GenerateComponentDescriptorH', () => {
   Object.keys(fixtures)
     .sort()
-    .forEach(fixtureName => {
+    .forEach((fixtureName) => {
       const fixture = fixtures[fixtureName];
 
       it(`can generate fixture ${fixtureName}`, () => {

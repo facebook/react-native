@@ -19,8 +19,8 @@ describe('Animated Mock', () => {
       Object.keys(AnimatedImplementation),
     );
   });
-  it('matches implementation params', done => {
-    Object.keys(AnimatedImplementation).forEach(key => {
+  it('matches implementation params', (done) => {
+    Object.keys(AnimatedImplementation).forEach((key) => {
       if (AnimatedImplementation[key].length !== AnimatedMock[key].length) {
         done(
           new Error(

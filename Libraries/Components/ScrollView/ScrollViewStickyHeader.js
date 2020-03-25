@@ -52,7 +52,7 @@ class ScrollViewStickyHeader extends React.Component<Props, State> {
     this.setState({nextHeaderLayoutY: y});
   }
 
-  _onLayout = event => {
+  _onLayout = (event) => {
     this.setState({
       measured: true,
       layoutY: event.nativeEvent.layout.y,

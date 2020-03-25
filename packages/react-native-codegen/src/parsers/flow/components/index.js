@@ -21,10 +21,10 @@ function findComponentConfig(ast) {
   const foundConfigs = [];
 
   const defaultExports = ast.body.filter(
-    node => node.type === 'ExportDefaultDeclaration',
+    (node) => node.type === 'ExportDefaultDeclaration',
   );
 
-  defaultExports.forEach(statement => {
+  defaultExports.forEach((statement) => {
     let declaration = statement.declaration;
 
     // codegenNativeComponent can be nested inside a cast
@@ -61,11 +61,11 @@ function findComponentConfig(ast) {
   const foundConfig = foundConfigs[0];
 
   const namedExports = ast.body.filter(
-    node => node.type === 'ExportNamedDeclaration',
+    (node) => node.type === 'ExportNamedDeclaration',
   );
 
   const commandsTypeNames = namedExports
-    .map(statement => {
+    .map((statement) => {
       let callExpression;
       let calleeName;
       try {
@@ -127,9 +127,7 @@ function getCommandProperties(commandTypeName, types, commandOptions) {
 
   if (typeAlias.type !== 'InterfaceDeclaration') {
     throw new Error(
-      `The type argument for codegenNativeCommands must be an interface, received ${
-        typeAlias.type
-      }`,
+      `The type argument for codegenNativeCommands must be an interface, received ${typeAlias.type}`,
     );
   }
 
@@ -143,7 +141,7 @@ function getCommandProperties(commandTypeName, types, commandOptions) {
   }
 
   const flowPropertyNames = properties
-    .map(property => property && property.key && property.key.name)
+    .map((property) => property && property.key && property.key.name)
     .filter(Boolean);
 
   if (commandOptions == null || commandOptions.supportedCommands == null) {
@@ -154,7 +152,7 @@ function getCommandProperties(commandTypeName, types, commandOptions) {
 
   if (
     commandOptions.supportedCommands.length !== flowPropertyNames.length ||
-    !commandOptions.supportedCommands.every(supportedCommand =>
+    !commandOptions.supportedCommands.every((supportedCommand) =>
       flowPropertyNames.includes(supportedCommand),
     )
   ) {

@@ -857,7 +857,7 @@ exports.description = 'Base component for rendering styled text.';
 exports.examples = [
   {
     title: 'Basic text',
-    render: function(): React.Element<typeof TextExample> {
+    render: function (): React.Element<typeof TextExample> {
       return <TextExample />;
     },
   },

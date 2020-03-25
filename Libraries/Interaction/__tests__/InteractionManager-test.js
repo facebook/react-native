@@ -177,7 +177,7 @@ describe('promise tasks', () => {
   it('should run a basic promise task', () => {
     const task1 = jest.fn(() => {
       expect(++sequenceId).toBe(1);
-      return new Promise(resolve => resolve());
+      return new Promise((resolve) => resolve());
     });
     InteractionManager.runAfterInteractions({gen: task1, name: 'gen1'});
     jest.runAllTimers();
@@ -187,7 +187,7 @@ describe('promise tasks', () => {
   it('should handle nested promises', () => {
     const task1 = jest.fn(() => {
       expect(++sequenceId).toBe(1);
-      return new Promise(resolve => {
+      return new Promise((resolve) => {
         InteractionManager.runAfterInteractions({
           gen: task2,
           name: 'gen2',
@@ -196,7 +196,7 @@ describe('promise tasks', () => {
     });
     const task2 = jest.fn(() => {
       expect(++sequenceId).toBe(2);
-      return new Promise(resolve => resolve());
+      return new Promise((resolve) => resolve());
     });
     InteractionManager.runAfterInteractions({gen: task1, name: 'gen1'});
     jest.runAllTimers();
@@ -208,7 +208,7 @@ describe('promise tasks', () => {
     const task1 = createSequenceTask(1);
     const task2 = jest.fn(() => {
       expect(++sequenceId).toBe(2);
-      return new Promise(resolve => {
+      return new Promise((resolve) => {
         setTimeout(() => {
           InteractionManager.runAfterInteractions(task3).then(resolve);
         }, 1);
@@ -262,13 +262,13 @@ describe('promise tasks', () => {
     expectToBeCalledOnce(task2);
   });
 
-  const bigAsyncTest = resolveTest => {
+  const bigAsyncTest = (resolveTest) => {
     jest.useRealTimers();
 
     const task1 = createSequenceTask(1);
     const task2 = jest.fn(() => {
       expect(++sequenceId).toBe(2);
-      return new Promise(resolve => {
+      return new Promise((resolve) => {
         InteractionManager.runAfterInteractions(task3);
         setTimeout(() => {
           InteractionManager.runAfterInteractions({
@@ -281,7 +281,7 @@ describe('promise tasks', () => {
     const task3 = createSequenceTask(3);
     const task4 = jest.fn(() => {
       expect(++sequenceId).toBe(4);
-      return new Promise(resolve => {
+      return new Promise((resolve) => {
         InteractionManager.runAfterInteractions(task5).then(resolve);
       });
     });

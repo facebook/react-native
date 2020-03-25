@@ -183,7 +183,7 @@ class TouchableFeedbackEvents extends React.Component<{...}, $FlowFixMeState> {
     );
   }
 
-  _appendEvent = eventName => {
+  _appendEvent = (eventName) => {
     const limit = 6;
     const eventLog = this.state.eventLog.slice(0, limit - 1);
     eventLog.unshift(eventName);
@@ -224,7 +224,7 @@ class TouchableDelayEvents extends React.Component<{...}, $FlowFixMeState> {
     );
   }
 
-  _appendEvent = eventName => {
+  _appendEvent = (eventName) => {
     const limit = 6;
     const eventLog = this.state.eventLog.slice(0, limit - 1);
     eventLog.unshift(eventName);
@@ -254,10 +254,10 @@ class ForceTouchExample extends React.Component<{...}, $FlowFixMeState> {
             style={styles.wrapper}
             testID="touchable_3dtouch_button"
             onStartShouldSetResponder={() => true}
-            onResponderMove={event =>
+            onResponderMove={(event) =>
               this.setState({force: event.nativeEvent.force})
             }
-            onResponderRelease={event => this.setState({force: 0})}>
+            onResponderRelease={(event) => this.setState({force: 0})}>
             <Text style={styles.button}>Press Me</Text>
           </View>
         </View>
@@ -560,13 +560,13 @@ exports.examples = [
       'child view is fully opaque, although it can be made to work as a simple ' +
       'background color change as well with the activeOpacity and ' +
       'underlayColor props.': string),
-    render: function(): React.Node {
+    render: function (): React.Node {
       return <TouchableHighlightBox />;
     },
   },
   {
     title: '<TouchableWithoutFeedback>',
-    render: function(): React.Node {
+    render: function (): React.Node {
       return <TouchableWithoutFeedbackBox />;
     },
   },
@@ -575,7 +575,7 @@ exports.examples = [
     description: ('TouchableNativeFeedback can have an AnimatedComponent as a' +
       'direct child.': string),
     platform: 'android',
-    render: function(): React.Node {
+    render: function (): React.Node {
       const mScale = new Animated.Value(1);
       Animated.timing(mScale, {
         toValue: 0.3,
@@ -601,7 +601,7 @@ exports.examples = [
   },
   {
     title: '<Text onPress={fn}> with highlight',
-    render: function(): React.Element<any> {
+    render: function (): React.Element<any> {
       return <TextOnPressBox />;
     },
   },
@@ -609,7 +609,7 @@ exports.examples = [
     title: 'Touchable feedback events',
     description: ('<Touchable*> components accept onPress, onPressIn, ' +
       'onPressOut, and onLongPress as props.': string),
-    render: function(): React.Element<any> {
+    render: function (): React.Element<any> {
       return <TouchableFeedbackEvents />;
     },
   },
@@ -618,7 +618,7 @@ exports.examples = [
     description: ('<Touchable*> components also accept delayPressIn, ' +
       'delayPressOut, and delayLongPress as props. These props impact the ' +
       'timing of feedback events.': string),
-    render: function(): React.Element<any> {
+    render: function (): React.Element<any> {
       return <TouchableDelayEvents />;
     },
   },
@@ -626,7 +626,7 @@ exports.examples = [
     title: '3D Touch / Force Touch',
     description:
       'iPhone 8 and 8 plus support 3D touch, which adds a force property to touches',
-    render: function(): React.Element<any> {
+    render: function (): React.Element<any> {
       return <ForceTouchExample />;
     },
     platform: 'ios',
@@ -635,14 +635,14 @@ exports.examples = [
     title: 'Touchable Hit Slop',
     description: ('<Touchable*> components accept hitSlop prop which extends the touch area ' +
       'without changing the view bounds.': string),
-    render: function(): React.Element<any> {
+    render: function (): React.Element<any> {
       return <TouchableHitSlop />;
     },
   },
   {
     title: 'Touchable Native Methods',
     description: ('Some <Touchable*> components expose native methods like `measure`.': string),
-    render: function(): React.Element<any> {
+    render: function (): React.Element<any> {
       return <TouchableNativeMethods />;
     },
   },
@@ -650,14 +650,14 @@ exports.examples = [
     title: 'Disabled Touchable*',
     description: ('<Touchable*> components accept disabled prop which prevents ' +
       'any interaction with component': string),
-    render: function(): React.Element<any> {
+    render: function (): React.Element<any> {
       return <TouchableDisabled />;
     },
   },
   {
     title: 'Custom Ripple Radius (Android-only)',
     description: ('Ripple radius on TouchableNativeFeedback can be controlled': string),
-    render: function(): React.Element<any> {
+    render: function (): React.Element<any> {
       return <CustomRippleRadius />;
     },
   },

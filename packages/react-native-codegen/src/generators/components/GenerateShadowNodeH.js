@@ -59,7 +59,7 @@ module.exports = {
     let hasAnyEvents = false;
 
     const moduleResults = Object.keys(schema.modules)
-      .map(moduleName => {
+      .map((moduleName) => {
         const components = schema.modules[moduleName].components;
         // No components in this module
         if (components == null) {
@@ -67,7 +67,7 @@ module.exports = {
         }
 
         return Object.keys(components)
-          .map(componentName => {
+          .map((componentName) => {
             const component = components[componentName];
             if (component.interfaceOnly === true) {
               return;

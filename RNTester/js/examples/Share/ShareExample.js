@@ -64,7 +64,7 @@ class ShareMessageExample extends React.Component<Props, State> {
         'React Native | A framework for building native apps using React',
     })
       .then(this._showResult)
-      .catch(error => this.setState({result: 'error: ' + error.message}));
+      .catch((error) => this.setState({result: 'error: ' + error.message}));
   }
 
   _shareText() {
@@ -82,7 +82,7 @@ class ShareMessageExample extends React.Component<Props, State> {
       },
     )
       .then(this._showResult)
-      .catch(error => this.setState({result: 'error: ' + error.message}));
+      .catch((error) => this.setState({result: 'error: ' + error.message}));
   }
 
   _showResult(result) {

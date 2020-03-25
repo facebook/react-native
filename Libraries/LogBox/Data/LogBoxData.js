@@ -71,7 +71,7 @@ let updateTimeout = null;
 let _isDisabled = false;
 let _selectedIndex = -1;
 
-let warningFilter: WarningFilter = function(format) {
+let warningFilter: WarningFilter = function (format) {
   return {
     finalFormat: format,
     forceDialogImmediately: false,
@@ -175,7 +175,7 @@ function appendNewLog(newLog) {
       }
     }, OPTIMISTIC_WAIT_TIME);
 
-    newLog.symbolicate(status => {
+    newLog.symbolicate((status) => {
       if (addPendingLog && status !== 'PENDING') {
         addPendingLog();
         clearTimeout(optimisticTimeout);
@@ -282,7 +282,7 @@ export function setSelectedLog(proposedNewIndex: number): void {
 }
 
 export function clearWarnings(): void {
-  const newLogs = Array.from(logs).filter(log => log.level !== 'warn');
+  const newLogs = Array.from(logs).filter((log) => log.level !== 'warn');
   if (newLogs.length !== logs.size) {
     logs = new Set(newLogs);
     setSelectedLog(-1);
@@ -292,7 +292,7 @@ export function clearWarnings(): void {
 
 export function clearErrors(): void {
   const newLogs = Array.from(logs).filter(
-    log => log.level !== 'error' && log.level !== 'fatal',
+    (log) => log.level !== 'error' && log.level !== 'fatal',
   );
   if (newLogs.length !== logs.size) {
     logs = new Set(newLogs);
@@ -354,7 +354,7 @@ export function addIgnorePatterns(
     // Without this, if you ignore a pattern after the a log is created,
     // then we would keep showing the log.
     logs = new Set(
-      Array.from(logs).filter(log => !isMessageIgnored(log.message.content)),
+      Array.from(logs).filter((log) => !isMessageIgnored(log.message.content)),
     );
   }
   handleUpdate();
@@ -439,7 +439,7 @@ export function withSubscription(
     }
 
     componentDidMount(): void {
-      this._subscription = observe(data => {
+      this._subscription = observe((data) => {
         this.setState(data);
       });
     }

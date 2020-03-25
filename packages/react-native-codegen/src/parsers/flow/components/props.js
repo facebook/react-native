@@ -54,7 +54,7 @@ function getTypeAnnotationForArray(name, typeAnnotation, defaultValue, types) {
           objectType.typeParameters.params[0].properties,
           types,
         )
-          .map(prop => buildPropSchema(prop, types))
+          .map((prop) => buildPropSchema(prop, types))
           .filter(Boolean),
       };
     }
@@ -75,7 +75,7 @@ function getTypeAnnotationForArray(name, typeAnnotation, defaultValue, types) {
             nestedObjectType.typeParameters.params[0].properties,
             types,
           )
-            .map(prop => buildPropSchema(prop, types))
+            .map((prop) => buildPropSchema(prop, types))
             .filter(Boolean),
         },
       };
@@ -150,7 +150,7 @@ function getTypeAnnotationForArray(name, typeAnnotation, defaultValue, types) {
         return {
           type: 'StringEnumTypeAnnotation',
           default: (defaultValue: string),
-          options: typeAnnotation.types.map(option => ({name: option.value})),
+          options: typeAnnotation.types.map((option) => ({name: option.value})),
         };
       } else if (unionType === 'NumberLiteralTypeAnnotation') {
         throw new Error(
@@ -201,7 +201,7 @@ function getTypeAnnotation(
         typeAnnotation.typeParameters.params[0].properties,
         types,
       )
-        .map(prop => buildPropSchema(prop, types))
+        .map((prop) => buildPropSchema(prop, types))
         .filter(Boolean),
     };
   }
@@ -298,13 +298,15 @@ function getTypeAnnotation(
         return {
           type: 'StringEnumTypeAnnotation',
           default: (defaultValue: string),
-          options: typeAnnotation.types.map(option => ({name: option.value})),
+          options: typeAnnotation.types.map((option) => ({name: option.value})),
         };
       } else if (unionType === 'NumberLiteralTypeAnnotation') {
         return {
           type: 'Int32EnumTypeAnnotation',
           default: (defaultValue: number),
-          options: typeAnnotation.types.map(option => ({value: option.value})),
+          options: typeAnnotation.types.map((option) => ({
+            value: option.value,
+          })),
         };
       } else {
         throw new Error(
@@ -345,8 +347,8 @@ function buildPropSchema(property, types: TypeMap): ?PropTypeShape {
   }
   if (
     value.type === 'NullableTypeAnnotation' &&
-    (typeAnnotation.type === 'GenericTypeAnnotation' &&
-      typeAnnotation.id.name === 'WithDefault')
+    typeAnnotation.type === 'GenericTypeAnnotation' &&
+    typeAnnotation.id.name === 'WithDefault'
   ) {
     throw new Error(
       'WithDefault<> is optional and does not need to be marked as optional. Please remove the ? annotation in front of it.',
@@ -418,7 +420,7 @@ function verifyPropNotAlreadyDefined(
   needleProp: PropAST,
 ) {
   const propName = needleProp.key.name;
-  const foundProp = props.some(prop => prop.key.name === propName);
+  const foundProp = props.some((prop) => prop.key.name === propName);
   if (foundProp) {
     throw new Error(`A prop was already defined with the name ${propName}`);
   }
@@ -429,7 +431,7 @@ function flattenProperties(
   types: TypeMap,
 ) {
   return typeDefinition
-    .map(property => {
+    .map((property) => {
       if (property.type === 'ObjectTypeProperty') {
         return property;
       } else if (property.type === 'ObjectTypeSpreadProperty') {
@@ -441,7 +443,7 @@ function flattenProperties(
     })
     .reduce((acc, item) => {
       if (Array.isArray(item)) {
-        item.forEach(prop => {
+        item.forEach((prop) => {
           verifyPropNotAlreadyDefined(acc, prop);
         });
         return acc.concat(item);
@@ -459,7 +461,7 @@ function getProps(
   types: TypeMap,
 ): $ReadOnlyArray<PropTypeShape> {
   return flattenProperties(typeDefinition, types)
-    .map(property => buildPropSchema(property, types))
+    .map((property) => buildPropSchema(property, types))
     .filter(Boolean);
 }
 

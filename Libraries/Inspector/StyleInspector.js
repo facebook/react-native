@@ -24,7 +24,7 @@ class StyleInspector extends React.Component<$FlowFixMeProps> {
     return (
       <View style={styles.container}>
         <View>
-          {names.map(name => (
+          {names.map((name) => (
             <Text key={name} style={styles.attr}>
               {name}:
             </Text>
@@ -32,7 +32,7 @@ class StyleInspector extends React.Component<$FlowFixMeProps> {
         </View>
 
         <View>
-          {names.map(name => {
+          {names.map((name) => {
             const value = this.props.style[name];
             return (
               <Text key={name} style={styles.value}>

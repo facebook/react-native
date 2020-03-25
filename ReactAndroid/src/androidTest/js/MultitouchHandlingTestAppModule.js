@@ -14,7 +14,7 @@ const {NativeModules, StyleSheet, View} = require('react-native');
 
 const {Recording} = NativeModules;
 
-const extractSingleTouch = nativeEvent => {
+const extractSingleTouch = (nativeEvent) => {
   const touches = nativeEvent.touches;
   const changedTouches = nativeEvent.changedTouches;
   const hasTouches = touches && touches.length > 0;
@@ -28,16 +28,16 @@ const extractSingleTouch = nativeEvent => {
 };
 
 class TouchTestApp extends React.Component {
-  handleStartShouldSetResponder = e => {
+  handleStartShouldSetResponder = (e) => {
     return true;
   };
 
-  handleOnResponderMove = e => {
+  handleOnResponderMove = (e) => {
     e = extractSingleTouch(e.nativeEvent);
     Recording.record('move;' + e.touches.length);
   };
 
-  handleResponderStart = e => {
+  handleResponderStart = (e) => {
     e = extractSingleTouch(e.nativeEvent);
     if (e.touches) {
       Recording.record('start;' + e.touches.length);
@@ -46,7 +46,7 @@ class TouchTestApp extends React.Component {
     }
   };
 
-  handleResponderEnd = e => {
+  handleResponderEnd = (e) => {
     e = extractSingleTouch(e.nativeEvent);
     if (e.touches) {
       Recording.record('end;' + e.touches.length);

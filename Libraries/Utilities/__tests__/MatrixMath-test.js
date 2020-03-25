@@ -17,7 +17,7 @@ function degreesToRadians(degrees) {
 }
 
 function convertZeroes(degrees) {
-  return degrees.map(value => (value === -0 ? 0 : value));
+  return degrees.map((value) => (value === -0 ? 0 : value));
 }
 
 describe('MatrixMath', () => {
@@ -43,7 +43,7 @@ describe('MatrixMath', () => {
       ]).rotationDegrees,
     ).toEqual([0, 0, 0]);
 
-    [30, 45, 60, 75, 90, 100, 115, 120, 133, 167].forEach(angle => {
+    [30, 45, 60, 75, 90, 100, 115, 120, 133, 167].forEach((angle) => {
       let mat = MatrixMath.createRotateZ(degreesToRadians(angle));
       expect(
         convertZeroes(MatrixMath.decomposeMatrix(mat).rotationDegrees),
@@ -121,7 +121,7 @@ describe('MatrixMath', () => {
 
   it('decomposes a 4x4 matrix to produce accurate Y-axis angles', () => {
     let mat;
-    [30, 45, 60, 75, 90, 100, 110, 120, 133, 167].forEach(angle => {
+    [30, 45, 60, 75, 90, 100, 110, 120, 133, 167].forEach((angle) => {
       mat = MatrixMath.createIdentityMatrix();
       MatrixMath.reuseRotateYCommand(mat, degreesToRadians(angle));
       expect(
@@ -160,7 +160,7 @@ describe('MatrixMath', () => {
 
   it('decomposes a 4x4 matrix to produce accurate X-axis angles', () => {
     let mat;
-    [30, 45, 60, 75, 90, 100, 110, 120, 133, 167].forEach(angle => {
+    [30, 45, 60, 75, 90, 100, 110, 120, 133, 167].forEach((angle) => {
       mat = MatrixMath.createIdentityMatrix();
       MatrixMath.reuseRotateXCommand(mat, degreesToRadians(angle));
       expect(

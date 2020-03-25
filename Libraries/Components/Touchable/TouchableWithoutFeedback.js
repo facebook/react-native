@@ -138,17 +138,17 @@ class TouchableWithoutFeedback extends React.Component<Props, State> {
     if (Platform.isTV) {
       this._tvTouchable = new TVTouchable(this, {
         getDisabled: () => this.props.disabled === true,
-        onBlur: event => {
+        onBlur: (event) => {
           if (this.props.onBlur != null) {
             this.props.onBlur(event);
           }
         },
-        onFocus: event => {
+        onFocus: (event) => {
           if (this.props.onFocus != null) {
             this.props.onFocus(event);
           }
         },
-        onPress: event => {
+        onPress: (event) => {
           if (this.props.onPress != null) {
             this.props.onPress(event);
           }

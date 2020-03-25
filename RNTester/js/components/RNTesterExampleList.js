@@ -58,7 +58,7 @@ class RowComponent extends React.PureComponent<{
     const {item} = this.props;
     return (
       <RNTesterThemeContext.Consumer>
-        {theme => {
+        {(theme) => {
           return (
             <TouchableHighlight
               onShowUnderlay={this.props.onShowUnderlay}
@@ -90,7 +90,7 @@ class RowComponent extends React.PureComponent<{
 
 const renderSectionHeader = ({section}) => (
   <RNTesterThemeContext.Consumer>
-    {theme => {
+    {(theme) => {
       return (
         <Text
           style={[
@@ -128,7 +128,7 @@ class RNTesterExampleList extends React.Component<Props, $FlowFixMeState> {
 
     return (
       <RNTesterThemeContext.Consumer>
-        {theme => {
+        {(theme) => {
           return (
             <View
               style={[
@@ -203,7 +203,7 @@ class RNTesterExampleList extends React.Component<Props, $FlowFixMeState> {
 
 const ItemSeparator = ({highlighted}) => (
   <RNTesterThemeContext.Consumer>
-    {theme => {
+    {(theme) => {
       return (
         <View
           style={

@@ -408,7 +408,7 @@ class XMLHttpRequest extends (EventTarget(...XHR_EVENTS): any) {
   }
 
   _clearSubscriptions(): void {
-    (this._subscriptions || []).forEach(sub => {
+    (this._subscriptions || []).forEach((sub) => {
       if (sub) {
         sub.remove();
       }
@@ -423,7 +423,7 @@ class XMLHttpRequest extends (EventTarget(...XHR_EVENTS): any) {
     }
     const headers = this.responseHeaders || {};
     return Object.keys(headers)
-      .map(headerName => {
+      .map((headerName) => {
         return headerName + ': ' + headers[headerName];
       })
       .join('\r\n');
@@ -479,32 +479,32 @@ class XMLHttpRequest extends (EventTarget(...XHR_EVENTS): any) {
       this._incrementalEvents || !!this.onreadystatechange || !!this.onprogress;
 
     this._subscriptions.push(
-      RCTNetworking.addListener('didSendNetworkData', args =>
+      RCTNetworking.addListener('didSendNetworkData', (args) =>
         this.__didUploadProgress(...args),
       ),
     );
     this._subscriptions.push(
-      RCTNetworking.addListener('didReceiveNetworkResponse', args =>
+      RCTNetworking.addListener('didReceiveNetworkResponse', (args) =>
         this.__didReceiveResponse(...args),
       ),
     );
     this._subscriptions.push(
-      RCTNetworking.addListener('didReceiveNetworkData', args =>
+      RCTNetworking.addListener('didReceiveNetworkData', (args) =>
         this.__didReceiveData(...args),
       ),
     );
     this._subscriptions.push(
-      RCTNetworking.addListener('didReceiveNetworkIncrementalData', args =>
+      RCTNetworking.addListener('didReceiveNetworkIncrementalData', (args) =>
         this.__didReceiveIncrementalData(...args),
       ),
     );
     this._subscriptions.push(
-      RCTNetworking.addListener('didReceiveNetworkDataProgress', args =>
+      RCTNetworking.addListener('didReceiveNetworkDataProgress', (args) =>
         this.__didReceiveDataProgress(...args),
       ),
     );
     this._subscriptions.push(
-      RCTNetworking.addListener('didCompleteNetworkResponse', args =>
+      RCTNetworking.addListener('didCompleteNetworkResponse', (args) =>
         this.__didCompleteResponse(...args),
       ),
     );

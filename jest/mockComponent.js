@@ -30,7 +30,7 @@ module.exports = (moduleName, instanceMethods) => {
       const props = Object.assign({}, RealComponent.defaultProps);
 
       if (this.props) {
-        Object.keys(this.props).forEach(prop => {
+        Object.keys(this.props).forEach((prop) => {
           // We can't just assign props on top of defaultProps
           // because React treats undefined as special and different from null.
           // If a prop is specified but set to undefined it is ignored and the
@@ -50,7 +50,7 @@ module.exports = (moduleName, instanceMethods) => {
     }
   };
 
-  Object.keys(RealComponent).forEach(classStatic => {
+  Object.keys(RealComponent).forEach((classStatic) => {
     Component[classStatic] = RealComponent[classStatic];
   });
 

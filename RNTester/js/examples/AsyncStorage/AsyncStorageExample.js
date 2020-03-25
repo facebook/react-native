@@ -46,7 +46,7 @@ class BasicStorageExample extends React.Component<{...}, $FlowFixMeState> {
     return (
       <View>
         <PickerIOS selectedValue={color} onValueChange={this._onValueChange}>
-          {COLORS.map(value => (
+          {COLORS.map((value) => (
             <PickerItemIOS key={value} value={value} label={value} />
           ))}
         </PickerIOS>
@@ -60,14 +60,14 @@ class BasicStorageExample extends React.Component<{...}, $FlowFixMeState> {
         </Text>
         <Text />
         <Text>Messages:</Text>
-        {this.state.messages.map(m => (
+        {this.state.messages.map((m) => (
           <Text key={m}>{m}</Text>
         ))}
       </View>
     );
   }
 
-  _onValueChange = async selectedValue => {
+  _onValueChange = async (selectedValue) => {
     this.setState({selectedValue});
     try {
       await AsyncStorage.setItem(STORAGE_KEY, selectedValue);
@@ -86,7 +86,7 @@ class BasicStorageExample extends React.Component<{...}, $FlowFixMeState> {
     }
   };
 
-  _appendMessage = message => {
+  _appendMessage = (message) => {
     this.setState({messages: this.state.messages.concat(message)});
   };
 }

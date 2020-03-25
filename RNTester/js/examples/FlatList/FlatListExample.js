@@ -76,11 +76,11 @@ class FlatListExample extends React.PureComponent<Props, State> {
     fadingEdgeLength: 0,
   };
 
-  _onChangeFilterText = filterText => {
+  _onChangeFilterText = (filterText) => {
     this.setState({filterText});
   };
 
-  _onChangeScrollToIndex = text => {
+  _onChangeScrollToIndex = (text) => {
     this._listRef
       .getNode()
       .scrollToIndex({viewPosition: 0.5, index: Number(text)});
@@ -102,7 +102,7 @@ class FlatListExample extends React.PureComponent<Props, State> {
 
   render(): React.Node {
     const filterRegex = new RegExp(String(this.state.filterText), 'i');
-    const filter = item =>
+    const filter = (item) =>
       filterRegex.test(item.text) || filterRegex.test(item.title);
     const filteredData = this.state.data.filter(filter);
     const flatListItemRendererProps = this._renderItemComponent();
@@ -139,7 +139,7 @@ class FlatListExample extends React.PureComponent<Props, State> {
                     placeholder="Fading edge length"
                     underlineColorAndroid="black"
                     keyboardType={'numeric'}
-                    onChange={event =>
+                    onChange={(event) =>
                       this.setState({
                         fadingEdgeLength: Number(event.nativeEvent.text),
                       })
@@ -188,7 +188,7 @@ class FlatListExample extends React.PureComponent<Props, State> {
       </RNTesterPage>
     );
   }
-  _captureRef = ref => {
+  _captureRef = (ref) => {
     this._listRef = ref;
   };
   _getItemLayout = (data: any, index: number) => {
@@ -198,7 +198,7 @@ class FlatListExample extends React.PureComponent<Props, State> {
     if (this.state.data.length >= 1000) {
       return;
     }
-    this.setState(state => ({
+    this.setState((state) => ({
       data: state.data.concat(genItemData(100, state.data.length)),
     }));
   };
@@ -244,7 +244,7 @@ class FlatListExample extends React.PureComponent<Props, State> {
     if (this.state.logViewable) {
       infoLog(
         'onViewableItemsChanged: ',
-        info.changed.map(v => ({...v, item: '...'})),
+        info.changed.map((v) => ({...v, item: '...'})),
       );
     }
   };
@@ -280,7 +280,7 @@ exports.simpleExampleContainer = true;
 exports.examples = [
   {
     title: 'Simple list of items',
-    render: function(): React.Element<typeof FlatListExample> {
+    render: function (): React.Element<typeof FlatListExample> {
       return <FlatListExample />;
     },
   },

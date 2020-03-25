@@ -26,7 +26,7 @@ class WithDatePickerData extends React.Component<Props, State> {
     date: new Date(),
   };
 
-  onDateChange = date => {
+  onDateChange = (date) => {
     this.setState({date: date});
   };
 
@@ -97,7 +97,7 @@ exports.description = 'Select dates and times using the native UIDatePicker.';
 exports.examples = [
   {
     title: 'Date and time picker',
-    render: function(): React.Element<any> {
+    render: function (): React.Element<any> {
       return (
         <WithDatePickerData>
           {(state, onDateChange) => (
@@ -114,7 +114,7 @@ exports.examples = [
   },
   {
     title: 'Date only picker',
-    render: function(): React.Element<any> {
+    render: function (): React.Element<any> {
       return (
         <WithDatePickerData>
           {(state, onDateChange) => (
@@ -131,7 +131,7 @@ exports.examples = [
   },
   {
     title: 'Time only picker, 20-minute interval',
-    render: function(): React.Element<any> {
+    render: function (): React.Element<any> {
       return (
         <WithDatePickerData>
           {(state, onDateChange) => (

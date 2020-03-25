@@ -164,7 +164,8 @@ class Easing {
    */
   static elastic(bounciness: number = 1): (t: number) => number {
     const p = bounciness * Math.PI;
-    return t => 1 - Math.pow(Math.cos((t * Math.PI) / 2), 3) * Math.cos(t * p);
+    return (t) =>
+      1 - Math.pow(Math.cos((t * Math.PI) / 2), 3) * Math.cos(t * p);
   }
 
   /**
@@ -176,7 +177,7 @@ class Easing {
    * - http://tiny.cc/back_default (s = 1.70158, default)
    */
   static back(s: number = 1.70158): (t: number) => number {
-    return t => t * t * ((s + 1) * t - s);
+    return (t) => t * t * ((s + 1) * t - s);
   }
 
   /**
@@ -231,7 +232,7 @@ class Easing {
    * Runs an easing function backwards.
    */
   static out(easing: (t: number) => number): (t: number) => number {
-    return t => 1 - easing(1 - t);
+    return (t) => 1 - easing(1 - t);
   }
 
   /**
@@ -240,7 +241,7 @@ class Easing {
    * duration.
    */
   static inOut(easing: (t: number) => number): (t: number) => number {
-    return t => {
+    return (t) => {
       if (t < 0.5) {
         return easing(t * 2) / 2;
       }

@@ -66,7 +66,7 @@ function expectAsyncNoError(place, err) {
 }
 
 function testSetAndGet() {
-  AsyncStorage.setItem(KEY_1, VAL_1, err1 => {
+  AsyncStorage.setItem(KEY_1, VAL_1, (err1) => {
     expectAsyncNoError('testSetAndGet/setItem', err1);
     AsyncStorage.getItem(KEY_1, (err2, result) => {
       expectAsyncNoError('testSetAndGet/getItem', err2);
@@ -109,7 +109,7 @@ function testRemoveItem() {
           'Missing KEY_1 or KEY_2 in ' + '(' + result + ')',
         );
         updateMessage('testRemoveItem - add two items');
-        AsyncStorage.removeItem(KEY_1, err2 => {
+        AsyncStorage.removeItem(KEY_1, (err2) => {
           expectAsyncNoError('testRemoveItem/removeItem', err2);
           updateMessage('delete successful ');
           AsyncStorage.getItem(KEY_1, (err3, result2) => {
@@ -137,9 +137,9 @@ function testRemoveItem() {
 }
 
 function testMerge() {
-  AsyncStorage.setItem(KEY_MERGE, JSON.stringify(VAL_MERGE_1), err1 => {
+  AsyncStorage.setItem(KEY_MERGE, JSON.stringify(VAL_MERGE_1), (err1) => {
     expectAsyncNoError('testMerge/setItem', err1);
-    AsyncStorage.mergeItem(KEY_MERGE, JSON.stringify(VAL_MERGE_2), err2 => {
+    AsyncStorage.mergeItem(KEY_MERGE, JSON.stringify(VAL_MERGE_2), (err2) => {
       expectAsyncNoError('testMerge/mergeItem', err2);
       AsyncStorage.getItem(KEY_MERGE, (err3, result) => {
         expectAsyncNoError('testMerge/setItem', err3);
@@ -152,11 +152,14 @@ function testMerge() {
 }
 
 function testOptimizedMultiGet() {
-  let batch = [[KEY_1, VAL_1], [KEY_2, VAL_2]];
+  let batch = [
+    [KEY_1, VAL_1],
+    [KEY_2, VAL_2],
+  ];
   let keys = batch.map(([key, value]) => key);
-  AsyncStorage.multiSet(batch, err1 => {
+  AsyncStorage.multiSet(batch, (err1) => {
     // yes, twice on purpose
-    [1, 2].forEach(i => {
+    [1, 2].forEach((i) => {
       expectAsyncNoError(`${i} testOptimizedMultiGet/multiSet`, err1);
       AsyncStorage.multiGet(keys, (err2, result) => {
         expectAsyncNoError(`${i} testOptimizedMultiGet/multiGet`, err2);
@@ -182,7 +185,7 @@ class AsyncStorageTest extends React.Component<{...}, $FlowFixMeState> {
       this.setState({done: true}, () => {
         TestModule.markTestCompleted();
       });
-    updateMessage = msg => {
+    updateMessage = (msg) => {
       this.setState({messages: this.state.messages.concat('\n' + msg)});
       DEBUG && console.log(msg);
     };

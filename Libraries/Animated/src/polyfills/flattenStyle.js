@@ -8,6 +8,6 @@
  */
 
 'use strict';
-module.exports = function(style) {
+module.exports = function (style) {
   return style;
 };

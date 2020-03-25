@@ -20,7 +20,7 @@ const {
 const {Recording} = NativeModules;
 
 class TouchBubblingTestApp extends React.Component {
-  handlePress = record => {
+  handlePress = (record) => {
     Recording.record(record);
   };
 

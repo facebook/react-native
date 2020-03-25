@@ -38,7 +38,7 @@ const protocolTemplate = `
 @end
 `;
 
-const callbackArgs = prop =>
+const callbackArgs = (prop) =>
   prop.typeAnnotation.returnTypeAnnotation.type ===
   'GenericPromiseTypeAnnotation'
     ? `${
@@ -159,7 +159,7 @@ module.exports = {
     moduleSpecName: string,
   ): FilesOutput {
     const nativeModules = Object.keys(schema.modules)
-      .map(moduleName => {
+      .map((moduleName) => {
         const modules = schema.modules[moduleName].nativeModules;
         if (modules == null) {
           return null;
@@ -171,15 +171,15 @@ module.exports = {
       .reduce((acc, components) => Object.assign(acc, components), {});
 
     const modules = Object.keys(nativeModules)
-      .map(name => moduleTemplate.replace(/::_MODULE_NAME_::/g, name))
+      .map((name) => moduleTemplate.replace(/::_MODULE_NAME_::/g, name))
       .join('\n');
 
     const protocols = Object.keys(nativeModules)
-      .map(name => {
+      .map((name) => {
         const objectForGeneratingStructs: Array<ObjectForGeneratingStructs> = [];
         const {properties} = nativeModules[name];
         const implementations = properties
-          .map(prop => {
+          .map((prop) => {
             const nativeArgs = prop.typeAnnotation.params
               .map((param, i) => {
                 let paramObjCType;
@@ -201,9 +201,7 @@ module.exports = {
                 } else {
                   paramObjCType = translatePrimitiveJSTypeToObjCType(
                     param,
-                    `Unspopported type for param "${param.name}" in ${
-                      prop.name
-                    }. Found: ${param.typeAnnotation.type}`,
+                    `Unspopported type for param "${param.name}" in ${prop.name}. Found: ${param.typeAnnotation.type}`,
                   );
                 }
                 return `${i === 0 ? '' : param.name}:(${paramObjCType})${
@@ -232,9 +230,7 @@ module.exports = {
                 '::_RETURN_VALUE_::',
                 translatePrimitiveJSTypeToObjCTypeForReturn(
                   returnTypeAnnotation,
-                  `Unspopported return type for ${prop.name}. Found: ${
-                    prop.typeAnnotation.returnTypeAnnotation.type
-                  }`,
+                  `Unspopported return type for ${prop.name}. Found: ${prop.typeAnnotation.returnTypeAnnotation.type}`,
                 ),
               )
               .replace('::_ARGS_::', nativeArgs);

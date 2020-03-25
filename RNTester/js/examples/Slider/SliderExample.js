@@ -19,7 +19,7 @@ function SliderExample(props: React.ElementConfig<typeof Slider>) {
   return (
     <View>
       <Text style={styles.text}>{value.toFixed(3)}</Text>
-      <Slider {...props} onValueChange={newValue => setValue(newValue)} />
+      <Slider {...props} onValueChange={(newValue) => setValue(newValue)} />
     </View>
   );
 }
@@ -32,9 +32,9 @@ function SlidingCompleteExample(props: React.ElementConfig<typeof Slider>) {
     <View>
       <SliderExample
         {...props}
-        onSlidingComplete={value => {
+        onSlidingComplete={(value) => {
           setSlideCompletionValue(value);
-          setSlideCompletionCount(count => count + 1);
+          setSlideCompletionCount((count) => count + 1);
         }}
       />
       <Text>

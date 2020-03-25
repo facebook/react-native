@@ -47,8 +47,8 @@ function configureNext(
   if (!Platform.isTesting) {
     UIManager.configureNextLayoutAnimation(
       config,
-      onAnimationDidEnd ?? function() {},
-      function() {} /* unused onError */,
+      onAnimationDidEnd ?? function () {},
+      function () {} /* unused onError */,
     );
   }
 }

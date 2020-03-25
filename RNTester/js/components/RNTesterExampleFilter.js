@@ -43,10 +43,10 @@ class RNTesterExampleFilter extends React.Component<Props, State> {
       );
     }
 
-    const filter = example =>
+    const filter = (example) =>
       this.props.disableSearch || this.props.filter({example, filterRegex});
 
-    const filteredSections = this.props.sections.map(section => ({
+    const filteredSections = this.props.sections.map((section) => ({
       ...section,
       data: section.data.filter(filter),
     }));
@@ -65,7 +65,7 @@ class RNTesterExampleFilter extends React.Component<Props, State> {
     }
     return (
       <RNTesterThemeContext.Consumer>
-        {theme => {
+        {(theme) => {
           return (
             <View
               style={[
@@ -76,7 +76,7 @@ class RNTesterExampleFilter extends React.Component<Props, State> {
                 autoCapitalize="none"
                 autoCorrect={false}
                 clearButtonMode="always"
-                onChangeText={text => {
+                onChangeText={(text) => {
                   this.setState(() => ({filter: text}));
                 }}
                 placeholder="Search..."

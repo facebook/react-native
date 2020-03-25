@@ -57,7 +57,7 @@ function _flush(rootNode: AnimatedValue): void {
   }
   findAnimatedStyles(rootNode);
   /* $FlowFixMe */
-  animatedStyles.forEach(animatedStyle => animatedStyle.update());
+  animatedStyles.forEach((animatedStyle) => animatedStyle.update());
 }
 
 /**
@@ -208,12 +208,12 @@ class AnimatedValue extends AnimatedWithChildren {
     this._animation = animation;
     animation.start(
       this._value,
-      value => {
+      (value) => {
         // Natively driven animations will never call into that callback, therefore we can always
         // pass flush = true to allow the updated value to propagate to native with setNativeProps
         this._updateValue(value, true /* flush */);
       },
-      result => {
+      (result) => {
         this._animation = null;
         if (handle !== null) {
           InteractionManager.clearInteractionHandle(handle);

@@ -21,7 +21,7 @@ export function createStringifySafeWithLimits(limits: {|
   maxStringLimit?: number,
   maxArrayLimit?: number,
   maxObjectKeysLimit?: number,
-|}): mixed => string {
+|}): (mixed) => string {
   const {
     maxDepth = Number.POSITIVE_INFINITY,
     maxStringLimit = Number.POSITIVE_INFINITY,
@@ -111,7 +111,7 @@ export function createStringifySafeWithLimits(limits: {|
   };
 }
 
-const stringifySafe: mixed => string = createStringifySafeWithLimits({
+const stringifySafe: (mixed) => string = createStringifySafeWithLimits({
   maxDepth: 10,
   maxStringLimit: 100,
   maxArrayLimit: 50,

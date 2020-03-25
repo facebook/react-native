@@ -185,7 +185,7 @@ function generateProtocol(
   componentName: string,
 ): string {
   const commands = component.commands
-    .map(command => {
+    .map((command) => {
       const params = command.typeAnnotation.params;
       const paramString =
         params.length === 0
@@ -270,7 +270,7 @@ function generateCommandHandler(
   }
 
   const ifCases = component.commands
-    .map(command => generateCommandIfCase(command, componentName))
+    .map((command) => generateCommandIfCase(command, componentName))
     .join('\n\n');
 
   return commandHandlerTemplate
@@ -287,7 +287,7 @@ module.exports = {
     const fileName = 'RCTComponentViewHelpers.h';
 
     const componentContent = Object.keys(schema.modules)
-      .map(moduleName => {
+      .map((moduleName) => {
         const components = schema.modules[moduleName].components;
         // No components in this module
         if (components == null) {
@@ -295,11 +295,11 @@ module.exports = {
         }
 
         return Object.keys(components)
-          .filter(componentName => {
+          .filter((componentName) => {
             const component = components[componentName];
             return component.excludedPlatform !== 'iOS';
           })
-          .map(componentName => {
+          .map((componentName) => {
             return [
               generateProtocol(components[componentName], componentName),
               generateCommandHandler(components[componentName], componentName),

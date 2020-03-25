@@ -50,7 +50,7 @@ class ImageBackground extends React.Component<$FlowFixMeProps> {
 
   _viewRef: ?React.ElementRef<typeof View> = null;
 
-  _captureRef = ref => {
+  _captureRef = (ref) => {
     this._viewRef = ref;
   };
 

@@ -41,7 +41,7 @@ const {
 
 function byClickable(): Predicate {
   return withMessage(
-    node =>
+    (node) =>
       // note: <Text /> lazy-mounts press handlers after the first press,
       //       so this is a workaround for targeting text nodes.
       (node.type === Text &&
@@ -68,7 +68,7 @@ function byClickable(): Predicate {
 
 function byTestID(testID: string): Predicate {
   return withMessage(
-    node => node.props && node.props.testID === testID,
+    (node) => node.props && node.props.testID === testID,
     `testID prop equals ${testID}`,
   );
 }
@@ -78,7 +78,7 @@ function byTextMatching(regex: RegExp): Predicate {
     /* $FlowFixMe(>=0.120.0) This comment suppresses an error found when Flow
      * v0.120 was deployed. To see the error, delete this comment and run Flow.
      */
-    node => node.props && regex.exec(node.props.children),
+    (node) => node.props && regex.exec(node.props.children),
     `text content matches ${regex.toString()}`,
   );
 }
@@ -170,7 +170,7 @@ function maximumDepthOfJSON(node: ?ReactTestRendererJSON): number {
     return 1;
   } else {
     let maxDepth = 0;
-    node.children.forEach(child => {
+    node.children.forEach((child) => {
       maxDepth = Math.max(maximumDepthOfJSON(child) + 1, maxDepth);
     });
     return maxDepth;
@@ -183,7 +183,7 @@ function renderAndEnforceStrictMode(element: React.Node): any {
 }
 
 function renderWithStrictMode(element: React.Node): ReactTestRendererType {
-  const WorkAroundBugWithStrictModeInTestRenderer = prps => prps.children;
+  const WorkAroundBugWithStrictModeInTestRenderer = (prps) => prps.children;
   const StrictMode = (React: $FlowFixMe).StrictMode;
   return ReactTestRenderer.create(
     <WorkAroundBugWithStrictModeInTestRenderer>

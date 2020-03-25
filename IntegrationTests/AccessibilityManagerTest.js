@@ -39,7 +39,7 @@ class AccessibilityManagerTest extends React.Component<{...}> {
       accessibilityExtraExtraLarge: 11.0,
       accessibilityExtraExtraExtraLarge: 12.0,
     });
-    RCTDeviceEventEmitter.addListener('didUpdateDimensions', update => {
+    RCTDeviceEventEmitter.addListener('didUpdateDimensions', (update) => {
       TestModule.markTestPassed(update.window.fontScale === 4.0);
     });
   }

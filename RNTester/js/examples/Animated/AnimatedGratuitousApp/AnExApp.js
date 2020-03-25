@@ -49,7 +49,7 @@ class Circle extends React.Component<any, any> {
 
   _onLongPress(): void {
     const config = {tension: 40, friction: 3};
-    this.state.pan.addListener(value => {
+    this.state.pan.addListener((value) => {
       // Async listener for state changes  (step1: uncomment)
       this.props.onMove && this.props.onMove(value);
     });
@@ -247,9 +247,9 @@ class AnExApp extends React.Component<any, any> {
       } else {
         let onLayout = null;
         if (!this.state.restLayouts[idx]) {
-          onLayout = function(index, e) {
+          onLayout = function (index, e) {
             const layout = e.nativeEvent.layout;
-            this.setState(state => {
+            this.setState((state) => {
               state.restLayouts[index] = layout;
               return state;
             });
@@ -295,7 +295,7 @@ class AnExApp extends React.Component<any, any> {
       <View style={styles.container}>
         <View
           style={styles.grid}
-          onLayout={e => this.setState({layout: e.nativeEvent.layout})}>
+          onLayout={(e) => this.setState({layout: e.nativeEvent.layout})}>
           {circles}
         </View>
       </View>

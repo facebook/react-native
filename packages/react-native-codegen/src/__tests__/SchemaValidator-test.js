@@ -68,7 +68,7 @@ describe('SchemaValidator', () => {
   describe('fixture', () => {
     Object.keys(fixtures)
       .sort()
-      .forEach(fixtureName => {
+      .forEach((fixtureName) => {
         const fixture = fixtures[fixtureName];
 
         it(`${fixtureName} has no errors`, () => {

@@ -100,7 +100,7 @@ exports.description = 'Component that is animated when ScrollView is offset.';
 exports.examples = [
   {
     title: 'Animated by scroll view',
-    render: function(): React.Element<typeof ScrollViewAnimatedExample> {
+    render: function (): React.Element<typeof ScrollViewAnimatedExample> {
       return <ScrollViewAnimatedExample />;
     },
   },

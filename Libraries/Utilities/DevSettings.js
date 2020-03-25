@@ -32,7 +32,7 @@ class DevSettings extends NativeEventEmitter {
     }
 
     this._menuItems.set(title, handler);
-    this.addListener('didPressMenuItem', event => {
+    this.addListener('didPressMenuItem', (event) => {
       if (event.title === title) {
         handler();
       }

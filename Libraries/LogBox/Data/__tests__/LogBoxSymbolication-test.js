@@ -22,8 +22,8 @@ const symbolicateStackTrace: JestMockFn<
   Promise<Array<StackFrame>>,
 > = (require('../../../Core/Devtools/symbolicateStackTrace'): any);
 
-const createStack = methodNames =>
-  methodNames.map(methodName => ({
+const createStack = (methodNames) =>
+  methodNames.map((methodName) => ({
     column: null,
     file: 'file://path/to/file.js',
     lineNumber: 1,
@@ -33,7 +33,7 @@ const createStack = methodNames =>
 describe('LogBoxSymbolication', () => {
   beforeEach(() => {
     jest.resetModules();
-    symbolicateStackTrace.mockImplementation(async stack => stack);
+    symbolicateStackTrace.mockImplementation(async (stack) => stack);
   });
 
   it('symbolicates different stacks', () => {

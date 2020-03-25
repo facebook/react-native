@@ -57,7 +57,7 @@ const AccessibilityInfo = {
    *
    * See https://reactnative.dev/docs/accessibilityinfo.html#isBoldTextEnabled
    */
-  isBoldTextEnabled: function(): Promise<boolean> {
+  isBoldTextEnabled: function (): Promise<boolean> {
     return new Promise((resolve, reject) => {
       if (NativeAccessibilityManager) {
         NativeAccessibilityManager.getCurrentBoldTextState(resolve, reject);
@@ -75,7 +75,7 @@ const AccessibilityInfo = {
    *
    * See https://reactnative.dev/docs/accessibilityinfo.html#isGrayscaleEnabled
    */
-  isGrayscaleEnabled: function(): Promise<boolean> {
+  isGrayscaleEnabled: function (): Promise<boolean> {
     return new Promise((resolve, reject) => {
       if (NativeAccessibilityManager) {
         NativeAccessibilityManager.getCurrentGrayscaleState(resolve, reject);
@@ -93,7 +93,7 @@ const AccessibilityInfo = {
    *
    * See https://reactnative.dev/docs/accessibilityinfo.html#isInvertColorsEnabled
    */
-  isInvertColorsEnabled: function(): Promise<boolean> {
+  isInvertColorsEnabled: function (): Promise<boolean> {
     return new Promise((resolve, reject) => {
       if (NativeAccessibilityManager) {
         NativeAccessibilityManager.getCurrentInvertColorsState(resolve, reject);
@@ -111,7 +111,7 @@ const AccessibilityInfo = {
    *
    * See https://reactnative.dev/docs/accessibilityinfo.html#isReduceMotionEnabled
    */
-  isReduceMotionEnabled: function(): Promise<boolean> {
+  isReduceMotionEnabled: function (): Promise<boolean> {
     return new Promise((resolve, reject) => {
       if (NativeAccessibilityManager) {
         NativeAccessibilityManager.getCurrentReduceMotionState(resolve, reject);
@@ -129,7 +129,7 @@ const AccessibilityInfo = {
    *
    * See https://reactnative.dev/docs/accessibilityinfo.html#isReduceTransparencyEnabled
    */
-  isReduceTransparencyEnabled: function(): Promise<boolean> {
+  isReduceTransparencyEnabled: function (): Promise<boolean> {
     return new Promise((resolve, reject) => {
       if (NativeAccessibilityManager) {
         NativeAccessibilityManager.getCurrentReduceTransparencyState(
@@ -150,7 +150,7 @@ const AccessibilityInfo = {
    *
    * See https://reactnative.dev/docs/accessibilityinfo.html#isScreenReaderEnabled
    */
-  isScreenReaderEnabled: function(): Promise<boolean> {
+  isScreenReaderEnabled: function (): Promise<boolean> {
     return new Promise((resolve, reject) => {
       if (NativeAccessibilityManager) {
         NativeAccessibilityManager.getCurrentVoiceOverState(resolve, reject);
@@ -203,7 +203,7 @@ const AccessibilityInfo = {
    *
    * See https://reactnative.dev/docs/accessibilityinfo.html#addeventlistener
    */
-  addEventListener: function(
+  addEventListener: function (
     eventName: ChangeEventName,
     handler: Function,
   ): Object {
@@ -233,7 +233,7 @@ const AccessibilityInfo = {
    *
    * See https://reactnative.dev/docs/accessibilityinfo.html#setaccessibilityfocus
    */
-  setAccessibilityFocus: function(reactTag: number): void {
+  setAccessibilityFocus: function (reactTag: number): void {
     if (NativeAccessibilityManager) {
       NativeAccessibilityManager.setAccessibilityFocus(reactTag);
     }
@@ -244,7 +244,7 @@ const AccessibilityInfo = {
    *
    * See https://reactnative.dev/docs/accessibilityinfo.html#announceforaccessibility
    */
-  announceForAccessibility: function(announcement: string): void {
+  announceForAccessibility: function (announcement: string): void {
     if (NativeAccessibilityManager) {
       NativeAccessibilityManager.announceForAccessibility(announcement);
     }
@@ -255,7 +255,7 @@ const AccessibilityInfo = {
    *
    * See https://reactnative.dev/docs/accessibilityinfo.html#removeeventlistener
    */
-  removeEventListener: function(
+  removeEventListener: function (
     eventName: ChangeEventName,
     handler: Function,
   ): void {

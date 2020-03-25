@@ -22,7 +22,7 @@ describe('VirtualizedList', () => {
         data={[{key: 'i1'}, {key: 'i2'}, {key: 'i3'}]}
         renderItem={({item}) => <item value={item.key} />}
         getItem={(data, index) => data[index]}
-        getItemCount={data => data.length}
+        getItemCount={(data) => data.length}
       />,
     );
     expect(component).toMatchSnapshot();
@@ -37,7 +37,7 @@ describe('VirtualizedList', () => {
         data={[{key: 'i1'}, {key: 'i2'}, {key: 'i3'}]}
         ListItemComponent={ListItemComponent}
         getItem={(data, index) => data[index]}
-        getItemCount={data => data.length}
+        getItemCount={(data) => data.length}
       />,
     );
     expect(component).toMatchSnapshot();
@@ -56,7 +56,7 @@ describe('VirtualizedList', () => {
           <item value={item.key} testID={`${item.key}-renderItem`} />
         )}
         getItem={(data, index) => data[index]}
-        getItemCount={data => data.length}
+        getItemCount={(data) => data.length}
       />,
     );
 
@@ -70,7 +70,7 @@ describe('VirtualizedList', () => {
   it('throws if no renderItem or ListItemComponent', () => {
     // Silence the React error boundary warning; we expect an uncaught error.
     const consoleError = console.error;
-    jest.spyOn(console, 'error').mockImplementation(message => {
+    jest.spyOn(console, 'error').mockImplementation((message) => {
       if (message.startsWith('The above error occured in the ')) {
         return;
       }
@@ -82,7 +82,7 @@ describe('VirtualizedList', () => {
         <VirtualizedList
           data={[{key: 'i1'}, {key: 'i2'}, {key: 'i3'}]}
           getItem={(data, index) => data[index]}
-          getItemCount={data => data.length}
+          getItemCount={(data) => data.length}
         />,
       );
     expect(componentFactory).toThrow(
@@ -98,7 +98,7 @@ describe('VirtualizedList', () => {
         data={[]}
         renderItem={({item}) => <item value={item.key} />}
         getItem={(data, index) => data[index]}
-        getItemCount={data => data.length}
+        getItemCount={(data) => data.length}
       />,
     );
     expect(component).toMatchSnapshot();
@@ -110,7 +110,7 @@ describe('VirtualizedList', () => {
         data={undefined}
         renderItem={({item}) => <item value={item.key} />}
         getItem={(data, index) => data[index]}
-        getItemCount={data => 0}
+        getItemCount={(data) => 0}
       />,
     );
     expect(component).toMatchSnapshot();
@@ -124,7 +124,7 @@ describe('VirtualizedList', () => {
         ListFooterComponent={() => <footer />}
         ListHeaderComponent={() => <header />}
         getItem={(data, index) => data[index]}
-        getItemCount={data => data.length}
+        getItemCount={(data) => data.length}
         renderItem={({item}) => <item value={item.key} />}
       />,
     );
@@ -137,7 +137,7 @@ describe('VirtualizedList', () => {
         data={[{key: 'hello'}]}
         ListEmptyComponent={() => <empty />}
         getItem={(data, index) => data[index]}
-        getItemCount={data => data.length}
+        getItemCount={(data) => data.length}
         renderItem={({item}) => <item value={item.key} />}
       />,
     );
@@ -153,7 +153,7 @@ describe('VirtualizedList', () => {
         ListHeaderComponent={() => <header />}
         data={new Array(5).fill().map((_, ii) => ({id: String(ii)}))}
         getItem={(data, index) => data[index]}
-        getItemCount={data => data.length}
+        getItemCount={(data) => data.length}
         getItemLayout={({index}) => ({length: 50, offset: index * 50})}
         inverted={true}
         keyExtractor={(item, index) => item.id}
@@ -181,14 +181,14 @@ describe('VirtualizedList', () => {
     const infos = [];
     const component = ReactTestRenderer.create(
       <VirtualizedList
-        ItemSeparatorComponent={props => <separator {...props} />}
+        ItemSeparatorComponent={(props) => <separator {...props} />}
         data={[{key: 'i0'}, {key: 'i1'}, {key: 'i2'}]}
-        renderItem={info => {
+        renderItem={(info) => {
           infos.push(info);
           return <item title={info.item.key} />;
         }}
         getItem={(data, index) => data[index]}
-        getItemCount={data => data.length}
+        getItemCount={(data) => data.length}
       />,
     );
     expect(component).toMatchSnapshot();
@@ -203,22 +203,22 @@ describe('VirtualizedList', () => {
     const component = ReactTestRenderer.create(
       <VirtualizedList
         data={[{key: 'outer0'}, {key: 'outer1'}]}
-        renderItem={outerInfo => (
+        renderItem={(outerInfo) => (
           <VirtualizedList
             data={[
               {key: outerInfo.item.key + ':inner0'},
               {key: outerInfo.item.key + ':inner1'},
             ]}
             horizontal={outerInfo.item.key === 'outer1'}
-            renderItem={innerInfo => {
+            renderItem={(innerInfo) => {
               return <item title={innerInfo.item.key} />;
             }}
             getItem={(data, index) => data[index]}
-            getItemCount={data => data.length}
+            getItemCount={(data) => data.length}
           />
         )}
         getItem={(data, index) => data[index]}
-        getItemCount={data => data.length}
+        getItemCount={(data) => data.length}
       />,
     );
     expect(component).toMatchSnapshot();
@@ -239,7 +239,7 @@ describe('VirtualizedList', () => {
       data,
       renderItem: ({item}) => <item value={item.key} />,
       getItem: (items, index) => items[index],
-      getItemCount: items => items.length,
+      getItemCount: (items) => items.length,
       getItemLayout: (items, index) => ({
         length: ITEM_HEIGHT,
         offset: ITEM_HEIGHT * index,
@@ -291,7 +291,7 @@ describe('VirtualizedList', () => {
         data={[{key: 'i1'}, {key: 'i2'}, {key: 'i3'}]}
         renderItem={({item}) => <item value={item.key} />}
         getItem={(data, index) => data[index]}
-        getItemCount={data => data.length}
+        getItemCount={(data) => data.length}
         ref={listRef}
       />,
     );
@@ -309,22 +309,22 @@ describe('VirtualizedList', () => {
     ReactTestRenderer.create(
       <VirtualizedList
         data={[{key: 'outer0'}, {key: 'outer1'}]}
-        renderItem={outerInfo => (
+        renderItem={(outerInfo) => (
           <VirtualizedList
             data={[
               {key: outerInfo.item.key + ':inner0'},
               {key: outerInfo.item.key + ':inner1'},
             ]}
-            renderItem={innerInfo => {
+            renderItem={(innerInfo) => {
               return <item title={innerInfo.item.key} />;
             }}
             getItem={(data, index) => data[index]}
-            getItemCount={data => data.length}
+            getItemCount={(data) => data.length}
             ref={listRef}
           />
         )}
         getItem={(data, index) => data[index]}
-        getItemCount={data => data.length}
+        getItemCount={(data) => data.length}
       />,
     );
     const scrollRef = listRef.current.getScrollRef();
@@ -349,7 +349,7 @@ describe('VirtualizedList', () => {
       windowSize: 21,
       renderItem: ({item}) => <item value={item.key} />,
       getItem: (items, index) => items[index],
-      getItemCount: items => items.length,
+      getItemCount: (items) => items.length,
       getItemLayout: (items, index) => ({
         length: ITEM_HEIGHT,
         offset: ITEM_HEIGHT * index,
@@ -401,7 +401,7 @@ describe('VirtualizedList', () => {
     const commonProps = {
       data: [{key: 'cell0'}],
       getItem: (data, index) => data[index],
-      getItemCount: data => data.length,
+      getItemCount: (data) => data.length,
       renderItem: ({item}) => <item value={item.key} />,
     };
     try {

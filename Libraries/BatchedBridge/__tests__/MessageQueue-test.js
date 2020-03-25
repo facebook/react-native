@@ -30,8 +30,8 @@ const assertQueue = (flushedQueue, index, moduleID, methodID, params) => {
 //
 // [ ] Local modules that throw exceptions are gracefully caught. In that case
 // local callbacks stored by IDs are cleaned up.
-describe('MessageQueue', function() {
-  beforeEach(function() {
+describe('MessageQueue', function () {
+  beforeEach(function () {
     jest.resetModules();
     MessageQueue = require('../MessageQueue');
     MessageQueueTestModule = require('../__mocks__/MessageQueueTestModule');
@@ -81,13 +81,25 @@ describe('MessageQueue', function() {
   });
 
   it('should throw when calling the same callback twice', () => {
-    queue.enqueueNativeCall(0, 1, [], () => {}, () => {});
+    queue.enqueueNativeCall(
+      0,
+      1,
+      [],
+      () => {},
+      () => {},
+    );
     queue.__invokeCallback(1, []);
     expect(() => queue.__invokeCallback(1, [])).toThrow();
   });
 
   it('should throw when calling both success and failure callback', () => {
-    queue.enqueueNativeCall(0, 1, [], () => {}, () => {});
+    queue.enqueueNativeCall(
+      0,
+      1,
+      [],
+      () => {},
+      () => {},
+    );
     queue.__invokeCallback(1, []);
     expect(() => queue.__invokeCallback(0, [])).toThrow();
   });
@@ -128,7 +140,7 @@ describe('MessageQueue', function() {
 
   it('should check if the global error handler is not overridden by the DebuggerInternal object', () => {
     const dummyModule = {
-      dummy: function() {},
+      dummy: function () {},
     };
     const name = 'emptyModuleName';
     const factory = jest.fn(() => dummyModule);
@@ -140,7 +152,7 @@ describe('MessageQueue', function() {
 
   it('should check if the global error handler is overridden by the DebuggerInternal object', () => {
     const dummyModule = {
-      dummy: function() {},
+      dummy: function () {},
     };
     const name = 'emptyModuleName';
     const factory = jest.fn(() => dummyModule);

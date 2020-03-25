@@ -38,7 +38,7 @@ class AppStateSubscription extends React.Component<
     this.setState({memoryWarnings: this.state.memoryWarnings + 1});
   };
 
-  _handleAppStateChange = appState => {
+  _handleAppStateChange = (appState) => {
     const previousAppStates = this.state.previousAppStates.slice();
     previousAppStates.push(this.state.appState);
     this.setState({

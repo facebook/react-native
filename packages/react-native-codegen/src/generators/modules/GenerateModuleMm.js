@@ -105,7 +105,7 @@ function tranlsateMethodForImplementation(property): string {
       ? 2
       : 0);
   const translatedArguments = property.typeAnnotation.params
-    .map(param => param.name)
+    .map((param) => param.name)
     .concat(
       property.typeAnnotation.returnTypeAnnotation.type ===
         'GenericPromiseTypeAnnotation'
@@ -149,7 +149,7 @@ module.exports = {
     const nativeModules: {[name: string]: NativeModuleShape, ...} = Object.keys(
       schema.modules,
     )
-      .map(moduleName => {
+      .map((moduleName) => {
         const modules = schema.modules[moduleName].nativeModules;
         if (modules == null) {
           return null;
@@ -182,7 +182,7 @@ module.exports = {
               if (property.typeAnnotation.params) {
                 return moduleAcc.concat(
                   property.typeAnnotation.params
-                    .map(param => {
+                    .map((param) => {
                       if (
                         param.typeAnnotation.type === 'ObjectTypeAnnotation'
                       ) {
@@ -206,7 +206,7 @@ module.exports = {
               return moduleAcc;
             }, []),
           )
-            .map(object =>
+            .map((object) =>
               getterTemplate
                 .replace(/::_GETTER_NAME_::/g, object.name)
                 .replace(/::_MODULE_NAME_::/g, moduleName),
@@ -217,10 +217,10 @@ module.exports = {
       .join('\n');
 
     const modules = Object.keys(nativeModules)
-      .map(name => {
+      .map((name) => {
         const {properties} = nativeModules[name];
         const translatedMethods = properties
-          .map(property => tranlsateMethodForImplementation(property))
+          .map((property) => tranlsateMethodForImplementation(property))
           .join('\n');
         return moduleTemplate
           .replace(/::_TURBOMODULE_METHOD_INVOKERS_::/g, translatedMethods)

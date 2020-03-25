@@ -15,7 +15,7 @@ const React = require('react');
 const RNTesterExampleContainer = require('./RNTesterExampleContainer');
 import type {RNTesterExample} from '../types/RNTesterTypes';
 
-const createExamplePage = function(
+const createExamplePage = function (
   title: ?string,
   exampleModule: RNTesterExample,
 ): React.ComponentType<any> {

@@ -37,16 +37,16 @@ function flatObjects(
     properties: $ReadOnlyArray<ObjectParamTypeAnnotation>,
     name: string,
   |}> = annotations
-    .map(annotation => ({
+    .map((annotation) => ({
       name: annotation.name,
       properties: annotation.object.properties,
     }))
     .filter(
-      annotation =>
+      (annotation) =>
         (annotation.name === 'GetConstantsReturnType') === forConstants,
     )
     .filter(
-      annotation =>
+      (annotation) =>
         annotation.name !== 'GetConstantsReturnType' ||
         annotation.properties.length > 0,
     );
@@ -60,7 +60,7 @@ function flatObjects(
     const oldObjectTypesToFlatten = objectTypesToFlatten;
     objectTypesToFlatten = [];
     flattenObjects = flattenObjects.concat(
-      oldObjectTypesToFlatten.map(object => {
+      oldObjectTypesToFlatten.map((object) => {
         const {properties} = object;
         if (properties !== undefined) {
           objectTypesToFlatten = objectTypesToFlatten.concat(

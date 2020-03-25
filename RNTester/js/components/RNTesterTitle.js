@@ -19,7 +19,7 @@ class RNTesterTitle extends React.Component<$FlowFixMeProps> {
   render(): React.Node {
     return (
       <RNTesterThemeContext.Consumer>
-        {theme => {
+        {(theme) => {
           return (
             <View
               style={[

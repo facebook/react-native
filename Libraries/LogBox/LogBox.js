@@ -29,10 +29,10 @@ if (__DEV__) {
   let errorImpl = error.bind(console);
   let warnImpl = warn.bind(console);
 
-  (console: any).error = function(...args) {
+  (console: any).error = function (...args) {
     errorImpl(...args);
   };
-  (console: any).warn = function(...args) {
+  (console: any).warn = function (...args) {
     warnImpl(...args);
   };
 
@@ -55,11 +55,11 @@ if (__DEV__) {
       // Trigger lazy initialization of module.
       require('../NativeModules/specs/NativeLogBox');
 
-      errorImpl = function(...args) {
+      errorImpl = function (...args) {
         registerError(...args);
       };
 
-      warnImpl = function(...args) {
+      warnImpl = function (...args) {
         registerWarning(...args);
       };
 
@@ -73,7 +73,7 @@ if (__DEV__) {
       (Object.defineProperty: any)(console, 'disableYellowBox', {
         configurable: true,
         get: () => LogBoxData.isDisabled(),
-        set: value => {
+        set: (value) => {
           LogBoxData.setDisabled(value);
           console.warn(
             'console.disableYellowBox has been deprecated and will be removed in a future release. Please use LogBox.ignoreAllLogs(value) instead.',

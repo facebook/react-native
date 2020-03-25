@@ -43,7 +43,7 @@ type OnErrorCallback = (error: any) => void;
  * @param {function} onError `func(error)`
  * @param {function} onSuccess `func(left, top, width, height, pageX, pageY)`
  */
-const queryLayoutByID = function(
+const queryLayoutByID = function (
   tag: ?number,
   onError: OnErrorCallback,
   onSuccess: OnSuccessCallback,

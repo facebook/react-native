@@ -35,7 +35,7 @@ class SafeAreaViewExample extends React.Component<
     emulateUnlessSupported: true,
   };
 
-  _setModalVisible = visible => {
+  _setModalVisible = (visible) => {
     this.setState({modalVisible: visible});
   };
 
@@ -58,7 +58,7 @@ class SafeAreaViewExample extends React.Component<
                 />
                 <Text>emulateUnlessSupported:</Text>
                 <Switch
-                  onValueChange={value =>
+                  onValueChange={(value) =>
                     this.setState({emulateUnlessSupported: value})
                   }
                   value={this.state.emulateUnlessSupported}
@@ -73,7 +73,7 @@ class SafeAreaViewExample extends React.Component<
         />
         <Text>emulateUnlessSupported:</Text>
         <Switch
-          onValueChange={value =>
+          onValueChange={(value) =>
             this.setState({emulateUnlessSupported: value})
           }
           value={this.state.emulateUnlessSupported}

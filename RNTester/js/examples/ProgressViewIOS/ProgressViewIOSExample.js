@@ -42,7 +42,7 @@ class ProgressViewExample extends React.Component<Props, State> {
     this._rafId = requestAnimationFrame(() => this.updateProgress());
   };
 
-  getProgress = offset => {
+  getProgress = (offset) => {
     const progress = this.state.progress + offset;
     return Math.sin(progress % Math.PI) % 1;
   };

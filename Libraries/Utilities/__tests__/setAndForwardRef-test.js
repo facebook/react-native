@@ -40,7 +40,7 @@ describe('setAndForwardRef', () => {
     _nativeRef: ?React.ElementRef<typeof ForwardedComponent> = null;
     _setNativeRef = setAndForwardRef({
       getForwardedRef: () => this.props.forwardedRef,
-      setLocalRef: ref => {
+      setLocalRef: (ref) => {
         this._nativeRef = ref;
       },
     });
@@ -70,7 +70,7 @@ describe('setAndForwardRef', () => {
 
     ReactTestRenderer.create(
       <TestComponentWithRef
-        ref={ref => {
+        ref={(ref) => {
           testRef = ref;
         }}
       />,

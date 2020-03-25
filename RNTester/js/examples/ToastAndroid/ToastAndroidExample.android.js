@@ -129,7 +129,7 @@ exports.description =
 exports.examples = [
   {
     title: 'Basic toast',
-    render: function(): React.Element<typeof ToastExample> {
+    render: function (): React.Element<typeof ToastExample> {
       return <ToastExample />;
     },
   },

@@ -35,7 +35,7 @@ type Props = $ReadOnly<{|
   },
   frame?: ?Object,
   selection?: ?number,
-  setSelection?: number => mixed,
+  setSelection?: (number) => mixed,
 |}>;
 
 class ElementProperties extends React.Component<Props> {
@@ -75,7 +75,7 @@ class ElementProperties extends React.Component<Props> {
                   <Text style={styles.breadItemText}>{hierarchyItem.name}</Text>
                 </TouchableHighlight>
               ),
-              i => (
+              (i) => (
                 <Text key={'sep-' + i} style={styles.breadSep}>
                   &#9656;
                 </Text>

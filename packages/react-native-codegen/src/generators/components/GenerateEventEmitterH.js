@@ -126,7 +126,7 @@ function generateEnum(structs, options, nameParts) {
 
   const toCases = options
     .map(
-      option =>
+      (option) =>
         `case ${structName}::${toSafeCppString(option.name)}: return "${
           option.name
         }";`,
@@ -152,7 +152,7 @@ function generateStruct(
   const structName = generateEventStructName(structNameParts);
 
   const fields = properties
-    .map(property => {
+    .map((property) => {
       return `${getNativeTypeFromAnnotation(
         componentName,
         property,
@@ -200,7 +200,7 @@ function generateStruct(
 function generateStructs(componentName: string, component): string {
   const structs: StructsMap = new Map();
 
-  component.events.forEach(event => {
+  component.events.forEach((event) => {
     if (event.typeAnnotation.argument) {
       generateStruct(
         structs,
@@ -225,7 +225,7 @@ function generateEvent(componentName: string, event: EventTypeShape): string {
 }
 function generateEvents(componentName: string, component): string {
   return component.events
-    .map(event => generateEvent(componentName, event))
+    .map((event) => generateEvent(componentName, event))
     .join('\n\n' + '  ');
 }
 
@@ -236,7 +236,7 @@ module.exports = {
     moduleSpecName: string,
   ): FilesOutput {
     const moduleComponents: ComponentCollection = Object.keys(schema.modules)
-      .map(moduleName => {
+      .map((moduleName) => {
         const components = schema.modules[moduleName].components;
         // No components in this module
         if (components == null) {
@@ -249,7 +249,7 @@ module.exports = {
       .reduce((acc, components) => Object.assign(acc, components), {});
 
     const moduleComponentsWithEvents = Object.keys(moduleComponents).filter(
-      componentName => moduleComponents[componentName].events.length > 0,
+      (componentName) => moduleComponents[componentName].events.length > 0,
     );
 
     const fileName = 'EventEmitters.h';
@@ -257,7 +257,7 @@ module.exports = {
     const componentEmitters =
       moduleComponentsWithEvents.length > 0
         ? Object.keys(moduleComponents)
-            .map(componentName => {
+            .map((componentName) => {
               const component = moduleComponents[componentName];
 
               const replacedTemplate = componentTemplate

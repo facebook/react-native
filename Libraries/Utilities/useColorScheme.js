@@ -19,7 +19,7 @@ export default function useColorScheme(): ?ColorSchemeName {
   const subscription = useMemo(
     () => ({
       getCurrentValue: () => Appearance.getColorScheme(),
-      subscribe: callback => {
+      subscribe: (callback) => {
         Appearance.addChangeListener(callback);
         return () => Appearance.removeChangeListener(callback);
       },

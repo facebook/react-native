@@ -46,7 +46,7 @@ var babelOpts = {
   }),
 };
 
-var buildDist = function(opts) {
+var buildDist = function (opts) {
   var webpackOpts = {
     debug: opts.debug,
     externals: {
@@ -80,7 +80,7 @@ var buildDist = function(opts) {
       }),
     );
   }
-  return webpackStream(webpackOpts, null, function(err, stats) {
+  return webpackStream(webpackOpts, null, function (err, stats) {
     if (err) {
       throw new gulpUtil.PluginError('webpack', err);
     }
@@ -101,11 +101,11 @@ var paths = {
   ],
 };
 
-gulp.task('clean', function(cb) {
+gulp.task('clean', function (cb) {
   del([paths.dist, paths.lib], cb);
 });
 
-gulp.task('modules', function() {
+gulp.task('modules', function () {
   return gulp
     .src(paths.src, {cwd: '../'})
     .pipe(babel(babelOpts))
@@ -113,7 +113,7 @@ gulp.task('modules', function() {
     .pipe(gulp.dest(paths.lib));
 });
 
-gulp.task('dist', ['modules'], function() {
+gulp.task('dist', ['modules'], function () {
   var distOpts = {
     debug: true,
     output: 'animated.js',
@@ -130,7 +130,7 @@ gulp.task('dist', ['modules'], function() {
     .pipe(gulp.dest(paths.dist));
 });
 
-gulp.task('dist:min', ['modules'], function() {
+gulp.task('dist:min', ['modules'], function () {
   var distOpts = {
     debug: false,
     output: 'animated.min.js',
@@ -146,10 +146,10 @@ gulp.task('dist:min', ['modules'], function() {
     .pipe(gulp.dest(paths.dist));
 });
 
-gulp.task('watch', function() {
+gulp.task('watch', function () {
   gulp.watch(paths.src, ['modules']);
 });
 
-gulp.task('default', function(cb) {
+gulp.task('default', function (cb) {
   runSequence('clean', 'modules', ['dist', 'dist:min'], cb);
 });

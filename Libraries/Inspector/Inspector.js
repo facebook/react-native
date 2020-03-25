@@ -118,7 +118,7 @@ class Inspector extends React.Component<
 
   componentWillUnmount() {
     if (this._subs) {
-      this._subs.map(fn => fn());
+      this._subs.map((fn) => fn());
     }
     hook.off('react-devtools', this._attachToDevtools);
   }
@@ -149,7 +149,7 @@ class Inspector extends React.Component<
     }, 100);
   };
 
-  _onAgentShowNativeHighlight = node => {
+  _onAgentShowNativeHighlight = (node) => {
     clearTimeout(this._hideTimeoutID);
 
     node.measure((x, y, width, height, left, top) => {
@@ -242,7 +242,7 @@ class Inspector extends React.Component<
 
   setTouchTargeting(val: boolean) {
     Touchable.TOUCH_TARGET_DEBUG = val;
-    this.props.onRequestRerenderApp(inspectedView => {
+    this.props.onRequestRerenderApp((inspectedView) => {
       this.setState({inspectedView});
     });
   }

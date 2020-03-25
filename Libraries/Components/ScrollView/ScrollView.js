@@ -368,7 +368,7 @@ type VRProps = $ReadOnly<{|
 
 type StickyHeaderComponentType = React.AbstractComponent<
   ScrollViewStickyHeaderProps,
-  $ReadOnly<{setNextHeaderY: number => void, ...}>,
+  $ReadOnly<{setNextHeaderY: (number) => void, ...}>,
 >;
 
 export type Props = $ReadOnly<{|
@@ -691,8 +691,8 @@ class ScrollView extends React.Component<Props, State> {
      *    instance.
      */
     Object.keys(ScrollResponder.Mixin)
-      .filter(key => typeof ScrollResponder.Mixin[key] !== 'function')
-      .forEach(key => {
+      .filter((key) => typeof ScrollResponder.Mixin[key] !== 'function')
+      .forEach((key) => {
         // $FlowFixMe - dynamically adding properties to a class
         (this: any)[key] = ScrollResponder.Mixin[key];
       });
@@ -966,7 +966,7 @@ class ScrollView extends React.Component<Props, State> {
   _innerViewRef: ?React.ElementRef<typeof View> = null;
   _setInnerViewRef = setAndForwardRef({
     getForwardedRef: () => this.props.innerViewRef,
-    setLocalRef: ref => {
+    setLocalRef: (ref) => {
       this._innerViewRef = ref;
     },
   });
@@ -1004,7 +1004,7 @@ class ScrollView extends React.Component<Props, State> {
     if (__DEV__ && this.props.style !== undefined) {
       const style = flattenStyle(this.props.style);
       const childLayoutProps = ['alignItems', 'justifyContent'].filter(
-        prop => style && style[prop] !== undefined,
+        (prop) => style && style[prop] !== undefined,
       );
       invariant(
         childLayoutProps.length === 0,
@@ -1037,11 +1037,13 @@ class ScrollView extends React.Component<Props, State> {
           return (
             <StickyHeaderComponent
               key={key}
-              ref={ref => this._setStickyHeaderRef(key, ref)}
+              ref={(ref) => this._setStickyHeaderRef(key, ref)}
               nextHeaderLayoutY={this._headerLayoutYs.get(
                 this._getKeyForIndex(nextIndex, childArray),
               )}
-              onLayout={event => this._onStickyHeaderLayout(index, event, key)}
+              onLayout={(event) =>
+                this._onStickyHeaderLayout(index, event, key)
+              }
               scrollAnimatedValue={this._scrollAnimatedValue}
               inverted={this.props.invertStickyHeaders}
               scrollViewHeight={this.state.layoutHeight}>

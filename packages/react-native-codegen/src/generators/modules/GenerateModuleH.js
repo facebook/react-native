@@ -90,7 +90,7 @@ module.exports = {
     moduleSpecName: string,
   ): FilesOutput {
     const nativeModules = Object.keys(schema.modules)
-      .map(moduleName => {
+      .map((moduleName) => {
         const modules = schema.modules[moduleName].nativeModules;
         if (modules == null) {
           return null;
@@ -102,17 +102,15 @@ module.exports = {
       .reduce((acc, components) => Object.assign(acc, components), {});
 
     const modules = Object.keys(nativeModules)
-      .map(name => {
+      .map((name) => {
         const {properties} = nativeModules[name];
         const traversedProperties = properties
-          .map(prop => {
+          .map((prop) => {
             const traversedArgs = prop.typeAnnotation.params
-              .map(param => {
+              .map((param) => {
                 const translatedParam = translatePrimitiveJSTypeToCpp(
                   param.typeAnnotation,
-                  `Unspopported type for param "${param.name}" in ${
-                    prop.name
-                  }. Found: ${param.typeAnnotation.type}`,
+                  `Unspopported type for param "${param.name}" in ${prop.name}. Found: ${param.typeAnnotation.type}`,
                 );
                 const isObject = translatedParam.startsWith('jsi::');
                 return (
@@ -128,9 +126,7 @@ module.exports = {
                 '::_RETURN_VALUE_::',
                 translatePrimitiveJSTypeToCpp(
                   prop.typeAnnotation.returnTypeAnnotation,
-                  `Unspopported return type for ${prop.name}. Found: ${
-                    prop.typeAnnotation.returnTypeAnnotation.type
-                  }`,
+                  `Unspopported return type for ${prop.name}. Found: ${prop.typeAnnotation.returnTypeAnnotation.type}`,
                 ),
               )
               .replace(

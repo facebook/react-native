@@ -179,7 +179,7 @@ const Keyboard = {
 
 // Throw away the dummy object and reassign it to original module
 KeyboardEventEmitter.dismiss = dismissKeyboard;
-KeyboardEventEmitter.scheduleLayoutAnimation = function(event: KeyboardEvent) {
+KeyboardEventEmitter.scheduleLayoutAnimation = function (event: KeyboardEvent) {
   const {duration, easing} = event;
   if (duration != null && duration !== 0) {
     LayoutAnimation.configureNext({

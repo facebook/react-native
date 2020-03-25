@@ -185,7 +185,7 @@ function generateStructsForConstants(
             .replace(
               /::_INPUT_::/g,
               object.properties
-                .map(property =>
+                .map((property) =>
                   getBuilderInputFieldDeclaration(property, object.name),
                 )
                 .join('\n          '),
@@ -193,7 +193,7 @@ function generateStructsForConstants(
             .replace(
               /::_PROPERTIES_::/g,
               object.properties
-                .map(property => getObjectProperty(property))
+                .map((property) => getObjectProperty(property))
                 .join('\n'),
             )
             .replace(/::_STRUCT_NAME_::/g, object.name),

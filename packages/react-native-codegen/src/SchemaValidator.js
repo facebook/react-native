@@ -20,14 +20,14 @@ function getErrors(schema: SchemaType): $ReadOnlyArray<string> {
   // Map of component name -> Array of module names
   const componentModules: Map<string, Array<string>> = new Map();
 
-  Object.keys(schema.modules).forEach(moduleName => {
+  Object.keys(schema.modules).forEach((moduleName) => {
     const module = schema.modules[moduleName];
 
     if (module.components == null) {
       return;
     }
 
-    Object.keys(module.components).forEach(componentName => {
+    Object.keys(module.components).forEach((componentName) => {
       if (module.components == null) {
         return;
       }

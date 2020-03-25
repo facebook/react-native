@@ -176,7 +176,7 @@ class TouchableHighlight extends React.Component<Props, State> {
       delayPressOut: this.props.delayPressOut,
       pressRectOffset: this.props.pressRetentionOffset,
       android_disableSound: this.props.touchSoundDisabled,
-      onBlur: event => {
+      onBlur: (event) => {
         if (Platform.isTV) {
           this._hideUnderlay();
         }
@@ -184,7 +184,7 @@ class TouchableHighlight extends React.Component<Props, State> {
           this.props.onBlur(event);
         }
       },
-      onFocus: event => {
+      onFocus: (event) => {
         if (Platform.isTV) {
           this._showUnderlay();
         }
@@ -192,12 +192,12 @@ class TouchableHighlight extends React.Component<Props, State> {
           this.props.onFocus(event);
         }
       },
-      onLongPress: event => {
+      onLongPress: (event) => {
         if (this.props.onLongPress != null) {
           this.props.onLongPress(event);
         }
       },
-      onPress: event => {
+      onPress: (event) => {
         if (this._hideTimeout != null) {
           clearTimeout(this._hideTimeout);
         }
@@ -211,7 +211,7 @@ class TouchableHighlight extends React.Component<Props, State> {
           this.props.onPress(event);
         }
       },
-      onPressIn: event => {
+      onPressIn: (event) => {
         if (this._hideTimeout != null) {
           clearTimeout(this._hideTimeout);
           this._hideTimeout = null;
@@ -221,7 +221,7 @@ class TouchableHighlight extends React.Component<Props, State> {
           this.props.onPressIn(event);
         }
       },
-      onPressOut: event => {
+      onPressOut: (event) => {
         if (this._hideTimeout == null) {
           this._hideUnderlay();
         }
@@ -341,17 +341,17 @@ class TouchableHighlight extends React.Component<Props, State> {
     if (Platform.isTV) {
       this._tvTouchable = new TVTouchable(this, {
         getDisabled: () => this.props.disabled === true,
-        onBlur: event => {
+        onBlur: (event) => {
           if (this.props.onBlur != null) {
             this.props.onBlur(event);
           }
         },
-        onFocus: event => {
+        onFocus: (event) => {
           if (this.props.onFocus != null) {
             this.props.onFocus(event);
           }
         },
-        onPress: event => {
+        onPress: (event) => {
           if (this.props.onPress != null) {
             this.props.onPress(event);
           }
