@@ -658,11 +658,11 @@ workflows:
           requires:
             - setup_js
       - test_android:
-          run_disabled_tests: true
+          run_disabled_tests: false
           requires:
             - setup_android
       - test_ios:
-          run_disabled_tests: true
+          run_disabled_tests: false
           requires:
             - setup_ios
       - test_ios:
