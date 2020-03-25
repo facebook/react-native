@@ -464,7 +464,7 @@ jobs:
 
       - run:
           name: Install rsync
-          command: apt-get install -y rsync
+          command: apt-get update -y && apt-get install rsync -y
 
       # Install Buck
       - install_buck_tooling
