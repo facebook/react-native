@@ -36,7 +36,7 @@ eslintTester.run('../platform-colors', rule, {
     },
     {
       code:
-        "const tuple = {light:'black', dark:'white'}; const color = DynamicColorIOS(tuple);",
+        "const tuple = {light: 'black', dark: 'white'}; const color = DynamicColorIOS(tuple);",
       errors: [{message: rule.meta.messages.dynamicColorIOSArg}],
     },
     {
