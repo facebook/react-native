@@ -11,7 +11,7 @@ module.exports = {
   meta: {
     type: 'problem',
     docs: {
-      description: 'Ensure that AndroidColor() is passed a literal.',
+      description: 'Ensure that ColorAndroid() is passed a literal.',
     },
     schema: [],
   },
