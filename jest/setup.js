@@ -126,11 +126,26 @@ jest
       '../Libraries/Components/RefreshControl/__mocks__/RefreshControlMock',
     ),
   )
-  .mock('../Libraries/Components/ScrollView/ScrollView', () =>
-    jest.requireActual(
-      '../Libraries/Components/ScrollView/__mocks__/ScrollViewMock',
-    ),
-  )
+  .mock('../Libraries/Components/ScrollView/ScrollView', () => {
+    const baseComponent = mockComponent(
+      '../Libraries/Components/ScrollView/ScrollView',
+      {
+        ...MockNativeMethods,
+        getScrollResponder: jest.fn(),
+        getScrollableNode: jest.fn(),
+        getInnerViewNode: jest.fn(),
+        getInnerViewRef: jest.fn(),
+        getNativeScrollRef: jest.fn(),
+        scrollTo: jest.fn(),
+        scrollToEnd: jest.fn(),
+        flashScrollIndicators: jest.fn(),
+        scrollResponderZoomTo: jest.fn(),
+        scrollResponderScrollNativeHandleToKeyboard: jest.fn(),
+      },
+    );
+    const mockScrollView = jest.requireActual('./mockScrollView');
+    return mockScrollView(baseComponent);
+  })
   .mock('../Libraries/Components/ActivityIndicator/ActivityIndicator', () =>
     mockComponent(
       '../Libraries/Components/ActivityIndicator/ActivityIndicator',

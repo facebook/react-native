@@ -1397,10 +1397,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       // We are assuming that getOutermostParentListRef().getScrollRef()
       // is a non-null reference to a ScrollView
       this._scrollRef.measureLayout(
-        this.context.virtualizedList
-          .getOutermostParentListRef()
-          .getScrollRef()
-          .getNativeScrollRef(),
+        this.context.virtualizedList.getOutermostParentListRef().getScrollRef(),
         (x, y, width, height) => {
           this._offsetFromParentVirtualizedList = this._selectOffset({x, y});
           this._scrollMetrics.contentLength = this._selectLength({
