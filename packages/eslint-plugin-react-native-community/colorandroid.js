@@ -11,23 +11,21 @@ module.exports = {
   meta: {
     type: 'problem',
     docs: {
-      description:
-        'require color property to be assigned result of PlatformColor()',
+      description: 'Ensure that AndroidColor() is passed a literal.',
     },
     schema: [],
-    messages: {
-      usePlatformColor: 'Use PlatformColor() for color values.',
-    },
   },
 
   create: function(context) {
     return {
-      Property: function(node) {
-        if (node.key.name === 'color') {
-          if (node.value.type === 'ObjectExpression') {
+      CallExpression: function(node) {
+        if (node.callee.name === 'ColorAndroid') {
+          const args = node.arguments;
+          if (!(args.length === 1 && args[0].type === 'Literal')) {
             context.report({
               node,
-              messageId: 'usePlatformColor',
+              message:
+                'ColorAndroid() must take a single argument that is a literal.',
             });
           }
         }
