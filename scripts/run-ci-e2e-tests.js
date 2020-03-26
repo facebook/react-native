@@ -95,7 +95,9 @@ try {
 
   cp(METRO_CONFIG, '.');
   cp(RN_GET_POLYFILLS, '.');
-  exec(`rsync -a ${ROOT}/${RN_POLYFILLS_PATH} ${REACT_NATIVE_APP_DIR}/${RN_POLYFILLS_PATH}`);
+  exec(
+    `rsync -a ${ROOT}/${RN_POLYFILLS_PATH} ${REACT_NATIVE_APP_DIR}/${RN_POLYFILLS_PATH}`,
+  );
   mv('_flowconfig', '.flowconfig');
   mv('_watchmanconfig', '.watchmanconfig');
 
