@@ -10,6 +10,5 @@
 exports.rules = {
   'error-subclass-name': require('./error-subclass-name'),
   'no-haste-imports': require('./no-haste-imports'),
-  dynamiccolorios: require('./dynamiccolorios'),
-  colorandroid: require('./colorandroid'),
+  'platform-colors': require('./platform-colors'),
 };
