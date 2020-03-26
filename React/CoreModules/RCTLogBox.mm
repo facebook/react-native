@@ -93,7 +93,7 @@ RCT_EXPORT_METHOD(show)
   if (RCTRedBoxGetEnabled()) {
     __weak RCTLogBox *weakSelf = self;
     dispatch_async(dispatch_get_main_queue(), ^{
-      __strong RCTLogBox *strongSelf =  weakSelf;
+      __strong RCTLogBox *strongSelf = weakSelf;
       if (!strongSelf) {
         return;
       }
@@ -110,7 +110,7 @@ RCT_EXPORT_METHOD(hide)
   if (RCTRedBoxGetEnabled()) {
     __weak RCTLogBox *weakSelf = self;
     dispatch_async(dispatch_get_main_queue(), ^{
-      __strong RCTLogBox *strongSelf =  weakSelf;
+      __strong RCTLogBox *strongSelf = weakSelf;
       if (!strongSelf) {
         return;
       }
