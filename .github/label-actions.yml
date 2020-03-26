@@ -38,3 +38,10 @@ issues:
         </th></tr><tr><td>:information_source:</td><td>
         It looks like you are using an older version of React Native. Please <a href="https://reactnative.dev/docs/upgrading">upgrade</a> to the latest version, and verify if the issue persists. If it does not, please let us know so we can close out this issue. This helps us ensure we are looking at issues that still exist in the current release.
         </td></tr></tbody></table>
+    "Needs: Repro":
+      comment: >
+        <table><tbody><tr><th width="50">:warning:</th><th width="100%">
+        Missing Reproducible Example
+        </th></tr><tr><td>:information_source:</td><td>
+        It looks like your issue is missing a reproducible example. Please provide a <a href="https://snack.expo.io">Snack</a> or a repository that demonstrates the issue you are reporting in a <a href="https://stackoverflow.com/help/minimal-reproducible-example">minimal, complete, and reproducible</a> manner.
+        </td></tr></tbody></table>
