@@ -53,11 +53,11 @@ rn_xplat_cxx_library(
     tests = [],
     visibility = ["PUBLIC"],
     deps = [
-        "fbsource//xplat/folly:container_evicting_cache_map",
-        "fbsource//xplat/folly:headers_only",
-        "fbsource//xplat/folly:memory",
-        "fbsource//xplat/folly:molly",
-        "fbsource//xplat/jsi:jsi",
+        "//xplat/folly:container_evicting_cache_map",
+        "//xplat/folly:headers_only",
+        "//xplat/folly:memory",
+        "//xplat/folly:molly",
+        "//xplat/jsi:jsi",
         react_native_xplat_target("better:better"),
     ],
 )

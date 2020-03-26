@@ -47,11 +47,11 @@ rn_xplat_cxx_library(
     tests = [":tests"],
     visibility = ["PUBLIC"],
     deps = [
-        "fbsource//xplat/fbsystrace:fbsystrace",
-        "fbsource//xplat/folly:headers_only",
-        "fbsource//xplat/folly:memory",
-        "fbsource//xplat/folly:molly",
-        "fbsource//xplat/third-party/glog:glog",
+        "//xplat/fbsystrace:fbsystrace",
+        "//xplat/folly:headers_only",
+        "//xplat/folly:memory",
+        "//xplat/folly:molly",
+        "//xplat/third-party/glog:glog",
         YOGA_CXX_TARGET,
         react_native_xplat_target("fabric/debug:debug"),
         react_native_xplat_target("fabric/core:core"),
@@ -72,8 +72,8 @@ fb_xplat_cxx_test(
     ],
     platforms = (ANDROID, APPLE, CXX),
     deps = [
-        "fbsource//xplat/folly:molly",
-        "fbsource//xplat/third-party/gmock:gtest",
         ":activityindicator",
+        "//xplat/folly:molly",
+        "//xplat/third-party/gmock:gtest",
     ],
 )

@@ -18,8 +18,8 @@ fb_apple_library(
     labels = ["supermodule:ios/default/public.react_native.infra"],
     reexport_all_header_dependencies = True,
     deps = [
-        "fbsource//xplat/js/react-native-github:RCTTypeSafety",
-        "fbsource//xplat/js/react-native-github/Libraries/RCTRequired:RCTRequired",
+        "//xplat/js/react-native-github:RCTTypeSafety",
+        "//xplat/js/react-native-github/Libraries/RCTRequired:RCTRequired",
         react_native_xplat_target_apple("turbomodule/core:core"),
     ],
 )

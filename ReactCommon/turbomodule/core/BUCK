@@ -42,9 +42,9 @@ rn_xplat_cxx_library(
     fbobjc_preprocessor_flags = OBJC_ARC_PREPROCESSOR_FLAGS + get_preprocessor_flags_for_build_mode(),
     force_static = True,
     ios_deps = [
-        "fbsource//xplat/FBBaseLite:FBBaseLite",
-        "fbsource//xplat/js/react-native-github:RCTCxxModule",
-        "fbsource//xplat/js/react-native-github:ReactInternal",
+        "//xplat/FBBaseLite:FBBaseLite",
+        "//xplat/js/react-native-github:RCTCxxModule",
+        "//xplat/js/react-native-github:ReactInternal",
     ],
     ios_exported_headers = subdir_glob(
         [
@@ -70,17 +70,17 @@ rn_xplat_cxx_library(
         "PUBLIC",
     ],
     deps = [
-        "fbsource//xplat/fbsystrace:fbsystrace",
-        "fbsource//xplat/folly:headers_only",
-        "fbsource//xplat/folly:memory",
-        "fbsource//xplat/folly:molly",
-        "fbsource//xplat/jsi:JSIDynamic",
-        "fbsource//xplat/third-party/glog:glog",
+        "//xplat/fbsystrace:fbsystrace",
+        "//xplat/folly:headers_only",
+        "//xplat/folly:memory",
+        "//xplat/folly:molly",
+        "//xplat/jsi:JSIDynamic",
+        "//xplat/third-party/glog:glog",
         react_native_xplat_target("cxxreact:bridge"),
         react_native_xplat_target("cxxreact:module"),
         react_native_xplat_target("callinvoker:callinvoker"),
     ],
     exported_deps = [
-        "fbsource//xplat/jsi:jsi",
+        "//xplat/jsi:jsi",
     ],
 )

@@ -120,9 +120,9 @@ rn_apple_library(
     reexport_all_header_dependencies = True,
     visibility = ["PUBLIC"],
     exported_deps = [
-        "fbsource//xplat/js:RCTLinkingApple",
-        "fbsource//xplat/js:RCTPushNotificationApple",
-        "fbsource//xplat/js/react-native-github:ReactInternalApple",
-        "fbsource//xplat/js/react-native-github/Libraries/FBReactNativeSpec:FBReactNativeSpecApple",
+        "//xplat/js:RCTLinkingApple",
+        "//xplat/js:RCTPushNotificationApple",
+        "//xplat/js/react-native-github:ReactInternalApple",
+        "//xplat/js/react-native-github/Libraries/FBReactNativeSpec:FBReactNativeSpecApple",
     ],
 )

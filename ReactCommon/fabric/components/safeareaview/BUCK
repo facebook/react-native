@@ -42,6 +42,6 @@ rn_xplat_cxx_library(
     visibility = ["PUBLIC"],
     deps = [
         react_native_xplat_target("fabric/core:core"),
-        "fbsource//xplat/js/react-native-github:generated_components-rncore",
+        "//xplat/js/react-native-github:generated_components-rncore",
     ],
 )

@@ -26,7 +26,7 @@ rn_xplat_cxx_library(
         react_native_target("java/com/facebook/react/jscexecutor:jscexecutor"),
     ],
     deps = [
-        "fbsource//xplat/folly:molly",
+        "//xplat/folly:molly",
         FBJNI_TARGET,
         react_native_target("jni/react/jni:jni"),
         react_native_xplat_target("jsi:JSCRuntime"),
