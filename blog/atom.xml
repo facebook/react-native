@@ -2,11 +2,23 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://reactnative.dev/blog</id>
     <title>React Native Blog</title>
-    <updated>2019-11-18T06:00:00.000Z</updated>
+    <updated>2020-03-26T06:00:00.000Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://reactnative.dev/blog"/>
     <subtitle>The best place to stay up-to-date with the latest React Native news and events.</subtitle>
     <logo>https://reactnative.dev/img/header_logo.svg</logo>
+    <entry>
+        <title type="html"><![CDATA[Announcing React Native 0.62 with Flipper]]></title>
+        <id>https://reactnative.dev/blog/2020/03/26/version-0.62.html</id>
+        <link href="https://reactnative.dev/blog/2020/03/26/version-0.62.html"/>
+        <updated>2020-03-26T06:00:00.000Z</updated>
+        <summary type="html"><![CDATA[<p>Today we’re releasing React Native version 0.62 which includes support for Flipper by default.</p> <p>This release comes in the midst of a global pandemic. We’re releasing this version today to respect the work of hundreds of contributors who made this rele...</p>]]></summary>
+        <author>
+            <name>Rick Hanlon</name>
+            <email/>
+            <uri>https://twitter.com/rickhanlonii</uri>
+        </author>
+    </entry>
     <entry>
         <title type="html"><![CDATA[Meet Doctor, a new React Native command]]></title>
         <id>https://reactnative.dev/blog/2019/11/18/react-native-doctor.html</id>
