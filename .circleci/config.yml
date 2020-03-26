@@ -7,6 +7,11 @@ defaults: &defaults
   working_directory: ~/react-native
   environment:
     - GIT_COMMIT_DESC: git log --format=oneline -n 1 $CIRCLE_SHA1
+    # The public github tokens are publicly visible by design
+    - PUBLIC_PULLBOT_GITHUB_TOKEN_A: "a6edf8e8d40ce4e8b11a"
+    - PUBLIC_PULLBOT_GITHUB_TOKEN_B: "150e1341f4dd9c944d2a"
+    - PUBLIC_ANALYSISBOT_GITHUB_TOKEN_A: &github_token_a "78a72af35445ca3f8180"
+    - PUBLIC_ANALYSISBOT_GITHUB_TOKEN_B: &github_token_b "b1a98e0bbd56ff1ccba1"
 
 # -------------------------
 #        EXECUTORS
@@ -31,6 +36,9 @@ executors:
       - _JAVA_OPTIONS: "-XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap"
       - GRADLE_OPTS: '-Dorg.gradle.daemon=false -Dorg.gradle.jvmargs="-XX:+HeapDumpOnOutOfMemoryError"'
       - BUILD_THREADS: 2
+      # Repeated here, as the environment key in this executor will overwrite the one in defaults
+      - PUBLIC_ANALYSISBOT_GITHUB_TOKEN_A: *github_token_a
+      - PUBLIC_ANALYSISBOT_GITHUB_TOKEN_B: *github_token_b
   reactnativeios:
     <<: *defaults
     macos:
@@ -106,7 +114,9 @@ commands:
         description: Homebrew package to install
         type: string
     steps:
-      - run: HOMEBREW_NO_AUTO_UPDATE=1 brew install << parameters.package >> >/dev/null
+      - run: 
+          name: "Brew: Install << parameters.package >>"
+          command: HOMEBREW_NO_AUTO_UPDATE=1 brew install << parameters.package >> >/dev/null
 
   with_brew_cache_span:
     parameters:
@@ -123,7 +133,22 @@ commands:
             - ~/Library/Caches/Homebrew
           key: v3-brew
 
-  with_pods_cache_span:
+  with_cocoapods_repos_cache_span:
+    parameters:
+      steps:
+        type: steps
+    steps:
+      - restore_cache:
+          keys:
+            - v1-cocoapods-{{ checksum "template/ios/Podfile" }}
+            - v1-cocoapods-
+      - steps: << parameters.steps >>
+      - save_cache:
+          paths:
+            - ~/.cocoapods/repos
+          key: v1-cocoapods-{{ checksum "template/ios/Podfile" }}
+
+  with_rntester_pods_cache_span:
     parameters:
       steps:
         type: steps
@@ -164,25 +189,6 @@ commands:
           name: Download Dependencies Using Buck
           command: ./scripts/circleci/buck_fetch.sh
 
-  # -------------------------
-  #  COMMANDS: Disabled Tests
-  # -------------------------
-  run_podspec_tests:
-    steps:
-      - run:
-          name: Test CocoaPods
-          command: ./scripts/process-podspecs.sh
-  run_e2e_tests:
-    steps:
-      - run:
-          name: Full End-to-End Test Suite
-          command: node ./scripts/run-ci-e2e-tests.js --android --ios --js --retries 3;
-  run_android_e2e_tests:
-    steps:
-      - run:
-          name: Android End-to-End Test Suite
-          command: node ./scripts/run-ci-e2e-tests.js --android --retries 3;
-
 # -------------------------
 #          JOBS
 # -------------------------
@@ -211,13 +217,6 @@ jobs:
   # This workflow should only fail if the bots fail to run.
   analyze_pr:
     executor: nodelts
-    # The public github tokens are publicly visible by design
-    environment:
-      - PUBLIC_PULLBOT_GITHUB_TOKEN_A: "a6edf8e8d40ce4e8b11a"
-      - PUBLIC_PULLBOT_GITHUB_TOKEN_B: "150e1341f4dd9c944d2a"
-      - PUBLIC_ANALYSISBOT_GITHUB_TOKEN_A: "78a72af35445ca3f8180"
-      - PUBLIC_ANALYSISBOT_GITHUB_TOKEN_B: "b1a98e0bbd56ff1ccba1"
-
     steps:
       - restore_cache_checkout:
           checkout_type: node
@@ -292,19 +291,34 @@ jobs:
       executor:
         type: executor
         default: nodelts
+      run_disabled_tests:
+        type: boolean
+        default: false
     executor: << parameters.executor >>
     steps:
       - restore_cache_checkout:
           checkout_type: node
       - setup_artifacts
       - run_yarn
+      - run:
+          name: Install rsync
+          command: sudo apt-get install rsync
 
       - run:
-          name: JavaScript Test Suite
+          name: "Run Tests: JavaScript Tests"
           command: node ./scripts/run-ci-javascript-tests.js --maxWorkers 2
+
+      # Optionally, run disabled tests
+      - when:
+          condition: << parameters.run_disabled_tests >>
+          steps:
+            - run:
+                name: "Run Tests: JavaScript End-to-End Tests"
+                command: node ./scripts/run-ci-e2e-tests.js --js --retries 3
 
       - store_test_results:
           path: ./reports/junit
+
   # -------------------------
   #     JOBS: Test iOS
   # -------------------------
@@ -313,6 +327,9 @@ jobs:
     executor: reactnativeios
     parameters:
       use_frameworks:
+        type: boolean
+        default: false
+      run_disabled_tests:
         type: boolean
         default: false
     environment:
@@ -331,9 +348,10 @@ jobs:
           command: source scripts/.tests.env && xcrun simctl boot "$IOS_DEVICE" || true
 
       - run:
-          name: Fetch CocoaPods Specs
+          name: Configure Environment Variables
           command: |
-            curl https://cocoapods-specs.circleci.com/fetch-cocoapods-repo-from-s3.sh | bash -s cf
+            echo 'export PATH=/usr/local/opt/node@10/bin:$PATH' >> $BASH_ENV
+            source $BASH_ENV
 
       - when:
           condition: << parameters.use_frameworks >>
@@ -342,7 +360,17 @@ jobs:
                 name: Set USE_FRAMEWORKS=1
                 command: echo "export USE_FRAMEWORKS=1" >> $BASH_ENV
 
-      - with_pods_cache_span:
+      - with_cocoapods_repos_cache_span:
+          steps:
+            - run:
+                name: Fetch CocoaPods Specs
+                command: |
+                  curl https://cocoapods-specs.circleci.com/fetch-cocoapods-repo-from-s3.sh | bash -s cf
+            - run: 
+                name: Setup the CocoaPods environment
+                command: pod setup
+
+      - with_rntester_pods_cache_span:
           steps:
             - run:
                 name: Generate RNTesterPods Workspace
@@ -352,101 +380,55 @@ jobs:
           steps:
             - brew_install:
                 package: watchman
-      - run: touch .watchmanconfig
-
-      - run: yarn test-ios
-      - store_test_results:
-          path: ./reports/junit
-
-  # Runs iOS end-to-end tests
-  test_ios_e2e:
-    executor: reactnativeios
-    # The public github tokens are publicly visible by design
-    environment:
-      - PUBLIC_GITHUB_TOKEN_A: "78a72af35445ca3f8180"
-      - PUBLIC_GITHUB_TOKEN_B: "b1a98e0bbd56ff1ccba1"
-    steps:
-      - restore_cache_checkout:
-          checkout_type: ios
-      - setup_artifacts
-      - run_yarn
-
-      - run:
-          name: Boot iPhone Simulator
-          command: source scripts/.tests.env && xcrun simctl boot "$IOS_DEVICE" || true
-
-      - run:
-          name: Configure Environment Variables
-          command: |
-            echo 'export PATH=/usr/local/opt/node@10/bin:$PATH' >> $BASH_ENV
-            source $BASH_ENV
-
-      # Brew
-      - with_brew_cache_span:
-          steps:
             - brew_install:
                 package: node@10
-            - run: HOMEBREW_NO_AUTO_UPDATE=1 brew tap wix/brew >/dev/null
+            - run:
+                name: "Brew: Tap wix/brew"
+                command: HOMEBREW_NO_AUTO_UPDATE=1 brew tap wix/brew >/dev/null
             - brew_install:
                 package: applesimutils
-            - brew_install:
-                package: watchman
-
-      # Configure Watchman
-      - run: touch .watchmanconfig
-
-      - restore_cache:
-          keys:
-            - v1-cocoapods-{{ checksum "template/ios/Podfile" }}
-            - v1-cocoapods-
-
-      - run: pod setup
 
       - run:
-          name: Generate RNTesterPods Workspace
+          name: Configure Watchman
+          command: touch .watchmanconfig
+
+      - run:
+          name: Generate RNTesterPods Xcode Workspace
           command: pushd RNTester && pod install --verbose && popd
 
+      # Test environment is ready, go ahead and run tests
+      - run: 
+          name: "Run Tests: iOS Unit and Integration Tests"
+          command: yarn test-ios
+          when: always
+
       - run:
-          name: Run Detox iOS End-to-End Tests
+          name: "Run Tests: Detox iOS End-to-End Tests"
           command: yarn run build-ios-e2e && yarn run test-ios-e2e
           when: always
 
+      # Optionally, run disabled tests
+      - when:
+          condition: << parameters.run_disabled_tests >>
+          steps:
+            - run:
+                name: "Run Tests: CocoaPods"
+                command: ./scripts/process-podspecs.sh
+            - run:
+                name: Free up port 8081 for iOS End-to-End Tests
+                command: |
+                  # free up port 8081 for the packager before running tests
+                  set +eo pipefail
+                  lsof -i tcp:8081 | awk 'NR!=1 {print $2}' | xargs kill
+                  set -eo pipefail
+            - run:
+                name: "Run Tests: iOS End-to-End Tests"
+                command: node ./scripts/run-ci-e2e-tests.js --ios --retries 3;
+
       - install_github_bot_deps
       - run:
-          name: Report size of RNTester.app
-          command: GITHUB_TOKEN="$PUBLIC_GITHUB_TOKEN_A""$PUBLIC_GITHUB_TOKEN_B" scripts/circleci/report-bundle-size.sh ios
-          when: always
-
-      - run:
-          name: Run iOS End-to-End Tests
-          command: |
-            # free up port 8081 for the packager before running tests
-            set +eo pipefail
-            lsof -i tcp:8081 | awk 'NR!=1 {print $2}' | xargs kill
-            set -eo pipefail
-            node ./scripts/run-ci-e2e-tests.js --ios --retries 3;
-          when: always
-
-      - save_cache:
-          paths:
-            - ~/.cocoapods/repos
-          key: v1-cocoapods-{{ checksum "template/ios/Podfile" }}
-
-      - store_test_results:
-          path: ./reports/junit
-
-  test_js_e2e:
-    executor: nodelts
-    steps:
-      - restore_cache_checkout:
-          checkout_type: node
-      - setup_artifacts
-      - run_yarn
-      - run: sudo apt-get install rsync
-
-      - run:
-          name: Run JavaScript End-to-End Tests
-          command: node ./scripts/run-ci-e2e-tests.js --js --retries 3
+          name: Report size of RNTester.app (analysis-bot)
+          command: GITHUB_TOKEN="$PUBLIC_ANALYSISBOT_GITHUB_TOKEN_A""$PUBLIC_ANALYSISBOT_GITHUB_TOKEN_B" scripts/circleci/report-bundle-size.sh ios
 
       - store_test_results:
           path: ./reports/junit
@@ -457,10 +439,10 @@ jobs:
   # Run Android tests
   test_android:
     executor: reactnativeandroid
-    # The public github tokens are publicly visible by design
-    environment:
-      - PUBLIC_GITHUB_TOKEN_A: "78a72af35445ca3f8180"
-      - PUBLIC_GITHUB_TOKEN_B: "b1a98e0bbd56ff1ccba1"
+    parameters:
+      run_disabled_tests:
+        type: boolean
+        default: false    
     steps:
       - restore_cache_checkout:
           checkout_type: android
@@ -482,6 +464,10 @@ jobs:
           background: true
 
       # Keep configuring Android dependencies while AVD boots up
+
+      - run:
+          name: Install rsync
+          command: apt-get update -y && apt-get install rsync -y
 
       # Install Buck
       - install_buck_tooling
@@ -515,27 +501,34 @@ jobs:
           name: Wait for Android Virtual Device
           command: source scripts/android-setup.sh && waitForAVD
 
+      - run:
+          name: Assemble RNTester App
+          command: ./gradlew RNTester:android:app:assembleRelease
+
       # Test Suite
       - run:
-          name: Run Unit Tests
+          name: "Run Tests: Android Unit Tests"
           command: buck test ReactAndroid/src/test/... --config build.threads=$BUILD_THREADS --xml ./reports/buck/all-results-raw.xml
 
       - run:
-          name: Run Instrumentation Tests
+          name: "Run Tests: Android Instrumentation Tests"
           command: |
             if [[ ! -e ReactAndroid/src/androidTest/assets/AndroidTestBundle.js ]]; then
               echo "JavaScript bundle missing, cannot run instrumentation tests. Verify Build JavaScript Bundle step completed successfully."; exit 1;
             fi
             source scripts/android-setup.sh && NO_BUCKD=1 retry3 timeout 300 buck install ReactAndroid/src/androidTest/buck-runner:instrumentation-tests --config build.threads=$BUILD_THREADS
 
-      - run:
-          name: Build Android RNTester App
-          command: ./gradlew RNTester:android:app:assembleRelease
+      - when:
+          condition: << parameters.run_disabled_tests >>
+          steps:
+            - run:
+                name: "Run Tests: Android End-to-End Tests"
+                command: node ./scripts/run-ci-e2e-tests.js --android --retries 3;
 
       - install_github_bot_deps
       - run:
-          name: Report size of RNTester.apk
-          command: GITHUB_TOKEN="$PUBLIC_GITHUB_TOKEN_A""$PUBLIC_GITHUB_TOKEN_B" scripts/circleci/report-bundle-size.sh android
+          name: Report size of RNTester.apk (analysis-bot)
+          command: GITHUB_TOKEN="$PUBLIC_ANALYSISBOT_GITHUB_TOKEN_A""$PUBLIC_ANALYSISBOT_GITHUB_TOKEN_B" scripts/circleci/report-bundle-size.sh android
 
       # Collect Results
       - run:
@@ -664,16 +657,15 @@ workflows:
             branches:
               ignore: gh-pages
       - test_js:
+          run_disabled_tests: true
           requires:
             - setup_js
-      - test_js_e2e:
-          requires:
-            - setup_js
-            - test_js
       - test_android:
+          run_disabled_tests: false
           requires:
             - setup_android
       - test_ios:
+          run_disabled_tests: false
           requires:
             - setup_ios
       - test_ios:
@@ -681,10 +673,6 @@ workflows:
           use_frameworks: true
           requires:
             - setup_ios
-      - test_ios_e2e:
-          requires:
-            - setup_ios
-            - test_js
       - test_js:
           name: test_js_prev_lts
           executor: nodeprevlts
