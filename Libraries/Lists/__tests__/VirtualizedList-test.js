@@ -457,3 +457,139 @@ describe('VirtualizedList', () => {
     }
   });
 });
+
+describe('VirtualizedList > OnEndReached', () => {
+  const ITEM_HEIGHT = 100;
+  const INITIAL_ITEM_COUNT = 20;
+  const APPENDED_ITEM_COUNT = 10;
+
+  let listItems, onEndReached, instance;
+  let shrinkedItemHeight;
+
+  beforeEach(() => {
+    shrinkedItemHeight = 0;
+
+    listItems = appendNewItems([], INITIAL_ITEM_COUNT);
+
+    onEndReached = jest.fn(function() {
+      appendNewItems(listItems, APPENDED_ITEM_COUNT);
+    });
+
+    instance = createComponentInstance();
+  });
+
+  it('should not be called after initial rendering', () => {
+    expect(onEndReached).not.toHaveBeenCalled();
+    expect(listItems.length).toBe(INITIAL_ITEM_COUNT);
+  });
+
+  it('should be called when the item layout is shrinked', () => {
+    expect(onEndReached).not.toHaveBeenCalled();
+    expect(listItems.length).toBe(INITIAL_ITEM_COUNT);
+
+    shrinkedItemHeight = ITEM_HEIGHT / 2;
+
+    const scroll = createScrollMethod();
+    scroll(0);
+
+    expect(onEndReached).toHaveBeenCalledTimes(1);
+    expect(listItems.length).toBe(INITIAL_ITEM_COUNT + APPENDED_ITEM_COUNT);
+  });
+
+  it('should be called once after scrolling by 800', () => {
+    const scroll = createScrollMethod();
+    scroll(800);
+
+    expect(onEndReached).toHaveBeenCalledTimes(1);
+    expect(onEndReached).toHaveBeenLastCalledWith({
+      distanceFromEnd: 464,
+    });
+    expect(listItems.length).toBe(INITIAL_ITEM_COUNT + APPENDED_ITEM_COUNT);
+  });
+
+  it('should not be called twice in a short period while scrolling fast', () => {
+    const scroll = createScrollMethod();
+    scroll(800);
+
+    expect(onEndReached).toHaveBeenCalledTimes(1);
+    expect(onEndReached).toHaveBeenLastCalledWith({
+      distanceFromEnd: 464,
+    });
+    expect(listItems.length).toBe(INITIAL_ITEM_COUNT + APPENDED_ITEM_COUNT);
+
+    scroll(850, 50);
+    expect(onEndReached).toHaveBeenCalledTimes(1);
+  });
+
+  it('should be called when required to load more items', () => {
+    const scroll = createScrollMethod();
+    scroll(800);
+    expect(onEndReached).toHaveBeenCalledTimes(1);
+    expect(listItems.length).toBe(INITIAL_ITEM_COUNT + APPENDED_ITEM_COUNT);
+
+    scroll(1600);
+    expect(onEndReached).toHaveBeenCalledTimes(2);
+    expect(onEndReached).toHaveBeenLastCalledWith({
+      distanceFromEnd: 664,
+    });
+    expect(listItems.length).toBe(INITIAL_ITEM_COUNT + APPENDED_ITEM_COUNT * 2);
+  });
+
+  function createComponentInstance() {
+    const props = {
+      data: listItems,
+      renderItem: ({item}) => <item value={item.key} />,
+      getItem: (items, index) => items[index],
+      getItemCount: items => items.length,
+      getItemLayout: (items, index) => ({
+        length: shrinkedItemHeight ? shrinkedItemHeight : ITEM_HEIGHT,
+        offset: (shrinkedItemHeight ? shrinkedItemHeight : ITEM_HEIGHT) * index,
+        index,
+      }),
+      onEndReached,
+    };
+
+    const component = ReactTestRenderer.create(<VirtualizedList {...props} />);
+    return component.getInstance();
+  }
+
+  function appendNewItems(items, count) {
+    const nextId = (items.length > 0 ? items[items.length - 1].id : 0) + 1;
+
+    for (let loop = 1; loop <= count; loop++) {
+      const id = nextId + loop;
+      items.push({
+        id: id,
+        key: `k${id}`,
+      });
+    }
+
+    return items;
+  }
+
+  function createScrollMethod() {
+    let scrollTimeStamp = 0;
+
+    return function scroll(y, delay = 1000) {
+      scrollTimeStamp += delay;
+
+      const nativeEvent = {
+        contentOffset: {y, x: 0},
+        layoutMeasurement: {width: 414, height: 736},
+        contentSize: {
+          width: 414,
+          height:
+            listItems.length *
+            (shrinkedItemHeight ? shrinkedItemHeight : ITEM_HEIGHT),
+        },
+        zoomScale: 1,
+        contentInset: {right: 0, top: 0, left: 0, bottom: 0},
+      };
+
+      instance._onScroll({
+        timeStamp: scrollTimeStamp,
+        nativeEvent,
+      });
+    };
+  }
+});

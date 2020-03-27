@@ -1218,8 +1218,6 @@ class VirtualizedList extends React.PureComponent<Props, State> {
   componentDidUpdate(prevProps: Props) {
     const {data, extraData} = this.props;
     if (data !== prevProps.data || extraData !== prevProps.extraData) {
-      this._hasDataChangedSinceEndReached = true;
-
       // clear the viewableIndices cache to also trigger
       // the onViewableItemsChanged callback with the new data
       this._viewabilityTuples.forEach(tuple => {
@@ -1248,7 +1246,6 @@ class VirtualizedList extends React.PureComponent<Props, State> {
   _fillRateHelper: FillRateHelper;
   _frames = {};
   _footerLength = 0;
-  _hasDataChangedSinceEndReached = true;
   _hasDoneInitialScroll = false;
   _hasInteracted = false;
   _hasMore = false;
@@ -1282,6 +1279,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
   _totalCellsMeasured = 0;
   _updateCellsToRenderBatcher: Batchinator;
   _viewabilityTuples: Array<ViewabilityHelperCallbackTuple> = [];
+  _hasDoneFirstScroll = false;
 
   _captureScrollRef = ref => {
     this._scrollRef = ref;
@@ -1537,30 +1535,48 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     return !this.props.horizontal ? metrics.y : metrics.x;
   }
 
-  _maybeCallOnEndReached() {
-    const {
-      data,
-      getItemCount,
-      onEndReached,
-      onEndReachedThreshold,
-    } = this.props;
-    const {contentLength, visibleLength, offset} = this._scrollMetrics;
-    const distanceFromEnd = contentLength - visibleLength - offset;
-    if (
-      onEndReached &&
-      this.state.last === getItemCount(data) - 1 &&
-      /* $FlowFixMe(>=0.63.0 site=react_native_fb) This comment suppresses an
-       * error found when Flow v0.63 was deployed. To see the error delete this
-       * comment and run Flow. */
-      distanceFromEnd < onEndReachedThreshold * visibleLength &&
-      (this._hasDataChangedSinceEndReached ||
-        this._scrollMetrics.contentLength !== this._sentEndForContentLength)
-    ) {
-      // Only call onEndReached once for a given dataset + content length.
-      this._hasDataChangedSinceEndReached = false;
-      this._sentEndForContentLength = this._scrollMetrics.contentLength;
-      onEndReached({distanceFromEnd});
+  _maybeCallOnEndReached(hasShrinkedContentLength: boolean = false) {
+    const {onEndReached, onEndReachedThreshold} = this.props;
+    if (!onEndReached) {
+      return;
     }
+
+    const {contentLength, visibleLength, offset, dOffset} = this._scrollMetrics;
+
+    // If this is just after the initial rendering
+    if (
+      !hasShrinkedContentLength &&
+      !this._hasDoneFirstScroll &&
+      offset === 0
+    ) {
+      return;
+    }
+
+    // If scrolled up in the vertical list
+    if (dOffset < 0) {
+      return;
+    }
+
+    // If contentLength has not changed
+    if (contentLength === this._sentEndForContentLength) {
+      return;
+    }
+
+    const distanceFromEnd = contentLength - visibleLength - offset;
+
+    // If the distance is so farther than the area shown on the screen
+    if (distanceFromEnd >= visibleLength * 1.5) {
+      return;
+    }
+
+    // $FlowFixMe
+    const minimumDistanceFromEnd = onEndReachedThreshold * visibleLength;
+    if (distanceFromEnd >= minimumDistanceFromEnd) {
+      return;
+    }
+
+    this._sentEndForContentLength = contentLength;
+    onEndReached({distanceFromEnd});
   }
 
   _onContentSizeChange = (width: number, height: number) => {
@@ -1580,9 +1596,24 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     if (this.props.onContentSizeChange) {
       this.props.onContentSizeChange(width, height);
     }
-    this._scrollMetrics.contentLength = this._selectLength({height, width});
+    const {contentLength: currentContentLength} = this._scrollMetrics;
+    const contentLength = this._selectLength({height, width});
+    this._scrollMetrics.contentLength = contentLength;
     this._scheduleCellsToRenderUpdate();
-    this._maybeCallOnEndReached();
+
+    const hasShrinkedContentLength =
+      currentContentLength > 0 &&
+      contentLength > 0 &&
+      contentLength < currentContentLength;
+
+    if (
+      hasShrinkedContentLength &&
+      this._sentEndForContentLength >= contentLength
+    ) {
+      this._sentEndForContentLength = 0;
+    }
+
+    this._maybeCallOnEndReached(hasShrinkedContentLength);
   };
 
   /* Translates metrics from a scroll event in a parent VirtualizedList into
@@ -1670,6 +1701,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     if (!this.props) {
       return;
     }
+    this._hasDoneFirstScroll = true;
     this._maybeCallOnEndReached();
     if (velocity !== 0) {
       this._fillRateHelper.activate();
