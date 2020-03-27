@@ -5,7 +5,7 @@ contact_links:
       about: Please report documentation issues in the React Native website repository.
     - name: ⤴️ Upgrade Issue
       url: https://github.com/react-native-community/upgrade-support
-      about: Please report upgrade issues in Upgrade Support repository.
+      about: Please report upgrade issues in the Upgrade Support repository.
     - name: 🤔 Questions and Help
       url: https://reactnative.dev/help
       about: Looking for help with your app? Please refer to the React Native community's support resources.
