@@ -140,6 +140,9 @@ traitCast<YogaLayoutableShadowNode const &>(ShadowNode const &shadowNode) {
 template <>
 inline YogaLayoutableShadowNode const *
 traitCast<YogaLayoutableShadowNode const *>(ShadowNode const *shadowNode) {
+  if (!shadowNode) {
+    return nullptr;
+  }
   bool castable = shadowNode->getTraits().check(
       ShadowNodeTraits::Trait::YogaLayoutableKind);
   assert(

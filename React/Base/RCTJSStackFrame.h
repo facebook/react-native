@@ -15,7 +15,11 @@
 @property (nonatomic, readonly) NSInteger column;
 @property (nonatomic, readonly) NSInteger collapse;
 
-- (instancetype)initWithMethodName:(NSString *)methodName file:(NSString *)file lineNumber:(NSInteger)lineNumber column:(NSInteger)column collapse:(NSInteger)collapse;
+- (instancetype)initWithMethodName:(NSString *)methodName
+                              file:(NSString *)file
+                        lineNumber:(NSInteger)lineNumber
+                            column:(NSInteger)column
+                          collapse:(NSInteger)collapse;
 - (NSDictionary *)toDictionary;
 
 + (instancetype)stackFrameWithLine:(NSString *)line;

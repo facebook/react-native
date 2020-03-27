@@ -9,6 +9,7 @@
 
 #import <react/components/view/AccessibilityPrimitives.h>
 #import <react/components/view/primitives.h>
+#import <react/core/LayoutPrimitives.h>
 #import <react/graphics/Color.h>
 #import <react/graphics/Geometry.h>
 #import <react/graphics/Transform.h>
@@ -164,6 +165,11 @@ inline facebook::react::Rect RCTRectFromCGRect(const CGRect &rect)
 inline facebook::react::EdgeInsets RCTEdgeInsetsFromUIEdgeInsets(const UIEdgeInsets &edgeInsets)
 {
   return {edgeInsets.left, edgeInsets.top, edgeInsets.right, edgeInsets.bottom};
+}
+
+inline facebook::react::LayoutDirection RCTLayoutDirection(BOOL isRTL)
+{
+  return isRTL ? facebook::react::LayoutDirection::RightToLeft : facebook::react::LayoutDirection::LeftToRight;
 }
 
 NS_ASSUME_NONNULL_END

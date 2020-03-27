@@ -18,27 +18,30 @@ namespace react {
 // adapter does the work.
 
 class DispatchMessageQueueThread : public MessageQueueThread {
-public:
-  DispatchMessageQueueThread(RCTModuleData *moduleData)
-    : moduleData_(moduleData) {}
+ public:
+  DispatchMessageQueueThread(RCTModuleData *moduleData) : moduleData_(moduleData) {}
 
-  void runOnQueue(std::function<void()>&& func) override {
+  void runOnQueue(std::function<void()> &&func) override
+  {
     dispatch_queue_t queue = moduleData_.methodQueue;
-    dispatch_block_t block = [func=std::move(func)] { func(); };
+    dispatch_block_t block = [func = std::move(func)] { func(); };
     RCTAssert(block != nullptr, @"Invalid block generated in call to %@", moduleData_);
     if (queue && block) {
       dispatch_async(queue, block);
     }
   }
-  void runOnQueueSync(std::function<void()>&& __unused func) override {
+  void runOnQueueSync(std::function<void()> &&__unused func) override
+  {
     LOG(FATAL) << "Unsupported operation";
   }
-  void quitSynchronous() override {
+  void quitSynchronous() override
+  {
     LOG(FATAL) << "Unsupported operation";
   }
 
-private:
+ private:
   RCTModuleData *moduleData_;
 };
 
-} }
+}
+}

@@ -39,8 +39,7 @@ extern const NSUInteger kRCTBundleURLProviderDefaultPort;
  * Returns the jsBundleURL for a given bundle entrypoint and
  * the fallback offline JS bundle if the packager is not running.
  */
-- (NSURL *)jsBundleURLForBundleRoot:(NSString *)bundleRoot
-                fallbackURLProvider:(NSURL *(^)(void))fallbackURLProvider;
+- (NSURL *)jsBundleURLForBundleRoot:(NSString *)bundleRoot fallbackURLProvider:(NSURL * (^)(void))fallbackURLProvider;
 
 /**
  * Returns the jsBundleURL for a given bundle entrypoint and
@@ -56,16 +55,14 @@ extern const NSUInteger kRCTBundleURLProviderDefaultPort;
  * Returns the jsBundleURL for a given bundle entrypoint and
  * the fallback offline JS bundle if the packager is not running.
  */
-- (NSURL *)jsBundleURLForBundleRoot:(NSString *)bundleRoot
-                   fallbackResource:(NSString *)resourceName;
+- (NSURL *)jsBundleURLForBundleRoot:(NSString *)bundleRoot fallbackResource:(NSString *)resourceName;
 
 /**
  * Returns the jsBundleURL for a given bundle entrypoint and
  * the fallback offline JS bundle. If resourceName or extension
  * are nil, "main" and "jsbundle" will be used, respectively.
  */
-- (NSURL *)jsBundleURLForFallbackResource:(NSString *)resourceName
-                        fallbackExtension:(NSString *)extension;
+- (NSURL *)jsBundleURLForFallbackResource:(NSString *)resourceName fallbackExtension:(NSString *)extension;
 
 /**
  * Returns the resourceURL for a given bundle entrypoint and
@@ -102,8 +99,6 @@ extern const NSUInteger kRCTBundleURLProviderDefaultPort;
  * In general, please use the instance method to decide if the packager is running and fallback to the pre-packaged
  * resource if it is not: -resourceURLForResourceRoot:resourceName:resourceExtension:offlineBundle:
  */
-+ (NSURL *)resourceURLForResourcePath:(NSString *)path
-                         packagerHost:(NSString *)packagerHost
-                                query:(NSString *)query;
++ (NSURL *)resourceURLForResourcePath:(NSString *)path packagerHost:(NSString *)packagerHost query:(NSString *)query;
 
 @end

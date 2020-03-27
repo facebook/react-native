@@ -13,14 +13,14 @@
  * The stage of the Surface
  */
 typedef NS_OPTIONS(NSInteger, RCTSurfaceStage) {
-  RCTSurfaceStageSurfaceDidInitialize = 1 << 0,        // Surface object was created
-  RCTSurfaceStageBridgeDidLoad = 1 << 1,               // Bridge was loaded
-  RCTSurfaceStageModuleDidLoad = 1 << 2,               // Module (JavaScript code) was loaded
-  RCTSurfaceStageSurfaceDidRun = 1 << 3,               // Module (JavaScript code) was run
-  RCTSurfaceStageSurfaceDidInitialRendering = 1 << 4,  // UIManager created the first shadow views
-  RCTSurfaceStageSurfaceDidInitialLayout = 1 << 5,     // UIManager completed the first layout pass
-  RCTSurfaceStageSurfaceDidInitialMounting = 1 << 6,   // UIManager completed the first mounting pass
-  RCTSurfaceStageSurfaceDidStop = 1 << 7,              // Surface stopped
+  RCTSurfaceStageSurfaceDidInitialize = 1 << 0, // Surface object was created
+  RCTSurfaceStageBridgeDidLoad = 1 << 1, // Bridge was loaded
+  RCTSurfaceStageModuleDidLoad = 1 << 2, // Module (JavaScript code) was loaded
+  RCTSurfaceStageSurfaceDidRun = 1 << 3, // Module (JavaScript code) was run
+  RCTSurfaceStageSurfaceDidInitialRendering = 1 << 4, // UIManager created the first shadow views
+  RCTSurfaceStageSurfaceDidInitialLayout = 1 << 5, // UIManager completed the first layout pass
+  RCTSurfaceStageSurfaceDidInitialMounting = 1 << 6, // UIManager completed the first mounting pass
+  RCTSurfaceStageSurfaceDidStop = 1 << 7, // Surface stopped
 
   // Most of the previously existed stages make no sense in the new architecture;
   // now Surface exposes only three simple stages:
@@ -30,7 +30,8 @@ typedef NS_OPTIONS(NSInteger, RCTSurfaceStage) {
   // Surface was started.
   RCTSurfaceStageStarted = 1 << 8,
   // All off-main-thread work is done; we are ready to mount the UI.
-  RCTSurfaceStagePrepared = RCTSurfaceStageBridgeDidLoad | RCTSurfaceStageModuleDidLoad | RCTSurfaceStageSurfaceDidRun | RCTSurfaceStageSurfaceDidInitialRendering | RCTSurfaceStageSurfaceDidInitialLayout,
+  RCTSurfaceStagePrepared = RCTSurfaceStageBridgeDidLoad | RCTSurfaceStageModuleDidLoad | RCTSurfaceStageSurfaceDidRun |
+      RCTSurfaceStageSurfaceDidInitialRendering | RCTSurfaceStageSurfaceDidInitialLayout,
   // All main-thread work is done, the UI was mounted.
   RCTSurfaceStageMounted = RCTSurfaceStageSurfaceDidInitialMounting,
 };

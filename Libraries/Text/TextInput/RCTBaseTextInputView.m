@@ -208,8 +208,10 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
                                                                           offset:start];
   UITextPosition *endPosition = [self.backedTextInputView positionFromPosition:self.backedTextInputView.beginningOfDocument
                                                                         offset:end];
-  UITextRange *range = [self.backedTextInputView textRangeFromPosition:startPosition toPosition:endPosition];
-  [self.backedTextInputView setSelectedTextRange:range notifyDelegate:NO];
+  if (startPosition && endPosition) {
+    UITextRange *range = [self.backedTextInputView textRangeFromPosition:startPosition toPosition:endPosition];
+    [self.backedTextInputView setSelectedTextRange:range notifyDelegate:NO];
+  }
 }
 
 - (void)setTextContentType:(NSString *)type

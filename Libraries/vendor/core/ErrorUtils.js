@@ -8,7 +8,7 @@
  * @flow strict
  */
 
-import type {ErrorUtilsT} from '../../polyfills/error-guard.js';
+import type {ErrorUtilsT} from '../../polyfills/error-guard';
 
 /**
  * The particular require runtime that we are using looks for a global

@@ -16,7 +16,7 @@
  * to native method.
  */
 
-@interface RCTManagedPointer: NSObject
+@interface RCTManagedPointer : NSObject
 
 @property (nonatomic, readonly) void *voidPointer;
 
@@ -34,6 +34,7 @@ RCTManagedPointer *managedPointer(P initializer)
   return [[RCTManagedPointer alloc] initWithPointer:std::move(ptr)];
 }
 
-} }
+}
+}
 
 #endif

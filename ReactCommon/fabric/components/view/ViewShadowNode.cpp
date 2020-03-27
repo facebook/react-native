@@ -11,24 +11,24 @@
 namespace facebook {
 namespace react {
 
-const char ViewComponentName[] = "View";
+char const ViewComponentName[] = "View";
 
 ViewShadowNode::ViewShadowNode(
     ShadowNodeFragment const &fragment,
     ShadowNodeFamily::Shared const &family,
     ShadowNodeTraits traits)
     : ConcreteViewShadowNode(fragment, family, traits) {
-  updateTraits();
+  initialize();
 }
 
 ViewShadowNode::ViewShadowNode(
     ShadowNode const &sourceShadowNode,
     ShadowNodeFragment const &fragment)
     : ConcreteViewShadowNode(sourceShadowNode, fragment) {
-  updateTraits();
+  initialize();
 }
 
-static bool isColorMeaningful(SharedColor const &color) {
+static bool isColorMeaningful(SharedColor const &color) noexcept {
   if (!color) {
     return false;
   }
@@ -36,8 +36,10 @@ static bool isColorMeaningful(SharedColor const &color) {
   return colorComponentsFromColor(color).alpha > 0;
 }
 
-void ViewShadowNode::updateTraits() {
+void ViewShadowNode::initialize() noexcept {
   auto &viewProps = static_cast<ViewProps const &>(*props_);
+
+  orderIndex_ = viewProps.zIndex;
 
   bool formsStackingContext = !viewProps.collapsable ||
       viewProps.pointerEvents == PointerEventsMode::None ||
@@ -54,7 +56,7 @@ void ViewShadowNode::updateTraits() {
   formsView = formsView || formsStackingContext;
 
 #ifdef ANDROID
-  // Force `formsStackingContext` trait for nodes which have .
+  // Force `formsStackingContext` trait for nodes which have `formsView`.
   // TODO: T63560216 Investigate why/how `formsView` entangled with
   // `formsStackingContext`.
   formsStackingContext = formsStackingContext || formsView;

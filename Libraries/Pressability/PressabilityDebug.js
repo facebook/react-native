@@ -10,7 +10,7 @@
 
 'use strict';
 
-import normalizeColor from '../StyleSheet/normalizeColor.js';
+import normalizeColor from '../StyleSheet/normalizeColor';
 import type {ColorValue} from '../StyleSheet/StyleSheetTypes';
 
 import Touchable from '../Components/Touchable/Touchable';

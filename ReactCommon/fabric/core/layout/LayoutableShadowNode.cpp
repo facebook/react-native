@@ -156,6 +156,21 @@ Size LayoutableShadowNode::measure(LayoutConstraints layoutConstraints) const {
   return Size();
 }
 
+Size LayoutableShadowNode::measure(
+    LayoutContext const &layoutContext,
+    LayoutConstraints const &layoutConstraints) const {
+  auto clonedShadowNode = clone({});
+  auto &layoutableShadowNode =
+      static_cast<LayoutableShadowNode &>(*clonedShadowNode);
+
+  auto localLayoutContext = layoutContext;
+  localLayoutContext.affectedNodes = nullptr;
+
+  layoutableShadowNode.layoutTree(localLayoutContext, layoutConstraints);
+
+  return layoutableShadowNode.getLayoutMetrics().frame.size;
+}
+
 Float LayoutableShadowNode::firstBaseline(Size size) const {
   return 0;
 }
@@ -203,13 +218,14 @@ ShadowNode::Shared LayoutableShadowNode::findNodeAtPoint(
     return nullptr;
   }
   auto frame = layoutableShadowNode->getLayoutMetrics().frame;
-  auto isPointInside = frame.containsPoint(point);
+  auto transformedFrame = frame * layoutableShadowNode->getTransform();
+  auto isPointInside = transformedFrame.containsPoint(point);
 
   if (!isPointInside) {
     return nullptr;
   }
 
-  auto newPoint = point - frame.origin;
+  auto newPoint = point - frame.origin * layoutableShadowNode->getTransform();
   for (const auto &childShadowNode : node->getChildren()) {
     auto hitView = findNodeAtPoint(childShadowNode, newPoint);
     if (hitView) {

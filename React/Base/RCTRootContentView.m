@@ -33,8 +33,8 @@
   return self;
 }
 
-RCT_NOT_IMPLEMENTED(-(instancetype)initWithFrame:(CGRect)frame)
-RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder:(nonnull NSCoder *)aDecoder)
+RCT_NOT_IMPLEMENTED(-(instancetype)initWithFrame : (CGRect)frame)
+RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (nonnull NSCoder *)aDecoder)
 
 - (void)layoutSubviews
 {
@@ -49,8 +49,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder:(nonnull NSCoder *)aDecoder)
   dispatch_async(dispatch_get_main_queue(), ^{
     if (!self->_contentHasAppeared) {
       self->_contentHasAppeared = YES;
-      [[NSNotificationCenter defaultCenter] postNotificationName:RCTContentDidAppearNotification
-                                                          object:self.superview];
+      [[NSNotificationCenter defaultCenter] postNotificationName:RCTContentDidAppearNotification object:self.superview];
     }
   });
 }
@@ -70,8 +69,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder:(nonnull NSCoder *)aDecoder)
   CGSize size = self.bounds.size;
   return CGSizeMake(
       _sizeFlexibility & RCTRootViewSizeFlexibilityWidth ? INFINITY : size.width,
-      _sizeFlexibility & RCTRootViewSizeFlexibilityHeight ? INFINITY : size.height
-    );
+      _sizeFlexibility & RCTRootViewSizeFlexibilityHeight ? INFINITY : size.height);
 }
 
 - (void)updateAvailableSize
@@ -101,7 +99,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder:(nonnull NSCoder *)aDecoder)
 
     [_bridge enqueueJSCall:@"AppRegistry"
                     method:@"unmountApplicationComponentAtRootTag"
-                      args:@[self.reactTag]
+                      args:@[ self.reactTag ]
                 completion:NULL];
   }
 }

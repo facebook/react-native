@@ -11,9 +11,9 @@
 'use strict';
 
 import invariant from 'invariant';
-import {Commands} from '../View/ViewNativeComponent.js';
-import type {ColorValue} from '../../StyleSheet/StyleSheetTypes.js';
-import type {PressEvent} from '../../Types/CoreEventTypes.js';
+import {Commands} from '../View/ViewNativeComponent';
+import type {ColorValue} from '../../StyleSheet/StyleSheetTypes';
+import type {PressEvent} from '../../Types/CoreEventTypes';
 import {Platform, View, processColor} from 'react-native';
 import * as React from 'react';
 import {useMemo} from 'react';

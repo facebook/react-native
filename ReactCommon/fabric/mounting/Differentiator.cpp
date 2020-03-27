@@ -79,6 +79,39 @@ class TinyMap final {
   better::small_vector<Pair, DefaultSize> vector_;
 };
 
+/*
+ * Sorting comparator for `reorderInPlaceIfNeeded`.
+ */
+static bool shouldFirstPairComesBeforeSecondOne(
+    ShadowViewNodePair const &lhs,
+    ShadowViewNodePair const &rhs) noexcept {
+  return lhs.shadowNode->getOrderIndex() < rhs.shadowNode->getOrderIndex();
+}
+
+/*
+ * Reorders pairs in-place based on `orderIndex` using a stable sort algorithm.
+ */
+static void reorderInPlaceIfNeeded(ShadowViewNodePair::List &pairs) noexcept {
+  if (pairs.size() < 2) {
+    return;
+  }
+
+  auto isReorderNeeded = false;
+  for (auto const &pair : pairs) {
+    if (pair.shadowNode->getOrderIndex() != 0) {
+      isReorderNeeded = true;
+      break;
+    }
+  }
+
+  if (!isReorderNeeded) {
+    return;
+  }
+
+  std::stable_sort(
+      pairs.begin(), pairs.end(), &shouldFirstPairComesBeforeSecondOne);
+}
+
 static void sliceChildShadowNodeViewPairsRecursively(
     ShadowViewNodePair::List &pairList,
     Point layoutOffset,
@@ -86,7 +119,9 @@ static void sliceChildShadowNodeViewPairsRecursively(
   for (auto const &sharedChildShadowNode : shadowNode.getChildren()) {
     auto &childShadowNode = *sharedChildShadowNode;
     auto shadowView = ShadowView(childShadowNode);
-    shadowView.layoutMetrics.frame.origin += layoutOffset;
+    if (shadowView.layoutMetrics != EmptyLayoutMetrics) {
+      shadowView.layoutMetrics.frame.origin += layoutOffset;
+    }
 
     if (childShadowNode.getTraits().check(
             ShadowNodeTraits::Trait::FormsStackingContext)) {
@@ -132,6 +167,10 @@ static_assert(
     std::is_move_constructible<ShadowViewNodePair>::value,
     "`ShadowViewNodePair` must be `move constructible`.");
 static_assert(
+    std::is_move_constructible<ShadowViewNodePair::List>::value,
+    "`ShadowViewNodePair::List` must be `move constructible`.");
+
+static_assert(
     std::is_move_assignable<ShadowViewMutation>::value,
     "`ShadowViewMutation` must be `move assignable`.");
 static_assert(
@@ -140,18 +179,25 @@ static_assert(
 static_assert(
     std::is_move_assignable<ShadowViewNodePair>::value,
     "`ShadowViewNodePair` must be `move assignable`.");
+static_assert(
+    std::is_move_assignable<ShadowViewNodePair::List>::value,
+    "`ShadowViewNodePair::List` must be `move assignable`.");
 
 static void calculateShadowViewMutations(
     ShadowViewMutation::List &mutations,
     ShadowView const &parentShadowView,
-    ShadowViewNodePair::List const &oldChildPairs,
-    ShadowViewNodePair::List const &newChildPairs) {
+    ShadowViewNodePair::List &&oldChildPairs,
+    ShadowViewNodePair::List &&newChildPairs) {
   // The current version of the algorithm is optimized for simplicity,
   // not for performance or optimal result.
 
   if (oldChildPairs.size() == 0 && newChildPairs.size() == 0) {
     return;
   }
+
+  // Sorting pairs based on `orderIndex` if needed.
+  reorderInPlaceIfNeeded(oldChildPairs);
+  reorderInPlaceIfNeeded(newChildPairs);
 
   auto index = int{0};
 
@@ -186,16 +232,16 @@ static void calculateShadowViewMutations(
           index));
     }
 
-    auto const oldGrandChildPairs =
+    auto oldGrandChildPairs =
         sliceChildShadowNodeViewPairs(*oldChildPair.shadowNode);
-    auto const newGrandChildPairs =
+    auto newGrandChildPairs =
         sliceChildShadowNodeViewPairs(*newChildPair.shadowNode);
     calculateShadowViewMutations(
         *(newGrandChildPairs.size() ? &downwardMutations
                                     : &destructiveDownwardMutations),
         oldChildPair.shadowView,
-        oldGrandChildPairs,
-        newGrandChildPairs);
+        std::move(oldGrandChildPairs),
+        std::move(newGrandChildPairs));
   }
 
   int lastIndexAfterFirstStage = index;
@@ -243,16 +289,16 @@ static void calculateShadowViewMutations(
       auto const &newChildPair = *it->second;
 
       if (newChildPair != oldChildPair) {
-        auto const oldGrandChildPairs =
+        auto oldGrandChildPairs =
             sliceChildShadowNodeViewPairs(*oldChildPair.shadowNode);
-        auto const newGrandChildPairs =
+        auto newGrandChildPairs =
             sliceChildShadowNodeViewPairs(*newChildPair.shadowNode);
         calculateShadowViewMutations(
             *(newGrandChildPairs.size() ? &downwardMutations
                                         : &destructiveDownwardMutations),
             newChildPair.shadowView,
-            oldGrandChildPairs,
-            newGrandChildPairs);
+            std::move(oldGrandChildPairs),
+            std::move(newGrandChildPairs));
       }
 
       // In any case we have to remove the view from `insertedPairs` as

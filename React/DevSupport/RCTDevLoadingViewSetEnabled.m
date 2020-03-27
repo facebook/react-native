@@ -13,10 +13,12 @@ static BOOL isDevLoadingViewEnabled = YES;
 static BOOL isDevLoadingViewEnabled = NO;
 #endif
 
-void RCTDevLoadingViewSetEnabled(BOOL enabled) {
+void RCTDevLoadingViewSetEnabled(BOOL enabled)
+{
   isDevLoadingViewEnabled = enabled;
 }
 
-BOOL RCTDevLoadingViewGetEnabled() {
+BOOL RCTDevLoadingViewGetEnabled()
+{
   return isDevLoadingViewEnabled;
 }

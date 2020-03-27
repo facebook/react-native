@@ -69,6 +69,15 @@ class LayoutableShadowNode : public ShadowNode {
   virtual Size measure(LayoutConstraints layoutConstraints) const;
 
   /*
+   * Measures the node with given `layoutContext` and `layoutConstraints`.
+   * The size of nested content and the padding should be included, the margin
+   * should *not* be included. Default implementation returns zero size.
+   */
+  virtual Size measure(
+      LayoutContext const &layoutContext,
+      LayoutConstraints const &layoutConstraints) const;
+
+  /*
    * Computes layout recursively.
    * Additional environmental constraints might be provided via `layoutContext`
    * argument.
@@ -97,6 +106,12 @@ class LayoutableShadowNode : public ShadowNode {
   LayoutMetrics getRelativeLayoutMetrics(
       LayoutableShadowNode const &ancestorLayoutableShadowNode,
       LayoutInspectingPolicy policy) const;
+
+  /*
+   * Sets layout metrics for the shadow node.
+   * Returns true if the metrics are different from previous ones.
+   */
+  bool setLayoutMetrics(LayoutMetrics layoutMetrics);
 
   /*
    * Returns the ShadowNode that is rendered at the Point received as a
@@ -140,12 +155,6 @@ class LayoutableShadowNode : public ShadowNode {
    */
   LayoutableShadowNode::UnsharedList getLayoutableChildNodes() const;
 
-  /*
-   * Sets layout metrics for the shadow node.
-   * Returns true if the metrics are different from previous ones.
-   */
-  virtual bool setLayoutMetrics(LayoutMetrics layoutMetrics);
-
 #pragma mark - DebugStringConvertible
 
 #if RN_DEBUG_STRING_CONVERTIBLE
@@ -172,6 +181,9 @@ inline LayoutableShadowNode const &traitCast<LayoutableShadowNode const &>(
 template <>
 inline LayoutableShadowNode const *traitCast<LayoutableShadowNode const *>(
     ShadowNode const *shadowNode) {
+  if (!shadowNode) {
+    return nullptr;
+  }
   bool castable =
       shadowNode->getTraits().check(ShadowNodeTraits::Trait::LayoutableKind);
   assert(

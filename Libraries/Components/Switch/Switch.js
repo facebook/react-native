@@ -11,9 +11,9 @@
 
 'use strict';
 
-const Platform = require('../../Utilities/Platform');
-const React = require('react');
-const StyleSheet = require('../../StyleSheet/StyleSheet');
+import Platform from '../../Utilities/Platform';
+import * as React from 'react';
+import StyleSheet from '../../StyleSheet/StyleSheet';
 
 import AndroidSwitchNativeComponent, {
   Commands as AndroidSwitchCommands,

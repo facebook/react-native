@@ -9,6 +9,8 @@ package com.facebook.react.views.textinput;
 
 import static com.facebook.react.uimanager.UIManagerHelper.getReactContext;
 
+import android.content.Context;
+import android.content.res.ColorStateList;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
@@ -35,6 +37,7 @@ import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 import com.facebook.react.bridge.JavaOnlyArray;
 import com.facebook.react.bridge.JavaOnlyMap;
 import com.facebook.react.bridge.ReactContext;
+import com.facebook.react.bridge.ReactSoftException;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReadableNativeMap;
@@ -205,7 +208,7 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
         this.receiveCommand(reactEditText, "blur", args);
         break;
       case SET_MOST_RECENT_EVENT_COUNT:
-        this.receiveCommand(reactEditText, "setMostRecentEventCount", args);
+        // TODO: delete, this is no longer used from JS
         break;
       case SET_TEXT_AND_SELECTION:
         this.receiveCommand(reactEditText, "setTextAndSelection", args);
@@ -226,27 +229,25 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
         reactEditText.clearFocusFromJS();
         break;
       case "setMostRecentEventCount":
-        reactEditText.setMostRecentEventCount(args.getInt(0));
+        // TODO: delete, this is no longer used from JS
         break;
       case "setTextAndSelection":
         int mostRecentEventCount = args.getInt(0);
-        reactEditText.setMostRecentEventCount(mostRecentEventCount);
-
-        if (mostRecentEventCount != UNSET) {
-          String text = args.getString(1);
-
-          int start = args.getInt(2);
-          int end = args.getInt(3);
-          if (end == UNSET) {
-            end = start;
-          }
-
-          // TODO: construct a ReactTextUpdate and use that with maybeSetText
-          // instead of calling setText, etc directly - doing that will definitely cause bugs.
-          reactEditText.maybeSetTextFromJS(
-              getReactTextUpdate(text, mostRecentEventCount, start, end));
-          reactEditText.maybeSetSelection(mostRecentEventCount, start, end);
+        if (mostRecentEventCount == UNSET) {
+          return;
         }
+
+        String text = args.getString(1);
+
+        int start = args.getInt(2);
+        int end = args.getInt(3);
+        if (end == UNSET) {
+          end = start;
+        }
+
+        reactEditText.maybeSetTextFromJS(
+            getReactTextUpdate(text, mostRecentEventCount, start, end));
+        reactEditText.maybeSetSelection(mostRecentEventCount, start, end);
         break;
     }
   }
@@ -467,11 +468,6 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
     }
   }
 
-  @ReactProp(name = "mostRecentEventCount", defaultInt = 0)
-  public void setMostRecentEventCount(ReactEditText view, int mostRecentEventCount) {
-    view.setMostRecentEventCount(mostRecentEventCount);
-  }
-
   @ReactProp(name = "caretHidden", defaultBoolean = false)
   public void setCaretHidden(ReactEditText view, boolean caretHidden) {
     view.setCursorVisible(!caretHidden);
@@ -496,7 +492,19 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
   @ReactProp(name = ViewProps.COLOR, customType = "Color")
   public void setColor(ReactEditText view, @Nullable Integer color) {
     if (color == null) {
-      view.setTextColor(DefaultStyleValuesUtil.getDefaultTextColor(view.getContext()));
+      ColorStateList defaultContextTextColor =
+          DefaultStyleValuesUtil.getDefaultTextColor(view.getContext());
+
+      if (defaultContextTextColor != null) {
+        view.setTextColor(defaultContextTextColor);
+      } else {
+        Context c = view.getContext();
+        ReactSoftException.logSoftException(
+            TAG,
+            new IllegalStateException(
+                "Could not get default text color from View Context: "
+                    + (c != null ? c.getClass().getCanonicalName() : "null")));
+      }
     } else {
       view.setTextColor(color);
     }
@@ -1198,26 +1206,6 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
     view.setPadding(left, top, right, bottom);
   }
 
-  // This is copied from ReactTextViewManager
-  // TODO: this should be from a common class or a static method somewhere
-  private int getTextBreakStrategy(@Nullable String textBreakStrategy) {
-    int androidTextBreakStrategy = Layout.BREAK_STRATEGY_HIGH_QUALITY;
-    if (textBreakStrategy != null) {
-      switch (textBreakStrategy) {
-        case "simple":
-          androidTextBreakStrategy = Layout.BREAK_STRATEGY_SIMPLE;
-          break;
-        case "balanced":
-          androidTextBreakStrategy = Layout.BREAK_STRATEGY_BALANCED;
-          break;
-        default:
-          androidTextBreakStrategy = Layout.BREAK_STRATEGY_HIGH_QUALITY;
-          break;
-      }
-    }
-    return androidTextBreakStrategy;
-  }
-
   /**
    * May be overriden by subclasses that would like to provide their own instance of the internal
    * {@code EditText} this class uses to determine the expected size of the view.
@@ -1236,22 +1224,33 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
     if (!state.getBoolean("hasThemeData")) {
       WritableNativeMap update = new WritableNativeMap();
 
-      EditText editText = createInternalEditText((ThemedReactContext) view.getContext());
+      ReactContext reactContext = UIManagerHelper.getReactContext(view);
+      if (reactContext instanceof ThemedReactContext) {
+        ThemedReactContext themedReactContext = (ThemedReactContext) reactContext;
+        EditText editText = createInternalEditText(themedReactContext);
 
-      // Even though we check `data["textChanged"].empty()` before using the value in C++,
-      // state updates crash without this value on key exception. It's unintuitive why
-      // folly::dynamic is crashing there and if there's any way to fix on the native side,
-      // so leave this here until we can figure out a better way of key-existence-checking in C++.
-      update.putNull("textChanged");
+        // Even though we check `data["textChanged"].empty()` before using the value in C++,
+        // state updates crash without this value on key exception. It's unintuitive why
+        // folly::dynamic is crashing there and if there's any way to fix on the native side,
+        // so leave this here until we can figure out a better way of key-existence-checking in C++.
+        update.putNull("textChanged");
 
-      update.putDouble(
-          "themePaddingStart", PixelUtil.toDIPFromPixel(ViewCompat.getPaddingStart(editText)));
-      update.putDouble(
-          "themePaddingEnd", PixelUtil.toDIPFromPixel(ViewCompat.getPaddingEnd(editText)));
-      update.putDouble("themePaddingTop", PixelUtil.toDIPFromPixel(editText.getPaddingTop()));
-      update.putDouble("themePaddingBottom", PixelUtil.toDIPFromPixel(editText.getPaddingBottom()));
+        update.putDouble(
+            "themePaddingStart", PixelUtil.toDIPFromPixel(ViewCompat.getPaddingStart(editText)));
+        update.putDouble(
+            "themePaddingEnd", PixelUtil.toDIPFromPixel(ViewCompat.getPaddingEnd(editText)));
+        update.putDouble("themePaddingTop", PixelUtil.toDIPFromPixel(editText.getPaddingTop()));
+        update.putDouble(
+            "themePaddingBottom", PixelUtil.toDIPFromPixel(editText.getPaddingBottom()));
 
-      stateWrapper.updateState(update);
+        stateWrapper.updateState(update);
+      } else {
+        ReactSoftException.logSoftException(
+            TAG,
+            new IllegalStateException(
+                "ReactContext is not a ThemedReactContent: "
+                    + (reactContext != null ? reactContext.getClass().getName() : "null")));
+      }
     }
 
     ReadableMap attributedString = state.getMap("attributedString");
@@ -1261,13 +1260,8 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
         TextLayoutManager.getOrCreateSpannableForText(
             view.getContext(), attributedString, mReactTextViewManagerCallback);
 
-    TextAttributeProps textViewProps = new TextAttributeProps(props);
-
     int textBreakStrategy =
-        getTextBreakStrategy(paragraphAttributes.getString("textBreakStrategy"));
-
-    // TODO add justificationMode prop into local Data
-    int justificationMode = Layout.JUSTIFICATION_MODE_NONE;
+        TextAttributeProps.getTextBreakStrategy(paragraphAttributes.getString("textBreakStrategy"));
 
     view.mStateWrapper = stateWrapper;
 
@@ -1275,9 +1269,9 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
         spanned,
         state.getInt("mostRecentEventCount"),
         false, // TODO add this into local Data
-        textViewProps.getTextAlign(),
+        TextAttributeProps.getTextAlignment(props),
         textBreakStrategy,
-        justificationMode,
+        TextAttributeProps.getJustificationMode(props),
         attributedString);
   }
 }

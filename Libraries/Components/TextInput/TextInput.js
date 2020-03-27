@@ -45,9 +45,9 @@ if (Platform.OS === 'android') {
   AndroidTextInputCommands = require('./AndroidTextInputNativeComponent')
     .Commands;
 } else if (Platform.OS === 'ios') {
-  RCTMultilineTextInputView = require('./RCTMultilineTextInputNativeComponent.js')
+  RCTMultilineTextInputView = require('./RCTMultilineTextInputNativeComponent')
     .default;
-  RCTSinglelineTextInputView = require('./RCTSingelineTextInputNativeComponent.js')
+  RCTSinglelineTextInputView = require('./RCTSingelineTextInputNativeComponent')
     .default;
 }
 
@@ -985,14 +985,12 @@ function InternalTextInput(props: Props): React.Node {
   };
 
   const _onChange = (event: ChangeEvent) => {
-    // Make sure to fire the mostRecentEventCount first so it is already set on
-    // native when the text value is set.
     if (AndroidTextInputCommands && inputRef.current != null) {
-      AndroidTextInputCommands.setMostRecentEventCount(
-        inputRef.current,
-        event.nativeEvent.eventCount,
-      );
+      // Do nothing
     } else if (inputRef.current != null) {
+      // Make sure to fire the mostRecentEventCount first so it is already set on
+      // native when the text value is set.
+      // This is now only relevant on iOS until we migrate to ViewCommands everywhere
       inputRef.current.setNativeProps({
         mostRecentEventCount: event.nativeEvent.eventCount,
       });

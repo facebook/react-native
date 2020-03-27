@@ -160,7 +160,8 @@ RCT_EXPORT_MODULE()
 {
   _presentedItems = nil;
   [_actionSheet dismissViewControllerAnimated:YES
-                                   completion:^(void){}];
+                                   completion:^(void){
+                                   }];
 }
 
 - (void)showOnShake
@@ -427,10 +428,7 @@ RCT_EXPORT_METHOD(show)
   _presentedItems = items;
   [RCTPresentedViewController() presentViewController:_actionSheet animated:YES completion:nil];
 
-  [_bridge enqueueJSCall:@"RCTNativeAppEventEmitter"
-                  method:@"emit"
-                    args:@[@"RCTDevMenuShown"]
-              completion:NULL];
+  [_bridge enqueueJSCall:@"RCTNativeAppEventEmitter" method:@"emit" args:@[ @"RCTDevMenuShown" ] completion:NULL];
 }
 
 - (RCTDevMenuAlertActionHandler)alertActionHandlerForDevItem:(RCTDevMenuItem *__nullable)item
@@ -493,16 +491,18 @@ RCT_EXPORT_METHOD(setHotLoadingEnabled : (BOOL)enabled)
   return _bridge.devSettings.isHotLoadingEnabled;
 }
 
-- (std::shared_ptr<facebook::react::TurboModule>)getTurboModuleWithJsInvoker:(std::shared_ptr<facebook::react::CallInvoker>)jsInvoker
+- (std::shared_ptr<facebook::react::TurboModule>)
+    getTurboModuleWithJsInvoker:(std::shared_ptr<facebook::react::CallInvoker>)jsInvoker
+                     perfLogger:(id<RCTTurboModulePerformanceLogger>)perfLogger
 {
-  return std::make_shared<facebook::react::NativeDevMenuSpecJSI>(self, jsInvoker);
+  return std::make_shared<facebook::react::NativeDevMenuSpecJSI>(self, jsInvoker, perfLogger);
 }
 
 @end
 
 #else // Unavailable when not in dev mode
 
-@interface RCTDevMenu() <NativeDevMenuSpec>
+@interface RCTDevMenu () <NativeDevMenuSpec>
 @end
 
 @implementation RCTDevMenu
@@ -520,7 +520,7 @@ RCT_EXPORT_METHOD(setHotLoadingEnabled : (BOOL)enabled)
 {
 }
 
-- (void)debugRemotely : (BOOL)enableDebug
+- (void)debugRemotely:(BOOL)enableDebug
 {
 }
 
@@ -533,9 +533,11 @@ RCT_EXPORT_METHOD(setHotLoadingEnabled : (BOOL)enabled)
   return @"DevMenu";
 }
 
-- (std::shared_ptr<facebook::react::TurboModule>)getTurboModuleWithJsInvoker:(std::shared_ptr<facebook::react::CallInvoker>)jsInvoker
+- (std::shared_ptr<facebook::react::TurboModule>)
+    getTurboModuleWithJsInvoker:(std::shared_ptr<facebook::react::CallInvoker>)jsInvoker
+                     perfLogger:(id<RCTTurboModulePerformanceLogger>)perfLogger
 {
-  return std::make_shared<facebook::react::NativeDevMenuSpecJSI>(self, jsInvoker);
+  return std::make_shared<facebook::react::NativeDevMenuSpecJSI>(self, jsInvoker, perfLogger);
 }
 
 @end
@@ -568,6 +570,7 @@ RCT_EXPORT_METHOD(setHotLoadingEnabled : (BOOL)enabled)
 
 @end
 
-Class RCTDevMenuCls(void) {
+Class RCTDevMenuCls(void)
+{
   return RCTDevMenu.class;
 }

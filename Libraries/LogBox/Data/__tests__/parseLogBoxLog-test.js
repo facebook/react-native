@@ -272,6 +272,74 @@ describe('parseLogBoxLog', () => {
     });
   });
 
+  it('parses an invalid require syntax error', () => {
+    const error = {
+      message: `Unable to resolve module \`ListCellx\` from /path/to/file.js: ListCellx could not be found within the project.
+
+If you are sure the module exists, try these steps:
+ 1. Clear watchman watches: watchman watch-del-all
+ 2. Delete node_modules and run yarn install
+ 3. Reset Metro's cache: yarn start --reset-cache
+ 4. Remove the cache: rm -rf /tmp/metro-*
+\u001b[0m \u001b[90m 10 | \u001b[39m\u001b[36mimport\u001b[39m \u001b[33mColor\u001b[39m from \u001b[32m'Color'\u001b[39m\u001b[33m;\u001b[39m\u001b[0m
+\u001b[0m \u001b[90m 11 | \u001b[39m\u001b[36mimport\u001b[39m \u001b[33mList\u001b[39m from \u001b[32m'List'\u001b[39m\u001b[33m;\u001b[39m\u001b[0m
+\u001b[0m\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 12 | \u001b[39m\u001b[36mimport\u001b[39m \u001b[33mListCell\u001b[39m from \u001b[32m'ListCellx'\u001b[39m\u001b[33m;\u001b[39m\u001b[0m
+\u001b[0m \u001b[90m    | \u001b[39m                           \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\u001b[0m
+\u001b[0m \u001b[90m 13 | \u001b[39m\u001b[36mimport\u001b[39m \u001b[33mNullState\u001b[39m from \u001b[32m'NullState'\u001b[39m\u001b[33m;\u001b[39m\u001b[0m
+\u001b[0m \u001b[90m 14 | \u001b[39m\u001b[36mimport\u001b[39m \u001b[33mUnitHeader\u001b[39m from \u001b[32m'UnitHeader'\u001b[39m\u001b[33m;\u001b[39m\u001b[0m
+\u001b[0m \u001b[90m 15 | \u001b[39m\u001b[36mimport\u001b[39m fbRemoteAsset from \u001b[32m'fbRemoteAsset'\u001b[39m\u001b[33m;\u001b[39m\u001b[0m`,
+      originalMessage: `Unable to resolve module \`ListCellx\` from /path/to/file.js: ListCellx could not be found within the project.
+
+If you are sure the module exists, try these steps:
+ 1. Clear watchman watches: watchman watch-del-all
+ 2. Delete node_modules and run yarn install
+ 3. Reset Metro's cache: yarn start --reset-cache
+ 4. Remove the cache: rm -rf /tmp/metro-*
+\u001b[0m \u001b[90m 10 | \u001b[39m\u001b[36mimport\u001b[39m \u001b[33mColor\u001b[39m from \u001b[32m'Color'\u001b[39m\u001b[33m;\u001b[39m\u001b[0m
+\u001b[0m \u001b[90m 11 | \u001b[39m\u001b[36mimport\u001b[39m \u001b[33mList\u001b[39m from \u001b[32m'List'\u001b[39m\u001b[33m;\u001b[39m\u001b[0m
+\u001b[0m\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 12 | \u001b[39m\u001b[36mimport\u001b[39m \u001b[33mListCell\u001b[39m from \u001b[32m'ListCellx'\u001b[39m\u001b[33m;\u001b[39m\u001b[0m
+\u001b[0m \u001b[90m    | \u001b[39m                           \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\u001b[0m
+\u001b[0m \u001b[90m 13 | \u001b[39m\u001b[36mimport\u001b[39m \u001b[33mNullState\u001b[39m from \u001b[32m'NullState'\u001b[39m\u001b[33m;\u001b[39m\u001b[0m
+\u001b[0m \u001b[90m 14 | \u001b[39m\u001b[36mimport\u001b[39m \u001b[33mUnitHeader\u001b[39m from \u001b[32m'UnitHeader'\u001b[39m\u001b[33m;\u001b[39m\u001b[0m
+\u001b[0m \u001b[90m 15 | \u001b[39m\u001b[36mimport\u001b[39m fbRemoteAsset from \u001b[32m'fbRemoteAsset'\u001b[39m\u001b[33m;\u001b[39m\u001b[0m`,
+      name: '',
+      isComponentError: false,
+      componentStack: '',
+      stack: [],
+      id: 0,
+      isFatal: true,
+    };
+
+    expect(parseLogBoxException(error)).toEqual({
+      level: 'syntax',
+      isComponentError: false,
+      codeFrame: {
+        fileName: '/path/to/file.js',
+        location: null,
+        content: `\u001b[0m \u001b[90m 10 | \u001b[39m\u001b[36mimport\u001b[39m \u001b[33mColor\u001b[39m from \u001b[32m'Color'\u001b[39m\u001b[33m;\u001b[39m\u001b[0m
+\u001b[0m \u001b[90m 11 | \u001b[39m\u001b[36mimport\u001b[39m \u001b[33mList\u001b[39m from \u001b[32m'List'\u001b[39m\u001b[33m;\u001b[39m\u001b[0m
+\u001b[0m\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 12 | \u001b[39m\u001b[36mimport\u001b[39m \u001b[33mListCell\u001b[39m from \u001b[32m'ListCellx'\u001b[39m\u001b[33m;\u001b[39m\u001b[0m
+\u001b[0m \u001b[90m    | \u001b[39m                           \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\u001b[0m
+\u001b[0m \u001b[90m 13 | \u001b[39m\u001b[36mimport\u001b[39m \u001b[33mNullState\u001b[39m from \u001b[32m'NullState'\u001b[39m\u001b[33m;\u001b[39m\u001b[0m
+\u001b[0m \u001b[90m 14 | \u001b[39m\u001b[36mimport\u001b[39m \u001b[33mUnitHeader\u001b[39m from \u001b[32m'UnitHeader'\u001b[39m\u001b[33m;\u001b[39m\u001b[0m
+\u001b[0m \u001b[90m 15 | \u001b[39m\u001b[36mimport\u001b[39m fbRemoteAsset from \u001b[32m'fbRemoteAsset'\u001b[39m\u001b[33m;\u001b[39m\u001b[0m`,
+      },
+      message: {
+        content: `ListCellx could not be found within the project.
+
+If you are sure the module exists, try these steps:
+ 1. Clear watchman watches: watchman watch-del-all
+ 2. Delete node_modules and run yarn install
+ 3. Reset Metro's cache: yarn start --reset-cache
+ 4. Remove the cache: rm -rf /tmp/metro-*`,
+        substitutions: [],
+      },
+      stack: [],
+      componentStack: [],
+      category: '/path/to/file.js-1-1',
+    });
+  });
+
   it('parses a reference error', () => {
     const error = {
       message: `

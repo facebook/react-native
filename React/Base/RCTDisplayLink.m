@@ -17,11 +17,9 @@
 #import "RCTProfile.h"
 
 #define RCTAssertRunLoop() \
-  RCTAssert(_runLoop == [NSRunLoop currentRunLoop], \
-  @"This method must be called on the CADisplayLink run loop")
+  RCTAssert(_runLoop == [NSRunLoop currentRunLoop], @"This method must be called on the CADisplayLink run loop")
 
-@implementation RCTDisplayLink
-{
+@implementation RCTDisplayLink {
   CADisplayLink *_jsDisplayLink;
   NSMutableSet<RCTModuleData *> *_frameUpdateObservers;
   NSRunLoop *_runLoop;
@@ -37,8 +35,7 @@
   return self;
 }
 
-- (void)registerModuleForFrameUpdates:(id<RCTBridgeModule>)module
-                       withModuleData:(RCTModuleData *)moduleData
+- (void)registerModuleForFrameUpdates:(id<RCTBridgeModule>)module withModuleData:(RCTModuleData *)moduleData
 {
   if (![moduleData.moduleClass conformsToProtocol:@protocol(RCTFrameUpdateObserver)] ||
       [_frameUpdateObservers containsObject:moduleData]) {
@@ -97,8 +94,7 @@
   [_jsDisplayLink invalidate];
 }
 
-- (void)dispatchBlock:(dispatch_block_t)block
-                queue:(dispatch_queue_t)queue
+- (void)dispatchBlock:(dispatch_block_t)block queue:(dispatch_queue_t)queue
 {
   if (queue == RCTJSThread) {
     block();
@@ -119,10 +115,12 @@
     if (!observer.paused) {
       if (moduleData.methodQueue) {
         RCTProfileBeginFlowEvent();
-        [self dispatchBlock:^{
-          RCTProfileEndFlowEvent();
-          [observer didUpdateFrame:frameUpdate];
-        } queue:moduleData.methodQueue];
+        [self
+            dispatchBlock:^{
+              RCTProfileEndFlowEvent();
+              [observer didUpdateFrame:frameUpdate];
+            }
+                    queue:moduleData.methodQueue];
       } else {
         [observer didUpdateFrame:frameUpdate];
       }
