@@ -688,9 +688,10 @@ jobs:
       - run:
           name: Flow Check iOS
           command: yarn flow-check-ios
-      - run:
-          name: Test Android Build
-          command: ./gradlew.bat RNTester:android:app:assembleRelease
+      # TODO: reenable this test    
+      # - run:
+      #     name: Test Android Build
+      #     command: ./gradlew.bat RNTester:android:app:assembleRelease
       - run:
           name: Run Test
           command: yarn test
