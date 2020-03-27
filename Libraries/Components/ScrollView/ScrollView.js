@@ -809,23 +809,11 @@ class ScrollView extends React.Component<Props, State> {
    * to the underlying scroll responder's methods.
    */
   getScrollResponder: () => ScrollResponderType = () => {
-    if (__DEV__) {
-      console.warn(
-        '`getScrollResponder()` is deprecated. This will be removed in a future release. ' +
-          'Use <ScrollView ref={myRef} /> instead.',
-      );
-    }
     // $FlowFixMe - overriding type to include ScrollResponder.Mixin
     return ((this: any): ScrollResponderType);
   };
 
   getScrollableNode: () => ?number = () => {
-    if (__DEV__) {
-      console.warn(
-        '`getScrollableNode()` is deprecated. This will be removed in a future release. ' +
-          'Use <ScrollView ref={myRef} /> instead.',
-      );
-    }
     return ReactNative.findNodeHandle(this._scrollViewRef);
   };
 
@@ -846,12 +834,6 @@ class ScrollView extends React.Component<Props, State> {
   }
 
   getNativeScrollRef: () => ?React.ElementRef<HostComponent<mixed>> = () => {
-    if (__DEV__) {
-      console.warn(
-        '`getNativeScrollRef()` is deprecated. This will be removed in a future release. ' +
-          'Use <ScrollView ref={myRef} /> instead.',
-      );
-    }
     return this._scrollViewRef;
   };
 
