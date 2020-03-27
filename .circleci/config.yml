@@ -644,30 +644,26 @@ jobs:
     executor: 
       name: win/default
     environment:
-      - ANDROID_HOME: "C:\\android-sdk-windows"
-      - ANDROID_NDK: "C:\\android-sdk-windows\\android-ndk-r19c"
+      - ANDROID_HOME: "C:\\Android\\android-sdk"
+      - ANDROID_NDK: "C:\\Android\\android-sdk\\ndk\\19.2.5345600"
       - ANDROID_BUILD_VERSION: 28
       - ANDROID_TOOLS_VERSION: 29.0.2
       - GRADLE_OPTS: -Dorg.gradle.daemon=false
-      - SDK_TOOLS_URL: https://dl.google.com/android/repository/sdk-tools-windows-3859397.zip
-      - NDK_TOOLS_URL: https://dl.google.com/android/repository/android-ndk-r19c-windows-x86_64.zip
+      - NDK_VERSION: 19.2.5345600
     steps:
-      - restore_cache_checkout:
-          checkout_type: windows 
+      - checkout
       - run:
           name: Install Android SDK Tools
           command: choco install android-sdk
       - run:
           name: Setup SDK
-          command: sdkmanager --licenses > nul
+          command: sdkmanager --licenses
       - run: sdkmanager "system-images;android-19;google_apis;armeabi-v7a"
       - run: sdkmanager "platforms;android-%ANDROID_BUILD_VERSION%"
       - run: sdkmanager "build-tools;%ANDROID_TOOLS_VERSION%"
       - run: sdkmanager "add-ons;addon-google_apis-google-23"
       - run: sdkmanager "extras;android;m2repository"
-      - run:
-          name: Install Android SDK Tools
-          command: choco install android-ndk
+      - run: sdkmanager "ndk;%NDK_VERSION%"
       - restore_cache:
           keys:
             - v5-win-node-{{ arch }}-{{ .Branch }}-{{ checksum "yarn.lock" }}
@@ -692,6 +688,9 @@ jobs:
       - run:
           name: Flow Check iOS
           command: yarn flow-check-ios
+      - run:
+          name: Test Android Build
+          command: ./gradlew.bat RNTester:android:app:assembleRelease
       - run:
           name: Run Test
           command: yarn test
@@ -805,10 +804,6 @@ workflows:
             - setup
   windows:
     jobs:
-      - setup:
-          name: setup_windows
-          checkout_type: windows
-          executor: win/default
       - windows_job
   nightly:
     triggers:
