@@ -88,14 +88,14 @@
 -        if (arguments.containsKey(KEY_CANCELABLE)) {
 -          alertFragment.setCancelable(arguments.getBoolean(KEY_CANCELABLE));
 +      if(isUsingPlatformFragmentManager()) {
-+        PlatformAlertFragment PlatformAlertFragment = new PlatformAlertFragment(actionListener, arguments);
-+        if (mIsInForeground && !mPlatformFragmentManager.isStateSaved()) {
++        PlatformAlertFragment platformAlertFragment = new PlatformAlertFragment(actionListener, arguments);
++        if (mIsInForeground) { // isStateSaved not available in sdk v25 and lower
 +          if (arguments.containsKey(KEY_CANCELABLE)) {
-+            PlatformAlertFragment.setCancelable(arguments.getBoolean(KEY_CANCELABLE));
++            platformAlertFragment.setCancelable(arguments.getBoolean(KEY_CANCELABLE));
 +          }
-+          PlatformAlertFragment.show(mPlatformFragmentManager, FRAGMENT_TAG);
++          platformAlertFragment.show(mPlatformFragmentManager, FRAGMENT_TAG);
 +        } else {
-+          mFragmentToShow = PlatformAlertFragment;
++          mFragmentToShow = platformAlertFragment;
          }
 -        alertFragment.show(mFragmentManager, FRAGMENT_TAG);
        } else {
