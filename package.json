@@ -142,7 +142,7 @@
     "flow-remove-types": "1.2.3",
     "jest": "^24.9.0",
     "jest-junit": "^6.3.0",
-    "jscodeshift": "^0.6.2",
+    "jscodeshift": "^0.7.0",
     "mkdirp": "^0.5.1",
     "prettier": "1.17.0",
     "react": "16.13.1",

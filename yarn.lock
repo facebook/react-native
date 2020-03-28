@@ -1909,10 +1909,10 @@ ast-types-flow@0.0.7, ast-types-flow@^0.0.7:
   resolved "https://registry.yarnpkg.com/ast-types-flow/-/ast-types-flow-0.0.7.tgz#f70b735c6bca1a5c9c22d982c3e39e7feba3bdad"
   integrity sha1-9wtzXGvKGlycItmCw+Oef+ujva0=
 
-ast-types@0.11.6:
-  version "0.11.6"
-  resolved "https://registry.yarnpkg.com/ast-types/-/ast-types-0.11.6.tgz#4e2266c2658829aef3b40cc33ad599c4e9eb89ef"
-  integrity sha512-nHiuV14upVGl7MWwFUYbzJ6YlfwWS084CU9EA8HajfYQjMSli5TQi3UTRygGF58LFWVkXxS1rbgRhROEqlQkXg==
+ast-types@0.13.2:
+  version "0.13.2"
+  resolved "https://registry.yarnpkg.com/ast-types/-/ast-types-0.13.2.tgz#df39b677a911a83f3a049644fb74fdded23cea48"
+  integrity sha512-uWMHxJxtfj/1oZClOxDEV1sQ1HCDkA4MG8Gr69KKeBjEVH0R84WlejZ0y2DcwyBlpAEMltmVYkVgqfLFb2oyiA==
 
 astral-regex@^1.0.0:
   version "1.0.0"
@@ -4783,10 +4783,10 @@ jsc-android@^245459.0.0:
   resolved "https://registry.yarnpkg.com/jsc-android/-/jsc-android-245459.0.0.tgz#e584258dd0b04c9159a27fb104cd5d491fd202c9"
   integrity sha512-wkjURqwaB1daNkDi2OYYbsLnIdC/lUM2nPXQKRs5pqEU9chDg435bjvo+LSaHotDENygHQDHe+ntUkkw2gwMtg==
 
-jscodeshift@^0.6.2:
-  version "0.6.2"
-  resolved "https://registry.yarnpkg.com/jscodeshift/-/jscodeshift-0.6.2.tgz#bb648e6bce717a597d165781158b0d73b7fa99c3"
-  integrity sha512-AXboSyuFiCS+vLym7fyBexc3JlmZjrwl+fupBA/bxMGONmyXE51BrF5nxePZwv2YUze/1PfOTBTVvKiZhKnHLg==
+jscodeshift@^0.7.0:
+  version "0.7.0"
+  resolved "https://registry.yarnpkg.com/jscodeshift/-/jscodeshift-0.7.0.tgz#4eee7506fd4fdacbd80340287d61575af991fdab"
+  integrity sha512-Kt6rpTa1HVhAWagD6J0y6qxxqRmDgkFvczerLgOsDNSGoUZSmq2CO1vFRcda9OV1BaZKSHCIh+VREPts5tB/Ig==
   dependencies:
     "@babel/core" "^7.1.6"
     "@babel/parser" "^7.1.6"
@@ -4803,7 +4803,7 @@ jscodeshift@^0.6.2:
     micromatch "^3.1.10"
     neo-async "^2.5.0"
     node-dir "^0.1.17"
-    recast "^0.16.1"
+    recast "^0.18.1"
     temp "^0.8.1"
     write-file-atomic "^2.3.0"
 
@@ -6245,7 +6245,7 @@ pretty-format@^25.1.0:
     ansi-styles "^4.0.0"
     react-is "^16.12.0"
 
-private@^0.1.6, private@~0.1.5:
+private@^0.1.6, private@^0.1.8:
   version "0.1.8"
   resolved "https://registry.yarnpkg.com/private/-/private-0.1.8.tgz#2381edb3689f7a53d653190060fcf822d2f368ff"
   integrity sha512-VvivMrbvd2nKkiG38qjULzlc+4Vx4wm/whI9pQD35YrARNnhxeiRktSOhSukRLFNlzg6Br/cJPet5J/u19r/mg==
@@ -6444,14 +6444,14 @@ realpath-native@^1.1.0:
   dependencies:
     util.promisify "^1.0.0"
 
-recast@^0.16.1:
-  version "0.16.1"
-  resolved "https://registry.yarnpkg.com/recast/-/recast-0.16.1.tgz#865f1800ef76e42e5d0375763b80f4d6a05f2069"
-  integrity sha512-ZUQm94F3AHozRaTo4Vz6yIgkSEZIL7p+BsWeGZ23rx+ZVRoqX+bvBA8br0xmCOU0DSR4qYGtV7Y5HxTsC4V78A==
+recast@^0.18.1:
+  version "0.18.7"
+  resolved "https://registry.yarnpkg.com/recast/-/recast-0.18.7.tgz#56338a6d803c8c3b9113344440dc70d13c8a1ef7"
+  integrity sha512-qNfoxvMkW4k8jJgNCfmIES7S31MEejXcEQs57eKUcQGiJUuX7cXNOD2h+W9z0rjNun2EkKqf0WvuRtmHw4NPNg==
   dependencies:
-    ast-types "0.11.6"
+    ast-types "0.13.2"
     esprima "~4.0.0"
-    private "~0.1.5"
+    private "^0.1.8"
     source-map "~0.6.1"
 
 rechoir@^0.6.2:
