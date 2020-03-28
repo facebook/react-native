@@ -274,9 +274,9 @@ TEST(MountingTest, testMinimalInstructionGeneration) {
   assert(mutations4[4].type == ShadowViewMutation::Delete);
   assert(mutations4[4].oldChildShadowView.tag == 103);
   assert(mutations4[5].type == ShadowViewMutation::Create);
-  assert(mutations4[5].newChildShadowView.tag == 102);
+  assert(mutations4[5].newChildShadowView.tag == 100);
   assert(mutations4[6].type == ShadowViewMutation::Create);
-  assert(mutations4[6].newChildShadowView.tag == 100);
+  assert(mutations4[6].newChildShadowView.tag == 102);
   assert(mutations4[7].type == ShadowViewMutation::Insert);
   assert(mutations4[7].newChildShadowView.tag == 100);
   assert(mutations4[7].index == 1);

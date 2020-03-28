@@ -11,6 +11,7 @@
 #include <better/small_vector.h>
 #include <react/core/LayoutableShadowNode.h>
 #include <react/debug/SystraceSection.h>
+#include <algorithm>
 #include "ShadowView.h"
 
 namespace facebook {
@@ -44,18 +45,35 @@ class TinyMap final {
   using Pair = std::pair<KeyT, ValueT>;
   using Iterator = Pair *;
 
+  /**
+   * This must strictly only be called from outside of this class.
+   */
   inline Iterator begin() {
-    return (Pair *)vector_;
+    // Force a clean so that iterating over this TinyMap doesn't iterate over
+    // erased elements. If all elements erased are at the front of the vector,
+    // then we don't need to clean.
+    cleanVector(erasedAtFront_ != numErased_);
+
+    return begin_();
   }
 
   inline Iterator end() {
-    return nullptr;
+    // `back()` asserts on the vector being non-empty
+    if (vector_.size() == 0 || numErased_ == vector_.size()) {
+      return nullptr;
+    }
+
+    return &vector_.back() + 1;
   }
 
   inline Iterator find(KeyT key) {
-    for (auto &item : vector_) {
-      if (item.first == key) {
-        return &item;
+    cleanVector();
+
+    assert(key != 0);
+
+    for (auto it = begin_() + erasedAtFront_; it != end(); it++) {
+      if (it->first == key) {
+        return it;
       }
     }
 
@@ -68,15 +86,58 @@ class TinyMap final {
   }
 
   inline void erase(Iterator iterator) {
-    static_assert(
-        std::is_same<KeyT, Tag>::value,
-        "The collection is designed to store only `Tag`s as keys.");
-    // Zero is a invalid tag.
+    numErased_++;
+
+    // Invalidate tag.
     iterator->first = 0;
+
+    if (iterator == begin_() + erasedAtFront_) {
+      erasedAtFront_++;
+    }
   }
 
  private:
+  /**
+   * Same as begin() but doesn't call cleanVector at the beginning.
+   */
+  inline Iterator begin_() {
+    // `front()` asserts on the vector being non-empty
+    if (vector_.size() == 0 || vector_.size() == numErased_) {
+      return nullptr;
+    }
+
+    return &vector_.front();
+  }
+
+  /**
+   * Remove erased elements from internal vector.
+   * We only modify the vector if erased elements are at least half of the
+   * vector.
+   */
+  inline void cleanVector(bool forceClean = false) {
+    if ((numErased_ < (vector_.size() / 2) && !forceClean) ||
+        vector_.size() == 0 || numErased_ == 0 ||
+        numErased_ == erasedAtFront_) {
+      return;
+    }
+
+    if (numErased_ == vector_.size()) {
+      vector_.clear();
+    } else {
+      vector_.erase(
+          std::remove_if(
+              vector_.begin(),
+              vector_.end(),
+              [](auto const &item) { return item.first == 0; }),
+          vector_.end());
+    }
+    numErased_ = 0;
+    erasedAtFront_ = 0;
+  }
+
   better::small_vector<Pair, DefaultSize> vector_;
+  int numErased_{0};
+  int erasedAtFront_{0};
 };
 
 /*
@@ -460,7 +521,7 @@ static void calculateShadowViewMutationsOptimizedMoves(
     // it's challenging to build an iterator that will work for our use-case
     // here.
     auto newRemainingPairs = TinyMap<Tag, ShadowViewNodePair const *>{};
-    auto newInsertedPairs = better::map<Tag, ShadowViewNodePair const *>{};
+    auto newInsertedPairs = TinyMap<Tag, ShadowViewNodePair const *>{};
     for (; index < newChildPairs.size(); index++) {
       auto const &newChildPair = newChildPairs[index];
       newRemainingPairs.insert({newChildPair.shadowView.tag, &newChildPair});
@@ -589,14 +650,14 @@ static void calculateShadowViewMutationsOptimizedMoves(
       auto const &newChildPair = newChildPairs[newIndex];
       insertMutations.push_back(ShadowViewMutation::InsertMutation(
           parentShadowView, newChildPair.shadowView, newIndex));
-      newInsertedPairs.insert(std::pair<Tag, ShadowViewNodePair const *>(
-          newChildPair.shadowView.tag, &newChildPair));
+      newInsertedPairs.insert({newChildPair.shadowView.tag, &newChildPair});
       newIndex++;
     }
 
     // Final step: generate Create instructions for new nodes
-    for (auto const &item : newInsertedPairs) {
-      auto const &newChildPair = *item.second;
+    for (auto it = newInsertedPairs.begin(); it != newInsertedPairs.end();
+         it++) {
+      auto const &newChildPair = *it->second;
       createMutations.push_back(
           ShadowViewMutation::CreateMutation(newChildPair.shadowView));
 
