@@ -105,12 +105,8 @@ void UIManager::completeSurface(
                   /* .children = */ rootChildren,
               });
         },
-        stateReconciliationEnabled_);
+        true);
   });
-}
-
-void UIManager::setStateReconciliationEnabled(bool enabled) {
-  stateReconciliationEnabled_ = enabled;
 }
 
 void UIManager::setJSResponder(
@@ -148,7 +144,7 @@ ShadowNode::Shared const *UIManager::getNewestCloneOfShadowNode(
               ancestorShadowNode = oldRootShadowNode.get();
               return nullptr;
             },
-            stateReconciliationEnabled_);
+            true);
       });
 
   auto ancestors = shadowNode->getFamily().getAncestors(*ancestorShadowNode);
@@ -184,7 +180,7 @@ void UIManager::setNativeProps(
                         });
                       }));
             },
-            stateReconciliationEnabled_);
+            true);
       });
 }
 
@@ -202,7 +198,7 @@ LayoutMetrics UIManager::getRelativeLayoutMetrics(
                 ancestorShadowNode = oldRootShadowNode.get();
                 return nullptr;
               },
-              stateReconciliationEnabled_);
+              true);
         });
   }
 

@@ -55,8 +55,6 @@ class UIManager final : public ShadowTreeDelegate {
       ShadowTree const &shadowTree,
       MountingCoordinator::Shared const &mountingCoordinator) const override;
 
-  void setStateReconciliationEnabled(bool enabled);
-
  private:
   friend class UIManagerBinding;
   friend class Scheduler;
@@ -124,7 +122,6 @@ class UIManager final : public ShadowTreeDelegate {
   UIManagerDelegate *delegate_;
   UIManagerBinding *uiManagerBinding_;
   ShadowTreeRegistry shadowTreeRegistry_{};
-  bool stateReconciliationEnabled_{false};
 };
 
 } // namespace react
