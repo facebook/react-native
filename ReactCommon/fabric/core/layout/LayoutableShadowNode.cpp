@@ -57,7 +57,7 @@ static LayoutMetrics calculateOffsetForLayoutMetrics(
 
     auto origin = layoutableCurrentShadowNode->getLayoutMetrics().frame.origin;
 
-    if (policy.includeTransform || policy.includeScrollViewContentOffset) {
+    if (policy.includeTransform) {
       // The check for ScrollView will be implemented after we have
       // a dedicated trait (part of `ShadowNodeTraits`) for that.
       origin = origin * layoutableCurrentShadowNode->getTransform();
