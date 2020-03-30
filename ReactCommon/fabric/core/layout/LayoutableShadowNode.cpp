@@ -55,15 +55,15 @@ static LayoutMetrics calculateOffsetForLayoutMetrics(
       return EmptyLayoutMetrics;
     }
 
-    auto origin = layoutableCurrentShadowNode->getLayoutMetrics().frame.origin;
+    auto frame = layoutableCurrentShadowNode->getLayoutMetrics().frame;
 
     if (policy.includeTransform) {
-      // The check for ScrollView will be implemented after we have
-      // a dedicated trait (part of `ShadowNodeTraits`) for that.
-      origin = origin * layoutableCurrentShadowNode->getTransform();
+      layoutMetrics.frame.size = layoutMetrics.frame.size *
+          layoutableCurrentShadowNode->getTransform();
+      frame = frame * layoutableCurrentShadowNode->getTransform();
     }
 
-    layoutMetrics.frame.origin += origin;
+    layoutMetrics.frame.origin += frame.origin;
   }
   return layoutMetrics;
 }
@@ -132,9 +132,13 @@ LayoutMetrics LayoutableShadowNode::getRelativeLayoutMetrics(
     return EmptyLayoutMetrics;
   }
 
-  auto layoutMetrics = dynamic_cast<LayoutableShadowNode const *>(newestChild)
-                           ->getLayoutMetrics();
-
+  auto layoutableNewestChild =
+      dynamic_cast<LayoutableShadowNode const *>(newestChild);
+  auto layoutMetrics = layoutableNewestChild->getLayoutMetrics();
+  if (policy.includeTransform) {
+    layoutMetrics.frame =
+        layoutMetrics.frame * layoutableNewestChild->getTransform();
+  }
   return calculateOffsetForLayoutMetrics(layoutMetrics, ancestors, policy);
 }
 
