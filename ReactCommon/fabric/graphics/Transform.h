@@ -86,9 +86,11 @@ Size operator*(Size const &size, Transform const &transform);
 
 /*
  * Applies tranformation to the given rect.
- * ONLY SUPPORTS scale transformation.
+ * ONLY SUPPORTS scale and translation transformation.
  */
 Rect operator*(Rect const &rect, Transform const &transform);
+
+Vector operator*(Transform const &transform, Vector const &vector);
 
 } // namespace react
 } // namespace facebook
