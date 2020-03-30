@@ -135,7 +135,7 @@ module.exports = {
       'DatePickerIOS-merged',
       'DatePickerIOS has been merged with DatePickerAndroid and will be removed in a future release. ' +
         "It can now be installed and imported from '@react-native-community/datetimepicker' instead of 'react-native'. " +
-        'See https://github.com/react-native-community/react-native-datetimepicker',
+        'See https://github.com/react-native-community/datetimepicker',
     );
     return require('./Libraries/Components/DatePicker/DatePickerIOS');
   },
@@ -195,7 +195,7 @@ module.exports = {
       'progress-bar-android-moved',
       'ProgressBarAndroid has been extracted from react-native core and will be removed in a future release. ' +
         "It can now be installed and imported from '@react-native-community/progress-bar-android' instead of 'react-native'. " +
-        'See https://github.com/react-native-community/react-native-progress-bar-android',
+        'See https://github.com/react-native-community/progress-bar-android',
     );
     return require('./Libraries/Components/ProgressBarAndroid/ProgressBarAndroid');
   },
@@ -204,7 +204,7 @@ module.exports = {
       'progress-view-ios-moved',
       'ProgressViewIOS has been extracted from react-native core and will be removed in a future release. ' +
         "It can now be installed and imported from '@react-native-community/progress-view' instead of 'react-native'. " +
-        'See https://github.com/react-native-community/react-native-progress-view',
+        'See https://github.com/react-native-community/progress-view',
     );
     return require('./Libraries/Components/ProgressViewIOS/ProgressViewIOS');
   },
@@ -222,7 +222,7 @@ module.exports = {
       'segmented-control-ios-moved',
       'SegmentedControlIOS has been extracted from react-native core and will be removed in a future release. ' +
         "It can now be installed and imported from '@react-native-community/segmented-control' instead of 'react-native'. " +
-        'See https://github.com/react-native-community/react-native-segmented-control',
+        'See https://github.com/react-native-community/segmented-control',
     );
     return require('./Libraries/Components/SegmentedControlIOS/SegmentedControlIOS');
   },
@@ -299,7 +299,7 @@ module.exports = {
       'async-storage-moved',
       'AsyncStorage has been extracted from react-native core and will be removed in a future release. ' +
         "It can now be installed and imported from '@react-native-community/async-storage' instead of 'react-native'. " +
-        'See https://github.com/react-native-community/react-native-async-storage',
+        'See https://github.com/react-native-community/async-storage',
     );
     return require('./Libraries/Storage/AsyncStorage');
   },
@@ -311,7 +311,7 @@ module.exports = {
       'clipboard-moved',
       'Clipboard has been extracted from react-native core and will be removed in a future release. ' +
         "It can now be installed and imported from '@react-native-community/clipboard' instead of 'react-native'. " +
-        'See https://github.com/react-native-community/react-native-clipboard',
+        'See https://github.com/react-native-community/clipboard',
     );
     return require('./Libraries/Components/Clipboard/Clipboard');
   },
@@ -320,7 +320,7 @@ module.exports = {
       'DatePickerAndroid-merged',
       'DatePickerAndroid has been merged with DatePickerIOS and will be removed in a future release. ' +
         "It can now be installed and imported from '@react-native-community/datetimepicker' instead of 'react-native'. " +
-        'See https://github.com/react-native-community/react-native-datetimepicker',
+        'See https://github.com/react-native-community/datetimepicker',
     );
     return require('./Libraries/Components/DatePickerAndroid/DatePickerAndroid');
   },
@@ -391,7 +391,7 @@ module.exports = {
       'pushNotificationIOS-moved',
       'PushNotificationIOS has been extracted from react-native core and will be removed in a future release. ' +
         "It can now be installed and imported from '@react-native-community/push-notification-ios' instead of 'react-native'. " +
-        'See https://github.com/react-native-community/react-native-push-notification-ios',
+        'See https://github.com/react-native-community/push-notification-ios',
     );
     return require('./Libraries/PushNotificationIOS/PushNotificationIOS');
   },
@@ -515,7 +515,7 @@ if (__DEV__) {
         false,
         'ART has been removed from React Native. ' +
           "It can now be installed and imported from '@react-native-community/art' instead of 'react-native'. " +
-          'See https://github.com/react-native-community/react-native-art',
+          'See https://github.com/react-native-community/art',
       );
     },
   });
@@ -620,7 +620,7 @@ if (__DEV__) {
         false,
         'TimePickerAndroid has been removed from React Native. ' +
           "It can now be installed and imported from '@react-native-community/datetimepicker' instead of 'react-native'. " +
-          'See https://github.com/react-native-community/react-native-datetimepicker',
+          'See https://github.com/react-native-community/datetimepicker',
       );
     },
   });
