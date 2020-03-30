@@ -435,6 +435,9 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
 
   @ReactProp(name = "cursorColor", customType = "Color")
   public void setCursorColor(ReactEditText view, @Nullable Integer color) {
+    if (color == null) {
+      return;
+    }
 
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
       Drawable cursorDrawable = view.getTextCursorDrawable();
@@ -467,9 +470,7 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
       }
 
       Drawable drawable = ContextCompat.getDrawable(view.getContext(), drawableResId);
-      if (color != null) {
-        drawable.setColorFilter(color, PorterDuff.Mode.SRC_IN);
-      }
+      drawable.setColorFilter(color, PorterDuff.Mode.SRC_IN);
       Drawable[] drawables = {drawable, drawable};
 
       // Update the current cursor drawable with the new one.
