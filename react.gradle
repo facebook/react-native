@@ -110,7 +110,8 @@ afterEvaluate {
                 execCommand.addAll([*nodeExecutableAndArgs, cliPath])
             }
         } else {
-            execCommand.addAll([npx, "react-native"])
+            throw new Exception("Missing cliPath or nodeExecutableAndArgs from build config. " +
+                "Please set project.ext.react.cliPath to the path of the react-native cli.js");
         }
 
         def enableHermes = enableHermesForVariant(variant)

@@ -25,7 +25,7 @@ exports[`LogBoxInspectorCodeFrame should render a code frame 1`] = `
         }
       }
     >
-      <ScrollViewMock
+      <ScrollView
         horizontal={true}
       >
         <Ansi
@@ -44,7 +44,7 @@ exports[`LogBoxInspectorCodeFrame should render a code frame 1`] = `
         | ^
     200 |"
         />
-      </ScrollViewMock>
+      </ScrollView>
     </View>
     <LogBoxButton
       backgroundColor={
@@ -107,7 +107,7 @@ exports[`LogBoxInspectorCodeFrame should render a code frame without a location 
         }
       }
     >
-      <ScrollViewMock
+      <ScrollView
         horizontal={true}
       >
         <Ansi
@@ -126,7 +126,7 @@ exports[`LogBoxInspectorCodeFrame should render a code frame without a location 
         | ^
     200 |"
         />
-      </ScrollViewMock>
+      </ScrollView>
     </View>
     <LogBoxButton
       backgroundColor={

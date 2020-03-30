@@ -13,13 +13,6 @@
 const {OS} = require('../../Utilities/Platform');
 const normalizeColor = require('../normalizeColor');
 
-const PlatformColorIOS = require('../PlatformColorValueTypes.ios')
-  .PlatformColor;
-const DynamicColorIOS = require('../PlatformColorValueTypesIOS.ios')
-  .DynamicColorIOS;
-const PlatformColorAndroid = require('../PlatformColorValueTypes.android')
-  .PlatformColor;
-
 describe('normalizeColor', function() {
   it('should accept only spec compliant colors', function() {
     expect(normalizeColor('#abc')).not.toBe(null);
@@ -139,8 +132,13 @@ describe('normalizeColor', function() {
 
   describe('iOS', () => {
     if (OS === 'ios') {
+      const PlatformColor = require('../PlatformColorValueTypes.ios')
+        .PlatformColor;
+      const DynamicColorIOS = require('../PlatformColorValueTypesIOS.ios')
+        .DynamicColorIOS;
+
       it('should normalize iOS PlatformColor colors', () => {
-        const color = PlatformColorIOS('systemRedColor');
+        const color = PlatformColor('systemRedColor');
         const normalizedColor = normalizeColor(color);
         const expectedColor = {semantic: ['systemRedColor']};
         expect(normalizedColor).toEqual(expectedColor);
@@ -155,8 +153,8 @@ describe('normalizeColor', function() {
 
       it('should normalize iOS Dynamic colors with PlatformColor colors', () => {
         const color = DynamicColorIOS({
-          light: PlatformColorIOS('systemBlackColor'),
-          dark: PlatformColorIOS('systemWhiteColor'),
+          light: PlatformColor('systemBlackColor'),
+          dark: PlatformColor('systemWhiteColor'),
         });
         const normalizedColor = normalizeColor(color);
         const expectedColor = {
@@ -172,8 +170,11 @@ describe('normalizeColor', function() {
 
   describe('Android', () => {
     if (OS === 'android') {
+      const PlatformColor = require('../PlatformColorValueTypes.android')
+        .PlatformColor;
+
       it('should normalize Android PlatformColor colors', () => {
-        const color = PlatformColorAndroid('?attr/colorPrimary');
+        const color = PlatformColor('?attr/colorPrimary');
         const normalizedColor = normalizeColor(color);
         const expectedColor = {resource_paths: ['?attr/colorPrimary']};
         expect(normalizedColor).toEqual(expectedColor);

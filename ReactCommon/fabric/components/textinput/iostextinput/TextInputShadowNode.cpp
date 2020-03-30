@@ -69,9 +69,19 @@ void TextInputShadowNode::setTextLayoutManager(
 void TextInputShadowNode::updateStateIfNeeded() {
   ensureUnsealed();
 
-  if (!getState() || getState()->getRevision() == State::initialRevisionValue) {
+  auto attributedStringFromJS = getAttributedString();
+  bool hasJSUpdatedAttributedString = false;
+  if (getState()) {
+    hasJSUpdatedAttributedString =
+        attributedStringFromJS.compareTextAttributesWithoutFrame(
+            getStateData().lastAttributedStringFromJS);
+  }
+
+  if (!getState() || getState()->getRevision() == State::initialRevisionValue ||
+      hasJSUpdatedAttributedString) {
     auto state = TextInputState{};
-    state.attributedStringBox = AttributedStringBox{getAttributedString()};
+    state.attributedStringBox = AttributedStringBox{attributedStringFromJS};
+    state.lastAttributedStringFromJS = attributedStringFromJS;
     state.paragraphAttributes = getConcreteProps().paragraphAttributes;
     state.layoutManager = textLayoutManager_;
     setStateData(std::move(state));

@@ -30,10 +30,11 @@ RCT_EXPORT_MODULE()
   return dispatch_get_main_queue();
 }
 
-- (std::shared_ptr<facebook::react::TurboModule>)getTurboModuleWithJsInvoker:
-    (std::shared_ptr<facebook::react::CallInvoker>)jsInvoker
+- (std::shared_ptr<facebook::react::TurboModule>)
+    getTurboModuleWithJsInvoker:(std::shared_ptr<facebook::react::CallInvoker>)jsInvoker
+                     perfLogger:(id<RCTTurboModulePerformanceLogger>)perfLogger
 {
-  return std::make_shared<NativeSampleTurboModuleSpecJSI>(self, jsInvoker);
+  return std::make_shared<NativeSampleTurboModuleSpecJSI>(self, jsInvoker, perfLogger);
 }
 
 // Backward compatible invalidation

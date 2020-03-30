@@ -102,6 +102,12 @@ if (__DEV__) {
   };
 
   const registerWarning = (...args): void => {
+    // Let warnings within LogBox itself fall through.
+    if (LogBoxData.isLogBoxErrorMessage(String(args[0]))) {
+      error.call(console, ...args);
+      return;
+    }
+
     try {
       if (!isRCTLogAdviceWarning(...args)) {
         const {category, message, componentStack} = parseLogBoxLog(args);
@@ -110,14 +116,12 @@ if (__DEV__) {
           // Be sure to pass LogBox warnings through.
           warn.call(console, ...args);
 
-          if (!LogBoxData.isLogBoxErrorMessage(message.content)) {
-            LogBoxData.addLog({
-              level: 'warn',
-              category,
-              message,
-              componentStack,
-            });
-          }
+          LogBoxData.addLog({
+            level: 'warn',
+            category,
+            message,
+            componentStack,
+          });
         }
       }
     } catch (err) {
@@ -126,6 +130,12 @@ if (__DEV__) {
   };
 
   const registerError = (...args): void => {
+    // Let errors within LogBox itself fall through.
+    if (LogBoxData.isLogBoxErrorMessage(args[0])) {
+      error.call(console, ...args);
+      return;
+    }
+
     try {
       if (!isWarningModuleWarning(...args)) {
         // Only show LogBox for the `warning` module, otherwise pass through and skip.
@@ -156,15 +166,12 @@ if (__DEV__) {
         const interpolated = parseInterpolation(args);
         error.call(console, interpolated.message.content);
 
-        // Only display errors outside of LogBox, not in LogBox itself.
-        if (!LogBoxData.isLogBoxErrorMessage(message.content)) {
-          LogBoxData.addLog({
-            level,
-            category,
-            message,
-            componentStack,
-          });
-        }
+        LogBoxData.addLog({
+          level,
+          category,
+          message,
+          componentStack,
+        });
       }
     } catch (err) {
       LogBoxData.reportLogBoxError(err);

@@ -89,9 +89,15 @@ try {
   cd(REACT_NATIVE_APP_DIR);
 
   const METRO_CONFIG = path.join(ROOT, 'metro.config.js');
-  const RN_POLYFILLS = path.join(ROOT, 'rn-get-polyfills.js');
+  const RN_GET_POLYFILLS = path.join(ROOT, 'rn-get-polyfills.js');
+  const RN_POLYFILLS_PATH = 'Libraries/polyfills/';
+  exec(`mkdir -p ${RN_POLYFILLS_PATH}`);
+
   cp(METRO_CONFIG, '.');
-  cp(RN_POLYFILLS, '.');
+  cp(RN_GET_POLYFILLS, '.');
+  exec(
+    `rsync -a ${ROOT}/${RN_POLYFILLS_PATH} ${REACT_NATIVE_APP_DIR}/${RN_POLYFILLS_PATH}`,
+  );
   mv('_flowconfig', '.flowconfig');
   mv('_watchmanconfig', '.watchmanconfig');
 
@@ -265,7 +271,7 @@ try {
     describe('Test: Verify packager can generate an Android bundle');
     if (
       exec(
-        'yarn react-native bundle --entry-file index.js --platform android --dev true --bundle-output android-bundle.js --max-workers 1',
+        'yarn react-native bundle --verbose --entry-file index.js --platform android --dev true --bundle-output android-bundle.js --max-workers 1',
       ).code
     ) {
       echo('Could not build Android bundle');

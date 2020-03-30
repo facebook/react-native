@@ -97,6 +97,12 @@ type PickerProps = $ReadOnly<{|
   itemStyle?: ?TextStyleProp,
 
   /**
+   * Color of the item background.
+   * @platform android
+   */
+  backgroundColor?: ColorValue,
+
+  /**
    * Prompt string for this picker, used on Android in dialog mode as the title of the dialog.
    * @platform android
    */

@@ -266,7 +266,7 @@ static void RNPerformMountInstructions(
   SystraceSection s("-[RCTMountingManager performTransaction:]");
   RCTAssertMainQueue();
 
-  auto transaction = mountingCoordinator->pullTransaction();
+  auto transaction = mountingCoordinator->pullTransaction(DifferentiatorMode::Classic);
   if (!transaction.has_value()) {
     return;
   }
