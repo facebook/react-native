@@ -1,6 +1,13 @@
 version: 2.1
 
 # -------------------------
+#        ORBS
+# -------------------------
+
+orbs:
+  win: circleci/windows@2.4.0
+
+# -------------------------
 #        DEFAULTS
 # -------------------------
 defaults: &defaults
@@ -12,6 +19,7 @@ defaults: &defaults
     - PUBLIC_PULLBOT_GITHUB_TOKEN_B: "150e1341f4dd9c944d2a"
     - PUBLIC_ANALYSISBOT_GITHUB_TOKEN_A: &github_token_a "78a72af35445ca3f8180"
     - PUBLIC_ANALYSISBOT_GITHUB_TOKEN_B: &github_token_b "b1a98e0bbd56ff1ccba1"
+
 
 # -------------------------
 #        EXECUTORS
@@ -629,6 +637,70 @@ jobs:
           command: |
             echo "Nightly build run"
 
+  # -------------------------
+  #    JOBS: Windows
+  # -------------------------
+  windows_job:
+    executor: 
+      name: win/default
+    environment:
+      - ANDROID_HOME: "C:\\Android\\android-sdk"
+      - ANDROID_NDK: "C:\\Android\\android-sdk\\ndk\\19.2.5345600"
+      - ANDROID_BUILD_VERSION: 28
+      - ANDROID_TOOLS_VERSION: 29.0.2
+      - GRADLE_OPTS: -Dorg.gradle.daemon=false
+      - NDK_VERSION: 19.2.5345600
+    steps:
+      - checkout
+      - run:
+          name: Install Android SDK Tools
+          command: choco install android-sdk
+      - run:
+          name: Setup SDK
+          command: sdkmanager --licenses
+      - run: sdkmanager "system-images;android-19;google_apis;armeabi-v7a"
+      - run: sdkmanager "platforms;android-%ANDROID_BUILD_VERSION%"
+      - run: sdkmanager "build-tools;%ANDROID_TOOLS_VERSION%"
+      - run: sdkmanager "add-ons;addon-google_apis-google-23"
+      - run: sdkmanager "extras;android;m2repository"
+      - run: sdkmanager "ndk;%NDK_VERSION%"
+      - restore_cache:
+          keys:
+            - v5-win-node-{{ arch }}-{{ .Branch }}-{{ checksum "yarn.lock" }}
+            - v5-win-node-{{ arch }}-{{ .Branch }}-
+            - v5-win-node-{{ arch }}-
+      - run:
+          name: Install Yarn
+          command: choco install yarn
+      - run:
+          name: Get Env info
+          command: npx envinfo@latest
+      - run:
+          name: Install Dependencies
+          command: yarn install --frozen-lockfile --non-interactive
+      - save_cache:
+          key: v5-win-node-{{ arch }}-{{ .Branch }}-{{ checksum "yarn.lock" }}
+          paths:
+            - C:\Users\circleci\AppData\Local\Yarn
+      - run:
+          name: Flow Check Android
+          command: yarn flow-check-android
+      - run:
+          name: Flow Check iOS
+          command: yarn flow-check-ios
+      # TODO: reenable this test    
+      # - run:
+      #     name: Test Android Build
+      #     command: ./gradlew.bat RNTester:android:app:assembleRelease
+      - run:
+          name: Run Test
+          command: yarn test
+      - save_cache:
+          key: v5-win-node-{{ arch }}-{{ .Branch }}-{{ checksum ".gradle" }}
+          paths:
+            - "%USERPROFILE%/.gradle/caches"
+            - "%USERPROFILE%/.gradle/wrapper" 
+
 # -------------------------
 #        WORK FLOWS
 # -------------------------
@@ -731,7 +803,9 @@ workflows:
       - js_coverage:
           requires:
             - setup
-
+  windows:
+    jobs:
+      - windows_job
   nightly:
     triggers:
       - schedule:
