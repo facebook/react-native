@@ -7311,6 +7311,19 @@ function createPortal(children, containerInfo, implementation) {
     implementation: implementation
   };
 }
+function findNodeHandle(componentOrHandle) {
+  if (null == componentOrHandle) return null;
+  if ("number" === typeof componentOrHandle) return componentOrHandle;
+  if (componentOrHandle._nativeTag) return componentOrHandle._nativeTag;
+  if (componentOrHandle.canonical && componentOrHandle.canonical._nativeTag)
+    return componentOrHandle.canonical._nativeTag;
+  componentOrHandle = findHostInstance(componentOrHandle);
+  return null == componentOrHandle
+    ? componentOrHandle
+    : componentOrHandle.canonical
+    ? componentOrHandle.canonical._nativeTag
+    : componentOrHandle._nativeTag;
+}
 batchedUpdatesImpl = function(fn, a) {
   var prevExecutionContext = executionContext;
   executionContext |= 1;
@@ -7328,7 +7341,7 @@ var roots = new Map();
     bundleType: devToolsConfig.bundleType,
     version: devToolsConfig.version,
     rendererPackageName: devToolsConfig.rendererPackageName,
-    getInspectorDataForViewTag: devToolsConfig.getInspectorDataForViewTag,
+    rendererConfig: devToolsConfig.rendererConfig,
     overrideHookState: null,
     overrideProps: null,
     setSuspenseHandler: null,
@@ -7349,12 +7362,21 @@ var roots = new Map();
   });
 })({
   findFiberByHostInstance: getInstanceFromInstance,
-  getInspectorDataForViewTag: function() {
-    throw Error("getInspectorDataForViewTag() is not available in production");
-  },
   bundleType: 0,
-  version: "16.13.0-b5c6dd2de",
-  rendererPackageName: "react-native-renderer"
+  version: "16.13.0",
+  rendererPackageName: "react-native-renderer",
+  rendererConfig: {
+    getInspectorDataForViewTag: function() {
+      throw Error(
+        "getInspectorDataForViewTag() is not available in production"
+      );
+    },
+    getInspectorDataForViewAtPoint: function() {
+      throw Error(
+        "getInspectorDataForViewAtPoint() is not available in production."
+      );
+    }.bind(null, findNodeHandle)
+  }
 });
 exports.createPortal = function(children, containerTag) {
   return createPortal(
@@ -7390,19 +7412,7 @@ exports.findHostInstance_DEPRECATED = function(componentOrHandle) {
     ? componentOrHandle.canonical
     : componentOrHandle;
 };
-exports.findNodeHandle = function(componentOrHandle) {
-  if (null == componentOrHandle) return null;
-  if ("number" === typeof componentOrHandle) return componentOrHandle;
-  if (componentOrHandle._nativeTag) return componentOrHandle._nativeTag;
-  if (componentOrHandle.canonical && componentOrHandle.canonical._nativeTag)
-    return componentOrHandle.canonical._nativeTag;
-  componentOrHandle = findHostInstance(componentOrHandle);
-  return null == componentOrHandle
-    ? componentOrHandle
-    : componentOrHandle.canonical
-    ? componentOrHandle.canonical._nativeTag
-    : componentOrHandle._nativeTag;
-};
+exports.findNodeHandle = findNodeHandle;
 exports.render = function(element, containerTag, callback) {
   var root = roots.get(containerTag);
   if (!root) {

@@ -20023,7 +20023,7 @@ function injectIntoDevTools(devToolsConfig) {
     bundleType: devToolsConfig.bundleType,
     version: devToolsConfig.version,
     rendererPackageName: devToolsConfig.rendererPackageName,
-    getInspectorDataForViewTag: devToolsConfig.getInspectorDataForViewTag,
+    rendererConfig: devToolsConfig.rendererConfig,
     overrideHookState: overrideHookState,
     overrideProps: overrideProps,
     setSuspenseHandler: setSuspenseHandler,
@@ -20077,7 +20077,7 @@ function createPortal(
 }
 
 // TODO: this is special because it gets imported during build.
-var ReactVersion = "16.13.0-b5c6dd2de";
+var ReactVersion = "16.13.0";
 
 var instanceCache = new Map();
 
@@ -20092,6 +20092,7 @@ var emptyObject$1 = {};
 }
 
 var getInspectorDataForViewTag;
+var getInspectorDataForViewAtPoint;
 
 {
   var traverseOwnerTreeUp = function(hierarchy, instance) {
@@ -20154,28 +20155,38 @@ var getInspectorDataForViewTag;
         name: getComponentName(fiber.type),
         getInspectorData: function(findNodeHandle) {
           return {
-            measure: function(callback) {
-              return ReactNativePrivateInterface.UIManager.measure(
-                getHostNode(fiber, findNodeHandle),
-                callback
-              );
-            },
             props: getHostProps(fiber),
-            source: fiber._debugSource
+            source: fiber._debugSource,
+            measure: function(callback) {
+              // If this is Fabric, we'll find a ShadowNode and use that to measure.
+              var hostFiber = findCurrentHostFiber(fiber);
+              var shadowNode =
+                hostFiber != null &&
+                hostFiber.stateNode !== null &&
+                hostFiber.stateNode.node;
+
+              if (shadowNode) {
+                nativeFabricUIManager.measure(shadowNode, callback);
+              } else {
+                return ReactNativePrivateInterface.UIManager.measure(
+                  getHostNode(fiber, findNodeHandle),
+                  callback
+                );
+              }
+            }
           };
         }
       };
     });
   };
 
-  getInspectorDataForViewTag = function(viewTag) {
-    var closestInstance = getInstanceFromTag(viewTag); // Handle case where user clicks outside of ReactNative
-
+  var getInspectorDataForInstance = function(closestInstance) {
+    // Handle case where user clicks outside of ReactNative
     if (!closestInstance) {
       return {
         hierarchy: [],
         props: emptyObject$1,
-        selection: null,
+        selectedIndex: null,
         source: null
       };
     }
@@ -20186,13 +20197,128 @@ var getInspectorDataForViewTag;
     var hierarchy = createHierarchy(fiberHierarchy);
     var props = getHostProps(instance);
     var source = instance._debugSource;
-    var selection = fiberHierarchy.indexOf(instance);
+    var selectedIndex = fiberHierarchy.indexOf(instance);
     return {
       hierarchy: hierarchy,
       props: props,
-      selection: selection,
+      selectedIndex: selectedIndex,
       source: source
     };
+  };
+
+  getInspectorDataForViewTag = function(viewTag) {
+    var closestInstance = getInstanceFromTag(viewTag); // Handle case where user clicks outside of ReactNative
+
+    if (!closestInstance) {
+      return {
+        hierarchy: [],
+        props: emptyObject$1,
+        selectedIndex: null,
+        source: null
+      };
+    }
+
+    var fiber = findCurrentFiberUsingSlowPath(closestInstance);
+    var fiberHierarchy = getOwnerHierarchy(fiber);
+    var instance = lastNonHostInstance(fiberHierarchy);
+    var hierarchy = createHierarchy(fiberHierarchy);
+    var props = getHostProps(instance);
+    var source = instance._debugSource;
+    var selectedIndex = fiberHierarchy.indexOf(instance);
+    return {
+      hierarchy: hierarchy,
+      props: props,
+      selectedIndex: selectedIndex,
+      source: source
+    };
+  };
+
+  getInspectorDataForViewAtPoint = function(
+    findNodeHandle,
+    inspectedView,
+    locationX,
+    locationY,
+    callback
+  ) {
+    var closestInstance = null;
+
+    if (inspectedView._internalInstanceHandle != null) {
+      // For Fabric we can look up the instance handle directly and measure it.
+      nativeFabricUIManager.findNodeAtPoint(
+        inspectedView._internalInstanceHandle.stateNode.node,
+        locationX,
+        locationY,
+        function(internalInstanceHandle) {
+          if (internalInstanceHandle == null) {
+            callback(
+              Object.assign(
+                {
+                  pointerY: locationY,
+                  frame: {
+                    left: 0,
+                    top: 0,
+                    width: 0,
+                    height: 0
+                  }
+                },
+                getInspectorDataForInstance(closestInstance)
+              )
+            );
+          }
+
+          closestInstance =
+            internalInstanceHandle.stateNode.canonical._internalInstanceHandle;
+          nativeFabricUIManager.measure(
+            internalInstanceHandle.stateNode.node,
+            function(x, y, width, height, pageX, pageY) {
+              callback(
+                Object.assign(
+                  {
+                    pointerY: locationY,
+                    frame: {
+                      left: pageX,
+                      top: pageY,
+                      width: width,
+                      height: height
+                    }
+                  },
+                  getInspectorDataForInstance(closestInstance)
+                )
+              );
+            }
+          );
+        }
+      );
+    } else if (inspectedView._internalFiberInstanceHandleDEV != null) {
+      // For Paper we fall back to the old strategy using the React tag.
+      ReactNativePrivateInterface.UIManager.findSubviewIn(
+        findNodeHandle(inspectedView),
+        [locationX, locationY],
+        function(nativeViewTag, left, top, width, height) {
+          var inspectorData = getInspectorDataForInstance(
+            getInstanceFromTag(nativeViewTag)
+          );
+          callback(
+            Object.assign({}, inspectorData, {
+              pointerY: locationY,
+              frame: {
+                left: left,
+                top: top,
+                width: width,
+                height: height
+              },
+              touchedViewTag: nativeViewTag
+            })
+          );
+        }
+      );
+    } else {
+      error(
+        "getInspectorDataForViewAtPoint expects to receieve a host component"
+      );
+
+      return;
+    }
   };
 }
 
@@ -20376,10 +20502,16 @@ setBatchingImplementation(batchedUpdates$1);
 var roots = new Map();
 injectIntoDevTools({
   findFiberByHostInstance: getInstanceFromInstance,
-  getInspectorDataForViewTag: getInspectorDataForViewTag,
   bundleType: 1,
   version: ReactVersion,
-  rendererPackageName: "react-native-renderer"
+  rendererPackageName: "react-native-renderer",
+  rendererConfig: {
+    getInspectorDataForViewTag: getInspectorDataForViewTag,
+    getInspectorDataForViewAtPoint: getInspectorDataForViewAtPoint.bind(
+      null,
+      findNodeHandle
+    )
+  }
 });
 
 exports.createPortal = createPortal$1;

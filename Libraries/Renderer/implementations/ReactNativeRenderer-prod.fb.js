@@ -4577,7 +4577,8 @@ function completeWork(current, workInProgress, renderExpirationTime) {
         );
         rootContainerInstance = new ReactNativeFiberHostComponent(
           current,
-          renderExpirationTime
+          renderExpirationTime,
+          workInProgress
         );
         instanceCache.set(current, workInProgress);
         instanceProps.set(current, newProps);
@@ -7541,6 +7542,19 @@ function createPortal(children, containerInfo, implementation) {
     implementation: implementation
   };
 }
+function findNodeHandle(componentOrHandle) {
+  if (null == componentOrHandle) return null;
+  if ("number" === typeof componentOrHandle) return componentOrHandle;
+  if (componentOrHandle._nativeTag) return componentOrHandle._nativeTag;
+  if (componentOrHandle.canonical && componentOrHandle.canonical._nativeTag)
+    return componentOrHandle.canonical._nativeTag;
+  componentOrHandle = findHostInstance(componentOrHandle);
+  return null == componentOrHandle
+    ? componentOrHandle
+    : componentOrHandle.canonical
+    ? componentOrHandle.canonical._nativeTag
+    : componentOrHandle._nativeTag;
+}
 function unmountComponentAtNode(containerTag) {
   var root = roots.get(containerTag);
   root &&
@@ -7565,7 +7579,7 @@ var roots = new Map();
     bundleType: devToolsConfig.bundleType,
     version: devToolsConfig.version,
     rendererPackageName: devToolsConfig.rendererPackageName,
-    getInspectorDataForViewTag: devToolsConfig.getInspectorDataForViewTag,
+    rendererConfig: devToolsConfig.rendererConfig,
     overrideHookState: null,
     overrideProps: null,
     setSuspenseHandler: null,
@@ -7586,12 +7600,21 @@ var roots = new Map();
   });
 })({
   findFiberByHostInstance: getInstanceFromTag,
-  getInspectorDataForViewTag: function() {
-    throw Error("getInspectorDataForViewTag() is not available in production");
-  },
   bundleType: 0,
   version: "16.13.0",
-  rendererPackageName: "react-native-renderer"
+  rendererPackageName: "react-native-renderer",
+  rendererConfig: {
+    getInspectorDataForViewTag: function() {
+      throw Error(
+        "getInspectorDataForViewTag() is not available in production"
+      );
+    },
+    getInspectorDataForViewAtPoint: function() {
+      throw Error(
+        "getInspectorDataForViewAtPoint() is not available in production."
+      );
+    }.bind(null, findNodeHandle)
+  }
 });
 exports.__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED = {
   computeComponentStackForErrorReporting: function(reactTag) {
@@ -7634,19 +7657,7 @@ exports.findHostInstance_DEPRECATED = function(componentOrHandle) {
     ? componentOrHandle.canonical
     : componentOrHandle;
 };
-exports.findNodeHandle = function(componentOrHandle) {
-  if (null == componentOrHandle) return null;
-  if ("number" === typeof componentOrHandle) return componentOrHandle;
-  if (componentOrHandle._nativeTag) return componentOrHandle._nativeTag;
-  if (componentOrHandle.canonical && componentOrHandle.canonical._nativeTag)
-    return componentOrHandle.canonical._nativeTag;
-  componentOrHandle = findHostInstance(componentOrHandle);
-  return null == componentOrHandle
-    ? componentOrHandle
-    : componentOrHandle.canonical
-    ? componentOrHandle.canonical._nativeTag
-    : componentOrHandle._nativeTag;
-};
+exports.findNodeHandle = findNodeHandle;
 exports.render = function(element, containerTag, callback) {
   var root = roots.get(containerTag);
   if (!root) {
