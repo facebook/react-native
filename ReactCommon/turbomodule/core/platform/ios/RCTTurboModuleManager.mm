@@ -159,9 +159,9 @@ static Class getFallbackClassFromName(const char *name)
 
   // If RCTTurboModule supports creating its own C++ TurboModule object,
   // allow it to do so.
-  if ([module respondsToSelector:@selector(getTurboModuleWithJsInvoker:)]) {
+  if ([module respondsToSelector:@selector(getTurboModuleWithJsInvoker:perfLogger:)]) {
     [_performanceLogger getTurboModuleFromRCTTurboModuleStart:moduleName];
-    auto turboModule = [module getTurboModuleWithJsInvoker:_jsInvoker];
+    auto turboModule = [module getTurboModuleWithJsInvoker:_jsInvoker perfLogger:_performanceLogger];
     [_performanceLogger getTurboModuleFromRCTTurboModuleEnd:moduleName];
     assert(turboModule != nullptr);
     _turboModuleCache.insert({moduleName, turboModule});
@@ -308,7 +308,7 @@ static Class getFallbackClassFromName(const char *name)
             @"%@ has no setter or ivar for its bridge, which is not "
              "permitted. You must either @synthesize the bridge property, "
              "or provide your own setter method.",
-            RCTBridgeModuleNameForClass(strongModule));
+            RCTBridgeModuleNameForClass([strongModule class]));
       }
 
       [performanceLogger attachRCTBridgeToRCTTurboModuleEnd:moduleName];
@@ -425,15 +425,6 @@ static Class getFallbackClassFromName(const char *name)
          * trigger an assertion failure.
          */
         auto turboModule = [strongSelf provideTurboModule:moduleName];
-
-        /**
-         * TODO(T63718299): Move this setter into the ObjCTurboModule constructor
-         */
-        if (performanceLogger) {
-          if (auto objCTurboModule = std::dynamic_pointer_cast<facebook::react::ObjCTurboModule>(turboModule)) {
-            objCTurboModule->setRCTTurboModulePerformanceLogger(performanceLogger);
-          };
-        }
 
         [performanceLogger createTurboModuleEnd:moduleName];
 

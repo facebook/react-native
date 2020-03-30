@@ -26,6 +26,7 @@ import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.bridge.RetryableMountingLayerException;
 import com.facebook.react.bridge.SoftAssertions;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.config.ReactFeatureFlags;
@@ -35,6 +36,7 @@ import com.facebook.react.uimanager.layoutanimation.LayoutAnimationListener;
 import com.facebook.systrace.Systrace;
 import com.facebook.systrace.SystraceMessage;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 import javax.annotation.concurrent.NotThreadSafe;
@@ -82,6 +84,7 @@ public class NativeViewHierarchyManager {
   private boolean mLayoutAnimationEnabled;
   private PopupMenu mPopupMenu;
   private int mDroppedViewIndex = 0;
+  private HashMap<Integer, Set<Integer>> mPendingDeletionsForTag;
 
   public NativeViewHierarchyManager(ViewManagerRegistry viewManagers) {
     this(viewManagers, new RootViewManager());
@@ -351,6 +354,18 @@ public class NativeViewHierarchyManager {
     return stringBuilder.toString();
   }
 
+  private Set<Integer> getPendingDeletionsForTag(int tag) {
+    if (mPendingDeletionsForTag == null) {
+      mPendingDeletionsForTag = new HashMap<>();
+    }
+
+    if (!mPendingDeletionsForTag.containsKey(tag)) {
+      mPendingDeletionsForTag.put(tag, new HashSet<Integer>());
+    }
+
+    return mPendingDeletionsForTag.get(tag);
+  }
+
   /**
    * @param tag react tag of the node we want to manage
    * @param indicesToRemove ordered (asc) list of indicies at which view should be removed
@@ -359,15 +374,13 @@ public class NativeViewHierarchyManager {
    * @param tagsToDelete list of tags corresponding to views that should be removed
    */
   public synchronized void manageChildren(
-      int tag,
+      final int tag,
       @Nullable int[] indicesToRemove,
       @Nullable ViewAtIndex[] viewsToAdd,
       @Nullable int[] tagsToDelete) {
     UiThreadUtil.assertOnUiThread();
 
-    final Set<Integer> pendingDeletionTags = new HashSet<>();
-    mLayoutAnimator.cancelAnimationsForViewTag(tag);
-
+    final Set<Integer> pendingDeletionTags = getPendingDeletionsForTag(tag);
     final ViewGroup viewToManage = (ViewGroup) mTagsToViews.get(tag);
     final ViewGroupManager viewManager = (ViewGroupManager) resolveViewManager(tag);
     if (viewToManage == null) {
@@ -380,6 +393,7 @@ public class NativeViewHierarchyManager {
     }
 
     int lastIndexToRemove = viewManager.getChildCount(viewToManage);
+
     if (indicesToRemove != null) {
       for (int i = indicesToRemove.length - 1; i >= 0; i--) {
         int indexToRemove = indicesToRemove[i];
@@ -451,7 +465,6 @@ public class NativeViewHierarchyManager {
         if (mLayoutAnimationEnabled && mLayoutAnimator.shouldAnimateLayout(viewToDestroy)) {
           pendingDeletionTags.add(tagToDelete);
           mLayoutAnimator.deleteView(
-              tag,
               viewToDestroy,
               new LayoutAnimationListener() {
                 @Override
@@ -463,6 +476,9 @@ public class NativeViewHierarchyManager {
                   viewManager.removeView(viewToManage, viewToDestroy);
                   dropView(viewToDestroy);
                   pendingDeletionTags.remove(viewToDestroy.getId());
+                  if (pendingDeletionTags.isEmpty()) {
+                    mPendingDeletionsForTag.remove(tag);
+                  }
                 }
               });
         } else {
@@ -502,6 +518,9 @@ public class NativeViewHierarchyManager {
 
         viewManager.addView(viewToManage, viewToAdd, normalizedIndex);
       }
+    }
+    if (pendingDeletionTags.isEmpty()) {
+      mPendingDeletionsForTag.remove(tag);
     }
   }
 
@@ -765,7 +784,7 @@ public class NativeViewHierarchyManager {
     UiThreadUtil.assertOnUiThread();
     View view = mTagsToViews.get(reactTag);
     if (view == null) {
-      throw new IllegalViewOperationException(
+      throw new RetryableMountingLayerException(
           "Trying to send command to a non-existing view with tag ["
               + reactTag
               + "] and command "
@@ -780,7 +799,7 @@ public class NativeViewHierarchyManager {
     UiThreadUtil.assertOnUiThread();
     View view = mTagsToViews.get(reactTag);
     if (view == null) {
-      throw new IllegalViewOperationException(
+      throw new RetryableMountingLayerException(
           "Trying to send command to a non-existing view with tag ["
               + reactTag
               + "] and command "

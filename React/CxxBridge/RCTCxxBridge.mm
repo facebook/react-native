@@ -377,8 +377,8 @@ struct RCTInstanceCallback : public InstanceCallback {
       }
       onProgress:^(RCTLoadingProgress *progressData) {
 #if (RCT_DEV | RCT_ENABLE_LOADING_VIEW) && __has_include(<React/RCTDevLoadingViewProtocol.h>)
-        // Note: RCTDevLoadingView should have been loaded at this point, so no need to allow lazy loading.
-        id<RCTDevLoadingViewProtocol> loadingView = [weakSelf moduleForName:@"DevLoadingView" lazilyLoadIfNecessary:NO];
+        id<RCTDevLoadingViewProtocol> loadingView = [weakSelf moduleForName:@"DevLoadingView"
+                                                      lazilyLoadIfNecessary:YES];
         [loadingView updateProgress:progressData];
 #endif
       }];
@@ -679,13 +679,6 @@ struct RCTInstanceCallback : public InstanceCallback {
 
   RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"");
 
-#if RCT_DEBUG
-  static dispatch_once_t onceToken;
-  dispatch_once(&onceToken, ^{
-    RCTVerifyAllModulesExported(extraModules);
-  });
-#endif
-
   RCT_PROFILE_BEGIN_EVENT(
       RCTProfileTagAlways, @"-[RCTCxxBridge initModulesWithDispatchGroup:] preinitialized moduleData", nil);
   // Set up moduleData for pre-initialized module instances
@@ -777,7 +770,7 @@ struct RCTInstanceCallback : public InstanceCallback {
 #endif
 }
 
-- (NSArray<RCTModuleData *> *)_initializeModules:(NSArray<id<RCTBridgeModule>> *)modules
+- (NSArray<RCTModuleData *> *)_initializeModules:(NSArray<Class> *)modules
                                withDispatchGroup:(dispatch_group_t)dispatchGroup
                                 lazilyDiscovered:(BOOL)lazilyDiscovered
 {

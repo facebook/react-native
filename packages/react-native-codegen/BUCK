@@ -11,9 +11,9 @@ fb_native.sh_binary(
     main = "src/cli/verify_with_old_codegen.sh",
     visibility = ["PUBLIC"],
     resources = [
-        "fbsource//xplat/js:setup_env",
         "src/cli/verify_with_old_codegen.js",
         "src/cli/verify_with_old_codegen.sh",
+        "//xplat/js:setup_env",
     ],
 )
 
@@ -27,9 +27,9 @@ fb_native.sh_binary(
     name = "write_to_json",
     main = "src/cli/combine/combine_js_to_schema.sh",
     resources = [
-        "fbsource//xplat/js:setup_env",
         "src/cli/combine/combine-js-to-schema.js",
         "src/cli/combine/combine_js_to_schema.sh",
+        "//xplat/js:setup_env",
     ],
     visibility = ["PUBLIC"],
 )
@@ -45,7 +45,7 @@ fb_native.sh_binary(
     ) + [
         "buck_tests/generate-tests.js",
         "package.json",
-        "fbsource//xplat/js:setup_env",
+        "//xplat/js:setup_env",
         "yarn.lock",
     ],
     visibility = ["PUBLIC"],
@@ -59,7 +59,7 @@ fb_native.genrule(
             "**/e2e/__test_fixtures__/modules/Native*.js",
         ],
     ),
-    cmd = "$(exe fbsource//xplat/js/react-native-github/packages/react-native-codegen:write_to_json) $OUT $SRCS",
+    cmd = "$(exe //xplat/js/react-native-github/packages/react-native-codegen:write_to_json) $OUT $SRCS",
     out = "schema-codegen_tests.json",
 )
 

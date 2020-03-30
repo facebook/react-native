@@ -91,11 +91,16 @@ RCT_EXPORT_MODULE()
 RCT_EXPORT_METHOD(show)
 {
   if (RCTRedBoxGetEnabled()) {
+    __weak RCTLogBox *weakSelf = self;
     dispatch_async(dispatch_get_main_queue(), ^{
-      if (!self->_view) {
-        self->_view = [[RCTLogBoxView alloc] initWithFrame:[UIScreen mainScreen].bounds bridge:self->_bridge];
+      __strong RCTLogBox *strongSelf = weakSelf;
+      if (!strongSelf) {
+        return;
       }
-      [self->_view show];
+      if (!strongSelf->_view) {
+        strongSelf->_view = [[RCTLogBoxView alloc] initWithFrame:[UIScreen mainScreen].bounds bridge:self->_bridge];
+      }
+      [strongSelf->_view show];
     });
   }
 }
@@ -103,16 +108,22 @@ RCT_EXPORT_METHOD(show)
 RCT_EXPORT_METHOD(hide)
 {
   if (RCTRedBoxGetEnabled()) {
+    __weak RCTLogBox *weakSelf = self;
     dispatch_async(dispatch_get_main_queue(), ^{
-      self->_view = nil;
+      __strong RCTLogBox *strongSelf = weakSelf;
+      if (!strongSelf) {
+        return;
+      }
+      strongSelf->_view = nil;
     });
   }
 }
 
-- (std::shared_ptr<facebook::react::TurboModule>)getTurboModuleWithJsInvoker:
-    (std::shared_ptr<facebook::react::CallInvoker>)jsInvoker
+- (std::shared_ptr<facebook::react::TurboModule>)
+    getTurboModuleWithJsInvoker:(std::shared_ptr<facebook::react::CallInvoker>)jsInvoker
+                     perfLogger:(id<RCTTurboModulePerformanceLogger>)perfLogger
 {
-  return std::make_shared<facebook::react::NativeLogBoxSpecJSI>(self, jsInvoker);
+  return std::make_shared<facebook::react::NativeLogBoxSpecJSI>(self, jsInvoker, perfLogger);
 }
 
 @end
@@ -139,10 +150,11 @@ RCT_EXPORT_METHOD(hide)
   // noop
 }
 
-- (std::shared_ptr<facebook::react::TurboModule>)getTurboModuleWithJsInvoker:
-    (std::shared_ptr<facebook::react::CallInvoker>)jsInvoker
+- (std::shared_ptr<facebook::react::TurboModule>)
+    getTurboModuleWithJsInvoker:(std::shared_ptr<facebook::react::CallInvoker>)jsInvoker
+                     perfLogger:(id<RCTTurboModulePerformanceLogger>)perfLogger
 {
-  return std::make_shared<facebook::react::NativeLogBoxSpecJSI>(self, jsInvoker);
+  return std::make_shared<facebook::react::NativeLogBoxSpecJSI>(self, jsInvoker, perfLogger);
 }
 @end
 

@@ -77,8 +77,9 @@ RCT_EXPORT_MODULE(PlatformConstants)
 }
 
 - (std::shared_ptr<TurboModule>)getTurboModuleWithJsInvoker:(std::shared_ptr<CallInvoker>)jsInvoker
+                                                 perfLogger:(id<RCTTurboModulePerformanceLogger>)perfLogger
 {
-  return std::make_shared<NativePlatformConstantsIOSSpecJSI>(self, jsInvoker);
+  return std::make_shared<NativePlatformConstantsIOSSpecJSI>(self, jsInvoker, perfLogger);
 }
 
 @end

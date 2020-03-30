@@ -300,7 +300,7 @@ describe('VirtualizedList', () => {
 
     // This is checking if the ref acts like a ScrollView. If we had an
     // `isScrollView(ref)` method, that would be preferred.
-    expect(scrollRef.scrollTo).toBeInstanceOf(Function);
+    expect(scrollRef.scrollTo).toBeInstanceOf(jest.fn().constructor);
   });
 
   it('getScrollRef for case where it returns a View', () => {

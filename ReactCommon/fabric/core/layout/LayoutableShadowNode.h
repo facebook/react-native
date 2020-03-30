@@ -46,7 +46,6 @@ class LayoutableShadowNode : public ShadowNode {
   class LayoutInspectingPolicy final {
    public:
     bool includeTransform{true};
-    bool includeScrollViewContentOffset{true};
   };
 
   using UnsharedList = better::

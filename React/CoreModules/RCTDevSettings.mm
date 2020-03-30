@@ -453,10 +453,11 @@ RCT_EXPORT_METHOD(addMenuItem : (NSString *)title)
   });
 }
 
-- (std::shared_ptr<facebook::react::TurboModule>)getTurboModuleWithJsInvoker:
-    (std::shared_ptr<facebook::react::CallInvoker>)jsInvoker
+- (std::shared_ptr<facebook::react::TurboModule>)
+    getTurboModuleWithJsInvoker:(std::shared_ptr<facebook::react::CallInvoker>)jsInvoker
+                     perfLogger:(id<RCTTurboModulePerformanceLogger>)perfLogger
 {
-  return std::make_shared<facebook::react::NativeDevSettingsSpecJSI>(self, jsInvoker);
+  return std::make_shared<facebook::react::NativeDevSettingsSpecJSI>(self, jsInvoker, perfLogger);
 }
 
 @end
@@ -519,10 +520,11 @@ RCT_EXPORT_METHOD(addMenuItem : (NSString *)title)
 {
 }
 
-- (std::shared_ptr<facebook::react::TurboModule>)getTurboModuleWithJsInvoker:
-    (std::shared_ptr<facebook::react::CallInvoker>)jsInvoker
+- (std::shared_ptr<facebook::react::TurboModule>)
+    getTurboModuleWithJsInvoker:(std::shared_ptr<facebook::react::CallInvoker>)jsInvoker
+                     perfLogger:(id<RCTTurboModulePerformanceLogger>)perfLogger
 {
-  return std::make_shared<facebook::react::NativeDevSettingsSpecJSI>(self, jsInvoker);
+  return std::make_shared<facebook::react::NativeDevSettingsSpecJSI>(self, jsInvoker, perfLogger);
 }
 
 @end

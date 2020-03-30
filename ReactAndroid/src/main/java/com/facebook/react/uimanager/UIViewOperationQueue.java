@@ -17,9 +17,11 @@ import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.GuardedRunnable;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContext;
+import com.facebook.react.bridge.ReactNoCrashSoftException;
 import com.facebook.react.bridge.ReactSoftException;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.bridge.RetryableMountingLayerException;
 import com.facebook.react.bridge.SoftAssertions;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.common.ReactConstants;
@@ -878,27 +880,26 @@ public class UIViewOperationQueue {
                   for (DispatchCommandViewOperation op : viewCommandOperations) {
                     try {
                       op.executeWithExceptions();
-                    } catch (Throwable e) {
+                    } catch (RetryableMountingLayerException e) {
                       // Catch errors in DispatchCommands. We allow all commands to be retried
-                      // exactly
-                      // once, after the current batch of other mountitems. If the second attempt
-                      // fails,
-                      // then  we log a soft error. This will still crash only in debug.
-                      // We do this because it is a ~relatively common pattern to dispatch a command
-                      // during render, for example, to scroll to the bottom of a ScrollView in
-                      // render.
-                      // This dispatches the command before that View is even mounted. By retrying
-                      // once,
-                      // we can still dispatch the vast majority of commands faster, avoid errors,
-                      // and
-                      // still operate correctly for most commands even when they're executed too
-                      // soon.
+                      // exactly once, after the current batch of other mountitems. If the second
+                      // attempt fails, then  we log a soft error. This will still crash only in
+                      // debug. We do this because it is a ~relatively common pattern to dispatch a
+                      // command during render, for example, to scroll to the bottom of a ScrollView
+                      // in render. This dispatches the command before that View is even mounted. By
+                      // retrying once, we can still dispatch the vast majority of commands faster,
+                      // avoid errors, and still operate correctly for most commands even when
+                      // they're executed too soon.
                       if (op.getRetries() == 0) {
                         op.incrementRetries();
                         mViewCommandOperations.add(op);
                       } else {
-                        ReactSoftException.logSoftException(TAG, e);
+                        // Retryable exceptions should be logged, but never crash in debug.
+                        ReactSoftException.logSoftException(TAG, new ReactNoCrashSoftException(e));
                       }
+                    } catch (Throwable e) {
+                      // Non-retryable exceptions should be logged in prod, and crash in Debug.
+                      ReactSoftException.logSoftException(TAG, e);
                     }
                   }
                 }

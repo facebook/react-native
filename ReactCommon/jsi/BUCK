@@ -57,7 +57,7 @@ rn_xplat_cxx_library(
     ],
     xcode_public_headers_symlinks = True,
     deps = [
-        "fbsource//xplat/folly:molly",
+        "//xplat/folly:molly",
         react_native_xplat_dep("jsi:jsi"),
     ],
 )
