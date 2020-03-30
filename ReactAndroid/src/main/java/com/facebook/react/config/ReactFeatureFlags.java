@@ -72,14 +72,6 @@ public class ReactFeatureFlags {
   public static boolean nullifyCatalystInstanceOnDestroy = false;
 
   /**
-   * Temporary flag that should be removed soon. See FabricUIManager: if this flag is disabled,
-   * mountItems scheduled on the UI thread will *always* be executed synchronously. If this flag is
-   * enabled, users of FabricUIManager may disable immediate execution of scheduled mount items.
-   * TODO T54997838: remove as followup
-   */
-  public static boolean allowDisablingImmediateExecutionOfScheduleMountItems = false;
-
-  /**
    * Temporary flag. See UIImplementation: if this flag is enabled, ViewCommands will be queued and
    * executed before any other types of UI operations.
    */

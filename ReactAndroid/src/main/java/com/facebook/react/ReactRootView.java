@@ -127,11 +127,9 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
   @Override
   protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
     // TODO: T60453649 - Add test automation to verify behavior of onMeasure
-    setAllowImmediateUIOperationExecution(false);
 
     if (mUseSurface) {
       super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-      setAllowImmediateUIOperationExecution(true);
       return;
     }
 
@@ -185,7 +183,6 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
       mLastHeight = height;
 
     } finally {
-      setAllowImmediateUIOperationExecution(true);
       Systrace.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
     }
   }
@@ -440,43 +437,6 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
       if (uiManager != null) {
         uiManager.updateRootLayoutSpecs(getRootViewTag(), widthMeasureSpec, heightMeasureSpec);
       }
-    }
-  }
-
-  /**
-   * In Fabric, it is possible for MountItems to be scheduled during onMeasure calls, specifically:
-   *
-   * <p>ReactRootView.onMeasure -> ReactRootView.updateRootLayoutSpecs ->
-   * FabricUIManager.updateRootLayoutSpecs -> Binding.setConstraints -> (C++) commit new tree ->
-   * (C++ Android binding) diff tree, schedule mount items -> FabricUIManager.scheduleMountItem
-   *
-   * <p>If called on the main thread, `scheduleMountItem` will execute MountItems synchronously,
-   * causing all ShadowNode updates to be flushed to the view hierarchy, on the main thread, during
-   * an onMeasure call.
-   *
-   * <p>Use this method to disable immediate execution of mount items.
-   *
-   * <p>This is a noop outside in pre-Fabric React Native.
-   */
-  private void setAllowImmediateUIOperationExecution(boolean flag) {
-    final ReactInstanceManager reactInstanceManager = mReactInstanceManager;
-
-    if (reactInstanceManager == null) {
-      return;
-    }
-
-    final ReactContext reactApplicationContext = reactInstanceManager.getCurrentReactContext();
-
-    if (reactApplicationContext == null) {
-      return;
-    }
-
-    @Nullable
-    UIManager uiManager = UIManagerHelper.getUIManager(reactApplicationContext, getUIManagerType());
-    // Ignore calling setAllowImmediateUIOperationExecution if UIManager is not properly
-    // initialized.
-    if (uiManager != null) {
-      uiManager.setAllowImmediateUIOperationExecution(flag);
     }
   }
 

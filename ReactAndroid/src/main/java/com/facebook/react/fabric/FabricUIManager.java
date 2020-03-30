@@ -136,13 +136,6 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
   private final DispatchUIFrameCallback mDispatchUIFrameCallback;
 
   /**
-   * Whether or not to immediately, synchronously execute mountItems when they are scheduled on the
-   * UI thread.
-   */
-  @ThreadConfined(UI)
-  private boolean mImmediatelyExecutedMountItemsOnUI = true;
-
-  /**
    * This is used to keep track of whether or not the FabricUIManager has been destroyed. Once the
    * Catalyst instance is being destroyed, we should cease all operation here.
    */
@@ -509,17 +502,6 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
   }
 
   /**
-   * When mounting instructions are scheduled on the UI thread, should they be executed immediately?
-   * *
-   */
-  @Override
-  @UiThread
-  @ThreadConfined(UI)
-  public void setAllowImmediateUIOperationExecution(boolean flag) {
-    mImmediatelyExecutedMountItemsOnUI = flag;
-  }
-
-  /**
    * This method enqueues UI operations directly to the UI thread. This might change in the future
    * to enforce execution order using {@link ReactChoreographer#CallbackType}.
    */
@@ -557,12 +539,7 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
 
     if (UiThreadUtil.isOnUiThread()) {
       // We only read these flags on the UI thread.
-      boolean immediateExecutionEnabled =
-          !ReactFeatureFlags.allowDisablingImmediateExecutionOfScheduleMountItems
-              || mImmediatelyExecutedMountItemsOnUI;
-      if (immediateExecutionEnabled) {
-        tryDispatchMountItems();
-      }
+      tryDispatchMountItems();
     }
 
     // Post markers outside of lock and after sync mounting finishes its execution
