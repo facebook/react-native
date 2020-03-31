@@ -156,7 +156,7 @@ def rn_codegen_components(
 
     fb_native.genrule(
         name = copy_generated_java_files,
-        cmd = "mkdir $OUT && find $(location :{}) -name '*.java' -exec cp {{}} $OUT \;".format(generate_fixtures_rule_name),
+        cmd = "mkdir $OUT && find $(location :{}) -name '*.java' -exec cp {{}} $OUT \\;".format(generate_fixtures_rule_name),
         out = "java",
         labels = ["codegen_rule"],
     )
