@@ -26,7 +26,6 @@
 #include <react/uimanager/SchedulerToolbox.h>
 #include <react/uimanager/primitives.h>
 #include <react/utils/ContextContainer.h>
-#include <react/utils/TimeUtils.h>
 
 #include <Glog/logging.h>
 
@@ -257,10 +256,13 @@ void Binding::installFabricUIManager(
       "react_fabric:enabled_collapse_delete_create_mounting_instructions");
 
   disableVirtualNodePreallocation_ = reactNativeConfig_->getBool(
-    "react_fabric:disable_virtual_node_preallocation");
+      "react_fabric:disable_virtual_node_preallocation");
 
   disablePreallocateViews_ = reactNativeConfig_->getBool(
       "react_fabric:disabled_view_preallocation_android");
+
+  enableOptimizedMovesDiffer_ = reactNativeConfig_->getBool(
+      "react_fabric:enabled_optimized_moves_differ_android");
 
   auto toolbox = SchedulerToolbox{};
   toolbox.contextContainer = contextContainer;
@@ -571,7 +573,9 @@ void Binding::schedulerDidFinishTransaction(
     return;
   }
 
-  auto mountingTransaction = mountingCoordinator->pullTransaction();
+  auto mountingTransaction = mountingCoordinator->pullTransaction(
+      enableOptimizedMovesDiffer_ ? DifferentiatorMode::OptimizedMoves
+                                  : DifferentiatorMode::Classic);
 
   if (!mountingTransaction.has_value()) {
     return;

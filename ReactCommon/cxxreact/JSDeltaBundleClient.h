@@ -20,13 +20,13 @@ namespace facebook {
 namespace react {
 
 class JSDeltaBundleClient {
-public:
-  void patch(const folly::dynamic& delta);
+ public:
+  void patch(const folly::dynamic &delta);
   JSModulesUnbundle::Module getModule(uint32_t moduleId) const;
   std::unique_ptr<const JSBigString> getStartupCode() const;
   void clear();
 
-private:
+ private:
   std::unordered_map<uint32_t, std::string> modules_;
   std::string startupCode_;
 
@@ -34,14 +34,16 @@ private:
 };
 
 class JSDeltaBundleClientRAMBundle : public JSModulesUnbundle {
-public:
+ public:
   JSDeltaBundleClientRAMBundle(
-    std::shared_ptr<const JSDeltaBundleClient> client) : client_(client) {}
+      std::shared_ptr<const JSDeltaBundleClient> client)
+      : client_(client) {}
 
   Module getModule(uint32_t moduleId) const override {
     return client_->getModule(moduleId);
   }
-private:
+
+ private:
   const std::shared_ptr<const JSDeltaBundleClient> client_;
 };
 

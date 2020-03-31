@@ -1133,7 +1133,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       );
       cells.push(
         <VirtualizedCellWrapper
-          cellKey={this._getCellKey() + '-footer'}
+          cellKey={this._getFooterCellKey()}
           key="$footer">
           <View
             onLayout={this._onLayoutFooter}
@@ -1218,8 +1218,6 @@ class VirtualizedList extends React.PureComponent<Props, State> {
   componentDidUpdate(prevProps: Props) {
     const {data, extraData} = this.props;
     if (data !== prevProps.data || extraData !== prevProps.extraData) {
-      this._hasDataChangedSinceEndReached = true;
-
       // clear the viewableIndices cache to also trigger
       // the onViewableItemsChanged callback with the new data
       this._viewabilityTuples.forEach(tuple => {
@@ -1248,7 +1246,6 @@ class VirtualizedList extends React.PureComponent<Props, State> {
   _fillRateHelper: FillRateHelper;
   _frames = {};
   _footerLength = 0;
-  _hasDataChangedSinceEndReached = true;
   _hasDoneInitialScroll = false;
   _hasInteracted = false;
   _hasMore = false;
@@ -1362,15 +1359,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       this._frames[cellKey].inLayout = true;
     }
 
-    const childListKeys = this._cellKeysToChildListKeys.get(cellKey);
-    if (childListKeys) {
-      for (let childKey of childListKeys) {
-        const childList = this._nestedChildLists.get(childKey);
-        childList &&
-          childList.ref &&
-          childList.ref.measureLayoutRelativeToContainingList();
-      }
-    }
+    this._triggerRemeasureForChildListsInCell(cellKey);
 
     this._computeBlankness();
     this._updateViewableItems(this.props.data);
@@ -1383,6 +1372,18 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     }
   };
 
+  _triggerRemeasureForChildListsInCell(cellKey: string): void {
+    const childListKeys = this._cellKeysToChildListKeys.get(cellKey);
+    if (childListKeys) {
+      for (let childKey of childListKeys) {
+        const childList = this._nestedChildLists.get(childKey);
+        childList &&
+          childList.ref &&
+          childList.ref.measureLayoutRelativeToContainingList();
+      }
+    }
+  }
+
   measureLayoutRelativeToContainingList(): void {
     // TODO (T35574538): findNodeHandle sometimes crashes with "Unable to find
     // node on an unmounted component" during scrolling
@@ -1393,10 +1394,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       // We are assuming that getOutermostParentListRef().getScrollRef()
       // is a non-null reference to a ScrollView
       this._scrollRef.measureLayout(
-        this.context.virtualizedList
-          .getOutermostParentListRef()
-          .getScrollRef()
-          .getNativeScrollRef(),
+        this.context.virtualizedList.getOutermostParentListRef().getScrollRef(),
         (x, y, width, height) => {
           this._offsetFromParentVirtualizedList = this._selectOffset({x, y});
           this._scrollMetrics.contentLength = this._selectLength({
@@ -1443,7 +1441,12 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     this.props.onLayout && this.props.onLayout(e);
   };
 
+  _getFooterCellKey(): string {
+    return this._getCellKey() + '-footer';
+  }
+
   _onLayoutFooter = e => {
+    this._triggerRemeasureForChildListsInCell(this._getFooterCellKey());
     this._footerLength = this._selectLength(e.nativeEvent.layout);
   };
 
@@ -1540,20 +1543,22 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     } = this.props;
     const {contentLength, visibleLength, offset} = this._scrollMetrics;
     const distanceFromEnd = contentLength - visibleLength - offset;
+    const threshold = onEndReachedThreshold
+      ? onEndReachedThreshold * visibleLength
+      : 0;
     if (
       onEndReached &&
       this.state.last === getItemCount(data) - 1 &&
-      /* $FlowFixMe(>=0.63.0 site=react_native_fb) This comment suppresses an
-       * error found when Flow v0.63 was deployed. To see the error delete this
-       * comment and run Flow. */
-      distanceFromEnd < onEndReachedThreshold * visibleLength &&
-      (this._hasDataChangedSinceEndReached ||
-        this._scrollMetrics.contentLength !== this._sentEndForContentLength)
+      distanceFromEnd < threshold &&
+      this._scrollMetrics.contentLength !== this._sentEndForContentLength
     ) {
-      // Only call onEndReached once for a given dataset + content length.
-      this._hasDataChangedSinceEndReached = false;
+      // Only call onEndReached once for a given content length
       this._sentEndForContentLength = this._scrollMetrics.contentLength;
       onEndReached({distanceFromEnd});
+    } else if (distanceFromEnd > threshold) {
+      // If the user scrolls away from the end and back again cause
+      // an onEndReached to be triggered again
+      this._sentEndForContentLength = 0;
     }
   }
 

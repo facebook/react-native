@@ -86,6 +86,10 @@ static NSDictionary *onLoadParamsForSource(RCTImageSource *source)
 {
   if ((self = [super initWithFrame:CGRectZero])) {
     _bridge = bridge;
+    _imageView = [[RCTUIImageViewAnimated alloc] init];
+    _imageView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+    [self addSubview:_imageView];
+
     NSNotificationCenter *center = [NSNotificationCenter defaultCenter];
     [center addObserver:self
                selector:@selector(clearImageIfDetached)
@@ -95,9 +99,15 @@ static NSDictionary *onLoadParamsForSource(RCTImageSource *source)
                selector:@selector(clearImageIfDetached)
                    name:UIApplicationDidEnterBackgroundNotification
                  object:nil];
-    _imageView = [[RCTUIImageViewAnimated alloc] init];
-    _imageView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-    [self addSubview:_imageView];
+#if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 130000
+    if (@available(iOS 13.0, *)) {
+      [center addObserver:self
+                 selector:@selector(clearImageIfDetached)
+
+                     name:UISceneDidEnterBackgroundNotification
+                   object:nil];
+    }
+#endif
   }
   return self;
 }

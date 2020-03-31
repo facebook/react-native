@@ -32,11 +32,12 @@ public class LogBoxModule extends NativeLogBoxSpec {
     super(reactContext);
 
     mDevSupportManager = devSupportManager;
+
     UiThreadUtil.runOnUiThread(
         new Runnable() {
           @Override
           public void run() {
-            if (mReactRootView == null) {
+            if (mReactRootView == null && mDevSupportManager != null) {
               mReactRootView = mDevSupportManager.createRootView("LogBox");
               if (mReactRootView == null) {
                 FLog.e(
@@ -55,25 +56,27 @@ public class LogBoxModule extends NativeLogBoxSpec {
 
   @Override
   public void show() {
-    UiThreadUtil.runOnUiThread(
-        new Runnable() {
-          @Override
-          public void run() {
-            if (mLogBoxDialog == null && mReactRootView != null) {
-              Activity context = getCurrentActivity();
-              if (context == null || context.isFinishing()) {
-                FLog.e(
-                    ReactConstants.TAG,
-                    "Unable to launch logbox because react activity "
-                        + "is not available, here is the error that logbox would've displayed: ");
-                return;
+    if (mReactRootView != null) {
+      UiThreadUtil.runOnUiThread(
+          new Runnable() {
+            @Override
+            public void run() {
+              if (mLogBoxDialog == null && mReactRootView != null) {
+                Activity context = getCurrentActivity();
+                if (context == null || context.isFinishing()) {
+                  FLog.e(
+                      ReactConstants.TAG,
+                      "Unable to launch logbox because react activity "
+                          + "is not available, here is the error that logbox would've displayed: ");
+                  return;
+                }
+                mLogBoxDialog = new LogBoxDialog(context, mReactRootView);
+                mLogBoxDialog.setCancelable(false);
+                mLogBoxDialog.show();
               }
-              mLogBoxDialog = new LogBoxDialog(context, mReactRootView);
-              mLogBoxDialog.setCancelable(false);
-              mLogBoxDialog.show();
             }
-          }
-        });
+          });
+    }
   }
 
   @Override
@@ -83,7 +86,7 @@ public class LogBoxModule extends NativeLogBoxSpec {
           @Override
           public void run() {
             if (mLogBoxDialog != null) {
-              if (mReactRootView.getParent() != null) {
+              if (mReactRootView != null && mReactRootView.getParent() != null) {
                 ((ViewGroup) mReactRootView.getParent()).removeView(mReactRootView);
               }
               mLogBoxDialog.dismiss();

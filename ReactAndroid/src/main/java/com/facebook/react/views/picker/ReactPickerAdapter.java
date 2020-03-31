@@ -23,6 +23,7 @@ class ReactPickerAdapter extends ArrayAdapter<ReactPickerItem> {
 
   private final LayoutInflater mInflater;
   private @Nullable Integer mPrimaryTextColor;
+  private @Nullable Integer mBackgroundColor;
 
   public ReactPickerAdapter(Context context, List<ReactPickerItem> data) {
     super(context, 0, data);
@@ -67,6 +68,10 @@ class ReactPickerAdapter extends ArrayAdapter<ReactPickerItem> {
       textView.setTextColor((ColorStateList) textView.getTag());
     }
 
+    if (mBackgroundColor != null) {
+      textView.setBackgroundColor(mBackgroundColor);
+    }
+
     return textView;
   }
 
@@ -74,8 +79,17 @@ class ReactPickerAdapter extends ArrayAdapter<ReactPickerItem> {
     return mPrimaryTextColor;
   }
 
+  public @Nullable Integer getBackgroundColor() {
+    return mBackgroundColor;
+  }
+
   public void setPrimaryTextColor(@Nullable Integer primaryTextColor) {
     mPrimaryTextColor = primaryTextColor;
+    notifyDataSetChanged();
+  }
+
+  public void setBackgroundColor(@Nullable Integer backgroundColor) {
+    mBackgroundColor = backgroundColor;
     notifyDataSetChanged();
   }
 }

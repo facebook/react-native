@@ -16,7 +16,7 @@ import type {ExceptionData} from '../../Core/NativeExceptionsManager';
 import type {LogBoxLogData} from './LogBoxLog';
 
 const BABEL_TRANSFORM_ERROR_FORMAT = /^(?:TransformError )?(?:SyntaxError: |ReferenceError: )(.*): (.*) \((\d+):(\d+)\)\n\n([\s\S]+)/;
-const BABEL_CODE_FRAME_ERROR_FORMAT = /^(?:TransformError )?(?:.*): (.*): ([\s\S]+?)\n([ >]{2}[\d\s]+ \|[\s\S]+|\u{001b}[\s\S]+)/u;
+const BABEL_CODE_FRAME_ERROR_FORMAT = /^(?:TransformError )?(?:.*):? (?:.*?)(\/.*): ([\s\S]+?)\n([ >]{2}[\d\s]+ \|[\s\S]+|\u{001b}[\s\S]+)/u;
 const METRO_ERROR_FORMAT = /^(?:InternalError Metro has encountered an error:) (.*): (.*) \((\d+):(\d+)\)\n\n([\s\S]+)/u;
 
 export type ExtendedExceptionData = ExceptionData & {

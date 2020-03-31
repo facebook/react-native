@@ -23,10 +23,6 @@ type ExtrapolateType = 'extend' | 'identity' | 'clamp';
 
 export type InterpolationConfigType = {
   inputRange: $ReadOnlyArray<number>,
-  /* $FlowFixMe(>=0.38.0 site=react_native_fb,react_native_oss) - Flow error
-   * detected during the deployment of v0.38.0. To see the error, remove this
-   * comment and run flow
-   */
   outputRange: $ReadOnlyArray<number> | $ReadOnlyArray<string>,
   easing?: (input: number) => number,
   extrapolate?: ExtrapolateType,
@@ -168,17 +164,17 @@ function interpolate(
 }
 
 function colorToRgba(input: string): string {
-  let int32Color = normalizeColor(input);
-  if (int32Color === null) {
+  let normalizedColor = normalizeColor(input);
+  if (normalizedColor === null || typeof normalizedColor !== 'number') {
     return input;
   }
 
-  int32Color = int32Color || 0;
+  normalizedColor = normalizedColor || 0;
 
-  const r = (int32Color & 0xff000000) >>> 24;
-  const g = (int32Color & 0x00ff0000) >>> 16;
-  const b = (int32Color & 0x0000ff00) >>> 8;
-  const a = (int32Color & 0x000000ff) / 255;
+  const r = (normalizedColor & 0xff000000) >>> 24;
+  const g = (normalizedColor & 0x00ff0000) >>> 16;
+  const b = (normalizedColor & 0x0000ff00) >>> 8;
+  const a = (normalizedColor & 0x000000ff) / 255;
 
   return `rgba(${r}, ${g}, ${b}, ${a})`;
 }
@@ -222,11 +218,10 @@ function createInterpolationFromStringOutputRange(
     });
   });
 
-  /* $FlowFixMe(>=0.18.0): `outputRange[0].match()` can return `null`. Need to
-   * guard against this possibility.
-   */
   const interpolations = outputRange[0]
     .match(stringShapeRegex)
+    /* $FlowFixMe(>=0.18.0): `outputRange[0].match()` can return `null`. Need
+     * to guard against this possibility. */
     .map((value, i) => {
       return createInterpolation({
         ...config,
@@ -363,6 +358,8 @@ class AnimatedInterpolation extends AnimatedWithChildren {
     return {
       inputRange: this._config.inputRange,
       // Only the `outputRange` can contain strings so we don't need to transform `inputRange` here
+      /* $FlowFixMe(>=0.38.0) - Flow error detected during the deployment of
+       * v0.38.0. To see the error, remove this comment and run flow */
       outputRange: this.__transformDataType(this._config.outputRange),
       extrapolateLeft:
         this._config.extrapolateLeft || this._config.extrapolate || 'extend',

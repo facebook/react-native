@@ -95,6 +95,7 @@ class JSIExecutor : public JSExecutor {
   std::string getDescription() override;
   void *getJavaScriptContext() override;
   bool isInspectable() override;
+  void handleMemoryPressure(int pressureLevel) override;
 
   // An implementation of JSIScopedTimeoutInvoker that simply runs the
   // invokee, with no timeout.

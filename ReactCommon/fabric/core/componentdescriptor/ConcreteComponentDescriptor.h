@@ -133,7 +133,7 @@ class ConcreteComponentDescriptor : public ComponentDescriptor {
   }
 
   virtual State::Shared createState(
-      ShadowNodeFamily::Shared const &family,
+      ShadowNodeFamily const &family,
       StateData::Shared const &data) const override {
     if (std::is_same<ConcreteStateData, StateData>::value) {
       // Default case: Returning `null` for nodes that don't use `State`.
@@ -143,7 +143,8 @@ class ConcreteComponentDescriptor : public ComponentDescriptor {
     assert(data && "Provided `data` is nullptr.");
 
     return std::make_shared<ConcreteState const>(
-        std::static_pointer_cast<ConcreteStateData const>(data), family);
+        std::static_pointer_cast<ConcreteStateData const>(data),
+        *family.getMostRecentState());
   }
 
   virtual ShadowNodeFamily::Shared createFamily(

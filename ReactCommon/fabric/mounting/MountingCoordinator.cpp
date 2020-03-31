@@ -14,9 +14,7 @@
 
 #include <condition_variable>
 
-#include <react/mounting/Differentiator.h>
 #include <react/mounting/ShadowViewMutation.h>
-#include <react/utils/TimeUtils.h>
 
 namespace facebook {
 namespace react {
@@ -68,8 +66,8 @@ bool MountingCoordinator::waitForTransaction(
       lock, timeout, [this]() { return lastRevision_.has_value(); });
 }
 
-better::optional<MountingTransaction> MountingCoordinator::pullTransaction()
-    const {
+better::optional<MountingTransaction> MountingCoordinator::pullTransaction(
+    DifferentiatorMode differentiatorMode) const {
   std::lock_guard<std::mutex> lock(mutex_);
 
   if (!lastRevision_.has_value()) {
@@ -82,7 +80,9 @@ better::optional<MountingTransaction> MountingCoordinator::pullTransaction()
   telemetry.willDiff();
 
   auto mutations = calculateShadowViewMutations(
-      baseRevision_.getRootShadowNode(), lastRevision_->getRootShadowNode());
+      differentiatorMode,
+      baseRevision_.getRootShadowNode(),
+      lastRevision_->getRootShadowNode());
 
   telemetry.didDiff();
 

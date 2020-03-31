@@ -21,32 +21,28 @@
 /**
  * Unregister a single-press keyboard command.
  */
-- (void)unregisterKeyCommandWithInput:(NSString *)input
-                        modifierFlags:(UIKeyModifierFlags)flags;
+- (void)unregisterKeyCommandWithInput:(NSString *)input modifierFlags:(UIKeyModifierFlags)flags;
 
 /**
  * Check if a single-press command is registered.
  */
-- (BOOL)isKeyCommandRegisteredForInput:(NSString *)input
-                         modifierFlags:(UIKeyModifierFlags)flags;
+- (BOOL)isKeyCommandRegisteredForInput:(NSString *)input modifierFlags:(UIKeyModifierFlags)flags;
 
 /**
  * Register a double-press keyboard command.
  */
 - (void)registerDoublePressKeyCommandWithInput:(NSString *)input
-                      modifierFlags:(UIKeyModifierFlags)flags
-                             action:(void (^)(UIKeyCommand *command))block;
+                                 modifierFlags:(UIKeyModifierFlags)flags
+                                        action:(void (^)(UIKeyCommand *command))block;
 
 /**
  * Unregister a double-press keyboard command.
  */
-- (void)unregisterDoublePressKeyCommandWithInput:(NSString *)input
-                        modifierFlags:(UIKeyModifierFlags)flags;
+- (void)unregisterDoublePressKeyCommandWithInput:(NSString *)input modifierFlags:(UIKeyModifierFlags)flags;
 
 /**
  * Check if a double-press command is registered.
  */
-- (BOOL)isDoublePressKeyCommandRegisteredForInput:(NSString *)input
-                         modifierFlags:(UIKeyModifierFlags)flags;
+- (BOOL)isDoublePressKeyCommandRegisteredForInput:(NSString *)input modifierFlags:(UIKeyModifierFlags)flags;
 
 @end

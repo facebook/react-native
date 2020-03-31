@@ -11,6 +11,7 @@ package com.facebook.react.viewmanagers;
 
 import android.view.View;
 import androidx.annotation.Nullable;
+import com.facebook.react.bridge.ColorPropConverter;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.uimanager.BaseViewManagerDelegate;
 import com.facebook.react.uimanager.BaseViewManagerInterface;
@@ -30,7 +31,7 @@ public class AndroidSwipeRefreshLayoutManagerDelegate<T extends View, U extends 
         mViewManager.setColors(view, (ReadableArray) value);
         break;
       case "progressBackgroundColor":
-        mViewManager.setProgressBackgroundColor(view, value == null ? null : ((Double) value).intValue());
+        mViewManager.setProgressBackgroundColor(view, ColorPropConverter.getColor(value, view.getContext()));
         break;
       case "size":
         mViewManager.setSize(view, value == null ? 1 : ((Double) value).intValue());

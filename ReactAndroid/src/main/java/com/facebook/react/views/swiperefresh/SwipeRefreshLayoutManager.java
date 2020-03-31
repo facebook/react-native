@@ -14,6 +14,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout.OnRefreshListener;
+import com.facebook.react.bridge.ColorPropConverter;
 import com.facebook.react.bridge.Dynamic;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableType;
@@ -68,7 +69,11 @@ public class SwipeRefreshLayoutManager extends ViewGroupManager<ReactSwipeRefres
     if (colors != null) {
       int[] colorValues = new int[colors.size()];
       for (int i = 0; i < colors.size(); i++) {
-        colorValues[i] = colors.getInt(i);
+        if (colors.getType(i) == ReadableType.Map) {
+          colorValues[i] = ColorPropConverter.getColor(colors.getMap(i), view.getContext());
+        } else {
+          colorValues[i] = colors.getInt(i);
+        }
       }
       view.setColorSchemeColors(colorValues);
     } else {

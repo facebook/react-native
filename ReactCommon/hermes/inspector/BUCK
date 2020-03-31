@@ -59,13 +59,14 @@ fb_xplat_cxx_library(
     xcode_public_headers_symlinks = True,
     deps = [
         react_native_xplat_target("jsinspector:jsinspector"),
-        "fbsource//xplat/folly:futures",
-        "fbsource//xplat/folly:molly",
-        "fbsource//xplat/hermes/API:HermesAPI",
-        "fbsource//xplat/jsi:jsi",
-        "fbsource//xplat/third-party/glog:glog",
         ":detail",
         ":inspectorlib",
+        "//xplat/folly:futures",
+        "//xplat/folly:molly",
+        "//xplat/hermes/API:HermesAPI",
+        "//xplat/jsi:JSIDynamic",
+        "//xplat/jsi:jsi",
+        "//xplat/third-party/glog:glog",
     ],
 )
 
@@ -85,9 +86,9 @@ fb_xplat_cxx_test(
         "PUBLIC",
     ],
     deps = [
-        "fbsource//xplat/third-party/gmock:gtest",
         ":chrome",
         ":detail",
+        "//xplat/third-party/gmock:gtest",
     ],
 )
 
@@ -123,7 +124,7 @@ fb_xplat_cxx_library(
     ],
     xcode_public_headers_symlinks = True,
     deps = [
-        "fbsource//xplat/folly:molly",
+        "//xplat/folly:molly",
     ],
 )
 
@@ -140,9 +141,9 @@ fb_xplat_cxx_test(
         "PUBLIC",
     ],
     deps = [
-        "fbsource//xplat/third-party/gmock:gmock",
-        "fbsource//xplat/third-party/gmock:gtest",
         ":detail",
+        "//xplat/third-party/gmock:gmock",
+        "//xplat/third-party/gmock:gtest",
     ],
 )
 
@@ -159,9 +160,9 @@ fb_xplat_cxx_binary(
         "PUBLIC",
     ],
     deps = [
-        "fbsource//xplat/hermes/API:HermesAPI",
         ":chrome",
         ":inspectorlib",
+        "//xplat/hermes/API:HermesAPI",
     ],
 )
 
@@ -194,12 +195,12 @@ fb_xplat_cxx_library(
     ],
     xcode_public_headers_symlinks = True,
     deps = [
-        "fbsource//xplat/folly:futures",
-        "fbsource//xplat/folly:molly",
-        "fbsource//xplat/hermes/API:HermesAPI",
-        "fbsource//xplat/jsi:jsi",
-        "fbsource//xplat/third-party/glog:glog",
         ":detail",
+        "//xplat/folly:futures",
+        "//xplat/folly:molly",
+        "//xplat/hermes/API:HermesAPI",
+        "//xplat/jsi:jsi",
+        "//xplat/third-party/glog:glog",
     ],
 )
 
@@ -217,7 +218,7 @@ fb_xplat_cxx_test(
         "PUBLIC",
     ],
     deps = [
-        "fbsource//xplat/third-party/gmock:gtest",
         ":inspectorlib",
+        "//xplat/third-party/gmock:gtest",
     ],
 )

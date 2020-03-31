@@ -9,6 +9,7 @@ package com.facebook.react.modules.appearance;
 
 import android.content.Context;
 import android.content.res.Configuration;
+import androidx.annotation.Nullable;
 import com.facebook.fbreact.specs.NativeAppearanceSpec;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -26,13 +27,34 @@ public class AppearanceModule extends NativeAppearanceSpec {
 
   private String mColorScheme = "light";
 
+  private final @Nullable OverrideColorScheme mOverrideColorScheme;
+
+  /** Optional override to the current color scheme */
+  public interface OverrideColorScheme {
+
+    /**
+     * Color scheme will use the return value instead of the current system configuration. Available
+     * scheme: {light, dark}
+     */
+    public String getScheme();
+  }
+
   public AppearanceModule(ReactApplicationContext reactContext) {
+    this(reactContext, null);
+  }
+
+  public AppearanceModule(
+      ReactApplicationContext reactContext, @Nullable OverrideColorScheme overrideColorScheme) {
     super(reactContext);
 
+    mOverrideColorScheme = overrideColorScheme;
     mColorScheme = colorSchemeForCurrentConfiguration(reactContext);
   }
 
-  private static String colorSchemeForCurrentConfiguration(Context context) {
+  private String colorSchemeForCurrentConfiguration(Context context) {
+    if (mOverrideColorScheme != null) {
+      return mOverrideColorScheme.getScheme();
+    }
     int currentNightMode =
         context.getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK;
     switch (currentNightMode) {

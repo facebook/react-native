@@ -45,9 +45,9 @@ if (Platform.OS === 'android') {
   AndroidTextInputCommands = require('./AndroidTextInputNativeComponent')
     .Commands;
 } else if (Platform.OS === 'ios') {
-  RCTMultilineTextInputView = require('./RCTMultilineTextInputNativeComponent.js')
+  RCTMultilineTextInputView = require('./RCTMultilineTextInputNativeComponent')
     .default;
-  RCTSinglelineTextInputView = require('./RCTSingelineTextInputNativeComponent.js')
+  RCTSinglelineTextInputView = require('./RCTSingelineTextInputNativeComponent')
     .default;
 }
 
@@ -699,42 +699,6 @@ type ImperativeMethods = $ReadOnly<{|
 
 const emptyFunctionThatReturnsTrue = () => true;
 
-function useFocusOnMount(
-  initialAutoFocus: ?boolean,
-  inputRef: {|
-    current: null | React.ElementRef<HostComponent<mixed>>,
-  |},
-) {
-  const initialAutoFocusValue = useRef<?boolean>(initialAutoFocus);
-
-  useEffect(() => {
-    // We only want to autofocus on initial mount.
-    // Since initialAutoFocusValue and inputRef will never change
-    // this should match the expected behavior
-    if (initialAutoFocusValue.current) {
-      const focus = () => {
-        if (inputRef.current != null) {
-          inputRef.current.focus();
-        }
-      };
-
-      let rafId;
-      if (Platform.OS === 'android') {
-        // On Android this needs to be executed in a rAF callback
-        // otherwise the keyboard opens then closes immediately.
-        rafId = requestAnimationFrame(focus);
-      } else {
-        focus();
-      }
-
-      return () => {
-        if (rafId != null) {
-          cancelAnimationFrame(rafId);
-        }
-      };
-    }
-  }, [initialAutoFocusValue, inputRef]);
-}
 /**
  * A foundational component for inputting text into the app via a
  * keyboard. Props provide configurability for several features, such as
@@ -935,8 +899,6 @@ function InternalTextInput(props: Props): React.Node {
     text,
   ]);
 
-  useFocusOnMount(props.autoFocus, inputRef);
-
   useEffect(() => {
     const inputRefValue = inputRef.current;
 
@@ -1023,14 +985,12 @@ function InternalTextInput(props: Props): React.Node {
   };
 
   const _onChange = (event: ChangeEvent) => {
-    // Make sure to fire the mostRecentEventCount first so it is already set on
-    // native when the text value is set.
     if (AndroidTextInputCommands && inputRef.current != null) {
-      AndroidTextInputCommands.setMostRecentEventCount(
-        inputRef.current,
-        event.nativeEvent.eventCount,
-      );
+      // Do nothing
     } else if (inputRef.current != null) {
+      // Make sure to fire the mostRecentEventCount first so it is already set on
+      // native when the text value is set.
+      // This is now only relevant on iOS until we migrate to ViewCommands everywhere
       inputRef.current.setNativeProps({
         mostRecentEventCount: event.nativeEvent.eventCount,
       });
@@ -1152,6 +1112,8 @@ function InternalTextInput(props: Props): React.Node {
         onBlur={_onBlur}
         onChange={_onChange}
         onFocus={_onFocus}
+        /* $FlowFixMe the types for AndroidTextInput don't match up exactly
+         * with the props for TextInput. This will need to get fixed */
         onScroll={_onScroll}
         onSelectionChange={_onSelectionChange}
         selection={selection}

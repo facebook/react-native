@@ -57,7 +57,7 @@ rn_xplat_cxx_library(
     ],
     xcode_public_headers_symlinks = True,
     deps = [
-        "fbsource//xplat/folly:molly",
+        "//xplat/folly:molly",
         react_native_xplat_dep("jsi:jsi"),
     ],
 )
@@ -72,38 +72,13 @@ rn_xplat_cxx_library(
         "JSCRuntime.h",
     ],
     apple_sdks = (IOS, MACOSX),
-    cxx_exported_platform_linker_flags = [
-        (
-            "macosx-x86_64",
-            [
-                "-framework",
-                "JavaScriptCore",
-            ],
-        ),
-    ],
-    cxx_platform_deps = [
-        (
-            "^(linux|gcc|platform)",
-            [
-                "fbsource//xplat/jsc:jsc",
-            ],
-        ),
-    ],
-    fbandroid_compiler_flags = [
-        "-fexceptions",
-        "-frtti",
-        "-O3",
-    ],
-    fbandroid_deps = [
-        "fbsource//xplat/jsc:jsc",
-    ],
     fbobjc_compiler_flags = [
         "-Os",
     ],
     fbobjc_frameworks = [
         "$SDKROOT/System/Library/Frameworks/JavaScriptCore.framework",
     ],
-    fbobjc_labels = ["supermodule:ios/default/private.react_native.infra"],
+    fbobjc_labels = ["supermodule:ios/default/public.react_native.infra"],
     # TODO (T55502220): Remove when iOS 9.0 deprecation is complete everywhere.
     fbobjc_target_sdk_version = "9.0",
     platforms = APPLE,

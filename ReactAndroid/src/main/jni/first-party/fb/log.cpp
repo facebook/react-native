@@ -17,7 +17,7 @@ void setLogHandler(LogHandler logHandler) {
   gLogHandler = logHandler;
 }
 
-int fb_printLog(int prio, const char *tag,  const char *fmt, ...) {
+int fb_printLog(int prio, const char *tag, const char *fmt, ...) {
   char logBuffer[LOG_BUFFER_SIZE];
 
   va_list va_args;
@@ -25,38 +25,42 @@ int fb_printLog(int prio, const char *tag,  const char *fmt, ...) {
   int result = vsnprintf(logBuffer, sizeof(logBuffer), fmt, va_args);
   va_end(va_args);
   if (gLogHandler != NULL) {
-      gLogHandler(prio, tag, logBuffer);
+    gLogHandler(prio, tag, logBuffer);
   }
   __android_log_write(prio, tag, logBuffer);
   return result;
 }
 
-void logPrintByDelims(int priority, const char* tag, const char* delims,
-        const char* msg, ...)
-{
-    va_list ap;
-    char buf[32768];
-    char* context;
-    char* tok;
+void logPrintByDelims(
+    int priority,
+    const char *tag,
+    const char *delims,
+    const char *msg,
+    ...) {
+  va_list ap;
+  char buf[32768];
+  char *context;
+  char *tok;
 
-    va_start(ap, msg);
-    vsnprintf(buf, sizeof(buf), msg, ap);
-    va_end(ap);
+  va_start(ap, msg);
+  vsnprintf(buf, sizeof(buf), msg, ap);
+  va_end(ap);
 
-    tok = strtok_r(buf, delims, &context);
+  tok = strtok_r(buf, delims, &context);
 
-    if (!tok) {
-        return;
-    }
+  if (!tok) {
+    return;
+  }
 
-    do {
-        __android_log_write(priority, tag, tok);
-    } while ((tok = strtok_r(NULL, delims, &context)));
+  do {
+    __android_log_write(priority, tag, tok);
+  } while ((tok = strtok_r(NULL, delims, &context)));
 }
 
 #ifndef ANDROID
 
-// Implementations of the basic android logging functions for non-android platforms.
+// Implementations of the basic android logging functions for non-android
+// platforms.
 
 static char logTagChar(int prio) {
   switch (prio) {
@@ -84,7 +88,7 @@ int __android_log_write(int prio, const char *tag, const char *text) {
   return fprintf(stderr, "[%c/%.16s] %s\n", logTagChar(prio), tag, text);
 }
 
-int __android_log_print(int prio, const char *tag,  const char *fmt, ...) {
+int __android_log_print(int prio, const char *tag, const char *fmt, ...) {
   va_list ap;
   va_start(ap, fmt);
 

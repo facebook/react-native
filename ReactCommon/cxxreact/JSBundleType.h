@@ -7,9 +7,9 @@
 
 #pragma once
 
+#include <folly/Portability.h>
 #include <cstdint>
 #include <cstring>
-#include <folly/Portability.h>
 
 #ifndef RN_EXPORT
 #define RN_EXPORT __attribute__((visibility("default")))
@@ -55,7 +55,7 @@ FOLLY_PACK_POP
  * Takes the first 8 bytes of a bundle, and returns a tag describing the
  * bundle's format.
  */
-RN_EXPORT ScriptTag parseTypeFromHeader(const BundleHeader& header);
+RN_EXPORT ScriptTag parseTypeFromHeader(const BundleHeader &header);
 
 /**
  * stringForScriptTag
@@ -63,7 +63,7 @@ RN_EXPORT ScriptTag parseTypeFromHeader(const BundleHeader& header);
  * Convert an `ScriptTag` enum into a string, useful for emitting in errors
  * and diagnostic messages.
  */
-RN_EXPORT const char* stringForScriptTag(const ScriptTag& tag);
+RN_EXPORT const char *stringForScriptTag(const ScriptTag &tag);
 
-}  // namespace react
-}  // namespace facebook
+} // namespace react
+} // namespace facebook

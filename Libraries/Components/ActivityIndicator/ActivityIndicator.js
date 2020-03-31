@@ -16,6 +16,7 @@ const StyleSheet = require('../../StyleSheet/StyleSheet');
 const View = require('../View/View');
 import type {HostComponent} from '../../Renderer/shims/ReactNativeTypes';
 import type {ViewProps} from '../View/ViewPropTypes';
+import type {ColorValue} from '../../StyleSheet/StyleSheetTypes';
 
 const PlatformActivityIndicator =
   Platform.OS === 'android'
@@ -50,7 +51,7 @@ type Props = $ReadOnly<{|
    *
    * See https://reactnative.dev/docs/activityindicator.html#color
    */
-  color?: ?string,
+  color?: ?ColorValue,
 
   /**
    * Size of the indicator (default is 'small').

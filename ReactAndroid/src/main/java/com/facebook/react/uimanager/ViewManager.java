@@ -74,7 +74,7 @@ public abstract class ViewManager<T extends View, C extends ReactShadowNode>
     return createView(reactContext, null, null, jsResponderHandler);
   }
 
-  /** Creates a view with knowledge of props. */
+  /** Creates a view with knowledge of props and state. */
   public @NonNull T createView(
       @NonNull ThemedReactContext reactContext,
       @Nullable ReactStylesDiffMap props,
@@ -287,6 +287,28 @@ public abstract class ViewManager<T extends View, C extends ReactShadowNode>
     return null;
   }
 
+  /**
+   * Subclasses can override this method to implement custom measure functions for the ViewManager
+   *
+   * @param context {@link com.facebook.react.bridge.ReactContext} used for the view.
+   * @param localData {@link ReadableMap} containing "local data" defined in C++
+   * @param props {@link ReadableMap} containing JS props
+   * @param state {@link ReadableMap} containing state defined in C++
+   * @param width width of the view (usually zero)
+   * @param widthMode widthMode used during calculation of layout
+   * @param height height of the view (usually zero)
+   * @param heightMode widthMode used during calculation of layout
+   * @param attachmentsPositions {@link int[]} array containing 2x times the amount of attachments
+   *     of the view. An attachment represents the position of an inline view that needs to be
+   *     rendered inside a component and it requires the content of the parent view in order to be
+   *     positioned. This array is meant to be used by the platform to RETURN the position of each
+   *     attachment, as a result of the calculation of layout. (e.g. this array is used to measure
+   *     inlineViews that are rendered inside Text components). On most of the components this array
+   *     will be contain a null value.
+   *     <p>Even values will represent the TOP of each attachment, Odd values represent the LEFT of
+   *     each attachment.
+   * @return result of calculation of layout for the arguments received as a parameter.
+   */
   public long measure(
       Context context,
       ReadableMap localData,
@@ -295,7 +317,8 @@ public abstract class ViewManager<T extends View, C extends ReactShadowNode>
       float width,
       YogaMeasureMode widthMode,
       float height,
-      YogaMeasureMode heightMode) {
+      YogaMeasureMode heightMode,
+      @Nullable int[] attachmentsPositions) {
     return 0;
   }
 

@@ -24,6 +24,7 @@ import RCTPickerNativeComponent, {
 } from './RCTPickerNativeComponent';
 import type {TextStyleProp} from '../../StyleSheet/StyleSheet';
 import type {ColorValue} from '../../StyleSheet/StyleSheetTypes';
+import type {ProcessedColorValue} from '../../StyleSheet/processColor';
 import type {SyntheticEvent} from '../../Types/CoreEventTypes';
 import type {ViewProps} from '../View/ViewPropTypes';
 
@@ -37,7 +38,7 @@ type PickerIOSChangeEvent = SyntheticEvent<
 type RCTPickerIOSItemType = $ReadOnly<{|
   label: ?Label,
   value: ?(number | string),
-  textColor: ?number,
+  textColor: ?ProcessedColorValue,
 |}>;
 
 type Label = Stringish | number;

@@ -13,11 +13,17 @@ NS_ASSUME_NONNULL_BEGIN
 
 @protocol RCTExceptionsManagerDelegate <NSObject>
 
-- (void)handleSoftJSExceptionWithMessage:(nullable NSString *)message stack:(nullable NSArray *)stack exceptionId:(NSNumber *)exceptionId;
-- (void)handleFatalJSExceptionWithMessage:(nullable NSString *)message stack:(nullable NSArray *)stack exceptionId:(NSNumber *)exceptionId;
+- (void)handleSoftJSExceptionWithMessage:(nullable NSString *)message
+                                   stack:(nullable NSArray *)stack
+                             exceptionId:(NSNumber *)exceptionId;
+- (void)handleFatalJSExceptionWithMessage:(nullable NSString *)message
+                                    stack:(nullable NSArray *)stack
+                              exceptionId:(NSNumber *)exceptionId;
 
 @optional
-- (void)updateJSExceptionWithMessage:(nullable NSString *)message stack:(nullable NSArray *)stack exceptionId:(NSNumber *)exceptionId;
+- (void)updateJSExceptionWithMessage:(nullable NSString *)message
+                               stack:(nullable NSArray *)stack
+                         exceptionId:(NSNumber *)exceptionId;
 
 @end
 
@@ -25,8 +31,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)initWithDelegate:(id<RCTExceptionsManagerDelegate>)delegate;
 
-- (void)reportSoftException:(nullable NSString *)message stack:(nullable NSArray<NSDictionary *> *)stack exceptionId:(double)exceptionId;
-- (void)reportFatalException:(nullable NSString *)message stack:(nullable NSArray<NSDictionary *> *)stack exceptionId:(double)exceptionId;
+- (void)reportSoftException:(nullable NSString *)message
+                      stack:(nullable NSArray<NSDictionary *> *)stack
+                exceptionId:(double)exceptionId;
+- (void)reportFatalException:(nullable NSString *)message
+                       stack:(nullable NSArray<NSDictionary *> *)stack
+                 exceptionId:(double)exceptionId;
 
 @property (nonatomic, weak) id<RCTExceptionsManagerDelegate> delegate;
 

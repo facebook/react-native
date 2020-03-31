@@ -17,9 +17,6 @@
 
 + (RCTInspectorPackagerConnection *)connectWithBundleURL:(NSURL *)bundleURL;
 + (void)disableDebugger;
-+ (void)attachDebugger:(NSString *)owner
-         withBundleURL:(NSURL *)bundleURL
-              withView:(UIViewController *)view;
 @end
 
 #endif

@@ -10,16 +10,16 @@
 
 'use strict';
 
-import {isHoverEnabled} from './HoverState.js';
+import {isHoverEnabled} from './HoverState';
 import invariant from 'invariant';
-import SoundManager from '../Components/Sound/SoundManager.js';
-import {normalizeRect, type RectOrSize} from '../StyleSheet/Rect.js';
+import SoundManager from '../Components/Sound/SoundManager';
+import {normalizeRect, type RectOrSize} from '../StyleSheet/Rect';
 import type {
   BlurEvent,
   FocusEvent,
   PressEvent,
   MouseEvent,
-} from '../Types/CoreEventTypes.js';
+} from '../Types/CoreEventTypes';
 import Platform from '../Utilities/Platform';
 import UIManager from '../ReactNative/UIManager';
 import type {HostComponent} from '../Renderer/shims/ReactNativeTypes';
@@ -271,8 +271,8 @@ const isPressInSignal = signal =>
 const isTerminalSignal = signal =>
   signal === 'RESPONDER_TERMINATED' || signal === 'RESPONDER_RELEASE';
 
-const DEFAULT_LONG_PRESS_DELAY_MS = 500;
-const DEFAULT_PRESS_DELAY_MS = 0;
+const DEFAULT_LONG_PRESS_DELAY_MS = 370; // 500 - 130
+const DEFAULT_PRESS_DELAY_MS = 130;
 const DEFAULT_PRESS_RECT_OFFSETS = {
   bottom: 30,
   left: 20,
@@ -640,6 +640,7 @@ export default class Pressability {
     event: PressEvent,
   ): void {
     if (isTerminalSignal(signal)) {
+      this._touchActivatePosition = null;
       this._cancelLongPressDelayTimeout();
     }
 

@@ -58,7 +58,7 @@ Facebook has a [bounty program](https://www.facebook.com/whitehat/) for the safe
 
 ## Helping with Documentation
 
-The React Native documentation is hosted as part of the React Native website repository at https://github.com/facebook/react-native-website. The website itself is located at <https://facebook.github.io/react-native> and it is built using [Docusaurus](https://docusaurus.io/). If there's anything you'd like to change in the docs, you can get started by clicking on the "Edit" button located on the upper right of most pages in the website.
+The React Native documentation is hosted as part of the React Native website repository at https://github.com/facebook/react-native-website. The website itself is located at <https://reactnative.dev/> and it is built using [Docusaurus](https://docusaurus.io/). If there's anything you'd like to change in the docs, you can get started by clicking on the "Edit" button located on the upper right of most pages in the website.
 
 If you are adding new functionality or introducing a change in behavior, we will ask you to update the documentation to reflect your changes.
 

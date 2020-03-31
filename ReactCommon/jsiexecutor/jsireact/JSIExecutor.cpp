@@ -15,6 +15,7 @@
 #include <folly/json.h>
 #include <glog/logging.h>
 #include <jsi/JSIDynamic.h>
+#include <jsi/instrumentation.h>
 
 #include <sstream>
 #include <stdexcept>
@@ -271,6 +272,74 @@ void *JSIExecutor::getJavaScriptContext() {
 
 bool JSIExecutor::isInspectable() {
   return runtime_->isInspectable();
+}
+
+void JSIExecutor::handleMemoryPressure(int pressureLevel) {
+  // The level is an enum value passed by the Android OS to an onTrimMemory
+  // event callback. Defined in ComponentCallbacks2.
+  enum AndroidMemoryPressure {
+    TRIM_MEMORY_BACKGROUND = 40,
+    TRIM_MEMORY_COMPLETE = 80,
+    TRIM_MEMORY_MODERATE = 60,
+    TRIM_MEMORY_RUNNING_CRITICAL = 15,
+    TRIM_MEMORY_RUNNING_LOW = 10,
+    TRIM_MEMORY_RUNNING_MODERATE = 5,
+    TRIM_MEMORY_UI_HIDDEN = 20,
+  };
+  const char *levelName;
+  switch (pressureLevel) {
+    case TRIM_MEMORY_BACKGROUND:
+      levelName = "TRIM_MEMORY_BACKGROUND";
+      break;
+    case TRIM_MEMORY_COMPLETE:
+      levelName = "TRIM_MEMORY_COMPLETE";
+      break;
+    case TRIM_MEMORY_MODERATE:
+      levelName = "TRIM_MEMORY_MODERATE";
+      break;
+    case TRIM_MEMORY_RUNNING_CRITICAL:
+      levelName = "TRIM_MEMORY_RUNNING_CRITICAL";
+      break;
+    case TRIM_MEMORY_RUNNING_LOW:
+      levelName = "TRIM_MEMORY_RUNNING_LOW";
+      break;
+    case TRIM_MEMORY_RUNNING_MODERATE:
+      levelName = "TRIM_MEMORY_RUNNING_MODERATE";
+      break;
+    case TRIM_MEMORY_UI_HIDDEN:
+      levelName = "TRIM_MEMORY_UI_HIDDEN";
+      break;
+    default:
+      levelName = "UNKNOWN";
+      break;
+  }
+
+  switch (pressureLevel) {
+    case TRIM_MEMORY_RUNNING_LOW:
+    case TRIM_MEMORY_RUNNING_MODERATE:
+    case TRIM_MEMORY_UI_HIDDEN:
+      // For non-severe memory trims, do nothing.
+      LOG(INFO) << "Memory warning (pressure level: " << levelName
+                << ") received by JS VM, ignoring because it's non-severe";
+      break;
+    case TRIM_MEMORY_BACKGROUND:
+    case TRIM_MEMORY_COMPLETE:
+    case TRIM_MEMORY_MODERATE:
+    case TRIM_MEMORY_RUNNING_CRITICAL:
+      // For now, pressureLevel is unused by collectGarbage.
+      // This may change in the future if the JS GC has different styles of
+      // collections.
+      LOG(INFO) << "Memory warning (pressure level: " << levelName
+                << ") received by JS VM, running a GC";
+      runtime_->instrumentation().collectGarbage();
+      break;
+    default:
+      // Use the raw number instead of the name here since the name is
+      // meaningless.
+      LOG(WARNING) << "Memory warning (pressure level: " << pressureLevel
+                   << ") received by JS VM, unrecognized pressure level";
+      break;
+  }
 }
 
 void JSIExecutor::bindBridge() {

@@ -9,17 +9,24 @@
 
 #import <QuartzCore/QuartzCore.h>
 
+#import <FBReactNativeSpec/FBReactNativeSpec.h>
 #import <React/RCTBridge.h>
+#import <React/RCTConvert.h>
 #import <React/RCTDefines.h>
+#import <React/RCTDevLoadingViewSetEnabled.h>
 #import <React/RCTModalHostViewController.h>
 #import <React/RCTUtils.h>
 
+#import "CoreModulesPlugins.h"
+
+using namespace facebook::react;
+
+@interface RCTDevLoadingView () <NativeDevLoadingViewSpec>
+@end
+
 #if RCT_DEV | RCT_ENABLE_LOADING_VIEW
 
-static BOOL isEnabled = YES;
-
-@implementation RCTDevLoadingView
-{
+@implementation RCTDevLoadingView {
   UIWindow *_window;
   UILabel *_label;
   NSDate *_showDate;
@@ -31,7 +38,7 @@ RCT_EXPORT_MODULE()
 
 + (void)setEnabled:(BOOL)enabled
 {
-  isEnabled = enabled;
+  RCTDevLoadingViewSetEnabled(enabled);
 }
 
 + (BOOL)requiresMainQueueSetup
@@ -57,9 +64,9 @@ RCT_EXPORT_MODULE()
   }
 }
 
-RCT_EXPORT_METHOD(showMessage:(NSString *)message color:(UIColor *)color backgroundColor:(UIColor *)backgroundColor)
+- (void)showMessage:(NSString *)message color:(UIColor *)color backgroundColor:(UIColor *)backgroundColor
 {
-  if (!isEnabled) {
+  if (!RCTDevLoadingViewGetEnabled()) {
     return;
   }
 
@@ -70,7 +77,8 @@ RCT_EXPORT_METHOD(showMessage:(NSString *)message color:(UIColor *)color backgro
 
       if (@available(iOS 11.0, *)) {
         UIWindow *window = RCTSharedApplication().keyWindow;
-        self->_window = [[UIWindow alloc] initWithFrame:CGRectMake(0, 0, screenSize.width, window.safeAreaInsets.top + 30)];
+        self->_window =
+            [[UIWindow alloc] initWithFrame:CGRectMake(0, 0, screenSize.width, window.safeAreaInsets.top + 30)];
         self->_label = [[UILabel alloc] initWithFrame:CGRectMake(0, window.safeAreaInsets.top, screenSize.width, 30)];
       } else {
         self->_window = [[UIWindow alloc] initWithFrame:CGRectMake(0, 0, screenSize.width, 22)];
@@ -85,8 +93,7 @@ RCT_EXPORT_METHOD(showMessage:(NSString *)message color:(UIColor *)color backgro
       // set a root VC so rotation is supported
       self->_window.rootViewController = [UIViewController new];
 
-      self->_label.font = [UIFont monospacedDigitSystemFontOfSize:12.0
-                                                           weight:UIFontWeightRegular];
+      self->_label.font = [UIFont monospacedDigitSystemFontOfSize:12.0 weight:UIFontWeightRegular];
       self->_label.textAlignment = NSTextAlignmentCenter;
     }
 
@@ -94,12 +101,28 @@ RCT_EXPORT_METHOD(showMessage:(NSString *)message color:(UIColor *)color backgro
     self->_label.textColor = color;
     self->_window.backgroundColor = backgroundColor;
     self->_window.hidden = NO;
+
+#if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && defined(__IPHONE_13_0) && \
+    __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_13_0
+    if (@available(iOS 13.0, *)) {
+      UIWindowScene *scene = (UIWindowScene *)RCTSharedApplication().connectedScenes.anyObject;
+      self->_window.windowScene = scene;
+    }
+#endif
   });
+}
+
+RCT_EXPORT_METHOD(showMessage
+                  : (NSString *)message withColor
+                  : (NSNumber *__nonnull)color withBackgroundColor
+                  : (NSNumber *__nonnull)backgroundColor)
+{
+  [self showMessage:message color:[RCTConvert UIColor:color] backgroundColor:[RCTConvert UIColor:backgroundColor]];
 }
 
 RCT_EXPORT_METHOD(hide)
 {
-  if (!isEnabled) {
+  if (!RCTDevLoadingViewGetEnabled()) {
     return;
   }
 
@@ -109,15 +132,16 @@ RCT_EXPORT_METHOD(hide)
     NSTimeInterval delay = MAX(0, MIN_PRESENTED_TIME - presentedTime);
     CGRect windowFrame = self->_window.frame;
     [UIView animateWithDuration:0.25
-                          delay:delay
-                        options:0
-                     animations:^{
-                       self->_window.frame = CGRectOffset(windowFrame, 0, -windowFrame.size.height);
-                     } completion:^(__unused BOOL finished) {
-                       self->_window.frame = windowFrame;
-                       self->_window.hidden = YES;
-                       self->_window = nil;
-                     }];
+        delay:delay
+        options:0
+        animations:^{
+          self->_window.frame = CGRectOffset(windowFrame, 0, -windowFrame.size.height);
+        }
+        completion:^(__unused BOOL finished) {
+          self->_window.frame = windowFrame;
+          self->_window.hidden = YES;
+          self->_window = nil;
+        }];
   });
 }
 
@@ -133,16 +157,14 @@ RCT_EXPORT_METHOD(hide)
 #endif
     color = [UIColor whiteColor];
     backgroundColor = [UIColor blackColor];
-      message = [NSString stringWithFormat:@"Connect to %@ to develop JavaScript.", RCT_PACKAGER_NAME];
+    message = [NSString stringWithFormat:@"Connect to %@ to develop JavaScript.", RCT_PACKAGER_NAME];
   } else {
     color = [UIColor whiteColor];
-    backgroundColor = [UIColor colorWithHue:1./3 saturation:1 brightness:.35 alpha:1];
+    backgroundColor = [UIColor colorWithHue:1. / 3 saturation:1 brightness:.35 alpha:1];
     message = [NSString stringWithFormat:@"Loading from %@:%@...", URL.host, URL.port];
   }
 
-  [self showMessage:message
-              color:color
-    backgroundColor:backgroundColor];
+  [self showMessage:message color:color backgroundColor:backgroundColor];
 }
 
 - (void)updateProgress:(RCTLoadingProgress *)progress
@@ -155,19 +177,51 @@ RCT_EXPORT_METHOD(hide)
   });
 }
 
+- (std::shared_ptr<TurboModule>)getTurboModuleWithJsInvoker:(std::shared_ptr<CallInvoker>)jsInvoker
+                                                 perfLogger:(id<RCTTurboModulePerformanceLogger>)perfLogger
+{
+  return std::make_shared<NativeDevLoadingViewSpecJSI>(self, jsInvoker, perfLogger);
+}
+
 @end
 
 #else
 
 @implementation RCTDevLoadingView
 
-+ (NSString *)moduleName { return nil; }
-+ (void)setEnabled:(BOOL)enabled { }
-- (void)showMessage:(NSString *)message color:(UIColor *)color backgroundColor:(UIColor *)backgroundColor { }
-- (void)showWithURL:(NSURL *)URL { }
-- (void)updateProgress:(RCTLoadingProgress *)progress { }
-- (void)hide { }
++ (NSString *)moduleName
+{
+  return nil;
+}
++ (void)setEnabled:(BOOL)enabled
+{
+}
+- (void)showMessage:(NSString *)message color:(UIColor *)color backgroundColor:(UIColor *)backgroundColor
+{
+}
+- (void)showMessage:(NSString *)message withColor:(NSNumber *)color withBackgroundColor:(NSNumber *)backgroundColor
+{
+}
+- (void)showWithURL:(NSURL *)URL
+{
+}
+- (void)updateProgress:(RCTLoadingProgress *)progress
+{
+}
+- (void)hide
+{
+}
+- (std::shared_ptr<TurboModule>)getTurboModuleWithJsInvoker:(std::shared_ptr<CallInvoker>)jsInvoker
+                                                 perfLogger:(id<RCTTurboModulePerformanceLogger>)perfLogger
+{
+  return std::make_shared<NativeDevLoadingViewSpecJSI>(self, jsInvoker, perfLogger);
+}
 
 @end
 
 #endif
+
+Class RCTDevLoadingViewCls(void)
+{
+  return RCTDevLoadingView.class;
+}

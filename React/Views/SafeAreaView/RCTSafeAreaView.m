@@ -27,8 +27,8 @@
   return self;
 }
 
-RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)decoder)
-RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
+RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (NSCoder *)decoder)
+RCT_NOT_IMPLEMENTED(-(instancetype)initWithFrame : (CGRect)frame)
 
 - (NSString *)description
 {
@@ -40,9 +40,9 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
   }
 
   return [NSString stringWithFormat:@"%@; safeAreaInsets = %@; appliedSafeAreaInsets = %@>",
-          superDescription,
-          NSStringFromUIEdgeInsets([self safeAreaInsetsIfSupportedAndEnabled]),
-          NSStringFromUIEdgeInsets(_currentSafeAreaInsets)];
+                                    superDescription,
+                                    NSStringFromUIEdgeInsets([self safeAreaInsetsIfSupportedAndEnabled]),
+                                    NSStringFromUIEdgeInsets(_currentSafeAreaInsets)];
 }
 
 - (BOOL)isSupportedByOS
@@ -64,7 +64,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
 
 - (UIEdgeInsets)emulatedSafeAreaInsets
 {
-  UIViewController* vc = self.reactViewController;
+  UIViewController *vc = self.reactViewController;
 
   if (!vc) {
     return UIEdgeInsetsZero;
@@ -87,12 +87,10 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
   return safeAreaInsets;
 }
 
-static BOOL UIEdgeInsetsEqualToEdgeInsetsWithThreshold(UIEdgeInsets insets1, UIEdgeInsets insets2, CGFloat threshold) {
-  return
-    ABS(insets1.left - insets2.left) <= threshold &&
-    ABS(insets1.right - insets2.right) <= threshold &&
-    ABS(insets1.top - insets2.top) <= threshold &&
-    ABS(insets1.bottom - insets2.bottom) <= threshold;
+static BOOL UIEdgeInsetsEqualToEdgeInsetsWithThreshold(UIEdgeInsets insets1, UIEdgeInsets insets2, CGFloat threshold)
+{
+  return ABS(insets1.left - insets2.left) <= threshold && ABS(insets1.right - insets2.right) <= threshold &&
+      ABS(insets1.top - insets2.top) <= threshold && ABS(insets1.bottom - insets2.bottom) <= threshold;
 }
 
 - (void)safeAreaInsetsDidChange
@@ -133,7 +131,7 @@ static BOOL UIEdgeInsetsEqualToEdgeInsetsWithThreshold(UIEdgeInsets insets1, UIE
   }
 
   _emulateUnlessSupported = emulateUnlessSupported;
-  
+
   if ([self isSupportedByOS]) {
     return;
   }

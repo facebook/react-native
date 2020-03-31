@@ -220,7 +220,7 @@ function reactConsoleErrorHandler() {
       /*reportToConsole*/ false,
     );
   } else {
-    const stringifySafe = require('../Utilities/stringifySafe');
+    const stringifySafe = require('../Utilities/stringifySafe').default;
     const str = Array.prototype.map
       .call(arguments, value =>
         typeof value === 'string' ? value : stringifySafe(value),

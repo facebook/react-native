@@ -7,11 +7,11 @@
 
 #import "RCTSwitchManager.h"
 
+#import <React/RCTUIManager.h>
 #import "RCTBridge.h"
 #import "RCTEventDispatcher.h"
 #import "RCTSwitch.h"
 #import "UIView+React.h"
-#import <React/RCTUIManager.h>
 
 @implementation RCTSwitchManager
 
@@ -20,9 +20,7 @@ RCT_EXPORT_MODULE()
 - (UIView *)view
 {
   RCTSwitch *switcher = [RCTSwitch new];
-  [switcher addTarget:self
-               action:@selector(onChange:)
-     forControlEvents:UIControlEventValueChanged];
+  [switcher addTarget:self action:@selector(onChange:) forControlEvents:UIControlEventValueChanged];
   return switcher;
 }
 
@@ -30,7 +28,7 @@ RCT_EXPORT_MODULE()
 {
   if (sender.wasOn != sender.on) {
     if (sender.onChange) {
-      sender.onChange(@{ @"value": @(sender.on) });
+      sender.onChange(@{@"value" : @(sender.on)});
     }
     sender.wasOn = sender.on;
   }
@@ -40,7 +38,7 @@ RCT_EXPORT_METHOD(setValue : (nonnull NSNumber *)viewTag toValue : (BOOL)value)
 {
   [self.bridge.uiManager addUIBlock:^(RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry) {
     UIView *view = viewRegistry[viewTag];
-    
+
     if ([view isKindOfClass:[UISwitch class]]) {
       [(UISwitch *)view setOn:value animated:NO];
     } else {

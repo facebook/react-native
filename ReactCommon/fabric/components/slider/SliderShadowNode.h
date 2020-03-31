@@ -38,6 +38,21 @@ class SliderShadowNode final : public ConcreteViewShadowNode<
   void setSliderMeasurementsManager(
       const std::shared_ptr<SliderMeasurementsManager> &measurementsManager);
 
+  static SliderState initialStateData(
+      ShadowNodeFragment const &fragment,
+      SurfaceId const surfaceId,
+      ComponentDescriptor const &componentDescriptor) {
+    auto imageSource = ImageSource{ImageSource::Type::Invalid};
+    return {imageSource,
+            {imageSource, nullptr},
+            imageSource,
+            {imageSource, nullptr},
+            imageSource,
+            {imageSource, nullptr},
+            imageSource,
+            {imageSource, nullptr}};
+  }
+
 #pragma mark - LayoutableShadowNode
 
   Size measure(LayoutConstraints layoutConstraints) const override;

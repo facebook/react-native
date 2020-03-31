@@ -469,7 +469,7 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
     markUpdated();
   }
 
-  @ReactProp(name = ViewProps.COLOR)
+  @ReactProp(name = ViewProps.COLOR, customType = "Color")
   public void setColor(@Nullable Integer color) {
     mIsColorSet = (color != null);
     if (mIsColorSet) {

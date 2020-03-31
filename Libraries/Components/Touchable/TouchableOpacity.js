@@ -12,10 +12,10 @@
 
 import Pressability, {
   type PressabilityConfig,
-} from '../../Pressability/Pressability.js';
-import {PressabilityDebugView} from '../../Pressability/PressabilityDebug.js';
-import TVTouchable from './TVTouchable.js';
-import typeof TouchableWithoutFeedback from './TouchableWithoutFeedback.js';
+} from '../../Pressability/Pressability';
+import {PressabilityDebugView} from '../../Pressability/PressabilityDebug';
+import TVTouchable from './TVTouchable';
+import typeof TouchableWithoutFeedback from './TouchableWithoutFeedback';
 import Animated from 'react-native/Libraries/Animated/src/Animated';
 import Easing from 'react-native/Libraries/Animated/src/Easing';
 import type {ViewStyleProp} from 'react-native/Libraries/StyleSheet/StyleSheet';

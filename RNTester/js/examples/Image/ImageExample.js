@@ -488,7 +488,7 @@ exports.examples = [
         <Image
           defaultSource={require('../../assets/bunny.png')}
           source={{
-            uri: 'https://facebook.github.io/origami/public/images/birds.jpg',
+            uri: 'https://origami.design/public/images/bird-logo.png',
           }}
           style={styles.base}
         />

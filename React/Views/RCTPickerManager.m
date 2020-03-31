@@ -7,10 +7,10 @@
 
 #import "RCTPickerManager.h"
 
-#import "RCTBridge.h"
-#import "RCTPicker.h"
-#import "RCTFont.h"
 #import <React/RCTUIManager.h>
+#import "RCTBridge.h"
+#import "RCTFont.h"
+#import "RCTPicker.h"
 
 @implementation RCTPickerManager
 

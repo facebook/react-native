@@ -66,6 +66,7 @@ module.exports = {
       textStyle,
     ): ImageStyleProp);
 
+    // $FlowExpectedError - Incompatible type.
     (StyleSheet.compose(
       // $FlowExpectedError - Incompatible type.
       [textStyle],

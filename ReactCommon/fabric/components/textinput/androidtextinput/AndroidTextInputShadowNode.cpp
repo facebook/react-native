@@ -33,8 +33,11 @@ AttributedString AndroidTextInputShadowNode::getAttributedString() const {
   // Use BaseTextShadowNode to get attributed string from children
   auto childTextAttributes = TextAttributes::defaultTextAttributes();
   childTextAttributes.apply(getConcreteProps().textAttributes);
-  auto attributedString =
-      BaseTextShadowNode::getAttributedString(childTextAttributes, *this);
+
+  auto attributedString = AttributedString{};
+  auto attachments = BaseTextShadowNode::Attachments{};
+  BaseTextShadowNode::buildAttributedString(
+      childTextAttributes, *this, attributedString, attachments);
 
   // BaseTextShadowNode only gets children. We must detect and prepend text
   // value attributes manually.
@@ -94,10 +97,17 @@ AttributedString AndroidTextInputShadowNode::getMostRecentAttributedString()
 
   auto reactTreeAttributedString = getAttributedString();
 
+  // Sometimes the treeAttributedString will only differ from the state
+  // not by inherent properties (string or prop attributes), but by the frame of
+  // the parent which has changed Thus, we can't directly compare the entire
+  // AttributedString
+  bool treeAttributedStringChanged =
+      !state.reactTreeAttributedString.compareTextAttributesWithoutFrame(
+          reactTreeAttributedString);
+
   return (
-      state.reactTreeAttributedString == reactTreeAttributedString
-          ? state.attributedString
-          : reactTreeAttributedString);
+      !treeAttributedStringChanged ? state.attributedString
+                                   : reactTreeAttributedString);
 }
 
 void AndroidTextInputShadowNode::updateStateIfNeeded() {
@@ -144,7 +154,11 @@ void AndroidTextInputShadowNode::updateStateIfNeeded() {
                                      getConcreteProps().paragraphAttributes,
                                      defaultTextAttributes,
                                      ShadowView(*this),
-                                     textLayoutManager_});
+                                     textLayoutManager_,
+                                     state.defaultThemePaddingStart,
+                                     state.defaultThemePaddingEnd,
+                                     state.defaultThemePaddingTop,
+                                     state.defaultThemePaddingBottom});
 }
 
 #pragma mark - LayoutableShadowNode
@@ -166,10 +180,12 @@ Size AndroidTextInputShadowNode::measure(
     return {0, 0};
   }
 
-  return textLayoutManager_->measure(
-      AttributedStringBox{attributedString},
-      getConcreteProps().paragraphAttributes,
-      layoutConstraints);
+  return textLayoutManager_
+      ->measure(
+          AttributedStringBox{attributedString},
+          getConcreteProps().paragraphAttributes,
+          layoutConstraints)
+      .size;
 }
 
 void AndroidTextInputShadowNode::layout(LayoutContext layoutContext) {

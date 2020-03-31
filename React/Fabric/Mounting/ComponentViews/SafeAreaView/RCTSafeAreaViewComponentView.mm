@@ -49,6 +49,11 @@ using namespace facebook::react;
 {
   [super safeAreaInsetsDidChange];
 
+  [self _updateStateIfNecessary];
+}
+
+- (void)_updateStateIfNecessary
+{
   if (!_state) {
     return;
   }
@@ -78,6 +83,7 @@ using namespace facebook::react;
            oldState:(facebook::react::State::Shared const &)oldState
 {
   _state = std::static_pointer_cast<SafeAreaViewShadowNode::ConcreteState const>(state);
+  [self _updateStateIfNecessary];
 }
 
 + (ComponentDescriptorProvider)componentDescriptorProvider

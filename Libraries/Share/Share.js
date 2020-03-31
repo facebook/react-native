@@ -125,7 +125,7 @@ class Share {
               typeof content.message === 'string' ? content.message : undefined,
             url: typeof content.url === 'string' ? content.url : undefined,
             subject: options.subject,
-            tintColor: tintColor != null ? tintColor : undefined,
+            tintColor: typeof tintColor === 'number' ? tintColor : undefined,
             excludedActivityTypes: options.excludedActivityTypes,
           },
           error => reject(error),

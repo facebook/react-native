@@ -75,9 +75,6 @@ export type ViewabilityConfig = {|
 class ViewabilityHelper {
   _config: ViewabilityConfig;
   _hasInteracted: boolean = false;
-  /* $FlowFixMe(>=0.63.0 site=react_native_fb) This comment suppresses an error
-   * found when Flow v0.63 was deployed. To see the error delete this comment
-   * and run Flow. */
   _timers: Set<number> = new Set();
   _viewableIndices: Array<number> = [];
   _viewableItems: Map<string, ViewToken> = new Map();
@@ -92,6 +89,9 @@ class ViewabilityHelper {
    * Cleanup, e.g. on unmount. Clears any pending timers.
    */
   dispose() {
+    /* $FlowFixMe(>=0.63.0 site=react_native_fb) This comment suppresses an
+     * error found when Flow v0.63 was deployed. To see the error delete this
+     * comment and run Flow. */
     this._timers.forEach(clearTimeout);
   }
 
@@ -227,6 +227,9 @@ class ViewabilityHelper {
     this._viewableIndices = viewableIndices;
     if (this._config.minimumViewTime) {
       const handle = setTimeout(() => {
+        /* $FlowFixMe(>=0.63.0 site=react_native_fb) This comment suppresses an
+         * error found when Flow v0.63 was deployed. To see the error delete
+         * this comment and run Flow. */
         this._timers.delete(handle);
         this._onUpdateSync(
           viewableIndices,
@@ -234,6 +237,9 @@ class ViewabilityHelper {
           createViewToken,
         );
       }, this._config.minimumViewTime);
+      /* $FlowFixMe(>=0.63.0 site=react_native_fb) This comment suppresses an
+       * error found when Flow v0.63 was deployed. To see the error delete this
+       * comment and run Flow. */
       this._timers.add(handle);
     } else {
       this._onUpdateSync(

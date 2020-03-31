@@ -15,6 +15,7 @@
 #include <hermes/hermes.h>
 #include <hermes/inspector/chrome/MessageTypes.h>
 #include <hermes/inspector/chrome/RemoteObjectsTable.h>
+#include <jsi/JSIDynamic.h>
 #include <jsi/jsi.h>
 
 namespace facebook {
@@ -122,7 +123,8 @@ RemoteObject makeRemoteObject(
     facebook::jsi::Runtime &runtime,
     const facebook::jsi::Value &value,
     facebook::hermes::inspector::chrome::RemoteObjectsTable &objTable,
-    const std::string &objectGroup);
+    const std::string &objectGroup,
+    bool byValue = false);
 
 } // namespace runtime
 

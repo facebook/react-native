@@ -9,6 +9,9 @@
 
 #include <react/components/root/RootComponentDescriptor.h>
 #include <react/components/scrollview/ScrollViewComponentDescriptor.h>
+#include <react/components/text/ParagraphComponentDescriptor.h>
+#include <react/components/text/RawTextComponentDescriptor.h>
+#include <react/components/text/TextComponentDescriptor.h>
 #include <react/components/view/ViewComponentDescriptor.h>
 #include <react/element/ComponentBuilder.h>
 #include <react/uimanager/ComponentDescriptorProviderRegistry.h>
@@ -29,6 +32,12 @@ inline ComponentBuilder simpleComponentBuilder() {
       concreteComponentDescriptorProvider<ViewComponentDescriptor>());
   componentDescriptorProviderRegistry.add(
       concreteComponentDescriptorProvider<ScrollViewComponentDescriptor>());
+  componentDescriptorProviderRegistry.add(
+      concreteComponentDescriptorProvider<ParagraphComponentDescriptor>());
+  componentDescriptorProviderRegistry.add(
+      concreteComponentDescriptorProvider<TextComponentDescriptor>());
+  componentDescriptorProviderRegistry.add(
+      concreteComponentDescriptorProvider<RawTextComponentDescriptor>());
 
   return ComponentBuilder{componentDescriptorRegistry};
 }

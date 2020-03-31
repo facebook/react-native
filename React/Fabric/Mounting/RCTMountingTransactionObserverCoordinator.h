@@ -16,8 +16,9 @@
 class RCTMountingTransactionObserverCoordinator final {
  public:
   /*
-   * Registers (and unregisters) specified `componentViewDescriptor` in the registry of views that need to be notified.
-   * Does nothing if a particular `componentViewDescriptor` does not listen the events.
+   * Registers (and unregisters) specified `componentViewDescriptor` in the
+   * registry of views that need to be notified. Does nothing if a particular
+   * `componentViewDescriptor` does not listen the events.
    */
   void registerViewComponentDescriptor(
       RCTComponentViewDescriptor const &componentViewDescriptor,

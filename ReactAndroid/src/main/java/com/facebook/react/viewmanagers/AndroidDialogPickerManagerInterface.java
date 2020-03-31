@@ -15,6 +15,7 @@ import com.facebook.react.bridge.ReadableArray;
 
 public interface AndroidDialogPickerManagerInterface<T extends View> {
   void setColor(T view, @Nullable Integer value);
+  void setBackgroundColor(T view, @Nullable Integer value);
   void setEnabled(T view, boolean value);
   void setItems(T view, @Nullable ReadableArray value);
   void setPrompt(T view, @Nullable String value);

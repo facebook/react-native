@@ -74,9 +74,6 @@ public class ReactEditText extends AppCompatEditText {
   /** A count of events sent to JS or C++. */
   protected int mNativeEventCount;
 
-  /** The most recent event number acked by JavaScript. Should only be updated from JS, not C++. */
-  protected int mMostRecentEventCount;
-
   private static final int UNSET = -1;
 
   private @Nullable ArrayList<TextWatcher> mListeners;
@@ -122,7 +119,6 @@ public class ReactEditText extends AppCompatEditText {
         getGravity() & (Gravity.HORIZONTAL_GRAVITY_MASK | Gravity.RELATIVE_HORIZONTAL_GRAVITY_MASK);
     mDefaultGravityVertical = getGravity() & Gravity.VERTICAL_GRAVITY_MASK;
     mNativeEventCount = 0;
-    mMostRecentEventCount = 0;
     mIsSettingTextFromJS = false;
     mBlurOnSubmit = null;
     mDisableFullscreen = false;
@@ -285,10 +281,6 @@ public class ReactEditText extends AppCompatEditText {
     mContentSizeWatcher = contentSizeWatcher;
   }
 
-  public void setMostRecentEventCount(int mostRecentEventCount) {
-    mMostRecentEventCount = mostRecentEventCount;
-  }
-
   public void setScrollWatcher(ScrollWatcher scrollWatcher) {
     mScrollWatcher = scrollWatcher;
   }
@@ -313,11 +305,6 @@ public class ReactEditText extends AppCompatEditText {
 
   @Override
   public void setSelection(int start, int end) {
-    // Skip setting the selection if the text wasn't set because of an out of date value.
-    if (mMostRecentEventCount < mNativeEventCount) {
-      return;
-    }
-
     super.setSelection(start, end);
   }
 
@@ -489,8 +476,7 @@ public class ReactEditText extends AppCompatEditText {
     }
 
     // Only set the text if it is up to date.
-    mMostRecentEventCount = reactTextUpdate.getJsEventCounter();
-    if (!canUpdateWithEventCount(mMostRecentEventCount)) {
+    if (!canUpdateWithEventCount(reactTextUpdate.getJsEventCounter())) {
       return;
     }
 
@@ -501,7 +487,7 @@ public class ReactEditText extends AppCompatEditText {
     // The current text gets replaced with the text received from JS. However, the spans on the
     // current text need to be adapted to the new text. Since TextView#setText() will remove or
     // reset some of these spans even if they are set directly, SpannableStringBuilder#replace() is
-    // used instead (this is also used by the the keyboard implementation underneath the covers).
+    // used instead (this is also used by the keyboard implementation underneath the covers).
     SpannableStringBuilder spannableStringBuilder =
         new SpannableStringBuilder(reactTextUpdate.getText());
     manageSpans(spannableStringBuilder);

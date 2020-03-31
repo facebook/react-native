@@ -51,23 +51,7 @@ RCTTextInputHandleCommand(id<RCTTextInputViewProtocol> componentView, NSString c
   }
 
   if ([commandName isEqualToString:@"setMostRecentEventCount"]) {
-#if RCT_DEBUG
-    if ([args count] != 1) {
-      RCTLogError(
-          @"%@ command %@ received %d arguments, expected %d.", @"TextInput", commandName, (int)[args count], 1);
-      return;
-    }
-#endif
-
-    NSObject *arg0 = args[0];
-#if RCT_DEBUG
-    if (!RCTValidateTypeOfViewCommandArgument(arg0, [NSNumber class], @"number", @"TextInput", commandName, @"1st")) {
-      return;
-    }
-#endif
-    NSInteger eventCount = [(NSNumber *)arg0 intValue];
-
-    [componentView setMostRecentEventCount:eventCount];
+    [componentView setMostRecentEventCount:0];
     return;
   }
 
@@ -80,13 +64,7 @@ RCTTextInputHandleCommand(id<RCTTextInputViewProtocol> componentView, NSString c
     }
 #endif
 
-    NSObject *arg0 = args[0];
-#if RCT_DEBUG
-    if (!RCTValidateTypeOfViewCommandArgument(arg0, [NSNumber class], @"number", @"TextInput", commandName, @"1st")) {
-      return;
-    }
-#endif
-    NSInteger eventCount = [(NSNumber *)arg0 intValue];
+    NSInteger eventCount = 0;
 
     NSObject *arg1 = args[1];
 #if RCT_DEBUG
@@ -100,7 +78,7 @@ RCTTextInputHandleCommand(id<RCTTextInputViewProtocol> componentView, NSString c
 
     NSObject *arg2 = args[2];
 #if RCT_DEBUG
-    if (!RCTValidateTypeOfViewCommandArgument(arg0, [NSNumber class], @"number", @"TextInput", commandName, @"3rd")) {
+    if (!RCTValidateTypeOfViewCommandArgument(arg2, [NSNumber class], @"number", @"TextInput", commandName, @"3rd")) {
       return;
     }
 #endif
@@ -108,7 +86,7 @@ RCTTextInputHandleCommand(id<RCTTextInputViewProtocol> componentView, NSString c
 
     NSObject *arg3 = args[3];
 #if RCT_DEBUG
-    if (!RCTValidateTypeOfViewCommandArgument(arg0, [NSNumber class], @"number", @"TextInput", commandName, @"4th")) {
+    if (!RCTValidateTypeOfViewCommandArgument(arg3, [NSNumber class], @"number", @"TextInput", commandName, @"4th")) {
       return;
     }
 #endif

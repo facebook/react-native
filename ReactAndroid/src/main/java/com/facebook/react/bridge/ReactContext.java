@@ -33,10 +33,17 @@ import java.util.concurrent.CopyOnWriteArraySet;
  */
 public class ReactContext extends ContextWrapper {
 
+  private static final String TAG = "ReactContext";
   private static final String EARLY_JS_ACCESS_EXCEPTION_MESSAGE =
       "Tried to access a JS module before the React instance was fully set up. Calls to "
           + "ReactContext#getJSModule should only happen once initialize() has been called on your "
           + "native module.";
+  private static final String LATE_JS_ACCESS_EXCEPTION_MESSAGE =
+      "Tried to access a JS module after the React instance was destroyed.";
+  private static final String EARLY_NATIVE_MODULE_EXCEPTION_MESSAGE =
+      "Trying to call native module before CatalystInstance has been set!";
+  private static final String LATE_NATIVE_MODULE_EXCEPTION_MESSAGE =
+      "Trying to call native module after CatalystInstance has been destroyed!";
 
   private final CopyOnWriteArraySet<LifecycleEventListener> mLifecycleEventListeners =
       new CopyOnWriteArraySet<>();
@@ -47,6 +54,7 @@ public class ReactContext extends ContextWrapper {
 
   private LifecycleState mLifecycleState = LifecycleState.BEFORE_CREATE;
 
+  private volatile boolean mDestroyed = false;
   private @Nullable CatalystInstance mCatalystInstance;
   private @Nullable LayoutInflater mInflater;
   private @Nullable MessageQueueThread mUiMessageQueueThread;
@@ -67,6 +75,11 @@ public class ReactContext extends ContextWrapper {
     }
     if (mCatalystInstance != null) {
       throw new IllegalStateException("ReactContext has been already initialized");
+    }
+    if (mDestroyed) {
+      ReactSoftException.logSoftException(
+          TAG,
+          new IllegalStateException("Cannot initialize ReactContext after it has been destroyed."));
     }
 
     mCatalystInstance = catalystInstance;
@@ -104,6 +117,11 @@ public class ReactContext extends ContextWrapper {
     mNativeModuleCallExceptionHandler = nativeModuleCallExceptionHandler;
   }
 
+  private void raiseCatalystInstanceMissingException() {
+    throw new IllegalStateException(
+        mDestroyed ? LATE_NATIVE_MODULE_EXCEPTION_MESSAGE : EARLY_NATIVE_MODULE_EXCEPTION_MESSAGE);
+  }
+
   // We override the following method so that views inflated with the inflater obtained from this
   // context return the ReactContext in #getContext(). The default implementation uses the base
   // context instead, so it couldn't be cast to ReactContext.
@@ -124,6 +142,9 @@ public class ReactContext extends ContextWrapper {
    */
   public <T extends JavaScriptModule> T getJSModule(Class<T> jsInterface) {
     if (mCatalystInstance == null) {
+      if (mDestroyed) {
+        throw new IllegalStateException(LATE_JS_ACCESS_EXCEPTION_MESSAGE);
+      }
       throw new IllegalStateException(EARLY_JS_ACCESS_EXCEPTION_MESSAGE);
     }
     return mCatalystInstance.getJSModule(jsInterface);
@@ -131,8 +152,7 @@ public class ReactContext extends ContextWrapper {
 
   public <T extends NativeModule> boolean hasNativeModule(Class<T> nativeModuleInterface) {
     if (mCatalystInstance == null) {
-      throw new IllegalStateException(
-          "Trying to call native module before CatalystInstance has been set!");
+      raiseCatalystInstanceMissingException();
     }
     return mCatalystInstance.hasNativeModule(nativeModuleInterface);
   }
@@ -140,8 +160,7 @@ public class ReactContext extends ContextWrapper {
   /** @return the instance of the specified module interface associated with this ReactContext. */
   public <T extends NativeModule> T getNativeModule(Class<T> nativeModuleInterface) {
     if (mCatalystInstance == null) {
-      throw new IllegalStateException(
-          "Trying to call native module before CatalystInstance has been set!");
+      raiseCatalystInstanceMissingException();
     }
     return mCatalystInstance.getNativeModule(nativeModuleInterface);
   }
@@ -273,6 +292,7 @@ public class ReactContext extends ContextWrapper {
   public void destroy() {
     UiThreadUtil.assertOnUiThread();
 
+    mDestroyed = true;
     if (mCatalystInstance != null) {
       mCatalystInstance.destroy();
       if (ReactFeatureFlags.nullifyCatalystInstanceOnDestroy) {

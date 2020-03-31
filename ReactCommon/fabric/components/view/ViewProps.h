@@ -23,12 +23,9 @@ class ViewProps;
 
 using SharedViewProps = std::shared_ptr<ViewProps const>;
 
-class ViewProps : public Props,
-                  public YogaStylableProps,
-                  public AccessibilityProps {
+class ViewProps : public YogaStylableProps, public AccessibilityProps {
  public:
   ViewProps() = default;
-  ViewProps(YGStyle const &yogaStyle);
   ViewProps(ViewProps const &sourceProps, RawProps const &rawProps);
 
 #pragma mark - Props

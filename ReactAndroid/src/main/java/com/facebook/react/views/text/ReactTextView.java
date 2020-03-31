@@ -34,6 +34,8 @@ import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.ReactCompoundView;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.ViewDefaults;
+import com.facebook.react.uimanager.common.UIManagerType;
+import com.facebook.react.uimanager.common.ViewUtil;
 import com.facebook.react.uimanager.events.RCTEventEmitter;
 import com.facebook.react.views.view.ReactViewBackgroundManager;
 import java.util.ArrayList;
@@ -66,7 +68,7 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
     mDefaultGravityVertical = getGravity() & Gravity.VERTICAL_GRAVITY_MASK;
   }
 
-  private WritableMap inlineViewJson(
+  private static WritableMap inlineViewJson(
       int visibility, int index, int left, int top, int right, int bottom) {
     WritableMap json = Arguments.createMap();
     if (visibility == View.GONE) {
@@ -96,7 +98,9 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
   @Override
   protected void onLayout(
       boolean changed, int textViewLeft, int textViewTop, int textViewRight, int textViewBottom) {
-    if (!(getText() instanceof Spanned)) {
+    // TODO T62882314: Delete this method when Fabric is fully released in OSS
+    if (!(getText() instanceof Spanned)
+        || ViewUtil.getUIManagerType(getId()) == UIManagerType.FABRIC) {
       /**
        * In general, {@link #setText} is called via {@link ReactTextViewManager#updateExtraData}
        * before we are laid out. This ordering is a requirement because we utilize the data from
@@ -114,12 +118,6 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
     }
 
     ReactContext reactContext = getReactContext();
-    if (!reactContext.hasCatalystInstance()) {
-      // In bridgeless mode there's no Catalyst instance; in that case, bail.
-      // TODO (T45503888): Figure out how to support nested views from JS or cpp.
-      return;
-    }
-
     UIManagerModule uiManager = reactContext.getNativeModule(UIManagerModule.class);
 
     Spanned text = (Spanned) getText();

@@ -16,9 +16,6 @@
   <a href="https://circleci.com/gh/facebook/react-native">
     <img src="https://circleci.com/gh/facebook/react-native.svg?style=shield" alt="Current CircleCI build status." />
   </a>
-  <a href="https://ci.appveyor.com/project/facebook/react-native/branch/master">
-    <img src="https://ci.appveyor.com/api/projects/status/g8d58ipi3auqdtrk/branch/master?svg=true" alt="Current Appveyor build status." />
-  </a>
   <a href="https://www.npmjs.org/package/react-native">
     <img src="https://badge.fury.io/js/react-native.svg" alt="Current npm package version." />
   </a>
