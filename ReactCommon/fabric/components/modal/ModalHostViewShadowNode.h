@@ -27,6 +27,12 @@ class ModalHostViewShadowNode final : public ConcreteViewShadowNode<
                                           ModalHostViewState> {
  public:
   using ConcreteViewShadowNode::ConcreteViewShadowNode;
+
+  static ShadowNodeTraits BaseTraits() {
+    auto traits = ConcreteViewShadowNode::BaseTraits();
+    traits.set(ShadowNodeTraits::Trait::RootNodeKind);
+    return traits;
+  }
 };
 
 } // namespace react
