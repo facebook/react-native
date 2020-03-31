@@ -15,7 +15,6 @@ const Easing = require('../../Animated/src/Easing');
 const React = require('react');
 const StyleSheet = require('../../StyleSheet/StyleSheet');
 const Text = require('../../Text/Text');
-const YellowBoxImageSource = require('./YellowBoxImageSource');
 const YellowBoxPressable = require('./YellowBoxPressable');
 const YellowBoxStyle = require('./YellowBoxStyle');
 
@@ -41,15 +40,13 @@ class YellowBoxInspectorSourceMapStatus extends React.Component<Props, State> {
 
   render(): React.Node {
     let image;
+
     switch (this.props.status) {
-      case 'COMPLETE':
-        image = YellowBoxImageSource.check;
-        break;
       case 'FAILED':
-        image = YellowBoxImageSource.alertTriangle;
+        image = require('../../LogBox/UI/LogBoxImages/alert-triangle.png');
         break;
       case 'PENDING':
-        image = YellowBoxImageSource.loader;
+        image = require('../../LogBox/UI/LogBoxImages/loader.png');
         break;
     }
 
@@ -66,7 +63,7 @@ class YellowBoxInspectorSourceMapStatus extends React.Component<Props, State> {
           this.props.status === 'PENDING' ? styles.pending : null,
         )}>
         <Animated.Image
-          source={{height: 16, uri: image, width: 16}}
+          source={image}
           style={StyleSheet.compose(
             styles.image,
             this.state.rotate == null
@@ -142,6 +139,8 @@ const styles = StyleSheet.create({
     backgroundColor: YellowBoxStyle.getTextColor(0.6),
   },
   image: {
+    height: 14,
+    width: 16,
     marginEnd: 4,
     tintColor: YellowBoxStyle.getBackgroundColor(1),
   },
