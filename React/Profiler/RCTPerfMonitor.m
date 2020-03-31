@@ -40,6 +40,14 @@ static BOOL RCTJSCSetOption(const char *option)
   static RCTJSCSetOptionType setOption;
   static dispatch_once_t onceToken;
 
+  // As of iOS 13.4, it is no longer possible to change the JavaScriptCore
+  // options at runtime. The options are protected and will cause an
+  // exception when you try to change them after the VM has been initialized.
+  // https://github.com/facebook/react-native/issues/28414
+  if (@available(iOS 13.4, *)) {
+    return NO;
+  }
+  
   dispatch_once(&onceToken, ^{
     /**
      * JSC private C++ static method to toggle options at runtime
