@@ -82,6 +82,10 @@ class Connection::Impl : public inspector::InspectorObserver,
   void handle(const m::debugger::StepOutRequest &req) override;
   void handle(const m::debugger::StepOverRequest &req) override;
   void handle(const m::heapProfiler::TakeHeapSnapshotRequest &req) override;
+  void handle(
+      const m::heapProfiler::StartTrackingHeapObjectsRequest &req) override;
+  void handle(
+      const m::heapProfiler::StopTrackingHeapObjectsRequest &req) override;
   void handle(const m::runtime::EvaluateRequest &req) override;
   void handle(const m::runtime::GetPropertiesRequest &req) override;
 
@@ -95,6 +99,11 @@ class Connection::Impl : public inspector::InspectorObserver,
       const std::string &objectGroup,
       bool onlyOwnProperties);
 
+  void sendSnapshot(
+      int reqId,
+      std::string message,
+      bool reportProgress,
+      bool stopStackTraceCapture);
   void sendToClient(const std::string &str);
   void sendResponseToClient(const m::Response &resp);
   void sendNotificationToClient(const m::Notification &resp);
@@ -389,15 +398,16 @@ void Connection::Impl::handle(
       .thenError<std::exception>(sendErrorToClient(req.id));
 }
 
-void Connection::Impl::handle(
-    const m::heapProfiler::TakeHeapSnapshotRequest &req) {
-  const auto id = req.id;
-  const bool reportProgress = req.reportProgress && *req.reportProgress;
-
+void Connection::Impl::sendSnapshot(
+    int reqId,
+    std::string message,
+    bool reportProgress,
+    bool stopStackTraceCapture) {
   inspector_
       ->executeIfEnabled(
-          "HeapProfiler.takeHeapSnapshot",
-          [this, reportProgress](const debugger::ProgramState &) {
+          message,
+          [this, reportProgress, stopStackTraceCapture](
+              const debugger::ProgramState &) {
             if (reportProgress) {
               // A progress notification with finished = true indicates the
               // snapshot has been captured and is ready to be sent.  Our
@@ -421,11 +431,51 @@ void Connection::Impl::handle(
                 });
 
             getRuntime().instrumentation().createSnapshotToStream(cos);
+            if (stopStackTraceCapture) {
+              getRuntime()
+                  .instrumentation()
+                  .stopTrackingHeapObjectStackTraces();
+            }
+          })
+      .via(executor_.get())
+      .thenValue([this, reqId](auto &&) {
+        sendResponseToClient(m::makeOkResponse(reqId));
+      })
+      .thenError<std::exception>(sendErrorToClient(reqId));
+}
+
+void Connection::Impl::handle(
+    const m::heapProfiler::TakeHeapSnapshotRequest &req) {
+  sendSnapshot(
+      req.id,
+      "HeapSnapshot.takeHeapSnapshot",
+      req.reportProgress && *req.reportProgress,
+      /* stopStackTraceCapture */ false);
+}
+
+void Connection::Impl::handle(
+    const m::heapProfiler::StartTrackingHeapObjectsRequest &req) {
+  const auto id = req.id;
+
+  inspector_
+      ->executeIfEnabled(
+          "HeapProfiler.startTrackingHeapObjects",
+          [this](const debugger::ProgramState &) {
+            getRuntime().instrumentation().startTrackingHeapObjectStackTraces();
           })
       .via(executor_.get())
       .thenValue(
           [this, id](auto &&) { sendResponseToClient(m::makeOkResponse(id)); })
       .thenError<std::exception>(sendErrorToClient(req.id));
+}
+
+void Connection::Impl::handle(
+    const m::heapProfiler::StopTrackingHeapObjectsRequest &req) {
+  sendSnapshot(
+      req.id,
+      "HeapSnapshot.takeHeapSnapshot",
+      req.reportProgress && *req.reportProgress,
+      /* stopStackTraceCapture */ true);
 }
 
 void Connection::Impl::handle(const m::runtime::EvaluateRequest &req) {

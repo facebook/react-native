@@ -1,5 +1,5 @@
 // Copyright 2004-present Facebook. All Rights Reserved.
-// @generated SignedSource<<633984dcfe87d2822ef0e80c1aab93ef>>
+// @generated SignedSource<<4ab81efd6f767bd583d00c806b7d1d9b>>
 
 #include "MessageTypes.h"
 
@@ -40,6 +40,10 @@ std::unique_ptr<Request> Request::fromJsonThrowOnError(const std::string &str) {
       {"Debugger.stepInto", makeUnique<debugger::StepIntoRequest>},
       {"Debugger.stepOut", makeUnique<debugger::StepOutRequest>},
       {"Debugger.stepOver", makeUnique<debugger::StepOverRequest>},
+      {"HeapProfiler.startTrackingHeapObjects",
+       makeUnique<heapProfiler::StartTrackingHeapObjectsRequest>},
+      {"HeapProfiler.stopTrackingHeapObjects",
+       makeUnique<heapProfiler::StopTrackingHeapObjectsRequest>},
       {"HeapProfiler.takeHeapSnapshot",
        makeUnique<heapProfiler::TakeHeapSnapshotRequest>},
       {"Runtime.evaluate", makeUnique<runtime::EvaluateRequest>},
@@ -584,6 +588,66 @@ dynamic debugger::StepOverRequest::toDynamic() const {
 }
 
 void debugger::StepOverRequest::accept(RequestHandler &handler) const {
+  handler.handle(*this);
+}
+
+heapProfiler::StartTrackingHeapObjectsRequest::StartTrackingHeapObjectsRequest()
+    : Request("HeapProfiler.startTrackingHeapObjects") {}
+
+heapProfiler::StartTrackingHeapObjectsRequest::StartTrackingHeapObjectsRequest(
+    const dynamic &obj)
+    : Request("HeapProfiler.startTrackingHeapObjects") {
+  assign(id, obj, "id");
+  assign(method, obj, "method");
+
+  dynamic params = obj.at("params");
+  assign(trackAllocations, params, "trackAllocations");
+}
+
+dynamic heapProfiler::StartTrackingHeapObjectsRequest::toDynamic() const {
+  dynamic params = dynamic::object;
+  put(params, "trackAllocations", trackAllocations);
+
+  dynamic obj = dynamic::object;
+  put(obj, "id", id);
+  put(obj, "method", method);
+  put(obj, "params", std::move(params));
+  return obj;
+}
+
+void heapProfiler::StartTrackingHeapObjectsRequest::accept(
+    RequestHandler &handler) const {
+  handler.handle(*this);
+}
+
+heapProfiler::StopTrackingHeapObjectsRequest::StopTrackingHeapObjectsRequest()
+    : Request("HeapProfiler.stopTrackingHeapObjects") {}
+
+heapProfiler::StopTrackingHeapObjectsRequest::StopTrackingHeapObjectsRequest(
+    const dynamic &obj)
+    : Request("HeapProfiler.stopTrackingHeapObjects") {
+  assign(id, obj, "id");
+  assign(method, obj, "method");
+
+  dynamic params = obj.at("params");
+  assign(reportProgress, params, "reportProgress");
+  assign(treatGlobalObjectsAsRoots, params, "treatGlobalObjectsAsRoots");
+}
+
+dynamic heapProfiler::StopTrackingHeapObjectsRequest::toDynamic() const {
+  dynamic params = dynamic::object;
+  put(params, "reportProgress", reportProgress);
+  put(params, "treatGlobalObjectsAsRoots", treatGlobalObjectsAsRoots);
+
+  dynamic obj = dynamic::object;
+  put(obj, "id", id);
+  put(obj, "method", method);
+  put(obj, "params", std::move(params));
+  return obj;
+}
+
+void heapProfiler::StopTrackingHeapObjectsRequest::accept(
+    RequestHandler &handler) const {
   handler.handle(*this);
 }
 
