@@ -39,8 +39,6 @@ static bool isColorMeaningful(SharedColor const &color) noexcept {
 void ViewShadowNode::initialize() noexcept {
   auto &viewProps = static_cast<ViewProps const &>(*props_);
 
-  orderIndex_ = viewProps.zIndex;
-
   bool formsStackingContext = !viewProps.collapsable ||
       viewProps.pointerEvents == PointerEventsMode::None ||
       !viewProps.nativeId.empty() || viewProps.accessible ||

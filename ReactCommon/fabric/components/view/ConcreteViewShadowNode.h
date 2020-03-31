@@ -52,6 +52,22 @@ class ConcreteViewShadowNode : public ConcreteShadowNode<
       ViewPropsT,
       ViewEventEmitterT,
       Ts...>;
+
+  ConcreteViewShadowNode(
+      ShadowNodeFragment const &fragment,
+      ShadowNodeFamily::Shared const &family,
+      ShadowNodeTraits traits)
+      : BaseShadowNode(fragment, family, traits) {
+    initialize();
+  }
+
+  ConcreteViewShadowNode(
+      ShadowNode const &sourceShadowNode,
+      ShadowNodeFragment const &fragment)
+      : BaseShadowNode(sourceShadowNode, fragment) {
+    initialize();
+  }
+
   using ConcreteViewProps = ViewPropsT;
 
   using BaseShadowNode::BaseShadowNode;
@@ -84,6 +100,11 @@ class ConcreteViewShadowNode : public ConcreteShadowNode<
     return list;
   }
 #endif
+
+ private:
+  void initialize() noexcept {
+    BaseShadowNode::orderIndex_ = BaseShadowNode::getConcreteProps().zIndex;
+  }
 };
 
 } // namespace react
