@@ -58,30 +58,7 @@ void MainRunLoopEventBeat::lockExecutorAndBeat() const
     return;
   }
 
-  // Note: We need the third mutex to get back to the main thread before
-  // the lambda is finished (because all mutexes are allocated on the stack).
-  std::mutex mutex1;
-  std::mutex mutex2;
-  std::mutex mutex3;
-
-  mutex1.lock();
-  mutex2.lock();
-  mutex3.lock();
-
-  jsi::Runtime *runtimePtr;
-
-  runtimeExecutor_([&](jsi::Runtime &runtime) {
-    runtimePtr = &runtime;
-    mutex1.unlock();
-    // `beat` is called somewhere here.
-    mutex2.lock();
-    mutex3.unlock();
-  });
-
-  mutex1.lock();
-  beat(*runtimePtr);
-  mutex2.unlock();
-  mutex3.lock();
+  executeSynchronouslyOnSameThread_CAN_DEADLOCK(runtimeExecutor_, [this](jsi::Runtime &runtime) { beat(runtime); });
 }
 
 } // namespace react
