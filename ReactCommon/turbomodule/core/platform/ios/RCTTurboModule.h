@@ -212,9 +212,13 @@ class JSI_EXPORT ObjCTurboModule : public TurboModule {
 
 @end
 
-// TODO: Consolidate this extension with the one in RCTSurfacePresenter.
+/**
+ * These methods are all implemented by RCTCxxBridge, which subclasses RCTBridge. Hence, they must only be used in
+ * contexts where the concrete class of an RCTBridge instance is RCTCxxBridge. This happens, for example, when
+ * [RCTCxxBridgeDelegate jsExecutorFactoryForBridge:(RCTBridge *)] is invoked by RCTCxxBridge.
+ *
+ * TODO: Consolidate this extension with the one in RCTSurfacePresenter.
+ */
 @interface RCTBridge ()
-
-- (std::weak_ptr<facebook::react::Instance>)reactInstance;
-
+- (std::shared_ptr<facebook::react::CallInvoker>)jsCallInvoker;
 @end

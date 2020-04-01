@@ -12,6 +12,7 @@
 #include <map>
 #include <vector>
 
+#include <ReactCommon/CallInvoker.h>
 #include <cxxreact/JSExecutor.h>
 
 namespace folly {
@@ -92,6 +93,13 @@ class NativeToJsBridge {
   void destroy();
 
   void runOnExecutorQueue(std::function<void(JSExecutor *)> task);
+
+  /**
+   * Native CallInvoker is used by TurboModules to schedule work on the
+   * NativeModule thread(s).
+   */
+  std::shared_ptr<CallInvoker> getNativeCallInvoker(
+      std::function<void(std::function<void()> &&work)> &&scheduleWork);
 
  private:
   // This is used to avoid a race condition where a proxyCallback gets queued
