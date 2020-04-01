@@ -14,15 +14,14 @@ const {transform: babelTransform} = require('@babel/core');
 const fixtures = require('../__test_fixtures__/fixtures.js');
 const failures = require('../__test_fixtures__/failures.js');
 
-function transform(fixture, filename) {
-  return babelTransform(fixture, {
+const transform = (fixture, filename) =>
+  babelTransform(fixture, {
     babelrc: false,
     cwd: '/',
     filename: filename,
     highlightCode: false,
     plugins: [require('@babel/plugin-syntax-flow'), require('../index')],
-  }).code;
-}
+  }).code.replace(/^[A-Z]:\\/g, '/'); // Ensure platform consistent snapshots.
 
 describe('Babel plugin inline view configs', () => {
   Object.keys(fixtures)
