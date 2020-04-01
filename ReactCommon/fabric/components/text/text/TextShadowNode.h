@@ -7,6 +7,8 @@
 
 #pragma once
 
+#include <limits>
+
 #include <react/components/text/BaseTextShadowNode.h>
 #include <react/components/text/TextProps.h>
 #include <react/components/view/ViewEventEmitter.h>
@@ -31,13 +33,28 @@ class TextShadowNode : public ConcreteShadowNode<
 
 #ifdef ANDROID
     traits.set(ShadowNodeTraits::Trait::FormsView);
-    traits.set(ShadowNodeTraits::Trait::FormsStackingContext);
 #endif
 
     return traits;
   }
 
   using ConcreteShadowNode::ConcreteShadowNode;
+
+#ifdef ANDROID
+  using BaseShadowNode = ConcreteShadowNode<
+      TextComponentName,
+      ShadowNode,
+      TextProps,
+      TextEventEmitter>;
+
+  TextShadowNode(
+      ShadowNodeFragment const &fragment,
+      ShadowNodeFamily::Shared const &family,
+      ShadowNodeTraits traits)
+      : BaseShadowNode(fragment, family, traits), BaseTextShadowNode() {
+    orderIndex_ = std::numeric_limits<decltype(orderIndex_)>::max();
+  }
+#endif
 };
 
 } // namespace react

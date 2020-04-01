@@ -24,6 +24,13 @@ std::unique_ptr<JSExecutor> JSCExecutorFactory::createJSExecutor(
       _RCTLogJavaScriptInternal(static_cast<RCTLogLevel>(logLevel), [NSString stringWithUTF8String:message.c_str()]);
     };
     react::bindNativeLogger(runtime, iosLoggingBinder);
+
+    react::PerformanceNow iosPerformanceNowBinder = []() {
+      // CACurrentMediaTime() returns the current absolute time, in seconds
+      return CACurrentMediaTime() * 1000;
+    };
+    react::bindNativePerformanceNow(runtime, iosPerformanceNowBinder);
+
     // Wrap over the original runtimeInstaller
     if (runtimeInstaller) {
       runtimeInstaller(runtime);

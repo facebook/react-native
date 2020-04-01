@@ -42,8 +42,9 @@ RCT_EXPORT_MODULE()
 }
 
 - (std::shared_ptr<TurboModule>)getTurboModuleWithJsInvoker:(std::shared_ptr<CallInvoker>)jsInvoker
+                                                 perfLogger:(id<RCTTurboModulePerformanceLogger>)perfLogger
 {
-  return std::make_shared<NativeSourceCodeSpecJSI>(self, jsInvoker);
+  return std::make_shared<NativeSourceCodeSpecJSI>(self, jsInvoker, perfLogger);
 }
 
 @end

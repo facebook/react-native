@@ -37,10 +37,12 @@ public class TextAttributeProps {
   private static final String PROP_TEXT_TRANSFORM = "textTransform";
 
   private static final int DEFAULT_TEXT_SHADOW_COLOR = 0x55000000;
+  private static final int DEFAULT_JUSTIFICATION_MODE =
+      (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) ? 0 : Layout.JUSTIFICATION_MODE_NONE;
 
-  protected boolean mIsAttachment = false;
-  protected float mAttachmentWidth = Float.NaN;
-  protected float mAttachmentHeight = Float.NaN;
+  private static final int DEFAULT_BREAK_STRATEGY =
+      (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) ? 0 : Layout.BREAK_STRATEGY_HIGH_QUALITY;
+
   protected float mLineHeight = Float.NaN;
   protected boolean mIsColorSet = false;
   protected boolean mAllowFontScaling = true;
@@ -54,10 +56,7 @@ public class TextAttributeProps {
   protected float mLineHeightInput = UNSET;
   protected float mLetterSpacingInput = Float.NaN;
   protected int mTextAlign = Gravity.NO_GRAVITY;
-  protected int mTextBreakStrategy =
-      (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) ? 0 : Layout.BREAK_STRATEGY_HIGH_QUALITY;
-  protected int mJustificationMode =
-      (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) ? 0 : Layout.JUSTIFICATION_MODE_NONE;
+
   protected TextTransform mTextTransform = TextTransform.UNSET;
 
   protected float mTextShadowOffsetDx = 0;
@@ -126,14 +125,10 @@ public class TextAttributeProps {
     setFontVariant(getArrayProp(ViewProps.FONT_VARIANT));
     setIncludeFontPadding(getBooleanProp(ViewProps.INCLUDE_FONT_PADDING, true));
     setTextDecorationLine(getStringProp(ViewProps.TEXT_DECORATION_LINE));
-    setTextBreakStrategy(getStringProp(ViewProps.TEXT_BREAK_STRATEGY));
     setTextShadowOffset(props.hasKey(PROP_SHADOW_OFFSET) ? props.getMap(PROP_SHADOW_OFFSET) : null);
     setTextShadowRadius(getIntProp(PROP_SHADOW_RADIUS, 1));
     setTextShadowColor(getIntProp(PROP_SHADOW_COLOR, DEFAULT_TEXT_SHADOW_COLOR));
     setTextTransform(getStringProp(PROP_TEXT_TRANSFORM));
-    setAttachmentHeight(getFloatProp(ViewProps.HEIGHT, UNSET));
-    setAttachmentWidth(getFloatProp(ViewProps.WIDTH, UNSET));
-    setIsAttachment(getBooleanProp(ViewProps.IS_ATTACHMENT, false));
   }
 
   // TODO T63645393 add support for RTL
@@ -161,16 +156,15 @@ public class TextAttributeProps {
     return textAlignment;
   }
 
-  private void setIsAttachment(boolean isAttachment) {
-    mIsAttachment = isAttachment;
-  }
+  public static int getJustificationMode(ReactStylesDiffMap props) {
+    @Nullable
+    String textAlignPropValue =
+        props.hasKey(ViewProps.TEXT_ALIGN) ? props.getString(ViewProps.TEXT_ALIGN) : null;
 
-  private void setAttachmentWidth(float attachmentWidth) {
-    mAttachmentWidth = attachmentWidth;
-  }
-
-  private void setAttachmentHeight(float attachmentHeight) {
-    mAttachmentHeight = attachmentHeight;
+    if ("justify".equals(textAlignPropValue) && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+      return Layout.JUSTIFICATION_MODE_INTER_WORD;
+    }
+    return DEFAULT_JUSTIFICATION_MODE;
   }
 
   private boolean getBooleanProp(String name, boolean defaultValue) {
@@ -357,23 +351,6 @@ public class TextAttributeProps {
     }
   }
 
-  public void setTextBreakStrategy(@Nullable String textBreakStrategy) {
-    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-      return;
-    }
-
-    if (textBreakStrategy == null || "highQuality".equals(textBreakStrategy)) {
-      mTextBreakStrategy = Layout.BREAK_STRATEGY_HIGH_QUALITY;
-    } else if ("simple".equals(textBreakStrategy)) {
-      mTextBreakStrategy = Layout.BREAK_STRATEGY_SIMPLE;
-    } else if ("balanced".equals(textBreakStrategy)) {
-      mTextBreakStrategy = Layout.BREAK_STRATEGY_BALANCED;
-    } else {
-      throw new JSApplicationIllegalArgumentException(
-          "Invalid textBreakStrategy: " + textBreakStrategy);
-    }
-  }
-
   public void setTextShadowOffset(ReadableMap offsetMap) {
     mTextShadowOffsetDx = 0;
     mTextShadowOffsetDy = 0;
@@ -416,6 +393,24 @@ public class TextAttributeProps {
     } else {
       throw new JSApplicationIllegalArgumentException("Invalid textTransform: " + textTransform);
     }
+  }
+
+  public static int getTextBreakStrategy(@Nullable String textBreakStrategy) {
+    int androidTextBreakStrategy = DEFAULT_BREAK_STRATEGY;
+    if (textBreakStrategy != null) {
+      switch (textBreakStrategy) {
+        case "simple":
+          androidTextBreakStrategy = Layout.BREAK_STRATEGY_SIMPLE;
+          break;
+        case "balanced":
+          androidTextBreakStrategy = Layout.BREAK_STRATEGY_BALANCED;
+          break;
+        default:
+          androidTextBreakStrategy = Layout.BREAK_STRATEGY_HIGH_QUALITY;
+          break;
+      }
+    }
+    return androidTextBreakStrategy;
   }
 
   /**

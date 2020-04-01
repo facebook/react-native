@@ -433,13 +433,9 @@ public abstract class DevSupportManagerBase
           }
         });
     options.put(
-        mDevSettings.isNuclideJSDebugEnabled()
-            ? mDevSettings.isRemoteJSDebugEnabled()
-                ? mApplicationContext.getString(R.string.catalyst_debug_chrome_stop)
-                : mApplicationContext.getString(R.string.catalyst_debug_chrome)
-            : mDevSettings.isRemoteJSDebugEnabled()
-                ? mApplicationContext.getString(R.string.catalyst_debug_stop)
-                : mApplicationContext.getString(R.string.catalyst_debug),
+        mDevSettings.isRemoteJSDebugEnabled()
+            ? mApplicationContext.getString(R.string.catalyst_debug_stop)
+            : mApplicationContext.getString(R.string.catalyst_debug),
         new DevOptionHandler() {
           @Override
           public void onOptionSelected() {
@@ -447,16 +443,6 @@ public abstract class DevSupportManagerBase
             handleReloadJS();
           }
         });
-    if (mDevSettings.isNuclideJSDebugEnabled()) {
-      options.put(
-          mApplicationContext.getString(R.string.catalyst_debug_nuclide),
-          new DevOptionHandler() {
-            @Override
-            public void onOptionSelected() {
-              mDevServerHelper.attachDebugger(mApplicationContext, "ReactNative");
-            }
-          });
-    }
     options.put(
         mApplicationContext.getString(R.string.catalyst_change_bundle_location),
         new DevOptionHandler() {

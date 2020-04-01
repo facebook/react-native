@@ -34,7 +34,7 @@ class TextLayoutManager {
   /*
    * Measures `attributedString` using native text rendering infrastructure.
    */
-  Size measure(
+  TextMeasurement measure(
       AttributedStringBox attributedStringBox,
       ParagraphAttributes paragraphAttributes,
       LayoutConstraints layoutConstraints) const;

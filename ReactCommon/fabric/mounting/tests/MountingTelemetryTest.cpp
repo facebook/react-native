@@ -19,7 +19,7 @@ using namespace facebook::react;
   EXPECT_TRUE((a >= b - threshold) && (a <= b + threshold))
 
 TEST(MountingTelemetryTest, timepoints) {
-  auto threshold = int64_t{30};
+  auto threshold = int64_t{100};
 
   auto timepointA = telemetryTimePointNow();
   std::this_thread::sleep_for(std::chrono::milliseconds(100));
@@ -31,7 +31,7 @@ TEST(MountingTelemetryTest, timepoints) {
 }
 
 TEST(MountingTelemetryTest, normalUseCase) {
-  auto threshold = int64_t{30};
+  auto threshold = int64_t{100};
   auto telemetry = MountingTelemetry{};
 
   telemetry.willCommit();
@@ -55,7 +55,7 @@ TEST(MountingTelemetryTest, normalUseCase) {
   auto mountDuration = telemetryDurationToMilliseconds(
       telemetry.getMountEndTime() - telemetry.getMountStartTime());
 
-  EXPECT_EQ_WITH_THRESHOLD(commitDuration, 400, threshold);
+  EXPECT_EQ_WITH_THRESHOLD(commitDuration, 400, threshold * 2);
   EXPECT_EQ_WITH_THRESHOLD(layoutDuration, 200, threshold);
   EXPECT_EQ_WITH_THRESHOLD(mountDuration, 100, threshold);
 }

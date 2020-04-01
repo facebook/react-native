@@ -82,7 +82,11 @@ void AttributedString::prependAttributedString(
       attributedString.fragments_.end());
 }
 
-const Fragments &AttributedString::getFragments() const {
+Fragments const &AttributedString::getFragments() const {
+  return fragments_;
+}
+
+Fragments &AttributedString::getFragments() {
   return fragments_;
 }
 

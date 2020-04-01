@@ -12,10 +12,10 @@
 
 import Pressability, {
   type PressabilityConfig,
-} from '../../Pressability/Pressability.js';
-import {PressabilityDebugView} from '../../Pressability/PressabilityDebug.js';
-import TVTouchable from './TVTouchable.js';
-import typeof TouchableWithoutFeedback from './TouchableWithoutFeedback.js';
+} from '../../Pressability/Pressability';
+import {PressabilityDebugView} from '../../Pressability/PressabilityDebug';
+import TVTouchable from './TVTouchable';
+import typeof TouchableWithoutFeedback from './TouchableWithoutFeedback';
 import {Commands} from 'react-native/Libraries/Components/View/ViewNativeComponent';
 import ReactNative from 'react-native/Libraries/Renderer/shims/ReactNative';
 import type {PressEvent} from 'react-native/Libraries/Types/CoreEventTypes';

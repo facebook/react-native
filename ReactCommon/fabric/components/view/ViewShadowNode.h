@@ -32,10 +32,8 @@ class ViewShadowNode final : public ConcreteViewShadowNode<
       ShadowNode const &sourceShadowNode,
       ShadowNodeFragment const &fragment);
 
-  bool isLayoutOnly() const;
-
  private:
-  void updateTraits();
+  void initialize() noexcept;
 };
 
 } // namespace react

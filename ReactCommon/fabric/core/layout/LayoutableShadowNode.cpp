@@ -55,15 +55,15 @@ static LayoutMetrics calculateOffsetForLayoutMetrics(
       return EmptyLayoutMetrics;
     }
 
-    auto origin = layoutableCurrentShadowNode->getLayoutMetrics().frame.origin;
+    auto frame = layoutableCurrentShadowNode->getLayoutMetrics().frame;
 
-    if (policy.includeTransform || policy.includeScrollViewContentOffset) {
-      // The check for ScrollView will be implemented after we have
-      // a dedicated trait (part of `ShadowNodeTraits`) for that.
-      origin = origin * layoutableCurrentShadowNode->getTransform();
+    if (policy.includeTransform) {
+      layoutMetrics.frame.size = layoutMetrics.frame.size *
+          layoutableCurrentShadowNode->getTransform();
+      frame = frame * layoutableCurrentShadowNode->getTransform();
     }
 
-    layoutMetrics.frame.origin += origin;
+    layoutMetrics.frame.origin += frame.origin;
   }
   return layoutMetrics;
 }
@@ -132,9 +132,13 @@ LayoutMetrics LayoutableShadowNode::getRelativeLayoutMetrics(
     return EmptyLayoutMetrics;
   }
 
-  auto layoutMetrics = dynamic_cast<LayoutableShadowNode const *>(newestChild)
-                           ->getLayoutMetrics();
-
+  auto layoutableNewestChild =
+      dynamic_cast<LayoutableShadowNode const *>(newestChild);
+  auto layoutMetrics = layoutableNewestChild->getLayoutMetrics();
+  if (policy.includeTransform) {
+    layoutMetrics.frame =
+        layoutMetrics.frame * layoutableNewestChild->getTransform();
+  }
   return calculateOffsetForLayoutMetrics(layoutMetrics, ancestors, policy);
 }
 
@@ -154,6 +158,21 @@ LayoutableShadowNode::getLayoutableChildNodes() const {
 
 Size LayoutableShadowNode::measure(LayoutConstraints layoutConstraints) const {
   return Size();
+}
+
+Size LayoutableShadowNode::measure(
+    LayoutContext const &layoutContext,
+    LayoutConstraints const &layoutConstraints) const {
+  auto clonedShadowNode = clone({});
+  auto &layoutableShadowNode =
+      static_cast<LayoutableShadowNode &>(*clonedShadowNode);
+
+  auto localLayoutContext = layoutContext;
+  localLayoutContext.affectedNodes = nullptr;
+
+  layoutableShadowNode.layoutTree(localLayoutContext, layoutConstraints);
+
+  return layoutableShadowNode.getLayoutMetrics().frame.size;
 }
 
 Float LayoutableShadowNode::firstBaseline(Size size) const {
@@ -203,13 +222,14 @@ ShadowNode::Shared LayoutableShadowNode::findNodeAtPoint(
     return nullptr;
   }
   auto frame = layoutableShadowNode->getLayoutMetrics().frame;
-  auto isPointInside = frame.containsPoint(point);
+  auto transformedFrame = frame * layoutableShadowNode->getTransform();
+  auto isPointInside = transformedFrame.containsPoint(point);
 
   if (!isPointInside) {
     return nullptr;
   }
 
-  auto newPoint = point - frame.origin;
+  auto newPoint = point - frame.origin * layoutableShadowNode->getTransform();
   for (const auto &childShadowNode : node->getChildren()) {
     auto hitView = findNodeAtPoint(childShadowNode, newPoint);
     if (hitView) {

@@ -21,11 +21,11 @@ import androidx.annotation.UiThread;
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.infer.annotation.ThreadConfined;
-import com.facebook.react.bridge.ReactNoCrashSoftException;
 import com.facebook.react.bridge.ReactSoftException;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReadableNativeMap;
+import com.facebook.react.bridge.RetryableMountingLayerException;
 import com.facebook.react.bridge.SoftAssertions;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.fabric.FabricUIManager;
@@ -155,21 +155,18 @@ public class MountingManager {
     // view hierarchy. For example, TextInput may send a "blur" command in response to the view
     // disappearing. Throw `ReactNoCrashSoftException` so they're logged but don't crash in dev
     // for now.
-    // TODO T58653970: Crash in debug again and fix all the places that cause this to crash.
     if (viewState == null) {
-      ReactSoftException.logSoftException(
-          MountingManager.TAG,
-          new ReactNoCrashSoftException(
-              "Unable to find viewState for tag: " + reactTag + " for commandId: " + commandId));
-      return;
+      throw new RetryableMountingLayerException(
+          "Unable to find viewState for tag: " + reactTag + " for commandId: " + commandId);
     }
 
     if (viewState.mViewManager == null) {
-      throw new IllegalStateException("Unable to find viewManager for tag " + reactTag);
+      throw new RetryableMountingLayerException("Unable to find viewManager for tag " + reactTag);
     }
 
     if (viewState.mView == null) {
-      throw new IllegalStateException("Unable to find viewState view for tag " + reactTag);
+      throw new RetryableMountingLayerException(
+          "Unable to find viewState view for tag " + reactTag);
     }
 
     viewState.mViewManager.receiveCommand(viewState.mView, commandId, commandArgs);
@@ -183,21 +180,19 @@ public class MountingManager {
     // view hierarchy. For example, TextInput may send a "blur" command in response to the view
     // disappearing. Throw `ReactNoCrashSoftException` so they're logged but don't crash in dev
     // for now.
-    // TODO T58653970: Crash in debug again and fix all the places that cause this to crash.
     if (viewState == null) {
-      ReactSoftException.logSoftException(
-          MountingManager.TAG,
-          new ReactNoCrashSoftException(
-              "Unable to find viewState for tag: " + reactTag + " for commandId: " + commandId));
-      return;
+      throw new RetryableMountingLayerException(
+          "Unable to find viewState for tag: " + reactTag + " for commandId: " + commandId);
     }
 
     if (viewState.mViewManager == null) {
-      throw new IllegalStateException("Unable to find viewState manager for tag " + reactTag);
+      throw new RetryableMountingLayerException(
+          "Unable to find viewState manager for tag " + reactTag);
     }
 
     if (viewState.mView == null) {
-      throw new IllegalStateException("Unable to find viewState view for tag " + reactTag);
+      throw new RetryableMountingLayerException(
+          "Unable to find viewState view for tag " + reactTag);
     }
 
     viewState.mViewManager.receiveCommand(viewState.mView, commandId, commandArgs);

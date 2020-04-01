@@ -71,14 +71,33 @@ class LayoutableShadowNodeTest : public ::testing::Test {
         familyAAA,
         traits);
 
+    auto familyAAAA = std::make_shared<ShadowNodeFamily>(
+        ShadowNodeFamilyFragment{
+            /* .tag = */ 11,
+            /* .surfaceId = */ 1,
+            /* .eventEmitter = */ nullptr,
+        },
+        eventDispatcher_,
+        componentDescriptor_);
+
+    nodeAAAA_ = std::make_shared<TestShadowNode>(
+        ShadowNodeFragment{
+            /* .props = */ std::make_shared<const TestProps>(),
+            /* .children = */ ShadowNode::emptySharedShadowNodeSharedList(),
+        },
+        familyAAAA,
+        traits);
+
     nodeA_->appendChild(nodeAA_);
     nodeAA_->appendChild(nodeAAA_);
+    nodeAAA_->appendChild(nodeAAAA_);
   }
 
   std::shared_ptr<EventDispatcher const> eventDispatcher_;
   std::shared_ptr<TestShadowNode> nodeA_;
   std::shared_ptr<TestShadowNode> nodeAA_;
   std::shared_ptr<TestShadowNode> nodeAAA_;
+  std::shared_ptr<TestShadowNode> nodeAAAA_;
   TestComponentDescriptor componentDescriptor_;
 };
 
@@ -96,6 +115,50 @@ TEST_F(LayoutableShadowNodeTest, relativeLayoutMetrics) {
   // D19447900 has more about the issue.
   EXPECT_EQ(relativeLayoutMetrics.frame.origin.x, 10);
   EXPECT_EQ(relativeLayoutMetrics.frame.origin.y, 20);
+}
+
+TEST_F(LayoutableShadowNodeTest, relativeLayoutMetricsOnTransformedNode) {
+  auto layoutMetrics = EmptyLayoutMetrics;
+  layoutMetrics.frame.size = {1000, 1000};
+  nodeA_->setLayoutMetrics(layoutMetrics);
+
+  layoutMetrics.frame.origin = {10, 20};
+  layoutMetrics.frame.size = {100, 200};
+  nodeAA_->_transform = Transform::Scale(0.5, 0.5, 1);
+  nodeAA_->setLayoutMetrics(layoutMetrics);
+
+  auto relativeLayoutMetrics = nodeAA_->getRelativeLayoutMetrics(*nodeA_, {});
+
+  EXPECT_EQ(relativeLayoutMetrics.frame.origin.x, 35);
+  EXPECT_EQ(relativeLayoutMetrics.frame.origin.y, 70);
+
+  EXPECT_EQ(relativeLayoutMetrics.frame.size.width, 50);
+  EXPECT_EQ(relativeLayoutMetrics.frame.size.height, 100);
+}
+
+TEST_F(LayoutableShadowNodeTest, relativeLayoutMetricsOnTransformedParent) {
+  auto layoutMetrics = EmptyLayoutMetrics;
+  layoutMetrics.frame.size = {1000, 1000};
+  nodeA_->setLayoutMetrics(layoutMetrics);
+  nodeAA_->setLayoutMetrics(layoutMetrics);
+
+  layoutMetrics.frame.origin = {10, 10};
+  layoutMetrics.frame.size = {100, 100};
+  nodeAAA_->_transform = Transform::Scale(0.5, 0.5, 1);
+  nodeAAA_->setLayoutMetrics(layoutMetrics);
+
+  layoutMetrics.frame.origin = {10, 10};
+  layoutMetrics.frame.size = {50, 50};
+  nodeAAAA_->setLayoutMetrics(layoutMetrics);
+
+  auto relativeLayoutMetrics =
+      nodeAAAA_->getRelativeLayoutMetrics(*nodeAA_, {});
+
+  EXPECT_EQ(relativeLayoutMetrics.frame.origin.x, 45);
+  EXPECT_EQ(relativeLayoutMetrics.frame.origin.y, 45);
+
+  EXPECT_EQ(relativeLayoutMetrics.frame.size.width, 25);
+  EXPECT_EQ(relativeLayoutMetrics.frame.size.height, 25);
 }
 
 TEST_F(LayoutableShadowNodeTest, relativeLayoutMetricsOnSameNode) {

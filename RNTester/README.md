@@ -8,7 +8,7 @@ Before running the app, make sure you ran:
 
     git clone https://github.com/facebook/react-native.git
     cd react-native
-    npm install
+    yarn install
 
 ### Running on iOS
 

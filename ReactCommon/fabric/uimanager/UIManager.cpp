@@ -105,12 +105,8 @@ void UIManager::completeSurface(
                   /* .children = */ rootChildren,
               });
         },
-        stateReconciliationEnabled_);
+        true);
   });
-}
-
-void UIManager::setStateReconciliationEnabled(bool enabled) {
-  stateReconciliationEnabled_ = enabled;
 }
 
 void UIManager::setJSResponder(
@@ -128,10 +124,39 @@ void UIManager::clearJSResponder() const {
   }
 }
 
+ShadowNode::Shared const *UIManager::getNewestCloneOfShadowNode(
+    ShadowNode::Shared const &shadowNode) const {
+  auto findNewestChildInParent =
+      [&](auto const &parentNode) -> ShadowNode::Shared const * {
+    for (auto const &child : parentNode.getChildren()) {
+      if (ShadowNode::sameFamily(*child, *shadowNode)) {
+        return &child;
+      }
+    }
+    return nullptr;
+  };
+
+  ShadowNode const *ancestorShadowNode;
+  shadowTreeRegistry_.visit(
+      shadowNode->getSurfaceId(), [&](ShadowTree const &shadowTree) {
+        shadowTree.tryCommit(
+            [&](RootShadowNode::Shared const &oldRootShadowNode) {
+              ancestorShadowNode = oldRootShadowNode.get();
+              return nullptr;
+            },
+            true);
+      });
+
+  auto ancestors = shadowNode->getFamily().getAncestors(*ancestorShadowNode);
+
+  return findNewestChildInParent(ancestors.rbegin()->first.get());
+}
+
 ShadowNode::Shared UIManager::findNodeAtPoint(
-    const ShadowNode::Shared &node,
+    ShadowNode::Shared const &node,
     Point point) const {
-  return LayoutableShadowNode::findNodeAtPoint(node, point);
+  return LayoutableShadowNode::findNodeAtPoint(
+      *getNewestCloneOfShadowNode(node), point);
 }
 
 void UIManager::setNativeProps(
@@ -155,7 +180,7 @@ void UIManager::setNativeProps(
                         });
                       }));
             },
-            stateReconciliationEnabled_);
+            true);
       });
 }
 
@@ -173,7 +198,7 @@ LayoutMetrics UIManager::getRelativeLayoutMetrics(
                 ancestorShadowNode = oldRootShadowNode.get();
                 return nullptr;
               },
-              stateReconciliationEnabled_);
+              true);
         });
   }
 
@@ -205,7 +230,7 @@ void UIManager::updateState(StateUpdate const &stateUpdate) const {
                 auto newData =
                     callback(oldShadowNode.getState()->getDataPointer());
                 auto newState =
-                    componentDescriptor.createState(family, newData);
+                    componentDescriptor.createState(*family, newData);
 
                 return oldShadowNode.clone({
                     /* .props = */ ShadowNodeFragment::propsPlaceholder(),

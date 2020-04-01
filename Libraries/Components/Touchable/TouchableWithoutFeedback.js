@@ -12,9 +12,9 @@
 
 import Pressability, {
   type PressabilityConfig,
-} from '../../Pressability/Pressability.js';
-import {PressabilityDebugView} from '../../Pressability/PressabilityDebug.js';
-import TVTouchable from './TVTouchable.js';
+} from '../../Pressability/Pressability';
+import {PressabilityDebugView} from '../../Pressability/PressabilityDebug';
+import TVTouchable from './TVTouchable';
 import type {
   AccessibilityActionEvent,
   AccessibilityActionInfo,

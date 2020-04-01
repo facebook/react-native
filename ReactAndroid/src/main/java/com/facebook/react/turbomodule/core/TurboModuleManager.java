@@ -26,11 +26,9 @@ import java.util.*;
  * a Java module, that the C++ counterpart calls.
  */
 public class TurboModuleManager implements JSIModule, TurboModuleRegistry {
-  static {
-    SoLoader.loadLibrary("turbomodulejsijni");
-  }
 
   private final TurboModuleManagerDelegate mTurbomoduleManagerDelegate;
+  private static volatile boolean sIsSoLibraryLoaded;
 
   private final Map<String, TurboModule> mTurboModules = new HashMap<>();
 
@@ -43,6 +41,7 @@ public class TurboModuleManager implements JSIModule, TurboModuleRegistry {
       TurboModuleManagerDelegate tmmDelegate,
       CallInvokerHolder jsCallInvokerHolder,
       CallInvokerHolder nativeCallInvokerHolder) {
+    maybeLoadSoLibrary();
     mHybridData =
         initHybrid(
             jsContext.get(),
@@ -136,5 +135,13 @@ public class TurboModuleManager implements JSIModule, TurboModuleRegistry {
 
     // Delete the native part of this hybrid class.
     mHybridData.resetNative();
+  }
+
+  // Prevents issues with initializer interruptions. See T38996825 and D13793825 for more context.
+  private static synchronized void maybeLoadSoLibrary() {
+    if (!sIsSoLibraryLoaded) {
+      SoLoader.loadLibrary("turbomodulejsijni");
+      sIsSoLibraryLoaded = true;
+    }
   }
 }

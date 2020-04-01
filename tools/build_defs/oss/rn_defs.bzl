@@ -15,7 +15,7 @@ _DEBUG_PREPROCESSOR_FLAGS = []
 
 _APPLE_COMPILER_FLAGS = []
 
-def get_debug_preprocessor_flags():
+def get_preprocessor_flags_for_build_mode():
     return _DEBUG_PREPROCESSOR_FLAGS
 
 def get_apple_compiler_flags():
@@ -26,15 +26,6 @@ IS_OSS_BUILD = True
 GLOG_DEP = "//ReactAndroid/build/third-party-ndk/glog:glog"
 
 INSPECTOR_FLAGS = []
-
-APPLE_JSC_DEPS = []
-
-ANDROID_JSC_INTERNAL_DEPS = [
-    "//native/third-party/jsc:jsc",
-    "//native/third-party/jsc:jsc_legacy_profiler",
-]
-
-ANDROID_JSC_DEPS = ANDROID_JSC_INTERNAL_DEPS
 
 ANDROID = "Android"
 

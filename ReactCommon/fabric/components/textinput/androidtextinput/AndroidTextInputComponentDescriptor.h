@@ -107,25 +107,54 @@ class AndroidTextInputComponentDescriptor final
       // Override padding
       // Node is still unsealed during adoption, before layout is complete
       // TODO: T62959168 account for RTL and paddingLeft when setting default
-      // paddingStart, and vice-versa with paddingRight/paddingEnd
+      // paddingStart, and vice-versa with paddingRight/paddingEnd.
+      // For now this assumes no RTL.
       YGStyle::Edges result =
           textInputShadowNode->getConcreteProps().yogaStyle.padding();
       bool changedPadding = false;
-      if (!textInputShadowNode->getConcreteProps().hasPaddingStart) {
+      if (!textInputShadowNode->getConcreteProps().hasPadding &&
+          !textInputShadowNode->getConcreteProps().hasPaddingStart &&
+          !textInputShadowNode->getConcreteProps().hasPaddingLeft &&
+          !textInputShadowNode->getConcreteProps().hasPaddingHorizontal) {
         changedPadding = true;
         result[YGEdgeStart] = theme[YGEdgeStart];
       }
-      if (!textInputShadowNode->getConcreteProps().hasPaddingEnd) {
+      if (!textInputShadowNode->getConcreteProps().hasPadding &&
+          !textInputShadowNode->getConcreteProps().hasPaddingEnd &&
+          !textInputShadowNode->getConcreteProps().hasPaddingRight &&
+          !textInputShadowNode->getConcreteProps().hasPaddingHorizontal) {
         changedPadding = true;
         result[YGEdgeEnd] = theme[YGEdgeEnd];
       }
-      if (!textInputShadowNode->getConcreteProps().hasPaddingTop) {
+      if (!textInputShadowNode->getConcreteProps().hasPadding &&
+          !textInputShadowNode->getConcreteProps().hasPaddingTop &&
+          !textInputShadowNode->getConcreteProps().hasPaddingVertical) {
         changedPadding = true;
         result[YGEdgeTop] = theme[YGEdgeTop];
       }
-      if (!textInputShadowNode->getConcreteProps().hasPaddingBottom) {
+      if (!textInputShadowNode->getConcreteProps().hasPadding &&
+          !textInputShadowNode->getConcreteProps().hasPaddingBottom &&
+          !textInputShadowNode->getConcreteProps().hasPaddingVertical) {
         changedPadding = true;
         result[YGEdgeBottom] = theme[YGEdgeBottom];
+      }
+
+      // If the TextInput initially does not have paddingLeft or paddingStart, a
+      // paddingStart may be set from the theme. If that happens, when there's a
+      // paddingLeft update, we must explicitly unset paddingStart... (same with
+      // paddingEnd)
+      // TODO: support RTL
+      if ((textInputShadowNode->getConcreteProps().hasPadding ||
+           textInputShadowNode->getConcreteProps().hasPaddingLeft ||
+           textInputShadowNode->getConcreteProps().hasPaddingHorizontal) &&
+          !textInputShadowNode->getConcreteProps().hasPaddingStart) {
+        result[YGEdgeStart] = YGValueUndefined;
+      }
+      if ((textInputShadowNode->getConcreteProps().hasPadding ||
+           textInputShadowNode->getConcreteProps().hasPaddingRight ||
+           textInputShadowNode->getConcreteProps().hasPaddingHorizontal) &&
+          !textInputShadowNode->getConcreteProps().hasPaddingEnd) {
+        result[YGEdgeEnd] = YGValueUndefined;
       }
 
       // Note that this is expensive: on every adopt, we need to set the Yoga

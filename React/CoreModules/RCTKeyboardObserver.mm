@@ -77,10 +77,11 @@ IMPLEMENT_KEYBOARD_HANDLER(keyboardDidHide)
 IMPLEMENT_KEYBOARD_HANDLER(keyboardWillChangeFrame)
 IMPLEMENT_KEYBOARD_HANDLER(keyboardDidChangeFrame)
 
-- (std::shared_ptr<facebook::react::TurboModule>)getTurboModuleWithJsInvoker:
-    (std::shared_ptr<facebook::react::CallInvoker>)jsInvoker
+- (std::shared_ptr<facebook::react::TurboModule>)
+    getTurboModuleWithJsInvoker:(std::shared_ptr<facebook::react::CallInvoker>)jsInvoker
+                     perfLogger:(id<RCTTurboModulePerformanceLogger>)perfLogger
 {
-  return std::make_shared<facebook::react::NativeKeyboardObserverSpecJSI>(self, jsInvoker);
+  return std::make_shared<facebook::react::NativeKeyboardObserverSpecJSI>(self, jsInvoker, perfLogger);
 }
 
 @end

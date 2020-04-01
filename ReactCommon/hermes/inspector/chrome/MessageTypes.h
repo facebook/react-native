@@ -1,5 +1,5 @@
 // Copyright 2004-present Facebook. All Rights Reserved.
-// @generated SignedSource<<16a6754d1896fef0cbab2a05800f6885>>
+// @generated SignedSource<<0a1a011902fd18d4eebd2fe12fafb8b1>>
 
 #pragma once
 
@@ -68,6 +68,8 @@ using UnserializableValue = std::string;
 namespace heapProfiler {
 struct AddHeapSnapshotChunkNotification;
 struct ReportHeapSnapshotProgressNotification;
+struct StartTrackingHeapObjectsRequest;
+struct StopTrackingHeapObjectsRequest;
 struct TakeHeapSnapshotRequest;
 } // namespace heapProfiler
 
@@ -88,6 +90,10 @@ struct RequestHandler {
   virtual void handle(const debugger::StepIntoRequest &req) = 0;
   virtual void handle(const debugger::StepOutRequest &req) = 0;
   virtual void handle(const debugger::StepOverRequest &req) = 0;
+  virtual void handle(
+      const heapProfiler::StartTrackingHeapObjectsRequest &req) = 0;
+  virtual void handle(
+      const heapProfiler::StopTrackingHeapObjectsRequest &req) = 0;
   virtual void handle(const heapProfiler::TakeHeapSnapshotRequest &req) = 0;
   virtual void handle(const runtime::EvaluateRequest &req) = 0;
   virtual void handle(const runtime::GetPropertiesRequest &req) = 0;
@@ -108,6 +114,10 @@ struct NoopRequestHandler : public RequestHandler {
   void handle(const debugger::StepIntoRequest &req) override {}
   void handle(const debugger::StepOutRequest &req) override {}
   void handle(const debugger::StepOverRequest &req) override {}
+  void handle(
+      const heapProfiler::StartTrackingHeapObjectsRequest &req) override {}
+  void handle(
+      const heapProfiler::StopTrackingHeapObjectsRequest &req) override {}
   void handle(const heapProfiler::TakeHeapSnapshotRequest &req) override {}
   void handle(const runtime::EvaluateRequest &req) override {}
   void handle(const runtime::GetPropertiesRequest &req) override {}
@@ -367,6 +377,27 @@ struct debugger::StepOverRequest : public Request {
 
   folly::dynamic toDynamic() const override;
   void accept(RequestHandler &handler) const override;
+};
+
+struct heapProfiler::StartTrackingHeapObjectsRequest : public Request {
+  StartTrackingHeapObjectsRequest();
+  explicit StartTrackingHeapObjectsRequest(const folly::dynamic &obj);
+
+  folly::dynamic toDynamic() const override;
+  void accept(RequestHandler &handler) const override;
+
+  folly::Optional<bool> trackAllocations;
+};
+
+struct heapProfiler::StopTrackingHeapObjectsRequest : public Request {
+  StopTrackingHeapObjectsRequest();
+  explicit StopTrackingHeapObjectsRequest(const folly::dynamic &obj);
+
+  folly::dynamic toDynamic() const override;
+  void accept(RequestHandler &handler) const override;
+
+  folly::Optional<bool> reportProgress;
+  folly::Optional<bool> treatGlobalObjectsAsRoots;
 };
 
 struct heapProfiler::TakeHeapSnapshotRequest : public Request {

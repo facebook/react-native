@@ -36,6 +36,7 @@ exports[`<ScrollView /> should render as expected: should deep render when not m
   onTouchStart={[Function]}
   pagingEnabled={false}
   scrollBarThumbImage={null}
+  scrollViewRef={null}
   sendMomentumEvents={false}
   snapToEnd={true}
   snapToStart={true}
@@ -70,21 +71,21 @@ exports[`<ScrollView /> should render as expected: should deep render when not m
 `;
 
 exports[`<ScrollView /> should render as expected: should shallow render as <ScrollView /> when mocked 1`] = `
-<ScrollView>
+<ForwardRef(ScrollView)>
   <View>
     <Text>
       Hello World!
     </Text>
   </View>
-</ScrollView>
+</ForwardRef(ScrollView)>
 `;
 
 exports[`<ScrollView /> should render as expected: should shallow render as <ScrollView /> when not mocked 1`] = `
-<ScrollView>
+<ForwardRef(ScrollView)>
   <View>
     <Text>
       Hello World!
     </Text>
   </View>
-</ScrollView>
+</ForwardRef(ScrollView)>
 `;

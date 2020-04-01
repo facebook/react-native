@@ -67,7 +67,6 @@ class AppContainer extends React.Component<Props, State> {
             const Inspector = require('../Inspector/Inspector');
             const inspector = this.state.inspector ? null : (
               <Inspector
-                isFabric={this.props.fabric === true}
                 inspectedView={this._mainRef}
                 onRequestRerenderApp={updateInspectedView => {
                   this.setState(

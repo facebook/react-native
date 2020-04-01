@@ -105,7 +105,7 @@ static ShadowNode::ListOfShared cloneSharedShadowNodeList(
   return result;
 }
 
-static ShadowNode::Unshared messWithChildren(
+static inline ShadowNode::Unshared messWithChildren(
     Entropy const &entropy,
     ShadowNode const &shadowNode) {
   auto children = shadowNode.getChildren();
@@ -116,7 +116,7 @@ static ShadowNode::Unshared messWithChildren(
        std::make_shared<ShadowNode::ListOfShared const>(children)});
 }
 
-static ShadowNode::Unshared messWithLayotableOnlyFlag(
+static inline ShadowNode::Unshared messWithLayotableOnlyFlag(
     Entropy const &entropy,
     ShadowNode const &shadowNode) {
   auto oldProps = shadowNode.getProps();
@@ -166,7 +166,7 @@ static ShadowNode::Unshared messWithLayotableOnlyFlag(
   return shadowNode.clone({newProps});
 }
 
-static ShadowNode::Unshared messWithYogaStyles(
+static inline ShadowNode::Unshared messWithYogaStyles(
     Entropy const &entropy,
     ShadowNode const &shadowNode) {
   folly::dynamic dynamic = folly::dynamic::object();
@@ -198,7 +198,7 @@ static ShadowNode::Unshared messWithYogaStyles(
 using ShadowNodeAlteration = std::function<
     ShadowNode::Unshared(Entropy const &entropy, ShadowNode const &shadowNode)>;
 
-static void alterShadowTree(
+static inline void alterShadowTree(
     Entropy const &entropy,
     RootShadowNode::Shared &rootShadowNode,
     ShadowNodeAlteration alteration) {
@@ -211,7 +211,7 @@ static void alterShadowTree(
           }));
 }
 
-static void alterShadowTree(
+static inline void alterShadowTree(
     Entropy const &entropy,
     RootShadowNode::Shared &rootShadowNode,
     std::vector<ShadowNodeAlteration> alterations) {
@@ -225,7 +225,7 @@ static SharedViewProps generateDefaultProps(
       componentDescriptor.cloneProps(nullptr, RawProps{}));
 }
 
-static ShadowNode::Shared generateShadowNodeTree(
+static inline ShadowNode::Shared generateShadowNodeTree(
     Entropy const &entropy,
     ComponentDescriptor const &componentDescriptor,
     int size,

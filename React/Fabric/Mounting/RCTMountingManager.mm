@@ -135,6 +135,8 @@ static void RNPerformMountInstructions(
 {
   SystraceSection s("RNPerformMountInstructions");
 
+  [CATransaction begin];
+  [CATransaction setValue:(id)kCFBooleanTrue forKey:kCATransactionDisableActions];
   for (auto const &mutation : mutations) {
     switch (mutation.type) {
       case ShadowViewMutation::Create: {
@@ -189,6 +191,7 @@ static void RNPerformMountInstructions(
       }
     }
   }
+  [CATransaction commit];
 }
 
 @implementation RCTMountingManager {
@@ -263,7 +266,7 @@ static void RNPerformMountInstructions(
   SystraceSection s("-[RCTMountingManager performTransaction:]");
   RCTAssertMainQueue();
 
-  auto transaction = mountingCoordinator->pullTransaction();
+  auto transaction = mountingCoordinator->pullTransaction(DifferentiatorMode::Classic);
   if (!transaction.has_value()) {
     return;
   }

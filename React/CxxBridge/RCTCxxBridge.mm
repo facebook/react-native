@@ -377,8 +377,8 @@ struct RCTInstanceCallback : public InstanceCallback {
       }
       onProgress:^(RCTLoadingProgress *progressData) {
 #if (RCT_DEV | RCT_ENABLE_LOADING_VIEW) && __has_include(<React/RCTDevLoadingViewProtocol.h>)
-        // Note: RCTDevLoadingView should have been loaded at this point, so no need to allow lazy loading.
-        id<RCTDevLoadingViewProtocol> loadingView = [weakSelf moduleForName:@"DevLoadingView" lazilyLoadIfNecessary:NO];
+        id<RCTDevLoadingViewProtocol> loadingView = [weakSelf moduleForName:@"DevLoadingView"
+                                                      lazilyLoadIfNecessary:YES];
         [loadingView updateProgress:progressData];
 #endif
       }];
@@ -679,13 +679,6 @@ struct RCTInstanceCallback : public InstanceCallback {
 
   RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"");
 
-#if RCT_DEBUG
-  static dispatch_once_t onceToken;
-  dispatch_once(&onceToken, ^{
-    RCTVerifyAllModulesExported(extraModules);
-  });
-#endif
-
   RCT_PROFILE_BEGIN_EVENT(
       RCTProfileTagAlways, @"-[RCTCxxBridge initModulesWithDispatchGroup:] preinitialized moduleData", nil);
   // Set up moduleData for pre-initialized module instances
@@ -777,7 +770,7 @@ struct RCTInstanceCallback : public InstanceCallback {
 #endif
 }
 
-- (NSArray<RCTModuleData *> *)_initializeModules:(NSArray<id<RCTBridgeModule>> *)modules
+- (NSArray<RCTModuleData *> *)_initializeModules:(NSArray<Class> *)modules
                                withDispatchGroup:(dispatch_group_t)dispatchGroup
                                 lazilyDiscovered:(BOOL)lazilyDiscovered
 {
@@ -1334,20 +1327,23 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithBundleURL
     [[NSNotificationCenter defaultCenter] postNotificationName:RCTJavaScriptWillStartExecutingNotification
                                                         object:self->_parentBridge
                                                       userInfo:@{@"bridge" : self}];
+
+    // hold a local reference to reactInstance in case a parallel thread
+    // resets it between null check and usage
+    auto reactInstance = self->_reactInstance;
     if (isRAMBundle(script)) {
       [self->_performanceLogger markStartForTag:RCTPLRAMBundleLoad];
       auto ramBundle = std::make_unique<JSIndexedRAMBundle>(sourceUrlStr.UTF8String);
       std::unique_ptr<const JSBigString> scriptStr = ramBundle->getStartupCode();
       [self->_performanceLogger markStopForTag:RCTPLRAMBundleLoad];
       [self->_performanceLogger setValue:scriptStr->size() forTag:RCTPLRAMStartupCodeSize];
-      if (self->_reactInstance) {
+      if (reactInstance) {
         auto registry =
             RAMBundleRegistry::multipleBundlesRegistry(std::move(ramBundle), JSIndexedRAMBundle::buildFactory());
-        self->_reactInstance->loadRAMBundle(std::move(registry), std::move(scriptStr), sourceUrlStr.UTF8String, !async);
+        reactInstance->loadRAMBundle(std::move(registry), std::move(scriptStr), sourceUrlStr.UTF8String, !async);
       }
-    } else if (self->_reactInstance) {
-      self->_reactInstance->loadScriptFromString(
-          std::make_unique<NSDataBigString>(script), sourceUrlStr.UTF8String, !async);
+    } else if (reactInstance) {
+      reactInstance->loadScriptFromString(std::make_unique<NSDataBigString>(script), sourceUrlStr.UTF8String, !async);
     } else {
       std::string methodName = async ? "loadApplicationScript" : "loadApplicationScriptSync";
       throw std::logic_error("Attempt to call " + methodName + ": on uninitialized bridge");

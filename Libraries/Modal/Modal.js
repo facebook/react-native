@@ -80,7 +80,7 @@ export type Props = $ReadOnly<{|
    * The `hardwareAccelerated` prop controls whether to force hardware
    * acceleration for the underlying window.
    *
-   * This prop works inly on Android.
+   * This prop works only on Android.
    *
    * See https://reactnative.dev/docs/modal.html#hardwareaccelerated
    */

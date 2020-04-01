@@ -150,7 +150,7 @@ class DecoratedRuntime : public jsi::WithRuntimeDecorator<ReentrancyCheck> {
  public:
   // The first argument may be another decorater which itself
   // decorates the real HermesRuntime, depending on the build config.
-  // The second argument is the the real HermesRuntime as well to
+  // The second argument is the real HermesRuntime as well to
   // manage the debugger registration.
   DecoratedRuntime(
       std::unique_ptr<Runtime> runtime,

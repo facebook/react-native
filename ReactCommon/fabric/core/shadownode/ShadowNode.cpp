@@ -58,6 +58,7 @@ ShadowNode::ShadowNode(
           fragment.children ? fragment.children
                             : emptySharedShadowNodeSharedList()),
       state_(fragment.state),
+      orderIndex_(0),
       stateRevision_(computeStateRevision(state_, children_)),
       family_(family),
       traits_(traits) {
@@ -87,6 +88,7 @@ ShadowNode::ShadowNode(
       state_(
           fragment.state ? fragment.state
                          : sourceShadowNode.getMostRecentState()),
+      orderIndex_(sourceShadowNode.orderIndex_),
       stateRevision_(computeStateRevision(state_, children_)),
       family_(sourceShadowNode.family_),
       traits_(sourceShadowNode.traits_) {
@@ -151,6 +153,10 @@ const State::Shared &ShadowNode::getState() const {
 
 State::Shared ShadowNode::getMostRecentState() const {
   return family_->getMostRecentState();
+}
+
+int ShadowNode::getOrderIndex() const {
+  return orderIndex_;
 }
 
 void ShadowNode::sealRecursive() const {

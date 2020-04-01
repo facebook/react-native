@@ -135,5 +135,10 @@ class JSIExecutor : public JSExecutor {
 using Logger =
     std::function<void(const std::string &message, unsigned int logLevel)>;
 void bindNativeLogger(jsi::Runtime &runtime, Logger logger);
+
+using PerformanceNow = std::function<double()>;
+void bindNativePerformanceNow(
+    jsi::Runtime &runtime,
+    PerformanceNow performanceNow);
 } // namespace react
 } // namespace facebook
