@@ -138,7 +138,13 @@ if (__DEV__) {
 
     try {
       if (!isWarningModuleWarning(...args)) {
-        // Only show LogBox for the `warning` module, otherwise pass through and skip.
+        // Only show LogBox for the 'warning' module, otherwise pass through.
+        // By passing through, this will get picked up by the React console override,
+        // potentially adding the component stack. React then passes it back to the
+        // React Native ExceptionsManager, which reports it to LogBox as an error.
+        //
+        // The 'warning' module needs to be handled here because React internally calls
+        // `console.error('Warning: ')` with the component stack already included.
         error.call(console, ...args);
         return;
       }
