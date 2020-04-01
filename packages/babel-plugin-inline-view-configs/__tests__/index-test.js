@@ -21,7 +21,7 @@ const transform = (fixture, filename) =>
     filename: filename,
     highlightCode: false,
     plugins: [require('@babel/plugin-syntax-flow'), require('../index')],
-  }).code.replace(/^[A-Za-z]:\\/g, '/'); // Ensure platform consistent snapshots.
+  }).code.replace(/^[A-z]:\\/g, '/'); // Ensure platform consistent snapshots.
 
 describe('Babel plugin inline view configs', () => {
   Object.keys(fixtures)
@@ -40,7 +40,7 @@ describe('Babel plugin inline view configs', () => {
           try {
             transform(failures[fixtureName], fixtureName);
           } catch (err) {
-            err.message = err.message.replace(/^[A-Za-z]:\\/g, '/'); // Ensure platform consistent snapshots.
+            err.message = err.message.replace(/^[A-z]:\\/g, '/'); // Ensure platform consistent snapshots.
             throw err;
           }
         }).toThrowErrorMatchingSnapshot();
