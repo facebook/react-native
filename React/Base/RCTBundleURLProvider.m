@@ -121,6 +121,7 @@ static NSURL *serverRootWithHostPort(NSString *hostPort)
 #if RCT_DEV
   NSString *host = [self guessPackagerHost];
   if (host) {
+    self.jsLocation = host;
     return host;
   }
 #endif
