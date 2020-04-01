@@ -58,7 +58,9 @@ const includesChangelog =
   (danger.github.pr.body.toLowerCase().includes('## changelog') ||
     danger.github.pr.body.toLowerCase().includes('release notes'));
 const correctlyFormattedChangelog = changelogRegex.test(danger.github.pr.body);
-const containsInternalChangelog = internalChangelogRegex.test(danger.github.pr.body);
+const containsInternalChangelog = internalChangelogRegex.test(
+  danger.github.pr.body,
+);
 
 // Provides advice if a changelog is missing
 const changelogInstructions =
