@@ -78,7 +78,7 @@ commands:
             - v4-yarn-cache-{{ arch }}-{{ checksum "yarn.lock" }}
             - v4-yarn-cache-{{ arch }}
       - run:
-          name: Run Yarn
+          name: "Yarn: Install Dependencies"
           command: |
             # Skip yarn install on metro bump commits as the package is not yet
             # available on npm
@@ -113,7 +113,7 @@ commands:
   install_github_bot_deps:
     steps:
       - run:
-          name: Install GitHub bot dependencies
+          name: "Yarn: Install dependencies (GitHub bots)"
           command: cd bots && yarn install --non-interactive --cache-folder ~/.cache/yarn
 
   brew_install:
@@ -140,21 +140,6 @@ commands:
             - /usr/local/Homebrew
             - ~/Library/Caches/Homebrew
           key: v3-brew
-
-  with_cocoapods_repos_cache_span:
-    parameters:
-      steps:
-        type: steps
-    steps:
-      - restore_cache:
-          keys:
-            - v1-cocoapods-{{ checksum "template/ios/Podfile" }}
-            - v1-cocoapods-
-      - steps: << parameters.steps >>
-      - save_cache:
-          paths:
-            - ~/.cocoapods/repos
-          key: v1-cocoapods-{{ checksum "template/ios/Podfile" }}
 
   with_rntester_pods_cache_span:
     parameters:
@@ -196,6 +181,34 @@ commands:
       - run:
           name: Download Dependencies Using Buck
           command: ./scripts/circleci/buck_fetch.sh
+
+  run_e2e:
+    parameters:
+      platform:
+        description: Target platform
+        type: enum
+        enum: ["android", "ios", "js"]
+        default: "js"
+      retries:
+        description: How many times the job should try to run these tests
+        type: integer
+        default: 3
+    steps:
+      - run:
+          name: "Run Tests: << parameters.platform >> End-to-End Tests"
+          command: node ./scripts/run-ci-e2e-tests.js --<< parameters.platform >> --retries << parameters.retries >>
+
+  report_bundle_size:
+    parameters:
+      platform:
+        description: Target platform
+        type: enum
+        enum: ["android", "ios"]
+    steps:
+      - install_github_bot_deps
+      - run:
+          name: Report size of RNTester.app (analysis-bot)
+          command: GITHUB_TOKEN="$PUBLIC_ANALYSISBOT_GITHUB_TOKEN_A""$PUBLIC_ANALYSISBOT_GITHUB_TOKEN_B" scripts/circleci/report-bundle-size.sh << parameters.platform >>
 
 # -------------------------
 #          JOBS
@@ -293,7 +306,6 @@ jobs:
   # -------------------------
   #   JOBS: Test JavaScript
   # -------------------------
-  # Runs JavaScript tests
   test_js:
     parameters:
       executor:
@@ -312,17 +324,20 @@ jobs:
           name: Install rsync
           command: sudo apt-get install rsync
 
+      # -------------------------
+      # Run JavaScript tests
       - run:
           name: "Run Tests: JavaScript Tests"
           command: node ./scripts/run-ci-javascript-tests.js --maxWorkers 2
+      - run_e2e:
+          platform: js
 
       # Optionally, run disabled tests
       - when:
           condition: << parameters.run_disabled_tests >>
           steps:
-            - run:
-                name: "Run Tests: JavaScript End-to-End Tests"
-                command: node ./scripts/run-ci-e2e-tests.js --js --retries 3
+            - run: echo "Failing tests may be moved here temporarily."
+      # -------------------------
 
       - store_test_results:
           path: ./reports/junit
@@ -330,14 +345,22 @@ jobs:
   # -------------------------
   #     JOBS: Test iOS
   # -------------------------
-  # Runs unit tests on iOS devices
   test_ios:
     executor: reactnativeios
     parameters:
       use_frameworks:
         type: boolean
         default: false
+      run_unit_tests:
+        description: Specifies whether unit tests should run.
+        type: boolean
+        default: false
+      run_detox_tests:
+        description: Specifies whether Detox e2e tests should run.
+        type: boolean
+        default: false
       run_disabled_tests:
+        description: Specifies whether disabled tests should run. Set this to true to debug failing tests.
         type: boolean
         default: false
     environment:
@@ -361,29 +384,6 @@ jobs:
             echo 'export PATH=/usr/local/opt/node@10/bin:$PATH' >> $BASH_ENV
             source $BASH_ENV
 
-      - when:
-          condition: << parameters.use_frameworks >>
-          steps:
-            - run:
-                name: Set USE_FRAMEWORKS=1
-                command: echo "export USE_FRAMEWORKS=1" >> $BASH_ENV
-
-      - with_cocoapods_repos_cache_span:
-          steps:
-            - run:
-                name: Fetch CocoaPods Specs
-                command: |
-                  curl https://cocoapods-specs.circleci.com/fetch-cocoapods-repo-from-s3.sh | bash -s cf
-            - run: 
-                name: Setup the CocoaPods environment
-                command: pod setup
-
-      - with_rntester_pods_cache_span:
-          steps:
-            - run:
-                name: Generate RNTesterPods Workspace
-                command: cd RNTester && pod install --verbose
-
       - with_brew_cache_span:
           steps:
             - brew_install:
@@ -400,25 +400,52 @@ jobs:
           name: Configure Watchman
           command: touch .watchmanconfig
 
+      - when:
+          condition: << parameters.use_frameworks >>
+          steps:
+            - run:
+                name: Set USE_FRAMEWORKS=1
+                command: echo "export USE_FRAMEWORKS=1" >> $BASH_ENV
+
+      - run:
+          name: Fetch CocoaPods Specs
+          command: |
+            curl https://cocoapods-specs.circleci.com/fetch-cocoapods-repo-from-s3.sh | bash -s cf
+      - run: 
+          name: Setup the CocoaPods environment
+          command: pod setup
+
+      - with_rntester_pods_cache_span:
+          steps:
+            - run:
+                name: Generate RNTesterPods Workspace
+                command: cd RNTester && pod install --verbose
+
       - run:
           name: Generate RNTesterPods Xcode Workspace
           command: pushd RNTester && pod install --verbose && popd
 
-      # Test environment is ready, go ahead and run tests
-      - run: 
-          name: "Run Tests: iOS Unit and Integration Tests"
-          command: yarn test-ios
-          when: always
-
-      - run:
-          name: "Run Tests: Detox iOS End-to-End Tests"
-          command: yarn run build-ios-e2e && yarn run test-ios-e2e
-          when: always
+      # -------------------------
+      # Runs iOS unit tests
+      - when:
+          condition: << parameters.run_unit_tests >>
+          steps:
+            - run: 
+                name: "Run Tests: iOS Unit and Integration Tests"
+                command: yarn test-ios
+      # Runs iOS Detox e2e tests
+      - when:
+          condition: << parameters.run_detox_tests >>
+          steps:
+            - run:
+                name: "Run Tests: Detox iOS End-to-End Tests"
+                command: yarn run build-ios-e2e && yarn run test-ios-e2e
 
       # Optionally, run disabled tests
       - when:
           condition: << parameters.run_disabled_tests >>
           steps:
+            - run: echo "Failing tests may be moved here temporarily."
             - run:
                 name: "Run Tests: CocoaPods"
                 command: ./scripts/process-podspecs.sh
@@ -429,22 +456,19 @@ jobs:
                   set +eo pipefail
                   lsof -i tcp:8081 | awk 'NR!=1 {print $2}' | xargs kill
                   set -eo pipefail
-            - run:
-                name: "Run Tests: iOS End-to-End Tests"
-                command: node ./scripts/run-ci-e2e-tests.js --ios --retries 3;
+            - run_e2e:
+                platform: ios
+      # -------------------------
 
-      - install_github_bot_deps
-      - run:
-          name: Report size of RNTester.app (analysis-bot)
-          command: GITHUB_TOKEN="$PUBLIC_ANALYSISBOT_GITHUB_TOKEN_A""$PUBLIC_ANALYSISBOT_GITHUB_TOKEN_B" scripts/circleci/report-bundle-size.sh ios
-
+      # Collect Results
+      - report_bundle_size:
+          platform: ios
       - store_test_results:
           path: ./reports/junit
 
   # -------------------------
   #    JOBS: Test Android
   # -------------------------
-  # Run Android tests
   test_android:
     executor: reactnativeandroid
     parameters:
@@ -513,11 +537,11 @@ jobs:
           name: Assemble RNTester App
           command: ./gradlew RNTester:android:app:assembleRelease
 
-      # Test Suite
+      # -------------------------
+      # Run Android tests
       - run:
           name: "Run Tests: Android Unit Tests"
           command: buck test ReactAndroid/src/test/... --config build.threads=$BUILD_THREADS --xml ./reports/buck/all-results-raw.xml
-
       - run:
           name: "Run Tests: Android Instrumentation Tests"
           command: |
@@ -526,19 +550,18 @@ jobs:
             fi
             source scripts/android-setup.sh && NO_BUCKD=1 retry3 timeout 300 buck install ReactAndroid/src/androidTest/buck-runner:instrumentation-tests --config build.threads=$BUILD_THREADS
 
+      # Optionally, run disabled tests
       - when:
           condition: << parameters.run_disabled_tests >>
           steps:
-            - run:
-                name: "Run Tests: Android End-to-End Tests"
-                command: node ./scripts/run-ci-e2e-tests.js --android --retries 3;
-
-      - install_github_bot_deps
-      - run:
-          name: Report size of RNTester.apk (analysis-bot)
-          command: GITHUB_TOKEN="$PUBLIC_ANALYSISBOT_GITHUB_TOKEN_A""$PUBLIC_ANALYSISBOT_GITHUB_TOKEN_B" scripts/circleci/report-bundle-size.sh android
+            - run: echo "Failing tests may be moved here temporarily."
+            - run_e2e:
+                platform: android
+      # -------------------------
 
       # Collect Results
+      - report_bundle_size:
+          platform: android
       - run:
           name: Collect Test Results
           command: |
@@ -550,7 +573,6 @@ jobs:
               ./tooling/junit/buck_to_junit.sh ~/react-native/reports/buck/all-results-raw.xml ~/react-native/reports/junit/results.xml
             fi
           when: always
-
       - store_test_results:
           path: ./reports/junit
 
@@ -570,6 +592,83 @@ jobs:
             npx envinfo@latest
             yarn run docker-setup-android
             yarn run docker-build-android
+
+  # -------------------------
+  #    JOBS: Windows
+  # -------------------------
+  test_windows:
+    executor:
+      name: win/default
+    parameters:
+      run_disabled_tests:
+        type: boolean
+        default: false
+    environment:
+      - ANDROID_HOME: "C:\\Android\\android-sdk"
+      - ANDROID_NDK: "C:\\Android\\android-sdk\\ndk\\19.2.5345600"
+      - ANDROID_BUILD_VERSION: 28
+      - ANDROID_TOOLS_VERSION: 29.0.2
+      - GRADLE_OPTS: -Dorg.gradle.daemon=false
+      - NDK_VERSION: 19.2.5345600
+    steps:
+      - checkout
+
+      # Setup Dependencies
+      - run:
+          name: Install Yarn
+          command: choco install yarn
+
+      - run:
+          name: Display Environment info
+          command: npx envinfo@latest
+
+      - restore_cache:
+          keys:
+            - v1-win-yarn-cache-{{ arch }}-{{ checksum "yarn.lock" }}
+            - v1-win-yarn-cache-{{ arch }}-
+      - run:
+          name: "Yarn: Install Dependencies"
+          command: yarn install --frozen-lockfile --non-interactive
+      - save_cache:
+          key: v1-win-yarn-cache-{{ arch }}-{{ checksum "yarn.lock" }}
+          paths:
+            - C:\Users\circleci\AppData\Local\Yarn
+
+      - run:
+          name: Install Android SDK Tools
+          command: choco install android-sdk
+
+      - run:
+          name: Setup Android SDKs
+          command: |
+            sdkmanager --licenses
+            sdkmanager "system-images;android-19;google_apis;armeabi-v7a"
+            sdkmanager "platforms;android-%ANDROID_BUILD_VERSION%"
+            sdkmanager "build-tools;%ANDROID_TOOLS_VERSION%"
+            sdkmanager "add-ons;addon-google_apis-google-23"
+            sdkmanager "extras;android;m2repository"
+            sdkmanager "ndk;%NDK_VERSION%"
+
+      # -------------------------
+      # Run Tests
+      - run:
+          name: "Flow: Check Android"
+          command: yarn flow-check-android
+      - run:
+          name: "Flow: Check iOS"
+          command: yarn flow-check-ios
+      - run:
+          name: "Run Tests: JavaScript Tests"
+          command: yarn test
+
+      # Optionally, run disabled tests
+      - when:
+          condition: << parameters.run_disabled_tests >>
+          steps:
+            - run: echo "Failing tests may be moved here temporarily."
+            - run:
+                name: Android Build
+                command: ./gradlew.bat RNTester:android:app:assembleRelease
 
   # -------------------------
   #      JOBS: Coverage
@@ -637,70 +736,6 @@ jobs:
           command: |
             echo "Nightly build run"
 
-  # -------------------------
-  #    JOBS: Windows
-  # -------------------------
-  windows_job:
-    executor: 
-      name: win/default
-    environment:
-      - ANDROID_HOME: "C:\\Android\\android-sdk"
-      - ANDROID_NDK: "C:\\Android\\android-sdk\\ndk\\19.2.5345600"
-      - ANDROID_BUILD_VERSION: 28
-      - ANDROID_TOOLS_VERSION: 29.0.2
-      - GRADLE_OPTS: -Dorg.gradle.daemon=false
-      - NDK_VERSION: 19.2.5345600
-    steps:
-      - checkout
-      - run:
-          name: Install Android SDK Tools
-          command: choco install android-sdk
-      - run:
-          name: Setup SDK
-          command: sdkmanager --licenses
-      - run: sdkmanager "system-images;android-19;google_apis;armeabi-v7a"
-      - run: sdkmanager "platforms;android-%ANDROID_BUILD_VERSION%"
-      - run: sdkmanager "build-tools;%ANDROID_TOOLS_VERSION%"
-      - run: sdkmanager "add-ons;addon-google_apis-google-23"
-      - run: sdkmanager "extras;android;m2repository"
-      - run: sdkmanager "ndk;%NDK_VERSION%"
-      - restore_cache:
-          keys:
-            - v5-win-node-{{ arch }}-{{ .Branch }}-{{ checksum "yarn.lock" }}
-            - v5-win-node-{{ arch }}-{{ .Branch }}-
-            - v5-win-node-{{ arch }}-
-      - run:
-          name: Install Yarn
-          command: choco install yarn
-      - run:
-          name: Get Env info
-          command: npx envinfo@latest
-      - run:
-          name: Install Dependencies
-          command: yarn install --frozen-lockfile --non-interactive
-      - save_cache:
-          key: v5-win-node-{{ arch }}-{{ .Branch }}-{{ checksum "yarn.lock" }}
-          paths:
-            - C:\Users\circleci\AppData\Local\Yarn
-      - run:
-          name: Flow Check Android
-          command: yarn flow-check-android
-      - run:
-          name: Flow Check iOS
-          command: yarn flow-check-ios
-      # TODO: reenable this test    
-      # - run:
-      #     name: Test Android Build
-      #     command: ./gradlew.bat RNTester:android:app:assembleRelease
-      - run:
-          name: Run Test
-          command: yarn test
-      - save_cache:
-          key: v5-win-node-{{ arch }}-{{ .Branch }}-{{ checksum ".gradle" }}
-          paths:
-            - "%USERPROFILE%/.gradle/caches"
-            - "%USERPROFILE%/.gradle/wrapper" 
-
 # -------------------------
 #        WORK FLOWS
 # -------------------------
@@ -729,7 +764,7 @@ workflows:
             branches:
               ignore: gh-pages
       - test_js:
-          run_disabled_tests: true
+          run_disabled_tests: false
           requires:
             - setup_js
       - test_android:
@@ -737,12 +772,27 @@ workflows:
           requires:
             - setup_android
       - test_ios:
+          name: test_ios_unit
           run_disabled_tests: false
+          run_unit_tests: true
           requires:
             - setup_ios
       - test_ios:
-          name: test_ios_frameworks
+          name: test_ios_unit_frameworks
           use_frameworks: true
+          run_unit_tests: true
+          requires:
+            - setup_ios
+      - test_ios:
+          name: test_ios_detox
+          run_disabled_tests: false
+          run_detox_tests: true
+          requires:
+            - setup_ios
+      - test_ios:
+          name: test_ios_detox_frameworks
+          use_frameworks: true
+          run_detox_tests: true
           requires:
             - setup_ios
       - test_js:
@@ -754,6 +804,12 @@ workflows:
           filters:
             branches:
               ignore: gh-pages
+      - test_windows:
+          filters:
+            branches:
+              ignore: gh-pages
+          run_disabled_tests: false
+
   releases:
     jobs:
       - setup:
@@ -803,9 +859,6 @@ workflows:
       - js_coverage:
           requires:
             - setup
-  windows:
-    jobs:
-      - windows_job
   nightly:
     triggers:
       - schedule:
