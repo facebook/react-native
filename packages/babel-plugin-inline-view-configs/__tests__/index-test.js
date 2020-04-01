@@ -21,7 +21,7 @@ const transform = (fixture, filename) =>
     filename: filename,
     highlightCode: false,
     plugins: [require('@babel/plugin-syntax-flow'), require('../index')],
-  }).code.replace(/^[A-z]:\\/g, '/'); // Ensure platform consistent snapshots.
+  }).code; 
 
 describe('Babel plugin inline view configs', () => {
   Object.keys(fixtures)
