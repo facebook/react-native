@@ -16,9 +16,11 @@ const failures = require('../__test_fixtures__/failures.js');
 
 function transform(fixture, filename) {
   return babelTransform(fixture, {
-    plugins: [require('@babel/plugin-syntax-flow'), require('../index')],
     babelrc: false,
-    filename,
+    cwd: '/',
+    filename: filename,
+    highlightCode: false,
+    plugins: [require('@babel/plugin-syntax-flow'), require('../index')],
   }).code;
 }
 
