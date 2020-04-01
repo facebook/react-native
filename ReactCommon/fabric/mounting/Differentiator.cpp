@@ -639,8 +639,6 @@ static void calculateShadowViewMutationsOptimizedMoves(
 
           oldIndex++;
           continue;
-        } else {
-          newRemainingPairs.erase(newIt);
         }
       }
 
