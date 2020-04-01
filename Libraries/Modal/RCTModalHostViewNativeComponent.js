@@ -53,6 +53,14 @@ type NativeProps = $ReadOnly<{|
   transparent?: WithDefault<boolean, false>,
 
   /**
+   * The `backgroundColor` prop controls the background color of the modal if
+   * the transparent property is set.
+   *
+   * See https://facebook.github.io/react-native/docs/modal.html#backgroundColor
+   */
+  backgroundColor?: WithDefault<string, 'white'>,
+
+  /**
    * The `statusBarTranslucent` prop determines whether your modal should go under
    * the system statusbar.
    *

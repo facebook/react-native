@@ -31,7 +31,7 @@ exports[`<Modal /> should render as <RCTModalHostView> when not mocked 1`] = `
           "top": 0,
         },
         Object {
-          "backgroundColor": "white",
+          "backgroundColor": undefined,
         },
       ]
     }
