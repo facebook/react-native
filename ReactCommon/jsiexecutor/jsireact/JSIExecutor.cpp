@@ -27,14 +27,20 @@ namespace react {
 
 class JSIExecutor::NativeModuleProxy : public jsi::HostObject {
  public:
-  NativeModuleProxy(JSIExecutor &executor) : executor_(executor) {}
+  NativeModuleProxy(std::shared_ptr<JSINativeModules> nativeModules)
+      : weakNativeModules_(nativeModules) {}
 
   Value get(Runtime &rt, const PropNameID &name) override {
     if (name.utf8(rt) == "name") {
       return jsi::String::createFromAscii(rt, "NativeModules");
     }
 
-    return executor_.nativeModules_.getModule(rt, name);
+    auto nativeModules = weakNativeModules_.lock();
+    if (!nativeModules) {
+      return nullptr;
+    }
+
+    return nativeModules->getModule(rt, name);
   }
 
   void set(Runtime &, const PropNameID &, const Value &) override {
@@ -43,7 +49,7 @@ class JSIExecutor::NativeModuleProxy : public jsi::HostObject {
   }
 
  private:
-  JSIExecutor &executor_;
+  std::weak_ptr<JSINativeModules> weakNativeModules_;
 };
 
 namespace {
@@ -63,7 +69,8 @@ JSIExecutor::JSIExecutor(
     RuntimeInstaller runtimeInstaller)
     : runtime_(runtime),
       delegate_(delegate),
-      nativeModules_(delegate ? delegate->getModuleRegistry() : nullptr),
+      nativeModules_(std::make_shared<JSINativeModules>(
+          delegate ? delegate->getModuleRegistry() : nullptr)),
       scopedTimeoutInvoker_(scopedTimeoutInvoker),
       runtimeInstaller_(runtimeInstaller) {
   runtime_->global().setProperty(
@@ -76,7 +83,7 @@ void JSIExecutor::initializeRuntime() {
       *runtime_,
       "nativeModuleProxy",
       Object::createFromHostObject(
-          *runtime_, std::make_shared<NativeModuleProxy>(*this)));
+          *runtime_, std::make_shared<NativeModuleProxy>(nativeModules_)));
 
   runtime_->global().setProperty(
       *runtime_,
