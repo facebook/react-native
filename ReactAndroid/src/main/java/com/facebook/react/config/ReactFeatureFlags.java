@@ -19,12 +19,6 @@ public class ReactFeatureFlags {
   /** Whether we should load a specific view manager immediately or when it is accessed by JS */
   public static boolean lazilyLoadViewManagers = false;
 
-  /** Reduce the number of Java-JS interops while accessing native arrays */
-  public static boolean useArrayNativeAccessor = false;
-
-  /** Reduce the number of Java-JS interops while accessing native maps */
-  public static boolean useMapNativeAccessor = false;
-
   /**
    * Should this application use TurboModules? If yes, then any module that inherits {@link
    * com.facebook.react.turbomodule.core.interfaces.TurboModule} will NOT be passed in to C++
