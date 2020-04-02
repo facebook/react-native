@@ -67,4 +67,10 @@ public class ReactFeatureFlags {
    * <p>The react flag is disabled by default because this is increasing ANRs (T57363204)
    */
   public static boolean clipChildRectsIfOverflowIsHidden = false;
+
+  /**
+   * Temporary feature flat to control a fix in the transition to layoutOnlyViews TODO T61185028:
+   * remove this when bug is fixed
+   */
+  public static boolean enableTransitionLayoutOnlyViewCleanup = false;
 }

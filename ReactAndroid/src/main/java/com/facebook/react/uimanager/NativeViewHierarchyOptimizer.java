@@ -9,9 +9,11 @@ package com.facebook.react.uimanager;
 
 import android.util.SparseBooleanArray;
 import androidx.annotation.Nullable;
+import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMapKeySetIterator;
+import com.facebook.react.config.ReactFeatureFlags;
 
 /**
  * Class responsible for optimizing the native view hierarchy while still respecting the final UI
@@ -45,6 +47,8 @@ import com.facebook.react.bridge.ReadableMapKeySetIterator;
  * depending on where the views being added/removed are attached in the optimized hierarchy
  */
 public class NativeViewHierarchyOptimizer {
+
+  private static final String TAG = "NativeViewHierarchyOptimizer";
 
   private static class NodeIndexPair {
     public final ReactShadowNode node;
@@ -421,6 +425,18 @@ public class NativeViewHierarchyOptimizer {
     // Bit of a hack: we need to update the layout of this node's children now that it's no longer
     // layout-only, but we may still receive more layout updates at the end of this batch that we
     // don't want to ignore.
+    if (ReactFeatureFlags.enableTransitionLayoutOnlyViewCleanup) {
+      FLog.i(
+          TAG,
+          "Transitioning LayoutOnlyView - tag: "
+              + node.getReactTag()
+              + " - rootTag: "
+              + node.getRootTag()
+              + " - hasProps: "
+              + (props != null)
+              + " - tagsWithLayout.size: "
+              + mTagsWithLayoutVisited.size());
+    }
     Assertions.assertCondition(mTagsWithLayoutVisited.size() == 0);
     applyLayoutBase(node);
     for (int i = 0; i < node.getChildCount(); i++) {
