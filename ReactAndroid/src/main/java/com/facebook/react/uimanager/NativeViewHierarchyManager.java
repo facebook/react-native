@@ -29,13 +29,11 @@ import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.RetryableMountingLayerException;
 import com.facebook.react.bridge.SoftAssertions;
 import com.facebook.react.bridge.UiThreadUtil;
-import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.react.touch.JSResponderHandler;
 import com.facebook.react.uimanager.layoutanimation.LayoutAnimationController;
 import com.facebook.react.uimanager.layoutanimation.LayoutAnimationListener;
 import com.facebook.systrace.Systrace;
 import com.facebook.systrace.SystraceMessage;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
@@ -78,12 +76,10 @@ public class NativeViewHierarchyManager {
   private final JSResponderHandler mJSResponderHandler = new JSResponderHandler();
   private final RootViewManager mRootViewManager;
   private final LayoutAnimationController mLayoutAnimator = new LayoutAnimationController();
-  private final int[] mDroppedViewArray = new int[100];
   private final RectF mBoundingBox = new RectF();
 
   private boolean mLayoutAnimationEnabled;
   private PopupMenu mPopupMenu;
-  private int mDroppedViewIndex = 0;
   private HashMap<Integer, Set<Integer>> mPendingDeletionsForTag;
 
   public NativeViewHierarchyManager(ViewManagerRegistry viewManagers) {
@@ -110,16 +106,8 @@ public class NativeViewHierarchyManager {
   public final synchronized ViewManager resolveViewManager(int tag) {
     ViewManager viewManager = mTagsToViewManagers.get(tag);
     if (viewManager == null) {
-      boolean alreadyDropped = Arrays.asList(mDroppedViewArray).contains(tag);
       throw new IllegalViewOperationException(
-          "ViewManager for tag "
-              + tag
-              + " could not be found.\n View already dropped? "
-              + alreadyDropped
-              + ".\nLast index "
-              + mDroppedViewIndex
-              + " in last 100 views"
-              + mDroppedViewArray.toString());
+          "ViewManager for tag " + tag + " could not be found.\n");
     }
     return viewManager;
   }
@@ -591,20 +579,12 @@ public class NativeViewHierarchyManager {
     view.setId(tag);
   }
 
-  private void cacheDroppedTag(int tag) {
-    mDroppedViewArray[mDroppedViewIndex] = tag;
-    mDroppedViewIndex = (mDroppedViewIndex + 1) % 100;
-  }
-
   /** Releases all references to given native View. */
   protected synchronized void dropView(View view) {
     UiThreadUtil.assertOnUiThread();
     if (view == null) {
       // Ignore this drop operation when view is null.
       return;
-    }
-    if (ReactFeatureFlags.logDroppedViews) {
-      cacheDroppedTag(view.getId());
     }
     if (mTagsToViewManagers.get(view.getId()) == null) {
       // This view has already been dropped (likely due to a threading issue caused by async js

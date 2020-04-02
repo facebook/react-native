@@ -23,12 +23,6 @@ public class ReactFeatureFlags {
    */
   public static volatile boolean useTurboModules = false;
 
-  /**
-   * Log tags of when a view deleted on the native side {@link
-   * com.facebook.react.uimanager.NativeViewHierarchyManager dropView}
-   */
-  public static boolean logDroppedViews = false;
-
   /*
    * This feature flag enables logs for Fabric
    */
