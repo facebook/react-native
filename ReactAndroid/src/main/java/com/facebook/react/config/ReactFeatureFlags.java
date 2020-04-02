@@ -30,12 +30,6 @@ public class ReactFeatureFlags {
   public static boolean logDroppedViews = false;
 
   /*
-   * This feature flag enables extra logging on ReactWebViews.
-   * Default value is false.
-   */
-  public static boolean enableExtraWebViewLogs = false;
-
-  /*
    * This feature flag enables logs for Fabric
    */
   public static boolean enableFabricLogs = false;
