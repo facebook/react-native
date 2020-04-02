@@ -49,6 +49,8 @@ void Instance::initializeBridge(
     nativeToJsBridge_ = std::make_shared<NativeToJsBridge>(
         jsef.get(), moduleRegistry_, jsQueue, callback_);
 
+    nativeToJsBridge_->initializeRuntime();
+
     /**
      * After NativeToJsBridge is created, the jsi::Runtime should exist.
      * Also, the JS message queue thread exists. So, it's safe to
@@ -64,25 +66,25 @@ void Instance::initializeBridge(
   CHECK(nativeToJsBridge_);
 }
 
-void Instance::loadApplication(
+void Instance::loadBundle(
     std::unique_ptr<RAMBundleRegistry> bundleRegistry,
     std::unique_ptr<const JSBigString> string,
     std::string sourceURL) {
   callback_->incrementPendingJSCalls();
-  SystraceSection s("Instance::loadApplication", "sourceURL", sourceURL);
-  nativeToJsBridge_->loadApplication(
+  SystraceSection s("Instance::loadBundle", "sourceURL", sourceURL);
+  nativeToJsBridge_->loadBundle(
       std::move(bundleRegistry), std::move(string), std::move(sourceURL));
 }
 
-void Instance::loadApplicationSync(
+void Instance::loadBundleSync(
     std::unique_ptr<RAMBundleRegistry> bundleRegistry,
     std::unique_ptr<const JSBigString> string,
     std::string sourceURL) {
   std::unique_lock<std::mutex> lock(m_syncMutex);
   m_syncCV.wait(lock, [this] { return m_syncReady; });
 
-  SystraceSection s("Instance::loadApplicationSync", "sourceURL", sourceURL);
-  nativeToJsBridge_->loadApplicationSync(
+  SystraceSection s("Instance::loadBundleSync", "sourceURL", sourceURL);
+  nativeToJsBridge_->loadBundleSync(
       std::move(bundleRegistry), std::move(string), std::move(sourceURL));
 }
 
@@ -90,7 +92,7 @@ void Instance::setSourceURL(std::string sourceURL) {
   callback_->incrementPendingJSCalls();
   SystraceSection s("Instance::setSourceURL", "sourceURL", sourceURL);
 
-  nativeToJsBridge_->loadApplication(nullptr, nullptr, std::move(sourceURL));
+  nativeToJsBridge_->loadBundle(nullptr, nullptr, std::move(sourceURL));
 }
 
 void Instance::loadScriptFromString(
@@ -99,9 +101,9 @@ void Instance::loadScriptFromString(
     bool loadSynchronously) {
   SystraceSection s("Instance::loadScriptFromString", "sourceURL", sourceURL);
   if (loadSynchronously) {
-    loadApplicationSync(nullptr, std::move(string), std::move(sourceURL));
+    loadBundleSync(nullptr, std::move(string), std::move(sourceURL));
   } else {
-    loadApplication(nullptr, std::move(string), std::move(sourceURL));
+    loadBundle(nullptr, std::move(string), std::move(sourceURL));
   }
 }
 
@@ -157,12 +159,12 @@ void Instance::loadRAMBundle(
     std::string startupScriptSourceURL,
     bool loadSynchronously) {
   if (loadSynchronously) {
-    loadApplicationSync(
+    loadBundleSync(
         std::move(bundleRegistry),
         std::move(startupScript),
         std::move(startupScriptSourceURL));
   } else {
-    loadApplication(
+    loadBundle(
         std::move(bundleRegistry),
         std::move(startupScript),
         std::move(startupScriptSourceURL));

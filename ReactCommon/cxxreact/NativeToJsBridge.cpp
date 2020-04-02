@@ -114,7 +114,12 @@ NativeToJsBridge::~NativeToJsBridge() {
       << "NativeToJsBridge::destroy() must be called before deallocating the NativeToJsBridge!";
 }
 
-void NativeToJsBridge::loadApplication(
+void NativeToJsBridge::initializeRuntime() {
+  runOnExecutorQueue(
+      [](JSExecutor *executor) mutable { executor->initializeRuntime(); });
+}
+
+void NativeToJsBridge::loadBundle(
     std::unique_ptr<RAMBundleRegistry> bundleRegistry,
     std::unique_ptr<const JSBigString> startupScript,
     std::string startupScriptSourceURL) {
@@ -129,7 +134,7 @@ void NativeToJsBridge::loadApplication(
           executor->setBundleRegistry(std::move(bundleRegistry));
         }
         try {
-          executor->loadApplicationScript(
+          executor->loadBundle(
               std::move(*startupScript), std::move(startupScriptSourceURL));
         } catch (...) {
           m_applicationScriptHasFailure = true;
@@ -138,7 +143,7 @@ void NativeToJsBridge::loadApplication(
       });
 }
 
-void NativeToJsBridge::loadApplicationSync(
+void NativeToJsBridge::loadBundleSync(
     std::unique_ptr<RAMBundleRegistry> bundleRegistry,
     std::unique_ptr<const JSBigString> startupScript,
     std::string startupScriptSourceURL) {
@@ -146,7 +151,7 @@ void NativeToJsBridge::loadApplicationSync(
     m_executor->setBundleRegistry(std::move(bundleRegistry));
   }
   try {
-    m_executor->loadApplicationScript(
+    m_executor->loadBundle(
         std::move(startupScript), std::move(startupScriptSourceURL));
   } catch (...) {
     m_applicationScriptHasFailure = true;

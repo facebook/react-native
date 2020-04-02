@@ -70,13 +70,8 @@ JSIExecutor::JSIExecutor(
       *runtime, "__jsiExecutorDescription", runtime->description());
 }
 
-void JSIExecutor::loadApplicationScript(
-    std::unique_ptr<const JSBigString> script,
-    std::string sourceURL) {
-  SystraceSection s("JSIExecutor::loadApplicationScript");
-
-  // TODO: check for and use precompiled HBC
-
+void JSIExecutor::initializeRuntime() {
+  SystraceSection s("JSIExecutor::initializeRuntime");
   runtime_->global().setProperty(
       *runtime_,
       "nativeModuleProxy",
@@ -134,6 +129,18 @@ void JSIExecutor::loadApplicationScript(
   if (runtimeInstaller_) {
     runtimeInstaller_(*runtime_);
   }
+  bool hasLogger(ReactMarker::logTaggedMarker);
+  if (hasLogger) {
+    ReactMarker::logMarker(ReactMarker::CREATE_REACT_CONTEXT_STOP);
+  }
+}
+
+void JSIExecutor::loadBundle(
+    std::unique_ptr<const JSBigString> script,
+    std::string sourceURL) {
+  SystraceSection s("JSIExecutor::loadBundle");
+
+  // TODO: check for and use precompiled HBC
 
   bool hasLogger(ReactMarker::logTaggedMarker);
   std::string scriptName = simpleBasename(sourceURL);
@@ -145,7 +152,6 @@ void JSIExecutor::loadApplicationScript(
       std::make_unique<BigStringBuffer>(std::move(script)), sourceURL);
   flush();
   if (hasLogger) {
-    ReactMarker::logMarker(ReactMarker::CREATE_REACT_CONTEXT_STOP);
     ReactMarker::logTaggedMarker(
         ReactMarker::RUN_JS_BUNDLE_STOP, scriptName.c_str());
   }

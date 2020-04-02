@@ -53,9 +53,7 @@ ProxyExecutor::~ProxyExecutor() {
   m_executor.reset();
 }
 
-void ProxyExecutor::loadApplicationScript(
-    std::unique_ptr<const JSBigString>,
-    std::string sourceURL) {
+void ProxyExecutor::initializeRuntime() {
   folly::dynamic nativeModuleConfig = folly::dynamic::array;
 
   {
@@ -76,14 +74,17 @@ void ProxyExecutor::loadApplicationScript(
         "__fbBatchedBridgeConfig",
         std::make_unique<JSBigStdString>(folly::toJson(config)));
   }
+}
 
-  static auto loadApplicationScript =
-      jni::findClassStatic(EXECUTOR_BASECLASS)
-          ->getMethod<void(jstring)>("loadApplicationScript");
+void ProxyExecutor::loadBundle(
+    std::unique_ptr<const JSBigString>,
+    std::string sourceURL) {
+  static auto loadBundle = jni::findClassStatic(EXECUTOR_BASECLASS)
+                               ->getMethod<void(jstring)>("loadBundle");
 
   // The proxy ignores the script data passed in.
 
-  loadApplicationScript(m_executor.get(), jni::make_jstring(sourceURL).get());
+  loadBundle(m_executor.get(), jni::make_jstring(sourceURL).get());
   // We can get pending calls here to native but the queue will be drained when
   // we launch the application.
 }
