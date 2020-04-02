@@ -11,7 +11,7 @@
 #import "RCTLog.h"
 #import "RCTUtils.h"
 
-#if !TARGET_OS_TV
+#if !TARGET_OS_TV && !TARGET_OS_OSX // TODO(macOS ISS#2323203)
 @implementation RCTConvert (UIStatusBar)
 
 RCT_ENUM_CONVERTER(UIStatusBarStyle, (@{
@@ -51,7 +51,7 @@ RCT_EXPORT_MODULE()
            @"statusBarFrameWillChange"];
 }
 
-#if !TARGET_OS_TV
+#if !TARGET_OS_TV && !TARGET_OS_OSX // TODO(macOS ISS#2323203)
 
 - (void)startObserving
 {

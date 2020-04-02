@@ -817,6 +817,8 @@
 		2D74EAFA1DAE9590003B751B /* RCTMultipartDataTask.m in Sources */ = {isa = PBXBuildFile; fileRef = 006FC4131D9B20820057AAAD /* RCTMultipartDataTask.m */; };
 		2D8C2E331DA40441000EE098 /* RCTMultipartStreamReader.m in Sources */ = {isa = PBXBuildFile; fileRef = 001BFCCF1D8381DE008E587E /* RCTMultipartStreamReader.m */; };
 		352DCFF01D19F4C20056D623 /* RCTI18nUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 352DCFEF1D19F4C20056D623 /* RCTI18nUtil.m */; };
+		383C517D2434412900CCBC30 /* RCTProgressViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 13513F3B1B1F43F400FCE529 /* RCTProgressViewManager.m */; };
+		383C517E243446D900CCBC30 /* RCTStatusBarManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 13723B4F1A82FD3C00F88898 /* RCTStatusBarManager.m */; };
 		385362722283369800B0989C /* RCTSRWebSocket.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 3D7BFD2C1EA8E3FA008DFB7A /* RCTSRWebSocket.h */; };
 		38B6D1FF228C879400AC0F0E /* (null) in Sources */ = {isa = PBXBuildFile; };
 		38BF7CDF22AF1B9900240972 /* JSCExecutorFactory.mm in Sources */ = {isa = PBXBuildFile; fileRef = 8507BBBC21EDACC200AEAFCA /* JSCExecutorFactory.mm */; };
@@ -5685,6 +5687,7 @@
 				657734931EE8356100A0E9EA /* RCTInspector.mm in Sources */,
 				59EB6DBE1EBD6FC90072A5E7 /* RCTUIManagerObserverCoordinator.mm in Sources */,
 				18B8F97E21431D6900CE911A /* RCTPlatform.m in Sources */,
+				383C517E243446D900CCBC30 /* RCTStatusBarManager.m in Sources */,
 				2D3B5E971D9B089000451313 /* RCTBridge.m in Sources */,
 				2D3B5E9B1D9B08A000451313 /* RCTFrameUpdate.m in Sources */,
 				2D3B5EE41D9B09BB00451313 /* RCTSegmentedControlManager.m in Sources */,
@@ -5694,6 +5697,7 @@
 				1968A2621F67275300EB3D1D /* RCTComponentEvent.m in Sources */,
 				2D3B5EE31D9B09B700451313 /* RCTSegmentedControl.m in Sources */,
 				189727D42141CE7E002A4E2A /* RCTSwitchManager.m in Sources */,
+				383C517D2434412900CCBC30 /* RCTProgressViewManager.m in Sources */,
 				130443A41E3FEAC600D93A67 /* RCTFollyConvert.mm in Sources */,
 				3D7BFD201EA8E351008DFB7A /* RCTPackagerConnection.mm in Sources */,
 				59E604A51FE9CCE300BD90C5 /* RCTScrollContentShadowView.m in Sources */,

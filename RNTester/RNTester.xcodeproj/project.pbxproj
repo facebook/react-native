@@ -135,6 +135,8 @@
 		2DE7E8061FB2A4F3009E225D /* libRCTWebSocket-tvOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2DD323D51DA2DD8B000FE1B8 /* libRCTWebSocket-tvOS.a */; };
 		2DE7E8071FB2A4F3009E225D /* libReact.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2DD323D91DA2DD8B000FE1B8 /* libReact.a */; };
 		3578590A1B28D2CF00341EDB /* libRCTLinking.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 357859011B28D2C500341EDB /* libRCTLinking.a */; };
+		383C517F243447EC00CCBC30 /* UpdatePropertiesExampleView.m in Sources */ = {isa = PBXBuildFile; fileRef = 272E6B3C1BEA849E001FCF37 /* UpdatePropertiesExampleView.m */; };
+		383C51A624344A4600CCBC30 /* FlexibleSizeExampleView.m in Sources */ = {isa = PBXBuildFile; fileRef = 27F441E81BEBE5030039B79C /* FlexibleSizeExampleView.m */; };
 		38C500E222D3CF2E00BCD999 /* RCTConvert_UIColorTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 38C500E122D3CF2E00BCD999 /* RCTConvert_UIColorTests.m */; };
 		39AA31A41DC1DFDC000F7EBB /* RCTUnicodeDecodeTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 39AA31A31DC1DFDC000F7EBB /* RCTUnicodeDecodeTests.m */; };
 		3D05746D1DE6008900184BB4 /* libRCTPushNotification-tvOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3D05746C1DE6008900184BB4 /* libRCTPushNotification-tvOS.a */; };
@@ -3130,6 +3132,8 @@
 				18FC77901EF4770B002B3F17 /* ViewController.m in Sources */,
 				18FC778D1EF4770B002B3F17 /* main.m in Sources */,
 				18FC778A1EF4770B002B3F17 /* AppDelegate.m in Sources */,
+				383C51A624344A4600CCBC30 /* FlexibleSizeExampleView.m in Sources */,
+				383C517F243447EC00CCBC30 /* UpdatePropertiesExampleView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -11,7 +11,11 @@
 #import <React/RCTRootView.h>
 #import <React/RCTViewManager.h>
 
+#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
 #import "AppDelegate.h"
+#else // [TODO(macOS ISS#2323203)
+#import "../../RNTester-macOS/AppDelegate.h"
+#endif // ]TODO(macOS ISS#2323203)
 
 @interface UpdatePropertiesExampleViewManager : RCTViewManager
 
@@ -21,7 +25,7 @@
 
 RCT_EXPORT_MODULE();
 
-- (UIView *)view
+- (RCTUIView *)view // TODO(macOS ISS#2323203)
 {
   return [UpdatePropertiesExampleView new];
 }
@@ -31,7 +35,11 @@ RCT_EXPORT_MODULE();
 @implementation UpdatePropertiesExampleView
 {
   RCTRootView *_rootView;
+#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
   UIButton *_button;
+#else // [TODO(macOS ISS#2323203)
+  NSButton *_button;
+#endif // ]TODO(macOS ISS#2323203)
   BOOL _beige;
 }
 
@@ -47,6 +55,7 @@ RCT_EXPORT_MODULE();
                                          moduleName:@"SetPropertiesExampleApp"
                                   initialProperties:@{@"color":@"beige"}];
 
+#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
     _button = [UIButton buttonWithType:UIButtonTypeRoundedRect];
     [_button setTitle:@"Native Button" forState:UIControlStateNormal];
     [_button setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
@@ -55,6 +64,12 @@ RCT_EXPORT_MODULE();
     [_button addTarget:self
                 action:@selector(changeColor)
       forControlEvents:UIControlEventTouchUpInside];
+#else // [TODO(macOS ISS#2323203)
+    _button = [[NSButton alloc] init];
+    [_button setTitle:@"Native Button"];
+    [_button setTarget:self];
+    [_button setAction:@selector(changeColor)];
+#endif // ]TODO(macOS ISS#2323203)
 
     [self addSubview:_button];
     [self addSubview:_rootView];
@@ -79,7 +94,7 @@ RCT_EXPORT_MODULE();
   [_rootView setAppProperties:@{@"color":_beige ? @"beige" : @"purple"}];
 }
 
-- (NSArray<UIView<RCTComponent> *> *)reactSubviews
+- (NSArray<RCTUIView<RCTComponent> *> *)reactSubviews // TODO(macOS ISS#2323203)
 {
   // this is to avoid unregistering our RCTRootView when the component is removed from RN hierarchy
   (void)[super reactSubviews];

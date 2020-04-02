@@ -16,10 +16,9 @@ const warnOnce = require('warnOnce');
 // Export React, plus some native additions.
 module.exports = {
   // Components
-  /*
   get AccessibilityInfo() {
     return require('AccessibilityInfo');
-  },*/
+  },
   get ActivityIndicator() {
     return require('ActivityIndicator');
   },
@@ -57,8 +56,7 @@ module.exports = {
   /*
   get ImageEditor() {
     return require('ImageEditor');
-  },
-  */
+  },*/
   get ImageStore() {
     warnOnce(
       'imagestore-deprecation',
@@ -76,15 +74,14 @@ module.exports = {
   get KeyboardAvoidingView() {
     return require('KeyboardAvoidingView');
   },
-    get ListView() {
+  get ListView() {
     warnOnce(
       'listview-deprecation',
       'ListView is deprecated and will be removed in a future release. ' +
         'See https://fb.me/nolistview for more information',
     );
     return require('ListView');
-  },
-  /*
+  },*/
   get MaskedViewIOS() {
     warnOnce(
       'maskedviewios-moved',
@@ -94,6 +91,7 @@ module.exports = {
     );
     return require('MaskedViewIOS');
   },
+  /*
   get Modal() {
     return require('Modal');
   },*/
@@ -103,13 +101,12 @@ module.exports = {
   get PickerIOS() {
     return require('../Components/Picker/PickerIOS');
   },
-  /*
   get ProgressBarAndroid() {
     return require('ProgressBarAndroid');
   },
   get ProgressViewIOS() {
     return require('ProgressViewIOS');
-  },*/
+  },
   get SafeAreaView() {
     return require('SafeAreaView');
   },
@@ -119,11 +116,9 @@ module.exports = {
   get SectionList() {
     return require('SectionList');
   },
-  /*
   get SegmentedControlIOS() {
     return require('SegmentedControlIOS');
   },
-  */
   get Slider() {
     warnOnce(
       'slider-moved',
@@ -139,10 +134,11 @@ module.exports = {
   /*
   get RefreshControl() {
     return require('RefreshControl');
-  },
+  },*/
   get StatusBar() {
     return require('StatusBar');
   },
+  /*
     get SwipeableFlatList() {
     return require('SwipeableFlatList');
   },*/

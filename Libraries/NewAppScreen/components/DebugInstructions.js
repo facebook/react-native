@@ -25,6 +25,13 @@ const DebugInstructions = Platform.select({
       Native debug menu.
     </Text>
   ),
+  // [TODO(macOS ISS#2323203)
+  macos: () => (
+    <Text>
+      Secondary click in this window to open the React Native debug menu.
+    </Text>
+  ),
+  // ]TODO(macOS ISS#2323203)
   default: () => (
     <Text>
       Press <Text style={styles.highlight}>menu button</Text> or{' '}

@@ -3,13 +3,10 @@
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
- *
  */
 
-#import <React/RCTUIKit.h> // TODO(macOS ISS#2323203)
+#import <Cocoa/Cocoa.h>
 
-#import <React/RCTView.h>
-
-@interface FlexibleSizeExampleView : RCTView
-
-@end
+int main(int argc, const char *argv[]) {
+  return NSApplicationMain(argc, argv);
+}

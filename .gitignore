@@ -68,7 +68,8 @@ package-lock.json
 
 /coverage
 /third-party
-/packages/
+/packages/*
+!/packages/react-native-macos-init/
 
 # Root dir shouldn't have Xcode project
 /*.xcodeproj

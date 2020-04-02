@@ -13,7 +13,12 @@
 #import <React/RCTRootViewDelegate.h>
 #import <React/RCTViewManager.h>
 
+#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
 #import "AppDelegate.h"
+#else // [TODO(macOS ISS#2323203)
+#import "../../RNTester-macOS/AppDelegate.h"
+#define UITextView NSTextView
+#endif // ]TODO(macOS ISS#2323203)
 
 @interface FlexibleSizeExampleViewManager : RCTViewManager
 
@@ -23,7 +28,7 @@
 
 RCT_EXPORT_MODULE();
 
-- (UIView *)view
+- (RCTUIView *)view // TODO(macOS ISS#2323203)
 {
   return [FlexibleSizeExampleView new];
 }
@@ -60,9 +65,13 @@ RCT_EXPORT_MODULE();
 #ifndef TARGET_OS_TV
     _currentSizeTextView.editable = NO;
 #endif
+#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
     _currentSizeTextView.text = @"Resizable view has not been resized yet";
-    _currentSizeTextView.textColor = [UIColor blackColor];
-    _currentSizeTextView.backgroundColor = [UIColor whiteColor];
+#else // [TODO(macOS ISS#2323203)
+    _currentSizeTextView.string = @"Resizable view has not been resized yet";
+#endif // ]TODO(macOS ISS#2323203)
+    _currentSizeTextView.textColor = [RCTUIColor blackColor]; // TODO(macOS ISS#2323203)
+    _currentSizeTextView.backgroundColor = [RCTUIColor whiteColor]; // TODO(macOS ISS#2323203)
     _currentSizeTextView.font = [UIFont boldSystemFontOfSize:10];
 
     _resizableRootView.delegate = self;
@@ -82,7 +91,8 @@ RCT_EXPORT_MODULE();
 }
 
 
-- (NSArray<UIView<RCTComponent> *> *)reactSubviews
+- (NSArray<RCTUIView<RCTComponent> *> *)reactSubviews // TODO(macOS ISS#2323203)
+
 {
   // this is to avoid unregistering our RCTRootView when the component is removed from RN hierarchy
   (void)[super reactSubviews];
@@ -99,10 +109,20 @@ RCT_EXPORT_MODULE();
 
   if (!_sizeUpdated) {
     _sizeUpdated = TRUE;
-    _currentSizeTextView.text = [NSString stringWithFormat:@"RCTRootViewDelegate: content with initially unknown size has appeared, updating root view's size so the content fits."];
+#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
+    _currentSizeTextView.text =
+#else // [TODO(macOS ISS#2323203)
+    _currentSizeTextView.string =
+#endif // ]TODO(macOS ISS#2323203)
+      [NSString stringWithFormat:@"RCTRootViewDelegate: content with initially unknown size has appeared, updating root view's size so the content fits."];
 
   } else {
-    _currentSizeTextView.text = [NSString stringWithFormat:@"RCTRootViewDelegate: content size has been changed to (%ld, %ld), updating root view's size.",
+    #if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
+        _currentSizeTextView.text =
+    #else // [TODO(macOS ISS#2323203)
+        _currentSizeTextView.string =
+    #endif // ]TODO(macOS ISS#2323203)
+      [NSString stringWithFormat:@"RCTRootViewDelegate: content size has been changed to (%ld, %ld), updating root view's size.",
                                  (long)newFrame.size.width,
                                  (long)newFrame.size.height];
 

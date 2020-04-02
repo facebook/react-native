@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -16,17 +16,17 @@ const ComponentExamples: Array<RNTesterExample> = [
   {
     key: 'ActivityIndicatorExample',
     module: require('./ActivityIndicatorExample'),
-    supportsTVOS: false,
+    supportsTVOS: true,
   },
   {
     key: 'ARTExample',
     module: require('./ARTExample'),
-    supportsTVOS: false,
+    supportsTVOS: true,
   },
   {
     key: 'ButtonExample',
     module: require('./ButtonExample'),
-    supportsTVOS: false,
+    supportsTVOS: true,
   },
   {
     key: 'DarkModeExample',
@@ -41,26 +41,52 @@ const ComponentExamples: Array<RNTesterExample> = [
   {
     key: 'FlatListExample',
     module: require('./FlatListExample'),
-    supportsTVOS: false,
+    supportsTVOS: true,
   },
+  // [TODO(OSS Candidate ISS#2710739)
   {
     key: 'FocusEvents',
     module: require('./FocusEventsExample'),
     supportsTVOS: true,
-  },
+  }, // ]TODO(OSS Candidate ISS#2710739)
   {
     key: 'ImageExample',
     module: require('./ImageExample'),
+    supportsTVOS: true,
+  },
+  {
+    key: 'InputAccessoryViewExample',
+    module: require('./InputAccessoryViewExample'),
+    supportsTVOS: true,
+  },
+  {
+    key: 'KeyboardAvoidingViewExample',
+    module: require('./KeyboardAvoidingViewExample'),
     supportsTVOS: false,
   },
   {
     key: 'LayoutEventsExample',
     module: require('./LayoutEventsExample'),
-    supportsTVOS: false,
+    supportsTVOS: true,
   },
+  {
+    key: 'MaskedViewExample',
+    module: require('./MaskedViewExample'),
+    supportsTVOS: true,
+  },
+  /*  {
+    key: 'ModalExample',
+    module: require('./ModalExample'),
+    supportsTVOS: true,
+  }, */
   {
     key: 'MultiColumnExample',
     module: require('./MultiColumnExample'),
+    supportsTVOS: true,
+  },
+  {
+    key: 'NewAppScreenExample',
+    module: require('./NewAppScreenExample'),
     supportsTVOS: false,
   },
   {
@@ -68,14 +94,44 @@ const ComponentExamples: Array<RNTesterExample> = [
     module: require('./PickerExample'),
     supportsTVOS: false,
   },
+  /*  {
+    key: 'PickerIOSExample',
+    module: require('./PickerIOSExample'),
+    supportsTVOS: false,
+  }, */
+  {
+    key: 'ProgressViewIOSExample',
+    module: require('./ProgressViewIOSExample'),
+    supportsTVOS: true,
+  },
+  {
+    key: 'RefreshControlExample',
+    module: require('./RefreshControlExample'),
+    supportsTVOS: false,
+  },
+  {
+    key: 'ScrollViewSimpleExample',
+    module: require('./ScrollViewSimpleExample'),
+    supportsTVOS: true,
+  },
+  {
+    key: 'SafeAreaViewExample',
+    module: require('./SafeAreaViewExample'),
+    supportsTVOS: true,
+  },
   {
     key: 'ScrollViewExample',
     module: require('./ScrollViewExample'),
-    supportsTVOS: false,
+    supportsTVOS: true,
   },
   {
     key: 'SectionListExample',
     module: require('./SectionListExample'),
+    supportsTVOS: true,
+  },
+  {
+    key: 'SegmentedControlIOSExample',
+    module: require('./SegmentedControlIOSExample'),
     supportsTVOS: false,
   },
   {
@@ -83,6 +139,11 @@ const ComponentExamples: Array<RNTesterExample> = [
     module: require('./SliderExample'),
     supportsTVOS: false,
   },
+  /*  {  Depends on Modal which is not implemented for macOS
+    key: 'StatusBarExample',
+    module: require('./StatusBarExample'),
+    supportsTVOS: false,
+  }, */
   {
     key: 'SwitchExample',
     module: require('./SwitchExample'),
@@ -91,17 +152,17 @@ const ComponentExamples: Array<RNTesterExample> = [
   {
     key: 'TextExample',
     module: require('./TextExample.macos'),
-    supportsTVOS: false,
+    supportsTVOS: true,
   },
   {
     key: 'TextInputExample',
     module: require('./TextInputExample.macos'),
-    supportsTVOS: false,
+    supportsTVOS: true,
   },
   {
     key: 'TouchableExample',
     module: require('./TouchableExample'),
-    supportsTVOS: false,
+    supportsTVOS: true,
   },
   {
     key: 'TransparentHitTestExample',
@@ -111,44 +172,64 @@ const ComponentExamples: Array<RNTesterExample> = [
   {
     key: 'ViewExample',
     module: require('./ViewExample'),
-    supportsTVOS: false,
+    supportsTVOS: true,
   },
 ];
 
 const APIExamples: Array<RNTesterExample> = [
   {
+    key: 'AccessibilityExample',
+    module: require('./AccessibilityExample'),
+    supportsTVOS: false,
+  },
+  {
+    key: 'AccessibilityIOSExample',
+    module: require('./AccessibilityIOSExample'),
+    supportsTVOS: false,
+  },
+  {
     key: 'ActionSheetIOSExample',
     module: require('./ActionSheetMacOSExample'),
-    supportsTVOS: false,
+    supportsTVOS: true,
   },
   {
     key: 'AnimatedExampleMacOS',
     module: require('./AnimatedExampleMacOS'),
-    supportsTVOS: false,
+    supportsTVOS: true,
   },
   {
     key: 'AlertExample',
     module: require('./AlertExample').AlertExample,
-    supportsTVOS: false,
+    supportsTVOS: true,
+  },
+  {
+    key: 'AnExApp',
+    module: require('./AnimatedGratuitousApp/AnExApp'),
+    supportsTVOS: true,
   },
   {
     key: 'AlertMacOSExample',
     module: require('./AlertMacOSExample'),
-    supportsTVOS: false,
+    supportsTVOS: true,
   },
   {
     key: 'AsyncStorageExample',
     module: require('./AsyncStorageExample'),
-    supportsTVOS: false,
+    supportsTVOS: true,
   },
   {
     key: 'BorderExample',
     module: require('./BorderExample'),
-    supportsTVOS: false,
+    supportsTVOS: true,
   },
   {
     key: 'BoxShadowExample',
     module: require('./BoxShadowExample'),
+    supportsTVOS: true,
+  },
+  {
+    key: 'CameraRollExample',
+    module: require('./CameraRollExample'),
     supportsTVOS: false,
   },
   {
@@ -157,23 +238,43 @@ const APIExamples: Array<RNTesterExample> = [
     supportsTVOS: false,
   },
   {
+    key: 'CrashExample',
+    module: require('./CrashExample'),
+    supportsTVOS: false,
+  },
+  {
+    key: 'Dimensions',
+    module: require('./DimensionsExample'),
+    supportsTVOS: true,
+  },
+  {
+    key: 'ImageEditingExample',
+    module: require('./ImageEditingExample'),
+    supportsTVOS: false,
+  },
+  {
     key: 'LayoutAnimationExample',
     module: require('./LayoutAnimationExample'),
-    supportsTVOS: false,
+    supportsTVOS: true,
   },
   {
     key: 'LayoutExample',
     module: require('./LayoutExample'),
-    supportsTVOS: false,
+    supportsTVOS: true,
   },
   {
     key: 'LinkingExample',
     module: require('./LinkingExample'),
-    supportsTVOS: false,
+    supportsTVOS: true,
   },
   {
     key: 'NativeAnimationsExample',
     module: require('./NativeAnimationsExample'),
+    supportsTVOS: true,
+  },
+  {
+    key: 'OrientationChangeExample',
+    module: require('./OrientationChangeExample'),
     supportsTVOS: false,
   },
   {
@@ -192,25 +293,60 @@ const APIExamples: Array<RNTesterExample> = [
     supportsTVOS: false,
   },
   {
+    key: 'RCTRootViewIOSExample',
+    module: require('./RCTRootViewIOSExample'),
+    supportsTVOS: true,
+  },
+  {
     key: 'RTLExample',
     module: require('./RTLExample'),
-    supportsTVOS: false,
+    supportsTVOS: true,
+  },
+  {
+    key: 'ShareExample',
+    module: require('./ShareExample'),
+    supportsTVOS: true,
+  },
+  {
+    key: 'SnapshotExample',
+    module: require('./SnapshotExample'),
+    supportsTVOS: true,
   },
   {
     key: 'TimerExample',
     module: require('./TimerExample'),
-    supportsTVOS: false,
+    supportsTVOS: true,
   },
   {
     key: 'TransformExample',
     module: require('./TransformExample'),
+    supportsTVOS: true,
+  },
+  /*  {
+    key: 'TurboModuleExample',
+    module: require('./TurboModuleExample'),
     supportsTVOS: false,
   },
   {
+    key: 'TVEventHandlerExample',
+    module: require('./TVEventHandlerExample'),
+    supportsTVOS: true,
+  },
+  {
+    key: 'VibrationExample',
+    module: require('./VibrationExample'),
+    supportsTVOS: false,
+  }, */
+  {
     key: 'WebSocketExample',
     module: require('./WebSocketExample'),
-    supportsTVOS: false,
+    supportsTVOS: true,
   },
+  /*  {
+    key: 'XHRExample',
+    module: require('./XHRExample'),
+    supportsTVOS: true,
+  }, */
 ];
 
 const Modules = {};

@@ -12,15 +12,14 @@
 
 'use strict';
 
-var React = require('React');
-var StyleSheet = require('StyleSheet');
+const React = require('react');
+const StyleSheet = require('../../StyleSheet/StyleSheet');
 
-var requireNativeComponent = require('requireNativeComponent');
+const RCTProgressViewNativeComponent = require('./RCTProgressViewNativeComponent');
 
-import type {NativeComponent} from 'ReactNative';
-import type {ImageSource} from 'ImageSource';
-import type {ColorValue} from 'StyleSheetTypes';
-import type {ViewProps} from 'ViewPropTypes';
+import type {ImageSource} from '../../Image/ImageSource';
+import type {ColorValue} from '../../StyleSheet/StyleSheetTypes';
+import type {ViewProps} from '../View/ViewPropTypes';
 
 type Props = $ReadOnly<{|
   ...ViewProps,
@@ -56,20 +55,14 @@ type Props = $ReadOnly<{|
   trackImage?: ?ImageSource,
 |}>;
 
-type NativeProgressViewIOS = Class<NativeComponent<Props>>;
-
-const RCTProgressView = ((requireNativeComponent(
-  'RCTProgressView',
-): any): NativeProgressViewIOS);
-
 /**
  * Use `ProgressViewIOS` to render a UIProgressView on iOS.
  */
 const ProgressViewIOS = (
   props: Props,
-  forwardedRef?: ?React.Ref<typeof RCTProgressView>,
+  forwardedRef?: ?React.Ref<typeof RCTProgressViewNativeComponent>,
 ) => (
-  <RCTProgressView
+  <RCTProgressViewNativeComponent
     {...props}
     style={[styles.progressView, props.style]}
     ref={forwardedRef}
@@ -82,11 +75,9 @@ const styles = StyleSheet.create({
   },
 });
 
-// $FlowFixMe - TODO T29156721 `React.forwardRef` is not defined in Flow, yet.
 const ProgressViewIOSWithRef = React.forwardRef(ProgressViewIOS);
 
 /* $FlowFixMe(>=0.89.0 site=react_native_ios_fb) This comment suppresses an
  * error found when Flow v0.89 was deployed. To see the error, delete this
  * comment and run Flow. */
-// $FlowFixMe
-module.exports = (ProgressViewIOSWithRef: NativeProgressViewIOS);
+module.exports = (ProgressViewIOSWithRef: typeof RCTProgressViewNativeComponent);

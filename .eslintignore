@@ -5,6 +5,8 @@
 Libraries/vendor/**/*
 Libraries/Renderer/*
 packages/*/node_modules
+packages/*/lib
+packages/*/lib-commonjs
 pr-inactivity-bookmarklet.js
 question-bookmarklet.js
 flow/
