@@ -10,7 +10,8 @@
       "build": "just-scripts build",
       "clean": "just-scripts clean",
       "lint": "just-scripts lint",
-      "lint:fix": "just-scripts lint:fix"
+      "lint:fix": "just-scripts lint:fix",
+      "prepublishOnly": "npm run build"
     },
     "bin": {
       "react-native-macos-init": "./bin.js"

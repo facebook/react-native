@@ -14,7 +14,7 @@ const {
  * @param  {String} name       name of the root JS module for this app
  * @param  {Object} options    command line options container
  */
-function generateWindows (projectDir, name, options) {
+function generateMacOS (projectDir, name, options) {
   if (!fs.existsSync(projectDir)) {
     fs.mkdirSync(projectDir);
   }
@@ -29,4 +29,4 @@ function generateWindows (projectDir, name, options) {
   );
 }
 
-module.exports = generateWindows;
+module.exports = generateMacOS;
