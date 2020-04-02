@@ -920,6 +920,7 @@ public class UIImplementation {
       }
     }
     cssNode.markUpdateSeen();
+    mNativeViewHierarchyOptimizer.onViewUpdatesCompleted(cssNode);
   }
 
   public void addUIBlock(UIBlock block) {

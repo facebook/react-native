@@ -446,4 +446,14 @@ public class NativeViewHierarchyOptimizer {
     }
     return true;
   }
+
+  /**
+   * Called when all the view updates of {@link ReactShadowNode} received as a parameter were
+   * processed.
+   */
+  void onViewUpdatesCompleted(ReactShadowNode cssNode) {
+    // cssNode is not being used, but it is passed as a parameter in case this is required in the
+    // future.
+    mTagsWithLayoutVisited.clear();
+  }
 }
