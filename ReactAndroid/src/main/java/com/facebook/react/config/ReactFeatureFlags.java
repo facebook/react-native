@@ -16,9 +16,6 @@ package com.facebook.react.config;
  */
 public class ReactFeatureFlags {
 
-  /** Whether we should load a specific view manager immediately or when it is accessed by JS */
-  public static boolean lazilyLoadViewManagers = false;
-
   /**
    * Should this application use TurboModules? If yes, then any module that inherits {@link
    * com.facebook.react.turbomodule.core.interfaces.TurboModule} will NOT be passed in to C++
