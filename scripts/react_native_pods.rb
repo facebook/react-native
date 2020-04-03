@@ -63,6 +63,23 @@ def use_flipper!(version = '~> 0.33.1')
   pod 'FlipperKit/SKIOSNetworkPlugin', version, :configuration => 'Debug'
   pod 'FlipperKit/FlipperKitUserDefaultsPlugin', version, :configuration => 'Debug'
   pod 'FlipperKit/FlipperKitReactPlugin', version, :configuration => 'Debug'
+
+  # List all transitive dependencies for FlipperKit pods
+  # to avoid them being linked in Release builds
+  pod 'Flipper', version, :configuration => 'Debug'
+  pod 'Flipper-DoubleConversion', '1.1.7', :configuration => 'Debug'
+  pod 'Flipper-Folly', '~> 2.1', :configuration => 'Debug'
+  pod 'Flipper-Glog', '0.3.6', :configuration => 'Debug'
+  pod 'Flipper-PeerTalk', '~> 0.0.4', :configuration => 'Debug'
+  pod 'Flipper-RSocket', '~> 1.0', :configuration => 'Debug'
+  pod 'FlipperKit/Core', version, :configuration => 'Debug'
+  pod 'FlipperKit/CppBridge', version, :configuration => 'Debug'
+  pod 'FlipperKit/FBCxxFollyDynamicConvert', version, :configuration => 'Debug'
+  pod 'FlipperKit/FBDefines', version, :configuration => 'Debug'
+  pod 'FlipperKit/FKPortForwarding', version, :configuration => 'Debug'
+  pod 'FlipperKit/FlipperKitHighlightOverlay', version, :configuration => 'Debug'
+  pod 'FlipperKit/FlipperKitLayoutTextSearchable', version, :configuration => 'Debug'
+  pod 'FlipperKit/FlipperKitNetworkPlugin', version, :configuration => 'Debug'
 end
 
 # Post Install processing for Flipper
