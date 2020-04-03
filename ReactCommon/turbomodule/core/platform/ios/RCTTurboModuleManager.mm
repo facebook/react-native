@@ -159,9 +159,11 @@ static Class getFallbackClassFromName(const char *name)
 
   // If RCTTurboModule supports creating its own C++ TurboModule object,
   // allow it to do so.
-  if ([module respondsToSelector:@selector(getTurboModuleWithJsInvoker:perfLogger:)]) {
+  if ([module respondsToSelector:@selector(getTurboModuleWithJsInvoker:nativeInvoker:perfLogger:)]) {
     [_performanceLogger getTurboModuleFromRCTTurboModuleStart:moduleName];
-    auto turboModule = [module getTurboModuleWithJsInvoker:_jsInvoker perfLogger:_performanceLogger];
+    auto turboModule = [module getTurboModuleWithJsInvoker:_jsInvoker
+                                             nativeInvoker:nullptr
+                                                perfLogger:_performanceLogger];
     [_performanceLogger getTurboModuleFromRCTTurboModuleEnd:moduleName];
     assert(turboModule != nullptr);
     _turboModuleCache.insert({moduleName, turboModule});

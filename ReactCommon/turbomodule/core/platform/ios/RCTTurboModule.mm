@@ -638,6 +638,7 @@ ObjCTurboModule::ObjCTurboModule(
     const std::string &name,
     id<RCTTurboModule> instance,
     std::shared_ptr<CallInvoker> jsInvoker,
+    std::shared_ptr<CallInvoker> nativeInvoker,
     id<RCTTurboModulePerformanceLogger> perfLogger)
     : TurboModule(name, jsInvoker), instance_(instance), performanceLogger_(perfLogger)
 {
