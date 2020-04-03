@@ -322,6 +322,10 @@ std::shared_ptr<CallInvoker> NativeToJsBridge::getDecoratedNativeCallInvoker(
       }
       m_nativeInvoker->invokeAsync(std::move(func));
     }
+
+    void invokeSync(std::function<void()> &&func) override {
+      m_nativeInvoker->invokeSync(std::move(func));
+    }
   };
 
   return std::make_shared<NativeCallInvoker>(m_delegate, nativeInvoker);

@@ -308,6 +308,9 @@ CatalystInstanceImpl::getNativeCallInvokerHolder() {
       void invokeAsync(std::function<void()> &&work) override {
         messageQueueThread_->runOnQueue(std::move(work));
       }
+      void invokeSync(std::function<void()> &&work) override {
+        messageQueueThread_->runOnQueueSync(std::move(work));
+      }
     };
 
     std::shared_ptr<CallInvoker> nativeInvoker =

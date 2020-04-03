@@ -161,6 +161,7 @@ class RN_EXPORT Instance {
     void setNativeToJsBridgeAndFlushCalls(
         std::weak_ptr<NativeToJsBridge> nativeToJsBridge);
     void invokeAsync(std::function<void()> &&work) override;
+    void invokeSync(std::function<void()> &&work) override;
   };
 
   std::shared_ptr<JSCallInvoker> jsCallInvoker_ =

@@ -24,6 +24,7 @@
 #include <glog/logging.h>
 
 #include <condition_variable>
+#include <exception>
 #include <fstream>
 #include <memory>
 #include <mutex>
@@ -245,6 +246,12 @@ void Instance::JSCallInvoker::setNativeToJsBridgeAndFlushCalls(
   }
 }
 
+void Instance::JSCallInvoker::invokeSync(std::function<void()> &&work) {
+  // TODO: Replace JS Callinvoker with RuntimeExecutor.
+  throw std::runtime_error(
+      "Synchronous native -> JS calls are currently not supported.");
+}
+
 void Instance::JSCallInvoker::invokeAsync(std::function<void()> &&work) {
   std::lock_guard<std::mutex> guard(m_mutex);
 
@@ -258,9 +265,9 @@ void Instance::JSCallInvoker::invokeAsync(std::function<void()> &&work) {
    * 3. The JS CallInvoker requires the NativeToJsBridge, which is created on
    *    the JS thread in Instance::initializeBridge.
    *
-   * Therefore, although we don't anyone to call invokeAsync before the JS
-   * bundle is executed, this buffering is implemented anyways to ensure
-   * that work isn't discarded.
+   * Therefore, although we don't call invokeAsync before the JS bundle is
+   * executed, this buffering is implemented anyways to ensure that work
+   * isn't discarded.
    */
   if (m_shouldBuffer) {
     m_workBuffer.push_back(std::move(work));
