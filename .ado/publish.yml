@@ -14,8 +14,43 @@ trigger:
 pr: none
 
 jobs:
-  - job: RNGithubPublish
-    displayName: React-Native GitHub Publish
+  - job: RNGithubNpmJSPublish
+    displayName: React-Native GitHub Publish to npmjs.org
+    pool:
+      vmImage: vs2017-win2016
+    timeoutInMinutes: 90 # how long to run the job before automatically cancelling
+    cancelTimeoutInMinutes: 5 # how much time to give 'run always even if cancelled tasks' before killing them
+    steps:
+      - checkout: self # self represents the repo where the initial Pipelines YAML file was found
+        clean: true # whether to fetch clean each time
+        # fetchDepth: 2 # the depth of commits to ask Git to fetch
+        lfs: false # whether to download Git-LFS files
+        submodules: recursive # set to 'true' for a single level of submodules or 'recursive' to get submodules of submodules
+        persistCredentials: true # set to 'true' to leave the OAuth token in the Git config after the initial fetch
+
+      - task: CmdLine@2
+        displayName: npm install
+        inputs:
+          script: npm install
+
+      - task: CmdLine@2
+        displayName: Bump package version
+        inputs:
+          script: node .ado/bumpFileVersions.js
+
+      - task: CmdLine@2
+        displayName: "Prepare package.json for npm publishing as react-native-macos"
+        inputs:
+          script: node .ado/renamePackageToMac.js
+
+      - task: Npm@1
+        displayName: "Publish react-native-macos to npmjs.org"
+        inputs:
+          command: 'publish'
+          publishEndpoint: 'npmjs'
+
+  - job: RNGithubOfficePublish
+    displayName: React-Native GitHub Publish to Office
     pool:
       vmImage: vs2017-win2016
     timeoutInMinutes: 90 # how long to run the job before automatically cancelling
