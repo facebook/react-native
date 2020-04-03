@@ -236,9 +236,10 @@ RCT_EXPORT_METHOD(addImageFromBase64:(NSString *)base64String
 
 - (std::shared_ptr<facebook::react::TurboModule>)
     getTurboModuleWithJsInvoker:(std::shared_ptr<facebook::react::CallInvoker>)jsInvoker
+                  nativeInvoker:(std::shared_ptr<facebook::react::CallInvoker>)nativeInvoker
                      perfLogger:(id<RCTTurboModulePerformanceLogger>)perfLogger
 {
-  return std::make_shared<facebook::react::NativeImageStoreSpecJSI>(self, jsInvoker, perfLogger);
+  return std::make_shared<facebook::react::NativeImageStoreSpecJSI>(self, jsInvoker, nativeInvoker, perfLogger);
 }
 
 @end

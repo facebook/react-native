@@ -477,9 +477,10 @@ RCT_EXPORT_METHOD(setHotLoadingEnabled : (BOOL)enabled)
 
 - (std::shared_ptr<facebook::react::TurboModule>)
     getTurboModuleWithJsInvoker:(std::shared_ptr<facebook::react::CallInvoker>)jsInvoker
+                  nativeInvoker:(std::shared_ptr<facebook::react::CallInvoker>)nativeInvoker
                      perfLogger:(id<RCTTurboModulePerformanceLogger>)perfLogger
 {
-  return std::make_shared<facebook::react::NativeDevMenuSpecJSI>(self, jsInvoker, perfLogger);
+  return std::make_shared<facebook::react::NativeDevMenuSpecJSI>(self, jsInvoker, nativeInvoker, perfLogger);
 }
 
 @end
@@ -519,9 +520,10 @@ RCT_EXPORT_METHOD(setHotLoadingEnabled : (BOOL)enabled)
 
 - (std::shared_ptr<facebook::react::TurboModule>)
     getTurboModuleWithJsInvoker:(std::shared_ptr<facebook::react::CallInvoker>)jsInvoker
+                  nativeInvoker:(std::shared_ptr<facebook::react::CallInvoker>)nativeInvoker
                      perfLogger:(id<RCTTurboModulePerformanceLogger>)perfLogger
 {
-  return std::make_shared<facebook::react::NativeDevMenuSpecJSI>(self, jsInvoker, perfLogger);
+  return std::make_shared<facebook::react::NativeDevMenuSpecJSI>(self, jsInvoker, nativeInvoker, perfLogger);
 }
 
 @end
