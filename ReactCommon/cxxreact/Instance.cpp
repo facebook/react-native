@@ -228,9 +228,9 @@ std::shared_ptr<CallInvoker> Instance::getJSCallInvoker() {
   return std::static_pointer_cast<CallInvoker>(jsCallInvoker_);
 }
 
-std::shared_ptr<CallInvoker> Instance::getNativeCallInvoker(
-    std::function<void(std::function<void()> &&work)> &&scheduleWork) {
-  return nativeToJsBridge_->getNativeCallInvoker(std::move(scheduleWork));
+std::shared_ptr<CallInvoker> Instance::getDecoratedNativeCallInvoker(
+    std::shared_ptr<CallInvoker> nativeInvoker) {
+  return nativeToJsBridge_->getDecoratedNativeCallInvoker(nativeInvoker);
 }
 
 void Instance::JSCallInvoker::setNativeToJsBridgeAndFlushCalls(

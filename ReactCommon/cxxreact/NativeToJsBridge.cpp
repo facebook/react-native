@@ -302,30 +302,29 @@ void NativeToJsBridge::runOnExecutorQueue(
       });
 }
 
-std::shared_ptr<CallInvoker> NativeToJsBridge::getNativeCallInvoker(
-    std::function<void(std::function<void()> &&work)> &&scheduleWork) {
+std::shared_ptr<CallInvoker> NativeToJsBridge::getDecoratedNativeCallInvoker(
+    std::shared_ptr<CallInvoker> nativeInvoker) {
   class NativeCallInvoker : public CallInvoker {
    private:
     std::weak_ptr<JsToNativeBridge> m_jsToNativeBridge;
-    std::function<void(std::function<void()> &&work)> m_scheduleWork;
+    std::shared_ptr<CallInvoker> m_nativeInvoker;
 
    public:
     NativeCallInvoker(
         std::weak_ptr<JsToNativeBridge> jsToNativeBridge,
-        std::function<void(std::function<void()> &&work)> &&scheduleWork)
+        std::shared_ptr<CallInvoker> nativeInvoker)
         : m_jsToNativeBridge(jsToNativeBridge),
-          m_scheduleWork(std::move(scheduleWork)) {}
+          m_nativeInvoker(nativeInvoker) {}
 
     void invokeAsync(std::function<void()> &&func) override {
       if (auto strongJsToNativeBridge = m_jsToNativeBridge.lock()) {
         strongJsToNativeBridge->recordTurboModuleAsyncMethodCall();
       }
-      m_scheduleWork(std::move(func));
+      m_nativeInvoker->invokeAsync(std::move(func));
     }
   };
 
-  return std::make_shared<NativeCallInvoker>(
-      m_delegate, std::move(scheduleWork));
+  return std::make_shared<NativeCallInvoker>(m_delegate, nativeInvoker);
 }
 
 } // namespace react

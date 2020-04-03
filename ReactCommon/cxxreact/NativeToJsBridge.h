@@ -103,8 +103,8 @@ class NativeToJsBridge {
    * Native CallInvoker is used by TurboModules to schedule work on the
    * NativeModule thread(s).
    */
-  std::shared_ptr<CallInvoker> getNativeCallInvoker(
-      std::function<void(std::function<void()> &&work)> &&scheduleWork);
+  std::shared_ptr<CallInvoker> getDecoratedNativeCallInvoker(
+      std::shared_ptr<CallInvoker> nativeInvoker);
 
  private:
   // This is used to avoid a race condition where a proxyCallback gets queued

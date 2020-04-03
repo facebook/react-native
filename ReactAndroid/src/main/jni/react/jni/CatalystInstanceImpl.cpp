@@ -297,12 +297,27 @@ CatalystInstanceImpl::getJSCallInvokerHolder() {
 jni::alias_ref<CallInvokerHolder::javaobject>
 CatalystInstanceImpl::getNativeCallInvokerHolder() {
   if (!nativeCallInvokerHolder_) {
+    class NativeThreadCallInvoker : public CallInvoker {
+     private:
+      std::shared_ptr<JMessageQueueThread> messageQueueThread_;
+
+     public:
+      NativeThreadCallInvoker(
+          std::shared_ptr<JMessageQueueThread> messageQueueThread)
+          : messageQueueThread_(messageQueueThread) {}
+      void invokeAsync(std::function<void()> &&work) override {
+        messageQueueThread_->runOnQueue(std::move(work));
+      }
+    };
+
+    std::shared_ptr<CallInvoker> nativeInvoker =
+        std::make_shared<NativeThreadCallInvoker>(moduleMessageQueue_);
+
+    std::shared_ptr<CallInvoker> decoratedNativeInvoker =
+        instance_->getDecoratedNativeCallInvoker(nativeInvoker);
+
     nativeCallInvokerHolder_ = jni::make_global(
-        CallInvokerHolder::newObjectCxxArgs(instance_->getNativeCallInvoker(
-            [moduleMessageQueue =
-                 moduleMessageQueue_](std::function<void()> &&work) {
-              moduleMessageQueue->runOnQueue(std::move(work));
-            })));
+        CallInvokerHolder::newObjectCxxArgs(decoratedNativeInvoker));
   }
 
   return nativeCallInvokerHolder_;
