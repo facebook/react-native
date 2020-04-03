@@ -72,10 +72,10 @@
 <p>In this guide, we will cover different, automated ways to ensure your app works as expected, ranging from static analysis to end-to-end tests.</p>
 <p><img src="/docs/assets/diagram_testing.svg" alt="Testing is a cycle of fixing, testing, and either passing to release or failing back into testing." /></p>
 <h2><a class="anchor" aria-hidden="true" id="why-test"></a><a href="#why-test" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Why Test</h2>
-<p>We're humans, and humans make mistakes. Testing is important because it helps you uncover these mistakes or verifies that your code is working. Perhaps even more importantly, testing ensures that your code continues to work in the future as you add new features, refactor the existing ones, or upgrade major dependencies of your project.</p>
+<p>We're humans, and humans make mistakes. Testing is important because it helps you uncover these mistakes and verifies that your code is working. Perhaps even more importantly, testing ensures that your code continues to work in the future as you add new features, refactor the existing ones, or upgrade major dependencies of your project.</p>
 <p>There is more value in testing than you might realize. One of the best ways to fix a bug in your code is to write a failing test that exposes it. Then when you fix the bug and re-run the test, if it passes it means the bug is fixed, never reintroduced into the code base.</p>
 <p>Tests can also serve as documentation for new people joining your team. For people who have never seen a codebase before, reading tests can help them understand how the existing code works.</p>
-<p>Last but not least, more automated testing means less time spent with manual <abbr title="Quality Assurance">QA</abbr>, freeing up valuable development time.</p>
+<p>Last but not least, more automated testing means less time spent with manual <abbr title="Quality Assurance">QA</abbr>, freeing up valuable time.</p>
 <h2><a class="anchor" aria-hidden="true" id="static-analysis"></a><a href="#static-analysis" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Static Analysis</h2>
 <p>The first step to improve your code quality is to start using static analysis tools. Static analysis checks your code for errors as you write it, but without running any of that code.</p>
 <ul>
@@ -89,7 +89,7 @@
 <p>To make your app more testable, start by separating the view part of your app—your React components—from your business logic and app state (regardless of whether you use Redux, MobX or other solutions). This way, you can keep your business logic testing—which shouldn’t rely on your React components—independent of the components themselves, whose job is primarily rendering your app’s UI!</p>
 <p>Theoretically, you could go so far as to move all logic and data fetching out of your components. This way your components would be solely dedicated to rendering. Your state would be entirely independent of your components. Your app’s logic would work without any React components at all!</p>
 <blockquote>
-<p>We encourage you to further explore the topic of testabile coding in other learning resources.</p>
+<p>We encourage you to further explore the topic of testable code in other learning resources.</p>
 </blockquote>
 <h2><a class="anchor" aria-hidden="true" id="writing-tests"></a><a href="#writing-tests" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Writing Tests</h2>
 <p>After writing testable code, it’s time to write some actual tests! The default template of React Native ships with <a href="https://jestjs.io">Jest</a> testing framework. It includes a preset that's tailored to this environment so you can get productive without tweaking the configuration and mocks straight away—<a href="#mocking">more on mocks</a> shortly. You can use Jest to write all types of tests featured in this guide.</p>
@@ -138,8 +138,9 @@
 <blockquote>
 <p>Please note that the terminology around what integration testing means is not always consistent. Also, the line between what is a unit test and what is an integration test may not always be clear. For this guide, your test falls into &quot;integration testing&quot; if it:</p>
 <ul>
-<li>Uses an external system (such as weather service API)</li>
-<li>Makes a network call to other application</li>
+<li>Combines several modules of your app as described above</li>
+<li>Uses an external system</li>
+<li>Makes a network call to other application (such as the weather service API)</li>
 <li>Does any kind of file or database <abbr title="Input/Output">I/O</abbr></li>
 </ul>
 </blockquote>
@@ -246,7 +247,7 @@
 <p>E2E tests give you the highest possible confidence that part of your app is working. The tradeoffs include:</p>
 <ul>
 <li>writing them is more time consuming compared to the other types of tests</li>
-<li>they can be slower to run</li>
+<li>they are slower to run</li>
 <li>they are more prone to flakiness (a &quot;flaky&quot; test is a test which randomly passes and fails without any change to code)</li>
 </ul>
 <p>Try to cover the vital parts of your app with E2E tests: authentication flow, core functionalities, payments, etc. Use faster JS tests for the non-vital parts of your app. The more tests you add, the higher your confidence, but also, the more time you'll spend maintaining and running them. Consider the tradeoffs and decide what's best for you.</p>
