@@ -210,11 +210,6 @@ struct RCTInstanceCallback : public InstanceCallback {
   return _jsMessageThread;
 }
 
-- (std::shared_ptr<CallInvoker>)jsCallInvoker
-{
-  return _reactInstance ? _reactInstance->getJSCallInvoker() : nullptr;
-}
-
 - (BOOL)isInspectable
 {
   return _reactInstance ? _reactInstance->isInspectable() : NO;
@@ -1448,6 +1443,18 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithBundleURL
       jsInvoker->invokeAsync(std::move(retainedFunc));
     }
   }];
+}
+
+#pragma mark - RCTBridge (RCTTurboModule)
+
+- (std::shared_ptr<CallInvoker>)jsCallInvoker
+{
+  return _reactInstance ? _reactInstance->getJSCallInvoker() : nullptr;
+}
+
+- (std::shared_ptr<CallInvoker>)decorateNativeCallInvoker:(std::shared_ptr<CallInvoker>)nativeInvoker
+{
+  return _reactInstance ? _reactInstance->getDecoratedNativeCallInvoker(nativeInvoker) : nullptr;
 }
 
 @end

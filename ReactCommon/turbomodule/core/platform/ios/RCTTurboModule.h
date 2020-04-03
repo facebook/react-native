@@ -221,6 +221,8 @@ class JSI_EXPORT ObjCTurboModule : public TurboModule {
  *
  * TODO: Consolidate this extension with the one in RCTSurfacePresenter.
  */
-@interface RCTBridge ()
+@interface RCTBridge (RCTTurboModule)
 - (std::shared_ptr<facebook::react::CallInvoker>)jsCallInvoker;
+- (std::shared_ptr<facebook::react::CallInvoker>)decorateNativeCallInvoker:
+    (std::shared_ptr<facebook::react::CallInvoker>)nativeInvoker;
 @end
