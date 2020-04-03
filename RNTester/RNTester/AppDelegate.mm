@@ -175,8 +175,10 @@
 - (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:(const std::string &)name
                                                        instance:(id<RCTTurboModule>)instance
                                                       jsInvoker:(std::shared_ptr<facebook::react::CallInvoker>)jsInvoker
+                                                      nativeInvoker:(std::shared_ptr<facebook::react::CallInvoker>)nativeInvoker
+                                                      perfLogger:(id<RCTTurboModulePerformanceLogger>)perfLogger
 {
-  return facebook::react::RNTesterTurboModuleProvider(name, instance, jsInvoker);
+  return facebook::react::RNTesterTurboModuleProvider(name, instance, jsInvoker, nativeInvoker, perfLogger);
 }
 
 - (id<RCTTurboModule>)getModuleInstanceFromClass:(Class)moduleClass

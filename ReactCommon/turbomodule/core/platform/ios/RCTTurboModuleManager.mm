@@ -188,7 +188,11 @@ static Class getFallbackClassFromName(const char *name)
    * Step 2d: Return an exact sub-class of ObjC TurboModule
    */
   [_performanceLogger getTurboModuleFromTMMDelegateStart:moduleName];
-  auto turboModule = [_delegate getTurboModule:moduleName instance:module jsInvoker:_jsInvoker];
+  auto turboModule = [_delegate getTurboModule:moduleName
+                                      instance:module
+                                     jsInvoker:_jsInvoker
+                                 nativeInvoker:nullptr
+                                    perfLogger:_performanceLogger];
   [_performanceLogger getTurboModuleFromTMMDelegateEnd:moduleName];
   if (turboModule != nullptr) {
     _turboModuleCache.insert({moduleName, turboModule});
