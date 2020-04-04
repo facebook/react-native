@@ -34,6 +34,7 @@ function updateVersionsInFiles() {
     pkgJson.version = releaseVersion;
     fs.writeFileSync(pkgJsonPath, JSON.stringify(pkgJson, null, 2));
     console.log(`Updating package.json to version ${releaseVersion}`);
+  
     return {releaseVersion, branchVersionSuffix};
 }
 

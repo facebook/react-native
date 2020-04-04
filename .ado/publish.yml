@@ -49,6 +49,41 @@ jobs:
           command: 'publish'
           publishEndpoint: 'npmjs'
 
+  - job: RNMacOSInitNpmJSPublish
+    displayName: react-native-macos-init Publish to npmjs.org
+    pool:
+      vmImage: vs2017-win2016
+    timeoutInMinutes: 90 # how long to run the job before automatically cancelling
+    cancelTimeoutInMinutes: 5 # how much time to give 'run always even if cancelled tasks' before killing them
+    steps:
+      - checkout: self # self represents the repo where the initial Pipelines YAML file was found
+        clean: true # whether to fetch clean each time
+        # fetchDepth: 2 # the depth of commits to ask Git to fetch
+        lfs: false # whether to download Git-LFS files
+        submodules: recursive # set to 'true' for a single level of submodules or 'recursive' to get submodules of submodules
+        persistCredentials: true # set to 'true' to leave the OAuth token in the Git config after the initial fetch
+
+      - task: CmdLine@2
+        displayName: yarn install
+        inputs:
+          script: |
+            cd packages/react-native-macos-init
+            yarn install
+
+      - task: CmdLine@2
+        displayName: yarn build
+        inputs:
+          script: |
+            cd packages/react-native-macos-init
+            yarn build
+
+      - task: CmdLine@2
+        displayName: "Publish react-native-macos-init to npmjs.org"
+        inputs:
+          script: |
+            cd packages/react-native-macos-init
+            npx --no-install beachball publish --branch origin/$(Build.SourceBranchName) -n $(npmAuthToken) -yes -m "applying package updates ***NO_CI***" --access public
+
   - job: RNGithubOfficePublish
     displayName: React-Native GitHub Publish to Office
     pool:

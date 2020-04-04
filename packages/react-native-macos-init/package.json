@@ -1,42 +1,46 @@
 {
-    "name": "react-native-macos-init",
-    "version": "0.0.9",
-    "description": "CLI to add react-native-macos to an existing react-native project",
-    "main": "index.js",
-    "repository": "https://github.com/microsoft/react-native-macos",
-    "license": "MIT",
-    "private": false,
-    "scripts": {
-      "build": "just-scripts build",
-      "clean": "just-scripts clean",
-      "lint": "just-scripts lint",
-      "lint:fix": "just-scripts lint:fix",
-      "prepublishOnly": "npm run build"
-    },
-    "bin": {
-      "react-native-macos-init": "./bin.js"
-    },
-    "dependencies": {
-      "chalk": "^3",
-      "npm-registry": "^0.1.13",
-      "prompts": "^2.3.0",
-      "find-up": "^4.1.0",
-      "semver": "^7.1.3",
-      "valid-url": "^1.0.9",
-      "yargs": "^15.1.0"
-    },
-    "devDependencies": {
-      "@types/chalk": "^2.2.0",
-      "@types/prompts": "^2.0.3",
-      "@types/semver": "^7.1.0",
-      "@types/valid-url": "^1.0.2",
-      "@types/yargs": "^15.0.3",
-      "just-scripts": "^0.36.1",
-      "typescript": "3.5.3"
-     },
-    "files": [
-      "bin.js",
-      "lib-commonjs",
-      "README.md"
-    ]
-  }
+  "name": "react-native-macos-init",
+  "version": "0.0.0",
+  "description": "CLI to add react-native-macos to an existing react-native project",
+  "main": "index.js",
+  "repository": "https://github.com/microsoft/react-native-macos",
+  "license": "MIT",
+  "private": false,
+  "scripts": {
+    "change": "beachball change",
+    "check": "beachball check",
+    "clean": "just-scripts clean",
+    "beachball:publish": "beachball publish",
+    "build": "just-scripts build",
+    "lint": "just-scripts lint",
+    "lint:fix": "just-scripts lint:fix",
+    "prepublishOnly": "npm run build"
+  },
+  "bin": {
+    "react-native-macos-init": "./bin.js"
+  },
+  "dependencies": {
+    "chalk": "^3",
+    "find-up": "^4.1.0",
+    "npm-registry": "^0.1.13",
+    "prompts": "^2.3.0",
+    "semver": "^7.1.3",
+    "valid-url": "^1.0.9",
+    "yargs": "^15.1.0"
+  },
+  "devDependencies": {
+    "@types/chalk": "^2.2.0",
+    "@types/prompts": "^2.0.3",
+    "@types/semver": "^7.1.0",
+    "@types/valid-url": "^1.0.2",
+    "@types/yargs": "^15.0.3",
+    "beachball": "^1.27.0",
+    "just-scripts": "^0.36.1",
+    "typescript": "3.5.3"
+  },
+  "files": [
+    "bin.js",
+    "lib-commonjs",
+    "README.md"
+  ]
+}
