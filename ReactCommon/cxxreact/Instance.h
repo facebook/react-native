@@ -70,7 +70,7 @@ class RN_EXPORT Instance {
       std::string startupScriptSourceURL,
       bool loadSynchronously);
   bool supportsProfiling();
-  void setGlobalVariable(
+  virtual void setGlobalVariable(
       std::string propName,
       std::unique_ptr<const JSBigString> jsonValue);
   virtual void *getJavaScriptContext();

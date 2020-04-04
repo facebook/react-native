@@ -11,6 +11,9 @@
 #import "MockInstance.hpp"
 #import "SampleCxxModule.hpp"
 
+using folly::dynamic;
+using std::vector;
+
 @interface MockInstanceTests : XCTestCase
 
 @end

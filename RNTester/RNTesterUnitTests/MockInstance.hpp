@@ -14,13 +14,6 @@ class MockInstance : public facebook::react::Instance {
 private:
   std::shared_ptr<std::vector<std::int64_t>> sumCache_;
 
-  void loadApplication(std::unique_ptr<facebook::react::RAMBundleRegistry> bundleRegistry,
-                               std::unique_ptr<const facebook::react::JSBigString> startupScript,
-                               std::string startupScriptSourceURL) override;
-  void loadApplicationSync(std::unique_ptr<facebook::react::RAMBundleRegistry> bundleRegistry,
-                                   std::unique_ptr<const facebook::react::JSBigString> startupScript,
-                                   std::string startupScriptSourceURL) override;
-
 public:
   MockInstance(std::shared_ptr<std::vector<std::int64_t>> sumCache);
 
@@ -33,14 +26,7 @@ public:
 
    void loadScriptFromString(std::unique_ptr<const facebook::react::JSBigString> string,
                                     std::string sourceURL, bool loadSynchronously) override;
-//  static bool isIndexedRAMBundle(const char *sourcePath);
-   void loadRAMBundleFromFile(const std::string& sourcePath,
-                                     const std::string& sourceURL,
-                                     bool loadSynchronously) override;
-   void loadRAMBundle(std::unique_ptr<facebook::react::RAMBundleRegistry> bundleRegistry,
-                             std::unique_ptr<const facebook::react::JSBigString> startupScript,
-                             std::string startupScriptSourceURL, bool loadSynchronously) override;
-//  bool supportsProfiling();
+
    void setGlobalVariable(std::string propName,
                                  std::unique_ptr<const facebook::react::JSBigString> jsonValue) override;
    void *getJavaScriptContext() override;
@@ -52,9 +38,6 @@ public:
 
   // This method is experimental, and may be modified or removed.
    void registerBundle(uint32_t bundleId, const std::string& bundlePath) override;
-
-   const facebook::react::ModuleRegistry &getModuleRegistry() const override;
-   facebook::react::ModuleRegistry &getModuleRegistry() override;
 
    void handleMemoryPressure(int pressureLevel) override;
 };
