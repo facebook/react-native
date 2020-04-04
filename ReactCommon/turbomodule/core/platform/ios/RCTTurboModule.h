@@ -143,6 +143,7 @@ class JSI_EXPORT ObjCTurboModule : public TurboModule {
       size_t count);
 
   id<RCTTurboModule> instance_;
+  std::shared_ptr<CallInvoker> nativeInvoker_;
 
  protected:
   void setMethodArgConversionSelector(NSString *methodName, int argIndex, NSString *fnName);

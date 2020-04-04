@@ -30,6 +30,41 @@ using namespace facebook;
  */
 static char kAssociatedMethodQueueKey;
 
+namespace {
+class MethodQueueNativeCallInvoker : public facebook::react::CallInvoker {
+ private:
+  dispatch_queue_t methodQueue_;
+
+ public:
+  MethodQueueNativeCallInvoker(dispatch_queue_t methodQueue) : methodQueue_(methodQueue) {}
+  void invokeAsync(std::function<void()> &&work) override
+  {
+    if (methodQueue_ == RCTJSThread) {
+      work();
+      return;
+    }
+
+    __block auto retainedWork = std::move(work);
+    dispatch_async(methodQueue_, ^{
+      retainedWork();
+    });
+  }
+
+  void invokeSync(std::function<void()> &&work) override
+  {
+    if (methodQueue_ == RCTJSThread) {
+      work();
+      return;
+    }
+
+    __block auto retainedWork = std::move(work);
+    dispatch_sync(methodQueue_, ^{
+      retainedWork();
+    });
+  }
+};
+}
+
 // Fallback lookup since RCT class prefix is sometimes stripped in the existing NativeModule system.
 // This will be removed in the future.
 static Class getFallbackClassFromName(const char *name)
@@ -164,12 +199,28 @@ static Class getFallbackClassFromName(const char *name)
 
   Class moduleClass = [module class];
 
+  dispatch_queue_t methodQueue = (dispatch_queue_t)objc_getAssociatedObject(module, &kAssociatedMethodQueueKey);
+
+  /**
+   * Step 2c: Create and native CallInvoker from the TurboModule's method queue.
+   */
+  std::shared_ptr<facebook::react::CallInvoker> nativeInvoker =
+      std::make_shared<MethodQueueNativeCallInvoker>(methodQueue);
+
+  /**
+   * Have RCTCxxBridge decorate native CallInvoker, so that it's aware of TurboModule async method calls.
+   * This helps the bridge fire onBatchComplete as readily as it should.
+   */
+  if ([_bridge respondsToSelector:@selector(decorateNativeCallInvoker:)]) {
+    nativeInvoker = [_bridge decorateNativeCallInvoker:nativeInvoker];
+  }
+
   // If RCTTurboModule supports creating its own C++ TurboModule object,
   // allow it to do so.
   if ([module respondsToSelector:@selector(getTurboModuleWithJsInvoker:nativeInvoker:perfLogger:)]) {
     [_performanceLogger getTurboModuleFromRCTTurboModuleStart:moduleName];
     auto turboModule = [module getTurboModuleWithJsInvoker:_jsInvoker
-                                             nativeInvoker:nullptr
+                                             nativeInvoker:nativeInvoker
                                                 perfLogger:_performanceLogger];
     [_performanceLogger getTurboModuleFromRCTTurboModuleEnd:moduleName];
     assert(turboModule != nullptr);
@@ -178,7 +229,7 @@ static Class getFallbackClassFromName(const char *name)
   }
 
   /**
-   * Step 2c: If the moduleClass is a legacy CxxModule, return a TurboCxxModule instance that
+   * Step 2d: If the moduleClass is a legacy CxxModule, return a TurboCxxModule instance that
    * wraps CxxModule.
    */
   if ([moduleClass isSubclassOfClass:RCTCxxModule.class]) {
@@ -192,13 +243,13 @@ static Class getFallbackClassFromName(const char *name)
   }
 
   /**
-   * Step 2d: Return an exact sub-class of ObjC TurboModule
+   * Step 2e: Return an exact sub-class of ObjC TurboModule
    */
   [_performanceLogger getTurboModuleFromTMMDelegateStart:moduleName];
   auto turboModule = [_delegate getTurboModule:moduleName
                                       instance:module
                                      jsInvoker:_jsInvoker
-                                 nativeInvoker:nullptr
+                                 nativeInvoker:nativeInvoker
                                     perfLogger:_performanceLogger];
   [_performanceLogger getTurboModuleFromTMMDelegateEnd:moduleName];
   if (turboModule != nullptr) {

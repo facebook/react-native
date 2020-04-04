@@ -360,39 +360,10 @@ jsi::Value ObjCTurboModule::performMethodInvocation(
     [performanceLogger syncRCTTurboModuleMethodCallEnd:moduleName methodName:methodName methodCallId:methodCallId];
   };
 
-  // Backward-compatibility layer for calling module methods on specific queue.
-  dispatch_queue_t methodQueue = NULL;
-  if ([instance_ conformsToProtocol:@protocol(RCTBridgeModule)] &&
-      [instance_ respondsToSelector:@selector(methodQueue)]) {
-    methodQueue = [instance_ performSelector:@selector(methodQueue)];
-  }
-
-  if (methodQueue == NULL || methodQueue == RCTJSThread) {
-    // This is the default mode of execution: on JS thread.
-    block();
-  } else if (methodQueue == dispatch_get_main_queue()) {
-    if (returnType == VoidKind) {
-      // Void methods are treated as async for now, so there's no need to block here.
-
-      [performanceLogger_ asyncRCTTurboModuleMethodCallDispatch:moduleName
-                                                     methodName:methodName
-                                                   methodCallId:methodCallId];
-      RCTExecuteOnMainQueue(block);
-    } else {
-      // This is not ideal, but provides the simplest mechanism for now.
-      // Eventually, methods should be responsible to queue things up to different queue if they need to.
-      // TODO: consider adding timer to warn if this method invocation takes too long.
-      RCTUnsafeExecuteOnMainQueueSync(block);
-    }
+  if (returnType == VoidKind) {
+    nativeInvoker_->invokeAsync([block]() -> void { block(); });
   } else {
-    if (returnType == VoidKind) {
-      [performanceLogger_ asyncRCTTurboModuleMethodCallDispatch:moduleName
-                                                     methodName:methodName
-                                                   methodCallId:methodCallId];
-      dispatch_async(methodQueue, block);
-    } else {
-      dispatch_sync(methodQueue, block);
-    }
+    nativeInvoker_->invokeSync([block]() -> void { block(); });
   }
 
   // VoidKind can't be null
@@ -640,7 +611,7 @@ ObjCTurboModule::ObjCTurboModule(
     std::shared_ptr<CallInvoker> jsInvoker,
     std::shared_ptr<CallInvoker> nativeInvoker,
     id<RCTTurboModulePerformanceLogger> perfLogger)
-    : TurboModule(name, jsInvoker), instance_(instance), performanceLogger_(perfLogger)
+    : TurboModule(name, jsInvoker), instance_(instance), nativeInvoker_(nativeInvoker), performanceLogger_(perfLogger)
 {
 }
 
