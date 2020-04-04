@@ -167,7 +167,7 @@ const AccessibilityInfo = {
    */
   get fetch(): $FlowFixMe {
     console.warn(
-      'AccessibilityInfo.fetch is deprecated, call Accessibility.isScreenReaderEnabled instead',
+      'AccessibilityInfo.fetch is deprecated, call AccessibilityInfo.isScreenReaderEnabled instead',
     );
     return this.isScreenReaderEnabled;
   },
