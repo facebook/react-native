@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 50;
+	objectVersion = 51;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -14,6 +14,9 @@
 		2DDEF0101F84BF7B00DBDF73 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2DDEF00F1F84BF7B00DBDF73 /* Images.xcassets */; };
 		383889DA23A7398900D06C3E /* RCTConvert_UIColorTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 383889D923A7398900D06C3E /* RCTConvert_UIColorTests.m */; };
 		3D2AFAF51D646CF80089D1A3 /* legacy_image@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 3D2AFAF41D646CF80089D1A3 /* legacy_image@2x.png */; };
+		4311CD55243874890041467A /* MockInstanceTests.mm in Sources */ = {isa = PBXBuildFile; fileRef = 4311CD54243874890041467A /* MockInstanceTests.mm */; };
+		4311CD5A243876A10041467A /* SampleCxxModule.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4311CD58243876A10041467A /* SampleCxxModule.cpp */; };
+		4311CD5D24387A260041467A /* MockInstance.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4311CD5B24387A260041467A /* MockInstance.cpp */; };
 		5C60EB1C226440DB0018C04F /* AppDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = 5C60EB1B226440DB0018C04F /* AppDelegate.mm */; };
 		5CB07C9B226467E60039471C /* RNTesterTurboModuleProvider.mm in Sources */ = {isa = PBXBuildFile; fileRef = 5CB07C99226467E60039471C /* RNTesterTurboModuleProvider.mm */; };
 		6766440649168A1FAD1DB4A4 /* libPods-RNTesterIntegrationTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5F836A7C97EC1BA121BA5A2A /* libPods-RNTesterIntegrationTests.a */; };
@@ -84,6 +87,11 @@
 		34028D6B10F47E490042EB27 /* Pods-RNTesterUnitTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RNTesterUnitTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-RNTesterUnitTests/Pods-RNTesterUnitTests.debug.xcconfig"; sourceTree = "<group>"; };
 		383889D923A7398900D06C3E /* RCTConvert_UIColorTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTConvert_UIColorTests.m; sourceTree = "<group>"; };
 		3D2AFAF41D646CF80089D1A3 /* legacy_image@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "legacy_image@2x.png"; path = "RNTester/legacy_image@2x.png"; sourceTree = "<group>"; };
+		4311CD54243874890041467A /* MockInstanceTests.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = MockInstanceTests.mm; sourceTree = "<group>"; };
+		4311CD58243876A10041467A /* SampleCxxModule.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SampleCxxModule.cpp; sourceTree = "<group>"; };
+		4311CD59243876A10041467A /* SampleCxxModule.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = SampleCxxModule.hpp; sourceTree = "<group>"; };
+		4311CD5B24387A260041467A /* MockInstance.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = MockInstance.cpp; sourceTree = "<group>"; };
+		4311CD5C24387A260041467A /* MockInstance.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = MockInstance.hpp; sourceTree = "<group>"; };
 		5BEC8567F3741044B6A5EFC5 /* Pods-RNTester.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RNTester.release.xcconfig"; path = "Pods/Target Support Files/Pods-RNTester/Pods-RNTester.release.xcconfig"; sourceTree = "<group>"; };
 		5C60EB1B226440DB0018C04F /* AppDelegate.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = AppDelegate.mm; path = RNTester/AppDelegate.mm; sourceTree = "<group>"; };
 		5CB07C99226467E60039471C /* RNTesterTurboModuleProvider.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = RNTesterTurboModuleProvider.mm; path = RNTester/RNTesterTurboModuleProvider.mm; sourceTree = "<group>"; };
@@ -351,6 +359,11 @@
 				E7DB212422B2C342005AC45F /* libOCMock.a */,
 				E7DB212522B2C342005AC45F /* OCMock */,
 				E7DB20B322B2BAA4005AC45F /* RNTesterUnitTestsBundle.js */,
+				4311CD54243874890041467A /* MockInstanceTests.mm */,
+				4311CD58243876A10041467A /* SampleCxxModule.cpp */,
+				4311CD59243876A10041467A /* SampleCxxModule.hpp */,
+				4311CD5B24387A260041467A /* MockInstance.cpp */,
+				4311CD5C24387A260041467A /* MockInstance.hpp */,
 			);
 			path = RNTesterUnitTests;
 			sourceTree = "<group>";
@@ -681,6 +694,7 @@
 				E7DB20D522B2BAA6005AC45F /* RCTPerformanceLoggerTests.m in Sources */,
 				E7DB20D922B2BAA6005AC45F /* RCTAnimationUtilsTests.m in Sources */,
 				E7DB20D122B2BAA6005AC45F /* RCTBundleURLProviderTests.m in Sources */,
+				4311CD5D24387A260041467A /* MockInstance.cpp in Sources */,
 				E7DB20EC22B2BAA6005AC45F /* RCTMultipartStreamReaderTests.m in Sources */,
 				E7DB20E022B2BAA6005AC45F /* RCTMethodArgumentTests.m in Sources */,
 				E7DB20E822B2BAA6005AC45F /* RCTModuleMethodTests.mm in Sources */,
@@ -696,6 +710,7 @@
 				E7DB20E722B2BAA6005AC45F /* RCTConvert_NSURLTests.m in Sources */,
 				E7DB20DD22B2BAA6005AC45F /* RCTEventDispatcherTests.m in Sources */,
 				E7DB20E122B2BAA6005AC45F /* RCTShadowViewTests.m in Sources */,
+				4311CD55243874890041467A /* MockInstanceTests.mm in Sources */,
 				E7DB20EA22B2BAA6005AC45F /* RCTImageUtilTests.m in Sources */,
 				E7DB20D722B2BAA6005AC45F /* RCTModuleInitTests.m in Sources */,
 				E7DB20E522B2BAA6005AC45F /* RCTDevMenuTests.m in Sources */,
@@ -704,6 +719,7 @@
 				E7DB20EB22B2BAA6005AC45F /* RCTConvert_YGValueTests.m in Sources */,
 				E7DB20E922B2BAA6005AC45F /* RCTComponentPropsTests.m in Sources */,
 				E7DB20D822B2BAA6005AC45F /* RCTJSONTests.m in Sources */,
+				4311CD5A243876A10041467A /* SampleCxxModule.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
