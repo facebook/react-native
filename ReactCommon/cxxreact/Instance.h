@@ -47,7 +47,7 @@ class RN_EXPORT Instance {
       std::shared_ptr<MessageQueueThread> jsQueue,
       std::shared_ptr<ModuleRegistry> moduleRegistry);
 
-  virtual void initializeRuntime();
+  void initializeRuntime();
 
   virtual void setSourceURL(std::string sourceURL);
 
@@ -69,7 +69,7 @@ class RN_EXPORT Instance {
       std::unique_ptr<const JSBigString> startupScript,
       std::string startupScriptSourceURL,
       bool loadSynchronously);
-  virtual bool supportsProfiling();
+  bool supportsProfiling();
   void setGlobalVariable(
       std::string propName,
       std::unique_ptr<const JSBigString> jsonValue);
