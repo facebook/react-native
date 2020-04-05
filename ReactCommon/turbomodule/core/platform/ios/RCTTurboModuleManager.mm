@@ -11,6 +11,8 @@
 #import <cassert>
 #import <mutex>
 
+#import <objc/runtime.h>
+
 #import <React/RCTBridge+Private.h>
 #import <React/RCTBridgeModule.h>
 #import <React/RCTCxxModule.h>
@@ -22,6 +24,46 @@
 #import <ReactCommon/TurboModuleBinding.h>
 
 using namespace facebook;
+
+/**
+ * A global variable whose address we use to associate method queues to id<RCTTurboModule> objects.
+ */
+static char kAssociatedMethodQueueKey;
+
+namespace {
+class MethodQueueNativeCallInvoker : public facebook::react::CallInvoker {
+ private:
+  dispatch_queue_t methodQueue_;
+
+ public:
+  MethodQueueNativeCallInvoker(dispatch_queue_t methodQueue) : methodQueue_(methodQueue) {}
+  void invokeAsync(std::function<void()> &&work) override
+  {
+    if (methodQueue_ == RCTJSThread) {
+      work();
+      return;
+    }
+
+    __block auto retainedWork = std::move(work);
+    dispatch_async(methodQueue_, ^{
+      retainedWork();
+    });
+  }
+
+  void invokeSync(std::function<void()> &&work) override
+  {
+    if (methodQueue_ == RCTJSThread) {
+      work();
+      return;
+    }
+
+    __block auto retainedWork = std::move(work);
+    dispatch_sync(methodQueue_, ^{
+      retainedWork();
+    });
+  }
+};
+}
 
 // Fallback lookup since RCT class prefix is sometimes stripped in the existing NativeModule system.
 // This will be removed in the future.
@@ -157,11 +199,29 @@ static Class getFallbackClassFromName(const char *name)
 
   Class moduleClass = [module class];
 
+  dispatch_queue_t methodQueue = (dispatch_queue_t)objc_getAssociatedObject(module, &kAssociatedMethodQueueKey);
+
+  /**
+   * Step 2c: Create and native CallInvoker from the TurboModule's method queue.
+   */
+  std::shared_ptr<facebook::react::CallInvoker> nativeInvoker =
+      std::make_shared<MethodQueueNativeCallInvoker>(methodQueue);
+
+  /**
+   * Have RCTCxxBridge decorate native CallInvoker, so that it's aware of TurboModule async method calls.
+   * This helps the bridge fire onBatchComplete as readily as it should.
+   */
+  if ([_bridge respondsToSelector:@selector(decorateNativeCallInvoker:)]) {
+    nativeInvoker = [_bridge decorateNativeCallInvoker:nativeInvoker];
+  }
+
   // If RCTTurboModule supports creating its own C++ TurboModule object,
   // allow it to do so.
-  if ([module respondsToSelector:@selector(getTurboModuleWithJsInvoker:perfLogger:)]) {
+  if ([module respondsToSelector:@selector(getTurboModuleWithJsInvoker:nativeInvoker:perfLogger:)]) {
     [_performanceLogger getTurboModuleFromRCTTurboModuleStart:moduleName];
-    auto turboModule = [module getTurboModuleWithJsInvoker:_jsInvoker perfLogger:_performanceLogger];
+    auto turboModule = [module getTurboModuleWithJsInvoker:_jsInvoker
+                                             nativeInvoker:nativeInvoker
+                                                perfLogger:_performanceLogger];
     [_performanceLogger getTurboModuleFromRCTTurboModuleEnd:moduleName];
     assert(turboModule != nullptr);
     _turboModuleCache.insert({moduleName, turboModule});
@@ -169,7 +229,7 @@ static Class getFallbackClassFromName(const char *name)
   }
 
   /**
-   * Step 2c: If the moduleClass is a legacy CxxModule, return a TurboCxxModule instance that
+   * Step 2d: If the moduleClass is a legacy CxxModule, return a TurboCxxModule instance that
    * wraps CxxModule.
    */
   if ([moduleClass isSubclassOfClass:RCTCxxModule.class]) {
@@ -183,10 +243,14 @@ static Class getFallbackClassFromName(const char *name)
   }
 
   /**
-   * Step 2d: Return an exact sub-class of ObjC TurboModule
+   * Step 2e: Return an exact sub-class of ObjC TurboModule
    */
   [_performanceLogger getTurboModuleFromTMMDelegateStart:moduleName];
-  auto turboModule = [_delegate getTurboModule:moduleName instance:module jsInvoker:_jsInvoker];
+  auto turboModule = [_delegate getTurboModule:moduleName
+                                      instance:module
+                                     jsInvoker:_jsInvoker
+                                 nativeInvoker:nativeInvoker
+                                    perfLogger:_performanceLogger];
   [_performanceLogger getTurboModuleFromTMMDelegateEnd:moduleName];
   if (turboModule != nullptr) {
     _turboModuleCache.insert({moduleName, turboModule});
@@ -260,11 +324,17 @@ static Class getFallbackClassFromName(const char *name)
     _rctTurboModuleCache.insert({moduleName, module});
   }
 
+  [self setUpRCTTurboModule:module moduleName:moduleName];
+  return module;
+}
+
+- (void)setUpRCTTurboModule:(id<RCTTurboModule>)module moduleName:(const char *)moduleName
+{
   __weak id<RCTBridgeModule> weakModule = (id<RCTBridgeModule>)module;
   __weak RCTBridge *weakBridge = _bridge;
   id<RCTTurboModulePerformanceLogger> performanceLogger = _performanceLogger;
 
-  auto setupTurboModule = ^{
+  auto setUpTurboModule = ^{
     if (!weakModule) {
       return;
     }
@@ -319,28 +389,56 @@ static Class getFallbackClassFromName(const char *name)
      * These modules typically have the following:
      *   `@synthesize methodQueue = _methodQueue`
      */
-    if ([strongModule respondsToSelector:@selector(methodQueue)]) {
-      [performanceLogger attachMethodQueueToRCTTurboModuleStart:moduleName];
 
-      dispatch_queue_t methodQueue = [strongModule performSelector:@selector(methodQueue)];
-      if (!methodQueue) {
-        NSString *moduleClassName = NSStringFromClass(strongModule.class);
-        NSString *queueName = [NSString stringWithFormat:@"com.facebook.react.%@Queue", moduleClassName];
-        methodQueue = dispatch_queue_create(queueName.UTF8String, DISPATCH_QUEUE_SERIAL);
+    [performanceLogger attachMethodQueueToRCTTurboModuleStart:moduleName];
+
+    dispatch_queue_t methodQueue = nil;
+    BOOL moduleHasMethodQueueGetter = [strongModule respondsToSelector:@selector(methodQueue)];
+
+    if (moduleHasMethodQueueGetter) {
+      methodQueue = [strongModule methodQueue];
+    }
+
+    /**
+     * Note: RCTJSThread, which is a valid method queue, is defined as (id)kCFNull. It should rightfully not enter the
+     * following if condition's block.
+     */
+    if (!methodQueue) {
+      NSString *methodQueueName = [NSString stringWithFormat:@"com.facebook.react.%sQueue", moduleName];
+      methodQueue = dispatch_queue_create(methodQueueName.UTF8String, DISPATCH_QUEUE_SERIAL);
+
+      if (moduleHasMethodQueueGetter) {
+        /**
+         * If the module has a method queue getter, two cases are possible:
+         *  - We @synthesized the method queue. In this case, the getter will initially return nil.
+         *  - We had a custom methodQueue function on the NativeModule. If we got this far, then that getter returned
+         *    nil.
+         *
+         * Therefore, we do a try/catch and use ObjC's KVC API and try to assign the method queue to the NativeModule.
+         * In case 1, we'll succeed. In case 2, an exception will be thrown, which we'll ignore.
+         */
+
         @try {
           [(id)strongModule setValue:methodQueue forKey:@"methodQueue"];
         } @catch (NSException *exception) {
           RCTLogError(
-              @"TM: %@ is returning nil for its methodQueue, which is not "
-               "permitted. You must either return a pre-initialized "
-               "queue, or @synthesize the methodQueue to let the bridge "
-               "create a queue for you.",
-              moduleClassName);
+              @"%@ has no setter or ivar for its methodQueue, which is not "
+               "permitted. You must either @synthesize the bridge property, "
+               "or provide your own setter method.",
+              RCTBridgeModuleNameForClass([strongModule class]));
         }
       }
-
-      [performanceLogger attachMethodQueueToRCTTurboModuleEnd:moduleName];
     }
+
+    /**
+     * Attach method queue to id<RCTTurboModule> object.
+     * This is necessary because the id<RCTTurboModule> object can be eagerly created/initialized before the method
+     * queue is required. The method queue is required for an id<RCTTurboModule> for JS -> Native calls. So, we need it
+     * before we create the id<RCTTurboModule>'s TurboModule jsi::HostObject in provideTurboModule:.
+     */
+    objc_setAssociatedObject(strongModule, &kAssociatedMethodQueueKey, methodQueue, OBJC_ASSOCIATION_RETAIN);
+
+    [performanceLogger attachMethodQueueToRCTTurboModuleEnd:moduleName];
 
     /**
      * NativeModules that implement the RCTFrameUpdateObserver protocol
@@ -372,6 +470,11 @@ static Class getFallbackClassFromName(const char *name)
     [performanceLogger setupRCTTurboModuleEnd:moduleName];
   };
 
+  /**
+   * TODO(T64991809): Fix TurboModule race:
+   *  - When NativeModules that don't require main queue setup are required from different threads, they'll
+   *    concurrently run setUpRCTTurboModule:
+   */
   if ([[module class] respondsToSelector:@selector(requiresMainQueueSetup)] &&
       [[module class] requiresMainQueueSetup]) {
     /**
@@ -382,12 +485,10 @@ static Class getFallbackClassFromName(const char *name)
      * TODO(T63807674): Investigate the right migration plan off of this
      */
     [_performanceLogger setupRCTTurboModuleDispatch:moduleName];
-    RCTUnsafeExecuteOnMainQueueSync(setupTurboModule);
+    RCTUnsafeExecuteOnMainQueueSync(setUpTurboModule);
   } else {
-    setupTurboModule();
+    setUpTurboModule();
   }
-
-  return module;
 }
 
 - (void)installJSBindingWithRuntime:(jsi::Runtime *)runtime

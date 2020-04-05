@@ -8,6 +8,7 @@
     "type": "git",
     "url": "git@github.com:facebook/react-native.git"
   },
+  "homepage": "https://github.com/facebook/react-native/tree/master/packages/eslint-config-react-native-community#readme",
   "dependencies": {
     "@react-native-community/eslint-plugin": "^1.0.0",
     "@typescript-eslint/eslint-plugin": "^2.25.0",

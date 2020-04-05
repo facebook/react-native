@@ -76,6 +76,7 @@ TEST(MountingTest, testMinimalInstructionGeneration) {
   auto childC = makeNode(viewComponentDescriptor, 102, {});
   auto childD = makeNode(viewComponentDescriptor, 103, {});
   auto childE = makeNode(viewComponentDescriptor, 104, {});
+  auto childF = makeNode(viewComponentDescriptor, 105, {});
 
   auto family = viewComponentDescriptor.createFamily(
       {10, SurfaceId(1), nullptr}, nullptr);
@@ -102,6 +103,10 @@ TEST(MountingTest, testMinimalInstructionGeneration) {
       generateDefaultProps(viewComponentDescriptor),
       std::make_shared<SharedShadowNodeList>(
           SharedShadowNodeList{childB, childA, childE, childC})});
+  auto shadowNodeV6 = shadowNodeV5->clone(ShadowNodeFragment{
+      generateDefaultProps(viewComponentDescriptor),
+      std::make_shared<SharedShadowNodeList>(SharedShadowNodeList{
+          childB, childA, childD, childF, childE, childC})});
 
   // Injecting a tree into the root node.
   auto rootNodeV1 = std::static_pointer_cast<RootShadowNode const>(
@@ -129,6 +134,11 @@ TEST(MountingTest, testMinimalInstructionGeneration) {
           ShadowNodeFragment{ShadowNodeFragment::propsPlaceholder(),
                              std::make_shared<SharedShadowNodeList>(
                                  SharedShadowNodeList{shadowNodeV5})}));
+  auto rootNodeV6 = std::static_pointer_cast<RootShadowNode const>(
+      rootNodeV5->ShadowNode::clone(
+          ShadowNodeFragment{ShadowNodeFragment::propsPlaceholder(),
+                             std::make_shared<SharedShadowNodeList>(
+                                 SharedShadowNodeList{shadowNodeV6})}));
 
   // Layout and diff
   std::vector<LayoutableShadowNode const *> affectedLayoutableNodesV1{};
@@ -160,6 +170,12 @@ TEST(MountingTest, testMinimalInstructionGeneration) {
   std::const_pointer_cast<RootShadowNode>(rootNodeV5)
       ->layoutIfNeeded(&affectedLayoutableNodesV5);
   rootNodeV5->sealRecursive();
+
+  std::vector<LayoutableShadowNode const *> affectedLayoutableNodesV6{};
+  affectedLayoutableNodesV6.reserve(1024);
+  std::const_pointer_cast<RootShadowNode>(rootNodeV6)
+      ->layoutIfNeeded(&affectedLayoutableNodesV6);
+  rootNodeV6->sealRecursive();
 
   // This block displays all the mutations for debugging purposes.
   /*
@@ -283,6 +299,26 @@ TEST(MountingTest, testMinimalInstructionGeneration) {
   assert(mutations4[8].type == ShadowViewMutation::Insert);
   assert(mutations4[8].newChildShadowView.tag == 102);
   assert(mutations4[8].index == 3);
+
+  auto mutations5 = calculateShadowViewMutations(
+      DifferentiatorMode::OptimizedMoves, *rootNodeV5, *rootNodeV6);
+
+  // The order and exact mutation instructions here may change at any time.
+  // This test just ensures that any changes are intentional.
+  // This test, in particular, ensures that inserting TWO children in the middle
+  // produces the minimal set of instructions. All these nodes are laid out with
+  // absolute positioning, so moving them around does not change layout.
+  assert(mutations5.size() == 4);
+  assert(mutations5[0].type == ShadowViewMutation::Create);
+  assert(mutations5[0].newChildShadowView.tag == 103);
+  assert(mutations5[1].type == ShadowViewMutation::Create);
+  assert(mutations5[1].newChildShadowView.tag == 105);
+  assert(mutations5[2].type == ShadowViewMutation::Insert);
+  assert(mutations5[2].newChildShadowView.tag == 103);
+  assert(mutations5[2].index == 2);
+  assert(mutations5[3].type == ShadowViewMutation::Insert);
+  assert(mutations5[3].newChildShadowView.tag == 105);
+  assert(mutations5[3].index == 3);
 }
 
 } // namespace react

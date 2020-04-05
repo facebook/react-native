@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include <ReactCommon/BridgeJSCallInvoker.h>
 #include <ReactCommon/CallInvokerHolder.h>
 #include <fbjni/fbjni.h>
 

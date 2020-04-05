@@ -197,9 +197,10 @@ static NSDictionary *RCTExportedDimensions(RCTBridge *bridge)
 #endif // TARGET_OS_TV
 
 - (std::shared_ptr<TurboModule>)getTurboModuleWithJsInvoker:(std::shared_ptr<CallInvoker>)jsInvoker
+                                              nativeInvoker:(std::shared_ptr<CallInvoker>)nativeInvoker
                                                  perfLogger:(id<RCTTurboModulePerformanceLogger>)perfLogger
 {
-  return std::make_shared<NativeDeviceInfoSpecJSI>(self, jsInvoker, perfLogger);
+  return std::make_shared<NativeDeviceInfoSpecJSI>(self, jsInvoker, nativeInvoker, perfLogger);
 }
 
 @end

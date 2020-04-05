@@ -67,7 +67,12 @@ class RCTObjcExecutor : public JSExecutor {
     setGlobalVariable("__fbBatchedBridgeConfig", std::make_unique<JSBigStdString>(folly::toJson(config)));
   }
 
-  void loadApplicationScript(std::unique_ptr<const JSBigString> script, std::string sourceURL) override
+  void initializeRuntime() override
+  {
+    // We do nothing here since initialization is done in the constructor
+  }
+
+  void loadBundle(std::unique_ptr<const JSBigString> script, std::string sourceURL) override
   {
     RCTProfileBeginFlowEvent();
     [m_jse executeApplicationScript:[NSData dataWithBytes:script->c_str() length:script->size()]

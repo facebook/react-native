@@ -39,9 +39,10 @@ RCT_EXPORT_METHOD(getString : (RCTPromiseResolveBlock)resolve reject : (__unused
 }
 
 - (std::shared_ptr<TurboModule>)getTurboModuleWithJsInvoker:(std::shared_ptr<CallInvoker>)jsInvoker
+                                              nativeInvoker:(std::shared_ptr<CallInvoker>)nativeInvoker
                                                  perfLogger:(id<RCTTurboModulePerformanceLogger>)perfLogger
 {
-  return std::make_shared<NativeClipboardSpecJSI>(self, jsInvoker, perfLogger);
+  return std::make_shared<NativeClipboardSpecJSI>(self, jsInvoker, nativeInvoker, perfLogger);
 }
 
 @end

@@ -83,9 +83,10 @@ RCT_EXPORT_MODULE(Appearance)
 }
 
 - (std::shared_ptr<TurboModule>)getTurboModuleWithJsInvoker:(std::shared_ptr<CallInvoker>)jsInvoker
+                                              nativeInvoker:(std::shared_ptr<CallInvoker>)nativeInvoker
                                                  perfLogger:(id<RCTTurboModulePerformanceLogger>)perfLogger
 {
-  return std::make_shared<NativeAppearanceSpecJSI>(self, jsInvoker, perfLogger);
+  return std::make_shared<NativeAppearanceSpecJSI>(self, jsInvoker, nativeInvoker, perfLogger);
 }
 
 RCT_EXPORT_SYNCHRONOUS_TYPED_METHOD(NSString *, getColorScheme)

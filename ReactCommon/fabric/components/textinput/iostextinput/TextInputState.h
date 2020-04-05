@@ -29,11 +29,6 @@ class TextInputState final {
   AttributedStringBox attributedStringBox;
 
   /*
-   * Last attributed string that came from JavaScript.
-   */
-  AttributedString lastAttributedStringFromJS;
-
-  /*
    * Represents all visual attributes of a paragraph of text represented as
    * a ParagraphAttributes.
    */

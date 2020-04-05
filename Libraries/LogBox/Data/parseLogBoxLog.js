@@ -239,21 +239,50 @@ export function parseLogBoxException(
     };
   }
 
-  const level = message.match(/^TransformError /)
-    ? 'syntax'
-    : error.isFatal || error.isComponentError
-    ? 'fatal'
-    : 'error';
+  if (message.match(/^TransformError /)) {
+    return {
+      level: 'syntax',
+      stack: error.stack,
+      isComponentError: error.isComponentError,
+      componentStack: [],
+      message: {
+        content: message,
+        substitutions: [],
+      },
+      category: message,
+    };
+  }
 
+  const componentStack = error.componentStack;
+  if (error.isFatal || error.isComponentError) {
+    return {
+      level: 'fatal',
+      stack: error.stack,
+      isComponentError: error.isComponentError,
+      componentStack:
+        componentStack != null ? parseComponentStack(componentStack) : [],
+      ...parseInterpolation([message]),
+    };
+  }
+
+  if (componentStack != null) {
+    // It is possible that console errors have a componentStack.
+    return {
+      level: 'error',
+      stack: error.stack,
+      isComponentError: error.isComponentError,
+      componentStack: parseComponentStack(componentStack),
+      ...parseInterpolation([message]),
+    };
+  }
+
+  // Most `console.error` calls won't have a componentStack. We parse them like
+  // regular logs which have the component stack burried in the message.
   return {
-    level: level,
+    level: 'error',
     stack: error.stack,
     isComponentError: error.isComponentError,
-    componentStack:
-      error.componentStack != null
-        ? parseComponentStack(error.componentStack)
-        : [],
-    ...parseInterpolation([message]),
+    ...parseLogBoxLog([message]),
   };
 }
 
@@ -286,7 +315,13 @@ export function parseLogBoxLog(
   if (componentStack.length === 0) {
     // Try finding the component stack elsewhere.
     for (const arg of args) {
-      if (typeof arg === 'string' && /^\n {4}in/.exec(arg)) {
+      if (typeof arg === 'string' && /\n {4}in /.exec(arg)) {
+        // Strip out any messages before the component stack.
+        const messageEndIndex = arg.indexOf('\n    in ');
+        if (messageEndIndex > 0) {
+          argsWithoutComponentStack.push(arg.slice(0, messageEndIndex));
+        }
+
         componentStack = parseComponentStack(arg);
       } else {
         argsWithoutComponentStack.push(arg);

@@ -45,6 +45,7 @@ class JSI_EXPORT NativeSampleTurboModuleSpecJSI : public ObjCTurboModule {
   NativeSampleTurboModuleSpecJSI(
       id<RCTTurboModule> instance,
       std::shared_ptr<CallInvoker> jsInvoker,
+      std::shared_ptr<CallInvoker> nativeInvoker,
       id<RCTTurboModulePerformanceLogger> perfLogger);
 };
 

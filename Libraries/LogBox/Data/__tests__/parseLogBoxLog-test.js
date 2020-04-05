@@ -143,6 +143,32 @@ describe('parseLogBoxLog', () => {
     });
   });
 
+  it('detects a component stack in the first argument', () => {
+    expect(
+      parseLogBoxLog([
+        'Some kind of message\n    in MyComponent (at filename.js:1)\n    in MyOtherComponent (at filename2.js:1)',
+      ]),
+    ).toEqual({
+      componentStack: [
+        {
+          content: 'MyComponent',
+          fileName: 'filename.js',
+          location: {column: -1, row: 1},
+        },
+        {
+          content: 'MyOtherComponent',
+          fileName: 'filename2.js',
+          location: {column: -1, row: 1},
+        },
+      ],
+      category: 'Some kind of message',
+      message: {
+        content: 'Some kind of message',
+        substitutions: [],
+      },
+    });
+  });
+
   it('detects a component stack in the second argument', () => {
     expect(
       parseLogBoxLog([
@@ -479,7 +505,7 @@ Please follow the instructions at: fburl.com/rn-remote-assets`,
     });
   });
 
-  it('parses a error log', () => {
+  it('parses an error log with `error.componentStack`', () => {
     const error = {
       id: 0,
       isFatal: false,
@@ -529,6 +555,59 @@ Please follow the instructions at: fburl.com/rn-remote-assets`,
           collapse: false,
         },
       ],
+    });
+  });
+
+  it('parses an error log with a component stack in the message', () => {
+    const error = {
+      id: 0,
+      isFatal: false,
+      isComponentError: false,
+      message:
+        'Some kind of message\n    in MyComponent (at filename.js:1)\n    in MyOtherComponent (at filename2.js:1)',
+      originalMessage:
+        'Some kind of message\n    in MyComponent (at filename.js:1)\n    in MyOtherComponent (at filename2.js:1)',
+      name: '',
+      componentStack: null,
+      stack: [
+        {
+          column: 1,
+          file: 'foo.js',
+          lineNumber: 1,
+          methodName: 'bar',
+          collapse: false,
+        },
+      ],
+    };
+    expect(parseLogBoxException(error)).toEqual({
+      level: 'error',
+      isComponentError: false,
+      stack: [
+        {
+          collapse: false,
+          column: 1,
+          file: 'foo.js',
+          lineNumber: 1,
+          methodName: 'bar',
+        },
+      ],
+      componentStack: [
+        {
+          content: 'MyComponent',
+          fileName: 'filename.js',
+          location: {column: -1, row: 1},
+        },
+        {
+          content: 'MyOtherComponent',
+          fileName: 'filename2.js',
+          location: {column: -1, row: 1},
+        },
+      ],
+      category: 'Some kind of message',
+      message: {
+        content: 'Some kind of message',
+        substitutions: [],
+      },
     });
   });
 

@@ -818,18 +818,10 @@ class ScrollView extends React.Component<Props, State> {
   };
 
   getInnerViewNode(): ?number {
-    console.warn(
-      '`getInnerViewNode()` is deprecated. This will be removed in a future release. ' +
-        'Use <ScrollView innerViewRef={myRef} /> instead.',
-    );
     return ReactNative.findNodeHandle(this._innerViewRef);
   }
 
   getInnerViewRef(): ?React.ElementRef<typeof View> {
-    console.warn(
-      '`getInnerViewRef()` is deprecated. This will be removed in a future release. ' +
-        'Use <ScrollView innerViewRef={myRef} /> instead.',
-    );
     return this._innerViewRef;
   }
 
