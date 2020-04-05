@@ -384,6 +384,12 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
 
   if (_maxLength) {
     NSInteger allowedLength = MAX(_maxLength.integerValue - (NSInteger)backedTextInputView.attributedText.string.length + (NSInteger)range.length, 0);
+    //If any words are marked , allow them to be finished.
+    UITextRange *selectedRange = [backedTextInputView markedTextRange];
+    NSString * markedText = [backedTextInputView textInRange:selectedRange];
+    if (markedText.length > 0) {
+      return YES;
+    }
 
     if (text.length > allowedLength) {
       // If we typed/pasted more than one character, limit the text inputted.
