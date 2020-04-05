@@ -1055,6 +1055,10 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = "";
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(PODS_ROOT)/boost-for-react-native\"",
+				);
 				INFOPLIST_FILE = RNTesterUnitTests/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 12.4;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -1075,10 +1079,6 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.facebook.RNTesterUnitTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TARGETED_DEVICE_FAMILY = "1,2";
-				HEADER_SEARCH_PATHS = (
-					"$(inherited)",
-					"\"$(PODS_ROOT)/boost-for-react-native\"",
-				);
 			};
 			name = Debug;
 		};
@@ -1095,6 +1095,10 @@
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = "";
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(PODS_ROOT)/boost-for-react-native\"",
+				);
 				INFOPLIST_FILE = RNTesterUnitTests/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 12.4;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -1114,10 +1118,6 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.facebook.RNTesterUnitTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TARGETED_DEVICE_FAMILY = "1,2";
-				HEADER_SEARCH_PATHS = (
-					"$(inherited)",
-					"\"$(PODS_ROOT)/boost-for-react-native\"",
-				);
 			};
 			name = Release;
 		};
