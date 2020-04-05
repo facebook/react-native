@@ -5,7 +5,7 @@
 
 Pod::Spec.new do |spec|
   spec.name = 'Folly'
-  spec.version = '2020.01.13.00'
+  spec.version = '2020.01.06.00 '
   spec.license = { :type => 'Apache License, Version 2.0' }
   spec.homepage = 'https://github.com/facebook/folly'
   spec.summary = 'An open-source C++ library developed and used at Facebook.'
@@ -33,6 +33,7 @@ Pod::Spec.new do |spec|
                       'folly/detail/UniqueInstance.cpp',
                       'folly/hash/SpookyHashV2.cpp',
                       'folly/lang/Assume.cpp',
+                      'folly/lang/ColdClass.cpp',
                       'folly/lang/CString.cpp',
                       'folly/memory/detail/MallocImpl.cpp',
                       'folly/net/NetOps.cpp',
