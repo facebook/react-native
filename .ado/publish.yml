@@ -63,6 +63,8 @@ jobs:
         submodules: recursive # set to 'true' for a single level of submodules or 'recursive' to get submodules of submodules
         persistCredentials: true # set to 'true' to leave the OAuth token in the Git config after the initial fetch
 
+      - template: templates/configure-git.yml
+
       - task: CmdLine@2
         displayName: yarn install
         inputs:
