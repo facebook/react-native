@@ -1,8 +1,0 @@
-{
-  "type": "major",
-  "comment": "Update scripts to publish react-native-macos-init",
-  "packageName": "react-native-macos-init",
-  "email": "tomun@microsoft.com",
-  "dependentChangeType": "patch",
-  "date": "2020-04-04T04:43:14.681Z"
-}

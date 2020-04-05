@@ -1,0 +1,20 @@
+{
+  "name": "react-native-macos-init",
+  "entries": [
+    {
+      "date": "Sun, 05 Apr 2020 00:06:57 GMT",
+      "tag": "react-native-macos-init_v2.0.0",
+      "version": "2.0.0",
+      "comments": {
+        "major": [
+          {
+            "comment": "Update scripts to publish react-native-macos-init",
+            "author": "tomun@microsoft.com",
+            "commit": "e9f6c209bc1ad6772a38c0ea9aca9842f058b187",
+            "package": "react-native-macos-init"
+          }
+        ]
+      }
+    }
+  ]
+}
