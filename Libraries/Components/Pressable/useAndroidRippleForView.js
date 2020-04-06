@@ -47,13 +47,10 @@ export default function useAndroidRippleForView(
   |}>,
 |}> {
   const {color, borderless, radius} = rippleConfig ?? {};
+  const normalizedBorderless = borderless === true;
 
   return useMemo(() => {
-    if (
-      Platform.OS === 'android' &&
-      Platform.Version >= 21 &&
-      (color != null || borderless != null || radius != null)
-    ) {
+    if (Platform.OS === 'android' && Platform.Version >= 21 && rippleConfig) {
       const processedColor = processColor(color);
       invariant(
         processedColor == null || typeof processedColor === 'number',
@@ -66,7 +63,7 @@ export default function useAndroidRippleForView(
           nativeBackgroundAndroid: {
             type: 'RippleAndroid',
             color: processedColor,
-            borderless: borderless === true,
+            borderless: normalizedBorderless,
             rippleRadius: radius,
           },
         },
@@ -100,5 +97,5 @@ export default function useAndroidRippleForView(
       };
     }
     return null;
-  }, [color, borderless, radius, viewRef]);
+  }, [color, normalizedBorderless, radius, viewRef]);
 }
