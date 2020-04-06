@@ -74,6 +74,9 @@ class Linking extends NativeEventEmitter {
    * See https://facebook.github.io/react-native/docs/linking.html#opensettings
    */
   openSettings(): Promise<any> {
+    if (Platform.OS === 'ios') {
+      return NativeLinking.openURL('app-settings:');
+    }
     return NativeLinking.openSettings();
   }
 
