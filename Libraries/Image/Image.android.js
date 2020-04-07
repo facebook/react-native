@@ -96,6 +96,10 @@ const ImageProps = {
   progressiveRenderingEnabled: PropTypes.bool,
   fadeDuration: PropTypes.number,
   /**
+   * Analytics Tag used by this Image
+   */
+  analyticTag: PropTypes.string,
+  /**
    * Invoked on load start
    */
   onLoadStart: PropTypes.func,

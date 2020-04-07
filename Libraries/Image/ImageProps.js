@@ -70,6 +70,11 @@ export type ImageProps = {|
   accessible?: ?boolean,
 
   /**
+   * Analytics Tag used by this Image
+   */
+  analyticTag?: ?string,
+
+  /**
    * The text that's read by the screen reader when the user interacts with
    * the image.
    *
