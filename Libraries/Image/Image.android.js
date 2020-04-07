@@ -20,6 +20,7 @@ const ReactNative = require('../Renderer/shims/ReactNative'); // eslint-disable-
 const StyleSheet = require('../StyleSheet/StyleSheet');
 const TextAncestor = require('../Text/TextAncestor');
 
+const ImageContext = require('./ImageContext');
 const flattenStyle = require('../StyleSheet/flattenStyle');
 const resolveAssetSource = require('./resolveAssetSource');
 
@@ -292,15 +293,25 @@ let Image = (props: ImagePropsType, forwardedRef) => {
   };
 
   return (
-    <TextAncestor.Consumer>
-      {hasTextAncestor =>
-        hasTextAncestor ? (
-          <TextInlineImageNativeComponent {...nativeProps} />
-        ) : (
-          <ImageViewNativeComponent {...nativeProps} />
-        )
-      }
-    </TextAncestor.Consumer>
+    <ImageContext.Consumer>
+      {analyticTag => {
+        const nativePropsWithAnalytics = {
+          ...nativeProps,
+          analyticTag: analyticTag,
+        };
+        return (
+          <TextAncestor.Consumer>
+            {hasTextAncestor =>
+              hasTextAncestor ? (
+                <TextInlineImageNativeComponent {...nativePropsWithAnalytics} />
+              ) : (
+                <ImageViewNativeComponent {...nativePropsWithAnalytics} />
+              )
+            }
+          </TextAncestor.Consumer>
+        );
+      }}
+    </ImageContext.Consumer>
   );
 };
 
