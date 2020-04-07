@@ -3,7 +3,10 @@ const fs = require("fs");
 const path = require("path");
 
 const pkgJsonPath = path.resolve(__dirname, "../package.json");
-const publishBranchName = process.env.BUILD_SOURCEBRANCH.match(/refs\/heads\/(.*)/)[1];
+let publishBranchName = '';
+try {
+  publishBranchName = process.env.BUILD_SOURCEBRANCH.match(/refs\/heads\/(.*)/)[1];
+} catch (error) {}
 
 function gatherVersionInfo() {
     let pkgJson = JSON.parse(fs.readFileSync(pkgJsonPath, "utf8"));

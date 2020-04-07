@@ -1,6 +1,9 @@
 # This file defines the Apple PR build steps used during the CI loop
 name: $(Date:yyyyMMdd).$(Rev:.r)
 
+variables:
+  - template: variables/mac.yml
+
 trigger: none # will disable CI builds entirely
 
 pr:
@@ -17,7 +20,7 @@ jobs:
         public:
           apply_office_patches: 'false'
     pool:
-      vmImage: macOS-10.14
+      vmImage: $(VmImage)
       demands: ['xcode', 'sh', 'npm']
     steps:
       - template: templates/apple-job-javascript.yml
@@ -36,12 +39,6 @@ jobs:
           xcode_actions_debug: 'build test'
           xcode_actions_release: 'build'
           apply_office_patches: 'false'
-        # Microsoft- We don't use tvOS, so don't bother maintaining the infra
-        # tvos:
-        #   packager_platform: 'ios'
-        #   xcode_sdk: appletvsimulator
-        #   xcode_scheme: 'RNTester-tvOS'
-        #   xcode_destination: 'platform=tvOS Simulator,OS=latest,name=Apple TV'
         macos:
           packager_platform: 'macos'
           xcode_sdk: macosx
@@ -67,7 +64,7 @@ jobs:
           xcode_actions_release: 'build'
           apply_office_patches: 'true'
     pool:
-      vmImage: macOS-10.14
+      vmImage: $(VmImage)
       demands: ['xcode', 'sh', 'npm']
     timeoutInMinutes: 60 # how long to run the job before automatically cancelling
     cancelTimeoutInMinutes: 5 # how much time to give 'run always even if cancelled tasks' before killing them
@@ -82,3 +79,21 @@ jobs:
           xcode_actions_release: $(xcode_actions_release)
           xcode_destination: $(xcode_destination)
           apply_office_patches: $(apply_office_patches)
+
+  - job: CliInit
+    displayName: Verify react-native-macos-init
+    strategy:
+      matrix:
+        MacDebug:
+          configuration: Debug
+    pool:
+      vmImage: $(VmImage)
+      demands: ['xcode', 'sh', 'npm']
+    steps:
+      - task: UseNode@1
+        inputs:
+          version: '10.x'
+
+      - template: templates/react-native-macos-init.yml
+        parameters:
+          configuration: $(configuration)

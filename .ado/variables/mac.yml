@@ -1,0 +1,2 @@
+variables:
+  VmImage: macOS-10.14

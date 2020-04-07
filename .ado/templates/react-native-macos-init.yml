@@ -1,0 +1,99 @@
+parameters:
+  configuration:
+
+steps:
+  - checkout: self # self represents the repo where the initial Pipelines YAML file was found
+    clean: true # whether to fetch clean each time
+    # fetchDepth: 2 # the depth of commits to ask Git to fetch
+    lfs: false # whether to download Git-LFS files
+    submodules: false # set to 'true' for a single level of submodules or 'recursive' to get submodules of submodules
+    persistCredentials: false # set to 'true' to leave the OAuth token in the Git config after the initial fetch
+
+  # First do a build of the local package, since we point the cli at the local files, it needs to be pre-built
+  - task: CmdLine@2
+    displayName: yarn install (local react-native-macos)
+    inputs:
+      script: yarn install --frozen-lockfile
+
+  - task: CmdLine@2
+    displayName: yarn install (local react-native-macos-init)
+    inputs:
+      script: |
+        cd packages/react-native-macos-init
+        yarn install
+
+  - task: CmdLine@2
+    displayName: yarn build (local react-native-macos-init)
+    inputs:
+      script: |
+        cd packages/react-native-macos-init
+        yarn build
+
+  - task: CmdLine@2
+    displayName: Install Verdaccio
+    inputs:
+      script: |
+        npm install --global verdaccio
+
+  - task: CmdLine@2
+    displayName: Install n used by ado-start-verdaccio.sh
+    inputs:
+      script: |
+        npm install --global n
+
+  - task: ShellScript@2
+    displayName: Launch test npm server (verdaccio)
+    inputs:
+      scriptPath: '.ado/ado-start-verdaccio.sh'
+      disableAutoCwd: true
+      cwd: ''
+
+  - script: |
+      npm set registry http://localhost:4873
+    displayName: Modify default npm config to point to local verdaccio server
+
+  - script: |
+      node .ado/waitForVerdaccio.js
+    displayName: Wait for verdaccio server to boot
+
+  - script: |
+      node .ado/npmAddUser.js user pass mail@nomail.com http://localhost:4873
+    displayName: Add npm user to verdaccio
+
+  - task: CmdLine@2
+    displayName: Bump package version
+    inputs:
+      script: node .ado/bumpFileVersions.js
+
+  - task: CmdLine@2
+    displayName: "Prepare package.json for npm publishing as react-native-macos"
+    inputs:
+      script: node .ado/renamePackageToMac.js
+
+  - script: |
+      npm publish --registry http://localhost:4873
+    displayName: Publish react-native-macos to verdaccio
+
+  - script: |
+      cd packages/react-native-macos-init
+      npx --no-install beachball publish --branch origin/$(System.PullRequest.TargetBranch) --no-push --registry http://localhost:4873 --yes --access public
+    displayName: Publish react-native-macos-init to verdaccio
+
+  - task: CmdLine@2
+    displayName: Install react-native cli
+    inputs:
+      script: npm install -g react-native-cli
+
+  - task: CmdLine@2
+    displayName: Init new project
+    inputs:
+      script: react-native init testcli
+      workingDirectory: $(Agent.BuildDirectory)
+
+  - task: CmdLine@2
+    displayName: Apply macos template
+    inputs:
+      script: npx react-native-macos-init --version latest --overwrite --prerelease
+      workingDirectory: $(Agent.BuildDirectory)/testcli
+
+  # TODO: react-native run-macos and test when implemented
