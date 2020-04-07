@@ -14,7 +14,6 @@ import type {SyntheticEvent, LayoutEvent} from '../Types/CoreEventTypes';
 import type {EdgeInsetsProp} from '../StyleSheet/EdgeInsetsPropType';
 import type {ImageSource} from './ImageSource';
 import type {ViewStyleProp, ImageStyleProp} from '../StyleSheet/StyleSheet';
-import type {DimensionValue} from '../StyleSheet/StyleSheetTypes';
 import type {ViewProps} from '../Components/View/ViewPropTypes';
 
 export type ImageLoadEvent = SyntheticEvent<
@@ -68,6 +67,11 @@ export type ImageProps = {|
    * See https://reactnative.dev/docs/image.html#accessible
    */
   accessible?: ?boolean,
+
+  /**
+   * Analytics Tag used by this Image
+   */
+  analyticTag?: ?string,
 
   /**
    * The text that's read by the screen reader when the user interacts with

@@ -102,6 +102,7 @@ static ModalHostViewEventEmitter::OnOrientationChange onOrientationChangeStruct(
   RCTFabricModalHostViewController *_viewController;
   ModalHostViewShadowNode::ConcreteState::Shared _state;
   BOOL _shouldAnimatePresentation;
+  BOOL _isPresented;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame
@@ -113,21 +114,18 @@ static ModalHostViewEventEmitter::OnOrientationChange onOrientationChangeStruct(
     _viewController = [RCTFabricModalHostViewController new];
     _viewController.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
     _viewController.delegate = self;
+    _isPresented = NO;
   }
 
   return self;
 }
 
-- (BOOL)isViewControllerPresented
-{
-  return _viewController.presentingViewController != nil;
-}
-
 - (void)ensurePresentedOnlyIfNeeded
 {
-  BOOL shouldBePresented = !self.isViewControllerPresented && self.window;
+  BOOL shouldBePresented = !_isPresented && self.window;
   if (shouldBePresented) {
     UIViewController *controller = [self reactViewController];
+    _isPresented = YES;
     return [controller
         presentViewController:_viewController
                      animated:_shouldAnimatePresentation
@@ -142,8 +140,9 @@ static ModalHostViewEventEmitter::OnOrientationChange onOrientationChangeStruct(
                    }];
   }
 
-  BOOL shouldBeHidden = self.isViewControllerPresented && !self.superview;
+  BOOL shouldBeHidden = _isPresented && !self.superview;
   if (shouldBeHidden) {
+    _isPresented = NO;
     [_viewController dismissViewControllerAnimated:_shouldAnimatePresentation completion:nil];
   }
 }
@@ -182,6 +181,13 @@ static ModalHostViewEventEmitter::OnOrientationChange onOrientationChangeStruct(
 + (ComponentDescriptorProvider)componentDescriptorProvider
 {
   return concreteComponentDescriptorProvider<ModalHostViewComponentDescriptor>();
+}
+
+- (void)prepareForRecycle
+{
+  [super prepareForRecycle];
+  _state.reset();
+  _isPresented = NO;
 }
 
 - (void)updateProps:(Props::Shared const &)props oldProps:(Props::Shared const &)oldProps

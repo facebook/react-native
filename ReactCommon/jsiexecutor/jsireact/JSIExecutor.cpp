@@ -27,14 +27,20 @@ namespace react {
 
 class JSIExecutor::NativeModuleProxy : public jsi::HostObject {
  public:
-  NativeModuleProxy(JSIExecutor &executor) : executor_(executor) {}
+  NativeModuleProxy(std::shared_ptr<JSINativeModules> nativeModules)
+      : weakNativeModules_(nativeModules) {}
 
   Value get(Runtime &rt, const PropNameID &name) override {
     if (name.utf8(rt) == "name") {
       return jsi::String::createFromAscii(rt, "NativeModules");
     }
 
-    return executor_.nativeModules_.getModule(rt, name);
+    auto nativeModules = weakNativeModules_.lock();
+    if (!nativeModules) {
+      return nullptr;
+    }
+
+    return nativeModules->getModule(rt, name);
   }
 
   void set(Runtime &, const PropNameID &, const Value &) override {
@@ -43,7 +49,7 @@ class JSIExecutor::NativeModuleProxy : public jsi::HostObject {
   }
 
  private:
-  JSIExecutor &executor_;
+  std::weak_ptr<JSINativeModules> weakNativeModules_;
 };
 
 namespace {
@@ -63,25 +69,21 @@ JSIExecutor::JSIExecutor(
     RuntimeInstaller runtimeInstaller)
     : runtime_(runtime),
       delegate_(delegate),
-      nativeModules_(delegate ? delegate->getModuleRegistry() : nullptr),
+      nativeModules_(std::make_shared<JSINativeModules>(
+          delegate ? delegate->getModuleRegistry() : nullptr)),
       scopedTimeoutInvoker_(scopedTimeoutInvoker),
       runtimeInstaller_(runtimeInstaller) {
   runtime_->global().setProperty(
       *runtime, "__jsiExecutorDescription", runtime->description());
 }
 
-void JSIExecutor::loadApplicationScript(
-    std::unique_ptr<const JSBigString> script,
-    std::string sourceURL) {
-  SystraceSection s("JSIExecutor::loadApplicationScript");
-
-  // TODO: check for and use precompiled HBC
-
+void JSIExecutor::initializeRuntime() {
+  SystraceSection s("JSIExecutor::initializeRuntime");
   runtime_->global().setProperty(
       *runtime_,
       "nativeModuleProxy",
       Object::createFromHostObject(
-          *runtime_, std::make_shared<NativeModuleProxy>(*this)));
+          *runtime_, std::make_shared<NativeModuleProxy>(nativeModules_)));
 
   runtime_->global().setProperty(
       *runtime_,
@@ -134,6 +136,18 @@ void JSIExecutor::loadApplicationScript(
   if (runtimeInstaller_) {
     runtimeInstaller_(*runtime_);
   }
+  bool hasLogger(ReactMarker::logTaggedMarker);
+  if (hasLogger) {
+    ReactMarker::logMarker(ReactMarker::CREATE_REACT_CONTEXT_STOP);
+  }
+}
+
+void JSIExecutor::loadBundle(
+    std::unique_ptr<const JSBigString> script,
+    std::string sourceURL) {
+  SystraceSection s("JSIExecutor::loadBundle");
+
+  // TODO: check for and use precompiled HBC
 
   bool hasLogger(ReactMarker::logTaggedMarker);
   std::string scriptName = simpleBasename(sourceURL);
@@ -145,7 +159,6 @@ void JSIExecutor::loadApplicationScript(
       std::make_unique<BigStringBuffer>(std::move(script)), sourceURL);
   flush();
   if (hasLogger) {
-    ReactMarker::logMarker(ReactMarker::CREATE_REACT_CONTEXT_STOP);
     ReactMarker::logTaggedMarker(
         ReactMarker::RUN_JS_BUNDLE_STOP, scriptName.c_str());
   }

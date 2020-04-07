@@ -178,9 +178,10 @@ RCT_EXPORT_METHOD(hide)
 }
 
 - (std::shared_ptr<TurboModule>)getTurboModuleWithJsInvoker:(std::shared_ptr<CallInvoker>)jsInvoker
+                                              nativeInvoker:(std::shared_ptr<CallInvoker>)nativeInvoker
                                                  perfLogger:(id<RCTTurboModulePerformanceLogger>)perfLogger
 {
-  return std::make_shared<NativeDevLoadingViewSpecJSI>(self, jsInvoker, perfLogger);
+  return std::make_shared<NativeDevLoadingViewSpecJSI>(self, jsInvoker, nativeInvoker, perfLogger);
 }
 
 @end
@@ -212,9 +213,10 @@ RCT_EXPORT_METHOD(hide)
 {
 }
 - (std::shared_ptr<TurboModule>)getTurboModuleWithJsInvoker:(std::shared_ptr<CallInvoker>)jsInvoker
+                                              nativeInvoker:(std::shared_ptr<CallInvoker>)nativeInvoker
                                                  perfLogger:(id<RCTTurboModulePerformanceLogger>)perfLogger
 {
-  return std::make_shared<NativeDevLoadingViewSpecJSI>(self, jsInvoker, perfLogger);
+  return std::make_shared<NativeDevLoadingViewSpecJSI>(self, jsInvoker, nativeInvoker, perfLogger);
 }
 
 @end

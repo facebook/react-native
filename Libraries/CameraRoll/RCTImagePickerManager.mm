@@ -251,9 +251,10 @@ didFinishPickingMediaWithInfo:(NSDictionary<NSString *, id> *)info
 
 - (std::shared_ptr<facebook::react::TurboModule>)
     getTurboModuleWithJsInvoker:(std::shared_ptr<facebook::react::CallInvoker>)jsInvoker
+                  nativeInvoker:(std::shared_ptr<facebook::react::CallInvoker>)nativeInvoker
                      perfLogger:(id<RCTTurboModulePerformanceLogger>)perfLogger
 {
-  return std::make_shared<facebook::react::NativeImagePickerIOSSpecJSI>(self, jsInvoker, perfLogger);
+  return std::make_shared<facebook::react::NativeImagePickerIOSSpecJSI>(self, jsInvoker, nativeInvoker, perfLogger);
 }
 
 @end

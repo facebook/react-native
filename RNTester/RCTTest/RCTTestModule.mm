@@ -33,7 +33,7 @@ namespace facebook {
 
     class JSI_EXPORT NativeTestModuleSpecJSI : public ObjCTurboModule {
     public:
-      NativeTestModuleSpecJSI(id<RCTTurboModule> instance, std::shared_ptr<CallInvoker> jsInvoker, id<RCTTurboModulePerformanceLogger> perfLogger);
+      NativeTestModuleSpecJSI(id<RCTTurboModule> instance, std::shared_ptr<CallInvoker> jsInvoker, std::shared_ptr<CallInvoker> nativeInvoker, id<RCTTurboModulePerformanceLogger> perfLogger);
 
     };
   } // namespace react
@@ -56,8 +56,8 @@ namespace facebook {
   }
 
 
-  NativeTestModuleSpecJSI::NativeTestModuleSpecJSI(id<RCTTurboModule> instance, std::shared_ptr<CallInvoker> jsInvoker, id<RCTTurboModulePerformanceLogger> perfLogger)
-    : ObjCTurboModule("TestModule", instance, jsInvoker, perfLogger) {
+  NativeTestModuleSpecJSI::NativeTestModuleSpecJSI(id<RCTTurboModule> instance, std::shared_ptr<CallInvoker> jsInvoker, std::shared_ptr<CallInvoker> nativeInvoker, id<RCTTurboModulePerformanceLogger> perfLogger)
+    : ObjCTurboModule("TestModule", instance, jsInvoker, nativeInvoker, perfLogger) {
 
       methodMap_["markTestCompleted"] = MethodMetadata {0, __hostFunction_NativeTestModuleSpecJSI_markTestCompleted};
 
@@ -148,9 +148,10 @@ RCT_EXPORT_METHOD(markTestPassed:(BOOL)success)
 
 - (std::shared_ptr<facebook::react::TurboModule>)
     getTurboModuleWithJsInvoker:(std::shared_ptr<facebook::react::CallInvoker>)jsInvoker
+                  nativeInvoker:(std::shared_ptr<facebook::react::CallInvoker>)nativeInvoker
                      perfLogger:(id<RCTTurboModulePerformanceLogger>)perfLogger
 {
-  return std::make_shared<facebook::react::NativeTestModuleSpecJSI>(self, jsInvoker, perfLogger);
+  return std::make_shared<facebook::react::NativeTestModuleSpecJSI>(self, jsInvoker, nativeInvoker, perfLogger);
 }
 
 @end

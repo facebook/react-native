@@ -114,9 +114,10 @@ RCT_EXPORT_METHOD(deleteValues:(NSArray<NSString *> *)keys)
 
 - (std::shared_ptr<facebook::react::TurboModule>)
     getTurboModuleWithJsInvoker:(std::shared_ptr<facebook::react::CallInvoker>)jsInvoker
+                  nativeInvoker:(std::shared_ptr<facebook::react::CallInvoker>)nativeInvoker
                      perfLogger:(id<RCTTurboModulePerformanceLogger>)perfLogger
 {
-  return std::make_shared<facebook::react::NativeSettingsManagerSpecJSI>(self, jsInvoker, perfLogger);
+  return std::make_shared<facebook::react::NativeSettingsManagerSpecJSI>(self, jsInvoker, nativeInvoker, perfLogger);
 }
 
 @end

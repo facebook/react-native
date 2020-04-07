@@ -44,11 +44,11 @@ void ViewShadowNode::initialize() noexcept {
       !viewProps.nativeId.empty() || viewProps.accessible ||
       viewProps.opacity != 1.0 || viewProps.transform != Transform{} ||
       viewProps.zIndex != 0 || viewProps.getClipsContentToBounds() ||
-      viewProps.yogaStyle.positionType() == YGPositionTypeAbsolute;
+      viewProps.yogaStyle.positionType() == YGPositionTypeAbsolute ||
+      isColorMeaningful(viewProps.shadowColor);
 
   bool formsView = isColorMeaningful(viewProps.backgroundColor) ||
       isColorMeaningful(viewProps.foregroundColor) ||
-      isColorMeaningful(viewProps.shadowColor) ||
       !(viewProps.yogaStyle.border() == YGStyle::Edges{});
 
   formsView = formsView || formsStackingContext;

@@ -2338,7 +2338,8 @@ static void YGDistributeFreeSpaceFirstPass(
           // first and second passes.
           deltaFreeSpace += boundMainSize - childFlexBasis;
           collectedFlexItemsValues.totalFlexShrinkScaledFactors -=
-              flexShrinkScaledFactor;
+              (-currentRelativeChild->resolveFlexShrink() *
+               currentRelativeChild->getLayout().computedFlexBasis.unwrap());
         }
       }
     } else if (

@@ -67,6 +67,7 @@ import com.facebook.react.fabric.mounting.mountitems.UpdatePaddingMountItem;
 import com.facebook.react.fabric.mounting.mountitems.UpdatePropsMountItem;
 import com.facebook.react.fabric.mounting.mountitems.UpdateStateMountItem;
 import com.facebook.react.modules.core.ReactChoreographer;
+import com.facebook.react.modules.i18nmanager.I18nUtil;
 import com.facebook.react.uimanager.ReactRoot;
 import com.facebook.react.uimanager.ReactRootViewTagGenerator;
 import com.facebook.react.uimanager.StateWrapper;
@@ -217,7 +218,9 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
         getMinSize(widthMeasureSpec),
         getMaxSize(widthMeasureSpec),
         getMinSize(heightMeasureSpec),
-        getMaxSize(heightMeasureSpec));
+        getMaxSize(heightMeasureSpec),
+        I18nUtil.getInstance().isRTL(rootView.getContext()),
+        I18nUtil.getInstance().doLeftAndRightSwapInRTL(rootView.getContext()));
     return rootTag;
   }
 
@@ -813,13 +816,14 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
     if (ENABLE_FABRIC_LOGS) {
       FLog.d(TAG, "Updating Root Layout Specs");
     }
-
     mBinding.setConstraints(
         rootTag,
         getMinSize(widthMeasureSpec),
         getMaxSize(widthMeasureSpec),
         getMinSize(heightMeasureSpec),
-        getMaxSize(heightMeasureSpec));
+        getMaxSize(heightMeasureSpec),
+        I18nUtil.getInstance().isRTL(mReactContextForRootTag.get(rootTag)),
+        I18nUtil.getInstance().doLeftAndRightSwapInRTL(mReactContextForRootTag.get(rootTag)));
   }
 
   public void receiveEvent(int reactTag, String eventName, @Nullable WritableMap params) {

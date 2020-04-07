@@ -101,7 +101,9 @@ void Binding::startSurfaceWithConstraints(
     jfloat minWidth,
     jfloat maxWidth,
     jfloat minHeight,
-    jfloat maxHeight) {
+    jfloat maxHeight,
+    jboolean isRTL,
+    jboolean doLeftAndRightSwapInRTL) {
   SystraceSection s("FabricUIManagerBinding::startSurfaceWithConstraints");
 
   LOG(WARNING) << "Binding::startSurfaceWithConstraints() was called (address: "
@@ -120,9 +122,12 @@ void Binding::startSurfaceWithConstraints(
 
   LayoutContext context;
   context.pointScaleFactor = {pointScaleFactor_};
+  context.swapLeftAndRightInRTL = doLeftAndRightSwapInRTL;
   LayoutConstraints constraints = {};
   constraints.minimumSize = minimumSize;
   constraints.maximumSize = maximumSize;
+  constraints.layoutDirection =
+      isRTL ? LayoutDirection::RightToLeft : LayoutDirection::LeftToRight;
 
   scheduler->startSurface(
       surfaceId,
@@ -167,7 +172,9 @@ void Binding::setConstraints(
     jfloat minWidth,
     jfloat maxWidth,
     jfloat minHeight,
-    jfloat maxHeight) {
+    jfloat maxHeight,
+    jboolean isRTL,
+    jboolean doLeftAndRightSwapInRTL) {
   SystraceSection s("FabricUIManagerBinding::setConstraints");
 
   std::shared_ptr<Scheduler> scheduler = getScheduler();
@@ -183,9 +190,12 @@ void Binding::setConstraints(
 
   LayoutContext context;
   context.pointScaleFactor = {pointScaleFactor_};
+  context.swapLeftAndRightInRTL = doLeftAndRightSwapInRTL;
   LayoutConstraints constraints = {};
   constraints.minimumSize = minimumSize;
   constraints.maximumSize = maximumSize;
+  constraints.layoutDirection =
+      isRTL ? LayoutDirection::RightToLeft : LayoutDirection::LeftToRight;
 
   scheduler->constraintSurfaceLayout(surfaceId, constraints, context);
 }

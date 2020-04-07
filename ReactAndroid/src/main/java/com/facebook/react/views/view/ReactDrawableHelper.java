@@ -69,7 +69,7 @@ public class ReactDrawableHelper {
       Context context, ReadableMap drawableDescriptionDict) {
     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
       throw new JSApplicationIllegalArgumentException(
-          "Ripple drawable is not available on " + "android API <21");
+          "Ripple drawable is not available on android API <21");
     }
     int color = getColor(context, drawableDescriptionDict);
     Drawable mask = getMask(drawableDescriptionDict);
@@ -101,7 +101,7 @@ public class ReactDrawableHelper {
         return context.getResources().getColor(sResolveOutValue.resourceId);
       } else {
         throw new JSApplicationIllegalArgumentException(
-            "Attribute colorControlHighlight " + "couldn't be resolved into a drawable");
+            "Attribute colorControlHighlight couldn't be resolved into a drawable");
       }
     }
   }

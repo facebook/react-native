@@ -37,6 +37,22 @@
 
 using namespace facebook::react;
 
+static inline LayoutConstraints RCTGetLayoutConstraintsForSize(CGSize minimumSize, CGSize maximumSize)
+{
+  return {
+      .minimumSize = RCTSizeFromCGSize(minimumSize),
+      .maximumSize = RCTSizeFromCGSize(maximumSize),
+      .layoutDirection = RCTLayoutDirection([[RCTI18nUtil sharedInstance] isRTL]),
+  };
+}
+
+static inline LayoutContext RCTGetLayoutContext()
+{
+  return {.pointScaleFactor = RCTScreenScale(),
+          .swapLeftAndRightInRTL =
+              [[RCTI18nUtil sharedInstance] isRTL] && [[RCTI18nUtil sharedInstance] doLeftAndRightSwapInRTL]};
+}
+
 @interface RCTSurfacePresenter () <RCTSchedulerDelegate, RCTMountingManagerDelegate>
 @end
 
@@ -147,10 +163,8 @@ using namespace facebook::react;
   if (!scheduler) {
     return minimumSize;
   }
-  LayoutContext layoutContext = {.pointScaleFactor = RCTScreenScale()};
-  LayoutConstraints layoutConstraints = {.minimumSize = RCTSizeFromCGSize(minimumSize),
-                                         .maximumSize = RCTSizeFromCGSize(maximumSize),
-                                         .layoutDirection = RCTLayoutDirection([[RCTI18nUtil sharedInstance] isRTL])};
+  LayoutContext layoutContext = RCTGetLayoutContext();
+  LayoutConstraints layoutConstraints = RCTGetLayoutConstraintsForSize(minimumSize, maximumSize);
   return [scheduler measureSurfaceWithLayoutConstraints:layoutConstraints
                                           layoutContext:layoutContext
                                               surfaceId:surface.rootTag];
@@ -163,10 +177,8 @@ using namespace facebook::react;
     return;
   }
 
-  LayoutContext layoutContext = {.pointScaleFactor = RCTScreenScale()};
-  LayoutConstraints layoutConstraints = {.minimumSize = RCTSizeFromCGSize(minimumSize),
-                                         .maximumSize = RCTSizeFromCGSize(maximumSize),
-                                         .layoutDirection = RCTLayoutDirection([[RCTI18nUtil sharedInstance] isRTL])};
+  LayoutContext layoutContext = RCTGetLayoutContext();
+  LayoutConstraints layoutConstraints = RCTGetLayoutConstraintsForSize(minimumSize, maximumSize);
   [scheduler constraintSurfaceLayoutWithLayoutConstraints:layoutConstraints
                                             layoutContext:layoutContext
                                                 surfaceId:surface.rootTag];
@@ -298,11 +310,9 @@ using namespace facebook::react;
                                                                                tag:surface.rootTag];
   });
 
-  LayoutContext layoutContext = {.pointScaleFactor = RCTScreenScale()};
+  LayoutContext layoutContext = RCTGetLayoutContext();
 
-  LayoutConstraints layoutConstraints = {.minimumSize = RCTSizeFromCGSize(surface.minimumSize),
-                                         .maximumSize = RCTSizeFromCGSize(surface.maximumSize),
-                                         .layoutDirection = RCTLayoutDirection([[RCTI18nUtil sharedInstance] isRTL])};
+  LayoutConstraints layoutConstraints = RCTGetLayoutConstraintsForSize(surface.minimumSize, surface.maximumSize);
 
   [scheduler startSurfaceWithSurfaceId:surface.rootTag
                             moduleName:surface.moduleName

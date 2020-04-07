@@ -188,9 +188,10 @@ class Runtime {
   /// \return the global object
   virtual Object global() = 0;
 
-  /// \return a short printable description of the instance.  This
-  /// should only be used by logging, debugging, and other
-  /// developer-facing callers.
+  /// \return a short printable description of the instance.  It should
+  /// at least include some human-readable indication of the runtime
+  /// implementation.  This should only be used by logging, debugging,
+  /// and other developer-facing callers.
   virtual std::string description() = 0;
 
   /// \return whether or not the underlying runtime supports debugging via the
