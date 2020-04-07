@@ -15,6 +15,7 @@ import type {HostComponent} from '../Renderer/shims/ReactNativeTypes';
 import type {
   WithDefault,
   DirectEventHandler,
+  BubblingEventHandler,
   Int32,
 } from '../Types/CodegenTypes';
 

@@ -61,7 +61,7 @@ const YellowBoxInspectorHeader = (props: Props): React.Node => {
 const YellowBoxInspectorHeaderButton = (
   props: $ReadOnly<{|
     disabled: boolean,
-    image: string,
+    image: number,
     onPress?: ?() => void,
   |}>,
 ): React.Node => (
