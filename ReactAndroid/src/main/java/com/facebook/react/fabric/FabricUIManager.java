@@ -816,14 +816,29 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
     if (ENABLE_FABRIC_LOGS) {
       FLog.d(TAG, "Updating Root Layout Specs");
     }
+
+    ThemedReactContext reactContext = mReactContextForRootTag.get(rootTag);
+    boolean isRTL = false;
+    boolean doLeftAndRightSwapInRTL = false;
+    if (reactContext != null) {
+      isRTL = I18nUtil.getInstance().isRTL(reactContext);
+      doLeftAndRightSwapInRTL = I18nUtil.getInstance().doLeftAndRightSwapInRTL(reactContext);
+    } else {
+      // TODO T65116569: analyze why this happens
+      ReactSoftException.logSoftException(
+          TAG,
+          new IllegalStateException(
+              "updateRootLayoutSpecs called before ReactContext set for tag: " + rootTag));
+    }
+
     mBinding.setConstraints(
         rootTag,
         getMinSize(widthMeasureSpec),
         getMaxSize(widthMeasureSpec),
         getMinSize(heightMeasureSpec),
         getMaxSize(heightMeasureSpec),
-        I18nUtil.getInstance().isRTL(mReactContextForRootTag.get(rootTag)),
-        I18nUtil.getInstance().doLeftAndRightSwapInRTL(mReactContextForRootTag.get(rootTag)));
+        isRTL,
+        doLeftAndRightSwapInRTL);
   }
 
   public void receiveEvent(int reactTag, String eventName, @Nullable WritableMap params) {
