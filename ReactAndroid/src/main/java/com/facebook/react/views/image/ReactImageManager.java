@@ -124,8 +124,8 @@ public class ReactImageManager extends SimpleViewManager<ReactImageView> {
     view.setBlurRadius(blurRadius);
   }
 
-  @ReactProp(name = "analyticTag")
-  public void setAnalyticsTag(ReactImageView view, @Nullable String analyticTag) {
+  @ReactProp(name = "internal_analyticTag")
+  public void setInternal_AnalyticsTag(ReactImageView view, @Nullable String analyticTag) {
     if (mCallerContextFactory != null) {
       view.updateCallerContext(
           mCallerContextFactory.getOrCreateCallerContext(

@@ -99,7 +99,7 @@ const ImageProps = {
   /**
    * Analytics Tag used by this Image
    */
-  analyticTag: PropTypes.string,
+  internal_analyticTag: PropTypes.string,
   /**
    * Invoked on load start
    */
@@ -299,7 +299,7 @@ let Image = (props: ImagePropsType, forwardedRef) => {
           analyticTag !== null
             ? {
                 ...nativeProps,
-                analyticTag: analyticTag,
+                internal_analyticTag: analyticTag,
               }
             : nativeProps;
         return (
