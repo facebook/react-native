@@ -22,6 +22,7 @@ const Platform = require('../Utilities/Platform');
 
 let _vibrating: boolean = false;
 let _id: number = 0; // _id is necessary to prevent race condition.
+const _default_vibration_length = 400;
 
 function vibrateByPattern(pattern: Array<number>, repeat: boolean = false) {
   if (_vibrating) {
@@ -29,7 +30,7 @@ function vibrateByPattern(pattern: Array<number>, repeat: boolean = false) {
   }
   _vibrating = true;
   if (pattern[0] === 0) {
-    NativeVibration.vibrate();
+    NativeVibration.vibrate(_default_vibration_length);
     pattern = pattern.slice(1);
   }
   if (pattern.length === 0) {
@@ -48,7 +49,7 @@ function vibrateScheduler(
   if (!_vibrating || id !== _id) {
     return;
   }
-  NativeVibration.vibrate();
+  NativeVibration.vibrate(_default_vibration_length);
   if (nextIndex >= pattern.length) {
     if (repeat) {
       nextIndex = 0;
@@ -70,7 +71,7 @@ const Vibration = {
    * See https://facebook.github.io/react-native/docs/vibration.html#vibrate
    */
   vibrate: function(
-    pattern: number | Array<number> = 400,
+    pattern: number | Array<number> = _default_vibration_length,
     repeat: boolean = false,
   ) {
     if (Platform.OS === 'android') {
@@ -86,7 +87,7 @@ const Vibration = {
         return;
       }
       if (typeof pattern === 'number') {
-        NativeVibration.vibrate();
+        NativeVibration.vibrate(pattern);
       } else if (Array.isArray(pattern)) {
         vibrateByPattern(pattern, repeat);
       } else {

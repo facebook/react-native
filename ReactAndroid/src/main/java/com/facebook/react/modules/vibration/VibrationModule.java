@@ -32,7 +32,9 @@ public class VibrationModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void vibrate(int duration) {
+  public void vibrate(double durationDouble) {
+    int duration = (int) durationDouble;
+
     Vibrator v = (Vibrator) getReactApplicationContext().getSystemService(Context.VIBRATOR_SERVICE);
     if (v != null) {
       v.vibrate(duration);
