@@ -24,7 +24,6 @@ import type {
 } from '../View/ViewAccessibility';
 import usePressability from '../../Pressability/usePressability';
 import {normalizeRect, type RectOrSize} from '../../StyleSheet/Rect';
-import type {ColorValue} from '../../StyleSheet/StyleSheetTypes';
 import type {LayoutEvent, PressEvent} from '../../Types/CoreEventTypes';
 import View from '../View/View';
 
