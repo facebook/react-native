@@ -33,13 +33,13 @@
 namespace facebook {
 namespace react {
 
-Instance::~Instance() {
+/*virtual */ Instance::~Instance() {
   if (nativeToJsBridge_) {
     nativeToJsBridge_->destroy();
   }
 }
 
-void Instance::initializeBridge(
+/*virtual */ void Instance::initializeBridge(
     std::unique_ptr<InstanceCallback> callback,
     std::shared_ptr<JSExecutorFactory> jsef,
     std::shared_ptr<MessageQueueThread> jsQueue,
@@ -89,14 +89,14 @@ void Instance::loadBundleSync(
       std::move(bundleRegistry), std::move(string), std::move(sourceURL));
 }
 
-void Instance::setSourceURL(std::string sourceURL) {
+/*virtual*/ void Instance::setSourceURL(std::string sourceURL) {
   callback_->incrementPendingJSCalls();
   SystraceSection s("Instance::setSourceURL", "sourceURL", sourceURL);
 
   nativeToJsBridge_->loadBundle(nullptr, nullptr, std::move(sourceURL));
 }
 
-void Instance::loadScriptFromString(
+/*virtual*/ void Instance::loadScriptFromString(
     std::unique_ptr<const JSBigString> string,
     std::string sourceURL,
     bool loadSynchronously) {
@@ -172,27 +172,27 @@ void Instance::loadRAMBundle(
   }
 }
 
-void Instance::setGlobalVariable(
+/*virtual*/ void Instance::setGlobalVariable(
     std::string propName,
     std::unique_ptr<const JSBigString> jsonValue) {
   nativeToJsBridge_->setGlobalVariable(
       std::move(propName), std::move(jsonValue));
 }
 
-void *Instance::getJavaScriptContext() {
+/*virtual*/ void *Instance::getJavaScriptContext() {
   return nativeToJsBridge_ ? nativeToJsBridge_->getJavaScriptContext()
                            : nullptr;
 }
 
-bool Instance::isInspectable() {
+/*virtual*/ bool Instance::isInspectable() {
   return nativeToJsBridge_ ? nativeToJsBridge_->isInspectable() : false;
 }
 
-bool Instance::isBatchActive() {
+/*virtual*/ bool Instance::isBatchActive() {
   return nativeToJsBridge_ ? nativeToJsBridge_->isBatchActive() : false;
 }
 
-void Instance::callJSFunction(
+/*virtual*/ void Instance::callJSFunction(
     std::string &&module,
     std::string &&method,
     folly::dynamic &&params) {
@@ -201,13 +201,13 @@ void Instance::callJSFunction(
       std::move(module), std::move(method), std::move(params));
 }
 
-void Instance::callJSCallback(uint64_t callbackId, folly::dynamic &&params) {
+/*virtual*/ void Instance::callJSCallback(uint64_t callbackId, folly::dynamic &&params) {
   SystraceSection s("Instance::callJSCallback");
   callback_->incrementPendingJSCalls();
   nativeToJsBridge_->invokeCallback((double)callbackId, std::move(params));
 }
 
-void Instance::registerBundle(
+/*virtual*/ void Instance::registerBundle(
     uint32_t bundleId,
     const std::string &bundlePath) {
   nativeToJsBridge_->registerBundle(bundleId, bundlePath);
@@ -221,15 +221,15 @@ ModuleRegistry &Instance::getModuleRegistry() {
   return *moduleRegistry_;
 }
 
-void Instance::handleMemoryPressure(int pressureLevel) {
+/*virtual*/ void Instance::handleMemoryPressure(int pressureLevel) {
   nativeToJsBridge_->handleMemoryPressure(pressureLevel);
 }
 
-std::shared_ptr<CallInvoker> Instance::getJSCallInvoker() {
+/*virtual*/ std::shared_ptr<CallInvoker> Instance::getJSCallInvoker() {
   return std::static_pointer_cast<CallInvoker>(jsCallInvoker_);
 }
 
-std::shared_ptr<CallInvoker> Instance::getDecoratedNativeCallInvoker(
+/*virtual*/ std::shared_ptr<CallInvoker> Instance::getDecoratedNativeCallInvoker(
     std::shared_ptr<CallInvoker> nativeInvoker) {
   return nativeToJsBridge_->getDecoratedNativeCallInvoker(nativeInvoker);
 }

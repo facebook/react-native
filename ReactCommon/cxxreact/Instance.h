@@ -40,8 +40,8 @@ struct InstanceCallback {
 
 class RN_EXPORT Instance {
  public:
-  ~Instance();
-  void initializeBridge(
+  virtual ~Instance();
+  virtual void initializeBridge(
       std::unique_ptr<InstanceCallback> callback,
       std::shared_ptr<JSExecutorFactory> jsef,
       std::shared_ptr<MessageQueueThread> jsQueue,
@@ -49,9 +49,9 @@ class RN_EXPORT Instance {
 
   void initializeRuntime();
 
-  void setSourceURL(std::string sourceURL);
+  virtual void setSourceURL(std::string sourceURL);
 
-  void loadScriptFromString(
+  virtual void loadScriptFromString(
       std::unique_ptr<const JSBigString> string,
       std::string sourceURL,
       bool loadSynchronously);
@@ -70,25 +70,25 @@ class RN_EXPORT Instance {
       std::string startupScriptSourceURL,
       bool loadSynchronously);
   bool supportsProfiling();
-  void setGlobalVariable(
+  virtual void setGlobalVariable(
       std::string propName,
       std::unique_ptr<const JSBigString> jsonValue);
-  void *getJavaScriptContext();
-  bool isInspectable();
-  bool isBatchActive();
-  void callJSFunction(
+  virtual void *getJavaScriptContext();
+  virtual bool isInspectable();
+  virtual bool isBatchActive();
+  virtual void callJSFunction(
       std::string &&module,
       std::string &&method,
       folly::dynamic &&params);
-  void callJSCallback(uint64_t callbackId, folly::dynamic &&params);
+  virtual void callJSCallback(uint64_t callbackId, folly::dynamic &&params);
 
   // This method is experimental, and may be modified or removed.
-  void registerBundle(uint32_t bundleId, const std::string &bundlePath);
+  virtual void registerBundle(uint32_t bundleId, const std::string &bundlePath);
 
   const ModuleRegistry &getModuleRegistry() const;
   ModuleRegistry &getModuleRegistry();
 
-  void handleMemoryPressure(int pressureLevel);
+  virtual void handleMemoryPressure(int pressureLevel);
 
   /**
    * JS CallInvoker is used by TurboModules to schedule work on the JS thread.
@@ -100,7 +100,7 @@ class RN_EXPORT Instance {
    *   also dispatch onBatchComplete if the queue of NativeModule method calls
    *   was not empty.
    */
-  std::shared_ptr<CallInvoker> getJSCallInvoker();
+  virtual std::shared_ptr<CallInvoker> getJSCallInvoker();
 
   /**
    * Native CallInvoker is used by TurboModules to schedule work on the
@@ -126,7 +126,7 @@ class RN_EXPORT Instance {
    *   NativeToJsBridge. Therefore, we need to pass in a CallInvoker that
    *   schedules work on the respective thread.
    */
-  std::shared_ptr<CallInvoker> getDecoratedNativeCallInvoker(
+  virtual std::shared_ptr<CallInvoker> getDecoratedNativeCallInvoker(
       std::shared_ptr<CallInvoker> nativeInvoker);
 
  private:
