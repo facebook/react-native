@@ -2399,7 +2399,7 @@ namespace facebook {
 
     
     static facebook::jsi::Value __hostFunction_NativeVibrationSpecJSI_vibrate(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
-      return static_cast<JavaTurboModule&>(turboModule).invokeJavaMethod(rt, VoidKind, "vibrate", "(Ljava/lang/Double;)V", args, count);
+      return static_cast<JavaTurboModule&>(turboModule).invokeJavaMethod(rt, VoidKind, "vibrate", "(D)V", args, count);
     }
 
     static facebook::jsi::Value __hostFunction_NativeVibrationSpecJSI_vibrateByPattern(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {

@@ -25,7 +25,7 @@ RCT_EXPORT_MODULE()
   AudioServicesPlaySystemSound(kSystemSoundID_Vibrate);
 }
 
-RCT_EXPORT_METHOD(vibrate:(NSNumber *)pattern)
+RCT_EXPORT_METHOD(vibrate:(double)pattern)
 {
   [self vibrate];
 }
