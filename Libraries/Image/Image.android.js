@@ -295,10 +295,13 @@ let Image = (props: ImagePropsType, forwardedRef) => {
   return (
     <ImageAnalyticsTagContext.Consumer>
       {analyticTag => {
-        const nativePropsWithAnalytics = {
-          ...nativeProps,
-          analyticTag: analyticTag,
-        };
+        const nativePropsWithAnalytics =
+          analyticTag !== null
+            ? {
+                ...nativeProps,
+                analyticTag: analyticTag,
+              }
+            : nativeProps;
         return (
           <TextAncestor.Consumer>
             {hasTextAncestor =>
