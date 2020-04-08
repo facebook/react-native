@@ -20,7 +20,7 @@ const ReactNative = require('../Renderer/shims/ReactNative'); // eslint-disable-
 const StyleSheet = require('../StyleSheet/StyleSheet');
 const TextAncestor = require('../Text/TextAncestor');
 
-const ImageContext = require('./ImageContext');
+const ImageAnalyticsTagContext = require('./ImageAnalyticsTagContext').default;
 const flattenStyle = require('../StyleSheet/flattenStyle');
 const resolveAssetSource = require('./resolveAssetSource');
 
@@ -293,7 +293,7 @@ let Image = (props: ImagePropsType, forwardedRef) => {
   };
 
   return (
-    <ImageContext.Consumer>
+    <ImageAnalyticsTagContext.Consumer>
       {analyticTag => {
         const nativePropsWithAnalytics = {
           ...nativeProps,
@@ -311,7 +311,7 @@ let Image = (props: ImagePropsType, forwardedRef) => {
           </TextAncestor.Consumer>
         );
       }}
-    </ImageContext.Consumer>
+    </ImageAnalyticsTagContext.Consumer>
   );
 };
 

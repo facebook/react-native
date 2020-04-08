@@ -10,6 +10,12 @@
 
 'use strict';
 
-const React = require('react');
+import * as React from 'react';
 
-module.exports = (React.createContext(null): React$Context<$FlowFixMe>);
+type ContextType = ?string;
+
+const Context: React.Context<ContextType> = React.createContext<ContextType>(
+  null,
+);
+
+export default Context;
