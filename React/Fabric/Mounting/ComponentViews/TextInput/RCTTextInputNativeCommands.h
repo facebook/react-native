@@ -51,7 +51,23 @@ RCTTextInputHandleCommand(id<RCTTextInputViewProtocol> componentView, NSString c
   }
 
   if ([commandName isEqualToString:@"setMostRecentEventCount"]) {
-    [componentView setMostRecentEventCount:0];
+#if RCT_DEBUG
+    if ([args count] != 1) {
+      RCTLogError(
+          @"%@ command %@ received %d arguments, expected %d.", @"TextInput", commandName, (int)[args count], 1);
+      return;
+    }
+#endif
+
+    NSObject *arg0 = args[0];
+#if RCT_DEBUG
+    if (!RCTValidateTypeOfViewCommandArgument(arg0, [NSNumber class], @"number", @"TextInput", commandName, @"1st")) {
+      return;
+    }
+#endif
+    NSInteger eventCount = [(NSNumber *)arg0 intValue];
+
+    [componentView setMostRecentEventCount:eventCount];
     return;
   }
 
@@ -64,7 +80,13 @@ RCTTextInputHandleCommand(id<RCTTextInputViewProtocol> componentView, NSString c
     }
 #endif
 
-    NSInteger eventCount = 0;
+    NSObject *arg0 = args[0];
+#if RCT_DEBUG
+    if (!RCTValidateTypeOfViewCommandArgument(arg0, [NSNumber class], @"number", @"TextInput", commandName, @"1st")) {
+      return;
+    }
+#endif
+    NSInteger eventCount = [(NSNumber *)arg0 intValue];
 
     NSObject *arg1 = args[1];
 #if RCT_DEBUG

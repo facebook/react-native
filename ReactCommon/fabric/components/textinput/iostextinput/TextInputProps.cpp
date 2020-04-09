@@ -49,7 +49,12 @@ TextInputProps::TextInputProps(
           "underlineColorAndroid",
           sourceProps.underlineColorAndroid,
           {})),
-      text(convertRawProp(rawProps, "text", sourceProps.text, {})){};
+      text(convertRawProp(rawProps, "text", sourceProps.text, {})),
+      mostRecentEventCount(convertRawProp(
+          rawProps,
+          "mostRecentEventCount",
+          sourceProps.mostRecentEventCount,
+          {})){};
 
 TextAttributes TextInputProps::getEffectiveTextAttributes() const {
   auto result = TextAttributes::defaultTextAttributes();

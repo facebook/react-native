@@ -22,6 +22,7 @@ class TextInputMetrics {
   Point contentOffset;
   EdgeInsets contentInset;
   Size containerSize;
+  int eventCount;
 };
 
 class TextInputEventEmitter : public ViewEventEmitter {

@@ -28,7 +28,7 @@ using namespace facebook::react;
 @implementation RCTTextInputComponentView {
   TextInputShadowNode::ConcreteState::Shared _state;
   UIView<RCTBackedTextInputViewProtocol> *_backedTextInputView;
-  size_t _stateRevision;
+  NSUInteger _mostRecentEventCount;
   NSAttributedString *_lastStringStateWasUpdatedWith;
 
   /*
@@ -55,7 +55,6 @@ using namespace facebook::react;
     _backedTextInputView.frame = self.bounds;
     _backedTextInputView.textInputDelegate = self;
     _ignoreNextTextInputCall = NO;
-    _stateRevision = State::initialRevisionValue;
     [self addSubview:_backedTextInputView];
   }
 
@@ -180,9 +179,8 @@ using namespace facebook::react;
     return;
   }
 
-  if (_state->getRevision() != _stateRevision) {
+  if (_mostRecentEventCount == _state->getData().mostRecentEventCount) {
     auto data = _state->getData();
-    _stateRevision = _state->getRevision();
     [self _setAttributedString:RCTNSAttributedStringFromAttributedStringBox(data.attributedStringBox)];
   }
 }
@@ -221,8 +219,8 @@ using namespace facebook::react;
 {
   [super prepareForRecycle];
   _backedTextInputView.attributedText = [[NSAttributedString alloc] init];
+  _mostRecentEventCount = 0;
   _state.reset();
-  _stateRevision = State::initialRevisionValue;
   _lastStringStateWasUpdatedWith = nil;
   _ignoreNextTextInputCall = NO;
 }
@@ -360,6 +358,7 @@ using namespace facebook::react;
   TextInputMetrics metrics;
   metrics.text = RCTStringFromNSString(_backedTextInputView.attributedText.string);
   metrics.selectionRange = [self _selectionRange];
+  metrics.eventCount = _mostRecentEventCount;
   return metrics;
 }
 
@@ -370,12 +369,12 @@ using namespace facebook::react;
   if (!_state) {
     return;
   }
-
   auto data = _state->getData();
   _lastStringStateWasUpdatedWith = attributedString;
   data.attributedStringBox = RCTAttributedStringBoxFromNSAttributedString(attributedString);
-  _state->updateState(std::move(data), EventPriority::SynchronousUnbatched);
-  _stateRevision = _state->getRevision() + 1;
+  _mostRecentEventCount += 1;
+  data.mostRecentEventCount = _mostRecentEventCount;
+  _state->updateState(std::move(data));
 }
 
 - (AttributedString::Range)_selectionRange
@@ -407,9 +406,7 @@ using namespace facebook::react;
 
 - (void)setMostRecentEventCount:(NSInteger)eventCount
 {
-  // no-op. `eventCount` isn't used in Fabric's TextInput.
-  // We are keeping it so commands are backwards
-  // compatible with Paper's TextInput.
+  _mostRecentEventCount = eventCount;
 }
 
 - (void)setTextAndSelection:(NSInteger)eventCount
@@ -417,9 +414,10 @@ using namespace facebook::react;
                       start:(NSInteger)start
                         end:(NSInteger)end
 {
-  // `eventCount` is ignored, isn't used in Fabric's TextInput.
-  // We are keeping it so commands are
-  // backwards compatible with Paper's TextInput.
+  if (_mostRecentEventCount != eventCount) {
+    return;
+  }
+
   if (value) {
     NSMutableAttributedString *mutableString =
         [[NSMutableAttributedString alloc] initWithAttributedString:_backedTextInputView.attributedText];
