@@ -119,7 +119,7 @@ class ScrollViewStickyHeader extends React.Component<Props, State> {
         //   header to continue scrolling up and make room for the next sticky header.
         //   In the case that there is no next header just translate equally to
         //   scroll indefinitely.
-        inputRange.push(layoutY);
+        inputRange.push(layoutY < 0 ? 0 : layoutY);
         outputRange.push(0);
         // If the next sticky header has not loaded yet (probably windowing) or is the last
         // we can just keep it sticked forever.
