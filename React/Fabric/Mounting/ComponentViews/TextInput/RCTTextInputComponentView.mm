@@ -29,6 +29,19 @@ using namespace facebook::react;
   TextInputShadowNode::ConcreteState::Shared _state;
   UIView<RCTBackedTextInputViewProtocol> *_backedTextInputView;
   size_t _stateRevision;
+  NSAttributedString *_lastStringStateWasUpdatedWith;
+
+  /*
+   * UIKit uses either UITextField or UITextView as its UIKit element for <TextInput>. UITextField is for single line
+   * entry, UITextView is for multiline entry. There is a problem with order of events when user types a character. In
+   * UITextField (single line text entry), typing a character first triggers `onChange` event and then
+   * onSelectionChange. In UITextView (multi line text entry), typing a character first triggers `onSelectionChange` and
+   * then onChange. JavaScript depends on `onChange` to be called before `onSelectionChange`. This flag keeps state so
+   * if UITextView is backing text input view, inside `-[RCTTextInputComponentView textInputDidChangeSelection]` we make
+   * sure to call `onChange` before `onSelectionChange` and ignore next `-[RCTTextInputComponentView
+   * textInputDidChange]` call.
+   */
+  BOOL _ignoreNextTextInputCall;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame
@@ -41,6 +54,7 @@ using namespace facebook::react;
     _backedTextInputView = props.traits.multiline ? [[RCTUITextView alloc] init] : [[RCTUITextField alloc] init];
     _backedTextInputView.frame = self.bounds;
     _backedTextInputView.textInputDelegate = self;
+    _ignoreNextTextInputCall = NO;
     _stateRevision = State::initialRevisionValue;
     [self addSubview:_backedTextInputView];
   }
@@ -190,6 +204,8 @@ using namespace facebook::react;
   _backedTextInputView.attributedText = [[NSAttributedString alloc] init];
   _state.reset();
   _stateRevision = State::initialRevisionValue;
+  _lastStringStateWasUpdatedWith = nil;
+  _ignoreNextTextInputCall = NO;
 }
 
 #pragma mark - RCTComponentViewProtocol
@@ -294,6 +310,10 @@ using namespace facebook::react;
 
 - (void)textInputDidChange
 {
+  if (_ignoreNextTextInputCall) {
+    _ignoreNextTextInputCall = NO;
+    return;
+  }
   [self _updateState];
 
   if (_eventEmitter) {
@@ -303,6 +323,12 @@ using namespace facebook::react;
 
 - (void)textInputDidChangeSelection
 {
+  auto const &props = *std::static_pointer_cast<TextInputProps const>(_props);
+  if (props.traits.multiline && ![_lastStringStateWasUpdatedWith isEqual:_backedTextInputView.attributedText]) {
+    [self textInputDidChange];
+    _ignoreNextTextInputCall = YES;
+  }
+
   if (_eventEmitter) {
     std::static_pointer_cast<TextInputEventEmitter const>(_eventEmitter)->onSelectionChange([self _textInputMetrics]);
   }
@@ -327,6 +353,7 @@ using namespace facebook::react;
   }
 
   auto data = _state->getData();
+  _lastStringStateWasUpdatedWith = attributedString;
   data.attributedStringBox = RCTAttributedStringBoxFromNSAttributedString(attributedString);
   _state->updateState(std::move(data), EventPriority::SynchronousUnbatched);
   _stateRevision = _state->getRevision() + 1;
