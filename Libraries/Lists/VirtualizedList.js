@@ -1117,10 +1117,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
               element.props.onLayout(event);
             }
           },
-          style: StyleSheet.compose(
-            inversionStyle,
-            element.props.style,
-          ),
+          style: StyleSheet.compose(inversionStyle, element.props.style),
         }),
       );
     }

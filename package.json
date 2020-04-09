@@ -144,7 +144,7 @@
     "jest-junit": "^6.3.0",
     "jscodeshift": "^0.7.0",
     "mkdirp": "^0.5.1",
-    "prettier": "1.17.0",
+    "prettier": "1.19.1",
     "react": "16.13.1",
     "react-test-renderer": "16.13.1",
     "shelljs": "^0.7.8",

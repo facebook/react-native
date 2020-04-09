@@ -101,10 +101,7 @@ const ActivityIndicator = (props: Props, forwardedRef?: any) => {
   return (
     <View
       onLayout={onLayout}
-      style={StyleSheet.compose(
-        styles.container,
-        style,
-      )}>
+      style={StyleSheet.compose(styles.container, style)}>
       {Platform.OS === 'android' ? (
         // $FlowFixMe Flow doesn't know when this is the android component
         <PlatformActivityIndicator {...nativeProps} {...androidProps} />
