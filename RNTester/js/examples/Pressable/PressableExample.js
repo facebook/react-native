@@ -378,7 +378,7 @@ exports.examples = [
   },
   {
     title: 'Pressable with custom Ripple',
-    description: ("Pressable can specify ripple's radius and borderless params": string),
+    description: ("Pressable can specify ripple's radius, color and borderless params": string),
     platform: 'android',
     render: function(): React.Node {
       const nativeFeedbackButton = {
@@ -386,32 +386,42 @@ exports.examples = [
         margin: 10,
       };
       return (
-        <View
-          style={[
-            styles.row,
-            {justifyContent: 'space-around', alignItems: 'center'},
-          ]}>
-          <Pressable
-            android_ripple={{color: 'orange', borderless: true, radius: 30}}>
-            <View>
-              <Text style={[styles.button, nativeFeedbackButton]}>
-                radius 30
-              </Text>
-            </View>
-          </Pressable>
+        <View>
+          <View
+            style={[
+              styles.row,
+              {justifyContent: 'space-around', alignItems: 'center'},
+            ]}>
+            <Pressable
+              android_ripple={{color: 'orange', borderless: true, radius: 30}}>
+              <View>
+                <Text style={[styles.button, nativeFeedbackButton]}>
+                  radius 30
+                </Text>
+              </View>
+            </Pressable>
 
-          <Pressable android_ripple={{borderless: true, radius: 150}}>
-            <View>
-              <Text style={[styles.button, nativeFeedbackButton]}>
-                radius 150
-              </Text>
-            </View>
-          </Pressable>
+            <Pressable android_ripple={{borderless: true, radius: 150}}>
+              <View>
+                <Text style={[styles.button, nativeFeedbackButton]}>
+                  radius 150
+                </Text>
+              </View>
+            </Pressable>
 
-          <Pressable android_ripple={{borderless: false, radius: 70}}>
+            <Pressable android_ripple={{borderless: false, radius: 70}}>
+              <View style={styles.block}>
+                <Text style={[styles.button, nativeFeedbackButton]}>
+                  radius 70, with border
+                </Text>
+              </View>
+            </Pressable>
+          </View>
+
+          <Pressable android_ripple={{borderless: false}}>
             <View style={styles.block}>
               <Text style={[styles.button, nativeFeedbackButton]}>
-                radius 70, with border
+                with border, default color and radius
               </Text>
             </View>
           </Pressable>
