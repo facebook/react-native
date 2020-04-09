@@ -183,7 +183,7 @@ using namespace facebook::react;
   if (_state->getRevision() != _stateRevision) {
     auto data = _state->getData();
     _stateRevision = _state->getRevision();
-    _backedTextInputView.attributedText = RCTNSAttributedStringFromAttributedStringBox(data.attributedStringBox);
+    [self _setAttributedString:RCTNSAttributedStringFromAttributedStringBox(data.attributedStringBox)];
   }
 }
 
@@ -196,6 +196,25 @@ using namespace facebook::react;
       UIEdgeInsetsInsetRect(self.bounds, RCTUIEdgeInsetsFromEdgeInsets(layoutMetrics.borderWidth));
   _backedTextInputView.textContainerInset =
       RCTUIEdgeInsetsFromEdgeInsets(layoutMetrics.contentInsets - layoutMetrics.borderWidth);
+}
+
+- (void)_setAttributedString:(NSAttributedString *)attributedString
+{
+  UITextRange *selectedRange = [_backedTextInputView selectedTextRange];
+  _backedTextInputView.attributedText = attributedString;
+  // Calling `[_backedTextInputView setAttributedText]` results
+  // in `textInputDidChangeSelection` being called but not `textInputDidChange`.
+  // For `_ignoreNextTextInputCall` to have correct value, these calls
+  // need to be balanced, that's why we manually set the flag here.
+  _ignoreNextTextInputCall = NO;
+  if (_lastStringStateWasUpdatedWith.length == attributedString.length) {
+    // Calling `[_backedTextInputView setAttributedText]` moves caret
+    // to the end of text input field. This cancels any selection as well
+    // as position in the text input field. In case the length of string
+    // doesn't change, selection and caret position is maintained.
+    [_backedTextInputView setSelectedTextRange:selectedRange notifyDelegate:NO];
+  }
+  _lastStringStateWasUpdatedWith = attributedString;
 }
 
 - (void)prepareForRecycle
@@ -406,7 +425,7 @@ using namespace facebook::react;
         [[NSMutableAttributedString alloc] initWithAttributedString:_backedTextInputView.attributedText];
     [mutableString replaceCharactersInRange:NSMakeRange(0, _backedTextInputView.attributedText.length)
                                  withString:value];
-    _backedTextInputView.attributedText = mutableString;
+    [self _setAttributedString:mutableString];
     [self _updateState];
   }
 
