@@ -14,25 +14,12 @@ import type {HostComponent} from '../../Renderer/shims/ReactNativeTypes';
 import requireNativeComponent from '../../ReactNative/requireNativeComponent';
 import codegenNativeCommands from '../../Utilities/codegenNativeCommands';
 import type {Int32} from '../../Types/CodegenTypes';
+import type {TextInputNativeCommands} from './TextInputNativeCommands';
 import * as React from 'react';
 
 type NativeType = HostComponent<mixed>;
 
-interface NativeCommands {
-  +focus: (viewRef: React.ElementRef<NativeType>) => void;
-  +blur: (viewRef: React.ElementRef<NativeType>) => void;
-  +setMostRecentEventCount: (
-    viewRef: React.ElementRef<NativeType>,
-    eventCount: Int32,
-  ) => void;
-  +setTextAndSelection: (
-    viewRef: React.ElementRef<NativeType>,
-    mostRecentEventCount: Int32,
-    value: ?string, // in theory this is nullable
-    start: Int32,
-    end: Int32,
-  ) => void;
-}
+type NativeCommands = TextInputNativeCommands<NativeType>;
 
 export const Commands: NativeCommands = codegenNativeCommands<NativeCommands>({
   supportedCommands: [

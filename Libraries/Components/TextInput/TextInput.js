@@ -30,6 +30,7 @@ import type {ViewProps} from '../View/ViewPropTypes';
 import type {SyntheticEvent, ScrollEvent} from '../../Types/CoreEventTypes';
 import type {PressEvent} from '../../Types/CoreEventTypes';
 import type {HostComponent} from '../../Renderer/shims/ReactNativeTypes';
+import type {TextInputNativeCommands} from './TextInputNativeCommands';
 
 const {useEffect, useRef, useState} = React;
 
@@ -37,18 +38,24 @@ type ReactRefSetter<T> = {current: null | T, ...} | ((ref: null | T) => mixed);
 
 let AndroidTextInput;
 let AndroidTextInputCommands;
-let RCTMultilineTextInputView;
 let RCTSinglelineTextInputView;
+let RCTSinglelineTextInputNativeCommands;
+let RCTMultilineTextInputView;
+let RCTMultilineTextInputNativeCommands;
 
 if (Platform.OS === 'android') {
   AndroidTextInput = require('./AndroidTextInputNativeComponent').default;
   AndroidTextInputCommands = require('./AndroidTextInputNativeComponent')
     .Commands;
 } else if (Platform.OS === 'ios') {
-  RCTMultilineTextInputView = require('./RCTMultilineTextInputNativeComponent')
-    .default;
   RCTSinglelineTextInputView = require('./RCTSingelineTextInputNativeComponent')
     .default;
+  RCTSinglelineTextInputNativeCommands = require('./RCTSingelineTextInputNativeComponent')
+    .Commands;
+  RCTMultilineTextInputView = require('./RCTMultilineTextInputNativeComponent')
+    .default;
+  RCTMultilineTextInputNativeCommands = require('./RCTMultilineTextInputNativeComponent')
+    .Commands;
 }
 
 export type ChangeEvent = SyntheticEvent<
@@ -845,6 +852,15 @@ function InternalTextInput(props: Props): React.Node {
     selection = null;
   }
 
+  let viewCommands: TextInputNativeCommands<HostComponent<any>>;
+  if (AndroidTextInputCommands) {
+    viewCommands = AndroidTextInputCommands;
+  } else {
+    viewCommands = props.multiline
+      ? RCTMultilineTextInputNativeCommands
+      : RCTSinglelineTextInputNativeCommands;
+  }
+
   const text =
     typeof props.value === 'string'
       ? props.value
@@ -877,16 +893,14 @@ function InternalTextInput(props: Props): React.Node {
       return;
     }
 
-    if (AndroidTextInputCommands && inputRef.current != null) {
-      AndroidTextInputCommands.setTextAndSelection(
+    if (inputRef.current != null) {
+      viewCommands.setTextAndSelection(
         inputRef.current,
         mostRecentEventCount,
         text,
         selection?.start ?? -1,
         selection?.end ?? -1,
       );
-    } else if (inputRef.current != null) {
-      inputRef.current.setNativeProps(nativeUpdate);
     }
   }, [
     mostRecentEventCount,
@@ -897,6 +911,7 @@ function InternalTextInput(props: Props): React.Node {
     selection,
     lastNativeSelection,
     text,
+    viewCommands,
   ]);
 
   useEffect(() => {
@@ -921,16 +936,14 @@ function InternalTextInput(props: Props): React.Node {
   }, [inputRef]);
 
   function clear(): void {
-    if (AndroidTextInputCommands && inputRef.current != null) {
-      AndroidTextInputCommands.setTextAndSelection(
+    if (inputRef.current != null) {
+      viewCommands.setTextAndSelection(
         inputRef.current,
         mostRecentEventCount,
         '',
         0,
         0,
       );
-    } else if (inputRef.current != null) {
-      inputRef.current.setNativeProps({text: ''});
     }
   }
 
@@ -985,17 +998,6 @@ function InternalTextInput(props: Props): React.Node {
   };
 
   const _onChange = (event: ChangeEvent) => {
-    if (AndroidTextInputCommands && inputRef.current != null) {
-      // Do nothing
-    } else if (inputRef.current != null) {
-      // Make sure to fire the mostRecentEventCount first so it is already set on
-      // native when the text value is set.
-      // This is now only relevant on iOS until we migrate to ViewCommands everywhere
-      inputRef.current.setNativeProps({
-        mostRecentEventCount: event.nativeEvent.eventCount,
-      });
-    }
-
     const text = event.nativeEvent.text;
     props.onChange && props.onChange(event);
     props.onChangeText && props.onChangeText(text);
