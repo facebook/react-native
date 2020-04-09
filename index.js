@@ -13,7 +13,6 @@
 import typeof AccessibilityInfo from './Libraries/Components/AccessibilityInfo/AccessibilityInfo';
 import typeof ActivityIndicator from './Libraries/Components/ActivityIndicator/ActivityIndicator';
 import typeof Button from './Libraries/Components/Button';
-import typeof CheckBox from './Libraries/Components/CheckBox/CheckBox';
 import typeof DatePickerIOS from './Libraries/Components/DatePicker/DatePickerIOS';
 import typeof DrawerLayoutAndroid from './Libraries/Components/DrawerAndroid/DrawerLayoutAndroid';
 import typeof FlatList from './Libraries/Lists/FlatList';
@@ -120,15 +119,6 @@ module.exports = {
   },
   get Button(): Button {
     return require('./Libraries/Components/Button');
-  },
-  get CheckBox(): CheckBox {
-    warnOnce(
-      'checkBox-moved',
-      'CheckBox has been extracted from react-native core and will be removed in a future release. ' +
-        "It can now be installed and imported from '@react-native-community/checkbox' instead of 'react-native'. " +
-        'See https://github.com/react-native-community/react-native-checkbox',
-    );
-    return require('./Libraries/Components/CheckBox/CheckBox');
   },
   get DatePickerIOS(): DatePickerIOS {
     warnOnce(
@@ -647,6 +637,19 @@ if (__DEV__) {
         'ViewPagerAndroid has been removed from React Native. ' +
           "It can now be installed and imported from '@react-native-community/viewpager' instead of 'react-native'. " +
           'See https://github.com/react-native-community/react-native-viewpager',
+      );
+    },
+  });
+
+  // $FlowFixMe This is intentional: Flow will error when attempting to access CheckBox.
+  Object.defineProperty(module.exports, 'CheckBox', {
+    configurable: true,
+    get() {
+      invariant(
+        false,
+        'CheckBox has been removed from React Native. ' +
+          "It can now be installed and imported from '@react-native-community/checkbox' instead of 'react-native'. " +
+          'See https://github.com/react-native-community/react-native-checkbox',
       );
     },
   });
