@@ -1,18 +1,18 @@
+
 require_relative '../node_modules/react-native/scripts/react_native_pods'
 require_relative '../node_modules/@react-native-community/cli-platform-ios/native_modules'
 
 platform :ios, '10.0'
 
-target 'HelloWorld' do
-  # Pods for HelloWorld
-  use_react_native!
+target 'RNTestProject' do
+  config = use_native_modules!
 
-  target 'HelloWorldTests' do
+  use_react_native!(:path => config["reactNativePath"])
+
+  target 'RNTestProjectTests' do
     inherit! :complete
     # Pods for testing
   end
-
-  use_native_modules!
 
   # Enables Flipper.
   #
