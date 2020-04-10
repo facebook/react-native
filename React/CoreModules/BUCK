@@ -33,7 +33,10 @@ rn_apple_library(
         "UIKit",
     ],
     header_path_prefix = "React",
-    labels = ["supermodule:ios/default/public.react_native.infra"],
+    labels = [
+        "depslint_never_remove",  # Some old NativeModule still relies on +load unfortunately.
+        "supermodule:ios/default/public.react_native.infra",
+    ],
     link_whole = True,
     platform_preprocessor_flags = [(
         "linux",
