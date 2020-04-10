@@ -7,12 +7,11 @@
 
 #import "RCTSafeAreaViewComponentView.h"
 
+#import <React/RCTFabricComponentsPlugins.h>
 #import <React/RCTUtils.h>
 #import <react/components/safeareaview/SafeAreaViewComponentDescriptor.h>
 #import <react/components/safeareaview/SafeAreaViewState.h>
-#import "FBRCTFabricComponentsPlugins.h"
 #import "RCTConversions.h"
-#import "RCTFabricComponentsPlugins.h"
 
 using namespace facebook::react;
 

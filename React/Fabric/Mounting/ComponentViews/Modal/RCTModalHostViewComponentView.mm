@@ -13,7 +13,7 @@
 #import <react/components/rncore/EventEmitters.h>
 #import <react/components/rncore/Props.h>
 
-#import "FBRCTFabricComponentsPlugins.h"
+#import <React/RCTFabricComponentsPlugins.h>
 #import "RCTConversions.h"
 #import "RCTFabricModalHostViewController.h"
 

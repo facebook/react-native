@@ -15,8 +15,7 @@
 #import <react/components/unimplementedview/UnimplementedViewShadowNode.h>
 
 #import <React/RCTConversions.h>
-
-#import "FBRCTFabricComponentsPlugins.h"
+#import <React/RCTFabricComponentsPlugins.h>
 
 using namespace facebook::react;
 

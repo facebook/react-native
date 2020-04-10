@@ -13,10 +13,9 @@
 #import <react/components/rncore/RCTComponentViewHelpers.h>
 
 #import <React/RCTConversions.h>
+#import <React/RCTFabricComponentsPlugins.h>
 #import <React/RCTRefreshableProtocol.h>
 #import <React/RCTScrollViewComponentView.h>
-
-#import "FBRCTFabricComponentsPlugins.h"
 
 using namespace facebook::react;
 

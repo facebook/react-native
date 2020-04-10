@@ -12,7 +12,7 @@
 #import <react/components/rncore/Props.h>
 #import <react/components/rncore/RCTComponentViewHelpers.h>
 
-#import "FBRCTFabricComponentsPlugins.h"
+#import <React/RCTFabricComponentsPlugins.h>
 
 using namespace facebook::react;
 
