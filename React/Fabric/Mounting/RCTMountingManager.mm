@@ -266,7 +266,10 @@ static void RNPerformMountInstructions(
   SystraceSection s("-[RCTMountingManager performTransaction:]");
   RCTAssertMainQueue();
 
-  auto transaction = mountingCoordinator->pullTransaction(DifferentiatorMode::Classic);
+  auto differentiatorMode =
+      self.useModernDifferentiatorMode ? DifferentiatorMode::OptimizedMoves : DifferentiatorMode::Classic;
+
+  auto transaction = mountingCoordinator->pullTransaction(differentiatorMode);
   if (!transaction.has_value()) {
     return;
   }
