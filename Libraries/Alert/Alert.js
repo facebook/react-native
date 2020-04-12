@@ -47,6 +47,10 @@ class Alert {
     buttons?: Buttons,
     options?: Options,
   ): void {
+    if (buttons && !Array.isArray(buttons)) {
+      console.error('buttons must be an array of buttons');
+    }
+
     if (Platform.OS === 'ios') {
       Alert.prompt(title, message, buttons, 'default');
     } else if (Platform.OS === 'android') {
