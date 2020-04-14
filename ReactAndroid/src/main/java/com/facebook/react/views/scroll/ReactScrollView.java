@@ -7,6 +7,8 @@
 
 package com.facebook.react.views.scroll;
 
+import android.app.UiModeManager;
+import android.content.res.Configuration;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Rect;
@@ -37,6 +39,8 @@ import com.facebook.react.uimanager.events.NativeGestureUtil;
 import com.facebook.react.views.view.ReactViewBackgroundManager;
 import java.lang.reflect.Field;
 import java.util.List;
+
+import static android.content.Context.UI_MODE_SERVICE;
 
 /**
  * A simple subclass of ScrollView that doesn't dispatch measure and layout to its children and has
@@ -82,6 +86,7 @@ public class ReactScrollView extends ScrollView
   private View mContentView;
   private ReactViewBackgroundManager mReactBackgroundManager;
   private @Nullable StateWrapper mStateWrapper;
+  private boolean mIsTv;
 
   public ReactScrollView(ReactContext context) {
     this(context, null);
@@ -95,6 +100,9 @@ public class ReactScrollView extends ScrollView
     mScroller = getOverScrollerFromParent();
     setOnHierarchyChangeListener(this);
     setScrollBarStyle(SCROLLBARS_OUTSIDE_OVERLAY);
+
+    UiModeManager uiManager = (UiModeManager) context.getSystemService(UI_MODE_SERVICE);
+    mIsTv = uiManager.getCurrentModeType() == Configuration.UI_MODE_TYPE_TELEVISION;
   }
 
   @Nullable
@@ -228,7 +236,7 @@ public class ReactScrollView extends ScrollView
    */
   @Override
   public void requestChildFocus(View child, View focused) {
-    if (focused != null) {
+    if (focused != null && !mIsTv) {
       scrollToChild(focused);
     }
     super.requestChildFocus(child, focused);
