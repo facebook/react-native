@@ -25,6 +25,10 @@ def detectEntryFile(config) {
  * Detects CLI location in a similar fashion to the React Native CLI
  */
 def detectCliPath(config) {
+    if (config.cliPath) {
+        return config.cliPath
+    }
+
     def cliPath = ["node", "-e", "console.log(require('react-native/cli').bin);"].execute([], projectDir).text
     
     if (cliPath) {
@@ -113,20 +117,16 @@ afterEvaluate {
 
         // Additional node and packager commandline arguments
         def nodeExecutableAndArgs = config.nodeExecutableAndArgs ?: ["node"]
-        def extraPackagerArgs = config.extraPackagerArgs ?: []
+        def cliPath = detectCliPath(config)
 
         def execCommand = []
 
-        if (config.cliPath || config.nodeExecutableAndArgs) {
-            if (Os.isFamily(Os.FAMILY_WINDOWS)) {
-                execCommand.addAll(["cmd", "/c", *nodeExecutableAndArgs, config.cliPath])
-            } else {
-                execCommand.addAll([*nodeExecutableAndArgs, config.cliPath])
-            }
+        if (Os.isFamily(Os.FAMILY_WINDOWS)) {
+            execCommand.addAll(["cmd", "/c", *nodeExecutableAndArgs, cliPath])
         } else {
-            execCommand.add(defaultCliPath())
+            execCommand.addAll([*nodeExecutableAndArgs, cliPath])
         }
-
+        
         def enableHermes = enableHermesForVariant(variant)
 
         def currentBundleTask = tasks.create(
@@ -159,7 +159,7 @@ afterEvaluate {
             def devEnabled = !(config."devDisabledIn${targetName}"
                 || targetName.toLowerCase().contains("release"))
 
-            def extraArgs = extraPackagerArgs;
+            def extraArgs = config.extraPackagerArgs ?: [];
 
             if (bundleConfig) {
                 extraArgs = extraArgs.clone()
