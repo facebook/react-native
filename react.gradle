@@ -21,7 +21,22 @@ def detectEntryFile(config) {
     return "index.js";
 }
 
-def defaultCliPath = "node_modules/react-native/cli.js"
+/**
+ * Detects CLI location in a similar fashion to the React Native CLI
+ */
+def detectCliPath(config) {
+    def cliPath = ["node", "-e", "console.log(require('react-native/cli').bin);"].execute([], projectDir).text
+
+    if (cliPath) {
+        return cliPath
+    } else if (new File("node_modules/react-native/cli.js").exists()) {
+        return "node_modules/react-native/cli.js"
+    } else {
+        throw new Exception("Couldn't determine CLI location. " +
+            "Please set `project.ext.react.cliPath` to the path of the react-native cli.js");
+    }
+}
+
 def composeSourceMapsPath = config.composeSourceMapsPath ?: "node_modules/react-native/scripts/compose-source-maps.js"
 def bundleAssetName = config.bundleAssetName ?: "index.android.bundle"
 def entryFile = detectEntryFile(config)
@@ -109,7 +124,7 @@ afterEvaluate {
                 execCommand.addAll([*nodeExecutableAndArgs, config.cliPath])
             }
         } else {
-            execCommand.add(defaultCliPath)
+            execCommand.add(defaultCliPath())
         }
 
         def enableHermes = enableHermesForVariant(variant)
