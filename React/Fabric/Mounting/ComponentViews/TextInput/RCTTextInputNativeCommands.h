@@ -14,7 +14,6 @@ NS_ASSUME_NONNULL_BEGIN
 @protocol RCTTextInputViewProtocol <NSObject>
 - (void)focus;
 - (void)blur;
-- (void)setMostRecentEventCount:(NSInteger)eventCount;
 - (void)setTextAndSelection:(NSInteger)eventCount
                       value:(NSString *__nullable)value
                       start:(NSInteger)start
@@ -47,27 +46,6 @@ RCTTextInputHandleCommand(id<RCTTextInputViewProtocol> componentView, NSString c
 #endif
 
     [componentView blur];
-    return;
-  }
-
-  if ([commandName isEqualToString:@"setMostRecentEventCount"]) {
-#if RCT_DEBUG
-    if ([args count] != 1) {
-      RCTLogError(
-          @"%@ command %@ received %d arguments, expected %d.", @"TextInput", commandName, (int)[args count], 1);
-      return;
-    }
-#endif
-
-    NSObject *arg0 = args[0];
-#if RCT_DEBUG
-    if (!RCTValidateTypeOfViewCommandArgument(arg0, [NSNumber class], @"number", @"TextInput", commandName, @"1st")) {
-      return;
-    }
-#endif
-    NSInteger eventCount = [(NSNumber *)arg0 intValue];
-
-    [componentView setMostRecentEventCount:eventCount];
     return;
   }
 

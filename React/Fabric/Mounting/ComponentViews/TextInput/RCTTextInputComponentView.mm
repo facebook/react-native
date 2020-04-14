@@ -407,11 +407,6 @@ using namespace facebook::react;
   [_backedTextInputView resignFirstResponder];
 }
 
-- (void)setMostRecentEventCount:(NSInteger)eventCount
-{
-  _mostRecentEventCount = eventCount;
-}
-
 - (void)setTextAndSelection:(NSInteger)eventCount
                       value:(NSString *__nullable)value
                       start:(NSInteger)start
