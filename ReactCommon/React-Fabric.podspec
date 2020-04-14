@@ -102,7 +102,7 @@ Pod::Spec.new do |s|
       sss.source_files         = "fabric/components/legacyviewmanagerinterop/**/*.{m,mm,cpp,h}"
       sss.exclude_files        = "**/tests/*"
       sss.header_dir           = "react/components/legacyviewmanagerinterop"
-      sss.pod_target_xcconfig  = { "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)/ReactCommon\" \"$(PODS_ROOT)/Folly\"" }
+      sss.pod_target_xcconfig  = { "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)/ReactCommon\" \"$(PODS_ROOT)/Folly\" \"$(PODS_ROOT)/Headers/Private/React-Core\"" }
     end
 
     ss.subspec "modal" do |sss|
