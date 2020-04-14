@@ -30,7 +30,7 @@ def reactRoot = file(config.root ?: "../../")
 def inputExcludes = config.inputExcludes ?: ["android/**", "ios/**"]
 def bundleConfig = config.bundleConfig ? "${reactRoot}/${config.bundleConfig}" : null ;
 def enableVmCleanup = config.enableVmCleanup == null ? true : config.enableVmCleanup
-def hermesCommand = config.hermesCommand ?: "../../node_modules/hermes-engine/%OS-BIN%/hermes"
+def hermesCommand = config.hermesCommand ?: "../../node_modules/hermes-engine/%OS-BIN%/hermesc"
 
 def reactNativeDevServerPort() {
     def value = project.getProperties().get("reactNativeDevServerPort")
