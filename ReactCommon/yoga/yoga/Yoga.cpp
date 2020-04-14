@@ -1663,8 +1663,8 @@ static void YGNodeAbsoluteLayoutChild(
 
 static void YGNodeWithMeasureFuncSetMeasuredDimensions(
     const YGNodeRef node,
-    const float availableWidth,
-    const float availableHeight,
+    float availableWidth,
+    float availableHeight,
     const YGMeasureMode widthMeasureMode,
     const YGMeasureMode heightMeasureMode,
     const float ownerWidth,
@@ -1676,6 +1676,13 @@ static void YGNodeWithMeasureFuncSetMeasuredDimensions(
       node,
       node->hasMeasureFunc(),
       "Expected node to have custom measure function");
+
+  if (widthMeasureMode == YGMeasureModeUndefined) {
+    availableWidth = YGUndefined;
+  }
+  if (heightMeasureMode == YGMeasureModeUndefined) {
+    availableHeight = YGUndefined;
+  }
 
   const float paddingAndBorderAxisRow =
       YGNodePaddingAndBorderForAxis(node, YGFlexDirectionRow, ownerWidth);
