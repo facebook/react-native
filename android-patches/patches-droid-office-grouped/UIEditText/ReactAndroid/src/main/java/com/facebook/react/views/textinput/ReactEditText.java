@@ -1,5 +1,5 @@
---- "e:\\github\\fb-react-native-forpatch-base\\ReactAndroid\\src\\main\\java\\com\\facebook\\react\\views\\textinput\\ReactEditText.java"	2020-01-30 13:55:48.432612400 -0800
-+++ "e:\\github\\ms-react-native-forpatch\\ReactAndroid\\src\\main\\java\\com\\facebook\\react\\views\\textinput\\ReactEditText.java"	2020-01-29 14:10:09.612921100 -0800
+--- "D:\\code\\work\\react-native\\ReactAndroid\\src\\main\\java\\com\\facebook\\react\\views\\textinput\\ReactEditText.java"	2020-04-13 10:06:53.422431000 -0700
++++ "D:\\code\\work\\ms_react_native\\ReactAndroid\\src\\main\\java\\com\\facebook\\react\\views\\textinput\\ReactEditText.java"	2020-04-13 18:32:34.087121800 -0700
 @@ -8,6 +8,7 @@
  package com.facebook.react.views.textinput;
  
@@ -54,7 +54,7 @@
    public void addTextChangedListener(TextWatcher watcher) {
      if (mListeners == null) {
        mListeners = new ArrayList<>();
-@@ -272,6 +248,16 @@
+@@ -272,10 +248,26 @@
    @Override
    protected void onFocusChanged(
        boolean focused, int direction, Rect previouslyFocusedRect) {
@@ -71,7 +71,17 @@
      super.onFocusChanged(focused, direction, previouslyFocusedRect);
      if (focused && mSelectionWatcher != null) {
        mSelectionWatcher.onSelectionChanged(getSelectionStart(), getSelectionEnd());
-@@ -291,12 +277,9 @@
+     }
++
++    if(focused)
++      showSoftKeyboard();
++    else
++      hideSoftKeyboard();
++
+   }
+ 
+   public void setSelectionWatcher(SelectionWatcher selectionWatcher) {
+@@ -291,12 +283,9 @@
    }
  
    public boolean getBlurOnSubmit() {
@@ -87,7 +97,7 @@
    }
  
    public void setDisableFullscreenUI(boolean disableFullscreenUI) {
-@@ -359,9 +342,13 @@
+@@ -359,9 +348,13 @@
  
    // VisibleForTesting from {@link TextInputEventsTestCase}.
    public void requestFocusFromJS() {
@@ -103,7 +113,7 @@
    }
  
    /* package */ void clearFocusFromJS() {
-@@ -460,11 +447,17 @@
+@@ -460,11 +453,17 @@
      return true;
    }
  
