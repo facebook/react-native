@@ -26,10 +26,10 @@ def detectEntryFile(config) {
  */
 def detectCliPath(config) {
     def cliPath = ["node", "-e", "console.log(require('react-native/cli').bin);"].execute([], projectDir).text
-
+    
     if (cliPath) {
         return cliPath
-    } else if (new File("node_modules/react-native/cli.js").exists()) {
+    } else if (new File("${projectDir}/../../node_modules/react-native/cli.js").exists()) {
         return "node_modules/react-native/cli.js"
     } else {
         throw new Exception("Couldn't determine CLI location. " +
