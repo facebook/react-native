@@ -21,7 +21,7 @@ def detectEntryFile(config) {
     return "index.js";
 }
 
-def cliPath = config.cliPath ?: "node_modules/react-native/cli.js"
+def defaultCliPath = "node_modules/react-native/cli.js"
 def composeSourceMapsPath = config.composeSourceMapsPath ?: "node_modules/react-native/scripts/compose-source-maps.js"
 def bundleAssetName = config.bundleAssetName ?: "index.android.bundle"
 def entryFile = detectEntryFile(config)
@@ -104,13 +104,12 @@ afterEvaluate {
 
         if (config.cliPath || config.nodeExecutableAndArgs) {
             if (Os.isFamily(Os.FAMILY_WINDOWS)) {
-                execCommand.addAll(["cmd", "/c", *nodeExecutableAndArgs, cliPath])
+                execCommand.addAll(["cmd", "/c", *nodeExecutableAndArgs, config.cliPath])
             } else {
-                execCommand.addAll([*nodeExecutableAndArgs, cliPath])
+                execCommand.addAll([*nodeExecutableAndArgs, config.cliPath])
             }
         } else {
-            throw new Exception("Missing cliPath or nodeExecutableAndArgs from build config. " +
-                "Please set project.ext.react.cliPath to the path of the react-native cli.js");
+            execCommand.add(defaultCliPath)
         }
 
         def enableHermes = enableHermesForVariant(variant)
