@@ -24,12 +24,7 @@ type NativeType = HostComponent<mixed>;
 type NativeCommands = TextInputNativeCommands<NativeType>;
 
 export const Commands: NativeCommands = codegenNativeCommands<NativeCommands>({
-  supportedCommands: [
-    'focus',
-    'blur',
-    'setMostRecentEventCount',
-    'setTextAndSelection',
-  ],
+  supportedCommands: ['focus', 'blur', 'setTextAndSelection'],
 });
 
 let SinglelineTextInputNativeComponent;

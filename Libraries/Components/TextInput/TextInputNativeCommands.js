@@ -17,10 +17,6 @@ import type {Int32} from '../../Types/CodegenTypes';
 export interface TextInputNativeCommands<T> {
   +focus: (viewRef: React.ElementRef<T>) => void;
   +blur: (viewRef: React.ElementRef<T>) => void;
-  +setMostRecentEventCount: (
-    viewRef: React.ElementRef<T>,
-    eventCount: Int32,
-  ) => void;
   +setTextAndSelection: (
     viewRef: React.ElementRef<T>,
     mostRecentEventCount: Int32,
@@ -30,11 +26,6 @@ export interface TextInputNativeCommands<T> {
   ) => void;
 }
 
-const supportedCommands = [
-  'focus',
-  'blur',
-  'setMostRecentEventCount',
-  'setTextAndSelection',
-];
+const supportedCommands = ['focus', 'blur', 'setTextAndSelection'];
 
 export default supportedCommands;

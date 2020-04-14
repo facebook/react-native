@@ -230,9 +230,6 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
       case "blurTextInput":
         reactEditText.clearFocusFromJS();
         break;
-      case "setMostRecentEventCount":
-        // TODO: delete, this is no longer used from JS
-        break;
       case "setTextAndSelection":
         int mostRecentEventCount = args.getInt(0);
         if (mostRecentEventCount == UNSET) {
