@@ -16,9 +16,10 @@ const path = require('path');
 const isReactNativeMacOS = path.basename(__dirname) === 'react-native-macos';
 const iosCommands = isReactNativeMacOS ? [] : ios.commands;
 const androidCommands = isReactNativeMacOS ? [] : android.commands;
+const macosCommands = [require('./local-cli/runMacOS/runMacOS')];
 
 module.exports = {
-  commands: [...iosCommands, ...androidCommands],
+  commands: [...iosCommands, ...androidCommands, ...macosCommands],
   platforms: {
     ios: {
       linkConfig: ios.linkConfig,

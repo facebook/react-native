@@ -59,10 +59,14 @@ function copyProjectTemplateAndReplace(
     { from: path.join(srcRootPath, 'metro.config.macos.js'), to: 'metro.config.macos.js' },
   ].forEach((mapping) => copyAndReplaceWithChangedCallback(mapping.from, destPath, mapping.to, templateVars, options.overwrite));
 
-  console.log(chalk.white.bold('To run your app on macOS:'));
-  console.log(chalk.white(`   open ${macOSDir}/${xcodeProjName}`));
-  console.log(chalk.white('   yarn start:macos'));
-  console.log(chalk.white.bold(`In Xcode switch to the ${projectNameMacOS} scheme then click Run.`));
+  console.log(`
+  ${chalk.blue(`Run instructions for ${chalk.bold('macOS')}`)}:
+    • npx react-native run-macos
+    ${chalk.dim('- or -')}
+    • Open ${macOSDir}/${xcodeProjName} in Xcode or run "xed -b ${macOSDir}"
+    • yarn start:macos
+    • Hit the Run button
+`);
 }
 
 function installDependencies(options) {

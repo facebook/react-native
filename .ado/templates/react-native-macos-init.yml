@@ -87,7 +87,7 @@ steps:
   - task: CmdLine@2
     displayName: Init new project
     inputs:
-      script: react-native init testcli
+      script: npx react-native init testcli
       workingDirectory: $(Agent.BuildDirectory)
 
   - task: CmdLine@2
@@ -96,4 +96,8 @@ steps:
       script: npx react-native-macos-init --version latest --overwrite --prerelease
       workingDirectory: $(Agent.BuildDirectory)/testcli
 
-  # TODO: react-native run-macos and test when implemented
+  - task: CmdLine@2
+    displayName: Run macos
+    inputs:
+      script: npx react-native run-macos
+      workingDirectory: $(Agent.BuildDirectory)/testcli
