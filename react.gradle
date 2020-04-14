@@ -34,7 +34,7 @@ def detectCliPath(config) {
     if (cliPath) {
         return cliPath
     } else if (new File("${projectDir}/../../node_modules/react-native/cli.js").exists()) {
-        return "node_modules/react-native/cli.js"
+        return "${projectDir}/../../node_modules/react-native/cli.js"
     } else {
         throw new Exception("Couldn't determine CLI location. " +
             "Please set `project.ext.react.cliPath` to the path of the react-native cli.js");
