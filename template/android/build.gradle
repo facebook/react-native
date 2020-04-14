@@ -11,7 +11,7 @@ buildscript {
         google()
         jcenter()
     }
-    ext.kotlinVersion = '1.3.0'
+    ext.kotlinVersion = '1.3.10'
     dependencies {
         classpath("com.android.tools.build:gradle:3.5.3")
         // for Detox
