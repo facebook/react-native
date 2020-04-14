@@ -37,8 +37,10 @@
 #endif // TODO(macOS ISS#2323203)
 #import "RCTShadowView+Internal.h"
 #import "RCTShadowView.h"
+#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
 #import "RCTSurfaceRootShadowView.h"
 #import "RCTSurfaceRootView.h"
+#endif // TODO(macOS ISS#2323203)
 #import "RCTUIManagerObserverCoordinator.h"
 #import "RCTUIManagerUtils.h"
 #import "RCTUtils.h"

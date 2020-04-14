@@ -58,23 +58,26 @@ function runMacOS(_, ctx, args) {
  * @param {{configuration: string, scheme?: string, projectPath: string, packager: boolean, verbose: boolean, port: number, terminal: string | undefined}} args
  */
 async function run(xcodeProject, scheme, args) {
-  const appName = await buildProject(xcodeProject, scheme, args);
+  await buildProject(xcodeProject, scheme, args);
 
-  const appPath = getBuildPath(
+  const buildSettings = getBuildSettings(
     xcodeProject,
     args.configuration,
-    appName,
     scheme,
+  );
+  const appPath = path.join(
+    buildSettings.TARGET_BUILD_DIR,
+    buildSettings.FULL_PRODUCT_NAME,
+  );
+  const infoPlistPath = path.join(
+    buildSettings.TARGET_BUILD_DIR,
+    buildSettings.INFOPLIST_PATH,
   );
 
   const bundleID = child_process
     .execFileSync(
       '/usr/libexec/PlistBuddy',
-      [
-        '-c',
-        'Print:CFBundleIdentifier',
-        path.join(appPath, 'Contents/Info.plist'),
-      ],
+      ['-c', 'Print:CFBundleIdentifier', infoPlistPath],
       {encoding: 'utf8'},
     )
     .trim();
@@ -109,7 +112,6 @@ function buildProject(xcodeProject, scheme, args) {
       args.configuration,
       '-scheme',
       scheme,
-      '-UseModernBuildSystem=NO',
     ];
     logger.info(
       `Building ${chalk.dim(
@@ -168,67 +170,46 @@ function buildProject(xcodeProject, scheme, args) {
         );
         return;
       }
-      resolve(getProductName(buildOutput) || scheme);
+      resolve();
     });
   });
 }
 
 /**
- * @param {string} buildSettings
+ * @param {{name: string, isWorkspace: boolean}} xcodeProject
+ * @param {string} configuration
+ * @param {string} scheme
+ * @returns {{ FULL_PRODUCT_NAME: string, INFOPLIST_PATH: string, TARGET_BUILD_DIR: string }}
  */
-function getTargetBuildDir(buildSettings) {
-  const settings = JSON.parse(buildSettings);
+function getBuildSettings(xcodeProject, configuration, scheme) {
+  const settings = JSON.parse(
+    child_process.execFileSync(
+      'xcodebuild',
+      [
+        xcodeProject.isWorkspace ? '-workspace' : '-project',
+        xcodeProject.name,
+        '-scheme',
+        scheme,
+        '-sdk',
+        'macosx',
+        '-configuration',
+        configuration,
+        '-showBuildSettings',
+        '-json',
+      ],
+      {encoding: 'utf8'},
+    ),
+  );
 
   // Find app in all building settings - look for WRAPPER_EXTENSION: 'app',
   for (const i in settings) {
-    const wrapperExtension = settings[i].buildSettings.WRAPPER_EXTENSION;
-    if (wrapperExtension === 'app') {
-      return settings[i].buildSettings.TARGET_BUILD_DIR;
+    const appSettings = settings[i].buildSettings;
+    if (appSettings.WRAPPER_EXTENSION === 'app') {
+      return appSettings;
     }
   }
 
-  return null;
-}
-
-/**
- * @param {{name: string, isWorkspace: boolean}} xcodeProject
- * @param {string} configuration
- * @param {string} appName
- * @param {string} scheme
- */
-function getBuildPath(xcodeProject, configuration, appName, scheme) {
-  const buildSettings = child_process.execFileSync(
-    'xcodebuild',
-    [
-      xcodeProject.isWorkspace ? '-workspace' : '-project',
-      xcodeProject.name,
-      '-scheme',
-      scheme,
-      '-sdk',
-      'macosx',
-      '-configuration',
-      configuration,
-      '-showBuildSettings',
-      '-json',
-    ],
-    {encoding: 'utf8'},
-  );
-  const targetBuildDir = getTargetBuildDir(buildSettings);
-  if (!targetBuildDir) {
-    throw new CLIError('Failed to get the target build directory.');
-  }
-
-  return `${targetBuildDir}/${appName}.app`;
-}
-
-/**
- * @param {string} buildOutput
- */
-function getProductName(buildOutput) {
-  const productNameMatch = /export FULL_PRODUCT_NAME="?(.+).app"?$/m.exec(
-    buildOutput,
-  );
-  return productNameMatch ? productNameMatch[1] : null;
+  throw new CLIError('Failed to get the target build settings.');
 }
 
 function xcprettyAvailable() {

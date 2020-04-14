@@ -1,3 +1,5 @@
+// @ts-check
+
 const fs = require('fs');
 const chalk = require('chalk');
 const path = require('path');
@@ -5,10 +7,27 @@ const copyAndReplace = require('@react-native-community/cli/build/tools/copyAndR
 const walk = require('@react-native-community/cli/build/tools/walk').default;
 const prompt = require('@react-native-community/cli/build/tools/generator/promptSync').default();
 
+/**
+ * @param {string} destPath
+ */
 function createDir(destPath) {
   if (!fs.existsSync(destPath)) {
-    fs.mkdirSync(destPath);
+    fs.mkdirSync(destPath, { recursive: true });
   }
+}
+
+/**
+ * @todo Move this upstream to @react-native-community/cli
+ *
+ * @param {string} templatePath 
+ * @param {Record<string, string>} replacements 
+ */
+function replaceInPath(templatePath, replacements) {
+  let result = templatePath;
+  Object.keys(replacements).forEach(key => {
+    result = result.replace(key, replacements[key]);
+  });
+  return result;
 }
 
 function copyAndReplaceWithChangedCallback(srcPath, destRoot, relativeDestPath, replacements, alwaysOverwrite) {
@@ -35,15 +54,23 @@ function copyAndReplaceWithChangedCallback(srcPath, destRoot, relativeDestPath, 
   );
 }
 
+/**
+ * @param {string} srcPath
+ * @param {string} destPath
+ * @param {string} relativeDestDir
+ * @param {Record<string, string>} replacements
+ * @param {boolean} alwaysOverwrite 
+ */
 function copyAndReplaceAll(srcPath, destPath, relativeDestDir, replacements, alwaysOverwrite) {
   walk(srcPath).forEach(absoluteSrcFilePath => {
     const filename = path.relative(srcPath, absoluteSrcFilePath);
-    const relativeDestPath = path.join(relativeDestDir, filename);
+    const relativeDestPath = path.join(relativeDestDir, replaceInPath(filename, replacements));
     copyAndReplaceWithChangedCallback(absoluteSrcFilePath, destPath, relativeDestPath, replacements, alwaysOverwrite);
   });
 }
 
-function alwaysOverwriteContentChangedCallback(  absoluteSrcFilePath,
+function alwaysOverwriteContentChangedCallback(
+  absoluteSrcFilePath,
   relativeDestPath,
   contentChanged
 ) {

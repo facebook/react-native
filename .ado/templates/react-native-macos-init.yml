@@ -97,6 +97,12 @@ steps:
       workingDirectory: $(Agent.BuildDirectory)/testcli
 
   - task: CmdLine@2
+    displayName: Install pods
+    inputs:
+      script: pod install
+      workingDirectory: $(Agent.BuildDirectory)/testcli/macos
+
+  - task: CmdLine@2
     displayName: Run macos
     inputs:
       script: npx react-native run-macos
