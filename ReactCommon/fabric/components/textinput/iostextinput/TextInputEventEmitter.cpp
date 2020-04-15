@@ -20,6 +20,8 @@ static jsi::Value textInputMetricsPayload(
       "text",
       jsi::String::createFromUtf8(runtime, textInputMetrics.text));
 
+  payload.setProperty(runtime, "eventCount", textInputMetrics.eventCount);
+
   {
     auto selection = jsi::Object(runtime);
     selection.setProperty(

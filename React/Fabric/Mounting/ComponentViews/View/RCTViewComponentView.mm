@@ -54,14 +54,13 @@ using namespace facebook::react;
 - (void)layoutSubviews
 {
   [super layoutSubviews];
-
-  if (_borderLayer) {
-    _borderLayer.frame = self.layer.bounds;
-  }
-
-  if (_contentView) {
-    _contentView.frame = RCTCGRectFromRect(_layoutMetrics.getContentFrame());
-  }
+  // Consider whether using `updateLayoutMetrics:oldLayoutMetrics`
+  // isn't more appropriate for your use case. `layoutSubviews` is called
+  // by UIKit while `updateLayoutMetrics:oldLayoutMetrics` is called
+  // by React Native Renderer within `CATransaction`.
+  // If you are calling `setFrame:` or other methods that cause
+  // `layoutSubviews` to be triggered, `_contentView`'s and `_borderLayout`'s
+  // frames might get out of sync with `self.bounds`.
 }
 
 - (BOOL)pointInside:(CGPoint)point withEvent:(UIEvent *)event
@@ -258,6 +257,14 @@ using namespace facebook::react;
 
   _layoutMetrics = layoutMetrics;
   _needsInvalidateLayer = YES;
+
+  if (_borderLayer) {
+    _borderLayer.frame = self.layer.bounds;
+  }
+
+  if (_contentView) {
+    _contentView.frame = RCTCGRectFromRect(_layoutMetrics.getContentFrame());
+  }
 }
 
 - (void)finalizeUpdates:(RNComponentViewUpdateMask)updateMask

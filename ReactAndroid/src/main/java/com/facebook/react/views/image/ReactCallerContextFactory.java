@@ -7,6 +7,7 @@
 
 package com.facebook.react.views.image;
 
+import androidx.annotation.Nullable;
 import com.facebook.react.uimanager.ThemedReactContext;
 
 /**
@@ -21,5 +22,5 @@ public interface ReactCallerContextFactory {
    * @param reactContext {@link ThemedReactContext} used to create the {@link ReactImageView}
    * @return an {@link Object} that represents the CallerContext.
    */
-  Object getOrCreateCallerContext(ThemedReactContext reactContext);
+  Object getOrCreateCallerContext(ThemedReactContext reactContext, @Nullable String analyticTag);
 }

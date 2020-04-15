@@ -758,7 +758,26 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
             FLog.d(TAG, "dispatchMountItems: Executing mountItem: " + m);
           }
         }
-        mountItem.execute(mMountingManager);
+
+        // TODO: if early ViewCommand dispatch ships 100% as a feature, this can be removed.
+        // This try/catch catches Retryable errors that can only be thrown by ViewCommands, which
+        // won't be executed here in Early Dispatch mode.
+        try {
+          mountItem.execute(mMountingManager);
+        } catch (RetryableMountingLayerException e) {
+          // It's very common for commands to be executed on views that no longer exist - for
+          // example, a blur event on TextInput being fired because of a navigation event away
+          // from the current screen. If the exception is marked as Retryable, we log a soft
+          // exception but never crash in debug.
+          // It's not clear that logging this is even useful, because these events are very
+          // common, mundane, and there's not much we can do about them currently.
+          ReactSoftException.logSoftException(
+              TAG,
+              new ReactNoCrashSoftException(
+                  "Caught exception executing retryable mounting layer instruction: "
+                      + mountItem.toString(),
+                  e));
+        }
       }
       mBatchedExecutionTime += SystemClock.uptimeMillis() - batchedExecutionStartTime;
     }
@@ -816,14 +835,29 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
     if (ENABLE_FABRIC_LOGS) {
       FLog.d(TAG, "Updating Root Layout Specs");
     }
+
+    ThemedReactContext reactContext = mReactContextForRootTag.get(rootTag);
+    boolean isRTL = false;
+    boolean doLeftAndRightSwapInRTL = false;
+    if (reactContext != null) {
+      isRTL = I18nUtil.getInstance().isRTL(reactContext);
+      doLeftAndRightSwapInRTL = I18nUtil.getInstance().doLeftAndRightSwapInRTL(reactContext);
+    } else {
+      // TODO T65116569: analyze why this happens
+      ReactSoftException.logSoftException(
+          TAG,
+          new IllegalStateException(
+              "updateRootLayoutSpecs called before ReactContext set for tag: " + rootTag));
+    }
+
     mBinding.setConstraints(
         rootTag,
         getMinSize(widthMeasureSpec),
         getMaxSize(widthMeasureSpec),
         getMinSize(heightMeasureSpec),
         getMaxSize(heightMeasureSpec),
-        I18nUtil.getInstance().isRTL(mReactContextForRootTag.get(rootTag)),
-        I18nUtil.getInstance().doLeftAndRightSwapInRTL(mReactContextForRootTag.get(rootTag)));
+        isRTL,
+        doLeftAndRightSwapInRTL);
   }
 
   public void receiveEvent(int reactTag, String eventName, @Nullable WritableMap params) {

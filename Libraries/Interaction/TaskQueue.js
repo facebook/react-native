@@ -172,9 +172,7 @@ class TaskQueue {
         this.hasTasksToProcess() && this._onMoreTasks();
       })
       .catch(ex => {
-        ex.message = `TaskQueue: Error resolving Promise in task ${
-          task.name
-        }: ${ex.message}`;
+        ex.message = `TaskQueue: Error resolving Promise in task ${task.name}: ${ex.message}`;
         throw ex;
       })
       .done();

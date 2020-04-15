@@ -51,6 +51,7 @@ class TextInputProps final : public ViewProps, public BaseTextProps {
    * "Private" (only used by TextInput.js) props
    */
   std::string const text{};
+  int const mostRecentEventCount{0};
 
   /*
    * Accessors

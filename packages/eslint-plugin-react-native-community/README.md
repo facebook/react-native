@@ -31,3 +31,7 @@ Enforces that error classes ( = classes with PascalCase names ending with `Error
 ### `no-haste-imports`
 
 Disallows Haste module names in `import` statements and `require()` calls.
+
+### `platform-colors`
+
+Enforces that calls to `PlatformColor` and `DynamicColorIOS` are statically analyzable to enable performance optimizations.

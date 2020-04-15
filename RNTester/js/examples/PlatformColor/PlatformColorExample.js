@@ -13,14 +13,7 @@
 const React = require('react');
 const ReactNative = require('react-native');
 import Platform from '../../../../Libraries/Utilities/Platform';
-const {
-  ColorAndroid,
-  DynamicColorIOS,
-  PlatformColor,
-  StyleSheet,
-  Text,
-  View,
-} = ReactNative;
+const {DynamicColorIOS, PlatformColor, StyleSheet, Text, View} = ReactNative;
 
 function PlatformColorsExample() {
   function createTable() {
@@ -263,24 +256,6 @@ function DynamicColorsExample() {
   );
 }
 
-function AndroidColorsExample() {
-  return Platform.OS === 'android' ? (
-    <View style={styles.column}>
-      <View style={styles.row}>
-        <Text style={styles.labelCell}>ColorAndroid('?attr/colorAccent')</Text>
-        <View
-          style={{
-            ...styles.colorCell,
-            backgroundColor: ColorAndroid('?attr/colorAccent'),
-          }}
-        />
-      </View>
-    </View>
-  ) : (
-    <Text style={styles.labelCell}>Not applicable on this platform</Text>
-  );
-}
-
 function VariantColorsExample() {
   return (
     <View style={styles.column}>
@@ -288,7 +263,7 @@ function VariantColorsExample() {
         <Text style={styles.labelCell}>
           {Platform.OS === 'ios'
             ? "DynamicColorIOS({light: 'red', dark: 'blue'})"
-            : "ColorAndroid('?attr/colorAccent')"}
+            : "PlatformColor('?attr/colorAccent')"}
         </Text>
         <View
           style={{
@@ -296,7 +271,7 @@ function VariantColorsExample() {
             backgroundColor:
               Platform.OS === 'ios'
                 ? DynamicColorIOS({light: 'red', dark: 'blue'})
-                : ColorAndroid('?attr/colorAccent'),
+                : PlatformColor('?attr/colorAccent'),
           }}
         />
       </View>
@@ -338,12 +313,6 @@ exports.examples = [
     title: 'iOS Dynamic Colors',
     render(): React.Element<any> {
       return <DynamicColorsExample />;
-    },
-  },
-  {
-    title: 'Android Colors',
-    render(): React.Element<any> {
-      return <AndroidColorsExample />;
     },
   },
   {

@@ -118,28 +118,7 @@ class KeyboardAvoidingView extends React.Component<Props, State> {
 
   _onLayout = (event: ViewLayoutEvent) => {
     this._frame = event.nativeEvent.layout;
-
-    let isInitial = !this._initialFrameHeight;
-
-    if (this.viewRef.current !== null) {
-      // Try to measure inside the window, not the view controller
-      this.viewRef.current.measureInWindow((x, y, width, height) => {
-        const frame: ViewLayout = {
-          x: x,
-          y: y,
-          width: width,
-          height: height,
-        };
-        this._frame = frame;
-
-        if (isInitial) {
-          // save the initial frame height, before the keyboard is visible
-          this._initialFrameHeight = frame.height;
-        }
-      });
-    }
-
-    if (isInitial) {
+    if (!this._initialFrameHeight) {
       // save the initial frame height, before the keyboard is visible
       this._initialFrameHeight = this._frame.height;
     }
@@ -191,10 +170,7 @@ class KeyboardAvoidingView extends React.Component<Props, State> {
         return (
           <View
             ref={this.viewRef}
-            style={StyleSheet.compose(
-              style,
-              heightStyle,
-            )}
+            style={StyleSheet.compose(style, heightStyle)}
             onLayout={this._onLayout}
             {...props}>
             {children}
@@ -209,12 +185,9 @@ class KeyboardAvoidingView extends React.Component<Props, State> {
             onLayout={this._onLayout}
             {...props}>
             <View
-              style={StyleSheet.compose(
-                contentContainerStyle,
-                {
-                  bottom: bottomHeight,
-                },
-              )}>
+              style={StyleSheet.compose(contentContainerStyle, {
+                bottom: bottomHeight,
+              })}>
               {children}
             </View>
           </View>
@@ -224,10 +197,7 @@ class KeyboardAvoidingView extends React.Component<Props, State> {
         return (
           <View
             ref={this.viewRef}
-            style={StyleSheet.compose(
-              style,
-              {paddingBottom: bottomHeight},
-            )}
+            style={StyleSheet.compose(style, {paddingBottom: bottomHeight})}
             onLayout={this._onLayout}
             {...props}>
             {children}

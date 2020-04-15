@@ -110,9 +110,7 @@ module.exports = {
               .map(param => {
                 const translatedParam = translatePrimitiveJSTypeToCpp(
                   param.typeAnnotation,
-                  `Unspopported type for param "${param.name}" in ${
-                    prop.name
-                  }. Found: ${param.typeAnnotation.type}`,
+                  `Unspopported type for param "${param.name}" in ${prop.name}. Found: ${param.typeAnnotation.type}`,
                 );
                 const isObject = translatedParam.startsWith('jsi::');
                 return (
@@ -128,9 +126,7 @@ module.exports = {
                 '::_RETURN_VALUE_::',
                 translatePrimitiveJSTypeToCpp(
                   prop.typeAnnotation.returnTypeAnnotation,
-                  `Unspopported return type for ${prop.name}. Found: ${
-                    prop.typeAnnotation.returnTypeAnnotation.type
-                  }`,
+                  `Unspopported return type for ${prop.name}. Found: ${prop.typeAnnotation.returnTypeAnnotation.type}`,
                 ),
               )
               .replace(

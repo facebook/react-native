@@ -455,4 +455,14 @@ public class ReactContext extends ContextWrapper {
     }
     return mCatalystInstance.getJSIModule(moduleType);
   }
+
+  /**
+   * Get the sourceURL for the JS bundle from the CatalystInstance. This method is needed for
+   * compatibility with bridgeless mode, which has no CatalystInstance.
+   *
+   * @return The JS bundle URL set when the bundle was loaded
+   */
+  public @Nullable String getSourceURL() {
+    return mCatalystInstance.getSourceURL();
+  }
 }

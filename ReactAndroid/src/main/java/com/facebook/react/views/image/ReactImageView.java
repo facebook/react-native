@@ -90,6 +90,11 @@ public class ReactImageView extends GenericDraweeView {
   private static final Matrix sInverse = new Matrix();
   private ImageResizeMethod mResizeMethod = ImageResizeMethod.AUTO;
 
+  public void updateCallerContext(@Nullable Object callerContext) {
+    mCallerContext = callerContext;
+    mIsDirty = true;
+  }
+
   private class RoundedCornerPostprocessor extends BasePostprocessor {
 
     void getRadii(Bitmap source, float[] computedCornerRadii, float[] mappedRadii) {
@@ -197,7 +202,7 @@ public class ReactImageView extends GenericDraweeView {
   private @Nullable ControllerListener mControllerListener;
   private @Nullable ControllerListener mControllerForTesting;
   private @Nullable GlobalImageLoadListener mGlobalImageLoadListener;
-  private final @Nullable Object mCallerContext;
+  private @Nullable Object mCallerContext;
   private int mFadeDurationMs = -1;
   private boolean mProgressiveRenderingEnabled;
   private ReadableMap mHeaders;

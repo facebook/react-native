@@ -1036,6 +1036,12 @@ public class ReactInstanceManager {
                           try {
                             setupReactContext(reactApplicationContext);
                           } catch (Exception e) {
+                            // TODO T62192299: remove this after investigation
+                            FLog.e(
+                                ReactConstants.TAG,
+                                "ReactInstanceManager caught exception in setupReactContext",
+                                e);
+
                             mDevSupportManager.handleException(e);
                           }
                         }

@@ -406,9 +406,7 @@ function buildMethodSchema(
   const value = getValueFromTypes(property.value, types);
   if (value.type !== 'FunctionTypeAnnotation') {
     throw new Error(
-      `Only methods are supported as module properties. Found ${
-        value.type
-      } in ${property.key.name}`,
+      `Only methods are supported as module properties. Found ${value.type} in ${property.key.name}`,
     );
   }
   const params = value.params.map(param =>
