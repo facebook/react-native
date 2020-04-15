@@ -922,24 +922,18 @@ bool JSCRuntime::isArray(const jsi::Object &obj) const {
 #endif
 }
 
-bool JSCRuntime::isArrayBuffer(const jsi::Object & /*obj*/) const {
-  // TODO: T23270523 - This would fail on builds that use our custom JSC
-  // auto typedArrayType = JSValueGetTypedArrayType(ctx_, objectRef(obj),
-  // nullptr);  return typedArrayType == kJSTypedArrayTypeArrayBuffer;
-  throw std::runtime_error("Unsupported");
+bool JSCRuntime::isArrayBuffer(const jsi::Object &obj) const {
+  auto typedArrayType = JSValueGetTypedArrayType(ctx_, objectRef(obj), nullptr);
+  return typedArrayType == kJSTypedArrayTypeArrayBuffer;
 }
 
-uint8_t *JSCRuntime::data(const jsi::ArrayBuffer & /*obj*/) {
-  // TODO: T23270523 - This would fail on builds that use our custom JSC
-  // return static_cast<uint8_t*>(
-  //    JSObjectGetArrayBufferBytesPtr(ctx_, objectRef(obj), nullptr));
-  throw std::runtime_error("Unsupported");
+uint8_t *JSCRuntime::data(const jsi::ArrayBuffer &obj) {
+  return static_cast<uint8_t*>(
+      JSObjectGetArrayBufferBytesPtr(ctx_, objectRef(obj), nullptr));
 }
 
-size_t JSCRuntime::size(const jsi::ArrayBuffer & /*obj*/) {
-  // TODO: T23270523 - This would fail on builds that use our custom JSC
-  // return JSObjectGetArrayBufferByteLength(ctx_, objectRef(obj), nullptr);
-  throw std::runtime_error("Unsupported");
+size_t JSCRuntime::size(const jsi::ArrayBuffer &obj) {
+  return JSObjectGetArrayBufferByteLength(ctx_, objectRef(obj), nullptr);
 }
 
 bool JSCRuntime::isFunction(const jsi::Object &obj) const {
