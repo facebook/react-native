@@ -32,7 +32,7 @@ import java.util.*;
  */
 public class TurboModuleManager implements JSIModule, TurboModuleRegistry {
   private static volatile boolean sIsSoLibraryLoaded;
-  private final List<String> mEagerInitModuleNames;
+  private final List<String> mEagerInitModuleNames = new ArrayList<>();
   private final TurboModuleProvider mJavaModuleProvider;
   private final TurboModuleProvider mCxxModuleProvider;
 
@@ -64,8 +64,11 @@ public class TurboModuleManager implements JSIModule, TurboModuleRegistry {
             delegate);
     installJSIBindings();
 
-    mEagerInitModuleNames =
-        delegate == null ? new ArrayList<String>() : delegate.getEagerInitModuleNames();
+    if (delegate != null) {
+      synchronized (delegate) {
+        mEagerInitModuleNames.addAll(delegate.getEagerInitModuleNames());
+      }
+    }
 
     mJavaModuleProvider =
         new TurboModuleProvider() {
@@ -75,7 +78,10 @@ public class TurboModuleManager implements JSIModule, TurboModuleRegistry {
               return null;
             }
 
-            return delegate.getModule(moduleName);
+            /** TODO(T65532092): Should TurboModuleManagerDelegate be thread-safe? */
+            synchronized (delegate) {
+              return delegate.getModule(moduleName);
+            }
           }
         };
 
@@ -87,7 +93,13 @@ public class TurboModuleManager implements JSIModule, TurboModuleRegistry {
               return null;
             }
 
-            CxxModuleWrapper nativeModule = delegate.getLegacyCxxModule(moduleName);
+            CxxModuleWrapper nativeModule;
+
+            /** TODO(T65532092): Should TurboModuleManagerDelegate be thread-safe? */
+            synchronized (delegate) {
+              nativeModule = delegate.getLegacyCxxModule(moduleName);
+            }
+
             if (nativeModule != null) {
               // TurboModuleManagerDelegate must always return TurboModules
               Assertions.assertCondition(
