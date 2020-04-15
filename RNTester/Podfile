@@ -43,8 +43,7 @@ require_relative '../scripts/autolink-ios'
 install! 'cocoapods', :deterministic_uuids => false
 
 # TODO(macOS GH#214)
-target 'RNTester' do
-  platform :ios, '9.0'
+def pods()
   # Uncomment for Swift
   # use_frameworks!
 
@@ -65,24 +64,37 @@ target 'RNTester' do
   # use_react_native!(path: "..", turbo_modules_enabled: true, fabric_enabled: true)
 end
 
+target 'RNTester' do
+  platform :ios, '9.0'
+  pods()
+end
+
+target 'RNTesterUnitTests' do
+  platform :ios, '9.0'
+  pods()
+  pod 'React-RCTTest', :path => "./RCTTest"
+end
+
+target 'RNTesterIntegrationTests' do
+  platform :ios, '9.0'
+  pods()
+  pod 'React-RCTTest', :path => "./RCTTest"
+end
+
 # TODO(macOS GH#214)
 target 'RNTester-macOS' do
   platform :osx, '10.14'
-  # Uncomment for Swift
-  # use_frameworks!
+  pods()
+end
 
-  project 'RNTesterPods.xcodeproj'
-  
-  # Enable TurboModule
-  use_react_native!(path: "..", turbo_modules_enabled: true)
-  # pod 'React-turbomodule-samples', :path => '../ReactCommon/turbomodule/samples'
+target 'RNTester-macOSUnitTests' do
+  platform :osx, '10.14'
+  pods()
+  pod 'React-RCTTest', :path => "./RCTTest"
+end
 
-  # Additional Pods which aren't included in the default Podfile
-  pod 'React-ART', :path => '../Libraries/ART'
-  pod 'React-RCTPushNotification', :path => '../Libraries/PushNotificationIOS'
-
-  # Additional Pods which are classed as unstable
-  #
-  # To use fabric: add `fabric_enabled` option to the use_react_native method above, like below
-  # use_react_native!(path: "..", turbo_modules_enabled: true, fabric_enabled: true)
+target 'RNTester-macOSIntegrationTests' do
+  platform :osx, '10.14'
+  pods()
+  pod 'React-RCTTest', :path => "./RCTTest"
 end

@@ -19,8 +19,8 @@ function createDir(destPath) {
 /**
  * @todo Move this upstream to @react-native-community/cli
  *
- * @param {string} templatePath 
- * @param {Record<string, string>} replacements 
+ * @param {string} templatePath
+ * @param {Record<string, string>} replacements
  */
 function replaceInPath(templatePath, replacements) {
   let result = templatePath;
@@ -59,7 +59,7 @@ function copyAndReplaceWithChangedCallback(srcPath, destRoot, relativeDestPath, 
  * @param {string} destPath
  * @param {string} relativeDestDir
  * @param {Record<string, string>} replacements
- * @param {boolean} alwaysOverwrite 
+ * @param {boolean} alwaysOverwrite
  */
 function copyAndReplaceAll(srcPath, destPath, relativeDestDir, replacements, alwaysOverwrite) {
   walk(srcPath).forEach(absoluteSrcFilePath => {

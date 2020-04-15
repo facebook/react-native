@@ -10,7 +10,11 @@
 #import <Foundation/Foundation.h>
 #import <XCTest/XCTest.h>
 
+#if __has_include(<React/RCTImageUtils.h>) // TODO(macOS ISS#2323203)
+#import <React/RCTImageUtils.h>
+#else // [TODO(macOS ISS#2323203)
 #import <RCTImage/RCTImageUtils.h>
+#endif // ]TODO(macOS ISS#2323203)
 
 #define RCTAssertEqualPoints(a, b) { \
 XCTAssertEqual(a.x, b.x); \

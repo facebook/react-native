@@ -6,7 +6,7 @@
  *
  */
 
-#import <React/RCTUIKit.h>
+#import <React/RCTUIKit.h> // TODO(macOS ISS#2323203)
 #import <XCTest/XCTest.h>
 
 #import <React/RCTBridgeModule.h>

@@ -8,11 +8,7 @@
 
 #import <XCTest/XCTest.h>
 
-#if !TARGET_OS_OSX // TODO(macOS ISS#2323203), to run Mac tests
 #import <RCTTest/RCTTestRunner.h>
-#else
-#import "../RCTTest/RCTTestRunner.h"
-#endif // TODO(macOS ISS#2323203)
 #import <React/RCTRootShadowView.h>
 #import <React/RCTShadowView.h>
 #import <React/RCTUIManager.h>

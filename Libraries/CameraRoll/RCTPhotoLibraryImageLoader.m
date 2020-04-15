@@ -45,9 +45,11 @@ RCT_EXPORT_MODULE()
   if (!imageURL) {
     completionHandler(RCTErrorWithMessage(@"Cannot load a photo library asset with no URL"), nil);
     return ^{};
+#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
   } else if ([imageURL.scheme caseInsensitiveCompare:@"assets-library"] == NSOrderedSame) {
     assetID = [imageURL absoluteString];
     results = [PHAsset fetchAssetsWithALAssetURLs:@[imageURL] options:nil];
+#endif // TODO(macOS ISS#2323203)
   } else {
     assetID = [imageURL.absoluteString substringFromIndex:@"ph://".length];
     results = [PHAsset fetchAssetsWithLocalIdentifiers:@[assetID] options:nil];

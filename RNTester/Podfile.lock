@@ -84,6 +84,8 @@ PODS:
     - React-Core (= 1000.0.0)
   - React-RCTSettings (1000.0.0):
     - React-Core (= 1000.0.0)
+  - React-RCTTest (1000.0.0):
+    - React-Core (= 1000.0.0)
   - React-RCTText (1000.0.0):
     - React-Core (= 1000.0.0)
   - React-RCTVibration (1000.0.0):
@@ -143,6 +145,7 @@ DEPENDENCIES:
   - React-RCTNetwork (from `../Libraries/Network`)
   - React-RCTPushNotification (from `../Libraries/PushNotificationIOS`)
   - React-RCTSettings (from `../Libraries/Settings`)
+  - React-RCTTest (from `./RCTTest`)
   - React-RCTText (from `../Libraries/Text`)
   - React-RCTVibration (from `../Libraries/Vibration`)
   - React-RCTWebSocket (from `../Libraries/WebSocket`)
@@ -197,6 +200,8 @@ EXTERNAL SOURCES:
     :path: "../Libraries/PushNotificationIOS"
   React-RCTSettings:
     :path: "../Libraries/Settings"
+  React-RCTTest:
+    :path: "./RCTTest"
   React-RCTText:
     :path: "../Libraries/Text"
   React-RCTVibration:
@@ -217,7 +222,7 @@ SPEC CHECKSUMS:
   glog: b3f6d74f3e2d33396addc0ee724d2b2b79fc3e00
   React: 74861516f70acbdca7b2548aa557bf8deee9698d
   React-ART: 08abf61755c11f2adbc78ae6e2f5b087a403a677
-  React-Core: aa142862b5ebdf94e003787e22417865e1c1016c
+  React-Core: 06246a75cdb32beacf777cda87c61c13276b4271
   React-cxxreact: 3e49ca16e0117d19b859450041c7fe4dc9296399
   React-DevSupport: 91d8812ad81fbfa8084b06e131e3d80087c665e9
   React-fishhook: 1a55e7b86dcab2d0e0db1268681365c3f5eefe0a
@@ -226,21 +231,22 @@ SPEC CHECKSUMS:
   React-jsiexecutor: 9af31e4fb3c7157d6437d11a4686974ffd5310b7
   React-jsinspector: bd0f3d1d100ec90008bdceeecc3b2ccde15f349c
   React-RCTActionSheet: c3adb7754a32492fc5e0bcaf2395221006588b6b
-  React-RCTAnimation: ed93d0ae9533f117e0512738338c4c8479a8925e
-  React-RCTBlob: f4387573b7c109b6feed2f7b6453cf326854bfdc
-  React-RCTCameraRoll: bb4e89e505fddd8a48c76db827e3e43b23b437e3
+  React-RCTAnimation: ae01c6e813366aef34ebe182f007ca42365b5f47
+  React-RCTBlob: 4c36d6a42e2d2ad5deff4b2182ffcf4c6ff0c048
+  React-RCTCameraRoll: 4c8233e7d0d3aee3448faaaa5df90f8168abaeed
   React-RCTImage: 841010ce5a7a0eb96bc3f22659560a176a254fc9
   React-RCTLinking: 4fe50097a4d8c9649b25fd6639257aa475530656
   React-RCTNetwork: b7bf49cc581752158e8aeee3e9aae83ab61fbcd0
   React-RCTPushNotification: 79cbb2aaf51f65b94e844c876f462ec07be33ac5
   React-RCTSettings: 1ad264bf310d7cf7f2b29c94836b84e5a0ca1561
-  React-RCTText: 21e57ebc1cc19db1b74cf40280c3a0360f760dcb
+  React-RCTTest: 6621c76066fa0c1293149d06c2bf2d5b06be6956
+  React-RCTText: fc8369e3ce7c9a474efc539d84b4f9bdc921bc0a
   React-RCTVibration: d9a3da17bd5d3f4d8b57a40e3e7fb842f7e62694
   React-RCTWebSocket: 7bb0868fafa9e8ed961a8f87879e2d2bf7946b3d
   React-turbomodule-core: 970dd38c0e59a09b5919e0a097abdd099c4ae9a7
   React-turbomodule-samples: 4d9081847444fe313ac06bb6ec604c35e49ba8c7
   yoga: fb23117669f477b0f4b3849d6999414cba0c69b7
 
-PODFILE CHECKSUM: 0fe24de33063625557c3c388037ac21ef86e5057
+PODFILE CHECKSUM: d10549a91f1ecde1496088874e41348b2cd79f9f
 
 COCOAPODS: 1.8.4

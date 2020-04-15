@@ -37,4 +37,16 @@ typedef NS_ENUM(NSInteger, UIImageRenderingMode) {
 @property (nonatomic, assign) CGFloat blurRadius;
 @property (nonatomic, assign) RCTResizeMode resizeMode;
 
+#if TARGET_OS_OSX // [TODO(macOS ISS#2323203)
+/**
+ * macOS Properties
+ */
+@property (nonatomic, copy) RCTDirectEventBlock onDoubleClick;
+@property (nonatomic, copy) RCTDirectEventBlock onClick;
+@property (nonatomic, copy) RCTDirectEventBlock onMouseEnter;
+@property (nonatomic, copy) RCTDirectEventBlock onMouseLeave;
+@property (nonatomic, copy) RCTDirectEventBlock onDragEnter;
+@property (nonatomic, copy) RCTDirectEventBlock onDragLeave;
+@property (nonatomic, copy) RCTDirectEventBlock onDrop;
+#endif // ]TODO(macOS ISS#2323203)
 @end

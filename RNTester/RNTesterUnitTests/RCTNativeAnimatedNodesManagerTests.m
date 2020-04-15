@@ -21,6 +21,7 @@ static const NSTimeInterval FRAME_LENGTH = 1.0 / 60.0;
 
 @end
 
+
 @implementation RCTFakeDisplayLink
 {
   NSTimeInterval _timestamp;

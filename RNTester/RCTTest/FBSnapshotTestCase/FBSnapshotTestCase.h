@@ -8,7 +8,7 @@
 
 #import <QuartzCore/QuartzCore.h>
 
-#import <UIKit/UIKit.h>
+#import <React/RCTUIKit.h> // TODO(macOS ISS#2323203)
 
 #import <XCTest/XCTest.h>
 
@@ -38,7 +38,7 @@
  @param error An error to log in an XCTAssert() macro if the method fails (missing reference image, images differ, etc).
  @returns YES if the comparison (or saving of the reference image) succeeded.
  */
-- (BOOL)compareSnapshotOfView:(UIView *)view
+- (BOOL)compareSnapshotOfView:(RCTUIView *)view // TODO(macOS ISS#2323203)
      referenceImagesDirectory:(NSString *)referenceImagesDirectory
                    identifier:(NSString *)identifier
                         error:(NSError **)errorPtr;

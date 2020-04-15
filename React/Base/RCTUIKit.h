@@ -361,6 +361,7 @@ CGPathRef UIBezierPathCreateCGPathRef(UIBezierPath *path);
 
 @property (nonatomic, readonly) BOOL canBecomeFirstResponder;
 - (BOOL)becomeFirstResponder;
+@property(nonatomic, readonly) BOOL isFirstResponder;
 
 @property (nonatomic, getter=isUserInteractionEnabled) BOOL userInteractionEnabled;
 
@@ -372,6 +373,7 @@ CGPathRef UIBezierPathCreateCGPathRef(UIBezierPath *path);
 - (void)didMoveToWindow;
 
 - (void)setNeedsLayout;
+- (void)layoutIfNeeded;
 
 - (void)layoutSubviews;
 

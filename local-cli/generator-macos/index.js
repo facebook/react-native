@@ -19,7 +19,7 @@ const oldProjectName = 'HelloWorld';
  * @param {string} srcRootPath
  * @param {string} destPath
  * @param {string} newProjectName
- * @param {{ overwrite?: boolean }} options 
+ * @param {{ overwrite?: boolean }} options
  */
 function copyProjectTemplateAndReplace(
   srcRootPath,
@@ -75,16 +75,16 @@ function copyProjectTemplateAndReplace(
 }
 
 /**
- * @param {string} basename 
- * @param {"iOS" | "macOS"} platform 
+ * @param {string} basename
+ * @param {"iOS" | "macOS"} platform
  */
 function projectName(basename, platform) {
   return basename + '-' + platform;
 }
 
 /**
- * @param {string} basename 
- * @param {"iOS" | "macOS"} platform 
+ * @param {string} basename
+ * @param {"iOS" | "macOS"} platform
  */
 function srcDirPath(basename, platform) {
   return path.join(macOSDir, projectName(basename, platform));
@@ -120,7 +120,7 @@ function schemesPath(basename) {
 
 /**
  * @param {string} basename
- * @param {"iOS" | "macOS"} platform 
+ * @param {"iOS" | "macOS"} platform
  */
 function schemePath(basename, platform) {
   return path.join(schemesPath(basename), projectName(basename, platform) + '.xcscheme');

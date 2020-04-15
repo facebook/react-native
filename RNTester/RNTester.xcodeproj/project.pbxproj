@@ -137,6 +137,8 @@
 		3578590A1B28D2CF00341EDB /* libRCTLinking.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 357859011B28D2C500341EDB /* libRCTLinking.a */; };
 		383C517F243447EC00CCBC30 /* UpdatePropertiesExampleView.m in Sources */ = {isa = PBXBuildFile; fileRef = 272E6B3C1BEA849E001FCF37 /* UpdatePropertiesExampleView.m */; };
 		383C51A624344A4600CCBC30 /* FlexibleSizeExampleView.m in Sources */ = {isa = PBXBuildFile; fileRef = 27F441E81BEBE5030039B79C /* FlexibleSizeExampleView.m */; };
+		3860669D24461CDF007E7C32 /* RCTNativeSampleTurboModuleSpec.mm in Sources */ = {isa = PBXBuildFile; fileRef = 5C2B71152267DB1A0066069E /* RCTNativeSampleTurboModuleSpec.mm */; };
+		386066C424461CE3007E7C32 /* RCTSampleTurboModule.mm in Sources */ = {isa = PBXBuildFile; fileRef = 5C2B711A2267DB1A0066069E /* RCTSampleTurboModule.mm */; };
 		38C500E222D3CF2E00BCD999 /* RCTConvert_UIColorTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 38C500E122D3CF2E00BCD999 /* RCTConvert_UIColorTests.m */; };
 		39AA31A41DC1DFDC000F7EBB /* RCTUnicodeDecodeTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 39AA31A31DC1DFDC000F7EBB /* RCTUnicodeDecodeTests.m */; };
 		3D05746D1DE6008900184BB4 /* libRCTPushNotification-tvOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3D05746C1DE6008900184BB4 /* libRCTPushNotification-tvOS.a */; };
@@ -3129,11 +3131,13 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3860669D24461CDF007E7C32 /* RCTNativeSampleTurboModuleSpec.mm in Sources */,
 				18FC77901EF4770B002B3F17 /* ViewController.m in Sources */,
 				18FC778D1EF4770B002B3F17 /* main.m in Sources */,
 				18FC778A1EF4770B002B3F17 /* AppDelegate.m in Sources */,
 				383C51A624344A4600CCBC30 /* FlexibleSizeExampleView.m in Sources */,
 				383C517F243447EC00CCBC30 /* UpdatePropertiesExampleView.m in Sources */,
+				386066C424461CE3007E7C32 /* RCTSampleTurboModule.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

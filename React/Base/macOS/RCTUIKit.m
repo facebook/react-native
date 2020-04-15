@@ -256,6 +256,10 @@ static RCTUIView *RCTUIViewCommonInit(RCTUIView *self)
   return [self canBecomeFirstResponder];
 }
 
+- (BOOL)isFirstResponder {
+  return [[self window] firstResponder] == self;
+}
+
 - (void)viewDidMoveToWindow
 {
   [self didMoveToWindow];
@@ -370,6 +374,13 @@ static RCTUIView *RCTUIViewCommonInit(RCTUIView *self)
 - (void)setNeedsLayout
 {
   self.needsLayout = YES;
+}
+
+- (void)layoutIfNeeded
+{
+  if ([self needsLayout]) {
+    [self layout];
+  }
 }
 
 - (void)layoutSubviews
