@@ -488,20 +488,4 @@ describe('VirtualizedList', () => {
       'scrollToIndex out of range: item length 0 but minimum is 1',
     );
   });
-
-  it('throws if using scrollToIndex when requested index is bigger than or equal to item length', () => {
-    const component = ReactTestRenderer.create(
-      <VirtualizedList
-        data={[{key: 'i1'}, {key: 'i2'}, {key: 'i3'}]}
-        renderItem={({item}) => <item value={item.key} />}
-        getItem={(data, index) => data[index]}
-        getItemCount={data => data.length}
-      />,
-    );
-    const instance = component.getInstance();
-
-    expect(() => instance.scrollToIndex({index: 3})).toThrow(
-      'scrollToIndex out of range: requested index 3 is out of 0 to 2',
-    );
-  });
 });
