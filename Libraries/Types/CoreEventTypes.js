@@ -144,13 +144,3 @@ export type FocusEvent = SyntheticEvent<
     target: number,
   |}>,
 >;
-
-export type MouseEvent = SyntheticEvent<
-  $ReadOnly<{|
-    clientX: number,
-    clientY: number,
-    pageX: number,
-    pageY: number,
-    timestamp: number,
-  |}>,
->;

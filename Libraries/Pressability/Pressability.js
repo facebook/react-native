@@ -10,16 +10,10 @@
 
 'use strict';
 
-import {isHoverEnabled} from './HoverState';
 import invariant from 'invariant';
 import SoundManager from '../Components/Sound/SoundManager';
 import {normalizeRect, type RectOrSize} from '../StyleSheet/Rect';
-import type {
-  BlurEvent,
-  FocusEvent,
-  PressEvent,
-  MouseEvent,
-} from '../Types/CoreEventTypes';
+import type {BlurEvent, FocusEvent, PressEvent} from '../Types/CoreEventTypes';
 import Platform from '../Utilities/Platform';
 import UIManager from '../ReactNative/UIManager';
 import type {HostComponent} from '../Renderer/shims/ReactNativeTypes';
@@ -53,16 +47,6 @@ export type PressabilityConfig = $ReadOnly<{|
   android_disableSound?: ?boolean,
 
   /**
-   * Duration to wait after hover in before calling `onHoverIn`.
-   */
-  delayHoverIn?: ?number,
-
-  /**
-   * Duration to wait after hover out before calling `onHoverOut`.
-   */
-  delayHoverOut?: ?number,
-
-  /**
    * Duration (in addition to `delayPressIn`) after which a press gesture is
    * considered a long press gesture. Defaults to 500 (milliseconds).
    */
@@ -87,16 +71,6 @@ export type PressabilityConfig = $ReadOnly<{|
    * Called after the element is focused.
    */
   onFocus?: ?(event: FocusEvent) => mixed,
-
-  /**
-   * Called when the hover is activated to provide visual feedback.
-   */
-  onHoverIn?: ?(event: MouseEvent) => mixed,
-
-  /**
-   * Called when the hover is deactivated to undo visual feedback.
-   */
-  onHoverOut?: ?(event: MouseEvent) => mixed,
 
   /**
    * Called when a long press gesture has been triggered.
@@ -151,8 +125,6 @@ export type EventHandlers = $ReadOnly<{|
   onBlur: (event: BlurEvent) => void,
   onClick: (event: PressEvent) => void,
   onFocus: (event: FocusEvent) => void,
-  onMouseEnter?: (event: MouseEvent) => void,
-  onMouseLeave?: (event: MouseEvent) => void,
   onResponderGrant: (event: PressEvent) => void,
   onResponderMove: (event: PressEvent) => void,
   onResponderRelease: (event: PressEvent) => void,
@@ -376,9 +348,6 @@ const DEFAULT_PRESS_RECT_OFFSETS = {
 export default class Pressability {
   _config: PressabilityConfig;
   _eventHandlers: ?EventHandlers = null;
-  _hoverInDelayTimeout: ?TimeoutID = null;
-  _hoverOutDelayTimeout: ?TimeoutID = null;
-  _isHovered: boolean = false;
   _longPressDelayTimeout: ?TimeoutID = null;
   _pressDelayTimeout: ?TimeoutID = null;
   _pressOutDelayTimeout: ?TimeoutID = null;
@@ -407,8 +376,6 @@ export default class Pressability {
    * Resets any pending timers. This should be called on unmount.
    */
   reset(): void {
-    this._cancelHoverInDelayTimeout();
-    this._cancelHoverOutDelayTimeout();
     this._cancelLongPressDelayTimeout();
     this._cancelPressDelayTimeout();
     this._cancelPressOutDelayTimeout();
@@ -425,22 +392,21 @@ export default class Pressability {
   }
 
   _createEventHandlers(): EventHandlers {
-    const focusEventHandlers = {
+    const eventHandlers = {
       onBlur: (event: BlurEvent): void => {
         const {onBlur} = this._config;
         if (onBlur != null) {
           onBlur(event);
         }
       },
+
       onFocus: (event: FocusEvent): void => {
         const {onFocus} = this._config;
         if (onFocus != null) {
           onFocus(event);
         }
       },
-    };
 
-    const responderEventHandlers = {
       onStartShouldSetResponder: (): boolean => {
         const {disabled} = this._config;
         if (disabled == null) {
@@ -548,60 +514,11 @@ export default class Pressability {
 
     if (process.env.NODE_ENV === 'test') {
       // We are setting this in order to find this node in ReactNativeTestTools
-      responderEventHandlers.onStartShouldSetResponder.testOnly_pressabilityConfig = () =>
+      eventHandlers.onStartShouldSetResponder.testOnly_pressabilityConfig = () =>
         this._config;
     }
 
-    const mouseEventHandlers =
-      Platform.OS === 'ios' || Platform.OS === 'android'
-        ? null
-        : {
-            onMouseEnter: (event: MouseEvent): void => {
-              if (isHoverEnabled()) {
-                this._isHovered = true;
-                this._cancelHoverOutDelayTimeout();
-                const {onHoverIn} = this._config;
-                if (onHoverIn != null) {
-                  const delayHoverIn = normalizeDelay(
-                    this._config.delayHoverIn,
-                  );
-                  if (delayHoverIn > 0) {
-                    this._hoverInDelayTimeout = setTimeout(() => {
-                      onHoverIn(event);
-                    }, delayHoverIn);
-                  } else {
-                    onHoverIn(event);
-                  }
-                }
-              }
-            },
-
-            onMouseLeave: (event: MouseEvent): void => {
-              if (this._isHovered) {
-                this._isHovered = false;
-                this._cancelHoverInDelayTimeout();
-                const {onHoverOut} = this._config;
-                if (onHoverOut != null) {
-                  const delayHoverOut = normalizeDelay(
-                    this._config.delayHoverOut,
-                  );
-                  if (delayHoverOut > 0) {
-                    this._hoverInDelayTimeout = setTimeout(() => {
-                      onHoverOut(event);
-                    }, delayHoverOut);
-                  } else {
-                    onHoverOut(event);
-                  }
-                }
-              }
-            },
-          };
-
-    return {
-      ...focusEventHandlers,
-      ...responderEventHandlers,
-      ...mouseEventHandlers,
-    };
+    return eventHandlers;
   }
 
   /**
@@ -805,20 +722,6 @@ export default class Pressability {
       this._config.onLongPressShouldCancelPress_DEPRECATED == null ||
       this._config.onLongPressShouldCancelPress_DEPRECATED()
     );
-  }
-
-  _cancelHoverInDelayTimeout(): void {
-    if (this._hoverInDelayTimeout != null) {
-      clearTimeout(this._hoverInDelayTimeout);
-      this._hoverInDelayTimeout = null;
-    }
-  }
-
-  _cancelHoverOutDelayTimeout(): void {
-    if (this._hoverOutDelayTimeout != null) {
-      clearTimeout(this._hoverOutDelayTimeout);
-      this._hoverOutDelayTimeout = null;
-    }
   }
 
   _cancelLongPressDelayTimeout(): void {
