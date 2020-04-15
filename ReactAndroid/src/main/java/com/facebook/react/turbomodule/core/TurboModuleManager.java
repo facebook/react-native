@@ -10,6 +10,7 @@ package com.facebook.react.turbomodule.core;
 import androidx.annotation.GuardedBy;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.jni.HybridData;
 import com.facebook.proguard.annotations.DoNotStrip;
@@ -17,6 +18,7 @@ import com.facebook.react.bridge.CxxModuleWrapper;
 import com.facebook.react.bridge.JSIModule;
 import com.facebook.react.bridge.JavaScriptContextHolder;
 import com.facebook.react.bridge.NativeModule;
+import com.facebook.react.common.ReactConstants;
 import com.facebook.react.turbomodule.core.interfaces.CallInvokerHolder;
 import com.facebook.react.turbomodule.core.interfaces.TurboModule;
 import com.facebook.react.turbomodule.core.interfaces.TurboModuleRegistry;
@@ -114,6 +116,12 @@ public class TurboModuleManager implements JSIModule, TurboModuleRegistry {
         /*
          * Always return null after cleanup has started, so that getModule(moduleName) returns null.
          */
+
+        FLog.e(
+            ReactConstants.TAG,
+            "TurboModuleManager.getOrMaybeCreateTurboModuleHolder: Tried to require TurboModule "
+                + moduleName
+                + " after cleanup initiated");
         return null;
       }
 
@@ -174,6 +182,10 @@ public class TurboModuleManager implements JSIModule, TurboModuleRegistry {
          * Therefore, we should initialize on the TurboModule now.
          */
         ((NativeModule) turboModule).initialize();
+      } else {
+        FLog.e(
+            ReactConstants.TAG,
+            "TurboModuleManager.getModule: TurboModule " + moduleName + " not found in delegate");
       }
 
       synchronized (moduleHolder) {
