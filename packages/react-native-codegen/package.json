@@ -7,13 +7,22 @@
     "type": "git",
     "url": "git@github.com:facebook/react-native.git"
   },
+  "scripts": {
+    "build": "yarn clean && yarn flow-remove-types src/ -d lib/ -q && yarn flow-copy-source src/ lib/",
+    "clean": "rm -rf lib",
+    "prepublish": "yarn run build"
+  },
   "license": "MIT",
   "files": [
-    "src"
+    "lib"
   ],
   "dependencies": {
     "flow-parser": "^0.121.0",
     "jscodeshift": "^0.7.0",
     "nullthrows": "^1.1.1"
+  },
+  "devDependencies": {
+    "flow-copy-source": "^2.0.9",
+    "flow-remove-types": "^2.122.0"
   }
 }
