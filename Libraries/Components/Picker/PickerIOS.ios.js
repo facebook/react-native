@@ -17,6 +17,7 @@ const React = require('react');
 const ReactNative = require('../../Renderer/shims/ReactNative');
 const StyleSheet = require('../../StyleSheet/StyleSheet');
 const View = require('../View/View');
+const Platform = require('../../Utilities/Platform'); // TODO(macOS ISS#2323203)
 const processColor = require('../../StyleSheet/processColor');
 const RCTPickerNativeComponent = require('./RCTPickerNativeComponent');
 
@@ -159,7 +160,7 @@ const styles = StyleSheet.create({
     // The picker will conform to whatever width is given, but we do
     // have to set the component's height explicitly on the
     // surrounding view to ensure it gets rendered.
-    height: 216,
+    height: Platform.OS === 'ios' ? 216 : 25, // TODO(macOS ISS#2323203): NSComboBox in Storyboards is 25 points.
   },
 });
 
