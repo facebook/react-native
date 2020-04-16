@@ -25,7 +25,7 @@ namespace facebook {
 
     class JSI_EXPORT NativeAccessibilityInfoSpecJSI : public JavaTurboModule {
     public:
-      NativeAccessibilityInfoSpecJSI(jni::alias_ref<JTurboModule> instance, std::shared_ptr<CallInvoker> jsInvoker, std::shared_ptr<CallInvoker> nativeInvoker);
+      NativeAccessibilityInfoSpecJSI(const JavaTurboModule::InitParams &params);
 
     };
   } // namespace react
@@ -39,7 +39,7 @@ namespace facebook {
 
     class JSI_EXPORT NativeAccessibilityManagerSpecJSI : public JavaTurboModule {
     public:
-      NativeAccessibilityManagerSpecJSI(jni::alias_ref<JTurboModule> instance, std::shared_ptr<CallInvoker> jsInvoker, std::shared_ptr<CallInvoker> nativeInvoker);
+      NativeAccessibilityManagerSpecJSI(const JavaTurboModule::InitParams &params);
 
     };
   } // namespace react
@@ -53,7 +53,7 @@ namespace facebook {
 
     class JSI_EXPORT NativeActionSheetManagerSpecJSI : public JavaTurboModule {
     public:
-      NativeActionSheetManagerSpecJSI(jni::alias_ref<JTurboModule> instance, std::shared_ptr<CallInvoker> jsInvoker, std::shared_ptr<CallInvoker> nativeInvoker);
+      NativeActionSheetManagerSpecJSI(const JavaTurboModule::InitParams &params);
 
     };
   } // namespace react
@@ -67,7 +67,7 @@ namespace facebook {
 
     class JSI_EXPORT NativeAlertManagerSpecJSI : public JavaTurboModule {
     public:
-      NativeAlertManagerSpecJSI(jni::alias_ref<JTurboModule> instance, std::shared_ptr<CallInvoker> jsInvoker, std::shared_ptr<CallInvoker> nativeInvoker);
+      NativeAlertManagerSpecJSI(const JavaTurboModule::InitParams &params);
 
     };
   } // namespace react
@@ -81,7 +81,7 @@ namespace facebook {
 
     class JSI_EXPORT NativeAnimatedModuleSpecJSI : public JavaTurboModule {
     public:
-      NativeAnimatedModuleSpecJSI(jni::alias_ref<JTurboModule> instance, std::shared_ptr<CallInvoker> jsInvoker, std::shared_ptr<CallInvoker> nativeInvoker);
+      NativeAnimatedModuleSpecJSI(const JavaTurboModule::InitParams &params);
 
     };
   } // namespace react
@@ -95,7 +95,7 @@ namespace facebook {
 
     class JSI_EXPORT NativeAnimationsDebugModuleSpecJSI : public JavaTurboModule {
     public:
-      NativeAnimationsDebugModuleSpecJSI(jni::alias_ref<JTurboModule> instance, std::shared_ptr<CallInvoker> jsInvoker, std::shared_ptr<CallInvoker> nativeInvoker);
+      NativeAnimationsDebugModuleSpecJSI(const JavaTurboModule::InitParams &params);
 
     };
   } // namespace react
@@ -109,7 +109,7 @@ namespace facebook {
 
     class JSI_EXPORT NativeAppStateSpecJSI : public JavaTurboModule {
     public:
-      NativeAppStateSpecJSI(jni::alias_ref<JTurboModule> instance, std::shared_ptr<CallInvoker> jsInvoker, std::shared_ptr<CallInvoker> nativeInvoker);
+      NativeAppStateSpecJSI(const JavaTurboModule::InitParams &params);
 
     };
   } // namespace react
@@ -123,7 +123,7 @@ namespace facebook {
 
     class JSI_EXPORT NativeAppearanceSpecJSI : public JavaTurboModule {
     public:
-      NativeAppearanceSpecJSI(jni::alias_ref<JTurboModule> instance, std::shared_ptr<CallInvoker> jsInvoker, std::shared_ptr<CallInvoker> nativeInvoker);
+      NativeAppearanceSpecJSI(const JavaTurboModule::InitParams &params);
 
     };
   } // namespace react
@@ -137,7 +137,7 @@ namespace facebook {
 
     class JSI_EXPORT NativeAsyncStorageSpecJSI : public JavaTurboModule {
     public:
-      NativeAsyncStorageSpecJSI(jni::alias_ref<JTurboModule> instance, std::shared_ptr<CallInvoker> jsInvoker, std::shared_ptr<CallInvoker> nativeInvoker);
+      NativeAsyncStorageSpecJSI(const JavaTurboModule::InitParams &params);
 
     };
   } // namespace react
@@ -151,7 +151,7 @@ namespace facebook {
 
     class JSI_EXPORT NativeBlobModuleSpecJSI : public JavaTurboModule {
     public:
-      NativeBlobModuleSpecJSI(jni::alias_ref<JTurboModule> instance, std::shared_ptr<CallInvoker> jsInvoker, std::shared_ptr<CallInvoker> nativeInvoker);
+      NativeBlobModuleSpecJSI(const JavaTurboModule::InitParams &params);
 
     };
   } // namespace react
@@ -165,7 +165,7 @@ namespace facebook {
 
     class JSI_EXPORT NativeBugReportingSpecJSI : public JavaTurboModule {
     public:
-      NativeBugReportingSpecJSI(jni::alias_ref<JTurboModule> instance, std::shared_ptr<CallInvoker> jsInvoker, std::shared_ptr<CallInvoker> nativeInvoker);
+      NativeBugReportingSpecJSI(const JavaTurboModule::InitParams &params);
 
     };
   } // namespace react
@@ -179,7 +179,7 @@ namespace facebook {
 
     class JSI_EXPORT NativeCameraRollManagerSpecJSI : public JavaTurboModule {
     public:
-      NativeCameraRollManagerSpecJSI(jni::alias_ref<JTurboModule> instance, std::shared_ptr<CallInvoker> jsInvoker, std::shared_ptr<CallInvoker> nativeInvoker);
+      NativeCameraRollManagerSpecJSI(const JavaTurboModule::InitParams &params);
 
     };
   } // namespace react
@@ -193,7 +193,7 @@ namespace facebook {
 
     class JSI_EXPORT NativeClipboardSpecJSI : public JavaTurboModule {
     public:
-      NativeClipboardSpecJSI(jni::alias_ref<JTurboModule> instance, std::shared_ptr<CallInvoker> jsInvoker, std::shared_ptr<CallInvoker> nativeInvoker);
+      NativeClipboardSpecJSI(const JavaTurboModule::InitParams &params);
 
     };
   } // namespace react
@@ -207,7 +207,7 @@ namespace facebook {
 
     class JSI_EXPORT NativeDatePickerAndroidSpecJSI : public JavaTurboModule {
     public:
-      NativeDatePickerAndroidSpecJSI(jni::alias_ref<JTurboModule> instance, std::shared_ptr<CallInvoker> jsInvoker, std::shared_ptr<CallInvoker> nativeInvoker);
+      NativeDatePickerAndroidSpecJSI(const JavaTurboModule::InitParams &params);
 
     };
   } // namespace react
@@ -221,7 +221,7 @@ namespace facebook {
 
     class JSI_EXPORT NativeDevLoadingViewSpecJSI : public JavaTurboModule {
     public:
-      NativeDevLoadingViewSpecJSI(jni::alias_ref<JTurboModule> instance, std::shared_ptr<CallInvoker> jsInvoker, std::shared_ptr<CallInvoker> nativeInvoker);
+      NativeDevLoadingViewSpecJSI(const JavaTurboModule::InitParams &params);
 
     };
   } // namespace react
@@ -235,7 +235,7 @@ namespace facebook {
 
     class JSI_EXPORT NativeDevMenuSpecJSI : public JavaTurboModule {
     public:
-      NativeDevMenuSpecJSI(jni::alias_ref<JTurboModule> instance, std::shared_ptr<CallInvoker> jsInvoker, std::shared_ptr<CallInvoker> nativeInvoker);
+      NativeDevMenuSpecJSI(const JavaTurboModule::InitParams &params);
 
     };
   } // namespace react
@@ -249,7 +249,7 @@ namespace facebook {
 
     class JSI_EXPORT NativeDevSettingsSpecJSI : public JavaTurboModule {
     public:
-      NativeDevSettingsSpecJSI(jni::alias_ref<JTurboModule> instance, std::shared_ptr<CallInvoker> jsInvoker, std::shared_ptr<CallInvoker> nativeInvoker);
+      NativeDevSettingsSpecJSI(const JavaTurboModule::InitParams &params);
 
     };
   } // namespace react
@@ -263,7 +263,7 @@ namespace facebook {
 
     class JSI_EXPORT NativeDeviceEventManagerSpecJSI : public JavaTurboModule {
     public:
-      NativeDeviceEventManagerSpecJSI(jni::alias_ref<JTurboModule> instance, std::shared_ptr<CallInvoker> jsInvoker, std::shared_ptr<CallInvoker> nativeInvoker);
+      NativeDeviceEventManagerSpecJSI(const JavaTurboModule::InitParams &params);
 
     };
   } // namespace react
@@ -277,7 +277,7 @@ namespace facebook {
 
     class JSI_EXPORT NativeDeviceInfoSpecJSI : public JavaTurboModule {
     public:
-      NativeDeviceInfoSpecJSI(jni::alias_ref<JTurboModule> instance, std::shared_ptr<CallInvoker> jsInvoker, std::shared_ptr<CallInvoker> nativeInvoker);
+      NativeDeviceInfoSpecJSI(const JavaTurboModule::InitParams &params);
 
     };
   } // namespace react
@@ -291,7 +291,7 @@ namespace facebook {
 
     class JSI_EXPORT NativeDialogManagerAndroidSpecJSI : public JavaTurboModule {
     public:
-      NativeDialogManagerAndroidSpecJSI(jni::alias_ref<JTurboModule> instance, std::shared_ptr<CallInvoker> jsInvoker, std::shared_ptr<CallInvoker> nativeInvoker);
+      NativeDialogManagerAndroidSpecJSI(const JavaTurboModule::InitParams &params);
 
     };
   } // namespace react
@@ -305,7 +305,7 @@ namespace facebook {
 
     class JSI_EXPORT NativeExceptionsManagerSpecJSI : public JavaTurboModule {
     public:
-      NativeExceptionsManagerSpecJSI(jni::alias_ref<JTurboModule> instance, std::shared_ptr<CallInvoker> jsInvoker, std::shared_ptr<CallInvoker> nativeInvoker);
+      NativeExceptionsManagerSpecJSI(const JavaTurboModule::InitParams &params);
 
     };
   } // namespace react
@@ -319,7 +319,7 @@ namespace facebook {
 
     class JSI_EXPORT NativeFileReaderModuleSpecJSI : public JavaTurboModule {
     public:
-      NativeFileReaderModuleSpecJSI(jni::alias_ref<JTurboModule> instance, std::shared_ptr<CallInvoker> jsInvoker, std::shared_ptr<CallInvoker> nativeInvoker);
+      NativeFileReaderModuleSpecJSI(const JavaTurboModule::InitParams &params);
 
     };
   } // namespace react
@@ -333,7 +333,7 @@ namespace facebook {
 
     class JSI_EXPORT NativeFrameRateLoggerSpecJSI : public JavaTurboModule {
     public:
-      NativeFrameRateLoggerSpecJSI(jni::alias_ref<JTurboModule> instance, std::shared_ptr<CallInvoker> jsInvoker, std::shared_ptr<CallInvoker> nativeInvoker);
+      NativeFrameRateLoggerSpecJSI(const JavaTurboModule::InitParams &params);
 
     };
   } // namespace react
@@ -347,7 +347,7 @@ namespace facebook {
 
     class JSI_EXPORT NativeHeadlessJsTaskSupportSpecJSI : public JavaTurboModule {
     public:
-      NativeHeadlessJsTaskSupportSpecJSI(jni::alias_ref<JTurboModule> instance, std::shared_ptr<CallInvoker> jsInvoker, std::shared_ptr<CallInvoker> nativeInvoker);
+      NativeHeadlessJsTaskSupportSpecJSI(const JavaTurboModule::InitParams &params);
 
     };
   } // namespace react
@@ -361,7 +361,7 @@ namespace facebook {
 
     class JSI_EXPORT NativeI18nManagerSpecJSI : public JavaTurboModule {
     public:
-      NativeI18nManagerSpecJSI(jni::alias_ref<JTurboModule> instance, std::shared_ptr<CallInvoker> jsInvoker, std::shared_ptr<CallInvoker> nativeInvoker);
+      NativeI18nManagerSpecJSI(const JavaTurboModule::InitParams &params);
 
     };
   } // namespace react
@@ -375,7 +375,7 @@ namespace facebook {
 
     class JSI_EXPORT NativeImageEditorSpecJSI : public JavaTurboModule {
     public:
-      NativeImageEditorSpecJSI(jni::alias_ref<JTurboModule> instance, std::shared_ptr<CallInvoker> jsInvoker, std::shared_ptr<CallInvoker> nativeInvoker);
+      NativeImageEditorSpecJSI(const JavaTurboModule::InitParams &params);
 
     };
   } // namespace react
@@ -389,7 +389,7 @@ namespace facebook {
 
     class JSI_EXPORT NativeImageLoaderAndroidSpecJSI : public JavaTurboModule {
     public:
-      NativeImageLoaderAndroidSpecJSI(jni::alias_ref<JTurboModule> instance, std::shared_ptr<CallInvoker> jsInvoker, std::shared_ptr<CallInvoker> nativeInvoker);
+      NativeImageLoaderAndroidSpecJSI(const JavaTurboModule::InitParams &params);
 
     };
   } // namespace react
@@ -403,7 +403,7 @@ namespace facebook {
 
     class JSI_EXPORT NativeImageLoaderIOSSpecJSI : public JavaTurboModule {
     public:
-      NativeImageLoaderIOSSpecJSI(jni::alias_ref<JTurboModule> instance, std::shared_ptr<CallInvoker> jsInvoker, std::shared_ptr<CallInvoker> nativeInvoker);
+      NativeImageLoaderIOSSpecJSI(const JavaTurboModule::InitParams &params);
 
     };
   } // namespace react
@@ -417,7 +417,7 @@ namespace facebook {
 
     class JSI_EXPORT NativeImagePickerIOSSpecJSI : public JavaTurboModule {
     public:
-      NativeImagePickerIOSSpecJSI(jni::alias_ref<JTurboModule> instance, std::shared_ptr<CallInvoker> jsInvoker, std::shared_ptr<CallInvoker> nativeInvoker);
+      NativeImagePickerIOSSpecJSI(const JavaTurboModule::InitParams &params);
 
     };
   } // namespace react
@@ -431,7 +431,7 @@ namespace facebook {
 
     class JSI_EXPORT NativeImageStoreSpecJSI : public JavaTurboModule {
     public:
-      NativeImageStoreSpecJSI(jni::alias_ref<JTurboModule> instance, std::shared_ptr<CallInvoker> jsInvoker, std::shared_ptr<CallInvoker> nativeInvoker);
+      NativeImageStoreSpecJSI(const JavaTurboModule::InitParams &params);
 
     };
   } // namespace react
@@ -445,7 +445,7 @@ namespace facebook {
 
     class JSI_EXPORT NativeJSCHeapCaptureSpecJSI : public JavaTurboModule {
     public:
-      NativeJSCHeapCaptureSpecJSI(jni::alias_ref<JTurboModule> instance, std::shared_ptr<CallInvoker> jsInvoker, std::shared_ptr<CallInvoker> nativeInvoker);
+      NativeJSCHeapCaptureSpecJSI(const JavaTurboModule::InitParams &params);
 
     };
   } // namespace react
@@ -459,7 +459,7 @@ namespace facebook {
 
     class JSI_EXPORT NativeJSCSamplingProfilerSpecJSI : public JavaTurboModule {
     public:
-      NativeJSCSamplingProfilerSpecJSI(jni::alias_ref<JTurboModule> instance, std::shared_ptr<CallInvoker> jsInvoker, std::shared_ptr<CallInvoker> nativeInvoker);
+      NativeJSCSamplingProfilerSpecJSI(const JavaTurboModule::InitParams &params);
 
     };
   } // namespace react
@@ -473,7 +473,7 @@ namespace facebook {
 
     class JSI_EXPORT NativeJSDevSupportSpecJSI : public JavaTurboModule {
     public:
-      NativeJSDevSupportSpecJSI(jni::alias_ref<JTurboModule> instance, std::shared_ptr<CallInvoker> jsInvoker, std::shared_ptr<CallInvoker> nativeInvoker);
+      NativeJSDevSupportSpecJSI(const JavaTurboModule::InitParams &params);
 
     };
   } // namespace react
@@ -487,7 +487,7 @@ namespace facebook {
 
     class JSI_EXPORT NativeKeyboardObserverSpecJSI : public JavaTurboModule {
     public:
-      NativeKeyboardObserverSpecJSI(jni::alias_ref<JTurboModule> instance, std::shared_ptr<CallInvoker> jsInvoker, std::shared_ptr<CallInvoker> nativeInvoker);
+      NativeKeyboardObserverSpecJSI(const JavaTurboModule::InitParams &params);
 
     };
   } // namespace react
@@ -501,7 +501,7 @@ namespace facebook {
 
     class JSI_EXPORT NativeLinkingSpecJSI : public JavaTurboModule {
     public:
-      NativeLinkingSpecJSI(jni::alias_ref<JTurboModule> instance, std::shared_ptr<CallInvoker> jsInvoker, std::shared_ptr<CallInvoker> nativeInvoker);
+      NativeLinkingSpecJSI(const JavaTurboModule::InitParams &params);
 
     };
   } // namespace react
@@ -515,7 +515,7 @@ namespace facebook {
 
     class JSI_EXPORT NativeLogBoxSpecJSI : public JavaTurboModule {
     public:
-      NativeLogBoxSpecJSI(jni::alias_ref<JTurboModule> instance, std::shared_ptr<CallInvoker> jsInvoker, std::shared_ptr<CallInvoker> nativeInvoker);
+      NativeLogBoxSpecJSI(const JavaTurboModule::InitParams &params);
 
     };
   } // namespace react
@@ -529,7 +529,7 @@ namespace facebook {
 
     class JSI_EXPORT NativeModalManagerSpecJSI : public JavaTurboModule {
     public:
-      NativeModalManagerSpecJSI(jni::alias_ref<JTurboModule> instance, std::shared_ptr<CallInvoker> jsInvoker, std::shared_ptr<CallInvoker> nativeInvoker);
+      NativeModalManagerSpecJSI(const JavaTurboModule::InitParams &params);
 
     };
   } // namespace react
@@ -543,7 +543,7 @@ namespace facebook {
 
     class JSI_EXPORT NativeNetworkingAndroidSpecJSI : public JavaTurboModule {
     public:
-      NativeNetworkingAndroidSpecJSI(jni::alias_ref<JTurboModule> instance, std::shared_ptr<CallInvoker> jsInvoker, std::shared_ptr<CallInvoker> nativeInvoker);
+      NativeNetworkingAndroidSpecJSI(const JavaTurboModule::InitParams &params);
 
     };
   } // namespace react
@@ -557,7 +557,7 @@ namespace facebook {
 
     class JSI_EXPORT NativeNetworkingIOSSpecJSI : public JavaTurboModule {
     public:
-      NativeNetworkingIOSSpecJSI(jni::alias_ref<JTurboModule> instance, std::shared_ptr<CallInvoker> jsInvoker, std::shared_ptr<CallInvoker> nativeInvoker);
+      NativeNetworkingIOSSpecJSI(const JavaTurboModule::InitParams &params);
 
     };
   } // namespace react
@@ -571,7 +571,7 @@ namespace facebook {
 
     class JSI_EXPORT NativePermissionsAndroidSpecJSI : public JavaTurboModule {
     public:
-      NativePermissionsAndroidSpecJSI(jni::alias_ref<JTurboModule> instance, std::shared_ptr<CallInvoker> jsInvoker, std::shared_ptr<CallInvoker> nativeInvoker);
+      NativePermissionsAndroidSpecJSI(const JavaTurboModule::InitParams &params);
 
     };
   } // namespace react
@@ -585,7 +585,7 @@ namespace facebook {
 
     class JSI_EXPORT NativePlatformConstantsAndroidSpecJSI : public JavaTurboModule {
     public:
-      NativePlatformConstantsAndroidSpecJSI(jni::alias_ref<JTurboModule> instance, std::shared_ptr<CallInvoker> jsInvoker, std::shared_ptr<CallInvoker> nativeInvoker);
+      NativePlatformConstantsAndroidSpecJSI(const JavaTurboModule::InitParams &params);
 
     };
   } // namespace react
@@ -599,7 +599,7 @@ namespace facebook {
 
     class JSI_EXPORT NativePlatformConstantsIOSSpecJSI : public JavaTurboModule {
     public:
-      NativePlatformConstantsIOSSpecJSI(jni::alias_ref<JTurboModule> instance, std::shared_ptr<CallInvoker> jsInvoker, std::shared_ptr<CallInvoker> nativeInvoker);
+      NativePlatformConstantsIOSSpecJSI(const JavaTurboModule::InitParams &params);
 
     };
   } // namespace react
@@ -613,7 +613,7 @@ namespace facebook {
 
     class JSI_EXPORT NativePushNotificationManagerIOSSpecJSI : public JavaTurboModule {
     public:
-      NativePushNotificationManagerIOSSpecJSI(jni::alias_ref<JTurboModule> instance, std::shared_ptr<CallInvoker> jsInvoker, std::shared_ptr<CallInvoker> nativeInvoker);
+      NativePushNotificationManagerIOSSpecJSI(const JavaTurboModule::InitParams &params);
 
     };
   } // namespace react
@@ -627,7 +627,7 @@ namespace facebook {
 
     class JSI_EXPORT NativeRedBoxSpecJSI : public JavaTurboModule {
     public:
-      NativeRedBoxSpecJSI(jni::alias_ref<JTurboModule> instance, std::shared_ptr<CallInvoker> jsInvoker, std::shared_ptr<CallInvoker> nativeInvoker);
+      NativeRedBoxSpecJSI(const JavaTurboModule::InitParams &params);
 
     };
   } // namespace react
@@ -641,7 +641,7 @@ namespace facebook {
 
     class JSI_EXPORT NativeSegmentFetcherSpecJSI : public JavaTurboModule {
     public:
-      NativeSegmentFetcherSpecJSI(jni::alias_ref<JTurboModule> instance, std::shared_ptr<CallInvoker> jsInvoker, std::shared_ptr<CallInvoker> nativeInvoker);
+      NativeSegmentFetcherSpecJSI(const JavaTurboModule::InitParams &params);
 
     };
   } // namespace react
@@ -655,7 +655,7 @@ namespace facebook {
 
     class JSI_EXPORT NativeSettingsManagerSpecJSI : public JavaTurboModule {
     public:
-      NativeSettingsManagerSpecJSI(jni::alias_ref<JTurboModule> instance, std::shared_ptr<CallInvoker> jsInvoker, std::shared_ptr<CallInvoker> nativeInvoker);
+      NativeSettingsManagerSpecJSI(const JavaTurboModule::InitParams &params);
 
     };
   } // namespace react
@@ -669,7 +669,7 @@ namespace facebook {
 
     class JSI_EXPORT NativeShareModuleSpecJSI : public JavaTurboModule {
     public:
-      NativeShareModuleSpecJSI(jni::alias_ref<JTurboModule> instance, std::shared_ptr<CallInvoker> jsInvoker, std::shared_ptr<CallInvoker> nativeInvoker);
+      NativeShareModuleSpecJSI(const JavaTurboModule::InitParams &params);
 
     };
   } // namespace react
@@ -683,7 +683,7 @@ namespace facebook {
 
     class JSI_EXPORT NativeSoundManagerSpecJSI : public JavaTurboModule {
     public:
-      NativeSoundManagerSpecJSI(jni::alias_ref<JTurboModule> instance, std::shared_ptr<CallInvoker> jsInvoker, std::shared_ptr<CallInvoker> nativeInvoker);
+      NativeSoundManagerSpecJSI(const JavaTurboModule::InitParams &params);
 
     };
   } // namespace react
@@ -697,7 +697,7 @@ namespace facebook {
 
     class JSI_EXPORT NativeSourceCodeSpecJSI : public JavaTurboModule {
     public:
-      NativeSourceCodeSpecJSI(jni::alias_ref<JTurboModule> instance, std::shared_ptr<CallInvoker> jsInvoker, std::shared_ptr<CallInvoker> nativeInvoker);
+      NativeSourceCodeSpecJSI(const JavaTurboModule::InitParams &params);
 
     };
   } // namespace react
@@ -711,7 +711,7 @@ namespace facebook {
 
     class JSI_EXPORT NativeStatusBarManagerAndroidSpecJSI : public JavaTurboModule {
     public:
-      NativeStatusBarManagerAndroidSpecJSI(jni::alias_ref<JTurboModule> instance, std::shared_ptr<CallInvoker> jsInvoker, std::shared_ptr<CallInvoker> nativeInvoker);
+      NativeStatusBarManagerAndroidSpecJSI(const JavaTurboModule::InitParams &params);
 
     };
   } // namespace react
@@ -725,7 +725,7 @@ namespace facebook {
 
     class JSI_EXPORT NativeStatusBarManagerIOSSpecJSI : public JavaTurboModule {
     public:
-      NativeStatusBarManagerIOSSpecJSI(jni::alias_ref<JTurboModule> instance, std::shared_ptr<CallInvoker> jsInvoker, std::shared_ptr<CallInvoker> nativeInvoker);
+      NativeStatusBarManagerIOSSpecJSI(const JavaTurboModule::InitParams &params);
 
     };
   } // namespace react
@@ -739,7 +739,7 @@ namespace facebook {
 
     class JSI_EXPORT NativeTVNavigationEventEmitterSpecJSI : public JavaTurboModule {
     public:
-      NativeTVNavigationEventEmitterSpecJSI(jni::alias_ref<JTurboModule> instance, std::shared_ptr<CallInvoker> jsInvoker, std::shared_ptr<CallInvoker> nativeInvoker);
+      NativeTVNavigationEventEmitterSpecJSI(const JavaTurboModule::InitParams &params);
 
     };
   } // namespace react
@@ -753,7 +753,7 @@ namespace facebook {
 
     class JSI_EXPORT NativeTimePickerAndroidSpecJSI : public JavaTurboModule {
     public:
-      NativeTimePickerAndroidSpecJSI(jni::alias_ref<JTurboModule> instance, std::shared_ptr<CallInvoker> jsInvoker, std::shared_ptr<CallInvoker> nativeInvoker);
+      NativeTimePickerAndroidSpecJSI(const JavaTurboModule::InitParams &params);
 
     };
   } // namespace react
@@ -767,7 +767,7 @@ namespace facebook {
 
     class JSI_EXPORT NativeTimingSpecJSI : public JavaTurboModule {
     public:
-      NativeTimingSpecJSI(jni::alias_ref<JTurboModule> instance, std::shared_ptr<CallInvoker> jsInvoker, std::shared_ptr<CallInvoker> nativeInvoker);
+      NativeTimingSpecJSI(const JavaTurboModule::InitParams &params);
 
     };
   } // namespace react
@@ -781,7 +781,7 @@ namespace facebook {
 
     class JSI_EXPORT NativeToastAndroidSpecJSI : public JavaTurboModule {
     public:
-      NativeToastAndroidSpecJSI(jni::alias_ref<JTurboModule> instance, std::shared_ptr<CallInvoker> jsInvoker, std::shared_ptr<CallInvoker> nativeInvoker);
+      NativeToastAndroidSpecJSI(const JavaTurboModule::InitParams &params);
 
     };
   } // namespace react
@@ -795,7 +795,7 @@ namespace facebook {
 
     class JSI_EXPORT NativeUIManagerSpecJSI : public JavaTurboModule {
     public:
-      NativeUIManagerSpecJSI(jni::alias_ref<JTurboModule> instance, std::shared_ptr<CallInvoker> jsInvoker, std::shared_ptr<CallInvoker> nativeInvoker);
+      NativeUIManagerSpecJSI(const JavaTurboModule::InitParams &params);
 
     };
   } // namespace react
@@ -809,7 +809,7 @@ namespace facebook {
 
     class JSI_EXPORT NativeVibrationSpecJSI : public JavaTurboModule {
     public:
-      NativeVibrationSpecJSI(jni::alias_ref<JTurboModule> instance, std::shared_ptr<CallInvoker> jsInvoker, std::shared_ptr<CallInvoker> nativeInvoker);
+      NativeVibrationSpecJSI(const JavaTurboModule::InitParams &params);
 
     };
   } // namespace react
@@ -823,7 +823,7 @@ namespace facebook {
 
     class JSI_EXPORT NativeWebSocketModuleSpecJSI : public JavaTurboModule {
     public:
-      NativeWebSocketModuleSpecJSI(jni::alias_ref<JTurboModule> instance, std::shared_ptr<CallInvoker> jsInvoker, std::shared_ptr<CallInvoker> nativeInvoker);
+      NativeWebSocketModuleSpecJSI(const JavaTurboModule::InitParams &params);
 
     };
   } // namespace react
