@@ -13,8 +13,8 @@ import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 
 /**
- * This is an interface that should be implemented by view managers supporting the base view
- * properties such as backgroundColor, opacity, etc.
+ * This is an interface that should be implemented by view managers supporting
+ * the base view properties such as backgroundColor, opacity, etc.
  */
 public interface BaseViewManagerInterface<T extends View> {
   void setAccessibilityActions(T view, @Nullable ReadableArray accessibilityActions);
@@ -42,6 +42,8 @@ public interface BaseViewManagerInterface<T extends View> {
   void setBorderTopRightRadius(T view, float borderRadius);
 
   void setElevation(T view, float elevation);
+
+  void setShadowColor(T view, int shadowColor);
 
   void setImportantForAccessibility(T view, @Nullable String importantForAccessibility);
 

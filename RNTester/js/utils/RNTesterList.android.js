@@ -145,6 +145,10 @@ const APIExamples: Array<RNTesterExample> = [
     module: require('../examples/Border/BorderExample'),
   },
   {
+    key: 'BoxShadowExample',
+    module: require('../examples/BoxShadow/BoxShadowExample'),
+  },
+  {
     key: 'ClipboardExample',
     module: require('../examples/Clipboard/ClipboardExample'),
   },
