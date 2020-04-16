@@ -15,6 +15,7 @@ rn_android_library(
         "PUBLIC",
     ],
     deps = [
+        "//fbandroid/java/com/facebook/catalyst/views/checkbox:checkboxAndroid",
         react_native_dep("libraries/fresco/fresco-react-native:imagepipeline"),
         react_native_dep("libraries/soloader/java/com/facebook/soloader:soloader"),
         react_native_dep("third-party/java/infer-annotations:infer-annotations"),
@@ -52,7 +53,6 @@ rn_android_library(
         react_native_target("java/com/facebook/react/turbomodule/core/interfaces:interfaces"),
         react_native_target("java/com/facebook/react/uimanager:uimanager"),
         react_native_target("java/com/facebook/react/views/art:art"),
-        react_native_target("java/com/facebook/react/views/checkbox:checkbox"),
         react_native_target("java/com/facebook/react/views/drawer:drawer"),
         react_native_target("java/com/facebook/react/views/image:image"),
         react_native_target("java/com/facebook/react/views/modal:modal"),
