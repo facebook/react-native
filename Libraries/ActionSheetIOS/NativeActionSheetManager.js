@@ -10,6 +10,7 @@
 
 import type {TurboModule} from '../TurboModule/RCTExport';
 import * as TurboModuleRegistry from '../TurboModule/TurboModuleRegistry';
+import type {ResolvedAssetSource} from '../Image/AssetSourceResolver';
 
 export interface Spec extends TurboModule {
   +getConstants: () => {||};
@@ -25,6 +26,8 @@ export interface Spec extends TurboModule {
       +cancelButtonTintColor?: ?number,
       +userInterfaceStyle?: ?string,
       +disabledButtonIndices?: Array<number>,
+      +icons?: ?Array<ResolvedAssetSource>,
+      +shouldTintIcons?: ?boolean,
     |},
     callback: (buttonIndex: number) => void,
   ) => void;

@@ -97,6 +97,11 @@ RCT_EXPORT_METHOD(showActionSheetWithOptions
   UIColor *cancelButtonTintColor =
       [RCTConvert UIColor:options.cancelButtonTintColor() ? @(*options.cancelButtonTintColor()) : nil];
 
+  NSArray<NSDictionary *> *icons = RCTConvertOptionalVecToArray(options.icons(), ^id(NSObject *element) {
+    return element;
+  });
+  BOOL shouldTintIcons = options.shouldTintIcons() ? [RCTConvert BOOL:@(*options.shouldTintIcons())] : YES;
+
   if (controller == nil) {
     RCTLogError(
         @"Tried to display action sheet but there is no application window. options: %@", @{
@@ -109,6 +114,8 @@ RCT_EXPORT_METHOD(showActionSheetWithOptions
           @"tintColor" : tintColor,
           @"cancelButtonTintColor" : cancelButtonTintColor,
           @"disabledButtonIndices" : disabledButtonIndices,
+          @"icons" : icons,
+          @"shouldTintIcons" : @(shouldTintIcons),
         });
     return;
   }
@@ -144,6 +151,25 @@ RCT_EXPORT_METHOD(showActionSheetWithOptions
     if (isCancelButtonIndex) {
       [actionButton setValue:cancelButtonTintColor forKey:@"titleTextColor"];
     }
+      
+    if (index < icons.count) {
+      NSDictionary *imageDictionary = icons[index];
+
+      if (imageDictionary != nil && ![imageDictionary isEqual:[NSNull null]]) {
+        UIImage *iconImage = [self iconImageFromDictionary:icons[index]];
+        if (iconImage) {
+          if (!shouldTintIcons) {
+            iconImage = [iconImage imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
+          }
+          [actionButton setValue:iconImage forKey:@"image"];
+        } else {
+          RCTLogWarn(
+              @"ActionSheetIOS: Index %@ from `icons` has an invalid icon image",
+              @(index));
+        }
+      }
+    }
+
     [alertController addAction:actionButton];
 
     index++;
@@ -266,6 +292,23 @@ RCT_EXPORT_METHOD(showShareActionSheetWithOptions
 - (std::shared_ptr<TurboModule>)getTurboModule:(const ObjCTurboModule::InitParams &)params
 {
   return std::make_shared<NativeActionSheetManagerSpecJSI>(params);
+}
+
+- (nullable UIImage *)iconImageFromDictionary:(NSDictionary *)dictionary
+{
+  NSString *iconURLString = dictionary[@"uri"];
+  if (!iconURLString) {
+    return nil;
+  }
+  NSURL *iconURL = [NSURL URLWithString:iconURLString];
+  if (!iconURL) {
+    return nil;
+  }
+  NSData *iconData = [NSData dataWithContentsOfURL:iconURL];
+  if (!iconData) {
+    return nil;
+  }
+  return [UIImage imageWithData:iconData];
 }
 
 @end

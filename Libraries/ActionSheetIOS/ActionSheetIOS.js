@@ -12,6 +12,8 @@ import RCTActionSheetManager from './NativeActionSheetManager';
 
 const invariant = require('invariant');
 const processColor = require('../StyleSheet/processColor');
+import type {ImageSource} from '../Image/ImageSource';
+import resolveAssetSource from '../Image/resolveAssetSource';
 import type {ColorValue} from '../StyleSheet/StyleSheet';
 import type {ProcessedColorValue} from '../StyleSheet/processColor';
 
@@ -50,6 +52,8 @@ const ActionSheetIOS = {
       +cancelButtonTintColor?: ColorValue | ProcessedColorValue,
       +userInterfaceStyle?: string,
       +disabledButtonIndices?: Array<number>,
+      +icons?: ?Array<ImageSource>,
+      +shouldTintIcons?: boolean,
     |},
     callback: (buttonIndex: number) => void,
   ) {
@@ -64,6 +68,7 @@ const ActionSheetIOS = {
       tintColor,
       cancelButtonTintColor,
       destructiveButtonIndex,
+      icons,
       ...remainingOptions
     } = options;
     let destructiveButtonIndices = null;
@@ -85,12 +90,20 @@ const ActionSheetIOS = {
         typeof processedCancelButtonTintColor === 'number',
       'Unexpected color given for ActionSheetIOS.showActionSheetWithOptions cancelButtonTintColor',
     );
+
+    let processedIcons = null;
+    if (icons) {
+      invariant(Array.isArray(icons), 'Must provide a valid array of icons');
+      processedIcons = icons.map(icon => resolveAssetSource(icon));
+    }
+
     RCTActionSheetManager.showActionSheetWithOptions(
       {
         ...remainingOptions,
         tintColor: processedTintColor,
         cancelButtonTintColor: processedCancelButtonTintColor,
         destructiveButtonIndices,
+        icons: processedIcons,
       },
       callback,
     );
