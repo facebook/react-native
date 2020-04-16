@@ -222,7 +222,7 @@ RCT_EXPORT_MODULE()
   return [_dataSource settingForKey:key];
 }
 
-- (BOOL)isNuclideDebuggingAvailable
+- (BOOL)isDeviceDebuggingAvailable
 {
 #if RCT_ENABLE_INSPECTOR
   return self.bridge.isInspectable;
