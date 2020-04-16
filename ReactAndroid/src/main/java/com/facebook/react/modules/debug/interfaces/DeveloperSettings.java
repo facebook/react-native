@@ -26,7 +26,7 @@ public interface DeveloperSettings {
   boolean isElementInspectorEnabled();
 
   /** @return Whether Nuclide JS debugging is enabled. */
-  boolean isNuclideJSDebugEnabled();
+  boolean isDeviceDebugEnabled();
 
   /** @return Whether remote JS debugging is enabled. */
   boolean isRemoteJSDebugEnabled();
