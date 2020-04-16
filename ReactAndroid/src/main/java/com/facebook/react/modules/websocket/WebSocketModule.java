@@ -21,6 +21,7 @@ import com.facebook.react.common.ReactConstants;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.facebook.react.modules.network.ForwardingCookieHandler;
+import com.facebook.react.modules.network.OkHttpClientProvider;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -88,12 +89,7 @@ public final class WebSocketModule extends NativeWebSocketModuleSpec {
       @Nullable final ReadableMap options,
       final double socketID) {
     final int id = (int) socketID;
-    OkHttpClient client =
-        new OkHttpClient.Builder()
-            .connectTimeout(10, TimeUnit.SECONDS)
-            .writeTimeout(10, TimeUnit.SECONDS)
-            .readTimeout(0, TimeUnit.MINUTES) // Disable timeouts for read
-            .build();
+    OkHttpClient client = OkHttpClientProvider.createClient();
 
     Request.Builder builder = new Request.Builder().tag(id).url(url);
 
