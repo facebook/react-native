@@ -3,11 +3,10 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 50;
+	objectVersion = 51;
 	objects = {
 
 /* Begin PBXBuildFile section */
-		13B07FBD1A68108700A75B9A /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB11A68108700A75B9A /* LaunchScreen.xib */; };
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
 		272E6B3F1BEA849E001FCF37 /* UpdatePropertiesExampleView.m in Sources */ = {isa = PBXBuildFile; fileRef = 272E6B3C1BEA849E001FCF37 /* UpdatePropertiesExampleView.m */; };
 		27F441EC1BEBE5030039B79C /* FlexibleSizeExampleView.m in Sources */ = {isa = PBXBuildFile; fileRef = 27F441E81BEBE5030039B79C /* FlexibleSizeExampleView.m */; };
@@ -18,6 +17,7 @@
 		5CB07C9B226467E60039471C /* RNTesterTurboModuleProvider.mm in Sources */ = {isa = PBXBuildFile; fileRef = 5CB07C99226467E60039471C /* RNTesterTurboModuleProvider.mm */; };
 		6766440649168A1FAD1DB4A4 /* libPods-RNTesterIntegrationTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5F836A7C97EC1BA121BA5A2A /* libPods-RNTesterIntegrationTests.a */; };
 		6ABAB5205C9B8E0726E12033 /* libPods-RNTester.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B5C8E567A4E6281113811CB1 /* libPods-RNTester.a */; };
+		8145AE06241172D900A3F8DA /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8145AE05241172D900A3F8DA /* LaunchScreen.storyboard */; };
 		85C7978AB28C149170A56955 /* libPods-RNTesterUnitTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 11941849F77C552FDC3EED77 /* libPods-RNTesterUnitTests.a */; };
 		E7C1241A22BEC44B00DA25C0 /* RNTesterIntegrationTests.m in Sources */ = {isa = PBXBuildFile; fileRef = E7C1241922BEC44B00DA25C0 /* RNTesterIntegrationTests.m */; };
 		E7DB20D122B2BAA6005AC45F /* RCTBundleURLProviderTests.m in Sources */ = {isa = PBXBuildFile; fileRef = E7DB20A922B2BAA3005AC45F /* RCTBundleURLProviderTests.m */; };
@@ -73,7 +73,6 @@
 		11941849F77C552FDC3EED77 /* libPods-RNTesterUnitTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-RNTesterUnitTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		13B07F961A680F5B00A75B9A /* RNTester.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RNTester.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		13B07FAF1A68108700A75B9A /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppDelegate.h; path = RNTester/AppDelegate.h; sourceTree = "<group>"; };
-		13B07FB21A68108700A75B9A /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/LaunchScreen.xib; sourceTree = "<group>"; };
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = RNTester/Info.plist; sourceTree = "<group>"; };
 		13B07FB71A68108700A75B9A /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = RNTester/main.m; sourceTree = "<group>"; };
 		272E6B3B1BEA849E001FCF37 /* UpdatePropertiesExampleView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = UpdatePropertiesExampleView.h; path = RNTester/NativeExampleViews/UpdatePropertiesExampleView.h; sourceTree = "<group>"; };
@@ -90,6 +89,7 @@
 		5CB07C9A226467E60039471C /* RNTesterTurboModuleProvider.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RNTesterTurboModuleProvider.h; path = RNTester/RNTesterTurboModuleProvider.h; sourceTree = "<group>"; };
 		5F836A7C97EC1BA121BA5A2A /* libPods-RNTesterIntegrationTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-RNTesterIntegrationTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		7D51F73F0DA20287418D98BD /* Pods-RNTesterIntegrationTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RNTesterIntegrationTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-RNTesterIntegrationTests/Pods-RNTesterIntegrationTests.release.xcconfig"; sourceTree = "<group>"; };
+		8145AE05241172D900A3F8DA /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = RNTester/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		972A459EE6CF8CC63531A088 /* Pods-RNTesterIntegrationTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RNTesterIntegrationTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-RNTesterIntegrationTests/Pods-RNTesterIntegrationTests.debug.xcconfig"; sourceTree = "<group>"; };
 		98233960D1D6A1977D1C7EAF /* Pods-RNTester.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RNTester.debug.xcconfig"; path = "Pods/Target Support Files/Pods-RNTester/Pods-RNTester.debug.xcconfig"; sourceTree = "<group>"; };
 		B5C8E567A4E6281113811CB1 /* libPods-RNTester.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-RNTester.a"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -219,7 +219,7 @@
 				5CB07C99226467E60039471C /* RNTesterTurboModuleProvider.mm */,
 				13B07FB71A68108700A75B9A /* main.m */,
 				2DDEF00F1F84BF7B00DBDF73 /* Images.xcassets */,
-				13B07FB11A68108700A75B9A /* LaunchScreen.xib */,
+				8145AE05241172D900A3F8DA /* LaunchScreen.storyboard */,
 				680759612239798500290469 /* Fabric */,
 				272E6B3A1BEA846C001FCF37 /* NativeExampleViews */,
 				1323F18D1C04ABAC0091BED0 /* Supporting Files */,
@@ -492,8 +492,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				2DDEF0101F84BF7B00DBDF73 /* Images.xcassets in Resources */,
+				8145AE06241172D900A3F8DA /* LaunchScreen.storyboard in Resources */,
 				3D2AFAF51D646CF80089D1A3 /* legacy_image@2x.png in Resources */,
-				13B07FBD1A68108700A75B9A /* LaunchScreen.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -729,18 +729,6 @@
 			targetProxy = E7DB215822B2F332005AC45F /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
-
-/* Begin PBXVariantGroup section */
-		13B07FB11A68108700A75B9A /* LaunchScreen.xib */ = {
-			isa = PBXVariantGroup;
-			children = (
-				13B07FB21A68108700A75B9A /* Base */,
-			);
-			name = LaunchScreen.xib;
-			path = RNTester;
-			sourceTree = "<group>";
-		};
-/* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
 		13B07F941A680F5B00A75B9A /* Debug */ = {
