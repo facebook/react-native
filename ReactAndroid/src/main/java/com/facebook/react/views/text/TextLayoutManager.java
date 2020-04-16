@@ -294,14 +294,20 @@ public class TextLayoutManager {
             ? paragraphAttributes.getInt("maximumNumberOfLines")
             : UNSET;
 
-    int calculatedWidth = layout.getWidth();
-    int calculatedHeight;
-    if (maximumNumberOfLines != UNSET
-        && maximumNumberOfLines != 0
-        && maximumNumberOfLines < layout.getLineCount()) {
-      calculatedHeight = layout.getLineBottom(maximumNumberOfLines - 1);
-    } else {
-      calculatedHeight = layout.getHeight();
+    int calculatedLineCount =
+        maximumNumberOfLines == UNSET || maximumNumberOfLines == 0
+            ? layout.getLineCount()
+            : Math.min(maximumNumberOfLines, layout.getLineCount());
+
+    int calculatedHeight = layout.getLineBottom(calculatedLineCount - 1);
+    // Instead of using `layout.getWidth()` (which may yield a significantly larger width for
+    // text that is wrapping), compute width using the longest line.
+    int calculatedWidth = 0;
+    for (int lineIndex = 0; lineIndex < calculatedLineCount; lineIndex++) {
+      float lineWidth = layout.getLineWidth(lineIndex);
+      if (lineWidth > calculatedWidth) {
+        calculatedWidth = (int) Math.ceil(lineWidth);
+      }
     }
 
     // Calculate the positions of the attachments (views) that will be rendered inside the Spanned
