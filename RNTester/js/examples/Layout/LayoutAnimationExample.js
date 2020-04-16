@@ -143,6 +143,60 @@ class AddRemoveExample extends React.Component<{...}, AddRemoveExampleState> {
   }
 }
 
+type ReparentingExampleState = {|
+  hasBorder: boolean,
+|};
+
+class ReparentingExample extends React.Component<
+  {...},
+  ReparentingExampleState,
+> {
+  state = {
+    hasBorder: false,
+  };
+
+  _onPressToggleAnimated = () => {
+    LayoutAnimation.configureNext(
+      {
+        duration: 300,
+        create: {type: 'easeInEaseOut', property: 'opacity', duration: 1000},
+        update: {type: 'easeInEaseOut', property: 'opacity'},
+        delete: {type: 'easeInEaseOut', property: 'opacity', duration: 1000},
+      },
+      args => console.log('ReparentingExample completed', args),
+    );
+    this._onPressToggle();
+  };
+
+  _onPressToggle = () => {
+    this.setState(state => ({hasBorder: !state.hasBorder}));
+  };
+
+  render() {
+    const parentStyle = this.state.hasBorder
+      ? {borderWidth: 5, borderColor: 'red'}
+      : {};
+
+    return (
+      <View style={styles.container}>
+        <TouchableOpacity onPress={this._onPressToggleAnimated}>
+          <View style={styles.button}>
+            <Text>Toggle</Text>
+          </View>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={this._onPressToggle}>
+          <View style={styles.button}>
+            <Text>Toggle (no animation)</Text>
+          </View>
+        </TouchableOpacity>
+        <View style={parentStyle}>
+          <GreenSquare />
+        </View>
+      </View>
+    );
+  }
+}
+
 const GreenSquare = () => (
   <View style={styles.greenSquare}>
     <Text>Green square</Text>
@@ -297,6 +351,12 @@ exports.examples = [
     title: 'Add and remove views',
     render(): React.Element<any> {
       return <AddRemoveExample />;
+    },
+  },
+  {
+    title: 'Animate Reparenting Update',
+    render(): React.Element<any> {
+      return <ReparentingExample />;
     },
   },
   {
