@@ -15,7 +15,7 @@ import javax.annotation.Nullable;
 @DoNotStrip
 public abstract class YogaNodeJNIBase extends YogaNode implements Cloneable {
 
-  /* Those flags needs be in sync with YGJNI.cpp */
+  /* Those flags needs be in sync with YGJNI.h */
   private static final byte MARGIN = 1;
   private static final byte PADDING = 2;
   private static final byte BORDER = 4;
