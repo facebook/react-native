@@ -102,15 +102,15 @@ public final class WebSocketModule extends NativeWebSocketModuleSpec {
       @Nullable final ReadableMap options,
       final double socketID) {
     final int id = (int) socketID;
-    OkHttpClient client =
+    OkHttpClient.Builder okHttpBuilder =
         new OkHttpClient.Builder()	
             .connectTimeout(10, TimeUnit.SECONDS)	
             .writeTimeout(10, TimeUnit.SECONDS)	
             .readTimeout(0, TimeUnit.MINUTES); // Disable timeouts for read
 
-    applyCustomBuilder(client);
+    applyCustomBuilder(okHttpBuilder);
 
-    client.build();
+    OkHttpClient client = okHttpBuilder.build();
 
     Request.Builder builder = new Request.Builder().tag(id).url(url);
 
