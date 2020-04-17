@@ -427,6 +427,12 @@ class VirtualizedList extends React.PureComponent<Props, State> {
         data,
       )} but minimum is 1`,
     );
+    invariant(
+      index < getItemCount(data),
+      `scrollToIndex out of range: requested index ${index} is out of 0 to ${getItemCount(
+        data,
+      ) - 1}`,
+    );
     if (!getItemLayout && index > this._highestMeasuredFrameIndex) {
       invariant(
         !!onScrollToIndexFailed,
