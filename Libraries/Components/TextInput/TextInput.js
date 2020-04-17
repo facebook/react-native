@@ -24,7 +24,7 @@ const nullthrows = require('nullthrows');
 const setAndForwardRef = require('../../Utilities/setAndForwardRef');
 
 import type {TextStyleProp, ViewStyleProp} from '../../StyleSheet/StyleSheet';
-import type {ColorValue} from '../../StyleSheet/StyleSheetTypes';
+import type {ColorValue} from '../../StyleSheet/StyleSheet';
 import type {ViewProps} from '../View/ViewPropTypes';
 import type {SyntheticEvent, ScrollEvent} from '../../Types/CoreEventTypes';
 import type {PressEvent} from '../../Types/CoreEventTypes';

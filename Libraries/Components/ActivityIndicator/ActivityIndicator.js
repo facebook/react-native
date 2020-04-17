@@ -16,7 +16,7 @@ const StyleSheet = require('../../StyleSheet/StyleSheet');
 const View = require('../View/View');
 import type {HostComponent} from '../../Renderer/shims/ReactNativeTypes';
 import type {ViewProps} from '../View/ViewPropTypes';
-import type {ColorValue} from '../../StyleSheet/StyleSheetTypes';
+import type {ColorValue} from '../../StyleSheet/StyleSheet';
 
 const PlatformActivityIndicator =
   Platform.OS === 'android'
