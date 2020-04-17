@@ -22,6 +22,7 @@ import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.facebook.react.modules.network.ForwardingCookieHandler;
 import com.facebook.react.modules.network.OkHttpClientProvider;
+import com.facebook.react.modules.network.CustomClientBuilder;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -54,6 +55,8 @@ public final class WebSocketModule extends NativeWebSocketModuleSpec {
 
   private ForwardingCookieHandler mCookieHandler;
 
+  private static @Nullable CustomClientBuilder customClientBuilder = null;
+
   public WebSocketModule(ReactApplicationContext context) {
     super(context);
     mCookieHandler = new ForwardingCookieHandler(context);
@@ -66,6 +69,16 @@ public final class WebSocketModule extends NativeWebSocketModuleSpec {
       reactApplicationContext
           .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
           .emit(eventName, params);
+    }
+  }
+
+  public static void setCustomClientBuilder(CustomClientBuilder ccb) {
+    customClientBuilder = ccb;
+  }
+
+  private static void applyCustomBuilder(OkHttpClient.Builder builder) {
+    if (customClientBuilder != null) {
+      customClientBuilder.apply(builder);
     }
   }
 
@@ -89,7 +102,15 @@ public final class WebSocketModule extends NativeWebSocketModuleSpec {
       @Nullable final ReadableMap options,
       final double socketID) {
     final int id = (int) socketID;
-    OkHttpClient client = OkHttpClientProvider.createClient();
+    OkHttpClient client =
+        new OkHttpClient.Builder()	
+            .connectTimeout(10, TimeUnit.SECONDS)	
+            .writeTimeout(10, TimeUnit.SECONDS)	
+            .readTimeout(0, TimeUnit.MINUTES); // Disable timeouts for read
+
+    applyCustomBuilder(client);
+
+    client.build();
 
     Request.Builder builder = new Request.Builder().tag(id).url(url);
 

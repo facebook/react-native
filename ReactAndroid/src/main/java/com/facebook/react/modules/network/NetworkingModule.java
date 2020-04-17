@@ -169,10 +169,6 @@ public final class NetworkingModule extends NativeNetworkingAndroidSpec {
     customClientBuilder = ccb;
   }
 
-  public static interface CustomClientBuilder {
-    public void apply(OkHttpClient.Builder builder);
-  }
-
   private static void applyCustomBuilder(OkHttpClient.Builder builder) {
     if (customClientBuilder != null) {
       customClientBuilder.apply(builder);
