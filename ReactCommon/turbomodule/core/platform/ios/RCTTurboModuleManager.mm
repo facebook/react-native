@@ -215,13 +215,19 @@ static Class getFallbackClassFromName(const char *name)
     nativeInvoker = [_bridge decorateNativeCallInvoker:nativeInvoker];
   }
 
+  facebook::react::ObjCTurboModule::InitParams params = {
+      .moduleName = moduleName,
+      .instance = module,
+      .jsInvoker = _jsInvoker,
+      .nativeInvoker = nativeInvoker,
+      .perfLogger = _performanceLogger,
+  };
+
   // If RCTTurboModule supports creating its own C++ TurboModule object,
   // allow it to do so.
-  if ([module respondsToSelector:@selector(getTurboModuleWithJsInvoker:nativeInvoker:perfLogger:)]) {
+  if ([module respondsToSelector:@selector(getTurboModule:)]) {
     [_performanceLogger getTurboModuleFromRCTTurboModuleStart:moduleName];
-    auto turboModule = [module getTurboModuleWithJsInvoker:_jsInvoker
-                                             nativeInvoker:nativeInvoker
-                                                perfLogger:_performanceLogger];
+    auto turboModule = [module getTurboModule:params];
     [_performanceLogger getTurboModuleFromRCTTurboModuleEnd:moduleName];
     assert(turboModule != nullptr);
     _turboModuleCache.insert({moduleName, turboModule});

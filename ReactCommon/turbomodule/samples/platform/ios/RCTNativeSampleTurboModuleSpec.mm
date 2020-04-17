@@ -111,12 +111,8 @@ static facebook::jsi::Value __hostFunction_NativeSampleTurboModuleSpecJSI_getCon
       .invokeObjCMethod(rt, ObjectKind, "getConstants", @selector(getConstants), args, count);
 }
 
-NativeSampleTurboModuleSpecJSI::NativeSampleTurboModuleSpecJSI(
-    id<RCTTurboModule> instance,
-    std::shared_ptr<CallInvoker> jsInvoker,
-    std::shared_ptr<CallInvoker> nativeInvoker,
-    id<RCTTurboModulePerformanceLogger> perfLogger)
-    : ObjCTurboModule("SampleTurboModule", instance, jsInvoker, nativeInvoker, perfLogger)
+NativeSampleTurboModuleSpecJSI::NativeSampleTurboModuleSpecJSI(const ObjCTurboModule::InitParams &params)
+    : ObjCTurboModule(params)
 {
   methodMap_["voidFunc"] = MethodMetadata{0, __hostFunction_NativeSampleTurboModuleSpecJSI_voidFunc};
   methodMap_["getBool"] = MethodMetadata{1, __hostFunction_NativeSampleTurboModuleSpecJSI_getBool};
