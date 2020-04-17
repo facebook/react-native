@@ -38,6 +38,9 @@ const API = {
   enableQueue: function(): void {
     queueConnections = true;
   },
+  getValue: function(tag: number, callback: (value: number) => void): void {
+    NativeAnimatedModule.getValue(tag, callback);
+  },
   disableQueue: function(): void {
     invariant(NativeAnimatedModule, 'Native animated module is not available');
     queueConnections = false;
