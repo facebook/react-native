@@ -23,6 +23,10 @@ const {
 const ScreenshotManager = NativeModules.ScreenshotManager;
 
 const BUTTONS = ['Option 0', 'Option 1', 'Option 2', 'Delete', 'Cancel'];
+const ICONS = [
+  require('../../assets/call.png'),
+  require('../../assets/dislike.png'),
+];
 const DESTRUCTIVE_INDEX = 3;
 const CANCEL_INDEX = 4;
 
@@ -84,6 +88,100 @@ class ActionSheetTintExample extends React.Component<
         cancelButtonIndex: CANCEL_INDEX,
         destructiveButtonIndex: DESTRUCTIVE_INDEX,
         tintColor: 'green',
+      },
+      buttonIndex => {
+        this.setState({clicked: BUTTONS[buttonIndex]});
+      },
+    );
+  };
+}
+
+class ActionSheetIconsExample extends React.Component<Props, State> {
+  state = {
+    clicked: 'none',
+  };
+
+  render() {
+    return (
+      <View>
+        <Text onPress={this.showActionSheet} style={style.button}>
+          Click to show the ActionSheet
+        </Text>
+        <Text>Clicked button: {this.state.clicked}</Text>
+      </View>
+    );
+  }
+
+  showActionSheet = () => {
+    ActionSheetIOS.showActionSheetWithOptions(
+      {
+        options: BUTTONS,
+        icons: ICONS,
+        cancelButtonIndex: CANCEL_INDEX,
+        destructiveButtonIndex: DESTRUCTIVE_INDEX,
+      },
+      buttonIndex => {
+        this.setState({clicked: BUTTONS[buttonIndex]});
+      },
+    );
+  };
+}
+class ActionSheetCustomTintIconsExample extends React.Component<Props, State> {
+  state = {
+    clicked: 'none',
+  };
+
+  render() {
+    return (
+      <View>
+        <Text onPress={this.showActionSheet} style={style.button}>
+          Click to show the ActionSheet
+        </Text>
+        <Text>Clicked button: {this.state.clicked}</Text>
+      </View>
+    );
+  }
+
+  showActionSheet = () => {
+    ActionSheetIOS.showActionSheetWithOptions(
+      {
+        options: BUTTONS,
+        icons: ICONS,
+        cancelButtonIndex: CANCEL_INDEX,
+        destructiveButtonIndex: DESTRUCTIVE_INDEX,
+        tintColor: 'green',
+      },
+      buttonIndex => {
+        this.setState({clicked: BUTTONS[buttonIndex]});
+      },
+    );
+  };
+}
+
+class ActionSheetUntintedIconsExample extends React.Component<Props, State> {
+  state = {
+    clicked: 'none',
+  };
+
+  render() {
+    return (
+      <View>
+        <Text onPress={this.showActionSheet} style={style.button}>
+          Click to show the ActionSheet
+        </Text>
+        <Text>Clicked button: {this.state.clicked}</Text>
+      </View>
+    );
+  }
+
+  showActionSheet = () => {
+    ActionSheetIOS.showActionSheetWithOptions(
+      {
+        options: BUTTONS,
+        icons: ICONS,
+        tintIcons: false,
+        cancelButtonIndex: CANCEL_INDEX,
+        destructiveButtonIndex: DESTRUCTIVE_INDEX,
       },
       buttonIndex => {
         this.setState({clicked: BUTTONS[buttonIndex]});
@@ -307,6 +405,24 @@ exports.examples = [
     title: 'Show Action Sheet with tinted buttons',
     render(): React.Element<any> {
       return <ActionSheetTintExample />;
+    },
+  },
+  {
+    title: 'Show Action Sheet with icons',
+    render(): React.Element<any> {
+      return <ActionSheetIconsExample />;
+    },
+  },
+  {
+    title: 'Show Action Sheet with icons and tinted buttons',
+    render(): React.Element<any> {
+      return <ActionSheetCustomTintIconsExample />;
+    },
+  },
+  {
+    title: 'Show Action Sheet with untinted icons',
+    render(): React.Element<any> {
+      return <ActionSheetUntintedIconsExample />;
     },
   },
   {

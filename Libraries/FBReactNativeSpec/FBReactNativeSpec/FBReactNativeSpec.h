@@ -118,6 +118,8 @@ namespace JS {
       folly::Optional<double> anchor() const;
       folly::Optional<double> tintColor() const;
       NSString *userInterfaceStyle() const;
+      folly::Optional<facebook::react::LazyVector<id<NSObject>>> icons() const;
+      folly::Optional<bool> tintIcons() const;
 
       SpecShowActionSheetWithOptionsOptions(NSDictionary *const v) : _v(v) {}
     private:
@@ -2941,6 +2943,16 @@ inline NSString *JS::NativeActionSheetManager::SpecShowActionSheetWithOptionsOpt
 {
   id const p = _v[@"userInterfaceStyle"];
   return RCTBridgingToString(p);
+}
+inline folly::Optional<facebook::react::LazyVector<id<NSObject>>> JS::NativeActionSheetManager::SpecShowActionSheetWithOptionsOptions::icons() const
+{
+  id const p = _v[@"icons"];
+  return RCTBridgingToOptionalVec(p, ^id<NSObject>(id itemValue_0) { return itemValue_0; });
+}
+inline folly::Optional<bool> JS::NativeActionSheetManager::SpecShowActionSheetWithOptionsOptions::tintIcons() const
+{
+  id const p = _v[@"tintIcons"];
+  return RCTBridgingToOptionalBool(p);
 }
 inline NSString *JS::NativeActionSheetManager::SpecShowShareActionSheetWithOptionsOptions::message() const
 {

@@ -14,6 +14,8 @@ import RCTActionSheetManager from './NativeActionSheetManager';
 
 const invariant = require('invariant');
 const processColor = require('../StyleSheet/processColor');
+import type {ImageSource} from '../Image/ImageSource';
+import resolveAssetSource from '../Image/resolveAssetSource';
 import type {ColorValue} from '../StyleSheet/StyleSheetTypes';
 import type {ProcessedColorValue} from '../StyleSheet/processColor';
 
@@ -49,6 +51,8 @@ const ActionSheetIOS = {
       +anchor?: ?number,
       +tintColor?: ColorValue | ProcessedColorValue,
       +userInterfaceStyle?: string,
+      +icons?: ?Array<ImageSource>,
+      +tintIcons?: boolean,
     |},
     callback: (buttonIndex: number) => void,
   ) {
@@ -59,7 +63,12 @@ const ActionSheetIOS = {
     invariant(typeof callback === 'function', 'Must provide a valid callback');
     invariant(RCTActionSheetManager, "ActionSheetManager does't exist");
 
-    const {tintColor, destructiveButtonIndex, ...remainingOptions} = options;
+    const {
+      tintColor,
+      destructiveButtonIndex,
+      icons,
+      ...remainingOptions
+    } = options;
     let destructiveButtonIndices = null;
 
     if (Array.isArray(destructiveButtonIndex)) {
@@ -73,11 +82,19 @@ const ActionSheetIOS = {
       processedTintColor == null || typeof processedTintColor === 'number',
       'Unexpected color given for ActionSheetIOS.showActionSheetWithOptions tintColor',
     );
+
+    let processedIcons = null;
+    if (icons) {
+      invariant(Array.isArray(icons), 'Must provide a valid array of icons');
+      processedIcons = icons.map(icon => resolveAssetSource(icon));
+    }
+
     RCTActionSheetManager.showActionSheetWithOptions(
       {
         ...remainingOptions,
         tintColor: processedTintColor,
         destructiveButtonIndices,
+        icons: processedIcons,
       },
       callback,
     );

@@ -25,6 +25,8 @@ export interface Spec extends TurboModule {
       +anchor?: ?number,
       +tintColor?: ?number,
       +userInterfaceStyle?: ?string,
+      +icons?: ?Array<Object>, // TODO: This should be a ResolvedAssetSource
+      +tintIcons?: ?boolean,
     |},
     callback: (buttonIndex: number) => void,
   ) => void;
