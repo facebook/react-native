@@ -9,9 +9,9 @@
 
 #include <better/mutex.h>
 
+#include <react/componentregistry/ComponentDescriptorProvider.h>
+#include <react/componentregistry/ComponentDescriptorRegistry.h>
 #include <react/core/ComponentDescriptor.h>
-#include <react/uimanager/ComponentDescriptorProvider.h>
-#include <react/uimanager/ComponentDescriptorRegistry.h>
 
 namespace facebook {
 namespace react {

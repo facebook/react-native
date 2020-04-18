@@ -10,9 +10,9 @@
 #include <glog/logging.h>
 #include <jsi/jsi.h>
 
+#include <react/componentregistry/ComponentDescriptorRegistry.h>
 #include <react/core/LayoutContext.h>
 #include <react/debug/SystraceSection.h>
-#include <react/uimanager/ComponentDescriptorRegistry.h>
 #include <react/uimanager/UIManager.h>
 #include <react/uimanager/UIManagerBinding.h>
 #include <react/uimanager/UITemplateProcessor.h>

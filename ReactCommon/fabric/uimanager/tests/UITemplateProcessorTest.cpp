@@ -9,18 +9,18 @@
 
 #include <glog/logging.h>
 #include <gtest/gtest.h>
-#include <react/uimanager/ComponentDescriptorFactory.h>
+#include <react/componentregistry/ComponentDescriptorFactory.h>
 #include <react/uimanager/UITemplateProcessor.h>
 
 using namespace facebook::react;
 
+#include <react/componentregistry/ComponentDescriptorFactory.h>
+#include <react/componentregistry/ComponentDescriptorProviderRegistry.h>
+#include <react/componentregistry/ComponentDescriptorRegistry.h>
 #include <react/components/rncore/ComponentDescriptors.h>
 #include <react/components/scrollview/ScrollViewComponentDescriptor.h>
 #include <react/components/view/ViewComponentDescriptor.h>
 #include <react/config/ReactNativeConfig.h>
-#include <react/uimanager/ComponentDescriptorFactory.h>
-#include <react/uimanager/ComponentDescriptorProviderRegistry.h>
-#include <react/uimanager/ComponentDescriptorRegistry.h>
 #include <react/utils/ContextContainer.h>
 
 namespace facebook {

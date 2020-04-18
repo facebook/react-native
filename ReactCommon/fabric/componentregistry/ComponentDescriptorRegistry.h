@@ -12,8 +12,8 @@
 #include <better/map.h>
 #include <better/mutex.h>
 
+#include <react/componentregistry/ComponentDescriptorProvider.h>
 #include <react/core/ComponentDescriptor.h>
-#include <react/uimanager/ComponentDescriptorProvider.h>
 
 namespace facebook {
 namespace react {

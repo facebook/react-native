@@ -9,7 +9,7 @@
 
 #include <fbjni/fbjni.h>
 #include <jsi/jsi.h>
-#include <react/uimanager/ComponentDescriptorRegistry.h>
+#include <react/componentregistry/ComponentDescriptorRegistry.h>
 #include <react/uimanager/Scheduler.h>
 #include <react/utils/ContextContainer.h>
 #include <mutex>

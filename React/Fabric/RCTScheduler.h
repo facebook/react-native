@@ -9,11 +9,11 @@
 #import <memory>
 
 #import <React/RCTPrimitives.h>
+#import <react/componentregistry/ComponentDescriptorFactory.h>
 #import <react/core/ComponentDescriptor.h>
 #import <react/core/LayoutConstraints.h>
 #import <react/core/LayoutContext.h>
 #import <react/mounting/MountingCoordinator.h>
-#import <react/uimanager/ComponentDescriptorFactory.h>
 #import <react/uimanager/SchedulerToolbox.h>
 #import <react/utils/ContextContainer.h>
 

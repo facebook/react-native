@@ -23,11 +23,11 @@
 #import <React/RCTSurfaceView.h>
 #import <React/RCTUtils.h>
 
+#import <react/componentregistry/ComponentDescriptorFactory.h>
 #import <react/components/root/RootShadowNode.h>
 #import <react/config/ReactNativeConfig.h>
 #import <react/core/LayoutConstraints.h>
 #import <react/core/LayoutContext.h>
-#import <react/uimanager/ComponentDescriptorFactory.h>
 #import <react/uimanager/SchedulerToolbox.h>
 #import <react/utils/ContextContainer.h>
 #import <react/utils/ManagedObjectWrapper.h>
