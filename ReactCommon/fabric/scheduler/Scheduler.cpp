@@ -13,9 +13,9 @@
 #include <react/componentregistry/ComponentDescriptorRegistry.h>
 #include <react/core/LayoutContext.h>
 #include <react/debug/SystraceSection.h>
+#include <react/templateprocessor/UITemplateProcessor.h>
 #include <react/uimanager/UIManager.h>
 #include <react/uimanager/UIManagerBinding.h>
-#include <react/uimanager/UITemplateProcessor.h>
 
 namespace facebook {
 namespace react {

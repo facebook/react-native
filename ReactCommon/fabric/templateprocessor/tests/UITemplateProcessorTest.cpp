@@ -10,7 +10,7 @@
 #include <glog/logging.h>
 #include <gtest/gtest.h>
 #include <react/componentregistry/ComponentDescriptorFactory.h>
-#include <react/uimanager/UITemplateProcessor.h>
+#include <react/templateprocessor/UITemplateProcessor.h>
 
 using namespace facebook::react;
 

@@ -4,6 +4,7 @@ load(
     "ANDROID",
     "APPLE",
     "CXX",
+    "fb_xplat_cxx_test",
     "get_apple_compiler_flags",
     "get_apple_inspector_flags",
     "react_native_xplat_target",
@@ -14,7 +15,7 @@ load(
 APPLE_COMPILER_FLAGS = get_apple_compiler_flags()
 
 rn_xplat_cxx_library(
-    name = "scheduler",
+    name = "templateprocessor",
     srcs = glob(
         ["**/*.cpp"],
         exclude = glob(["tests/**/*.cpp"]),
@@ -28,7 +29,7 @@ rn_xplat_cxx_library(
         [
             ("", "*.h"),
         ],
-        prefix = "react/scheduler",
+        prefix = "react/templateprocessor",
     ),
     compiler_flags = [
         "-fexceptions",
@@ -46,6 +47,7 @@ rn_xplat_cxx_library(
         "-DLOG_TAG=\"ReactNative\"",
         "-DWITH_FBSYSTRACE=1",
     ],
+    tests = [":tests"],
     visibility = ["PUBLIC"],
     deps = [
         "//xplat/fbsystrace:fbsystrace",
@@ -56,13 +58,36 @@ rn_xplat_cxx_library(
         "//xplat/jsi:jsi",
         "//xplat/third-party/glog:glog",
         react_native_xplat_target("fabric/core:core"),
-        react_native_xplat_target("fabric/mounting:mounting"),
         react_native_xplat_target("fabric/uimanager:uimanager"),
-        react_native_xplat_target("fabric/templateprocessor:templateprocessor"),
-        react_native_xplat_target("config:config"),
         react_native_xplat_target("fabric/componentregistry:componentregistry"),
         react_native_xplat_target("fabric/debug:debug"),
-        react_native_xplat_target("fabric/components/root:root"),
+        react_native_xplat_target("config:config"),
         react_native_xplat_target("utils:utils"),
+    ],
+)
+
+fb_xplat_cxx_test(
+    name = "tests",
+    srcs = glob(["tests/**/*.cpp"]),
+    headers = glob(["tests/**/*.h"]),
+    compiler_flags = [
+        "-fexceptions",
+        "-frtti",
+        "-std=c++14",
+        "-Wall",
+    ],
+    contacts = ["oncall+react_native@xmail.facebook.com"],
+    platforms = (ANDROID, APPLE, CXX),
+    deps = [
+        ":templateprocessor",
+        "//xplat/folly:molly",
+        "//xplat/third-party/gmock:gtest",
+        react_native_xplat_target("config:config"),
+        react_native_xplat_target("fabric/components/activityindicator:activityindicator"),
+        react_native_xplat_target("fabric/components/image:image"),
+        react_native_xplat_target("fabric/components/root:root"),
+        react_native_xplat_target("fabric/components/scrollview:scrollview"),
+        react_native_xplat_target("fabric/components/view:view"),
+        "//xplat/js/react-native-github:generated_components-rncore",
     ],
 )
