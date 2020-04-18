@@ -14,7 +14,7 @@
 #import <react/core/LayoutConstraints.h>
 #import <react/core/LayoutContext.h>
 #import <react/mounting/MountingCoordinator.h>
-#import <react/uimanager/SchedulerToolbox.h>
+#import <react/scheduler/SchedulerToolbox.h>
 #import <react/utils/ContextContainer.h>
 
 NS_ASSUME_NONNULL_BEGIN

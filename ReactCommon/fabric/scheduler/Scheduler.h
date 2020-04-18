@@ -16,8 +16,8 @@
 #include <react/config/ReactNativeConfig.h>
 #include <react/core/ComponentDescriptor.h>
 #include <react/core/LayoutConstraints.h>
-#include <react/uimanager/SchedulerDelegate.h>
-#include <react/uimanager/SchedulerToolbox.h>
+#include <react/scheduler/SchedulerDelegate.h>
+#include <react/scheduler/SchedulerToolbox.h>
 #include <react/uimanager/UIManagerBinding.h>
 #include <react/uimanager/UIManagerDelegate.h>
 #include <react/utils/ContextContainer.h>
