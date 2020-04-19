@@ -18,7 +18,7 @@ using Fragments = AttributedString::Fragments;
 #pragma mark - Fragment
 
 std::string Fragment::AttachmentCharacter() {
-  return "\uFFFC"; // Unicode `OBJECT REPLACEMENT CHARACTER`
+  return u8"\uFFFC"; // Unicode `OBJECT REPLACEMENT CHARACTER`
 }
 
 bool Fragment::isAttachment() const {
