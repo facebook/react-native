@@ -9,13 +9,9 @@
  */
 
 export type CapturedError = {
-  +componentName: ?string,
   +componentStack: string,
   +error: mixed,
   +errorBoundary: ?{...},
-  +errorBoundaryFound: boolean,
-  +errorBoundaryName: string | null,
-  +willRetry: boolean,
   ...
 };
 

@@ -34,7 +34,7 @@ const _subscriptions = new Map();
  * well as to register to be notified when the state of the screen reader
  * changes.
  *
- * See http://facebook.github.io/react-native/docs/accessibilityinfo.html
+ * See https://reactnative.dev/docs/accessibilityinfo.html
  */
 
 const AccessibilityInfo = {
@@ -93,7 +93,7 @@ const AccessibilityInfo = {
    */
   get fetch(): () => Promise<boolean> {
     console.warn(
-      'AccessibilityInfo.fetch is deprecated, call Accessibility.isScreenReaderEnabled instead',
+      'AccessibilityInfo.fetch is deprecated, call AccessibilityInfo.isScreenReaderEnabled instead',
     );
     return this.isScreenReaderEnabled;
   },
@@ -138,7 +138,7 @@ const AccessibilityInfo = {
   /**
    * Set accessibility focus to a react component.
    *
-   * See http://facebook.github.io/react-native/docs/accessibilityinfo.html#setaccessibilityfocus
+   * See https://reactnative.dev/docs/accessibilityinfo.html#setaccessibilityfocus
    */
   setAccessibilityFocus: function(reactTag: number): void {
     UIManager.sendAccessibilityEvent(
@@ -150,7 +150,7 @@ const AccessibilityInfo = {
   /**
    * Post a string to be announced by the screen reader.
    *
-   * See http://facebook.github.io/react-native/docs/accessibilityinfo.html#announceforaccessibility
+   * See https://reactnative.dev/docs/accessibilityinfo.html#announceforaccessibility
    */
   announceForAccessibility: function(announcement: string): void {
     if (NativeAccessibilityInfo) {

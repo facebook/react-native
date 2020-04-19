@@ -52,7 +52,11 @@ function preprocessException(data: ExceptionData): ExceptionData {
  * Handles the developer-visible aspect of errors and exceptions
  */
 let exceptionID = 0;
-function reportException(e: ExtendedError, isFatal: boolean) {
+function reportException(
+  e: ExtendedError,
+  isFatal: boolean,
+  reportToConsole: boolean, // only true when coming from handleException; the error has not yet been logged
+) {
   const NativeExceptionsManager = require('./NativeExceptionsManager').default;
   if (NativeExceptionsManager) {
     const parseErrorStack = require('./Devtools/parseErrorStack');
@@ -64,26 +68,15 @@ function reportException(e: ExtendedError, isFatal: boolean) {
       message += `\n\nThis error is located at:${e.componentStack}`;
     }
     const namePrefix = e.name == null || e.name === '' ? '' : `${e.name}: `;
-    const isFromConsoleError = e.name === 'console.error';
 
     if (!message.startsWith(namePrefix)) {
       message = namePrefix + message;
     }
 
-    // Errors created by `console.error` have already been printed.
-    if (!isFromConsoleError) {
-      if (console._errorOriginal) {
-        console._errorOriginal(message);
-      } else {
-        console.error(message);
-      }
-    }
-
     message =
       e.jsEngine == null ? message : `${message}, js engine: ${e.jsEngine}`;
 
-    const isHandledByLogBox =
-      e.forceRedbox !== true && global.__unstable_isLogBoxEnabled === true;
+    const isHandledByLogBox = e.forceRedbox !== true;
 
     const data = preprocessException({
       message,
@@ -103,6 +96,13 @@ function reportException(e: ExtendedError, isFatal: boolean) {
         suppressRedBox: isHandledByLogBox,
       },
     });
+
+    if (reportToConsole) {
+      // we feed back into console.error, to make sure any methods that are
+      // monkey patched on top of console.error are called when coming from
+      // handleException
+      console.error(data.message);
+    }
 
     if (isHandledByLogBox) {
       LogBoxData.addException({
@@ -134,6 +134,11 @@ function reportException(e: ExtendedError, isFatal: boolean) {
           console.log('Unable to symbolicate stack trace: ' + error.message);
         });
     }
+  } else if (reportToConsole) {
+    // we feed back into console.error, to make sure any methods that are
+    // monkey patched on top of console.error are called when coming from
+    // handleException
+    console.error(e);
   }
 }
 
@@ -142,6 +147,10 @@ declare var console: typeof console & {
   reportErrorsAsExceptions: boolean,
   ...
 };
+
+// If we trigger console.error _from_ handleException,
+// we do want to make sure that console.error doesn't trigger error reporting again
+let inExceptionHandler = false;
 
 /**
  * Logs exceptions to the (native) console and displays them
@@ -157,21 +166,61 @@ function handleException(e: mixed, isFatal: boolean) {
     // `throw '<error message>'` somewhere in your codebase.
     error = new SyntheticError(e);
   }
-  reportException(error, isFatal);
+  try {
+    inExceptionHandler = true;
+    reportException(error, isFatal, /*reportToConsole*/ true);
+  } finally {
+    inExceptionHandler = false;
+  }
 }
 
 function reactConsoleErrorHandler() {
+  // bubble up to any original handlers
+  console._errorOriginal.apply(console, arguments);
   if (!console.reportErrorsAsExceptions) {
-    console._errorOriginal.apply(console, arguments);
+    return;
+  }
+  if (inExceptionHandler) {
+    // The fundamental trick here is that are multiple entry point to logging errors:
+    // (see D19743075 for more background)
+    //
+    // 1. An uncaught exception being caught by the global handler
+    // 2. An error being logged throw console.error
+    //
+    // However, console.error is monkey patched multiple times: by this module, and by the
+    // DevTools setup that sends messages to Metro.
+    // The patching order cannot be relied upon.
+    //
+    // So, some scenarios that are handled by this flag:
+    //
+    // Logging an error:
+    // 1. console.error called from user code
+    // 2. (possibly) arrives _first_ at DevTool handler, send to Metro
+    // 3. Bubbles to here
+    // 4. goes into report Exception.
+    // 5. should not trigger console.error again, to avoid looping / logging twice
+    // 6. should still bubble up to original console
+    //    (which might either be console.log, or the DevTools handler in case it patched _earlier_ and (2) didn't happen)
+    //
+    // Throwing an uncaught exception:
+    // 1. exception thrown
+    // 2. picked up by handleException
+    // 3. should be send to console.error (not console._errorOriginal, as DevTools might have patched _later_ and it needs to send it to Metro)
+    // 4. that _might_ bubble again to the `reactConsoleErrorHandle` defined here
+    //    -> should not handle exception _again_, to avoid looping / showing twice (this code branch)
+    // 5. should still bubble up to original console (which might either be console.log, or the DevTools handler in case that one patched _earlier_)
     return;
   }
 
   if (arguments[0] && arguments[0].stack) {
     // reportException will console.error this with high enough fidelity.
-    reportException(arguments[0], /* isFatal */ false);
+    reportException(
+      arguments[0],
+      /* isFatal */ false,
+      /*reportToConsole*/ false,
+    );
   } else {
-    console._errorOriginal.apply(console, arguments);
-    const stringifySafe = require('../Utilities/stringifySafe');
+    const stringifySafe = require('../Utilities/stringifySafe').default;
     const str = Array.prototype.map
       .call(arguments, value =>
         typeof value === 'string' ? value : stringifySafe(value),
@@ -186,7 +235,7 @@ function reactConsoleErrorHandler() {
     }
     const error: ExtendedError = new SyntheticError(str);
     error.name = 'console.error';
-    reportException(error, /* isFatal */ false);
+    reportException(error, /* isFatal */ false, /*reportToConsole*/ false);
   }
 }
 

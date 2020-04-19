@@ -9,13 +9,12 @@
 
 #ifdef RN_SHADOW_TREE_INTROSPECTION
 #include <glog/logging.h>
+#include <sstream>
 #endif
 
 #include <condition_variable>
 
-#include <react/mounting/Differentiator.h>
 #include <react/mounting/ShadowViewMutation.h>
-#include <react/utils/TimeUtils.h>
 
 namespace facebook {
 namespace react {
@@ -67,8 +66,8 @@ bool MountingCoordinator::waitForTransaction(
       lock, timeout, [this]() { return lastRevision_.has_value(); });
 }
 
-better::optional<MountingTransaction> MountingCoordinator::pullTransaction()
-    const {
+better::optional<MountingTransaction> MountingCoordinator::pullTransaction(
+    DifferentiatorMode differentiatorMode) const {
   std::lock_guard<std::mutex> lock(mutex_);
 
   if (!lastRevision_.has_value()) {
@@ -81,7 +80,9 @@ better::optional<MountingTransaction> MountingCoordinator::pullTransaction()
   telemetry.willDiff();
 
   auto mutations = calculateShadowViewMutations(
-      baseRevision_.getRootShadowNode(), lastRevision_->getRootShadowNode());
+      differentiatorMode,
+      baseRevision_.getRootShadowNode(),
+      lastRevision_->getRootShadowNode());
 
   telemetry.didDiff();
 
@@ -89,20 +90,27 @@ better::optional<MountingTransaction> MountingCoordinator::pullTransaction()
   stubViewTree_.mutate(mutations);
   auto stubViewTree =
       stubViewTreeFromShadowNode(lastRevision_->getRootShadowNode());
-  if (stubViewTree_ != stubViewTree) {
-    LOG(ERROR) << "Old tree:"
-               << "\n"
-               << baseRevision_.getRootShadowNode().getDebugDescription()
-               << "\n";
-    LOG(ERROR) << "New tree:"
-               << "\n"
-               << lastRevision_->getRootShadowNode().getDebugDescription()
-               << "\n";
-    LOG(ERROR) << "Mutations:"
-               << "\n"
-               << getDebugDescription(mutations, {});
-    assert(false);
+
+  std::string line;
+
+  std::stringstream ssOldTree(
+      baseRevision_.getRootShadowNode().getDebugDescription());
+  while (std::getline(ssOldTree, line, '\n')) {
+    LOG(ERROR) << "Old tree:" << line;
   }
+
+  std::stringstream ssNewTree(
+      lastRevision_->getRootShadowNode().getDebugDescription());
+  while (std::getline(ssNewTree, line, '\n')) {
+    LOG(ERROR) << "New tree:" << line;
+  }
+
+  std::stringstream ssMutations(getDebugDescription(mutations, {}));
+  while (std::getline(ssMutations, line, '\n')) {
+    LOG(ERROR) << "Mutations:" << line;
+  }
+
+  assert(stubViewTree_ == stubViewTree);
 #endif
 
   baseRevision_ = std::move(*lastRevision_);

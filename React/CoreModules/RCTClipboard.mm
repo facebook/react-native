@@ -26,27 +26,26 @@ RCT_EXPORT_MODULE()
   return dispatch_get_main_queue();
 }
 
-
-RCT_EXPORT_METHOD(setString:(NSString *)content)
+RCT_EXPORT_METHOD(setString : (NSString *)content)
 {
   UIPasteboard *clipboard = [UIPasteboard generalPasteboard];
-  clipboard.string = (content ? : @"");
+  clipboard.string = (content ?: @"");
 }
 
-RCT_EXPORT_METHOD(getString:(RCTPromiseResolveBlock)resolve
-                  reject:(__unused RCTPromiseRejectBlock)reject)
+RCT_EXPORT_METHOD(getString : (RCTPromiseResolveBlock)resolve reject : (__unused RCTPromiseRejectBlock)reject)
 {
   UIPasteboard *clipboard = [UIPasteboard generalPasteboard];
-  resolve((clipboard.string ? : @""));
+  resolve((clipboard.string ?: @""));
 }
 
-- (std::shared_ptr<TurboModule>)getTurboModuleWithJsInvoker:(std::shared_ptr<CallInvoker>)jsInvoker
+- (std::shared_ptr<TurboModule>)getTurboModule:(const ObjCTurboModule::InitParams &)params
 {
-  return std::make_shared<NativeClipboardSpecJSI>(self, jsInvoker);
+  return std::make_shared<NativeClipboardSpecJSI>(params);
 }
 
 @end
 
-Class RCTClipboardCls(void) {
+Class RCTClipboardCls(void)
+{
   return RCTClipboard.class;
 }

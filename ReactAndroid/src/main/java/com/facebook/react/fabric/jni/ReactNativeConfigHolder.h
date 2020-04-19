@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include <fb/fbjni.h>
+#include <fbjni/fbjni.h>
 #include <react/config/ReactNativeConfig.h>
 #include <react/jni/JMessageQueueThread.h>
 #include <react/jni/ReadableNativeMap.h>
@@ -25,10 +25,10 @@ class ReactNativeConfigHolder : public ReactNativeConfig {
   ReactNativeConfigHolder(jni::alias_ref<jobject> reactNativeConfig)
       : reactNativeConfig_(make_global(reactNativeConfig)){};
 
-  bool getBool(const std::string& param) const override;
-  std::string getString(const std::string& param) const override;
-  int64_t getInt64(const std::string& param) const override;
-  double getDouble(const std::string& param) const override;
+  bool getBool(const std::string &param) const override;
+  std::string getString(const std::string &param) const override;
+  int64_t getInt64(const std::string &param) const override;
+  double getDouble(const std::string &param) const override;
 
  private:
   jni::global_ref<jobject> reactNativeConfig_;

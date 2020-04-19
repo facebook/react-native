@@ -8,15 +8,16 @@
 #import "RCTAccessibilityManager.h"
 
 #import <FBReactNativeSpec/FBReactNativeSpec.h>
-#import <React/RCTUIManager.h>
 #import <React/RCTBridge.h>
 #import <React/RCTConvert.h>
 #import <React/RCTEventDispatcher.h>
 #import <React/RCTLog.h>
+#import <React/RCTUIManager.h>
 
 #import "CoreModulesPlugins.h"
 
-NSString *const RCTAccessibilityManagerDidUpdateMultiplierNotification = @"RCTAccessibilityManagerDidUpdateMultiplierNotification";
+NSString *const RCTAccessibilityManagerDidUpdateMultiplierNotification =
+    @"RCTAccessibilityManagerDidUpdateMultiplierNotification";
 
 @interface RCTAccessibilityManager () <NativeAccessibilityManagerSpec>
 
@@ -103,13 +104,14 @@ RCT_EXPORT_MODULE()
 {
   NSDictionary *userInfo = notification.userInfo;
   // Response dictionary to populate the event with.
-  NSDictionary *response = @{@"announcement": userInfo[UIAccessibilityAnnouncementKeyStringValue],
-                              @"success": userInfo[UIAccessibilityAnnouncementKeyWasSuccessful]};
+  NSDictionary *response = @{
+    @"announcement" : userInfo[UIAccessibilityAnnouncementKeyStringValue],
+    @"success" : userInfo[UIAccessibilityAnnouncementKeyWasSuccessful]
+  };
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
-  [_bridge.eventDispatcher sendDeviceEventWithName:@"announcementFinished"
-                                              body:response];
+  [_bridge.eventDispatcher sendDeviceEventWithName:@"announcementFinished" body:response];
 #pragma clang diagnostic pop
 }
 
@@ -120,8 +122,7 @@ RCT_EXPORT_MODULE()
     _isBoldTextEnabled = newBoldTextEnabled;
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
-    [_bridge.eventDispatcher sendDeviceEventWithName:@"boldTextChanged"
-                                                body:@(_isBoldTextEnabled)];
+    [_bridge.eventDispatcher sendDeviceEventWithName:@"boldTextChanged" body:@(_isBoldTextEnabled)];
 #pragma clang diagnostic pop
   }
 }
@@ -133,8 +134,7 @@ RCT_EXPORT_MODULE()
     _isGrayscaleEnabled = newGrayscaleEnabled;
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
-    [_bridge.eventDispatcher sendDeviceEventWithName:@"grayscaleChanged"
-                                                body:@(_isGrayscaleEnabled)];
+    [_bridge.eventDispatcher sendDeviceEventWithName:@"grayscaleChanged" body:@(_isGrayscaleEnabled)];
 #pragma clang diagnostic pop
   }
 }
@@ -146,8 +146,7 @@ RCT_EXPORT_MODULE()
     _isInvertColorsEnabled = newInvertColorsEnabled;
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
-    [_bridge.eventDispatcher sendDeviceEventWithName:@"invertColorsChanged"
-                                                body:@(_isInvertColorsEnabled)];
+    [_bridge.eventDispatcher sendDeviceEventWithName:@"invertColorsChanged" body:@(_isInvertColorsEnabled)];
 #pragma clang diagnostic pop
   }
 }
@@ -159,8 +158,7 @@ RCT_EXPORT_MODULE()
     _isReduceMotionEnabled = newReduceMotionEnabled;
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
-    [_bridge.eventDispatcher sendDeviceEventWithName:@"reduceMotionChanged"
-                                                body:@(_isReduceMotionEnabled)];
+    [_bridge.eventDispatcher sendDeviceEventWithName:@"reduceMotionChanged" body:@(_isReduceMotionEnabled)];
 #pragma clang diagnostic pop
   }
 }
@@ -172,8 +170,7 @@ RCT_EXPORT_MODULE()
     _isReduceTransparencyEnabled = newReduceTransparencyEnabled;
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
-    [_bridge.eventDispatcher sendDeviceEventWithName:@"reduceTransparencyChanged"
-                                                body:@(_isReduceTransparencyEnabled)];
+    [_bridge.eventDispatcher sendDeviceEventWithName:@"reduceTransparencyChanged" body:@(_isReduceTransparencyEnabled)];
 #pragma clang diagnostic pop
   }
 }
@@ -185,8 +182,7 @@ RCT_EXPORT_MODULE()
     _isVoiceOverEnabled = newIsVoiceOverEnabled;
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
-    [_bridge.eventDispatcher sendDeviceEventWithName:@"screenReaderChanged"
-                                                body:@(_isVoiceOverEnabled)];
+    [_bridge.eventDispatcher sendDeviceEventWithName:@"screenReaderChanged" body:@(_isVoiceOverEnabled)];
 #pragma clang diagnostic pop
   }
 }
@@ -202,7 +198,8 @@ RCT_EXPORT_MODULE()
 - (void)invalidateMultiplier
 {
   self.multiplier = [self multiplierForContentSizeCategory:_contentSizeCategory];
-  [[NSNotificationCenter defaultCenter] postNotificationName:RCTAccessibilityManagerDidUpdateMultiplierNotification object:self];
+  [[NSNotificationCenter defaultCenter] postNotificationName:RCTAccessibilityManagerDidUpdateMultiplierNotification
+                                                      object:self];
 }
 
 - (CGFloat)multiplierForContentSizeCategory:(NSString *)category
@@ -226,23 +223,27 @@ RCT_EXPORT_MODULE()
 - (NSDictionary<NSString *, NSNumber *> *)multipliers
 {
   if (_multipliers == nil) {
-    _multipliers = @{UIContentSizeCategoryExtraSmall: @0.823,
-                     UIContentSizeCategorySmall: @0.882,
-                     UIContentSizeCategoryMedium: @0.941,
-                     UIContentSizeCategoryLarge: @1.0,
-                     UIContentSizeCategoryExtraLarge: @1.118,
-                     UIContentSizeCategoryExtraExtraLarge: @1.235,
-                     UIContentSizeCategoryExtraExtraExtraLarge: @1.353,
-                     UIContentSizeCategoryAccessibilityMedium: @1.786,
-                     UIContentSizeCategoryAccessibilityLarge: @2.143,
-                     UIContentSizeCategoryAccessibilityExtraLarge: @2.643,
-                     UIContentSizeCategoryAccessibilityExtraExtraLarge: @3.143,
-                     UIContentSizeCategoryAccessibilityExtraExtraExtraLarge: @3.571};
+    _multipliers = @{
+      UIContentSizeCategoryExtraSmall : @0.823,
+      UIContentSizeCategorySmall : @0.882,
+      UIContentSizeCategoryMedium : @0.941,
+      UIContentSizeCategoryLarge : @1.0,
+      UIContentSizeCategoryExtraLarge : @1.118,
+      UIContentSizeCategoryExtraExtraLarge : @1.235,
+      UIContentSizeCategoryExtraExtraExtraLarge : @1.353,
+      UIContentSizeCategoryAccessibilityMedium : @1.786,
+      UIContentSizeCategoryAccessibilityLarge : @2.143,
+      UIContentSizeCategoryAccessibilityExtraLarge : @2.643,
+      UIContentSizeCategoryAccessibilityExtraExtraLarge : @3.143,
+      UIContentSizeCategoryAccessibilityExtraExtraExtraLarge : @3.571
+    };
   }
   return _multipliers;
 }
 
-RCT_EXPORT_METHOD(setAccessibilityContentSizeMultipliers:(JS::NativeAccessibilityManager::SpecSetAccessibilityContentSizeMultipliersJSMultipliers &)JSMultipliers)
+RCT_EXPORT_METHOD(setAccessibilityContentSizeMultipliers
+                  : (JS::NativeAccessibilityManager::SpecSetAccessibilityContentSizeMultipliersJSMultipliers &)
+                      JSMultipliers)
 {
   NSMutableDictionary<NSString *, NSNumber *> *multipliers = [NSMutableDictionary new];
   setMultipliers(multipliers, UIContentSizeCategoryExtraSmall, JSMultipliers.extraSmall());
@@ -255,23 +256,26 @@ RCT_EXPORT_METHOD(setAccessibilityContentSizeMultipliers:(JS::NativeAccessibilit
   setMultipliers(multipliers, UIContentSizeCategoryAccessibilityMedium, JSMultipliers.accessibilityMedium());
   setMultipliers(multipliers, UIContentSizeCategoryAccessibilityLarge, JSMultipliers.accessibilityLarge());
   setMultipliers(multipliers, UIContentSizeCategoryAccessibilityExtraLarge, JSMultipliers.accessibilityExtraLarge());
-  setMultipliers(multipliers, UIContentSizeCategoryAccessibilityExtraExtraLarge,
-                 JSMultipliers.accessibilityExtraExtraLarge());
-  setMultipliers(multipliers, UIContentSizeCategoryAccessibilityExtraExtraExtraLarge,
-                 JSMultipliers.accessibilityExtraExtraExtraLarge());
+  setMultipliers(
+      multipliers, UIContentSizeCategoryAccessibilityExtraExtraLarge, JSMultipliers.accessibilityExtraExtraLarge());
+  setMultipliers(
+      multipliers,
+      UIContentSizeCategoryAccessibilityExtraExtraExtraLarge,
+      JSMultipliers.accessibilityExtraExtraExtraLarge());
   self.multipliers = multipliers;
 }
 
-static void setMultipliers(NSMutableDictionary<NSString *, NSNumber *> *multipliers,
-                           NSString *key,
-                           folly::Optional<double> optionalDouble)
+static void setMultipliers(
+    NSMutableDictionary<NSString *, NSNumber *> *multipliers,
+    NSString *key,
+    folly::Optional<double> optionalDouble)
 {
   if (optionalDouble.hasValue()) {
     multipliers[key] = @(optionalDouble.value());
   }
 }
 
-RCT_EXPORT_METHOD(setAccessibilityFocus:(double)reactTag)
+RCT_EXPORT_METHOD(setAccessibilityFocus : (double)reactTag)
 {
   dispatch_async(dispatch_get_main_queue(), ^{
     UIView *view = [self.bridge.uiManager viewForReactTag:@(reactTag)];
@@ -279,59 +283,64 @@ RCT_EXPORT_METHOD(setAccessibilityFocus:(double)reactTag)
   });
 }
 
-RCT_EXPORT_METHOD(announceForAccessibility:(NSString *)announcement)
+RCT_EXPORT_METHOD(announceForAccessibility : (NSString *)announcement)
 {
   UIAccessibilityPostNotification(UIAccessibilityAnnouncementNotification, announcement);
 }
 
-RCT_EXPORT_METHOD(getMultiplier:(RCTResponseSenderBlock)callback)
+RCT_EXPORT_METHOD(getMultiplier : (RCTResponseSenderBlock)callback)
 {
   if (callback) {
     callback(@[ @(self.multiplier) ]);
   }
 }
 
-RCT_EXPORT_METHOD(getCurrentBoldTextState:(RCTResponseSenderBlock)onSuccess
-                  onError:(__unused RCTResponseSenderBlock)onError)
+RCT_EXPORT_METHOD(getCurrentBoldTextState
+                  : (RCTResponseSenderBlock)onSuccess onError
+                  : (__unused RCTResponseSenderBlock)onError)
 {
-  onSuccess(@[@(_isBoldTextEnabled)]);
+  onSuccess(@[ @(_isBoldTextEnabled) ]);
 }
 
-RCT_EXPORT_METHOD(getCurrentGrayscaleState:(RCTResponseSenderBlock)onSuccess
-                  onError:(__unused RCTResponseSenderBlock)onError)
+RCT_EXPORT_METHOD(getCurrentGrayscaleState
+                  : (RCTResponseSenderBlock)onSuccess onError
+                  : (__unused RCTResponseSenderBlock)onError)
 {
-  onSuccess(@[@(_isGrayscaleEnabled)]);
+  onSuccess(@[ @(_isGrayscaleEnabled) ]);
 }
 
-RCT_EXPORT_METHOD(getCurrentInvertColorsState:(RCTResponseSenderBlock)onSuccess
-                  onError:(__unused RCTResponseSenderBlock)onError)
+RCT_EXPORT_METHOD(getCurrentInvertColorsState
+                  : (RCTResponseSenderBlock)onSuccess onError
+                  : (__unused RCTResponseSenderBlock)onError)
 {
-  onSuccess(@[@(_isInvertColorsEnabled)]);
+  onSuccess(@[ @(_isInvertColorsEnabled) ]);
 }
 
-RCT_EXPORT_METHOD(getCurrentReduceMotionState:(RCTResponseSenderBlock)onSuccess
-                  onError:(__unused RCTResponseSenderBlock)onError)
+RCT_EXPORT_METHOD(getCurrentReduceMotionState
+                  : (RCTResponseSenderBlock)onSuccess onError
+                  : (__unused RCTResponseSenderBlock)onError)
 {
-  onSuccess(@[@(_isReduceMotionEnabled)]);
+  onSuccess(@[ @(_isReduceMotionEnabled) ]);
 }
 
-RCT_EXPORT_METHOD(getCurrentReduceTransparencyState:(RCTResponseSenderBlock)onSuccess
-                  onError:(__unused RCTResponseSenderBlock)onError)
+RCT_EXPORT_METHOD(getCurrentReduceTransparencyState
+                  : (RCTResponseSenderBlock)onSuccess onError
+                  : (__unused RCTResponseSenderBlock)onError)
 {
-  onSuccess(@[@(_isReduceTransparencyEnabled)]);
+  onSuccess(@[ @(_isReduceTransparencyEnabled) ]);
 }
 
-RCT_EXPORT_METHOD(getCurrentVoiceOverState:(RCTResponseSenderBlock)onSuccess
-                  onError:(__unused RCTResponseSenderBlock)onError)
+RCT_EXPORT_METHOD(getCurrentVoiceOverState
+                  : (RCTResponseSenderBlock)onSuccess onError
+                  : (__unused RCTResponseSenderBlock)onError)
 {
-  onSuccess(@[@(_isVoiceOverEnabled)]);
+  onSuccess(@[ @(_isVoiceOverEnabled) ]);
 }
 
-
-- (std::shared_ptr<facebook::react::TurboModule>)getTurboModuleWithJsInvoker:
-(std::shared_ptr<facebook::react::CallInvoker>)jsInvoker
+- (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:
+    (const facebook::react::ObjCTurboModule::InitParams &)params
 {
-  return std::make_shared<facebook::react::NativeAccessibilityManagerSpecJSI>(self, jsInvoker);
+  return std::make_shared<facebook::react::NativeAccessibilityManagerSpecJSI>(params);
 }
 
 @end

@@ -107,7 +107,7 @@ public class ReactImageManager extends SimpleViewManager<ReactImageView> {
   public ReactImageView createViewInstance(ThemedReactContext context) {
     Object callerContext =
         mCallerContextFactory != null
-            ? mCallerContextFactory.getOrCreateCallerContext(context)
+            ? mCallerContextFactory.getOrCreateCallerContext(context, null)
             : getCallerContext();
     return new ReactImageView(
         context, getDraweeControllerBuilder(), mGlobalImageLoadListener, callerContext);
@@ -122,6 +122,15 @@ public class ReactImageManager extends SimpleViewManager<ReactImageView> {
   @ReactProp(name = "blurRadius")
   public void setBlurRadius(ReactImageView view, float blurRadius) {
     view.setBlurRadius(blurRadius);
+  }
+
+  @ReactProp(name = "internal_analyticTag")
+  public void setInternal_AnalyticsTag(ReactImageView view, @Nullable String analyticTag) {
+    if (mCallerContextFactory != null) {
+      view.updateCallerContext(
+          mCallerContextFactory.getOrCreateCallerContext(
+              (ThemedReactContext) view.getContext(), analyticTag));
+    }
   }
 
   // In JS this is Image.props.defaultSource

@@ -6,6 +6,9 @@
  */
 
 #pragma once
+
+#ifdef __cplusplus
+
 #include <cstdint>
 #include <stdio.h>
 #include "BitUtils.h"
@@ -73,7 +76,7 @@ private:
   }
 
   // DANGER DANGER DANGER!
-  // If the the node assigned to has children, we'd either have to deallocate
+  // If the node assigned to has children, we'd either have to deallocate
   // them (potentially incorrect) or ignore them (danger of leaks). Only ever
   // use this after checking that there are no children.
   // DO NOT CHANGE THE VISIBILITY OF THIS METHOD!
@@ -330,3 +333,5 @@ public:
   bool isLayoutTreeEqualToNode(const YGNode& node) const;
   void reset();
 };
+
+#endif

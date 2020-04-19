@@ -15,6 +15,9 @@
 
 typedef void (^AnimatedOperation)(RCTNativeAnimatedNodesManager *nodesManager);
 
+@interface RCTNativeAnimatedModule() <NativeAnimatedModuleSpec>
+@end
+
 @implementation RCTNativeAnimatedModule
 {
   RCTNativeAnimatedNodesManager *_nodesManager;
@@ -330,6 +333,11 @@ RCT_EXPORT_METHOD(removeAnimatedEventFromView:(double)viewTag
   RCTExecuteOnMainQueue(^{
     [self->_nodesManager handleAnimatedEvent:event];
   });
+}
+
+- (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:(const facebook::react::ObjCTurboModule::InitParams &)params
+{
+  return std::make_shared<facebook::react::NativeAnimatedModuleSpecJSI>(params);
 }
 
 @end

@@ -16,35 +16,29 @@ namespace react {
 
 TextLayoutManager::TextLayoutManager(ContextContainer::Shared const &contextContainer)
 {
-  self_ = (__bridge_retained void *)[RCTTextLayoutManager new];
+  self_ = wrapManagedObject([RCTTextLayoutManager new]);
 }
 
-TextLayoutManager::~TextLayoutManager()
-{
-  CFRelease(self_);
-  self_ = nullptr;
-}
-
-void *TextLayoutManager::getNativeTextLayoutManager() const
+std::shared_ptr<void> TextLayoutManager::getNativeTextLayoutManager() const
 {
   assert(self_ && "Stored NativeTextLayoutManager must not be null.");
   return self_;
 }
 
-Size TextLayoutManager::measure(
+TextMeasurement TextLayoutManager::measure(
     AttributedStringBox attributedStringBox,
     ParagraphAttributes paragraphAttributes,
     LayoutConstraints layoutConstraints) const
 {
-  RCTTextLayoutManager *textLayoutManager = (__bridge RCTTextLayoutManager *)self_;
+  RCTTextLayoutManager *textLayoutManager = (RCTTextLayoutManager *)unwrapManagedObject(self_);
 
-  auto size = Size{};
+  auto measurement = TextMeasurement{};
 
   switch (attributedStringBox.getMode()) {
     case AttributedStringBox::Mode::Value: {
       auto &attributedString = attributedStringBox.getValue();
 
-      size = measureCache_.get(
+      measurement = measureCache_.get(
           {attributedString, paragraphAttributes, layoutConstraints}, [&](TextMeasureCacheKey const &key) {
             return [textLayoutManager measureAttributedString:attributedString
                                           paragraphAttributes:paragraphAttributes
@@ -57,14 +51,16 @@ Size TextLayoutManager::measure(
       NSAttributedString *nsAttributedString =
           (NSAttributedString *)unwrapManagedObject(attributedStringBox.getOpaquePointer());
 
-      size = [textLayoutManager measureNSAttributedString:nsAttributedString
-                                      paragraphAttributes:paragraphAttributes
-                                        layoutConstraints:layoutConstraints];
+      measurement = [textLayoutManager measureNSAttributedString:nsAttributedString
+                                             paragraphAttributes:paragraphAttributes
+                                               layoutConstraints:layoutConstraints];
       break;
     }
   }
 
-  return layoutConstraints.clamp(size);
+  measurement.size = layoutConstraints.clamp(measurement.size);
+
+  return measurement;
 }
 
 } // namespace react

@@ -47,7 +47,8 @@ static BOOL devSettingsMenuEnabled = YES;
 static BOOL devSettingsMenuEnabled = NO;
 #endif
 
-void RCTDevSettingsSetEnabled(BOOL enabled) {
+void RCTDevSettingsSetEnabled(BOOL enabled)
+{
   devSettingsMenuEnabled = enabled;
 }
 
@@ -113,7 +114,7 @@ void RCTDevSettingsSetEnabled(BOOL enabled) {
 
 @end
 
-@interface RCTDevSettings () <RCTBridgeModule, RCTInvalidating> {
+@interface RCTDevSettings () <RCTBridgeModule, RCTInvalidating, NativeDevSettingsSpec> {
   BOOL _isJSLoaded;
 #if ENABLE_PACKAGER_CONNECTION
   RCTHandlerToken _reloadToken;
@@ -129,14 +130,9 @@ void RCTDevSettingsSetEnabled(BOOL enabled) {
 
 RCT_EXPORT_MODULE()
 
-+ (BOOL)requiresMainQueueSetup
-{
-  return YES; // RCT_DEV-only
-}
-
 - (instancetype)init
 {
-  // default behavior is to use NSUserDefaults
+  // Default behavior is to use NSUserDefaults with shake and hot loading enabled.
   NSDictionary *defaultValues = @{
     kRCTDevSettingShakeToShowDevMenu : @YES,
     kRCTDevSettingHotLoadingEnabled : @YES,
@@ -144,6 +140,11 @@ RCT_EXPORT_MODULE()
   RCTDevSettingsUserDefaultsDataSource *dataSource =
       [[RCTDevSettingsUserDefaultsDataSource alloc] initWithDefaultValues:defaultValues];
   return [self initWithDataSource:dataSource];
+}
+
++ (BOOL)requiresMainQueueSetup
+{
+  return NO;
 }
 
 - (instancetype)initWithDataSource:(id<RCTDevSettingsDataSource>)dataSource
@@ -177,11 +178,9 @@ RCT_EXPORT_MODULE()
 #endif
 
 #if RCT_ENABLE_INSPECTOR
-  // we need this dispatch back to the main thread because even though this
-  // is executed on the main thread, at this point the bridge is not yet
-  // finished with its initialisation. But it does finish by the time it
-  // relinquishes control of the main thread, so only queue on the JS thread
-  // after the current main thread operation is done.
+  // We need this dispatch to the main thread because the bridge is not yet
+  // finished with its initialisation. By the time it relinquishes control of
+  // the main thread, this operation can be performed.
   dispatch_async(dispatch_get_main_queue(), ^{
     [bridge
         dispatchBlock:^{
@@ -210,7 +209,7 @@ RCT_EXPORT_MODULE()
 
 - (NSArray<NSString *> *)supportedEvents
 {
-  return @[@"didPressMenuItem"];
+  return @[ @"didPressMenuItem" ];
 }
 
 - (void)_updateSettingWithValue:(id)value forKey:(NSString *)key
@@ -223,7 +222,7 @@ RCT_EXPORT_MODULE()
   return [_dataSource settingForKey:key];
 }
 
-- (BOOL)isNuclideDebuggingAvailable
+- (BOOL)isDeviceDebuggingAvailable
 {
 #if RCT_ENABLE_INSPECTOR
   return self.bridge.isInspectable;
@@ -251,14 +250,14 @@ RCT_EXPORT_METHOD(reload)
   RCTTriggerReloadCommandListeners(@"Unknown From JS");
 }
 
-RCT_EXPORT_METHOD(reloadWithReason : (NSString *) reason)
+RCT_EXPORT_METHOD(reloadWithReason : (NSString *)reason)
 {
   RCTTriggerReloadCommandListeners(reason);
 }
 
 RCT_EXPORT_METHOD(onFastRefresh)
 {
-    [self.bridge onFastRefresh];
+  [self.bridge onFastRefresh];
 }
 
 RCT_EXPORT_METHOD(setIsShakeToShowDevMenuEnabled : (BOOL)enabled)
@@ -355,12 +354,14 @@ RCT_EXPORT_METHOD(toggleElementInspector)
   }
 }
 
-RCT_EXPORT_METHOD(addMenuItem:(NSString *)title)
+RCT_EXPORT_METHOD(addMenuItem : (NSString *)title)
 {
   __weak __typeof(self) weakSelf = self;
-  [self.bridge.devMenu addItem:[RCTDevMenuItem buttonItemWithTitle:title handler:^{
-    [weakSelf sendEventWithName:@"didPressMenuItem" body:@{@"title": title}];
-  }]];
+  [self.bridge.devMenu addItem:[RCTDevMenuItem buttonItemWithTitle:title
+                                                           handler:^{
+                                                             [weakSelf sendEventWithName:@"didPressMenuItem"
+                                                                                    body:@{@"title" : title}];
+                                                           }]];
 }
 
 - (BOOL)isElementInspectorShown
@@ -395,8 +396,6 @@ RCT_EXPORT_METHOD(addMenuItem:(NSString *)title)
   }
 }
 
-#if RCT_DEV_MENU
-
 - (void)addHandler:(id<RCTPackagerClientMethod>)handler forPackagerMethod:(NSString *)name
 {
 #if ENABLE_PACKAGER_CONNECTION
@@ -404,7 +403,22 @@ RCT_EXPORT_METHOD(addMenuItem:(NSString *)title)
 #endif
 }
 
-#endif
+- (void)setupHotModuleReloadClientIfApplicableForURL:(NSURL *)bundleURL
+{
+  if (bundleURL && !bundleURL.fileURL) { // isHotLoadingAvailable check
+    NSString *const path = [bundleURL.path substringFromIndex:1]; // Strip initial slash.
+    NSString *const host = bundleURL.host;
+    NSNumber *const port = bundleURL.port;
+    if (self.bridge) {
+      [self.bridge enqueueJSCall:@"HMRClient"
+                          method:@"setup"
+                            args:@[ @"ios", path, host, RCTNullIfNil(port), @(YES) ]
+                      completion:NULL];
+    } else {
+      self.invokeJS(@"HMRClient", @"setup", @[ @"ios", path, host, RCTNullIfNil(port), @(YES) ]);
+    }
+  }
+}
 
 #pragma mark - Internal
 
@@ -439,9 +453,18 @@ RCT_EXPORT_METHOD(addMenuItem:(NSString *)title)
   });
 }
 
+- (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:
+    (const facebook::react::ObjCTurboModule::InitParams &)params
+{
+  return std::make_shared<facebook::react::NativeDevSettingsSpecJSI>(params);
+}
+
 @end
 
-#else // #if RCT_DEV
+#else // #if RCT_DEV_MENU
+
+@interface RCTDevSettings () <NativeDevSettingsSpec>
+@end
 
 @implementation RCTDevSettings
 
@@ -454,6 +477,10 @@ RCT_EXPORT_METHOD(addMenuItem:(NSString *)title)
   return NO;
 }
 - (BOOL)isRemoteDebuggingAvailable
+{
+  return NO;
+}
++ (BOOL)requiresMainQueueSetup
 {
   return NO;
 }
@@ -482,6 +509,9 @@ RCT_EXPORT_METHOD(addMenuItem:(NSString *)title)
 - (void)toggleElementInspector
 {
 }
+- (void)setupHotModuleReloadClientIfApplicableForURL:(NSURL *)bundleURL
+{
+}
 - (void)addMenuItem:(NSString *)title
 {
 }
@@ -489,9 +519,15 @@ RCT_EXPORT_METHOD(addMenuItem:(NSString *)title)
 {
 }
 
+- (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:
+    (const facebook::react::ObjCTurboModule::InitParams &)params
+{
+  return std::make_shared<facebook::react::NativeDevSettingsSpecJSI>(params);
+}
+
 @end
 
-#endif
+#endif // #if RCT_DEV_MENU
 
 @implementation RCTBridge (RCTDevSettings)
 
@@ -506,6 +542,7 @@ RCT_EXPORT_METHOD(addMenuItem:(NSString *)title)
 
 @end
 
-Class RCTDevSettingsCls(void) {
+Class RCTDevSettingsCls(void)
+{
   return RCTDevSettings.class;
 }

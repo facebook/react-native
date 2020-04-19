@@ -16,7 +16,7 @@ import type {
   ViewStyleProp,
   DangerouslyImpreciseStyle,
 } from '../../StyleSheet/StyleSheet';
-import type {ColorValue} from '../../StyleSheet/StyleSheetTypes';
+import type {ColorValue} from '../../StyleSheet/StyleSheet';
 import type {EdgeInsetsProp} from '../../StyleSheet/EdgeInsetsPropType';
 import type {ScrollEvent} from '../../Types/CoreEventTypes';
 import type {PointProp} from '../../StyleSheet/PointPropType';

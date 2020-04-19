@@ -27,13 +27,14 @@ using SharedTextLayoutManager = std::shared_ptr<const TextLayoutManager>;
  */
 class TextLayoutManager {
  public:
+  using Shared = std::shared_ptr<TextLayoutManager const>;
+
   TextLayoutManager(ContextContainer::Shared const &contextContainer);
-  ~TextLayoutManager();
 
   /*
    * Measures `attributedString` using native text rendering infrastructure.
    */
-  Size measure(
+  TextMeasurement measure(
       AttributedStringBox attributedStringBox,
       ParagraphAttributes paragraphAttributes,
       LayoutConstraints layoutConstraints) const;
@@ -42,10 +43,10 @@ class TextLayoutManager {
    * Returns an opaque pointer to platform-specific TextLayoutManager.
    * Is used on a native views layer to delegate text rendering to the manager.
    */
-  void *getNativeTextLayoutManager() const;
+  std::shared_ptr<void> getNativeTextLayoutManager() const;
 
  private:
-  void *self_;
+  std::shared_ptr<void> self_;
   TextMeasureCache measureCache_{};
 };
 

@@ -30,7 +30,23 @@
 
 #ifdef RN_FABRIC_ENABLED
 #import <React/RCTSurfacePresenter.h>
+#import <React/RCTSurfacePresenterBridgeAdapter.h>
 #import <React/RCTFabricSurfaceHostingProxyRootView.h>
+
+#import <react/config/ReactNativeConfig.h>
+#endif
+
+  
+#if DEBUG
+#ifdef FB_SONARKIT_ENABLED
+#import <FlipperKit/FlipperClient.h>
+#import <FlipperKitLayoutPlugin/FlipperKitLayoutPlugin.h>
+#import <FlipperKitLayoutPlugin/SKDescriptorMapper.h>
+#import <FlipperKitNetworkPlugin/FlipperKitNetworkPlugin.h>
+#import <FlipperKitReactPlugin/FlipperKitReactPlugin.h>
+#import <FlipperKitUserDefaultsPlugin/FKUserDefaultsPlugin.h>
+#import <SKIOSNetworkPlugin/SKIOSNetworkAdapter.h>
+#endif
 #endif
 
 #import <ReactCommon/RCTTurboModuleManager.h>
@@ -40,7 +56,9 @@
 @interface AppDelegate() <RCTCxxBridgeDelegate, RCTTurboModuleManagerDelegate>{
 
 #ifdef RN_FABRIC_ENABLED
-  RCTSurfacePresenter *_surfacePresenter;
+  RCTSurfacePresenterBridgeAdapter *_bridgeAdapter;
+  std::shared_ptr<const facebook::react::ReactNativeConfig> _reactNativeConfig;
+  facebook::react::ContextContainer::Shared _contextContainer;
 #endif
 
   RCTTurboModuleManager *_turboModuleManager;
@@ -64,14 +82,15 @@
   }
 
 #ifdef RN_FABRIC_ENABLED
-  _surfacePresenter = [[RCTSurfacePresenter alloc] initWithBridge:_bridge
-                                                           config:nil
-                                                      imageLoader:RCTTurboModuleEnabled() ?
-                                                                  [_bridge moduleForName:@"RCTImageLoader"
-                                                                  lazilyLoadIfNecessary:YES] : nil
-                                                  runtimeExecutor:nullptr];
+  _contextContainer = std::make_shared<facebook::react::ContextContainer const>();
+  _reactNativeConfig = std::make_shared<facebook::react::EmptyReactNativeConfig const>();
 
-  _bridge.surfacePresenter = _surfacePresenter;
+  _contextContainer->insert("ReactNativeConfig", _reactNativeConfig);
+
+  _bridgeAdapter = [[RCTSurfacePresenterBridgeAdapter alloc] initWithBridge:_bridge
+                                                           contextContainer:_contextContainer];
+
+  _bridge.surfacePresenter = _bridgeAdapter.surfacePresenter;
 
   UIView *rootView = [[RCTFabricSurfaceHostingProxyRootView alloc] initWithBridge:_bridge moduleName:@"RNTesterApp" initialProperties:initProps];
 #else
@@ -83,6 +102,7 @@
   rootViewController.view = rootView;
   self.window.rootViewController = rootViewController;
   [self.window makeKeyAndVisible];
+  [self initializeFlipper:application];
   return YES;
 }
 
@@ -92,6 +112,22 @@
   NSString *bundleRoot = [NSString stringWithFormat:@"%@RNTester/js/RNTesterApp.ios", bundlePrefix];
   return [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:bundleRoot
                                                         fallbackResource:nil];
+}
+
+- (void)initializeFlipper:(UIApplication *)application
+{
+#if DEBUG
+#ifdef FB_SONARKIT_ENABLED
+  FlipperClient *client = [FlipperClient sharedClient];
+  SKDescriptorMapper *layoutDescriptorMapper = [[SKDescriptorMapper alloc] initWithDefaults];
+  [client addPlugin:[[FlipperKitLayoutPlugin alloc] initWithRootNode:application
+                                                withDescriptorMapper:layoutDescriptorMapper]];
+  [client addPlugin:[[FKUserDefaultsPlugin alloc] initWithSuiteName:nil]];
+  [client addPlugin:[FlipperKitReactPlugin new]];
+  [client addPlugin:[[FlipperKitNetworkPlugin alloc] initWithNetworkAdapter:[SKIOSNetworkAdapter new]]];
+  [client start];
+#endif
+#endif
 }
 
 - (BOOL)application:(UIApplication *)app
@@ -114,7 +150,9 @@
 
 - (std::unique_ptr<facebook::react::JSExecutorFactory>)jsExecutorFactoryForBridge:(RCTBridge *)bridge
 {
-  _turboModuleManager = [[RCTTurboModuleManager alloc] initWithBridge:bridge delegate:self];
+  _turboModuleManager = [[RCTTurboModuleManager alloc] initWithBridge:bridge
+                                                             delegate:self
+                                                            jsInvoker:bridge.jsCallInvoker];
   __weak __typeof(self) weakSelf = self;
   return std::make_unique<facebook::react::JSCExecutorFactory>([weakSelf, bridge](facebook::jsi::Runtime &runtime) {
     if (!bridge) {
@@ -141,10 +179,9 @@
 }
 
 - (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:(const std::string &)name
-                                                       instance:(id<RCTTurboModule>)instance
-                                                      jsInvoker:(std::shared_ptr<facebook::react::CallInvoker>)jsInvoker
+                                                       initParams:(const facebook::react::ObjCTurboModule::InitParams &)params
 {
-  return facebook::react::RNTesterTurboModuleProvider(name, instance, jsInvoker);
+  return facebook::react::RNTesterTurboModuleProvider(name, params);
 }
 
 - (id<RCTTurboModule>)getModuleInstanceFromClass:(Class)moduleClass

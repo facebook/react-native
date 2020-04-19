@@ -1,4 +1,4 @@
-load("@fbsource//tools/build_defs/apple:flag_defs.bzl", "OBJC_ARC_PREPROCESSOR_FLAGS", "get_debug_preprocessor_flags", "get_static_library_ios_flags")
+load("@fbsource//tools/build_defs/apple:flag_defs.bzl", "OBJC_ARC_PREPROCESSOR_FLAGS", "get_preprocessor_flags_for_build_mode", "get_static_library_ios_flags")
 load("//tools/build_defs/oss:rn_defs.bzl", "ANDROID", "APPLE", "react_native_target", "react_native_xplat_target", "rn_xplat_cxx_library", "subdir_glob")
 
 rn_xplat_cxx_library(
@@ -38,13 +38,13 @@ rn_xplat_cxx_library(
         "-fobjc-arc-exceptions",
     ],
     fbobjc_inherited_buck_flags = get_static_library_ios_flags(),
-    fbobjc_labels = ["supermodule:ios/isolation/infra.react_native"],
-    fbobjc_preprocessor_flags = OBJC_ARC_PREPROCESSOR_FLAGS + get_debug_preprocessor_flags(),
+    fbobjc_labels = ["supermodule:ios/default/public.react_native.infra"],
+    fbobjc_preprocessor_flags = OBJC_ARC_PREPROCESSOR_FLAGS + get_preprocessor_flags_for_build_mode(),
     force_static = True,
     ios_deps = [
-        "fbsource//xplat/FBBaseLite:FBBaseLite",
-        "fbsource//xplat/js/react-native-github:RCTCxxModule",
-        "fbsource//xplat/js/react-native-github:ReactInternal",
+        "//xplat/FBBaseLite:FBBaseLite",
+        "//xplat/js/react-native-github:RCTCxxModule",
+        "//xplat/js/react-native-github:ReactInternal",
     ],
     ios_exported_headers = subdir_glob(
         [
@@ -70,17 +70,17 @@ rn_xplat_cxx_library(
         "PUBLIC",
     ],
     deps = [
-        "fbsource//xplat/fbsystrace:fbsystrace",
-        "fbsource//xplat/folly:headers_only",
-        "fbsource//xplat/folly:memory",
-        "fbsource//xplat/folly:molly",
-        "fbsource//xplat/jsi:JSIDynamic",
-        "fbsource//xplat/third-party/glog:glog",
+        "//xplat/fbsystrace:fbsystrace",
+        "//xplat/folly:headers_only",
+        "//xplat/folly:memory",
+        "//xplat/folly:molly",
+        "//xplat/jsi:JSIDynamic",
+        "//xplat/third-party/glog:glog",
         react_native_xplat_target("cxxreact:bridge"),
         react_native_xplat_target("cxxreact:module"),
         react_native_xplat_target("callinvoker:callinvoker"),
     ],
     exported_deps = [
-        "fbsource//xplat/jsi:jsi",
+        "//xplat/jsi:jsi",
     ],
 )

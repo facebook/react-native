@@ -152,7 +152,10 @@ function testMerge() {
 }
 
 function testOptimizedMultiGet() {
-  let batch = [[KEY_1, VAL_1], [KEY_2, VAL_2]];
+  let batch = [
+    [KEY_1, VAL_1],
+    [KEY_2, VAL_2],
+  ];
   let keys = batch.map(([key, value]) => key);
   AsyncStorage.multiSet(batch, err1 => {
     // yes, twice on purpose

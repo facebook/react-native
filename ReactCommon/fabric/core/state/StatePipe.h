@@ -9,14 +9,12 @@
 
 #include <functional>
 
-#include <react/core/StateData.h>
-#include <react/core/StateTarget.h>
+#include <react/core/StateUpdate.h>
 
 namespace facebook {
 namespace react {
 
-using StatePipe = std::function<
-    void(const StateData::Shared &data, const StateTarget &target)>;
+using StatePipe = std::function<void(StateUpdate const &stateUpdate)>;
 
 } // namespace react
 } // namespace facebook

@@ -10,8 +10,8 @@
 #include <climits>
 #include <memory>
 #include <string>
-#include <vector>
 #include <unordered_set>
+#include <vector>
 
 namespace facebook {
 namespace react {
@@ -299,6 +299,23 @@ template <typename T, typename... Ts>
 std::vector<T, Ts...> getDebugChildren(
     std::vector<T, Ts...> const &vector,
     DebugStringConvertibleOptions options) {
+  return vector;
+}
+
+// `std::array<T, Size>`
+template <typename T, size_t Size>
+std::string getDebugName(std::array<T, Size> const &array) {
+  return "List";
+}
+
+template <typename T, size_t Size>
+std::vector<T> getDebugChildren(
+    std::array<T, Size> const &array,
+    DebugStringConvertibleOptions options) {
+  auto vector = std::vector<T>{};
+  for (auto const &value : array) {
+    vector.push_back(value);
+  }
   return vector;
 }
 

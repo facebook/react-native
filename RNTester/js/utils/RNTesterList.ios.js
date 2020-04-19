@@ -88,6 +88,11 @@ const ComponentExamples: Array<RNTesterExample> = [
     supportsTVOS: false,
   },
   {
+    key: 'PressableExample',
+    module: require('../examples/Pressable/PressableExample'),
+    supportsTVOS: true,
+  },
+  {
     key: 'ProgressViewIOSExample',
     module: require('../examples/ProgressViewIOS/ProgressViewIOSExample'),
     supportsTVOS: true,
@@ -273,6 +278,11 @@ const APIExamples: Array<RNTesterExample> = [
     key: 'PanResponderExample',
     module: require('../examples/PanResponder/PanResponderExample'),
     supportsTVOS: false,
+  },
+  {
+    key: 'PlatformColorExample',
+    module: require('../examples/PlatformColor/PlatformColorExample'),
+    supportsTVOS: true,
   },
   {
     key: 'PointerEventsExample',

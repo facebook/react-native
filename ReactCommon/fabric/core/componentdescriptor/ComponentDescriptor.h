@@ -75,9 +75,9 @@ class ComponentDescriptor {
   /*
    * Creates a new `ShadowNode` of a particular component type.
    */
-  virtual SharedShadowNode createShadowNode(
+  virtual ShadowNode::Shared createShadowNode(
       const ShadowNodeFragment &fragment,
-      ShadowNodeFamilyFragment const &familyFragment) const = 0;
+      ShadowNodeFamily::Shared const &family) const = 0;
 
   /*
    * Clones a `ShadowNode` with optionally new `props` and/or `children`.
@@ -90,8 +90,8 @@ class ComponentDescriptor {
    * Appends (by mutating) a given `childShadowNode` to `parentShadowNode`.
    */
   virtual void appendChild(
-      const SharedShadowNode &parentShadowNode,
-      const SharedShadowNode &childShadowNode) const = 0;
+      const ShadowNode::Shared &parentShadowNode,
+      const ShadowNode::Shared &childShadowNode) const = 0;
 
   /*
    * Creates a new `Props` of a particular type with all values copied from
@@ -104,28 +104,27 @@ class ComponentDescriptor {
       const RawProps &rawProps) const = 0;
 
   /*
-   * Creates a new `EventEmitter` object compatible with particular type of
-   * shadow nodes.
-   */
-  virtual SharedEventEmitter createEventEmitter(
-      SharedEventTarget eventTarget,
-      const Tag &tag) const = 0;
-
-  /*
    * Create an initial State object that represents (and contains) an initial
    * State's data which can be constructed based on initial Props.
    */
   virtual State::Shared createInitialState(
       ShadowNodeFragment const &fragment,
-      SurfaceId const surfaceId) const = 0;
+      ShadowNodeFamily::Shared const &family) const = 0;
 
   /*
    * Creates a new State object that represents (and contains) a new version of
    * State's data.
    */
   virtual State::Shared createState(
-      const State::Shared &previousState,
+      ShadowNodeFamily const &family,
       const StateData::Shared &data) const = 0;
+
+  /*
+   * Creates a shadow node family for particular node.
+   */
+  virtual ShadowNodeFamily::Shared createFamily(
+      ShadowNodeFamilyFragment const &fragment,
+      SharedEventTarget eventTarget) const = 0;
 
  protected:
   EventDispatcher::Weak eventDispatcher_;

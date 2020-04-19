@@ -24,24 +24,32 @@ namespace react {
 template <typename DataT>
 class ConcreteState : public State {
  public:
-  using Shared = std::shared_ptr<const ConcreteState>;
+  using Shared = std::shared_ptr<ConcreteState const>;
   using Data = DataT;
+  using SharedData = std::shared_ptr<Data const>;
 
+  /*
+   * Creates an updated `State` object with given previous one and `data`.
+   */
+  explicit ConcreteState(SharedData const &data, State const &state)
+      : State(data, state) {}
+
+  /*
+   * Creates a first-of-its-family `State` object with given `family` and
+   * `data`.
+   */
   explicit ConcreteState(
-      Data &&data,
-      StateCoordinator::Shared const &stateCoordinator)
-      : State(stateCoordinator), data_(std::move(data)) {}
-
-  explicit ConcreteState(Data &&data, State const &other)
-      : State(other), data_(std::move(data)) {}
+      SharedData const &data,
+      ShadowNodeFamily::Shared const &family)
+      : State(data, family) {}
 
   virtual ~ConcreteState() = default;
 
   /*
    * Returns stored data.
    */
-  const Data &getData() const {
-    return data_;
+  Data const &getData() const {
+    return *std::static_pointer_cast<Data const>(data_);
   }
 
   /*
@@ -54,7 +62,7 @@ class ConcreteState : public State {
       Data &&newData,
       EventPriority priority = EventPriority::AsynchronousUnbatched) const {
     updateState(
-        [data = std::move(newData)](const Data &oldData) mutable -> Data && {
+        [data = std::move(newData)](Data const &oldData) mutable -> Data && {
           return std::move(data);
         },
         priority);
@@ -69,34 +77,35 @@ class ConcreteState : public State {
    * of conflict.
    */
   void updateState(
-      std::function<Data(const Data &oldData)> callback,
+      std::function<Data(Data const &oldData)> callback,
       EventPriority priority = EventPriority::AsynchronousBatched) const {
-    stateCoordinator_->dispatchRawState(
-        {[stateCoordinator = stateCoordinator_,
-          callback = std::move(
-              callback)]() -> std::pair<StateTarget, StateData::Shared> {
-          auto target = stateCoordinator->getTarget();
-          auto oldState = target.getShadowNode().getState();
-          auto oldData = std::static_pointer_cast<const ConcreteState>(oldState)
-                             ->getData();
-          auto newData = std::make_shared<Data>(callback(oldData));
-          return {std::move(target), std::move(newData)};
-        }},
-        priority);
+    auto family = family_.lock();
+
+    if (!family) {
+      // No more nodes of this family exist anymore,
+      // updating state is impossible.
+      return;
+    }
+
+    auto stateUpdate = StateUpdate{
+        family, [=](StateData::Shared const &oldData) -> StateData::Shared {
+          assert(oldData);
+          return std::make_shared<Data const>(
+              callback(*std::static_pointer_cast<Data const>(oldData)));
+        }};
+
+    family->dispatchRawState(std::move(stateUpdate), priority);
   }
 
 #ifdef ANDROID
   folly::dynamic getDynamic() const override {
-    return data_.getDynamic();
+    return getData().getDynamic();
   }
 
   void updateState(folly::dynamic data) const override {
-    updateState(std::move(Data(data_, data)));
+    updateState(std::move(Data(getData(), data)));
   }
 #endif
-
- private:
-  DataT data_;
 };
 
 } // namespace react

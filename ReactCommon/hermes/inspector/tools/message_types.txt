@@ -17,8 +17,9 @@ Debugger.stepOver
 HeapProfiler.addHeapSnapshotChunk
 HeapProfiler.reportHeapSnapshotProgress
 HeapProfiler.takeHeapSnapshot
+HeapProfiler.startTrackingHeapObjects
+HeapProfiler.stopTrackingHeapObjects
 Runtime.consoleAPICalled
 Runtime.evaluate
 Runtime.executionContextCreated
-Runtime.getHeapUsage
 Runtime.getProperties

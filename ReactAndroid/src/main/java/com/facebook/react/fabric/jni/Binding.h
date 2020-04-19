@@ -7,11 +7,11 @@
 
 #pragma once
 
-#include <fb/fbjni.h>
+#include <fbjni/fbjni.h>
 #include <react/jni/JMessageQueueThread.h>
 #include <react/jni/ReadableNativeMap.h>
-#include <react/uimanager/Scheduler.h>
-#include <react/uimanager/SchedulerDelegate.h>
+#include <react/scheduler/Scheduler.h>
+#include <react/scheduler/SchedulerDelegate.h>
 #include <memory>
 #include <mutex>
 #include "ComponentFactoryDelegate.h"
@@ -38,7 +38,9 @@ class Binding : public jni::HybridClass<Binding>, public SchedulerDelegate {
       jfloat minWidth,
       jfloat maxWidth,
       jfloat minHeight,
-      jfloat maxHeight);
+      jfloat maxHeight,
+      jboolean isRTL,
+      jboolean doLeftAndRightSwapInRTL);
 
   static jni::local_ref<jhybriddata> initHybrid(jni::alias_ref<jclass>);
 
@@ -62,7 +64,9 @@ class Binding : public jni::HybridClass<Binding>, public SchedulerDelegate {
       jfloat minWidth,
       jfloat maxWidth,
       jfloat minHeight,
-      jfloat maxHeight);
+      jfloat maxHeight,
+      jboolean isRTL,
+      jboolean doLeftAndRightSwapInRTL);
 
   void renderTemplateToSurface(jint surfaceId, jstring uiTemplate);
 
@@ -76,17 +80,17 @@ class Binding : public jni::HybridClass<Binding>, public SchedulerDelegate {
       const ShadowView &shadowView);
 
   void schedulerDidDispatchCommand(
-    const ShadowView &shadowView,
-    std::string const &commandName,
-    folly::dynamic const args);
+      const ShadowView &shadowView,
+      std::string const &commandName,
+      folly::dynamic const args);
 
   void setPixelDensity(float pointScaleFactor);
 
   void schedulerDidSetJSResponder(
-     SurfaceId surfaceId,
-     const ShadowView &shadowView,
-     const ShadowView &initialShadowView,
-     bool blockNativeResponder);
+      SurfaceId surfaceId,
+      const ShadowView &shadowView,
+      const ShadowView &initialShadowView,
+      bool blockNativeResponder);
 
   void schedulerDidClearJSResponder();
 
@@ -107,6 +111,8 @@ class Binding : public jni::HybridClass<Binding>, public SchedulerDelegate {
   bool shouldCollateRemovesAndDeletes_{false};
   bool collapseDeleteCreateMountingInstructions_{false};
   bool disablePreallocateViews_{false};
+  bool disableVirtualNodePreallocation_{false};
+  bool enableOptimizedMovesDiffer_{false};
 };
 
 } // namespace react

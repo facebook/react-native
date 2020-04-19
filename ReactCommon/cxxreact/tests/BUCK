@@ -28,10 +28,10 @@ jni_instrumentation_test_lib(
         "//fbandroid/instrumentation_tests/...",
     ],
     deps = [
-        "fbsource//xplat/folly:dynamic",
-        "fbsource//xplat/third-party/gmock:gtest",
-        "fbsource//xplat/third-party/linker_lib:android",
-        "fbsource//xplat/third-party/linker_lib:atomic",
+        "//xplat/folly:dynamic",
+        "//xplat/third-party/gmock:gtest",
+        "//xplat/third-party/linker_lib:android",
+        "//xplat/third-party/linker_lib:atomic",
         react_native_xplat_target("cxxreact:bridge"),
         react_native_xplat_target("cxxreact:jsbigstring"),
     ],
@@ -49,8 +49,8 @@ fb_xplat_cxx_test(
         react_native_xplat_target("cxxreact/..."),
     ],
     deps = [
-        "fbsource//xplat/folly:molly",
-        "fbsource//xplat/third-party/gmock:gtest",
+        "//xplat/folly:molly",
+        "//xplat/third-party/gmock:gtest",
         react_native_xplat_target("cxxreact:bridge"),
         react_native_xplat_target("cxxreact:jsbigstring"),
     ],
@@ -64,8 +64,8 @@ fb_xplat_cxx_test(
         "-frtti",
     ],
     deps = [
-        "fbsource//xplat/folly:molly",
-        "fbsource//xplat/third-party/gmock:gtest",
+        "//xplat/folly:molly",
+        "//xplat/third-party/gmock:gtest",
         react_native_xplat_target("cxxreact:jsbigstring"),
     ],
 )

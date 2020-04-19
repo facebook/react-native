@@ -12,11 +12,11 @@
 namespace facebook {
 namespace react {
 
-static LayoutMetrics layoutMetricsFromShadowNode(const ShadowNode &shadowNode) {
-  auto layoutableShadowNode =
-      dynamic_cast<const LayoutableShadowNode *>(&shadowNode);
-  return layoutableShadowNode ? layoutableShadowNode->getLayoutMetrics()
-                              : EmptyLayoutMetrics;
+static LayoutMetrics layoutMetricsFromShadowNode(ShadowNode const &shadowNode) {
+  auto layotableShadowNode =
+      traitCast<LayoutableShadowNode const *>(&shadowNode);
+  return layotableShadowNode ? layotableShadowNode->getLayoutMetrics()
+                             : EmptyLayoutMetrics;
 }
 
 ShadowView::ShadowView(const ShadowNode &shadowNode)
@@ -26,7 +26,6 @@ ShadowView::ShadowView(const ShadowNode &shadowNode)
       props(shadowNode.getProps()),
       eventEmitter(shadowNode.getEventEmitter()),
       layoutMetrics(layoutMetricsFromShadowNode(shadowNode)),
-      localData(shadowNode.getLocalData()),
       state(shadowNode.getState()) {}
 
 bool ShadowView::operator==(const ShadowView &rhs) const {
@@ -36,7 +35,6 @@ bool ShadowView::operator==(const ShadowView &rhs) const {
              this->props,
              this->eventEmitter,
              this->layoutMetrics,
-             this->localData,
              this->state) ==
       std::tie(
              rhs.tag,
@@ -44,7 +42,6 @@ bool ShadowView::operator==(const ShadowView &rhs) const {
              rhs.props,
              rhs.eventEmitter,
              rhs.layoutMetrics,
-             rhs.localData,
              rhs.state);
 }
 
@@ -66,7 +63,6 @@ std::vector<DebugStringConvertibleObject> getDebugProps(
       {"props", getDebugDescription(object.props, options)},
       {"eventEmitter", getDebugDescription(object.eventEmitter, options)},
       {"layoutMetrics", getDebugDescription(object.layoutMetrics, options)},
-      {"localData", getDebugDescription(object.localData, options)},
       {"state", getDebugDescription(object.state, options)},
   };
 }

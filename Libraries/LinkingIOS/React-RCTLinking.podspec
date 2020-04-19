@@ -17,14 +17,14 @@ else
 end
 
 folly_compiler_flags = '-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -Wno-comma -Wno-shorten-64-to-32'
-folly_version = '2018.10.22.00'
+folly_version = '2020.01.13.00'
 
 Pod::Spec.new do |s|
   s.name                   = "React-RCTLinking"
   s.version                = version
   s.summary                = "A general interface to interact with both incoming and outgoing app links."
-  s.homepage               = "http://facebook.github.io/react-native/"
-  s.documentation_url      = "https://facebook.github.io/react-native/docs/linking"
+  s.homepage               = "https://reactnative.dev/"
+  s.documentation_url      = "https://reactnative.dev/docs/linking"
   s.license                = package["license"]
   s.author                 = "Facebook, Inc. and its affiliates"
   s.platforms              = { :ios => "10.0", :tvos => "10.0" }
@@ -42,4 +42,5 @@ Pod::Spec.new do |s|
   s.dependency "FBReactNativeSpec", version
   s.dependency "React-Core/RCTLinkingHeaders", version
   s.dependency "ReactCommon/turbomodule/core", version
+  s.dependency "React-jsi", version
 end

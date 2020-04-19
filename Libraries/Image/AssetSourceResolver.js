@@ -114,7 +114,12 @@ class AssetSourceResolver {
    */
   scaledAssetURLNearBundle(): ResolvedAssetSource {
     const path = this.jsbundleUrl || 'file://';
-    return this.fromSource(path + getScaledAssetPath(this.asset));
+    return this.fromSource(
+      // Assets can have relative paths outside of the project root.
+      // When bundling them we replace `../` with `_` to make sure they
+      // don't end up outside of the expected assets directory.
+      path + getScaledAssetPath(this.asset).replace(/\.\.\//g, '_'),
+    );
   }
 
   /**

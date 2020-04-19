@@ -13,25 +13,6 @@
 namespace facebook {
 namespace react {
 
-static YGStyle yogaStyleFromLayoutConstraints(
-    LayoutConstraints const &layoutConstraints) {
-  auto yogaStyle = YGStyle{};
-  yogaStyle.minDimensions()[YGDimensionWidth] =
-      yogaStyleValueFromFloat(layoutConstraints.minimumSize.width);
-  yogaStyle.minDimensions()[YGDimensionHeight] =
-      yogaStyleValueFromFloat(layoutConstraints.minimumSize.height);
-
-  yogaStyle.maxDimensions()[YGDimensionWidth] =
-      yogaStyleValueFromFloat(layoutConstraints.maximumSize.width);
-  yogaStyle.maxDimensions()[YGDimensionHeight] =
-      yogaStyleValueFromFloat(layoutConstraints.maximumSize.height);
-
-  yogaStyle.direction() =
-      yogaDirectionFromLayoutDirection(layoutConstraints.layoutDirection);
-
-  return yogaStyle;
-}
-
 RootProps::RootProps(RootProps const &sourceProps, RawProps const &rawProps)
     : ViewProps(sourceProps, rawProps) {}
 
@@ -39,7 +20,7 @@ RootProps::RootProps(
     RootProps const &sourceProps,
     LayoutConstraints const &layoutConstraints,
     LayoutContext const &layoutContext)
-    : ViewProps(yogaStyleFromLayoutConstraints(layoutConstraints)),
+    : ViewProps(),
       layoutConstraints(layoutConstraints),
       layoutContext(layoutContext){};
 

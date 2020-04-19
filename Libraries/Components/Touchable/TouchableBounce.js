@@ -12,11 +12,11 @@
 
 import Pressability, {
   type PressabilityConfig,
-} from '../../Pressability/Pressability.js';
-import {PressabilityDebugView} from '../../Pressability/PressabilityDebug.js';
-import type {ViewStyleProp} from '../../StyleSheet/StyleSheet.js';
-import TVTouchable from './TVTouchable.js';
-import typeof TouchableWithoutFeedback from './TouchableWithoutFeedback.js';
+} from '../../Pressability/Pressability';
+import {PressabilityDebugView} from '../../Pressability/PressabilityDebug';
+import type {ViewStyleProp} from '../../StyleSheet/StyleSheet';
+import TVTouchable from './TVTouchable';
+import typeof TouchableWithoutFeedback from './TouchableWithoutFeedback';
 import {Animated, Platform} from 'react-native';
 import * as React from 'react';
 

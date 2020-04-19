@@ -22,10 +22,6 @@ const ComponentExamples: Array<RNTesterExample> = [
     module: require('../examples/Button/ButtonExample'),
   },
   {
-    key: 'CheckBoxExample',
-    module: require('../examples/CheckBox/CheckBoxExample'),
-  },
-  {
     key: 'FlatListExample',
     module: require('../examples/FlatList/FlatListExample'),
   },
@@ -56,6 +52,10 @@ const ComponentExamples: Array<RNTesterExample> = [
   {
     key: 'PickerExample',
     module: require('../examples/Picker/PickerExample'),
+  },
+  {
+    key: 'PressableExample',
+    module: require('../examples/Pressable/PressableExample'),
   },
   {
     key: 'ProgressBarAndroidExample',
@@ -195,6 +195,10 @@ const APIExamples: Array<RNTesterExample> = [
   {
     key: 'PermissionsExampleAndroid',
     module: require('../examples/PermissionsAndroid/PermissionsExample'),
+  },
+  {
+    key: 'PlatformColorExample',
+    module: require('../examples/PlatformColor/PlatformColorExample'),
   },
   {
     key: 'PointerEventsExample',

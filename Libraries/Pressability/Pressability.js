@@ -10,16 +10,16 @@
 
 'use strict';
 
-import {isHoverEnabled} from './HoverState.js';
+import {isHoverEnabled} from './HoverState';
 import invariant from 'invariant';
-import SoundManager from '../Components/Sound/SoundManager.js';
-import type {EdgeInsetsProp} from '../StyleSheet/EdgeInsetsPropType.js';
+import SoundManager from '../Components/Sound/SoundManager';
+import {normalizeRect, type RectOrSize} from '../StyleSheet/Rect';
 import type {
   BlurEvent,
   FocusEvent,
   PressEvent,
   MouseEvent,
-} from '../Types/CoreEventTypes.js';
+} from '../Types/CoreEventTypes';
 import Platform from '../Utilities/Platform';
 import UIManager from '../ReactNative/UIManager';
 import type {HostComponent} from '../Renderer/shims/ReactNativeTypes';
@@ -40,12 +40,12 @@ export type PressabilityConfig = $ReadOnly<{|
   /**
    * Amount to extend the `VisualRect` by to create `HitRect`.
    */
-  hitSlop?: ?EdgeInsetsProp,
+  hitSlop?: ?RectOrSize,
 
   /**
    * Amount to extend the `HitRect` by to create `PressRect`.
    */
-  pressRectOffset?: ?EdgeInsetsProp,
+  pressRectOffset?: ?RectOrSize,
 
   /**
    * Whether to disable the systemm sound when `onPress` fires on Android.
@@ -147,7 +147,7 @@ export type PressabilityConfig = $ReadOnly<{|
   onStartShouldSetResponder_DEPRECATED?: ?() => boolean,
 |}>;
 
-type EventHandlers = $ReadOnly<{|
+export type EventHandlers = $ReadOnly<{|
   onBlur: (event: BlurEvent) => void,
   onClick: (event: PressEvent) => void,
   onFocus: (event: FocusEvent) => void,
@@ -271,8 +271,8 @@ const isPressInSignal = signal =>
 const isTerminalSignal = signal =>
   signal === 'RESPONDER_TERMINATED' || signal === 'RESPONDER_RELEASE';
 
-const DEFAULT_LONG_PRESS_DELAY_MS = 500;
-const DEFAULT_PRESS_DELAY_MS = 0;
+const DEFAULT_LONG_PRESS_DELAY_MS = 370; // 500 - 130
+const DEFAULT_PRESS_DELAY_MS = 130;
 const DEFAULT_PRESS_RECT_OFFSETS = {
   bottom: 30,
   left: 20,
@@ -546,6 +546,12 @@ export default class Pressability {
       },
     };
 
+    if (process.env.NODE_ENV === 'test') {
+      // We are setting this in order to find this node in ReactNativeTestTools
+      responderEventHandlers.onStartShouldSetResponder.testOnly_pressabilityConfig = () =>
+        this._config;
+    }
+
     const mouseEventHandlers =
       Platform.OS === 'ios' || Platform.OS === 'android'
         ? null
@@ -634,6 +640,7 @@ export default class Pressability {
     event: PressEvent,
   ): void {
     if (isTerminalSignal(signal)) {
+      this._touchActivatePosition = null;
       this._cancelLongPressDelayTimeout();
     }
 
@@ -747,7 +754,8 @@ export default class Pressability {
       top: number,
     |}>,
   ): boolean {
-    const {hitSlop, pressRectOffset} = this._config;
+    const hitSlop = normalizeRect(this._config.hitSlop);
+    const pressRectOffset = normalizeRect(this._config.pressRectOffset);
 
     let regionBottom = responderRegion.bottom;
     let regionLeft = responderRegion.left;

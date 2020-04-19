@@ -56,7 +56,7 @@ class TouchableHighlightBox extends React.Component<{...}, $FlowFixMeState> {
             style={styles.wrapper}
             testID="touchable_highlight_image_button"
             onPress={this.touchableOnPress}>
-            <Image source={heartImage} style={styles.image} />
+            <Image source={remoteImage} style={styles.image} />
           </TouchableHighlight>
           <TouchableHighlight
             style={styles.wrapper}
@@ -401,37 +401,82 @@ class TouchableDisabled extends React.Component<{...}> {
         </TouchableWithoutFeedback>
 
         {Platform.OS === 'android' && (
-          <TouchableNativeFeedback
-            onPress={() => console.log('custom TNF has been clicked')}
-            background={TouchableNativeFeedback.SelectableBackground()}>
-            <View style={[styles.row, styles.block]}>
-              <Text style={[styles.button, styles.nativeFeedbackButton]}>
-                Enabled TouchableNativeFeedback
-              </Text>
-            </View>
-          </TouchableNativeFeedback>
-        )}
+          <>
+            <TouchableNativeFeedback
+              onPress={() => console.log('custom TNF has been clicked')}
+              background={TouchableNativeFeedback.SelectableBackground()}>
+              <View style={[styles.row, styles.block]}>
+                <Text style={[styles.button, styles.nativeFeedbackButton]}>
+                  Enabled TouchableNativeFeedback
+                </Text>
+              </View>
+            </TouchableNativeFeedback>
 
-        {Platform.OS === 'android' && (
-          <TouchableNativeFeedback
-            disabled={true}
-            onPress={() => console.log('custom TNF has been clicked')}
-            background={TouchableNativeFeedback.SelectableBackground()}>
-            <View style={[styles.row, styles.block]}>
-              <Text
-                style={[styles.disabledButton, styles.nativeFeedbackButton]}>
-                Disabled TouchableNativeFeedback
-              </Text>
-            </View>
-          </TouchableNativeFeedback>
+            <TouchableNativeFeedback
+              disabled={true}
+              onPress={() => console.log('custom TNF has been clicked')}
+              background={TouchableNativeFeedback.SelectableBackground()}>
+              <View style={[styles.row, styles.block]}>
+                <Text
+                  style={[styles.disabledButton, styles.nativeFeedbackButton]}>
+                  Disabled TouchableNativeFeedback
+                </Text>
+              </View>
+            </TouchableNativeFeedback>
+          </>
         )}
       </View>
     );
   }
 }
 
-const heartImage = {
-  uri: 'https://pbs.twimg.com/media/BlXBfT3CQAA6cVZ.png:small',
+function CustomRippleRadius() {
+  if (Platform.OS !== 'android') {
+    return null;
+  }
+  return (
+    <View
+      style={[
+        styles.row,
+        {justifyContent: 'space-around', alignItems: 'center'},
+      ]}>
+      <TouchableNativeFeedback
+        onPress={() => console.log('custom TNF has been clicked')}
+        background={TouchableNativeFeedback.Ripple('orange', true, 30)}>
+        <View>
+          <Text style={[styles.button, styles.nativeFeedbackButton]}>
+            radius 30
+          </Text>
+        </View>
+      </TouchableNativeFeedback>
+
+      <TouchableNativeFeedback
+        onPress={() => console.log('custom TNF has been clicked')}
+        background={TouchableNativeFeedback.SelectableBackgroundBorderless(
+          150,
+        )}>
+        <View>
+          <Text style={[styles.button, styles.nativeFeedbackButton]}>
+            radius 150
+          </Text>
+        </View>
+      </TouchableNativeFeedback>
+
+      <TouchableNativeFeedback
+        onPress={() => console.log('custom TNF has been clicked')}
+        background={TouchableNativeFeedback.SelectableBackground(70)}>
+        <View style={styles.block}>
+          <Text style={[styles.button, styles.nativeFeedbackButton]}>
+            radius 70, with border
+          </Text>
+        </View>
+      </TouchableNativeFeedback>
+    </View>
+  );
+}
+
+const remoteImage = {
+  uri: 'https://www.facebook.com/favicon.ico',
 };
 
 const styles = StyleSheet.create({
@@ -582,7 +627,7 @@ exports.examples = [
   {
     title: '3D Touch / Force Touch',
     description:
-      'iPhone 6s and 6s plus support 3D touch, which adds a force property to touches',
+      'iPhone 8 and 8 plus support 3D touch, which adds a force property to touches',
     render: function(): React.Element<any> {
       return <ForceTouchExample />;
     },
@@ -601,6 +646,13 @@ exports.examples = [
     description: ('Some <Touchable*> components expose native methods like `measure`.': string),
     render: function(): React.Element<any> {
       return <TouchableNativeMethods />;
+    },
+  },
+  {
+    title: 'Custom Ripple Radius (Android-only)',
+    description: ('Ripple radius on TouchableNativeFeedback can be controlled': string),
+    render: function(): React.Element<any> {
+      return <CustomRippleRadius />;
     },
   },
   {

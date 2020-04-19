@@ -22,17 +22,12 @@ const normalizeColor = require('../../../StyleSheet/normalizeColor');
 type ExtrapolateType = 'extend' | 'identity' | 'clamp';
 
 export type InterpolationConfigType = {
-  inputRange: Array<number>,
-  /* $FlowFixMe(>=0.38.0 site=react_native_fb,react_native_oss) - Flow error
-   * detected during the deployment of v0.38.0. To see the error, remove this
-   * comment and run flow
-   */
-  outputRange: Array<number> | Array<string>,
+  inputRange: $ReadOnlyArray<number>,
+  outputRange: $ReadOnlyArray<number> | $ReadOnlyArray<string>,
   easing?: (input: number) => number,
   extrapolate?: ExtrapolateType,
   extrapolateLeft?: ExtrapolateType,
   extrapolateRight?: ExtrapolateType,
-  ...
 };
 
 const linear = t => t;
@@ -169,17 +164,17 @@ function interpolate(
 }
 
 function colorToRgba(input: string): string {
-  let int32Color = normalizeColor(input);
-  if (int32Color === null) {
+  let normalizedColor = normalizeColor(input);
+  if (normalizedColor === null || typeof normalizedColor !== 'number') {
     return input;
   }
 
-  int32Color = int32Color || 0;
+  normalizedColor = normalizedColor || 0;
 
-  const r = (int32Color & 0xff000000) >>> 24;
-  const g = (int32Color & 0x00ff0000) >>> 16;
-  const b = (int32Color & 0x0000ff00) >>> 8;
-  const a = (int32Color & 0x000000ff) / 255;
+  const r = (normalizedColor & 0xff000000) >>> 24;
+  const g = (normalizedColor & 0x00ff0000) >>> 16;
+  const b = (normalizedColor & 0x0000ff00) >>> 8;
+  const a = (normalizedColor & 0x000000ff) / 255;
 
   return `rgba(${r}, ${g}, ${b}, ${a})`;
 }
@@ -223,11 +218,10 @@ function createInterpolationFromStringOutputRange(
     });
   });
 
-  /* $FlowFixMe(>=0.18.0): `outputRange[0].match()` can return `null`. Need to
-   * guard against this possibility.
-   */
   const interpolations = outputRange[0]
     .match(stringShapeRegex)
+    /* $FlowFixMe(>=0.18.0): `outputRange[0].match()` can return `null`. Need
+     * to guard against this possibility. */
     .map((value, i) => {
       return createInterpolation({
         ...config,
@@ -258,7 +252,7 @@ function isRgbOrRgba(range) {
   return typeof range === 'string' && range.startsWith('rgb');
 }
 
-function checkPattern(arr: Array<string>) {
+function checkPattern(arr: $ReadOnlyArray<string>) {
   const pattern = arr[0].replace(stringShapeRegex, '');
   for (let i = 1; i < arr.length; ++i) {
     invariant(
@@ -268,7 +262,7 @@ function checkPattern(arr: Array<string>) {
   }
 }
 
-function findRange(input: number, inputRange: Array<number>) {
+function findRange(input: number, inputRange: $ReadOnlyArray<number>) {
   let i;
   for (i = 1; i < inputRange.length - 1; ++i) {
     if (inputRange[i] >= input) {
@@ -278,7 +272,7 @@ function findRange(input: number, inputRange: Array<number>) {
   return i - 1;
 }
 
-function checkValidInputRange(arr: Array<number>) {
+function checkValidInputRange(arr: $ReadOnlyArray<number>) {
   invariant(arr.length >= 2, 'inputRange must have at least 2 elements');
   for (let i = 1; i < arr.length; ++i) {
     invariant(
@@ -294,7 +288,7 @@ function checkValidInputRange(arr: Array<number>) {
   }
 }
 
-function checkInfiniteRange(name: string, arr: Array<number>) {
+function checkInfiniteRange(name: string, arr: $ReadOnlyArray<number>) {
   invariant(arr.length >= 2, name + ' must have at least 2 elements');
   invariant(
     arr.length !== 2 || arr[0] !== -Infinity || arr[1] !== Infinity,
@@ -364,6 +358,8 @@ class AnimatedInterpolation extends AnimatedWithChildren {
     return {
       inputRange: this._config.inputRange,
       // Only the `outputRange` can contain strings so we don't need to transform `inputRange` here
+      /* $FlowFixMe(>=0.38.0) - Flow error detected during the deployment of
+       * v0.38.0. To see the error, remove this comment and run flow */
       outputRange: this.__transformDataType(this._config.outputRange),
       extrapolateLeft:
         this._config.extrapolateLeft || this._config.extrapolate || 'extend',

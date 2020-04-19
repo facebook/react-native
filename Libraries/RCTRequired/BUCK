@@ -3,7 +3,9 @@ load("//tools/build_defs/oss:rn_defs.bzl", "fb_apple_library")
 fb_apple_library(
     name = "RCTRequired",
     autoglob = True,
+    complete_nullability = True,
     contacts = ["oncall+react_native@xmail.facebook.com"],
+    extension_api_only = True,
     frameworks = ["Foundation"],
-    labels = ["supermodule:ios/isolation/infra.react_native"],
+    labels = ["supermodule:ios/default/public.react_native.infra"],
 )

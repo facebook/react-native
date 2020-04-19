@@ -1,4 +1,4 @@
-load("//tools/build_defs/oss:rn_defs.bzl", "ANDROID", "APPLE", "react_native_xplat_target", "rn_xplat_cxx_library", "subdir_glob")
+load("//tools/build_defs/oss:rn_defs.bzl", "ANDROID", "APPLE", "rn_xplat_cxx_library", "subdir_glob")
 
 rn_xplat_cxx_library(
     name = "callinvoker",
@@ -16,7 +16,7 @@ rn_xplat_cxx_library(
         "-std=c++14",
         "-Wall",
     ],
-    fbobjc_labels = ["supermodule:ios/isolation/infra.react_native"],
+    fbobjc_labels = ["supermodule:ios/default/public.react_native.infra"],
     platforms = (ANDROID, APPLE),
     preferred_linkage = "static",
     preprocessor_flags = [
@@ -25,8 +25,5 @@ rn_xplat_cxx_library(
     ],
     visibility = [
         "PUBLIC",
-    ],
-    deps = [
-        react_native_xplat_target("cxxreact:bridge"),
     ],
 )

@@ -335,18 +335,26 @@ class RuntimeDecorator : public Base, private jsi::Instrumentation {
     plain().instrumentation().collectGarbage();
   }
 
-  bool createSnapshotToFile(const std::string& path) override {
-    return plain().instrumentation().createSnapshotToFile(path);
+  void startTrackingHeapObjectStackTraces() override {
+    plain().instrumentation().startTrackingHeapObjectStackTraces();
   }
 
-  bool createSnapshotToStream(std::ostream& os) override {
-    return plain().instrumentation().createSnapshotToStream(os);
+  void stopTrackingHeapObjectStackTraces() override {
+    plain().instrumentation().stopTrackingHeapObjectStackTraces();
   }
 
-  void writeBridgeTrafficTraceToFile(
-      const std::string& fileName) const override {
-    const_cast<Plain&>(plain()).instrumentation().writeBridgeTrafficTraceToFile(
-        fileName);
+  void createSnapshotToFile(const std::string& path) override {
+    plain().instrumentation().createSnapshotToFile(path);
+  }
+
+  void createSnapshotToStream(std::ostream& os) override {
+    plain().instrumentation().createSnapshotToStream(os);
+  }
+
+  std::string flushAndDisableBridgeTrafficTrace() override {
+    return const_cast<Plain&>(plain())
+        .instrumentation()
+        .flushAndDisableBridgeTrafficTrace();
   }
 
   void writeBasicBlockProfileTraceToFile(

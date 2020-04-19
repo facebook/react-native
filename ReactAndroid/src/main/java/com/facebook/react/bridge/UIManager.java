@@ -81,16 +81,4 @@ public interface UIManager extends JSIModule, PerformanceCounter {
    * @param eventType
    */
   void sendAccessibilityEvent(int reactTag, int eventType);
-
-  /**
-   * When mounting instructions are scheduled on the UI thread, should they be executed immediately?
-   * For Fabric. Should noop in pre-Fabric.
-   *
-   * <p>This should only be called on the UI thread.
-   *
-   * @param flag
-   */
-  @UiThread
-  @ThreadConfined(UI)
-  void setAllowImmediateUIOperationExecution(boolean flag);
 }

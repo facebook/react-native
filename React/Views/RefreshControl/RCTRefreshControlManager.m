@@ -7,9 +7,9 @@
 
 #import <React/RCTUIManager.h>
 
+#import "RCTRefreshControl.h"
 #import "RCTRefreshControlManager.h"
 #import "RCTRefreshableProtocol.h"
-#import "RCTRefreshControl.h"
 
 @implementation RCTRefreshControlManager
 
@@ -32,7 +32,7 @@ RCT_EXPORT_METHOD(setNativeRefreshing : (nonnull NSNumber *)viewTag toRefreshing
     UIView *view = viewRegistry[viewTag];
 
     if ([view conformsToProtocol:@protocol(RCTRefreshableProtocol)]) {
-      [(id<RCTRefreshableProtocol>)view setRefreshing: refreshing];
+      [(id<RCTRefreshableProtocol>)view setRefreshing:refreshing];
     } else {
       RCTLogError(@"view must conform to protocol RCTRefreshableProtocol");
     }

@@ -20,6 +20,8 @@
 #import "RCTConversions.h"
 #import "RCTFabricComponentsPlugins.h"
 
+using namespace facebook::react;
+
 @interface RCTImageComponentView () <RCTImageResponseDelegate>
 @end
 
@@ -79,8 +81,7 @@
   [super updateProps:props oldProps:oldProps];
 }
 
-- (void)updateState:(facebook::react::State::Shared const &)state
-           oldState:(facebook::react::State::Shared const &)oldState
+- (void)updateState:(State::Shared const &)state oldState:(State::Shared const &)oldState
 {
   _state = std::static_pointer_cast<ImageShadowNode::ConcreteState const>(state);
   auto _oldState = std::static_pointer_cast<ImageShadowNode::ConcreteState const>(oldState);
@@ -101,7 +102,9 @@
     // For now, we consolidate instrumentation logic in the image loader, so that pre-Fabric gets the same treatment.
     auto instrumentation = std::static_pointer_cast<RCTImageInstrumentationProxy const>(
         data.getImageRequest().getSharedImageInstrumentation());
-    instrumentation->trackNativeImageView(self);
+    if (instrumentation) {
+      instrumentation->trackNativeImageView(self);
+    }
   }
 }
 
@@ -133,7 +136,7 @@
 
 - (void)didReceiveImage:(UIImage *)image fromObserver:(void const *)observer
 {
-  if (!_eventEmitter) {
+  if (!_eventEmitter || !_state) {
     // Notifications are delivered asynchronously and might arrive after the view is already recycled.
     // In the future, we should incorporate an `EventEmitter` into a separate object owned by `ImageRequest` or `State`.
     // See for more info: T46311063.
@@ -164,7 +167,12 @@
   self->_imageView.layer.minificationFilter = kCAFilterTrilinear;
   self->_imageView.layer.magnificationFilter = kCAFilterTrilinear;
 
-  _state->getData().getImageRequest().getImageInstrumentation().didSetImage();
+  auto data = _state->getData();
+  auto instrumentation = std::static_pointer_cast<RCTImageInstrumentationProxy const>(
+      data.getImageRequest().getSharedImageInstrumentation());
+  if (instrumentation) {
+    instrumentation->didSetImage();
+  }
 }
 
 - (void)didReceiveProgress:(float)progress fromObserver:(void const *)observer

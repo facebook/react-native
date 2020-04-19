@@ -386,6 +386,14 @@ YOGA_EXPORT void YGNodeInsertChild(
   owner->markDirtyAndPropogate();
 }
 
+YOGA_EXPORT void YGNodeSwapChild(
+    const YGNodeRef owner,
+    const YGNodeRef child,
+    const uint32_t index) {
+  owner->replaceChild(child, index);
+  child->setOwner(owner);
+}
+
 YOGA_EXPORT void YGNodeRemoveChild(
     const YGNodeRef owner,
     const YGNodeRef excludedChild) {
@@ -1655,8 +1663,8 @@ static void YGNodeAbsoluteLayoutChild(
 
 static void YGNodeWithMeasureFuncSetMeasuredDimensions(
     const YGNodeRef node,
-    const float availableWidth,
-    const float availableHeight,
+    float availableWidth,
+    float availableHeight,
     const YGMeasureMode widthMeasureMode,
     const YGMeasureMode heightMeasureMode,
     const float ownerWidth,
@@ -1668,6 +1676,13 @@ static void YGNodeWithMeasureFuncSetMeasuredDimensions(
       node,
       node->hasMeasureFunc(),
       "Expected node to have custom measure function");
+
+  if (widthMeasureMode == YGMeasureModeUndefined) {
+    availableWidth = YGUndefined;
+  }
+  if (heightMeasureMode == YGMeasureModeUndefined) {
+    availableHeight = YGUndefined;
+  }
 
   const float paddingAndBorderAxisRow =
       YGNodePaddingAndBorderForAxis(node, YGFlexDirectionRow, ownerWidth);
@@ -2330,7 +2345,8 @@ static void YGDistributeFreeSpaceFirstPass(
           // first and second passes.
           deltaFreeSpace += boundMainSize - childFlexBasis;
           collectedFlexItemsValues.totalFlexShrinkScaledFactors -=
-              flexShrinkScaledFactor;
+              (-currentRelativeChild->resolveFlexShrink() *
+               currentRelativeChild->getLayout().computedFlexBasis.unwrap());
         }
       }
     } else if (
@@ -3805,8 +3821,10 @@ bool YGLayoutNodeInternal(
   if (needToVisitNode) {
     // Invalidate the cached results.
     layout->nextCachedMeasurementsIndex = 0;
-    layout->cachedLayout.widthMeasureMode = (YGMeasureMode) -1;
-    layout->cachedLayout.heightMeasureMode = (YGMeasureMode) -1;
+    layout->cachedLayout.availableWidth = -1;
+    layout->cachedLayout.availableHeight = -1;
+    layout->cachedLayout.widthMeasureMode = YGMeasureModeUndefined;
+    layout->cachedLayout.heightMeasureMode = YGMeasureModeUndefined;
     layout->cachedLayout.computedWidth = -1;
     layout->cachedLayout.computedHeight = -1;
   }

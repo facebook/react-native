@@ -48,6 +48,7 @@ RCT_REMAP_VIEW_PROPERTY(caretHidden, backedTextInputView.caretHidden, BOOL)
 RCT_REMAP_VIEW_PROPERTY(clearButtonMode, backedTextInputView.clearButtonMode, UITextFieldViewMode)
 RCT_REMAP_VIEW_PROPERTY(scrollEnabled, backedTextInputView.scrollEnabled, BOOL)
 RCT_REMAP_VIEW_PROPERTY(secureTextEntry, backedTextInputView.secureTextEntry, BOOL)
+RCT_EXPORT_VIEW_PROPERTY(autoFocus, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(blurOnSubmit, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(clearTextOnFocus, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(keyboardType, UIKeyboardType)
@@ -98,6 +99,35 @@ RCT_CUSTOM_VIEW_PROPERTY(multiline, BOOL, UIView)
                                                name:@"RCTAccessibilityManagerDidUpdateMultiplierNotification"
                                              object:[bridge moduleForName:@"AccessibilityManager"
                                                     lazilyLoadIfNecessary:YES]];
+}
+
+RCT_EXPORT_METHOD(focus : (nonnull NSNumber *)viewTag)
+{
+  [self.bridge.uiManager addUIBlock:^(RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry) {
+    UIView *view = viewRegistry[viewTag];
+    [view reactFocus];
+  }];
+}
+
+RCT_EXPORT_METHOD(blur : (nonnull NSNumber *)viewTag)
+{
+  [self.bridge.uiManager addUIBlock:^(RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry) {
+    UIView *view = viewRegistry[viewTag];
+    [view reactBlur];
+  }];
+}
+
+RCT_EXPORT_METHOD(setTextAndSelection : (nonnull NSNumber *)viewTag
+                 mostRecentEventCount : (NSInteger)mostRecentEventCount
+                                value : (NSString *)value
+                                start : (NSInteger)start
+                                  end : (NSInteger)end)
+{
+  [self.bridge.uiManager addUIBlock:^(RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry) {
+    RCTBaseTextInputView *view = (RCTBaseTextInputView *)viewRegistry[viewTag];
+    view.mostRecentEventCount = mostRecentEventCount;
+    [view setText:value selectionStart:start selectionEnd:end];
+  }];
 }
 
 #pragma mark - RCTUIManagerObserver

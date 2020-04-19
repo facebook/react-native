@@ -9,13 +9,12 @@
 
 #import <React/RCTAssert.h>
 #import <React/RCTConversions.h>
-#import <glog/logging.h>
 
 #import <better/map.h>
 #import <better/mutex.h>
 
+#import <react/componentregistry/ComponentDescriptorProviderRegistry.h>
 #import <react/core/ReactPrimitives.h>
-#import <react/uimanager/ComponentDescriptorProviderRegistry.h>
 
 #ifdef RN_DISABLE_OSS_PLUGIN_HEADER
 #import <RCTFabricComponentPlugin/RCTFabricPluginProvider.h>
@@ -30,6 +29,7 @@
 #import "RCTMountingTransactionObserving.h"
 #import "RCTParagraphComponentView.h"
 #import "RCTRootComponentView.h"
+#import "RCTTextInputComponentView.h"
 #import "RCTUnimplementedViewComponentView.h"
 #import "RCTViewComponentView.h"
 
@@ -55,13 +55,10 @@ static Class<RCTComponentViewProtocol> RCTComponentViewClassWithName(const char 
   [componentViewFactory registerComponentViewClass:[RCTRootComponentView class]];
   [componentViewFactory registerComponentViewClass:[RCTViewComponentView class]];
   [componentViewFactory registerComponentViewClass:[RCTParagraphComponentView class]];
+  [componentViewFactory registerComponentViewClass:[RCTTextInputComponentView class]];
 
   Class<RCTComponentViewProtocol> imageClass = RCTComponentViewClassWithName("Image");
-  if (imageClass) {
-    [componentViewFactory registerComponentViewClass:imageClass];
-  } else {
-    LOG(FATAL) << "Image component not found";
-  }
+  [componentViewFactory registerComponentViewClass:imageClass];
 
   auto providerRegistry = &componentViewFactory->_providerRegistry;
 

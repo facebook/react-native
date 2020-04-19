@@ -7,10 +7,10 @@
 
 #import "RCTScheduler.h"
 
+#import <react/componentregistry/ComponentDescriptorFactory.h>
 #import <react/debug/SystraceSection.h>
-#import <react/uimanager/ComponentDescriptorFactory.h>
-#import <react/uimanager/Scheduler.h>
-#import <react/uimanager/SchedulerDelegate.h>
+#import <react/scheduler/Scheduler.h>
+#import <react/scheduler/SchedulerDelegate.h>
 
 #import <React/RCTFollyConvert.h>
 
@@ -120,6 +120,11 @@ class SchedulerDelegateProxy : public SchedulerDelegate {
 - (ComponentDescriptor const *)findComponentDescriptorByHandle_DO_NOT_USE_THIS_IS_BROKEN:(ComponentHandle)handle
 {
   return _scheduler->findComponentDescriptorByHandle_DO_NOT_USE_THIS_IS_BROKEN(handle);
+}
+
+- (MountingCoordinator::Shared)mountingCoordinatorWithSurfaceId:(SurfaceId)surfaceId
+{
+  return _scheduler->findMountingCoordinator(surfaceId);
 }
 
 @end

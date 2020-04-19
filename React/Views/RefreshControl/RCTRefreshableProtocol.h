@@ -5,8 +5,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#import <UIKit/UIKit.h>
 #import <React/RCTComponent.h>
+#import <UIKit/UIKit.h>
 
 /**
  * Protocol used to dispatch commands in `RCTRefreshControlManager.h`.

@@ -66,7 +66,7 @@ const PERMISSIONS = Object.freeze({
 /**
  * `PermissionsAndroid` provides access to Android M's new permissions model.
  *
- * See https://facebook.github.io/react-native/docs/permissionsandroid.html
+ * See https://reactnative.dev/docs/permissionsandroid.html
  */
 
 class PermissionsAndroid {
@@ -134,7 +134,7 @@ class PermissionsAndroid {
    * Returns a promise resolving to a boolean value as to whether the specified
    * permissions has been granted
    *
-   * See https://facebook.github.io/react-native/docs/permissionsandroid.html#check
+   * See https://reactnative.dev/docs/permissionsandroid.html#check
    */
   check(permission: PermissionType): Promise<boolean> {
     if (Platform.OS !== 'android') {
@@ -188,7 +188,7 @@ class PermissionsAndroid {
    * Prompts the user to enable a permission and returns a promise resolving to a
    * string value indicating whether the user allowed or denied the request
    *
-   * See https://facebook.github.io/react-native/docs/permissionsandroid.html#request
+   * See https://reactnative.dev/docs/permissionsandroid.html#request
    */
   async request(
     permission: PermissionType,
@@ -236,7 +236,7 @@ class PermissionsAndroid {
    * returns an object with the permissions as keys and strings as values
    * indicating whether the user allowed or denied the request
    *
-   * See https://facebook.github.io/react-native/docs/permissionsandroid.html#requestmultiple
+   * See https://reactnative.dev/docs/permissionsandroid.html#requestmultiple
    */
   requestMultiple(
     permissions: Array<PermissionType>,

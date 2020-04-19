@@ -81,7 +81,7 @@ public class JSDebuggerWebSocketClient extends WebSocketListener {
     }
   }
 
-  public void loadApplicationScript(
+  public void loadBundle(
       String sourceURL, HashMap<String, String> injectedObjects, JSDebuggerCallback callback) {
     int requestID = mRequestID.getAndIncrement();
     mCallbacks.put(requestID, callback);
@@ -119,7 +119,7 @@ public class JSDebuggerWebSocketClient extends WebSocketListener {
 
       js.beginObject().name("id").value(requestID).name("method").value(methodName);
       /* JsonWriter does not offer writing raw string (without quotes), that's why
-      here we directly write to output string using the the underlying StringWriter */
+      here we directly write to output string using the underlying StringWriter */
       sw.append(",\"arguments\":").append(jsonArgsArray);
       js.endObject().close();
       sendMessage(requestID, sw.toString());

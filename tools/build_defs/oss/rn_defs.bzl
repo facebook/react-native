@@ -15,7 +15,7 @@ _DEBUG_PREPROCESSOR_FLAGS = []
 
 _APPLE_COMPILER_FLAGS = []
 
-def get_debug_preprocessor_flags():
+def get_preprocessor_flags_for_build_mode():
     return _DEBUG_PREPROCESSOR_FLAGS
 
 def get_apple_compiler_flags():
@@ -26,15 +26,6 @@ IS_OSS_BUILD = True
 GLOG_DEP = "//ReactAndroid/build/third-party-ndk/glog:glog"
 
 INSPECTOR_FLAGS = []
-
-APPLE_JSC_DEPS = []
-
-ANDROID_JSC_INTERNAL_DEPS = [
-    "//native/third-party/jsc:jsc",
-    "//native/third-party/jsc:jsc_legacy_profiler",
-]
-
-ANDROID_JSC_DEPS = ANDROID_JSC_INTERNAL_DEPS
 
 ANDROID = "Android"
 
@@ -167,16 +158,12 @@ def rn_android_prebuilt_aar(*args, **kwargs):
 def rn_apple_library(*args, **kwargs):
     kwargs.setdefault("link_whole", True)
     kwargs.setdefault("enable_exceptions", True)
+    kwargs.setdefault("target_sdk_version", "10.0")
+    _ = kwargs.pop("plugins_only", False)
     native.apple_library(*args, **kwargs)
 
-def rn_plugin_apple_library(**kwargs):
-    kwargs.setdefault("link_whole", True)
-
-    # This just an alias to apple_library for now.
-    native.apple_library(**kwargs)
-
 def rn_java_library(*args, **kwargs):
-    is_androidx = kwargs.pop("is_androidx", False)
+    _ = kwargs.pop("is_androidx", False)
     native.java_library(*args, **kwargs)
 
 def rn_java_annotation_processor(*args, **kwargs):

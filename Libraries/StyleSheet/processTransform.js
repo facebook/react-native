@@ -14,7 +14,7 @@ const MatrixMath = require('../Utilities/MatrixMath');
 const Platform = require('../Utilities/Platform');
 
 const invariant = require('invariant');
-const stringifySafe = require('../Utilities/stringifySafe');
+const stringifySafe = require('../Utilities/stringifySafe').default;
 
 /**
  * Generate a transform matrix based on the provided transforms, and use that
@@ -170,9 +170,6 @@ function _validateTransform(key, value, transformation) {
   switch (key) {
     case 'matrix':
       invariant(
-        /* $FlowFixMe(>=0.88.0 site=react_native_fb) This comment suppresses an
-         * error found when Flow v0.88 was deployed. To see the error, delete
-         * this comment and run Flow. */
         value.length === 9 || value.length === 16,
         'Matrix transform must have a length of 9 (2d) or 16 (3d). ' +
           'Provided matrix has a length of %s: %s',
@@ -185,9 +182,6 @@ function _validateTransform(key, value, transformation) {
       break;
     case 'translate':
       invariant(
-        /* $FlowFixMe(>=0.88.0 site=react_native_fb) This comment suppresses an
-         * error found when Flow v0.88 was deployed. To see the error, delete
-         * this comment and run Flow. */
         value.length === 2 || value.length === 3,
         'Transform with key translate must be an array of length 2 or 3, found %s: %s',
         /* $FlowFixMe(>=0.84.0 site=react_native_fb) This comment suppresses an

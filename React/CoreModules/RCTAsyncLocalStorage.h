@@ -19,7 +19,7 @@
  *
  * Keys and values must always be strings or an error is returned.
  */
-@interface RCTAsyncLocalStorage : NSObject <RCTBridgeModule,RCTInvalidating>
+@interface RCTAsyncLocalStorage : NSObject <RCTBridgeModule, RCTInvalidating>
 
 @property (nonatomic, assign) BOOL clearOnInvalidate;
 
@@ -31,11 +31,11 @@
 // For clearing data when the bridge may not exist, e.g. when logging out.
 + (void)clearAllData;
 
-// Grab data from the cache. ResponseBlock result array will have an error at position 0, and an array of arrays at position 1.
+// Grab data from the cache. ResponseBlock result array will have an error at position 0, and an array of arrays at
+// position 1.
 - (void)multiGet:(NSArray<NSString *> *)keys callback:(RCTResponseSenderBlock)callback;
 
 // Add multiple key value pairs to the cache.
 - (void)multiSet:(NSArray<NSArray<NSString *> *> *)kvPairs callback:(RCTResponseSenderBlock)callback;
-
 
 @end

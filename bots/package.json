@@ -9,6 +9,7 @@
     "minimatch": "^3.0.4"
   },
   "dependencies": {
-    "@octokit/rest": "15.18.0"
+    "@octokit/rest": "^16.43.0",
+    "firebase": "^7.10.0"
   }
 }

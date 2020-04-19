@@ -275,9 +275,7 @@ function getNativeTypeFromAnnotation(
     default:
       (typeAnnotation: empty);
       throw new Error(
-        `Received invalid typeAnnotation for ${componentName} prop ${
-          prop.name
-        }, received ${typeAnnotation.type}`,
+        `Received invalid typeAnnotation for ${componentName} prop ${prop.name}, received ${typeAnnotation.type}`,
       );
   }
 }
@@ -454,7 +452,7 @@ function generatePropsString(
       const nativeType = getNativeTypeFromAnnotation(componentName, prop, []);
       const defaultValue = convertDefaultTypeToString(componentName, prop);
 
-      return `const ${nativeType} ${prop.name}{${defaultValue}};`;
+      return `${nativeType} ${prop.name}{${defaultValue}};`;
     })
     .join('\n' + '  ');
 }
@@ -727,9 +725,7 @@ function generateStruct(
       default:
         (property.typeAnnotation.type: empty);
         throw new Error(
-          `Received invalid component property type ${
-            property.typeAnnotation.type
-          }`,
+          `Received invalid component property type ${property.typeAnnotation.type}`,
         );
     }
   });

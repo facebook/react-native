@@ -8,7 +8,7 @@ Before running the app, make sure you ran:
 
     git clone https://github.com/facebook/react-native.git
     cd react-native
-    npm install
+    yarn install
 
 ### Running on iOS
 
@@ -32,7 +32,7 @@ _Note: Building for the first time can take a while._
 
 Open the RNTester app in your emulator.
 If you want to use a physical device, run `adb devices`, then `adb -s <device name> reverse tcp:8081 tcp:8081`.
-See [Running on Device](https://facebook.github.io/react-native/docs/running-on-device.html) for additional instructions on using a physical device.
+See [Running on Device](https://reactnative.dev/docs/running-on-device.html) for additional instructions on using a physical device.
 
 ### Running with Buck
 

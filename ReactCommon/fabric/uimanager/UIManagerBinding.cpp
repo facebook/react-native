@@ -454,8 +454,7 @@ jsi::Value UIManagerBinding::get(
           auto layoutMetrics = uiManager->getRelativeLayoutMetrics(
               *shadowNodeFromValue(runtime, arguments[0]),
               shadowNodeFromValue(runtime, arguments[1]).get(),
-              {/* .includeTransform = */ true,
-               /* .includeScrollViewContentOffset = */ true});
+              {/* .includeTransform = */ true});
           auto frame = layoutMetrics.frame;
           auto result = jsi::Object(runtime);
           result.setProperty(runtime, "left", frame.origin.x);
@@ -499,8 +498,7 @@ jsi::Value UIManagerBinding::get(
           auto layoutMetrics = uiManager->getRelativeLayoutMetrics(
               *shadowNodeFromValue(runtime, arguments[0]),
               shadowNodeFromValue(runtime, arguments[1]).get(),
-              {/* .includeTransform = */ false,
-               /* .includeScrollViewContentOffset = */ false});
+              {/* .includeTransform = */ false});
 
           if (layoutMetrics == EmptyLayoutMetrics) {
             auto onFailFunction =
@@ -536,8 +534,7 @@ jsi::Value UIManagerBinding::get(
           auto layoutMetrics = uiManager->getRelativeLayoutMetrics(
               *shadowNodeFromValue(runtime, arguments[0]),
               nullptr,
-              {/* .includeTransform = */ true,
-               /* .includeScrollViewContentOffset = */ true});
+              {/* .includeTransform = */ true});
           auto frame = layoutMetrics.frame;
           auto onSuccessFunction =
               arguments[1].getObject(runtime).getFunction(runtime);
@@ -567,8 +564,7 @@ jsi::Value UIManagerBinding::get(
           auto layoutMetrics = uiManager->getRelativeLayoutMetrics(
               *shadowNodeFromValue(runtime, arguments[0]),
               nullptr,
-              {/* .includeTransform = */ true,
-               /* .includeScrollViewContentOffset = */ true});
+              {/* .includeTransform = */ true});
 
           auto onSuccessFunction =
               arguments[1].getObject(runtime).getFunction(runtime);

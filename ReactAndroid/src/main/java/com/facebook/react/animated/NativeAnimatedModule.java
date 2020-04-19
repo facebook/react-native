@@ -58,12 +58,12 @@ import java.util.ArrayList;
  * stores a mapping from the view properties to the corresponding animated values (so it's actually
  * also a node with connections to the value nodes).
  *
- * <p>Last "special" elements of the the graph are "animation drivers". Those are objects
- * (represented as a graph nodes too) that based on some criteria updates attached values every
- * frame (we have few types of those, e.g., spring, timing, decay). Animation objects can be
- * "started" and "stopped". Those are like "pulse generators" for the rest of the nodes graph. Those
- * pulses then propagate along the graph to the children nodes up to the special node type:
- * AnimatedProps which then can be used to calculate property update map for a view.
+ * <p>Last "special" elements of the graph are "animation drivers". Those are objects (represented
+ * as a graph nodes too) that based on some criteria updates attached values every frame (we have
+ * few types of those, e.g., spring, timing, decay). Animation objects can be "started" and
+ * "stopped". Those are like "pulse generators" for the rest of the nodes graph. Those pulses then
+ * propagate along the graph to the children nodes up to the special node type: AnimatedProps which
+ * then can be used to calculate property update map for a view.
  *
  * <p>This class acts as a proxy between the "native" API that can be called from JS and the main
  * class that coordinates all the action: {@link NativeAnimatedNodesManager}. Since all the methods
@@ -127,13 +127,11 @@ public class NativeAnimatedModule extends NativeAnimatedModuleSpec
   public void initialize() {
     ReactApplicationContext reactApplicationContext = getReactApplicationContextIfActiveOrWarn();
 
-    if (reactApplicationContext != null) {
+    // TODO T59412313 Implement this API on FabricUIManager to use in bridgeless mode
+    if (reactApplicationContext != null && !reactApplicationContext.isBridgeless()) {
       reactApplicationContext.addLifecycleEventListener(this);
-      if (!reactApplicationContext.isBridgeless()) {
-        // TODO T59412313 Implement this API on FabricUIManager to use in bridgeless mode
-        UIManagerModule uiManager = reactApplicationContext.getNativeModule(UIManagerModule.class);
-        uiManager.addUIManagerListener(this);
-      }
+      UIManagerModule uiManager = reactApplicationContext.getNativeModule(UIManagerModule.class);
+      uiManager.addUIManagerListener(this);
     }
   }
 

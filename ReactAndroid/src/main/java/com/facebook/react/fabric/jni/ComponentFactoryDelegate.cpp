@@ -7,9 +7,9 @@
 
 #include "ComponentFactoryDelegate.h"
 #include <android/log.h>
-#include <fb/fbjni.h>
+#include <fbjni/fbjni.h>
 #include <jsi/jsi.h>
-#include <react/uimanager/ComponentDescriptorRegistry.h>
+#include <react/componentregistry/ComponentDescriptorRegistry.h>
 
 using namespace facebook::jsi;
 

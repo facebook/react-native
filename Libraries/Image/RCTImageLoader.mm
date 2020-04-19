@@ -99,6 +99,7 @@ static uint64_t monotonicTimeGetCurrentNanoseconds(void)
 @synthesize maxConcurrentLoadingTasks = _maxConcurrentLoadingTasks;
 @synthesize maxConcurrentDecodingTasks = _maxConcurrentDecodingTasks;
 @synthesize maxConcurrentDecodingBytes = _maxConcurrentDecodingBytes;
+@synthesize turboModuleLookupDelegate = _turboModuleLookupDelegate;
 
 RCT_EXPORT_MODULE()
 
@@ -583,7 +584,8 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
                                    completionBlock:(void (^)(NSError *error, id imageOrData, NSURLResponse *response))completionHandler
 {
   // Check if networking module is available
-  if (RCT_DEBUG && ![_bridge respondsToSelector:@selector(networking)]) {
+  if (RCT_DEBUG && ![_bridge respondsToSelector:@selector(networking)]
+      && ![_turboModuleLookupDelegate moduleForName:"RCTNetworking"]) {
     RCTLogError(@"No suitable image URL loader found for %@. You may need to "
                 " import the RCTNetwork library in order to load images.",
                 request.URL.absoluteString);
@@ -591,6 +593,9 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
   }
 
   RCTNetworking *networking = [_bridge networking];
+  if (!networking) {
+    networking = [_turboModuleLookupDelegate moduleForName:"RCTNetworking"];
+  }
 
   // Check if networking module can load image
   if (RCT_DEBUG && ![networking canHandleRequest:request]) {
@@ -1072,10 +1077,9 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
   }
 }
 
-- (std::shared_ptr<facebook::react::TurboModule>)getTurboModuleWithJsInvoker:
-  (std::shared_ptr<facebook::react::CallInvoker>)jsInvoker
+- (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:(const facebook::react::ObjCTurboModule::InitParams &)params
 {
-  return std::make_shared<facebook::react::NativeImageLoaderIOSSpecJSI>(self, jsInvoker);
+  return std::make_shared<facebook::react::NativeImageLoaderIOSSpecJSI>(params);
 }
 
 RCT_EXPORT_METHOD(getSize:(NSString *)uri resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject)

@@ -63,7 +63,9 @@ using namespace facebook::react;
 - (void)updateLayoutMetrics:(LayoutMetrics const &)layoutMetrics
            oldLayoutMetrics:(LayoutMetrics const &)oldLayoutMetrics
 {
-  if (layoutMetrics.frame != oldLayoutMetrics.frame) {
+  bool forceUpdate = oldLayoutMetrics == EmptyLayoutMetrics;
+
+  if (forceUpdate || (layoutMetrics.frame != oldLayoutMetrics.frame)) {
     CGRect frame = RCTCGRectFromRect(layoutMetrics.frame);
 
     if (!std::isfinite(frame.origin.x) || !std::isfinite(frame.origin.y) || !std::isfinite(frame.size.width) ||
@@ -86,13 +88,13 @@ using namespace facebook::react;
     self.bounds = CGRect{CGPointZero, frame.size};
   }
 
-  if (layoutMetrics.layoutDirection != oldLayoutMetrics.layoutDirection) {
+  if (forceUpdate || (layoutMetrics.layoutDirection != oldLayoutMetrics.layoutDirection)) {
     self.semanticContentAttribute = layoutMetrics.layoutDirection == LayoutDirection::RightToLeft
         ? UISemanticContentAttributeForceRightToLeft
         : UISemanticContentAttributeForceLeftToRight;
   }
 
-  if (layoutMetrics.displayType != oldLayoutMetrics.displayType) {
+  if (forceUpdate || (layoutMetrics.displayType != oldLayoutMetrics.displayType)) {
     self.hidden = layoutMetrics.displayType == DisplayType::None;
   }
 }

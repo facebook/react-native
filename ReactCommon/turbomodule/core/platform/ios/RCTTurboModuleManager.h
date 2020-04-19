@@ -11,9 +11,8 @@
 
 // TODO: Move to xplat codegen.
 - (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:(const std::string &)name
-                                                       instance:(id<RCTTurboModule>)instance
-                                                      jsInvoker:
-                                                          (std::shared_ptr<facebook::react::CallInvoker>)jsInvoker;
+                                                     initParams:
+                                                         (const facebook::react::ObjCTurboModule::InitParams &)params;
 
 @optional
 
@@ -38,11 +37,16 @@
 
 @interface RCTTurboModuleManager : NSObject <RCTTurboModuleLookupDelegate>
 
-- (instancetype)initWithBridge:(RCTBridge *)bridge delegate:(id<RCTTurboModuleManagerDelegate>)delegate;
+- (instancetype)initWithBridge:(RCTBridge *)bridge
+                      delegate:(id<RCTTurboModuleManagerDelegate>)delegate
+                     jsInvoker:(std::shared_ptr<facebook::react::CallInvoker>)jsInvoker;
+
+- (instancetype)initWithBridge:(RCTBridge *)bridge
+                      delegate:(id<RCTTurboModuleManagerDelegate>)delegate
+                     jsInvoker:(std::shared_ptr<facebook::react::CallInvoker>)jsInvoker
+             performanceLogger:(id<RCTTurboModulePerformanceLogger>)performanceLogger;
 
 - (void)installJSBindingWithRuntime:(facebook::jsi::Runtime *)runtime;
-
-- (std::shared_ptr<facebook::react::TurboModule>)getModule:(const std::string &)name;
 
 - (void)invalidate;
 

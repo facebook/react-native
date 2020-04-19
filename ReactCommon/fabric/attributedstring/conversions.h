@@ -22,7 +22,7 @@
 #include <react/graphics/conversions.h>
 #include <cmath>
 
-#include <Glog/logging.h>
+#include <glog/logging.h>
 
 namespace facebook {
 namespace react {
@@ -484,6 +484,27 @@ inline folly::dynamic toDynamic(
   return values;
 }
 
+inline folly::dynamic toDynamic(const FontVariant &fontVariant) {
+  auto result = folly::dynamic::array();
+  if ((int)fontVariant & (int)FontVariant::SmallCaps) {
+    result.push_back("small-caps");
+  }
+  if ((int)fontVariant & (int)FontVariant::OldstyleNums) {
+    result.push_back("oldstyle-nums");
+  }
+  if ((int)fontVariant & (int)FontVariant::LiningNums) {
+    result.push_back("lining-nums");
+  }
+  if ((int)fontVariant & (int)FontVariant::TabularNums) {
+    result.push_back("tabular-nums");
+  }
+  if ((int)fontVariant & (int)FontVariant::ProportionalNums) {
+    result.push_back("proportional-nums");
+  }
+
+  return result;
+}
+
 inline folly::dynamic toDynamic(const TextAttributes &textAttributes) {
   auto _textAttributes = folly::dynamic::object();
   if (textAttributes.foregroundColor) {
@@ -513,7 +534,7 @@ inline folly::dynamic toDynamic(const TextAttributes &textAttributes) {
     _textAttributes("fontStyle", toString(*textAttributes.fontStyle));
   }
   if (textAttributes.fontVariant.has_value()) {
-    _textAttributes("fontVariant", toString(*textAttributes.fontVariant));
+    _textAttributes("fontVariant", toDynamic(*textAttributes.fontVariant));
   }
   if (textAttributes.allowFontScaling.has_value()) {
     _textAttributes("allowFontScaling", *textAttributes.allowFontScaling);
@@ -579,6 +600,13 @@ inline folly::dynamic toDynamic(const AttributedString &attributedString) {
     dynamicFragment["string"] = fragment.string;
     if (fragment.parentShadowView.componentHandle) {
       dynamicFragment["reactTag"] = fragment.parentShadowView.tag;
+    }
+    if (fragment.isAttachment()) {
+      dynamicFragment["isAttachment"] = true;
+      dynamicFragment["width"] =
+          (int)fragment.parentShadowView.layoutMetrics.frame.size.width;
+      dynamicFragment["height"] =
+          (int)fragment.parentShadowView.layoutMetrics.frame.size.height;
     }
     dynamicFragment["textAttributes"] = toDynamic(fragment.textAttributes);
     fragments.push_back(dynamicFragment);

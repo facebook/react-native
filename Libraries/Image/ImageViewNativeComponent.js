@@ -18,7 +18,7 @@ import type {HostComponent} from '../Renderer/shims/ReactNativeTypes';
 import type {ImageProps} from './ImageProps';
 import type {ViewProps} from '../Components/View/ViewPropTypes';
 import type {ImageStyleProp} from '../StyleSheet/StyleSheet';
-import type {ColorValue} from '../StyleSheet/StyleSheetTypes';
+import type {ColorValue} from '../StyleSheet/StyleSheet';
 
 import ImageViewViewConfig from './ImageViewViewConfig';
 const ReactNativeViewConfigRegistry = require('../Renderer/shims/ReactNativeViewConfigRegistry');
@@ -52,4 +52,5 @@ if (global.RN$Bridgeless) {
   );
 }
 
-export default ((ImageViewNativeComponent: any): HostComponent<NativeProps>); // flowlint-line unclear-type:off
+// flowlint-next-line unclear-type:off
+export default ((ImageViewNativeComponent: any): HostComponent<NativeProps>);

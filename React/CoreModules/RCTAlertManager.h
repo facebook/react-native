@@ -17,7 +17,6 @@ typedef NS_ENUM(NSInteger, RCTAlertViewStyle) {
   RCTAlertViewStyleLoginAndPasswordInput
 };
 
-
 @interface RCTAlertManager : NSObject <RCTBridgeModule, RCTInvalidating>
 
 @end

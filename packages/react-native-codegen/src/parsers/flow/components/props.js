@@ -94,6 +94,7 @@ function getTypeAnnotationForArray(name, typeAnnotation, defaultValue, types) {
         name: 'ImageSourcePrimitive',
       };
     case 'ColorValue':
+    case 'ProcessedColorValue':
       return {
         type: 'NativePrimitiveTypeAnnotation',
         name: 'ColorPrimitive',
@@ -217,6 +218,7 @@ function getTypeAnnotation(
         name: 'ImageSourcePrimitive',
       };
     case 'ColorValue':
+    case 'ProcessedColorValue':
       return {
         type: 'NativePrimitiveTypeAnnotation',
         name: 'ColorPrimitive',
@@ -343,8 +345,8 @@ function buildPropSchema(property, types: TypeMap): ?PropTypeShape {
   }
   if (
     value.type === 'NullableTypeAnnotation' &&
-    (typeAnnotation.type === 'GenericTypeAnnotation' &&
-      typeAnnotation.id.name === 'WithDefault')
+    typeAnnotation.type === 'GenericTypeAnnotation' &&
+    typeAnnotation.id.name === 'WithDefault'
   ) {
     throw new Error(
       'WithDefault<> is optional and does not need to be marked as optional. Please remove the ? annotation in front of it.',

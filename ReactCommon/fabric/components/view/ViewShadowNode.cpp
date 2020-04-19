@@ -6,27 +6,71 @@
  */
 
 #include "ViewShadowNode.h"
+#include <react/components/view/primitives.h>
 
 namespace facebook {
 namespace react {
 
-const char ViewComponentName[] = "View";
+char const ViewComponentName[] = "View";
 
-bool ViewShadowNode::isLayoutOnly() const {
-  const auto &viewProps = *std::static_pointer_cast<const ViewProps>(props_);
+ViewShadowNode::ViewShadowNode(
+    ShadowNodeFragment const &fragment,
+    ShadowNodeFamily::Shared const &family,
+    ShadowNodeTraits traits)
+    : ConcreteViewShadowNode(fragment, family, traits) {
+  initialize();
+}
 
-  return viewProps.collapsable &&
-      // Generic Props
-      viewProps.nativeId.empty() &&
-      // Accessibility Props
-      !viewProps.accessible &&
-      // Style Props
-      viewProps.opacity == 1.0 && !viewProps.backgroundColor &&
-      !viewProps.foregroundColor && !viewProps.shadowColor &&
-      viewProps.transform == Transform{} && viewProps.zIndex == 0 &&
-      !viewProps.getClipsContentToBounds() &&
-      // Layout Metrics
-      getLayoutMetrics().borderWidth == EdgeInsets{};
+ViewShadowNode::ViewShadowNode(
+    ShadowNode const &sourceShadowNode,
+    ShadowNodeFragment const &fragment)
+    : ConcreteViewShadowNode(sourceShadowNode, fragment) {
+  initialize();
+}
+
+static bool isColorMeaningful(SharedColor const &color) noexcept {
+  if (!color) {
+    return false;
+  }
+
+  return colorComponentsFromColor(color).alpha > 0;
+}
+
+void ViewShadowNode::initialize() noexcept {
+  auto &viewProps = static_cast<ViewProps const &>(*props_);
+
+  bool formsStackingContext = !viewProps.collapsable ||
+      viewProps.pointerEvents == PointerEventsMode::None ||
+      !viewProps.nativeId.empty() || viewProps.accessible ||
+      viewProps.opacity != 1.0 || viewProps.transform != Transform{} ||
+      viewProps.zIndex != 0 || viewProps.getClipsContentToBounds() ||
+      viewProps.yogaStyle.positionType() == YGPositionTypeAbsolute ||
+      isColorMeaningful(viewProps.shadowColor);
+
+  bool formsView = isColorMeaningful(viewProps.backgroundColor) ||
+      isColorMeaningful(viewProps.foregroundColor) ||
+      !(viewProps.yogaStyle.border() == YGStyle::Edges{});
+
+  formsView = formsView || formsStackingContext;
+
+#ifdef ANDROID
+  // Force `formsStackingContext` trait for nodes which have `formsView`.
+  // TODO: T63560216 Investigate why/how `formsView` entangled with
+  // `formsStackingContext`.
+  formsStackingContext = formsStackingContext || formsView;
+#endif
+
+  if (formsView) {
+    traits_.set(ShadowNodeTraits::Trait::FormsView);
+  } else {
+    traits_.unset(ShadowNodeTraits::Trait::FormsView);
+  }
+
+  if (formsStackingContext) {
+    traits_.set(ShadowNodeTraits::Trait::FormsStackingContext);
+  } else {
+    traits_.unset(ShadowNodeTraits::Trait::FormsStackingContext);
+  }
 }
 
 } // namespace react

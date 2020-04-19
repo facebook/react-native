@@ -13,7 +13,9 @@
 const Platform = require('../../Utilities/Platform');
 const React = require('react');
 
+const invariant = require('invariant');
 const processColor = require('../../StyleSheet/processColor');
+import type {ColorValue} from '../../StyleSheet/StyleSheet';
 
 import NativeStatusBarManagerAndroid from './NativeStatusBarManagerAndroid';
 import NativeStatusBarManagerIOS from './NativeStatusBarManagerIOS';
@@ -61,7 +63,7 @@ type AndroidProps = $ReadOnly<{|
    * The background color of the status bar.
    * @platform android
    */
-  backgroundColor?: ?string,
+  backgroundColor?: ?ColorValue,
   /**
    * If the status bar is translucent.
    * When translucent is set to true, the app will draw under the status bar.
@@ -322,6 +324,10 @@ class StatusBar extends React.Component<Props> {
       );
       return;
     }
+    invariant(
+      typeof processedColor === 'number',
+      'Unexpected color given for StatusBar.setBackgroundColor',
+    );
 
     NativeStatusBarManagerAndroid.setColor(processedColor, animated);
   }
@@ -455,31 +461,23 @@ class StatusBar extends React.Component<Props> {
           );
         }
       } else if (Platform.OS === 'android') {
-        if (
-          !oldProps ||
-          oldProps.barStyle.value !== mergedProps.barStyle.value
-        ) {
-          NativeStatusBarManagerAndroid.setStyle(mergedProps.barStyle.value);
-        }
-        if (
-          !oldProps ||
-          oldProps.backgroundColor.value !== mergedProps.backgroundColor.value
-        ) {
-          const processedColor = processColor(
-            mergedProps.backgroundColor.value,
+        //todo(T60684787): Add back optimization to only update bar style and
+        //background color if the new value is different from the old value.
+        NativeStatusBarManagerAndroid.setStyle(mergedProps.barStyle.value);
+        const processedColor = processColor(mergedProps.backgroundColor.value);
+        if (processedColor == null) {
+          console.warn(
+            `\`StatusBar._updatePropsStack\`: Color ${mergedProps.backgroundColor.value} parsed to null or undefined`,
           );
-          if (processedColor == null) {
-            console.warn(
-              `\`StatusBar._updatePropsStack\`: Color ${
-                mergedProps.backgroundColor.value
-              } parsed to null or undefined`,
-            );
-          } else {
-            NativeStatusBarManagerAndroid.setColor(
-              processedColor,
-              mergedProps.backgroundColor.animated,
-            );
-          }
+        } else {
+          invariant(
+            typeof processedColor === 'number',
+            'Unexpected color given in StatusBar._updatePropsStack',
+          );
+          NativeStatusBarManagerAndroid.setColor(
+            processedColor,
+            mergedProps.backgroundColor.animated,
+          );
         }
         if (!oldProps || oldProps.hidden.value !== mergedProps.hidden.value) {
           NativeStatusBarManagerAndroid.setHidden(mergedProps.hidden.value);

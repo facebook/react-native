@@ -34,10 +34,9 @@ void RCTRegisterReloadCommandListener(id<RCTReloadListener> listener)
   dispatch_once(&onceToken, ^{
     [[RCTKeyCommands sharedInstance] registerKeyCommandWithInput:@"r"
                                                    modifierFlags:UIKeyModifierCommand
-                                                          action:
-     ^(__unused UIKeyCommand *command) {
-      RCTTriggerReloadCommandListeners(@"Command + R");
-    }];
+                                                          action:^(__unused UIKeyCommand *command) {
+                                                            RCTTriggerReloadCommandListeners(@"Command + R");
+                                                          }];
   });
 #endif
   [listeners addObject:listener];
@@ -49,8 +48,9 @@ void RCTTriggerReloadCommandListeners(NSString *reason)
   [listenersLock lock];
   [[NSNotificationCenter defaultCenter] postNotificationName:RCTTriggerReloadCommandNotification
                                                       object:nil
-                                                    userInfo:@{RCTTriggerReloadCommandReasonKey: RCTNullIfNil(reason),
-                                                               RCTTriggerReloadCommandBundleURLKey: RCTNullIfNil(bundleURL)
+                                                    userInfo:@{
+                                                      RCTTriggerReloadCommandReasonKey : RCTNullIfNil(reason),
+                                                      RCTTriggerReloadCommandBundleURLKey : RCTNullIfNil(bundleURL)
                                                     }];
 
   for (id<RCTReloadListener> l in [listeners allObjects]) {
