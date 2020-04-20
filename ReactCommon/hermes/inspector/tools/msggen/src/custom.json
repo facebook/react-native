@@ -1,3 +1,26 @@
 {
-  "domains": []
+  "domains": [
+    {
+      "domain": "Hermes",
+      "description": "Hermes specific messages",
+      "commands": [
+        {
+          "name": "setPauseOnLoad",
+          "description": "Pause VM when new scripts are loaded (reason='load')",
+          "parameters": [
+            {
+              "name": "state",
+              "description": "Pause on script load mode",
+              "type": "string",
+              "enum": [
+                "none",
+                "smart",
+                "all"
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
 }
