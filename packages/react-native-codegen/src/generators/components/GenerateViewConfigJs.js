@@ -78,9 +78,7 @@ function getReactDiffProcessValue(typeAnnotation) {
             return j.literal(true);
           default:
             throw new Error(
-              `Received unknown array native typeAnnotation: "${
-                typeAnnotation.elementType.name
-              }"`,
+              `Received unknown array native typeAnnotation: "${typeAnnotation.elementType.name}"`,
             );
         }
       }

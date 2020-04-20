@@ -7,6 +7,7 @@
 
 #pragma once
 
+#include <react/componentregistry/ComponentDescriptorProviderRegistry.h>
 #include <react/components/root/RootComponentDescriptor.h>
 #include <react/components/scrollview/ScrollViewComponentDescriptor.h>
 #include <react/components/text/ParagraphComponentDescriptor.h>
@@ -14,7 +15,6 @@
 #include <react/components/text/TextComponentDescriptor.h>
 #include <react/components/view/ViewComponentDescriptor.h>
 #include <react/element/ComponentBuilder.h>
-#include <react/uimanager/ComponentDescriptorProviderRegistry.h>
 
 namespace facebook {
 namespace react {

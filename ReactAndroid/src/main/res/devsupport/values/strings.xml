@@ -3,14 +3,15 @@
   <string name="catalyst_reload" project="catalyst" translatable="false">Reload</string>
   <string name="catalyst_reload_error" project="catalyst" translatable="false">Failed to load bundle. Try restarting the bundler or reconnecting your device.</string>
   <string name="catalyst_change_bundle_location" project="catalyst" translatable="false">Change Bundle Location</string>
+  <string name="catalyst_open_flipper_error" project="catalyst" translatable="false">Failed to open Flipper. Please check that Metro is running.</string>
+  <string name="catalyst_devtools_open" project="catalyst" translatable="false">Open React DevTools</string>
+  <string name="catalyst_debug_open" project="catalyst" translatable="false">Open Debugger</string>
   <string name="catalyst_debug" project="catalyst" translatable="false">Debug</string>
   <string name="catalyst_debug_stop" project="catalyst" translatable="false">Stop Debugging</string>
   <string name="catalyst_debug_connecting" project="catalyst" translatable="false">Connecting to debugger...</string>
   <string name="catalyst_debug_error" project="catalyst" translatable="false">Failed to connect to debugger!</string>
   <string name="catalyst_debug_chrome" project="catalyst" translatable="false">Debug with Chrome</string>
   <string name="catalyst_debug_chrome_stop" project="catalyst" translatable="false">Stop Chrome Debugging</string>
-  <string name="catalyst_debug_nuclide" project="catalyst" translatable="false">Debug with Nuclide</string>
-  <string name="catalyst_debug_nuclide_error" project="catalyst" translatable="false">Failed to communicate with the bundler to enabling debugging with Nuclide.</string>
   <string name="catalyst_hot_reloading" project="catalyst" translatable="false">Enable Fast Refresh</string>
   <string name="catalyst_hot_reloading_stop" project="catalyst" translatable="false">Disable Fast Refresh</string>
   <string name="catalyst_hot_reloading_auto_disable" project="catalyst" translatable="false">Disabling Fast Refresh because it requires a development bundle.</string>

@@ -23,17 +23,12 @@
 namespace facebook {
 namespace react {
 
-JavaTurboModule::JavaTurboModule(
-    const std::string &name,
-    jni::alias_ref<JTurboModule> instance,
-    std::shared_ptr<CallInvoker> jsInvoker,
-    std::shared_ptr<CallInvoker> nativeInvoker)
-    : TurboModule(name, jsInvoker),
-      instance_(jni::make_global(instance)),
-      nativeInvoker_(nativeInvoker) {}
+JavaTurboModule::JavaTurboModule(const InitParams &params)
+    : TurboModule(params.moduleName, params.jsInvoker),
+      instance_(jni::make_global(params.instance)),
+      nativeInvoker_(params.nativeInvoker) {}
 
 namespace {
-
 jni::local_ref<JCxxCallbackImpl::JavaPart> createJavaCallbackFromJSIFunction(
     jsi::Function &&function,
     jsi::Runtime &rt,

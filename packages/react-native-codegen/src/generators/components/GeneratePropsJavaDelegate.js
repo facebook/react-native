@@ -82,14 +82,10 @@ function getJavaValueForProp(
           : `"${typeAnnotation.default}"`;
       return `value == null ? ${defaultValueString} : (String) value`;
     case 'Int32TypeAnnotation':
-      return `value == null ? ${
-        typeAnnotation.default
-      } : ((Double) value).intValue()`;
+      return `value == null ? ${typeAnnotation.default} : ((Double) value).intValue()`;
     case 'DoubleTypeAnnotation':
       if (prop.optional) {
-        return `value == null ? ${
-          typeAnnotation.default
-        }f : ((Double) value).doubleValue()`;
+        return `value == null ? ${typeAnnotation.default}f : ((Double) value).doubleValue()`;
       } else {
         return 'value == null ? Double.NaN : ((Double) value).doubleValue()';
       }
@@ -97,9 +93,7 @@ function getJavaValueForProp(
       if (typeAnnotation.default === null) {
         return 'value == null ? null : ((Double) value).floatValue()';
       } else if (prop.optional) {
-        return `value == null ? ${
-          typeAnnotation.default
-        }f : ((Double) value).floatValue()`;
+        return `value == null ? ${typeAnnotation.default}f : ((Double) value).floatValue()`;
       } else {
         return 'value == null ? Float.NaN : ((Double) value).floatValue()';
       }
@@ -126,9 +120,7 @@ function getJavaValueForProp(
     case 'StringEnumTypeAnnotation':
       return '(String) value';
     case 'Int32EnumTypeAnnotation':
-      return `value == null ? ${
-        typeAnnotation.default
-      } : ((Double) value).intValue()`;
+      return `value == null ? ${typeAnnotation.default} : ((Double) value).intValue()`;
     default:
       (typeAnnotation: empty);
       throw new Error('Received invalid typeAnnotation');

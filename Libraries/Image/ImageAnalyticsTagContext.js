@@ -4,14 +4,18 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @flow strict
  * @format
- * @flow strict-local
  */
 
 'use strict';
 
-import type {ColorValue} from './StyleSheetTypes';
+import * as React from 'react';
 
-export const ColorAndroid = (color: string): ColorValue => {
-  throw new Error('ColorAndroid is not available on this platform.');
-};
+type ContextType = ?string;
+
+const Context: React.Context<ContextType> = React.createContext<ContextType>(
+  null,
+);
+
+export default Context;

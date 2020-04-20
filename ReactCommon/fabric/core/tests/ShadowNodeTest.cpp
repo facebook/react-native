@@ -288,5 +288,7 @@ TEST_F(ShadowNodeTest, handleState) {
 
   // State cannot be changed for sealed shadow node.
   secondNode->sealRecursive();
-  EXPECT_ANY_THROW(secondNode->setStateData(TestState{42}));
+  EXPECT_DEATH_IF_SUPPORTED(
+      { secondNode->setStateData(TestState{42}); },
+      "Attempt to mutate a sealed object.");
 }

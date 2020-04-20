@@ -31,7 +31,7 @@ exports[`<Image /> should render as <RCTImageView> when not mocked 1`] = `
 `;
 
 exports[`<Image /> should shallow render as <ForwardRef(Image)> when not mocked 1`] = `
-<ForwardRef(Image)
+<Image
   source={
     Object {
       "uri": "foo-bar.jpg",

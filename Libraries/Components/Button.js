@@ -21,7 +21,7 @@ const View = require('./View/View');
 const invariant = require('invariant');
 
 import type {PressEvent} from '../Types/CoreEventTypes';
-import type {ColorValue} from '../StyleSheet/StyleSheetTypes';
+import type {ColorValue} from '../StyleSheet/StyleSheet';
 
 type ButtonProps = $ReadOnly<{|
   /**

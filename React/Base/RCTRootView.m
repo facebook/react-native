@@ -21,6 +21,7 @@
 #import "RCTPerformanceLogger.h"
 #import "RCTProfile.h"
 #import "RCTRootContentView.h"
+#import "RCTRootShadowView.h"
 #import "RCTTouchHandler.h"
 #import "RCTUIManager.h"
 #import "RCTUIManagerUtils.h"
@@ -71,6 +72,7 @@ NSString *const RCTContentDidAppearNotification = @"RCTContentDidAppearNotificat
     _loadingViewFadeDelay = 0.25;
     _loadingViewFadeDuration = 0.25;
     _sizeFlexibility = RCTRootViewSizeFlexibilityNone;
+    _minimumSize = CGSizeZero;
 
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(bridgeDidReload)
@@ -165,6 +167,23 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (NSCoder *)aDecoder)
   [super layoutSubviews];
   _contentView.frame = self.bounds;
   _loadingView.center = (CGPoint){CGRectGetMidX(self.bounds), CGRectGetMidY(self.bounds)};
+}
+
+- (void)setMinimumSize:(CGSize)minimumSize
+{
+  if (CGSizeEqualToSize(_minimumSize, minimumSize)) {
+    return;
+  }
+  _minimumSize = minimumSize;
+  __block NSNumber *tag = self.reactTag;
+  __weak typeof(self) weakSelf = self;
+  RCTExecuteOnUIManagerQueue(^{
+    __strong typeof(self) strongSelf = weakSelf;
+    if (strongSelf && strongSelf->_bridge.isValid) {
+      RCTRootShadowView *shadowView = (RCTRootShadowView *)[strongSelf->_bridge.uiManager shadowViewForReactTag:tag];
+      shadowView.minimumSize = minimumSize;
+    }
+  });
 }
 
 - (UIViewController *)reactViewController

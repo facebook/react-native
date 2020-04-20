@@ -526,17 +526,17 @@ public class ReactViewBackgroundDrawable extends Drawable {
     mTempRectForBorderRadiusOutline.set(getBounds());
     mTempRectForCenterDrawPath.set(getBounds());
 
-    float fullBorderWidth = getFullBorderWidth();
-    if (fullBorderWidth > 0) {
-      mTempRectForCenterDrawPath.inset(fullBorderWidth * 0.5f, fullBorderWidth * 0.5f);
-    }
-
     final RectF borderWidth = getDirectionAwareBorderInsets();
 
     mInnerClipTempRectForBorderRadius.top += borderWidth.top;
     mInnerClipTempRectForBorderRadius.bottom -= borderWidth.bottom;
     mInnerClipTempRectForBorderRadius.left += borderWidth.left;
     mInnerClipTempRectForBorderRadius.right -= borderWidth.right;
+
+    mTempRectForCenterDrawPath.top += borderWidth.top * 0.5f;
+    mTempRectForCenterDrawPath.bottom -= borderWidth.bottom * 0.5f;
+    mTempRectForCenterDrawPath.left += borderWidth.left * 0.5f;
+    mTempRectForCenterDrawPath.right -= borderWidth.right * 0.5f;
 
     final float borderRadius = getFullBorderRadius();
     float topLeftRadius = getBorderRadiusOrDefaultTo(borderRadius, BorderRadiusLocation.TOP_LEFT);
@@ -663,14 +663,22 @@ public class ReactViewBackgroundDrawable extends Drawable {
     mCenterDrawPath.addRoundRect(
         mTempRectForCenterDrawPath,
         new float[] {
-          innerTopLeftRadiusX + (topLeftRadius > 0 ? extraRadiusForOutline : 0),
-          innerTopLeftRadiusY + (topLeftRadius > 0 ? extraRadiusForOutline : 0),
-          innerTopRightRadiusX + (topRightRadius > 0 ? extraRadiusForOutline : 0),
-          innerTopRightRadiusY + (topRightRadius > 0 ? extraRadiusForOutline : 0),
-          innerBottomRightRadiusX + (bottomRightRadius > 0 ? extraRadiusForOutline : 0),
-          innerBottomRightRadiusY + (bottomRightRadius > 0 ? extraRadiusForOutline : 0),
-          innerBottomLeftRadiusX + (bottomLeftRadius > 0 ? extraRadiusForOutline : 0),
-          innerBottomLeftRadiusY + (bottomLeftRadius > 0 ? extraRadiusForOutline : 0)
+          Math.max(topLeftRadius - borderWidth.left * 0.5f,
+            (borderWidth.left > 0.0f) ? (topLeftRadius / borderWidth.left) : 0.0f),
+          Math.max(topLeftRadius - borderWidth.top * 0.5f,
+            (borderWidth.top > 0.0f) ? (topLeftRadius / borderWidth.top) : 0.0f),
+          Math.max(topRightRadius - borderWidth.right * 0.5f,
+            (borderWidth.right > 0.0f) ? (topRightRadius / borderWidth.right) : 0.0f),
+          Math.max(topRightRadius - borderWidth.top * 0.5f,
+            (borderWidth.top > 0.0f) ? (topRightRadius / borderWidth.top) : 0.0f),
+          Math.max(bottomRightRadius - borderWidth.right * 0.5f,
+            (borderWidth.right > 0.0f) ? (bottomRightRadius / borderWidth.right) : 0.0f),
+          Math.max(bottomRightRadius - borderWidth.bottom * 0.5f,
+            (borderWidth.bottom > 0.0f) ? (bottomRightRadius / borderWidth.bottom) : 0.0f),
+          Math.max(bottomLeftRadius - borderWidth.left * 0.5f,
+            (borderWidth.left > 0.0f) ? (bottomLeftRadius / borderWidth.left) : 0.0f),
+          Math.max(bottomLeftRadius - borderWidth.bottom * 0.5f,
+            (borderWidth.bottom > 0.0f) ? (bottomLeftRadius / borderWidth.bottom) : 0.0f)
         },
         Path.Direction.CW);
 
@@ -998,10 +1006,11 @@ public class ReactViewBackgroundDrawable extends Drawable {
   }
 
   private void drawRectangularBackgroundWithBorders(Canvas canvas) {
+    mPaint.setStyle(Paint.Style.FILL);
+    
     int useColor = ColorUtil.multiplyColorAlpha(mColor, mAlpha);
     if (Color.alpha(useColor) != 0) { // color is not transparent
       mPaint.setColor(useColor);
-      mPaint.setStyle(Paint.Style.FILL);
       canvas.drawRect(getBounds(), mPaint);
     }
 

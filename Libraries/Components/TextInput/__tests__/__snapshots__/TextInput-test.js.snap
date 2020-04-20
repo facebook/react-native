@@ -6,6 +6,7 @@ exports[`TextInput tests should render as expected: should deep render when mock
   allowFontScaling={true}
   focusable={true}
   forwardedRef={null}
+  mostRecentEventCount={0}
   onBlur={[Function]}
   onChange={[Function]}
   onClick={[Function]}
@@ -32,6 +33,7 @@ exports[`TextInput tests should render as expected: should deep render when not 
   allowFontScaling={true}
   focusable={true}
   forwardedRef={null}
+  mostRecentEventCount={0}
   onBlur={[Function]}
   onChange={[Function]}
   onClick={[Function]}

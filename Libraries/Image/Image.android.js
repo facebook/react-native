@@ -20,7 +20,7 @@ const ReactNative = require('../Renderer/shims/ReactNative'); // eslint-disable-
 const StyleSheet = require('../StyleSheet/StyleSheet');
 const TextAncestor = require('../Text/TextAncestor');
 
-const ImageContext = require('./ImageContext');
+const ImageAnalyticsTagContext = require('./ImageAnalyticsTagContext').default;
 const flattenStyle = require('../StyleSheet/flattenStyle');
 const resolveAssetSource = require('./resolveAssetSource');
 
@@ -99,7 +99,7 @@ const ImageProps = {
   /**
    * Analytics Tag used by this Image
    */
-  analyticTag: PropTypes.string,
+  internal_analyticTag: PropTypes.string,
   /**
    * Invoked on load start
    */
@@ -293,12 +293,15 @@ let Image = (props: ImagePropsType, forwardedRef) => {
   };
 
   return (
-    <ImageContext.Consumer>
+    <ImageAnalyticsTagContext.Consumer>
       {analyticTag => {
-        const nativePropsWithAnalytics = {
-          ...nativeProps,
-          analyticTag: analyticTag,
-        };
+        const nativePropsWithAnalytics =
+          analyticTag !== null
+            ? {
+                ...nativeProps,
+                internal_analyticTag: analyticTag,
+              }
+            : nativeProps;
         return (
           <TextAncestor.Consumer>
             {hasTextAncestor =>
@@ -311,7 +314,7 @@ let Image = (props: ImagePropsType, forwardedRef) => {
           </TextAncestor.Consumer>
         );
       }}
-    </ImageContext.Consumer>
+    </ImageAnalyticsTagContext.Consumer>
   );
 };
 

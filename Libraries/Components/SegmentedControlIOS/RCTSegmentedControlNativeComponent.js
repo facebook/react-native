@@ -18,7 +18,7 @@ import type {
   WithDefault,
   Int32,
 } from '../../Types/CodegenTypes';
-import type {ColorValue} from '../../StyleSheet/StyleSheetTypes';
+import type {ColorValue} from '../../StyleSheet/StyleSheet';
 
 export type OnChangeEvent = $ReadOnly<{|
   value: Int32,

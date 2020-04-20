@@ -89,7 +89,7 @@ class LayoutableShadowNode : public ShadowNode {
   /*
    * Returns layout metrics computed during previous layout pass.
    */
-  virtual LayoutMetrics getLayoutMetrics() const;
+  LayoutMetrics getLayoutMetrics() const;
 
   /*
    * Returns a transform object that represents transformations that will/should

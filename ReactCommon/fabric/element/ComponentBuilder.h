@@ -9,11 +9,11 @@
 
 #include <memory>
 
+#include <react/componentregistry/ComponentDescriptorRegistry.h>
 #include <react/core/ComponentDescriptor.h>
 #include <react/core/ShadowNode.h>
 #include <react/core/ShadowNodeFamilyFragment.h>
 #include <react/core/ShadowNodeFragment.h>
-#include <react/uimanager/ComponentDescriptorRegistry.h>
 
 #include <react/element/Element.h>
 #include <react/element/ElementFragment.h>

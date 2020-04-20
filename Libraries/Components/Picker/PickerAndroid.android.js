@@ -21,9 +21,8 @@ import StyleSheet from '../../StyleSheet/StyleSheet';
 import invariant from 'invariant';
 import processColor from '../../StyleSheet/processColor';
 
-import type {ColorValue} from '../../StyleSheet/StyleSheetTypes';
 import type {SyntheticEvent} from '../../Types/CoreEventTypes';
-import type {TextStyleProp} from '../../StyleSheet/StyleSheet';
+import type {ColorValue, TextStyleProp} from '../../StyleSheet/StyleSheet';
 
 type PickerItemSelectSyntheticEvent = SyntheticEvent<
   $ReadOnly<{|
@@ -121,10 +120,7 @@ function PickerAndroid(props: Props): React.Node {
     prompt: props.prompt,
     ref: pickerRef,
     selected,
-    style: StyleSheet.compose(
-      styles.pickerAndroid,
-      props.style,
-    ),
+    style: StyleSheet.compose(styles.pickerAndroid, props.style),
     backgroundColor: props.backgroundColor,
     testID: props.testID,
   };

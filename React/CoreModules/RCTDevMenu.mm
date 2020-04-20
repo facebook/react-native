@@ -16,11 +16,9 @@
 #import <React/RCTLog.h>
 #import <React/RCTReloadCommand.h>
 #import <React/RCTUtils.h>
-
 #import "CoreModulesPlugins.h"
 
 #if RCT_DEV_MENU
-
 #if RCT_ENABLE_INSPECTOR
 #import <React/RCTInspectorDevServerHelper.h>
 #endif
@@ -221,13 +219,59 @@ RCT_EXPORT_MODULE()
                                                }]];
 
   if (!devSettings.isProfilingEnabled) {
-    if (!devSettings.isRemoteDebuggingAvailable) {
+#if RCT_ENABLE_INSPECTOR
+    if (devSettings.isDeviceDebuggingAvailable) {
+      // For on-device debugging we link out to Flipper.
+      // Since we're assuming Flipper is available, also include the DevTools.
+      // Note: For parity with the Android code.
+
+      // Reset the old debugger setting so no one gets stuck.
+      // TODO: Remove in a few weeks.
+      if (devSettings.isDebuggingRemotely) {
+        devSettings.isDebuggingRemotely = false;
+      }
+      [items addObject:[RCTDevMenuItem
+                           buttonItemWithTitleBlock:^NSString * {
+                             return @"Open Debugger";
+                           }
+                           handler:^{
+                             [RCTInspectorDevServerHelper
+                                          openURL:@"flipper://null/Hermesdebuggerrn?device=React%20Native"
+                                    withBundleURL:bridge.bundleURL
+                                 withErrorMessage:@"Failed to open Flipper. Please check that Metro is runnning."];
+                           }]];
+
+      [items addObject:[RCTDevMenuItem
+                           buttonItemWithTitleBlock:^NSString * {
+                             return @"Open React DevTools";
+                           }
+                           handler:^{
+                             [RCTInspectorDevServerHelper
+                                          openURL:@"flipper://null/React?device=React%20Native"
+                                    withBundleURL:bridge.bundleURL
+                                 withErrorMessage:@"Failed to open Flipper. Please check that Metro is runnning."];
+                           }]];
+    } else if (devSettings.isRemoteDebuggingAvailable) {
+#else
+    if (devSettings.isRemoteDebuggingAvailable) {
+#endif
+      // For remote debugging, we open up Chrome running the app in a web worker.
+      // Note that this requires async communication, which will not work for Turbo Modules.
+      [items addObject:[RCTDevMenuItem
+                           buttonItemWithTitleBlock:^NSString * {
+                             return devSettings.isDebuggingRemotely ? @"Stop Debugging" : @"Debug with Chrome";
+                           }
+                           handler:^{
+                             devSettings.isDebuggingRemotely = !devSettings.isDebuggingRemotely;
+                           }]];
+    } else {
+      // If neither are available, we're defaulting to a message that tells you about remote debugging.
       [items
           addObject:[RCTDevMenuItem
                         buttonItemWithTitle:@"Debugger Unavailable"
                                     handler:^{
                                       NSString *message = RCTTurboModuleEnabled()
-                                          ? @"Debugging is not currently supported when TurboModule is enabled."
+                                          ? @"Debugging with Chrome is not supported when TurboModules are enabled."
                                           : @"Include the RCTWebSocket library to enable JavaScript debugging.";
                                       UIAlertController *alertController =
                                           [UIAlertController alertControllerWithTitle:@"Debugger Unavailable"
@@ -246,14 +290,6 @@ RCT_EXPORT_MODULE()
                                                                                  animated:YES
                                                                                completion:NULL];
                                     }]];
-    } else {
-      [items addObject:[RCTDevMenuItem
-                           buttonItemWithTitleBlock:^NSString * {
-                             return devSettings.isDebuggingRemotely ? @"Stop Debugging" : @"Debug";
-                           }
-                           handler:^{
-                             devSettings.isDebuggingRemotely = !devSettings.isDebuggingRemotely;
-                           }]];
     }
   }
 
@@ -475,12 +511,10 @@ RCT_EXPORT_METHOD(setHotLoadingEnabled : (BOOL)enabled)
   return _bridge.devSettings.isHotLoadingEnabled;
 }
 
-- (std::shared_ptr<facebook::react::TurboModule>)
-    getTurboModuleWithJsInvoker:(std::shared_ptr<facebook::react::CallInvoker>)jsInvoker
-                  nativeInvoker:(std::shared_ptr<facebook::react::CallInvoker>)nativeInvoker
-                     perfLogger:(id<RCTTurboModulePerformanceLogger>)perfLogger
+- (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:
+    (const facebook::react::ObjCTurboModule::InitParams &)params
 {
-  return std::make_shared<facebook::react::NativeDevMenuSpecJSI>(self, jsInvoker, nativeInvoker, perfLogger);
+  return std::make_shared<facebook::react::NativeDevMenuSpecJSI>(params);
 }
 
 @end
@@ -518,12 +552,10 @@ RCT_EXPORT_METHOD(setHotLoadingEnabled : (BOOL)enabled)
   return @"DevMenu";
 }
 
-- (std::shared_ptr<facebook::react::TurboModule>)
-    getTurboModuleWithJsInvoker:(std::shared_ptr<facebook::react::CallInvoker>)jsInvoker
-                  nativeInvoker:(std::shared_ptr<facebook::react::CallInvoker>)nativeInvoker
-                     perfLogger:(id<RCTTurboModulePerformanceLogger>)perfLogger
+- (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:
+    (const facebook::react::ObjCTurboModule::InitParams &)params
 {
-  return std::make_shared<facebook::react::NativeDevMenuSpecJSI>(self, jsInvoker, nativeInvoker, perfLogger);
+  return std::make_shared<facebook::react::NativeDevMenuSpecJSI>(params);
 }
 
 @end

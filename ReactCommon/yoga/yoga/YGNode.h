@@ -6,6 +6,9 @@
  */
 
 #pragma once
+
+#ifdef __cplusplus
+
 #include <cstdint>
 #include <stdio.h>
 #include "BitUtils.h"
@@ -330,3 +333,5 @@ public:
   bool isLayoutTreeEqualToNode(const YGNode& node) const;
   void reset();
 };
+
+#endif

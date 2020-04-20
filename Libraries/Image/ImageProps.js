@@ -69,9 +69,9 @@ export type ImageProps = {|
   accessible?: ?boolean,
 
   /**
-   * Analytics Tag used by this Image
+   * Internal prop to set an "Analytics Tag" that can will be set on the Image
    */
-  analyticTag?: ?string,
+  internal_analyticTag?: ?string,
 
   /**
    * The text that's read by the screen reader when the user interacts with

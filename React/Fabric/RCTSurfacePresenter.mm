@@ -23,11 +23,12 @@
 #import <React/RCTSurfaceView.h>
 #import <React/RCTUtils.h>
 
+#import <react/componentregistry/ComponentDescriptorFactory.h>
 #import <react/components/root/RootShadowNode.h>
+#import <react/config/ReactNativeConfig.h>
 #import <react/core/LayoutConstraints.h>
 #import <react/core/LayoutContext.h>
-#import <react/uimanager/ComponentDescriptorFactory.h>
-#import <react/uimanager/SchedulerToolbox.h>
+#import <react/scheduler/SchedulerToolbox.h>
 #import <react/utils/ContextContainer.h>
 #import <react/utils/ManagedObjectWrapper.h>
 
@@ -298,6 +299,12 @@ static inline LayoutContext RCTGetLayoutContext()
 
   RCTScheduler *scheduler = [[RCTScheduler alloc] initWithToolbox:toolbox];
   scheduler.delegate = self;
+
+  auto reactNativeConfig = _contextContainer->at<std::shared_ptr<ReactNativeConfig const>>("ReactNativeConfig");
+  if (reactNativeConfig) {
+    _mountingManager.useModernDifferentiatorMode =
+        reactNativeConfig->getBool("react_fabric:enabled_optimized_moves_differ_ios");
+  }
 
   return scheduler;
 }

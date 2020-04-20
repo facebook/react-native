@@ -10,7 +10,7 @@
 
 'use strict';
 
-import type {ColorValue} from './StyleSheetTypes';
+import type {ColorValue} from './StyleSheet';
 import type {ProcessedColorValue} from './processColor';
 
 export opaque type NativeColorValue = {
@@ -19,10 +19,6 @@ export opaque type NativeColorValue = {
 
 export const PlatformColor = (...names: Array<string>): ColorValue => {
   return {resource_paths: names};
-};
-
-export const ColorAndroidPrivate = (color: string): ColorValue => {
-  return {resource_paths: [color]};
 };
 
 export const normalizeColorObject = (
