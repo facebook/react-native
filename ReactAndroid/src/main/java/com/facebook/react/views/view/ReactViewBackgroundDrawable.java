@@ -998,10 +998,11 @@ public class ReactViewBackgroundDrawable extends Drawable {
   }
 
   private void drawRectangularBackgroundWithBorders(Canvas canvas) {
+    mPaint.setStyle(Paint.Style.FILL);
+    
     int useColor = ColorUtil.multiplyColorAlpha(mColor, mAlpha);
     if (Color.alpha(useColor) != 0) { // color is not transparent
       mPaint.setColor(useColor);
-      mPaint.setStyle(Paint.Style.FILL);
       canvas.drawRect(getBounds(), mPaint);
     }
 
