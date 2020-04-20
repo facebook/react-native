@@ -98,6 +98,7 @@ class ComponentDescriptor {
    * `props` and `rawProps` applied on top of this.
    * If `props` is `nullptr`, a default `Props` object (with default values)
    * will be used.
+   * Must return an object which is NOT pointer equal to `props`.
    */
   virtual SharedProps cloneProps(
       const SharedProps &props,
