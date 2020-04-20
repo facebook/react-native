@@ -815,6 +815,7 @@ public class UIManagerModule extends ReactContextBaseJavaModule
   public void sendAccessibilityEvent(int tag, int eventType) {
     int uiManagerType = ViewUtil.getUIManagerType(tag);
     if (uiManagerType == FABRIC) {
+      // TODO: T65793557 Refactor sendAccessibilityEvent to use ViewCommands
       UIManager fabricUIManager =
           UIManagerHelper.getUIManager(getReactApplicationContext(), uiManagerType);
       if (fabricUIManager != null) {
