@@ -18,7 +18,6 @@
 #include <react/debug/DebugStringConvertibleItem.h>
 #include <react/debug/SystraceSection.h>
 #include <yoga/Yoga.h>
-#include <iostream>
 
 namespace facebook {
 namespace react {
@@ -450,7 +449,7 @@ void YogaLayoutableShadowNode::swapLeftAndRightInYogaStyleProps(
 
   if (yogaStyle.margin()[YGEdgeRight] != YGValueUndefined) {
     yogaStyle.margin()[YGEdgeEnd] = margin[YGEdgeRight];
-    yogaStyle.margin()[YGEdgeLeft] = YGValueUndefined;
+    yogaStyle.margin()[YGEdgeRight] = YGValueUndefined;
   }
 
   shadowNode.yogaNode_.setStyle(yogaStyle);
