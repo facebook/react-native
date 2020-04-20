@@ -483,4 +483,17 @@ public class NativeAnimatedModule extends NativeAnimatedModuleSpec
   public void removeListeners(double count) {
     // iOS only
   }
+
+  @Override
+  public void getValue(final double animatedValueNodeTagDouble, Callback callback) {
+    final int animatedValueNodeTag = (int) animatedValueNodeTagDouble;
+    mOperations.add(
+      new UIThreadOperation() {
+        @Override
+        public void execute(NativeAnimatedNodesManager animatedNodesManager) {
+          animatedNodesManager.getValue(animatedValueNodeTag, callback);
+        }
+      }
+    );
+  }
 }

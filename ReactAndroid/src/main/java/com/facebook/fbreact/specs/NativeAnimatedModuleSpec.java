@@ -84,4 +84,7 @@ public abstract class NativeAnimatedModuleSpec extends ReactContextBaseJavaModul
 
   @ReactMethod
   public abstract void addListener(String eventName);
+
+  @ReactMethod
+  public abstract void getValue (double nodeTag, Callback callback);
 }
