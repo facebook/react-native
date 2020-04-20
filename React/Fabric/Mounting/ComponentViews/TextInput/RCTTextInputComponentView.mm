@@ -157,6 +157,10 @@ using namespace facebook::react;
     _backedTextInputView.placeholder = RCTNSStringFromString(newTextInputProps.placeholder);
   }
 
+  if (newTextInputProps.placeholderTextColor != oldTextInputProps.placeholderTextColor) {
+    _backedTextInputView.placeholderColor = RCTUIColorFromSharedColor(newTextInputProps.placeholderTextColor);
+  }
+
   if (newTextInputProps.textAttributes != oldTextInputProps.textAttributes) {
     _backedTextInputView.defaultTextAttributes =
         RCTNSTextAttributesFromTextAttributes(newTextInputProps.getEffectiveTextAttributes());
