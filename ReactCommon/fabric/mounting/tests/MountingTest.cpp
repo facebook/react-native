@@ -248,24 +248,18 @@ TEST(MountingTest, testMinimalInstructionGeneration) {
   // This test, in particular, ensures that removing a node in the middle
   // produces a single remove (and delete) instruction, and no remove/insert
   // (move) operations; and that simultaneously, we can insert a node at the
-  // end. NOTE: This list of mutations has some unexpected "Update"
-  // instructions, due to layout issues (some LayoutMetrics are 0). Not sure
-  // why, but the point of this test is to make sure there aren't unnecessary
-  // insert/deletes, so we can ignore for now.
-  assert(mutations3.size() == 7);
-  assert(mutations3[0].type == ShadowViewMutation::Update);
-  assert(mutations3[1].type == ShadowViewMutation::Update);
-  assert(mutations3[2].type == ShadowViewMutation::Update);
-  assert(mutations3[3].type == ShadowViewMutation::Remove);
-  assert(mutations3[3].oldChildShadowView.tag == 102);
-  assert(mutations3[3].index == 1);
-  assert(mutations3[4].type == ShadowViewMutation::Delete);
-  assert(mutations3[4].oldChildShadowView.tag == 102);
-  assert(mutations3[5].type == ShadowViewMutation::Create);
-  assert(mutations3[5].newChildShadowView.tag == 104);
-  assert(mutations3[6].type == ShadowViewMutation::Insert);
-  assert(mutations3[6].newChildShadowView.tag == 104);
-  assert(mutations3[6].index == 2);
+  // end.
+  assert(mutations3.size() == 4);
+  assert(mutations3[0].type == ShadowViewMutation::Remove);
+  assert(mutations3[0].oldChildShadowView.tag == 102);
+  assert(mutations3[0].index == 1);
+  assert(mutations3[1].type == ShadowViewMutation::Delete);
+  assert(mutations3[1].oldChildShadowView.tag == 102);
+  assert(mutations3[2].type == ShadowViewMutation::Create);
+  assert(mutations3[2].newChildShadowView.tag == 104);
+  assert(mutations3[3].type == ShadowViewMutation::Insert);
+  assert(mutations3[3].newChildShadowView.tag == 104);
+  assert(mutations3[3].index == 2);
 
   // Calculating mutations.
   auto mutations4 = calculateShadowViewMutations(
@@ -276,29 +270,23 @@ TEST(MountingTest, testMinimalInstructionGeneration) {
   // This test, in particular, ensures that inserting a child at the middle, and
   // at the end, and removing a node in the middle, produces the minimal set of
   // instructions. All these nodes are laid out with absolute positioning, so
-  // moving them around does not change layout. NOTE: This list of mutations has
-  // some unexpected "Update" instructions, due to layout issues (some
-  // LayoutMetrics are 0). Not sure why, but the point of this test is to make
-  // sure there aren't unnecessary insert/deletes, so we can ignore for now.
-  assert(mutations4.size() == 9);
-  assert(mutations4[0].type == ShadowViewMutation::Update);
-  assert(mutations4[1].type == ShadowViewMutation::Update);
-  assert(mutations4[2].type == ShadowViewMutation::Update);
-  assert(mutations4[3].type == ShadowViewMutation::Remove);
-  assert(mutations4[3].oldChildShadowView.tag == 103);
-  assert(mutations4[3].index == 1);
-  assert(mutations4[4].type == ShadowViewMutation::Delete);
-  assert(mutations4[4].oldChildShadowView.tag == 103);
-  assert(mutations4[5].type == ShadowViewMutation::Create);
-  assert(mutations4[5].newChildShadowView.tag == 100);
-  assert(mutations4[6].type == ShadowViewMutation::Create);
-  assert(mutations4[6].newChildShadowView.tag == 102);
-  assert(mutations4[7].type == ShadowViewMutation::Insert);
-  assert(mutations4[7].newChildShadowView.tag == 100);
-  assert(mutations4[7].index == 1);
-  assert(mutations4[8].type == ShadowViewMutation::Insert);
-  assert(mutations4[8].newChildShadowView.tag == 102);
-  assert(mutations4[8].index == 3);
+  // moving them around does not change layout.
+  assert(mutations4.size() == 6);
+  assert(mutations4[0].type == ShadowViewMutation::Remove);
+  assert(mutations4[0].oldChildShadowView.tag == 103);
+  assert(mutations4[0].index == 1);
+  assert(mutations4[1].type == ShadowViewMutation::Delete);
+  assert(mutations4[1].oldChildShadowView.tag == 103);
+  assert(mutations4[2].type == ShadowViewMutation::Create);
+  assert(mutations4[2].newChildShadowView.tag == 100);
+  assert(mutations4[3].type == ShadowViewMutation::Create);
+  assert(mutations4[3].newChildShadowView.tag == 102);
+  assert(mutations4[4].type == ShadowViewMutation::Insert);
+  assert(mutations4[4].newChildShadowView.tag == 100);
+  assert(mutations4[4].index == 1);
+  assert(mutations4[5].type == ShadowViewMutation::Insert);
+  assert(mutations4[5].newChildShadowView.tag == 102);
+  assert(mutations4[5].index == 3);
 
   auto mutations5 = calculateShadowViewMutations(
       DifferentiatorMode::OptimizedMoves, *rootNodeV5, *rootNodeV6);
