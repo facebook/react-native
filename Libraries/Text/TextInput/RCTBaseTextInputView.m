@@ -68,7 +68,12 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
 - (void)enforceTextAttributesIfNeeded
 {
   id<RCTBackedTextInputViewProtocol> backedTextInputView = self.backedTextInputView;
-  backedTextInputView.defaultTextAttributes = [_textAttributes effectiveTextAttributes];
+  
+  NSDictionary<NSAttributedStringKey,id> *copied =  [[_textAttributes effectiveTextAttributes] mutableCopy];
+  if ([copied valueForKey:NSForegroundColorAttributeName] == nil) {
+      [copied setValue:[UIColor blackColor] forKey:NSForegroundColorAttributeName];
+  }
+  backedTextInputView.defaultTextAttributes = copied;
 }
 
 - (void)setReactPaddingInsets:(UIEdgeInsets)reactPaddingInsets
