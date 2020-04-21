@@ -235,9 +235,7 @@ function validateTransform(
   configs.forEach(config => {
     if (!TRANSFORM_WHITELIST.hasOwnProperty(config.property)) {
       throw new Error(
-        `Property '${
-          config.property
-        }' is not supported by native animated module`,
+        `Property '${config.property}' is not supported by native animated module`,
       );
     }
   });

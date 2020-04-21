@@ -122,12 +122,22 @@ public class ReactTextShadowNode extends ReactBaseTextShadowNode {
             }
           }
 
-          if (mNumberOfLines != UNSET && mNumberOfLines < layout.getLineCount()) {
-            return YogaMeasureOutput.make(
-                layout.getWidth(), layout.getLineBottom(mNumberOfLines - 1));
-          } else {
-            return YogaMeasureOutput.make(layout.getWidth(), layout.getHeight());
+          final int lineCount =
+              mNumberOfLines == UNSET
+                  ? layout.getLineCount()
+                  : Math.min(mNumberOfLines, layout.getLineCount());
+
+          // Instead of using `layout.getWidth()` (which may yield a significantly larger width for
+          // text that is wrapping), compute width using the longest line.
+          float layoutWidth = 0;
+          for (int lineIndex = 0; lineIndex < lineCount; lineIndex++) {
+            float lineWidth = layout.getLineWidth(lineIndex);
+            if (lineWidth > layoutWidth) {
+              layoutWidth = lineWidth;
+            }
           }
+
+          return YogaMeasureOutput.make(layoutWidth, layout.getLineBottom(lineCount - 1));
         }
       };
 

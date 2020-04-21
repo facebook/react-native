@@ -99,6 +99,9 @@ class AutogrowingTextInputExample extends React.Component<{...}> {
           onValueChange={value => this.setState({multiline: value})}
         />
         <Text>TextInput:</Text>
+        {/* $FlowFixMe(>=0.122.0 site=react_native_android_fb) This comment
+         * suppresses an error found when Flow v0.122.0 was deployed. To see
+         * the error, delete this comment and run Flow. */}
         <TextInput
           /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was
            * found when making Flow check .android.js files. */
@@ -114,8 +117,6 @@ class AutogrowingTextInputExample extends React.Component<{...}> {
              * found when making Flow check .android.js files. */
             this.setState({contentSize: event.nativeEvent.contentSize})
           }
-          /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was
-           * found when making Flow check .android.js files. */
           {...props}
         />
         <Text>Plain text value representation:</Text>

@@ -10,13 +10,13 @@
 
 #include <gtest/gtest.h>
 
+#include <react/componentregistry/ComponentDescriptorProviderRegistry.h>
 #include <react/components/root/RootComponentDescriptor.h>
 #include <react/components/scrollview/ScrollViewComponentDescriptor.h>
 #include <react/components/view/ViewComponentDescriptor.h>
 #include <react/element/ComponentBuilder.h>
 #include <react/element/Element.h>
 #include <react/element/testUtils.h>
-#include <react/uimanager/ComponentDescriptorProviderRegistry.h>
 
 namespace facebook {
 namespace react {

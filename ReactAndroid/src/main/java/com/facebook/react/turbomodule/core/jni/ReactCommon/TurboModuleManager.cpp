@@ -93,10 +93,10 @@ void TurboModuleManager::installJSIBindings() {
     }
 
     static auto getLegacyCxxModule =
-        delegate->getClass()
+        javaPart->getClass()
             ->getMethod<jni::alias_ref<CxxModuleWrapper::javaobject>(
                 const std::string &)>("getLegacyCxxModule");
-    auto legacyCxxModule = getLegacyCxxModule(delegate.get(), name);
+    auto legacyCxxModule = getLegacyCxxModule(javaPart.get(), name);
 
     if (legacyCxxModule) {
       auto turboModule = std::make_shared<react::TurboCxxModule>(
@@ -112,8 +112,12 @@ void TurboModuleManager::installJSIBindings() {
     auto moduleInstance = getJavaModule(javaPart.get(), name);
 
     if (moduleInstance) {
-      auto turboModule = delegate->cthis()->getTurboModule(
-          name, moduleInstance, jsCallInvoker, nativeCallInvoker);
+      JavaTurboModule::InitParams params = {.moduleName = name,
+                                            .instance = moduleInstance,
+                                            .jsInvoker = jsCallInvoker,
+                                            .nativeInvoker = nativeCallInvoker};
+
+      auto turboModule = delegate->cthis()->getTurboModule(name, params);
       turboModuleCache->insert({name, turboModule});
       return turboModule;
     }

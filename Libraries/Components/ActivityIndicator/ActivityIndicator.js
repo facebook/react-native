@@ -16,7 +16,7 @@ const StyleSheet = require('../../StyleSheet/StyleSheet');
 const View = require('../View/View');
 import type {HostComponent} from '../../Renderer/shims/ReactNativeTypes';
 import type {ViewProps} from '../View/ViewPropTypes';
-import type {ColorValue} from '../../StyleSheet/StyleSheetTypes';
+import type {ColorValue} from '../../StyleSheet/StyleSheet';
 
 const PlatformActivityIndicator =
   Platform.OS === 'android'
@@ -101,10 +101,7 @@ const ActivityIndicator = (props: Props, forwardedRef?: any) => {
   return (
     <View
       onLayout={onLayout}
-      style={StyleSheet.compose(
-        styles.container,
-        style,
-      )}>
+      style={StyleSheet.compose(styles.container, style)}>
       {Platform.OS === 'android' ? (
         // $FlowFixMe Flow doesn't know when this is the android component
         <PlatformActivityIndicator {...nativeProps} {...androidProps} />

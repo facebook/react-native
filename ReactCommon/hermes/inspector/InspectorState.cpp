@@ -236,6 +236,10 @@ std::pair<NextStatePtr, CommandPtr> InspectorState::Running::didPause(
   } else if (reason == debugger::PauseReason::ScriptLoaded) {
     inspector_.addCurrentScriptToLoadedScripts();
     inspector_.notifyScriptsLoaded();
+    if (inspector_.shouldPauseOnThisScriptLoad()) {
+      return std::make_pair<NextStatePtr, CommandPtr>(
+          InspectorState::Paused::make(inspector_), nullptr);
+    }
   } else if (reason == debugger::PauseReason::EvalComplete) {
     assert(pendingEvalPromise_);
 

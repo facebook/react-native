@@ -13,14 +13,7 @@
 const React = require('react');
 const ReactNative = require('react-native');
 import Platform from '../../../../Libraries/Utilities/Platform';
-const {
-  ColorAndroid,
-  DynamicColorIOS,
-  PlatformColor,
-  StyleSheet,
-  Text,
-  View,
-} = ReactNative;
+const {DynamicColorIOS, PlatformColor, StyleSheet, Text, View} = ReactNative;
 
 function PlatformColorsExample() {
   function createTable() {
@@ -29,94 +22,94 @@ function PlatformColorsExample() {
       colors = [
         // https://developer.apple.com/documentation/uikit/uicolor/ui_element_colors
         // Label Colors
-        {label: 'labelColor', color: PlatformColor('labelColor')},
+        {label: 'label', color: PlatformColor('label')},
         {
-          label: 'secondaryLabelColor',
-          color: PlatformColor('secondaryLabelColor'),
+          label: 'secondaryLabel',
+          color: PlatformColor('secondaryLabel'),
         },
         {
-          label: 'tertiaryLabelColor',
-          color: PlatformColor('tertiaryLabelColor'),
+          label: 'tertiaryLabel',
+          color: PlatformColor('tertiaryLabel'),
         },
         {
-          label: 'quaternaryLabelColor',
-          color: PlatformColor('quaternaryLabelColor'),
+          label: 'quaternaryLabel',
+          color: PlatformColor('quaternaryLabel'),
         },
         // Fill Colors
-        {label: 'systemFillColor', color: PlatformColor('systemFillColor')},
+        {label: 'systemFill', color: PlatformColor('systemFill')},
         {
-          label: 'secondarySystemFillColor',
-          color: PlatformColor('secondarySystemFillColor'),
+          label: 'secondarySystemFill',
+          color: PlatformColor('secondarySystemFill'),
         },
         {
-          label: 'tertiarySystemFillColor',
-          color: PlatformColor('tertiarySystemFillColor'),
+          label: 'tertiarySystemFill',
+          color: PlatformColor('tertiarySystemFill'),
         },
         {
-          label: 'quaternarySystemFillColor',
-          color: PlatformColor('quaternarySystemFillColor'),
+          label: 'quaternarySystemFill',
+          color: PlatformColor('quaternarySystemFill'),
         },
         // Text Colors
         {
-          label: 'placeholderTextColor',
-          color: PlatformColor('placeholderTextColor'),
+          label: 'placeholderText',
+          color: PlatformColor('placeholderText'),
         },
         // Standard Content Background Colors
         {
-          label: 'systemBackgroundColor',
-          color: PlatformColor('systemBackgroundColor'),
+          label: 'systemBackground',
+          color: PlatformColor('systemBackground'),
         },
         {
-          label: 'secondarySystemBackgroundColor',
-          color: PlatformColor('secondarySystemBackgroundColor'),
+          label: 'secondarySystemBackground',
+          color: PlatformColor('secondarySystemBackground'),
         },
         {
-          label: 'tertiarySystemBackgroundColor',
-          color: PlatformColor('tertiarySystemBackgroundColor'),
+          label: 'tertiarySystemBackground',
+          color: PlatformColor('tertiarySystemBackground'),
         },
         // Grouped Content Background Colors
         {
-          label: 'systemGroupedBackgroundColor',
-          color: PlatformColor('systemGroupedBackgroundColor'),
+          label: 'systemGroupedBackground',
+          color: PlatformColor('systemGroupedBackground'),
         },
         {
-          label: 'secondarySystemGroupedBackgroundColor',
-          color: PlatformColor('secondarySystemGroupedBackgroundColor'),
+          label: 'secondarySystemGroupedBackground',
+          color: PlatformColor('secondarySystemGroupedBackground'),
         },
         {
-          label: 'tertiarySystemGroupedBackgroundColor',
-          color: PlatformColor('tertiarySystemGroupedBackgroundColor'),
+          label: 'tertiarySystemGroupedBackground',
+          color: PlatformColor('tertiarySystemGroupedBackground'),
         },
         // Separator Colors
-        {label: 'separatorColor', color: PlatformColor('separatorColor')},
+        {label: 'separator', color: PlatformColor('separator')},
         {
-          label: 'opaqueSeparatorColor',
-          color: PlatformColor('opaqueSeparatorColor'),
+          label: 'opaqueSeparator',
+          color: PlatformColor('opaqueSeparator'),
         },
         // Link Color
-        {label: 'linkColor', color: PlatformColor('linkColor')},
+        {label: 'link', color: PlatformColor('link')},
         // Nonadaptable Colors
-        {label: 'darkTextColor', color: PlatformColor('darkTextColor')},
-        {label: 'lightTextColor', color: PlatformColor('lightTextColor')},
+        {label: 'darkText', color: PlatformColor('darkText')},
+        {label: 'lightText', color: PlatformColor('lightText')},
         // https://developer.apple.com/documentation/uikit/uicolor/standard_colors
         // Adaptable Colors
-        {label: 'systemBlueColor', color: PlatformColor('systemBlueColor')},
-        {label: 'systemBrownColor', color: PlatformColor('systemBrownColor')},
-        {label: 'systemGreenColor', color: PlatformColor('systemGreenColor')},
-        {label: 'systemIndigoColor', color: PlatformColor('systemIndigoColor')},
-        {label: 'systemOrangeColor', color: PlatformColor('systemOrangeColor')},
-        {label: 'systemPinkColor', color: PlatformColor('systemPinkColor')},
-        {label: 'systemPurpleColor', color: PlatformColor('systemPurpleColor')},
-        {label: 'systemRedColor', color: PlatformColor('systemRedColor')},
-        {label: 'systemTealColor', color: PlatformColor('systemTealColor')},
-        {label: 'systemYellowColor', color: PlatformColor('systemYellowColor')},
+        {label: 'systemBlue', color: PlatformColor('systemBlue')},
+        {label: 'systemBrown', color: PlatformColor('systemBrown')},
+        {label: 'systemGreen', color: PlatformColor('systemGreen')},
+        {label: 'systemIndigo', color: PlatformColor('systemIndigo')},
+        {label: 'systemOrange', color: PlatformColor('systemOrange')},
+        {label: 'systemPink', color: PlatformColor('systemPink')},
+        {label: 'systemPurple', color: PlatformColor('systemPurple')},
+        {label: 'systemRed', color: PlatformColor('systemRed')},
+        {label: 'systemTeal', color: PlatformColor('systemTeal')},
+        {label: 'systemYellow', color: PlatformColor('systemYellow')},
         // Adaptable Gray Colors
-        {label: 'systemGrayColor', color: PlatformColor('systemGrayColor')},
-        {label: 'systemGray2Color', color: PlatformColor('systemGray2Color')},
-        {label: 'systemGray3Color', color: PlatformColor('systemGray3Color')},
-        {label: 'systemGray4Color', color: PlatformColor('systemGray4Color')},
-        {label: 'systemGray5Color', color: PlatformColor('systemGray5Color')},
-        {label: 'systemGray6Color', color: PlatformColor('systemGray6Color')},
+        {label: 'systemGray', color: PlatformColor('systemGray')},
+        {label: 'systemGray2', color: PlatformColor('systemGray2')},
+        {label: 'systemGray3', color: PlatformColor('systemGray3')},
+        {label: 'systemGray4', color: PlatformColor('systemGray4')},
+        {label: 'systemGray5', color: PlatformColor('systemGray5')},
+        {label: 'systemGray6', color: PlatformColor('systemGray6')},
       ];
     } else if (Platform.OS === 'android') {
       colors = [
@@ -263,24 +256,6 @@ function DynamicColorsExample() {
   );
 }
 
-function AndroidColorsExample() {
-  return Platform.OS === 'android' ? (
-    <View style={styles.column}>
-      <View style={styles.row}>
-        <Text style={styles.labelCell}>ColorAndroid('?attr/colorAccent')</Text>
-        <View
-          style={{
-            ...styles.colorCell,
-            backgroundColor: ColorAndroid('?attr/colorAccent'),
-          }}
-        />
-      </View>
-    </View>
-  ) : (
-    <Text style={styles.labelCell}>Not applicable on this platform</Text>
-  );
-}
-
 function VariantColorsExample() {
   return (
     <View style={styles.column}>
@@ -288,7 +263,7 @@ function VariantColorsExample() {
         <Text style={styles.labelCell}>
           {Platform.OS === 'ios'
             ? "DynamicColorIOS({light: 'red', dark: 'blue'})"
-            : "ColorAndroid('?attr/colorAccent')"}
+            : "PlatformColor('?attr/colorAccent')"}
         </Text>
         <View
           style={{
@@ -296,7 +271,7 @@ function VariantColorsExample() {
             backgroundColor:
               Platform.OS === 'ios'
                 ? DynamicColorIOS({light: 'red', dark: 'blue'})
-                : ColorAndroid('?attr/colorAccent'),
+                : PlatformColor('?attr/colorAccent'),
           }}
         />
       </View>
@@ -338,12 +313,6 @@ exports.examples = [
     title: 'iOS Dynamic Colors',
     render(): React.Element<any> {
       return <DynamicColorsExample />;
-    },
-  },
-  {
-    title: 'Android Colors',
-    render(): React.Element<any> {
-      return <AndroidColorsExample />;
     },
   },
   {

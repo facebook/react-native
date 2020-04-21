@@ -101,6 +101,12 @@ class YogaLayoutableShadowNode : public LayoutableShadowNode {
 
  private:
   /*
+   * Return true if child's yogaNode's owner is this->yogaNode_. Otherwise
+   * returns false.
+   */
+  bool doesOwn(YogaLayoutableShadowNode const &child) const;
+
+  /*
    * Appends `child`'s Yoga node to the own Yoga node.
    * Complements `ShadowNode::appendChild(...)` functionality from Yoga
    * perspective.
@@ -122,6 +128,38 @@ class YogaLayoutableShadowNode : public LayoutableShadowNode {
       YGMeasureMode widthMode,
       float height,
       YGMeasureMode heightMode);
+
+  /*
+   * Walks though shadow node hierarchy and reassign following values:
+   * - (left|right) → (start|end)
+   * - margin(Left|Right) → margin(Start|End)
+   * - padding(Left|Right) → padding(Start|End)
+   * - borderTop(Left|Right)Radius → borderTop(Start|End)Radius
+   * - borderBottom(Left|Right)Radius → borderBottom(Start|End)Radius
+   * - border(Left|Right)Width → border(Start|End)Width
+   * - border(Left|Right)Color → border(Start|End)Color
+   * This is neccesarry to be backwards compatible with Paper, it swaps the
+   * values as well in https://fburl.com/diffusion/kl7bjr3h
+   */
+  static void swapLeftAndRightInTree(
+      YogaLayoutableShadowNode const &shadowNode);
+  /*
+   * In shadow node passed as argument, reassigns following values
+   * - borderTop(Left|Right)Radius → borderTop(Start|End)Radius
+   * - borderBottom(Left|Right)Radius → borderBottom(Start|End)Radius
+   * - border(Left|Right)Width → border(Start|End)Width
+   * - border(Left|Right)Color → border(Start|End)Color
+   */
+  static void swapLeftAndRightInViewProps(
+      YogaLayoutableShadowNode const &shadowNode);
+  /*
+   * In yoga node passed as argument, reassigns following values
+   * - (left|right) → (start|end)
+   * - margin(Left|Right) → margin(Start|End)
+   * - padding(Left|Right) → padding(Start|End)
+   */
+  static void swapLeftAndRightInYogaStyleProps(
+      YogaLayoutableShadowNode const &shadowNode);
 };
 
 template <>

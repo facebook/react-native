@@ -30,6 +30,12 @@ class ImageShadowNode final : public ConcreteViewShadowNode<
  public:
   using ConcreteViewShadowNode::ConcreteViewShadowNode;
 
+  static ShadowNodeTraits BaseTraits() {
+    auto traits = ConcreteViewShadowNode::BaseTraits();
+    traits.set(ShadowNodeTraits::Trait::LeafYogaNode);
+    return traits;
+  }
+
   /*
    * Associates a shared `ImageManager` with the node.
    */

@@ -69,23 +69,26 @@ void TextInputShadowNode::setTextLayoutManager(
 void TextInputShadowNode::updateStateIfNeeded() {
   ensureUnsealed();
 
-  auto attributedStringFromJS = getAttributedString();
-  bool hasJSUpdatedAttributedString = false;
-  if (getState()) {
-    hasJSUpdatedAttributedString =
-        attributedStringFromJS.compareTextAttributesWithoutFrame(
-            getStateData().lastAttributedStringFromJS);
+  auto reactTreeAttributedString = getAttributedString();
+  auto const &state = getStateData();
+
+  assert(textLayoutManager_);
+  assert(
+      (!state.layoutManager || state.layoutManager == textLayoutManager_) &&
+      "`StateData` refers to a different `TextLayoutManager`");
+
+  if (state.reactTreeAttributedString == reactTreeAttributedString &&
+      state.layoutManager == textLayoutManager_) {
+    return;
   }
 
-  if (!getState() || getState()->getRevision() == State::initialRevisionValue ||
-      hasJSUpdatedAttributedString) {
-    auto state = TextInputState{};
-    state.attributedStringBox = AttributedStringBox{attributedStringFromJS};
-    state.lastAttributedStringFromJS = attributedStringFromJS;
-    state.paragraphAttributes = getConcreteProps().paragraphAttributes;
-    state.layoutManager = textLayoutManager_;
-    setStateData(std::move(state));
-  }
+  auto newState = TextInputState{};
+  newState.attributedStringBox = AttributedStringBox{reactTreeAttributedString};
+  newState.paragraphAttributes = getConcreteProps().paragraphAttributes;
+  newState.reactTreeAttributedString = reactTreeAttributedString;
+  newState.layoutManager = textLayoutManager_;
+  newState.mostRecentEventCount = getConcreteProps().mostRecentEventCount;
+  setStateData(std::move(newState));
 }
 
 #pragma mark - LayoutableShadowNode

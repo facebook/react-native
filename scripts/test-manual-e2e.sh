@@ -58,11 +58,14 @@ info ""
 read -n 1
 adb shell am start -n com.facebook.react.uiapp/.RNTesterActivity
 
+success "Installing CocoaPods dependencies"
+rm -rf RNTester/Pods
+(cd RNTester && pod install)
+
 info "Press any key to open the workspace in Xcode, then build and test manually."
 info ""
 read -n 1
-success "Installing CocoaPods dependencies"
-rm -rf RNTester/Pods && cd RNTester && pod install
+
 open "RNTester/RNTesterPods.xcworkspace"
 
 info "When done testing RNTester app on iOS and Android press any key to continue."
@@ -113,7 +116,7 @@ info ""
 info "Press any key to open the project in Xcode"
 info ""
 read -n 1
-open "/tmp/${project_name}/ios/${project_name}.xcodeproj"
+open "/tmp/${project_name}/ios/${project_name}.xcworkspace"
 
 cd "$repo_root"
 

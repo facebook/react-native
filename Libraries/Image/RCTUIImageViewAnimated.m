@@ -183,7 +183,7 @@ static NSUInteger RCTDeviceFreeMemory() {
   // TODO: `displayLink.frameInterval` is not available on UIKitForMac
   NSTimeInterval duration = displayLink.duration;
 #else
-  NSTimeInterval duration = displayLink.duration * displayLink.frameInterval;
+  NSTimeInterval duration = displayLink.duration * displayLink.preferredFramesPerSecond;
 #endif
   NSUInteger totalFrameCount = self.totalFrameCount;
   NSUInteger currentFrameIndex = self.currentFrameIndex;

@@ -210,11 +210,6 @@ struct RCTInstanceCallback : public InstanceCallback {
   return _jsMessageThread;
 }
 
-- (std::weak_ptr<Instance>)reactInstance
-{
-  return _reactInstance;
-}
-
 - (BOOL)isInspectable
 {
   return _reactInstance ? _reactInstance->isInspectable() : NO;
@@ -1345,7 +1340,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithBundleURL
     } else if (reactInstance) {
       reactInstance->loadScriptFromString(std::make_unique<NSDataBigString>(script), sourceUrlStr.UTF8String, !async);
     } else {
-      std::string methodName = async ? "loadApplicationScript" : "loadApplicationScriptSync";
+      std::string methodName = async ? "loadBundle" : "loadBundleSync";
       throw std::logic_error("Attempt to call " + methodName + ": on uninitialized bridge");
     }
   }];
@@ -1443,11 +1438,23 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithBundleURL
   __weak __typeof(self) weakSelf = self;
   [self _runAfterLoad:^{
     __strong __typeof(self) strongSelf = weakSelf;
-    if (strongSelf->_reactInstance == nullptr) {
-      return;
+
+    if (std::shared_ptr<CallInvoker> jsInvoker = strongSelf.jsCallInvoker) {
+      jsInvoker->invokeAsync(std::move(retainedFunc));
     }
-    strongSelf->_reactInstance->invokeAsync(std::move(retainedFunc));
   }];
+}
+
+#pragma mark - RCTBridge (RCTTurboModule)
+
+- (std::shared_ptr<CallInvoker>)jsCallInvoker
+{
+  return _reactInstance ? _reactInstance->getJSCallInvoker() : nullptr;
+}
+
+- (std::shared_ptr<CallInvoker>)decorateNativeCallInvoker:(std::shared_ptr<CallInvoker>)nativeInvoker
+{
+  return _reactInstance ? _reactInstance->getDecoratedNativeCallInvoker(nativeInvoker) : nullptr;
 }
 
 @end

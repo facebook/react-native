@@ -10,8 +10,8 @@
 #include <fbjni/fbjni.h>
 #include <react/jni/JMessageQueueThread.h>
 #include <react/jni/ReadableNativeMap.h>
-#include <react/uimanager/Scheduler.h>
-#include <react/uimanager/SchedulerDelegate.h>
+#include <react/scheduler/Scheduler.h>
+#include <react/scheduler/SchedulerDelegate.h>
 #include <memory>
 #include <mutex>
 #include "ComponentFactoryDelegate.h"
@@ -38,7 +38,9 @@ class Binding : public jni::HybridClass<Binding>, public SchedulerDelegate {
       jfloat minWidth,
       jfloat maxWidth,
       jfloat minHeight,
-      jfloat maxHeight);
+      jfloat maxHeight,
+      jboolean isRTL,
+      jboolean doLeftAndRightSwapInRTL);
 
   static jni::local_ref<jhybriddata> initHybrid(jni::alias_ref<jclass>);
 
@@ -62,7 +64,9 @@ class Binding : public jni::HybridClass<Binding>, public SchedulerDelegate {
       jfloat minWidth,
       jfloat maxWidth,
       jfloat minHeight,
-      jfloat maxHeight);
+      jfloat maxHeight,
+      jboolean isRTL,
+      jboolean doLeftAndRightSwapInRTL);
 
   void renderTemplateToSurface(jint surfaceId, jstring uiTemplate);
 

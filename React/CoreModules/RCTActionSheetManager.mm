@@ -232,10 +232,9 @@ RCT_EXPORT_METHOD(showShareActionSheetWithOptions
   [self presentViewController:shareController onParentViewController:controller anchorViewTag:anchorViewTag];
 }
 
-- (std::shared_ptr<TurboModule>)getTurboModuleWithJsInvoker:(std::shared_ptr<CallInvoker>)jsInvoker
-                                                 perfLogger:(id<RCTTurboModulePerformanceLogger>)perfLogger
+- (std::shared_ptr<TurboModule>)getTurboModule:(const ObjCTurboModule::InitParams &)params
 {
-  return std::make_shared<NativeActionSheetManagerSpecJSI>(self, jsInvoker, perfLogger);
+  return std::make_shared<NativeActionSheetManagerSpecJSI>(params);
 }
 
 @end

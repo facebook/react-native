@@ -23,11 +23,12 @@
 #import <React/RCTSurfaceView.h>
 #import <React/RCTUtils.h>
 
+#import <react/componentregistry/ComponentDescriptorFactory.h>
 #import <react/components/root/RootShadowNode.h>
+#import <react/config/ReactNativeConfig.h>
 #import <react/core/LayoutConstraints.h>
 #import <react/core/LayoutContext.h>
-#import <react/uimanager/ComponentDescriptorFactory.h>
-#import <react/uimanager/SchedulerToolbox.h>
+#import <react/scheduler/SchedulerToolbox.h>
 #import <react/utils/ContextContainer.h>
 #import <react/utils/ManagedObjectWrapper.h>
 
@@ -36,6 +37,22 @@
 #import "RuntimeEventBeat.h"
 
 using namespace facebook::react;
+
+static inline LayoutConstraints RCTGetLayoutConstraintsForSize(CGSize minimumSize, CGSize maximumSize)
+{
+  return {
+      .minimumSize = RCTSizeFromCGSize(minimumSize),
+      .maximumSize = RCTSizeFromCGSize(maximumSize),
+      .layoutDirection = RCTLayoutDirection([[RCTI18nUtil sharedInstance] isRTL]),
+  };
+}
+
+static inline LayoutContext RCTGetLayoutContext()
+{
+  return {.pointScaleFactor = RCTScreenScale(),
+          .swapLeftAndRightInRTL =
+              [[RCTI18nUtil sharedInstance] isRTL] && [[RCTI18nUtil sharedInstance] doLeftAndRightSwapInRTL]};
+}
 
 @interface RCTSurfacePresenter () <RCTSchedulerDelegate, RCTMountingManagerDelegate>
 @end
@@ -147,10 +164,8 @@ using namespace facebook::react;
   if (!scheduler) {
     return minimumSize;
   }
-  LayoutContext layoutContext = {.pointScaleFactor = RCTScreenScale()};
-  LayoutConstraints layoutConstraints = {.minimumSize = RCTSizeFromCGSize(minimumSize),
-                                         .maximumSize = RCTSizeFromCGSize(maximumSize),
-                                         .layoutDirection = RCTLayoutDirection([[RCTI18nUtil sharedInstance] isRTL])};
+  LayoutContext layoutContext = RCTGetLayoutContext();
+  LayoutConstraints layoutConstraints = RCTGetLayoutConstraintsForSize(minimumSize, maximumSize);
   return [scheduler measureSurfaceWithLayoutConstraints:layoutConstraints
                                           layoutContext:layoutContext
                                               surfaceId:surface.rootTag];
@@ -163,10 +178,8 @@ using namespace facebook::react;
     return;
   }
 
-  LayoutContext layoutContext = {.pointScaleFactor = RCTScreenScale()};
-  LayoutConstraints layoutConstraints = {.minimumSize = RCTSizeFromCGSize(minimumSize),
-                                         .maximumSize = RCTSizeFromCGSize(maximumSize),
-                                         .layoutDirection = RCTLayoutDirection([[RCTI18nUtil sharedInstance] isRTL])};
+  LayoutContext layoutContext = RCTGetLayoutContext();
+  LayoutConstraints layoutConstraints = RCTGetLayoutConstraintsForSize(minimumSize, maximumSize);
   [scheduler constraintSurfaceLayoutWithLayoutConstraints:layoutConstraints
                                             layoutContext:layoutContext
                                                 surfaceId:surface.rootTag];
@@ -287,6 +300,12 @@ using namespace facebook::react;
   RCTScheduler *scheduler = [[RCTScheduler alloc] initWithToolbox:toolbox];
   scheduler.delegate = self;
 
+  auto reactNativeConfig = _contextContainer->at<std::shared_ptr<ReactNativeConfig const>>("ReactNativeConfig");
+  if (reactNativeConfig) {
+    _mountingManager.useModernDifferentiatorMode =
+        reactNativeConfig->getBool("react_fabric:enabled_optimized_moves_differ_ios");
+  }
+
   return scheduler;
 }
 
@@ -298,11 +317,9 @@ using namespace facebook::react;
                                                                                tag:surface.rootTag];
   });
 
-  LayoutContext layoutContext = {.pointScaleFactor = RCTScreenScale()};
+  LayoutContext layoutContext = RCTGetLayoutContext();
 
-  LayoutConstraints layoutConstraints = {.minimumSize = RCTSizeFromCGSize(surface.minimumSize),
-                                         .maximumSize = RCTSizeFromCGSize(surface.maximumSize),
-                                         .layoutDirection = RCTLayoutDirection([[RCTI18nUtil sharedInstance] isRTL])};
+  LayoutConstraints layoutConstraints = RCTGetLayoutConstraintsForSize(surface.minimumSize, surface.maximumSize);
 
   [scheduler startSurfaceWithSurfaceId:surface.rootTag
                             moduleName:surface.moduleName

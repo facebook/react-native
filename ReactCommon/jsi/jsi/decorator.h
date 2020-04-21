@@ -335,6 +335,14 @@ class RuntimeDecorator : public Base, private jsi::Instrumentation {
     plain().instrumentation().collectGarbage();
   }
 
+  void startTrackingHeapObjectStackTraces() override {
+    plain().instrumentation().startTrackingHeapObjectStackTraces();
+  }
+
+  void stopTrackingHeapObjectStackTraces() override {
+    plain().instrumentation().stopTrackingHeapObjectStackTraces();
+  }
+
   void createSnapshotToFile(const std::string& path) override {
     plain().instrumentation().createSnapshotToFile(path);
   }

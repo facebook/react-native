@@ -11,6 +11,7 @@
 #include <limits>
 #include <memory>
 
+#include <react/components/view/ViewProps.h>
 #include <react/components/view/conversions.h>
 #include <react/core/LayoutConstraints.h>
 #include <react/core/LayoutContext.h>
@@ -53,6 +54,10 @@ YogaLayoutableShadowNode::YogaLayoutableShadowNode(
       yogaNode_(&initializeYogaConfig(yogaConfig_)) {
   yogaNode_.setContext(this);
 
+  // Newly created node must be `dirty` just becasue it is new.
+  // This is not a default for `YGNode`.
+  yogaNode_.setDirty(true);
+
   updateYogaProps();
   updateYogaChildren();
 }
@@ -78,11 +83,9 @@ YogaLayoutableShadowNode::YogaLayoutableShadowNode(
     updateYogaProps();
   }
 
-  // Yoga children have `yogaNode_` set as owner. At this point that yogaNode_
-  // is from previous `YogaLayoutableShadowNode` that is being cloned here.
-  // Calling `updateYogaChildren` is needed in order to update owner of
-  // children.
-  updateYogaChildren();
+  if (fragment.children) {
+    updateYogaChildren();
+  }
 }
 
 void YogaLayoutableShadowNode::cleanLayout() {
@@ -126,6 +129,11 @@ void YogaLayoutableShadowNode::appendChild(ShadowNode::Shared const &child) {
   }
 }
 
+bool YogaLayoutableShadowNode::doesOwn(
+    YogaLayoutableShadowNode const &child) const {
+  return child.yogaNode_.getOwner() == &yogaNode_;
+}
+
 void YogaLayoutableShadowNode::appendChildYogaNode(
     YogaLayoutableShadowNode const &child) {
   ensureUnsealed();
@@ -135,8 +143,6 @@ void YogaLayoutableShadowNode::appendChildYogaNode(
     // a child.
     return;
   }
-
-  yogaNode_.setDirty(true);
 
   auto yogaNodeRawPtr = &yogaNode_;
   auto childYogaNodeRawPtr = &child.yogaNode_;
@@ -170,11 +176,15 @@ void YogaLayoutableShadowNode::updateYogaChildren() {
   // Optimization:
   // If the new list of child nodes consists of clean nodes, and if their styles
   // are identical to styles of old children, we don't dirty the node.
-  bool isClean = !yogaNode_.getDirtied() &&
-      children.size() == yogaNode_.getChildren().size();
+  bool isClean =
+      !yogaNode_.isDirty() && children.size() == yogaNode_.getChildren().size();
   auto oldChildren = isClean ? yogaNode_.getChildren() : YGVector{};
 
   yogaNode_.setChildren({});
+
+  // We might undo this later at the end of the method if we can infer that
+  // dirting is not necessary here.
+  yogaNode_.setDirty(true);
 
   auto i = int{0};
   for (auto const &child : children) {
@@ -258,6 +268,10 @@ void YogaLayoutableShadowNode::layoutTree(
 
   applyLayoutConstraints(yogaNode_.getStyle(), layoutConstraints);
 
+  if (layoutContext.swapLeftAndRightInRTL) {
+    swapLeftAndRightInTree(*this);
+  }
+
   {
     SystraceSection s("YogaLayoutableShadowNode::YGNodeCalculateLayout");
 
@@ -313,8 +327,9 @@ YogaLayoutableShadowNode &YogaLayoutableShadowNode::cloneAndReplaceChild(
     int suggestedIndex) {
   auto clonedChildShadowNode = child.clone({});
   replaceChild(child, clonedChildShadowNode, suggestedIndex);
-
-  return static_cast<YogaLayoutableShadowNode &>(*clonedChildShadowNode);
+  auto &node = static_cast<YogaLayoutableShadowNode &>(*clonedChildShadowNode);
+  node.yogaNode_.setDirty(true);
+  return node;
 }
 
 #pragma mark - Yoga Connectors
@@ -386,6 +401,124 @@ YGConfig &YogaLayoutableShadowNode::initializeYogaConfig(YGConfig &config) {
       YogaLayoutableShadowNode::yogaNodeCloneCallbackConnector);
   config.useLegacyStretchBehaviour = true;
   return config;
+}
+
+#pragma mark - RTL left and right swapping
+
+void YogaLayoutableShadowNode::swapLeftAndRightInTree(
+    YogaLayoutableShadowNode const &shadowNode) {
+  swapLeftAndRightInYogaStyleProps(shadowNode);
+  swapLeftAndRightInViewProps(shadowNode);
+
+  for (auto &child : shadowNode.getChildren()) {
+    auto const yogaLayoutableChild =
+        traitCast<YogaLayoutableShadowNode const *>(child.get());
+    if (yogaLayoutableChild && !yogaLayoutableChild->doesOwn(shadowNode)) {
+      swapLeftAndRightInTree(*yogaLayoutableChild);
+    }
+  }
+}
+
+void YogaLayoutableShadowNode::swapLeftAndRightInYogaStyleProps(
+    YogaLayoutableShadowNode const &shadowNode) {
+  auto yogaStyle = shadowNode.yogaNode_.getStyle();
+
+  YGStyle::Edges const &position = yogaStyle.position();
+  YGStyle::Edges const &padding = yogaStyle.padding();
+  YGStyle::Edges const &margin = yogaStyle.margin();
+
+  // Swap Yoga node values, position, padding and margin.
+
+  if (yogaStyle.position()[YGEdgeLeft] != YGValueUndefined) {
+    yogaStyle.position()[YGEdgeStart] = position[YGEdgeLeft];
+    yogaStyle.position()[YGEdgeLeft] = YGValueUndefined;
+  }
+
+  if (yogaStyle.position()[YGEdgeRight] != YGValueUndefined) {
+    yogaStyle.position()[YGEdgeEnd] = position[YGEdgeRight];
+    yogaStyle.position()[YGEdgeRight] = YGValueUndefined;
+  }
+
+  if (yogaStyle.padding()[YGEdgeLeft] != YGValueUndefined) {
+    yogaStyle.padding()[YGEdgeStart] = padding[YGEdgeLeft];
+    yogaStyle.padding()[YGEdgeLeft] = YGValueUndefined;
+  }
+
+  if (yogaStyle.padding()[YGEdgeRight] != YGValueUndefined) {
+    yogaStyle.padding()[YGEdgeEnd] = padding[YGEdgeRight];
+    yogaStyle.padding()[YGEdgeRight] = YGValueUndefined;
+  }
+
+  if (yogaStyle.margin()[YGEdgeLeft] != YGValueUndefined) {
+    yogaStyle.margin()[YGEdgeStart] = margin[YGEdgeLeft];
+    yogaStyle.margin()[YGEdgeLeft] = YGValueUndefined;
+  }
+
+  if (yogaStyle.margin()[YGEdgeRight] != YGValueUndefined) {
+    yogaStyle.margin()[YGEdgeEnd] = margin[YGEdgeRight];
+    yogaStyle.margin()[YGEdgeRight] = YGValueUndefined;
+  }
+
+  shadowNode.yogaNode_.setStyle(yogaStyle);
+}
+
+void YogaLayoutableShadowNode::swapLeftAndRightInViewProps(
+    YogaLayoutableShadowNode const &shadowNode) {
+  auto &typedCasting = static_cast<ViewProps const &>(*shadowNode.props_);
+  auto &props = const_cast<ViewProps &>(typedCasting);
+
+  // Swap border node values, borderRadii, borderColors and borderStyles.
+  if (props.borderRadii.topLeft.hasValue()) {
+    props.borderRadii.topStart = props.borderRadii.topLeft;
+    props.borderRadii.topLeft.clear();
+  }
+
+  if (props.borderRadii.bottomLeft.hasValue()) {
+    props.borderRadii.bottomStart = props.borderRadii.bottomLeft;
+    props.borderRadii.bottomLeft.clear();
+  }
+
+  if (props.borderRadii.topRight.hasValue()) {
+    props.borderRadii.topEnd = props.borderRadii.topRight;
+    props.borderRadii.topRight.clear();
+  }
+
+  if (props.borderRadii.bottomRight.hasValue()) {
+    props.borderRadii.bottomEnd = props.borderRadii.bottomRight;
+    props.borderRadii.bottomRight.clear();
+  }
+
+  if (props.borderColors.left.hasValue()) {
+    props.borderColors.start = props.borderColors.left;
+    props.borderColors.left.clear();
+  }
+
+  if (props.borderColors.right.hasValue()) {
+    props.borderColors.end = props.borderColors.right;
+    props.borderColors.right.clear();
+  }
+
+  if (props.borderStyles.left.hasValue()) {
+    props.borderStyles.start = props.borderStyles.left;
+    props.borderStyles.left.clear();
+  }
+
+  if (props.borderStyles.right.hasValue()) {
+    props.borderStyles.end = props.borderStyles.right;
+    props.borderStyles.right.clear();
+  }
+
+  YGStyle::Edges const &border = props.yogaStyle.border();
+
+  if (props.yogaStyle.border()[YGEdgeLeft] != YGValueUndefined) {
+    props.yogaStyle.border()[YGEdgeStart] = border[YGEdgeLeft];
+    props.yogaStyle.border()[YGEdgeLeft] = YGValueUndefined;
+  }
+
+  if (props.yogaStyle.border()[YGEdgeRight] != YGValueUndefined) {
+    props.yogaStyle.border()[YGEdgeEnd] = border[YGEdgeRight];
+    props.yogaStyle.border()[YGEdgeRight] = YGValueUndefined;
+  }
 }
 
 } // namespace react

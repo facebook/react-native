@@ -49,9 +49,7 @@ function generatePropsString(componentName: string, component: ComponentShape) {
   return component.props
     .map(prop => {
       const defaultValue = convertDefaultTypeToString(componentName, prop);
-      return `${prop.name}(convertRawProp(rawProps, "${
-        prop.name
-      }", sourceProps.${prop.name}, {${defaultValue}}))`;
+      return `${prop.name}(convertRawProp(rawProps, "${prop.name}", sourceProps.${prop.name}, {${defaultValue}}))`;
     })
     .join(',\n' + '    ');
 }

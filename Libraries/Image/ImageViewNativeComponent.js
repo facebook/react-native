@@ -18,7 +18,7 @@ import type {HostComponent} from '../Renderer/shims/ReactNativeTypes';
 import type {ImageProps} from './ImageProps';
 import type {ViewProps} from '../Components/View/ViewPropTypes';
 import type {ImageStyleProp} from '../StyleSheet/StyleSheet';
-import type {ColorValue} from '../StyleSheet/StyleSheetTypes';
+import type {ColorValue} from '../StyleSheet/StyleSheet';
 
 import ImageViewViewConfig from './ImageViewViewConfig';
 const ReactNativeViewConfigRegistry = require('../Renderer/shims/ReactNativeViewConfigRegistry');

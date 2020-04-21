@@ -31,8 +31,14 @@ extern const NSUInteger kRCTBundleURLProviderDefaultPort;
  */
 - (void)resetToDefaults;
 
-#if RCT_DEV
-- (BOOL)isPackagerRunning:(NSString *)host;
+/**
+ * Return the server host. If its a development build and there's no jsLocation defined,
+ * it will return the server host IP address
+ */
+- (NSString *)packagerServerHost;
+
+#if RCT_DEV_MENU
++ (BOOL)isPackagerRunning:(NSString *)host;
 #endif
 
 /**

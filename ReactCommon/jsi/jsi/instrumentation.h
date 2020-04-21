@@ -52,6 +52,13 @@ class Instrumentation {
   /// perform a full garbage collection
   virtual void collectGarbage() = 0;
 
+  /// Start capturing JS stack-traces for all JS heap allocated objects. These
+  /// can be accessed via \c ::createSnapshotToFile().
+  virtual void startTrackingHeapObjectStackTraces() = 0;
+
+  /// Stop capture JS stack-traces for JS heap allocated objects.
+  virtual void stopTrackingHeapObjectStackTraces() = 0;
+
   /// Captures the heap to a file
   ///
   /// \param path to save the heap capture

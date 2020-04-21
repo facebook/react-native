@@ -23,17 +23,22 @@ TEST(SealableTest, sealObjectCorrectly) {
 TEST(SealableTest, handleAssignmentsCorrectly) {
   Sealable obj;
   Sealable other;
-  EXPECT_NO_THROW(obj = other);
+
+  // Should work fine.
+  obj = other;
 
   // Assignment after getting sealed is not allowed.
   obj.seal();
   Sealable other2;
-  EXPECT_THROW(obj = other2, std::runtime_error);
+
+  EXPECT_DEATH_IF_SUPPORTED(
+      { obj = other2; }, "Attempt to mutate a sealed object.");
 
   // It doesn't matter if the other object is also sealed, it's still not
   // allowed.
   other2.seal();
-  EXPECT_THROW(obj = other2, std::runtime_error);
+  EXPECT_DEATH_IF_SUPPORTED(
+      { obj = other2; }, "Attempt to mutate a sealed object.");
 
   // Fresh creation off other Sealable is still unsealed.
   Sealable other3(obj);

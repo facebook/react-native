@@ -27,7 +27,7 @@ type FilesOutput = Map<string, string>;
 const moduleTemplate = `
 class JSI_EXPORT Native::_MODULE_NAME_::SpecJSI : public ObjCTurboModule {
 public:
-  Native::_MODULE_NAME_::SpecJSI(id<RCTTurboModule> instance, std::shared_ptr<CallInvoker> jsInvoker, id<RCTTurboModulePerformanceLogger> perfLogger);
+  Native::_MODULE_NAME_::SpecJSI(const ObjCTurboModule::InitParams &params);
 };`;
 
 const protocolTemplate = `
@@ -201,9 +201,7 @@ module.exports = {
                 } else {
                   paramObjCType = translatePrimitiveJSTypeToObjCType(
                     param,
-                    `Unspopported type for param "${param.name}" in ${
-                      prop.name
-                    }. Found: ${param.typeAnnotation.type}`,
+                    `Unspopported type for param "${param.name}" in ${prop.name}. Found: ${param.typeAnnotation.type}`,
                   );
                 }
                 return `${i === 0 ? '' : param.name}:(${paramObjCType})${
@@ -232,9 +230,7 @@ module.exports = {
                 '::_RETURN_VALUE_::',
                 translatePrimitiveJSTypeToObjCTypeForReturn(
                   returnTypeAnnotation,
-                  `Unspopported return type for ${prop.name}. Found: ${
-                    prop.typeAnnotation.returnTypeAnnotation.type
-                  }`,
+                  `Unspopported return type for ${prop.name}. Found: ${prop.typeAnnotation.returnTypeAnnotation.type}`,
                 ),
               )
               .replace('::_ARGS_::', nativeArgs);

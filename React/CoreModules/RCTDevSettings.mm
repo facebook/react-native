@@ -222,7 +222,7 @@ RCT_EXPORT_MODULE()
   return [_dataSource settingForKey:key];
 }
 
-- (BOOL)isNuclideDebuggingAvailable
+- (BOOL)isDeviceDebuggingAvailable
 {
 #if RCT_ENABLE_INSPECTOR
   return self.bridge.isInspectable;
@@ -453,11 +453,10 @@ RCT_EXPORT_METHOD(addMenuItem : (NSString *)title)
   });
 }
 
-- (std::shared_ptr<facebook::react::TurboModule>)
-    getTurboModuleWithJsInvoker:(std::shared_ptr<facebook::react::CallInvoker>)jsInvoker
-                     perfLogger:(id<RCTTurboModulePerformanceLogger>)perfLogger
+- (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:
+    (const facebook::react::ObjCTurboModule::InitParams &)params
 {
-  return std::make_shared<facebook::react::NativeDevSettingsSpecJSI>(self, jsInvoker, perfLogger);
+  return std::make_shared<facebook::react::NativeDevSettingsSpecJSI>(params);
 }
 
 @end
@@ -520,11 +519,10 @@ RCT_EXPORT_METHOD(addMenuItem : (NSString *)title)
 {
 }
 
-- (std::shared_ptr<facebook::react::TurboModule>)
-    getTurboModuleWithJsInvoker:(std::shared_ptr<facebook::react::CallInvoker>)jsInvoker
-                     perfLogger:(id<RCTTurboModulePerformanceLogger>)perfLogger
+- (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:
+    (const facebook::react::ObjCTurboModule::InitParams &)params
 {
-  return std::make_shared<facebook::react::NativeDevSettingsSpecJSI>(self, jsInvoker, perfLogger);
+  return std::make_shared<facebook::react::NativeDevSettingsSpecJSI>(params);
 }
 
 @end

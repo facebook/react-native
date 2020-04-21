@@ -186,11 +186,10 @@ RCT_EXPORT_METHOD(close : (double)code reason : (NSString *)reason socketID : (d
                      }];
 }
 
-- (std::shared_ptr<facebook::react::TurboModule>)
-    getTurboModuleWithJsInvoker:(std::shared_ptr<facebook::react::CallInvoker>)jsInvoker
-                     perfLogger:(id<RCTTurboModulePerformanceLogger>)perfLogger
+- (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:
+    (const facebook::react::ObjCTurboModule::InitParams &)params
 {
-  return std::make_shared<facebook::react::NativeWebSocketModuleSpecJSI>(self, jsInvoker, perfLogger);
+  return std::make_shared<facebook::react::NativeWebSocketModuleSpecJSI>(params);
 }
 
 @end

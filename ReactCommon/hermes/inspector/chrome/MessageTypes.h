@@ -1,5 +1,5 @@
 // Copyright 2004-present Facebook. All Rights Reserved.
-// @generated SignedSource<<16a6754d1896fef0cbab2a05800f6885>>
+// @generated SignedSource<<08b66e22784e225b926d36131b9a7693>>
 
 #pragma once
 
@@ -68,8 +68,14 @@ using UnserializableValue = std::string;
 namespace heapProfiler {
 struct AddHeapSnapshotChunkNotification;
 struct ReportHeapSnapshotProgressNotification;
+struct StartTrackingHeapObjectsRequest;
+struct StopTrackingHeapObjectsRequest;
 struct TakeHeapSnapshotRequest;
 } // namespace heapProfiler
+
+namespace hermes {
+struct SetPauseOnLoadRequest;
+} // namespace hermes
 
 /// RequestHandler handles requests via the visitor pattern.
 struct RequestHandler {
@@ -88,7 +94,12 @@ struct RequestHandler {
   virtual void handle(const debugger::StepIntoRequest &req) = 0;
   virtual void handle(const debugger::StepOutRequest &req) = 0;
   virtual void handle(const debugger::StepOverRequest &req) = 0;
+  virtual void handle(
+      const heapProfiler::StartTrackingHeapObjectsRequest &req) = 0;
+  virtual void handle(
+      const heapProfiler::StopTrackingHeapObjectsRequest &req) = 0;
   virtual void handle(const heapProfiler::TakeHeapSnapshotRequest &req) = 0;
+  virtual void handle(const hermes::SetPauseOnLoadRequest &req) = 0;
   virtual void handle(const runtime::EvaluateRequest &req) = 0;
   virtual void handle(const runtime::GetPropertiesRequest &req) = 0;
 };
@@ -108,7 +119,12 @@ struct NoopRequestHandler : public RequestHandler {
   void handle(const debugger::StepIntoRequest &req) override {}
   void handle(const debugger::StepOutRequest &req) override {}
   void handle(const debugger::StepOverRequest &req) override {}
+  void handle(
+      const heapProfiler::StartTrackingHeapObjectsRequest &req) override {}
+  void handle(
+      const heapProfiler::StopTrackingHeapObjectsRequest &req) override {}
   void handle(const heapProfiler::TakeHeapSnapshotRequest &req) override {}
+  void handle(const hermes::SetPauseOnLoadRequest &req) override {}
   void handle(const runtime::EvaluateRequest &req) override {}
   void handle(const runtime::GetPropertiesRequest &req) override {}
 };
@@ -369,6 +385,27 @@ struct debugger::StepOverRequest : public Request {
   void accept(RequestHandler &handler) const override;
 };
 
+struct heapProfiler::StartTrackingHeapObjectsRequest : public Request {
+  StartTrackingHeapObjectsRequest();
+  explicit StartTrackingHeapObjectsRequest(const folly::dynamic &obj);
+
+  folly::dynamic toDynamic() const override;
+  void accept(RequestHandler &handler) const override;
+
+  folly::Optional<bool> trackAllocations;
+};
+
+struct heapProfiler::StopTrackingHeapObjectsRequest : public Request {
+  StopTrackingHeapObjectsRequest();
+  explicit StopTrackingHeapObjectsRequest(const folly::dynamic &obj);
+
+  folly::dynamic toDynamic() const override;
+  void accept(RequestHandler &handler) const override;
+
+  folly::Optional<bool> reportProgress;
+  folly::Optional<bool> treatGlobalObjectsAsRoots;
+};
+
 struct heapProfiler::TakeHeapSnapshotRequest : public Request {
   TakeHeapSnapshotRequest();
   explicit TakeHeapSnapshotRequest(const folly::dynamic &obj);
@@ -378,6 +415,16 @@ struct heapProfiler::TakeHeapSnapshotRequest : public Request {
 
   folly::Optional<bool> reportProgress;
   folly::Optional<bool> treatGlobalObjectsAsRoots;
+};
+
+struct hermes::SetPauseOnLoadRequest : public Request {
+  SetPauseOnLoadRequest();
+  explicit SetPauseOnLoadRequest(const folly::dynamic &obj);
+
+  folly::dynamic toDynamic() const override;
+  void accept(RequestHandler &handler) const override;
+
+  std::string state;
 };
 
 struct runtime::EvaluateRequest : public Request {

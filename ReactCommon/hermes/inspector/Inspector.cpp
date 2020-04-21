@@ -382,6 +382,34 @@ folly::Future<folly::Unit> Inspector::setPauseOnExceptions(
   return promise->getFuture();
 };
 
+folly::Future<folly::Unit> Inspector::setPauseOnLoads(
+    const PauseOnLoadMode mode) {
+  std::unique_lock<std::mutex> lock(mutex_);
+  auto promise = std::make_shared<folly::Promise<Unit>>();
+  pauseOnLoadMode_ = mode;
+  promise->setValue();
+  return promise->getFuture();
+};
+
+bool Inspector::shouldPauseOnThisScriptLoad() {
+  switch (pauseOnLoadMode_) {
+    case None:
+      return false;
+    case All:
+      return true;
+    case Smart:
+      // If we don't have active breakpoints, there's nothing to set or update.
+      if (debugger_.getBreakpoints().size() == 0) {
+        return false;
+      }
+      // If there's no source map URL, it's probably not a file we care about.
+      if (getScriptInfoFromTopCallFrame().sourceMappingUrl.size() == 0) {
+        return false;
+      }
+      return true;
+  }
+};
+
 debugger::Command Inspector::didPause(debugger::Debugger &debugger) {
   std::unique_lock<std::mutex> lock(mutex_);
 

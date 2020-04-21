@@ -1,5 +1,5 @@
 // Copyright 2004-present Facebook. All Rights Reserved.
-// @generated SignedSource<<633984dcfe87d2822ef0e80c1aab93ef>>
+// @generated SignedSource<<0d7691362d081e7bc44d2b7a0ed24371>>
 
 #include "MessageTypes.h"
 
@@ -40,8 +40,13 @@ std::unique_ptr<Request> Request::fromJsonThrowOnError(const std::string &str) {
       {"Debugger.stepInto", makeUnique<debugger::StepIntoRequest>},
       {"Debugger.stepOut", makeUnique<debugger::StepOutRequest>},
       {"Debugger.stepOver", makeUnique<debugger::StepOverRequest>},
+      {"HeapProfiler.startTrackingHeapObjects",
+       makeUnique<heapProfiler::StartTrackingHeapObjectsRequest>},
+      {"HeapProfiler.stopTrackingHeapObjects",
+       makeUnique<heapProfiler::StopTrackingHeapObjectsRequest>},
       {"HeapProfiler.takeHeapSnapshot",
        makeUnique<heapProfiler::TakeHeapSnapshotRequest>},
+      {"Hermes.setPauseOnLoad", makeUnique<hermes::SetPauseOnLoadRequest>},
       {"Runtime.evaluate", makeUnique<runtime::EvaluateRequest>},
       {"Runtime.getProperties", makeUnique<runtime::GetPropertiesRequest>},
   };
@@ -587,6 +592,66 @@ void debugger::StepOverRequest::accept(RequestHandler &handler) const {
   handler.handle(*this);
 }
 
+heapProfiler::StartTrackingHeapObjectsRequest::StartTrackingHeapObjectsRequest()
+    : Request("HeapProfiler.startTrackingHeapObjects") {}
+
+heapProfiler::StartTrackingHeapObjectsRequest::StartTrackingHeapObjectsRequest(
+    const dynamic &obj)
+    : Request("HeapProfiler.startTrackingHeapObjects") {
+  assign(id, obj, "id");
+  assign(method, obj, "method");
+
+  dynamic params = obj.at("params");
+  assign(trackAllocations, params, "trackAllocations");
+}
+
+dynamic heapProfiler::StartTrackingHeapObjectsRequest::toDynamic() const {
+  dynamic params = dynamic::object;
+  put(params, "trackAllocations", trackAllocations);
+
+  dynamic obj = dynamic::object;
+  put(obj, "id", id);
+  put(obj, "method", method);
+  put(obj, "params", std::move(params));
+  return obj;
+}
+
+void heapProfiler::StartTrackingHeapObjectsRequest::accept(
+    RequestHandler &handler) const {
+  handler.handle(*this);
+}
+
+heapProfiler::StopTrackingHeapObjectsRequest::StopTrackingHeapObjectsRequest()
+    : Request("HeapProfiler.stopTrackingHeapObjects") {}
+
+heapProfiler::StopTrackingHeapObjectsRequest::StopTrackingHeapObjectsRequest(
+    const dynamic &obj)
+    : Request("HeapProfiler.stopTrackingHeapObjects") {
+  assign(id, obj, "id");
+  assign(method, obj, "method");
+
+  dynamic params = obj.at("params");
+  assign(reportProgress, params, "reportProgress");
+  assign(treatGlobalObjectsAsRoots, params, "treatGlobalObjectsAsRoots");
+}
+
+dynamic heapProfiler::StopTrackingHeapObjectsRequest::toDynamic() const {
+  dynamic params = dynamic::object;
+  put(params, "reportProgress", reportProgress);
+  put(params, "treatGlobalObjectsAsRoots", treatGlobalObjectsAsRoots);
+
+  dynamic obj = dynamic::object;
+  put(obj, "id", id);
+  put(obj, "method", method);
+  put(obj, "params", std::move(params));
+  return obj;
+}
+
+void heapProfiler::StopTrackingHeapObjectsRequest::accept(
+    RequestHandler &handler) const {
+  handler.handle(*this);
+}
+
 heapProfiler::TakeHeapSnapshotRequest::TakeHeapSnapshotRequest()
     : Request("HeapProfiler.takeHeapSnapshot") {}
 
@@ -615,6 +680,33 @@ dynamic heapProfiler::TakeHeapSnapshotRequest::toDynamic() const {
 
 void heapProfiler::TakeHeapSnapshotRequest::accept(
     RequestHandler &handler) const {
+  handler.handle(*this);
+}
+
+hermes::SetPauseOnLoadRequest::SetPauseOnLoadRequest()
+    : Request("Hermes.setPauseOnLoad") {}
+
+hermes::SetPauseOnLoadRequest::SetPauseOnLoadRequest(const dynamic &obj)
+    : Request("Hermes.setPauseOnLoad") {
+  assign(id, obj, "id");
+  assign(method, obj, "method");
+
+  dynamic params = obj.at("params");
+  assign(state, params, "state");
+}
+
+dynamic hermes::SetPauseOnLoadRequest::toDynamic() const {
+  dynamic params = dynamic::object;
+  put(params, "state", state);
+
+  dynamic obj = dynamic::object;
+  put(obj, "id", id);
+  put(obj, "method", method);
+  put(obj, "params", std::move(params));
+  return obj;
+}
+
+void hermes::SetPauseOnLoadRequest::accept(RequestHandler &handler) const {
   handler.handle(*this);
 }
 

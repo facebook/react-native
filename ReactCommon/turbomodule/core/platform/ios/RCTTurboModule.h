@@ -127,11 +127,16 @@ class Instance;
  */
 class JSI_EXPORT ObjCTurboModule : public TurboModule {
  public:
-  ObjCTurboModule(
-      const std::string &name,
-      id<RCTTurboModule> instance,
-      std::shared_ptr<CallInvoker> jsInvoker,
-      id<RCTTurboModulePerformanceLogger> perfLogger);
+  // TODO(T65603471): Should we unify this with a Fabric abstraction?
+  struct InitParams {
+    std::string moduleName;
+    id<RCTTurboModule> instance;
+    std::shared_ptr<CallInvoker> jsInvoker;
+    std::shared_ptr<CallInvoker> nativeInvoker;
+    id<RCTTurboModulePerformanceLogger> perfLogger;
+  };
+
+  ObjCTurboModule(const InitParams &params);
 
   jsi::Value invokeObjCMethod(
       jsi::Runtime &runtime,
@@ -142,6 +147,7 @@ class JSI_EXPORT ObjCTurboModule : public TurboModule {
       size_t count);
 
   id<RCTTurboModule> instance_;
+  std::shared_ptr<CallInvoker> nativeInvoker_;
 
  protected:
   void setMethodArgConversionSelector(NSString *methodName, int argIndex, NSString *fnName);
@@ -206,15 +212,20 @@ class JSI_EXPORT ObjCTurboModule : public TurboModule {
 
 @optional
 // This should be required, after migration is done.
-- (std::shared_ptr<facebook::react::TurboModule>)
-    getTurboModuleWithJsInvoker:(std::shared_ptr<facebook::react::CallInvoker>)jsInvoker
-                     perfLogger:(id<RCTTurboModulePerformanceLogger>)perfLogger;
+- (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:
+    (const facebook::react::ObjCTurboModule::InitParams &)params;
 
 @end
 
-// TODO: Consolidate this extension with the one in RCTSurfacePresenter.
-@interface RCTBridge ()
-
-- (std::weak_ptr<facebook::react::Instance>)reactInstance;
-
+/**
+ * These methods are all implemented by RCTCxxBridge, which subclasses RCTBridge. Hence, they must only be used in
+ * contexts where the concrete class of an RCTBridge instance is RCTCxxBridge. This happens, for example, when
+ * [RCTCxxBridgeDelegate jsExecutorFactoryForBridge:(RCTBridge *)] is invoked by RCTCxxBridge.
+ *
+ * TODO: Consolidate this extension with the one in RCTSurfacePresenter.
+ */
+@interface RCTBridge (RCTTurboModule)
+- (std::shared_ptr<facebook::react::CallInvoker>)jsCallInvoker;
+- (std::shared_ptr<facebook::react::CallInvoker>)decorateNativeCallInvoker:
+    (std::shared_ptr<facebook::react::CallInvoker>)nativeInvoker;
 @end

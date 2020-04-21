@@ -1255,7 +1255,7 @@ TEST(ConnectionTests, testEvalOnCallFrameException) {
        // TODO: unsure why these frames are here, but they're in hdb tests
        // too. Ask Hermes about if they really should be there.
        FrameInfo("eval", 0, 0).setLineNumberMax(19),
-       FrameInfo("(native)", 0, 0),
+       FrameInfo("callme", 12, 2),
        FrameInfo("global", 0, 0).setLineNumberMax(19)});
   expectEvalResponse(conn, msgId + 2, 5);
   msgId += 3;

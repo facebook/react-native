@@ -40,7 +40,7 @@ struct Registration {
   std::mutex _mutex; // protects all ivars
   RCTReconnectingWebSocket *_socket;
   BOOL _socketConnected;
-  NSString *_jsLocationForSocket;
+  NSString *_serverHostForSocket;
   id _bundleURLChangeObserver;
   uint32_t _nextToken;
   std::vector<Registration<RCTNotificationHandler>> _notificationRegistrations;
@@ -62,8 +62,8 @@ struct Registration {
 {
   if (self = [super init]) {
     _nextToken = 1; // Prevent randomly erasing a handler if you pass a bogus 0 token
-    _jsLocationForSocket = [RCTBundleURLProvider sharedSettings].jsLocation;
-    _socket = socketForLocation(_jsLocationForSocket);
+    _serverHostForSocket = [[RCTBundleURLProvider sharedSettings] packagerServerHost];
+    _socket = socketForLocation(_serverHostForSocket);
     _socket.delegate = self;
     [_socket start];
 
@@ -79,10 +79,10 @@ struct Registration {
   return self;
 }
 
-static RCTReconnectingWebSocket *socketForLocation(NSString *const jsLocation)
+static RCTReconnectingWebSocket *socketForLocation(NSString *const serverHost)
 {
   NSURLComponents *const components = [NSURLComponents new];
-  components.host = jsLocation ?: @"localhost";
+  components.host = serverHost ?: @"localhost";
   components.scheme = @"http";
   components.port = @(kRCTBundleURLProviderDefaultPort);
   components.path = @"/message";
@@ -118,15 +118,15 @@ static RCTReconnectingWebSocket *socketForLocation(NSString *const jsLocation)
     return; // already stopped
   }
 
-  NSString *const jsLocation = [RCTBundleURLProvider sharedSettings].jsLocation;
-  if ([jsLocation isEqual:_jsLocationForSocket]) {
+  NSString *const serverHost = [[RCTBundleURLProvider sharedSettings] packagerServerHost];
+  if ([serverHost isEqual:_serverHostForSocket]) {
     return; // unchanged
   }
 
   _socket.delegate = nil;
   [_socket stop];
-  _jsLocationForSocket = jsLocation;
-  _socket = socketForLocation(jsLocation);
+  _serverHostForSocket = serverHost;
+  _socket = socketForLocation(serverHost);
   _socket.delegate = self;
   [_socket start];
 }

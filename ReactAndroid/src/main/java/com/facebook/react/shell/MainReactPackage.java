@@ -45,7 +45,6 @@ import com.facebook.react.turbomodule.core.interfaces.TurboModule;
 import com.facebook.react.uimanager.ViewManager;
 import com.facebook.react.views.art.ARTRenderableViewManager;
 import com.facebook.react.views.art.ARTSurfaceViewManager;
-import com.facebook.react.views.checkbox.ReactCheckBoxManager;
 import com.facebook.react.views.drawer.ReactDrawerLayoutManager;
 import com.facebook.react.views.image.ReactImageManager;
 import com.facebook.react.views.modal.ReactModalHostManager;
@@ -178,7 +177,6 @@ public class MainReactPackage extends TurboReactPackage {
     viewManagers.add(ARTRenderableViewManager.createARTGroupViewManager());
     viewManagers.add(ARTRenderableViewManager.createARTShapeViewManager());
     viewManagers.add(ARTRenderableViewManager.createARTTextViewManager());
-    viewManagers.add(new ReactCheckBoxManager());
     viewManagers.add(new ReactDialogPickerManager());
     viewManagers.add(new ReactDrawerLayoutManager());
     viewManagers.add(new ReactDropdownPickerManager());
