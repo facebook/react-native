@@ -490,6 +490,15 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
                           forView:self];
 }
 
+- (BOOL)textInputShouldReceiveImage:(UIImage *)image
+{
+  return _onReceiveImage != nil;
+}
+
+- (void)textInputDidReceiveImage:(UIImage *)image {
+  NSLog(@"Paste Image Handler");
+}
+
 #pragma mark - Layout (in UIKit terms, with all insets)
 
 - (CGSize)intrinsicContentSize

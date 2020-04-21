@@ -600,6 +600,8 @@ export type Props = $ReadOnly<{|
    */
   onScroll?: ?(e: ScrollEvent) => mixed,
 
+  onReceiveImage?: ?() => mixed,
+
   /**
    * The string that will be rendered before text input has been entered.
    */

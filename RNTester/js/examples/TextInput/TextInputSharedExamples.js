@@ -421,6 +421,7 @@ class SelectionExample extends React.Component<
           multiline={this.props.multiline}
           onChangeText={value => this.setState({value})}
           onSelectionChange={this.onSelectionChange.bind(this)}
+          onReceiveImage={e => console.log(e)}
           ref={textInput => (this._textInput = textInput)}
           selection={this.state.selection}
           style={this.props.style}
@@ -443,7 +444,45 @@ class SelectionExample extends React.Component<
   }
 }
 
+type ImagePasteExampleState = {
+  value: string,
+  ...
+};
+
+class ImagePasteExample extends React.Component<
+  $FlowFixMeProps,
+  ImagePasteExampleState,
+> {
+  _textInput: any;
+
+  constructor(props) {
+    super(props);
+    this.state = {
+      value: props.value,
+    };
+  }
+
+  render() {
+    return (
+      <View>
+        <TextInput
+          multiline
+          onReceiveImage={e => console.log(e)}
+          style={this.props.style}
+          value={this.state.value}
+        />
+      </View>
+    );
+  }
+}
+
 module.exports = ([
+  {
+    title: 'Paste image',
+    render: function(): React.Node {
+      return <ImagePasteExample />;
+    },
+  },
   {
     title: 'Auto-focus',
     render: function(): React.Node {

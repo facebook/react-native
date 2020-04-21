@@ -169,8 +169,14 @@ static UIColor *defaultPlaceholderColor()
 
 - (void)paste:(id)sender
 {
-  [super paste:sender];
-  _textWasPasted = YES;
+  if ([[UIPasteboard generalPasteboard] image]) {
+    if ([self.textInputDelegate respondsToSelector:@selector(textInputDidReceiveImage:)]) {
+      [self.textInputDelegate textInputDidReceiveImage:[[UIPasteboard generalPasteboard] image]];
+    }
+  } else {
+    [super paste:sender];
+    _textWasPasted = YES;
+  }
 }
 
 - (void)setContentOffset:(CGPoint)contentOffset animated:(__unused BOOL)animated
@@ -254,6 +260,13 @@ static UIColor *defaultPlaceholderColor()
 - (BOOL)canPerformAction:(SEL)action withSender:(id)sender
 {
   if (_contextMenuHidden) {
+    return NO;
+  }
+
+  if ([[UIPasteboard generalPasteboard] image]) {
+    if ([self.textInputDelegate respondsToSelector:@selector(textInputDidReceiveImage:)] && [self.textInputDelegate respondsToSelector:@selector(textInputShouldReceiveImage:)]) {
+      return [self.textInputDelegate textInputShouldReceiveImage:[[UIPasteboard generalPasteboard] image]];
+    }
     return NO;
   }
 
