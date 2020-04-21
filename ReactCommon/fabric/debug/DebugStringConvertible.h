@@ -26,6 +26,9 @@ namespace react {
 // Additional logging can be enabled editing yoga.cpp (e.g. gPrintChanges,
 // gPrintSkips)
 
+// To Debug introspection of RN Shadow tree, uncomment the following line:
+// #define RN_SHADOW_TREE_INTROSPECTION 1
+
 #if RN_DEBUG_STRING_CONVERTIBLE
 
 class DebugStringConvertible;
