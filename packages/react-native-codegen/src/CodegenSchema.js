@@ -47,7 +47,7 @@ export type StringTypeAnnotation = $ReadOnly<{|
   type: 'StringTypeAnnotation',
 |}>;
 
-export type ObjectPropertyType =
+export type EventObjectPropertyType =
   | $ReadOnly<{|
       type: 'BooleanTypeAnnotation',
       name: string,
@@ -85,7 +85,7 @@ export type ObjectPropertyType =
       type: 'ObjectTypeAnnotation',
       name: string,
       optional: boolean,
-      properties: $ReadOnlyArray<ObjectPropertyType>,
+      properties: $ReadOnlyArray<EventObjectPropertyType>,
     |}>;
 
 type PropTypeTypeAnnotation =
@@ -274,7 +274,7 @@ export type EventTypeShape = $ReadOnly<{|
     type: 'EventTypeAnnotation',
     argument?: $ReadOnly<{|
       type: 'ObjectTypeAnnotation',
-      properties: $ReadOnlyArray<ObjectPropertyType>,
+      properties: $ReadOnlyArray<EventObjectPropertyType>,
     |}>,
   |}>,
 |}>;
