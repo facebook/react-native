@@ -28,25 +28,26 @@ import {
 
 const Section = ({title, children}): Node => {
   const isDarkMode = useColorScheme() === 'dark';
-
-  const sectionTitleStyles = [
-    styles.sectionTitle,
-    {
-      color: isDarkMode ? Colors.white : Colors.black,
-    },
-  ];
-
-  const sectionDescriptionStyles = [
-    styles.sectionDescription,
-    {
-      color: isDarkMode ? Colors.light : Colors.dark,
-    },
-  ];
-
   return (
     <View style={styles.sectionContainer}>
-      <Text style={sectionTitleStyles}>{title}</Text>
-      <Text style={sectionDescriptionStyles}>{children}</Text>
+      <Text
+        style={[
+          styles.sectionTitle,
+          {
+            color: isDarkMode ? Colors.white : Colors.black,
+          },
+        ]}>
+        {title}
+      </Text>
+      <Text
+        style={[
+          styles.sectionDescription,
+          {
+            color: isDarkMode ? Colors.light : Colors.dark,
+          },
+        ]}>
+        {children}
+      </Text>
     </View>
   );
 };
