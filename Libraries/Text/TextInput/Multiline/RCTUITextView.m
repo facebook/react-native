@@ -13,6 +13,8 @@
 #import <React/RCTBackedTextInputDelegateAdapter.h>
 #import <React/RCTTextAttributes.h>
 
+#define SUPPORTED_PASTEBOARD_DATA_TYPES @[@"public.png", @"public.gif", @"public.jpg"]
+
 @implementation RCTUITextView
 {
   UILabel *_placeholderView;
@@ -169,9 +171,15 @@ static UIColor *defaultPlaceholderColor()
 
 - (void)paste:(id)sender
 {
-  if ([[UIPasteboard generalPasteboard] image]) {
-    if ([self.textInputDelegate respondsToSelector:@selector(textInputDidReceiveImage:)]) {
-      [self.textInputDelegate textInputDidReceiveImage:[[UIPasteboard generalPasteboard] image]];
+  if ([[UIPasteboard generalPasteboard] containsPasteboardTypes:SUPPORTED_PASTEBOARD_DATA_TYPES]) {
+    if ([self.textInputDelegate respondsToSelector:@selector(textInputDidReceiveImageData:forImageType:)]) {
+      for (NSString *type in SUPPORTED_PASTEBOARD_DATA_TYPES) {
+        NSData *data = [[UIPasteboard generalPasteboard] dataForPasteboardType:type];
+        if (data != nil) {
+          [self.textInputDelegate textInputDidReceiveImageData:data forImageType:type];
+          break;
+        }
+      }
     }
   } else {
     [super paste:sender];
@@ -263,9 +271,9 @@ static UIColor *defaultPlaceholderColor()
     return NO;
   }
 
-  if ([[UIPasteboard generalPasteboard] image]) {
-    if ([self.textInputDelegate respondsToSelector:@selector(textInputDidReceiveImage:)] && [self.textInputDelegate respondsToSelector:@selector(textInputShouldReceiveImage:)]) {
-      return [self.textInputDelegate textInputShouldReceiveImage:[[UIPasteboard generalPasteboard] image]];
+  if (action == @selector(paste:) && [[UIPasteboard generalPasteboard] containsPasteboardTypes:SUPPORTED_PASTEBOARD_DATA_TYPES]) {
+    if ([self.textInputDelegate respondsToSelector:@selector(textInputDidReceiveImageData:forImageType:)] && [self.textInputDelegate respondsToSelector:@selector(textInputShouldReceiveImageData)]) {
+      return [self.textInputDelegate textInputShouldReceiveImageData];
     }
     return NO;
   }

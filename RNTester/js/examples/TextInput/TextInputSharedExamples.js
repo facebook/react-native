@@ -19,6 +19,7 @@ const {
   TextInput,
   View,
   StyleSheet,
+  Image,
 } = require('react-native');
 
 import type {RNTesterExampleModuleItem} from '../../types/RNTesterTypes';
@@ -421,7 +422,6 @@ class SelectionExample extends React.Component<
           multiline={this.props.multiline}
           onChangeText={value => this.setState({value})}
           onSelectionChange={this.onSelectionChange.bind(this)}
-          onReceiveImage={e => console.log(e)}
           ref={textInput => (this._textInput = textInput)}
           selection={this.state.selection}
           style={this.props.style}
@@ -446,6 +446,7 @@ class SelectionExample extends React.Component<
 
 type ImagePasteExampleState = {
   value: string,
+  image: ?{data: string, 'mime-type': string},
   ...
 };
 
@@ -463,14 +464,25 @@ class ImagePasteExample extends React.Component<
   }
 
   render() {
+    const {image} = this.state;
     return (
       <View>
         <TextInput
           multiline
-          onReceiveImage={e => console.log(e)}
+          onReceiveImage={e => this.setState({image: e.nativeEvent.image})}
           style={this.props.style}
           value={this.state.value}
         />
+        {image ? (
+          <View>
+            <Text value={image['mime-type']} />
+            <Image
+              style={{width: '100%', height: 200}}
+              resizeMode={'contain'}
+              source={{uri: `data:${image['mime-type']};base64,${image.data}`}}
+            />
+          </View>
+        ) : null}
       </View>
     );
   }

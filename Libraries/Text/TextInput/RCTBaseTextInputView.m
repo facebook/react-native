@@ -490,13 +490,32 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
                           forView:self];
 }
 
-- (BOOL)textInputShouldReceiveImage:(UIImage *)image
-{
-  return _onReceiveImage != nil;
+- (BOOL)textInputShouldReceiveImageData {
+    return _onReceiveImage != nil;
 }
 
-- (void)textInputDidReceiveImage:(UIImage *)image {
-  NSLog(@"Paste Image Handler");
+- (void)textInputDidReceiveImageData:(NSData *)data forImageType:(NSString *)imageType {
+  NSString *mime = @"application/octet-stream";
+  if ([imageType isEqualToString:@"public.png"]) {
+    mime = @"image/png";
+  } else if ([imageType isEqualToString:@"public.gif"]) {
+    mime = @"image/gif";
+  } else if ([imageType isEqualToString:@"public.jpg"]) {
+    mime = @"image/jpg";
+  }
+    
+  NSString *image = [data base64EncodedStringWithOptions:0];
+  
+  RCTDirectEventBlock onReceiveImage = self.onReceiveImage;
+    
+  if (onReceiveImage) {
+    onReceiveImage(@{
+      @"image": @{
+        @"data": image,
+        @"mime-type": mime
+      }
+    });
+  }
 }
 
 #pragma mark - Layout (in UIKit terms, with all insets)

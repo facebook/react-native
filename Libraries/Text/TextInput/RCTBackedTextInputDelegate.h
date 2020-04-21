@@ -37,9 +37,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView;
 
-- (BOOL)textInputShouldReceiveImage:(UIImage *)image;
+- (BOOL)textInputShouldReceiveImageData;
 
-- (void)textInputDidReceiveImage:(UIImage *)image;
+- (void)textInputDidReceiveImageData:(NSData *)data forImageType:(NSString *)imageType;
 
 @end
 

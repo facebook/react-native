@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		090639DA244F615900A263B5 /* NSURLResponse+FixFlipperKit.m in Sources */ = {isa = PBXBuildFile; fileRef = 090639D9244F615900A263B5 /* NSURLResponse+FixFlipperKit.m */; };
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
 		272E6B3F1BEA849E001FCF37 /* UpdatePropertiesExampleView.m in Sources */ = {isa = PBXBuildFile; fileRef = 272E6B3C1BEA849E001FCF37 /* UpdatePropertiesExampleView.m */; };
 		27F441EC1BEBE5030039B79C /* FlexibleSizeExampleView.m in Sources */ = {isa = PBXBuildFile; fileRef = 27F441E81BEBE5030039B79C /* FlexibleSizeExampleView.m */; };
@@ -70,6 +71,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		090639D9244F615900A263B5 /* NSURLResponse+FixFlipperKit.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "NSURLResponse+FixFlipperKit.m"; sourceTree = "<group>"; };
 		11941849F77C552FDC3EED77 /* libPods-RNTesterUnitTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-RNTesterUnitTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		13B07F961A680F5B00A75B9A /* RNTester.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RNTester.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		13B07FAF1A68108700A75B9A /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppDelegate.h; path = RNTester/AppDelegate.h; sourceTree = "<group>"; };
@@ -223,6 +225,7 @@
 				680759612239798500290469 /* Fabric */,
 				272E6B3A1BEA846C001FCF37 /* NativeExampleViews */,
 				1323F18D1C04ABAC0091BED0 /* Supporting Files */,
+				090639D9244F615900A263B5 /* NSURLResponse+FixFlipperKit.m */,
 			);
 			name = RNTester;
 			sourceTree = "<group>";
@@ -667,6 +670,7 @@
 				272E6B3F1BEA849E001FCF37 /* UpdatePropertiesExampleView.m in Sources */,
 				5CB07C9B226467E60039471C /* RNTesterTurboModuleProvider.mm in Sources */,
 				27F441EC1BEBE5030039B79C /* FlexibleSizeExampleView.m in Sources */,
+				090639DA244F615900A263B5 /* NSURLResponse+FixFlipperKit.m in Sources */,
 				5C60EB1C226440DB0018C04F /* AppDelegate.mm in Sources */,
 				13B07FC11A68108700A75B9A /* main.m in Sources */,
 			);
