@@ -18,6 +18,7 @@ import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.StaticLayout;
 import android.text.TextPaint;
+import android.util.LayoutDirection;
 import android.util.LruCache;
 import androidx.annotation.Nullable;
 import com.facebook.react.bridge.ReadableArray;
@@ -46,6 +47,17 @@ public class TextLayoutManager {
 
   private static final Object sSpannableCacheLock = new Object();
   private static LruCache<String, Spannable> sSpannableCache = new LruCache<>(spannableCacheSize);
+
+  public static boolean isRTL(ReadableMap attributedString) {
+    ReadableArray fragments = attributedString.getArray("fragments");
+    for (int i = 0, length = fragments.size(); i < length; i++) {
+      ReadableMap fragment = fragments.getMap(i);
+      ReactStylesDiffMap map = new ReactStylesDiffMap(fragment.getMap("textAttributes"));
+      TextAttributeProps textAttributes = new TextAttributeProps(map);
+      return textAttributes.mLayoutDirection == LayoutDirection.RTL;
+    }
+    return false;
+  }
 
   private static void buildSpannableFromFragment(
       Context context,

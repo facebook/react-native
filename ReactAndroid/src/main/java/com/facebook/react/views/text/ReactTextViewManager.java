@@ -87,7 +87,6 @@ public class ReactTextViewManager
     ReadableNativeMap state = stateWrapper.getState();
     ReadableMap attributedString = state.getMap("attributedString");
     ReadableMap paragraphAttributes = state.getMap("paragraphAttributes");
-
     Spannable spanned =
         TextLayoutManager.getOrCreateSpannableForText(
             view.getContext(), attributedString, mReactTextViewManagerCallback);
@@ -100,7 +99,7 @@ public class ReactTextViewManager
         spanned,
         state.hasKey("mostRecentEventCount") ? state.getInt("mostRecentEventCount") : -1,
         false, // TODO add this into local Data
-        TextAttributeProps.getTextAlignment(props),
+        TextAttributeProps.getTextAlignment(props, TextLayoutManager.isRTL(attributedString)),
         textBreakStrategy,
         TextAttributeProps.getJustificationMode(props));
   }
