@@ -30,6 +30,7 @@ fb_native.sh_binary(
         "src/cli/combine/combine-js-to-schema.js",
         "src/cli/combine/combine_js_to_schema.sh",
         "//xplat/js:setup_env",
+        ":yarn-workspace",
     ],
     visibility = ["PUBLIC"],
 )
