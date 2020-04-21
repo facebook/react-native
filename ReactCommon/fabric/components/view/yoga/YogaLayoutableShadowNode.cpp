@@ -6,11 +6,6 @@
  */
 
 #include "YogaLayoutableShadowNode.h"
-
-#include <algorithm>
-#include <limits>
-#include <memory>
-
 #include <react/components/view/ViewProps.h>
 #include <react/components/view/conversions.h>
 #include <react/core/LayoutConstraints.h>
@@ -18,6 +13,9 @@
 #include <react/debug/DebugStringConvertibleItem.h>
 #include <react/debug/SystraceSection.h>
 #include <yoga/Yoga.h>
+#include <algorithm>
+#include <limits>
+#include <memory>
 
 namespace facebook {
 namespace react {
@@ -396,10 +394,29 @@ YGSize YogaLayoutableShadowNode::yogaNodeMeasureCallbackConnector(
                 yogaFloatFromFloat(size.height)};
 }
 
+#ifdef RN_DEBUG_YOGA_LOGGER
+static int YogaLog(
+    const YGConfigRef config,
+    const YGNodeRef node,
+    YGLogLevel level,
+    const char *format,
+    va_list args) {
+  int result = vsnprintf(NULL, 0, format, args);
+  std::vector<char> buffer(1 + result);
+  vsnprintf(buffer.data(), buffer.size(), format, args);
+  LOG(INFO) << "RNYogaLogger " << buffer.data();
+  return result;
+}
+#endif
+
 YGConfig &YogaLayoutableShadowNode::initializeYogaConfig(YGConfig &config) {
   config.setCloneNodeCallback(
       YogaLayoutableShadowNode::yogaNodeCloneCallbackConnector);
   config.useLegacyStretchBehaviour = true;
+#ifdef RN_DEBUG_YOGA_LOGGER
+  config.printTree = true;
+  config.setLogger(&YogaLog);
+#endif
   return config;
 }
 

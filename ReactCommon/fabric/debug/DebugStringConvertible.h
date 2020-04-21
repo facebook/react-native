@@ -20,6 +20,12 @@ namespace react {
 #define RN_DEBUG_STRING_CONVERTIBLE 1
 #endif
 
+// To Debug Yoga layout, uncomment the following line.
+// #define RN_DEBUG_YOGA_LOGGER 1
+//
+// Additional logging can be enabled editing yoga.cpp (e.g. gPrintChanges,
+// gPrintSkips)
+
 #if RN_DEBUG_STRING_CONVERTIBLE
 
 class DebugStringConvertible;
