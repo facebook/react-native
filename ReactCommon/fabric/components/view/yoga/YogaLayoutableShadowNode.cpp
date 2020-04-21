@@ -54,6 +54,10 @@ YogaLayoutableShadowNode::YogaLayoutableShadowNode(
       yogaNode_(&initializeYogaConfig(yogaConfig_)) {
   yogaNode_.setContext(this);
 
+  // Newly created node must be `dirty` just becasue it is new.
+  // This is not a default for `YGNode`.
+  yogaNode_.setDirty(true);
+
   updateYogaProps();
   updateYogaChildren();
 }
@@ -140,8 +144,6 @@ void YogaLayoutableShadowNode::appendChildYogaNode(
     return;
   }
 
-  yogaNode_.setDirty(true);
-
   auto yogaNodeRawPtr = &yogaNode_;
   auto childYogaNodeRawPtr = &child.yogaNode_;
   auto childNodePtr = const_cast<YogaLayoutableShadowNode *>(&child);
@@ -179,6 +181,10 @@ void YogaLayoutableShadowNode::updateYogaChildren() {
   auto oldChildren = isClean ? yogaNode_.getChildren() : YGVector{};
 
   yogaNode_.setChildren({});
+
+  // We might undo this later at the end of the method if we can infer that
+  // dirting is not necessary here.
+  yogaNode_.setDirty(true);
 
   auto i = int{0};
   for (auto const &child : children) {
@@ -321,8 +327,9 @@ YogaLayoutableShadowNode &YogaLayoutableShadowNode::cloneAndReplaceChild(
     int suggestedIndex) {
   auto clonedChildShadowNode = child.clone({});
   replaceChild(child, clonedChildShadowNode, suggestedIndex);
-
-  return static_cast<YogaLayoutableShadowNode &>(*clonedChildShadowNode);
+  auto &node = static_cast<YogaLayoutableShadowNode &>(*clonedChildShadowNode);
+  node.yogaNode_.setDirty(true);
+  return node;
 }
 
 #pragma mark - Yoga Connectors
