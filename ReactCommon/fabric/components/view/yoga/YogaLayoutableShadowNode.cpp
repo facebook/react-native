@@ -174,8 +174,8 @@ void YogaLayoutableShadowNode::updateYogaChildren() {
   // Optimization:
   // If the new list of child nodes consists of clean nodes, and if their styles
   // are identical to styles of old children, we don't dirty the node.
-  bool isClean = !yogaNode_.getDirtied() &&
-      children.size() == yogaNode_.getChildren().size();
+  bool isClean =
+      !yogaNode_.isDirty() && children.size() == yogaNode_.getChildren().size();
   auto oldChildren = isClean ? yogaNode_.getChildren() : YGVector{};
 
   yogaNode_.setChildren({});
