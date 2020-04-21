@@ -79,7 +79,7 @@ function getImports(
       default:
         (name: empty);
         throw new Error(
-          `Invalid NativePrimitiveTypeAnnotation name, got ${name}`,
+          `Invalid NativeComponentCustomTypeAnnotation name, got ${name}`,
         );
     }
   }
@@ -87,7 +87,7 @@ function getImports(
   component.props.forEach(prop => {
     const typeAnnotation = prop.typeAnnotation;
 
-    if (typeAnnotation.type === 'NativePrimitiveTypeAnnotation') {
+    if (typeAnnotation.type === 'NativeComponentCustomTypeAnnotation') {
       addImportsForNativeName(typeAnnotation.name);
     }
 

@@ -72,7 +72,7 @@ function getJavaValueForProp(prop: PropTypeShape, imports): string {
       } else {
         return 'float value';
       }
-    case 'NativePrimitiveTypeAnnotation':
+    case 'NativeComponentCustomTypeAnnotation':
       switch (typeAnnotation.name) {
         case 'ColorPrimitive':
           addNullable(imports);
@@ -88,7 +88,7 @@ function getJavaValueForProp(prop: PropTypeShape, imports): string {
           return '@Nullable ReadableMap value';
         default:
           (typeAnnotation.name: empty);
-          throw new Error('Received unknown NativePrimitiveTypeAnnotation');
+          throw new Error('Received unknown NativeComponentCustomTypeAnnotation');
       }
     case 'ArrayTypeAnnotation': {
       addNullable(imports);

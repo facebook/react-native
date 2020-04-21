@@ -90,23 +90,23 @@ function getTypeAnnotationForArray(name, typeAnnotation, defaultValue, types) {
   switch (type) {
     case 'ImageSource':
       return {
-        type: 'NativePrimitiveTypeAnnotation',
+        type: 'NativeComponentCustomTypeAnnotation',
         name: 'ImageSourcePrimitive',
       };
     case 'ColorValue':
     case 'ProcessedColorValue':
       return {
-        type: 'NativePrimitiveTypeAnnotation',
+        type: 'NativeComponentCustomTypeAnnotation',
         name: 'ColorPrimitive',
       };
     case 'PointValue':
       return {
-        type: 'NativePrimitiveTypeAnnotation',
+        type: 'NativeComponentCustomTypeAnnotation',
         name: 'PointPrimitive',
       };
     case 'EdgeInsetsValue':
       return {
-        type: 'NativePrimitiveTypeAnnotation',
+        type: 'NativeComponentCustomTypeAnnotation',
         name: 'EdgeInsetsPrimitive',
       };
     case 'Stringish':
@@ -214,31 +214,31 @@ function getTypeAnnotation(
   switch (type) {
     case 'ImageSource':
       return {
-        type: 'NativePrimitiveTypeAnnotation',
+        type: 'NativeComponentCustomTypeAnnotation',
         name: 'ImageSourcePrimitive',
       };
     case 'ColorValue':
     case 'ProcessedColorValue':
       return {
-        type: 'NativePrimitiveTypeAnnotation',
+        type: 'NativeComponentCustomTypeAnnotation',
         name: 'ColorPrimitive',
       };
     case 'ColorArrayValue':
       return {
         type: 'ArrayTypeAnnotation',
         elementType: {
-          type: 'NativePrimitiveTypeAnnotation',
+          type: 'NativeComponentCustomTypeAnnotation',
           name: 'ColorPrimitive',
         },
       };
     case 'PointValue':
       return {
-        type: 'NativePrimitiveTypeAnnotation',
+        type: 'NativeComponentCustomTypeAnnotation',
         name: 'PointPrimitive',
       };
     case 'EdgeInsetsValue':
       return {
-        type: 'NativePrimitiveTypeAnnotation',
+        type: 'NativeComponentCustomTypeAnnotation',
         name: 'EdgeInsetsPrimitive',
       };
     case 'Int32':

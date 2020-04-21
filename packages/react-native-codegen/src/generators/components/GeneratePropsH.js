@@ -221,7 +221,7 @@ function getNativeTypeFromAnnotation(
     case 'DoubleTypeAnnotation':
     case 'FloatTypeAnnotation':
       return getCppTypeForAnnotation(typeAnnotation.type);
-    case 'NativePrimitiveTypeAnnotation':
+    case 'NativeComponentCustomTypeAnnotation':
       switch (typeAnnotation.name) {
         case 'ColorPrimitive':
           return 'SharedColor';
@@ -233,7 +233,7 @@ function getNativeTypeFromAnnotation(
           return 'EdgeInsets';
         default:
           (typeAnnotation.name: empty);
-          throw new Error('Received unknown NativePrimitiveTypeAnnotation');
+          throw new Error('Received unknown NativeComponentCustomTypeAnnotation');
       }
     case 'ArrayTypeAnnotation': {
       const arrayType = typeAnnotation.elementType.type;
@@ -504,7 +504,7 @@ function getLocalImports(
       default:
         (name: empty);
         throw new Error(
-          `Invalid NativePrimitiveTypeAnnotation name, got ${name}`,
+          `Invalid NativeComponentCustomTypeAnnotation name, got ${name}`,
         );
     }
   }
@@ -512,7 +512,7 @@ function getLocalImports(
   properties.forEach(prop => {
     const typeAnnotation = prop.typeAnnotation;
 
-    if (typeAnnotation.type === 'NativePrimitiveTypeAnnotation') {
+    if (typeAnnotation.type === 'NativeComponentCustomTypeAnnotation') {
       addImportsForNativeName(typeAnnotation.name);
     }
 
@@ -525,7 +525,7 @@ function getLocalImports(
 
     if (
       typeAnnotation.type === 'ArrayTypeAnnotation' &&
-      typeAnnotation.elementType.type === 'NativePrimitiveTypeAnnotation'
+      typeAnnotation.elementType.type === 'NativeComponentCustomTypeAnnotation'
     ) {
       addImportsForNativeName(typeAnnotation.elementType.name);
     }
@@ -703,7 +703,7 @@ function generateStruct(
         return;
       case 'FloatTypeAnnotation':
         return;
-      case 'NativePrimitiveTypeAnnotation':
+      case 'NativeComponentCustomTypeAnnotation':
         return;
       case 'ArrayTypeAnnotation':
         return;
