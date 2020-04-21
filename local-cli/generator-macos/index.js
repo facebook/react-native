@@ -134,8 +134,11 @@ function installDependencies(options) {
 
   // Patch package.json to have start:macos
   const projectPackageJsonPath = path.join(cwd, 'package.json');
+  /** @type {{ scripts?: {} }} */
   const projectPackageJson = JSON.parse(fs.readFileSync(projectPackageJsonPath, { encoding: 'UTF8' }));
-  projectPackageJson.scripts['start:macos'] = 'node node_modules/react-native-macos/local-cli/cli.js start --use-react-native-macos';
+  const scripts = projectPackageJson.scripts || {};
+  scripts['start:macos'] = 'node node_modules/react-native-macos/local-cli/cli.js start --use-react-native-macos';
+  projectPackageJson.scripts = scripts;
   fs.writeFileSync(projectPackageJsonPath, JSON.stringify(projectPackageJson, null, 2));
 
   // Install dependencies using correct package manager

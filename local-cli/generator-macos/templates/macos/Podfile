@@ -1,7 +1,7 @@
-# require_relative '../node_modules/@react-native-community/cli-platform-ios/native_modules'
+require_relative '../node_modules/@react-native-community/cli-platform-ios/native_modules'
 
 abstract_target 'Shared' do
-  # use_native_modules!
+  use_native_modules!
 
   pod 'React', :path => "../node_modules/react-native-macos/"
   pod 'React-Core', :path => "../node_modules/react-native-macos/React"
