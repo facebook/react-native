@@ -163,7 +163,9 @@ function convertDefaultTypeToString(
           return '';
         default:
           (typeAnnotation.name: empty);
-          throw new Error('Received unknown NativePrimitiveTypeAnnotation');
+          throw new Error(
+            `Unsupported type annotation: ${typeAnnotation.name}`,
+          );
       }
     case 'ArrayTypeAnnotation': {
       const elementType = typeAnnotation.elementType;
@@ -198,7 +200,7 @@ function convertDefaultTypeToString(
       )}`;
     default:
       (typeAnnotation: empty);
-      throw new Error('Received invalid typeAnnotation');
+      throw new Error(`Unsupported type annotation: ${typeAnnotation.type}`);
   }
 }
 
