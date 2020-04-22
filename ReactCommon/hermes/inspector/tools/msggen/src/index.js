@@ -26,7 +26,6 @@ import {ImplementationWriter} from './ImplementationWriter';
 // $FlowFixMe: this isn't a module, just a JSON file.
 const standard = require('devtools-protocol/json/js_protocol.json');
 
-// $FlowFixMe: this isn't a module, also just a JSON file.
 const custom = require('../src/custom.json');
 
 type Descriptor = {|
