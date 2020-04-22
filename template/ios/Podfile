@@ -22,12 +22,3 @@ target 'HelloWorld' do
     flipper_post_install(installer)
   end
 end
-
-target 'HelloWorld-tvOS' do
-  # Pods for HelloWorld-tvOS
-
-  target 'HelloWorld-tvOSTests' do
-    inherit! :search_paths
-    # Pods for testing
-  end
-end
