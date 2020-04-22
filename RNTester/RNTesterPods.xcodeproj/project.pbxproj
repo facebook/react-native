@@ -796,6 +796,10 @@
 					"$(TOOLCHAIN_DIR)/usr/lib/swift/$(PLATFORM_NAME)",
 				);
 				"LIBRARY_SEARCH_PATHS[arch=*]" = "$(inherited)";
+				OTHER_CFLAGS = (
+					"$(inherited)",
+					"-DFB_SONARKIT_ENABLED=1",
+				);
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
@@ -803,6 +807,7 @@
 					"-framework",
 					"\"JavaScriptCore\"",
 				);
+				OTHER_SWIFT_FLAGS = "$(inherited) -Xcc -DFB_SONARKIT_ENABLED";
 				PRODUCT_BUNDLE_IDENTIFIER = com.facebook.react.uiapp;
 				PRODUCT_NAME = RNTester;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -857,6 +862,10 @@
 					"$(TOOLCHAIN_DIR)/usr/lib/swift-5.0/$(PLATFORM_NAME)",
 					"$(TOOLCHAIN_DIR)/usr/lib/swift/$(PLATFORM_NAME)",
 				);
+				OTHER_CFLAGS = (
+					"$(inherited)",
+					"-DFB_SONARKIT_ENABLED=1",
+				);
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
@@ -864,6 +873,7 @@
 					"-framework",
 					"\"JavaScriptCore\"",
 				);
+				OTHER_SWIFT_FLAGS = "$(inherited) -Xcc -DFB_SONARKIT_ENABLED";
 				PRODUCT_BUNDLE_IDENTIFIER = com.facebook.react.uiapp;
 				PRODUCT_NAME = RNTester;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -1056,6 +1066,7 @@
 					"$(inherited)",
 					"-DFB_SONARKIT_ENABLED=1",
 				);
+				OTHER_SWIFT_FLAGS = "$(inherited) -Xcc -DFB_SONARKIT_ENABLED";
 				PRODUCT_BUNDLE_IDENTIFIER = com.facebook.RNTesterUnitTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -1091,6 +1102,7 @@
 					"$(inherited)",
 					"-DFB_SONARKIT_ENABLED=1",
 				);
+				OTHER_SWIFT_FLAGS = "$(inherited) -Xcc -DFB_SONARKIT_ENABLED";
 				PRODUCT_BUNDLE_IDENTIFIER = com.facebook.RNTesterUnitTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -1127,6 +1139,7 @@
 					"$(inherited)",
 					"-DFB_SONARKIT_ENABLED=1",
 				);
+				OTHER_SWIFT_FLAGS = "$(inherited) -Xcc -DFB_SONARKIT_ENABLED";
 				PRODUCT_BUNDLE_IDENTIFIER = com.facebook.RNTesterIntegrationTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -1160,6 +1173,7 @@
 					"$(inherited)",
 					"-DFB_SONARKIT_ENABLED=1",
 				);
+				OTHER_SWIFT_FLAGS = "$(inherited) -Xcc -DFB_SONARKIT_ENABLED";
 				PRODUCT_BUNDLE_IDENTIFIER = com.facebook.RNTesterIntegrationTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TARGETED_DEVICE_FAMILY = "1,2";
