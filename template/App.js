@@ -26,7 +26,7 @@ import {
   ReloadInstructions,
 } from 'react-native/Libraries/NewAppScreen';
 
-const Section = ({title, children}): Node => {
+const Section = ({children, title}): Node => {
   const isDarkMode = useColorScheme() === 'dark';
   return (
     <View style={styles.sectionContainer}>
@@ -55,7 +55,7 @@ const Section = ({title, children}): Node => {
 const App: () => Node = () => {
   const isDarkMode = useColorScheme() === 'dark';
 
-  const backgroundStyles = {
+  const backgroundStyle = {
     backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
   };
 
@@ -74,11 +74,11 @@ const App: () => Node = () => {
   ) : null;
 
   return (
-    <SafeAreaView style={backgroundStyles}>
+    <SafeAreaView style={backgroundStyle}>
       <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
       <ScrollView
         contentInsetAdjustmentBehavior="automatic"
-        style={backgroundStyles}>
+        style={backgroundStyle}>
         <Header />
         {hermes}
         <View
