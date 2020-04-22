@@ -34,3 +34,5 @@ export interface DEPRECATED_RCTExport<T: void = void> {
 }
 
 export interface TurboModule extends DEPRECATED_RCTExport<void> {}
+
+export type {RootTag} from '../ReactNative/RootTag.js';
