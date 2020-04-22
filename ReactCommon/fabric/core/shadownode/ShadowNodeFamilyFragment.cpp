@@ -21,5 +21,16 @@ ShadowNodeFamilyFragment ShadowNodeFamilyFragment::build(
   };
 }
 
+using Value = ShadowNodeFamilyFragment::Value;
+
+Value::Value(ShadowNodeFamilyFragment const &fragment)
+    : tag_(fragment.tag),
+      surfaceId_(fragment.surfaceId),
+      eventEmitter_(fragment.eventEmitter) {}
+
+Value::operator ShadowNodeFamilyFragment() const {
+  return ShadowNodeFamilyFragment{tag_, surfaceId_, eventEmitter_};
+}
+
 } // namespace react
 } // namespace facebook
