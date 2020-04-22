@@ -95,7 +95,7 @@ import typeof Platform from './Libraries/Utilities/Platform';
 import typeof processColor from './Libraries/StyleSheet/processColor';
 import typeof {PlatformColor} from './Libraries/StyleSheet/PlatformColorValueTypes';
 import typeof {DynamicColorIOS} from './Libraries/StyleSheet/PlatformColorValueTypesIOS';
-import typeof RootTagContext from './Libraries/ReactNative/RootTagContext';
+import typeof {RootTagContext} from './Libraries/ReactNative/RootTag';
 import typeof DeprecatedColorPropType from './Libraries/DeprecatedPropTypes/DeprecatedColorPropType';
 import typeof DeprecatedEdgeInsetsPropType from './Libraries/DeprecatedPropTypes/DeprecatedEdgeInsetsPropType';
 import typeof DeprecatedPointPropType from './Libraries/DeprecatedPropTypes/DeprecatedPointPropType';
@@ -468,7 +468,7 @@ module.exports = {
     return require('./Libraries/ReactNative/requireNativeComponent');
   },
   get unstable_RootTagContext(): RootTagContext {
-    return require('./Libraries/ReactNative/RootTagContext');
+    return require('./Libraries/ReactNative/RootTag').RootTagContext;
   },
   get unstable_enableLogBox(): () => void {
     return () =>
