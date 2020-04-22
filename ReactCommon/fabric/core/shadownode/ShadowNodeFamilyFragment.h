@@ -13,6 +13,8 @@
 namespace facebook {
 namespace react {
 
+class ShadowNodeFamily;
+
 /*
  * Note: All of the fields are `const &` references (essentially just raw
  * pointers) which means that the Fragment does not copy/store them nor
@@ -20,6 +22,8 @@ namespace react {
  */
 class ShadowNodeFamilyFragment final {
  public:
+  static ShadowNodeFamilyFragment build(ShadowNodeFamily const &family);
+
   Tag const tag;
   SurfaceId const surfaceId;
   EventEmitter::Shared const &eventEmitter;

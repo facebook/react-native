@@ -87,6 +87,7 @@ class ShadowNodeFamily {
 
  private:
   friend ShadowNode;
+  friend ShadowNodeFamilyFragment;
 
   EventDispatcher::Weak eventDispatcher_;
   mutable std::shared_ptr<State const> mostRecentState_;

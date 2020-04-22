@@ -133,7 +133,7 @@ class ConcreteComponentDescriptor : public ComponentDescriptor {
     return std::make_shared<ConcreteState>(
         std::make_shared<ConcreteStateData const>(
             ConcreteShadowNode::initialStateData(
-                fragment, family->getSurfaceId(), *this)),
+                fragment, ShadowNodeFamilyFragment::build(*family), *this)),
         family);
   }
 
