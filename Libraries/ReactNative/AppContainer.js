@@ -10,15 +10,13 @@
 
 'use strict';
 
+import * as React from 'react';
 const EmitterSubscription = require('../vendor/emitter/EmitterSubscription');
-const PropTypes = require('prop-types');
 const RCTDeviceEventEmitter = require('../EventEmitter/RCTDeviceEventEmitter');
-const React = require('react');
+const PropTypes = require('prop-types');
 const RootTagContext = require('./RootTagContext');
 const StyleSheet = require('../StyleSheet/StyleSheet');
 const View = require('../Components/View/View');
-
-type Context = {rootTag: number, ...};
 
 type Props = $ReadOnly<{|
   children?: React.Node,
@@ -35,6 +33,10 @@ type State = {|
   hasError: boolean,
 |};
 
+type ContextType = $ReadOnly<{|rootTag: number|}>;
+
+const AppContainerContext = React.createContext<ContextType>({rootTag: 0});
+
 class AppContainer extends React.Component<Props, State> {
   state: State = {
     inspector: null,
@@ -46,17 +48,27 @@ class AppContainer extends React.Component<Props, State> {
 
   static getDerivedStateFromError: any = undefined;
 
-  static childContextTypes:
-    | any
-    | {|rootTag: React$PropType$Primitive<number>|} = {
-    rootTag: PropTypes.number,
-  };
+  static Context: React.Context<ContextType> = AppContainerContext;
 
-  getChildContext(): Context {
-    return {
-      rootTag: this.props.rootTag,
-    };
-  }
+  static childContextTypes:
+     | any		
+     | {|rootTag: React$PropType$Primitive<number>|} = {		
+     rootTag: PropTypes.number,		
+   };		
+
+    getChildContext(): ContextType {
+      const that = this;
+
+      return {		
+       get rootTag() {
+         console.warn(
+          'AppContainer has been migrated to the new Context API. ' +
+          'It is recommended to use AppContainer.Context.Consumer to consume the rootTag.'
+         );
+         return that.props.rootTag;
+       } 
+     };		
+   }
 
   componentDidMount(): void {
     if (__DEV__) {
@@ -111,7 +123,9 @@ class AppContainer extends React.Component<Props, State> {
         ref={ref => {
           this._mainRef = ref;
         }}>
-        {this.props.children}
+        <AppContainer.Context.Provider value={{rootTag: this.props.rootTag}}>
+          {this.props.children}
+        </AppContainer.Context.Provider>
       </View>
     );
 

@@ -146,10 +146,6 @@ class Modal extends React.Component<Props> {
     hardwareAccelerated: false,
   };
 
-  static contextTypes: any | {|rootTag: React$PropType$Primitive<number>|} = {
-    rootTag: PropTypes.number,
-  };
-
   _identifier: number;
   _eventSubscription: ?EmitterSubscription;
 
@@ -215,9 +211,13 @@ class Modal extends React.Component<Props> {
     }
 
     const innerChildren = __DEV__ ? (
-      <AppContainer rootTag={this.context.rootTag}>
-        {this.props.children}
-      </AppContainer>
+      <AppContainer.Context.Consumer>
+        {context => 
+          <AppContainer rootTag={context.rootTag}>
+            {this.props.children}
+          </AppContainer>
+        }
+      </AppContainer.Context.Consumer>
     ) : (
       this.props.children
     );
