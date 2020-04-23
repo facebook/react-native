@@ -78,13 +78,13 @@ function getImports(properties: $ReadOnlyArray<PropTypeShape>): Set<string> {
   properties.forEach(prop => {
     const typeAnnotation = prop.typeAnnotation;
 
-    if (typeAnnotation.type === 'NativePrimitiveTypeAnnotation') {
+    if (typeAnnotation.type === 'ReservedPropTypeAnnotation') {
       addImportsForNativeName(typeAnnotation.name);
     }
 
     if (
       typeAnnotation.type === 'ArrayTypeAnnotation' &&
-      typeAnnotation.elementType.type === 'NativePrimitiveTypeAnnotation'
+      typeAnnotation.elementType.type === 'ReservedPropTypeAnnotation'
     ) {
       addImportsForNativeName(typeAnnotation.elementType.name);
     }
@@ -151,7 +151,7 @@ function convertDefaultTypeToString(
       return parseInt(defaultFloatVal, 10) === defaultFloatVal
         ? defaultFloatVal.toFixed(1)
         : String(typeAnnotation.default);
-    case 'NativePrimitiveTypeAnnotation':
+    case 'ReservedPropTypeAnnotation':
       switch (typeAnnotation.name) {
         case 'ColorPrimitive':
           return '';

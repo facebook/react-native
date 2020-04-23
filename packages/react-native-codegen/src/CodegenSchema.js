@@ -124,7 +124,7 @@ type PropTypeTypeAnnotation =
       |}>,
     |}>
   | $ReadOnly<{|
-      type: 'NativePrimitiveTypeAnnotation',
+      type: 'ReservedPropTypeAnnotation',
       name:
         | 'ColorPrimitive'
         | 'ImageSourcePrimitive'
@@ -165,7 +165,7 @@ type PropTypeTypeAnnotation =
             properties: $ReadOnlyArray<PropTypeShape>,
           |}>
         | $ReadOnly<{|
-            type: 'NativePrimitiveTypeAnnotation',
+            type: 'ReservedPropTypeAnnotation',
             name:
               | 'ColorPrimitive'
               | 'ImageSourcePrimitive'

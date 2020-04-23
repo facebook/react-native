@@ -97,7 +97,7 @@ function getJavaValueForProp(
       } else {
         return 'value == null ? Float.NaN : ((Double) value).floatValue()';
       }
-    case 'NativePrimitiveTypeAnnotation':
+    case 'ReservedPropTypeAnnotation':
       switch (typeAnnotation.name) {
         case 'ColorPrimitive':
           return 'ColorPropConverter.getColor(value, view.getContext())';
@@ -109,7 +109,7 @@ function getJavaValueForProp(
           return '(ReadableMap) value';
         default:
           (typeAnnotation.name: empty);
-          throw new Error('Received unknown NativePrimitiveTypeAnnotation');
+          throw new Error('Received unknown ReservedPropTypeAnnotation');
       }
     case 'ArrayTypeAnnotation': {
       return '(ReadableArray) value';
