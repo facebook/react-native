@@ -1012,13 +1012,15 @@ Object {
                     "name": "rootTag",
                     "nullable": false,
                     "typeAnnotation": Object {
-                      "type": "GenericObjectTypeAnnotation",
+                      "name": "RootTag",
+                      "type": "ReservedFunctionValueTypeAnnotation",
                     },
                   },
                 ],
                 "returnTypeAnnotation": Object {
+                  "name": "RootTag",
                   "nullable": false,
-                  "type": "GenericObjectTypeAnnotation",
+                  "type": "ReservedFunctionValueTypeAnnotation",
                 },
                 "type": "FunctionTypeAnnotation",
               },

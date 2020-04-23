@@ -93,20 +93,30 @@ const constants = `- (facebook::react::ModuleConstants<JS::Native::_MODULE_NAME_
 
 function translatePrimitiveJSTypeToObjCType(
   param: FunctionTypeAnnotationParam,
-  error: string,
+  createErrorMessage: (typeName: string) => string,
 ) {
+  const {nullable, typeAnnotation} = param;
+
   function wrapIntoNullableIfNeeded(generatedType: string) {
-    return param.nullable ? `${generatedType} _Nullable` : generatedType;
+    return nullable ? `${generatedType} _Nullable` : generatedType;
   }
-  switch (param.typeAnnotation.type) {
+  switch (typeAnnotation.type) {
+    case 'ReservedFunctionValueTypeAnnotation':
+      switch (typeAnnotation.name) {
+        case 'RootTag':
+          return nullable ? 'NSNumber *' : 'double';
+        default:
+          (typeAnnotation.name: empty);
+          throw new Error(createErrorMessage(typeAnnotation.name));
+      }
     case 'StringTypeAnnotation':
       return wrapIntoNullableIfNeeded('NSString *');
     case 'NumberTypeAnnotation':
     case 'FloatTypeAnnotation':
     case 'Int32TypeAnnotation':
-      return param.nullable ? 'NSNumber *' : 'double';
+      return nullable ? 'NSNumber *' : 'double';
     case 'BooleanTypeAnnotation':
-      return param.nullable ? 'NSNumber * _Nullable' : 'BOOL';
+      return nullable ? 'NSNumber * _Nullable' : 'BOOL';
     case 'GenericObjectTypeAnnotation':
       return wrapIntoNullableIfNeeded('NSDictionary *');
     case 'ArrayTypeAnnotation':
@@ -116,18 +126,30 @@ function translatePrimitiveJSTypeToObjCType(
     case 'ObjectTypeAnnotation':
       return wrapIntoNullableIfNeeded('NSDictionary *');
     default:
-      throw new Error(error);
+      // TODO (T65847278): Figure out why this does not work.
+      // (typeAnnotation.type: empty);
+      throw new Error(createErrorMessage(typeAnnotation.type));
   }
 }
 
 function translatePrimitiveJSTypeToObjCTypeForReturn(
-  type: FunctionTypeAnnotationReturn,
-  error: string,
+  typeAnnotation: FunctionTypeAnnotationReturn,
+  createErrorMessage: (typeName: string) => string,
 ) {
   function wrapIntoNullableIfNeeded(generatedType: string) {
-    return type.nullable ? `${generatedType} _Nullable` : generatedType;
+    return typeAnnotation.nullable
+      ? `${generatedType} _Nullable`
+      : generatedType;
   }
-  switch (type.type) {
+  switch (typeAnnotation.type) {
+    case 'ReservedFunctionValueTypeAnnotation':
+      switch (typeAnnotation.name) {
+        case 'RootTag':
+          return wrapIntoNullableIfNeeded('NSNumber *');
+        default:
+          (typeAnnotation.name: empty);
+          throw new Error(createErrorMessage(typeAnnotation.name));
+      }
     case 'VoidTypeAnnotation':
     case 'GenericPromiseTypeAnnotation':
       return 'void';
@@ -138,7 +160,7 @@ function translatePrimitiveJSTypeToObjCTypeForReturn(
     case 'Int32TypeAnnotation':
       return wrapIntoNullableIfNeeded('NSNumber *');
     case 'BooleanTypeAnnotation':
-      return type.nullable ? 'NSNumber * _Nullable' : 'BOOL';
+      return typeAnnotation.nullable ? 'NSNumber * _Nullable' : 'BOOL';
     case 'GenericObjectTypeAnnotation':
       return wrapIntoNullableIfNeeded('NSDictionary *');
     case 'ArrayTypeAnnotation':
@@ -146,9 +168,12 @@ function translatePrimitiveJSTypeToObjCTypeForReturn(
     case 'ObjectTypeAnnotation':
       return wrapIntoNullableIfNeeded('NSDictionary *');
     default:
-      throw new Error(error);
+      // TODO (T65847278): Figure out why this does not work.
+      // (typeAnnotation.type: empty);
+      throw new Error(createErrorMessage(typeAnnotation.type));
   }
 }
+
 const methodImplementationTemplate =
   '- (::_RETURN_VALUE_::) ::_PROPERTY_NAME_::::_ARGS_::;';
 
@@ -201,7 +226,8 @@ module.exports = {
                 } else {
                   paramObjCType = translatePrimitiveJSTypeToObjCType(
                     param,
-                    `Unspopported type for param "${param.name}" in ${prop.name}. Found: ${param.typeAnnotation.type}`,
+                    typeName =>
+                      `Unsupported type for param "${param.name}" in ${prop.name}. Found: ${typeName}`,
                   );
                 }
                 return `${i === 0 ? '' : param.name}:(${paramObjCType})${
@@ -230,7 +256,8 @@ module.exports = {
                 '::_RETURN_VALUE_::',
                 translatePrimitiveJSTypeToObjCTypeForReturn(
                   returnTypeAnnotation,
-                  `Unspopported return type for ${prop.name}. Found: ${prop.typeAnnotation.returnTypeAnnotation.type}`,
+                  typeName =>
+                    `Unsupported return type for ${prop.name}. Found: ${typeName}`,
                 ),
               )
               .replace('::_ARGS_::', nativeArgs);

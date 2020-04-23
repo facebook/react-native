@@ -67,6 +67,11 @@ function getElementTypeForArrayOrObject(
       : typeAnnotation.type;
 
   switch (type) {
+    case 'RootTag':
+      return {
+        type: 'ReservedFunctionValueTypeAnnotation',
+        name: 'RootTag',
+      };
     case 'Array':
     case '$ReadOnlyArray':
       if (
@@ -168,6 +173,15 @@ function getTypeAnnotationForParam(
       : typeAnnotation.type;
 
   switch (type) {
+    case 'RootTag':
+      return {
+        name: paramName,
+        nullable,
+        typeAnnotation: {
+          type: 'ReservedFunctionValueTypeAnnotation',
+          name: 'RootTag',
+        },
+      };
     case 'Array':
     case '$ReadOnlyArray':
       if (
@@ -300,6 +314,12 @@ function getReturnTypeAnnotation(
       : typeAnnotation.type;
 
   switch (type) {
+    case 'RootTag':
+      return {
+        nullable,
+        type: 'ReservedFunctionValueTypeAnnotation',
+        name: 'RootTag',
+      };
     case 'Promise':
       if (
         typeAnnotation.typeParameters &&

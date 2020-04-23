@@ -63,6 +63,14 @@ function getBuilderInputFieldDeclaration(
   }
   const {typeAnnotation} = property;
   switch (typeAnnotation.type) {
+    case 'ReservedFunctionValueTypeAnnotation':
+      switch (typeAnnotation.name) {
+        case 'RootTag':
+          return markRequiredIfNecessary('double');
+        default:
+          (typeAnnotation.name: empty);
+          throw new Error(`Unknown prop type, found: ${typeAnnotation.name}"`);
+      }
     case 'StringTypeAnnotation':
       if (property.optional) {
         return 'NSString *' + property.name + ';';
@@ -146,6 +154,14 @@ function unsafeGetter(name: string, optional: boolean) {
 function getObjectProperty(property: ObjectParamTypeAnnotation): string {
   const {typeAnnotation} = property;
   switch (typeAnnotation.type) {
+    case 'ReservedFunctionValueTypeAnnotation':
+      switch (typeAnnotation.name) {
+        case 'RootTag':
+          return numberGetter(property.name, property.optional);
+        default:
+          (typeAnnotation.name: empty);
+          throw new Error(`Unknown prop type, found: ${typeAnnotation.name}"`);
+      }
     case 'NumberTypeAnnotation':
     case 'FloatTypeAnnotation':
     case 'Int32TypeAnnotation':

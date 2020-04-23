@@ -200,12 +200,18 @@ export type PrimitiveTypeAnnotation = $ReadOnly<{|
   type: PrimitiveTypeAnnotationType,
 |}>;
 
+export type ReservedFunctionValueTypeName = 'RootTag'; // Union with more custom types.
+
 export type FunctionTypeAnnotationParamTypeAnnotation =
   | $ReadOnly<{|
       type:
         | 'AnyTypeAnnotation'
         | 'FunctionTypeAnnotation'
         | PrimitiveTypeAnnotationType,
+    |}>
+  | $ReadOnly<{|
+      type: 'ReservedFunctionValueTypeAnnotation',
+      name: ReservedFunctionValueTypeName,
     |}>
   | $ReadOnly<{|
       type: 'ArrayTypeAnnotation',
@@ -228,9 +234,14 @@ export type FunctionTypeAnnotationReturn =
   | $ReadOnly<{|
       nullable: boolean,
       type:
-        | PrimitiveTypeAnnotationType
+        | 'GenericPromiseTypeAnnotation'
         | 'VoidTypeAnnotation'
-        | 'GenericPromiseTypeAnnotation',
+        | PrimitiveTypeAnnotationType,
+    |}>
+  | $ReadOnly<{|
+      nullable: boolean,
+      type: 'ReservedFunctionValueTypeAnnotation',
+      name: ReservedFunctionValueTypeName,
     |}>
   | $ReadOnly<{|
       nullable: boolean,

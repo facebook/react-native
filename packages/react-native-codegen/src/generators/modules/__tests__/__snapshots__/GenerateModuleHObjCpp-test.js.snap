@@ -298,6 +298,7 @@ inline JS::NativeSampleTurboModule::Constants::Builder::Builder(Constants i) : _
 - (NSString *) getString:(NSString *)arg;
 - (NSArray<id<NSObject>> *) getArray:(NSArray *)arg;
 - (NSDictionary *) getObject:(NSDictionary *)arg;
+- (NSNumber *) getRootTag:(double)arg;
 - (NSDictionary *) getValue:(double)x
    y:(NSString *)y
    z:(NSDictionary *)z;

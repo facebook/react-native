@@ -71,8 +71,18 @@ namespace react {
 } // namespace facebook
 `;
 
-function translateReturnTypeToKind(type): string {
-  switch (type) {
+function translateReturnTypeToKind(typeAnnotation): string {
+  switch (typeAnnotation.type) {
+    case 'ReservedFunctionValueTypeAnnotation':
+      switch (typeAnnotation.name) {
+        case 'RootTag':
+          return 'NumberKind';
+        default:
+          (typeAnnotation.name: empty);
+          throw new Error(
+            `Invalid ReservedFunctionValueTypeName name, got ${typeAnnotation.name}`,
+          );
+      }
     case 'VoidTypeAnnotation':
       return 'VoidKind';
     case 'StringTypeAnnotation':
@@ -92,23 +102,24 @@ function translateReturnTypeToKind(type): string {
     case 'ArrayTypeAnnotation':
       return 'ArrayKind';
     default:
-      (type: empty);
-      throw new Error(`Unknown prop type for returning value, found: ${type}"`);
+      // TODO (T65847278): Figure out why this does not work.
+      // (typeAnnotation.type: empty);
+      throw new Error(
+        `Unknown prop type for returning value, found: ${typeAnnotation.type}"`,
+      );
   }
 }
 
-function tranlsateMethodForImplementation(property): string {
+function translateMethodForImplementation(property): string {
+  const {returnTypeAnnotation} = property.typeAnnotation;
+
   const numberOfParams =
     property.typeAnnotation.params.length +
-    (property.typeAnnotation.returnTypeAnnotation.type ===
-    'GenericPromiseTypeAnnotation'
-      ? 2
-      : 0);
+    (returnTypeAnnotation.type === 'GenericPromiseTypeAnnotation' ? 2 : 0);
   const translatedArguments = property.typeAnnotation.params
     .map(param => param.name)
     .concat(
-      property.typeAnnotation.returnTypeAnnotation.type ===
-        'GenericPromiseTypeAnnotation'
+      returnTypeAnnotation.type === 'GenericPromiseTypeAnnotation'
         ? ['resolve', 'reject']
         : [],
     )
@@ -117,20 +128,14 @@ function tranlsateMethodForImplementation(property): string {
     .concat(':');
   if (
     property.name === 'getConstants' &&
-    property.typeAnnotation.returnTypeAnnotation.type ===
-      'ObjectTypeAnnotation' &&
-    property.typeAnnotation.returnTypeAnnotation.properties &&
-    property.typeAnnotation.returnTypeAnnotation.properties.length === 0
+    returnTypeAnnotation.type === 'ObjectTypeAnnotation' &&
+    returnTypeAnnotation.properties &&
+    returnTypeAnnotation.properties.length === 0
   ) {
     return '';
   }
   return propertyTemplate
-    .replace(
-      /::_KIND_::/g,
-      translateReturnTypeToKind(
-        property.typeAnnotation.returnTypeAnnotation.type,
-      ),
-    )
+    .replace(/::_KIND_::/g, translateReturnTypeToKind(returnTypeAnnotation))
     .replace(/::_PROPERTY_NAME_::/g, property.name)
     .replace(
       /::_ARGS_::/g,
@@ -220,7 +225,7 @@ module.exports = {
       .map(name => {
         const {properties} = nativeModules[name];
         const translatedMethods = properties
-          .map(property => tranlsateMethodForImplementation(property))
+          .map(property => translateMethodForImplementation(property))
           .join('\n');
         return moduleTemplate
           .replace(/::_TURBOMODULE_METHOD_INVOKERS_::/g, translatedMethods)
