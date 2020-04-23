@@ -7,6 +7,7 @@ const path = require('path');
 const childProcess = require('child_process');
 const fs = require('fs');
 const {
+  appendToExistingFile,
   createDir,
   copyAndReplaceAll,
   copyAndReplaceWithChangedCallback,
@@ -60,6 +61,9 @@ function copyProjectTemplateAndReplace(
 
   [
     { from: path.join(srcRootPath, 'react-native.config.js'), to: 'react-native.config.js' },
+  ].forEach((mapping) => appendToExistingFile(mapping.from, mapping.to, templateVars));
+
+  [
     { from: path.join(srcRootPath, 'metro.config.macos.js'), to: 'metro.config.macos.js' },
   ].forEach((mapping) => copyAndReplaceWithChangedCallback(mapping.from, destPath, mapping.to, templateVars, options.overwrite));
 
