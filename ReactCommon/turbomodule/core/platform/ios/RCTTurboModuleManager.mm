@@ -409,7 +409,8 @@ static Class getFallbackClassFromName(const char *name)
  *
  * This method can be called synchronously from two different contexts:
  *  - The thread that calls provideRCTTurboModule:
- *  - The main thread (if the TurboModule requires main queue init), blocking the thread that calls provideRCTTurboModule:.
+ *  - The main thread (if the TurboModule requires main queue init), blocking the thread that calls
+ * provideRCTTurboModule:.
  */
 - (id<RCTTurboModule>)_createAndSetUpRCTTurboModule:(Class)moduleClass moduleName:(const char *)moduleName
 {
@@ -611,8 +612,8 @@ static Class getFallbackClassFromName(const char *name)
   });
 
   /**
-   * If a module overrides `init` then we must assume that it expects to be initialized on the main thread, because it may
-   * need to access UIKit.
+   * If a module overrides `init` then we must assume that it expects to be initialized on the main thread, because it
+   * may need to access UIKit.
    */
   const BOOL hasCustomInit = [moduleClass instanceMethodForSelector:@selector(init)] != objectInitMethod;
 
