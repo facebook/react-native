@@ -21,11 +21,17 @@ export type CommandsFunctionTypeParamAnnotation = $ReadOnly<{|
 |}>;
 
 export type CommandsTypeAnnotation =
+  | ReservedFunctionValueTypeAnnotation
   | BooleanTypeAnnotation
   | Int32TypeAnnotation
   | DoubleTypeAnnotation
   | FloatTypeAnnotation
   | StringTypeAnnotation;
+
+type ReservedFunctionValueTypeAnnotation = $ReadOnly<{|
+  type: 'ReservedFunctionValueTypeAnnotation',
+  name: ReservedFunctionValueTypeName,
+|}>;
 
 export type DoubleTypeAnnotation = $ReadOnly<{|
   type: 'DoubleTypeAnnotation',

@@ -1476,6 +1476,22 @@ const COMMANDS_AND_PROPS: SchemaType = {
           ],
           commands: [
             {
+              name: 'handleRootTag',
+              optional: false,
+              typeAnnotation: {
+                type: 'FunctionTypeAnnotation',
+                params: [
+                  {
+                    name: 'rootTag',
+                    typeAnnotation: {
+                      type: 'ReservedFunctionValueTypeAnnotation',
+                      name: 'RootTag',
+                    },
+                  },
+                ],
+              },
+            },
+            {
               name: 'hotspotUpdate',
               optional: false,
               typeAnnotation: {

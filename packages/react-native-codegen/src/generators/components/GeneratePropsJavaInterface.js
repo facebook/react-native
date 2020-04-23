@@ -125,7 +125,17 @@ function generatePropsString(component: ComponentShape, imports) {
 }
 
 function getCommandArgJavaType(param) {
-  switch (param.typeAnnotation.type) {
+  const {typeAnnotation} = param;
+
+  switch (typeAnnotation.type) {
+    case 'ReservedFunctionValueTypeAnnotation':
+      switch (typeAnnotation.name) {
+        case 'RootTag':
+          return 'double';
+        default:
+          (typeAnnotation.name: empty);
+          throw new Error(`Receieved invalid type: ${typeAnnotation.name}`);
+      }
     case 'BooleanTypeAnnotation':
       return 'boolean';
     case 'DoubleTypeAnnotation':
@@ -137,7 +147,7 @@ function getCommandArgJavaType(param) {
     case 'StringTypeAnnotation':
       return 'String';
     default:
-      (param.typeAnnotation.type: empty);
+      (typeAnnotation.type: empty);
       throw new Error('Receieved invalid typeAnnotation');
   }
 }

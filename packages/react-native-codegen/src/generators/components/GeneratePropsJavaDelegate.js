@@ -153,7 +153,17 @@ function generatePropCasesString(
 }
 
 function getCommandArgJavaType(param, index) {
-  switch (param.typeAnnotation.type) {
+  const {typeAnnotation} = param;
+
+  switch (typeAnnotation.type) {
+    case 'ReservedFunctionValueTypeAnnotation':
+      switch (typeAnnotation.name) {
+        case 'RootTag':
+          return `args.getDouble(${index})`;
+        default:
+          (typeAnnotation.name: empty);
+          throw new Error(`Receieved invalid type: ${typeAnnotation.name}`);
+      }
     case 'BooleanTypeAnnotation':
       return `args.getBoolean(${index})`;
     case 'DoubleTypeAnnotation':
@@ -165,8 +175,8 @@ function getCommandArgJavaType(param, index) {
     case 'StringTypeAnnotation':
       return `args.getString(${index})`;
     default:
-      (param.typeAnnotation.type: empty);
-      throw new Error('Receieved invalid typeAnnotation');
+      (typeAnnotation.type: empty);
+      throw new Error(`Receieved invalid type: ${typeAnnotation.type}`);
   }
 }
 

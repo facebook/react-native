@@ -2337,6 +2337,22 @@ Object {
         "Module": Object {
           "commands": Array [
             Object {
+              "name": "handleRootTag",
+              "optional": false,
+              "typeAnnotation": Object {
+                "params": Array [
+                  Object {
+                    "name": "rootTag",
+                    "typeAnnotation": Object {
+                      "name": "RootTag",
+                      "type": "ReservedFunctionValueTypeAnnotation",
+                    },
+                  },
+                ],
+                "type": "FunctionTypeAnnotation",
+              },
+            },
+            Object {
               "name": "hotspotUpdate",
               "optional": false,
               "typeAnnotation": Object {

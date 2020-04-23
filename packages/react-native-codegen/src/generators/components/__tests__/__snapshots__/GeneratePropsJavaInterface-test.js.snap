@@ -145,6 +145,7 @@ import androidx.annotation.Nullable;
 
 public interface CommandNativeComponentManagerInterface<T extends View> {
   void setAccessibilityHint(T view, @Nullable String value);
+  void handleRootTag(T view, double rootTag);
   void hotspotUpdate(T view, int x, int y);
 }
 ",
