@@ -58,6 +58,8 @@ YogaLayoutableShadowNode::YogaLayoutableShadowNode(
 
   updateYogaProps();
   updateYogaChildren();
+
+  ensureConsistency();
 }
 
 YogaLayoutableShadowNode::YogaLayoutableShadowNode(
@@ -84,6 +86,8 @@ YogaLayoutableShadowNode::YogaLayoutableShadowNode(
   if (fragment.children) {
     updateYogaChildren();
   }
+
+  ensureConsistency();
 }
 
 void YogaLayoutableShadowNode::cleanLayout() {
@@ -115,51 +119,108 @@ void YogaLayoutableShadowNode::enableMeasurement() {
       YogaLayoutableShadowNode::yogaNodeMeasureCallbackConnector);
 }
 
-void YogaLayoutableShadowNode::appendChild(ShadowNode::Shared const &child) {
+void YogaLayoutableShadowNode::appendYogaChild(ShadowNode const &childNode) {
+  // The caller must check this before calling this method.
+  assert(!getTraits().check(ShadowNodeTraits::Trait::LeafYogaNode));
+
+  ensureYogaChildrenLookFine();
+
+  auto &layoutableChildNode =
+      traitCast<YogaLayoutableShadowNode const &>(childNode);
+  yogaNode_.insertChild(
+      &layoutableChildNode.yogaNode_, yogaNode_.getChildren().size());
+
+  ensureYogaChildrenLookFine();
+}
+
+void YogaLayoutableShadowNode::adoptYogaChild(size_t index) {
   ensureUnsealed();
+  ensureYogaChildrenLookFine();
 
-  LayoutableShadowNode::appendChild(child);
+  // The caller must check this before calling this method.
+  assert(!getTraits().check(ShadowNodeTraits::Trait::LeafYogaNode));
 
-  auto yogaLayoutableChild =
-      traitCast<YogaLayoutableShadowNode const *>(child.get());
-  if (yogaLayoutableChild) {
-    appendChildYogaNode(*yogaLayoutableChild);
+  auto &children = getChildren();
+
+  // Overflow checks.
+  assert(children.size() > index);
+  assert(children.size() >= yogaNode_.getChildren().size());
+
+  auto &childNode = *children.at(index);
+
+  auto &layoutableChildNode =
+      traitCast<YogaLayoutableShadowNode const &>(childNode);
+
+  // Note, the following (commented out) assert is conceptually valid but still
+  // might produce false-positive signals because of the ABA problem (different
+  // objects with non-interleaving life-times being allocated on the same
+  // address). assert(layoutableChildNode.yogaNode_.getOwner() != &yogaNode_);
+
+  if (layoutableChildNode.yogaNode_.getOwner() == nullptr) {
+    // The child node is not owned.
+    layoutableChildNode.yogaNode_.setOwner(&yogaNode_);
+    // At this point the child yoga node must be already inserted by the caller.
+    // assert(layoutableChildNode.yogaNode_.isDirty());
+  } else {
+    // The child is owned by some other node, we need to clone that.
+    auto clonedChildNode = childNode.clone({});
+    auto &layoutableClonedChildNode =
+        traitCast<YogaLayoutableShadowNode const &>(*clonedChildNode);
+
+    // The owner must be nullptr for a newly cloned node.
+    assert(layoutableClonedChildNode.yogaNode_.getOwner() == nullptr);
+
+    // Establishing ownership.
+    layoutableClonedChildNode.yogaNode_.setOwner(&yogaNode_);
+
+    // Replace the child node with a newly cloned one in the children list.
+    replaceChild(childNode, clonedChildNode, index);
+
+    // Replace the Yoga node inside the Yoga node children list.
+    yogaNode_.replaceChild(&layoutableClonedChildNode.yogaNode_, index);
   }
+
+  ensureYogaChildrenLookFine();
+}
+
+void YogaLayoutableShadowNode::appendChild(
+    ShadowNode::Shared const &childNode) {
+  ensureUnsealed();
+  ensureConsistency();
+
+  // Calling the base class (`ShadowNode`) mehtod.
+  LayoutableShadowNode::appendChild(childNode);
+
+  if (getTraits().check(ShadowNodeTraits::Trait::LeafYogaNode)) {
+    // This node is a declared leaf.
+    return;
+  }
+
+  // Here we don't have information about the previous structure of the node (if
+  // it that existed before), so we don't have anything to compare the Yoga node
+  // with (like a previous version of this node). Therefore we must dirty the
+  // node.
+  yogaNode_.setDirty(true);
+
+  // All children of a non-leaf `YogaLayoutableShadowNode` must be a
+  // `YogaLayoutableShadowNode`s.
+  assert(traitCast<YogaLayoutableShadowNode const *>(childNode.get()));
+
+  // Appending the Yoga node.
+  appendYogaChild(*childNode);
+
+  ensureYogaChildrenLookFine();
+  ensureYogaChildrenAlighment();
+
+  // Adopting the Yoga node.
+  adoptYogaChild(getChildren().size() - 1);
+
+  ensureConsistency();
 }
 
 bool YogaLayoutableShadowNode::doesOwn(
     YogaLayoutableShadowNode const &child) const {
   return child.yogaNode_.getOwner() == &yogaNode_;
-}
-
-void YogaLayoutableShadowNode::appendChildYogaNode(
-    YogaLayoutableShadowNode const &child) {
-  ensureUnsealed();
-
-  if (getTraits().check(ShadowNodeTraits::Trait::LeafYogaNode)) {
-    // This node is a declared leaf, therefore we must not add the Yoga node as
-    // a child.
-    return;
-  }
-
-  auto yogaNodeRawPtr = &yogaNode_;
-  auto childYogaNodeRawPtr = &child.yogaNode_;
-  auto childNodePtr = const_cast<YogaLayoutableShadowNode *>(&child);
-
-  if (childYogaNodeRawPtr->getOwner() != nullptr) {
-    childNodePtr =
-        &cloneAndReplaceChild(*childNodePtr, yogaNode_.getChildren().size());
-    childYogaNodeRawPtr = &childNodePtr->yogaNode_;
-  }
-
-  // Inserted node must have a clear owner (must not be shared).
-  assert(childYogaNodeRawPtr->getOwner() == nullptr);
-
-  childNodePtr->ensureUnsealed();
-  childYogaNodeRawPtr->setOwner(yogaNodeRawPtr);
-
-  yogaNodeRawPtr->insertChild(
-      childYogaNodeRawPtr, yogaNodeRawPtr->getChildren().size());
 }
 
 void YogaLayoutableShadowNode::updateYogaChildren() {
@@ -169,36 +230,28 @@ void YogaLayoutableShadowNode::updateYogaChildren() {
 
   ensureUnsealed();
 
-  auto &children = getChildren();
+  bool isClean = !yogaNode_.isDirty() &&
+      getChildren().size() == yogaNode_.getChildren().size();
 
-  // Optimization:
-  // If the new list of child nodes consists of clean nodes, and if their styles
-  // are identical to styles of old children, we don't dirty the node.
-  bool isClean =
-      !yogaNode_.isDirty() && children.size() == yogaNode_.getChildren().size();
-  auto oldChildren = isClean ? yogaNode_.getChildren() : YGVector{};
-
+  auto oldYogaChildren = isClean ? yogaNode_.getChildren() : YGVector{};
   yogaNode_.setChildren({});
 
-  // We might undo this later at the end of the method if we can infer that
-  // dirting is not necessary here.
-  yogaNode_.setDirty(true);
+  for (size_t i = 0; i < getChildren().size(); i++) {
+    appendYogaChild(*getChildren().at(i));
+    adoptYogaChild(i);
 
-  auto i = int{0};
-  for (auto const &child : children) {
-    auto yogaLayoutableChild =
-        traitCast<YogaLayoutableShadowNode const *>(child.get());
+    if (isClean) {
+      auto &oldYogaChildNode = *oldYogaChildren[i];
+      auto &newYogaChildNode =
+          traitCast<YogaLayoutableShadowNode const &>(*getChildren().at(i))
+              .yogaNode_;
 
-    if (!yogaLayoutableChild) {
-      continue;
+      isClean = isClean && !newYogaChildNode.isDirty() &&
+          (newYogaChildNode.getStyle() == oldYogaChildNode.getStyle());
     }
-
-    appendChildYogaNode(*yogaLayoutableChild);
-
-    isClean = isClean && !yogaLayoutableChild->yogaNode_.isDirty() &&
-        yogaLayoutableChild->yogaNode_.getStyle() ==
-            oldChildren[i++]->getStyle();
   }
+
+  assert(getChildren().size() == yogaNode_.getChildren().size());
 
   yogaNode_.setDirty(!isClean);
 }
@@ -320,16 +373,6 @@ void YogaLayoutableShadowNode::layoutChildren(LayoutContext layoutContext) {
   }
 }
 
-YogaLayoutableShadowNode &YogaLayoutableShadowNode::cloneAndReplaceChild(
-    YogaLayoutableShadowNode &child,
-    int suggestedIndex) {
-  auto clonedChildShadowNode = child.clone({});
-  replaceChild(child, clonedChildShadowNode, suggestedIndex);
-  auto &node = static_cast<YogaLayoutableShadowNode &>(*clonedChildShadowNode);
-  node.yogaNode_.setDirty(true);
-  return node;
-}
-
 #pragma mark - Yoga Connectors
 
 YGNode *YogaLayoutableShadowNode::yogaNodeCloneCallbackConnector(
@@ -344,8 +387,10 @@ YGNode *YogaLayoutableShadowNode::yogaNodeCloneCallbackConnector(
       static_cast<YogaLayoutableShadowNode *>(parentYogaNode->getContext());
   auto oldNode =
       static_cast<YogaLayoutableShadowNode *>(oldYogaNode->getContext());
-  auto clonedNode = &parentNode->cloneAndReplaceChild(*oldNode, childIndex);
-  return &clonedNode->yogaNode_;
+
+  auto clonedNode = oldNode->clone({});
+  parentNode->replaceChild(*oldNode, clonedNode, childIndex);
+  return &static_cast<YogaLayoutableShadowNode &>(*clonedNode).yogaNode_;
 }
 
 YGSize YogaLayoutableShadowNode::yogaNodeMeasureCallbackConnector(
@@ -536,6 +581,74 @@ void YogaLayoutableShadowNode::swapLeftAndRightInViewProps(
     props.yogaStyle.border()[YGEdgeEnd] = border[YGEdgeRight];
     props.yogaStyle.border()[YGEdgeRight] = YGValueUndefined;
   }
+}
+
+#pragma mark - Consistency Ensuring Helpers
+
+void YogaLayoutableShadowNode::ensureConsistency() const {
+  ensureYogaChildrenLookFine();
+  ensureYogaChildrenAlighment();
+  ensureYogaChildrenOwnersConsistency();
+}
+
+void YogaLayoutableShadowNode::ensureYogaChildrenOwnersConsistency() const {
+#ifndef NDEBUG
+  // Checking that all Yoga node children have the same `owner`.
+  // The owner might be not equal to the `yogaNode_` though.
+  auto &yogaChildren = yogaNode_.getChildren();
+
+  if (yogaChildren.size() > 0) {
+    auto owner = yogaChildren.at(0)->getOwner();
+    for (auto const &child : yogaChildren) {
+      assert(child->getOwner() == owner);
+    }
+  }
+#endif
+}
+
+void YogaLayoutableShadowNode::ensureYogaChildrenLookFine() const {
+#ifndef NDEBUG
+  // Checking that the shapes of Yoga node children object look fine.
+  // This is the only heuristic that might produce false-positive results
+  // (really broken dangled nodes might look fine). This is useful as an early
+  // signal that something went wrong.
+  auto &yogaChildren = yogaNode_.getChildren();
+
+  for (auto const &yogaChild : yogaChildren) {
+    assert(yogaChild->getContext());
+    assert(yogaChild->getChildren().size() < 16384);
+    if (yogaChild->getChildren().size() > 0) {
+      assert(!yogaChild->hasMeasureFunc());
+    }
+  }
+#endif
+}
+
+void YogaLayoutableShadowNode::ensureYogaChildrenAlighment() const {
+#ifndef NDEBUG
+  // If the node is not a leaf node, checking that:
+  // - All children are `YogaLayoutableShadowNode` subclasses.
+  // - All Yoga children are owned/connected to corresponding children of
+  //   this node.
+
+  auto &yogaChildren = yogaNode_.getChildren();
+  auto &children = getChildren();
+
+  if (getTraits().check(ShadowNodeTraits::Trait::LeafYogaNode)) {
+    assert(yogaChildren.size() == 0);
+    return;
+  }
+
+  assert(yogaChildren.size() == children.size());
+
+  for (size_t i = 0; i < children.size(); i++) {
+    auto &yogaChild = yogaChildren.at(i);
+    auto &child = children.at(i);
+    assert(
+        yogaChild->getContext() ==
+        traitCast<YogaLayoutableShadowNode const *>(child.get()));
+  }
+#endif
 }
 
 } // namespace react
