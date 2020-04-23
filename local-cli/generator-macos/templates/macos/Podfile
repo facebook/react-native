@@ -1,8 +1,6 @@
 require_relative '../node_modules/@react-native-community/cli-platform-ios/native_modules'
 
 abstract_target 'Shared' do
-  use_native_modules!
-
   pod 'React', :path => "../node_modules/react-native-macos/"
   pod 'React-Core', :path => "../node_modules/react-native-macos/React"
   pod 'React-fishhook', :path => "../node_modules/react-native-macos/Libraries/fishhook"
@@ -30,11 +28,13 @@ abstract_target 'Shared' do
 
   target 'HelloWorld-macOS' do
     platform :macos, '10.14'
+    use_native_modules!
     # Pods specifically for macOS target
   end
 
   target 'HelloWorld-iOS' do
     platform :ios, '9'
+    use_native_modules!
     # Pods specifically for iOS target
   end
 end
