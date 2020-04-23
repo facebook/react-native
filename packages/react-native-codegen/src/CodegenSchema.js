@@ -256,13 +256,13 @@ export type FunctionTypeAnnotation = $ReadOnly<{|
   optional: boolean,
 |}>;
 
-export type MethodTypeShape = $ReadOnly<{|
+export type NativeModuleMethodTypeShape = $ReadOnly<{|
   name: string,
   typeAnnotation: FunctionTypeAnnotation,
 |}>;
 
 export type NativeModuleShape = $ReadOnly<{|
-  properties: $ReadOnlyArray<MethodTypeShape>,
+  properties: $ReadOnlyArray<NativeModuleMethodTypeShape>,
 |}>;
 
 export type EventTypeShape = $ReadOnly<{|

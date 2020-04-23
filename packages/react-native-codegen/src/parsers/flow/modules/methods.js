@@ -11,7 +11,7 @@
 'use strict';
 
 import type {
-  MethodTypeShape,
+  NativeModuleMethodTypeShape,
   FunctionTypeAnnotationParam,
   FunctionTypeAnnotationReturn,
   FunctionTypeAnnotationParamTypeAnnotation,
@@ -401,7 +401,7 @@ function getReturnTypeAnnotation(
 function buildMethodSchema(
   property: MethodAST,
   types: TypeMap,
-): MethodTypeShape {
+): NativeModuleMethodTypeShape {
   const name: string = property.key.name;
   const value = getValueFromTypes(property.value, types);
   if (value.type !== 'FunctionTypeAnnotation') {
@@ -432,7 +432,7 @@ function buildMethodSchema(
 function getMethods(
   typeDefinition: $ReadOnlyArray<MethodAST>,
   types: TypeMap,
-): $ReadOnlyArray<MethodTypeShape> {
+): $ReadOnlyArray<NativeModuleMethodTypeShape> {
   return typeDefinition
     .filter(property => property.type === 'ObjectTypeProperty')
     .map(property => buildMethodSchema(property, types))
