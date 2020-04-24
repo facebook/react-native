@@ -311,14 +311,28 @@ public class TextLayoutManager {
             ? layout.getLineCount()
             : Math.min(maximumNumberOfLines, layout.getLineCount());
 
-    int calculatedHeight = layout.getLineBottom(calculatedLineCount - 1);
     // Instead of using `layout.getWidth()` (which may yield a significantly larger width for
     // text that is wrapping), compute width using the longest line.
-    int calculatedWidth = 0;
-    for (int lineIndex = 0; lineIndex < calculatedLineCount; lineIndex++) {
-      float lineWidth = layout.getLineWidth(lineIndex);
-      if (lineWidth > calculatedWidth) {
-        calculatedWidth = (int) Math.ceil(lineWidth);
+    float calculatedWidth = 0;
+    if (widthYogaMeasureMode == YogaMeasureMode.EXACTLY) {
+      calculatedWidth = width;
+    } else {
+      for (int lineIndex = 0; lineIndex < calculatedLineCount; lineIndex++) {
+        float lineWidth = layout.getLineWidth(lineIndex);
+        if (lineWidth > calculatedWidth) {
+          calculatedWidth = lineWidth;
+        }
+      }
+      if (widthYogaMeasureMode == YogaMeasureMode.AT_MOST && calculatedWidth > width) {
+        calculatedWidth = width;
+      }
+    }
+
+    float calculatedHeight = height;
+    if (heightYogaMeasureMode != YogaMeasureMode.EXACTLY) {
+      calculatedHeight = layout.getLineBottom(calculatedLineCount - 1);
+      if (heightYogaMeasureMode == YogaMeasureMode.AT_MOST && calculatedHeight > height) {
+        calculatedHeight = height;
       }
     }
 
@@ -356,7 +370,7 @@ public class TextLayoutManager {
                 isRtlParagraph
                     // Equivalent to `layout.getLineLeft(line)` but `getLineLeft` returns incorrect
                     // values when the paragraph is RTL and `setSingleLine(true)`.
-                    ? calculatedWidth - (int) layout.getLineWidth(line)
+                    ? (int) calculatedWidth - (int) layout.getLineWidth(line)
                     : (int) layout.getLineRight(line) - placeholderWidth;
           } else {
             // The direction of the paragraph may not be exactly the direction the string is heading
@@ -379,7 +393,8 @@ public class TextLayoutManager {
               // The result is equivalent to bugless versions of
               // `getPrimaryHorizontal`/`getSecondaryHorizontal`.
               placeholderLeftPosition =
-                  calculatedWidth - ((int) layout.getLineRight(line) - placeholderLeftPosition);
+                  (int) calculatedWidth
+                      - ((int) layout.getLineRight(line) - placeholderLeftPosition);
             }
             if (isRtlChar) {
               placeholderLeftPosition -= placeholderWidth;
