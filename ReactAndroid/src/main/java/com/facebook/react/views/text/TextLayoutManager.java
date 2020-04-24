@@ -356,12 +356,12 @@ public class TextLayoutManager {
         // thing to be truncated.
         if (!(isLineTruncated && start >= layout.getLineStart(line) + layout.getEllipsisStart(line))
             || start >= layout.getLineEnd(line)) {
-          int placeholderWidth = placeholder.getWidth();
-          int placeholderHeight = placeholder.getHeight();
+          float placeholderWidth = placeholder.getWidth();
+          float placeholderHeight = placeholder.getHeight();
           // Calculate if the direction of the placeholder character is Right-To-Left.
           boolean isRtlChar = layout.isRtlCharAt(start);
           boolean isRtlParagraph = layout.getParagraphDirection(line) == Layout.DIR_RIGHT_TO_LEFT;
-          int placeholderLeftPosition;
+          float placeholderLeftPosition;
           // There's a bug on Samsung devices where calling getPrimaryHorizontal on
           // the last offset in the layout will result in an endless loop. Work around
           // this bug by avoiding getPrimaryHorizontal in that case.
@@ -370,8 +370,8 @@ public class TextLayoutManager {
                 isRtlParagraph
                     // Equivalent to `layout.getLineLeft(line)` but `getLineLeft` returns incorrect
                     // values when the paragraph is RTL and `setSingleLine(true)`.
-                    ? (int) calculatedWidth - (int) layout.getLineWidth(line)
-                    : (int) layout.getLineRight(line) - placeholderWidth;
+                    ? calculatedWidth - layout.getLineWidth(line)
+                    : layout.getLineRight(line) - placeholderWidth;
           } else {
             // The direction of the paragraph may not be exactly the direction the string is heading
             // in at the
@@ -381,8 +381,8 @@ public class TextLayoutManager {
             boolean characterAndParagraphDirectionMatch = isRtlParagraph == isRtlChar;
             placeholderLeftPosition =
                 characterAndParagraphDirectionMatch
-                    ? (int) layout.getPrimaryHorizontal(start)
-                    : (int) layout.getSecondaryHorizontal(start);
+                    ? layout.getPrimaryHorizontal(start)
+                    : layout.getSecondaryHorizontal(start);
             if (isRtlParagraph) {
               // Adjust `placeholderLeftPosition` to work around an Android bug.
               // The bug is when the paragraph is RTL and `setSingleLine(true)`, some layout
@@ -393,22 +393,21 @@ public class TextLayoutManager {
               // The result is equivalent to bugless versions of
               // `getPrimaryHorizontal`/`getSecondaryHorizontal`.
               placeholderLeftPosition =
-                  (int) calculatedWidth
-                      - ((int) layout.getLineRight(line) - placeholderLeftPosition);
+                  calculatedWidth - (layout.getLineRight(line) - placeholderLeftPosition);
             }
             if (isRtlChar) {
               placeholderLeftPosition -= placeholderWidth;
             }
           }
           // Vertically align the inline view to the baseline of the line of text.
-          int placeholderTopPosition = layout.getLineBaseline(line) - placeholderHeight;
+          float placeholderTopPosition = layout.getLineBaseline(line) - placeholderHeight;
           int attachmentPosition = attachmentIndex * 2;
 
           // The attachment array returns the positions of each of the attachments as
           attachmentsPositions[attachmentPosition] =
-              (int) PixelUtil.toSPFromPixel(placeholderTopPosition);
+              (int) Math.ceil(PixelUtil.toSPFromPixel(placeholderTopPosition));
           attachmentsPositions[attachmentPosition + 1] =
-              (int) PixelUtil.toSPFromPixel(placeholderLeftPosition);
+              (int) Math.ceil(PixelUtil.toSPFromPixel(placeholderLeftPosition));
           attachmentIndex++;
         }
       }
