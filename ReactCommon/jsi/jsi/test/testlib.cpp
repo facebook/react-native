@@ -1197,10 +1197,11 @@ TEST_P(JSITest, MultiDecoratorTest) {
     int nest = 0;
   };
 
-  class MultiRuntime final : public WithRuntimeDecorator<WithTuple<Inc, Nest>> {
+  class MultiRuntime final
+      : public WithRuntimeDecorator<std::tuple<Inc, Nest>> {
    public:
     explicit MultiRuntime(std::unique_ptr<Runtime> rt)
-        : WithRuntimeDecorator<WithTuple<Inc, Nest>>(*rt, tuple_),
+        : WithRuntimeDecorator<std::tuple<Inc, Nest>>(*rt, tuple_),
           rt_(std::move(rt)) {}
 
     int count() {
@@ -1212,7 +1213,7 @@ TEST_P(JSITest, MultiDecoratorTest) {
 
    private:
     std::unique_ptr<Runtime> rt_;
-    WithTuple<Inc, Nest> tuple_;
+    std::tuple<Inc, Nest> tuple_;
   };
 
   MultiRuntime mrt(factory());
