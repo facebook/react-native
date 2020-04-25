@@ -263,6 +263,10 @@ ShadowNode::Unshared ShadowNode::cloneTree(
 
   auto newShadowNode = callback(*oldShadowNode);
 
+  assert(
+      newShadowNode &&
+      "`callback` returned `nullptr` which is not allowed value.");
+
   auto childNode = newShadowNode;
 
   for (auto it = ancestors.rbegin(); it != ancestors.rend(); ++it) {
