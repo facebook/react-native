@@ -73,7 +73,7 @@ public class AndroidInfoModule extends NativePlatformConstantsAndroidSpec implem
     constants.put("Fingerprint", Build.FINGERPRINT);
     constants.put("Model", Build.MODEL);
     if (ReactBuildConfig.DEBUG) {
-      constants.put("ServerHost", getServerHost());
+      constants.put("ServerHost", AndroidInfoHelpers.getServerHost(getReactApplicationContext().getApplicationContext()));
     }
     constants.put(
         "isTesting", "true".equals(System.getProperty(IS_TESTING)) || isRunningScreenshotTest());
@@ -97,13 +97,5 @@ public class AndroidInfoModule extends NativePlatformConstantsAndroidSpec implem
     } catch (ClassNotFoundException ignored) {
       return false;
     }
-  }
-
-  private String getServerHost() {
-    Resources resources = getReactApplicationContext().getApplicationContext().getResources();
-
-    Integer devServerPort = resources.getInteger(R.integer.react_native_dev_server_port);
-
-    return AndroidInfoHelpers.getServerHost(devServerPort);
   }
 }
