@@ -13,6 +13,7 @@ import android.view.View;
 import androidx.annotation.Nullable;
 import androidx.core.view.ViewCompat;
 import com.facebook.react.bridge.ReadableArray;
+import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.RetryableMountingLayerException;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.module.annotations.ReactModule;
@@ -301,6 +302,15 @@ public class ReactScrollViewManager extends ViewGroupManager<ReactScrollView>
     } else {
       view.setVerticalFadingEdgeEnabled(false);
       view.setFadingEdgeLength(0);
+    }
+  }
+
+  @ReactProp(name = "contentOffset")
+  public void setContentOffset(ReactScrollView view, ReadableMap value) {
+    if (value != null) {
+      double x = value.getDouble("x");
+      double y = value.getDouble("y");
+      view.reactScrollTo((int) PixelUtil.toPixelFromDIP(x), (int) PixelUtil.toPixelFromDIP(y));
     }
   }
 

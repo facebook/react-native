@@ -303,8 +303,10 @@ public class ReactHorizontalScrollViewManager extends ViewGroupManager<ReactHori
 
   @ReactProp(name = "contentOffset")
   public void setContentOffset(ReactHorizontalScrollView view, ReadableMap value) {
-    double x = value.getDouble("x");
-    double y = value.getDouble("y");
-    view.reactScrollTo((int) PixelUtil.toPixelFromDIP(x), (int) PixelUtil.toPixelFromDIP(y));
+    if (value != null) {
+      double x = value.getDouble("x");
+      double y = value.getDouble("y");
+      view.reactScrollTo((int) PixelUtil.toPixelFromDIP(x), (int) PixelUtil.toPixelFromDIP(y));
+    }
   }
 }
