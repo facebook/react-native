@@ -125,11 +125,11 @@ void UIManager::clearJSResponder() const {
 }
 
 ShadowNode::Shared const *UIManager::getNewestCloneOfShadowNode(
-    ShadowNode::Shared const &shadowNode) const {
+    ShadowNode const &shadowNode) const {
   auto findNewestChildInParent =
       [&](auto const &parentNode) -> ShadowNode::Shared const * {
     for (auto const &child : parentNode.getChildren()) {
-      if (ShadowNode::sameFamily(*child, *shadowNode)) {
+      if (ShadowNode::sameFamily(*child, shadowNode)) {
         return &child;
       }
     }
@@ -138,7 +138,7 @@ ShadowNode::Shared const *UIManager::getNewestCloneOfShadowNode(
 
   ShadowNode const *ancestorShadowNode;
   shadowTreeRegistry_.visit(
-      shadowNode->getSurfaceId(), [&](ShadowTree const &shadowTree) {
+      shadowNode.getSurfaceId(), [&](ShadowTree const &shadowTree) {
         shadowTree.tryCommit(
             [&](RootShadowNode::Shared const &oldRootShadowNode) {
               ancestorShadowNode = oldRootShadowNode.get();
@@ -147,7 +147,11 @@ ShadowNode::Shared const *UIManager::getNewestCloneOfShadowNode(
             true);
       });
 
-  auto ancestors = shadowNode->getFamily().getAncestors(*ancestorShadowNode);
+  auto ancestors = shadowNode.getFamily().getAncestors(*ancestorShadowNode);
+
+  if (ancestors.rbegin() == ancestors.rend()) {
+    return nullptr;
+  }
 
   return findNewestChildInParent(ancestors.rbegin()->first.get());
 }
@@ -156,7 +160,7 @@ ShadowNode::Shared UIManager::findNodeAtPoint(
     ShadowNode::Shared const &node,
     Point point) const {
   return LayoutableShadowNode::findNodeAtPoint(
-      *getNewestCloneOfShadowNode(node), point);
+      *getNewestCloneOfShadowNode(*node), point);
 }
 
 void UIManager::setNativeProps(
@@ -202,10 +206,22 @@ LayoutMetrics UIManager::getRelativeLayoutMetrics(
         });
   }
 
+  // Get latest version of both the ShadowNode and its ancestor.
+  // It is possible for JS (or other callers) to have a reference
+  // to a previous version of ShadowNodes, but we enforce that
+  // metrics are only calculated on most recently committed versions.
+  auto newestShadowNode = getNewestCloneOfShadowNode(shadowNode);
+  auto newestAncestorShadowNode = ancestorShadowNode == nullptr
+      ? nullptr
+      : getNewestCloneOfShadowNode(*ancestorShadowNode);
+
   auto layoutableShadowNode =
-      traitCast<LayoutableShadowNode const *>(&shadowNode);
+      traitCast<LayoutableShadowNode const *>(newestShadowNode->get());
   auto layoutableAncestorShadowNode =
-      traitCast<LayoutableShadowNode const *>(ancestorShadowNode);
+      (newestAncestorShadowNode == nullptr
+           ? nullptr
+           : traitCast<LayoutableShadowNode const *>(
+                 newestAncestorShadowNode->get()));
 
   if (!layoutableShadowNode || !layoutableAncestorShadowNode) {
     return EmptyLayoutMetrics;

@@ -93,7 +93,7 @@ class UIManager final : public ShadowTreeDelegate {
       Point point) const;
 
   ShadowNode::Shared const *getNewestCloneOfShadowNode(
-      ShadowNode::Shared const &shadowNode) const;
+      ShadowNode const &shadowNode) const;
 
   /*
    * Returns layout metrics of given `shadowNode` relative to
