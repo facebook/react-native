@@ -311,6 +311,8 @@ public class ReactScrollViewManager extends ViewGroupManager<ReactScrollView>
       double x = value.getDouble("x");
       double y = value.getDouble("y");
       view.reactScrollTo((int) PixelUtil.toPixelFromDIP(x), (int) PixelUtil.toPixelFromDIP(y));
+    } else {
+      view.reactScrollTo(0, 0);
     }
   }
 
