@@ -3664,8 +3664,8 @@ static inline bool YGMeasureModeNewMeasureSizeIsStricterAndStillValid(
 }
 
 YOGA_EXPORT float YGRoundValueToPixelGrid(
-    const float value,
-    const float pointScaleFactor,
+    const double value,
+    const double pointScaleFactor,
     const bool forceCeil,
     const bool forceFloor) {
   double scaledValue = ((double) value) * pointScaleFactor;
@@ -4081,24 +4081,24 @@ YOGA_EXPORT void YGConfigSetPointScaleFactor(
 
 static void YGRoundToPixelGrid(
     const YGNodeRef node,
-    const float pointScaleFactor,
-    const float absoluteLeft,
-    const float absoluteTop) {
+    const double pointScaleFactor,
+    const double absoluteLeft,
+    const double absoluteTop) {
   if (pointScaleFactor == 0.0f) {
     return;
   }
 
-  const float nodeLeft = node->getLayout().position[YGEdgeLeft];
-  const float nodeTop = node->getLayout().position[YGEdgeTop];
+  const double nodeLeft = node->getLayout().position[YGEdgeLeft];
+  const double nodeTop = node->getLayout().position[YGEdgeTop];
 
-  const float nodeWidth = node->getLayout().dimensions[YGDimensionWidth];
-  const float nodeHeight = node->getLayout().dimensions[YGDimensionHeight];
+  const double nodeWidth = node->getLayout().dimensions[YGDimensionWidth];
+  const double nodeHeight = node->getLayout().dimensions[YGDimensionHeight];
 
-  const float absoluteNodeLeft = absoluteLeft + nodeLeft;
-  const float absoluteNodeTop = absoluteTop + nodeTop;
+  const double absoluteNodeLeft = absoluteLeft + nodeLeft;
+  const double absoluteNodeTop = absoluteTop + nodeTop;
 
-  const float absoluteNodeRight = absoluteNodeLeft + nodeWidth;
-  const float absoluteNodeBottom = absoluteNodeTop + nodeHeight;
+  const double absoluteNodeRight = absoluteNodeLeft + nodeWidth;
+  const double absoluteNodeBottom = absoluteNodeTop + nodeHeight;
 
   // If a node has a custom measure function we never want to round down its
   // size as this could lead to unwanted text truncation.
