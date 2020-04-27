@@ -32,7 +32,7 @@
 
 @property (nonatomic, assign) BOOL centerContent;
 #if !TARGET_OS_TV
-@property (nonatomic, strong) UIView<RCTCustomRefreshContolProtocol> *customRefreshControl;
+@property (nonatomic, strong) UIRefreshControl<RCTCustomRefreshContolProtocol> *customRefreshControl;
 @property (nonatomic, assign) BOOL pinchGestureEnabled;
 #endif
 
@@ -224,13 +224,13 @@
 }
 
 #if !TARGET_OS_TV
-- (void)setCustomRefreshControl:(UIView<RCTCustomRefreshContolProtocol> *)refreshControl
+- (void)setCustomRefreshControl:(UIRefreshControl<RCTCustomRefreshContolProtocol> *)refreshControl
 {
   if (_customRefreshControl) {
     [_customRefreshControl removeFromSuperview];
   }
   _customRefreshControl = refreshControl;
-  [self addSubview:_customRefreshControl];
+  self.refreshControl = refreshControl;
 }
 
 - (void)setPinchGestureEnabled:(BOOL)pinchGestureEnabled
@@ -344,7 +344,7 @@ static inline void RCTApplyTransformationAccordingLayoutDirection(
   [super insertReactSubview:view atIndex:atIndex];
 #if !TARGET_OS_TV
   if ([view conformsToProtocol:@protocol(RCTCustomRefreshContolProtocol)]) {
-    [_scrollView setCustomRefreshControl:(UIView<RCTCustomRefreshContolProtocol> *)view];
+    [_scrollView setCustomRefreshControl:(UIRefreshControl<RCTCustomRefreshContolProtocol> *)view];
     if (![view isKindOfClass:[UIRefreshControl class]] && [view conformsToProtocol:@protocol(UIScrollViewDelegate)]) {
       [self addScrollListener:(UIView<UIScrollViewDelegate> *)view];
     }
@@ -418,16 +418,6 @@ static inline void RCTApplyTransformationAccordingLayoutDirection(
   [super layoutSubviews];
   RCTAssert(self.subviews.count == 1, @"we should only have exactly one subview");
   RCTAssert([self.subviews lastObject] == _scrollView, @"our only subview should be a scrollview");
-
-#if !TARGET_OS_TV
-  // Adjust the refresh control frame if the scrollview layout changes.
-  UIView<RCTCustomRefreshContolProtocol> *refreshControl = _scrollView.customRefreshControl;
-  if (refreshControl && refreshControl.isRefreshing) {
-    refreshControl.frame =
-        (CGRect){_scrollView.contentOffset, {_scrollView.frame.size.width, refreshControl.frame.size.height}};
-  }
-#endif
-
   [self updateClippedSubviews];
 }
 
