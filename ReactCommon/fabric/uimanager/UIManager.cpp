@@ -149,10 +149,6 @@ ShadowNode::Shared const *UIManager::getNewestCloneOfShadowNode(
 
   auto ancestors = shadowNode.getFamily().getAncestors(*ancestorShadowNode);
 
-  if (ancestors.rbegin() == ancestors.rend()) {
-    return nullptr;
-  }
-
   return findNewestChildInParent(ancestors.rbegin()->first.get());
 }
 
@@ -204,6 +200,8 @@ LayoutMetrics UIManager::getRelativeLayoutMetrics(
               },
               true);
         });
+  } else {
+    ancestorShadowNode = getNewestCloneOfShadowNode(*ancestorShadowNode)->get();
   }
 
   // Get latest version of both the ShadowNode and its ancestor.
@@ -211,17 +209,11 @@ LayoutMetrics UIManager::getRelativeLayoutMetrics(
   // to a previous version of ShadowNodes, but we enforce that
   // metrics are only calculated on most recently committed versions.
   auto newestShadowNode = getNewestCloneOfShadowNode(shadowNode);
-  auto newestAncestorShadowNode = ancestorShadowNode == nullptr
-      ? nullptr
-      : getNewestCloneOfShadowNode(*ancestorShadowNode);
 
   auto layoutableShadowNode =
       traitCast<LayoutableShadowNode const *>(newestShadowNode->get());
   auto layoutableAncestorShadowNode =
-      (newestAncestorShadowNode == nullptr
-           ? nullptr
-           : traitCast<LayoutableShadowNode const *>(
-                 newestAncestorShadowNode->get()));
+      traitCast<LayoutableShadowNode const *>(ancestorShadowNode);
 
   if (!layoutableShadowNode || !layoutableAncestorShadowNode) {
     return EmptyLayoutMetrics;
