@@ -24,7 +24,6 @@
   __weak RCTEventDispatcher *_eventDispatcher;
   BOOL _hasInputAccesoryView;
   NSString *_Nullable _predictedText;
-  NSInteger _nativeEventCount;
   BOOL _didMoveToWindow;
 }
 
@@ -199,17 +198,9 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
   }
 }
 
-- (void)setText:(NSString *__nullable)text
- selectionStart:(NSInteger)start
-   selectionEnd:(NSInteger)end
+- (void)setSelectionStart:(NSInteger)start
+             selectionEnd:(NSInteger)end
 {
-  if (text) {
-    NSMutableAttributedString *mutableString =
-    [[NSMutableAttributedString alloc] initWithAttributedString:self.backedTextInputView.attributedText];
-    [mutableString replaceCharactersInRange:NSMakeRange(0, mutableString.string.length) withString:text];
-    self.backedTextInputView.attributedText = mutableString;
-  }
-
   UITextPosition *startPosition = [self.backedTextInputView positionFromPosition:self.backedTextInputView.beginningOfDocument
                                                                           offset:start];
   UITextPosition *endPosition = [self.backedTextInputView positionFromPosition:self.backedTextInputView.beginningOfDocument
