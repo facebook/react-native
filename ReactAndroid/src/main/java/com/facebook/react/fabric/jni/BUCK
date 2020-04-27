@@ -32,7 +32,7 @@ rn_xplat_cxx_library(
         react_native_xplat_target("fabric/scheduler:scheduler"),
         react_native_xplat_target("fabric/componentregistry:componentregistry"),
         react_native_xplat_target("fabric/components/scrollview:scrollview"),
-        react_native_xplat_target("utils:utils"),
+        react_native_xplat_target("runtimeexecutor:runtimeexecutor"),
         react_native_target("jni/react/jni:jni"),
         "//xplat/fbsystrace:fbsystrace",
         "//xplat/folly:molly",
