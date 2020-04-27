@@ -73,13 +73,12 @@ static NSDictionary *onLoadParamsForSource(RCTImageSource *source)
   // Size of the image loaded / being loaded, so we can determine when to issue a reload to accommodate a changing size.
   CGSize _targetSize;
 
-  // A block that can be invoked to cancel the most recent call to -reloadImage, if any
-  RCTImageLoaderCancellationBlock _reloadImageCancellationBlock;
-
   // Whether the latest change of props requires the image to be reloaded
   BOOL _needsReload;
 
   RCTUIImageViewAnimated *_imageView;
+  
+  RCTImageURLLoaderRequest *_loaderRequest;
 }
 
 - (instancetype)initWithBridge:(RCTBridge *)bridge
@@ -216,12 +215,11 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
 
 - (void)cancelImageLoad
 {
-  RCTImageLoaderCancellationBlock previousCancellationBlock = _reloadImageCancellationBlock;
-  if (previousCancellationBlock) {
-    previousCancellationBlock();
-    _reloadImageCancellationBlock = nil;
+  if (_loaderRequest.cancellationBlock) {
+    _loaderRequest.cancellationBlock();
   }
 
+  _loaderRequest = nil;
   _pendingImageSource = nil;
 }
 
@@ -343,7 +341,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
                                                                      progressBlock:progressHandler
                                                                   partialLoadBlock:partialLoadHandler
                                                                    completionBlock:completionHandler];
-    _reloadImageCancellationBlock = loaderRequest.cancellationBlock;
+    _loaderRequest = loaderRequest;
   } else {
     [self clearImage];
   }
@@ -469,6 +467,12 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
   } else if ([self shouldChangeImageSource]) {
     [self reloadImage];
   }
+}
+
+- (void)dealloc {
+  id<RCTImageLoaderWithAttributionProtocol> imageLoader = [_bridge moduleForName:@"ImageLoader"
+                                                           lazilyLoadIfNecessary:YES];
+  [imageLoader trackURLImageDidDestroy:_loaderRequest];
 }
 
 @end
