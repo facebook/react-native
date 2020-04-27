@@ -27,7 +27,7 @@ void sleep(double durationInSeconds) {
 }
 
 TEST(MountingTelemetryTest, timepoints) {
-  auto threshold = int64_t{10};
+  auto threshold = int64_t{70};
 
   auto timepointA = telemetryTimePointNow();
   sleep<TelemetryClock>(0.1);
@@ -39,7 +39,7 @@ TEST(MountingTelemetryTest, timepoints) {
 }
 
 TEST(MountingTelemetryTest, normalUseCase) {
-  auto threshold = int64_t{10};
+  auto threshold = int64_t{70};
   auto telemetry = MountingTelemetry{};
 
   telemetry.willCommit();
