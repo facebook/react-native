@@ -125,8 +125,18 @@ RCT_EXPORT_METHOD(setTextAndSelection : (nonnull NSNumber *)viewTag
 {
   [self.bridge.uiManager addUIBlock:^(RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry) {
     RCTBaseTextInputView *view = (RCTBaseTextInputView *)viewRegistry[viewTag];
-    view.mostRecentEventCount = mostRecentEventCount;
-    [view setText:value selectionStart:start selectionEnd:end];
+    NSInteger eventLag = view.nativeEventCount - mostRecentEventCount;
+    if (eventLag != 0) {
+      return;
+    }
+    RCTExecuteOnUIManagerQueue(^{
+      RCTBaseTextInputShadowView *shadowView = (RCTBaseTextInputShadowView *)[self.bridge.uiManager shadowViewForReactTag:viewTag];
+      [shadowView setText:value];
+      [self.bridge.uiManager setNeedsLayout];
+      RCTExecuteOnMainQueue(^{
+        [view setSelectionStart:start selectionEnd:end];
+      });
+    });
   }];
 }
 
