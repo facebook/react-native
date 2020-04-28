@@ -62,8 +62,10 @@ public interface CatalystInstance
 
   <T extends NativeModule> boolean hasNativeModule(Class<T> nativeModuleInterface);
 
+  @Nullable
   <T extends NativeModule> T getNativeModule(Class<T> nativeModuleInterface);
 
+  @Nullable
   NativeModule getNativeModule(String moduleName);
 
   JSIModule getJSIModule(JSIModuleType moduleType);
