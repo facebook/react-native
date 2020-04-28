@@ -56,9 +56,12 @@ public class ReactDrawerLayoutManager extends ViewGroupManager<ReactDrawerLayout
 
   @Override
   protected void addEventEmitters(ThemedReactContext reactContext, ReactDrawerLayout view) {
-    view.addDrawerListener(
-        new DrawerEventEmitter(
-            view, reactContext.getNativeModule(UIManagerModule.class).getEventDispatcher()));
+    UIManagerModule uiManager = reactContext.getNativeModule(UIManagerModule.class);
+    if (uiManager == null) {
+      return;
+    }
+
+    view.addDrawerListener(new DrawerEventEmitter(view, uiManager.getEventDispatcher()));
   }
 
   @Override

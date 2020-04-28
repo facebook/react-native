@@ -1090,18 +1090,23 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
 
   private class ReactContentSizeWatcher implements ContentSizeWatcher {
     private ReactEditText mEditText;
-    private EventDispatcher mEventDispatcher;
+    private @Nullable EventDispatcher mEventDispatcher;
     private int mPreviousContentWidth = 0;
     private int mPreviousContentHeight = 0;
 
     public ReactContentSizeWatcher(ReactEditText editText) {
       mEditText = editText;
       ReactContext reactContext = getReactContext(editText);
-      mEventDispatcher = reactContext.getNativeModule(UIManagerModule.class).getEventDispatcher();
+      UIManagerModule uiManager = reactContext.getNativeModule(UIManagerModule.class);
+      mEventDispatcher = uiManager != null ? uiManager.getEventDispatcher() : null;
     }
 
     @Override
     public void onLayout() {
+      if (mEventDispatcher == null) {
+        return;
+      }
+
       int contentWidth = mEditText.getWidth();
       int contentHeight = mEditText.getHeight();
 

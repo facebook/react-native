@@ -80,8 +80,14 @@ public class ReactSwitchManager extends SimpleViewManager<ReactSwitch>
         @Override
         public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
           ReactContext reactContext = (ReactContext) buttonView.getContext();
-          reactContext
-              .getNativeModule(UIManagerModule.class)
+
+          UIManagerModule uiManager = reactContext.getNativeModule(UIManagerModule.class);
+
+          if (uiManager == null) {
+            return;
+          }
+
+          uiManager
               .getEventDispatcher()
               .dispatchEvent(new ReactSwitchEvent(buttonView.getId(), isChecked));
         }

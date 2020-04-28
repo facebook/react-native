@@ -8,6 +8,7 @@
 package com.facebook.react.fabric;
 
 import androidx.annotation.NonNull;
+import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.JSIModuleProvider;
 import com.facebook.react.bridge.JavaScriptContextHolder;
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -83,7 +84,8 @@ public class FabricJSIModuleProvider implements JSIModuleProvider<UIManager> {
   private FabricUIManager createUIManager(@NonNull EventBeatManager eventBeatManager) {
     Systrace.beginSection(
         Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "FabricJSIModuleProvider.createUIManager");
-    UIManagerModule nativeModule = mReactApplicationContext.getNativeModule(UIManagerModule.class);
+    UIManagerModule nativeModule =
+        Assertions.assertNotNull(mReactApplicationContext.getNativeModule(UIManagerModule.class));
     EventDispatcher eventDispatcher = nativeModule.getEventDispatcher();
     FabricUIManager fabricUIManager =
         new FabricUIManager(

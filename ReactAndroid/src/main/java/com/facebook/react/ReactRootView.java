@@ -200,9 +200,12 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
       return;
     }
     ReactContext reactContext = mReactInstanceManager.getCurrentReactContext();
-    EventDispatcher eventDispatcher =
-        reactContext.getNativeModule(UIManagerModule.class).getEventDispatcher();
-    mJSTouchDispatcher.onChildStartedNativeGesture(androidEvent, eventDispatcher);
+    UIManagerModule uiManager = reactContext.getNativeModule(UIManagerModule.class);
+
+    if (uiManager != null) {
+      EventDispatcher eventDispatcher = uiManager.getEventDispatcher();
+      mJSTouchDispatcher.onChildStartedNativeGesture(androidEvent, eventDispatcher);
+    }
   }
 
   @Override
@@ -285,9 +288,12 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
       return;
     }
     ReactContext reactContext = mReactInstanceManager.getCurrentReactContext();
-    EventDispatcher eventDispatcher =
-        reactContext.getNativeModule(UIManagerModule.class).getEventDispatcher();
-    mJSTouchDispatcher.handleTouchEvent(event, eventDispatcher);
+    UIManagerModule uiManager = reactContext.getNativeModule(UIManagerModule.class);
+
+    if (uiManager != null) {
+      EventDispatcher eventDispatcher = uiManager.getEventDispatcher();
+      mJSTouchDispatcher.handleTouchEvent(event, eventDispatcher);
+    }
   }
 
   @Override
@@ -749,10 +755,12 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
     }
 
     private void emitUpdateDimensionsEvent() {
-      mReactInstanceManager
-          .getCurrentReactContext()
-          .getNativeModule(DeviceInfoModule.class)
-          .emitUpdateDimensionsEvent();
+      DeviceInfoModule deviceInfo =
+          mReactInstanceManager.getCurrentReactContext().getNativeModule(DeviceInfoModule.class);
+
+      if (deviceInfo != null) {
+        deviceInfo.emitUpdateDimensionsEvent();
+      }
     }
 
     private WritableMap createKeyboardEventPayload(

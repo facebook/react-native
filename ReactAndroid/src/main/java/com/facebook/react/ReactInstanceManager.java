@@ -470,7 +470,9 @@ public class ReactInstanceManager {
     } else {
       DeviceEventManagerModule deviceEventManagerModule =
           reactContext.getNativeModule(DeviceEventManagerModule.class);
-      deviceEventManagerModule.emitHardwareBackPressed();
+      if (deviceEventManagerModule != null) {
+        deviceEventManagerModule.emitHardwareBackPressed();
+      }
     }
   }
 
@@ -497,7 +499,9 @@ public class ReactInstanceManager {
               || NfcAdapter.ACTION_NDEF_DISCOVERED.equals(action))) {
         DeviceEventManagerModule deviceEventManagerModule =
             currentContext.getNativeModule(DeviceEventManagerModule.class);
-        deviceEventManagerModule.emitNewIntentReceived(uri);
+        if (deviceEventManagerModule != null) {
+          deviceEventManagerModule.emitNewIntentReceived(uri);
+        }
       }
       currentContext.onNewIntent(mCurrentActivity, intent);
     }
@@ -775,9 +779,12 @@ public class ReactInstanceManager {
 
     ReactContext currentReactContext = getCurrentReactContext();
     if (currentReactContext != null) {
-      currentReactContext
-          .getNativeModule(AppearanceModule.class)
-          .onConfigurationChanged(updatedContext);
+      AppearanceModule appearanceModule =
+          currentReactContext.getNativeModule(AppearanceModule.class);
+
+      if (appearanceModule != null) {
+        appearanceModule.onConfigurationChanged(updatedContext);
+      }
     }
   }
 

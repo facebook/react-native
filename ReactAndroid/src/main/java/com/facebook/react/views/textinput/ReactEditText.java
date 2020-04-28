@@ -609,7 +609,9 @@ public class ReactEditText extends AppCompatEditText {
       ReactContext reactContext = getReactContext(this);
       final ReactTextInputLocalData localData = new ReactTextInputLocalData(this);
       UIManagerModule uiManager = reactContext.getNativeModule(UIManagerModule.class);
-      uiManager.setViewLocalData(getId(), localData);
+      if (uiManager != null) {
+        uiManager.setViewLocalData(getId(), localData);
+      }
     }
   }
 
