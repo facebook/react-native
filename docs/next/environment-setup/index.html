@@ -270,9 +270,8 @@ brew <span class="token function">install</span> watchman
 <p><block class="native windows android" /></p>
 <ol>
 <li>Open the <strong>Windows Control Panel.</strong></li>
-<li>Under <strong>System and Security,</strong> open <strong>System.</strong></li>
-<li>Click on <strong>Advanced system settings...</strong></li>
-<li>Then click on <strong>Environment Variables...</strong></li>
+<li>Click on <strong>User Accounts,</strong> then click <strong>User Accounts</strong> again</li>
+<li>Click on <strong>Change my environment variables</strong></li>
 <li>Click on <strong>New...</strong> to create a new <code>ANDROID_HOME</code> user variable that points to the path to your Android SDK:</li>
 </ol>
 <p><img src="/docs/assets/GettingStartedAndroidEnvironmentVariableANDROID_HOME.png" alt="ANDROID_HOME Environment Variable"></p>
@@ -281,12 +280,16 @@ brew <span class="token function">install</span> watchman
 </code></pre>
 <p>You can find the actual location of the SDK in the Android Studio &quot;Preferences&quot; dialog, under <strong>Appearance &amp; Behavior</strong> → <strong>System Settings</strong> → <strong>Android SDK</strong>.</p>
 <p>Open a new Command Prompt window to ensure the new environment variable is loaded before proceeding to the next step.</p>
+<ol>
+<li>Open powershell</li>
+<li>Copy and paste <strong>Get-ChildItem -Path Env:\</strong> into powershell</li>
+<li>Verify <code>ANDROID_HOME</code> has been added</li>
+</ol>
 <p><h4>4. Add platform-tools to Path</h4></p>
 <ol>
 <li>Open the <strong>Windows Control Panel.</strong></li>
-<li>Under <strong>System and Security,</strong> open <strong>System.</strong></li>
-<li>Click on <strong>Advanced system settings...</strong></li>
-<li>Then click on <strong>Environment Variables...</strong></li>
+<li>Click on <strong>User Accounts,</strong> then click <strong>User Accounts</strong> again</li>
+<li>Click on <strong>Change my environment variables</strong></li>
 <li>Select the <strong>Path</strong> variable.</li>
 <li>Click <strong>Edit.</strong></li>
 <li>Click <strong>New</strong> and add the path to platform-tools to the list.</li>
