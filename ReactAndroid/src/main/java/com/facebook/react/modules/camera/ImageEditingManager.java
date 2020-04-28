@@ -1,14 +1,37 @@
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
+ * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
+ * directory of this source tree.
  */
-
 package com.facebook.react.modules.camera;
 
-import javax.annotation.Nullable;
-
+import android.annotation.SuppressLint;
+import android.content.Context;
+import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.BitmapRegionDecoder;
+import android.graphics.Matrix;
+import android.graphics.Rect;
+import android.media.ExifInterface;
+import android.net.Uri;
+import android.os.AsyncTask;
+import android.provider.MediaStore;
+import android.text.TextUtils;
+import androidx.annotation.Nullable;
+import com.facebook.common.logging.FLog;
+import com.facebook.infer.annotation.Assertions;
+import com.facebook.react.bridge.Callback;
+import com.facebook.react.bridge.GuardedAsyncTask;
+import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
+import com.facebook.react.bridge.ReactApplicationContext;
+import com.facebook.react.bridge.ReactContext;
+import com.facebook.react.bridge.ReactContextBaseJavaModule;
+import com.facebook.react.bridge.ReactMethod;
+import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.common.ReactConstants;
+import com.facebook.react.module.annotations.ReactModule;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FilenameFilter;
@@ -22,76 +45,48 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import android.annotation.SuppressLint;
-import android.content.Context;
-import android.database.Cursor;
-import android.graphics.Bitmap;
-import android.graphics.BitmapRegionDecoder;
-import android.graphics.BitmapFactory;
-import android.graphics.Matrix;
-import android.graphics.Rect;
-import android.media.ExifInterface;
-import android.net.Uri;
-import android.os.AsyncTask;
-import android.provider.MediaStore;
-import android.text.TextUtils;
-
-import com.facebook.common.logging.FLog;
-import com.facebook.react.bridge.Callback;
-import com.facebook.react.bridge.GuardedAsyncTask;
-import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.bridge.ReactContext;
-import com.facebook.react.bridge.ReactContextBaseJavaModule;
-import com.facebook.react.bridge.ReactMethod;
-import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
-import com.facebook.react.bridge.ReadableMap;
-import com.facebook.infer.annotation.Assertions;
-import com.facebook.react.common.ReactConstants;
-import com.facebook.react.module.annotations.ReactModule;
-
-/**
- * Native module that provides image cropping functionality.
- */
+/** Native module that provides image cropping functionality. */
 @ReactModule(name = ImageEditingManager.NAME)
 public class ImageEditingManager extends ReactContextBaseJavaModule {
 
-  protected static final String NAME = "ImageEditingManager";
+  public static final String NAME = "ImageEditingManager";
 
-  private static final List<String> LOCAL_URI_PREFIXES = Arrays.asList(
-      "file://", "content://");
+  private static final List<String> LOCAL_URI_PREFIXES = Arrays.asList("file://", "content://");
 
   private static final String TEMP_FILE_PREFIX = "ReactNative_cropped_image_";
 
   /** Compress quality of the output file. */
   private static final int COMPRESS_QUALITY = 90;
 
-  @SuppressLint("InlinedApi") private static final String[] EXIF_ATTRIBUTES = new String[] {
-    ExifInterface.TAG_APERTURE,
-    ExifInterface.TAG_DATETIME,
-    ExifInterface.TAG_DATETIME_DIGITIZED,
-    ExifInterface.TAG_EXPOSURE_TIME,
-    ExifInterface.TAG_FLASH,
-    ExifInterface.TAG_FOCAL_LENGTH,
-    ExifInterface.TAG_GPS_ALTITUDE,
-    ExifInterface.TAG_GPS_ALTITUDE_REF,
-    ExifInterface.TAG_GPS_DATESTAMP,
-    ExifInterface.TAG_GPS_LATITUDE,
-    ExifInterface.TAG_GPS_LATITUDE_REF,
-    ExifInterface.TAG_GPS_LONGITUDE,
-    ExifInterface.TAG_GPS_LONGITUDE_REF,
-    ExifInterface.TAG_GPS_PROCESSING_METHOD,
-    ExifInterface.TAG_GPS_TIMESTAMP,
-    ExifInterface.TAG_IMAGE_LENGTH,
-    ExifInterface.TAG_IMAGE_WIDTH,
-    ExifInterface.TAG_ISO,
-    ExifInterface.TAG_MAKE,
-    ExifInterface.TAG_MODEL,
-    ExifInterface.TAG_ORIENTATION,
-    ExifInterface.TAG_SUBSEC_TIME,
-    ExifInterface.TAG_SUBSEC_TIME_DIG,
-    ExifInterface.TAG_SUBSEC_TIME_ORIG,
-    ExifInterface.TAG_WHITE_BALANCE
-  };
+  @SuppressLint("InlinedApi")
+  private static final String[] EXIF_ATTRIBUTES =
+      new String[] {
+        ExifInterface.TAG_APERTURE,
+        ExifInterface.TAG_DATETIME,
+        ExifInterface.TAG_DATETIME_DIGITIZED,
+        ExifInterface.TAG_EXPOSURE_TIME,
+        ExifInterface.TAG_FLASH,
+        ExifInterface.TAG_FOCAL_LENGTH,
+        ExifInterface.TAG_GPS_ALTITUDE,
+        ExifInterface.TAG_GPS_ALTITUDE_REF,
+        ExifInterface.TAG_GPS_DATESTAMP,
+        ExifInterface.TAG_GPS_LATITUDE,
+        ExifInterface.TAG_GPS_LATITUDE_REF,
+        ExifInterface.TAG_GPS_LONGITUDE,
+        ExifInterface.TAG_GPS_LONGITUDE_REF,
+        ExifInterface.TAG_GPS_PROCESSING_METHOD,
+        ExifInterface.TAG_GPS_TIMESTAMP,
+        ExifInterface.TAG_IMAGE_LENGTH,
+        ExifInterface.TAG_IMAGE_WIDTH,
+        ExifInterface.TAG_ISO,
+        ExifInterface.TAG_MAKE,
+        ExifInterface.TAG_MODEL,
+        ExifInterface.TAG_ORIENTATION,
+        ExifInterface.TAG_SUBSEC_TIME,
+        ExifInterface.TAG_SUBSEC_TIME_DIG,
+        ExifInterface.TAG_SUBSEC_TIME_ORIG,
+        ExifInterface.TAG_WHITE_BALANCE
+      };
 
   public ImageEditingManager(ReactApplicationContext reactContext) {
     super(reactContext);
@@ -136,15 +131,16 @@ public class ImageEditingManager extends ReactContextBaseJavaModule {
     }
 
     private void cleanDirectory(File directory) {
-      File[] toDelete = directory.listFiles(
-          new FilenameFilter() {
-            @Override
-            public boolean accept(File dir, String filename) {
-              return filename.startsWith(TEMP_FILE_PREFIX);
-            }
-          });
+      File[] toDelete =
+          directory.listFiles(
+              new FilenameFilter() {
+                @Override
+                public boolean accept(File dir, String filename) {
+                  return filename.startsWith(TEMP_FILE_PREFIX);
+                }
+              });
       if (toDelete != null) {
-        for (File file: toDelete) {
+        for (File file : toDelete) {
           file.delete();
         }
       }
@@ -158,44 +154,43 @@ public class ImageEditingManager extends ReactContextBaseJavaModule {
    *
    * @param uri the MediaStore URI of the image to crop
    * @param options crop parameters specified as {@code {offset: {x, y}, size: {width, height}}}.
-   *        Optionally this also contains  {@code {targetSize: {width, height}}}. If this is
-   *        specified, the cropped image will be resized to that size.
-   *        All units are in pixels (not DPs).
+   *     Optionally this also contains {@code {targetSize: {width, height}}}. If this is specified,
+   *     the cropped image will be resized to that size. All units are in pixels (not DPs).
    * @param success callback to be invoked when the image has been cropped; the only argument that
-   *        is passed to this callback is the file:// URI of the new image
+   *     is passed to this callback is the file:// URI of the new image
    * @param error callback to be invoked when an error occurs (e.g. can't create file etc.)
    */
   @ReactMethod
   public void cropImage(
-      String uri,
-      ReadableMap options,
-      final Callback success,
-      final Callback error) {
+      String uri, ReadableMap options, final Callback success, final Callback error) {
     ReadableMap offset = options.hasKey("offset") ? options.getMap("offset") : null;
     ReadableMap size = options.hasKey("size") ? options.getMap("size") : null;
-    if (offset == null || size == null ||
-        !offset.hasKey("x") || !offset.hasKey("y") ||
-        !size.hasKey("width") || !size.hasKey("height")) {
+    if (offset == null
+        || size == null
+        || !offset.hasKey("x")
+        || !offset.hasKey("y")
+        || !size.hasKey("width")
+        || !size.hasKey("height")) {
       throw new JSApplicationIllegalArgumentException("Please specify offset and size");
     }
     if (uri == null || uri.isEmpty()) {
       throw new JSApplicationIllegalArgumentException("Please specify a URI");
     }
 
-    CropTask cropTask = new CropTask(
-        getReactApplicationContext(),
-        uri,
-        (int) offset.getDouble("x"),
-        (int) offset.getDouble("y"),
-        (int) size.getDouble("width"),
-        (int) size.getDouble("height"),
-        success,
-        error);
+    CropTask cropTask =
+        new CropTask(
+            getReactApplicationContext(),
+            uri,
+            (int) offset.getDouble("x"),
+            (int) offset.getDouble("y"),
+            (int) size.getDouble("width"),
+            (int) size.getDouble("height"),
+            success,
+            error);
     if (options.hasKey("displaySize")) {
       ReadableMap targetSize = options.getMap("displaySize");
       cropTask.setTargetSize(
-        (int) targetSize.getDouble("width"),
-        (int) targetSize.getDouble("height"));
+          (int) targetSize.getDouble("width"), (int) targetSize.getDouble("height"));
     }
     cropTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
   }
@@ -223,8 +218,8 @@ public class ImageEditingManager extends ReactContextBaseJavaModule {
         Callback error) {
       super(context);
       if (x < 0 || y < 0 || width <= 0 || height <= 0) {
-        throw new JSApplicationIllegalArgumentException(String.format(
-            "Invalid crop rectangle: [%d, %d, %d, %d]", x, y, width, height));
+        throw new JSApplicationIllegalArgumentException(
+            String.format("Invalid crop rectangle: [%d, %d, %d, %d]", x, y, width, height));
       }
       mContext = context;
       mUri = uri;
@@ -238,8 +233,8 @@ public class ImageEditingManager extends ReactContextBaseJavaModule {
 
     public void setTargetSize(int width, int height) {
       if (width <= 0 || height <= 0) {
-        throw new JSApplicationIllegalArgumentException(String.format(
-            "Invalid target size: [%d, %d]", width, height));
+        throw new JSApplicationIllegalArgumentException(
+            String.format("Invalid target size: [%d, %d]", width, height));
       }
       mTargetWidth = width;
       mTargetHeight = height;
@@ -294,11 +289,12 @@ public class ImageEditingManager extends ReactContextBaseJavaModule {
 
     /**
      * Reads and crops the bitmap.
+     *
      * @param outOptions Bitmap options, useful to determine {@code outMimeType}.
      */
     private Bitmap crop(BitmapFactory.Options outOptions) throws IOException {
       InputStream inputStream = openBitmapInputStream();
-      // Effeciently crops image without loading full resolution into memory
+      // Efficiently crops image without loading full resolution into memory
       // https://developer.android.com/reference/android/graphics/BitmapRegionDecoder.html
       BitmapRegionDecoder decoder = BitmapRegionDecoder.newInstance(inputStream, false);
       try {
@@ -313,15 +309,13 @@ public class ImageEditingManager extends ReactContextBaseJavaModule {
     }
 
     /**
-     * Crop the rectangle given by {@code mX, mY, mWidth, mHeight} within the source bitmap
-     * and scale the result to {@code targetWidth, targetHeight}.
+     * Crop the rectangle given by {@code mX, mY, mWidth, mHeight} within the source bitmap and
+     * scale the result to {@code targetWidth, targetHeight}.
+     *
      * @param outOptions Bitmap options, useful to determine {@code outMimeType}.
      */
     private Bitmap cropAndResize(
-        int targetWidth,
-        int targetHeight,
-        BitmapFactory.Options outOptions)
-        throws IOException {
+        int targetWidth, int targetHeight, BitmapFactory.Options outOptions) throws IOException {
       Assertions.assertNotNull(outOptions);
 
       // Loading large bitmaps efficiently:
@@ -418,8 +412,10 @@ public class ImageEditingManager extends ReactContextBaseJavaModule {
     if (uri.getScheme().equals("file")) {
       return new File(uri.getPath());
     } else if (uri.getScheme().equals("content")) {
-      Cursor cursor = context.getContentResolver()
-        .query(uri, new String[] { MediaStore.MediaColumns.DATA }, null, null, null);
+      Cursor cursor =
+          context
+              .getContentResolver()
+              .query(uri, new String[] {MediaStore.MediaColumns.DATA}, null, null, null);
       if (cursor != null) {
         try {
           if (cursor.moveToFirst()) {
@@ -494,21 +490,22 @@ public class ImageEditingManager extends ReactContextBaseJavaModule {
     }
     if (externalCacheDir == null) {
       cacheDir = internalCacheDir;
-    }
-    else if (internalCacheDir == null) {
+    } else if (internalCacheDir == null) {
       cacheDir = externalCacheDir;
     } else {
-      cacheDir = externalCacheDir.getFreeSpace() > internalCacheDir.getFreeSpace() ?
-          externalCacheDir : internalCacheDir;
+      cacheDir =
+          externalCacheDir.getFreeSpace() > internalCacheDir.getFreeSpace()
+              ? externalCacheDir
+              : internalCacheDir;
     }
     return File.createTempFile(TEMP_FILE_PREFIX, getFileExtensionForType(mimeType), cacheDir);
   }
 
   /**
-   * When scaling down the bitmap, decode only every n-th pixel in each dimension.
-   * Calculate the largest {@code inSampleSize} value that is a power of 2 and keeps both
-   * {@code width, height} larger or equal to {@code targetWidth, targetHeight}.
-   * This can significantly reduce memory usage.
+   * When scaling down the bitmap, decode only every n-th pixel in each dimension. Calculate the
+   * largest {@code inSampleSize} value that is a power of 2 and keeps both {@code width, height}
+   * larger or equal to {@code targetWidth, targetHeight}. This can significantly reduce memory
+   * usage.
    */
   private static int getDecodeSampleSize(int width, int height, int targetWidth, int targetHeight) {
     int inSampleSize = 1;

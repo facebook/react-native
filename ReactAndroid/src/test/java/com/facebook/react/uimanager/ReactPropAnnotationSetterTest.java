@@ -1,35 +1,32 @@
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
+ * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
+ * directory of this source tree.
  */
-
 package com.facebook.react.uimanager;
-
-import android.view.View;
-
-import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
-import com.facebook.react.bridge.ReadableArray;
-import com.facebook.react.bridge.ReadableMap;
-import com.facebook.react.bridge.JavaOnlyArray;
-import com.facebook.react.bridge.JavaOnlyMap;
-import com.facebook.react.uimanager.annotations.ReactProp;
-import com.facebook.react.uimanager.annotations.ReactPropGroup;
-
-import org.junit.Before;
-import org.junit.runner.RunWith;
-import org.junit.Rule;
-import org.junit.Test;
-import org.powermock.core.classloader.annotations.PowerMockIgnore;
-import org.powermock.modules.junit4.rule.PowerMockRule;
-import org.robolectric.RobolectricTestRunner;
 
 import static org.fest.assertions.api.Assertions.fail;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
+
+import android.view.View;
+import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
+import com.facebook.react.bridge.JavaOnlyArray;
+import com.facebook.react.bridge.JavaOnlyMap;
+import com.facebook.react.bridge.ReadableArray;
+import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.uimanager.annotations.ReactProp;
+import com.facebook.react.uimanager.annotations.ReactPropGroup;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.powermock.core.classloader.annotations.PowerMockIgnore;
+import org.powermock.modules.junit4.rule.PowerMockRule;
+import org.robolectric.RobolectricTestRunner;
 
 /**
  * Test updating view through {@link ViewManager} with {@link ReactProp} and {@link ReactPropGroup}
@@ -39,21 +36,31 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 @PowerMockIgnore({"org.mockito.*", "org.robolectric.*", "androidx.*", "android.*"})
 public class ReactPropAnnotationSetterTest {
 
-  @Rule
-  public PowerMockRule rule = new PowerMockRule();
+  @Rule public PowerMockRule rule = new PowerMockRule();
 
   public interface ViewManagerUpdatesReceiver {
     void onBooleanSetterCalled(boolean value);
+
     void onIntSetterCalled(int value);
+
     void onDoubleSetterCalled(double value);
+
     void onFloatSetterCalled(float value);
+
     void onStringSetterCalled(String value);
+
     void onBoxedBooleanSetterCalled(Boolean value);
+
     void onBoxedIntSetterCalled(Integer value);
+
     void onArraySetterCalled(ReadableArray value);
+
     void onMapSetterCalled(ReadableMap value);
+
     void onFloatGroupPropSetterCalled(int index, float value);
+
     void onIntGroupPropSetterCalled(int index, int value);
+
     void onBoxedIntGroupPropSetterCalled(int index, Integer value);
   }
 
@@ -157,42 +164,42 @@ public class ReactPropAnnotationSetterTest {
       mViewManagerUpdatesReceiver.onMapSetterCalled(value);
     }
 
-    @ReactPropGroup(names = {
-        "floatGroupPropFirst",
-        "floatGroupPropSecond",
-    })
+    @ReactPropGroup(
+        names = {
+          "floatGroupPropFirst",
+          "floatGroupPropSecond",
+        })
     public void setFloatGroupProp(View v, int index, float value) {
       mViewManagerUpdatesReceiver.onFloatGroupPropSetterCalled(index, value);
     }
 
-    @ReactPropGroup(names = {
-        "floatGroupPropWithDefaultFirst",
-        "floatGroupPropWithDefaultSecond",
-    }, defaultFloat = -100.0f)
+    @ReactPropGroup(
+        names = {
+          "floatGroupPropWithDefaultFirst",
+          "floatGroupPropWithDefaultSecond",
+        },
+        defaultFloat = -100.0f)
     public void setFloatGroupPropWithDefault(View v, int index, float value) {
       mViewManagerUpdatesReceiver.onFloatGroupPropSetterCalled(index, value);
     }
 
-    @ReactPropGroup(names = {
-        "intGroupPropFirst",
-        "intGroupPropSecond"
-    })
+    @ReactPropGroup(names = {"intGroupPropFirst", "intGroupPropSecond"})
     public void setIntGroupProp(View v, int index, int value) {
       mViewManagerUpdatesReceiver.onIntGroupPropSetterCalled(index, value);
     }
 
-    @ReactPropGroup(names = {
-        "intGroupPropWithDefaultFirst",
-        "intGroupPropWithDefaultSecond"
-    }, defaultInt = 555)
+    @ReactPropGroup(
+        names = {"intGroupPropWithDefaultFirst", "intGroupPropWithDefaultSecond"},
+        defaultInt = 555)
     public void setIntGroupPropWithDefault(View v, int index, int value) {
       mViewManagerUpdatesReceiver.onIntGroupPropSetterCalled(index, value);
     }
 
-    @ReactPropGroup(names = {
-        "boxedIntGroupPropFirst",
-        "boxedIntGroupPropSecond",
-    })
+    @ReactPropGroup(
+        names = {
+          "boxedIntGroupPropFirst",
+          "boxedIntGroupPropSecond",
+        })
     public void setBoxedIntGroupProp(View v, int index, Integer value) {
       mViewManagerUpdatesReceiver.onBoxedIntGroupPropSetterCalled(index, value);
     }

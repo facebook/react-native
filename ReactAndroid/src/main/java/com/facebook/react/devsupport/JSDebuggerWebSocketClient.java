@@ -1,20 +1,18 @@
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
+ * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
+ * directory of this source tree.
  */
-
 package com.facebook.react.devsupport;
 
 import android.util.JsonReader;
 import android.util.JsonToken;
 import android.util.JsonWriter;
-
+import androidx.annotation.Nullable;
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.common.JavascriptException;
-
 import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
@@ -22,24 +20,20 @@ import java.util.HashMap;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
-
-import javax.annotation.Nullable;
-
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 import okhttp3.WebSocket;
 import okhttp3.WebSocketListener;
 
-/**
- * A wrapper around WebSocketClient that recognizes RN debugging message format.
- */
+/** A wrapper around WebSocketClient that recognizes RN debugging message format. */
 public class JSDebuggerWebSocketClient extends WebSocketListener {
 
   private static final String TAG = "JSDebuggerWebSocketClient";
 
   public interface JSDebuggerCallback {
     void onSuccess(@Nullable String response);
+
     void onFailure(Throwable cause);
   }
 
@@ -55,11 +49,12 @@ public class JSDebuggerWebSocketClient extends WebSocketListener {
       throw new IllegalStateException("JSDebuggerWebSocketClient is already initialized.");
     }
     mConnectCallback = callback;
-    mHttpClient = new OkHttpClient.Builder()
-      .connectTimeout(10, TimeUnit.SECONDS)
-      .writeTimeout(10, TimeUnit.SECONDS)
-      .readTimeout(0, TimeUnit.MINUTES) // Disable timeouts for read
-      .build();
+    mHttpClient =
+        new OkHttpClient.Builder()
+            .connectTimeout(10, TimeUnit.SECONDS)
+            .writeTimeout(10, TimeUnit.SECONDS)
+            .readTimeout(0, TimeUnit.MINUTES) // Disable timeouts for read
+            .build();
 
     Request request = new Request.Builder().url(url).build();
     mHttpClient.newWebSocket(request, this);
@@ -73,10 +68,12 @@ public class JSDebuggerWebSocketClient extends WebSocketListener {
       StringWriter sw = new StringWriter();
       JsonWriter js = new JsonWriter(sw);
       js.beginObject()
-        .name("id").value(requestID)
-        .name("method").value("prepareJSRuntime")
-        .endObject()
-        .close();
+          .name("id")
+          .value(requestID)
+          .name("method")
+          .value("prepareJSRuntime")
+          .endObject()
+          .close();
       sendMessage(requestID, sw.toString());
     } catch (IOException e) {
       triggerRequestFailure(requestID, e);
@@ -84,20 +81,23 @@ public class JSDebuggerWebSocketClient extends WebSocketListener {
   }
 
   public void loadApplicationScript(
-      String sourceURL,
-      HashMap<String, String> injectedObjects,
-      JSDebuggerCallback callback) {
+      String sourceURL, HashMap<String, String> injectedObjects, JSDebuggerCallback callback) {
     int requestID = mRequestID.getAndIncrement();
     mCallbacks.put(requestID, callback);
 
     try {
       StringWriter sw = new StringWriter();
-      JsonWriter js = new JsonWriter(sw)
-         .beginObject()
-         .name("id").value(requestID)
-         .name("method").value("executeApplicationScript")
-         .name("url").value(sourceURL)
-         .name("inject").beginObject();
+      JsonWriter js =
+          new JsonWriter(sw)
+              .beginObject()
+              .name("id")
+              .value(requestID)
+              .name("method")
+              .value("executeApplicationScript")
+              .name("url")
+              .value(sourceURL)
+              .name("inject")
+              .beginObject();
       for (String key : injectedObjects.keySet()) {
         js.name(key).value(injectedObjects.get(key));
       }
@@ -108,10 +108,7 @@ public class JSDebuggerWebSocketClient extends WebSocketListener {
     }
   }
 
-  public void executeJSCall(
-      String methodName,
-      String jsonArgsArray,
-      JSDebuggerCallback callback) {
+  public void executeJSCall(String methodName, String jsonArgsArray, JSDebuggerCallback callback) {
     int requestID = mRequestID.getAndIncrement();
     mCallbacks.put(requestID, callback);
 
@@ -119,11 +116,9 @@ public class JSDebuggerWebSocketClient extends WebSocketListener {
       StringWriter sw = new StringWriter();
       JsonWriter js = new JsonWriter(sw);
 
-      js.beginObject()
-        .name("id").value(requestID)
-        .name("method").value(methodName);
+      js.beginObject().name("id").value(requestID).name("method").value(methodName);
       /* JsonWriter does not offer writing raw string (without quotes), that's why
-         here we directly write to output string using the the underlying StringWriter */
+      here we directly write to output string using the the underlying StringWriter */
       sw.append(",\"arguments\":").append(jsonArgsArray);
       js.endObject().close();
       sendMessage(requestID, sw.toString());
@@ -146,8 +141,7 @@ public class JSDebuggerWebSocketClient extends WebSocketListener {
   private void sendMessage(int requestID, String message) {
     if (mWebSocket == null) {
       triggerRequestFailure(
-          requestID,
-          new IllegalStateException("WebSocket connection no longer valid"));
+          requestID, new IllegalStateException("WebSocket connection no longer valid"));
       return;
     }
     try {

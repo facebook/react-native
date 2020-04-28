@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Scheme
-   LastUpgradeVersion = "1120"
+   LastUpgradeVersion = "1020"
    version = "1.3">
    <BuildAction
-      parallelizeBuildables = "YES"
+      parallelizeBuildables = "NO"
       buildImplicitDependencies = "YES">
       <BuildActionEntries>
          <BuildActionEntry
@@ -48,9 +48,9 @@
             skipped = "NO">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "38A937FA244531670025DABB"
-               BuildableName = "RNTesterUnitTests.xctest"
-               BlueprintName = "RNTesterUnitTests"
+               BlueprintIdentifier = "E7DB215222B2F332005AC45F"
+               BuildableName = "RNTesterIntegrationTests.xctest"
+               BlueprintName = "RNTesterIntegrationTests"
                ReferencedContainer = "container:RNTesterPods.xcodeproj">
             </BuildableReference>
          </TestableReference>
@@ -58,9 +58,9 @@
             skipped = "NO">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "38E0B2B524456B0700EF053A"
-               BuildableName = "RNTesterIntegrationTests.xctest"
-               BlueprintName = "RNTesterIntegrationTests"
+               BlueprintIdentifier = "E7DB209E22B2BA84005AC45F"
+               BuildableName = "RNTesterUnitTests.xctest"
+               BlueprintName = "RNTesterUnitTests"
                ReferencedContainer = "container:RNTesterPods.xcodeproj">
             </BuildableReference>
          </TestableReference>

@@ -14,18 +14,20 @@ namespace facebook {
 namespace react {
 
 /**
- * A simple wrapper class that can be registered to a collection that keep it alive for extended period of time.
- * This object can be removed from the collection when needed.
+ * A simple wrapper class that can be registered to a collection that keep it
+ * alive for extended period of time. This object can be removed from the
+ * collection when needed.
  *
  * The subclass of this class must be created using std::make_shared<T>().
  * After creation, add it to the `LongLivedObjectCollection`.
- * When done with the object, call `allowRelease()` to allow the OS to release it.
+ * When done with the object, call `allowRelease()` to allow the OS to release
+ * it.
  */
 class LongLivedObject {
-public:
+ public:
   void allowRelease();
 
-protected:
+ protected:
   LongLivedObject();
 };
 
@@ -33,17 +35,17 @@ protected:
  * A singleton collection for the `LongLivedObject`s.
  */
 class LongLivedObjectCollection {
-public:
-  static LongLivedObjectCollection& get();
+ public:
+  static LongLivedObjectCollection &get();
 
-  LongLivedObjectCollection(LongLivedObjectCollection const&) = delete;
-  void operator=(LongLivedObjectCollection const&) = delete;
+  LongLivedObjectCollection(LongLivedObjectCollection const &) = delete;
+  void operator=(LongLivedObjectCollection const &) = delete;
 
   void add(std::shared_ptr<LongLivedObject> o);
   void remove(const LongLivedObject *o);
   void clear();
 
-private:
+ private:
   LongLivedObjectCollection();
   std::unordered_set<std::shared_ptr<LongLivedObject>> collection_;
 };

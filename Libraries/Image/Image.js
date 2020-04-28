@@ -50,7 +50,7 @@ function getSizeWithHeaders(
   headers: {[string]: string},
   success: (width: number, height: number) => void,
   failure?: (error: any) => void,
-) {
+): any {
   return ImageViewManager.getSizeWithHeaders({uri, headers})
     .then(function(sizes) {
       success(sizes.width, sizes.height);
@@ -63,7 +63,7 @@ function getSizeWithHeaders(
     );
 }
 
-function prefetch(url: string) {
+function prefetch(url: string): any {
   return ImageViewManager.prefetchImage(url);
 }
 

@@ -1,10 +1,9 @@
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
+ * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
+ * directory of this source tree.
  */
-
 package com.facebook.react.views.unimplementedview;
 
 import android.content.Context;
@@ -19,7 +18,9 @@ public class ReactUnimplementedView extends LinearLayout {
   public ReactUnimplementedView(Context context) {
     super(context);
     mTextView = new AppCompatTextView(context);
-    mTextView.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.MATCH_PARENT));
+    mTextView.setLayoutParams(
+        new LinearLayout.LayoutParams(
+            LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.MATCH_PARENT));
     mTextView.setGravity(Gravity.CENTER);
     mTextView.setTextColor(Color.WHITE);
 

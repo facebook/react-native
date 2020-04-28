@@ -383,7 +383,25 @@ const PanResponder = {
    *  accordingly. (numberActiveTouches) may not be totally accurate unless you
    *  are the responder.
    */
-  create(config: PanResponderConfig) {
+  create(
+    config: PanResponderConfig,
+  ): $TEMPORARY$object<{|
+    getInteractionHandle: () => ?number,
+    panHandlers: $TEMPORARY$object<{|
+      onMoveShouldSetResponder: (event: PressEvent) => boolean,
+      onMoveShouldSetResponderCapture: (event: PressEvent) => boolean,
+      onResponderEnd: (event: PressEvent) => void,
+      onResponderGrant: (event: PressEvent) => boolean,
+      onResponderMove: (event: PressEvent) => void,
+      onResponderReject: (event: PressEvent) => void,
+      onResponderRelease: (event: PressEvent) => void,
+      onResponderStart: (event: PressEvent) => void,
+      onResponderTerminate: (event: PressEvent) => void,
+      onResponderTerminationRequest: (event: PressEvent) => boolean,
+      onStartShouldSetResponder: (event: PressEvent) => boolean,
+      onStartShouldSetResponderCapture: (event: PressEvent) => boolean,
+    |}>,
+  |}> {
     const interactionState = {
       handle: (null: ?number),
     };

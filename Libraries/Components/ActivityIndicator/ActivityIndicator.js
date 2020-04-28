@@ -15,16 +15,14 @@ const React = require('react');
 const StyleSheet = require('../../StyleSheet/StyleSheet');
 const View = require('../View/View');
 
-const RCTActivityIndicatorViewNativeComponent = require('./RCTActivityIndicatorViewNativeComponent');
-
 import type {NativeComponent} from '../../Renderer/shims/ReactNative';
 import type {ViewProps} from '../View/ViewPropTypes';
 import type {NativeOrDynamicColorType} from '../../Color/NativeOrDynamicColorType'; // ]TODO(macOS ISS#2323203)
 
-const RCTActivityIndicator =
+const PlatformActivityIndicator =
   Platform.OS === 'android'
     ? require('../ProgressBarAndroid/ProgressBarAndroid')
-    : RCTActivityIndicatorViewNativeComponent;
+    : require('./ActivityIndicatorViewNativeComponent').default;
 
 const GRAY = '#999999';
 
@@ -94,6 +92,9 @@ const ActivityIndicator = (props: Props, forwardedRef?: any) => {
     ref: forwardedRef,
     style: sizeStyle,
     size: sizeProp,
+  };
+
+  const androidProps = {
     styleAttr: 'Normal',
     indeterminate: true,
   };
@@ -105,9 +106,12 @@ const ActivityIndicator = (props: Props, forwardedRef?: any) => {
         styles.container,
         style,
       )}>
-      {/* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was
-       * found when making Flow check .android.js files. */}
-      <RCTActivityIndicator {...nativeProps} />
+      {Platform.OS === 'android' ? (
+        // $FlowFixMe Flow doesn't know when this is the android component
+        <PlatformActivityIndicator {...nativeProps} {...androidProps} />
+      ) : (
+        <PlatformActivityIndicator {...nativeProps} />
+      )}
     </View>
   );
 };

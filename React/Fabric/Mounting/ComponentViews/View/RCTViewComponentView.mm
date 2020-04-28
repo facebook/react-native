@@ -94,7 +94,7 @@ using namespace facebook::react;
   return concreteComponentDescriptorProvider<ViewComponentDescriptor>();
 }
 
-- (void)updateProps:(SharedProps)props oldProps:(SharedProps)oldProps
+- (void)updateProps:(Props::Shared const &)props oldProps:(Props::Shared const &)oldProps
 {
 #ifndef NS_BLOCK_ASSERTIONS
   auto propsRawPtr = _props.get();
@@ -107,10 +107,8 @@ using namespace facebook::react;
       NSStringFromClass([self class]));
 #endif
 
-  auto const &oldViewProps = *std::static_pointer_cast<ViewProps const>(oldProps ?: _props);
+  auto const &oldViewProps = *std::static_pointer_cast<ViewProps const>(_props);
   auto const &newViewProps = *std::static_pointer_cast<ViewProps const>(props);
-
-  _props = std::static_pointer_cast<ViewProps const>(props);
 
   BOOL needsInvalidateLayer = NO;
 
@@ -122,7 +120,7 @@ using namespace facebook::react;
 
   // `backgroundColor`
   if (oldViewProps.backgroundColor != newViewProps.backgroundColor) {
-    _backgroundColor = RCTUIColorFromSharedColor(newViewProps.backgroundColor);
+    self.backgroundColor = RCTUIColorFromSharedColor(newViewProps.backgroundColor);
     needsInvalidateLayer = YES;
   }
 
@@ -241,15 +239,18 @@ using namespace facebook::react;
   }
 
   _needsInvalidateLayer = _needsInvalidateLayer || needsInvalidateLayer;
+
+  _props = std::static_pointer_cast<ViewProps const>(props);
 }
 
-- (void)updateEventEmitter:(SharedEventEmitter)eventEmitter
+- (void)updateEventEmitter:(EventEmitter::Shared const &)eventEmitter
 {
   assert(std::dynamic_pointer_cast<ViewEventEmitter const>(eventEmitter));
   _eventEmitter = std::static_pointer_cast<ViewEventEmitter const>(eventEmitter);
 }
 
-- (void)updateLayoutMetrics:(LayoutMetrics)layoutMetrics oldLayoutMetrics:(LayoutMetrics)oldLayoutMetrics
+- (void)updateLayoutMetrics:(LayoutMetrics const &)layoutMetrics
+           oldLayoutMetrics:(LayoutMetrics const &)oldLayoutMetrics
 {
   [super updateLayoutMetrics:layoutMetrics oldLayoutMetrics:oldLayoutMetrics];
 
@@ -332,12 +333,10 @@ static RCTCornerRadii RCTCornerRadiiFromBorderRadii(BorderRadii borderRadii)
 
 static RCTBorderColors RCTBorderColorsFromBorderColors(BorderColors borderColors)
 {
-  return RCTBorderColors{
-    .left = RCTCGColorRefUnretainedFromSharedColor(borderColors.left),
-    .top =  RCTCGColorRefUnretainedFromSharedColor(borderColors.top),
-    .bottom =  RCTCGColorRefUnretainedFromSharedColor(borderColors.bottom),
-    .right = RCTCGColorRefUnretainedFromSharedColor(borderColors.right)
-  };
+  return RCTBorderColors{.left = RCTCGColorRefUnretainedFromSharedColor(borderColors.left),
+                         .top = RCTCGColorRefUnretainedFromSharedColor(borderColors.top),
+                         .bottom = RCTCGColorRefUnretainedFromSharedColor(borderColors.bottom),
+                         .right = RCTCGColorRefUnretainedFromSharedColor(borderColors.right)};
 }
 
 static UIEdgeInsets UIEdgeInsetsFromBorderInsets(EdgeInsets edgeInsets)
@@ -460,7 +459,7 @@ static RCTBorderStyle RCTBorderStyleFromBorderStyle(BorderStyle borderStyle)
     CGFloat cornerRadius = 0;
     if (self.clipsToBounds) {
       if (borderMetrics.borderRadii.isUniform()) {
-        // In this case we can simply use `cornerRadius` exclusivly.
+        // In this case we can simply use `cornerRadius` exclusively.
         cornerRadius = borderMetrics.borderRadii.topLeft;
       } else {
         // In this case we have to generate masking layer manually.
@@ -563,6 +562,11 @@ static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
 - (SharedTouchEventEmitter)touchEventEmitterAtPoint:(CGPoint)point
 {
   return _eventEmitter;
+}
+
+- (NSString *)componentViewName_DO_NOT_USE_THIS_IS_BROKEN
+{
+  return RCTNSStringFromString([[self class] componentDescriptorProvider].name);
 }
 
 @end

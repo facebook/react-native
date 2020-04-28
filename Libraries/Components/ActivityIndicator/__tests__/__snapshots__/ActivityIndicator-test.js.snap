@@ -22,7 +22,6 @@ exports[`<ActivityIndicator /> should render as <View> when not mocked 1`] = `
     animating={true}
     color="#0000ff"
     hidesWhenStopped={true}
-    indeterminate={true}
     size="large"
     style={
       Object {
@@ -30,7 +29,6 @@ exports[`<ActivityIndicator /> should render as <View> when not mocked 1`] = `
         "width": 36,
       }
     }
-    styleAttr="Normal"
   />
 </View>
 `;

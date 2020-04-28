@@ -5,16 +5,16 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#import "RCTMultilineTextInputView.h"
+#import <React/RCTMultilineTextInputView.h>
 
 #import <React/RCTUtils.h>
 
-#import "RCTUITextView.h"
+#import <React/RCTUITextView.h>
 
 @implementation RCTMultilineTextInputView
 {
 #if TARGET_OS_OSX // [TODO(macOS ISS#2323203)
-  RCTUIScrollView *_scrollView; // TODO(macOS ISS#3536887)
+  RCTUIScrollView *_scrollView;
 #endif // ]TODO(macOS ISS#2323203)
   RCTUITextView *_backedTextInputView;
 }

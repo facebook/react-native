@@ -18,16 +18,18 @@ namespace react {
 ImageManager::ImageManager(ContextContainer::Shared const &contextContainer)
 {
   RCTImageLoader *imageLoader =
-      (RCTImageLoader *)unwrapManagedObject(contextContainer->getInstance<std::shared_ptr<void>>("RCTImageLoader"));
+      (RCTImageLoader *)unwrapManagedObject(contextContainer->at<std::shared_ptr<void>>("RCTImageLoader"));
   self_ = (__bridge_retained void *)[[RCTImageManager alloc] initWithImageLoader:imageLoader];
 }
 
-ImageManager::~ImageManager() {
+ImageManager::~ImageManager()
+{
   CFRelease(self_);
   self_ = nullptr;
 }
 
-ImageRequest ImageManager::requestImage(const ImageSource &imageSource) const {
+ImageRequest ImageManager::requestImage(const ImageSource &imageSource) const
+{
   RCTImageManager *imageManager = (__bridge RCTImageManager *)self_;
   return [imageManager requestImage:imageSource];
 }

@@ -4,8 +4,8 @@
 // LICENSE file in the root directory of this source tree.
 
 package com.facebook.jni;
+
 import com.facebook.proguard.annotations.DoNotStrip;
 
 @DoNotStrip
-public abstract class HybridClassBase extends HybridData {
-}
+public abstract class HybridClassBase extends HybridData {}

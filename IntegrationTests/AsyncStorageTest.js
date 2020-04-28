@@ -177,7 +177,7 @@ function testOptimizedMultiGet() {
 }
 
 class AsyncStorageTest extends React.Component<{}, $FlowFixMeState> {
-  state = {
+  state: any | $TEMPORARY$object<{|done: boolean, messages: string|}> = {
     messages: 'Initializing...',
     done: false,
   };
@@ -194,7 +194,7 @@ class AsyncStorageTest extends React.Component<{}, $FlowFixMeState> {
     AsyncStorage.clear(testSetAndGet);
   }
 
-  render() {
+  render(): React.Node {
     return (
       <View style={styles.container}>
         <Text>

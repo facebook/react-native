@@ -8,8 +8,8 @@
 #import "RCTParagraphComponentView.h"
 
 #import <react/components/text/ParagraphComponentDescriptor.h>
-#import <react/components/text/ParagraphLocalData.h>
 #import <react/components/text/ParagraphProps.h>
+#import <react/components/text/ParagraphState.h>
 #import <react/components/text/RawTextComponentDescriptor.h>
 #import <react/components/text/TextComponentDescriptor.h>
 #import <react/core/LocalData.h>
@@ -21,7 +21,7 @@
 using namespace facebook::react;
 
 @implementation RCTParagraphComponentView {
-  SharedParagraphLocalData _paragraphLocalData;
+  ParagraphShadowNode::ConcreteState::Shared _state;
   ParagraphAttributes _paragraphAttributes;
 }
 
@@ -53,42 +53,41 @@ using namespace facebook::react;
           concreteComponentDescriptorProvider<TextComponentDescriptor>()};
 }
 
-- (void)updateProps:(SharedProps)props oldProps:(SharedProps)oldProps
+- (void)updateProps:(Props::Shared const &)props oldProps:(Props::Shared const &)oldProps
 {
   const auto &paragraphProps = std::static_pointer_cast<const ParagraphProps>(props);
 
-  [super updateProps:props oldProps:oldProps];
-
   assert(paragraphProps);
   _paragraphAttributes = paragraphProps->paragraphAttributes;
+
+  [super updateProps:props oldProps:oldProps];
 }
 
-- (void)updateLocalData:(SharedLocalData)localData oldLocalData:(SharedLocalData)oldLocalData
+- (void)updateState:(State::Shared const &)state oldState:(State::Shared const &)oldState
 {
-  _paragraphLocalData = std::static_pointer_cast<const ParagraphLocalData>(localData);
-  assert(_paragraphLocalData);
+  _state = std::static_pointer_cast<ParagraphShadowNode::ConcreteState const>(state);
   [self setNeedsDisplay];
 }
 
 - (void)prepareForRecycle
 {
   [super prepareForRecycle];
-  _paragraphLocalData.reset();
+  _state.reset();
 }
 
 - (void)drawRect:(CGRect)rect
 {
-  if (!_paragraphLocalData) {
+  if (!_state) {
     return;
   }
 
-  SharedTextLayoutManager textLayoutManager = _paragraphLocalData->getTextLayoutManager();
+  SharedTextLayoutManager textLayoutManager = _state->getData().layoutManager;
   RCTTextLayoutManager *nativeTextLayoutManager =
       (__bridge RCTTextLayoutManager *)textLayoutManager->getNativeTextLayoutManager();
 
   CGRect frame = RCTCGRectFromRect(_layoutMetrics.getContentFrame());
 
-  [nativeTextLayoutManager drawAttributedString:_paragraphLocalData->getAttributedString()
+  [nativeTextLayoutManager drawAttributedString:_state->getData().attributedString
                             paragraphAttributes:_paragraphAttributes
                                           frame:frame];
 }
@@ -102,26 +101,26 @@ using namespace facebook::react;
     return superAccessibilityLabel;
   }
 
-  if (!_paragraphLocalData) {
+  if (!_state) {
     return nil;
   }
 
-  return RCTNSStringFromString(_paragraphLocalData->getAttributedString().getString());
+  return RCTNSStringFromString(_state->getData().attributedString.getString());
 }
 
 - (SharedTouchEventEmitter)touchEventEmitterAtPoint:(CGPoint)point
 {
-  if (!_paragraphLocalData) {
+  if (!_state) {
     return _eventEmitter;
   }
 
-  SharedTextLayoutManager textLayoutManager = _paragraphLocalData->getTextLayoutManager();
+  SharedTextLayoutManager textLayoutManager = _state->getData().layoutManager;
   RCTTextLayoutManager *nativeTextLayoutManager =
       (__bridge RCTTextLayoutManager *)textLayoutManager->getNativeTextLayoutManager();
   CGRect frame = RCTCGRectFromRect(_layoutMetrics.getContentFrame());
 
   SharedEventEmitter eventEmitter =
-      [nativeTextLayoutManager getEventEmitterWithAttributeString:_paragraphLocalData->getAttributedString()
+      [nativeTextLayoutManager getEventEmitterWithAttributeString:_state->getData().attributedString
                                               paragraphAttributes:_paragraphAttributes
                                                             frame:frame
                                                           atPoint:point];

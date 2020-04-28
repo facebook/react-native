@@ -10,7 +10,7 @@ package org.mockito.configuration;
 /**
  * Disables the Mockito cache to prevent Mockito & Robolectric bugs.
  *
- * Mockito loads this with reflection, so this class might appear unused.
+ * <p>Mockito loads this with reflection, so this class might appear unused.
  */
 @SuppressWarnings("unused")
 public class MockitoConfiguration extends DefaultMockitoConfiguration {

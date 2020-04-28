@@ -10,6 +10,15 @@
 
 'use strict';
 
+jest.mock('../../../BatchedBridge/NativeModules', () => ({
+  NativeAnimatedModule: {},
+  PlatformConstants: {
+    getConstants() {
+      return {};
+    },
+  },
+}));
+
 let Animated = require('../Animated');
 describe('Animated tests', () => {
   beforeEach(() => {

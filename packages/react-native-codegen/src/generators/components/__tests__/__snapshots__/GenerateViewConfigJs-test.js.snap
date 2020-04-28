@@ -1,0 +1,920 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`GenerateViewConfigJs can generate fixture ARRAY_PROPS 1`] = `
+Map {
+  "ARRAY_PROPSNativeViewConfig.js" => "
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @flow
+ */
+
+'use strict';
+
+const registerGeneratedViewConfig = require('registerGeneratedViewConfig');
+
+const ArrayPropsNativeComponentViewConfig = {
+  uiViewClassName: 'ArrayPropsNativeComponent',
+
+  validAttributes: {
+    names: true,
+    disableds: true,
+    progress: true,
+    radii: true,
+    colors: { process: require('processColorArray') },
+    srcs: true,
+    points: true,
+    sizes: true,
+    object: true,
+  },
+};
+
+let nativeComponentName = 'ArrayPropsNativeComponent';
+
+registerGeneratedViewConfig(nativeComponentName, ArrayPropsNativeComponentViewConfig);
+
+export const __INTERNAL_VIEW_CONFIG = ArrayPropsNativeComponentViewConfig;
+
+export default nativeComponentName;
+",
+}
+`;
+
+exports[`GenerateViewConfigJs can generate fixture BOOLEAN_PROP 1`] = `
+Map {
+  "BOOLEAN_PROPNativeViewConfig.js" => "
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @flow
+ */
+
+'use strict';
+
+const registerGeneratedViewConfig = require('registerGeneratedViewConfig');
+
+const BooleanPropNativeComponentViewConfig = {
+  uiViewClassName: 'BooleanPropNativeComponent',
+
+  validAttributes: {
+    disabled: true,
+  },
+};
+
+let nativeComponentName = 'BooleanPropNativeComponent';
+
+registerGeneratedViewConfig(nativeComponentName, BooleanPropNativeComponentViewConfig);
+
+export const __INTERNAL_VIEW_CONFIG = BooleanPropNativeComponentViewConfig;
+
+export default nativeComponentName;
+",
+}
+`;
+
+exports[`GenerateViewConfigJs can generate fixture COLOR_PROP 1`] = `
+Map {
+  "COLOR_PROPNativeViewConfig.js" => "
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @flow
+ */
+
+'use strict';
+
+const registerGeneratedViewConfig = require('registerGeneratedViewConfig');
+
+const ColorPropNativeComponentViewConfig = {
+  uiViewClassName: 'ColorPropNativeComponent',
+
+  validAttributes: {
+    tintColor: { process: require('processColor') },
+  },
+};
+
+let nativeComponentName = 'ColorPropNativeComponent';
+
+registerGeneratedViewConfig(nativeComponentName, ColorPropNativeComponentViewConfig);
+
+export const __INTERNAL_VIEW_CONFIG = ColorPropNativeComponentViewConfig;
+
+export default nativeComponentName;
+",
+}
+`;
+
+exports[`GenerateViewConfigJs can generate fixture COMMANDS 1`] = `
+Map {
+  "COMMANDSNativeViewConfig.js" => "
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @flow
+ */
+
+'use strict';
+
+const registerGeneratedViewConfig = require('registerGeneratedViewConfig');
+const {dispatchCommand} = require(\\"react-native/Libraries/Renderer/shims/ReactNative\\");
+
+const CommandNativeComponentViewConfig = {
+  uiViewClassName: 'CommandNativeComponent',
+  validAttributes: {},
+};
+
+let nativeComponentName = 'CommandNativeComponent';
+
+registerGeneratedViewConfig(nativeComponentName, CommandNativeComponentViewConfig);
+
+export const __INTERNAL_VIEW_CONFIG = CommandNativeComponentViewConfig;
+
+export default nativeComponentName;
+
+export const Commands = {
+    flashScrollIndicators(ref) {
+        dispatchCommand(ref, \\"flashScrollIndicators\\", []);
+    },
+
+    allTypes(ref, x, y, z, message, animated) {
+        dispatchCommand(ref, \\"allTypes\\", [x, y, z, message, animated]);
+    }
+};
+",
+}
+`;
+
+exports[`GenerateViewConfigJs can generate fixture COMMANDS_AND_PROPS 1`] = `
+Map {
+  "COMMANDS_AND_PROPSNativeViewConfig.js" => "
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @flow
+ */
+
+'use strict';
+
+const registerGeneratedViewConfig = require('registerGeneratedViewConfig');
+const {dispatchCommand} = require(\\"react-native/Libraries/Renderer/shims/ReactNative\\");
+
+const CommandNativeComponentViewConfig = {
+  uiViewClassName: 'CommandNativeComponent',
+
+  validAttributes: {
+    accessibilityHint: true,
+  },
+};
+
+let nativeComponentName = 'CommandNativeComponent';
+
+registerGeneratedViewConfig(nativeComponentName, CommandNativeComponentViewConfig);
+
+export const __INTERNAL_VIEW_CONFIG = CommandNativeComponentViewConfig;
+
+export default nativeComponentName;
+
+export const Commands = {
+    hotspotUpdate(ref, x, y) {
+        dispatchCommand(ref, \\"hotspotUpdate\\", [x, y]);
+    }
+};
+",
+}
+`;
+
+exports[`GenerateViewConfigJs can generate fixture DOUBLE_PROPS 1`] = `
+Map {
+  "DOUBLE_PROPSNativeViewConfig.js" => "
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @flow
+ */
+
+'use strict';
+
+const registerGeneratedViewConfig = require('registerGeneratedViewConfig');
+
+const DoublePropNativeComponentViewConfig = {
+  uiViewClassName: 'DoublePropNativeComponent',
+
+  validAttributes: {
+    blurRadius: true,
+    blurRadius2: true,
+    blurRadius3: true,
+    blurRadius4: true,
+    blurRadius5: true,
+    blurRadius6: true,
+  },
+};
+
+let nativeComponentName = 'DoublePropNativeComponent';
+
+registerGeneratedViewConfig(nativeComponentName, DoublePropNativeComponentViewConfig);
+
+export const __INTERNAL_VIEW_CONFIG = DoublePropNativeComponentViewConfig;
+
+export default nativeComponentName;
+",
+}
+`;
+
+exports[`GenerateViewConfigJs can generate fixture ENUM_PROP 1`] = `
+Map {
+  "ENUM_PROPNativeViewConfig.js" => "
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @flow
+ */
+
+'use strict';
+
+const registerGeneratedViewConfig = require('registerGeneratedViewConfig');
+
+const EnumPropsNativeComponentViewConfig = {
+  uiViewClassName: 'EnumPropsNativeComponent',
+
+  validAttributes: {
+    alignment: true,
+  },
+};
+
+let nativeComponentName = 'EnumPropsNativeComponent';
+
+registerGeneratedViewConfig(nativeComponentName, EnumPropsNativeComponentViewConfig);
+
+export const __INTERNAL_VIEW_CONFIG = EnumPropsNativeComponentViewConfig;
+
+export default nativeComponentName;
+",
+}
+`;
+
+exports[`GenerateViewConfigJs can generate fixture EVENT_NESTED_OBJECT_PROPS 1`] = `
+Map {
+  "EVENT_NESTED_OBJECT_PROPSNativeViewConfig.js" => "
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @flow
+ */
+
+'use strict';
+
+const registerGeneratedViewConfig = require('registerGeneratedViewConfig');
+
+const EventsNestedObjectNativeComponentViewConfig = {
+  uiViewClassName: 'EventsNestedObjectNativeComponent',
+
+  bubblingEventTypes: {
+    topChange: {
+      phasedRegistrationNames: {
+        captured: 'onChangeCapture',
+        bubbled: 'onChange',
+      },
+    },
+  },
+
+  validAttributes: {
+    disabled: true,
+    onChange: true,
+  },
+};
+
+let nativeComponentName = 'EventsNestedObjectNativeComponent';
+
+registerGeneratedViewConfig(nativeComponentName, EventsNestedObjectNativeComponentViewConfig);
+
+export const __INTERNAL_VIEW_CONFIG = EventsNestedObjectNativeComponentViewConfig;
+
+export default nativeComponentName;
+",
+}
+`;
+
+exports[`GenerateViewConfigJs can generate fixture EVENT_PROPS 1`] = `
+Map {
+  "EVENT_PROPSNativeViewConfig.js" => "
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @flow
+ */
+
+'use strict';
+
+const registerGeneratedViewConfig = require('registerGeneratedViewConfig');
+
+const EventsNativeComponentViewConfig = {
+  uiViewClassName: 'EventsNativeComponent',
+
+  bubblingEventTypes: {
+    topChange: {
+      phasedRegistrationNames: {
+        captured: 'onChangeCapture',
+        bubbled: 'onChange',
+      },
+    },
+
+    topEnd: {
+      phasedRegistrationNames: {
+        captured: 'onEndCapture',
+        bubbled: 'onEnd',
+      },
+    },
+  },
+
+  directEventTypes: {
+    topEventDirect: {
+      registrationName: 'onEventDirect',
+    },
+
+    topOrientationChange: {
+      registrationName: 'onOrientationChange',
+    },
+  },
+
+  validAttributes: {
+    disabled: true,
+    onChange: true,
+    onEventDirect: true,
+    onOrientationChange: true,
+    onEnd: true,
+  },
+};
+
+let nativeComponentName = 'EventsNativeComponent';
+
+registerGeneratedViewConfig(nativeComponentName, EventsNativeComponentViewConfig);
+
+export const __INTERNAL_VIEW_CONFIG = EventsNativeComponentViewConfig;
+
+export default nativeComponentName;
+",
+}
+`;
+
+exports[`GenerateViewConfigJs can generate fixture EVENTS_WITH_PAPER_NAME 1`] = `
+Map {
+  "EVENTS_WITH_PAPER_NAMENativeViewConfig.js" => "
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @flow
+ */
+
+'use strict';
+
+const registerGeneratedViewConfig = require('registerGeneratedViewConfig');
+
+const InterfaceOnlyComponentViewConfig = {
+  uiViewClassName: 'RCTInterfaceOnlyComponent',
+
+  bubblingEventTypes: {
+    paperChange: {
+      phasedRegistrationNames: {
+        captured: 'onChangeCapture',
+        bubbled: 'onChange',
+      },
+    },
+
+    topChange: {
+      phasedRegistrationNames: {
+        captured: 'onChangeCapture',
+        bubbled: 'onChange',
+      },
+    },
+  },
+
+  directEventTypes: {
+    paperDirectChange: {
+      registrationName: 'onDire tChange',
+    },
+
+    topDire tChange: {
+      registrationName: 'onDire tChange',
+    },
+  },
+
+  validAttributes: {
+    onChange: true,
+    onDire tChange: true,
+  },
+};
+
+let nativeComponentName = 'RCTInterfaceOnlyComponent';
+
+registerGeneratedViewConfig(nativeComponentName, InterfaceOnlyComponentViewConfig);
+
+export const __INTERNAL_VIEW_CONFIG = InterfaceOnlyComponentViewConfig;
+
+export default nativeComponentName;
+",
+}
+`;
+
+exports[`GenerateViewConfigJs can generate fixture FLOAT_PROPS 1`] = `
+Map {
+  "FLOAT_PROPSNativeViewConfig.js" => "
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @flow
+ */
+
+'use strict';
+
+const registerGeneratedViewConfig = require('registerGeneratedViewConfig');
+
+const FloatPropNativeComponentViewConfig = {
+  uiViewClassName: 'FloatPropNativeComponent',
+
+  validAttributes: {
+    blurRadius: true,
+    blurRadius2: true,
+    blurRadius3: true,
+    blurRadius4: true,
+    blurRadius5: true,
+    blurRadius6: true,
+  },
+};
+
+let nativeComponentName = 'FloatPropNativeComponent';
+
+registerGeneratedViewConfig(nativeComponentName, FloatPropNativeComponentViewConfig);
+
+export const __INTERNAL_VIEW_CONFIG = FloatPropNativeComponentViewConfig;
+
+export default nativeComponentName;
+",
+}
+`;
+
+exports[`GenerateViewConfigJs can generate fixture IMAGE_PROP 1`] = `
+Map {
+  "IMAGE_PROPNativeViewConfig.js" => "
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @flow
+ */
+
+'use strict';
+
+const registerGeneratedViewConfig = require('registerGeneratedViewConfig');
+
+const ImagePropNativeComponentViewConfig = {
+  uiViewClassName: 'ImagePropNativeComponent',
+
+  validAttributes: {
+    thumbImage: { process: require('resolveAssetSource') },
+  },
+};
+
+let nativeComponentName = 'ImagePropNativeComponent';
+
+registerGeneratedViewConfig(nativeComponentName, ImagePropNativeComponentViewConfig);
+
+export const __INTERNAL_VIEW_CONFIG = ImagePropNativeComponentViewConfig;
+
+export default nativeComponentName;
+",
+}
+`;
+
+exports[`GenerateViewConfigJs can generate fixture INTEGER_PROPS 1`] = `
+Map {
+  "INTEGER_PROPSNativeViewConfig.js" => "
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @flow
+ */
+
+'use strict';
+
+const registerGeneratedViewConfig = require('registerGeneratedViewConfig');
+
+const IntegerPropNativeComponentViewConfig = {
+  uiViewClassName: 'IntegerPropNativeComponent',
+
+  validAttributes: {
+    progress1: true,
+    progress2: true,
+    progress3: true,
+  },
+};
+
+let nativeComponentName = 'IntegerPropNativeComponent';
+
+registerGeneratedViewConfig(nativeComponentName, IntegerPropNativeComponentViewConfig);
+
+export const __INTERNAL_VIEW_CONFIG = IntegerPropNativeComponentViewConfig;
+
+export default nativeComponentName;
+",
+}
+`;
+
+exports[`GenerateViewConfigJs can generate fixture INTERFACE_ONLY 1`] = `
+Map {
+  "INTERFACE_ONLYNativeViewConfig.js" => "
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @flow
+ */
+
+'use strict';
+
+const registerGeneratedViewConfig = require('registerGeneratedViewConfig');
+
+const InterfaceOnlyComponentViewConfig = {
+  uiViewClassName: 'RCTInterfaceOnlyComponent',
+
+  bubblingEventTypes: {
+    topChange: {
+      phasedRegistrationNames: {
+        captured: 'onChangeCapture',
+        bubbled: 'onChange',
+      },
+    },
+  },
+
+  validAttributes: {
+    accessibilityHint: true,
+    onChange: true,
+  },
+};
+
+let nativeComponentName = 'RCTInterfaceOnlyComponent';
+
+registerGeneratedViewConfig(nativeComponentName, InterfaceOnlyComponentViewConfig);
+
+export const __INTERNAL_VIEW_CONFIG = InterfaceOnlyComponentViewConfig;
+
+export default nativeComponentName;
+",
+}
+`;
+
+exports[`GenerateViewConfigJs can generate fixture MULTI_NATIVE_PROP 1`] = `
+Map {
+  "MULTI_NATIVE_PROPNativeViewConfig.js" => "
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @flow
+ */
+
+'use strict';
+
+const registerGeneratedViewConfig = require('registerGeneratedViewConfig');
+
+const ImageColorPropNativeComponentViewConfig = {
+  uiViewClassName: 'ImageColorPropNativeComponent',
+
+  validAttributes: {
+    thumbImage: { process: require('resolveAssetSource') },
+    color: { process: require('processColor') },
+    thumbTintColor: { process: require('processColor') },
+    point: { diff: require('pointsDiffer') },
+  },
+};
+
+let nativeComponentName = 'ImageColorPropNativeComponent';
+
+registerGeneratedViewConfig(nativeComponentName, ImageColorPropNativeComponentViewConfig);
+
+export const __INTERNAL_VIEW_CONFIG = ImageColorPropNativeComponentViewConfig;
+
+export default nativeComponentName;
+",
+}
+`;
+
+exports[`GenerateViewConfigJs can generate fixture NO_PROPS_NO_EVENTS 1`] = `
+Map {
+  "NO_PROPS_NO_EVENTSNativeViewConfig.js" => "
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @flow
+ */
+
+'use strict';
+
+const registerGeneratedViewConfig = require('registerGeneratedViewConfig');
+
+const NoPropsNoEventsComponentViewConfig = {
+  uiViewClassName: 'NoPropsNoEventsComponent',
+  validAttributes: {},
+};
+
+let nativeComponentName = 'NoPropsNoEventsComponent';
+
+registerGeneratedViewConfig(nativeComponentName, NoPropsNoEventsComponentViewConfig);
+
+export const __INTERNAL_VIEW_CONFIG = NoPropsNoEventsComponentViewConfig;
+
+export default nativeComponentName;
+",
+}
+`;
+
+exports[`GenerateViewConfigJs can generate fixture OBJECT_PROPS 1`] = `
+Map {
+  "OBJECT_PROPSNativeViewConfig.js" => "
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @flow
+ */
+
+'use strict';
+
+const registerGeneratedViewConfig = require('registerGeneratedViewConfig');
+
+const ObjectPropsViewConfig = {
+  uiViewClassName: 'ObjectProps',
+
+  validAttributes: {
+    objectProp: true,
+  },
+};
+
+let nativeComponentName = 'ObjectProps';
+
+registerGeneratedViewConfig(nativeComponentName, ObjectPropsViewConfig);
+
+export const __INTERNAL_VIEW_CONFIG = ObjectPropsViewConfig;
+
+export default nativeComponentName;
+",
+}
+`;
+
+exports[`GenerateViewConfigJs can generate fixture POINT_PROP 1`] = `
+Map {
+  "POINT_PROPNativeViewConfig.js" => "
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @flow
+ */
+
+'use strict';
+
+const registerGeneratedViewConfig = require('registerGeneratedViewConfig');
+
+const PointPropNativeComponentViewConfig = {
+  uiViewClassName: 'PointPropNativeComponent',
+
+  validAttributes: {
+    startPoint: { diff: require('pointsDiffer') },
+  },
+};
+
+let nativeComponentName = 'PointPropNativeComponent';
+
+registerGeneratedViewConfig(nativeComponentName, PointPropNativeComponentViewConfig);
+
+export const __INTERNAL_VIEW_CONFIG = PointPropNativeComponentViewConfig;
+
+export default nativeComponentName;
+",
+}
+`;
+
+exports[`GenerateViewConfigJs can generate fixture STRING_PROP 1`] = `
+Map {
+  "STRING_PROPNativeViewConfig.js" => "
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @flow
+ */
+
+'use strict';
+
+const registerGeneratedViewConfig = require('registerGeneratedViewConfig');
+
+const StringPropComponentViewConfig = {
+  uiViewClassName: 'StringPropComponent',
+
+  validAttributes: {
+    accessibilityHint: true,
+    accessibilityRole: true,
+  },
+};
+
+let nativeComponentName = 'StringPropComponent';
+
+registerGeneratedViewConfig(nativeComponentName, StringPropComponentViewConfig);
+
+export const __INTERNAL_VIEW_CONFIG = StringPropComponentViewConfig;
+
+export default nativeComponentName;
+",
+}
+`;
+
+exports[`GenerateViewConfigJs can generate fixture TWO_COMPONENTS_DIFFERENT_FILES 1`] = `
+Map {
+  "TWO_COMPONENTS_DIFFERENT_FILESNativeViewConfig.js" => "
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @flow
+ */
+
+'use strict';
+
+const registerGeneratedViewConfig = require('registerGeneratedViewConfig');
+
+const MultiFile1NativeComponentViewConfig = {
+  uiViewClassName: 'MultiFile1NativeComponent',
+
+  validAttributes: {
+    disabled: true,
+  },
+};
+
+let nativeComponentName = 'MultiFile1NativeComponent';
+
+registerGeneratedViewConfig(nativeComponentName, MultiFile1NativeComponentViewConfig);
+
+export const __INTERNAL_VIEW_CONFIG = MultiFile1NativeComponentViewConfig;
+
+export default nativeComponentName;
+
+const MultiFile2NativeComponentViewConfig = {
+  uiViewClassName: 'MultiFile2NativeComponent',
+
+  validAttributes: {
+    disabled: true,
+  },
+};
+
+let nativeComponentName = 'MultiFile2NativeComponent';
+
+registerGeneratedViewConfig(nativeComponentName, MultiFile2NativeComponentViewConfig);
+
+export const __INTERNAL_VIEW_CONFIG = MultiFile2NativeComponentViewConfig;
+
+export default nativeComponentName;
+",
+}
+`;
+
+exports[`GenerateViewConfigJs can generate fixture TWO_COMPONENTS_SAME_FILE 1`] = `
+Map {
+  "TWO_COMPONENTS_SAME_FILENativeViewConfig.js" => "
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @flow
+ */
+
+'use strict';
+
+const registerGeneratedViewConfig = require('registerGeneratedViewConfig');
+
+const MultiComponent1NativeComponentViewConfig = {
+  uiViewClassName: 'MultiComponent1NativeComponent',
+
+  validAttributes: {
+    disabled: true,
+  },
+};
+
+let nativeComponentName = 'MultiComponent1NativeComponent';
+
+registerGeneratedViewConfig(nativeComponentName, MultiComponent1NativeComponentViewConfig);
+
+export const __INTERNAL_VIEW_CONFIG = MultiComponent1NativeComponentViewConfig;
+
+export default nativeComponentName;
+
+const MultiComponent2NativeComponentViewConfig = {
+  uiViewClassName: 'MultiComponent2NativeComponent',
+
+  validAttributes: {
+    disabled: true,
+  },
+};
+
+let nativeComponentName = 'MultiComponent2NativeComponent';
+
+registerGeneratedViewConfig(nativeComponentName, MultiComponent2NativeComponentViewConfig);
+
+export const __INTERNAL_VIEW_CONFIG = MultiComponent2NativeComponentViewConfig;
+
+export default nativeComponentName;
+",
+}
+`;
+
+exports[`GenerateViewConfigJs can generate fixture with a deprecated view config name 1`] = `
+Map {
+  "DEPRECATED_VIEW_CONFIG_NAMENativeViewConfig.js" => "
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @flow
+ */
+
+'use strict';
+
+const registerGeneratedViewConfig = require('registerGeneratedViewConfig');
+const {UIManager} = require(\\"react-native\\")
+
+const NativeComponentNameViewConfig = {
+  uiViewClassName: 'NativeComponentName',
+  validAttributes: {},
+};
+
+let nativeComponentName = 'NativeComponentName';
+if (UIManager.getViewManagerConfig('NativeComponentName')) {
+  nativeComponentName = 'NativeComponentName';
+} else if (UIManager.getViewManagerConfig('DeprecatedNativeComponentName')){
+  nativeComponentName = 'DeprecatedNativeComponentName';
+} else {
+  throw new Error('Failed to find native component for either \\"NativeComponentName\\" or \\"DeprecatedNativeComponentName\\"')
+}
+registerGeneratedViewConfig(nativeComponentName, NativeComponentNameViewConfig);
+
+export const __INTERNAL_VIEW_CONFIG = NativeComponentNameViewConfig;
+
+export default nativeComponentName;
+",
+}
+`;

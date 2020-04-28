@@ -43,7 +43,7 @@ class StaticContainer extends React.Component<Props> {
     return !!nextProps.shouldUpdate;
   }
 
-  render() {
+  render(): null | React$Node {
     const child = this.props.children;
     return child === null || child === false
       ? null

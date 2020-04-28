@@ -9,19 +9,18 @@ package com.facebook.react.devsupport;
 import static org.fest.assertions.api.Assertions.assertThat;
 
 import com.facebook.react.common.StandardCharsets;
-import com.facebook.react.devsupport.BundleDeltaClient;
-import org.junit.Test;
-import org.junit.Before;
-import org.junit.runner.RunWith;
-import org.robolectric.RobolectricTestRunner;
-import okio.BufferedSource;
-import org.junit.Rule;
-import org.junit.rules.TemporaryFolder;
-import okio.Okio;
 import java.io.ByteArrayInputStream;
-import java.nio.file.Files;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import okio.BufferedSource;
+import okio.Okio;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
+import org.junit.runner.RunWith;
+import org.robolectric.RobolectricTestRunner;
 
 @RunWith(RobolectricTestRunner.class)
 public class BundleDeltaClientTest {
@@ -72,12 +71,7 @@ public class BundleDeltaClientTest {
                 + "\"deleted\": [1]"
                 + "}"),
         file);
-    assertThat(contentOf(file))
-        .isEqualTo(
-            "pre\n"
-                + "0.1\n"
-                + "2\n"
-                + "post\n");
+    assertThat(contentOf(file)).isEqualTo("pre\n" + "0.1\n" + "2\n" + "post\n");
   }
 
   @Test
@@ -101,34 +95,34 @@ public class BundleDeltaClientTest {
                 + "console.log('That is all folks!');\n");
   }
 
-    @Test
-    public void testSortsModulesByIdInPatchedBundle() throws IOException {
-      File file = mFolder.newFile();
-      mClient.processDelta(
-          bufferedSource(
-              "{"
-                  + "\"pre\": \"console.log('Hello World!');\","
-                  + "\"post\": \"console.log('That is all folks!');\","
-                  + "\"modules\": [[3, \"3\"], [0, \"0\"], [1, \"1\"]]"
-                  + "}"),
-          file);
-      file = mFolder.newFile();
-      mClient.processDelta(
-          bufferedSource(
-              "{"
-                  + "\"added\": [[2, \"2\"]],"
-                  + "\"modified\": [[0, \"0.1\"]],"
-                  + "\"deleted\": [1]"
-                  + "}"),
-          file);
-      assertThat(contentOf(file))
-          .isEqualTo(
-              "console.log('Hello World!');\n"
-                  + "0.1\n"
-                  + "2\n"
-                  + "3\n"
-                  + "console.log('That is all folks!');\n");
-    }
+  @Test
+  public void testSortsModulesByIdInPatchedBundle() throws IOException {
+    File file = mFolder.newFile();
+    mClient.processDelta(
+        bufferedSource(
+            "{"
+                + "\"pre\": \"console.log('Hello World!');\","
+                + "\"post\": \"console.log('That is all folks!');\","
+                + "\"modules\": [[3, \"3\"], [0, \"0\"], [1, \"1\"]]"
+                + "}"),
+        file);
+    file = mFolder.newFile();
+    mClient.processDelta(
+        bufferedSource(
+            "{"
+                + "\"added\": [[2, \"2\"]],"
+                + "\"modified\": [[0, \"0.1\"]],"
+                + "\"deleted\": [1]"
+                + "}"),
+        file);
+    assertThat(contentOf(file))
+        .isEqualTo(
+            "console.log('Hello World!');\n"
+                + "0.1\n"
+                + "2\n"
+                + "3\n"
+                + "console.log('That is all folks!');\n");
+  }
 
   private static BufferedSource bufferedSource(String string) {
     return Okio.buffer(

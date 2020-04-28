@@ -19,19 +19,19 @@
 namespace facebook {
 namespace react {
 
-YogaStylableProps::YogaStylableProps(const YGStyle &yogaStyle)
+YogaStylableProps::YogaStylableProps(YGStyle const &yogaStyle)
     : yogaStyle(yogaStyle) {}
 
 YogaStylableProps::YogaStylableProps(
-    const YogaStylableProps &sourceProps,
-    const RawProps &rawProps)
+    YogaStylableProps const &sourceProps,
+    RawProps const &rawProps)
     : yogaStyle(convertRawProp(rawProps, sourceProps.yogaStyle)){};
 
 #pragma mark - DebugStringConvertible
 
 #if RN_DEBUG_STRING_CONVERTIBLE
 SharedDebugStringConvertibleList YogaStylableProps::getDebugProps() const {
-  const auto defaultYogaStyle = YGStyle{};
+  auto const defaultYogaStyle = YGStyle{};
   return {
       debugStringConvertibleItem(
           "direction", yogaStyle.direction(), defaultYogaStyle.direction()),

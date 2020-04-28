@@ -10,8 +10,8 @@
 
 'use strict';
 
-import type {TurboModule} from 'RCTExport';
-import * as TurboModuleRegistry from 'TurboModuleRegistry';
+import type {TurboModule} from '../TurboModule/RCTExport';
+import * as TurboModuleRegistry from '../TurboModule/TurboModuleRegistry';
 
 export interface Spec extends TurboModule {
   +getConstants: () => {|
@@ -27,4 +27,4 @@ export interface Spec extends TurboModule {
   +removeListeners: (count: number) => void;
 }
 
-export default TurboModuleRegistry.getEnforcing<Spec>('AppState');
+export default (TurboModuleRegistry.getEnforcing<Spec>('AppState'): Spec);

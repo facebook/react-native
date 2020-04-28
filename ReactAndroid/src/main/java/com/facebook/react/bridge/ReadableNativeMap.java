@@ -6,16 +6,14 @@
  */
 package com.facebook.react.bridge;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.jni.HybridData;
 import com.facebook.proguard.annotations.DoNotStrip;
-import com.facebook.react.config.ReactFeatureFlags;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 /**
  * Implementation of a read-only map in native memory. This will generally be constructed and filled
@@ -66,7 +64,7 @@ public class ReadableNativeMap extends NativeMap implements ReadableMap {
 
   private native Object[] importValues();
 
-  private @Nonnull HashMap<String, ReadableType> getLocalTypeMap() {
+  private @NonNull HashMap<String, ReadableType> getLocalTypeMap() {
     if (mLocalTypeMap != null) {
       return mLocalTypeMap;
     }
@@ -92,19 +90,19 @@ public class ReadableNativeMap extends NativeMap implements ReadableMap {
   private native Object[] importTypes();
 
   @Override
-  public boolean hasKey(@Nonnull String name) {
+  public boolean hasKey(@NonNull String name) {
     return getLocalMap().containsKey(name);
   }
 
   @Override
-  public boolean isNull(@Nonnull String name) {
+  public boolean isNull(@NonNull String name) {
     if (getLocalMap().containsKey(name)) {
       return getLocalMap().get(name) == null;
     }
     throw new NoSuchKeyException(name);
   }
 
-  private @Nonnull Object getValue(@Nonnull String name) {
+  private @NonNull Object getValue(@NonNull String name) {
     if (hasKey(name) && !(isNull(name))) {
       return Assertions.assertNotNull(getLocalMap().get(name));
     }
@@ -143,38 +141,38 @@ public class ReadableNativeMap extends NativeMap implements ReadableMap {
   }
 
   @Override
-  public boolean getBoolean(@Nonnull String name) {
+  public boolean getBoolean(@NonNull String name) {
     return getValue(name, Boolean.class).booleanValue();
   }
 
   @Override
-  public double getDouble(@Nonnull String name) {
+  public double getDouble(@NonNull String name) {
     return getValue(name, Double.class).doubleValue();
   }
 
   @Override
-  public int getInt(@Nonnull String name) {
+  public int getInt(@NonNull String name) {
     // All numbers coming out of native are doubles, so cast here then truncate
     return getValue(name, Double.class).intValue();
   }
 
   @Override
-  public @Nullable String getString(@Nonnull String name) {
+  public @Nullable String getString(@NonNull String name) {
     return getNullableValue(name, String.class);
   }
 
   @Override
-  public @Nullable ReadableArray getArray(@Nonnull String name) {
+  public @Nullable ReadableArray getArray(@NonNull String name) {
     return getNullableValue(name, ReadableArray.class);
   }
 
   @Override
-  public @Nullable ReadableNativeMap getMap(@Nonnull String name) {
+  public @Nullable ReadableNativeMap getMap(@NonNull String name) {
     return getNullableValue(name, ReadableNativeMap.class);
   }
 
   @Override
-  public @Nonnull ReadableType getType(@Nonnull String name) {
+  public @NonNull ReadableType getType(@NonNull String name) {
     if (getLocalTypeMap().containsKey(name)) {
       return Assertions.assertNotNull(getLocalTypeMap().get(name));
     }
@@ -182,17 +180,17 @@ public class ReadableNativeMap extends NativeMap implements ReadableMap {
   }
 
   @Override
-  public @Nonnull Dynamic getDynamic(@Nonnull String name) {
+  public @NonNull Dynamic getDynamic(@NonNull String name) {
     return DynamicFromMap.create(this, name);
   }
 
   @Override
-  public @Nonnull Iterator<Map.Entry<String, Object>> getEntryIterator() {
+  public @NonNull Iterator<Map.Entry<String, Object>> getEntryIterator() {
     return getLocalMap().entrySet().iterator();
   }
 
   @Override
-  public @Nonnull ReadableMapKeySetIterator keySetIterator() {
+  public @NonNull ReadableMapKeySetIterator keySetIterator() {
     return new ReadableNativeMapKeySetIterator(this);
   }
 
@@ -211,7 +209,7 @@ public class ReadableNativeMap extends NativeMap implements ReadableMap {
   }
 
   @Override
-  public @Nonnull HashMap<String, Object> toHashMap() {
+  public @NonNull HashMap<String, Object> toHashMap() {
     // we can almost just return getLocalMap(), but we need to convert nested arrays and maps to the
     // correct types first
     HashMap<String, Object> hashMap = new HashMap<>(getLocalMap());

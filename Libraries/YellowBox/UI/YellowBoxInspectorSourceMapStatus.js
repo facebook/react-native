@@ -34,7 +34,7 @@ type State = {|
 |};
 
 class YellowBoxInspectorSourceMapStatus extends React.Component<Props, State> {
-  state = {
+  state: State = {
     animation: null,
     rotate: null,
   };

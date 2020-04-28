@@ -1,30 +1,27 @@
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
+ * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
+ * directory of this source tree.
  */
-
 package com.facebook.react.modules.debug;
 
+import androidx.annotation.Nullable;
+import com.facebook.infer.annotation.Assertions;
+import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.UiThreadUtil;
-import javax.annotation.Nullable;
-
+import com.facebook.react.modules.core.ChoreographerCompat;
+import com.facebook.react.uimanager.UIManagerModule;
 import java.util.Map;
 import java.util.TreeMap;
 
-import com.facebook.react.bridge.ReactContext;
-import com.facebook.react.modules.core.ChoreographerCompat;
-import com.facebook.react.uimanager.UIManagerModule;
-import com.facebook.infer.annotation.Assertions;
-
 /**
- * Each time a frame is drawn, records whether it should have expected any more callbacks since
- * the last time a frame was drawn (i.e. was a frame skipped?). Uses this plus total elapsed time
- * to determine FPS. Can also record total and expected frame counts, though NB, since the expected
+ * Each time a frame is drawn, records whether it should have expected any more callbacks since the
+ * last time a frame was drawn (i.e. was a frame skipped?). Uses this plus total elapsed time to
+ * determine FPS. Can also record total and expected frame counts, though NB, since the expected
  * frame rate is estimated, the expected frame count will lose accuracy over time.
  *
- * Also records the JS FPS, i.e. the frames per second with which either JS updated the UI or was
+ * <p>Also records the JS FPS, i.e. the frames per second with which either JS updated the UI or was
  * idle and not trying to update the UI. This is different from the FPS above since JS rendering is
  * async.
  */
@@ -94,9 +91,7 @@ public class FpsDebugFrameCallback extends ChoreographerCompat.FrameCallback {
     long lastFrameStartTime = mLastFrameTime;
     mLastFrameTime = l;
 
-    if (mDidJSUpdateUiDuringFrameDetector.getDidJSHitFrameAndCleanup(
-        lastFrameStartTime,
-        l)) {
+    if (mDidJSUpdateUiDuringFrameDetector.getDidJSHitFrameAndCleanup(lastFrameStartTime, l)) {
       mNumFrameCallbacksWithBatchDispatches++;
     }
 
@@ -109,14 +104,15 @@ public class FpsDebugFrameCallback extends ChoreographerCompat.FrameCallback {
 
     if (mIsRecordingFpsInfoAtEachFrame) {
       Assertions.assertNotNull(mTimeToFps);
-      FpsInfo info = new FpsInfo(
-          getNumFrames(),
-          getNumJSFrames(),
-          expectedNumFrames,
-          m4PlusFrameStutters,
-          getFPS(),
-          getJSFPS(),
-          getTotalTimeMS());
+      FpsInfo info =
+          new FpsInfo(
+              getNumFrames(),
+              getNumJSFrames(),
+              expectedNumFrames,
+              m4PlusFrameStutters,
+              getFPS(),
+              getJSFPS(),
+              getTotalTimeMS());
       mTimeToFps.put(System.currentTimeMillis(), info);
     }
     mExpectedNumFramesPrev = expectedNumFrames;
@@ -127,17 +123,19 @@ public class FpsDebugFrameCallback extends ChoreographerCompat.FrameCallback {
 
   public void start() {
     mShouldStop = false;
-    mReactContext.getCatalystInstance().addBridgeIdleDebugListener(
-        mDidJSUpdateUiDuringFrameDetector);
+    mReactContext
+        .getCatalystInstance()
+        .addBridgeIdleDebugListener(mDidJSUpdateUiDuringFrameDetector);
     mUIManagerModule.setViewHierarchyUpdateDebugListener(mDidJSUpdateUiDuringFrameDetector);
     final FpsDebugFrameCallback fpsDebugFrameCallback = this;
-    UiThreadUtil.runOnUiThread(new Runnable() {
-      @Override
-      public void run() {
-        mChoreographer = ChoreographerCompat.getInstance();
-        mChoreographer.postFrameCallback(fpsDebugFrameCallback);
-      }
-    });
+    UiThreadUtil.runOnUiThread(
+        new Runnable() {
+          @Override
+          public void run() {
+            mChoreographer = ChoreographerCompat.getInstance();
+            mChoreographer.postFrameCallback(fpsDebugFrameCallback);
+          }
+        });
   }
 
   public void startAndRecordFpsAtEachFrame() {
@@ -148,8 +146,9 @@ public class FpsDebugFrameCallback extends ChoreographerCompat.FrameCallback {
 
   public void stop() {
     mShouldStop = true;
-    mReactContext.getCatalystInstance().removeBridgeIdleDebugListener(
-        mDidJSUpdateUiDuringFrameDetector);
+    mReactContext
+        .getCatalystInstance()
+        .removeBridgeIdleDebugListener(mDidJSUpdateUiDuringFrameDetector);
     mUIManagerModule.setViewHierarchyUpdateDebugListener(null);
   }
 

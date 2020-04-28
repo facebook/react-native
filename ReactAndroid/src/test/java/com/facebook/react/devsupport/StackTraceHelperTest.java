@@ -1,10 +1,9 @@
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
+ * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
+ * directory of this source tree.
  */
-
 package com.facebook.react.devsupport;
 
 import static org.fest.assertions.api.Assertions.assertThat;
@@ -19,8 +18,8 @@ public class StackTraceHelperTest {
 
   @Test
   public void testParseAlternateFormatStackFrameWithMethod() {
-    final StackFrame frame = StackTraceHelper.convertJsStackTrace(
-        "at func1 (/path/to/file.js:2:18)")[0];
+    final StackFrame frame =
+        StackTraceHelper.convertJsStackTrace("at func1 (/path/to/file.js:2:18)")[0];
     assertThat(frame.getMethod()).isEqualTo("func1");
     assertThat(frame.getFileName()).isEqualTo("file.js");
     assertThat(frame.getLine()).isEqualTo(2);
@@ -29,8 +28,7 @@ public class StackTraceHelperTest {
 
   @Test
   public void testParseStackFrameWithMethod() {
-    final StackFrame frame = StackTraceHelper.convertJsStackTrace(
-        "render@Test.bundle:1:2000")[0];
+    final StackFrame frame = StackTraceHelper.convertJsStackTrace("render@Test.bundle:1:2000")[0];
     assertThat(frame.getMethod()).isEqualTo("render");
     assertThat(frame.getFileName()).isEqualTo("Test.bundle");
     assertThat(frame.getLine()).isEqualTo(1);
@@ -39,8 +37,7 @@ public class StackTraceHelperTest {
 
   @Test
   public void testParseStackFrameWithoutMethod() {
-    final StackFrame frame = StackTraceHelper.convertJsStackTrace(
-        "Test.bundle:1:2000")[0];
+    final StackFrame frame = StackTraceHelper.convertJsStackTrace("Test.bundle:1:2000")[0];
     assertThat(frame.getMethod()).isEqualTo("(unknown)");
     assertThat(frame.getFileName()).isEqualTo("Test.bundle");
     assertThat(frame.getLine()).isEqualTo(1);

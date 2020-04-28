@@ -56,7 +56,7 @@ rn_xplat_cxx_library(
         "fbsource//xplat/third-party/linker_lib:android",
         "fbsource//xplat/third-party/linker_lib:atomic",
         "fbsource//xplat/folly:molly",
-        "fbandroid//xplat/fbgloginit:fbgloginit",
+        "//fbandroid/xplat/fbgloginit:fbgloginit",
         "fbsource//xplat/fbsystrace:fbsystrace",
         react_native_target("java/com/facebook/react/turbomodule/core/jni:jscallinvokerholder"),
         react_native_xplat_target("cxxreact:bridge"),

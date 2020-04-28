@@ -37,7 +37,7 @@ if (
       getPolyfills,
     },
     resolver: {
-      hasteImplModulePath: require.resolve('./jest/hasteImpl'),
+      platforms: ['ios', 'macos', 'android'],
     },
     transformer: {
       assetRegistryPath: require.resolve('./Libraries/Image/AssetRegistry'),
@@ -55,7 +55,6 @@ if (
       getPolyfills,
     },
     resolver: {
-      hasteImplModulePath: require.resolve('./jest/hasteImpl'),
       platforms: ['ios', 'macos', 'android'],
     },
     transformer: {

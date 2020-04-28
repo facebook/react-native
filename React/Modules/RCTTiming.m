@@ -338,7 +338,7 @@ RCT_EXPORT_METHOD(createTimer:(nonnull NSNumber *)callbackID
   @synchronized (_timers) {
     _timers[callbackID] = timer;
   }
-  
+
   if (_inBackground) {
     [self scheduleSleepTimer:timer.target];
   } else if (_paused) {

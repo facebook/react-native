@@ -41,7 +41,7 @@ type State = {|
 class YellowBoxInspector extends React.Component<Props, State> {
   _symbolication: ?SymbolicationRequest;
 
-  state = {
+  state: State = {
     selectedIndex: 0,
   };
 
@@ -85,19 +85,24 @@ class YellowBoxInspector extends React.Component<Props, State> {
                 status={warning.symbolicated.status}
               />
             </View>
-            {warning.getAvailableStack().map((frame, index) => (
-              <YellowBoxInspectorStackFrame
-                key={index}
-                frame={frame}
-                onPress={
-                  warning.symbolicated.status === 'COMPLETE'
-                    ? () => {
-                        openFileInEditor(frame.file, frame.lineNumber);
-                      }
-                    : null
-                }
-              />
-            ))}
+            {warning.getAvailableStack().map((frame, index) => {
+              const {file, lineNumber} = frame;
+              return (
+                <YellowBoxInspectorStackFrame
+                  key={index}
+                  frame={frame}
+                  onPress={
+                    warning.symbolicated.status === 'COMPLETE' &&
+                    file != null &&
+                    lineNumber != null
+                      ? () => {
+                          openFileInEditor(file, lineNumber);
+                        }
+                      : null
+                  }
+                />
+              );
+            })}
           </View>
         </ScrollView>
         <YellowBoxInspectorFooter

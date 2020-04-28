@@ -10,11 +10,10 @@
 
 'use strict';
 
-const NativeModules = require('../../BatchedBridge/NativeModules');
+import NativeAccessibilityInfo from './NativeAccessibilityInfo';
+
 const RCTDeviceEventEmitter = require('../../EventEmitter/RCTDeviceEventEmitter');
 const UIManager = require('../../ReactNative/UIManager');
-
-const RCTAccessibilityInfo = NativeModules.AccessibilityInfo;
 
 const REDUCE_MOTION_EVENT = 'reduceMotionDidChange';
 const TOUCH_EXPLORATION_EVENT = 'touchExplorationDidChange';
@@ -61,7 +60,11 @@ const AccessibilityInfo = {
 
   isReduceMotionEnabled: function(): Promise<boolean> {
     return new Promise((resolve, reject) => {
-      RCTAccessibilityInfo.isReduceMotionEnabled(resolve);
+      if (NativeAccessibilityInfo) {
+        NativeAccessibilityInfo.isReduceMotionEnabled(resolve);
+      } else {
+        reject(false);
+      }
     });
   },
 
@@ -74,7 +77,11 @@ const AccessibilityInfo = {
 
   isScreenReaderEnabled: function(): Promise<boolean> {
     return new Promise((resolve, reject) => {
-      RCTAccessibilityInfo.isTouchExplorationEnabled(resolve);
+      if (NativeAccessibilityInfo) {
+        NativeAccessibilityInfo.isTouchExplorationEnabled(resolve);
+      } else {
+        reject(false);
+      }
     });
   },
 
@@ -132,7 +139,7 @@ const AccessibilityInfo = {
   setAccessibilityFocus: function(reactTag: number): void {
     UIManager.sendAccessibilityEvent(
       reactTag,
-      UIManager.AccessibilityEventTypes.typeViewFocused,
+      UIManager.getConstants().AccessibilityEventTypes.typeViewFocused,
     );
   },
 
@@ -142,7 +149,9 @@ const AccessibilityInfo = {
    * See http://facebook.github.io/react-native/docs/accessibilityinfo.html#announceforaccessibility
    */
   announceForAccessibility: function(announcement: string): void {
-    RCTAccessibilityInfo.announceForAccessibility(announcement);
+    if (NativeAccessibilityInfo) {
+      NativeAccessibilityInfo.announceForAccessibility(announcement);
+    }
   },
 };
 

@@ -9,11 +9,12 @@ package com.facebook.react.fabric.mounting.mountitems;
 import static com.facebook.react.fabric.FabricUIManager.DEBUG;
 import static com.facebook.react.fabric.FabricUIManager.TAG;
 
+import com.facebook.common.logging.FLog;
 import com.facebook.proguard.annotations.DoNotStrip;
+import com.facebook.react.bridge.ReactMarker;
+import com.facebook.react.bridge.ReactMarkerConstants;
 import com.facebook.react.fabric.mounting.MountingManager;
 import com.facebook.systrace.Systrace;
-
-import com.facebook.common.logging.FLog;
 
 /**
  * This class represents a batch of {@link MountItem}s
@@ -29,8 +30,9 @@ public class BatchMountItem implements MountItem {
 
   private final MountItem[] mMountItems;
   private final int mSize;
+  private final int mCommitNumber;
 
-  public BatchMountItem(MountItem[] items, int size) {
+  public BatchMountItem(MountItem[] items, int size, int commitNumber) {
     if (items == null) {
       throw new NullPointerException();
     }
@@ -40,6 +42,7 @@ public class BatchMountItem implements MountItem {
     }
     mMountItems = items;
     mSize = size;
+    mCommitNumber = commitNumber;
   }
 
   @Override
@@ -47,12 +50,22 @@ public class BatchMountItem implements MountItem {
     Systrace.beginSection(
         Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "FabricUIManager::mountViews - " + mSize + " items");
 
+    if (mCommitNumber > 0) {
+      ReactMarker.logFabricMarker(
+          ReactMarkerConstants.FABRIC_BATCH_EXECUTION_START, null, mCommitNumber);
+    }
+
     for (int mountItemIndex = 0; mountItemIndex < mSize; mountItemIndex++) {
       MountItem mountItem = mMountItems[mountItemIndex];
       if (DEBUG) {
         FLog.d(TAG, "Executing mountItem: " + mountItem);
       }
       mountItem.execute(mountingManager);
+    }
+
+    if (mCommitNumber > 0) {
+      ReactMarker.logFabricMarker(
+          ReactMarkerConstants.FABRIC_BATCH_EXECUTION_END, null, mCommitNumber);
     }
 
     Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);

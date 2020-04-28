@@ -23,7 +23,7 @@ const MAX_STRING_LENGTH = 50;
  * it best to get the content but ultimately relies on implementation details
  * of React and will fail in future versions.
  */
-function dumpReactTree() {
+function dumpReactTree(): string {
   try {
     return getReactTree();
   } catch (e) {

@@ -1,0 +1,10 @@
+#!/bin/sh
+
+DIR="$(dirname "${BASH_SOURCE[0]}")"
+cd "$DIR"
+
+FBSOURCE="$(hg root)"
+CLANG_FORMAT="$FBSOURCE/tools/third-party/clang-format/clang-format"
+SRC="$FBSOURCE/xplat/hermes-inspector"
+
+find "$SRC" '(' -name '*.h' -or -name '*.cpp' ')' -exec "$CLANG_FORMAT" -i -style=file '{}' ';'

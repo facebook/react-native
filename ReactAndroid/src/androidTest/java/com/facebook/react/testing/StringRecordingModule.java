@@ -1,29 +1,29 @@
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
+ * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
+ * directory of this source tree.
  */
-
 package com.facebook.react.testing;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import com.facebook.react.bridge.BaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
- * Native module provides single method {@link #record} which records its single string argument
- * in calls array
+ * Native module provides single method {@link #record} which records its single string argument in
+ * calls array
  */
 public class StringRecordingModule extends BaseJavaModule {
+
+  public static final String NAME = "Recording";
 
   private final List<String> mCalls = new ArrayList<String>();
 
   @Override
   public String getName() {
-    return "Recording";
+    return NAME;
   }
 
   @ReactMethod

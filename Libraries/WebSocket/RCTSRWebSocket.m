@@ -14,7 +14,9 @@
 //   limitations under the License.
 //
 
-#import "RCTSRWebSocket.h"
+#if !TARGET_OS_UIKITFORMAC
+
+#import <React/RCTSRWebSocket.h>
 
 #import <Availability.h>
 #if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
@@ -1637,3 +1639,5 @@ static NSRunLoop *networkRunLoop = nil;
 }
 
 @end
+
+#endif

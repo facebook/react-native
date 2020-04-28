@@ -28,7 +28,6 @@
 const start = Date.now();
 
 require('./setUpGlobals');
-require('./polyfillES6Collections');
 require('./setUpSystrace');
 require('./setUpErrorHandling');
 require('./polyfillPromise');

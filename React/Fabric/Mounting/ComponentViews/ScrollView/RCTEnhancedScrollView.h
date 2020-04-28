@@ -13,7 +13,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 /**
  * `UIScrollView` subclass which has some improvements and tweaks
- * wich are not directly related to React.
+ * which are not directly related to React.
  */
 @interface RCTEnhancedScrollView : UIScrollView
 

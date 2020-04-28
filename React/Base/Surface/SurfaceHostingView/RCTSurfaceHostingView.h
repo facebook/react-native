@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#import <UIKit/UIKit.h>
+#import <React/RCTUIKit.h> // TODO(macOS ISS#2323203)
 
 #import <React/RCTSurfaceDelegate.h>
 #import <React/RCTSurfaceSizeMeasureMode.h>
@@ -14,7 +14,7 @@
 @class RCTBridge;
 @class RCTSurface;
 
-typedef UIView *_Nullable(^RCTSurfaceHostingViewActivityIndicatorViewFactory)(void);
+typedef RCTUIView *_Nullable(^RCTSurfaceHostingViewActivityIndicatorViewFactory)(void); // TODO(macOS ISS#2323203)
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -24,7 +24,7 @@ NS_ASSUME_NONNULL_BEGIN
  * This class can be used as easy-to-use general purpose integration point
  * of ReactNative-powered experiences in UIKit based apps.
  */
-@interface RCTSurfaceHostingView : UIView <RCTSurfaceDelegate>
+@interface RCTSurfaceHostingView : RCTUIView <RCTSurfaceDelegate> // TODO(macOS ISS#2323203)
 
 /**
  * Create an instance of RCTSurface to be hosted.

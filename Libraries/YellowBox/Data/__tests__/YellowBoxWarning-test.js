@@ -11,7 +11,7 @@
 
 'use strict';
 
-import type {StackFrame} from '../../../Core/Devtools/parseErrorStack';
+import type {StackFrame} from '../../../Core/NativeExceptionsManager';
 
 jest.mock('../YellowBoxSymbolication');
 

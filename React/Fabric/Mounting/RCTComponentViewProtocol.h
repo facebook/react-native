@@ -70,7 +70,8 @@ typedef NS_OPTIONS(NSInteger, RNComponentViewUpdateMask) {
  * Called for updating component's props.
  * Receiver must update native view props accordingly changed props.
  */
-- (void)updateProps:(facebook::react::SharedProps)props oldProps:(facebook::react::SharedProps)oldProps;
+- (void)updateProps:(facebook::react::Props::Shared const &)props
+           oldProps:(facebook::react::Props::Shared const &)oldProps;
 
 /*
  * Called for updating component's local data.
@@ -83,22 +84,28 @@ typedef NS_OPTIONS(NSInteger, RNComponentViewUpdateMask) {
  * Called for updating component's state.
  * Receiver must update native view according to changed state.
  */
-- (void)updateState:(facebook::react::State::Shared)state oldState:(facebook::react::State::Shared)oldState;
+- (void)updateState:(facebook::react::State::Shared const &)state
+           oldState:(facebook::react::State::Shared const &)oldState;
 
 /*
  * Called for updating component's event handlers set.
  * Receiver must cache `eventEmitter` object inside and use it for emitting
  * events when needed.
  */
-- (void)updateEventEmitter:(facebook::react::SharedEventEmitter)eventEmitter;
+- (void)updateEventEmitter:(facebook::react::EventEmitter::Shared const &)eventEmitter;
 
 /*
  * Called for updating component's layout metrics.
  * Receiver must update `UIView` layout-related fields (such as `frame`,
  * `bounds`, `layer.zPosition`, and so on) accordingly.
  */
-- (void)updateLayoutMetrics:(facebook::react::LayoutMetrics)layoutMetrics
-           oldLayoutMetrics:(facebook::react::LayoutMetrics)oldLayoutMetrics;
+- (void)updateLayoutMetrics:(facebook::react::LayoutMetrics const &)layoutMetrics
+           oldLayoutMetrics:(facebook::react::LayoutMetrics const &)oldLayoutMetrics;
+
+/*
+ * Called when receiving a command
+ */
+- (void)handleCommand:(NSString const *)commandName args:(NSArray const *)args;
 
 /*
  * Called right after all update methods were called for a particular component view.

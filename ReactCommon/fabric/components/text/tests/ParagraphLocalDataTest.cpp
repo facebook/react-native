@@ -12,7 +12,7 @@
 #include <react/attributedstring/AttributedString.h>
 #include <react/attributedstring/TextAttributes.h>
 #include <react/attributedstring/primitives.h>
-#include <react/components/text/ParagraphLocalData.h>
+#include <react/components/text/ParagraphState.h>
 #include <react/components/text/conversions.h>
 
 namespace facebook {
@@ -21,7 +21,7 @@ namespace react {
 #ifdef ANDROID
 
 TEST(ParagraphLocalDataTest, testSomething) {
-  auto attString = AttributedString();
+  auto attributedString = AttributedString();
   auto fragment = AttributedString::Fragment();
   fragment.string = "test";
 
@@ -35,10 +35,10 @@ TEST(ParagraphLocalDataTest, testSomething) {
   fragment.textAttributes = text;
   attString.prependFragment(fragment);
 
-  auto paragraphLocalData = ParagraphLocalData();
-  paragraphLocalData.setAttributedString(attString);
+  auto paragraphState = ParagraphState{};
+  paragraphLocalData.attributedString = attributedString;
 
-  auto result = toDynamic(paragraphLocalData)["attributedString"];
+  auto result = toDynamic(paragraphState)["attributedString"];
 
   assert(result["string"] == fragment.string);
   auto textAttribute = result["fragments"][0]["textAttributes"];

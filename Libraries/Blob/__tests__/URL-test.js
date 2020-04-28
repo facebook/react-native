@@ -31,5 +31,7 @@ describe('URL', function() {
     // expect(g.href).toBe('https://developer.mozilla.org/en-US/docs');
     const h = new URL('/en-US/docs', a);
     expect(h.href).toBe('https://developer.mozilla.org/en-US/docs');
+    const i = new URL('http://github.com', 'http://google.com');
+    expect(i.href).toBe('http://github.com/');
   });
 });

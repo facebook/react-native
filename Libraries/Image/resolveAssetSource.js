@@ -29,10 +29,9 @@ function getSourceCodeScriptURL(): ?string {
   let sourceCode =
     global.nativeExtensions && global.nativeExtensions.SourceCode;
   if (!sourceCode) {
-    const NativeModules = require('../BatchedBridge/NativeModules');
-    sourceCode = NativeModules && NativeModules.SourceCode;
+    sourceCode = require('../NativeModules/specs/NativeSourceCode').default;
   }
-  _sourceCodeScriptURL = sourceCode.scriptURL;
+  _sourceCodeScriptURL = sourceCode.getConstants().scriptURL;
   return _sourceCodeScriptURL;
 }
 

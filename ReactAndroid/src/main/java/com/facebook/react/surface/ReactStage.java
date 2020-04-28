@@ -5,9 +5,7 @@ import static java.lang.annotation.RetentionPolicy.SOURCE;
 import androidx.annotation.IntDef;
 import java.lang.annotation.Retention;
 
-/**
- * The stage of the Surface
- */
+/** The stage of the Surface */
 @Retention(SOURCE)
 @IntDef({
   ReactStage.SURFACE_DID_INITIALIZE,

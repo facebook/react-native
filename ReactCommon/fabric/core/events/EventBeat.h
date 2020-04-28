@@ -17,7 +17,7 @@ namespace react {
 
 /*
  * Event Beat serves two interleaving purposes: synchronization of event queues
- * and ensuring that event dispatching happens on propper threads.
+ * and ensuring that event dispatching happens on proper threads.
  */
 class EventBeat {
  public:

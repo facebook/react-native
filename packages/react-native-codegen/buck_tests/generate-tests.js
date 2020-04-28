@@ -15,9 +15,9 @@ const fs = require('fs');
 const mkdirp = require('mkdirp');
 
 const args = process.argv.slice(2);
-if (args.length !== 3) {
+if (args.length !== 4) {
   throw new Error(
-    `Expected to receive path to schema, library name, and output directory. Received ${args.join(
+    `Expected to receive path to schema, library name, output directory and module spec name. Received ${args.join(
       ', ',
     )}`,
   );
@@ -26,6 +26,7 @@ if (args.length !== 3) {
 const schemaPath = args[0];
 const libraryName = args[1];
 const outputDirectory = args[2];
+const moduleSpecName = args[3];
 
 const schemaText = fs.readFileSync(schemaPath, 'utf-8');
 
@@ -43,6 +44,15 @@ try {
 }
 
 RNCodegen.generate(
-  {libraryName, schema, outputDirectory},
-  {generators: ['descriptors', 'events', 'props', 'tests', 'shadow-nodes']},
+  {libraryName, schema, outputDirectory, moduleSpecName},
+  {
+    generators: [
+      'descriptors',
+      'events',
+      'props',
+      'tests',
+      'shadow-nodes',
+      'modules',
+    ],
+  },
 );

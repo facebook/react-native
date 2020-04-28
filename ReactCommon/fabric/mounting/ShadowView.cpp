@@ -53,7 +53,7 @@ bool ShadowView::operator!=(const ShadowView &rhs) const {
 #if RN_DEBUG_STRING_CONVERTIBLE
 
 std::string getDebugName(ShadowView const &object) {
-  return object.componentHandle == 0 ? object.componentName : "Empty";
+  return object.componentHandle == 0 ? "Invalid" : object.componentName;
 }
 
 std::vector<DebugStringConvertibleObject> getDebugProps(

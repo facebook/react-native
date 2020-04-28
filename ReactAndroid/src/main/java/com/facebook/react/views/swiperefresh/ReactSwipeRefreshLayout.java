@@ -1,23 +1,19 @@
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
+ * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
+ * directory of this source tree.
  */
-
 package com.facebook.react.views.swiperefresh;
 
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import android.view.MotionEvent;
 import android.view.ViewConfiguration;
-
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.events.NativeGestureUtil;
 
-/**
- * Basic extension of {@link SwipeRefreshLayout} with ReactNative-specific functionality.
- */
+/** Basic extension of {@link SwipeRefreshLayout} with ReactNative-specific functionality. */
 public class ReactSwipeRefreshLayout extends SwipeRefreshLayout {
 
   private static final float DEFAULT_CIRCLE_TARGET = 64;
@@ -104,9 +100,9 @@ public class ReactSwipeRefreshLayout extends SwipeRefreshLayout {
 
   /**
    * {@link SwipeRefreshLayout} completely bypasses ViewGroup's "disallowIntercept" by overriding
-   * {@link ViewGroup#onInterceptTouchEvent} and never calling super.onInterceptTouchEvent().
-   * This means that horizontal scrolls will always be intercepted, even though they shouldn't, so
-   * we have to check for that manually here.
+   * {@link ViewGroup#onInterceptTouchEvent} and never calling super.onInterceptTouchEvent(). This
+   * means that horizontal scrolls will always be intercepted, even though they shouldn't, so we
+   * have to check for that manually here.
    */
   private boolean shouldInterceptTouchEvent(MotionEvent ev) {
     switch (ev.getAction()) {

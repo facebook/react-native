@@ -4,9 +4,9 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-#import "RCTNativeAnimatedModule.h"
+#import <React/RCTNativeAnimatedModule.h>
 
-#import "RCTNativeAnimatedNodesManager.h"
+#import <React/RCTNativeAnimatedNodesManager.h>
 
 typedef void (^AnimatedOperation)(RCTNativeAnimatedNodesManager *nodesManager);
 
@@ -14,7 +14,7 @@ typedef void (^AnimatedOperation)(RCTNativeAnimatedNodesManager *nodesManager);
 {
   RCTNativeAnimatedNodesManager *_nodesManager;
 
-  // Oparations called after views have been updated.
+  // Operations called after views have been updated.
   NSMutableArray<AnimatedOperation> *_operations;
   // Operations called before views have been updated.
   NSMutableArray<AnimatedOperation> *_preOperations;
@@ -87,10 +87,14 @@ RCT_EXPORT_METHOD(startAnimatingNode:(nonnull NSNumber *)animationId
   [self addOperationBlock:^(RCTNativeAnimatedNodesManager *nodesManager) {
     [nodesManager startAnimatingNode:animationId nodeTag:nodeTag config:config endCallback:callBack];
   }];
-  if ([_nodesManager isNodeManagedByFabric:nodeTag]) {
-    _animIdIsManagedByFabric[animationId] = @YES;
-    [self flushOperationQueues];
-  }
+  __weak RCTNativeAnimatedModule *weakSelf = self;
+  RCTExecuteOnMainQueue(^{
+      __strong RCTNativeAnimatedModule *strongSelf = weakSelf;
+      if (strongSelf && [strongSelf->_nodesManager isNodeManagedByFabric:nodeTag]) {
+          strongSelf->_animIdIsManagedByFabric[animationId] = @YES;
+          [strongSelf flushOperationQueues];
+      }
+  });
 }
 
 RCT_EXPORT_METHOD(stopAnimation:(nonnull NSNumber *)animationId)
@@ -232,27 +236,31 @@ RCT_EXPORT_METHOD(removeAnimatedEventFromView:(nonnull NSNumber *)viewTag
 - (void)willMountComponentsWithRootTag:(NSInteger)rootTag
 {
   RCTAssertMainQueue();
-  __block NSArray<AnimatedOperation> *preOperations;
-  RCTUnsafeExecuteOnUIManagerQueueSync(^{
-    preOperations = self->_preOperations;
+  RCTExecuteOnUIManagerQueue(^{
+    NSArray<AnimatedOperation> *preOperations = self->_preOperations;
     self->_preOperations = [NSMutableArray new];
+
+    RCTExecuteOnMainQueue(^{
+      for (AnimatedOperation preOperation in preOperations) {
+        preOperation(self->_nodesManager);
+      }
+    });
   });
-  for (AnimatedOperation operation in preOperations) {
-    operation(self->_nodesManager);
-  }
 }
 
 - (void)didMountComponentsWithRootTag:(NSInteger)rootTag
 {
   RCTAssertMainQueue();
-  __block NSArray<AnimatedOperation> *operations;
-  RCTUnsafeExecuteOnUIManagerQueueSync(^{
-    operations = self->_operations;
+  RCTExecuteOnUIManagerQueue(^{
+    NSArray<AnimatedOperation> *operations = self->_operations;
     self->_operations = [NSMutableArray new];
+
+    RCTExecuteOnMainQueue(^{
+      for (AnimatedOperation operation in operations) {
+        operation(self->_nodesManager);
+      }
+    });
   });
-  for (AnimatedOperation operation in operations) {
-    operation(self->_nodesManager);
-  }
 }
 
 #pragma mark - RCTUIManagerObserver

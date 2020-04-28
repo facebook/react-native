@@ -47,11 +47,11 @@ RCT_MULTI_ENUM_CONVERTER(UIAccessibilityTraits, (@{
   @"adjustable": @(UIAccessibilityTraitAdjustable),
   @"allowsDirectInteraction": @(UIAccessibilityTraitAllowsDirectInteraction),
   @"pageTurn": @(UIAccessibilityTraitCausesPageTurn),
-  // TODO(macOS ISS#2323203):
+  // [TODO(macOS ISS#2323203):
   // a set of RN accessibilityTraits are macOS specific accessiblity roles and map to nothing on iOS:
   @"group": @(UIAccessibilityTraitNone),
   @"list": @(UIAccessibilityTraitNone),
-  // TODO(macOS ISS#2323203)
+  // ]TODO(macOS ISS#2323203)
   @"alert": @(UIAccessibilityTraitNone),
   @"checkbox": @(UIAccessibilityTraitNone),
   @"combobox": @(UIAccessibilityTraitNone),
@@ -128,8 +128,8 @@ RCT_EXPORT_VIEW_PROPERTY(hasTVPreferredFocus, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(tvParallaxProperties, NSDictionary)
 #endif
 
-// Acessibility related properties
-#if !TARGET_OS_OSX
+// Accessibility related properties
+#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
 RCT_REMAP_VIEW_PROPERTY(accessible, reactAccessibilityElement.isAccessibilityElement, BOOL)
 #else // [TODO(macOS ISS#2323203)
 RCT_REMAP_VIEW_PROPERTY(accessible, reactAccessibilityElement.accessibilityElement, BOOL)
@@ -138,7 +138,7 @@ RCT_REMAP_VIEW_PROPERTY(accessibilityActions, reactAccessibilityElement.accessib
 RCT_REMAP_VIEW_PROPERTY(accessibilityLabel, reactAccessibilityElement.accessibilityLabel, NSString)
 #if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
 RCT_REMAP_VIEW_PROPERTY(accessibilityHint, reactAccessibilityElement.accessibilityHint, NSString) // TODO(macOS ISS#2323203)
-RCT_REMAP_VIEW_PROPERTY(accessibilityTraits, reactAccessibilityElement.accessibilityTraits, UIAccessibilityTraits)
+RCT_REMAP_VIEW_PROPERTY(accessibilityTraits, reactAccessibilityElement.accessibilityTraits, UIAccessibilityTraits) // TODO(macOS ISS#2323203)
 RCT_REMAP_VIEW_PROPERTY(accessibilityViewIsModal, reactAccessibilityElement.accessibilityViewIsModal, BOOL)
 RCT_REMAP_VIEW_PROPERTY(accessibilityElementsHidden, reactAccessibilityElement.accessibilityElementsHidden, BOOL)
 RCT_REMAP_VIEW_PROPERTY(accessibilityIgnoresInvertColors, reactAccessibilityElement.shouldAccessibilityIgnoresInvertColors, BOOL)
@@ -182,21 +182,21 @@ RCT_CUSTOM_VIEW_PROPERTY(overflow, YGOverflow, RCTView)
     view.clipsToBounds = defaultView.clipsToBounds;
   }
 }
-#if !TARGET_OS_OSX // [TODO(macOS ISS#2323203)
+#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
 RCT_CUSTOM_VIEW_PROPERTY(shouldRasterizeIOS, BOOL, RCTView)
 {
   view.layer.shouldRasterize = json ? [RCTConvert BOOL:json] : defaultView.layer.shouldRasterize;
   view.layer.rasterizationScale = view.layer.shouldRasterize ? [UIScreen mainScreen].scale : defaultView.layer.rasterizationScale;
 }
-#endif // ]TODO(macOS ISS#2323203)
+#endif // TODO(macOS ISS#2323203)
 
 RCT_CUSTOM_VIEW_PROPERTY(transform, CATransform3D, RCTView)
 {
-#if !TARGET_OS_OSX // [TODO(macOS ISS#2323203)
+#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
   view.layer.transform = json ? [RCTConvert CATransform3D:json] : defaultView.layer.transform;
   // Enable edge antialiasing in perspective transforms
   view.layer.allowsEdgeAntialiasing = !(view.layer.transform.m34 == 0.0f);
-#elif TARGET_OS_OSX // TODO(macOS ISS#2323203)
+#elif TARGET_OS_OSX // [TODO(macOS ISS#2323203)
   view.layer.sublayerTransform = json ? [RCTConvert CATransform3D:json] : defaultView.layer.sublayerTransform;
   // TODO: Improve this by enabling edge antialiasing only for transforms with rotation or skewing
   view.layer.edgeAntialiasingMask = !CATransform3DIsIdentity(view.layer.sublayerTransform) ? kCALayerLeftEdge | kCALayerRightEdge | kCALayerBottomEdge | kCALayerTopEdge : 0;
@@ -205,7 +205,7 @@ RCT_CUSTOM_VIEW_PROPERTY(transform, CATransform3D, RCTView)
 
 RCT_CUSTOM_VIEW_PROPERTY(accessibilityRole, UIAccessibilityTraits, RCTView)
 {
-#if !TARGET_OS_OSX
+#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
    const UIAccessibilityTraits AccessibilityRolesMask = UIAccessibilityTraitNone | UIAccessibilityTraitButton | UIAccessibilityTraitLink | UIAccessibilityTraitSearchField | UIAccessibilityTraitImage | UIAccessibilityTraitKeyboardKey | UIAccessibilityTraitStaticText | UIAccessibilityTraitAdjustable | UIAccessibilityTraitHeader | UIAccessibilityTraitSummaryElement | SwitchAccessibilityTrait;
   view.reactAccessibilityElement.accessibilityTraits = view.reactAccessibilityElement.accessibilityTraits & ~AccessibilityRolesMask;
   UIAccessibilityTraits newTraits = json ? [RCTConvert UIAccessibilityTraits:json] : defaultView.accessibilityTraits;
@@ -216,18 +216,18 @@ RCT_CUSTOM_VIEW_PROPERTY(accessibilityRole, UIAccessibilityTraits, RCTView)
     NSString *role = json ? [RCTConvert NSString:json] : @"";
     view.reactAccessibilityElement.accessibilityRole = role;
   }
-#else
+#else // [TODO(macOS ISS#2323203)
   if (json) {
     view.reactAccessibilityElement.accessibilityRole = [RCTConvert accessibilityRoleFromTraits:json];
   } else {
     view.reactAccessibilityElement.accessibilityRole = defaultView.accessibilityRole;
   }
-#endif
+#endif // ]TODO(macOS ISS#2323203)
 }
 
 RCT_CUSTOM_VIEW_PROPERTY(accessibilityStates, NSArray<NSString *>, RCTView)
 {
-#if !TARGET_OS_OSX
+#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
   // This mask must be kept in sync with the AccessibilityStates enum defined in ViewAccessibility.js and DeprecatedViewAccessibility.js
   NSArray<NSString *> *states = json ? [RCTConvert NSStringArray:json] : nil;
   NSMutableArray *newStates = [NSMutableArray new];
@@ -253,7 +253,39 @@ RCT_CUSTOM_VIEW_PROPERTY(accessibilityStates, NSArray<NSString *>, RCTView)
   } else {
     view.reactAccessibilityElement.accessibilityStates = nil;
   }
-#endif
+}
+
+RCT_CUSTOM_VIEW_PROPERTY(accessibilityState, NSDictionary, RCTView)
+{
+  NSDictionary<NSString *, id> *state = json ? [RCTConvert NSDictionary:json] : nil;
+  NSMutableDictionary<NSString *, id> *newState = [[NSMutableDictionary<NSString *, id> alloc] init];
+
+  if (!state) {
+    return;
+  }
+
+  const UIAccessibilityTraits AccessibilityStatesMask = UIAccessibilityTraitNotEnabled | UIAccessibilityTraitSelected;
+  view.reactAccessibilityElement.accessibilityTraits = view.reactAccessibilityElement.accessibilityTraits & ~AccessibilityStatesMask;
+
+  for (NSString *s in state) {
+    id val = [state objectForKey:s];
+    if (!val) {
+      continue;
+    }
+    if ([s isEqualToString:@"selected"] && [val isKindOfClass:[NSNumber class]] && [val boolValue]) {
+      view.reactAccessibilityElement.accessibilityTraits |= UIAccessibilityTraitSelected;
+    } else if ([s isEqualToString:@"disabled"] && [val isKindOfClass:[NSNumber class]] && [val boolValue]) {
+      view.reactAccessibilityElement.accessibilityTraits |= UIAccessibilityTraitNotEnabled;
+    } else {
+      newState[s] = val;
+    }
+  }
+  if (newState.count > 0) {
+    view.reactAccessibilityElement.accessibilityState = newState;
+  } else {
+    view.reactAccessibilityElement.accessibilityState = nil;
+  }
+#endif // TODO(macOS ISS#2323203)
 }
 
 RCT_CUSTOM_VIEW_PROPERTY(nativeID, NSString *, RCTView)
@@ -412,7 +444,7 @@ RCT_EXPORT_VIEW_PROPERTY(onBlur, RCTBubblingEventBlock)
 // ]TODO(OSS Candidate ISS#2710739)
 
 
-#if TARGET_OS_OSX // TODO(macOS ISS#2323203)
+#if TARGET_OS_OSX // [TODO(macOS ISS#2323203)
 #pragma mark - macOS properties
 
 RCT_EXPORT_VIEW_PROPERTY(onDoubleClick, RCTDirectEventBlock)
@@ -422,7 +454,7 @@ RCT_EXPORT_VIEW_PROPERTY(onMouseLeave, RCTDirectEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onDragEnter, RCTDirectEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onDragLeave, RCTDirectEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onDrop, RCTDirectEventBlock)
-#endif // TODO(macOS ISS#2323203)
+#endif // ]TODO(macOS ISS#2323203)
 
 #pragma mark - ShadowView properties
 

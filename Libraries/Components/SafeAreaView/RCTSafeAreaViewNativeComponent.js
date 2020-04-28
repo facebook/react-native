@@ -5,21 +5,24 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @flow
+ * @flow strict-local
  */
 
-const requireNativeComponent = require('../../ReactNative/requireNativeComponent');
+'use strict';
 
 import type {ViewProps} from '../View/ViewPropTypes';
-import type {NativeComponent} from '../../Renderer/shims/ReactNative';
+import type {WithDefault} from '../../Types/CodegenTypes';
+
+import codegenNativeComponent from '../../Utilities/codegenNativeComponent';
+import {type NativeComponentType} from '../../Utilities/codegenNativeComponent';
 
 type NativeProps = $ReadOnly<{|
   ...ViewProps,
-  emulateUnlessSupported?: boolean,
+
+  // Props
+  emulateUnlessSupported?: WithDefault<boolean, false>,
 |}>;
 
-type RCTSafeAreaViewNativeType = Class<NativeComponent<NativeProps>>;
-
-module.exports = ((requireNativeComponent(
+export default (codegenNativeComponent<NativeProps>(
   'RCTSafeAreaView',
-): any): RCTSafeAreaViewNativeType);
+): NativeComponentType<NativeProps>);

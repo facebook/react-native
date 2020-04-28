@@ -1,10 +1,9 @@
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
+ * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
+ * directory of this source tree.
  */
-
 package com.facebook.react.views.art;
 
 import android.graphics.Canvas;
@@ -15,18 +14,14 @@ import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.RectF;
 import android.graphics.Shader;
+import androidx.annotation.Nullable;
 import com.facebook.common.logging.FLog;
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.uimanager.annotations.ReactProp;
-import javax.annotation.Nullable;
 
-import static com.facebook.react.common.ArrayUtils.copyArray;
-
-/**
- * Shadow node for virtual ARTShape view
- */
+/** Shadow node for virtual ARTShape view */
 public class ARTShapeShadowNode extends ARTVirtualNode {
 
   private static final int CAP_BUTT = 0;
@@ -58,7 +53,7 @@ public class ARTShapeShadowNode extends ARTVirtualNode {
   private int mStrokeCap = CAP_ROUND;
   private int mStrokeJoin = JOIN_ROUND;
 
-  public ARTShapeShadowNode() { }
+  public ARTShapeShadowNode() {}
 
   @ReactProp(name = "d")
   public void setShapePath(@Nullable ReadableArray shapePath) {
@@ -109,8 +104,7 @@ public class ARTShapeShadowNode extends ARTVirtualNode {
     if (opacity > MIN_OPACITY_FOR_DRAW) {
       saveAndSetupCanvas(canvas);
       if (mPath == null) {
-        throw new JSApplicationIllegalArgumentException(
-            "Shapes should have a valid path (d) prop");
+        throw new JSApplicationIllegalArgumentException("Shapes should have a valid path (d) prop");
       }
       if (setupFillPaint(paint, opacity)) {
         canvas.drawPath(mPath, paint);
@@ -124,8 +118,8 @@ public class ARTShapeShadowNode extends ARTVirtualNode {
   }
 
   /**
-   * Sets up {@link #mPaint} according to the props set on a shadow view. Returns {@code true}
-   * if the stroke should be drawn, {@code false} if not.
+   * Sets up {@link #mPaint} according to the props set on a shadow view. Returns {@code true} if
+   * the stroke should be drawn, {@code false} if not.
    */
   protected boolean setupStrokePaint(Paint paint, float opacity) {
     if (mStrokeWidth == 0 || mStrokeColor == null || mStrokeColor.length == 0) {
@@ -175,8 +169,8 @@ public class ARTShapeShadowNode extends ARTVirtualNode {
   }
 
   /**
-   * Sets up {@link #mPaint} according to the props set on a shadow view. Returns {@code true}
-   * if the fill should be drawn, {@code false} if not.
+   * Sets up {@link #mPaint} according to the props set on a shadow view. Returns {@code true} if
+   * the fill should be drawn, {@code false} if not.
    */
   protected boolean setupFillPaint(Paint paint, float opacity) {
     if (mBrushData != null && mBrushData.length > 0) {
@@ -193,11 +187,13 @@ public class ARTShapeShadowNode extends ARTVirtualNode {
               (int) (mBrushData[3] * 255));
           break;
         case COLOR_TYPE_LINEAR_GRADIENT:
-          // For mBrushData format refer to LinearGradient and insertColorStopsIntoArray functions in ReactNativeART.js
+          // For mBrushData format refer to LinearGradient and insertColorStopsIntoArray functions
+          // in ReactNativeART.js
           if (mBrushData.length < 5) {
-            FLog.w(ReactConstants.TAG,
-              "[ARTShapeShadowNode setupFillPaint] expects 5 elements, received "
-              + mBrushData.length);
+            FLog.w(
+                ReactConstants.TAG,
+                "[ARTShapeShadowNode setupFillPaint] expects 5 elements, received "
+                    + mBrushData.length);
             return false;
           }
           float gradientStartX = mBrushData[1] * mScale;
@@ -210,23 +206,24 @@ public class ARTShapeShadowNode extends ARTVirtualNode {
           if (stops > 0) {
             colors = new int[stops];
             positions = new float[stops];
-            for (int i=0; i<stops; i++) {
-              positions[i] = mBrushData[5 + 4*stops + i];
-              int r = (int) (255 * mBrushData[5 + 4*i + 0]);
-              int g = (int) (255 * mBrushData[5 + 4*i + 1]);
-              int b = (int) (255 * mBrushData[5 + 4*i + 2]);
-              int a = (int) (255 * mBrushData[5 + 4*i + 3]);
+            for (int i = 0; i < stops; i++) {
+              positions[i] = mBrushData[5 + 4 * stops + i];
+              int r = (int) (255 * mBrushData[5 + 4 * i + 0]);
+              int g = (int) (255 * mBrushData[5 + 4 * i + 1]);
+              int b = (int) (255 * mBrushData[5 + 4 * i + 2]);
+              int a = (int) (255 * mBrushData[5 + 4 * i + 3]);
               colors[i] = Color.argb(a, r, g, b);
             }
           }
           paint.setShader(
-            new LinearGradient(
-              gradientStartX, gradientStartY,
-              gradientEndX, gradientEndY,
-              colors, positions,
-              Shader.TileMode.CLAMP
-            )
-          );
+              new LinearGradient(
+                  gradientStartX,
+                  gradientStartY,
+                  gradientEndX,
+                  gradientEndY,
+                  colors,
+                  positions,
+                  Shader.TileMode.CLAMP));
           break;
         case COLOR_TYPE_RADIAL_GRADIENT:
           // TODO(6352048): Support radial gradient etc.
@@ -255,10 +252,10 @@ public class ARTShapeShadowNode extends ARTVirtualNode {
   }
 
   /**
-   * Creates a {@link Path} from an array of instructions constructed by JS
-   * (see ARTSerializablePath.js). Each instruction starts with a type (see PATH_TYPE_*) followed
-   * by arguments for that instruction. For example, to create a line the instruction will be
-   * 2 (PATH_LINE_TO), x, y. This will draw a line from the last draw point (or 0,0) to x,y.
+   * Creates a {@link Path} from an array of instructions constructed by JS (see
+   * ARTSerializablePath.js). Each instruction starts with a type (see PATH_TYPE_*) followed by
+   * arguments for that instruction. For example, to create a line the instruction will be 2
+   * (PATH_LINE_TO), x, y. This will draw a line from the last draw point (or 0,0) to x,y.
    *
    * @param data the array of instructions
    * @return the {@link Path} that can be drawn to a canvas
@@ -289,29 +286,29 @@ public class ARTShapeShadowNode extends ARTVirtualNode {
               data[i++] * mScale);
           break;
         case PATH_TYPE_ARC:
-        {
-          float x = data[i++] * mScale;
-          float y = data[i++] * mScale;
-          float r = data[i++] * mScale;
-          float start = (float) Math.toDegrees(data[i++]);
-          float end = (float) Math.toDegrees(data[i++]);
+          {
+            float x = data[i++] * mScale;
+            float y = data[i++] * mScale;
+            float r = data[i++] * mScale;
+            float start = (float) Math.toDegrees(data[i++]);
+            float end = (float) Math.toDegrees(data[i++]);
 
-          boolean counterClockwise = !(data[i++] == 1f);
-          float sweep = end - start;
-          if (Math.abs(sweep) >= 360) {
-            path.addCircle(x, y, r, counterClockwise ? Path.Direction.CCW : Path.Direction.CW);
-          } else {
-            sweep = modulus(sweep, 360);
-            if (counterClockwise && sweep < 360) {
-              // Counter-clockwise sweeps are negative
-              sweep = -1 * (360 - sweep);
+            boolean counterClockwise = !(data[i++] == 1f);
+            float sweep = end - start;
+            if (Math.abs(sweep) >= 360) {
+              path.addCircle(x, y, r, counterClockwise ? Path.Direction.CCW : Path.Direction.CW);
+            } else {
+              sweep = modulus(sweep, 360);
+              if (counterClockwise && sweep < 360) {
+                // Counter-clockwise sweeps are negative
+                sweep = -1 * (360 - sweep);
+              }
+
+              RectF oval = new RectF(x - r, y - r, x + r, y + r);
+              path.arcTo(oval, start, sweep);
             }
-
-            RectF oval = new RectF(x - r, y - r, x + r, y + r);
-            path.arcTo(oval, start, sweep);
+            break;
           }
-          break;
-        }
         default:
           throw new JSApplicationIllegalArgumentException(
               "Unrecognized drawing instruction " + type);

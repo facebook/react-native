@@ -6,6 +6,7 @@
 package com.facebook.react.uimanager;
 
 import android.view.View;
+import androidx.annotation.Nullable;
 import com.facebook.common.logging.FLog;
 import com.facebook.react.bridge.Dynamic;
 import com.facebook.react.bridge.DynamicFromObject;
@@ -18,7 +19,6 @@ import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
-import javax.annotation.Nullable;
 
 /**
  * This class is responsible for holding view manager property setters and is used in a process of
@@ -163,7 +163,7 @@ import javax.annotation.Nullable;
     @Override
     protected Object getValueOrDefault(Object value) {
       // All numbers from JS are Doubles which can't be simply cast to Integer
-      return value == null ? mDefaultValue : (Integer) ((Double)value).intValue();
+      return value == null ? mDefaultValue : (Integer) ((Double) value).intValue();
     }
   }
 
@@ -220,7 +220,7 @@ import javax.annotation.Nullable;
     @Override
     protected Object getValueOrDefault(Object value) {
       // All numbers from JS are Doubles which can't be simply cast to Float
-      return value == null ? mDefaultValue : (Float) ((Double)value).floatValue();
+      return value == null ? mDefaultValue : (Float) ((Double) value).floatValue();
     }
   }
 

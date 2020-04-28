@@ -77,7 +77,7 @@ React Native is developed and supported by many companies and individual core co
 - [Documentation](#-documentation)
 - [Upgrading](#-upgrading)
 - [How to Contribute](#-how-to-contribute)
-- [Code of Conduct](#-code-of-conduct)
+- [Code of Conduct](#code-of-conduct)
 - [License](#-license)
 
 
@@ -86,7 +86,6 @@ React Native is developed and supported by many companies and individual core co
 React Native apps may target iOS 9.0 and Android 4.1 (API 16) or newer. You may use Windows, macOS, or Linux as your development operating system, though building and running iOS apps is limited to macOS. Tools like [Expo](https://expo.io) can be used to work around this.
 
 ## 🎉 Building your first React Native app
->>>>>>> v0.60.0
 
 Follow the [Getting Started guide](https://facebook.github.io/react-native/docs/getting-started.html). The recommended way to install React Native depends on your project. Here you can find short guides for the most common scenarios:
 

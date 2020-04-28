@@ -3,6 +3,10 @@ load("//tools/build_defs/oss:rn_defs.bzl", "YOGA_TARGET", "react_native_dep", "r
 rn_android_library(
     name = "modal",
     srcs = glob(["*.java"]),
+    is_androidx = True,
+    provided_deps = [
+        react_native_dep("third-party/android/androidx:annotation"),
+    ],
     required_for_source_only_abi = True,
     visibility = [
         "PUBLIC",

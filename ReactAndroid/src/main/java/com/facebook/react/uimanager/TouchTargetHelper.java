@@ -1,13 +1,10 @@
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
+ * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
+ * directory of this source tree.
  */
-
 package com.facebook.react.uimanager;
-
-import javax.annotation.Nullable;
 
 import android.graphics.Matrix;
 import android.graphics.PointF;
@@ -15,14 +12,14 @@ import android.graphics.Rect;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-
+import androidx.annotation.Nullable;
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.touch.ReactHitSlopView;
 
 /**
- * Class responsible for identifying which react view should handle a given {@link MotionEvent}.
- * It uses the event coordinates to traverse the view hierarchy and return a suitable view.
+ * Class responsible for identifying which react view should handle a given {@link MotionEvent}. It
+ * uses the event coordinates to traverse the view hierarchy and return a suitable view.
  */
 public class TouchTargetHelper {
 
@@ -32,25 +29,21 @@ public class TouchTargetHelper {
   private static final Matrix mInverseMatrix = new Matrix();
 
   /**
-   * Find touch event target view within the provided container given the coordinates provided
-   * via {@link MotionEvent}.
+   * Find touch event target view within the provided container given the coordinates provided via
+   * {@link MotionEvent}.
    *
    * @param eventX the X screen coordinate of the touch location
    * @param eventY the Y screen coordinate of the touch location
    * @param viewGroup the container view to traverse
    * @return the react tag ID of the child view that should handle the event
    */
-  public static int findTargetTagForTouch(
-      float eventX,
-      float eventY,
-      ViewGroup viewGroup) {
-    return findTargetTagAndCoordinatesForTouch(
-        eventX, eventY, viewGroup, mEventCoords, null);
+  public static int findTargetTagForTouch(float eventX, float eventY, ViewGroup viewGroup) {
+    return findTargetTagAndCoordinatesForTouch(eventX, eventY, viewGroup, mEventCoords, null);
   }
 
   /**
-   * Find touch event target view within the provided container given the coordinates provided
-   * via {@link MotionEvent}.
+   * Find touch event target view within the provided container given the coordinates provided via
+   * {@link MotionEvent}.
    *
    * @param eventX the X screen coordinate of the touch location
    * @param eventY the Y screen coordinate of the touch location
@@ -59,17 +52,14 @@ public class TouchTargetHelper {
    * @return the react tag ID of the child view that should handle the event
    */
   public static int findTargetTagForTouch(
-      float eventX,
-      float eventY,
-      ViewGroup viewGroup,
-      @Nullable int[] nativeViewId) {
+      float eventX, float eventY, ViewGroup viewGroup, @Nullable int[] nativeViewId) {
     return findTargetTagAndCoordinatesForTouch(
         eventX, eventY, viewGroup, mEventCoords, nativeViewId);
   }
 
   /**
-   * Find touch event target view within the provided container given the coordinates provided
-   * via {@link MotionEvent}.
+   * Find touch event target view within the provided container given the coordinates provided via
+   * {@link MotionEvent}.
    *
    * @param eventX the X screen coordinate of the touch location
    * @param eventY the Y screen coordinate of the touch location
@@ -110,27 +100,28 @@ public class TouchTargetHelper {
   }
 
   /**
-   * Returns the touch target View that is either viewGroup or one if its descendants.
-   * This is a recursive DFS since view the entire tree must be parsed until the target is found.
-   * If the search does not backtrack, it is possible to follow a branch that cannot be a target
-   * (because of pointerEvents). For example, if both C and E can be the target of an event:
-   * A (pointerEvents: auto) - B (pointerEvents: box-none) - C (pointerEvents: none)
-   *  \ D (pointerEvents: auto)  - E (pointerEvents: auto)
-   * If the search goes down the first branch, it would return A as the target, which is incorrect.
-   * NB: This modifies the eventCoords to always be relative to the current viewGroup. When the
-   * method returns, it will contain the eventCoords relative to the targetView found.
+   * Returns the touch target View that is either viewGroup or one if its descendants. This is a
+   * recursive DFS since view the entire tree must be parsed until the target is found. If the
+   * search does not backtrack, it is possible to follow a branch that cannot be a target (because
+   * of pointerEvents). For example, if both C and E can be the target of an event: A
+   * (pointerEvents: auto) - B (pointerEvents: box-none) - C (pointerEvents: none) \ D
+   * (pointerEvents: auto) - E (pointerEvents: auto) If the search goes down the first branch, it
+   * would return A as the target, which is incorrect. NB: This modifies the eventCoords to always
+   * be relative to the current viewGroup. When the method returns, it will contain the eventCoords
+   * relative to the targetView found.
    */
   private static View findTouchTargetView(float[] eventCoords, ViewGroup viewGroup) {
     int childrenCount = viewGroup.getChildCount();
     // Consider z-index when determining the touch target.
-    ReactZIndexedViewGroup zIndexedViewGroup = viewGroup instanceof ReactZIndexedViewGroup ?
-      (ReactZIndexedViewGroup) viewGroup :
-      null;
+    ReactZIndexedViewGroup zIndexedViewGroup =
+        viewGroup instanceof ReactZIndexedViewGroup ? (ReactZIndexedViewGroup) viewGroup : null;
     for (int i = childrenCount - 1; i >= 0; i--) {
-      int childIndex = zIndexedViewGroup != null ? zIndexedViewGroup.getZIndexMappedChildIndex(i) : i;
+      int childIndex =
+          zIndexedViewGroup != null ? zIndexedViewGroup.getZIndexMappedChildIndex(i) : i;
       View child = viewGroup.getChildAt(childIndex);
       PointF childPoint = mTempPoint;
-      if (isTransformedTouchPointInView(eventCoords[0], eventCoords[1], viewGroup, child, childPoint)) {
+      if (isTransformedTouchPointInView(
+          eventCoords[0], eventCoords[1], viewGroup, child, childPoint)) {
         // If it is contained within the child View, the childPoint value will contain the view
         // coordinates relative to the child
         // We need to store the existing X,Y for the viewGroup away as it is possible this child
@@ -151,16 +142,12 @@ public class TouchTargetHelper {
   }
 
   /**
-   * Returns whether the touch point is within the child View
-   * It is transform aware and will invert the transform Matrix to find the true local points
-   * This code is taken from {@link ViewGroup#isTransformedTouchPointInView()}
+   * Returns whether the touch point is within the child View It is transform aware and will invert
+   * the transform Matrix to find the true local points This code is taken from {@link
+   * ViewGroup#isTransformedTouchPointInView()}
    */
   private static boolean isTransformedTouchPointInView(
-      float x,
-      float y,
-      ViewGroup parent,
-      View child,
-      PointF outLocalPoint) {
+      float x, float y, ViewGroup parent, View child, PointF outLocalPoint) {
     float localX = x + parent.getScrollX() - child.getLeft();
     float localY = y + parent.getScrollY() - child.getTop();
     Matrix matrix = child.getMatrix();
@@ -176,8 +163,10 @@ public class TouchTargetHelper {
     }
     if (child instanceof ReactHitSlopView && ((ReactHitSlopView) child).getHitSlopRect() != null) {
       Rect hitSlopRect = ((ReactHitSlopView) child).getHitSlopRect();
-      if ((localX >= -hitSlopRect.left && localX < (child.getRight() - child.getLeft()) + hitSlopRect.right)
-        && (localY >= -hitSlopRect.top && localY < (child.getBottom() - child.getTop()) + hitSlopRect.bottom)) {
+      if ((localX >= -hitSlopRect.left
+              && localX < (child.getRight() - child.getLeft()) + hitSlopRect.right)
+          && (localY >= -hitSlopRect.top
+              && localY < (child.getBottom() - child.getTop()) + hitSlopRect.bottom)) {
         outLocalPoint.set(localX, localY);
         return true;
       }
@@ -185,7 +174,7 @@ public class TouchTargetHelper {
       return false;
     } else {
       if ((localX >= 0 && localX < (child.getRight() - child.getLeft()))
-        && (localY >= 0 && localY < (child.getBottom() - child.getTop()))) {
+          && (localY >= 0 && localY < (child.getBottom() - child.getTop()))) {
         outLocalPoint.set(localX, localY);
         return true;
       }
@@ -194,15 +183,16 @@ public class TouchTargetHelper {
     }
   }
 
-
   /**
    * Returns the touch target View of the event given, or null if neither the given View nor any of
    * its descendants are the touch target.
    */
   private static @Nullable View findTouchTargetViewWithPointerEvents(
       float eventCoords[], View view) {
-    PointerEvents pointerEvents = view instanceof ReactPointerEventsView ?
-        ((ReactPointerEventsView) view).getPointerEvents() : PointerEvents.AUTO;
+    PointerEvents pointerEvents =
+        view instanceof ReactPointerEventsView
+            ? ((ReactPointerEventsView) view).getPointerEvents()
+            : PointerEvents.AUTO;
 
     // Views that are disabled should never be the target of pointer events. However, their children
     // can be because some views (SwipeRefreshLayout) use enabled but still have children that can
@@ -238,7 +228,8 @@ public class TouchTargetHelper {
         // is both a ViewGroup and ReactCompoundView (ReactTextView is a ReactCompoundView but not a
         // ViewGroup).
         if (view instanceof ReactCompoundView) {
-          int reactTag = ((ReactCompoundView)view).reactTagForTouch(eventCoords[0], eventCoords[1]);
+          int reactTag =
+              ((ReactCompoundView) view).reactTagForTouch(eventCoords[0], eventCoords[1]);
           if (reactTag != view.getId()) {
             // make sure we exclude the View itself because of the PointerEvents.BOX_NONE
             return view;
@@ -273,5 +264,4 @@ public class TouchTargetHelper {
     }
     return targetView.getId();
   }
-
 }

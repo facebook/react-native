@@ -51,7 +51,7 @@ const _cookies: {[key: string]: number} = {};
 const PRINT_TO_CONSOLE: false = false; // Type as false to prevent accidentally committing `true`;
 
 /**
- * This function creates peformance loggers that can be used to collect and log
+ * This function creates performance loggers that can be used to collect and log
  * various performance data such as timespans, points and extras.
  * The loggers need to have minimal overhead since they're used in production.
  */
@@ -67,7 +67,7 @@ function createPerformanceLogger(): IPerformanceLogger {
 
     addTimespan(key: string, lengthInMs: number, description?: string) {
       if (this._timespans[key]) {
-        if (__DEV__) {
+        if (PRINT_TO_CONSOLE && __DEV__) {
           infoLog(
             'PerformanceLogger: Attempting to add a timespan that already exists ',
             key,
@@ -84,7 +84,7 @@ function createPerformanceLogger(): IPerformanceLogger {
 
     startTimespan(key: string, description?: string) {
       if (this._timespans[key]) {
-        if (__DEV__) {
+        if (PRINT_TO_CONSOLE && __DEV__) {
           infoLog(
             'PerformanceLogger: Attempting to start a timespan that already exists ',
             key,
@@ -106,7 +106,7 @@ function createPerformanceLogger(): IPerformanceLogger {
     stopTimespan(key: string) {
       const timespan = this._timespans[key];
       if (!timespan || !timespan.startTime) {
-        if (__DEV__) {
+        if (PRINT_TO_CONSOLE && __DEV__) {
           infoLog(
             'PerformanceLogger: Attempting to end a timespan that has not started ',
             key,
@@ -115,7 +115,7 @@ function createPerformanceLogger(): IPerformanceLogger {
         return;
       }
       if (timespan.endTime) {
-        if (__DEV__) {
+        if (PRINT_TO_CONSOLE && __DEV__) {
           infoLog(
             'PerformanceLogger: Attempting to end a timespan that has already ended ',
             key,
@@ -187,9 +187,11 @@ function createPerformanceLogger(): IPerformanceLogger {
     },
 
     logTimespans() {
-      for (const key in this._timespans) {
-        if (this._timespans[key].totalTime) {
-          infoLog(key + ': ' + this._timespans[key].totalTime + 'ms');
+      if (PRINT_TO_CONSOLE) {
+        for (const key in this._timespans) {
+          if (this._timespans[key].totalTime) {
+            infoLog(key + ': ' + this._timespans[key].totalTime + 'ms');
+          }
         }
       }
     },
@@ -203,7 +205,7 @@ function createPerformanceLogger(): IPerformanceLogger {
 
     setExtra(key: string, value: any) {
       if (this._extras[key]) {
-        if (__DEV__) {
+        if (PRINT_TO_CONSOLE && __DEV__) {
           infoLog(
             'PerformanceLogger: Attempting to set an extra that already exists ',
             {key, currentValue: this._extras[key], attemptedValue: value},
@@ -225,12 +227,14 @@ function createPerformanceLogger(): IPerformanceLogger {
     },
 
     logExtras() {
-      infoLog(this._extras);
+      if (PRINT_TO_CONSOLE) {
+        infoLog(this._extras);
+      }
     },
 
     markPoint(key: string, timestamp?: number) {
       if (this._points[key]) {
-        if (__DEV__) {
+        if (PRINT_TO_CONSOLE && __DEV__) {
           infoLog(
             'PerformanceLogger: Attempting to mark a point that has been already logged ',
             key,
@@ -246,8 +250,10 @@ function createPerformanceLogger(): IPerformanceLogger {
     },
 
     logPoints() {
-      for (const key in this._points) {
-        infoLog(key + ': ' + this._points[key] + 'ms');
+      if (PRINT_TO_CONSOLE) {
+        for (const key in this._points) {
+          infoLog(key + ': ' + this._points[key] + 'ms');
+        }
       }
     },
 

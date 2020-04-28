@@ -35,11 +35,18 @@ inline void fromRawValue(const RawValue &value, ImageSource &result) {
     }
 
     if (items.find("width") != items.end() &&
-        items.find("height") != items.end()) {
+        items.find("height") != items.end() &&
+        // The following checks have to be removed after codegen is shipped.
+        // See T45151459.
+        items.at("width").hasType<Float>() &&
+        items.at("height").hasType<Float>()) {
       result.size = {(Float)items.at("width"), (Float)items.at("height")};
     }
 
-    if (items.find("scale") != items.end()) {
+    if (items.find("scale") != items.end() &&
+        // The following checks have to be removed after codegen is shipped.
+        // See T45151459.
+        items.at("scale").hasType<Float>()) {
       result.scale = (Float)items.at("scale");
     } else {
       result.scale = items.find("deprecated") != items.end() ? 0.0 : 1.0;

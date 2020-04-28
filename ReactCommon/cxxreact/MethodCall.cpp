@@ -64,12 +64,12 @@ std::vector<MethodCall> parseMethodCalls(folly::dynamic&& jsonData) {
     }
 
     methodCalls.emplace_back(
-      static_cast<int>(moduleIds[i].asInt()),
-      static_cast<int>(methodIds[i].asInt()),
+      moduleIds[i].asInt(),
+      methodIds[i].asInt(),
       std::move(params[i]),
       callId);
 
-    // only incremement callid if contains valid callid as callid is optional
+    // only increment callid if contains valid callid as callid is optional
     callId += (callId != -1) ? 1 : 0;
   }
 

@@ -6,12 +6,12 @@
  */
 
 
-#import "RCTFileReaderModule.h"
+#import <React/RCTFileReaderModule.h>
 
 #import <React/RCTBridge.h>
 #import <React/RCTConvert.h>
 
-#import "RCTBlobManager.h"
+#import <React/RCTBlobManager.h>
 
 
 @implementation RCTFileReaderModule

@@ -7,15 +7,14 @@ package com.facebook.react.devsupport;
 
 import android.util.Pair;
 import android.view.View;
+import androidx.annotation.Nullable;
 import com.facebook.react.bridge.JavaScriptModule;
 import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.module.annotations.ReactModule;
 import java.util.HashMap;
 import java.util.Map;
-import javax.annotation.Nullable;
 
 @ReactModule(name = JSDevSupport.MODULE_NAME)
 public class JSDevSupport extends ReactContextBaseJavaModule {
@@ -25,8 +24,7 @@ public class JSDevSupport extends ReactContextBaseJavaModule {
   public static final int ERROR_CODE_EXCEPTION = 0;
   public static final int ERROR_CODE_VIEW_NOT_FOUND = 1;
 
-  @Nullable
-  private volatile DevSupportCallback mCurrentCallback = null;
+  @Nullable private volatile DevSupportCallback mCurrentCallback = null;
 
   public interface JSDevSupportModule extends JavaScriptModule {
     void getJSHierarchy(int reactTag);
@@ -55,11 +53,12 @@ public class JSDevSupport extends ReactContextBaseJavaModule {
   }
 
   public synchronized void getJSHierarchy(int reactTag, DevSupportCallback callback) {
-    JSDevSupportModule
-        jsDevSupportModule = getReactApplicationContext().getJSModule(JSDevSupportModule.class);
+    JSDevSupportModule jsDevSupportModule =
+        getReactApplicationContext().getJSModule(JSDevSupportModule.class);
     if (jsDevSupportModule == null) {
-      callback.onFailure(ERROR_CODE_EXCEPTION, new JSCHeapCapture.CaptureException(MODULE_NAME +
-        " module not registered."));
+      callback.onFailure(
+          ERROR_CODE_EXCEPTION,
+          new JSCHeapCapture.CaptureException(MODULE_NAME + " module not registered."));
       return;
     }
     mCurrentCallback = callback;
@@ -94,5 +93,4 @@ public class JSDevSupport extends ReactContextBaseJavaModule {
   public String getName() {
     return MODULE_NAME;
   }
-
 }

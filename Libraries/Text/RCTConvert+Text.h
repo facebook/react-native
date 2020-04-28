@@ -23,7 +23,7 @@ typedef enum UITextSpellCheckingType : NSInteger {
     UITextSpellCheckingTypeNo,
     UITextSpellCheckingTypeYes,
 } UITextSpellCheckingType;
-#endif // TODO(macOS ISS#2323203)]
+#endif // ]TODO(macOS ISS#2323203)]
 
 @interface RCTConvert (Text)
 

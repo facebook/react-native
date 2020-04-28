@@ -12,10 +12,10 @@
 
 'use strict';
 
-import type {
-  TimePickerOptions,
-  TimePickerResult,
-} from './TimePickerAndroidTypes';
+import NativeTimePickerAndroid, {
+  type TimePickerOptions,
+  type TimePickerResult,
+} from './NativeTimePickerAndroid';
 
 const TimePickerAndroid = {
   async open(options: TimePickerOptions): Promise<TimePickerResult> {

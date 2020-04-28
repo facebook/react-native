@@ -15,7 +15,7 @@
 namespace facebook {
 namespace react {
 
-class RawProps;
+class RawPropsParser;
 
 /*
  * `RawValue` abstracts some arbitrary complex data structure similar to JSON.
@@ -62,7 +62,8 @@ class RawValue {
   }
 
  private:
-  friend RawProps;
+  friend class RawProps;
+  friend class RawPropsParser;
 
   /*
    * Arbitrary constructors are private only for RawProps and internal usage.

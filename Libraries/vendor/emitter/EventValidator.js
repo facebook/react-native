@@ -30,7 +30,7 @@ const EventValidator = {
    *   const types = {someEvent: true, anotherEvent: true};
    *   const emitter = EventValidator.addValidation(emitter, types);
    */
-  addValidation: function(emitter: Object, types: Object) {
+  addValidation: function(emitter: Object, types: Object): {emit: any => any} {
     const eventTypes = Object.keys(types);
     const emitterWithValidation = Object.create(emitter);
 

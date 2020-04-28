@@ -13,9 +13,6 @@
 
 @interface RCTLinkingManager : RCTEventEmitter
 
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wnullability-completeness"
-
 #if TARGET_OS_OSX // [TODO(macOS ISS#2323203)
 + (void)getUrlEventHandler:(NSAppleEventDescriptor *)event withReplyEvent:(NSAppleEventDescriptor *)replyEvent;
 #else // ]TODO(macOS ISS#2323203)
@@ -39,5 +36,3 @@
 #endif // TODO(macOS ISS#2323203)
 
 @end
-
-#pragma clang diagnostic pop

@@ -408,10 +408,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   [_contentView invalidate];
 }
 
-- (void)cancelTouches
-{
-  [[_contentView touchHandler] cancel];
-}
 
 #if TARGET_OS_OSX // [TODO(macOS ISS#2323203)
 - (NSMenu *)menuForEvent:(NSEvent *)event
@@ -431,7 +427,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   return menu;
 }
 #endif // ]TODO(macOS ISS#2323203)
-
 @end
 
 @implementation RCTRootView (Deprecated)
@@ -440,6 +435,12 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 {
   RCTLogWarn(@"Calling deprecated `[-RCTRootView intrinsicSize]`.");
   return self.intrinsicContentSize;
+}
+
+- (void)cancelTouches
+{
+  RCTLogWarn(@"`-[RCTRootView cancelTouches]` is deprecated and will be deleted soon.");
+  [[_contentView touchHandler] cancel];
 }
 
 @end

@@ -151,6 +151,7 @@ class AnimatedProps extends AnimatedNode {
     for (const propKey in this._props) {
       const value = this._props[propKey];
       if (value instanceof AnimatedNode) {
+        value.__makeNative();
         propsConfig[propKey] = value.__getNativeTag();
       }
     }

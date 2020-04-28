@@ -7,7 +7,6 @@
 
 #pragma once
 
-#include <react/components/view/AccessibleShadowNode.h>
 #include <react/components/view/ViewEventEmitter.h>
 #include <react/components/view/ViewProps.h>
 #include <react/components/view/YogaLayoutableShadowNode.h>
@@ -35,7 +34,6 @@ class ConcreteViewShadowNode : public ConcreteShadowNode<
                                    ViewPropsT,
                                    ViewEventEmitterT,
                                    Ts...>,
-                               public AccessibleShadowNode,
                                public YogaLayoutableShadowNode {
   static_assert(
       std::is_base_of<ViewProps, ViewPropsT>::value,
@@ -59,8 +57,6 @@ class ConcreteViewShadowNode : public ConcreteShadowNode<
       const ShadowNodeFragment &fragment,
       const ComponentDescriptor &componentDescriptor)
       : BaseShadowNode(fragment, componentDescriptor),
-        AccessibleShadowNode(
-            std::static_pointer_cast<const ConcreteViewProps>(fragment.props)),
         YogaLayoutableShadowNode() {
     YogaLayoutableShadowNode::setProps(
         *std::static_pointer_cast<const ConcreteViewProps>(fragment.props));
@@ -72,9 +68,6 @@ class ConcreteViewShadowNode : public ConcreteShadowNode<
       const ShadowNode &sourceShadowNode,
       const ShadowNodeFragment &fragment)
       : BaseShadowNode(sourceShadowNode, fragment),
-        AccessibleShadowNode(
-            static_cast<const ConcreteViewShadowNode &>(sourceShadowNode),
-            std::static_pointer_cast<const ConcreteViewProps>(fragment.props)),
         YogaLayoutableShadowNode(
             static_cast<const ConcreteViewShadowNode &>(sourceShadowNode)) {
     if (fragment.props) {

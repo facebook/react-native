@@ -3,11 +3,13 @@ load("//tools/build_defs/oss:rn_defs.bzl", "YOGA_TARGET", "react_native_dep", "r
 rn_android_library(
     name = "frescosupport",
     srcs = glob(["*.java"]),
+    is_androidx = True,
     visibility = [
         "PUBLIC",
     ],
     deps = [
         YOGA_TARGET,
+        react_native_dep("third-party/android/androidx:annotation"),
         react_native_dep("libraries/fresco/fresco-react-native:fbcore"),
         react_native_dep("libraries/fresco/fresco-react-native:fresco-drawee"),
         react_native_dep("libraries/fresco/fresco-react-native:fresco-react-native"),

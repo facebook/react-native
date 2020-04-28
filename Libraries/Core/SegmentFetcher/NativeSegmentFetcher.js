@@ -18,6 +18,11 @@ export interface Spec extends TurboModule {
     options: Object, // flowlint-line unclear-type: off
     callback: (error: ?Object) => void, // flowlint-line unclear-type: off
   ) => void;
+  +getSegment?: (
+    segmentId: number,
+    options: Object, // flowlint-line unclear-type: off
+    callback: (error: ?Object, path: ?string) => void, // flowlint-line unclear-type: off
+  ) => void;
 }
 
-export default TurboModuleRegistry.getEnforcing<Spec>('SegmentFetcher');
+export default (TurboModuleRegistry.getEnforcing<Spec>('SegmentFetcher'): Spec);

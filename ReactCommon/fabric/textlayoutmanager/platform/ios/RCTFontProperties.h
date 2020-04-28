@@ -27,12 +27,12 @@ typedef NS_OPTIONS(NSInteger, RCTFontVariant) {
 };
 
 struct RCTFontProperties {
-  NSString *family;
-  CGFloat size;
-  UIFontWeight weight;
-  RCTFontStyle style;
-  RCTFontVariant variant;
-  CGFloat sizeMultiplier;
+  NSString *family = nil;
+  CGFloat size = NAN;
+  UIFontWeight weight = NAN;
+  RCTFontStyle style = RCTFontStyleUndefined;
+  RCTFontVariant variant = RCTFontVariantUndefined;
+  CGFloat sizeMultiplier = NAN;
 };
 
 NS_ASSUME_NONNULL_END

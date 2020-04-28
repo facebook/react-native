@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#import "RCTBaseTextInputViewManager.h"
+#import <React/RCTBaseTextInputViewManager.h>
 
 #import <React/RCTAccessibilityManager.h>
 #import <React/RCTBridge.h>
@@ -17,10 +17,10 @@
 #import <React/RCTUIManagerUtils.h>
 #import <React/RCTUIManagerObserverCoordinator.h>
 
-#import "RCTBaseTextInputShadowView.h"
-#import "RCTBaseTextInputView.h"
+#import <React/RCTBaseTextInputShadowView.h>
+#import <React/RCTBaseTextInputView.h>
 #if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
-#import "RCTConvert+Text.h"
+#import <React/RCTConvert+Text.h>
 #endif // TODO(macOS ISS#2323203)
 
 @interface RCTBaseTextInputViewManager () <RCTUIManagerObserver>
@@ -62,6 +62,7 @@ RCT_EXPORT_NOT_OSX_VIEW_PROPERTY(selectTextOnFocus, BOOL) // TODO(macOS ISS#2323
 RCT_EXPORT_VIEW_PROPERTY(selection, RCTTextSelection)
 RCT_EXPORT_VIEW_PROPERTY(inputAccessoryViewID, NSString)
 RCT_EXPORT_VIEW_PROPERTY(textContentType, NSString)
+RCT_EXPORT_VIEW_PROPERTY(passwordRules, NSString)
 
 RCT_EXPORT_VIEW_PROPERTY(onChange, RCTBubblingEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onSelectionChange, RCTDirectEventBlock)

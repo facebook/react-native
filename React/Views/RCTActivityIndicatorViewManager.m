@@ -33,7 +33,17 @@ RCT_EXPORT_MODULE()
 
 RCT_EXPORT_VIEW_PROPERTY(color, UIColor)
 RCT_EXPORT_VIEW_PROPERTY(hidesWhenStopped, BOOL)
-RCT_REMAP_VIEW_PROPERTY(size, activityIndicatorViewStyle, UIActivityIndicatorViewStyle)
+RCT_CUSTOM_VIEW_PROPERTY(size, UIActivityIndicatorViewStyle, RCTActivityIndicatorView) // TODO(macOS ISS#2323203)
+{
+  /*
+    Setting activityIndicatorViewStyle overrides the color, so restore the original color
+    after setting the indicator style.
+  */
+  RCTUIColor *oldColor = view.color; // TODO(macOS ISS#2323203)
+  view.activityIndicatorViewStyle = json ? [RCTConvert UIActivityIndicatorViewStyle: json] : defaultView.activityIndicatorViewStyle;
+  view.color = oldColor;
+}
+
 RCT_CUSTOM_VIEW_PROPERTY(animating, BOOL, RCTActivityIndicatorView) // TODO(macOS ISS#2323203)
 {
   BOOL animating = json ? [RCTConvert BOOL:json] : [defaultView isAnimating];

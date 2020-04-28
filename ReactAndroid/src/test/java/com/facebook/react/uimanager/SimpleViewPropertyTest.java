@@ -1,56 +1,47 @@
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
+ * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
+ * directory of this source tree.
  */
-
 package com.facebook.react.uimanager;
-
-import java.util.Map;
-
-import android.graphics.drawable.ColorDrawable;
-import android.view.View;
-
-import com.facebook.react.bridge.ReadableMap;
-import com.facebook.react.touch.JSResponderHandler;
-import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.bridge.ReactTestHelper;
-import com.facebook.react.bridge.JavaOnlyMap;
-import com.facebook.react.bridge.CatalystInstance;
-import com.facebook.react.uimanager.annotations.ReactProp;
-
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.robolectric.RuntimeEnvironment;
-import org.robolectric.RobolectricTestRunner;
-import org.powermock.core.classloader.annotations.PowerMockIgnore;
-import org.powermock.modules.junit4.rule.PowerMockRule;
 
 import static org.fest.assertions.api.Assertions.assertThat;
 import static org.fest.assertions.api.Assertions.offset;
 
-/**
- * Verify {@link View} view property being applied properly by {@link SimpleViewManager}
- */
+import android.graphics.drawable.ColorDrawable;
+import android.view.View;
+import com.facebook.react.bridge.CatalystInstance;
+import com.facebook.react.bridge.JavaOnlyMap;
+import com.facebook.react.bridge.ReactApplicationContext;
+import com.facebook.react.bridge.ReactTestHelper;
+import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.touch.JSResponderHandler;
+import com.facebook.react.uimanager.annotations.ReactProp;
+import java.util.Map;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.powermock.core.classloader.annotations.PowerMockIgnore;
+import org.powermock.modules.junit4.rule.PowerMockRule;
+import org.robolectric.RobolectricTestRunner;
+import org.robolectric.RuntimeEnvironment;
+
+/** Verify {@link View} view property being applied properly by {@link SimpleViewManager} */
 @RunWith(RobolectricTestRunner.class)
 @PowerMockIgnore({"org.mockito.*", "org.robolectric.*", "androidx.*", "android.*"})
 public class SimpleViewPropertyTest {
 
-  @Rule
-  public PowerMockRule rule = new PowerMockRule();
+  @Rule public PowerMockRule rule = new PowerMockRule();
 
   private static class ConcreteViewManager extends SimpleViewManager<View> {
 
     @ReactProp(name = "foo")
-    public void setFoo(View view, boolean foo) {
-    }
+    public void setFoo(View view, boolean foo) {}
 
     @ReactProp(name = "bar")
-    public void setBar(View view, ReadableMap bar) {
-    }
+    public void setBar(View view, ReadableMap bar) {}
 
     @Override
     protected View createViewInstance(ThemedReactContext reactContext) {
@@ -83,7 +74,7 @@ public class SimpleViewPropertyTest {
 
   @Test
   public void testOpacity() {
-    View view = mManager.createViewWithProps(mThemedContext, buildStyles(), new JSResponderHandler());
+    View view = mManager.createView(mThemedContext, buildStyles(), null, new JSResponderHandler());
 
     mManager.updateProperties(view, buildStyles());
     assertThat(view.getAlpha()).isEqualTo(1.0f);
@@ -97,16 +88,16 @@ public class SimpleViewPropertyTest {
 
   @Test
   public void testBackgroundColor() {
-    View view = mManager.createViewWithProps(mThemedContext, buildStyles(), new JSResponderHandler());
+    View view = mManager.createView(mThemedContext, buildStyles(), null, new JSResponderHandler());
 
     mManager.updateProperties(view, buildStyles());
     assertThat(view.getBackground()).isEqualTo(null);
 
     mManager.updateProperties(view, buildStyles("backgroundColor", 12));
-    assertThat(((ColorDrawable)view.getBackground()).getColor()).isEqualTo(12);
+    assertThat(((ColorDrawable) view.getBackground()).getColor()).isEqualTo(12);
 
     mManager.updateProperties(view, buildStyles("backgroundColor", null));
-    assertThat(((ColorDrawable)view.getBackground()).getColor()).isEqualTo(0);
+    assertThat(((ColorDrawable) view.getBackground()).getColor()).isEqualTo(0);
   }
 
   @Test

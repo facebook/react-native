@@ -10,57 +10,37 @@
 
 'use strict';
 
-const Platform = require('../../Utilities/Platform');
-const ReactNative = require('../../Renderer/shims/ReactNative');
-
-const requireNativeComponent = require('../../ReactNative/requireNativeComponent');
-
-import type {SwitchChangeEvent} from '../../Types/CoreEventTypes';
+import type {BubblingEventHandler, WithDefault} from '../../Types/CodegenTypes';
 import type {ColorValue} from '../../StyleSheet/StyleSheetTypes';
 import type {ViewProps} from '../View/ViewPropTypes';
 import type {NativeOrDynamicColorType} from '../../Color/NativeOrDynamicColorType'; // TODO(macOS ISS#2323203)
 
-type SwitchProps = $ReadOnly<{|
+import codegenNativeComponent from '../../Utilities/codegenNativeComponent';
+import {type NativeComponentType} from '../../Utilities/codegenNativeComponent';
+
+type SwitchChangeEvent = $ReadOnly<{|
+  value: boolean,
+|}>;
+
+type NativeProps = $ReadOnly<{|
   ...ViewProps,
-  disabled?: ?boolean,
-  onChange?: ?(event: SwitchChangeEvent) => mixed,
-  thumbColor?: ?(string | NativeOrDynamicColorType), // TODO(macOS ISS#2323203)
-  trackColorForFalse?: ?(string | NativeOrDynamicColorType), // TODO(macOS ISS#2323203)
-  trackColorForTrue?: ?(string | NativeOrDynamicColorType), // TODO(macOS ISS#2323203)
-  value?: ?boolean,
+
+  // Props
+  disabled?: WithDefault<boolean, false>,
+  value?: WithDefault<boolean, false>,
+  tintColor?: ?(ColorValue | NativeOrDynamicColorType), // TODO(macOS ISS#2323203)
+  onTintColor?: ?(ColorValue | NativeOrDynamicColorType), // TODO(macOS ISS#2323203)
+  thumbTintColor?: ?(ColorValue | NativeOrDynamicColorType), // TODO(macOS ISS#2323203)
+
+  // Deprecated props
+  thumbColor?: ?(ColorValue | NativeOrDynamicColorType), // TODO(macOS ISS#2323203)
+  trackColorForFalse?: ?(ColorValue | NativeOrDynamicColorType), // TODO(macOS ISS#2323203)
+  trackColorForTrue?: ?(ColorValue | NativeOrDynamicColorType), // TODO(macOS ISS#2323203)
+
+  // Events
+  onChange?: ?BubblingEventHandler<SwitchChangeEvent>,
 |}>;
 
-// @see ReactSwitchManager.java
-export type NativeAndroidProps = $ReadOnly<{|
-  ...SwitchProps,
-
-  enabled?: ?boolean,
-  on?: ?boolean,
-  thumbTintColor?: ?(string | NativeOrDynamicColorType), // TODO(macOS ISS#2323203)
-  trackTintColor?: ?(string | NativeOrDynamicColorType), // TODO(macOS ISS#2323203)
-|}>;
-
-// @see RCTSwitchManager.m
-export type NativeIOSProps = $ReadOnly<{|
-  ...SwitchProps,
-
-  onTintColor?: ?(string | NativeOrDynamicColorType), // TODO(macOS ISS#2323203)
-  thumbTintColor?: ?(string | NativeOrDynamicColorType), // TODO(macOS ISS#2323203)
-  tintColor?: ?(string | NativeOrDynamicColorType), // TODO(macOS ISS#2323203)
-|}>;
-
-type SwitchNativeComponentType = Class<
-  ReactNative.NativeComponent<
-    $ReadOnly<{|
-      ...NativeAndroidProps,
-      ...NativeIOSProps,
-    |}>,
-  >,
->;
-
-const SwitchNativeComponent: SwitchNativeComponentType =
-  Platform.OS === 'android'
-    ? (requireNativeComponent('AndroidSwitch'): any)
-    : (requireNativeComponent('RCTSwitch'): any);
-
-module.exports = SwitchNativeComponent;
+export default (codegenNativeComponent<NativeProps>('Switch', {
+  paperComponentName: 'RCTSwitch',
+}): NativeComponentType<NativeProps>);

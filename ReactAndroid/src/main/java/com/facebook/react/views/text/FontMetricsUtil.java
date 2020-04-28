@@ -1,10 +1,9 @@
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
+ * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
+ * directory of this source tree.
  */
-
 package com.facebook.react.views.text;
 
 import android.content.Context;
@@ -22,19 +21,24 @@ public class FontMetricsUtil {
   private static final String X_HEIGHT_MEASUREMENT_TEXT = "x";
   private static final float AMPLIFICATION_FACTOR = 100;
 
-  public static WritableArray getFontMetrics(CharSequence text, Layout layout, TextPaint paint, Context context) {
+  public static WritableArray getFontMetrics(
+      CharSequence text, Layout layout, TextPaint paint, Context context) {
     DisplayMetrics dm = context.getResources().getDisplayMetrics();
     WritableArray lines = Arguments.createArray();
-    // To calculate xHeight and capHeight we have to render an "x" and "T" and manually measure their height.
-    // In order to get more precision than Android offers, we blow up the text size by 100 and measure it.
+    // To calculate xHeight and capHeight we have to render an "x" and "T" and manually measure
+    // their height.
+    // In order to get more precision than Android offers, we blow up the text size by 100 and
+    // measure it.
     // Luckily, text size affects rendering linearly, so we can do this trick.
     TextPaint paintCopy = new TextPaint(paint);
     paintCopy.setTextSize(paintCopy.getTextSize() * AMPLIFICATION_FACTOR);
     Rect capHeightBounds = new Rect();
-    paintCopy.getTextBounds(CAP_HEIGHT_MEASUREMENT_TEXT, 0, CAP_HEIGHT_MEASUREMENT_TEXT.length(), capHeightBounds);
+    paintCopy.getTextBounds(
+        CAP_HEIGHT_MEASUREMENT_TEXT, 0, CAP_HEIGHT_MEASUREMENT_TEXT.length(), capHeightBounds);
     double capHeight = capHeightBounds.height() / AMPLIFICATION_FACTOR / dm.density;
     Rect xHeightBounds = new Rect();
-    paintCopy.getTextBounds(X_HEIGHT_MEASUREMENT_TEXT, 0, X_HEIGHT_MEASUREMENT_TEXT.length(), xHeightBounds);
+    paintCopy.getTextBounds(
+        X_HEIGHT_MEASUREMENT_TEXT, 0, X_HEIGHT_MEASUREMENT_TEXT.length(), xHeightBounds);
     double xHeight = xHeightBounds.height() / AMPLIFICATION_FACTOR / dm.density;
     for (int i = 0; i < layout.getLineCount(); i++) {
       Rect bounds = new Rect();

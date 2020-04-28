@@ -3,15 +3,15 @@
 // This source code is licensed under the MIT license found in the
 // LICENSE file in the root directory of this source tree.
 
-#import "RCTInspectorDevServerHelper.h"
+#import <React/RCTInspectorDevServerHelper.h>
 
-#if RCT_DEV
+#if RCT_DEV && !TARGET_OS_UIKITFORMAC
 
 #import <React/RCTUIKit.h> // TODO(macOS ISS#2323203)
 #import <React/RCTLog.h>
 
-#import "RCTDefines.h"
-#import "RCTInspectorPackagerConnection.h"
+#import <React/RCTDefines.h>
+#import <React/RCTInspectorPackagerConnection.h>
 
 static NSString *const kDebuggerMsgDisable = @"{ \"id\":1,\"method\":\"Debugger.disable\" }";
 
@@ -33,6 +33,10 @@ static NSString *getServerHost(NSURL *bundleURL, NSNumber *port)
 static NSURL *getInspectorDeviceUrl(NSURL *bundleURL)
 {
   NSNumber *inspectorProxyPort = @8081;
+  NSString *inspectorProxyPortStr = [[[NSProcessInfo processInfo] environment] objectForKey:@"RCT_METRO_PORT"];
+  if (inspectorProxyPortStr && [inspectorProxyPortStr length] > 0) {
+    inspectorProxyPort = [NSNumber numberWithInt:[inspectorProxyPortStr intValue]];
+  }
 #if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
   NSString *escapedDeviceName = [[[UIDevice currentDevice] name] stringByAddingPercentEncodingWithAllowedCharacters:NSCharacterSet.URLQueryAllowedCharacterSet];
 #else // [TODO(macOS ISS#2323203)
@@ -48,6 +52,10 @@ static NSURL *getInspectorDeviceUrl(NSURL *bundleURL)
 static NSURL *getAttachDeviceUrl(NSURL *bundleURL, NSString *title)
 {
   NSNumber *metroBundlerPort = @8081;
+  NSString *metroBundlerPortStr = [[[NSProcessInfo processInfo] environment] objectForKey:@"RCT_METRO_PORT"];
+  if (metroBundlerPortStr && [metroBundlerPortStr length] > 0) {
+    metroBundlerPort = [NSNumber numberWithInt:[metroBundlerPortStr intValue]];
+  }
 #if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
   NSString *escapedDeviceName = [[[UIDevice currentDevice] name] stringByAddingPercentEncodingWithAllowedCharacters:NSCharacterSet.URLHostAllowedCharacterSet];
 #else // [TODO(macOS ISS#2323203)

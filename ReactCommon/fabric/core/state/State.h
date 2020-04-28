@@ -48,7 +48,7 @@ class State {
   /*
    * Must be used by `ShadowNode` *only*.
    */
-  const State::Shared &getCommitedState() const;
+  State::Shared getCommitedState() const;
 };
 
 } // namespace react

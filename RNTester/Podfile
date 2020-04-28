@@ -42,26 +42,26 @@ require_relative '../scripts/autolink-ios'
 # FIXME: https://github.com/microsoft/react-native/issues/210
 install! 'cocoapods', :deterministic_uuids => false
 
-# TODO(macOS GH#214)
-def pods()
-  # Uncomment for Swift
-  # use_frameworks!
+if ENV['USE_FRAMEWORKS'] == '1'
+  puts "Installing pods with use_frameworks!"
+  use_frameworks!
+end
 
+def pods()
   project 'RNTesterPods.xcodeproj'
-  
+
   # Enable TurboModule
-  use_react_native!(path: "..", turbo_modules_enabled: true)
-  pod 'React-turbomodule-samples', :path => '../ReactCommon/turbomodule/samples'
+  use_react_native!(path: "..")
+  pod 'ReactCommon/turbomodule/samples', :path => '../ReactCommon'
 
   # Additional Pods which aren't included in the default Podfile
-  pod 'React-RCTCameraRoll', :path => '../Libraries/CameraRoll'
   pod 'React-ART', :path => '../Libraries/ART'
   pod 'React-RCTPushNotification', :path => '../Libraries/PushNotificationIOS'
 
   # Additional Pods which are classed as unstable
   #
   # To use fabric: add `fabric_enabled` option to the use_react_native method above, like below
-  # use_react_native!(path: "..", turbo_modules_enabled: true, fabric_enabled: true)
+  # use_react_native!(path: "..", fabric_enabled: true)
 end
 
 target 'RNTester' do
@@ -69,32 +69,37 @@ target 'RNTester' do
   pods()
 end
 
-target 'RNTesterUnitTests' do
-  platform :ios, '9.0'
-  pods()
-  pod 'React-RCTTest', :path => "./RCTTest"
-end
-
-target 'RNTesterIntegrationTests' do
-  platform :ios, '9.0'
-  pods()
-  pod 'React-RCTTest', :path => "./RCTTest"
-end
-
-# TODO(macOS GH#214)
 target 'RNTester-macOS' do
   platform :osx, '10.14'
   pods()
 end
 
+target 'RNTesterUnitTests' do
+  platform :ios, '9.0'
+  pods()
+  pod 'React-RCTTest', :path => "RCTTest"
+end
+
+target 'RNTesterIntegrationTests' do
+  platform :ios, '9.0'
+  pods()
+  pod 'React-RCTTest', :path => "RCTTest"
+end
+
 target 'RNTester-macOSUnitTests' do
   platform :osx, '10.14'
   pods()
-  pod 'React-RCTTest', :path => "./RCTTest"
+  pod 'React-RCTTest', :path => "RCTTest"
 end
 
 target 'RNTester-macOSIntegrationTests' do
   platform :osx, '10.14'
   pods()
-  pod 'React-RCTTest', :path => "./RCTTest"
+  pod 'React-RCTTest', :path => "RCTTest"
+end
+
+post_install do |installer|
+  installer.pods_project.targets.each do |target|
+    puts target.name
+  end
 end

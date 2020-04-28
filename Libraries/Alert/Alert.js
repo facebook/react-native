@@ -10,11 +10,19 @@
 
 'use strict';
 
-const AlertMacOS = require('AlertMacOS'); // TODO(macOS ISS#2323203)
-const NativeModules = require('../BatchedBridge/NativeModules');
-const RCTAlertManager = NativeModules.AlertManager;
-const Platform = require('../Utilities/Platform');
+import AlertMacOS from './AlertMacOS'; // TODO(macOS ISS#2323203)
+import Platform from '../Utilities/Platform';
+import NativeDialogManagerAndroid, {
+  type DialogOptions,
+} from '../NativeModules/specs/NativeDialogManagerAndroid';
+import RCTAlertManager from './RCTAlertManager';
 
+export type AlertType =
+  | 'default'
+  | 'plain-text'
+  | 'secure-text'
+  | 'login-password';
+export type AlertButtonStyle = 'default' | 'cancel' | 'destructive';
 export type Buttons = Array<{
   text?: string,
   onPress?: ?Function,
@@ -23,21 +31,8 @@ export type Buttons = Array<{
 
 type Options = {
   cancelable?: ?boolean,
-  onDismiss?: ?Function,
+  onDismiss?: ?() => void,
 };
-
-export type AlertType = $Keys<{
-  default: string,
-  'plain-text': string,
-  'secure-text': string,
-  'login-password': string,
-}>; // added export TODO(macOS ISS#2323203)
-
-export type AlertButtonStyle = $Keys<{
-  default: string,
-  cancel: string,
-  destructive: string,
-}>;
 
 /**
  * Launches an alert dialog with the specified title and message.
@@ -56,55 +51,55 @@ class Alert {
     } else if (Platform.OS === 'macos' /* TODO[(macOS ISS#2323203) */) {
       AlertMacOS.prompt(title, message, buttons); // TODO](macOS ISS#2323203)
     } else if (Platform.OS === 'android') {
-      let config = {
+      if (!NativeDialogManagerAndroid) {
+        return;
+      }
+      const constants = NativeDialogManagerAndroid.getConstants();
+
+      const config: DialogOptions = {
         title: title || '',
         message: message || '',
         cancelable: false,
       };
 
-      if (options) {
-        config = {...config, cancelable: options.cancelable};
+      if (options && options.cancelable) {
+        config.cancelable = options.cancelable;
       }
       // At most three buttons (neutral, negative, positive). Ignore rest.
       // The text 'OK' should be probably localized. iOS Alert does that in native.
+      const defaultPositiveText = 'OK';
       const validButtons: Buttons = buttons
         ? buttons.slice(0, 3)
-        : [{text: 'OK'}];
+        : [{text: defaultPositiveText}];
       const buttonPositive = validButtons.pop();
       const buttonNegative = validButtons.pop();
       const buttonNeutral = validButtons.pop();
+
       if (buttonNeutral) {
-        config = {...config, buttonNeutral: buttonNeutral.text || ''};
+        config.buttonNeutral = buttonNeutral.text || '';
       }
       if (buttonNegative) {
-        config = {...config, buttonNegative: buttonNegative.text || ''};
+        config.buttonNegative = buttonNegative.text || '';
       }
       if (buttonPositive) {
-        config = {...config, buttonPositive: buttonPositive.text || ''};
+        config.buttonPositive = buttonPositive.text || defaultPositiveText;
       }
-      NativeModules.DialogManagerAndroid.showAlert(
-        config,
-        errorMessage => console.warn(errorMessage),
-        (action, buttonKey) => {
-          if (action === NativeModules.DialogManagerAndroid.buttonClicked) {
-            if (
-              buttonKey === NativeModules.DialogManagerAndroid.buttonNeutral
-            ) {
-              buttonNeutral.onPress && buttonNeutral.onPress();
-            } else if (
-              buttonKey === NativeModules.DialogManagerAndroid.buttonNegative
-            ) {
-              buttonNegative.onPress && buttonNegative.onPress();
-            } else if (
-              buttonKey === NativeModules.DialogManagerAndroid.buttonPositive
-            ) {
-              buttonPositive.onPress && buttonPositive.onPress();
-            }
-          } else if (action === NativeModules.DialogManagerAndroid.dismissed) {
-            options && options.onDismiss && options.onDismiss();
+
+      const onAction = (action, buttonKey) => {
+        if (action === constants.buttonClicked) {
+          if (buttonKey === constants.buttonNeutral) {
+            buttonNeutral.onPress && buttonNeutral.onPress();
+          } else if (buttonKey === constants.buttonNegative) {
+            buttonNegative.onPress && buttonNegative.onPress();
+          } else if (buttonKey === constants.buttonPositive) {
+            buttonPositive.onPress && buttonPositive.onPress();
           }
-        },
-      );
+        } else if (action === constants.dismissed) {
+          options && options.onDismiss && options.onDismiss();
+        }
+      };
+      const onError = errorMessage => console.warn(errorMessage);
+      NativeDialogManagerAndroid.showAlert(config, onError, onAction);
     }
   }
 
@@ -130,7 +125,7 @@ class Alert {
           {
             title: title || '',
             type: 'plain-text',
-            defaultValue: message,
+            defaultValue: message || '',
           },
           (id, value) => {
             callback(value);

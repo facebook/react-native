@@ -1,10 +1,9 @@
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
+ * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
+ * directory of this source tree.
  */
-
 package com.facebook.react.modules.toast;
 
 import android.view.Gravity;
@@ -18,9 +17,7 @@ import com.facebook.react.common.MapBuilder;
 import com.facebook.react.module.annotations.ReactModule;
 import java.util.Map;
 
-/**
- * {@link NativeModule} that allows JS to show an Android Toast.
- */
+/** {@link NativeModule} that allows JS to show an Android Toast. */
 @ReactModule(name = ToastModule.NAME)
 public class ToastModule extends ReactContextBaseJavaModule {
 
@@ -54,24 +51,26 @@ public class ToastModule extends ReactContextBaseJavaModule {
 
   @ReactMethod
   public void show(final String message, final int duration) {
-    UiThreadUtil.runOnUiThread(new Runnable() {
-      @Override
-      public void run() {
-        Toast.makeText(getReactApplicationContext(), message, duration).show();
-      }
-    });
+    UiThreadUtil.runOnUiThread(
+        new Runnable() {
+          @Override
+          public void run() {
+            Toast.makeText(getReactApplicationContext(), message, duration).show();
+          }
+        });
   }
 
   @ReactMethod
   public void showWithGravity(final String message, final int duration, final int gravity) {
-    UiThreadUtil.runOnUiThread(new Runnable() {
-      @Override
-      public void run() {
-        Toast toast = Toast.makeText(getReactApplicationContext(), message, duration);
-        toast.setGravity(gravity, 0, 0);
-        toast.show();
-      }
-    });
+    UiThreadUtil.runOnUiThread(
+        new Runnable() {
+          @Override
+          public void run() {
+            Toast toast = Toast.makeText(getReactApplicationContext(), message, duration);
+            toast.setGravity(gravity, 0, 0);
+            toast.show();
+          }
+        });
   }
 
   @ReactMethod

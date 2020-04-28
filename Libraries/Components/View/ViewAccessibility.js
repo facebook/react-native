@@ -10,7 +10,7 @@
 
 'use strict';
 
-import type {SyntheticEvent} from 'CoreEventTypes';
+import type {SyntheticEvent} from '../../Types/CoreEventTypes';
 
 // [TODO(android ISS)
 export type AccessibilityNodeInfoProp = {
@@ -71,3 +71,11 @@ export type AccessibilityActionEvent = SyntheticEvent<
     actionName: string,
   }>,
 >;
+
+export type AccessibilityState = {
+  disabled?: boolean,
+  selected?: boolean,
+  checked?: ?boolean | 'mixed',
+  busy?: boolean,
+  expanded?: boolean,
+};

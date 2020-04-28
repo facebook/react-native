@@ -5,6 +5,7 @@
 
 package com.facebook.react.uimanager;
 
+import androidx.annotation.Nullable;
 import com.facebook.react.bridge.Dynamic;
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 import com.facebook.react.bridge.ReadableType;
@@ -20,7 +21,6 @@ import com.facebook.yoga.YogaOverflow;
 import com.facebook.yoga.YogaPositionType;
 import com.facebook.yoga.YogaUnit;
 import com.facebook.yoga.YogaWrap;
-import javax.annotation.Nullable;
 
 /**
  * Supply setters for base view layout properties such as width, height, flex properties, borders,
@@ -33,14 +33,12 @@ import javax.annotation.Nullable;
  */
 public class LayoutShadowNode extends ReactShadowNodeImpl {
 
-  /**
-   * A Mutable version of com.facebook.yoga.YogaValue
-   */
+  /** A Mutable version of com.facebook.yoga.YogaValue */
   private static class MutableYogaValue {
     float value;
     YogaUnit unit;
 
-    private MutableYogaValue() { }
+    private MutableYogaValue() {}
 
     private MutableYogaValue(MutableYogaValue mutableYogaValue) {
       this.value = mutableYogaValue.value;
@@ -119,6 +117,7 @@ public class LayoutShadowNode extends ReactShadowNodeImpl {
   }
 
   boolean mCollapsable;
+
   @ReactProp(name = "collapsable")
   public void setCollapsable(boolean collapsable) {
     mCollapsable = collapsable;
@@ -271,26 +270,31 @@ public class LayoutShadowNode extends ReactShadowNodeImpl {
     }
 
     switch (flexDirection) {
-      case "column": {
-        setFlexDirection(YogaFlexDirection.COLUMN);
-        break;
-      }
-      case "column-reverse": {
-        setFlexDirection(YogaFlexDirection.COLUMN_REVERSE);
-        break;
-      }
-      case "row": {
-        setFlexDirection(YogaFlexDirection.ROW);
-        break;
-      }
-      case "row-reverse": {
-        setFlexDirection(YogaFlexDirection.ROW_REVERSE);
-        break;
-      }
-      default: {
-        throw new JSApplicationIllegalArgumentException(
-            "invalid value for flexDirection: " + flexDirection);
-      }
+      case "column":
+        {
+          setFlexDirection(YogaFlexDirection.COLUMN);
+          break;
+        }
+      case "column-reverse":
+        {
+          setFlexDirection(YogaFlexDirection.COLUMN_REVERSE);
+          break;
+        }
+      case "row":
+        {
+          setFlexDirection(YogaFlexDirection.ROW);
+          break;
+        }
+      case "row-reverse":
+        {
+          setFlexDirection(YogaFlexDirection.ROW_REVERSE);
+          break;
+        }
+      default:
+        {
+          throw new JSApplicationIllegalArgumentException(
+              "invalid value for flexDirection: " + flexDirection);
+        }
     }
   }
 
@@ -306,22 +310,26 @@ public class LayoutShadowNode extends ReactShadowNodeImpl {
     }
 
     switch (flexWrap) {
-      case "nowrap": {
-        setFlexWrap(YogaWrap.NO_WRAP);
-        break;
-      }
-      case "wrap": {
-        setFlexWrap(YogaWrap.WRAP);
-        break;
-      }
-      case "wrap-reverse": {
-        setFlexWrap(YogaWrap.WRAP_REVERSE);
-        break;
-      }
-      default: {
-        throw new JSApplicationIllegalArgumentException(
-            "invalid value for flexWrap: " + flexWrap);
-      }
+      case "nowrap":
+        {
+          setFlexWrap(YogaWrap.NO_WRAP);
+          break;
+        }
+      case "wrap":
+        {
+          setFlexWrap(YogaWrap.WRAP);
+          break;
+        }
+      case "wrap-reverse":
+        {
+          setFlexWrap(YogaWrap.WRAP_REVERSE);
+          break;
+        }
+      default:
+        {
+          throw new JSApplicationIllegalArgumentException(
+              "invalid value for flexWrap: " + flexWrap);
+        }
     }
   }
 
@@ -337,42 +345,51 @@ public class LayoutShadowNode extends ReactShadowNodeImpl {
     }
 
     switch (alignSelf) {
-      case "auto": {
-        setAlignSelf(YogaAlign.AUTO);
-        return;
-      }
-      case "flex-start": {
-        setAlignSelf(YogaAlign.FLEX_START);
-        return;
-      }
-      case "center": {
-        setAlignSelf(YogaAlign.CENTER);
-        return;
-      }
-      case "flex-end": {
-        setAlignSelf(YogaAlign.FLEX_END);
-        return;
-      }
-      case "stretch": {
-        setAlignSelf(YogaAlign.STRETCH);
-        return;
-      }
-      case "baseline": {
-        setAlignSelf(YogaAlign.BASELINE);
-        return;
-      }
-      case "space-between": {
-        setAlignSelf(YogaAlign.SPACE_BETWEEN);
-        return;
-      }
-      case "space-around": {
-        setAlignSelf(YogaAlign.SPACE_AROUND);
-        return;
-      }
-      default: {
-        throw new JSApplicationIllegalArgumentException(
-            "invalid value for alignSelf: " + alignSelf);
-      }
+      case "auto":
+        {
+          setAlignSelf(YogaAlign.AUTO);
+          return;
+        }
+      case "flex-start":
+        {
+          setAlignSelf(YogaAlign.FLEX_START);
+          return;
+        }
+      case "center":
+        {
+          setAlignSelf(YogaAlign.CENTER);
+          return;
+        }
+      case "flex-end":
+        {
+          setAlignSelf(YogaAlign.FLEX_END);
+          return;
+        }
+      case "stretch":
+        {
+          setAlignSelf(YogaAlign.STRETCH);
+          return;
+        }
+      case "baseline":
+        {
+          setAlignSelf(YogaAlign.BASELINE);
+          return;
+        }
+      case "space-between":
+        {
+          setAlignSelf(YogaAlign.SPACE_BETWEEN);
+          return;
+        }
+      case "space-around":
+        {
+          setAlignSelf(YogaAlign.SPACE_AROUND);
+          return;
+        }
+      default:
+        {
+          throw new JSApplicationIllegalArgumentException(
+              "invalid value for alignSelf: " + alignSelf);
+        }
     }
   }
 
@@ -388,42 +405,51 @@ public class LayoutShadowNode extends ReactShadowNodeImpl {
     }
 
     switch (alignItems) {
-      case "auto": {
-        setAlignItems(YogaAlign.AUTO);
-        return;
-      }
-      case "flex-start": {
-        setAlignItems(YogaAlign.FLEX_START);
-        return;
-      }
-      case "center": {
-        setAlignItems(YogaAlign.CENTER);
-        return;
-      }
-      case "flex-end": {
-        setAlignItems(YogaAlign.FLEX_END);
-        return;
-      }
-      case "stretch": {
-        setAlignItems(YogaAlign.STRETCH);
-        return;
-      }
-      case "baseline": {
-        setAlignItems(YogaAlign.BASELINE);
-        return;
-      }
-      case "space-between": {
-        setAlignItems(YogaAlign.SPACE_BETWEEN);
-        return;
-      }
-      case "space-around": {
-        setAlignItems(YogaAlign.SPACE_AROUND);
-        return;
-      }
-      default: {
-        throw new JSApplicationIllegalArgumentException(
-            "invalid value for alignItems: " + alignItems);
-      }
+      case "auto":
+        {
+          setAlignItems(YogaAlign.AUTO);
+          return;
+        }
+      case "flex-start":
+        {
+          setAlignItems(YogaAlign.FLEX_START);
+          return;
+        }
+      case "center":
+        {
+          setAlignItems(YogaAlign.CENTER);
+          return;
+        }
+      case "flex-end":
+        {
+          setAlignItems(YogaAlign.FLEX_END);
+          return;
+        }
+      case "stretch":
+        {
+          setAlignItems(YogaAlign.STRETCH);
+          return;
+        }
+      case "baseline":
+        {
+          setAlignItems(YogaAlign.BASELINE);
+          return;
+        }
+      case "space-between":
+        {
+          setAlignItems(YogaAlign.SPACE_BETWEEN);
+          return;
+        }
+      case "space-around":
+        {
+          setAlignItems(YogaAlign.SPACE_AROUND);
+          return;
+        }
+      default:
+        {
+          throw new JSApplicationIllegalArgumentException(
+              "invalid value for alignItems: " + alignItems);
+        }
     }
   }
 
@@ -439,42 +465,51 @@ public class LayoutShadowNode extends ReactShadowNodeImpl {
     }
 
     switch (alignContent) {
-      case "auto": {
-        setAlignContent(YogaAlign.AUTO);
-        return;
-      }
-      case "flex-start": {
-        setAlignContent(YogaAlign.FLEX_START);
-        return;
-      }
-      case "center": {
-        setAlignContent(YogaAlign.CENTER);
-        return;
-      }
-      case "flex-end": {
-        setAlignContent(YogaAlign.FLEX_END);
-        return;
-      }
-      case "stretch": {
-        setAlignContent(YogaAlign.STRETCH);
-        return;
-      }
-      case "baseline": {
-        setAlignContent(YogaAlign.BASELINE);
-        return;
-      }
-      case "space-between": {
-        setAlignContent(YogaAlign.SPACE_BETWEEN);
-        return;
-      }
-      case "space-around": {
-        setAlignContent(YogaAlign.SPACE_AROUND);
-        return;
-      }
-      default: {
-        throw new JSApplicationIllegalArgumentException(
-            "invalid value for alignContent: " + alignContent);
-      }
+      case "auto":
+        {
+          setAlignContent(YogaAlign.AUTO);
+          return;
+        }
+      case "flex-start":
+        {
+          setAlignContent(YogaAlign.FLEX_START);
+          return;
+        }
+      case "center":
+        {
+          setAlignContent(YogaAlign.CENTER);
+          return;
+        }
+      case "flex-end":
+        {
+          setAlignContent(YogaAlign.FLEX_END);
+          return;
+        }
+      case "stretch":
+        {
+          setAlignContent(YogaAlign.STRETCH);
+          return;
+        }
+      case "baseline":
+        {
+          setAlignContent(YogaAlign.BASELINE);
+          return;
+        }
+      case "space-between":
+        {
+          setAlignContent(YogaAlign.SPACE_BETWEEN);
+          return;
+        }
+      case "space-around":
+        {
+          setAlignContent(YogaAlign.SPACE_AROUND);
+          return;
+        }
+      default:
+        {
+          throw new JSApplicationIllegalArgumentException(
+              "invalid value for alignContent: " + alignContent);
+        }
     }
   }
 
@@ -490,34 +525,41 @@ public class LayoutShadowNode extends ReactShadowNodeImpl {
     }
 
     switch (justifyContent) {
-      case "flex-start": {
-        setJustifyContent(YogaJustify.FLEX_START);
-        break;
-      }
-      case "center": {
-        setJustifyContent(YogaJustify.CENTER);
-        break;
-      }
-      case "flex-end": {
-        setJustifyContent(YogaJustify.FLEX_END);
-        break;
-      }
-      case "space-between": {
-        setJustifyContent(YogaJustify.SPACE_BETWEEN);
-        break;
-      }
-      case "space-around": {
-        setJustifyContent(YogaJustify.SPACE_AROUND);
-        break;
-      }
-      case "space-evenly": {
-        setJustifyContent(YogaJustify.SPACE_EVENLY);
-        break;
-      }
-      default: {
-        throw new JSApplicationIllegalArgumentException(
-            "invalid value for justifyContent: " + justifyContent);
-      }
+      case "flex-start":
+        {
+          setJustifyContent(YogaJustify.FLEX_START);
+          break;
+        }
+      case "center":
+        {
+          setJustifyContent(YogaJustify.CENTER);
+          break;
+        }
+      case "flex-end":
+        {
+          setJustifyContent(YogaJustify.FLEX_END);
+          break;
+        }
+      case "space-between":
+        {
+          setJustifyContent(YogaJustify.SPACE_BETWEEN);
+          break;
+        }
+      case "space-around":
+        {
+          setJustifyContent(YogaJustify.SPACE_AROUND);
+          break;
+        }
+      case "space-evenly":
+        {
+          setJustifyContent(YogaJustify.SPACE_EVENLY);
+          break;
+        }
+      default:
+        {
+          throw new JSApplicationIllegalArgumentException(
+              "invalid value for justifyContent: " + justifyContent);
+        }
     }
   }
 
@@ -532,22 +574,26 @@ public class LayoutShadowNode extends ReactShadowNodeImpl {
     }
 
     switch (overflow) {
-      case "visible": {
-        setOverflow(YogaOverflow.VISIBLE);
-        break;
-      }
-      case "hidden": {
-        setOverflow(YogaOverflow.HIDDEN);
-        break;
-      }
-      case "scroll": {
-        setOverflow(YogaOverflow.SCROLL);
-        break;
-      }
-      default: {
-        throw new JSApplicationIllegalArgumentException(
-            "invalid value for overflow: " + overflow);
-      }
+      case "visible":
+        {
+          setOverflow(YogaOverflow.VISIBLE);
+          break;
+        }
+      case "hidden":
+        {
+          setOverflow(YogaOverflow.HIDDEN);
+          break;
+        }
+      case "scroll":
+        {
+          setOverflow(YogaOverflow.SCROLL);
+          break;
+        }
+      default:
+        {
+          throw new JSApplicationIllegalArgumentException(
+              "invalid value for overflow: " + overflow);
+        }
     }
   }
 
@@ -563,34 +609,35 @@ public class LayoutShadowNode extends ReactShadowNodeImpl {
     }
 
     switch (display) {
-      case "flex": {
-        setDisplay(YogaDisplay.FLEX);
-        break;
-      }
-      case "none": {
-        setDisplay(YogaDisplay.NONE);
-        break;
-      }
-      default: {
-        throw new JSApplicationIllegalArgumentException(
-            "invalid value for display: " + display);
-      }
+      case "flex":
+        {
+          setDisplay(YogaDisplay.FLEX);
+          break;
+        }
+      case "none":
+        {
+          setDisplay(YogaDisplay.NONE);
+          break;
+        }
+      default:
+        {
+          throw new JSApplicationIllegalArgumentException("invalid value for display: " + display);
+        }
     }
   }
 
   @ReactPropGroup(
-    names = {
-      ViewProps.MARGIN,
-      ViewProps.MARGIN_VERTICAL,
-      ViewProps.MARGIN_HORIZONTAL,
-      ViewProps.MARGIN_START,
-      ViewProps.MARGIN_END,
-      ViewProps.MARGIN_TOP,
-      ViewProps.MARGIN_BOTTOM,
-      ViewProps.MARGIN_LEFT,
-      ViewProps.MARGIN_RIGHT,
-    }
-  )
+      names = {
+        ViewProps.MARGIN,
+        ViewProps.MARGIN_VERTICAL,
+        ViewProps.MARGIN_HORIZONTAL,
+        ViewProps.MARGIN_START,
+        ViewProps.MARGIN_END,
+        ViewProps.MARGIN_TOP,
+        ViewProps.MARGIN_BOTTOM,
+        ViewProps.MARGIN_LEFT,
+        ViewProps.MARGIN_RIGHT,
+      })
   public void setMargins(int index, Dynamic margin) {
     if (isVirtual()) {
       return;
@@ -617,18 +664,17 @@ public class LayoutShadowNode extends ReactShadowNodeImpl {
   }
 
   @ReactPropGroup(
-    names = {
-      ViewProps.PADDING,
-      ViewProps.PADDING_VERTICAL,
-      ViewProps.PADDING_HORIZONTAL,
-      ViewProps.PADDING_START,
-      ViewProps.PADDING_END,
-      ViewProps.PADDING_TOP,
-      ViewProps.PADDING_BOTTOM,
-      ViewProps.PADDING_LEFT,
-      ViewProps.PADDING_RIGHT,
-    }
-  )
+      names = {
+        ViewProps.PADDING,
+        ViewProps.PADDING_VERTICAL,
+        ViewProps.PADDING_HORIZONTAL,
+        ViewProps.PADDING_START,
+        ViewProps.PADDING_END,
+        ViewProps.PADDING_TOP,
+        ViewProps.PADDING_BOTTOM,
+        ViewProps.PADDING_LEFT,
+        ViewProps.PADDING_RIGHT,
+      })
   public void setPaddings(int index, Dynamic padding) {
     if (isVirtual()) {
       return;
@@ -652,17 +698,16 @@ public class LayoutShadowNode extends ReactShadowNodeImpl {
   }
 
   @ReactPropGroup(
-    names = {
-      ViewProps.BORDER_WIDTH,
-      ViewProps.BORDER_START_WIDTH,
-      ViewProps.BORDER_END_WIDTH,
-      ViewProps.BORDER_TOP_WIDTH,
-      ViewProps.BORDER_BOTTOM_WIDTH,
-      ViewProps.BORDER_LEFT_WIDTH,
-      ViewProps.BORDER_RIGHT_WIDTH,
-    },
-    defaultFloat = YogaConstants.UNDEFINED
-  )
+      names = {
+        ViewProps.BORDER_WIDTH,
+        ViewProps.BORDER_START_WIDTH,
+        ViewProps.BORDER_END_WIDTH,
+        ViewProps.BORDER_TOP_WIDTH,
+        ViewProps.BORDER_BOTTOM_WIDTH,
+        ViewProps.BORDER_LEFT_WIDTH,
+        ViewProps.BORDER_RIGHT_WIDTH,
+      },
+      defaultFloat = YogaConstants.UNDEFINED)
   public void setBorderWidths(int index, float borderWidth) {
     if (isVirtual()) {
       return;
@@ -672,15 +717,14 @@ public class LayoutShadowNode extends ReactShadowNodeImpl {
   }
 
   @ReactPropGroup(
-    names = {
-      ViewProps.START,
-      ViewProps.END,
-      ViewProps.LEFT,
-      ViewProps.RIGHT,
-      ViewProps.TOP,
-      ViewProps.BOTTOM,
-    }
-  )
+      names = {
+        ViewProps.START,
+        ViewProps.END,
+        ViewProps.LEFT,
+        ViewProps.RIGHT,
+        ViewProps.TOP,
+        ViewProps.BOTTOM,
+      })
   public void setPositionValues(int index, Dynamic position) {
     if (isVirtual()) {
       return;
@@ -733,18 +777,21 @@ public class LayoutShadowNode extends ReactShadowNodeImpl {
     }
 
     switch (position) {
-      case "relative": {
-        setPositionType(YogaPositionType.RELATIVE);
-        break;
-      }
-      case "absolute": {
-        setPositionType(YogaPositionType.ABSOLUTE);
-        break;
-      }
-      default: {
-        throw new JSApplicationIllegalArgumentException(
-            "invalid value for position: " + position);
-      }
+      case "relative":
+        {
+          setPositionType(YogaPositionType.RELATIVE);
+          break;
+        }
+      case "absolute":
+        {
+          setPositionType(YogaPositionType.ABSOLUTE);
+          break;
+        }
+      default:
+        {
+          throw new JSApplicationIllegalArgumentException(
+              "invalid value for position: " + position);
+        }
     }
   }
 

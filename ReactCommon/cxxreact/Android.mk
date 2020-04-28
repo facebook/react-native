@@ -26,6 +26,8 @@ include $(BUILD_STATIC_LIBRARY)
 
 $(call import-module,fb)
 $(call import-module,folly)
+$(call import-module,jsc)
 $(call import-module,glog)
 $(call import-module,jsi)
 $(call import-module,jsinspector)
+$(call import-module,hermes/inspector)

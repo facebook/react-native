@@ -58,7 +58,7 @@ public:
     if (isEndOfBatch) {
       // onBatchComplete will be called on the native (module) queue, but
       // decrementPendingJSCalls will be called sync. Be aware that the bridge may still
-      // be processing native calls when the birdge idle signaler fires.
+      // be processing native calls when the bridge idle signaler fires.
       if (m_batchHadNativeModuleCalls) {
         m_callback->onBatchComplete();
         m_batchHadNativeModuleCalls = false;

@@ -35,6 +35,7 @@
   NSMutableArray<UIImagePickerController *> *_pickers;
   NSMutableArray<RCTResponseSenderBlock> *_pickerCallbacks;
   NSMutableArray<RCTResponseSenderBlock> *_pickerCancelCallbacks;
+  NSMutableDictionary<NSString *, NSDictionary<NSString *, id> *> *_pendingVideoInfo;
 }
 
 RCT_EXPORT_MODULE(ImagePickerIOS);
@@ -131,6 +132,24 @@ RCT_EXPORT_METHOD(openSelectDialog:(NSDictionary *)config
         cancelCallback:cancelCallback];
 }
 
+// In iOS 13, the URLs provided when selecting videos from the library are only valid while the
+// info object provided by the delegate is retained.
+// This method provides a way to clear out all retained pending info objects.
+RCT_EXPORT_METHOD(clearAllPendingVideos)
+{
+  [_pendingVideoInfo removeAllObjects];
+  _pendingVideoInfo = [NSMutableDictionary new];
+}
+
+// In iOS 13, the URLs provided when selecting videos from the library are only valid while the
+// info object provided by the delegate is retained.
+// This method provides a way to release the info object for a particular file url when the application
+// is done with it, for example after the video has been uploaded or copied locally.
+RCT_EXPORT_METHOD(removePendingVideo:(NSString *)url)
+{
+  [_pendingVideoInfo removeObjectForKey:url];
+}
+
 - (void)imagePickerController:(UIImagePickerController *)picker
 didFinishPickingMediaWithInfo:(NSDictionary<NSString *, id> *)info
 {
@@ -146,7 +165,15 @@ didFinishPickingMediaWithInfo:(NSDictionary<NSString *, id> *)info
     width = @(image.size.width);
   }
   if (imageURL) {
-    [self _dismissPicker:picker args:@[imageURL.absoluteString, RCTNullIfNil(height), RCTNullIfNil(width)]];
+    NSString *imageURLString = imageURL.absoluteString;
+    // In iOS 13, video URLs are only valid while info dictionary is retained
+    if (@available(iOS 13.0, *)) {
+      if (isMovie) {
+        _pendingVideoInfo[imageURLString] = info;
+      }
+    }
+
+    [self _dismissPicker:picker args:@[imageURLString, RCTNullIfNil(height), RCTNullIfNil(width)]];
     return;
   }
 
@@ -174,6 +201,7 @@ didFinishPickingMediaWithInfo:(NSDictionary<NSString *, id> *)info
     _pickers = [NSMutableArray new];
     _pickerCallbacks = [NSMutableArray new];
     _pickerCancelCallbacks = [NSMutableArray new];
+    _pendingVideoInfo = [NSMutableDictionary new];
   }
 
   [_pickers addObject:imagePicker];

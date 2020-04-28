@@ -13,17 +13,6 @@
 ; Ignore "BUCK" generated dirs
 <PROJECT_ROOT>/\.buckd/
 
-; Ignore unexpected extra "@providesModule"
-.*/node_modules/.*/node_modules/fbjs/.*
-
-; Ignore duplicate module providers
-; For RN Apps installed via npm, "Libraries" folder is inside
-; "node_modules/react-native" but in the source repo it is in the root
-.*/Libraries/react-native/React.js
-
-; Ignore polyfills
-.*/Libraries/polyfills/.*
-
 ; TODO(macOS ISS#2323203): Ignore metro.config.js
 <PROJECT_ROOT>/metro.config.js
 
@@ -41,7 +30,7 @@
 .*/node_modules/warning/.*
 
 ; Flow doesn't support platforms
-.*/Libraries/Utilities/HMRLoadingView.js
+.*/Libraries/Utilities/LoadingView.js
 
 [untyped]
 .*/node_modules/@react-native-community/cli/.*/.*
@@ -62,35 +51,19 @@ module.file_ext=.js
 module.file_ext=.json
 module.file_ext=.android.js
 
-module.system=haste
-module.system.haste.use_name_reducers=true
-# keep the following in sync with server/haste/hasteImpl.js
-# get basename
-module.system.haste.name_reducers='^.*/\([a-zA-Z0-9$_.-]+\.js\(\.flow\)?\)$' -> '\1'
-# strip .js or .js.flow suffix
-module.system.haste.name_reducers='^\(.*\)\.js\(\.flow\)?$' -> '\1'
-# strip .android suffix
-module.system.haste.name_reducers='^\(.*\)\.android$' -> '\1'
-module.system.haste.name_reducers='^\(.*\)\.ios$' -> '\1'
 # TODO(macOS ISS#2323203):
 module.system.haste.name_reducers='^\(.*\)\.macos$' -> '\1'
-module.system.haste.name_reducers='^\(.*\)\.native$' -> '\1'
-module.system.haste.paths.blacklist=.*/__tests__/.*
-module.system.haste.paths.blacklist=.*/__mocks__/.*
-module.system.haste.paths.whitelist=<PROJECT_ROOT>/Libraries/.*
-module.system.haste.paths.whitelist=<PROJECT_ROOT>/RNTester/.*
-module.system.haste.paths.whitelist=<PROJECT_ROOT>/IntegrationTests/.*
-module.system.haste.paths.blacklist=<PROJECT_ROOT>/Libraries/react-native/react-native-implementation.js
-module.system.haste.paths.blacklist=<PROJECT_ROOT>/Libraries/Animated/src/polyfills/.*
-
 munge_underscores=true
 
-module.name_mapper='^[./a-zA-Z0-9$_-]+\.\(bmp\|gif\|jpg\|jpeg\|png\|psd\|svg\|webp\|m4v\|mov\|mp4\|mpeg\|mpg\|webm\|aac\|aiff\|caf\|m4a\|mp3\|wav\|html\|pdf\)$' -> 'RelativeImageStub'
+module.name_mapper='^react-native$' -> '<PROJECT_ROOT>/Libraries/react-native/react-native-implementation'
+module.name_mapper='^react-native/\(.*\)$' -> '<PROJECT_ROOT>/\1'
+module.name_mapper='^[./a-zA-Z0-9$_-]+\.\(bmp\|gif\|jpg\|jpeg\|png\|psd\|svg\|webp\|m4v\|mov\|mp4\|mpeg\|mpg\|webm\|aac\|aiff\|caf\|m4a\|mp3\|wav\|html\|pdf\)$' -> '<PROJECT_ROOT>/Libraries/Image/RelativeImageStub'
 
 suppress_type=$FlowIssue
 suppress_type=$FlowFixMe
 suppress_type=$FlowFixMeProps
 suppress_type=$FlowFixMeState
+suppress_type=$FlowFixMeEmpty
 
 suppress_comment=\\(.\\|\n\\)*\\$FlowFixMe\\($\\|[^(]\\|(\\(<VERSION>\\)? *\\(site=[a-z,_]*react_native\\(_android\\)?_\\(oss\\|fb\\)[a-z,_]*\\)?)\\)
 suppress_comment=\\(.\\|\n\\)*\\$FlowIssue\\((\\(<VERSION>\\)? *\\(site=[a-z,_]*react_native\\(_android\\)?_\\(oss\\|fb\\)[a-z,_]*\\)?)\\)?:? #[0-9]+
@@ -119,4 +92,4 @@ untyped-import
 untyped-type-import
 
 [version]
-^0.98.0
+^0.105.0

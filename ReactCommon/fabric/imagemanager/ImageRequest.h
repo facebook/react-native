@@ -63,7 +63,7 @@ class ImageRequest final {
 
  private:
   /*
-   * Image source assosiated with the request.
+   * Image source associated with the request.
    */
   ImageSource imageSource_;
 

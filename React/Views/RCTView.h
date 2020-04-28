@@ -29,7 +29,6 @@ extern const UIAccessibilityTraits SwitchAccessibilityTrait;
 /**
  * Accessibility event handlers
  */
-@property (nonatomic, copy) NSArray <NSDictionary *> *accessibilityActions;
 @property (nonatomic, copy) RCTDirectEventBlock onAccessibilityAction;
 @property (nonatomic, copy) RCTDirectEventBlock onAccessibilityTap;
 #if !TARGET_OS_OSX // TODO(macOS ISS#2323203)

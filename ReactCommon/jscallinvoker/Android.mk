@@ -8,7 +8,7 @@ LOCAL_PATH := $(call my-dir)
 include $(CLEAR_VARS)
 
 # Header search path for all source files in this module.
-LOCAL_C_INCLUDES := $(LOCAL_PATH)/jsireact
+LOCAL_C_INCLUDES := $(LOCAL_PATH)/ReactCommon
 
 # Header search path for modules that depend on this module
 LOCAL_EXPORT_C_INCLUDES := $(LOCAL_PATH)
@@ -20,8 +20,8 @@ LOCAL_STATIC_LIBRARIES = libreactnative
 # Name of this module.
 LOCAL_MODULE := jscallinvoker
 
-# Compile all local c++ files under ./jsireact
-LOCAL_SRC_FILES := $(wildcard $(LOCAL_PATH)/jsireact/*.cpp)
+# Compile all local c++ files under ./ReactCommon
+LOCAL_SRC_FILES := $(wildcard $(LOCAL_PATH)/ReactCommon/*.cpp)
 
 # Build the files in this directory as a shared library
 include $(BUILD_STATIC_LIBRARY)

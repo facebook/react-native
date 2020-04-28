@@ -10,11 +10,8 @@ REACT_NATIVE_ROOT="$THIS_DIR/.."
 # Application root directory - General use case: react-native is a dependency
 PROJECT_ROOT="$THIS_DIR/../../.."
 
-# shellcheck source=/dev/null
-source "${THIS_DIR}/.packager.env"
-
 # check and assign NODE_BINARY env
-# shellcheck disable=SC1091
+# shellcheck disable=SC1090
 source "${THIS_DIR}/node-binary.sh"
 
 # When running react-native tests, react-native doesn't live in node_modules but in the PROJECT_ROOT

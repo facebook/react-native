@@ -21,8 +21,8 @@
 @end
 
 @implementation RCTSurfaceHostingView {
-  UIView *_Nullable _activityIndicatorView;
-  UIView *_Nullable _surfaceView;
+  RCTUIView *_Nullable _activityIndicatorView; // TODO(macOS ISS#2323203)
+  RCTUIView *_Nullable _surfaceView; // TODO(macOS ISS#2323203)
   RCTSurfaceStage _stage;
 }
 
@@ -80,8 +80,10 @@ RCT_NOT_IMPLEMENTED(- (nullable instancetype)initWithCoder:(NSCoder *)coder)
     &maximumSize
   );
 
-  [_surface setMinimumSize:minimumSize
-               maximumSize:maximumSize];
+  if (RCTSurfaceStageIsRunning(_stage)) {
+    [_surface setMinimumSize:minimumSize
+                 maximumSize:maximumSize];
+  }
 }
 
 - (CGSize)intrinsicContentSize
@@ -101,7 +103,11 @@ RCT_NOT_IMPLEMENTED(- (nullable instancetype)initWithCoder:(NSCoder *)coder)
 {
   if (RCTSurfaceStageIsPreparing(_stage)) {
     if (_activityIndicatorView) {
+#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
       return [_activityIndicatorView sizeThatFits:size];
+#else // [TODO(macOS ISS#2323203)
+      return [_activityIndicatorView fittingSize];
+#endif // ]TODO(macOS ISS#2323203)
     }
 
     return CGSizeZero;
@@ -209,7 +215,11 @@ RCT_NOT_IMPLEMENTED(- (nullable instancetype)initWithCoder:(NSCoder *)coder)
 - (void)_invalidateLayout
 {
   [self invalidateIntrinsicContentSize];
+#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
   [self.superview setNeedsLayout];
+#else // [TODO(macOS ISS#2323203)
+  [self.superview setNeedsLayout:YES];
+#endif // ]TODO(macOS ISS#2323203)
 }
 
 - (void)_updateViews

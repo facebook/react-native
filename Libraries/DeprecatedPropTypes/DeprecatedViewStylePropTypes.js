@@ -12,9 +12,9 @@
 
 const DeprecatedColorPropType = require('./DeprecatedColorPropType');
 const DeprecatedLayoutPropTypes = require('./DeprecatedLayoutPropTypes');
-const ReactPropTypes = require('prop-types');
 const DeprecatedShadowPropTypesIOS = require('./DeprecatedShadowPropTypesIOS');
 const DeprecatedTransformPropTypes = require('./DeprecatedTransformPropTypes');
+const ReactPropTypes = require('prop-types');
 
 /**
  * Warning: Some of these properties may not be supported in all releases.
@@ -23,7 +23,10 @@ const DeprecatedViewStylePropTypes = {
   ...DeprecatedLayoutPropTypes,
   ...DeprecatedShadowPropTypesIOS,
   ...DeprecatedTransformPropTypes,
-  backfaceVisibility: ReactPropTypes.oneOf(['visible', 'hidden']),
+  backfaceVisibility: (ReactPropTypes.oneOf([
+    'visible',
+    'hidden',
+  ]): React$PropType$Primitive<'visible' | 'hidden'>),
   backgroundColor: DeprecatedColorPropType,
   borderColor: DeprecatedColorPropType,
   borderTopColor: DeprecatedColorPropType,
@@ -41,7 +44,11 @@ const DeprecatedViewStylePropTypes = {
   borderBottomRightRadius: ReactPropTypes.number,
   borderBottomStartRadius: ReactPropTypes.number,
   borderBottomEndRadius: ReactPropTypes.number,
-  borderStyle: ReactPropTypes.oneOf(['solid', 'dotted', 'dashed']),
+  borderStyle: (ReactPropTypes.oneOf([
+    'solid',
+    'dotted',
+    'dashed',
+  ]): React$PropType$Primitive<'solid' | 'dotted' | 'dashed'>),
   borderWidth: ReactPropTypes.number,
   borderTopWidth: ReactPropTypes.number,
   borderRightWidth: ReactPropTypes.number,

@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#import "RCTLocalAssetImageLoader.h"
+#import <React/RCTLocalAssetImageLoader.h>
 
 #import <stdatomic.h>
 

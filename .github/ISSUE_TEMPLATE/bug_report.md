@@ -29,12 +29,12 @@ React Native version:
 Describe what you expected to happen:
 
 
-Snack, code example, or link to a repository:
-
+Snack, code example, screenshot, or link to a repository:
 
 <!--
   Please provide a Snack (https://snack.expo.io/), a link to a repository on GitHub, or
   provide a minimal code example that reproduces the problem.
-  Here are some tips for providing a minimal example: https://stackoverflow.com/help/mcve.
+  You may provide a screenshot of the application if you think it is relevant to your bug report. 
+  Here are some tips for providing a minimal example: https://stackoverflow.com/help/mcve.	  --	
 -->
 

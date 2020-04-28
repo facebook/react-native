@@ -185,7 +185,7 @@ describe('YellowBoxRegistry', () => {
     expect(observer.mock.calls[0][0]).toBe(registry());
   });
 
-  it('sends batched updates asynchoronously', () => {
+  it('sends batched updates asynchronously', () => {
     const {observer} = observe();
     expect(observer.mock.calls.length).toBe(1);
 

@@ -7,7 +7,7 @@
 
 #import <React/RCTUIKit.h> // [TODO(macOS ISS#2323203)
 
-#if TARGET_OS_OSX
+#if TARGET_OS_OSX // [TODO(macOS ISS#2323203)
 NS_ASSUME_NONNULL_BEGIN
 @protocol RCTUITextFieldDelegate <NSTextFieldDelegate>
 @optional

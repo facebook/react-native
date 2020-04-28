@@ -50,7 +50,7 @@ static TextAttributes convertRawProp(
   textAttributes.lineHeight =
       convertRawProp(rawProps, "lineHeight", defaultTextAttributes.lineHeight);
   textAttributes.alignment =
-      convertRawProp(rawProps, "alignment", defaultTextAttributes.alignment);
+      convertRawProp(rawProps, "textAlign", defaultTextAttributes.alignment);
   textAttributes.baseWritingDirection = convertRawProp(
       rawProps,
       "baseWritingDirection",

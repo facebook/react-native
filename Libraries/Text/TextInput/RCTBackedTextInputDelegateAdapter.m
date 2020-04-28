@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#import "RCTBackedTextInputDelegateAdapter.h"
+#import <React/RCTBackedTextInputDelegateAdapter.h>
 #import "RCTBackedTextInputViewProtocol.h" // TODO(OSS Candidate ISS#2710739)
 #import "RCTBackedTextInputDelegate.h" // TODO(OSS Candidate ISS#2710739)
 #import "../RCTTextUIKit.h" // TODO(macOS ISS#2323203)

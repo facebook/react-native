@@ -1,41 +1,34 @@
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
+ * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
+ * directory of this source tree.
  */
 
 // switchview because switch is a keyword
 package com.facebook.react.views.switchview;
 
-import android.graphics.PorterDuff;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.CompoundButton;
+import androidx.annotation.Nullable;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.uimanager.LayoutShadowNode;
-import com.facebook.react.uimanager.ReactShadowNodeImpl;
 import com.facebook.react.uimanager.SimpleViewManager;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.ViewProps;
 import com.facebook.react.uimanager.annotations.ReactProp;
-import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.yoga.YogaMeasureFunction;
 import com.facebook.yoga.YogaMeasureMode;
 import com.facebook.yoga.YogaMeasureOutput;
 import com.facebook.yoga.YogaNode;
-import javax.annotation.Nullable;
 
-/**
- * View manager for {@link ReactSwitch} components.
- */
+/** View manager for {@link ReactSwitch} components. */
 public class ReactSwitchManager extends SimpleViewManager<ReactSwitch> {
 
   public static final String REACT_CLASS = "AndroidSwitch";
 
-  static class ReactSwitchShadowNode extends LayoutShadowNode implements
-      YogaMeasureFunction {
+  static class ReactSwitchShadowNode extends LayoutShadowNode implements YogaMeasureFunction {
 
     private int mWidth;
     private int mHeight;
@@ -62,9 +55,7 @@ public class ReactSwitchManager extends SimpleViewManager<ReactSwitch> {
         // on a specific device/theme/locale combination.
         ReactSwitch reactSwitch = new ReactSwitch(getThemedContext());
         reactSwitch.setShowText(false);
-        final int spec = View.MeasureSpec.makeMeasureSpec(
-            0,
-            View.MeasureSpec.UNSPECIFIED);
+        final int spec = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED);
         reactSwitch.measure(spec, spec);
         mWidth = reactSwitch.getMeasuredWidth();
         mHeight = reactSwitch.getMeasuredHeight();
@@ -80,10 +71,10 @@ public class ReactSwitchManager extends SimpleViewManager<ReactSwitch> {
         @Override
         public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
           ReactContext reactContext = (ReactContext) buttonView.getContext();
-          reactContext.getNativeModule(UIManagerModule.class).getEventDispatcher().dispatchEvent(
-              new ReactSwitchEvent(
-                  buttonView.getId(),
-                  isChecked));
+          reactContext
+              .getNativeModule(UIManagerModule.class)
+              .getEventDispatcher()
+              .dispatchEvent(new ReactSwitchEvent(buttonView.getId(), isChecked));
         }
       };
 

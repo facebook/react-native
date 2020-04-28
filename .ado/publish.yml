@@ -157,15 +157,15 @@ jobs:
           #verbosityPack: 'Detailed' # Options: quiet, normal, detailed
           #arguments: # Required when command == Custom
 
-      - task: CmdLine@2
-        displayName: Setup Build Dependencies
-        inputs:
-          script: .ado\setup_droid_deps.bat
+#      - task: CmdLine@2
+#        displayName: Setup Build Dependencies
+#        inputs:
+#          script: .ado\setup_droid_deps.bat
 
       - task: Gradle@1
         displayName: gradlew installArchives
-        env:
-          REACT_NATIVE_DEPENDENCIES: $(System.DefaultWorkingDirectory)\build_deps
+#        env:
+#          REACT_NATIVE_DEPENDENCIES: $(System.DefaultWorkingDirectory)\build_deps
         inputs:
           gradleWrapperFile: gradlew
           # workingDirectory: src\react-native\

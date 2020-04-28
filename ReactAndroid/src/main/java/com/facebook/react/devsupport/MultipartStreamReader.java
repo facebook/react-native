@@ -1,23 +1,19 @@
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
+ * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
+ * directory of this source tree.
  */
-
 package com.facebook.react.devsupport;
 
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-
 import okio.Buffer;
 import okio.BufferedSource;
 import okio.ByteString;
 
-/**
- * Utility class to parse the body of a response of type multipart/mixed.
- */
+/** Utility class to parse the body of a response of type multipart/mixed. */
 public class MultipartStreamReader {
   // Standard line separator for HTTP.
   private static final String CRLF = "\r\n";
@@ -27,14 +23,11 @@ public class MultipartStreamReader {
   private long mLastProgressEvent;
 
   public interface ChunkListener {
-    /**
-     * Invoked when a chunk of a multipart response is fully downloaded.
-     */
-    void onChunkComplete(Map<String, String> headers, Buffer body, boolean isLastChunk) throws IOException;
+    /** Invoked when a chunk of a multipart response is fully downloaded. */
+    void onChunkComplete(Map<String, String> headers, Buffer body, boolean isLastChunk)
+        throws IOException;
 
-    /**
-     * Invoked as bytes of the current chunk are read.
-     */
+    /** Invoked as bytes of the current chunk are read. */
     void onChunkProgress(Map<String, String> headers, long loaded, long total) throws IOException;
   }
 
@@ -77,7 +70,9 @@ public class MultipartStreamReader {
     }
   }
 
-  private void emitProgress(Map<String, String> headers, long contentLength, boolean isFinal, ChunkListener listener) throws IOException {
+  private void emitProgress(
+      Map<String, String> headers, long contentLength, boolean isFinal, ChunkListener listener)
+      throws IOException {
     if (headers == null || listener == null) {
       return;
     }
@@ -85,13 +80,15 @@ public class MultipartStreamReader {
     long currentTime = System.currentTimeMillis();
     if (currentTime - mLastProgressEvent > 16 || isFinal) {
       mLastProgressEvent = currentTime;
-      long headersContentLength = headers.get("Content-Length") != null ? Long.parseLong(headers.get("Content-Length")) : 0;
+      long headersContentLength =
+          headers.get("Content-Length") != null ? Long.parseLong(headers.get("Content-Length")) : 0;
       listener.onChunkProgress(headers, contentLength, headersContentLength);
     }
   }
 
   /**
    * Reads all parts of the multipart response and execute the listener for each chunk received.
+   *
    * @param listener Listener invoked when chunks are received.
    * @return If the read was successful
    */

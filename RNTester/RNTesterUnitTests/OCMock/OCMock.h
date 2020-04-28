@@ -14,14 +14,14 @@
  *  under the License.
  */
 
-#import <OCMock/OCMockObject.h>
-#import <OCMock/OCMRecorder.h>
-#import <OCMock/OCMStubRecorder.h>
-#import <OCMock/OCMConstraint.h>
-#import <OCMock/OCMArg.h>
-#import <OCMock/OCMLocation.h>
-#import <OCMock/OCMMacroState.h>
-#import <OCMock/NSNotificationCenter+OCMAdditions.h>
+#import "OCMockObject.h"
+#import "OCMRecorder.h"
+#import "OCMStubRecorder.h"
+#import "OCMConstraint.h"
+#import "OCMArg.h"
+#import "OCMLocation.h"
+#import "OCMMacroState.h"
+#import "NSNotificationCenter+OCMAdditions.h"
 
 
 #define OCMClassMock(cls) [OCMockObject niceMockForClass:cls]

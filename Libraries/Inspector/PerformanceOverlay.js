@@ -17,7 +17,7 @@ const Text = require('../Text/Text');
 const View = require('../Components/View/View');
 
 class PerformanceOverlay extends React.Component<{}> {
-  render() {
+  render(): React.Node {
     const perfLogs = PerformanceLogger.getTimespans();
     const items = [];
 

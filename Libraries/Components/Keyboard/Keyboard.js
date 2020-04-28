@@ -11,12 +11,13 @@
 'use strict';
 
 const LayoutAnimation = require('../../LayoutAnimation/LayoutAnimation');
-const invariant = require('invariant');
 const NativeEventEmitter = require('../../EventEmitter/NativeEventEmitter');
-const KeyboardObserver = require('../../BatchedBridge/NativeModules')
-  .KeyboardObserver;
+
 const dismissKeyboard = require('../../Utilities/dismissKeyboard');
-const KeyboardEventEmitter = new NativeEventEmitter(KeyboardObserver);
+const invariant = require('invariant');
+
+import NativeKeyboardObserver from './NativeKeyboardObserver';
+const KeyboardEventEmitter = new NativeEventEmitter(NativeKeyboardObserver);
 
 export type KeyboardEventName =
   | 'keyboardWillShow'
@@ -33,18 +34,30 @@ export type KeyboardEventEasing =
   | 'linear'
   | 'keyboard';
 
-type ScreenRect = $ReadOnly<{|
+export type KeyboardEventCoordinates = $ReadOnly<{|
   screenX: number,
   screenY: number,
   width: number,
   height: number,
 |}>;
 
-export type KeyboardEvent = $ReadOnly<{|
+export type KeyboardEvent = AndroidKeyboardEvent | IOSKeyboardEvent;
+
+type BaseKeyboardEvent = {|
   duration: number,
   easing: KeyboardEventEasing,
-  endCoordinates: ScreenRect,
-  startCoordinates: ScreenRect,
+  endCoordinates: KeyboardEventCoordinates,
+|};
+
+export type AndroidKeyboardEvent = $ReadOnly<{|
+  ...BaseKeyboardEvent,
+  duration: 0,
+  easing: 'keyboard',
+|}>;
+
+export type IOSKeyboardEvent = $ReadOnly<{|
+  ...BaseKeyboardEvent,
+  startCoordinates: KeyboardEventCoordinates,
   isEventFromThisApp: boolean,
 |}>;
 
@@ -96,7 +109,21 @@ type KeyboardEventListener = (e: KeyboardEvent) => void;
  *```
  */
 
-let Keyboard = {
+let Keyboard:
+  | NativeEventEmitter
+  | $TEMPORARY$object<{|
+      addListener: (
+        eventName: KeyboardEventName,
+        callback: KeyboardEventListener,
+      ) => $FlowFixMe,
+      dismiss: () => $FlowFixMe,
+      removeAllListeners: (eventName: KeyboardEventName) => $FlowFixMe,
+      removeListener: (
+        eventName: KeyboardEventName,
+        callback: KeyboardEventListener,
+      ) => $FlowFixMe,
+      scheduleLayoutAnimation: (event: KeyboardEvent) => $FlowFixMe,
+    |}> = {
   /**
    * The `addListener` function connects a JavaScript function to an identified native
    * keyboard notification event.

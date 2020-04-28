@@ -30,5 +30,8 @@
     "run-sequence": "^1.1.2",
     "webpack": "1.11.0",
     "webpack-stream": "^2.1.0"
-  }
+  },
+  "beachball": {
+    "shouldPublish": false
+  }  
 }

@@ -408,7 +408,9 @@ const TouchableHighlight = ((createReactClass({
         accessibilityHint={this.props.accessibilityHint} // TODO(OSS Candidate ISS#2710739)
         accessibilityRole={this.props.accessibilityRole}
         accessibilityStates={this.props.accessibilityStates}
-        onAccessibilityTap={this.props.onAccessibilityTap} // TODO(OSS Candidate ISS#2710739)
+        accessibilityState={this.props.accessibilityState}
+        accessibilityActions={this.props.accessibilityActions}
+        onAccessibilityAction={this.props.onAccessibilityAction}
         acceptsKeyboardFocus={
           (this.props.acceptsKeyboardFocus === undefined ||
             this.props.acceptsKeyboardFocus) &&
@@ -434,8 +436,8 @@ const TouchableHighlight = ((createReactClass({
         nextFocusLeft={this.props.nextFocusLeft}
         nextFocusRight={this.props.nextFocusRight}
         nextFocusUp={this.props.nextFocusUp}
-        clickable={
-          this.props.clickable !== false && this.props.onPress !== undefined
+        focusable={
+          this.props.focusable !== false && this.props.onPress !== undefined
         }
         onClick={this.touchableHandlePress}
         onStartShouldSetResponder={this.touchableHandleStartShouldSetResponder}

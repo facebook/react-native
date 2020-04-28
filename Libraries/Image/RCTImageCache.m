@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#import "RCTImageCache.h"
+#import <React/RCTImageCache.h>
 
 #import <objc/runtime.h>
 
@@ -16,7 +16,7 @@
 #import <React/RCTUtils.h>
 #import <React/RCTResizeMode.h>
 
-#import "RCTImageUtils.h"
+#import <React/RCTImageUtils.h>
 
 static const NSUInteger RCTMaxCachableDecodedImageSizeInBytes = 2097152; // 2 MB
 
@@ -77,7 +77,7 @@ static NSString *RCTCacheKeyForImage(NSString *imageTag, CGSize size, CGFloat sc
   if (!image) {
     return;
   }
-  NSInteger bytes = image.reactDecodedImageBytes; // TODO(macOS ISS#2323203)
+  NSInteger bytes = image.reactDecodedImageBytes;
   if (bytes <= RCTMaxCachableDecodedImageSizeInBytes) {
     [self->_decodedImageCache setObject:image
                                  forKey:cacheKey

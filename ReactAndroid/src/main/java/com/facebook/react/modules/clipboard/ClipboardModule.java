@@ -1,24 +1,20 @@
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
+ * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
+ * directory of this source tree.
  */
-
 package com.facebook.react.modules.clipboard;
 
-import android.content.ClipboardManager;
 import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.Context;
-
 import com.facebook.react.bridge.ContextBaseJavaModule;
-import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.Promise;
+import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.module.annotations.ReactModule;
 
-/**
- * A module that allows JS to get/set clipboard contents.
- */
+/** A module that allows JS to get/set clipboard contents. */
 @ReactModule(name = ClipboardModule.NAME)
 public class ClipboardModule extends ContextBaseJavaModule {
 
@@ -42,9 +38,7 @@ public class ClipboardModule extends ContextBaseJavaModule {
     try {
       ClipboardManager clipboard = getClipboardService();
       ClipData clipData = clipboard.getPrimaryClip();
-      if (clipData == null) {
-        promise.resolve("");
-      } else if (clipData.getItemCount() >= 1) {
+      if (clipData != null && clipData.getItemCount() >= 1) {
         ClipData.Item firstItem = clipboard.getPrimaryClip().getItemAt(0);
         promise.resolve("" + firstItem.getText());
       } else {

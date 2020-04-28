@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#import "RCTActionSheetManager.h"
+#import <React/RCTActionSheetManager.h>
 
 #import <React/RCTBridge.h>
 #import <React/RCTConvert.h>
@@ -233,7 +233,7 @@ RCT_EXPORT_METHOD(showShareActionSheetWithOptions:(NSDictionary *)options
   shareController.completionWithItemsHandler = ^(NSString *activityType, BOOL completed, __unused NSArray *returnedItems, NSError *activityError) {
     if (activityError) {
       failureCallback(activityError);
-    } else {
+    } else if (completed) {
       successCallback(@[@(completed), RCTNullIfNil(activityType)]);
     }
   };

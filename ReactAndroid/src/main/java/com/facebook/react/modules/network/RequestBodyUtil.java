@@ -1,14 +1,14 @@
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
+ * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
+ * directory of this source tree.
  */
-
 package com.facebook.react.modules.network;
 
 import android.content.Context;
 import android.net.Uri;
+import androidx.annotation.Nullable;
 import com.facebook.common.logging.FLog;
 import com.facebook.react.common.ReactConstants;
 import java.io.ByteArrayOutputStream;
@@ -22,7 +22,6 @@ import java.net.URL;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
 import java.util.zip.GZIPOutputStream;
-import javax.annotation.Nullable;
 import okhttp3.MediaType;
 import okhttp3.RequestBody;
 import okhttp3.internal.Util;
@@ -41,9 +40,7 @@ import okio.Source;
   private static final String NAME = "RequestBodyUtil";
   private static final String TEMP_FILE_SUFFIX = "temp";
 
-  /**
-   * Returns whether encode type indicates the body needs to be gzip-ed.
-   */
+  /** Returns whether encode type indicates the body needs to be gzip-ed. */
   public static boolean isGzipEncoding(@Nullable final String encodingType) {
     return CONTENT_ENCODING_GZIP.equalsIgnoreCase(encodingType);
   }
@@ -53,8 +50,7 @@ import okio.Source;
    * been found or if an error as occurred.
    */
   public static @Nullable InputStream getFileInputStream(
-      Context context,
-      String fileContentUriStr) {
+      Context context, String fileContentUriStr) {
     try {
       Uri fileContentUri = Uri.parse(fileContentUriStr);
 
@@ -63,10 +59,7 @@ import okio.Source;
       }
       return context.getContentResolver().openInputStream(fileContentUri);
     } catch (Exception e) {
-      FLog.e(
-          ReactConstants.TAG,
-          "Could not retrieve file for contentUri " + fileContentUriStr,
-          e);
+      FLog.e(ReactConstants.TAG, "Could not retrieve file for contentUri " + fileContentUriStr, e);
       return null;
     }
   }
@@ -114,9 +107,7 @@ import okio.Source;
     return RequestBody.create(mediaType, gzipByteArrayOutputStream.toByteArray());
   }
 
-  /**
-   * Creates a RequestBody from a mediaType and inputStream given.
-   */
+  /** Creates a RequestBody from a mediaType and inputStream given. */
   public static RequestBody create(final MediaType mediaType, final InputStream inputStream) {
     return new RequestBody() {
       @Override
@@ -146,18 +137,13 @@ import okio.Source;
     };
   }
 
-  /**
-   * Creates a ProgressRequestBody that can be used for showing uploading progress
-   */
+  /** Creates a ProgressRequestBody that can be used for showing uploading progress */
   public static ProgressRequestBody createProgressRequest(
-      RequestBody requestBody,
-      ProgressListener listener) {
+      RequestBody requestBody, ProgressListener listener) {
     return new ProgressRequestBody(requestBody, listener);
   }
 
-  /**
-   * Creates a empty RequestBody if required by the http method spec, otherwise use null
-   */
+  /** Creates a empty RequestBody if required by the http method spec, otherwise use null */
   public static RequestBody getEmptyBody(String method) {
     if (method.equals("POST") || method.equals("PUT") || method.equals("PATCH")) {
       return RequestBody.create(null, ByteString.EMPTY);

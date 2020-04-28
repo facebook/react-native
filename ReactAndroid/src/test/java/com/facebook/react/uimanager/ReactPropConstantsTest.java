@@ -1,10 +1,9 @@
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
+ * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
+ * directory of this source tree.
  */
-
 package com.facebook.react.uimanager;
 
 import static org.fest.assertions.api.Assertions.assertThat;
@@ -28,15 +27,12 @@ import org.powermock.modules.junit4.rule.PowerMockRule;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.RuntimeEnvironment;
 
-/**
- * Verifies that prop constants are generated properly based on {@code ReactProp} annotation.
- */
+/** Verifies that prop constants are generated properly based on {@code ReactProp} annotation. */
 @RunWith(RobolectricTestRunner.class)
 @PowerMockIgnore({"org.mockito.*", "org.robolectric.*", "androidx.*", "android.*"})
 public class ReactPropConstantsTest {
 
-  @Rule
-  public PowerMockRule rule = new PowerMockRule();
+  @Rule public PowerMockRule rule = new PowerMockRule();
 
   private class ViewManagerUnderTest extends ViewManager<View, ReactShadowNode> {
 
@@ -68,103 +64,88 @@ public class ReactPropConstantsTest {
     }
 
     @ReactProp(name = "boolProp")
-    public void setBoolProp(View v, boolean value) {
-    }
+    public void setBoolProp(View v, boolean value) {}
 
     @ReactProp(name = "intProp")
-    public void setIntProp(View v, int value) {
-    }
+    public void setIntProp(View v, int value) {}
 
     @ReactProp(name = "floatProp")
-    public void setFloatProp(View v, float value) {
-    }
+    public void setFloatProp(View v, float value) {}
 
     @ReactProp(name = "doubleProp")
-    public void setDoubleProp(View v, double value) {
-    }
+    public void setDoubleProp(View v, double value) {}
 
     @ReactProp(name = "stringProp")
-    public void setStringProp(View v, String value) {
-    }
+    public void setStringProp(View v, String value) {}
 
     @ReactProp(name = "boxedBoolProp")
-    public void setBoxedBoolProp(View v, Boolean value) {
-    }
+    public void setBoxedBoolProp(View v, Boolean value) {}
 
     @ReactProp(name = "boxedIntProp")
-    public void setBoxedIntProp(View v, Integer value) {
-    }
+    public void setBoxedIntProp(View v, Integer value) {}
 
     @ReactProp(name = "arrayProp")
-    public void setArrayProp(View v, ReadableArray value) {
-    }
+    public void setArrayProp(View v, ReadableArray value) {}
 
     @ReactProp(name = "mapProp")
-    public void setMapProp(View v, ReadableMap value) {
-    }
+    public void setMapProp(View v, ReadableMap value) {}
 
-    @ReactPropGroup(names = {
-        "floatGroupPropFirst",
-        "floatGroupPropSecond",
-    })
-    public void setFloatGroupProp(View v, int index, float value) {
-    }
+    @ReactPropGroup(
+        names = {
+          "floatGroupPropFirst",
+          "floatGroupPropSecond",
+        })
+    public void setFloatGroupProp(View v, int index, float value) {}
 
-    @ReactPropGroup(names = {
-        "intGroupPropFirst",
-        "intGroupPropSecond"
-    })
-    public void setIntGroupProp(View v, int index, int value) {
-    }
+    @ReactPropGroup(names = {"intGroupPropFirst", "intGroupPropSecond"})
+    public void setIntGroupProp(View v, int index, int value) {}
 
-    @ReactPropGroup(names = {
-        "boxedIntGroupPropFirst",
-        "boxedIntGroupPropSecond",
-    })
-    public void setBoxedIntGroupProp(View v, int index, Integer value) {
-    }
+    @ReactPropGroup(
+        names = {
+          "boxedIntGroupPropFirst",
+          "boxedIntGroupPropSecond",
+        })
+    public void setBoxedIntGroupProp(View v, int index, Integer value) {}
 
     @ReactProp(name = "customIntProp", customType = "date")
-    public void customIntProp(View v, int value) {
-    }
+    public void customIntProp(View v, int value) {}
 
-    @ReactPropGroup(names = {
-        "customBoxedIntGroupPropFirst",
-        "customBoxedIntGroupPropSecond"
-    }, customType = "color")
-    public void customIntGroupProp(View v, int index, Integer value) {
-    }
+    @ReactPropGroup(
+        names = {"customBoxedIntGroupPropFirst", "customBoxedIntGroupPropSecond"},
+        customType = "color")
+    public void customIntGroupProp(View v, int index, Integer value) {}
   }
 
   @Test
   public void testNativePropsIncludeCorrectTypes() {
     List<ViewManager> viewManagers = Arrays.<ViewManager>asList(new ViewManagerUnderTest());
-    ReactApplicationContext reactContext = new ReactApplicationContext(RuntimeEnvironment.application);
-    UIManagerModule uiManagerModule =
-        new UIManagerModule(reactContext, viewManagers, 0);
+    ReactApplicationContext reactContext =
+        new ReactApplicationContext(RuntimeEnvironment.application);
+    UIManagerModule uiManagerModule = new UIManagerModule(reactContext, viewManagers, 0);
     Map<String, String> constants =
         (Map) valueAtPath(uiManagerModule.getConstants(), "SomeView", "NativeProps");
-    assertThat(constants).isEqualTo(
-        MapBuilder.<String, String>builder()
-            .put("boolProp", "boolean")
-            .put("intProp", "number")
-            .put("doubleProp", "number")
-            .put("floatProp", "number")
-            .put("stringProp", "String")
-            .put("boxedBoolProp", "boolean")
-            .put("boxedIntProp", "number")
-            .put("arrayProp", "Array")
-            .put("mapProp", "Map")
-            .put("floatGroupPropFirst", "number")
-            .put("floatGroupPropSecond", "number")
-            .put("intGroupPropFirst", "number")
-            .put("intGroupPropSecond", "number")
-            .put("boxedIntGroupPropFirst", "number")
-            .put("boxedIntGroupPropSecond", "number")
-            .put("customIntProp", "date")
-            .put("customBoxedIntGroupPropFirst", "color")
-            .put("customBoxedIntGroupPropSecond", "color")
-            .build());
+    assertThat(constants)
+        .isEqualTo(
+            MapBuilder.<String, String>builder()
+                .put("boolProp", "boolean")
+                .put("intProp", "number")
+                .put("doubleProp", "number")
+                .put("floatProp", "number")
+                .put("stringProp", "String")
+                .put("boxedBoolProp", "boolean")
+                .put("boxedIntProp", "number")
+                .put("arrayProp", "Array")
+                .put("mapProp", "Map")
+                .put("floatGroupPropFirst", "number")
+                .put("floatGroupPropSecond", "number")
+                .put("intGroupPropFirst", "number")
+                .put("intGroupPropSecond", "number")
+                .put("boxedIntGroupPropFirst", "number")
+                .put("boxedIntGroupPropSecond", "number")
+                .put("customIntProp", "date")
+                .put("customBoxedIntGroupPropFirst", "color")
+                .put("customBoxedIntGroupPropSecond", "color")
+                .build());
   }
 
   private static Object valueAtPath(Map nestedMap, String... keyPath) {

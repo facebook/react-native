@@ -161,4 +161,98 @@ describe('VirtualizedSectionList', () => {
     );
     expect(component).toMatchSnapshot();
   });
+
+  describe('scrollToLocation', () => {
+    const ITEM_HEIGHT = 100;
+
+    const createVirtualizedSectionList = props => {
+      const component = ReactTestRenderer.create(
+        <VirtualizedSectionList
+          sections={[
+            {title: 's1', data: [{key: 'i1.1'}, {key: 'i1.2'}, {key: 'i1.3'}]},
+            {title: 's2', data: [{key: 'i2.1'}, {key: 'i2.2'}, {key: 'i2.3'}]},
+          ]}
+          renderItem={({item}) => <item value={item.key} />}
+          getItem={(data, key) => data[key]}
+          getItemCount={data => data.length}
+          getItemLayout={(data, index) => ({
+            length: ITEM_HEIGHT,
+            offset: ITEM_HEIGHT * index,
+            index,
+          })}
+          {...props}
+        />,
+      );
+      const instance = component.getInstance();
+      const spy = jest.fn();
+      instance._listRef.scrollToIndex = spy;
+      return {
+        instance,
+        spy,
+      };
+    };
+
+    it('when sticky stickySectionHeadersEnabled={true}, header height is added to the developer-provided viewOffset', () => {
+      const {instance, spy} = createVirtualizedSectionList({
+        stickySectionHeadersEnabled: true,
+      });
+
+      const viewOffset = 25;
+
+      instance.scrollToLocation({
+        sectionIndex: 0,
+        itemIndex: 1,
+        viewOffset,
+      });
+      expect(spy).toHaveBeenCalledWith({
+        index: 1,
+        itemIndex: 1,
+        sectionIndex: 0,
+        viewOffset: viewOffset + ITEM_HEIGHT,
+      });
+    });
+
+    it.each([
+      [
+        // prevents #18098
+        {sectionIndex: 0, itemIndex: 0},
+        {
+          index: 0,
+          itemIndex: 0,
+          sectionIndex: 0,
+          viewOffset: 0,
+        },
+      ],
+      [
+        {sectionIndex: 2, itemIndex: 1},
+        {
+          index: 11,
+          itemIndex: 1,
+          sectionIndex: 2,
+          viewOffset: 0,
+        },
+      ],
+      [
+        {
+          sectionIndex: 0,
+          itemIndex: 1,
+          viewOffset: 25,
+        },
+        {
+          index: 1,
+          itemIndex: 1,
+          sectionIndex: 0,
+          viewOffset: 25,
+        },
+      ],
+    ])(
+      'given sectionIndex, itemIndex and viewOffset, scrollToIndex is called with correct params',
+      (scrollToLocationParams, expected) => {
+        const {instance, spy} = createVirtualizedSectionList();
+
+        instance.scrollToLocation(scrollToLocationParams);
+        expect(spy).toHaveBeenCalledWith(expected);
+      },
+    );
+  });
 });

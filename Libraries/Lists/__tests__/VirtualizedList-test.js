@@ -28,6 +28,61 @@ describe('VirtualizedList', () => {
     expect(component).toMatchSnapshot();
   });
 
+  it('renders simple list using ListItemComponent', () => {
+    function ListItemComponent({item}) {
+      return <item value={item.key} />;
+    }
+    const component = ReactTestRenderer.create(
+      <VirtualizedList
+        data={[{key: 'i1'}, {key: 'i2'}, {key: 'i3'}]}
+        ListItemComponent={ListItemComponent}
+        getItem={(data, index) => data[index]}
+        getItemCount={data => data.length}
+      />,
+    );
+    expect(component).toMatchSnapshot();
+  });
+
+  it('warns if both renderItem or ListItemComponent are specified. Uses ListItemComponent', () => {
+    jest.spyOn(global.console, 'warn');
+    function ListItemComponent({item}) {
+      return <item value={item.key} testID={`${item.key}-ListItemComponent`} />;
+    }
+    const component = ReactTestRenderer.create(
+      <VirtualizedList
+        data={[{key: 'i1'}]}
+        ListItemComponent={ListItemComponent}
+        renderItem={({item}) => (
+          <item value={item.key} testID={`${item.key}-renderItem`} />
+        )}
+        getItem={(data, index) => data[index]}
+        getItemCount={data => data.length}
+      />,
+    );
+
+    expect(console.warn.mock.calls).toEqual([
+      [
+        'VirtualizedList: Both ListItemComponent and renderItem props are present. ListItemComponent will take precedence over renderItem.',
+      ],
+    ]);
+    expect(component).toMatchSnapshot();
+    console.warn.mockRestore();
+  });
+
+  it('throws if no renderItem or ListItemComponent', () => {
+    const componentFactory = () =>
+      ReactTestRenderer.create(
+        <VirtualizedList
+          data={[{key: 'i1'}, {key: 'i2'}, {key: 'i3'}]}
+          getItem={(data, index) => data[index]}
+          getItemCount={data => data.length}
+        />,
+      );
+    expect(componentFactory).toThrow(
+      'VirtualizedList: Either ListItemComponent or renderItem props are required but none were found.',
+    );
+  });
+
   it('renders empty list', () => {
     const component = ReactTestRenderer.create(
       <VirtualizedList

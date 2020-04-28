@@ -10,138 +10,107 @@
 
 'use strict';
 
-const AndroidDropdownPickerNativeComponent = require('./AndroidDropdownPickerNativeComponent');
-const AndroidDialogPickerNativeComponent = require('./AndroidDialogPickerNativeComponent');
-const React = require('react');
-const StyleSheet = require('../../StyleSheet/StyleSheet');
-
-const processColor = require('../../StyleSheet/processColor');
-
-const REF_PICKER = 'picker';
-const MODE_DROPDOWN = 'dropdown';
+import AndroidDropdownPickerNativeComponent from './AndroidDropdownPickerNativeComponent';
+import AndroidDialogPickerNativeComponent from './AndroidDialogPickerNativeComponent';
+import * as React from 'react';
+import StyleSheet from '../../StyleSheet/StyleSheet';
+import processColor from '../../StyleSheet/processColor';
 
 import type {SyntheticEvent} from '../../Types/CoreEventTypes';
 import type {TextStyleProp} from '../../StyleSheet/StyleSheet';
 
-type PickerAndroidChangeEvent = SyntheticEvent<
+type PickerItemSelectSyntheticEvent = SyntheticEvent<
   $ReadOnly<{|
     position: number,
   |}>,
 >;
 
-type PickerAndroidProps = $ReadOnly<{|
+type PickerItemValue = number | string;
+
+type Props = $ReadOnly<{|
+  accessibilityLabel?: ?Stringish,
   children?: React.Node,
   style?: ?TextStyleProp,
-  selectedValue?: ?(number | string),
+  selectedValue?: ?PickerItemValue,
   enabled?: ?boolean,
   mode?: ?('dialog' | 'dropdown'),
-  onValueChange?: ?(itemValue: ?(string | number), itemIndex: number) => mixed,
+  onValueChange?: ?(itemValue: ?PickerItemValue, itemIndex: number) => mixed,
   prompt?: ?string,
   testID?: string,
 |}>;
 
-type Item = $ReadOnly<{|
-  label: string,
-  value: ?(number | string),
-  color?: ?number,
-|}>;
-
-type PickerAndroidState = {|
-  selectedIndex: number,
-  items: $ReadOnlyArray<Item>,
-|};
-
 /**
  * Not exposed as a public API - use <Picker> instead.
  */
+function PickerAndroid(props: Props): React.Node {
+  const pickerRef = React.useRef(null);
 
-class PickerAndroid extends React.Component<
-  PickerAndroidProps,
-  PickerAndroidState,
-> {
-  static getDerivedStateFromProps(
-    props: PickerAndroidProps,
-  ): PickerAndroidState {
-    let selectedIndex = 0;
+  const [items, selected] = React.useMemo(() => {
+    // eslint-disable-next-line no-shadow
+    let selected = 0;
+    // eslint-disable-next-line no-shadow
     const items = React.Children.map(props.children, (child, index) => {
       if (child === null) {
-        return;
+        return null;
       }
       if (child.props.value === props.selectedValue) {
-        selectedIndex = index;
+        selected = index;
       }
-      const childProps = {
-        value: child.props.value,
-        label: child.props.label,
+      const {color, label} = child.props;
+      return {
+        color: color == null ? null : processColor(color),
+        label,
       };
-      if (child.props.color) {
-        /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was
-         * found when making Flow check .android.js files. */
-        childProps.color = processColor(child.props.color);
-      }
-      return childProps;
     });
-    return {selectedIndex, items};
-  }
+    return [items, selected];
+  }, [props.children, props.selectedValue]);
 
-  state = PickerAndroid.getDerivedStateFromProps(this.props);
+  const onSelect = React.useCallback(
+    ({nativeEvent}: PickerItemSelectSyntheticEvent) => {
+      const {position} = nativeEvent;
+      const onValueChange = props.onValueChange;
 
-  render() {
-    const Picker =
-      this.props.mode === MODE_DROPDOWN
-        ? AndroidDropdownPickerNativeComponent
-        : AndroidDialogPickerNativeComponent;
-
-    const nativeProps = {
-      enabled: this.props.enabled,
-      items: this.state.items,
-      mode: this.props.mode,
-      onSelect: this._onChange,
-      prompt: this.props.prompt,
-      selected: this.state.selectedIndex,
-      testID: this.props.testID,
-      style: [styles.pickerAndroid, this.props.style],
-      /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was found
-       * when making Flow check .android.js files. */
-      accessibilityLabel: this.props.accessibilityLabel,
-    };
-
-    return <Picker ref={REF_PICKER} {...nativeProps} />;
-  }
-
-  _onChange = (event: PickerAndroidChangeEvent) => {
-    if (this.props.onValueChange) {
-      const position = event.nativeEvent.position;
-      if (position >= 0) {
-        const children = React.Children.toArray(this.props.children).filter(
-          item => item != null,
-        );
-        const value = children[position].props.value;
-        /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was
-         * found when making Flow check .android.js files. */
-        if (this.props.selectedValue !== value) {
-          this.props.onValueChange(value, position);
+      if (onValueChange != null) {
+        if (position >= 0) {
+          const children = React.Children.toArray(props.children).filter(
+            item => item != null,
+          );
+          const value = children[position].props.value;
+          if (props.selectedValue !== value) {
+            onValueChange(value, position);
+          }
+        } else {
+          onValueChange(null, position);
         }
-      } else {
-        this.props.onValueChange(null, position);
       }
-    }
 
-    // The picker is a controlled component. This means we expect the
-    // on*Change handlers to be in charge of updating our
-    // `selectedValue` prop. That way they can also
-    // disallow/undo/mutate the selection of certain values. In other
-    // words, the embedder of this component should be the source of
-    // truth, not the native component.
-    if (
-      this.refs[REF_PICKER] &&
-      this.state.selectedIndex !== event.nativeEvent.position
-    ) {
-      this.refs[REF_PICKER].setNativeProps({
-        selected: this.state.selectedIndex,
-      });
-    }
+      const {current} = pickerRef;
+      if (current != null && position !== selected) {
+        current.setNativeProps({selected});
+      }
+    },
+    [props.children, props.onValueChange, props.selectedValue, selected],
+  );
+
+  const rootProps = {
+    accessibilityLabel: props.accessibilityLabel,
+    enabled: props.enabled,
+    items,
+    onSelect,
+    prompt: props.prompt,
+    ref: pickerRef,
+    selected,
+    style: StyleSheet.compose(
+      styles.pickerAndroid,
+      props.style,
+    ),
+    testID: props.testID,
   };
+  return props.mode === 'dropdown' ? (
+    <AndroidDropdownPickerNativeComponent {...rootProps} />
+  ) : (
+    <AndroidDialogPickerNativeComponent {...rootProps} />
+  );
 }
 
 const styles = StyleSheet.create({

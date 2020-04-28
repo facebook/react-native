@@ -291,7 +291,7 @@ RCT_CONCAT(initialize_, objc_name)() { RCTRegisterModule([objc_name class]); }
  * Most modules can be used from any thread. All of the modules exported non-sync method will be called on its
  * methodQueue, and the module will be constructed lazily when its first invoked. Some modules have main need to access
  * information that's main queue only (e.g. most UIKit classes). Since we don't want to dispatch synchronously to the
- * main thread to this safely, we construct these moduels and export their constants ahead-of-time.
+ * main thread to this safely, we construct these modules and export their constants ahead-of-time.
  *
  * Note that when set to false, the module constructor will be called from any thread.
  *

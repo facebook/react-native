@@ -7,7 +7,6 @@
 
 #import "RCTLog.h"
 
-#include <asl.h>
 #include <cxxabi.h>
 
 #import "RCTAssert.h"
@@ -56,26 +55,6 @@ RCTLogFunction RCTDefaultLogFunction = ^(
   NSString *log = RCTFormatLog([NSDate date], level, fileName, lineNumber, message);
   fprintf(stderr, "%s\n", log.UTF8String);
   fflush(stderr);
-
-  int aslLevel;
-  switch(level) {
-    case RCTLogLevelTrace:
-      aslLevel = ASL_LEVEL_DEBUG;
-      break;
-    case RCTLogLevelInfo:
-      aslLevel = ASL_LEVEL_NOTICE;
-      break;
-    case RCTLogLevelWarning:
-      aslLevel = ASL_LEVEL_WARNING;
-      break;
-    case RCTLogLevelError:
-      aslLevel = ASL_LEVEL_ERR;
-      break;
-    case RCTLogLevelFatal:
-      aslLevel = ASL_LEVEL_CRIT;
-      break;
-  }
-  asl_log(NULL, NULL, aslLevel, "%s", message.UTF8String);
 };
 
 void RCTSetLogFunction(RCTLogFunction logFunction)

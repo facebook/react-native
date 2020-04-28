@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the LICENSE
@@ -7,11 +7,15 @@
 #pragma once
 #include <cstdint>
 #include <stdio.h>
+#include "Bitfield.h"
 #include "CompactValue.h"
 #include "YGConfig.h"
 #include "YGLayout.h"
 #include "YGStyle.h"
+#include "YGMacros.h"
 #include "Yoga-internal.h"
+
+YGConfigRef YGConfigGetDefault();
 
 struct YGNode {
   using MeasureWithContextFn =
@@ -20,14 +24,20 @@ struct YGNode {
   using PrintWithContextFn = void (*)(YGNode*, void*);
 
 private:
+  static constexpr size_t hasNewLayout_ = 0;
+  static constexpr size_t isReferenceBaseline_ = 1;
+  static constexpr size_t isDirty_ = 2;
+  static constexpr size_t nodeType_ = 3;
+  static constexpr size_t measureUsesContext_ = 4;
+  static constexpr size_t baselineUsesContext_ = 5;
+  static constexpr size_t printUsesContext_ = 6;
+  static constexpr size_t useWebDefaults_ = 7;
+
   void* context_ = nullptr;
-  bool hasNewLayout_ : 1;
-  bool isReferenceBaseline_ : 1;
-  bool isDirty_ : 1;
-  YGNodeType nodeType_ = {}; // ISS
-  bool measureUsesContext_ : 1;
-  bool baselineUsesContext_ : 1;
-  bool printUsesContext_ : 1;
+  using Flags = facebook::yoga::
+      Bitfield<uint8_t, bool, bool, bool, YGNodeType, bool, bool, bool, bool>;
+  Flags flags_ =
+      {true, false, false, YGNodeTypeDefault, false, false, false, false};
   uint8_t reserved_ = 0;
   union {
     YGMeasureFunc noContext;
@@ -58,6 +68,12 @@ private:
   void setMeasureFunc(decltype(measure_));
   void setBaselineFunc(decltype(baseline_));
 
+  void useWebDefaults() {
+    flags_.at<useWebDefaults_>() = true;
+    style_.flexDirection() = YGFlexDirectionRow;
+    style_.alignContent() = YGAlignStretch;
+  }
+
   // DANGER DANGER DANGER!
   // If the the node assigned to has children, we'd either have to deallocate
   // them (potentially incorrect) or ignore them (danger of leaks). Only ever
@@ -68,16 +84,12 @@ private:
   using CompactValue = facebook::yoga::detail::CompactValue;
 
 public:
-  YGNode() : YGNode{nullptr} {}
-  explicit YGNode(const YGConfigRef newConfig)
-      : hasNewLayout_{true},
-        isReferenceBaseline_{false},
-        isDirty_{false},
-        nodeType_{YGNodeTypeDefault},
-        measureUsesContext_{false},
-        baselineUsesContext_{false},
-        printUsesContext_{false},
-        config_{newConfig} {};
+  YGNode() : YGNode{YGConfigGetDefault()} {}
+  explicit YGNode(const YGConfigRef config) : config_{config} {
+    if (config->useWebDefaults) {
+      useWebDefaults();
+    }
+  };
   ~YGNode() = default; // cleanup of owner/children relationships in YGNodeFree
 
   YGNode(YGNode&&);
@@ -85,6 +97,9 @@ public:
   // Does not expose true value semantics, as children are not cloned eagerly.
   // Should we remove this?
   YGNode(const YGNode& node) = default;
+
+  // for RB fabric
+  YGNode(const YGNode& node, YGConfigRef config);
 
   // assignment means potential leaks of existing children, or alternatively
   // freeing unowned memory, double free, or freeing stack memory.
@@ -98,9 +113,9 @@ public:
 
   void print(void*);
 
-  bool getHasNewLayout() const { return hasNewLayout_; }
+  bool getHasNewLayout() const { return flags_.at<hasNewLayout_>(); }
 
-  YGNodeType getNodeType() const { return nodeType_; }
+  YGNodeType getNodeType() const { return flags_.at<nodeType_>(); }
 
   bool hasMeasureFunc() const noexcept { return measure_.noContext != nullptr; }
 
@@ -126,7 +141,7 @@ public:
 
   uint32_t getLineIndex() const { return lineIndex_; }
 
-  bool isReferenceBaseline() { return isReferenceBaseline_; }
+  bool isReferenceBaseline() { return flags_.at<isReferenceBaseline_>(); }
 
   // returns the YGNodeRef that owns this YGNode. An owner is used to identify
   // the YogaTree that a YGNode belongs to. This method will return the parent
@@ -159,7 +174,7 @@ public:
 
   YGConfigRef getConfig() const { return config_; }
 
-  bool isDirty() const { return isDirty_; }
+  bool isDirty() const { return flags_.at<isDirty_>(); }
 
   std::array<YGValue, 2> getResolvedDimensions() const {
     return resolvedDimensions_;
@@ -207,17 +222,19 @@ public:
 
   void setPrintFunc(YGPrintFunc printFunc) {
     print_.noContext = printFunc;
-    printUsesContext_ = false;
+    flags_.at<printUsesContext_>() = false;
   }
   void setPrintFunc(PrintWithContextFn printFunc) {
     print_.withContext = printFunc;
-    printUsesContext_ = true;
+    flags_.at<printUsesContext_>() = true;
   }
   void setPrintFunc(std::nullptr_t) { setPrintFunc(YGPrintFunc{nullptr}); }
 
-  void setHasNewLayout(bool hasNewLayout) { hasNewLayout_ = hasNewLayout; }
+  void setHasNewLayout(bool hasNewLayout) {
+    flags_.at<hasNewLayout_>() = hasNewLayout;
+  }
 
-  void setNodeType(YGNodeType nodeType) { nodeType_ = nodeType; }
+  void setNodeType(YGNodeType nodeType) { flags_.at<nodeType_>() = nodeType; }
 
   void setMeasureFunc(YGMeasureFunc measureFunc);
   void setMeasureFunc(MeasureWithContextFn);
@@ -226,11 +243,11 @@ public:
   }
 
   void setBaselineFunc(YGBaselineFunc baseLineFunc) {
-    baselineUsesContext_ = false;
+    flags_.at<baselineUsesContext_>() = false;
     baseline_.noContext = baseLineFunc;
   }
   void setBaselineFunc(BaselineWithContextFn baseLineFunc) {
-    baselineUsesContext_ = true;
+    flags_.at<baselineUsesContext_>() = true;
     baseline_.withContext = baseLineFunc;
   }
   void setBaselineFunc(std::nullptr_t) {
@@ -246,7 +263,7 @@ public:
   void setLineIndex(uint32_t lineIndex) { lineIndex_ = lineIndex; }
 
   void setIsReferenceBaseline(bool isReferenceBaseline) {
-    isReferenceBaseline_ = isReferenceBaseline;
+    flags_.at<isReferenceBaseline_>() = isReferenceBaseline;
   }
 
   void setOwner(YGNodeRef owner) { owner_ = owner; }
@@ -255,7 +272,7 @@ public:
 
   // TODO: rvalue override for setChildren
 
-  void setConfig(YGConfigRef config) { config_ = config; }
+  YG_DEPRECATED void setConfig(YGConfigRef config) { config_ = config; }
 
   void setDirty(bool isDirty);
   void setLayoutLastOwnerDirection(YGDirection direction);
@@ -275,7 +292,6 @@ public:
       const float mainSize,
       const float crossSize,
       const float ownerWidth);
-  void setAndPropogateUseLegacyFlag(bool useLegacyFlag);
   void setLayoutDoesLegacyFlagAffectsLayout(bool doesLegacyFlagAffectsLayout);
   void setLayoutDidUseLegacyFlag(bool didUseLegacyFlag);
   void markDirtyAndPropogateDownwards();

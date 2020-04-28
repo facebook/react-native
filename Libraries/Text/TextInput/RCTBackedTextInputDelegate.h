@@ -30,10 +30,10 @@ NS_ASSUME_NONNULL_BEGIN
 - (BOOL)textInputShouldHandleDeleteBackward:(id<RCTBackedTextInputViewProtocol>)sender; // Return `YES` to have the deleteBackward event handled normally. Return `NO` to disallow it and handle it yourself. TODO(OSS Candidate ISS#2710739)
 #if TARGET_OS_OSX // [TODO(macOS ISS#2323203)
 - (BOOL)textInputShouldHandleDeleteForward:(id<RCTBackedTextInputViewProtocol>)sender; // Return `YES` to have the deleteForward event handled normally. Return `NO` to disallow it and handle it yourself.
-#endif  // ]TODO(macOS ISS#2323203)
+#endif // ]TODO(macOS ISS#2323203)
 
 @optional
-- (void)scrollViewDidScroll:(RCTUIScrollView *)scrollView;
+- (void)scrollViewDidScroll:(RCTUIScrollView *)scrollView; // TODO(macOS ISS#2323203)
 
 @end
 

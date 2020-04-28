@@ -9,4 +9,18 @@
 
 @implementation RCTEnhancedScrollView
 
+- (instancetype)initWithFrame:(CGRect)frame
+{
+  if (self = [super initWithFrame:frame]) {
+    if (@available(iOS 11.0, *)) {
+      // We set the default behavior to "never" so that iOS
+      // doesn't do weird things to UIScrollView insets automatically
+      // and keeps it as an opt-in behavior.
+      self.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
+    }
+  }
+
+  return self;
+}
+
 @end

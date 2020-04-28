@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#import "RCTTextView.h"
+#import <React/RCTTextView.h>
 
 #if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
 #import <MobileCoreServices/UTCoreTypes.h>
@@ -17,30 +17,17 @@
 #import <React/RCTUtils.h>
 #import <React/UIView+React.h>
 
-#import "RCTTextShadowView.h"
-
-@interface RCTTextTiledLayer : CATiledLayer
-
-@end
-
-@implementation RCTTextTiledLayer
-
-+ (CFTimeInterval)fadeDuration
-{
-  return 0.05;
-}
-
-@end
+#import <React/RCTTextShadowView.h>
 
 #import <QuartzCore/QuartzCore.h> // TODO(macOS ISS#2323203)
 
 @implementation RCTTextView
 {
+  CAShapeLayer *_highlightLayer;
 #if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
   UILongPressGestureRecognizer *_longPressGestureRecognizer;
 #endif // TODO(macOS ISS#2323203)
 
-  CAShapeLayer *_highlightLayer;
   NSArray<RCTUIView *> *_Nullable _descendantViews; // TODO(macOS ISS#3536887)
   NSTextStorage *_Nullable _textStorage;
   CGRect _contentFrame;
@@ -167,9 +154,10 @@
     return;
   }
 
+
   NSLayoutManager *layoutManager = _textStorage.layoutManagers.firstObject;
   NSTextContainer *textContainer = layoutManager.textContainers.firstObject;
-  
+
   NSRange glyphRange = [layoutManager glyphRangeForTextContainer:textContainer];
   [layoutManager drawBackgroundForGlyphRange:glyphRange atPoint:_contentFrame.origin];
   [layoutManager drawGlyphsForGlyphRange:glyphRange atPoint:_contentFrame.origin];
@@ -177,7 +165,6 @@
   __block UIBezierPath *highlightPath = nil;
   NSRange characterRange = [layoutManager characterRangeForGlyphRange:glyphRange
                                                      actualGlyphRange:NULL];
-
   [_textStorage enumerateAttribute:RCTTextAttributesIsHighlightedAttributeName
                            inRange:characterRange
                            options:0
@@ -219,6 +206,7 @@
     _highlightLayer = nil;
   }
 }
+
 
 - (NSNumber *)reactTagAtPoint:(CGPoint)point
 {

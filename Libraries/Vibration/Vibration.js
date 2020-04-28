@@ -11,7 +11,7 @@
 
 'use strict';
 
-const RCTVibration = require('../BatchedBridge/NativeModules').Vibration;
+import NativeVibration from './NativeVibration';
 const Platform = require('../Utilities/Platform');
 
 /**
@@ -29,7 +29,7 @@ function vibrateByPattern(pattern: Array<number>, repeat: boolean = false) {
   }
   _vibrating = true;
   if (pattern[0] === 0) {
-    RCTVibration.vibrate();
+    NativeVibration.vibrate();
     pattern = pattern.slice(1);
   }
   if (pattern.length === 0) {
@@ -48,7 +48,7 @@ function vibrateScheduler(
   if (!_vibrating || id !== _id) {
     return;
   }
-  RCTVibration.vibrate();
+  NativeVibration.vibrate();
   if (nextIndex >= pattern.length) {
     if (repeat) {
       nextIndex = 0;
@@ -75,9 +75,9 @@ const Vibration = {
   ) {
     if (Platform.OS === 'android') {
       if (typeof pattern === 'number') {
-        RCTVibration.vibrate(pattern);
+        NativeVibration.vibrate(pattern);
       } else if (Array.isArray(pattern)) {
-        RCTVibration.vibrateByPattern(pattern, repeat ? 0 : -1);
+        NativeVibration.vibrateByPattern(pattern, repeat ? 0 : -1);
       } else {
         throw new Error('Vibration pattern should be a number or array');
       }
@@ -86,7 +86,7 @@ const Vibration = {
         return;
       }
       if (typeof pattern === 'number') {
-        RCTVibration.vibrate();
+        NativeVibration.vibrate();
       } else if (Array.isArray(pattern)) {
         vibrateByPattern(pattern, repeat);
       } else {
@@ -103,7 +103,7 @@ const Vibration = {
     if (Platform.OS === 'ios') {
       _vibrating = false;
     } else {
-      RCTVibration.cancel();
+      NativeVibration.cancel();
     }
   },
 };

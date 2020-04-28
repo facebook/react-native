@@ -9,7 +9,7 @@ rn_xplat_cxx_library(
         [
             ("", "*.h"),
         ],
-        prefix = "jsireact",
+        prefix = "ReactCommon",
     ),
     compiler_flags = [
         "-fexceptions",
@@ -24,7 +24,7 @@ rn_xplat_cxx_library(
         [
             ("platform/android", "*.h"),
         ],
-        prefix = "jsireact",
+        prefix = "ReactCommon",
     ),
     fbandroid_srcs = glob(
         [
@@ -48,7 +48,7 @@ rn_xplat_cxx_library(
         [
             ("platform/ios", "*.h"),
         ],
-        prefix = "jsireact",
+        prefix = "ReactCommon",
     ),
     ios_frameworks = [
         "$SDKROOT/System/Library/Frameworks/Foundation.framework",
@@ -62,7 +62,6 @@ rn_xplat_cxx_library(
     platforms = (ANDROID, APPLE),
     preprocessor_flags = [
         "-DLOG_TAG=\"ReactNative\"",
-        "-DRN_TURBO_MODULE_ENABLED",
         "-DWITH_FBSYSTRACE=1",
     ],
     visibility = [

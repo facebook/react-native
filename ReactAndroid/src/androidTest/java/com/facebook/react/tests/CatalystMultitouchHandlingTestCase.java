@@ -1,19 +1,16 @@
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
+ * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
+ * directory of this source tree.
  */
-
 package com.facebook.react.tests;
 
-import java.util.List;
-
 import android.view.MotionEvent;
-
-import com.facebook.react.testing.ReactInstanceSpecForTest;
 import com.facebook.react.testing.ReactAppInstrumentationTestCase;
+import com.facebook.react.testing.ReactInstanceSpecForTest;
 import com.facebook.react.testing.StringRecordingModule;
+import java.util.List;
 
 /**
  * Test case for verifying that multitouch events are directed to the React's view touch handlers
@@ -30,8 +27,7 @@ public class CatalystMultitouchHandlingTestCase extends ReactAppInstrumentationT
 
   @Override
   protected ReactInstanceSpecForTest createReactInstanceSpecForTest() {
-    return new ReactInstanceSpecForTest()
-        .addNativeModule(mRecordingModule);
+    return new ReactInstanceSpecForTest().addNativeModule(mRecordingModule);
   }
 
   /**
@@ -102,27 +98,45 @@ public class CatalystMultitouchHandlingTestCase extends ReactAppInstrumentationT
       final int pointerCount,
       final MotionEvent.PointerProperties[] pointerProps,
       final MotionEvent.PointerCoords[] pointerCoords) {
-    getRootView().post(
-        new Runnable() {
-          @Override
-          public void run() {
-            MotionEvent event =
-                MotionEvent.obtain(start, when, action, pointerCount, pointerProps, pointerCoords, 0, 0, 1.0f, 1.0f, 0, 0, 0, 0);
-            getRootView().dispatchTouchEvent(event);
-            event.recycle();
-          }
-        });
+    getRootView()
+        .post(
+            new Runnable() {
+              @Override
+              public void run() {
+                MotionEvent event =
+                    MotionEvent.obtain(
+                        start,
+                        when,
+                        action,
+                        pointerCount,
+                        pointerProps,
+                        pointerCoords,
+                        0,
+                        0,
+                        1.0f,
+                        1.0f,
+                        0,
+                        0,
+                        0,
+                        0);
+                getRootView().dispatchTouchEvent(event);
+                event.recycle();
+              }
+            });
     getInstrumentation().waitForIdleSync();
   }
 
   /**
    * This method "replay" multi-touch gesture recorded with modified TouchesHelper class that
-   * generated this piece of code (see https://phabricator.fb.com/P19756940).
-   * This is not intended to be copied/reused and once we need to have more multitouch gestures
-   * in instrumentation tests we should either:
-   *  - implement nice generator similar to {@link SingleTouchGestureGenerator}
-   *  - implement gesture recorded that will record touch data using arbitrary format and then read
-   *  this recorded touch sequence during tests instead of generating code like this
+   * generated this piece of code (see https://phabricator.fb.com/P19756940). This is not intended
+   * to be copied/reused and once we need to have more multitouch gestures in instrumentation tests
+   * we should either:
+   *
+   * <ul>
+   *   <li>implement nice generator similar to {@link SingleTouchGestureGenerator}
+   *   <li>implement gesture recorded that will record touch data using arbitrary format and then
+   *       read this recorded touch sequence during tests instead of generating code like this
+   * </ul>
    */
   private void generateRecordedPinchTouchEvents() {
     // START OF GENERATED CODE
@@ -149,7 +163,13 @@ public class CatalystMultitouchHandlingTestCase extends ReactAppInstrumentationT
       pointerCoords[0] = createPointerCoords(267.0f, 346.0f);
       pointerProps[1] = createPointerProps(1, 1);
       pointerCoords[1] = createPointerCoords(225.0f, 542.0f);
-      dispatchEvent(MotionEvent.ACTION_POINTER_DOWN | (1 << MotionEvent.ACTION_POINTER_INDEX_SHIFT), 446560605, 446560630, 2, pointerProps, pointerCoords);
+      dispatchEvent(
+          MotionEvent.ACTION_POINTER_DOWN | (1 << MotionEvent.ACTION_POINTER_INDEX_SHIFT),
+          446560605,
+          446560630,
+          2,
+          pointerProps,
+          pointerCoords);
     }
 
     {
@@ -639,7 +659,13 @@ public class CatalystMultitouchHandlingTestCase extends ReactAppInstrumentationT
       pointerCoords[0] = createPointerCoords(349.0f, 110.0f);
       pointerProps[1] = createPointerProps(1, 1);
       pointerCoords[1] = createPointerCoords(151.0f, 680.0f);
-      dispatchEvent(MotionEvent.ACTION_POINTER_UP | (0 << MotionEvent.ACTION_POINTER_INDEX_SHIFT), 446560605, 446561443, 2, pointerProps, pointerCoords);
+      dispatchEvent(
+          MotionEvent.ACTION_POINTER_UP | (0 << MotionEvent.ACTION_POINTER_INDEX_SHIFT),
+          446560605,
+          446561443,
+          2,
+          pointerProps,
+          pointerCoords);
     }
 
     {
@@ -651,5 +677,4 @@ public class CatalystMultitouchHandlingTestCase extends ReactAppInstrumentationT
     }
     // END OF GENERATED CODE
   }
-
 }

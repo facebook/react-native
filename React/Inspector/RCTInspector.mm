@@ -3,17 +3,17 @@
 // This source code is licensed under the MIT license found in the
 // LICENSE file in the root directory of this source tree.
 
-#import "RCTInspector.h"
+#import <React/RCTInspector.h>
 
-#if RCT_DEV
+#if RCT_DEV && !TARGET_OS_UIKITFORMAC
 
 #include <jsinspector/InspectorInterfaces.h>
 
-#import "RCTDefines.h"
-#import "RCTInspectorPackagerConnection.h"
-#import "RCTLog.h"
-#import "RCTSRWebSocket.h"
-#import "RCTUtils.h"
+#import <React/RCTDefines.h>
+#import <React/RCTInspectorPackagerConnection.h>
+#import <React/RCTLog.h>
+#import <React/RCTSRWebSocket.h>
+#import <React/RCTUtils.h>
 
 using namespace facebook::react;
 

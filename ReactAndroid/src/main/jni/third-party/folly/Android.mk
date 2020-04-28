@@ -17,6 +17,14 @@ LOCAL_SRC_FILES:= \
   folly/container/detail/F14Table.cpp \
   folly/ScopeGuard.cpp \
 
+ifeq ($(APP_OPTIM),debug)
+  LOCAL_SRC_FILES += \
+    folly/lang/Assume.cpp \
+    folly/lang/SafeAssert.cpp \
+    folly/FileUtil.cpp \
+    folly/portability/SysUio.cpp
+endif
+
 LOCAL_C_INCLUDES := $(LOCAL_PATH)
 LOCAL_EXPORT_C_INCLUDES := $(LOCAL_PATH)
 
@@ -26,7 +34,7 @@ FOLLY_FLAGS := \
   -DFOLLY_NO_CONFIG=1 \
   -DFOLLY_HAVE_CLOCK_GETTIME=1 \
   -DFOLLY_HAVE_MEMRCHR=1 \
-#  -DFOLLY_USE_LIBCPP=1
+  -DFOLLY_USE_LIBCPP=1
 
 # If APP_PLATFORM in Application.mk targets android-23 above, please comment this line.
 # NDK uses GNU style stderror_r() after API 23.
@@ -65,7 +73,7 @@ LOCAL_SRC_FILES := \
   folly/memory/MallctlHelper.cpp \
   folly/portability/SysMembarrier.cpp \
   folly/synchronization/AsymmetricMemoryBarrier.cpp \
-  folly/synchronization/HazPtr.cpp \
+  folly/synchronization/Hazptr.cpp \
   folly/synchronization/ParkingLot.cpp \
   folly/synchronization/WaitOptions.cpp
 

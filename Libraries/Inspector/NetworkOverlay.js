@@ -103,7 +103,7 @@ class NetworkOverlay extends React.Component<Props, State> {
   // Map of `xhr._index` -> `index in `this.state.requests`.
   _xhrIdMap: {[key: number]: number} = {};
 
-  state = {
+  state: State = {
     detailRowId: null,
     requests: [],
   };
@@ -325,7 +325,7 @@ class NetworkOverlay extends React.Component<Props, State> {
     WebSocketInterceptor.disableInterception();
   }
 
-  _renderItem = ({item, index}): ?React.Element<any> => {
+  _renderItem = ({item, index}): React.Element<any> => {
     const tableRowViewStyle = [
       styles.tableRow,
       index % 2 === 1 ? styles.tableRowOdd : styles.tableRowEven,

@@ -61,6 +61,10 @@ static const NSTimeInterval kTestTimeoutSeconds = 120;
   RCTAssertParam(app);
   RCTAssertParam(referenceDirectory);
 
+  // TODO(macOS ISS#2323203): uncomment to record snapshot images
+//  referenceDirectory = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES).firstObject;
+  // Search for `_runner.recordMode = ` and change instances to YES
+
   if ((self = [super init])) {
     if (!referenceDirectory.length) {
       referenceDirectory = [[NSBundle bundleForClass:self.class].resourcePath stringByAppendingPathComponent:@"ReferenceImages"];
@@ -88,7 +92,8 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 - (NSURL *)defaultScriptURL
 {
   if (getenv("CI_USE_PACKAGER") || _useBundler) {
-    return [NSURL URLWithString:[NSString stringWithFormat:@"http://localhost:8081/%@.bundle?platform=%@&dev=true", _appPath, kRCTPlatformName]]; // TODO(macOS ISS#2323203)
+    NSString *bundlePrefix = [[[NSBundle mainBundle] infoDictionary] valueForKey:@"RN_BUNDLE_PREFIX"] ?: @""; // TODO(macOS ISS#2323203)
+    return [NSURL URLWithString:[NSString stringWithFormat:@"http://localhost:8081/%@%@.bundle?platform=%@&dev=true", bundlePrefix, _appPath, kRCTPlatformName]]; // TODO(macOS ISS#2323203)
   } else {
     return [[NSBundle bundleForClass:[RCTBridge class]] URLForResource:@"main" withExtension:@"jsbundle"];
   }

@@ -13,13 +13,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 @class RCTFabricSurface;
 
-typedef void(^RCTSurfaceEnumeratorBlock)(NSEnumerator<RCTFabricSurface *> *enumerator);
+typedef void (^RCTSurfaceEnumeratorBlock)(NSEnumerator<RCTFabricSurface *> *enumerator);
 
 /**
  * Registry of Surfaces.
- * Incapsulates storing Surface objects and quering them by root tag.
+ * Incapsulates storing Surface objects and querying them by root tag.
  * All methods of the registry are thread-safe.
- * The registry stores Surface objects as weak refereces.
+ * The registry stores Surface objects as weak references.
  */
 @interface RCTSurfaceRegistry : NSObject
 
@@ -38,7 +38,7 @@ typedef void(^RCTSurfaceEnumeratorBlock)(NSEnumerator<RCTFabricSurface *> *enume
 
 /**
  * Returns stored Surface object by given root tag.
- * If the registry does not have such Surface registred, returns `nil`.
+ * If the registry does not have such Surface registered, returns `nil`.
  */
 - (nullable RCTFabricSurface *)surfaceForRootTag:(ReactTag)rootTag;
 

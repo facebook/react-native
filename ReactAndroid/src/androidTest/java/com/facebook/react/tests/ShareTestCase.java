@@ -1,36 +1,24 @@
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
+ * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
+ * directory of this source tree.
  */
-
 package com.facebook.react.tests;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import android.app.Activity;
-import android.app.AlertDialog;
 import android.app.Instrumentation.ActivityMonitor;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.IntentFilter.MalformedMimeTypeException;
-import androidx.fragment.app.DialogFragment;
-
 import com.facebook.react.bridge.BaseJavaModule;
-import com.facebook.react.testing.ReactInstanceSpecForTest;
-import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.JavaScriptModule;
+import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.bridge.WritableNativeMap;
 import com.facebook.react.modules.share.ShareModule;
 import com.facebook.react.testing.ReactAppInstrumentationTestCase;
+import com.facebook.react.testing.ReactInstanceSpecForTest;
 
-/**
- * Test case for {@link ShareModule}.
- */
+/** Test case for {@link ShareModule}. */
 public class ShareTestCase extends ReactAppInstrumentationTestCase {
 
   private static interface ShareTestModule extends JavaScriptModule {
@@ -64,15 +52,13 @@ public class ShareTestCase extends ReactAppInstrumentationTestCase {
     public int getErrors() {
       return mErrors;
     }
-
   }
 
   final ShareRecordingModule mRecordingModule = new ShareRecordingModule();
 
   @Override
   protected ReactInstanceSpecForTest createReactInstanceSpecForTest() {
-    return super.createReactInstanceSpecForTest()
-        .addNativeModule(mRecordingModule);
+    return super.createReactInstanceSpecForTest().addNativeModule(mRecordingModule);
   }
 
   @Override
@@ -101,7 +87,5 @@ public class ShareTestCase extends ReactAppInstrumentationTestCase {
     assertEquals(1, monitor.getHits());
     assertEquals(1, mRecordingModule.getOpened());
     assertEquals(0, mRecordingModule.getErrors());
-
   }
-
 }

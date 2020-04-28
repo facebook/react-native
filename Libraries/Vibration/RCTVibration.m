@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#import "RCTVibration.h"
+#import <React/RCTVibration.h>
 
 #import <AudioToolbox/AudioToolbox.h>
 

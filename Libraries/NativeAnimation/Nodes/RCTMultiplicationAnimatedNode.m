@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#import "RCTMultiplicationAnimatedNode.h"
+#import <React/RCTMultiplicationAnimatedNode.h>
 
 @implementation RCTMultiplicationAnimatedNode
 

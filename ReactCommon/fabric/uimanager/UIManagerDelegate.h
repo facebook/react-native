@@ -20,7 +20,7 @@ class UIManagerDelegate {
  public:
   /*
    * Called right after the new/updated Shadow Node tree is constructed.
-   * The tree is not layed out and not sealed at this time.
+   * The tree is not laid out and not sealed at this time.
    */
   virtual void uiManagerDidFinishTransaction(
       SurfaceId surfaceId,
@@ -28,11 +28,32 @@ class UIManagerDelegate {
 
   /*
    * Called each time when UIManager constructs a new Shadow Node. Receiver
-   * maight use this to preluminary optimistically allocate a new native view
+   * might use this to optimistically allocate a new native view
    * instances.
    */
   virtual void uiManagerDidCreateShadowNode(
       const SharedShadowNode &shadowNode) = 0;
+
+  /*
+   * Called when UIManager wants to dispatch a command to the mounting layer.
+   */
+  virtual void uiManagerDidDispatchCommand(
+      const SharedShadowNode &shadowNode,
+      std::string const &commandName,
+      folly::dynamic const args) = 0;
+
+  /*
+   * Set JS responder for a view
+   */
+  virtual void uiManagerDidSetJSResponder(
+      SurfaceId surfaceId,
+      SharedShadowNode const &shadowView,
+      bool blockNativeResponder) = 0;
+
+  /*
+   * Clear the JSResponder for a view
+   */
+  virtual void uiManagerDidClearJSResponder() = 0;
 
   virtual ~UIManagerDelegate() noexcept = default;
 };

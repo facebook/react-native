@@ -1,10 +1,9 @@
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
+ * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
+ * directory of this source tree.
  */
-
 package com.facebook.react.tests;
 
 import com.facebook.react.bridge.BaseJavaModule;
@@ -27,14 +26,13 @@ import com.facebook.react.uimanager.ViewManager;
 import java.util.ArrayList;
 import org.junit.Ignore;
 
-/**
- * Test marshalling return values from Java to JS
- */
+/** Test marshalling return values from Java to JS */
 @Ignore("Fix prop types and view managers.")
 public class CatalystNativeJavaToJSReturnValuesTestCase extends ReactIntegrationTestCase {
 
   private interface TestJavaToJSReturnValuesModule extends JavaScriptModule {
     void callMethod(String methodName, String expectedReturnType, String expectedJSON);
+
     void triggerException();
   }
 
@@ -110,19 +108,19 @@ public class CatalystNativeJavaToJSReturnValuesTestCase extends ReactIntegration
     super.setUp();
 
     final UIManagerModule mUIManager =
-        new UIManagerModule(
-            getContext(), new ArrayList<ViewManager>(), 0);
+        new UIManagerModule(getContext(), new ArrayList<ViewManager>(), 0);
 
     mAssertModule = new AssertModule();
 
-    mInstance = ReactTestHelper.catalystInstanceBuilder(this)
-        .addNativeModule(mAssertModule)
-        .addNativeModule(new DeviceInfoModule(getContext()))
-        .addNativeModule(new AppStateModule(getContext()))
-        .addNativeModule(new FakeWebSocketModule())
-        .addNativeModule(mUIManager)
-        .addNativeModule(new TestModule())
-        .build();
+    mInstance =
+        ReactTestHelper.catalystInstanceBuilder(this)
+            .addNativeModule(mAssertModule)
+            .addNativeModule(new DeviceInfoModule(getContext()))
+            .addNativeModule(new AppStateModule(getContext()))
+            .addNativeModule(new FakeWebSocketModule())
+            .addNativeModule(mUIManager)
+            .addNativeModule(new TestModule())
+            .build();
   }
 
   public void testGetPrimitives() {

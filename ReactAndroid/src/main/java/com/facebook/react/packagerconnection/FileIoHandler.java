@@ -1,27 +1,22 @@
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
+ * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
+ * directory of this source tree.
  */
-
 package com.facebook.react.packagerconnection;
 
-import javax.annotation.Nullable;
-
+import android.os.Handler;
+import android.os.Looper;
+import android.util.Base64;
+import androidx.annotation.Nullable;
+import com.facebook.common.logging.FLog;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-
-import android.os.Handler;
-import android.os.Looper;
-import android.util.Base64;
-
-import com.facebook.common.logging.FLog;
-
 import org.json.JSONObject;
 
 public class FileIoHandler implements Runnable {
@@ -67,88 +62,92 @@ public class FileIoHandler implements Runnable {
     mHandler = new Handler(Looper.getMainLooper());
     mOpenFiles = new HashMap<>();
     mRequestHandlers = new HashMap<>();
-    mRequestHandlers.put("fopen", new RequestOnlyHandler() {
-      @Override
-      public void onRequest(
-          @Nullable Object params, Responder responder) {
-        synchronized (mOpenFiles) {
-          try {
-            JSONObject paramsObj = (JSONObject)params;
-            if (paramsObj == null) {
-              throw new Exception("params must be an object { mode: string, filename: string }");
-            }
-            String mode = paramsObj.optString("mode");
-            if (mode == null) {
-              throw new Exception("missing params.mode");
-            }
-            String filename = paramsObj.optString("filename");
-            if (filename == null) {
-              throw new Exception("missing params.filename");
-            }
-            if (!mode.equals("r")) {
-              throw new IllegalArgumentException("unsupported mode: " + mode);
-            }
+    mRequestHandlers.put(
+        "fopen",
+        new RequestOnlyHandler() {
+          @Override
+          public void onRequest(@Nullable Object params, Responder responder) {
+            synchronized (mOpenFiles) {
+              try {
+                JSONObject paramsObj = (JSONObject) params;
+                if (paramsObj == null) {
+                  throw new Exception(
+                      "params must be an object { mode: string, filename: string }");
+                }
+                String mode = paramsObj.optString("mode");
+                if (mode == null) {
+                  throw new Exception("missing params.mode");
+                }
+                String filename = paramsObj.optString("filename");
+                if (filename == null) {
+                  throw new Exception("missing params.filename");
+                }
+                if (!mode.equals("r")) {
+                  throw new IllegalArgumentException("unsupported mode: " + mode);
+                }
 
-            responder.respond(addOpenFile(filename));
-          } catch (Exception e) {
-            responder.error(e.toString());
+                responder.respond(addOpenFile(filename));
+              } catch (Exception e) {
+                responder.error(e.toString());
+              }
+            }
           }
-        }
-      }
-    });
-    mRequestHandlers.put("fclose", new RequestOnlyHandler() {
-      @Override
-      public void onRequest(
-          @Nullable Object params, Responder responder) {
-        synchronized (mOpenFiles) {
-          try {
-            if (!(params instanceof Number)) {
-              throw new Exception("params must be a file handle");
-            }
-            TtlFileInputStream stream = mOpenFiles.get((int)params);
-            if (stream == null) {
-              throw new Exception("invalid file handle, it might have timed out");
-            }
+        });
+    mRequestHandlers.put(
+        "fclose",
+        new RequestOnlyHandler() {
+          @Override
+          public void onRequest(@Nullable Object params, Responder responder) {
+            synchronized (mOpenFiles) {
+              try {
+                if (!(params instanceof Number)) {
+                  throw new Exception("params must be a file handle");
+                }
+                TtlFileInputStream stream = mOpenFiles.get((int) params);
+                if (stream == null) {
+                  throw new Exception("invalid file handle, it might have timed out");
+                }
 
-            mOpenFiles.remove((int)params);
-            stream.close();
-            responder.respond("");
-          } catch (Exception e) {
-            responder.error(e.toString());
+                mOpenFiles.remove((int) params);
+                stream.close();
+                responder.respond("");
+              } catch (Exception e) {
+                responder.error(e.toString());
+              }
+            }
           }
-        }
-      }
-    });
-    mRequestHandlers.put("fread", new RequestOnlyHandler() {
-      @Override
-      public void onRequest(
-          @Nullable Object params, Responder responder) {
-        synchronized (mOpenFiles) {
-          try {
-            JSONObject paramsObj = (JSONObject)params;
-            if (paramsObj == null) {
-              throw new Exception("params must be an object { file: handle, size: number }");
-            }
-            int file = paramsObj.optInt("file");
-            if (file == 0) {
-              throw new Exception("invalid or missing file handle");
-            }
-            int size = paramsObj.optInt("size");
-            if (size == 0) {
-              throw new Exception("invalid or missing read size");
-            }
-            TtlFileInputStream stream = mOpenFiles.get(file);
-            if (stream == null) {
-              throw new Exception("invalid file handle, it might have timed out");
-            }
+        });
+    mRequestHandlers.put(
+        "fread",
+        new RequestOnlyHandler() {
+          @Override
+          public void onRequest(@Nullable Object params, Responder responder) {
+            synchronized (mOpenFiles) {
+              try {
+                JSONObject paramsObj = (JSONObject) params;
+                if (paramsObj == null) {
+                  throw new Exception("params must be an object { file: handle, size: number }");
+                }
+                int file = paramsObj.optInt("file");
+                if (file == 0) {
+                  throw new Exception("invalid or missing file handle");
+                }
+                int size = paramsObj.optInt("size");
+                if (size == 0) {
+                  throw new Exception("invalid or missing read size");
+                }
+                TtlFileInputStream stream = mOpenFiles.get(file);
+                if (stream == null) {
+                  throw new Exception("invalid file handle, it might have timed out");
+                }
 
-            responder.respond(stream.read(size));
-          } catch (Exception e) {
-            responder.error(e.toString());
+                responder.respond(stream.read(size));
+              } catch (Exception e) {
+                responder.error(e.toString());
+              }
+            }
           }
-        }
-      }
-    });
+        });
   }
 
   public Map<String, RequestHandler> handlers() {
@@ -176,9 +175,7 @@ public class FileIoHandler implements Runnable {
           try {
             stream.close();
           } catch (IOException e) {
-            FLog.e(
-              TAG,
-              "closing expired file failed: " + e.toString());
+            FLog.e(TAG, "closing expired file failed: " + e.toString());
           }
         }
       }

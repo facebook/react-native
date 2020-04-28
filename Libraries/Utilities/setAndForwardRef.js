@@ -48,7 +48,10 @@ type Args = $ReadOnly<{|
  *   module.exports = MyViewWithRef;
  */
 
-function setAndForwardRef({getForwardedRef, setLocalRef}: Args) {
+function setAndForwardRef({
+  getForwardedRef,
+  setLocalRef,
+}: Args): (ref: ElementRef<any>) => void {
   return function forwardRef(ref: ElementRef<any>) {
     const forwardedRef = getForwardedRef();
 

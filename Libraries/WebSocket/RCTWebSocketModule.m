@@ -5,14 +5,14 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#import "RCTWebSocketModule.h"
+#import <React/RCTWebSocketModule.h>
 
 #import <objc/runtime.h>
 
 #import <React/RCTConvert.h>
 #import <React/RCTUtils.h>
 
-#import "RCTSRWebSocket.h"
+#import <React/RCTSRWebSocket.h>
 
 @implementation RCTSRWebSocket (React)
 
@@ -155,7 +155,8 @@ RCT_EXPORT_METHOD(close:(NSInteger)code reason:(NSString *)reason socketID:(nonn
 - (void)webSocketDidOpen:(RCTSRWebSocket *)webSocket
 {
   [self sendEventWithName:@"websocketOpen" body:@{
-    @"id": webSocket.reactTag
+    @"id": webSocket.reactTag,
+    @"protocol": webSocket.protocol ? webSocket.protocol : @""
   }];
 }
 

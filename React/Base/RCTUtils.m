@@ -966,6 +966,22 @@ NSString *RCTUIKitLocalizedString(NSString *string)
 }
 #endif // TODO(macOS ISS#2323203)
 
+NSString  *RCTHumanReadableType(NSObject *obj)
+{
+  if ([obj isKindOfClass:[NSString class]]) {
+    return @"string";
+  } else if ([obj isKindOfClass:[NSNumber class]]) {
+    int intVal = [(NSNumber *)obj intValue];
+    if(intVal == 0 || intVal == 1) {
+      return @"boolean or number";
+    }
+
+    return @"number";
+  } else {
+    return NSStringFromClass([obj class]);
+  }
+}
+
 NSString *__nullable RCTGetURLQueryParam(NSURL *__nullable URL, NSString *param)
 {
   RCTAssertParam(param);
@@ -1036,4 +1052,22 @@ RCT_EXTERN BOOL RCTUIManagerTypeForTagIsFabric(NSNumber *reactTag)
 {
   // See https://github.com/facebook/react/pull/12587
   return [reactTag integerValue] % 2 == 0;
+}
+
+RCT_EXTERN BOOL RCTValidateTypeOfViewCommandArgument(NSObject *obj, id expectedClass, NSString const * expectedType, NSString const *componentName, NSString const * commandName, NSString const * argPos)
+{
+  if (![obj isKindOfClass:expectedClass]) {
+    NSString *kindOfClass = RCTHumanReadableType(obj);
+
+    RCTLogError(
+                @"%@ command %@ received %@ argument of type %@, expected %@.",
+                componentName,
+                commandName,
+                argPos,
+                kindOfClass,
+                expectedType);
+    return false;
+  }
+
+  return true;
 }

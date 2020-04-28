@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#import "RCTDiffClampAnimatedNode.h"
+#import <React/RCTDiffClampAnimatedNode.h>
 
 #import <React/RCTLog.h>
 

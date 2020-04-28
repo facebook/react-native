@@ -28,7 +28,7 @@ namespace react {
 // large string needs to be curried into a std::function<>, which must
 // by CopyConstructible.
 
-class RN_EXPORT JSBigString {
+class JSBigString {
 public:
   JSBigString() = default;
 

@@ -33,7 +33,7 @@ describe('MessageQueue', function() {
   beforeEach(function() {
     jest.resetModules();
     MessageQueue = require('../MessageQueue');
-    MessageQueueTestModule = require('MessageQueueTestModule');
+    MessageQueueTestModule = require('../__mocks__/MessageQueueTestModule');
     queue = new MessageQueue();
     queue.registerCallableModule(
       'MessageQueueTestModule',
@@ -125,7 +125,7 @@ describe('MessageQueue', function() {
     expect(factory).toHaveBeenCalledTimes(1);
   });
 
-  it('should check if the global error handler is not overriden by the DebuggerInternal object', () => {
+  it('should check if the global error handler is not overridden by the DebuggerInternal object', () => {
     const dummyModule = {
       dummy: function() {},
     };
@@ -137,7 +137,7 @@ describe('MessageQueue', function() {
     expect(queue.__shouldPauseOnThrow).toHaveBeenCalledTimes(2);
   });
 
-  it('should check if the global error handler is overriden by the DebuggerInternal object', () => {
+  it('should check if the global error handler is overridden by the DebuggerInternal object', () => {
     const dummyModule = {
       dummy: function() {},
     };

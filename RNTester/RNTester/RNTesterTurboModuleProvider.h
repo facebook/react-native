@@ -6,12 +6,15 @@
  *
  */
 
-#ifdef RN_TURBO_MODULE_ENABLED
-
-#import <jsireact/RCTTurboModule.h>
+#import <ReactCommon/RCTTurboModule.h>
 
 namespace facebook {
 namespace react {
+
+/**
+ * Provide the TurboModule class for the given name.
+ */
+Class RNTesterTurboModuleClassProvider(const char *name);
 
 /**
  * Provide a pure C++ instance of a TurboModule, specific to this app.
@@ -27,5 +30,3 @@ std::shared_ptr<TurboModule> RNTesterTurboModuleProvider(const std::string &name
 
 } // namespace react
 } // namespace facebook
-
-#endif

@@ -11,6 +11,8 @@
 'use strict';
 
 const React = require('react');
+const TouchableBounce = require('react-native/Libraries/Components/Touchable/TouchableBounce');
+
 const {
   Image,
   StyleSheet,
@@ -21,7 +23,6 @@ const {
   TouchableWithoutFeedback,
   View,
 } = require('react-native');
-const TouchableBounce = require('react-native/Libraries/Components/Touchable/TouchableBounce');
 
 /**
  * All the views implemented on Android, each with the nativeID property set.
@@ -30,7 +31,7 @@ const TouchableBounce = require('react-native/Libraries/Components/Touchable/Tou
  * - The nativeID property is passed to the native views
  */
 class NativeIdTestApp extends React.Component<{}> {
-  render() {
+  render(): React.Node {
     const uri =
       'data:image/gif;base64,' +
       'R0lGODdhMAAwAPAAAAAAAP///ywAAAAAMAAwAAAC8IyPqcvt3wCcDkiLc7C0qwyGHhSWpjQu5yqmCYsapy' +

@@ -144,8 +144,8 @@ public class NativeModuleRegistry {
   }
 
   public NativeModule getModule(String name) {
-    return Assertions.assertNotNull(
-        mModules.get(name), "Could not find module with name " + name).getModule();
+    return Assertions.assertNotNull(mModules.get(name), "Could not find module with name " + name)
+        .getModule();
   }
 
   public List<NativeModule> getAllModules() {

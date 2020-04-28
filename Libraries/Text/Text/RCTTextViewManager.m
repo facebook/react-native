@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#import "RCTTextViewManager.h"
+#import <React/RCTTextViewManager.h>
 
 #import <React/RCTAccessibilityManager.h>
 #import <React/RCTShadowView+Layout.h>
@@ -14,8 +14,8 @@
 #import <React/RCTUIManagerUtils.h>
 #import <React/RCTUIManagerObserverCoordinator.h>
 
-#import "RCTTextShadowView.h"
-#import "RCTTextView.h"
+#import <React/RCTTextShadowView.h>
+#import <React/RCTTextView.h>
 
 @interface RCTTextViewManager () <RCTUIManagerObserver>
 

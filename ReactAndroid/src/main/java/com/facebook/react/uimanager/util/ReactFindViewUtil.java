@@ -7,6 +7,7 @@ package com.facebook.react.uimanager.util;
 
 import android.view.View;
 import android.view.ViewGroup;
+import androidx.annotation.Nullable;
 import com.facebook.react.R;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -14,49 +15,43 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import javax.annotation.Nullable;
 
-/**
- * Finds views in React Native view hierarchies
- */
+/** Finds views in React Native view hierarchies */
 public class ReactFindViewUtil {
 
   private static final List<OnViewFoundListener> mOnViewFoundListeners = new ArrayList<>();
   private static final Map<OnMultipleViewsFoundListener, Set<String>>
       mOnMultipleViewsFoundListener = new HashMap<>();
 
-  /**
-   * Callback to be invoked when a react native view has been found
-   */
+  /** Callback to be invoked when a react native view has been found */
   public interface OnViewFoundListener {
 
-    /**
-     * Returns the native id of the view of interest
-     */
+    /** Returns the native id of the view of interest */
     String getNativeId();
 
     /**
      * Called when the view has been found
+     *
      * @param view
      */
     void onViewFound(View view);
   }
 
-  /**
-   * Callback to be invoked when all react native views with geiven NativeIds have been found
-   */
-  public interface OnMultipleViewsFoundListener{
+  /** Callback to be invoked when all react native views with geiven NativeIds have been found */
+  public interface OnMultipleViewsFoundListener {
 
     void onViewFound(View view, String nativeId);
     /**
      * Called when all teh views have been found
+     *
      * @param map
      */
   }
 
   /**
-   * Finds a view that is tagged with {@param nativeId} as its nativeID prop
-   * under the {@param root} view hierarchy. Returns the view if found, null otherwise.
+   * Finds a view that is tagged with {@param nativeId} as its nativeID prop under the {@param root}
+   * view hierarchy. Returns the view if found, null otherwise.
+   *
    * @param root root of the view hierarchy from which to find the view
    */
   public static @Nullable View findView(View root, String nativeId) {
@@ -82,6 +77,7 @@ public class ReactFindViewUtil {
    * Finds a view tagged with {@param onViewFoundListener}'s nativeID in the given {@param root}
    * view hierarchy. If the view does not exist yet due to React Native's async layout, a listener
    * will be added. When the view is found, the {@param onViewFoundListener} will be invoked.
+   *
    * @param root root of the view hierarchy from which to find the view
    */
   public static void findView(View root, OnViewFoundListener onViewFoundListener) {
@@ -100,9 +96,7 @@ public class ReactFindViewUtil {
     mOnViewFoundListeners.add(onViewFoundListener);
   }
 
-  /**
-   * Removes an OnViewFoundListener previously registered with addViewListener().
-   */
+  /** Removes an OnViewFoundListener previously registered with addViewListener(). */
   public static void removeViewListener(OnViewFoundListener onViewFoundListener) {
     mOnViewFoundListeners.remove(onViewFoundListener);
   }
@@ -115,9 +109,7 @@ public class ReactFindViewUtil {
     mOnMultipleViewsFoundListener.remove(listener);
   }
 
-  /**
-   * Invokes any listeners that are listening on this {@param view}'s native id
-   */
+  /** Invokes any listeners that are listening on this {@param view}'s native id */
   public static void notifyViewRendered(View view) {
     String nativeId = getNativeId(view);
     if (nativeId == null) {
@@ -132,11 +124,12 @@ public class ReactFindViewUtil {
       }
     }
 
-    for (Map.Entry<OnMultipleViewsFoundListener, Set<String>> entry : mOnMultipleViewsFoundListener.entrySet()) {
-       Set<String> nativeIds = entry.getValue();
-       if (nativeIds != null && nativeIds.contains(nativeId)) {
-            entry.getKey().onViewFound(view, nativeId);
-       }
+    for (Map.Entry<OnMultipleViewsFoundListener, Set<String>> entry :
+        mOnMultipleViewsFoundListener.entrySet()) {
+      Set<String> nativeIds = entry.getValue();
+      if (nativeIds != null && nativeIds.contains(nativeId)) {
+        entry.getKey().onViewFound(view, nativeId);
+      }
     }
   }
 

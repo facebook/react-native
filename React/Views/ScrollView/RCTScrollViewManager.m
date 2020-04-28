@@ -54,7 +54,7 @@ RCT_ENUM_CONVERTER(UIScrollViewContentInsetAdjustmentBehavior, (@{
 
 RCT_EXPORT_MODULE()
 
-- (RCTPlatformView *)view
+- (RCTPlatformView *)view // TODO(macOS ISS#2323203)
 {
   return [[RCTScrollView alloc] initWithEventDispatcher:self.bridge.eventDispatcher];
 }

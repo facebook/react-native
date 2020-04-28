@@ -10,10 +10,10 @@
 
 'use strict';
 
-const Platform = require('Platform');
 const React = require('react');
 const ReactNative = require('react-native');
 const {Image, LayoutAnimation, StyleSheet, Text, View} = ReactNative;
+const {Platform} = ReactNative; // TODO(macOS ISS#2323203)
 const {TestModule} = ReactNative.NativeModules;
 
 import type {ViewStyleProp} from 'react-native/Libraries/StyleSheet/StyleSheet';
@@ -53,8 +53,8 @@ class LayoutEventsTest extends React.Component<Props, State> {
   animateViewLayout() {
     debug('animateViewLayout invoked');
     LayoutAnimation.configureNext(
-      Platform.OS === 'macos'
-        ? LayoutAnimation.Presets.easeInEaseOut
+      Platform.OS === 'macos' // [TODO(macOS ISS#2323203)
+        ? LayoutAnimation.Presets.easeInEaseOut // ]TODO(macOS ISS#2323203)
         : LayoutAnimation.Presets.spring,
       () => {
         debug('animateViewLayout done');
@@ -64,7 +64,7 @@ class LayoutEventsTest extends React.Component<Props, State> {
     this.setState({viewStyle: {margin: 60}});
   }
 
-  addWrapText = () => {
+  addWrapText: () => void = () => {
     debug('addWrapText invoked');
     this.setState(
       {extraText: '  And a bunch more text to wrap around a few lines.'},
@@ -72,14 +72,14 @@ class LayoutEventsTest extends React.Component<Props, State> {
     );
   };
 
-  changeContainer = () => {
+  changeContainer: () => void = () => {
     debug('changeContainer invoked');
     this.setState({containerStyle: {width: 280}}, () =>
       this.checkLayout(TestModule.markTestCompleted),
     );
   };
 
-  checkLayout = (next?: ?() => void) => {
+  checkLayout: (next?: ?() => void) => void = (next?: ?() => void) => {
     const view = this._view;
     const txt = this._txt;
     const img = this._img;
@@ -123,22 +123,22 @@ class LayoutEventsTest extends React.Component<Props, State> {
     }
   }
 
-  onViewLayout = (e: LayoutEvent) => {
+  onViewLayout: (e: LayoutEvent) => void = (e: LayoutEvent) => {
     debug('received view layout event\n', e.nativeEvent);
     this.setState({viewLayout: e.nativeEvent.layout}, this.checkLayout);
   };
 
-  onTextLayout = (e: LayoutEvent) => {
+  onTextLayout: (e: LayoutEvent) => void = (e: LayoutEvent) => {
     debug('received text layout event\n', e.nativeEvent);
     this.setState({textLayout: e.nativeEvent.layout}, this.checkLayout);
   };
 
-  onImageLayout = (e: LayoutEvent) => {
+  onImageLayout: (e: LayoutEvent) => void = (e: LayoutEvent) => {
     debug('received image layout event\n', e.nativeEvent);
     this.setState({imageLayout: e.nativeEvent.layout}, this.checkLayout);
   };
 
-  render() {
+  render(): React.Node {
     const viewStyle = [styles.view, this.state.viewStyle];
     const textLayout = this.state.textLayout || {width: '?', height: '?'};
     const imageLayout = this.state.imageLayout || {x: '?', y: '?'};

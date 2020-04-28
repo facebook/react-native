@@ -1,24 +1,16 @@
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
+ * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
+ * directory of this source tree.
  */
-
 package com.facebook.react.modules.camera;
-
-import java.io.ByteArrayOutputStream;
-import java.io.Closeable;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
 
 import android.content.ContentResolver;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.util.Base64;
 import android.util.Base64OutputStream;
-
 import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.GuardedAsyncTask;
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -26,10 +18,16 @@ import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.module.annotations.ReactModule;
+import java.io.ByteArrayOutputStream;
+import java.io.Closeable;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 
-@ReactModule(name = "ImageStoreManager")
+@ReactModule(name = ImageStoreManager.NAME)
 public class ImageStoreManager extends ReactContextBaseJavaModule {
 
+  public static final String NAME = "ImageStoreManager";
   private static final int BUFFER_SIZE = 8192;
 
   public ImageStoreManager(ReactApplicationContext reactContext) {
@@ -38,7 +36,7 @@ public class ImageStoreManager extends ReactContextBaseJavaModule {
 
   @Override
   public String getName() {
-    return "ImageStoreManager";
+    return NAME;
   }
 
   /**
@@ -59,11 +57,7 @@ public class ImageStoreManager extends ReactContextBaseJavaModule {
     private final Callback mSuccess;
     private final Callback mError;
 
-    private GetBase64Task(
-        ReactContext reactContext,
-        String uri,
-        Callback success,
-        Callback error) {
+    private GetBase64Task(ReactContext reactContext, String uri, Callback success, Callback error) {
       super(reactContext);
       mUri = uri;
       mSuccess = success;

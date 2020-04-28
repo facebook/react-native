@@ -1,17 +1,16 @@
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
+ * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
+ * directory of this source tree.
  */
-
 package com.facebook.react.animated;
+
+import static org.fest.assertions.api.Assertions.assertThat;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
-
-import static org.fest.assertions.api.Assertions.assertThat;
 
 /**
  * Tests method used by {@link InterpolationAnimatedNode} to interpolate value of the input nodes.
@@ -21,12 +20,11 @@ public class NativeAnimatedInterpolationTest {
 
   private double simpleInterpolation(double value, double[] input, double[] output) {
     return InterpolationAnimatedNode.interpolate(
-      value,
-      input,
-      output,
-      InterpolationAnimatedNode.EXTRAPOLATE_TYPE_EXTEND,
-      InterpolationAnimatedNode.EXTRAPOLATE_TYPE_EXTEND
-    );
+        value,
+        input,
+        output,
+        InterpolationAnimatedNode.EXTRAPOLATE_TYPE_EXTEND,
+        InterpolationAnimatedNode.EXTRAPOLATE_TYPE_EXTEND);
   }
 
   @Test
@@ -82,39 +80,43 @@ public class NativeAnimatedInterpolationTest {
   public void testClampExtrapolate() {
     double[] input = new double[] {10d, 20d};
     double[] output = new double[] {0d, 1d};
-    assertThat(InterpolationAnimatedNode.interpolate(
-      30d,
-      input,
-      output,
-      InterpolationAnimatedNode.EXTRAPOLATE_TYPE_CLAMP,
-      InterpolationAnimatedNode.EXTRAPOLATE_TYPE_CLAMP
-    )).isEqualTo(1);
-    assertThat(InterpolationAnimatedNode.interpolate(
-      5d,
-      input,
-      output,
-      InterpolationAnimatedNode.EXTRAPOLATE_TYPE_CLAMP,
-      InterpolationAnimatedNode.EXTRAPOLATE_TYPE_CLAMP
-    )).isEqualTo(0);
+    assertThat(
+            InterpolationAnimatedNode.interpolate(
+                30d,
+                input,
+                output,
+                InterpolationAnimatedNode.EXTRAPOLATE_TYPE_CLAMP,
+                InterpolationAnimatedNode.EXTRAPOLATE_TYPE_CLAMP))
+        .isEqualTo(1);
+    assertThat(
+            InterpolationAnimatedNode.interpolate(
+                5d,
+                input,
+                output,
+                InterpolationAnimatedNode.EXTRAPOLATE_TYPE_CLAMP,
+                InterpolationAnimatedNode.EXTRAPOLATE_TYPE_CLAMP))
+        .isEqualTo(0);
   }
 
   @Test
   public void testIdentityExtrapolate() {
     double[] input = new double[] {10d, 20d};
     double[] output = new double[] {0d, 1d};
-    assertThat(InterpolationAnimatedNode.interpolate(
-      30d,
-      input,
-      output,
-      InterpolationAnimatedNode.EXTRAPOLATE_TYPE_IDENTITY,
-      InterpolationAnimatedNode.EXTRAPOLATE_TYPE_IDENTITY
-    )).isEqualTo(30);
-    assertThat(InterpolationAnimatedNode.interpolate(
-      5d,
-      input,
-      output,
-      InterpolationAnimatedNode.EXTRAPOLATE_TYPE_IDENTITY,
-      InterpolationAnimatedNode.EXTRAPOLATE_TYPE_IDENTITY
-    )).isEqualTo(5);
+    assertThat(
+            InterpolationAnimatedNode.interpolate(
+                30d,
+                input,
+                output,
+                InterpolationAnimatedNode.EXTRAPOLATE_TYPE_IDENTITY,
+                InterpolationAnimatedNode.EXTRAPOLATE_TYPE_IDENTITY))
+        .isEqualTo(30);
+    assertThat(
+            InterpolationAnimatedNode.interpolate(
+                5d,
+                input,
+                output,
+                InterpolationAnimatedNode.EXTRAPOLATE_TYPE_IDENTITY,
+                InterpolationAnimatedNode.EXTRAPOLATE_TYPE_IDENTITY))
+        .isEqualTo(5);
   }
 }

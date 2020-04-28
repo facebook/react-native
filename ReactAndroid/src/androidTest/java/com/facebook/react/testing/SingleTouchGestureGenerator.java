@@ -1,28 +1,26 @@
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
+ * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
+ * directory of this source tree.
  */
-
 package com.facebook.react.testing;
 
 import android.os.SystemClock;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewConfiguration;
-
 import com.facebook.react.testing.idledetection.IdleWaiter;
 
 /**
  * Provides methods for generating touch events and dispatching them directly to a given view.
  * Events scenarios are based on {@link android.test.TouchUtils} but they get gets dispatched
- * directly through the view hierarchy using {@link View#dispatchTouchEvent} method instead of
- * using instrumentation API.
- * <p>
- * All the events for a gesture are dispatched immediately which makes tests run very fast.
- * The eventTime for each event is still set correctly. Android's gesture recognizers check
- * eventTime in order to figure out gesture speed, and therefore scroll vs fling is recognized.
+ * directly through the view hierarchy using {@link View#dispatchTouchEvent} method instead of using
+ * instrumentation API.
+ *
+ * <p>All the events for a gesture are dispatched immediately which makes tests run very fast. The
+ * eventTime for each event is still set correctly. Android's gesture recognizers check eventTime in
+ * order to figure out gesture speed, and therefore scroll vs fling is recognized.
  */
 public class SingleTouchGestureGenerator {
 
@@ -44,10 +42,7 @@ public class SingleTouchGestureGenerator {
   }
 
   private SingleTouchGestureGenerator dispatchEvent(
-      final int action,
-      final float x,
-      final float y,
-      long eventTime) {
+      final int action, final float x, final float y, long eventTime) {
     mEventTime = eventTime;
     if (action == MotionEvent.ACTION_DOWN) {
       mLastDownTime = eventTime;
@@ -90,10 +85,7 @@ public class SingleTouchGestureGenerator {
   }
 
   private SingleTouchGestureGenerator dispatchDelayedEvent(
-      int action,
-      float x,
-      float y,
-      long delay) {
+      int action, float x, float y, long delay) {
     return dispatchEvent(action, x, y, mEventTime + delay);
   }
 
@@ -127,12 +119,7 @@ public class SingleTouchGestureGenerator {
   }
 
   public SingleTouchGestureGenerator drag(
-      float fromX,
-      float fromY,
-      float toX,
-      float toY,
-      int stepCount,
-      long totalDelay) {
+      float fromX, float fromY, float toX, float toY, int stepCount, long totalDelay) {
 
     float xStep = (toX - fromX) / stepCount;
     float yStep = (toY - fromY) / stepCount;

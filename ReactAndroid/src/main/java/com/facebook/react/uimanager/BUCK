@@ -47,6 +47,7 @@ rn_android_library(
     ],
     exported_deps = [
         ":DisplayMetrics",
+        react_native_dep("third-party/android/androidx:annotation"),
         react_native_dep("third-party/java/jsr-305:jsr-305"),
         react_native_target("java/com/facebook/react/uimanager/common:common"),
     ],
@@ -58,12 +59,16 @@ rn_android_library(
         "DisplayMetricsHolder.java",
     ],
     is_androidx = True,
+    provided_deps = [
+        react_native_dep("third-party/android/androidx:annotation"),
+    ],
     required_for_source_only_abi = True,
     visibility = [
         "PUBLIC",
     ],
     deps = [
         react_native_dep("third-party/java/infer-annotations:infer-annotations"),
+        react_native_dep("third-party/android/androidx:annotation"),
         react_native_dep("third-party/java/jsr-305:jsr-305"),
         react_native_target("java/com/facebook/react/bridge:bridge"),
     ],

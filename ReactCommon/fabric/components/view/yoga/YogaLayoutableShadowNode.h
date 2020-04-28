@@ -95,19 +95,19 @@ class YogaLayoutableShadowNode : public LayoutableShadowNode,
 
  protected:
   /*
+   * Yoga config associated (only) with this particular node.
+   */
+  YGConfig yogaConfig_;
+
+  /*
    * All Yoga functions only accept non-const arguments, so we have to mark
    * Yoga node as `mutable` here to avoid `static_cast`ing the pointer to this
    * all the time.
    */
   mutable YGNode yogaNode_;
 
-  /*
-   * Yoga config associated (only) with this particular node.
-   */
-  YGConfig yogaConfig_;
-
  private:
-  static void initializeYogaConfig(YGConfig &config);
+  static YGConfig &initializeYogaConfig(YGConfig &config);
   static YGNode *yogaNodeCloneCallbackConnector(
       YGNode *oldYogaNode,
       YGNode *parentYogaNode,

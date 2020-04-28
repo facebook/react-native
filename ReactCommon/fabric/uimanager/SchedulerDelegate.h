@@ -22,7 +22,7 @@ class SchedulerDelegate {
  public:
   /*
    * Called right after Scheduler computed (and laid out) a new updated version
-   * of the tree and calculated a set of mutations which are suffisient
+   * of the tree and calculated a set of mutations which are sufficient
    * to construct a new one.
    */
   virtual void schedulerDidFinishTransaction(
@@ -34,6 +34,25 @@ class SchedulerDelegate {
   virtual void schedulerDidRequestPreliminaryViewAllocation(
       SurfaceId surfaceId,
       const ShadowView &shadowView) = 0;
+
+  virtual void schedulerDidDispatchCommand(
+      const ShadowView &shadowView,
+      std::string const &commandName,
+      folly::dynamic const args) = 0;
+
+  /*
+   * Set JS responder for a view
+   */
+  virtual void schedulerDidSetJSResponder(
+      SurfaceId surfaceId,
+      const ShadowView &shadowView,
+      const ShadowView &initialShadowView,
+      bool blockNativeResponder) = 0;
+
+  /*
+   * Clear the JSResponder for a view
+   */
+  virtual void schedulerDidClearJSResponder() = 0;
 
   virtual ~SchedulerDelegate() noexcept = default;
 };

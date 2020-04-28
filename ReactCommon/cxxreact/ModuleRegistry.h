@@ -8,11 +8,10 @@
 #include <memory>
 #include <unordered_set>
 #include <vector>
+
 #include <cxxreact/JSExecutor.h>
 #include <folly/Optional.h>
 #include <folly/dynamic.h>
-
-#include <cxxreact/NativeModule.h>
 
 #ifndef RN_EXPORT
 #define RN_EXPORT __attribute__((visibility("default")))
@@ -41,12 +40,6 @@ class RN_EXPORT ModuleRegistry {
 
   ModuleRegistry(std::vector<std::unique_ptr<NativeModule>> modules, ModuleNotFoundCallback callback = nullptr);
   void registerModules(std::vector<std::unique_ptr<NativeModule>> modules);
-
-  // Remove this after Task #1895397 completed.
-  size_t GetModuleSize()
-  {
-    return modules_.size();
-  }
 
   std::vector<std::string> moduleNames();
 

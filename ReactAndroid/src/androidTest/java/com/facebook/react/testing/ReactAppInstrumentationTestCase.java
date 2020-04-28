@@ -1,10 +1,9 @@
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
+ * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
+ * directory of this source tree.
  */
-
 package com.facebook.react.testing;
 
 import android.content.Intent;
@@ -12,18 +11,16 @@ import android.graphics.Bitmap;
 import android.test.ActivityInstrumentationTestCase2;
 import android.view.View;
 import android.view.ViewGroup;
+import androidx.annotation.Nullable;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.testing.idledetection.IdleWaiter;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
-import javax.annotation.Nullable;
 
-/**
- * Base class for instrumentation tests that runs React based react application in UI mode
- */
-public abstract class ReactAppInstrumentationTestCase extends
-    ActivityInstrumentationTestCase2<ReactAppTestActivity> implements IdleWaiter {
+/** Base class for instrumentation tests that runs React based react application in UI mode */
+public abstract class ReactAppInstrumentationTestCase
+    extends ActivityInstrumentationTestCase2<ReactAppTestActivity> implements IdleWaiter {
 
   public ReactAppInstrumentationTestCase() {
     super(ReactAppTestActivity.class);
@@ -38,9 +35,7 @@ public abstract class ReactAppInstrumentationTestCase extends
     setActivityIntent(intent);
     final ReactAppTestActivity activity = getActivity();
     activity.loadApp(
-        getReactApplicationKeyUnderTest(),
-        createReactInstanceSpecForTest(),
-        getEnableDevSupport());
+        getReactApplicationKeyUnderTest(), createReactInstanceSpecForTest(), getEnableDevSupport());
     waitForBridgeAndUIIdle();
   }
 
@@ -56,8 +51,8 @@ public abstract class ReactAppInstrumentationTestCase extends
   }
 
   /**
-   * This method isn't safe since it doesn't factor in layout-only view removal. Use
-   * {@link #getViewByTestId(String)} instead.
+   * This method isn't safe since it doesn't factor in layout-only view removal. Use {@link
+   * #getViewByTestId(String)} instead.
    */
   @Deprecated
   public <T extends View> T getViewAtPath(int... path) {
@@ -65,8 +60,8 @@ public abstract class ReactAppInstrumentationTestCase extends
   }
 
   public <T extends View> T getViewByTestId(String testID) {
-    return (T) ReactTestHelper
-        .getViewWithReactTestId((ViewGroup) getRootView().getParent(), testID);
+    return (T)
+        ReactTestHelper.getViewWithReactTestId((ViewGroup) getRootView().getParent(), testID);
   }
 
   public SingleTouchGestureGenerator createGestureGenerator() {
@@ -87,31 +82,32 @@ public abstract class ReactAppInstrumentationTestCase extends
 
     final CountDownLatch latch = new CountDownLatch(1);
     final BitmapHolder bitmapHolder = new BitmapHolder();
-    final Runnable getScreenshotRunnable = new Runnable() {
+    final Runnable getScreenshotRunnable =
+        new Runnable() {
 
-      private static final int MAX_TRIES = 1000;
-      // This is the constant used in the support library for APIs that don't have Choreographer
-      private static final int FRAME_DELAY_MS = 10;
+          private static final int MAX_TRIES = 1000;
+          // This is the constant used in the support library for APIs that don't have Choreographer
+          private static final int FRAME_DELAY_MS = 10;
 
-      private int mNumRuns = 0;
+          private int mNumRuns = 0;
 
-      @Override
-      public void run() {
-        mNumRuns++;
-        ReactAppTestActivity activity = getActivity();
-        if (!activity.isScreenshotReady()) {
-          if (mNumRuns > MAX_TRIES) {
-            throw new RuntimeException(
-                "Waited " + MAX_TRIES + " frames to get screenshot but it's still not ready!");
+          @Override
+          public void run() {
+            mNumRuns++;
+            ReactAppTestActivity activity = getActivity();
+            if (!activity.isScreenshotReady()) {
+              if (mNumRuns > MAX_TRIES) {
+                throw new RuntimeException(
+                    "Waited " + MAX_TRIES + " frames to get screenshot but it's still not ready!");
+              }
+              activity.postDelayed(this, FRAME_DELAY_MS);
+              return;
+            }
+
+            bitmapHolder.bitmap = getActivity().getCurrentScreenshot();
+            latch.countDown();
           }
-          activity.postDelayed(this, FRAME_DELAY_MS);
-          return;
-        }
-
-        bitmapHolder.bitmap = getActivity().getCurrentScreenshot();
-        latch.countDown();
-      }
-    };
+        };
 
     getActivity().runOnUiThread(getScreenshotRunnable);
     try {
@@ -125,8 +121,8 @@ public abstract class ReactAppInstrumentationTestCase extends
   }
 
   /**
-   * Implement this method to provide application key to be launched. List of available
-   * application is located in TestBundle.js file
+   * Implement this method to provide application key to be launched. List of available application
+   * is located in TestBundle.js file
    */
   protected abstract String getReactApplicationKeyUnderTest();
 
@@ -138,9 +134,7 @@ public abstract class ReactAppInstrumentationTestCase extends
     return false;
   }
 
-  /**
-   * Override this method to provide extra native modules to be loaded before the app starts
-   */
+  /** Override this method to provide extra native modules to be loaded before the app starts */
   protected ReactInstanceSpecForTest createReactInstanceSpecForTest() {
     return new ReactInstanceSpecForTest();
   }
@@ -149,9 +143,7 @@ public abstract class ReactAppInstrumentationTestCase extends
     return getActivity().getReactContext();
   }
 
-  /**
-   * Helper class to pass the bitmap between execution scopes in {@link #getScreenshot()}.
-   */
+  /** Helper class to pass the bitmap between execution scopes in {@link #getScreenshot()}. */
   private static class BitmapHolder {
 
     public @Nullable volatile Bitmap bitmap;

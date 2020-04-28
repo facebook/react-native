@@ -36,15 +36,17 @@
 		<key>NSAllowsArbitraryLoads</key>
 		<true/>
 	</dict>
-	<key>NSPhotoLibraryUsageDescription</key>
-	<string>Photo library access needed for some tests.</string>
 	<key>NSHumanReadableCopyright</key>
 	<string>Copyright © 2017 Facebook. All rights reserved.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>true</string>
 	<key>NSMainStoryboardFile</key>
 	<string>Main</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Photo library access needed for some tests.</string>
 	<key>NSPrincipalClass</key>
 	<string>NSApplication</string>
+	<key>RN_BUNDLE_PREFIX</key>
+	<string>$(RN_BUNDLE_PREFIX)</string>
 </dict>
 </plist>

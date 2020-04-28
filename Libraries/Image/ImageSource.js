@@ -87,5 +87,4 @@ export type ImageURISource = $ReadOnly<{
 // We have to export any because of an issue in Flow with objects that come from Relay:
 // https://fburl.com/8ljo5tmr
 // https://fb.facebook.com/groups/flow/permalink/1824103160971624/
-// $FlowFixMe T26861415
 export type ImageSource = ImageURISource | number | Array<ImageURISource>;

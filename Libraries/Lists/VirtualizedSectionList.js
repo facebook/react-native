@@ -145,10 +145,19 @@ type OptionalProps<SectionT: SectionBase<any>> = {
 export type Props<SectionT> = RequiredProps<SectionT> &
   OptionalProps<SectionT> &
   VirtualizedListProps;
+export type ScrollToLocationParamsType = {|
+  animated?: ?boolean,
+  itemIndex: number,
+  sectionIndex: number,
+  viewOffset?: number,
+  viewPosition?: number,
+|};
 
-type DefaultProps = typeof VirtualizedList.defaultProps & {
+type DefaultProps = {|
+  ...typeof VirtualizedList.defaultProps,
   data: $ReadOnlyArray<Item>,
-};
+|};
+
 type State = {
   childProps: VirtualizedListProps,
   selectedRowIndexPath: SelectedRowIndexPathType, // TODO(macOS ISS#2323203)
@@ -167,22 +176,17 @@ class VirtualizedSectionList<
     data: [],
   };
 
-  scrollToLocation(params: {
-    animated?: ?boolean,
-    itemIndex: number,
-    sectionIndex: number,
-    viewPosition?: number,
-  }) {
+  scrollToLocation(params: ScrollToLocationParamsType) {
     let index = params.itemIndex;
     for (let i = 0; i < params.sectionIndex; i++) {
       index += this.props.getItemCount(this.props.sections[i].data) + 2;
     }
-    let viewOffset = 0;
+    let viewOffset = params.viewOffset || 0;
     if (params.itemIndex > 0 && this.props.stickySectionHeadersEnabled) {
       const frame = this._listRef._getFrameMetricsApprox(
         index - params.itemIndex,
       );
-      viewOffset = frame.length;
+      viewOffset += frame.length;
     }
     const toIndexParams = {
       ...params,
@@ -242,7 +246,6 @@ class VirtualizedSectionList<
       return rowIndexPath;
     }
 
-    const count = this.props.sections[sectionIndex].data.length;
     let row = rowIndexPath.rowIndex;
     let rowAbove = row - 1;
 
@@ -339,7 +342,7 @@ class VirtualizedSectionList<
     }
   }; // ]TODO(macOS ISS#2323203)
 
-  render() {
+  render(): React.Node {
     let keyEventHandler = this.props.onScrollKeyDown; // [TODO(macOS ISS#2323203)
     if (!keyEventHandler) {
       keyEventHandler = this.props.enableSelectionOnKeyPress
@@ -570,7 +573,7 @@ type ItemWithSeparatorProps = $ReadOnly<{|
   cellKey: string,
   index: number,
   item: Item,
-  isSelected: boolean,
+  isSelected: boolean, // TODO(macOS ISS#2323203)
   onUpdateSeparator: (cellKey: string, newProps: Object) => void,
   prevCellKey?: ?string,
   renderItem: Function,

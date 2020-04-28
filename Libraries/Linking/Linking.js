@@ -117,4 +117,4 @@ class Linking extends NativeEventEmitter {
   }
 }
 
-module.exports = new Linking();
+module.exports = (new Linking(): Linking);

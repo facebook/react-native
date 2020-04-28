@@ -55,7 +55,7 @@ extern NSString *const FBReferenceImageFilePathKey;
  Performs the comparison of the view.
  @param view The view to snapshot.
  @param selector selector
- @param identifier An optional identifier, used is there are muliptle snapshot tests in a given -test method.
+ @param identifier An optional identifier, used is there are multiple snapshot tests in a given -test method.
  @param errorPtr An error to log in an XCTAssert() macro if the method fails (missing reference image, images differ, etc).
  @returns YES if the comparison (or saving of the reference image) succeeded.
  */

@@ -157,10 +157,13 @@ RCT_EXTERN void RCTGetRGBAColorComponents(CGColorRef color, CGFloat rgba[_Nonnul
 // Converts a CGColor to a hex string
 RCT_EXTERN NSString *RCTColorToHexString(CGColorRef color);
 
-#if !TARGET_OS_OSX // [TODO(macOS ISS#2323203)
+#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
 // Get standard localized string (if it exists)
 RCT_EXTERN NSString *RCTUIKitLocalizedString(NSString *string);
-#endif // ]TODO(macOS ISS#2323203)
+#endif // TODO(macOS ISS#2323203)
+
+// Get a human readable type string from an NSObject. For example NSString becomes string
+RCT_EXTERN NSString *RCTHumanReadableType(NSObject *obj);
 
 // URL manipulation
 RCT_EXTERN NSString *__nullable RCTGetURLQueryParam(NSURL *__nullable URL, NSString *param);
@@ -170,5 +173,7 @@ RCT_EXTERN NSURL *__nullable RCTURLByReplacingQueryParam(NSURL *__nullable URL, 
 RCT_EXTERN NSString *RCTDropReactPrefixes(NSString *s);
 
 RCT_EXTERN BOOL RCTUIManagerTypeForTagIsFabric(NSNumber *reactTag);
+
+RCT_EXTERN BOOL RCTValidateTypeOfViewCommandArgument(NSObject *obj, id expectedClass, NSString const * expectedType, NSString const *componentName, NSString const * commandName, NSString const * argPos);
 
 NS_ASSUME_NONNULL_END

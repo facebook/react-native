@@ -1,23 +1,20 @@
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
+ * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
+ * directory of this source tree.
  */
-
 package com.facebook.react.tests;
 
+import android.view.View;
+import com.facebook.react.testing.ReactAppInstrumentationTestCase;
+import com.facebook.react.uimanager.util.ReactFindViewUtil;
 import java.util.Arrays;
 import java.util.List;
 
-import android.view.View;
-
-import com.facebook.react.testing.ReactAppInstrumentationTestCase;
-import com.facebook.react.uimanager.util.ReactFindViewUtil;
-
 /**
- * Tests that the 'nativeID' property can be set on various views.
- * The 'nativeID' property is used to reference react managed views from native code.
+ * Tests that the 'nativeID' property can be set on various views. The 'nativeID' property is used
+ * to reference react managed views from native code.
  */
 public class NativeIdTestCase extends ReactAppInstrumentationTestCase {
 
@@ -26,43 +23,43 @@ public class NativeIdTestCase extends ReactAppInstrumentationTestCase {
     return "NativeIdTestApp";
   }
 
-  private final List<String> viewTags = Arrays.asList(
-    "Image",
-    "Text",
-    "TouchableBounce",
-    "TouchableHighlight",
-    "TouchableOpacity",
-    "TouchableWithoutFeedback",
-    "TextInput",
-    "View");
+  private final List<String> viewTags =
+      Arrays.asList(
+          "Image",
+          "Text",
+          "TouchableBounce",
+          "TouchableHighlight",
+          "TouchableOpacity",
+          "TouchableWithoutFeedback",
+          "TextInput",
+          "View");
 
   private boolean mViewFound;
 
   @Override
   protected void setUp() throws Exception {
     mViewFound = false;
-    ReactFindViewUtil.addViewListener(new ReactFindViewUtil.OnViewFoundListener() {
-      @Override
-      public String getNativeId() {
-        return viewTags.get(0);
-      }
+    ReactFindViewUtil.addViewListener(
+        new ReactFindViewUtil.OnViewFoundListener() {
+          @Override
+          public String getNativeId() {
+            return viewTags.get(0);
+          }
 
-      @Override
-      public void onViewFound(View view) {
-        mViewFound = true;
-      }
-    });
+          @Override
+          public void onViewFound(View view) {
+            mViewFound = true;
+          }
+        });
     super.setUp();
   }
 
   public void testPropertyIsSetForViews() {
     for (String nativeId : viewTags) {
-      View viewWithTag = ReactFindViewUtil.findView(
-        getActivity().getRootView(),
-        nativeId);
+      View viewWithTag = ReactFindViewUtil.findView(getActivity().getRootView(), nativeId);
       assertNotNull(
-        "View with nativeID " + nativeId + " was not found. Check NativeIdTestModule.js.",
-        viewWithTag);
+          "View with nativeID " + nativeId + " was not found. Check NativeIdTestModule.js.",
+          viewWithTag);
     }
   }
 
@@ -73,20 +70,19 @@ public class NativeIdTestCase extends ReactAppInstrumentationTestCase {
   public void testFindView() {
     mViewFound = false;
     ReactFindViewUtil.findView(
-      getActivity().getRootView(),
-      new ReactFindViewUtil.OnViewFoundListener() {
-        @Override
-        public String getNativeId() {
-          return viewTags.get(0);
-        }
+        getActivity().getRootView(),
+        new ReactFindViewUtil.OnViewFoundListener() {
+          @Override
+          public String getNativeId() {
+            return viewTags.get(0);
+          }
 
-        @Override
-        public void onViewFound(View view) {
-          mViewFound = true;
-        }
-      });
+          @Override
+          public void onViewFound(View view) {
+            mViewFound = true;
+          }
+        });
     assertTrue(
-      "OnViewFound callback should have successfully been invoked synchronously",
-      mViewFound);
+        "OnViewFound callback should have successfully been invoked synchronously", mViewFound);
   }
 }

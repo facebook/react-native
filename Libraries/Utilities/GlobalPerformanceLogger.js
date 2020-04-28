@@ -8,8 +8,9 @@
  * @format
  */
 'use strict';
-
 const createPerformanceLogger = require('./createPerformanceLogger');
+
+import type {IPerformanceLogger} from './createPerformanceLogger';
 
 /**
  * This is a global shared instance of IPerformanceLogger that is created with
@@ -18,6 +19,6 @@ const createPerformanceLogger = require('./createPerformanceLogger');
  * that are logged during loading bundle. If you want to log something from your
  * React component you should use PerformanceLoggerContext instead.
  */
-const GlobalPerformanceLogger = createPerformanceLogger();
+const GlobalPerformanceLogger: IPerformanceLogger = createPerformanceLogger();
 
 module.exports = GlobalPerformanceLogger;

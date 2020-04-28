@@ -8,7 +8,7 @@
 #import "RCTBlobCollector.h"
 
 #import <React/RCTBridge+Private.h>
-#import "RCTBlobManager.h"
+#import <React/RCTBlobManager.h>
 
 namespace facebook {
 namespace react {

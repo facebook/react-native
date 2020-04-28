@@ -1,21 +1,18 @@
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
+ * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
+ * directory of this source tree.
  */
-
 package com.facebook.react.views.drawer;
 
-import androidx.drawerlayout.widget.DrawerLayout;
-import android.view.Gravity;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
-
+import androidx.drawerlayout.widget.DrawerLayout;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.common.ReactConstants;
-import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.events.NativeGestureUtil;
 
 /**

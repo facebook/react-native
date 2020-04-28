@@ -14,6 +14,7 @@ const React = require('react');
 const StyleSheet = require('../StyleSheet/StyleSheet');
 const Text = require('../Text/Text');
 const View = require('../Components/View/View');
+
 const resolveBoxStyle = require('./resolveBoxStyle');
 
 const blank = {
@@ -24,7 +25,7 @@ const blank = {
 };
 
 class BoxInspector extends React.Component<$FlowFixMeProps> {
-  render() {
+  render(): React.Node {
     const frame = this.props.frame;
     const style = this.props.style;
     const margin = (style && resolveBoxStyle('margin', style)) || blank;

@@ -28,8 +28,11 @@ const SamplingProfiler = {
       error = e.toString();
     }
 
-    const {JSCSamplingProfiler} = require('../BatchedBridge/NativeModules');
-    JSCSamplingProfiler.operationComplete(token, result, error);
+    const NativeJSCSamplingProfiler = require('./NativeJSCSamplingProfiler')
+      .default;
+    if (NativeJSCSamplingProfiler) {
+      NativeJSCSamplingProfiler.operationComplete(token, result, error);
+    }
   },
 };
 

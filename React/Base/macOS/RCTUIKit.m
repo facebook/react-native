@@ -7,7 +7,7 @@
 
 // TODO(macOS ISS#2323203)
 
-#import "React/RCTUIKit.h" // TODO(macOS ISS#2323203)
+#import <React/RCTUIKit.h> // TODO(macOS ISS#2323203)
 
 #import <React/RCTAssert.h>
 
@@ -87,19 +87,6 @@ void UIGraphicsEndImageContext(void)
 
 // UIImage
 
-static NSData *NSImageDataForFileType(NSImage *image, NSBitmapImageFileType fileType, NSDictionary<NSString *, id> *properties)
-{
-  RCTAssert(image.representations.count == 1, @"Expected only a single representation since UIImage only supports one.");
-
-  NSBitmapImageRep *imageRep = (NSBitmapImageRep *)image.representations.firstObject;
-  if (![imageRep isKindOfClass:[NSBitmapImageRep class]]) {
-    RCTAssert([imageRep isKindOfClass:[NSBitmapImageRep class]], @"We need an NSBitmapImageRep to create an image.");
-    return nil;
-  }
-
-  return [imageRep representationUsingType:fileType properties:properties];
-}
-
 CGFloat UIImageGetScale(NSImage *image)
 {
   if (image == nil) {
@@ -119,19 +106,32 @@ CGFloat UIImageGetScale(NSImage *image)
   return 1.0;
 }
 
-NSData *UIImagePNGRepresentation(NSImage *image)
-{
-  return NSImageDataForFileType(image, NSBitmapImageFileTypePNG, @{});
-}
-
-NSData *UIImageJPEGRepresentation(NSImage *image, CGFloat compressionQuality)
-{
-  return NSImageDataForFileType(image, NSBitmapImageFileTypeJPEG, @{NSImageCompressionFactor : @(compressionQuality)});
-}
-
 CGImageRef UIImageGetCGImageRef(NSImage *image)
 {
   return [image CGImageForProposedRect:NULL context:NULL hints:NULL];
+}
+
+static NSData *NSImageDataForFileType(NSImage *image, NSBitmapImageFileType fileType, NSDictionary<NSString *, id> *properties)
+{
+  RCTAssert(image.representations.count == 1, @"Expected only a single representation since UIImage only supports one.");
+
+  NSBitmapImageRep *imageRep = (NSBitmapImageRep *)image.representations.firstObject;
+  if (![imageRep isKindOfClass:[NSBitmapImageRep class]]) {
+    RCTAssert([imageRep isKindOfClass:[NSBitmapImageRep class]], @"We need an NSBitmapImageRep to create an image.");
+    return nil;
+  }
+
+  return [imageRep representationUsingType:fileType properties:properties];
+}
+
+NSData *UIImagePNGRepresentation(NSImage *image) {
+  return NSImageDataForFileType(image, NSBitmapImageFileTypePNG, @{});
+}
+
+NSData *UIImageJPEGRepresentation(NSImage *image, CGFloat compressionQuality) {
+  return NSImageDataForFileType(image,
+                                NSBitmapImageFileTypeJPEG,
+                                @{NSImageCompressionFactor: @(1.0)});
 }
 
 // UIBezierPath

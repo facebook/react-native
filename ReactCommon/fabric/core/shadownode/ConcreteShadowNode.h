@@ -22,7 +22,7 @@ namespace react {
  * with many handy features.
  */
 template <
-    const char *concreteComponentName,
+    ComponentName concreteComponentName,
     typename PropsT,
     typename EventEmitterT = EventEmitter,
     typename StateDataT = StateData>
@@ -80,8 +80,11 @@ class ConcreteShadowNode : public ShadowNode {
   }
 
   const SharedConcreteProps getProps() const {
-    assert(std::dynamic_pointer_cast<const PropsT>(props_));
-    return std::static_pointer_cast<const PropsT>(props_);
+    assert(props_ && "Props must not be `nullptr`.");
+    assert(
+        std::dynamic_pointer_cast<ConcreteProps const>(props_) &&
+        "Props must be an instance of ConcreteProps class.");
+    return std::static_pointer_cast<ConcreteProps const>(props_);
   }
 
   /*
@@ -89,7 +92,11 @@ class ConcreteShadowNode : public ShadowNode {
    * Thread-safe after the node is sealed.
    */
   ConcreteStateData const &getStateData() const {
-    return std::static_pointer_cast<const ConcreteState>(state_)->getData();
+    assert(state_ && "State must not be `nullptr`.");
+    assert(
+        std::dynamic_pointer_cast<ConcreteState const>(state_) &&
+        "State must be an instance of ConcreteState class.");
+    return std::static_pointer_cast<ConcreteState const>(state_)->getData();
   }
 
   /*

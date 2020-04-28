@@ -12,7 +12,9 @@
 'use strict';
 
 const React = require('react');
-// $FlowFixMe
+/* $FlowFixMe(>=0.99.0 site=react_native_ios_fb) This comment suppresses an
+ * error found when Flow v0.99 was deployed. To see the error, delete this
+ * comment and run Flow. */
 const DrawerLayoutAndroid = require('../DrawerLayoutAndroid.android');
 const View = require('../../View/View');
 
@@ -23,7 +25,7 @@ describe('<DrawerLayoutAndroid />', () => {
     const instance = render.create(
       <DrawerLayoutAndroid
         drawerWidth={300}
-        drawerPosition={DrawerLayoutAndroid.positions.Left}
+        drawerPosition="left"
         renderNavigationView={() => <View />}
       />,
     );
@@ -34,7 +36,7 @@ describe('<DrawerLayoutAndroid />', () => {
     const output = render.shallow(
       <DrawerLayoutAndroid
         drawerWidth={300}
-        drawerPosition={DrawerLayoutAndroid.positions.Left}
+        drawerPosition="left"
         renderNavigationView={() => <View />}
       />,
     );
@@ -47,7 +49,7 @@ describe('<DrawerLayoutAndroid />', () => {
     const output = render.shallow(
       <DrawerLayoutAndroid
         drawerWidth={300}
-        drawerPosition={DrawerLayoutAndroid.positions.Left}
+        drawerPosition="left"
         renderNavigationView={() => <View />}
       />,
     );
@@ -60,7 +62,7 @@ describe('<DrawerLayoutAndroid />', () => {
     const instance = render.create(
       <DrawerLayoutAndroid
         drawerWidth={300}
-        drawerPosition={DrawerLayoutAndroid.positions.Left}
+        drawerPosition="left"
         renderNavigationView={() => <View />}
       />,
     );

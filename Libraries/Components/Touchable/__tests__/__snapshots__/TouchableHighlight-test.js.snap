@@ -4,8 +4,8 @@ exports[`TouchableHighlight renders correctly 1`] = `
 <View
   acceptsKeyboardFocus={true}
   accessible={true}
-  clickable={false}
   enableFocusRing={true}
+  focusable={false}
   isTVSelectable={true}
   onClick={[Function]}
   onResponderGrant={[Function]}

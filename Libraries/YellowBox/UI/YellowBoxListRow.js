@@ -13,9 +13,9 @@
 const React = require('react');
 const StyleSheet = require('../../StyleSheet/StyleSheet');
 const Text = require('../../Text/Text');
-const YellowBoxPressable = require('./YellowBoxPressable');
 const View = require('../../Components/View/View');
 const YellowBoxCategory = require('../Data/YellowBoxCategory');
+const YellowBoxPressable = require('./YellowBoxPressable');
 const YellowBoxStyle = require('./YellowBoxStyle');
 const YellowBoxWarning = require('../Data/YellowBoxWarning');
 
@@ -28,8 +28,8 @@ type Props = $ReadOnly<{|
 |}>;
 
 class YellowBoxListRow extends React.Component<Props> {
-  static GUTTER = StyleSheet.hairlineWidth;
-  static HEIGHT = 48;
+  static GUTTER: number = StyleSheet.hairlineWidth;
+  static HEIGHT: number = 48;
 
   shouldComponentUpdate(nextProps: Props): boolean {
     const prevProps = this.props;
@@ -38,7 +38,7 @@ class YellowBoxListRow extends React.Component<Props> {
       prevProps.onPress !== nextProps.onPress ||
       prevProps.warnings.length !== nextProps.warnings.length ||
       prevProps.warnings.some(
-        (prevWarning, index) => prevWarning !== nextProps[index],
+        (prevWarning, index) => prevWarning !== nextProps.warnings[index],
       )
     );
   }

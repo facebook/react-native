@@ -1,6 +1,14 @@
 PODS:
   - boost-for-react-native (1.63.0)
   - DoubleConversion (1.1.6)
+  - FBLazyVector (0.61.5-microsoft-fb61merge.1)
+  - FBReactNativeSpec (0.61.5-microsoft-fb61merge.1):
+    - Folly (= 2018.10.22.00)
+    - RCTRequired (= 0.61.5-microsoft-fb61merge.1)
+    - RCTTypeSafety (= 0.61.5-microsoft-fb61merge.1)
+    - React-Core (= 0.61.5-microsoft-fb61merge.1)
+    - React-jsi (= 0.61.5-microsoft-fb61merge.1)
+    - ReactCommon/turbomodule/core (= 0.61.5-microsoft-fb61merge.1)
   - Folly (2018.10.22.00):
     - boost-for-react-native
     - DoubleConversion
@@ -11,171 +19,299 @@ PODS:
     - DoubleConversion
     - glog
   - glog (0.3.5)
-  - React (1000.0.0):
-    - React-Core (= 1000.0.0)
-    - React-DevSupport (= 1000.0.0)
-    - React-RCTActionSheet (= 1000.0.0)
-    - React-RCTAnimation (= 1000.0.0)
-    - React-RCTBlob (= 1000.0.0)
-    - React-RCTImage (= 1000.0.0)
-    - React-RCTLinking (= 1000.0.0)
-    - React-RCTNetwork (= 1000.0.0)
-    - React-RCTSettings (= 1000.0.0)
-    - React-RCTText (= 1000.0.0)
-    - React-RCTVibration (= 1000.0.0)
-    - React-RCTWebSocket (= 1000.0.0)
-  - React-ART (1000.0.0):
-    - React-Core (= 1000.0.0)
-  - React-Core (1000.0.0):
+  - RCTRequired (0.61.5-microsoft-fb61merge.1)
+  - RCTTypeSafety (0.61.5-microsoft-fb61merge.1):
+    - FBLazyVector (= 0.61.5-microsoft-fb61merge.1)
     - Folly (= 2018.10.22.00)
-    - React-cxxreact (= 1000.0.0)
-    - React-jsiexecutor (= 1000.0.0)
-    - yoga (= 1000.0.0.React)
-  - React-cxxreact (1000.0.0):
+    - RCTRequired (= 0.61.5-microsoft-fb61merge.1)
+    - React-Core (= 0.61.5-microsoft-fb61merge.1)
+  - React (0.61.5-microsoft-fb61merge.1):
+    - React-Core (= 0.61.5-microsoft-fb61merge.1)
+    - React-Core/DevSupport (= 0.61.5-microsoft-fb61merge.1)
+    - React-Core/RCTWebSocket (= 0.61.5-microsoft-fb61merge.1)
+    - React-RCTActionSheet (= 0.61.5-microsoft-fb61merge.1)
+    - React-RCTAnimation (= 0.61.5-microsoft-fb61merge.1)
+    - React-RCTBlob (= 0.61.5-microsoft-fb61merge.1)
+    - React-RCTImage (= 0.61.5-microsoft-fb61merge.1)
+    - React-RCTLinking (= 0.61.5-microsoft-fb61merge.1)
+    - React-RCTNetwork (= 0.61.5-microsoft-fb61merge.1)
+    - React-RCTSettings (= 0.61.5-microsoft-fb61merge.1)
+    - React-RCTText (= 0.61.5-microsoft-fb61merge.1)
+    - React-RCTVibration (= 0.61.5-microsoft-fb61merge.1)
+  - React-ART (0.61.5-microsoft-fb61merge.1):
+    - React-Core/ARTHeaders (= 0.61.5-microsoft-fb61merge.1)
+  - React-Core (0.61.5-microsoft-fb61merge.1):
+    - Folly (= 2018.10.22.00)
+    - glog
+    - React-Core/Default (= 0.61.5-microsoft-fb61merge.1)
+    - React-cxxreact (= 0.61.5-microsoft-fb61merge.1)
+    - React-jsi (= 0.61.5-microsoft-fb61merge.1)
+    - React-jsiexecutor (= 0.61.5-microsoft-fb61merge.1)
+    - Yoga
+  - React-Core/ARTHeaders (0.61.5-microsoft-fb61merge.1):
+    - Folly (= 2018.10.22.00)
+    - glog
+    - React-Core/Default
+    - React-cxxreact (= 0.61.5-microsoft-fb61merge.1)
+    - React-jsi (= 0.61.5-microsoft-fb61merge.1)
+    - React-jsiexecutor (= 0.61.5-microsoft-fb61merge.1)
+    - Yoga
+  - React-Core/CoreModulesHeaders (0.61.5-microsoft-fb61merge.1):
+    - Folly (= 2018.10.22.00)
+    - glog
+    - React-Core/Default
+    - React-cxxreact (= 0.61.5-microsoft-fb61merge.1)
+    - React-jsi (= 0.61.5-microsoft-fb61merge.1)
+    - React-jsiexecutor (= 0.61.5-microsoft-fb61merge.1)
+    - Yoga
+  - React-Core/Default (0.61.5-microsoft-fb61merge.1):
+    - Folly (= 2018.10.22.00)
+    - glog
+    - React-cxxreact (= 0.61.5-microsoft-fb61merge.1)
+    - React-jsi (= 0.61.5-microsoft-fb61merge.1)
+    - React-jsiexecutor (= 0.61.5-microsoft-fb61merge.1)
+    - Yoga
+  - React-Core/DevSupport (0.61.5-microsoft-fb61merge.1):
+    - Folly (= 2018.10.22.00)
+    - glog
+    - React-Core/Default (= 0.61.5-microsoft-fb61merge.1)
+    - React-Core/RCTWebSocket (= 0.61.5-microsoft-fb61merge.1)
+    - React-cxxreact (= 0.61.5-microsoft-fb61merge.1)
+    - React-jsi (= 0.61.5-microsoft-fb61merge.1)
+    - React-jsiexecutor (= 0.61.5-microsoft-fb61merge.1)
+    - React-jsinspector (= 0.61.5-microsoft-fb61merge.1)
+    - Yoga
+  - React-Core/RCTActionSheetHeaders (0.61.5-microsoft-fb61merge.1):
+    - Folly (= 2018.10.22.00)
+    - glog
+    - React-Core/Default
+    - React-cxxreact (= 0.61.5-microsoft-fb61merge.1)
+    - React-jsi (= 0.61.5-microsoft-fb61merge.1)
+    - React-jsiexecutor (= 0.61.5-microsoft-fb61merge.1)
+    - Yoga
+  - React-Core/RCTAnimationHeaders (0.61.5-microsoft-fb61merge.1):
+    - Folly (= 2018.10.22.00)
+    - glog
+    - React-Core/Default
+    - React-cxxreact (= 0.61.5-microsoft-fb61merge.1)
+    - React-jsi (= 0.61.5-microsoft-fb61merge.1)
+    - React-jsiexecutor (= 0.61.5-microsoft-fb61merge.1)
+    - Yoga
+  - React-Core/RCTBlobHeaders (0.61.5-microsoft-fb61merge.1):
+    - Folly (= 2018.10.22.00)
+    - glog
+    - React-Core/Default
+    - React-cxxreact (= 0.61.5-microsoft-fb61merge.1)
+    - React-jsi (= 0.61.5-microsoft-fb61merge.1)
+    - React-jsiexecutor (= 0.61.5-microsoft-fb61merge.1)
+    - Yoga
+  - React-Core/RCTImageHeaders (0.61.5-microsoft-fb61merge.1):
+    - Folly (= 2018.10.22.00)
+    - glog
+    - React-Core/Default
+    - React-cxxreact (= 0.61.5-microsoft-fb61merge.1)
+    - React-jsi (= 0.61.5-microsoft-fb61merge.1)
+    - React-jsiexecutor (= 0.61.5-microsoft-fb61merge.1)
+    - Yoga
+  - React-Core/RCTLinkingHeaders (0.61.5-microsoft-fb61merge.1):
+    - Folly (= 2018.10.22.00)
+    - glog
+    - React-Core/Default
+    - React-cxxreact (= 0.61.5-microsoft-fb61merge.1)
+    - React-jsi (= 0.61.5-microsoft-fb61merge.1)
+    - React-jsiexecutor (= 0.61.5-microsoft-fb61merge.1)
+    - Yoga
+  - React-Core/RCTNetworkHeaders (0.61.5-microsoft-fb61merge.1):
+    - Folly (= 2018.10.22.00)
+    - glog
+    - React-Core/Default
+    - React-cxxreact (= 0.61.5-microsoft-fb61merge.1)
+    - React-jsi (= 0.61.5-microsoft-fb61merge.1)
+    - React-jsiexecutor (= 0.61.5-microsoft-fb61merge.1)
+    - Yoga
+  - React-Core/RCTPushNotificationHeaders (0.61.5-microsoft-fb61merge.1):
+    - Folly (= 2018.10.22.00)
+    - glog
+    - React-Core/Default
+    - React-cxxreact (= 0.61.5-microsoft-fb61merge.1)
+    - React-jsi (= 0.61.5-microsoft-fb61merge.1)
+    - React-jsiexecutor (= 0.61.5-microsoft-fb61merge.1)
+    - Yoga
+  - React-Core/RCTSettingsHeaders (0.61.5-microsoft-fb61merge.1):
+    - Folly (= 2018.10.22.00)
+    - glog
+    - React-Core/Default
+    - React-cxxreact (= 0.61.5-microsoft-fb61merge.1)
+    - React-jsi (= 0.61.5-microsoft-fb61merge.1)
+    - React-jsiexecutor (= 0.61.5-microsoft-fb61merge.1)
+    - Yoga
+  - React-Core/RCTTextHeaders (0.61.5-microsoft-fb61merge.1):
+    - Folly (= 2018.10.22.00)
+    - glog
+    - React-Core/Default
+    - React-cxxreact (= 0.61.5-microsoft-fb61merge.1)
+    - React-jsi (= 0.61.5-microsoft-fb61merge.1)
+    - React-jsiexecutor (= 0.61.5-microsoft-fb61merge.1)
+    - Yoga
+  - React-Core/RCTVibrationHeaders (0.61.5-microsoft-fb61merge.1):
+    - Folly (= 2018.10.22.00)
+    - glog
+    - React-Core/Default
+    - React-cxxreact (= 0.61.5-microsoft-fb61merge.1)
+    - React-jsi (= 0.61.5-microsoft-fb61merge.1)
+    - React-jsiexecutor (= 0.61.5-microsoft-fb61merge.1)
+    - Yoga
+  - React-Core/RCTWebSocket (0.61.5-microsoft-fb61merge.1):
+    - Folly (= 2018.10.22.00)
+    - glog
+    - React-Core/Default (= 0.61.5-microsoft-fb61merge.1)
+    - React-cxxreact (= 0.61.5-microsoft-fb61merge.1)
+    - React-jsi (= 0.61.5-microsoft-fb61merge.1)
+    - React-jsiexecutor (= 0.61.5-microsoft-fb61merge.1)
+    - Yoga
+  - React-CoreModules (0.61.5-microsoft-fb61merge.1):
+    - FBReactNativeSpec (= 0.61.5-microsoft-fb61merge.1)
+    - Folly (= 2018.10.22.00)
+    - RCTTypeSafety (= 0.61.5-microsoft-fb61merge.1)
+    - React-Core/CoreModulesHeaders (= 0.61.5-microsoft-fb61merge.1)
+    - React-RCTImage (= 0.61.5-microsoft-fb61merge.1)
+    - ReactCommon/turbomodule/core (= 0.61.5-microsoft-fb61merge.1)
+  - React-cxxreact (0.61.5-microsoft-fb61merge.1):
     - boost-for-react-native (= 1.63.0)
     - DoubleConversion
     - Folly (= 2018.10.22.00)
     - glog
-    - React-jsinspector (= 1000.0.0)
-  - React-DevSupport (1000.0.0):
-    - React-Core (= 1000.0.0)
-    - React-RCTWebSocket (= 1000.0.0)
-  - React-fishhook (1000.0.0)
-  - React-jscallinvoker (1000.0.0):
-    - Folly (= 2018.10.22.00)
-    - React-cxxreact (= 1000.0.0)
-  - React-jsi (1000.0.0):
+    - React-jsinspector (= 0.61.5-microsoft-fb61merge.1)
+  - React-jsi (0.61.5-microsoft-fb61merge.1):
     - boost-for-react-native (= 1.63.0)
     - DoubleConversion
     - Folly (= 2018.10.22.00)
     - glog
-    - React-jsi/Default (= 1000.0.0)
-  - React-jsi/Default (1000.0.0):
+    - React-jsi/Default (= 0.61.5-microsoft-fb61merge.1)
+  - React-jsi/Default (0.61.5-microsoft-fb61merge.1):
     - boost-for-react-native (= 1.63.0)
     - DoubleConversion
     - Folly (= 2018.10.22.00)
     - glog
-  - React-jsiexecutor (1000.0.0):
+  - React-jsiexecutor (0.61.5-microsoft-fb61merge.1):
     - DoubleConversion
     - Folly (= 2018.10.22.00)
     - glog
-    - React-cxxreact (= 1000.0.0)
-    - React-jsi (= 1000.0.0)
-  - React-jsinspector (1000.0.0)
-  - React-RCTActionSheet (1000.0.0):
-    - React-Core (= 1000.0.0)
-  - React-RCTAnimation (1000.0.0):
-    - React-Core (= 1000.0.0)
-  - React-RCTBlob (1000.0.0):
-    - React-Core (= 1000.0.0)
-    - React-RCTNetwork (= 1000.0.0)
-    - React-RCTWebSocket (= 1000.0.0)
-  - React-RCTCameraRoll (1000.0.0):
-    - React-Core (= 1000.0.0)
-    - React-RCTImage (= 1000.0.0)
-  - React-RCTImage (1000.0.0):
-    - React-Core (= 1000.0.0)
-    - React-RCTNetwork (= 1000.0.0)
-  - React-RCTLinking (1000.0.0):
-    - React-Core (= 1000.0.0)
-  - React-RCTNetwork (1000.0.0):
-    - React-Core (= 1000.0.0)
-  - React-RCTPushNotification (1000.0.0):
-    - React-Core (= 1000.0.0)
-  - React-RCTSettings (1000.0.0):
-    - React-Core (= 1000.0.0)
-  - React-RCTTest (1000.0.0):
-    - React-Core (= 1000.0.0)
-  - React-RCTText (1000.0.0):
-    - React-Core (= 1000.0.0)
-  - React-RCTVibration (1000.0.0):
-    - React-Core (= 1000.0.0)
-  - React-RCTWebSocket (1000.0.0):
-    - React-Core (= 1000.0.0)
-    - React-fishhook (= 1000.0.0)
-  - React-turbomodule-core (1000.0.0):
+    - React-cxxreact (= 0.61.5-microsoft-fb61merge.1)
+    - React-jsi (= 0.61.5-microsoft-fb61merge.1)
+  - React-jsinspector (0.61.5-microsoft-fb61merge.1)
+  - React-RCTActionSheet (0.61.5-microsoft-fb61merge.1):
+    - React-Core/RCTActionSheetHeaders (= 0.61.5-microsoft-fb61merge.1)
+  - React-RCTAnimation (0.61.5-microsoft-fb61merge.1):
+    - React-Core/RCTAnimationHeaders (= 0.61.5-microsoft-fb61merge.1)
+  - React-RCTBlob (0.61.5-microsoft-fb61merge.1):
+    - React-Core/RCTBlobHeaders (= 0.61.5-microsoft-fb61merge.1)
+    - React-Core/RCTWebSocket (= 0.61.5-microsoft-fb61merge.1)
+    - React-jsi (= 0.61.5-microsoft-fb61merge.1)
+    - React-RCTNetwork (= 0.61.5-microsoft-fb61merge.1)
+  - React-RCTImage (0.61.5-microsoft-fb61merge.1):
+    - React-Core/RCTImageHeaders (= 0.61.5-microsoft-fb61merge.1)
+    - React-RCTNetwork (= 0.61.5-microsoft-fb61merge.1)
+  - React-RCTLinking (0.61.5-microsoft-fb61merge.1):
+    - React-Core/RCTLinkingHeaders (= 0.61.5-microsoft-fb61merge.1)
+  - React-RCTNetwork (0.61.5-microsoft-fb61merge.1):
+    - React-Core/RCTNetworkHeaders (= 0.61.5-microsoft-fb61merge.1)
+  - React-RCTPushNotification (0.61.5-microsoft-fb61merge.1):
+    - React-Core/RCTPushNotificationHeaders (= 0.61.5-microsoft-fb61merge.1)
+  - React-RCTSettings (0.61.5-microsoft-fb61merge.1):
+    - React-Core/RCTSettingsHeaders (= 0.61.5-microsoft-fb61merge.1)
+  - React-RCTTest (0.61.5-microsoft-fb61merge.1):
+    - React-Core (= 0.61.5-microsoft-fb61merge.1)
+  - React-RCTText (0.61.5-microsoft-fb61merge.1):
+    - React-Core/RCTTextHeaders (= 0.61.5-microsoft-fb61merge.1)
+  - React-RCTVibration (0.61.5-microsoft-fb61merge.1):
+    - React-Core/RCTVibrationHeaders (= 0.61.5-microsoft-fb61merge.1)
+  - ReactCommon/jscallinvoker (0.61.5-microsoft-fb61merge.1):
+    - DoubleConversion
     - Folly (= 2018.10.22.00)
-    - React-Core (= 1000.0.0)
-    - React-cxxreact (= 1000.0.0)
-    - React-jscallinvoker (= 1000.0.0)
-    - React-jsi (= 1000.0.0)
-    - React-turbomodule-core/core-ios (= 1000.0.0)
-  - React-turbomodule-core/core-ios (1000.0.0):
+    - glog
+    - React-cxxreact (= 0.61.5-microsoft-fb61merge.1)
+  - ReactCommon/turbomodule/core (0.61.5-microsoft-fb61merge.1):
+    - DoubleConversion
     - Folly (= 2018.10.22.00)
-    - React-Core (= 1000.0.0)
-    - React-cxxreact (= 1000.0.0)
-    - React-jscallinvoker (= 1000.0.0)
-    - React-jsi (= 1000.0.0)
-  - React-turbomodule-samples (1000.0.0):
+    - glog
+    - React-Core (= 0.61.5-microsoft-fb61merge.1)
+    - React-cxxreact (= 0.61.5-microsoft-fb61merge.1)
+    - React-jsi (= 0.61.5-microsoft-fb61merge.1)
+    - ReactCommon/jscallinvoker (= 0.61.5-microsoft-fb61merge.1)
+  - ReactCommon/turbomodule/samples (0.61.5-microsoft-fb61merge.1):
+    - DoubleConversion
     - Folly (= 2018.10.22.00)
-    - React-Core (= 1000.0.0)
-    - React-cxxreact (= 1000.0.0)
-    - React-jsi (= 1000.0.0)
-    - React-turbomodule-core (= 1000.0.0)
-    - React-turbomodule-samples/samples-ios (= 1000.0.0)
-  - React-turbomodule-samples/samples-ios (1000.0.0):
-    - Folly (= 2018.10.22.00)
-    - React-Core (= 1000.0.0)
-    - React-cxxreact (= 1000.0.0)
-    - React-jsi (= 1000.0.0)
-    - React-turbomodule-core (= 1000.0.0)
-  - yoga (1000.0.0.React)
+    - glog
+    - React-Core (= 0.61.5-microsoft-fb61merge.1)
+    - React-cxxreact (= 0.61.5-microsoft-fb61merge.1)
+    - React-jsi (= 0.61.5-microsoft-fb61merge.1)
+    - ReactCommon/jscallinvoker (= 0.61.5-microsoft-fb61merge.1)
+    - ReactCommon/turbomodule/core (= 0.61.5-microsoft-fb61merge.1)
+  - Yoga (1.14.0)
 
 DEPENDENCIES:
   - boost-for-react-native (from `../third-party-podspecs/boost-for-react-native.podspec`)
   - DoubleConversion (from `../third-party-podspecs/DoubleConversion.podspec`)
+  - FBLazyVector (from `../Libraries/FBLazyVector`)
+  - FBReactNativeSpec (from `../Libraries/FBReactNativeSpec`)
   - Folly (from `../third-party-podspecs/Folly.podspec`)
   - glog (from `../third-party-podspecs/glog.podspec`)
+  - RCTRequired (from `../Libraries/RCTRequired`)
+  - RCTTypeSafety (from `../Libraries/TypeSafety`)
   - React (from `../`)
   - React-ART (from `../Libraries/ART`)
-  - React-Core (from `../React`)
+  - React-Core (from `../`)
+  - React-Core/DevSupport (from `../`)
+  - React-Core/RCTWebSocket (from `../`)
+  - React-CoreModules (from `../React/CoreModules`)
   - React-cxxreact (from `../ReactCommon/cxxreact`)
-  - React-DevSupport (from `../React`)
-  - React-fishhook (from `../Libraries/fishhook`)
-  - React-jscallinvoker (from `../ReactCommon/jscallinvoker`)
   - React-jsi (from `../ReactCommon/jsi`)
   - React-jsiexecutor (from `../ReactCommon/jsiexecutor`)
   - React-jsinspector (from `../ReactCommon/jsinspector`)
   - React-RCTActionSheet (from `../Libraries/ActionSheetIOS`)
   - React-RCTAnimation (from `../Libraries/NativeAnimation`)
   - React-RCTBlob (from `../Libraries/Blob`)
-  - React-RCTCameraRoll (from `../Libraries/CameraRoll`)
   - React-RCTImage (from `../Libraries/Image`)
   - React-RCTLinking (from `../Libraries/LinkingIOS`)
   - React-RCTNetwork (from `../Libraries/Network`)
   - React-RCTPushNotification (from `../Libraries/PushNotificationIOS`)
   - React-RCTSettings (from `../Libraries/Settings`)
-  - React-RCTTest (from `./RCTTest`)
+  - React-RCTTest (from `RCTTest`)
   - React-RCTText (from `../Libraries/Text`)
   - React-RCTVibration (from `../Libraries/Vibration`)
-  - React-RCTWebSocket (from `../Libraries/WebSocket`)
-  - React-turbomodule-core (from `../ReactCommon/turbomodule/core`)
-  - React-turbomodule-samples (from `../ReactCommon/turbomodule/samples`)
-  - yoga (from `../ReactCommon/yoga`)
+  - ReactCommon/jscallinvoker (from `../ReactCommon`)
+  - ReactCommon/turbomodule/core (from `../ReactCommon`)
+  - ReactCommon/turbomodule/samples (from `../ReactCommon`)
+  - Yoga (from `../ReactCommon/yoga`)
 
 EXTERNAL SOURCES:
   boost-for-react-native:
     :podspec: "../third-party-podspecs/boost-for-react-native.podspec"
   DoubleConversion:
     :podspec: "../third-party-podspecs/DoubleConversion.podspec"
+  FBLazyVector:
+    :path: "../Libraries/FBLazyVector"
+  FBReactNativeSpec:
+    :path: "../Libraries/FBReactNativeSpec"
   Folly:
     :podspec: "../third-party-podspecs/Folly.podspec"
   glog:
     :podspec: "../third-party-podspecs/glog.podspec"
+  RCTRequired:
+    :path: "../Libraries/RCTRequired"
+  RCTTypeSafety:
+    :path: "../Libraries/TypeSafety"
   React:
     :path: "../"
   React-ART:
     :path: "../Libraries/ART"
   React-Core:
-    :path: "../React"
+    :path: "../"
+  React-CoreModules:
+    :path: "../React/CoreModules"
   React-cxxreact:
     :path: "../ReactCommon/cxxreact"
-  React-DevSupport:
-    :path: "../React"
-  React-fishhook:
-    :path: "../Libraries/fishhook"
-  React-jscallinvoker:
-    :path: "../ReactCommon/jscallinvoker"
   React-jsi:
     :path: "../ReactCommon/jsi"
   React-jsiexecutor:
@@ -188,8 +324,6 @@ EXTERNAL SOURCES:
     :path: "../Libraries/NativeAnimation"
   React-RCTBlob:
     :path: "../Libraries/Blob"
-  React-RCTCameraRoll:
-    :path: "../Libraries/CameraRoll"
   React-RCTImage:
     :path: "../Libraries/Image"
   React-RCTLinking:
@@ -201,52 +335,47 @@ EXTERNAL SOURCES:
   React-RCTSettings:
     :path: "../Libraries/Settings"
   React-RCTTest:
-    :path: "./RCTTest"
+    :path: RCTTest
   React-RCTText:
     :path: "../Libraries/Text"
   React-RCTVibration:
     :path: "../Libraries/Vibration"
-  React-RCTWebSocket:
-    :path: "../Libraries/WebSocket"
-  React-turbomodule-core:
-    :path: "../ReactCommon/turbomodule/core"
-  React-turbomodule-samples:
-    :path: "../ReactCommon/turbomodule/samples"
-  yoga:
+  ReactCommon:
+    :path: "../ReactCommon"
+  Yoga:
     :path: "../ReactCommon/yoga"
 
 SPEC CHECKSUMS:
   boost-for-react-native: a110407d9db2642fd2e1bcd7c5a51c81f2521dc9
   DoubleConversion: a1bc12a74baa397a2609e0f10e19b8062d864053
+  FBLazyVector: 5dfe164c4ecb355c7c99cd823e1d84ff1a5788bc
+  FBReactNativeSpec: 28b8ea431b593568368273a8351d3626b7072b76
   Folly: feff29ba9d0b7c2e4f793a94942831d6cc5bbad7
   glog: b3f6d74f3e2d33396addc0ee724d2b2b79fc3e00
-  React: 74861516f70acbdca7b2548aa557bf8deee9698d
-  React-ART: 08abf61755c11f2adbc78ae6e2f5b087a403a677
-  React-Core: 06246a75cdb32beacf777cda87c61c13276b4271
-  React-cxxreact: 3e49ca16e0117d19b859450041c7fe4dc9296399
-  React-DevSupport: 91d8812ad81fbfa8084b06e131e3d80087c665e9
-  React-fishhook: 1a55e7b86dcab2d0e0db1268681365c3f5eefe0a
-  React-jscallinvoker: f84d92e0e70a0f8a04907d0682a7c58533708b67
-  React-jsi: 87033eb3052f4e6b8bf54af32c8f0a29ffbec13c
-  React-jsiexecutor: 9af31e4fb3c7157d6437d11a4686974ffd5310b7
-  React-jsinspector: bd0f3d1d100ec90008bdceeecc3b2ccde15f349c
-  React-RCTActionSheet: c3adb7754a32492fc5e0bcaf2395221006588b6b
-  React-RCTAnimation: ae01c6e813366aef34ebe182f007ca42365b5f47
-  React-RCTBlob: 4c36d6a42e2d2ad5deff4b2182ffcf4c6ff0c048
-  React-RCTCameraRoll: 4c8233e7d0d3aee3448faaaa5df90f8168abaeed
-  React-RCTImage: 841010ce5a7a0eb96bc3f22659560a176a254fc9
-  React-RCTLinking: 4fe50097a4d8c9649b25fd6639257aa475530656
-  React-RCTNetwork: b7bf49cc581752158e8aeee3e9aae83ab61fbcd0
-  React-RCTPushNotification: 79cbb2aaf51f65b94e844c876f462ec07be33ac5
-  React-RCTSettings: 1ad264bf310d7cf7f2b29c94836b84e5a0ca1561
-  React-RCTTest: 6621c76066fa0c1293149d06c2bf2d5b06be6956
-  React-RCTText: fc8369e3ce7c9a474efc539d84b4f9bdc921bc0a
-  React-RCTVibration: d9a3da17bd5d3f4d8b57a40e3e7fb842f7e62694
-  React-RCTWebSocket: 7bb0868fafa9e8ed961a8f87879e2d2bf7946b3d
-  React-turbomodule-core: 970dd38c0e59a09b5919e0a097abdd099c4ae9a7
-  React-turbomodule-samples: 4d9081847444fe313ac06bb6ec604c35e49ba8c7
-  yoga: fb23117669f477b0f4b3849d6999414cba0c69b7
+  RCTRequired: a92bf3036ee83300f125e3ee403252f551293faf
+  RCTTypeSafety: 894595ede98c88e05ee2032f4316e30a07c909d0
+  React: 1a7744d3583f828c5b368d97bc1d6883c3ef5061
+  React-ART: 55140fce0343403c2673714c647dcce3197a3e21
+  React-Core: f9055a8a893057ebbb2d6c23760e3f6ef79d68fb
+  React-CoreModules: b9bb34399e89d5e0377318e133da1ac378931f39
+  React-cxxreact: c0472143c05562852bf9733164bc4df083267b0e
+  React-jsi: e72668b938c2fa510bcd1512ba57428a85bda150
+  React-jsiexecutor: dd2f155314ab1298d2de1552aab62293e91ecb90
+  React-jsinspector: cd6ba3c471eb2bc85907e6b34b330efe932bf841
+  React-RCTActionSheet: d2286019562b8d450539169bd8e652c2a1e89339
+  React-RCTAnimation: cb5a777cb6d0da54b17d1466c6fd6851a468cd89
+  React-RCTBlob: b108e5553a9a1c6876d88e6e896ec766f2160b06
+  React-RCTImage: 1110fc0018a3689e19033373eff412aad9855e0e
+  React-RCTLinking: 69e440dda05ef2a05475b6f59d6ae13df3fc0897
+  React-RCTNetwork: 24ea076fa72d5268f040154908794da9f1de4677
+  React-RCTPushNotification: 23dad6b2aed72c0314de77d69dcd71e5c4471b78
+  React-RCTSettings: ca6bee2469300226003a53a29eaac57be1e2c918
+  React-RCTTest: 054f7afca584b04069b25cde0570494d5824336d
+  React-RCTText: 8d5cf19c48793405597b7ac85e71ae48606fcf0c
+  React-RCTVibration: c1d3ddc2070a3bee4b0c8d8653393ca0ff976dc7
+  ReactCommon: 7571c31a09af5ea4d3f0bf2bc4c64b4442ff300c
+  Yoga: 8e1634114a2a688230bce816fa00459aaa088671
 
-PODFILE CHECKSUM: d10549a91f1ecde1496088874e41348b2cd79f9f
+PODFILE CHECKSUM: c0ee8fa1224b483cb7f0297981cb8fe4813aa299
 
 COCOAPODS: 1.8.4

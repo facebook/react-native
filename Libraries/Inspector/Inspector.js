@@ -115,7 +115,7 @@ class Inspector extends React.Component<
     this.setState({inspectedViewTag: newProps.inspectedViewTag});
   }
 
-  attachToDevtools = (agent: Object) => {
+  attachToDevtools: (agent: any) => void = (agent: Object) => {
     let _hideWait = null;
     const hlSub = agent.sub('highlight', ({node, name, props}) => {
       clearTimeout(_hideWait);
@@ -239,7 +239,7 @@ class Inspector extends React.Component<
     });
   }
 
-  render() {
+  render(): React.Node {
     const panelContainerStyle =
       this.state.panelPos === 'bottom'
         ? {bottom: 0}

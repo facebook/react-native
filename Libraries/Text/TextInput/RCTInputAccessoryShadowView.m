@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#import "RCTInputAccessoryShadowView.h"
+#import <React/RCTInputAccessoryShadowView.h>
 
 #import <React/RCTUtils.h>
 

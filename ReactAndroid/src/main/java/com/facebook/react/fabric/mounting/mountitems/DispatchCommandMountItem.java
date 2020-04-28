@@ -7,9 +7,8 @@
 package com.facebook.react.fabric.mounting.mountitems;
 
 import androidx.annotation.Nullable;
-import com.facebook.react.fabric.mounting.MountingManager;
 import com.facebook.react.bridge.ReadableArray;
-import com.facebook.react.bridge.UiThreadUtil;
+import com.facebook.react.fabric.mounting.MountingManager;
 
 public class DispatchCommandMountItem implements MountItem {
 

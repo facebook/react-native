@@ -16,9 +16,8 @@ TEST(ComponentDescriptorTest, createShadowNode) {
       std::make_shared<TestComponentDescriptor>(nullptr);
 
   ASSERT_EQ(descriptor->getComponentHandle(), TestShadowNode::Handle());
-  ASSERT_STREQ(
-      descriptor->getComponentName().c_str(), TestShadowNode::Name().c_str());
-  ASSERT_STREQ(descriptor->getComponentName().c_str(), "Test");
+  ASSERT_STREQ(descriptor->getComponentName(), TestShadowNode::Name());
+  ASSERT_STREQ(descriptor->getComponentName(), "Test");
 
   const auto &raw = RawProps(folly::dynamic::object("nativeID", "abc"));
   SharedProps props = descriptor->cloneProps(nullptr, raw);
@@ -30,9 +29,8 @@ TEST(ComponentDescriptorTest, createShadowNode) {
   });
 
   ASSERT_EQ(node->getComponentHandle(), TestShadowNode::Handle());
-  ASSERT_STREQ(
-      node->getComponentName().c_str(), TestShadowNode::Name().c_str());
-  ASSERT_STREQ(node->getComponentName().c_str(), "Test");
+  ASSERT_STREQ(node->getComponentName(), TestShadowNode::Name());
+  ASSERT_STREQ(node->getComponentName(), "Test");
   ASSERT_EQ(node->getTag(), 9);
   ASSERT_EQ(node->getSurfaceId(), 1);
   ASSERT_STREQ(node->getProps()->nativeId.c_str(), "abc");
@@ -52,7 +50,7 @@ TEST(ComponentDescriptorTest, cloneShadowNode) {
   });
   SharedShadowNode cloned = descriptor->cloneShadowNode(*node, {});
 
-  ASSERT_STREQ(cloned->getComponentName().c_str(), "Test");
+  ASSERT_STREQ(cloned->getComponentName(), "Test");
   ASSERT_EQ(cloned->getTag(), 9);
   ASSERT_EQ(cloned->getSurfaceId(), 1);
   ASSERT_STREQ(cloned->getProps()->nativeId.c_str(), "abc");

@@ -11,6 +11,8 @@ import com.facebook.debug.debugoverlay.model.DebugOverlayTag;
 public interface Printer {
 
   void logMessage(final DebugOverlayTag tag, final String message, Object... args);
+
   void logMessage(final DebugOverlayTag tag, final String message);
+
   boolean shouldDisplayLogMessage(final DebugOverlayTag tag);
 }

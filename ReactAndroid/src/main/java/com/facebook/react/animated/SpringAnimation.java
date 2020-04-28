@@ -1,18 +1,17 @@
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
+ * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
+ * directory of this source tree.
  */
-
 package com.facebook.react.animated;
 
 import com.facebook.react.bridge.ReadableMap;
 
 /**
  * Implementation of {@link AnimationDriver} providing support for spring animations. The
- * implementation has been copied from android implementation of Rebound library (see
- * <a href="http://facebook.github.io/rebound/">http://facebook.github.io/rebound/</a>)
+ * implementation has been copied from android implementation of Rebound library (see <a
+ * href="http://facebook.github.io/rebound/">http://facebook.github.io/rebound/</a>)
  */
 /*package*/ class SpringAnimation extends AnimationDriver {
 
@@ -101,6 +100,7 @@ import com.facebook.react.bridge.ReadableMap;
 
   /**
    * get the displacement from rest for a given physics state
+   *
    * @param state the state to measure from
    * @return the distance displaced by
    */
@@ -110,22 +110,24 @@ import com.facebook.react.bridge.ReadableMap;
 
   /**
    * check if the current state is at rest
+   *
    * @return is the spring at rest
    */
   private boolean isAtRest() {
-    return Math.abs(mCurrentState.velocity) <= mRestSpeedThreshold &&
-      (getDisplacementDistanceForState(mCurrentState) <= mDisplacementFromRestThreshold ||
-        mSpringStiffness == 0);
+    return Math.abs(mCurrentState.velocity) <= mRestSpeedThreshold
+        && (getDisplacementDistanceForState(mCurrentState) <= mDisplacementFromRestThreshold
+            || mSpringStiffness == 0);
   }
 
   /**
    * Check if the spring is overshooting beyond its target.
+   *
    * @return true if the spring is overshooting its target
    */
   private boolean isOvershooting() {
-    return mSpringStiffness > 0 &&
-      ((mStartValue < mEndValue && mCurrentState.position > mEndValue) ||
-        (mStartValue > mEndValue && mCurrentState.position < mEndValue));
+    return mSpringStiffness > 0
+        && ((mStartValue < mEndValue && mCurrentState.position > mEndValue)
+            || (mStartValue > mEndValue && mCurrentState.position < mEndValue));
   }
 
   private void advance(double realDeltaTime) {
@@ -147,7 +149,7 @@ import com.facebook.react.bridge.ReadableMap;
     double k = mSpringStiffness;
     double v0 = -mInitialVelocity;
 
-    double zeta = c / (2 * Math.sqrt(k * m ));
+    double zeta = c / (2 * Math.sqrt(k * m));
     double omega0 = Math.sqrt(k / m);
     double omega1 = omega0 * Math.sqrt(1.0 - (zeta * zeta));
     double x0 = mEndValue - mStartValue;
@@ -159,27 +161,26 @@ import com.facebook.react.bridge.ReadableMap;
       // Under damped
       double envelope = Math.exp(-zeta * omega0 * t);
       position =
-        mEndValue -
-          envelope *
-            ((v0 + zeta * omega0 * x0) / omega1 * Math.sin(omega1 * t) +
-              x0 * Math.cos(omega1 * t));
+          mEndValue
+              - envelope
+                  * ((v0 + zeta * omega0 * x0) / omega1 * Math.sin(omega1 * t)
+                      + x0 * Math.cos(omega1 * t));
       // This looks crazy -- it's actually just the derivative of the
       // oscillation function
       velocity =
-        zeta *
-          omega0 *
-          envelope *
-          (Math.sin(omega1 * t) * (v0 + zeta * omega0 * x0) / omega1 +
-            x0 * Math.cos(omega1 * t)) -
-          envelope *
-            (Math.cos(omega1 * t) * (v0 + zeta * omega0 * x0) -
-              omega1 * x0 * Math.sin(omega1 * t));
+          zeta
+                  * omega0
+                  * envelope
+                  * (Math.sin(omega1 * t) * (v0 + zeta * omega0 * x0) / omega1
+                      + x0 * Math.cos(omega1 * t))
+              - envelope
+                  * (Math.cos(omega1 * t) * (v0 + zeta * omega0 * x0)
+                      - omega1 * x0 * Math.sin(omega1 * t));
     } else {
       // Critically damped spring
       double envelope = Math.exp(-omega0 * t);
       position = mEndValue - envelope * (x0 + (v0 + omega0 * x0) * t);
-      velocity =
-        envelope * (v0 * (t * omega0 - 1) + t * x0 * (omega0 * omega0));
+      velocity = envelope * (v0 * (t * omega0 - 1) + t * x0 * (omega0 * omega0));
     }
 
     mCurrentState.position = position;

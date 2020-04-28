@@ -181,7 +181,9 @@ const TouchableBounce = ((createReactClass({
         accessibilityHint={this.props.accessibilityHint}
         accessibilityRole={this.props.accessibilityRole}
         accessibilityStates={this.props.accessibilityStates}
-        onAccessibilityTap={this.props.onAccessibilityTap} // TODO(OSS Candidate ISS#2710739)
+        accessibilityState={this.props.accessibilityState}
+        accessibilityActions={this.props.accessibilityActions}
+        onAccessibilityAction={this.props.onAccessibilityAction}
         acceptsKeyboardFocus={
           (this.props.acceptsKeyboardFocus === undefined ||
             this.props.acceptsKeyboardFocus) &&
@@ -196,8 +198,8 @@ const TouchableBounce = ((createReactClass({
         nativeID={this.props.nativeID}
         testID={this.props.testID}
         hitSlop={this.props.hitSlop}
-        clickable={
-          this.props.clickable !== false &&
+        focusable={
+          this.props.focusable !== false &&
           this.props.onPress !== undefined &&
           !this.props.disabled
         }
@@ -209,9 +211,6 @@ const TouchableBounce = ((createReactClass({
         onResponderGrant={this.touchableHandleResponderGrant}
         onResponderMove={this.touchableHandleResponderMove}
         onResponderRelease={this.touchableHandleResponderRelease}
-        /* $FlowFixMe(>=0.89.0 site=react_native_fb) This comment suppresses an
-         * error found when Flow v0.89 was deployed. To see the error, delete
-         * this comment and run Flow. */
         onResponderTerminate={this.touchableHandleResponderTerminate}
         tooltip={this.props.tooltip} // TODO(macOS/win ISS#2323203)
         onMouseEnter={this.props.onMouseEnter} // [TODO(macOS ISS#2323203)

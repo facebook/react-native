@@ -121,20 +121,22 @@ class Picker extends React.Component<PickerProps> {
   /**
    * On Android, display the options in a dialog.
    */
-  static MODE_DIALOG = MODE_DIALOG;
+  static MODE_DIALOG: $TEMPORARY$string<'dialog'> = MODE_DIALOG;
 
   /**
    * On Android, display the options in a dropdown (this is the default).
    */
-  static MODE_DROPDOWN = MODE_DROPDOWN;
+  static MODE_DROPDOWN: $TEMPORARY$string<'dropdown'> = MODE_DROPDOWN;
 
-  static Item = PickerItem;
+  static Item: typeof PickerItem = PickerItem;
 
-  static defaultProps = {
+  static defaultProps: $TEMPORARY$object<{|
+    mode: $TEMPORARY$string<'dialog'>,
+  |}> = {
     mode: MODE_DIALOG,
   };
 
-  render() {
+  render(): React.Node {
     if (
       Platform.OS === 'ios' ||
       Platform.OS === 'macos' /* TODO(macOS ISS#2323203) */

@@ -1,15 +1,14 @@
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
+ * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
+ * directory of this source tree.
  */
-
 package com.facebook.react.modules.network;
 
-import org.junit.Test;
-
 import static org.junit.Assert.assertEquals;
+
+import org.junit.Test;
 
 public class HeaderUtilTest {
   public static final String TABULATION_TEST = "\teyJhbGciOiJS\t";
@@ -24,7 +23,6 @@ public class HeaderUtilTest {
   @Test
   public void nameStripKeepsLetters() {
     assertEquals(ALPHABET_TEST, HeaderUtil.stripHeaderName(ALPHABET_TEST));
-
   }
 
   @Test
@@ -35,7 +33,6 @@ public class HeaderUtilTest {
   @Test
   public void nameStripKeepsNumbers() {
     assertEquals(NUMBERS_TEST, HeaderUtil.stripHeaderName(NUMBERS_TEST));
-
   }
 
   @Test
@@ -72,5 +69,4 @@ public class HeaderUtilTest {
   public void nameStripRemovesExtraSymbols() {
     assertEquals(BANNED_TEST_EXPECTED, HeaderUtil.stripHeaderName(NAME_BANNED_SYMBOLS_TEST));
   }
-
 }

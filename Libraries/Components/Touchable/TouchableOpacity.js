@@ -52,7 +52,7 @@ type Props = $ReadOnly<{|
  * On press down, the opacity of the wrapped view is decreased, dimming it.
  *
  * Opacity is controlled by wrapping the children in an Animated.View, which is
- * added to the view hiearchy.  Be aware that this can affect layout.
+ * added to the view hierarchy.  Be aware that this can affect layout.
  *
  * Example:
  *
@@ -311,7 +311,9 @@ const TouchableOpacity = ((createReactClass({
         accessibilityHint={this.props.accessibilityHint} // TODO(OSS Candidate ISS#2710739)
         accessibilityRole={this.props.accessibilityRole}
         accessibilityStates={this.props.accessibilityStates}
-        onAccessibilityTap={this.props.onAccessibilityTap} // TODO(OSS Candidate ISS#2710739)
+        accessibilityState={this.props.accessibilityState}
+        accessibilityActions={this.props.accessibilityActions}
+        onAccessibilityAction={this.props.onAccessibilityAction}
         acceptsKeyboardFocus={
           (this.props.acceptsKeyboardFocus === undefined ||
             this.props.acceptsKeyboardFocus) &&
@@ -336,8 +338,8 @@ const TouchableOpacity = ((createReactClass({
         hasTVPreferredFocus={this.props.hasTVPreferredFocus}
         tvParallaxProperties={this.props.tvParallaxProperties}
         hitSlop={this.props.hitSlop}
-        clickable={
-          this.props.clickable !== false && this.props.onPress !== undefined
+        focusable={
+          this.props.focusable !== false && this.props.onPress !== undefined
         }
         onClick={this.touchableHandlePress}
         onStartShouldSetResponder={this.touchableHandleStartShouldSetResponder}
@@ -354,9 +356,6 @@ const TouchableOpacity = ((createReactClass({
         onDragLeave={this.props.onDragLeave}
         onDrop={this.props.onDrop}
         draggedTypes={this.props.draggedTypes} // ]TODO(macOS ISS#2323203)
-        /* $FlowFixMe(>=0.89.0 site=react_native_fb) This comment suppresses an
-         * error found when Flow v0.89 was deployed. To see the error, delete
-         * this comment and run Flow. */
         onResponderTerminate={this.touchableHandleResponderTerminate}>
         {this.props.children}
         {Touchable.renderDebugView({

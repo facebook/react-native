@@ -1,17 +1,14 @@
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
+ * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
+ * directory of this source tree.
  */
-
 package com.facebook.react.modules.image;
-
-import javax.annotation.Nullable;
 
 import android.net.Uri;
 import android.util.SparseArray;
-
+import androidx.annotation.Nullable;
 import com.facebook.common.executors.CallerThreadExecutor;
 import com.facebook.common.references.CloseableReference;
 import com.facebook.datasource.BaseDataSubscriber;
@@ -22,7 +19,6 @@ import com.facebook.imagepipeline.core.ImagePipeline;
 import com.facebook.imagepipeline.image.CloseableImage;
 import com.facebook.imagepipeline.request.ImageRequest;
 import com.facebook.imagepipeline.request.ImageRequestBuilder;
-import com.facebook.react.modules.fresco.ReactNetworkImageRequest;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.GuardedAsyncTask;
 import com.facebook.react.bridge.LifecycleEventListener;
@@ -34,11 +30,12 @@ import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.module.annotations.ReactModule;
+import com.facebook.react.modules.fresco.ReactNetworkImageRequest;
 import com.facebook.react.views.imagehelper.ImageSource;
 
 @ReactModule(name = ImageLoaderModule.NAME)
-public class ImageLoaderModule extends ReactContextBaseJavaModule implements
-  LifecycleEventListener {
+public class ImageLoaderModule extends ReactContextBaseJavaModule
+    implements LifecycleEventListener {
 
   private static final String ERROR_INVALID_URI = "E_INVALID_URI";
   private static final String ERROR_PREFETCH_FAILURE = "E_PREFETCH_FAILURE";
@@ -68,13 +65,11 @@ public class ImageLoaderModule extends ReactContextBaseJavaModule implements
    * Fetch the width and height of the given image.
    *
    * @param uriString the URI of the remote image to prefetch
-   * @param promise the promise that is fulfilled when the image is successfully prefetched
-   *                or rejected when there is an error
+   * @param promise the promise that is fulfilled when the image is successfully prefetched or
+   *     rejected when there is an error
    */
   @ReactMethod
-  public void getSize(
-      final String uriString,
-      final Promise promise) {
+  public void getSize(final String uriString, final Promise promise) {
     if (uriString == null || uriString.isEmpty()) {
       promise.reject(ERROR_INVALID_URI, "Cannot get the size of an image for an empty URI");
       return;
@@ -84,41 +79,41 @@ public class ImageLoaderModule extends ReactContextBaseJavaModule implements
     ImageRequest request = ImageRequestBuilder.newBuilderWithSource(source.getUri()).build();
 
     DataSource<CloseableReference<CloseableImage>> dataSource =
-      Fresco.getImagePipeline().fetchDecodedImage(request, mCallerContext);
+        Fresco.getImagePipeline().fetchDecodedImage(request, mCallerContext);
 
     DataSubscriber<CloseableReference<CloseableImage>> dataSubscriber =
-      new BaseDataSubscriber<CloseableReference<CloseableImage>>() {
-        @Override
-        protected void onNewResultImpl(
-            DataSource<CloseableReference<CloseableImage>> dataSource) {
-          if (!dataSource.isFinished()) {
-            return;
-          }
-          CloseableReference<CloseableImage> ref = dataSource.getResult();
-          if (ref != null) {
-            try {
-              CloseableImage image = ref.get();
-
-              WritableMap sizes = Arguments.createMap();
-              sizes.putInt("width", image.getWidth());
-              sizes.putInt("height", image.getHeight());
-
-              promise.resolve(sizes);
-            } catch (Exception e) {
-              promise.reject(ERROR_GET_SIZE_FAILURE, e);
-            } finally {
-              CloseableReference.closeSafely(ref);
+        new BaseDataSubscriber<CloseableReference<CloseableImage>>() {
+          @Override
+          protected void onNewResultImpl(
+              DataSource<CloseableReference<CloseableImage>> dataSource) {
+            if (!dataSource.isFinished()) {
+              return;
             }
-          } else {
-            promise.reject(ERROR_GET_SIZE_FAILURE);
-          }
-        }
+            CloseableReference<CloseableImage> ref = dataSource.getResult();
+            if (ref != null) {
+              try {
+                CloseableImage image = ref.get();
 
-        @Override
-        protected void onFailureImpl(DataSource<CloseableReference<CloseableImage>> dataSource) {
-          promise.reject(ERROR_GET_SIZE_FAILURE, dataSource.getFailureCause());
-        }
-      };
+                WritableMap sizes = Arguments.createMap();
+                sizes.putInt("width", image.getWidth());
+                sizes.putInt("height", image.getHeight());
+
+                promise.resolve(sizes);
+              } catch (Exception e) {
+                promise.reject(ERROR_GET_SIZE_FAILURE, e);
+              } finally {
+                CloseableReference.closeSafely(ref);
+              }
+            } else {
+              promise.reject(ERROR_GET_SIZE_FAILURE);
+            }
+          }
+
+          @Override
+          protected void onFailureImpl(DataSource<CloseableReference<CloseableImage>> dataSource) {
+            promise.reject(ERROR_GET_SIZE_FAILURE, dataSource.getFailureCause());
+          }
+        };
     dataSource.subscribe(dataSubscriber, CallerThreadExecutor.getInstance());
   }
 
@@ -127,59 +122,59 @@ public class ImageLoaderModule extends ReactContextBaseJavaModule implements
    *
    * @param uriString the URI of the remote image to prefetch
    * @param headers headers send with the request
-   * @param promise the promise that is fulfilled when the image is successfully prefetched
-   *                or rejected when there is an error
+   * @param promise the promise that is fulfilled when the image is successfully prefetched or
+   *     rejected when there is an error
    */
   @ReactMethod
   public void getSizeWithHeaders(
-      final String uriString,
-      final ReadableMap headers,
-      final Promise promise) {
+      final String uriString, final ReadableMap headers, final Promise promise) {
     if (uriString == null || uriString.isEmpty()) {
       promise.reject(ERROR_INVALID_URI, "Cannot get the size of an image for an empty URI");
       return;
     }
 
     ImageSource source = new ImageSource(getReactApplicationContext(), uriString);
-    ImageRequestBuilder imageRequestBuilder = ImageRequestBuilder.newBuilderWithSource(source.getUri());
-    ImageRequest request = ReactNetworkImageRequest.fromBuilderWithHeaders(imageRequestBuilder, headers);
+    ImageRequestBuilder imageRequestBuilder =
+        ImageRequestBuilder.newBuilderWithSource(source.getUri());
+    ImageRequest request =
+        ReactNetworkImageRequest.fromBuilderWithHeaders(imageRequestBuilder, headers);
 
     DataSource<CloseableReference<CloseableImage>> dataSource =
-      Fresco.getImagePipeline().fetchDecodedImage(request, mCallerContext);
+        Fresco.getImagePipeline().fetchDecodedImage(request, mCallerContext);
 
     DataSubscriber<CloseableReference<CloseableImage>> dataSubscriber =
-      new BaseDataSubscriber<CloseableReference<CloseableImage>>() {
-        @Override
-        protected void onNewResultImpl(
-            DataSource<CloseableReference<CloseableImage>> dataSource) {
-          if (!dataSource.isFinished()) {
-            return;
-          }
-          CloseableReference<CloseableImage> ref = dataSource.getResult();
-          if (ref != null) {
-            try {
-              CloseableImage image = ref.get();
-
-              WritableMap sizes = Arguments.createMap();
-              sizes.putInt("width", image.getWidth());
-              sizes.putInt("height", image.getHeight());
-
-              promise.resolve(sizes);
-            } catch (Exception e) {
-              promise.reject(ERROR_GET_SIZE_FAILURE, e);
-            } finally {
-              CloseableReference.closeSafely(ref);
+        new BaseDataSubscriber<CloseableReference<CloseableImage>>() {
+          @Override
+          protected void onNewResultImpl(
+              DataSource<CloseableReference<CloseableImage>> dataSource) {
+            if (!dataSource.isFinished()) {
+              return;
             }
-          } else {
-            promise.reject(ERROR_GET_SIZE_FAILURE);
-          }
-        }
+            CloseableReference<CloseableImage> ref = dataSource.getResult();
+            if (ref != null) {
+              try {
+                CloseableImage image = ref.get();
 
-        @Override
-        protected void onFailureImpl(DataSource<CloseableReference<CloseableImage>> dataSource) {
-          promise.reject(ERROR_GET_SIZE_FAILURE, dataSource.getFailureCause());
-        }
-      };
+                WritableMap sizes = Arguments.createMap();
+                sizes.putInt("width", image.getWidth());
+                sizes.putInt("height", image.getHeight());
+
+                promise.resolve(sizes);
+              } catch (Exception e) {
+                promise.reject(ERROR_GET_SIZE_FAILURE, e);
+              } finally {
+                CloseableReference.closeSafely(ref);
+              }
+            } else {
+              promise.reject(ERROR_GET_SIZE_FAILURE);
+            }
+          }
+
+          @Override
+          protected void onFailureImpl(DataSource<CloseableReference<CloseableImage>> dataSource) {
+            promise.reject(ERROR_GET_SIZE_FAILURE, dataSource.getFailureCause());
+          }
+        };
     dataSource.subscribe(dataSubscriber, CallerThreadExecutor.getInstance());
   }
 
@@ -188,15 +183,11 @@ public class ImageLoaderModule extends ReactContextBaseJavaModule implements
    *
    * @param uriString the URI of the remote image to prefetch
    * @param requestId the client-supplied request ID used to identify this request
-   * @param promise the promise that is fulfilled when the image is successfully prefetched
-   *                or rejected when there is an error
+   * @param promise the promise that is fulfilled when the image is successfully prefetched or
+   *     rejected when there is an error
    */
   @ReactMethod
-  public void prefetchImage(
-    final String uriString,
-    final int requestId,
-    final Promise promise)
-  {
+  public void prefetchImage(final String uriString, final int requestId, final Promise promise) {
     if (uriString == null || uriString.isEmpty()) {
       promise.reject(ERROR_INVALID_URI, "Cannot prefetch an image for an empty URI");
       return;
@@ -206,31 +197,32 @@ public class ImageLoaderModule extends ReactContextBaseJavaModule implements
     ImageRequest request = ImageRequestBuilder.newBuilderWithSource(uri).build();
 
     DataSource<Void> prefetchSource =
-      Fresco.getImagePipeline().prefetchToDiskCache(request, mCallerContext);
-    DataSubscriber<Void> prefetchSubscriber = new BaseDataSubscriber<Void>() {
-      @Override
-      protected void onNewResultImpl(DataSource<Void> dataSource) {
-        if (!dataSource.isFinished()) {
-          return;
-        }
-        try {
-          removeRequest(requestId);
-          promise.resolve(true);
-        } finally {
-          dataSource.close();
-        }
-      }
+        Fresco.getImagePipeline().prefetchToDiskCache(request, mCallerContext);
+    DataSubscriber<Void> prefetchSubscriber =
+        new BaseDataSubscriber<Void>() {
+          @Override
+          protected void onNewResultImpl(DataSource<Void> dataSource) {
+            if (!dataSource.isFinished()) {
+              return;
+            }
+            try {
+              removeRequest(requestId);
+              promise.resolve(true);
+            } finally {
+              dataSource.close();
+            }
+          }
 
-      @Override
-      protected void onFailureImpl(DataSource<Void> dataSource) {
-        try {
-          removeRequest(requestId);
-          promise.reject(ERROR_PREFETCH_FAILURE, dataSource.getFailureCause());
-        } finally {
-          dataSource.close();
-        }
-      }
-    };
+          @Override
+          protected void onFailureImpl(DataSource<Void> dataSource) {
+            try {
+              removeRequest(requestId);
+              promise.reject(ERROR_PREFETCH_FAILURE, dataSource.getFailureCause());
+            } finally {
+              dataSource.close();
+            }
+          }
+        };
     registerRequest(requestId, prefetchSource);
     prefetchSource.subscribe(prefetchSubscriber, CallerThreadExecutor.getInstance());
   }
@@ -280,12 +272,10 @@ public class ImageLoaderModule extends ReactContextBaseJavaModule implements
   }
 
   @Override
-  public void onHostResume() {
-  }
+  public void onHostResume() {}
 
   @Override
-  public void onHostPause() {
-  }
+  public void onHostPause() {}
 
   @Override
   public void onHostDestroy() {

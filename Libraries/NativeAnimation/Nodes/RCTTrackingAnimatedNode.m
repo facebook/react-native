@@ -5,9 +5,9 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#import "RCTTrackingAnimatedNode.h"
-#import "RCTValueAnimatedNode.h"
-#import "RCTNativeAnimatedNodesManager.h"
+#import <React/RCTTrackingAnimatedNode.h>
+#import <React/RCTValueAnimatedNode.h>
+#import <React/RCTNativeAnimatedNodesManager.h>
 
 @implementation RCTTrackingAnimatedNode {
   NSNumber *_animationId;

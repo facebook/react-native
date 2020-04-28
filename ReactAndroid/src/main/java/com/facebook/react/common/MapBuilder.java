@@ -1,46 +1,35 @@
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
+ * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
+ * directory of this source tree.
  */
-
 package com.facebook.react.common;
 
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * Utility class for creating maps
- */
+/** Utility class for creating maps */
 public class MapBuilder {
 
-  /**
-   * Creates an instance of {@code HashMap}
-   */
+  /** Creates an instance of {@code HashMap} */
   public static <K, V> HashMap<K, V> newHashMap() {
     return new HashMap<K, V>();
   }
 
-  /**
-   * Returns the empty map.
-   */
+  /** Returns the empty map. */
   public static <K, V> Map<K, V> of() {
     return newHashMap();
   }
 
-  /**
-   * Returns map containing a single entry.
-   */
+  /** Returns map containing a single entry. */
   public static <K, V> Map<K, V> of(K k1, V v1) {
     Map map = of();
     map.put(k1, v1);
     return map;
   }
 
-  /**
-   * Returns map containing the given entries.
-   */
+  /** Returns map containing the given entries. */
   public static <K, V> Map<K, V> of(K k1, V v1, K k2, V v2) {
     Map map = of();
     map.put(k1, v1);
@@ -48,9 +37,7 @@ public class MapBuilder {
     return map;
   }
 
-  /**
-   * Returns map containing the given entries.
-   */
+  /** Returns map containing the given entries. */
   public static <K, V> Map<K, V> of(K k1, V v1, K k2, V v2, K k3, V v3) {
     Map map = of();
     map.put(k1, v1);
@@ -59,9 +46,7 @@ public class MapBuilder {
     return map;
   }
 
-  /**
-   * Returns map containing the given entries.
-   */
+  /** Returns map containing the given entries. */
   public static <K, V> Map<K, V> of(K k1, V v1, K k2, V v2, K k3, V v3, K k4, V v4) {
     Map map = of();
     map.put(k1, v1);
@@ -71,9 +56,7 @@ public class MapBuilder {
     return map;
   }
 
-  /**
-   * Returns map containing the given entries.
-   */
+  /** Returns map containing the given entries. */
   public static <K, V> Map<K, V> of(K k1, V v1, K k2, V v2, K k3, V v3, K k4, V v4, K k5, V v5) {
     Map map = of();
     map.put(k1, v1);
@@ -84,9 +67,7 @@ public class MapBuilder {
     return map;
   }
 
-  /**
-   * Returns map containing the given entries.
-   */
+  /** Returns map containing the given entries. */
   public static <K, V> Map<K, V> of(
       K k1, V v1, K k2, V v2, K k3, V v3, K k4, V v4, K k5, V v5, K k6, V v6) {
     Map map = of();
@@ -99,9 +80,7 @@ public class MapBuilder {
     return map;
   }
 
-  /**
-   * Returns map containing the given entries.
-   */
+  /** Returns map containing the given entries. */
   public static <K, V> Map<K, V> of(
       K k1, V v1, K k2, V v2, K k3, V v3, K k4, V v4, K k5, V v5, K k6, V v6, K k7, V v7) {
     Map map = of();
@@ -115,9 +94,7 @@ public class MapBuilder {
     return map;
   }
 
-  /**
-   * Returns map containing the given entries.
-   */
+  /** Returns map containing the given entries. */
   public static <K, V> Builder<K, V> builder() {
     return new Builder();
   }
@@ -132,15 +109,15 @@ public class MapBuilder {
       mUnderConstruction = true;
     }
 
-    public Builder<K,V> put(K k, V v) {
+    public Builder<K, V> put(K k, V v) {
       if (!mUnderConstruction) {
         throw new IllegalStateException("Underlying map has already been built");
       }
-      mMap.put(k,v);
+      mMap.put(k, v);
       return this;
     }
 
-    public Map<K,V> build() {
+    public Map<K, V> build() {
       if (!mUnderConstruction) {
         throw new IllegalStateException("Underlying map has already been built");
       }
@@ -148,5 +125,4 @@ public class MapBuilder {
       return mMap;
     }
   }
-
 }

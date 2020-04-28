@@ -23,6 +23,17 @@ inline std::string toString(const LayoutDirection &layoutDirection) {
   }
 }
 
+inline int toInt(const LayoutDirection &layoutDirection) {
+  switch (layoutDirection) {
+    case LayoutDirection::Undefined:
+      return 0;
+    case LayoutDirection::LeftToRight:
+      return 1;
+    case LayoutDirection::RightToLeft:
+      return 2;
+  }
+}
+
 inline std::string toString(const DisplayType &displayType) {
   switch (displayType) {
     case DisplayType::None:

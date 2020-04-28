@@ -6,8 +6,8 @@
 package com.facebook.react.uimanager.layoutanimation;
 
 /**
- * Enum representing the different view properties that can be used when animating layout for
- * view creation.
+ * Enum representing the different view properties that can be used when animating layout for view
+ * creation.
  */
 /* package */ enum AnimatedPropertyType {
   OPACITY,

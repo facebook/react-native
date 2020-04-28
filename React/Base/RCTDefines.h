@@ -56,7 +56,7 @@
 #endif
 
 #ifndef ENABLE_PACKAGER_CONNECTION
-#if RCT_DEV && __has_include(<React/RCTPackagerConnection.h>)
+#if RCT_DEV && (__has_include("RCTPackagerConnection.h") || __has_include(<React/RCTPackagerConnection.h>)) && !TARGET_OS_UIKITFORMAC
 #define ENABLE_PACKAGER_CONNECTION 1
 #else
 #define ENABLE_PACKAGER_CONNECTION 0
@@ -88,6 +88,13 @@
 #undef RCT_METRO_PORT
 #define RCT_METRO_PORT 8081
 #endif
+#endif
+
+/**
+ * Add the default packager name
+ */
+#ifndef RCT_PACKAGER_NAME
+#define RCT_PACKAGER_NAME @"Metro"
 #endif
 
 /**

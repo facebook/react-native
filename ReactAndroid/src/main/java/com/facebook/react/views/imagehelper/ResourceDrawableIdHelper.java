@@ -1,25 +1,20 @@
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
+ * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
+ * directory of this source tree.
  */
-
 package com.facebook.react.views.imagehelper;
-
-import javax.annotation.Nullable;
-import javax.annotation.concurrent.ThreadSafe;
-
-import java.util.HashMap;
-import java.util.Map;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import androidx.annotation.Nullable;
+import java.util.HashMap;
+import java.util.Map;
+import javax.annotation.concurrent.ThreadSafe;
 
-/**
- * Helper class for obtaining information about local images.
- */
+/** Helper class for obtaining information about local images. */
 @ThreadSafe
 public class ResourceDrawableIdHelper {
 
@@ -64,10 +59,7 @@ public class ResourceDrawableIdHelper {
       if (mResourceDrawableIdMap.containsKey(name)) {
         return mResourceDrawableIdMap.get(name);
       }
-      int id = context.getResources().getIdentifier(
-        name,
-        "drawable",
-        context.getPackageName());
+      int id = context.getResources().getIdentifier(name, "drawable", context.getPackageName());
       mResourceDrawableIdMap.put(name, id);
       return id;
     }
@@ -80,9 +72,8 @@ public class ResourceDrawableIdHelper {
 
   public Uri getResourceDrawableUri(Context context, @Nullable String name) {
     int resId = getResourceDrawableId(context, name);
-    return resId > 0 ? new Uri.Builder()
-        .scheme(LOCAL_RESOURCE_SCHEME)
-        .path(String.valueOf(resId))
-        .build() : Uri.EMPTY;
+    return resId > 0
+        ? new Uri.Builder().scheme(LOCAL_RESOURCE_SCHEME).path(String.valueOf(resId)).build()
+        : Uri.EMPTY;
   }
 }

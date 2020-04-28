@@ -1,29 +1,26 @@
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
+ * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
+ * directory of this source tree.
  */
 package com.facebook.react.modules.camera;
-
-import android.util.Base64;
-import android.util.Base64InputStream;
-
-import com.facebook.react.bridge.ReactApplicationContext;
-
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.powermock.core.classloader.annotations.PowerMockIgnore;
-import org.robolectric.RobolectricTestRunner;
-
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Random;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.mockito.Mockito.mock;
+
+import android.util.Base64;
+import android.util.Base64InputStream;
+import com.facebook.react.bridge.ReactApplicationContext;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Random;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.powermock.core.classloader.annotations.PowerMockIgnore;
+import org.robolectric.RobolectricTestRunner;
 
 @RunWith(RobolectricTestRunner.class)
 @PowerMockIgnore({"org.mockito.*", "org.robolectric.*", "androidx.*", "android.*"})
@@ -57,9 +54,7 @@ public class ImageStoreManagerTest {
     assertFalse(invokeConversion(inputStream).contains("\n"));
   }
 
-  /**
-   * Just to test if using the ByteArrayInputStream isn't missing something
-   */
+  /** Just to test if using the ByteArrayInputStream isn't missing something */
   @Test
   public void itDoesNotAddLineBreaks_whenBase64InputStream() throws IOException {
     byte[] exampleString = "dGVzdA==".getBytes();

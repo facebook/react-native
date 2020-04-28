@@ -1,12 +1,12 @@
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
+ * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
+ * directory of this source tree.
  */
-
 package com.facebook.react.devsupport;
 
+import androidx.annotation.Nullable;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReadableType;
@@ -15,27 +15,22 @@ import com.facebook.react.devsupport.interfaces.StackFrame;
 import java.io.File;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import javax.annotation.Nullable;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-/**
- * Helper class converting JS and Java stack traces into arrays of {@link StackFrame} objects.
- */
+/** Helper class converting JS and Java stack traces into arrays of {@link StackFrame} objects. */
 public class StackTraceHelper {
 
   public static final java.lang.String COLUMN_KEY = "column";
   public static final java.lang.String LINE_NUMBER_KEY = "lineNumber";
 
-  private static final Pattern STACK_FRAME_PATTERN1 = Pattern.compile(
-      "^(?:(.*?)@)?(.*?)\\:([0-9]+)\\:([0-9]+)$");
-  private static final Pattern STACK_FRAME_PATTERN2 = Pattern.compile(
-      "\\s*(?:at)\\s*(.+?)\\s*[@(](.*):([0-9]+):([0-9]+)[)]$");
+  private static final Pattern STACK_FRAME_PATTERN1 =
+      Pattern.compile("^(?:(.*?)@)?(.*?)\\:([0-9]+)\\:([0-9]+)$");
+  private static final Pattern STACK_FRAME_PATTERN2 =
+      Pattern.compile("\\s*(?:at)\\s*(.+?)\\s*[@(](.*):([0-9]+):([0-9]+)[)]$");
 
-  /**
-   * Represents a generic entry in a stack trace, be it originally from JS or Java.
-   */
+  /** Represents a generic entry in a stack trace, be it originally from JS or Java. */
   public static class StackFrameImpl implements StackFrame {
     private final String mFile;
     private final String mMethod;
@@ -62,30 +57,24 @@ public class StackTraceHelper {
     /**
      * Get the file this stack frame points to.
      *
-     * JS traces return the full path to the file here, while Java traces only return the file name
-     * (the path is not known).
+     * <p>JS traces return the full path to the file here, while Java traces only return the file
+     * name (the path is not known).
      */
     public String getFile() {
       return mFile;
     }
 
-    /**
-     * Get the name of the method this frame points to.
-     */
+    /** Get the name of the method this frame points to. */
     public String getMethod() {
       return mMethod;
     }
 
-    /**
-     * Get the line number this frame points to in the file returned by {@link #getFile()}.
-     */
+    /** Get the line number this frame points to in the file returned by {@link #getFile()}. */
     public int getLine() {
       return mLine;
     }
 
-    /**
-     * Get the column this frame points to in the file returned by {@link #getFile()}.
-     */
+    /** Get the column this frame points to in the file returned by {@link #getFile()}. */
     public int getColumn() {
       return mColumn;
     }
@@ -93,16 +82,14 @@ public class StackTraceHelper {
     /**
      * Get just the name of the file this frame points to.
      *
-     * For JS traces this is different from {@link #getFile()} in that it only returns the file
+     * <p>For JS traces this is different from {@link #getFile()} in that it only returns the file
      * name, not the full path. For Java traces there is no difference.
      */
     public String getFileName() {
       return mFileName;
     }
 
-    /**
-     * Convert the stack frame to a JSON representation.
-     */
+    /** Convert the stack frame to a JSON representation. */
     public JSONObject toJSON() {
       return new JSONObject(
           MapBuilder.of(
@@ -114,8 +101,8 @@ public class StackTraceHelper {
   }
 
   /**
-   * Convert a JavaScript stack trace (see {@code parseErrorStack} JS module) to an array of
-   * {@link StackFrame}s.
+   * Convert a JavaScript stack trace (see {@code parseErrorStack} JS module) to an array of {@link
+   * StackFrame}s.
    */
   public static StackFrame[] convertJsStackTrace(@Nullable ReadableArray stack) {
     int size = stack != null ? stack.size() : 0;
@@ -143,8 +130,8 @@ public class StackTraceHelper {
   }
 
   /**
-   * Convert a JavaScript stack trace (see {@code parseErrorStack} JS module) to an array of
-   * {@link StackFrame}s.
+   * Convert a JavaScript stack trace (see {@code parseErrorStack} JS module) to an array of {@link
+   * StackFrame}s.
    */
   public static StackFrame[] convertJsStackTrace(JSONArray stack) {
     int size = stack != null ? stack.length() : 0;
@@ -170,9 +157,7 @@ public class StackTraceHelper {
     return result;
   }
 
-  /**
-   * Convert a JavaScript stack trace to an array of {@link StackFrame}s.
-   */
+  /** Convert a JavaScript stack trace to an array of {@link StackFrame}s. */
   public static StackFrame[] convertJsStackTrace(String stack) {
     String[] stackTrace = stack.split("\n");
     StackFrame[] result = new StackFrame[stackTrace.length];
@@ -188,35 +173,33 @@ public class StackTraceHelper {
         result[i] = new StackFrameImpl(null, stackTrace[i], -1, -1);
         continue;
       }
-      result[i] = new StackFrameImpl(
-        matcher.group(2),
-        matcher.group(1) == null ? "(unknown)" : matcher.group(1),
-        Integer.parseInt(matcher.group(3)),
-        Integer.parseInt(matcher.group(4)));
+      result[i] =
+          new StackFrameImpl(
+              matcher.group(2),
+              matcher.group(1) == null ? "(unknown)" : matcher.group(1),
+              Integer.parseInt(matcher.group(3)),
+              Integer.parseInt(matcher.group(4)));
     }
     return result;
   }
 
-  /**
-   * Convert a {@link Throwable} to an array of {@link StackFrame}s.
-   */
+  /** Convert a {@link Throwable} to an array of {@link StackFrame}s. */
   public static StackFrame[] convertJavaStackTrace(Throwable exception) {
     StackTraceElement[] stackTrace = exception.getStackTrace();
     StackFrame[] result = new StackFrame[stackTrace.length];
     for (int i = 0; i < stackTrace.length; i++) {
-      result[i] = new StackFrameImpl(
-          stackTrace[i].getClassName(),
-          stackTrace[i].getFileName(),
-          stackTrace[i].getMethodName(),
-          stackTrace[i].getLineNumber(),
-          -1);
+      result[i] =
+          new StackFrameImpl(
+              stackTrace[i].getClassName(),
+              stackTrace[i].getFileName(),
+              stackTrace[i].getMethodName(),
+              stackTrace[i].getLineNumber(),
+              -1);
     }
     return result;
   }
 
-  /**
-   * Format a {@link StackFrame} to a String (method name is not included).
-   */
+  /** Format a {@link StackFrame} to a String (method name is not included). */
   public static String formatFrameSource(StackFrame frame) {
     StringBuilder lineInfo = new StringBuilder();
     lineInfo.append(frame.getFileName());
@@ -231,14 +214,13 @@ public class StackTraceHelper {
     return lineInfo.toString();
   }
 
-  /**
-   * Format an array of {@link StackFrame}s with the error title to a String.
-   */
+  /** Format an array of {@link StackFrame}s with the error title to a String. */
   public static String formatStackTrace(String title, StackFrame[] stack) {
     StringBuilder stackTrace = new StringBuilder();
     stackTrace.append(title).append("\n");
-    for (StackFrame frame: stack) {
-      stackTrace.append(frame.getMethod())
+    for (StackFrame frame : stack) {
+      stackTrace
+          .append(frame.getMethod())
           .append("\n")
           .append("    ")
           .append(formatFrameSource(frame))

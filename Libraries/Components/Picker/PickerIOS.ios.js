@@ -13,18 +13,18 @@
 
 'use strict';
 
+const RCTPickerNativeComponent = require('./RCTPickerNativeComponent');
 const React = require('react');
 const ReactNative = require('../../Renderer/shims/ReactNative');
 const StyleSheet = require('../../StyleSheet/StyleSheet');
 const View = require('../View/View');
 const Platform = require('../../Utilities/Platform'); // TODO(macOS ISS#2323203)
 const processColor = require('../../StyleSheet/processColor');
-const RCTPickerNativeComponent = require('./RCTPickerNativeComponent');
 
-import type {SyntheticEvent} from '../../Types/CoreEventTypes';
-import type {ColorValue} from '../../StyleSheet/StyleSheetTypes';
-import type {ViewProps} from '../View/ViewPropTypes';
 import type {TextStyleProp} from '../../StyleSheet/StyleSheet';
+import type {ColorValue} from '../../StyleSheet/StyleSheetTypes';
+import type {SyntheticEvent} from '../../Types/CoreEventTypes';
+import type {ViewProps} from '../View/ViewPropTypes';
 import type {NativeOrDynamicColorType} from '../../Color/NativeOrDynamicColorType'; // TODO(macOS ISS#2323203)
 
 type PickerIOSChangeEvent = SyntheticEvent<
@@ -76,19 +76,19 @@ type ItemProps = $ReadOnly<{|
   color?: ?ColorValue,
 |}>;
 
-const PickerIOSItem = (props: ItemProps) => {
+const PickerIOSItem = (props: ItemProps): null => {
   return null;
 };
 
 class PickerIOS extends React.Component<Props, State> {
   _picker: ?React.ElementRef<RCTPickerIOSType> = null;
 
-  state = {
+  state: State = {
     selectedIndex: 0,
     items: [],
   };
 
-  static Item = PickerIOSItem;
+  static Item: (props: ItemProps) => null = PickerIOSItem;
 
   static getDerivedStateFromProps(props: Props): State {
     let selectedIndex = 0;
@@ -108,7 +108,7 @@ class PickerIOS extends React.Component<Props, State> {
     return {selectedIndex, items};
   }
 
-  render() {
+  render(): React.Node {
     return (
       <View style={this.props.style}>
         <RCTPickerNativeComponent

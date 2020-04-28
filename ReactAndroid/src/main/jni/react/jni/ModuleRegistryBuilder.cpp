@@ -5,6 +5,7 @@
 
 #include "ModuleRegistryBuilder.h"
 
+#include <string>
 #include <glog/logging.h>
 
 #include <cxxreact/CxxNativeModule.h>
@@ -18,16 +19,18 @@ std::string ModuleHolder::getName() const {
   return method(self())->toStdString();
 }
 
-xplat::module::CxxModule::Provider ModuleHolder::getProvider() const {
-  return [self=jni::make_global(self())] {
-    static auto method =
+xplat::module::CxxModule::Provider ModuleHolder::getProvider(const std::string& moduleName) const {
+  return [self=jni::make_global(self()), moduleName] {
+    static auto getModule =
       ModuleHolder::javaClassStatic()->getMethod<JNativeModule::javaobject()>(
         "getModule");
     // This is the call which uses the lazy Java Provider to instantiate the
     // Java CxxModuleWrapper which contains the CxxModule.
-    auto module = method(self);
+    auto module = getModule(self);
+
     CHECK(module->isInstanceOf(CxxModuleWrapperBase::javaClassStatic()))
-      << "module isn't a C++ module";
+        << "NativeModule '" << moduleName << "' isn't a C++ module";
+
     auto cxxModule = jni::static_ref_cast<CxxModuleWrapperBase::javaobject>(module);
     // Then, we grab the CxxModule from the wrapper, which is no longer needed.
     return cxxModule->cthis()->getModule();
@@ -48,8 +51,9 @@ std::vector<std::unique_ptr<NativeModule>> buildNativeModuleList(
   }
   if (cxxModules) {
     for (const auto& cm : *cxxModules) {
+      std::string moduleName = cm->getName();
       modules.emplace_back(folly::make_unique<CxxNativeModule>(
-                             winstance, cm->getName(), cm->getProvider(), moduleMessageQueue));
+                             winstance, moduleName, cm->getProvider(moduleName), moduleMessageQueue));
     }
   }
   return modules;

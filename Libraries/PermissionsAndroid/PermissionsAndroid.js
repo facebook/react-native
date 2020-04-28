@@ -10,7 +10,15 @@
 
 'use strict';
 
-const NativeModules = require('../BatchedBridge/NativeModules');
+const Platform = require('../Utilities/Platform');
+
+import NativeDialogManagerAndroid from '../NativeModules/specs/NativeDialogManagerAndroid';
+import NativePermissionsAndroid from './NativePermissionsAndroid';
+import type {
+  PermissionStatus,
+  PermissionType,
+} from './NativePermissionsAndroid';
+import invariant from 'invariant';
 
 export type Rationale = {
   title: string,
@@ -20,7 +28,39 @@ export type Rationale = {
   buttonNeutral?: string,
 };
 
-type PermissionStatus = 'granted' | 'denied' | 'never_ask_again';
+const PERMISSION_REQUEST_RESULT = Object.freeze({
+  GRANTED: 'granted',
+  DENIED: 'denied',
+  NEVER_ASK_AGAIN: 'never_ask_again',
+});
+
+const PERMISSIONS = Object.freeze({
+  READ_CALENDAR: 'android.permission.READ_CALENDAR',
+  WRITE_CALENDAR: 'android.permission.WRITE_CALENDAR',
+  CAMERA: 'android.permission.CAMERA',
+  READ_CONTACTS: 'android.permission.READ_CONTACTS',
+  WRITE_CONTACTS: 'android.permission.WRITE_CONTACTS',
+  GET_ACCOUNTS: 'android.permission.GET_ACCOUNTS',
+  ACCESS_FINE_LOCATION: 'android.permission.ACCESS_FINE_LOCATION',
+  ACCESS_COARSE_LOCATION: 'android.permission.ACCESS_COARSE_LOCATION',
+  RECORD_AUDIO: 'android.permission.RECORD_AUDIO',
+  READ_PHONE_STATE: 'android.permission.READ_PHONE_STATE',
+  CALL_PHONE: 'android.permission.CALL_PHONE',
+  READ_CALL_LOG: 'android.permission.READ_CALL_LOG',
+  WRITE_CALL_LOG: 'android.permission.WRITE_CALL_LOG',
+  ADD_VOICEMAIL: 'com.android.voicemail.permission.ADD_VOICEMAIL',
+  USE_SIP: 'android.permission.USE_SIP',
+  PROCESS_OUTGOING_CALLS: 'android.permission.PROCESS_OUTGOING_CALLS',
+  BODY_SENSORS: 'android.permission.BODY_SENSORS',
+  SEND_SMS: 'android.permission.SEND_SMS',
+  RECEIVE_SMS: 'android.permission.RECEIVE_SMS',
+  READ_SMS: 'android.permission.READ_SMS',
+  RECEIVE_WAP_PUSH: 'android.permission.RECEIVE_WAP_PUSH',
+  RECEIVE_MMS: 'android.permission.RECEIVE_MMS',
+  READ_EXTERNAL_STORAGE: 'android.permission.READ_EXTERNAL_STORAGE',
+  WRITE_EXTERNAL_STORAGE: 'android.permission.WRITE_EXTERNAL_STORAGE',
+});
+
 /**
  * `PermissionsAndroid` provides access to Android M's new permissions model.
  *
@@ -28,46 +68,37 @@ type PermissionStatus = 'granted' | 'denied' | 'never_ask_again';
  */
 
 class PermissionsAndroid {
-  PERMISSIONS: Object;
-  RESULTS: Object;
-
-  constructor() {
-    /**
-     * A list of specified "dangerous" permissions that require prompting the user
-     */
-    this.PERMISSIONS = {
-      READ_CALENDAR: 'android.permission.READ_CALENDAR',
-      WRITE_CALENDAR: 'android.permission.WRITE_CALENDAR',
-      CAMERA: 'android.permission.CAMERA',
-      READ_CONTACTS: 'android.permission.READ_CONTACTS',
-      WRITE_CONTACTS: 'android.permission.WRITE_CONTACTS',
-      GET_ACCOUNTS: 'android.permission.GET_ACCOUNTS',
-      ACCESS_FINE_LOCATION: 'android.permission.ACCESS_FINE_LOCATION',
-      ACCESS_COARSE_LOCATION: 'android.permission.ACCESS_COARSE_LOCATION',
-      RECORD_AUDIO: 'android.permission.RECORD_AUDIO',
-      READ_PHONE_STATE: 'android.permission.READ_PHONE_STATE',
-      CALL_PHONE: 'android.permission.CALL_PHONE',
-      READ_CALL_LOG: 'android.permission.READ_CALL_LOG',
-      WRITE_CALL_LOG: 'android.permission.WRITE_CALL_LOG',
-      ADD_VOICEMAIL: 'com.android.voicemail.permission.ADD_VOICEMAIL',
-      USE_SIP: 'android.permission.USE_SIP',
-      PROCESS_OUTGOING_CALLS: 'android.permission.PROCESS_OUTGOING_CALLS',
-      BODY_SENSORS: 'android.permission.BODY_SENSORS',
-      SEND_SMS: 'android.permission.SEND_SMS',
-      RECEIVE_SMS: 'android.permission.RECEIVE_SMS',
-      READ_SMS: 'android.permission.READ_SMS',
-      RECEIVE_WAP_PUSH: 'android.permission.RECEIVE_WAP_PUSH',
-      RECEIVE_MMS: 'android.permission.RECEIVE_MMS',
-      READ_EXTERNAL_STORAGE: 'android.permission.READ_EXTERNAL_STORAGE',
-      WRITE_EXTERNAL_STORAGE: 'android.permission.WRITE_EXTERNAL_STORAGE',
-    };
-
-    this.RESULTS = {
-      GRANTED: 'granted',
-      DENIED: 'denied',
-      NEVER_ASK_AGAIN: 'never_ask_again',
-    };
-  }
+  PERMISSIONS: {|
+    ACCESS_COARSE_LOCATION: string,
+    ACCESS_FINE_LOCATION: string,
+    ADD_VOICEMAIL: string,
+    BODY_SENSORS: string,
+    CALL_PHONE: string,
+    CAMERA: string,
+    GET_ACCOUNTS: string,
+    PROCESS_OUTGOING_CALLS: string,
+    READ_CALENDAR: string,
+    READ_CALL_LOG: string,
+    READ_CONTACTS: string,
+    READ_EXTERNAL_STORAGE: string,
+    READ_PHONE_STATE: string,
+    READ_SMS: string,
+    RECEIVE_MMS: string,
+    RECEIVE_SMS: string,
+    RECEIVE_WAP_PUSH: string,
+    RECORD_AUDIO: string,
+    SEND_SMS: string,
+    USE_SIP: string,
+    WRITE_CALENDAR: string,
+    WRITE_CALL_LOG: string,
+    WRITE_CONTACTS: string,
+    WRITE_EXTERNAL_STORAGE: string,
+  |} = PERMISSIONS;
+  RESULTS: {|
+    DENIED: $TEMPORARY$string<'denied'>,
+    GRANTED: $TEMPORARY$string<'granted'>,
+    NEVER_ASK_AGAIN: $TEMPORARY$string<'never_ask_again'>,
+  |} = PERMISSION_REQUEST_RESULT;
 
   /**
    * DEPRECATED - use check
@@ -77,11 +108,23 @@ class PermissionsAndroid {
    *
    * @deprecated
    */
-  checkPermission(permission: string): Promise<boolean> {
+  checkPermission(permission: PermissionType): Promise<boolean> {
     console.warn(
       '"PermissionsAndroid.checkPermission" is deprecated. Use "PermissionsAndroid.check" instead',
     );
-    return NativeModules.PermissionsAndroid.checkPermission(permission);
+    if (Platform.OS !== 'android') {
+      console.warn(
+        '"PermissionsAndroid" module works only for Android platform.',
+      );
+      return Promise.resolve(false);
+    }
+
+    invariant(
+      NativePermissionsAndroid,
+      'PermissionsAndroid is not installed correctly.',
+    );
+
+    return NativePermissionsAndroid.checkPermission(permission);
   }
 
   /**
@@ -90,8 +133,20 @@ class PermissionsAndroid {
    *
    * See https://facebook.github.io/react-native/docs/permissionsandroid.html#check
    */
-  check(permission: string): Promise<boolean> {
-    return NativeModules.PermissionsAndroid.checkPermission(permission);
+  check(permission: PermissionType): Promise<boolean> {
+    if (Platform.OS !== 'android') {
+      console.warn(
+        '"PermissionsAndroid" module works only for Android platform.',
+      );
+      return Promise.resolve(false);
+    }
+
+    invariant(
+      NativePermissionsAndroid,
+      'PermissionsAndroid is not installed correctly.',
+    );
+
+    return NativePermissionsAndroid.checkPermission(permission);
   }
 
   /**
@@ -109,12 +164,19 @@ class PermissionsAndroid {
    * @deprecated
    */
   async requestPermission(
-    permission: string,
+    permission: PermissionType,
     rationale?: Rationale,
   ): Promise<boolean> {
     console.warn(
       '"PermissionsAndroid.requestPermission" is deprecated. Use "PermissionsAndroid.request" instead',
     );
+    if (Platform.OS !== 'android') {
+      console.warn(
+        '"PermissionsAndroid" module works only for Android platform.',
+      );
+      return Promise.resolve(false);
+    }
+
     const response = await this.request(permission, rationale);
     return response === this.RESULTS.GRANTED;
   }
@@ -126,28 +188,41 @@ class PermissionsAndroid {
    * See https://facebook.github.io/react-native/docs/permissionsandroid.html#request
    */
   async request(
-    permission: string,
+    permission: PermissionType,
     rationale?: Rationale,
   ): Promise<PermissionStatus> {
+    if (Platform.OS !== 'android') {
+      console.warn(
+        '"PermissionsAndroid" module works only for Android platform.',
+      );
+      return Promise.resolve(this.RESULTS.DENIED);
+    }
+
+    invariant(
+      NativePermissionsAndroid,
+      'PermissionsAndroid is not installed correctly.',
+    );
+
     if (rationale) {
-      const shouldShowRationale = await NativeModules.PermissionsAndroid.shouldShowRequestPermissionRationale(
+      const shouldShowRationale = await NativePermissionsAndroid.shouldShowRequestPermissionRationale(
         permission,
       );
 
-      if (shouldShowRationale) {
+      if (shouldShowRationale && !!NativeDialogManagerAndroid) {
         return new Promise((resolve, reject) => {
-          NativeModules.DialogManagerAndroid.showAlert(
-            rationale,
+          const options = {
+            ...rationale,
+          };
+          NativeDialogManagerAndroid.showAlert(
+            options,
             () => reject(new Error('Error showing rationale')),
             () =>
-              resolve(
-                NativeModules.PermissionsAndroid.requestPermission(permission),
-              ),
+              resolve(NativePermissionsAndroid.requestPermission(permission)),
           );
         });
       }
     }
-    return NativeModules.PermissionsAndroid.requestPermission(permission);
+    return NativePermissionsAndroid.requestPermission(permission);
   }
 
   /**
@@ -158,11 +233,21 @@ class PermissionsAndroid {
    * See https://facebook.github.io/react-native/docs/permissionsandroid.html#requestmultiple
    */
   requestMultiple(
-    permissions: Array<string>,
-  ): Promise<{[permission: string]: PermissionStatus}> {
-    return NativeModules.PermissionsAndroid.requestMultiplePermissions(
-      permissions,
+    permissions: Array<PermissionType>,
+  ): Promise<{[permission: PermissionType]: PermissionStatus}> {
+    if (Platform.OS !== 'android') {
+      console.warn(
+        '"PermissionsAndroid" module works only for Android platform.',
+      );
+      return Promise.resolve({});
+    }
+
+    invariant(
+      NativePermissionsAndroid,
+      'PermissionsAndroid is not installed correctly.',
     );
+
+    return NativePermissionsAndroid.requestMultiplePermissions(permissions);
   }
 }
 

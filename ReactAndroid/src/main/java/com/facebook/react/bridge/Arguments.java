@@ -1,30 +1,27 @@
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
+ * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
+ * directory of this source tree.
  */
 package com.facebook.react.bridge;
 
+import android.os.Bundle;
+import androidx.annotation.Nullable;
 import java.lang.reflect.Array;
-
 import java.util.AbstractList;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import javax.annotation.Nullable;
-
-import android.os.Bundle;
-
 public class Arguments {
   private static Object makeNativeObject(Object object) {
     if (object == null) {
       return null;
-    } else if (object instanceof Float ||
-      object instanceof Long ||
-      object instanceof Byte ||
-      object instanceof Short) {
+    } else if (object instanceof Float
+        || object instanceof Long
+        || object instanceof Byte
+        || object instanceof Short) {
       return ((Number) object).doubleValue();
     } else if (object.getClass().isArray()) {
       return makeNativeArray(object);
@@ -41,12 +38,11 @@ public class Arguments {
   }
 
   /**
-   * This method converts a List into a NativeArray.  The data types supported
-   * are boolean, int, float, double, and String.  List, Map, and Bundle
-   * objects, as well as arrays, containing values of the above types and/or
-   * null, or any recursive arrangement of these, are also supported.  The best
-   * way to think of this is a way to generate a Java representation of a json
-   * list, from Java types which have a natural representation in json.
+   * This method converts a List into a NativeArray. The data types supported are boolean, int,
+   * float, double, and String. List, Map, and Bundle objects, as well as arrays, containing values
+   * of the above types and/or null, or any recursive arrangement of these, are also supported. The
+   * best way to think of this is a way to generate a Java representation of a json list, from Java
+   * types which have a natural representation in json.
    */
   public static WritableNativeArray makeNativeArray(List objects) {
     WritableNativeArray nativeArray = new WritableNativeArray();
@@ -77,8 +73,8 @@ public class Arguments {
   }
 
   /**
-   * This overload is like the above, but uses reflection to operate on any
-   * primitive or object type.
+   * This overload is like the above, but uses reflection to operate on any primitive or object
+   * type.
    */
   public static <T> WritableNativeArray makeNativeArray(final Object objects) {
     if (objects == null) {
@@ -86,15 +82,16 @@ public class Arguments {
     }
     // No explicit check for objects's type here.  If it's not an array, the
     // Array methods will throw IllegalArgumentException.
-    return makeNativeArray(new AbstractList() {
-      public int size() {
-        return Array.getLength(objects);
-      }
+    return makeNativeArray(
+        new AbstractList() {
+          public int size() {
+            return Array.getLength(objects);
+          }
 
-      public Object get(int index) {
-        return Array.get(objects, index);
-      }
-    });
+          public Object get(int index) {
+            return Array.get(objects, index);
+          }
+        });
   }
 
   private static void addEntry(WritableNativeMap nativeMap, String key, Object value) {
@@ -119,10 +116,9 @@ public class Arguments {
   }
 
   /**
-   * This method converts a Map into a NativeMap.  Value types are supported as
-   * with makeNativeArray.  The best way to think of this is a way to generate
-   * a Java representation of a json object, from Java types which have a
-   * natural representation in json.
+   * This method converts a Map into a NativeMap. Value types are supported as with makeNativeArray.
+   * The best way to think of this is a way to generate a Java representation of a json object, from
+   * Java types which have a natural representation in json.
    */
   public static WritableNativeMap makeNativeMap(Map<String, Object> objects) {
     WritableNativeMap nativeMap = new WritableNativeMap();
@@ -135,9 +131,7 @@ public class Arguments {
     return nativeMap;
   }
 
-  /**
-   * Like the above, but takes a Bundle instead of a Map.
-   */
+  /** Like the above, but takes a Bundle instead of a Map. */
   public static WritableNativeMap makeNativeMap(Bundle bundle) {
     WritableNativeMap nativeMap = new WritableNativeMap();
     if (bundle == null) {
@@ -149,16 +143,12 @@ public class Arguments {
     return nativeMap;
   }
 
-  /**
-   * This method should be used when you need to stub out creating NativeArrays in unit tests.
-   */
+  /** This method should be used when you need to stub out creating NativeArrays in unit tests. */
   public static WritableArray createArray() {
     return new WritableNativeArray();
   }
 
-  /**
-   * This method should be used when you need to stub out creating NativeMaps in unit tests.
-   */
+  /** This method should be used when you need to stub out creating NativeMaps in unit tests. */
   public static WritableMap createMap() {
     return new WritableNativeMap();
   }
@@ -198,7 +188,7 @@ public class Arguments {
    * Convert an array to a {@link WritableArray}.
    *
    * @param array the array to convert. Supported types are: {@code String[]}, {@code Bundle[]},
-   *              {@code int[]}, {@code float[]}, {@code double[]}, {@code boolean[]}.
+   *     {@code int[]}, {@code float[]}, {@code double[]}, {@code boolean[]}.
    * @return the converted {@link WritableArray}
    * @throws IllegalArgumentException if the passed object is none of the above types
    */
@@ -237,10 +227,12 @@ public class Arguments {
   /**
    * Convert a {@link List} to a {@link WritableArray}.
    *
-   * @param list the list to convert. Supported value types are: {@code null}, {@code String}, {@code Bundle},
-   *              {@code List}, {@code Number}, {@code Boolean}, and all array types supported in {@link #fromArray(Object)}.
+   * @param list the list to convert. Supported value types are: {@code null}, {@code String},
+   *     {@code Bundle}, {@code List}, {@code Number}, {@code Boolean}, and all array types
+   *     supported in {@link #fromArray(Object)}.
    * @return the converted {@link WritableArray}
-   * @throws IllegalArgumentException if one of the values from the passed list is none of the above types
+   * @throws IllegalArgumentException if one of the values from the passed list is none of the above
+   *     types
    */
   public static WritableArray fromList(List list) {
     WritableArray catalystArray = createArray();
@@ -269,14 +261,15 @@ public class Arguments {
   }
 
   /**
-   * Convert a {@link Bundle} to a {@link WritableMap}. Supported key types in the bundle
-   * are:
+   * Convert a {@link Bundle} to a {@link WritableMap}. Supported key types in the bundle are:
+   *
    * <p>
+   *
    * <ul>
-   * <li>primitive types: int, float, double, boolean</li>
-   * <li>arrays supported by {@link #fromArray(Object)}</li>
-   * <li>lists supported by {@link #fromList(List)}</li>
-   * <li>{@link Bundle} objects that are recursively converted to maps</li>
+   *   <li>primitive types: int, float, double, boolean
+   *   <li>arrays supported by {@link #fromArray(Object)}
+   *   <li>lists supported by {@link #fromList(List)}
+   *   <li>{@link Bundle} objects that are recursively converted to maps
    * </ul>
    *
    * @param bundle the {@link Bundle} to convert
@@ -362,8 +355,8 @@ public class Arguments {
   }
 
   /**
-   * Convert a {@link WritableMap} to a {@link Bundle}.
-   * Note: Each array is converted to an {@link ArrayList}.
+   * Convert a {@link WritableMap} to a {@link Bundle}. Note: Each array is converted to an {@link
+   * ArrayList}.
    *
    * @param readableMap the {@link WritableMap} to convert.
    * @return the converted {@link Bundle}.

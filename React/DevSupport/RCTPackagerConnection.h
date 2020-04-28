@@ -9,7 +9,7 @@
 
 #import <React/RCTDefines.h>
 
-#if RCT_DEV
+#if RCT_DEV && !TARGET_OS_UIKITFORMAC
 
 NS_ASSUME_NONNULL_BEGIN
 

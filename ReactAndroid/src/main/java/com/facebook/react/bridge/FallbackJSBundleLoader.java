@@ -1,25 +1,23 @@
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
+ * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
+ * directory of this source tree.
  */
-
 package com.facebook.react.bridge;
 
+import com.facebook.common.logging.FLog;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Stack;
 
-import com.facebook.common.logging.FLog;
-
 /**
  * FallbackJSBundleLoader
  *
- * An implementation of {@link JSBundleLoader} that will try to load from
- * multiple sources, falling back from one source to the next at load time
- * when an exception is thrown for a recoverable error.
+ * <p>An implementation of {@link JSBundleLoader} that will try to load from multiple sources,
+ * falling back from one source to the next at load time when an exception is thrown for a
+ * recoverable error.
  */
 public final class FallbackJSBundleLoader extends JSBundleLoader {
 
@@ -32,10 +30,7 @@ public final class FallbackJSBundleLoader extends JSBundleLoader {
   // Reasons why we fell-back on previous loaders, in order of occurrence.
   private final ArrayList<Exception> mRecoveredErrors = new ArrayList<>();
 
-  /**
-   * @param loaders Loaders for the sources to try, in descending order of
-   *                preference.
-   */
+  /** @param loaders Loaders for the sources to try, in descending order of preference. */
   public FallbackJSBundleLoader(List<JSBundleLoader> loaders) {
     mLoaders = new Stack();
     ListIterator<JSBundleLoader> it = loaders.listIterator(loaders.size());
@@ -45,9 +40,9 @@ public final class FallbackJSBundleLoader extends JSBundleLoader {
   }
 
   /**
-   * This loader delegates to (and so behaves like) the currently preferred
-   * loader. If that loader fails in a recoverable way and we fall back from it,
-   * it is replaced by the next most preferred loader.
+   * This loader delegates to (and so behaves like) the currently preferred loader. If that loader
+   * fails in a recoverable way and we fall back from it, it is replaced by the next most preferred
+   * loader.
    */
   @Override
   public String loadScript(JSBundleLoaderDelegate delegate) {
@@ -71,8 +66,7 @@ public final class FallbackJSBundleLoader extends JSBundleLoader {
       return mLoaders.peek();
     }
 
-    RuntimeException fallbackException =
-      new RuntimeException("No fallback options available");
+    RuntimeException fallbackException = new RuntimeException("No fallback options available");
 
     // Invariant: tail.getCause() == null
     Throwable tail = fallbackException;

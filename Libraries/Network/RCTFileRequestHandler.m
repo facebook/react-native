@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#import "RCTFileRequestHandler.h"
+#import <React/RCTFileRequestHandler.h>
 
 #if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
 #import <MobileCoreServices/MobileCoreServices.h>

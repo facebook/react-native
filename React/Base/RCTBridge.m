@@ -34,6 +34,7 @@ NSString *const RCTDidSetupModuleNotificationSetupTimeKey = @"setupTime";
 NSString *const RCTBridgeWillReloadNotification = @"RCTBridgeWillReloadNotification";
 NSString *const RCTBridgeWillDownloadScriptNotification = @"RCTBridgeWillDownloadScriptNotification";
 NSString *const RCTBridgeDidDownloadScriptNotification = @"RCTBridgeDidDownloadScriptNotification";
+NSString *const RCTBridgeWillInvalidateModulesNotification = @"RCTBridgeWillInvalidateModulesNotification";
 NSString *const RCTBridgeDidInvalidateModulesNotification = @"RCTBridgeDidInvalidateModulesNotification";
 NSString *const RCTBridgeDidDownloadScriptNotificationSourceKey = @"source";
 NSString *const RCTBridgeDidDownloadScriptNotificationBridgeDescriptionKey = @"bridgeDescription";
@@ -93,6 +94,12 @@ NSString *RCTBridgeModuleNameForClass(Class cls)
 static BOOL turboModuleEnabled = NO;
 BOOL RCTTurboModuleEnabled(void)
 {
+#if RCT_DEBUG
+  // TODO(T53341772): Allow TurboModule for test environment. Right now this breaks RNTester tests if enabled.
+  if (RCTRunningInTestEnvironment()) {
+    return NO;
+  }
+#endif
   return turboModuleEnabled;
 }
 
@@ -286,7 +293,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
 - (void)reload
 {
-  #if RCT_ENABLE_INSPECTOR
+  #if RCT_ENABLE_INSPECTOR && !TARGET_OS_UIKITFORMAC
   // Disable debugger to resume the JsVM & avoid thread locks while reloading
   [RCTInspectorDevServerHelper disableDebugger];
   #endif

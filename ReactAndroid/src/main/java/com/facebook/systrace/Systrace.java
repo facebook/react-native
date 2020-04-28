@@ -1,18 +1,17 @@
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
+ * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
+ * directory of this source tree.
  */
-
 package com.facebook.systrace;
 
 import android.os.Build;
 import android.os.Trace;
 
 /**
- * Systrace stub that mostly does nothing but delegates to Trace for beginning/ending sections.
- * The internal version of this file has not been opensourced yet.
+ * Systrace stub that mostly does nothing but delegates to Trace for beginning/ending sections. The
+ * internal version of this file has not been opensourced yet.
  */
 public class Systrace {
 
@@ -38,21 +37,15 @@ public class Systrace {
     }
   }
 
-  public static void registerListener(TraceListener listener) {
-  }
+  public static void registerListener(TraceListener listener) {}
 
-  public static void unregisterListener(TraceListener listener) {
-  }
+  public static void unregisterListener(TraceListener listener) {}
 
   public static boolean isTracing(long tag) {
     return false;
   }
 
-  public static void traceInstant(
-      long tag,
-      final String title,
-      EventScope scope) {
-  }
+  public static void traceInstant(long tag, final String title, EventScope scope) {}
 
   public static void beginSection(long tag, final String sectionName) {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
@@ -66,45 +59,21 @@ public class Systrace {
     }
   }
 
-  public static void beginAsyncSection(
-      long tag,
-      final String sectionName,
-      final int cookie) {
-  }
+  public static void beginAsyncSection(long tag, final String sectionName, final int cookie) {}
 
   public static void beginAsyncSection(
       long tag, final String sectionName, final int cookie, final long startNanos) {}
 
-  public static void endAsyncSection(
-      long tag,
-      final String sectionName,
-      final int cookie) {
-  }
+  public static void endAsyncSection(long tag, final String sectionName, final int cookie) {}
 
   public static void endAsyncSection(
       long tag, final String sectionName, final int cookie, final long endNanos) {}
 
-  public static void traceCounter(
-      long tag,
-      final String counterName,
-      final int counterValue) {
-  }
+  public static void traceCounter(long tag, final String counterName, final int counterValue) {}
 
-  public static void startAsyncFlow(
-      long tag,
-      final String sectionName,
-      final int cookie) {
-  }
+  public static void startAsyncFlow(long tag, final String sectionName, final int cookie) {}
 
-  public static void stepAsyncFlow(
-      long tag,
-      final String sectionName,
-      final int cookie) {
-  }
+  public static void stepAsyncFlow(long tag, final String sectionName, final int cookie) {}
 
-  public static void endAsyncFlow(
-      long tag,
-      final String sectionName,
-      final int cookie) {
-  }
+  public static void endAsyncFlow(long tag, final String sectionName, final int cookie) {}
 }

@@ -7,9 +7,7 @@ package com.facebook.react.module.model;
 
 import java.util.Map;
 
-/**
- * Interface for auto-generated class by ReactModuleSpecProcessor.
- */
+/** Interface for auto-generated class by ReactModuleSpecProcessor. */
 public interface ReactModuleInfoProvider {
 
   Map<String, ReactModuleInfo> getReactModuleInfos();

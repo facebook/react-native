@@ -1,28 +1,23 @@
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
+ * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
+ * directory of this source tree.
  */
-
 package com.facebook.react.tests;
 
 import android.os.Bundle;
 import android.test.ActivityInstrumentationTestCase2;
-
 import com.facebook.react.bridge.BaseJavaModule;
-import com.facebook.react.testing.FakeWebSocketModule;
-import com.facebook.react.testing.ReactInstanceSpecForTest;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.testing.FakeWebSocketModule;
 import com.facebook.react.testing.ReactAppTestActivity;
+import com.facebook.react.testing.ReactInstanceSpecForTest;
 
-/**
- * Simple test case for passing initial props to the root React application.
- */
-public class InitialPropsTestCase extends
-    ActivityInstrumentationTestCase2<ReactAppTestActivity> {
+/** Simple test case for passing initial props to the root React application. */
+public class InitialPropsTestCase extends ActivityInstrumentationTestCase2<ReactAppTestActivity> {
 
   public static final String DEFAULT_JS_BUNDLE = "AndroidTestBundle.js";
 
@@ -78,17 +73,13 @@ public class InitialPropsTestCase extends
             props.putDouble("key3", 5.5);
             props.putFloat("key4", 5.6f);
             props.putBoolean("key5", true);
-            props.putStringArray("key6", new String[]{"one", "two", "three"});
-            props.putIntArray("key7", new int[]{1, 2, 3});
-            props.putDoubleArray("key8", new double[]{1.5, 2.5, 3.5});
-            props.putFloatArray("key9", new float[]{1.6f, 2.6f, 3.6f});
-            props.putBooleanArray("key10", new boolean[]{true, false});
+            props.putStringArray("key6", new String[] {"one", "two", "three"});
+            props.putIntArray("key7", new int[] {1, 2, 3});
+            props.putDoubleArray("key8", new double[] {1.5, 2.5, 3.5});
+            props.putFloatArray("key9", new float[] {1.6f, 2.6f, 3.6f});
+            props.putBooleanArray("key10", new boolean[] {true, false});
             activity.loadApp(
-                "InitialPropsTestApp",
-                catalystInstanceSpec,
-                props,
-                DEFAULT_JS_BUNDLE,
-                false);
+                "InitialPropsTestApp", catalystInstanceSpec, props, DEFAULT_JS_BUNDLE, false);
           }
         });
     activity.waitForBridgeAndUIIdle();

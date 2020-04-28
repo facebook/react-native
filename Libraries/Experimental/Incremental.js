@@ -11,9 +11,8 @@
 'use strict';
 
 const InteractionManager = require('../Interaction/InteractionManager');
-const React = require('react');
-
 const PropTypes = require('prop-types');
+const React = require('react');
 
 const infoLog = require('../Utilities/infoLog');
 
@@ -104,11 +103,16 @@ class Incremental extends React.Component<Props, State> {
   _mounted: boolean;
   _rendered: boolean;
 
-  static defaultProps = {
+  static defaultProps: $TEMPORARY$object<{|name: string|}> = {
     name: '',
   };
 
-  static contextTypes = {
+  static contextTypes:
+    | any
+    | $TEMPORARY$object<{|
+        incrementalGroup: React$PropType$Primitive<any>,
+        incrementalGroupEnabled: React$PropType$Primitive<boolean>,
+      |}> = {
     incrementalGroup: PropTypes.object,
     incrementalGroupEnabled: PropTypes.bool,
   };

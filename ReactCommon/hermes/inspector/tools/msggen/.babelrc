@@ -1,0 +1,9 @@
+{
+  "presets": [ "flow", ["env", {
+      "targets": {
+        "node": "current"
+      }
+    }]
+  ],
+  "plugins": ["idx"]
+}

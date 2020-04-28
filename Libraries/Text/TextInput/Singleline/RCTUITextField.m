@@ -5,14 +5,15 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#import "RCTUITextField.h"
+#import <React/RCTUITextField.h>
 
 #import <React/RCTUtils.h>
 #import <React/UIView+React.h>
 
-#import "RCTBackedTextInputDelegateAdapter.h"
-#import "RCTBackedTextInputDelegate.h" // TODO(OSS Candidate ISS#2710739)
-#import "RCTTextAttributes.h"
+#import <React/RCTBackedTextInputDelegateAdapter.h>
+#import <React/RCTBackedTextInputDelegate.h> // TODO(OSS Candidate ISS#2710739)
+#import <React/RCTTextAttributes.h>
+
 
 #if TARGET_OS_OSX // [TODO(macOS ISS#2323203)
 @interface RCTUITextFieldCell : NSTextFieldCell
@@ -416,6 +417,18 @@ static RCTUIColor *defaultPlaceholderTextColor()
 #endif // ]TODO(macOS ISS#2323203)
 
 #pragma mark - Overrides
+
+#if !TARGET_OS_OSX
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-implementations"
+// Overrides selectedTextRange setter to get notify when selectedTextRange changed.
+- (void)setSelectedTextRange:(UITextRange *)selectedTextRange
+{
+  [super setSelectedTextRange:selectedTextRange];
+  [_textInputDelegateAdapter selectedTextRangeWasSet];
+}
+#pragma clang diagnostic pop
+#endif // !TARGET_OS_OSX
 
 #if TARGET_OS_OSX // [TODO(macOS ISS#2323203)
 - (BOOL)becomeFirstResponder

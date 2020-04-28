@@ -9,12 +9,9 @@ import com.facebook.jni.HybridData;
 import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.soloader.SoLoader;
 
-/**
- * This does nothing interesting, except avoid breaking existing code.
- */
+/** This does nothing interesting, except avoid breaking existing code. */
 @DoNotStrip
-public class CxxModuleWrapper extends CxxModuleWrapperBase
-{
+public class CxxModuleWrapper extends CxxModuleWrapperBase {
   protected CxxModuleWrapper(HybridData hd) {
     super(hd);
   }

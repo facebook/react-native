@@ -1,44 +1,38 @@
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
+ * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
+ * directory of this source tree.
  */
-
 package com.facebook.react;
-
-import java.util.Arrays;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
-import com.facebook.react.bridge.NativeModule;
-import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.uimanager.ViewManager;
-
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.Rule;
-
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-import org.powermock.core.classloader.annotations.PowerMockIgnore;
-import org.powermock.modules.junit4.rule.PowerMockRule;
-import org.robolectric.RobolectricTestRunner;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.facebook.react.bridge.NativeModule;
+import com.facebook.react.bridge.ReactApplicationContext;
+import com.facebook.react.uimanager.ViewManager;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+import org.powermock.core.classloader.annotations.PowerMockIgnore;
+import org.powermock.modules.junit4.rule.PowerMockRule;
+import org.robolectric.RobolectricTestRunner;
+
 @RunWith(RobolectricTestRunner.class)
 @PowerMockIgnore({"org.mockito.*", "org.robolectric.*", "androidx.*", "android.*"})
 public class CompositeReactPackageTest {
 
-  @Rule
-  public PowerMockRule rule = new PowerMockRule();
+  @Rule public PowerMockRule rule = new PowerMockRule();
 
   @Mock ReactPackage packageNo1;
   @Mock ReactPackage packageNo2;
@@ -99,11 +93,11 @@ public class CompositeReactPackageTest {
     NativeModule moduleNo4 = mock(NativeModule.class);
     when(moduleNo4.getName()).thenReturn("ModuleNo4");
 
-    when(packageNo1.createNativeModules(reactContext)).thenReturn(
-        Arrays.asList(new NativeModule[]{moduleNo1, moduleNo2}));
+    when(packageNo1.createNativeModules(reactContext))
+        .thenReturn(Arrays.asList(new NativeModule[] {moduleNo1, moduleNo2}));
 
-    when(packageNo2.createNativeModules(reactContext)).thenReturn(
-        Arrays.asList(new NativeModule[]{moduleNo3, moduleNo4}));
+    when(packageNo2.createNativeModules(reactContext))
+        .thenReturn(Arrays.asList(new NativeModule[] {moduleNo3, moduleNo4}));
 
     // When
     List<NativeModule> compositeModules = composite.createNativeModules(reactContext);
@@ -112,8 +106,8 @@ public class CompositeReactPackageTest {
 
     // Wrapping lists into sets to be order-independent.
     // Note that there should be no module2 returned.
-    Set<NativeModule> expected = new HashSet<>(
-        Arrays.asList(new NativeModule[]{moduleNo1, moduleNo3, moduleNo4}));
+    Set<NativeModule> expected =
+        new HashSet<>(Arrays.asList(new NativeModule[] {moduleNo1, moduleNo3, moduleNo4}));
     Set<NativeModule> actual = new HashSet<>(compositeModules);
 
     assertEquals(expected, actual);
@@ -139,11 +133,11 @@ public class CompositeReactPackageTest {
     ViewManager managerNo4 = mock(ViewManager.class);
     when(managerNo4.getName()).thenReturn("ManagerNo4");
 
-    when(packageNo1.createViewManagers(reactContext)).thenReturn(
-        Arrays.asList(new ViewManager[]{managerNo1, managerNo2}));
+    when(packageNo1.createViewManagers(reactContext))
+        .thenReturn(Arrays.asList(new ViewManager[] {managerNo1, managerNo2}));
 
-    when(packageNo2.createViewManagers(reactContext)).thenReturn(
-        Arrays.asList(new ViewManager[]{managerNo3, managerNo4}));
+    when(packageNo2.createViewManagers(reactContext))
+        .thenReturn(Arrays.asList(new ViewManager[] {managerNo3, managerNo4}));
 
     // When
     List<ViewManager> compositeModules = composite.createViewManagers(reactContext);
@@ -152,9 +146,8 @@ public class CompositeReactPackageTest {
 
     // Wrapping lists into sets to be order-independent.
     // Note that there should be no managerNo2 returned.
-    Set<ViewManager> expected = new HashSet<>(
-        Arrays.asList(new ViewManager[]{managerNo1, managerNo3, managerNo4})
-    );
+    Set<ViewManager> expected =
+        new HashSet<>(Arrays.asList(new ViewManager[] {managerNo1, managerNo3, managerNo4}));
     Set<ViewManager> actual = new HashSet<>(compositeModules);
 
     assertEquals(expected, actual);

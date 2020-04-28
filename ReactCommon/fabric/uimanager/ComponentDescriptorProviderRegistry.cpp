@@ -52,6 +52,8 @@ ComponentDescriptorProviderRegistry::createComponentDescriptorRegistry(
     registry->add(pair.second);
   }
 
+  componentDescriptorRegistries_.push_back(registry);
+
   return registry;
 }
 

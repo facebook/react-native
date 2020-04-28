@@ -3,7 +3,7 @@
 // This source code is licensed under the MIT license found in the
 // LICENSE file in the root directory of this source tree.
 
-#include "JSIExecutor.h"
+#include "jsireact/JSIExecutor.h"
 
 #include <cxxreact/JSBigString.h>
 #include <cxxreact/ModuleRegistry.h>
@@ -68,8 +68,8 @@ JSIExecutor::JSIExecutor(
 }
 
 void JSIExecutor::loadApplicationScript(
-      std::unique_ptr<const JSBigString> script,
-      std::string sourceURL) {
+    std::unique_ptr<const JSBigString> script,
+    std::string sourceURL) {
   SystraceSection s("JSIExecutor::loadApplicationScript");
 
   // TODO: check for and use precompiled HBC
@@ -112,6 +112,21 @@ void JSIExecutor::loadApplicationScript(
               const jsi::Value &,
               const jsi::Value *args,
               size_t count) { return nativeCallSyncHook(args, count); }));
+
+#if DEBUG
+  runtime_->global().setProperty(
+      *runtime_,
+      "globalEvalWithSourceUrl",
+      Function::createFromHostFunction(
+          *runtime_,
+          PropNameID::forAscii(*runtime_, "globalEvalWithSourceUrl"),
+          1,
+          [this](
+              jsi::Runtime &,
+              const jsi::Value &,
+              const jsi::Value *args,
+              size_t count) { return globalEvalWithSourceUrl(args, count); }));
+#endif
 
   if (runtimeInstaller_) {
     runtimeInstaller_(*runtime_);
@@ -161,6 +176,10 @@ void JSIExecutor::registerBundle(
     bundleRegistry_->registerBundle(bundleId, bundlePath);
   } else {
     auto script = JSBigFileString::fromPath(bundlePath);
+    if (script->size() == 0) {
+      throw std::invalid_argument(
+          "Empty bundle registered with ID " + tag + " from " + bundlePath);
+    }
     runtime_->evaluateJavaScript(
         std::make_unique<BigStringBuffer>(std::move(script)),
         JSExecutor::getSyntheticBundlePath(bundleId, bundlePath));
@@ -211,7 +230,7 @@ void JSIExecutor::callFunction(
 void JSIExecutor::invokeCallback(
     const double callbackId,
     const folly::dynamic &arguments) {
-  // SystraceSection s("JSIExecutor::invokeCallback", "callbackId", callbackId);
+  SystraceSection s("JSIExecutor::invokeCallback", "callbackId", callbackId);
   if (!invokeCallbackAndReturnFlushedQueue_) {
     bindBridge();
   }
@@ -241,7 +260,7 @@ void JSIExecutor::setGlobalVariable(
 }
 
 std::string JSIExecutor::getDescription() {
-  return "JSI " + runtime_->description();
+  return "JSI (" + runtime_->description() + ")";
 }
 
 void *JSIExecutor::getJavaScriptContext() {
@@ -353,6 +372,24 @@ Value JSIExecutor::nativeCallSyncHook(const Value *args, size_t count) {
   }
   return valueFromDynamic(*runtime_, result.value());
 }
+
+#if DEBUG
+Value JSIExecutor::globalEvalWithSourceUrl(const Value *args, size_t count) {
+  if (count != 1 && count != 2) {
+    throw std::invalid_argument(
+        "globalEvalWithSourceUrl arg count must be 1 or 2");
+  }
+
+  auto code = args[0].asString(*runtime_).utf8(*runtime_);
+  std::string url;
+  if (count > 1 && args[1].isString()) {
+    url = args[1].asString(*runtime_).utf8(*runtime_);
+  }
+
+  return runtime_->evaluateJavaScript(
+      std::make_unique<StringBuffer>(std::move(code)), url);
+}
+#endif
 
 void bindNativeLogger(Runtime &runtime, Logger logger) {
   runtime.global().setProperty(

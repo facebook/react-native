@@ -36,6 +36,14 @@ LOCAL_MODULE := reactnativejni
 # Compile all local c++ files.
 LOCAL_SRC_FILES := $(wildcard *.cpp)
 
+ifeq ($(APP_OPTIM),debug)
+  # Keep symbols by overriding the strip command invoked by ndk-build.
+  # Note that this will apply to all shared libraries,
+  # i.e. shared libraries will NOT be stripped
+  # even though we override it in this Android.mk
+  cmd-strip :=
+endif
+
 # Build the files in this directory as a shared library
 include $(BUILD_SHARED_LIBRARY)
 
@@ -60,6 +68,7 @@ $(call import-module,cxxreact)
 $(call import-module,jsi)
 $(call import-module,jsiexecutor)
 $(call import-module,jscallinvoker)
+$(call import-module,hermes)
 
 include $(REACT_SRC_DIR)/turbomodule/core/jni/Android.mk
 
@@ -68,3 +77,6 @@ include $(REACT_SRC_DIR)/turbomodule/core/jni/Android.mk
 # $(call import-module,jscexecutor)
 
 include $(REACT_SRC_DIR)/jscexecutor/Android.mk
+include $(REACT_SRC_DIR)/../hermes/reactexecutor/Android.mk
+include $(REACT_SRC_DIR)/../hermes/instrumentation/Android.mk
+include $(REACT_SRC_DIR)/modules/blob/jni/Android.mk

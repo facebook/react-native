@@ -1,11 +1,12 @@
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
+ * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
+ * directory of this source tree.
  */
-
 package com.facebook.react.views.slider;
+
+import static org.fest.assertions.api.Assertions.assertThat;
 
 import android.widget.SeekBar;
 import com.facebook.react.bridge.CatalystInstance;
@@ -23,17 +24,12 @@ import org.powermock.modules.junit4.rule.PowerMockRule;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.RuntimeEnvironment;
 
-import static org.fest.assertions.api.Assertions.assertThat;
-
-/**
- * Verify {@link SeekBar} view property being applied properly by {@link ReactSliderManager}
- */
+/** Verify {@link SeekBar} view property being applied properly by {@link ReactSliderManager} */
 @RunWith(RobolectricTestRunner.class)
 @PowerMockIgnore({"org.mockito.*", "org.robolectric.*", "androidx.*", "android.*"})
 public class ReactSliderPropertyTest {
 
-  @Rule
-  public PowerMockRule rule = new PowerMockRule();
+  @Rule public PowerMockRule rule = new PowerMockRule();
 
   private ThemedReactContext mThemedContext;
   private ReactSliderManager mManager;

@@ -11,14 +11,18 @@
 
 const Blob = require('./Blob');
 
-const {BlobModule} = require('../BatchedBridge/NativeModules');
+import NativeBlobModule from './NativeBlobModule';
 
 let BLOB_URL_PREFIX = null;
 
-if (BlobModule && typeof BlobModule.BLOB_URI_SCHEME === 'string') {
-  BLOB_URL_PREFIX = BlobModule.BLOB_URI_SCHEME + ':';
-  if (typeof BlobModule.BLOB_URI_HOST === 'string') {
-    BLOB_URL_PREFIX += `//${BlobModule.BLOB_URI_HOST}/`;
+if (
+  NativeBlobModule &&
+  typeof NativeBlobModule.getConstants().BLOB_URI_SCHEME === 'string'
+) {
+  const constants = NativeBlobModule.getConstants();
+  BLOB_URL_PREFIX = constants.BLOB_URI_SCHEME + ':';
+  if (typeof constants.BLOB_URI_HOST === 'string') {
+    BLOB_URL_PREFIX += `//${constants.BLOB_URI_HOST}/`;
   }
 }
 
@@ -126,7 +130,12 @@ export class URL {
 
   constructor(url: string, base: string) {
     let baseUrl = null;
-    if (base) {
+    if (!base || validateBaseUrl(url)) {
+      this._url = url;
+      if (!this._url.endsWith('/')) {
+        this._url += '/';
+      }
+    } else {
       if (typeof base === 'string') {
         baseUrl = base;
         if (!validateBaseUrl(baseUrl)) {
@@ -142,11 +151,6 @@ export class URL {
         url = '';
       }
       this._url = `${baseUrl}${url}`;
-    } else {
-      this._url = url;
-      if (!this._url.endsWith('/')) {
-        this._url += '/';
-      }
     }
   }
 

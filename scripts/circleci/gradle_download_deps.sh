@@ -6,8 +6,4 @@
 
 set -e
 
-<<<<<<< HEAD
-./gradlew :ReactAndroid:downloadBoost # :ReactAndroid:downloadDoubleConversion :ReactAndroid:downloadFolly :ReactAndroid:downloadGlog :ReactAndroid:downloadJSC
-=======
 ./gradlew :ReactAndroid:downloadBoost :ReactAndroid:downloadDoubleConversion :ReactAndroid:downloadFolly :ReactAndroid:downloadGlog
->>>>>>> v0.60.0

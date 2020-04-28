@@ -1,38 +1,33 @@
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
+ * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
+ * directory of this source tree.
  */
-
 package com.facebook.react.views.art;
 
-import javax.annotation.Nullable;
-
 import android.graphics.Canvas;
-import android.graphics.Paint;
 import android.graphics.Color;
-import android.view.Surface;
+import android.graphics.Paint;
 import android.graphics.PorterDuff;
 import android.graphics.SurfaceTexture;
-import android.view.TextureView;
 import android.os.Build;
-
+import android.view.Surface;
+import android.view.TextureView;
+import androidx.annotation.Nullable;
 import com.facebook.common.logging.FLog;
+import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.uimanager.LayoutShadowNode;
-import com.facebook.react.uimanager.UIViewOperationQueue;
 import com.facebook.react.uimanager.ReactShadowNode;
-import com.facebook.react.uimanager.ViewProps;
 import com.facebook.react.uimanager.ThemedReactContext;
+import com.facebook.react.uimanager.UIViewOperationQueue;
+import com.facebook.react.uimanager.ViewProps;
 import com.facebook.react.uimanager.annotations.ReactProp;
-import com.facebook.react.bridge.LifecycleEventListener;
 
-/**
- * Shadow node for ART virtual tree root - ARTSurfaceView
- */
+/** Shadow node for ART virtual tree root - ARTSurfaceView */
 public class ARTSurfaceViewShadowNode extends LayoutShadowNode
-  implements TextureView.SurfaceTextureListener, LifecycleEventListener {
+    implements TextureView.SurfaceTextureListener, LifecycleEventListener {
 
   private @Nullable Surface mSurface;
 

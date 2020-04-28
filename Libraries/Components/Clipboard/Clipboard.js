@@ -10,7 +10,7 @@
 
 'use strict';
 
-const Clipboard = require('../../BatchedBridge/NativeModules').Clipboard;
+import NativeClipboard from './NativeClipboard';
 
 /**
  * `Clipboard` gives you an interface for setting and getting content from Clipboard on both iOS and Android
@@ -25,7 +25,7 @@ module.exports = {
    * ```
    */
   getString(): Promise<string> {
-    return Clipboard.getString();
+    return NativeClipboard.getString();
   },
   /**
    * Set content of string type. You can use following code to set clipboard content
@@ -37,6 +37,6 @@ module.exports = {
    * @param the content to be stored in the clipboard.
    */
   setString(content: string) {
-    Clipboard.setString(content);
+    NativeClipboard.setString(content);
   },
 };

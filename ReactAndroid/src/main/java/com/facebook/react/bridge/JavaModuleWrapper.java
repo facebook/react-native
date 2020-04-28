@@ -1,24 +1,10 @@
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
+ * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
+ * directory of this source tree.
  */
-
 package com.facebook.react.bridge;
-
-import javax.annotation.Nullable;
-
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import com.facebook.proguard.annotations.DoNotStrip;
-import com.facebook.systrace.Systrace;
-import com.facebook.systrace.SystraceMessage;
 
 import static com.facebook.react.bridge.ReactMarkerConstants.CONVERT_CONSTANTS_END;
 import static com.facebook.react.bridge.ReactMarkerConstants.CONVERT_CONSTANTS_START;
@@ -26,25 +12,30 @@ import static com.facebook.react.bridge.ReactMarkerConstants.GET_CONSTANTS_END;
 import static com.facebook.react.bridge.ReactMarkerConstants.GET_CONSTANTS_START;
 import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
 
-/**
- * This is part of the glue which wraps a java BaseJavaModule in a C++
- * NativeModule.  This could all be in C++, but it's android-specific
- * initialization code, and writing it this way is easier to read and means
- * fewer JNI calls.
- */
+import androidx.annotation.Nullable;
+import com.facebook.proguard.annotations.DoNotStrip;
+import com.facebook.systrace.Systrace;
+import com.facebook.systrace.SystraceMessage;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
+/**
+ * This is part of the glue which wraps a java BaseJavaModule in a C++ NativeModule. This could all
+ * be in C++, but it's android-specific initialization code, and writing it this way is easier to
+ * read and means fewer JNI calls.
+ */
 @DoNotStrip
 public class JavaModuleWrapper {
   @DoNotStrip
   public class MethodDescriptor {
-    @DoNotStrip
-    Method method;
-    @DoNotStrip
-    String signature;
-    @DoNotStrip
-    String name;
-    @DoNotStrip
-    String type;
+    @DoNotStrip Method method;
+    @DoNotStrip String signature;
+    @DoNotStrip String name;
+    @DoNotStrip String type;
   }
 
   private final JSInstance mJSInstance;
@@ -93,10 +84,11 @@ public class JavaModuleWrapper {
           // We do not support method overloading since js sees a function as an object regardless
           // of number of params.
           throw new IllegalArgumentException(
-            "Java Module " + getName() + " method name already registered: " + methodName);
+              "Java Module " + getName() + " method name already registered: " + methodName);
         }
         MethodDescriptor md = new MethodDescriptor();
-        JavaMethodWrapper method = new JavaMethodWrapper(this, targetMethod, annotation.isBlockingSynchronousMethod());
+        JavaMethodWrapper method =
+            new JavaMethodWrapper(this, targetMethod, annotation.isBlockingSynchronousMethod());
         md.name = methodName;
         md.type = method.getType();
         if (md.type == BaseJavaModule.METHOD_TYPE_SYNC) {
@@ -126,8 +118,8 @@ public class JavaModuleWrapper {
 
     final String moduleName = getName();
     SystraceMessage.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "JavaModuleWrapper.getConstants")
-      .arg("moduleName", moduleName)
-      .flush();
+        .arg("moduleName", moduleName)
+        .flush();
     ReactMarker.logMarker(GET_CONSTANTS_START, moduleName);
 
     BaseJavaModule baseJavaModule = getModule();

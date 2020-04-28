@@ -225,6 +225,22 @@ static void RNPerformMountInstructions(ShadowViewMutationList const &mutations, 
   });
 }
 
+- (void)dispatchCommand:(ReactTag)reactTag commandName:(NSString *)commandName args:(NSArray *)args
+{
+  if (RCTIsMainQueue()) {
+    // Already on the proper thread, so:
+    // * No need to do a thread jump;
+    // * No need to allocate a block.
+    [self synchronouslyDispatchCommandOnUIThread:reactTag commandName:commandName args:args];
+    return;
+  }
+
+  RCTExecuteOnMainQueue(^{
+    RCTAssertMainQueue();
+    [self synchronouslyDispatchCommandOnUIThread:reactTag commandName:commandName args:args];
+  });
+}
+
 - (void)mountMutations:(MountingCoordinator::Shared const &)mountingCoordinator
 {
   SystraceSection s("-[RCTMountingManager mountMutations:]");
@@ -251,6 +267,15 @@ static void RNPerformMountInstructions(ShadowViewMutationList const &mutations, 
   SharedProps oldProps = [componentView props];
   SharedProps newProps = componentDescriptor.cloneProps(oldProps, RawProps(convertIdToFollyDynamic(props)));
   [componentView updateProps:newProps oldProps:oldProps];
+}
+
+- (void)synchronouslyDispatchCommandOnUIThread:(ReactTag)reactTag
+                                   commandName:(NSString *)commandName
+                                          args:(NSArray *)args
+{
+  RCTAssertMainQueue();
+  UIView<RCTComponentViewProtocol> *componentView = [_componentViewRegistry componentViewByTag:reactTag];
+  [componentView handleCommand:commandName args:args];
 }
 
 @end

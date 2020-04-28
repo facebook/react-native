@@ -107,12 +107,10 @@ using namespace facebook::react;
   return concreteComponentDescriptorProvider<SliderComponentDescriptor>();
 }
 
-- (void)updateProps:(SharedProps)props oldProps:(SharedProps)oldProps
+- (void)updateProps:(Props::Shared const &)props oldProps:(Props::Shared const &)oldProps
 {
-  const auto &oldSliderProps = *std::static_pointer_cast<const SliderProps>(oldProps ?: _props);
+  const auto &oldSliderProps = *std::static_pointer_cast<const SliderProps>(_props);
   const auto &newSliderProps = *std::static_pointer_cast<const SliderProps>(props);
-
-  [super updateProps:props oldProps:oldProps];
 
   // `value`
   if (oldSliderProps.value != newSliderProps.value) {
@@ -149,6 +147,8 @@ using namespace facebook::react;
   if (oldSliderProps.maximumTrackTintColor != newSliderProps.maximumTrackTintColor) {
     _sliderView.maximumTrackTintColor = [UIColor colorWithCGColor:newSliderProps.maximumTrackTintColor.get()];
   }
+
+  [super updateProps:props oldProps:oldProps];
 }
 
 - (void)updateLocalData:(SharedLocalData)localData oldLocalData:(SharedLocalData)oldLocalData

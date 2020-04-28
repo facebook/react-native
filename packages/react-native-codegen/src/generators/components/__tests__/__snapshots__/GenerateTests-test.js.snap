@@ -1,0 +1,854 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`GenerateTests can generate fixture ARRAY_PROPS 1`] = `
+Map {
+  "Tests.cpp" => "/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+#include <gtest/gtest.h>
+#include <react/components/ARRAY_PROPS/Props.h>
+#include <react/components/image/conversions.h>
+#include <react/core/RawProps.h>
+#include <react/core/RawPropsParser.h>
+#include <react/core/propsConversions.h>
+
+using namespace facebook::react;
+
+TEST(ArrayPropsNativeComponentProps_DoesNotDie, etc) {
+  auto propParser = RawPropsParser();
+  propParser.prepare<ArrayPropsNativeComponentProps>();
+  auto const &sourceProps = ArrayPropsNativeComponentProps();
+  auto const &rawProps = RawProps(folly::dynamic::object(\\"xx_invalid_xx\\", \\"xx_invalid_xx\\"));
+  rawProps.parse(propParser);
+  ArrayPropsNativeComponentProps(sourceProps, rawProps);
+}",
+}
+`;
+
+exports[`GenerateTests can generate fixture BOOLEAN_PROP 1`] = `
+Map {
+  "Tests.cpp" => "/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+#include <gtest/gtest.h>
+#include <react/components/BOOLEAN_PROP/Props.h>
+#include <react/core/RawProps.h>
+#include <react/core/RawPropsParser.h>
+#include <react/core/propsConversions.h>
+
+using namespace facebook::react;
+
+TEST(BooleanPropNativeComponentProps_DoesNotDie, etc) {
+  auto propParser = RawPropsParser();
+  propParser.prepare<BooleanPropNativeComponentProps>();
+  auto const &sourceProps = BooleanPropNativeComponentProps();
+  auto const &rawProps = RawProps(folly::dynamic::object(\\"xx_invalid_xx\\", \\"xx_invalid_xx\\"));
+  rawProps.parse(propParser);
+  BooleanPropNativeComponentProps(sourceProps, rawProps);
+}
+
+TEST(BooleanPropNativeComponentProps_disabled, etc) {
+  auto propParser = RawPropsParser();
+  propParser.prepare<BooleanPropNativeComponentProps>();
+  auto const &sourceProps = BooleanPropNativeComponentProps();
+  auto const &rawProps = RawProps(folly::dynamic::object(\\"disabled\\", true));
+  rawProps.parse(propParser);
+  BooleanPropNativeComponentProps(sourceProps, rawProps);
+}",
+}
+`;
+
+exports[`GenerateTests can generate fixture COLOR_PROP 1`] = `
+Map {
+  "Tests.cpp" => "/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+#include <gtest/gtest.h>
+#include <react/components/COLOR_PROP/Props.h>
+#include <react/core/RawProps.h>
+#include <react/core/RawPropsParser.h>
+#include <react/core/propsConversions.h>
+
+using namespace facebook::react;
+
+TEST(ColorPropNativeComponentProps_DoesNotDie, etc) {
+  auto propParser = RawPropsParser();
+  propParser.prepare<ColorPropNativeComponentProps>();
+  auto const &sourceProps = ColorPropNativeComponentProps();
+  auto const &rawProps = RawProps(folly::dynamic::object(\\"xx_invalid_xx\\", \\"xx_invalid_xx\\"));
+  rawProps.parse(propParser);
+  ColorPropNativeComponentProps(sourceProps, rawProps);
+}
+
+TEST(ColorPropNativeComponentProps_tintColor, etc) {
+  auto propParser = RawPropsParser();
+  propParser.prepare<ColorPropNativeComponentProps>();
+  auto const &sourceProps = ColorPropNativeComponentProps();
+  auto const &rawProps = RawProps(folly::dynamic::object(\\"tintColor\\", 1));
+  rawProps.parse(propParser);
+  ColorPropNativeComponentProps(sourceProps, rawProps);
+}",
+}
+`;
+
+exports[`GenerateTests can generate fixture COMMANDS 1`] = `
+Map {
+  "Tests.cpp" => "/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+#include <gtest/gtest.h>
+#include <react/components/COMMANDS/Props.h>
+#include <react/core/RawProps.h>
+#include <react/core/RawPropsParser.h>
+#include <react/core/propsConversions.h>
+
+using namespace facebook::react;
+
+TEST(CommandNativeComponentProps_DoesNotDie, etc) {
+  auto propParser = RawPropsParser();
+  propParser.prepare<CommandNativeComponentProps>();
+  auto const &sourceProps = CommandNativeComponentProps();
+  auto const &rawProps = RawProps(folly::dynamic::object(\\"xx_invalid_xx\\", \\"xx_invalid_xx\\"));
+  rawProps.parse(propParser);
+  CommandNativeComponentProps(sourceProps, rawProps);
+}",
+}
+`;
+
+exports[`GenerateTests can generate fixture COMMANDS_AND_PROPS 1`] = `
+Map {
+  "Tests.cpp" => "/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+#include <gtest/gtest.h>
+#include <react/components/COMMANDS_AND_PROPS/Props.h>
+#include <react/core/RawProps.h>
+#include <react/core/RawPropsParser.h>
+#include <react/core/propsConversions.h>
+
+using namespace facebook::react;
+
+TEST(CommandNativeComponentProps_DoesNotDie, etc) {
+  auto propParser = RawPropsParser();
+  propParser.prepare<CommandNativeComponentProps>();
+  auto const &sourceProps = CommandNativeComponentProps();
+  auto const &rawProps = RawProps(folly::dynamic::object(\\"xx_invalid_xx\\", \\"xx_invalid_xx\\"));
+  rawProps.parse(propParser);
+  CommandNativeComponentProps(sourceProps, rawProps);
+}
+
+TEST(CommandNativeComponentProps_accessibilityHint, etc) {
+  auto propParser = RawPropsParser();
+  propParser.prepare<CommandNativeComponentProps>();
+  auto const &sourceProps = CommandNativeComponentProps();
+  auto const &rawProps = RawProps(folly::dynamic::object(\\"accessibilityHint\\", \\"foo\\"));
+  rawProps.parse(propParser);
+  CommandNativeComponentProps(sourceProps, rawProps);
+}",
+}
+`;
+
+exports[`GenerateTests can generate fixture DOUBLE_PROPS 1`] = `
+Map {
+  "Tests.cpp" => "/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+#include <gtest/gtest.h>
+#include <react/components/DOUBLE_PROPS/Props.h>
+#include <react/core/RawProps.h>
+#include <react/core/RawPropsParser.h>
+#include <react/core/propsConversions.h>
+
+using namespace facebook::react;
+
+TEST(DoublePropNativeComponentProps_DoesNotDie, etc) {
+  auto propParser = RawPropsParser();
+  propParser.prepare<DoublePropNativeComponentProps>();
+  auto const &sourceProps = DoublePropNativeComponentProps();
+  auto const &rawProps = RawProps(folly::dynamic::object(\\"xx_invalid_xx\\", \\"xx_invalid_xx\\"));
+  rawProps.parse(propParser);
+  DoublePropNativeComponentProps(sourceProps, rawProps);
+}",
+}
+`;
+
+exports[`GenerateTests can generate fixture ENUM_PROP 1`] = `
+Map {
+  "Tests.cpp" => "/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+#include <gtest/gtest.h>
+#include <react/components/ENUM_PROP/Props.h>
+#include <react/core/RawProps.h>
+#include <react/core/RawPropsParser.h>
+#include <react/core/propsConversions.h>
+
+using namespace facebook::react;
+
+TEST(EnumPropsNativeComponentProps_DoesNotDie, etc) {
+  auto propParser = RawPropsParser();
+  propParser.prepare<EnumPropsNativeComponentProps>();
+  auto const &sourceProps = EnumPropsNativeComponentProps();
+  auto const &rawProps = RawProps(folly::dynamic::object(\\"xx_invalid_xx\\", \\"xx_invalid_xx\\"));
+  rawProps.parse(propParser);
+  EnumPropsNativeComponentProps(sourceProps, rawProps);
+}
+
+TEST(EnumPropsNativeComponentProps_alignment_Top, etc) {
+  auto propParser = RawPropsParser();
+  propParser.prepare<EnumPropsNativeComponentProps>();
+  auto const &sourceProps = EnumPropsNativeComponentProps();
+  auto const &rawProps = RawProps(folly::dynamic::object(\\"alignment\\", \\"top\\"));
+  rawProps.parse(propParser);
+  EnumPropsNativeComponentProps(sourceProps, rawProps);
+}
+
+TEST(EnumPropsNativeComponentProps_alignment_Center, etc) {
+  auto propParser = RawPropsParser();
+  propParser.prepare<EnumPropsNativeComponentProps>();
+  auto const &sourceProps = EnumPropsNativeComponentProps();
+  auto const &rawProps = RawProps(folly::dynamic::object(\\"alignment\\", \\"center\\"));
+  rawProps.parse(propParser);
+  EnumPropsNativeComponentProps(sourceProps, rawProps);
+}
+
+TEST(EnumPropsNativeComponentProps_alignment_BottomRight, etc) {
+  auto propParser = RawPropsParser();
+  propParser.prepare<EnumPropsNativeComponentProps>();
+  auto const &sourceProps = EnumPropsNativeComponentProps();
+  auto const &rawProps = RawProps(folly::dynamic::object(\\"alignment\\", \\"bottom-right\\"));
+  rawProps.parse(propParser);
+  EnumPropsNativeComponentProps(sourceProps, rawProps);
+}",
+}
+`;
+
+exports[`GenerateTests can generate fixture EVENT_NESTED_OBJECT_PROPS 1`] = `
+Map {
+  "Tests.cpp" => "/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+#include <gtest/gtest.h>
+#include <react/components/EVENT_NESTED_OBJECT_PROPS/Props.h>
+#include <react/core/RawProps.h>
+#include <react/core/RawPropsParser.h>
+#include <react/core/propsConversions.h>
+
+using namespace facebook::react;
+
+TEST(EventsNestedObjectNativeComponentProps_DoesNotDie, etc) {
+  auto propParser = RawPropsParser();
+  propParser.prepare<EventsNestedObjectNativeComponentProps>();
+  auto const &sourceProps = EventsNestedObjectNativeComponentProps();
+  auto const &rawProps = RawProps(folly::dynamic::object(\\"xx_invalid_xx\\", \\"xx_invalid_xx\\"));
+  rawProps.parse(propParser);
+  EventsNestedObjectNativeComponentProps(sourceProps, rawProps);
+}
+
+TEST(EventsNestedObjectNativeComponentProps_disabled, etc) {
+  auto propParser = RawPropsParser();
+  propParser.prepare<EventsNestedObjectNativeComponentProps>();
+  auto const &sourceProps = EventsNestedObjectNativeComponentProps();
+  auto const &rawProps = RawProps(folly::dynamic::object(\\"disabled\\", true));
+  rawProps.parse(propParser);
+  EventsNestedObjectNativeComponentProps(sourceProps, rawProps);
+}",
+}
+`;
+
+exports[`GenerateTests can generate fixture EVENT_PROPS 1`] = `
+Map {
+  "Tests.cpp" => "/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+#include <gtest/gtest.h>
+#include <react/components/EVENT_PROPS/Props.h>
+#include <react/core/RawProps.h>
+#include <react/core/RawPropsParser.h>
+#include <react/core/propsConversions.h>
+
+using namespace facebook::react;
+
+TEST(EventsNativeComponentProps_DoesNotDie, etc) {
+  auto propParser = RawPropsParser();
+  propParser.prepare<EventsNativeComponentProps>();
+  auto const &sourceProps = EventsNativeComponentProps();
+  auto const &rawProps = RawProps(folly::dynamic::object(\\"xx_invalid_xx\\", \\"xx_invalid_xx\\"));
+  rawProps.parse(propParser);
+  EventsNativeComponentProps(sourceProps, rawProps);
+}
+
+TEST(EventsNativeComponentProps_disabled, etc) {
+  auto propParser = RawPropsParser();
+  propParser.prepare<EventsNativeComponentProps>();
+  auto const &sourceProps = EventsNativeComponentProps();
+  auto const &rawProps = RawProps(folly::dynamic::object(\\"disabled\\", true));
+  rawProps.parse(propParser);
+  EventsNativeComponentProps(sourceProps, rawProps);
+}",
+}
+`;
+
+exports[`GenerateTests can generate fixture EVENTS_WITH_PAPER_NAME 1`] = `
+Map {
+  "Tests.cpp" => "/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+#include <gtest/gtest.h>
+#include <react/components/EVENTS_WITH_PAPER_NAME/Props.h>
+#include <react/core/RawProps.h>
+#include <react/core/RawPropsParser.h>
+#include <react/core/propsConversions.h>
+
+using namespace facebook::react;
+
+TEST(InterfaceOnlyComponentProps_DoesNotDie, etc) {
+  auto propParser = RawPropsParser();
+  propParser.prepare<InterfaceOnlyComponentProps>();
+  auto const &sourceProps = InterfaceOnlyComponentProps();
+  auto const &rawProps = RawProps(folly::dynamic::object(\\"xx_invalid_xx\\", \\"xx_invalid_xx\\"));
+  rawProps.parse(propParser);
+  InterfaceOnlyComponentProps(sourceProps, rawProps);
+}",
+}
+`;
+
+exports[`GenerateTests can generate fixture FLOAT_PROPS 1`] = `
+Map {
+  "Tests.cpp" => "/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+#include <gtest/gtest.h>
+#include <react/components/FLOAT_PROPS/Props.h>
+#include <react/core/RawProps.h>
+#include <react/core/RawPropsParser.h>
+#include <react/core/propsConversions.h>
+
+using namespace facebook::react;
+
+TEST(FloatPropNativeComponentProps_DoesNotDie, etc) {
+  auto propParser = RawPropsParser();
+  propParser.prepare<FloatPropNativeComponentProps>();
+  auto const &sourceProps = FloatPropNativeComponentProps();
+  auto const &rawProps = RawProps(folly::dynamic::object(\\"xx_invalid_xx\\", \\"xx_invalid_xx\\"));
+  rawProps.parse(propParser);
+  FloatPropNativeComponentProps(sourceProps, rawProps);
+}
+
+TEST(FloatPropNativeComponentProps_blurRadius, etc) {
+  auto propParser = RawPropsParser();
+  propParser.prepare<FloatPropNativeComponentProps>();
+  auto const &sourceProps = FloatPropNativeComponentProps();
+  auto const &rawProps = RawProps(folly::dynamic::object(\\"blurRadius\\", 0.1));
+  rawProps.parse(propParser);
+  FloatPropNativeComponentProps(sourceProps, rawProps);
+}
+
+TEST(FloatPropNativeComponentProps_blurRadius2, etc) {
+  auto propParser = RawPropsParser();
+  propParser.prepare<FloatPropNativeComponentProps>();
+  auto const &sourceProps = FloatPropNativeComponentProps();
+  auto const &rawProps = RawProps(folly::dynamic::object(\\"blurRadius2\\", 0.001));
+  rawProps.parse(propParser);
+  FloatPropNativeComponentProps(sourceProps, rawProps);
+}
+
+TEST(FloatPropNativeComponentProps_blurRadius3, etc) {
+  auto propParser = RawPropsParser();
+  propParser.prepare<FloatPropNativeComponentProps>();
+  auto const &sourceProps = FloatPropNativeComponentProps();
+  auto const &rawProps = RawProps(folly::dynamic::object(\\"blurRadius3\\", 2.1));
+  rawProps.parse(propParser);
+  FloatPropNativeComponentProps(sourceProps, rawProps);
+}
+
+TEST(FloatPropNativeComponentProps_blurRadius4, etc) {
+  auto propParser = RawPropsParser();
+  propParser.prepare<FloatPropNativeComponentProps>();
+  auto const &sourceProps = FloatPropNativeComponentProps();
+  auto const &rawProps = RawProps(folly::dynamic::object(\\"blurRadius4\\", 0.1));
+  rawProps.parse(propParser);
+  FloatPropNativeComponentProps(sourceProps, rawProps);
+}
+
+TEST(FloatPropNativeComponentProps_blurRadius5, etc) {
+  auto propParser = RawPropsParser();
+  propParser.prepare<FloatPropNativeComponentProps>();
+  auto const &sourceProps = FloatPropNativeComponentProps();
+  auto const &rawProps = RawProps(folly::dynamic::object(\\"blurRadius5\\", 1));
+  rawProps.parse(propParser);
+  FloatPropNativeComponentProps(sourceProps, rawProps);
+}
+
+TEST(FloatPropNativeComponentProps_blurRadius6, etc) {
+  auto propParser = RawPropsParser();
+  propParser.prepare<FloatPropNativeComponentProps>();
+  auto const &sourceProps = FloatPropNativeComponentProps();
+  auto const &rawProps = RawProps(folly::dynamic::object(\\"blurRadius6\\", 0.1));
+  rawProps.parse(propParser);
+  FloatPropNativeComponentProps(sourceProps, rawProps);
+}",
+}
+`;
+
+exports[`GenerateTests can generate fixture IMAGE_PROP 1`] = `
+Map {
+  "Tests.cpp" => "/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+#include <gtest/gtest.h>
+#include <react/components/IMAGE_PROP/Props.h>
+#include <react/components/image/conversions.h>
+#include <react/core/RawProps.h>
+#include <react/core/RawPropsParser.h>
+#include <react/core/propsConversions.h>
+
+using namespace facebook::react;
+
+TEST(ImagePropNativeComponentProps_DoesNotDie, etc) {
+  auto propParser = RawPropsParser();
+  propParser.prepare<ImagePropNativeComponentProps>();
+  auto const &sourceProps = ImagePropNativeComponentProps();
+  auto const &rawProps = RawProps(folly::dynamic::object(\\"xx_invalid_xx\\", \\"xx_invalid_xx\\"));
+  rawProps.parse(propParser);
+  ImagePropNativeComponentProps(sourceProps, rawProps);
+}
+
+TEST(ImagePropNativeComponentProps_thumbImage, etc) {
+  auto propParser = RawPropsParser();
+  propParser.prepare<ImagePropNativeComponentProps>();
+  auto const &sourceProps = ImagePropNativeComponentProps();
+  auto const &rawProps = RawProps(folly::dynamic::object(\\"thumbImage\\", folly::dynamic::object(\\"url\\", \\"testurl\\")));
+  rawProps.parse(propParser);
+  ImagePropNativeComponentProps(sourceProps, rawProps);
+}",
+}
+`;
+
+exports[`GenerateTests can generate fixture INTEGER_PROPS 1`] = `
+Map {
+  "Tests.cpp" => "/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+#include <gtest/gtest.h>
+#include <react/components/INTEGER_PROPS/Props.h>
+#include <react/core/RawProps.h>
+#include <react/core/RawPropsParser.h>
+#include <react/core/propsConversions.h>
+
+using namespace facebook::react;
+
+TEST(IntegerPropNativeComponentProps_DoesNotDie, etc) {
+  auto propParser = RawPropsParser();
+  propParser.prepare<IntegerPropNativeComponentProps>();
+  auto const &sourceProps = IntegerPropNativeComponentProps();
+  auto const &rawProps = RawProps(folly::dynamic::object(\\"xx_invalid_xx\\", \\"xx_invalid_xx\\"));
+  rawProps.parse(propParser);
+  IntegerPropNativeComponentProps(sourceProps, rawProps);
+}",
+}
+`;
+
+exports[`GenerateTests can generate fixture INTERFACE_ONLY 1`] = `
+Map {
+  "Tests.cpp" => "/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+#include <gtest/gtest.h>
+#include <react/components/INTERFACE_ONLY/Props.h>
+#include <react/core/RawProps.h>
+#include <react/core/RawPropsParser.h>
+#include <react/core/propsConversions.h>
+
+using namespace facebook::react;
+
+TEST(InterfaceOnlyComponentProps_DoesNotDie, etc) {
+  auto propParser = RawPropsParser();
+  propParser.prepare<InterfaceOnlyComponentProps>();
+  auto const &sourceProps = InterfaceOnlyComponentProps();
+  auto const &rawProps = RawProps(folly::dynamic::object(\\"xx_invalid_xx\\", \\"xx_invalid_xx\\"));
+  rawProps.parse(propParser);
+  InterfaceOnlyComponentProps(sourceProps, rawProps);
+}
+
+TEST(InterfaceOnlyComponentProps_accessibilityHint, etc) {
+  auto propParser = RawPropsParser();
+  propParser.prepare<InterfaceOnlyComponentProps>();
+  auto const &sourceProps = InterfaceOnlyComponentProps();
+  auto const &rawProps = RawProps(folly::dynamic::object(\\"accessibilityHint\\", \\"foo\\"));
+  rawProps.parse(propParser);
+  InterfaceOnlyComponentProps(sourceProps, rawProps);
+}",
+}
+`;
+
+exports[`GenerateTests can generate fixture MULTI_NATIVE_PROP 1`] = `
+Map {
+  "Tests.cpp" => "/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+#include <gtest/gtest.h>
+#include <react/components/MULTI_NATIVE_PROP/Props.h>
+#include <react/components/image/conversions.h>
+#include <react/core/RawProps.h>
+#include <react/core/RawPropsParser.h>
+#include <react/core/propsConversions.h>
+
+using namespace facebook::react;
+
+TEST(ImageColorPropNativeComponentProps_DoesNotDie, etc) {
+  auto propParser = RawPropsParser();
+  propParser.prepare<ImageColorPropNativeComponentProps>();
+  auto const &sourceProps = ImageColorPropNativeComponentProps();
+  auto const &rawProps = RawProps(folly::dynamic::object(\\"xx_invalid_xx\\", \\"xx_invalid_xx\\"));
+  rawProps.parse(propParser);
+  ImageColorPropNativeComponentProps(sourceProps, rawProps);
+}
+
+TEST(ImageColorPropNativeComponentProps_thumbImage, etc) {
+  auto propParser = RawPropsParser();
+  propParser.prepare<ImageColorPropNativeComponentProps>();
+  auto const &sourceProps = ImageColorPropNativeComponentProps();
+  auto const &rawProps = RawProps(folly::dynamic::object(\\"thumbImage\\", folly::dynamic::object(\\"url\\", \\"testurl\\")));
+  rawProps.parse(propParser);
+  ImageColorPropNativeComponentProps(sourceProps, rawProps);
+}
+
+TEST(ImageColorPropNativeComponentProps_color, etc) {
+  auto propParser = RawPropsParser();
+  propParser.prepare<ImageColorPropNativeComponentProps>();
+  auto const &sourceProps = ImageColorPropNativeComponentProps();
+  auto const &rawProps = RawProps(folly::dynamic::object(\\"color\\", 1));
+  rawProps.parse(propParser);
+  ImageColorPropNativeComponentProps(sourceProps, rawProps);
+}
+
+TEST(ImageColorPropNativeComponentProps_thumbTintColor, etc) {
+  auto propParser = RawPropsParser();
+  propParser.prepare<ImageColorPropNativeComponentProps>();
+  auto const &sourceProps = ImageColorPropNativeComponentProps();
+  auto const &rawProps = RawProps(folly::dynamic::object(\\"thumbTintColor\\", 1));
+  rawProps.parse(propParser);
+  ImageColorPropNativeComponentProps(sourceProps, rawProps);
+}
+
+TEST(ImageColorPropNativeComponentProps_point, etc) {
+  auto propParser = RawPropsParser();
+  propParser.prepare<ImageColorPropNativeComponentProps>();
+  auto const &sourceProps = ImageColorPropNativeComponentProps();
+  auto const &rawProps = RawProps(folly::dynamic::object(\\"point\\", folly::dynamic::object(\\"x\\", 1)(\\"y\\", 1)));
+  rawProps.parse(propParser);
+  ImageColorPropNativeComponentProps(sourceProps, rawProps);
+}",
+}
+`;
+
+exports[`GenerateTests can generate fixture NO_PROPS_NO_EVENTS 1`] = `
+Map {
+  "Tests.cpp" => "/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+#include <gtest/gtest.h>
+#include <react/components/NO_PROPS_NO_EVENTS/Props.h>
+#include <react/core/RawProps.h>
+#include <react/core/RawPropsParser.h>
+#include <react/core/propsConversions.h>
+
+using namespace facebook::react;
+
+TEST(NoPropsNoEventsComponentProps_DoesNotDie, etc) {
+  auto propParser = RawPropsParser();
+  propParser.prepare<NoPropsNoEventsComponentProps>();
+  auto const &sourceProps = NoPropsNoEventsComponentProps();
+  auto const &rawProps = RawProps(folly::dynamic::object(\\"xx_invalid_xx\\", \\"xx_invalid_xx\\"));
+  rawProps.parse(propParser);
+  NoPropsNoEventsComponentProps(sourceProps, rawProps);
+}",
+}
+`;
+
+exports[`GenerateTests can generate fixture OBJECT_PROPS 1`] = `
+Map {
+  "Tests.cpp" => "/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+#include <gtest/gtest.h>
+#include <react/components/OBJECT_PROPS/Props.h>
+#include <react/components/image/conversions.h>
+#include <react/core/RawProps.h>
+#include <react/core/RawPropsParser.h>
+#include <react/core/propsConversions.h>
+
+using namespace facebook::react;
+
+TEST(ObjectPropsProps_DoesNotDie, etc) {
+  auto propParser = RawPropsParser();
+  propParser.prepare<ObjectPropsProps>();
+  auto const &sourceProps = ObjectPropsProps();
+  auto const &rawProps = RawProps(folly::dynamic::object(\\"xx_invalid_xx\\", \\"xx_invalid_xx\\"));
+  rawProps.parse(propParser);
+  ObjectPropsProps(sourceProps, rawProps);
+}",
+}
+`;
+
+exports[`GenerateTests can generate fixture POINT_PROP 1`] = `
+Map {
+  "Tests.cpp" => "/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+#include <gtest/gtest.h>
+#include <react/components/POINT_PROP/Props.h>
+#include <react/core/RawProps.h>
+#include <react/core/RawPropsParser.h>
+#include <react/core/propsConversions.h>
+
+using namespace facebook::react;
+
+TEST(PointPropNativeComponentProps_DoesNotDie, etc) {
+  auto propParser = RawPropsParser();
+  propParser.prepare<PointPropNativeComponentProps>();
+  auto const &sourceProps = PointPropNativeComponentProps();
+  auto const &rawProps = RawProps(folly::dynamic::object(\\"xx_invalid_xx\\", \\"xx_invalid_xx\\"));
+  rawProps.parse(propParser);
+  PointPropNativeComponentProps(sourceProps, rawProps);
+}
+
+TEST(PointPropNativeComponentProps_startPoint, etc) {
+  auto propParser = RawPropsParser();
+  propParser.prepare<PointPropNativeComponentProps>();
+  auto const &sourceProps = PointPropNativeComponentProps();
+  auto const &rawProps = RawProps(folly::dynamic::object(\\"startPoint\\", folly::dynamic::object(\\"x\\", 1)(\\"y\\", 1)));
+  rawProps.parse(propParser);
+  PointPropNativeComponentProps(sourceProps, rawProps);
+}",
+}
+`;
+
+exports[`GenerateTests can generate fixture STRING_PROP 1`] = `
+Map {
+  "Tests.cpp" => "/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+#include <gtest/gtest.h>
+#include <react/components/STRING_PROP/Props.h>
+#include <react/core/RawProps.h>
+#include <react/core/RawPropsParser.h>
+#include <react/core/propsConversions.h>
+
+using namespace facebook::react;
+
+TEST(StringPropComponentProps_DoesNotDie, etc) {
+  auto propParser = RawPropsParser();
+  propParser.prepare<StringPropComponentProps>();
+  auto const &sourceProps = StringPropComponentProps();
+  auto const &rawProps = RawProps(folly::dynamic::object(\\"xx_invalid_xx\\", \\"xx_invalid_xx\\"));
+  rawProps.parse(propParser);
+  StringPropComponentProps(sourceProps, rawProps);
+}
+
+TEST(StringPropComponentProps_accessibilityHint, etc) {
+  auto propParser = RawPropsParser();
+  propParser.prepare<StringPropComponentProps>();
+  auto const &sourceProps = StringPropComponentProps();
+  auto const &rawProps = RawProps(folly::dynamic::object(\\"accessibilityHint\\", \\"foo\\"));
+  rawProps.parse(propParser);
+  StringPropComponentProps(sourceProps, rawProps);
+}
+
+TEST(StringPropComponentProps_accessibilityRole, etc) {
+  auto propParser = RawPropsParser();
+  propParser.prepare<StringPropComponentProps>();
+  auto const &sourceProps = StringPropComponentProps();
+  auto const &rawProps = RawProps(folly::dynamic::object(\\"accessibilityRole\\", \\"foo\\"));
+  rawProps.parse(propParser);
+  StringPropComponentProps(sourceProps, rawProps);
+}",
+}
+`;
+
+exports[`GenerateTests can generate fixture TWO_COMPONENTS_DIFFERENT_FILES 1`] = `
+Map {
+  "Tests.cpp" => "/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+#include <gtest/gtest.h>
+#include <react/components/TWO_COMPONENTS_DIFFERENT_FILES/Props.h>
+#include <react/core/RawProps.h>
+#include <react/core/RawPropsParser.h>
+#include <react/core/propsConversions.h>
+
+using namespace facebook::react;
+
+TEST(MultiFile1NativeComponentProps_DoesNotDie, etc) {
+  auto propParser = RawPropsParser();
+  propParser.prepare<MultiFile1NativeComponentProps>();
+  auto const &sourceProps = MultiFile1NativeComponentProps();
+  auto const &rawProps = RawProps(folly::dynamic::object(\\"xx_invalid_xx\\", \\"xx_invalid_xx\\"));
+  rawProps.parse(propParser);
+  MultiFile1NativeComponentProps(sourceProps, rawProps);
+}
+
+TEST(MultiFile1NativeComponentProps_disabled, etc) {
+  auto propParser = RawPropsParser();
+  propParser.prepare<MultiFile1NativeComponentProps>();
+  auto const &sourceProps = MultiFile1NativeComponentProps();
+  auto const &rawProps = RawProps(folly::dynamic::object(\\"disabled\\", true));
+  rawProps.parse(propParser);
+  MultiFile1NativeComponentProps(sourceProps, rawProps);
+}
+
+TEST(MultiFile2NativeComponentProps_DoesNotDie, etc) {
+  auto propParser = RawPropsParser();
+  propParser.prepare<MultiFile2NativeComponentProps>();
+  auto const &sourceProps = MultiFile2NativeComponentProps();
+  auto const &rawProps = RawProps(folly::dynamic::object(\\"xx_invalid_xx\\", \\"xx_invalid_xx\\"));
+  rawProps.parse(propParser);
+  MultiFile2NativeComponentProps(sourceProps, rawProps);
+}
+
+TEST(MultiFile2NativeComponentProps_disabled, etc) {
+  auto propParser = RawPropsParser();
+  propParser.prepare<MultiFile2NativeComponentProps>();
+  auto const &sourceProps = MultiFile2NativeComponentProps();
+  auto const &rawProps = RawProps(folly::dynamic::object(\\"disabled\\", true));
+  rawProps.parse(propParser);
+  MultiFile2NativeComponentProps(sourceProps, rawProps);
+}",
+}
+`;
+
+exports[`GenerateTests can generate fixture TWO_COMPONENTS_SAME_FILE 1`] = `
+Map {
+  "Tests.cpp" => "/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+#include <gtest/gtest.h>
+#include <react/components/TWO_COMPONENTS_SAME_FILE/Props.h>
+#include <react/core/RawProps.h>
+#include <react/core/RawPropsParser.h>
+#include <react/core/propsConversions.h>
+
+using namespace facebook::react;
+
+TEST(MultiComponent1NativeComponentProps_DoesNotDie, etc) {
+  auto propParser = RawPropsParser();
+  propParser.prepare<MultiComponent1NativeComponentProps>();
+  auto const &sourceProps = MultiComponent1NativeComponentProps();
+  auto const &rawProps = RawProps(folly::dynamic::object(\\"xx_invalid_xx\\", \\"xx_invalid_xx\\"));
+  rawProps.parse(propParser);
+  MultiComponent1NativeComponentProps(sourceProps, rawProps);
+}
+
+TEST(MultiComponent1NativeComponentProps_disabled, etc) {
+  auto propParser = RawPropsParser();
+  propParser.prepare<MultiComponent1NativeComponentProps>();
+  auto const &sourceProps = MultiComponent1NativeComponentProps();
+  auto const &rawProps = RawProps(folly::dynamic::object(\\"disabled\\", true));
+  rawProps.parse(propParser);
+  MultiComponent1NativeComponentProps(sourceProps, rawProps);
+}
+
+TEST(MultiComponent2NativeComponentProps_DoesNotDie, etc) {
+  auto propParser = RawPropsParser();
+  propParser.prepare<MultiComponent2NativeComponentProps>();
+  auto const &sourceProps = MultiComponent2NativeComponentProps();
+  auto const &rawProps = RawProps(folly::dynamic::object(\\"xx_invalid_xx\\", \\"xx_invalid_xx\\"));
+  rawProps.parse(propParser);
+  MultiComponent2NativeComponentProps(sourceProps, rawProps);
+}
+
+TEST(MultiComponent2NativeComponentProps_disabled, etc) {
+  auto propParser = RawPropsParser();
+  propParser.prepare<MultiComponent2NativeComponentProps>();
+  auto const &sourceProps = MultiComponent2NativeComponentProps();
+  auto const &rawProps = RawProps(folly::dynamic::object(\\"disabled\\", true));
+  rawProps.parse(propParser);
+  MultiComponent2NativeComponentProps(sourceProps, rawProps);
+}",
+}
+`;

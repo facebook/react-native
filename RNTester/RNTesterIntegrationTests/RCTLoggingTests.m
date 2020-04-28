@@ -11,7 +11,6 @@
 #import <React/RCTAssert.h>
 #import <React/RCTBridge.h>
 #import <React/RCTLog.h>
-#import <React/RCTBundleURLProvider.h>
 
 @interface RCTLoggingTests : XCTestCase
 
@@ -43,7 +42,6 @@
   RCTAssert(scriptURL != nil, @"No scriptURL set");
 
   _bridge = [[RCTBridge alloc] initWithBundleURL:scriptURL moduleProvider:NULL launchOptions:nil];
-
   NSDate *date = [NSDate dateWithTimeIntervalSinceNow:60];
   while (date.timeIntervalSinceNow > 0 && _bridge.loading) {
     [[NSRunLoop mainRunLoop] runMode:NSDefaultRunLoopMode beforeDate:[NSDate dateWithTimeIntervalSinceNow:0.1]];
@@ -98,7 +96,7 @@
 
   XCTAssertEqual(_lastLogLevel, RCTLogLevelError);
   XCTAssertEqual(_lastLogSource, RCTLogSourceJavaScript);
-  XCTAssertEqualObjects(_lastLogMessage, @"Invariant failed");
+  XCTAssertEqualObjects(_lastLogMessage, @"Invariant Violation: Invariant failed");
 
   [_bridge enqueueJSCall:@"LoggingTestModule.logErrorToConsole" args:@[@"Invoking console.error"]];
   dispatch_semaphore_wait(_logSem, RCT_TEST_LOGGING_TIMEOUT); // TODO(OSS Candidate ISS#2710739)
@@ -122,7 +120,7 @@
 
   XCTAssertEqual(_lastLogLevel, RCTLogLevelError);
   XCTAssertEqual(_lastLogSource, RCTLogSourceJavaScript);
-  XCTAssertEqualObjects(_lastLogMessage, @"Throwing an error");
+  XCTAssertEqualObjects(_lastLogMessage, @"Error: Throwing an error");
 }
 
 @end

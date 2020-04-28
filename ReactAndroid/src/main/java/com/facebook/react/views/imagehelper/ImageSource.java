@@ -1,22 +1,17 @@
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
+ * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
+ * directory of this source tree.
  */
-
 package com.facebook.react.views.imagehelper;
-
-import javax.annotation.Nullable;
 
 import android.content.Context;
 import android.net.Uri;
-
+import androidx.annotation.Nullable;
 import com.facebook.infer.annotation.Assertions;
 
-/**
- * Class describing an image source (network URI or resource) and size.
- */
+/** Class describing an image source (network URI or resource) and size. */
 public class ImageSource {
 
   private @Nullable Uri mUri;
@@ -37,30 +32,22 @@ public class ImageSource {
     this(context, source, 0.0d, 0.0d);
   }
 
-  /**
-   * Get the source of this image, as it was passed to the constructor.
-   */
+  /** Get the source of this image, as it was passed to the constructor. */
   public String getSource() {
     return mSource;
   }
 
-  /**
-   * Get the URI for this image - can be either a parsed network URI or a resource URI.
-   */
+  /** Get the URI for this image - can be either a parsed network URI or a resource URI. */
   public Uri getUri() {
     return Assertions.assertNotNull(mUri);
   }
 
-  /**
-   * Get the area of this image.
-   */
+  /** Get the area of this image. */
   public double getSize() {
     return mSize;
   }
 
-  /**
-   * Get whether this image source represents an Android resource or a network URI.
-   */
+  /** Get whether this image source represents an Android resource or a network URI. */
   public boolean isResource() {
     return isResource;
   }

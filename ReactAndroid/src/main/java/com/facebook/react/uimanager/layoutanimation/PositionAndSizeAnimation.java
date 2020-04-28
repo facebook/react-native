@@ -11,9 +11,9 @@ import android.view.animation.Transformation;
 
 /**
  * Animation responsible for updating size and position of a view. We can't use scaling as view
- * content may not necessarily stretch. As a result, this approach is inefficient because of
- * layout passes occurring on every frame.
- * What we might want to try to do instead is use a combined ScaleAnimation and TranslateAnimation.
+ * content may not necessarily stretch. As a result, this approach is inefficient because of layout
+ * passes occurring on every frame. What we might want to try to do instead is use a combined
+ * ScaleAnimation and TranslateAnimation.
  */
 /* package */ class PositionAndSizeAnimation extends Animation implements LayoutHandlingAnimation {
 

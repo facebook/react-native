@@ -6,7 +6,7 @@
 #import <Foundation/Foundation.h>
 #import <React/RCTDefines.h>
 
-#if RCT_DEV
+#if RCT_DEV && !TARGET_OS_UIKITFORMAC
 
 @interface RCTBundleStatus : NSObject
 @property (atomic, assign) BOOL isLastBundleDownloadSuccess;

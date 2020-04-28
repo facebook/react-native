@@ -3,10 +3,11 @@ load(
     "//tools/build_defs/oss:rn_defs.bzl",
     "ANDROID",
     "APPLE",
+    "CXX",
+    "YOGA_CXX_TARGET",
     "fb_xplat_cxx_test",
     "get_apple_compiler_flags",
     "get_apple_inspector_flags",
-    "react_native_target",
     "react_native_xplat_target",
     "rn_xplat_cxx_library",
     "subdir_glob",
@@ -37,9 +38,6 @@ rn_xplat_cxx_library(
         "-std=c++14",
         "-Wall",
     ],
-    fbandroid_deps = [
-        react_native_target("jni/react/jni:jni"),
-    ],
     fbandroid_exported_headers = subdir_glob(
         [
             ("", "*.h"),
@@ -64,7 +62,7 @@ rn_xplat_cxx_library(
         prefix = "react/components/modal",
     ),
     macosx_tests_override = [],
-    platforms = (ANDROID, APPLE),
+    platforms = (ANDROID, APPLE, CXX),
     preprocessor_flags = [
         "-DLOG_TAG=\"ReactNative\"",
         "-DWITH_FBSYSTRACE=1",
@@ -77,7 +75,7 @@ rn_xplat_cxx_library(
         "fbsource//xplat/folly:memory",
         "fbsource//xplat/folly:molly",
         "fbsource//xplat/third-party/glog:glog",
-        "fbsource//xplat/yoga:yoga",
+        YOGA_CXX_TARGET,
         react_native_xplat_target("fabric/debug:debug"),
         react_native_xplat_target("fabric/core:core"),
         react_native_xplat_target("fabric/components/image:image"),
@@ -100,7 +98,7 @@ fb_xplat_cxx_test(
         "-Wall",
     ],
     contacts = ["oncall+react_native@xmail.facebook.com"],
-    platforms = (ANDROID, APPLE),
+    platforms = (ANDROID, APPLE, CXX),
     deps = [
         "fbsource//xplat/folly:molly",
         "fbsource//xplat/third-party/gmock:gtest",

@@ -1,19 +1,16 @@
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
+ * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
+ * directory of this source tree.
  */
-
 package com.facebook.react.modules.storage;
-
-import javax.annotation.Nullable;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
-
+import androidx.annotation.Nullable;
 import com.facebook.common.logging.FLog;
 import com.facebook.react.common.ReactConstants;
 
@@ -34,16 +31,20 @@ public class ReactDatabaseSupplier extends SQLiteOpenHelper {
   static final String VALUE_COLUMN = "value";
 
   static final String VERSION_TABLE_CREATE =
-      "CREATE TABLE " + TABLE_CATALYST + " (" +
-          KEY_COLUMN + " TEXT PRIMARY KEY, " +
-          VALUE_COLUMN + " TEXT NOT NULL" +
-          ")";
+      "CREATE TABLE "
+          + TABLE_CATALYST
+          + " ("
+          + KEY_COLUMN
+          + " TEXT PRIMARY KEY, "
+          + VALUE_COLUMN
+          + " TEXT NOT NULL"
+          + ")";
 
   private static @Nullable ReactDatabaseSupplier sReactDatabaseSupplierInstance;
 
   private Context mContext;
   private @Nullable SQLiteDatabase mDb;
-  private long mMaximumDatabaseSize =  6L * 1024L * 1024L; // 6 MB in bytes
+  private long mMaximumDatabaseSize = 6L * 1024L * 1024L; // 6 MB in bytes
 
   private ReactDatabaseSupplier(Context context) {
     super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -70,9 +71,7 @@ public class ReactDatabaseSupplier extends SQLiteOpenHelper {
     }
   }
 
-  /**
-   * Verify the database exists and is open.
-   */
+  /** Verify the database exists and is open. */
   /* package */ synchronized boolean ensureDatabase() {
     if (mDb != null && mDb.isOpen()) {
       return true;
@@ -107,9 +106,7 @@ public class ReactDatabaseSupplier extends SQLiteOpenHelper {
     return true;
   }
 
-  /**
-   * Create and/or open the database.
-   */
+  /** Create and/or open the database. */
   public synchronized SQLiteDatabase get() {
     ensureDatabase();
     return mDb;
@@ -136,8 +133,8 @@ public class ReactDatabaseSupplier extends SQLiteOpenHelper {
   }
 
   /**
-   * Sets the maximum size the database will grow to. The maximum size cannot
-   * be set below the current size.
+   * Sets the maximum size the database will grow to. The maximum size cannot be set below the
+   * current size.
    */
   public synchronized void setMaximumSize(long size) {
     mMaximumDatabaseSize = size;

@@ -20,11 +20,15 @@ using namespace facebook::react;
 
 @implementation RCTImageManager {
   RCTImageLoader *_imageLoader;
+  dispatch_queue_t _backgroundSerialQueue;
 }
 
-- (instancetype)initWithImageLoader:(RCTImageLoader *)imageLoader {
+- (instancetype)initWithImageLoader:(RCTImageLoader *)imageLoader
+{
   if (self = [super init]) {
     _imageLoader = imageLoader;
+    _backgroundSerialQueue =
+        dispatch_queue_create("com.facebook.react-native.image-manager-queue", DISPATCH_QUEUE_SERIAL);
   }
 
   return self;
@@ -46,8 +50,12 @@ using namespace facebook::react;
    * work (such as creating an `NSURLRequest` object and some obscure logic inside `RCTImageLoader`) can take a couple
    * of milliseconds, so we have to offload this to a separate thread. `ImageRequest` can be created as part of the
    * layout process, so it must be highly performant.
+   *
+   * Technically, we don't need to dispatch this to *serial* queue. The interface of `RCTImageLoader` promises to be
+   * fully thread-safe. However, in reality, it crashes when we request images on concurrently on different threads. See
+   * T46024425 for more details.
    */
-  dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+  dispatch_async(_backgroundSerialQueue, ^{
     NSURLRequest *request = NSURLRequestFromImageSource(imageSource);
 
     auto completionBlock = ^(NSError *error, UIImage *image) {

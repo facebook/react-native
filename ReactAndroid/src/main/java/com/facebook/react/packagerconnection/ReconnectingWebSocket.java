@@ -1,23 +1,18 @@
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
+ * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
+ * directory of this source tree.
  */
-
 package com.facebook.react.packagerconnection;
-
-import javax.annotation.Nullable;
-
-import java.io.IOException;
-import java.nio.channels.ClosedChannelException;
-import java.util.concurrent.TimeUnit;
 
 import android.os.Handler;
 import android.os.Looper;
-
+import androidx.annotation.Nullable;
 import com.facebook.common.logging.FLog;
-
+import java.io.IOException;
+import java.nio.channels.ClosedChannelException;
+import java.util.concurrent.TimeUnit;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
@@ -25,21 +20,21 @@ import okhttp3.WebSocket;
 import okhttp3.WebSocketListener;
 import okio.ByteString;
 
-/**
- * A wrapper around WebSocketClient that reconnects automatically
- */
-final public class ReconnectingWebSocket extends WebSocketListener {
+/** A wrapper around WebSocketClient that reconnects automatically */
+public final class ReconnectingWebSocket extends WebSocketListener {
   private static final String TAG = ReconnectingWebSocket.class.getSimpleName();
 
   private static final int RECONNECT_DELAY_MS = 2000;
 
   public interface MessageCallback {
     void onMessage(String text);
+
     void onMessage(ByteString bytes);
   }
 
   public interface ConnectionCallback {
     void onConnected();
+
     void onDisconnected();
   }
 
@@ -52,9 +47,7 @@ final public class ReconnectingWebSocket extends WebSocketListener {
   private @Nullable ConnectionCallback mConnectionCallback;
 
   public ReconnectingWebSocket(
-      String url,
-      MessageCallback messageCallback,
-      ConnectionCallback connectionCallback) {
+      String url, MessageCallback messageCallback, ConnectionCallback connectionCallback) {
     super();
     mUrl = url;
     mMessageCallback = messageCallback;
@@ -67,11 +60,12 @@ final public class ReconnectingWebSocket extends WebSocketListener {
       throw new IllegalStateException("Can't connect closed client");
     }
 
-    OkHttpClient httpClient = new OkHttpClient.Builder()
-      .connectTimeout(10, TimeUnit.SECONDS)
-      .writeTimeout(10, TimeUnit.SECONDS)
-      .readTimeout(0, TimeUnit.MINUTES) // Disable timeouts for read
-      .build();
+    OkHttpClient httpClient =
+        new OkHttpClient.Builder()
+            .connectTimeout(10, TimeUnit.SECONDS)
+            .writeTimeout(10, TimeUnit.SECONDS)
+            .readTimeout(0, TimeUnit.MINUTES) // Disable timeouts for read
+            .build();
 
     Request request = new Request.Builder().url(mUrl).build();
     httpClient.newWebSocket(request, this);
@@ -95,13 +89,13 @@ final public class ReconnectingWebSocket extends WebSocketListener {
     }
 
     mHandler.postDelayed(
-      new Runnable() {
-        @Override
-        public void run() {
-          delayedReconnect();
-        }
-      },
-      RECONNECT_DELAY_MS);
+        new Runnable() {
+          @Override
+          public void run() {
+            delayedReconnect();
+          }
+        },
+        RECONNECT_DELAY_MS);
   }
 
   public void closeQuietly() {

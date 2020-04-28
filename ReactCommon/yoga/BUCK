@@ -2,9 +2,9 @@ load("//tools/build_defs/oss:rn_defs.bzl", "cxx_library")
 
 cxx_library(
     name = "yoga",
-    srcs = glob(["yoga/*.cpp"]),
+    srcs = glob(["yoga/**/*.cpp"]),
     header_namespace = "",
-    exported_headers = glob(["yoga/*.h"]),
+    exported_headers = glob(["yoga/**/*.h"]),
     compiler_flags = [
         "-fno-omit-frame-pointer",
         "-fexceptions",

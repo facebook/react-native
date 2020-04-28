@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#import "RCTResizeMode.h"
+#import <React/RCTResizeMode.h>
 
 @implementation RCTConvert(RCTResizeMode)
 

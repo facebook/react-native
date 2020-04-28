@@ -14,5 +14,4 @@ import java.lang.annotation.Target;
 @Inherited
 @Retention(RetentionPolicy.CLASS)
 @Target(ElementType.TYPE)
-public @interface ReactPropertyHolder {
-}
+public @interface ReactPropertyHolder {}

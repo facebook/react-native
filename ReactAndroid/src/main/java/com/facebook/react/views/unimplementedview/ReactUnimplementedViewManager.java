@@ -1,23 +1,22 @@
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
+ * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
+ * directory of this source tree.
  */
-
 package com.facebook.react.views.unimplementedview;
 
 import static com.facebook.react.views.unimplementedview.ReactUnimplementedViewManager.REACT_CLASS;
 
+import androidx.annotation.Nullable;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.ViewGroupManager;
 import com.facebook.react.uimanager.annotations.ReactProp;
-import javax.annotation.Nullable;
 
 /**
- * ViewManager for {@link ReactUnimplementedView} to represent a component that is not
- * yet supported.
+ * ViewManager for {@link ReactUnimplementedView} to represent a component that is not yet
+ * supported.
  */
 @ReactModule(name = ReactUnimplementedViewManager.REACT_CLASS)
 public class ReactUnimplementedViewManager extends ViewGroupManager<ReactUnimplementedView> {

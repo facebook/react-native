@@ -1,25 +1,19 @@
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
+ * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
+ * directory of this source tree.
  */
-
 package com.facebook.react.tests;
-
-import java.util.ArrayList;
 
 import android.view.View;
 import android.widget.ScrollView;
-
 import com.facebook.react.testing.AbstractScrollViewTestCase;
 import com.facebook.react.testing.SingleTouchGestureGenerator;
 import com.facebook.react.uimanager.PixelUtil;
+import java.util.ArrayList;
 
-/**
- * Integration test for vertical ScrollView.
- * See ScrollViewTestModule.js
- */
+/** Integration test for vertical ScrollView. See ScrollViewTestModule.js */
 public class ReactScrollViewTestCase extends AbstractScrollViewTestCase {
 
   @Override
@@ -61,8 +55,7 @@ public class ReactScrollViewTestCase extends AbstractScrollViewTestCase {
     assertFalse("Expected to receive at least one scroll event", yOffsets.isEmpty());
     assertTrue("Expected offset to be greater than 0", yOffsets.get(yOffsets.size() - 1) > 0);
     assertTrue(
-        "Expected no item click event fired",
-        mScrollListenerModule.getItemsPressed().isEmpty());
+        "Expected no item click event fired", mScrollListenerModule.getItemsPressed().isEmpty());
     assertEquals(
         "Expected last offset to be offset of scroll view",
         PixelUtil.toDIPFromPixel(scrollView.getScrollY()),
@@ -104,9 +97,7 @@ public class ReactScrollViewTestCase extends AbstractScrollViewTestCase {
     assertEquals(visibleItemNumber, (int) itemIds.get(0));
   }
 
-  /**
-   * Verify that 'scrollTo' command makes ScrollView start scrolling
-   */
+  /** Verify that 'scrollTo' command makes ScrollView start scrolling */
   public void testScrollToCommand() throws Exception {
     ScrollView scrollView = getViewAtPath(0);
     ScrollViewTestModule jsModule =

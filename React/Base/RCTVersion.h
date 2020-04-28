@@ -8,9 +8,11 @@
 
 #import <Foundation/Foundation.h>
 
-extern NSString* const RCTVersionMajor;
-extern NSString* const RCTVersionMinor;
-extern NSString* const RCTVersionPatch;
-extern NSString* const RCTVersionPrerelease;
+#import <React/RCTDefines.h>
 
-extern NSDictionary* RCTGetReactNativeVersion(void);
+RCT_EXTERN NSString* const RCTVersionMajor;
+RCT_EXTERN NSString* const RCTVersionMinor;
+RCT_EXTERN NSString* const RCTVersionPatch;
+RCT_EXTERN NSString* const RCTVersionPrerelease;
+
+RCT_EXTERN NSDictionary* RCTGetReactNativeVersion(void);

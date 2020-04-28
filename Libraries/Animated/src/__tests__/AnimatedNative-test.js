@@ -22,9 +22,15 @@ jest
   .setMock('../../../Lists/FlatList', ClassComponentMock)
   .setMock('../../../Lists/SectionList', ClassComponentMock)
   .setMock('react', {Component: class {}})
-  .setMock('../../../BatchedBridge/NativeModules', {
+  .mock('../../../BatchedBridge/NativeModules', () => ({
     NativeAnimatedModule: {},
-  })
+    PlatformConstants: {
+      getConstants() {
+        return {};
+      },
+    },
+  }))
+  .mock('../NativeAnimatedModule')
   .mock('../../../EventEmitter/NativeEventEmitter')
   // findNodeHandle is imported from ReactNative so mock that whole module.
   .setMock('../../../Renderer/shims/ReactNative', {findNodeHandle: () => 1});
@@ -43,8 +49,7 @@ function createAndMountComponent(ComponentClass, props) {
 }
 
 describe('Native Animated', () => {
-  const nativeAnimatedModule = require('../../../BatchedBridge/NativeModules')
-    .NativeAnimatedModule;
+  const nativeAnimatedModule = require('../NativeAnimatedModule').default;
 
   beforeEach(() => {
     nativeAnimatedModule.addAnimatedEventToView = jest.fn();

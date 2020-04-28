@@ -16,7 +16,7 @@
 
 @implementation RCTPlatform
 
-RCT_EXPORT_MODULE(MacOSConstants)
+RCT_EXPORT_MODULE(PlatformConstants)
 
 + (BOOL)requiresMainQueueSetup
 {
@@ -31,6 +31,10 @@ RCT_EXPORT_MODULE(MacOSConstants)
     @"isTesting": @(RCTRunningInTestEnvironment()),
     @"reactNativeVersion": RCTGetReactNativeVersion(),
   };
+}
+
+Class RCTPlatformCls(void) {
+  return RCTPlatform.class;
 }
 
 @end

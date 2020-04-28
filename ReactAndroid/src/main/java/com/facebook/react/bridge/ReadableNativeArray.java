@@ -1,21 +1,18 @@
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
+ * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
+ * directory of this source tree.
  */
-
 package com.facebook.react.bridge;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.jni.HybridData;
 import com.facebook.proguard.annotations.DoNotStrip;
-import com.facebook.react.config.ReactFeatureFlags;
 import java.util.ArrayList;
 import java.util.Arrays;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 /**
  * Implementation of a NativeArray that allows read-only access to its members. This will generally
@@ -31,11 +28,12 @@ public class ReadableNativeArray extends NativeArray implements ReadableArray {
     super(hybridData);
   }
 
-  //WriteOnce but not in the constructor fields
+  // WriteOnce but not in the constructor fields
   private @Nullable Object[] mLocalArray;
   private @Nullable ReadableType[] mLocalTypeArray;
 
   private static int jniPassCounter = 0;
+
   public static int getJNIPassCounter() {
     return jniPassCounter;
   }
@@ -53,6 +51,7 @@ public class ReadableNativeArray extends NativeArray implements ReadableArray {
     }
     return mLocalArray;
   }
+
   private native Object[] importArray();
 
   private ReadableType[] getLocalTypeArray() {
@@ -69,6 +68,7 @@ public class ReadableNativeArray extends NativeArray implements ReadableArray {
     }
     return mLocalTypeArray;
   }
+
   private native Object[] importTypeArray();
 
   @Override
@@ -112,12 +112,12 @@ public class ReadableNativeArray extends NativeArray implements ReadableArray {
   }
 
   @Override
-  public @Nonnull ReadableType getType(int index) {
+  public @NonNull ReadableType getType(int index) {
     return getLocalTypeArray()[index];
   }
 
   @Override
-  public @Nonnull Dynamic getDynamic(int index) {
+  public @NonNull Dynamic getDynamic(int index) {
     return DynamicFromArray.create(this, index);
   }
 
@@ -136,7 +136,7 @@ public class ReadableNativeArray extends NativeArray implements ReadableArray {
   }
 
   @Override
-  public @Nonnull ArrayList<Object> toArrayList() {
+  public @NonNull ArrayList<Object> toArrayList() {
     ArrayList<Object> arrayList = new ArrayList<>();
 
     for (int i = 0; i < this.size(); i++) {

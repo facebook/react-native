@@ -12,7 +12,7 @@
 
 import {requireNativeComponent} from 'react-native';
 
-const AndroidTextInputNativeComponent = requireNativeComponent(
+const AndroidTextInputNativeComponent: string = requireNativeComponent(
   'AndroidTextInput',
 );
 

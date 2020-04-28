@@ -12,6 +12,6 @@
 
 'use strict';
 
-var RCTAlertManager = require('NativeModules').AlertManager;
+var RCTAlertManager = require('../BatchedBridge/NativeModules').AlertManager;
 
 module.exports = RCTAlertManager;

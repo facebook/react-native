@@ -154,6 +154,7 @@ TextAttributes TextAttributes::defaultTextAttributes() {
     textAttributes.foregroundColor = blackColor();
     textAttributes.backgroundColor = clearColor();
     textAttributes.fontSize = 14.0;
+    textAttributes.fontSizeMultiplier = 1.0;
     return textAttributes;
   }();
   return textAttributes;

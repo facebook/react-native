@@ -32,7 +32,7 @@ function normalizeColor(
 
   // [TODO(macOS ISS#2323203)
   if (typeof color === 'object' && color !== null) {
-    const normalizeColorObject = require('normalizeColorObject'); // TODO(macOS ISS#2323203)
+    const normalizeColorObject = require('./normalizeColorObject'); // TODO(macOS ISS#2323203)
 
     const normalizedColorObj = normalizeColorObject(color);
 

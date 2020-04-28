@@ -1,15 +1,12 @@
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
+ * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
+ * directory of this source tree.
  */
-
 package com.facebook.react.uimanager;
 
-/**
- * Default property values for Views to be shared between Views and ShadowViews.
- */
+/** Default property values for Views to be shared between Views and ShadowViews. */
 public class ViewDefaults {
 
   public static final float FONT_SIZE_SP = 14.0f;

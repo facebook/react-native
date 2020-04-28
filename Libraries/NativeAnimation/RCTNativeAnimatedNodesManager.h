@@ -12,8 +12,6 @@
 
 @protocol RCTValueAnimatedNodeObserver;
 
-@protocol RCTValueAnimatedNodeObserver;
-
 @interface RCTNativeAnimatedNodesManager : NSObject
 
 - (nonnull instancetype)initWithBridge:(nonnull RCTBridge *)bridge;

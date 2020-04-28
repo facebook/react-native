@@ -1,10 +1,9 @@
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
+ * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
+ * directory of this source tree.
  */
-
 package com.facebook.react.animated;
 
 import com.facebook.react.bridge.JSApplicationCausedNativeException;
@@ -19,8 +18,7 @@ import com.facebook.react.bridge.ReadableMap;
   private double mLastValue;
 
   public DiffClampAnimatedNode(
-    ReadableMap config,
-    NativeAnimatedNodesManager nativeAnimatedNodesManager) {
+      ReadableMap config, NativeAnimatedNodesManager nativeAnimatedNodesManager) {
     mNativeAnimatedNodesManager = nativeAnimatedNodesManager;
     mInputNodeTag = config.getInt("input");
     mMin = config.getDouble("min");
@@ -41,9 +39,8 @@ import com.facebook.react.bridge.ReadableMap;
   private double getInputNodeValue() {
     AnimatedNode animatedNode = mNativeAnimatedNodesManager.getNodeById(mInputNodeTag);
     if (animatedNode == null || !(animatedNode instanceof ValueAnimatedNode)) {
-      throw new JSApplicationCausedNativeException("Illegal node ID set as an input for " +
-        "Animated.DiffClamp node");
-
+      throw new JSApplicationCausedNativeException(
+          "Illegal node ID set as an input for " + "Animated.DiffClamp node");
     }
 
     return ((ValueAnimatedNode) animatedNode).getValue();

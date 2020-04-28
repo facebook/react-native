@@ -1,54 +1,46 @@
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
+ * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
+ * directory of this source tree.
  */
-
 package com.facebook.react.views.textinput;
+
+import static org.fest.assertions.api.Assertions.assertThat;
 
 import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.os.Build;
-import android.text.InputType;
 import android.text.InputFilter;
+import android.text.InputType;
 import android.text.Layout;
 import android.util.DisplayMetrics;
 import android.view.Gravity;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
-
 import com.facebook.react.bridge.CatalystInstance;
-import com.facebook.react.bridge.ReactTestHelper;
-import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.bridge.JSApplicationCausedNativeException;
 import com.facebook.react.bridge.JavaOnlyMap;
-import com.facebook.react.uimanager.ReactStylesDiffMap;
+import com.facebook.react.bridge.ReactApplicationContext;
+import com.facebook.react.bridge.ReactTestHelper;
 import com.facebook.react.uimanager.DisplayMetricsHolder;
-import com.facebook.react.views.text.DefaultStyleValuesUtil;
+import com.facebook.react.uimanager.ReactStylesDiffMap;
 import com.facebook.react.uimanager.ThemedReactContext;
-
+import com.facebook.react.views.text.DefaultStyleValuesUtil;
 import org.junit.Before;
-import org.junit.Test;
 import org.junit.Rule;
+import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.Robolectric;
+import org.powermock.core.classloader.annotations.PowerMockIgnore;
+import org.powermock.modules.junit4.rule.PowerMockRule;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.RuntimeEnvironment;
-import org.powermock.modules.junit4.rule.PowerMockRule;
-import org.powermock.core.classloader.annotations.PowerMockIgnore;
 
-import static org.fest.assertions.api.Assertions.assertThat;
-
-/**
- * Verify {@link EditText} view property being applied properly by {@link ReactTextInputManager}
- */
+/** Verify {@link EditText} view property being applied properly by {@link ReactTextInputManager} */
 @RunWith(RobolectricTestRunner.class)
 @PowerMockIgnore({"org.mockito.*", "org.robolectric.*", "androidx.*", "android.*"})
 public class ReactTextInputPropertyTest {
 
-  @Rule
-  public PowerMockRule rule = new PowerMockRule();
+  @Rule public PowerMockRule rule = new PowerMockRule();
 
   private ReactApplicationContext mContext;
   private CatalystInstance mCatalystInstanceMock;
@@ -100,29 +92,24 @@ public class ReactTextInputPropertyTest {
     assertThat(view.getInputType() & InputType.TYPE_TEXT_FLAG_CAP_CHARACTERS).isZero();
 
     mManager.updateProperties(
-        view,
-        buildStyles("autoCapitalize", InputType.TYPE_TEXT_FLAG_CAP_SENTENCES));
+        view, buildStyles("autoCapitalize", InputType.TYPE_TEXT_FLAG_CAP_SENTENCES));
     assertThat(view.getInputType() & InputType.TYPE_TEXT_FLAG_CAP_SENTENCES).isNotZero();
     assertThat(view.getInputType() & InputType.TYPE_TEXT_FLAG_CAP_WORDS).isZero();
     assertThat(view.getInputType() & InputType.TYPE_TEXT_FLAG_CAP_CHARACTERS).isZero();
 
     mManager.updateProperties(
-        view,
-        buildStyles("autoCapitalize", InputType.TYPE_TEXT_FLAG_CAP_WORDS));
+        view, buildStyles("autoCapitalize", InputType.TYPE_TEXT_FLAG_CAP_WORDS));
     assertThat(view.getInputType() & InputType.TYPE_TEXT_FLAG_CAP_SENTENCES).isZero();
     assertThat(view.getInputType() & InputType.TYPE_TEXT_FLAG_CAP_WORDS).isNotZero();
     assertThat(view.getInputType() & InputType.TYPE_TEXT_FLAG_CAP_CHARACTERS).isZero();
 
     mManager.updateProperties(
-        view,
-        buildStyles("autoCapitalize", InputType.TYPE_TEXT_FLAG_CAP_CHARACTERS));
+        view, buildStyles("autoCapitalize", InputType.TYPE_TEXT_FLAG_CAP_CHARACTERS));
     assertThat(view.getInputType() & InputType.TYPE_TEXT_FLAG_CAP_SENTENCES).isZero();
     assertThat(view.getInputType() & InputType.TYPE_TEXT_FLAG_CAP_WORDS).isZero();
     assertThat(view.getInputType() & InputType.TYPE_TEXT_FLAG_CAP_CHARACTERS).isNotZero();
 
-    mManager.updateProperties(
-        view,
-        buildStyles("autoCapitalize", InputType.TYPE_CLASS_TEXT));
+    mManager.updateProperties(view, buildStyles("autoCapitalize", InputType.TYPE_CLASS_TEXT));
     assertThat(view.getInputType() & InputType.TYPE_TEXT_FLAG_CAP_SENTENCES).isZero();
     assertThat(view.getInputType() & InputType.TYPE_TEXT_FLAG_CAP_WORDS).isZero();
     assertThat(view.getInputType() & InputType.TYPE_TEXT_FLAG_CAP_CHARACTERS).isZero();
@@ -166,8 +153,7 @@ public class ReactTextInputPropertyTest {
     ReactEditText view = mManager.createViewInstance(mThemedContext);
 
     final ColorStateList defaultPlaceholderColorStateList =
-        DefaultStyleValuesUtil.getDefaultTextColorHint(
-            view.getContext());
+        DefaultStyleValuesUtil.getDefaultTextColorHint(view.getContext());
 
     ColorStateList colors = view.getHintTextColors();
     assertThat(colors).isEqualTo(defaultPlaceholderColorStateList);
@@ -236,16 +222,19 @@ public class ReactTextInputPropertyTest {
     int numberPadTypeFlags = InputType.TYPE_CLASS_NUMBER;
     int decimalPadTypeFlags = InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL;
     int numericTypeFlags =
-        InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL |
-        InputType.TYPE_NUMBER_FLAG_SIGNED;
+        InputType.TYPE_CLASS_NUMBER
+            | InputType.TYPE_NUMBER_FLAG_DECIMAL
+            | InputType.TYPE_NUMBER_FLAG_SIGNED;
     int emailTypeFlags = InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS | InputType.TYPE_CLASS_TEXT;
-    int passwordVisibilityFlag = InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD &
-        ~InputType.TYPE_TEXT_VARIATION_PASSWORD;
+    int passwordVisibilityFlag =
+        InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD & ~InputType.TYPE_TEXT_VARIATION_PASSWORD;
 
-    int generalKeyboardTypeFlags = numericTypeFlags |
-        InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS |
-        InputType.TYPE_CLASS_TEXT | InputType.TYPE_CLASS_PHONE |
-        passwordVisibilityFlag;
+    int generalKeyboardTypeFlags =
+        numericTypeFlags
+            | InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS
+            | InputType.TYPE_CLASS_TEXT
+            | InputType.TYPE_CLASS_PHONE
+            | passwordVisibilityFlag;
 
     mManager.updateProperties(view, buildStyles());
     assertThat(view.getInputType() & generalKeyboardTypeFlags).isEqualTo(InputType.TYPE_CLASS_TEXT);
@@ -266,7 +255,8 @@ public class ReactTextInputPropertyTest {
     assertThat(view.getInputType() & generalKeyboardTypeFlags).isEqualTo(emailTypeFlags);
 
     mManager.updateProperties(view, buildStyles("keyboardType", "phone-pad"));
-    assertThat(view.getInputType() & generalKeyboardTypeFlags).isEqualTo(InputType.TYPE_CLASS_PHONE);
+    assertThat(view.getInputType() & generalKeyboardTypeFlags)
+        .isEqualTo(InputType.TYPE_CLASS_PHONE);
 
     mManager.updateProperties(view, buildStyles("keyboardType", "visible-password"));
     assertThat(view.getInputType() & generalKeyboardTypeFlags).isEqualTo(passwordVisibilityFlag);
@@ -343,9 +333,11 @@ public class ReactTextInputPropertyTest {
     mManager.updateProperties(view, buildStyles("textAlign", "right"));
     assertThat(view.getGravity() & Gravity.HORIZONTAL_GRAVITY_MASK).isEqualTo(Gravity.RIGHT);
     mManager.updateProperties(view, buildStyles("textAlign", "center"));
-    assertThat(view.getGravity() & Gravity.HORIZONTAL_GRAVITY_MASK).isEqualTo(Gravity.CENTER_HORIZONTAL);
+    assertThat(view.getGravity() & Gravity.HORIZONTAL_GRAVITY_MASK)
+        .isEqualTo(Gravity.CENTER_HORIZONTAL);
     mManager.updateProperties(view, buildStyles("textAlign", null));
-    assertThat(view.getGravity() & Gravity.HORIZONTAL_GRAVITY_MASK).isEqualTo(defaultHorizontalGravity);
+    assertThat(view.getGravity() & Gravity.HORIZONTAL_GRAVITY_MASK)
+        .isEqualTo(defaultHorizontalGravity);
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
       mManager.updateProperties(view, buildStyles("textAlign", "justify"));
       assertThat(view.getJustificationMode()).isEqualTo(Layout.JUSTIFICATION_MODE_INTER_WORD);
@@ -357,29 +349,26 @@ public class ReactTextInputPropertyTest {
     mManager.updateProperties(view, buildStyles("textAlignVertical", "bottom"));
     assertThat(view.getGravity() & Gravity.VERTICAL_GRAVITY_MASK).isEqualTo(Gravity.BOTTOM);
     mManager.updateProperties(view, buildStyles("textAlignVertical", "center"));
-    assertThat(view.getGravity() & Gravity.VERTICAL_GRAVITY_MASK).isEqualTo(Gravity.CENTER_VERTICAL);
+    assertThat(view.getGravity() & Gravity.VERTICAL_GRAVITY_MASK)
+        .isEqualTo(Gravity.CENTER_VERTICAL);
     mManager.updateProperties(view, buildStyles("textAlignVertical", null));
     assertThat(view.getGravity() & Gravity.VERTICAL_GRAVITY_MASK).isEqualTo(defaultVerticalGravity);
 
     // TextAlign + TextAlignVertical
     mManager.updateProperties(
-      view,
-      buildStyles("textAlign", "center", "textAlignVertical", "center"));
+        view, buildStyles("textAlign", "center", "textAlignVertical", "center"));
     assertThat(view.getGravity()).isEqualTo(Gravity.CENTER);
     mManager.updateProperties(
-      view,
-      buildStyles("textAlign", "right", "textAlignVertical", "bottom"));
+        view, buildStyles("textAlign", "right", "textAlignVertical", "bottom"));
     assertThat(view.getGravity()).isEqualTo(Gravity.RIGHT | Gravity.BOTTOM);
-    mManager.updateProperties(
-      view,
-      buildStyles("textAlign", null, "textAlignVertical", null));
+    mManager.updateProperties(view, buildStyles("textAlign", null, "textAlignVertical", null));
     assertThat(view.getGravity()).isEqualTo(defaultGravity);
   }
 
   @Test
   public void testMaxLength() {
     ReactEditText view = mManager.createViewInstance(mThemedContext);
-    InputFilter[] filters = new InputFilter[] { new InputFilter.AllCaps() };
+    InputFilter[] filters = new InputFilter[] {new InputFilter.AllCaps()};
     view.setFilters(filters);
     mManager.setMaxLength(view, null);
     assertThat(view.getFilters()).isEqualTo(filters);

@@ -24,7 +24,7 @@ const ensurePositiveDelayProps = require('./ensurePositiveDelayProps');
 const processColor = require('../../StyleSheet/processColor');
 
 import type {PressEvent} from '../../Types/CoreEventTypes';
-import type {NativeOrDynamicColorType} from '../../Color/NativeOrDynamicColorType'; // ]TODO(macOS ISS#2323203)
+import type {NativeOrDynamicColorType} from '../../Color/NativeOrDynamicColorType'; // TODO(macOS ISS#2323203)
 
 const rippleBackgroundPropType = PropTypes.shape({
   type: PropTypes.oneOf(['RippleAndroid']),
@@ -316,7 +316,9 @@ const TouchableNativeFeedback = createReactClass({
       accessibilityHint: this.props.accessibilityHint, // TODO(OSS Candidate ISS#2710739)
       accessibilityRole: this.props.accessibilityRole,
       accessibilityStates: this.props.accessibilityStates,
-      onAccessibilityTap: this.props.onAccessibilityTap, // TODO(OSS Candidate ISS#2710739)
+      accessibilityState: this.props.accessibilityState,
+      accessibilityActions: this.props.accessibilityActions,
+      onAccessibilityAction: this.props.onAccessibilityAction,
       children,
       testID: this.props.testID,
       onLayout: this.props.onLayout,
@@ -328,8 +330,8 @@ const TouchableNativeFeedback = createReactClass({
       nextFocusRight: this.props.nextFocusRight,
       nextFocusUp: this.props.nextFocusUp,
       hasTVPreferredFocus: this.props.hasTVPreferredFocus,
-      clickable:
-        this.props.clickable !== false &&
+      focusable:
+        this.props.focusable !== false &&
         this.props.onPress !== undefined &&
         !this.props.disabled,
       onClick: this.touchableHandlePress,

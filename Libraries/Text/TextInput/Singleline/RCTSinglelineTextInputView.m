@@ -5,11 +5,11 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#import "RCTSinglelineTextInputView.h"
+#import <React/RCTSinglelineTextInputView.h>
 
 #import <React/RCTBridge.h>
 
-#import "RCTUITextField.h"
+#import <React/RCTUITextField.h>
 
 @implementation RCTSinglelineTextInputView
 {

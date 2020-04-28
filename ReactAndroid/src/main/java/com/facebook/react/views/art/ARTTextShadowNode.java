@@ -1,26 +1,21 @@
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
+ * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
+ * directory of this source tree.
  */
-
 package com.facebook.react.views.art;
-
-import javax.annotation.Nullable;
 
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Typeface;
 import android.text.TextUtils;
-
+import androidx.annotation.Nullable;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.uimanager.annotations.ReactProp;
 
-/**
- * Shadow node for virtual ARTText view
- */
+/** Shadow node for virtual ARTText view */
 public class ARTTextShadowNode extends ARTShapeShadowNode {
 
   private static final String PROP_LINES = "lines";
@@ -40,7 +35,7 @@ public class ARTTextShadowNode extends ARTShapeShadowNode {
   private @Nullable ReadableMap mFrame;
   private int mTextAlignment = TEXT_ALIGNMENT_LEFT;
 
-  public ARTTextShadowNode() { }
+  public ARTTextShadowNode() {}
 
   @ReactProp(name = "frame")
   public void setFrame(@Nullable ReadableMap frame) {

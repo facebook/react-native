@@ -36,6 +36,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface RCTBridge (RCTSurfacePresenterStub)
 
 - (id<RCTSurfacePresenterStub>)surfacePresenter;
+- (void)setSurfacePresenter:(id<RCTSurfacePresenterStub>)presenter;
 
 @end
 

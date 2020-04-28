@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#import "RCTConvert+Text.h"
+#import <React/RCTConvert+Text.h>
 
 @implementation RCTConvert (Text)
 

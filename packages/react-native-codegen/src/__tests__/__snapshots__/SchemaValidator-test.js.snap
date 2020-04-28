@@ -5,9 +5,3 @@ Array [
   "Duplicate components found with name Component1. Found in modules Module1, Module2",
 ]
 `;
-
-exports[`SchemaValidator fails on components with no props 1`] = `
-Array [
-  "BooleanPropNativeComponent in module Switch must define props",
-]
-`;

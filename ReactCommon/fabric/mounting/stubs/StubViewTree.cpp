@@ -11,7 +11,12 @@ namespace react {
 StubViewTree::StubViewTree(ShadowView const &shadowView) {
   auto view = std::make_shared<StubView>();
   view->update(shadowView);
+  rootTag = shadowView.tag;
   registry[shadowView.tag] = view;
+}
+
+StubView const &StubViewTree::getRootStubView() const {
+  return *registry.at(rootTag);
 }
 
 void StubViewTree::mutate(ShadowViewMutationList const &mutations) {

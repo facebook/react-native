@@ -1,33 +1,26 @@
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
+ * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
+ * directory of this source tree.
  */
-
 package com.facebook.react.common;
-
-import javax.annotation.Nullable;
-
-import java.util.concurrent.TimeUnit;
 
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
-
+import androidx.annotation.Nullable;
 import com.facebook.infer.annotation.Assertions;
+import java.util.concurrent.TimeUnit;
 
-/**
- * Listens for the user shaking their phone. Allocation-less once it starts listening.
- */
+/** Listens for the user shaking their phone. Allocation-less once it starts listening. */
 public class ShakeDetector implements SensorEventListener {
   // Collect sensor data in this interval (nanoseconds)
   private static final long MIN_TIME_BETWEEN_SAMPLES_NS =
-    TimeUnit.NANOSECONDS.convert(20, TimeUnit.MILLISECONDS);
+      TimeUnit.NANOSECONDS.convert(20, TimeUnit.MILLISECONDS);
   // Number of nanoseconds to listen for and count shakes (nanoseconds)
-  private static final float SHAKING_WINDOW_NS =
-    TimeUnit.NANOSECONDS.convert(3, TimeUnit.SECONDS);
+  private static final float SHAKING_WINDOW_NS = TimeUnit.NANOSECONDS.convert(3, TimeUnit.SECONDS);
   // Required force to constitute a rage shake. Need to multiply gravity by 1.33 because a rage
   // shake in one direction should have more force than just the magnitude of free fall.
   private static final float REQUIRED_FORCE = SensorManager.GRAVITY_EARTH * 1.33f;
@@ -44,7 +37,7 @@ public class ShakeDetector implements SensorEventListener {
   private long mLastTimestamp;
   private int mNumShakes;
   private long mLastShakeTimestamp;
-  //number of shakes required to trigger onShake()
+  // number of shakes required to trigger onShake()
   private int mMinNumShakes;
 
   public ShakeDetector(ShakeListener listener) {
@@ -56,9 +49,7 @@ public class ShakeDetector implements SensorEventListener {
     mMinNumShakes = minNumShakes;
   }
 
-  /**
-   * Start listening for shakes.
-   */
+  /** Start listening for shakes. */
   public void start(SensorManager manager) {
     Assertions.assertNotNull(manager);
     Sensor accelerometer = manager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
@@ -71,9 +62,7 @@ public class ShakeDetector implements SensorEventListener {
     }
   }
 
-  /**
-   * Stop listening for shakes.
-   */
+  /** Stop listening for shakes. */
   public void stop() {
     if (mSensorManager != null) {
       mSensorManager.unregisterListener(this);
@@ -81,9 +70,7 @@ public class ShakeDetector implements SensorEventListener {
     }
   }
 
-  /**
-   * Reset all variables used to keep track of number of shakes recorded.
-   */
+  /** Reset all variables used to keep track of number of shakes recorded. */
   private void reset() {
     mNumShakes = 0;
     mAccelerationX = 0;
@@ -95,8 +82,8 @@ public class ShakeDetector implements SensorEventListener {
    * Determine if acceleration applied to sensor is large enough to count as a rage shake.
    *
    * @param a acceleration in x, y, or z applied to the sensor
-   * @return true if the magnitude of the force exceeds the minimum required amount of force.
-   * false otherwise.
+   * @return true if the magnitude of the force exceeds the minimum required amount of force. false
+   *     otherwise.
    */
   private boolean atLeastRequiredForce(float a) {
     return Math.abs(a) > REQUIRED_FORCE;
@@ -104,6 +91,7 @@ public class ShakeDetector implements SensorEventListener {
 
   /**
    * Save data about last shake
+   *
    * @param timestamp (ns) of last sensor event
    */
   private void recordShake(long timestamp) {
@@ -138,8 +126,7 @@ public class ShakeDetector implements SensorEventListener {
   }
 
   @Override
-  public void onAccuracyChanged(Sensor sensor, int i) {
-  }
+  public void onAccuracyChanged(Sensor sensor, int i) {}
 
   private void maybeDispatchShake(long currentTimestamp) {
     if (mNumShakes >= 8 * mMinNumShakes) {

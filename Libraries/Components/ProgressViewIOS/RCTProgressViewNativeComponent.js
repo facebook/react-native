@@ -10,25 +10,26 @@
 
 'use strict';
 
-const requireNativeComponent = require('../../ReactNative/requireNativeComponent');
-
-import type {NativeComponent} from '../../Renderer/shims/ReactNative';
+import type {Float, WithDefault} from '../../Types/CodegenTypes';
 import type {ImageSource} from '../../Image/ImageSource';
 import type {ColorValue} from '../../StyleSheet/StyleSheetTypes';
 import type {ViewProps} from '../View/ViewPropTypes';
 
+import codegenNativeComponent from '../../Utilities/codegenNativeComponent';
+import {type NativeComponentType} from '../../Utilities/codegenNativeComponent';
+
 type NativeProps = $ReadOnly<{|
   ...ViewProps,
-  progressViewStyle?: ?('default' | 'bar'),
-  progress?: ?number,
+
+  // Props
+  progressViewStyle?: WithDefault<'default' | 'bar', 'default'>,
+  progress?: WithDefault<Float, 0>,
   progressTintColor?: ?ColorValue,
   trackTintColor?: ?ColorValue,
   progressImage?: ?ImageSource,
   trackImage?: ?ImageSource,
 |}>;
 
-type NativeProgressViewIOS = Class<NativeComponent<NativeProps>>;
-
-module.exports = ((requireNativeComponent(
+export default (codegenNativeComponent<NativeProps>(
   'RCTProgressView',
-): any): NativeProgressViewIOS);
+): NativeComponentType<NativeProps>);

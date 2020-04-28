@@ -12,6 +12,6 @@
 
 const requireNativeComponent = require('../ReactNative/requireNativeComponent');
 
-const TextInlineImage = requireNativeComponent('RCTTextInlineImage');
+const TextInlineImage: string = requireNativeComponent('RCTTextInlineImage');
 
 module.exports = TextInlineImage;

@@ -18,7 +18,7 @@ import type {LayoutEvent} from '../../Types/CoreEventTypes';
 
 const AnimatedView = AnimatedImplementation.createAnimatedComponent(View);
 
-type Props = {
+export type Props = {
   children?: React.Element<any>,
   nextHeaderLayoutY: ?number,
   onLayout: (event: LayoutEvent) => void,
@@ -38,7 +38,7 @@ type State = {
 };
 
 class ScrollViewStickyHeader extends React.Component<Props, State> {
-  state = {
+  state: State = {
     measured: false,
     layoutY: 0,
     layoutHeight: 0,
@@ -63,7 +63,7 @@ class ScrollViewStickyHeader extends React.Component<Props, State> {
     }
   };
 
-  render() {
+  render(): React.Node {
     const {inverted, scrollViewHeight} = this.props;
     const {measured, layoutHeight, layoutY, nextHeaderLayoutY} = this.state;
     const inputRange: Array<number> = [-1, 0];

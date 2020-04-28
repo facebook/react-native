@@ -26,7 +26,7 @@
 #include <folly/Memory.h>
 #include <jni/Countable.h>
 #include <jni/LocalReference.h>
-#include <jsireact/JSCallInvokerHolder.h>
+#include <ReactCommon/JSCallInvokerHolder.h>
 
 #include "CxxModuleWrapper.h"
 #include "JavaScriptExecutorHolder.h"

@@ -115,7 +115,7 @@ describe('bezier', function() {
       });
     });
   });
-  describe('symetric curves', function() {
+  describe('symmetric curves', function() {
     it('should have a central value y~=0.5 at x=0.5', function() {
       repeat(10)(function() {
         const a = Math.random(),

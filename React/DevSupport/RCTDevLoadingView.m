@@ -5,14 +5,17 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#import "RCTDevLoadingView.h"
+#import <React/RCTDevLoadingView.h>
 
 #import <QuartzCore/QuartzCore.h>
 
-#import "RCTBridge.h"
-#import "RCTDefines.h"
-#import "RCTDevSettings.h" // TODO(OSS Candidate ISS#2710739)
-#import "RCTUtils.h"
+#import <React/RCTBridge.h>
+#import <React/RCTDefines.h>
+#import <React/RCTDevSettings.h> // TODO(OSS Candidate ISS#2710739)
+#if !TARGET_OS_OSX
+#import <React/RCTModalHostViewController.h>
+#endif // !TARGET_OS_OSX
+#import <React/RCTUtils.h>
 
 #if RCT_DEV | RCT_ENABLE_LOADING_VIEW
 
@@ -170,22 +173,22 @@ RCT_EXPORT_METHOD(hide)
 {
   RCTUIColor *color; // TODO(OSS Candidate ISS#2710739)
   RCTUIColor *backgroundColor; // TODO(OSS Candidate ISS#2710739)
-  NSString *source;
+  NSString *message;
   if (URL.fileURL) {
     // If dev mode is not enabled, we don't want to show this kind of notification
 #if !RCT_DEV
     return;
 #endif
-    color = [RCTUIColor grayColor]; // TODO(OSS Candidate ISS#2710739)
+    color = [RCTUIColor whiteColor]; //TODO(OSS Candidate ISS#2710739) UIColor -> RCTUIColor
     backgroundColor = [RCTUIColor blackColor]; // TODO(OSS Candidate ISS#2710739)
-    source = @"pre-bundled file";
+      message = [NSString stringWithFormat:@"Connect to %@ to develop JavaScript.", RCT_PACKAGER_NAME];
   } else {
     color = [RCTUIColor whiteColor]; // TODO(OSS Candidate ISS#2710739)
     backgroundColor = [RCTUIColor colorWithHue:1./3 saturation:1 brightness:.35 alpha:1]; // TODO(OSS Candidate ISS#2710739)
-    source = [NSString stringWithFormat:@"%@:%@", URL.host, URL.port];
+    message = [NSString stringWithFormat:@"Loading from %@:%@...", URL.host, URL.port];
   }
 
-  [self showMessage:[NSString stringWithFormat:@"Loading from %@...", source]
+  [self showMessage:message
               color:color
     backgroundColor:backgroundColor];
 }

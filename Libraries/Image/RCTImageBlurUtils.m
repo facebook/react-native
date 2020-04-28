@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#import "RCTImageBlurUtils.h"
+#import <React/RCTImageBlurUtils.h>
 
 #import <React/RCTUIKit.h> // TODO(macOS ISS#2323203)
 #import <React/RCTUtils.h> // TODO(macOS ISS#2323203)

@@ -18,7 +18,7 @@ if [ -n "$1" ]
 fi
 
 xcodebuild \
-  -project "RNTester/RNTester.xcodeproj" \
+  -workspace "RNTester/RNTesterPods.xcworkspace" \
   -scheme $SCHEME \
   -sdk $SDK \
   -destination "$DESTINATION" \

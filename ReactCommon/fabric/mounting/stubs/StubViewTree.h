@@ -21,6 +21,9 @@ class StubViewTree {
 
   void mutate(ShadowViewMutationList const &mutations);
 
+  StubView const &getRootStubView() const;
+
+  Tag rootTag;
   std::unordered_map<Tag, StubView::Shared> registry{};
 };
 

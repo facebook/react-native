@@ -1,10 +1,9 @@
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
+ * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
+ * directory of this source tree.
  */
-
 package com.facebook.react.views.text;
 
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
@@ -30,8 +29,7 @@ public class TextAttributes {
   private float mHeightOfTallestInlineViewOrImage = Float.NaN;
   private TextTransform mTextTransform = TextTransform.UNSET;
 
-  public TextAttributes() {
-  }
+  public TextAttributes() {}
 
   public TextAttributes applyChild(TextAttributes child) {
     TextAttributes result = new TextAttributes();
@@ -42,10 +40,18 @@ public class TextAttributes {
 
     result.mFontSize = !Float.isNaN(child.mFontSize) ? child.mFontSize : mFontSize;
     result.mLineHeight = !Float.isNaN(child.mLineHeight) ? child.mLineHeight : mLineHeight;
-    result.mLetterSpacing = !Float.isNaN(child.mLetterSpacing) ? child.mLetterSpacing : mLetterSpacing;
-    result.mMaxFontSizeMultiplier = !Float.isNaN(child.mMaxFontSizeMultiplier) ? child.mMaxFontSizeMultiplier : mMaxFontSizeMultiplier;
-    result.mHeightOfTallestInlineViewOrImage = !Float.isNaN(child.mHeightOfTallestInlineViewOrImage) ? child.mHeightOfTallestInlineViewOrImage : mHeightOfTallestInlineViewOrImage;
-    result.mTextTransform = child.mTextTransform != TextTransform.UNSET ? child.mTextTransform : mTextTransform;
+    result.mLetterSpacing =
+        !Float.isNaN(child.mLetterSpacing) ? child.mLetterSpacing : mLetterSpacing;
+    result.mMaxFontSizeMultiplier =
+        !Float.isNaN(child.mMaxFontSizeMultiplier)
+            ? child.mMaxFontSizeMultiplier
+            : mMaxFontSizeMultiplier;
+    result.mHeightOfTallestInlineViewOrImage =
+        !Float.isNaN(child.mHeightOfTallestInlineViewOrImage)
+            ? child.mHeightOfTallestInlineViewOrImage
+            : mHeightOfTallestInlineViewOrImage;
+    result.mTextTransform =
+        child.mTextTransform != TextTransform.UNSET ? child.mTextTransform : mTextTransform;
 
     return result;
   }
@@ -91,7 +97,8 @@ public class TextAttributes {
 
   public void setMaxFontSizeMultiplier(float maxFontSizeMultiplier) {
     if (maxFontSizeMultiplier != 0 && maxFontSizeMultiplier < 1) {
-      throw new JSApplicationIllegalArgumentException("maxFontSizeMultiplier must be NaN, 0, or >= 1");
+      throw new JSApplicationIllegalArgumentException(
+          "maxFontSizeMultiplier must be NaN, 0, or >= 1");
     }
     mMaxFontSizeMultiplier = maxFontSizeMultiplier;
   }
@@ -121,8 +128,8 @@ public class TextAttributes {
   public int getEffectiveFontSize() {
     float fontSize = !Float.isNaN(mFontSize) ? mFontSize : ViewDefaults.FONT_SIZE_SP;
     return mAllowFontScaling
-      ? (int) Math.ceil(PixelUtil.toPixelFromSP(fontSize, getEffectiveMaxFontSizeMultiplier()))
-      : (int) Math.ceil(PixelUtil.toPixelFromDIP(fontSize));
+        ? (int) Math.ceil(PixelUtil.toPixelFromSP(fontSize, getEffectiveMaxFontSizeMultiplier()))
+        : (int) Math.ceil(PixelUtil.toPixelFromDIP(fontSize));
   }
 
   public float getEffectiveLineHeight() {
@@ -130,15 +137,16 @@ public class TextAttributes {
       return Float.NaN;
     }
 
-    float lineHeight = mAllowFontScaling
-      ? PixelUtil.toPixelFromSP(mLineHeight, getEffectiveMaxFontSizeMultiplier())
-      : PixelUtil.toPixelFromDIP(mLineHeight);
+    float lineHeight =
+        mAllowFontScaling
+            ? PixelUtil.toPixelFromSP(mLineHeight, getEffectiveMaxFontSizeMultiplier())
+            : PixelUtil.toPixelFromDIP(mLineHeight);
 
     // Take into account the requested line height
     // and the height of the inline images.
     boolean useInlineViewHeight =
-      !Float.isNaN(mHeightOfTallestInlineViewOrImage)
-        && mHeightOfTallestInlineViewOrImage > lineHeight;
+        !Float.isNaN(mHeightOfTallestInlineViewOrImage)
+            && mHeightOfTallestInlineViewOrImage > lineHeight;
     return useInlineViewHeight ? mHeightOfTallestInlineViewOrImage : lineHeight;
   }
 
@@ -147,9 +155,10 @@ public class TextAttributes {
       return Float.NaN;
     }
 
-    float letterSpacingPixels = mAllowFontScaling
-      ? PixelUtil.toPixelFromSP(mLetterSpacing, getEffectiveMaxFontSizeMultiplier())
-      : PixelUtil.toPixelFromDIP(mLetterSpacing);
+    float letterSpacingPixels =
+        mAllowFontScaling
+            ? PixelUtil.toPixelFromSP(mLetterSpacing, getEffectiveMaxFontSizeMultiplier())
+            : PixelUtil.toPixelFromDIP(mLetterSpacing);
 
     // `letterSpacingPixels` and `getEffectiveFontSize` are both in pixels,
     // yielding an accurate em value.
@@ -159,25 +168,34 @@ public class TextAttributes {
   // Never returns NaN
   public float getEffectiveMaxFontSizeMultiplier() {
     return !Float.isNaN(mMaxFontSizeMultiplier)
-      ? mMaxFontSizeMultiplier
-      : DEFAULT_MAX_FONT_SIZE_MULTIPLIER;
+        ? mMaxFontSizeMultiplier
+        : DEFAULT_MAX_FONT_SIZE_MULTIPLIER;
   }
 
   public String toString() {
-    return (
-      "TextAttributes {"
-      + "\n  getAllowFontScaling(): " + getAllowFontScaling()
-      + "\n  getFontSize(): " + getFontSize()
-      + "\n  getEffectiveFontSize(): " + getEffectiveFontSize()
-      + "\n  getHeightOfTallestInlineViewOrImage(): " + getHeightOfTallestInlineViewOrImage()
-      + "\n  getLetterSpacing(): " + getLetterSpacing()
-      + "\n  getEffectiveLetterSpacing(): " + getEffectiveLetterSpacing()
-      + "\n  getLineHeight(): " + getLineHeight()
-      + "\n  getEffectiveLineHeight(): " + getEffectiveLineHeight()
-      + "\n  getTextTransform(): " + getTextTransform()
-      + "\n  getMaxFontSizeMultiplier(): " + getMaxFontSizeMultiplier()
-      + "\n  getEffectiveMaxFontSizeMultiplier(): " + getEffectiveMaxFontSizeMultiplier()
-      + "\n}"
-    );
+    return ("TextAttributes {"
+        + "\n  getAllowFontScaling(): "
+        + getAllowFontScaling()
+        + "\n  getFontSize(): "
+        + getFontSize()
+        + "\n  getEffectiveFontSize(): "
+        + getEffectiveFontSize()
+        + "\n  getHeightOfTallestInlineViewOrImage(): "
+        + getHeightOfTallestInlineViewOrImage()
+        + "\n  getLetterSpacing(): "
+        + getLetterSpacing()
+        + "\n  getEffectiveLetterSpacing(): "
+        + getEffectiveLetterSpacing()
+        + "\n  getLineHeight(): "
+        + getLineHeight()
+        + "\n  getEffectiveLineHeight(): "
+        + getEffectiveLineHeight()
+        + "\n  getTextTransform(): "
+        + getTextTransform()
+        + "\n  getMaxFontSizeMultiplier(): "
+        + getMaxFontSizeMultiplier()
+        + "\n  getEffectiveMaxFontSizeMultiplier(): "
+        + getEffectiveMaxFontSizeMultiplier()
+        + "\n}");
   }
 }

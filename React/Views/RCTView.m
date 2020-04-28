@@ -20,7 +20,7 @@
 UIAccessibilityTraits const SwitchAccessibilityTrait = 0x20000000000001;
 #endif // TODO(macOS ISS#2323203)
 
-@implementation RCTPlatformView (RCTViewUnmounting)
+@implementation RCTPlatformView (RCTViewUnmounting) // TODO(macOS ISS#2323203)
 
 - (void)react_remountAllSubviews
 {
@@ -179,24 +179,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:unused)
   return RCTRecursiveAccessibilityLabel(self);
 }
 
--(void)setAccessibilityActions:(NSArray *)actions
-{
-  if (!actions) {
-    return;
-  }
-  accessibilityActionsNameMap = [[NSMutableDictionary alloc] init];
-  accessibilityActionsLabelMap = [[NSMutableDictionary alloc] init];
-  for (NSDictionary *action in actions) {
-    if (action[@"name"]) {
-      accessibilityActionsNameMap[action[@"name"]] = action;
-    }
-    if (action[@"label"]) {
-      accessibilityActionsLabelMap[action[@"label"]] = action;
-    }
-  }
-  _accessibilityActions = [actions copy];
-}
-
 #if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
 - (NSArray <UIAccessibilityCustomAction *> *)accessibilityCustomActions
 {
@@ -204,9 +186,15 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:unused)
     return nil;
   }
 
+  accessibilityActionsNameMap = [[NSMutableDictionary alloc] init];
+  accessibilityActionsLabelMap = [[NSMutableDictionary alloc] init];
   NSMutableArray *actions = [NSMutableArray array];
   for (NSDictionary *action in self.accessibilityActions) {
+    if (action[@"name"]) {
+      accessibilityActionsNameMap[action[@"name"]] = action;
+    }
     if (action[@"label"]) {
+      accessibilityActionsLabelMap[action[@"label"]] = action;
       [actions addObject:[[UIAccessibilityCustomAction alloc] initWithName:action[@"label"]
                                                                     target:self
                                                                   selector:@selector(didActivateAccessibilityCustomAction:)]];
@@ -246,6 +234,15 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:unused)
         return @"0";
       }
     }
+    for (NSString *state in self.accessibilityState) {
+      id val = self.accessibilityState[state];
+      if (!val) {
+        continue;
+      }
+      if ([state isEqualToString:@"checked"] && [val isKindOfClass:[NSNumber class]]) {
+        return [val boolValue] ? @"1" : @"0";
+      }
+    }
   }
 #endif // TODO(macOS ISS#2323203)
   NSMutableArray *valueComponents = [NSMutableArray new];
@@ -280,6 +277,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:unused)
                           @"busy" : @"busy",
                           @"expanded" : @"expanded",
                           @"collapsed" : @"collapsed",
+                          @"mixed": @"mixed",
                           };
   });
   NSString *roleDescription = self.accessibilityRole ? roleDescriptions[self.accessibilityRole]: nil;
@@ -292,8 +290,27 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:unused)
       [valueComponents addObject:stateDescription];
     }
   }
+  for (NSString *state in self.accessibilityState) {
+    id val = self.accessibilityState[state];
+    if (!val) {
+      continue;
+    }
+    if ([state isEqualToString:@"checked"]) {
+      if ([val isKindOfClass:[NSNumber class]]) {
+        [valueComponents addObject:stateDescriptions[[val boolValue] ? @"checked" : @"unchecked"]];
+      } else if ([val isKindOfClass:[NSString class]] && [val isEqualToString:@"mixed"]) {
+        [valueComponents addObject:stateDescriptions[@"mixed"]];
+      }
+    }
+    if ([state isEqualToString:@"expanded"] && [val isKindOfClass:[NSNumber class]]) {
+      [valueComponents addObject:stateDescriptions[[val boolValue] ? @"expanded" : @"collapsed"]];
+    }
+    if ([state isEqualToString:@"busy"] && [val isKindOfClass:[NSNumber class]] && [val boolValue]) {
+      [valueComponents addObject:stateDescriptions[@"busy"]];
+    }
+  }
   if (valueComponents.count > 0) {
-    return [valueComponents componentsJoinedByString:@",  "];
+    return [valueComponents componentsJoinedByString:@", "];
   }
   return nil;
 }
@@ -901,7 +918,7 @@ static CGFloat RCTDefaultIfNegativeTo(CGFloat defaultValue, CGFloat x) {
   // solve this, we'll need to add a container view inside the main view to
   // correctly clip the subviews.
 
-#if !TARGET_OS_OSX
+#if !TARGET_OS_OSX // [TODO(macOS ISS#2323203)
   id savedTraitCollection = nil;
 #if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 130000
   if (@available(iOS 13.0, *)) {
@@ -909,7 +926,7 @@ static CGFloat RCTDefaultIfNegativeTo(CGFloat defaultValue, CGFloat x) {
     [UITraitCollection setCurrentTraitCollection:[self traitCollection]];
   }
 #endif
-#endif
+#endif // ]TODO(macOS ISS#2323203)
 
   if (useIOSBorderRendering) {
     layer.cornerRadius = cornerRadii.topLeft;
@@ -922,13 +939,13 @@ static CGFloat RCTDefaultIfNegativeTo(CGFloat defaultValue, CGFloat x) {
     return;
   }
 
-#if !TARGET_OS_OSX
+#if !TARGET_OS_OSX // [TODO(macOS ISS#2323203)
 #if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 130000
   if (@available(iOS 13.0, *)) {
     [UITraitCollection setCurrentTraitCollection:savedTraitCollection];
   }
 #endif 
-#endif
+#endif // ]TODO(macOS ISS#2323203)
 
 #if TARGET_OS_OSX // [TODO(macOS ISS#2323203)
   CGFloat scaleFactor = self.window.backingScaleFactor;
@@ -1126,9 +1143,9 @@ setBorderStyle()
 
 - (void)dealloc
 {
-#if TARGET_OS_OSX // TODO(macOS ISS#2323203)
+#if TARGET_OS_OSX // [TODO(macOS ISS#2323203)
   [[NSNotificationCenter defaultCenter] removeObserver:self];
-#endif // TODO(macOS ISS#2323203)
+#endif // ]TODO(macOS ISS#2323203)
   CGColorRelease(_borderColor);
   CGColorRelease(_borderTopColor);
   CGColorRelease(_borderRightColor);

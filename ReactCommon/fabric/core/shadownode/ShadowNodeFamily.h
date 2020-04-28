@@ -34,8 +34,8 @@ class ShadowNodeFamily {
 
   /*
    * Sets the parent.
-   * This is not techically thread-safe, but practically it mutates the object
-   * only once (and the model enforces that this first call is not concurent).
+   * This is not technically thread-safe, but practically it mutates the object
+   * only once (and the model enforces that this first call is not concurrent).
    */
   void setParent(ShadowNodeFamily::Shared const &parent) const;
 

@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#import "RCTWebSocketExecutor.h"
+#import <React/RCTWebSocketExecutor.h>
 
 #import <React/RCTAssert.h>
 #import <React/RCTBridge.h>
@@ -14,7 +14,7 @@
 #import <React/RCTLog.h>
 #import <React/RCTUtils.h>
 
-#import "RCTSRWebSocket.h"
+#import <React/RCTSRWebSocket.h>
 
 #if RCT_DEV // Debug executors are only supported in dev mode
 

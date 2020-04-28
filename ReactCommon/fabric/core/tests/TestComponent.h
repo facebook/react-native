@@ -42,8 +42,6 @@ static const char TestComponentName[] = "Test";
 class TestProps : public Props {
  public:
   using Props::Props;
-  TestProps()
-      : Props(Props(), RawProps(folly::dynamic::object("nativeID", "testNativeID"))) {}
 };
 using SharedTestProps = std::shared_ptr<const TestProps>;
 

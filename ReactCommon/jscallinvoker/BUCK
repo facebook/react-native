@@ -1,15 +1,15 @@
-load("//tools/build_defs/oss:rn_defs.bzl", "ANDROID", "APPLE", "react_native_xplat_target", "rn_xplat_cxx_library")
+load("//tools/build_defs/oss:rn_defs.bzl", "ANDROID", "APPLE", "react_native_xplat_target", "rn_xplat_cxx_library", "subdir_glob")
 
 rn_xplat_cxx_library(
     name = "jscallinvoker",
-    srcs = [
-        "jsireact/BridgeJSCallInvoker.cpp",
-    ],
+    srcs = glob(["**/*.cpp"]),
     header_namespace = "",
-    exported_headers = {
-        "jsireact/BridgeJSCallInvoker.h": "jsireact/BridgeJSCallInvoker.h",
-        "jsireact/JSCallInvoker.h": "jsireact/JSCallInvoker.h",
-    },
+    exported_headers = subdir_glob(
+        [
+            ("ReactCommon", "*.h"),
+        ],
+        prefix = "ReactCommon",
+    ),
     compiler_flags = [
         "-fexceptions",
         "-frtti",

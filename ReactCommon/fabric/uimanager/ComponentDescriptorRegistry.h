@@ -45,12 +45,12 @@ class ComponentDescriptorRegistry {
   void registerComponentDescriptor(
       SharedComponentDescriptor componentDescriptor) const;
 
-  ComponentDescriptor const &at(ComponentName const &componentName) const;
+  ComponentDescriptor const &at(std::string const &componentName) const;
   ComponentDescriptor const &at(ComponentHandle componentHandle) const;
 
   SharedShadowNode createNode(
       Tag tag,
-      ComponentName const &viewName,
+      std::string const &viewName,
       SurfaceId surfaceId,
       folly::dynamic const &props,
       SharedEventTarget const &eventTarget) const;
@@ -73,7 +73,7 @@ class ComponentDescriptorRegistry {
   mutable better::shared_mutex mutex_;
   mutable better::map<ComponentHandle, SharedComponentDescriptor>
       _registryByHandle;
-  mutable better::map<ComponentName, SharedComponentDescriptor> _registryByName;
+  mutable better::map<std::string, SharedComponentDescriptor> _registryByName;
   ComponentDescriptor::Shared _fallbackComponentDescriptor;
   ComponentDescriptorParameters parameters_{};
 };

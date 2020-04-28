@@ -5,6 +5,7 @@ rn_android_library(
     srcs = glob([
         "*.java",
     ]),
+    is_androidx = True,
     provided_deps = [
         react_native_dep("third-party/android/androidx:annotation"),
         react_native_dep("third-party/android/androidx:core"),

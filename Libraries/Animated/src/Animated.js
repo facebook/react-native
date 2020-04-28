@@ -12,28 +12,31 @@
 
 import Platform from '../../Utilities/Platform';
 
-const AnimatedImplementation = Platform.isTesting
-  ? require('./AnimatedMock')
-  : require('./AnimatedImplementation');
+const AnimatedMock = require('./AnimatedMock');
+const AnimatedImplementation = require('./AnimatedImplementation');
+
+const Animated = ((Platform.isTesting
+  ? AnimatedMock
+  : AnimatedImplementation): typeof AnimatedMock);
 
 module.exports = {
-  get FlatList() {
+  get FlatList(): any {
     return require('./components/AnimatedFlatList');
   },
-  get Image() {
+  get Image(): any {
     return require('./components/AnimatedImage');
   },
-  get ScrollView() {
+  get ScrollView(): any {
     return require('./components/AnimatedScrollView');
   },
-  get SectionList() {
+  get SectionList(): any {
     return require('./components/AnimatedSectionList');
   },
-  get Text() {
+  get Text(): any {
     return require('./components/AnimatedText');
   },
-  get View() {
+  get View(): any {
     return require('./components/AnimatedView');
   },
-  ...AnimatedImplementation,
+  ...Animated,
 };

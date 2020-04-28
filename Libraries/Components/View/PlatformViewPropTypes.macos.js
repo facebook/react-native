@@ -9,4 +9,6 @@
 
 // TODO(macOS ISS#2323203)
 
-module.exports = {};
+'use strict';
+
+export type PlatformViewPropTypes = {};

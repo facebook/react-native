@@ -14,13 +14,9 @@ import android.content.Intent;
  */
 public interface ActivityEventListener {
 
-  /**
-   * Called when host (activity/service) receives an {@link Activity#onActivityResult} call.
-   */
+  /** Called when host (activity/service) receives an {@link Activity#onActivityResult} call. */
   void onActivityResult(Activity activity, int requestCode, int resultCode, Intent data);
 
-  /**
-   * Called when a new intent is passed to the activity
-   */
+  /** Called when a new intent is passed to the activity */
   void onNewIntent(Intent intent);
 }

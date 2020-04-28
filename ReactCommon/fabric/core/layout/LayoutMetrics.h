@@ -14,7 +14,7 @@ namespace facebook {
 namespace react {
 
 /*
- * Describes results of layout process for partucular shadow node.
+ * Describes results of layout process for particular shadow node.
  */
 struct LayoutMetrics {
   Rect frame;

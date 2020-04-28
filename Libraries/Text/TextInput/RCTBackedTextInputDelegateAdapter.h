@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#import "../RCTTextUIKit.h" // TODO(macOS ISS#2323203)
+#import <React/RCTTextUIKit.h> // TODO(macOS ISS#2323203)
 
 NS_ASSUME_NONNULL_BEGIN
 

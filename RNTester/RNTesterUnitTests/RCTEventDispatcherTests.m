@@ -6,10 +6,10 @@
  *
  */
 
-#import <React/RCTUIKit.h>
+#import <React/RCTUIKit.h> // TODO(macOS ISS#3536887)
 #import <XCTest/XCTest.h>
 
-#import <OCMock/OCMock.h>
+#import "OCMock/OCMock.h"
 
 #import <React/RCTEventDispatcher.h>
 

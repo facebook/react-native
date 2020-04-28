@@ -1,10 +1,9 @@
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
+ * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
+ * directory of this source tree.
  */
-
 package com.facebook.react.views.scroll;
 
 import android.os.SystemClock;
@@ -32,9 +31,7 @@ public class OnScrollDispatchHelper {
   public boolean onScrollChanged(int x, int y) {
     long eventTime = SystemClock.uptimeMillis();
     boolean shouldDispatch =
-        eventTime - mLastScrollEventTimeMs > MIN_EVENT_SEPARATION_MS ||
-            mPrevX != x ||
-            mPrevY != y;
+        eventTime - mLastScrollEventTimeMs > MIN_EVENT_SEPARATION_MS || mPrevX != x || mPrevY != y;
 
     if (eventTime - mLastScrollEventTimeMs != 0) {
       mXFlingVelocity = (float) (x - mPrevX) / (eventTime - mLastScrollEventTimeMs);

@@ -18,7 +18,7 @@ If you are eager to start contributing code right away, we have a list of [good 
 
 There are other ways you can contribute without writing a single line of code. Here are a few things you can do to help out:
 
-1. **Replying and handling open issues.** We get a lot of issues every day, and some of them may lack necessary information. You can help out by guiding people through the process of filling out the issue template, asking for clarifying information, or pointing them to existing issues that match their description of the problem. We'll cover more about this process later, in [Handling Issues](http://github.com/facebook/react-native/wiki/Handling-Issues).
+1. **Replying and handling open issues.** We get a lot of issues every day, and some of them may lack necessary information. You can help out by guiding people through the process of filling out the issue template, asking for clarifying information, or pointing them to existing issues that match their description of the problem. We cover more about this process in the [Issue Triage wiki](https://github.com/facebook/react-native/wiki/Issues#triage).
 2. **Reviewing pull requests for the docs.** Reviewing [documentation updates](https://github.com/facebook/react-native-website/pulls) can be as simple as checking for spelling and grammar. If you encounter situations that can be explained better in the docs, click **Edit** at the top of most docs pages to get started with your own contribution.
 3. **Help people write test plans.** Some pull requests sent to the main repository may lack a proper test plan. These help reviewers understand how the change was tested, and can speed up the time it takes for a contribution to be accepted.
 
@@ -30,6 +30,7 @@ We use GitHub issues and pull requests to keep track of bug reports and contribu
 
 You can learn more about the contribution process in the following documents:
 
+* [Issues](https://github.com/facebook/react-native/wiki/Issues)
 * [Pull Requests](https://github.com/facebook/react-native/wiki/Pull-Requests)
 
 We also have a thriving community of contributors who would be happy to help you get set up. You can reach out to us through [@ReactNative](http://twitter.com/reactnative) (the React Native team) and [@ReactNativeComm](http://twitter.com/reactnativecomm) (the React Native Community organization).
@@ -47,9 +48,9 @@ There are a few other repositories you might want to familiarize yourself with:
 
 Browsing through these repositories should provide some insight into how the React Native open source project is managed.
 
-## Handling Issues
+## GitHub Issues
 
-We use GitHub issues to track bugs exclusively. You can report an issue by filing a [Bug Report](https://github.com/facebook/react-native/issues/new/choose). Watch this space for more details on how to get involved and triage issues.
+We use GitHub issues to track bugs exclusively. We have documented our issue handling processes in the [Issues wiki](https://github.com/facebook/react-native/wiki/Issues).
 
 ### Security Bugs
 
@@ -82,7 +83,7 @@ Code-level contributions to React Native generally come in the form of [pull req
 7. Create a pull request to the React Native repository.
 8. Review and address comments on your pull request.
     1. A bot may comment with suggestions. Generally we ask you to resolve these first before a maintainer will review your code.
-9. If you haven't already, complete the Contributor License Agreement ("CLA").
+9. If you haven't already, please complete the [Contributor License Agreement](https://github.com/facebook/react-native/wiki/Contributor-License-Agreement) ("CLA"). **[Complete your CLA here.](https://code.facebook.com/cla)**
 
 If all goes well, your pull request will be merged. If it is not merged, maintainers will do their best to explain the reason why.
 

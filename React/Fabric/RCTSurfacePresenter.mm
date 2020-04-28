@@ -7,10 +7,10 @@
 
 #import "RCTSurfacePresenter.h"
 
+#import <cxxreact/MessageQueueThread.h>
+#import <jsi/jsi.h>
 #import <objc/runtime.h>
 #import <mutex>
-#import <jsi/jsi.h>
-#import <cxxreact/MessageQueueThread.h>
 
 #import <React/RCTAssert.h>
 #import <React/RCTBridge+Private.h>
@@ -31,12 +31,13 @@
 #import <react/core/LayoutConstraints.h>
 #import <react/core/LayoutContext.h>
 #import <react/uimanager/ComponentDescriptorFactory.h>
+#import <react/uimanager/SchedulerToolbox.h>
 #import <react/utils/ContextContainer.h>
 #import <react/utils/ManagedObjectWrapper.h>
 
 #import "MainRunLoopEventBeat.h"
-#import "RuntimeEventBeat.h"
 #import "RCTConversions.h"
+#import "RuntimeEventBeat.h"
 
 using namespace facebook::react;
 
@@ -51,19 +52,27 @@ using namespace facebook::react;
 @implementation RCTSurfacePresenter {
   std::mutex _schedulerMutex;
   std::mutex _contextContainerMutex;
-  RCTScheduler *_Nullable _scheduler; // Thread-safe. Mutation of the instance variable is protected by `_schedulerMutex`.
+  RCTScheduler
+      *_Nullable _scheduler; // Thread-safe. Mutation of the instance variable is protected by `_schedulerMutex`.
   RCTMountingManager *_mountingManager; // Thread-safe.
-  RCTSurfaceRegistry *_surfaceRegistry;  // Thread-safe.
+  RCTSurfaceRegistry *_surfaceRegistry; // Thread-safe.
   RCTBridge *_bridge; // Unsafe. We are moving away from Bridge.
   RCTBridge *_batchedBridge;
   std::shared_ptr<const ReactNativeConfig> _reactNativeConfig;
   better::shared_mutex _observerListMutex;
   NSMutableArray<id<RCTSurfacePresenterObserver>> *_observers;
+  RCTImageLoader *_imageLoader;
+  RuntimeExecutor _runtimeExecutor;
 }
 
-- (instancetype)initWithBridge:(RCTBridge *)bridge config:(std::shared_ptr<const ReactNativeConfig>)config
+- (instancetype)initWithBridge:(RCTBridge *)bridge
+                        config:(std::shared_ptr<const ReactNativeConfig>)config
+                   imageLoader:(RCTImageLoader *)imageLoader
+               runtimeExecutor:(RuntimeExecutor)runtimeExecutor
 {
   if (self = [super init]) {
+    _imageLoader = imageLoader;
+    _runtimeExecutor = runtimeExecutor;
     _bridge = bridge;
     _batchedBridge = [_bridge batchedBridge] ?: _bridge;
     [_batchedBridge setSurfacePresenter:self];
@@ -122,8 +131,7 @@ using namespace facebook::react;
   [_surfaceRegistry unregisterSurface:surface];
 }
 
-- (void)setProps:(NSDictionary *)props
-         surface:(RCTFabricSurface *)surface
+- (void)setProps:(NSDictionary *)props surface:(RCTFabricSurface *)surface
 {
   // This implementation is suboptimal indeed but still better than nothing for now.
   [self _stopSurface:surface];
@@ -139,32 +147,22 @@ using namespace facebook::react;
                       maximumSize:(CGSize)maximumSize
                           surface:(RCTFabricSurface *)surface
 {
-  LayoutContext layoutContext = {
-    .pointScaleFactor = RCTScreenScale()
-  };
+  LayoutContext layoutContext = {.pointScaleFactor = RCTScreenScale()};
 
-  LayoutConstraints layoutConstraints = {
-    .minimumSize = RCTSizeFromCGSize(minimumSize),
-    .maximumSize = RCTSizeFromCGSize(maximumSize)
-  };
+  LayoutConstraints layoutConstraints = {.minimumSize = RCTSizeFromCGSize(minimumSize),
+                                         .maximumSize = RCTSizeFromCGSize(maximumSize)};
 
   return [self._scheduler measureSurfaceWithLayoutConstraints:layoutConstraints
                                                 layoutContext:layoutContext
                                                     surfaceId:surface.rootTag];
 }
 
-- (void)setMinimumSize:(CGSize)minimumSize
-           maximumSize:(CGSize)maximumSize
-               surface:(RCTFabricSurface *)surface
+- (void)setMinimumSize:(CGSize)minimumSize maximumSize:(CGSize)maximumSize surface:(RCTFabricSurface *)surface
 {
-  LayoutContext layoutContext = {
-    .pointScaleFactor = RCTScreenScale()
-  };
+  LayoutContext layoutContext = {.pointScaleFactor = RCTScreenScale()};
 
-  LayoutConstraints layoutConstraints = {
-    .minimumSize = RCTSizeFromCGSize(minimumSize),
-    .maximumSize = RCTSizeFromCGSize(maximumSize)
-  };
+  LayoutConstraints layoutConstraints = {.minimumSize = RCTSizeFromCGSize(minimumSize),
+                                         .maximumSize = RCTSizeFromCGSize(maximumSize)};
 
   [self._scheduler constraintSurfaceLayoutWithLayoutConstraints:layoutConstraints
                                                   layoutContext:layoutContext
@@ -203,8 +201,22 @@ using namespace facebook::react;
         createComponentDescriptorRegistryWithParameters:{eventDispatcher, contextContainer}];
   };
 
-  _scheduler = [[RCTScheduler alloc] initWithContextContainer:self.contextContainer
-                                     componentRegistryFactory:componentRegistryFactory];
+  auto runtimeExecutor = [self getRuntimeExecutor];
+
+  auto toolbox = SchedulerToolbox{};
+  toolbox.contextContainer = self.contextContainer;
+  toolbox.componentRegistryFactory = componentRegistryFactory;
+  toolbox.runtimeExecutor = runtimeExecutor;
+
+  toolbox.synchronousEventBeatFactory = [runtimeExecutor]() {
+    return std::make_unique<MainRunLoopEventBeat>(runtimeExecutor);
+  };
+
+  toolbox.asynchronousEventBeatFactory = [runtimeExecutor]() {
+    return std::make_unique<RuntimeEventBeat>(runtimeExecutor);
+  };
+
+  _scheduler = [[RCTScheduler alloc] initWithToolbox:toolbox];
   _scheduler.delegate = self;
 
   return _scheduler;
@@ -212,17 +224,11 @@ using namespace facebook::react;
 
 @synthesize contextContainer = _contextContainer;
 
-- (ContextContainer::Shared)contextContainer
+- (RuntimeExecutor)getRuntimeExecutor
 {
-  std::lock_guard<std::mutex> lock(_contextContainerMutex);
-
-  if (_contextContainer) {
-    return _contextContainer;
+  if (_runtimeExecutor) {
+    return _runtimeExecutor;
   }
-
-  _contextContainer = std::make_shared<ContextContainer>();
-
-  _contextContainer->registerInstance(_reactNativeConfig, "ReactNativeConfig");
 
   auto messageQueueThread = _batchedBridge.jsMessageThread;
   if (messageQueueThread) {
@@ -239,20 +245,30 @@ using namespace facebook::react;
     [((RCTCxxBridge *)_batchedBridge) invokeAsync:[runtime, callback = std::move(callback)]() { callback(*runtime); }];
   };
 
-  EventBeatFactory synchronousBeatFactory = [runtimeExecutor]() {
-    return std::make_unique<MainRunLoopEventBeat>(runtimeExecutor);
-  };
+  return runtimeExecutor;
+}
 
-  EventBeatFactory asynchronousBeatFactory = [runtimeExecutor]() {
-    return std::make_unique<RuntimeEventBeat>(runtimeExecutor);
-  };
+- (ContextContainer::Shared)contextContainer
+{
+  std::lock_guard<std::mutex> lock(_contextContainerMutex);
 
-  _contextContainer->registerInstance<EventBeatFactory>(synchronousBeatFactory, "synchronous");
-  _contextContainer->registerInstance<EventBeatFactory>(asynchronousBeatFactory, "asynchronous");
+  if (_contextContainer) {
+    return _contextContainer;
+  }
 
-  _contextContainer->registerInstance(runtimeExecutor, "runtime-executor");
+  _contextContainer = std::make_shared<ContextContainer>();
+  // Please do not add stuff here; `SurfacePresenter` must not alter `ContextContainer`.
+  // Those two pieces eventually should be moved out there:
+  // * `RCTImageLoader` should be moved to `RCTImageComponentView`.
+  // * `ReactNativeConfig` should be set by outside product code.
+  _contextContainer->insert("ReactNativeConfig", _reactNativeConfig);
+  // TODO T47869586 petetheheat: Delete else case when TM rollout 100%
+  if (_imageLoader) {
+    _contextContainer->insert("RCTImageLoader", wrapManagedObject(_imageLoader));
+  } else {
+    _contextContainer->insert("RCTImageLoader", wrapManagedObject([_bridge moduleForClass:[RCTImageLoader class]]));
+  }
 
-  _contextContainer->registerInstance(wrapManagedObject([_bridge imageLoader]), "RCTImageLoader");
   return _contextContainer;
 }
 
@@ -264,14 +280,10 @@ using namespace facebook::react;
                                                                                tag:surface.rootTag];
   });
 
-  LayoutContext layoutContext = {
-    .pointScaleFactor = RCTScreenScale()
-  };
+  LayoutContext layoutContext = {.pointScaleFactor = RCTScreenScale()};
 
-  LayoutConstraints layoutConstraints = {
-    .minimumSize = RCTSizeFromCGSize(surface.minimumSize),
-    .maximumSize = RCTSizeFromCGSize(surface.maximumSize)
-  };
+  LayoutConstraints layoutConstraints = {.minimumSize = RCTSizeFromCGSize(surface.minimumSize),
+                                         .maximumSize = RCTSizeFromCGSize(surface.maximumSize)};
 
   [self._scheduler startSurfaceWithSurfaceId:surface.rootTag
                                   moduleName:surface.moduleName
@@ -323,6 +335,17 @@ using namespace facebook::react;
   [surface _setStage:RCTSurfaceStagePrepared];
 
   [_mountingManager scheduleTransaction:mountingCoordinator];
+}
+
+- (void)schedulerDidDispatchCommand:(facebook::react::ShadowView const &)shadowView
+                        commandName:(std::string const &)commandName
+                               args:(folly::dynamic const)args
+{
+  ReactTag tag = shadowView.tag;
+  NSString *commandStr = [[NSString alloc] initWithUTF8String:commandName.c_str()];
+  NSArray *argsArray = convertFollyDynamicToId(args);
+
+  [self->_mountingManager dispatchCommand:tag commandName:commandStr args:argsArray];
 }
 
 - (void)addObserver:(id<RCTSurfacePresenterObserver>)observer
@@ -390,7 +413,6 @@ using namespace facebook::react;
   {
     std::lock_guard<std::mutex> lock(_schedulerMutex);
     _scheduler = nil;
-    _contextContainer = nil;
   }
 }
 
@@ -402,20 +424,6 @@ using namespace facebook::react;
 
     [self _startAllSurfaces];
   }
-}
-
-@end
-
-@implementation RCTBridge (Deprecated)
-
-- (void)setSurfacePresenter:(RCTSurfacePresenter *)surfacePresenter
-{
-  objc_setAssociatedObject(self, @selector(surfacePresenter), surfacePresenter, OBJC_ASSOCIATION_ASSIGN);
-}
-
-- (RCTSurfacePresenter *)surfacePresenter
-{
-  return objc_getAssociatedObject(self, @selector(surfacePresenter));
 }
 
 @end

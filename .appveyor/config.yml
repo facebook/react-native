@@ -1,13 +1,13 @@
 environment:
   ANDROID_HOME: "C:\\android-sdk-windows"
-  ANDROID_NDK: "C:\\android-sdk-windows\\android-ndk-r17c"
+  ANDROID_NDK: "C:\\android-sdk-windows\\android-ndk-r19c"
   ANDROID_BUILD_VERSION: 28
   ANDROID_TOOLS_VERSION: 28.0.3
 
   GRADLE_OPTS: -Dorg.gradle.daemon=false
 
   SDK_TOOLS_URL: https://dl.google.com/android/repository/sdk-tools-windows-3859397.zip
-  NDK_TOOLS_URL: https://dl.google.com/android/repository/android-ndk-r17c-windows-x86_64.zip
+  NDK_TOOLS_URL: https://dl.google.com/android/repository/android-ndk-r19c-windows-x86_64.zip
 
   matrix:
     - nodejs_version: 8
@@ -38,7 +38,7 @@ build_script:
   - yarn run flow-check-android
   - yarn run flow-check-ios
   - yarn run test
-  - gradlew.bat RNTester:android:app:assembleRelease
+  # - gradlew.bat RNTester:android:app:assembleRelease
 
 cache:
   - node_modules

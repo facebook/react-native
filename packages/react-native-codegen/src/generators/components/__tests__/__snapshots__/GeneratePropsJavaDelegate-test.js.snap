@@ -1,0 +1,757 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`GeneratePropsJavaDelegate can generate fixture ARRAY_PROPS 1`] = `
+Map {
+  "ArrayPropsNativeComponentManagerDelegate.java" => "
+package com.facebook.react.viewmanagers;
+
+import android.view.View;
+import androidx.annotation.Nullable;
+import com.facebook.react.bridge.ReadableArray;
+import com.facebook.react.uimanager.BaseViewManager;
+import com.facebook.react.uimanager.BaseViewManagerDelegate;
+import com.facebook.react.uimanager.LayoutShadowNode;
+
+public class ArrayPropsNativeComponentManagerDelegate<T extends View, U extends BaseViewManager<T, ? extends LayoutShadowNode> & ArrayPropsNativeComponentManagerInterface<T>> extends BaseViewManagerDelegate<T, U> {
+  public ArrayPropsNativeComponentManagerDelegate(U viewManager) {
+    super(viewManager);
+  }
+  @Override
+  public void setProperty(T view, String propName, @Nullable Object value) {
+    switch (propName) {
+      case \\"names\\":
+        mViewManager.setNames(view, (ReadableArray) value);
+        break;
+      case \\"disableds\\":
+        mViewManager.setDisableds(view, (ReadableArray) value);
+        break;
+      case \\"progress\\":
+        mViewManager.setProgress(view, (ReadableArray) value);
+        break;
+      case \\"radii\\":
+        mViewManager.setRadii(view, (ReadableArray) value);
+        break;
+      case \\"colors\\":
+        mViewManager.setColors(view, (ReadableArray) value);
+        break;
+      case \\"srcs\\":
+        mViewManager.setSrcs(view, (ReadableArray) value);
+        break;
+      case \\"points\\":
+        mViewManager.setPoints(view, (ReadableArray) value);
+        break;
+      case \\"sizes\\":
+        mViewManager.setSizes(view, (ReadableArray) value);
+        break;
+      case \\"object\\":
+        mViewManager.setObject(view, (ReadableArray) value);
+        break;
+      default:
+        super.setProperty(view, propName, value);
+    }
+  }
+}
+",
+}
+`;
+
+exports[`GeneratePropsJavaDelegate can generate fixture BOOLEAN_PROP 1`] = `
+Map {
+  "BooleanPropNativeComponentManagerDelegate.java" => "
+package com.facebook.react.viewmanagers;
+
+import android.view.View;
+import androidx.annotation.Nullable;
+import com.facebook.react.uimanager.BaseViewManager;
+import com.facebook.react.uimanager.BaseViewManagerDelegate;
+import com.facebook.react.uimanager.LayoutShadowNode;
+
+public class BooleanPropNativeComponentManagerDelegate<T extends View, U extends BaseViewManager<T, ? extends LayoutShadowNode> & BooleanPropNativeComponentManagerInterface<T>> extends BaseViewManagerDelegate<T, U> {
+  public BooleanPropNativeComponentManagerDelegate(U viewManager) {
+    super(viewManager);
+  }
+  @Override
+  public void setProperty(T view, String propName, @Nullable Object value) {
+    switch (propName) {
+      case \\"disabled\\":
+        mViewManager.setDisabled(view, value == null ? false : (boolean) value);
+        break;
+      default:
+        super.setProperty(view, propName, value);
+    }
+  }
+}
+",
+}
+`;
+
+exports[`GeneratePropsJavaDelegate can generate fixture COLOR_PROP 1`] = `
+Map {
+  "ColorPropNativeComponentManagerDelegate.java" => "
+package com.facebook.react.viewmanagers;
+
+import android.view.View;
+import androidx.annotation.Nullable;
+import com.facebook.react.uimanager.BaseViewManager;
+import com.facebook.react.uimanager.BaseViewManagerDelegate;
+import com.facebook.react.uimanager.LayoutShadowNode;
+
+public class ColorPropNativeComponentManagerDelegate<T extends View, U extends BaseViewManager<T, ? extends LayoutShadowNode> & ColorPropNativeComponentManagerInterface<T>> extends BaseViewManagerDelegate<T, U> {
+  public ColorPropNativeComponentManagerDelegate(U viewManager) {
+    super(viewManager);
+  }
+  @Override
+  public void setProperty(T view, String propName, @Nullable Object value) {
+    switch (propName) {
+      case \\"tintColor\\":
+        mViewManager.setTintColor(view, value == null ? null : ((Double) value).intValue());
+        break;
+      default:
+        super.setProperty(view, propName, value);
+    }
+  }
+}
+",
+}
+`;
+
+exports[`GeneratePropsJavaDelegate can generate fixture COMMANDS 1`] = `
+Map {
+  "CommandNativeComponentManagerDelegate.java" => "
+package com.facebook.react.viewmanagers;
+
+import android.view.View;
+import androidx.annotation.Nullable;
+import com.facebook.react.bridge.ReadableArray;
+import com.facebook.react.uimanager.BaseViewManager;
+import com.facebook.react.uimanager.BaseViewManagerDelegate;
+import com.facebook.react.uimanager.LayoutShadowNode;
+
+public class CommandNativeComponentManagerDelegate<T extends View, U extends BaseViewManager<T, ? extends LayoutShadowNode> & CommandNativeComponentManagerInterface<T>> extends BaseViewManagerDelegate<T, U> {
+  public CommandNativeComponentManagerDelegate(U viewManager) {
+    super(viewManager);
+  }
+  @Override
+  public void setProperty(T view, String propName, @Nullable Object value) {
+    super.setProperty(view, propName, value);
+  }
+
+  public void receiveCommand(CommandNativeComponentManagerInterface<T> viewManager, T view, String commandName, ReadableArray args) {
+    case \\"flashScrollIndicators\\":
+      viewManager.flashScrollIndicators(view);
+      break;
+    case \\"allTypes\\":
+      viewManager.allTypes(view, args.getInt(0), args.getFloat(1), args.getDouble(2), args.getString(3), args.getBoolean(4));
+      break;
+  }
+}
+",
+}
+`;
+
+exports[`GeneratePropsJavaDelegate can generate fixture COMMANDS_AND_PROPS 1`] = `
+Map {
+  "CommandNativeComponentManagerDelegate.java" => "
+package com.facebook.react.viewmanagers;
+
+import android.view.View;
+import androidx.annotation.Nullable;
+import com.facebook.react.bridge.ReadableArray;
+import com.facebook.react.uimanager.BaseViewManager;
+import com.facebook.react.uimanager.BaseViewManagerDelegate;
+import com.facebook.react.uimanager.LayoutShadowNode;
+
+public class CommandNativeComponentManagerDelegate<T extends View, U extends BaseViewManager<T, ? extends LayoutShadowNode> & CommandNativeComponentManagerInterface<T>> extends BaseViewManagerDelegate<T, U> {
+  public CommandNativeComponentManagerDelegate(U viewManager) {
+    super(viewManager);
+  }
+  @Override
+  public void setProperty(T view, String propName, @Nullable Object value) {
+    switch (propName) {
+      case \\"accessibilityHint\\":
+        mViewManager.setAccessibilityHint(view, value == null ? \\"\\" : (String) value);
+        break;
+      default:
+        super.setProperty(view, propName, value);
+    }
+  }
+
+  public void receiveCommand(CommandNativeComponentManagerInterface<T> viewManager, T view, String commandName, ReadableArray args) {
+    case \\"hotspotUpdate\\":
+      viewManager.hotspotUpdate(view, args.getInt(0), args.getInt(1));
+      break;
+  }
+}
+",
+}
+`;
+
+exports[`GeneratePropsJavaDelegate can generate fixture DOUBLE_PROPS 1`] = `
+Map {
+  "DoublePropNativeComponentManagerDelegate.java" => "
+package com.facebook.react.viewmanagers;
+
+import android.view.View;
+import androidx.annotation.Nullable;
+import com.facebook.react.uimanager.BaseViewManager;
+import com.facebook.react.uimanager.BaseViewManagerDelegate;
+import com.facebook.react.uimanager.LayoutShadowNode;
+
+public class DoublePropNativeComponentManagerDelegate<T extends View, U extends BaseViewManager<T, ? extends LayoutShadowNode> & DoublePropNativeComponentManagerInterface<T>> extends BaseViewManagerDelegate<T, U> {
+  public DoublePropNativeComponentManagerDelegate(U viewManager) {
+    super(viewManager);
+  }
+  @Override
+  public void setProperty(T view, String propName, @Nullable Object value) {
+    switch (propName) {
+      case \\"blurRadius\\":
+        mViewManager.setBlurRadius(view, value == null ? Double.NaN : ((Double) value).doubleValue());
+        break;
+      case \\"blurRadius2\\":
+        mViewManager.setBlurRadius2(view, value == null ? 0.001f : ((Double) value).doubleValue());
+        break;
+      case \\"blurRadius3\\":
+        mViewManager.setBlurRadius3(view, value == null ? 2.1f : ((Double) value).doubleValue());
+        break;
+      case \\"blurRadius4\\":
+        mViewManager.setBlurRadius4(view, value == null ? 0f : ((Double) value).doubleValue());
+        break;
+      case \\"blurRadius5\\":
+        mViewManager.setBlurRadius5(view, value == null ? 1f : ((Double) value).doubleValue());
+        break;
+      case \\"blurRadius6\\":
+        mViewManager.setBlurRadius6(view, value == null ? 0f : ((Double) value).doubleValue());
+        break;
+      default:
+        super.setProperty(view, propName, value);
+    }
+  }
+}
+",
+}
+`;
+
+exports[`GeneratePropsJavaDelegate can generate fixture ENUM_PROP 1`] = `
+Map {
+  "EnumPropsNativeComponentManagerDelegate.java" => "
+package com.facebook.react.viewmanagers;
+
+import android.view.View;
+import androidx.annotation.Nullable;
+import com.facebook.react.uimanager.BaseViewManager;
+import com.facebook.react.uimanager.BaseViewManagerDelegate;
+import com.facebook.react.uimanager.LayoutShadowNode;
+
+public class EnumPropsNativeComponentManagerDelegate<T extends View, U extends BaseViewManager<T, ? extends LayoutShadowNode> & EnumPropsNativeComponentManagerInterface<T>> extends BaseViewManagerDelegate<T, U> {
+  public EnumPropsNativeComponentManagerDelegate(U viewManager) {
+    super(viewManager);
+  }
+  @Override
+  public void setProperty(T view, String propName, @Nullable Object value) {
+    switch (propName) {
+      case \\"alignment\\":
+        mViewManager.setAlignment(view, (String) value);
+        break;
+      default:
+        super.setProperty(view, propName, value);
+    }
+  }
+}
+",
+}
+`;
+
+exports[`GeneratePropsJavaDelegate can generate fixture EVENT_NESTED_OBJECT_PROPS 1`] = `
+Map {
+  "EventsNestedObjectNativeComponentManagerDelegate.java" => "
+package com.facebook.react.viewmanagers;
+
+import android.view.View;
+import androidx.annotation.Nullable;
+import com.facebook.react.uimanager.BaseViewManager;
+import com.facebook.react.uimanager.BaseViewManagerDelegate;
+import com.facebook.react.uimanager.LayoutShadowNode;
+
+public class EventsNestedObjectNativeComponentManagerDelegate<T extends View, U extends BaseViewManager<T, ? extends LayoutShadowNode> & EventsNestedObjectNativeComponentManagerInterface<T>> extends BaseViewManagerDelegate<T, U> {
+  public EventsNestedObjectNativeComponentManagerDelegate(U viewManager) {
+    super(viewManager);
+  }
+  @Override
+  public void setProperty(T view, String propName, @Nullable Object value) {
+    switch (propName) {
+      case \\"disabled\\":
+        mViewManager.setDisabled(view, value == null ? false : (boolean) value);
+        break;
+      default:
+        super.setProperty(view, propName, value);
+    }
+  }
+}
+",
+}
+`;
+
+exports[`GeneratePropsJavaDelegate can generate fixture EVENT_PROPS 1`] = `
+Map {
+  "EventsNativeComponentManagerDelegate.java" => "
+package com.facebook.react.viewmanagers;
+
+import android.view.View;
+import androidx.annotation.Nullable;
+import com.facebook.react.uimanager.BaseViewManager;
+import com.facebook.react.uimanager.BaseViewManagerDelegate;
+import com.facebook.react.uimanager.LayoutShadowNode;
+
+public class EventsNativeComponentManagerDelegate<T extends View, U extends BaseViewManager<T, ? extends LayoutShadowNode> & EventsNativeComponentManagerInterface<T>> extends BaseViewManagerDelegate<T, U> {
+  public EventsNativeComponentManagerDelegate(U viewManager) {
+    super(viewManager);
+  }
+  @Override
+  public void setProperty(T view, String propName, @Nullable Object value) {
+    switch (propName) {
+      case \\"disabled\\":
+        mViewManager.setDisabled(view, value == null ? false : (boolean) value);
+        break;
+      default:
+        super.setProperty(view, propName, value);
+    }
+  }
+}
+",
+}
+`;
+
+exports[`GeneratePropsJavaDelegate can generate fixture EVENTS_WITH_PAPER_NAME 1`] = `
+Map {
+  "InterfaceOnlyComponentManagerDelegate.java" => "
+package com.facebook.react.viewmanagers;
+
+import android.view.View;
+import androidx.annotation.Nullable;
+import com.facebook.react.uimanager.BaseViewManager;
+import com.facebook.react.uimanager.BaseViewManagerDelegate;
+import com.facebook.react.uimanager.LayoutShadowNode;
+
+public class InterfaceOnlyComponentManagerDelegate<T extends View, U extends BaseViewManager<T, ? extends LayoutShadowNode> & InterfaceOnlyComponentManagerInterface<T>> extends BaseViewManagerDelegate<T, U> {
+  public InterfaceOnlyComponentManagerDelegate(U viewManager) {
+    super(viewManager);
+  }
+  @Override
+  public void setProperty(T view, String propName, @Nullable Object value) {
+    super.setProperty(view, propName, value);
+  }
+}
+",
+}
+`;
+
+exports[`GeneratePropsJavaDelegate can generate fixture FLOAT_PROPS 1`] = `
+Map {
+  "FloatPropNativeComponentManagerDelegate.java" => "
+package com.facebook.react.viewmanagers;
+
+import android.view.View;
+import androidx.annotation.Nullable;
+import com.facebook.react.uimanager.BaseViewManager;
+import com.facebook.react.uimanager.BaseViewManagerDelegate;
+import com.facebook.react.uimanager.LayoutShadowNode;
+
+public class FloatPropNativeComponentManagerDelegate<T extends View, U extends BaseViewManager<T, ? extends LayoutShadowNode> & FloatPropNativeComponentManagerInterface<T>> extends BaseViewManagerDelegate<T, U> {
+  public FloatPropNativeComponentManagerDelegate(U viewManager) {
+    super(viewManager);
+  }
+  @Override
+  public void setProperty(T view, String propName, @Nullable Object value) {
+    switch (propName) {
+      case \\"blurRadius\\":
+        mViewManager.setBlurRadius(view, value == null ? Float.NaN : ((Double) value).floatValue());
+        break;
+      case \\"blurRadius2\\":
+        mViewManager.setBlurRadius2(view, value == null ? 0.001f : ((Double) value).floatValue());
+        break;
+      case \\"blurRadius3\\":
+        mViewManager.setBlurRadius3(view, value == null ? 2.1f : ((Double) value).floatValue());
+        break;
+      case \\"blurRadius4\\":
+        mViewManager.setBlurRadius4(view, value == null ? 0f : ((Double) value).floatValue());
+        break;
+      case \\"blurRadius5\\":
+        mViewManager.setBlurRadius5(view, value == null ? 1f : ((Double) value).floatValue());
+        break;
+      case \\"blurRadius6\\":
+        mViewManager.setBlurRadius6(view, value == null ? 0f : ((Double) value).floatValue());
+        break;
+      default:
+        super.setProperty(view, propName, value);
+    }
+  }
+}
+",
+}
+`;
+
+exports[`GeneratePropsJavaDelegate can generate fixture IMAGE_PROP 1`] = `
+Map {
+  "ImagePropNativeComponentManagerDelegate.java" => "
+package com.facebook.react.viewmanagers;
+
+import android.view.View;
+import androidx.annotation.Nullable;
+import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.uimanager.BaseViewManager;
+import com.facebook.react.uimanager.BaseViewManagerDelegate;
+import com.facebook.react.uimanager.LayoutShadowNode;
+
+public class ImagePropNativeComponentManagerDelegate<T extends View, U extends BaseViewManager<T, ? extends LayoutShadowNode> & ImagePropNativeComponentManagerInterface<T>> extends BaseViewManagerDelegate<T, U> {
+  public ImagePropNativeComponentManagerDelegate(U viewManager) {
+    super(viewManager);
+  }
+  @Override
+  public void setProperty(T view, String propName, @Nullable Object value) {
+    switch (propName) {
+      case \\"thumbImage\\":
+        mViewManager.setThumbImage(view, (ReadableMap) value);
+        break;
+      default:
+        super.setProperty(view, propName, value);
+    }
+  }
+}
+",
+}
+`;
+
+exports[`GeneratePropsJavaDelegate can generate fixture INTEGER_PROPS 1`] = `
+Map {
+  "IntegerPropNativeComponentManagerDelegate.java" => "
+package com.facebook.react.viewmanagers;
+
+import android.view.View;
+import androidx.annotation.Nullable;
+import com.facebook.react.uimanager.BaseViewManager;
+import com.facebook.react.uimanager.BaseViewManagerDelegate;
+import com.facebook.react.uimanager.LayoutShadowNode;
+
+public class IntegerPropNativeComponentManagerDelegate<T extends View, U extends BaseViewManager<T, ? extends LayoutShadowNode> & IntegerPropNativeComponentManagerInterface<T>> extends BaseViewManagerDelegate<T, U> {
+  public IntegerPropNativeComponentManagerDelegate(U viewManager) {
+    super(viewManager);
+  }
+  @Override
+  public void setProperty(T view, String propName, @Nullable Object value) {
+    switch (propName) {
+      case \\"progress1\\":
+        mViewManager.setProgress1(view, value == null ? 0 : ((Double) value).intValue());
+        break;
+      case \\"progress2\\":
+        mViewManager.setProgress2(view, value == null ? -1 : ((Double) value).intValue());
+        break;
+      case \\"progress3\\":
+        mViewManager.setProgress3(view, value == null ? 10 : ((Double) value).intValue());
+        break;
+      default:
+        super.setProperty(view, propName, value);
+    }
+  }
+}
+",
+}
+`;
+
+exports[`GeneratePropsJavaDelegate can generate fixture INTERFACE_ONLY 1`] = `
+Map {
+  "InterfaceOnlyComponentManagerDelegate.java" => "
+package com.facebook.react.viewmanagers;
+
+import android.view.View;
+import androidx.annotation.Nullable;
+import com.facebook.react.uimanager.BaseViewManager;
+import com.facebook.react.uimanager.BaseViewManagerDelegate;
+import com.facebook.react.uimanager.LayoutShadowNode;
+
+public class InterfaceOnlyComponentManagerDelegate<T extends View, U extends BaseViewManager<T, ? extends LayoutShadowNode> & InterfaceOnlyComponentManagerInterface<T>> extends BaseViewManagerDelegate<T, U> {
+  public InterfaceOnlyComponentManagerDelegate(U viewManager) {
+    super(viewManager);
+  }
+  @Override
+  public void setProperty(T view, String propName, @Nullable Object value) {
+    switch (propName) {
+      case \\"accessibilityHint\\":
+        mViewManager.setAccessibilityHint(view, value == null ? \\"\\" : (String) value);
+        break;
+      default:
+        super.setProperty(view, propName, value);
+    }
+  }
+}
+",
+}
+`;
+
+exports[`GeneratePropsJavaDelegate can generate fixture MULTI_NATIVE_PROP 1`] = `
+Map {
+  "ImageColorPropNativeComponentManagerDelegate.java" => "
+package com.facebook.react.viewmanagers;
+
+import android.view.View;
+import androidx.annotation.Nullable;
+import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.uimanager.BaseViewManager;
+import com.facebook.react.uimanager.BaseViewManagerDelegate;
+import com.facebook.react.uimanager.LayoutShadowNode;
+
+public class ImageColorPropNativeComponentManagerDelegate<T extends View, U extends BaseViewManager<T, ? extends LayoutShadowNode> & ImageColorPropNativeComponentManagerInterface<T>> extends BaseViewManagerDelegate<T, U> {
+  public ImageColorPropNativeComponentManagerDelegate(U viewManager) {
+    super(viewManager);
+  }
+  @Override
+  public void setProperty(T view, String propName, @Nullable Object value) {
+    switch (propName) {
+      case \\"thumbImage\\":
+        mViewManager.setThumbImage(view, (ReadableMap) value);
+        break;
+      case \\"color\\":
+        mViewManager.setColor(view, value == null ? null : ((Double) value).intValue());
+        break;
+      case \\"thumbTintColor\\":
+        mViewManager.setThumbTintColor(view, value == null ? null : ((Double) value).intValue());
+        break;
+      case \\"point\\":
+        mViewManager.setPoint(view, (ReadableMap) value);
+        break;
+      default:
+        super.setProperty(view, propName, value);
+    }
+  }
+}
+",
+}
+`;
+
+exports[`GeneratePropsJavaDelegate can generate fixture NO_PROPS_NO_EVENTS 1`] = `
+Map {
+  "NoPropsNoEventsComponentManagerDelegate.java" => "
+package com.facebook.react.viewmanagers;
+
+import android.view.View;
+import androidx.annotation.Nullable;
+import com.facebook.react.uimanager.BaseViewManager;
+import com.facebook.react.uimanager.BaseViewManagerDelegate;
+import com.facebook.react.uimanager.LayoutShadowNode;
+
+public class NoPropsNoEventsComponentManagerDelegate<T extends View, U extends BaseViewManager<T, ? extends LayoutShadowNode> & NoPropsNoEventsComponentManagerInterface<T>> extends BaseViewManagerDelegate<T, U> {
+  public NoPropsNoEventsComponentManagerDelegate(U viewManager) {
+    super(viewManager);
+  }
+  @Override
+  public void setProperty(T view, String propName, @Nullable Object value) {
+    super.setProperty(view, propName, value);
+  }
+}
+",
+}
+`;
+
+exports[`GeneratePropsJavaDelegate can generate fixture OBJECT_PROPS 1`] = `
+Map {
+  "ObjectPropsManagerDelegate.java" => "
+package com.facebook.react.viewmanagers;
+
+import android.view.View;
+import androidx.annotation.Nullable;
+import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.uimanager.BaseViewManager;
+import com.facebook.react.uimanager.BaseViewManagerDelegate;
+import com.facebook.react.uimanager.LayoutShadowNode;
+
+public class ObjectPropsManagerDelegate<T extends View, U extends BaseViewManager<T, ? extends LayoutShadowNode> & ObjectPropsManagerInterface<T>> extends BaseViewManagerDelegate<T, U> {
+  public ObjectPropsManagerDelegate(U viewManager) {
+    super(viewManager);
+  }
+  @Override
+  public void setProperty(T view, String propName, @Nullable Object value) {
+    switch (propName) {
+      case \\"objectProp\\":
+        mViewManager.setObjectProp(view, (ReadableMap) value);
+        break;
+      default:
+        super.setProperty(view, propName, value);
+    }
+  }
+}
+",
+}
+`;
+
+exports[`GeneratePropsJavaDelegate can generate fixture POINT_PROP 1`] = `
+Map {
+  "PointPropNativeComponentManagerDelegate.java" => "
+package com.facebook.react.viewmanagers;
+
+import android.view.View;
+import androidx.annotation.Nullable;
+import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.uimanager.BaseViewManager;
+import com.facebook.react.uimanager.BaseViewManagerDelegate;
+import com.facebook.react.uimanager.LayoutShadowNode;
+
+public class PointPropNativeComponentManagerDelegate<T extends View, U extends BaseViewManager<T, ? extends LayoutShadowNode> & PointPropNativeComponentManagerInterface<T>> extends BaseViewManagerDelegate<T, U> {
+  public PointPropNativeComponentManagerDelegate(U viewManager) {
+    super(viewManager);
+  }
+  @Override
+  public void setProperty(T view, String propName, @Nullable Object value) {
+    switch (propName) {
+      case \\"startPoint\\":
+        mViewManager.setStartPoint(view, (ReadableMap) value);
+        break;
+      default:
+        super.setProperty(view, propName, value);
+    }
+  }
+}
+",
+}
+`;
+
+exports[`GeneratePropsJavaDelegate can generate fixture STRING_PROP 1`] = `
+Map {
+  "StringPropComponentManagerDelegate.java" => "
+package com.facebook.react.viewmanagers;
+
+import android.view.View;
+import androidx.annotation.Nullable;
+import com.facebook.react.uimanager.BaseViewManager;
+import com.facebook.react.uimanager.BaseViewManagerDelegate;
+import com.facebook.react.uimanager.LayoutShadowNode;
+
+public class StringPropComponentManagerDelegate<T extends View, U extends BaseViewManager<T, ? extends LayoutShadowNode> & StringPropComponentManagerInterface<T>> extends BaseViewManagerDelegate<T, U> {
+  public StringPropComponentManagerDelegate(U viewManager) {
+    super(viewManager);
+  }
+  @Override
+  public void setProperty(T view, String propName, @Nullable Object value) {
+    switch (propName) {
+      case \\"accessibilityHint\\":
+        mViewManager.setAccessibilityHint(view, value == null ? \\"\\" : (String) value);
+        break;
+      case \\"accessibilityRole\\":
+        mViewManager.setAccessibilityRole(view, value == null ? null : (String) value);
+        break;
+      default:
+        super.setProperty(view, propName, value);
+    }
+  }
+}
+",
+}
+`;
+
+exports[`GeneratePropsJavaDelegate can generate fixture TWO_COMPONENTS_DIFFERENT_FILES 1`] = `
+Map {
+  "MultiFile1NativeComponentManagerDelegate.java" => "
+package com.facebook.react.viewmanagers;
+
+import android.view.View;
+import androidx.annotation.Nullable;
+import com.facebook.react.uimanager.BaseViewManager;
+import com.facebook.react.uimanager.BaseViewManagerDelegate;
+import com.facebook.react.uimanager.LayoutShadowNode;
+
+public class MultiFile1NativeComponentManagerDelegate<T extends View, U extends BaseViewManager<T, ? extends LayoutShadowNode> & MultiFile1NativeComponentManagerInterface<T>> extends BaseViewManagerDelegate<T, U> {
+  public MultiFile1NativeComponentManagerDelegate(U viewManager) {
+    super(viewManager);
+  }
+  @Override
+  public void setProperty(T view, String propName, @Nullable Object value) {
+    switch (propName) {
+      case \\"disabled\\":
+        mViewManager.setDisabled(view, value == null ? false : (boolean) value);
+        break;
+      default:
+        super.setProperty(view, propName, value);
+    }
+  }
+}
+",
+  "MultiFile2NativeComponentManagerDelegate.java" => "
+package com.facebook.react.viewmanagers;
+
+import android.view.View;
+import androidx.annotation.Nullable;
+import com.facebook.react.uimanager.BaseViewManager;
+import com.facebook.react.uimanager.BaseViewManagerDelegate;
+import com.facebook.react.uimanager.LayoutShadowNode;
+
+public class MultiFile2NativeComponentManagerDelegate<T extends View, U extends BaseViewManager<T, ? extends LayoutShadowNode> & MultiFile2NativeComponentManagerInterface<T>> extends BaseViewManagerDelegate<T, U> {
+  public MultiFile2NativeComponentManagerDelegate(U viewManager) {
+    super(viewManager);
+  }
+  @Override
+  public void setProperty(T view, String propName, @Nullable Object value) {
+    switch (propName) {
+      case \\"disabled\\":
+        mViewManager.setDisabled(view, value == null ? true : (boolean) value);
+        break;
+      default:
+        super.setProperty(view, propName, value);
+    }
+  }
+}
+",
+}
+`;
+
+exports[`GeneratePropsJavaDelegate can generate fixture TWO_COMPONENTS_SAME_FILE 1`] = `
+Map {
+  "MultiComponent1NativeComponentManagerDelegate.java" => "
+package com.facebook.react.viewmanagers;
+
+import android.view.View;
+import androidx.annotation.Nullable;
+import com.facebook.react.uimanager.BaseViewManager;
+import com.facebook.react.uimanager.BaseViewManagerDelegate;
+import com.facebook.react.uimanager.LayoutShadowNode;
+
+public class MultiComponent1NativeComponentManagerDelegate<T extends View, U extends BaseViewManager<T, ? extends LayoutShadowNode> & MultiComponent1NativeComponentManagerInterface<T>> extends BaseViewManagerDelegate<T, U> {
+  public MultiComponent1NativeComponentManagerDelegate(U viewManager) {
+    super(viewManager);
+  }
+  @Override
+  public void setProperty(T view, String propName, @Nullable Object value) {
+    switch (propName) {
+      case \\"disabled\\":
+        mViewManager.setDisabled(view, value == null ? false : (boolean) value);
+        break;
+      default:
+        super.setProperty(view, propName, value);
+    }
+  }
+}
+",
+  "MultiComponent2NativeComponentManagerDelegate.java" => "
+package com.facebook.react.viewmanagers;
+
+import android.view.View;
+import androidx.annotation.Nullable;
+import com.facebook.react.uimanager.BaseViewManager;
+import com.facebook.react.uimanager.BaseViewManagerDelegate;
+import com.facebook.react.uimanager.LayoutShadowNode;
+
+public class MultiComponent2NativeComponentManagerDelegate<T extends View, U extends BaseViewManager<T, ? extends LayoutShadowNode> & MultiComponent2NativeComponentManagerInterface<T>> extends BaseViewManagerDelegate<T, U> {
+  public MultiComponent2NativeComponentManagerDelegate(U viewManager) {
+    super(viewManager);
+  }
+  @Override
+  public void setProperty(T view, String propName, @Nullable Object value) {
+    switch (propName) {
+      case \\"disabled\\":
+        mViewManager.setDisabled(view, value == null ? true : (boolean) value);
+        break;
+      default:
+        super.setProperty(view, propName, value);
+    }
+  }
+}
+",
+}
+`;

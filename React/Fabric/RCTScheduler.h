@@ -14,6 +14,7 @@
 #import <react/core/LayoutContext.h>
 #import <react/mounting/MountingCoordinator.h>
 #import <react/uimanager/ComponentDescriptorFactory.h>
+#import <react/uimanager/SchedulerToolbox.h>
 #import <react/utils/ContextContainer.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -27,6 +28,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)schedulerDidFinishTransaction:(facebook::react::MountingCoordinator::Shared const &)mountingCoordinator;
 
+- (void)schedulerDidDispatchCommand:(facebook::react::ShadowView const &)shadowView
+                        commandName:(std::string const &)commandName
+                               args:(folly::dynamic const)args;
+
 @end
 
 /**
@@ -36,8 +41,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (atomic, weak, nullable) id<RCTSchedulerDelegate> delegate;
 
-- (instancetype)initWithContextContainer:(facebook::react::ContextContainer::Shared)contextContatiner
-                componentRegistryFactory:(facebook::react::ComponentRegistryFactory)componentRegistryFactory;
+- (instancetype)initWithToolbox:(facebook::react::SchedulerToolbox)toolbox;
 
 - (void)startSurfaceWithSurfaceId:(facebook::react::SurfaceId)surfaceId
                        moduleName:(NSString *)moduleName

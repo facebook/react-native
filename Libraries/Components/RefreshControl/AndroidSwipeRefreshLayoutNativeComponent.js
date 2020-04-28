@@ -10,18 +10,17 @@
 
 'use strict';
 
-const requireNativeComponent = require('../../ReactNative/requireNativeComponent');
+import codegenNativeComponent from '../../Utilities/codegenNativeComponent';
+import {type NativeComponentType} from '../../Utilities/codegenNativeComponent';
 
+import type {
+  DirectEventHandler,
+  Float,
+  Int32,
+  WithDefault,
+} from '../../Types/CodegenTypes';
 import type {ColorValue} from '../../StyleSheet/StyleSheetTypes';
 import type {ViewProps} from '../View/ViewPropTypes';
-import type {NativeComponent} from '../../Renderer/shims/ReactNative';
-
-const AndroidSwipeRefreshLayout = require('../../ReactNative/UIManager').getViewManagerConfig(
-  'AndroidSwipeRefreshLayout',
-);
-const RefreshLayoutConsts = AndroidSwipeRefreshLayout
-  ? AndroidSwipeRefreshLayout.Constants
-  : {SIZE: {}};
 
 type NativeProps = $ReadOnly<{|
   ...ViewProps,
@@ -29,7 +28,7 @@ type NativeProps = $ReadOnly<{|
   /**
    * Whether the pull to refresh functionality is enabled.
    */
-  enabled?: ?boolean,
+  enabled?: WithDefault<boolean, false>,
   /**
    * The colors (at least one) that will be used to draw the refresh indicator.
    */
@@ -40,20 +39,25 @@ type NativeProps = $ReadOnly<{|
   progressBackgroundColor?: ?ColorValue,
   /**
    * Size of the refresh indicator, see RefreshControl.SIZE.
+   *
+   * This type isn't currently accurate. It really is specific numbers
+   * hard coded in the Android platform.
+   *
+   * Also, 1 isn't actually a safe default. We are able to set this here
+   * because native code isn't currently consuming the generated artifact.
+   * This will end up being
+   * size?: WithDefault<'default' | 'large', 'default'>,
    */
-  size?: ?(
-    | typeof RefreshLayoutConsts.SIZE.DEFAULT
-    | typeof RefreshLayoutConsts.SIZE.LARGE
-  ),
+  size?: WithDefault<Int32, 1>,
   /**
    * Progress view top offset
    */
-  progressViewOffset?: ?number,
+  progressViewOffset?: WithDefault<Float, 0>,
 
   /**
    * Called when the view starts refreshing.
    */
-  onRefresh?: ?() => mixed,
+  onRefresh?: ?DirectEventHandler<null>,
 
   /**
    * Whether the view should be indicating an active refresh.
@@ -61,8 +65,6 @@ type NativeProps = $ReadOnly<{|
   refreshing: boolean,
 |}>;
 
-type AndroidSwipeRefreshLayoutNativeType = Class<NativeComponent<NativeProps>>;
-
-module.exports = ((requireNativeComponent(
+export default (codegenNativeComponent<NativeProps>(
   'AndroidSwipeRefreshLayout',
-): any): AndroidSwipeRefreshLayoutNativeType);
+): NativeComponentType<NativeProps>);

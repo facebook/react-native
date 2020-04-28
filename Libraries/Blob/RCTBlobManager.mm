@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#import "RCTBlobManager.h"
+#import <React/RCTBlobManager.h>
 
 #import <mutex>
 

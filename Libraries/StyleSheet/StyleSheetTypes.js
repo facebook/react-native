@@ -14,6 +14,11 @@ const AnimatedNode = require('../Animated/src/nodes/AnimatedNode');
 import type {NativeOrDynamicColorType} from '../Color/NativeOrDynamicColorType'; // TODO(macOS ISS#2323203)
 
 export type ColorValue = null | string | NativeOrDynamicColorType; // TODO(macOS ISS#2323203)
+export type ColorArrayValue = null | $ReadOnlyArray<ColorValue>;
+export type PointValue = {|
+  x: number,
+  y: number,
+|};
 export type DimensionValue = null | number | string | AnimatedNode;
 
 /**

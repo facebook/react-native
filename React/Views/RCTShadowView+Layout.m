@@ -64,12 +64,12 @@
 
 - (void)dirtyLayout
 {
-  // The default implementaion does nothing.
+  // The default implementation does nothing.
 }
 
 - (void)clearLayout
 {
-  // The default implementaion does nothing.
+  // The default implementation does nothing.
 }
 
 @end

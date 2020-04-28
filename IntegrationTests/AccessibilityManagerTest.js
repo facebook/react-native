@@ -14,11 +14,18 @@ const React = require('react');
 const ReactNative = require('react-native');
 const {View} = ReactNative;
 const RCTDeviceEventEmitter = require('react-native/Libraries/EventEmitter/RCTDeviceEventEmitter');
-const {TestModule, AccessibilityManager} = ReactNative.NativeModules;
+const {TestModule} = ReactNative.NativeModules;
+import NativeAccessibilityManager from 'react-native/Libraries/Components/AccessibilityInfo/NativeAccessibilityManager';
+import invariant from 'invariant';
 
 class AccessibilityManagerTest extends React.Component<{}> {
   componentDidMount() {
-    AccessibilityManager.setAccessibilityContentSizeMultipliers({
+    invariant(
+      NativeAccessibilityManager,
+      "NativeAccessibilityManager doesn't exist",
+    );
+
+    NativeAccessibilityManager.setAccessibilityContentSizeMultipliers({
       extraSmall: 1.0,
       small: 2.0,
       medium: 3.0,

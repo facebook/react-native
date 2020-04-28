@@ -20,8 +20,9 @@ import com.facebook.react.bridge.ReadableNativeMap;
 import com.facebook.react.bridge.SoftAssertions;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.fabric.FabricUIManager;
-import com.facebook.react.fabric.jsi.EventEmitterWrapper;
+import com.facebook.react.fabric.events.EventEmitterWrapper;
 import com.facebook.react.fabric.mounting.mountitems.MountItem;
+import com.facebook.react.touch.JSResponderHandler;
 import com.facebook.react.uimanager.IllegalViewOperationException;
 import com.facebook.react.uimanager.ReactStylesDiffMap;
 import com.facebook.react.uimanager.RootView;
@@ -41,17 +42,15 @@ import java.util.concurrent.ConcurrentHashMap;
 public class MountingManager {
 
   private final ConcurrentHashMap<Integer, ViewState> mTagToViewState;
+  private final JSResponderHandler mJSResponderHandler = new JSResponderHandler();
   private final ViewManagerRegistry mViewManagerRegistry;
   private final RootViewManager mRootViewManager = new RootViewManager();
-  private final ViewFactory mViewFactory;
 
   public MountingManager(ViewManagerRegistry viewManagerRegistry) {
     mTagToViewState = new ConcurrentHashMap<>();
     mViewManagerRegistry = viewManagerRegistry;
-    mViewFactory = new ViewManagerFactory(viewManagerRegistry);
   }
 
-  @UiThread
   public void addRootView(int reactRootTag, View rootView) {
     if (rootView.getId() != View.NO_ID) {
       throw new IllegalViewOperationException(
@@ -91,27 +90,6 @@ public class MountingManager {
     }
 
     mTagToViewState.remove(reactTag);
-    Context context = view.getContext();
-    if (context instanceof ThemedReactContext) {
-      // We only recycle views that were created by RN (its context is instance of
-      // ThemedReactContext)
-      mViewFactory.recycle(
-          (ThemedReactContext) context, Assertions.assertNotNull(viewManager).getName(), view);
-    }
-  }
-
-  /** Releases all references to react root tag. */
-  @UiThread
-  public void removeRootView(int reactRootTag) {
-    UiThreadUtil.assertOnUiThread();
-    ViewState viewState = mTagToViewState.get(reactRootTag);
-    if (viewState == null || !viewState.mIsRoot) {
-      SoftAssertions.assertUnreachable(
-          "View with tag " + reactRootTag + " is not registered as a root view");
-    }
-    if (viewState.mView != null) {
-      dropView(viewState.mView);
-    }
   }
 
   @UiThread
@@ -122,7 +100,8 @@ public class MountingManager {
     ViewState viewState = getViewState(tag);
     final View view = viewState.mView;
     if (view == null) {
-      throw new IllegalStateException("Unable to find view for viewState " + viewState);
+      throw new IllegalStateException(
+          "Unable to find view for viewState " + viewState + " and tag " + tag);
     }
     getViewGroupManager(parentViewState).addView(parentView, view, index);
   }
@@ -130,12 +109,27 @@ public class MountingManager {
   private ViewState getViewState(int tag) {
     ViewState viewState = mTagToViewState.get(tag);
     if (viewState == null) {
-      throw new IllegalStateException("Unable to find viewState view " + viewState);
+      throw new IllegalStateException("Unable to find viewState view for tag " + tag);
     }
     return viewState;
   }
 
+  @Deprecated
   public void receiveCommand(int reactTag, int commandId, @Nullable ReadableArray commandArgs) {
+    ViewState viewState = getViewState(reactTag);
+
+    if (viewState.mViewManager == null) {
+      throw new IllegalStateException("Unable to find viewState manager for tag " + reactTag);
+    }
+
+    if (viewState.mView == null) {
+      throw new IllegalStateException("Unable to find viewState view for tag " + reactTag);
+    }
+
+    viewState.mViewManager.receiveCommand(viewState.mView, commandId, commandArgs);
+  }
+
+  public void receiveCommand(int reactTag, String commandId, @Nullable ReadableArray commandArgs) {
     ViewState viewState = getViewState(reactTag);
 
     if (viewState.mViewManager == null) {
@@ -170,11 +164,12 @@ public class MountingManager {
   }
 
   @UiThread
-  public void createViewWithProps(
+  public void createView(
       ThemedReactContext themedReactContext,
       String componentName,
       int reactTag,
       @Nullable ReadableMap props,
+      @Nullable StateWrapper stateWrapper,
       boolean isLayoutable) {
     if (mTagToViewState.get(reactTag) != null) {
       return;
@@ -183,19 +178,23 @@ public class MountingManager {
     View view = null;
     ViewManager viewManager = null;
 
-    ReactStylesDiffMap diffMap = null;
+    ReactStylesDiffMap propsDiffMap = null;
     if (props != null) {
-      diffMap = new ReactStylesDiffMap(props);
+      propsDiffMap = new ReactStylesDiffMap(props);
     }
 
     if (isLayoutable) {
       viewManager = mViewManagerRegistry.get(componentName);
-      view = mViewFactory.getOrCreateView(componentName, diffMap, themedReactContext);
+      // View Managers are responsible for dealing with initial state and props.
+      view =
+          viewManager.createView(
+              themedReactContext, propsDiffMap, stateWrapper, mJSResponderHandler);
       view.setId(reactTag);
     }
 
     ViewState viewState = new ViewState(reactTag, view, viewManager);
-    viewState.mCurrentProps = diffMap;
+    viewState.mCurrentProps = propsDiffMap;
+    viewState.mCurrentState = (stateWrapper != null ? stateWrapper.getState() : null);
 
     mTagToViewState.put(reactTag, viewState);
   }
@@ -304,7 +303,11 @@ public class MountingManager {
     if (viewManager == null) {
       throw new IllegalStateException("Unable to find ViewManager for tag: " + reactTag);
     }
-    viewManager.updateState(viewState.mView, stateWrapper);
+    Object extraData =
+        viewManager.updateState(viewState.mView, viewState.mCurrentProps, stateWrapper);
+    if (extraData != null) {
+      viewManager.updateExtraData(viewState.mView, extraData);
+    }
   }
 
   @UiThread
@@ -313,6 +316,7 @@ public class MountingManager {
       String componentName,
       int reactTag,
       @Nullable ReadableMap props,
+      @Nullable StateWrapper stateWrapper,
       boolean isLayoutable) {
 
     if (mTagToViewState.get(reactTag) != null) {
@@ -320,7 +324,7 @@ public class MountingManager {
           "View for component " + componentName + " with tag " + reactTag + " already exists.");
     }
 
-    createViewWithProps(reactContext, componentName, reactTag, props, isLayoutable);
+    createView(reactContext, componentName, reactTag, props, stateWrapper, isLayoutable);
   }
 
   @UiThread
@@ -328,6 +332,59 @@ public class MountingManager {
     UiThreadUtil.assertOnUiThread();
     ViewState viewState = getViewState(reactTag);
     viewState.mEventEmitter = eventEmitter;
+  }
+
+  /**
+   * Set the JS responder for the view associated with the tags received as a parameter.
+   *
+   * <p>The JSResponder coordinates the return values of the onInterceptTouch method in Android
+   * Views. This allows JS to coordinate when a touch should be handled by JS or by the Android
+   * native views. See {@link JSResponderHandler} for more details.
+   *
+   * <p>This method is going to be executed on the UIThread as soon as it is delivered from JS to
+   * RN.
+   *
+   * <p>Currently, there is no warranty that the view associated with the react tag exists, because
+   * this method is not handled by the react commit process.
+   *
+   * @param reactTag React tag of the first parent of the view that is NOT virtual
+   * @param initialReactTag React tag of the JS view that initiated the touch operation
+   * @param blockNativeResponder If native responder should be blocked or not
+   */
+  @UiThread
+  public synchronized void setJSResponder(
+      int reactTag, int initialReactTag, boolean blockNativeResponder) {
+    if (!blockNativeResponder) {
+      mJSResponderHandler.setJSResponder(initialReactTag, null);
+      return;
+    }
+
+    ViewState viewState = getViewState(reactTag);
+    View view = viewState.mView;
+    if (initialReactTag != reactTag && view instanceof ViewParent) {
+      // In this case, initialReactTag corresponds to a virtual/layout-only View, and we already
+      // have a parent of that View in reactTag, so we can use it.
+      mJSResponderHandler.setJSResponder(initialReactTag, (ViewParent) view);
+      return;
+    } else if (view == null) {
+      SoftAssertions.assertUnreachable("Cannot find view for tag " + reactTag + ".");
+      return;
+    }
+
+    if (viewState.mIsRoot) {
+      SoftAssertions.assertUnreachable(
+          "Cannot block native responder on " + reactTag + " that is a root view");
+    }
+    mJSResponderHandler.setJSResponder(initialReactTag, view.getParent());
+  }
+
+  /**
+   * Clears the JS Responder specified by {@link #setJSResponder(int, int, boolean)}. After this
+   * method is called, all the touch events are going to be handled by JS.
+   */
+  @UiThread
+  public void clearJSResponder() {
+    mJSResponderHandler.clearJSResponder();
   }
 
   @AnyThread
@@ -362,10 +419,10 @@ public class MountingManager {
     final int mReactTag;
     final boolean mIsRoot;
     @Nullable final ViewManager mViewManager;
-    public ReactStylesDiffMap mCurrentProps;
-    public ReadableMap mCurrentLocalData;
-    public ReadableMap mCurrentState;
-    public EventEmitterWrapper mEventEmitter;
+    @Nullable public ReactStylesDiffMap mCurrentProps = null;
+    @Nullable public ReadableMap mCurrentLocalData = null;
+    @Nullable public ReadableMap mCurrentState = null;
+    @Nullable public EventEmitterWrapper mEventEmitter = null;
 
     private ViewState(int reactTag, @Nullable View view, @Nullable ViewManager viewManager) {
       this(reactTag, view, viewManager, false);

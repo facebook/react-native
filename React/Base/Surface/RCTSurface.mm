@@ -109,7 +109,7 @@
   [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
-#pragma mark - Immutable Properties (no need to enforce synchonization)
+#pragma mark - Immutable Properties (no need to enforce synchronization)
 
 - (RCTBridge *)bridge
 {
@@ -126,7 +126,7 @@
   return _rootViewTag;
 }
 
-#pragma mark - Convinience Internal Thread-Safe Properties
+#pragma mark - Convenience Internal Thread-Safe Properties
 
 - (RCTBridge *)_batchedBridge
 {
@@ -173,7 +173,7 @@
   }
 
   RCTAssert([rootView isKindOfClass:[RCTSurfaceRootView class]],
-    @"Received root view is not an instanse of `RCTSurfaceRootView`.");
+    @"Received root view is not an instance of `RCTSurfaceRootView`.");
 
   if (rootView.superview != view) {
     view.rootView = rootView;
@@ -339,7 +339,7 @@
     RCTSurfaceRootShadowView *rootShadowView =
       (RCTSurfaceRootShadowView *)[uiManager shadowViewForReactTag:self->_rootViewTag];
     RCTAssert([rootShadowView isKindOfClass:[RCTSurfaceRootShadowView class]],
-      @"Received shadow view is not an instanse of `RCTSurfaceRootShadowView`.");
+      @"Received shadow view is not an instance of `RCTSurfaceRootShadowView`.");
 
     [rootShadowView setMinimumSize:minimumSize
                        maximumSize:maximumSize];
@@ -360,7 +360,7 @@
       (RCTSurfaceRootShadowView *)[uiManager shadowViewForReactTag:self->_rootViewTag];
 
     RCTAssert([rootShadowView isKindOfClass:[RCTSurfaceRootShadowView class]],
-      @"Received shadow view is not an instanse of `RCTSurfaceRootShadowView`.");
+      @"Received shadow view is not an instance of `RCTSurfaceRootShadowView`.");
 
     fittingSize = [rootShadowView sizeThatFitsMinimumSize:minimumSize
                                               maximumSize:maximumSize];
@@ -396,7 +396,7 @@
     RCTSurfaceRootShadowView *rootShadowView =
       (RCTSurfaceRootShadowView *)[uiManager shadowViewForReactTag:self->_rootViewTag];
     RCTAssert([rootShadowView isKindOfClass:[RCTSurfaceRootShadowView class]],
-      @"Received shadow view is not an instanse of `RCTSurfaceRootShadowView`.");
+      @"Received shadow view is not an instance of `RCTSurfaceRootShadowView`.");
 
     [rootShadowView setMinimumSize:minimumSize maximumSize:maximumSize];
     [uiManager setNeedsLayout];
@@ -452,7 +452,7 @@
 
   if (RCTIsMainQueue() && (stage & RCTSurfaceStageSurfaceDidInitialMounting)) {
     // All main-threaded execution (especially mounting process) has to be
-    // intercepted, captured and performed synchnously at the end of this method
+    // intercepted, captured and performed synchronously at the end of this method
     // right after the semaphore signals.
 
     // Atomic variant of `_waitingForMountingStageOnMainQueue = YES;`
