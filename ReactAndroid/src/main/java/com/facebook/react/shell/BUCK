@@ -51,7 +51,6 @@ rn_android_library(
         react_native_target("java/com/facebook/react/modules/websocket:websocket"),
         react_native_target("java/com/facebook/react/turbomodule/core/interfaces:interfaces"),
         react_native_target("java/com/facebook/react/uimanager:uimanager"),
-        react_native_target("java/com/facebook/react/views/art:art"),
         react_native_target("java/com/facebook/react/views/drawer:drawer"),
         react_native_target("java/com/facebook/react/views/image:image"),
         react_native_target("java/com/facebook/react/views/modal:modal"),
