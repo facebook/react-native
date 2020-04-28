@@ -29,7 +29,7 @@ def detectCliPath(config) {
         return config.cliPath
     }
 
-    def cliPath = ["node", "-e", "console.log(require('react-native/cli').bin);"].execute([], projectDir).text
+    def cliPath = ["node", "-e", "console.log(require('react-native/cli').bin);"].execute([], projectDir).text.trim()
     
     if (cliPath) {
         return cliPath
