@@ -41,7 +41,7 @@ public class ReactDrawableHelper {
       int attrId = getAttrId(context, attr);
       if (!context.getTheme().resolveAttribute(attrId, sResolveOutValue, true)) {
         throw new JSApplicationIllegalArgumentException(
-            "Attribute " + attr + " couldn't be resolved into a drawable");
+            "Attribute " + attr + " with id " + attrId + " couldn't be resolved into a drawable");
       }
       Drawable drawable = getDefaultThemeDrawable(context);
       return setRadius(drawableDescriptionDict, drawable);
