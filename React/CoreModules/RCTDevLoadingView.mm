@@ -31,6 +31,7 @@ using namespace facebook::react;
   UILabel *_label;
   UILabel *_host;
   NSDate *_showDate;
+  BOOL _hiding;
 }
 
 @synthesize bridge = _bridge;
@@ -85,7 +86,7 @@ RCT_EXPORT_MODULE()
 
 - (void)showMessage:(NSString *)message color:(UIColor *)color backgroundColor:(UIColor *)backgroundColor
 {
-  if (!RCTDevLoadingViewGetEnabled()) {
+  if (!RCTDevLoadingViewGetEnabled() || self->_hiding) {
     return;
   }
 
@@ -159,6 +160,7 @@ RCT_EXPORT_METHOD(hide)
   }
 
   dispatch_async(dispatch_get_main_queue(), ^{
+    self->_hiding = true;
     const NSTimeInterval MIN_PRESENTED_TIME = 0.6;
     NSTimeInterval presentedTime = [[NSDate date] timeIntervalSinceDate:self->_showDate];
     NSTimeInterval delay = MAX(0, MIN_PRESENTED_TIME - presentedTime);
@@ -173,6 +175,7 @@ RCT_EXPORT_METHOD(hide)
           self->_window.frame = windowFrame;
           self->_window.hidden = YES;
           self->_window = nil;
+          self->_hiding = false;
         }];
   });
 }
