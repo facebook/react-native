@@ -9,6 +9,7 @@ package com.facebook.react.modules.image;
 
 import android.net.Uri;
 import android.util.SparseArray;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import com.facebook.common.executors.CallerThreadExecutor;
 import com.facebook.common.references.CloseableReference;
@@ -58,6 +59,7 @@ public class ImageLoaderModule extends NativeImageLoaderAndroidSpec
   }
 
   @Override
+  @NonNull
   public String getName() {
     return NAME;
   }
@@ -212,6 +214,8 @@ public class ImageLoaderModule extends NativeImageLoaderAndroidSpec
             try {
               removeRequest(requestId);
               promise.resolve(true);
+            } catch (Exception e) {
+              promise.reject(ERROR_PREFETCH_FAILURE, e);
             } finally {
               dataSource.close();
             }
