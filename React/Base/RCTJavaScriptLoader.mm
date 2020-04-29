@@ -52,7 +52,9 @@ static RCTSource *RCTSourceCreate(NSURL *url, NSData *data, int64_t length) NS_R
   NSMutableString *desc = [NSMutableString new];
   [desc appendString:_status ?: @"Bundling"];
 
-  if ([_total integerValue] > 0) {
+  if ([_total integerValue] > 0 && [_done integerValue] > [_total integerValue]) {
+    [desc appendFormat:@" %ld%%", (long)100];
+  } else if ([_total integerValue] > 0) {
     [desc appendFormat:@" %ld%%", (long)(100 * [_done integerValue] / [_total integerValue])];
   } else {
     [desc appendFormat:@" %ld%%", (long)0];
