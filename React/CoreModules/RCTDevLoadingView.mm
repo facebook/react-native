@@ -29,6 +29,7 @@ using namespace facebook::react;
 @implementation RCTDevLoadingView {
   UIWindow *_window;
   UILabel *_label;
+  UILabel *_host;
   NSDate *_showDate;
 }
 
@@ -64,6 +65,24 @@ RCT_EXPORT_MODULE()
   }
 }
 
+- (UIColor *)dimColor:(UIColor *)c
+{
+  // Given a color, return a slightly lighter or darker color for dim effect.
+  CGFloat h, s, b, a;
+  if ([c getHue:&h saturation:&s brightness:&b alpha:&a])
+    return [UIColor colorWithHue:h saturation:s brightness:b < 0.5 ? b * 1.25 : b * 0.75 alpha:a];
+  return nil;
+}
+
+- (NSString *)getTextForHost
+{
+  if (self->_bridge.bundleURL == nil || self->_bridge.bundleURL.fileURL) {
+    return @"React Native";
+  }
+
+  return [NSString stringWithFormat:@"%@:%@", self->_bridge.bundleURL.host, self->_bridge.bundleURL.port];
+}
+
 - (void)showMessage:(NSString *)message color:(UIColor *)color backgroundColor:(UIColor *)backgroundColor
 {
   if (!RCTDevLoadingViewGetEnabled()) {
@@ -78,18 +97,25 @@ RCT_EXPORT_MODULE()
       if (@available(iOS 11.0, *)) {
         UIWindow *window = RCTSharedApplication().keyWindow;
         self->_window =
-            [[UIWindow alloc] initWithFrame:CGRectMake(0, 0, screenSize.width, window.safeAreaInsets.top + 30)];
-        self->_label = [[UILabel alloc] initWithFrame:CGRectMake(0, window.safeAreaInsets.top, screenSize.width, 30)];
+            [[UIWindow alloc] initWithFrame:CGRectMake(0, 0, screenSize.width, window.safeAreaInsets.top + 52)];
+        self->_label = [[UILabel alloc] initWithFrame:CGRectMake(0, window.safeAreaInsets.top, screenSize.width, 22)];
+        self->_host =
+            [[UILabel alloc] initWithFrame:CGRectMake(0, window.safeAreaInsets.top + 20, screenSize.width, 22)];
+        self->_host.font = [UIFont monospacedDigitSystemFontOfSize:10.0 weight:UIFontWeightRegular];
+        self->_host.textAlignment = NSTextAlignmentCenter;
+
+        [self->_window addSubview:self->_label];
+        [self->_window addSubview:self->_host];
+
       } else {
         self->_window = [[UIWindow alloc] initWithFrame:CGRectMake(0, 0, screenSize.width, 22)];
         self->_label = [[UILabel alloc] initWithFrame:self->_window.bounds];
+
+        [self->_window addSubview:self->_label];
+        // TODO: Add host to iOS < 11.0
       }
-      [self->_window addSubview:self->_label];
-#if TARGET_OS_TV
-      self->_window.windowLevel = UIWindowLevelNormal + 1;
-#else
+
       self->_window.windowLevel = UIWindowLevelStatusBar + 1;
-#endif
       // set a root VC so rotation is supported
       self->_window.rootViewController = [UIViewController new];
 
@@ -99,6 +125,12 @@ RCT_EXPORT_MODULE()
 
     self->_label.text = message;
     self->_label.textColor = color;
+
+    if (self->_host != nil) {
+      self->_host.text = [self getTextForHost];
+      self->_host.textColor = [self dimColor:color];
+    }
+
     self->_window.backgroundColor = backgroundColor;
     self->_window.hidden = NO;
 
