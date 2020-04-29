@@ -16,10 +16,10 @@ import Colors from './Colors';
 const HermesBadge = (): Node => {
   const isDarkMode = useColorScheme() === 'dark';
   return global.HermesInternal ? (
-    <View style={styles.engine}>
+    <View style={styles.badge}>
       <Text
         style={[
-          styles.footer,
+          styles.badgeText,
           {
             color: isDarkMode ? Colors.light : Colors.dark,
           },
@@ -31,12 +31,12 @@ const HermesBadge = (): Node => {
 };
 
 const styles = StyleSheet.create({
-  engine: {
+  badge: {
     position: 'absolute',
     top: 8,
     right: 12,
   },
-  footer: {
+  badgeText: {
     fontSize: 14,
     fontWeight: '600',
     textAlign: 'right',
