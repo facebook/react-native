@@ -188,14 +188,13 @@ RCT_EXPORT_METHOD(hide)
     return;
 #endif
     color = [UIColor whiteColor];
-    backgroundColor = [UIColor blackColor];
+    backgroundColor = [UIColor colorWithHue:105 saturation:0 brightness:.25 alpha:1];
     message = [NSString stringWithFormat:@"Connect to %@ to develop JavaScript.", RCT_PACKAGER_NAME];
   } else {
     color = [UIColor whiteColor];
-    backgroundColor = [UIColor colorWithHue:1. / 3 saturation:1 brightness:.35 alpha:1];
-    message = [NSString stringWithFormat:@"Loading from %@:%@...", URL.host, URL.port];
+    backgroundColor = [UIColor colorWithHue:105 saturation:0 brightness:.25 alpha:1];
+    message = [NSString stringWithFormat:@"Loading from %@\u2026", RCT_PACKAGER_NAME];
   }
-
   [self showMessage:message color:color backgroundColor:backgroundColor];
 }
 

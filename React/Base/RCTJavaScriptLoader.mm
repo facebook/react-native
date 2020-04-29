@@ -50,10 +50,12 @@ static RCTSource *RCTSourceCreate(NSURL *url, NSData *data, int64_t length) NS_R
 - (NSString *)description
 {
   NSMutableString *desc = [NSMutableString new];
-  [desc appendString:_status ?: @"Loading"];
+  [desc appendString:_status ?: @"Bundling"];
 
   if ([_total integerValue] > 0) {
-    [desc appendFormat:@" %ld%% (%@/%@)", (long)(100 * [_done integerValue] / [_total integerValue]), _done, _total];
+    [desc appendFormat:@" %ld%%", (long)(100 * [_done integerValue] / [_total integerValue])];
+  } else {
+    [desc appendFormat:@" %ld%%", (long)0];
   }
   [desc appendString:@"\u2026"];
   return desc;
@@ -346,7 +348,7 @@ static RCTLoadingProgress *progressEventFromData(NSData *rawData)
 static RCTLoadingProgress *progressEventFromDownloadProgress(NSNumber *total, NSNumber *done)
 {
   RCTLoadingProgress *progress = [RCTLoadingProgress new];
-  progress.status = @"Downloading JavaScript bundle";
+  progress.status = @"Downloading";
   // Progress values are in bytes transform them to kilobytes for smaller numbers.
   progress.done = done != nil ? @([done integerValue] / 1024) : nil;
   progress.total = total != nil ? @([total integerValue] / 1024) : nil;
