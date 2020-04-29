@@ -32,6 +32,7 @@ using namespace facebook::react;
   UILabel *_host;
   NSDate *_showDate;
   BOOL _hiding;
+  dispatch_block_t _initialMessageBlock;
 }
 
 @synthesize bridge = _bridge;
@@ -64,6 +65,27 @@ RCT_EXPORT_MODULE()
   if (bridge.loading) {
     [self showWithURL:bridge.bundleURL];
   }
+}
+
+- (void)clearInitialMessageDelay
+{
+  if (self->_initialMessageBlock != nil) {
+    dispatch_block_cancel(self->_initialMessageBlock);
+    self->_initialMessageBlock = nil;
+  }
+}
+
+- (void)showInitialMessageDelayed:(void (^)())initialMessage
+{
+  self->_initialMessageBlock = dispatch_block_create(static_cast<dispatch_block_flags_t>(0), initialMessage);
+
+  // We delay the initial loading message to prevent flashing it
+  // when loading progress starts quickly. To do that, we
+  // schedule the message to be shown in a block, and cancel
+  // the block later when the progress starts coming in.
+  // If the progress beats this timer, this message is not shown.
+  dispatch_after(
+      dispatch_time(DISPATCH_TIME_NOW, 0.2 * NSEC_PER_SEC), dispatch_get_main_queue(), self->_initialMessageBlock);
 }
 
 - (UIColor *)dimColor:(UIColor *)c
@@ -159,6 +181,9 @@ RCT_EXPORT_METHOD(hide)
     return;
   }
 
+  // Cancel the initial message block so it doesn't display later and get stuck.
+  [self clearInitialMessageDelay];
+
   dispatch_async(dispatch_get_main_queue(), ^{
     self->_hiding = true;
     const NSTimeInterval MIN_PRESENTED_TIME = 0.6;
@@ -186,19 +211,23 @@ RCT_EXPORT_METHOD(hide)
   UIColor *backgroundColor;
   NSString *message;
   if (URL.fileURL) {
-    // If dev mode is not enabled, we don't want to show this kind of notification
+    // If dev mode is not enabled, we don't want to show this kind of notification.
 #if !RCT_DEV
     return;
 #endif
     color = [UIColor whiteColor];
     backgroundColor = [UIColor colorWithHue:105 saturation:0 brightness:.25 alpha:1];
     message = [NSString stringWithFormat:@"Connect to %@ to develop JavaScript.", RCT_PACKAGER_NAME];
+    [self showMessage:message color:color backgroundColor:backgroundColor];
   } else {
     color = [UIColor whiteColor];
     backgroundColor = [UIColor colorWithHue:105 saturation:0 brightness:.25 alpha:1];
     message = [NSString stringWithFormat:@"Loading from %@\u2026", RCT_PACKAGER_NAME];
+
+    [self showInitialMessageDelayed:^{
+      [self showMessage:message color:color backgroundColor:backgroundColor];
+    }];
   }
-  [self showMessage:message color:color backgroundColor:backgroundColor];
 }
 
 - (void)updateProgress:(RCTLoadingProgress *)progress
@@ -206,8 +235,23 @@ RCT_EXPORT_METHOD(hide)
   if (!progress) {
     return;
   }
+
+  // Cancel the initial message block so it's not flashed before progress.
+  [self clearInitialMessageDelay];
+
   dispatch_async(dispatch_get_main_queue(), ^{
-    self->_label.text = [progress description];
+    if (self->_window == nil) {
+      // If we didn't show the initial message, then there's no banner window.
+      // We need to create it here so that the progress is actually displayed.
+      UIColor *color = [UIColor whiteColor];
+      UIColor *backgroundColor = [UIColor colorWithHue:105 saturation:0 brightness:.25 alpha:1];
+      [self showMessage:[progress description] color:color backgroundColor:backgroundColor];
+    } else {
+      // This is an optimization. Since the progress can come in quickly,
+      // we want to do the minimum amount of work to update the UI,
+      // which is to only update the label text.
+      self->_label.text = [progress description];
+    }
   });
 }
 
