@@ -100,3 +100,6 @@ RNTester/Pods/*
 # Visual studio
 .vscode
 .vs
+
+# Android memory profiler files
+*.hprof
