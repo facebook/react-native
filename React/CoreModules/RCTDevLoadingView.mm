@@ -186,11 +186,11 @@ RCT_EXPORT_METHOD(hide)
 
   dispatch_async(dispatch_get_main_queue(), ^{
     self->_hiding = true;
-    const NSTimeInterval MIN_PRESENTED_TIME = 0.6;
+    const NSTimeInterval MIN_PRESENTED_TIME = 0.5;
     NSTimeInterval presentedTime = [[NSDate date] timeIntervalSinceDate:self->_showDate];
     NSTimeInterval delay = MAX(0, MIN_PRESENTED_TIME - presentedTime);
     CGRect windowFrame = self->_window.frame;
-    [UIView animateWithDuration:0.25
+    [UIView animateWithDuration:0.1
         delay:delay
         options:0
         animations:^{
