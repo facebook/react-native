@@ -10,10 +10,18 @@
 
 'use strict';
 
-import Header from './components/Header';
-import LearnMoreLinks from './components/LearnMoreLinks';
 import Colors from './components/Colors';
+import Header from './components/Header';
+import HermesBadge from './components/HermesBadge';
+import LearnMoreLinks from './components/LearnMoreLinks';
 import DebugInstructions from './components/DebugInstructions';
 import ReloadInstructions from './components/ReloadInstructions';
 
-export {Header, LearnMoreLinks, Colors, DebugInstructions, ReloadInstructions};
+export {
+  Colors,
+  Header,
+  HermesBadge,
+  LearnMoreLinks,
+  DebugInstructions,
+  ReloadInstructions,
+};

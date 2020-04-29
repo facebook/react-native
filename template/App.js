@@ -22,6 +22,7 @@ import {
   Colors,
   DebugInstructions,
   Header,
+  HermesBadge,
   LearnMoreLinks,
   ReloadInstructions,
 } from 'react-native/Libraries/NewAppScreen';
@@ -59,20 +60,6 @@ const App: () => Node = () => {
     backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
   };
 
-  const hermes = global.HermesInternal ? (
-    <View style={styles.engine}>
-      <Text
-        style={[
-          styles.footer,
-          {
-            color: isDarkMode ? Colors.light : Colors.dark,
-          },
-        ]}>
-        Engine: Hermes
-      </Text>
-    </View>
-  ) : null;
-
   return (
     <SafeAreaView style={backgroundStyle}>
       <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
@@ -80,7 +67,7 @@ const App: () => Node = () => {
         contentInsetAdjustmentBehavior="automatic"
         style={backgroundStyle}>
         <Header />
-        {hermes}
+        <HermesBadge />
         <View
           style={{
             backgroundColor: isDarkMode ? Colors.black : Colors.white,
@@ -106,10 +93,6 @@ const App: () => Node = () => {
 };
 
 const styles = StyleSheet.create({
-  engine: {
-    position: 'absolute',
-    right: 0,
-  },
   sectionContainer: {
     marginTop: 32,
     paddingHorizontal: 24,
@@ -125,13 +108,6 @@ const styles = StyleSheet.create({
   },
   highlight: {
     fontWeight: '700',
-  },
-  footer: {
-    fontSize: 12,
-    fontWeight: '600',
-    padding: 4,
-    paddingRight: 12,
-    textAlign: 'right',
   },
 });
 
