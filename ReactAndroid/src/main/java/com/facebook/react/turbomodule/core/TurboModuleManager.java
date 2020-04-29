@@ -19,6 +19,7 @@ import com.facebook.react.bridge.JSIModule;
 import com.facebook.react.bridge.JavaScriptContextHolder;
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.common.ReactConstants;
+import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.react.turbomodule.core.interfaces.CallInvokerHolder;
 import com.facebook.react.turbomodule.core.interfaces.TurboModule;
 import com.facebook.react.turbomodule.core.interfaces.TurboModuleRegistry;
@@ -142,11 +143,14 @@ public class TurboModuleManager implements JSIModule, TurboModuleRegistry {
          * Always return null after cleanup has started, so that getModule(moduleName) returns null.
          */
 
-        FLog.e(
-            ReactConstants.TAG,
-            "TurboModuleManager.getOrMaybeCreateTurboModuleHolder: Tried to require TurboModule "
-                + moduleName
-                + " after cleanup initiated");
+        if (ReactFeatureFlags.enableTurboModuleDebugLogs) {
+          // TODO(T46487253): Remove after task is closed
+          FLog.e(
+              ReactConstants.TAG,
+              "TurboModuleManager.getOrMaybeCreateTurboModuleHolder: Tried to require TurboModule "
+                  + moduleName
+                  + " after cleanup initiated");
+        }
         return null;
       }
 
