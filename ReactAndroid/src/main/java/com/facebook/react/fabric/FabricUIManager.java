@@ -842,12 +842,6 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
     if (reactContext != null) {
       isRTL = I18nUtil.getInstance().isRTL(reactContext);
       doLeftAndRightSwapInRTL = I18nUtil.getInstance().doLeftAndRightSwapInRTL(reactContext);
-    } else {
-      // TODO T65116569: analyze why this happens
-      ReactSoftException.logSoftException(
-          TAG,
-          new IllegalStateException(
-              "updateRootLayoutSpecs called before ReactContext set for tag: " + rootTag));
     }
 
     mBinding.setConstraints(
