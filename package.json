@@ -1,13 +1,8 @@
 {
   "name": "react-native",
-<<<<<<< HEAD
-  "version": "0.61.0-microsoft.1",
-  "description": "[Microsoft Fork] A framework for building native apps using React",
-=======
-  "version": "0.62.2",
+  "version": "0.62.0-microsoft.0",
   "bin": "./cli.js",
-  "description": "A framework for building native apps using React",
->>>>>>> fb/0.62-stable
+  "description": "[Microsoft Fork] A framework for building native apps using React",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -20,10 +15,6 @@
     "outputDirectory": "reports/junit",
     "outputName": "js-test-results.xml"
   },
-<<<<<<< HEAD
-  "main": "Libraries/react-native/react-native-implementation",
-=======
->>>>>>> fb/0.62-stable
   "files": [
     "!template/node_modules",
     "!template/package-lock.json",
@@ -32,25 +23,9 @@
     "android",
     "cli.js",
     "flow",
-<<<<<<< HEAD
-    "folly",
-    "init.sh",
-    "local-cli",
-    "scripts/compose-source-maps.js",
-    "scripts/fixmacscripts.sh",
-    "scripts/ios-configure-glog.sh",
-    "scripts/ios-install-third-party.sh",
-    "scripts/launchPackager.bat",
-    "scripts/launchPackager.command",
-    "scripts/node-binary.sh",
-    "scripts/packager.sh",
-    "scripts/postInstall.js",
-    "scripts/react-native-xcode.sh",
-=======
     "index.js",
     "init.sh",
     "interface.js",
->>>>>>> fb/0.62-stable
     "jest-preset.js",
     "jest",
     "lib",
@@ -58,10 +33,7 @@
     "LICENSE",
     "local-cli",
     "packager",
-<<<<<<< HEAD
-=======
     "React-Core.podspec",
->>>>>>> fb/0.62-stable
     "react-native.config.js",
     "react.gradle",
     "React.podspec",
@@ -70,12 +42,6 @@
     "ReactAndroid",
     "ReactCommon",
     "README.md",
-<<<<<<< HEAD
-    "stubs/glog",
-    "third-party-podspecs",
-    "template",
-    "local-cli",
-=======
     "rn-get-polyfills.js",
     "scripts/compose-source-maps.js",
     "scripts/ios-configure-glog.sh",
@@ -85,7 +51,6 @@
     "scripts/node-binary.sh",
     "scripts/packager.sh",
     "scripts/react-native-xcode.sh",
->>>>>>> fb/0.62-stable
     "template.config.js",
     "template",
     "third-party-podspecs"
@@ -116,19 +81,6 @@
     "test-android-e2e": "yarn run docker-build-android && yarn run test-android-run-e2e",
     "build-ios-e2e": "detox build -c ios.sim.release",
     "test-ios-e2e": "detox test -c ios.sim.release RNTester/e2e",
-<<<<<<< HEAD
-    "test-ios": "./scripts/objc-test.sh test",
-    "postinstall": "node scripts/postInstall.js"
-  },
-  "peerDependencies": {
-    "react": "16.9.0"
-  },
-  "dependencies": {
-    "@babel/runtime": "^7.0.0",
-    "@react-native-community/cli": "^3.0.0",
-    "@react-native-community/cli-platform-android": "^3.0.0",
-    "@react-native-community/cli-platform-ios": "^3.0.0",
-=======
     "test-ios": "./scripts/objc-test.sh test"
   },
   "peerDependencies": {
@@ -139,7 +91,6 @@
     "@react-native-community/cli": "^4.5.1",
     "@react-native-community/cli-platform-android": "^4.5.1",
     "@react-native-community/cli-platform-ios": "^4.5.0",
->>>>>>> fb/0.62-stable
     "abort-controller": "^3.0.0",
     "anser": "^1.4.9",
     "base64-js": "^1.1.2",
@@ -150,24 +101,6 @@
     "event-target-shim": "^5.0.1",
     "fbjs": "^1.0.0",
     "fbjs-scripts": "^1.1.0",
-<<<<<<< HEAD
-    "hermes-engine": "^0.2.1",
-    "hermesvm": "^0.1.0",
-    "invariant": "^2.2.4",
-    "jsc-android": "^245459.0.0",
-    "metro-babel-register": "^0.56.0",
-    "metro-react-native-babel-transformer": "^0.56.0",
-    "metro-source-map": "^0.56.0",
-    "nullthrows": "^1.1.0",
-    "pretty-format": "^24.7.0",
-    "promise": "^7.1.1",
-    "prop-types": "^15.7.2",
-    "react-devtools-core": "^3.6.3",
-    "react-refresh": "^0.4.0",
-    "regenerator-runtime": "^0.13.2",
-    "scheduler": "0.15.0",
-    "stacktrace-parser": "^0.1.3",
-=======
     "hermes-engine": "~0.4.0",
     "invariant": "^2.2.4",
     "jsc-android": "^245459.0.0",
@@ -184,18 +117,12 @@
     "scheduler": "0.17.0",
     "stacktrace-parser": "^0.1.3",
     "use-subscription": "^1.0.0",
->>>>>>> fb/0.62-stable
     "whatwg-fetch": "^3.0.0"
   },
   "devDependencies": {
     "@babel/core": "^7.0.0",
-<<<<<<< HEAD
-    "@babel/generator": "^7.0.0",
-    "@react-native-community/eslint-plugin": "1.0.0",
-=======
     "@babel/generator": "^7.5.0",
     "@react-native-community/eslint-plugin": "file:packages/eslint-plugin-react-native-community",
->>>>>>> fb/0.62-stable
     "@reactions/component": "^2.0.2",
     "async": "^2.4.0",
     "babel-eslint": "10.0.1",
@@ -213,30 +140,18 @@
     "eslint-plugin-jsx-a11y": "6.2.1",
     "eslint-plugin-prettier": "2.6.2",
     "eslint-plugin-react": "7.12.4",
-<<<<<<< HEAD
-    "eslint-plugin-react-hooks": "^1.5.1",
-    "eslint-plugin-react-native": "3.6.0",
-    "eslint-plugin-relay": "1.3.0",
-    "flow-bin": "^0.105.0",
-=======
     "eslint-plugin-react-hooks": "^2.0.1",
     "eslint-plugin-react-native": "3.8.1",
     "eslint-plugin-relay": "1.4.1",
     "flow-bin": "^0.113.0",
->>>>>>> fb/0.62-stable
     "flow-remove-types": "1.2.3",
     "jest": "^24.8.0",
     "jest-junit": "^6.3.0",
     "jscodeshift": "^0.6.2",
     "mkdirp": "^0.5.1",
     "prettier": "1.17.0",
-<<<<<<< HEAD
-    "react": "16.9.0",
-    "react-test-renderer": "16.9.0",
-=======
     "react": "16.11.0",
     "react-test-renderer": "16.11.0",
->>>>>>> fb/0.62-stable
     "shelljs": "^0.7.8",
     "signedsource": "^1.0.0",
     "ws": "^6.1.4",
