@@ -6,6 +6,10 @@ fb_apple_library(
     contacts = ["oncall+react_native@xmail.facebook.com"],
     enable_exceptions = False,
     frameworks = [],
+<<<<<<< HEAD
+=======
+    labels = ["supermodule:ios/isolation/infra.react_native"],
+>>>>>>> fb/0.62-stable
     link_whole = False,
     visibility = ["PUBLIC"],
 )

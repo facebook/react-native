@@ -16,7 +16,11 @@ type Options<T = string> = $ReadOnly<{|
   supportedCommands: $ReadOnlyArray<T>,
 |}>;
 
+<<<<<<< HEAD
 function codegenNativeCommands<T: {}>(options: Options<$Keys<T>>): T {
+=======
+function codegenNativeCommands<T: {...}>(options: Options<$Keys<T>>): T {
+>>>>>>> fb/0.62-stable
   const commandObj = {};
 
   options.supportedCommands.forEach(command => {

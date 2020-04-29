@@ -12,8 +12,11 @@
 
 const Platform = require('../../Utilities/Platform');
 const React = require('react');
+<<<<<<< HEAD
 
 const nullthrows = require('nullthrows');
+=======
+>>>>>>> fb/0.62-stable
 
 import type {ColorValue} from '../../StyleSheet/StyleSheetTypes';
 import type {ViewProps} from '../View/ViewPropTypes';
@@ -137,7 +140,7 @@ export type RefreshControlProps = $ReadOnly<{|
 class RefreshControl extends React.Component<RefreshControlProps> {
   static SIZE: any = RefreshLayoutConsts.SIZE;
 
-  _setNativePropsOnRef: ?({refreshing: boolean}) => void;
+  _setNativePropsOnRef: ?({refreshing: boolean, ...}) => void;
   _lastNativeRefreshing = false;
 
   componentDidMount() {

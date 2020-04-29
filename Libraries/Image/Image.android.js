@@ -14,7 +14,6 @@ const DeprecatedImageStylePropTypes = require('../DeprecatedPropTypes/Deprecated
 const DeprecatedStyleSheetPropType = require('../DeprecatedPropTypes/DeprecatedStyleSheetPropType');
 const DeprecatedViewPropTypes = require('../DeprecatedPropTypes/DeprecatedViewPropTypes');
 const ImageViewNativeComponent = require('./ImageViewNativeComponent');
-const NativeModules = require('../BatchedBridge/NativeModules');
 const PropTypes = require('prop-types');
 const React = require('react');
 const ReactNative = require('../Renderer/shims/ReactNative'); // eslint-disable-line no-unused-vars
@@ -22,10 +21,9 @@ const StyleSheet = require('../StyleSheet/StyleSheet');
 const TextAncestor = require('../Text/TextAncestor');
 
 const flattenStyle = require('../StyleSheet/flattenStyle');
-const merge = require('../vendor/core/merge');
 const resolveAssetSource = require('./resolveAssetSource');
 
-const {ImageLoader} = NativeModules;
+import NativeImageLoaderAndroid from './NativeImageLoaderAndroid';
 
 const TextInlineImageNativeComponent = require('./TextInlineImageNativeComponent');
 
@@ -38,11 +36,13 @@ function generateRequestId() {
 
 const ImageProps = {
   ...DeprecatedViewPropTypes,
-  style: DeprecatedStyleSheetPropType(DeprecatedImageStylePropTypes),
+  style: (DeprecatedStyleSheetPropType(
+    DeprecatedImageStylePropTypes,
+  ): ReactPropsCheckType),
   /**
    * See https://facebook.github.io/react-native/docs/image.html#source
    */
-  source: PropTypes.oneOfType([
+  source: (PropTypes.oneOfType([
     PropTypes.shape({
       uri: PropTypes.string,
       headers: PropTypes.objectOf(PropTypes.string),
@@ -58,7 +58,21 @@ const ImageProps = {
         headers: PropTypes.objectOf(PropTypes.string),
       }),
     ),
-  ]),
+  ]): React$PropType$Primitive<
+    | {
+        headers?: {[string]: string, ...},
+        uri?: string,
+        ...
+      }
+    | number
+    | Array<{
+        headers?: {[string]: string, ...},
+        height?: number,
+        uri?: string,
+        width?: number,
+        ...
+      }>,
+  >),
   /**
    * blurRadius: the blur radius of the blur filter added to the image
    *
@@ -72,13 +86,13 @@ const ImageProps = {
   /**
    * See https://facebook.github.io/react-native/docs/image.html#loadingindicatorsource
    */
-  loadingIndicatorSource: PropTypes.oneOfType([
+  loadingIndicatorSource: (PropTypes.oneOfType([
     PropTypes.shape({
       uri: PropTypes.string,
     }),
     // Opaque type returned by require('./image.jpg')
     PropTypes.number,
-  ]),
+  ]): React$PropType$Primitive<{uri?: string, ...} | number>),
   progressiveRenderingEnabled: PropTypes.bool,
   fadeDuration: PropTypes.number,
   /**
@@ -107,20 +121,26 @@ const ImageProps = {
    *
    * See https://facebook.github.io/react-native/docs/image.html#resizemethod
    */
-  resizeMethod: PropTypes.oneOf(['auto', 'resize', 'scale']),
+  resizeMethod: (PropTypes.oneOf([
+    'auto',
+    'resize',
+    'scale',
+  ]): React$PropType$Primitive<'auto' | 'resize' | 'scale'>),
   /**
    * Determines how to resize the image when the frame doesn't match the raw
    * image dimensions.
    *
    * See https://facebook.github.io/react-native/docs/image.html#resizemode
    */
-  resizeMode: PropTypes.oneOf([
+  resizeMode: (PropTypes.oneOf([
     'cover',
     'contain',
     'stretch',
     'repeat',
     'center',
-  ]),
+  ]): React$PropType$Primitive<
+    'cover' | 'contain' | 'stretch' | 'repeat' | 'center',
+  >),
 };
 
 /**
@@ -132,8 +152,8 @@ function getSize(
   url: string,
   success: (width: number, height: number) => void,
   failure?: (error: any) => void,
-) {
-  return ImageLoader.getSize(url)
+): any {
+  return NativeImageLoaderAndroid.getSize(url)
     .then(function(sizes) {
       success(sizes.width, sizes.height);
     })
@@ -153,11 +173,11 @@ function getSize(
  */
 function getSizeWithHeaders(
   url: string,
-  headers: {[string]: string},
+  headers: {[string]: string, ...},
   success: (width: number, height: number) => void,
   failure?: (error: any) => void,
-) {
-  return ImageLoader.getSizeWithHeaders(url, headers)
+): any {
+  return NativeImageLoaderAndroid.getSizeWithHeaders(url, headers)
     .then(function(sizes) {
       success(sizes.width, sizes.height);
     })
@@ -169,14 +189,14 @@ function getSizeWithHeaders(
     );
 }
 
-function prefetch(url: string, callback: ?Function) {
+function prefetch(url: string, callback: ?Function): any {
   const requestId = generateRequestId();
   callback && callback(requestId);
-  return ImageLoader.prefetchImage(url, requestId);
+  return NativeImageLoaderAndroid.prefetchImage(url, requestId);
 }
 
 function abortPrefetch(requestId: number) {
-  ImageLoader.abortRequest(requestId);
+  NativeImageLoaderAndroid.abortRequest(requestId);
 }
 
 /**
@@ -186,19 +206,19 @@ function abortPrefetch(requestId: number) {
  */
 async function queryCache(
   urls: Array<string>,
-): Promise<{[string]: 'memory' | 'disk' | 'disk/memory'}> {
-  return await ImageLoader.queryCache(urls);
+): Promise<{[string]: 'memory' | 'disk' | 'disk/memory', ...}> {
+  return await NativeImageLoaderAndroid.queryCache(urls);
 }
 
-declare class ImageComponentType extends ReactNative.NativeComponent<ImagePropsType> {
-  static getSize: typeof getSize;
-  static getSizeWithHeaders: typeof getSizeWithHeaders;
-  static prefetch: typeof prefetch;
-  static abortPrefetch: typeof abortPrefetch;
-  static queryCache: typeof queryCache;
-  static resolveAssetSource: typeof resolveAssetSource;
-  static propTypes: typeof ImageProps;
-}
+type ImageComponentStatics = $ReadOnly<{|
+  getSize: typeof getSize,
+  getSizeWithHeaders: typeof getSizeWithHeaders,
+  prefetch: typeof prefetch,
+  abortPrefetch: typeof abortPrefetch,
+  queryCache: typeof queryCache,
+  resolveAssetSource: typeof resolveAssetSource,
+  propTypes: typeof ImageProps,
+|}>;
 
 /**
  * A React component for displaying different types of images,
@@ -207,10 +227,7 @@ declare class ImageComponentType extends ReactNative.NativeComponent<ImagePropsT
  *
  * See https://facebook.github.io/react-native/docs/image.html
  */
-let Image = (
-  props: ImagePropsType,
-  forwardedRef: ?React.Ref<'RCTTextInlineImage' | 'ImageViewNativeComponent'>,
-) => {
+let Image = (props: ImagePropsType, forwardedRef) => {
   let source = resolveAssetSource(props.source);
   const defaultSource = resolveAssetSource(props.defaultSource);
   const loadingIndicatorSource = resolveAssetSource(
@@ -259,7 +276,8 @@ let Image = (
   }
 
   const {onLoadStart, onLoad, onLoadEnd, onError} = props;
-  const nativeProps = merge(props, {
+  const nativeProps = {
+    ...props,
     style,
     shouldNotifyLoadEvents: !!(onLoadStart || onLoad || onLoadEnd || onError),
     src: sources,
@@ -271,7 +289,7 @@ let Image = (
       ? loadingIndicatorSource.uri
       : null,
     ref: forwardedRef,
-  });
+  };
 
   return (
     <TextAncestor.Consumer>
@@ -286,7 +304,12 @@ let Image = (
   );
 };
 
-Image = React.forwardRef(Image);
+Image = React.forwardRef<
+  ImagePropsType,
+  | React.ElementRef<typeof TextInlineImageNativeComponent>
+  | React.ElementRef<typeof ImageViewNativeComponent>,
+>(Image);
+
 Image.displayName = 'Image';
 
 /**
@@ -362,7 +385,9 @@ const styles = StyleSheet.create({
   },
 });
 
-/* $FlowFixMe(>=0.89.0 site=react_native_android_fb) This comment suppresses an
- * error found when Flow v0.89 was deployed. To see the error, delete this
- * comment and run Flow. */
-module.exports = (Image: Class<ImageComponentType>);
+module.exports = ((Image: any): React.AbstractComponent<
+  ImagePropsType,
+  | React.ElementRef<typeof TextInlineImageNativeComponent>
+  | React.ElementRef<typeof ImageViewNativeComponent>,
+> &
+  ImageComponentStatics);

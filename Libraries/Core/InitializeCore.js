@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @flow
+ * @flow strict-local
  */
 
 /* globals window: true */
@@ -23,6 +23,7 @@
  *   2. Bridged modules.
  *
  */
+
 'use strict';
 
 const start = Date.now();

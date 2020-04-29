@@ -26,22 +26,41 @@ const {
 import type {ViewStyleProp} from '../../../Libraries/StyleSheet/StyleSheet';
 import type {RNTesterExample} from '../types/RNTesterTypes';
 
+<<<<<<< HEAD
+=======
+import {RNTesterThemeContext} from './RNTesterTheme';
+
+>>>>>>> fb/0.62-stable
 type Props = {
   onNavigate: Function,
   list: {
     ComponentExamples: Array<RNTesterExample>,
     APIExamples: Array<RNTesterExample>,
+<<<<<<< HEAD
   },
   style?: ?ViewStyleProp,
+=======
+    ...
+  },
+  style?: ?ViewStyleProp,
+  ...
+>>>>>>> fb/0.62-stable
 };
 
 class RowComponent extends React.PureComponent<{
   item: Object,
+<<<<<<< HEAD
   isSelected?: ?boolean, // TODO(macOS ISS#2323203)
+=======
+>>>>>>> fb/0.62-stable
   onNavigate: Function,
   onPress?: Function,
   onShowUnderlay?: Function,
   onHideUnderlay?: Function,
+<<<<<<< HEAD
+=======
+  ...
+>>>>>>> fb/0.62-stable
 }> {
   _onPress = () => {
     if (this.props.onPress) {
@@ -52,6 +71,7 @@ class RowComponent extends React.PureComponent<{
   };
   render() {
     const {item} = this.props;
+<<<<<<< HEAD
     const rowStyle = this.props.isSelected ? styles.selectedRow : styles.row; // TODO(macOS ISS#2323203)
     return (
       <TouchableHighlight
@@ -65,12 +85,61 @@ class RowComponent extends React.PureComponent<{
           <Text style={styles.rowDetailText}>{item.module.description}</Text>
         </View>
       </TouchableHighlight>
+=======
+    return (
+      <RNTesterThemeContext.Consumer>
+        {theme => {
+          return (
+            <TouchableHighlight
+              onShowUnderlay={this.props.onShowUnderlay}
+              onHideUnderlay={this.props.onHideUnderlay}
+              onPress={this._onPress}>
+              <View
+                style={[
+                  styles.row,
+                  {backgroundColor: theme.SystemBackgroundColor},
+                ]}>
+                <Text style={[styles.rowTitleText, {color: theme.LabelColor}]}>
+                  {item.module.title}
+                </Text>
+                <Text
+                  style={[
+                    styles.rowDetailText,
+                    {color: theme.SecondaryLabelColor},
+                  ]}>
+                  {item.module.description}
+                </Text>
+              </View>
+            </TouchableHighlight>
+          );
+        }}
+      </RNTesterThemeContext.Consumer>
+>>>>>>> fb/0.62-stable
     );
   }
 }
 
 const renderSectionHeader = ({section}) => (
+<<<<<<< HEAD
   <Text style={styles.sectionHeader}>{section.title}</Text>
+=======
+  <RNTesterThemeContext.Consumer>
+    {theme => {
+      return (
+        <Text
+          style={[
+            styles.sectionHeader,
+            {
+              color: theme.SecondaryLabelColor,
+              backgroundColor: theme.GroupedBackgroundColor,
+            },
+          ]}>
+          {section.title}
+        </Text>
+      );
+    }}
+  </RNTesterThemeContext.Consumer>
+>>>>>>> fb/0.62-stable
 );
 
 class RNTesterExampleList extends React.Component<Props, $FlowFixMeState> {
@@ -93,6 +162,7 @@ class RNTesterExampleList extends React.Component<Props, $FlowFixMeState> {
     ];
 
     return (
+<<<<<<< HEAD
       <View style={[styles.listContainer, this.props.style]}>
         {this._renderTitleRow()}
         <RNTesterExampleFilter
@@ -143,6 +213,48 @@ class RNTesterExampleList extends React.Component<Props, $FlowFixMeState> {
     <RowComponent
       item={item}
       isSelected={isSelected} // TODO(macOS ISS#2323203)
+=======
+      <RNTesterThemeContext.Consumer>
+        {theme => {
+          return (
+            <View
+              style={[
+                styles.listContainer,
+                this.props.style,
+                {backgroundColor: theme.SecondaryGroupedBackgroundColor},
+              ]}>
+              {this._renderTitleRow()}
+              <RNTesterExampleFilter
+                testID="explorer_search"
+                sections={sections}
+                filter={filter}
+                render={({filteredSections}) => (
+                  <SectionList
+                    ItemSeparatorComponent={ItemSeparator}
+                    contentContainerStyle={{
+                      backgroundColor: theme.SeparatorColor,
+                    }}
+                    style={{backgroundColor: theme.SystemBackgroundColor}}
+                    sections={filteredSections}
+                    renderItem={this._renderItem}
+                    keyboardShouldPersistTaps="handled"
+                    automaticallyAdjustContentInsets={false}
+                    keyboardDismissMode="on-drag"
+                    renderSectionHeader={renderSectionHeader}
+                  />
+                )}
+              />
+            </View>
+          );
+        }}
+      </RNTesterThemeContext.Consumer>
+    );
+  }
+
+  _renderItem = ({item, separators}) => (
+    <RowComponent
+      item={item}
+>>>>>>> fb/0.62-stable
       onNavigate={this.props.onNavigate}
       onShowUnderlay={separators.highlight}
       onHideUnderlay={separators.unhighlight}
@@ -178,13 +290,33 @@ class RNTesterExampleList extends React.Component<Props, $FlowFixMeState> {
 }
 
 const ItemSeparator = ({highlighted}) => (
+<<<<<<< HEAD
   <View style={highlighted ? styles.separatorHighlighted : styles.separator} />
+=======
+  <RNTesterThemeContext.Consumer>
+    {theme => {
+      return (
+        <View
+          style={
+            highlighted
+              ? [
+                  styles.separatorHighlighted,
+                  {backgroundColor: theme.OpaqueSeparatorColor},
+                ]
+              : [styles.separator, {backgroundColor: theme.SeparatorColor}]
+          }
+        />
+      );
+    }}
+  </RNTesterThemeContext.Consumer>
+>>>>>>> fb/0.62-stable
 );
 
 const styles = StyleSheet.create({
   listContainer: {
     flex: 1,
   },
+<<<<<<< HEAD
   list: {
     ...Platform.select({
       // [TODO(macOS ISS#2323203)
@@ -221,11 +353,15 @@ const styles = StyleSheet.create({
         color: 'black',
       }, // [TODO(macOS ISS#2323203)
     }), // ]TODO(macOS ISS#2323203)
+=======
+  sectionHeader: {
+>>>>>>> fb/0.62-stable
     padding: 5,
     fontWeight: '500',
     fontSize: 11,
   },
   row: {
+<<<<<<< HEAD
     ...Platform.select({
       // [TODO(macOS ISS#2323203)
       macos: {
@@ -239,10 +375,13 @@ const styles = StyleSheet.create({
         backgroundColor: 'white',
       }, // [TODO(macOS ISS#2323203)
     }), // ]TODO(macOS ISS#2323203)
+=======
+>>>>>>> fb/0.62-stable
     justifyContent: 'center',
     paddingHorizontal: 15,
     paddingVertical: 8,
   },
+<<<<<<< HEAD
   selectedRow: {
     // [TODO(macOS ISS#2323203)
     backgroundColor: '#DDECF8',
@@ -265,10 +404,15 @@ const styles = StyleSheet.create({
         backgroundColor: '#bbbbbb',
       }, // [TODO(macOS ISS#2323203)
     }), // ]TODO(macOS ISS#2323203)
+=======
+  separator: {
+    height: StyleSheet.hairlineWidth,
+>>>>>>> fb/0.62-stable
     marginLeft: 15,
   },
   separatorHighlighted: {
     height: StyleSheet.hairlineWidth,
+<<<<<<< HEAD
     backgroundColor: 'rgb(217, 217, 217)',
   },
   sectionListContentContainer: Platform.select({
@@ -297,6 +441,15 @@ const styles = StyleSheet.create({
   rowDetailText: {
     fontSize: 15,
     color: '#888888',
+=======
+  },
+  rowTitleText: {
+    fontSize: 17,
+    fontWeight: '500',
+  },
+  rowDetailText: {
+    fontSize: 15,
+>>>>>>> fb/0.62-stable
     lineHeight: 20,
   },
 });

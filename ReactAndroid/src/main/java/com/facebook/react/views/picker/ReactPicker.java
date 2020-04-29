@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
@@ -122,6 +122,18 @@ public class ReactPicker extends AppCompatSpinner {
     mStagedSelection = selection;
   }
 
+<<<<<<< HEAD
+=======
+  /** Will set the "selection" value immediately as opposed to {@link #setStagedSelection(int)} */
+  /* package */ void setImmediateSelection(int selection) {
+    if (selection != getSelectedItemPosition()) {
+      setOnItemSelectedListener(null);
+      setSelection(selection, false);
+      setOnItemSelectedListener(mItemSelectedListener);
+    }
+  }
+
+>>>>>>> fb/0.62-stable
   /* package */ void setStagedPrimaryTextColor(@Nullable Integer primaryColor) {
     mStagedPrimaryTextColor = primaryColor;
   }

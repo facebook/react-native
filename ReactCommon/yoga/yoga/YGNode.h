@@ -1,13 +1,18 @@
 /*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the MIT license found in the LICENSE
- * file in the root directory of this source tree.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
+
 #pragma once
 #include <cstdint>
 #include <stdio.h>
+<<<<<<< HEAD
 #include "Bitfield.h"
+=======
+#include "BitUtils.h"
+>>>>>>> fb/0.62-stable
 #include "CompactValue.h"
 #include "YGConfig.h"
 #include "YGLayout.h"
@@ -17,7 +22,11 @@
 
 YGConfigRef YGConfigGetDefault();
 
+<<<<<<< HEAD
 struct YGNode {
+=======
+struct YOGA_EXPORT YGNode {
+>>>>>>> fb/0.62-stable
   using MeasureWithContextFn =
       YGSize (*)(YGNode*, float, YGMeasureMode, float, YGMeasureMode, void*);
   using BaselineWithContextFn = float (*)(YGNode*, float, float, void*);
@@ -34,10 +43,14 @@ private:
   static constexpr size_t useWebDefaults_ = 7;
 
   void* context_ = nullptr;
+<<<<<<< HEAD
   using Flags = facebook::yoga::
       Bitfield<uint8_t, bool, bool, bool, YGNodeType, bool, bool, bool, bool>;
   Flags flags_ =
       {true, false, false, YGNodeTypeDefault, false, false, false, false};
+=======
+  uint8_t flags = 1;
+>>>>>>> fb/0.62-stable
   uint8_t reserved_ = 0;
   union {
     YGMeasureFunc noContext;
@@ -69,7 +82,11 @@ private:
   void setBaselineFunc(decltype(baseline_));
 
   void useWebDefaults() {
+<<<<<<< HEAD
     flags_.at<useWebDefaults_>() = true;
+=======
+    facebook::yoga::detail::setBooleanData(flags, useWebDefaults_, true);
+>>>>>>> fb/0.62-stable
     style_.flexDirection() = YGFlexDirectionRow;
     style_.alignContent() = YGAlignStretch;
   }
@@ -113,9 +130,19 @@ public:
 
   void print(void*);
 
+<<<<<<< HEAD
   bool getHasNewLayout() const { return flags_.at<hasNewLayout_>(); }
 
   YGNodeType getNodeType() const { return flags_.at<nodeType_>(); }
+=======
+  bool getHasNewLayout() const {
+    return facebook::yoga::detail::getBooleanData(flags, hasNewLayout_);
+  }
+
+  YGNodeType getNodeType() const {
+    return facebook::yoga::detail::getEnumData<YGNodeType>(flags, nodeType_);
+  }
+>>>>>>> fb/0.62-stable
 
   bool hasMeasureFunc() const noexcept { return measure_.noContext != nullptr; }
 
@@ -141,7 +168,13 @@ public:
 
   uint32_t getLineIndex() const { return lineIndex_; }
 
+<<<<<<< HEAD
   bool isReferenceBaseline() { return flags_.at<isReferenceBaseline_>(); }
+=======
+  bool isReferenceBaseline() {
+    return facebook::yoga::detail::getBooleanData(flags, isReferenceBaseline_);
+  }
+>>>>>>> fb/0.62-stable
 
   // returns the YGNodeRef that owns this YGNode. An owner is used to identify
   // the YogaTree that a YGNode belongs to. This method will return the parent
@@ -174,7 +207,13 @@ public:
 
   YGConfigRef getConfig() const { return config_; }
 
+<<<<<<< HEAD
   bool isDirty() const { return flags_.at<isDirty_>(); }
+=======
+  bool isDirty() const {
+    return facebook::yoga::detail::getBooleanData(flags, isDirty_);
+  }
+>>>>>>> fb/0.62-stable
 
   std::array<YGValue, 2> getResolvedDimensions() const {
     return resolvedDimensions_;
@@ -222,19 +261,37 @@ public:
 
   void setPrintFunc(YGPrintFunc printFunc) {
     print_.noContext = printFunc;
+<<<<<<< HEAD
     flags_.at<printUsesContext_>() = false;
   }
   void setPrintFunc(PrintWithContextFn printFunc) {
     print_.withContext = printFunc;
     flags_.at<printUsesContext_>() = true;
+=======
+    facebook::yoga::detail::setBooleanData(flags, printUsesContext_, false);
+  }
+  void setPrintFunc(PrintWithContextFn printFunc) {
+    print_.withContext = printFunc;
+    facebook::yoga::detail::setBooleanData(flags, printUsesContext_, true);
+>>>>>>> fb/0.62-stable
   }
   void setPrintFunc(std::nullptr_t) { setPrintFunc(YGPrintFunc{nullptr}); }
 
   void setHasNewLayout(bool hasNewLayout) {
+<<<<<<< HEAD
     flags_.at<hasNewLayout_>() = hasNewLayout;
   }
 
   void setNodeType(YGNodeType nodeType) { flags_.at<nodeType_>() = nodeType; }
+=======
+    facebook::yoga::detail::setBooleanData(flags, hasNewLayout_, hasNewLayout);
+  }
+
+  void setNodeType(YGNodeType nodeType) {
+    return facebook::yoga::detail::setEnumData<YGNodeType>(
+        flags, nodeType_, nodeType);
+  }
+>>>>>>> fb/0.62-stable
 
   void setMeasureFunc(YGMeasureFunc measureFunc);
   void setMeasureFunc(MeasureWithContextFn);
@@ -243,11 +300,19 @@ public:
   }
 
   void setBaselineFunc(YGBaselineFunc baseLineFunc) {
+<<<<<<< HEAD
     flags_.at<baselineUsesContext_>() = false;
     baseline_.noContext = baseLineFunc;
   }
   void setBaselineFunc(BaselineWithContextFn baseLineFunc) {
     flags_.at<baselineUsesContext_>() = true;
+=======
+    facebook::yoga::detail::setBooleanData(flags, baselineUsesContext_, false);
+    baseline_.noContext = baseLineFunc;
+  }
+  void setBaselineFunc(BaselineWithContextFn baseLineFunc) {
+    facebook::yoga::detail::setBooleanData(flags, baselineUsesContext_, true);
+>>>>>>> fb/0.62-stable
     baseline_.withContext = baseLineFunc;
   }
   void setBaselineFunc(std::nullptr_t) {
@@ -263,7 +328,12 @@ public:
   void setLineIndex(uint32_t lineIndex) { lineIndex_ = lineIndex; }
 
   void setIsReferenceBaseline(bool isReferenceBaseline) {
+<<<<<<< HEAD
     flags_.at<isReferenceBaseline_>() = isReferenceBaseline;
+=======
+    facebook::yoga::detail::setBooleanData(
+        flags, isReferenceBaseline_, isReferenceBaseline);
+>>>>>>> fb/0.62-stable
   }
 
   void setOwner(YGNodeRef owner) { owner_ = owner; }

@@ -22,4 +22,10 @@ export interface Spec extends TurboModule {
   +getValueWithPromise: () => ?Promise<string>;
 }
 
+<<<<<<< HEAD
 export default TurboModuleRegistry.getEnforcing<Spec>('SampleTurboModule');
+=======
+export default (TurboModuleRegistry.getEnforcing<Spec>(
+  'SampleTurboModule',
+): Spec);
+>>>>>>> fb/0.62-stable

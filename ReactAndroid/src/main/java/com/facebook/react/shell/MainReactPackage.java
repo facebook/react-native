@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
@@ -16,6 +16,7 @@ import com.facebook.react.module.annotations.ReactModuleList;
 import com.facebook.react.module.model.ReactModuleInfo;
 import com.facebook.react.module.model.ReactModuleInfoProvider;
 import com.facebook.react.modules.accessibilityinfo.AccessibilityInfoModule;
+import com.facebook.react.modules.appearance.AppearanceModule;
 import com.facebook.react.modules.appstate.AppStateModule;
 import com.facebook.react.modules.blob.BlobModule;
 import com.facebook.react.modules.blob.FileReaderModule;
@@ -71,6 +72,10 @@ import java.util.Map;
 @ReactModuleList(
     nativeModules = {
       AccessibilityInfoModule.class,
+<<<<<<< HEAD
+=======
+      AppearanceModule.class,
+>>>>>>> fb/0.62-stable
       AppStateModule.class,
       BlobModule.class,
       FileReaderModule.class,
@@ -112,6 +117,11 @@ public class MainReactPackage extends TurboReactPackage {
     switch (name) {
       case AccessibilityInfoModule.NAME:
         return new AccessibilityInfoModule(context);
+<<<<<<< HEAD
+=======
+      case AppearanceModule.NAME:
+        return new AppearanceModule(context);
+>>>>>>> fb/0.62-stable
       case AppStateModule.NAME:
         return new AppStateModule(context);
       case BlobModule.NAME:
@@ -210,6 +220,10 @@ public class MainReactPackage extends TurboReactPackage {
       Class<? extends NativeModule>[] moduleList =
           new Class[] {
             AccessibilityInfoModule.class,
+<<<<<<< HEAD
+=======
+            AppearanceModule.class,
+>>>>>>> fb/0.62-stable
             AppStateModule.class,
             BlobModule.class,
             FileReaderModule.class,

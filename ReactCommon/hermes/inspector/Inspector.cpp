@@ -1,4 +1,13 @@
+<<<<<<< HEAD
 // Copyright 2004-present Facebook. All Rights Reserved.
+=======
+/*
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+>>>>>>> fb/0.62-stable
 
 #include "Inspector.h"
 #include "Exceptions.h"
@@ -11,19 +20,34 @@
 #include <hermes/inspector/detail/SerialExecutor.h>
 #include <hermes/inspector/detail/Thread.h>
 
+<<<<<<< HEAD
+=======
+#ifdef HERMES_INSPECTOR_FOLLY_KLUDGE
+>>>>>>> fb/0.62-stable
 // <kludge> This is here, instead of linking against
 // folly/futures/Future.cpp, to avoid pulling in another pile of
 // dependencies, including the separate dependency libevent.  This is
 // likely specific to the version of folly RN uses, so may need to be
 // changed.  Even better, perhaps folly can be refactored to simplify
+<<<<<<< HEAD
 // this.
 
 template class folly::Future<folly::Unit>;
+=======
+// this.  Providing a RN-specific Timekeeper impl may also help.
+
+template class folly::Future<folly::Unit>;
+template class folly::Future<bool>;
+>>>>>>> fb/0.62-stable
 
 namespace folly {
 namespace futures {
 
+<<<<<<< HEAD
 Future<Unit> sleep(Duration dur, Timekeeper *tk) {
+=======
+Future<Unit> sleep(Duration, Timekeeper *) {
+>>>>>>> fb/0.62-stable
   LOG(FATAL) << "folly::futures::sleep() not implemented";
 }
 
@@ -39,6 +63,10 @@ std::shared_ptr<Timekeeper> getTimekeeperSingleton() {
 } // namespace folly
 
 // </kludge>
+<<<<<<< HEAD
+=======
+#endif
+>>>>>>> fb/0.62-stable
 
 namespace facebook {
 namespace hermes {
@@ -184,7 +212,14 @@ void Inspector::triggerAsyncPause(bool andTickle) {
   // In order to ensure that we pause soon, we both set the async pause flag on
   // the runtime, and we run a bit of dummy JS to ensure we enter the Hermes
   // interpreter loop.
+<<<<<<< HEAD
   debugger_.triggerAsyncPause();
+=======
+  debugger_.triggerAsyncPause(
+      pendingPauseState_ == AsyncPauseState::Implicit
+          ? debugger::AsyncPauseKind::Implicit
+          : debugger::AsyncPauseKind::Explicit);
+>>>>>>> fb/0.62-stable
 
   if (andTickle) {
     // We run the dummy JS on a background thread to avoid any reentrancy issues
@@ -205,8 +240,12 @@ ScriptInfo Inspector::getScriptInfoFromTopCallFrame() {
   auto stackTrace = debugger_.getProgramState().getStackTrace();
 
   if (stackTrace.callFrameCount() > 0) {
+<<<<<<< HEAD
     uint32_t i = stackTrace.callFrameCount() - 1;
     debugger::SourceLocation loc = stackTrace.callFrameForIndex(i).location;
+=======
+    debugger::SourceLocation loc = stackTrace.callFrameForIndex(0).location;
+>>>>>>> fb/0.62-stable
 
     info.fileId = loc.fileId;
     info.fileName = loc.fileName;
@@ -220,6 +259,10 @@ void Inspector::addCurrentScriptToLoadedScripts() {
   ScriptInfo info = getScriptInfoFromTopCallFrame();
 
   if (!loadedScripts_.count(info.fileId)) {
+<<<<<<< HEAD
+=======
+    loadedScriptIdByName_[info.fileName] = info.fileId;
+>>>>>>> fb/0.62-stable
     loadedScripts_[info.fileId] = LoadedScriptInfo{std::move(info), false};
   }
 }
@@ -577,6 +620,52 @@ void Inspector::setPauseOnExceptionsOnExecutor(
   });
 }
 
+<<<<<<< HEAD
+=======
+static const char *kSuppressionVariable = "_hermes_suppress_superseded_warning";
+void Inspector::alertIfPausedInSupersededFile() {
+  if (isExecutingSupersededFile() &&
+      !shouldSuppressAlertAboutSupersededFiles()) {
+    ScriptInfo info = getScriptInfoFromTopCallFrame();
+    std::string warning =
+        "You have loaded the current file multiple times, and you are "
+        "now paused in one of the previous instances. The source "
+        "code you see may not correspond to what's being executed "
+        "(set JS variable " +
+        std::string(kSuppressionVariable) +
+        "=true to "
+        "suppress this warning. Filename: " +
+        info.fileName + ").";
+    jsi::Array jsiArray(adapter_->getRuntime(), 1);
+    jsiArray.setValueAtIndex(adapter_->getRuntime(), 0, warning);
+
+    ConsoleMessageInfo logMessage("warning", std::move(jsiArray));
+    observer_.onMessageAdded(*this, logMessage);
+  }
+}
+
+bool Inspector::shouldSuppressAlertAboutSupersededFiles() {
+  jsi::Runtime &rt = adapter_->getRuntime();
+  jsi::Value setting = rt.global().getProperty(rt, kSuppressionVariable);
+
+  if (setting.isUndefined() || !setting.isBool())
+    return false;
+  return setting.getBool();
+}
+
+bool Inspector::isExecutingSupersededFile() {
+  ScriptInfo info = getScriptInfoFromTopCallFrame();
+  if (info.fileName.empty())
+    return false;
+
+  auto it = loadedScriptIdByName_.find(info.fileName);
+  if (it != loadedScriptIdByName_.end()) {
+    return it->second > info.fileId;
+  }
+  return false;
+}
+
+>>>>>>> fb/0.62-stable
 } // namespace inspector
 } // namespace hermes
 } // namespace facebook

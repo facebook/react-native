@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
@@ -7,6 +8,17 @@
 package com.facebook.hermes.reactexecutor;
 
 import com.facebook.hermes.instrumentation.HermesMemoryDumper;
+=======
+/*
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+package com.facebook.hermes.reactexecutor;
+
+>>>>>>> fb/0.62-stable
 import com.facebook.jni.HybridData;
 import com.facebook.react.bridge.JavaScriptExecutor;
 import com.facebook.soloader.SoLoader;
@@ -19,11 +31,19 @@ public class HermesExecutor extends JavaScriptExecutor {
     // libhermes must be loaded explicitly to invoke its JNI_OnLoad.
     SoLoader.loadLibrary("hermes");
     try {
+<<<<<<< HEAD
       SoLoader.loadLibrary("hermes-executor-release");
       mode_ = "Release";
     } catch (UnsatisfiedLinkError e) {
       SoLoader.loadLibrary("hermes-executor-debug");
       mode_ = "Debug";
+=======
+      SoLoader.loadLibrary("hermes-executor-debug");
+      mode_ = "Debug";
+    } catch (UnsatisfiedLinkError e) {
+      SoLoader.loadLibrary("hermes-executor-release");
+      mode_ = "Release";
+>>>>>>> fb/0.62-stable
     }
   }
 
@@ -31,6 +51,7 @@ public class HermesExecutor extends JavaScriptExecutor {
     super(
         config == null
             ? initHybridDefaultConfig()
+<<<<<<< HEAD
             : initHybrid(
                 config.heapSizeMB,
                 config.es6Symbol,
@@ -39,6 +60,9 @@ public class HermesExecutor extends JavaScriptExecutor {
                 config.heapDumper,
                 config.tripWireCooldownMS,
                 config.tripWireLimitBytes));
+=======
+            : initHybrid(config.heapSizeMB, config.es6Symbol, config.bytecodeWarmupPercent));
+>>>>>>> fb/0.62-stable
   }
 
   @Override
@@ -58,6 +82,7 @@ public class HermesExecutor extends JavaScriptExecutor {
   private static native HybridData initHybridDefaultConfig();
 
   private static native HybridData initHybrid(
+<<<<<<< HEAD
       long heapSizeMB,
       boolean es6Symbol,
       int bytecodeWarmupPercent,
@@ -65,4 +90,7 @@ public class HermesExecutor extends JavaScriptExecutor {
       @Nullable HermesMemoryDumper heapDumper,
       long tripWireCooldownMS,
       long tripWireLimitBytes);
+=======
+      long heapSizeMB, boolean es6Symbol, int bytecodeWarmupPercent);
+>>>>>>> fb/0.62-stable
 }

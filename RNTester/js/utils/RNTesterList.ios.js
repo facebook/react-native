@@ -19,21 +19,27 @@ const ComponentExamples: Array<RNTesterExample> = [
     supportsTVOS: true,
   },
   {
+<<<<<<< HEAD
     key: 'ARTExample',
     module: require('../examples/ART/ARTExample'),
     supportsTVOS: true,
   },
   {
+=======
+>>>>>>> fb/0.62-stable
     key: 'ButtonExample',
     module: require('../examples/Button/ButtonExample'),
     supportsTVOS: true,
   },
+<<<<<<< HEAD
   // [TODO(OSS Candidate ISS#2710739)
   {
     key: 'DarkModeExample',
     module: require('../examples/DarkModeExample/DarkModeExample'),
     supportsTVOS: false,
   }, // ]TODO(OSS Candidate ISS#2710739)
+=======
+>>>>>>> fb/0.62-stable
   {
     key: 'DatePickerIOSExample',
     module: require('../examples/DatePicker/DatePickerIOSExample'),
@@ -44,12 +50,15 @@ const ComponentExamples: Array<RNTesterExample> = [
     module: require('../examples/FlatList/FlatListExample'),
     supportsTVOS: true,
   },
+<<<<<<< HEAD
   // [TODO(OSS Candidate ISS#2710739)
   {
     key: 'FocusEvents',
     module: require('../examples/FocusEventsExample/FocusEventsExample'),
     supportsTVOS: true,
   }, // ]TODO(OSS Candidate ISS#2710739)
+=======
+>>>>>>> fb/0.62-stable
   {
     key: 'ImageExample',
     module: require('../examples/Image/ImageExample'),
@@ -218,6 +227,14 @@ const APIExamples: Array<RNTesterExample> = [
     supportsTVOS: true,
   },
   {
+<<<<<<< HEAD
+=======
+    key: 'AppearanceExample',
+    module: require('../examples/Appearance/AppearanceExample'),
+    supportsTVOS: false,
+  },
+  {
+>>>>>>> fb/0.62-stable
     key: 'AppStateExample',
     module: require('../examples/AppState/AppStateExample'),
     supportsTVOS: true,
@@ -248,6 +265,13 @@ const APIExamples: Array<RNTesterExample> = [
     supportsTVOS: false,
   },
   {
+<<<<<<< HEAD
+=======
+    key: 'DevSettings',
+    module: require('../examples/DevSettings/DevSettingsExample'),
+  },
+  {
+>>>>>>> fb/0.62-stable
     key: 'Dimensions',
     module: require('../examples/Dimensions/DimensionsExample'),
     supportsTVOS: true,
@@ -349,7 +373,11 @@ const APIExamples: Array<RNTesterExample> = [
   },
 ];
 
+<<<<<<< HEAD
 const Modules: $TEMPORARY$object<{||}> = {};
+=======
+const Modules: {...} = {};
+>>>>>>> fb/0.62-stable
 
 APIExamples.concat(ComponentExamples).forEach(Example => {
   Modules[Example.key] = Example.module;

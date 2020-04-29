@@ -7,6 +7,10 @@
  * @flow
  * @format
  */
+<<<<<<< HEAD
+=======
+
+>>>>>>> fb/0.62-stable
 'use strict';
 
 module.exports = {
@@ -16,7 +20,11 @@ module.exports = {
     );
     return null;
   },
+<<<<<<< HEAD
   getConstants: (): $TEMPORARY$object<{||}> => ({}),
+=======
+  getConstants: (): {...} => ({}),
+>>>>>>> fb/0.62-stable
   getConstantsForViewManager: (viewManagerName: string) => {},
   getDefaultEventTypes: (): Array<$FlowFixMe> => [],
   playTouchSound: () => {},

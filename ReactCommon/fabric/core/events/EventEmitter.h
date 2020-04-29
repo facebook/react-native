@@ -1,9 +1,10 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
+
 #pragma once
 
 #include <memory>
@@ -13,6 +14,7 @@
 #include <react/core/EventDispatcher.h>
 #include <react/core/EventPriority.h>
 #include <react/core/EventTarget.h>
+#include <react/core/ReactPrimitives.h>
 
 namespace facebook {
 namespace react {
@@ -28,12 +30,6 @@ using SharedEventEmitter = std::shared_ptr<const EventEmitter>;
  * event.
  */
 class EventEmitter {
-  /*
-   * We have to repeat `Tag` type definition here because `events` module does
-   * not depend on `core` module (and should not).
-   */
-  using Tag = int32_t;
-
  public:
   using Shared = std::shared_ptr<EventEmitter const>;
 

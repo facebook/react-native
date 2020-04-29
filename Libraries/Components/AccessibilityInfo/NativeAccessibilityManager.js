@@ -38,7 +38,11 @@ export interface Spec extends TurboModule {
     onSuccess: (isScreenReaderEnabled: boolean) => void,
     onError: (error: Object) => void,
   ) => void;
+<<<<<<< HEAD
   +setAccessibilityContentSizeMultipliers: (JSMultiipliers: {|
+=======
+  +setAccessibilityContentSizeMultipliers: (JSMultipliers: {|
+>>>>>>> fb/0.62-stable
     +extraSmall?: ?number,
     +small?: ?number,
     +medium?: ?number,

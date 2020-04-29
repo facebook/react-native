@@ -89,7 +89,12 @@ jest
     mockComponent('../Libraries/Text/Text', MockNativeMethods),
   )
   .mock('../Libraries/Components/TextInput/TextInput', () =>
-    mockComponent('../Libraries/Components/TextInput/TextInput'),
+    mockComponent('../Libraries/Components/TextInput/TextInput', {
+      ...MockNativeMethods,
+      isFocused: jest.fn(),
+      clear: jest.fn(),
+      getNativeRef: jest.fn(),
+    }),
   )
   .mock('../Libraries/Modal/Modal', () =>
     mockComponent('../Libraries/Modal/Modal'),
@@ -125,6 +130,7 @@ jest
       '../Libraries/Components/ActivityIndicator/ActivityIndicator',
     ),
   )
+<<<<<<< HEAD
   .mock('../Libraries/Animated/src/Animated', () => {
     const Animated = jest.requireActual('../Libraries/Animated/src/Animated');
     Animated.Text.__skipSetNativeProps_FOR_TESTS_ONLY = true;
@@ -146,6 +152,8 @@ jest
     };
     return AnimatedImplementation;
   })
+=======
+>>>>>>> fb/0.62-stable
   .mock('../Libraries/AppState/AppState', () => ({
     addEventListener: jest.fn(),
     removeEventListener: jest.fn(),
@@ -327,12 +335,29 @@ jest
   }))
   .mock('../Libraries/ReactNative/requireNativeComponent', () => {
     const React = require('react');
+<<<<<<< HEAD
 
     return viewName => {
       const Component = class extends React.Component {
         render() {
           return React.createElement(viewName, this.props, this.props.children);
         }
+=======
+
+    return viewName => {
+      const Component = class extends React.Component {
+        render() {
+          return React.createElement(viewName, this.props, this.props.children);
+        }
+
+        // The methods that exist on host components
+        blur = jest.fn();
+        focus = jest.fn();
+        measure = jest.fn();
+        measureInWindow = jest.fn();
+        measureLayout = jest.fn();
+        setNativeProps = jest.fn();
+>>>>>>> fb/0.62-stable
       };
 
       if (viewName === 'RCTView') {

@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -24,10 +24,16 @@
 - (instancetype)initWithManagerClass:(Class)managerClass
                               bridge:(RCTBridge *)bridge NS_DESIGNATED_INITIALIZER;
 
+<<<<<<< HEAD
 - (RCTPlatformView *)createViewWithTag:(NSNumber *)tag; // TODO(macOS ISS#2323203)
+=======
+- (UIView *)createViewWithTag:(NSNumber *)tag rootTag:(NSNumber *)rootTag;
+>>>>>>> fb/0.62-stable
 - (RCTShadowView *)createShadowViewWithTag:(NSNumber *)tag;
 - (void)setProps:(NSDictionary<NSString *, id> *)props forView:(id<RCTComponent>)view;
 - (void)setProps:(NSDictionary<NSString *, id> *)props forShadowView:(RCTShadowView *)shadowView;
+
+@property (nonatomic, copy, nullable) void (^eventInterceptor)(NSString *eventName, NSDictionary *event, NSNumber *reactTag);
 
 - (NSDictionary<NSString *, id> *)viewConfig;
 

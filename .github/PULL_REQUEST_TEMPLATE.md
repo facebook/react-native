@@ -22,4 +22,8 @@ If you are making a new change then one of the following should be done:
 
 #### Focus areas to test
 
+<<<<<<< HEAD
 (optional)
+=======
+<!-- Demonstrate the code is solid. Example: The exact commands you ran and their output, screenshots / videos if the pull request changes the user interface. -->
+>>>>>>> fb/0.62-stable

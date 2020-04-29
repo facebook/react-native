@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
@@ -8,16 +8,12 @@ package com.facebook.react.devsupport;
 
 import android.content.Context;
 import android.os.AsyncTask;
-import android.os.Handler;
-import android.os.Looper;
 import android.widget.Toast;
 import androidx.annotation.Nullable;
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.R;
-import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.common.ReactConstants;
-import com.facebook.react.common.network.OkHttpCallUtil;
 import com.facebook.react.devsupport.interfaces.DevBundleDownloadListener;
 import com.facebook.react.devsupport.interfaces.PackagerStatusCallback;
 import com.facebook.react.devsupport.interfaces.StackFrame;
@@ -38,7 +34,6 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import okhttp3.Call;
 import okhttp3.Callback;
-import okhttp3.ConnectionPool;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -68,8 +63,6 @@ public class DevServerHelper {
 
   private static final String PACKAGER_OK_STATUS = "packager-status:running";
 
-  private static final int LONG_POLL_KEEP_ALIVE_DURATION_MS = 2 * 60 * 1000; // 2 mins
-  private static final int LONG_POLL_FAILURE_DELAY_MS = 5000;
   private static final int HTTP_CONNECT_TIMEOUT_MS = 5000;
 
   private static final String DEBUGGER_MSG_DISABLE = "{ \"id\":1,\"method\":\"Debugger.disable\" }";
@@ -102,7 +95,6 @@ public class DevServerHelper {
 
   private enum BundleType {
     BUNDLE("bundle"),
-    DELTA("delta"),
     MAP("map");
 
     private final String mTypeID;
@@ -118,15 +110,11 @@ public class DevServerHelper {
 
   private final DevInternalSettings mSettings;
   private final OkHttpClient mClient;
-  private final Handler mRestartOnChangePollingHandler;
   private final BundleDownloader mBundleDownloader;
   private final String mPackageName;
 
-  private boolean mOnChangePollingEnabled;
   private @Nullable JSPackagerClient mPackagerClient;
   private @Nullable InspectorPackagerConnection mInspectorPackagerConnection;
-  private @Nullable OkHttpClient mOnChangePollingClient;
-  private @Nullable OnServerContentChangeListener mOnServerContentChangeListener;
   private InspectorPackagerConnection.BundleStatusProvider mBundlerStatusProvider;
 
   public DevServerHelper(
@@ -143,7 +131,6 @@ public class DevServerHelper {
             .build();
     mBundleDownloader = new BundleDownloader(mClient);
 
-    mRestartOnChangePollingHandler = new Handler(Looper.getMainLooper());
     mPackageName = packageName;
   }
 
@@ -397,8 +384,12 @@ public class DevServerHelper {
       File outputFile,
       String bundleURL,
       BundleDownloader.BundleInfo bundleInfo) {
+<<<<<<< HEAD
     mBundleDownloader.downloadBundleFromURL(
         callback, outputFile, bundleURL, bundleInfo, getDeltaClientType());
+=======
+    mBundleDownloader.downloadBundleFromURL(callback, outputFile, bundleURL, bundleInfo);
+>>>>>>> fb/0.62-stable
   }
 
   public void downloadBundleFromURL(
@@ -408,17 +399,7 @@ public class DevServerHelper {
       BundleDownloader.BundleInfo bundleInfo,
       Request.Builder requestBuilder) {
     mBundleDownloader.downloadBundleFromURL(
-        callback, outputFile, bundleURL, bundleInfo, getDeltaClientType(), requestBuilder);
-  }
-
-  private BundleDeltaClient.ClientType getDeltaClientType() {
-    if (mSettings.isBundleDeltasCppEnabled()) {
-      return BundleDeltaClient.ClientType.NATIVE;
-    } else if (mSettings.isBundleDeltasEnabled()) {
-      return BundleDeltaClient.ClientType.DEV_SUPPORT;
-    } else {
-      return BundleDeltaClient.ClientType.NONE;
-    }
+        callback, outputFile, bundleURL, bundleInfo, requestBuilder);
   }
 
   /** @return the host to use when connecting to the bundle server from the host itself. */
@@ -475,7 +456,11 @@ public class DevServerHelper {
   public String getDevServerBundleURL(final String jsModulePath) {
     return createBundleURL(
         jsModulePath,
+<<<<<<< HEAD
         mSettings.isBundleDeltasEnabled() ? BundleType.DELTA : BundleType.BUNDLE,
+=======
+        BundleType.BUNDLE,
+>>>>>>> fb/0.62-stable
         mSettings.getPackagerConnectionSettings().getDebugServerHost());
   }
 
@@ -536,6 +521,7 @@ public class DevServerHelper {
     return String.format(Locale.US, "http://%s/status", host);
   }
 
+<<<<<<< HEAD
   public void stopPollingOnChangeEndpoint() {
     mOnChangePollingEnabled = false;
     mRestartOnChangePollingHandler.removeCallbacksAndMessages(null);
@@ -620,6 +606,8 @@ public class DevServerHelper {
         mSettings.getPackagerConnectionSettings().getDebugServerHost());
   }
 
+=======
+>>>>>>> fb/0.62-stable
   private String createLaunchJSDevtoolsCommandUrl() {
     return String.format(
         Locale.US,
@@ -652,8 +640,7 @@ public class DevServerHelper {
   }
 
   public String getSourceUrl(String mainModuleName) {
-    return createBundleURL(
-        mainModuleName, mSettings.isBundleDeltasEnabled() ? BundleType.DELTA : BundleType.BUNDLE);
+    return createBundleURL(mainModuleName, BundleType.BUNDLE);
   }
 
   public String getJSBundleURLForRemoteDebugging(String mainModuleName) {

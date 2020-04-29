@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
@@ -6,6 +7,18 @@
  */
 package com.facebook.react.fabric;
 
+=======
+/*
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+package com.facebook.react.fabric;
+
+import androidx.annotation.NonNull;
+>>>>>>> fb/0.62-stable
 import java.util.HashMap;
 import java.util.Map;
 
@@ -17,7 +30,11 @@ import java.util.Map;
  */
 public class FabricComponents {
 
+<<<<<<< HEAD
   private static final Map<String, String> sComponentNames = new HashMap<>();
+=======
+  private static @NonNull final Map<String, String> sComponentNames = new HashMap<>();
+>>>>>>> fb/0.62-stable
 
   static {
     // TODO T31905686: unify component names between JS - Android - iOS - C++
@@ -33,6 +50,12 @@ public class FabricComponents {
     sComponentNames.put("ShimmeringView", "RKShimmeringView");
     sComponentNames.put("TemplateView", "RCTTemplateView");
     sComponentNames.put("AxialGradientView", "RCTAxialGradientView");
+<<<<<<< HEAD
+=======
+    sComponentNames.put("Video", "RCTVideo");
+    sComponentNames.put("StickerInputView", "RCTStickerInputView");
+    sComponentNames.put("Map", "RCTMap");
+>>>>>>> fb/0.62-stable
   }
 
   /** @return the name of component in the Fabric environment */

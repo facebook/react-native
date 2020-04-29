@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -27,7 +27,11 @@ class JSI_EXPORT TurboCxxModule : public TurboModule {
  public:
   TurboCxxModule(
       std::unique_ptr<facebook::xplat::module::CxxModule> cxxModule,
+<<<<<<< HEAD
       std::shared_ptr<JSCallInvoker> jsInvoker);
+=======
+      std::shared_ptr<CallInvoker> jsInvoker);
+>>>>>>> fb/0.62-stable
 
   virtual facebook::jsi::Value get(
       facebook::jsi::Runtime &runtime,

@@ -16,6 +16,7 @@
 #import <string>
 #import <unordered_map>
 
+<<<<<<< HEAD
 static std::unordered_map<std::string, Class (*)(void)> sCoreModuleClassMap = {
   {"ExceptionsManager", RCTExceptionsManagerCls},
 {"ImageLoader", RCTImageLoaderCls},
@@ -23,6 +24,35 @@ static std::unordered_map<std::string, Class (*)(void)> sCoreModuleClassMap = {
 };
 
 Class RCTCoreModulesClassProvider(const char *name) {
+=======
+Class RCTCoreModulesClassProvider(const char *name) {
+  static std::unordered_map<std::string, Class (*)(void)> sCoreModuleClassMap = {
+    {"AccessibilityManager", RCTAccessibilityManagerCls},
+    {"Appearance", RCTAppearanceCls},
+    {"DeviceInfo", RCTDeviceInfoCls},
+    {"ExceptionsManager", RCTExceptionsManagerCls},
+    {"PlatformConstants", RCTPlatformCls},
+    {"Clipboard", RCTClipboardCls},
+    {"I18nManager", RCTI18nManagerCls},
+    {"SourceCode", RCTSourceCodeCls},
+    {"ActionSheetManager", RCTActionSheetManagerCls},
+    {"AlertManager", RCTAlertManagerCls},
+    {"AsyncLocalStorage", RCTAsyncLocalStorageCls},
+    {"Timing", RCTTimingCls},
+    {"StatusBarManager", RCTStatusBarManagerCls},
+    {"KeyboardObserver", RCTKeyboardObserverCls},
+    {"AppState", RCTAppStateCls},
+    {"PerfMonitor", RCTPerfMonitorCls},
+    {"DevMenu", RCTDevMenuCls},
+    {"DevSettings", RCTDevSettingsCls},
+    {"RedBox", RCTRedBoxCls},
+    {"LogBox", RCTLogBoxCls},
+    {"TVNavigationEventEmitter", RCTTVNavigationEventEmitterCls},
+    {"WebSocketExecutor", RCTWebSocketExecutorCls},
+    {"WebSocketModule", RCTWebSocketModuleCls},
+  };
+
+>>>>>>> fb/0.62-stable
   auto p = sCoreModuleClassMap.find(name);
   if (p != sCoreModuleClassMap.end()) {
     auto classFunc = p->second;

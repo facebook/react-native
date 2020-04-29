@@ -1,10 +1,36 @@
+<<<<<<< HEAD
 load("@fbsource//tools/build_defs:default_platform_defs.bzl", "ANDROID", "APPLE", "IOS")
 load("@fbsource//tools/build_defs:fb_native_wrapper.bzl", "fb_native")
 load("@fbsource//tools/build_defs:fb_xplat_cxx_binary.bzl", "fb_xplat_cxx_binary")
+=======
+load("@fbsource//tools/build_defs:fb_native_wrapper.bzl", "fb_native")
+load("@fbsource//tools/build_defs:fb_xplat_cxx_binary.bzl", "fb_xplat_cxx_binary")
+load("@fbsource//tools/build_defs:platform_defs.bzl", "ANDROID", "APPLE", "IOS")
+>>>>>>> fb/0.62-stable
 load("@fbsource//tools/build_defs/oss:rn_defs.bzl", "rn_android_library", "rn_xplat_cxx_library")
 load("@fbsource//tools/build_defs/third_party:yarn_defs.bzl", "yarn_workspace")
 load("@fbsource//xplat/js/react-native-github/packages/react-native-codegen:DEFS.bzl", "rn_codegen_components", "rn_codegen_modules")
 load("//tools/build_defs/oss:rn_defs.bzl", "react_native_target")
+<<<<<<< HEAD
+=======
+
+fb_native.sh_binary(
+    name = "codegen_rn_modules_tests",
+    main = "src/cli/verify_with_old_codegen.sh",
+    visibility = ["PUBLIC"],
+    resources = [
+        "fbsource//xplat/js:setup_env",
+        "src/cli/verify_with_old_codegen.js",
+        "src/cli/verify_with_old_codegen.sh",
+    ],
+)
+>>>>>>> fb/0.62-stable
+
+fb_native.sh_test(
+    name = "verify_all_modules_with_old_codegen",
+    test = "src/cli/verify_all_modules_with_old_codegen.sh",
+    visibility = ["PUBLIC"],
+)
 
 fb_native.sh_binary(
     name = "write_to_json",
@@ -112,6 +138,7 @@ rn_xplat_cxx_library(
     ],
     deps = [
         ":generated_components-codegen_tests",
+<<<<<<< HEAD
     ],
 )
 
@@ -140,6 +167,36 @@ rn_xplat_cxx_library(
     ],
 )
 
+=======
+    ],
+)
+
+rn_xplat_cxx_library(
+    name = "rn_codegen_library_mm",
+    srcs = ["buck_tests/emptyFile.mm"],
+    headers = [],
+    apple_sdks = (IOS,),
+    compiler_flags = [
+        "-fexceptions",
+        "-frtti",
+        "-std=c++14",
+        "-Wall",
+    ],
+    platforms = (APPLE),
+    preprocessor_flags = [
+        "-DLOG_TAG=\"ReactNative\"",
+        "-DWITH_FBSYSTRACE=1",
+    ],
+    visibility = [
+        "PUBLIC",
+    ],
+    deps = [
+        ":generated_components-codegen_tests",
+        ":generated_objcpp_modules-codegen_tests",
+    ],
+)
+
+>>>>>>> fb/0.62-stable
 yarn_workspace(
     name = "yarn-workspace",
     srcs = glob(

@@ -14,7 +14,14 @@ const TimingAnimation = require('../animations/TimingAnimation');
 
 describe('Timing Animation', () => {
   it('should return array of 61 items', () => {
+<<<<<<< HEAD
     const timingAnim = new TimingAnimation({duration: 1000});
+=======
+    const timingAnim = new TimingAnimation({
+      duration: 1000,
+      useNativeDriver: false,
+    });
+>>>>>>> fb/0.62-stable
     const config = timingAnim.__getNativeAnimationConfig();
 
     expect(config.frames.length).toBe(61);
@@ -23,7 +30,14 @@ describe('Timing Animation', () => {
   });
 
   it('should cope with zero duration', () => {
+<<<<<<< HEAD
     const timingAnim = new TimingAnimation({duration: 0});
+=======
+    const timingAnim = new TimingAnimation({
+      duration: 0,
+      useNativeDriver: false,
+    });
+>>>>>>> fb/0.62-stable
     const config = timingAnim.__getNativeAnimationConfig();
 
     expect(config.frames.length).toBe(1);

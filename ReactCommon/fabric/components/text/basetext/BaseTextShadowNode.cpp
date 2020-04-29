@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -18,11 +18,11 @@ namespace facebook {
 namespace react {
 
 AttributedString BaseTextShadowNode::getAttributedString(
-    const TextAttributes &textAttributes,
-    const SharedShadowNode &parentNode) const {
+    TextAttributes const &textAttributes,
+    ShadowNode const &parentNode) {
   auto attributedString = AttributedString{};
 
-  for (const auto &childNode : parentNode->getChildren()) {
+  for (auto const &childNode : parentNode.getChildren()) {
     // RawShadowNode
     auto rawTextShadowNode =
         std::dynamic_pointer_cast<const RawTextShadowNode>(childNode);
@@ -35,7 +35,7 @@ AttributedString BaseTextShadowNode::getAttributedString(
       // `attributedString` causes a retain cycle (besides that fact that we
       // don't need it at all). Storing a `ShadowView` instance instead of
       // `ShadowNode` should properly fix this problem.
-      fragment.parentShadowView = ShadowView(*parentNode);
+      fragment.parentShadowView = ShadowView(parentNode);
       attributedString.appendFragment(fragment);
       continue;
     }
@@ -48,13 +48,14 @@ AttributedString BaseTextShadowNode::getAttributedString(
       localTextAttributes.apply(textShadowNode->getProps()->textAttributes);
       attributedString.appendAttributedString(
           textShadowNode->getAttributedString(
-              localTextAttributes, textShadowNode));
+              localTextAttributes, *textShadowNode));
       continue;
     }
 
     // Any other kind of ShadowNode
     auto fragment = AttributedString::Fragment{};
-    fragment.shadowView = ShadowView(*childNode);
+    fragment.string = AttributedString::Fragment::AttachmentCharacter();
+    fragment.parentShadowView = ShadowView(*childNode);
     fragment.textAttributes = textAttributes;
     attributedString.appendFragment(fragment);
   }

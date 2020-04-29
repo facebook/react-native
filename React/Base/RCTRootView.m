@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -14,7 +14,11 @@
 #import "RCTAssert.h"
 #import "RCTBridge.h"
 #import "RCTBridge+Private.h"
+<<<<<<< HEAD
 #import "RCTDevSettings.h"// TODO(OSS Candidate ISS#2710739)
+=======
+#import "RCTConstants.h"
+>>>>>>> fb/0.62-stable
 #import "RCTEventDispatcher.h"
 // TODO(OSS Candidate ISS#2710739): remove #import "RCTKeyCommands.h"
 #import "RCTLog.h"
@@ -386,6 +390,12 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   if (bothSizesHaveAZeroDimension || sizesAreEqual) {
     return;
   }
+<<<<<<< HEAD
+=======
+
+  [self invalidateIntrinsicContentSize];
+  [self.superview setNeedsLayout];
+>>>>>>> fb/0.62-stable
 
   [_delegate rootViewDidChangeIntrinsicSize:self];
 }
@@ -402,12 +412,18 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   [self showLoadingView];
 }
 
-- (void)dealloc
+- (void)traitCollectionDidChange:(UITraitCollection *)previousTraitCollection
 {
-  [[NSNotificationCenter defaultCenter] removeObserver:self];
-  [_contentView invalidate];
+  [super traitCollectionDidChange:previousTraitCollection];
+
+  [[NSNotificationCenter defaultCenter] postNotificationName:RCTUserInterfaceStyleDidChangeNotification
+                                                      object:self
+                                                    userInfo:@{
+                                                      RCTUserInterfaceStyleDidChangeNotificationTraitCollectionKey: self.traitCollection,
+                                                    }];
 }
 
+<<<<<<< HEAD
 
 #if TARGET_OS_OSX // [TODO(macOS ISS#2323203)
 - (NSMenu *)menuForEvent:(NSEvent *)event
@@ -425,6 +441,11 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
     [[_contentView touchHandler] willShowMenuWithEvent:event];
   }
   return menu;
+=======
+- (void)dealloc
+{
+  [_contentView invalidate];
+>>>>>>> fb/0.62-stable
 }
 #endif // ]TODO(macOS ISS#2323203)
 @end

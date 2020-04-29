@@ -10,10 +10,16 @@
 
 'use strict';
 
+<<<<<<< HEAD
 const PropTypes = require('prop-types');
 const DeprecatedColorPropType = require('./DeprecatedColorPropType');
 const DeprecatedViewPropTypes = require('./DeprecatedViewPropTypes');
 const DocumentSelectionState = require('../vendor/document/selection/DocumentSelectionState');
+=======
+const DeprecatedColorPropType = require('./DeprecatedColorPropType');
+const DeprecatedViewPropTypes = require('./DeprecatedViewPropTypes');
+const PropTypes = require('prop-types');
+>>>>>>> fb/0.62-stable
 const Text = require('../Text/Text');
 
 const DataDetectorTypes = [
@@ -35,7 +41,16 @@ module.exports = {
    * - `sentences`: first letter of each sentence (*default*).
    * - `none`: don't auto capitalize anything.
    */
+<<<<<<< HEAD
   autoCapitalize: PropTypes.oneOf(['none', 'sentences', 'words', 'characters']),
+=======
+  autoCapitalize: (PropTypes.oneOf([
+    'none',
+    'sentences',
+    'words',
+    'characters',
+  ]): React$PropType$Primitive<'none' | 'sentences' | 'words' | 'characters'>),
+>>>>>>> fb/0.62-stable
   /**
    * Determines which content to suggest on auto complete, e.g.`username`.
    * To disable auto complete, use `off`.
@@ -60,7 +75,11 @@ module.exports = {
    *
    * @platform android
    */
+<<<<<<< HEAD
   autoCompleteType: PropTypes.oneOf([
+=======
+  autoCompleteType: (PropTypes.oneOf([
+>>>>>>> fb/0.62-stable
     'cc-csc',
     'cc-exp',
     'cc-exp-month',
@@ -74,7 +93,25 @@ module.exports = {
     'tel',
     'username',
     'off',
+<<<<<<< HEAD
   ]),
+=======
+  ]): React$PropType$Primitive<
+    | 'cc-csc'
+    | 'cc-exp'
+    | 'cc-exp-month'
+    | 'cc-exp-year'
+    | 'cc-number'
+    | 'email'
+    | 'name'
+    | 'password'
+    | 'postal-code'
+    | 'street-address'
+    | 'tel'
+    | 'username'
+    | 'off',
+  >),
+>>>>>>> fb/0.62-stable
   /**
    * If `false`, disables auto-correct. The default value is `true`.
    */
@@ -129,6 +166,10 @@ module.exports = {
    * - `name-phone-pad`
    * - `twitter`
    * - `web-search`
+<<<<<<< HEAD
+=======
+   * - `ascii-capable-number-pad`
+>>>>>>> fb/0.62-stable
    *
    * *Android Only*
    *
@@ -136,7 +177,11 @@ module.exports = {
    *
    * - `visible-password`
    */
+<<<<<<< HEAD
   keyboardType: PropTypes.oneOf([
+=======
+  keyboardType: (PropTypes.oneOf([
+>>>>>>> fb/0.62-stable
     // Cross-platform
     'default',
     'email-address',
@@ -151,14 +196,45 @@ module.exports = {
     'decimal-pad',
     'twitter',
     'web-search',
+<<<<<<< HEAD
     // Android-only
     'visible-password',
   ]),
+=======
+    // iOS 10+ only
+    'ascii-capable-number-pad',
+    // Android-only
+    'visible-password',
+  ]): React$PropType$Primitive<
+    | 'default'
+    | 'email-address'
+    | 'numeric'
+    | 'phone-pad'
+    | 'number-pad'
+    | 'ascii-capable'
+    | 'numbers-and-punctuation'
+    | 'url'
+    | 'name-phone-pad'
+    | 'decimal-pad'
+    | 'twitter'
+    | 'web-search'
+    | 'ascii-capable-number-pad'
+    | 'visible-password',
+  >),
+>>>>>>> fb/0.62-stable
   /**
    * Determines the color of the keyboard.
    * @platform ios
    */
+<<<<<<< HEAD
   keyboardAppearance: PropTypes.oneOf(['default', 'light', 'dark']),
+=======
+  keyboardAppearance: (PropTypes.oneOf([
+    'default',
+    'light',
+    'dark',
+  ]): React$PropType$Primitive<'default' | 'light' | 'dark'>),
+>>>>>>> fb/0.62-stable
   /**
    * Determines how the return key should look. On Android you can also use
    * `returnKeyLabel`.
@@ -191,7 +267,11 @@ module.exports = {
    * - `route`
    * - `yahoo`
    */
+<<<<<<< HEAD
   returnKeyType: PropTypes.oneOf([
+=======
+  returnKeyType: (PropTypes.oneOf([
+>>>>>>> fb/0.62-stable
     // Cross-platform
     'done',
     'go',
@@ -208,7 +288,25 @@ module.exports = {
     'join',
     'route',
     'yahoo',
+<<<<<<< HEAD
   ]),
+=======
+  ]): React$PropType$Primitive<
+    | 'done'
+    | 'go'
+    | 'next'
+    | 'search'
+    | 'send'
+    | 'none'
+    | 'previous'
+    | 'default'
+    | 'emergency-call'
+    | 'google'
+    | 'join'
+    | 'route'
+    | 'yahoo',
+  >),
+>>>>>>> fb/0.62-stable
   /**
    * Sets the return key to the label. Use it instead of `returnKeyType`.
    * @platform android
@@ -250,7 +348,15 @@ module.exports = {
    * The default value is `simple`.
    * @platform android
    */
+<<<<<<< HEAD
   textBreakStrategy: PropTypes.oneOf(['simple', 'highQuality', 'balanced']),
+=======
+  textBreakStrategy: (PropTypes.oneOf([
+    'simple',
+    'highQuality',
+    'balanced',
+  ]): React$PropType$Primitive<'simple' | 'highQuality' | 'balanced'>),
+>>>>>>> fb/0.62-stable
   /**
    * Callback that is called when the text input is blurred.
    */
@@ -334,6 +440,7 @@ module.exports = {
    */
   selectionColor: DeprecatedColorPropType,
   /**
+<<<<<<< HEAD
    * An instance of `DocumentSelectionState`, this is some state that is responsible for
    * maintaining selection information for a document.
    *
@@ -357,6 +464,19 @@ module.exports = {
     start: PropTypes.number.isRequired,
     end: PropTypes.number,
   }),
+=======
+   * The start and end of the text input's selection. Set start and end to
+   * the same value to position the cursor.
+   */
+  selection: (PropTypes.shape({
+    start: PropTypes.number.isRequired,
+    end: PropTypes.number,
+  }): React$PropType$Primitive<{
+    end?: number,
+    start: number,
+    ...
+  }>),
+>>>>>>> fb/0.62-stable
   /**
    * The value to show for the text input. `TextInput` is a controlled
    * component, which means the native value will be forced to match this
@@ -378,12 +498,22 @@ module.exports = {
    * This property is supported only for single-line TextInput component.
    * @platform ios
    */
+<<<<<<< HEAD
   clearButtonMode: PropTypes.oneOf([
+=======
+  clearButtonMode: (PropTypes.oneOf([
+>>>>>>> fb/0.62-stable
     'never',
     'while-editing',
     'unless-editing',
     'always',
+<<<<<<< HEAD
   ]),
+=======
+  ]): React$PropType$Primitive<
+    'never' | 'while-editing' | 'unless-editing' | 'always',
+  >),
+>>>>>>> fb/0.62-stable
   /**
    * If `true`, clears the text field automatically when editing begins.
    * @platform ios
@@ -471,10 +601,27 @@ module.exports = {
    *
    * @platform ios
    */
+<<<<<<< HEAD
   dataDetectorTypes: PropTypes.oneOfType([
     PropTypes.oneOf(DataDetectorTypes),
     PropTypes.arrayOf(PropTypes.oneOf(DataDetectorTypes)),
   ]),
+=======
+  dataDetectorTypes: (PropTypes.oneOfType([
+    PropTypes.oneOf(DataDetectorTypes),
+    PropTypes.arrayOf(PropTypes.oneOf(DataDetectorTypes)),
+  ]): React$PropType$Primitive<
+    | 'phoneNumber'
+    | 'link'
+    | 'address'
+    | 'calendarEvent'
+    | 'none'
+    | 'all'
+    | Array<
+        'phoneNumber' | 'link' | 'address' | 'calendarEvent' | 'none' | 'all',
+      >,
+  >),
+>>>>>>> fb/0.62-stable
   /**
    * If `true`, caret is hidden. The default value is `false`.
    * This property is supported only for single-line TextInput component on iOS.
@@ -496,7 +643,11 @@ module.exports = {
    * expected semantic meaning for the content that users enter.
    * @platform ios
    */
+<<<<<<< HEAD
   textContentType: PropTypes.oneOf([
+=======
+  textContentType: (PropTypes.oneOf([
+>>>>>>> fb/0.62-stable
     'none',
     'URL',
     'addressCity',
@@ -525,7 +676,40 @@ module.exports = {
     'password',
     'newPassword',
     'oneTimeCode',
+<<<<<<< HEAD
   ]),
+=======
+  ]): React$PropType$Primitive<
+    | 'none'
+    | 'URL'
+    | 'addressCity'
+    | 'addressCityAndState'
+    | 'addressState'
+    | 'countryName'
+    | 'creditCardNumber'
+    | 'emailAddress'
+    | 'familyName'
+    | 'fullStreetAddress'
+    | 'givenName'
+    | 'jobTitle'
+    | 'location'
+    | 'middleName'
+    | 'name'
+    | 'namePrefix'
+    | 'nameSuffix'
+    | 'nickname'
+    | 'organizationName'
+    | 'postalCode'
+    | 'streetAddressLine1'
+    | 'streetAddressLine2'
+    | 'sublocality'
+    | 'telephoneNumber'
+    | 'username'
+    | 'password'
+    | 'newPassword'
+    | 'oneTimeCode',
+  >),
+>>>>>>> fb/0.62-stable
   /**
    * When `false`, it will prevent the soft keyboard from showing when the field is focused.
    * Defaults to `true`.

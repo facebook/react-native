@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -16,7 +16,10 @@ typedef void (^RCTRemoteNotificationCallback)(UIBackgroundFetchResult result);
 #endif // TODO(macOS ISS#2323203)
 
 #if !TARGET_OS_TV && !TARGET_OS_UIKITFORMAC
+<<<<<<< HEAD
 #if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
+=======
+>>>>>>> fb/0.62-stable
 + (void)didRegisterUserNotificationSettings:(UIUserNotificationSettings *)notificationSettings;
 #endif // TODO(macOS ISS#2323203)
 + (void)didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken;

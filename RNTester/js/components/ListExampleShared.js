@@ -30,6 +30,7 @@ export type Item = {
   key: string,
   pressed: boolean,
   noImage?: ?boolean,
+  ...
 };
 
 function genItemData(count: number, start: number = 0): Array<Item> {
@@ -52,11 +53,11 @@ const ITEM_HEIGHT = 72;
 class ItemComponent extends React.PureComponent<{
   fixedHeight?: ?boolean,
   horizontal?: ?boolean,
-  isSelected?: ?boolean, // TODO(macOS ISS#2323203)
   item: Item,
   onPress: (key: string) => void,
   onShowUnderlay?: () => void,
   onHideUnderlay?: () => void,
+  ...
 }> {
   _onPress = () => {
     this.props.onPress(this.props.item.key);
@@ -65,20 +66,15 @@ class ItemComponent extends React.PureComponent<{
     const {fixedHeight, horizontal, item} = this.props;
     const itemHash = Math.abs(hashCode(item.title));
     const imgSource = THUMB_URLS[itemHash % THUMB_URLS.length];
-    const rowStyle = this.props.isSelected ? styles.selectedRow : styles.row; // TODO(macOS ISS#2323203)
     return (
       <TouchableHighlight
         onPress={this._onPress}
         onShowUnderlay={this.props.onShowUnderlay}
         onHideUnderlay={this.props.onHideUnderlay}
-        tvParallaxProperties={{
-          pressMagnification: 1.1,
-        }}
-        acceptsKeyboardFocus={false} // TODO(macOS ISS#2323203)
         style={horizontal ? styles.horizItem : styles.item}>
         <View
           style={[
-            rowStyle, // TODO(macOS ISS#2323203)
+            styles.row,
             horizontal && {width: HORIZ_WIDTH},
             fixedHeight && {height: ITEM_HEIGHT},
           ]}>
@@ -94,7 +90,7 @@ class ItemComponent extends React.PureComponent<{
   }
 }
 
-const renderStackedItem = ({item}: {item: Item}): React.Node => {
+const renderStackedItem = ({item}: {item: Item, ...}): React.Node => {
   const itemHash = Math.abs(hashCode(item.title));
   const imgSource = THUMB_URLS[itemHash % THUMB_URLS.length];
   return (
@@ -107,7 +103,7 @@ const renderStackedItem = ({item}: {item: Item}): React.Node => {
   );
 };
 
-class FooterComponent extends React.PureComponent<{}> {
+class FooterComponent extends React.PureComponent<{...}> {
   render(): React.Node {
     return (
       <View style={styles.headerFooterContainer}>
@@ -120,7 +116,7 @@ class FooterComponent extends React.PureComponent<{}> {
   }
 }
 
-class HeaderComponent extends React.PureComponent<{}> {
+class HeaderComponent extends React.PureComponent<{...}> {
   render(): React.Node {
     return (
       <View style={styles.headerFooterContainer}>
@@ -133,7 +129,7 @@ class HeaderComponent extends React.PureComponent<{}> {
   }
 }
 
-class ListEmptyComponent extends React.PureComponent<{}> {
+class ListEmptyComponent extends React.PureComponent<{...}> {
   render(): React.Node {
     return (
       <View style={styles.listEmpty}>
@@ -143,7 +139,7 @@ class ListEmptyComponent extends React.PureComponent<{}> {
   }
 }
 
-class SeparatorComponent extends React.PureComponent<{}> {
+class SeparatorComponent extends React.PureComponent<{...}> {
   render(): React.Node {
     return <View style={styles.separator} />;
   }
@@ -222,7 +218,7 @@ function getItemLayout(
   data: any,
   index: number,
   horizontal?: boolean,
-): $TEMPORARY$object<{|index: number, length: number, offset: number|}> {
+): {|index: number, length: number, offset: number|} {
   const [length, separator, header] = horizontal
     ? [HORIZ_WIDTH, 0, HEADER.width]
     : [ITEM_HEIGHT, SEPARATOR_HEIGHT, HEADER.height];
@@ -311,12 +307,6 @@ const styles = StyleSheet.create({
     padding: 10,
     backgroundColor: 'white',
   },
-  selectedRow: {
-    // [TODO(macOS ISS#2323203)
-    flexDirection: 'row',
-    padding: 10,
-    backgroundColor: '#DDECF8',
-  }, // ]TODO(macOS ISS#2323203)
   searchTextInput: {
     backgroundColor: 'white',
     borderColor: '#cccccc',
@@ -343,13 +333,6 @@ const styles = StyleSheet.create({
       margin: -10,
       transform: [{scale: 0.5}],
     },
-    macos: {
-      // [TODO(macOS ISS#2323203)
-      top: 4,
-      left: 12,
-      margin: -10,
-      transform: [{scale: 0.5}],
-    }, // ]TODO(macOS ISS#2323203)
   }),
   stacked: {
     alignItems: 'center',

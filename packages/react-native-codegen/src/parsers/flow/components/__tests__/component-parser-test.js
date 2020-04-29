@@ -5,7 +5,11 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @emails oncall+react_native
+<<<<<<< HEAD
  * @flow
+=======
+ * @flow strict-local
+>>>>>>> fb/0.62-stable
  * @format
  */
 

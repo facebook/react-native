@@ -91,11 +91,18 @@ export type ObjectPropertyType =
 type PropTypeTypeAnnotation =
   | $ReadOnly<{|
       type: 'BooleanTypeAnnotation',
-      default: boolean,
+      default: boolean | null,
     |}>
   | $ReadOnly<{|
       type: 'StringTypeAnnotation',
       default: string | null,
+<<<<<<< HEAD
+    |}>
+  | $ReadOnly<{|
+      type: 'DoubleTypeAnnotation',
+      default: number,
+=======
+>>>>>>> fb/0.62-stable
     |}>
   | $ReadOnly<{|
       type: 'DoubleTypeAnnotation',
@@ -103,7 +110,7 @@ type PropTypeTypeAnnotation =
     |}>
   | $ReadOnly<{|
       type: 'FloatTypeAnnotation',
-      default: number,
+      default: number | null,
     |}>
   | $ReadOnly<{|
       type: 'Int32TypeAnnotation',
@@ -117,8 +124,23 @@ type PropTypeTypeAnnotation =
       |}>,
     |}>
   | $ReadOnly<{|
+      type: 'Int32EnumTypeAnnotation',
+      default: number,
+      options: $ReadOnlyArray<{|
+        value: number,
+      |}>,
+    |}>
+  | $ReadOnly<{|
       type: 'NativePrimitiveTypeAnnotation',
-      name: 'ColorPrimitive' | 'ImageSourcePrimitive' | 'PointPrimitive',
+      name:
+        | 'ColorPrimitive'
+        | 'ImageSourcePrimitive'
+        | 'PointPrimitive'
+        | 'EdgeInsetsPrimitive',
+    |}>
+  | $ReadOnly<{|
+      type: 'ObjectTypeAnnotation',
+      properties: $ReadOnlyArray<PropTypeShape>,
     |}>
   | $ReadOnly<{|
       type: 'ObjectTypeAnnotation',
@@ -155,7 +177,22 @@ type PropTypeTypeAnnotation =
           |}>
         | $ReadOnly<{|
             type: 'NativePrimitiveTypeAnnotation',
+<<<<<<< HEAD
             name: 'ColorPrimitive' | 'ImageSourcePrimitive' | 'PointPrimitive',
+=======
+            name:
+              | 'ColorPrimitive'
+              | 'ImageSourcePrimitive'
+              | 'PointPrimitive'
+              | 'EdgeInsetsPrimitive',
+          |}>
+        | $ReadOnly<{|
+            type: 'ArrayTypeAnnotation',
+            elementType: $ReadOnly<{|
+              type: 'ObjectTypeAnnotation',
+              properties: $ReadOnlyArray<PropTypeShape>,
+            |}>,
+>>>>>>> fb/0.62-stable
           |}>,
     |}>;
 
@@ -270,6 +307,12 @@ export type OptionsShape = $ReadOnly<{|
   // Does not check for new name
   paperComponentName?: string,
 
+<<<<<<< HEAD
+=======
+  // Use for components that are not used on one or the other platform.
+  excludedPlatform?: 'iOS' | 'android',
+
+>>>>>>> fb/0.62-stable
   // Use for components currently being renamed in paper
   // Will use new name if it is available and fallback to this name
   paperComponentNameDeprecated?: string,
@@ -291,12 +334,15 @@ export type ComponentShape = $ReadOnly<{|
 export type SchemaType = $ReadOnly<{|
   modules: $ReadOnly<{
     [module: string]: $ReadOnly<{|
-      components?: $ReadOnly<{
-        [component: string]: ComponentShape,
+      components?: $ReadOnly<{[component: string]: ComponentShape, ...}>,
+      nativeModules?: $ReadOnly<{
+        [nativeModule: string]: NativeModuleShape,
+        ...,
       }>,
       nativeModules?: $ReadOnly<{
         [nativeModule: string]: NativeModuleShape,
       }>,
     |}>,
+    ...,
   }>,
 |}>;

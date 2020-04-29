@@ -31,6 +31,7 @@ type Props = $ReadOnly<{|
   source?: ?{
     fileName?: string,
     lineNumber?: number,
+    ...
   },
   frame?: ?Object,
   selection?: ?number,

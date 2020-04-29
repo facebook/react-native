@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
@@ -24,7 +24,6 @@ import com.facebook.react.uimanager.PointerEvents;
 import com.facebook.react.uimanager.Spacing;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.UIManagerModule;
-import com.facebook.react.uimanager.ViewGroupManager;
 import com.facebook.react.uimanager.ViewProps;
 import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.annotations.ReactPropGroup;
@@ -35,7 +34,7 @@ import java.util.Map;
 
 /** View manager for AndroidViews (plain React Views). */
 @ReactModule(name = ReactViewManager.REACT_CLASS)
-public class ReactViewManager extends ViewGroupManager<ReactViewGroup> {
+public class ReactViewManager extends ReactClippingViewManager<ReactViewGroup> {
 
   @VisibleForTesting public static final String REACT_CLASS = ViewProps.VIEW_CLASS_NAME;
 
@@ -171,12 +170,15 @@ public class ReactViewManager extends ViewGroupManager<ReactViewGroup> {
         fg == null
             ? null
             : ReactDrawableHelper.createDrawableFromJSDescription(view.getContext(), fg));
+<<<<<<< HEAD
   }
 
   @ReactProp(
       name = com.facebook.react.uimanager.ReactClippingViewGroupHelper.PROP_REMOVE_CLIPPED_SUBVIEWS)
   public void setRemoveClippedSubviews(ReactViewGroup view, boolean removeClippedSubviews) {
     view.setRemoveClippedSubviews(removeClippedSubviews);
+=======
+>>>>>>> fb/0.62-stable
   }
 
   @ReactProp(name = ViewProps.NEEDS_OFFSCREEN_ALPHA_COMPOSITING)
@@ -307,6 +309,7 @@ public class ReactViewManager extends ViewGroupManager<ReactViewGroup> {
           handleSetPressed(root, args);
           break;
         }
+<<<<<<< HEAD
     }
   }
 
@@ -353,50 +356,44 @@ public class ReactViewManager extends ViewGroupManager<ReactViewGroup> {
       parent.addViewWithSubviewClippingEnabled(child, index);
     } else {
       parent.addView(child, index);
+=======
+>>>>>>> fb/0.62-stable
     }
   }
 
   @Override
-  public int getChildCount(ReactViewGroup parent) {
-    boolean removeClippedSubviews = parent.getRemoveClippedSubviews();
-    if (removeClippedSubviews) {
-      return parent.getAllChildrenCount();
-    } else {
-      return parent.getChildCount();
+  public void receiveCommand(ReactViewGroup root, String commandId, @Nullable ReadableArray args) {
+    switch (commandId) {
+      case HOTSPOT_UPDATE_KEY:
+        {
+          handleHotspotUpdate(root, args);
+          break;
+        }
+      case "setPressed":
+        {
+          handleSetPressed(root, args);
+          break;
+        }
     }
   }
 
-  @Override
-  public View getChildAt(ReactViewGroup parent, int index) {
-    boolean removeClippedSubviews = parent.getRemoveClippedSubviews();
-    if (removeClippedSubviews) {
-      return parent.getChildAtWithSubviewClippingEnabled(index);
-    } else {
-      return parent.getChildAt(index);
+  private void handleSetPressed(ReactViewGroup root, @Nullable ReadableArray args) {
+    if (args == null || args.size() != 1) {
+      throw new JSApplicationIllegalArgumentException(
+          "Illegal number of arguments for 'setPressed' command");
     }
+    root.setPressed(args.getBoolean(0));
   }
 
-  @Override
-  public void removeViewAt(ReactViewGroup parent, int index) {
-    boolean removeClippedSubviews = parent.getRemoveClippedSubviews();
-    if (removeClippedSubviews) {
-      View child = getChildAt(parent, index);
-      if (child.getParent() != null) {
-        parent.removeView(child);
-      }
-      parent.removeViewWithSubviewClippingEnabled(child);
-    } else {
-      parent.removeViewAt(index);
+  private void handleHotspotUpdate(ReactViewGroup root, @Nullable ReadableArray args) {
+    if (args == null || args.size() != 2) {
+      throw new JSApplicationIllegalArgumentException(
+          "Illegal number of arguments for 'updateHotspot' command");
     }
-  }
-
-  @Override
-  public void removeAllViews(ReactViewGroup parent) {
-    boolean removeClippedSubviews = parent.getRemoveClippedSubviews();
-    if (removeClippedSubviews) {
-      parent.removeAllViewsWithSubviewClippingEnabled();
-    } else {
-      parent.removeAllViews();
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+      float x = PixelUtil.toPixelFromDIP(args.getDouble(0));
+      float y = PixelUtil.toPixelFromDIP(args.getDouble(1));
+      root.drawableHotspotChanged(x, y);
     }
   }
 }

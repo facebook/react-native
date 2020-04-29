@@ -49,7 +49,7 @@ That is my proper element.
 --Faust, JW Goethe
 `;
 
-class XHRExampleBinaryUpload extends React.Component<{}, $FlowFixMeState> {
+class XHRExampleBinaryUpload extends React.Component<{...}, $FlowFixMeState> {
   static handlePostTestServerUpload(xhr: XMLHttpRequest) {
     if (xhr.status !== 200) {
       Alert.alert(
@@ -72,9 +72,7 @@ class XHRExampleBinaryUpload extends React.Component<{}, $FlowFixMeState> {
     Linking.openURL(url);
   }
 
-  state:
-    | $FlowFixMe
-    | $TEMPORARY$object<{|type: $TEMPORARY$string<'Uint8Array'>|}> = {
+  state: $FlowFixMe | {|type: $TEMPORARY$string<'Uint8Array'>|} = {
     type: 'Uint8Array',
   };
 

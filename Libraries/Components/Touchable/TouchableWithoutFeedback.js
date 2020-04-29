@@ -4,12 +4,13 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @flow strict-local
  * @format
- * @flow
  */
 
 'use strict';
 
+<<<<<<< HEAD
 const DeprecatedEdgeInsetsPropType = require('../../DeprecatedPropTypes/DeprecatedEdgeInsetsPropType');
 const React = require('react');
 const PropTypes = require('prop-types');
@@ -23,11 +24,26 @@ const {
   DeprecatedAccessibilityRoles,
 } = require('../../DeprecatedPropTypes/DeprecatedViewAccessibility');
 
+=======
+import Pressability from '../../Pressability/Pressability.js';
+import {PressabilityDebugView} from '../../Pressability/PressabilityDebug.js';
+import TVTouchable from './TVTouchable.js';
+>>>>>>> fb/0.62-stable
 import type {
-  SyntheticEvent,
+  AccessibilityActionEvent,
+  AccessibilityActionInfo,
+  AccessibilityRole,
+  AccessibilityState,
+  AccessibilityValue,
+} from '../../Components/View/ViewAccessibility';
+import type {EdgeInsetsProp} from '../../StyleSheet/EdgeInsetsPropType';
+import type {
+  BlurEvent,
+  FocusEvent,
   LayoutEvent,
   PressEvent,
 } from '../../Types/CoreEventTypes';
+<<<<<<< HEAD
 import type {EdgeInsetsProp} from '../../StyleSheet/EdgeInsetsPropType';
 import type {
   AccessibilityRole,
@@ -73,22 +89,42 @@ const OVERRIDE_PROPS = [
 export type Props = $ReadOnly<{|
   accessible?: ?boolean,
   accessibilityLabel?: ?Stringish,
+=======
+import Platform from '../../Utilities/Platform';
+import View from '../../Components/View/View';
+import * as React from 'react';
+
+type Props = $ReadOnly<{|
+  accessibilityActions?: ?$ReadOnlyArray<AccessibilityActionInfo>,
+  accessibilityElementsHidden?: ?boolean,
+>>>>>>> fb/0.62-stable
   accessibilityHint?: ?Stringish,
   accessibilityIgnoresInvertColors?: ?boolean,
+  accessibilityLabel?: ?Stringish,
+  accessibilityLiveRegion?: ?('none' | 'polite' | 'assertive'),
   accessibilityRole?: ?AccessibilityRole,
+<<<<<<< HEAD
   accessibilityStates?: ?AccessibilityStates,
   accessibilityState?: ?AccessibilityState,
   accessibilityActions?: ?$ReadOnlyArray<AccessibilityActionInfo>,
+=======
+  accessibilityState?: ?AccessibilityState,
+  accessibilityValue?: ?AccessibilityValue,
+  accessibilityViewIsModal?: ?boolean,
+  accessible?: ?boolean,
+>>>>>>> fb/0.62-stable
   children?: ?React.Node,
   delayLongPress?: ?number,
   delayPressIn?: ?number,
   delayPressOut?: ?number,
   disabled?: ?boolean,
+  focusable?: ?boolean,
   hitSlop?: ?EdgeInsetsProp,
+  importantForAccessibility?: ?('auto' | 'yes' | 'no' | 'no-hide-descendants'),
   nativeID?: ?string,
-  touchSoundDisabled?: ?boolean,
-  onBlur?: ?(e: BlurEvent) => void,
-  onFocus?: ?(e: FocusEvent) => void,
+  onAccessibilityAction?: ?(event: AccessibilityActionEvent) => mixed,
+  onBlur?: ?(event: BlurEvent) => mixed,
+  onFocus?: ?(event: FocusEvent) => mixed,
   onLayout?: ?(event: LayoutEvent) => mixed,
   onLongPress?: ?(event: PressEvent) => mixed,
   onPress?: ?(event: PressEvent) => mixed,
@@ -107,8 +143,10 @@ export type Props = $ReadOnly<{|
   pressRetentionOffset?: ?EdgeInsetsProp,
   rejectResponderTermination?: ?boolean,
   testID?: ?string,
+  touchSoundDisabled?: ?boolean,
 |}>;
 
+<<<<<<< HEAD
 /**
  * Do not use unless you have a very good reason. All elements that
  * respond to press should have a visual feedback when touched.
@@ -278,43 +316,152 @@ const TouchableWithoutFeedback = ((createReactClass({
     // $FlowFixMe Invalid prop usage
     return this.props.pressRetentionOffset || PRESS_RETENTION_OFFSET;
   },
+=======
+type State = $ReadOnly<{|
+  pressability: Pressability,
+|}>;
+>>>>>>> fb/0.62-stable
 
-  touchableGetHitSlop: function(): ?Object {
-    return this.props.hitSlop;
-  },
+const PASSTHROUGH_PROPS = [
+  'accessibilityActions',
+  'accessibilityElementsHidden',
+  'accessibilityHint',
+  'accessibilityIgnoresInvertColors',
+  'accessibilityLabel',
+  'accessibilityLiveRegion',
+  'accessibilityRole',
+  'accessibilityState',
+  'accessibilityValue',
+  'accessibilityViewIsModal',
+  'hitSlop',
+  'importantForAccessibility',
+  'nativeID',
+  'onAccessibilityAction',
+  'onBlur',
+  'onFocus',
+  'onLayout',
+  'testID',
+];
 
-  touchableGetHighlightDelayMS: function(): number {
-    return this.props.delayPressIn || 0;
-  },
+class TouchableWithoutFeedback extends React.Component<Props, State> {
+  _tvTouchable: ?TVTouchable;
 
-  touchableGetLongPressDelayMS: function(): number {
-    return this.props.delayLongPress === 0
-      ? 0
-      : this.props.delayLongPress || 500;
-  },
+  state: State = {
+    pressability: new Pressability({
+      getHitSlop: () => this.props.hitSlop,
+      getLongPressDelayMS: () => {
+        if (this.props.delayLongPress != null) {
+          const maybeNumber = this.props.delayLongPress;
+          if (typeof maybeNumber === 'number') {
+            return maybeNumber;
+          }
+        }
+        return 500;
+      },
+      getPressDelayMS: () => this.props.delayPressIn,
+      getPressOutDelayMS: () => this.props.delayPressOut,
+      getPressRectOffset: () => this.props.pressRetentionOffset,
+      getTouchSoundDisabled: () => this.props.touchSoundDisabled,
+      onBlur: event => {
+        if (this.props.onBlur != null) {
+          this.props.onBlur(event);
+        }
+      },
+      onFocus: event => {
+        if (this.props.onFocus != null) {
+          this.props.onFocus(event);
+        }
+      },
+      onLongPress: event => {
+        if (this.props.onLongPress != null) {
+          this.props.onLongPress(event);
+        }
+      },
+      onPress: event => {
+        if (this.props.onPress != null) {
+          this.props.onPress(event);
+        }
+      },
+      onPressIn: event => {
+        if (this.props.onPressIn != null) {
+          this.props.onPressIn(event);
+        }
+      },
+      onPressOut: event => {
+        if (this.props.onPressOut != null) {
+          this.props.onPressOut(event);
+        }
+      },
+      onResponderTerminationRequest: () =>
+        !this.props.rejectResponderTermination,
+      onStartShouldSetResponder: () => !this.props.disabled,
+    }),
+  };
 
-  touchableGetPressOutDelayMS: function(): number {
-    return this.props.delayPressOut || 0;
-  },
-
-  render: function(): React.Element<any> {
-    // Note(avik): remove dynamic typecast once Flow has been upgraded
-    // $FlowFixMe(>=0.41.0)
-    const child = React.Children.only(this.props.children);
-    let children = child.props.children;
-    if (Touchable.TOUCH_TARGET_DEBUG && child.type === View) {
-      children = React.Children.toArray(children);
-      children.push(
-        Touchable.renderDebugView({color: 'red', hitSlop: this.props.hitSlop}),
-      );
-    }
-
-    const overrides = {};
-    for (const prop of OVERRIDE_PROPS) {
-      if (this.props[prop] !== undefined) {
-        overrides[prop] = this.props[prop];
+  render(): React.Node {
+    const element = React.Children.only(this.props.children);
+    const children = [element.props.children];
+    if (__DEV__) {
+      if (element.type === View) {
+        children.push(
+          <PressabilityDebugView color="red" hitSlop={this.props.hitSlop} />,
+        );
       }
     }
+
+    // BACKWARD-COMPATIBILITY: Focus and blur events were never supported before
+    // adopting `Pressability`, so preserve that behavior.
+    const {
+      onBlur,
+      onFocus,
+      ...eventHandlersWithoutBlurAndFocus
+    } = this.state.pressability.getEventHandlers();
+
+    const elementProps: {[string]: mixed, ...} = {
+      ...eventHandlersWithoutBlurAndFocus,
+      accessible: this.props.accessible !== false,
+      focusable:
+        this.props.focusable !== false && this.props.onPress !== undefined,
+    };
+    for (const prop of PASSTHROUGH_PROPS) {
+      if (this.props[prop] !== undefined) {
+        elementProps[prop] = this.props[prop];
+      }
+    }
+
+    return React.cloneElement(element, elementProps, ...children);
+  }
+
+  componentDidMount(): void {
+    if (Platform.isTV) {
+      this._tvTouchable = new TVTouchable(this, {
+        getDisabled: () => this.props.disabled === true,
+        onBlur: event => {
+          if (this.props.onBlur != null) {
+            this.props.onBlur(event);
+          }
+        },
+        onFocus: event => {
+          if (this.props.onFocus != null) {
+            this.props.onFocus(event);
+          }
+        },
+        onPress: event => {
+          if (this.props.onPress != null) {
+            this.props.onPress(event);
+          }
+        },
+      });
+    }
+  }
+
+  componentWillUnmount(): void {
+    if (Platform.isTV) {
+      if (this._tvTouchable != null) {
+        this._tvTouchable.destroy();
+      }
+    }
+<<<<<<< HEAD
 
     return (React: any).cloneElement(child, {
       ...overrides,
@@ -356,5 +503,10 @@ const TouchableWithoutFeedback = ((createReactClass({
     });
   },
 }): any): React.ComponentType<Props>);
+=======
+    this.state.pressability.reset();
+  }
+}
+>>>>>>> fb/0.62-stable
 
 module.exports = TouchableWithoutFeedback;

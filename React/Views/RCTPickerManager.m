@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -10,6 +10,7 @@
 #import "RCTBridge.h"
 #import "RCTPicker.h"
 #import "RCTFont.h"
+#import <React/RCTUIManager.h>
 
 @implementation RCTPickerManager
 
@@ -40,6 +41,24 @@ RCT_CUSTOM_VIEW_PROPERTY(fontStyle, NSString, __unused RCTPicker)
 RCT_CUSTOM_VIEW_PROPERTY(fontFamily, NSString, RCTPicker)
 {
   view.font = [RCTFont updateFont:view.font withFamily:json ?: defaultView.font.familyName];
+}
+
+RCT_EXPORT_METHOD(setNativeSelectedIndex : (nonnull NSNumber *)viewTag toIndex : (nonnull NSNumber *)index)
+{
+  [self.bridge.uiManager addUIBlock:^(RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry) {
+    UIView *view = viewRegistry[viewTag];
+    
+    if ([view isKindOfClass:[RCTPicker class]]) {
+      [(RCTPicker *)view setSelectedIndex:index.integerValue];
+    } else {
+      UIView *subview = view.subviews.firstObject;
+      if ([subview isKindOfClass:[RCTPicker class]]) {
+        [(RCTPicker *)subview setSelectedIndex:index.integerValue];
+      } else {
+        RCTLogError(@"view type must be RCTPicker");
+      }
+    }
+  }];
 }
 
 @end

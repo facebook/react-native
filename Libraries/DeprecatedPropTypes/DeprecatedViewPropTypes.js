@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @flow
+ * @flow strict-local
  */
 
 'use strict';
@@ -13,13 +13,13 @@
 const DeprecatedEdgeInsetsPropType = require('./DeprecatedEdgeInsetsPropType');
 const DeprecatedStyleSheetPropType = require('./DeprecatedStyleSheetPropType');
 const DeprecatedViewStylePropTypes = require('./DeprecatedViewStylePropTypes');
+<<<<<<< HEAD
 const PlatformViewPropTypes = require('../Components/View/PlatformViewPropTypes');
+=======
+>>>>>>> fb/0.62-stable
 const PropTypes = require('prop-types');
 
-const {
-  DeprecatedAccessibilityRoles,
-  DeprecatedAccessibilityStates,
-} = require('./DeprecatedViewAccessibility');
+const {DeprecatedAccessibilityRoles} = require('./DeprecatedViewAccessibility');
 
 const stylePropType: ReactPropsCheckType = DeprecatedStyleSheetPropType(
   DeprecatedViewStylePropTypes,
@@ -104,6 +104,7 @@ module.exports = {
     | 'toolbar',
   >),
 
+<<<<<<< HEAD
   /**
    * Indicates to accessibility services that UI Component is in a specific State.
    */
@@ -122,6 +123,10 @@ module.exports = {
     >,
   >),
   accessibilityState: PropTypes.object,
+=======
+  accessibilityState: PropTypes.object,
+  accessibilityValue: PropTypes.object,
+>>>>>>> fb/0.62-stable
   /**
    * Indicates to accessibility services whether the user should be notified
    * when this view changes. Works for Android API >= 19 only.
@@ -425,9 +430,4 @@ module.exports = {
    * See http://facebook.github.io/react-native/docs/view.html#needsoffscreenalphacompositing
    */
   needsOffscreenAlphaCompositing: PropTypes.bool,
-
-  /**
-   * Any additional platform-specific view prop types, or prop type overrides.
-   */
-  ...PlatformViewPropTypes,
 };

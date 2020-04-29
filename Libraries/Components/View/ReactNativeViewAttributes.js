@@ -19,8 +19,13 @@ const UIView = {
   accessibilityLabel: true,
   accessibilityLiveRegion: true,
   accessibilityRole: true,
+<<<<<<< HEAD
   accessibilityStates: true,
   accessibilityState: true,
+=======
+  accessibilityState: true,
+  accessibilityValue: true,
+>>>>>>> fb/0.62-stable
   accessibilityHint: true,
   acceptsKeyboardFocus: true, // TODO(macOS ISS#2323203)
   enableFocusRing: true, // TODO(macOS ISS#2323203)

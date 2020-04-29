@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -224,9 +224,14 @@ NSAttributedString *RCTNSAttributedStringFromAttributedString(const AttributedSt
   for (auto fragment : attributedString.getFragments()) {
     NSAttributedString *nsAttributedStringFragment;
 
+<<<<<<< HEAD
     auto layoutMetrics = fragment.shadowView.layoutMetrics;
 
     if (layoutMetrics != EmptyLayoutMetrics) {
+=======
+    if (fragment.isAttachment()) {
+      auto layoutMetrics = fragment.parentShadowView.layoutMetrics;
+>>>>>>> fb/0.62-stable
       CGRect bounds = {.origin = {.x = layoutMetrics.frame.origin.x, .y = layoutMetrics.frame.origin.y},
                        .size = {.width = layoutMetrics.frame.size.width, .height = layoutMetrics.frame.size.height}};
 

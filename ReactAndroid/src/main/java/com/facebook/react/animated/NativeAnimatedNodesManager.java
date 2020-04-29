@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
@@ -317,7 +317,7 @@ import java.util.Queue;
     propsAnimatedNode.disconnectFromView(viewTag);
   }
 
-  public void restoreDefaultValues(int animatedNodeTag, int viewTag) {
+  public void restoreDefaultValues(int animatedNodeTag) {
     AnimatedNode node = mAnimatedNodes.get(animatedNodeTag);
     // Restoring default values needs to happen before UIManager operations so it is
     // possible the node hasn't been created yet if it is being connected and

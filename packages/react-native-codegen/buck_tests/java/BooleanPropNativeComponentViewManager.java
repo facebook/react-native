@@ -1,6 +1,20 @@
+<<<<<<< HEAD
 package com.facebook.react.uimanager;
 
 import android.view.ViewGroup;
+=======
+/*
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+package com.facebook.react.uimanager;
+
+import android.view.ViewGroup;
+import androidx.annotation.Nullable;
+>>>>>>> fb/0.62-stable
 import com.facebook.react.viewmanagers.BooleanPropNativeComponentViewManagerDelegate;
 import com.facebook.react.viewmanagers.BooleanPropNativeComponentViewManagerInterface;
 
@@ -26,4 +40,10 @@ public class BooleanPropNativeComponentViewManager extends SimpleViewManager<Vie
 
   @Override
   public void setDisabled(ViewGroup view, boolean value) {}
+<<<<<<< HEAD
+=======
+
+  @Override
+  public void setDisabledNullable(ViewGroup view, @Nullable Boolean value) {}
+>>>>>>> fb/0.62-stable
 }

@@ -4,10 +4,10 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- *
  * @format
  * @emails oncall+react_native
  */
+
 'use strict';
 
 const React = require('react');
@@ -92,5 +92,64 @@ describe('FlatList', () => {
       />,
     );
     expect(component).toMatchSnapshot();
+  });
+  it('getNativeScrollRef for case where it returns a native view', () => {
+    jest.resetModules();
+    jest.unmock('../../Components/ScrollView/ScrollView');
+
+    const listRef = React.createRef(null);
+
+    ReactTestRenderer.create(
+      <FlatList
+        data={[{key: 'outer0'}, {key: 'outer1'}]}
+        renderItem={outerInfo => (
+          <FlatList
+            data={[
+              {key: outerInfo.item.key + ':inner0'},
+              {key: outerInfo.item.key + ':inner1'},
+            ]}
+            renderItem={innerInfo => {
+              return <item title={innerInfo.item.key} />;
+            }}
+            ref={listRef}
+          />
+        )}
+      />,
+    );
+
+    const scrollRef = listRef.current.getNativeScrollRef();
+
+    // This is checking if the ref acts like a host component. If we had an
+    // `isHostComponent(ref)` method, that would be preferred.
+    expect(scrollRef.measure).toBeInstanceOf(jest.fn().constructor);
+    expect(scrollRef.measureLayout).toBeInstanceOf(jest.fn().constructor);
+    expect(scrollRef.measureInWindow).toBeInstanceOf(jest.fn().constructor);
+  });
+
+  it('getNativeScrollRef for case where it returns a native scroll view', () => {
+    jest.resetModules();
+    jest.unmock('../../Components/ScrollView/ScrollView');
+
+    function ListItemComponent({item}) {
+      return <item value={item.key} />;
+    }
+    const listRef = React.createRef(null);
+
+    ReactTestRenderer.create(
+      <FlatList
+        data={[{key: 'i4'}, {key: 'i2'}, {key: 'i3'}]}
+        ListItemComponent={ListItemComponent}
+        numColumns={2}
+        ref={listRef}
+      />,
+    );
+
+    const scrollRef = listRef.current.getNativeScrollRef();
+
+    // This is checking if the ref acts like a host component. If we had an
+    // `isHostComponent(ref)` method, that would be preferred.
+    expect(scrollRef.measure).toBeInstanceOf(jest.fn().constructor);
+    expect(scrollRef.measureLayout).toBeInstanceOf(jest.fn().constructor);
+    expect(scrollRef.measureInWindow).toBeInstanceOf(jest.fn().constructor);
   });
 });

@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
@@ -67,6 +67,7 @@ public abstract class JSBundleLoader {
           return sourceURL;
         } catch (Exception e) {
           throw DebugServerException.makeGeneric(sourceURL, e.getMessage(), e);
+<<<<<<< HEAD
         }
       }
     };
@@ -89,6 +90,8 @@ public abstract class JSBundleLoader {
           return sourceURL;
         } catch (Exception e) {
           throw DebugServerException.makeGeneric(sourceURL, e.getMessage(), e);
+=======
+>>>>>>> fb/0.62-stable
         }
       }
     };

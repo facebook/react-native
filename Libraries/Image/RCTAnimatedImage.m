@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /**
+=======
+/*
+>>>>>>> fb/0.62-stable
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -47,6 +51,7 @@
     if (!image) {
       return nil;
     }
+<<<<<<< HEAD
 #if TARGET_OS_OSX // [TODO(macOS ISS#2323203)
     self = [image copy];
 #else // ]TODO(macOS ISS#2323203)
@@ -54,6 +59,11 @@
 
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveMemoryWarning:) name:UIApplicationDidReceiveMemoryWarningNotification object:nil];
 #endif // TODO(macOS ISS#2323203)
+=======
+    self = [super initWithCGImage:image.CGImage scale:MAX(scale, 1) orientation:image.imageOrientation];
+
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveMemoryWarning:) name:UIApplicationDidReceiveMemoryWarningNotification object:nil];
+>>>>>>> fb/0.62-stable
   }
 
   return self;
@@ -91,6 +101,13 @@
     NSNumber *gifLoopCount = gifProperties[(__bridge NSString *)kCGImagePropertyGIFLoopCount];
     if (gifLoopCount != nil) {
       loopCount = gifLoopCount.unsignedIntegerValue;
+<<<<<<< HEAD
+=======
+      // A loop count of 1 means it should repeat twice, 2 means, thrice, etc.
+      if (loopCount != 0) {
+        loopCount++;
+      }
+>>>>>>> fb/0.62-stable
     }
   }
   return loopCount;
@@ -144,11 +161,15 @@
   if (!imageRef) {
     return nil;
   }
+<<<<<<< HEAD
 #if TARGET_OS_OSX // [TODO(macOS ISS#2323203)
   UIImage *image = [[NSImage alloc] initWithCGImage:imageRef size:CGSizeMake(CGImageGetWidth(imageRef), CGImageGetHeight(imageRef))];
 #else // ]TODO(macOS ISS#2323203)
   UIImage *image = [[UIImage alloc] initWithCGImage:imageRef scale:_scale orientation:UIImageOrientationUp];
 #endif // TODO(macOS ISS#2323203)
+=======
+  UIImage *image = [[UIImage alloc] initWithCGImage:imageRef scale:_scale orientation:UIImageOrientationUp];
+>>>>>>> fb/0.62-stable
   CGImageRelease(imageRef);
   return image;
 }
@@ -168,9 +189,12 @@
     CFRelease(_imageSource);
     _imageSource = NULL;
   }
+<<<<<<< HEAD
 #if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
   [[NSNotificationCenter defaultCenter] removeObserver:self name:UIApplicationDidReceiveMemoryWarningNotification object:nil];
 #endif // TODO(macOS ISS#2323203)
+=======
+>>>>>>> fb/0.62-stable
 }
 
 @end

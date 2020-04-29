@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @flow
+ * @flow strict-local
  */
 
 'use strict';
@@ -39,6 +39,7 @@ type State = {
   viewLayout?: Layout,
   viewStyle?: ViewStyleProp,
   containerStyle?: ViewStyleProp,
+  ...
 };
 
 class LayoutEventsTest extends React.Component<Props, State> {

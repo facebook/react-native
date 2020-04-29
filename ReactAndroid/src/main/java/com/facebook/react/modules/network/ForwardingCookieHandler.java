@@ -1,7 +1,9 @@
-// Copyright (c) Facebook, Inc. and its affiliates.
-
-// This source code is licensed under the MIT license found in the
-// LICENSE file in the root directory of this source tree.
+/*
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
 
 package com.facebook.react.modules.network;
 
@@ -122,7 +124,7 @@ public class ForwardingCookieHandler extends CookieHandler {
     }
   }
 
-  private void addCookies(final String url, final List<String> cookies) {
+  public void addCookies(final String url, final List<String> cookies) {
     final CookieManager cookieManager = getCookieManager();
     if (cookieManager == null) return;
 
@@ -184,8 +186,12 @@ public class ForwardingCookieHandler extends CookieHandler {
         // We cannot catch MissingWebViewPackageException as it is in a private / system API
         // class. This validates the exception's message to ensure we are only handling this
         // specific exception.
-        // https://android.googlesource.com/platform/frameworks/base/+/master/core/java/android/webkit/WebViewFactory.java#98
-        if (message != null && message.contains("No WebView installed")) {
+        // https://android.googlesource.com/platform/frameworks/base/+/master/core/java/android/webkit/WebViewFactory.java#348
+        if (message != null
+            && exception
+                .getClass()
+                .getCanonicalName()
+                .equals("android.webkit.WebViewFactory.MissingWebViewPackageException")) {
           return null;
         } else {
           throw exception;

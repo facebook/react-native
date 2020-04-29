@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -10,7 +10,6 @@
 #import <React/RCTUIKit.h> // TODO(macOS ISS#2323203)
 
 #import "RCTConvert.h"
-#import "RCTEventDispatcher.h"
 #import "RCTLog.h"
 #import "RCTUIManager.h"
 #import "RCTUIManagerObserverCoordinator.h"
@@ -18,12 +17,14 @@
 #import "RCTUtils.h"
 #import "UIView+Private.h"
 #import "UIView+React.h"
+#import "RCTScrollEvent.h"
 
 
 #if !TARGET_OS_TV && !TARGET_OS_OSX // TODO(macOS ISS#2323203)
 #import "RCTRefreshControl.h"
 #endif
 
+<<<<<<< HEAD
 @interface RCTScrollEvent : NSObject <RCTEvent>
 
 - (instancetype)initWithEventName:(NSString *)eventName
@@ -153,6 +154,8 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
 @end
 
+=======
+>>>>>>> fb/0.62-stable
 /**
  * Include a custom scroll view subclass because we want to limit certain
  * default UIKit behaviors such as textFields automatically scrolling
@@ -176,7 +179,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 @property (nonatomic, strong) NSPanGestureRecognizer *panGestureRecognizer;
 #endif // ]TODO(macOS ISS#2323203)
 @end
-
 
 @implementation RCTCustomScrollView
 
@@ -1215,6 +1217,12 @@ RCT_SCROLL_EVENT_HANDLER(scrollViewDidScrollToTop, onScrollToTop)
       return NO;
     }
   }
+
+  if (self.inverted) {
+    [self scrollToEnd:YES];
+    return NO;
+  }
+
   return YES;
 }
 

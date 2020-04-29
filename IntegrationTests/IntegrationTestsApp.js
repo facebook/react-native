@@ -51,7 +51,7 @@ require('./LoggingTestModule');
 
 type Test = any;
 
-class IntegrationTestsApp extends React.Component<{}, $FlowFixMeState> {
+class IntegrationTestsApp extends React.Component<{...}, $FlowFixMeState> {
   state = {
     test: (null: ?Test),
   };

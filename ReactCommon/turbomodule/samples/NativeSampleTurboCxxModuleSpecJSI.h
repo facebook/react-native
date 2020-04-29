@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -18,7 +18,7 @@ namespace react {
 // TODO: This definition should be codegen'ed for type-safety purpose.
 class JSI_EXPORT NativeSampleTurboCxxModuleSpecJSI : public TurboModule {
  protected:
-  NativeSampleTurboCxxModuleSpecJSI(std::shared_ptr<JSCallInvoker> jsInvoker);
+  NativeSampleTurboCxxModuleSpecJSI(std::shared_ptr<CallInvoker> jsInvoker);
 
  public:
   virtual void voidFunc(jsi::Runtime &rt) = 0;

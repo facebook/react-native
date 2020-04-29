@@ -7,6 +7,7 @@
  * @flow
  * @format
  */
+
 'use strict';
 
 const invariant = require('invariant');
@@ -17,6 +18,7 @@ export type ViewToken = {
   index: ?number,
   isViewable: boolean,
   section?: any,
+  ...
 };
 
 export type ViewabilityConfigCallbackPair = {
@@ -24,7 +26,9 @@ export type ViewabilityConfigCallbackPair = {
   onViewableItemsChanged: (info: {
     viewableItems: Array<ViewToken>,
     changed: Array<ViewToken>,
+    ...
   }) => void,
+  ...
 };
 
 export type ViewabilityConfig = {|
@@ -98,8 +102,19 @@ class ViewabilityHelper {
     itemCount: number,
     scrollOffset: number,
     viewportHeight: number,
-    getFrameMetrics: (index: number) => ?{length: number, offset: number},
-    renderRange?: {first: number, last: number}, // Optional optimization to reduce the scan size
+    getFrameMetrics: (
+      index: number,
+    ) => ?{
+      length: number,
+      offset: number,
+      ...
+    },
+    // Optional optimization to reduce the scan size
+    renderRange?: {
+      first: number,
+      last: number,
+      ...
+    },
   ): Array<number> {
     const {
       itemVisiblePercentThreshold,
@@ -164,13 +179,25 @@ class ViewabilityHelper {
     itemCount: number,
     scrollOffset: number,
     viewportHeight: number,
-    getFrameMetrics: (index: number) => ?{length: number, offset: number},
+    getFrameMetrics: (
+      index: number,
+    ) => ?{
+      length: number,
+      offset: number,
+      ...
+    },
     createViewToken: (index: number, isViewable: boolean) => ViewToken,
     onViewableItemsChanged: ({
       viewableItems: Array<ViewToken>,
       changed: Array<ViewToken>,
+      ...
     }) => void,
-    renderRange?: {first: number, last: number}, // Optional optimization to reduce the scan size
+    // Optional optimization to reduce the scan size
+    renderRange?: {
+      first: number,
+      last: number,
+      ...
+    },
   ): void {
     if (
       (this._config.waitForInteraction && !this._hasInteracted) ||

@@ -1,4 +1,13 @@
+<<<<<<< HEAD
 // Copyright 2004-present Facebook. All Rights Reserved.
+=======
+/*
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+>>>>>>> fb/0.62-stable
 
 #pragma once
 
@@ -18,6 +27,11 @@ namespace inspector {
 namespace chrome {
 namespace message {
 
+<<<<<<< HEAD
+=======
+std::string stripCachePrevention(const std::string &url);
+
+>>>>>>> fb/0.62-stable
 template <typename T>
 void setHermesLocation(
     facebook::hermes::debugger::SourceLocation &hermesLoc,
@@ -37,6 +51,7 @@ void setHermesLocation(
   }
 
   if (chromeLoc.url.hasValue()) {
+<<<<<<< HEAD
     hermesLoc.fileName = chromeLoc.url.value();
   } else if (chromeLoc.urlRegex.hasValue()) {
     const std::regex regex(chromeLoc.urlRegex.value());
@@ -45,6 +60,21 @@ void setHermesLocation(
         hermesLoc.fileName = fileName;
         break;
       }
+=======
+    hermesLoc.fileName = stripCachePrevention(chromeLoc.url.value());
+  } else if (chromeLoc.urlRegex.hasValue()) {
+    const std::regex regex(stripCachePrevention(chromeLoc.urlRegex.value()));
+    auto it = parsedScripts.rbegin();
+
+    // We currently only support one physical breakpoint per location, so
+    // search backwards so that we find the latest matching file.
+    while (it != parsedScripts.rend()) {
+      if (std::regex_match(*it, regex)) {
+        hermesLoc.fileName = *it;
+        break;
+      }
+      it++;
+>>>>>>> fb/0.62-stable
     }
   }
 }

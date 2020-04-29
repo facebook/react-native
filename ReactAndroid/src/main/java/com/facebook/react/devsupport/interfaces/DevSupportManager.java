@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
@@ -6,6 +6,10 @@
  */
 package com.facebook.react.devsupport.interfaces;
 
+<<<<<<< HEAD
+=======
+import android.view.View;
+>>>>>>> fb/0.62-stable
 import androidx.annotation.Nullable;
 import com.facebook.react.bridge.NativeModuleCallExceptionHandler;
 import com.facebook.react.bridge.ReactContext;
@@ -24,6 +28,14 @@ public interface DevSupportManager extends NativeModuleCallExceptionHandler {
 
   void addCustomDevOption(String optionName, DevOptionHandler optionHandler);
 
+<<<<<<< HEAD
+=======
+  @Nullable
+  View createRootView(String appKey);
+
+  void destroyRootView(View rootView);
+
+>>>>>>> fb/0.62-stable
   void showNewJSError(String message, ReadableArray details, int errorCookie);
 
   void updateJSError(final String message, final ReadableArray details, final int errorCookie);
@@ -68,8 +80,11 @@ public interface DevSupportManager extends NativeModuleCallExceptionHandler {
 
   void setRemoteJSDebugEnabled(final boolean isRemoteJSDebugEnabled);
 
+<<<<<<< HEAD
   void setReloadOnJSChangeEnabled(final boolean isReloadOnJSChangeEnabled);
 
+=======
+>>>>>>> fb/0.62-stable
   void setFpsDebugEnabled(final boolean isFpsDebugEnabled);
 
   void toggleElementInspector();

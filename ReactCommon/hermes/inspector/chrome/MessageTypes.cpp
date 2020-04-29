@@ -1,5 +1,9 @@
 // Copyright 2004-present Facebook. All Rights Reserved.
+<<<<<<< HEAD
 // @generated <<SignedSource::*O*zOeWoEQle#+L!plEphiEmie@IsG>>
+=======
+// @generated SignedSource<<986a7615a1af0edce2bf49c00b4ef623>>
+>>>>>>> fb/0.62-stable
 
 #include "MessageTypes.h"
 
@@ -32,6 +36,10 @@ std::unique_ptr<Request> Request::fromJsonThrowOnError(const std::string &str) {
       {"Debugger.removeBreakpoint",
        makeUnique<debugger::RemoveBreakpointRequest>},
       {"Debugger.resume", makeUnique<debugger::ResumeRequest>},
+<<<<<<< HEAD
+=======
+      {"Debugger.setBreakpoint", makeUnique<debugger::SetBreakpointRequest>},
+>>>>>>> fb/0.62-stable
       {"Debugger.setBreakpointByUrl",
        makeUnique<debugger::SetBreakpointByUrlRequest>},
       {"Debugger.setPauseOnExceptions",
@@ -39,7 +47,14 @@ std::unique_ptr<Request> Request::fromJsonThrowOnError(const std::string &str) {
       {"Debugger.stepInto", makeUnique<debugger::StepIntoRequest>},
       {"Debugger.stepOut", makeUnique<debugger::StepOutRequest>},
       {"Debugger.stepOver", makeUnique<debugger::StepOverRequest>},
+<<<<<<< HEAD
       {"Runtime.evaluate", makeUnique<runtime::EvaluateRequest>},
+=======
+      {"HeapProfiler.takeHeapSnapshot",
+       makeUnique<heapProfiler::TakeHeapSnapshotRequest>},
+      {"Runtime.evaluate", makeUnique<runtime::EvaluateRequest>},
+      {"Runtime.getHeapUsage", makeUnique<runtime::GetHeapUsageRequest>},
+>>>>>>> fb/0.62-stable
       {"Runtime.getProperties", makeUnique<runtime::GetPropertiesRequest>},
   };
 
@@ -430,6 +445,38 @@ void debugger::ResumeRequest::accept(RequestHandler &handler) const {
   handler.handle(*this);
 }
 
+<<<<<<< HEAD
+=======
+debugger::SetBreakpointRequest::SetBreakpointRequest()
+    : Request("Debugger.setBreakpoint") {}
+
+debugger::SetBreakpointRequest::SetBreakpointRequest(const dynamic &obj)
+    : Request("Debugger.setBreakpoint") {
+  assign(id, obj, "id");
+  assign(method, obj, "method");
+
+  dynamic params = obj.at("params");
+  assign(location, params, "location");
+  assign(condition, params, "condition");
+}
+
+dynamic debugger::SetBreakpointRequest::toDynamic() const {
+  dynamic params = dynamic::object;
+  put(params, "location", location);
+  put(params, "condition", condition);
+
+  dynamic obj = dynamic::object;
+  put(obj, "id", id);
+  put(obj, "method", method);
+  put(obj, "params", std::move(params));
+  return obj;
+}
+
+void debugger::SetBreakpointRequest::accept(RequestHandler &handler) const {
+  handler.handle(*this);
+}
+
+>>>>>>> fb/0.62-stable
 debugger::SetBreakpointByUrlRequest::SetBreakpointByUrlRequest()
     : Request("Debugger.setBreakpointByUrl") {}
 
@@ -553,6 +600,38 @@ void debugger::StepOverRequest::accept(RequestHandler &handler) const {
   handler.handle(*this);
 }
 
+<<<<<<< HEAD
+=======
+heapProfiler::TakeHeapSnapshotRequest::TakeHeapSnapshotRequest()
+    : Request("HeapProfiler.takeHeapSnapshot") {}
+
+heapProfiler::TakeHeapSnapshotRequest::TakeHeapSnapshotRequest(
+    const dynamic &obj)
+    : Request("HeapProfiler.takeHeapSnapshot") {
+  assign(id, obj, "id");
+  assign(method, obj, "method");
+
+  dynamic params = obj.at("params");
+  assign(reportProgress, params, "reportProgress");
+}
+
+dynamic heapProfiler::TakeHeapSnapshotRequest::toDynamic() const {
+  dynamic params = dynamic::object;
+  put(params, "reportProgress", reportProgress);
+
+  dynamic obj = dynamic::object;
+  put(obj, "id", id);
+  put(obj, "method", method);
+  put(obj, "params", std::move(params));
+  return obj;
+}
+
+void heapProfiler::TakeHeapSnapshotRequest::accept(
+    RequestHandler &handler) const {
+  handler.handle(*this);
+}
+
+>>>>>>> fb/0.62-stable
 runtime::EvaluateRequest::EvaluateRequest() : Request("Runtime.evaluate") {}
 
 runtime::EvaluateRequest::EvaluateRequest(const dynamic &obj)
@@ -591,6 +670,29 @@ void runtime::EvaluateRequest::accept(RequestHandler &handler) const {
   handler.handle(*this);
 }
 
+<<<<<<< HEAD
+=======
+runtime::GetHeapUsageRequest::GetHeapUsageRequest()
+    : Request("Runtime.getHeapUsage") {}
+
+runtime::GetHeapUsageRequest::GetHeapUsageRequest(const dynamic &obj)
+    : Request("Runtime.getHeapUsage") {
+  assign(id, obj, "id");
+  assign(method, obj, "method");
+}
+
+dynamic runtime::GetHeapUsageRequest::toDynamic() const {
+  dynamic obj = dynamic::object;
+  put(obj, "id", id);
+  put(obj, "method", method);
+  return obj;
+}
+
+void runtime::GetHeapUsageRequest::accept(RequestHandler &handler) const {
+  handler.handle(*this);
+}
+
+>>>>>>> fb/0.62-stable
 runtime::GetPropertiesRequest::GetPropertiesRequest()
     : Request("Runtime.getProperties") {}
 
@@ -675,6 +777,28 @@ dynamic debugger::EvaluateOnCallFrameResponse::toDynamic() const {
   return obj;
 }
 
+<<<<<<< HEAD
+=======
+debugger::SetBreakpointResponse::SetBreakpointResponse(const dynamic &obj) {
+  assign(id, obj, "id");
+
+  dynamic res = obj.at("result");
+  assign(breakpointId, res, "breakpointId");
+  assign(actualLocation, res, "actualLocation");
+}
+
+dynamic debugger::SetBreakpointResponse::toDynamic() const {
+  dynamic res = dynamic::object;
+  put(res, "breakpointId", breakpointId);
+  put(res, "actualLocation", actualLocation);
+
+  dynamic obj = dynamic::object;
+  put(obj, "id", id);
+  put(obj, "result", std::move(res));
+  return obj;
+}
+
+>>>>>>> fb/0.62-stable
 debugger::SetBreakpointByUrlResponse::SetBreakpointByUrlResponse(
     const dynamic &obj) {
   assign(id, obj, "id");
@@ -714,6 +838,28 @@ dynamic runtime::EvaluateResponse::toDynamic() const {
   return obj;
 }
 
+<<<<<<< HEAD
+=======
+runtime::GetHeapUsageResponse::GetHeapUsageResponse(const dynamic &obj) {
+  assign(id, obj, "id");
+
+  dynamic res = obj.at("result");
+  assign(usedSize, res, "usedSize");
+  assign(totalSize, res, "totalSize");
+}
+
+dynamic runtime::GetHeapUsageResponse::toDynamic() const {
+  dynamic res = dynamic::object;
+  put(res, "usedSize", usedSize);
+  put(res, "totalSize", totalSize);
+
+  dynamic obj = dynamic::object;
+  put(obj, "id", id);
+  put(obj, "result", std::move(res));
+  return obj;
+}
+
+>>>>>>> fb/0.62-stable
 runtime::GetPropertiesResponse::GetPropertiesResponse(const dynamic &obj) {
   assign(id, obj, "id");
 
@@ -842,6 +988,60 @@ dynamic debugger::ScriptParsedNotification::toDynamic() const {
   return obj;
 }
 
+<<<<<<< HEAD
+=======
+heapProfiler::AddHeapSnapshotChunkNotification::
+    AddHeapSnapshotChunkNotification()
+    : Notification("HeapProfiler.addHeapSnapshotChunk") {}
+
+heapProfiler::AddHeapSnapshotChunkNotification::
+    AddHeapSnapshotChunkNotification(const dynamic &obj)
+    : Notification("HeapProfiler.addHeapSnapshotChunk") {
+  assign(method, obj, "method");
+
+  dynamic params = obj.at("params");
+  assign(chunk, params, "chunk");
+}
+
+dynamic heapProfiler::AddHeapSnapshotChunkNotification::toDynamic() const {
+  dynamic params = dynamic::object;
+  put(params, "chunk", chunk);
+
+  dynamic obj = dynamic::object;
+  put(obj, "method", method);
+  put(obj, "params", std::move(params));
+  return obj;
+}
+
+heapProfiler::ReportHeapSnapshotProgressNotification::
+    ReportHeapSnapshotProgressNotification()
+    : Notification("HeapProfiler.reportHeapSnapshotProgress") {}
+
+heapProfiler::ReportHeapSnapshotProgressNotification::
+    ReportHeapSnapshotProgressNotification(const dynamic &obj)
+    : Notification("HeapProfiler.reportHeapSnapshotProgress") {
+  assign(method, obj, "method");
+
+  dynamic params = obj.at("params");
+  assign(done, params, "done");
+  assign(total, params, "total");
+  assign(finished, params, "finished");
+}
+
+dynamic heapProfiler::ReportHeapSnapshotProgressNotification::toDynamic()
+    const {
+  dynamic params = dynamic::object;
+  put(params, "done", done);
+  put(params, "total", total);
+  put(params, "finished", finished);
+
+  dynamic obj = dynamic::object;
+  put(obj, "method", method);
+  put(obj, "params", std::move(params));
+  return obj;
+}
+
+>>>>>>> fb/0.62-stable
 runtime::ConsoleAPICalledNotification::ConsoleAPICalledNotification()
     : Notification("Runtime.consoleAPICalled") {}
 

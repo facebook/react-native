@@ -5,6 +5,10 @@ cd "$DIR"
 
 FBSOURCE="$(hg root)"
 CLANG_FORMAT="$FBSOURCE/tools/third-party/clang-format/clang-format"
+<<<<<<< HEAD
 SRC="$FBSOURCE/xplat/hermes-inspector"
+=======
+SRC="$FBSOURCE/xplat/js/react-native-github/ReactCommon/hermes/inspector"
+>>>>>>> fb/0.62-stable
 
 find "$SRC" '(' -name '*.h' -or -name '*.cpp' ')' -exec "$CLANG_FORMAT" -i -style=file '{}' ';'

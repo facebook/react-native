@@ -18,6 +18,24 @@ import NativeSourceCode from '../../NativeModules/specs/NativeSourceCode';
 let fetch;
 
 import type {StackFrame} from '../NativeExceptionsManager';
+<<<<<<< HEAD
+=======
+
+export type CodeFrame = $ReadOnly<{|
+  content: string,
+  location: ?{
+    row: number,
+    column: number,
+    ...
+  },
+  fileName: string,
+|}>;
+
+export type SymbolicatedStackTrace = $ReadOnly<{|
+  stack: Array<StackFrame>,
+  codeFrame: ?CodeFrame,
+|}>;
+>>>>>>> fb/0.62-stable
 
 function isSourcedFromDisk(sourcePath: string): boolean {
   return !/^http/.test(sourcePath) && /[\\/]/.test(sourcePath);
@@ -25,7 +43,7 @@ function isSourcedFromDisk(sourcePath: string): boolean {
 
 async function symbolicateStackTrace(
   stack: Array<StackFrame>,
-): Promise<Array<StackFrame>> {
+): Promise<SymbolicatedStackTrace> {
   // RN currently lazy loads whatwg-fetch using a custom fetch module, which,
   // when called for the first time, requires and re-exports 'whatwg-fetch'.
   // However, when a dependency of the project tries to require whatwg-fetch
@@ -74,8 +92,7 @@ async function symbolicateStackTrace(
     method: 'POST',
     body: JSON.stringify({stack: stackCopy}),
   });
-  const json = await response.json();
-  return json.stack;
+  return await response.json();
 }
 
 module.exports = symbolicateStackTrace;

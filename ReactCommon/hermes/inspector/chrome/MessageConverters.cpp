@@ -1,4 +1,13 @@
+<<<<<<< HEAD
 // Copyright 2004-present Facebook. All Rights Reserved.
+=======
+/*
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+>>>>>>> fb/0.62-stable
 
 #include "MessageConverters.h"
 
@@ -30,6 +39,14 @@ m::OkResponse m::makeOkResponse(int id) {
   return resp;
 }
 
+<<<<<<< HEAD
+=======
+std::string m::stripCachePrevention(const std::string &url) {
+  std::regex regex("&?cachePrevention=[0-9]*");
+  return std::regex_replace(url, regex, "");
+}
+
+>>>>>>> fb/0.62-stable
 /*
  * debugger message conversion helpers
  */
@@ -58,6 +75,7 @@ m::debugger::CallFrame m::debugger::makeCallFrame(
   result.location = makeLocation(callFrameInfo.location);
 
   uint32_t scopeCount = lexicalInfo.getScopesCount();
+<<<<<<< HEAD
   for (uint32_t scopeIndex = 0; scopeIndex < scopeCount; scopeIndex++) {
     m::debugger::Scope scope;
 
@@ -73,6 +91,40 @@ m::debugger::CallFrame m::debugger::makeCallFrame(
           std::make_pair(callFrameIndex, scopeIndex), BacktraceObjectGroup);
     }
 
+=======
+
+  // First we have our local scope (unless we're in the global function)
+  if (scopeCount > 1) {
+    m::debugger::Scope scope;
+    scope.type = "local";
+    scope.object.objectId = objTable.addScope(
+        std::make_pair(callFrameIndex, 0), BacktraceObjectGroup);
+    scope.object.type = "object";
+    scope.object.className = "Object";
+    result.scopeChain.emplace_back(std::move(scope));
+  }
+
+  // Then we have zero or more parent closure scopes
+  for (uint32_t scopeIndex = 1; scopeIndex < scopeCount - 1; scopeIndex++) {
+    m::debugger::Scope scope;
+
+    scope.type = "closure";
+    // TODO: Get the parent closure's name
+    scope.name = folly::to<std::string>(scopeIndex);
+    scope.object.objectId = objTable.addScope(
+        std::make_pair(callFrameIndex, scopeIndex), BacktraceObjectGroup);
+    scope.object.type = "object";
+    scope.object.className = "Object";
+    result.scopeChain.emplace_back(std::move(scope));
+  }
+
+  // Finally, we always have the global scope
+  {
+    m::debugger::Scope scope;
+    scope.type = "global";
+    scope.object.objectId =
+        objTable.addValue(runtime.global(), BacktraceObjectGroup);
+>>>>>>> fb/0.62-stable
     scope.object.type = "object";
     scope.object.className = "Object";
     result.scopeChain.emplace_back(std::move(scope));

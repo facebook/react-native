@@ -7,6 +7,7 @@
  * @flow strict-local
  * @format
  */
+
 'use strict';
 
 import type {
@@ -16,10 +17,10 @@ import type {
 } from '../Renderer/shims/ReactNativeTypes';
 
 // TODO: type these properly.
-type Node = {};
+type Node = {...};
 type NodeSet = Array<Node>;
-type NodeProps = {};
-type InstanceHandle = {};
+type NodeProps = {...};
+type InstanceHandle = {...};
 type Spec = {|
   +createNode: (
     reactTag: number,
@@ -48,6 +49,7 @@ type Spec = {|
     onFail: () => void,
     onSuccess: MeasureLayoutOnSuccessCallback,
   ) => void,
+  +findShadowNodeByTag_DEPRECATED: (reactTag: number) => ?Node,
 |};
 
 const FabricUIManager: ?Spec = global.nativeFabricUIManager;

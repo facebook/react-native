@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -9,11 +9,14 @@
 
 #import <AVFoundation/AVFoundation.h>
 
+<<<<<<< HEAD
 #import <yoga/Yoga.h> // TODO(macOS ISS#2323203)
 
 #if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
 #import "RCTAccessibilityManager.h"
 #endif // TODO(macOS ISS#2323203)
+=======
+>>>>>>> fb/0.62-stable
 #import "RCTAssert.h"
 #import "RCTBridge+Private.h"
 #import "RCTBridge.h"
@@ -99,6 +102,7 @@ RCT_EXPORT_MODULE()
   return NO;
 }
 
+<<<<<<< HEAD
 #if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
 - (void)dealloc
 {
@@ -106,6 +110,8 @@ RCT_EXPORT_MODULE()
 }
 #endif // TODO(macOS ISS#2323203)
 
+=======
+>>>>>>> fb/0.62-stable
 - (void)invalidate
 {
   /**
@@ -194,8 +200,9 @@ RCT_EXPORT_MODULE()
   dispatch_async(dispatch_get_main_queue(), ^{
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(didReceiveNewContentSizeMultiplier)
-                                                 name:RCTAccessibilityManagerDidUpdateMultiplierNotification
-                                               object:self->_bridge.accessibilityManager];
+                                                 name:@"RCTAccessibilityManagerDidUpdateMultiplierNotification"
+                                               object:[self->_bridge moduleForName:@"AccessibilityManager"
+                                                             lazilyLoadIfNecessary:YES]];
   });
 #endif // TODO(macOS ISS#2323203)
 #if !TARGET_OS_TV && !TARGET_OS_OSX // TODO(macOS ISS#2323203)
@@ -217,8 +224,12 @@ RCT_EXPORT_MODULE()
   // Report the event across the bridge.
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
-  [_bridge.eventDispatcher sendDeviceEventWithName:@"didUpdateContentSizeMultiplier"
-                                              body:@([_bridge.accessibilityManager multiplier])];
+  id multiplier = [[self->_bridge moduleForName:@"AccessibilityManager"
+                          lazilyLoadIfNecessary:YES] valueForKey:@"multiplier"];
+  if (multiplier) {
+    [_bridge.eventDispatcher sendDeviceEventWithName:@"didUpdateContentSizeMultiplier"
+                                                body:multiplier];
+  }
 #pragma clang diagnostic pop
 
   RCTExecuteOnUIManagerQueue(^{
@@ -349,7 +360,25 @@ static NSDictionary *deviceOrientationEventBody(UIDeviceOrientation orientation)
 - (NSString *)viewNameForReactTag:(NSNumber *)reactTag
 {
   RCTAssertUIManagerQueue();
-  return _shadowViewRegistry[reactTag].viewName;
+  NSString *name = _shadowViewRegistry[reactTag].viewName;
+  if (name) {
+    return name;
+  }
+
+  __block UIView *view;
+  RCTUnsafeExecuteOnMainQueueSync(^{
+    view = self->_viewRegistry[reactTag];
+  });
+
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wundeclared-selector"
+
+  if ([view respondsToSelector:@selector(componentViewName_DO_NOT_USE_THIS_IS_BROKEN)]) {
+    return [view performSelector:@selector(componentViewName_DO_NOT_USE_THIS_IS_BROKEN)];
+  }
+
+#pragma clang diagnostic pop
+  return nil;
 }
 
 - (UIView *)viewForReactTag:(NSNumber *)reactTag
@@ -1006,7 +1035,7 @@ RCT_EXPORT_METHOD(createView:(nonnull NSNumber *)reactTag
       return;
     }
 
-    preliminaryCreatedView = [componentData createViewWithTag:reactTag];
+    preliminaryCreatedView = [componentData createViewWithTag:reactTag rootTag:rootTag];
 
     if (preliminaryCreatedView) {
       self->_viewRegistry[reactTag] = preliminaryCreatedView;
@@ -1110,7 +1139,11 @@ RCT_EXPORT_METHOD(dispatchViewManagerCommand:(nonnull NSNumber *)reactTag
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wundeclared-selector"
   if (!componentData) {
+<<<<<<< HEAD
       __block RCTPlatformView *view; // TODO(macOS ISS#2323203)
+=======
+    __block UIView *view;
+>>>>>>> fb/0.62-stable
     RCTUnsafeExecuteOnMainQueueSync(^{
       view = self->_viewRegistry[reactTag];
     });
@@ -1172,7 +1205,7 @@ RCT_EXPORT_METHOD(dispatchViewManagerCommand:(nonnull NSNumber *)reactTag
   }];
 }
 
-- (void)flushUIBlocksWithCompletion:(void (^)(void))completion;
+- (void)flushUIBlocksWithCompletion:(void (^)(void))completion
 {
   RCTAssertUIManagerQueue();
 

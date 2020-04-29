@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
@@ -18,6 +18,10 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.hardware.SensorManager;
 import android.util.Pair;
+<<<<<<< HEAD
+=======
+import android.view.View;
+>>>>>>> fb/0.62-stable
 import android.widget.EditText;
 import android.widget.Toast;
 import androidx.annotation.Nullable;
@@ -30,7 +34,10 @@ import com.facebook.react.bridge.CatalystInstance;
 import com.facebook.react.bridge.DefaultNativeModuleCallExceptionHandler;
 import com.facebook.react.bridge.JavaJSExecutor;
 import com.facebook.react.bridge.JavaScriptExecutorFactory;
+<<<<<<< HEAD
 import com.facebook.react.bridge.NativeDeltaClient;
+=======
+>>>>>>> fb/0.62-stable
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReactMarker;
 import com.facebook.react.bridge.ReactMarkerConstants;
@@ -47,6 +54,7 @@ import com.facebook.react.devsupport.interfaces.DevSupportManager;
 import com.facebook.react.devsupport.interfaces.ErrorCustomizer;
 import com.facebook.react.devsupport.interfaces.PackagerStatusCallback;
 import com.facebook.react.devsupport.interfaces.StackFrame;
+import com.facebook.react.modules.core.RCTNativeAppEventEmitter;
 import com.facebook.react.modules.debug.interfaces.DeveloperSettings;
 import com.facebook.react.packagerconnection.RequestHandler;
 import com.facebook.react.packagerconnection.Responder;
@@ -376,6 +384,14 @@ public class DevSupportManagerImpl
     }
   }
 
+  public @Nullable View createRootView(String appKey) {
+    return mReactInstanceManagerHelper.createRootView(appKey);
+  }
+
+  public void destroyRootView(View rootView) {
+    mReactInstanceManagerHelper.destroyRootView(rootView);
+  }
+
   private void hideDevOptionsDialog() {
     if (mDevOptionsDialog != null) {
       mDevOptionsDialog.dismiss();
@@ -518,9 +534,13 @@ public class DevSupportManagerImpl
             mReactInstanceManagerHelper.toggleElementInspector();
           }
         });
+<<<<<<< HEAD
     // "Live reload" which refreshes on every edit was removed in favor of "Fast Refresh".
     // While native code for "Live reload" is still there, please don't add the option back.
     // See D15958697 for more context.
+=======
+
+>>>>>>> fb/0.62-stable
     options.put(
         mDevSettings.isHotModuleReplacementEnabled()
             ? mApplicationContext.getString(R.string.catalyst_hot_reloading_stop)
@@ -557,6 +577,7 @@ public class DevSupportManagerImpl
           @Override
           public void onOptionSelected() {
             toggleJSSamplingProfiler();
+<<<<<<< HEAD
           }
         });
 
@@ -577,9 +598,34 @@ public class DevSupportManagerImpl
               }
             }
             mDevSettings.setFpsDebugEnabled(!mDevSettings.isFpsDebugEnabled());
+=======
+>>>>>>> fb/0.62-stable
+          }
+        });
+
+    options.put(
+<<<<<<< HEAD
+=======
+        mDevSettings.isFpsDebugEnabled()
+            ? mApplicationContext.getString(R.string.catalyst_perf_monitor_stop)
+            : mApplicationContext.getString(R.string.catalyst_perf_monitor),
+        new DevOptionHandler() {
+          @Override
+          public void onOptionSelected() {
+            if (!mDevSettings.isFpsDebugEnabled()) {
+              // Request overlay permission if needed when "Show Perf Monitor" option is selected
+              Context context = mReactInstanceManagerHelper.getCurrentActivity();
+              if (context == null) {
+                FLog.e(ReactConstants.TAG, "Unable to get reference to react activity");
+              } else {
+                DebugOverlayController.requestPermission(context);
+              }
+            }
+            mDevSettings.setFpsDebugEnabled(!mDevSettings.isFpsDebugEnabled());
           }
         });
     options.put(
+>>>>>>> fb/0.62-stable
         mApplicationContext.getString(R.string.catalyst_settings),
         new DevOptionHandler() {
           @Override
@@ -623,6 +669,55 @@ public class DevSupportManagerImpl
                 })
             .create();
     mDevOptionsDialog.show();
+    if (mCurrentContext != null) {
+      mCurrentContext.getJSModule(RCTNativeAppEventEmitter.class).emit("RCTDevMenuShown", null);
+    }
+  }
+
+  /** Starts of stops the sampling profiler */
+  private void toggleJSSamplingProfiler() {
+    JavaScriptExecutorFactory javaScriptExecutorFactory =
+        mReactInstanceManagerHelper.getJavaScriptExecutorFactory();
+    if (!mIsSamplingProfilerEnabled) {
+      try {
+        javaScriptExecutorFactory.startSamplingProfiler();
+        Toast.makeText(mApplicationContext, "Starting Sampling Profiler", Toast.LENGTH_SHORT)
+            .show();
+      } catch (UnsupportedOperationException e) {
+        Toast.makeText(
+                mApplicationContext,
+                javaScriptExecutorFactory.toString() + " does not support Sampling Profiler",
+                Toast.LENGTH_LONG)
+            .show();
+      } finally {
+        mIsSamplingProfilerEnabled = true;
+      }
+    } else {
+      try {
+        final String outputPath =
+            File.createTempFile(
+                    "sampling-profiler-trace", ".cpuprofile", mApplicationContext.getCacheDir())
+                .getPath();
+        javaScriptExecutorFactory.stopSamplingProfiler(outputPath);
+        Toast.makeText(
+                mApplicationContext,
+                "Saved results from Profiler to " + outputPath,
+                Toast.LENGTH_LONG)
+            .show();
+      } catch (IOException e) {
+        FLog.e(
+            ReactConstants.TAG,
+            "Could not create temporary file for saving results from Sampling Profiler");
+      } catch (UnsupportedOperationException e) {
+        Toast.makeText(
+                mApplicationContext,
+                javaScriptExecutorFactory.toString() + "does not support Sampling Profiler",
+                Toast.LENGTH_LONG)
+            .show();
+      } finally {
+        mIsSamplingProfilerEnabled = false;
+      }
+    }
   }
 
   /** Starts of stops the sampling profiler */
@@ -1026,7 +1121,7 @@ public class DevSupportManagerImpl
     mDevServerHelper.downloadBundleFromURL(
         new DevBundleDownloadListener() {
           @Override
-          public void onSuccess(final @Nullable NativeDeltaClient nativeDeltaClient) {
+          public void onSuccess() {
             mDevLoadingViewController.hide();
             mDevLoadingViewVisible = false;
             synchronized (DevSupportManagerImpl.this) {
@@ -1034,7 +1129,7 @@ public class DevSupportManagerImpl
               mBundleStatus.updateTimestamp = System.currentTimeMillis();
             }
             if (mBundleDownloadListener != null) {
-              mBundleDownloadListener.onSuccess(nativeDeltaClient);
+              mBundleDownloadListener.onSuccess();
             }
             UiThreadUtil.runOnUiThread(
                 new Runnable() {
@@ -1042,7 +1137,11 @@ public class DevSupportManagerImpl
                   public void run() {
                     ReactMarker.logMarker(
                         ReactMarkerConstants.DOWNLOAD_END, bundleInfo.toJSONString());
+<<<<<<< HEAD
                     mReactInstanceManagerHelper.onJSBundleLoadedFromServer(nativeDeltaClient);
+=======
+                    mReactInstanceManagerHelper.onJSBundleLoadedFromServer();
+>>>>>>> fb/0.62-stable
                   }
                 });
           }
@@ -1131,6 +1230,7 @@ public class DevSupportManagerImpl
             handleReloadJS();
           }
         });
+<<<<<<< HEAD
   }
 
   @Override
@@ -1147,6 +1247,8 @@ public class DevSupportManagerImpl
             handleReloadJS();
           }
         });
+=======
+>>>>>>> fb/0.62-stable
   }
 
   @Override
@@ -1211,6 +1313,7 @@ public class DevSupportManagerImpl
       }
 
       mDevServerHelper.openPackagerConnection(this.getClass().getSimpleName(), this);
+<<<<<<< HEAD
       if (mDevSettings.isReloadOnJSChangeEnabled()) {
         mDevServerHelper.startPollingOnChangeEndpoint(
             new DevServerHelper.OnServerContentChangeListener() {
@@ -1222,6 +1325,8 @@ public class DevSupportManagerImpl
       } else {
         mDevServerHelper.stopPollingOnChangeEndpoint();
       }
+=======
+>>>>>>> fb/0.62-stable
     } else {
       // hide FPS debug overlay
       if (mDebugOverlayController != null) {
@@ -1249,7 +1354,6 @@ public class DevSupportManagerImpl
       // hide loading view
       mDevLoadingViewController.hide();
       mDevServerHelper.closePackagerConnection();
-      mDevServerHelper.stopPollingOnChangeEndpoint();
     }
   }
 

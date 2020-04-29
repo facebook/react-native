@@ -18,8 +18,13 @@ export interface Spec extends TurboModule {
   +addNetworkingHandler: () => void;
   +addWebSocketHandler: (id: number) => void;
   +removeWebSocketHandler: (id: number) => void;
+<<<<<<< HEAD
   +sendOverSocket: (blob: Object, id: number) => void;
   +createFromParts: (parts: Array<Object>, blobId: string) => void;
+=======
+  +sendOverSocket: (blob: Object, socketID: number) => void;
+  +createFromParts: (parts: Array<Object>, withId: string) => void;
+>>>>>>> fb/0.62-stable
   +release: (blobId: string) => void;
 }
 

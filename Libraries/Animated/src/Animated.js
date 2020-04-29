@@ -11,6 +11,9 @@
 'use strict';
 
 import Platform from '../../Utilities/Platform';
+const View = require('../../Components/View/View');
+const React = require('react');
+import type {AnimatedComponentType} from './createAnimatedComponent';
 
 const AnimatedMock = require('./AnimatedMock');
 const AnimatedImplementation = require('./AnimatedImplementation');
@@ -35,7 +38,14 @@ module.exports = {
   get Text(): any {
     return require('./components/AnimatedText');
   },
+<<<<<<< HEAD
   get View(): any {
+=======
+  get View(): AnimatedComponentType<
+    React.ElementConfig<typeof View>,
+    React.ElementRef<typeof View>,
+  > {
+>>>>>>> fb/0.62-stable
     return require('./components/AnimatedView');
   },
   ...Animated,

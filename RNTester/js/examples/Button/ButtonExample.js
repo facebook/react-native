@@ -13,6 +13,10 @@
 const React = require('react');
 
 const {Alert, Button, View, StyleSheet} = require('react-native');
+<<<<<<< HEAD
+=======
+import {RNTesterThemeContext} from '../../components/RNTesterTheme';
+>>>>>>> fb/0.62-stable
 
 function onButtonPress(buttonName) {
   Alert.alert(`${buttonName} has been pressed!`);
@@ -31,12 +35,28 @@ exports.examples = [
       'everyone.': string),
     render: function(): React.Node {
       return (
+<<<<<<< HEAD
         <Button
           onPress={() => onButtonPress('Simple')}
           testID="simple_button"
           title="Press Me"
           accessibilityLabel="See an informative alert"
         />
+=======
+        <RNTesterThemeContext.Consumer>
+          {theme => {
+            return (
+              <Button
+                onPress={() => onButtonPress('Simple')}
+                testID="simple_button"
+                color={theme.LinkColor}
+                title="Press Me"
+                accessibilityLabel="See an informative alert"
+              />
+            );
+          }}
+        </RNTesterThemeContext.Consumer>
+>>>>>>> fb/0.62-stable
       );
     },
   },
@@ -47,6 +67,7 @@ exports.examples = [
       'Android, the color adjusts the background color of the button.': string),
     render: function(): React.Node {
       return (
+<<<<<<< HEAD
         <Button
           onPress={() => onButtonPress('Purple')}
           testID="purple_button"
@@ -54,6 +75,21 @@ exports.examples = [
           color="#841584"
           accessibilityLabel="Learn more about purple"
         />
+=======
+        <RNTesterThemeContext.Consumer>
+          {theme => {
+            return (
+              <Button
+                onPress={() => onButtonPress('Purple')}
+                testID="purple_button"
+                color={theme.SystemPurpleColor}
+                title="Press Purple"
+                accessibilityLabel="Learn more about purple"
+              />
+            );
+          }}
+        </RNTesterThemeContext.Consumer>
+>>>>>>> fb/0.62-stable
       );
     },
   },
@@ -63,6 +99,7 @@ exports.examples = [
       'the button': string),
     render: function(): React.Node {
       return (
+<<<<<<< HEAD
         <View style={styles.container}>
           <Button
             onPress={() => onButtonPress('Left')}
@@ -78,6 +115,30 @@ exports.examples = [
             accessibilityLabel="Ok, Great!"
           />
         </View>
+=======
+        <RNTesterThemeContext.Consumer>
+          {theme => {
+            return (
+              <View style={styles.container}>
+                <Button
+                  onPress={() => onButtonPress('Left')}
+                  testID="left_button"
+                  color={theme.LinkColor}
+                  title="This looks great!"
+                  accessibilityLabel="This sounds great!"
+                />
+                <Button
+                  onPress={() => onButtonPress('Right')}
+                  testID="right_button"
+                  color={theme.SystemPurpleColor}
+                  title="Ok!"
+                  accessibilityLabel="Ok, Great!"
+                />
+              </View>
+            );
+          }}
+        </RNTesterThemeContext.Consumer>
+>>>>>>> fb/0.62-stable
       );
     },
   },

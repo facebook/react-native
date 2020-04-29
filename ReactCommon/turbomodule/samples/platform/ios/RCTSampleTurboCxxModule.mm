@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -18,7 +18,7 @@ using namespace facebook;
 
 RCT_EXPORT_MODULE();
 
-- (std::shared_ptr<react::TurboModule>)getTurboModuleWithJsInvoker:(std::shared_ptr<react::JSCallInvoker>)jsInvoker
+- (std::shared_ptr<react::TurboModule>)getTurboModuleWithJsInvoker:(std::shared_ptr<react::CallInvoker>)jsInvoker
 {
   return std::make_shared<react::SampleTurboCxxModule>(jsInvoker);
 }

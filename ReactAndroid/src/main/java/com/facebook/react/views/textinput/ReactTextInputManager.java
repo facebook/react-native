@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
@@ -7,7 +7,6 @@
 package com.facebook.react.views.textinput;
 
 import android.graphics.PorterDuff;
-import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.text.Editable;
@@ -15,6 +14,7 @@ import android.text.InputFilter;
 import android.text.InputType;
 import android.text.Layout;
 import android.text.Spannable;
+import android.text.SpannableStringBuilder;
 import android.text.TextWatcher;
 import android.view.Gravity;
 import android.view.KeyEvent;
@@ -27,15 +27,29 @@ import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.Dynamic;
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
+import com.facebook.react.bridge.JavaOnlyArray;
+import com.facebook.react.bridge.JavaOnlyMap;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReadableArray;
+<<<<<<< HEAD
 import com.facebook.react.bridge.ReadableType;
+=======
+import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.bridge.ReadableNativeMap;
+import com.facebook.react.bridge.ReadableType;
+import com.facebook.react.bridge.WritableArray;
+import com.facebook.react.bridge.WritableMap;
+import com.facebook.react.bridge.WritableNativeArray;
+import com.facebook.react.bridge.WritableNativeMap;
+>>>>>>> fb/0.62-stable
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.uimanager.BaseViewManager;
 import com.facebook.react.uimanager.LayoutShadowNode;
 import com.facebook.react.uimanager.PixelUtil;
+import com.facebook.react.uimanager.ReactStylesDiffMap;
 import com.facebook.react.uimanager.Spacing;
+import com.facebook.react.uimanager.StateWrapper;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.ViewDefaults;
@@ -47,9 +61,11 @@ import com.facebook.react.views.imagehelper.ResourceDrawableIdHelper;
 import com.facebook.react.views.scroll.ScrollEvent;
 import com.facebook.react.views.scroll.ScrollEventType;
 import com.facebook.react.views.text.DefaultStyleValuesUtil;
-import com.facebook.react.views.text.ReactFontManager;
 import com.facebook.react.views.text.ReactTextUpdate;
+import com.facebook.react.views.text.TextAttributeProps;
 import com.facebook.react.views.text.TextInlineImageSpan;
+import com.facebook.react.views.text.TextLayoutManager;
+import com.facebook.react.views.text.TextTransform;
 import com.facebook.yoga.YogaConstants;
 import java.lang.reflect.Field;
 import java.util.LinkedList;
@@ -59,7 +75,7 @@ import java.util.Map;
 @ReactModule(name = ReactTextInputManager.REACT_CLASS)
 public class ReactTextInputManager extends BaseViewManager<ReactEditText, LayoutShadowNode> {
   public static final String TAG = ReactTextInputManager.class.getSimpleName();
-  protected static final String REACT_CLASS = "AndroidTextInput";
+  public static final String REACT_CLASS = "AndroidTextInput";
 
   private static final int[] SPACING_TYPES = {
     Spacing.ALL, Spacing.LEFT, Spacing.RIGHT, Spacing.TOP, Spacing.BOTTOM,
@@ -67,6 +83,8 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
 
   private static final int FOCUS_TEXT_INPUT = 1;
   private static final int BLUR_TEXT_INPUT = 2;
+  private static final int SET_MOST_RECENT_EVENT_COUNT = 3;
+  private static final int SET_TEXT_AND_SELECTION = 4;
 
   private static final int INPUT_TYPE_KEYBOARD_NUMBER_PAD = InputType.TYPE_CLASS_NUMBER;
   private static final int INPUT_TYPE_KEYBOARD_DECIMAL_PAD =
@@ -81,6 +99,13 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
           | InputType.TYPE_CLASS_TEXT
           | InputType.TYPE_CLASS_PHONE
           | PASSWORD_VISIBILITY_FLAG;
+<<<<<<< HEAD
+=======
+  private static final int AUTOCAPITALIZE_FLAGS =
+      InputType.TYPE_TEXT_FLAG_CAP_SENTENCES
+          | InputType.TYPE_TEXT_FLAG_CAP_WORDS
+          | InputType.TYPE_TEXT_FLAG_CAP_CHARACTERS;
+>>>>>>> fb/0.62-stable
 
   private static final String KEYBOARD_TYPE_EMAIL_ADDRESS = "email-address";
   private static final String KEYBOARD_TYPE_NUMERIC = "numeric";
@@ -172,12 +197,66 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
       ReactEditText reactEditText, int commandId, @Nullable ReadableArray args) {
     switch (commandId) {
       case FOCUS_TEXT_INPUT:
-        reactEditText.requestFocusFromJS();
+        this.receiveCommand(reactEditText, "focus", args);
         break;
       case BLUR_TEXT_INPUT:
-        reactEditText.clearFocusFromJS();
+        this.receiveCommand(reactEditText, "blur", args);
+        break;
+      case SET_MOST_RECENT_EVENT_COUNT:
+        this.receiveCommand(reactEditText, "setMostRecentEventCount", args);
+        break;
+      case SET_TEXT_AND_SELECTION:
+        this.receiveCommand(reactEditText, "setTextAndSelection", args);
         break;
     }
+  }
+
+  @Override
+  public void receiveCommand(
+      ReactEditText reactEditText, String commandId, @Nullable ReadableArray args) {
+    switch (commandId) {
+      case "focus":
+      case "focusTextInput":
+        reactEditText.requestFocusFromJS();
+        break;
+      case "blur":
+      case "blurTextInput":
+        reactEditText.clearFocusFromJS();
+        break;
+      case "setMostRecentEventCount":
+        reactEditText.setMostRecentEventCount(args.getInt(0));
+        break;
+      case "setTextAndSelection":
+        int mostRecentEventCount = args.getInt(0);
+        reactEditText.setMostRecentEventCount(mostRecentEventCount);
+
+        if (mostRecentEventCount != UNSET) {
+          String text = args.getString(1);
+
+          int start = args.getInt(2);
+          int end = args.getInt(3);
+          if (end == UNSET) {
+            end = start;
+          }
+
+          // TODO: construct a ReactTextUpdate and use that with maybeSetText
+          // instead of calling setText, etc directly - doing that will definitely cause bugs.
+          reactEditText.maybeSetTextFromJS(
+              getReactTextUpdate(text, mostRecentEventCount, start, end));
+        }
+        break;
+    }
+  }
+
+  // TODO: if we're able to fill in all these values and call maybeSetText when appropriate
+  // I think this is all that's needed to fully support TextInput in Fabric
+  private ReactTextUpdate getReactTextUpdate(
+      String text, int mostRecentEventCount, int start, int end) {
+    SpannableStringBuilder sb = new SpannableStringBuilder();
+    sb.append(TextTransform.apply(text, TextTransform.UNSET));
+
+    return new ReactTextUpdate(
+        sb, mostRecentEventCount, false, 0, 0, 0, 0, Gravity.NO_GRAVITY, 0, 0, start, end);
   }
 
   @Override
@@ -200,17 +279,27 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
     if (extraData instanceof ReactTextUpdate) {
       ReactTextUpdate update = (ReactTextUpdate) extraData;
 
-      view.setPadding(
-          (int) update.getPaddingLeft(),
-          (int) update.getPaddingTop(),
-          (int) update.getPaddingRight(),
-          (int) update.getPaddingBottom());
+      // TODO T58784068: delete this block of code, these are always unset in Fabric
+      int paddingLeft = (int) update.getPaddingLeft();
+      int paddingTop = (int) update.getPaddingTop();
+      int paddingRight = (int) update.getPaddingRight();
+      int paddingBottom = (int) update.getPaddingBottom();
+      if (paddingLeft != UNSET
+          || paddingTop != UNSET
+          || paddingRight != UNSET
+          || paddingBottom != UNSET) {
+        view.setPadding(
+            paddingLeft != UNSET ? paddingLeft : view.getPaddingLeft(),
+            paddingTop != UNSET ? paddingTop : view.getPaddingTop(),
+            paddingRight != UNSET ? paddingRight : view.getPaddingRight(),
+            paddingBottom != UNSET ? paddingBottom : view.getPaddingBottom());
+      }
 
       if (update.containsImages()) {
         Spannable spannable = update.getText();
         TextInlineImageSpan.possiblyUpdateInlineImageSpans(spannable, view);
       }
-      view.maybeSetText(update);
+      view.maybeSetTextFromState(update);
       if (update.getSelectionStart() != UNSET && update.getSelectionEnd() != UNSET)
         view.setSelection(update.getSelectionStart(), update.getSelectionEnd());
     }
@@ -223,6 +312,7 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
 
   @ReactProp(name = ViewProps.FONT_FAMILY)
   public void setFontFamily(ReactEditText view, String fontFamily) {
+<<<<<<< HEAD
     int style = Typeface.NORMAL;
     if (view.getTypeface() != null) {
       style = view.getTypeface().getStyle();
@@ -231,6 +321,9 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
         ReactFontManager.getInstance()
             .getTypeface(fontFamily, style, view.getContext().getAssets());
     view.setTypeface(newTypeface);
+=======
+    view.setFontFamily(fontFamily);
+>>>>>>> fb/0.62-stable
   }
 
   @ReactProp(name = ViewProps.MAX_FONT_SIZE_MULTIPLIER, defaultFloat = Float.NaN)
@@ -238,6 +331,7 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
     view.setMaxFontSizeMultiplier(maxFontSizeMultiplier);
   }
 
+<<<<<<< HEAD
   /**
    * /* This code was taken from the method setFontWeight of the class ReactTextShadowNode /* TODO:
    * Factor into a common place they can both use
@@ -266,22 +360,21 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
    * /* This code was taken from the method setFontStyle of the class ReactTextShadowNode /* TODO:
    * Factor into a common place they can both use
    */
-  @ReactProp(name = ViewProps.FONT_STYLE)
-  public void setFontStyle(ReactEditText view, @Nullable String fontStyleString) {
-    int fontStyle = UNSET;
-    if ("italic".equals(fontStyleString)) {
-      fontStyle = Typeface.ITALIC;
-    } else if ("normal".equals(fontStyleString)) {
-      fontStyle = Typeface.NORMAL;
-    }
+=======
+  @ReactProp(name = ViewProps.FONT_WEIGHT)
+  public void setFontWeight(ReactEditText view, @Nullable String fontWeight) {
+    view.setFontWeight(fontWeight);
+  }
 
-    Typeface currentTypeface = view.getTypeface();
-    if (currentTypeface == null) {
-      currentTypeface = Typeface.DEFAULT;
-    }
-    if (fontStyle != currentTypeface.getStyle()) {
-      view.setTypeface(currentTypeface, fontStyle);
-    }
+>>>>>>> fb/0.62-stable
+  @ReactProp(name = ViewProps.FONT_STYLE)
+  public void setFontStyle(ReactEditText view, @Nullable String fontStyle) {
+    view.setFontStyle(fontStyle);
+  }
+
+  @ReactProp(name = ViewProps.INCLUDE_FONT_PADDING, defaultBoolean = true)
+  public void setIncludeFontPadding(ReactEditText view, boolean includepad) {
+    view.setIncludeFontPadding(includepad);
   }
 
   @ReactProp(name = "importantForAutofill")
@@ -680,17 +773,22 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
       }
     }
 
+<<<<<<< HEAD
     updateStagedInputTypeFlag(
         view,
         InputType.TYPE_TEXT_FLAG_CAP_SENTENCES
             | InputType.TYPE_TEXT_FLAG_CAP_WORDS
             | InputType.TYPE_TEXT_FLAG_CAP_CHARACTERS,
         autoCapitalizeValue);
+=======
+    updateStagedInputTypeFlag(view, AUTOCAPITALIZE_FLAGS, autoCapitalizeValue);
+>>>>>>> fb/0.62-stable
   }
 
   @ReactProp(name = "keyboardType")
   public void setKeyboardType(ReactEditText view, @Nullable String keyboardType) {
     int flagsToSet = InputType.TYPE_CLASS_TEXT;
+    boolean unsettingFlagsBreaksAutocomplete = false;
     if (KEYBOARD_TYPE_NUMERIC.equalsIgnoreCase(keyboardType)) {
       flagsToSet = INPUT_TYPE_KEYBOARD_NUMBERED;
     } else if (KEYBOARD_TYPE_NUMBER_PAD.equalsIgnoreCase(keyboardType)) {
@@ -705,8 +803,19 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
       // This will supercede secureTextEntry={false}. If it doesn't, due to the way
       //  the flags work out, the underlying field will end up a URI-type field.
       flagsToSet = InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD;
+    } else if ((view.getStagedInputType() & AUTOCAPITALIZE_FLAGS) != 0) {
+      // This prevents KEYBOARD_TYPE_FLAGS from being unset when the keyboardType is
+      // default, null, or unsupported, and autocapitalize is on.
+      // Unsetting these flags breaks the autoCapitalize functionality.
+      unsettingFlagsBreaksAutocomplete = true;
     }
+<<<<<<< HEAD
     updateStagedInputTypeFlag(view, KEYBOARD_TYPE_FLAGS, flagsToSet);
+=======
+
+    updateStagedInputTypeFlag(
+        view, (unsettingFlagsBreaksAutocomplete ? 0 : KEYBOARD_TYPE_FLAGS), flagsToSet);
+>>>>>>> fb/0.62-stable
     checkPasswordType(view);
   }
 
@@ -793,6 +902,7 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
   @Override
   protected void onAfterUpdateTransaction(ReactEditText view) {
     super.onAfterUpdateTransaction(view);
+    view.maybeUpdateTypeface();
     view.commitStagedInputType();
   }
 
@@ -806,6 +916,7 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
     }
   }
 
+<<<<<<< HEAD
   /**
    * This code was taken from the method parseNumericFontWeight of the class ReactTextShadowNode
    * TODO: Factor into a common place they can both use
@@ -823,6 +934,8 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
         : -1;
   }
 
+=======
+>>>>>>> fb/0.62-stable
   private static void updateStagedInputTypeFlag(
       ReactEditText view, int flagsToUnset, int flagsToSet) {
     view.setStagedInputType((view.getStagedInputType() & ~flagsToUnset) | flagsToSet);
@@ -849,6 +962,10 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
 
     @Override
     public void onTextChanged(CharSequence s, int start, int before, int count) {
+      if (mEditText.mDisableTextDiffing) {
+        return;
+      }
+
       // Rearranging the text (i.e. changing between singleline and multiline attributes) can
       // also trigger onTextChanged, call the event in JS only when the text actually changed
       if (count == 0 && before == 0) {
@@ -861,6 +978,92 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
       // Don't send same text changes
       if (count == before && newText.equals(oldText)) {
         return;
+      }
+
+      // Fabric: update representation of AttributedString
+      JavaOnlyMap attributedString = mEditText.mAttributedString;
+      if (attributedString != null && attributedString.hasKey("fragments")) {
+        String changedText = s.subSequence(start, start + count).toString();
+
+        String completeStr = attributedString.getString("string");
+        String newCompleteStr =
+            completeStr.substring(0, start)
+                + changedText
+                + (completeStr.length() > start + before
+                    ? completeStr.substring(start + before)
+                    : "");
+        attributedString.putString("string", newCompleteStr);
+
+        // Loop through all fragments and change them in-place
+        JavaOnlyArray fragments = (JavaOnlyArray) attributedString.getArray("fragments");
+        int positionInAttributedString = 0;
+        boolean found = false;
+        for (int i = 0; i < fragments.size() && !found; i++) {
+          JavaOnlyMap fragment = (JavaOnlyMap) fragments.getMap(i);
+          String fragmentStr = fragment.getString("string");
+          int positionBefore = positionInAttributedString;
+          positionInAttributedString += fragmentStr.length();
+          if (positionInAttributedString < start) {
+            continue;
+          }
+
+          int relativePosition = start - positionBefore;
+          found = true;
+
+          // Does the change span multiple Fragments?
+          // If so, we put any new text entirely in the first
+          // Fragment that we edit. For example, if you select two words
+          // across Fragment boundaries, "one | two", and replace them with a
+          // character "x", the first Fragment will replace "one " with "x", and the
+          // second Fragment will replace "two" with an empty string.
+          int remaining = fragmentStr.length() - relativePosition;
+
+          String newString =
+              fragmentStr.substring(0, relativePosition)
+                  + changedText
+                  + (fragmentStr.substring(relativePosition + Math.min(before, remaining)));
+          fragment.putString("string", newString);
+
+          // If we're changing 10 characters (before=10) and remaining=3,
+          // we want to remove 3 characters from this fragment (`Math.min(before, remaining)`)
+          // and 7 from the next Fragment (`before = 10 - 3`)
+          if (remaining < before) {
+            changedText = "";
+            start += remaining;
+            before = before - remaining;
+            found = false;
+          }
+        }
+      }
+
+      // Fabric: communicate to C++ layer that text has changed
+      // We need to call `incrementAndGetEventCounter` here explicitly because this
+      // update may race with other updates.
+      // TODO: currently WritableNativeMaps/WritableNativeArrays cannot be reused so
+      // we must recreate these data structures every time. It would be nice to have a
+      // reusable data-structure to use for TextInput because constructing these and copying
+      // on every keystroke is very expensive.
+      if (mEditText.mStateWrapper != null && attributedString != null) {
+        WritableMap map = new WritableNativeMap();
+        WritableMap newAttributedString = new WritableNativeMap();
+
+        WritableArray fragments = new WritableNativeArray();
+
+        for (int i = 0; i < attributedString.getArray("fragments").size(); i++) {
+          ReadableMap readableFragment = attributedString.getArray("fragments").getMap(i);
+          WritableMap fragment = new WritableNativeMap();
+          fragment.putDouble("reactTag", readableFragment.getInt("reactTag"));
+          fragment.putString("string", readableFragment.getString("string"));
+          fragments.pushMap(fragment);
+        }
+
+        newAttributedString.putString("string", attributedString.getString("string"));
+        newAttributedString.putArray("fragments", fragments);
+
+        map.putInt("mostRecentEventCount", mEditText.incrementAndGetEventCounter());
+        map.putMap("textChanged", newAttributedString);
+
+        mEditText.mStateWrapper.updateState(map);
       }
 
       // The event that contains the event counter and updates it must be sent first.
@@ -1074,5 +1277,62 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
             InputType.TYPE_TEXT_FLAG_CAP_WORDS,
             "sentences",
             InputType.TYPE_TEXT_FLAG_CAP_SENTENCES));
+  }
+
+  @Override
+  public void setPadding(ReactEditText view, int left, int top, int right, int bottom) {
+    view.setPadding(left, top, right, bottom);
+  }
+
+  // This is copied from ReactTextViewManager
+  // TODO: this should be from a common class or a static method somewhere
+  private int getTextBreakStrategy(@Nullable String textBreakStrategy) {
+    int androidTextBreakStrategy = Layout.BREAK_STRATEGY_HIGH_QUALITY;
+    if (textBreakStrategy != null) {
+      switch (textBreakStrategy) {
+        case "simple":
+          androidTextBreakStrategy = Layout.BREAK_STRATEGY_SIMPLE;
+          break;
+        case "balanced":
+          androidTextBreakStrategy = Layout.BREAK_STRATEGY_BALANCED;
+          break;
+        default:
+          androidTextBreakStrategy = Layout.BREAK_STRATEGY_HIGH_QUALITY;
+          break;
+      }
+    }
+    return androidTextBreakStrategy;
+  }
+
+  @Override
+  public Object updateState(
+      ReactEditText view, ReactStylesDiffMap props, @Nullable StateWrapper stateWrapper) {
+    // TODO T55794595: Add support for updating state with null stateWrapper
+    ReadableNativeMap state = stateWrapper.getState();
+    ReadableMap attributedString = state.getMap("attributedString");
+    ReadableMap paragraphAttributes = state.getMap("paragraphAttributes");
+
+    Spannable spanned =
+        TextLayoutManager.getOrCreateSpannableForText(view.getContext(), attributedString);
+    //    view.setSpanned(spanned);
+
+    TextAttributeProps textViewProps = new TextAttributeProps(props);
+
+    int textBreakStrategy =
+        getTextBreakStrategy(paragraphAttributes.getString("textBreakStrategy"));
+
+    // TODO add justificationMode prop into local Data
+    int justificationMode = Layout.JUSTIFICATION_MODE_NONE;
+
+    view.mStateWrapper = stateWrapper;
+
+    return ReactTextUpdate.buildReactTextUpdateFromState(
+        spanned,
+        state.getInt("mostRecentEventCount"),
+        false, // TODO add this into local Data
+        textViewProps.getTextAlign(),
+        textBreakStrategy,
+        justificationMode,
+        attributedString);
   }
 }

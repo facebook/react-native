@@ -12,9 +12,8 @@
 
 const RNTesterTitle = require('./RNTesterTitle');
 const React = require('react');
-import {Platform} from 'react-native'; // TODO(macOS ISS#2323203)
-
 const {ScrollView, StyleSheet, View} = require('react-native');
+import {RNTesterThemeContext} from './RNTesterTheme';
 
 type Props = $ReadOnly<{|
   children?: React.Node,
@@ -40,30 +39,29 @@ class RNTesterPage extends React.Component<Props> {
     ) : null;
     const spacer = this.props.noSpacer ? null : <View style={styles.spacer} />;
     return (
-      <View style={styles.container}>
-        {title}
-        <ContentWrapper style={styles.wrapper} {...wrapperProps}>
-          {this.props.children}
-          {spacer}
-        </ContentWrapper>
-      </View>
+      <RNTesterThemeContext.Consumer>
+        {theme => {
+          return (
+            <View
+              style={[
+                styles.container,
+                {backgroundColor: theme.SecondarySystemBackgroundColor},
+              ]}>
+              {title}
+              <ContentWrapper style={styles.wrapper} {...wrapperProps}>
+                {this.props.children}
+                {spacer}
+              </ContentWrapper>
+            </View>
+          );
+        }}
+      </RNTesterThemeContext.Consumer>
     );
   }
 }
 
 const styles = StyleSheet.create({
   container: {
-    ...Platform.select({
-      ios: {
-        backgroundColor: {semantic: 'secondarySystemBackgroundColor'},
-      },
-      macos: {
-        backgroundColor: {semantic: 'underPageBackgroundColor'},
-      },
-      default: {
-        backgroundColor: '#e9eaed',
-      },
-    }),
     flex: 1,
   },
   spacer: {

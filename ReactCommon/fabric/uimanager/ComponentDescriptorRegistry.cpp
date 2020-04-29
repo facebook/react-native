@@ -1,26 +1,32 @@
-// Copyright (c) Facebook, Inc. and its affiliates.
-
-// This source code is licensed under the MIT license found in the
-// LICENSE file in the root directory of this source tree.
+/*
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
 
 #include "ComponentDescriptorRegistry.h"
 
 #include <react/core/ShadowNodeFragment.h>
+#include <react/uimanager/ComponentDescriptorProviderRegistry.h>
 #include <react/uimanager/primitives.h>
 
 namespace facebook {
 namespace react {
 
 ComponentDescriptorRegistry::ComponentDescriptorRegistry(
-    ComponentDescriptorParameters const &parameters)
-    : parameters_(parameters) {}
+    ComponentDescriptorParameters const &parameters,
+    ComponentDescriptorProviderRegistry const &providerRegistry)
+    : parameters_(parameters), providerRegistry_(providerRegistry) {}
 
 void ComponentDescriptorRegistry::add(
     ComponentDescriptorProvider componentDescriptorProvider) const {
   std::unique_lock<better::shared_mutex> lock(mutex_);
 
   auto componentDescriptor = componentDescriptorProvider.constructor(
-      parameters_.eventDispatcher, parameters_.contextContainer);
+      {parameters_.eventDispatcher,
+       parameters_.contextContainer,
+       componentDescriptorProvider.flavor});
   assert(
       componentDescriptor->getComponentHandle() ==
       componentDescriptorProvider.handle);
@@ -39,21 +45,6 @@ void ComponentDescriptorRegistry::add(
     auto *self = const_cast<ComponentDescriptorRegistry *>(this);
     self->setFallbackComponentDescriptor(sharedComponentDescriptor);
   }
-}
-
-void ComponentDescriptorRegistry::remove(
-    ComponentDescriptorProvider componentDescriptorProvider) const {
-  std::unique_lock<better::shared_mutex> lock(mutex_);
-
-  assert(
-      _registryByHandle.find(componentDescriptorProvider.handle) !=
-      _registryByHandle.end());
-  assert(
-      _registryByName.find(componentDescriptorProvider.name) !=
-      _registryByName.end());
-
-  _registryByHandle.erase(componentDescriptorProvider.handle);
-  _registryByName.erase(componentDescriptorProvider.name);
 }
 
 void ComponentDescriptorRegistry::registerComponentDescriptor(
@@ -97,15 +88,17 @@ static std::string componentNameByReactViewName(std::string viewName) {
     return "ShimmeringView";
   }
 
+  if (viewName == "RefreshControl") {
+    return "PullToRefreshView";
+  }
+
   if (viewName == "AndroidProgressBar") {
     return "ActivityIndicatorView";
   }
 
   // We need this temporarily for testing purposes until we have proper
   // implementation of core components.
-  if (viewName == "SinglelineTextInputView" ||
-      viewName == "MultilineTextInputView" || viewName == "AndroidTextInput" ||
-      viewName == "SafeAreaView" || viewName == "ScrollContentView" ||
+  if (viewName == "ScrollContentView" ||
       viewName == "AndroidHorizontalScrollContentView" // Android
   ) {
     return "View";
@@ -122,6 +115,23 @@ ComponentDescriptor const &ComponentDescriptorRegistry::at(
 
   auto it = _registryByName.find(unifiedComponentName);
   if (it == _registryByName.end()) {
+    mutex_.unlock_shared();
+    providerRegistry_.request(unifiedComponentName.c_str());
+    mutex_.lock_shared();
+
+    it = _registryByName.find(unifiedComponentName);
+
+    /*
+     * TODO: T54849676
+     * Uncomment the `assert` after the following block that checks
+     * `_fallbackComponentDescriptor` is no longer needed. The assert assumes
+     * that `componentDescriptorProviderRequest` is always not null and register
+     * some component on every single request.
+     */
+    // assert(it != _registryByName.end());
+  }
+
+  if (it == _registryByName.end()) {
     if (_fallbackComponentDescriptor == nullptr) {
       throw std::invalid_argument(
           ("Unable to find componentDescriptor for " + unifiedComponentName)
@@ -129,7 +139,21 @@ ComponentDescriptor const &ComponentDescriptorRegistry::at(
     }
     return *_fallbackComponentDescriptor.get();
   }
+
   return *it->second;
+}
+
+ComponentDescriptor const *ComponentDescriptorRegistry::
+    findComponentDescriptorByHandle_DO_NOT_USE_THIS_IS_BROKEN(
+        ComponentHandle componentHandle) const {
+  std::shared_lock<better::shared_mutex> lock(mutex_);
+
+  auto iterator = _registryByHandle.find(componentHandle);
+  if (iterator == _registryByHandle.end()) {
+    return nullptr;
+  }
+
+  return iterator->second.get();
 }
 
 ComponentDescriptor const &ComponentDescriptorRegistry::at(

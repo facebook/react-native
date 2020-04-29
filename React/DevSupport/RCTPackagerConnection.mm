@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -21,7 +21,11 @@
 #import <React/RCTReconnectingWebSocket.h>
 #import <React/RCTUtils.h>
 
+<<<<<<< HEAD
 #if RCT_DEV && !TARGET_OS_UIKITFORMAC
+=======
+#if RCT_DEV
+>>>>>>> fb/0.62-stable
 
 #import <React/RCTSRWebSocket.h>
 

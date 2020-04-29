@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -55,8 +55,6 @@
     _touchHandler = [RCTSurfaceTouchHandler new];
 
     _stage = RCTSurfaceStageSurfaceDidInitialize;
-
-    [_surfacePresenter registerSurface:self];
   }
 
   return self;
@@ -67,8 +65,7 @@
   if (![self _setStage:RCTSurfaceStageStarted]) {
     return NO;
   }
-
-  [_surfacePresenter startSurface:self];
+  [_surfacePresenter registerSurface:self];
 
   return YES;
 }

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
@@ -8,6 +9,18 @@
 #include <HermesExecutorFactory.h>
 #include <fb/fbjni.h>
 #include <folly/Memory.h>
+=======
+/*
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+#include <../instrumentation/HermesMemoryDumper.h>
+#include <HermesExecutorFactory.h>
+#include <fbjni/fbjni.h>
+>>>>>>> fb/0.62-stable
 #include <hermes/Public/GCConfig.h>
 #include <hermes/Public/RuntimeConfig.h>
 #include <jni.h>
@@ -15,6 +28,7 @@
 #include <react/jni/JSLogging.h>
 #include <react/jni/JavaScriptExecutorHolder.h>
 
+<<<<<<< HEAD
 namespace facebook {
 namespace react {
 
@@ -32,6 +46,17 @@ static ::hermes::vm::RuntimeConfig makeRuntimeConfig(
     jni::alias_ref<jsi::jni::HermesMemoryDumper> heapDumper,
     jlong tripWireCooldownMS,
     jlong tripWireLimitBytes) {
+=======
+#include <memory>
+
+namespace facebook {
+namespace react {
+
+static ::hermes::vm::RuntimeConfig makeRuntimeConfig(
+    jlong heapSizeMB,
+    bool es6Symbol,
+    jint bytecodeWarmupPercent) {
+>>>>>>> fb/0.62-stable
   namespace vm = ::hermes::vm;
   auto gcConfigBuilder =
       vm::GCConfig::Builder()
@@ -43,6 +68,7 @@ static ::hermes::vm::RuntimeConfig makeRuntimeConfig(
           .withAllocInYoung(false)
           .withRevertToYGAtTTI(true);
 
+<<<<<<< HEAD
   if (tripWireEnabled) {
     assert(
         heapDumper &&
@@ -77,6 +103,8 @@ static ::hermes::vm::RuntimeConfig makeRuntimeConfig(
             .build());
   }
 
+=======
+>>>>>>> fb/0.62-stable
   return vm::RuntimeConfig::Builder()
       .withGCConfig(gcConfigBuilder.build())
       .withES6Symbol(es6Symbol)
@@ -102,13 +130,18 @@ class HermesExecutorHolder
     JReactMarker::setLogPerfMarkerIfNeeded();
 
     return makeCxxInstance(
+<<<<<<< HEAD
         folly::make_unique<HermesExecutorFactory>(installBindings));
+=======
+        std::make_unique<HermesExecutorFactory>(installBindings));
+>>>>>>> fb/0.62-stable
   }
 
   static jni::local_ref<jhybriddata> initHybrid(
       jni::alias_ref<jclass>,
       jlong heapSizeMB,
       bool es6Symbol,
+<<<<<<< HEAD
       jint bytecodeWarmupPercent,
       bool tripWireEnabled,
       jni::alias_ref<jsi::jni::HermesMemoryDumper> heapDumper,
@@ -124,6 +157,13 @@ class HermesExecutorHolder
         tripWireCooldownMS,
         tripWireLimitBytes);
     return makeCxxInstance(folly::make_unique<HermesExecutorFactory>(
+=======
+      jint bytecodeWarmupPercent) {
+    JReactMarker::setLogPerfMarkerIfNeeded();
+    auto runtimeConfig =
+        makeRuntimeConfig(heapSizeMB, es6Symbol, bytecodeWarmupPercent);
+    return makeCxxInstance(std::make_unique<HermesExecutorFactory>(
+>>>>>>> fb/0.62-stable
         installBindings, JSIExecutor::defaultTimeoutInvoker, runtimeConfig));
   }
 

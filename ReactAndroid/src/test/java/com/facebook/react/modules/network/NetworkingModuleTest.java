@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
@@ -15,6 +15,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.facebook.react.bridge.Arguments;
+import com.facebook.react.bridge.CatalystInstance;
 import com.facebook.react.bridge.JavaOnlyArray;
 import com.facebook.react.bridge.JavaOnlyMap;
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -35,6 +36,7 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okio.Buffer;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -65,7 +67,32 @@ import org.robolectric.RobolectricTestRunner;
 @RunWith(RobolectricTestRunner.class)
 @PowerMockIgnore({"org.mockito.*", "org.robolectric.*", "androidx.*", "android.*"})
 public class NetworkingModuleTest {
+  private NetworkingModule mNetworkingModule;
+  private OkHttpClient mHttpClient;
+  private RCTDeviceEventEmitter mEmitter;
 
+  @Rule public PowerMockRule rule = new PowerMockRule();
+
+  @Before
+  public void prepareModules() {
+    mHttpClient = mock(OkHttpClient.class);
+    when(mHttpClient.cookieJar()).thenReturn(mock(CookieJarContainer.class));
+    when(mHttpClient.newCall(any(Request.class)))
+        .thenAnswer(
+            new Answer<Object>() {
+              @Override
+              public Object answer(InvocationOnMock invocation) throws Throwable {
+                Call callMock = mock(Call.class);
+                return callMock;
+              }
+            });
+    OkHttpClient.Builder clientBuilder = mock(OkHttpClient.Builder.class);
+    when(clientBuilder.build()).thenReturn(mHttpClient);
+    when(mHttpClient.newBuilder()).thenReturn(clientBuilder);
+
+    mEmitter = mock(RCTDeviceEventEmitter.class);
+
+<<<<<<< HEAD
   @Rule public PowerMockRule rule = new PowerMockRule();
 
   @Test
@@ -87,6 +114,19 @@ public class NetworkingModuleTest {
         new NetworkingModule(mock(ReactApplicationContext.class), "", httpClient);
 
     networkingModule.sendRequest(
+=======
+    CatalystInstance reactInstance = mock(CatalystInstance.class);
+    ReactApplicationContext reactContext = mock(ReactApplicationContext.class);
+    when(reactContext.getCatalystInstance()).thenReturn(reactInstance);
+    when(reactContext.hasActiveCatalystInstance()).thenReturn(true);
+    when(reactContext.getJSModule(any(Class.class))).thenReturn(mEmitter);
+    mNetworkingModule = new NetworkingModule(reactContext, "", mHttpClient);
+  }
+
+  @Test
+  public void testGetWithoutHeaders() throws Exception {
+    mNetworkingModule.sendRequest(
+>>>>>>> fb/0.62-stable
         "GET",
         "http://somedomain/foo",
         /* requestId */ 0,
@@ -98,7 +138,7 @@ public class NetworkingModuleTest {
         /* withCredentials */ false);
 
     ArgumentCaptor<Request> argumentCaptor = ArgumentCaptor.forClass(Request.class);
-    verify(httpClient).newCall(argumentCaptor.capture());
+    verify(mHttpClient).newCall(argumentCaptor.capture());
     assertThat(argumentCaptor.getValue().url().toString()).isEqualTo("http://somedomain/foo");
     // We set the User-Agent header by default
     assertThat(argumentCaptor.getValue().headers().size()).isEqualTo(1);
@@ -107,21 +147,15 @@ public class NetworkingModuleTest {
 
   @Test
   public void testFailGetWithInvalidHeadersStruct() throws Exception {
-    RCTDeviceEventEmitter emitter = mock(RCTDeviceEventEmitter.class);
-    ReactApplicationContext context = mock(ReactApplicationContext.class);
-    when(context.getJSModule(any(Class.class))).thenReturn(emitter);
-
-    OkHttpClient httpClient = mock(OkHttpClient.class);
-    OkHttpClient.Builder clientBuilder = mock(OkHttpClient.Builder.class);
-    when(clientBuilder.build()).thenReturn(httpClient);
-    when(httpClient.newBuilder()).thenReturn(clientBuilder);
-    NetworkingModule networkingModule = new NetworkingModule(context, "", httpClient);
-
     List<JavaOnlyArray> invalidHeaders = Arrays.asList(JavaOnlyArray.of("foo"));
 
     mockEvents();
 
+<<<<<<< HEAD
     networkingModule.sendRequest(
+=======
+    mNetworkingModule.sendRequest(
+>>>>>>> fb/0.62-stable
         "GET",
         "http://somedoman/foo",
         /* requestId */ 0,
@@ -132,27 +166,25 @@ public class NetworkingModuleTest {
         /* timeout */ 0,
         /* withCredentials */ false);
 
+<<<<<<< HEAD
     verifyErrorEmit(emitter, 0);
+=======
+    verifyErrorEmit(mEmitter, 0);
+>>>>>>> fb/0.62-stable
   }
 
   @Test
   public void testFailPostWithoutContentType() throws Exception {
-    RCTDeviceEventEmitter emitter = mock(RCTDeviceEventEmitter.class);
-    ReactApplicationContext context = mock(ReactApplicationContext.class);
-    when(context.getJSModule(any(Class.class))).thenReturn(emitter);
-
-    OkHttpClient httpClient = mock(OkHttpClient.class);
-    OkHttpClient.Builder clientBuilder = mock(OkHttpClient.Builder.class);
-    when(clientBuilder.build()).thenReturn(httpClient);
-    when(httpClient.newBuilder()).thenReturn(clientBuilder);
-    NetworkingModule networkingModule = new NetworkingModule(context, "", httpClient);
-
     JavaOnlyMap body = new JavaOnlyMap();
     body.putString("string", "This is request body");
 
     mockEvents();
 
+<<<<<<< HEAD
     networkingModule.sendRequest(
+=======
+    mNetworkingModule.sendRequest(
+>>>>>>> fb/0.62-stable
         "POST",
         "http://somedomain/bar",
         0,
@@ -163,24 +195,22 @@ public class NetworkingModuleTest {
         /* timeout */ 0,
         /* withCredentials */ false);
 
+<<<<<<< HEAD
     verifyErrorEmit(emitter, 0);
+=======
+    verifyErrorEmit(mEmitter, 0);
+>>>>>>> fb/0.62-stable
   }
 
   @Test
   public void testFailInvalidUrl() throws Exception {
-    RCTDeviceEventEmitter emitter = mock(RCTDeviceEventEmitter.class);
-    ReactApplicationContext context = mock(ReactApplicationContext.class);
-    when(context.getJSModule(any(Class.class))).thenReturn(emitter);
-
-    OkHttpClient httpClient = mock(OkHttpClient.class);
-    OkHttpClient.Builder clientBuilder = mock(OkHttpClient.Builder.class);
-    when(clientBuilder.build()).thenReturn(httpClient);
-    when(httpClient.newBuilder()).thenReturn(clientBuilder);
-    NetworkingModule networkingModule = new NetworkingModule(context, "", httpClient);
-
     mockEvents();
 
+<<<<<<< HEAD
     networkingModule.sendRequest(
+=======
+    mNetworkingModule.sendRequest(
+>>>>>>> fb/0.62-stable
         "GET",
         "aaa",
         /* requestId */ 0,
@@ -191,7 +221,11 @@ public class NetworkingModuleTest {
         /* timeout */ 0,
         /* withCredentials */ false);
 
+<<<<<<< HEAD
     verifyErrorEmit(emitter, 0);
+=======
+    verifyErrorEmit(mEmitter, 0);
+>>>>>>> fb/0.62-stable
   }
 
   private static void verifyErrorEmit(RCTDeviceEventEmitter emitter, int requestId) {
@@ -226,6 +260,7 @@ public class NetworkingModuleTest {
 
   @Test
   public void testSuccessfulPostRequest() throws Exception {
+<<<<<<< HEAD
     RCTDeviceEventEmitter emitter = mock(RCTDeviceEventEmitter.class);
     ReactApplicationContext context = mock(ReactApplicationContext.class);
     when(context.getJSModule(any(Class.class))).thenReturn(emitter);
@@ -245,12 +280,18 @@ public class NetworkingModuleTest {
     when(httpClient.newBuilder()).thenReturn(clientBuilder);
     NetworkingModule networkingModule = new NetworkingModule(context, "", httpClient);
 
+=======
+>>>>>>> fb/0.62-stable
     JavaOnlyMap body = new JavaOnlyMap();
     body.putString("string", "This is request body");
 
     mockEvents();
 
+<<<<<<< HEAD
     networkingModule.sendRequest(
+=======
+    mNetworkingModule.sendRequest(
+>>>>>>> fb/0.62-stable
         "POST",
         "http://somedomain/bar",
         0,
@@ -262,7 +303,7 @@ public class NetworkingModuleTest {
         /* withCredentials */ false);
 
     ArgumentCaptor<Request> argumentCaptor = ArgumentCaptor.forClass(Request.class);
-    verify(httpClient).newCall(argumentCaptor.capture());
+    verify(mHttpClient).newCall(argumentCaptor.capture());
     assertThat(argumentCaptor.getValue().url().toString()).isEqualTo("http://somedomain/bar");
     assertThat(argumentCaptor.getValue().headers().size()).isEqualTo(2);
     assertThat(argumentCaptor.getValue().method()).isEqualTo("POST");
@@ -275,6 +316,7 @@ public class NetworkingModuleTest {
 
   @Test
   public void testHeaders() throws Exception {
+<<<<<<< HEAD
     OkHttpClient httpClient = mock(OkHttpClient.class);
     when(httpClient.newCall(any(Request.class)))
         .thenAnswer(
@@ -291,12 +333,18 @@ public class NetworkingModuleTest {
     NetworkingModule networkingModule =
         new NetworkingModule(mock(ReactApplicationContext.class), "", httpClient);
 
+=======
+>>>>>>> fb/0.62-stable
     List<JavaOnlyArray> headers =
         Arrays.asList(
             JavaOnlyArray.of("Accept", "text/plain"),
             JavaOnlyArray.of("User-Agent", "React test agent/1.0"));
 
+<<<<<<< HEAD
     networkingModule.sendRequest(
+=======
+    mNetworkingModule.sendRequest(
+>>>>>>> fb/0.62-stable
         "GET",
         "http://someurl/baz",
         0,
@@ -307,7 +355,7 @@ public class NetworkingModuleTest {
         /* timeout */ 0,
         /* withCredentials */ false);
     ArgumentCaptor<Request> argumentCaptor = ArgumentCaptor.forClass(Request.class);
-    verify(httpClient).newCall(argumentCaptor.capture());
+    verify(mHttpClient).newCall(argumentCaptor.capture());
     Headers requestHeaders = argumentCaptor.getValue().headers();
     assertThat(requestHeaders.size()).isEqualTo(2);
     assertThat(requestHeaders.get("Accept")).isEqualTo("text/plain");
@@ -316,6 +364,7 @@ public class NetworkingModuleTest {
 
   @Test
   public void testPostJsonContentTypeHeader() throws Exception {
+<<<<<<< HEAD
     OkHttpClient httpClient = mock(OkHttpClient.class);
     when(httpClient.newCall(any(Request.class)))
         .thenAnswer(
@@ -331,11 +380,17 @@ public class NetworkingModuleTest {
     when(httpClient.newBuilder()).thenReturn(clientBuilder);
     NetworkingModule networkingModule =
         new NetworkingModule(mock(ReactApplicationContext.class), "", httpClient);
+=======
+>>>>>>> fb/0.62-stable
 
     JavaOnlyMap body = new JavaOnlyMap();
     body.putString("string", "{ \"key\": \"value\" }");
 
+<<<<<<< HEAD
     networkingModule.sendRequest(
+=======
+    mNetworkingModule.sendRequest(
+>>>>>>> fb/0.62-stable
         "POST",
         "http://somedomain/bar",
         0,
@@ -347,7 +402,7 @@ public class NetworkingModuleTest {
         /* withCredentials */ false);
 
     ArgumentCaptor<Request> argumentCaptor = ArgumentCaptor.forClass(Request.class);
-    verify(httpClient).newCall(argumentCaptor.capture());
+    verify(mHttpClient).newCall(argumentCaptor.capture());
 
     // Verify okhttp does not append "charset=utf-8"
     assertThat(argumentCaptor.getValue().body().contentType().toString())
@@ -356,6 +411,7 @@ public class NetworkingModuleTest {
 
   @Test
   public void testRespectsExistingCharacterSet() throws Exception {
+<<<<<<< HEAD
     RCTDeviceEventEmitter emitter = mock(RCTDeviceEventEmitter.class);
     ReactApplicationContext context = mock(ReactApplicationContext.class);
     when(context.getJSModule(any(Class.class))).thenReturn(emitter);
@@ -375,12 +431,18 @@ public class NetworkingModuleTest {
     when(httpClient.newBuilder()).thenReturn(clientBuilder);
     NetworkingModule networkingModule = new NetworkingModule(context, "", httpClient);
 
+=======
+>>>>>>> fb/0.62-stable
     JavaOnlyMap body = new JavaOnlyMap();
     body.putString("string", "Friðjónsson");
 
     mockEvents();
 
+<<<<<<< HEAD
     networkingModule.sendRequest(
+=======
+    mNetworkingModule.sendRequest(
+>>>>>>> fb/0.62-stable
         "POST",
         "http://somedomain/bar",
         0,
@@ -392,7 +454,7 @@ public class NetworkingModuleTest {
         /* withCredentials */ false);
 
     ArgumentCaptor<Request> argumentCaptor = ArgumentCaptor.forClass(Request.class);
-    verify(httpClient).newCall(argumentCaptor.capture());
+    verify(mHttpClient).newCall(argumentCaptor.capture());
 
     Buffer contentBuffer = new Buffer();
     argumentCaptor.getValue().body().writeTo(contentBuffer);
@@ -401,6 +463,7 @@ public class NetworkingModuleTest {
 
   @Test
   public void testGracefullyRecoversFromInvalidContentType() throws Exception {
+<<<<<<< HEAD
     RCTDeviceEventEmitter emitter = mock(RCTDeviceEventEmitter.class);
     ReactApplicationContext context = mock(ReactApplicationContext.class);
     when(context.getJSModule(any(Class.class))).thenReturn(emitter);
@@ -420,12 +483,18 @@ public class NetworkingModuleTest {
     when(httpClient.newBuilder()).thenReturn(clientBuilder);
     NetworkingModule networkingModule = new NetworkingModule(context, "", httpClient);
 
+=======
+>>>>>>> fb/0.62-stable
     JavaOnlyMap body = new JavaOnlyMap();
     body.putString("string", "test");
 
     mockEvents();
 
+<<<<<<< HEAD
     networkingModule.sendRequest(
+=======
+    mNetworkingModule.sendRequest(
+>>>>>>> fb/0.62-stable
         "POST",
         "http://somedomain/bar",
         0,
@@ -437,7 +506,7 @@ public class NetworkingModuleTest {
         /* withCredentials */ false);
 
     ArgumentCaptor<Request> argumentCaptor = ArgumentCaptor.forClass(Request.class);
-    verify(httpClient).newCall(argumentCaptor.capture());
+    verify(mHttpClient).newCall(argumentCaptor.capture());
 
     Buffer contentBuffer = new Buffer();
     argumentCaptor.getValue().body().writeTo(contentBuffer);
@@ -466,6 +535,7 @@ public class NetworkingModuleTest {
     formData.pushMap(bodyPart);
     body.putArray("formData", formData);
 
+<<<<<<< HEAD
     OkHttpClient httpClient = mock(OkHttpClient.class);
     when(httpClient.newCall(any(Request.class)))
         .thenAnswer(
@@ -482,6 +552,9 @@ public class NetworkingModuleTest {
     NetworkingModule networkingModule =
         new NetworkingModule(mock(ReactApplicationContext.class), "", httpClient);
     networkingModule.sendRequest(
+=======
+    mNetworkingModule.sendRequest(
+>>>>>>> fb/0.62-stable
         "POST",
         "http://someurl/uploadFoo",
         0,
@@ -494,7 +567,7 @@ public class NetworkingModuleTest {
 
     // verify url, method, headers
     ArgumentCaptor<Request> argumentCaptor = ArgumentCaptor.forClass(Request.class);
-    verify(httpClient).newCall(argumentCaptor.capture());
+    verify(mHttpClient).newCall(argumentCaptor.capture());
     assertThat(argumentCaptor.getValue().url().toString()).isEqualTo("http://someurl/uploadFoo");
     assertThat(argumentCaptor.getValue().method()).isEqualTo("POST");
     assertThat(argumentCaptor.getValue().body().contentType().type())
@@ -531,6 +604,7 @@ public class NetworkingModuleTest {
     formData.pushMap(bodyPart);
     body.putArray("formData", formData);
 
+<<<<<<< HEAD
     OkHttpClient httpClient = mock(OkHttpClient.class);
     when(httpClient.newCall(any(Request.class)))
         .thenAnswer(
@@ -547,6 +621,9 @@ public class NetworkingModuleTest {
     NetworkingModule networkingModule =
         new NetworkingModule(mock(ReactApplicationContext.class), "", httpClient);
     networkingModule.sendRequest(
+=======
+    mNetworkingModule.sendRequest(
+>>>>>>> fb/0.62-stable
         "POST",
         "http://someurl/uploadFoo",
         0,
@@ -559,7 +636,7 @@ public class NetworkingModuleTest {
 
     // verify url, method, headers
     ArgumentCaptor<Request> argumentCaptor = ArgumentCaptor.forClass(Request.class);
-    verify(httpClient).newCall(argumentCaptor.capture());
+    verify(mHttpClient).newCall(argumentCaptor.capture());
     assertThat(argumentCaptor.getValue().url().toString()).isEqualTo("http://someurl/uploadFoo");
     assertThat(argumentCaptor.getValue().method()).isEqualTo("POST");
     assertThat(argumentCaptor.getValue().body().contentType().type())
@@ -637,6 +714,7 @@ public class NetworkingModuleTest {
                 JavaOnlyArray.of("content-disposition", "filename=photo.jpg"))));
     formData.pushMap(imageBodyPart);
 
+<<<<<<< HEAD
     OkHttpClient httpClient = mock(OkHttpClient.class);
     when(httpClient.newCall(any(Request.class)))
         .thenAnswer(
@@ -654,6 +732,9 @@ public class NetworkingModuleTest {
     NetworkingModule networkingModule =
         new NetworkingModule(mock(ReactApplicationContext.class), "", httpClient);
     networkingModule.sendRequest(
+=======
+    mNetworkingModule.sendRequest(
+>>>>>>> fb/0.62-stable
         "POST",
         "http://someurl/uploadFoo",
         0,
@@ -694,15 +775,18 @@ public class NetworkingModuleTest {
   @Test
   public void testCancelAllCallsOnCatalystInstanceDestroy() throws Exception {
     PowerMockito.mockStatic(OkHttpCallUtil.class);
-    OkHttpClient httpClient = mock(OkHttpClient.class);
     final int requests = 3;
     final Call[] calls = new Call[requests];
     for (int idx = 0; idx < requests; idx++) {
       calls[idx] = mock(Call.class);
     }
 
+<<<<<<< HEAD
     when(httpClient.cookieJar()).thenReturn(mock(CookieJarContainer.class));
     when(httpClient.newCall(any(Request.class)))
+=======
+    when(mHttpClient.newCall(any(Request.class)))
+>>>>>>> fb/0.62-stable
         .thenAnswer(
             new Answer<Object>() {
               @Override
@@ -711,6 +795,7 @@ public class NetworkingModuleTest {
                 return calls[(Integer) request.tag() - 1];
               }
             });
+<<<<<<< HEAD
     OkHttpClient.Builder clientBuilder = mock(OkHttpClient.Builder.class);
     when(clientBuilder.build()).thenReturn(httpClient);
     when(httpClient.newBuilder()).thenReturn(clientBuilder);
@@ -720,6 +805,12 @@ public class NetworkingModuleTest {
 
     for (int idx = 0; idx < requests; idx++) {
       networkingModule.sendRequest(
+=======
+    mNetworkingModule.initialize();
+
+    for (int idx = 0; idx < requests; idx++) {
+      mNetworkingModule.sendRequest(
+>>>>>>> fb/0.62-stable
           "GET",
           "http://somedomain/foo",
           idx + 1,
@@ -730,9 +821,9 @@ public class NetworkingModuleTest {
           /* timeout */ 0,
           /* withCredentials */ false);
     }
-    verify(httpClient, times(3)).newCall(any(Request.class));
+    verify(mHttpClient, times(3)).newCall(any(Request.class));
 
-    networkingModule.onCatalystInstanceDestroy();
+    mNetworkingModule.onCatalystInstanceDestroy();
     PowerMockito.verifyStatic(times(3));
     ArgumentCaptor<OkHttpClient> clientArguments = ArgumentCaptor.forClass(OkHttpClient.class);
     ArgumentCaptor<Integer> requestIdArguments = ArgumentCaptor.forClass(Integer.class);
@@ -747,15 +838,18 @@ public class NetworkingModuleTest {
   @Test
   public void testCancelSomeCallsOnCatalystInstanceDestroy() throws Exception {
     PowerMockito.mockStatic(OkHttpCallUtil.class);
-    OkHttpClient httpClient = mock(OkHttpClient.class);
     final int requests = 3;
     final Call[] calls = new Call[requests];
     for (int idx = 0; idx < requests; idx++) {
       calls[idx] = mock(Call.class);
     }
 
+<<<<<<< HEAD
     when(httpClient.cookieJar()).thenReturn(mock(CookieJarContainer.class));
     when(httpClient.newCall(any(Request.class)))
+=======
+    when(mHttpClient.newCall(any(Request.class)))
+>>>>>>> fb/0.62-stable
         .thenAnswer(
             new Answer<Object>() {
               @Override
@@ -764,6 +858,7 @@ public class NetworkingModuleTest {
                 return calls[(Integer) request.tag() - 1];
               }
             });
+<<<<<<< HEAD
     OkHttpClient.Builder clientBuilder = mock(OkHttpClient.Builder.class);
     when(clientBuilder.build()).thenReturn(httpClient);
     when(httpClient.newBuilder()).thenReturn(clientBuilder);
@@ -772,6 +867,11 @@ public class NetworkingModuleTest {
 
     for (int idx = 0; idx < requests; idx++) {
       networkingModule.sendRequest(
+=======
+
+    for (int idx = 0; idx < requests; idx++) {
+      mNetworkingModule.sendRequest(
+>>>>>>> fb/0.62-stable
           "GET",
           "http://somedomain/foo",
           idx + 1,
@@ -782,9 +882,9 @@ public class NetworkingModuleTest {
           /* timeout */ 0,
           /* withCredentials */ false);
     }
-    verify(httpClient, times(3)).newCall(any(Request.class));
+    verify(mHttpClient, times(3)).newCall(any(Request.class));
 
-    networkingModule.abortRequest(requests);
+    mNetworkingModule.abortRequest(requests);
     PowerMockito.verifyStatic(times(1));
     ArgumentCaptor<OkHttpClient> clientArguments = ArgumentCaptor.forClass(OkHttpClient.class);
     ArgumentCaptor<Integer> requestIdArguments = ArgumentCaptor.forClass(Integer.class);
@@ -795,7 +895,7 @@ public class NetworkingModuleTest {
     // verifyStatic actually does not clear all calls so far, so we have to check for all of them.
     // If `cancelTag` would've been called again for the aborted call, we would have had
     // `requests + 1` calls.
-    networkingModule.onCatalystInstanceDestroy();
+    mNetworkingModule.onCatalystInstanceDestroy();
     PowerMockito.verifyStatic(times(requests));
     clientArguments = ArgumentCaptor.forClass(OkHttpClient.class);
     requestIdArguments = ArgumentCaptor.forClass(Integer.class);

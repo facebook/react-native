@@ -13,58 +13,35 @@
 const React = require('react');
 const {Slider, Text, StyleSheet, View} = require('react-native');
 
-class SliderExample extends React.Component<$FlowFixMeProps, $FlowFixMeState> {
-  static defaultProps = {
-    value: 0,
-  };
+function SliderExample(props: React.ElementConfig<typeof Slider>) {
+  const [value, setValue] = React.useState(0);
 
-  state = {
-    value: this.props.value,
-  };
-
-  render() {
-    return (
-      <View>
-        <Text style={styles.text}>
-          {this.state.value && +this.state.value.toFixed(3)}
-        </Text>
-        <Slider
-          {...this.props}
-          onValueChange={value => this.setState({value: value})}
-        />
-      </View>
-    );
-  }
+  return (
+    <View>
+      <Text style={styles.text}>{value.toFixed(3)}</Text>
+      <Slider {...props} onValueChange={newValue => setValue(newValue)} />
+    </View>
+  );
 }
 
-class SlidingCompleteExample extends React.Component<
-  $FlowFixMeProps,
-  $FlowFixMeState,
-> {
-  state = {
-    slideCompletionValue: 0,
-    slideCompletionCount: 0,
-  };
+function SlidingCompleteExample(props: React.ElementConfig<typeof Slider>) {
+  const [slideCompletionValue, setSlideCompletionValue] = React.useState(0);
+  const [slideCompletionCount, setSlideCompletionCount] = React.useState(0);
 
-  render() {
-    return (
-      <View>
-        <SliderExample
-          {...this.props}
-          onSlidingComplete={value =>
-            this.setState({
-              slideCompletionValue: value,
-              slideCompletionCount: this.state.slideCompletionCount + 1,
-            })
-          }
-        />
-        <Text>
-          Completions: {this.state.slideCompletionCount} Value:{' '}
-          {this.state.slideCompletionValue}
-        </Text>
-      </View>
-    );
-  }
+  return (
+    <View>
+      <SliderExample
+        {...props}
+        onSlidingComplete={value => {
+          setSlideCompletionValue(value);
+          setSlideCompletionCount(count => count + 1);
+        }}
+      />
+      <Text>
+        Completions: {slideCompletionCount} Value: {slideCompletionValue}
+      </Text>
+    </View>
+  );
 }
 
 const styles = StyleSheet.create({
@@ -130,7 +107,7 @@ exports.examples = [
   },
   {
     title: 'Custom thumb image',
-    platform: ['ios', 'macos'], // TODO(OSS Candidate ISS#2710739)
+    platform: 'ios',
     render(): React.Element<any> {
       return (
         <SliderExample thumbImage={require('../../assets/uie_thumb_big.png')} />
@@ -139,14 +116,14 @@ exports.examples = [
   },
   {
     title: 'Custom track image',
-    platform: ['ios', 'macos'], // TODO(OSS Candidate ISS#2710739)
+    platform: 'ios',
     render(): React.Element<any> {
       return <SliderExample trackImage={require('../../assets/slider.png')} />;
     },
   },
   {
     title: 'Custom min/max track image',
-    platform: ['ios', 'macos'], // TODO(OSS Candidate ISS#2710739)
+    platform: 'ios',
     render(): React.Element<any> {
       return (
         <SliderExample

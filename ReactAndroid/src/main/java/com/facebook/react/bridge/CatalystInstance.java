@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
@@ -10,7 +10,7 @@ import androidx.annotation.Nullable;
 import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.react.bridge.queue.ReactQueueConfiguration;
 import com.facebook.react.common.annotations.VisibleForTesting;
-import com.facebook.react.turbomodule.core.interfaces.JSCallInvokerHolder;
+import com.facebook.react.turbomodule.core.interfaces.CallInvokerHolder;
 import java.util.Collection;
 import java.util.List;
 
@@ -107,6 +107,7 @@ public interface CatalystInstance
   void addJSIModules(List<JSIModuleSpec> jsiModules);
 
   /**
+<<<<<<< HEAD
    * Returns a hybrid object that contains a pointer to JSCallInvoker. Required for
    * TurboModuleManager initialization.
    */
@@ -117,5 +118,23 @@ public interface CatalystInstance
    * Hence, we must provide the TurboModuleRegistry to CatalystInstance so that getNativeModule,
    * hasNativeModule, and getNativeModules can also return TurboModules.
    */
+=======
+   * Returns a hybrid object that contains a pointer to a JS CallInvoker, which is used to schedule
+   * work on the JS Thread. Required for TurboModuleManager initialization.
+   */
+  CallInvokerHolder getJSCallInvokerHolder();
+
+  /**
+   * Returns a hybrid object that contains a pointer to a Native CallInvoker, which is used to
+   * schedule work on the NativeModules thread. Required for TurboModuleManager initialization.
+   */
+  CallInvokerHolder getNativeCallInvokerHolder();
+
+  /**
+   * For the time being, we want code relying on the old infra to also work with TurboModules.
+   * Hence, we must provide the TurboModuleRegistry to CatalystInstance so that getNativeModule,
+   * hasNativeModule, and getNativeModules can also return TurboModules.
+   */
+>>>>>>> fb/0.62-stable
   void setTurboModuleManager(JSIModule getter);
 }

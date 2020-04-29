@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -27,6 +27,7 @@
 
     _backedTextInputView = [[RCTUITextView alloc] initWithFrame:self.bounds];
     _backedTextInputView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+<<<<<<< HEAD
     _backedTextInputView.backgroundColor = [RCTUIColor clearColor]; // TODO(OSS Candidate ISS#2710739)
     _backedTextInputView.textColor = [RCTUIColor blackColor]; // TODO(OSS Candidate ISS#2710739)
     // This line actually removes 5pt (default value) left and right padding in UITextView.
@@ -50,6 +51,8 @@
     _backedTextInputView.textContainer.containerSize = NSMakeSize(CGFLOAT_MAX, CGFLOAT_MAX);
     _backedTextInputView.textContainer.widthTracksTextView = YES;
 #endif // ]TODO(macOS ISS#2323203)
+=======
+>>>>>>> fb/0.62-stable
     _backedTextInputView.textInputDelegate = self;
 
 #if !TARGET_OS_OSX // TODO(macOS ISS#2323203)

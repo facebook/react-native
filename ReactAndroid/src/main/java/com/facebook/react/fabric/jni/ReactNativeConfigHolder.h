@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include <fb/fbjni.h>
+#include <fbjni/fbjni.h>
 #include <react/config/ReactNativeConfig.h>
 #include <react/jni/JMessageQueueThread.h>
 #include <react/jni/ReadableNativeMap.h>
@@ -23,15 +23,15 @@ namespace react {
 class ReactNativeConfigHolder : public ReactNativeConfig {
  public:
   ReactNativeConfigHolder(jni::alias_ref<jobject> reactNativeConfig)
-      : reactNativeConfig_(reactNativeConfig){};
+      : reactNativeConfig_(make_global(reactNativeConfig)){};
 
-  bool getBool(const std::string& param) const override;
-  std::string getString(const std::string& param) const override;
-  int64_t getInt64(const std::string& param) const override;
-  double getDouble(const std::string& param) const override;
+  bool getBool(const std::string &param) const override;
+  std::string getString(const std::string &param) const override;
+  int64_t getInt64(const std::string &param) const override;
+  double getDouble(const std::string &param) const override;
 
  private:
-  jni::alias_ref<jobject> reactNativeConfig_;
+  jni::global_ref<jobject> reactNativeConfig_;
 };
 
 } // namespace react

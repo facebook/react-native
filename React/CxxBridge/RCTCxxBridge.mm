@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -24,6 +24,7 @@
 #import <React/RCTPerformanceLogger.h>
 #import <React/RCTProfile.h>
 #import <React/RCTRedBox.h>
+#import <React/RCTReloadCommand.h>
 #import <React/RCTUtils.h>
 #import <React/RCTFollyConvert.h>
 #import <cxxreact/CxxNativeModule.h>
@@ -44,7 +45,11 @@
 #import <React/RCTFBSystrace.h>
 #endif
 
+<<<<<<< HEAD
 #if RCT_DEV && __has_include(<React/RCTDevLoadingView.h>)
+=======
+#if (RCT_DEV | RCT_ENABLE_LOADING_VIEW) && __has_include(<React/RCTDevLoadingView.h>)
+>>>>>>> fb/0.62-stable
 #import <React/RCTDevLoadingView.h>
 #endif
 
@@ -375,6 +380,7 @@ struct RCTInstanceCallback : public InstanceCallback {
     sourceCode = source.data;
     dispatch_group_leave(prepareBridge);
   } onProgress:^(RCTLoadingProgress *progressData) {
+<<<<<<< HEAD
 #if RCT_DEV && __has_include(<React/RCTDevLoadingView.h>)
     if ([[self devSettings] isDevModeEnabled]) { // TODO(OSS Candidate ISS#2710739)
       // Note: RCTDevLoadingView should have been loaded at this point, so no need to allow lazy loading.
@@ -382,6 +388,13 @@ struct RCTInstanceCallback : public InstanceCallback {
                                         lazilyLoadIfNecessary:NO];
       [loadingView updateProgress:progressData];
     } // TODO(OSS Candidate ISS#2710739)
+=======
+#if (RCT_DEV | RCT_ENABLE_LOADING_VIEW) && __has_include(<React/RCTDevLoadingView.h>)
+    // Note: RCTDevLoadingView should have been loaded at this point, so no need to allow lazy loading.
+    RCTDevLoadingView *loadingView = [weakSelf moduleForName:RCTBridgeModuleNameForClass([RCTDevLoadingView class])
+                                       lazilyLoadIfNecessary:NO];
+    [loadingView updateProgress:progressData];
+>>>>>>> fb/0.62-stable
 #endif
   }];
 
@@ -490,6 +503,8 @@ struct RCTInstanceCallback : public InstanceCallback {
     return moduleData.instance;
   }
   
+  static NSSet<NSString *> *ignoredModuleLoadFailures = [NSSet setWithArray: @[@"UIManager"]];
+
   static NSSet<NSString *> *ignoredModuleLoadFailures = [NSSet setWithArray: @[@"UIManager"]];
 
   // Module may not be loaded yet, so attempt to force load it here.
@@ -603,7 +618,7 @@ struct RCTInstanceCallback : public InstanceCallback {
    _moduleRegistryCreated = YES;
 }
 
-- (void)updateModuleWithInstance:(id<RCTBridgeModule>)instance;
+- (void)updateModuleWithInstance:(id<RCTBridgeModule>)instance
 {
   NSString *const moduleName = RCTBridgeModuleNameForClass([instance class]);
   if (moduleName) {
@@ -920,6 +935,7 @@ struct RCTInstanceCallback : public InstanceCallback {
     [self enqueueApplicationScript:sourceCode url:self.bundleURL onComplete:completion];
   }
 
+<<<<<<< HEAD
 #if RCT_DEV
   RCTDevSettings *devSettings = [self devSettings]; // TODO(OSS Candidate ISS#2710739)
   if ([devSettings isDevModeEnabled] && devSettings.isHotLoadingAvailable) {
@@ -927,12 +943,22 @@ struct RCTInstanceCallback : public InstanceCallback {
     NSString *host = self.bundleURL.host;
     NSNumber *port = self.bundleURL.port;
     BOOL isHotLoadingEnabled = devSettings.isHotLoadingEnabled;
+=======
+  if (self.devSettings.isHotLoadingAvailable) {
+    NSString *path = [self.bundleURL.path substringFromIndex:1]; // strip initial slash
+    NSString *host = self.bundleURL.host;
+    NSNumber *port = self.bundleURL.port;
+    BOOL isHotLoadingEnabled = self.devSettings.isHotLoadingEnabled;
+>>>>>>> fb/0.62-stable
     [self enqueueJSCall:@"HMRClient"
                  method:@"setup"
                    args:@[@"ios", path, host, RCTNullIfNil(port), @(isHotLoadingEnabled)]
              completion:NULL];
   }
+<<<<<<< HEAD
 #endif
+=======
+>>>>>>> fb/0.62-stable
 }
 
 - (void)handleError:(NSError *)error
@@ -1017,7 +1043,15 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
   if (!_valid) {
     RCTLogWarn(@"Attempting to reload bridge before it's valid: %@. Try restarting the development server if connected.", self);
   }
-  [_parentBridge reload];
+  RCTTriggerReloadCommandListeners(@"Unknown from cxx bridge");
+}
+
+- (void)reloadWithReason:(NSString *)reason
+{
+  if (!_valid) {
+    RCTLogWarn(@"Attempting to reload bridge before it's valid: %@. Try restarting the development server if connected.", self);
+  }
+  RCTTriggerReloadCommandListeners(reason);
 }
 
 - (Class)executorClass

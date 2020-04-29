@@ -1,22 +1,37 @@
-// Copyright (c) Facebook, Inc. and its affiliates.
-
-// This source code is licensed under the MIT license found in the
-// LICENSE file in the root directory of this source tree.
+/*
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
 
 import org.apache.tools.ant.taskdefs.condition.Os
 
-def config = project.hasProperty("react") ? project.react : [];
+def config = project.hasProperty("react") ? project.react : [:];
+
+def detectEntryFile(config) {
+    if (System.getenv('ENTRY_FILE')) {
+        return System.getenv('ENTRY_FILE')
+    } else if (config.entryFile) {
+        return config.entryFile
+    } else if ((new File("${projectDir}/../../index.android.js")).exists()) {
+        return "index.android.js"
+    }
+
+    return "index.js";
+}
 
 def cliPath = config.cliPath ?: "node_modules/react-native/cli.js"
 def composeSourceMapsPath = config.composeSourceMapsPath ?: "node_modules/react-native/scripts/compose-source-maps.js"
 def bundleAssetName = config.bundleAssetName ?: "index.android.bundle"
-def entryFile = config.entryFile ?: "index.android.js"
+def entryFile = detectEntryFile(config)
 def bundleCommand = config.bundleCommand ?: "bundle"
 def reactRoot = file(config.root ?: "../../")
 def inputExcludes = config.inputExcludes ?: ["android/**", "ios/**"]
 def bundleConfig = config.bundleConfig ? "${reactRoot}/${config.bundleConfig}" : null ;
 def enableVmCleanup = config.enableVmCleanup == null ? true : config.enableVmCleanup
 def hermesCommand = config.hermesCommand ?: "../../node_modules/hermes-engine/%OS-BIN%/hermes"
+<<<<<<< HEAD
 
 def reactNativeDevServerPort() {
     def value = project.getProperties().get("reactNativeDevServerPort")
@@ -50,6 +65,41 @@ def getHermesCommand = {
             .replace('/' as char, File.separatorChar);
 }
 
+=======
+
+def reactNativeDevServerPort() {
+    def value = project.getProperties().get("reactNativeDevServerPort")
+    return value != null ? value : "8081"
+}
+
+def reactNativeInspectorProxyPort() {
+    def value = project.getProperties().get("reactNativeInspectorProxyPort")
+    return value != null ? value : reactNativeDevServerPort()
+}
+
+def getHermesOSBin() {
+    if (Os.isFamily(Os.FAMILY_WINDOWS)) return "win64-bin";
+    if (Os.isFamily(Os.FAMILY_MAC)) return "osx-bin";
+    if (Os.isOs(null, "linux", "amd64", null)) return "linux64-bin";
+    throw new Exception("OS not recognized. Please set project.ext.react.hermesCommand " +
+                        "to the path of a working Hermes compiler.");
+}
+
+// Make sure not to inspect the Hermes config unless we need it,
+// to avoid breaking any JSC-only setups.
+def getHermesCommand = {
+    // If the project specifies a Hermes command, don't second guess it.
+    if (!hermesCommand.contains("%OS-BIN%")) {
+        return hermesCommand
+    }
+
+    // Execution on Windows fails with / as separator
+    return hermesCommand
+            .replaceAll("%OS-BIN%", getHermesOSBin())
+            .replace('/' as char, File.separatorChar);
+}
+
+>>>>>>> fb/0.62-stable
 // Set enableHermesForVariant to a function to configure per variant,
 // or set `enableHermes` to True/False to set all of them
 def enableHermesForVariant = config.enableHermesForVariant ?: {
@@ -157,7 +207,11 @@ afterEvaluate {
                             hermesFlags = config.hermesFlagsDebug
                             if (hermesFlags == null) hermesFlags = []
                         }
+<<<<<<< HEAD
                         
+=======
+
+>>>>>>> fb/0.62-stable
                         if (Os.isFamily(Os.FAMILY_WINDOWS)) {
                             commandLine("cmd", "/c", getHermesCommand(), "-emit-binary", "-out", hbcTempFile, jsBundleFile, *hermesFlags)
                         } else {

@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -50,6 +50,21 @@
 {
   _selectedIndex = selectedIndex;
   self.selectedSegmentIndex = selectedIndex; // TODO(macOS ISS#2323203)
+}
+
+- (void)setTintColor:(UIColor *)tintColor
+{
+  [super setTintColor:tintColor];
+#if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && defined(__IPHONE_13_0) && \
+    __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_13_0
+  if (@available(iOS 13.0, *)) {
+    [self setSelectedSegmentTintColor:tintColor];
+    [self setTitleTextAttributes:@{NSForegroundColorAttributeName: [UIColor whiteColor]}
+                        forState:UIControlStateSelected];
+    [self setTitleTextAttributes:@{NSForegroundColorAttributeName: tintColor}
+                        forState:UIControlStateNormal];
+  }
+#endif
 }
 
 - (void)didChange

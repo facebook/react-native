@@ -26,6 +26,35 @@ using ArrayPropsNativeComponentComponentDescriptor = ConcreteComponentDescriptor
 }
 `;
 
+<<<<<<< HEAD
+=======
+exports[`GenerateComponentDescriptorH can generate fixture ARRAY_PROPS_WITH_NESTED_OBJECT 1`] = `
+Map {
+  "ComponentDescriptors.h" => "
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+#pragma once
+
+#include <react/components/ARRAY_PROPS_WITH_NESTED_OBJECT/ShadowNodes.h>
+#include <react/core/ConcreteComponentDescriptor.h>
+
+namespace facebook {
+namespace react {
+
+using ArrayPropsNativeComponentComponentDescriptor = ConcreteComponentDescriptor<ArrayPropsNativeComponentShadowNode>;
+
+} // namespace react
+} // namespace facebook
+",
+}
+`;
+
+>>>>>>> fb/0.62-stable
 exports[`GenerateComponentDescriptorH can generate fixture BOOLEAN_PROP 1`] = `
 Map {
   "ComponentDescriptors.h" => "
@@ -156,33 +185,11 @@ using DoublePropNativeComponentComponentDescriptor = ConcreteComponentDescriptor
 }
 `;
 
+<<<<<<< HEAD
 exports[`GenerateComponentDescriptorH can generate fixture ENUM_PROP 1`] = `
-Map {
-  "ComponentDescriptors.h" => "
-/**
- * Copyright (c) Facebook, Inc. and its affiliates.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
- */
-
-#pragma once
-
-#include <react/components/ENUM_PROP/ShadowNodes.h>
-#include <react/core/ConcreteComponentDescriptor.h>
-
-namespace facebook {
-namespace react {
-
-using EnumPropsNativeComponentComponentDescriptor = ConcreteComponentDescriptor<EnumPropsNativeComponentShadowNode>;
-
-} // namespace react
-} // namespace facebook
-",
-}
-`;
-
+=======
 exports[`GenerateComponentDescriptorH can generate fixture EVENT_NESTED_OBJECT_PROPS 1`] = `
+>>>>>>> fb/0.62-stable
 Map {
   "ComponentDescriptors.h" => "
 /**
@@ -194,13 +201,21 @@ Map {
 
 #pragma once
 
+<<<<<<< HEAD
+#include <react/components/ENUM_PROP/ShadowNodes.h>
+=======
 #include <react/components/EVENT_NESTED_OBJECT_PROPS/ShadowNodes.h>
+>>>>>>> fb/0.62-stable
 #include <react/core/ConcreteComponentDescriptor.h>
 
 namespace facebook {
 namespace react {
 
+<<<<<<< HEAD
+using EnumPropsNativeComponentComponentDescriptor = ConcreteComponentDescriptor<EnumPropsNativeComponentShadowNode>;
+=======
 using EventsNestedObjectNativeComponentComponentDescriptor = ConcreteComponentDescriptor<EventsNestedObjectNativeComponentShadowNode>;
+>>>>>>> fb/0.62-stable
 
 } // namespace react
 } // namespace facebook
@@ -208,7 +223,11 @@ using EventsNestedObjectNativeComponentComponentDescriptor = ConcreteComponentDe
 }
 `;
 
+<<<<<<< HEAD
+exports[`GenerateComponentDescriptorH can generate fixture EVENT_NESTED_OBJECT_PROPS 1`] = `
+=======
 exports[`GenerateComponentDescriptorH can generate fixture EVENT_PROPS 1`] = `
+>>>>>>> fb/0.62-stable
 Map {
   "ComponentDescriptors.h" => "
 /**
@@ -220,13 +239,21 @@ Map {
 
 #pragma once
 
+<<<<<<< HEAD
+#include <react/components/EVENT_NESTED_OBJECT_PROPS/ShadowNodes.h>
+=======
 #include <react/components/EVENT_PROPS/ShadowNodes.h>
+>>>>>>> fb/0.62-stable
 #include <react/core/ConcreteComponentDescriptor.h>
 
 namespace facebook {
 namespace react {
 
+<<<<<<< HEAD
+using EventsNestedObjectNativeComponentComponentDescriptor = ConcreteComponentDescriptor<EventsNestedObjectNativeComponentShadowNode>;
+=======
 using EventsNativeComponentComponentDescriptor = ConcreteComponentDescriptor<EventsNativeComponentShadowNode>;
+>>>>>>> fb/0.62-stable
 
 } // namespace react
 } // namespace facebook
@@ -234,7 +261,11 @@ using EventsNativeComponentComponentDescriptor = ConcreteComponentDescriptor<Eve
 }
 `;
 
+<<<<<<< HEAD
+exports[`GenerateComponentDescriptorH can generate fixture EVENT_PROPS 1`] = `
+=======
 exports[`GenerateComponentDescriptorH can generate fixture EVENTS_WITH_PAPER_NAME 1`] = `
+>>>>>>> fb/0.62-stable
 Map {
   "ComponentDescriptors.h" => "
 /**
@@ -246,13 +277,59 @@ Map {
 
 #pragma once
 
+<<<<<<< HEAD
+#include <react/components/EVENT_PROPS/ShadowNodes.h>
+=======
 #include <react/components/EVENTS_WITH_PAPER_NAME/ShadowNodes.h>
+>>>>>>> fb/0.62-stable
 #include <react/core/ConcreteComponentDescriptor.h>
 
 namespace facebook {
 namespace react {
 
+<<<<<<< HEAD
+using EventsNativeComponentComponentDescriptor = ConcreteComponentDescriptor<EventsNativeComponentShadowNode>;
+=======
 
+>>>>>>> fb/0.62-stable
+
+} // namespace react
+} // namespace facebook
+",
+}
+`;
+
+<<<<<<< HEAD
+exports[`GenerateComponentDescriptorH can generate fixture EVENTS_WITH_PAPER_NAME 1`] = `
+=======
+exports[`GenerateComponentDescriptorH can generate fixture EXCLUDE_ANDROID 1`] = `
+>>>>>>> fb/0.62-stable
+Map {
+  "ComponentDescriptors.h" => "
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+#pragma once
+
+<<<<<<< HEAD
+#include <react/components/EVENTS_WITH_PAPER_NAME/ShadowNodes.h>
+=======
+#include <react/components/EXCLUDE_ANDROID/ShadowNodes.h>
+>>>>>>> fb/0.62-stable
+#include <react/core/ConcreteComponentDescriptor.h>
+
+namespace facebook {
+namespace react {
+
+<<<<<<< HEAD
+
+=======
+using ExcludedAndroidComponentComponentDescriptor = ConcreteComponentDescriptor<ExcludedAndroidComponentShadowNode>;
+>>>>>>> fb/0.62-stable
 
 } // namespace react
 } // namespace facebook
@@ -312,6 +389,61 @@ using ImagePropNativeComponentComponentDescriptor = ConcreteComponentDescriptor<
 }
 `;
 
+<<<<<<< HEAD
+=======
+exports[`GenerateComponentDescriptorH can generate fixture INSETS_PROP 1`] = `
+Map {
+  "ComponentDescriptors.h" => "
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+#pragma once
+
+#include <react/components/INSETS_PROP/ShadowNodes.h>
+#include <react/core/ConcreteComponentDescriptor.h>
+
+namespace facebook {
+namespace react {
+
+using InsetsPropNativeComponentComponentDescriptor = ConcreteComponentDescriptor<InsetsPropNativeComponentShadowNode>;
+
+} // namespace react
+} // namespace facebook
+",
+}
+`;
+
+exports[`GenerateComponentDescriptorH can generate fixture INT32_ENUM_PROP 1`] = `
+Map {
+  "ComponentDescriptors.h" => "
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+#pragma once
+
+#include <react/components/INT32_ENUM_PROP/ShadowNodes.h>
+#include <react/core/ConcreteComponentDescriptor.h>
+
+namespace facebook {
+namespace react {
+
+using Int32EnumPropsNativeComponentComponentDescriptor = ConcreteComponentDescriptor<Int32EnumPropsNativeComponentShadowNode>;
+
+} // namespace react
+} // namespace facebook
+",
+}
+`;
+
+>>>>>>> fb/0.62-stable
 exports[`GenerateComponentDescriptorH can generate fixture INTEGER_PROPS 1`] = `
 Map {
   "ComponentDescriptors.h" => "
@@ -468,6 +600,35 @@ using PointPropNativeComponentComponentDescriptor = ConcreteComponentDescriptor<
 }
 `;
 
+<<<<<<< HEAD
+=======
+exports[`GenerateComponentDescriptorH can generate fixture STRING_ENUM_PROP 1`] = `
+Map {
+  "ComponentDescriptors.h" => "
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+#pragma once
+
+#include <react/components/STRING_ENUM_PROP/ShadowNodes.h>
+#include <react/core/ConcreteComponentDescriptor.h>
+
+namespace facebook {
+namespace react {
+
+using StringEnumPropsNativeComponentComponentDescriptor = ConcreteComponentDescriptor<StringEnumPropsNativeComponentShadowNode>;
+
+} // namespace react
+} // namespace facebook
+",
+}
+`;
+
+>>>>>>> fb/0.62-stable
 exports[`GenerateComponentDescriptorH can generate fixture STRING_PROP 1`] = `
 Map {
   "ComponentDescriptors.h" => "

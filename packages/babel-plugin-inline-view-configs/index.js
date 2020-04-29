@@ -6,6 +6,10 @@
  *
  * @format
  */
+<<<<<<< HEAD
+=======
+
+>>>>>>> fb/0.62-stable
 'use strict';
 
 const {parseString} = require('react-native-codegen/src/parsers/flow');
@@ -41,6 +45,17 @@ function isCodegenDeclaration(declaration) {
     declaration.callee.name === 'codegenNativeComponent'
   ) {
     return true;
+<<<<<<< HEAD
+=======
+  } else if (
+    declaration.type === 'TypeCastExpression' &&
+    declaration.expression &&
+    declaration.expression.callee &&
+    declaration.expression.callee.name &&
+    declaration.expression.callee.name === 'codegenNativeComponent'
+  ) {
+    return true;
+>>>>>>> fb/0.62-stable
   }
 
   return false;

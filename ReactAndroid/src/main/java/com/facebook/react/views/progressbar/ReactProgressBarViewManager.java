@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
@@ -13,8 +13,14 @@ import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.uimanager.BaseViewManager;
 import com.facebook.react.uimanager.ThemedReactContext;
+import com.facebook.react.uimanager.ViewManagerDelegate;
 import com.facebook.react.uimanager.ViewProps;
 import com.facebook.react.uimanager.annotations.ReactProp;
+<<<<<<< HEAD
+=======
+import com.facebook.react.viewmanagers.AndroidProgressBarManagerDelegate;
+import com.facebook.react.viewmanagers.AndroidProgressBarManagerInterface;
+>>>>>>> fb/0.62-stable
 
 /**
  * Manages instances of ProgressBar. ProgressBar is wrapped in a ProgressBarContainerView because
@@ -24,7 +30,12 @@ import com.facebook.react.uimanager.annotations.ReactProp;
  */
 @ReactModule(name = ReactProgressBarViewManager.REACT_CLASS)
 public class ReactProgressBarViewManager
+<<<<<<< HEAD
     extends BaseViewManager<ProgressBarContainerView, ProgressBarShadowNode> {
+=======
+    extends BaseViewManager<ProgressBarContainerView, ProgressBarShadowNode>
+    implements AndroidProgressBarManagerInterface<ProgressBarContainerView> {
+>>>>>>> fb/0.62-stable
 
   public static final String REACT_CLASS = "AndroidProgressBar";
 
@@ -37,6 +48,8 @@ public class ReactProgressBarViewManager
 
   private static Object sProgressBarCtorLock = new Object();
 
+  private final ViewManagerDelegate<ProgressBarContainerView> mDelegate;
+
   /**
    * We create ProgressBars on both the UI and shadow threads. There is a race condition in the
    * ProgressBar constructor that may cause crashes when two ProgressBars are constructed at the
@@ -46,6 +59,10 @@ public class ReactProgressBarViewManager
     synchronized (sProgressBarCtorLock) {
       return new ProgressBar(context, null, style);
     }
+  }
+
+  public ReactProgressBarViewManager() {
+    mDelegate = new AndroidProgressBarManagerDelegate<>(this);
   }
 
   @Override
@@ -58,30 +75,43 @@ public class ReactProgressBarViewManager
     return new ProgressBarContainerView(context);
   }
 
+  @Override
   @ReactProp(name = PROP_STYLE)
-  public void setStyle(ProgressBarContainerView view, @Nullable String styleName) {
+  public void setStyleAttr(ProgressBarContainerView view, @Nullable String styleName) {
     view.setStyle(styleName);
   }
 
+  @Override
   @ReactProp(name = ViewProps.COLOR, customType = "Color")
   public void setColor(ProgressBarContainerView view, @Nullable Integer color) {
     view.setColor(color);
   }
 
+  @Override
   @ReactProp(name = PROP_INDETERMINATE)
   public void setIndeterminate(ProgressBarContainerView view, boolean indeterminate) {
     view.setIndeterminate(indeterminate);
   }
 
+  @Override
   @ReactProp(name = PROP_PROGRESS)
   public void setProgress(ProgressBarContainerView view, double progress) {
     view.setProgress(progress);
   }
 
+  @Override
   @ReactProp(name = PROP_ANIMATING)
   public void setAnimating(ProgressBarContainerView view, boolean animating) {
     view.setAnimating(animating);
   }
+
+  @Override
+  public void setTestID(ProgressBarContainerView view, @Nullable String value) {
+    super.setTestId(view, value);
+  }
+
+  @Override
+  public void setTypeAttr(ProgressBarContainerView view, @Nullable String value) {}
 
   @Override
   public ProgressBarShadowNode createShadowNodeInstance() {
@@ -101,6 +131,11 @@ public class ReactProgressBarViewManager
   @Override
   protected void onAfterUpdateTransaction(ProgressBarContainerView view) {
     view.apply();
+  }
+
+  @Override
+  protected ViewManagerDelegate<ProgressBarContainerView> getDelegate() {
+    return mDelegate;
   }
 
   /* package */ static int getStyleFromString(@Nullable String styleStr) {

@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
@@ -8,11 +8,9 @@ package com.facebook.react.modules.websocket;
 
 import androidx.annotation.Nullable;
 import com.facebook.common.logging.FLog;
+import com.facebook.fbreact.specs.NativeWebSocketModuleSpec;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.bridge.ReactContext;
-import com.facebook.react.bridge.ReactContextBaseJavaModule;
-import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReadableMapKeySetIterator;
@@ -38,7 +36,13 @@ import okhttp3.WebSocketListener;
 import okio.ByteString;
 
 @ReactModule(name = WebSocketModule.NAME, hasConstants = false)
+<<<<<<< HEAD
 public final class WebSocketModule extends ReactContextBaseJavaModule {
+=======
+public final class WebSocketModule extends NativeWebSocketModuleSpec {
+  public static final String TAG = WebSocketModule.class.getSimpleName();
+
+>>>>>>> fb/0.62-stable
   public static final String NAME = "WebSocketModule";
 
   public interface ContentHandler {
@@ -50,19 +54,27 @@ public final class WebSocketModule extends ReactContextBaseJavaModule {
   private final Map<Integer, WebSocket> mWebSocketConnections = new ConcurrentHashMap<>();
   private final Map<Integer, ContentHandler> mContentHandlers = new ConcurrentHashMap<>();
 
-  private ReactContext mReactContext;
   private ForwardingCookieHandler mCookieHandler;
 
   public WebSocketModule(ReactApplicationContext context) {
     super(context);
-    mReactContext = context;
     mCookieHandler = new ForwardingCookieHandler(context);
   }
 
   private void sendEvent(String eventName, WritableMap params) {
+<<<<<<< HEAD
     mReactContext
         .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
         .emit(eventName, params);
+=======
+    ReactApplicationContext reactApplicationContext = getReactApplicationContextIfActiveOrWarn();
+
+    if (reactApplicationContext != null) {
+      reactApplicationContext
+          .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
+          .emit(eventName, params);
+    }
+>>>>>>> fb/0.62-stable
   }
 
   @Override
@@ -78,12 +90,17 @@ public final class WebSocketModule extends ReactContextBaseJavaModule {
     }
   }
 
-  @ReactMethod
+  @Override
   public void connect(
       final String url,
       @Nullable final ReadableArray protocols,
       @Nullable final ReadableMap options,
+<<<<<<< HEAD
       final int id) {
+=======
+      final double socketID) {
+    final int id = (int) socketID;
+>>>>>>> fb/0.62-stable
     OkHttpClient client =
         new OkHttpClient.Builder()
             .connectTimeout(10, TimeUnit.SECONDS)
@@ -206,8 +223,9 @@ public final class WebSocketModule extends ReactContextBaseJavaModule {
     client.dispatcher().executorService().shutdown();
   }
 
-  @ReactMethod
-  public void close(int code, String reason, int id) {
+  @Override
+  public void close(double code, String reason, double socketID) {
+    int id = (int) socketID;
     WebSocket client = mWebSocketConnections.get(id);
     if (client == null) {
       // WebSocket is already closed
@@ -215,7 +233,7 @@ public final class WebSocketModule extends ReactContextBaseJavaModule {
       return;
     }
     try {
-      client.close(code, reason);
+      client.close((int) code, reason);
       mWebSocketConnections.remove(id);
       mContentHandlers.remove(id);
     } catch (Exception e) {
@@ -223,8 +241,9 @@ public final class WebSocketModule extends ReactContextBaseJavaModule {
     }
   }
 
-  @ReactMethod
-  public void send(String message, int id) {
+  @Override
+  public void send(String message, double socketID) {
+    final int id = (int) socketID;
     WebSocket client = mWebSocketConnections.get(id);
     if (client == null) {
       // This is a programmer error -- display development warning
@@ -248,8 +267,9 @@ public final class WebSocketModule extends ReactContextBaseJavaModule {
     }
   }
 
-  @ReactMethod
-  public void sendBinary(String base64String, int id) {
+  @Override
+  public void sendBinary(String base64String, double socketID) {
+    final int id = (int) socketID;
     WebSocket client = mWebSocketConnections.get(id);
     if (client == null) {
       // This is a programmer error -- display development warning
@@ -297,8 +317,9 @@ public final class WebSocketModule extends ReactContextBaseJavaModule {
     }
   }
 
-  @ReactMethod
-  public void ping(int id) {
+  @Override
+  public void ping(double socketID) {
+    final int id = (int) socketID;
     WebSocket client = mWebSocketConnections.get(id);
     if (client == null) {
       // This is a programmer error -- display development warning
@@ -390,4 +411,10 @@ public final class WebSocketModule extends ReactContextBaseJavaModule {
       throw new IllegalArgumentException("Unable to get cookie from " + uri);
     }
   }
+
+  @Override
+  public void addListener(String eventName) {}
+
+  @Override
+  public void removeListeners(double count) {}
 }

@@ -5,12 +5,15 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @flow
+ * @flow strict-local
  */
 
 'use strict';
 
+const RNTesterBlock = require('../../components/RNTesterBlock');
+const RNTesterPage = require('../../components/RNTesterPage');
 const React = require('react');
+
 const {
   StyleSheet,
   Text,
@@ -18,12 +21,9 @@ const {
   TouchableWithoutFeedback,
 } = require('react-native');
 
-const RNTesterBlock = require('../../components/RNTesterBlock');
-const RNTesterPage = require('../../components/RNTesterPage');
-
 type Props = $ReadOnly<{||}>;
 class ToastExample extends React.Component<Props> {
-  render() {
+  render(): React.Node {
     return (
       <RNTesterPage title="ToastAndroid">
         <RNTesterBlock title="Simple toast">

@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -18,7 +18,11 @@
 #import <React/RCTManagedPointer.h>
 #import <React/RCTModuleMethod.h>
 #import <React/RCTUtils.h>
+<<<<<<< HEAD
 #import <ReactCommon/JSCallInvoker.h>
+=======
+#import <ReactCommon/CallInvoker.h>
+>>>>>>> fb/0.62-stable
 #import <ReactCommon/LongLivedObject.h>
 #import <ReactCommon/TurboModule.h>
 #import <ReactCommon/TurboModuleUtils.h>
@@ -93,16 +97,25 @@ static jsi::Value convertObjCObjectToJSIValue(jsi::Runtime &runtime, id value)
 static id convertJSIValueToObjCObject(
     jsi::Runtime &runtime,
     const jsi::Value &value,
+<<<<<<< HEAD
     std::shared_ptr<react::JSCallInvoker> jsInvoker);
+=======
+    std::shared_ptr<react::CallInvoker> jsInvoker);
+>>>>>>> fb/0.62-stable
 static NSString *convertJSIStringToNSString(jsi::Runtime &runtime, const jsi::String &value)
 {
   return [NSString stringWithUTF8String:value.utf8(runtime).c_str()];
 }
 
+<<<<<<< HEAD
 static NSArray *convertJSIArrayToNSArray(
     jsi::Runtime &runtime,
     const jsi::Array &value,
     std::shared_ptr<react::JSCallInvoker> jsInvoker)
+=======
+static NSArray *
+convertJSIArrayToNSArray(jsi::Runtime &runtime, const jsi::Array &value, std::shared_ptr<react::CallInvoker> jsInvoker)
+>>>>>>> fb/0.62-stable
 {
   size_t size = value.size(runtime);
   NSMutableArray *result = [NSMutableArray new];
@@ -117,7 +130,11 @@ static NSArray *convertJSIArrayToNSArray(
 static NSDictionary *convertJSIObjectToNSDictionary(
     jsi::Runtime &runtime,
     const jsi::Object &value,
+<<<<<<< HEAD
     std::shared_ptr<react::JSCallInvoker> jsInvoker)
+=======
+    std::shared_ptr<react::CallInvoker> jsInvoker)
+>>>>>>> fb/0.62-stable
 {
   jsi::Array propertyNames = value.getPropertyNames(runtime);
   size_t size = propertyNames.size(runtime);
@@ -136,11 +153,19 @@ static NSDictionary *convertJSIObjectToNSDictionary(
 static RCTResponseSenderBlock convertJSIFunctionToCallback(
     jsi::Runtime &runtime,
     const jsi::Function &value,
+<<<<<<< HEAD
     std::shared_ptr<react::JSCallInvoker> jsInvoker);
 static id convertJSIValueToObjCObject(
     jsi::Runtime &runtime,
     const jsi::Value &value,
     std::shared_ptr<react::JSCallInvoker> jsInvoker)
+=======
+    std::shared_ptr<react::CallInvoker> jsInvoker);
+static id convertJSIValueToObjCObject(
+    jsi::Runtime &runtime,
+    const jsi::Value &value,
+    std::shared_ptr<react::CallInvoker> jsInvoker)
+>>>>>>> fb/0.62-stable
 {
   if (value.isUndefined() || value.isNull()) {
     return nil;
@@ -171,14 +196,22 @@ static id convertJSIValueToObjCObject(
 static RCTResponseSenderBlock convertJSIFunctionToCallback(
     jsi::Runtime &runtime,
     const jsi::Function &value,
+<<<<<<< HEAD
     std::shared_ptr<react::JSCallInvoker> jsInvoker)
 {
   __block auto wrapper = std::make_shared<react::CallbackWrapper>(value.getFunction(runtime), runtime, jsInvoker);
+=======
+    std::shared_ptr<react::CallInvoker> jsInvoker)
+{
+  auto weakWrapper = react::CallbackWrapper::createWeak(value.getFunction(runtime), runtime, jsInvoker);
+  BOOL __block wrapperWasCalled = NO;
+>>>>>>> fb/0.62-stable
   return ^(NSArray *responses) {
-    if (wrapper == nullptr) {
+    if (wrapperWasCalled) {
       throw std::runtime_error("callback arg cannot be called more than once");
     }
 
+<<<<<<< HEAD
     std::shared_ptr<react::CallbackWrapper> rw = wrapper;
     wrapper->jsInvoker().invokeAsync([rw, responses]() {
       std::vector<jsi::Value> args = convertNSArrayToStdVector(rw->runtime(), responses);
@@ -256,12 +289,29 @@ struct PromiseWrapper : public react::LongLivedObject {
         jsi::Value arg = convertNSDictionaryToJSIObject(rt, jsError);
         retainedWrapper->callback().call(rt, arg);
       });
+=======
+    auto strongWrapper = weakWrapper.lock();
+    if (!strongWrapper) {
+      return;
+    }
 
-      // Prevent future invocation of the same resolve() function.
-      cleanup();
-    };
-  }
+    strongWrapper->jsInvoker().invokeAsync([weakWrapper, responses]() {
+      auto strongWrapper2 = weakWrapper.lock();
+      if (!strongWrapper2) {
+        return;
+      }
 
+      std::vector<jsi::Value> args = convertNSArrayToStdVector(strongWrapper2->runtime(), responses);
+      strongWrapper2->callback().call(strongWrapper2->runtime(), (const jsi::Value *)args.data(), args.size());
+      strongWrapper2->destroy();
+    });
+>>>>>>> fb/0.62-stable
+
+    wrapperWasCalled = YES;
+  };
+}
+
+<<<<<<< HEAD
   void cleanup()
   {
     resolveWrapper = nullptr;
@@ -281,6 +331,15 @@ struct PromiseWrapper : public react::LongLivedObject {
 using PromiseInvocationBlock = void (^)(jsi::Runtime &rt, std::shared_ptr<PromiseWrapper> wrapper);
 static jsi::Value
 createPromise(jsi::Runtime &runtime, std::shared_ptr<react::JSCallInvoker> jsInvoker, PromiseInvocationBlock invoke)
+=======
+namespace facebook {
+namespace react {
+
+jsi::Value ObjCTurboModule::createPromise(
+    jsi::Runtime &runtime,
+    std::shared_ptr<react::CallInvoker> jsInvoker,
+    PromiseInvocationBlock invoke)
+>>>>>>> fb/0.62-stable
 {
   if (!invoke) {
     return jsi::Value::undefined();
@@ -297,23 +356,94 @@ createPromise(jsi::Runtime &runtime, std::shared_ptr<react::JSCallInvoker> jsInv
       2,
       [invokeCopy, jsInvoker](jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args, size_t count) {
         if (count != 2) {
-          throw std::invalid_argument("Promise fn arg count must be 2");
+          throw std::invalid_argument(
+              "Promise must pass constructor function two args. Passed " + std::to_string(count) + " args.");
         }
         if (!invokeCopy) {
           return jsi::Value::undefined();
         }
-        jsi::Function resolve = args[0].getObject(rt).getFunction(rt);
-        jsi::Function reject = args[1].getObject(rt).getFunction(rt);
-        auto wrapper = PromiseWrapper::create(std::move(resolve), std::move(reject), rt, jsInvoker);
-        invokeCopy(rt, wrapper);
+
+        auto weakResolveWrapper =
+            react::CallbackWrapper::createWeak(args[0].getObject(rt).getFunction(rt), rt, jsInvoker);
+        auto weakRejectWrapper =
+            react::CallbackWrapper::createWeak(args[1].getObject(rt).getFunction(rt), rt, jsInvoker);
+
+        __block BOOL resolveWasCalled = NO;
+        __block BOOL rejectWasCalled = NO;
+
+        RCTPromiseResolveBlock resolveBlock = ^(id result) {
+          if (rejectWasCalled) {
+            throw std::runtime_error("Tried to resolve a promise after it's already been rejected.");
+          }
+
+          if (resolveWasCalled) {
+            throw std::runtime_error("Tried to resolve a promise more than once.");
+          }
+
+          auto strongResolveWrapper = weakResolveWrapper.lock();
+          auto strongRejectWrapper = weakRejectWrapper.lock();
+          if (!strongResolveWrapper || !strongRejectWrapper) {
+            return;
+          }
+
+          strongResolveWrapper->jsInvoker().invokeAsync([weakResolveWrapper, weakRejectWrapper, result]() {
+            auto strongResolveWrapper2 = weakResolveWrapper.lock();
+            auto strongRejectWrapper2 = weakRejectWrapper.lock();
+            if (!strongResolveWrapper2 || !strongRejectWrapper2) {
+              return;
+            }
+
+            jsi::Runtime &rt = strongResolveWrapper2->runtime();
+            jsi::Value arg = convertObjCObjectToJSIValue(rt, result);
+            strongResolveWrapper2->callback().call(rt, arg);
+
+            strongResolveWrapper2->destroy();
+            strongRejectWrapper2->destroy();
+          });
+
+          resolveWasCalled = YES;
+        };
+
+        RCTPromiseRejectBlock rejectBlock = ^(NSString *code, NSString *message, NSError *error) {
+          if (resolveWasCalled) {
+            throw std::runtime_error("Tried to reject a promise after it's already been resolved.");
+          }
+
+          if (rejectWasCalled) {
+            throw std::runtime_error("Tried to reject a promise more than once.");
+          }
+
+          auto strongResolveWrapper = weakResolveWrapper.lock();
+          auto strongRejectWrapper = weakRejectWrapper.lock();
+          if (!strongResolveWrapper || !strongRejectWrapper) {
+            return;
+          }
+
+          NSDictionary *jsError = RCTJSErrorFromCodeMessageAndNSError(code, message, error);
+          strongRejectWrapper->jsInvoker().invokeAsync([weakResolveWrapper, weakRejectWrapper, jsError]() {
+            auto strongResolveWrapper2 = weakResolveWrapper.lock();
+            auto strongRejectWrapper2 = weakRejectWrapper.lock();
+            if (!strongResolveWrapper2 || !strongRejectWrapper2) {
+              return;
+            }
+
+            jsi::Runtime &rt = strongRejectWrapper2->runtime();
+            jsi::Value arg = convertNSDictionaryToJSIObject(rt, jsError);
+            strongRejectWrapper2->callback().call(rt, arg);
+
+            strongResolveWrapper2->destroy();
+            strongRejectWrapper2->destroy();
+          });
+
+          rejectWasCalled = YES;
+        };
+
+        invokeCopy(rt, resolveBlock, rejectBlock);
         return jsi::Value::undefined();
       });
 
   return Promise.callAsConstructor(runtime, fn);
 }
-
-namespace facebook {
-namespace react {
 
 namespace {
 
@@ -331,7 +461,11 @@ jsi::Value performMethodInvocation(
     NSInvocation *inv,
     TurboModuleMethodValueKind valueKind,
     const id<RCTTurboModule> module,
+<<<<<<< HEAD
     std::shared_ptr<JSCallInvoker> jsInvoker,
+=======
+    std::shared_ptr<CallInvoker> jsInvoker,
+>>>>>>> fb/0.62-stable
     NSMutableArray *retainedObjectsForInvocation)
 {
   __block id result;
@@ -373,6 +507,13 @@ jsi::Value performMethodInvocation(
     } else {
       dispatch_sync(methodQueue, block);
     }
+  }
+
+  // VoidKind can't be null
+  // PromiseKind, and FunctionKind must throw errors always
+  if (valueKind != VoidKind && valueKind != PromiseKind && valueKind != FunctionKind &&
+      (result == (id)kCFNull || result == nil)) {
+    return jsi::Value::null();
   }
 
   // TODO: Re-use value conversion logic from existing impl, if possible.
@@ -460,7 +601,11 @@ NSInvocation *ObjCTurboModule::getMethodInvocation(
     jsi::Runtime &runtime,
     TurboModuleMethodValueKind valueKind,
     const id<RCTTurboModule> module,
+<<<<<<< HEAD
     std::shared_ptr<JSCallInvoker> jsInvoker,
+=======
+    std::shared_ptr<CallInvoker> jsInvoker,
+>>>>>>> fb/0.62-stable
     const std::string &methodName,
     SEL selector,
     const jsi::Value *args,
@@ -475,7 +620,7 @@ NSInvocation *ObjCTurboModule::getMethodInvocation(
 
   for (size_t i = 0; i < count; i++) {
     const jsi::Value *arg = &args[i];
-    const char *objCArgType = [methodSignature getArgumentTypeAtIndex:i + 2];
+    const std::string objCArgType = [methodSignature getArgumentTypeAtIndex:i + 2];
 
     if (arg->isBool()) {
       bool v = arg->getBool();
@@ -483,7 +628,7 @@ NSInvocation *ObjCTurboModule::getMethodInvocation(
       /**
        * JS type checking ensures the Objective C argument here is either a BOOL or NSNumber*.
        */
-      if (objCArgType[0] == _C_ID) {
+      if (objCArgType == @encode(id)) {
         id objCArg = [NSNumber numberWithBool:v];
         [inv setArgument:(void *)&objCArg atIndex:i + 2];
         [retainedObjectsForInvocation addObject:objCArg];
@@ -500,7 +645,7 @@ NSInvocation *ObjCTurboModule::getMethodInvocation(
       /**
        * JS type checking ensures the Objective C argument here is either a double or NSNumber*.
        */
-      if (objCArgType[0] == _C_ID) {
+      if (objCArgType == @encode(id)) {
         id objCArg = [NSNumber numberWithDouble:v];
         NSString *methodNameNSString = @(methodName.c_str());
 
@@ -545,7 +690,11 @@ NSInvocation *ObjCTurboModule::getMethodInvocation(
       /**
        * Convert objects using RCTConvert.
        */
+<<<<<<< HEAD
       if (objCArgType[0] == _C_ID) {
+=======
+      if (objCArgType == @encode(id)) {
+>>>>>>> fb/0.62-stable
         NSString *argumentType = getArgumentTypeName(methodNameNSString, i);
         if (argumentType != nil) {
           NSString *rctConvertMethodName = [NSString stringWithFormat:@"%@:", argumentType];
@@ -597,7 +746,11 @@ NSInvocation *ObjCTurboModule::getMethodInvocation(
 ObjCTurboModule::ObjCTurboModule(
     const std::string &name,
     id<RCTTurboModule> instance,
+<<<<<<< HEAD
     std::shared_ptr<JSCallInvoker> jsInvoker)
+=======
+    std::shared_ptr<CallInvoker> jsInvoker)
+>>>>>>> fb/0.62-stable
     : TurboModule(name, jsInvoker), instance_(instance)
 {
 }
@@ -617,6 +770,7 @@ jsi::Value ObjCTurboModule::invokeObjCMethod(
   if (valueKind == PromiseKind) {
     // Promise return type is special cased today, i.e. it needs extra 2 function args for resolve() and reject(), to
     // be passed to the actual ObjC++ class method.
+<<<<<<< HEAD
     return createPromise(runtime, jsInvoker_, ^(jsi::Runtime &rt, std::shared_ptr<PromiseWrapper> wrapper) {
       RCTPromiseResolveBlock resolveBlock = wrapper->resolveBlock();
       RCTPromiseRejectBlock rejectBlock = wrapper->rejectBlock();
@@ -627,6 +781,19 @@ jsi::Value ObjCTurboModule::invokeObjCMethod(
       // The return type becomes void in the ObjC side.
       performMethodInvocation(rt, inv, VoidKind, instance_, jsInvoker_, retainedObjectsForInvocation);
     });
+=======
+    return createPromise(
+        runtime,
+        jsInvoker_,
+        ^(jsi::Runtime &rt, RCTPromiseResolveBlock resolveBlock, RCTPromiseRejectBlock rejectBlock) {
+          [inv setArgument:(void *)&resolveBlock atIndex:count + 2];
+          [inv setArgument:(void *)&rejectBlock atIndex:count + 3];
+          [retainedObjectsForInvocation addObject:resolveBlock];
+          [retainedObjectsForInvocation addObject:rejectBlock];
+          // The return type becomes void in the ObjC side.
+          performMethodInvocation(rt, inv, VoidKind, instance_, jsInvoker_, retainedObjectsForInvocation);
+        });
+>>>>>>> fb/0.62-stable
   }
 
   return performMethodInvocation(runtime, inv, valueKind, instance_, jsInvoker_, retainedObjectsForInvocation);

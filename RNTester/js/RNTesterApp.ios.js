@@ -25,9 +25,11 @@ const {
   BackHandler,
   Button,
   Linking,
+  Platform,
   SafeAreaView,
   StyleSheet,
   Text,
+  useColorScheme,
   View,
   YellowBox,
 } = require('react-native');
@@ -35,10 +37,17 @@ const {
 import type {RNTesterExample} from './types/RNTesterTypes';
 import type {RNTesterAction} from './utils/RNTesterActions';
 import type {RNTesterNavigationState} from './utils/RNTesterNavigationReducer';
+<<<<<<< HEAD
 
 type Props = {
   exampleFromAppetizeParams?: ?string,
 };
+=======
+import {RNTesterThemeContext, themes} from './components/RNTesterTheme';
+import type {ColorSchemeName} from '../../Libraries/Utilities/NativeAppearance';
+
+type Props = {exampleFromAppetizeParams?: ?string, ...};
+>>>>>>> fb/0.62-stable
 
 YellowBox.ignoreWarnings([
   'Module RCTImagePickerManager requires main queue setup',
@@ -46,20 +55,95 @@ YellowBox.ignoreWarnings([
 
 const APP_STATE_KEY = 'RNTesterAppState.v2';
 
-const Header = ({onBack, title}: {onBack?: () => mixed, title: string}) => (
-  <SafeAreaView style={styles.headerContainer}>
-    <View style={styles.header}>
-      <View style={styles.headerCenter}>
-        <Text style={styles.title}>{title}</Text>
-      </View>
-      {onBack && (
-        <View style={styles.headerLeft}>
-          <Button title="Back" onPress={onBack} />
-        </View>
-      )}
-    </View>
-  </SafeAreaView>
+const Header = ({
+  onBack,
+  title,
+}: {
+  onBack?: () => mixed,
+  title: string,
+  ...
+}) => (
+  <RNTesterThemeContext.Consumer>
+    {theme => {
+      return (
+        <SafeAreaView
+          style={[
+            styles.headerContainer,
+            {
+              borderBottomColor: theme.SeparatorColor,
+              backgroundColor: theme.TertiarySystemBackgroundColor,
+            },
+          ]}>
+          <View style={styles.header}>
+            <View style={styles.headerCenter}>
+              <Text style={{...styles.title, ...{color: theme.LabelColor}}}>
+                {title}
+              </Text>
+            </View>
+            {onBack && (
+              <View>
+                <Button
+                  title="Back"
+                  onPress={onBack}
+                  color={Platform.select({
+                    ios: theme.LinkColor,
+                    default: undefined,
+                  })}
+                />
+              </View>
+            )}
+          </View>
+        </SafeAreaView>
+      );
+    }}
+  </RNTesterThemeContext.Consumer>
 );
+
+const RNTesterExampleContainerViaHook = ({
+  onBack,
+  title,
+  module,
+}: {
+  onBack?: () => mixed,
+  title: string,
+  module: RNTesterExample,
+  ...
+}) => {
+  const colorScheme: ?ColorSchemeName = useColorScheme();
+  const theme = colorScheme === 'dark' ? themes.dark : themes.light;
+  return (
+    <RNTesterThemeContext.Provider value={theme}>
+      <View style={styles.exampleContainer}>
+        <Header onBack={onBack} title={title} />
+        <RNTesterExampleContainer module={module} />
+      </View>
+    </RNTesterThemeContext.Provider>
+  );
+};
+
+const RNTesterExampleListViaHook = ({
+  onNavigate,
+  list,
+}: {
+  onNavigate?: () => mixed,
+  list: {
+    ComponentExamples: Array<RNTesterExample>,
+    APIExamples: Array<RNTesterExample>,
+    ...
+  },
+  ...
+}) => {
+  const colorScheme: ?ColorSchemeName = useColorScheme();
+  const theme = colorScheme === 'dark' ? themes.dark : themes.light;
+  return (
+    <RNTesterThemeContext.Provider value={theme}>
+      <View style={styles.exampleContainer}>
+        <Header title="RNTester" />
+        <RNTesterExampleList onNavigate={onNavigate} list={list} />
+      </View>
+    </RNTesterThemeContext.Provider>
+  );
+};
 
 class RNTesterApp extends React.Component<Props, RNTesterNavigationState> {
   _mounted: boolean;
@@ -120,21 +204,19 @@ class RNTesterApp extends React.Component<Props, RNTesterNavigationState> {
         return <Component onExampleExit={this._handleBack} />;
       } else {
         return (
-          <View style={styles.exampleContainer}>
-            <Header onBack={this._handleBack} title={Component.title} />
-            <RNTesterExampleContainer module={Component} />
-          </View>
+          <RNTesterExampleContainerViaHook
+            onBack={this._handleBack}
+            title={Component.title}
+            module={Component}
+          />
         );
       }
     }
     return (
-      <View style={styles.exampleContainer}>
-        <Header title="RNTester" />
-        <RNTesterExampleList
-          onNavigate={this._handleAction}
-          list={RNTesterList}
-        />
-      </View>
+      <RNTesterExampleListViaHook
+        onNavigate={this._handleAction}
+        list={RNTesterList}
+      />
     );
   }
 }
@@ -142,14 +224,16 @@ class RNTesterApp extends React.Component<Props, RNTesterNavigationState> {
 const styles = StyleSheet.create({
   headerContainer: {
     borderBottomWidth: StyleSheet.hairlineWidth,
+<<<<<<< HEAD
     borderBottomColor: {semantic: 'separatorColor'}, // TODO(OSS Candidate ISS#2710739)
     backgroundColor: {semantic: 'tertiarySystemBackgroundColor'}, // TODO(OSS Candidate ISS#2710739)
+=======
+>>>>>>> fb/0.62-stable
   },
   header: {
     height: 40,
     flexDirection: 'row',
   },
-  headerLeft: {},
   headerCenter: {
     flex: 1,
     position: 'absolute',
@@ -182,7 +266,7 @@ RNTesterList.ComponentExamples.concat(RNTesterList.APIExamples).forEach(
   (Example: RNTesterExample) => {
     const ExampleModule = Example.module;
     if (ExampleModule.displayName) {
-      class Snapshotter extends React.Component<{}> {
+      class Snapshotter extends React.Component<{...}> {
         render() {
           return (
             <SnapshotViewIOS>

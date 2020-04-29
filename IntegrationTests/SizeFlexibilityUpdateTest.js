@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @flow
+ * @flow strict-local
  */
 
 'use strict';
@@ -54,7 +54,12 @@ class SizeFlexibilityUpdateTest extends React.Component<Props> {
   rootViewDidChangeIntrinsicSize: (intrinsicSize: {
     height: number,
     width: number,
+<<<<<<< HEAD
   }) => void = (intrinsicSize: {width: number, height: number}) => {
+=======
+    ...
+  }) => void = (intrinsicSize: {width: number, height: number, ...}) => {
+>>>>>>> fb/0.62-stable
     if (finalState) {
       // If a test reaches its final state, it is not expected to do anything more
       TestModule.markTestPassed(false);

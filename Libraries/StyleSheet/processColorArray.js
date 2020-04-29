@@ -11,11 +11,8 @@
 'use strict';
 
 const processColor = require('./processColor');
-import type {NativeOrDynamicColorType} from '../Color/NativeOrDynamicColorType'; // TODO(macOS ISS#2323203)
 
-function processColorArray(
-  colors: ?Array<string>,
-): ?Array<?(number | NativeOrDynamicColorType)> {
+function processColorArray(colors: ?Array<string>): ?Array<?number> {
   return colors == null ? null : colors.map(processColor);
 }
 

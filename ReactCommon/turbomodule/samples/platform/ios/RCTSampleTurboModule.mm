@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -31,7 +31,11 @@ RCT_EXPORT_MODULE()
 }
 
 - (std::shared_ptr<facebook::react::TurboModule>)getTurboModuleWithJsInvoker:
+<<<<<<< HEAD
     (std::shared_ptr<facebook::react::JSCallInvoker>)jsInvoker
+=======
+    (std::shared_ptr<facebook::react::CallInvoker>)jsInvoker
+>>>>>>> fb/0.62-stable
 {
   return std::make_shared<NativeSampleTurboModuleSpecJSI>(self, jsInvoker);
 }

@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
@@ -29,6 +29,9 @@ import com.facebook.react.bridge.ReadableMap;
   }
 
   public double getValue() {
+    if (Double.isNaN(mOffset + mValue)) {
+      this.update();
+    }
     return mOffset + mValue;
   }
 

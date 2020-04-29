@@ -11,6 +11,7 @@
 'use strict';
 
 const {
+<<<<<<< HEAD
   getCppTypeForAnnotation,
   toSafeCppString,
   generateStructName,
@@ -18,6 +19,23 @@ const {
 } = require('./CppHelpers.js');
 
 import type {PropTypeShape, SchemaType} from '../../CodegenSchema';
+=======
+  convertDefaultTypeToString,
+  getCppTypeForAnnotation,
+  getEnumMaskName,
+  getEnumName,
+  toSafeCppString,
+  generateStructName,
+  getImports,
+  toIntEnumValueName,
+} = require('./CppHelpers.js');
+
+import type {
+  ExtendsPropsShape,
+  PropTypeShape,
+  SchemaType,
+} from '../../CodegenSchema';
+>>>>>>> fb/0.62-stable
 
 // File path -> contents
 type FilesOutput = Map<string, string>;
@@ -73,6 +91,27 @@ static inline std::string toString(const ::_ENUM_NAME_:: &value) {
 }
 `.trim();
 
+<<<<<<< HEAD
+=======
+const intEnumTemplate = `
+enum class ::_ENUM_NAME_:: { ::_VALUES_:: };
+
+static inline void fromRawValue(const RawValue &value, ::_ENUM_NAME_:: &result) {
+  assert(value.hasType<int>());
+  auto integerValue = (int)value;
+  switch (integerValue) {::_FROM_CASES_::
+  }
+  abort();
+}
+
+static inline std::string toString(const ::_ENUM_NAME_:: &value) {
+  switch (value) {
+    ::_TO_CASES_::
+  }
+}
+`.trim();
+
+>>>>>>> fb/0.62-stable
 const structTemplate = `struct ::_STRUCT_NAME_:: {
   ::_FIELDS_::
 };
@@ -98,6 +137,23 @@ const arrayConversionFunction = `static inline void fromRawValue(const RawValue 
 }
 `;
 
+<<<<<<< HEAD
+=======
+const doubleArrayConversionFunction = `static inline void fromRawValue(const RawValue &value, std::vector<std::vector<::_STRUCT_NAME_::>> &result) {
+  auto items = (std::vector<std::vector<RawValue>>)value;
+  for (const std::vector<RawValue> &item : items) {
+    auto nestedArray = std::vector<::_STRUCT_NAME_::>{};
+    for (const RawValue &nestedItem : item) {
+      ::_STRUCT_NAME_:: newItem;
+      fromRawValue(nestedItem, newItem);
+      nestedArray.emplace_back(newItem);
+    }
+    result.emplace_back(nestedArray);
+  }
+}
+`;
+
+>>>>>>> fb/0.62-stable
 const arrayEnumTemplate = `
 using ::_ENUM_MASK_:: = uint32_t;
 
@@ -167,7 +223,15 @@ function getClassExtendString(component): string {
   return extendString;
 }
 
+<<<<<<< HEAD
 function getNativeTypeFromAnnotation(componentName: string, prop): string {
+=======
+function getNativeTypeFromAnnotation(
+  componentName: string,
+  prop,
+  nameParts: $ReadOnlyArray<string>,
+): string {
+>>>>>>> fb/0.62-stable
   const typeAnnotation = prop.typeAnnotation;
 
   switch (typeAnnotation.type) {
@@ -185,11 +249,17 @@ function getNativeTypeFromAnnotation(componentName: string, prop): string {
           return 'ImageSource';
         case 'PointPrimitive':
           return 'Point';
+<<<<<<< HEAD
+=======
+        case 'EdgeInsetsPrimitive':
+          return 'EdgeInsets';
+>>>>>>> fb/0.62-stable
         default:
           (typeAnnotation.name: empty);
           throw new Error('Received unknown NativePrimitiveTypeAnnotation');
       }
     case 'ArrayTypeAnnotation': {
+<<<<<<< HEAD
       if (typeAnnotation.elementType.type === 'ArrayTypeAnnotation') {
         throw new Error(
           'ArrayTypeAnnotation of type ArrayTypeAnnotation not supported',
@@ -214,6 +284,44 @@ function getNativeTypeFromAnnotation(componentName: string, prop): string {
     }
     case 'StringEnumTypeAnnotation':
       return getEnumName(componentName, prop.name);
+=======
+      const arrayType = typeAnnotation.elementType.type;
+      if (arrayType === 'ArrayTypeAnnotation') {
+        return `std::vector<${getNativeTypeFromAnnotation(
+          componentName,
+          {typeAnnotation: typeAnnotation.elementType, name: ''},
+          nameParts.concat([prop.name]),
+        )}>`;
+      }
+      if (arrayType === 'ObjectTypeAnnotation') {
+        const structName = generateStructName(
+          componentName,
+          nameParts.concat([prop.name]),
+        );
+        return `std::vector<${structName}>`;
+      }
+      if (arrayType === 'StringEnumTypeAnnotation') {
+        const enumName = getEnumName(componentName, prop.name);
+        return getEnumMaskName(enumName);
+      }
+      const itemAnnotation = getNativeTypeFromAnnotation(
+        componentName,
+        {
+          typeAnnotation: typeAnnotation.elementType,
+          name: componentName,
+        },
+        nameParts.concat([prop.name]),
+      );
+      return `std::vector<${itemAnnotation}>`;
+    }
+    case 'ObjectTypeAnnotation': {
+      return generateStructName(componentName, nameParts.concat([prop.name]));
+    }
+    case 'StringEnumTypeAnnotation':
+      return getEnumName(componentName, prop.name);
+    case 'Int32EnumTypeAnnotation':
+      return getEnumName(componentName, prop.name);
+>>>>>>> fb/0.62-stable
     default:
       (typeAnnotation: empty);
       throw new Error(
@@ -224,6 +332,7 @@ function getNativeTypeFromAnnotation(componentName: string, prop): string {
   }
 }
 
+<<<<<<< HEAD
 function convertDefaultTypeToString(componentName: string, prop): string {
   const typeAnnotation = prop.typeAnnotation;
   switch (typeAnnotation.type) {
@@ -298,6 +407,8 @@ function getEnumMaskName(enumName: string): string {
   return `${enumName}Mask`;
 }
 
+=======
+>>>>>>> fb/0.62-stable
 function convertValueToEnumOption(value: string): string {
   return toSafeCppString(value);
 }
@@ -340,6 +451,7 @@ function generateArrayEnumString(
     .replace('::_FROM_CASES_::', fromCases)
     .replace('::_TO_CASES_::', toCases);
 }
+<<<<<<< HEAD
 function generateEnum(componentName, prop) {
   if (!prop.typeAnnotation.options) {
     return '';
@@ -371,6 +483,87 @@ function generateEnum(componentName, prop) {
     .replace('::_FROM_CASES_::', fromCases)
     .replace('::_TO_CASES_::', toCases);
 }
+=======
+
+function generateStringEnum(componentName, prop) {
+  const typeAnnotation = prop.typeAnnotation;
+  if (typeAnnotation.type === 'StringEnumTypeAnnotation') {
+    const values: $ReadOnlyArray<string> = typeAnnotation.options.map(
+      option => option.name,
+    );
+    const enumName = getEnumName(componentName, prop.name);
+
+    const fromCases = values
+      .map(
+        value =>
+          `if (string == "${value}") { result = ${enumName}::${convertValueToEnumOption(
+            value,
+          )}; return; }`,
+      )
+      .join('\n' + '  ');
+
+    const toCases = values
+      .map(
+        value =>
+          `case ${enumName}::${convertValueToEnumOption(
+            value,
+          )}: return "${value}";`,
+      )
+      .join('\n' + '    ');
+
+    return enumTemplate
+      .replace(/::_ENUM_NAME_::/g, enumName)
+      .replace('::_VALUES_::', values.map(toSafeCppString).join(', '))
+      .replace('::_FROM_CASES_::', fromCases)
+      .replace('::_TO_CASES_::', toCases);
+  }
+
+  return '';
+}
+
+function generateIntEnum(componentName, prop) {
+  const typeAnnotation = prop.typeAnnotation;
+  if (typeAnnotation.type === 'Int32EnumTypeAnnotation') {
+    const values: $ReadOnlyArray<number> = typeAnnotation.options.map(
+      option => option.value,
+    );
+    const enumName = getEnumName(componentName, prop.name);
+
+    const fromCases = values
+      .map(
+        value =>
+          `
+    case ${value}:
+      result = ${enumName}::${toIntEnumValueName(prop.name, value)};
+      return;`,
+      )
+      .join('');
+
+    const toCases = values
+      .map(
+        value =>
+          `case ${enumName}::${toIntEnumValueName(
+            prop.name,
+            value,
+          )}: return "${value}";`,
+      )
+      .join('\n' + '    ');
+
+    const valueVariables = values
+      .map(val => `${toIntEnumValueName(prop.name, val)} = ${val}`)
+      .join(', ');
+
+    return intEnumTemplate
+      .replace(/::_ENUM_NAME_::/g, enumName)
+      .replace('::_VALUES_::', valueVariables)
+      .replace('::_FROM_CASES_::', fromCases)
+      .replace('::_TO_CASES_::', toCases);
+  }
+
+  return '';
+}
+
+>>>>>>> fb/0.62-stable
 function generateEnumString(componentName: string, component): string {
   return component.props
     .map(prop => {
@@ -386,17 +579,37 @@ function generateEnumString(componentName: string, component): string {
       }
 
       if (prop.typeAnnotation.type === 'StringEnumTypeAnnotation') {
+<<<<<<< HEAD
         return generateEnum(componentName, prop);
+=======
+        return generateStringEnum(componentName, prop);
+      }
+
+      if (prop.typeAnnotation.type === 'Int32EnumTypeAnnotation') {
+        return generateIntEnum(componentName, prop);
+>>>>>>> fb/0.62-stable
       }
 
       if (prop.typeAnnotation.type === 'ObjectTypeAnnotation') {
         return prop.typeAnnotation.properties
+<<<<<<< HEAD
           .filter(
             property =>
               property.typeAnnotation.type === 'StringEnumTypeAnnotation',
           )
           .map(property => {
             return generateEnum(componentName, property);
+=======
+          .map(property => {
+            if (property.typeAnnotation.type === 'StringEnumTypeAnnotation') {
+              return generateStringEnum(componentName, property);
+            } else if (
+              property.typeAnnotation.type === 'Int32EnumTypeAnnotation'
+            ) {
+              return generateIntEnum(componentName, property);
+            }
+            return null;
+>>>>>>> fb/0.62-stable
           })
           .filter(Boolean)
           .join('\n');
@@ -412,7 +625,11 @@ function generatePropsString(
 ) {
   return props
     .map(prop => {
+<<<<<<< HEAD
       const nativeType = getNativeTypeFromAnnotation(componentName, prop);
+=======
+      const nativeType = getNativeTypeFromAnnotation(componentName, prop, []);
+>>>>>>> fb/0.62-stable
       const defaultValue = convertDefaultTypeToString(componentName, prop);
 
       return `const ${nativeType} ${prop.name}{${defaultValue}};`;
@@ -420,10 +637,19 @@ function generatePropsString(
     .join('\n' + '  ');
 }
 
+<<<<<<< HEAD
 function getLocalImports(component): Set<string> {
   const imports: Set<string> = new Set();
 
   component.extendsProps.forEach(extendProps => {
+=======
+function getExtendsImports(
+  extendsProps: $ReadOnlyArray<ExtendsPropsShape>,
+): Set<string> {
+  const imports: Set<string> = new Set();
+
+  extendsProps.forEach(extendProps => {
+>>>>>>> fb/0.62-stable
     switch (extendProps.type) {
       case 'ReactNativeBuiltInType':
         switch (extendProps.knownTypeName) {
@@ -440,6 +666,17 @@ function getLocalImports(component): Set<string> {
     }
   });
 
+<<<<<<< HEAD
+=======
+  return imports;
+}
+
+function getLocalImports(
+  properties: $ReadOnlyArray<PropTypeShape>,
+): Set<string> {
+  const imports: Set<string> = new Set();
+
+>>>>>>> fb/0.62-stable
   function addImportsForNativeName(name) {
     switch (name) {
       case 'ColorPrimitive':
@@ -451,6 +688,12 @@ function getLocalImports(component): Set<string> {
       case 'PointPrimitive':
         imports.add('#include <react/graphics/Geometry.h>');
         return;
+<<<<<<< HEAD
+=======
+      case 'EdgeInsetsPrimitive':
+        imports.add('#include <react/graphics/Geometry.h>');
+        return;
+>>>>>>> fb/0.62-stable
       default:
         (name: empty);
         throw new Error(
@@ -459,7 +702,11 @@ function getLocalImports(component): Set<string> {
     }
   }
 
+<<<<<<< HEAD
   component.props.forEach(prop => {
+=======
+  properties.forEach(prop => {
+>>>>>>> fb/0.62-stable
     const typeAnnotation = prop.typeAnnotation;
 
     if (typeAnnotation.type === 'NativePrimitiveTypeAnnotation') {
@@ -480,16 +727,37 @@ function getLocalImports(component): Set<string> {
       addImportsForNativeName(typeAnnotation.elementType.name);
     }
 
+<<<<<<< HEAD
     if (typeAnnotation.type === 'ObjectTypeAnnotation') {
       imports.add('#include <react/core/propsConversions.h>');
       const objectImports = getImports(typeAnnotation.properties);
       objectImports.forEach(imports.add, imports);
+=======
+    if (
+      typeAnnotation.type === 'ArrayTypeAnnotation' &&
+      typeAnnotation.elementType.type === 'ObjectTypeAnnotation'
+    ) {
+      const objectProps = typeAnnotation.elementType.properties;
+      const objectImports = getImports(objectProps);
+      const localImports = getLocalImports(objectProps);
+      objectImports.forEach(imports.add, imports);
+      localImports.forEach(imports.add, imports);
+    }
+
+    if (typeAnnotation.type === 'ObjectTypeAnnotation') {
+      imports.add('#include <react/core/propsConversions.h>');
+      const objectImports = getImports(typeAnnotation.properties);
+      const localImports = getLocalImports(typeAnnotation.properties);
+      objectImports.forEach(imports.add, imports);
+      localImports.forEach(imports.add, imports);
+>>>>>>> fb/0.62-stable
     }
   });
 
   return imports;
 }
 
+<<<<<<< HEAD
 function generateStructs(componentName: string, component): string {
   const structs: StructsMap = new Map();
   component.props.forEach(prop => {
@@ -511,16 +779,132 @@ function generateStructs(componentName: string, component): string {
         arrayConversionFunction.replace(
           /::_STRUCT_NAME_::/g,
           generateStructName(componentName, [prop.name]),
-        ),
-      );
-    }
-  });
-
+=======
+function generateStructsForComponent(componentName: string, component): string {
+  const structs = generateStructs(componentName, component.props, []);
   const structArray = Array.from(structs.values());
   if (structArray.length < 1) {
     return '';
   }
   return structArray.join('\n\n');
+}
+
+function generateStructs(
+  componentName: string,
+  properties,
+  nameParts,
+): StructsMap {
+  const structs: StructsMap = new Map();
+  properties.forEach(prop => {
+    const typeAnnotation = prop.typeAnnotation;
+    if (typeAnnotation.type === 'ObjectTypeAnnotation') {
+      // Recursively visit all of the object properties.
+      // Note: this is depth first so that the nested structs are ordered first.
+      const elementProperties = typeAnnotation.properties;
+      const nestedStructs = generateStructs(
+        componentName,
+        elementProperties,
+        nameParts.concat([prop.name]),
+      );
+      nestedStructs.forEach(function(value, key) {
+        structs.set(key, value);
+      });
+
+      generateStruct(
+        structs,
+        componentName,
+        nameParts.concat([prop.name]),
+        typeAnnotation.properties,
+      );
+    }
+
+    if (
+      prop.typeAnnotation.type === 'ArrayTypeAnnotation' &&
+      prop.typeAnnotation.elementType.type === 'ObjectTypeAnnotation'
+    ) {
+      // Recursively visit all of the object properties.
+      // Note: this is depth first so that the nested structs are ordered first.
+      const elementProperties = prop.typeAnnotation.elementType.properties;
+      const nestedStructs = generateStructs(
+        componentName,
+        elementProperties,
+        nameParts.concat([prop.name]),
+      );
+      nestedStructs.forEach(function(value, key) {
+        structs.set(key, value);
+      });
+
+      // Generate this struct and its conversion function.
+      generateStruct(
+        structs,
+        componentName,
+        nameParts.concat([prop.name]),
+        elementProperties,
+      );
+
+      // Generate the conversion function for std:vector<Object>.
+      // Note: This needs to be at the end since it references the struct above.
+      structs.set(
+        `${[componentName, ...nameParts.concat([prop.name])].join(
+          '',
+        )}ArrayStruct`,
+        arrayConversionFunction.replace(
+          /::_STRUCT_NAME_::/g,
+          generateStructName(componentName, nameParts.concat([prop.name])),
+        ),
+      );
+    }
+    if (
+      prop.typeAnnotation.type === 'ArrayTypeAnnotation' &&
+      prop.typeAnnotation.elementType.type === 'ArrayTypeAnnotation' &&
+      prop.typeAnnotation.elementType.elementType.type ===
+        'ObjectTypeAnnotation'
+    ) {
+      // Recursively visit all of the object properties.
+      // Note: this is depth first so that the nested structs are ordered first.
+      const elementProperties =
+        prop.typeAnnotation.elementType.elementType.properties;
+      const nestedStructs = generateStructs(
+        componentName,
+        elementProperties,
+        nameParts.concat([prop.name]),
+      );
+      nestedStructs.forEach(function(value, key) {
+        structs.set(key, value);
+      });
+
+      // Generate this struct and its conversion function.
+      generateStruct(
+        structs,
+        componentName,
+        nameParts.concat([prop.name]),
+        elementProperties,
+      );
+
+      // Generate the conversion function for std:vector<Object>.
+      // Note: This needs to be at the end since it references the struct above.
+      structs.set(
+        `${[componentName, ...nameParts.concat([prop.name])].join(
+          '',
+        )}ArrayArrayStruct`,
+        doubleArrayConversionFunction.replace(
+          /::_STRUCT_NAME_::/g,
+          generateStructName(componentName, nameParts.concat([prop.name])),
+>>>>>>> fb/0.62-stable
+        ),
+      );
+    }
+  });
+
+<<<<<<< HEAD
+  const structArray = Array.from(structs.values());
+  if (structArray.length < 1) {
+    return '';
+  }
+  return structArray.join('\n\n');
+=======
+  return structs;
+>>>>>>> fb/0.62-stable
 }
 
 function generateStruct(
@@ -537,7 +921,11 @@ function generateStruct(
       return `${getNativeTypeFromAnnotation(
         componentName,
         property,
+<<<<<<< HEAD
         // structNameParts,
+=======
+        structNameParts,
+>>>>>>> fb/0.62-stable
       )} ${property.name};`;
     })
     .join('\n' + '  ');
@@ -561,6 +949,11 @@ function generateStruct(
         return;
       case 'StringEnumTypeAnnotation':
         return;
+<<<<<<< HEAD
+=======
+      case 'Int32EnumTypeAnnotation':
+        return;
+>>>>>>> fb/0.62-stable
       case 'DoubleTypeAnnotation':
         return;
       case 'ObjectTypeAnnotation':
@@ -620,19 +1013,40 @@ module.exports = {
         }
 
         return Object.keys(components)
+<<<<<<< HEAD
+=======
+          .filter(componentName => {
+            const component = components[componentName];
+            return component.excludedPlatform !== 'iOS';
+          })
+>>>>>>> fb/0.62-stable
           .map(componentName => {
             const component = components[componentName];
 
             const newName = `${componentName}Props`;
+<<<<<<< HEAD
             const structString = generateStructs(componentName, component);
+=======
+            const structString = generateStructsForComponent(
+              componentName,
+              component,
+            );
+>>>>>>> fb/0.62-stable
             const enumString = generateEnumString(componentName, component);
             const propsString = generatePropsString(
               componentName,
               component.props,
             );
             const extendString = getClassExtendString(component);
+<<<<<<< HEAD
             const imports = getLocalImports(component);
 
+=======
+            const extendsImports = getExtendsImports(component.extendsProps);
+            const imports = getLocalImports(component.props);
+
+            extendsImports.forEach(allImports.add, allImports);
+>>>>>>> fb/0.62-stable
             imports.forEach(allImports.add, allImports);
 
             const replacedTemplate = classTemplate

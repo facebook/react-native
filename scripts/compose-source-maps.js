@@ -7,6 +7,10 @@
  *
  * @format
  */
+<<<<<<< HEAD
+=======
+
+>>>>>>> fb/0.62-stable
 'use strict';
 
 const {composeSourceMaps} = require('metro-source-map');

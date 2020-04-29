@@ -11,7 +11,7 @@
 'use strict';
 
 import type {ComponentShape, SchemaType} from '../../CodegenSchema';
-const {getImports} = require('./CppHelpers');
+const {convertDefaultTypeToString, getImports} = require('./CppHelpers');
 
 // File path -> contents
 type FilesOutput = Map<string, string>;
@@ -45,12 +45,13 @@ const componentTemplate = `
       {}
 `.trim();
 
-function generatePropsString(component: ComponentShape) {
+function generatePropsString(componentName: string, component: ComponentShape) {
   return component.props
     .map(prop => {
+      const defaultValue = convertDefaultTypeToString(componentName, prop);
       return `${prop.name}(convertRawProp(rawProps, "${
         prop.name
-      }", sourceProps.${prop.name}, ${prop.name}))`;
+      }", sourceProps.${prop.name}, {${defaultValue}}))`;
     })
     .join(',\n' + '    ');
 }
@@ -100,11 +101,15 @@ module.exports = {
         }
 
         return Object.keys(components)
+          .filter(componentName => {
+            const component = components[componentName];
+            return component.excludedPlatform !== 'iOS';
+          })
           .map(componentName => {
             const component = components[componentName];
             const newName = `${componentName}Props`;
 
-            const propsString = generatePropsString(component);
+            const propsString = generatePropsString(componentName, component);
             const extendString = getClassExtendString(component);
 
             const imports = getImports(component.props);

@@ -12,18 +12,42 @@
 
 import NativePlatformConstantsAndroid from './NativePlatformConstantsAndroid';
 
-export type PlatformSelectSpec<A, D> = {
+export type PlatformSelectSpec<A, N, D> = {
   android?: A,
+  native?: N,
   default?: D,
+  ...
 };
 
 const Platform = {
   __constants: null,
   OS: 'android',
+<<<<<<< HEAD
   get Version() {
     return this.constants.Version;
   },
   get constants() {
+=======
+  get Version(): number {
+    return this.constants.Version;
+  },
+  get constants(): {|
+    isTesting: boolean,
+    reactNativeVersion: {|
+      major: number,
+      minor: number,
+      patch: number,
+      prerelease: ?number,
+    |},
+    Version: number,
+    Release: string,
+    Serial: string,
+    Fingerprint: string,
+    Model: string,
+    ServerHost: string,
+    uiMode: string,
+  |} {
+>>>>>>> fb/0.62-stable
     if (this.__constants == null) {
       this.__constants = NativePlatformConstantsAndroid.getConstants();
     }
@@ -38,8 +62,12 @@ const Platform = {
   get isTV(): boolean {
     return this.constants.uiMode === 'tv';
   },
-  select: <A, D>(spec: PlatformSelectSpec<A, D>): A | D =>
-    'android' in spec ? spec.android : spec.default,
+  select: <A, N, D>(spec: PlatformSelectSpec<A, N, D>): A | N | D =>
+    'android' in spec
+      ? spec.android
+      : 'native' in spec
+      ? spec.native
+      : spec.default,
 };
 
 module.exports = Platform;

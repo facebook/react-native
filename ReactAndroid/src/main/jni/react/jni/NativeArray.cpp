@@ -1,11 +1,13 @@
-// Copyright (c) Facebook, Inc. and its affiliates.
-
-// This source code is licensed under the MIT license found in the
-// LICENSE file in the root directory of this source tree.
+/*
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
 
 #include "NativeArray.h"
 
-#include <fb/fbjni.h>
+#include <fbjni/fbjni.h>
 #include <folly/json.h>
 
 using namespace facebook::jni;
@@ -16,8 +18,10 @@ namespace react {
 NativeArray::NativeArray(folly::dynamic array)
     : isConsumed(false), array_(std::move(array)) {
   if (!array_.isArray()) {
-    throwNewJavaException(exceptions::gUnexpectedNativeTypeExceptionClass,
-                               "expected Array, got a %s", array_.typeName());
+    throwNewJavaException(
+        exceptions::gUnexpectedNativeTypeExceptionClass,
+        "expected Array, got a %s",
+        array_.typeName());
   }
 }
 
@@ -28,7 +32,7 @@ local_ref<jstring> NativeArray::toString() {
 
 void NativeArray::registerNatives() {
   registerHybrid({
-    makeNativeMethod("toString", NativeArray::toString),
+      makeNativeMethod("toString", NativeArray::toString),
   });
 }
 
@@ -42,5 +46,5 @@ void NativeArray::throwIfConsumed() {
   exceptions::throwIfObjectAlreadyConsumed(this, "Array already consumed");
 }
 
-}
-}
+} // namespace react
+} // namespace facebook

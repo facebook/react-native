@@ -17,23 +17,37 @@ can get debug logs to show even when tests are passing by running the test
 executable directly:
 
 ```
+<<<<<<< HEAD
 $ buck build fbsource//xplat/hermes-inspector:chrome-tests
 $ buck-out/gen/hermes-inspector/chrome-tests
+=======
+$ buck build fbsource//xplat/js/react-native-github/ReactCommon/hermes/inspector:chrome-tests
+$ buck-out/gen/js/react-native-github/ReactCommon/hermes/inspector/chrome-tests
+>>>>>>> fb/0.62-stable
 [...]
 ```
 
 You can use standard gtest filters to only execute a particular set of tests:
 
 ```
+<<<<<<< HEAD
 $ buck-out/gen/hermes-inspector/chrome-tests \
+=======
+$ buck-out/gen/js/react-native-github/ReactCommon/hermes/inspector/chrome-tests \
+>>>>>>> fb/0.62-stable
     --gtest_filter='ConnectionTests.testSetBreakpoint'
 ```
 
 You can debug the tests using lldb or gdb:
 
 ```
+<<<<<<< HEAD
 $ lldb buck-out/gen/hermes-inspector/chrome-tests
 $ gdb buck-out/gen/hermes-inspector/chrome-tests
+=======
+$ lldb buck-out/gen/js/react-native-github/ReactCommon/hermes/inspector/chrome-tests
+$ gdb buck-out/gen/js/react-native-github/ReactCommon/hermes/inspector/chrome-tests
+>>>>>>> fb/0.62-stable
 ```
 
 # Formatting
@@ -42,7 +56,11 @@ Make sure the code is formatted using the hermes clang-format rules before
 committing:
 
 ```
+<<<<<<< HEAD
 $ xplat/hermes-inspector/tools/format
+=======
+$ xplat/js/react-native-github/ReactCommon/hermes/inspector/tools/format
+>>>>>>> fb/0.62-stable
 ```
 
 We follow the clang format rules used by the rest of the Hermes project.
@@ -53,7 +71,11 @@ To add support for a new Chrome DevTools protocol message, add the message you
 want to add to tools/message_types.txt, and re-run the message types generator:
 
 ```
+<<<<<<< HEAD
 $ xplat/hermes-inspector/tools/run_msggen
+=======
+$ xplat/js/react-native-github/ReactCommon/hermes/inspector/tools/run_msggen
+>>>>>>> fb/0.62-stable
 ```
 
 This will generate C++ structs for the new message type in

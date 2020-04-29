@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
@@ -6,10 +6,18 @@
  */
 package com.facebook.react.testing;
 
+<<<<<<< HEAD
+=======
+import android.app.Instrumentation;
+>>>>>>> fb/0.62-stable
 import android.content.Context;
 import android.view.View;
 import android.view.ViewGroup;
 import androidx.annotation.Nullable;
+<<<<<<< HEAD
+=======
+import androidx.test.InstrumentationRegistry;
+>>>>>>> fb/0.62-stable
 import com.android.internal.util.Predicate;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.NativeModuleRegistryBuilder;
@@ -110,6 +118,7 @@ public class ReactTestHelper {
   }
 
   public static ReactTestFactory getReactTestFactory() {
+<<<<<<< HEAD
     // TODO: re-enable after cleanup of android-x migration
     //    Instrumentation inst = InstrumentationRegistry.getInstrumentation();
     //    if (!(inst instanceof ReactTestFactory)) {
@@ -117,6 +126,13 @@ public class ReactTestHelper {
     //    }
     //
     //    return (ReactTestFactory) inst;
+=======
+    Instrumentation inst = InstrumentationRegistry.getInstrumentation();
+    if (!(inst instanceof ReactTestFactory)) {
+      return new DefaultReactTestFactory();
+    }
+    return (ReactTestFactory) inst;
+>>>>>>> fb/0.62-stable
   }
 
   public static ReactTestFactory.ReactInstanceEasyBuilder catalystInstanceBuilder(
@@ -142,6 +158,7 @@ public class ReactTestHelper {
             final CatalystInstance instance = builder.build();
             testCase.initializeWithInstance(instance);
             instance.runJSBundle();
+<<<<<<< HEAD
             // TODO: re-enable after cleanup of android-x migration
             //          InstrumentationRegistry.getInstrumentation().runOnMainSync(new Runnable() {
             //            @Override
@@ -150,6 +167,17 @@ public class ReactTestHelper {
             instance.initialize();
             //            }
             //          });
+=======
+            InstrumentationRegistry.getInstrumentation()
+                .runOnMainSync(
+                    new Runnable() {
+                      @Override
+                      public void run() {
+                        ReactChoreographer.initialize();
+                        instance.initialize();
+                      }
+                    });
+>>>>>>> fb/0.62-stable
             testCase.waitForBridgeAndUIIdle();
             return instance;
           }

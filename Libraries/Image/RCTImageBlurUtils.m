@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -6,9 +6,12 @@
  */
 
 #import <React/RCTImageBlurUtils.h>
+<<<<<<< HEAD
 
 #import <React/RCTUIKit.h> // TODO(macOS ISS#2323203)
 #import <React/RCTUtils.h> // TODO(macOS ISS#2323203)
+=======
+>>>>>>> fb/0.62-stable
 
 UIImage *RCTBlurredImageWithRadius(UIImage *inputImage, CGFloat radius)
 {

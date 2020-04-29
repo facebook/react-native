@@ -4,14 +4,13 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- *
- * This class is responsible for coordinating the "focused"
- * state for TextInputs. All calls relating to the keyboard
- * should be funneled through here
- *
  * @format
  * @flow strict-local
  */
+
+// This class is responsible for coordinating the "focused" state for
+// TextInputs. All calls relating to the keyboard should be funneled
+// through here.
 
 'use strict';
 
@@ -29,18 +28,36 @@ function currentlyFocusedField(): ?number {
   return currentlyFocusedID;
 }
 
+function focusField(textFieldID: ?number): void {
+  if (currentlyFocusedID !== textFieldID && textFieldID != null) {
+    currentlyFocusedID = textFieldID;
+  }
+}
+
+function blurField(textFieldID: ?number) {
+  if (currentlyFocusedID === textFieldID && textFieldID != null) {
+    currentlyFocusedID = null;
+  }
+}
+
 /**
  * @param {number} TextInputID id of the text field to focus
  * Focuses the specified text field
  * noop if the text field was already focused
  */
 function focusTextInput(textFieldID: ?number) {
+<<<<<<< HEAD
   if (currentlyFocusedID !== textFieldID && textFieldID !== null) {
     currentlyFocusedID = textFieldID;
     if (
       Platform.OS === 'ios' ||
       Platform.OS === 'macos' /* TODO(macOS ISS#2323203) */
     ) {
+=======
+  if (currentlyFocusedID !== textFieldID && textFieldID != null) {
+    focusField(textFieldID);
+    if (Platform.OS === 'ios') {
+>>>>>>> fb/0.62-stable
       UIManager.focus(textFieldID);
     } else if (Platform.OS === 'android') {
       UIManager.dispatchViewManagerCommand(
@@ -59,12 +76,18 @@ function focusTextInput(textFieldID: ?number) {
  * noop if it wasn't focused
  */
 function blurTextInput(textFieldID: ?number) {
+<<<<<<< HEAD
   if (currentlyFocusedID === textFieldID && textFieldID !== null) {
     currentlyFocusedID = null;
     if (
       Platform.OS === 'ios' ||
       Platform.OS === 'macos' /* TODO(macOS ISS#2323203) */
     ) {
+=======
+  if (currentlyFocusedID === textFieldID && textFieldID != null) {
+    blurField(textFieldID);
+    if (Platform.OS === 'ios') {
+>>>>>>> fb/0.62-stable
       UIManager.blur(textFieldID);
     } else if (Platform.OS === 'android') {
       UIManager.dispatchViewManagerCommand(
@@ -91,6 +114,8 @@ function isTextInput(textFieldID: number): boolean {
 
 module.exports = {
   currentlyFocusedField,
+  focusField,
+  blurField,
   focusTextInput,
   blurTextInput,
   registerInput,

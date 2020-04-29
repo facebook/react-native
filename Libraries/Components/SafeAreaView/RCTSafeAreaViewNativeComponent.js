@@ -14,7 +14,11 @@ import type {ViewProps} from '../View/ViewPropTypes';
 import type {WithDefault} from '../../Types/CodegenTypes';
 
 import codegenNativeComponent from '../../Utilities/codegenNativeComponent';
+<<<<<<< HEAD
 import {type NativeComponentType} from '../../Utilities/codegenNativeComponent';
+=======
+import type {HostComponent} from '../../Renderer/shims/ReactNativeTypes';
+>>>>>>> fb/0.62-stable
 
 type NativeProps = $ReadOnly<{|
   ...ViewProps,
@@ -23,6 +27,13 @@ type NativeProps = $ReadOnly<{|
   emulateUnlessSupported?: WithDefault<boolean, false>,
 |}>;
 
+<<<<<<< HEAD
 export default (codegenNativeComponent<NativeProps>(
   'RCTSafeAreaView',
 ): NativeComponentType<NativeProps>);
+=======
+export default (codegenNativeComponent<NativeProps>('SafeAreaView', {
+  paperComponentName: 'RCTSafeAreaView',
+  interfaceOnly: true,
+}): HostComponent<NativeProps>);
+>>>>>>> fb/0.62-stable

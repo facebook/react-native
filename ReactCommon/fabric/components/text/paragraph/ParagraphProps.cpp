@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -6,14 +6,18 @@
  */
 
 #include "ParagraphProps.h"
+#include "../../../attributedstring/primitives.h"
 
 #include <react/attributedstring/conversions.h>
 #include <react/core/propsConversions.h>
 #include <react/debug/debugStringConvertibleUtils.h>
 
+#include <Glog/logging.h>
+
 namespace facebook {
 namespace react {
 
+<<<<<<< HEAD
 static ParagraphAttributes convertRawProp(
     RawProps const &rawProps,
     ParagraphAttributes const &defaultParagraphAttributes) {
@@ -43,6 +47,8 @@ static ParagraphAttributes convertRawProp(
   return paragraphAttributes;
 }
 
+=======
+>>>>>>> fb/0.62-stable
 ParagraphProps::ParagraphProps(
     ParagraphProps const &sourceProps,
     RawProps const &rawProps)

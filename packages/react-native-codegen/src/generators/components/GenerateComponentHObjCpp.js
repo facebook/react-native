@@ -43,8 +43,13 @@ const protocolTemplate = `
 `.trim();
 
 const commandHandlerIfCaseConvertArgTemplate = `
+<<<<<<< HEAD
 #if RCT_DEBUG
   NSObject *arg::_ARG_NUMBER_:: = args[::_ARG_NUMBER_::];
+=======
+  NSObject *arg::_ARG_NUMBER_:: = args[::_ARG_NUMBER_::];
+#if RCT_DEBUG
+>>>>>>> fb/0.62-stable
   if (!RCTValidateTypeOfViewCommandArgument(arg::_ARG_NUMBER_::, ::_EXPECTED_KIND_::, @"::_EXPECTED_KIND_STRING_::", @"::_COMPONENT_NAME_::", commandName, @"::_ARG_NUMBER_STR_::")) {
     return;
   }
@@ -61,7 +66,11 @@ if ([commandName isEqualToString:@"::_COMMAND_NAME_::"]) {
   }
 #endif
 
+<<<<<<< HEAD
 ::_CONVERT_ARGS_::
+=======
+  ::_CONVERT_ARGS_::
+>>>>>>> fb/0.62-stable
 
   ::_COMMAND_CALL_::
   return;
@@ -70,7 +79,11 @@ if ([commandName isEqualToString:@"::_COMMAND_NAME_::"]) {
 
 const commandHandlerTemplate = `
 RCT_EXTERN inline void RCT::_COMPONENT_NAME_::HandleCommand(
+<<<<<<< HEAD
   id<::_COMPONENT_NAME_::ViewProtocol> componentView,
+=======
+  id<RCT::_COMPONENT_NAME_::ViewProtocol> componentView,
+>>>>>>> fb/0.62-stable
   NSString const *commandName,
   NSArray const *args)
 {
@@ -251,7 +264,11 @@ function generateCommandIfCase(
             return `${index === 0 ? '' : param.name}:${param.name}`;
           })
           .join(' ');
+<<<<<<< HEAD
   const commandCall = `[componentView ${command.name}${commandCallArgs}]`;
+=======
+  const commandCall = `[componentView ${command.name}${commandCallArgs}];`;
+>>>>>>> fb/0.62-stable
 
   return commandHandlerIfCaseTemplate
     .replace(/::_COMPONENT_NAME_::/g, componentName)
@@ -295,6 +312,13 @@ module.exports = {
         }
 
         return Object.keys(components)
+<<<<<<< HEAD
+=======
+          .filter(componentName => {
+            const component = components[componentName];
+            return component.excludedPlatform !== 'iOS';
+          })
+>>>>>>> fb/0.62-stable
           .map(componentName => {
             return [
               generateProtocol(components[componentName], componentName),

@@ -36,9 +36,15 @@ type State = {|
 |};
 
 class YellowBoxPressable extends React.Component<Props, State> {
+<<<<<<< HEAD
   static defaultProps: $TEMPORARY$object<{|
     backgroundColor: $TEMPORARY$object<{|default: string, pressed: string|}>,
   |}> = {
+=======
+  static defaultProps: {|
+    backgroundColor: {|default: string, pressed: string|},
+  |} = {
+>>>>>>> fb/0.62-stable
     backgroundColor: {
       default: YellowBoxStyle.getBackgroundColor(0.95),
       pressed: YellowBoxStyle.getHighlightColor(1),

@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -53,13 +53,14 @@ static NSRegularExpression *RCTJSStackFrameRegex()
 
 @implementation RCTJSStackFrame
 
-- (instancetype)initWithMethodName:(NSString *)methodName file:(NSString *)file lineNumber:(NSInteger)lineNumber column:(NSInteger)column
+- (instancetype)initWithMethodName:(NSString *)methodName file:(NSString *)file lineNumber:(NSInteger)lineNumber column:(NSInteger)column collapse:(NSInteger)collapse
 {
   if (self = [super init]) {
     _methodName = methodName;
     _file = file;
     _lineNumber = lineNumber;
     _column = column;
+    _collapse = collapse;
   }
   return self;
 }
@@ -70,7 +71,8 @@ static NSRegularExpression *RCTJSStackFrameRegex()
      @"methodName": RCTNullIfNil(self.methodName),
      @"file": RCTNullIfNil(self.file),
      @"lineNumber": @(self.lineNumber),
-     @"column": @(self.column)
+     @"column": @(self.column),
+     @"collapse": @(self.collapse)
   };
 }
 
@@ -91,7 +93,8 @@ static NSRegularExpression *RCTJSStackFrameRegex()
   return [[self alloc] initWithMethodName:methodName
                                      file:file
                                lineNumber:[lineNumber integerValue]
-                                   column:[column integerValue]];
+                                   column:[column integerValue]
+                                 collapse:@NO];
 }
 
 + (instancetype)stackFrameWithDictionary:(NSDictionary *)dict
@@ -99,7 +102,8 @@ static NSRegularExpression *RCTJSStackFrameRegex()
   return [[self alloc] initWithMethodName:RCTNilIfNull(dict[@"methodName"])
                                      file:dict[@"file"]
                                lineNumber:[RCTNilIfNull(dict[@"lineNumber"]) integerValue]
-                                   column:[RCTNilIfNull(dict[@"column"]) integerValue]];
+                                   column:[RCTNilIfNull(dict[@"column"]) integerValue]
+                                 collapse:[RCTNilIfNull(dict[@"collapse"]) integerValue]];
 }
 
 + (NSArray<RCTJSStackFrame *> *)stackFramesWithLines:(NSString *)lines

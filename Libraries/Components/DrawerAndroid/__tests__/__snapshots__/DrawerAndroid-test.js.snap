@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`<DrawerLayoutAndroid /> should render as <DrawerLayoutAndroid> when mocked 1`] = `
+exports[`<DrawerLayoutAndroid /> should render as expected: should deep render when mocked (please verify output manually) 1`] = `
 <AndroidDrawerLayout
   drawerBackgroundColor="white"
   drawerPosition="left"
@@ -52,7 +52,7 @@ exports[`<DrawerLayoutAndroid /> should render as <DrawerLayoutAndroid> when moc
 </AndroidDrawerLayout>
 `;
 
-exports[`<DrawerLayoutAndroid /> should render as <DrawerLayoutAndroid> when not mocked 1`] = `
+exports[`<DrawerLayoutAndroid /> should render as expected: should deep render when not mocked (please verify output manually) 1`] = `
 <AndroidDrawerLayout
   drawerBackgroundColor="white"
   drawerPosition="left"
@@ -104,7 +104,7 @@ exports[`<DrawerLayoutAndroid /> should render as <DrawerLayoutAndroid> when not
 </AndroidDrawerLayout>
 `;
 
-exports[`<DrawerLayoutAndroid /> should shallow render as <DrawerLayoutAndroid> when mocked 1`] = `
+exports[`<DrawerLayoutAndroid /> should render as expected: should shallow render as <DrawerLayoutAndroid /> when mocked 1`] = `
 <DrawerLayoutAndroid
   drawerBackgroundColor="white"
   drawerPosition="left"
@@ -113,7 +113,7 @@ exports[`<DrawerLayoutAndroid /> should shallow render as <DrawerLayoutAndroid> 
 />
 `;
 
-exports[`<DrawerLayoutAndroid /> should shallow render as <DrawerLayoutAndroid> when not mocked 1`] = `
+exports[`<DrawerLayoutAndroid /> should render as expected: should shallow render as <DrawerLayoutAndroid /> when not mocked 1`] = `
 <DrawerLayoutAndroid
   drawerBackgroundColor="white"
   drawerPosition="left"

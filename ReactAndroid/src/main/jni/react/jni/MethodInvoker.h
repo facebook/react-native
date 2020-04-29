@@ -1,14 +1,16 @@
-// Copyright (c) Facebook, Inc. and its affiliates.
-
-// This source code is licensed under the MIT license found in the
-// LICENSE file in the root directory of this source tree.
+/*
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
 
 #pragma once
 
 #include <vector>
 
 #include <cxxreact/JSExecutor.h>
-#include <fb/fbjni.h>
+#include <fbjni/fbjni.h>
 #include <folly/dynamic.h>
 
 namespace facebook {
@@ -27,19 +29,28 @@ struct JReflectMethod : public jni::JavaClass<JReflectMethod> {
 };
 
 struct JBaseJavaModule : public jni::JavaClass<JBaseJavaModule> {
-  static constexpr auto kJavaDescriptor = "Lcom/facebook/react/bridge/BaseJavaModule;";
+  static constexpr auto kJavaDescriptor =
+      "Lcom/facebook/react/bridge/BaseJavaModule;";
 };
 
 class MethodInvoker {
-public:
-  MethodInvoker(jni::alias_ref<JReflectMethod::javaobject> method, std::string signature, std::string traceName, bool isSync);
+ public:
+  MethodInvoker(
+      jni::alias_ref<JReflectMethod::javaobject> method,
+      std::string signature,
+      std::string traceName,
+      bool isSync);
 
-  MethodCallResult invoke(std::weak_ptr<Instance>& instance, jni::alias_ref<JBaseJavaModule::javaobject> module, const folly::dynamic& params);
+  MethodCallResult invoke(
+      std::weak_ptr<Instance> &instance,
+      jni::alias_ref<JBaseJavaModule::javaobject> module,
+      const folly::dynamic &params);
 
   bool isSyncHook() const {
     return isSync_;
   }
-private:
+
+ private:
   jmethodID method_;
   std::string signature_;
   std::size_t jsArgCount_;
@@ -47,5 +58,5 @@ private:
   bool isSync_;
 };
 
-}
-}
+} // namespace react
+} // namespace facebook

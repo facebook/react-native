@@ -33,6 +33,7 @@ exports[`SectionList rendering empty section headers is fine 1`] = `
   onScrollEndDrag={[Function]}
   onScrollKeyDown={null}
   renderItem={[Function]}
+<<<<<<< HEAD
   renderSectionHeader={[Function]}
   rowIndex={-1}
   scrollEventThrottle={50}
@@ -52,12 +53,14 @@ exports[`SectionList rendering empty section headers is fine 1`] = `
       },
     ]
   }
+=======
+  scrollEventThrottle={50}
+>>>>>>> fb/0.62-stable
   stickyHeaderIndices={
     Array [
       0,
     ]
   }
-  stickySectionHeadersEnabled={true}
   updateCellsBatchingPeriod={50}
   windowSize={21}
 >
@@ -116,6 +119,7 @@ exports[`SectionList renders a footer when there is no data 1`] = `
   onScrollEndDrag={[Function]}
   onScrollKeyDown={null}
   renderItem={[Function]}
+<<<<<<< HEAD
   renderSectionFooter={[Function]}
   renderSectionHeader={[Function]}
   rowIndex={-1}
@@ -129,12 +133,14 @@ exports[`SectionList renders a footer when there is no data 1`] = `
       },
     ]
   }
+=======
+  scrollEventThrottle={50}
+>>>>>>> fb/0.62-stable
   stickyHeaderIndices={
     Array [
       0,
     ]
   }
-  stickySectionHeadersEnabled={true}
   updateCellsBatchingPeriod={50}
   windowSize={21}
 >
@@ -185,6 +191,7 @@ exports[`SectionList renders a footer when there is no data and no header 1`] = 
   onScrollEndDrag={[Function]}
   onScrollKeyDown={null}
   renderItem={[Function]}
+<<<<<<< HEAD
   renderSectionFooter={[Function]}
   rowIndex={-1}
   scrollEventThrottle={50}
@@ -197,12 +204,14 @@ exports[`SectionList renders a footer when there is no data and no header 1`] = 
       },
     ]
   }
+=======
+  scrollEventThrottle={50}
+>>>>>>> fb/0.62-stable
   stickyHeaderIndices={
     Array [
       0,
     ]
   }
-  stickySectionHeadersEnabled={true}
   updateCellsBatchingPeriod={50}
   windowSize={21}
 >
@@ -228,7 +237,6 @@ exports[`SectionList renders all the bells and whistles 1`] = `
   ListEmptyComponent={[Function]}
   ListFooterComponent={[Function]}
   ListHeaderComponent={[Function]}
-  SectionSeparatorComponent={[Function]}
   data={
     Array [
       Object {
@@ -293,6 +301,7 @@ exports[`SectionList renders all the bells and whistles 1`] = `
   }
   refreshing={false}
   renderItem={[Function]}
+<<<<<<< HEAD
   renderSectionFooter={[Function]}
   renderSectionHeader={[Function]}
   rowIndex={-1}
@@ -338,6 +347,9 @@ exports[`SectionList renders all the bells and whistles 1`] = `
       },
     ]
   }
+=======
+  scrollEventThrottle={50}
+>>>>>>> fb/0.62-stable
   stickyHeaderIndices={
     Array [
       1,
@@ -345,7 +357,6 @@ exports[`SectionList renders all the bells and whistles 1`] = `
       9,
     ]
   }
-  stickySectionHeadersEnabled={true}
   updateCellsBatchingPeriod={50}
   windowSize={21}
 >
@@ -525,10 +536,12 @@ exports[`SectionList renders empty list 1`] = `
   renderItem={[Function]}
   rowIndex={-1}
   scrollEventThrottle={50}
+<<<<<<< HEAD
   sectionIndex={0}
   sections={Array []}
+=======
+>>>>>>> fb/0.62-stable
   stickyHeaderIndices={Array []}
-  stickySectionHeadersEnabled={true}
   updateCellsBatchingPeriod={50}
   windowSize={21}
 >

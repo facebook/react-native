@@ -14,30 +14,16 @@
 const React = require('react');
 const ProgressViewIOS = require('../ProgressViewIOS');
 
-const render = require('../../../../jest/renderer');
+const ReactNativeTestTools = require('../../../Utilities/ReactNativeTestTools');
 
 describe('<ProgressViewIOS />', () => {
-  it('should render as <RCTProgressView> when mocked', () => {
-    const instance = render.create(<ProgressViewIOS progress={90} />);
-    expect(instance).toMatchSnapshot();
-  });
-
-  it('should shallow render as <ForwardRef(ProgressViewIOS)> when mocked', () => {
-    const output = render.shallow(<ProgressViewIOS progress={90} />);
-    expect(output).toMatchSnapshot();
-  });
-
-  it('should shallow render as <ForwardRef(ProgressViewIOS)> when not mocked', () => {
-    jest.dontMock('../ProgressViewIOS');
-
-    const output = render.shallow(<ProgressViewIOS progress={90} />);
-    expect(output).toMatchSnapshot();
-  });
-
-  it('should render as <RCTProgressView> when not mocked', () => {
-    jest.dontMock('../ProgressViewIOS');
-
-    const instance = render.create(<ProgressViewIOS progress={90} />);
-    expect(instance).toMatchSnapshot();
+  it('should render as expected', () => {
+    ReactNativeTestTools.expectRendersMatchingSnapshot(
+      'ProgressViewIOS',
+      () => <ProgressViewIOS progress={90} />,
+      () => {
+        jest.dontMock('../ProgressViewIOS');
+      },
+    );
   });
 });

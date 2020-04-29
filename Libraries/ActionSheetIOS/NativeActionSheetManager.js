@@ -12,7 +12,10 @@
 
 import type {TurboModule} from '../TurboModule/RCTExport';
 import * as TurboModuleRegistry from '../TurboModule/TurboModuleRegistry';
+<<<<<<< HEAD
 import type {NativeOrDynamicColorType} from '../Color/NativeOrDynamicColorType'; // TODO(macOS ISS#2323203)
+=======
+>>>>>>> fb/0.62-stable
 
 export interface Spec extends TurboModule {
   +getConstants: () => {||};
@@ -21,11 +24,18 @@ export interface Spec extends TurboModule {
       +title?: ?string,
       +message?: ?string,
       +options: ?Array<string>,
+<<<<<<< HEAD
       // Supports Array<number> as well.
       +destructiveButtonIndex?: ?number,
       +cancelButtonIndex?: ?number,
       +anchor?: ?number,
       +tintColor?: ?(number | NativeOrDynamicColorType), // TODO(macOS ISS#2323203)
+=======
+      +destructiveButtonIndices?: ?Array<number>,
+      +cancelButtonIndex?: ?number,
+      +anchor?: ?number,
+      +tintColor?: ?number,
+>>>>>>> fb/0.62-stable
     |},
     callback: (buttonIndex: number) => void,
   ) => void;
@@ -35,7 +45,11 @@ export interface Spec extends TurboModule {
       +url?: ?string,
       +subject?: ?string,
       +anchor?: ?number,
+<<<<<<< HEAD
       +tintColor?: ?(number | NativeOrDynamicColorType), // TODO(macOS ISS#2323203)
+=======
+      +tintColor?: ?number,
+>>>>>>> fb/0.62-stable
       +excludedActivityTypes?: ?Array<string>,
     |},
     failureCallback: (error: {|

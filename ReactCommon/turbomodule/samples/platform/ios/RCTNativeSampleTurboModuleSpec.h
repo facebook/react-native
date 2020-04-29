@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -42,7 +42,11 @@ namespace react {
  */
 class JSI_EXPORT NativeSampleTurboModuleSpecJSI : public ObjCTurboModule {
  public:
+<<<<<<< HEAD
   NativeSampleTurboModuleSpecJSI(id<RCTTurboModule> instance, std::shared_ptr<JSCallInvoker> jsInvoker);
+=======
+  NativeSampleTurboModuleSpecJSI(id<RCTTurboModule> instance, std::shared_ptr<CallInvoker> jsInvoker);
+>>>>>>> fb/0.62-stable
 };
 
 } // namespace react

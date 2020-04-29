@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
@@ -11,6 +11,11 @@ import com.facebook.jni.HybridData;
 import com.facebook.react.bridge.CxxModuleWrapper;
 import com.facebook.react.turbomodule.core.interfaces.TurboModule;
 import com.facebook.soloader.SoLoader;
+<<<<<<< HEAD
+=======
+import java.util.ArrayList;
+import java.util.List;
+>>>>>>> fb/0.62-stable
 
 public abstract class TurboModuleManagerDelegate {
   static {
@@ -38,4 +43,8 @@ public abstract class TurboModuleManagerDelegate {
    */
   @Nullable
   public abstract CxxModuleWrapper getLegacyCxxModule(String moduleName);
+
+  public List<String> getEagerInitModuleNames() {
+    return new ArrayList<>();
+  }
 }

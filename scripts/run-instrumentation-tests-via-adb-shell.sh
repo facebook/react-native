@@ -3,10 +3,10 @@
 #
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
-#
+
 # Python script to run instrumentation tests, copied from https://github.com/circleci/circle-dummy-android
 # Example: ./scripts/run-android-instrumentation-tests.sh com.facebook.react.tests com.facebook.react.tests.ReactPickerTestCase
-#
+
 export PATH="$ANDROID_HOME/platform-tools:$ANDROID_HOME/tools:$PATH"
 
 # clear the logs

@@ -33,7 +33,6 @@ exports[`FlatList renders all the bells and whistles 1`] = `
   initialNumToRender={10}
   keyExtractor={[Function]}
   maxToRenderPerBatch={10}
-  numColumns={2}
   onContentSizeChange={[Function]}
   onEndReachedThreshold={2}
   onLayout={[Function]}
@@ -137,7 +136,6 @@ exports[`FlatList renders empty list 1`] = `
   initialNumToRender={10}
   keyExtractor={[Function]}
   maxToRenderPerBatch={10}
-  numColumns={1}
   onContentSizeChange={[Function]}
   onEndReachedThreshold={2}
   onLayout={[Function]}
@@ -167,7 +165,6 @@ exports[`FlatList renders null list 1`] = `
   initialNumToRender={10}
   keyExtractor={[Function]}
   maxToRenderPerBatch={10}
-  numColumns={1}
   onContentSizeChange={[Function]}
   onEndReachedThreshold={2}
   onLayout={[Function]}
@@ -210,7 +207,10 @@ exports[`FlatList renders simple list (multiple columns) 1`] = `
   initialNumToRender={10}
   keyExtractor={[Function]}
   maxToRenderPerBatch={10}
+<<<<<<< HEAD
   numColumns={2}
+=======
+>>>>>>> fb/0.62-stable
   onContentSizeChange={[Function]}
   onEndReachedThreshold={2}
   onLayout={[Function]}
@@ -218,7 +218,10 @@ exports[`FlatList renders simple list (multiple columns) 1`] = `
   onScroll={[Function]}
   onScrollBeginDrag={[Function]}
   onScrollEndDrag={[Function]}
+<<<<<<< HEAD
   onScrollKeyDown={null}
+=======
+>>>>>>> fb/0.62-stable
   removeClippedSubviews={false}
   renderItem={[Function]}
   scrollEventThrottle={50}
@@ -289,7 +292,6 @@ exports[`FlatList renders simple list 1`] = `
   initialNumToRender={10}
   keyExtractor={[Function]}
   maxToRenderPerBatch={10}
-  numColumns={1}
   onContentSizeChange={[Function]}
   onEndReachedThreshold={2}
   onLayout={[Function]}
@@ -358,7 +360,10 @@ exports[`FlatList renders simple list using ListItemComponent (multiple columns)
   initialNumToRender={10}
   keyExtractor={[Function]}
   maxToRenderPerBatch={10}
+<<<<<<< HEAD
   numColumns={2}
+=======
+>>>>>>> fb/0.62-stable
   onContentSizeChange={[Function]}
   onEndReachedThreshold={2}
   onLayout={[Function]}
@@ -366,7 +371,10 @@ exports[`FlatList renders simple list using ListItemComponent (multiple columns)
   onScroll={[Function]}
   onScrollBeginDrag={[Function]}
   onScrollEndDrag={[Function]}
+<<<<<<< HEAD
   onScrollKeyDown={null}
+=======
+>>>>>>> fb/0.62-stable
   removeClippedSubviews={false}
   scrollEventThrottle={50}
   stickyHeaderIndices={Array []}
@@ -437,7 +445,10 @@ exports[`FlatList renders simple list using ListItemComponent 1`] = `
   initialNumToRender={10}
   keyExtractor={[Function]}
   maxToRenderPerBatch={10}
+<<<<<<< HEAD
   numColumns={1}
+=======
+>>>>>>> fb/0.62-stable
   onContentSizeChange={[Function]}
   onEndReachedThreshold={2}
   onLayout={[Function]}
@@ -445,7 +456,10 @@ exports[`FlatList renders simple list using ListItemComponent 1`] = `
   onScroll={[Function]}
   onScrollBeginDrag={[Function]}
   onScrollEndDrag={[Function]}
+<<<<<<< HEAD
   onScrollKeyDown={null}
+=======
+>>>>>>> fb/0.62-stable
   removeClippedSubviews={false}
   scrollEventThrottle={50}
   stickyHeaderIndices={Array []}

@@ -7,6 +7,7 @@
  * @format
  * @emails oncall+react_native
  */
+
 'use strict';
 
 describe('checkVersion', () => {
@@ -129,6 +130,7 @@ function _mockNativeVersion(
 ) {
   jest.doMock('../../Utilities/NativePlatformConstantsAndroid', () => ({
     getConstants: () => ({
+<<<<<<< HEAD
       reactNativeVersion: {major, minor, patch, prerelease},
     }),
   }));
@@ -136,5 +138,14 @@ function _mockNativeVersion(
     getConstants: () => ({
       reactNativeVersion: {major, minor, patch, prerelease},
     }),
+=======
+      reactNativeVersion: {major, minor, patch, prerelease},
+    }),
+  }));
+  jest.doMock('../../Utilities/NativePlatformConstantsIOS', () => ({
+    getConstants: () => ({
+      reactNativeVersion: {major, minor, patch, prerelease},
+    }),
+>>>>>>> fb/0.62-stable
   }));
 }

@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
@@ -31,7 +31,9 @@ public class VibrationModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void vibrate(int duration) {
+  public void vibrate(double durationDouble) {
+    int duration = (int) durationDouble;
+
     Vibrator v = (Vibrator) getReactApplicationContext().getSystemService(Context.VIBRATOR_SERVICE);
     if (v != null) {
       v.vibrate(duration);

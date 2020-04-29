@@ -67,17 +67,17 @@ const CustomSeparatorComponent = ({highlighted, text}) => (
   </View>
 );
 
-class SectionListExample extends React.PureComponent<{}, $FlowFixMeState> {
+class SectionListExample extends React.PureComponent<{...}, $FlowFixMeState> {
   state:
     | any
-    | $TEMPORARY$object<{|
+    | {|
         data: Array<Item>,
         debug: boolean,
         filterText: string,
         inverted: boolean,
         logViewable: boolean,
         virtualized: boolean,
-      |}> = {
+      |} = {
     data: genItemData(1000),
     debug: false,
     filterText: '',
@@ -92,7 +92,7 @@ class SectionListExample extends React.PureComponent<{}, $FlowFixMeState> {
     {useNativeDriver: true},
   );
 
-  _sectionListRef: Animated.SectionList;
+  _sectionListRef: React.ElementRef<typeof Animated.SectionList>;
   _captureRef = ref => {
     this._sectionListRef = ref;
   };
@@ -230,10 +230,12 @@ class SectionListExample extends React.PureComponent<{}, $FlowFixMeState> {
     changed: Array<{
       key: string,
       isViewable: boolean,
-      item: {columns: Array<*>},
+      item: {columns: Array<*>, ...},
       index: ?number,
       section?: any,
+      ...
     }>,
+    ...
   }) => {
     // Impressions can be logged here
     if (this.state.logViewable) {

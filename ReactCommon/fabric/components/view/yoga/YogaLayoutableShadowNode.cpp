@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -21,18 +21,30 @@
 namespace facebook {
 namespace react {
 
+<<<<<<< HEAD
 YogaLayoutableShadowNode::YogaLayoutableShadowNode()
     : yogaConfig_(nullptr), yogaNode_(&initializeYogaConfig(yogaConfig_)) {
+=======
+YogaLayoutableShadowNode::YogaLayoutableShadowNode(bool isLeaf)
+    : yogaConfig_(nullptr),
+      yogaNode_(&initializeYogaConfig(yogaConfig_)),
+      isLeaf_(isLeaf) {
+>>>>>>> fb/0.62-stable
   yogaNode_.setContext(this);
 }
 
 YogaLayoutableShadowNode::YogaLayoutableShadowNode(
-    const YogaLayoutableShadowNode &layoutableShadowNode)
+    YogaLayoutableShadowNode const &layoutableShadowNode)
     : LayoutableShadowNode(layoutableShadowNode),
       yogaConfig_(nullptr),
       yogaNode_(
           layoutableShadowNode.yogaNode_,
+<<<<<<< HEAD
           &initializeYogaConfig(yogaConfig_)) {
+=======
+          &initializeYogaConfig(yogaConfig_)),
+      isLeaf_(layoutableShadowNode.isLeaf_) {
+>>>>>>> fb/0.62-stable
   yogaNode_.setContext(this);
   yogaNode_.setOwner(nullptr);
 
@@ -70,6 +82,10 @@ void YogaLayoutableShadowNode::enableMeasurement() {
 }
 
 void YogaLayoutableShadowNode::appendChild(YogaLayoutableShadowNode *child) {
+  if (isLeaf_) {
+    return;
+  }
+
   ensureUnsealed();
 
   yogaNode_.setDirty(true);
@@ -95,6 +111,10 @@ void YogaLayoutableShadowNode::appendChild(YogaLayoutableShadowNode *child) {
 
 void YogaLayoutableShadowNode::setChildren(
     YogaLayoutableShadowNode::UnsharedList children) {
+  if (isLeaf_) {
+    return;
+  }
+
   ensureUnsealed();
 
   // Optimization:
@@ -134,6 +154,18 @@ void YogaLayoutableShadowNode::setSize(Size size) const {
   auto style = yogaNode_.getStyle();
   style.dimensions()[YGDimensionWidth] = yogaStyleValueFromFloat(size.width);
   style.dimensions()[YGDimensionHeight] = yogaStyleValueFromFloat(size.height);
+  yogaNode_.setStyle(style);
+  yogaNode_.setDirty(true);
+}
+
+void YogaLayoutableShadowNode::setPadding(RectangleEdges<Float> padding) const {
+  ensureUnsealed();
+
+  auto style = yogaNode_.getStyle();
+  style.padding()[YGEdgeTop] = yogaStyleValueFromFloat(padding.top);
+  style.padding()[YGEdgeLeft] = yogaStyleValueFromFloat(padding.left);
+  style.padding()[YGEdgeRight] = yogaStyleValueFromFloat(padding.right);
+  style.padding()[YGEdgeBottom] = yogaStyleValueFromFloat(padding.bottom);
   yogaNode_.setStyle(style);
   yogaNode_.setDirty(true);
 }

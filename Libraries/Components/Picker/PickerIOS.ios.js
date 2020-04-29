@@ -4,28 +4,38 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- *
- * This is a controlled component version of RCTPickerIOS
- *
  * @format
- * @flow
+ * @flow strict-local
  */
+
+// This is a controlled component version of RCTPickerIOS.
 
 'use strict';
 
 const RCTPickerNativeComponent = require('./RCTPickerNativeComponent');
 const React = require('react');
-const ReactNative = require('../../Renderer/shims/ReactNative');
 const StyleSheet = require('../../StyleSheet/StyleSheet');
 const View = require('../View/View');
+<<<<<<< HEAD
 const Platform = require('../../Utilities/Platform'); // TODO(macOS ISS#2323203)
 const processColor = require('../../StyleSheet/processColor');
 
+=======
+
+const processColor = require('../../StyleSheet/processColor');
+
+import RCTPickerNativeComponent, {
+  Commands as PickerCommands,
+} from './RCTPickerNativeComponent';
+>>>>>>> fb/0.62-stable
 import type {TextStyleProp} from '../../StyleSheet/StyleSheet';
 import type {ColorValue} from '../../StyleSheet/StyleSheetTypes';
 import type {SyntheticEvent} from '../../Types/CoreEventTypes';
 import type {ViewProps} from '../View/ViewPropTypes';
+<<<<<<< HEAD
 import type {NativeOrDynamicColorType} from '../../Color/NativeOrDynamicColorType'; // TODO(macOS ISS#2323203)
+=======
+>>>>>>> fb/0.62-stable
 
 type PickerIOSChangeEvent = SyntheticEvent<
   $ReadOnly<{|
@@ -39,20 +49,6 @@ type RCTPickerIOSItemType = $ReadOnly<{|
   value: ?(number | string),
   textColor: ?(number | NativeOrDynamicColorType), // TODO(macOS ISS#2323203)
 |}>;
-
-type RCTPickerIOSType = Class<
-  ReactNative.NativeComponent<
-    $ReadOnly<{|
-      items: $ReadOnlyArray<RCTPickerIOSItemType>,
-      onChange: (event: PickerIOSChangeEvent) => void,
-      onResponderTerminationRequest: () => boolean,
-      onStartShouldSetResponder: () => boolean,
-      selectedIndex: number,
-      style?: ?TextStyleProp,
-      testID?: ?string,
-    |}>,
-  >,
->;
 
 type Label = Stringish | number;
 
@@ -81,7 +77,8 @@ const PickerIOSItem = (props: ItemProps): null => {
 };
 
 class PickerIOS extends React.Component<Props, State> {
-  _picker: ?React.ElementRef<RCTPickerIOSType> = null;
+  _picker: ?React.ElementRef<typeof RCTPickerNativeComponent> = null;
+  _lastNativeValue: ?number;
 
   state: State = {
     selectedIndex: 0,
@@ -120,11 +117,25 @@ class PickerIOS extends React.Component<Props, State> {
           items={this.state.items}
           selectedIndex={this.state.selectedIndex}
           onChange={this._onChange}
-          onStartShouldSetResponder={() => true}
-          onResponderTerminationRequest={() => false}
         />
       </View>
     );
+  }
+
+  componentDidUpdate() {
+    // This is necessary in case native updates the picker and JS decides
+    // that the update should be ignored and we should stick with the value
+    // that we have in JS.
+    if (
+      this._picker &&
+      this._lastNativeValue !== undefined &&
+      this._lastNativeValue !== this.state.selectedIndex
+    ) {
+      PickerCommands.setNativeSelectedIndex(
+        this._picker,
+        this.state.selectedIndex,
+      );
+    }
   }
 
   _onChange = event => {
@@ -138,20 +149,8 @@ class PickerIOS extends React.Component<Props, State> {
       );
     }
 
-    // The picker is a controlled component. This means we expect the
-    // on*Change handlers to be in charge of updating our
-    // `selectedValue` prop. That way they can also
-    // disallow/undo/mutate the selection of certain values. In other
-    // words, the embedder of this component should be the source of
-    // truth, not the native component.
-    if (
-      this._picker &&
-      this.state.selectedIndex !== event.nativeEvent.newIndex
-    ) {
-      this._picker.setNativeProps({
-        selectedIndex: this.state.selectedIndex,
-      });
-    }
+    this._lastNativeValue = event.nativeEvent.newIndex;
+    this.forceUpdate();
   };
 }
 

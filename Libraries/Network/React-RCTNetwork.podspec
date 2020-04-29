@@ -1,4 +1,3 @@
-# coding: utf-8
 # Copyright (c) Facebook, Inc. and its affiliates.
 #
 # This source code is licensed under the MIT license found in the
@@ -17,6 +16,9 @@ else
   source[:tag] = "v#{version}"
 end
 
+folly_compiler_flags = '-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -Wno-comma -Wno-shorten-64-to-32'
+folly_version = '2018.10.22.00'
+
 Pod::Spec.new do |s|
   s.name                   = "React-RCTNetwork"
   s.version                = version
@@ -24,11 +26,30 @@ Pod::Spec.new do |s|
   s.homepage               = "http://facebook.github.io/react-native/"
   s.license                = package["license"]
   s.author                 = "Facebook, Inc. and its affiliates"
+<<<<<<< HEAD
   s.platforms              = { :ios => "9.0", :tvos => "9.2", :osx => "10.14" } # TODO(macOS GH#214)
+=======
+  s.platforms              = { :ios => "9.0", :tvos => "9.2" }
+  s.compiler_flags         = folly_compiler_flags + ' -Wno-nullability-completeness'
+>>>>>>> fb/0.62-stable
   s.source                 = source
   s.source_files           = "*.{m,mm}"
   s.preserve_paths         = "package.json", "LICENSE", "LICENSE-docs"
   s.header_dir             = "RCTNetwork"
+<<<<<<< HEAD
 
+=======
+  s.pod_target_xcconfig    = {
+                               "USE_HEADERMAP" => "YES",
+                               "CLANG_CXX_LANGUAGE_STANDARD" => "c++14",
+                               "HEADER_SEARCH_PATHS" => "\"$(PODS_ROOT)/Folly\""
+                             }
+  s.frameworks             = "MobileCoreServices"
+
+  s.dependency "Folly", folly_version
+  s.dependency "FBReactNativeSpec", version
+  s.dependency "RCTTypeSafety", version
+  s.dependency "ReactCommon/turbomodule/core", version
+>>>>>>> fb/0.62-stable
   s.dependency "React-Core/RCTNetworkHeaders", version
 end

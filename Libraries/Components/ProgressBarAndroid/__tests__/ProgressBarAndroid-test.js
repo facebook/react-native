@@ -6,7 +6,7 @@
  *
  * @format
  * @emails oncall+react_native
- * @flow
+ * @flow strict-local
  */
 
 'use strict';
@@ -17,38 +17,16 @@ const React = require('react');
  * comment and run Flow. */
 const ProgressBarAndroid = require('../ProgressBarAndroid.android');
 
-const render = require('../../../../jest/renderer');
+const ReactNativeTestTools = require('../../../Utilities/ReactNativeTestTools');
 
 describe('<ProgressBarAndroid />', () => {
-  it('should render as <ProgressBarAndroid> when mocked', () => {
-    const instance = render.create(
-      <ProgressBarAndroid styleAttr="Horizontal" />,
+  it('should render as expected', () => {
+    ReactNativeTestTools.expectRendersMatchingSnapshot(
+      'ProgressBarAndroid',
+      () => <ProgressBarAndroid styleAttr="Horizontal" indeterminate={true} />,
+      () => {
+        jest.dontMock('../ProgressBarAndroid');
+      },
     );
-    expect(instance).toMatchSnapshot();
-  });
-
-  it('should shallow render as <ForwardRef(ProgressBarAndroid)> when mocked', () => {
-    const output = render.shallow(
-      <ProgressBarAndroid styleAttr="Horizontal" />,
-    );
-    expect(output).toMatchSnapshot();
-  });
-
-  it('should shallow render as <ForwardRef(ProgressBarAndroid)> when not mocked', () => {
-    jest.dontMock('../ProgressBarAndroid');
-
-    const output = render.shallow(
-      <ProgressBarAndroid styleAttr="Horizontal" />,
-    );
-    expect(output).toMatchSnapshot();
-  });
-
-  it('should render as <ProgressBarAndroid> when not mocked', () => {
-    jest.dontMock('../ProgressBarAndroid');
-
-    const instance = render.create(
-      <ProgressBarAndroid styleAttr="Horizontal" />,
-    );
-    expect(instance).toMatchSnapshot();
   });
 });

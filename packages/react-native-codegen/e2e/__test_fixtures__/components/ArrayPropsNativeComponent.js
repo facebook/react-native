@@ -5,7 +5,11 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @format
+<<<<<<< HEAD
  * @flow
+=======
+ * @flow strict-local
+>>>>>>> fb/0.62-stable
  */
 
 'use strict';
@@ -13,6 +17,10 @@
 import type {
   PointValue,
   ColorValue,
+<<<<<<< HEAD
+=======
+  EdgeInsetsValue,
+>>>>>>> fb/0.62-stable
 } from '../../../../../Libraries/StyleSheet/StyleSheetTypes';
 import type {ImageSource} from '../../../../../Libraries/Image/ImageSource';
 import type {
@@ -22,7 +30,11 @@ import type {
 } from '../../../../../Libraries/Types/CodegenTypes';
 import type {ViewProps} from '../../../../../Libraries/Components/View/ViewPropTypes';
 import codegenNativeComponent from '../../../../../Libraries/Utilities/codegenNativeComponent';
+<<<<<<< HEAD
 import {type NativeComponentType} from '../../../../../Libraries/Utilities/codegenNativeComponent';
+=======
+import type {HostComponent} from '../../../../../Libraries/Renderer/shims/ReactNativeTypes';
+>>>>>>> fb/0.62-stable
 
 type NativeProps = $ReadOnly<{|
   ...ViewProps,
@@ -35,10 +47,18 @@ type NativeProps = $ReadOnly<{|
   colors?: $ReadOnlyArray<ColorValue>,
   srcs?: $ReadOnlyArray<ImageSource>,
   points?: $ReadOnlyArray<PointValue>,
+<<<<<<< HEAD
+=======
+  edgeInsets?: $ReadOnlyArray<EdgeInsetsValue>,
+>>>>>>> fb/0.62-stable
   sizes?: WithDefault<$ReadOnlyArray<'small' | 'large'>, 'small'>,
   object?: $ReadOnlyArray<$ReadOnly<{|prop: string|}>>,
 |}>;
 
 export default (codegenNativeComponent<NativeProps>(
   'ArrayPropsNativeComponentView',
+<<<<<<< HEAD
 ): NativeComponentType<NativeProps>);
+=======
+): HostComponent<NativeProps>);
+>>>>>>> fb/0.62-stable

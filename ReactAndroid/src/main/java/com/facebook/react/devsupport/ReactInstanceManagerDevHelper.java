@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
@@ -7,10 +7,17 @@
 package com.facebook.react.devsupport;
 
 import android.app.Activity;
+<<<<<<< HEAD
 import androidx.annotation.Nullable;
 import com.facebook.react.bridge.JavaJSExecutor;
 import com.facebook.react.bridge.JavaScriptExecutorFactory;
 import com.facebook.react.bridge.NativeDeltaClient;
+=======
+import android.view.View;
+import androidx.annotation.Nullable;
+import com.facebook.react.bridge.JavaJSExecutor;
+import com.facebook.react.bridge.JavaScriptExecutorFactory;
+>>>>>>> fb/0.62-stable
 
 /**
  * Interface used by {@link DevSupportManager} for accessing some fields and methods of {@link
@@ -22,7 +29,11 @@ public interface ReactInstanceManagerDevHelper {
   void onReloadWithJSDebugger(JavaJSExecutor.Factory proxyExecutorFactory);
 
   /** Notify react instance manager about new JS bundle version downloaded from the server. */
+<<<<<<< HEAD
   void onJSBundleLoadedFromServer(@Nullable NativeDeltaClient nativeDeltaClient);
+=======
+  void onJSBundleLoadedFromServer();
+>>>>>>> fb/0.62-stable
 
   /** Request to toggle the react element inspector. */
   void toggleElementInspector();
@@ -32,4 +43,12 @@ public interface ReactInstanceManagerDevHelper {
   Activity getCurrentActivity();
 
   JavaScriptExecutorFactory getJavaScriptExecutorFactory();
+<<<<<<< HEAD
+=======
+
+  @Nullable
+  View createRootView(String appKey);
+
+  void destroyRootView(View rootView);
+>>>>>>> fb/0.62-stable
 }

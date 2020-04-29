@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -11,6 +11,7 @@
 #import "RCTDatePicker.h"
 #import "RCTEventDispatcher.h"
 #import "UIView+React.h"
+#import <React/RCTUIManager.h>
 
 #if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
 @implementation RCTConvert(UIDatePicker)
@@ -63,5 +64,23 @@ RCT_REMAP_VIEW_PROPERTY(mode, datePickerMode, NSDatePickerMode)
 RCT_REMAP_VIEW_PROPERTY(timeZoneOffsetInMinutes, timeZone, NSTimeZone)
 RCT_REMAP_VIEW_PROPERTY(pickerStyle, datePickerStyle, NSDatePickerStyle)
 #endif // ]TODO(macOS ISS#2323203)
+
+RCT_EXPORT_METHOD(setNativeDate : (nonnull NSNumber *)viewTag toDate : (NSDate *)date)
+{
+  [self.bridge.uiManager addUIBlock:^(RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry) {
+    UIView *view = viewRegistry[viewTag];
+    
+    if ([view isKindOfClass:[RCTDatePicker class]]) {
+      [(RCTDatePicker *)view setDate:date];
+    } else {
+      UIView *subview = view.subviews.firstObject;
+      if ([subview isKindOfClass:[RCTDatePicker class]]) {
+        [(RCTDatePicker *)subview setDate:date];
+      } else {
+        RCTLogError(@"view type must be RCTPicker");
+      }
+    }
+  }];
+}
 
 @end

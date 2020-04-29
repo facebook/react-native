@@ -11,7 +11,10 @@
 'use strict';
 
 const NativeEventEmitter = require('../EventEmitter/NativeEventEmitter');
+<<<<<<< HEAD
 import {Platform} from 'react-native'; // TODO(macOS ISS#2323203)
+=======
+>>>>>>> fb/0.62-stable
 import NativePushNotificationManagerIOS from './NativePushNotificationManagerIOS';
 const invariant = require('invariant');
 
@@ -32,6 +35,7 @@ export type FetchResult = {
   NewData: string,
   NoData: string,
   ResultFailed: string,
+  ...
 };
 
 /**
@@ -59,6 +63,7 @@ export type PushNotificationEventName = $Keys<{
    * handler will be invoked with {message: string, code: number, details: any}.
    */
   registrationError: string,
+  ...
 }>;
 
 /**
@@ -302,23 +307,23 @@ class PushNotificationIOS {
     alert?: boolean,
     badge?: boolean,
     sound?: boolean,
+    ...
   }): Promise<{
     alert: boolean,
     badge: boolean,
     sound: boolean,
+    ...
   }> {
-    let requestedPermissions = {};
+    let requestedPermissions = {
+      alert: true,
+      badge: true,
+      sound: true,
+    };
     if (permissions) {
       requestedPermissions = {
         alert: !!permissions.alert,
         badge: !!permissions.badge,
         sound: !!permissions.sound,
-      };
-    } else {
-      requestedPermissions = {
-        alert: true,
-        badge: true,
-        sound: true,
       };
     }
     invariant(

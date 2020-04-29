@@ -26,7 +26,7 @@ export type RNTesterProps = $ReadOnly<{|
 
 export type RNTesterExampleModuleItem = $ReadOnly<{|
   title: string,
-  platform?: string | Array<string>, // TODO(macOS ISS#2323203)
+  platform?: string,
   description?: string,
   render: () => React.Node,
 |}>;

@@ -17,7 +17,13 @@ const dismissKeyboard = require('../../Utilities/dismissKeyboard');
 const invariant = require('invariant');
 
 import NativeKeyboardObserver from './NativeKeyboardObserver';
+<<<<<<< HEAD
 const KeyboardEventEmitter = new NativeEventEmitter(NativeKeyboardObserver);
+=======
+const KeyboardEventEmitter: NativeEventEmitter = new NativeEventEmitter(
+  NativeKeyboardObserver,
+);
+>>>>>>> fb/0.62-stable
 
 export type KeyboardEventName =
   | 'keyboardWillShow'
@@ -109,6 +115,7 @@ type KeyboardEventListener = (e: KeyboardEvent) => void;
  *```
  */
 
+<<<<<<< HEAD
 let Keyboard:
   | NativeEventEmitter
   | $TEMPORARY$object<{|
@@ -124,6 +131,9 @@ let Keyboard:
       ) => $FlowFixMe,
       scheduleLayoutAnimation: (event: KeyboardEvent) => $FlowFixMe,
     |}> = {
+=======
+const Keyboard = {
+>>>>>>> fb/0.62-stable
   /**
    * The `addListener` function connects a JavaScript function to an identified native
    * keyboard notification event.
@@ -190,9 +200,8 @@ let Keyboard:
 };
 
 // Throw away the dummy object and reassign it to original module
-Keyboard = KeyboardEventEmitter;
-Keyboard.dismiss = dismissKeyboard;
-Keyboard.scheduleLayoutAnimation = function(event: KeyboardEvent) {
+KeyboardEventEmitter.dismiss = dismissKeyboard;
+KeyboardEventEmitter.scheduleLayoutAnimation = function(event: KeyboardEvent) {
   const {duration, easing} = event;
   if (duration != null && duration !== 0) {
     LayoutAnimation.configureNext({
@@ -205,4 +214,4 @@ Keyboard.scheduleLayoutAnimation = function(event: KeyboardEvent) {
   }
 };
 
-module.exports = Keyboard;
+module.exports = KeyboardEventEmitter;

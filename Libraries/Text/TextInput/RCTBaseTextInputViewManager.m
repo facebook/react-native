@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -7,7 +7,6 @@
 
 #import <React/RCTBaseTextInputViewManager.h>
 
-#import <React/RCTAccessibilityManager.h>
 #import <React/RCTBridge.h>
 #import <React/RCTConvert.h>
 #import <React/RCTFont.h>
@@ -19,9 +18,13 @@
 
 #import <React/RCTBaseTextInputShadowView.h>
 #import <React/RCTBaseTextInputView.h>
+<<<<<<< HEAD
 #if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
 #import <React/RCTConvert+Text.h>
 #endif // TODO(macOS ISS#2323203)
+=======
+#import <React/RCTConvert+Text.h>
+>>>>>>> fb/0.62-stable
 
 @interface RCTBaseTextInputViewManager () <RCTUIManagerObserver>
 
@@ -54,6 +57,11 @@ RCT_REMAP_OSX_VIEW_PROPERTY(spellCheck, backedTextInputView.automaticSpellingCor
 RCT_REMAP_NOT_OSX_VIEW_PROPERTY(caretHidden, backedTextInputView.caretHidden, BOOL) // TODO(macOS ISS#2323203)
 RCT_REMAP_NOT_OSX_VIEW_PROPERTY(clearButtonMode, backedTextInputView.clearButtonMode, UITextFieldViewMode) // TODO(macOS ISS#2323203)
 RCT_REMAP_VIEW_PROPERTY(scrollEnabled, backedTextInputView.scrollEnabled, BOOL)
+<<<<<<< HEAD
+=======
+RCT_REMAP_VIEW_PROPERTY(secureTextEntry, backedTextInputView.secureTextEntry, BOOL)
+RCT_EXPORT_VIEW_PROPERTY(autoFocus, BOOL)
+>>>>>>> fb/0.62-stable
 RCT_EXPORT_VIEW_PROPERTY(blurOnSubmit, BOOL)
 RCT_EXPORT_NOT_OSX_VIEW_PROPERTY(clearTextOnFocus, BOOL) // TODO(macOS ISS#2323203)
 RCT_REMAP_NOT_OSX_VIEW_PROPERTY(keyboardType, backedTextInputView.keyboardType, UIKeyboardType) // TODO(macOS ISS#2323203)
@@ -79,9 +87,15 @@ RCT_EXPORT_SHADOW_PROPERTY(onContentSizeChange, RCTBubblingEventBlock)
 - (RCTShadowView *)shadowView
 {
   RCTBaseTextInputShadowView *shadowView = [[RCTBaseTextInputShadowView alloc] initWithBridge:self.bridge];
+<<<<<<< HEAD
 #if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
   shadowView.textAttributes.fontSizeMultiplier = self.bridge.accessibilityManager.multiplier;
 #endif // TODO(macOS ISS#2323203)
+=======
+  shadowView.textAttributes.fontSizeMultiplier = [[[self.bridge
+                                                    moduleForName:@"AccessibilityManager"
+                                                    lazilyLoadIfNecessary:YES] valueForKey:@"multiplier"] floatValue];
+>>>>>>> fb/0.62-stable
   [_shadowViews addObject:shadowView];
   return shadowView;
 }
@@ -97,6 +111,7 @@ RCT_EXPORT_SHADOW_PROPERTY(onContentSizeChange, RCTBubblingEventBlock)
 #if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
   [[NSNotificationCenter defaultCenter] addObserver:self
                                            selector:@selector(handleDidUpdateMultiplierNotification)
+<<<<<<< HEAD
                                                name:RCTAccessibilityManagerDidUpdateMultiplierNotification
                                              object:bridge.accessibilityManager];
 #endif // TODO(macOS ISS#2323203)
@@ -105,6 +120,11 @@ RCT_EXPORT_SHADOW_PROPERTY(onContentSizeChange, RCTBubblingEventBlock)
 - (void)dealloc
 {
   [[NSNotificationCenter defaultCenter] removeObserver:self];
+=======
+                                               name:@"RCTAccessibilityManagerDidUpdateMultiplierNotification"
+                                             object:[bridge moduleForName:@"AccessibilityManager"
+                                                    lazilyLoadIfNecessary:YES]];
+>>>>>>> fb/0.62-stable
 }
 
 #pragma mark - RCTUIManagerObserver
@@ -120,7 +140,8 @@ RCT_EXPORT_SHADOW_PROPERTY(onContentSizeChange, RCTBubblingEventBlock)
 
 - (void)handleDidUpdateMultiplierNotification
 {
-  CGFloat fontSizeMultiplier = self.bridge.accessibilityManager.multiplier;
+  CGFloat fontSizeMultiplier = [[[self.bridge moduleForName:@"AccessibilityManager"]
+                                 valueForKey:@"multiplier"] floatValue];
 
   NSHashTable<RCTBaseTextInputShadowView *> *shadowViews = _shadowViews;
   RCTExecuteOnUIManagerQueue(^{

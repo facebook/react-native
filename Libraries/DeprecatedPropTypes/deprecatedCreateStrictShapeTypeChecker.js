@@ -11,10 +11,10 @@
 'use strict';
 
 const invariant = require('invariant');
-const merge = require('../vendor/core/merge');
 
 function deprecatedCreateStrictShapeTypeChecker(shapeTypes: {
   [key: string]: ReactPropsCheckType,
+  ...,
 }): ReactPropsChainableTypeChecker {
   function checkType(
     isRequired,
@@ -46,7 +46,7 @@ function deprecatedCreateStrictShapeTypeChecker(shapeTypes: {
     }
     // We need to check all keys in case some are required but missing from
     // props.
-    const allKeys = merge(props[propName], shapeTypes);
+    const allKeys = {...props[propName], ...shapeTypes};
     for (const key in allKeys) {
       const checker = shapeTypes[key];
       if (!checker) {
@@ -71,7 +71,7 @@ function deprecatedCreateStrictShapeTypeChecker(shapeTypes: {
     }
   }
   function chainedCheckType(
-    props: {[key: string]: any},
+    props: {[key: string]: any, ...},
     propName: string,
     componentName: string,
     location?: string,

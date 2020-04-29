@@ -49,6 +49,7 @@ type PickerItemProps = $ReadOnly<{|
 /**
  * Individual selectable item in a Picker.
  */
+export type {PickerItem};
 class PickerItem extends React.Component<PickerItemProps> {
   render() {
     // The items are not rendered directly
@@ -130,17 +131,25 @@ class Picker extends React.Component<PickerProps> {
 
   static Item: typeof PickerItem = PickerItem;
 
+<<<<<<< HEAD
   static defaultProps: $TEMPORARY$object<{|
     mode: $TEMPORARY$string<'dialog'>,
   |}> = {
+=======
+  static defaultProps: {|mode: $TEMPORARY$string<'dialog'>|} = {
+>>>>>>> fb/0.62-stable
     mode: MODE_DIALOG,
   };
 
   render(): React.Node {
+<<<<<<< HEAD
     if (
       Platform.OS === 'ios' ||
       Platform.OS === 'macos' /* TODO(macOS ISS#2323203) */
     ) {
+=======
+    if (Platform.OS === 'ios') {
+>>>>>>> fb/0.62-stable
       /* $FlowFixMe(>=0.81.0 site=react_native_ios_fb) This suppression was
        * added when renaming suppression sites. */
       return <PickerIOS {...this.props}>{this.props.children}</PickerIOS>;

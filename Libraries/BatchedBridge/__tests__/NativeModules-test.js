@@ -167,11 +167,14 @@ describe('MessageQueue', function() {
     }).toThrow();
     await expect(promise1).rejects.toBeInstanceOf(Error);
     await expect(promise1).rejects.toMatchObject({message: 'firstFailure'});
+<<<<<<< HEAD
     // Check that we get a useful stack trace from failures.
     const error = await promise1.catch(x => x);
     expect(getLineFromFrame(parseErrorStack(error)[0])).toContain(
       'NativeModules.RemoteModule1.promiseReturningMethod(',
     );
+=======
+>>>>>>> fb/0.62-stable
 
     // Handle the second remote invocation by signaling success.
     BatchedBridge.__invokeCallback(secondSuccCBID, ['secondSucc']);
@@ -211,6 +214,7 @@ describe('MessageQueue', function() {
       });
     });
 
+<<<<<<< HEAD
     it('throwing a "native" exception gets framesToPop = 2', function() {
       global.nativeCallSyncHook = () => {
         throw new Error('Exception in HostFunction: foo');
@@ -241,6 +245,8 @@ describe('MessageQueue', function() {
       expect(error.framesToPop).toBe(42);
     });
 
+=======
+>>>>>>> fb/0.62-stable
     it('returning a value', function() {
       global.nativeCallSyncHook = jest.fn(() => {
         return 'secondSucc';

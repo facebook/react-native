@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -46,13 +46,20 @@ RawProps::RawProps(folly::dynamic const &dynamic) noexcept {
   dynamic_ = dynamic;
 }
 
+<<<<<<< HEAD
 void RawProps::parse(RawPropsParser const &parser) const {
+=======
+void RawProps::parse(RawPropsParser const &parser) const noexcept {
+>>>>>>> fb/0.62-stable
   assert(parser_ == nullptr && "A parser was already assigned.");
   parser_ = &parser;
   parser.preparse(*this);
 }
 
+<<<<<<< HEAD
 #ifdef ANDROID
+=======
+>>>>>>> fb/0.62-stable
 /*
  * Deprecated. Do not use.
  * The support for explicit conversion to `folly::dynamic` is deprecated and
@@ -68,7 +75,10 @@ RawProps::operator folly::dynamic() const noexcept {
       return dynamic_;
   }
 }
+<<<<<<< HEAD
 #endif
+=======
+>>>>>>> fb/0.62-stable
 
 /*
  * Returns `true` if the object is empty.

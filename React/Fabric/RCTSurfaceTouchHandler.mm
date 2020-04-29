@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -57,6 +57,11 @@ struct ActiveTouch {
   Touch touch;
   SharedTouchEventEmitter eventEmitter;
 
+  /*
+   * A component view on which the touch was begun.
+   */
+  __strong UIView<RCTComponentViewProtocol> *componentView = nil;
+
   struct Hasher {
     size_t operator()(const ActiveTouch &activeTouch) const {
       return std::hash<decltype(activeTouch.touch.identifier)>()(activeTouch.touch.identifier);
@@ -71,7 +76,7 @@ struct ActiveTouch {
 };
 
 static void UpdateActiveTouchWithUITouch(ActiveTouch &activeTouch, UITouch *uiTouch, UIView *rootComponentView) {
-  CGPoint offsetPoint = [uiTouch locationInView:uiTouch.view];
+  CGPoint offsetPoint = [uiTouch locationInView:activeTouch.componentView];
   CGPoint screenPoint = [uiTouch locationInView:uiTouch.window];
   CGPoint pagePoint = [uiTouch locationInView:rootComponentView];
 
@@ -96,6 +101,8 @@ static ActiveTouch CreateTouchWithUITouch(UITouch *uiTouch, UIView *rootComponen
         touchEventEmitterAtPoint:[uiTouch locationInView:componentView]];
     activeTouch.touch.target = (Tag)componentView.tag;
   }
+
+  activeTouch.componentView = componentView;
 
   UpdateActiveTouchWithUITouch(activeTouch, uiTouch, rootComponentView);
   return activeTouch;

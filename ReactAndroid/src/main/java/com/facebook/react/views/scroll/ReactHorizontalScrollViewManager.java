@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
@@ -275,5 +275,16 @@ public class ReactHorizontalScrollViewManager extends ViewGroupManager<ReactHori
   @ReactProp(name = "persistentScrollbar")
   public void setPersistentScrollbar(ReactHorizontalScrollView view, boolean value) {
     view.setScrollbarFadingEnabled(!value);
+  }
+
+  @ReactProp(name = "fadingEdgeLength")
+  public void setFadingEdgeLength(ReactHorizontalScrollView view, int value) {
+    if (value > 0) {
+      view.setHorizontalFadingEdgeEnabled(true);
+      view.setFadingEdgeLength(value);
+    } else {
+      view.setHorizontalFadingEdgeEnabled(false);
+      view.setFadingEdgeLength(0);
+    }
   }
 }

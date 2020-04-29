@@ -15,11 +15,21 @@ import * as TurboModuleRegistry from '../../TurboModule/TurboModuleRegistry';
 
 export interface Spec extends TurboModule {
   +reload: () => void;
+<<<<<<< HEAD
   +setHotLoadingEnabled: (isHotLoadingEnabled: boolean) => void;
   +setIsDebuggingRemotely: (isDebuggingRemotelyEnabled: boolean) => void;
   +setLiveReloadEnabled: (isLiveReloadEnabled: boolean) => void;
   +setProfilingEnabled: (isProfilingEnabled: boolean) => void;
   +toggleElementInspector: () => void;
+=======
+  +reloadWithReason?: (reason: string) => void;
+  +onFastRefresh?: () => void;
+  +setHotLoadingEnabled: (isHotLoadingEnabled: boolean) => void;
+  +setIsDebuggingRemotely: (isDebuggingRemotelyEnabled: boolean) => void;
+  +setProfilingEnabled: (isProfilingEnabled: boolean) => void;
+  +toggleElementInspector: () => void;
+  +addMenuItem: (title: string) => void;
+>>>>>>> fb/0.62-stable
 
   // iOS only.
   +setIsShakeToShowDevMenuEnabled: (enabled: boolean) => void;

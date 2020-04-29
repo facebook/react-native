@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -74,16 +74,28 @@ class RawProps final {
   RawProps(RawProps const &other) noexcept = delete;
   RawProps &operator=(RawProps const &other) noexcept = delete;
 
+<<<<<<< HEAD
   void parse(RawPropsParser const &parser) const;
+=======
+  void parse(RawPropsParser const &parser) const noexcept;
+>>>>>>> fb/0.62-stable
 
-#ifdef ANDROID
   /*
    * Deprecated. Do not use.
    * The support for explicit conversion to `folly::dynamic` is deprecated and
    * will be removed as soon Android implementation does not need it.
    */
   explicit operator folly::dynamic() const noexcept;
+<<<<<<< HEAD
 #endif
+=======
+
+  /*
+   * Returns `true` if the object is empty.
+   * Empty `RawProps` does not have any stored data.
+   */
+  bool isEmpty() const noexcept;
+>>>>>>> fb/0.62-stable
 
   /*
    * Returns `true` if the object is empty.
@@ -108,11 +120,19 @@ class RawProps final {
    */
   // Mode
   mutable Mode mode_;
+<<<<<<< HEAD
 
   // Case 1: Source data is represented as `jsi::Object`.
   jsi::Runtime *runtime_;
   jsi::Value value_;
 
+=======
+
+  // Case 1: Source data is represented as `jsi::Object`.
+  jsi::Runtime *runtime_;
+  jsi::Value value_;
+
+>>>>>>> fb/0.62-stable
   // Case 2: Source data is represented as `folly::dynamic`.
   folly::dynamic dynamic_;
 

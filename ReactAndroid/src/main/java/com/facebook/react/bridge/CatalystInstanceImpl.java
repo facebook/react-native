@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
@@ -6,6 +6,7 @@
  */
 package com.facebook.react.bridge;
 
+import static com.facebook.infer.annotation.ThreadConfined.UI;
 import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
 
 import android.content.res.AssetManager;
@@ -14,6 +15,7 @@ import android.util.Log;
 import androidx.annotation.Nullable;
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
+import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.jni.HybridData;
 import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.react.bridge.queue.MessageQueueThread;
@@ -25,7 +27,11 @@ import com.facebook.react.common.ReactConstants;
 import com.facebook.react.common.annotations.VisibleForTesting;
 import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.react.module.annotations.ReactModule;
+<<<<<<< HEAD
 import com.facebook.react.turbomodule.core.JSCallInvokerHolderImpl;
+=======
+import com.facebook.react.turbomodule.core.CallInvokerHolderImpl;
+>>>>>>> fb/0.62-stable
 import com.facebook.react.turbomodule.core.interfaces.TurboModule;
 import com.facebook.react.turbomodule.core.interfaces.TurboModuleRegistry;
 import com.facebook.systrace.Systrace;
@@ -83,6 +89,8 @@ public class CatalystInstanceImpl implements CatalystInstance {
   private final String mJsPendingCallsTitleForTrace =
       "pending_js_calls_instance" + sNextInstanceIdForTrace.getAndIncrement();
   private volatile boolean mDestroyed = false;
+  private volatile boolean mNativeModulesThreadDestructionComplete = false;
+  private volatile boolean mJSThreadDestructionComplete = false;
   private final TraceListener mTraceListener;
   private final JavaScriptModuleRegistry mJSModuleRegistry;
   private final JSBundleLoader mJSBundleLoader;
@@ -100,14 +108,25 @@ public class CatalystInstanceImpl implements CatalystInstance {
   private @Nullable String mSourceURL;
 
   private JavaScriptContextHolder mJavaScriptContextHolder;
+<<<<<<< HEAD
   private @Nullable TurboModuleRegistry mTurboModuleRegistry = null;
+=======
+  private volatile @Nullable TurboModuleRegistry mTurboModuleRegistry = null;
+  private @Nullable JSIModule mTurboModuleManagerJSIModule = null;
+>>>>>>> fb/0.62-stable
 
   // C++ parts
   private final HybridData mHybridData;
 
   private static native HybridData initHybrid();
 
+<<<<<<< HEAD
   public native JSCallInvokerHolderImpl getJSCallInvokerHolder();
+=======
+  public native CallInvokerHolderImpl getJSCallInvokerHolder();
+
+  public native CallInvokerHolderImpl getNativeCallInvokerHolder();
+>>>>>>> fb/0.62-stable
 
   private CatalystInstanceImpl(
       final ReactQueueConfigurationSpec reactQueueConfigurationSpec,
@@ -233,6 +252,7 @@ public class CatalystInstanceImpl implements CatalystInstance {
     jniLoadScriptFromFile(fileName, sourceURL, loadSynchronously);
   }
 
+<<<<<<< HEAD
   @Override
   public void loadScriptFromDeltaBundle(
       String sourceURL, NativeDeltaClient deltaClient, boolean loadSynchronously) {
@@ -240,6 +260,8 @@ public class CatalystInstanceImpl implements CatalystInstance {
     jniLoadScriptFromDeltaBundle(sourceURL, deltaClient, loadSynchronously);
   }
 
+=======
+>>>>>>> fb/0.62-stable
   private native void jniSetSourceURL(String sourceURL);
 
   private native void jniRegisterSegment(int segmentId, String path);
@@ -249,9 +271,12 @@ public class CatalystInstanceImpl implements CatalystInstance {
 
   private native void jniLoadScriptFromFile(
       String fileName, String sourceURL, boolean loadSynchronously);
+<<<<<<< HEAD
 
   private native void jniLoadScriptFromDeltaBundle(
       String sourceURL, NativeDeltaClient deltaClient, boolean loadSynchronously);
+=======
+>>>>>>> fb/0.62-stable
 
   @Override
   public void runJSBundle() {
@@ -333,8 +358,21 @@ public class CatalystInstanceImpl implements CatalystInstance {
    * fully shut down other threads.
    */
   @Override
+  @ThreadConfined(UI)
   public void destroy() {
     Log.d(ReactConstants.TAG, "CatalystInstanceImpl.destroy() start");
+    UiThreadUtil.assertOnUiThread();
+
+    if (ReactFeatureFlags.useCatalystTeardownV2) {
+      destroyV2();
+    } else {
+      destroyV1();
+    }
+  }
+
+  @ThreadConfined(UI)
+  public void destroyV1() {
+    Log.d(ReactConstants.TAG, "CatalystInstanceImpl.destroyV1() start");
     UiThreadUtil.assertOnUiThread();
 
     if (mDestroyed) {
@@ -361,11 +399,14 @@ public class CatalystInstanceImpl implements CatalystInstance {
               }
             }
 
+<<<<<<< HEAD
             final JSIModule turboModuleManager =
                 ReactFeatureFlags.useTurboModules
                     ? mJSIModuleRegistry.getModule(JSIModuleType.TurboModuleManager)
                     : null;
 
+=======
+>>>>>>> fb/0.62-stable
             getReactQueueConfiguration()
                 .getJSQueueThread()
                 .runOnQueue(
@@ -373,8 +414,13 @@ public class CatalystInstanceImpl implements CatalystInstance {
                       @Override
                       public void run() {
                         // We need to destroy the TurboModuleManager on the JS Thread
+<<<<<<< HEAD
                         if (turboModuleManager != null) {
                           turboModuleManager.onCatalystInstanceDestroy();
+=======
+                        if (mTurboModuleManagerJSIModule != null) {
+                          mTurboModuleManagerJSIModule.onCatalystInstanceDestroy();
+>>>>>>> fb/0.62-stable
                         }
 
                         getReactQueueConfiguration()
@@ -412,6 +458,101 @@ public class CatalystInstanceImpl implements CatalystInstance {
                     });
           }
         });
+
+    // This is a noop if the listener was not yet registered.
+    Systrace.unregisterListener(mTraceListener);
+  }
+
+  /**
+   * Destroys this catalyst instance, waiting for any other threads in ReactQueueConfiguration
+   * (besides the UI thread) to finish running. Must be called from the UI thread so that we can
+   * fully shut down other threads.
+   */
+  @ThreadConfined(UI)
+  public void destroyV2() {
+    Log.d(ReactConstants.TAG, "CatalystInstanceImpl.destroyV2() start");
+    UiThreadUtil.assertOnUiThread();
+
+    if (mDestroyed) {
+      return;
+    }
+
+    // TODO: tell all APIs to shut down
+    ReactMarker.logMarker(ReactMarkerConstants.DESTROY_CATALYST_INSTANCE_START);
+    mDestroyed = true;
+    mNativeModulesThreadDestructionComplete = false;
+    mJSThreadDestructionComplete = false;
+
+    mNativeModulesQueueThread.runOnQueue(
+        new Runnable() {
+          @Override
+          public void run() {
+            Log.d("CatalystInstanceImpl", ".destroy on native modules thread");
+            mNativeModuleRegistry.notifyJSInstanceDestroy();
+
+            // Notifies all JSI modules that they are being destroyed, including the FabricUIManager
+            // and Fabric Scheduler
+            mJSIModuleRegistry.notifyJSInstanceDestroy();
+            boolean wasIdle = (mPendingJSCalls.getAndSet(0) == 0);
+            if (!mBridgeIdleListeners.isEmpty()) {
+              for (NotThreadSafeBridgeIdleDebugListener listener : mBridgeIdleListeners) {
+                if (!wasIdle) {
+                  listener.onTransitionToBridgeIdle();
+                }
+                listener.onBridgeDestroyed();
+              }
+            }
+
+            mNativeModulesThreadDestructionComplete = true;
+            Log.d("CatalystInstanceImpl", ".destroy on native modules thread finished");
+          }
+        });
+
+    getReactQueueConfiguration()
+        .getJSQueueThread()
+        .runOnQueue(
+            new Runnable() {
+              @Override
+              public void run() {
+                Log.d("CatalystInstanceImpl", ".destroy on JS thread");
+                // We need to destroy the TurboModuleManager on the JS Thread
+                if (mTurboModuleManagerJSIModule != null) {
+                  mTurboModuleManagerJSIModule.onCatalystInstanceDestroy();
+                }
+
+                mJSThreadDestructionComplete = true;
+                Log.d("CatalystInstanceImpl", ".destroy on JS thread finished");
+              }
+            });
+
+    // Wait until destruction is complete
+    long waitStartTime = System.currentTimeMillis();
+    while (!mNativeModulesThreadDestructionComplete || !mJSThreadDestructionComplete) {
+      // Never wait here, blocking the UI thread, for more than 100ms
+      if ((System.currentTimeMillis() - waitStartTime) > 100) {
+        Log.w(
+            ReactConstants.TAG,
+            "CatalystInstanceImpl.destroy() timed out waiting for Native Modules and JS thread teardown");
+        break;
+      }
+    }
+
+    // Kill non-UI threads from neutral third party
+    // potentially expensive, so don't run on UI thread
+
+    // contextHolder is used as a lock to guard against
+    // other users of the JS VM having the VM destroyed
+    // underneath them, so notify them before we reset
+    // Native
+    mJavaScriptContextHolder.clear();
+
+    // Imperatively destruct the C++ CatalystInstance rather than
+    // wait for the JVM's GC to free it.
+    mHybridData.resetNative();
+
+    getReactQueueConfiguration().destroy();
+    Log.d(ReactConstants.TAG, "CatalystInstanceImpl.destroy() end");
+    ReactMarker.logMarker(ReactMarkerConstants.DESTROY_CATALYST_INSTANCE_END);
 
     // This is a noop if the listener was not yet registered.
     Systrace.unregisterListener(mTraceListener);
@@ -456,7 +597,11 @@ public class CatalystInstanceImpl implements CatalystInstance {
   @Override
   public <T extends NativeModule> boolean hasNativeModule(Class<T> nativeModuleInterface) {
     String moduleName = getNameFromAnnotation(nativeModuleInterface);
+<<<<<<< HEAD
     return mTurboModuleRegistry != null && mTurboModuleRegistry.hasModule(moduleName)
+=======
+    return getTurboModuleRegistry() != null && getTurboModuleRegistry().hasModule(moduleName)
+>>>>>>> fb/0.62-stable
         ? true
         : mNativeModuleRegistry.hasModule(moduleName);
   }
@@ -464,12 +609,30 @@ public class CatalystInstanceImpl implements CatalystInstance {
   @Override
   public <T extends NativeModule> T getNativeModule(Class<T> nativeModuleInterface) {
     return (T) getNativeModule(getNameFromAnnotation(nativeModuleInterface));
+<<<<<<< HEAD
+=======
+  }
+
+  private TurboModuleRegistry getTurboModuleRegistry() {
+    if (ReactFeatureFlags.useTurboModules) {
+      return Assertions.assertNotNull(
+          mTurboModuleRegistry,
+          "TurboModules are enabled, but mTurboModuleRegistry hasn't been set.");
+    }
+
+    return null;
+>>>>>>> fb/0.62-stable
   }
 
   @Override
   public NativeModule getNativeModule(String moduleName) {
+<<<<<<< HEAD
     if (mTurboModuleRegistry != null) {
       TurboModule turboModule = mTurboModuleRegistry.getModule(moduleName);
+=======
+    if (getTurboModuleRegistry() != null) {
+      TurboModule turboModule = getTurboModuleRegistry().getModule(moduleName);
+>>>>>>> fb/0.62-stable
 
       if (turboModule != null) {
         return (NativeModule) turboModule;
@@ -494,8 +657,13 @@ public class CatalystInstanceImpl implements CatalystInstance {
     Collection<NativeModule> nativeModules = new ArrayList<>();
     nativeModules.addAll(mNativeModuleRegistry.getAllModules());
 
+<<<<<<< HEAD
     if (mTurboModuleRegistry != null) {
       for (TurboModule turboModule : mTurboModuleRegistry.getModules()) {
+=======
+    if (getTurboModuleRegistry() != null) {
+      for (TurboModule turboModule : getTurboModuleRegistry().getModules()) {
+>>>>>>> fb/0.62-stable
         nativeModules.add((NativeModule) turboModule);
       }
     }
@@ -571,8 +739,14 @@ public class CatalystInstanceImpl implements CatalystInstance {
     }
   }
 
+<<<<<<< HEAD
   public void setTurboModuleManager(JSIModule getter) {
     mTurboModuleRegistry = (TurboModuleRegistry) getter;
+=======
+  public void setTurboModuleManager(JSIModule module) {
+    mTurboModuleRegistry = (TurboModuleRegistry) module;
+    mTurboModuleManagerJSIModule = module;
+>>>>>>> fb/0.62-stable
   }
 
   private void decrementPendingJSCalls() {

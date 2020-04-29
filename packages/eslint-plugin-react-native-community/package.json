@@ -7,8 +7,12 @@
     "type": "git",
     "url": "git@github.com:facebook/react-native.git"
   },
+<<<<<<< HEAD
   "license": "MIT",
   "beachball": {
     "shouldPublish": false
   }  
+=======
+  "license": "MIT"
+>>>>>>> fb/0.62-stable
 }

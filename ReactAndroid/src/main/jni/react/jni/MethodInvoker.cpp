@@ -1,7 +1,9 @@
-// Copyright (c) Facebook, Inc. and its affiliates.
-
-// This source code is licensed under the MIT license found in the
-// LICENSE file in the root directory of this source tree.
+/*
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
 
 #include "MethodInvoker.h"
 
@@ -12,7 +14,7 @@
 #include <glog/logging.h>
 
 #include <cxxreact/CxxNativeModule.h>
-#include <fb/fbjni.h>
+#include <fbjni/fbjni.h>
 
 #include "JCallback.h"
 #include "ReadableNativeArray.h"
@@ -30,9 +32,12 @@ namespace {
 using dynamic_iterator = folly::dynamic::const_iterator;
 
 struct JPromiseImpl : public JavaClass<JPromiseImpl> {
-  constexpr static auto kJavaDescriptor = "Lcom/facebook/react/bridge/PromiseImpl;";
+  constexpr static auto kJavaDescriptor =
+      "Lcom/facebook/react/bridge/PromiseImpl;";
 
-  static local_ref<javaobject> create(local_ref<JCallback::javaobject> resolve, local_ref<JCallback::javaobject> reject) {
+  static local_ref<javaobject> create(
+      local_ref<JCallback::javaobject> resolve,
+      local_ref<JCallback::javaobject> reject) {
     return newInstance(resolve, reject);
   }
 };
@@ -40,10 +45,10 @@ struct JPromiseImpl : public JavaClass<JPromiseImpl> {
 // HACK: Exposes constructor
 struct ExposedReadableNativeArray : public ReadableNativeArray {
   explicit ExposedReadableNativeArray(folly::dynamic array)
-    : ReadableNativeArray(std::move(array)) {}
+      : ReadableNativeArray(std::move(array)) {}
 };
 
-jdouble extractDouble(const folly::dynamic& value) {
+jdouble extractDouble(const folly::dynamic &value) {
   if (value.isInt()) {
     return static_cast<jdouble>(value.getInt());
   } else {
@@ -51,7 +56,7 @@ jdouble extractDouble(const folly::dynamic& value) {
   }
 }
 
-jint extractInteger(const folly::dynamic& value) {
+jint extractInteger(const folly::dynamic &value) {
   // The logic here is taken from convertDynamicIfIntegral, but the
   // return type and exception are different.
   if (value.isInt()) {
@@ -60,14 +65,16 @@ jint extractInteger(const folly::dynamic& value) {
   double dbl = value.getDouble();
   jint result = static_cast<jint>(dbl);
   if (dbl != result) {
-    throw std::invalid_argument(
-      folly::to<std::string>(
-        "Tried to convert jint argument, but got a non-integral double: ", dbl));
+    throw std::invalid_argument(folly::to<std::string>(
+        "Tried to convert jint argument, but got a non-integral double: ",
+        dbl));
   }
   return result;
 }
 
-local_ref<JCxxCallbackImpl::jhybridobject> extractCallback(std::weak_ptr<Instance>& instance, const folly::dynamic& value) {
+local_ref<JCxxCallbackImpl::jhybridobject> extractCallback(
+    std::weak_ptr<Instance> &instance,
+    const folly::dynamic &value) {
   if (value.isNull()) {
     return local_ref<JCxxCallbackImpl::jhybridobject>(nullptr);
   } else {
@@ -75,7 +82,10 @@ local_ref<JCxxCallbackImpl::jhybridobject> extractCallback(std::weak_ptr<Instanc
   }
 }
 
-local_ref<JPromiseImpl::javaobject> extractPromise(std::weak_ptr<Instance>& instance, dynamic_iterator& it, dynamic_iterator& end) {
+local_ref<JPromiseImpl::javaobject> extractPromise(
+    std::weak_ptr<Instance> &instance,
+    dynamic_iterator &it,
+    dynamic_iterator &end) {
   auto resolve = extractCallback(instance, *it++);
   CHECK(it != end);
   auto reject = extractCallback(instance, *it++);
@@ -93,11 +103,16 @@ bool isNullable(char type) {
     case 'X':
       return true;
     default:
-      return false;;
+      return false;
+      ;
   }
 }
 
-jvalue extract(std::weak_ptr<Instance>& instance, char type, dynamic_iterator& it, dynamic_iterator& end) {
+jvalue extract(
+    std::weak_ptr<Instance> &instance,
+    char type,
+    dynamic_iterator &it,
+    dynamic_iterator &end) {
   CHECK(it != end);
   jvalue value;
   if (type == 'P') {
@@ -105,7 +120,7 @@ jvalue extract(std::weak_ptr<Instance>& instance, char type, dynamic_iterator& i
     return value;
   }
 
-  const auto& arg = *it++;
+  const auto &arg = *it++;
   if (isNullable(type) && arg.isNull()) {
     value.l = nullptr;
     return value;
@@ -116,7 +131,8 @@ jvalue extract(std::weak_ptr<Instance>& instance, char type, dynamic_iterator& i
       value.z = static_cast<jboolean>(arg.getBool());
       break;
     case 'Z':
-      value.l = JBoolean::valueOf(static_cast<jboolean>(arg.getBool())).release();
+      value.l =
+          JBoolean::valueOf(static_cast<jboolean>(arg.getBool())).release();
       break;
     case 'i':
       value.i = extractInteger(arg);
@@ -128,7 +144,8 @@ jvalue extract(std::weak_ptr<Instance>& instance, char type, dynamic_iterator& i
       value.f = static_cast<jfloat>(extractDouble(arg));
       break;
     case 'F':
-      value.l = JFloat::valueOf(static_cast<jfloat>(extractDouble(arg))).release();
+      value.l =
+          JFloat::valueOf(static_cast<jfloat>(extractDouble(arg))).release();
       break;
     case 'd':
       value.d = extractDouble(arg);
@@ -154,7 +171,7 @@ jvalue extract(std::weak_ptr<Instance>& instance, char type, dynamic_iterator& i
   return value;
 }
 
-std::size_t countJsArgs(const std::string& signature) {
+std::size_t countJsArgs(const std::string &signature) {
   std::size_t count = 0;
   for (char c : signature) {
     switch (c) {
@@ -169,29 +186,38 @@ std::size_t countJsArgs(const std::string& signature) {
   return count;
 }
 
+} // namespace
+
+MethodInvoker::MethodInvoker(
+    alias_ref<JReflectMethod::javaobject> method,
+    std::string signature,
+    std::string traceName,
+    bool isSync)
+    : method_(method->getMethodID()),
+      signature_(signature),
+      jsArgCount_(countJsArgs(signature) - 2),
+      traceName_(std::move(traceName)),
+      isSync_(isSync) {
+  CHECK(signature_.at(1) == '.') << "Improper module method signature";
+  CHECK(isSync_ || signature_.at(0) == 'v')
+      << "Non-sync hooks cannot have a non-void return type";
 }
 
-MethodInvoker::MethodInvoker(alias_ref<JReflectMethod::javaobject> method, std::string signature, std::string traceName, bool isSync)
- : method_(method->getMethodID()),
- signature_(signature),
- jsArgCount_(countJsArgs(signature) -2),
- traceName_(std::move(traceName)),
- isSync_(isSync) {
-     CHECK(signature_.at(1) == '.') << "Improper module method signature";
-     CHECK(isSync_ || signature_.at(0) == 'v') << "Non-sync hooks cannot have a non-void return type";
-}
-
-MethodCallResult MethodInvoker::invoke(std::weak_ptr<Instance>& instance, alias_ref<JBaseJavaModule::javaobject> module, const folly::dynamic& params) {
-  #ifdef WITH_FBSYSTRACE
+MethodCallResult MethodInvoker::invoke(
+    std::weak_ptr<Instance> &instance,
+    alias_ref<JBaseJavaModule::javaobject> module,
+    const folly::dynamic &params) {
+#ifdef WITH_FBSYSTRACE
   fbsystrace::FbSystraceSection s(
       TRACE_TAG_REACT_CXX_BRIDGE,
       isSync_ ? "callJavaSyncHook" : "callJavaModuleMethod",
       "method",
       traceName_);
-  #endif
+#endif
 
   if (params.size() != jsArgCount_) {
-    throw std::invalid_argument(folly::to<std::string>("expected ", jsArgCount_, " arguments, got ", params.size()));
+    throw std::invalid_argument(folly::to<std::string>(
+        "expected ", jsArgCount_, " arguments, got ", params.size()));
   }
 
   auto env = Environment::current();
@@ -199,38 +225,48 @@ MethodCallResult MethodInvoker::invoke(std::weak_ptr<Instance>& instance, alias_
   JniLocalScope scope(env, argCount);
   jvalue args[argCount];
   std::transform(
-    signature_.begin() + 2,
-    signature_.end(),
-    args,
-    [&instance, it = params.begin(), end = params.end()] (char type) mutable {
-      return extract(instance, type, it, end);
-  });
+      signature_.begin() + 2,
+      signature_.end(),
+      args,
+      [&instance, it = params.begin(), end = params.end()](char type) mutable {
+        return extract(instance, type, it, end);
+      });
 
-#define PRIMITIVE_CASE(METHOD) {                                             \
-  auto result = env->Call ## METHOD ## MethodA(module.get(), method_, args); \
-  throwPendingJniExceptionAsCppException();                                  \
-  return folly::dynamic(result);                                             \
-}
+#define PRIMITIVE_CASE(METHOD)                                             \
+  {                                                                        \
+    auto result = env->Call##METHOD##MethodA(module.get(), method_, args); \
+    throwPendingJniExceptionAsCppException();                              \
+    return folly::dynamic(result);                                         \
+  }
 
-#define PRIMITIVE_CASE_CASTING(METHOD, RESULT_TYPE) {                        \
-  auto result = env->Call ## METHOD ## MethodA(module.get(), method_, args); \
-  throwPendingJniExceptionAsCppException();                                  \
-  return folly::dynamic(static_cast<RESULT_TYPE>(result));                   \
-}
+#define PRIMITIVE_CASE_CASTING(METHOD, RESULT_TYPE)                        \
+  {                                                                        \
+    auto result = env->Call##METHOD##MethodA(module.get(), method_, args); \
+    throwPendingJniExceptionAsCppException();                              \
+    return folly::dynamic(static_cast<RESULT_TYPE>(result));               \
+  }
 
-#define OBJECT_CASE(JNI_CLASS, ACTIONS) {                                 \
-  auto jobject = env->CallObjectMethodA(module.get(), method_, args);     \
-  throwPendingJniExceptionAsCppException();                               \
-  auto result = adopt_local(static_cast<JNI_CLASS::javaobject>(jobject)); \
-  return folly::dynamic(result->ACTIONS());                               \
-}
+#define OBJECT_CASE(JNI_CLASS, ACTIONS)                                     \
+  {                                                                         \
+    auto jobject = env->CallObjectMethodA(module.get(), method_, args);     \
+    throwPendingJniExceptionAsCppException();                               \
+    if (!jobject) {                                                         \
+      return folly::dynamic(nullptr);                                       \
+    }                                                                       \
+    auto result = adopt_local(static_cast<JNI_CLASS::javaobject>(jobject)); \
+    return folly::dynamic(result->ACTIONS());                               \
+  }
 
-#define OBJECT_CASE_CASTING(JNI_CLASS, ACTIONS, RESULT_TYPE) {            \
-  auto jobject = env->CallObjectMethodA(module.get(), method_, args);     \
-  throwPendingJniExceptionAsCppException();                               \
-  auto result = adopt_local(static_cast<JNI_CLASS::javaobject>(jobject)); \
-  return folly::dynamic(static_cast<RESULT_TYPE>(result->ACTIONS()));     \
-}
+#define OBJECT_CASE_CASTING(JNI_CLASS, ACTIONS, RESULT_TYPE)                \
+  {                                                                         \
+    auto jobject = env->CallObjectMethodA(module.get(), method_, args);     \
+    throwPendingJniExceptionAsCppException();                               \
+    if (!jobject) {                                                         \
+      return folly::dynamic(nullptr);                                       \
+    }                                                                       \
+    auto result = adopt_local(static_cast<JNI_CLASS::javaobject>(jobject)); \
+    return folly::dynamic(static_cast<RESULT_TYPE>(result->ACTIONS()));     \
+  }
 
   char returnType = signature_.at(0);
   switch (returnType) {
@@ -269,5 +305,5 @@ MethodCallResult MethodInvoker::invoke(std::weak_ptr<Instance>& instance, alias_
   }
 }
 
-}
-}
+} // namespace react
+} // namespace facebook

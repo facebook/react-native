@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -6,9 +6,12 @@
  */
 
 #import <React/RCTBackedTextInputDelegateAdapter.h>
+<<<<<<< HEAD
 #import "RCTBackedTextInputViewProtocol.h" // TODO(OSS Candidate ISS#2710739)
 #import "RCTBackedTextInputDelegate.h" // TODO(OSS Candidate ISS#2710739)
 #import "../RCTTextUIKit.h" // TODO(macOS ISS#2323203)
+=======
+>>>>>>> fb/0.62-stable
 
 #pragma mark - RCTBackedTextFieldDelegateAdapter (for UITextField)
 
@@ -87,11 +90,32 @@ static void *TextFieldSelectionObservingContext = &TextFieldSelectionObservingCo
 
 - (BOOL)textField:(__unused UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string
 {
-  BOOL result = [_backedTextInputView.textInputDelegate textInputShouldChangeTextInRange:range replacementText:string];
-  if (result) {
-    _textDidChangeIsComing = YES;
+  NSString *newText =
+    [_backedTextInputView.textInputDelegate textInputShouldChangeText:string inRange:range];
+
+  if (newText == nil) {
+    return NO;
   }
-  return result;
+
+  if ([newText isEqualToString:string]) {
+    _textDidChangeIsComing = YES;
+    return YES;
+  }
+
+  NSMutableAttributedString *attributedString = [_backedTextInputView.attributedText mutableCopy];
+  [attributedString replaceCharactersInRange:range withString:newText];
+  [_backedTextInputView setAttributedText:[attributedString copy]];
+
+  // Setting selection to the end of the replaced text.
+  UITextPosition *position =
+    [_backedTextInputView positionFromPosition:_backedTextInputView.beginningOfDocument
+                                        offset:(range.location + newText.length)];
+  [_backedTextInputView setSelectedTextRange:[_backedTextInputView textRangeFromPosition:position toPosition:position]
+                              notifyDelegate:YES];
+
+  [self textFieldDidChange];
+
+  return NO;
 }
 
 - (BOOL)textFieldShouldReturn:(__unused UITextField *)textField
@@ -121,7 +145,7 @@ static void *TextFieldSelectionObservingContext = &TextFieldSelectionObservingCo
 // even when there is no more text in the `UITextField`.
 - (BOOL)keyboardInputShouldDelete:(__unused UITextField *)textField
 {
-  [_backedTextInputView.textInputDelegate textInputShouldChangeTextInRange:NSMakeRange(0, 0) replacementText:@""];
+  [_backedTextInputView.textInputDelegate textInputShouldChangeText:@"" inRange:NSMakeRange(0, 0)];
   return YES;
 }
 
@@ -288,11 +312,32 @@ static void *TextFieldSelectionObservingContext = &TextFieldSelectionObservingCo
     }
   }
 
-  BOOL result = [_backedTextInputView.textInputDelegate textInputShouldChangeTextInRange:range replacementText:text];
-  if (result) {
-    _textDidChangeIsComing = YES;
+  NSString *newText =
+    [_backedTextInputView.textInputDelegate textInputShouldChangeText:text inRange:range];
+
+  if (newText == nil) {
+    return NO;
   }
-  return result;
+
+  if ([newText isEqualToString:text]) {
+    _textDidChangeIsComing = YES;
+    return YES;
+  }
+
+  NSMutableAttributedString *attributedString = [_backedTextInputView.attributedText mutableCopy];
+  [attributedString replaceCharactersInRange:range withString:newText];
+  [_backedTextInputView setAttributedText:[attributedString copy]];
+
+  // Setting selection to the end of the replaced text.
+  UITextPosition *position =
+    [_backedTextInputView positionFromPosition:_backedTextInputView.beginningOfDocument
+                                        offset:(range.location + newText.length)];
+  [_backedTextInputView setSelectedTextRange:[_backedTextInputView textRangeFromPosition:position toPosition:position]
+                              notifyDelegate:YES];
+
+  [self textViewDidChange:_backedTextInputView];
+
+  return NO;
 }
 
 - (void)textViewDidChange:(__unused UITextView *)textView

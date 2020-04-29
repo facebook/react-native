@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -52,11 +52,12 @@ class ConcreteState : public State {
    */
   void updateState(
       Data &&newData,
-      EventPriority priority = EventPriority::SynchronousUnbatched) const {
+      EventPriority priority = EventPriority::AsynchronousUnbatched) const {
     updateState(
         [data = std::move(newData)](const Data &oldData) mutable -> Data && {
           return std::move(data);
-        });
+        },
+        priority);
   }
 
   /*
@@ -85,12 +86,12 @@ class ConcreteState : public State {
   }
 
 #ifdef ANDROID
-  const folly::dynamic getDynamic() const override {
+  folly::dynamic getDynamic() const override {
     return data_.getDynamic();
   }
 
   void updateState(folly::dynamic data) const override {
-    updateState(std::move(Data(data)));
+    updateState(std::move(Data(data_, data)));
   }
 #endif
 

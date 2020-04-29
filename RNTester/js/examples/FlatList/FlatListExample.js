@@ -29,7 +29,14 @@ const {
   pressItem,
   renderSmallSwitchOption,
 } = require('../../components/ListExampleShared');
-const {Alert, Animated, StyleSheet, View} = require('react-native');
+const {
+  Alert,
+  Animated,
+  Platform,
+  StyleSheet,
+  TextInput,
+  View,
+} = require('react-native');
 
 import type {Item} from '../../components/ListExampleShared';
 
@@ -51,6 +58,7 @@ type State = {|
   virtualized: boolean,
   empty: boolean,
   useFlatListItemComponent: boolean,
+  fadingEdgeLength: number,
 |};
 
 class FlatListExample extends React.PureComponent<Props, State> {
@@ -65,6 +73,7 @@ class FlatListExample extends React.PureComponent<Props, State> {
     virtualized: true,
     empty: false,
     useFlatListItemComponent: false,
+    fadingEdgeLength: 0,
   };
 
   _onChangeFilterText = filterText => {
@@ -124,11 +133,26 @@ class FlatListExample extends React.PureComponent<Props, State> {
               {renderSmallSwitchOption(this, 'empty')}
               {renderSmallSwitchOption(this, 'debug')}
               {renderSmallSwitchOption(this, 'useFlatListItemComponent')}
+              {Platform.OS === 'android' && (
+                <View>
+                  <TextInput
+                    placeholder="Fading edge length"
+                    underlineColorAndroid="black"
+                    keyboardType={'numeric'}
+                    onChange={event =>
+                      this.setState({
+                        fadingEdgeLength: Number(event.nativeEvent.text),
+                      })
+                    }
+                  />
+                </View>
+              )}
               <Spindicator value={this._scrollPos} />
             </View>
           </View>
           <SeparatorComponent />
           <Animated.FlatList
+            fadingEdgeLength={this.state.fadingEdgeLength}
             ItemSeparatorComponent={ItemSeparatorComponent}
             ListHeaderComponent={<HeaderComponent />}
             ListFooterComponent={FooterComponent}
@@ -136,9 +160,6 @@ class FlatListExample extends React.PureComponent<Props, State> {
             data={this.state.empty ? [] : filteredData}
             debug={this.state.debug}
             disableVirtualization={!this.state.virtualized}
-            acceptsKeyboardFocus={true} // TODO(macOS ISS#2323203)
-            enableSelectionOnKeyPress={true} // TODO(macOS ISS#2323203)
-            onSelectionEntered={this._handleSelectionEntered} // TODO(macOS ISS#2323203)
             getItemLayout={
               this.state.fixedHeight ? this._getItemLayout : undefined
             }
@@ -189,12 +210,13 @@ class FlatListExample extends React.PureComponent<Props, State> {
 
     return {
       renderItem: undefined,
-      [flatListPropKey]: ({item, isSelected, separators}) => {
-        // TODO(macOS ISS#2323203)
+      /* $FlowFixMe(>=0.111.0 site=react_native_fb) This comment suppresses an
+       * error found when Flow v0.111 was deployed. To see the error, delete
+       * this comment and run Flow. */
+      [flatListPropKey]: ({item, separators}) => {
         return (
           <ItemComponent
             item={item}
-            isSelected={isSelected} // TODO(macOS ISS#2323203)
             horizontal={this.state.horizontal}
             fixedHeight={this.state.fixedHeight}
             onPress={this._pressItem}
@@ -214,7 +236,9 @@ class FlatListExample extends React.PureComponent<Props, State> {
       item: any,
       index: ?number,
       section?: any,
+      ...
     }>,
+    ...
   }) => {
     // Impressions can be logged here
     if (this.state.logViewable) {
@@ -225,16 +249,10 @@ class FlatListExample extends React.PureComponent<Props, State> {
     }
   };
   _pressItem = (key: string) => {
-    // [TODO(macOS ISS#2323203)
     this._listRef.getNode().recordInteraction();
     pressItem(this, key);
   };
-  _handleSelectionEntered = item => {
-    const {key} = item; // ]TODO(macOS ISS#2323203)
-    this._listRef.getNode().recordInteraction();
-    pressItem(this, key);
-  };
-  _listRef: Animated.FlatList;
+  _listRef: React.ElementRef<typeof Animated.FlatList>;
 }
 
 const styles = StyleSheet.create({

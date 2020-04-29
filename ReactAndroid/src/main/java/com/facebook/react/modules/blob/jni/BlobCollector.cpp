@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 // Copyright 2004-present Facebook. All Rights Reserved.
 // This source code is licensed under the MIT license found in the
 // LICENSE file in the root directory of this source tree.
@@ -5,6 +6,18 @@
 #include "BlobCollector.h"
 
 #include <fb/fbjni.h>
+=======
+/*
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+#include "BlobCollector.h"
+
+#include <fbjni/fbjni.h>
+>>>>>>> fb/0.62-stable
 #include <memory>
 #include <mutex>
 
@@ -24,7 +37,11 @@ BlobCollector::BlobCollector(
 BlobCollector::~BlobCollector() {
   jni::ThreadScope::WithClassLoader([&] {
     static auto removeMethod = jni::findClassStatic(kBlobModuleJavaDescriptor)
+<<<<<<< HEAD
         ->getMethod<void(jstring)>("remove");
+=======
+                                   ->getMethod<void(jstring)>("remove");
+>>>>>>> fb/0.62-stable
     removeMethod(blobModule_, jni::make_jstring(blobId_).get());
   });
 }
@@ -33,7 +50,11 @@ void BlobCollector::nativeInstall(
     jni::alias_ref<jhybridobject> jThis,
     jni::alias_ref<jobject> blobModule,
     jlong jsContextNativePointer) {
+<<<<<<< HEAD
   auto &runtime = *((jsi::Runtime *) jsContextNativePointer);
+=======
+  auto &runtime = *((jsi::Runtime *)jsContextNativePointer);
+>>>>>>> fb/0.62-stable
   auto blobModuleRef = jni::make_global(blobModule);
   runtime.global().setProperty(
       runtime,

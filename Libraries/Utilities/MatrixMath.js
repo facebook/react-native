@@ -9,6 +9,7 @@
  */
 
 /* eslint-disable space-infix-ops */
+
 'use strict';
 
 const invariant = require('invariant');

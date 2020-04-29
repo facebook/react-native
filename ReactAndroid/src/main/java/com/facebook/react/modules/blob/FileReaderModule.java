@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
@@ -29,16 +29,33 @@ public class FileReaderModule extends ReactContextBaseJavaModule {
     return NAME;
   }
 
-  private BlobModule getBlobModule() {
-    return getReactApplicationContext().getNativeModule(BlobModule.class);
+  private BlobModule getBlobModule(String reason) {
+    ReactApplicationContext reactApplicationContext = getReactApplicationContextIfActiveOrWarn();
+
+    if (reactApplicationContext != null) {
+      return reactApplicationContext.getNativeModule(BlobModule.class);
+    }
+
+    return null;
   }
 
   @ReactMethod
   public void readAsText(ReadableMap blob, String encoding, Promise promise) {
+    BlobModule blobModule = getBlobModule("readAsText");
+
+    if (blobModule == null) {
+      promise.reject(
+          new IllegalStateException("Could not get BlobModule from ReactApplicationContext"));
+      return;
+    }
 
     byte[] bytes =
+<<<<<<< HEAD
         getBlobModule()
             .resolve(blob.getString("blobId"), blob.getInt("offset"), blob.getInt("size"));
+=======
+        blobModule.resolve(blob.getString("blobId"), blob.getInt("offset"), blob.getInt("size"));
+>>>>>>> fb/0.62-stable
 
     if (bytes == null) {
       promise.reject(ERROR_INVALID_BLOB, "The specified blob is invalid");
@@ -54,9 +71,22 @@ public class FileReaderModule extends ReactContextBaseJavaModule {
 
   @ReactMethod
   public void readAsDataURL(ReadableMap blob, Promise promise) {
+<<<<<<< HEAD
     byte[] bytes =
         getBlobModule()
             .resolve(blob.getString("blobId"), blob.getInt("offset"), blob.getInt("size"));
+=======
+    BlobModule blobModule = getBlobModule("readAsDataURL");
+
+    if (blobModule == null) {
+      promise.reject(
+          new IllegalStateException("Could not get BlobModule from ReactApplicationContext"));
+      return;
+    }
+
+    byte[] bytes =
+        blobModule.resolve(blob.getString("blobId"), blob.getInt("offset"), blob.getInt("size"));
+>>>>>>> fb/0.62-stable
 
     if (bytes == null) {
       promise.reject(ERROR_INVALID_BLOB, "The specified blob is invalid");

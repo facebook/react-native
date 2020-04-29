@@ -1,25 +1,42 @@
-// Copyright (c) Facebook, Inc. and its affiliates.
-
-// This source code is licensed under the MIT license found in the
-// LICENSE file in the root directory of this source tree.
+/*
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
 
 package com.facebook.react.uimanager;
 
 import android.content.Context;
 import android.os.Bundle;
+<<<<<<< HEAD
 import android.text.SpannableString;
 import android.text.style.URLSpan;
 import android.util.Log;
 import android.view.View;
+=======
+import android.os.Handler;
+import android.os.Message;
+import android.text.SpannableString;
+import android.text.style.URLSpan;
+import android.view.View;
+import android.view.accessibility.AccessibilityEvent;
+>>>>>>> fb/0.62-stable
 import androidx.annotation.Nullable;
 import androidx.core.view.AccessibilityDelegateCompat;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
 import androidx.core.view.accessibility.AccessibilityNodeInfoCompat.AccessibilityActionCompat;
+<<<<<<< HEAD
+=======
+import androidx.core.view.accessibility.AccessibilityNodeInfoCompat.RangeInfoCompat;
+>>>>>>> fb/0.62-stable
 import com.facebook.react.R;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Dynamic;
 import com.facebook.react.bridge.ReactContext;
+import com.facebook.react.bridge.ReactNoCrashSoftException;
+import com.facebook.react.bridge.ReactSoftException;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReadableMapKeySetIterator;
@@ -36,14 +53,39 @@ public class ReactAccessibilityDelegate extends AccessibilityDelegateCompat {
 
   private static final String TAG = "ReactAccessibilityDelegate";
   private static int sCounter = 0x3f000000;
+  private static final int TIMEOUT_SEND_ACCESSIBILITY_EVENT = 200;
+  private static final int SEND_EVENT = 1;
 
   public static final HashMap<String, Integer> sActionIdMap = new HashMap<>();
 
+<<<<<<< HEAD
+  public static final HashMap<String, Integer> sActionIdMap = new HashMap<>();
+
+=======
+>>>>>>> fb/0.62-stable
   static {
     sActionIdMap.put("activate", AccessibilityActionCompat.ACTION_CLICK.getId());
     sActionIdMap.put("longpress", AccessibilityActionCompat.ACTION_LONG_CLICK.getId());
     sActionIdMap.put("increment", AccessibilityActionCompat.ACTION_SCROLL_FORWARD.getId());
     sActionIdMap.put("decrement", AccessibilityActionCompat.ACTION_SCROLL_BACKWARD.getId());
+<<<<<<< HEAD
+=======
+  }
+
+  private Handler mHandler;
+
+  /**
+   * Schedule a command for sending an accessibility event. </br> Note: A command is used to ensure
+   * that accessibility events are sent at most one in a given time frame to save system resources
+   * while the progress changes quickly.
+   */
+  private void scheduleAccessibilityEventSender(View host) {
+    if (mHandler.hasMessages(SEND_EVENT, host)) {
+      mHandler.removeMessages(SEND_EVENT, host);
+    }
+    Message msg = mHandler.obtainMessage(SEND_EVENT, host);
+    mHandler.sendMessageDelayed(msg, TIMEOUT_SEND_ACCESSIBILITY_EVENT);
+>>>>>>> fb/0.62-stable
   }
 
   /**
@@ -148,6 +190,14 @@ public class ReactAccessibilityDelegate extends AccessibilityDelegateCompat {
   public ReactAccessibilityDelegate() {
     super();
     mAccessibilityActionsMap = new HashMap<Integer, String>();
+    mHandler =
+        new Handler() {
+          @Override
+          public void handleMessage(Message msg) {
+            View host = (View) msg.obj;
+            host.sendAccessibilityEvent(AccessibilityEvent.TYPE_VIEW_SELECTED);
+          }
+        };
   }
 
   @Override
@@ -159,6 +209,7 @@ public class ReactAccessibilityDelegate extends AccessibilityDelegateCompat {
       setRole(info, accessibilityRole, host.getContext());
     }
 
+<<<<<<< HEAD
     // states are changeable.
     final ReadableArray accessibilityStates =
         (ReadableArray) host.getTag(R.id.accessibility_states);
@@ -169,6 +220,13 @@ public class ReactAccessibilityDelegate extends AccessibilityDelegateCompat {
     if (accessibilityState != null) {
       setState(info, accessibilityState, host.getContext());
     }
+=======
+    // state is changeable.
+    final ReadableMap accessibilityState = (ReadableMap) host.getTag(R.id.accessibility_state);
+    if (accessibilityState != null) {
+      setState(info, accessibilityState, host.getContext());
+    }
+>>>>>>> fb/0.62-stable
     final ReadableArray accessibilityActions =
         (ReadableArray) host.getTag(R.id.accessibility_actions);
     if (accessibilityActions != null) {
@@ -190,6 +248,61 @@ public class ReactAccessibilityDelegate extends AccessibilityDelegateCompat {
         info.addAction(accessibilityAction);
       }
     }
+
+    // Process accessibilityValue
+
+    final ReadableMap accessibilityValue = (ReadableMap) host.getTag(R.id.accessibility_value);
+    if (accessibilityValue != null
+        && accessibilityValue.hasKey("min")
+        && accessibilityValue.hasKey("now")
+        && accessibilityValue.hasKey("max")) {
+      final Dynamic minDynamic = accessibilityValue.getDynamic("min");
+      final Dynamic nowDynamic = accessibilityValue.getDynamic("now");
+      final Dynamic maxDynamic = accessibilityValue.getDynamic("max");
+      if (minDynamic != null
+          && minDynamic.getType() == ReadableType.Number
+          && nowDynamic != null
+          && nowDynamic.getType() == ReadableType.Number
+          && maxDynamic != null
+          && maxDynamic.getType() == ReadableType.Number) {
+        final int min = minDynamic.asInt();
+        final int now = nowDynamic.asInt();
+        final int max = maxDynamic.asInt();
+        if (max > min && now >= min && max >= now) {
+          info.setRangeInfo(RangeInfoCompat.obtain(RangeInfoCompat.RANGE_TYPE_INT, min, max, now));
+        }
+      }
+    }
+  }
+
+  @Override
+  public void onInitializeAccessibilityEvent(View host, AccessibilityEvent event) {
+    super.onInitializeAccessibilityEvent(host, event);
+    // Set item count and current item index on accessibility events for adjustable
+    // in order to make Talkback announce the value of the adjustable
+    final ReadableMap accessibilityValue = (ReadableMap) host.getTag(R.id.accessibility_value);
+    if (accessibilityValue != null
+        && accessibilityValue.hasKey("min")
+        && accessibilityValue.hasKey("now")
+        && accessibilityValue.hasKey("max")) {
+      final Dynamic minDynamic = accessibilityValue.getDynamic("min");
+      final Dynamic nowDynamic = accessibilityValue.getDynamic("now");
+      final Dynamic maxDynamic = accessibilityValue.getDynamic("max");
+      if (minDynamic != null
+          && minDynamic.getType() == ReadableType.Number
+          && nowDynamic != null
+          && nowDynamic.getType() == ReadableType.Number
+          && maxDynamic != null
+          && maxDynamic.getType() == ReadableType.Number) {
+        final int min = minDynamic.asInt();
+        final int now = nowDynamic.asInt();
+        final int max = maxDynamic.asInt();
+        if (max > min && now >= min && max >= now) {
+          event.setItemCount(max - min);
+          event.setCurrentItemIndex(now);
+        }
+      }
+    }
   }
 
   @Override
@@ -198,14 +311,40 @@ public class ReactAccessibilityDelegate extends AccessibilityDelegateCompat {
       final WritableMap event = Arguments.createMap();
       event.putString("actionName", mAccessibilityActionsMap.get(action));
       ReactContext reactContext = (ReactContext) host.getContext();
+<<<<<<< HEAD
       reactContext
           .getJSModule(RCTEventEmitter.class)
           .receiveEvent(host.getId(), "topAccessibilityAction", event);
+=======
+      if (reactContext.hasActiveCatalystInstance()) {
+        reactContext
+            .getJSModule(RCTEventEmitter.class)
+            .receiveEvent(host.getId(), "topAccessibilityAction", event);
+      } else {
+        ReactSoftException.logSoftException(
+            TAG, new ReactNoCrashSoftException("Cannot get RCTEventEmitter, no CatalystInstance"));
+      }
+
+      // In order to make Talkback announce the change of the adjustable's value,
+      // schedule to send a TYPE_VIEW_SELECTED event after performing the scroll actions.
+      final AccessibilityRole accessibilityRole =
+          (AccessibilityRole) host.getTag(R.id.accessibility_role);
+      final ReadableMap accessibilityValue = (ReadableMap) host.getTag(R.id.accessibility_value);
+      if (accessibilityRole == AccessibilityRole.ADJUSTABLE
+          && (action == AccessibilityActionCompat.ACTION_SCROLL_FORWARD.getId()
+              || action == AccessibilityActionCompat.ACTION_SCROLL_BACKWARD.getId())) {
+        if (accessibilityValue != null && !accessibilityValue.hasKey("text")) {
+          scheduleAccessibilityEventSender(host);
+        }
+        return super.performAccessibilityAction(host, action, args);
+      }
+>>>>>>> fb/0.62-stable
       return true;
     }
     return super.performAccessibilityAction(host, action, args);
   }
 
+<<<<<<< HEAD
   private static void setStates(
       AccessibilityNodeInfoCompat info, ReadableArray accessibilityStates, Context context) {
     for (int i = 0; i < accessibilityStates.size(); i++) {
@@ -231,10 +370,32 @@ public class ReactAccessibilityDelegate extends AccessibilityDelegateCompat {
             info.setText(context.getString(R.string.state_off_description));
           }
           break;
+=======
+  private static void setState(
+      AccessibilityNodeInfoCompat info, ReadableMap accessibilityState, Context context) {
+    final ReadableMapKeySetIterator i = accessibilityState.keySetIterator();
+    while (i.hasNextKey()) {
+      final String state = i.nextKey();
+      final Dynamic value = accessibilityState.getDynamic(state);
+      if (state.equals(STATE_SELECTED) && value.getType() == ReadableType.Boolean) {
+        info.setSelected(value.asBoolean());
+      } else if (state.equals(STATE_DISABLED) && value.getType() == ReadableType.Boolean) {
+        info.setEnabled(!value.asBoolean());
+      } else if (state.equals(STATE_CHECKED) && value.getType() == ReadableType.Boolean) {
+        final boolean boolValue = value.asBoolean();
+        info.setCheckable(true);
+        info.setChecked(boolValue);
+        if (info.getClassName().equals(AccessibilityRole.getValue(AccessibilityRole.SWITCH))) {
+          info.setText(
+              context.getString(
+                  boolValue ? R.string.state_on_description : R.string.state_off_description));
+        }
+>>>>>>> fb/0.62-stable
       }
     }
   }
 
+<<<<<<< HEAD
   private static void setState(
       AccessibilityNodeInfoCompat info, ReadableMap accessibilityState, Context context) {
     Log.d(TAG, "setState " + accessibilityState);
@@ -259,6 +420,8 @@ public class ReactAccessibilityDelegate extends AccessibilityDelegateCompat {
     }
   }
 
+=======
+>>>>>>> fb/0.62-stable
   /** Strings for setting the Role Description in english */
 
   // TODO: Eventually support for other languages on talkback
@@ -289,6 +452,9 @@ public class ReactAccessibilityDelegate extends AccessibilityDelegateCompat {
       nodeInfo.setRoleDescription(context.getString(R.string.image_description));
     } else if (role.equals(AccessibilityRole.IMAGEBUTTON)) {
       nodeInfo.setRoleDescription(context.getString(R.string.imagebutton_description));
+      nodeInfo.setClickable(true);
+    } else if (role.equals(AccessibilityRole.BUTTON)) {
+      nodeInfo.setRoleDescription(context.getString(R.string.button_description));
       nodeInfo.setClickable(true);
     } else if (role.equals(AccessibilityRole.SUMMARY)) {
       nodeInfo.setRoleDescription(context.getString(R.string.summary_description));
@@ -332,7 +498,10 @@ public class ReactAccessibilityDelegate extends AccessibilityDelegateCompat {
     // so leave it alone.
     if (!ViewCompat.hasAccessibilityDelegate(view)
         && (view.getTag(R.id.accessibility_role) != null
+<<<<<<< HEAD
             || view.getTag(R.id.accessibility_states) != null
+=======
+>>>>>>> fb/0.62-stable
             || view.getTag(R.id.accessibility_state) != null
             || view.getTag(R.id.accessibility_actions) != null)) {
       ViewCompat.setAccessibilityDelegate(view, new ReactAccessibilityDelegate());

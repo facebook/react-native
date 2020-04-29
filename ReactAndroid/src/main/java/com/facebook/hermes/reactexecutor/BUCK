@@ -13,6 +13,10 @@ rn_android_library(
         react_native_dep("libraries/soloader/java/com/facebook/soloader:soloader"),
         react_native_dep("third-party/java/jsr-305:jsr-305"),
         react_native_target("java/com/facebook/hermes/instrumentation:instrumentation"),
+<<<<<<< HEAD
+=======
+        react_native_target("java/com/facebook/hermes/instrumentation:hermes_samplingprofiler"),
+>>>>>>> fb/0.62-stable
         react_native_target("java/com/facebook/react/bridge:bridge"),
         ":jni",
         ":runtimeconfig",

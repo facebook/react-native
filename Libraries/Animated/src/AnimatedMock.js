@@ -7,6 +7,7 @@
  * @flow
  * @format
  */
+
 'use strict';
 
 const {AnimatedEvent, attachNativeEvent} = require('./AnimatedEvent');
@@ -30,12 +31,13 @@ import type {Mapping, EventConfig} from './AnimatedEvent';
  * animation functions from AnimatedImplementation with empty animations for
  * predictability in tests.
  */
-type CompositeAnimation = {
+export type CompositeAnimation = {
   start: (callback?: ?EndCallback) => void,
   stop: () => void,
   reset: () => void,
   _startNativeLoop: (iterations?: number) => void,
   _isUsingNativeDriver: () => boolean,
+  ...
 };
 
 const emptyAnimation = {
@@ -89,9 +91,7 @@ const sequence = function(
   return emptyAnimation;
 };
 
-type ParallelConfig = {
-  stopTogether?: boolean,
-};
+type ParallelConfig = {stopTogether?: boolean, ...};
 const parallel = function(
   animations: Array<CompositeAnimation>,
   config?: ?ParallelConfig,
@@ -110,7 +110,15 @@ const stagger = function(
   return emptyAnimation;
 };
 
+<<<<<<< HEAD
 type LoopAnimationConfig = {iterations: number, resetBeforeIteration?: boolean};
+=======
+type LoopAnimationConfig = {
+  iterations: number,
+  resetBeforeIteration?: boolean,
+  ...
+};
+>>>>>>> fb/0.62-stable
 
 const loop = function(
   animation: CompositeAnimation,
@@ -119,7 +127,7 @@ const loop = function(
   return emptyAnimation;
 };
 
-const event = function(argMapping: Array<?Mapping>, config?: EventConfig): any {
+const event = function(argMapping: Array<?Mapping>, config: EventConfig): any {
   return null;
 };
 

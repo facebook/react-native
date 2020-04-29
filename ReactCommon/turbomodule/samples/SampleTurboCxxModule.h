@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /**
+=======
+/*
+>>>>>>> fb/0.62-stable
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -21,7 +25,11 @@ namespace react {
  */
 class SampleTurboCxxModule : public NativeSampleTurboCxxModuleSpecJSI {
  public:
+<<<<<<< HEAD
   SampleTurboCxxModule(std::shared_ptr<JSCallInvoker> jsInvoker);
+=======
+  SampleTurboCxxModule(std::shared_ptr<CallInvoker> jsInvoker);
+>>>>>>> fb/0.62-stable
 
   void voidFunc(jsi::Runtime &rt) override;
   bool getBool(jsi::Runtime &rt, bool arg) override;

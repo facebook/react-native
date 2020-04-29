@@ -12,8 +12,12 @@
 
 const Platform = require('../Utilities/Platform');
 
+<<<<<<< HEAD
 const normalizeColor = require('../Color/normalizeColor');
 import type {NativeOrDynamicColorType} from '../Color/NativeOrDynamicColorType'; // ]TODO(macOS ISS#2323203)
+=======
+const normalizeColor = require('./normalizeColor');
+>>>>>>> fb/0.62-stable
 
 /* eslint no-bitwise: 0 */
 function processColor(

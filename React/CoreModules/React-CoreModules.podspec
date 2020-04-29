@@ -1,4 +1,3 @@
-# coding: utf-8
 # Copyright (c) Facebook, Inc. and its affiliates.
 #
 # This source code is licensed under the MIT license found in the
@@ -27,12 +26,10 @@ Pod::Spec.new do |s|
   s.homepage               = "http://facebook.github.io/react-native/"
   s.license                = package["license"]
   s.author                 = "Facebook, Inc. and its affiliates"
-  s.platforms              = { :ios => "9.0", :tvos => "9.2", :osx => "10.14" } # TODO(macOS GH#214)
+  s.platforms              = { :ios => "9.0", :tvos => "9.2" }
   s.compiler_flags         = folly_compiler_flags + ' -Wno-nullability-completeness'
   s.source                 = source
   s.source_files           = "**/*.{c,m,mm,cpp}"
-  s.osx.exclude_files      = "RCTPlatform.mm"
-
   s.header_dir             = "CoreModules"
   s.pod_target_xcconfig    = {
                                "USE_HEADERMAP" => "YES",
@@ -41,9 +38,9 @@ Pod::Spec.new do |s|
                              }
 
   s.dependency "FBReactNativeSpec", version
-  s.dependency "RCTTypeSafety", version
-  s.dependency "React-RCTImage", version
   s.dependency "Folly", folly_version
+  s.dependency "RCTTypeSafety", version
   s.dependency "React-Core/CoreModulesHeaders", version
+  s.dependency "React-RCTImage", version
   s.dependency "ReactCommon/turbomodule/core", version
 end

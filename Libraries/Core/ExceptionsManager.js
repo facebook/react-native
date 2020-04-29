@@ -11,10 +11,45 @@
 'use strict';
 
 import type {ExtendedError} from './Devtools/parseErrorStack';
+import * as LogBoxData from '../LogBox/Data/LogBoxData';
+import type {ExceptionData} from './NativeExceptionsManager';
 
 class SyntheticError extends Error {
   name: string = '';
 }
+<<<<<<< HEAD
+=======
+
+type ExceptionDecorator = ExceptionData => ExceptionData;
+
+let userExceptionDecorator: ?ExceptionDecorator;
+let inUserExceptionDecorator = false;
+
+/**
+ * Allows the app to add information to the exception report before it is sent
+ * to native. This API is not final.
+ */
+
+function unstable_setExceptionDecorator(
+  exceptionDecorator: ?ExceptionDecorator,
+) {
+  userExceptionDecorator = exceptionDecorator;
+}
+
+function preprocessException(data: ExceptionData): ExceptionData {
+  if (userExceptionDecorator && !inUserExceptionDecorator) {
+    inUserExceptionDecorator = true;
+    try {
+      return userExceptionDecorator(data);
+    } catch {
+      // Fall through
+    } finally {
+      inUserExceptionDecorator = false;
+    }
+  }
+  return data;
+}
+>>>>>>> fb/0.62-stable
 
 /**
  * Handles the developer-visible aspect of errors and exceptions
@@ -30,6 +65,7 @@ function reportException(e: ExtendedError, isFatal: boolean) {
     let message = originalMessage;
     if (e.componentStack != null) {
       message += `\n\nThis error is located at:${e.componentStack}`;
+<<<<<<< HEAD
     }
     const namePrefix = e.name == null || e.name === '' ? '' : `${e.name}: `;
     const isFromConsoleError = e.name === 'console.error';
@@ -50,6 +86,32 @@ function reportException(e: ExtendedError, isFatal: boolean) {
     message =
       e.jsEngine == null ? message : `${message}, js engine: ${e.jsEngine}`;
     NativeExceptionsManager.reportException({
+=======
+    }
+    const namePrefix = e.name == null || e.name === '' ? '' : `${e.name}: `;
+    const isFromConsoleError = e.name === 'console.error';
+
+    if (!message.startsWith(namePrefix)) {
+      message = namePrefix + message;
+    }
+
+    // Errors created by `console.error` have already been printed.
+    if (!isFromConsoleError) {
+      if (console._errorOriginal) {
+        console._errorOriginal(message);
+      } else {
+        console.error(message);
+      }
+    }
+
+    message =
+      e.jsEngine == null ? message : `${message}, js engine: ${e.jsEngine}`;
+
+    const isHandledByLogBox =
+      e.forceRedbox !== true && global.__unstable_isLogBoxEnabled === true;
+
+    const data = preprocessException({
+>>>>>>> fb/0.62-stable
       message,
       originalMessage: message === originalMessage ? null : originalMessage,
       name: e.name == null || e.name === '' ? null : e.name,
@@ -61,23 +123,48 @@ function reportException(e: ExtendedError, isFatal: boolean) {
       extraData: {
         jsEngine: e.jsEngine,
         rawStack: e.stack,
+<<<<<<< HEAD
         framesPopped: e.framesToPop,
       },
     });
+=======
+
+        // Hack to hide native redboxes when in the LogBox experiment.
+        // This is intentionally untyped and stuffed here, because it is temporary.
+        suppressRedBox: isHandledByLogBox,
+      },
+    });
+
+    if (isHandledByLogBox) {
+      LogBoxData.addException({
+        ...data,
+        isComponentError: !!e.isComponentError,
+      });
+    }
+
+    NativeExceptionsManager.reportException(data);
+
+>>>>>>> fb/0.62-stable
     if (__DEV__) {
       if (e.preventSymbolication === true) {
         return;
       }
       const symbolicateStackTrace = require('./Devtools/symbolicateStackTrace');
       symbolicateStackTrace(stack)
-        .then(prettyStack => {
+        .then(({stack: prettyStack}) => {
           if (prettyStack) {
+<<<<<<< HEAD
             const stackWithoutCollapsedFrames = prettyStack.filter(
               frame => !frame.collapse,
             );
             NativeExceptionsManager.updateExceptionMessage(
               message,
               stackWithoutCollapsedFrames,
+=======
+            NativeExceptionsManager.updateExceptionMessage(
+              data.message,
+              prettyStack,
+>>>>>>> fb/0.62-stable
               currentExceptionID,
             );
           } else {
@@ -94,6 +181,7 @@ function reportException(e: ExtendedError, isFatal: boolean) {
 declare var console: typeof console & {
   _errorOriginal: typeof console.error,
   reportErrorsAsExceptions: boolean,
+  ...
 };
 
 /**
@@ -125,8 +213,13 @@ function reactConsoleErrorHandler() {
   } else {
     console._errorOriginal.apply(console, arguments);
     const stringifySafe = require('../Utilities/stringifySafe');
-    const str = Array.prototype.map.call(arguments, stringifySafe).join(', ');
-    if (str.slice(0, 10) === '"Warning: ') {
+    const str = Array.prototype.map
+      .call(arguments, value =>
+        typeof value === 'string' ? value : stringifySafe(value),
+      )
+      .join(' ');
+
+    if (str.slice(0, 9) === 'Warning: ') {
       // React warnings use console.error so that a stack trace is shown, but
       // we don't (currently) want these to show a redbox
       // (Note: Logic duplicated in polyfills/console.js.)
@@ -134,7 +227,10 @@ function reactConsoleErrorHandler() {
     }
     const error: ExtendedError = new SyntheticError(str);
     error.name = 'console.error';
+<<<<<<< HEAD
     error.framesToPop = (error.framesToPop || 0) + 1;
+=======
+>>>>>>> fb/0.62-stable
     reportException(error, /* isFatal */ false);
   }
 }
@@ -158,4 +254,13 @@ function installConsoleErrorReporter() {
   }
 }
 
+<<<<<<< HEAD
 module.exports = {handleException, installConsoleErrorReporter, SyntheticError};
+=======
+module.exports = {
+  handleException,
+  installConsoleErrorReporter,
+  SyntheticError,
+  unstable_setExceptionDecorator,
+};
+>>>>>>> fb/0.62-stable

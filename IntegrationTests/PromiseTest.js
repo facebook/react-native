@@ -15,7 +15,11 @@ const ReactNative = require('react-native');
 const {View} = ReactNative;
 const {TestModule} = ReactNative.NativeModules;
 
+<<<<<<< HEAD
 class PromiseTest extends React.Component<{}> {
+=======
+class PromiseTest extends React.Component<{...}> {
+>>>>>>> fb/0.62-stable
   shouldResolve: boolean = false;
   shouldReject: boolean = false;
   shouldSucceedAsync: boolean = false;

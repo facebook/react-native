@@ -23,6 +23,29 @@ extern const char ArrayPropsNativeComponentComponentName[] = \\"ArrayPropsNative
 }
 `;
 
+exports[`GenerateShadowNodeCpp can generate fixture ARRAY_PROPS_WITH_NESTED_OBJECT 1`] = `
+Map {
+  "ShadowNodes.cpp" => "
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+#include <react/components/ARRAY_PROPS_WITH_NESTED_OBJECT/ShadowNodes.h>
+
+namespace facebook {
+namespace react {
+
+extern const char ArrayPropsNativeComponentComponentName[] = \\"ArrayPropsNativeComponent\\";
+
+} // namespace react
+} // namespace facebook
+",
+}
+`;
+
 exports[`GenerateShadowNodeCpp can generate fixture BOOLEAN_PROP 1`] = `
 Map {
   "ShadowNodes.cpp" => "
@@ -138,29 +161,6 @@ extern const char DoublePropNativeComponentComponentName[] = \\"DoublePropNative
 }
 `;
 
-exports[`GenerateShadowNodeCpp can generate fixture ENUM_PROP 1`] = `
-Map {
-  "ShadowNodes.cpp" => "
-/**
- * Copyright (c) Facebook, Inc. and its affiliates.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
- */
-
-#include <react/components/ENUM_PROP/ShadowNodes.h>
-
-namespace facebook {
-namespace react {
-
-extern const char EnumPropsNativeComponentComponentName[] = \\"EnumPropsNativeComponent\\";
-
-} // namespace react
-} // namespace facebook
-",
-}
-`;
-
 exports[`GenerateShadowNodeCpp can generate fixture EVENT_NESTED_OBJECT_PROPS 1`] = `
 Map {
   "ShadowNodes.cpp" => "
@@ -230,6 +230,29 @@ namespace react {
 }
 `;
 
+exports[`GenerateShadowNodeCpp can generate fixture EXCLUDE_ANDROID 1`] = `
+Map {
+  "ShadowNodes.cpp" => "
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+#include <react/components/EXCLUDE_ANDROID/ShadowNodes.h>
+
+namespace facebook {
+namespace react {
+
+extern const char ExcludedAndroidComponentComponentName[] = \\"ExcludedAndroidComponent\\";
+
+} // namespace react
+} // namespace facebook
+",
+}
+`;
+
 exports[`GenerateShadowNodeCpp can generate fixture FLOAT_PROPS 1`] = `
 Map {
   "ShadowNodes.cpp" => "
@@ -269,6 +292,52 @@ namespace facebook {
 namespace react {
 
 extern const char ImagePropNativeComponentComponentName[] = \\"ImagePropNativeComponent\\";
+
+} // namespace react
+} // namespace facebook
+",
+}
+`;
+
+exports[`GenerateShadowNodeCpp can generate fixture INSETS_PROP 1`] = `
+Map {
+  "ShadowNodes.cpp" => "
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+#include <react/components/INSETS_PROP/ShadowNodes.h>
+
+namespace facebook {
+namespace react {
+
+extern const char InsetsPropNativeComponentComponentName[] = \\"InsetsPropNativeComponent\\";
+
+} // namespace react
+} // namespace facebook
+",
+}
+`;
+
+exports[`GenerateShadowNodeCpp can generate fixture INT32_ENUM_PROP 1`] = `
+Map {
+  "ShadowNodes.cpp" => "
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+#include <react/components/INT32_ENUM_PROP/ShadowNodes.h>
+
+namespace facebook {
+namespace react {
+
+extern const char Int32EnumPropsNativeComponentComponentName[] = \\"Int32EnumPropsNativeComponent\\";
 
 } // namespace react
 } // namespace facebook
@@ -407,6 +476,29 @@ namespace facebook {
 namespace react {
 
 extern const char PointPropNativeComponentComponentName[] = \\"PointPropNativeComponent\\";
+
+} // namespace react
+} // namespace facebook
+",
+}
+`;
+
+exports[`GenerateShadowNodeCpp can generate fixture STRING_ENUM_PROP 1`] = `
+Map {
+  "ShadowNodes.cpp" => "
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+#include <react/components/STRING_ENUM_PROP/ShadowNodes.h>
+
+namespace facebook {
+namespace react {
+
+extern const char StringEnumPropsNativeComponentComponentName[] = \\"StringEnumPropsNativeComponent\\";
 
 } // namespace react
 } // namespace facebook

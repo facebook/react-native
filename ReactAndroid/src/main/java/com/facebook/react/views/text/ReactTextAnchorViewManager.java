@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
@@ -57,6 +57,11 @@ public abstract class ReactTextAnchorViewManager<T extends View, C extends React
     } else {
       throw new JSApplicationIllegalArgumentException("Invalid ellipsizeMode: " + ellipsizeMode);
     }
+  }
+
+  @ReactProp(name = ViewProps.ADJUSTS_FONT_SIZE_TO_FIT)
+  public void setAdjustFontSizeToFit(ReactTextView view, boolean adjustsFontSizeToFit) {
+    view.setAdjustFontSizeToFit(adjustsFontSizeToFit);
   }
 
   @ReactProp(name = ViewProps.TEXT_ALIGN_VERTICAL)

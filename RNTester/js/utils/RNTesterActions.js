@@ -5,22 +5,21 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @flow strict
+ * @flow strict-local
  */
 
 'use strict';
 
-export type RNTesterBackAction = {
-  type: 'RNTesterBackAction',
-};
+import type {RNTesterTheme} from '../components/RNTesterTheme';
 
-export type RNTesterListAction = {
-  type: 'RNTesterListAction',
-};
+export type RNTesterBackAction = {type: 'RNTesterBackAction', ...};
+
+export type RNTesterListAction = {type: 'RNTesterListAction', ...};
 
 export type RNTesterExampleAction = {
   type: 'RNTesterExampleAction',
   openExample: string,
+  ...
 };
 
 export type RNTesterAction =

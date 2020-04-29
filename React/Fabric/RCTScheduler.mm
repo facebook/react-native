@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -85,7 +85,7 @@ class SchedulerDelegateProxy : public SchedulerDelegate {
                        moduleName:(NSString *)moduleName
                      initialProps:(NSDictionary *)initialProps
                 layoutConstraints:(LayoutConstraints)layoutConstraints
-                    layoutContext:(LayoutContext)layoutContext;
+                    layoutContext:(LayoutContext)layoutContext
 {
   SystraceSection s("-[RCTScheduler startSurfaceWithSurfaceId:...]");
 
@@ -117,9 +117,9 @@ class SchedulerDelegateProxy : public SchedulerDelegate {
   _scheduler->constraintSurfaceLayout(surfaceId, layoutConstraints, layoutContext);
 }
 
-- (const ComponentDescriptor &)getComponentDescriptor:(ComponentHandle)handle
+- (ComponentDescriptor const *)findComponentDescriptorByHandle_DO_NOT_USE_THIS_IS_BROKEN:(ComponentHandle)handle
 {
-  return _scheduler->getComponentDescriptor(handle);
+  return _scheduler->findComponentDescriptorByHandle_DO_NOT_USE_THIS_IS_BROKEN(handle);
 }
 
 @end

@@ -176,8 +176,13 @@ function testOptimizedMultiGet() {
   });
 }
 
+<<<<<<< HEAD
 class AsyncStorageTest extends React.Component<{}, $FlowFixMeState> {
   state: any | $TEMPORARY$object<{|done: boolean, messages: string|}> = {
+=======
+class AsyncStorageTest extends React.Component<{...}, $FlowFixMeState> {
+  state: any | {|done: boolean, messages: string|} = {
+>>>>>>> fb/0.62-stable
     messages: 'Initializing...',
     done: false,
   };

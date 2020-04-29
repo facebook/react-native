@@ -7,6 +7,7 @@
  * @flow
  * @format
  */
+
 'use strict';
 
 const Batchinator = require('../Interaction/Batchinator');
@@ -28,6 +29,7 @@ const warning = require('fbjs/lib/warning');
 
 const {computeWindowedRenderLimits} = require('./VirtualizeUtils');
 
+import type {ScrollResponderType} from '../Components/ScrollView/ScrollView';
 import type {ViewStyleProp} from '../StyleSheet/StyleSheet';
 import type {
   ViewabilityConfig,
@@ -42,13 +44,22 @@ export type Separators = {
   highlight: () => void,
   unhighlight: () => void,
   updateProps: (select: 'leading' | 'trailing', newProps: Object) => void,
+<<<<<<< HEAD
+=======
+  ...
+>>>>>>> fb/0.62-stable
 };
 
 export type RenderItemProps<ItemT> = {
   item: ItemT,
   index: number,
+<<<<<<< HEAD
   isSelected: boolean, // TODO(macOS ISS#2323203)
   separators: Separators,
+=======
+  separators: Separators,
+  ...
+>>>>>>> fb/0.62-stable
 };
 
 export type RenderItemType<ItemT> = (
@@ -60,9 +71,12 @@ type ViewabilityHelperCallbackTuple = {
   onViewableItemsChanged: (info: {
     viewableItems: Array<ViewToken>,
     changed: Array<ViewToken>,
+    ...
   }) => void,
+  ...
 };
 
+<<<<<<< HEAD
 // [TODO(macOS ISS#2323203)
 export type SelectedRowIndexPathType = {
   sectionIndex: number,
@@ -70,6 +84,9 @@ export type SelectedRowIndexPathType = {
 }; // ]TODO(macOS ISS#2323203)
 
 type RequiredProps = {
+=======
+type RequiredProps = {|
+>>>>>>> fb/0.62-stable
   /**
    * The default accessor functions assume this is an Array<{key: string} | {id: string}> but you can override
    * getItem, getItemCount, and keyExtractor to handle any type of index-based data.
@@ -83,11 +100,17 @@ type RequiredProps = {
    * Determines how many items are in the data blob.
    */
   getItemCount: (data: any) => number,
+<<<<<<< HEAD
 };
 type OptionalProps = {
   // TODO: Conflicts with the optional `renderItem` in
   // `VirtualizedSectionList`'s props.
   renderItem?: $FlowFixMe<?RenderItemType<Item>>,
+=======
+|};
+type OptionalProps = {|
+  renderItem?: ?RenderItemType<Item>,
+>>>>>>> fb/0.62-stable
   /**
    * `debug` will turn on extra logging and visual overlays to aid with debugging both usage and
    * implementation, but with a significant perf hit.
@@ -111,10 +134,16 @@ type OptionalProps = {
    * `data` prop, stick it here and treat it immutably.
    */
   extraData?: any,
+  // e.g. height, y
   getItemLayout?: (
     data: any,
     index: number,
-  ) => {length: number, offset: number, index: number}, // e.g. height, y
+  ) => {
+    length: number,
+    offset: number,
+    index: number,
+    ...
+  },
   horizontal?: ?boolean,
   /**
    * How many items to render in the initial batch. This should be enough to fill the screen but not
@@ -140,10 +169,46 @@ type OptionalProps = {
    */
   CellRendererComponent?: ?React.ComponentType<any>,
   /**
+<<<<<<< HEAD
    * Each data item is rendered using this element. Can be a React Component Class,
    * or a render function.
    */
   ListItemComponent?: ?React.ComponentType<any>,
+=======
+   * Rendered in between each item, but not at the top or bottom. By default, `highlighted` and
+   * `leadingItem` props are provided. `renderItem` provides `separators.highlight`/`unhighlight`
+   * which will update the `highlighted` prop, but you can also add custom props with
+   * `separators.updateProps`.
+   */
+  ItemSeparatorComponent?: ?React.ComponentType<any>,
+  /**
+   * Takes an item from `data` and renders it into the list. Example usage:
+   *
+   *     <FlatList
+   *       ItemSeparatorComponent={Platform.OS !== 'android' && ({highlighted}) => (
+   *         <View style={[style.separator, highlighted && {marginLeft: 0}]} />
+   *       )}
+   *       data={[{title: 'Title Text', key: 'item1'}]}
+   *       ListItemComponent={({item, separators}) => (
+   *         <TouchableHighlight
+   *           onPress={() => this._onPress(item)}
+   *           onShowUnderlay={separators.highlight}
+   *           onHideUnderlay={separators.unhighlight}>
+   *           <View style={{backgroundColor: 'white'}}>
+   *             <Text>{item.title}</Text>
+   *           </View>
+   *         </TouchableHighlight>
+   *       )}
+   *     />
+   *
+   * Provides additional metadata like `index` if you need it, as well as a more generic
+   * `separators.updateProps` function which let's you set whatever props you want to change the
+   * rendering of either the leading separator or trailing separator in case the more common
+   * `highlight` and `unhighlight` (which set the `highlighted: boolean` prop) are insufficient for
+   * your use-case.
+   */
+  ListItemComponent?: ?(React.ComponentType<any> | React.Element<any>),
+>>>>>>> fb/0.62-stable
   /**
    * Rendered when the list is empty. Can be a React Component Class, a render function, or
    * a rendered element.
@@ -179,14 +244,23 @@ type OptionalProps = {
    * interfere with responding to button taps or other interactions.
    */
   maxToRenderPerBatch: number,
-  onEndReached?: ?(info: {distanceFromEnd: number}) => void,
-  onEndReachedThreshold?: ?number, // units of visible length
-  onLayout?: ?Function,
+  /**
+   * Called once when the scroll position gets within `onEndReachedThreshold` of the rendered
+   * content.
+   */
+  onEndReached?: ?(info: {distanceFromEnd: number, ...}) => void,
+  /**
+   * How far from the end (in units of visible length of the list) the bottom edge of the
+   * list must be from the end of the content to trigger the `onEndReached` callback.
+   * Thus a value of 0.5 will trigger `onEndReached` when the end of the content is
+   * within half the visible length of the list.
+   */
+  onEndReachedThreshold?: ?number,
   /**
    * If provided, a standard RefreshControl will be added for "Pull to Refresh" functionality. Make
    * sure to also set the `refreshing` prop correctly.
    */
-  onRefresh?: ?Function,
+  onRefresh?: ?() => void,
   /**
    * Used to handle failures when scrolling to an index that has not been measured yet. Recommended
    * action is to either compute your own offset and `scrollTo` it, or scroll as far as possible and
@@ -196,6 +270,7 @@ type OptionalProps = {
     index: number,
     highestMeasuredFrameIndex: number,
     averageItemLength: number,
+    ...
   }) => void,
   /**
    * If provided, will be invoked whenever the selection on the list changes. Make sure to set
@@ -217,6 +292,7 @@ type OptionalProps = {
   onViewableItemsChanged?: ?(info: {
     viewableItems: Array<ViewToken>,
     changed: Array<ViewToken>,
+    ...
   }) => void,
   persistentScrollbar?: ?boolean,
   /**
@@ -249,6 +325,9 @@ type OptionalProps = {
    * screen. Similar fill rate/responsiveness tradeoff as `maxToRenderPerBatch`.
    */
   updateCellsBatchingPeriod: number,
+  /**
+   * See `ViewabilityHelper` for flow type and further documentation.
+   */
   viewabilityConfig?: ViewabilityConfig,
   /**
    * List of ViewabilityConfig/onViewableItemsChanged pairs. A specific onViewableItemsChanged
@@ -263,10 +342,29 @@ type OptionalProps = {
    * chance that fast scrolling may reveal momentary blank areas of unrendered content.
    */
   windowSize: number,
-};
-/* $FlowFixMe - this Props seems to be missing a bunch of stuff. Remove this
- * comment to see the errors */
-export type Props = RequiredProps & OptionalProps;
+  /**
+   * The legacy implementation is no longer supported.
+   */
+  legacyImplementation?: empty,
+|};
+
+type Props = {|
+  ...React.ElementConfig<typeof ScrollView>,
+  ...RequiredProps,
+  ...OptionalProps,
+|};
+
+type DefaultProps = {|
+  disableVirtualization: boolean,
+  horizontal: boolean,
+  initialNumToRender: number,
+  keyExtractor: (item: Item, index: number) => string,
+  maxToRenderPerBatch: number,
+  onEndReachedThreshold: number,
+  scrollEventThrottle: number,
+  updateCellsBatchingPeriod: number,
+  windowSize: number,
+|};
 
 type DefaultProps = {|
   disableVirtualization: boolean,
@@ -288,18 +386,24 @@ type Frame = {
   length: number,
   index: number,
   inLayout: boolean,
+  ...
 };
 
 type ChildListState = {
   first: number,
   last: number,
-  frames: {[key: number]: Frame},
+  frames: {[key: number]: Frame, ...},
+  ...
 };
 
 type State = {
   first: number,
   last: number,
+<<<<<<< HEAD
   selectedRowIndex: number, // TODO(macOS ISS#2323203)
+=======
+  ...
+>>>>>>> fb/0.62-stable
 };
 
 /**
@@ -334,7 +438,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
   props: Props;
 
   // scrollToEnd may be janky without getItemLayout prop
-  scrollToEnd(params?: ?{animated?: ?boolean}) {
+  scrollToEnd(params?: ?{animated?: ?boolean, ...}) {
     const animated = params ? params.animated : true;
     const veryLast = this.props.getItemCount(this.props.data) - 1;
     const frame = this._getFrameMetricsApprox(veryLast);
@@ -345,9 +449,11 @@ class VirtualizedList extends React.PureComponent<Props, State> {
         this._footerLength -
         this._scrollMetrics.visibleLength,
     );
-    /* $FlowFixMe(>=0.53.0 site=react_native_fb,react_native_oss) This comment
-     * suppresses an error when upgrading Flow's support for React. To see the
-     * error delete this comment and run Flow. */
+
+    if (this._scrollRef == null) {
+      return;
+    }
+
     this._scrollRef.scrollTo(
       this.props.horizontal ? {x: offset, animated} : {y: offset, animated},
     );
@@ -359,6 +465,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     index: number,
     viewOffset?: number,
     viewPosition?: number,
+    ...
   }) {
     const {
       data,
@@ -395,9 +502,11 @@ class VirtualizedList extends React.PureComponent<Props, State> {
           (viewPosition || 0) *
             (this._scrollMetrics.visibleLength - frame.length),
       ) - (viewOffset || 0);
-    /* $FlowFixMe(>=0.53.0 site=react_native_fb,react_native_oss) This comment
-     * suppresses an error when upgrading Flow's support for React. To see the
-     * error delete this comment and run Flow. */
+
+    if (this._scrollRef == null) {
+      return;
+    }
+
     this._scrollRef.scrollTo(
       horizontal ? {x: offset, animated} : {y: offset, animated},
     );
@@ -409,6 +518,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     animated?: ?boolean,
     item: Item,
     viewPosition?: number,
+    ...
   }) {
     const {item} = params;
     const {data, getItem, getItemCount} = this.props;
@@ -431,11 +541,13 @@ class VirtualizedList extends React.PureComponent<Props, State> {
    * Param `animated` (`true` by default) defines whether the list
    * should do an animation while scrolling.
    */
-  scrollToOffset(params: {animated?: ?boolean, offset: number}) {
+  scrollToOffset(params: {animated?: ?boolean, offset: number, ...}) {
     const {animated, offset} = params;
-    /* $FlowFixMe(>=0.53.0 site=react_native_fb,react_native_oss) This comment
-     * suppresses an error when upgrading Flow's support for React. To see the
-     * error delete this comment and run Flow. */
+
+    if (this._scrollRef == null) {
+      return;
+    }
+
     this._scrollRef.scrollTo(
       this.props.horizontal ? {x: offset, animated} : {y: offset, animated},
     );
@@ -471,9 +583,10 @@ class VirtualizedList extends React.PureComponent<Props, State> {
   }
 
   flashScrollIndicators() {
-    /* $FlowFixMe(>=0.53.0 site=react_native_fb,react_native_oss) This comment
-     * suppresses an error when upgrading Flow's support for React. To see the
-     * error delete this comment and run Flow. */
+    if (this._scrollRef == null) {
+      return;
+    }
+
     this._scrollRef.flashScrollIndicators();
   }
 
@@ -482,13 +595,21 @@ class VirtualizedList extends React.PureComponent<Props, State> {
    * Note that `this._scrollRef` might not be a `ScrollView`, so we
    * need to check that it responds to `getScrollResponder` before calling it.
    */
+<<<<<<< HEAD
   getScrollResponder(): any {
+=======
+  getScrollResponder(): ?ScrollResponderType {
+>>>>>>> fb/0.62-stable
     if (this._scrollRef && this._scrollRef.getScrollResponder) {
       return this._scrollRef.getScrollResponder();
     }
   }
 
+<<<<<<< HEAD
   getScrollableNode(): any {
+=======
+  getScrollableNode(): ?number {
+>>>>>>> fb/0.62-stable
     if (this._scrollRef && this._scrollRef.getScrollableNode) {
       return this._scrollRef.getScrollableNode();
     } else {
@@ -496,7 +617,13 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     }
   }
 
+<<<<<<< HEAD
   getScrollRef(): any {
+=======
+  getScrollRef():
+    | ?React.ElementRef<typeof ScrollView>
+    | ?React.ElementRef<typeof View> {
+>>>>>>> fb/0.62-stable
     if (this._scrollRef && this._scrollRef.getScrollRef) {
       return this._scrollRef.getScrollRef();
     } else {
@@ -592,6 +719,10 @@ class VirtualizedList extends React.PureComponent<Props, State> {
         timestamp: number,
         velocity: number,
         visibleLength: number,
+<<<<<<< HEAD
+=======
+        ...
+>>>>>>> fb/0.62-stable
       },
       horizontal: ?boolean,
       getOutermostParentListRef: Function,
@@ -600,11 +731,21 @@ class VirtualizedList extends React.PureComponent<Props, State> {
         cellKey: string,
         key: string,
         ref: VirtualizedList,
+<<<<<<< HEAD
+=======
+        ...
+>>>>>>> fb/0.62-stable
       }) => ?ChildListState,
       unregisterAsNestedChild: ({
         key: string,
         state: ChildListState,
+<<<<<<< HEAD
       }) => void,
+=======
+        ...
+      }) => void,
+      ...
+>>>>>>> fb/0.62-stable
     },
   |} {
     return {
@@ -651,6 +792,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     cellKey: string,
     key: string,
     ref: VirtualizedList,
+    ...
   }): ?ChildListState => {
     // Register the mapping between this child key and the cellKey for its cell
     const childListsInCell =
@@ -679,6 +821,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
   _unregisterAsNestedChild = (childList: {
     key: string,
     state: ChildListState,
+    ...
   }): void => {
     this._nestedChildLists.set(childList.key, {
       ref: null,
@@ -691,6 +834,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
   constructor(props: Props, context: Object) {
     super(props, context);
     invariant(
+      // $FlowFixMe
       !props.onScroll || !props.onScroll.__isNative,
       'Components based on VirtualizedList must be wrapped with Animated.createAnimatedComponent ' +
         'to support native onScroll events with useNativeDriver',
@@ -947,6 +1091,9 @@ class VirtualizedList extends React.PureComponent<Props, State> {
                 initBlock.offset -
                 (this.props.initialScrollIndex ? 0 : initBlock.length);
               cells.push(
+                /* $FlowFixMe(>=0.111.0 site=react_native_fb) This comment
+                 * suppresses an error found when Flow v0.111 was deployed. To
+                 * see the error, delete this comment and run Flow. */
                 <View key="$sticky_lead" style={{[spacerKey]: leadSpace}} />,
               );
               this._pushCells(
@@ -961,6 +1108,9 @@ class VirtualizedList extends React.PureComponent<Props, State> {
                 this._getFrameMetricsApprox(first).offset -
                 (stickyBlock.offset + stickyBlock.length);
               cells.push(
+                /* $FlowFixMe(>=0.111.0 site=react_native_fb) This comment
+                 * suppresses an error found when Flow v0.111 was deployed. To
+                 * see the error, delete this comment and run Flow. */
                 <View key="$sticky_trail" style={{[spacerKey]: trailSpace}} />,
               );
               insertedStickySpacer = true;
@@ -974,6 +1124,9 @@ class VirtualizedList extends React.PureComponent<Props, State> {
             this._getFrameMetricsApprox(first).offset -
             (initBlock.offset + initBlock.length);
           cells.push(
+            /* $FlowFixMe(>=0.111.0 site=react_native_fb) This comment
+             * suppresses an error found when Flow v0.111 was deployed. To see
+             * the error, delete this comment and run Flow. */
             <View key="$lead_spacer" style={{[spacerKey]: firstSpace}} />,
           );
         }
@@ -1008,6 +1161,9 @@ class VirtualizedList extends React.PureComponent<Props, State> {
           endFrame.length -
           (lastFrame.offset + lastFrame.length);
         cells.push(
+          /* $FlowFixMe(>=0.111.0 site=react_native_fb) This comment suppresses
+           * an error found when Flow v0.111 was deployed. To see the error,
+           * delete this comment and run Flow. */
           <View key="$tail_spacer" style={{[spacerKey]: tailSpacerLength}} />,
         );
       }
@@ -1075,13 +1231,10 @@ class VirtualizedList extends React.PureComponent<Props, State> {
           ? this.props.invertStickyHeaders
           : this.props.inverted,
       stickyHeaderIndices,
+      style: inversionStyle
+        ? [inversionStyle, this.props.style]
+        : this.props.style,
     };
-    if (inversionStyle) {
-      /* $FlowFixMe(>=0.70.0 site=react_native_fb) This comment suppresses an
-       * error found when Flow v0.70 was deployed. To see the error delete
-       * this comment and run Flow. */
-      scrollProps.style = [inversionStyle, this.props.style];
-    }
 
     this._hasMore =
       this.state.last < this.props.getItemCount(this.props.data) - 1;
@@ -1133,8 +1286,6 @@ class VirtualizedList extends React.PureComponent<Props, State> {
   componentDidUpdate(prevProps: Props) {
     const {data, extraData} = this.props;
     if (data !== prevProps.data || extraData !== prevProps.extraData) {
-      this._hasDataChangedSinceEndReached = true;
-
       // clear the viewableIndices cache to also trigger
       // the onViewableItemsChanged callback with the new data
       this._viewabilityTuples.forEach(tuple => {
@@ -1163,7 +1314,6 @@ class VirtualizedList extends React.PureComponent<Props, State> {
   _fillRateHelper: FillRateHelper;
   _frames = {};
   _footerLength = 0;
-  _hasDataChangedSinceEndReached = true;
   _hasDoneInitialScroll = false;
   _hasInteracted = false;
   _hasMore = false;
@@ -1174,7 +1324,11 @@ class VirtualizedList extends React.PureComponent<Props, State> {
   _indicesToKeys: Map<number, string> = new Map();
   _nestedChildLists: Map<
     string,
-    {ref: ?VirtualizedList, state: ?ChildListState},
+    {
+      ref: ?VirtualizedList,
+      state: ?ChildListState,
+      ...
+    },
   > = new Map();
   _offsetFromParentVirtualizedList: number = 0;
   _prevParentOffset: number = 0;
@@ -1223,6 +1377,9 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       invariant(
         typeof props.refreshing === 'boolean',
         '`refreshing` prop must be set as a boolean in order to use `onRefresh`, but got `' +
+          /* $FlowFixMe(>=0.111.0 site=react_native_fb) This comment suppresses
+           * an error found when Flow v0.111 was deployed. To see the error,
+           * delete this comment and run Flow. */
           JSON.stringify(props.refreshing) +
           '`',
       );
@@ -1512,11 +1669,23 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     );
   }
 
-  _selectLength(metrics: $ReadOnly<{height: number, width: number}>): number {
+  _selectLength(
+    metrics: $ReadOnly<{
+      height: number,
+      width: number,
+      ...
+    }>,
+  ): number {
     return !this.props.horizontal ? metrics.height : metrics.width;
   }
 
-  _selectOffset(metrics: $ReadOnly<{x: number, y: number}>): number {
+  _selectOffset(
+    metrics: $ReadOnly<{
+      x: number,
+      y: number,
+      ...
+    }>,
+  ): number {
     return !this.props.horizontal ? metrics.y : metrics.x;
   }
 
@@ -1529,20 +1698,22 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     } = this.props;
     const {contentLength, visibleLength, offset} = this._scrollMetrics;
     const distanceFromEnd = contentLength - visibleLength - offset;
+    const threshold = onEndReachedThreshold
+      ? onEndReachedThreshold * visibleLength
+      : 0;
     if (
       onEndReached &&
       this.state.last === getItemCount(data) - 1 &&
-      /* $FlowFixMe(>=0.63.0 site=react_native_fb) This comment suppresses an
-       * error found when Flow v0.63 was deployed. To see the error delete this
-       * comment and run Flow. */
-      distanceFromEnd < onEndReachedThreshold * visibleLength &&
-      (this._hasDataChangedSinceEndReached ||
-        this._scrollMetrics.contentLength !== this._sentEndForContentLength)
+      distanceFromEnd < threshold &&
+      this._scrollMetrics.contentLength !== this._sentEndForContentLength
     ) {
-      // Only call onEndReached once for a given dataset + content length.
-      this._hasDataChangedSinceEndReached = false;
+      // Only call onEndReached once for a given content length
       this._sentEndForContentLength = this._scrollMetrics.contentLength;
       onEndReached({distanceFromEnd});
+    } else if (distanceFromEnd > threshold) {
+      // If the user scrolls away from the end and back again cause
+      // an onEndReached to be triggered again
+      this._sentEndForContentLength = 0;
     }
   }
 
@@ -1574,6 +1745,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
   _convertParentScrollMetrics = (metrics: {
     visibleLength: number,
     offset: number,
+    ...
   }) => {
     // Offset of the top of the nested list relative to the top of its parent's viewport
     const offset = metrics.offset - this._offsetFromParentVirtualizedList;
@@ -1821,7 +1993,11 @@ class VirtualizedList extends React.PureComponent<Props, State> {
 
   _getFrameMetricsApprox = (
     index: number,
-  ): {length: number, offset: number} => {
+  ): {
+    length: number,
+    offset: number,
+    ...
+  } => {
     const frame = this._getFrameMetrics(index);
     if (frame && frame.index === index) {
       // check for invalid frames due to row re-ordering
@@ -1846,6 +2022,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     offset: number,
     index: number,
     inLayout?: boolean,
+    ...
   } => {
     const {
       data,
@@ -1909,6 +2086,7 @@ type CellRendererProps = {
   horizontal: ?boolean,
   index: number,
   inversionStyle: ViewStyleProp,
+<<<<<<< HEAD
   isSelected: ?boolean, // TODO(macOS ISS#2323203)
   item: Item,
   onLayout: (event: Object) => void, // This is extracted by ScrollViewStickyHeader
@@ -1920,6 +2098,30 @@ type CellRendererProps = {
     ListItemComponent?: ?(React.ComponentType<any> | React.Element<any>),
   },
   prevCellKey: ?string,
+=======
+  item: Item,
+  // This is extracted by ScrollViewStickyHeader
+  onLayout: (event: Object) => void,
+  onUnmount: (cellKey: string) => void,
+  onUpdateSeparators: (cellKeys: Array<?string>, props: Object) => void,
+  parentProps: {
+    // e.g. height, y,
+    getItemLayout?: (
+      data: any,
+      index: number,
+    ) => {
+      length: number,
+      offset: number,
+      index: number,
+      ...
+    },
+    renderItem?: ?RenderItemType<Item>,
+    ListItemComponent?: ?(React.ComponentType<any> | React.Element<any>),
+    ...
+  },
+  prevCellKey: ?string,
+  ...
+>>>>>>> fb/0.62-stable
 };
 
 type CellRendererState = {
@@ -1927,6 +2129,10 @@ type CellRendererState = {
     highlighted: boolean,
     leadingItem: ?Item,
   |}>,
+<<<<<<< HEAD
+=======
+  ...
+>>>>>>> fb/0.62-stable
 };
 
 class CellRenderer extends React.Component<
@@ -2000,8 +2206,12 @@ class CellRenderer extends React.Component<
     this.props.onUnmount(this.props.cellKey);
   }
 
+<<<<<<< HEAD
   _renderElement(renderItem, ListItemComponent, item, index, isSelected) {
     // TODO(macOS ISS#2323203)
+=======
+  _renderElement(renderItem, ListItemComponent, item, index) {
+>>>>>>> fb/0.62-stable
     if (renderItem && ListItemComponent) {
       console.warn(
         'VirtualizedList: Both ListItemComponent and renderItem props are present. ListItemComponent will take' +
@@ -2010,6 +2220,12 @@ class CellRenderer extends React.Component<
     }
 
     if (ListItemComponent) {
+<<<<<<< HEAD
+=======
+      /* $FlowFixMe(>=0.108.0 site=react_native_fb) This comment suppresses an
+       * error found when Flow v0.108 was deployed. To see the error, delete
+       * this comment and run Flow. */
+>>>>>>> fb/0.62-stable
       return React.createElement(ListItemComponent, {
         item,
         index,
@@ -2049,7 +2265,10 @@ class CellRenderer extends React.Component<
       ListItemComponent,
       item,
       index,
+<<<<<<< HEAD
       isSelected, // TODO(macOS ISS#2323203)
+=======
+>>>>>>> fb/0.62-stable
     );
 
     const onLayout =
@@ -2097,6 +2316,7 @@ class CellRenderer extends React.Component<
 class VirtualizedCellWrapper extends React.Component<{
   cellKey: string,
   children: React.Node,
+  ...
 }> {
   static childContextTypes = {
     virtualizedCell: PropTypes.shape({

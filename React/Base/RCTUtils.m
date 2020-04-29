@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -19,6 +19,7 @@
 
 #import "RCTAssert.h"
 #import "RCTLog.h"
+#import <React/RCTUtilsUIOverride.h>
 
 NSString *const RCTErrorUnspecified = @"EUNSPECIFIED";
 
@@ -534,8 +535,8 @@ UIWindow *__nullable RCTKeyWindow(void)
 
 UIViewController *__nullable RCTPresentedViewController(void)
 {
-  if (RCTRunningInAppExtension()) {
-    return nil;
+  if ([RCTUtilsUIOverride hasPresentedViewController]) {
+    return [RCTUtilsUIOverride presentedViewController];
   }
 
   UIViewController *controller = RCTKeyWindow().rootViewController;
@@ -965,6 +966,22 @@ NSString *RCTUIKitLocalizedString(NSString *string)
   return UIKitBundle ? [UIKitBundle localizedStringForKey:string value:string table:nil] : string;
 }
 #endif // TODO(macOS ISS#2323203)
+
+NSString  *RCTHumanReadableType(NSObject *obj)
+{
+  if ([obj isKindOfClass:[NSString class]]) {
+    return @"string";
+  } else if ([obj isKindOfClass:[NSNumber class]]) {
+    int intVal = [(NSNumber *)obj intValue];
+    if(intVal == 0 || intVal == 1) {
+      return @"boolean or number";
+    }
+
+    return @"number";
+  } else {
+    return NSStringFromClass([obj class]);
+  }
+}
 
 NSString  *RCTHumanReadableType(NSObject *obj)
 {

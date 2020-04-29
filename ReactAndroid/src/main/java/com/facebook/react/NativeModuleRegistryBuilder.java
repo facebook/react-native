@@ -1,14 +1,15 @@
-// Copyright (c) Facebook, Inc. and its affiliates.
-
-// This source code is licensed under the MIT license found in the
-// LICENSE file in the root directory of this source tree.
+/*
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
 
 package com.facebook.react;
 
 import com.facebook.react.bridge.ModuleHolder;
 import com.facebook.react.bridge.NativeModuleRegistry;
 import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.config.ReactFeatureFlags;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -57,6 +58,7 @@ public class NativeModuleRegistryBuilder {
         }
         mModules.remove(existingNativeModule);
       }
+<<<<<<< HEAD
       if (ReactFeatureFlags.useTurboModules && moduleHolder.isTurboModule()) {
         // If this module is a TurboModule, and if TurboModules are enabled, don't add this module
 
@@ -69,6 +71,8 @@ public class NativeModuleRegistryBuilder {
         // there
         continue;
       }
+=======
+>>>>>>> fb/0.62-stable
       mModules.put(name, moduleHolder);
     }
   }

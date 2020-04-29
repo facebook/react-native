@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
@@ -7,10 +7,15 @@
 package com.facebook.react.uimanager.events;
 
 import androidx.annotation.Nullable;
+<<<<<<< HEAD
+=======
+import com.facebook.proguard.annotations.DoNotStrip;
+>>>>>>> fb/0.62-stable
 import com.facebook.react.bridge.JavaScriptModule;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
 
+@DoNotStrip
 public interface RCTEventEmitter extends JavaScriptModule {
   void receiveEvent(int targetTag, String eventName, @Nullable WritableMap event);
 

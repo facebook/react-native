@@ -12,7 +12,11 @@
 module.exports = {
   haste: {
     defaultPlatform: 'ios',
+<<<<<<< HEAD
     platforms: ['android', 'ios', 'macos', 'native'],
+=======
+    platforms: ['android', 'ios', 'native'],
+>>>>>>> fb/0.62-stable
   },
   transform: {
     '^.+\\.(js|ts|tsx)$': 'babel-jest',

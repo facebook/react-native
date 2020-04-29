@@ -6,7 +6,7 @@
  *
  * @format
  * @emails oncall+react_native
- * @flow
+ * @flow strict-local
  */
 
 'use strict';
@@ -18,9 +18,10 @@ const React = require('react');
 const DrawerLayoutAndroid = require('../DrawerLayoutAndroid.android');
 const View = require('../../View/View');
 
-const render = require('../../../../jest/renderer');
+const ReactNativeTestTools = require('../../../Utilities/ReactNativeTestTools');
 
 describe('<DrawerLayoutAndroid />', () => {
+<<<<<<< HEAD
   it('should render as <DrawerLayoutAndroid> when mocked', () => {
     const instance = render.create(
       <DrawerLayoutAndroid
@@ -67,5 +68,21 @@ describe('<DrawerLayoutAndroid />', () => {
       />,
     );
     expect(instance).toMatchSnapshot();
+=======
+  it('should render as expected', () => {
+    ReactNativeTestTools.expectRendersMatchingSnapshot(
+      'DrawerLayoutAndroid',
+      () => (
+        <DrawerLayoutAndroid
+          drawerWidth={300}
+          drawerPosition="left"
+          renderNavigationView={() => <View />}
+        />
+      ),
+      () => {
+        jest.dontMock('../DrawerLayoutAndroid');
+      },
+    );
+>>>>>>> fb/0.62-stable
   });
 });

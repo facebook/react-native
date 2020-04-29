@@ -8,5 +8,9 @@
  */
 
 exports.rules = {
+<<<<<<< HEAD
+=======
+  'error-subclass-name': require('./error-subclass-name'),
+>>>>>>> fb/0.62-stable
   'no-haste-imports': require('./no-haste-imports'),
 };

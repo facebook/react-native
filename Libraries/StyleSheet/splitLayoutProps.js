@@ -44,6 +44,10 @@ function splitLayoutProps(
 ): {
   outer: DangerouslyImpreciseStyle,
   inner: DangerouslyImpreciseStyle,
+<<<<<<< HEAD
+=======
+  ...
+>>>>>>> fb/0.62-stable
 } {
   const inner = {};
   const outer = {};

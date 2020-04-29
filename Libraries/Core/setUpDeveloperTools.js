@@ -7,13 +7,18 @@
  * @flow strict-local
  * @format
  */
+
 'use strict';
 
 import Platform from '../Utilities/Platform';
 
+<<<<<<< HEAD
 declare var console: typeof console & {
   _isPolyfilled: boolean,
 };
+=======
+declare var console: typeof console & {_isPolyfilled: boolean, ...};
+>>>>>>> fb/0.62-stable
 
 /**
  * Sets up developer tools for React Native.
@@ -23,6 +28,7 @@ if (__DEV__) {
   // TODO (T45803484) Enable devtools for bridgeless RN
   if (!global.RN$Bridgeless) {
     if (!global.__RCTProfileIsProfiling) {
+<<<<<<< HEAD
       // not when debugging in chrome
       // TODO(t12832058) This check is broken
       if (!window.document) {
@@ -52,6 +58,9 @@ if (__DEV__) {
           resolveRNStyle: require('../StyleSheet/flattenStyle'),
         });
       }
+=======
+      require('./setUpReactDevTools');
+>>>>>>> fb/0.62-stable
 
       // Set up inspector
       const JSInspector = require('../JSInspector/JSInspector');
@@ -90,7 +99,10 @@ if (__DEV__) {
           'debug',
         ].forEach(level => {
           const originalFunction = console[level];
+<<<<<<< HEAD
           // $FlowFixMe Overwrite console methods
+=======
+>>>>>>> fb/0.62-stable
           console[level] = function(...args) {
             HMRClient.log(level, args);
             originalFunction.apply(console, args);

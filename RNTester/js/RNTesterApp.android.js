@@ -10,7 +10,16 @@
 
 'use strict';
 
+const RNTesterActions = require('./utils/RNTesterActions');
+const RNTesterExampleContainer = require('./components/RNTesterExampleContainer');
+const RNTesterExampleList = require('./components/RNTesterExampleList');
+const RNTesterList = require('./utils/RNTesterList');
+const RNTesterNavigationReducer = require('./utils/RNTesterNavigationReducer');
 const React = require('react');
+const URIActionMap = require('./utils/URIActionMap');
+
+const nativeImageSource = require('../../Libraries/Image/nativeImageSource');
+
 const {
   AppRegistry,
   AsyncStorage,
@@ -24,8 +33,10 @@ const {
   Text,
   TouchableWithoutFeedback,
   UIManager,
+  useColorScheme,
   View,
 } = require('react-native');
+<<<<<<< HEAD
 const RNTesterActions = require('./utils/RNTesterActions');
 const RNTesterExampleContainer = require('./components/RNTesterExampleContainer');
 const RNTesterExampleList = require('./components/RNTesterExampleList');
@@ -36,14 +47,24 @@ const URIActionMap = require('./utils/URIActionMap');
 const nativeImageSource = require('../../Libraries/Image/nativeImageSource');
 
 import type {RNTesterNavigationState} from './utils/RNTesterNavigationReducer';
+=======
+
+import type {RNTesterExample} from './types/RNTesterTypes';
+import type {RNTesterNavigationState} from './utils/RNTesterNavigationReducer';
+import {RNTesterThemeContext, themes} from './components/RNTesterTheme';
+>>>>>>> fb/0.62-stable
 
 UIManager.setLayoutAnimationEnabledExperimental(true);
 
 const DRAWER_WIDTH_LEFT = 56;
 
+<<<<<<< HEAD
 type Props = {
   exampleFromAppetizeParams?: ?string,
 };
+=======
+type Props = {exampleFromAppetizeParams?: ?string, ...};
+>>>>>>> fb/0.62-stable
 
 const APP_STATE_KEY = 'RNTesterAppState.v2';
 
@@ -53,6 +74,7 @@ const HEADER_NAV_ICON = nativeImageSource({
   height: 48,
 });
 
+<<<<<<< HEAD
 const Header = ({title, onPressDrawer}) => {
   return (
     <View style={styles.toolbar}>
@@ -65,6 +87,117 @@ const Header = ({title, onPressDrawer}) => {
         </TouchableWithoutFeedback>
       </View>
     </View>
+=======
+const Header = ({
+  onPressDrawer,
+  title,
+}: {
+  onPressDrawer?: () => mixed,
+  title: string,
+  ...
+}) => (
+  <RNTesterThemeContext.Consumer>
+    {theme => {
+      return (
+        <View style={[styles.toolbar, {backgroundColor: theme.ToolbarColor}]}>
+          <View style={styles.toolbarCenter}>
+            <Text style={[styles.title, {color: theme.LabelColor}]}>
+              {title}
+            </Text>
+          </View>
+          <View style={styles.toolbarLeft}>
+            <TouchableWithoutFeedback onPress={onPressDrawer}>
+              <Image source={HEADER_NAV_ICON} />
+            </TouchableWithoutFeedback>
+          </View>
+        </View>
+      );
+    }}
+  </RNTesterThemeContext.Consumer>
+);
+
+const RNTesterExampleContainerViaHook = ({
+  onPressDrawer,
+  title,
+  module,
+  exampleRef,
+}: {
+  onPressDrawer?: () => mixed,
+  title: string,
+  module: RNTesterExample,
+  exampleRef: () => void,
+  ...
+}) => {
+  const colorScheme = useColorScheme();
+  const theme = colorScheme === 'dark' ? themes.dark : themes.light;
+  return (
+    <RNTesterThemeContext.Provider value={theme}>
+      <View style={styles.container}>
+        <Header title={title} onPressDrawer={onPressDrawer} />
+        <RNTesterExampleContainer module={module} ref={exampleRef} />
+      </View>
+    </RNTesterThemeContext.Provider>
+  );
+};
+
+const RNTesterDrawerContentViaHook = ({
+  onNavigate,
+  list,
+}: {
+  onNavigate?: () => mixed,
+  list: {
+    ComponentExamples: Array<RNTesterExample>,
+    APIExamples: Array<RNTesterExample>,
+    ...
+  },
+  ...
+}) => {
+  const colorScheme = useColorScheme();
+  const theme = colorScheme === 'dark' ? themes.dark : themes.light;
+  return (
+    <RNTesterThemeContext.Provider value={theme}>
+      <View
+        style={[
+          styles.drawerContentWrapper,
+          {backgroundColor: theme.SystemBackgroundColor},
+        ]}>
+        <RNTesterExampleList
+          list={list}
+          displayTitleRow={true}
+          disableSearch={true}
+          onNavigate={onNavigate}
+        />
+      </View>
+    </RNTesterThemeContext.Provider>
+  );
+};
+
+const RNTesterExampleListViaHook = ({
+  title,
+  onPressDrawer,
+  onNavigate,
+  list,
+}: {
+  title: string,
+  onPressDrawer?: () => mixed,
+  onNavigate?: () => mixed,
+  list: {
+    ComponentExamples: Array<RNTesterExample>,
+    APIExamples: Array<RNTesterExample>,
+    ...
+  },
+  ...
+}) => {
+  const colorScheme = useColorScheme();
+  const theme = colorScheme === 'dark' ? themes.dark : themes.light;
+  return (
+    <RNTesterThemeContext.Provider value={theme}>
+      <View style={styles.container}>
+        <Header title={title} onPressDrawer={onPressDrawer} />
+        <RNTesterExampleList onNavigate={onNavigate} list={list} />
+      </View>
+    </RNTesterThemeContext.Provider>
+>>>>>>> fb/0.62-stable
   );
 };
 
@@ -99,7 +232,7 @@ class RNTesterApp extends React.Component<Props, RNTesterNavigationState> {
     });
   }
 
-  render() {
+  render(): React.Node {
     if (!this.state) {
       return null;
     }
@@ -132,14 +265,10 @@ class RNTesterApp extends React.Component<Props, RNTesterNavigationState> {
 
   _renderDrawerContent = () => {
     return (
-      <View style={styles.drawerContentWrapper}>
-        <RNTesterExampleList
-          list={RNTesterList}
-          displayTitleRow={true}
-          disableSearch={true}
-          onNavigate={this._handleAction}
-        />
-      </View>
+      <RNTesterDrawerContentViaHook
+        onNavigate={this._handleAction}
+        list={RNTesterList}
+      />
     );
   };
 
@@ -163,6 +292,7 @@ class RNTesterApp extends React.Component<Props, RNTesterNavigationState> {
         );
       } else if (ExampleModule) {
         return (
+<<<<<<< HEAD
           <View style={styles.container}>
             <Header
               title={ExampleModule.title}
@@ -179,11 +309,26 @@ class RNTesterApp extends React.Component<Props, RNTesterNavigationState> {
               }}
             />
           </View>
+=======
+          <RNTesterExampleContainerViaHook
+            /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was found
+             * when making Flow check .android.js files. */
+            onPressDrawer={() => this.drawer.openDrawer()}
+            title={ExampleModule.title}
+            module={ExampleModule}
+            exampleRef={example => {
+              /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue
+               * was found when making Flow check .android.js files. */
+              this._exampleRef = example;
+            }}
+          />
+>>>>>>> fb/0.62-stable
         );
       }
     }
 
     return (
+<<<<<<< HEAD
       <View style={styles.container}>
         <Header
           title="RNTester"
@@ -196,6 +341,16 @@ class RNTesterApp extends React.Component<Props, RNTesterNavigationState> {
           list={RNTesterList}
         />
       </View>
+=======
+      <RNTesterExampleListViaHook
+        title={'RNTester'}
+        /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was found
+         * when making Flow check .android.js files. */
+        onPressDrawer={() => this.drawer.openDrawer()}
+        onNavigate={this._handleAction}
+        list={RNTesterList}
+      />
+>>>>>>> fb/0.62-stable
     );
   }
 
@@ -245,7 +400,6 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   toolbar: {
-    backgroundColor: '#E9EAED',
     height: 56,
   },
   toolbarLeft: {
@@ -267,7 +421,6 @@ const styles = StyleSheet.create({
   drawerContentWrapper: {
     flex: 1,
     paddingTop: StatusBar.currentHeight,
-    backgroundColor: 'white',
   },
 });
 

@@ -7,6 +7,7 @@
  * @flow
  * @format
  */
+
 'use strict';
 
 const React = require('react');
@@ -31,16 +32,16 @@ type State = {
   pan: Object,
   linear: Object,
   isRTL: boolean,
+  ...
 };
 
-type RTLToggleState = {
-  isRTL: boolean,
-};
+type RTLToggleState = {isRTL: boolean, ...};
 
 type AnimationState = {
   toggleStatus: any,
   linear: Object,
   windowWidth: number,
+  ...
 };
 
 const SCALE = PixelRatio.get();
@@ -520,10 +521,7 @@ const BorderExample = withRTLState(({isRTL, setRTL}) => {
 });
 
 const directionStyle = isRTL =>
-  Platform.OS === 'ios' ||
-  Platform.OS === 'macos' /* TODO(OSS Candidate ISS#2710739) */
-    ? {direction: isRTL ? 'rtl' : 'ltr'}
-    : null;
+  Platform.OS === 'ios' ? {direction: isRTL ? 'rtl' : 'ltr'} : null;
 
 const styles = StyleSheet.create({
   container: {
@@ -661,7 +659,7 @@ exports.examples = [
   },
   {
     title: 'Default Text Alignment',
-    description: ('In iOS/macOS, it depends on active language. ' +
+    description: ('In iOS, it depends on active language. ' +
       'In Android, it depends on the text content.': string),
     render: function(): React.Element<any> {
       return <TextAlignmentExample style={styles.fontSizeSmall} />;
@@ -669,7 +667,7 @@ exports.examples = [
   },
   {
     title: "Using textAlign: 'left'",
-    description: ('In iOS/macOS/Android, text alignment flips regardless of ' +
+    description: ('In iOS/Android, text alignment flips regardless of ' +
       'languages or text content.': string),
     render: function(): React.Element<any> {
       return (
@@ -681,7 +679,7 @@ exports.examples = [
   },
   {
     title: "Using textAlign: 'right'",
-    description: ('In iOS/macOS/Android, text alignment flips regardless of ' +
+    description: ('In iOS/Android, text alignment flips regardless of ' +
       'languages or text content.': string),
     render: function(): React.Element<any> {
       return (

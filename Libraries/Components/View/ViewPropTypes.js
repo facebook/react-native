@@ -11,19 +11,32 @@
 'use strict';
 
 import type {
+<<<<<<< HEAD
   PressEvent,
   Layout,
   LayoutEvent,
   ScrollEvent, // TODO(macOS ISS#2323203)
+=======
+  BlurEvent,
+  FocusEvent,
+  MouseEvent,
+  PressEvent,
+  Layout,
+  LayoutEvent,
+>>>>>>> fb/0.62-stable
 } from '../../Types/CoreEventTypes';
 import type {EdgeInsetsProp} from '../../StyleSheet/EdgeInsetsPropType';
 import type {Node} from 'react';
 import type {ViewStyleProp} from '../../StyleSheet/StyleSheet';
-import type {TVViewProps} from '../AppleTV/TVViewPropTypes';
 import type {
   AccessibilityRole,
+<<<<<<< HEAD
   AccessibilityStates,
   AccessibilityState,
+=======
+  AccessibilityState,
+  AccessibilityValue,
+>>>>>>> fb/0.62-stable
   AccessibilityActionEvent,
   AccessibilityActionInfo,
   AccessibilityNodeInfoProp, // TODO(android ISS)
@@ -36,13 +49,18 @@ import type {DraggedTypesType} from '../View/DraggedType';
 export type ViewLayout = Layout;
 export type ViewLayoutEvent = LayoutEvent;
 
+type BubblingEventProps = $ReadOnly<{|
+  onBlur?: ?(event: BlurEvent) => mixed,
+  onFocus?: ?(event: FocusEvent) => mixed,
+|}>;
+
 type DirectEventProps = $ReadOnly<{|
   /**
    * When `accessible` is true, the system will try to invoke this function
    * when the user performs an accessibility custom action.
    *
    */
-  onAccessibilityAction?: ?(event: AccessibilityActionEvent) => void,
+  onAccessibilityAction?: ?(event: AccessibilityActionEvent) => mixed,
 
   /**
    * When `accessible` is true, the system will try to invoke this function
@@ -50,7 +68,7 @@ type DirectEventProps = $ReadOnly<{|
    *
    * See http://facebook.github.io/react-native/docs/view.html#onaccessibilitytap
    */
-  onAccessibilityTap?: ?() => void,
+  onAccessibilityTap?: ?() => mixed,
 
   /**
    * When `accessible` is true, the system will try to invoke this function
@@ -91,7 +109,7 @@ type DirectEventProps = $ReadOnly<{|
    *
    * See http://facebook.github.io/react-native/docs/view.html#onmagictap
    */
-  onMagicTap?: ?() => void,
+  onMagicTap?: ?() => mixed,
 
   /**
    * When `accessible` is `true`, the system will invoke this function when the
@@ -99,7 +117,12 @@ type DirectEventProps = $ReadOnly<{|
    *
    * See http://facebook.github.io/react-native/docs/view.html#onaccessibilityescape
    */
-  onAccessibilityEscape?: ?() => void,
+  onAccessibilityEscape?: ?() => mixed,
+|}>;
+
+type MouseEventProps = $ReadOnly<{|
+  onMouseEnter?: (event: MouseEvent) => void,
+  onMouseLeave?: (event: MouseEvent) => void,
 |}>;
 
 type TouchEventProps = $ReadOnly<{|
@@ -332,6 +355,13 @@ type AndroidViewProps = $ReadOnly<{|
   accessibilityNodeInfo?: AccessibilityNodeInfoProp, // TODO(android ISS)
 
   /**
+   * Whether to force the Android TV focus engine to move focus to this view.
+   *
+   * @platform android
+   */
+  hasTVPreferredFocus?: ?boolean,
+
+  /**
    * TV next focus down (see documentation for the View component).
    *
    * @platform android
@@ -368,12 +398,26 @@ type AndroidViewProps = $ReadOnly<{|
 
   /**
    * Whether this `View` should be focusable with a non-touch input device, eg. receive focus with a hardware keyboard.
+<<<<<<< HEAD
    * when the user performs a click.
   focusable?: boolean,
    *
    * @platform android
    */
   onClick?: ?(event: PressEvent) => mixed, // TODO(android ISS)
+=======
+   *
+   * @platform android
+   */
+  focusable?: boolean,
+
+  /**
+   * The action to perform when this `View` is clicked on by a non-touch click, eg. enter key on a hardware keyboard.
+   *
+   * @platform android
+   */
+  onClick?: ?(event: PressEvent) => mixed,
+>>>>>>> fb/0.62-stable
 |}>;
 
 type IOSViewProps = $ReadOnly<{|
@@ -425,15 +469,13 @@ type IOSViewProps = $ReadOnly<{|
 |}>;
 
 export type ViewProps = $ReadOnly<{|
+  ...BubblingEventProps,
   ...DirectEventProps,
   ...GestureResponderEventProps,
+  ...MouseEventProps,
   ...TouchEventProps,
   ...AndroidViewProps,
   ...IOSViewProps,
-
-  // There's no easy way to create a different type if (Platform.isTV):
-  // so we must include TVViewProps
-  ...TVViewProps,
 
   children?: Node,
   style?: ?ViewStyleProp,
@@ -473,8 +515,13 @@ export type ViewProps = $ReadOnly<{|
   /**
    * Indicates to accessibility services that UI Component is in a specific State.
    */
+<<<<<<< HEAD
   accessibilityStates?: ?AccessibilityStates,
   accessibilityState?: ?AccessibilityState,
+=======
+  accessibilityState?: ?AccessibilityState,
+  accessibilityValue?: ?AccessibilityValue,
+>>>>>>> fb/0.62-stable
 
   /**
    * Provides an array of custom actions available for accessibility.

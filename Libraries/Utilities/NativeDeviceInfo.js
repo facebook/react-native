@@ -13,27 +13,47 @@
 import type {TurboModule} from '../TurboModule/RCTExport';
 import * as TurboModuleRegistry from '../TurboModule/TurboModuleRegistry';
 
+<<<<<<< HEAD
 type DisplayMetricsAndroid = $ReadOnly<{|
+=======
+type DisplayMetricsAndroid = {|
+>>>>>>> fb/0.62-stable
   width: number,
   height: number,
   scale: number,
   fontScale: number,
   densityDpi: number,
+<<<<<<< HEAD
 |}>;
 
 export type DisplayMetrics = $ReadOnly<{|
+=======
+|};
+
+export type DisplayMetrics = {|
+>>>>>>> fb/0.62-stable
   width: number,
   height: number,
   scale: number,
   fontScale: number,
+<<<<<<< HEAD
 |}>;
 
 export type DimensionsPayload = $ReadOnly<{|
+=======
+|};
+
+export type DimensionsPayload = {|
+>>>>>>> fb/0.62-stable
   window?: DisplayMetrics,
   screen?: DisplayMetrics,
   windowPhysicalPixels?: DisplayMetricsAndroid,
   screenPhysicalPixels?: DisplayMetricsAndroid,
+<<<<<<< HEAD
 |}>;
+=======
+|};
+>>>>>>> fb/0.62-stable
 
 export interface Spec extends TurboModule {
   +getConstants: () => {|

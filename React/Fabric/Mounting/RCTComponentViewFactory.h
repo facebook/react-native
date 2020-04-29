@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -7,11 +7,22 @@
 
 #import <UIKit/UIKit.h>
 
+#import <React/RCTComponentViewDescriptor.h>
 #import <React/RCTComponentViewProtocol.h>
 
 #import <react/uimanager/ComponentDescriptorRegistry.h>
 
 NS_ASSUME_NONNULL_BEGIN
+
+@protocol RCTComponentViewFactoryDelegate <NSObject>
+
+/**
+ * Given a component name, return its actual class. If component with doesn't exist, nil is returned.
+ * Can be called on any thread.
+ */
+- (Class<RCTComponentViewProtocol>)componentViewClassWithName:(facebook::react::ComponentName)name;
+
+@end
 
 /**
  * Registry of supported component view classes that can instantiate
@@ -30,15 +41,9 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)registerComponentViewClass:(Class<RCTComponentViewProtocol>)componentViewClass;
 
 /**
- * Unregisters a component view class in the factory.
- */
-- (void)unregisterComponentViewClass:(Class<RCTComponentViewProtocol>)componentViewClass;
-
-/**
  * Creates a component view with given component handle.
  */
-- (UIView<RCTComponentViewProtocol> *)createComponentViewWithComponentHandle:
-    (facebook::react::ComponentHandle)componentHandle;
+- (RCTComponentViewDescriptor)createComponentViewWithComponentHandle:(facebook::react::ComponentHandle)componentHandle;
 
 /**
  * Creates *managed* `ComponentDescriptorRegistry`. After creation, the object continues to store a weak pointer to the
@@ -46,6 +51,8 @@ NS_ASSUME_NONNULL_BEGIN
  */
 - (facebook::react::ComponentDescriptorRegistry::Shared)createComponentDescriptorRegistryWithParameters:
     (facebook::react::ComponentDescriptorParameters)parameters;
+
+@property (atomic, weak, nullable) id<RCTComponentViewFactoryDelegate> delegate;
 
 @end
 

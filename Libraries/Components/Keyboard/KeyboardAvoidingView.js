@@ -61,17 +61,21 @@ type State = {|
  * adjusting its height, position, or bottom padding.
  */
 class KeyboardAvoidingView extends React.Component<Props, State> {
+<<<<<<< HEAD
   static defaultProps: $TEMPORARY$object<{|
     enabled: boolean,
     keyboardVerticalOffset: number,
   |}> = {
+=======
+  static defaultProps: {|enabled: boolean, keyboardVerticalOffset: number|} = {
+>>>>>>> fb/0.62-stable
     enabled: true,
     keyboardVerticalOffset: 0,
   };
 
   _frame: ?ViewLayout = null;
   _subscriptions: Array<EmitterSubscription> = [];
-  viewRef: {current: React.ElementRef<any> | null};
+  viewRef: {current: React.ElementRef<any> | null, ...};
   _initialFrameHeight: number = 0;
 
   constructor(props: Props) {

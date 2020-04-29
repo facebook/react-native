@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -325,6 +325,26 @@
 #else  // [TODO(macOS ISS#2323203)
   return ((RCTSliderCell*)self.cell).knobImage;
 #endif // ]TODO(macOS ISS#2323203)
+}
+
+- (void)accessibilityIncrement
+{
+  [super accessibilityIncrement];
+  if (_onSlidingComplete) {
+    _onSlidingComplete(@{
+        @"value": @(self.value),
+    });
+  }
+}
+
+- (void)accessibilityDecrement
+{
+  [super accessibilityDecrement];
+  if (_onSlidingComplete) {
+    _onSlidingComplete(@{
+        @"value": @(self.value),
+    });
+  }
 }
 
 @end

@@ -86,7 +86,14 @@ class YellowBoxInspector extends React.Component<Props, State> {
               />
             </View>
             {warning.getAvailableStack().map((frame, index) => {
+<<<<<<< HEAD
               const {file, lineNumber} = frame;
+=======
+              const {file, lineNumber, collapse = false} = frame;
+              if (collapse) {
+                return null;
+              }
+>>>>>>> fb/0.62-stable
               return (
                 <YellowBoxInspectorStackFrame
                   key={index}

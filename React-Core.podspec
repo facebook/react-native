@@ -1,4 +1,7 @@
+<<<<<<< HEAD
 # coding: utf-8
+=======
+>>>>>>> fb/0.62-stable
 # Copyright (c) Facebook, Inc. and its affiliates.
 #
 # This source code is licensed under the MIT license found in the
@@ -43,7 +46,11 @@ Pod::Spec.new do |s|
   s.homepage               = "http://facebook.github.io/react-native/"
   s.license                = package["license"]
   s.author                 = "Facebook, Inc. and its affiliates"
+<<<<<<< HEAD
   s.platforms              = { :ios => "9.0", :tvos => "9.2", :osx => "10.14" } # TODO(macOS GH#214)
+=======
+  s.platforms              = { :ios => "9.0", :tvos => "9.2" }
+>>>>>>> fb/0.62-stable
   s.source                 = source
   s.compiler_flags         = folly_compiler_flags + ' ' + boost_compiler_flags
   s.header_dir             = "React"
@@ -59,6 +66,7 @@ Pod::Spec.new do |s|
                                 "React/DevSupport/**/*",
                                 "React/Fabric/**/*",
                                 "React/Inspector/**/*"
+<<<<<<< HEAD
     ss.ios.exclude_files      = "React/**/RCTTV*.*",
 
     # TODO(macOS GH#214)
@@ -73,6 +81,9 @@ Pod::Spec.new do |s|
                                 "React/Views/{RCTModal*,RCTMasked*,RCTTV*,RCTRefreshControl*,RCTWrapperViewController}.*",
                                 "React/Views/SafeAreaView/*"
 
+=======
+    ss.ios.exclude_files      = "React/**/RCTTV*.*"
+>>>>>>> fb/0.62-stable
     ss.tvos.exclude_files     = "React/Modules/RCTClipboard*",
                                 "React/Views/RCTDatePicker*",
                                 "React/Views/RCTPicker*",

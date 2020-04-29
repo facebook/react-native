@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @flow
+ * @flow strict-local
  * @format
  */
 
@@ -25,18 +25,37 @@ export type SymbolicationRequest = $ReadOnly<{|
 class YellowBoxWarning {
   static parse({
     args,
-    framesToPop,
   }: $ReadOnly<{|
     args: $ReadOnlyArray<mixed>,
-    framesToPop: number,
   |}>): {|
     category: Category,
     message: Message,
     stack: Stack,
   |} {
+    let mutableArgs: Array<mixed> = [...args];
+
+    // This detects a very narrow case of a simple warning string,
+    // with a component stack appended by React DevTools.
+    // In this case, we convert the component stack to a substituion,
+    // because YellowBox formats those pleasantly.
+    // If there are other subtituations or formatting,
+    // we bail to avoid potentially corrupting the data.
+    if (mutableArgs.length === 2) {
+      const first = mutableArgs[0];
+      const last = mutableArgs[1];
+      if (
+        typeof first === 'string' &&
+        typeof last === 'string' &&
+        /^\n {4}in/.exec(last)
+      ) {
+        mutableArgs[0] = first + '%s';
+      }
+    }
+
     return {
-      ...YellowBoxCategory.parse(args),
-      stack: createStack({framesToPop: framesToPop + 1}),
+      ...YellowBoxCategory.parse(mutableArgs),
+      // TODO: Use Error.captureStackTrace on Hermes
+      stack: parseErrorStack(new Error()),
     };
   }
 
@@ -102,12 +121,6 @@ class YellowBoxWarning {
       },
     };
   }
-}
-
-function createStack({framesToPop}: $ReadOnly<{|framesToPop: number|}>): Stack {
-  const error: any = new Error();
-  error.framesToPop = framesToPop + 1;
-  return parseErrorStack(error);
 }
 
 module.exports = YellowBoxWarning;

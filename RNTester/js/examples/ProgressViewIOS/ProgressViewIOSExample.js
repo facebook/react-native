@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @flow
+ * @flow strict-local
  */
 
 'use strict';
@@ -42,9 +42,6 @@ class ProgressViewExample extends React.Component<Props, State> {
     this._rafId = requestAnimationFrame(() => this.updateProgress());
   };
 
-  /* $FlowFixMe(>=0.85.0 site=react_native_fb) This comment suppresses an error
-   * found when Flow v0.85 was deployed. To see the error, delete this comment
-   * and run Flow. */
   getProgress = offset => {
     const progress = this.state.progress + offset;
     return Math.sin(progress % Math.PI) % 1;

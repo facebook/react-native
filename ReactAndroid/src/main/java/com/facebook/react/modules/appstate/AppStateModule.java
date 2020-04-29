@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
@@ -19,10 +19,15 @@ import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.modules.core.DeviceEventManagerModule.RCTDeviceEventEmitter;
 import java.util.HashMap;
 import java.util.Map;
+import javax.annotation.Nullable;
 
 @ReactModule(name = AppStateModule.NAME)
 public class AppStateModule extends ReactContextBaseJavaModule
     implements LifecycleEventListener, WindowFocusChangeListener {
+<<<<<<< HEAD
+=======
+  public static final String TAG = AppStateModule.class.getSimpleName();
+>>>>>>> fb/0.62-stable
 
   public static final String NAME = "AppState";
 
@@ -80,9 +85,13 @@ public class AppStateModule extends ReactContextBaseJavaModule
 
   @Override
   public void onWindowFocusChange(boolean hasFocus) {
+<<<<<<< HEAD
     getReactApplicationContext()
         .getJSModule(RCTDeviceEventEmitter.class)
         .emit("appStateFocusChange", hasFocus);
+=======
+    sendEvent("appStateFocusChange", hasFocus);
+>>>>>>> fb/0.62-stable
   }
 
   private WritableMap createAppStateEventMap() {
@@ -91,9 +100,21 @@ public class AppStateModule extends ReactContextBaseJavaModule
     return appState;
   }
 
+  private void sendEvent(String eventName, @Nullable Object data) {
+    ReactApplicationContext reactApplicationContext = getReactApplicationContextIfActiveOrWarn();
+
+    if (reactApplicationContext != null) {
+      reactApplicationContext.getJSModule(RCTDeviceEventEmitter.class).emit(eventName, data);
+    }
+  }
+
   private void sendAppStateChangeEvent() {
+<<<<<<< HEAD
     getReactApplicationContext()
         .getJSModule(RCTDeviceEventEmitter.class)
         .emit("appStateDidChange", createAppStateEventMap());
+=======
+    sendEvent("appStateDidChange", createAppStateEventMap());
+>>>>>>> fb/0.62-stable
   }
 }

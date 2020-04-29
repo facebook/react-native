@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -20,9 +20,8 @@
   UITextView *_detachedTextView;
 #endif // TODO(macOS ISS#2323203)
   RCTBackedTextViewDelegateAdapter *_textInputDelegateAdapter;
+  NSDictionary<NSAttributedStringKey, id> *_defaultTextAttributes;
 }
-
-@synthesize reactTextAttributes = _reactTextAttributes;
 
 static UIFont *defaultPlaceholderFont()
 {
@@ -46,7 +45,6 @@ static RCTUIColor *defaultPlaceholderColor() // TODO(OSS Candidate ISS#2710739)
     _placeholderView = [[UILabel alloc] initWithFrame:self.bounds];
     _placeholderView.isAccessibilityElement = NO;
     _placeholderView.numberOfLines = 0;
-    _placeholderView.textColor = defaultPlaceholderColor();
     [self addSubview:_placeholderView];
 #else // [TODO(macOS ISS#2323203)
     NSTextCheckingTypes checkingTypes = 0;
@@ -55,14 +53,18 @@ static RCTUIColor *defaultPlaceholderColor() // TODO(OSS Candidate ISS#2710739)
 #endif // ]TODO(macOS ISS#2323203)
 
     _textInputDelegateAdapter = [[RCTBackedTextViewDelegateAdapter alloc] initWithTextView:self];
+
+    self.backgroundColor = [UIColor clearColor];
+    self.textColor = [UIColor blackColor];
+    // This line actually removes 5pt (default value) left and right padding in UITextView.
+    self.textContainer.lineFragmentPadding = 0;
+#if !TARGET_OS_TV
+    self.scrollsToTop = NO;
+#endif
+    self.scrollEnabled = YES;
   }
 
   return self;
-}
-
-- (void)dealloc
-{
-  [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 #pragma mark - Accessibility
@@ -98,17 +100,22 @@ static RCTUIColor *defaultPlaceholderColor() // TODO(OSS Candidate ISS#2710739)
 - (void)setPlaceholder:(NSString *)placeholder
 {
   _placeholder = placeholder;
+<<<<<<< HEAD
 #if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
   _placeholderView.text = _placeholder;
   _placeholderView.attributedText = [[NSAttributedString alloc] initWithString:_placeholder ?: @"" attributes:[self placeholderEffectiveTextAttributes]];
 #else // [TODO(macOS ISS#2323203)
   [self setNeedsDisplay:YES];
 #endif // ]TODO(macOS ISS#2323203)
+=======
+  [self _updatePlaceholder];
+>>>>>>> fb/0.62-stable
 }
 
 - (void)setPlaceholderColor:(RCTUIColor *)placeholderColor // TODO(OSS Candidate ISS#2710739)
 {
   _placeholderColor = placeholderColor;
+<<<<<<< HEAD
 #if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
   _placeholderView.textColor = _placeholderColor ?: defaultPlaceholderColor();
 #else // [TODO(macOS ISS#2323203)
@@ -168,29 +175,28 @@ static RCTUIColor *defaultPlaceholderColor() // TODO(OSS Candidate ISS#2710739)
   }
 
   return success;
+=======
+  [self _updatePlaceholder];
+>>>>>>> fb/0.62-stable
 }
 #endif // ]TODO(macOS ISS#2323203)
 
-- (void)setReactTextAttributes:(RCTTextAttributes *)reactTextAttributes
+- (void)setDefaultTextAttributes:(NSDictionary<NSAttributedStringKey, id> *)defaultTextAttributes
 {
-  if ([reactTextAttributes isEqual:_reactTextAttributes]) {
-    return;
-  }
-  self.typingAttributes = reactTextAttributes.effectiveTextAttributes;
-  _reactTextAttributes = reactTextAttributes;
-  // Update placeholder text attributes
-  [self setPlaceholder:_placeholder];
+  _defaultTextAttributes = defaultTextAttributes;
+  self.typingAttributes = defaultTextAttributes;
+  [self _updatePlaceholder];
 }
 
-- (RCTTextAttributes *)reactTextAttributes
+- (NSDictionary<NSAttributedStringKey, id> *)defaultTextAttributes
 {
-  return _reactTextAttributes;
+  return _defaultTextAttributes;
 }
 
 - (void)textDidChange
 {
   _textWasPasted = NO;
-  [self invalidatePlaceholderVisibility];
+  [self _invalidatePlaceholderVisibility];
 }
 
 #pragma mark - Overrides
@@ -198,11 +204,15 @@ static RCTUIColor *defaultPlaceholderColor() // TODO(OSS Candidate ISS#2710739)
 - (void)setFont:(UIFont *)font
 {
   [super setFont:font];
+<<<<<<< HEAD
 #if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
   _placeholderView.font = font ?: defaultPlaceholderFont();
 #else // [TODO(macOS ISS#2323203)
   [self setNeedsDisplay:YES];
 #endif // ]TODO(macOS ISS#2323203)
+=======
+  [self _updatePlaceholder];
+>>>>>>> fb/0.62-stable
 }
 
 - (void)setTextAlignment:(NSTextAlignment)textAlignment
@@ -356,7 +366,7 @@ static RCTUIColor *defaultPlaceholderColor() // TODO(OSS Candidate ISS#2710739)
   
 #if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
   CGSize maxPlaceholderSize = CGSizeMake(UIEdgeInsetsInsetRect(self.bounds, textContainerInset).size.width, CGFLOAT_MAX);
-  CGSize placeholderSize = [placeholder boundingRectWithSize:maxPlaceholderSize options:NSStringDrawingUsesLineFragmentOrigin attributes:[self placeholderEffectiveTextAttributes] context:nil].size;
+  CGSize placeholderSize = [placeholder boundingRectWithSize:maxPlaceholderSize options:NSStringDrawingUsesLineFragmentOrigin attributes:[self _placeholderTextAttributes] context:nil].size;
   placeholderSize = CGSizeMake(RCTCeilPixelValue(placeholderSize.width), RCTCeilPixelValue(placeholderSize.height));
 #else // [TODO(macOS ISS#2323203)
   CGFloat scale = self.window.backingScaleFactor;
@@ -434,7 +444,7 @@ static RCTUIColor *defaultPlaceholderColor() // TODO(OSS Candidate ISS#2710739)
 
 #pragma mark - Placeholder
 
-- (void)invalidatePlaceholderVisibility
+- (void)_invalidatePlaceholderVisibility
 {
 #if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
   BOOL isVisible = _placeholder.length != 0 && self.attributedText.length == 0;
@@ -453,19 +463,22 @@ static RCTUIColor *defaultPlaceholderColor() // TODO(OSS Candidate ISS#2710739)
 }
 #endif // ]TODO(OSS Candidate ISS#2710739)
 
-- (NSDictionary<NSAttributedStringKey, id> *)placeholderEffectiveTextAttributes
+- (void)_updatePlaceholder
 {
-  NSMutableDictionary<NSAttributedStringKey, id> *effectiveTextAttributes = [NSMutableDictionary dictionaryWithDictionary:@{
-                                                                                                                            NSFontAttributeName: _reactTextAttributes.effectiveFont ?: defaultPlaceholderFont(),
-                                                                                                                            NSForegroundColorAttributeName: self.placeholderColor ?: defaultPlaceholderColor(),
-                                                                                                                            NSKernAttributeName:isnan(_reactTextAttributes.letterSpacing) ? @0 : @(_reactTextAttributes.letterSpacing)
-                                                                                                                            }];
-  NSParagraphStyle *paragraphStyle = [_reactTextAttributes effectiveParagraphStyle];
-  if (paragraphStyle) {
-    effectiveTextAttributes[NSParagraphStyleAttributeName] = paragraphStyle;
+  _placeholderView.attributedText = [[NSAttributedString alloc] initWithString:_placeholder ?: @"" attributes:[self _placeholderTextAttributes]];
+}
+
+- (NSDictionary<NSAttributedStringKey, id> *)_placeholderTextAttributes
+{
+  NSMutableDictionary<NSAttributedStringKey, id> *textAttributes = [_defaultTextAttributes mutableCopy] ?: [NSMutableDictionary new];
+
+  [textAttributes setValue:self.placeholderColor ?: defaultPlaceholderColor() forKey:NSForegroundColorAttributeName];
+
+  if (![textAttributes objectForKey:NSFontAttributeName]) {
+    [textAttributes setValue:defaultPlaceholderFont() forKey:NSFontAttributeName];
   }
-  
-  return [effectiveTextAttributes copy];
+
+  return textAttributes;
 }
 
 #pragma mark - Utility Methods

@@ -8,12 +8,26 @@ Debugger.removeBreakpoint
 Debugger.resume
 Debugger.resumed
 Debugger.scriptParsed
+<<<<<<< HEAD
+=======
+Debugger.setBreakpoint
+>>>>>>> fb/0.62-stable
 Debugger.setBreakpointByUrl
 Debugger.setPauseOnExceptions
 Debugger.stepInto
 Debugger.stepOut
 Debugger.stepOver
+<<<<<<< HEAD
 Runtime.consoleAPICalled
 Runtime.evaluate
 Runtime.executionContextCreated
+=======
+HeapProfiler.addHeapSnapshotChunk
+HeapProfiler.reportHeapSnapshotProgress
+HeapProfiler.takeHeapSnapshot
+Runtime.consoleAPICalled
+Runtime.evaluate
+Runtime.executionContextCreated
+Runtime.getHeapUsage
+>>>>>>> fb/0.62-stable
 Runtime.getProperties

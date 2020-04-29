@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -20,6 +20,7 @@
 
 typedef void (^RCTPropBlock)(id<RCTComponent> view, id json);
 typedef NSMutableDictionary<NSString *, RCTPropBlock> RCTPropBlockDictionary;
+typedef void (^InterceptorBlock)(NSString *eventName, NSDictionary *event, id sender);
 
 /**
  * Get the converter function for the specified type
@@ -65,13 +66,22 @@ static SEL selectorForType(NSString *type)
 
 RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
+<<<<<<< HEAD
 - (RCTPlatformView *)createViewWithTag:(NSNumber *)tag // TODO(macOS ISS#2323203)
+=======
+- (UIView *)createViewWithTag:(NSNumber *)tag rootTag:(NSNumber *)rootTag
+>>>>>>> fb/0.62-stable
 {
   RCTAssertMainQueue();
 
   RCTPlatformView *view = [self.manager view]; // TODO(macOS ISS#2323203)
   view.reactTag = tag;
+<<<<<<< HEAD
 #if !TARGET_OS_OSX && !TARGET_OS_TV // TODO(macOS ISS#2323203)
+=======
+  view.rootTag = rootTag;
+#if !TARGET_OS_TV
+>>>>>>> fb/0.62-stable
   view.multipleTouchEnabled = YES;
 #endif
 #if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
@@ -95,7 +105,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   if (!isShadowView) {
     if (!json && !_defaultView) {
       // Only create default view if json is null
-      _defaultView = [self createViewWithTag:nil];
+      _defaultView = [self createViewWithTag:nil rootTag:nil];
     }
     ((void (*)(id, SEL, id, id, id))objc_msgSend)(self.manager, setter, json, view, _defaultView);
   } else {
@@ -103,7 +113,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   }
 }
 
-static RCTPropBlock createEventSetter(NSString *propName, SEL setter, RCTBridge *bridge)
+static RCTPropBlock createEventSetter(NSString *propName, SEL setter,InterceptorBlock eventInterceptor, RCTBridge *bridge)
 {
   __weak RCTBridge *weakBridge = bridge;
   return ^(id target, id json) {
@@ -117,10 +127,14 @@ static RCTPropBlock createEventSetter(NSString *propName, SEL setter, RCTBridge 
           return;
         }
 
-        RCTComponentEvent *componentEvent = [[RCTComponentEvent alloc] initWithName:propName
-                                                                            viewTag:strongTarget.reactTag
-                                                                               body:event];
-        [weakBridge.eventDispatcher sendEvent:componentEvent];
+        if (eventInterceptor) {
+          eventInterceptor(propName, event, strongTarget.reactTag);
+        } else {
+          RCTComponentEvent *componentEvent = [[RCTComponentEvent alloc] initWithName:propName
+                                                                              viewTag:strongTarget.reactTag
+                                                                                 body:event];
+          [weakBridge.eventDispatcher sendEvent:componentEvent];
+        }
       };
     }
     ((void (*)(id, SEL, id))objc_msgSend)(target, setter, eventHandler);
@@ -246,7 +260,7 @@ static RCTPropBlock createNSInvocationSetter(NSMethodSignature *typeSignature, S
     if (type == NSSelectorFromString(@"RCTBubblingEventBlock:") ||
         type == NSSelectorFromString(@"RCTDirectEventBlock:")) {
       // Special case for event handlers
-      setterBlock = createEventSetter(name, setter, _bridge);
+      setterBlock = createEventSetter(name, setter, self.eventInterceptor, _bridge);
     } else {
       // Ordinary property handlers
       NSMethodSignature *typeSignature = [[RCTConvert class] methodSignatureForSelector:type];

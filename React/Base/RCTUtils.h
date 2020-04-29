@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -103,7 +103,7 @@ RCT_EXTERN BOOL RCTForceTouchAvailable(void);
 RCT_EXTERN NSError *RCTErrorWithMessage(NSString *message);
 
 // Convert nil values to NSNull, and vice-versa
-#define RCTNullIfNil(value) (value ?: (id)kCFNull)
+#define RCTNullIfNil(value) ((value) ?: (id)kCFNull)
 #define RCTNilIfNull(value) \
   ({ __typeof__(value) t = (value); (id)t == (id)kCFNull ? (__typeof(value))nil : t; })
 
@@ -161,6 +161,9 @@ RCT_EXTERN NSString *RCTColorToHexString(CGColorRef color);
 // Get standard localized string (if it exists)
 RCT_EXTERN NSString *RCTUIKitLocalizedString(NSString *string);
 #endif // TODO(macOS ISS#2323203)
+
+// Get a human readable type string from an NSObject. For example NSString becomes string
+RCT_EXTERN NSString *RCTHumanReadableType(NSObject *obj);
 
 // Get a human readable type string from an NSObject. For example NSString becomes string
 RCT_EXTERN NSString *RCTHumanReadableType(NSObject *obj);

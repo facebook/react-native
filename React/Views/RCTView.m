@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -179,7 +179,10 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:unused)
   return RCTRecursiveAccessibilityLabel(self);
 }
 
+<<<<<<< HEAD
 #if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
+=======
+>>>>>>> fb/0.62-stable
 - (NSArray <UIAccessibilityCustomAction *> *)accessibilityCustomActions
 {
   if (!self.accessibilityActions.count) {
@@ -227,11 +230,13 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:unused)
 {
 #if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
   if ((self.accessibilityTraits & SwitchAccessibilityTrait) == SwitchAccessibilityTrait) {
-    for (NSString *state in self.accessibilityStates) {
-      if ([state isEqualToString:@"checked"]) {
-        return @"1";
-      } else if ([state isEqualToString:@"unchecked"]) {
-        return @"0";
+    for (NSString *state in self.accessibilityState) {
+      id val = self.accessibilityState[state];
+      if (!val) {
+        continue;
+      }
+      if ([state isEqualToString:@"checked"] && [val isKindOfClass:[NSNumber class]]) {
+        return [val boolValue] ? @"1" : @"0";
       }
     }
     for (NSString *state in self.accessibilityState) {
@@ -284,12 +289,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:unused)
   if (roleDescription) {
     [valueComponents addObject:roleDescription];
   }
-  for (NSString *state in self.accessibilityStates) {
-    NSString *stateDescription = state ? stateDescriptions[state] : nil;
-    if (stateDescription) {
-      [valueComponents addObject:stateDescription];
-    }
-  }
   for (NSString *state in self.accessibilityState) {
     id val = self.accessibilityState[state];
     if (!val) {
@@ -309,6 +308,48 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:unused)
       [valueComponents addObject:stateDescriptions[@"busy"]];
     }
   }
+  
+  // handle accessibilityValue
+
+  if (self.accessibilityValueInternal) {
+    id min = self.accessibilityValueInternal[@"min"];
+    id now = self.accessibilityValueInternal[@"now"];
+    id max = self.accessibilityValueInternal[@"max"];
+    id text = self.accessibilityValueInternal[@"text"];
+    if (text && [text isKindOfClass:[NSString class]]) {
+      [valueComponents addObject:text];
+    } else if ([min isKindOfClass:[NSNumber class]] &&
+        [now isKindOfClass:[NSNumber class]] &&
+        [max isKindOfClass:[NSNumber class]] &&
+        ([min intValue] < [max intValue]) &&
+        ([min intValue] <= [now intValue] && [now intValue] <= [max intValue])) {
+      int val = ([now intValue]*100)/([max intValue]-[min intValue]);
+      [valueComponents addObject:[NSString stringWithFormat:@"%d percent", val]];
+    }
+  }
+<<<<<<< HEAD
+  for (NSString *state in self.accessibilityState) {
+    id val = self.accessibilityState[state];
+    if (!val) {
+      continue;
+    }
+    if ([state isEqualToString:@"checked"]) {
+      if ([val isKindOfClass:[NSNumber class]]) {
+        [valueComponents addObject:stateDescriptions[[val boolValue] ? @"checked" : @"unchecked"]];
+      } else if ([val isKindOfClass:[NSString class]] && [val isEqualToString:@"mixed"]) {
+        [valueComponents addObject:stateDescriptions[@"mixed"]];
+      }
+    }
+    if ([state isEqualToString:@"expanded"] && [val isKindOfClass:[NSNumber class]]) {
+      [valueComponents addObject:stateDescriptions[[val boolValue] ? @"expanded" : @"collapsed"]];
+    }
+    if ([state isEqualToString:@"busy"] && [val isKindOfClass:[NSNumber class]] && [val boolValue]) {
+      [valueComponents addObject:stateDescriptions[@"busy"]];
+    }
+  }
+=======
+
+>>>>>>> fb/0.62-stable
   if (valueComponents.count > 0) {
     return [valueComponents componentsJoinedByString:@", "];
   }
@@ -426,8 +467,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:unused)
 {
   if ([self performAccessibilityAction:@"activate"]) {
     return YES;
-  }
-  else if (_onAccessibilityTap) {
+  } else if (_onAccessibilityTap) {
     _onAccessibilityTap(nil);
     return YES;
   } else {

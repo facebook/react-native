@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
@@ -6,6 +6,10 @@
  */
 package com.facebook.react.modules.datepicker;
 
+<<<<<<< HEAD
+=======
+import android.app.Activity;
+>>>>>>> fb/0.62-stable
 import android.app.DatePickerDialog.OnDateSetListener;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnDismissListener;
@@ -100,12 +104,19 @@ public class DatePickerDialogModule extends ReactContextBaseJavaModule {
    */
   @ReactMethod
   public void open(@Nullable final ReadableMap options, Promise promise) {
-    FragmentActivity activity = (FragmentActivity) getCurrentActivity();
-    if (activity == null) {
+    Activity raw_activity = getCurrentActivity();
+    if (raw_activity == null || !(raw_activity instanceof FragmentActivity)) {
       promise.reject(
+<<<<<<< HEAD
           ERROR_NO_ACTIVITY, "Tried to open a DatePicker dialog while not attached to an Activity");
+=======
+          ERROR_NO_ACTIVITY,
+          "Tried to open a DatePicker dialog while not attached to a FragmentActivity");
+>>>>>>> fb/0.62-stable
       return;
     }
+
+    FragmentActivity activity = (FragmentActivity) raw_activity;
 
     FragmentManager fragmentManager = activity.getSupportFragmentManager();
     DialogFragment oldFragment = (DialogFragment) fragmentManager.findFragmentByTag(FRAGMENT_TAG);

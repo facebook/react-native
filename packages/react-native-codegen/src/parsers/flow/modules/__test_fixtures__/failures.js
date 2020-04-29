@@ -4,7 +4,11 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+<<<<<<< HEAD
  * @flow
+=======
+ * @flow strict-local
+>>>>>>> fb/0.62-stable
  * @format
  */
 
@@ -17,7 +21,11 @@ const NATIVE_MODULES_WITH_ARRAY_WITH_NO_TYPE_FOR_CONTENT = `
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+<<<<<<< HEAD
  * @flow
+=======
+ * @flow strict-local
+>>>>>>> fb/0.62-stable
  * @format
  */
 
@@ -41,7 +49,11 @@ const NATIVE_MODULES_WITH_ARRAY_WITH_NO_TYPE_FOR_CONTENT_AS_PARAM = `
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+<<<<<<< HEAD
  * @flow
+=======
+ * @flow strict-local
+>>>>>>> fb/0.62-stable
  * @format
  */
 
@@ -65,7 +77,11 @@ const NATIVE_MODULES_WITH_READ_ONLY_OBJECT_NO_TYPE_FOR_CONTENT = `
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+<<<<<<< HEAD
  * @flow
+=======
+ * @flow strict-local
+>>>>>>> fb/0.62-stable
  * @format
  */
 
@@ -89,7 +105,11 @@ const NATIVE_MODULES_WITH_NOT_ONLY_METHODS = `
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+<<<<<<< HEAD
  * @flow
+=======
+ * @flow strict-local
+>>>>>>> fb/0.62-stable
  * @format
  */
 
@@ -117,7 +137,11 @@ const NATIVE_MODULES_WITH_UNNAMED_PARAMS = `
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+<<<<<<< HEAD
  * @flow
+=======
+ * @flow strict-local
+>>>>>>> fb/0.62-stable
  * @format
  */
 
@@ -142,7 +166,11 @@ const NATIVE_MODULES_WITH_PROMISE_WITHOUT_TYPE = `
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+<<<<<<< HEAD
  * @flow
+=======
+ * @flow strict-local
+>>>>>>> fb/0.62-stable
  * @format
  */
 
@@ -167,7 +195,11 @@ const TWO_NATIVE_MODULES_EXPORTED_WITH_DEFAULT = `
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+<<<<<<< HEAD
  * @flow
+=======
+ * @flow strict-local
+>>>>>>> fb/0.62-stable
  * @format
  */
 
@@ -189,7 +221,11 @@ const TWO_NATIVE_EXTENDING_TURBO_MODULE = `
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+<<<<<<< HEAD
  * @flow
+=======
+ * @flow strict-local
+>>>>>>> fb/0.62-stable
  * @format
  */
 
@@ -199,11 +235,19 @@ import type {TurboModule} from '../RCTExport';
 import * as TurboModuleRegistry from '../TurboModuleRegistry';
 
 export interface Spec extends TurboModule {
+<<<<<<< HEAD
   +getSth(a : ?number) => void
 }
 
 export interface Spec2 extends TurboModule {
   +getSth(a : ?number) => void
+=======
+  +getSth: (a : ?number) => void
+}
+
+export interface Spec2 extends TurboModule {
+  +getSth: (a : ?number) => void
+>>>>>>> fb/0.62-stable
 }
 
 

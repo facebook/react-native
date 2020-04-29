@@ -35,6 +35,7 @@ exports[`VirtualizedSectionList handles nested lists 1`] = `
   renderItem={[Function]}
   rowIndex={-1}
   scrollEventThrottle={50}
+<<<<<<< HEAD
   sectionIndex={0}
   sections={
     Array [
@@ -51,6 +52,8 @@ exports[`VirtualizedSectionList handles nested lists 1`] = `
       },
     ]
   }
+=======
+>>>>>>> fb/0.62-stable
   stickyHeaderIndices={Array []}
   updateCellsBatchingPeriod={50}
   windowSize={21}
@@ -98,6 +101,7 @@ exports[`VirtualizedSectionList handles nested lists 1`] = `
         renderItem={[Function]}
         rowIndex={-1}
         scrollEventThrottle={50}
+<<<<<<< HEAD
         sectionIndex={0}
         sections={
           Array [
@@ -114,6 +118,8 @@ exports[`VirtualizedSectionList handles nested lists 1`] = `
             },
           ]
         }
+=======
+>>>>>>> fb/0.62-stable
         stickyHeaderIndices={Array []}
         updateCellsBatchingPeriod={50}
         windowSize={21}
@@ -182,6 +188,7 @@ exports[`VirtualizedSectionList handles nested lists 1`] = `
         renderItem={[Function]}
         rowIndex={-1}
         scrollEventThrottle={50}
+<<<<<<< HEAD
         sectionIndex={0}
         sections={
           Array [
@@ -198,6 +205,8 @@ exports[`VirtualizedSectionList handles nested lists 1`] = `
             },
           ]
         }
+=======
+>>>>>>> fb/0.62-stable
         stickyHeaderIndices={Array []}
         updateCellsBatchingPeriod={50}
         windowSize={21}
@@ -304,6 +313,7 @@ exports[`VirtualizedSectionList handles separators correctly 1`] = `
   renderItem={[Function]}
   rowIndex={-1}
   scrollEventThrottle={50}
+<<<<<<< HEAD
   sectionIndex={0}
   sections={
     Array [
@@ -323,6 +333,8 @@ exports[`VirtualizedSectionList handles separators correctly 1`] = `
       },
     ]
   }
+=======
+>>>>>>> fb/0.62-stable
   stickyHeaderIndices={Array []}
   updateCellsBatchingPeriod={50}
   windowSize={21}
@@ -464,6 +476,7 @@ exports[`VirtualizedSectionList handles separators correctly 2`] = `
   renderItem={[Function]}
   rowIndex={-1}
   scrollEventThrottle={50}
+<<<<<<< HEAD
   sectionIndex={0}
   sections={
     Array [
@@ -483,6 +496,8 @@ exports[`VirtualizedSectionList handles separators correctly 2`] = `
       },
     ]
   }
+=======
+>>>>>>> fb/0.62-stable
   stickyHeaderIndices={Array []}
   updateCellsBatchingPeriod={50}
   windowSize={21}
@@ -624,6 +639,7 @@ exports[`VirtualizedSectionList handles separators correctly 3`] = `
   renderItem={[Function]}
   rowIndex={-1}
   scrollEventThrottle={50}
+<<<<<<< HEAD
   sectionIndex={0}
   sections={
     Array [
@@ -643,6 +659,8 @@ exports[`VirtualizedSectionList handles separators correctly 3`] = `
       },
     ]
   }
+=======
+>>>>>>> fb/0.62-stable
   stickyHeaderIndices={Array []}
   updateCellsBatchingPeriod={50}
   windowSize={21}
@@ -805,6 +823,7 @@ exports[`VirtualizedSectionList renders all the bells and whistles 1`] = `
   renderItem={[Function]}
   rowIndex={-1}
   scrollEventThrottle={50}
+<<<<<<< HEAD
   sectionIndex={0}
   sections={
     Array [
@@ -830,6 +849,8 @@ exports[`VirtualizedSectionList renders all the bells and whistles 1`] = `
       },
     ]
   }
+=======
+>>>>>>> fb/0.62-stable
   stickyHeaderIndices={Array []}
   style={
     Array [
@@ -895,10 +916,10 @@ exports[`VirtualizedSectionList renders all the bells and whistles 1`] = `
       }
     >
       <View>
+        <separator />
         <item
           value="0"
         />
-        <separator />
       </View>
     </View>
     <View
@@ -918,10 +939,10 @@ exports[`VirtualizedSectionList renders all the bells and whistles 1`] = `
       }
     >
       <View>
+        <separator />
         <item
           value="1"
         />
-        <separator />
       </View>
     </View>
     <View
@@ -941,10 +962,10 @@ exports[`VirtualizedSectionList renders all the bells and whistles 1`] = `
       }
     >
       <View>
+        <separator />
         <item
           value="2"
         />
-        <separator />
       </View>
     </View>
     <View
@@ -964,10 +985,10 @@ exports[`VirtualizedSectionList renders all the bells and whistles 1`] = `
       }
     >
       <View>
+        <separator />
         <item
           value="3"
         />
-        <separator />
       </View>
     </View>
     <View
@@ -1045,8 +1066,11 @@ exports[`VirtualizedSectionList renders empty list 1`] = `
   renderItem={[Function]}
   rowIndex={-1}
   scrollEventThrottle={50}
+<<<<<<< HEAD
   sectionIndex={0}
   sections={Array []}
+=======
+>>>>>>> fb/0.62-stable
   stickyHeaderIndices={Array []}
   updateCellsBatchingPeriod={50}
   windowSize={21}
@@ -1079,8 +1103,11 @@ exports[`VirtualizedSectionList renders empty list with empty component 1`] = `
   renderItem={[Function]}
   rowIndex={-1}
   scrollEventThrottle={50}
+<<<<<<< HEAD
   sectionIndex={0}
   sections={Array []}
+=======
+>>>>>>> fb/0.62-stable
   stickyHeaderIndices={Array []}
   updateCellsBatchingPeriod={50}
   windowSize={21}
@@ -1134,6 +1161,7 @@ exports[`VirtualizedSectionList renders list with empty component 1`] = `
   renderItem={[Function]}
   rowIndex={-1}
   scrollEventThrottle={50}
+<<<<<<< HEAD
   sectionIndex={0}
   sections={
     Array [
@@ -1147,6 +1175,8 @@ exports[`VirtualizedSectionList renders list with empty component 1`] = `
       },
     ]
   }
+=======
+>>>>>>> fb/0.62-stable
   stickyHeaderIndices={Array []}
   updateCellsBatchingPeriod={50}
   windowSize={21}
@@ -1239,6 +1269,7 @@ exports[`VirtualizedSectionList renders simple list 1`] = `
   renderItem={[Function]}
   rowIndex={-1}
   scrollEventThrottle={50}
+<<<<<<< HEAD
   sectionIndex={0}
   sections={
     Array [
@@ -1258,6 +1289,8 @@ exports[`VirtualizedSectionList renders simple list 1`] = `
       },
     ]
   }
+=======
+>>>>>>> fb/0.62-stable
   stickyHeaderIndices={Array []}
   updateCellsBatchingPeriod={50}
   windowSize={21}
