@@ -22,7 +22,6 @@ import {
   Colors,
   DebugInstructions,
   Header,
-  HermesBadge,
   LearnMoreLinks,
   ReloadInstructions,
 } from 'react-native/Libraries/NewAppScreen';
@@ -67,7 +66,6 @@ const App: () => Node = () => {
         contentInsetAdjustmentBehavior="automatic"
         style={backgroundStyle}>
         <Header />
-        <HermesBadge />
         <View
           style={{
             backgroundColor: isDarkMode ? Colors.black : Colors.white,
