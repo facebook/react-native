@@ -5,10 +5,11 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @format
+ * @flow
  */
 
 // TODO(macOS ISS#2323203)
 
-'use strict';
-
-module.exports = require('../UnimplementedViews/UnimplementedView');
+/* $FlowFixMe allow macOS to share iOS file */
+const RCTNetworking = require('./RCTNetworking.ios');
+module.exports = RCTNetworking;

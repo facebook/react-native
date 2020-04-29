@@ -7,8 +7,6 @@
  * @format
  */
 
-// TODO(macOS ISS#2323203) TODO(windows ISS): this file is TouchableNativeFeedback.ios.js in facebook's repo.  Renamed to TouchableNativeFeedback.js since it is shared here between ios, macos, and windows.
-
 'use strict';
 
 const React = require('react');

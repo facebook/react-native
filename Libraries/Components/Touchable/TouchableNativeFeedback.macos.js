@@ -5,11 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @flow strict-local
  */
 
-// TODO(macOS ISS#2323203)
-
-/* $FlowFixMe allow macOS to share iOS file */
-const LoadingView = require('./LoadingView.ios');
-module.exports = LoadingView;
+const DummyTouchableNativeFeedback = require('./TouchableNativeFeedback.ios');
+module.exports = DummyTouchableNativeFeedback;

@@ -7,9 +7,6 @@
  * @flow
  * @format
  */
-
-// TODO(macOS ISS#2323203) TODO(windows ISS): this file is Image.ios.js in facebook's repo.  Renamed to Image.js since it is shared here between ios, macos, and windows.
-
 'use strict';
 
 const DeprecatedImagePropType = require('../DeprecatedPropTypes/DeprecatedImagePropType');

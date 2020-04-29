@@ -10,14 +10,6 @@
 
 // TODO(macOS ISS#2323203)
 
-'use strict';
-
-const NativeEventEmitter = require('../../EventEmitter/NativeEventEmitter');
-const {StatusBarManager} = require('../../BatchedBridge/NativeModules');
-
-/**
- * Use `StatusBar` for mutating the status bar.
- */
-class StatusBarIOS extends NativeEventEmitter {}
-
-module.exports = new StatusBarIOS(StatusBarManager);
+/* $FlowFixMe allow macOS to share iOS file */
+const StatusBarIOS = require('./StatusBarIOS.ios');
+module.exports = StatusBarIOS;

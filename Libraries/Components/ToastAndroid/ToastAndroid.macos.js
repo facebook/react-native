@@ -10,14 +10,5 @@
 
 // TODO(macOS ISS#2323203)
 
-'use strict';
-
-const warning = require('fbjs/lib/warning');
-
-const ToastAndroid = {
-  show: function(message: string, duration: number): void {
-    warning(false, 'ToastAndroid is not supported on this platform.');
-  },
-};
-
+const ToastAndroid = require('./ToastAndroid.ios');
 module.exports = ToastAndroid;

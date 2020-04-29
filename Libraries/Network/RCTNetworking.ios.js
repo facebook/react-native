@@ -8,8 +8,6 @@
  * @flow
  */
 
-// TODO(macOS ISS#2323203) TODO(windows ISS): this file is RCTNetworking.ios.js in facebook's repo.  Renamed to RCTNetworking.js since it is shared here between ios, macos, and windows.
-
 'use strict';
 
 const NativeEventEmitter = require('../EventEmitter/NativeEventEmitter');
