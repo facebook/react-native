@@ -32,6 +32,8 @@ describe('LogBoxNotification', () => {
   it('should render log', () => {
     const output = render.shallowRender(
       <LogBoxNotification
+        isOnBottom
+        togglePosition={() => {}}
         log={log}
         totalLogCount={1}
         level="warn"
