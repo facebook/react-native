@@ -29,13 +29,6 @@
   },
   "dependencies": {
     "idx": "^2.1.0",
-<<<<<<< HEAD
-    "yargs": "^9.0.1"
-  },
-  "beachball": {
-    "shouldPublish": false
-=======
     "yargs": "^14.2.0"
->>>>>>> fb/0.62-stable
   }
 }

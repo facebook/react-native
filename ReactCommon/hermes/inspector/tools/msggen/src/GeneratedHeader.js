@@ -7,10 +7,7 @@
  * @flow
  * @format
  */
-<<<<<<< HEAD
-=======
 
->>>>>>> fb/0.62-stable
 'use strict';
 
 // placeholder token that will be replaced by signedsource script

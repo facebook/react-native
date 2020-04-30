@@ -1,9 +1,5 @@
 // Copyright 2004-present Facebook. All Rights Reserved.
-<<<<<<< HEAD
-// @generated <<SignedSource::*O*zOeWoEQle#+L!plEphiEmie@IsG>>
-=======
 // @generated SignedSource<<986a7615a1af0edce2bf49c00b4ef623>>
->>>>>>> fb/0.62-stable
 
 #include "MessageTypes.h"
 
@@ -36,10 +32,7 @@ std::unique_ptr<Request> Request::fromJsonThrowOnError(const std::string &str) {
       {"Debugger.removeBreakpoint",
        makeUnique<debugger::RemoveBreakpointRequest>},
       {"Debugger.resume", makeUnique<debugger::ResumeRequest>},
-<<<<<<< HEAD
-=======
       {"Debugger.setBreakpoint", makeUnique<debugger::SetBreakpointRequest>},
->>>>>>> fb/0.62-stable
       {"Debugger.setBreakpointByUrl",
        makeUnique<debugger::SetBreakpointByUrlRequest>},
       {"Debugger.setPauseOnExceptions",
@@ -47,14 +40,10 @@ std::unique_ptr<Request> Request::fromJsonThrowOnError(const std::string &str) {
       {"Debugger.stepInto", makeUnique<debugger::StepIntoRequest>},
       {"Debugger.stepOut", makeUnique<debugger::StepOutRequest>},
       {"Debugger.stepOver", makeUnique<debugger::StepOverRequest>},
-<<<<<<< HEAD
-      {"Runtime.evaluate", makeUnique<runtime::EvaluateRequest>},
-=======
       {"HeapProfiler.takeHeapSnapshot",
        makeUnique<heapProfiler::TakeHeapSnapshotRequest>},
       {"Runtime.evaluate", makeUnique<runtime::EvaluateRequest>},
       {"Runtime.getHeapUsage", makeUnique<runtime::GetHeapUsageRequest>},
->>>>>>> fb/0.62-stable
       {"Runtime.getProperties", makeUnique<runtime::GetPropertiesRequest>},
   };
 
@@ -445,8 +434,6 @@ void debugger::ResumeRequest::accept(RequestHandler &handler) const {
   handler.handle(*this);
 }
 
-<<<<<<< HEAD
-=======
 debugger::SetBreakpointRequest::SetBreakpointRequest()
     : Request("Debugger.setBreakpoint") {}
 
@@ -476,7 +463,6 @@ void debugger::SetBreakpointRequest::accept(RequestHandler &handler) const {
   handler.handle(*this);
 }
 
->>>>>>> fb/0.62-stable
 debugger::SetBreakpointByUrlRequest::SetBreakpointByUrlRequest()
     : Request("Debugger.setBreakpointByUrl") {}
 
@@ -600,8 +586,6 @@ void debugger::StepOverRequest::accept(RequestHandler &handler) const {
   handler.handle(*this);
 }
 
-<<<<<<< HEAD
-=======
 heapProfiler::TakeHeapSnapshotRequest::TakeHeapSnapshotRequest()
     : Request("HeapProfiler.takeHeapSnapshot") {}
 
@@ -631,7 +615,6 @@ void heapProfiler::TakeHeapSnapshotRequest::accept(
   handler.handle(*this);
 }
 
->>>>>>> fb/0.62-stable
 runtime::EvaluateRequest::EvaluateRequest() : Request("Runtime.evaluate") {}
 
 runtime::EvaluateRequest::EvaluateRequest(const dynamic &obj)
@@ -670,8 +653,6 @@ void runtime::EvaluateRequest::accept(RequestHandler &handler) const {
   handler.handle(*this);
 }
 
-<<<<<<< HEAD
-=======
 runtime::GetHeapUsageRequest::GetHeapUsageRequest()
     : Request("Runtime.getHeapUsage") {}
 
@@ -692,7 +673,6 @@ void runtime::GetHeapUsageRequest::accept(RequestHandler &handler) const {
   handler.handle(*this);
 }
 
->>>>>>> fb/0.62-stable
 runtime::GetPropertiesRequest::GetPropertiesRequest()
     : Request("Runtime.getProperties") {}
 
@@ -777,8 +757,6 @@ dynamic debugger::EvaluateOnCallFrameResponse::toDynamic() const {
   return obj;
 }
 
-<<<<<<< HEAD
-=======
 debugger::SetBreakpointResponse::SetBreakpointResponse(const dynamic &obj) {
   assign(id, obj, "id");
 
@@ -798,7 +776,6 @@ dynamic debugger::SetBreakpointResponse::toDynamic() const {
   return obj;
 }
 
->>>>>>> fb/0.62-stable
 debugger::SetBreakpointByUrlResponse::SetBreakpointByUrlResponse(
     const dynamic &obj) {
   assign(id, obj, "id");
@@ -838,8 +815,6 @@ dynamic runtime::EvaluateResponse::toDynamic() const {
   return obj;
 }
 
-<<<<<<< HEAD
-=======
 runtime::GetHeapUsageResponse::GetHeapUsageResponse(const dynamic &obj) {
   assign(id, obj, "id");
 
@@ -859,7 +834,6 @@ dynamic runtime::GetHeapUsageResponse::toDynamic() const {
   return obj;
 }
 
->>>>>>> fb/0.62-stable
 runtime::GetPropertiesResponse::GetPropertiesResponse(const dynamic &obj) {
   assign(id, obj, "id");
 
@@ -988,8 +962,6 @@ dynamic debugger::ScriptParsedNotification::toDynamic() const {
   return obj;
 }
 
-<<<<<<< HEAD
-=======
 heapProfiler::AddHeapSnapshotChunkNotification::
     AddHeapSnapshotChunkNotification()
     : Notification("HeapProfiler.addHeapSnapshotChunk") {}
@@ -1041,7 +1013,6 @@ dynamic heapProfiler::ReportHeapSnapshotProgressNotification::toDynamic()
   return obj;
 }
 
->>>>>>> fb/0.62-stable
 runtime::ConsoleAPICalledNotification::ConsoleAPICalledNotification()
     : Notification("Runtime.consoleAPICalled") {}
 

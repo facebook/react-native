@@ -1,13 +1,9 @@
-<<<<<<< HEAD
-// Copyright 2004-present Facebook. All Rights Reserved.
-=======
 /*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
->>>>>>> fb/0.62-stable
 
 #include <hermes/inspector/chrome/MessageTypes.h>
 
@@ -402,8 +398,6 @@ TEST(MessageTests, TestRequestFromJson) {
   EXPECT_TRUE(invalidReq.hasException());
 }
 
-<<<<<<< HEAD
-=======
 TEST(MessageTests, TestBreakpointRequestFromJSON) {
   std::unique_ptr<Request> baseReq = Request::fromJsonThrowOnError(R"({
     "id": 1,
@@ -422,7 +416,6 @@ TEST(MessageTests, TestBreakpointRequestFromJSON) {
   EXPECT_EQ(req->location.columnNumber.value(), 67);
 }
 
->>>>>>> fb/0.62-stable
 struct MyHandler : public NoopRequestHandler {
   void handle(const debugger::EnableRequest &req) override {
     enableReq = req;

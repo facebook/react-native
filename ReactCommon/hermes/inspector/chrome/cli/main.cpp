@@ -1,13 +1,9 @@
-<<<<<<< HEAD
-// Copyright 2004-present Facebook. All Rights Reserved.
-=======
 /*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
->>>>>>> fb/0.62-stable
 
 #include <cstdio>
 #include <cstdlib>
@@ -55,11 +51,6 @@ static void usage() {
   exit(1);
 }
 
-<<<<<<< HEAD
-static std::string prettify(const std::string &str) {
-  try {
-    folly::dynamic obj = folly::parseJson(str);
-=======
 /// Truncate UTF8 string \p s to be at most \p len bytes long.  If a multi-byte
 /// sequence crosses the limit (len), it will be wholly omitted from the
 /// output.  If the output is truncated, it will be suffixed with "...".
@@ -125,13 +116,10 @@ static std::string prettify(const std::string &str) {
   try {
     folly::dynamic obj = folly::parseJson(str);
     truncateStringsIn(obj, MAX_LINE_LEN);
->>>>>>> fb/0.62-stable
     return folly::toPrettyJson(obj);
   } catch (...) {
     // pass
   }
-<<<<<<< HEAD
-=======
 
   if (str.size() > MAX_LINE_LEN) {
     std::string cpy = str;
@@ -139,7 +127,6 @@ static std::string prettify(const std::string &str) {
     return cpy;
   }
 
->>>>>>> fb/0.62-stable
   return str;
 }
 

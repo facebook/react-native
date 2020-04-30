@@ -7,18 +7,11 @@
  * @flow
  * @format
  */
-<<<<<<< HEAD
-=======
 
->>>>>>> fb/0.62-stable
 'use strict';
 
 import fs from 'fs';
 
-<<<<<<< HEAD
-// $FlowFixMe: flow doesn't know about yargs
-=======
->>>>>>> fb/0.62-stable
 import yargs from 'yargs';
 
 import {Command} from './Command';

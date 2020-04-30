@@ -1,13 +1,9 @@
-<<<<<<< HEAD
-// Copyright 2004-present Facebook. All Rights Reserved.
-=======
 /*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
->>>>>>> fb/0.62-stable
 
 #pragma once
 
@@ -15,10 +11,7 @@
 #include <mutex>
 #include <string>
 #include <unordered_map>
-<<<<<<< HEAD
-=======
 #include <unordered_set>
->>>>>>> fb/0.62-stable
 
 #include <hermes/hermes.h>
 #include <hermes/inspector/RuntimeAdapter.h>

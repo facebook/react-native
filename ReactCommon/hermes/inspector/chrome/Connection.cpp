@@ -1,13 +1,9 @@
-<<<<<<< HEAD
-// Copyright 2004-present Facebook. All Rights Reserved.
-=======
 /*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
->>>>>>> fb/0.62-stable
 
 #include "Connection.h"
 
@@ -21,15 +17,10 @@
 #include <hermes/inspector/Inspector.h>
 #include <hermes/inspector/chrome/MessageConverters.h>
 #include <hermes/inspector/chrome/RemoteObjectsTable.h>
-<<<<<<< HEAD
-#include <hermes/inspector/detail/SerialExecutor.h>
-#include <hermes/inspector/detail/Thread.h>
-=======
 #include <hermes/inspector/detail/CallbackOStream.h>
 #include <hermes/inspector/detail/SerialExecutor.h>
 #include <hermes/inspector/detail/Thread.h>
 #include <jsi/instrumentation.h>
->>>>>>> fb/0.62-stable
 
 namespace facebook {
 namespace hermes {
@@ -84,22 +75,15 @@ class Connection::Impl : public inspector::InspectorObserver,
   void handle(const m::debugger::PauseRequest &req) override;
   void handle(const m::debugger::RemoveBreakpointRequest &req) override;
   void handle(const m::debugger::ResumeRequest &req) override;
-<<<<<<< HEAD
-=======
   void handle(const m::debugger::SetBreakpointRequest &req) override;
->>>>>>> fb/0.62-stable
   void handle(const m::debugger::SetBreakpointByUrlRequest &req) override;
   void handle(const m::debugger::SetPauseOnExceptionsRequest &req) override;
   void handle(const m::debugger::StepIntoRequest &req) override;
   void handle(const m::debugger::StepOutRequest &req) override;
   void handle(const m::debugger::StepOverRequest &req) override;
-<<<<<<< HEAD
-  void handle(const m::runtime::EvaluateRequest &req) override;
-=======
   void handle(const m::heapProfiler::TakeHeapSnapshotRequest &req) override;
   void handle(const m::runtime::EvaluateRequest &req) override;
   void handle(const m::runtime::GetHeapUsageRequest &req) override;
->>>>>>> fb/0.62-stable
   void handle(const m::runtime::GetPropertiesRequest &req) override;
 
  private:
@@ -114,18 +98,12 @@ class Connection::Impl : public inspector::InspectorObserver,
 
   void sendToClient(const std::string &str);
   void sendResponseToClient(const m::Response &resp);
-<<<<<<< HEAD
-=======
   void sendNotificationToClient(const m::Notification &resp);
->>>>>>> fb/0.62-stable
   folly::Function<void(const std::exception &)> sendErrorToClient(int id);
   void sendResponseToClientViaExecutor(int id);
   void sendResponseToClientViaExecutor(folly::Future<Unit> future, int id);
   void sendNotificationToClientViaExecutor(const m::Notification &note);
-<<<<<<< HEAD
-=======
   void sendErrorToClientViaExecutor(int id, const std::string &error);
->>>>>>> fb/0.62-stable
 
   std::shared_ptr<RuntimeAdapter> runtimeAdapter_;
   std::string title_;
@@ -413,8 +391,6 @@ void Connection::Impl::handle(
       .thenError<std::exception>(sendErrorToClient(req.id));
 }
 
-<<<<<<< HEAD
-=======
 void Connection::Impl::handle(
     const m::heapProfiler::TakeHeapSnapshotRequest &req) {
   const auto id = req.id;
@@ -454,7 +430,6 @@ void Connection::Impl::handle(
       .thenError<std::exception>(sendErrorToClient(req.id));
 }
 
->>>>>>> fb/0.62-stable
 void Connection::Impl::handle(const m::runtime::EvaluateRequest &req) {
   auto remoteObjPtr = std::make_shared<m::runtime::RemoteObject>();
 
@@ -503,8 +478,6 @@ void Connection::Impl::handle(const m::debugger::ResumeRequest &req) {
   sendResponseToClientViaExecutor(inspector_->resume(), req.id);
 }
 
-<<<<<<< HEAD
-=======
 void Connection::Impl::handle(const m::debugger::SetBreakpointRequest &req) {
   debugger::SourceLocation loc;
 
@@ -539,7 +512,6 @@ void Connection::Impl::handle(const m::debugger::SetBreakpointRequest &req) {
       .thenError<std::exception>(sendErrorToClient(req.id));
 }
 
->>>>>>> fb/0.62-stable
 void Connection::Impl::handle(
     const m::debugger::SetBreakpointByUrlRequest &req) {
   debugger::SourceLocation loc;
@@ -577,13 +549,9 @@ void Connection::Impl::handle(
   } else if (req.state == "uncaught") {
     mode = debugger::PauseOnThrowMode::Uncaught;
   } else {
-<<<<<<< HEAD
-    sendErrorToClient(req.id);
-=======
     sendErrorToClientViaExecutor(
         req.id, "Unknown pause-on-exception state: " + req.state);
     return;
->>>>>>> fb/0.62-stable
   }
 
   sendResponseToClientViaExecutor(
@@ -602,8 +570,6 @@ void Connection::Impl::handle(const m::debugger::StepOverRequest &req) {
   sendResponseToClientViaExecutor(inspector_->stepOver(), req.id);
 }
 
-<<<<<<< HEAD
-=======
 void Connection::Impl::handle(const m::runtime::GetHeapUsageRequest &req) {
   auto resp = std::make_shared<m::runtime::GetHeapUsageResponse>();
   resp->id = req.id;
@@ -624,19 +590,15 @@ void Connection::Impl::handle(const m::runtime::GetHeapUsageRequest &req) {
       .thenError<std::exception>(sendErrorToClient(req.id));
 }
 
->>>>>>> fb/0.62-stable
 std::vector<m::runtime::PropertyDescriptor>
 Connection::Impl::makePropsFromScope(
     std::pair<uint32_t, uint32_t> frameAndScopeIndex,
     const std::string &objectGroup,
     const debugger::ProgramState &state) {
-<<<<<<< HEAD
-=======
   // Chrome represents variables in a scope as properties on a dummy object.
   // We don't instantiate such dummy objects, we just pretended to have one.
   // Chrome has now asked for its properties, so it's time to synthesize
   // descriptions of the properties that the dummy object would have had.
->>>>>>> fb/0.62-stable
   std::vector<m::runtime::PropertyDescriptor> result;
 
   uint32_t frameIndex = frameAndScopeIndex.first;
@@ -644,8 +606,6 @@ Connection::Impl::makePropsFromScope(
   debugger::LexicalInfo lexicalInfo = state.getLexicalInfo(frameIndex);
   uint32_t varCount = lexicalInfo.getVariablesCountInScope(scopeIndex);
 
-<<<<<<< HEAD
-=======
   // If this is the frame's local scope, include 'this'.
   if (scopeIndex == 0) {
     auto varInfo = state.getVariableInfoForThis(frameIndex);
@@ -659,7 +619,6 @@ Connection::Impl::makePropsFromScope(
   }
 
   // Then add each of the variables in this lexical scope.
->>>>>>> fb/0.62-stable
   for (uint32_t varIndex = 0; varIndex < varCount; varIndex++) {
     debugger::VariableInfo varInfo =
         state.getVariableInfo(frameIndex, scopeIndex, varIndex);
@@ -668,10 +627,7 @@ Connection::Impl::makePropsFromScope(
     desc.name = varInfo.name;
     desc.value = m::runtime::makeRemoteObject(
         getRuntime(), varInfo.value, objTable_, objectGroup);
-<<<<<<< HEAD
-=======
     desc.enumerable = true;
->>>>>>> fb/0.62-stable
 
     result.emplace_back(std::move(desc));
   }
@@ -708,11 +664,6 @@ Connection::Impl::makePropsFromValue(
       m::runtime::PropertyDescriptor desc;
       desc.name = propName.utf8(runtime);
 
-<<<<<<< HEAD
-      jsi::Value propValue = obj.getProperty(runtime, propName);
-      desc.value = m::runtime::makeRemoteObject(
-          runtime, propValue, objTable_, objectGroup);
-=======
       try {
         // Currently, we fetch the property even if it runs code.
         // Chrome instead detects getters and makes you click to invoke.
@@ -728,7 +679,6 @@ Connection::Impl::makePropsFromValue(
             objTable_,
             objectGroup);
       }
->>>>>>> fb/0.62-stable
 
       result.emplace_back(std::move(desc));
     }
@@ -789,13 +739,10 @@ void Connection::Impl::sendResponseToClient(const m::Response &resp) {
   sendToClient(resp.toJson());
 }
 
-<<<<<<< HEAD
-=======
 void Connection::Impl::sendNotificationToClient(const m::Notification &note) {
   sendToClient(note.toJson());
 }
 
->>>>>>> fb/0.62-stable
 folly::Function<void(const std::exception &)>
 Connection::Impl::sendErrorToClient(int id) {
   return [this, id](const std::exception &e) {
@@ -818,8 +765,6 @@ void Connection::Impl::sendResponseToClientViaExecutor(
       .thenError<std::exception>(sendErrorToClient(id));
 }
 
-<<<<<<< HEAD
-=======
 void Connection::Impl::sendErrorToClientViaExecutor(
     int id,
     const std::string &error) {
@@ -831,7 +776,6 @@ void Connection::Impl::sendErrorToClientViaExecutor(
       });
 }
 
->>>>>>> fb/0.62-stable
 void Connection::Impl::sendNotificationToClientViaExecutor(
     const m::Notification &note) {
   executor_->add(
