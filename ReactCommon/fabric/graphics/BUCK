@@ -1,8 +1,9 @@
-load("@fbsource//tools/build_defs/apple:flag_defs.bzl", "get_debug_preprocessor_flags")
+load("@fbsource//tools/build_defs/apple:flag_defs.bzl", "get_preprocessor_flags_for_build_mode")
 load(
     "//tools/build_defs/oss:rn_defs.bzl",
     "ANDROID",
     "APPLE",
+    "CXX",
     "fb_xplat_cxx_test",
     "get_apple_compiler_flags",
     "get_apple_inspector_flags",
@@ -38,23 +39,35 @@ rn_xplat_cxx_library(
         "-std=c++14",
         "-Wall",
     ],
+    cxx_exported_headers = subdir_glob(
+        [
+            ("platform/cxx", "**/*.h"),
+        ],
+        prefix = "react/graphics",
+    ),
+    cxx_srcs = glob(
+        [
+            "platform/cxx/**/*.cpp",
+        ],
+    ),
     fbandroid_exported_headers = subdir_glob(
         [
-            ("platform/android", "**/*.h"),
+            ("platform/cxx", "**/*.h"),
         ],
         prefix = "react/graphics",
     ),
     fbandroid_srcs = glob(
         [
-            "platform/android/**/*.cpp",
+            "platform/cxx/**/*.cpp",
         ],
     ),
     fbobjc_compiler_flags = APPLE_COMPILER_FLAGS,
-    fbobjc_preprocessor_flags = get_debug_preprocessor_flags() + get_apple_inspector_flags(),
+    fbobjc_labels = ["supermodule:ios/default/public.react_native.infra"],
+    fbobjc_preprocessor_flags = get_preprocessor_flags_for_build_mode() + get_apple_inspector_flags(),
     force_static = True,
     ios_deps = [
-        "fbsource//xplat/js:RCTImage",
-        "fbsource//xplat/js/react-native-github:RCTCxxBridge",
+        "//xplat/js:RCTImage",
+        "//xplat/js/react-native-github:RCTCxxBridge",
     ],
     ios_exported_headers = subdir_glob(
         [
@@ -74,7 +87,7 @@ rn_xplat_cxx_library(
         ],
     ),
     macosx_tests_override = [],
-    platforms = (ANDROID, APPLE),
+    platforms = (ANDROID, APPLE, CXX),
     preprocessor_flags = [
         "-DLOG_TAG=\"ReactNative\"",
         "-DWITH_FBSYSTRACE=1",
@@ -82,11 +95,11 @@ rn_xplat_cxx_library(
     tests = [":tests"],
     visibility = ["PUBLIC"],
     deps = [
-        "fbsource//xplat/fbsystrace:fbsystrace",
-        "fbsource//xplat/folly:headers_only",
-        "fbsource//xplat/folly:memory",
-        "fbsource//xplat/folly:molly",
-        "fbsource//xplat/third-party/glog:glog",
+        "//xplat/fbsystrace:fbsystrace",
+        "//xplat/folly:headers_only",
+        "//xplat/folly:memory",
+        "//xplat/folly:molly",
+        "//xplat/third-party/glog:glog",
     ],
 )
 
@@ -101,10 +114,10 @@ fb_xplat_cxx_test(
         "-Wall",
     ],
     contacts = ["oncall+react_native@xmail.facebook.com"],
-    platforms = (ANDROID, APPLE),
+    platforms = (ANDROID, APPLE, CXX),
     deps = [
-        "fbsource//xplat/folly:molly",
-        "fbsource//xplat/third-party/gmock:gtest",
         ":graphics",
+        "//xplat/folly:molly",
+        "//xplat/third-party/gmock:gtest",
     ],
 )

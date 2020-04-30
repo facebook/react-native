@@ -11,7 +11,7 @@ oss_cxx_library(
         "-Wall",
         "-Werror",
         "-O3",
-        "-std=c++14",
+        "-std=c++11",
     ],
     soname = "libyoga.$(ext)",
     visibility = ["PUBLIC"],

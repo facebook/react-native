@@ -16,17 +16,31 @@ const {View} = ReactNative;
 
 const {TestModule, RNTesterTestModule} = ReactNative.NativeModules;
 
-class SyncMethodTest extends React.Component<{}> {
+class SyncMethodTest extends React.Component<{...}> {
   componentDidMount() {
     if (
       RNTesterTestModule.echoString('test string value') !== 'test string value'
     ) {
-      throw new Error('Something wrong with sync method export');
+      throw new Error('Something wrong with echoString sync method');
     }
     if (RNTesterTestModule.methodThatReturnsNil() != null) {
-      throw new Error('Something wrong with sync method export');
+      throw new Error('Something wrong with methodThatReturnsNil sync method');
     }
-    TestModule.markTestCompleted();
+    let response;
+    RNTesterTestModule.methodThatCallsCallbackWithString('test', echo => {
+      response = echo;
+    });
+    requestAnimationFrame(() => {
+      if (response === 'test') {
+        TestModule.markTestCompleted();
+      } else {
+        throw new Error(
+          'Something wrong with methodThatCallsCallbackWithString sync method, ' +
+            'got response ' +
+            JSON.stringify(response),
+        );
+      }
+    });
   }
 
   render(): React.Node {

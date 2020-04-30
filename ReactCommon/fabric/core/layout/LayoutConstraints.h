@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -6,6 +6,8 @@
  */
 
 #pragma once
+
+#include <limits>
 
 #include <folly/Hash.h>
 #include <react/core/LayoutPrimitives.h>
@@ -19,7 +21,8 @@ namespace react {
  */
 struct LayoutConstraints {
   Size minimumSize{0, 0};
-  Size maximumSize{kFloatUndefined, kFloatUndefined};
+  Size maximumSize{std::numeric_limits<Float>::infinity(),
+                   std::numeric_limits<Float>::infinity()};
   LayoutDirection layoutDirection{LayoutDirection::Undefined};
 
   /*

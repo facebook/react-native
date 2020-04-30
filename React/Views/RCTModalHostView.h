@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -43,7 +43,11 @@
 
 @protocol RCTModalHostViewInteractor <NSObject>
 
-- (void)presentModalHostView:(RCTModalHostView *)modalHostView withViewController:(RCTModalHostViewController *)viewController animated:(BOOL)animated;
-- (void)dismissModalHostView:(RCTModalHostView *)modalHostView withViewController:(RCTModalHostViewController *)viewController animated:(BOOL)animated;
+- (void)presentModalHostView:(RCTModalHostView *)modalHostView
+          withViewController:(RCTModalHostViewController *)viewController
+                    animated:(BOOL)animated;
+- (void)dismissModalHostView:(RCTModalHostView *)modalHostView
+          withViewController:(RCTModalHostViewController *)viewController
+                    animated:(BOOL)animated;
 
 @end

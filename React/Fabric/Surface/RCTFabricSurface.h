@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -7,6 +7,7 @@
 
 #import <React/RCTPrimitives.h>
 #import <React/RCTSurfaceStage.h>
+#import <react/mounting/MountingCoordinator.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -121,10 +122,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 /**
  * Synchronously blocks the current thread up to given `timeout` until
- * the Surface reaches `stage`.
- * NOT SUPPORTED IN FABRIC YET.
+ * the Surface is rendered.
  */
-- (BOOL)synchronouslyWaitForStage:(RCTSurfaceStage)stage timeout:(NSTimeInterval)timeout;
+- (BOOL)synchronouslyWaitFor:(NSTimeInterval)timeout;
 
 @end
 

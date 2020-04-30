@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -7,9 +7,7 @@
 
 package com.facebook.react.bridge;
 
-/**
- * Interface for a module that will be notified when a batch of JS->Java calls has finished.
- */
+/** Interface for a module that will be notified when a batch of JS->Java calls has finished. */
 public interface OnBatchCompleteListener {
 
   void onBatchComplete();

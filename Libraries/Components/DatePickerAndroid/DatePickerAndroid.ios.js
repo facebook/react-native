@@ -10,7 +10,7 @@
 
 'use strict';
 
-import type {Options, DatePickerOpenAction} from 'DatePickerAndroidTypes';
+import type {Options, DatePickerOpenAction} from './DatePickerAndroidTypes';
 
 class DatePickerAndroid {
   static async open(options: ?Options): Promise<DatePickerOpenAction> {

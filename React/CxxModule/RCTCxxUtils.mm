@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -22,16 +22,17 @@ namespace react {
 
 using facebook::jsi::JSError;
 
-std::vector<std::unique_ptr<NativeModule>> createNativeModules(NSArray<RCTModuleData *> *modules, RCTBridge *bridge, const std::shared_ptr<Instance> &instance)
+std::vector<std::unique_ptr<NativeModule>>
+createNativeModules(NSArray<RCTModuleData *> *modules, RCTBridge *bridge, const std::shared_ptr<Instance> &instance)
 {
   std::vector<std::unique_ptr<NativeModule>> nativeModules;
   for (RCTModuleData *moduleData in modules) {
     if ([moduleData.moduleClass isSubclassOfClass:[RCTCxxModule class]]) {
       nativeModules.emplace_back(std::make_unique<CxxNativeModule>(
-        instance,
-        [moduleData.name UTF8String],
-        [moduleData] { return [(RCTCxxModule *)(moduleData.instance) createModule]; },
-        std::make_shared<DispatchMessageQueueThread>(moduleData)));
+          instance,
+          [moduleData.name UTF8String],
+          [moduleData] { return [(RCTCxxModule *)(moduleData.instance) createModule]; },
+          std::make_shared<DispatchMessageQueueThread>(moduleData)));
     } else {
       nativeModules.emplace_back(std::make_unique<RCTNativeModule>(bridge, moduleData));
     }
@@ -44,7 +45,7 @@ static NSError *errorWithException(const std::exception &e)
   NSString *msg = @(e.what());
   NSMutableDictionary *errorInfo = [NSMutableDictionary dictionary];
 
-  const auto *jsError = dynamic_cast<const JSError*>(&e);
+  const auto *jsError = dynamic_cast<const JSError *>(&e);
   if (jsError) {
     errorInfo[RCTJSRawStackTraceKey] = @(jsError->getStack().c_str());
     msg = [@"Unhandled JS Exception: " stringByAppendingString:msg];
@@ -53,9 +54,10 @@ static NSError *errorWithException(const std::exception &e)
   NSError *nestedError;
   try {
     std::rethrow_if_nested(e);
-  } catch(const std::exception &e) {
+  } catch (const std::exception &e) {
     nestedError = errorWithException(e);
-  } catch(...) {}
+  } catch (...) {
+  }
 
   if (nestedError) {
     msg = [NSString stringWithFormat:@"%@\n\n%@", msg, [nestedError localizedDescription]];
@@ -65,19 +67,16 @@ static NSError *errorWithException(const std::exception &e)
   return [NSError errorWithDomain:RCTErrorDomain code:1 userInfo:errorInfo];
 }
 
-NSError *tryAndReturnError(const std::function<void()>& func)
+NSError *tryAndReturnError(const std::function<void()> &func)
 {
   try {
     @try {
       func();
       return nil;
-    }
-    @catch (NSException *exception) {
-      NSString *message =
-      [NSString stringWithFormat:@"Exception '%@' was thrown from JS thread", exception];
+    } @catch (NSException *exception) {
+      NSString *message = [NSString stringWithFormat:@"Exception '%@' was thrown from JS thread", exception];
       return RCTErrorWithMessage(message);
-    }
-    @catch (id exception) {
+    } @catch (id exception) {
       // This will catch any other ObjC exception, but no C++ exceptions
       return RCTErrorWithMessage(@"non-std ObjC Exception");
     }
@@ -103,4 +102,5 @@ NSString *deriveSourceURL(NSURL *url)
   return sourceUrl ?: @"";
 }
 
-} }
+}
+}

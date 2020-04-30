@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -8,13 +8,11 @@
 package com.facebook.react.views.image;
 
 import android.graphics.Bitmap;
-
 import com.facebook.cache.common.CacheKey;
 import com.facebook.cache.common.MultiCacheKey;
 import com.facebook.common.references.CloseableReference;
 import com.facebook.imagepipeline.bitmaps.PlatformBitmapFactory;
 import com.facebook.imagepipeline.request.Postprocessor;
-
 import java.util.LinkedList;
 import java.util.List;
 
@@ -33,13 +31,13 @@ public class MultiPostprocessor implements Postprocessor {
   }
 
   private MultiPostprocessor(List<Postprocessor> postprocessors) {
-     mPostprocessors = new LinkedList<>(postprocessors);
+    mPostprocessors = new LinkedList<>(postprocessors);
   }
 
   @Override
-  public String getName () {
+  public String getName() {
     StringBuilder name = new StringBuilder();
-    for (Postprocessor p: mPostprocessors) {
+    for (Postprocessor p : mPostprocessors) {
       if (name.length() > 0) {
         name.append(",");
       }
@@ -51,16 +49,17 @@ public class MultiPostprocessor implements Postprocessor {
   }
 
   @Override
-  public CacheKey getPostprocessorCacheKey () {
+  public CacheKey getPostprocessorCacheKey() {
     LinkedList<CacheKey> keys = new LinkedList<>();
-    for (Postprocessor p: mPostprocessors) {
+    for (Postprocessor p : mPostprocessors) {
       keys.push(p.getPostprocessorCacheKey());
     }
     return new MultiCacheKey(keys);
   }
 
   @Override
-  public CloseableReference<Bitmap>	process(Bitmap sourceBitmap, PlatformBitmapFactory bitmapFactory) {
+  public CloseableReference<Bitmap> process(
+      Bitmap sourceBitmap, PlatformBitmapFactory bitmapFactory) {
     CloseableReference<Bitmap> prevBitmap = null, nextBitmap = null;
 
     try {

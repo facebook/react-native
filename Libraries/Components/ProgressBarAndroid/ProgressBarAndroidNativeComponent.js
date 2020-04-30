@@ -4,30 +4,32 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @flow
+ * @flow strict-local
  * @format
  */
 
 'use strict';
 
-const requireNativeComponent = require('requireNativeComponent');
+import type {ColorValue} from '../../StyleSheet/StyleSheet';
+import type {ViewProps} from '../View/ViewPropTypes';
+import type {Double, WithDefault} from '../../Types/CodegenTypes';
 
-import type {ViewProps} from 'ViewPropTypes';
-import type {NativeComponent} from 'ReactNative';
+import codegenNativeComponent from '../../Utilities/codegenNativeComponent';
+import type {HostComponent} from '../../Renderer/shims/ReactNativeTypes';
 
 type NativeProps = $ReadOnly<{|
   ...ViewProps,
+
+  //Props
   styleAttr?: string,
   typeAttr?: string,
   indeterminate: boolean,
-  progress?: number,
-  animating?: ?boolean,
-  color?: ?string,
-  testID?: ?string,
+  progress?: WithDefault<Double, 0>,
+  animating?: WithDefault<boolean, true>,
+  color?: ?ColorValue,
+  testID?: WithDefault<string, ''>,
 |}>;
 
-type ProgressBarAndroidType = Class<NativeComponent<NativeProps>>;
-
-module.exports = ((requireNativeComponent(
+export default (codegenNativeComponent<NativeProps>(
   'AndroidProgressBar',
-): any): ProgressBarAndroidType);
+): HostComponent<NativeProps>);

@@ -11,10 +11,10 @@
 
 'use strict';
 
-const React = require('React');
+const React = require('react');
 const ReactTestRenderer = require('react-test-renderer');
 
-const setAndForwardRef = require('setAndForwardRef');
+const setAndForwardRef = require('../setAndForwardRef');
 
 describe('setAndForwardRef', () => {
   let innerFuncCalled = false;

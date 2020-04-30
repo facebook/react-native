@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -12,8 +12,8 @@
 
 using namespace facebook::react;
 
-inline static NSTextAlignment RCTNSTextAlignmentFromTextAlignment(
-    TextAlignment textAlignment) {
+inline static NSTextAlignment RCTNSTextAlignmentFromTextAlignment(TextAlignment textAlignment)
+{
   switch (textAlignment) {
     case TextAlignment::Natural:
       return NSTextAlignmentNatural;
@@ -28,8 +28,8 @@ inline static NSTextAlignment RCTNSTextAlignmentFromTextAlignment(
   }
 }
 
-inline static NSWritingDirection RCTNSWritingDirectionFromWritingDirection(
-    WritingDirection writingDirection) {
+inline static NSWritingDirection RCTNSWritingDirectionFromWritingDirection(WritingDirection writingDirection)
+{
   switch (writingDirection) {
     case WritingDirection::Natural:
       return NSWritingDirectionNatural;
@@ -40,7 +40,8 @@ inline static NSWritingDirection RCTNSWritingDirectionFromWritingDirection(
   }
 }
 
-inline static RCTFontStyle RCTFontStyleFromFontStyle(FontStyle fontStyle) {
+inline static RCTFontStyle RCTFontStyleFromFontStyle(FontStyle fontStyle)
+{
   switch (fontStyle) {
     case FontStyle::Normal:
       return RCTFontStyleNormal;
@@ -51,14 +52,15 @@ inline static RCTFontStyle RCTFontStyleFromFontStyle(FontStyle fontStyle) {
   }
 }
 
-inline static RCTFontVariant RCTFontVariantFromFontVariant(
-    FontVariant fontVariant) {
+inline static RCTFontVariant RCTFontVariantFromFontVariant(FontVariant fontVariant)
+{
   return (RCTFontVariant)fontVariant;
 }
 
 inline static NSUnderlineStyle RCTNSUnderlineStyleFromStyleAndPattern(
     TextDecorationLineStyle textDecorationLineStyle,
-    TextDecorationLinePattern textDecorationLinePattern) {
+    TextDecorationLinePattern textDecorationLinePattern)
+{
   NSUnderlineStyle style = NSUnderlineStyleNone;
 
   switch (textDecorationLineStyle) {
@@ -94,6 +96,7 @@ inline static NSUnderlineStyle RCTNSUnderlineStyleFromStyleAndPattern(
   return style;
 }
 
-inline static UIColor *RCTUIColorFromSharedColor(const SharedColor &color) {
+inline static UIColor *RCTUIColorFromSharedColor(const SharedColor &color)
+{
   return color ? [UIColor colorWithCGColor:color.get()] : nil;
 }

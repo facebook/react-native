@@ -10,7 +10,7 @@
 'use strict';
 
 const GlobalPerformanceLogger = jest
-  .unmock('createPerformanceLogger')
-  .genMockFromModule('GlobalPerformanceLogger');
+  .unmock('../createPerformanceLogger')
+  .genMockFromModule('../GlobalPerformanceLogger');
 
 module.exports = GlobalPerformanceLogger;

@@ -4,12 +4,13 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @flow
+ * @flow strict-local
  * @format
  */
+
 'use strict';
 
-const {polyfillGlobal} = require('PolyfillFunctions');
+const {polyfillGlobal} = require('../Utilities/PolyfillFunctions');
 
 /**
  * Set up Promise. The native Promise implementation throws the following error:
@@ -18,4 +19,4 @@ const {polyfillGlobal} = require('PolyfillFunctions');
  * If you don't need these polyfills, don't use InitializeCore; just directly
  * require the modules you need from InitializeCore for setup.
  */
-polyfillGlobal('Promise', () => require('Promise'));
+polyfillGlobal('Promise', () => require('../Promise'));

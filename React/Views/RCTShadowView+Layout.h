@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -25,14 +25,14 @@
  * Designated method to control dirty propagation mechanism.
  * Dirties the shadow view (and all affected shadow views, usually a superview)
  * in terms of layout.
- * The default implementaion does nothing.
+ * The default implementation does nothing.
  */
 - (void)dirtyLayout;
 
 /**
  * Designated method to control dirty propagation mechanism.
  * Clears (makes not dirty) the shadow view.
- * The default implementaion does nothing.
+ * The default implementation does nothing.
  */
 - (void)clearLayout;
 

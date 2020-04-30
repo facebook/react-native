@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -8,41 +8,41 @@
 package com.facebook.react.views.scroll;
 
 import android.graphics.Color;
-import androidx.core.view.ViewCompat;
 import android.util.DisplayMetrics;
-
+import androidx.annotation.Nullable;
+import androidx.core.view.ViewCompat;
 import com.facebook.react.bridge.ReadableArray;
+import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.uimanager.DisplayMetricsHolder;
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.ReactClippingViewGroupHelper;
+import com.facebook.react.uimanager.ReactStylesDiffMap;
 import com.facebook.react.uimanager.Spacing;
+import com.facebook.react.uimanager.StateWrapper;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.ViewGroupManager;
 import com.facebook.react.uimanager.ViewProps;
 import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.annotations.ReactPropGroup;
 import com.facebook.yoga.YogaConstants;
-
 import java.util.ArrayList;
 import java.util.List;
-import javax.annotation.Nullable;
 
 /**
  * View manager for {@link ReactHorizontalScrollView} components.
  *
- * <p>Note that {@link ReactScrollView} and {@link ReactHorizontalScrollView} are exposed to JS
- * as a single ScrollView component, configured via the {@code horizontal} boolean property.
+ * <p>Note that {@link ReactScrollView} and {@link ReactHorizontalScrollView} are exposed to JS as a
+ * single ScrollView component, configured via the {@code horizontal} boolean property.
  */
 @ReactModule(name = ReactHorizontalScrollViewManager.REACT_CLASS)
-public class ReactHorizontalScrollViewManager
-    extends ViewGroupManager<ReactHorizontalScrollView>
+public class ReactHorizontalScrollViewManager extends ViewGroupManager<ReactHorizontalScrollView>
     implements ReactScrollViewCommandHelper.ScrollCommandHandler<ReactHorizontalScrollView> {
 
   public static final String REACT_CLASS = "AndroidHorizontalScrollView";
 
   private static final int[] SPACING_TYPES = {
-      Spacing.ALL, Spacing.LEFT, Spacing.RIGHT, Spacing.TOP, Spacing.BOTTOM,
+    Spacing.ALL, Spacing.LEFT, Spacing.RIGHT, Spacing.TOP, Spacing.BOTTOM,
   };
 
   private @Nullable FpsListener mFpsListener = null;
@@ -65,6 +65,15 @@ public class ReactHorizontalScrollViewManager
     return new ReactHorizontalScrollView(context, mFpsListener);
   }
 
+  @Override
+  public Object updateState(
+      ReactHorizontalScrollView view,
+      ReactStylesDiffMap props,
+      @Nullable StateWrapper stateWrapper) {
+    view.updateState(stateWrapper);
+    return null;
+  }
+
   @ReactProp(name = "scrollEnabled", defaultBoolean = true)
   public void setScrollEnabled(ReactHorizontalScrollView view, boolean value) {
     view.setScrollEnabled(value);
@@ -80,6 +89,12 @@ public class ReactHorizontalScrollViewManager
     view.setDecelerationRate(decelerationRate);
   }
 
+  @ReactProp(name = "disableIntervalMomentum")
+  public void setDisableIntervalMomentum(
+      ReactHorizontalScrollView view, boolean disbaleIntervalMomentum) {
+    view.setDisableIntervalMomentum(disbaleIntervalMomentum);
+  }
+
   @ReactProp(name = "snapToInterval")
   public void setSnapToInterval(ReactHorizontalScrollView view, float snapToInterval) {
     // snapToInterval needs to be exposed as a float because of the Javascript interface.
@@ -88,7 +103,8 @@ public class ReactHorizontalScrollViewManager
   }
 
   @ReactProp(name = "snapToOffsets")
-  public void setSnapToOffsets(ReactHorizontalScrollView view, @Nullable ReadableArray snapToOffsets) {
+  public void setSnapToOffsets(
+      ReactHorizontalScrollView view, @Nullable ReadableArray snapToOffsets) {
     DisplayMetrics screenDisplayMetrics = DisplayMetricsHolder.getScreenDisplayMetrics();
     List<Integer> offsets = new ArrayList<Integer>();
     for (int i = 0; i < snapToOffsets.size(); i++) {
@@ -108,14 +124,15 @@ public class ReactHorizontalScrollViewManager
   }
 
   @ReactProp(name = ReactClippingViewGroupHelper.PROP_REMOVE_CLIPPED_SUBVIEWS)
-  public void setRemoveClippedSubviews(ReactHorizontalScrollView view, boolean removeClippedSubviews) {
+  public void setRemoveClippedSubviews(
+      ReactHorizontalScrollView view, boolean removeClippedSubviews) {
     view.setRemoveClippedSubviews(removeClippedSubviews);
   }
 
   /**
-   * Computing momentum events is potentially expensive since we post a runnable on the UI thread
-   * to see when it is done.  We only do that if {@param sendMomentumEvents} is set to true.  This
-   * is handled automatically in js by checking if there is a listener on the momentum events.
+   * Computing momentum events is potentially expensive since we post a runnable on the UI thread to
+   * see when it is done. We only do that if {@param sendMomentumEvents} is set to true. This is
+   * handled automatically in js by checking if there is a listener on the momentum events.
    *
    * @param view
    * @param sendMomentumEvents
@@ -142,9 +159,7 @@ public class ReactHorizontalScrollViewManager
     view.setPagingEnabled(pagingEnabled);
   }
 
-  /**
-   * Controls overScroll behaviour
-   */
+  /** Controls overScroll behaviour */
   @ReactProp(name = "overScrollMode")
   public void setOverScrollMode(ReactHorizontalScrollView view, String value) {
     view.setOverScrollMode(ReactScrollViewHelper.parseOverScrollMode(value));
@@ -157,9 +172,13 @@ public class ReactHorizontalScrollViewManager
 
   @Override
   public void receiveCommand(
-      ReactHorizontalScrollView scrollView,
-      int commandId,
-      @Nullable ReadableArray args) {
+      ReactHorizontalScrollView scrollView, int commandId, @Nullable ReadableArray args) {
+    ReactScrollViewCommandHelper.receiveCommand(this, scrollView, commandId, args);
+  }
+
+  @Override
+  public void receiveCommand(
+      ReactHorizontalScrollView scrollView, String commandId, @Nullable ReadableArray args) {
     ReactScrollViewCommandHelper.receiveCommand(this, scrollView, commandId, args);
   }
 
@@ -172,9 +191,9 @@ public class ReactHorizontalScrollViewManager
   public void scrollTo(
       ReactHorizontalScrollView scrollView, ReactScrollViewCommandHelper.ScrollToCommandData data) {
     if (data.mAnimated) {
-      scrollView.smoothScrollTo(data.mDestX, data.mDestY);
+      scrollView.reactSmoothScrollTo(data.mDestX, data.mDestY);
     } else {
-      scrollView.scrollTo(data.mDestX, data.mDestY);
+      scrollView.reactScrollTo(data.mDestX, data.mDestY);
     }
   }
 
@@ -183,18 +202,18 @@ public class ReactHorizontalScrollViewManager
       ReactHorizontalScrollView scrollView,
       ReactScrollViewCommandHelper.ScrollToEndCommandData data) {
     // ScrollView always has one child - the scrollable area
-    int right =
-      scrollView.getChildAt(0).getWidth() + scrollView.getPaddingRight();
+    int right = scrollView.getChildAt(0).getWidth() + scrollView.getPaddingRight();
     if (data.mAnimated) {
-      scrollView.smoothScrollTo(right, scrollView.getScrollY());
+      scrollView.reactSmoothScrollTo(right, scrollView.getScrollY());
     } else {
-      scrollView.scrollTo(right, scrollView.getScrollY());
+      scrollView.reactScrollTo(right, scrollView.getScrollY());
     }
   }
 
   /**
    * When set, fills the rest of the scrollview with a color to avoid setting a background and
    * creating unnecessary overdraw.
+   *
    * @param view
    * @param color
    */
@@ -203,13 +222,15 @@ public class ReactHorizontalScrollViewManager
     view.setEndFillColor(color);
   }
 
-  @ReactPropGroup(names = {
-      ViewProps.BORDER_RADIUS,
-      ViewProps.BORDER_TOP_LEFT_RADIUS,
-      ViewProps.BORDER_TOP_RIGHT_RADIUS,
-      ViewProps.BORDER_BOTTOM_RIGHT_RADIUS,
-      ViewProps.BORDER_BOTTOM_LEFT_RADIUS
-  }, defaultFloat = YogaConstants.UNDEFINED)
+  @ReactPropGroup(
+      names = {
+        ViewProps.BORDER_RADIUS,
+        ViewProps.BORDER_TOP_LEFT_RADIUS,
+        ViewProps.BORDER_TOP_RIGHT_RADIUS,
+        ViewProps.BORDER_BOTTOM_RIGHT_RADIUS,
+        ViewProps.BORDER_BOTTOM_LEFT_RADIUS
+      },
+      defaultFloat = YogaConstants.UNDEFINED)
   public void setBorderRadius(ReactHorizontalScrollView view, int index, float borderRadius) {
     if (!YogaConstants.isUndefined(borderRadius)) {
       borderRadius = PixelUtil.toPixelFromDIP(borderRadius);
@@ -227,13 +248,15 @@ public class ReactHorizontalScrollViewManager
     view.setBorderStyle(borderStyle);
   }
 
-  @ReactPropGroup(names = {
-      ViewProps.BORDER_WIDTH,
-      ViewProps.BORDER_LEFT_WIDTH,
-      ViewProps.BORDER_RIGHT_WIDTH,
-      ViewProps.BORDER_TOP_WIDTH,
-      ViewProps.BORDER_BOTTOM_WIDTH,
-  }, defaultFloat = YogaConstants.UNDEFINED)
+  @ReactPropGroup(
+      names = {
+        ViewProps.BORDER_WIDTH,
+        ViewProps.BORDER_LEFT_WIDTH,
+        ViewProps.BORDER_RIGHT_WIDTH,
+        ViewProps.BORDER_TOP_WIDTH,
+        ViewProps.BORDER_BOTTOM_WIDTH,
+      },
+      defaultFloat = YogaConstants.UNDEFINED)
   public void setBorderWidth(ReactHorizontalScrollView view, int index, float width) {
     if (!YogaConstants.isUndefined(width)) {
       width = PixelUtil.toPixelFromDIP(width);
@@ -241,13 +264,19 @@ public class ReactHorizontalScrollViewManager
     view.setBorderWidth(SPACING_TYPES[index], width);
   }
 
-  @ReactPropGroup(names = {
-      "borderColor", "borderLeftColor", "borderRightColor", "borderTopColor", "borderBottomColor"
-  }, customType = "Color")
+  @ReactPropGroup(
+      names = {
+        "borderColor",
+        "borderLeftColor",
+        "borderRightColor",
+        "borderTopColor",
+        "borderBottomColor"
+      },
+      customType = "Color")
   public void setBorderColor(ReactHorizontalScrollView view, int index, Integer color) {
     float rgbComponent =
-        color == null ? YogaConstants.UNDEFINED : (float) ((int)color & 0x00FFFFFF);
-    float alphaComponent = color == null ? YogaConstants.UNDEFINED : (float) ((int)color >>> 24);
+        color == null ? YogaConstants.UNDEFINED : (float) ((int) color & 0x00FFFFFF);
+    float alphaComponent = color == null ? YogaConstants.UNDEFINED : (float) ((int) color >>> 24);
     view.setBorderColor(SPACING_TYPES[index], rgbComponent, alphaComponent);
   }
 
@@ -259,5 +288,25 @@ public class ReactHorizontalScrollViewManager
   @ReactProp(name = "persistentScrollbar")
   public void setPersistentScrollbar(ReactHorizontalScrollView view, boolean value) {
     view.setScrollbarFadingEnabled(!value);
+  }
+
+  @ReactProp(name = "fadingEdgeLength")
+  public void setFadingEdgeLength(ReactHorizontalScrollView view, int value) {
+    if (value > 0) {
+      view.setHorizontalFadingEdgeEnabled(true);
+      view.setFadingEdgeLength(value);
+    } else {
+      view.setHorizontalFadingEdgeEnabled(false);
+      view.setFadingEdgeLength(0);
+    }
+  }
+
+  @ReactProp(name = "contentOffset")
+  public void setContentOffset(ReactHorizontalScrollView view, ReadableMap value) {
+    if (value != null) {
+      double x = value.getDouble("x");
+      double y = value.getDouble("y");
+      view.reactScrollTo((int) PixelUtil.toPixelFromDIP(x), (int) PixelUtil.toPixelFromDIP(y));
+    }
   }
 }

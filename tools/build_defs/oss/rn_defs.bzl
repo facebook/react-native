@@ -15,7 +15,7 @@ _DEBUG_PREPROCESSOR_FLAGS = []
 
 _APPLE_COMPILER_FLAGS = []
 
-def get_debug_preprocessor_flags():
+def get_preprocessor_flags_for_build_mode():
     return _DEBUG_PREPROCESSOR_FLAGS
 
 def get_apple_compiler_flags():
@@ -27,20 +27,13 @@ GLOG_DEP = "//ReactAndroid/build/third-party-ndk/glog:glog"
 
 INSPECTOR_FLAGS = []
 
-APPLE_JSC_DEPS = []
-
-ANDROID_JSC_INTERNAL_DEPS = [
-    "//native/third-party/jsc:jsc",
-    "//native/third-party/jsc:jsc_legacy_profiler",
-]
-
-ANDROID_JSC_DEPS = ANDROID_JSC_INTERNAL_DEPS
-
 ANDROID = "Android"
 
 APPLE = ""
 
 YOGA_TARGET = "//ReactAndroid/src/main/java/com/facebook:yoga"
+
+YOGA_CXX_TARGET = "//ReactCommon/yoga:yoga"
 
 FBGLOGINIT_TARGET = "//ReactAndroid/src/main/jni/first-party/fbgloginit:fbgloginit"
 
@@ -78,6 +71,9 @@ def react_native_target(path):
 def react_native_xplat_target(path):
     return "//ReactCommon/" + path
 
+def react_native_xplat_target_apple(path):
+    return react_native_xplat_target(path) + "Apple"
+
 # Example: react_native_tests_target('java/com/facebook/react/modules:modules')
 def react_native_tests_target(path):
     return "//ReactAndroid/src/test/" + path
@@ -94,6 +90,9 @@ def react_native_dep(path):
 # Example: react_native_xplat_dep('java/com/facebook/systrace:systrace')
 def react_native_xplat_dep(path):
     return "//ReactCommon/" + path
+
+def rn_extra_build_flags():
+    return []
 
 # React property preprocessor
 def rn_android_library(name, deps = [], plugins = [], *args, **kwargs):
@@ -156,7 +155,15 @@ def rn_android_resource(*args, **kwargs):
 def rn_android_prebuilt_aar(*args, **kwargs):
     native.android_prebuilt_aar(*args, **kwargs)
 
+def rn_apple_library(*args, **kwargs):
+    kwargs.setdefault("link_whole", True)
+    kwargs.setdefault("enable_exceptions", True)
+    kwargs.setdefault("target_sdk_version", "10.0")
+    _ = kwargs.pop("plugins_only", False)
+    native.apple_library(*args, **kwargs)
+
 def rn_java_library(*args, **kwargs):
+    _ = kwargs.pop("is_androidx", False)
     native.java_library(*args, **kwargs)
 
 def rn_java_annotation_processor(*args, **kwargs):
@@ -296,6 +303,9 @@ def _single_subdir_glob(dirpath, glob_pattern, exclude = None, prefix = None):
 
     return results
 
+def fb_apple_library(*args, **kwargs):
+    native.apple_library(*args, **kwargs)
+
 def oss_cxx_library(**kwargs):
     cxx_library(**kwargs)
 
@@ -306,3 +316,8 @@ def jni_instrumentation_test_lib(**_kwargs):
 def fb_xplat_cxx_test(**_kwargs):
     """A noop stub for OSS build."""
     pass
+
+# iOS Plugin support.
+def react_module_plugin_providers():
+    # Noop for now
+    return []

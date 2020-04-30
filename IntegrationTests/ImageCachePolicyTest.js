@@ -27,18 +27,19 @@ const {TestModule} = ReactNative.NativeModules;
 
 const TESTS = ['only-if-cached', 'default', 'reload', 'force-cache'];
 
-type Props = {};
+type Props = {...};
 type State = {
   'only-if-cached'?: boolean,
   default?: boolean,
   reload?: boolean,
   'force-cache'?: boolean,
+  ...
 };
 
 class ImageCachePolicyTest extends React.Component<Props, $FlowFixMeState> {
-  state = {};
+  state: $FlowFixMe | {...} = {};
 
-  shouldComponentUpdate(nextProps: Props, nextState: State) {
+  shouldComponentUpdate(nextProps: Props, nextState: State): boolean {
     const results: Array<?boolean> = TESTS.map(x => nextState[x]);
 
     if (!results.includes(undefined)) {
@@ -56,14 +57,14 @@ class ImageCachePolicyTest extends React.Component<Props, $FlowFixMeState> {
     this.setState({[name]: pass});
   }
 
-  render() {
+  render(): React.Node {
     return (
       <View style={styles.container}>
         <Text>Hello</Text>
         <Image
           source={{
             uri:
-              'https://facebook.github.io/react-native/img/favicon.png?cacheBust=notinCache' +
+              'https://raw.githubusercontent.com/facebook/react-native/master/Libraries/NewAppScreen/components/logo.png?cacheBust=notinCache' +
               Date.now(),
             cache: 'only-if-cached',
           }}
@@ -74,7 +75,7 @@ class ImageCachePolicyTest extends React.Component<Props, $FlowFixMeState> {
         <Image
           source={{
             uri:
-              'https://facebook.github.io/react-native/img/favicon.png?cacheBust=notinCache' +
+              'https://raw.githubusercontent.com/facebook/react-native/master/Libraries/NewAppScreen/components/logo.png?cacheBust=notinCache' +
               Date.now(),
             cache: 'default',
           }}
@@ -85,7 +86,7 @@ class ImageCachePolicyTest extends React.Component<Props, $FlowFixMeState> {
         <Image
           source={{
             uri:
-              'https://facebook.github.io/react-native/img/favicon.png?cacheBust=notinCache' +
+              'https://raw.githubusercontent.com/facebook/react-native/master/Libraries/NewAppScreen/components/logo.png?cacheBust=notinCache' +
               Date.now(),
             cache: 'reload',
           }}
@@ -96,7 +97,7 @@ class ImageCachePolicyTest extends React.Component<Props, $FlowFixMeState> {
         <Image
           source={{
             uri:
-              'https://facebook.github.io/react-native/img/favicon.png?cacheBust=notinCache' +
+              'https://raw.githubusercontent.com/facebook/react-native/master/Libraries/NewAppScreen/components/logo.png?cacheBust=notinCache' +
               Date.now(),
             cache: 'force-cache',
           }}

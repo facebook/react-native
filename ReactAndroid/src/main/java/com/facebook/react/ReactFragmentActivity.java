@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -8,10 +8,8 @@
 package com.facebook.react;
 
 /**
- * @deprecated
- * ReactFragmentActivity will be removed in 0.59 release.
- * Use {@link ReactActivity} instead.
+ * @deprecated ReactFragmentActivity will be removed in 0.59 release. Use {@link ReactActivity}
+ *     instead.
  */
 @Deprecated
-public abstract class ReactFragmentActivity extends ReactActivity {
-}
+public abstract class ReactFragmentActivity extends ReactActivity {}

@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -19,16 +19,13 @@ public abstract class JavaScriptExecutor {
   }
 
   /**
-   * Close this executor and cleanup any resources that it was using. No further calls are
-   * expected after this.
-   * TODO mhorowitz: This may no longer be used; check and delete if possible.
+   * Close this executor and cleanup any resources that it was using. No further calls are expected
+   * after this. TODO mhorowitz: This may no longer be used; check and delete if possible.
    */
   public void close() {
     mHybridData.resetNative();
   }
 
-  /**
-   * Returns the name of the executor, identifying the underlying runtime.
-   */
-  abstract public String getName();
+  /** Returns the name of the executor, identifying the underlying runtime. */
+  public abstract String getName();
 }

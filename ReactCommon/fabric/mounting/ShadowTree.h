@@ -1,13 +1,11 @@
-// Copyright (c) Facebook, Inc. and its affiliates.
-
-// This source code is licensed under the MIT license found in the
-// LICENSE file in the root directory of this source tree.
+/*
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
 
 #pragma once
-
-#ifdef DEBUG
-#define RN_SHADOW_TREE_INTROSPECTION
-#endif
 
 #include <better/mutex.h>
 #include <memory>
@@ -17,18 +15,15 @@
 #include <react/core/LayoutConstraints.h>
 #include <react/core/ReactPrimitives.h>
 #include <react/core/ShadowNode.h>
+#include <react/mounting/MountingCoordinator.h>
 #include <react/mounting/ShadowTreeDelegate.h>
-#include <react/mounting/ShadowViewMutation.h>
-
-#ifdef RN_SHADOW_TREE_INTROSPECTION
-#include <react/mounting/stubs.h>
-#endif
+#include <react/mounting/ShadowTreeRevision.h>
 
 namespace facebook {
 namespace react {
 
-using ShadowTreeCommitTransaction = std::function<UnsharedRootShadowNode(
-    const SharedRootShadowNode &oldRootShadowNode)>;
+using ShadowTreeCommitTransaction = std::function<RootShadowNode::Unshared(
+    RootShadowNode::Shared const &oldRootShadowNode)>;
 
 /*
  * Represents the shadow tree and its lifecycle.
@@ -40,9 +35,10 @@ class ShadowTree final {
    */
   ShadowTree(
       SurfaceId surfaceId,
-      const LayoutConstraints &layoutConstraints,
-      const LayoutContext &layoutContext,
-      const RootComponentDescriptor &rootComponentDescriptor);
+      LayoutConstraints const &layoutConstraints,
+      LayoutContext const &layoutContext,
+      RootComponentDescriptor const &rootComponentDescriptor,
+      ShadowTreeDelegate const &delegate);
 
   ~ShadowTree();
 
@@ -55,50 +51,52 @@ class ShadowTree final {
    * Performs commit calling `transaction` function with a `oldRootShadowNode`
    * and expecting a `newRootShadowNode` as a return value.
    * The `transaction` function can abort commit returning `nullptr`.
-   * If a `revision` pointer is not null, the method will store there a
-   * contiguous revision number of the successfully performed transaction.
    * Returns `true` if the operation finished successfully.
    */
   bool tryCommit(
       ShadowTreeCommitTransaction transaction,
-      long commitStartTime,
-      int *revision = nullptr) const;
+      bool enableStateReconciliation = false) const;
 
   /*
    * Calls `tryCommit` in a loop until it finishes successfully.
    */
   void commit(
       ShadowTreeCommitTransaction transaction,
-      long commitStartTime,
-      int *revision = nullptr) const;
-
-#pragma mark - Delegate
+      bool enableStateReconciliation = false) const;
 
   /*
-   * Sets and gets the delegate.
-   * The delegate is stored as a raw pointer, so the owner must null
-   * the pointer before being destroyed.
+   * Commit an empty tree (a new `RootShadowNode` with no children).
    */
-  void setDelegate(ShadowTreeDelegate const *delegate);
-  ShadowTreeDelegate const *getDelegate() const;
+  void commitEmptyTree() const;
+
+  MountingCoordinator::Shared getMountingCoordinator() const;
+
+  /*
+   * Temporary.
+   * Do not use.
+   */
+  void setEnableNewStateReconciliation(bool value) {
+    enableNewStateReconciliation_ = value;
+  }
 
  private:
-  UnsharedRootShadowNode cloneRootShadowNode(
-      const SharedRootShadowNode &oldRootShadowNode,
-      const LayoutConstraints &layoutConstraints,
-      const LayoutContext &layoutContext) const;
+  RootShadowNode::Unshared cloneRootShadowNode(
+      RootShadowNode::Shared const &oldRootShadowNode,
+      LayoutConstraints const &layoutConstraints,
+      LayoutContext const &layoutContext) const;
 
-  void emitLayoutEvents(const ShadowViewMutationList &mutations) const;
+  void emitLayoutEvents(
+      std::vector<LayoutableShadowNode const *> &affectedLayoutableNodes) const;
 
-  const SurfaceId surfaceId_;
+  SurfaceId const surfaceId_;
+  ShadowTreeDelegate const &delegate_;
   mutable better::shared_mutex commitMutex_;
-  mutable SharedRootShadowNode rootShadowNode_; // Protected by `commitMutex_`.
-  mutable int revision_{1}; // Protected by `commitMutex_`.
-  ShadowTreeDelegate const *delegate_;
-
-#ifdef RN_SHADOW_TREE_INTROSPECTION
-  mutable StubViewTree stubViewTree_; // Protected by `commitMutex_`.
-#endif
+  mutable RootShadowNode::Shared
+      rootShadowNode_; // Protected by `commitMutex_`.
+  mutable ShadowTreeRevision::Number revisionNumber_{
+      0}; // Protected by `commitMutex_`.
+  MountingCoordinator::Shared mountingCoordinator_;
+  bool enableNewStateReconciliation_{false};
 };
 
 } // namespace react

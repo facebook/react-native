@@ -10,7 +10,7 @@
 
 'use strict';
 
-const {SourceCode} = require('NativeModules');
+import NativeSourceCode from '../../NativeModules/specs/NativeSourceCode';
 
 let _cachedDevServerURL: ?string;
 const FALLBACK = 'http://localhost:8081/';
@@ -18,6 +18,7 @@ const FALLBACK = 'http://localhost:8081/';
 type DevServerInfo = {
   url: string,
   bundleLoadedFromServer: boolean,
+  ...
 };
 
 /**
@@ -26,10 +27,9 @@ type DevServerInfo = {
  */
 function getDevServer(): DevServerInfo {
   if (_cachedDevServerURL === undefined) {
-    const match =
-      SourceCode &&
-      SourceCode.scriptURL &&
-      SourceCode.scriptURL.match(/^https?:\/\/.*?\//);
+    const match = NativeSourceCode.getConstants().scriptURL.match(
+      /^https?:\/\/.*?\//,
+    );
     _cachedDevServerURL = match ? match[0] : null;
   }
 

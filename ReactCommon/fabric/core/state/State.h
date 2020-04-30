@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -7,13 +7,14 @@
 
 #pragma once
 
+#ifdef ANDROID
 #include <folly/dynamic.h>
-#include <react/core/StateCoordinator.h>
+#endif
+
+#include <react/core/ShadowNodeFamily.h>
 
 namespace facebook {
 namespace react {
-
-class ShadowNode;
 
 /*
  * An abstract interface of State.
@@ -24,30 +25,86 @@ class State {
  public:
   using Shared = std::shared_ptr<const State>;
 
-  State(StateCoordinator::Shared stateCoordinator);
+  static size_t constexpr initialRevisionValue = 1;
+
+ protected:
+  /*
+   * Constructors are protected to make calling them directly with
+   * type-erasured arguments impossible.
+   */
+  explicit State(StateData::Shared const &data, State const &state);
+  explicit State(
+      StateData::Shared const &data,
+      ShadowNodeFamily::Shared const &family);
+
+ public:
   virtual ~State() = default;
 
+  /*
+   * Returns a momentary value of the most recently committed state
+   * associated with a family of nodes which this state belongs to.
+   * Sequential calls might return different values.
+   */
+  State::Shared getMostRecentState() const;
+
+  /*
+   * Returns the most recent state (same as `getMostRecentState()` method)
+   * if this state is obsolete, otherwise returns `nullptr`.
+   */
+  State::Shared getMostRecentStateIfObsolete() const;
+
+  /*
+   * Returns a revision number of the `State` object.
+   * The number is being automatically assigned during the creation of `State`
+   * objects.
+   * Revision `0` represents a case when we don't have any info about state
+   * object (actual State instances cannot have it).
+   * Revision `1` represents a newly created initial state object.
+   */
+  size_t getRevision() const;
+
 #ifdef ANDROID
-  virtual const folly::dynamic getDynamic() const;
-  virtual void updateState(folly::dynamic data) const;
+  virtual folly::dynamic getDynamic() const = 0;
+  virtual void updateState(folly::dynamic data) const = 0;
 #endif
 
  protected:
-  StateCoordinator::Shared stateCoordinator_;
-
- private:
-  friend class ShadowNode;
-  friend class StateCoordinator;
+  friend class ShadowNodeFamily;
+  friend class UIManager;
 
   /*
-   * Must be used by `ShadowNode` *only*.
+   * Returns a shared pointer to data.
+   * To be used by `UIManager` only.
    */
-  void commit(const ShadowNode &shadowNode) const;
+  StateData::Shared const &getDataPointer() const {
+    return data_;
+  }
 
   /*
-   * Must be used by `ShadowNode` *only*.
+   * A family of a node with this state is associated.
+   * Must be a weak pointer to avoid retain cycle among `State`, `ShadowNode`,
+   * and `ShadowNodeFamily` instances.
    */
-  const State::Shared &getCommitedState() const;
+  ShadowNodeFamily::Weak family_;
+
+  /*
+   * Type-erasured pointer to arbitrary component-specific data held by the
+   * `State`.
+   */
+  StateData::Shared data_;
+
+  /*
+   * Indicates that the state was committed once and then was replaced by a
+   * newer one.
+   * To be used by `StateCoordinator` only.
+   * Protected by mutex inside `StateCoordinator`.
+   */
+  mutable bool isObsolete_{false};
+
+  /*
+   * Revision of the State object.
+   */
+  size_t revision_;
 };
 
 } // namespace react

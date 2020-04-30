@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -9,22 +9,19 @@ package com.facebook.react.modules.share;
 
 import android.app.Activity;
 import android.content.Intent;
-
+import com.facebook.fbreact.specs.NativeShareModuleSpec;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.bridge.ReactContextBaseJavaModule;
-import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.module.annotations.ReactModule;
 
-/**
- * Intent module. Launch other activities or open URLs.
- */
-@ReactModule(name = "ShareModule")
-public class ShareModule extends ReactContextBaseJavaModule {
+/** Intent module. Launch other activities or open URLs. */
+@ReactModule(name = ShareModule.NAME)
+public class ShareModule extends NativeShareModuleSpec {
 
+  public static final String NAME = "ShareModule";
   /* package */ static final String ACTION_SHARED = "sharedAction";
   /* package */ static final String ERROR_INVALID_CONTENT = "E_INVALID_CONTENT";
   /* package */ static final String ERROR_UNABLE_TO_OPEN_DIALOG = "E_UNABLE_TO_OPEN_DIALOG";
@@ -35,18 +32,18 @@ public class ShareModule extends ReactContextBaseJavaModule {
 
   @Override
   public String getName() {
-    return "ShareModule";
+    return NAME;
   }
 
   /**
    * Open a chooser dialog to send text content to other apps.
    *
-   * Refer http://developer.android.com/intl/ko/training/sharing/send.html
+   * <p>Refer http://developer.android.com/intl/ko/training/sharing/send.html
    *
    * @param content the data to send
    * @param dialogTitle the title of the chooser dialog
    */
-  @ReactMethod
+  @Override
   public void share(ReadableMap content, String dialogTitle, Promise promise) {
     if (content == null) {
       promise.reject(ERROR_INVALID_CONTENT, "Content cannot be null");

@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -7,19 +7,19 @@
 
 package com.facebook.react.devsupport;
 
-import com.facebook.react.devsupport.interfaces.ErrorCustomizer;
-import javax.annotation.Nullable;
-
-import java.io.File;
-
+import android.view.View;
+import androidx.annotation.Nullable;
+import com.facebook.common.logging.FLog;
 import com.facebook.react.bridge.DefaultNativeModuleCallExceptionHandler;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.devsupport.interfaces.DevOptionHandler;
 import com.facebook.react.devsupport.interfaces.DevSupportManager;
+import com.facebook.react.devsupport.interfaces.ErrorCustomizer;
 import com.facebook.react.devsupport.interfaces.PackagerStatusCallback;
 import com.facebook.react.devsupport.interfaces.StackFrame;
 import com.facebook.react.modules.debug.interfaces.DeveloperSettings;
+import java.io.File;
 
 /**
  * A dummy implementation of {@link DevSupportManager} to be used in production mode where
@@ -34,49 +34,51 @@ public class DisabledDevSupportManager implements DevSupportManager {
   }
 
   @Override
-  public void showNewJavaError(String message, Throwable e) {
+  public void showNewJavaError(String message, Throwable e) {}
 
+  @Override
+  public void addCustomDevOption(String optionName, DevOptionHandler optionHandler) {}
+
+  @Override
+  public void showNewJSError(String message, ReadableArray details, int errorCookie) {}
+
+  @Override
+  public @Nullable View createRootView(String appKey) {
+    return null;
   }
 
   @Override
-  public void addCustomDevOption(String optionName, DevOptionHandler optionHandler) {
-
-  }
+  public void destroyRootView(View rootView) {}
 
   @Override
-  public void showNewJSError(String message, ReadableArray details, int errorCookie) {
-
-  }
+  public void updateJSError(String message, ReadableArray details, int errorCookie) {}
 
   @Override
-  public void updateJSError(String message, ReadableArray details, int errorCookie) {
-
-  }
+  public void hideRedboxDialog() {}
 
   @Override
-  public void hideRedboxDialog() {
-
-  }
+  public void showDevOptionsDialog() {}
 
   @Override
-  public void showDevOptionsDialog() {
-
-  }
+  public void setDevSupportEnabled(boolean isDevSupportEnabled) {}
 
   @Override
-  public void setDevSupportEnabled(boolean isDevSupportEnabled) {
-
-  }
+  public void startInspector() {}
 
   @Override
-  public void startInspector() {
-
-  }
+  public void stopInspector() {}
 
   @Override
-  public void stopInspector() {
+  public void setHotModuleReplacementEnabled(boolean isHotModuleReplacementEnabled) {}
 
-  }
+  @Override
+  public void setRemoteJSDebugEnabled(boolean isRemoteJSDebugEnabled) {}
+
+  @Override
+  public void setFpsDebugEnabled(boolean isFpsDebugEnabled) {}
+
+  @Override
+  public void toggleElementInspector() {}
 
   @Override
   public boolean getDevSupportEnabled() {
@@ -89,14 +91,10 @@ public class DisabledDevSupportManager implements DevSupportManager {
   }
 
   @Override
-  public void onNewReactContextCreated(ReactContext reactContext) {
-
-  }
+  public void onNewReactContextCreated(ReactContext reactContext) {}
 
   @Override
-  public void onReactInstanceDestroyed(ReactContext reactContext) {
-
-  }
+  public void onReactInstanceDestroyed(ReactContext reactContext) {}
 
   @Override
   public String getSourceMapUrl() {
@@ -124,29 +122,20 @@ public class DisabledDevSupportManager implements DevSupportManager {
   }
 
   @Override
-  public void reloadSettings() {
-
-  }
+  public void reloadSettings() {}
 
   @Override
-  public void handleReloadJS() {
-
-  }
+  public void handleReloadJS() {}
 
   @Override
-  public void reloadJSFromServer(String bundleURL) {
-
-  }
+  public void reloadJSFromServer(String bundleURL) {}
 
   @Override
-  public void isPackagerRunning(PackagerStatusCallback callback) {
-
-  }
+  public void isPackagerRunning(final PackagerStatusCallback callback) {}
 
   @Override
   public @Nullable File downloadBundleResourceFromUrlSync(
-      final String resourceURL,
-      final File outputFile) {
+      final String resourceURL, final File outputFile) {
     return null;
   }
 
@@ -161,12 +150,17 @@ public class DisabledDevSupportManager implements DevSupportManager {
   }
 
   @Override
-  public void registerErrorCustomizer(ErrorCustomizer errorCustomizer) {
-    
-  }
+  public void registerErrorCustomizer(ErrorCustomizer errorCustomizer) {}
+
+  @Override
+  public void setPackagerLocationCustomizer(
+      DevSupportManager.PackagerLocationCustomizer packagerLocationCustomizer) {}
 
   @Override
   public void handleException(Exception e) {
+    // TODO T62192299: remove this after investigation
+    FLog.e("DisabledDevSupportManager", "Caught exception", e);
+
     mDefaultNativeModuleCallExceptionHandler.handleException(e);
   }
 }

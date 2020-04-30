@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -14,7 +14,7 @@ namespace facebook {
 namespace react {
 
 /*
- * Describes results of layout process for partucular shadow node.
+ * Describes results of layout process for particular shadow node.
  */
 struct LayoutMetrics {
   Rect frame;
@@ -45,7 +45,7 @@ struct LayoutMetrics {
                rhs.borderWidth,
                rhs.displayType,
                rhs.layoutDirection,
-               this->pointScaleFactor);
+               rhs.pointScaleFactor);
   }
 
   bool operator!=(const LayoutMetrics &rhs) const {
@@ -56,11 +56,10 @@ struct LayoutMetrics {
 /*
  * Represents some undefined, not-yet-computed or meaningless value of
  * `LayoutMetrics` type.
+ * The value is comparable by equality with any other `LayoutMetrics` value.
  */
-static const LayoutMetrics EmptyLayoutMetrics = {/* .frame = */ {
-    /* .origin = */ {0, 0},
-    /* .size = */ {-1, -1},
-}};
+static LayoutMetrics const EmptyLayoutMetrics = {
+    /* .frame = */ {{0, 0}, {-1.0, -1.0}}};
 
 } // namespace react
 } // namespace facebook

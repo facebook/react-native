@@ -5,19 +5,20 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @flow
+ * @flow strict-local
  */
 
 'use strict';
 
 const React = require('react');
 const ReactNative = require('react-native');
+
 const requestAnimationFrame = require('fbjs/lib/requestAnimationFrame');
 
 const {StyleSheet, View} = ReactNative;
 const {TestModule} = ReactNative.NativeModules;
 
-class SimpleSnapshotTest extends React.Component<{}> {
+class SimpleSnapshotTest extends React.Component<{...}> {
   componentDidMount() {
     if (!TestModule.verifySnapshot) {
       throw new Error('TestModule.verifySnapshot not defined.');
@@ -25,11 +26,11 @@ class SimpleSnapshotTest extends React.Component<{}> {
     requestAnimationFrame(() => TestModule.verifySnapshot(this.done));
   }
 
-  done = (success: boolean) => {
+  done: (success: boolean) => void = (success: boolean) => {
     TestModule.markTestPassed(success);
   };
 
-  render() {
+  render(): React.Node {
     return (
       <View style={styles.container}>
         <View style={styles.box1} />

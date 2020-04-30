@@ -10,12 +10,16 @@
 
 'use strict';
 
-const LayoutAnimation = require('LayoutAnimation');
+const LayoutAnimation = require('../../LayoutAnimation/LayoutAnimation');
+const NativeEventEmitter = require('../../EventEmitter/NativeEventEmitter');
+
+const dismissKeyboard = require('../../Utilities/dismissKeyboard');
 const invariant = require('invariant');
-const NativeEventEmitter = require('NativeEventEmitter');
-const KeyboardObserver = require('NativeModules').KeyboardObserver;
-const dismissKeyboard = require('dismissKeyboard');
-const KeyboardEventEmitter = new NativeEventEmitter(KeyboardObserver);
+
+import NativeKeyboardObserver from './NativeKeyboardObserver';
+const KeyboardEventEmitter: NativeEventEmitter = new NativeEventEmitter(
+  NativeKeyboardObserver,
+);
 
 export type KeyboardEventName =
   | 'keyboardWillShow'
@@ -32,18 +36,30 @@ export type KeyboardEventEasing =
   | 'linear'
   | 'keyboard';
 
-type ScreenRect = $ReadOnly<{|
+export type KeyboardEventCoordinates = $ReadOnly<{|
   screenX: number,
   screenY: number,
   width: number,
   height: number,
 |}>;
 
-export type KeyboardEvent = $ReadOnly<{|
+export type KeyboardEvent = AndroidKeyboardEvent | IOSKeyboardEvent;
+
+type BaseKeyboardEvent = {|
   duration: number,
   easing: KeyboardEventEasing,
-  endCoordinates: ScreenRect,
-  startCoordinates: ScreenRect,
+  endCoordinates: KeyboardEventCoordinates,
+|};
+
+export type AndroidKeyboardEvent = $ReadOnly<{|
+  ...BaseKeyboardEvent,
+  duration: 0,
+  easing: 'keyboard',
+|}>;
+
+export type IOSKeyboardEvent = $ReadOnly<{|
+  ...BaseKeyboardEvent,
+  startCoordinates: KeyboardEventCoordinates,
   isEventFromThisApp: boolean,
 |}>;
 
@@ -95,7 +111,7 @@ type KeyboardEventListener = (e: KeyboardEvent) => void;
  *```
  */
 
-let Keyboard = {
+const Keyboard = {
   /**
    * The `addListener` function connects a JavaScript function to an identified native
    * keyboard notification event.
@@ -162,9 +178,8 @@ let Keyboard = {
 };
 
 // Throw away the dummy object and reassign it to original module
-Keyboard = KeyboardEventEmitter;
-Keyboard.dismiss = dismissKeyboard;
-Keyboard.scheduleLayoutAnimation = function(event: KeyboardEvent) {
+KeyboardEventEmitter.dismiss = dismissKeyboard;
+KeyboardEventEmitter.scheduleLayoutAnimation = function(event: KeyboardEvent) {
   const {duration, easing} = event;
   if (duration != null && duration !== 0) {
     LayoutAnimation.configureNext({
@@ -177,4 +192,4 @@ Keyboard.scheduleLayoutAnimation = function(event: KeyboardEvent) {
   }
 };
 
-module.exports = Keyboard;
+module.exports = KeyboardEventEmitter;

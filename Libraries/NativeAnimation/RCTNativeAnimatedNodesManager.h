@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -18,6 +18,8 @@
 - (void)updateAnimations;
 
 - (void)stepAnimations:(nonnull CADisplayLink *)displaylink;
+
+- (BOOL)isNodeManagedByFabric:(nonnull NSNumber *)tag;
 
 // graph
 

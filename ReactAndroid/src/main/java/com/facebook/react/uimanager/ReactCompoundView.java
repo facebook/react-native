@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -18,6 +18,7 @@ public interface ReactCompoundView {
 
   /**
    * Return react tag for touched element. Event coordinates are relative to the view
+   *
    * @param touchX the X touch coordinate relative to the view
    * @param touchY the Y touch coordinate relative to the view
    */

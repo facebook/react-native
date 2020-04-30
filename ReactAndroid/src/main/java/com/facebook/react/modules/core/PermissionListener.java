@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -16,8 +16,8 @@ import android.app.Activity;
 public interface PermissionListener {
 
   /**
-   * Method called whenever there's a result to a permission request. It is forwarded from
-   * {@link Activity#onRequestPermissionsResult}.
+   * Method called whenever there's a result to a permission request. It is forwarded from {@link
+   * Activity#onRequestPermissionsResult}.
    *
    * @return boolean Whether the PermissionListener can be removed.
    */

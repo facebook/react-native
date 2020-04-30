@@ -4,13 +4,16 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- *
  * @format
  * @emails oncall+react_native
  */
+
 'use strict';
 
-const {elementsThatOverlapOffsets, newRangeCount} = require('VirtualizeUtils');
+const {
+  elementsThatOverlapOffsets,
+  newRangeCount,
+} = require('../VirtualizeUtils');
 
 describe('newRangeCount', function() {
   it('handles subset', function() {
@@ -31,7 +34,7 @@ describe('newRangeCount', function() {
   it('handles front extension', function() {
     expect(newRangeCount({first: 1, last: 4}, {first: 0, last: 4})).toBe(1);
   });
-  it('handles forward insersect', function() {
+  it('handles forward intersect', function() {
     expect(newRangeCount({first: 1, last: 4}, {first: 3, last: 6})).toBe(2);
   });
   it('handles reverse intersect', function() {

@@ -1,11 +1,11 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
 
-#import "RCTImageCache.h"
+#import <React/RCTImageCache.h>
 
 #import <objc/runtime.h>
 
@@ -16,7 +16,7 @@
 #import <React/RCTUtils.h>
 #import <React/RCTResizeMode.h>
 
-#import "RCTImageUtils.h"
+#import <React/RCTImageUtils.h>
 
 static const NSUInteger RCTMaxCachableDecodedImageSizeInBytes = 2097152; // 2 MB
 
@@ -52,11 +52,6 @@ static NSString *RCTCacheKeyForImage(NSString *imageTag, CGSize size, CGFloat sc
   }
 
   return self;
-}
-
-- (void)dealloc
-{
-  [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 - (void)clearCache

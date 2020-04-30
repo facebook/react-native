@@ -1,4 +1,3 @@
-# coding: utf-8
 # Copyright (c) Facebook, Inc. and its affiliates.
 #
 # This source code is licensed under the MIT license found in the
@@ -34,25 +33,24 @@ Pod::Spec.new do |s|
                                beautiful and fast products with no compromises in
                                quality or capability.
                              DESC
-  s.homepage               = "http://facebook.github.io/react-native/"
+  s.homepage               = "https://reactnative.dev/"
   s.license                = package["license"]
   s.author                 = "Facebook, Inc. and its affiliates"
-  s.platforms              = { :ios => "9.0", :tvos => "9.2" }
+  s.platforms              = { :ios => "10.0", :tvos => "10.0" }
   s.source                 = source
   s.preserve_paths         = "package.json", "LICENSE", "LICENSE-docs"
   s.cocoapods_version      = ">= 1.2.0"
 
   s.dependency "React-Core", version
-  s.dependency "React-DevSupport", version
+  s.dependency "React-Core/DevSupport", version
+  s.dependency "React-Core/RCTWebSocket", version
   s.dependency "React-RCTActionSheet", version
   s.dependency "React-RCTAnimation", version
   s.dependency "React-RCTBlob", version
-  s.dependency "React-RCTGeolocation", version
   s.dependency "React-RCTImage", version
   s.dependency "React-RCTLinking", version
   s.dependency "React-RCTNetwork", version
   s.dependency "React-RCTSettings", version
   s.dependency "React-RCTText", version
   s.dependency "React-RCTVibration", version
-  s.dependency "React-RCTWebSocket", version
 end

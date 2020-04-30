@@ -1,9 +1,8 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
- *
  */
 
 #import <XCTest/XCTest.h>
@@ -52,14 +51,21 @@ RCTDefineImageDecoder(RCTImageLoaderTestsDecoder2)
 
   NS_VALID_UNTIL_END_OF_SCOPE RCTBridge *bridge = [[RCTBridge alloc] initWithBundleURL:_bundleURL moduleProvider:^{ return @[loader]; } launchOptions:nil];
 
-  NSURLRequest *urlRequest = [NSURLRequest requestWithURL:[NSURL URLWithString:@"https://facebook.github.io/react-native/img/opengraph.png"]];
-  [bridge.imageLoader loadImageWithURLRequest:urlRequest size:CGSizeMake(100, 100) scale:1.0 clipped:YES resizeMode:RCTResizeModeContain progressBlock:^(int64_t progress, int64_t total) {
-    XCTAssertEqual(progress, 1);
-    XCTAssertEqual(total, 1);
-  } partialLoadBlock:nil completionBlock:^(NSError *loadError, id loadedImage) {
-    XCTAssertEqualObjects(loadedImage, image);
-    XCTAssertNil(loadError);
-  }];
+  NSURLRequest *urlRequest = [NSURLRequest requestWithURL:[NSURL URLWithString:@"https://reactnative.dev/img/opengraph.png"]];
+  [[bridge moduleForClass:[RCTImageLoader class]]
+   loadImageWithURLRequest:urlRequest
+   size:CGSizeMake(100, 100)
+   scale:1.0
+   clipped:YES
+   resizeMode:RCTResizeModeContain
+   progressBlock:^(int64_t progress, int64_t total) {
+     XCTAssertEqual(progress, 1);
+     XCTAssertEqual(total, 1);
+   }
+   partialLoadBlock:nil completionBlock:^(NSError *loadError, id loadedImage) {
+     XCTAssertEqualObjects(loadedImage, image);
+     XCTAssertNil(loadError);
+   }];
 }
 
 - (void)testImageLoaderUsesImageURLLoaderWithHighestPriority
@@ -83,14 +89,21 @@ RCTDefineImageDecoder(RCTImageLoaderTestsDecoder2)
 
   NS_VALID_UNTIL_END_OF_SCOPE RCTBridge *bridge = [[RCTBridge alloc] initWithBundleURL:_bundleURL moduleProvider:^{ return @[loader1, loader2]; } launchOptions:nil];
 
-  NSURLRequest *urlRequest = [NSURLRequest requestWithURL:[NSURL URLWithString:@"https://facebook.github.io/react-native/img/opengraph.png"]];
-  [bridge.imageLoader loadImageWithURLRequest:urlRequest size:CGSizeMake(100, 100) scale:1.0 clipped:YES resizeMode:RCTResizeModeContain progressBlock:^(int64_t progress, int64_t total) {
-    XCTAssertEqual(progress, 1);
-    XCTAssertEqual(total, 1);
-  } partialLoadBlock:nil completionBlock:^(NSError *loadError, id loadedImage) {
-    XCTAssertEqualObjects(loadedImage, image);
-    XCTAssertNil(loadError);
-  }];
+  NSURLRequest *urlRequest = [NSURLRequest requestWithURL:[NSURL URLWithString:@"https://reactnative.dev/img/opengraph.png"]];
+  [[bridge moduleForClass:[RCTImageLoader class]]
+   loadImageWithURLRequest:urlRequest
+   size:CGSizeMake(100, 100)
+   scale:1.0
+   clipped:YES
+   resizeMode:RCTResizeModeContain
+   progressBlock:^(int64_t progress, int64_t total) {
+     XCTAssertEqual(progress, 1);
+     XCTAssertEqual(total, 1);
+   }
+   partialLoadBlock:nil completionBlock:^(NSError *loadError, id loadedImage) {
+     XCTAssertEqualObjects(loadedImage, image);
+     XCTAssertNil(loadError);
+   }];
 }
 
 - (void)testImageDecoding
@@ -108,10 +121,17 @@ RCTDefineImageDecoder(RCTImageLoaderTestsDecoder2)
 
   NS_VALID_UNTIL_END_OF_SCOPE RCTBridge *bridge = [[RCTBridge alloc] initWithBundleURL:_bundleURL moduleProvider:^{ return @[decoder]; } launchOptions:nil];
 
-  RCTImageLoaderCancellationBlock cancelBlock = [bridge.imageLoader decodeImageData:data size:CGSizeMake(1, 1) scale:1.0 clipped:NO resizeMode:RCTResizeModeStretch completionBlock:^(NSError *decodeError, id decodedImage) {
+  RCTImageLoaderCancellationBlock cancelBlock =
+  [[bridge moduleForClass:[RCTImageLoader class]]
+   decodeImageData:data
+   size:CGSizeMake(1, 1)
+   scale:1.0
+   clipped:NO
+   resizeMode:RCTResizeModeStretch
+   completionBlock:^(NSError *decodeError, id decodedImage) {
     XCTAssertEqualObjects(decodedImage, image);
     XCTAssertNil(decodeError);
-  }];
+   }];
   XCTAssertNotNil(cancelBlock);
 }
 
@@ -137,10 +157,17 @@ RCTDefineImageDecoder(RCTImageLoaderTestsDecoder2)
 
   NS_VALID_UNTIL_END_OF_SCOPE RCTBridge *bridge = [[RCTBridge alloc] initWithBundleURL:_bundleURL moduleProvider:^{ return @[decoder1, decoder2]; } launchOptions:nil];
 
-  RCTImageLoaderCancellationBlock cancelBlock = [bridge.imageLoader decodeImageData:data size:CGSizeMake(1, 1) scale:1.0 clipped:NO resizeMode:RCTResizeModeStretch completionBlock:^(NSError *decodeError, id decodedImage) {
-    XCTAssertEqualObjects(decodedImage, image);
-    XCTAssertNil(decodeError);
-  }];
+  RCTImageLoaderCancellationBlock cancelBlock =
+  [[bridge moduleForClass:[RCTImageLoader class]]
+   decodeImageData:data
+   size:CGSizeMake(1, 1)
+   scale:1.0
+   clipped:NO
+   resizeMode:RCTResizeModeStretch
+   completionBlock:^(NSError *decodeError, id decodedImage) {
+     XCTAssertEqualObjects(decodedImage, image);
+     XCTAssertNil(decodeError);
+    }];
   XCTAssertNotNil(cancelBlock);
 }
 

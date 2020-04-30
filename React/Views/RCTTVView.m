@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -19,8 +19,7 @@
 #import "RCTView.h"
 #import "UIView+React.h"
 
-@implementation RCTTVView
-{
+@implementation RCTTVView {
   UITapGestureRecognizer *_selectRecognizer;
 }
 
@@ -29,14 +28,14 @@
   if (self = [super initWithFrame:frame]) {
     dispatch_once(&onceToken, ^{
       defaultTVParallaxProperties = @{
-        @"enabled": @YES,
-        @"shiftDistanceX": @2.0f,
-        @"shiftDistanceY": @2.0f,
-        @"tiltAngle": @0.05f,
-        @"magnification": @1.0f,
-        @"pressMagnification": @1.0f,
-        @"pressDuration": @0.3f,
-        @"pressDelay": @0.0f
+        @"enabled" : @YES,
+        @"shiftDistanceX" : @2.0f,
+        @"shiftDistanceY" : @2.0f,
+        @"tiltAngle" : @0.05f,
+        @"magnification" : @1.0f,
+        @"pressMagnification" : @1.0f,
+        @"pressDuration" : @0.3f,
+        @"pressDelay" : @0.0f
       };
     });
     self.tvParallaxProperties = defaultTVParallaxProperties;
@@ -45,10 +44,11 @@
   return self;
 }
 
-static NSDictionary* defaultTVParallaxProperties = nil;
+static NSDictionary *defaultTVParallaxProperties = nil;
 static dispatch_once_t onceToken;
 
-- (void)setTvParallaxProperties:(NSDictionary *)tvParallaxProperties {
+- (void)setTvParallaxProperties:(NSDictionary *)tvParallaxProperties
+{
   if (_tvParallaxProperties == nil) {
     _tvParallaxProperties = [defaultTVParallaxProperties copy];
     return;
@@ -63,19 +63,19 @@ static dispatch_once_t onceToken;
   _tvParallaxProperties = [newParallaxProperties copy];
 }
 
-RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:unused)
+RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : unused)
 
-- (void)setIsTVSelectable:(BOOL)isTVSelectable {
+- (void)setIsTVSelectable:(BOOL)isTVSelectable
+{
   self->_isTVSelectable = isTVSelectable;
   if (isTVSelectable) {
-    UITapGestureRecognizer *recognizer = [[UITapGestureRecognizer alloc] 
-                                           initWithTarget:self 
-                                                   action:@selector(handleSelect:)];
-    recognizer.allowedPressTypes = @[@(UIPressTypeSelect)];
+    UITapGestureRecognizer *recognizer = [[UITapGestureRecognizer alloc] initWithTarget:self
+                                                                                 action:@selector(handleSelect:)];
+    recognizer.allowedPressTypes = @[ @(UIPressTypeSelect) ];
     _selectRecognizer = recognizer;
     [self addGestureRecognizer:_selectRecognizer];
   } else {
-    if(_selectRecognizer) {
+    if (_selectRecognizer) {
       [self removeGestureRecognizer:_selectRecognizer];
     }
   }
@@ -83,37 +83,38 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:unused)
 
 - (void)handleSelect:(__unused UIGestureRecognizer *)r
 {
-	if ([self.tvParallaxProperties[@"enabled"] boolValue] == YES) {
+  if ([self.tvParallaxProperties[@"enabled"] boolValue] == YES) {
     float magnification = [self.tvParallaxProperties[@"magnification"] floatValue];
     float pressMagnification = [self.tvParallaxProperties[@"pressMagnification"] floatValue];
-		
-		// Duration of press animation
-		float pressDuration = [self.tvParallaxProperties[@"pressDuration"] floatValue];
-		
-		// Delay of press animation
-		float pressDelay = [self.tvParallaxProperties[@"pressDelay"] floatValue];
-		
+
+    // Duration of press animation
+    float pressDuration = [self.tvParallaxProperties[@"pressDuration"] floatValue];
+
+    // Delay of press animation
+    float pressDelay = [self.tvParallaxProperties[@"pressDelay"] floatValue];
+
     [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:pressDelay]];
-    
-    [UIView animateWithDuration:(pressDuration/2)
-      animations:^{
-        self.transform = CGAffineTransformMakeScale(pressMagnification, pressMagnification);
-      }
-      completion:^(__unused BOOL finished1){
-        [UIView animateWithDuration:(pressDuration/2)
-          animations:^{
-            self.transform = CGAffineTransformMakeScale(magnification, magnification);
-          }
-          completion:^(__unused BOOL finished2) {
-            [[NSNotificationCenter defaultCenter] postNotificationName:RCTTVNavigationEventNotification 
-              object:@{@"eventType":@"select",@"tag":self.reactTag}];
-          }];
-       }];
-    
-	} else {
-		[[NSNotificationCenter defaultCenter] postNotificationName:RCTTVNavigationEventNotification
-															                          object:@{@"eventType":@"select",@"tag":self.reactTag}];
-	}
+
+    [UIView animateWithDuration:(pressDuration / 2)
+        animations:^{
+          self.transform = CGAffineTransformMakeScale(pressMagnification, pressMagnification);
+        }
+        completion:^(__unused BOOL finished1) {
+          [UIView animateWithDuration:(pressDuration / 2)
+              animations:^{
+                self.transform = CGAffineTransformMakeScale(magnification, magnification);
+              }
+              completion:^(__unused BOOL finished2) {
+                [[NSNotificationCenter defaultCenter]
+                    postNotificationName:RCTTVNavigationEventNotification
+                                  object:@{@"eventType" : @"select", @"tag" : self.reactTag}];
+              }];
+        }];
+
+  } else {
+    [[NSNotificationCenter defaultCenter] postNotificationName:RCTTVNavigationEventNotification
+                                                        object:@{@"eventType" : @"select", @"tag" : self.reactTag}];
+  }
 }
 
 - (BOOL)isUserInteractionEnabled
@@ -133,26 +134,26 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:unused)
   CGFloat const shiftDistanceY = [self.tvParallaxProperties[@"shiftDistanceY"] floatValue];
 
   // Make horizontal movements shift the centre left and right
-  UIInterpolatingMotionEffect *xShift = [[UIInterpolatingMotionEffect alloc]
-                                          initWithKeyPath:@"center.x"
-                                                     type:UIInterpolatingMotionEffectTypeTiltAlongHorizontalAxis];
-  xShift.minimumRelativeValue = @( shiftDistanceX * -1.0f);
-  xShift.maximumRelativeValue = @( shiftDistanceX);
+  UIInterpolatingMotionEffect *xShift =
+      [[UIInterpolatingMotionEffect alloc] initWithKeyPath:@"center.x"
+                                                      type:UIInterpolatingMotionEffectTypeTiltAlongHorizontalAxis];
+  xShift.minimumRelativeValue = @(shiftDistanceX * -1.0f);
+  xShift.maximumRelativeValue = @(shiftDistanceX);
 
   // Make vertical movements shift the centre up and down
-  UIInterpolatingMotionEffect *yShift = [[UIInterpolatingMotionEffect alloc]
-                                          initWithKeyPath:@"center.y"
-                                                     type:UIInterpolatingMotionEffectTypeTiltAlongVerticalAxis];
-  yShift.minimumRelativeValue = @( shiftDistanceY * -1.0f);
-  yShift.maximumRelativeValue = @( shiftDistanceY);
+  UIInterpolatingMotionEffect *yShift =
+      [[UIInterpolatingMotionEffect alloc] initWithKeyPath:@"center.y"
+                                                      type:UIInterpolatingMotionEffectTypeTiltAlongVerticalAxis];
+  yShift.minimumRelativeValue = @(shiftDistanceY * -1.0f);
+  yShift.maximumRelativeValue = @(shiftDistanceY);
 
   // Size of tilt movements
   CGFloat const tiltAngle = [self.tvParallaxProperties[@"tiltAngle"] floatValue];
 
   // Now make horizontal movements effect a rotation about the Y axis for side-to-side rotation.
-  UIInterpolatingMotionEffect *xTilt = [[UIInterpolatingMotionEffect alloc] 
-                                         initWithKeyPath:@"layer.transform"
-                                                    type:UIInterpolatingMotionEffectTypeTiltAlongHorizontalAxis];
+  UIInterpolatingMotionEffect *xTilt =
+      [[UIInterpolatingMotionEffect alloc] initWithKeyPath:@"layer.transform"
+                                                      type:UIInterpolatingMotionEffectTypeTiltAlongHorizontalAxis];
 
   // CATransform3D value for minimumRelativeValue
   CATransform3D transMinimumTiltAboutY = CATransform3DIdentity;
@@ -165,13 +166,13 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:unused)
   transMaximumTiltAboutY = CATransform3DRotate(transMaximumTiltAboutY, tiltAngle, 0, 1, 0);
 
   // Set the transform property boundaries for the interpolation
-  xTilt.minimumRelativeValue = [NSValue valueWithCATransform3D: transMinimumTiltAboutY];
-  xTilt.maximumRelativeValue = [NSValue valueWithCATransform3D: transMaximumTiltAboutY];
+  xTilt.minimumRelativeValue = [NSValue valueWithCATransform3D:transMinimumTiltAboutY];
+  xTilt.maximumRelativeValue = [NSValue valueWithCATransform3D:transMaximumTiltAboutY];
 
   // Now make vertical movements effect a rotation about the X axis for up and down rotation.
-  UIInterpolatingMotionEffect *yTilt = [[UIInterpolatingMotionEffect alloc] 
-                                         initWithKeyPath:@"layer.transform" 
-                                                    type:UIInterpolatingMotionEffectTypeTiltAlongVerticalAxis];
+  UIInterpolatingMotionEffect *yTilt =
+      [[UIInterpolatingMotionEffect alloc] initWithKeyPath:@"layer.transform"
+                                                      type:UIInterpolatingMotionEffectTypeTiltAlongVerticalAxis];
 
   // CATransform3D value for minimumRelativeValue
   CATransform3D transMinimumTiltAboutX = CATransform3DIdentity;
@@ -184,42 +185,52 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:unused)
   transMaximumTiltAboutX = CATransform3DRotate(transMaximumTiltAboutX, tiltAngle, 1, 0, 0);
 
   // Set the transform property boundaries for the interpolation
-  yTilt.minimumRelativeValue = [NSValue valueWithCATransform3D: transMinimumTiltAboutX];
-  yTilt.maximumRelativeValue = [NSValue valueWithCATransform3D: transMaximumTiltAboutX];
+  yTilt.minimumRelativeValue = [NSValue valueWithCATransform3D:transMinimumTiltAboutX];
+  yTilt.maximumRelativeValue = [NSValue valueWithCATransform3D:transMaximumTiltAboutX];
 
   // Add all of the motion effects to this group
-  self.motionEffects = @[xShift, yShift, xTilt, yTilt];
+  self.motionEffects = @[ xShift, yShift, xTilt, yTilt ];
 
   float magnification = [self.tvParallaxProperties[@"magnification"] floatValue];
 
-  [UIView animateWithDuration:0.2 animations:^{
-    self.transform = CGAffineTransformMakeScale(magnification, magnification);
-  }];
+  [UIView animateWithDuration:0.2
+                   animations:^{
+                     self.transform = CGAffineTransformMakeScale(magnification, magnification);
+                   }];
 }
 
-- (void)didUpdateFocusInContext:(UIFocusUpdateContext *)context withAnimationCoordinator:(UIFocusAnimationCoordinator *)coordinator
+- (void)didUpdateFocusInContext:(UIFocusUpdateContext *)context
+       withAnimationCoordinator:(UIFocusAnimationCoordinator *)coordinator
 {
-  if (context.nextFocusedView == self && self.isTVSelectable ) {
+  if (context.nextFocusedView == self && self.isTVSelectable) {
     [self becomeFirstResponder];
-    [coordinator addCoordinatedAnimations:^(void){
-      if([self.tvParallaxProperties[@"enabled"] boolValue]) {
-        [self addParallaxMotionEffects];
-      }
-      [[NSNotificationCenter defaultCenter] postNotificationName:RCTTVNavigationEventNotification
-                                                          object:@{@"eventType":@"focus",@"tag":self.reactTag}];
-    } completion:^(void){}];
+    [coordinator
+        addCoordinatedAnimations:^(void) {
+          if ([self.tvParallaxProperties[@"enabled"] boolValue]) {
+            [self addParallaxMotionEffects];
+          }
+          [[NSNotificationCenter defaultCenter]
+              postNotificationName:RCTTVNavigationEventNotification
+                            object:@{@"eventType" : @"focus", @"tag" : self.reactTag}];
+        }
+                      completion:^(void){
+                      }];
   } else {
-    [coordinator addCoordinatedAnimations:^(void){
-      [[NSNotificationCenter defaultCenter] postNotificationName:RCTTVNavigationEventNotification
-                                                          object:@{@"eventType":@"blur",@"tag":self.reactTag}];
-      [UIView animateWithDuration:0.2 animations:^{
-        self.transform = CGAffineTransformMakeScale(1, 1);
-      }];
+    [coordinator
+        addCoordinatedAnimations:^(void) {
+          [[NSNotificationCenter defaultCenter] postNotificationName:RCTTVNavigationEventNotification
+                                                              object:@{@"eventType" : @"blur", @"tag" : self.reactTag}];
+          [UIView animateWithDuration:0.2
+                           animations:^{
+                             self.transform = CGAffineTransformMakeScale(1, 1);
+                           }];
 
-      for (UIMotionEffect *effect in [self.motionEffects copy]){
-        [self removeMotionEffect:effect];
-      }
-    } completion:^(void){}];
+          for (UIMotionEffect *effect in [self.motionEffects copy]) {
+            [self removeMotionEffect:effect];
+          }
+        }
+                      completion:^(void){
+                      }];
     [self resignFirstResponder];
   }
 }
@@ -233,7 +244,8 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:unused)
       while (![rootview isReactRootView] && rootview != nil) {
         rootview = [rootview superview];
       }
-      if (rootview == nil) return;
+      if (rootview == nil)
+        return;
 
       rootview = [rootview superview];
 

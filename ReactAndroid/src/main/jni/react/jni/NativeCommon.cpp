@@ -1,7 +1,9 @@
-// Copyright (c) Facebook, Inc. and its affiliates.
-
-// This source code is licensed under the MIT license found in the
-// LICENSE file in the root directory of this source tree.
+/*
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
 
 #include "NativeCommon.h"
 
@@ -12,13 +14,13 @@ namespace react {
 
 namespace exceptions {
 const char *gUnexpectedNativeTypeExceptionClass =
-  "com/facebook/react/bridge/UnexpectedNativeTypeException";
+    "com/facebook/react/bridge/UnexpectedNativeTypeException";
 }
 
 namespace {
 
 // Returns a leaked global_ref.
-alias_ref<ReadableType> getTypeField(const char* fieldName) {
+alias_ref<ReadableType> getTypeField(const char *fieldName) {
   static auto cls = ReadableType::javaClassStatic();
   auto field = cls->getStaticField<ReadableType::javaobject>(fieldName);
   return make_global(cls->getStaticFieldValue(field)).release();
@@ -54,7 +56,8 @@ local_ref<ReadableType> ReadableType::getType(folly::dynamic::Type type) {
       return make_local(val);
     }
     default:
-      throwNewJavaException(exceptions::gUnexpectedNativeTypeExceptionClass, "Unknown type");
+      throwNewJavaException(
+          exceptions::gUnexpectedNativeTypeExceptionClass, "Unknown type");
   }
 }
 

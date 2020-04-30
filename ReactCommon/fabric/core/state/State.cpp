@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -7,43 +7,43 @@
 
 #include "State.h"
 
-#include <glog/logging.h>
 #include <react/core/ShadowNode.h>
+#include <react/core/ShadowNodeFragment.h>
 #include <react/core/State.h>
-#include <react/core/StateTarget.h>
-#include <react/core/StateUpdate.h>
-
-#ifdef ANDROID
-#include <folly/dynamic.h>
-#endif
+#include <react/core/StateData.h>
 
 namespace facebook {
 namespace react {
 
-State::State(StateCoordinator::Shared stateCoordinator)
-    : stateCoordinator_(std::move(stateCoordinator)){};
+State::State(StateData::Shared const &data, State const &state)
+    : family_(state.family_), data_(data), revision_(state.revision_ + 1){};
 
-void State::commit(const ShadowNode &shadowNode) const {
-  stateCoordinator_->setTarget(StateTarget{shadowNode});
+State::State(
+    StateData::Shared const &data,
+    ShadowNodeFamily::Shared const &family)
+    : family_(family), data_(data), revision_{State::initialRevisionValue} {};
+
+State::Shared State::getMostRecentState() const {
+  auto family = family_.lock();
+  if (!family) {
+    return {};
+  }
+
+  return family->getMostRecentState();
 }
 
-const State::Shared &State::getCommitedState() const {
-  return stateCoordinator_->getTarget().getShadowNode().getState();
+State::Shared State::getMostRecentStateIfObsolete() const {
+  auto family = family_.lock();
+  if (!family) {
+    return {};
+  }
+
+  return family->getMostRecentStateIfObsolete(*this);
 }
 
-#ifdef ANDROID
-const folly::dynamic State::getDynamic() const {
-  LOG(FATAL)
-      << "State::getDynamic should never be called (some virtual method of a concrete implementation should be called instead)";
-  abort();
-  return folly::dynamic::object();
+size_t State::getRevision() const {
+  return revision_;
 }
-void State::updateState(folly::dynamic data) const {
-  LOG(FATAL)
-      << "State::updateState should never be called (some virtual method of a concrete implementation should be called instead).";
-  abort();
-}
-#endif
 
 } // namespace react
 } // namespace facebook

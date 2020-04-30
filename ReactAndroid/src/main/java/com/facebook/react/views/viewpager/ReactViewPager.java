@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -7,12 +7,13 @@
 
 package com.facebook.react.views.viewpager;
 
-import androidx.viewpager.widget.PagerAdapter;
-import androidx.viewpager.widget.ViewPager;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import androidx.viewpager.widget.PagerAdapter;
+import androidx.viewpager.widget.ViewPager;
 import com.facebook.common.logging.FLog;
+import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.uimanager.UIManagerModule;
@@ -56,9 +57,7 @@ public class ReactViewPager extends ViewPager {
       setOffscreenPageLimit(mViews.size());
     }
 
-    /**
-     * Replace a set of views to the ViewPager adapter and update the ViewPager
-     */
+    /** Replace a set of views to the ViewPager adapter and update the ViewPager */
     void setViews(List<View> views) {
       mViews.clear();
       mViews.addAll(views);
@@ -70,9 +69,8 @@ public class ReactViewPager extends ViewPager {
     }
 
     /**
-     * Remove all the views from the adapter and de-parents them from the ViewPager
-     * After calling this, it is expected that notifyDataSetChanged should be called soon
-     * afterwards.
+     * Remove all the views from the adapter and de-parents them from the ViewPager After calling
+     * this, it is expected that notifyDataSetChanged should be called soon afterwards.
      */
     void removeAllViewsFromAdapter(ViewPager pager) {
       mViews.clear();
@@ -94,8 +92,9 @@ public class ReactViewPager extends ViewPager {
     @Override
     public int getItemPosition(Object object) {
       // if we've removed all views, we want to return POSITION_NONE intentionally
-      return mIsViewPagerInIntentionallyInconsistentState || !mViews.contains(object) ?
-        POSITION_NONE : mViews.indexOf(object);
+      return mIsViewPagerInIntentionallyInconsistentState || !mViews.contains(object)
+          ? POSITION_NONE
+          : mViews.indexOf(object);
     }
 
     @Override
@@ -120,15 +119,13 @@ public class ReactViewPager extends ViewPager {
 
     @Override
     public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-      mEventDispatcher.dispatchEvent(
-          new PageScrollEvent(getId(), position, positionOffset));
+      mEventDispatcher.dispatchEvent(new PageScrollEvent(getId(), position, positionOffset));
     }
 
     @Override
     public void onPageSelected(int position) {
       if (!mIsCurrentItemFromJs) {
-        mEventDispatcher.dispatchEvent(
-            new PageSelectedEvent(getId(), position));
+        mEventDispatcher.dispatchEvent(new PageSelectedEvent(getId(), position));
       }
     }
 
@@ -148,8 +145,7 @@ public class ReactViewPager extends ViewPager {
         default:
           throw new IllegalStateException("Unsupported pageScrollState");
       }
-      mEventDispatcher.dispatchEvent(
-        new PageScrollStateChangedEvent(getId(), pageScrollState));
+      mEventDispatcher.dispatchEvent(new PageScrollStateChangedEvent(getId(), pageScrollState));
     }
   }
 
@@ -159,7 +155,9 @@ public class ReactViewPager extends ViewPager {
 
   public ReactViewPager(ReactContext reactContext) {
     super(reactContext);
-    mEventDispatcher = reactContext.getNativeModule(UIManagerModule.class).getEventDispatcher();
+    mEventDispatcher =
+        Assertions.assertNotNull(reactContext.getNativeModule(UIManagerModule.class))
+            .getEventDispatcher();
     mIsCurrentItemFromJs = false;
     setOnPageChangeListener(new PageChangeListener());
     setAdapter(new Adapter());
@@ -219,7 +217,6 @@ public class ReactViewPager extends ViewPager {
     mScrollEnabled = scrollEnabled;
   }
 
-
   @Override
   protected void onAttachedToWindow() {
     super.onAttachedToWindow();
@@ -229,15 +226,16 @@ public class ReactViewPager extends ViewPager {
     post(measureAndLayout);
   }
 
-  private final Runnable measureAndLayout = new Runnable() {
-    @Override
-    public void run() {
-      measure(
+  private final Runnable measureAndLayout =
+      new Runnable() {
+        @Override
+        public void run() {
+          measure(
               MeasureSpec.makeMeasureSpec(getWidth(), MeasureSpec.EXACTLY),
               MeasureSpec.makeMeasureSpec(getHeight(), MeasureSpec.EXACTLY));
-      layout(getLeft(), getTop(), getRight(), getBottom());
-    }
-  };
+          layout(getLeft(), getTop(), getRight(), getBottom());
+        }
+      };
 
   /*package*/ void addViewToAdapter(View child, int index) {
     getAdapter().addView(child, index);

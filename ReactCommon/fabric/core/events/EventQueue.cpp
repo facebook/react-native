@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -105,8 +105,7 @@ void EventQueue::flushStateUpdates() const {
   }
 
   for (const auto &stateUpdate : stateUpdateQueue) {
-    auto pair = stateUpdate();
-    statePipe_(pair.second, pair.first);
+    statePipe_(stateUpdate);
   }
 }
 

@@ -1,13 +1,13 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
 
-apply plugin: 'com.android.application'
-
-import com.android.build.OutputFile
+plugins {
+    id("com.android.application")
+}
 
 /**
  * The react.gradle file registers a task for each build variant (e.g. bundleDebugJsAndAssets
@@ -70,7 +70,9 @@ project.ext.react = [
     entryFile: file("../../js/RNTesterApp.android.js"),
     root: "$rootDir",
     inputExcludes: ["android/**", "./**", ".gradle/**"],
-    extraPackagerArgs: ["--reactNativePath", "$rootDir"]
+    composeSourceMapsPath: "$rootDir/scripts/compose-source-maps.js",
+    hermesCommand: "../../../node_modules/hermes-engine/%OS-BIN%/hermesc",
+    enableHermesForVariant: { def v -> v.name.contains("hermes") }
 ]
 
 apply from: "../../../react.gradle"
@@ -91,20 +93,40 @@ def enableSeparateBuildPerCPUArchitecture = true
  */
 def enableProguardInReleaseBuilds = true
 
+/**
+ * Use the international variant of JavaScriptCore
+ * This variant includes the ICU i18n library to make APIs like `Date.toLocaleString`
+ * and `String.localeCompare` work when using with locales other than en-US.
+ * Note that this variant is about 6MiB larger per architecture than the default.
+ */
+def useIntlJsc = false
+
 android {
-    compileSdkVersion 28
+    compileSdkVersion 29
 
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
 
+    flavorDimensions "vm"
+    productFlavors {
+        hermes {
+            dimension "vm"
+        }
+        jsc {
+            dimension "vm"
+        }
+    }
+
     defaultConfig {
         applicationId "com.facebook.react.uiapp"
-        minSdkVersion 16
-        targetSdkVersion 28
+        minSdkVersion 18
+        targetSdkVersion 29
         versionCode 1
         versionName "1.0"
+        testBuildType System.getProperty('testBuildType', 'debug')  // This will later be used to control the test apk build type
+        testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
     }
     signingConfigs {
         release {
@@ -130,8 +152,15 @@ android {
             minifyEnabled enableProguardInReleaseBuilds
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             signingConfig signingConfigs.release
+            // Detox-specific additions to pro-guard
+            proguardFile "${rootProject.projectDir}/../node_modules/detox/android/detox/proguard-rules-app.pro"
         }
     }
+}
+
+configurations {
+  hermesDebugImplementation {}
+  hermesReleaseImplementation {}
 }
 
 dependencies {
@@ -139,4 +168,32 @@ dependencies {
 
     // Build React Native from source
     implementation project(':ReactAndroid')
+
+    implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.0.0"
+
+    def hermesPath = '$projectDir/../../../../node_modules/hermes-engine/android/'
+    hermesDebugImplementation files(hermesPath + "hermes-debug.aar")
+    hermesReleaseImplementation files(hermesPath + "hermes-release.aar")
+
+    debugImplementation("com.facebook.flipper:flipper:${FLIPPER_VERSION}") {
+        exclude group:'com.facebook.fbjni'
+    }
+
+    debugImplementation("com.facebook.flipper:flipper-network-plugin:${FLIPPER_VERSION}") {
+        exclude group:'com.facebook.flipper'
+    }
+
+    debugImplementation("com.facebook.flipper:flipper-fresco-plugin:${FLIPPER_VERSION}") {
+        exclude group:'com.facebook.flipper'
+    }
+
+    if (useIntlJsc) {
+        jscImplementation 'org.webkit:android-jsc-intl:+'
+    } else {
+        jscImplementation 'org.webkit:android-jsc:+'
+    }
+
+    // Use detox test library
+    androidTestImplementation('com.wix:detox:+') { transitive = true }
+    androidTestImplementation 'junit:junit:4.12'
 }

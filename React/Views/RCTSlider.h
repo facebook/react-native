@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -12,7 +12,7 @@
 @interface RCTSlider : UISlider
 
 @property (nonatomic, copy) RCTBubblingEventBlock onValueChange;
-@property (nonatomic, copy) RCTBubblingEventBlock onSlidingComplete;
+@property (nonatomic, copy) RCTDirectEventBlock onSlidingComplete;
 
 @property (nonatomic, assign) float step;
 @property (nonatomic, assign) float lastValue;
@@ -22,6 +22,5 @@
 @property (nonatomic, strong) UIImage *maximumTrackImage;
 
 @property (nonatomic, strong) UIImage *thumbImage;
-
 
 @end

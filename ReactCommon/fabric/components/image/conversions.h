@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -35,25 +35,41 @@ inline void fromRawValue(const RawValue &value, ImageSource &result) {
     }
 
     if (items.find("width") != items.end() &&
-        items.find("height") != items.end()) {
+        items.find("height") != items.end() &&
+        // The following checks have to be removed after codegen is shipped.
+        // See T45151459.
+        items.at("width").hasType<Float>() &&
+        items.at("height").hasType<Float>()) {
       result.size = {(Float)items.at("width"), (Float)items.at("height")};
     }
 
-    if (items.find("scale") != items.end()) {
+    if (items.find("scale") != items.end() &&
+        // The following checks have to be removed after codegen is shipped.
+        // See T45151459.
+        items.at("scale").hasType<Float>()) {
       result.scale = (Float)items.at("scale");
     } else {
       result.scale = items.find("deprecated") != items.end() ? 0.0 : 1.0;
     }
 
-    if (items.find("url") != items.end()) {
+    if (items.find("url") != items.end() &&
+        // The following should be removed after codegen is shipped.
+        // See T45151459.
+        items.at("url").hasType<std::string>()) {
       result.uri = (std::string)items.at("url");
     }
 
-    if (items.find("uri") != items.end()) {
+    if (items.find("uri") != items.end() &&
+        // The following should be removed after codegen is shipped.
+        // See T45151459.
+        items.at("uri").hasType<std::string>()) {
       result.uri = (std::string)items.at("uri");
     }
 
-    if (items.find("bundle") != items.end()) {
+    if (items.find("bundle") != items.end() &&
+        // The following should be removed after codegen is shipped.
+        // See T45151459.
+        items.at("bundle").hasType<std::string>()) {
       result.bundle = (std::string)items.at("bundle");
       result.type = ImageSource::Type::Local;
     }
@@ -61,7 +77,10 @@ inline void fromRawValue(const RawValue &value, ImageSource &result) {
     return;
   }
 
-  abort();
+  // The following should be removed after codegen is shipped.
+  // See T45151459.
+  result = {};
+  result.type = ImageSource::Type::Invalid;
 }
 
 inline std::string toString(const ImageSource &value) {

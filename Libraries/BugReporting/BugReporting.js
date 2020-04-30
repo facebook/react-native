@@ -5,23 +5,28 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @flow
+ * @flow strict-local
  */
 
 'use strict';
 
-const RCTDeviceEventEmitter = require('RCTDeviceEventEmitter');
-const infoLog = require('infoLog');
+const RCTDeviceEventEmitter = require('../EventEmitter/RCTDeviceEventEmitter');
 
-import type EmitterSubscription from 'EmitterSubscription';
+import type EmitterSubscription from '../vendor/emitter/EmitterSubscription';
+import NativeBugReporting from './NativeBugReporting';
+import NativeRedBox from '../NativeModules/specs/NativeRedBox';
 
-type ExtraData = {[key: string]: string};
+type ExtraData = {[key: string]: string, ...};
 type SourceCallback = () => string;
-type DebugData = {extras: ExtraData, files: ExtraData};
+type DebugData = {
+  extras: ExtraData,
+  files: ExtraData,
+  ...
+};
 
 function defaultExtras() {
   BugReporting.addFileSource('react_hierarchy.txt', () =>
-    require('dumpReactTree')(),
+    require('./dumpReactTree')(),
   );
 }
 
@@ -67,7 +72,7 @@ class BugReporting {
   static addSource(
     key: string,
     callback: SourceCallback,
-  ): {remove: () => void} {
+  ): {remove: () => void, ...} {
     return this._addSource(key, callback, BugReporting._extraSources);
   }
 
@@ -82,7 +87,7 @@ class BugReporting {
   static addFileSource(
     key: string,
     callback: SourceCallback,
-  ): {remove: () => void} {
+  ): {remove: () => void, ...} {
     return this._addSource(key, callback, BugReporting._fileSources);
   }
 
@@ -90,7 +95,7 @@ class BugReporting {
     key: string,
     callback: SourceCallback,
     source: Map<string, SourceCallback>,
-  ): {remove: () => void} {
+  ): {remove: () => void, ...} {
     BugReporting._maybeInit();
     if (source.has(key)) {
       console.warn(
@@ -120,16 +125,14 @@ class BugReporting {
     for (const [key, callback] of BugReporting._fileSources) {
       fileData[key] = callback();
     }
-    infoLog('BugReporting extraData:', extraData);
-    const BugReportingNativeModule = require('NativeModules').BugReporting;
-    BugReportingNativeModule &&
-      BugReportingNativeModule.setExtraData &&
-      BugReportingNativeModule.setExtraData(extraData, fileData);
 
-    const RedBoxNativeModule = require('NativeModules').RedBox;
-    RedBoxNativeModule &&
-      RedBoxNativeModule.setExtraData &&
-      RedBoxNativeModule.setExtraData(extraData, 'From BugReporting.js');
+    if (NativeBugReporting != null && NativeBugReporting.setExtraData != null) {
+      NativeBugReporting.setExtraData(extraData, fileData);
+    }
+
+    if (NativeRedBox != null && NativeRedBox.setExtraData != null) {
+      NativeRedBox.setExtraData(extraData, 'From BugReporting.js');
+    }
 
     return {extras: extraData, files: fileData};
   }

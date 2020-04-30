@@ -28,9 +28,10 @@ type State = {
   lastMessage: ?string | ?ArrayBuffer,
   testMessage: string,
   testExpectedResponse: string,
+  ...
 };
 
-class WebSocketTest extends React.Component<{}, State> {
+class WebSocketTest extends React.Component<{...}, State> {
   state: State = {
     url: DEFAULT_WS_URL,
     fetchStatus: null,
@@ -113,7 +114,7 @@ class WebSocketTest extends React.Component<{}, State> {
     this.testConnect();
   }
 
-  testConnect = () => {
+  testConnect: () => void = () => {
     this._connect();
     this._waitFor(this._socketIsConnected, 5, connectSucceeded => {
       if (!connectSucceeded) {
@@ -124,7 +125,7 @@ class WebSocketTest extends React.Component<{}, State> {
     });
   };
 
-  testSendAndReceive = () => {
+  testSendAndReceive: () => void = () => {
     this._sendTestMessage();
     this._waitFor(this._receivedTestExpectedResponse, 5, messageReceived => {
       if (!messageReceived) {
@@ -135,7 +136,7 @@ class WebSocketTest extends React.Component<{}, State> {
     });
   };
 
-  testDisconnect = () => {
+  testDisconnect: () => void = () => {
     this._disconnect();
     this._waitFor(this._socketIsDisconnected, 5, disconnectSucceeded => {
       TestModule.markTestPassed(disconnectSucceeded);

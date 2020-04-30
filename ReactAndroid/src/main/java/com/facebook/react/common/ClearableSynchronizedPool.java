@@ -1,15 +1,17 @@
-// Copyright (c) Facebook, Inc. and its affiliates.
-
-// This source code is licensed under the MIT license found in the
-// LICENSE file in the root directory of this source tree.
+/*
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
 
 package com.facebook.react.common;
 
 import androidx.core.util.Pools;
 
 /**
- * Like {@link androidx.core.util.Pools.SynchronizedPool} with the option to clear the pool
- * (e.g. on memory pressure).
+ * Like {@link androidx.core.util.Pools.SynchronizedPool} with the option to clear the pool (e.g. on
+ * memory pressure).
  */
 public class ClearableSynchronizedPool<T> implements Pools.Pool<T> {
 

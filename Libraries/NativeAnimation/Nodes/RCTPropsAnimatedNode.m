@@ -1,19 +1,19 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
 
-#import "RCTPropsAnimatedNode.h"
+#import <React/RCTPropsAnimatedNode.h>
 
 #import <React/RCTLog.h>
 #import <React/RCTSurfacePresenterStub.h>
 #import <React/RCTUIManager.h>
 
-#import "RCTAnimationUtils.h"
-#import "RCTStyleAnimatedNode.h"
-#import "RCTValueAnimatedNode.h"
+#import <React/RCTAnimationUtils.h>
+#import <React/RCTStyleAnimatedNode.h>
+#import <React/RCTValueAnimatedNode.h>
 
 
 
@@ -28,12 +28,17 @@
 }
 
 - (instancetype)initWithTag:(NSNumber *)tag
-                     config:(NSDictionary<NSString *, id> *)config;
+                     config:(NSDictionary<NSString *, id> *)config
 {
   if (self = [super initWithTag:tag config:config]) {
     _propsDictionary = [NSMutableDictionary new];
   }
   return self;
+}
+
+- (BOOL)isManagedByFabric
+{
+  return _managedByFabric;
 }
 
 - (void)connectToView:(NSNumber *)viewTag
@@ -110,8 +115,13 @@
 
     } else if ([parentNode isKindOfClass:[RCTValueAnimatedNode class]]) {
       NSString *property = [self propertyNameForParentTag:parentTag];
-      CGFloat value = [(RCTValueAnimatedNode *)parentNode value];
-      self->_propsDictionary[property] = @(value);
+      id animatedObject = [(RCTValueAnimatedNode *)parentNode animatedObject];
+      if (animatedObject) {
+        self->_propsDictionary[property] = animatedObject;
+      } else {
+        CGFloat value = [(RCTValueAnimatedNode *)parentNode value];
+        self->_propsDictionary[property] = @(value);
+      }
     }
   }
 

@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -25,6 +25,5 @@ import com.facebook.proguard.annotations.DoNotStrip;
     return "JSCJavaScriptExecutor";
   }
 
-
-  private native static HybridData initHybrid(ReadableNativeMap jscConfig);
+  private static native HybridData initHybrid(ReadableNativeMap jscConfig);
 }

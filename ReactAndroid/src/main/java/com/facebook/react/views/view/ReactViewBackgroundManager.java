@@ -1,16 +1,18 @@
-// Copyright (c) Facebook, Inc. and its affiliates.
-
-// This source code is licensed under the MIT license found in the
-// LICENSE file in the root directory of this source tree.
+/*
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
 
 package com.facebook.react.views.view;
 
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.LayerDrawable;
-import androidx.core.view.ViewCompat;
 import android.view.View;
-import javax.annotation.Nullable;
+import androidx.annotation.Nullable;
+import androidx.core.view.ViewCompat;
 
 /** Class that manages the background for views and borders. */
 public class ReactViewBackgroundManager {

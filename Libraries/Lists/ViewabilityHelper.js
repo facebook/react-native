@@ -7,6 +7,7 @@
  * @flow
  * @format
  */
+
 'use strict';
 
 const invariant = require('invariant');
@@ -17,6 +18,7 @@ export type ViewToken = {
   index: ?number,
   isViewable: boolean,
   section?: any,
+  ...
 };
 
 export type ViewabilityConfigCallbackPair = {
@@ -24,7 +26,9 @@ export type ViewabilityConfigCallbackPair = {
   onViewableItemsChanged: (info: {
     viewableItems: Array<ViewToken>,
     changed: Array<ViewToken>,
+    ...
   }) => void,
+  ...
 };
 
 export type ViewabilityConfig = {|
@@ -71,9 +75,6 @@ export type ViewabilityConfig = {|
 class ViewabilityHelper {
   _config: ViewabilityConfig;
   _hasInteracted: boolean = false;
-  /* $FlowFixMe(>=0.63.0 site=react_native_fb) This comment suppresses an error
-   * found when Flow v0.63 was deployed. To see the error delete this comment
-   * and run Flow. */
   _timers: Set<number> = new Set();
   _viewableIndices: Array<number> = [];
   _viewableItems: Map<string, ViewToken> = new Map();
@@ -88,6 +89,9 @@ class ViewabilityHelper {
    * Cleanup, e.g. on unmount. Clears any pending timers.
    */
   dispose() {
+    /* $FlowFixMe(>=0.63.0 site=react_native_fb) This comment suppresses an
+     * error found when Flow v0.63 was deployed. To see the error delete this
+     * comment and run Flow. */
     this._timers.forEach(clearTimeout);
   }
 
@@ -98,8 +102,19 @@ class ViewabilityHelper {
     itemCount: number,
     scrollOffset: number,
     viewportHeight: number,
-    getFrameMetrics: (index: number) => ?{length: number, offset: number},
-    renderRange?: {first: number, last: number}, // Optional optimization to reduce the scan size
+    getFrameMetrics: (
+      index: number,
+    ) => ?{
+      length: number,
+      offset: number,
+      ...
+    },
+    // Optional optimization to reduce the scan size
+    renderRange?: {
+      first: number,
+      last: number,
+      ...
+    },
   ): Array<number> {
     const {
       itemVisiblePercentThreshold,
@@ -164,13 +179,25 @@ class ViewabilityHelper {
     itemCount: number,
     scrollOffset: number,
     viewportHeight: number,
-    getFrameMetrics: (index: number) => ?{length: number, offset: number},
+    getFrameMetrics: (
+      index: number,
+    ) => ?{
+      length: number,
+      offset: number,
+      ...
+    },
     createViewToken: (index: number, isViewable: boolean) => ViewToken,
     onViewableItemsChanged: ({
       viewableItems: Array<ViewToken>,
       changed: Array<ViewToken>,
+      ...
     }) => void,
-    renderRange?: {first: number, last: number}, // Optional optimization to reduce the scan size
+    // Optional optimization to reduce the scan size
+    renderRange?: {
+      first: number,
+      last: number,
+      ...
+    },
   ): void {
     if (
       (this._config.waitForInteraction && !this._hasInteracted) ||
@@ -200,6 +227,9 @@ class ViewabilityHelper {
     this._viewableIndices = viewableIndices;
     if (this._config.minimumViewTime) {
       const handle = setTimeout(() => {
+        /* $FlowFixMe(>=0.63.0 site=react_native_fb) This comment suppresses an
+         * error found when Flow v0.63 was deployed. To see the error delete
+         * this comment and run Flow. */
         this._timers.delete(handle);
         this._onUpdateSync(
           viewableIndices,
@@ -207,6 +237,9 @@ class ViewabilityHelper {
           createViewToken,
         );
       }, this._config.minimumViewTime);
+      /* $FlowFixMe(>=0.63.0 site=react_native_fb) This comment suppresses an
+       * error found when Flow v0.63 was deployed. To see the error delete this
+       * comment and run Flow. */
       this._timers.add(handle);
     } else {
       this._onUpdateSync(

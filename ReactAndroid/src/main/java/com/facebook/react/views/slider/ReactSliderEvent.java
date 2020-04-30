@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -12,9 +12,7 @@ import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.uimanager.events.Event;
 import com.facebook.react.uimanager.events.RCTEventEmitter;
 
-/**
- * Event emitted by a ReactSliderManager when user changes slider position.
- */
+/** Event emitted by a ReactSliderManager when user changes slider position. */
 public class ReactSliderEvent extends Event<ReactSliderEvent> {
 
   public static final String EVENT_NAME = "topChange";
@@ -36,7 +34,6 @@ public class ReactSliderEvent extends Event<ReactSliderEvent> {
     return mFromUser;
   }
 
-
   @Override
   public String getEventName() {
     return EVENT_NAME;
@@ -46,6 +43,7 @@ public class ReactSliderEvent extends Event<ReactSliderEvent> {
   public short getCoalescingKey() {
     return 0;
   }
+
   @Override
   public void dispatch(RCTEventEmitter rctEventEmitter) {
     rctEventEmitter.receiveEvent(getViewTag(), getEventName(), serializeEventData());

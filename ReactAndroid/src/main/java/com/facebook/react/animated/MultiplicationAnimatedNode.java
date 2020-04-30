@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -21,8 +21,7 @@ import com.facebook.react.bridge.ReadableMap;
   private final int[] mInputNodes;
 
   public MultiplicationAnimatedNode(
-      ReadableMap config,
-      NativeAnimatedNodesManager nativeAnimatedNodesManager) {
+      ReadableMap config, NativeAnimatedNodesManager nativeAnimatedNodesManager) {
     mNativeAnimatedNodesManager = nativeAnimatedNodesManager;
     ReadableArray inputNodes = config.getArray("input");
     mInputNodes = new int[inputNodes.size()];
@@ -39,8 +38,8 @@ import com.facebook.react.bridge.ReadableMap;
       if (animatedNode != null && animatedNode instanceof ValueAnimatedNode) {
         mValue *= ((ValueAnimatedNode) animatedNode).getValue();
       } else {
-        throw new JSApplicationCausedNativeException("Illegal node ID set as an input for " +
-          "Animated.multiply node");
+        throw new JSApplicationCausedNativeException(
+            "Illegal node ID set as an input for " + "Animated.multiply node");
       }
     }
   }

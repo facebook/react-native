@@ -60,5 +60,7 @@
 	<false/>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>You need to add NSPhotoLibraryUsageDescription key in Info.plist to enable photo library usage, otherwise it is going to *fail silently*!</string>
+	<key>RN_BUNDLE_PREFIX</key>
+	<string>$(RN_BUNDLE_PREFIX)</string>
 </dict>
 </plist>

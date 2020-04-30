@@ -10,7 +10,7 @@
 
 'use strict';
 
-const defineLazyObjectProperty = require('defineLazyObjectProperty');
+const defineLazyObjectProperty = require('./defineLazyObjectProperty');
 
 /**
  * Sets an object's property. If a property with the same name exists, this will

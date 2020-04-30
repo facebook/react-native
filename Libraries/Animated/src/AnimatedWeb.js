@@ -10,11 +10,14 @@
 
 'use strict';
 
-const AnimatedImplementation = require('AnimatedImplementation');
+const AnimatedImplementation = require('./AnimatedImplementation');
 
 module.exports = {
   ...AnimatedImplementation,
-  div: AnimatedImplementation.createAnimatedComponent('div'),
-  span: AnimatedImplementation.createAnimatedComponent('span'),
-  img: AnimatedImplementation.createAnimatedComponent('img'),
+  // $FlowFixMe createAnimatedComponent expects to receive types. Plain intrinsic components can't be typed like this
+  div: (AnimatedImplementation.createAnimatedComponent('div'): $FlowFixMe),
+  // $FlowFixMe createAnimatedComponent expects to receive types. Plain intrinsic components can't be typed like this
+  span: (AnimatedImplementation.createAnimatedComponent('span'): $FlowFixMe),
+  // $FlowFixMe createAnimatedComponent expects to receive types. Plain intrinsic components can't be typed like this
+  img: (AnimatedImplementation.createAnimatedComponent('img'): $FlowFixMe),
 };

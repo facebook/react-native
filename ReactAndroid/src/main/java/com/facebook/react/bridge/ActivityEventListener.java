@@ -1,7 +1,9 @@
-// Copyright (c) Facebook, Inc. and its affiliates.
-
-// This source code is licensed under the MIT license found in the
-// LICENSE file in the root directory of this source tree.
+/*
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
 
 package com.facebook.react.bridge;
 
@@ -14,13 +16,9 @@ import android.content.Intent;
  */
 public interface ActivityEventListener {
 
-  /**
-   * Called when host (activity/service) receives an {@link Activity#onActivityResult} call.
-   */
+  /** Called when host (activity/service) receives an {@link Activity#onActivityResult} call. */
   void onActivityResult(Activity activity, int requestCode, int resultCode, Intent data);
 
-  /**
-   * Called when a new intent is passed to the activity
-   */
+  /** Called when a new intent is passed to the activity */
   void onNewIntent(Intent intent);
 }

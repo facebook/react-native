@@ -5,67 +5,68 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @flow
+ * @flow strict-local
  */
 
 'use strict';
 
-const requireNativeComponent = require('requireNativeComponent');
+import codegenNativeComponent from '../Utilities/codegenNativeComponent';
+import type {HostComponent} from '../Renderer/shims/ReactNativeTypes';
+import type {
+  WithDefault,
+  DirectEventHandler,
+  Int32,
+} from '../Types/CodegenTypes';
 
-import type {ViewProps} from 'ViewPropTypes';
-import type {SyntheticEvent} from 'CoreEventTypes';
-import type {NativeComponent} from 'ReactNative';
+import type {ViewProps} from '../Components/View/ViewPropTypes';
 
-type OrientationChangeEvent = SyntheticEvent<
-  $ReadOnly<{|
-    orientation: 'portrait' | 'landscape',
-  |}>,
->;
+type OrientationChangeEvent = $ReadOnly<{|
+  orientation: 'portrait' | 'landscape',
+|}>;
 
-type ModalNativeProps = $ReadOnly<{|
+type NativeProps = $ReadOnly<{|
   ...ViewProps,
 
   /**
    * The `animationType` prop controls how the modal animates.
    *
-   * See https://facebook.github.io/react-native/docs/modal.html#animationtype
+   * See https://reactnative.dev/docs/modal.html#animationtype
    */
-  animationType?: ?('none' | 'slide' | 'fade'),
+  animationType?: WithDefault<'none' | 'slide' | 'fade', 'none'>,
 
   /**
    * The `presentationStyle` prop controls how the modal appears.
    *
-   * See https://facebook.github.io/react-native/docs/modal.html#presentationstyle
+   * See https://reactnative.dev/docs/modal.html#presentationstyle
    */
-  presentationStyle?: ?(
-    | 'fullScreen'
-    | 'pageSheet'
-    | 'formSheet'
-    | 'overFullScreen'
-  ),
+  presentationStyle?: WithDefault<
+    'fullScreen' | 'pageSheet' | 'formSheet' | 'overFullScreen',
+    'fullScreen',
+  >,
 
   /**
    * The `transparent` prop determines whether your modal will fill the
    * entire view.
    *
-   * See https://facebook.github.io/react-native/docs/modal.html#transparent
+   * See https://reactnative.dev/docs/modal.html#transparent
    */
-  transparent?: ?boolean,
+  transparent?: WithDefault<boolean, false>,
+
+  /**
+   * The `statusBarTranslucent` prop determines whether your modal should go under
+   * the system statusbar.
+   *
+   * See https://reactnative.dev/docs/modal.html#statusBarTranslucent
+   */
+  statusBarTranslucent?: WithDefault<boolean, false>,
 
   /**
    * The `hardwareAccelerated` prop controls whether to force hardware
    * acceleration for the underlying window.
    *
-   * See https://facebook.github.io/react-native/docs/modal.html#hardwareaccelerated
+   * See https://reactnative.dev/docs/modal.html#hardwareaccelerated
    */
-  hardwareAccelerated?: ?boolean,
-
-  /**
-   * The `visible` prop determines whether your modal is visible.
-   *
-   * See https://facebook.github.io/react-native/docs/modal.html#visible
-   */
-  visible?: ?boolean,
+  hardwareAccelerated?: WithDefault<boolean, false>,
 
   /**
    * The `onRequestClose` callback is called when the user taps the hardware
@@ -73,59 +74,53 @@ type ModalNativeProps = $ReadOnly<{|
    *
    * This is required on Apple TV and Android.
    *
-   * See https://facebook.github.io/react-native/docs/modal.html#onrequestclose
+   * See https://reactnative.dev/docs/modal.html#onrequestclose
    */
-  onRequestClose?: ?(event?: SyntheticEvent<null>) => mixed,
+  onRequestClose?: ?DirectEventHandler<null>,
 
   /**
    * The `onShow` prop allows passing a function that will be called once the
    * modal has been shown.
    *
-   * See https://facebook.github.io/react-native/docs/modal.html#onshow
+   * See https://reactnative.dev/docs/modal.html#onshow
    */
-  onShow?: ?(event?: SyntheticEvent<null>) => mixed,
-
-  /**
-   * The `onDismiss` prop allows passing a function that will be called once
-   * the modal has been dismissed.
-   *
-   * See https://facebook.github.io/react-native/docs/modal.html#ondismiss
-   */
-  onDismiss?: ?() => mixed,
+  onShow?: ?DirectEventHandler<null>,
 
   /**
    * Deprecated. Use the `animationType` prop instead.
    */
-  animated?: ?boolean,
+  animated?: WithDefault<boolean, false>,
 
   /**
    * The `supportedOrientations` prop allows the modal to be rotated to any of the specified orientations.
    *
-   * See https://facebook.github.io/react-native/docs/modal.html#supportedorientations
+   * See https://reactnative.dev/docs/modal.html#supportedorientations
    */
-  supportedOrientations?: ?$ReadOnlyArray<
-    | 'portrait'
-    | 'portrait-upside-down'
-    | 'landscape'
-    | 'landscape-left'
-    | 'landscape-right',
+  supportedOrientations?: WithDefault<
+    $ReadOnlyArray<
+      | 'portrait'
+      | 'portrait-upside-down'
+      | 'landscape'
+      | 'landscape-left'
+      | 'landscape-right',
+    >,
+    'portrait',
   >,
 
   /**
    * The `onOrientationChange` callback is called when the orientation changes while the modal is being displayed.
    *
-   * See https://facebook.github.io/react-native/docs/modal.html#onorientationchange
+   * See https://reactnative.dev/docs/modal.html#onorientationchange
    */
-  onOrientationChange?: ?(event: OrientationChangeEvent) => mixed,
+  onOrientationChange?: ?DirectEventHandler<OrientationChangeEvent>,
 
   /**
    * The `identifier` is the unique number for identifying Modal components.
    */
-  identifier?: ?number,
+  identifier?: WithDefault<Int32, 0>,
 |}>;
 
-type RCTModalHostViewNativeType = Class<NativeComponent<ModalNativeProps>>;
-
-module.exports = ((requireNativeComponent(
-  'RCTModalHostView',
-): any): RCTModalHostViewNativeType);
+export default (codegenNativeComponent<NativeProps>('ModalHostView', {
+  interfaceOnly: true,
+  paperComponentName: 'RCTModalHostView',
+}): HostComponent<NativeProps>);

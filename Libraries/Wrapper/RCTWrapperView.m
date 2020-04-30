@@ -1,7 +1,9 @@
-// Copyright (c) Facebook, Inc. and its affiliates.
-//
-// This source code is licensed under the MIT license found in the
-// LICENSE file in the root directory of this source tree.
+/*
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
 
 #import "RCTWrapperView.h"
 
@@ -74,7 +76,7 @@
   [super invalidateIntrinsicContentSize];
 
   // Setting `intrinsicContentSize` dirties the Yoga node and
-  // enfoce Yoga to call `measure` function (backed to `measureBlock`).
+  // enforce Yoga to call `measure` function (backed to `measureBlock`).
   [_bridge.uiManager setIntrinsicContentSize:self.intrinsicContentSize forView:self];
 }
 

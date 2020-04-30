@@ -1,7 +1,9 @@
-// Copyright (c) Facebook, Inc. and its affiliates.
-
-// This source code is licensed under the MIT license found in the
-// LICENSE file in the root directory of this source tree.
+/*
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
 
 #include "ReadableNativeMap.h"
 
@@ -57,8 +59,11 @@ void addDynamicToJArray(
 }
 
 local_ref<JArrayClass<jstring>> ReadableNativeMap::importKeys() {
-  auto pairs = map_.items();
   keys_ = folly::dynamic::array();
+  if (map_ == nullptr) {
+    return JArrayClass<jstring>::newArray(0);
+  }
+  auto pairs = map_.items();
   for (auto &pair : pairs) {
     keys_.value().push_back(pair.first.asString());
   }

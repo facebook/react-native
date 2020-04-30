@@ -10,7 +10,7 @@
 
 'use strict';
 
-const buildStyleInterpolator = require('buildStyleInterpolator');
+const buildStyleInterpolator = require('../buildStyleInterpolator');
 
 const validateEmpty = function(interpolator, value, validator) {
   const emptyObject = {};
@@ -187,7 +187,7 @@ describe('buildStyleInterpolator', function() {
       });
     });
   });
-  it('should detect chnages correctly', function() {
+  it('should detect changes correctly', function() {
     const testAnim = {
       opacity: {
         from: 0,

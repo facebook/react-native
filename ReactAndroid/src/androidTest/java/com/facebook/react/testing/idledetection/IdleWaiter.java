@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -7,9 +7,7 @@
 
 package com.facebook.react.testing.idledetection;
 
-/**
- * Interface for something that knows how to wait for bridge and UI idle.
- */
+/** Interface for something that knows how to wait for bridge and UI idle. */
 public interface IdleWaiter {
 
   void waitForBridgeAndUIIdle();

@@ -10,8 +10,23 @@
 
 'use strict';
 
-const ScrollView = require('ScrollView');
+import * as React from 'react';
 
-const createAnimatedComponent = require('createAnimatedComponent');
+const ScrollView = require('../../../Components/ScrollView/ScrollView');
+const createAnimatedComponent = require('../createAnimatedComponent');
 
-module.exports = createAnimatedComponent(ScrollView);
+import type {AnimatedComponentType} from '../createAnimatedComponent';
+
+/**
+ * @see https://github.com/facebook/react-native/commit/b8c8562
+ */
+const ScrollViewWithEventThrottle = React.forwardRef((props, ref) => (
+  <ScrollView scrollEventThrottle={0.0001} {...props} ref={ref} />
+));
+
+module.exports = (createAnimatedComponent(
+  ScrollViewWithEventThrottle,
+): AnimatedComponentType<
+  React.ElementConfig<typeof ScrollView>,
+  React.ElementRef<typeof ScrollView>,
+>);

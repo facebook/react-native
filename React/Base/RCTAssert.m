@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -23,10 +23,12 @@ RCTFatalExceptionHandler RCTCurrentFatalExceptionHandler = nil;
 NSException *_RCTNotImplementedException(SEL, Class);
 NSException *_RCTNotImplementedException(SEL cmd, Class cls)
 {
-  NSString *msg = [NSString stringWithFormat:@"%s is not implemented "
-                   "for the class %@", sel_getName(cmd), cls];
-  return [NSException exceptionWithName:@"RCTNotDesignatedInitializerException"
-                                 reason:msg userInfo:nil];
+  NSString *msg = [NSString stringWithFormat:
+                                @"%s is not implemented "
+                                 "for the class %@",
+                                sel_getName(cmd),
+                                cls];
+  return [NSException exceptionWithName:@"RCTNotDesignatedInitializerException" reason:msg userInfo:nil];
 }
 
 void RCTSetAssertFunction(RCTAssertFunction assertFunction)
@@ -43,15 +45,11 @@ void RCTAddAssertFunction(RCTAssertFunction assertFunction)
 {
   RCTAssertFunction existing = RCTCurrentAssertFunction;
   if (existing) {
-    RCTCurrentAssertFunction = ^(NSString *condition,
-                                 NSString *fileName,
-                                 NSNumber *lineNumber,
-                                 NSString *function,
-                                 NSString *message) {
-
-      existing(condition, fileName, lineNumber, function, message);
-      assertFunction(condition, fileName, lineNumber, function, message);
-    };
+    RCTCurrentAssertFunction =
+        ^(NSString *condition, NSString *fileName, NSNumber *lineNumber, NSString *function, NSString *message) {
+          existing(condition, fileName, lineNumber, function, message);
+          assertFunction(condition, fileName, lineNumber, function, message);
+        };
   } else {
     RCTCurrentAssertFunction = assertFunction;
   }
@@ -101,11 +99,12 @@ NSString *RCTCurrentThreadName(void)
 }
 
 void _RCTAssertFormat(
-  const char *condition,
-  const char *fileName,
-  int lineNumber,
-  const char *function,
-  NSString *format, ...)
+    const char *condition,
+    const char *fileName,
+    int lineNumber,
+    const char *function,
+    NSString *format,
+    ...)
 {
   RCTAssertFunction assertFunction = RCTGetLocalAssertFunction();
   if (assertFunction) {
@@ -143,9 +142,10 @@ void RCTFatal(NSError *error)
       // name: RCTFatalException: <underlying error description>
       // reason: <underlying error description plus JS stack trace, truncated to 175 characters>
       // userInfo: <underlying error userinfo, plus untruncated description plus JS stack trace>
-      @throw [[NSException alloc]  initWithName:name reason:message userInfo:userInfo];
+      @throw [[NSException alloc] initWithName:name reason:message userInfo:userInfo];
 #if DEBUG
-    } @catch (NSException *e) {}
+    } @catch (NSException *e) {
+    }
 #endif
   }
 }
@@ -160,33 +160,45 @@ RCTFatalHandler RCTGetFatalHandler(void)
   return RCTCurrentFatalHandler;
 }
 
-NSString *RCTFormatError(NSString *message, NSArray<NSDictionary<NSString *, id> *> *stackTrace, NSUInteger maxMessageLength)
+NSString *
+RCTFormatError(NSString *message, NSArray<NSDictionary<NSString *, id> *> *stackTrace, NSUInteger maxMessageLength)
 {
   if (maxMessageLength > 0 && message.length > maxMessageLength) {
     message = [[message substringToIndex:maxMessageLength] stringByAppendingString:@"..."];
   }
 
-  NSMutableString *prettyStack = [NSMutableString string];
-  if (stackTrace) {
-    [prettyStack appendString:@", stack:\n"];
+  NSString *prettyStack = RCTFormatStackTrace(stackTrace);
 
-    NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:@"\\b((?:seg-\\d+(?:_\\d+)?|\\d+)\\.js)"
-                                                                           options:NSRegularExpressionCaseInsensitive
-                                                                             error:NULL];
+  return [NSString
+      stringWithFormat:@"%@%@%@", message, prettyStack ? @", stack:\n" : @"", prettyStack ? prettyStack : @""];
+}
+
+NSString *RCTFormatStackTrace(NSArray<NSDictionary<NSString *, id> *> *stackTrace)
+{
+  if (stackTrace) {
+    NSMutableString *prettyStack = [NSMutableString string];
+
+    NSRegularExpression *regex =
+        [NSRegularExpression regularExpressionWithPattern:@"\\b((?:seg-\\d+(?:_\\d+)?|\\d+)\\.js)"
+                                                  options:NSRegularExpressionCaseInsensitive
+                                                    error:NULL];
     for (NSDictionary<NSString *, id> *frame in stackTrace) {
       NSString *fileName = [frame[@"file"] lastPathComponent];
-      NSTextCheckingResult *match = fileName != nil ? [regex firstMatchInString:fileName options:0 range:NSMakeRange(0, fileName.length)] : nil;
+      NSTextCheckingResult *match =
+          fileName != nil ? [regex firstMatchInString:fileName options:0 range:NSMakeRange(0, fileName.length)] : nil;
       if (match) {
         fileName = [NSString stringWithFormat:@"%@:", [fileName substringWithRange:match.range]];
       } else {
         fileName = @"";
       }
 
-      [prettyStack appendFormat:@"%@@%@%@:%@\n", frame[@"methodName"], fileName, frame[@"lineNumber"], frame[@"column"]];
+      [prettyStack
+          appendFormat:@"%@@%@%@:%@\n", frame[@"methodName"], fileName, frame[@"lineNumber"], frame[@"column"]];
     }
-  }
 
-  return [NSString stringWithFormat:@"%@%@", message, prettyStack];
+    return prettyStack;
+  }
+  return nil;
 }
 
 void RCTFatalException(NSException *exception)
@@ -202,7 +214,8 @@ void RCTFatalException(NSException *exception)
 #endif
       @throw exception;
 #if DEBUG
-    } @catch (NSException *e) {}
+    } @catch (NSException *e) {
+    }
 #endif
   }
 }
@@ -216,4 +229,3 @@ RCTFatalExceptionHandler RCTGetFatalExceptionHandler(void)
 {
   return RCTCurrentFatalExceptionHandler;
 }
-

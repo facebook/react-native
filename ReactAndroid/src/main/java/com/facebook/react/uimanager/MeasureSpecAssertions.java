@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -9,9 +9,7 @@ package com.facebook.react.uimanager;
 
 import android.view.View;
 
-/**
- * Shared utility for asserting on MeasureSpecs.
- */
+/** Shared utility for asserting on MeasureSpecs. */
 public class MeasureSpecAssertions {
 
   public static final void assertExplicitMeasureSpec(int widthMeasureSpec, int heightMeasureSpec) {
@@ -20,8 +18,8 @@ public class MeasureSpecAssertions {
 
     if (widthMode == View.MeasureSpec.UNSPECIFIED || heightMode == View.MeasureSpec.UNSPECIFIED) {
       throw new IllegalStateException(
-          "A catalyst view must have an explicit width and height given to it. This should " +
-              "normally happen as part of the standard catalyst UI framework.");
+          "A catalyst view must have an explicit width and height given to it. This should "
+              + "normally happen as part of the standard catalyst UI framework.");
     }
   }
 }

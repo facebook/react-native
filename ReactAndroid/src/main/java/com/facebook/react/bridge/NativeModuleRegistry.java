@@ -1,9 +1,10 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
- * directory of this source tree.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
+
 package com.facebook.react.bridge;
 
 import com.facebook.infer.annotation.Assertions;
@@ -144,8 +145,8 @@ public class NativeModuleRegistry {
   }
 
   public NativeModule getModule(String name) {
-    return Assertions.assertNotNull(
-        mModules.get(name), "Could not find module with name " + name).getModule();
+    return Assertions.assertNotNull(mModules.get(name), "Could not find module with name " + name)
+        .getModule();
   }
 
   public List<NativeModule> getAllModules() {

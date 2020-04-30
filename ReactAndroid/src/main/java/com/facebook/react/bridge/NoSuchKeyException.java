@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -9,9 +9,7 @@ package com.facebook.react.bridge;
 
 import com.facebook.proguard.annotations.DoNotStrip;
 
-/**
- * Exception thrown by {@link ReadableNativeMap} when a key that does not exist is requested.
- */
+/** Exception thrown by {@link ReadableNativeMap} when a key that does not exist is requested. */
 @DoNotStrip
 public class NoSuchKeyException extends RuntimeException {
 

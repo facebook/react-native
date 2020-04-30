@@ -4,17 +4,13 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * To test Danger during development, run yarn in this directory, then run:
- * $ yarn danger pr <URL to GitHub PR>
- *
  * @format
  */
 
 'use strict';
 
-const includes = require('lodash.includes');
-
 const {danger, fail, message, warn} = require('danger');
+const includes = require('lodash.includes');
 
 // Provides advice if a summary section is missing, or body is too short
 const includesSummary =
@@ -55,16 +51,20 @@ if (!includesTestPlan) {
 }
 
 // Regex looks for given categories, types, a file/framework/component, and a message - broken into 4 capture groups
-const changelogRegex = /\[\s?(ANDROID|GENERAL|IOS)\s?\]\s*?\[\s?(ADDED|CHANGED|DEPRECATED|REMOVED|FIXED|SECURITY)\s?\]\s*?\-?\s*?(.*)/gi;
+const changelogRegex = /\[\s?(ANDROID|GENERAL|IOS|JS|JAVASCRIPT|INTERNAL)\s?\]\s?\[\s?(ADDED|CHANGED|DEPRECATED|REMOVED|FIXED|SECURITY)\s?\]\s*?-?\s*?(.*)/gi;
+const internalChangelogRegex = /\[\s?(INTERNAL)\s?\].*/gi;
 const includesChangelog =
   danger.github.pr.body &&
   (danger.github.pr.body.toLowerCase().includes('## changelog') ||
     danger.github.pr.body.toLowerCase().includes('release notes'));
 const correctlyFormattedChangelog = changelogRegex.test(danger.github.pr.body);
+const containsInternalChangelog = internalChangelogRegex.test(
+  danger.github.pr.body,
+);
 
 // Provides advice if a changelog is missing
 const changelogInstructions =
-  'A changelog entry has the following format: `[CATEGORY] [TYPE] - Message`.\n\n<details>CATEGORY may be:\n\n- General\n- iOS\n- Android\n\nTYPE may be:\n\n- Added, for new features.\n- Changed, for changes in existing functionality.\n- Deprecated, for soon-to-be removed features.\n- Removed, for now removed features.\n- Fixed, for any bug fixes.\n- Security, in case of vulnerabilities.\n\nMESSAGE may answer "what and why" on a feature level.   Use this to briefly tell React Native users about notable changes.</details>';
+  'A changelog entry has the following format: `[CATEGORY] [TYPE] - Message`.\n\n<details>CATEGORY may be:\n\n- General\n- iOS\n- Android\n- JavaScript\n- Internal (for changes that do not need to be called out in the release notes)\n\nTYPE may be:\n\n- Added, for new features.\n- Changed, for changes in existing functionality.\n- Deprecated, for soon-to-be removed features.\n- Removed, for now removed features.\n- Fixed, for any bug fixes.\n- Security, in case of vulnerabilities.\n\nMESSAGE may answer "what and why" on a feature level.   Use this to briefly tell React Native users about notable changes.</details>';
 if (!includesChangelog) {
   const title = ':clipboard: Missing Changelog';
   const idea =
@@ -72,9 +72,9 @@ if (!includesChangelog) {
     'To do so, add a "## Changelog" section to your PR description. ' +
     changelogInstructions;
   message(`${title} - <i>${idea}</i>`);
-} else if (!correctlyFormattedChangelog) {
-  const title = ':clipboard: Changelog Format';
-  const idea = 'Did you include a Changelog? ' + changelogInstructions;
+} else if (!correctlyFormattedChangelog && !containsInternalChangelog) {
+  const title = ':clipboard: Verify Changelog Format';
+  const idea = changelogInstructions;
   message(`${title} - <i>${idea}</i>`);
 }
 
@@ -90,6 +90,6 @@ if (!isMergeRefMaster && isMergeRefStable) {
 } else if (!isMergeRefMaster && !isMergeRefStable) {
   const title = ':exclamation: Base Branch';
   const idea =
-    'The base branch for this PR is something other than `master`. [Are you sure you want to target something other than the `master` branch?](http://facebook.github.io/react-native/docs/contributing.html#pull-requests)';
+    'The base branch for this PR is something other than `master`. [Are you sure you want to target something other than the `master` branch?](https://reactnative.dev/docs/contributing.html#pull-requests)';
   fail(`${title} - <i>${idea}</i>`);
 }

@@ -9,9 +9,9 @@
 
 'use strict';
 
-import GlobalPerformanceLogger from 'GlobalPerformanceLogger';
-import createPerformanceLogger from 'createPerformanceLogger';
-import type {IPerformanceLogger} from 'createPerformanceLogger';
+import GlobalPerformanceLogger from '../GlobalPerformanceLogger';
+import createPerformanceLogger from '../createPerformanceLogger';
+import type {IPerformanceLogger} from '../createPerformanceLogger';
 
 const TIMESPAN_1 = '<timespan_1>';
 const TIMESPAN_2 = '<timespan_2>';

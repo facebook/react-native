@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -21,7 +21,7 @@ public final class ReactTextInputLocalData {
   private final int mMaxLines;
   private final int mInputType;
   private final int mBreakStrategy;
-  private final  CharSequence mPlaceholder;
+  private final CharSequence mPlaceholder;
 
   public ReactTextInputLocalData(EditText editText) {
     mText = new SpannableStringBuilder(editText.getText());

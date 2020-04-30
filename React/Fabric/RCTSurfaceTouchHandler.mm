@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -7,9 +7,9 @@
 
 #import "RCTSurfaceTouchHandler.h"
 
-#import <UIKit/UIGestureRecognizerSubclass.h>
 #import <React/RCTUtils.h>
 #import <React/RCTViewComponentView.h>
+#import <UIKit/UIGestureRecognizerSubclass.h>
 
 #import "RCTConversions.h"
 #import "RCTTouchableComponentViewProtocol.h"
@@ -18,13 +18,14 @@ using namespace facebook::react;
 
 template <size_t size>
 class IdentifierPool {
-public:
-
-  void enqueue(int index) {
+ public:
+  void enqueue(int index)
+  {
     usage[index] = false;
   }
 
-  int dequeue() {
+  int dequeue()
+  {
     while (true) {
       if (!usage[lastIndex]) {
         usage[lastIndex] = true;
@@ -34,14 +35,14 @@ public:
     }
   }
 
-  void reset() {
+  void reset()
+  {
     for (int i = 0; i < size; i++) {
       usage[i] = false;
     }
   }
 
-private:
-
+ private:
   bool usage[size];
   int lastIndex;
 };
@@ -57,21 +58,29 @@ struct ActiveTouch {
   Touch touch;
   SharedTouchEventEmitter eventEmitter;
 
+  /*
+   * A component view on which the touch was begun.
+   */
+  __strong UIView<RCTComponentViewProtocol> *componentView = nil;
+
   struct Hasher {
-    size_t operator()(const ActiveTouch &activeTouch) const {
+    size_t operator()(const ActiveTouch &activeTouch) const
+    {
       return std::hash<decltype(activeTouch.touch.identifier)>()(activeTouch.touch.identifier);
     }
   };
 
   struct Comparator {
-    bool operator()(const ActiveTouch &lhs, const ActiveTouch &rhs) const {
+    bool operator()(const ActiveTouch &lhs, const ActiveTouch &rhs) const
+    {
       return lhs.touch.identifier == rhs.touch.identifier;
     }
   };
 };
 
-static void UpdateActiveTouchWithUITouch(ActiveTouch &activeTouch, UITouch *uiTouch, UIView *rootComponentView) {
-  CGPoint offsetPoint = [uiTouch locationInView:uiTouch.view];
+static void UpdateActiveTouchWithUITouch(ActiveTouch &activeTouch, UITouch *uiTouch, UIView *rootComponentView)
+{
+  CGPoint offsetPoint = [uiTouch locationInView:activeTouch.componentView];
   CGPoint screenPoint = [uiTouch locationInView:uiTouch.window];
   CGPoint pagePoint = [uiTouch locationInView:rootComponentView];
 
@@ -86,35 +95,38 @@ static void UpdateActiveTouchWithUITouch(ActiveTouch &activeTouch, UITouch *uiTo
   }
 }
 
-static ActiveTouch CreateTouchWithUITouch(UITouch *uiTouch, UIView *rootComponentView) {
+static ActiveTouch CreateTouchWithUITouch(UITouch *uiTouch, UIView *rootComponentView)
+{
   UIView *componentView = uiTouch.view;
 
   ActiveTouch activeTouch = {};
 
   if ([componentView respondsToSelector:@selector(touchEventEmitterAtPoint:)]) {
-    activeTouch.eventEmitter = [(id<RCTTouchableComponentViewProtocol>)componentView touchEventEmitterAtPoint:[uiTouch locationInView:componentView]];
+    activeTouch.eventEmitter = [(id<RCTTouchableComponentViewProtocol>)componentView
+        touchEventEmitterAtPoint:[uiTouch locationInView:componentView]];
     activeTouch.touch.target = (Tag)componentView.tag;
   }
+
+  activeTouch.componentView = componentView;
 
   UpdateActiveTouchWithUITouch(activeTouch, uiTouch, rootComponentView);
   return activeTouch;
 }
 
-static BOOL AllTouchesAreCancelledOrEnded(NSSet<UITouch *> *touches) {
+static BOOL AllTouchesAreCancelledOrEnded(NSSet<UITouch *> *touches)
+{
   for (UITouch *touch in touches) {
-    if (touch.phase == UITouchPhaseBegan ||
-        touch.phase == UITouchPhaseMoved ||
-        touch.phase == UITouchPhaseStationary) {
+    if (touch.phase == UITouchPhaseBegan || touch.phase == UITouchPhaseMoved || touch.phase == UITouchPhaseStationary) {
       return NO;
     }
   }
   return YES;
 }
 
-static BOOL AnyTouchesChanged(NSSet<UITouch *> *touches) {
+static BOOL AnyTouchesChanged(NSSet<UITouch *> *touches)
+{
   for (UITouch *touch in touches) {
-    if (touch.phase == UITouchPhaseBegan ||
-        touch.phase == UITouchPhaseMoved) {
+    if (touch.phase == UITouchPhaseBegan || touch.phase == UITouchPhaseMoved) {
       return YES;
     }
   }
@@ -127,9 +139,10 @@ static BOOL AnyTouchesChanged(NSSet<UITouch *> *touches) {
  * This is quite trivial but decent implementation of hasher function
  * inspired by this research: https://stackoverflow.com/a/21062520/496389.
  */
-template<typename PointerT>
+template <typename PointerT>
 struct PointerHasher {
-  constexpr std::size_t operator()(const PointerT &value) const {
+  constexpr std::size_t operator()(const PointerT &value) const
+  {
     return reinterpret_cast<size_t>(value);
   }
 };
@@ -138,11 +151,8 @@ struct PointerHasher {
 @end
 
 @implementation RCTSurfaceTouchHandler {
-  std::unordered_map<
-    __unsafe_unretained UITouch *,
-    ActiveTouch,
-    PointerHasher<__unsafe_unretained UITouch *>
-  > _activeTouches;
+  std::unordered_map<__unsafe_unretained UITouch *, ActiveTouch, PointerHasher<__unsafe_unretained UITouch *>>
+      _activeTouches;
 
   UIView *_rootComponentView;
   IdentifierPool<11> _identifierPool;
@@ -165,7 +175,7 @@ struct PointerHasher {
   return self;
 }
 
-RCT_NOT_IMPLEMENTED(- (instancetype)initWithTarget:(id)target action:(SEL)action)
+RCT_NOT_IMPLEMENTED(-(instancetype)initWithTarget : (id)target action : (SEL)action)
 
 - (void)attachToView:(UIView *)view
 {
@@ -196,14 +206,25 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithTarget:(id)target action:(SEL)action
 - (void)_updateTouches:(NSSet<UITouch *> *)touches
 {
   for (UITouch *touch in touches) {
-    UpdateActiveTouchWithUITouch(_activeTouches.at(touch), touch, _rootComponentView);
+    auto iterator = _activeTouches.find(touch);
+    assert(iterator != _activeTouches.end() && "Inconsistency between local and UIKit touch registries");
+    if (iterator == _activeTouches.end()) {
+      continue;
+    }
+
+    UpdateActiveTouchWithUITouch(iterator->second, touch, _rootComponentView);
   }
 }
 
 - (void)_unregisterTouches:(NSSet<UITouch *> *)touches
 {
   for (UITouch *touch in touches) {
-    const auto &activeTouch = _activeTouches.at(touch);
+    auto iterator = _activeTouches.find(touch);
+    assert(iterator != _activeTouches.end() && "Inconsistency between local and UIKit touch registries");
+    if (iterator == _activeTouches.end()) {
+      continue;
+    }
+    auto &activeTouch = iterator->second;
     _identifierPool.enqueue(activeTouch.touch.identifier);
     _activeTouches.erase(touch);
   }
@@ -215,7 +236,12 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithTarget:(id)target action:(SEL)action
   activeTouches.reserve(touches.count);
 
   for (UITouch *touch in touches) {
-    activeTouches.push_back(_activeTouches.at(touch));
+    auto iterator = _activeTouches.find(touch);
+    assert(iterator != _activeTouches.end() && "Inconsistency between local and UIKit touch registries");
+    if (iterator == _activeTouches.end()) {
+      continue;
+    }
+    activeTouches.push_back(iterator->second);
   }
 
   return activeTouches;
@@ -225,7 +251,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithTarget:(id)target action:(SEL)action
 {
   TouchEvent event = {};
   std::unordered_set<ActiveTouch, ActiveTouch::Hasher, ActiveTouch::Comparator> changedActiveTouches = {};
-  std::unordered_set<SharedTouchEventEmitter> uniqueEventEmitter = {};
+  std::unordered_set<SharedTouchEventEmitter> uniqueEventEmitters = {};
   BOOL isEndishEventType = eventType == RCTTouchEventTypeTouchEnd || eventType == RCTTouchEventTypeTouchCancel;
 
   for (const auto &activeTouch : activeTouches) {
@@ -235,7 +261,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithTarget:(id)target action:(SEL)action
 
     changedActiveTouches.insert(activeTouch);
     event.changedTouches.insert(activeTouch.touch);
-    uniqueEventEmitter.insert(activeTouch.eventEmitter);
+    uniqueEventEmitters.insert(activeTouch.eventEmitter);
   }
 
   for (const auto &pair : _activeTouches) {
@@ -243,17 +269,14 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithTarget:(id)target action:(SEL)action
       continue;
     }
 
-    if (
-        isEndishEventType &&
-        event.changedTouches.find(pair.second.touch) != event.changedTouches.end()
-    ) {
+    if (isEndishEventType && event.changedTouches.find(pair.second.touch) != event.changedTouches.end()) {
       continue;
     }
 
     event.touches.insert(pair.second.touch);
   }
 
-  for (const auto &eventEmitter : uniqueEventEmitter) {
+  for (const auto &eventEmitter : uniqueEventEmitters) {
     event.targetTouches.clear();
 
     for (const auto &pair : _activeTouches) {
@@ -286,8 +309,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithTarget:(id)target action:(SEL)action
   [super touchesBegan:touches withEvent:event];
 
   [self _registerTouches:touches];
-  [self _dispatchActiveTouches:[self _activeTouchesFromTouches:touches]
-                     eventType:RCTTouchEventTypeTouchStart];
+  [self _dispatchActiveTouches:[self _activeTouchesFromTouches:touches] eventType:RCTTouchEventTypeTouchStart];
 
   if (self.state == UIGestureRecognizerStatePossible) {
     self.state = UIGestureRecognizerStateBegan;
@@ -301,8 +323,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithTarget:(id)target action:(SEL)action
   [super touchesMoved:touches withEvent:event];
 
   [self _updateTouches:touches];
-  [self _dispatchActiveTouches:[self _activeTouchesFromTouches:touches]
-                     eventType:RCTTouchEventTypeTouchMove];
+  [self _dispatchActiveTouches:[self _activeTouchesFromTouches:touches] eventType:RCTTouchEventTypeTouchMove];
 
   self.state = UIGestureRecognizerStateChanged;
 }
@@ -312,8 +333,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithTarget:(id)target action:(SEL)action
   [super touchesEnded:touches withEvent:event];
 
   [self _updateTouches:touches];
-  [self _dispatchActiveTouches:[self _activeTouchesFromTouches:touches]
-                     eventType:RCTTouchEventTypeTouchEnd];
+  [self _dispatchActiveTouches:[self _activeTouchesFromTouches:touches] eventType:RCTTouchEventTypeTouchEnd];
   [self _unregisterTouches:touches];
 
   if (AllTouchesAreCancelledOrEnded(event.allTouches)) {
@@ -328,8 +348,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithTarget:(id)target action:(SEL)action
   [super touchesCancelled:touches withEvent:event];
 
   [self _updateTouches:touches];
-  [self _dispatchActiveTouches:[self _activeTouchesFromTouches:touches]
-                     eventType:RCTTouchEventTypeTouchCancel];
+  [self _dispatchActiveTouches:[self _activeTouchesFromTouches:touches] eventType:RCTTouchEventTypeTouchCancel];
   [self _unregisterTouches:touches];
 
   if (AllTouchesAreCancelledOrEnded(event.allTouches)) {
@@ -351,8 +370,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithTarget:(id)target action:(SEL)action
       activeTouches.push_back(pair.second);
     }
 
-    [self _dispatchActiveTouches:activeTouches
-                       eventType:RCTTouchEventTypeTouchCancel];
+    [self _dispatchActiveTouches:activeTouches eventType:RCTTouchEventTypeTouchCancel];
 
     // Force-unregistering all the touches.
     _activeTouches.clear();
@@ -374,7 +392,8 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithTarget:(id)target action:(SEL)action
 
 #pragma mark - UIGestureRecognizerDelegate
 
-- (BOOL)gestureRecognizer:(__unused UIGestureRecognizer *)gestureRecognizer shouldRequireFailureOfGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer
+- (BOOL)gestureRecognizer:(__unused UIGestureRecognizer *)gestureRecognizer
+    shouldRequireFailureOfGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer
 {
   // Same condition for `failure of` as for `be prevented by`.
   return [self canBePreventedByGestureRecognizer:otherGestureRecognizer];

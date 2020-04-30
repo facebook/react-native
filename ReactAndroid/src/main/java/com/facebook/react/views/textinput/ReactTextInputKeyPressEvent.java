@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -12,9 +12,7 @@ import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.uimanager.events.Event;
 import com.facebook.react.uimanager.events.RCTEventEmitter;
 
-/**
- * Event emitted by EditText native view when key pressed
- */
+/** Event emitted by EditText native view when key pressed */
 public class ReactTextInputKeyPressEvent extends Event<ReactTextInputEvent> {
 
   public static final String EVENT_NAME = "topKeyPress";

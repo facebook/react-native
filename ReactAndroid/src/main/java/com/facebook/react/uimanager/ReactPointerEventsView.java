@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -15,8 +15,6 @@ import android.view.View;
  */
 public interface ReactPointerEventsView {
 
-  /**
-   * Return the PointerEvents of the View.
-   */
+  /** Return the PointerEvents of the View. */
   PointerEvents getPointerEvents();
 }

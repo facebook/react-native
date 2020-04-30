@@ -32,19 +32,11 @@ function getErrors(schema: SchemaType): $ReadOnlyArray<string> {
         return;
       }
 
-      const component = module.components[componentName];
-
       if (!componentModules.has(componentName)) {
         componentModules.set(componentName, []);
       }
 
       nullthrows(componentModules.get(componentName)).push(moduleName);
-
-      if (component.props.length === 0) {
-        errors.add(
-          `${componentName} in module ${moduleName} must define props`,
-        );
-      }
     });
   });
 

@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -14,5 +14,4 @@ public interface CookieJarContainer extends CookieJar {
   void setCookieJar(CookieJar cookieJar);
 
   void removeCookieJar();
-
 }

@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -44,11 +44,14 @@
 @property (nonatomic, assign) NSTimeInterval scrollEventThrottle;
 @property (nonatomic, assign) BOOL centerContent;
 @property (nonatomic, copy) NSDictionary *maintainVisibleContentPosition;
+@property (nonatomic, assign) BOOL scrollToOverflowEnabled;
 @property (nonatomic, assign) int snapToInterval;
+@property (nonatomic, assign) BOOL disableIntervalMomentum;
 @property (nonatomic, copy) NSArray<NSNumber *> *snapToOffsets;
 @property (nonatomic, assign) BOOL snapToStart;
 @property (nonatomic, assign) BOOL snapToEnd;
 @property (nonatomic, copy) NSString *snapToAlignment;
+@property (nonatomic, assign) BOOL inverted;
 
 // NOTE: currently these event props are only declared so we can export the
 // event names to JS - we don't call the blocks directly because scroll events

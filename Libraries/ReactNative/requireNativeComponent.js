@@ -4,14 +4,16 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @flow strict-local
+ * @flow
  * @format
  */
 
 'use strict';
 
-const createReactNativeComponentClass = require('createReactNativeComponentClass');
-const getNativeComponentAttributes = require('getNativeComponentAttributes');
+const createReactNativeComponentClass = require('../Renderer/shims/createReactNativeComponentClass');
+const getNativeComponentAttributes = require('./getNativeComponentAttributes');
+
+import type {HostComponent} from '../Renderer/shims/ReactNativeTypes';
 
 /**
  * Creates values that can be used like React components which represent native
@@ -21,9 +23,10 @@ const getNativeComponentAttributes = require('getNativeComponentAttributes');
  *   const View = requireNativeComponent('RCTView');
  *
  */
-const requireNativeComponent = (uiViewClassName: string): string =>
-  createReactNativeComponentClass(uiViewClassName, () =>
+
+const requireNativeComponent = <T>(uiViewClassName: string): HostComponent<T> =>
+  ((createReactNativeComponentClass(uiViewClassName, () =>
     getNativeComponentAttributes(uiViewClassName),
-  );
+  ): any): HostComponent<T>);
 
 module.exports = requireNativeComponent;

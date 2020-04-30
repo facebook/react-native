@@ -7,6 +7,7 @@
  * @flow strict-local
  * @format
  */
+
 'use strict';
 
 /**
@@ -19,6 +20,10 @@ if (global.GLOBAL === undefined) {
 
 if (global.window === undefined) {
   global.window = global;
+}
+
+if (global.self === undefined) {
+  global.self = global;
 }
 
 // Set up process

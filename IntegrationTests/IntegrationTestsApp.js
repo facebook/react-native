@@ -10,7 +10,7 @@
 
 'use strict';
 
-require('InitializeCore');
+require('react-native/Libraries/Core/InitializeCore');
 const React = require('react');
 const ReactNative = require('react-native');
 const {
@@ -36,6 +36,7 @@ const TESTS = [
   require('./SyncMethodTest'),
   require('./WebSocketTest'),
   require('./AccessibilityManagerTest'),
+  require('./GlobalEvalWithSourceUrlTest'),
 ];
 
 TESTS.forEach(
@@ -46,11 +47,11 @@ TESTS.forEach(
 );
 
 // Modules required for integration tests
-require('LoggingTestModule');
+require('./LoggingTestModule');
 
 type Test = any;
 
-class IntegrationTestsApp extends React.Component<{}, $FlowFixMeState> {
+class IntegrationTestsApp extends React.Component<{...}, $FlowFixMeState> {
   state = {
     test: (null: ?Test),
   };
@@ -78,6 +79,9 @@ class IntegrationTestsApp extends React.Component<{}, $FlowFixMeState> {
           {TESTS.map(test => [
             <TouchableOpacity
               onPress={() => this.setState({test})}
+              /* $FlowFixMe(>=0.115.0 site=react_native_fb) This comment
+               * suppresses an error found when Flow v0.115 was deployed. To
+               * see the error, delete this comment and run Flow. */
               style={styles.row}>
               <Text style={styles.testName}>{test.displayName}</Text>
             </TouchableOpacity>,

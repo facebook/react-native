@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -14,15 +14,13 @@ import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.ViewManager;
 
 /**
- * Manages raw text nodes (aka {@code textContent} in terms of DOM).
- * Since they are used only as a virtual nodes, any type of native view
- * operation will throw an {@link IllegalStateException}.
+ * Manages raw text nodes (aka {@code textContent} in terms of DOM). Since they are used only as a
+ * virtual nodes, any type of native view operation will throw an {@link IllegalStateException}.
  */
 @ReactModule(name = ReactRawTextManager.REACT_CLASS)
 public class ReactRawTextManager extends ViewManager<View, ReactRawTextShadowNode> {
 
-  @VisibleForTesting
-  public static final String REACT_CLASS = "RCTRawText";
+  @VisibleForTesting public static final String REACT_CLASS = "RCTRawText";
 
   @Override
   public String getName() {

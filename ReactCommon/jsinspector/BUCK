@@ -31,6 +31,7 @@ rn_xplat_cxx_library(
         "-std=c++1y",
     ],
     fbandroid_preferred_linkage = "shared",
+    fbobjc_labels = ["supermodule:ios/default/public.react_native.infra"],
     visibility = [
         "PUBLIC",
     ],

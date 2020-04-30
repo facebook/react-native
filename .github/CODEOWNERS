@@ -29,9 +29,12 @@ Libraries/NativeAnimation/* @janicduplessis
 Libraries/Image/* @shergin
 Libraries/Text/* @shergin
 
-# Modifications to package.json typically require 
+# Modifications to package.json typically require
 # additional effort from a Facebook employee to land
 /package.json @hramos @cpojer
 
 # These should not be modified through a GitHub PR
 LICENSE* @hramos @cpojer @yungsters
+
+# The eslint-config-react-native-community package requires manual publishing after merging
+/packages/eslint-config-react-native-community/* @matt-oakes

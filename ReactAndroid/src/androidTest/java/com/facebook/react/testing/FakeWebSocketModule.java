@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -7,16 +7,13 @@
 
 package com.facebook.react.testing;
 
-import javax.annotation.Nullable;
-
+import androidx.annotation.Nullable;
 import com.facebook.react.bridge.BaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 
-/**
- * Dummy implementation of storage module, used for testing
- */
+/** Dummy implementation of storage module, used for testing */
 public final class FakeWebSocketModule extends BaseJavaModule {
 
   @Override
@@ -31,21 +28,17 @@ public final class FakeWebSocketModule extends BaseJavaModule {
 
   @ReactMethod
   public void connect(
-    final String url,
-    @Nullable final ReadableArray protocols,
-    @Nullable final ReadableMap headers,
-    final int id) {
-  }
+      final String url,
+      @Nullable final ReadableArray protocols,
+      @Nullable final ReadableMap headers,
+      final int id) {}
 
   @ReactMethod
-  public void close(int code, String reason, int id) {
-  }
+  public void close(int code, String reason, int id) {}
 
   @ReactMethod
-  public void send(String message, int id) {
-  }
+  public void send(String message, int id) {}
 
   @ReactMethod
-  public void sendBinary(String base64String, int id) {
-  }
+  public void sendBinary(String base64String, int id) {}
 }

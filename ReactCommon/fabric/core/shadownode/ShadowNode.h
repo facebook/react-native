@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -13,11 +13,11 @@
 
 #include <better/small_vector.h>
 #include <react/core/EventEmitter.h>
-#include <react/core/LocalData.h>
 #include <react/core/Props.h>
 #include <react/core/ReactPrimitives.h>
 #include <react/core/Sealable.h>
 #include <react/core/ShadowNodeFamily.h>
+#include <react/core/ShadowNodeTraits.h>
 #include <react/core/State.h>
 #include <react/debug/DebugStringConvertible.h>
 
@@ -28,9 +28,9 @@ static constexpr const int kShadowNodeChildrenSmallVectorSize = 8;
 
 class ComponentDescriptor;
 struct ShadowNodeFragment;
-
 class ShadowNode;
 
+// Deprecated: Use ShadowNode::Shared instead
 using SharedShadowNode = std::shared_ptr<const ShadowNode>;
 using WeakShadowNode = std::weak_ptr<const ShadowNode>;
 using UnsharedShadowNode = std::shared_ptr<ShadowNode>;
@@ -39,12 +39,16 @@ using SharedShadowNodeList =
 using SharedShadowNodeSharedList = std::shared_ptr<const SharedShadowNodeList>;
 using SharedShadowNodeUnsharedList = std::shared_ptr<SharedShadowNodeList>;
 
-class ShadowNode : public virtual Sealable,
-                   public virtual DebugStringConvertible,
-                   public std::enable_shared_from_this<ShadowNode> {
+class ShadowNode : public Sealable, public DebugStringConvertible {
  public:
-  using Shared = std::shared_ptr<const ShadowNode>;
-  using Weak = std::weak_ptr<const ShadowNode>;
+  using Shared = std::shared_ptr<ShadowNode const>;
+  using Weak = std::weak_ptr<ShadowNode const>;
+  using Unshared = std::shared_ptr<ShadowNode>;
+  using ListOfShared =
+      better::small_vector<Shared, kShadowNodeChildrenSmallVectorSize>;
+  using SharedListOfShared = std::shared_ptr<ListOfShared const>;
+  using UnsharedListOfShared = std::shared_ptr<ListOfShared>;
+
   using AncestorList = better::small_vector<
       std::pair<
           std::reference_wrapper<ShadowNode const> /* parentNode */,
@@ -59,14 +63,23 @@ class ShadowNode : public virtual Sealable,
    */
   static bool sameFamily(const ShadowNode &first, const ShadowNode &second);
 
+  /*
+   * A set of traits associated with a particular class.
+   * Reimplement in subclasses to declare class-specific traits.
+   */
+  static ShadowNodeTraits BaseTraits() {
+    return ShadowNodeTraits{};
+  }
+
 #pragma mark - Constructors
 
   /*
    * Creates a Shadow Node based on fields specified in a `fragment`.
    */
   ShadowNode(
-      const ShadowNodeFragment &fragment,
-      const ComponentDescriptor &componentDescriptor);
+      ShadowNodeFragment const &fragment,
+      ShadowNodeFamily::Shared const &family,
+      ShadowNodeTraits traits);
 
   /*
    * Creates a Shadow Node via cloning given `sourceShadowNode` and
@@ -84,10 +97,27 @@ class ShadowNode : public virtual Sealable,
    */
   UnsharedShadowNode clone(const ShadowNodeFragment &fragment) const;
 
+  /*
+   * Clones the node (and partially the tree starting from the node) by
+   * replacing a `oldShadowNode` (which corresponds to a given
+   * `shadowNodeFamily`) with a node that `callback` returns.
+   *
+   * Returns `nullptr` if the operation cannot be performed successfully.
+   */
+  ShadowNode::Unshared cloneTree(
+      ShadowNodeFamily const &shadowNodeFamily,
+      std::function<ShadowNode::Unshared(ShadowNode const &oldShadowNode)>
+          callback) const;
+
 #pragma mark - Getters
 
-  virtual ComponentHandle getComponentHandle() const = 0;
-  virtual ComponentName getComponentName() const = 0;
+  ComponentName getComponentName() const;
+  ComponentHandle getComponentHandle() const;
+
+  /*
+   * Returns a stored traits.
+   */
+  ShadowNodeTraits getTraits() const;
 
   SharedProps const &getProps() const;
   SharedShadowNodeList const &getChildren() const;
@@ -106,34 +136,32 @@ class ShadowNode : public virtual Sealable,
   const State::Shared &getState() const;
 
   /*
-   * Returns a momentary value of currently committed state associated with a
-   * family of nodes which this node belongs to.
+   * Returns a momentary value of the most recently created or committed state
+   * associated with a family of nodes which this node belongs to.
+   * Sequential calls might return different values.
+   * The method may return null pointer in case if the particular `ShadowNode`
+   * does not use `State`.
    */
-  const State::Shared &getCommitedState() const;
+  State::Shared getMostRecentState() const;
 
   /*
-   * Returns a local data associated with the node.
-   * `LocalData` object might be used for data exchange between native view and
-   * shadow node instances.
-   * Concrete type of the object depends on concrete type of the `ShadowNode`.
+   * Returns a number that specifies the order of the node.
+   * A view generated from a node with a greater order index is placed before a
+   * view generated from a node with a lower order index.
    */
-  SharedLocalData getLocalData() const;
+  int getOrderIndex() const;
 
   void sealRecursive() const;
 
+  ShadowNodeFamily const &getFamily() const;
+
 #pragma mark - Mutating Methods
 
-  void appendChild(const SharedShadowNode &child);
+  void appendChild(ShadowNode::Shared const &child);
   void replaceChild(
-      const SharedShadowNode &oldChild,
-      const SharedShadowNode &newChild,
+      ShadowNode const &oldChild,
+      ShadowNode::Shared const &newChild,
       int suggestedIndex = -1);
-
-  /*
-   * Sets local data assosiated with the node.
-   * The node must be unsealed at this point.
-   */
-  void setLocalData(const SharedLocalData &localData);
 
   /*
    * Performs all side effects associated with mounting/unmounting in one place.
@@ -142,16 +170,7 @@ class ShadowNode : public virtual Sealable,
    */
   void setMounted(bool mounted) const;
 
-  /*
-   * Returns a list of all ancestors of the node relative to the given ancestor.
-   * The list starts from the given ancestor node and ends with the parent node
-   * of `this` node. The elements of the list have a reference to some parent
-   * node and an index of the child of the parent node.
-   * Returns an empty array if there is no ancestor-descendant relationship.
-   * Can be called from any thread.
-   * The theoretical complexity of the algorithm is `O(ln(n))`. Use it wisely.
-   */
-  AncestorList getAncestors(ShadowNode const &ancestorShadowNode) const;
+  int getStateRevision() const;
 
 #pragma mark - DebugStringConvertible
 
@@ -160,15 +179,31 @@ class ShadowNode : public virtual Sealable,
   std::string getDebugValue() const override;
   SharedDebugStringConvertibleList getDebugChildren() const override;
   SharedDebugStringConvertibleList getDebugProps() const override;
+
+  /*
+   * A number of the generation of the ShadowNode instance;
+   * is used and useful for debug-printing purposes *only*.
+   * Do not access this value in any circumstances.
+   */
+  int const revision_;
 #endif
 
  protected:
   SharedProps props_;
   SharedShadowNodeSharedList children_;
-  SharedLocalData localData_;
   State::Shared state_;
+  int orderIndex_;
 
  private:
+  friend ShadowNodeFamily;
+
+  /**
+   * This number is deterministically, statelessly recomputable . It tells us
+   * the version of the state of the entire subtree, including this component
+   * and all descendants.
+   */
+  int stateRevision_;
+
   /*
    * Clones the list of children (and creates a new `shared_ptr` to it) if
    * `childrenAreShared_` flag is `true`.
@@ -180,19 +215,25 @@ class ShadowNode : public virtual Sealable,
    */
   ShadowNodeFamily::Shared family_;
 
+ protected:
   /*
-   * Indicates that `children` list is shared between nodes and need
-   * to be cloned before the first mutation.
+   * Traits associated with the particular `ShadowNode` class and an instance of
+   * that class.
    */
-  bool childrenAreShared_;
-
-  /*
-   * A number of the generation of the ShadowNode instance;
-   * is used and useful for debug-printing purposes *only*.
-   * Do not access this value in any circumstances.
-   */
-  const int revision_;
+  ShadowNodeTraits traits_;
 };
+
+/*
+ * Template declarations for future specializations in concrete classes.
+ * `traitCast` checks for a trait that corresponds to the provided type and
+ * performs `static_cast`. Practically, the behavior is identical to
+ * `dynamic_cast` with very little runtime overhead.
+ */
+template <typename ShadowNodeReferenceT>
+ShadowNodeReferenceT traitCast(ShadowNode const &shadowNode);
+
+template <typename ShadowNodePointerT>
+ShadowNodePointerT traitCast(ShadowNode const *shadowNode);
 
 } // namespace react
 } // namespace facebook

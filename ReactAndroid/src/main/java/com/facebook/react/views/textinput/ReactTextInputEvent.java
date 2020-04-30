@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -13,8 +13,8 @@ import com.facebook.react.uimanager.events.Event;
 import com.facebook.react.uimanager.events.RCTEventEmitter;
 
 /**
- * Event emitted by EditText native view when text changes.
- * VisibleForTesting from {@link TextInputEventsTestCase}.
+ * Event emitted by EditText native view when text changes. VisibleForTesting from {@link
+ * TextInputEventsTestCase}.
  */
 public class ReactTextInputEvent extends Event<ReactTextInputEvent> {
 
@@ -26,11 +26,7 @@ public class ReactTextInputEvent extends Event<ReactTextInputEvent> {
   private int mRangeEnd;
 
   public ReactTextInputEvent(
-      int viewId,
-      String text,
-      String previousText,
-      int rangeStart,
-      int rangeEnd) {
+      int viewId, String text, String previousText, int rangeStart, int rangeEnd) {
     super(viewId);
     mText = text;
     mPreviousText = previousText;

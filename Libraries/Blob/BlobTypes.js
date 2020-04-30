@@ -10,6 +10,8 @@
 
 'use strict';
 
+export opaque type BlobCollector = {...};
+
 export type BlobData = {
   blobId: string,
   offset: number,
@@ -17,9 +19,12 @@ export type BlobData = {
   name?: string,
   type?: string,
   lastModified?: number,
+  __collector?: ?BlobCollector,
+  ...
 };
 
 export type BlobOptions = {
   type: string,
   lastModified: number,
+  ...
 };

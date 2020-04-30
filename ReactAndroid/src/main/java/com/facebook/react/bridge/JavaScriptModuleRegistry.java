@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -7,8 +7,8 @@
 
 package com.facebook.react.bridge;
 
-import javax.annotation.Nullable;
-
+import androidx.annotation.Nullable;
+import com.facebook.react.common.build.ReactBuildConfig;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
@@ -16,12 +16,10 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
-import com.facebook.react.common.build.ReactBuildConfig;
-
 /**
- * Class responsible for holding all the {@link JavaScriptModule}s.  Uses Java proxy objects
- * to dispatch method calls on JavaScriptModules to the bridge using the corresponding
- * module and method ids so the proper function is executed in JavaScript.
+ * Class responsible for holding all the {@link JavaScriptModule}s. Uses Java proxy objects to
+ * dispatch method calls on JavaScriptModules to the bridge using the corresponding module and
+ * method ids so the proper function is executed in JavaScript.
  */
 public final class JavaScriptModuleRegistry {
   private final HashMap<Class<? extends JavaScriptModule>, JavaScriptModule> mModuleInstances;
@@ -31,17 +29,18 @@ public final class JavaScriptModuleRegistry {
   }
 
   public synchronized <T extends JavaScriptModule> T getJavaScriptModule(
-      CatalystInstance instance,
-      Class<T> moduleInterface) {
+      CatalystInstance instance, Class<T> moduleInterface) {
     JavaScriptModule module = mModuleInstances.get(moduleInterface);
     if (module != null) {
       return (T) module;
     }
 
-    JavaScriptModule interfaceProxy = (JavaScriptModule) Proxy.newProxyInstance(
-        moduleInterface.getClassLoader(),
-        new Class[]{moduleInterface},
-        new JavaScriptModuleInvocationHandler(instance, moduleInterface));
+    JavaScriptModule interfaceProxy =
+        (JavaScriptModule)
+            Proxy.newProxyInstance(
+                moduleInterface.getClassLoader(),
+                new Class[] {moduleInterface},
+                new JavaScriptModuleInvocationHandler(instance, moduleInterface));
     mModuleInstances.put(moduleInterface, interfaceProxy);
     return (T) interfaceProxy;
   }
@@ -52,8 +51,7 @@ public final class JavaScriptModuleRegistry {
     private @Nullable String mName;
 
     public JavaScriptModuleInvocationHandler(
-        CatalystInstance catalystInstance,
-        Class<? extends JavaScriptModule> moduleInterface) {
+        CatalystInstance catalystInstance, Class<? extends JavaScriptModule> moduleInterface) {
       mCatalystInstance = catalystInstance;
       mModuleInterface = moduleInterface;
 
@@ -62,8 +60,10 @@ public final class JavaScriptModuleRegistry {
         for (Method method : mModuleInterface.getDeclaredMethods()) {
           if (!methodNames.add(method.getName())) {
             throw new AssertionError(
-              "Method overloading is unsupported: " + mModuleInterface.getName() +
-                "#" + method.getName());
+                "Method overloading is unsupported: "
+                    + mModuleInterface.getName()
+                    + "#"
+                    + method.getName());
           }
         }
       }
@@ -71,28 +71,30 @@ public final class JavaScriptModuleRegistry {
 
     private String getJSModuleName() {
       if (mName == null) {
-        // With proguard obfuscation turned on, proguard apparently (poorly) emulates inner
-        // classes or something because Class#getSimpleName() no longer strips the outer
-        // class name. We manually strip it here if necessary.
-        String name = mModuleInterface.getSimpleName();
-        int dollarSignIndex = name.lastIndexOf('$');
-        if (dollarSignIndex != -1) {
-          name = name.substring(dollarSignIndex + 1);
-        }
-
-        // getting the class name every call is expensive, so cache it
-        mName = name;
+        // Getting the class name every call is expensive, so cache it
+        mName = JavaScriptModuleRegistry.getJSModuleName(mModuleInterface);
       }
       return mName;
     }
 
     @Override
-    public @Nullable Object invoke(Object proxy, Method method, @Nullable Object[] args) throws Throwable {
-      NativeArray jsArgs = args != null
-        ? Arguments.fromJavaArgs(args)
-        : new WritableNativeArray();
+    public @Nullable Object invoke(Object proxy, Method method, @Nullable Object[] args)
+        throws Throwable {
+      NativeArray jsArgs = args != null ? Arguments.fromJavaArgs(args) : new WritableNativeArray();
       mCatalystInstance.callFunction(getJSModuleName(), method.getName(), jsArgs);
       return null;
     }
+  }
+
+  public static String getJSModuleName(Class<? extends JavaScriptModule> jsModuleInterface) {
+    // With proguard obfuscation turned on, proguard apparently (poorly) emulates inner
+    // classes or something because Class#getSimpleName() no longer strips the outer
+    // class name. We manually strip it here if necessary.
+    String name = jsModuleInterface.getSimpleName();
+    int dollarSignIndex = name.lastIndexOf('$');
+    if (dollarSignIndex != -1) {
+      name = name.substring(dollarSignIndex + 1);
+    }
+    return name;
   }
 }

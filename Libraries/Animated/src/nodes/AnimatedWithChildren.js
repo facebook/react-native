@@ -7,6 +7,7 @@
  * @flow strict-local
  * @format
  */
+
 'use strict';
 
 const AnimatedNode = require('./AnimatedNode');
@@ -31,6 +32,7 @@ class AnimatedWithChildren extends AnimatedNode {
         );
       }
     }
+    super.__makeNative();
   }
 
   __addChild(child: AnimatedNode): void {
@@ -68,6 +70,17 @@ class AnimatedWithChildren extends AnimatedNode {
 
   __getChildren(): Array<AnimatedNode> {
     return this._children;
+  }
+
+  __callListeners(value: number): void {
+    super.__callListeners(value);
+    if (!this.__isNative) {
+      for (const child of this._children) {
+        if (child.__getValue) {
+          child.__callListeners(child.__getValue());
+        }
+      }
+    }
   }
 }
 

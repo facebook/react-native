@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -7,11 +7,11 @@
 
 package com.facebook.react.views.text;
 
+import static com.facebook.react.views.text.TextAttributeProps.UNSET;
+
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
-import androidx.appcompat.widget.AppCompatTextView;
-import androidx.appcompat.widget.TintContextWrapper;
 import android.text.Layout;
 import android.text.Spannable;
 import android.text.Spanned;
@@ -21,8 +21,11 @@ import android.text.util.Linkify;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
-
+import androidx.annotation.Nullable;
+import androidx.appcompat.widget.AppCompatTextView;
+import androidx.appcompat.widget.TintContextWrapper;
 import com.facebook.common.logging.FLog;
+import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.WritableArray;
@@ -32,10 +35,10 @@ import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.ReactCompoundView;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.ViewDefaults;
+import com.facebook.react.uimanager.common.UIManagerType;
+import com.facebook.react.uimanager.common.ViewUtil;
 import com.facebook.react.uimanager.events.RCTEventEmitter;
 import com.facebook.react.views.view.ReactViewBackgroundManager;
-import javax.annotation.Nullable;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -43,7 +46,7 @@ import java.util.Comparator;
 public class ReactTextView extends AppCompatTextView implements ReactCompoundView {
 
   private static final ViewGroup.LayoutParams EMPTY_LAYOUT_PARAMS =
-    new ViewGroup.LayoutParams(0, 0);
+      new ViewGroup.LayoutParams(0, 0);
 
   private boolean mContainsImages;
   private int mDefaultGravityHorizontal;
@@ -51,6 +54,7 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
   private int mTextAlign = Gravity.NO_GRAVITY;
   private int mNumberOfLines = ViewDefaults.NUMBER_OF_LINES;
   private TextUtils.TruncateAt mEllipsizeLocation = TextUtils.TruncateAt.END;
+  private boolean mAdjustsFontSizeToFit = false;
   private int mLinkifyMaskType = 0;
   private boolean mNotifyOnInlineViewLayout;
 
@@ -61,11 +65,12 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
     super(context);
     mReactBackgroundManager = new ReactViewBackgroundManager(this);
     mDefaultGravityHorizontal =
-      getGravity() & (Gravity.HORIZONTAL_GRAVITY_MASK | Gravity.RELATIVE_HORIZONTAL_GRAVITY_MASK);
+        getGravity() & (Gravity.HORIZONTAL_GRAVITY_MASK | Gravity.RELATIVE_HORIZONTAL_GRAVITY_MASK);
     mDefaultGravityVertical = getGravity() & Gravity.VERTICAL_GRAVITY_MASK;
   }
 
-  private WritableMap inlineViewJson(int visibility, int index, int left, int top, int right, int bottom) {
+  private static WritableMap inlineViewJson(
+      int visibility, int index, int left, int top, int right, int bottom) {
     WritableMap json = Arguments.createMap();
     if (visibility == View.GONE) {
       json.putString("visibility", "gone");
@@ -87,39 +92,42 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
   private ReactContext getReactContext() {
     Context context = getContext();
     return (context instanceof TintContextWrapper)
-        ? (ReactContext)((TintContextWrapper)context).getBaseContext()
-        : (ReactContext)context;
+        ? (ReactContext) ((TintContextWrapper) context).getBaseContext()
+        : (ReactContext) context;
   }
 
   @Override
-  protected void onLayout(boolean changed,
-                          int textViewLeft,
-                          int textViewTop,
-                          int textViewRight,
-                          int textViewBottom) {
-    if (!(getText() instanceof Spanned)) {
+  protected void onLayout(
+      boolean changed, int textViewLeft, int textViewTop, int textViewRight, int textViewBottom) {
+    // TODO T62882314: Delete this method when Fabric is fully released in OSS
+    if (!(getText() instanceof Spanned)
+        || ViewUtil.getUIManagerType(getId()) == UIManagerType.FABRIC) {
       /**
        * In general, {@link #setText} is called via {@link ReactTextViewManager#updateExtraData}
        * before we are laid out. This ordering is a requirement because we utilize the data from
        * setText in onLayout.
        *
-       * However, it's possible for us to get an extra layout before we've received our setText
+       * <p>However, it's possible for us to get an extra layout before we've received our setText
        * call. If this happens before the initial setText call, then getText() will have its default
        * value which isn't a Spanned and we need to bail out. That's fine because we'll get a
        * setText followed by a layout later.
        *
-       * The cause for the extra early layout is that an ancestor gets transitioned from a
+       * <p>The cause for the extra early layout is that an ancestor gets transitioned from a
        * layout-only node to a non layout-only node.
        */
       return;
     }
 
-    UIManagerModule uiManager = getReactContext().getNativeModule(UIManagerModule.class);
+    ReactContext reactContext = getReactContext();
+    UIManagerModule uiManager =
+        Assertions.assertNotNull(reactContext.getNativeModule(UIManagerModule.class));
 
     Spanned text = (Spanned) getText();
     Layout layout = getLayout();
-    TextInlineViewPlaceholderSpan[] placeholders = text.getSpans(0, text.length(), TextInlineViewPlaceholderSpan.class);
-    ArrayList inlineViewInfoArray = mNotifyOnInlineViewLayout ? new ArrayList(placeholders.length) : null;
+    TextInlineViewPlaceholderSpan[] placeholders =
+        text.getSpans(0, text.length(), TextInlineViewPlaceholderSpan.class);
+    ArrayList inlineViewInfoArray =
+        mNotifyOnInlineViewLayout ? new ArrayList(placeholders.length) : null;
     int textViewWidth = textViewRight - textViewLeft;
     int textViewHeight = textViewBottom - textViewTop;
 
@@ -130,17 +138,19 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
       int line = layout.getLineForOffset(start);
       boolean isLineTruncated = layout.getEllipsisCount(line) > 0;
 
-      if (// This truncation check works well on recent versions of Android (tested on 5.1.1 and
-          // 6.0.1) but not on Android 4.4.4. The reason is that getEllipsisCount is buggy on
-          // Android 4.4.4. Specifically, it incorrectly returns 0 if an inline view is the first
-          // thing to be truncated.
-          (isLineTruncated && start >= layout.getLineStart(line) + layout.getEllipsisStart(line)) ||
+      if ( // This truncation check works well on recent versions of Android (tested on 5.1.1 and
+      // 6.0.1) but not on Android 4.4.4. The reason is that getEllipsisCount is buggy on
+      // Android 4.4.4. Specifically, it incorrectly returns 0 if an inline view is the first
+      // thing to be truncated.
+      (isLineTruncated && start >= layout.getLineStart(line) + layout.getEllipsisStart(line))
+          ||
 
           // This truncation check works well on Android 4.4.4 but not on others (e.g. 6.0.1).
           // On Android 4.4.4, getLineEnd returns the first truncated character whereas on 6.0.1,
           // it appears to return the position after the last character on the line even if that
           // character is truncated.
-          line >= mNumberOfLines || start >= layout.getLineEnd(line)) {
+          line >= mNumberOfLines
+          || start >= layout.getLineEnd(line)) {
         // On some versions of Android (e.g. 4.4.4, 5.1.1), getPrimaryHorizontal can infinite
         // loop when called on a character that appears after the ellipsis. Avoid this bug by
         // special casing the character truncation case.
@@ -162,21 +172,25 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
         // the last offset in the layout will result in an endless loop. Work around
         // this bug by avoiding getPrimaryHorizontal in that case.
         if (start == text.length() - 1) {
-          placeholderHorizontalPosition = isRtlParagraph
-              // Equivalent to `layout.getLineLeft(line)` but `getLineLeft` returns incorrect
-              // values when the paragraph is RTL and `setSingleLine(true)`.
-            ? textViewWidth - (int)layout.getLineWidth(line)
-            : (int) layout.getLineRight(line) - width;
+          placeholderHorizontalPosition =
+              isRtlParagraph
+                  // Equivalent to `layout.getLineLeft(line)` but `getLineLeft` returns incorrect
+                  // values when the paragraph is RTL and `setSingleLine(true)`.
+                  ? textViewWidth - (int) layout.getLineWidth(line)
+                  : (int) layout.getLineRight(line) - width;
         } else {
-          // The direction of the paragraph may not be exactly the direction the string is heading in at the
-          // position of the placeholder. So, if the direction of the character is the same as the paragraph
+          // The direction of the paragraph may not be exactly the direction the string is heading
+          // in at the
+          // position of the placeholder. So, if the direction of the character is the same as the
+          // paragraph
           // use primary, secondary otherwise.
           boolean characterAndParagraphDirectionMatch = isRtlParagraph == isRtlChar;
 
-          placeholderHorizontalPosition = characterAndParagraphDirectionMatch
-            ? (int) layout.getPrimaryHorizontal(start)
-            : (int) layout.getSecondaryHorizontal(start);
-          
+          placeholderHorizontalPosition =
+              characterAndParagraphDirectionMatch
+                  ? (int) layout.getPrimaryHorizontal(start)
+                  : (int) layout.getSecondaryHorizontal(start);
+
           if (isRtlParagraph) {
             // Adjust `placeholderHorizontalPosition` to work around an Android bug.
             // The bug is when the paragraph is RTL and `setSingleLine(true)`, some layout
@@ -184,8 +198,10 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
             // `getLineRight` return incorrect values. Their return values seem to be off
             // by the same number of pixels so subtracting these values cancels out the error.
             //
-            // The result is equivalent to bugless versions of `getPrimaryHorizontal`/`getSecondaryHorizontal`.
-            placeholderHorizontalPosition = textViewWidth - ((int)layout.getLineRight(line) - placeholderHorizontalPosition);
+            // The result is equivalent to bugless versions of
+            // `getPrimaryHorizontal`/`getSecondaryHorizontal`.
+            placeholderHorizontalPosition =
+                textViewWidth - ((int) layout.getLineRight(line) - placeholderHorizontalPosition);
           }
 
           if (isRtlChar) {
@@ -193,9 +209,10 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
           }
         }
 
-        int leftRelativeToTextView = isRtlChar
-          ? placeholderHorizontalPosition + getTotalPaddingRight()
-          : placeholderHorizontalPosition + getTotalPaddingLeft();
+        int leftRelativeToTextView =
+            isRtlChar
+                ? placeholderHorizontalPosition + getTotalPaddingRight()
+                : placeholderHorizontalPosition + getTotalPaddingLeft();
 
         int left = textViewLeft + leftRelativeToTextView;
 
@@ -203,7 +220,8 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
         int topRelativeToTextView = getTotalPaddingTop() + layout.getLineBaseline(line) - height;
         int top = textViewTop + topRelativeToTextView;
 
-        boolean isFullyClipped = textViewWidth <= leftRelativeToTextView || textViewHeight <= topRelativeToTextView;
+        boolean isFullyClipped =
+            textViewWidth <= leftRelativeToTextView || textViewHeight <= topRelativeToTextView;
         int layoutVisibility = isFullyClipped ? View.GONE : View.VISIBLE;
         int layoutLeft = left;
         int layoutTop = top;
@@ -215,32 +233,33 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
         child.layout(layoutLeft, layoutTop, layoutRight, layoutBottom);
         if (mNotifyOnInlineViewLayout) {
           inlineViewInfoArray.add(
-              inlineViewJson(layoutVisibility, start, layoutLeft, layoutTop, layoutRight, layoutBottom));
+              inlineViewJson(
+                  layoutVisibility, start, layoutLeft, layoutTop, layoutRight, layoutBottom));
         }
       }
     }
 
     if (mNotifyOnInlineViewLayout) {
-      Collections.sort(inlineViewInfoArray, new Comparator() {
-        @Override
-        public int compare(Object o1, Object o2) {
-          WritableMap m1 = (WritableMap)o1;
-          WritableMap m2 = (WritableMap)o2;
-          return m1.getInt("index") - m2.getInt("index");
-        }
-      });
+      Collections.sort(
+          inlineViewInfoArray,
+          new Comparator() {
+            @Override
+            public int compare(Object o1, Object o2) {
+              WritableMap m1 = (WritableMap) o1;
+              WritableMap m2 = (WritableMap) o2;
+              return m1.getInt("index") - m2.getInt("index");
+            }
+          });
       WritableArray inlineViewInfoArray2 = Arguments.createArray();
       for (Object item : inlineViewInfoArray) {
-        inlineViewInfoArray2.pushMap((WritableMap)item);
+        inlineViewInfoArray2.pushMap((WritableMap) item);
       }
 
       WritableMap event = Arguments.createMap();
       event.putArray("inlineViews", inlineViewInfoArray2);
-      getReactContext().getJSModule(RCTEventEmitter.class).receiveEvent(
-          getId(),
-          "topInlineViewLayout",
-          event
-      );
+      reactContext
+          .getJSModule(RCTEventEmitter.class)
+          .receiveEvent(getId(), "topInlineViewLayout", event);
     }
   }
 
@@ -258,11 +277,25 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
       setMovementMethod(LinkMovementMethod.getInstance());
     }
     setText(spannable);
-    setPadding(
-      (int) Math.floor(update.getPaddingLeft()),
-      (int) Math.floor(update.getPaddingTop()),
-      (int) Math.floor(update.getPaddingRight()),
-      (int) Math.floor(update.getPaddingBottom()));
+    float paddingLeft = update.getPaddingLeft();
+    float paddingTop = update.getPaddingTop();
+    float paddingRight = update.getPaddingRight();
+    float paddingBottom = update.getPaddingBottom();
+
+    // In Fabric padding is set by the update of Layout Metrics and not as part of the "setText"
+    // operation
+    // TODO T56559197: remove this condition when we migrate 100% to Fabric
+    if (paddingLeft != UNSET
+        && paddingBottom != UNSET
+        && paddingRight != UNSET
+        && paddingBottom != UNSET) {
+
+      setPadding(
+          (int) Math.floor(paddingLeft),
+          (int) Math.floor(paddingTop),
+          (int) Math.floor(paddingRight),
+          (int) Math.floor(paddingBottom));
+    }
 
     int nextTextAlign = update.getTextAlign();
     if (mTextAlign != nextTextAlign) {
@@ -423,8 +456,10 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
       gravityHorizontal = mDefaultGravityHorizontal;
     }
     setGravity(
-      (getGravity() & ~Gravity.HORIZONTAL_GRAVITY_MASK &
-        ~Gravity.RELATIVE_HORIZONTAL_GRAVITY_MASK) | gravityHorizontal);
+        (getGravity()
+                & ~Gravity.HORIZONTAL_GRAVITY_MASK
+                & ~Gravity.RELATIVE_HORIZONTAL_GRAVITY_MASK)
+            | gravityHorizontal);
   }
 
   /* package */ void setGravityVertical(int gravityVertical) {
@@ -440,6 +475,10 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
     setMaxLines(mNumberOfLines);
   }
 
+  public void setAdjustFontSizeToFit(boolean adjustsFontSizeToFit) {
+    mAdjustsFontSizeToFit = adjustsFontSizeToFit;
+  }
+
   public void setEllipsizeLocation(TextUtils.TruncateAt ellipsizeLocation) {
     mEllipsizeLocation = ellipsizeLocation;
   }
@@ -449,7 +488,11 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
   }
 
   public void updateView() {
-    @Nullable TextUtils.TruncateAt ellipsizeLocation = mNumberOfLines == ViewDefaults.NUMBER_OF_LINES ? null : mEllipsizeLocation;
+    @Nullable
+    TextUtils.TruncateAt ellipsizeLocation =
+        mNumberOfLines == ViewDefaults.NUMBER_OF_LINES || mAdjustsFontSizeToFit
+            ? null
+            : mEllipsizeLocation;
     setEllipsize(ellipsizeLocation);
   }
 

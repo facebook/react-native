@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -9,14 +9,10 @@ package com.facebook.react.bridge;
 
 import java.util.List;
 
-/**
- * Interface used to initialize JSI Modules into the JSI Bridge.
- */
+/** Interface used to initialize JSI Modules into the JSI Bridge. */
 public interface JSIModulePackage {
 
-  /**
-   * @return a {@link List< JSIModuleSpec >} that contain the list of JSI Modules.
-   */
-  List<JSIModuleSpec> getJSIModules(ReactApplicationContext reactApplicationContext, JavaScriptContextHolder jsContext);
-
+  /** @return a {@link List< JSIModuleSpec >} that contain the list of JSI Modules. */
+  List<JSIModuleSpec> getJSIModules(
+      ReactApplicationContext reactApplicationContext, JavaScriptContextHolder jsContext);
 }

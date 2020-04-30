@@ -10,7 +10,7 @@
 
 'use strict';
 
-const Easing = require('Easing');
+const Easing = require('../Easing');
 describe('Easing', () => {
   it('should work with linear', () => {
     const easing = Easing.linear;

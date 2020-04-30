@@ -1,7 +1,9 @@
-//  Copyright (c) Facebook, Inc. and its affiliates.
-//
-// This source code is licensed under the MIT license found in the
-// LICENSE file in the root directory of this source tree.
+/*
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
 
 package com.facebook.react.tests.core;
 
@@ -36,26 +38,28 @@ public class ReactInstanceManagerTest {
     Activity activity = mActivityRule.getActivity();
     mReactRootView = new ReactRootView(activity);
     mReactInstanceManager =
-      ReactTestHelper.getReactTestFactory()
-        .getReactInstanceManagerBuilder()
-        .setApplication(activity.getApplication())
-        .setBundleAssetName("AndroidTestBundle.js")
-        .setInitialLifecycleState(LifecycleState.BEFORE_CREATE)
-        .addPackage(new MainReactPackage())
-        .build();
+        ReactTestHelper.getReactTestFactory()
+            .getReactInstanceManagerBuilder()
+            .setApplication(activity.getApplication())
+            .setBundleAssetName("AndroidTestBundle.js")
+            .setInitialLifecycleState(LifecycleState.BEFORE_CREATE)
+            .addPackage(new MainReactPackage())
+            .build();
   }
 
   @After
   public void tearDown() {
     final ReactRootView reactRootView = mReactRootView;
     final ReactInstanceManager reactInstanceManager = mReactInstanceManager;
-    InstrumentationRegistry.getInstrumentation().runOnMainSync(new Runnable() {
-      @Override
-      public void run() {
-        reactRootView.unmountReactApplication();
-        reactInstanceManager.destroy();
-      }
-    });
+    InstrumentationRegistry.getInstrumentation()
+        .runOnMainSync(
+            new Runnable() {
+              @Override
+              public void run() {
+                reactRootView.unmountReactApplication();
+                reactInstanceManager.destroy();
+              }
+            });
   }
 
   @Test

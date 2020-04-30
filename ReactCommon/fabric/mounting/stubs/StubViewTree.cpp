@@ -1,7 +1,9 @@
-// Copyright (c) Facebook, Inc. and its affiliates.
-
-// This source code is licensed under the MIT license found in the
-// LICENSE file in the root directory of this source tree.
+/*
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
 
 #include "StubViewTree.h"
 
@@ -11,7 +13,12 @@ namespace react {
 StubViewTree::StubViewTree(ShadowView const &shadowView) {
   auto view = std::make_shared<StubView>();
   view->update(shadowView);
+  rootTag = shadowView.tag;
   registry[shadowView.tag] = view;
+}
+
+StubView const &StubViewTree::getRootStubView() const {
+  return *registry.at(rootTag);
 }
 
 void StubViewTree::mutate(ShadowViewMutationList const &mutations) {

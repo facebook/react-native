@@ -4,17 +4,17 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * On Apple TV, this implements back navigation using the TV remote's menu button.
- * On iOS, this just implements a stub.
- *
  * @flow
  * @format
  */
 
+// On Apple TV, this implements back navigation using the TV remote's menu button.
+// On iOS, this just implements a stub.
+
 'use strict';
 
-const Platform = require('Platform');
-const TVEventHandler = require('TVEventHandler');
+const Platform = require('./Platform');
+const TVEventHandler = require('../Components/AppleTV/TVEventHandler');
 
 type BackPressEventName = 'backPress' | 'hardwareBackPress';
 
@@ -54,11 +54,11 @@ type TBackHandler = {|
   +exitApp: () => void,
   +addEventListener: (
     eventName: BackPressEventName,
-    handler: Function,
-  ) => {remove: () => void},
+    handler: () => ?boolean,
+  ) => {remove: () => void, ...},
   +removeEventListener: (
     eventName: BackPressEventName,
-    handler: Function,
+    handler: () => ?boolean,
   ) => void,
 |};
 
@@ -93,8 +93,8 @@ if (Platform.isTV) {
 
     addEventListener: function(
       eventName: BackPressEventName,
-      handler: Function,
-    ): {remove: () => void} {
+      handler: () => ?boolean,
+    ): {remove: () => void, ...} {
       _backPressSubscriptions.add(handler);
       return {
         remove: () => BackHandler.removeEventListener(eventName, handler),
@@ -103,7 +103,7 @@ if (Platform.isTV) {
 
     removeEventListener: function(
       eventName: BackPressEventName,
-      handler: Function,
+      handler: () => ?boolean,
     ): void {
       _backPressSubscriptions.delete(handler);
     },

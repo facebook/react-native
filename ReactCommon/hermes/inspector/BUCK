@@ -1,0 +1,224 @@
+# Copyright 2004-present Facebook. All Rights Reserved.
+
+load("@fbsource//tools/build_defs:fb_xplat_cxx_binary.bzl", "fb_xplat_cxx_binary")
+load("@fbsource//tools/build_defs:fb_xplat_cxx_library.bzl", "fb_xplat_cxx_library")
+load("@fbsource//tools/build_defs:fb_xplat_cxx_test.bzl", "fb_xplat_cxx_test")
+load("@fbsource//tools/build_defs:platform_defs.bzl", "APPLE", "CXX")
+load("@fbsource//tools/build_defs/oss:rn_defs.bzl", "react_native_xplat_target")
+load("@fbsource//xplat/hermes/defs:hermes.bzl", "hermes_build_mode", "hermes_optimize_flag")
+
+CFLAGS_BY_MODE = {
+    "dbg": [
+        "-fexceptions",
+        "-frtti",
+        hermes_optimize_flag("dbg"),
+        "-g",
+    ],
+    "dev": [
+        "-fexceptions",
+        "-frtti",
+        hermes_optimize_flag("dev"),
+        "-g",
+    ],
+    "opt": [
+        "-fexceptions",
+        "-frtti",
+        hermes_optimize_flag("opt"),
+    ],
+}
+
+CHROME_EXPORTED_HEADERS = [
+    "chrome/AutoAttachUtils.h",
+    "chrome/Connection.h",
+    "chrome/ConnectionDemux.h",
+    "chrome/MessageConverters.h",
+    "chrome/MessageInterfaces.h",
+    "chrome/MessageTypes.h",
+    "chrome/Registration.h",
+    "chrome/RemoteObjectsTable.h",
+]
+
+fb_xplat_cxx_library(
+    name = "chrome",
+    srcs = glob(["chrome/*.cpp"]),
+    headers = glob(
+        [
+            "chrome/*.h",
+        ],
+        exclude = CHROME_EXPORTED_HEADERS,
+    ),
+    header_namespace = "hermes/inspector",
+    exported_headers = CHROME_EXPORTED_HEADERS,
+    compiler_flags = CFLAGS_BY_MODE[hermes_build_mode()],
+    fbobjc_header_path_prefix = "hermes/inspector/chrome",
+    macosx_tests_override = [],
+    tests = [":chrome-tests"],
+    visibility = [
+        "PUBLIC",
+    ],
+    xcode_public_headers_symlinks = True,
+    deps = [
+        react_native_xplat_target("jsinspector:jsinspector"),
+        ":detail",
+        ":inspectorlib",
+        "//xplat/folly:futures",
+        "//xplat/folly:molly",
+        "//xplat/hermes/API:HermesAPI",
+        "//xplat/jsi:JSIDynamic",
+        "//xplat/jsi:jsi",
+        "//xplat/third-party/glog:glog",
+    ],
+)
+
+fb_xplat_cxx_test(
+    name = "chrome-tests",
+    srcs = glob([
+        "chrome/tests/*.cpp",
+    ]),
+    headers = glob([
+        "chrome/tests/*.h",
+    ]),
+    compiler_flags = CFLAGS_BY_MODE[hermes_build_mode()],
+    cxx_deps = [react_native_xplat_target("jsinspector:jsinspector")],
+    fbandroid_deps = [react_native_xplat_target("jsinspector:jsinspector")],
+    fbobjc_deps = [react_native_xplat_target("jsinspector:jsinspector")],
+    visibility = [
+        "PUBLIC",
+    ],
+    deps = [
+        ":chrome",
+        ":detail",
+        "//xplat/third-party/gmock:gtest",
+    ],
+)
+
+DETAIL_EXPORTED_HEADERS = [
+    "detail/CallbackOStream.h",
+    "detail/SerialExecutor.h",
+    "detail/Thread.h",
+]
+
+fb_xplat_cxx_library(
+    name = "detail",
+    srcs = glob(["detail/*.cpp"]),
+    headers = glob(
+        [
+            "detail/*.h",
+        ],
+        exclude = DETAIL_EXPORTED_HEADERS,
+    ),
+    header_namespace = "hermes/inspector",
+    exported_headers = DETAIL_EXPORTED_HEADERS,
+    compiler_flags = CFLAGS_BY_MODE[hermes_build_mode()],
+    # This is required by lint, but must be False, because there is
+    # no JNI_Onload.
+    fbandroid_allow_jni_merging = False,
+    fbandroid_deps = [
+        "//fbandroid/native/fb:fb",
+    ],
+    fbobjc_header_path_prefix = "hermes/inspector/detail",
+    macosx_tests_override = [],
+    tests = [":detail-tests"],
+    visibility = [
+        "PUBLIC",
+    ],
+    xcode_public_headers_symlinks = True,
+    deps = [
+        "//xplat/folly:molly",
+    ],
+)
+
+fb_xplat_cxx_test(
+    name = "detail-tests",
+    srcs = glob([
+        "detail/tests/*.cpp",
+    ]),
+    headers = glob([
+        "detail/tests/*.h",
+    ]),
+    compiler_flags = CFLAGS_BY_MODE[hermes_build_mode()],
+    visibility = [
+        "PUBLIC",
+    ],
+    deps = [
+        ":detail",
+        "//xplat/third-party/gmock:gmock",
+        "//xplat/third-party/gmock:gtest",
+    ],
+)
+
+fb_xplat_cxx_binary(
+    name = "hermes-chrome-debug-server",
+    srcs = glob([
+        "chrome/cli/*.cpp",
+    ]),
+    compiler_flags = CFLAGS_BY_MODE[hermes_build_mode()],
+    cxx_deps = [react_native_xplat_target("jsinspector:jsinspector")],
+    fbandroid_deps = [react_native_xplat_target("jsinspector:jsinspector")],
+    fbobjc_deps = [react_native_xplat_target("jsinspector:jsinspector")],
+    visibility = [
+        "PUBLIC",
+    ],
+    deps = [
+        ":chrome",
+        ":inspectorlib",
+        "//xplat/hermes/API:HermesAPI",
+    ],
+)
+
+INSPECTOR_EXPORTED_HEADERS = [
+    "AsyncPauseState.h",
+    "Exceptions.h",
+    "Inspector.h",
+    "RuntimeAdapter.h",
+]
+
+# can't be named "inspector" since JSC already uses it, causing a buck rulekey
+# collision: P58794155
+fb_xplat_cxx_library(
+    name = "inspectorlib",
+    srcs = glob(["*.cpp"]),
+    headers = glob(
+        [
+            "*.h",
+        ],
+        exclude = INSPECTOR_EXPORTED_HEADERS,
+    ),
+    header_namespace = "hermes/inspector",
+    exported_headers = INSPECTOR_EXPORTED_HEADERS,
+    compiler_flags = CFLAGS_BY_MODE[hermes_build_mode()],
+    cxx_tests = [":inspector-tests"],
+    fbobjc_header_path_prefix = "hermes/inspector",
+    macosx_tests_override = [],
+    visibility = [
+        "PUBLIC",
+    ],
+    xcode_public_headers_symlinks = True,
+    deps = [
+        ":detail",
+        "//xplat/folly:futures",
+        "//xplat/folly:molly",
+        "//xplat/hermes/API:HermesAPI",
+        "//xplat/jsi:jsi",
+        "//xplat/third-party/glog:glog",
+    ],
+)
+
+fb_xplat_cxx_test(
+    name = "inspector-tests",
+    srcs = glob([
+        "tests/*.cpp",
+    ]),
+    headers = glob([
+        "tests/*.h",
+    ]),
+    compiler_flags = CFLAGS_BY_MODE[hermes_build_mode()],
+    platforms = (CXX, APPLE),
+    visibility = [
+        "PUBLIC",
+    ],
+    deps = [
+        ":inspectorlib",
+        "//xplat/third-party/gmock:gtest",
+    ],
+)

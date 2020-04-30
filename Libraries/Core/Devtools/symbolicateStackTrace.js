@@ -10,14 +10,29 @@
 
 'use strict';
 
-const getDevServer = require('getDevServer');
+const getDevServer = require('./getDevServer');
 
-const {SourceCode} = require('NativeModules');
+import NativeSourceCode from '../../NativeModules/specs/NativeSourceCode';
 
 // Avoid requiring fetch on load of this module; see symbolicateStackTrace
 let fetch;
 
-import type {StackFrame} from 'parseErrorStack';
+import type {StackFrame} from '../NativeExceptionsManager';
+
+export type CodeFrame = $ReadOnly<{|
+  content: string,
+  location: ?{
+    row: number,
+    column: number,
+    ...
+  },
+  fileName: string,
+|}>;
+
+export type SymbolicatedStackTrace = $ReadOnly<{|
+  stack: Array<StackFrame>,
+  codeFrame: ?CodeFrame,
+|}>;
 
 function isSourcedFromDisk(sourcePath: string): boolean {
   return !/^http/.test(sourcePath) && /[\\/]/.test(sourcePath);
@@ -25,7 +40,7 @@ function isSourcedFromDisk(sourcePath: string): boolean {
 
 async function symbolicateStackTrace(
   stack: Array<StackFrame>,
-): Promise<Array<StackFrame>> {
+): Promise<SymbolicatedStackTrace> {
   // RN currently lazy loads whatwg-fetch using a custom fetch module, which,
   // when called for the first time, requires and re-exports 'whatwg-fetch'.
   // However, when a dependency of the project tries to require whatwg-fetch
@@ -38,7 +53,7 @@ async function symbolicateStackTrace(
   // The fix below postpones trying to load fetch until the first call to symbolicateStackTrace.
   // At that time, we will have either global.fetch (whatwg-fetch) or RN's fetch.
   if (!fetch) {
-    fetch = global.fetch || require('fetch').fetch;
+    fetch = global.fetch || require('../../Network/fetch').fetch;
   }
 
   const devServer = getDevServer();
@@ -48,16 +63,21 @@ async function symbolicateStackTrace(
 
   let stackCopy = stack;
 
-  if (SourceCode.scriptURL) {
+  const {scriptURL} = NativeSourceCode.getConstants();
+  if (scriptURL) {
     let foundInternalSource: boolean = false;
     stackCopy = stack.map((frame: StackFrame) => {
+      if (frame.file == null) {
+        return frame;
+      }
+
       // If the sources exist on disk rather than appearing to come from the packager,
       // replace the location with the packager URL until we reach an internal source
       // which does not have a path (no slashes), indicating a switch from within
       // the application to a surrounding debugging environment.
       if (!foundInternalSource && isSourcedFromDisk(frame.file)) {
         // Copy frame into new object and replace 'file' property
-        return {...frame, file: SourceCode.scriptURL};
+        return {...frame, file: scriptURL};
       }
 
       foundInternalSource = true;
@@ -69,8 +89,7 @@ async function symbolicateStackTrace(
     method: 'POST',
     body: JSON.stringify({stack: stackCopy}),
   });
-  const json = await response.json();
-  return json.stack;
+  return await response.json();
 }
 
 module.exports = symbolicateStackTrace;

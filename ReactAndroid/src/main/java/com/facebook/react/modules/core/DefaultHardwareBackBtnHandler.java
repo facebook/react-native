@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -16,8 +16,8 @@ public interface DefaultHardwareBackBtnHandler {
 
   /**
    * By default, all onBackPress() calls should not execute the default backpress handler and should
-   * instead propagate it to the JS instance. If JS doesn't want to handle the back press itself,
-   * it shall call back into native to invoke this function which should execute the default handler
+   * instead propagate it to the JS instance. If JS doesn't want to handle the back press itself, it
+   * shall call back into native to invoke this function which should execute the default handler
    */
   void invokeDefaultOnBackPressed();
 }

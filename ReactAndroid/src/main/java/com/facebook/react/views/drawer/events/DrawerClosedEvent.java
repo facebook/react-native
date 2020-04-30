@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -13,7 +13,7 @@ import com.facebook.react.uimanager.events.RCTEventEmitter;
 
 public class DrawerClosedEvent extends Event<DrawerClosedEvent> {
 
-  public static final String EVENT_NAME = "topDrawerClosed";
+  public static final String EVENT_NAME = "topDrawerClose";
 
   public DrawerClosedEvent(int viewId) {
     super(viewId);
@@ -34,5 +34,4 @@ public class DrawerClosedEvent extends Event<DrawerClosedEvent> {
   public void dispatch(RCTEventEmitter rctEventEmitter) {
     rctEventEmitter.receiveEvent(getViewTag(), getEventName(), Arguments.createMap());
   }
-
 }

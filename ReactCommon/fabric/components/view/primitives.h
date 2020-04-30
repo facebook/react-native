@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -17,6 +17,8 @@ namespace facebook {
 namespace react {
 
 enum class PointerEventsMode { Auto, None, BoxNone, BoxOnly };
+
+enum class BackfaceVisibility { Auto, Visible, Hidden };
 
 enum class BorderStyle { Solid, Dotted, Dashed };
 
@@ -45,9 +47,9 @@ struct CascadedRectangleEdges {
 
     return {
         /* .left = */ left.value_or(leading.value_or(horizontalOrAllOrDefault)),
+        /* .top = */ top.value_or(verticalOrAllOrDefault),
         /* .right = */
         right.value_or(trailing.value_or(horizontalOrAllOrDefault)),
-        /* .top = */ top.value_or(verticalOrAllOrDefault),
         /* .bottom = */ bottom.value_or(verticalOrAllOrDefault),
     };
   }
@@ -107,9 +109,9 @@ struct CascadedRectangleCorners {
         /* .topRight = */
         topRight.value_or(topTrailing.value_or(all.value_or(defaults))),
         /* .bottomLeft = */
-        bottomLeft.value_or(topLeading.value_or(all.value_or(defaults))),
+        bottomLeft.value_or(bottomLeading.value_or(all.value_or(defaults))),
         /* .bottomRight = */
-        bottomRight.value_or(topTrailing.value_or(all.value_or(defaults))),
+        bottomRight.value_or(bottomTrailing.value_or(all.value_or(defaults))),
     };
   }
 

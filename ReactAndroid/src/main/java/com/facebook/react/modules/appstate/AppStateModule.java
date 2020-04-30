@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -7,25 +7,26 @@
 
 package com.facebook.react.modules.appstate;
 
+import com.facebook.fbreact.specs.NativeAppStateSpec;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.bridge.ReactContextBaseJavaModule;
-import com.facebook.react.bridge.ReactMethod;
+import com.facebook.react.bridge.WindowFocusChangeListener;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.common.LifecycleState;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.modules.core.DeviceEventManagerModule.RCTDeviceEventEmitter;
-
 import java.util.HashMap;
 import java.util.Map;
+import javax.annotation.Nullable;
 
 @ReactModule(name = AppStateModule.NAME)
-public class AppStateModule extends ReactContextBaseJavaModule
-        implements LifecycleEventListener {
+public class AppStateModule extends NativeAppStateSpec
+    implements LifecycleEventListener, WindowFocusChangeListener {
+  public static final String TAG = AppStateModule.class.getSimpleName();
 
-  protected static final String NAME = "AppState";
+  public static final String NAME = "AppState";
 
   public static final String APP_STATE_ACTIVE = "active";
   public static final String APP_STATE_BACKGROUND = "background";
@@ -37,8 +38,11 @@ public class AppStateModule extends ReactContextBaseJavaModule
   public AppStateModule(ReactApplicationContext reactContext) {
     super(reactContext);
     reactContext.addLifecycleEventListener(this);
-    mAppState = (reactContext.getLifecycleState() == LifecycleState.RESUMED ?
-            APP_STATE_ACTIVE : APP_STATE_BACKGROUND);
+    reactContext.addWindowFocusChangeListener(this);
+    mAppState =
+        (reactContext.getLifecycleState() == LifecycleState.RESUMED
+            ? APP_STATE_ACTIVE
+            : APP_STATE_BACKGROUND);
   }
 
   @Override
@@ -47,13 +51,13 @@ public class AppStateModule extends ReactContextBaseJavaModule
   }
 
   @Override
-  public Map<String, Object> getConstants() {
+  public Map<String, Object> getTypedExportedConstants() {
     HashMap<String, Object> constants = new HashMap<>();
     constants.put(INITIAL_STATE, mAppState);
     return constants;
   }
 
-  @ReactMethod
+  @Override
   public void getCurrentAppState(Callback success, Callback error) {
     success.invoke(createAppStateEventMap());
   }
@@ -76,14 +80,43 @@ public class AppStateModule extends ReactContextBaseJavaModule
     // catalyst instance is going to be immediately dropped, and all JS calls with it.
   }
 
+  @Override
+  public void onWindowFocusChange(boolean hasFocus) {
+    sendEvent("appStateFocusChange", hasFocus);
+  }
+
   private WritableMap createAppStateEventMap() {
     WritableMap appState = Arguments.createMap();
     appState.putString("app_state", mAppState);
     return appState;
   }
 
+  private void sendEvent(String eventName, @Nullable Object data) {
+    ReactApplicationContext reactApplicationContext = getReactApplicationContext();
+
+    if (reactApplicationContext == null) {
+      return;
+    }
+    // We don't gain anything interesting from logging here, and it's an extremely common
+    // race condition for an AppState event to be triggered as the Catalyst instance is being
+    // set up or torn down. So, just fail silently here.
+    if (!reactApplicationContext.hasActiveCatalystInstance()) {
+      return;
+    }
+    reactApplicationContext.getJSModule(RCTDeviceEventEmitter.class).emit(eventName, data);
+  }
+
   private void sendAppStateChangeEvent() {
-    getReactApplicationContext().getJSModule(RCTDeviceEventEmitter.class)
-            .emit("appStateDidChange", createAppStateEventMap());
+    sendEvent("appStateDidChange", createAppStateEventMap());
+  }
+
+  @Override
+  public void addListener(String eventName) {
+    // iOS only
+  }
+
+  @Override
+  public void removeListeners(double count) {
+    // iOS only
   }
 }

@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -7,19 +7,16 @@
 
 package com.facebook.react.testing;
 
+import com.facebook.react.bridge.BaseJavaModule;
+import com.facebook.react.bridge.JavaScriptModule;
+import com.facebook.react.bridge.ReactMethod;
 import java.util.ArrayList;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 
-import com.facebook.react.bridge.BaseJavaModule;
-import com.facebook.react.bridge.ReactMethod;
-import com.facebook.react.bridge.JavaScriptModule;
-import com.facebook.react.testing.ReactInstanceSpecForTest;
-import com.facebook.react.testing.ReactAppInstrumentationTestCase;
-
 /**
- * Shared by {@link ReactScrollViewTestCase} and {@link ReactHorizontalScrollViewTestCase}.
- * See also ScrollViewTestModule.js
+ * Shared by {@link ReactScrollViewTestCase} and {@link ReactHorizontalScrollViewTestCase}. See also
+ * ScrollViewTestModule.js
  */
 public abstract class AbstractScrollViewTestCase extends ReactAppInstrumentationTestCase {
 
@@ -38,8 +35,7 @@ public abstract class AbstractScrollViewTestCase extends ReactAppInstrumentation
   @Override
   protected ReactInstanceSpecForTest createReactInstanceSpecForTest() {
     mScrollListenerModule = new ScrollListenerModule();
-    return super.createReactInstanceSpecForTest()
-        .addNativeModule(mScrollListenerModule);
+    return super.createReactInstanceSpecForTest().addNativeModule(mScrollListenerModule);
   }
 
   // See ScrollViewListenerModule.js

@@ -1,7 +1,9 @@
-// Copyright (c) Facebook, Inc. and its affiliates.
-
-// This source code is licensed under the MIT license found in the
-// LICENSE file in the root directory of this source tree.
+/*
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
 
 package com.facebook.react.bridge;
 
@@ -9,12 +11,9 @@ import com.facebook.jni.HybridData;
 import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.soloader.SoLoader;
 
-/**
- * This does nothing interesting, except avoid breaking existing code.
- */
+/** This does nothing interesting, except avoid breaking existing code. */
 @DoNotStrip
-public class CxxModuleWrapper extends CxxModuleWrapperBase
-{
+public class CxxModuleWrapper extends CxxModuleWrapperBase {
   protected CxxModuleWrapper(HybridData hd) {
     super(hd);
   }

@@ -1,7 +1,9 @@
-// Copyright (c) Facebook, Inc. and its affiliates.
-
-// This source code is licensed under the MIT license found in the
-// LICENSE file in the root directory of this source tree.
+/*
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
 
 #pragma once
 
@@ -34,57 +36,80 @@ class ExecutorDelegate {
   virtual std::shared_ptr<ModuleRegistry> getModuleRegistry() = 0;
 
   virtual void callNativeModules(
-    JSExecutor& executor, folly::dynamic&& calls, bool isEndOfBatch) = 0;
+      JSExecutor &executor,
+      folly::dynamic &&calls,
+      bool isEndOfBatch) = 0;
   virtual MethodCallResult callSerializableNativeHook(
-    JSExecutor& executor, unsigned int moduleId, unsigned int methodId, folly::dynamic&& args) = 0;
+      JSExecutor &executor,
+      unsigned int moduleId,
+      unsigned int methodId,
+      folly::dynamic &&args) = 0;
 };
 
-using NativeExtensionsProvider = std::function<folly::dynamic(const std::string&)>;
+using NativeExtensionsProvider =
+    std::function<folly::dynamic(const std::string &)>;
 
 class JSExecutorFactory {
-public:
+ public:
   virtual std::unique_ptr<JSExecutor> createJSExecutor(
-    std::shared_ptr<ExecutorDelegate> delegate,
-    std::shared_ptr<MessageQueueThread> jsQueue) = 0;
+      std::shared_ptr<ExecutorDelegate> delegate,
+      std::shared_ptr<MessageQueueThread> jsQueue) = 0;
   virtual ~JSExecutorFactory() {}
 };
 
 class RN_EXPORT JSExecutor {
-public:
+ public:
+  /**
+   * Prepares the JS runtime for React Native by installing global variables.
+   * Called once before any JS is evaluated.
+   */
+  virtual void initializeRuntime() = 0;
   /**
    * Execute an application script bundle in the JS context.
    */
-  virtual void loadApplicationScript(std::unique_ptr<const JSBigString> script,
-                                     std::string sourceURL) = 0;
+  virtual void loadBundle(
+      std::unique_ptr<const JSBigString> script,
+      std::string sourceURL) = 0;
 
   /**
    * Add an application "RAM" bundle registry
    */
-  virtual void setBundleRegistry(std::unique_ptr<RAMBundleRegistry> bundleRegistry) = 0;
+  virtual void setBundleRegistry(
+      std::unique_ptr<RAMBundleRegistry> bundleRegistry) = 0;
 
   /**
    * Register a file path for an additional "RAM" bundle
    */
-  virtual void registerBundle(uint32_t bundleId, const std::string& bundlePath) = 0;
+  virtual void registerBundle(
+      uint32_t bundleId,
+      const std::string &bundlePath) = 0;
 
   /**
    * Executes BatchedBridge.callFunctionReturnFlushedQueue with the module ID,
-   * method ID and optional additional arguments in JS. The executor is responsible
-   * for using Bridge->callNativeModules to invoke any necessary native modules methods.
+   * method ID and optional additional arguments in JS. The executor is
+   * responsible for using Bridge->callNativeModules to invoke any necessary
+   * native modules methods.
    */
-  virtual void callFunction(const std::string& moduleId, const std::string& methodId, const folly::dynamic& arguments) = 0;
+  virtual void callFunction(
+      const std::string &moduleId,
+      const std::string &methodId,
+      const folly::dynamic &arguments) = 0;
 
   /**
    * Executes BatchedBridge.invokeCallbackAndReturnFlushedQueue with the cbID,
-   * and optional additional arguments in JS and returns the next queue. The executor
-   * is responsible for using Bridge->callNativeModules to invoke any necessary
-   * native modules methods.
+   * and optional additional arguments in JS and returns the next queue. The
+   * executor is responsible for using Bridge->callNativeModules to invoke any
+   * necessary native modules methods.
    */
-  virtual void invokeCallback(const double callbackId, const folly::dynamic& arguments) = 0;
+  virtual void invokeCallback(
+      const double callbackId,
+      const folly::dynamic &arguments) = 0;
 
-  virtual void setGlobalVariable(std::string propName, std::unique_ptr<const JSBigString> jsonValue) = 0;
+  virtual void setGlobalVariable(
+      std::string propName,
+      std::unique_ptr<const JSBigString> jsonValue) = 0;
 
-  virtual void* getJavaScriptContext() {
+  virtual void *getJavaScriptContext() {
     return nullptr;
   }
 
@@ -112,7 +137,8 @@ public:
 
   static std::string getSyntheticBundlePath(
       uint32_t bundleId,
-      const std::string& bundlePath);
+      const std::string &bundlePath);
 };
 
-} }
+} // namespace react
+} // namespace facebook

@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -13,8 +13,8 @@ import com.facebook.react.uimanager.events.Event;
 import com.facebook.react.uimanager.events.RCTEventEmitter;
 
 /**
- * Event emitted by EditText native view when text changes.
- * VisibleForTesting from {@link TextInputEventsTestCase}.
+ * Event emitted by EditText native view when text changes. VisibleForTesting from {@link
+ * TextInputEventsTestCase}.
  */
 public class ReactTextChangedEvent extends Event<ReactTextChangedEvent> {
 
@@ -23,10 +23,7 @@ public class ReactTextChangedEvent extends Event<ReactTextChangedEvent> {
   private String mText;
   private int mEventCount;
 
-  public ReactTextChangedEvent(
-      int viewId,
-      String text,
-      int eventCount) {
+  public ReactTextChangedEvent(int viewId, String text, int eventCount) {
     super(viewId);
     mText = text;
     mEventCount = eventCount;

@@ -3,9 +3,10 @@
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
- *
- *  This file was pulled from the facebook/rebound repository.
  */
+
+// This file was pulled from the facebook/rebound repository.
+
 package com.facebook.react.modules.core;
 
 import android.os.Handler;
@@ -26,7 +27,7 @@ public class ChoreographerCompat {
 
   public static ChoreographerCompat getInstance() {
     UiThreadUtil.assertOnUiThread();
-    if (sInstance == null){
+    if (sInstance == null) {
       sInstance = new ChoreographerCompat();
     }
     return sInstance;
@@ -57,8 +58,7 @@ public class ChoreographerCompat {
   }
 
   private void choreographerPostFrameCallbackDelayed(
-    Choreographer.FrameCallback frameCallback,
-    long delayMillis) {
+      Choreographer.FrameCallback frameCallback, long delayMillis) {
     mChoreographer.postFrameCallbackDelayed(frameCallback, delayMillis);
   }
 
@@ -67,41 +67,44 @@ public class ChoreographerCompat {
   }
 
   /**
-   * This class provides a compatibility wrapper around the JellyBean FrameCallback with methods
-   * to access cached wrappers for submitting a real FrameCallback to a Choreographer or a Runnable
-   * to a Handler.
+   * This class provides a compatibility wrapper around the JellyBean FrameCallback with methods to
+   * access cached wrappers for submitting a real FrameCallback to a Choreographer or a Runnable to
+   * a Handler.
    */
-  public static abstract class FrameCallback {
+  public abstract static class FrameCallback {
 
     private Runnable mRunnable;
     private Choreographer.FrameCallback mFrameCallback;
 
     Choreographer.FrameCallback getFrameCallback() {
       if (mFrameCallback == null) {
-        mFrameCallback = new Choreographer.FrameCallback() {
-          @Override
-          public void doFrame(long frameTimeNanos) {
-            FrameCallback.this.doFrame(frameTimeNanos);
-          }
-        };
+        mFrameCallback =
+            new Choreographer.FrameCallback() {
+              @Override
+              public void doFrame(long frameTimeNanos) {
+                FrameCallback.this.doFrame(frameTimeNanos);
+              }
+            };
       }
       return mFrameCallback;
     }
 
     Runnable getRunnable() {
       if (mRunnable == null) {
-        mRunnable = new Runnable() {
-          @Override
-          public void run() {
-            doFrame(System.nanoTime());
-          }
-        };
+        mRunnable =
+            new Runnable() {
+              @Override
+              public void run() {
+                doFrame(System.nanoTime());
+              }
+            };
       }
       return mRunnable;
     }
 
     /**
-     * Just a wrapper for frame callback, see {@link android.view.Choreographer.FrameCallback#doFrame(long)}.
+     * Just a wrapper for frame callback, see {@link
+     * android.view.Choreographer.FrameCallback#doFrame(long)}.
      */
     public abstract void doFrame(long frameTimeNanos);
   }

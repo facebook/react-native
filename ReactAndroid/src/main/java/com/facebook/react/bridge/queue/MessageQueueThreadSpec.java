@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -7,9 +7,7 @@
 
 package com.facebook.react.bridge.queue;
 
-/**
- * Spec for creating a MessageQueueThread.
- */
+/** Spec for creating a MessageQueueThread. */
 public class MessageQueueThreadSpec {
 
   private static final MessageQueueThreadSpec MAIN_UI_SPEC =

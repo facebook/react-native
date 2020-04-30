@@ -4,9 +4,13 @@
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
 
-cat <(echo eslint; npm run lint --silent -- --format=json; echo flow; npm run flow --silent -- check --json) | node scripts/circleci/code-analysis-bot.js
+GITHUB_OWNER=${CIRCLE_PROJECT_USERNAME:-facebook}
+GITHUB_REPO=${CIRCLE_PROJECT_REPONAME:-react-native}
+export GITHUB_OWNER
+export GITHUB_REPO
 
-# check status
+cat <(echo eslint; npm run lint --silent -- --format=json; echo flow; npm run flow-check-ios --silent --json; echo flow; npm run flow-check-android --silent --json) | GITHUB_PR_NUMBER="$CIRCLE_PR_NUMBER" node bots/code-analysis-bot.js
+
 STATUS=$?
 if [ $STATUS == 0 ]; then
   echo "Code analyzed successfully."

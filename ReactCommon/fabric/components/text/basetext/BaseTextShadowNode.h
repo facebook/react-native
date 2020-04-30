@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -20,11 +20,43 @@ namespace react {
 class BaseTextShadowNode {
  public:
   /*
-   * Returns a `AttributedString` which represents text content of the node.
+   * Represents additional information associated with some fragments which
+   * represent embedded into text component (such as an image or inline view).
    */
-  AttributedString getAttributedString(
-      const TextAttributes &baseTextAttributes,
-      const SharedShadowNode &parentNode) const;
+  class Attachment final {
+   public:
+    /*
+     * Unowning pointer to a `ShadowNode` that represents the attachment.
+     * Cannot be `null`.
+     */
+    ShadowNode const *shadowNode;
+
+    /*
+     * Index of the fragment in `AttributedString` that represents the
+     * the attachment.
+     */
+    size_t fragmentIndex;
+  };
+
+  /*
+   * A list of `Attachment`s.
+   * Performance-wise, the prevailing case is when there are no attachments
+   * at all, therefore we don't need an inline buffer (`small_vector`).
+   */
+  using Attachments = std::vector<Attachment>;
+
+  /*
+   * Builds an `AttributedString` which represents text content of the node.
+   * This is static so that both Paragraph (which subclasses BaseText) and
+   * TextInput (which does not) can use this.
+   * TODO T53299884: decide if this should be moved out and made a static
+   * function, or if TextInput should inherit from BaseTextShadowNode.
+   */
+  static void buildAttributedString(
+      TextAttributes const &baseTextAttributes,
+      ShadowNode const &parentNode,
+      AttributedString &outAttributedString,
+      Attachments &outAttachments);
 };
 
 } // namespace react

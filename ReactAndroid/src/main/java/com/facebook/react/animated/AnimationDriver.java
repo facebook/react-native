@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -36,6 +36,6 @@ import com.facebook.react.bridge.ReadableMap;
    */
   public void resetConfig(ReadableMap config) {
     throw new JSApplicationCausedNativeException(
-            "Animation config for " + getClass().getSimpleName() + " cannot be reset");
+        "Animation config for " + getClass().getSimpleName() + " cannot be reset");
   }
 }

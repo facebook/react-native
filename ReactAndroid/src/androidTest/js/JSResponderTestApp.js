@@ -9,12 +9,14 @@
 
 'use strict';
 
-const React = require('React');
-const StyleSheet = require('StyleSheet');
-const View = require('View');
-const Text = require('Text');
-const PanResponder = require('PanResponder');
-const ScrollView = require('ScrollView');
+const React = require('react');
+const {
+  PanResponder,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+} = require('react-native');
 
 class JSResponderTestApp extends React.Component {
   _handleMoveShouldSetPanResponder = (e, gestureState) => {

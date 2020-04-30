@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -15,7 +15,9 @@ NSString *const RCTBundleURLProviderUpdatedNotification = @"RCTBundleURLProvider
 const NSUInteger kRCTBundleURLProviderDefaultPort = RCT_METRO_PORT;
 
 static NSString *const kRCTJsLocationKey = @"RCT_jsLocation";
-static NSString *const kRCTEnableLiveReloadKey = @"RCT_enableLiveReload";
+// This option is no longer exposed in the dev menu UI.
+// It was renamed in D15958697 so it doesn't get stuck with no way to turn it off:
+static NSString *const kRCTEnableLiveReloadKey = @"RCT_enableLiveReload_LEGACY";
 static NSString *const kRCTEnableDevKey = @"RCT_enableDev";
 static NSString *const kRCTEnableMinificationKey = @"RCT_enableMinification";
 
@@ -33,9 +35,9 @@ static NSString *const kRCTEnableMinificationKey = @"RCT_enableMinification";
 - (NSDictionary *)defaults
 {
   return @{
-    kRCTEnableLiveReloadKey: @NO,
-    kRCTEnableDevKey: @YES,
-    kRCTEnableMinificationKey: @NO,
+    kRCTEnableLiveReloadKey : @NO,
+    kRCTEnableDevKey : @YES,
+    kRCTEnableMinificationKey : @NO,
   };
 }
 
@@ -60,37 +62,33 @@ static NSString *const kRCTEnableMinificationKey = @"RCT_enableMinification";
 
 static NSURL *serverRootWithHostPort(NSString *hostPort)
 {
-  if([hostPort rangeOfString:@":"].location != NSNotFound){
-    return [NSURL URLWithString:
-            [NSString stringWithFormat:@"http://%@/",
-             hostPort]];
+  if ([hostPort rangeOfString:@":"].location != NSNotFound) {
+    return [NSURL URLWithString:[NSString stringWithFormat:@"http://%@/", hostPort]];
   }
-  return [NSURL URLWithString:
-          [NSString stringWithFormat:@"http://%@:%lu/",
-           hostPort, (unsigned long)kRCTBundleURLProviderDefaultPort]];
+  return [NSURL
+      URLWithString:[NSString
+                        stringWithFormat:@"http://%@:%lu/", hostPort, (unsigned long)kRCTBundleURLProviderDefaultPort]];
 }
 
-#if RCT_DEV
-- (BOOL)isPackagerRunning:(NSString *)host
+#if RCT_DEV_MENU
++ (BOOL)isPackagerRunning:(NSString *)host
 {
   NSURL *url = [serverRootWithHostPort(host) URLByAppendingPathComponent:@"status"];
-  
+
   NSURLSession *session = [NSURLSession sharedSession];
   NSURLRequest *request = [NSURLRequest requestWithURL:url];
   __block NSURLResponse *response;
   __block NSData *data;
-  
+
   dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
   [[session dataTaskWithRequest:request
-            completionHandler:^(NSData *d,
-                                NSURLResponse *res,
-                                __unused NSError *err) {
-              data = d;
-              response = res;
-              dispatch_semaphore_signal(semaphore);
-            }] resume];
+              completionHandler:^(NSData *d, NSURLResponse *res, __unused NSError *err) {
+                data = d;
+                response = res;
+                dispatch_semaphore_signal(semaphore);
+              }] resume];
   dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);
-  
+
   NSString *status = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
   return [status isEqualToString:@"packager-status:running"];
 }
@@ -101,12 +99,13 @@ static NSURL *serverRootWithHostPort(NSString *hostPort)
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
     NSString *ipPath = [[NSBundle mainBundle] pathForResource:@"ip" ofType:@"txt"];
-    ipGuess = [[NSString stringWithContentsOfFile:ipPath encoding:NSUTF8StringEncoding error:nil]
-               stringByTrimmingCharactersInSet:[NSCharacterSet newlineCharacterSet]];
+    ipGuess =
+        [[NSString stringWithContentsOfFile:ipPath encoding:NSUTF8StringEncoding
+                                      error:nil] stringByTrimmingCharactersInSet:[NSCharacterSet newlineCharacterSet]];
   });
 
   NSString *host = ipGuess ?: @"localhost";
-  if ([self isPackagerRunning:host]) {
+  if ([RCTBundleURLProvider isPackagerRunning:host]) {
     return host;
   }
   return nil;
@@ -128,11 +127,11 @@ static NSURL *serverRootWithHostPort(NSString *hostPort)
   return nil;
 }
 
-- (NSURL *)jsBundleURLForBundleRoot:(NSString *)bundleRoot fallbackResource:(NSString *)resourceName fallbackExtension:(NSString *)extension
+- (NSURL *)jsBundleURLForBundleRoot:(NSString *)bundleRoot fallbackURLProvider:(NSURL * (^)(void))fallbackURLProvider
 {
   NSString *packagerServerHost = [self packagerServerHost];
   if (!packagerServerHost) {
-    return [self jsBundleURLForFallbackResource:resourceName fallbackExtension:extension];
+    return fallbackURLProvider();
   } else {
     return [RCTBundleURLProvider jsBundleURLForBundleRoot:bundleRoot
                                              packagerHost:packagerServerHost
@@ -141,13 +140,22 @@ static NSURL *serverRootWithHostPort(NSString *hostPort)
   }
 }
 
+- (NSURL *)jsBundleURLForBundleRoot:(NSString *)bundleRoot
+                   fallbackResource:(NSString *)resourceName
+                  fallbackExtension:(NSString *)extension
+{
+  return [self jsBundleURLForBundleRoot:bundleRoot
+                    fallbackURLProvider:^NSURL * {
+                      return [self jsBundleURLForFallbackResource:resourceName fallbackExtension:extension];
+                    }];
+}
+
 - (NSURL *)jsBundleURLForBundleRoot:(NSString *)bundleRoot fallbackResource:(NSString *)resourceName
 {
   return [self jsBundleURLForBundleRoot:bundleRoot fallbackResource:resourceName fallbackExtension:nil];
 }
 
-- (NSURL *)jsBundleURLForFallbackResource:(NSString *)resourceName
-                        fallbackExtension:(NSString *)extension
+- (NSURL *)jsBundleURLForFallbackResource:(NSString *)resourceName fallbackExtension:(NSString *)extension
 {
   resourceName = resourceName ?: @"main";
   extension = extension ?: @"jsbundle";
@@ -177,16 +185,15 @@ static NSURL *serverRootWithHostPort(NSString *hostPort)
   NSString *path = [NSString stringWithFormat:@"/%@.bundle", bundleRoot];
   // When we support only iOS 8 and above, use queryItems for a better API.
   NSString *query = [NSString stringWithFormat:@"platform=ios&dev=%@&minify=%@",
-                      enableDev ? @"true" : @"false",
-                      enableMinification ? @"true": @"false"];
+                                               enableDev ? @"true" : @"false",
+                                               enableMinification ? @"true" : @"false"];
   return [[self class] resourceURLForResourcePath:path packagerHost:packagerHost query:query];
 }
 
-+ (NSURL *)resourceURLForResourcePath:(NSString *)path
-                         packagerHost:(NSString *)packagerHost
-                                query:(NSString *)query
++ (NSURL *)resourceURLForResourcePath:(NSString *)path packagerHost:(NSString *)packagerHost query:(NSString *)query
 {
-  NSURLComponents *components = [NSURLComponents componentsWithURL:serverRootWithHostPort(packagerHost) resolvingAgainstBaseURL:NO];
+  NSURLComponents *components = [NSURLComponents componentsWithURL:serverRootWithHostPort(packagerHost)
+                                           resolvingAgainstBaseURL:NO];
   components.path = path;
   if (query != nil) {
     components.query = query;

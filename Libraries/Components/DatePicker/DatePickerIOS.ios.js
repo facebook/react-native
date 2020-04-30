@@ -4,25 +4,25 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- *
- * This is a controlled component version of RCTDatePickerIOS
- *
  * @format
  * @flow strict-local
  */
 
+// This is a controlled component version of RCTDatePickerIOS.
+
 'use strict';
 
-const React = require('React');
-const StyleSheet = require('StyleSheet');
-const View = require('View');
+import RCTDatePickerNativeComponent, {
+  Commands as DatePickerCommands,
+} from './RCTDatePickerNativeComponent';
+const React = require('react');
+const StyleSheet = require('../../StyleSheet/StyleSheet');
+const View = require('../View/View');
 
 const invariant = require('invariant');
 
-import type {ViewProps} from 'ViewPropTypes';
-import type {SyntheticEvent} from 'CoreEventTypes';
-
-const RCTDatePickerNativeComponent = require('RCTDatePickerNativeComponent');
+import type {SyntheticEvent} from '../../Types/CoreEventTypes';
+import type {ViewProps} from '../View/ViewPropTypes';
 
 type Event = SyntheticEvent<
   $ReadOnly<{|
@@ -113,7 +113,7 @@ type Props = $ReadOnly<{|
  * source of truth.
  */
 class DatePickerIOS extends React.Component<Props> {
-  static DefaultProps = {
+  static DefaultProps: {|mode: $TEMPORARY$string<'datetime'>|} = {
     mode: 'datetime',
   };
 
@@ -123,9 +123,7 @@ class DatePickerIOS extends React.Component<Props> {
     if (this.props.date) {
       const propsTimeStamp = this.props.date.getTime();
       if (this._picker) {
-        this._picker.setNativeProps({
-          date: propsTimeStamp,
-        });
+        DatePickerCommands.setNativeDate(this._picker, propsTimeStamp);
       }
     }
   }
@@ -135,9 +133,10 @@ class DatePickerIOS extends React.Component<Props> {
     this.props.onDateChange &&
       this.props.onDateChange(new Date(nativeTimeStamp));
     this.props.onChange && this.props.onChange(event);
+    this.forceUpdate();
   };
 
-  render() {
+  render(): React.Node {
     const props = this.props;
     invariant(
       props.date || props.initialDate,

@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -15,4 +15,5 @@ namespace react {
 folly::dynamic convertIdToFollyDynamic(id json);
 id convertFollyDynamicToId(const folly::dynamic &dyn);
 
-} }
+} // namespace react
+} // namespace facebook

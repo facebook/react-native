@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -18,7 +18,7 @@
 
 - (instancetype)initWithSurface:(RCTSurface *)surface
 {
-  if (self == [super init]) {
+  if (self = [super init]) {
     _surface = surface;
   }
 

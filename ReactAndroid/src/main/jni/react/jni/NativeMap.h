@@ -1,11 +1,13 @@
-// Copyright (c) Facebook, Inc. and its affiliates.
-
-// This source code is licensed under the MIT license found in the
-// LICENSE file in the root directory of this source tree.
+/*
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
 
 #pragma once
 
-#include <fb/fbjni.h>
+#include <fbjni/fbjni.h>
 #include <folly/dynamic.h>
 
 #include "NativeCommon.h"
@@ -15,7 +17,8 @@ namespace react {
 
 class NativeMap : public jni::HybridClass<NativeMap> {
  public:
-  static auto constexpr kJavaDescriptor = "Lcom/facebook/react/bridge/NativeMap;";
+  static auto constexpr kJavaDescriptor =
+      "Lcom/facebook/react/bridge/NativeMap;";
 
   std::string toString();
 
@@ -36,5 +39,5 @@ class NativeMap : public jni::HybridClass<NativeMap> {
   explicit NativeMap(folly::dynamic s) : isConsumed(false), map_(s) {}
 };
 
-}  // namespace react
-}  // namespace facebook
+} // namespace react
+} // namespace facebook

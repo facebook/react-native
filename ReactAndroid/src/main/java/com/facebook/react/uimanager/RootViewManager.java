@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -10,9 +10,7 @@ package com.facebook.react.uimanager;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
-/**
- * View manager for ReactRootView components.
- */
+/** View manager for ReactRootView components. */
 public class RootViewManager extends ViewGroupManager<ViewGroup> {
 
   public static final String REACT_CLASS = "RootView";

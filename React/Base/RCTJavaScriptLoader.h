@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -11,21 +11,21 @@
 
 extern NSString *const RCTJavaScriptLoaderErrorDomain;
 
-NS_ENUM(NSInteger) {
-  RCTJavaScriptLoaderErrorNoScriptURL = 1,
-  RCTJavaScriptLoaderErrorFailedOpeningFile = 2,
-  RCTJavaScriptLoaderErrorFailedReadingFile = 3,
-  RCTJavaScriptLoaderErrorFailedStatingFile = 3,
-  RCTJavaScriptLoaderErrorURLLoadFailed = 3,
-  RCTJavaScriptLoaderErrorBCVersion = 4,
-  RCTJavaScriptLoaderErrorBCNotSupported = 4,
+NS_ENUM(NSInteger){
+    RCTJavaScriptLoaderErrorNoScriptURL = 1,
+    RCTJavaScriptLoaderErrorFailedOpeningFile = 2,
+    RCTJavaScriptLoaderErrorFailedReadingFile = 3,
+    RCTJavaScriptLoaderErrorFailedStatingFile = 3,
+    RCTJavaScriptLoaderErrorURLLoadFailed = 3,
+    RCTJavaScriptLoaderErrorBCVersion = 4,
+    RCTJavaScriptLoaderErrorBCNotSupported = 4,
 
-  RCTJavaScriptLoaderErrorCannotBeLoadedSynchronously = 1000,
+    RCTJavaScriptLoaderErrorCannotBeLoadedSynchronously = 1000,
 };
 
-NS_ENUM(NSInteger) {
-  RCTSourceFilesChangedCountNotBuiltByBundler = -2,
-  RCTSourceFilesChangedCountRebuiltFromScratch = -1,
+NS_ENUM(NSInteger){
+    RCTSourceFilesChangedCountNotBuiltByBundler = -2,
+    RCTSourceFilesChangedCountRebuiltFromScratch = -1,
 };
 
 @interface RCTLoadingProgress : NSObject
@@ -74,7 +74,9 @@ typedef void (^RCTSourceLoadBlock)(NSError *error, RCTSource *source);
 
 @interface RCTJavaScriptLoader : NSObject
 
-+ (void)loadBundleAtURL:(NSURL *)scriptURL onProgress:(RCTSourceLoadProgressBlock)onProgress onComplete:(RCTSourceLoadBlock)onComplete;
++ (void)loadBundleAtURL:(NSURL *)scriptURL
+             onProgress:(RCTSourceLoadProgressBlock)onProgress
+             onComplete:(RCTSourceLoadBlock)onComplete;
 
 /**
  * @experimental

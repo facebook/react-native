@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -9,6 +9,7 @@ package com.facebook.react.views.image;
 
 import android.graphics.Color;
 import android.graphics.PorterDuff.Mode;
+import androidx.annotation.Nullable;
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.facebook.drawee.controller.AbstractDraweeControllerBuilder;
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
@@ -24,7 +25,6 @@ import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.annotations.ReactPropGroup;
 import com.facebook.yoga.YogaConstants;
 import java.util.Map;
-import javax.annotation.Nullable;
 
 @ReactModule(name = ReactImageManager.REACT_CLASS)
 public class ReactImageManager extends SimpleViewManager<ReactImageView> {
@@ -39,25 +39,55 @@ public class ReactImageManager extends SimpleViewManager<ReactImageView> {
   private @Nullable AbstractDraweeControllerBuilder mDraweeControllerBuilder;
   private @Nullable GlobalImageLoadListener mGlobalImageLoadListener;
   private final @Nullable Object mCallerContext;
+  private final @Nullable ReactCallerContextFactory mCallerContextFactory;
 
+  /**
+   * @deprecated use {@link ReactImageManager#ReactImageManager(AbstractDraweeControllerBuilder,
+   *     ReactCallerContextFactory)} instead.
+   */
+  @Deprecated
   public ReactImageManager(
-      AbstractDraweeControllerBuilder draweeControllerBuilder, Object callerContext) {
+      @Nullable AbstractDraweeControllerBuilder draweeControllerBuilder,
+      @Nullable Object callerContext) {
     this(draweeControllerBuilder, null, callerContext);
   }
 
+  /**
+   * @deprecated use {@link ReactImageManager#ReactImageManager(AbstractDraweeControllerBuilder,
+   *     GlobalImageLoadListener, ReactCallerContextFactory)} instead.
+   */
+  @Deprecated
   public ReactImageManager(
-      AbstractDraweeControllerBuilder draweeControllerBuilder,
+      @Nullable AbstractDraweeControllerBuilder draweeControllerBuilder,
       @Nullable GlobalImageLoadListener globalImageLoadListener,
-      Object callerContext) {
+      @Nullable Object callerContext) {
     mDraweeControllerBuilder = draweeControllerBuilder;
     mGlobalImageLoadListener = globalImageLoadListener;
     mCallerContext = callerContext;
+    mCallerContextFactory = null;
+  }
+
+  public ReactImageManager(
+      @Nullable AbstractDraweeControllerBuilder draweeControllerBuilder,
+      @Nullable ReactCallerContextFactory callerContextFactory) {
+    this(draweeControllerBuilder, null, callerContextFactory);
+  }
+
+  public ReactImageManager(
+      @Nullable AbstractDraweeControllerBuilder draweeControllerBuilder,
+      @Nullable GlobalImageLoadListener globalImageLoadListener,
+      @Nullable ReactCallerContextFactory callerContextFactory) {
+    mDraweeControllerBuilder = draweeControllerBuilder;
+    mGlobalImageLoadListener = globalImageLoadListener;
+    mCallerContextFactory = callerContextFactory;
+    mCallerContext = null;
   }
 
   public ReactImageManager() {
     // Lazily initialize as FrescoModule have not been initialized yet
     mDraweeControllerBuilder = null;
     mCallerContext = null;
+    mCallerContextFactory = null;
   }
 
   public AbstractDraweeControllerBuilder getDraweeControllerBuilder() {
@@ -67,14 +97,20 @@ public class ReactImageManager extends SimpleViewManager<ReactImageView> {
     return mDraweeControllerBuilder;
   }
 
+  /** @deprecated use {@link ReactCallerContextFactory} instead */
+  @Deprecated
   public Object getCallerContext() {
     return mCallerContext;
   }
 
   @Override
   public ReactImageView createViewInstance(ThemedReactContext context) {
+    Object callerContext =
+        mCallerContextFactory != null
+            ? mCallerContextFactory.getOrCreateCallerContext(context, null)
+            : getCallerContext();
     return new ReactImageView(
-        context, getDraweeControllerBuilder(), mGlobalImageLoadListener, getCallerContext());
+        context, getDraweeControllerBuilder(), mGlobalImageLoadListener, callerContext);
   }
 
   // In JS this is Image.props.source
@@ -86,6 +122,15 @@ public class ReactImageManager extends SimpleViewManager<ReactImageView> {
   @ReactProp(name = "blurRadius")
   public void setBlurRadius(ReactImageView view, float blurRadius) {
     view.setBlurRadius(blurRadius);
+  }
+
+  @ReactProp(name = "internal_analyticTag")
+  public void setInternal_AnalyticsTag(ReactImageView view, @Nullable String analyticTag) {
+    if (mCallerContextFactory != null) {
+      view.updateCallerContext(
+          mCallerContextFactory.getOrCreateCallerContext(
+              (ThemedReactContext) view.getContext(), analyticTag));
+    }
   }
 
   // In JS this is Image.props.defaultSource
@@ -123,13 +168,15 @@ public class ReactImageManager extends SimpleViewManager<ReactImageView> {
     view.setBorderWidth(borderWidth);
   }
 
-  @ReactPropGroup(names = {
-      ViewProps.BORDER_RADIUS,
-      ViewProps.BORDER_TOP_LEFT_RADIUS,
-      ViewProps.BORDER_TOP_RIGHT_RADIUS,
-      ViewProps.BORDER_BOTTOM_RIGHT_RADIUS,
-      ViewProps.BORDER_BOTTOM_LEFT_RADIUS
-  }, defaultFloat = YogaConstants.UNDEFINED)
+  @ReactPropGroup(
+      names = {
+        ViewProps.BORDER_RADIUS,
+        ViewProps.BORDER_TOP_LEFT_RADIUS,
+        ViewProps.BORDER_TOP_RIGHT_RADIUS,
+        ViewProps.BORDER_BOTTOM_RIGHT_RADIUS,
+        ViewProps.BORDER_BOTTOM_LEFT_RADIUS
+      },
+      defaultFloat = YogaConstants.UNDEFINED)
   public void setBorderRadius(ReactImageView view, int index, float borderRadius) {
     if (!YogaConstants.isUndefined(borderRadius)) {
       borderRadius = PixelUtil.toPixelFromDIP(borderRadius);
@@ -157,7 +204,8 @@ public class ReactImageManager extends SimpleViewManager<ReactImageView> {
     } else if ("scale".equals(resizeMethod)) {
       view.setResizeMethod(ImageResizeMethod.SCALE);
     } else {
-      throw new JSApplicationIllegalArgumentException("Invalid resize method: '" + resizeMethod+ "'");
+      throw new JSApplicationIllegalArgumentException(
+          "Invalid resize method: '" + resizeMethod + "'");
     }
   }
 
@@ -193,14 +241,14 @@ public class ReactImageManager extends SimpleViewManager<ReactImageView> {
   @Override
   public @Nullable Map getExportedCustomDirectEventTypeConstants() {
     return MapBuilder.of(
-      ImageLoadEvent.eventNameForType(ImageLoadEvent.ON_LOAD_START),
-        MapBuilder.of("registrationName", "onLoadStart"),
-      ImageLoadEvent.eventNameForType(ImageLoadEvent.ON_LOAD),
-        MapBuilder.of("registrationName", "onLoad"),
-      ImageLoadEvent.eventNameForType(ImageLoadEvent.ON_ERROR),
-        MapBuilder.of("registrationName", "onError"),
-      ImageLoadEvent.eventNameForType(ImageLoadEvent.ON_LOAD_END),
-        MapBuilder.of("registrationName", "onLoadEnd"));
+        ImageLoadEvent.eventNameForType(ImageLoadEvent.ON_LOAD_START),
+            MapBuilder.of("registrationName", "onLoadStart"),
+        ImageLoadEvent.eventNameForType(ImageLoadEvent.ON_LOAD),
+            MapBuilder.of("registrationName", "onLoad"),
+        ImageLoadEvent.eventNameForType(ImageLoadEvent.ON_ERROR),
+            MapBuilder.of("registrationName", "onError"),
+        ImageLoadEvent.eventNameForType(ImageLoadEvent.ON_LOAD_END),
+            MapBuilder.of("registrationName", "onLoadEnd"));
   }
 
   @Override

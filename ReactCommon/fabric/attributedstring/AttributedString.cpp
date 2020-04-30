@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -17,13 +17,25 @@ using Fragments = AttributedString::Fragments;
 
 #pragma mark - Fragment
 
+std::string Fragment::AttachmentCharacter() {
+  return u8"\uFFFC"; // Unicode `OBJECT REPLACEMENT CHARACTER`
+}
+
+bool Fragment::isAttachment() const {
+  return string == AttachmentCharacter();
+}
+
 bool Fragment::operator==(const Fragment &rhs) const {
-  return std::tie(string, textAttributes, shadowView, parentShadowView) ==
+  return std::tie(
+             string,
+             textAttributes,
+             parentShadowView.tag,
+             parentShadowView.layoutMetrics) ==
       std::tie(
              rhs.string,
              rhs.textAttributes,
-             rhs.shadowView,
-             rhs.parentShadowView);
+             rhs.parentShadowView.tag,
+             rhs.parentShadowView.layoutMetrics);
 }
 
 bool Fragment::operator!=(const Fragment &rhs) const {
@@ -70,7 +82,11 @@ void AttributedString::prependAttributedString(
       attributedString.fragments_.end());
 }
 
-const Fragments &AttributedString::getFragments() const {
+Fragments const &AttributedString::getFragments() const {
+  return fragments_;
+}
+
+Fragments &AttributedString::getFragments() {
   return fragments_;
 }
 
@@ -84,6 +100,22 @@ std::string AttributedString::getString() const {
 
 bool AttributedString::isEmpty() const {
   return fragments_.empty();
+}
+
+bool AttributedString::compareTextAttributesWithoutFrame(
+    const AttributedString &rhs) const {
+  if (fragments_.size() != rhs.fragments_.size()) {
+    return false;
+  }
+
+  for (unsigned i = 0; i < fragments_.size(); i++) {
+    if (fragments_[i].textAttributes != rhs.fragments_[i].textAttributes ||
+        fragments_[i].string != rhs.fragments_[i].string) {
+      return false;
+    }
+  }
+
+  return true;
 }
 
 bool AttributedString::operator==(const AttributedString &rhs) const {

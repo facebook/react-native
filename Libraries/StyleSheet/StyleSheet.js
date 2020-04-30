@@ -7,15 +7,17 @@
  * @flow
  * @format
  */
+
 'use strict';
 
-const PixelRatio = require('PixelRatio');
-const ReactNativeStyleAttributes = require('ReactNativeStyleAttributes');
-const StyleSheetValidation = require('StyleSheetValidation');
+const PixelRatio = require('../Utilities/PixelRatio');
+const ReactNativeStyleAttributes = require('../Components/View/ReactNativeStyleAttributes');
+const StyleSheetValidation = require('./StyleSheetValidation');
 
-const flatten = require('flattenStyle');
+const flatten = require('./flattenStyle');
 
 import type {
+  ____ColorValue_Internal,
   ____Styles_Internal,
   ____DangerouslyImpreciseStyle_Internal,
   ____DangerouslyImpreciseStyleProp_Internal,
@@ -25,7 +27,16 @@ import type {
   ____TextStyleProp_Internal,
   ____ImageStyle_Internal,
   ____ImageStyleProp_Internal,
-} from 'StyleSheetTypes';
+} from './StyleSheetTypes';
+
+/**
+ * This type should be used as the type for anything that is a color. It is
+ * most useful when using DynamicColorIOS which can be a string or a dynamic
+ * color object.
+ *
+ * type props = {backgroundColor: ColorValue};
+ */
+export type ColorValue = ____ColorValue_Internal;
 
 /**
  * This type should be used as the type for a prop that is passed through
@@ -151,7 +162,7 @@ export type ImageStyle = ____ImageStyle_Internal;
  */
 export type DangerouslyImpreciseStyle = ____DangerouslyImpreciseStyle_Internal;
 
-let hairlineWidth = PixelRatio.roundToNearestPixel(0.4);
+let hairlineWidth: number = PixelRatio.roundToNearestPixel(0.4);
 if (hairlineWidth === 0) {
   hairlineWidth = 1 / PixelRatio.get();
 }
@@ -279,7 +290,7 @@ module.exports = {
    * > **NOTE**: Exercise caution as abusing this can tax you in terms of
    * > optimizations.
    * >
-   * > IDs enable optimizations through the bridge and memory in general. Refering
+   * > IDs enable optimizations through the bridge and memory in general. Referring
    * > to style objects directly will deprive you of these optimizations.
    *
    * Example:
@@ -346,7 +357,7 @@ module.exports = {
   /**
    * Creates a StyleSheet style reference from the given object.
    */
-  create<+S: ____Styles_Internal>(obj: S): $ObjMap<S, (Object) => any> {
+  create<+S: ____Styles_Internal>(obj: S): $ReadOnly<S> {
     // TODO: This should return S as the return type. But first,
     // we need to codemod all the callsites that are typing this
     // return value as a number (even though it was opaque).

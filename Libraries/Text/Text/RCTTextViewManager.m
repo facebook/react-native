@@ -1,21 +1,20 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
 
-#import "RCTTextViewManager.h"
+#import <React/RCTTextViewManager.h>
 
-#import <React/RCTAccessibilityManager.h>
 #import <React/RCTShadowView+Layout.h>
 #import <React/RCTShadowView.h>
 #import <React/RCTUIManager.h>
 #import <React/RCTUIManagerUtils.h>
 #import <React/RCTUIManagerObserverCoordinator.h>
 
-#import "RCTTextShadowView.h"
-#import "RCTTextView.h"
+#import <React/RCTTextShadowView.h>
+#import <React/RCTTextView.h>
 
 @interface RCTTextViewManager () <RCTUIManagerObserver>
 
@@ -46,13 +45,9 @@ RCT_EXPORT_VIEW_PROPERTY(selectable, BOOL)
 
   [[NSNotificationCenter defaultCenter] addObserver:self
                                            selector:@selector(handleDidUpdateMultiplierNotification)
-                                               name:RCTAccessibilityManagerDidUpdateMultiplierNotification
-                                             object:bridge.accessibilityManager];
-}
-
-- (void)dealloc
-{
-  [[NSNotificationCenter defaultCenter] removeObserver:self];
+                                               name:@"RCTAccessibilityManagerDidUpdateMultiplierNotification"
+                                             object:[bridge moduleForName:@"AccessibilityManager"
+                                                    lazilyLoadIfNecessary:YES]];
 }
 
 - (UIView *)view
@@ -63,7 +58,8 @@ RCT_EXPORT_VIEW_PROPERTY(selectable, BOOL)
 - (RCTShadowView *)shadowView
 {
   RCTTextShadowView *shadowView = [[RCTTextShadowView alloc] initWithBridge:self.bridge];
-  shadowView.textAttributes.fontSizeMultiplier = self.bridge.accessibilityManager.multiplier;
+  shadowView.textAttributes.fontSizeMultiplier = [[[self.bridge moduleForName:@"AccessibilityManager"]
+                                                   valueForKey:@"multiplier"] floatValue];
   [_shadowViews addObject:shadowView];
   return shadowView;
 }
@@ -81,7 +77,8 @@ RCT_EXPORT_VIEW_PROPERTY(selectable, BOOL)
 
 - (void)handleDidUpdateMultiplierNotification
 {
-  CGFloat fontSizeMultiplier = self.bridge.accessibilityManager.multiplier;
+  CGFloat fontSizeMultiplier = [[[self.bridge moduleForName:@"AccessibilityManager"]
+                                 valueForKey:@"multiplier"] floatValue];
 
   NSHashTable<RCTTextShadowView *> *shadowViews = _shadowViews;
   RCTExecuteOnUIManagerQueue(^{

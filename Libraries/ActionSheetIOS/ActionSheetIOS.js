@@ -7,17 +7,20 @@
  * @flow
  * @format
  */
+
 'use strict';
 
-const RCTActionSheetManager = require('NativeModules').ActionSheetManager;
+import RCTActionSheetManager from './NativeActionSheetManager';
 
 const invariant = require('invariant');
-const processColor = require('processColor');
+const processColor = require('../StyleSheet/processColor');
+import type {ColorValue} from '../StyleSheet/StyleSheet';
+import type {ProcessedColorValue} from '../StyleSheet/processColor';
 
 /**
  * Display action sheets and share sheets on iOS.
  *
- * See http://facebook.github.io/react-native/docs/actionsheetios.html
+ * See https://reactnative.dev/docs/actionsheetios.html
  */
 const ActionSheetIOS = {
   /**
@@ -35,17 +38,18 @@ const ActionSheetIOS = {
    * The 'callback' function takes one parameter, the zero-based index
    * of the selected item.
    *
-   * See http://facebook.github.io/react-native/docs/actionsheetios.html#showactionsheetwithoptions
+   * See https://reactnative.dev/docs/actionsheetios.html#showactionsheetwithoptions
    */
   showActionSheetWithOptions(
     options: {|
       +title?: ?string,
       +message?: ?string,
       +options: Array<string>,
-      +destructiveButtonIndex?: ?number,
+      +destructiveButtonIndex?: ?number | ?Array<number>,
       +cancelButtonIndex?: ?number,
       +anchor?: ?number,
-      +tintColor?: number | string,
+      +tintColor?: ColorValue | ProcessedColorValue,
+      +userInterfaceStyle?: string,
       +disabledButtonIndices?: Array<number>,
     |},
     callback: (buttonIndex: number) => void,
@@ -55,9 +59,28 @@ const ActionSheetIOS = {
       'Options must be a valid object',
     );
     invariant(typeof callback === 'function', 'Must provide a valid callback');
+    invariant(RCTActionSheetManager, "ActionSheetManager does't exist");
 
+    const {tintColor, destructiveButtonIndex, ...remainingOptions} = options;
+    let destructiveButtonIndices = null;
+
+    if (Array.isArray(destructiveButtonIndex)) {
+      destructiveButtonIndices = destructiveButtonIndex;
+    } else if (typeof destructiveButtonIndex === 'number') {
+      destructiveButtonIndices = [destructiveButtonIndex];
+    }
+
+    const processedTintColor = processColor(tintColor);
+    invariant(
+      processedTintColor == null || typeof processedTintColor === 'number',
+      'Unexpected color given for ActionSheetIOS.showActionSheetWithOptions tintColor',
+    );
     RCTActionSheetManager.showActionSheetWithOptions(
-      {...options, tintColor: processColor(options.tintColor)},
+      {
+        ...remainingOptions,
+        tintColor: processedTintColor,
+        destructiveButtonIndices,
+      },
       callback,
     );
   },
@@ -83,7 +106,7 @@ const ActionSheetIOS = {
    * - a boolean value signifying success or failure
    * - a string that, in the case of success, indicates the method of sharing
    *
-   * See http://facebook.github.io/react-native/docs/actionsheetios.html#showshareactionsheetwithoptions
+   * See https://reactnative.dev/docs/actionsheetios.html#showshareactionsheetwithoptions
    */
   showShareActionSheetWithOptions(
     options: Object,
@@ -102,6 +125,7 @@ const ActionSheetIOS = {
       typeof successCallback === 'function',
       'Must provide a valid successCallback',
     );
+    invariant(RCTActionSheetManager, "ActionSheetManager does't exist");
     RCTActionSheetManager.showShareActionSheetWithOptions(
       {...options, tintColor: processColor(options.tintColor)},
       failureCallback,

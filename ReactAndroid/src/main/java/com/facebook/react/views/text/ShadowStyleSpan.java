@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -6,7 +6,6 @@
  */
 
 package com.facebook.react.views.text;
-
 
 import android.text.TextPaint;
 import android.text.style.CharacterStyle;

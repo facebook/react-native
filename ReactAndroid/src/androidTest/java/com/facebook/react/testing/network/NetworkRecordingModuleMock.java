@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -7,8 +7,7 @@
 
 package com.facebook.react.testing.network;
 
-import javax.annotation.Nullable;
-
+import androidx.annotation.Nullable;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -70,10 +69,7 @@ public class NetworkRecordingModuleMock extends ReactContextBaseJavaModule {
   }
 
   private void fireReactCallback(
-      Callback callback,
-      int status,
-      @Nullable String headers,
-      @Nullable String body) {
+      Callback callback, int status, @Nullable String headers, @Nullable String body) {
     callback.invoke(status, headers, body);
   }
 

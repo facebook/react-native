@@ -5,22 +5,21 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @flow
+ * @flow strict-local
  */
 
 'use strict';
 
-const Platform = require('Platform');
-const RCTSliderNativeComponent = require('RCTSliderNativeComponent');
-const React = require('React');
-const ReactNative = require('ReactNative');
-const StyleSheet = require('StyleSheet');
+const Platform = require('../../Utilities/Platform');
+import SliderNativeComponent from './SliderNativeComponent';
+const React = require('react');
+const StyleSheet = require('../../StyleSheet/StyleSheet');
 
-import type {ImageSource} from 'ImageSource';
-import type {ViewStyleProp} from 'StyleSheet';
-import type {ColorValue} from 'StyleSheetTypes';
-import type {ViewProps} from 'ViewPropTypes';
-import type {SyntheticEvent} from 'CoreEventTypes';
+import type {ImageSource} from '../../Image/ImageSource';
+import type {ViewStyleProp} from '../../StyleSheet/StyleSheet';
+import type {ColorValue} from '../../StyleSheet/StyleSheet';
+import type {ViewProps} from '../View/ViewPropTypes';
+import type {SyntheticEvent} from '../../Types/CoreEventTypes';
 
 type Event = SyntheticEvent<
   $ReadOnly<{|
@@ -197,14 +196,20 @@ type Props = $ReadOnly<{|
  */
 const Slider = (
   props: Props,
-  forwardedRef?: ?React.Ref<typeof RCTSliderNativeComponent>,
+  forwardedRef?: ?React.Ref<typeof SliderNativeComponent>,
 ) => {
-  const style = StyleSheet.compose(
-    styles.slider,
-    props.style,
-  );
+  const style = StyleSheet.compose(styles.slider, props.style);
 
-  const {onValueChange, onSlidingComplete, ...localProps} = props;
+  const {
+    disabled = false,
+    value = 0.5,
+    minimumValue = 0,
+    maximumValue = 1,
+    step = 0,
+    onValueChange,
+    onSlidingComplete,
+    ...localProps
+  } = props;
 
   const onValueChangeEvent = onValueChange
     ? (event: Event) => {
@@ -227,32 +232,30 @@ const Slider = (
     : null;
 
   return (
-    <RCTSliderNativeComponent
+    <SliderNativeComponent
       {...localProps}
-      ref={forwardedRef}
-      style={style}
+      // TODO: Reconcile these across the two platforms.
+      enabled={!disabled}
+      disabled={disabled}
+      maximumValue={maximumValue}
+      minimumValue={minimumValue}
       onChange={onChangeEvent}
-      onSlidingComplete={onSlidingCompleteEvent}
-      onValueChange={onValueChangeEvent}
-      enabled={!props.disabled}
-      onStartShouldSetResponder={() => true}
       onResponderTerminationRequest={() => false}
+      onSlidingComplete={onSlidingCompleteEvent}
+      onStartShouldSetResponder={() => true}
+      onValueChange={onValueChangeEvent}
+      ref={forwardedRef}
+      step={step}
+      style={style}
+      value={value}
     />
   );
 };
 
-const SliderWithRef = React.forwardRef(Slider);
-
-/* $FlowFixMe(>=0.89.0 site=react_native_fb) This comment suppresses an error
- * found when Flow v0.89 was deployed. To see the error, delete this comment
- * and run Flow. */
-SliderWithRef.defaultProps = {
-  disabled: false,
-  value: 0,
-  minimumValue: 0,
-  maximumValue: 1,
-  step: 0,
-};
+const SliderWithRef: React.AbstractComponent<
+  Props,
+  React.ElementRef<typeof SliderNativeComponent>,
+> = React.forwardRef(Slider);
 
 let styles;
 if (Platform.OS === 'ios') {
@@ -267,7 +270,4 @@ if (Platform.OS === 'ios') {
   });
 }
 
-/* $FlowFixMe(>=0.89.0 site=react_native_fb) This comment suppresses an error
- * found when Flow v0.89 was deployed. To see the error, delete this comment
- * and run Flow. */
-module.exports = (SliderWithRef: Class<ReactNative.NativeComponent<Props>>);
+module.exports = SliderWithRef;

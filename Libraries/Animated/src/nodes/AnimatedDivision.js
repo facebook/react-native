@@ -7,6 +7,7 @@
  * @flow
  * @format
  */
+
 'use strict';
 
 const AnimatedInterpolation = require('./AnimatedInterpolation');
@@ -22,6 +23,9 @@ class AnimatedDivision extends AnimatedWithChildren {
 
   constructor(a: AnimatedNode | number, b: AnimatedNode | number) {
     super();
+    if (b === 0) {
+      console.error('Detected potential division by zero in AnimatedDivision');
+    }
     this._a = typeof a === 'number' ? new AnimatedValue(a) : a;
     this._b = typeof b === 'number' ? new AnimatedValue(b) : b;
   }

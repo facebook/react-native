@@ -7,14 +7,13 @@
  * @flow
  * @format
  */
+
 'use strict';
 
-const Image = require('Image');
-const React = require('React');
-const StyleSheet = require('StyleSheet');
-const View = require('View');
-
-const ensureComponentIsNative = require('ensureComponentIsNative');
+const Image = require('./Image');
+const React = require('react');
+const StyleSheet = require('../StyleSheet/StyleSheet');
+const View = require('../Components/View/View');
 
 /**
  * Very simple drop-in replacement for <Image> which supports nesting views.
@@ -28,7 +27,7 @@ const ensureComponentIsNative = require('ensureComponentIsNative');
  *     return (
  *       <ImageBackground
  *         style={{width: 50, height: 50}}
- *         source={{uri: 'https://facebook.github.io/react-native/img/opengraph.png'}}
+ *         source={{uri: 'https://reactnative.dev/img/opengraph.png'}}
  *       >
  *         <Text>React</Text>
  *       </ImageBackground>
@@ -45,7 +44,6 @@ class ImageBackground extends React.Component<$FlowFixMeProps> {
     // Work-around flow
     const viewRef = this._viewRef;
     if (viewRef) {
-      ensureComponentIsNative(viewRef);
       viewRef.setNativeProps(props);
     }
   }
@@ -56,7 +54,7 @@ class ImageBackground extends React.Component<$FlowFixMeProps> {
     this._viewRef = ref;
   };
 
-  render() {
+  render(): React.Node {
     const {children, style, imageStyle, imageRef, ...props} = this.props;
 
     return (

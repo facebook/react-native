@@ -11,7 +11,7 @@
 'use strict';
 
 describe('warnOnce', () => {
-  const warnOnce = require('warnOnce');
+  const warnOnce = require('../warnOnce');
 
   it('logs warning messages to the console exactly once', () => {
     console.error = jest.fn();

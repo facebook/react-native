@@ -1,13 +1,44 @@
 load("//tools/build_defs:fb_native_wrapper.bzl", "fb_native")
 
-fb_native.android_prebuilt_aar(
+fb_native.android_library(
     name = "soloader",
-    aar = ":soloader-binary-aar",
+    exported_deps = [
+        ":annotation-binary",
+        ":nativeloader-binary",
+        ":soloader-binary",
+    ],
     visibility = ["PUBLIC"],
+)
+
+fb_native.android_prebuilt_aar(
+    name = "annotation-binary",
+    aar = ":annotation-binary-aar",
+)
+
+fb_native.prebuilt_jar(
+    name = "nativeloader-binary",
+    binary_jar = ":nativeloader-binary.jar",
+)
+
+fb_native.android_prebuilt_aar(
+    name = "soloader-binary",
+    aar = ":soloader-binary-aar",
+)
+
+fb_native.remote_file(
+    name = "annotation-binary-aar",
+    sha1 = "ae6d46195467467fae746c6225f79ac41e7039e8",
+    url = "mvn:com.facebook.soloader:annotation:aar:0.8.2",
+)
+
+fb_native.remote_file(
+    name = "nativeloader-binary.jar",
+    sha1 = "86cb3da9384707034355ac1e84e9a8cf6de80f7c",
+    url = "mvn:com.facebook.soloader:nativeloader:jar:0.8.2",
 )
 
 fb_native.remote_file(
     name = "soloader-binary-aar",
-    sha1 = "4de8f64830aff60beb52fb27dffb2fcbe54c39df",
-    url = "mvn:com.facebook.soloader:soloader:aar:0.6.0",
+    sha1 = "8575dbdec464207a19273bd3c09d758a08fa655c",
+    url = "mvn:com.facebook.soloader:soloader:aar:0.8.2",
 )

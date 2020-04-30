@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -10,10 +10,10 @@
 #import <React/RCTFont.h>
 #import <React/RCTLog.h>
 
-#import "ARTLinearGradient.h"
-#import "ARTPattern.h"
-#import "ARTRadialGradient.h"
-#import "ARTSolidColor.h"
+#import <React/ARTLinearGradient.h>
+#import <React/ARTPattern.h>
+#import <React/ARTRadialGradient.h>
+#import <React/ARTSolidColor.h>
 
 @implementation RCTConvert (ART)
 

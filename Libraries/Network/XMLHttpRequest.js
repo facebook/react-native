@@ -10,13 +10,16 @@
 
 'use strict';
 
+const BlobManager = require('../Blob/BlobManager');
 const EventTarget = require('event-target-shim');
-const RCTNetworking = require('RCTNetworking');
+const GlobalPerformanceLogger = require('react-native/Libraries/Utilities/GlobalPerformanceLogger');
+const RCTNetworking = require('./RCTNetworking');
 
 const base64 = require('base64-js');
 const invariant = require('invariant');
 const warning = require('fbjs/lib/warning');
-const BlobManager = require('BlobManager');
+
+const DEBUG_NETWORK_SEND_DELAY: false = false; // Set to a number of milliseconds when debugging
 
 export type NativeResponseType = 'base64' | 'blob' | 'text';
 export type ResponseType =
@@ -39,6 +42,7 @@ type XHRInterceptor = {
   dataReceived(id: number, data: string): void,
   loadingFinished(id: number, encodedDataLength: number): void,
   loadingFailed(id: number, error: string): void,
+  ...
 };
 
 // The native blob module is optional so inject it here if available.
@@ -73,7 +77,7 @@ const REQUEST_EVENTS = [
 
 const XHR_EVENTS = REQUEST_EVENTS.concat('readystatechange');
 
-class XMLHttpRequestEventTarget extends EventTarget(...REQUEST_EVENTS) {
+class XMLHttpRequestEventTarget extends (EventTarget(...REQUEST_EVENTS): any) {
   onload: ?Function;
   onloadstart: ?Function;
   onprogress: ?Function;
@@ -86,7 +90,7 @@ class XMLHttpRequestEventTarget extends EventTarget(...REQUEST_EVENTS) {
 /**
  * Shared base for platform-specific XMLHttpRequest implementations.
  */
-class XMLHttpRequest extends EventTarget(...XHR_EVENTS) {
+class XMLHttpRequest extends (EventTarget(...XHR_EVENTS): any) {
   static UNSENT: number = UNSENT;
   static OPENED: number = OPENED;
   static HEADERS_RECEIVED: number = HEADERS_RECEIVED;
@@ -129,6 +133,7 @@ class XMLHttpRequest extends EventTarget(...XHR_EVENTS) {
   _headers: Object;
   _lowerCaseResponseHeaders: Object;
   _method: ?string = null;
+  _perfKey: ?string = null;
   _response: string | ?Object;
   _responseType: ResponseType;
   _response: string = '';
@@ -241,7 +246,7 @@ class XMLHttpRequest extends EventTarget(...XHR_EVENTS) {
         if (typeof this._response === 'object' && this._response) {
           this._cachedResponse = BlobManager.createFromOptions(this._response);
         } else if (this._response === '') {
-          this._cachedResponse = null;
+          this._cachedResponse = BlobManager.createFromParts([]);
         } else {
           throw new Error(`Invalid response for blob: ${this._response}`);
         }
@@ -298,6 +303,8 @@ class XMLHttpRequest extends EventTarget(...XHR_EVENTS) {
     responseURL: ?string,
   ): void {
     if (requestId === this._requestId) {
+      this._perfKey != null &&
+        GlobalPerformanceLogger.stopTimespan(this._perfKey);
       this.status = status;
       this.setResponseHeaders(responseHeaders);
       this.setReadyState(this.HEADERS_RECEIVED);
@@ -510,22 +517,41 @@ class XMLHttpRequest extends EventTarget(...XHR_EVENTS) {
       nativeResponseType = 'blob';
     }
 
-    invariant(this._method, 'Request method needs to be defined.');
-    invariant(this._url, 'Request URL needs to be defined.');
-    RCTNetworking.sendRequest(
-      this._method,
-      this._trackingName,
-      this._url,
-      this._headers,
-      data,
-      /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was found
-       * when making Flow check .android.js files. */
-      nativeResponseType,
-      incrementalEvents,
-      this.timeout,
-      this.__didCreateRequest.bind(this),
-      this.withCredentials,
-    );
+    const doSend = () => {
+      const friendlyName =
+        this._trackingName !== 'unknown' ? this._trackingName : this._url;
+      this._perfKey = 'network_XMLHttpRequest_' + String(friendlyName);
+      GlobalPerformanceLogger.startTimespan(this._perfKey);
+      invariant(
+        this._method,
+        'XMLHttpRequest method needs to be defined (%s).',
+        friendlyName,
+      );
+      invariant(
+        this._url,
+        'XMLHttpRequest URL needs to be defined (%s).',
+        friendlyName,
+      );
+      RCTNetworking.sendRequest(
+        this._method,
+        this._trackingName,
+        this._url,
+        this._headers,
+        data,
+        /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was found
+         * when making Flow check .android.js files. */
+        nativeResponseType,
+        incrementalEvents,
+        this.timeout,
+        this.__didCreateRequest.bind(this),
+        this.withCredentials,
+      );
+    };
+    if (DEBUG_NETWORK_SEND_DELAY) {
+      setTimeout(doSend, DEBUG_NETWORK_SEND_DELAY);
+    } else {
+      doSend();
+    }
   }
 
   abort(): void {

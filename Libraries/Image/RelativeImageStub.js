@@ -13,9 +13,9 @@
 // This is a stub for flow to make it understand require('./icon.png')
 // See metro/src/Bundler/index.js
 
-const AssetRegistry = require('AssetRegistry');
+const AssetRegistry = require('./AssetRegistry');
 
-module.exports = AssetRegistry.registerAsset({
+module.exports = (AssetRegistry.registerAsset({
   __packager_asset: true,
   fileSystemLocation: '/full/path/to/directory',
   httpServerLocation: '/assets/full/path/to/directory',
@@ -25,4 +25,4 @@ module.exports = AssetRegistry.registerAsset({
   hash: 'nonsense',
   name: 'icon',
   type: 'png',
-});
+}): number);

@@ -10,9 +10,9 @@
 
 'use strict';
 
-const StyleSheet = require('StyleSheet');
-const StyleSheetValidation = require('StyleSheetValidation');
-const flattenStyle = require('flattenStyle');
+const StyleSheet = require('../StyleSheet');
+const StyleSheetValidation = require('../StyleSheetValidation');
+const flattenStyle = require('../flattenStyle');
 
 function getFixture() {
   StyleSheetValidation.addValidStylePropTypes({

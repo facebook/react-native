@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -20,8 +20,7 @@ import com.facebook.react.uimanager.ThemedReactContext;
 @ReactModule(name = ReactVirtualTextViewManager.REACT_CLASS)
 public class ReactVirtualTextViewManager extends BaseViewManager<View, ReactVirtualTextShadowNode> {
 
-  @VisibleForTesting
-  public static final String REACT_CLASS = "RCTVirtualText";
+  @VisibleForTesting public static final String REACT_CLASS = "RCTVirtualText";
 
   @Override
   public String getName() {

@@ -9,6 +9,7 @@
  */
 
 /* eslint no-bitwise: 0 */
+
 'use strict';
 
 /**

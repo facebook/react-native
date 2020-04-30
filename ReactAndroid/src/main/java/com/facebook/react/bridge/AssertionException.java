@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -8,9 +8,9 @@
 package com.facebook.react.bridge;
 
 /**
- * Like {@link AssertionError} but extends RuntimeException so that it may be caught by a
- * {@link NativeModuleCallExceptionHandler}. See that class for more details. Used in
- * conjunction with {@link SoftAssertions}.
+ * Like {@link AssertionError} but extends RuntimeException so that it may be caught by a {@link
+ * NativeModuleCallExceptionHandler}. See that class for more details. Used in conjunction with
+ * {@link SoftAssertions}.
  */
 public class AssertionException extends RuntimeException {
 

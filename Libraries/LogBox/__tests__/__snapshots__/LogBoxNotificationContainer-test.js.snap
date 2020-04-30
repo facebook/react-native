@@ -1,0 +1,64 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`LogBoxNotificationContainer should render inspector with logs, even when disabled 1`] = `
+<View
+  style={
+    Object {
+      "bottom": 0,
+      "left": 0,
+      "position": "absolute",
+      "right": 0,
+      "top": 0,
+    }
+  }
+>
+  <LogBoxInspector
+    logs={
+      Array [
+        LogBoxLog {
+          "category": "Some kind of message",
+          "codeFrame": undefined,
+          "componentStack": Array [],
+          "count": 1,
+          "isComponentError": false,
+          "level": "warn",
+          "message": Object {
+            "content": "Some kind of message",
+            "substitutions": Array [],
+          },
+          "stack": Array [],
+          "symbolicated": Object {
+            "error": null,
+            "stack": null,
+            "status": "NONE",
+          },
+          "type": undefined,
+        },
+        LogBoxLog {
+          "category": "Some kind of message (latest)",
+          "codeFrame": undefined,
+          "componentStack": Array [],
+          "count": 1,
+          "isComponentError": false,
+          "level": "error",
+          "message": Object {
+            "content": "Some kind of message (latest)",
+            "substitutions": Array [],
+          },
+          "stack": Array [],
+          "symbolicated": Object {
+            "error": null,
+            "stack": null,
+            "status": "NONE",
+          },
+          "type": undefined,
+        },
+      ]
+    }
+    onChangeSelectedIndex={[Function]}
+    onDismiss={[Function]}
+    onMinimize={[Function]}
+    selectedIndex={-1}
+  />
+</View>
+`;

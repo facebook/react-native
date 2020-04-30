@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -35,6 +35,17 @@ void ViewEventEmitter::onAccessibilityEscape() const {
 #pragma mark - Layout
 
 void ViewEventEmitter::onLayout(const LayoutMetrics &layoutMetrics) const {
+  // Due to State Reconciliation, `onLayout` can be called potentially many
+  // times with identical layoutMetrics. Ensure that the JS event is only
+  // dispatched when the value changes.
+  {
+    std::lock_guard<std::mutex> guard(layoutMetricsMutex_);
+    if (lastLayoutMetrics_ == layoutMetrics) {
+      return;
+    }
+    lastLayoutMetrics_ = layoutMetrics;
+  }
+
   dispatchEvent("layout", [frame = layoutMetrics.frame](jsi::Runtime &runtime) {
     auto layout = jsi::Object(runtime);
     layout.setProperty(runtime, "x", frame.origin.x);

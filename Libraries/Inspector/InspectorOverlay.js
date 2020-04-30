@@ -10,15 +10,14 @@
 
 'use strict';
 
-const Dimensions = require('Dimensions');
-const ElementBox = require('ElementBox');
-const React = require('React');
-const StyleSheet = require('StyleSheet');
-const UIManager = require('UIManager');
-const View = require('View');
+const Dimensions = require('../Utilities/Dimensions');
+const ElementBox = require('./ElementBox');
+const React = require('react');
+const StyleSheet = require('../StyleSheet/StyleSheet');
+const View = require('../Components/View/View');
 
-import type {PressEvent} from 'CoreEventTypes';
-import type {ViewStyleProp} from 'StyleSheet';
+import type {ViewStyleProp} from '../StyleSheet/StyleSheet';
+import type {PressEvent} from '../Types/CoreEventTypes';
 
 type Inspected = $ReadOnly<{|
   frame?: Object,
@@ -27,32 +26,22 @@ type Inspected = $ReadOnly<{|
 
 type Props = $ReadOnly<{|
   inspected?: Inspected,
-  inspectedViewTag?: ?number,
-  onTouchViewTag: (tag: number, frame: Object, pointerY: number) => mixed,
+  onTouchPoint: (locationX: number, locationY: number) => void,
 |}>;
 
 class InspectorOverlay extends React.Component<Props> {
-  findViewForTouchEvent = (e: PressEvent) => {
+  findViewForTouchEvent: (e: PressEvent) => void = (e: PressEvent) => {
     const {locationX, locationY} = e.nativeEvent.touches[0];
-    UIManager.findSubviewIn(
-      this.props.inspectedViewTag,
-      [locationX, locationY],
-      (nativeViewTag, left, top, width, height) => {
-        this.props.onTouchViewTag(
-          nativeViewTag,
-          {left, top, width, height},
-          locationY,
-        );
-      },
-    );
+
+    this.props.onTouchPoint(locationX, locationY);
   };
 
-  shouldSetResponser = (e: PressEvent): boolean => {
+  shouldSetResponser: (e: PressEvent) => boolean = (e: PressEvent): boolean => {
     this.findViewForTouchEvent(e);
     return true;
   };
 
-  render() {
+  render(): React.Node {
     let content = null;
     if (this.props.inspected) {
       content = (

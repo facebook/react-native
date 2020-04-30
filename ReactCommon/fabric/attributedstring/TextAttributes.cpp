@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -154,6 +154,7 @@ TextAttributes TextAttributes::defaultTextAttributes() {
     textAttributes.foregroundColor = blackColor();
     textAttributes.backgroundColor = clearColor();
     textAttributes.fontSize = 14.0;
+    textAttributes.fontSizeMultiplier = 1.0;
     return textAttributes;
   }();
   return textAttributes;

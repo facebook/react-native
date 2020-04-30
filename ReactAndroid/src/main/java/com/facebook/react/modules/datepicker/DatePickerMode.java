@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -7,9 +7,7 @@
 
 package com.facebook.react.modules.datepicker;
 
-/**
- * Date picker modes
- */
+/** Date picker modes */
 public enum DatePickerMode {
   CALENDAR,
   SPINNER,

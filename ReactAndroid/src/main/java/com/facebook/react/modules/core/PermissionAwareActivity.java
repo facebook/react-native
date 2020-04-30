@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -10,28 +10,20 @@ package com.facebook.react.modules.core;
 import android.app.Activity;
 
 /**
- * Interface used to denote activities that can forward permission requests and call
- * {@link PermissionListener}s with the permission request results.
+ * Interface used to denote activities that can forward permission requests and call {@link
+ * PermissionListener}s with the permission request results.
  */
 public interface PermissionAwareActivity {
 
-  /**
-   * See {@link Activity#checkPermission}.
-   */
+  /** See {@link Activity#checkPermission}. */
   int checkPermission(String permission, int pid, int uid);
 
-  /**
-   * See {@link Activity#checkSelfPermission}.
-   */
+  /** See {@link Activity#checkSelfPermission}. */
   int checkSelfPermission(String permission);
 
-  /**
-   * See {@link Activity#shouldShowRequestPermissionRationale}.
-   */
+  /** See {@link Activity#shouldShowRequestPermissionRationale}. */
   boolean shouldShowRequestPermissionRationale(String permission);
 
-  /**
-   * See {@link Activity#requestPermissions}.
-   */
+  /** See {@link Activity#requestPermissions}. */
   void requestPermissions(String[] permissions, int requestCode, PermissionListener listener);
 }

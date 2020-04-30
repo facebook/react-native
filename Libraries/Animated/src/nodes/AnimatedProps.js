@@ -7,13 +7,14 @@
  * @flow
  * @format
  */
+
 'use strict';
 
 const {AnimatedEvent} = require('../AnimatedEvent');
 const AnimatedNode = require('./AnimatedNode');
 const AnimatedStyle = require('./AnimatedStyle');
 const NativeAnimatedHelper = require('../NativeAnimatedHelper');
-const ReactNative = require('ReactNative');
+const ReactNative = require('../../../Renderer/shims/ReactNative');
 
 const invariant = require('invariant');
 
@@ -146,11 +147,22 @@ class AnimatedProps extends AnimatedNode {
     );
   }
 
+  __restoreDefaultValues(): void {
+    // When using the native driver, view properties need to be restored to
+    // their default values manually since react no longer tracks them. This
+    // is needed to handle cases where a prop driven by native animated is removed
+    // after having been changed natively by an animation.
+    if (this.__isNative) {
+      NativeAnimatedHelper.API.restoreDefaultValues(this.__getNativeTag());
+    }
+  }
+
   __getNativeConfig(): Object {
     const propsConfig = {};
     for (const propKey in this._props) {
       const value = this._props[propKey];
       if (value instanceof AnimatedNode) {
+        value.__makeNative();
         propsConfig[propKey] = value.__getNativeTag();
       }
     }

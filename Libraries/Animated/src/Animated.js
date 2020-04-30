@@ -10,30 +10,41 @@
 
 'use strict';
 
-import Platform from 'Platform';
+import Platform from '../../Utilities/Platform';
+const View = require('../../Components/View/View');
+const React = require('react');
+import type {AnimatedComponentType} from './createAnimatedComponent';
 
-const AnimatedImplementation = Platform.isTesting
-  ? require('AnimatedMock')
-  : require('AnimatedImplementation');
+const AnimatedMock = require('./AnimatedMock');
+const AnimatedImplementation = require('./AnimatedImplementation');
+
+//TODO(T57411659): Remove the bridgeless check when Animated perf regressions are fixed.
+const Animated = ((Platform.isTesting ||
+(global.RN$Bridgeless && Platform.OS === 'ios')
+  ? AnimatedMock
+  : AnimatedImplementation): typeof AnimatedMock);
 
 module.exports = {
-  get FlatList() {
-    return require('AnimatedFlatList');
+  get FlatList(): any {
+    return require('./components/AnimatedFlatList');
   },
-  get Image() {
-    return require('AnimatedImage');
+  get Image(): any {
+    return require('./components/AnimatedImage');
   },
-  get ScrollView() {
-    return require('AnimatedScrollView');
+  get ScrollView(): any {
+    return require('./components/AnimatedScrollView');
   },
-  get SectionList() {
-    return require('AnimatedSectionList');
+  get SectionList(): any {
+    return require('./components/AnimatedSectionList');
   },
-  get Text() {
-    return require('AnimatedText');
+  get Text(): any {
+    return require('./components/AnimatedText');
   },
-  get View() {
-    return require('AnimatedView');
+  get View(): AnimatedComponentType<
+    React.ElementConfig<typeof View>,
+    React.ElementRef<typeof View>,
+  > {
+    return require('./components/AnimatedView');
   },
-  ...AnimatedImplementation,
+  ...Animated,
 };

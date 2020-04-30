@@ -1,0 +1,1331 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`GeneratePropsH can generate fixture ARRAY_PROPS 1`] = `
+Map {
+  "Props.h" => "
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+#pragma once
+
+#include <cinttypes>
+#include <react/components/view/ViewProps.h>
+#include <react/graphics/Color.h>
+#include <react/graphics/Geometry.h>
+#include <react/imagemanager/primitives.h>
+#include <vector>
+
+namespace facebook {
+namespace react {
+
+using ArrayPropsNativeComponentSizesMask = uint32_t;
+
+enum class ArrayPropsNativeComponentSizes: ArrayPropsNativeComponentSizesMask {
+  Small = 1 << 0,
+  Large = 1 << 1
+};
+
+constexpr bool operator&(
+  ArrayPropsNativeComponentSizesMask const lhs,
+  enum ArrayPropsNativeComponentSizes const rhs) {
+  return lhs & static_cast<ArrayPropsNativeComponentSizesMask>(rhs);
+}
+
+constexpr ArrayPropsNativeComponentSizesMask operator|(
+  ArrayPropsNativeComponentSizesMask const lhs,
+  enum ArrayPropsNativeComponentSizes const rhs) {
+  return lhs | static_cast<ArrayPropsNativeComponentSizesMask>(rhs);
+}
+
+constexpr void operator|=(
+  ArrayPropsNativeComponentSizesMask &lhs,
+  enum ArrayPropsNativeComponentSizes const rhs) {
+  lhs = lhs | static_cast<ArrayPropsNativeComponentSizesMask>(rhs);
+}
+
+static inline void fromRawValue(const RawValue &value, ArrayPropsNativeComponentSizesMask &result) {
+  auto items = std::vector<std::string>{value};
+  for (const auto &item : items) {
+    if (item == \\"small\\") {
+      result |= ArrayPropsNativeComponentSizes::Small;
+      continue;
+    }
+    if (item == \\"large\\") {
+      result |= ArrayPropsNativeComponentSizes::Large;
+      continue;
+    }
+    abort();
+  }
+}
+
+static inline std::string toString(const ArrayPropsNativeComponentSizesMask &value) {
+    auto result = std::string{};
+    auto separator = std::string{\\", \\"};
+
+    if (value & ArrayPropsNativeComponentSizes::Small) {
+      result += \\"small\\" + separator;
+    }
+    if (value & ArrayPropsNativeComponentSizes::Large) {
+      result += \\"large\\" + separator;
+    }
+    if (!result.empty()) {
+      result.erase(result.length() - separator.length());
+    }
+    return result;
+}
+struct ArrayPropsNativeComponentObjectStruct {
+  std::string stringProp;
+};
+
+static inline void fromRawValue(const RawValue &value, ArrayPropsNativeComponentObjectStruct &result) {
+  auto map = (better::map<std::string, RawValue>)value;
+
+  auto stringProp = map.find(\\"stringProp\\");
+  if (stringProp != map.end()) {
+    fromRawValue(stringProp->second, result.stringProp);
+  }
+}
+
+static inline std::string toString(const ArrayPropsNativeComponentObjectStruct &value) {
+  return \\"[Object ArrayPropsNativeComponentObjectStruct]\\";
+}
+
+static inline void fromRawValue(const RawValue &value, std::vector<ArrayPropsNativeComponentObjectStruct> &result) {
+  auto items = (std::vector<RawValue>)value;
+  for (const auto &item : items) {
+    ArrayPropsNativeComponentObjectStruct newItem;
+    fromRawValue(item, newItem);
+    result.emplace_back(newItem);
+  }
+}
+
+
+struct ArrayPropsNativeComponentArrayObjectStruct {
+  std::string stringProp;
+};
+
+static inline void fromRawValue(const RawValue &value, ArrayPropsNativeComponentArrayObjectStruct &result) {
+  auto map = (better::map<std::string, RawValue>)value;
+
+  auto stringProp = map.find(\\"stringProp\\");
+  if (stringProp != map.end()) {
+    fromRawValue(stringProp->second, result.stringProp);
+  }
+}
+
+static inline std::string toString(const ArrayPropsNativeComponentArrayObjectStruct &value) {
+  return \\"[Object ArrayPropsNativeComponentArrayObjectStruct]\\";
+}
+
+static inline void fromRawValue(const RawValue &value, std::vector<ArrayPropsNativeComponentArrayObjectStruct> &result) {
+  auto items = (std::vector<RawValue>)value;
+  for (const auto &item : items) {
+    ArrayPropsNativeComponentArrayObjectStruct newItem;
+    fromRawValue(item, newItem);
+    result.emplace_back(newItem);
+  }
+}
+
+
+struct ArrayPropsNativeComponentArrayStruct {
+  std::vector<ArrayPropsNativeComponentArrayObjectStruct> object;
+};
+
+static inline void fromRawValue(const RawValue &value, ArrayPropsNativeComponentArrayStruct &result) {
+  auto map = (better::map<std::string, RawValue>)value;
+
+  auto object = map.find(\\"object\\");
+  if (object != map.end()) {
+    fromRawValue(object->second, result.object);
+  }
+}
+
+static inline std::string toString(const ArrayPropsNativeComponentArrayStruct &value) {
+  return \\"[Object ArrayPropsNativeComponentArrayStruct]\\";
+}
+
+static inline void fromRawValue(const RawValue &value, std::vector<ArrayPropsNativeComponentArrayStruct> &result) {
+  auto items = (std::vector<RawValue>)value;
+  for (const auto &item : items) {
+    ArrayPropsNativeComponentArrayStruct newItem;
+    fromRawValue(item, newItem);
+    result.emplace_back(newItem);
+  }
+}
+
+
+struct ArrayPropsNativeComponentArrayOfArrayOfObjectStruct {
+  std::string stringProp;
+};
+
+static inline void fromRawValue(const RawValue &value, ArrayPropsNativeComponentArrayOfArrayOfObjectStruct &result) {
+  auto map = (better::map<std::string, RawValue>)value;
+
+  auto stringProp = map.find(\\"stringProp\\");
+  if (stringProp != map.end()) {
+    fromRawValue(stringProp->second, result.stringProp);
+  }
+}
+
+static inline std::string toString(const ArrayPropsNativeComponentArrayOfArrayOfObjectStruct &value) {
+  return \\"[Object ArrayPropsNativeComponentArrayOfArrayOfObjectStruct]\\";
+}
+
+static inline void fromRawValue(const RawValue &value, std::vector<std::vector<ArrayPropsNativeComponentArrayOfArrayOfObjectStruct>> &result) {
+  auto items = (std::vector<std::vector<RawValue>>)value;
+  for (const std::vector<RawValue> &item : items) {
+    auto nestedArray = std::vector<ArrayPropsNativeComponentArrayOfArrayOfObjectStruct>{};
+    for (const RawValue &nestedItem : item) {
+      ArrayPropsNativeComponentArrayOfArrayOfObjectStruct newItem;
+      fromRawValue(nestedItem, newItem);
+      nestedArray.emplace_back(newItem);
+    }
+    result.emplace_back(nestedArray);
+  }
+}
+
+class ArrayPropsNativeComponentProps final : public ViewProps {
+ public:
+  ArrayPropsNativeComponentProps() = default;
+  ArrayPropsNativeComponentProps(const ArrayPropsNativeComponentProps &sourceProps, const RawProps &rawProps);
+
+#pragma mark - Props
+
+  std::vector<std::string> names{};
+  std::vector<bool> disableds{};
+  std::vector<int> progress{};
+  std::vector<Float> radii{};
+  std::vector<SharedColor> colors{};
+  std::vector<ImageSource> srcs{};
+  std::vector<Point> points{};
+  ArrayPropsNativeComponentSizesMask sizes{static_cast<ArrayPropsNativeComponentSizesMask>(ArrayPropsNativeComponentSizes::Small)};
+  std::vector<ArrayPropsNativeComponentObjectStruct> object{};
+  std::vector<ArrayPropsNativeComponentArrayStruct> array{};
+  std::vector<std::vector<ArrayPropsNativeComponentArrayOfArrayOfObjectStruct>> arrayOfArrayOfObject{};
+};
+
+} // namespace react
+} // namespace facebook
+",
+}
+`;
+
+exports[`GeneratePropsH can generate fixture ARRAY_PROPS_WITH_NESTED_OBJECT 1`] = `
+Map {
+  "Props.h" => "
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+#pragma once
+
+#include <react/components/image/conversions.h>
+#include <react/components/view/ViewProps.h>
+#include <react/graphics/Color.h>
+#include <react/graphics/Geometry.h>
+#include <react/imagemanager/primitives.h>
+#include <vector>
+
+namespace facebook {
+namespace react {
+
+struct ArrayPropsNativeComponentNativePrimitivesStruct {
+  std::vector<SharedColor> colors;
+  std::vector<ImageSource> srcs;
+  std::vector<Point> points;
+};
+
+static inline void fromRawValue(const RawValue &value, ArrayPropsNativeComponentNativePrimitivesStruct &result) {
+  auto map = (better::map<std::string, RawValue>)value;
+
+  auto colors = map.find(\\"colors\\");
+  if (colors != map.end()) {
+    fromRawValue(colors->second, result.colors);
+  }
+  auto srcs = map.find(\\"srcs\\");
+  if (srcs != map.end()) {
+    fromRawValue(srcs->second, result.srcs);
+  }
+  auto points = map.find(\\"points\\");
+  if (points != map.end()) {
+    fromRawValue(points->second, result.points);
+  }
+}
+
+static inline std::string toString(const ArrayPropsNativeComponentNativePrimitivesStruct &value) {
+  return \\"[Object ArrayPropsNativeComponentNativePrimitivesStruct]\\";
+}
+
+static inline void fromRawValue(const RawValue &value, std::vector<ArrayPropsNativeComponentNativePrimitivesStruct> &result) {
+  auto items = (std::vector<RawValue>)value;
+  for (const auto &item : items) {
+    ArrayPropsNativeComponentNativePrimitivesStruct newItem;
+    fromRawValue(item, newItem);
+    result.emplace_back(newItem);
+  }
+}
+
+class ArrayPropsNativeComponentProps final : public ViewProps {
+ public:
+  ArrayPropsNativeComponentProps() = default;
+  ArrayPropsNativeComponentProps(const ArrayPropsNativeComponentProps &sourceProps, const RawProps &rawProps);
+
+#pragma mark - Props
+
+  std::vector<ArrayPropsNativeComponentNativePrimitivesStruct> nativePrimitives{};
+};
+
+} // namespace react
+} // namespace facebook
+",
+}
+`;
+
+exports[`GeneratePropsH can generate fixture BOOLEAN_PROP 1`] = `
+Map {
+  "Props.h" => "
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+#pragma once
+
+#include <react/components/view/ViewProps.h>
+
+namespace facebook {
+namespace react {
+
+class BooleanPropNativeComponentProps final : public ViewProps {
+ public:
+  BooleanPropNativeComponentProps() = default;
+  BooleanPropNativeComponentProps(const BooleanPropNativeComponentProps &sourceProps, const RawProps &rawProps);
+
+#pragma mark - Props
+
+  bool disabled{false};
+};
+
+} // namespace react
+} // namespace facebook
+",
+}
+`;
+
+exports[`GeneratePropsH can generate fixture COLOR_PROP 1`] = `
+Map {
+  "Props.h" => "
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+#pragma once
+
+#include <react/components/view/ViewProps.h>
+#include <react/graphics/Color.h>
+
+namespace facebook {
+namespace react {
+
+class ColorPropNativeComponentProps final : public ViewProps {
+ public:
+  ColorPropNativeComponentProps() = default;
+  ColorPropNativeComponentProps(const ColorPropNativeComponentProps &sourceProps, const RawProps &rawProps);
+
+#pragma mark - Props
+
+  SharedColor tintColor{};
+};
+
+} // namespace react
+} // namespace facebook
+",
+}
+`;
+
+exports[`GeneratePropsH can generate fixture COMMANDS 1`] = `
+Map {
+  "Props.h" => "
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+#pragma once
+
+#include <react/components/view/ViewProps.h>
+
+namespace facebook {
+namespace react {
+
+class CommandNativeComponentProps final : public ViewProps {
+ public:
+  CommandNativeComponentProps() = default;
+  CommandNativeComponentProps(const CommandNativeComponentProps &sourceProps, const RawProps &rawProps);
+
+#pragma mark - Props
+
+  
+};
+
+} // namespace react
+} // namespace facebook
+",
+}
+`;
+
+exports[`GeneratePropsH can generate fixture COMMANDS_AND_PROPS 1`] = `
+Map {
+  "Props.h" => "
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+#pragma once
+
+#include <react/components/view/ViewProps.h>
+
+namespace facebook {
+namespace react {
+
+class CommandNativeComponentProps final : public ViewProps {
+ public:
+  CommandNativeComponentProps() = default;
+  CommandNativeComponentProps(const CommandNativeComponentProps &sourceProps, const RawProps &rawProps);
+
+#pragma mark - Props
+
+  std::string accessibilityHint{\\"\\"};
+};
+
+} // namespace react
+} // namespace facebook
+",
+}
+`;
+
+exports[`GeneratePropsH can generate fixture DOUBLE_PROPS 1`] = `
+Map {
+  "Props.h" => "
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+#pragma once
+
+#include <react/components/view/ViewProps.h>
+
+namespace facebook {
+namespace react {
+
+class DoublePropNativeComponentProps final : public ViewProps {
+ public:
+  DoublePropNativeComponentProps() = default;
+  DoublePropNativeComponentProps(const DoublePropNativeComponentProps &sourceProps, const RawProps &rawProps);
+
+#pragma mark - Props
+
+  double blurRadius{0.0};
+  double blurRadius2{0.001};
+  double blurRadius3{2.1};
+  double blurRadius4{0.0};
+  double blurRadius5{1.0};
+  double blurRadius6{0.0};
+};
+
+} // namespace react
+} // namespace facebook
+",
+}
+`;
+
+exports[`GeneratePropsH can generate fixture EVENT_NESTED_OBJECT_PROPS 1`] = `
+Map {
+  "Props.h" => "
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+#pragma once
+
+#include <react/components/view/ViewProps.h>
+
+namespace facebook {
+namespace react {
+
+class EventsNestedObjectNativeComponentProps final : public ViewProps {
+ public:
+  EventsNestedObjectNativeComponentProps() = default;
+  EventsNestedObjectNativeComponentProps(const EventsNestedObjectNativeComponentProps &sourceProps, const RawProps &rawProps);
+
+#pragma mark - Props
+
+  bool disabled{false};
+};
+
+} // namespace react
+} // namespace facebook
+",
+}
+`;
+
+exports[`GeneratePropsH can generate fixture EVENT_PROPS 1`] = `
+Map {
+  "Props.h" => "
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+#pragma once
+
+#include <react/components/view/ViewProps.h>
+
+namespace facebook {
+namespace react {
+
+class EventsNativeComponentProps final : public ViewProps {
+ public:
+  EventsNativeComponentProps() = default;
+  EventsNativeComponentProps(const EventsNativeComponentProps &sourceProps, const RawProps &rawProps);
+
+#pragma mark - Props
+
+  bool disabled{false};
+};
+
+} // namespace react
+} // namespace facebook
+",
+}
+`;
+
+exports[`GeneratePropsH can generate fixture EVENTS_WITH_PAPER_NAME 1`] = `
+Map {
+  "Props.h" => "
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+#pragma once
+
+#include <react/components/view/ViewProps.h>
+
+namespace facebook {
+namespace react {
+
+class InterfaceOnlyComponentProps final : public ViewProps {
+ public:
+  InterfaceOnlyComponentProps() = default;
+  InterfaceOnlyComponentProps(const InterfaceOnlyComponentProps &sourceProps, const RawProps &rawProps);
+
+#pragma mark - Props
+
+  
+};
+
+} // namespace react
+} // namespace facebook
+",
+}
+`;
+
+exports[`GeneratePropsH can generate fixture EXCLUDE_ANDROID 1`] = `
+Map {
+  "Props.h" => "
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+#pragma once
+
+#include <react/components/view/ViewProps.h>
+
+namespace facebook {
+namespace react {
+
+class ExcludedAndroidComponentProps final : public ViewProps {
+ public:
+  ExcludedAndroidComponentProps() = default;
+  ExcludedAndroidComponentProps(const ExcludedAndroidComponentProps &sourceProps, const RawProps &rawProps);
+
+#pragma mark - Props
+
+  
+};
+
+} // namespace react
+} // namespace facebook
+",
+}
+`;
+
+exports[`GeneratePropsH can generate fixture FLOAT_PROPS 1`] = `
+Map {
+  "Props.h" => "
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+#pragma once
+
+#include <react/components/view/ViewProps.h>
+
+namespace facebook {
+namespace react {
+
+class FloatPropNativeComponentProps final : public ViewProps {
+ public:
+  FloatPropNativeComponentProps() = default;
+  FloatPropNativeComponentProps(const FloatPropNativeComponentProps &sourceProps, const RawProps &rawProps);
+
+#pragma mark - Props
+
+  Float blurRadius{0.0};
+  Float blurRadius2{0.001};
+  Float blurRadius3{2.1};
+  Float blurRadius4{0.0};
+  Float blurRadius5{1.0};
+  Float blurRadius6{0.0};
+};
+
+} // namespace react
+} // namespace facebook
+",
+}
+`;
+
+exports[`GeneratePropsH can generate fixture IMAGE_PROP 1`] = `
+Map {
+  "Props.h" => "
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+#pragma once
+
+#include <react/components/view/ViewProps.h>
+#include <react/imagemanager/primitives.h>
+
+namespace facebook {
+namespace react {
+
+class ImagePropNativeComponentProps final : public ViewProps {
+ public:
+  ImagePropNativeComponentProps() = default;
+  ImagePropNativeComponentProps(const ImagePropNativeComponentProps &sourceProps, const RawProps &rawProps);
+
+#pragma mark - Props
+
+  ImageSource thumbImage{};
+};
+
+} // namespace react
+} // namespace facebook
+",
+}
+`;
+
+exports[`GeneratePropsH can generate fixture INSETS_PROP 1`] = `
+Map {
+  "Props.h" => "
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+#pragma once
+
+#include <react/components/view/ViewProps.h>
+#include <react/graphics/Geometry.h>
+
+namespace facebook {
+namespace react {
+
+class InsetsPropNativeComponentProps final : public ViewProps {
+ public:
+  InsetsPropNativeComponentProps() = default;
+  InsetsPropNativeComponentProps(const InsetsPropNativeComponentProps &sourceProps, const RawProps &rawProps);
+
+#pragma mark - Props
+
+  EdgeInsets contentInset{};
+};
+
+} // namespace react
+} // namespace facebook
+",
+}
+`;
+
+exports[`GeneratePropsH can generate fixture INT32_ENUM_PROP 1`] = `
+Map {
+  "Props.h" => "
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+#pragma once
+
+#include <react/components/view/ViewProps.h>
+
+namespace facebook {
+namespace react {
+
+enum class Int32EnumPropsNativeComponentMaxInterval { MaxInterval0 = 0, MaxInterval1 = 1, MaxInterval2 = 2 };
+
+static inline void fromRawValue(const RawValue &value, Int32EnumPropsNativeComponentMaxInterval &result) {
+  assert(value.hasType<int>());
+  auto integerValue = (int)value;
+  switch (integerValue) {
+    case 0:
+      result = Int32EnumPropsNativeComponentMaxInterval::MaxInterval0;
+      return;
+    case 1:
+      result = Int32EnumPropsNativeComponentMaxInterval::MaxInterval1;
+      return;
+    case 2:
+      result = Int32EnumPropsNativeComponentMaxInterval::MaxInterval2;
+      return;
+  }
+  abort();
+}
+
+static inline std::string toString(const Int32EnumPropsNativeComponentMaxInterval &value) {
+  switch (value) {
+    case Int32EnumPropsNativeComponentMaxInterval::MaxInterval0: return \\"0\\";
+    case Int32EnumPropsNativeComponentMaxInterval::MaxInterval1: return \\"1\\";
+    case Int32EnumPropsNativeComponentMaxInterval::MaxInterval2: return \\"2\\";
+  }
+}
+
+class Int32EnumPropsNativeComponentProps final : public ViewProps {
+ public:
+  Int32EnumPropsNativeComponentProps() = default;
+  Int32EnumPropsNativeComponentProps(const Int32EnumPropsNativeComponentProps &sourceProps, const RawProps &rawProps);
+
+#pragma mark - Props
+
+  Int32EnumPropsNativeComponentMaxInterval maxInterval{Int32EnumPropsNativeComponentMaxInterval::MaxInterval0};
+};
+
+} // namespace react
+} // namespace facebook
+",
+}
+`;
+
+exports[`GeneratePropsH can generate fixture INTEGER_PROPS 1`] = `
+Map {
+  "Props.h" => "
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+#pragma once
+
+#include <react/components/view/ViewProps.h>
+
+namespace facebook {
+namespace react {
+
+class IntegerPropNativeComponentProps final : public ViewProps {
+ public:
+  IntegerPropNativeComponentProps() = default;
+  IntegerPropNativeComponentProps(const IntegerPropNativeComponentProps &sourceProps, const RawProps &rawProps);
+
+#pragma mark - Props
+
+  int progress1{0};
+  int progress2{-1};
+  int progress3{10};
+};
+
+} // namespace react
+} // namespace facebook
+",
+}
+`;
+
+exports[`GeneratePropsH can generate fixture INTERFACE_ONLY 1`] = `
+Map {
+  "Props.h" => "
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+#pragma once
+
+#include <react/components/view/ViewProps.h>
+
+namespace facebook {
+namespace react {
+
+class InterfaceOnlyComponentProps final : public ViewProps {
+ public:
+  InterfaceOnlyComponentProps() = default;
+  InterfaceOnlyComponentProps(const InterfaceOnlyComponentProps &sourceProps, const RawProps &rawProps);
+
+#pragma mark - Props
+
+  std::string accessibilityHint{\\"\\"};
+};
+
+} // namespace react
+} // namespace facebook
+",
+}
+`;
+
+exports[`GeneratePropsH can generate fixture MULTI_NATIVE_PROP 1`] = `
+Map {
+  "Props.h" => "
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+#pragma once
+
+#include <react/components/view/ViewProps.h>
+#include <react/graphics/Color.h>
+#include <react/graphics/Geometry.h>
+#include <react/imagemanager/primitives.h>
+
+namespace facebook {
+namespace react {
+
+class ImageColorPropNativeComponentProps final : public ViewProps {
+ public:
+  ImageColorPropNativeComponentProps() = default;
+  ImageColorPropNativeComponentProps(const ImageColorPropNativeComponentProps &sourceProps, const RawProps &rawProps);
+
+#pragma mark - Props
+
+  ImageSource thumbImage{};
+  SharedColor color{};
+  SharedColor thumbTintColor{};
+  Point point{};
+};
+
+} // namespace react
+} // namespace facebook
+",
+}
+`;
+
+exports[`GeneratePropsH can generate fixture NO_PROPS_NO_EVENTS 1`] = `
+Map {
+  "Props.h" => "
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+#pragma once
+
+#include <react/components/view/ViewProps.h>
+
+namespace facebook {
+namespace react {
+
+class NoPropsNoEventsComponentProps final : public ViewProps {
+ public:
+  NoPropsNoEventsComponentProps() = default;
+  NoPropsNoEventsComponentProps(const NoPropsNoEventsComponentProps &sourceProps, const RawProps &rawProps);
+
+#pragma mark - Props
+
+  
+};
+
+} // namespace react
+} // namespace facebook
+",
+}
+`;
+
+exports[`GeneratePropsH can generate fixture OBJECT_PROPS 1`] = `
+Map {
+  "Props.h" => "
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+#pragma once
+
+#include <react/components/image/conversions.h>
+#include <react/components/view/ViewProps.h>
+#include <react/core/propsConversions.h>
+#include <react/graphics/Color.h>
+#include <react/graphics/Geometry.h>
+#include <react/imagemanager/primitives.h>
+#include <vector>
+
+namespace facebook {
+namespace react {
+
+enum class ObjectPropsStringEnumProp { Option1 };
+
+static inline void fromRawValue(const RawValue &value, ObjectPropsStringEnumProp &result) {
+  auto string = (std::string)value;
+  if (string == \\"option1\\") { result = ObjectPropsStringEnumProp::Option1; return; }
+  abort();
+}
+
+static inline std::string toString(const ObjectPropsStringEnumProp &value) {
+  switch (value) {
+    case ObjectPropsStringEnumProp::Option1: return \\"option1\\";
+  }
+}
+enum class ObjectPropsIntEnumProp { IntEnumProp0 = 0 };
+
+static inline void fromRawValue(const RawValue &value, ObjectPropsIntEnumProp &result) {
+  assert(value.hasType<int>());
+  auto integerValue = (int)value;
+  switch (integerValue) {
+    case 0:
+      result = ObjectPropsIntEnumProp::IntEnumProp0;
+      return;
+  }
+  abort();
+}
+
+static inline std::string toString(const ObjectPropsIntEnumProp &value) {
+  switch (value) {
+    case ObjectPropsIntEnumProp::IntEnumProp0: return \\"0\\";
+  }
+}
+struct ObjectPropsObjectPropObjectArrayPropStruct {
+  std::vector<std::string> array;
+};
+
+static inline void fromRawValue(const RawValue &value, ObjectPropsObjectPropObjectArrayPropStruct &result) {
+  auto map = (better::map<std::string, RawValue>)value;
+
+  auto array = map.find(\\"array\\");
+  if (array != map.end()) {
+    fromRawValue(array->second, result.array);
+  }
+}
+
+static inline std::string toString(const ObjectPropsObjectPropObjectArrayPropStruct &value) {
+  return \\"[Object ObjectPropsObjectPropObjectArrayPropStruct]\\";
+}
+
+struct ObjectPropsObjectPropObjectPrimitiveRequiredPropStruct {
+  ImageSource image;
+  SharedColor color;
+  Point point;
+};
+
+static inline void fromRawValue(const RawValue &value, ObjectPropsObjectPropObjectPrimitiveRequiredPropStruct &result) {
+  auto map = (better::map<std::string, RawValue>)value;
+
+  auto image = map.find(\\"image\\");
+  if (image != map.end()) {
+    fromRawValue(image->second, result.image);
+  }
+  auto color = map.find(\\"color\\");
+  if (color != map.end()) {
+    fromRawValue(color->second, result.color);
+  }
+  auto point = map.find(\\"point\\");
+  if (point != map.end()) {
+    fromRawValue(point->second, result.point);
+  }
+}
+
+static inline std::string toString(const ObjectPropsObjectPropObjectPrimitiveRequiredPropStruct &value) {
+  return \\"[Object ObjectPropsObjectPropObjectPrimitiveRequiredPropStruct]\\";
+}
+
+struct ObjectPropsObjectPropNestedPropANestedPropBStruct {
+  std::string nestedPropC;
+};
+
+static inline void fromRawValue(const RawValue &value, ObjectPropsObjectPropNestedPropANestedPropBStruct &result) {
+  auto map = (better::map<std::string, RawValue>)value;
+
+  auto nestedPropC = map.find(\\"nestedPropC\\");
+  if (nestedPropC != map.end()) {
+    fromRawValue(nestedPropC->second, result.nestedPropC);
+  }
+}
+
+static inline std::string toString(const ObjectPropsObjectPropNestedPropANestedPropBStruct &value) {
+  return \\"[Object ObjectPropsObjectPropNestedPropANestedPropBStruct]\\";
+}
+
+struct ObjectPropsObjectPropNestedPropAStruct {
+  ObjectPropsObjectPropNestedPropANestedPropBStruct nestedPropB;
+};
+
+static inline void fromRawValue(const RawValue &value, ObjectPropsObjectPropNestedPropAStruct &result) {
+  auto map = (better::map<std::string, RawValue>)value;
+
+  auto nestedPropB = map.find(\\"nestedPropB\\");
+  if (nestedPropB != map.end()) {
+    fromRawValue(nestedPropB->second, result.nestedPropB);
+  }
+}
+
+static inline std::string toString(const ObjectPropsObjectPropNestedPropAStruct &value) {
+  return \\"[Object ObjectPropsObjectPropNestedPropAStruct]\\";
+}
+
+struct ObjectPropsObjectPropNestedArrayAsPropertyArrayPropStruct {
+  std::string stringProp;
+};
+
+static inline void fromRawValue(const RawValue &value, ObjectPropsObjectPropNestedArrayAsPropertyArrayPropStruct &result) {
+  auto map = (better::map<std::string, RawValue>)value;
+
+  auto stringProp = map.find(\\"stringProp\\");
+  if (stringProp != map.end()) {
+    fromRawValue(stringProp->second, result.stringProp);
+  }
+}
+
+static inline std::string toString(const ObjectPropsObjectPropNestedArrayAsPropertyArrayPropStruct &value) {
+  return \\"[Object ObjectPropsObjectPropNestedArrayAsPropertyArrayPropStruct]\\";
+}
+
+static inline void fromRawValue(const RawValue &value, std::vector<ObjectPropsObjectPropNestedArrayAsPropertyArrayPropStruct> &result) {
+  auto items = (std::vector<RawValue>)value;
+  for (const auto &item : items) {
+    ObjectPropsObjectPropNestedArrayAsPropertyArrayPropStruct newItem;
+    fromRawValue(item, newItem);
+    result.emplace_back(newItem);
+  }
+}
+
+
+struct ObjectPropsObjectPropNestedArrayAsPropertyStruct {
+  std::vector<ObjectPropsObjectPropNestedArrayAsPropertyArrayPropStruct> arrayProp;
+};
+
+static inline void fromRawValue(const RawValue &value, ObjectPropsObjectPropNestedArrayAsPropertyStruct &result) {
+  auto map = (better::map<std::string, RawValue>)value;
+
+  auto arrayProp = map.find(\\"arrayProp\\");
+  if (arrayProp != map.end()) {
+    fromRawValue(arrayProp->second, result.arrayProp);
+  }
+}
+
+static inline std::string toString(const ObjectPropsObjectPropNestedArrayAsPropertyStruct &value) {
+  return \\"[Object ObjectPropsObjectPropNestedArrayAsPropertyStruct]\\";
+}
+
+struct ObjectPropsObjectPropStruct {
+  std::string stringProp;
+  bool booleanProp;
+  Float floatProp;
+  int intProp;
+  ObjectPropsStringEnumProp stringEnumProp;
+  ObjectPropsIntEnumProp intEnumProp;
+  ObjectPropsObjectPropObjectArrayPropStruct objectArrayProp;
+  ObjectPropsObjectPropObjectPrimitiveRequiredPropStruct objectPrimitiveRequiredProp;
+  ObjectPropsObjectPropNestedPropAStruct nestedPropA;
+  ObjectPropsObjectPropNestedArrayAsPropertyStruct nestedArrayAsProperty;
+};
+
+static inline void fromRawValue(const RawValue &value, ObjectPropsObjectPropStruct &result) {
+  auto map = (better::map<std::string, RawValue>)value;
+
+  auto stringProp = map.find(\\"stringProp\\");
+  if (stringProp != map.end()) {
+    fromRawValue(stringProp->second, result.stringProp);
+  }
+  auto booleanProp = map.find(\\"booleanProp\\");
+  if (booleanProp != map.end()) {
+    fromRawValue(booleanProp->second, result.booleanProp);
+  }
+  auto floatProp = map.find(\\"floatProp\\");
+  if (floatProp != map.end()) {
+    fromRawValue(floatProp->second, result.floatProp);
+  }
+  auto intProp = map.find(\\"intProp\\");
+  if (intProp != map.end()) {
+    fromRawValue(intProp->second, result.intProp);
+  }
+  auto stringEnumProp = map.find(\\"stringEnumProp\\");
+  if (stringEnumProp != map.end()) {
+    fromRawValue(stringEnumProp->second, result.stringEnumProp);
+  }
+  auto intEnumProp = map.find(\\"intEnumProp\\");
+  if (intEnumProp != map.end()) {
+    fromRawValue(intEnumProp->second, result.intEnumProp);
+  }
+  auto objectArrayProp = map.find(\\"objectArrayProp\\");
+  if (objectArrayProp != map.end()) {
+    fromRawValue(objectArrayProp->second, result.objectArrayProp);
+  }
+  auto objectPrimitiveRequiredProp = map.find(\\"objectPrimitiveRequiredProp\\");
+  if (objectPrimitiveRequiredProp != map.end()) {
+    fromRawValue(objectPrimitiveRequiredProp->second, result.objectPrimitiveRequiredProp);
+  }
+  auto nestedPropA = map.find(\\"nestedPropA\\");
+  if (nestedPropA != map.end()) {
+    fromRawValue(nestedPropA->second, result.nestedPropA);
+  }
+  auto nestedArrayAsProperty = map.find(\\"nestedArrayAsProperty\\");
+  if (nestedArrayAsProperty != map.end()) {
+    fromRawValue(nestedArrayAsProperty->second, result.nestedArrayAsProperty);
+  }
+}
+
+static inline std::string toString(const ObjectPropsObjectPropStruct &value) {
+  return \\"[Object ObjectPropsObjectPropStruct]\\";
+}
+class ObjectPropsProps final : public ViewProps {
+ public:
+  ObjectPropsProps() = default;
+  ObjectPropsProps(const ObjectPropsProps &sourceProps, const RawProps &rawProps);
+
+#pragma mark - Props
+
+  ObjectPropsObjectPropStruct objectProp{};
+};
+
+} // namespace react
+} // namespace facebook
+",
+}
+`;
+
+exports[`GeneratePropsH can generate fixture POINT_PROP 1`] = `
+Map {
+  "Props.h" => "
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+#pragma once
+
+#include <react/components/view/ViewProps.h>
+#include <react/graphics/Geometry.h>
+
+namespace facebook {
+namespace react {
+
+class PointPropNativeComponentProps final : public ViewProps {
+ public:
+  PointPropNativeComponentProps() = default;
+  PointPropNativeComponentProps(const PointPropNativeComponentProps &sourceProps, const RawProps &rawProps);
+
+#pragma mark - Props
+
+  Point startPoint{};
+};
+
+} // namespace react
+} // namespace facebook
+",
+}
+`;
+
+exports[`GeneratePropsH can generate fixture STRING_ENUM_PROP 1`] = `
+Map {
+  "Props.h" => "
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+#pragma once
+
+#include <react/components/view/ViewProps.h>
+
+namespace facebook {
+namespace react {
+
+enum class StringEnumPropsNativeComponentAlignment { Top, Center, BottomRight };
+
+static inline void fromRawValue(const RawValue &value, StringEnumPropsNativeComponentAlignment &result) {
+  auto string = (std::string)value;
+  if (string == \\"top\\") { result = StringEnumPropsNativeComponentAlignment::Top; return; }
+  if (string == \\"center\\") { result = StringEnumPropsNativeComponentAlignment::Center; return; }
+  if (string == \\"bottom-right\\") { result = StringEnumPropsNativeComponentAlignment::BottomRight; return; }
+  abort();
+}
+
+static inline std::string toString(const StringEnumPropsNativeComponentAlignment &value) {
+  switch (value) {
+    case StringEnumPropsNativeComponentAlignment::Top: return \\"top\\";
+    case StringEnumPropsNativeComponentAlignment::Center: return \\"center\\";
+    case StringEnumPropsNativeComponentAlignment::BottomRight: return \\"bottom-right\\";
+  }
+}
+
+class StringEnumPropsNativeComponentProps final : public ViewProps {
+ public:
+  StringEnumPropsNativeComponentProps() = default;
+  StringEnumPropsNativeComponentProps(const StringEnumPropsNativeComponentProps &sourceProps, const RawProps &rawProps);
+
+#pragma mark - Props
+
+  StringEnumPropsNativeComponentAlignment alignment{StringEnumPropsNativeComponentAlignment::Center};
+};
+
+} // namespace react
+} // namespace facebook
+",
+}
+`;
+
+exports[`GeneratePropsH can generate fixture STRING_PROP 1`] = `
+Map {
+  "Props.h" => "
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+#pragma once
+
+#include <react/components/view/ViewProps.h>
+
+namespace facebook {
+namespace react {
+
+class StringPropComponentProps final : public ViewProps {
+ public:
+  StringPropComponentProps() = default;
+  StringPropComponentProps(const StringPropComponentProps &sourceProps, const RawProps &rawProps);
+
+#pragma mark - Props
+
+  std::string accessibilityHint{\\"\\"};
+  std::string accessibilityRole{};
+};
+
+} // namespace react
+} // namespace facebook
+",
+}
+`;
+
+exports[`GeneratePropsH can generate fixture TWO_COMPONENTS_DIFFERENT_FILES 1`] = `
+Map {
+  "Props.h" => "
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+#pragma once
+
+#include <react/components/view/ViewProps.h>
+
+namespace facebook {
+namespace react {
+
+class MultiFile1NativeComponentProps final : public ViewProps {
+ public:
+  MultiFile1NativeComponentProps() = default;
+  MultiFile1NativeComponentProps(const MultiFile1NativeComponentProps &sourceProps, const RawProps &rawProps);
+
+#pragma mark - Props
+
+  bool disabled{false};
+};
+
+class MultiFile2NativeComponentProps final : public ViewProps {
+ public:
+  MultiFile2NativeComponentProps() = default;
+  MultiFile2NativeComponentProps(const MultiFile2NativeComponentProps &sourceProps, const RawProps &rawProps);
+
+#pragma mark - Props
+
+  bool disabled{true};
+};
+
+} // namespace react
+} // namespace facebook
+",
+}
+`;
+
+exports[`GeneratePropsH can generate fixture TWO_COMPONENTS_SAME_FILE 1`] = `
+Map {
+  "Props.h" => "
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+#pragma once
+
+#include <react/components/view/ViewProps.h>
+
+namespace facebook {
+namespace react {
+
+class MultiComponent1NativeComponentProps final : public ViewProps {
+ public:
+  MultiComponent1NativeComponentProps() = default;
+  MultiComponent1NativeComponentProps(const MultiComponent1NativeComponentProps &sourceProps, const RawProps &rawProps);
+
+#pragma mark - Props
+
+  bool disabled{false};
+};
+
+class MultiComponent2NativeComponentProps final : public ViewProps {
+ public:
+  MultiComponent2NativeComponentProps() = default;
+  MultiComponent2NativeComponentProps(const MultiComponent2NativeComponentProps &sourceProps, const RawProps &rawProps);
+
+#pragma mark - Props
+
+  bool disabled{true};
+};
+
+} // namespace react
+} // namespace facebook
+",
+}
+`;

@@ -1,11 +1,11 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
 
-#import "RCTTextAttributes.h"
+#import <React/RCTTextAttributes.h>
 
 #import <React/RCTAssert.h>
 #import <React/RCTFont.h>
@@ -37,7 +37,7 @@ NSString *const RCTTextAttributesTagAttributeName = @"RCTTextAttributesTagAttrib
 
 - (void)applyTextAttributes:(RCTTextAttributes *)textAttributes
 {
-  // Note: All lines marked with `*` does not use explicit/correct rules to compare old and new values becuase
+  // Note: All lines marked with `*` does not use explicit/correct rules to compare old and new values because
   // their types do not have special designated value representing undefined/unspecified/inherit meaning.
   // We will address this in the future.
 
@@ -170,7 +170,7 @@ NSString *const RCTTextAttributesTagAttributeName = @"RCTTextAttributesTagAttrib
   }
 
   // Shadow
-  if (!CGSizeEqualToSize(_textShadowOffset, CGSizeZero)) {
+  if (!isnan(_textShadowRadius)) {
     NSShadow *shadow = [NSShadow new];
     shadow.shadowOffset = _textShadowOffset;
     shadow.shadowBlurRadius = _textShadowRadius;

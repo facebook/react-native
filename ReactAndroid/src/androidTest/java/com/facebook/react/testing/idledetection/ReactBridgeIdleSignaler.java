@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -7,10 +7,9 @@
 
 package com.facebook.react.testing.idledetection;
 
+import com.facebook.react.bridge.NotThreadSafeBridgeIdleDebugListener;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
-
-import com.facebook.react.bridge.NotThreadSafeBridgeIdleDebugListener;
 
 /**
  * Utility class that uses {@link NotThreadSafeBridgeIdleDebugListener} interface to allow callers

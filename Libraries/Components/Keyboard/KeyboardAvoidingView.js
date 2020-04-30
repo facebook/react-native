@@ -10,17 +10,21 @@
 
 'use strict';
 
-const Keyboard = require('Keyboard');
-const LayoutAnimation = require('LayoutAnimation');
-const Platform = require('Platform');
-const React = require('React');
-const StyleSheet = require('StyleSheet');
-const View = require('View');
+const Keyboard = require('./Keyboard');
+const LayoutAnimation = require('../../LayoutAnimation/LayoutAnimation');
+const Platform = require('../../Utilities/Platform');
+const React = require('react');
+const StyleSheet = require('../../StyleSheet/StyleSheet');
+const View = require('../View/View');
 
-import type EmitterSubscription from 'EmitterSubscription';
-import type {ViewStyleProp} from 'StyleSheet';
-import type {ViewProps, ViewLayout, ViewLayoutEvent} from 'ViewPropTypes';
-import type {KeyboardEvent} from 'Keyboard';
+import type {ViewStyleProp} from '../../StyleSheet/StyleSheet';
+import type EmitterSubscription from '../../vendor/emitter/EmitterSubscription';
+import type {
+  ViewProps,
+  ViewLayout,
+  ViewLayoutEvent,
+} from '../View/ViewPropTypes';
+import type {KeyboardEvent} from './Keyboard';
 
 type Props = $ReadOnly<{|
   ...ViewProps,
@@ -57,14 +61,14 @@ type State = {|
  * adjusting its height, position, or bottom padding.
  */
 class KeyboardAvoidingView extends React.Component<Props, State> {
-  static defaultProps = {
+  static defaultProps: {|enabled: boolean, keyboardVerticalOffset: number|} = {
     enabled: true,
     keyboardVerticalOffset: 0,
   };
 
   _frame: ?ViewLayout = null;
   _subscriptions: Array<EmitterSubscription> = [];
-  viewRef: {current: React.ElementRef<any> | null};
+  viewRef: {current: React.ElementRef<any> | null, ...};
   _initialFrameHeight: number = 0;
 
   constructor(props: Props) {
@@ -166,10 +170,7 @@ class KeyboardAvoidingView extends React.Component<Props, State> {
         return (
           <View
             ref={this.viewRef}
-            style={StyleSheet.compose(
-              style,
-              heightStyle,
-            )}
+            style={StyleSheet.compose(style, heightStyle)}
             onLayout={this._onLayout}
             {...props}>
             {children}
@@ -184,12 +185,9 @@ class KeyboardAvoidingView extends React.Component<Props, State> {
             onLayout={this._onLayout}
             {...props}>
             <View
-              style={StyleSheet.compose(
-                contentContainerStyle,
-                {
-                  bottom: bottomHeight,
-                },
-              )}>
+              style={StyleSheet.compose(contentContainerStyle, {
+                bottom: bottomHeight,
+              })}>
               {children}
             </View>
           </View>
@@ -199,10 +197,7 @@ class KeyboardAvoidingView extends React.Component<Props, State> {
         return (
           <View
             ref={this.viewRef}
-            style={StyleSheet.compose(
-              style,
-              {paddingBottom: bottomHeight},
-            )}
+            style={StyleSheet.compose(style, {paddingBottom: bottomHeight})}
             onLayout={this._onLayout}
             {...props}>
             {children}

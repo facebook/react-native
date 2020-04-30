@@ -1,7 +1,9 @@
-// Copyright (c) Facebook, Inc. and its affiliates.
-
-// This source code is licensed under the MIT license found in the
-// LICENSE file in the root directory of this source tree.
+/*
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
 
 package com.facebook.react.bridge;
 
@@ -11,18 +13,16 @@ import com.facebook.proguard.annotations.DoNotStrip;
 /**
  * A Java Object which represents a cross-platform C++ module
  *
- * This module implements the NativeModule interface but will never be invoked from Java,
- * instead the underlying Cxx module will be extracted by the bridge and called directly.
+ * <p>This module implements the NativeModule interface but will never be invoked from Java, instead
+ * the underlying Cxx module will be extracted by the bridge and called directly.
  */
 @DoNotStrip
-public class CxxModuleWrapperBase implements NativeModule
-{
+public class CxxModuleWrapperBase implements NativeModule {
   static {
     ReactBridge.staticInit();
   }
 
-  @DoNotStrip
-  private HybridData mHybridData;
+  @DoNotStrip private HybridData mHybridData;
 
   @Override
   public native String getName();

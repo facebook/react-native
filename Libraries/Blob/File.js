@@ -7,13 +7,14 @@
  * @flow
  * @format
  */
+
 'use strict';
 
-const Blob = require('Blob');
+const Blob = require('./Blob');
 
 const invariant = require('invariant');
 
-import type {BlobOptions} from 'BlobTypes';
+import type {BlobOptions} from './BlobTypes';
 
 /**
  * The File interface provides information about files.

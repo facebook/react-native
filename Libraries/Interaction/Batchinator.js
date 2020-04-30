@@ -10,7 +10,7 @@
 
 'use strict';
 
-const InteractionManager = require('InteractionManager');
+const InteractionManager = require('./InteractionManager');
 
 /**
  * A simple class for batching up invocations of a low-pri callback. A timeout is set to run the
@@ -37,7 +37,7 @@ const InteractionManager = require('InteractionManager');
 class Batchinator {
   _callback: () => void;
   _delay: number;
-  _taskHandle: ?{cancel: () => void};
+  _taskHandle: ?{cancel: () => void, ...};
   constructor(callback: () => void, delayMS: number) {
     this._delay = delayMS;
     this._callback = callback;
@@ -48,7 +48,7 @@ class Batchinator {
    * By default, if there is a pending task the callback is run immediately. Set the option abort to
    * true to not call the callback if it was pending.
    */
-  dispose(options: {abort: boolean} = {abort: false}) {
+  dispose(options: {abort: boolean, ...} = {abort: false}) {
     if (this._taskHandle) {
       this._taskHandle.cancel();
       if (!options.abort) {

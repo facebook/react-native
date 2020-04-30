@@ -4,12 +4,17 @@ rn_android_library(
     name = "fabric",
     srcs = glob([
         "*.java",
+        "events/**/*.java",
         "jsi/*.java",
         "mounting/**/*.java",
     ]),
     is_androidx = True,
     provided_deps = [
-        react_native_dep("third-party/android/support/v4:lib-support-v4"),
+        react_native_dep("third-party/android/androidx:annotation"),
+        react_native_dep("third-party/android/androidx:core"),
+        react_native_dep("third-party/android/androidx:fragment"),
+        react_native_dep("third-party/android/androidx:legacy-support-core-ui"),
+        react_native_dep("third-party/android/androidx:legacy-support-core-utils"),
     ],
     required_for_source_only_abi = True,
     visibility = [
@@ -24,7 +29,8 @@ rn_android_library(
         react_native_target("java/com/facebook/debug/tags:tags"),
         react_native_target("java/com/facebook/debug/holder:holder"),
         react_native_target("java/com/facebook/react/bridge:bridge"),
-        react_native_target("java/com/facebook/react/fabric/jsi/jni:jni"),
+        react_native_target("java/com/facebook/react/config:config"),
+        react_native_target("java/com/facebook/react/fabric/jni:jni"),
         react_native_target("java/com/facebook/react:react"),
         react_native_target("java/com/facebook/react/module/annotations:annotations"),
         react_native_target("java/com/facebook/react/modules/core:core"),

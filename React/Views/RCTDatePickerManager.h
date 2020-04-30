@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -8,7 +8,7 @@
 #import <React/RCTConvert.h>
 #import <React/RCTViewManager.h>
 
-@interface RCTConvert(UIDatePicker)
+@interface RCTConvert (UIDatePicker)
 
 + (UIDatePickerMode)UIDatePickerMode:(id)json;
 

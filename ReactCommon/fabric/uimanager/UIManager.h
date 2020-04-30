@@ -1,4 +1,9 @@
-// Copyright 2004-present Facebook. All Rights Reserved.
+/*
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
 
 #pragma once
 
@@ -6,18 +11,22 @@
 #include <folly/dynamic.h>
 #include <jsi/jsi.h>
 
+#include <react/componentregistry/ComponentDescriptorRegistry.h>
 #include <react/core/ShadowNode.h>
 #include <react/core/StateData.h>
+#include <react/mounting/ShadowTree.h>
+#include <react/mounting/ShadowTreeDelegate.h>
 #include <react/mounting/ShadowTreeRegistry.h>
-#include <react/uimanager/ComponentDescriptorRegistry.h>
 #include <react/uimanager/UIManagerDelegate.h>
 
 namespace facebook {
 namespace react {
 
-class UIManager {
+class UIManagerBinding;
+
+class UIManager final : public ShadowTreeDelegate {
  public:
-  void setShadowTreeRegistry(ShadowTreeRegistry *shadowTreeRegistry);
+  ~UIManager();
 
   void setComponentDescriptorRegistry(
       const SharedComponentDescriptorRegistry &componentDescriptorRegistry);
@@ -30,33 +39,61 @@ class UIManager {
   void setDelegate(UIManagerDelegate *delegate);
   UIManagerDelegate *getDelegate();
 
+  /*
+   * Provides access to a UIManagerBindging.
+   * The `callback` methods will not be called if the internal pointer to
+   * `UIManagerBindging` is `nullptr`.
+   * The callback is called synchronously on the same thread.
+   */
+  void visitBinding(
+      std::function<void(UIManagerBinding const &uiManagerBinding)> callback)
+      const;
+
+#pragma mark - ShadowTreeDelegate
+
+  void shadowTreeDidFinishTransaction(
+      ShadowTree const &shadowTree,
+      MountingCoordinator::Shared const &mountingCoordinator) const override;
+
  private:
   friend class UIManagerBinding;
   friend class Scheduler;
 
-  SharedShadowNode createNode(
+  ShadowNode::Shared createNode(
       Tag tag,
-      const std::string &name,
+      std::string const &componentName,
       SurfaceId surfaceId,
       const RawProps &props,
       SharedEventTarget eventTarget) const;
 
-  SharedShadowNode cloneNode(
-      const SharedShadowNode &shadowNode,
+  ShadowNode::Shared cloneNode(
+      const ShadowNode::Shared &shadowNode,
       const SharedShadowNodeSharedList &children = nullptr,
       const RawProps *rawProps = nullptr) const;
 
   void appendChild(
-      const SharedShadowNode &parentShadowNode,
-      const SharedShadowNode &childShadowNode) const;
+      const ShadowNode::Shared &parentShadowNode,
+      const ShadowNode::Shared &childShadowNode) const;
 
   void completeSurface(
       SurfaceId surfaceId,
       const SharedShadowNodeUnsharedList &rootChildren) const;
 
-  void setNativeProps(
-      const SharedShadowNode &shadowNode,
-      const RawProps &rawProps) const;
+  void setNativeProps(ShadowNode const &shadowNode, RawProps const &rawProps)
+      const;
+
+  void setJSResponder(
+      const ShadowNode::Shared &shadowNode,
+      const bool blockNativeResponder) const;
+
+  void clearJSResponder() const;
+
+  ShadowNode::Shared findNodeAtPoint(
+      ShadowNode::Shared const &shadowNode,
+      Point point) const;
+
+  ShadowNode::Shared const *getNewestCloneOfShadowNode(
+      ShadowNode const &shadowNode) const;
 
   /*
    * Returns layout metrics of given `shadowNode` relative to
@@ -64,20 +101,27 @@ class UIManager {
    * `ancestorShadowNode` is nullptr).
    */
   LayoutMetrics getRelativeLayoutMetrics(
-      const ShadowNode &shadowNode,
-      const ShadowNode *ancestorShadowNode) const;
+      ShadowNode const &shadowNode,
+      ShadowNode const *ancestorShadowNode,
+      LayoutableShadowNode::LayoutInspectingPolicy policy) const;
 
   /*
    * Creates a new shadow node with given state data, clones what's necessary
    * and performs a commit.
    */
-  void updateState(
-      const SharedShadowNode &shadowNode,
-      const StateData::Shared &rawStateData) const;
+  void updateState(StateUpdate const &stateUpdate) const;
 
-  ShadowTreeRegistry *shadowTreeRegistry_;
+  void dispatchCommand(
+      const ShadowNode::Shared &shadowNode,
+      std::string const &commandName,
+      folly::dynamic const args) const;
+
+  ShadowTreeRegistry const &getShadowTreeRegistry() const;
+
   SharedComponentDescriptorRegistry componentDescriptorRegistry_;
   UIManagerDelegate *delegate_;
+  UIManagerBinding *uiManagerBinding_;
+  ShadowTreeRegistry shadowTreeRegistry_{};
 };
 
 } // namespace react

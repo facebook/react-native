@@ -1,0 +1,39 @@
+{
+  "name": "hermes-inspector-msggen",
+  "version": "1.0.0",
+  "license": "MIT",
+  "bin": {
+    "msggen": "./bin/index.js"
+  },
+  "scripts": {
+    "flow": "flow",
+    "build": "babel src --out-dir bin --source-maps",
+    "watch": "babel src --out-dir bin --source-maps --watch",
+    "test": "jest"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.2.0",
+    "@babel/core": "^7.2.0",
+    "@babel/plugin-syntax-flow": "^7.2.0",
+    "@babel/plugin-transform-flow-strip-types": "^7.2.0",
+    "@babel/preset-env": "^7.2.0",
+    "@babel/preset-flow": "^7.2.0",
+    "diff": "3.5.0",
+    "extend": "3.0.2",
+    "jest": "^24.9.0",
+    "nwmatcher": "1.4.4",
+    "randomatic": "3.0.0",
+    "sshpk": "1.16.1",
+    "webpack": "^4.41.0"
+  },
+  "jest": {
+    "transform": {
+      ".*": "<rootDir>/node_modules/babel-jest"
+    }
+  },
+  "dependencies": {
+    "devtools-protocol": "0.0.730699",
+    "idx": "^2.1.0",
+    "yargs": "^14.2.0"
+  }
+}

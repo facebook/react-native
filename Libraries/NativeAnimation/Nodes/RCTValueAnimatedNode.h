@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -24,6 +24,7 @@
 - (void)extractOffset;
 
 @property (nonatomic, assign) CGFloat value;
+@property (nonatomic, strong) id animatedObject;
 @property (nonatomic, weak) id<RCTValueAnimatedNodeObserver> valueObserver;
 
 @end

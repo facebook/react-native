@@ -1,0 +1,45 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`<SafeAreaView /> should render as expected: should deep render when mocked (please verify output manually) 1`] = `
+<RCTSafeAreaView
+  emulateUnlessSupported={true}
+>
+  <View>
+    <Text>
+      Hello World!
+    </Text>
+  </View>
+</RCTSafeAreaView>
+`;
+
+exports[`<SafeAreaView /> should render as expected: should deep render when not mocked (please verify output manually) 1`] = `
+<RCTSafeAreaView
+  emulateUnlessSupported={true}
+>
+  <View>
+    <Text>
+      Hello World!
+    </Text>
+  </View>
+</RCTSafeAreaView>
+`;
+
+exports[`<SafeAreaView /> should render as expected: should shallow render as <SafeAreaView /> when mocked 1`] = `
+<ForwardRef(SafeAreaView)>
+  <View>
+    <Text>
+      Hello World!
+    </Text>
+  </View>
+</ForwardRef(SafeAreaView)>
+`;
+
+exports[`<SafeAreaView /> should render as expected: should shallow render as <SafeAreaView /> when not mocked 1`] = `
+<ForwardRef(SafeAreaView)>
+  <View>
+    <Text>
+      Hello World!
+    </Text>
+  </View>
+</ForwardRef(SafeAreaView)>
+`;

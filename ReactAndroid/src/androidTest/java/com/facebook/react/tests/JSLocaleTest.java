@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -23,13 +23,12 @@ import com.facebook.react.views.view.ReactViewManager;
 import java.util.Arrays;
 import java.util.List;
 
-/**
- * Test locale-based functionality of JS VM
- */
+/** Test locale-based functionality of JS VM */
 public class JSLocaleTest extends ReactIntegrationTestCase {
 
   private interface TestJSLocaleModule extends JavaScriptModule {
     void toUpper(String string);
+
     void toLower(String string);
   }
 
@@ -41,12 +40,8 @@ public class JSLocaleTest extends ReactIntegrationTestCase {
   protected void setUp() throws Exception {
     super.setUp();
 
-    List<ViewManager> viewManagers = Arrays.<ViewManager>asList(
-        new ReactViewManager());
-    final UIManagerModule mUIManager = new UIManagerModule(
-        getContext(),
-        viewManagers,
-        0);
+    List<ViewManager> viewManagers = Arrays.<ViewManager>asList(new ReactViewManager());
+    final UIManagerModule mUIManager = new UIManagerModule(getContext(), viewManagers, 0);
     UiThreadUtil.runOnUiThread(
         new Runnable() {
           @Override
@@ -58,13 +53,14 @@ public class JSLocaleTest extends ReactIntegrationTestCase {
     waitForIdleSync();
 
     mStringRecordingModule = new StringRecordingModule();
-    mInstance = ReactTestHelper.catalystInstanceBuilder(this)
-        .addNativeModule(mStringRecordingModule)
-        .addNativeModule(mUIManager)
-        .addNativeModule(new DeviceInfoModule(getContext()))
-        .addNativeModule(new AppStateModule(getContext()))
-        .addNativeModule(new FakeWebSocketModule())
-        .build();
+    mInstance =
+        ReactTestHelper.catalystInstanceBuilder(this)
+            .addNativeModule(mStringRecordingModule)
+            .addNativeModule(mUIManager)
+            .addNativeModule(new DeviceInfoModule(getContext()))
+            .addNativeModule(new AppStateModule(getContext()))
+            .addNativeModule(new FakeWebSocketModule())
+            .build();
   }
 
   public void testToUpper() {

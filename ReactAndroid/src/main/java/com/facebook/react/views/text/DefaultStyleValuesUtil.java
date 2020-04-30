@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -12,9 +12,7 @@ import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
 
-/**
- * Utility class that access default values from style
- */
+/** Utility class that access default values from style */
 public final class DefaultStyleValuesUtil {
 
   private DefaultStyleValuesUtil() {
@@ -55,7 +53,7 @@ public final class DefaultStyleValuesUtil {
     Resources.Theme theme = context.getTheme();
     TypedArray textAppearances = null;
     try {
-      textAppearances = theme.obtainStyledAttributes(new int[]{attribute});
+      textAppearances = theme.obtainStyledAttributes(new int[] {attribute});
       ColorStateList textColor = textAppearances.getColorStateList(0);
       return textColor;
     } finally {

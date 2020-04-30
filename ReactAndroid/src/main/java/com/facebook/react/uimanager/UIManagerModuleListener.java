@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -7,9 +7,7 @@
 
 package com.facebook.react.uimanager;
 
-/**
- * Listener used to hook into the UIManager update process.
- */
+/** Listener used to hook into the UIManager update process. */
 public interface UIManagerModuleListener {
   /**
    * Called right before view updates are dispatched at the end of a batch. This is useful if a

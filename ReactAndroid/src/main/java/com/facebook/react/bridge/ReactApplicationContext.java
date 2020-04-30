@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -10,8 +10,8 @@ package com.facebook.react.bridge;
 import android.content.Context;
 
 /**
- * A context wrapper that always wraps Android Application {@link Context} and
- * {@link CatalystInstance} by extending {@link ReactContext}
+ * A context wrapper that always wraps Android Application {@link Context} and {@link
+ * CatalystInstance} by extending {@link ReactContext}
  */
 public class ReactApplicationContext extends ReactContext {
   // We want to wrap ApplicationContext, since there is no easy way to verify that application

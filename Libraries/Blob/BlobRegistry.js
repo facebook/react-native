@@ -8,7 +8,7 @@
  * @format
  */
 
-const registry: {[key: string]: number} = {};
+const registry: {[key: string]: number, ...} = {};
 
 const register = (id: string) => {
   if (registry[id]) {
@@ -27,7 +27,7 @@ const unregister = (id: string) => {
   }
 };
 
-const has = (id: string) => {
+const has = (id: string): number | boolean => {
   return registry[id] && registry[id] > 0;
 };
 

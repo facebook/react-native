@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -16,45 +16,75 @@ namespace facebook {
 namespace react {
 
 AccessibilityProps::AccessibilityProps(
-    const AccessibilityProps &sourceProps,
-    const RawProps &rawProps)
-    : accessible(
-          convertRawProp(rawProps, "accessible", sourceProps.accessible)),
+    AccessibilityProps const &sourceProps,
+    RawProps const &rawProps)
+    : accessible(convertRawProp(
+          rawProps,
+          "accessible",
+          sourceProps.accessible,
+          false)),
       accessibilityTraits(convertRawProp(
           rawProps,
-          "accessibilityTraits",
-          sourceProps.accessibilityTraits)),
+          "accessibilityRole",
+          sourceProps.accessibilityTraits,
+          AccessibilityTraits::None)),
       accessibilityLabel(convertRawProp(
           rawProps,
           "accessibilityLabel",
-          sourceProps.accessibilityLabel)),
+          sourceProps.accessibilityLabel,
+          "")),
       accessibilityHint(convertRawProp(
           rawProps,
           "accessibilityHint",
-          sourceProps.accessibilityHint)),
+          sourceProps.accessibilityHint,
+          "")),
       accessibilityActions(convertRawProp(
           rawProps,
           "accessibilityActions",
-          sourceProps.accessibilityActions)),
+          sourceProps.accessibilityActions,
+          {})),
       accessibilityViewIsModal(convertRawProp(
           rawProps,
           "accessibilityViewIsModal",
-          sourceProps.accessibilityViewIsModal)),
+          sourceProps.accessibilityViewIsModal,
+          false)),
       accessibilityElementsHidden(convertRawProp(
           rawProps,
           "accessibilityElementsHidden",
-          sourceProps.accessibilityElementsHidden)),
+          sourceProps.accessibilityElementsHidden,
+          false)),
       accessibilityIgnoresInvertColors(convertRawProp(
           rawProps,
           "accessibilityIgnoresInvertColors",
-          sourceProps.accessibilityIgnoresInvertColors)),
-      testId(convertRawProp(rawProps, "testId", sourceProps.testId)) {}
+          sourceProps.accessibilityIgnoresInvertColors,
+          false)),
+      onAccessibilityTap(convertRawProp(
+          rawProps,
+          "onAccessibilityTap",
+          sourceProps.onAccessibilityTap,
+          {})),
+      onAccessibilityMagicTap(convertRawProp(
+          rawProps,
+          "onAccessibilityMagicTap",
+          sourceProps.onAccessibilityMagicTap,
+          {})),
+      onAccessibilityEscape(convertRawProp(
+          rawProps,
+          "onAccessibilityEscape",
+          sourceProps.onAccessibilityEscape,
+          {})),
+      onAccessibilityAction(convertRawProp(
+          rawProps,
+          "onAccessibilityAction",
+          sourceProps.onAccessibilityAction,
+          {})),
+      testId(convertRawProp(rawProps, "testId", sourceProps.testId, "")) {}
 
 #pragma mark - DebugStringConvertible
 
 #if RN_DEBUG_STRING_CONVERTIBLE
 SharedDebugStringConvertibleList AccessibilityProps::getDebugProps() const {
-  const auto &defaultProps = AccessibilityProps();
+  auto const &defaultProps = AccessibilityProps();
   return SharedDebugStringConvertibleList{
       debugStringConvertibleItem("testId", testId, defaultProps.testId),
   };

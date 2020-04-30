@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -9,8 +9,7 @@
 
 #import <React/RCTBridge.h>
 
-typedef NS_ENUM(NSInteger, RCTTextEventType)
-{
+typedef NS_ENUM(NSInteger, RCTTextEventType) {
   RCTTextEventTypeFocus,
   RCTTextEventTypeBlur,
   RCTTextEventTypeChange,
@@ -35,6 +34,7 @@ RCT_EXTERN NSString *RCTNormalizeInputEventName(NSString *eventName);
 @protocol RCTEvent <NSObject>
 @required
 
+@property (nonatomic, strong, readonly) NSNumber *viewTag;
 @property (nonatomic, copy, readonly) NSString *eventName;
 
 - (BOOL)canCoalesce;
@@ -46,12 +46,6 @@ RCT_EXTERN NSString *RCTNormalizeInputEventName(NSString *eventName);
 - (NSArray *)arguments;
 
 @optional
-
-/**
- * Can be implemented for view based events that need to be coalesced
- * by it's viewTag.
- */
-@property (nonatomic, strong, readonly) NSNumber *viewTag;
 
 /**
  * Coalescing related methods must only be implemented if canCoalesce
@@ -75,7 +69,6 @@ RCT_EXTERN NSString *RCTNormalizeInputEventName(NSString *eventName);
 
 @end
 
-
 /**
  * This class wraps the -[RCTBridge enqueueJSCall:args:] method, and
  * provides some convenience methods for generating event calls.
@@ -85,14 +78,12 @@ RCT_EXTERN NSString *RCTNormalizeInputEventName(NSString *eventName);
 /**
  * Deprecated, do not use.
  */
-- (void)sendAppEventWithName:(NSString *)name body:(id)body
-__deprecated_msg("Subclass RCTEventEmitter instead");
+- (void)sendAppEventWithName:(NSString *)name body:(id)body __deprecated_msg("Subclass RCTEventEmitter instead");
 
 /**
  * Deprecated, do not use.
  */
-- (void)sendDeviceEventWithName:(NSString *)name body:(id)body
-__deprecated_msg("Subclass RCTEventEmitter instead");
+- (void)sendDeviceEventWithName:(NSString *)name body:(id)body __deprecated_msg("Subclass RCTEventEmitter instead");
 
 /**
  * Send a text input/focus event. For internal use only.

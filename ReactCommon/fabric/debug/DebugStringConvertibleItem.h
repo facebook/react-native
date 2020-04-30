@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -37,7 +37,7 @@ class DebugStringConvertibleItem : public DebugStringConvertible {
  private:
   std::string name_;
   std::string value_;
-  SharedDebugStringConvertibleList props_;
+  SharedDebugStringConvertibleList debugProps_;
   SharedDebugStringConvertibleList children_;
 };
 

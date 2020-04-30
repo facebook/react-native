@@ -1,10 +1,8 @@
 #!/bin/bash
-#
 # Copyright (c) Facebook, Inc. and its affiliates.
 #
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
-#
 
 # for buck gen
 mount -o remount,exec /dev/shm
@@ -31,7 +29,7 @@ watchman shutdown-server
 
 # integration tests
 # build JS bundle for instrumentation tests
-node cli.js bundle --platform android --dev true --entry-file ReactAndroid/src/androidTest/js/TestBundle.js --bundle-output ReactAndroid/src/androidTest/assets/AndroidTestBundle.js --reactNativePath .
+node cli.js bundle --platform android --dev true --entry-file ReactAndroid/src/androidTest/js/TestBundle.js --bundle-output ReactAndroid/src/androidTest/assets/AndroidTestBundle.js
 
 # build test APK
 # shellcheck disable=SC1091

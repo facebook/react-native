@@ -10,20 +10,22 @@
 
 'use strict';
 
-const infoLog = require('infoLog');
+const infoLog = require('../Utilities/infoLog');
 const invariant = require('invariant');
 
 type SimpleTask = {
   name: string,
   run: () => void,
+  ...
 };
 type PromiseTask = {
   name: string,
   gen: () => Promise<any>,
+  ...
 };
 export type Task = Function | SimpleTask | PromiseTask;
 
-const DEBUG = false;
+const DEBUG: false = false;
 
 /**
  * TaskQueue - A system for queueing and executing a mix of simple callbacks and
@@ -49,7 +51,7 @@ class TaskQueue {
    * `onMoreTasks` is invoked when `PromiseTask`s resolve if there are more
    * tasks to process.
    */
-  constructor({onMoreTasks}: {onMoreTasks: () => void}) {
+  constructor({onMoreTasks}: {onMoreTasks: () => void, ...}) {
     this._onMoreTasks = onMoreTasks;
     this._queueStack = [{tasks: [], popable: false}];
   }
@@ -100,10 +102,10 @@ class TaskQueue {
       const task = queue.shift();
       try {
         if (task.gen) {
-          DEBUG && infoLog('genPromise for task ' + task.name);
+          DEBUG && infoLog('TaskQueue: genPromise for task ' + task.name);
           this._genPromise((task: any)); // Rather than annoying tagged union
         } else if (task.run) {
-          DEBUG && infoLog('run task ' + task.name);
+          DEBUG && infoLog('TaskQueue: run task ' + task.name);
           task.run();
         } else {
           invariant(
@@ -111,7 +113,7 @@ class TaskQueue {
             'Expected Function, SimpleTask, or PromiseTask, but got:\n' +
               JSON.stringify(task, null, 2),
           );
-          DEBUG && infoLog('run anonymous task');
+          DEBUG && infoLog('TaskQueue: run anonymous task');
           task();
         }
       } catch (e) {
@@ -122,7 +124,11 @@ class TaskQueue {
     }
   }
 
-  _queueStack: Array<{tasks: Array<Task>, popable: boolean}>;
+  _queueStack: Array<{
+    tasks: Array<Task>,
+    popable: boolean,
+    ...
+  }>;
   _onMoreTasks: () => void;
 
   _getCurrentQueue(): Array<Task> {
@@ -135,7 +141,7 @@ class TaskQueue {
     ) {
       this._queueStack.pop();
       DEBUG &&
-        infoLog('popped queue: ', {
+        infoLog('TaskQueue: popped queue: ', {
           stackIdx,
           queueStackSize: this._queueStack.length,
         });
@@ -152,13 +158,13 @@ class TaskQueue {
     // happens once it is fully processed.
     this._queueStack.push({tasks: [], popable: false});
     const stackIdx = this._queueStack.length - 1;
-    DEBUG && infoLog('push new queue: ', {stackIdx});
-    DEBUG && infoLog('exec gen task ' + task.name);
+    DEBUG && infoLog('TaskQueue: push new queue: ', {stackIdx});
+    DEBUG && infoLog('TaskQueue: exec gen task ' + task.name);
     task
       .gen()
       .then(() => {
         DEBUG &&
-          infoLog('onThen for gen task ' + task.name, {
+          infoLog('TaskQueue: onThen for gen task ' + task.name, {
             stackIdx,
             queueStackSize: this._queueStack.length,
           });
@@ -166,9 +172,7 @@ class TaskQueue {
         this.hasTasksToProcess() && this._onMoreTasks();
       })
       .catch(ex => {
-        ex.message = `TaskQueue: Error resolving Promise in task ${
-          task.name
-        }: ${ex.message}`;
+        ex.message = `TaskQueue: Error resolving Promise in task ${task.name}: ${ex.message}`;
         throw ex;
       })
       .done();

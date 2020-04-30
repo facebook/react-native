@@ -1,7 +1,9 @@
-// Copyright (c) Facebook, Inc. and its affiliates.
-
-// This source code is licensed under the MIT license found in the
-// LICENSE file in the root directory of this source tree.
+/*
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
 
 package com.facebook.react.bridge;
 
@@ -12,13 +14,17 @@ import android.os.AsyncTask;
  * throws handled by the {@link com.facebook.react.bridge.NativeModuleCallExceptionHandler}
  * registered if the app is in dev mode.
  */
-public abstract class GuardedResultAsyncTask<Result>
-    extends AsyncTask<Void, Void, Result> {
+public abstract class GuardedResultAsyncTask<Result> extends AsyncTask<Void, Void, Result> {
 
-  private final ReactContext mReactContext;
+  private final NativeModuleCallExceptionHandler mExceptionHandler;
 
+  @Deprecated
   protected GuardedResultAsyncTask(ReactContext reactContext) {
-    mReactContext = reactContext;
+    this(reactContext.getExceptionHandler());
+  }
+
+  protected GuardedResultAsyncTask(NativeModuleCallExceptionHandler exceptionHandler) {
+    mExceptionHandler = exceptionHandler;
   }
 
   @Override
@@ -26,7 +32,7 @@ public abstract class GuardedResultAsyncTask<Result>
     try {
       return doInBackgroundGuarded();
     } catch (RuntimeException e) {
-      mReactContext.handleException(e);
+      mExceptionHandler.handleException(e);
       throw e;
     }
   }
@@ -36,11 +42,11 @@ public abstract class GuardedResultAsyncTask<Result>
     try {
       onPostExecuteGuarded(result);
     } catch (RuntimeException e) {
-      mReactContext.handleException(e);
+      mExceptionHandler.handleException(e);
     }
   }
 
   protected abstract Result doInBackgroundGuarded();
-  protected abstract void onPostExecuteGuarded(Result result);
 
+  protected abstract void onPostExecuteGuarded(Result result);
 }

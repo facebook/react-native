@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -18,9 +18,6 @@ namespace react {
 
 class RootShadowNode;
 
-using SharedRootShadowNode = std::shared_ptr<const RootShadowNode>;
-using UnsharedRootShadowNode = std::shared_ptr<RootShadowNode>;
-
 extern const char RootComponentName[];
 
 /*
@@ -34,30 +31,22 @@ class RootShadowNode final
  public:
   using ConcreteViewShadowNode::ConcreteViewShadowNode;
 
+  using Shared = std::shared_ptr<RootShadowNode const>;
+  using Unshared = std::shared_ptr<RootShadowNode>;
+
   /*
-   * Layouts the shadow tree.
+   * Layouts the shadow tree if needed.
+   * Returns `false` if the three is already laid out.
    */
-  void layout();
+  bool layoutIfNeeded(
+      std::vector<LayoutableShadowNode const *> *affectedNodes = {});
 
   /*
    * Clones the node with given `layoutConstraints` and `layoutContext`.
    */
-  UnsharedRootShadowNode clone(
-      const LayoutConstraints &layoutConstraints,
-      const LayoutContext &layoutContext) const;
-
-  /*
-   * Clones the node replacing a given old shadow node with a new one in the
-   * tree by cloning all nodes on the path to the root node and then complete
-   * the tree. Returns `nullptr` if the operation cannot be finished
-   * successfully.
-   */
-  UnsharedRootShadowNode clone(
-      const SharedShadowNode &oldShadowNode,
-      const SharedShadowNode &newShadowNode) const;
-
- private:
-  using YogaLayoutableShadowNode::layout;
+  RootShadowNode::Unshared clone(
+      LayoutConstraints const &layoutConstraints,
+      LayoutContext const &layoutContext) const;
 };
 
 } // namespace react

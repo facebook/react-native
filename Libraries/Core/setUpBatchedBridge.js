@@ -7,36 +7,40 @@
  * @flow strict-local
  * @format
  */
+
 'use strict';
 
-/**
- * Set up the BatchedBridge. This must be done after the other steps in
- * InitializeCore to ensure that the JS environment has been initialized.
- * You can use this module directly, or just require InitializeCore.
- */
-const BatchedBridge = require('BatchedBridge');
-BatchedBridge.registerLazyCallableModule('Systrace', () => require('Systrace'));
-BatchedBridge.registerLazyCallableModule('JSTimers', () => require('JSTimers'));
-BatchedBridge.registerLazyCallableModule('HeapCapture', () =>
-  require('HeapCapture'),
+let registerModule;
+if (global.RN$Bridgeless && global.RN$registerCallableModule) {
+  registerModule = global.RN$registerCallableModule;
+} else {
+  const BatchedBridge = require('../BatchedBridge/BatchedBridge');
+  registerModule = (moduleName, factory) =>
+    BatchedBridge.registerLazyCallableModule(moduleName, factory);
+}
+
+registerModule('Systrace', () => require('../Performance/Systrace'));
+registerModule('JSTimers', () => require('./Timers/JSTimers'));
+registerModule('HeapCapture', () => require('../HeapCapture/HeapCapture'));
+registerModule('SamplingProfiler', () =>
+  require('../Performance/SamplingProfiler'),
 );
-BatchedBridge.registerLazyCallableModule('SamplingProfiler', () =>
-  require('SamplingProfiler'),
+registerModule('RCTLog', () => require('../Utilities/RCTLog'));
+registerModule('RCTDeviceEventEmitter', () =>
+  require('../EventEmitter/RCTDeviceEventEmitter'),
 );
-BatchedBridge.registerLazyCallableModule('RCTLog', () => require('RCTLog'));
-BatchedBridge.registerLazyCallableModule('RCTDeviceEventEmitter', () =>
-  require('RCTDeviceEventEmitter'),
+registerModule('RCTNativeAppEventEmitter', () =>
+  require('../EventEmitter/RCTNativeAppEventEmitter'),
 );
-BatchedBridge.registerLazyCallableModule('RCTNativeAppEventEmitter', () =>
-  require('RCTNativeAppEventEmitter'),
+registerModule('GlobalPerformanceLogger', () =>
+  require('../Utilities/GlobalPerformanceLogger'),
 );
-BatchedBridge.registerLazyCallableModule('GlobalPerformanceLogger', () =>
-  require('GlobalPerformanceLogger'),
-);
-BatchedBridge.registerLazyCallableModule('JSDevSupportModule', () =>
-  require('JSDevSupportModule'),
+registerModule('JSDevSupportModule', () =>
+  require('../Utilities/JSDevSupportModule'),
 );
 
 if (__DEV__ && !global.__RCTProfileIsProfiling) {
-  BatchedBridge.registerCallableModule('HMRClient', require('HMRClient'));
+  registerModule('HMRClient', () => require('../Utilities/HMRClient'));
+} else {
+  registerModule('HMRClient', () => require('../Utilities/HMRClientProdShim'));
 }

@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -10,7 +10,7 @@
 #include <react/components/image/ImageShadowNode.h>
 #include <react/core/ConcreteComponentDescriptor.h>
 #include <react/imagemanager/ImageManager.h>
-#include <react/uimanager/ContextContainer.h>
+#include <react/utils/ContextContainer.h>
 
 namespace facebook {
 namespace react {
@@ -21,23 +21,9 @@ namespace react {
 class ImageComponentDescriptor final
     : public ConcreteComponentDescriptor<ImageShadowNode> {
  public:
-  ImageComponentDescriptor(
-      EventDispatcher::Shared eventDispatcher,
-      const SharedContextContainer &contextContainer)
-      : ConcreteComponentDescriptor(eventDispatcher),
-  // TODO (39486757): implement image manager on Android, currently Android does
-  // not have an ImageManager so this will crash
-#ifndef ANDROID
-        imageManager_(
-            contextContainer
-                ? contextContainer->getInstance<SharedImageManager>(
-                      "ImageManager")
-                : nullptr) {
-  }
-#else
-        imageManager_(nullptr) {
-  }
-#endif
+  ImageComponentDescriptor(ComponentDescriptorParameters const &parameters)
+      : ConcreteComponentDescriptor(parameters),
+        imageManager_(std::make_shared<ImageManager>(contextContainer_)){};
 
   void adopt(UnsharedShadowNode shadowNode) const override {
     ConcreteComponentDescriptor::adopt(shadowNode);

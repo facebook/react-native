@@ -22,10 +22,10 @@ LOCAL_CFLAGS += -fexceptions -frtti -Wno-unused-lambda-capture
 LOCAL_LDLIBS += -landroid
 
 # The dynamic libraries (.so files) that this module depends on.
-LOCAL_SHARED_LIBRARIES := libfolly_json libfb libjsc libglog_init libyoga
+LOCAL_SHARED_LIBRARIES := libfolly_json libfb libfbjni libglog_init libyoga
 
 # The static libraries (.a files) that this module depends on.
-LOCAL_STATIC_LIBRARIES := libreactnative
+LOCAL_STATIC_LIBRARIES := libreactnative libcallinvokerholder libruntimeexecutor
 
 # Name of this module.
 #
@@ -35,6 +35,14 @@ LOCAL_MODULE := reactnativejni
 
 # Compile all local c++ files.
 LOCAL_SRC_FILES := $(wildcard *.cpp)
+
+ifeq ($(APP_OPTIM),debug)
+  # Keep symbols by overriding the strip command invoked by ndk-build.
+  # Note that this will apply to all shared libraries,
+  # i.e. shared libraries will NOT be stripped
+  # even though we override it in this Android.mk
+  cmd-strip :=
+endif
 
 # Build the files in this directory as a shared library
 include $(BUILD_SHARED_LIBRARY)
@@ -53,15 +61,24 @@ include $(BUILD_SHARED_LIBRARY)
 #   to the specification inside <dir>/<module-dir>/Android.mk.
 $(call import-module,folly)
 $(call import-module,fb)
+$(call import-module,fbjni)
 $(call import-module,jsc)
 $(call import-module,fbgloginit)
 $(call import-module,yogajni)
 $(call import-module,cxxreact)
 $(call import-module,jsi)
 $(call import-module,jsiexecutor)
+$(call import-module,callinvoker)
+$(call import-module,hermes)
+$(call import-module,runtimeexecutor)
+
+include $(REACT_SRC_DIR)/turbomodule/core/jni/Android.mk
 
 # TODO(ramanpreet):
 #   Why doesn't this import-module call generate a jscexecutor.so file?
 # $(call import-module,jscexecutor)
 
 include $(REACT_SRC_DIR)/jscexecutor/Android.mk
+include $(REACT_SRC_DIR)/../hermes/reactexecutor/Android.mk
+include $(REACT_SRC_DIR)/../hermes/instrumentation/Android.mk
+include $(REACT_SRC_DIR)/modules/blob/jni/Android.mk

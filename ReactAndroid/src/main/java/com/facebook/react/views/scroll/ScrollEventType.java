@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -7,9 +7,7 @@
 
 package com.facebook.react.views.scroll;
 
-/**
- * Scroll event types that JS module RCTEventEmitter can understand
- */
+/** Scroll event types that JS module RCTEventEmitter can understand */
 public enum ScrollEventType {
   BEGIN_DRAG,
   END_DRAG,

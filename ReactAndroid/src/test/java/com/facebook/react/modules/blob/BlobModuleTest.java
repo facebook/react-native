@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -7,13 +7,20 @@
 
 package com.facebook.react.modules.blob;
 
-import android.net.Uri;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
+import android.net.Uri;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.JavaOnlyArray;
 import com.facebook.react.bridge.JavaOnlyMap;
 import com.facebook.react.bridge.ReactTestHelper;
-
+import java.nio.ByteBuffer;
+import java.nio.charset.Charset;
+import java.util.Arrays;
+import java.util.Random;
+import java.util.UUID;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -29,16 +36,6 @@ import org.powermock.modules.junit4.rule.PowerMockRule;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
 
-import java.nio.ByteBuffer;
-import java.nio.charset.Charset;
-import java.util.Arrays;
-import java.util.Random;
-import java.util.UUID;
-
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-
 @PrepareForTest({Arguments.class})
 @RunWith(RobolectricTestRunner.class)
 @PowerMockIgnore({"org.mockito.*", "org.robolectric.*", "androidx.*", "android.*"})
@@ -49,18 +46,19 @@ public class BlobModuleTest {
   private String mBlobId;
   private BlobModule mBlobModule;
 
-  @Rule
-  public PowerMockRule rule = new PowerMockRule();
+  @Rule public PowerMockRule rule = new PowerMockRule();
 
   @Before
   public void prepareModules() throws Exception {
     PowerMockito.mockStatic(Arguments.class);
-    Mockito.when(Arguments.createMap()).thenAnswer(new Answer<Object>() {
-      @Override
-      public Object answer(InvocationOnMock invocation) throws Throwable {
-        return new JavaOnlyMap();
-      }
-    });
+    Mockito.when(Arguments.createMap())
+        .thenAnswer(
+            new Answer<Object>() {
+              @Override
+              public Object answer(InvocationOnMock invocation) throws Throwable {
+                return new JavaOnlyMap();
+              }
+            });
 
     mBytes = new byte[120];
     new Random().nextBytes(mBytes);
@@ -83,11 +81,12 @@ public class BlobModuleTest {
 
   @Test
   public void testResolveUri() {
-    Uri uri = new Uri.Builder()
-        .appendPath(mBlobId)
-        .appendQueryParameter("offset", "0")
-        .appendQueryParameter("size", String.valueOf(mBytes.length))
-        .build();
+    Uri uri =
+        new Uri.Builder()
+            .appendPath(mBlobId)
+            .appendQueryParameter("offset", "0")
+            .appendQueryParameter("size", String.valueOf(mBytes.length))
+            .build();
 
     assertArrayEquals(mBytes, mBlobModule.resolve(uri));
   }

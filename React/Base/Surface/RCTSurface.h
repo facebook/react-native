@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -66,8 +66,7 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  * Sets `minimumSize` and `maximumSize` layout constraints for the Surface.
  */
-- (void)setMinimumSize:(CGSize)minimumSize
-           maximumSize:(CGSize)maximumSize;
+- (void)setMinimumSize:(CGSize)minimumSize maximumSize:(CGSize)maximumSize;
 
 /**
  * Previously set `minimumSize` layout constraint.
@@ -92,8 +91,7 @@ NS_ASSUME_NONNULL_BEGIN
  * Measures the Surface with given constraints.
  * This method does not cause any side effects on the surface object.
  */
-- (CGSize)sizeThatFitsMinimumSize:(CGSize)minimumSize
-                      maximumSize:(CGSize)maximumSize;
+- (CGSize)sizeThatFitsMinimumSize:(CGSize)minimumSize maximumSize:(CGSize)maximumSize;
 
 /**
  * Return the current size of the root view based on (but not clamp by) current
@@ -129,7 +127,9 @@ NS_ASSUME_NONNULL_BEGIN
  * Mount the React component specified by the given moduleName. This is typically
  * calling runApplication.js from the native side.
  */
-- (void)mountReactComponentWithBridge:(RCTBridge *)bridge moduleName:(NSString *)moduleName params:(NSDictionary *)params;
+- (void)mountReactComponentWithBridge:(RCTBridge *)bridge
+                           moduleName:(NSString *)moduleName
+                               params:(NSDictionary *)params;
 
 /**
  * Unmount the React component specified by the given rootViewTag, called from native.

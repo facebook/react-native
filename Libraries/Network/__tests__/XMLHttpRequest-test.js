@@ -9,8 +9,8 @@
  */
 
 'use strict';
-jest.unmock('Platform');
-const Platform = require('Platform');
+jest.unmock('../../Utilities/Platform');
+const Platform = require('../../Utilities/Platform');
 let requestId = 1;
 
 function setRequestId(id) {
@@ -20,21 +20,28 @@ function setRequestId(id) {
   requestId = id;
 }
 
-jest.dontMock('event-target-shim').setMock('NativeModules', {
-  Networking: {
-    addListener: function() {},
-    removeListeners: function() {},
-    sendRequest(options, callback) {
-      if (typeof callback === 'function') {
-        // android does not pass a callback
-        callback(requestId);
-      }
+jest
+  .dontMock('event-target-shim')
+  .setMock('../../BatchedBridge/NativeModules', {
+    Networking: {
+      addListener: function() {},
+      removeListeners: function() {},
+      sendRequest(options, callback) {
+        if (typeof callback === 'function') {
+          // android does not pass a callback
+          callback(requestId);
+        }
+      },
+      abortRequest: function() {},
     },
-    abortRequest: function() {},
-  },
-});
+    PlatformConstants: {
+      getConstants() {
+        return {};
+      },
+    },
+  });
 
-const XMLHttpRequest = require('XMLHttpRequest');
+const XMLHttpRequest = require('../XMLHttpRequest');
 
 describe('XMLHttpRequest', function() {
   let xhr;
@@ -88,9 +95,16 @@ describe('XMLHttpRequest', function() {
   it('should expose responseType correctly', function() {
     expect(xhr.responseType).toBe('');
 
+    jest.spyOn(console, 'error').mockImplementationOnce(() => {});
+
     // Setting responseType to an unsupported value has no effect.
     xhr.responseType = 'arrayblobbuffertextfile';
     expect(xhr.responseType).toBe('');
+
+    expect(console.error).toBeCalledWith(
+      "Warning: The provided value 'arrayblobbuffertextfile' is not a valid 'responseType'.",
+    );
+    console.error.mockRestore();
 
     xhr.responseType = 'arraybuffer';
     expect(xhr.responseType).toBe('arraybuffer');

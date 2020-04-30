@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -12,5 +12,4 @@ import android.text.style.UnderlineSpan;
 /*
  * Wraps {@link UnderlineSpan} as a {@link ReactSpan}.
  */
-public class ReactUnderlineSpan extends UnderlineSpan implements ReactSpan {
-}
+public class ReactUnderlineSpan extends UnderlineSpan implements ReactSpan {}

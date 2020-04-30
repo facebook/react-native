@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -9,8 +9,6 @@ package com.facebook.react;
 
 public interface ReactApplication {
 
-  /**
-   * Get the default {@link ReactNativeHost} for this app.
-   */
+  /** Get the default {@link ReactNativeHost} for this app. */
   ReactNativeHost getReactNativeHost();
 }

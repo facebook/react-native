@@ -11,7 +11,7 @@
 'use strict';
 
 describe('mergeIntoFast', () => {
-  const mergeIntoFast = require('mergeIntoFast');
+  const mergeIntoFast = require('../mergeIntoFast');
 
   it('should merge two objects', () => {
     const a = {fontScale: 2, height: 1334};

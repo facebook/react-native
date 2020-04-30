@@ -7,16 +7,16 @@
  * @format
  * @flow
  */
+
 'use strict';
 
-const Platform = require('Platform');
-const Systrace = require('Systrace');
+const BatchedBridge = require('../../BatchedBridge/BatchedBridge');
+const Platform = require('../../Utilities/Platform');
+const Systrace = require('../../Performance/Systrace');
 
 const invariant = require('invariant');
-const {Timing} = require('NativeModules');
-const BatchedBridge = require('BatchedBridge');
 
-import type {ExtendedError} from 'parseErrorStack';
+import NativeTiming from './NativeTiming';
 
 let _performanceNow = null;
 function performanceNow() {
@@ -58,8 +58,7 @@ const types: Array<?JSTimerType> = [];
 const timerIDs: Array<?number> = [];
 let immediates: Array<number> = [];
 let requestIdleCallbacks: Array<number> = [];
-const requestIdleCallbackTimeouts: {[number]: number} = {};
-const identifiers: Array<null | {methodName: string}> = [];
+const requestIdleCallbackTimeouts: {[number]: number, ...} = {};
 
 let GUID = 1;
 let errors: ?Array<Error> = null;
@@ -81,15 +80,6 @@ function _allocateCallback(func: Function, type: JSTimerType): number {
   timerIDs[freeIndex] = id;
   callbacks[freeIndex] = func;
   types[freeIndex] = type;
-  if (__DEV__) {
-    const parseErrorStack = require('parseErrorStack');
-    const error: ExtendedError = new Error();
-    error.framesToPop = 1;
-    const stack = parseErrorStack(error);
-    if (stack) {
-      identifiers[freeIndex] = stack.shift();
-    }
-  }
   return id;
 }
 
@@ -123,17 +113,11 @@ function _callTimer(timerID: number, frameTime: number, didTimeout: ?boolean) {
   }
 
   if (__DEV__) {
-    const identifier = identifiers[timerIndex] || {};
-    Systrace.beginEvent('Systrace.callTimer: ' + identifier.methodName);
+    Systrace.beginEvent(type + ' [invoke]');
   }
 
   // Clear the metadata
-  if (
-    type === 'setTimeout' ||
-    type === 'setImmediate' ||
-    type === 'requestAnimationFrame' ||
-    type === 'requestIdleCallback'
-  ) {
+  if (type !== 'setInterval') {
     _clearIndex(timerIndex);
   }
 
@@ -178,21 +162,23 @@ function _callTimer(timerID: number, frameTime: number, didTimeout: ?boolean) {
  * more immediates are queued up (can be used as a condition a while loop).
  */
 function _callImmediatesPass() {
+  if (immediates.length === 0) {
+    return false;
+  }
+
   if (__DEV__) {
     Systrace.beginEvent('callImmediatesPass()');
   }
 
   // The main reason to extract a single pass is so that we can track
   // in the system trace
-  if (immediates.length > 0) {
-    const passImmediates = immediates.slice();
-    immediates = [];
+  const passImmediates = immediates;
+  immediates = [];
 
-    // Use for loop rather than forEach as per @vjeux's advice
-    // https://github.com/facebook/react-native/commit/c8fd9f7588ad02d2293cac7224715f4af7b0f352#commitcomment-14570051
-    for (let i = 0; i < passImmediates.length; ++i) {
-      _callTimer(passImmediates[i], 0);
-    }
+  // Use for loop rather than forEach as per @vjeux's advice
+  // https://github.com/facebook/react-native/commit/c8fd9f7588ad02d2293cac7224715f4af7b0f352#commitcomment-14570051
+  for (let i = 0; i < passImmediates.length; ++i) {
+    _callTimer(passImmediates[i], 0);
   }
 
   if (__DEV__) {
@@ -205,7 +191,6 @@ function _clearIndex(i: number) {
   timerIDs[i] = null;
   callbacks[i] = null;
   types[i] = null;
-  identifiers[i] = null;
 }
 
 function _freeCallback(timerID: number) {
@@ -218,10 +203,10 @@ function _freeCallback(timerID: number) {
   const index = timerIDs.indexOf(timerID);
   // See corresponding comment in `callTimers` for reasoning behind this
   if (index !== -1) {
-    _clearIndex(index);
     const type = types[index];
+    _clearIndex(index);
     if (type !== 'setImmediate' && type !== 'requestIdleCallback') {
-      Timing.deleteTimer(timerID);
+      deleteTimer(timerID);
     }
   }
 }
@@ -250,7 +235,7 @@ const JSTimers = {
       () => func.apply(undefined, args),
       'setTimeout',
     );
-    Timing.createTimer(id, duration || 0, Date.now(), /* recurring */ false);
+    createTimer(id, duration || 0, Date.now(), /* recurring */ false);
     return id;
   },
 
@@ -276,7 +261,7 @@ const JSTimers = {
       () => func.apply(undefined, args),
       'setInterval',
     );
-    Timing.createTimer(id, duration || 0, Date.now(), /* recurring */ true);
+    createTimer(id, duration || 0, Date.now(), /* recurring */ true);
     return id;
   },
 
@@ -298,7 +283,7 @@ const JSTimers = {
    */
   requestAnimationFrame: function(func: Function) {
     const id = _allocateCallback(func, 'requestAnimationFrame');
-    Timing.createTimer(id, 1, Date.now(), /* recurring */ false);
+    createTimer(id, 1, Date.now(), /* recurring */ false);
     return id;
   },
 
@@ -309,7 +294,7 @@ const JSTimers = {
    */
   requestIdleCallback: function(func: Function, options: ?Object) {
     if (requestIdleCallbacks.length === 0) {
-      Timing.setSendIdleEvents(true);
+      setSendIdleEvents(true);
     }
 
     const timeout = options && options.timeout;
@@ -337,7 +322,7 @@ const JSTimers = {
         }
         delete requestIdleCallbackTimeouts[id];
         if (requestIdleCallbacks.length === 0) {
-          Timing.setSendIdleEvents(false);
+          setSendIdleEvents(false);
         }
       }, timeout);
       requestIdleCallbackTimeouts[id] = timeoutId;
@@ -359,7 +344,7 @@ const JSTimers = {
     }
 
     if (requestIdleCallbacks.length === 0) {
-      Timing.setSendIdleEvents(false);
+      setSendIdleEvents(false);
     }
   },
 
@@ -393,8 +378,7 @@ const JSTimers = {
       'Cannot call `callTimers` with an empty list of IDs.',
     );
 
-    // $FlowFixMe: optionals do not allow assignment from null
-    errors = null;
+    errors = (null: ?Array<Error>);
     for (let i = 0; i < timersToCall.length; i++) {
       _callTimer(timersToCall[i], 0);
     }
@@ -425,10 +409,9 @@ const JSTimers = {
       return;
     }
 
-    // $FlowFixMe: optionals do not allow assignment from null
-    errors = null;
+    errors = (null: ?Array<Error>);
     if (requestIdleCallbacks.length > 0) {
-      const passIdleCallbacks = requestIdleCallbacks.slice();
+      const passIdleCallbacks = requestIdleCallbacks;
       requestIdleCallbacks = [];
 
       for (let i = 0; i < passIdleCallbacks.length; ++i) {
@@ -437,7 +420,7 @@ const JSTimers = {
     }
 
     if (requestIdleCallbacks.length === 0) {
-      Timing.setSendIdleEvents(false);
+      setSendIdleEvents(false);
     }
 
     if (errors) {
@@ -454,7 +437,7 @@ const JSTimers = {
    * before we hand control back to native.
    */
   callImmediates() {
-    errors = null;
+    errors = (null: ?Array<Error>);
     while (_callImmediatesPass()) {}
     if (errors) {
       errors.forEach(error =>
@@ -477,8 +460,44 @@ const JSTimers = {
   },
 };
 
-let ExportedJSTimers;
-if (!Timing) {
+function createTimer(
+  callbackID: number,
+  duration: number,
+  jsSchedulingTime: number,
+  repeats: boolean,
+): void {
+  invariant(NativeTiming, 'NativeTiming is available');
+  NativeTiming.createTimer(callbackID, duration, jsSchedulingTime, repeats);
+}
+
+function deleteTimer(timerID: number): void {
+  invariant(NativeTiming, 'NativeTiming is available');
+  NativeTiming.deleteTimer(timerID);
+}
+
+function setSendIdleEvents(sendIdleEvents: boolean): void {
+  invariant(NativeTiming, 'NativeTiming is available');
+  NativeTiming.setSendIdleEvents(sendIdleEvents);
+}
+
+let ExportedJSTimers: {|
+  callIdleCallbacks: (frameTime: number) => any | void,
+  callImmediates: () => void,
+  callTimers: (timersToCall: Array<number>) => any | void,
+  cancelAnimationFrame: (timerID: number) => void,
+  cancelIdleCallback: (timerID: number) => void,
+  clearImmediate: (timerID: number) => void,
+  clearInterval: (timerID: number) => void,
+  clearTimeout: (timerID: number) => void,
+  emitTimeDriftWarning: (warningMessage: string) => any | void,
+  requestAnimationFrame: (func: any) => any | number,
+  requestIdleCallback: (func: any, options: ?any) => any | number,
+  setImmediate: (func: any, ...args: any) => number,
+  setInterval: (func: any, duration: number, ...args: any) => number,
+  setTimeout: (func: any, duration: number, ...args: any) => number,
+|};
+
+if (!NativeTiming) {
   console.warn("Timing native module is not available, can't set timers.");
   // $FlowFixMe: we can assume timers are generally available
   ExportedJSTimers = ({
@@ -489,8 +508,6 @@ if (!Timing) {
   ExportedJSTimers = JSTimers;
 }
 
-BatchedBridge.setImmediatesCallback(
-  ExportedJSTimers.callImmediates.bind(ExportedJSTimers),
-);
+BatchedBridge.setImmediatesCallback(JSTimers.callImmediates);
 
 module.exports = ExportedJSTimers;

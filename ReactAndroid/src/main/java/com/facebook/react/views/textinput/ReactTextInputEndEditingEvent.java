@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -13,8 +13,8 @@ import com.facebook.react.uimanager.events.Event;
 import com.facebook.react.uimanager.events.RCTEventEmitter;
 
 /**
- * Event emitted by EditText native view when text editing ends,
- * because of the user leaving the text input.
+ * Event emitted by EditText native view when text editing ends, because of the user leaving the
+ * text input.
  */
 class ReactTextInputEndEditingEvent extends Event<ReactTextInputEndEditingEvent> {
 
@@ -22,9 +22,7 @@ class ReactTextInputEndEditingEvent extends Event<ReactTextInputEndEditingEvent>
 
   private String mText;
 
-  public ReactTextInputEndEditingEvent(
-      int viewId,
-      String text) {
+  public ReactTextInputEndEditingEvent(int viewId, String text) {
     super(viewId);
     mText = text;
   }

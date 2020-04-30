@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -20,6 +20,17 @@ inline std::string toString(const LayoutDirection &layoutDirection) {
       return "ltr";
     case LayoutDirection::RightToLeft:
       return "rtl";
+  }
+}
+
+inline int toInt(const LayoutDirection &layoutDirection) {
+  switch (layoutDirection) {
+    case LayoutDirection::Undefined:
+      return 0;
+    case LayoutDirection::LeftToRight:
+      return 1;
+    case LayoutDirection::RightToLeft:
+      return 2;
   }
 }
 

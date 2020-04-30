@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -8,8 +8,8 @@
 #pragma once
 
 #include <folly/SharedMutex.h>
-#include <shared_mutex>
 #include <mutex>
+#include <shared_mutex>
 
 namespace facebook {
 namespace better {

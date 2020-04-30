@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -7,7 +7,7 @@
 
 #include "SliderMeasurementsManager.h"
 
-#include <fb/fbjni.h>
+#include <fbjni/fbjni.h>
 #include <react/core/conversions.h>
 #include <react/jni/ReadableNativeMap.h>
 
@@ -17,6 +17,7 @@ namespace facebook {
 namespace react {
 
 Size SliderMeasurementsManager::measure(
+    SurfaceId surfaceId,
     LayoutConstraints layoutConstraints) const {
   {
     std::lock_guard<std::mutex> lock(mutex_);
@@ -26,38 +27,37 @@ Size SliderMeasurementsManager::measure(
   }
 
   const jni::global_ref<jobject> &fabricUIManager =
-      contextContainer_->getInstance<jni::global_ref<jobject>>(
-          "FabricUIManager");
+      contextContainer_->at<jni::global_ref<jobject>>("FabricUIManager");
 
   static auto measure =
       jni::findClassStatic("com/facebook/react/fabric/FabricUIManager")
           ->getMethod<jlong(
+              jint,
               jstring,
               ReadableMap::javaobject,
               ReadableMap::javaobject,
-              jint,
-              jint,
-              jint,
-              jint)>("measure");
+              ReadableMap::javaobject,
+              jfloat,
+              jfloat,
+              jfloat,
+              jfloat)>("measure");
 
   auto minimumSize = layoutConstraints.minimumSize;
   auto maximumSize = layoutConstraints.maximumSize;
-  int minWidth = (int)minimumSize.width;
-  int minHeight = (int)minimumSize.height;
-  int maxWidth = (int)maximumSize.width;
-  int maxHeight = (int)maximumSize.height;
 
   local_ref<JString> componentName = make_jstring("RCTSlider");
 
   auto measurement = yogaMeassureToSize(measure(
       fabricUIManager,
+      surfaceId,
       componentName.get(),
       nullptr,
       nullptr,
-      minWidth,
-      maxWidth,
-      minHeight,
-      maxHeight));
+      nullptr,
+      minimumSize.width,
+      maximumSize.width,
+      minimumSize.height,
+      maximumSize.height));
 
   std::lock_guard<std::mutex> lock(mutex_);
   cachedMeasurement_ = measurement;

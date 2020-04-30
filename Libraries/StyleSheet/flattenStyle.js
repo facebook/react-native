@@ -7,12 +7,13 @@
  * @flow strict-local
  * @format
  */
+
 'use strict';
 
 import type {
   DangerouslyImpreciseStyle,
   DangerouslyImpreciseStyleProp,
-} from 'StyleSheet';
+} from './StyleSheet';
 
 function flattenStyle(
   style: ?DangerouslyImpreciseStyleProp,

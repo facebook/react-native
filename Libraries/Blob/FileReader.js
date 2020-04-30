@@ -10,9 +10,10 @@
 
 'use strict';
 
+const Blob = require('./Blob');
 const EventTarget = require('event-target-shim');
-const Blob = require('Blob');
-const {FileReaderModule} = require('NativeModules');
+
+import NativeFileReaderModule from './NativeFileReaderModule';
 
 type ReadyState =
   | 0 // EMPTY
@@ -34,14 +35,14 @@ const EMPTY = 0;
 const LOADING = 1;
 const DONE = 2;
 
-class FileReader extends EventTarget(...READER_EVENTS) {
-  static EMPTY = EMPTY;
-  static LOADING = LOADING;
-  static DONE = DONE;
+class FileReader extends (EventTarget(...READER_EVENTS): any) {
+  static EMPTY: number = EMPTY;
+  static LOADING: number = LOADING;
+  static DONE: number = DONE;
 
-  EMPTY = EMPTY;
-  LOADING = LOADING;
-  DONE = DONE;
+  EMPTY: number = EMPTY;
+  LOADING: number = LOADING;
+  DONE: number = DONE;
 
   _readyState: ReadyState;
   _error: ?Error;
@@ -84,10 +85,16 @@ class FileReader extends EventTarget(...READER_EVENTS) {
     throw new Error('FileReader.readAsArrayBuffer is not implemented');
   }
 
-  readAsDataURL(blob: Blob) {
+  readAsDataURL(blob: ?Blob) {
     this._aborted = false;
 
-    FileReaderModule.readAsDataURL(blob.data).then(
+    if (blob == null) {
+      throw new TypeError(
+        "Failed to execute 'readAsDataURL' on 'FileReader': parameter 1 is not of type 'Blob'",
+      );
+    }
+
+    NativeFileReaderModule.readAsDataURL(blob.data).then(
       (text: string) => {
         if (this._aborted) {
           return;
@@ -105,10 +112,16 @@ class FileReader extends EventTarget(...READER_EVENTS) {
     );
   }
 
-  readAsText(blob: Blob, encoding: string = 'UTF-8') {
+  readAsText(blob: ?Blob, encoding: string = 'UTF-8') {
     this._aborted = false;
 
-    FileReaderModule.readAsText(blob.data, encoding).then(
+    if (blob == null) {
+      throw new TypeError(
+        "Failed to execute 'readAsText' on 'FileReader': parameter 1 is not of type 'Blob'",
+      );
+    }
+
+    NativeFileReaderModule.readAsText(blob.data, encoding).then(
       (text: string) => {
         if (this._aborted) {
           return;

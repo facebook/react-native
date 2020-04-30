@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -19,6 +19,8 @@
 #import <React/RCTUtils.h>
 
 #import "RCTSurfacePresenter.h"
+
+using namespace facebook::react;
 
 @implementation RCTFabricSurface {
   // Immutable
@@ -55,8 +57,6 @@
     _touchHandler = [RCTSurfaceTouchHandler new];
 
     _stage = RCTSurfaceStageSurfaceDidInitialize;
-
-    [_surfacePresenter registerSurface:self];
   }
 
   return self;
@@ -67,8 +67,7 @@
   if (![self _setStage:RCTSurfaceStageStarted]) {
     return NO;
   }
-
-  [_surfacePresenter startSurface:self];
+  [_surfacePresenter registerSurface:self];
 
   return YES;
 }
@@ -88,7 +87,7 @@
   [self stop];
 }
 
-#pragma mark - Immutable Properties (no need to enforce synchonization)
+#pragma mark - Immutable Properties (no need to enforce synchronization)
 
 - (NSString *)moduleName
 {
@@ -256,10 +255,9 @@
 
 #pragma mark - Synchronous Waiting
 
-- (BOOL)synchronouslyWaitForStage:(RCTSurfaceStage)stage timeout:(NSTimeInterval)timeout
+- (BOOL)synchronouslyWaitFor:(NSTimeInterval)timeout
 {
-  // TODO: Not supported yet.
-  return NO;
+  return [_surfacePresenter synchronouslyWaitSurface:self timeout:timeout];
 }
 
 #pragma mark - Deprecated

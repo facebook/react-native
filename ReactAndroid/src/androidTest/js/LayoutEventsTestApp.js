@@ -9,11 +9,10 @@
 
 'use strict';
 
-const React = require('React');
-const View = require('View');
-const StyleSheet = require('StyleSheet');
+const React = require('react');
+const {NativeModules, StyleSheet, View} = require('react-native');
 
-const RecordingModule = require('NativeModules').Recording;
+const {Recording: RecordingModule} = NativeModules;
 
 const LAYOUT_SPECS = [
   [10, 10, 100, 100],

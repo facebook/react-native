@@ -7,16 +7,24 @@
  * @flow
  * @format
  */
+
 'use strict';
 
 const {AnimatedEvent} = require('./AnimatedEvent');
 const AnimatedProps = require('./nodes/AnimatedProps');
-const React = require('React');
-const DeprecatedViewStylePropTypes = require('DeprecatedViewStylePropTypes');
+const React = require('react');
 
 const invariant = require('invariant');
+const setAndForwardRef = require('../../Utilities/setAndForwardRef');
 
-function createAnimatedComponent(Component: any): any {
+export type AnimatedComponentType<
+  Props: {+[string]: mixed, ...},
+  Instance,
+> = React.AbstractComponent<$ObjMap<Props, () => any>, Instance>;
+
+function createAnimatedComponent<Props: {+[string]: mixed, ...}, Instance>(
+  Component: React.AbstractComponent<Props, Instance>,
+): AnimatedComponentType<Props, Instance> {
   invariant(
     typeof Component !== 'function' ||
       (Component.prototype && Component.prototype.isReactComponent),
@@ -25,45 +33,16 @@ function createAnimatedComponent(Component: any): any {
   );
 
   class AnimatedComponent extends React.Component<Object> {
-    _component: any;
+    _component: any; // TODO T53738161: flow type this, and the whole file
     _invokeAnimatedPropsCallbackOnMount: boolean = false;
     _prevComponent: any;
     _propsAnimated: AnimatedProps;
     _eventDetachers: Array<Function> = [];
 
-    static __skipSetNativeProps_FOR_TESTS_ONLY = false;
-
-    constructor(props: Object) {
-      super(props);
-    }
-
-    componentWillUnmount() {
-      this._propsAnimated && this._propsAnimated.__detach();
-      this._detachNativeEvents();
-    }
-
-    setNativeProps(props) {
-      this._component.setNativeProps(props);
-    }
-
-    UNSAFE_componentWillMount() {
-      this._attachProps(this.props);
-    }
-
-    componentDidMount() {
-      if (this._invokeAnimatedPropsCallbackOnMount) {
-        this._invokeAnimatedPropsCallbackOnMount = false;
-        this._animatedPropsCallback();
-      }
-
-      this._propsAnimated.setNativeView(this._component);
-      this._attachNativeEvents();
-    }
-
     _attachNativeEvents() {
       // Make sure to get the scrollable node for components that implement
       // `ScrollResponder.Mixin`.
-      const scrollableNode = this._component.getScrollableNode
+      const scrollableNode = this._component?.getScrollableNode
         ? this._component.getScrollableNode()
         : this._component;
 
@@ -95,8 +74,33 @@ function createAnimatedComponent(Component: any): any {
         // So a deferred call won't always be invoked.
         this._invokeAnimatedPropsCallbackOnMount = true;
       } else if (
-        AnimatedComponent.__skipSetNativeProps_FOR_TESTS_ONLY ||
-        typeof this._component.setNativeProps !== 'function'
+        process.env.NODE_ENV === 'test' ||
+        // For animating properties of non-leaf/non-native components
+        typeof this._component.setNativeProps !== 'function' ||
+        // In Fabric, force animations to go through forceUpdate and skip setNativeProps
+        // eslint-disable-next-line dot-notation
+        this._component['_internalInstanceHandle']?.stateNode?.canonical !=
+          null ||
+        // Some components have a setNativeProps function but aren't a host component
+        // such as lists like FlatList and SectionList. These should also use
+        // forceUpdate in Fabric since setNativeProps doesn't exist on the underlying
+        // host component. This crazy hack is essentially special casing those lists and
+        // ScrollView itself to use forceUpdate in Fabric.
+        // If these components end up using forwardRef then these hacks can go away
+        // as this._component would actually be the underlying host component and the above check
+        // would be sufficient.
+        (this._component.getNativeScrollRef != null &&
+          this._component.getNativeScrollRef() != null &&
+          // eslint-disable-next-line dot-notation
+          this._component.getNativeScrollRef()['_internalInstanceHandle']
+            ?.stateNode?.canonical != null) ||
+        (this._component.getScrollResponder != null &&
+          this._component.getScrollResponder().getNativeScrollRef != null &&
+          this._component.getScrollResponder().getNativeScrollRef() != null &&
+          this._component.getScrollResponder().getNativeScrollRef()[
+            // eslint-disable-next-line dot-notation
+            '_internalInstanceHandle'
+          ]?.stateNode?.canonical != null)
       ) {
         this.forceUpdate();
       } else if (!this._propsAnimated.__isNative) {
@@ -128,22 +132,32 @@ function createAnimatedComponent(Component: any): any {
       // This way the intermediate state isn't to go to 0 and trigger
       // this expensive recursive detaching to then re-attach everything on
       // the very next operation.
-      oldPropsAnimated && oldPropsAnimated.__detach();
-    }
-
-    UNSAFE_componentWillReceiveProps(newProps) {
-      this._attachProps(newProps);
-    }
-
-    componentDidUpdate(prevProps) {
-      if (this._component !== this._prevComponent) {
-        this._propsAnimated.setNativeView(this._component);
-      }
-      if (this._component !== this._prevComponent || prevProps !== this.props) {
-        this._detachNativeEvents();
-        this._attachNativeEvents();
+      if (oldPropsAnimated) {
+        oldPropsAnimated.__restoreDefaultValues();
+        oldPropsAnimated.__detach();
       }
     }
+
+    _setComponentRef = setAndForwardRef({
+      getForwardedRef: () => this.props.forwardedRef,
+      setLocalRef: ref => {
+        this._prevComponent = this._component;
+        this._component = ref;
+
+        // TODO: Delete this in a future release.
+        if (ref != null && ref.getNode == null) {
+          ref.getNode = () => {
+            console.warn(
+              '%s: Calling `getNode()` on the ref of an Animated component ' +
+                'is no longer necessary. You can now directly use the ref ' +
+                'instead. This method will be removed in a future release.',
+              ref.constructor.name ?? '<<anonymous>>',
+            );
+            return ref;
+          };
+        }
+      },
+    });
 
     render() {
       const props = this._propsAnimated.__getValue();
@@ -162,43 +176,48 @@ function createAnimatedComponent(Component: any): any {
       );
     }
 
-    _setComponentRef = c => {
-      this._prevComponent = this._component;
-      this._component = c;
-    };
+    UNSAFE_componentWillMount() {
+      this._attachProps(this.props);
+    }
 
-    // A third party library can use getNode()
-    // to get the node reference of the decorated component
-    getNode() {
-      return this._component;
+    componentDidMount() {
+      if (this._invokeAnimatedPropsCallbackOnMount) {
+        this._invokeAnimatedPropsCallbackOnMount = false;
+        this._animatedPropsCallback();
+      }
+
+      this._propsAnimated.setNativeView(this._component);
+      this._attachNativeEvents();
+    }
+
+    UNSAFE_componentWillReceiveProps(newProps) {
+      this._attachProps(newProps);
+    }
+
+    componentDidUpdate(prevProps) {
+      if (this._component !== this._prevComponent) {
+        this._propsAnimated.setNativeView(this._component);
+      }
+      if (this._component !== this._prevComponent || prevProps !== this.props) {
+        this._detachNativeEvents();
+        this._attachNativeEvents();
+      }
+    }
+
+    componentWillUnmount() {
+      this._propsAnimated && this._propsAnimated.__detach();
+      this._detachNativeEvents();
     }
   }
 
-  const propTypes = Component.propTypes;
-
-  AnimatedComponent.propTypes = {
-    style: function(props, propName, componentName) {
-      if (!propTypes) {
-        return;
-      }
-
-      for (const key in DeprecatedViewStylePropTypes) {
-        if (!propTypes[key] && props[key] !== undefined) {
-          console.warn(
-            'You are setting the style `{ ' +
-              key +
-              ': ... }` as a prop. You ' +
-              'should nest it in a style object. ' +
-              'E.g. `{ style: { ' +
-              key +
-              ': ... } }`',
-          );
-        }
-      }
-    },
-  };
-
-  return AnimatedComponent;
+  return React.forwardRef(function AnimatedComponentWrapper(props, ref) {
+    return (
+      <AnimatedComponent
+        {...props}
+        {...(ref == null ? null : {forwardedRef: ref})}
+      />
+    );
+  });
 }
 
 module.exports = createAnimatedComponent;

@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -7,15 +7,15 @@
 
 package com.facebook.react.animated;
 
+import androidx.annotation.Nullable;
 import com.facebook.react.bridge.ReadableMap;
-
-import javax.annotation.Nullable;
 
 /**
  * Basic type of animated node that maps directly from {@code Animated.Value(x)} of Animated.js
  * library.
  */
 /*package*/ class ValueAnimatedNode extends AnimatedNode {
+  /*package*/ Object mAnimatedObject = null;
   /*package*/ double mValue = Double.NaN;
   /*package*/ double mOffset = 0;
   private @Nullable AnimatedNodeValueListener mValueListener;
@@ -30,7 +30,14 @@ import javax.annotation.Nullable;
   }
 
   public double getValue() {
+    if (Double.isNaN(mOffset + mValue)) {
+      this.update();
+    }
     return mOffset + mValue;
+  }
+
+  public Object getAnimatedObject() {
+    return mAnimatedObject;
   }
 
   public void flattenOffset() {

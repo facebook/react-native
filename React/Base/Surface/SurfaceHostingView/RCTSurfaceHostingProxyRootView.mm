@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -19,7 +19,8 @@
 #import "RCTSurface.h"
 #import "UIView+React.h"
 
-static RCTSurfaceSizeMeasureMode convertToSurfaceSizeMeasureMode(RCTRootViewSizeFlexibility sizeFlexibility) {
+static RCTSurfaceSizeMeasureMode convertToSurfaceSizeMeasureMode(RCTRootViewSizeFlexibility sizeFlexibility)
+{
   switch (sizeFlexibility) {
     case RCTRootViewSizeFlexibilityWidthAndHeight:
       return RCTSurfaceSizeMeasureModeWidthUndefined | RCTSurfaceSizeMeasureModeHeightUndefined;
@@ -32,7 +33,8 @@ static RCTSurfaceSizeMeasureMode convertToSurfaceSizeMeasureMode(RCTRootViewSize
   }
 }
 
-static RCTRootViewSizeFlexibility convertToRootViewSizeFlexibility(RCTSurfaceSizeMeasureMode sizeMeasureMode) {
+static RCTRootViewSizeFlexibility convertToRootViewSizeFlexibility(RCTSurfaceSizeMeasureMode sizeMeasureMode)
+{
   switch (sizeMeasureMode) {
     case RCTSurfaceSizeMeasureModeWidthUndefined | RCTSurfaceSizeMeasureModeHeightUndefined:
       return RCTRootViewSizeFlexibilityWidthAndHeight;
@@ -67,9 +69,12 @@ static RCTRootViewSizeFlexibility convertToRootViewSizeFlexibility(RCTSurfaceSiz
   // `RCTRootViewSizeFlexibilityNone` is the RCTRootView's default.
   RCTSurfaceSizeMeasureMode sizeMeasureMode = convertToSurfaceSizeMeasureMode(RCTRootViewSizeFlexibilityNone);
 
-  if (self = [super initWithBridge:bridge moduleName:moduleName initialProperties:initialProperties sizeMeasureMode:sizeMeasureMode]) {
+  RCTSurface *surface = [[self class] createSurfaceWithBridge:bridge
+                                                   moduleName:moduleName
+                                            initialProperties:initialProperties];
+  [surface start];
+  if (self = [super initWithSurface:surface sizeMeasureMode:sizeMeasureMode]) {
     self.backgroundColor = [UIColor whiteColor];
-    [super.surface start];
   }
 
   RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"");
@@ -82,17 +87,15 @@ static RCTRootViewSizeFlexibility convertToRootViewSizeFlexibility(RCTSurfaceSiz
                 initialProperties:(NSDictionary *)initialProperties
                     launchOptions:(NSDictionary *)launchOptions
 {
-  RCTBridge *bridge = [[RCTBridge alloc] initWithBundleURL:bundleURL
-                                            moduleProvider:nil
-                                             launchOptions:launchOptions];
+  RCTBridge *bridge = [[RCTBridge alloc] initWithBundleURL:bundleURL moduleProvider:nil launchOptions:launchOptions];
 
   return [self initWithBridge:bridge moduleName:moduleName initialProperties:initialProperties];
 }
 
-RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
-RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
+RCT_NOT_IMPLEMENTED(-(instancetype)initWithFrame : (CGRect)frame)
+RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (NSCoder *)aDecoder)
 
-# pragma mark proxy methods to RCTSurfaceHostingView
+#pragma mark proxy methods to RCTSurfaceHostingView
 
 - (NSString *)moduleName
 {
@@ -136,7 +139,8 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 
 - (void)setLoadingView:(UIView *)loadingView
 {
-  super.activityIndicatorViewFactory = ^UIView *(void) {
+  super.activityIndicatorViewFactory = ^UIView *(void)
+  {
     return loadingView;
   };
 }
@@ -149,8 +153,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   if (RCTSurfaceStageIsRunning(stage)) {
     [_bridge.performanceLogger markStopForTag:RCTPLTTI];
     dispatch_async(dispatch_get_main_queue(), ^{
-      [[NSNotificationCenter defaultCenter] postNotificationName:RCTContentDidAppearNotification
-                                                          object:self];
+      [[NSNotificationCenter defaultCenter] postNotificationName:RCTContentDidAppearNotification object:self];
     });
   }
 }
@@ -177,4 +180,3 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 }
 
 @end
-

@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -7,8 +7,7 @@
 
 package com.facebook.react.common.futures;
 
-import javax.annotation.Nullable;
-
+import androidx.annotation.Nullable;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
@@ -73,12 +72,12 @@ public class SimpleSettableFuture<T> implements Future<T> {
    * Wait up to the timeout time for another Thread to set a value on this future. If a value has
    * already been set, this method will return immediately.
    *
-   * NB: For simplicity, we catch and wrap InterruptedException. Do NOT use this class if you
-   * are in the 1% of cases where you actually want to handle that.
+   * <p>NB: For simplicity, we catch and wrap InterruptedException. Do NOT use this class if you are
+   * in the 1% of cases where you actually want to handle that.
    */
   @Override
-  public @Nullable T get(long timeout, TimeUnit unit) throws
-      InterruptedException, ExecutionException, TimeoutException {
+  public @Nullable T get(long timeout, TimeUnit unit)
+      throws InterruptedException, ExecutionException, TimeoutException {
     if (!mReadyLatch.await(timeout, unit)) {
       throw new TimeoutException("Timed out waiting for result");
     }
@@ -90,8 +89,7 @@ public class SimpleSettableFuture<T> implements Future<T> {
   }
 
   /**
-   * Convenience wrapper for {@link #get()} that re-throws get()'s Exceptions as
-   * RuntimeExceptions.
+   * Convenience wrapper for {@link #get()} that re-throws get()'s Exceptions as RuntimeExceptions.
    */
   public @Nullable T getOrThrow() {
     try {

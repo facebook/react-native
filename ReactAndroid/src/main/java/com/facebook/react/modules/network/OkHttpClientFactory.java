@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -10,5 +10,5 @@ package com.facebook.react.modules.network;
 import okhttp3.OkHttpClient;
 
 public interface OkHttpClientFactory {
-    OkHttpClient createNewNetworkModuleClient();
+  OkHttpClient createNewNetworkModuleClient();
 };

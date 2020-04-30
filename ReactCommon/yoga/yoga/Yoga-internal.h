@@ -1,9 +1,10 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the MIT license found in the LICENSE
- * file in the root directory of this source tree.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
+
 #pragma once
 #include <algorithm>
 #include <array>
@@ -15,12 +16,6 @@
 using YGVector = std::vector<YGNodeRef>;
 
 YG_EXTERN_C_BEGIN
-
-WIN_EXPORT float YGRoundValueToPixelGrid(
-    const float value,
-    const float pointScaleFactor,
-    const bool forceCeil,
-    const bool forceFloor);
 
 void YGNodeCalculateLayoutWithContext(
     YGNodeRef node,
@@ -59,10 +54,10 @@ struct YGCachedMeasurement {
   float computedHeight;
 
   YGCachedMeasurement()
-      : availableWidth(0),
-        availableHeight(0),
-        widthMeasureMode((YGMeasureMode) -1),
-        heightMeasureMode((YGMeasureMode) -1),
+      : availableWidth(-1),
+        availableHeight(-1),
+        widthMeasureMode(YGMeasureModeUndefined),
+        heightMeasureMode(YGMeasureModeUndefined),
         computedWidth(-1),
         computedHeight(-1) {}
 
@@ -91,9 +86,9 @@ struct YGCachedMeasurement {
   }
 };
 
-// This value was chosen based on empiracle data. Even the most complicated
-// layouts should not require more than 16 entries to fit within the cache.
-#define YG_MAX_CACHED_RESULT_COUNT 16
+// This value was chosen based on empirical data:
+// 98% of analyzed layouts require less than 8 entries.
+#define YG_MAX_CACHED_RESULT_COUNT 8
 
 namespace facebook {
 namespace yoga {
@@ -110,12 +105,8 @@ public:
     values_.fill(defaultValue);
   }
 
-  const CompactValue& operator[](size_t i) const noexcept {
-    return values_[i];
-  }
-  CompactValue& operator[](size_t i) noexcept {
-    return values_[i];
-  }
+  const CompactValue& operator[](size_t i) const noexcept { return values_[i]; }
+  CompactValue& operator[](size_t i) noexcept { return values_[i]; }
 
   template <size_t I>
   YGValue get() const noexcept {

@@ -1,0 +1,682 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`GenerateEventEmitterH can generate fixture ARRAY_PROPS 1`] = `
+Map {
+  "EventEmitters.h" => "
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+#pragma once
+
+#include <react/components/view/ViewEventEmitter.h>
+
+namespace facebook {
+namespace react {
+
+
+
+} // namespace react
+} // namespace facebook
+",
+}
+`;
+
+exports[`GenerateEventEmitterH can generate fixture ARRAY_PROPS_WITH_NESTED_OBJECT 1`] = `
+Map {
+  "EventEmitters.h" => "
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+#pragma once
+
+#include <react/components/view/ViewEventEmitter.h>
+
+namespace facebook {
+namespace react {
+
+
+
+} // namespace react
+} // namespace facebook
+",
+}
+`;
+
+exports[`GenerateEventEmitterH can generate fixture BOOLEAN_PROP 1`] = `
+Map {
+  "EventEmitters.h" => "
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+#pragma once
+
+#include <react/components/view/ViewEventEmitter.h>
+
+namespace facebook {
+namespace react {
+
+
+
+} // namespace react
+} // namespace facebook
+",
+}
+`;
+
+exports[`GenerateEventEmitterH can generate fixture COLOR_PROP 1`] = `
+Map {
+  "EventEmitters.h" => "
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+#pragma once
+
+#include <react/components/view/ViewEventEmitter.h>
+
+namespace facebook {
+namespace react {
+
+
+
+} // namespace react
+} // namespace facebook
+",
+}
+`;
+
+exports[`GenerateEventEmitterH can generate fixture COMMANDS 1`] = `
+Map {
+  "EventEmitters.h" => "
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+#pragma once
+
+#include <react/components/view/ViewEventEmitter.h>
+
+namespace facebook {
+namespace react {
+
+
+
+} // namespace react
+} // namespace facebook
+",
+}
+`;
+
+exports[`GenerateEventEmitterH can generate fixture COMMANDS_AND_PROPS 1`] = `
+Map {
+  "EventEmitters.h" => "
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+#pragma once
+
+#include <react/components/view/ViewEventEmitter.h>
+
+namespace facebook {
+namespace react {
+
+
+
+} // namespace react
+} // namespace facebook
+",
+}
+`;
+
+exports[`GenerateEventEmitterH can generate fixture DOUBLE_PROPS 1`] = `
+Map {
+  "EventEmitters.h" => "
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+#pragma once
+
+#include <react/components/view/ViewEventEmitter.h>
+
+namespace facebook {
+namespace react {
+
+
+
+} // namespace react
+} // namespace facebook
+",
+}
+`;
+
+exports[`GenerateEventEmitterH can generate fixture EVENT_NESTED_OBJECT_PROPS 1`] = `
+Map {
+  "EventEmitters.h" => "
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+#pragma once
+
+#include <react/components/view/ViewEventEmitter.h>
+
+namespace facebook {
+namespace react {
+
+class EventsNestedObjectNativeComponentEventEmitter : public ViewEventEmitter {
+ public:
+  using ViewEventEmitter::ViewEventEmitter;
+
+  struct OnChangeLocationSource {
+      std::string url;
+    };
+
+  struct OnChangeLocation {
+      OnChangeLocationSource source;
+    int x;
+    int y;
+    };
+
+  struct OnChange {
+      OnChangeLocation location;
+    };
+
+  void onChange(OnChange value) const;
+};
+
+} // namespace react
+} // namespace facebook
+",
+}
+`;
+
+exports[`GenerateEventEmitterH can generate fixture EVENT_PROPS 1`] = `
+Map {
+  "EventEmitters.h" => "
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+#pragma once
+
+#include <react/components/view/ViewEventEmitter.h>
+
+namespace facebook {
+namespace react {
+
+class EventsNativeComponentEventEmitter : public ViewEventEmitter {
+ public:
+  using ViewEventEmitter::ViewEventEmitter;
+
+  struct OnChange {
+      bool value;
+    std::string source;
+    int progress;
+    Float scale;
+    };
+
+  struct OnEventDirect {
+      bool value;
+    };
+
+  enum class OnOrientationChangeOrientation {
+    Landscape,
+    Portrait
+  };
+
+  static char const *toString(const OnOrientationChangeOrientation value) {
+    switch (value) {
+      case OnOrientationChangeOrientation::Landscape: return \\"landscape\\";
+      case OnOrientationChangeOrientation::Portrait: return \\"portrait\\";
+    }
+  }
+
+  struct OnOrientationChange {
+      OnOrientationChangeOrientation orientation;
+    };
+
+  void onChange(OnChange value) const;
+
+  void onEventDirect(OnEventDirect value) const;
+
+  void onOrientationChange(OnOrientationChange value) const;
+
+  void onEnd() const;
+};
+
+} // namespace react
+} // namespace facebook
+",
+}
+`;
+
+exports[`GenerateEventEmitterH can generate fixture EVENTS_WITH_PAPER_NAME 1`] = `
+Map {
+  "EventEmitters.h" => "
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+#pragma once
+
+#include <react/components/view/ViewEventEmitter.h>
+
+namespace facebook {
+namespace react {
+
+class InterfaceOnlyComponentEventEmitter : public ViewEventEmitter {
+ public:
+  using ViewEventEmitter::ViewEventEmitter;
+
+  struct OnChange {
+      bool value;
+    };
+
+  struct OnDire tChange {
+      bool value;
+    };
+
+  void onChange(OnChange value) const;
+
+  void onDire tChange(OnDire tChange value) const;
+};
+
+} // namespace react
+} // namespace facebook
+",
+}
+`;
+
+exports[`GenerateEventEmitterH can generate fixture EXCLUDE_ANDROID 1`] = `
+Map {
+  "EventEmitters.h" => "
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+#pragma once
+
+#include <react/components/view/ViewEventEmitter.h>
+
+namespace facebook {
+namespace react {
+
+
+
+} // namespace react
+} // namespace facebook
+",
+}
+`;
+
+exports[`GenerateEventEmitterH can generate fixture FLOAT_PROPS 1`] = `
+Map {
+  "EventEmitters.h" => "
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+#pragma once
+
+#include <react/components/view/ViewEventEmitter.h>
+
+namespace facebook {
+namespace react {
+
+
+
+} // namespace react
+} // namespace facebook
+",
+}
+`;
+
+exports[`GenerateEventEmitterH can generate fixture IMAGE_PROP 1`] = `
+Map {
+  "EventEmitters.h" => "
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+#pragma once
+
+#include <react/components/view/ViewEventEmitter.h>
+
+namespace facebook {
+namespace react {
+
+
+
+} // namespace react
+} // namespace facebook
+",
+}
+`;
+
+exports[`GenerateEventEmitterH can generate fixture INSETS_PROP 1`] = `
+Map {
+  "EventEmitters.h" => "
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+#pragma once
+
+#include <react/components/view/ViewEventEmitter.h>
+
+namespace facebook {
+namespace react {
+
+
+
+} // namespace react
+} // namespace facebook
+",
+}
+`;
+
+exports[`GenerateEventEmitterH can generate fixture INT32_ENUM_PROP 1`] = `
+Map {
+  "EventEmitters.h" => "
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+#pragma once
+
+#include <react/components/view/ViewEventEmitter.h>
+
+namespace facebook {
+namespace react {
+
+
+
+} // namespace react
+} // namespace facebook
+",
+}
+`;
+
+exports[`GenerateEventEmitterH can generate fixture INTEGER_PROPS 1`] = `
+Map {
+  "EventEmitters.h" => "
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+#pragma once
+
+#include <react/components/view/ViewEventEmitter.h>
+
+namespace facebook {
+namespace react {
+
+
+
+} // namespace react
+} // namespace facebook
+",
+}
+`;
+
+exports[`GenerateEventEmitterH can generate fixture INTERFACE_ONLY 1`] = `
+Map {
+  "EventEmitters.h" => "
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+#pragma once
+
+#include <react/components/view/ViewEventEmitter.h>
+
+namespace facebook {
+namespace react {
+
+class InterfaceOnlyComponentEventEmitter : public ViewEventEmitter {
+ public:
+  using ViewEventEmitter::ViewEventEmitter;
+
+  struct OnChange {
+      bool value;
+    };
+
+  void onChange(OnChange value) const;
+};
+
+} // namespace react
+} // namespace facebook
+",
+}
+`;
+
+exports[`GenerateEventEmitterH can generate fixture MULTI_NATIVE_PROP 1`] = `
+Map {
+  "EventEmitters.h" => "
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+#pragma once
+
+#include <react/components/view/ViewEventEmitter.h>
+
+namespace facebook {
+namespace react {
+
+
+
+} // namespace react
+} // namespace facebook
+",
+}
+`;
+
+exports[`GenerateEventEmitterH can generate fixture NO_PROPS_NO_EVENTS 1`] = `
+Map {
+  "EventEmitters.h" => "
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+#pragma once
+
+#include <react/components/view/ViewEventEmitter.h>
+
+namespace facebook {
+namespace react {
+
+
+
+} // namespace react
+} // namespace facebook
+",
+}
+`;
+
+exports[`GenerateEventEmitterH can generate fixture OBJECT_PROPS 1`] = `
+Map {
+  "EventEmitters.h" => "
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+#pragma once
+
+#include <react/components/view/ViewEventEmitter.h>
+
+namespace facebook {
+namespace react {
+
+
+
+} // namespace react
+} // namespace facebook
+",
+}
+`;
+
+exports[`GenerateEventEmitterH can generate fixture POINT_PROP 1`] = `
+Map {
+  "EventEmitters.h" => "
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+#pragma once
+
+#include <react/components/view/ViewEventEmitter.h>
+
+namespace facebook {
+namespace react {
+
+
+
+} // namespace react
+} // namespace facebook
+",
+}
+`;
+
+exports[`GenerateEventEmitterH can generate fixture STRING_ENUM_PROP 1`] = `
+Map {
+  "EventEmitters.h" => "
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+#pragma once
+
+#include <react/components/view/ViewEventEmitter.h>
+
+namespace facebook {
+namespace react {
+
+
+
+} // namespace react
+} // namespace facebook
+",
+}
+`;
+
+exports[`GenerateEventEmitterH can generate fixture STRING_PROP 1`] = `
+Map {
+  "EventEmitters.h" => "
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+#pragma once
+
+#include <react/components/view/ViewEventEmitter.h>
+
+namespace facebook {
+namespace react {
+
+
+
+} // namespace react
+} // namespace facebook
+",
+}
+`;
+
+exports[`GenerateEventEmitterH can generate fixture TWO_COMPONENTS_DIFFERENT_FILES 1`] = `
+Map {
+  "EventEmitters.h" => "
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+#pragma once
+
+#include <react/components/view/ViewEventEmitter.h>
+
+namespace facebook {
+namespace react {
+
+
+
+} // namespace react
+} // namespace facebook
+",
+}
+`;
+
+exports[`GenerateEventEmitterH can generate fixture TWO_COMPONENTS_SAME_FILE 1`] = `
+Map {
+  "EventEmitters.h" => "
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+#pragma once
+
+#include <react/components/view/ViewEventEmitter.h>
+
+namespace facebook {
+namespace react {
+
+
+
+} // namespace react
+} // namespace facebook
+",
+}
+`;

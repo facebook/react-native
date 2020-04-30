@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -22,7 +22,7 @@ extern const char RawTextComponentName[];
  * <RawText> component must not have any children.
  */
 using RawTextShadowNode =
-    ConcreteShadowNode<RawTextComponentName, RawTextProps>;
+    ConcreteShadowNode<RawTextComponentName, ShadowNode, RawTextProps>;
 
 } // namespace react
 } // namespace facebook

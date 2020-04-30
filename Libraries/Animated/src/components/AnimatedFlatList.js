@@ -10,8 +10,23 @@
 
 'use strict';
 
-const FlatList = require('FlatList');
+import * as React from 'react';
 
-const createAnimatedComponent = require('createAnimatedComponent');
+const FlatList = require('../../../Lists/FlatList');
+const createAnimatedComponent = require('../createAnimatedComponent');
 
-module.exports = createAnimatedComponent(FlatList);
+import type {AnimatedComponentType} from '../createAnimatedComponent';
+
+/**
+ * @see https://github.com/facebook/react-native/commit/b8c8562
+ */
+const FlatListWithEventThrottle = React.forwardRef((props, ref) => (
+  <FlatList scrollEventThrottle={0.0001} {...props} ref={ref} />
+));
+
+module.exports = (createAnimatedComponent(
+  FlatListWithEventThrottle,
+): AnimatedComponentType<
+  React.ElementConfig<typeof FlatList>,
+  React.ElementRef<typeof FlatList>,
+>);

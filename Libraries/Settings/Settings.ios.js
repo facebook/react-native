@@ -10,15 +10,21 @@
 
 'use strict';
 
-const RCTDeviceEventEmitter = require('RCTDeviceEventEmitter');
-const RCTSettingsManager = require('NativeModules').SettingsManager;
+const RCTDeviceEventEmitter = require('../EventEmitter/RCTDeviceEventEmitter');
 
 const invariant = require('invariant');
 
-const subscriptions: Array<{keys: Array<string>, callback: ?Function}> = [];
+import NativeSettingsManager from './NativeSettingsManager';
+
+const subscriptions: Array<{
+  keys: Array<string>,
+  callback: ?Function,
+  ...
+}> = [];
 
 const Settings = {
-  _settings: RCTSettingsManager && RCTSettingsManager.settings,
+  _settings: (NativeSettingsManager &&
+    NativeSettingsManager.getConstants().settings: any),
 
   get(key: string): mixed {
     return this._settings[key];
@@ -26,7 +32,7 @@ const Settings = {
 
   set(settings: Object) {
     this._settings = Object.assign(this._settings, settings);
-    RCTSettingsManager.setValues(settings);
+    NativeSettingsManager.setValues(settings);
   },
 
   watchKeys(keys: string | Array<string>, callback: Function): number {

@@ -1,4 +1,4 @@
-load("//tools/build_defs/oss:rn_defs.bzl", "ANDROID", "FBJNI_TARGET", "IS_OSS_BUILD", "react_native_xplat_dep", "react_native_xplat_target", "rn_xplat_cxx_library")
+load("//tools/build_defs/oss:rn_defs.bzl", "ANDROID", "FBJNI_TARGET", "IS_OSS_BUILD", "react_native_target", "react_native_xplat_dep", "react_native_xplat_target", "rn_xplat_cxx_library")
 
 EXPORTED_HEADERS = [
     "CxxModuleWrapper.h",
@@ -8,6 +8,7 @@ EXPORTED_HEADERS = [
     "JavaScriptExecutorHolder.h",
     "JCallback.h",
     "JMessageQueueThread.h",
+    "JNativeRunnable.h",
     "JReactMarker.h",
     "JSLoader.h",
     "JSLogging.h",
@@ -18,6 +19,7 @@ EXPORTED_HEADERS = [
     "NativeMap.h",
     "ReadableNativeArray.h",
     "ReadableNativeMap.h",
+    "JRuntimeExecutor.h",
     "WritableNativeArray.h",
     "WritableNativeMap.h",
 ]
@@ -52,15 +54,18 @@ rn_xplat_cxx_library(
         "PUBLIC",
     ],
     deps = ([
-        "fbsource//xplat/third-party/linker_lib:android",
-        "fbsource//xplat/third-party/linker_lib:atomic",
-        "fbsource//xplat/folly:molly",
-        "fbandroid//xplat/fbgloginit:fbgloginit",
-        "fbsource//xplat/fbsystrace:fbsystrace",
+        "//xplat/third-party/linker_lib:android",
+        "//xplat/third-party/linker_lib:atomic",
+        "//xplat/third-party/glog:glog",
+        "//xplat/folly:molly",
+        "//fbandroid/xplat/fbgloginit:fbgloginit",
+        "//xplat/fbsystrace:fbsystrace",
+        react_native_target("java/com/facebook/react/turbomodule/core/jni:callinvokerholder"),
         react_native_xplat_target("cxxreact:bridge"),
         react_native_xplat_target("cxxreact:jsbigstring"),
         react_native_xplat_target("cxxreact:module"),
         react_native_xplat_target("jsinspector:jsinspector"),
+        react_native_xplat_target("runtimeexecutor:runtimeexecutor"),
         react_native_xplat_dep("jsi:jsi"),
         FBJNI_TARGET,
     ]) if not IS_OSS_BUILD else [],

@@ -10,42 +10,59 @@
 
 'use strict';
 
-const NativeModules = require('NativeModules');
+import NativePlatformConstantsIOS from './NativePlatformConstantsIOS';
 
-export type PlatformSelectSpec<D, I> = {
+export type PlatformSelectSpec<D, N, I> = {
   default?: D,
+  native?: N,
   ios?: I,
+  ...
 };
 
 const Platform = {
+  __constants: null,
   OS: 'ios',
-  get Version() {
-    const constants = NativeModules.PlatformConstants;
-    return constants && constants.osVersion;
+  get Version(): string {
+    return this.constants.osVersion;
   },
-  get isPad() {
-    const constants = NativeModules.PlatformConstants;
-    return constants ? constants.interfaceIdiom === 'pad' : false;
+  get constants(): {|
+    forceTouchAvailable: boolean,
+    interfaceIdiom: string,
+    isTesting: boolean,
+    osVersion: string,
+    reactNativeVersion: {|
+      major: number,
+      minor: number,
+      patch: number,
+      prerelease: ?number,
+    |},
+    systemName: string,
+  |} {
+    if (this.__constants == null) {
+      this.__constants = NativePlatformConstantsIOS.getConstants();
+    }
+    return this.__constants;
+  },
+  get isPad(): boolean {
+    return this.constants.interfaceIdiom === 'pad';
   },
   /**
    * Deprecated, use `isTV` instead.
    */
-  get isTVOS() {
+  get isTVOS(): boolean {
     return Platform.isTV;
   },
-  get isTV() {
-    const constants = NativeModules.PlatformConstants;
-    return constants ? constants.interfaceIdiom === 'tv' : false;
+  get isTV(): boolean {
+    return this.constants.interfaceIdiom === 'tv';
   },
   get isTesting(): boolean {
     if (__DEV__) {
-      const constants = NativeModules.PlatformConstants;
-      return constants && constants.isTesting;
+      return this.constants.isTesting;
     }
     return false;
   },
-  select: <D, I>(spec: PlatformSelectSpec<D, I>): D | I =>
-    'ios' in spec ? spec.ios : spec.default,
+  select: <D, N, I>(spec: PlatformSelectSpec<D, N, I>): D | N | I =>
+    'ios' in spec ? spec.ios : 'native' in spec ? spec.native : spec.default,
 };
 
 module.exports = Platform;

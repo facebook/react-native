@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -13,26 +13,30 @@ namespace facebook {
 namespace react {
 
 class NSDataBigString : public JSBigString {
-public:
+ public:
   // The NSData passed in must be be null-terminated.
   NSDataBigString(NSData *data);
 
   // The ASCII optimization is not enabled on iOS
-  bool isAscii() const override {
+  bool isAscii() const override
+  {
     return false;
   }
 
-  const char *c_str() const override {
+  const char *c_str() const override
+  {
     return (const char *)[m_data bytes];
   }
 
-  size_t size() const override {
+  size_t size() const override
+  {
     return m_length;
   }
 
-private:
+ private:
   NSData *m_data;
   size_t m_length;
 };
 
-} }
+}
+}

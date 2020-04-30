@@ -1,11 +1,13 @@
-// Copyright (c) Facebook, Inc. and its affiliates.
-
-// This source code is licensed under the MIT license found in the
-// LICENSE file in the root directory of this source tree.
+/*
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
 
 #pragma once
 
-#include <react/mounting/ShadowViewMutation.h>
+#include <react/mounting/MountingCoordinator.h>
 
 namespace facebook {
 namespace react {
@@ -18,13 +20,11 @@ class ShadowTree;
 class ShadowTreeDelegate {
  public:
   /*
-   * Called right after Shadow Tree commit a new state of the the tree.
+   * Called right after Shadow Tree commit a new state of the tree.
    */
-  virtual void shadowTreeDidCommit(
-      const ShadowTree &shadowTree,
-      const ShadowViewMutationList &mutations,
-      long commitStartTime,
-      long layoutTime) const = 0;
+  virtual void shadowTreeDidFinishTransaction(
+      ShadowTree const &shadowTree,
+      MountingCoordinator::Shared const &mountingCoordinator) const = 0;
 
   virtual ~ShadowTreeDelegate() noexcept = default;
 };

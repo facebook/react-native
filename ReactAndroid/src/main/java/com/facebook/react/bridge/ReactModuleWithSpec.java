@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -10,10 +10,8 @@ package com.facebook.react.bridge;
 import com.facebook.proguard.annotations.DoNotStrip;
 
 /**
- * An interface to be implemented by react modules that extends from the
- * generated spec class.
- * This is experimental.
+ * An interface to be implemented by react modules that extends from the generated spec class. This
+ * is experimental.
  */
 @DoNotStrip
-public interface ReactModuleWithSpec {
-}
+public interface ReactModuleWithSpec {}

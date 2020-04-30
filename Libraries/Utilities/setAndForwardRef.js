@@ -10,11 +10,11 @@
 
 'use strict';
 
-import type React from 'React';
+import type {ElementRef, Ref} from 'react';
 
 type Args = $ReadOnly<{|
-  getForwardedRef: () => ?React.Ref<any>,
-  setLocalRef: (ref: React.ElementRef<any>) => mixed,
+  getForwardedRef: () => ?Ref<any>,
+  setLocalRef: (ref: ElementRef<any>) => mixed,
 |}>;
 
 /**
@@ -48,8 +48,11 @@ type Args = $ReadOnly<{|
  *   module.exports = MyViewWithRef;
  */
 
-function setAndForwardRef({getForwardedRef, setLocalRef}: Args) {
-  return function forwardRef(ref: React.ElementRef<any>) {
+function setAndForwardRef({
+  getForwardedRef,
+  setLocalRef,
+}: Args): (ref: ElementRef<any>) => void {
+  return function forwardRef(ref: ElementRef<any>) {
     const forwardedRef = getForwardedRef();
 
     setLocalRef(ref);

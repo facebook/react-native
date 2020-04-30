@@ -10,8 +10,14 @@
 
 'use strict';
 
-const View = require('View');
+import * as React from 'react';
 
-const createAnimatedComponent = require('createAnimatedComponent');
+const View = require('../../../Components/View/View');
+const createAnimatedComponent = require('../createAnimatedComponent');
 
-module.exports = createAnimatedComponent(View);
+import type {AnimatedComponentType} from '../createAnimatedComponent';
+
+module.exports = (createAnimatedComponent(View): AnimatedComponentType<
+  React.ElementConfig<typeof View>,
+  React.ElementRef<typeof View>,
+>);

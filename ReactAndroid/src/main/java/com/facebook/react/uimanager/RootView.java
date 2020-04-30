@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -9,9 +9,7 @@ package com.facebook.react.uimanager;
 
 import android.view.MotionEvent;
 
-/**
- * Interface for the root native view of a React native application.
- */
+/** Interface for the root native view of a React native application. */
 public interface RootView {
 
   /**

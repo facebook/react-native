@@ -43,8 +43,8 @@ describe('DatePickerIOS', () => {
     await testElement.setColumnToValue(2, '10');
     await testElement.setColumnToValue(3, 'AM');
 
-    await expect(dateIndicator).toHaveText('12/4/2005');
-    await expect(timeIndicator).toHaveText('4:10 AM');
+    await expect(dateIndicator).toHaveText('12/4/2006');
+    await expect(timeIndicator).toHaveText('04:10 AM');
   });
 
   it('Should change indicator with date-only picker', async () => {

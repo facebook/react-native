@@ -1,7 +1,9 @@
-// Copyright (c) Facebook, Inc. and its affiliates.
-
-// This source code is licensed under the MIT license found in the
-// LICENSE file in the root directory of this source tree.
+/*
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
 
 #include "NativeMap.h"
 
@@ -19,7 +21,7 @@ std::string NativeMap::toString() {
 
 void NativeMap::registerNatives() {
   registerHybrid({
-    makeNativeMethod("toString", NativeMap::toString),
+      makeNativeMethod("toString", NativeMap::toString),
   });
 }
 
@@ -33,5 +35,5 @@ void NativeMap::throwIfConsumed() {
   exceptions::throwIfObjectAlreadyConsumed(this, "Map already consumed");
 }
 
-}  // namespace react
-}  // namespace facebook
+} // namespace react
+} // namespace facebook

@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -15,7 +15,7 @@
 namespace facebook {
 namespace react {
 
-class RawProps;
+class RawPropsParser;
 
 /*
  * `RawValue` abstracts some arbitrary complex data structure similar to JSON.
@@ -62,7 +62,8 @@ class RawValue {
   }
 
  private:
-  friend RawProps;
+  friend class RawProps;
+  friend class RawPropsParser;
 
   /*
    * Arbitrary constructors are private only for RawProps and internal usage.
@@ -94,7 +95,7 @@ class RawValue {
     return castValue(dynamic_, (T *)nullptr);
   }
 
-  inline explicit operator folly::dynamic() const {
+  inline explicit operator folly::dynamic() const noexcept {
     return dynamic_;
   }
 
@@ -245,6 +246,19 @@ class RawValue {
     result.reserve(dynamic.size());
     for (const auto &item : dynamic) {
       result.push_back(castValue(item, (T *)nullptr));
+    }
+    return result;
+  }
+
+  template <typename T>
+  static std::vector<std::vector<T>> castValue(
+      const folly::dynamic &dynamic,
+      std::vector<std::vector<T>> *type) noexcept {
+    assert(dynamic.isArray());
+    auto result = std::vector<std::vector<T>>{};
+    result.reserve(dynamic.size());
+    for (const auto &item : dynamic) {
+      result.push_back(castValue(item, (std::vector<T> *)nullptr));
     }
     return result;
   }

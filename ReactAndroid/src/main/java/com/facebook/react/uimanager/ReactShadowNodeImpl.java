@@ -1,11 +1,13 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
+
 package com.facebook.react.uimanager;
 
+import androidx.annotation.Nullable;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.uimanager.annotations.ReactPropertyHolder;
 import com.facebook.yoga.YogaAlign;
@@ -19,13 +21,13 @@ import com.facebook.yoga.YogaFlexDirection;
 import com.facebook.yoga.YogaJustify;
 import com.facebook.yoga.YogaMeasureFunction;
 import com.facebook.yoga.YogaNode;
+import com.facebook.yoga.YogaNodeFactory;
 import com.facebook.yoga.YogaOverflow;
 import com.facebook.yoga.YogaPositionType;
 import com.facebook.yoga.YogaValue;
 import com.facebook.yoga.YogaWrap;
 import java.util.ArrayList;
 import java.util.Arrays;
-import javax.annotation.Nullable;
 
 /**
  * Base node class for representing virtual tree of React nodes. Shadow nodes are used primarily for
@@ -89,7 +91,7 @@ public class ReactShadowNodeImpl implements ReactShadowNode<ReactShadowNodeImpl>
     mDefaultPadding = new Spacing(0);
     if (!isVirtual()) {
       YogaNode node = YogaNodePool.get().acquire();
-      mYogaNode = node == null ? YogaNode.create(sYogaConfig) : node;
+      mYogaNode = node == null ? YogaNodeFactory.create(sYogaConfig) : node;
       mYogaNode.setData(this);
       Arrays.fill(mPadding, YogaConstants.UNDEFINED);
     } else {
@@ -234,7 +236,7 @@ public class ReactShadowNodeImpl implements ReactShadowNode<ReactShadowNodeImpl>
   public ReactShadowNodeImpl removeChildAt(int i) {
     if (mChildren == null) {
       throw new ArrayIndexOutOfBoundsException(
-        "Index " + i + " out of bounds: node has no children");
+          "Index " + i + " out of bounds: node has no children");
     }
     ReactShadowNodeImpl removed = mChildren.remove(i);
     removed.mParent = null;
@@ -259,7 +261,7 @@ public class ReactShadowNodeImpl implements ReactShadowNode<ReactShadowNodeImpl>
   public final ReactShadowNodeImpl getChildAt(int i) {
     if (mChildren == null) {
       throw new ArrayIndexOutOfBoundsException(
-        "Index " + i + " out of bounds: node has no children");
+          "Index " + i + " out of bounds: node has no children");
     }
     return mChildren.get(i);
   }
@@ -311,8 +313,7 @@ public class ReactShadowNodeImpl implements ReactShadowNode<ReactShadowNodeImpl>
    * require layouting (marked with {@link #dirty()}).
    */
   @Override
-  public void onBeforeLayout(NativeViewHierarchyOptimizer nativeViewHierarchyOptimizer) {
-  }
+  public void onBeforeLayout(NativeViewHierarchyOptimizer nativeViewHierarchyOptimizer) {}
 
   @Override
   public final void updateProperties(ReactStylesDiffMap props) {
@@ -371,17 +372,17 @@ public class ReactShadowNodeImpl implements ReactShadowNode<ReactShadowNodeImpl>
       mScreenHeight = newScreenHeight;
 
       if (layoutHasChanged) {
-        //TODO: T26400974 ReactShadowNode should not depend on nativeViewHierarchyOptimizer
+        // TODO: T26400974 ReactShadowNode should not depend on nativeViewHierarchyOptimizer
         if (nativeViewHierarchyOptimizer != null) {
           nativeViewHierarchyOptimizer.handleUpdateLayout(this);
         } else {
           uiViewOperationQueue.enqueueUpdateLayout(
-            getParent().getReactTag(),
-            getReactTag(),
-            getScreenX(),
-            getScreenY(),
-            getScreenWidth(),
-            getScreenHeight());
+              getParent().getReactTag(),
+              getReactTag(),
+              getScreenX(),
+              getScreenY(),
+              getScreenWidth(),
+              getScreenHeight());
         }
       }
 
@@ -546,10 +547,9 @@ public class ReactShadowNodeImpl implements ReactShadowNode<ReactShadowNodeImpl>
 
   @Override
   public NativeKind getNativeKind() {
-    return
-      isVirtual() || isLayoutOnly() ? NativeKind.NONE :
-      hoistNativeChildren() ? NativeKind.LEAF :
-      NativeKind.PARENT;
+    return isVirtual() || isLayoutOnly()
+        ? NativeKind.NONE
+        : hoistNativeChildren() ? NativeKind.LEAF : NativeKind.PARENT;
   }
 
   @Override
@@ -577,10 +577,9 @@ public class ReactShadowNodeImpl implements ReactShadowNode<ReactShadowNodeImpl>
 
   private int getTotalNativeNodeContributionToParent() {
     NativeKind kind = getNativeKind();
-    return
-      kind == NativeKind.NONE ? mTotalNativeChildren :
-      kind == NativeKind.LEAF ? 1 + mTotalNativeChildren :
-      1; // kind == NativeKind.PARENT
+    return kind == NativeKind.NONE
+        ? mTotalNativeChildren
+        : kind == NativeKind.LEAF ? 1 + mTotalNativeChildren : 1; // kind == NativeKind.PARENT
   }
 
   @Override
@@ -987,12 +986,24 @@ public class ReactShadowNodeImpl implements ReactShadowNode<ReactShadowNodeImpl>
       result.append("  ");
     }
 
-    result.append("<").append(getClass().getSimpleName()).append(" view='").append(getViewClass())
-      .append("' tag=").append(getReactTag());
+    result
+        .append("<")
+        .append(getClass().getSimpleName())
+        .append(" view='")
+        .append(getViewClass())
+        .append("' tag=")
+        .append(getReactTag());
     if (mYogaNode != null) {
-      result.append(" layout='x:").append(getScreenX())
-        .append(" y:").append(getScreenY()).append(" w:").append(getLayoutWidth()).append(" h:")
-        .append(getLayoutHeight()).append("'");
+      result
+          .append(" layout='x:")
+          .append(getScreenX())
+          .append(" y:")
+          .append(getScreenY())
+          .append(" w:")
+          .append(getLayoutWidth())
+          .append(" h:")
+          .append(getLayoutHeight())
+          .append("'");
     } else {
       result.append("(virtual node)");
     }
@@ -1033,9 +1044,11 @@ public class ReactShadowNodeImpl implements ReactShadowNode<ReactShadowNodeImpl>
 
   @Override
   public Iterable<? extends ReactShadowNode> calculateLayoutOnChildren() {
-    return isVirtualAnchor() ?
+    return isVirtualAnchor()
+        ?
         // All of the descendants are virtual so none of them are involved in layout.
-        null :
+        null
+        :
         // Just return the children. Flexbox calculations have already been run on them.
         mChildren;
   }

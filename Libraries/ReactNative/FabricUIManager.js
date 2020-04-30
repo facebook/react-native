@@ -4,16 +4,23 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @flow strict
+ * @flow strict-local
  * @format
  */
+
 'use strict';
 
+import type {
+  MeasureOnSuccessCallback,
+  MeasureInWindowOnSuccessCallback,
+  MeasureLayoutOnSuccessCallback,
+} from '../Renderer/shims/ReactNativeTypes';
+
 // TODO: type these properly.
-type Node = {};
+type Node = {...};
 type NodeSet = Array<Node>;
-type NodeProps = {};
-type InstanceHandle = {};
+type NodeProps = {...};
+type InstanceHandle = {...};
 type Spec = {|
   +createNode: (
     reactTag: number,
@@ -31,6 +38,17 @@ type Spec = {|
   +appendChildToSet: (childSet: NodeSet, child: Node) => void,
   +completeRoot: (rootTag: number, childSet: NodeSet) => void,
   +setNativeProps: (node: Node, nativeProps: NodeProps) => void,
+  +measure: (node: Node, callback: MeasureOnSuccessCallback) => void,
+  +measureInWindow: (
+    node: Node,
+    callback: MeasureInWindowOnSuccessCallback,
+  ) => void,
+  +measureLayout: (
+    node: Node,
+    relativeNode: Node,
+    onFail: () => void,
+    onSuccess: MeasureLayoutOnSuccessCallback,
+  ) => void,
 |};
 
 const FabricUIManager: ?Spec = global.nativeFabricUIManager;

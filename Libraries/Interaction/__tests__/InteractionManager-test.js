@@ -10,11 +10,13 @@
 
 'use strict';
 
-jest.mock('ErrorUtils').mock('BatchedBridge');
+jest
+  .mock('../../vendor/core/ErrorUtils')
+  .mock('../../BatchedBridge/BatchedBridge');
 
 const isWindows = process.platform === 'win32';
 function expectToBeCalledOnce(fn) {
-  // todo fix this test case on widnows
+  // todo fix this test case on windows
   if (isWindows) {
     return;
   }
@@ -28,7 +30,7 @@ describe('InteractionManager', () => {
 
   beforeEach(() => {
     jest.resetModules();
-    InteractionManager = require('InteractionManager');
+    InteractionManager = require('../InteractionManager');
 
     interactionStart = jest.fn();
     interactionComplete = jest.fn();
@@ -167,8 +169,8 @@ describe('promise tasks', () => {
   beforeEach(() => {
     jest.resetModules();
     jest.useFakeTimers();
-    InteractionManager = require('InteractionManager');
-    BatchedBridge = require('BatchedBridge');
+    InteractionManager = require('../InteractionManager');
+    BatchedBridge = require('../../BatchedBridge/BatchedBridge');
     sequenceId = 0;
   });
 

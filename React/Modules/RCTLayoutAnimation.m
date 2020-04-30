@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -77,8 +77,7 @@ static UIViewAnimationOptions UIViewAnimationOptionsFromRCTAnimationType(RCTAnim
   return self;
 }
 
-- (instancetype)initWithDuration:(NSTimeInterval)duration
-                          config:(NSDictionary *)config
+- (instancetype)initWithDuration:(NSTimeInterval)duration config:(NSDictionary *)config
 {
   if (!config) {
     return nil;
@@ -109,8 +108,7 @@ static UIViewAnimationOptions UIViewAnimationOptionsFromRCTAnimationType(RCTAnim
   return self;
 }
 
-- (void)performAnimations:(void (^)(void))animations
-      withCompletionBlock:(void (^)(BOOL completed))completionBlock
+- (void)performAnimations:(void (^)(void))animations withCompletionBlock:(void (^)(BOOL completed))completionBlock
 {
   if (_animationType == RCTAnimationTypeSpring) {
     [UIView animateWithDuration:_duration
@@ -122,8 +120,7 @@ static UIViewAnimationOptions UIViewAnimationOptionsFromRCTAnimationType(RCTAnim
                      completion:completionBlock];
   } else {
     UIViewAnimationOptions options =
-      UIViewAnimationOptionBeginFromCurrentState |
-      UIViewAnimationOptionsFromRCTAnimationType(_animationType);
+        UIViewAnimationOptionBeginFromCurrentState | UIViewAnimationOptionsFromRCTAnimationType(_animationType);
 
     [UIView animateWithDuration:_duration
                           delay:_delay
@@ -135,19 +132,25 @@ static UIViewAnimationOptions UIViewAnimationOptionsFromRCTAnimationType(RCTAnim
 
 - (BOOL)isEqual:(RCTLayoutAnimation *)animation
 {
-  return
-    _duration == animation.duration &&
-    _delay == animation.delay &&
-    (_property == animation.property || [_property isEqualToString:animation.property]) &&
-    _springDamping == animation.springDamping &&
-    _initialVelocity == animation.initialVelocity &&
-    _animationType == animation.animationType;
+  return _duration == animation.duration && _delay == animation.delay &&
+      (_property == animation.property || [_property isEqualToString:animation.property]) &&
+      _springDamping == animation.springDamping && _initialVelocity == animation.initialVelocity &&
+      _animationType == animation.animationType;
 }
 
 - (NSString *)description
 {
-  return [NSString stringWithFormat:@"<%@: %p; duration: %f; delay: %f; property: %@; springDamping: %f; initialVelocity: %f; animationType: %li;>",
-          NSStringFromClass([self class]), self, _duration, _delay, _property, _springDamping, _initialVelocity, (long)_animationType];
+  return [NSString
+      stringWithFormat:
+          @"<%@: %p; duration: %f; delay: %f; property: %@; springDamping: %f; initialVelocity: %f; animationType: %li;>",
+          NSStringFromClass([self class]),
+          self,
+          _duration,
+          _delay,
+          _property,
+          _springDamping,
+          _initialVelocity,
+          (long)_animationType];
 }
 
 @end

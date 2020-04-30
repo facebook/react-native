@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -8,8 +8,8 @@
 #pragma once
 
 #include <folly/Optional.h>
-#include <react/components/text/ParagraphMeasurementCache.h>
 #include <react/components/text/ParagraphProps.h>
+#include <react/components/text/ParagraphState.h>
 #include <react/components/text/TextShadowNode.h>
 #include <react/components/view/ConcreteViewShadowNode.h>
 #include <react/core/ConcreteShadowNode.h>
@@ -20,7 +20,7 @@
 namespace facebook {
 namespace react {
 
-extern const char ParagraphComponentName[];
+extern char const ParagraphComponentName[];
 
 using ParagraphEventEmitter = ViewEventEmitter;
 
@@ -32,52 +32,74 @@ using ParagraphEventEmitter = ViewEventEmitter;
 class ParagraphShadowNode : public ConcreteViewShadowNode<
                                 ParagraphComponentName,
                                 ParagraphProps,
-                                ParagraphEventEmitter>,
+                                ParagraphEventEmitter,
+                                ParagraphState>,
                             public BaseTextShadowNode {
  public:
   using ConcreteViewShadowNode::ConcreteViewShadowNode;
 
-  /*
-   * Returns a `AttributedString` which represents text content of the node.
-   */
-  AttributedString getAttributedString() const;
+  static ShadowNodeTraits BaseTraits() {
+    auto traits = ConcreteViewShadowNode::BaseTraits();
+    traits.set(ShadowNodeTraits::Trait::LeafYogaNode);
+    traits.set(ShadowNodeTraits::Trait::TextKind);
+
+#ifdef ANDROID
+    // Unsetting `FormsStackingContext` trait is essential on Android where we
+    // can't mount views inside `TextView`.
+    traits.unset(ShadowNodeTraits::Trait::FormsStackingContext);
+#endif
+
+    return traits;
+  }
 
   /*
    * Associates a shared TextLayoutManager with the node.
    * `ParagraphShadowNode` uses the manager to measure text content
-   * and construct `ParagraphLocalData` objects.
+   * and construct `ParagraphState` objects.
    */
   void setTextLayoutManager(SharedTextLayoutManager textLayoutManager);
-
-  /*
-   * Associates a shared LRU cache with the node.
-   * `ParagraphShadowNode` uses this to cache the results of
-   * text rendering measurements.
-   * By design, the ParagraphComponentDescriptor outlives all
-   * shadow nodes, so it's safe for this to be a raw pointer.
-   */
-  void setMeasureCache(const ParagraphMeasurementCache *cache);
 
 #pragma mark - LayoutableShadowNode
 
   void layout(LayoutContext layoutContext) override;
   Size measure(LayoutConstraints layoutConstraints) const override;
 
+  /*
+   * Internal representation of the nested content of the node in a format
+   * suitable for future processing.
+   */
+  class Content final {
+   public:
+    AttributedString attributedString;
+    ParagraphAttributes paragraphAttributes;
+    Attachments attachments;
+  };
+
  private:
   /*
-   * Creates a `LocalData` object (with `AttributedText` and
-   * `TextLayoutManager`) if needed.
+   * Builds (if needed) and returns a reference to a `Content` object.
    */
-  void updateLocalDataIfNeeded();
-
-  SharedTextLayoutManager textLayoutManager_;
-  const ParagraphMeasurementCache *measureCache_;
+  Content const &getContent() const;
 
   /*
-   * Cached attributed string that represents the content of the subtree started
-   * from the node.
+   * Builds and returns a `Content` object with given `layoutConstraints`.
    */
-  mutable folly::Optional<AttributedString> cachedAttributedString_{};
+  Content getContentWithMeasuredAttachments(
+      LayoutContext const &layoutContext,
+      LayoutConstraints const &layoutConstraints) const;
+
+  /*
+   * Creates a `State` object (with `AttributedText` and
+   * `TextLayoutManager`) if needed.
+   */
+  void updateStateIfNeeded(Content const &content);
+
+  SharedTextLayoutManager textLayoutManager_;
+
+  /*
+   * Cached content of the subtree started from the node.
+   */
+  mutable better::optional<Content> content_{};
 };
 
 } // namespace react

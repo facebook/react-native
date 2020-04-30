@@ -32,4 +32,4 @@ If you want to participate in casual discussions about the use of React Native, 
 - [React Native Community Facebook Group](https://www.facebook.com/groups/react.native.community)
 
 
-> For a full list of community resources, check out [React Native's Community page](https://facebook.github.io/react-native/help).
+> For a full list of community resources, check out [React Native's Community page](https://reactnative.dev/help).

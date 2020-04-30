@@ -7,6 +7,7 @@
  * @flow
  * @format
  */
+
 'use strict';
 
 const AnimatedValue = require('./AnimatedValue');
@@ -14,7 +15,11 @@ const AnimatedWithChildren = require('./AnimatedWithChildren');
 
 const invariant = require('invariant');
 
-type ValueXYListenerCallback = (value: {x: number, y: number}) => void;
+type ValueXYListenerCallback = (value: {
+  x: number,
+  y: number,
+  ...
+}) => mixed;
 
 let _uniqueId = 1;
 
@@ -22,15 +27,26 @@ let _uniqueId = 1;
  * 2D Value for driving 2D animations, such as pan gestures. Almost identical
  * API to normal `Animated.Value`, but multiplexed.
  *
- * See http://facebook.github.io/react-native/docs/animatedvaluexy.html
+ * See https://reactnative.dev/docs/animatedvaluexy.html
  */
 class AnimatedValueXY extends AnimatedWithChildren {
   x: AnimatedValue;
   y: AnimatedValue;
-  _listeners: {[key: string]: {x: string, y: string}};
+  _listeners: {
+    [key: string]: {
+      x: string,
+      y: string,
+      ...
+    },
+    ...,
+  };
 
   constructor(
-    valueIn?: ?{+x: number | AnimatedValue, +y: number | AnimatedValue},
+    valueIn?: ?{
+      +x: number | AnimatedValue,
+      +y: number | AnimatedValue,
+      ...
+    },
   ) {
     super();
     const value: any = valueIn || {x: 0, y: 0}; // @flowfixme: shouldn't need `: any`
@@ -53,9 +69,9 @@ class AnimatedValueXY extends AnimatedWithChildren {
    * Directly set the value. This will stop any animations running on the value
    * and update all the bound properties.
    *
-   * See http://facebook.github.io/react-native/docs/animatedvaluexy.html#setvalue
+   * See https://reactnative.dev/docs/animatedvaluexy.html#setvalue
    */
-  setValue(value: {x: number, y: number}) {
+  setValue(value: {x: number, y: number, ...}) {
     this.x.setValue(value.x);
     this.y.setValue(value.y);
   }
@@ -65,9 +81,9 @@ class AnimatedValueXY extends AnimatedWithChildren {
    * via `setValue`, an animation, or `Animated.event`. Useful for compensating
    * things like the start of a pan gesture.
    *
-   * See http://facebook.github.io/react-native/docs/animatedvaluexy.html#setoffset
+   * See https://reactnative.dev/docs/animatedvaluexy.html#setoffset
    */
-  setOffset(offset: {x: number, y: number}) {
+  setOffset(offset: {x: number, y: number, ...}) {
     this.x.setOffset(offset.x);
     this.y.setOffset(offset.y);
   }
@@ -76,7 +92,7 @@ class AnimatedValueXY extends AnimatedWithChildren {
    * Merges the offset value into the base value and resets the offset to zero.
    * The final output of the value is unchanged.
    *
-   * See http://facebook.github.io/react-native/docs/animatedvaluexy.html#flattenoffset
+   * See https://reactnative.dev/docs/animatedvaluexy.html#flattenoffset
    */
   flattenOffset(): void {
     this.x.flattenOffset();
@@ -87,14 +103,18 @@ class AnimatedValueXY extends AnimatedWithChildren {
    * Sets the offset value to the base value, and resets the base value to
    * zero. The final output of the value is unchanged.
    *
-   * See http://facebook.github.io/react-native/docs/animatedvaluexy.html#extractoffset
+   * See https://reactnative.dev/docs/animatedvaluexy.html#extractoffset
    */
   extractOffset(): void {
     this.x.extractOffset();
     this.y.extractOffset();
   }
 
-  __getValue(): {x: number, y: number} {
+  __getValue(): {
+    x: number,
+    y: number,
+    ...
+  } {
     return {
       x: this.x.__getValue(),
       y: this.y.__getValue(),
@@ -104,9 +124,15 @@ class AnimatedValueXY extends AnimatedWithChildren {
   /**
    * Stops any animation and resets the value to its original.
    *
-   * See http://facebook.github.io/react-native/docs/animatedvaluexy.html#resetanimation
+   * See https://reactnative.dev/docs/animatedvaluexy.html#resetanimation
    */
-  resetAnimation(callback?: (value: {x: number, y: number}) => void): void {
+  resetAnimation(
+    callback?: (value: {
+      x: number,
+      y: number,
+      ...
+    }) => void,
+  ): void {
     this.x.resetAnimation();
     this.y.resetAnimation();
     callback && callback(this.__getValue());
@@ -117,9 +143,15 @@ class AnimatedValueXY extends AnimatedWithChildren {
    * final value after stopping the animation, which is useful for updating
    * state to match the animation position with layout.
    *
-   * See http://facebook.github.io/react-native/docs/animatedvaluexy.html#stopanimation
+   * See https://reactnative.dev/docs/animatedvaluexy.html#stopanimation
    */
-  stopAnimation(callback?: (value: {x: number, y: number}) => void): void {
+  stopAnimation(
+    callback?: (value: {
+      x: number,
+      y: number,
+      ...
+    }) => void,
+  ): void {
     this.x.stopAnimation();
     this.y.stopAnimation();
     callback && callback(this.__getValue());
@@ -132,7 +164,7 @@ class AnimatedValueXY extends AnimatedWithChildren {
    *
    * Returns a string that serves as an identifier for the listener.
    *
-   * See http://facebook.github.io/react-native/docs/animatedvaluexy.html#addlistener
+   * See https://reactnative.dev/docs/animatedvaluexy.html#addlistener
    */
   addListener(callback: ValueXYListenerCallback): string {
     const id = String(_uniqueId++);
@@ -150,7 +182,7 @@ class AnimatedValueXY extends AnimatedWithChildren {
    * Unregister a listener. The `id` param shall match the identifier
    * previously returned by `addListener()`.
    *
-   * See http://facebook.github.io/react-native/docs/animatedvaluexy.html#removelistener
+   * See https://reactnative.dev/docs/animatedvaluexy.html#removelistener
    */
   removeListener(id: string): void {
     this.x.removeListener(this._listeners[id].x);
@@ -161,7 +193,7 @@ class AnimatedValueXY extends AnimatedWithChildren {
   /**
    * Remove all registered listeners.
    *
-   * See http://facebook.github.io/react-native/docs/animatedvaluexy.html#removealllisteners
+   * See https://reactnative.dev/docs/animatedvaluexy.html#removealllisteners
    */
   removeAllListeners(): void {
     this.x.removeAllListeners();
@@ -172,9 +204,9 @@ class AnimatedValueXY extends AnimatedWithChildren {
   /**
    * Converts `{x, y}` into `{left, top}` for use in style.
    *
-   * See http://facebook.github.io/react-native/docs/animatedvaluexy.html#getlayout
+   * See https://reactnative.dev/docs/animatedvaluexy.html#getlayout
    */
-  getLayout(): {[key: string]: AnimatedValue} {
+  getLayout(): {[key: string]: AnimatedValue, ...} {
     return {
       left: this.x,
       top: this.y,
@@ -184,9 +216,9 @@ class AnimatedValueXY extends AnimatedWithChildren {
   /**
    * Converts `{x, y}` into a useable translation transform.
    *
-   * See http://facebook.github.io/react-native/docs/animatedvaluexy.html#gettranslatetransform
+   * See https://reactnative.dev/docs/animatedvaluexy.html#gettranslatetransform
    */
-  getTranslateTransform(): Array<{[key: string]: AnimatedValue}> {
+  getTranslateTransform(): Array<{[key: string]: AnimatedValue, ...}> {
     return [{translateX: this.x}, {translateY: this.y}];
   }
 }

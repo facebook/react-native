@@ -9,8 +9,8 @@
 
 'use strict';
 
-const BatchedBridge = require('BatchedBridge');
-const {assertEquals, assertTrue} = require('Asserts');
+const BatchedBridge = require('react-native/Libraries/BatchedBridge/BatchedBridge');
+const {assertEquals, assertTrue} = require('./Asserts');
 
 function strictStringCompare(a, b) {
   if (typeof a !== 'string' || typeof b !== 'string' || a.length !== b.length) {

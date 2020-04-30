@@ -1,143 +1,11 @@
+version: 2.1
+
 # -------------------------
-#        ALIASES
+#        ORBS
 # -------------------------
-aliases:
-  # -------------------------
-  #      ALIASES: Caches
-  # -------------------------
-  - &restore-yarn-cache
-    keys:
-      - v1-yarn-cache-{{ arch }}-{{ checksum "package.json" }}{{ checksum "bots/package.json" }}
-      - v1-yarn-cache-{{ arch }}
 
-  - &save-yarn-cache
-    paths:
-      - ~/.cache/yarn
-    key: v1-yarn-cache-{{ arch }}-{{ checksum "package.json" }}{{ checksum "bots/package.json" }}
-
-  - &restore-brew-cache
-    keys:
-      - v1-brew
-
-  - &save-brew-cache
-    paths:
-      - /usr/local/Homebrew
-      - ~/Library/Caches/Homebrew
-    key: v1-brew
-
-  # Android
-  - &restore-buck-downloads-cache
-    keys:
-      - v3-buck-v2019.01.10.01-{{ checksum "scripts/circleci/buck_fetch.sh" }}}
-      - v3-buck-v2019.01.10.01-
-  - &save-buck-downloads-cache
-    paths:
-      - ~/buck
-      - ~/okbuck
-    key: v3-buck-v2019.01.10.01-{{ checksum "scripts/circleci/buck_fetch.sh" }}
-
-  - &restore-gradle-downloads-cache
-    keys:
-      - v1-gradle-{{ checksum "ReactAndroid/build.gradle" }}-{{ checksum "scripts/circleci/gradle_download_deps.sh" }}
-      - v1-gradle-
-
-  - &save-gradle-downloads-cache
-    paths:
-      - ~/.gradle
-      - ReactAndroid/build/downloads
-      - ReactAndroid/build/third-party-ndk
-    key: v1-gradle-{{ checksum "ReactAndroid/build.gradle" }}-{{ checksum "scripts/circleci/gradle_download_deps.sh" }}
-
-  # -------------------------
-  #  ALIASES: Shared Commands
-  # -------------------------
-  - &yarn
-    name: Run Yarn
-    command: |
-      # Skip yarn install on metro bump commits as the package is not yet
-      # available on npm
-      if [[ $(echo "$GIT_COMMIT_DESC" | grep -c "Bump metro@") -eq 0 ]]; then
-        yarn install --non-interactive --cache-folder ~/.cache/yarn
-      fi
-
-  - &setup-artifacts
-    name: Initial Setup
-    command: |
-      mkdir -p ~/react-native/reports/buck/
-      mkdir -p ~/react-native/reports/build/
-      mkdir -p ~/react-native/reports/junit/
-      mkdir -p ~/react-native/reports/outputs/
-
-  # Android
-  - &download-dependencies-buck
-    name: Download Dependencies Using Buck
-    command: ./scripts/circleci/buck_fetch.sh
-
-  - &download-dependencies-gradle
-    name: Download Dependencies Using Gradle
-    command: ./scripts/circleci/gradle_download_deps.sh
-
-  # JavaScript
-  - &run-js-tests
-    name: JavaScript Test Suite
-    command: yarn test-ci
-
-  # -------------------------
-  #  ALIASES: Disabled Tests
-  # -------------------------
-  - &run-podspec-tests
-    name: Test CocoaPods
-    command: ./scripts/process-podspecs.sh
-  - &run-e2e-tests
-    name: End-to-End Test Suite
-    command: ./scripts/run-ci-e2e-tests.js --android --ios --js --retries 3;
-  - &run-android-e2e-tests
-    name: Android End-to-End Test Suite
-    command: node ./scripts/run-ci-e2e-tests.js --android --retries 3;
-
-
-  # -------------------------
-  #  ALIASES: Branch Filters
-  # -------------------------
-  - &filter-only-master
-    branches:
-      only: master
-
-  - &filter-only-master-stable
-    branches:
-      only:
-        - /.*-stable/
-        - master
-
-  - &filter-only-stable
-    branches:
-      only:
-        - /.*-stable/
-
-  - &filter-ignore-gh-pages
-    branches:
-      ignore: gh-pages
-
-  - &filter-only-version-tags
-    # Both of the following conditions must be included!
-    # Ignore any commit on any branch by default.
-    branches:
-      ignore: /.*/
-    # Only act on version tags.
-    tags:
-      only: /v[0-9]+(\.[0-9]+)*(\-rc(\.[0-9]+)?)?/
-
-  - &filter-only-forked-pull-requests
-    branches:
-      only: /^pull\/.*$/
-
-  # -------------------------
-  #     ALIASES: Workflows
-  # -------------------------
-  - &run-after-checkout
-    filters: *filter-ignore-gh-pages
-    requires:
-      - checkout_code
+orbs:
+  win: circleci/windows@2.4.0
 
 # -------------------------
 #        DEFAULTS
@@ -146,51 +14,221 @@ defaults: &defaults
   working_directory: ~/react-native
   environment:
     - GIT_COMMIT_DESC: git log --format=oneline -n 1 $CIRCLE_SHA1
+    # The public github tokens are publicly visible by design
+    - PUBLIC_PULLBOT_GITHUB_TOKEN_A: "a6edf8e8d40ce4e8b11a"
+    - PUBLIC_PULLBOT_GITHUB_TOKEN_B: "150e1341f4dd9c944d2a"
+    - PUBLIC_ANALYSISBOT_GITHUB_TOKEN_A: &github_token_a "78a72af35445ca3f8180"
+    - PUBLIC_ANALYSISBOT_GITHUB_TOKEN_B: &github_token_b "b1a98e0bbd56ff1ccba1"
 
-# JavaScript
-js_defaults: &js_defaults
-  <<: *defaults
-  docker:
-    - image: node:8
 
-# Android
-android_defaults: &android_defaults
-  <<: *defaults
-  docker:
-  - image: reactnativecommunity/react-native-android:2019-1-19
-  resource_class: "large"
-  environment:
-    - TERM: "dumb"
-    - ADB_INSTALL_TIMEOUT: 10
-    - _JAVA_OPTIONS: "-XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap"
-    - GRADLE_OPTS: '-Dorg.gradle.daemon=false -Dorg.gradle.jvmargs="-XX:+HeapDumpOnOutOfMemoryError"'
-    - BUILD_THREADS: 2
+# -------------------------
+#        EXECUTORS
+# -------------------------
+executors:
+  nodelts:
+    <<: *defaults
+    docker:
+      - image: circleci/node:12
+  nodeprevlts:
+    <<: *defaults
+    docker:
+      - image: circleci/node:10
+  reactnativeandroid:
+    <<: *defaults
+    docker:
+      - image: reactnativecommunity/react-native-android:2019-10-18
+    resource_class: "large"
+    environment:
+      - TERM: "dumb"
+      - ADB_INSTALL_TIMEOUT: 10
+      - _JAVA_OPTIONS: "-XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap"
+      - GRADLE_OPTS: '-Dorg.gradle.daemon=false -Dorg.gradle.jvmargs="-XX:+HeapDumpOnOutOfMemoryError"'
+      - BUILD_THREADS: 2
+      # Repeated here, as the environment key in this executor will overwrite the one in defaults
+      - PUBLIC_ANALYSISBOT_GITHUB_TOKEN_A: *github_token_a
+      - PUBLIC_ANALYSISBOT_GITHUB_TOKEN_B: *github_token_b
+  reactnativeios:
+    <<: *defaults
+    macos:
+      xcode: &_XCODE_VERSION "11.3.1"
 
-# iOS
-macos_defaults: &macos_defaults
-  <<: *defaults
-  macos:
-    xcode: "10.1.0"
+# -------------------------
+#        COMMANDS
+# -------------------------
+commands:
+  restore_cache_checkout:
+    parameters:
+      checkout_type:
+        type: string
+        default: node
+    steps:
+      - restore_cache:
+          key: v1-repo-{{ .Environment.CIRCLE_SHA1 }}-<< parameters.checkout_type >>
+
+  setup_artifacts:
+    steps:
+      - run:
+          name: Initial Setup
+          command: mkdir -p ./reports/{buck,build,junit,outputs}
+
+  run_yarn:
+    steps:
+      - restore_cache:
+          keys:
+            - v4-yarn-cache-{{ arch }}-{{ checksum "yarn.lock" }}
+            - v4-yarn-cache-{{ arch }}
+      - run:
+          name: "Yarn: Install Dependencies"
+          command: |
+            # Skip yarn install on metro bump commits as the package is not yet
+            # available on npm
+            if [[ $(echo "$GIT_COMMIT_DESC" | grep -c "Bump metro@") -eq 0 ]]; then
+              yarn install --non-interactive --cache-folder ~/.cache/yarn
+            fi
+      - save_cache:
+          paths:
+            - ~/.cache/yarn
+          key: v4-yarn-cache-{{ arch }}-{{ checksum "yarn.lock" }}
+
+  install_buck_tooling:
+    steps:
+      - restore_cache:
+          keys:
+            - v3-buck-v2019.01.10.01-{{ checksum "scripts/circleci/buck_fetch.sh" }}}
+            - v3-buck-v2019.01.10.01-
+      - run:
+          name: Install BUCK
+          command: |
+            buck --version
+            # Install related tooling
+            if [[ ! -e ~/okbuck ]]; then
+              git clone https://github.com/uber/okbuck.git ~/okbuck --depth=1
+            fi
+      - save_cache:
+          paths:
+            - ~/buck
+            - ~/okbuck
+          key: v3-buck-v2019.01.10.01-{{ checksum "scripts/circleci/buck_fetch.sh" }}
+
+  install_github_bot_deps:
+    steps:
+      - run:
+          name: "Yarn: Install dependencies (GitHub bots)"
+          command: cd bots && yarn install --non-interactive --cache-folder ~/.cache/yarn
+
+  brew_install:
+    parameters:
+      package:
+        description: Homebrew package to install
+        type: string
+    steps:
+      - run: 
+          name: "Brew: Install << parameters.package >>"
+          command: HOMEBREW_NO_AUTO_UPDATE=1 brew install << parameters.package >> >/dev/null
+
+  with_brew_cache_span:
+    parameters:
+      steps:
+        type: steps
+    steps:
+      - restore_cache:
+          keys:
+            - v3-brew
+      - steps: << parameters.steps >>
+      - save_cache:
+          paths:
+            - /usr/local/Homebrew
+            - ~/Library/Caches/Homebrew
+          key: v3-brew
+
+  with_rntester_pods_cache_span:
+    parameters:
+      steps:
+        type: steps
+    steps:
+      - run:
+          name: Setup CocoaPods cache
+          # Copy RNTester/Podfile.lock since it can be changed by pod install
+          command: cp RNTester/Podfile.lock RNTester/Podfile.lock.bak
+      - restore_cache:
+          keys:
+            - v1-pods-{{ .Environment.CIRCLE_JOB }}-{{ checksum "RNTester/Podfile.lock.bak" }}
+            - v1-pods-{{ .Environment.CIRCLE_JOB }}-
+      - steps: << parameters.steps >>
+      - save_cache:
+          paths:
+            - RNTester/Pods
+          key: v1-pods-{{ .Environment.CIRCLE_JOB }}-{{ checksum "RNTester/Podfile.lock.bak" }}
+
+  download_gradle_dependencies:
+    steps:
+      - restore_cache:
+          keys:
+            - v1-gradle-{{ checksum "ReactAndroid/build.gradle" }}-{{ checksum "scripts/circleci/gradle_download_deps.sh" }}
+            - v1-gradle-
+      - run:
+          name: Download Dependencies Using Gradle
+          command: ./scripts/circleci/gradle_download_deps.sh
+      - save_cache:
+          paths:
+            - ~/.gradle
+            - ReactAndroid/build/downloads
+            - ReactAndroid/build/third-party-ndk
+          key: v1-gradle-{{ checksum "ReactAndroid/build.gradle" }}-{{ checksum "scripts/circleci/gradle_download_deps.sh" }}
+
+  download_buck_dependencies:
+    steps:
+      - run:
+          name: Download Dependencies Using Buck
+          command: ./scripts/circleci/buck_fetch.sh
+
+  run_e2e:
+    parameters:
+      platform:
+        description: Target platform
+        type: enum
+        enum: ["android", "ios", "js"]
+        default: "js"
+      retries:
+        description: How many times the job should try to run these tests
+        type: integer
+        default: 3
+    steps:
+      - run:
+          name: "Run Tests: << parameters.platform >> End-to-End Tests"
+          command: node ./scripts/run-ci-e2e-tests.js --<< parameters.platform >> --retries << parameters.retries >>
+
+  report_bundle_size:
+    parameters:
+      platform:
+        description: Target platform
+        type: enum
+        enum: ["android", "ios"]
+    steps:
+      - install_github_bot_deps
+      - run:
+          name: Report size of RNTester.app (analysis-bot)
+          command: GITHUB_TOKEN="$PUBLIC_ANALYSISBOT_GITHUB_TOKEN_A""$PUBLIC_ANALYSISBOT_GITHUB_TOKEN_B" scripts/circleci/report-bundle-size.sh << parameters.platform >>
 
 # -------------------------
 #          JOBS
 # -------------------------
-version: 2
 jobs:
-  # Set up a Node environment for downstream jobs
-  checkout_code:
-    <<: *js_defaults
+  setup:
+    parameters:
+        executor:
+          type: executor
+          default: nodelts
+        checkout_type:
+          type: string
+          default: node
+    executor: << parameters.executor >>
     steps:
       - checkout
-      - run: *setup-artifacts
-
-      - restore-cache: *restore-yarn-cache
-      - run: *yarn
-      - save-cache: *save-yarn-cache
-
-      - persist_to_workspace:
-          root: .
-          paths: .
+      - save_cache:
+          key: v1-repo-{{ .Environment.CIRCLE_SHA1 }}-<< parameters.checkout_type >>
+          paths:
+            - ~/react-native
 
   # -------------------------
   #     JOBS: Analyze PR
@@ -199,80 +237,53 @@ jobs:
   # Issues will be posted to the PR itself via GitHub bots.
   # This workflow should only fail if the bots fail to run.
   analyze_pr:
-    <<: *defaults
-    docker:
-      - image: node:lts
-    # The public github tokens are publicly visible by design
-    environment:
-      - PUBLIC_PULLBOT_GITHUB_TOKEN_A: "a6edf8e8d40ce4e8b11a"
-      - PUBLIC_PULLBOT_GITHUB_TOKEN_B: "150e1341f4dd9c944d2a"
-      - PUBLIC_ANALYSISBOT_GITHUB_TOKEN_A: "78a72af35445ca3f8180"
-      - PUBLIC_ANALYSISBOT_GITHUB_TOKEN_B: "b1a98e0bbd56ff1ccba1"
-
+    executor: nodelts
     steps:
-      - checkout
-      - run: *setup-artifacts
+      - restore_cache_checkout:
+          checkout_type: node
+      - run_yarn
 
-      - restore-cache: *restore-yarn-cache
-      - run: *yarn
+      - install_github_bot_deps
 
       - run:
-          name: Analyze Shell Scripts
-          command: |
-            echo -e "\\x1B[36mInstalling additional dependencies\\x1B[0m"
-            apt update && apt install -y shellcheck jq
-            yarn add @octokit/rest@15.18.0
-            echo -e "\\x1B[36mAnalyzing shell scripts\\x1B[0m"; \
-            GITHUB_TOKEN="$PUBLIC_ANALYSISBOT_GITHUB_TOKEN_A""$PUBLIC_ANALYSISBOT_GITHUB_TOKEN_B" \
-            GITHUB_OWNER="$CIRCLE_PROJECT_USERNAME" \
-            GITHUB_REPO="$CIRCLE_PROJECT_REPONAME" \
-            GITHUB_PR_NUMBER="$CIRCLE_PR_NUMBER" \
-            ./scripts/circleci/analyze_scripts.sh
+          name: Install additional GitHub bot dependencies
+          command: sudo apt update && sudo apt install -y shellcheck jq
+
+      - run:
+          name: Run linters against modified files (analysis-bot)
+          command: GITHUB_TOKEN="$PUBLIC_ANALYSISBOT_GITHUB_TOKEN_A""$PUBLIC_ANALYSISBOT_GITHUB_TOKEN_B" yarn lint-ci
           when: always
 
       - run:
-          name: Analyze Code
+          name: Analyze Pull Request (pull-bot)
           command: |
-            echo -e "\\x1B[36mInstalling additional dependencies\\x1B[0m"; yarn add @octokit/rest@15.18.0
-            echo -e "\\x1B[36mAnalyzing code\\x1B[0m"; \
-            GITHUB_TOKEN="$PUBLIC_ANALYSISBOT_GITHUB_TOKEN_A""$PUBLIC_ANALYSISBOT_GITHUB_TOKEN_B" \
-            GITHUB_OWNER="$CIRCLE_PROJECT_USERNAME" \
-            GITHUB_REPO="$CIRCLE_PROJECT_REPONAME" \
-            GITHUB_PR_NUMBER="$CIRCLE_PR_NUMBER" \
-            ./scripts/circleci/analyze_code.sh
-          when: always
-
-      - run:
-          name: Analyze Pull Request
-          command: |
-            echo -e "\\x1B[36mInstalling additional dependencies\\x1B[0m"
             cd bots
-            yarn install --non-interactive --cache-folder ~/.cache/yarn
-            echo -e "\\x1B[36mAnalyzing pull request\\x1B[0m"; \
-            DANGER_GITHUB_API_TOKEN="$PUBLIC_PULLBOT_GITHUB_TOKEN_A""$PUBLIC_PULLBOT_GITHUB_TOKEN_B" \
-            yarn danger ci --use-github-checks
+            DANGER_GITHUB_API_TOKEN="$PUBLIC_PULLBOT_GITHUB_TOKEN_A""$PUBLIC_PULLBOT_GITHUB_TOKEN_B" yarn danger ci --use-github-checks
           when: always
-      - save-cache: *save-yarn-cache
+
 
   # -------------------------
   #    JOBS: Analyze Code
   # -------------------------
-  analyze:
-    <<: *js_defaults
+  analyze_code:
+    executor: nodelts
     steps:
-      - attach_workspace:
-          at: ~/react-native
+      - restore_cache_checkout:
+          checkout_type: node
+      - setup_artifacts
+      - run_yarn
 
       - run:
           name: Lint code
-          command: scripts/circleci/exec_swallow_error.sh yarn lint --format junit -o ~/react-native/reports/junit/eslint/results.xml
+          command: scripts/circleci/exec_swallow_error.sh yarn lint --format junit -o ./reports/junit/eslint/results.xml
+          when: always
 
-      - run: 
+      - run:
           name: Check for errors in code using Flow (iOS)
           command: yarn flow-check-ios
           when: always
 
-      - run: 
+      - run:
           name: Check for errors in code using Flow (Android)
           command: yarn flow-check-android
           when: always
@@ -284,135 +295,191 @@ jobs:
             ./scripts/circleci/validate_yarn_lockfile.sh
           when: always
 
+      - run:
+          name: Check formatting
+          command: yarn run format-check
+          when: always
+
       - store_test_results:
-          path: ~/react-native/reports/junit
-      - store_artifacts:
-          path: ~/react-native/yarn.lock
+          path: ./reports/junit
 
   # -------------------------
   #   JOBS: Test JavaScript
   # -------------------------
-  # Runs JavaScript tests on Node 8
-  test_javascript:
-    <<: *js_defaults
+  test_js:
+    parameters:
+      executor:
+        type: executor
+        default: nodelts
+      run_disabled_tests:
+        type: boolean
+        default: false
+    executor: << parameters.executor >>
     steps:
-      - attach_workspace:
-          at: ~/react-native
+      - restore_cache_checkout:
+          checkout_type: node
+      - setup_artifacts
+      - run_yarn
+      - run:
+          name: Install rsync
+          command: sudo apt-get install rsync
 
-      - run: *run-js-tests
+      # -------------------------
+      # Run JavaScript tests
+      - run:
+          name: "Run Tests: JavaScript Tests"
+          command: node ./scripts/run-ci-javascript-tests.js --maxWorkers 2
+      - run_e2e:
+          platform: js
 
-      - run: 
-          name: JavaScript End-to-End Test Suite
-          command: node ./scripts/run-ci-e2e-tests.js --js --retries 3;
+      # Optionally, run disabled tests
+      - when:
+          condition: << parameters.run_disabled_tests >>
+          steps:
+            - run: echo "Failing tests may be moved here temporarily."
+      # -------------------------
 
       - store_test_results:
-          path: ~/react-native/reports/junit
-
-  # Run JavaScript tests on Node LTS
-  test_node_lts:
-    <<: *defaults
-    docker:
-      - image: node:lts
-    steps:
-      - checkout
-      - run: *setup-artifacts
-
-      - run: *yarn
-
-      - run: *run-js-tests
-
-      - run: yarn run format-check
-
-      - store_test_results:
-          path: ~/react-native/reports/junit
+          path: ./reports/junit
 
   # -------------------------
   #     JOBS: Test iOS
   # -------------------------
-  # Runs unit tests on iOS devices
   test_ios:
-    <<: *macos_defaults
+    executor: reactnativeios
+    parameters:
+      use_frameworks:
+        type: boolean
+        default: false
+      run_unit_tests:
+        description: Specifies whether unit tests should run.
+        type: boolean
+        default: false
+      run_detox_tests:
+        description: Specifies whether Detox e2e tests should run.
+        type: boolean
+        default: false
+      run_disabled_tests:
+        description: Specifies whether disabled tests should run. Set this to true to debug failing tests.
+        type: boolean
+        default: false
+    environment:
+      - REPORTS_DIR: "./reports/junit"
     steps:
-      - attach_workspace:
-          at: ~/react-native
+      - restore_cache_checkout:
+          checkout_type: ios
+      - setup_artifacts
+      - run_yarn
 
+      - run: |
+          cd RNTester
+          bundle check || bundle install
       - run:
           name: Boot iPhone Simulator
-          command: source scripts/.tests.env && xcrun simctl boot "$IOS_DEVICE" || true      
-
-      - restore-cache: *restore-brew-cache
-      - run:
-          name: Install Watchman
-          command: |
-            HOMEBREW_NO_AUTO_UPDATE=1 brew install watchman >/dev/null
-            touch .watchmanconfig      
-      - save-cache: *save-brew-cache
-
-      - run:
-          name: iOS Test Suite
-          command: ./scripts/objc-test-ios.sh test      
-
-      - run:
-          name: iOS End-to-End Test Suite
-          command: node ./scripts/run-ci-e2e-tests.js --ios --retries 3;
-
-      - store_test_results:
-          path: ~/react-native/reports/junit
-
-  # Runs end to end tests (Detox)
-  test_detox_end_to_end:
-    <<: *macos_defaults
-    steps:
-      - attach_workspace:
-          at: ~/react-native
-
-      - run: 
-          name: Start iPhone 5s simulator
-          background: true
-          command: xcrun simctl boot "iPhone 5s" || true
+          command: source scripts/.tests.env && xcrun simctl boot "$IOS_DEVICE" || true
 
       - run:
           name: Configure Environment Variables
           command: |
-            echo 'export PATH=/usr/local/opt/node@8/bin:$PATH' >> $BASH_ENV
+            echo 'export PATH=/usr/local/opt/node@10/bin:$PATH' >> $BASH_ENV
             source $BASH_ENV
 
-      # Brew
-      - restore-cache: *restore-brew-cache
+      - with_brew_cache_span:
+          steps:
+            - brew_install:
+                package: watchman
+            - brew_install:
+                package: node@10
+            - run:
+                name: "Brew: Tap wix/brew"
+                command: HOMEBREW_NO_AUTO_UPDATE=1 brew tap wix/brew >/dev/null
+            - brew_install:
+                package: applesimutils
+
       - run:
-          name: Configure Detox Environment
+          name: Configure Watchman
+          command: touch .watchmanconfig
+
+      - when:
+          condition: << parameters.use_frameworks >>
+          steps:
+            - run:
+                name: Set USE_FRAMEWORKS=1
+                command: echo "export USE_FRAMEWORKS=1" >> $BASH_ENV
+
+      - run:
+          name: Fetch CocoaPods Specs
           command: |
-            HOMEBREW_NO_AUTO_UPDATE=1 brew install node@8 >/dev/null
-            HOMEBREW_NO_AUTO_UPDATE=1 brew tap wix/brew >/dev/null
-            HOMEBREW_NO_AUTO_UPDATE=1 brew install applesimutils >/dev/null
-            touch .watchmanconfig
-            node -v
-      - save-cache: *save-brew-cache
+            curl https://cocoapods-specs.circleci.com/fetch-cocoapods-repo-from-s3.sh | bash -s cf
+      - run: 
+          name: Setup the CocoaPods environment
+          command: pod setup
 
-      # Yarn install
-      - restore-cache: *restore-yarn-cache
-      - run: *yarn
-      - save-cache: *save-yarn-cache
+      - with_rntester_pods_cache_span:
+          steps:
+            - run:
+                name: Generate RNTesterPods Workspace
+                command: cd RNTester && pod install --verbose
 
-      # Xcode build
       - run:
-          name: Build iOS app for simulator
-          command: yarn run build-ios-e2e
+          name: Generate RNTesterPods Xcode Workspace
+          command: pushd RNTester && pod install --verbose && popd
 
-      # Test
-      - run:
-          name: Run Detox Tests
-          command: yarn run test-ios-e2e
+      # -------------------------
+      # Runs iOS unit tests
+      - when:
+          condition: << parameters.run_unit_tests >>
+          steps:
+            - run: 
+                name: "Run Tests: iOS Unit and Integration Tests"
+                command: yarn test-ios
+      # Runs iOS Detox e2e tests
+      - when:
+          condition: << parameters.run_detox_tests >>
+          steps:
+            - run:
+                name: "Run Tests: Detox iOS End-to-End Tests"
+                command: yarn run build-ios-e2e && yarn run test-ios-e2e
+
+      # Optionally, run disabled tests
+      - when:
+          condition: << parameters.run_disabled_tests >>
+          steps:
+            - run: echo "Failing tests may be moved here temporarily."
+            - run:
+                name: "Run Tests: CocoaPods"
+                command: ./scripts/process-podspecs.sh
+            - run:
+                name: Free up port 8081 for iOS End-to-End Tests
+                command: |
+                  # free up port 8081 for the packager before running tests
+                  set +eo pipefail
+                  lsof -i tcp:8081 | awk 'NR!=1 {print $2}' | xargs kill
+                  set -eo pipefail
+            - run_e2e:
+                platform: ios
+      # -------------------------
+
+      # Collect Results
+      - report_bundle_size:
+          platform: ios
+      - store_test_results:
+          path: ./reports/junit
 
   # -------------------------
   #    JOBS: Test Android
   # -------------------------
-  # Run Android tests
   test_android:
-    <<: *android_defaults
+    executor: reactnativeandroid
+    parameters:
+      run_disabled_tests:
+        type: boolean
+        default: false    
     steps:
-      - attach_workspace:
-          at: ~/react-native
+      - restore_cache_checkout:
+          checkout_type: android
+      - setup_artifacts
+      - run_yarn
 
       # Validate Android SDK installation and packages
       - run:
@@ -422,40 +489,28 @@ jobs:
       # Starting emulator in advance as it takes some time to boot.
       - run:
           name: Create Android Virtual Device
-          command: source scripts/android-setup.sh && createAVD      
-      - run: 
+          command: source scripts/android-setup.sh && createAVD
+      - run:
           name: Launch Android Virtual Device in Background
           command: source scripts/android-setup.sh && launchAVD
           background: true
 
       # Keep configuring Android dependencies while AVD boots up
 
+      - run:
+          name: Install rsync
+          command: apt-get update -y && apt-get install rsync -y
+
       # Install Buck
-      - restore-cache: *restore-buck-downloads-cache
-      - run: 
-          name: Install BUCK
-          command: |
-            buck --version
-            # Install related tooling
-            if [[ ! -e ~/okbuck ]]; then
-              git clone https://github.com/uber/okbuck.git ~/okbuck --depth=1
-            fi
-            mkdir -p ~/react-native/tooling/junit
-            cp -R ~/okbuck/tooling/junit/* ~/react-native/tooling/junit/.      
-      - save-cache: *save-buck-downloads-cache
+      - install_buck_tooling
 
       # Validate Android test environment (including Buck)
       - run:
           name: Validate Android Test Environment
-          command: ./scripts/validate-android-test-env.sh      
+          command: ./scripts/validate-android-test-env.sh
 
-      # Download dependencies using Buck
-      - run: *download-dependencies-buck
-
-      # Download dependencies using Gradle
-      - restore-cache: *restore-gradle-downloads-cache
-      - run: *download-dependencies-gradle
-      - save-cache: *save-gradle-downloads-cache
+      - download_buck_dependencies
+      - download_gradle_dependencies
 
       # Build and compile
       - run:
@@ -471,107 +526,215 @@ jobs:
       # Build JavaScript Bundle for instrumentation tests
       - run:
           name: Build JavaScript Bundle
-          command: node cli.js bundle --max-workers 2 --platform android --dev true --entry-file ReactAndroid/src/androidTest/js/TestBundle.js --bundle-output ReactAndroid/src/androidTest/assets/AndroidTestBundle.js --reactNativePath .
-      
+          command: node cli.js bundle --max-workers 2 --platform android --dev true --entry-file ReactAndroid/src/androidTest/js/TestBundle.js --bundle-output ReactAndroid/src/androidTest/assets/AndroidTestBundle.js
 
       # Wait for AVD to finish booting before running tests
       - run:
           name: Wait for Android Virtual Device
-          command: source scripts/android-setup.sh && waitForAVD      
-
-      # Test Suite
-      - run:
-          name: Run Unit Tests
-          command: buck test ReactAndroid/src/test/... --config build.threads=$BUILD_THREADS --xml ~/react-native/reports/buck/all-results-raw.xml
+          command: source scripts/android-setup.sh && waitForAVD
 
       - run:
-          name: Run Instrumentation Tests
+          name: Assemble RNTester App
+          command: ./gradlew RNTester:android:app:assembleRelease
+
+      # -------------------------
+      # Run Android tests
+      - run:
+          name: "Run Tests: Android Unit Tests"
+          command: buck test ReactAndroid/src/test/... --config build.threads=$BUILD_THREADS --xml ./reports/buck/all-results-raw.xml
+      - run:
+          name: "Run Tests: Android Instrumentation Tests"
           command: |
             if [[ ! -e ReactAndroid/src/androidTest/assets/AndroidTestBundle.js ]]; then
               echo "JavaScript bundle missing, cannot run instrumentation tests. Verify Build JavaScript Bundle step completed successfully."; exit 1;
             fi
             source scripts/android-setup.sh && NO_BUCKD=1 retry3 timeout 300 buck install ReactAndroid/src/androidTest/buck-runner:instrumentation-tests --config build.threads=$BUILD_THREADS
-      
-      - run:
-          name: Build Android RNTester App
-          command: ./gradlew RNTester:android:app:assembleRelease
+
+      # Optionally, run disabled tests
+      - when:
+          condition: << parameters.run_disabled_tests >>
+          steps:
+            - run: echo "Failing tests may be moved here temporarily."
+            - run_e2e:
+                platform: android
+      # -------------------------
 
       # Collect Results
+      - report_bundle_size:
+          platform: android
       - run:
           name: Collect Test Results
           command: |
-            find . -type f -regex ".*/build/test-results/debug/.*xml" -exec cp {} ~/react-native/reports/build/ \;
-            find . -type f -regex ".*/outputs/androidTest-results/connected/.*xml" -exec cp {} ~/react-native/reports/outputs/ \;
-            find . -type f -regex ".*/buck-out/gen/ReactAndroid/src/test/.*/.*xml" -exec cp {} ~/react-native/reports/buck/ \;
-            ./tooling/junit/buck_to_junit.sh ~/react-native/reports/buck/all-results-raw.xml ~/react-native/reports/junit/all-results-junit.xml
+            find . -type f -regex ".*/build/test-results/debug/.*xml" -exec cp {} ./reports/build/ \;
+            find . -type f -regex ".*/outputs/androidTest-results/connected/.*xml" -exec cp {} ./reports/outputs/ \;
+            find . -type f -regex ".*/buck-out/gen/ReactAndroid/src/test/.*/.*xml" -exec cp {} ./reports/buck/ \;
+            if [ -f ~/react-native/reports/buck/all-results-raw.xml ]; then
+              cd ~/okbuck
+              ./tooling/junit/buck_to_junit.sh ~/react-native/reports/buck/all-results-raw.xml ~/react-native/reports/junit/results.xml
+            fi
           when: always
-      
       - store_test_results:
-          path: ~/react-native/reports/junit
-  
+          path: ./reports/junit
+
+  # -------------------------
+  #    JOBS: Test Docker
+  # -------------------------
+  test_docker:
+    machine: true
+    steps:
+      - checkout
+      - run:
+          name: Build Docker container for Android RNTester App
+          command: |
+            source ~/.bashrc
+            nvm i node
+            npm i -g yarn
+            npx envinfo@latest
+            yarn run docker-setup-android
+            yarn run docker-build-android
+
+  # -------------------------
+  #    JOBS: Windows
+  # -------------------------
+  test_windows:
+    executor:
+      name: win/default
+    parameters:
+      run_disabled_tests:
+        type: boolean
+        default: false
+    environment:
+      - ANDROID_HOME: "C:\\Android\\android-sdk"
+      - ANDROID_NDK: "C:\\Android\\android-sdk\\ndk\\19.2.5345600"
+      - ANDROID_BUILD_VERSION: 28
+      - ANDROID_TOOLS_VERSION: 29.0.2
+      - GRADLE_OPTS: -Dorg.gradle.daemon=false
+      - NDK_VERSION: 19.2.5345600
+    steps:
+      - checkout
+
+      # Setup Dependencies
+      - run:
+          name: Install Yarn
+          command: choco install yarn
+
+      - run:
+          name: Display Environment info
+          command: npx envinfo@latest
+
+      - restore_cache:
+          keys:
+            - v1-win-yarn-cache-{{ arch }}-{{ checksum "yarn.lock" }}
+            - v1-win-yarn-cache-{{ arch }}-
+      - run:
+          name: "Yarn: Install Dependencies"
+          command: yarn install --frozen-lockfile --non-interactive
+      - save_cache:
+          key: v1-win-yarn-cache-{{ arch }}-{{ checksum "yarn.lock" }}
+          paths:
+            - C:\Users\circleci\AppData\Local\Yarn
+
+      - run:
+          name: Install Android SDK Tools
+          command: choco install android-sdk
+
+      - run:
+          name: Setup Android SDKs
+          command: |
+            sdkmanager --licenses
+            sdkmanager "system-images;android-19;google_apis;armeabi-v7a"
+            sdkmanager "platforms;android-%ANDROID_BUILD_VERSION%"
+            sdkmanager "build-tools;%ANDROID_TOOLS_VERSION%"
+            sdkmanager "add-ons;addon-google_apis-google-23"
+            sdkmanager "extras;android;m2repository"
+            sdkmanager "ndk;%NDK_VERSION%"
+
+      # -------------------------
+      # Run Tests
+      - run:
+          name: "Flow: Check Android"
+          command: yarn flow-check-android
+      - run:
+          name: "Flow: Check iOS"
+          command: yarn flow-check-ios
+      - run:
+          name: "Run Tests: JavaScript Tests"
+          command: yarn test
+
+      # Optionally, run disabled tests
+      - when:
+          condition: << parameters.run_disabled_tests >>
+          steps:
+            - run: echo "Failing tests may be moved here temporarily."
+            - run:
+                name: Android Build
+                command: ./gradlew.bat RNTester:android:app:assembleRelease
+
   # -------------------------
   #      JOBS: Coverage
   # -------------------------
   # Collect JavaScript test coverage
   js_coverage:
-    <<: *js_defaults
+    executor: nodelts
     environment:
       - CI_BRANCH: $CIRCLE_BRANCH
       - CI_PULL_REQUEST: $CIRCLE_PULL_REQUEST
       - CI_BUILD_NUMBER: $CIRCLE_BUILD_NUM
       - CI_BUILD_URL: $CIRCLE_BUILD_URL
     steps:
-      - checkout
-      - restore-cache: *restore-yarn-cache
-      - run: *yarn
+      - restore_cache_checkout:
+          checkout_type: node
+      - setup_artifacts
+      - run_yarn
       - run:
-          name: Test coverage
+          name: Collect test coverage information
           command: |
-            yarn test --coverage --maxWorkers=2
-            cat ./coverage/lcov.info | ./node_modules/.bin/coveralls
-          when: always      
+            scripts/circleci/exec_swallow_error.sh yarn test --coverage --maxWorkers=2
+            if [[ -e ./coverage/lcov.info ]]; then
+              cat ./coverage/lcov.info | scripts/circleci/exec_swallow_error.sh ./node_modules/.bin/coveralls
+            fi
       - store_artifacts:
           path: ~/react-native/coverage/
 
   # -------------------------
   #      JOBS: Releases
   # -------------------------
-  # Publishes new version onto npm
-  # Only works on stable branches when a properly tagged commit is pushed
+  # Publishes a new version onto npm
   publish_npm_package:
-    <<: *android_defaults
+    parameters:
+      publish_npm_args:
+        type: string
+        default: --nonightly
+    executor: reactnativeandroid
     steps:
-      - checkout
-
-      - restore-cache: *restore-yarn-cache
-      - run: *yarn
-
-      # Fetch dependencies using Buck
-      - restore-cache: *restore-buck-downloads-cache
-      - run: *download-dependencies-buck
-
-      # Fetch dependencies using Gradle
-      - restore-cache: *restore-gradle-downloads-cache
-      - run: *download-dependencies-gradle
-
-      - restore-cache: *restore-yarn-cache
-      - run: *yarn
-
       - run:
-          name: Authenticate with npm
-          command: echo "//registry.npmjs.org/:_authToken=${CIRCLE_NPM_TOKEN}" > ~/.npmrc
-
-      - run:
-          name: Authenticate git user
+          name: Add github.com to SSH known hosts
           command: |
-            git config --global user.email "react-native-bot@users.noreply.github.com"
-            git config --global user.name "npm Deployment Script"
-            echo "machine github.com login react-native-bot password $GITHUB_TOKEN" > ~/.netrc
+            mkdir -p ~/.ssh
+            echo '|1|If6MU203eXTaaWL678YEfWkVMrw=|kqLeIAyTy8pzpj8x8Ae4Fr8Mtlc= ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAq2A7hRGmdnm9tUDbO9IDSwBK6TbQa+PXYPCPy6rbTrTtw7PHkccKrpp0yVhp5HdEIcKr6pLlVDBfOLX9QUsyCOV0wzfjIJNlGEYsdlLJizHhbn2mUjvSAHQqZETYP81eFzLQNnPHt4EVVUh7VfDESU84KezmD5QlWpXLmvU31/yMf+Se8xhHTvKSCZIFImWwoG6mbUoWf9nzpIoaSjB+weqqUUmpaaasXVal72J+UX2B+2RPW3RcT0eOzQgqlJL3RKrTJvdsjE3JEAvGq3lGHSZXy28G3skua2SmVi/w4yCE6gbODqnTWlg7+wC604ydGXA8VJiS5ap43JXiUFFAaQ==' >> ~/.ssh/known_hosts
+      - restore_cache_checkout:
+          checkout_type: android
+      - run_yarn
+      - install_buck_tooling
+      - download_buck_dependencies
+      - download_gradle_dependencies
+      - run: echo "//registry.npmjs.org/:_authToken=${CIRCLE_NPM_TOKEN}" > ~/.npmrc
+      - run: |
+          git config --global user.email "react-native-bot@users.noreply.github.com"
+          git config --global user.name "npm Deployment Script"
+          echo "machine github.com login react-native-bot password $GITHUB_TOKEN" > ~/.netrc
+      - run: node ./scripts/publish-npm.js << parameters.publish_npm_args >>
 
-      # Build and publish release. Requires an Android environment.
+  # -------------------------
+  #    JOBS: Nightly
+  # -------------------------
+  nightly_job:
+    machine: true
+    steps:
       - run:
-          name: Publish React Native Package
-          command: node ./scripts/publish-npm.js
+          name: Nightly
+          command: |
+            echo "Nightly build run"
 
 # -------------------------
 #        WORK FLOWS
@@ -581,29 +744,138 @@ workflows:
 
   tests:
     jobs:
-      - test_node_lts:
-          filters: *filter-ignore-gh-pages
-
-      - checkout_code:
-          filters: *filter-ignore-gh-pages
-
-      - analyze: *run-after-checkout
-      - test_javascript: *run-after-checkout
-      - test_android: *run-after-checkout
-      - test_ios: *run-after-checkout
-      - test_detox_end_to_end: *run-after-checkout
+      - setup:
+          name: setup_js
+          filters:
+            branches:
+              ignore: gh-pages
+      - setup:
+          name: setup_ios
+          checkout_type: ios
+          executor: reactnativeios
+          filters:
+            branches:
+              ignore: gh-pages
+      - setup:
+          name: setup_android
+          checkout_type: android
+          executor: reactnativeandroid
+          filters:
+            branches:
+              ignore: gh-pages
+      - test_js:
+          run_disabled_tests: false
+          requires:
+            - setup_js
+      - test_android:
+          run_disabled_tests: false
+          requires:
+            - setup_android
+      - test_ios:
+          name: test_ios_unit
+          run_disabled_tests: false
+          run_unit_tests: true
+          requires:
+            - setup_ios
+      - test_ios:
+          name: test_ios_unit_frameworks
+          use_frameworks: true
+          run_unit_tests: true
+          requires:
+            - setup_ios
+      - test_ios:
+          name: test_ios_detox
+          run_disabled_tests: false
+          run_detox_tests: true
+          requires:
+            - setup_ios
+      - test_ios:
+          name: test_ios_detox_frameworks
+          use_frameworks: true
+          run_detox_tests: true
+          requires:
+            - setup_ios
+      - test_js:
+          name: test_js_prev_lts
+          executor: nodeprevlts
+          requires:
+            - setup_js
+      - test_docker:
+          filters:
+            branches:
+              ignore: gh-pages
+      - test_windows:
+          filters:
+            branches:
+              ignore: gh-pages
+          run_disabled_tests: false
 
   releases:
     jobs:
+      - setup:
+          name: setup_android
+          checkout_type: android
+          executor: reactnativeandroid
+          filters:
+            # Both of the following conditions must be included!
+            # Ignore any commit on any branch by default.
+            branches:
+              ignore: /.*/
+            # Only act on version tags.
+            tags:
+              only: /v[0-9]+(\.[0-9]+)*(\-rc(\.[0-9]+)?)?/
       - publish_npm_package:
-          filters: *filter-only-version-tags
+          requires:
+            - setup_android
+          filters:
+            # Both of the following conditions must be included!
+            # Ignore any commit on any branch by default.
+            branches:
+              ignore: /.*/
+            # Only act on version tags.
+            tags:
+              only: /v[0-9]+(\.[0-9]+)*(\-rc(\.[0-9]+)?)?/
 
   analysis:
     jobs:
+      - setup
+      # Run lints on every commit other than those to the gh-pages branch
+      - analyze_code:
+          requires:
+            - setup
+          filters:
+            branches:
+              ignore: gh-pages
+
       # Run code checks on PRs from forks
       - analyze_pr:
-          filters: *filter-only-forked-pull-requests
+          requires:
+            - setup
+          filters:
+            branches:
+              only: /^pull\/.*$/
 
-      # Gather coverage on master
+      # Gather coverage
       - js_coverage:
-          filters: *filter-only-master
+          requires:
+            - setup
+  nightly:
+    triggers:
+      - schedule:
+          cron: "0 0 * * *"
+          filters:
+            branches:
+              only:
+                - master
+    jobs:
+      - nightly_job
+
+      - setup:
+          name: setup_android
+          checkout_type: android
+          executor: reactnativeandroid
+
+      - publish_npm_package:
+          publish_npm_args: --nightly
+          requires:
+            - setup_android

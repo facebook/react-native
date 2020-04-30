@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -14,9 +14,11 @@
 
 #include <better/small_vector.h>
 #include <react/core/LayoutMetrics.h>
-#include <react/core/Sealable.h>
 #include <react/core/ShadowNode.h>
+#include <react/core/ShadowNodeFragment.h>
 #include <react/debug/DebugStringConvertible.h>
+#include <react/graphics/Geometry.h>
+#include <react/graphics/Transform.h>
 
 namespace facebook {
 namespace react {
@@ -28,22 +30,54 @@ struct LayoutContext;
  * Describes all sufficient layout API (in approach-agnostic way)
  * which makes a concurrent layout possible.
  */
-class LayoutableShadowNode : public virtual Sealable {
+class LayoutableShadowNode : public ShadowNode {
  public:
+  LayoutableShadowNode(
+      ShadowNodeFragment const &fragment,
+      ShadowNodeFamily::Shared const &family,
+      ShadowNodeTraits traits);
+
+  LayoutableShadowNode(
+      ShadowNode const &sourceShadowNode,
+      ShadowNodeFragment const &fragment);
+
+  static ShadowNodeTraits BaseTraits();
+
+  class LayoutInspectingPolicy final {
+   public:
+    bool includeTransform{true};
+  };
+
   using UnsharedList = better::
       small_vector<LayoutableShadowNode *, kShadowNodeChildrenSmallVectorSize>;
 
-  virtual ~LayoutableShadowNode() noexcept = default;
+  /*
+   * Performs layout of the tree starting from this node. Usually is being
+   * called on the root node.
+   * Default implementation does nothing.
+   */
+  virtual void layoutTree(
+      LayoutContext layoutContext,
+      LayoutConstraints layoutConstraints);
 
   /*
-   * Measures the node (and node content, propbably recursivly) with
+   * Measures the node (and node content, probably recursively) with
    * given constrains and relying on possible layout.
    * Default implementation returns zero size.
    */
   virtual Size measure(LayoutConstraints layoutConstraints) const;
 
   /*
-   * Computes layout recusively.
+   * Measures the node with given `layoutContext` and `layoutConstraints`.
+   * The size of nested content and the padding should be included, the margin
+   * should *not* be included. Default implementation returns zero size.
+   */
+  virtual Size measure(
+      LayoutContext const &layoutContext,
+      LayoutConstraints const &layoutConstraints) const;
+
+  /*
+   * Computes layout recursively.
    * Additional environmental constraints might be provided via `layoutContext`
    * argument.
    * Default implementation basically calls `layoutChildren()` and then
@@ -55,26 +89,42 @@ class LayoutableShadowNode : public virtual Sealable {
   /*
    * Returns layout metrics computed during previous layout pass.
    */
-  virtual LayoutMetrics getLayoutMetrics() const;
+  LayoutMetrics getLayoutMetrics() const;
 
   /*
-   * Returns `true` if the node represents only information necessary for
-   * layout computation and can be safely removed from view hierarchy.
-   * Default implementation returns `false`.
+   * Returns a transform object that represents transformations that will/should
+   * be applied on top of regular layout metrics by mounting layer.
+   * The `transform` value modifies a coordinate space of a layout system.
+   * Default implementation returns `Identity` transform.
    */
-  virtual bool isLayoutOnly() const;
+  virtual Transform getTransform() const;
 
   /*
    * Returns layout metrics relatively to the given ancestor node.
    */
   LayoutMetrics getRelativeLayoutMetrics(
-      const LayoutableShadowNode &ancestorLayoutableShadowNode) const;
+      LayoutableShadowNode const &ancestorLayoutableShadowNode,
+      LayoutInspectingPolicy policy) const;
+
+  /*
+   * Sets layout metrics for the shadow node.
+   * Returns true if the metrics are different from previous ones.
+   */
+  bool setLayoutMetrics(LayoutMetrics layoutMetrics);
+
+  /*
+   * Returns the ShadowNode that is rendered at the Point received as a
+   * parameter.
+   */
+  static ShadowNode::Shared findNodeAtPoint(
+      ShadowNode::Shared node,
+      Point point);
 
  protected:
   /*
    * Clean or Dirty layout state:
    * Indicates whether all nodes (and possibly their subtrees) along the path
-   * to the root node should be re-layouted.
+   * to the root node should be re-laid out.
    */
   virtual void cleanLayout() = 0;
   virtual void dirtyLayout() = 0;
@@ -89,7 +139,7 @@ class LayoutableShadowNode : public virtual Sealable {
 
   /*
    * Applies layout for all children;
-   * does not call anything in recusive manner *by desing*.
+   * does not call anything in recursive manner *by desing*.
    */
   virtual void layoutChildren(LayoutContext layoutContext);
 
@@ -102,22 +152,7 @@ class LayoutableShadowNode : public virtual Sealable {
   /*
    * Returns layoutable children to interate on.
    */
-  virtual LayoutableShadowNode::UnsharedList getLayoutableChildNodes()
-      const = 0;
-
-  /*
-   * In case layout algorithm needs to mutate this (probably sealed) node,
-   * it has to clone and replace it in the hierarchy before to do so.
-   */
-  virtual LayoutableShadowNode *cloneAndReplaceChild(
-      LayoutableShadowNode *child,
-      int suggestedIndex = -1) = 0;
-
-  /*
-   * Sets layout metrics for the shadow node.
-   * Returns true if the metrics are different from previous ones.
-   */
-  virtual bool setLayoutMetrics(LayoutMetrics layoutMetrics);
+  LayoutableShadowNode::UnsharedList getLayoutableChildNodes() const;
 
 #pragma mark - DebugStringConvertible
 
@@ -126,8 +161,38 @@ class LayoutableShadowNode : public virtual Sealable {
 #endif
 
  private:
-  LayoutMetrics layoutMetrics_{};
+  LayoutMetrics layoutMetrics_;
 };
+
+template <>
+inline LayoutableShadowNode const &traitCast<LayoutableShadowNode const &>(
+    ShadowNode const &shadowNode) {
+  bool castable =
+      shadowNode.getTraits().check(ShadowNodeTraits::Trait::LayoutableKind);
+  assert(
+      castable ==
+      (dynamic_cast<LayoutableShadowNode const *>(&shadowNode) != nullptr));
+  assert(castable);
+  (void)castable;
+  return static_cast<LayoutableShadowNode const &>(shadowNode);
+}
+
+template <>
+inline LayoutableShadowNode const *traitCast<LayoutableShadowNode const *>(
+    ShadowNode const *shadowNode) {
+  if (!shadowNode) {
+    return nullptr;
+  }
+  bool castable =
+      shadowNode->getTraits().check(ShadowNodeTraits::Trait::LayoutableKind);
+  assert(
+      castable ==
+      (dynamic_cast<LayoutableShadowNode const *>(shadowNode) != nullptr));
+  if (!castable) {
+    return nullptr;
+  }
+  return static_cast<LayoutableShadowNode const *>(shadowNode);
+}
 
 } // namespace react
 } // namespace facebook

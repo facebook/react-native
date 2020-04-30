@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -15,33 +15,33 @@
 namespace facebook {
 namespace react {
 
-class AccessibilityProps;
-
-typedef std::shared_ptr<const AccessibilityProps> SharedAccessibilityProps;
-
-class AccessibilityProps : public virtual DebugStringConvertible {
+class AccessibilityProps {
  public:
   AccessibilityProps() = default;
   AccessibilityProps(
-      const AccessibilityProps &sourceProps,
-      const RawProps &rawProps);
+      AccessibilityProps const &sourceProps,
+      RawProps const &rawProps);
 
 #pragma mark - Props
 
-  const bool accessible{false};
-  const AccessibilityTraits accessibilityTraits{AccessibilityTraits::None};
-  const std::string accessibilityLabel{""};
-  const std::string accessibilityHint{""};
-  const std::vector<std::string> accessibilityActions{};
-  const bool accessibilityViewIsModal{false};
-  const bool accessibilityElementsHidden{false};
-  const bool accessibilityIgnoresInvertColors{false};
-  const std::string testId{""};
+  bool accessible{false};
+  AccessibilityTraits accessibilityTraits{AccessibilityTraits::None};
+  std::string accessibilityLabel{""};
+  std::string accessibilityHint{""};
+  std::vector<std::string> accessibilityActions{};
+  bool accessibilityViewIsModal{false};
+  bool accessibilityElementsHidden{false};
+  bool accessibilityIgnoresInvertColors{false};
+  bool onAccessibilityTap{};
+  bool onAccessibilityMagicTap{};
+  bool onAccessibilityEscape{};
+  bool onAccessibilityAction{};
+  std::string testId{""};
 
 #pragma mark - DebugStringConvertible
 
 #if RN_DEBUG_STRING_CONVERTIBLE
-  SharedDebugStringConvertibleList getDebugProps() const override;
+  SharedDebugStringConvertibleList getDebugProps() const;
 #endif
 };
 

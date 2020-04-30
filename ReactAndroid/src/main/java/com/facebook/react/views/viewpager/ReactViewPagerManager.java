@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -7,10 +7,8 @@
 
 package com.facebook.react.views.viewpager;
 
-import java.util.Map;
-
 import android.view.View;
-
+import androidx.annotation.Nullable;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.common.MapBuilder;
@@ -18,20 +16,27 @@ import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.ViewGroupManager;
+import com.facebook.react.uimanager.ViewManagerDelegate;
 import com.facebook.react.uimanager.annotations.ReactProp;
+import com.facebook.react.viewmanagers.AndroidViewPagerManagerDelegate;
+import com.facebook.react.viewmanagers.AndroidViewPagerManagerInterface;
+import java.util.Map;
 
-import javax.annotation.Nullable;
-
-/**
- * Instance of {@link ViewManager} that provides native {@link ViewPager} view.
- */
+/** Instance of {@link ViewManager} that provides native {@link ViewPager} view. */
 @ReactModule(name = ReactViewPagerManager.REACT_CLASS)
-public class ReactViewPagerManager extends ViewGroupManager<ReactViewPager> {
+public class ReactViewPagerManager extends ViewGroupManager<ReactViewPager>
+    implements AndroidViewPagerManagerInterface<ReactViewPager> {
 
   public static final String REACT_CLASS = "AndroidViewPager";
 
   public static final int COMMAND_SET_PAGE = 1;
   public static final int COMMAND_SET_PAGE_WITHOUT_ANIMATION = 2;
+
+  private final ViewManagerDelegate<ReactViewPager> mDelegate;
+
+  public ReactViewPagerManager() {
+    mDelegate = new AndroidViewPagerManagerDelegate<>(this);
+  }
 
   @Override
   public String getName() {
@@ -43,6 +48,7 @@ public class ReactViewPagerManager extends ViewGroupManager<ReactViewPager> {
     return new ReactViewPager(reactContext);
   }
 
+  @Override
   @ReactProp(name = "scrollEnabled", defaultBoolean = true)
   public void setScrollEnabled(ReactViewPager viewPager, boolean value) {
     viewPager.setScrollEnabled(value);
@@ -57,40 +63,60 @@ public class ReactViewPagerManager extends ViewGroupManager<ReactViewPager> {
   public Map getExportedCustomDirectEventTypeConstants() {
     return MapBuilder.of(
         PageScrollEvent.EVENT_NAME, MapBuilder.of("registrationName", "onPageScroll"),
-        PageScrollStateChangedEvent.EVENT_NAME, MapBuilder.of("registrationName", "onPageScrollStateChanged"),
+        PageScrollStateChangedEvent.EVENT_NAME,
+            MapBuilder.of("registrationName", "onPageScrollStateChanged"),
         PageSelectedEvent.EVENT_NAME, MapBuilder.of("registrationName", "onPageSelected"));
   }
 
   @Override
-  public Map<String,Integer> getCommandsMap() {
+  public Map<String, Integer> getCommandsMap() {
     return MapBuilder.of(
-        "setPage",
-        COMMAND_SET_PAGE,
-        "setPageWithoutAnimation",
-        COMMAND_SET_PAGE_WITHOUT_ANIMATION);
+        "setPage", COMMAND_SET_PAGE, "setPageWithoutAnimation", COMMAND_SET_PAGE_WITHOUT_ANIMATION);
   }
 
   @Override
   public void receiveCommand(
-      ReactViewPager viewPager,
-      int commandType,
-      @Nullable ReadableArray args) {
+      ReactViewPager viewPager, int commandType, @Nullable ReadableArray args) {
     Assertions.assertNotNull(viewPager);
     Assertions.assertNotNull(args);
     switch (commandType) {
-      case COMMAND_SET_PAGE: {
-        viewPager.setCurrentItemFromJs(args.getInt(0), true);
-        return;
-      }
-      case COMMAND_SET_PAGE_WITHOUT_ANIMATION: {
-        viewPager.setCurrentItemFromJs(args.getInt(0), false);
-        return;
-      }
+      case COMMAND_SET_PAGE:
+        {
+          viewPager.setCurrentItemFromJs(args.getInt(0), true);
+          return;
+        }
+      case COMMAND_SET_PAGE_WITHOUT_ANIMATION:
+        {
+          viewPager.setCurrentItemFromJs(args.getInt(0), false);
+          return;
+        }
       default:
-        throw new IllegalArgumentException(String.format(
-            "Unsupported command %d received by %s.",
-            commandType,
-            getClass().getSimpleName()));
+        throw new IllegalArgumentException(
+            String.format(
+                "Unsupported command %d received by %s.", commandType, getClass().getSimpleName()));
+    }
+  }
+
+  @Override
+  public void receiveCommand(
+      ReactViewPager viewPager, String commandType, @Nullable ReadableArray args) {
+    Assertions.assertNotNull(viewPager);
+    Assertions.assertNotNull(args);
+    switch (commandType) {
+      case "setPage":
+        {
+          viewPager.setCurrentItemFromJs(args.getInt(0), true);
+          return;
+        }
+      case "setPageWithoutAnimation":
+        {
+          viewPager.setCurrentItemFromJs(args.getInt(0), false);
+          return;
+        }
+      default:
+        throw new IllegalArgumentException(
+            String.format(
+                "Unsupported command %d received by %s.", commandType, getClass().getSimpleName()));
     }
   }
 
@@ -114,13 +140,36 @@ public class ReactViewPagerManager extends ViewGroupManager<ReactViewPager> {
     parent.removeViewFromAdapter(index);
   }
 
-  @ReactProp(name = "pageMargin", defaultFloat = 0)
-  public void setPageMargin(ReactViewPager pager, float margin) {
+  @Override
+  @ReactProp(name = "pageMargin", defaultInt = 0)
+  public void setPageMargin(ReactViewPager pager, int margin) {
     pager.setPageMargin((int) PixelUtil.toPixelFromDIP(margin));
   }
 
+  @Override
   @ReactProp(name = "peekEnabled", defaultBoolean = false)
   public void setPeekEnabled(ReactViewPager pager, boolean peekEnabled) {
     pager.setClipToPadding(!peekEnabled);
+  }
+
+  @Override
+  public void setInitialPage(ReactViewPager view, int value) {}
+
+  @Override
+  public void setKeyboardDismissMode(ReactViewPager view, @Nullable String value) {}
+
+  @Override
+  public void setPage(ReactViewPager view, int page) {
+    // TODO(T52835863): Implement when view commands start using delegates generated by JS.
+  }
+
+  @Override
+  public void setPageWithoutAnimation(ReactViewPager view, int page) {
+    // TODO(T52835863): Implement when view commands start using delegates generated by JS.
+  }
+
+  @Override
+  public ViewManagerDelegate<ReactViewPager> getDelegate() {
+    return mDelegate;
   }
 }

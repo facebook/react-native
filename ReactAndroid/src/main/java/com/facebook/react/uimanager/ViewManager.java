@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -7,12 +7,15 @@
 
 package com.facebook.react.uimanager;
 
+import android.content.Context;
 import android.view.View;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import com.facebook.react.bridge.BaseJavaModule;
 import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.react.touch.JSResponderHandler;
 import com.facebook.react.touch.ReactInterceptingViewGroup;
 import com.facebook.react.uimanager.annotations.ReactProp;
@@ -21,31 +24,63 @@ import com.facebook.react.uimanager.annotations.ReactPropertyHolder;
 import com.facebook.yoga.YogaMeasureMode;
 import java.util.Map;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
 /**
  * Class responsible for knowing how to create and update catalyst Views of a given type. It is also
- * responsible for creating and updating CSSNodeDEPRECATED subclasses used for calculating position and size
- * for the corresponding native view.
+ * responsible for creating and updating CSSNodeDEPRECATED subclasses used for calculating position
+ * and size for the corresponding native view.
  */
 @ReactPropertyHolder
 public abstract class ViewManager<T extends View, C extends ReactShadowNode>
-  extends BaseJavaModule {
+    extends BaseJavaModule {
 
-  public final void updateProperties(@Nonnull T viewToUpdate, ReactStylesDiffMap props) {
-    ViewManagerPropertyUpdater.updateProps(this, viewToUpdate, props);
+  /**
+   * For the vast majority of ViewManagers, you will not need to override this. Only override this
+   * if you really know what you're doing and have a very unique use-case.
+   *
+   * @param viewToUpdate
+   * @param props
+   * @param stateWrapper
+   */
+  public void updateProperties(@NonNull T viewToUpdate, ReactStylesDiffMap props) {
+    final ViewManagerDelegate<T> delegate;
+    if (ReactFeatureFlags.useViewManagerDelegates && (delegate = getDelegate()) != null) {
+      ViewManagerPropertyUpdater.updateProps(delegate, viewToUpdate, props);
+    } else {
+      ViewManagerPropertyUpdater.updateProps(this, viewToUpdate, props);
+    }
     onAfterUpdateTransaction(viewToUpdate);
   }
 
   /**
-   * Creates a view and installs event emitters on it.
+   * Override this method and return an instance of {@link ViewManagerDelegate} if the props of the
+   * view managed by this view manager should be set via this delegate. The provided instance will
+   * then get calls to {@link ViewManagerDelegate#setProperty(View, String, Object)} for every prop
+   * that must be updated and it's the delegate's responsibility to apply these values to the view.
+   *
+   * <p>By default this method returns {@code null}, which means that the view manager doesn't have
+   * a delegate and the view props should be set internally by the view manager itself.
+   *
+   * @return an instance of {@link ViewManagerDelegate} if the props of the view managed by this
+   *     view manager should be set via this delegate
    */
-  public final @Nonnull T createView(
-      @Nonnull ThemedReactContext reactContext,
+  @Nullable
+  protected ViewManagerDelegate<T> getDelegate() {
+    return null;
+  }
+
+  /** Creates a view and installs event emitters on it. */
+  private final @NonNull T createView(
+      @NonNull ThemedReactContext reactContext, JSResponderHandler jsResponderHandler) {
+    return createView(reactContext, null, null, jsResponderHandler);
+  }
+
+  /** Creates a view with knowledge of props and state. */
+  public @NonNull T createView(
+      @NonNull ThemedReactContext reactContext,
+      @Nullable ReactStylesDiffMap props,
+      @Nullable StateWrapper stateWrapper,
       JSResponderHandler jsResponderHandler) {
-    T view = createViewInstance(reactContext);
-    addEventEmitters(reactContext, view);
+    T view = createViewInstance(reactContext, props, stateWrapper);
     if (view instanceof ReactInterceptingViewGroup) {
       ((ReactInterceptingViewGroup) view).setOnInterceptTouchEventListener(jsResponderHandler);
     }
@@ -54,9 +89,9 @@ public abstract class ViewManager<T extends View, C extends ReactShadowNode>
 
   /**
    * @return the name of this view manager. This will be the name used to reference this view
-   * manager from JavaScript in createReactNativeComponentClass.
+   *     manager from JavaScript in createReactNativeComponentClass.
    */
-  public abstract @Nonnull String getName();
+  public abstract @NonNull String getName();
 
   /**
    * This method should return a subclass of {@link ReactShadowNode} which will be then used for
@@ -67,7 +102,7 @@ public abstract class ViewManager<T extends View, C extends ReactShadowNode>
     throw new RuntimeException("ViewManager subclasses must implement createShadowNodeInstance()");
   }
 
-  public @Nonnull C createShadowNodeInstance(@Nonnull ReactApplicationContext context) {
+  public @NonNull C createShadowNodeInstance(@NonNull ReactApplicationContext context) {
     return createShadowNodeInstance();
   }
 
@@ -75,8 +110,8 @@ public abstract class ViewManager<T extends View, C extends ReactShadowNode>
    * This method should return {@link Class} instance that represent type of shadow node that this
    * manager will return from {@link #createShadowNodeInstance}.
    *
-   * This method will be used in the bridge initialization phase to collect properties exposed using
-   * {@link ReactProp} (or {@link ReactPropGroup}) annotation from the {@link ReactShadowNode}
+   * <p>This method will be used in the bridge initialization phase to collect properties exposed
+   * using {@link ReactProp} (or {@link ReactPropGroup}) annotation from the {@link ReactShadowNode}
    * subclass specific for native view this manager provides.
    *
    * @return {@link Class} object that represents type of shadow node used by this view manager.
@@ -85,76 +120,100 @@ public abstract class ViewManager<T extends View, C extends ReactShadowNode>
 
   /**
    * Subclasses should return a new View instance of the proper type.
+   *
    * @param reactContext
    */
-  protected abstract @Nonnull T createViewInstance(@Nonnull ThemedReactContext reactContext);
+  protected abstract @NonNull T createViewInstance(@NonNull ThemedReactContext reactContext);
 
   /**
-   * Called when view is detached from view hierarchy and allows for some additional cleanup by
-   * the {@link ViewManager} subclass.
+   * Subclasses should return a new View instance of the proper type. This is an optional method
+   * that will call createViewInstance for you. Override it if you need props upon creation of the
+   * view.
+   *
+   * @param reactContext
    */
-  public void onDropViewInstance(@Nonnull T view) {
+  protected @NonNull T createViewInstance(
+      @NonNull ThemedReactContext reactContext,
+      @Nullable ReactStylesDiffMap initialProps,
+      @Nullable StateWrapper stateWrapper) {
+    T view = createViewInstance(reactContext);
+    addEventEmitters(reactContext, view);
+    if (initialProps != null) {
+      updateProperties(view, initialProps);
+    }
+    if (stateWrapper != null) {
+      Object extraData = updateState(view, initialProps, stateWrapper);
+      if (extraData != null) {
+        updateExtraData(view, extraData);
+      }
+    }
+    return view;
   }
+
+  /**
+   * Called when view is detached from view hierarchy and allows for some additional cleanup by the
+   * {@link ViewManager} subclass.
+   */
+  public void onDropViewInstance(@NonNull T view) {}
 
   /**
    * Subclasses can override this method to install custom event emitters on the given View. You
    * might want to override this method if your view needs to emit events besides basic touch events
    * to JS (e.g. scroll events).
    */
-  protected void addEventEmitters(@Nonnull ThemedReactContext reactContext, @Nonnull T view) {
-  }
+  protected void addEventEmitters(@NonNull ThemedReactContext reactContext, @NonNull T view) {}
 
   /**
    * Callback that will be triggered after all properties are updated in current update transaction
    * (all @ReactProp handlers for properties updated in current transaction have been called). If
-   * you want to override this method you should call super.onAfterUpdateTransaction from it as
-   * the parent class of the ViewManager may rely on callback being executed.
+   * you want to override this method you should call super.onAfterUpdateTransaction from it as the
+   * parent class of the ViewManager may rely on callback being executed.
    */
-  protected void onAfterUpdateTransaction(@Nonnull T view) {
-  }
+  protected void onAfterUpdateTransaction(@NonNull T view) {}
 
   /**
    * Subclasses can implement this method to receive an optional extra data enqueued from the
-   * corresponding instance of {@link ReactShadowNode} in
-   * {@link ReactShadowNode#onCollectExtraUpdates}.
+   * corresponding instance of {@link ReactShadowNode} in {@link
+   * ReactShadowNode#onCollectExtraUpdates}.
    *
-   * Since css layout step and ui updates can be executed in separate thread apart of setting
+   * <p>Since css layout step and ui updates can be executed in separate thread apart of setting
    * x/y/width/height this is the recommended and thread-safe way of passing extra data from css
    * node to the native view counterpart.
    *
-   * TODO(7247021): Replace updateExtraData with generic update props mechanism after D2086999
+   * <p>TODO T7247021: Replace updateExtraData with generic update props mechanism after D2086999
    */
-  public abstract void updateExtraData(@Nonnull T root, Object extraData);
+  public abstract void updateExtraData(@NonNull T root, Object extraData);
 
   /**
-   * Subclasses may use this method to receive events/commands directly from JS through the
-   * {@link UIManager}. Good example of such a command would be {@code scrollTo} request with
-   * coordinates for a {@link ScrollView} or {@code goBack} request for a {@link WebView} instance.
+   * Subclasses may use this method to receive events/commands directly from JS through the {@link
+   * UIManager}. Good example of such a command would be {@code scrollTo} request with coordinates
+   * for a {@link ScrollView} instance.
+   *
+   * <p>This method is deprecated use {@link #receiveCommand(View, String, ReadableArray)} instead.
    *
    * @param root View instance that should receive the command
    * @param commandId code of the command
    * @param args optional arguments for the command
    */
-  public void receiveCommand(@Nonnull T root, int commandId, @Nullable ReadableArray args) {
-  }
+  @Deprecated
+  public void receiveCommand(@NonNull T root, int commandId, @Nullable ReadableArray args) {}
 
   /**
-   * Subclasses of {@link ViewManager} that expect to receive commands through
-   * {@link UIManagerModule#dispatchViewManagerCommand} should override this method returning the
-   * map between names of the commands and IDs that are then used in {@link #receiveCommand} method
+   * Subclasses may use this method to receive events/commands directly from JS through the {@link
+   * UIManager}. Good example of such a command would be {@code scrollTo} request with coordinates
+   * for a {@link ReactScrollView} instance.
+   *
+   * @param root View instance that should receive the command
+   * @param commandId code of the command
+   * @param args optional arguments for the command
+   */
+  public void receiveCommand(@NonNull T root, String commandId, @Nullable ReadableArray args) {}
+
+  /**
+   * Subclasses of {@link ViewManager} that expect to receive commands through {@link
+   * UIManagerModule#dispatchViewManagerCommand} should override this method returning the map
+   * between names of the commands and IDs that are then used in {@link #receiveCommand} method
    * whenever the command is dispatched for this particular {@link ViewManager}.
-   *
-   * As an example we may consider {@link ReactWebViewManager} that expose the following commands:
-   * goBack, goForward, reload. In this case the map returned from {@link #getCommandsMap} from
-   * {@link ReactWebViewManager} will look as follows:
-   * {
-   *   "goBack": 1,
-   *   "goForward": 2,
-   *   "reload": 3,
-   * }
-   *
-   * Now assuming that "reload" command is dispatched through {@link UIManagerModule} we trigger
-   * {@link ReactWebViewManager#receiveCommand} passing "3" as {@code commandId} argument.
    *
    * @return map of string to int mapping of the expected commands
    */
@@ -167,7 +226,9 @@ public abstract class ViewManager<T extends View, C extends ReactShadowNode>
    * native views. This should return bubbling directly-dispatched event types and specify what
    * names should be used to subscribe to either form (bubbling/capturing).
    *
-   * Returned map should be of the form:
+   * <p>Returned map should be of the form:
+   *
+   * <pre>
    * {
    *   "onTwirl": {
    *     "phasedRegistrationNames": {
@@ -176,6 +237,7 @@ public abstract class ViewManager<T extends View, C extends ReactShadowNode>
    *     }
    *   }
    * }
+   * </pre>
    */
   public @Nullable Map<String, Object> getExportedCustomBubblingEventTypeConstants() {
     return null;
@@ -185,12 +247,15 @@ public abstract class ViewManager<T extends View, C extends ReactShadowNode>
    * Returns a map of config data passed to JS that defines eligible events that can be placed on
    * native views. This should return non-bubbling directly-dispatched event types.
    *
-   * Returned map should be of the form:
+   * <p>Returned map should be of the form:
+   *
+   * <pre>
    * {
    *   "onTwirl": {
    *     "registrationName": "onTwirl"
    *   }
    * }
+   * </pre>
    */
   public @Nullable Map<String, Object> getExportedCustomDirectEventTypeConstants() {
     return null;
@@ -208,21 +273,58 @@ public abstract class ViewManager<T extends View, C extends ReactShadowNode>
     return ViewManagerPropertyUpdater.getNativeProps(getClass(), getShadowNodeClass());
   }
 
-  /**
-   *
-   */
-  public @Nullable Object updateLocalData(@Nonnull T view, ReactStylesDiffMap props, ReactStylesDiffMap localData) {
+  public @Nullable Object updateLocalData(
+      @NonNull T view, ReactStylesDiffMap props, ReactStylesDiffMap localData) {
     return null;
   }
 
+  /**
+   * Subclasses can implement this method to receive state updates shared between all instances of
+   * this component type.
+   */
+  public @Nullable Object updateState(
+      @NonNull T view, ReactStylesDiffMap props, @Nullable StateWrapper stateWrapper) {
+    return null;
+  }
+
+  /**
+   * Subclasses can override this method to implement custom measure functions for the ViewManager
+   *
+   * @param context {@link com.facebook.react.bridge.ReactContext} used for the view.
+   * @param localData {@link ReadableMap} containing "local data" defined in C++
+   * @param props {@link ReadableMap} containing JS props
+   * @param state {@link ReadableMap} containing state defined in C++
+   * @param width width of the view (usually zero)
+   * @param widthMode widthMode used during calculation of layout
+   * @param height height of the view (usually zero)
+   * @param heightMode widthMode used during calculation of layout
+   * @param attachmentsPositions {@link int[]} array containing 2x times the amount of attachments
+   *     of the view. An attachment represents the position of an inline view that needs to be
+   *     rendered inside a component and it requires the content of the parent view in order to be
+   *     positioned. This array is meant to be used by the platform to RETURN the position of each
+   *     attachment, as a result of the calculation of layout. (e.g. this array is used to measure
+   *     inlineViews that are rendered inside Text components). On most of the components this array
+   *     will be contain a null value.
+   *     <p>Even values will represent the TOP of each attachment, Odd values represent the LEFT of
+   *     each attachment.
+   * @return result of calculation of layout for the arguments received as a parameter.
+   */
   public long measure(
-      ReactContext context,
+      Context context,
       ReadableMap localData,
       ReadableMap props,
+      ReadableMap state,
       float width,
       YogaMeasureMode widthMode,
       float height,
-      YogaMeasureMode heightMode) {
+      YogaMeasureMode heightMode,
+      @Nullable int[] attachmentsPositions) {
     return 0;
   }
+
+  /**
+   * Subclasses can override this method to set padding for the given View in Fabric. Since not all
+   * components support setting padding, the default implementation of this method does nothing.
+   */
+  public void setPadding(T view, int left, int top, int right, int bottom) {}
 }

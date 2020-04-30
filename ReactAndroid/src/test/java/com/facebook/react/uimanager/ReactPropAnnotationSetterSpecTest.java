@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -7,29 +7,23 @@
 
 package com.facebook.react.uimanager;
 
-import java.util.Date;
-
 import android.view.View;
-
 import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.annotations.ReactPropGroup;
-
-import org.powermock.core.classloader.annotations.PowerMockIgnore;
-import org.powermock.modules.junit4.rule.PowerMockRule;
+import java.util.Date;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.powermock.core.classloader.annotations.PowerMockIgnore;
+import org.powermock.modules.junit4.rule.PowerMockRule;
 import org.robolectric.RobolectricTestRunner;
 
-/**
- * Test that verifies that spec of methods annotated with @ReactProp is correct
- */
+/** Test that verifies that spec of methods annotated with @ReactProp is correct */
 @RunWith(RobolectricTestRunner.class)
 @PowerMockIgnore({"org.mockito.*", "org.robolectric.*", "androidx.*", "android.*"})
 public class ReactPropAnnotationSetterSpecTest {
 
-  @Rule
-  public PowerMockRule rule = new PowerMockRule();
+  @Rule public PowerMockRule rule = new PowerMockRule();
 
   private abstract class BaseViewManager extends ViewManager<View, ReactShadowNode> {
 
@@ -54,16 +48,14 @@ public class ReactPropAnnotationSetterSpecTest {
     }
 
     @Override
-    public void updateExtraData(View root, Object extraData) {
-    }
+    public void updateExtraData(View root, Object extraData) {}
   }
 
   @Test(expected = RuntimeException.class)
   public void testMethodWithWongNumberOfParams() {
     new BaseViewManager() {
       @ReactProp(name = "prop")
-      public void setterWithIncorrectNumberOfArgs(View v, boolean value, boolean otherValue) {
-      }
+      public void setterWithIncorrectNumberOfArgs(View v, boolean value, boolean otherValue) {}
     }.getNativeProps();
   }
 
@@ -71,8 +63,7 @@ public class ReactPropAnnotationSetterSpecTest {
   public void testMethodWithTooFewParams() {
     new BaseViewManager() {
       @ReactProp(name = "prop")
-      public void setterWithTooFewParams(View v) {
-      }
+      public void setterWithTooFewParams(View v) {}
     }.getNativeProps();
   }
 
@@ -80,8 +71,7 @@ public class ReactPropAnnotationSetterSpecTest {
   public void testUnsupportedPropValueType() {
     new BaseViewManager() {
       @ReactProp(name = "prop")
-      public void setterWithUnsupportedValueType(View v, Date value) {
-      }
+      public void setterWithUnsupportedValueType(View v, Date value) {}
     }.getNativeProps();
   }
 
@@ -89,8 +79,7 @@ public class ReactPropAnnotationSetterSpecTest {
   public void testSetterWIthNonViewParam() {
     new BaseViewManager() {
       @ReactProp(name = "prop")
-      public void setterWithNonViewParam(Object v, boolean value) {
-      }
+      public void setterWithNonViewParam(Object v, boolean value) {}
     }.getNativeProps();
   }
 
@@ -98,8 +87,7 @@ public class ReactPropAnnotationSetterSpecTest {
   public void testGroupInvalidNumberOfParams() {
     new BaseViewManager() {
       @ReactPropGroup(names = {"prop1", "prop2"})
-      public void setterWIthInvalidNumberOfParams(View v, int index, float value, float other) {
-      }
+      public void setterWIthInvalidNumberOfParams(View v, int index, float value, float other) {}
     }.getNativeProps();
   }
 
@@ -107,8 +95,7 @@ public class ReactPropAnnotationSetterSpecTest {
   public void testGroupTooFewParams() {
     new BaseViewManager() {
       @ReactPropGroup(names = {"prop1", "prop2"})
-      public void setterWIthTooFewParams(View v, int index) {
-      }
+      public void setterWIthTooFewParams(View v, int index) {}
     }.getNativeProps();
   }
 
@@ -116,8 +103,7 @@ public class ReactPropAnnotationSetterSpecTest {
   public void testGroupNoIndexParam() {
     new BaseViewManager() {
       @ReactPropGroup(names = {"prop1", "prop2"})
-      public void setterWithoutIndexParam(View v, float value, float sth) {
-      }
+      public void setterWithoutIndexParam(View v, float value, float sth) {}
     }.getNativeProps();
   }
 
@@ -125,8 +111,7 @@ public class ReactPropAnnotationSetterSpecTest {
   public void testGroupNoViewParam() {
     new BaseViewManager() {
       @ReactPropGroup(names = {"prop1", "prop2"})
-      public void setterWithoutViewParam(Object v, int index, float value) {
-      }
+      public void setterWithoutViewParam(Object v, int index, float value) {}
     }.getNativeProps();
   }
 
@@ -134,8 +119,7 @@ public class ReactPropAnnotationSetterSpecTest {
   public void testGroupUnsupportedPropType() {
     new BaseViewManager() {
       @ReactPropGroup(names = {"prop1", "prop2"})
-      public void setterWithUnsupportedPropType(View v, int index, long value) {
-      }
+      public void setterWithUnsupportedPropType(View v, int index, long value) {}
     }.getNativeProps();
   }
 }

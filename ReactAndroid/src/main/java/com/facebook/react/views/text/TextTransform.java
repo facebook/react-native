@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -9,11 +9,13 @@ package com.facebook.react.views.text;
 
 import java.text.BreakIterator;
 
-/**
- * Types of text transforms for CustomTextTransformSpan
- */
+/** Types of text transforms for CustomTextTransformSpan */
 public enum TextTransform {
-  NONE, UPPERCASE, LOWERCASE, CAPITALIZE, UNSET;
+  NONE,
+  UPPERCASE,
+  LOWERCASE,
+  CAPITALIZE,
+  UNSET;
 
   public static String apply(String text, TextTransform textTransform) {
     if (text == null) {
@@ -21,7 +23,7 @@ public enum TextTransform {
     }
 
     String transformed;
-    switch(textTransform) {
+    switch (textTransform) {
       case UPPERCASE:
         transformed = text.toUpperCase();
         break;

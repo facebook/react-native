@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -45,9 +45,11 @@ NS_ASSUME_NONNULL_BEGIN
                 initialProperties:(NSDictionary *)initialProperties
                     launchOptions:(NSDictionary *)launchOptions;
 
+- (instancetype)initWithSurface:(RCTSurface *)surface
+                sizeMeasureMode:(RCTSurfaceSizeMeasureMode)sizeMeasureMode NS_UNAVAILABLE;
+
 - (void)cancelTouches;
 
 @end
 
 NS_ASSUME_NONNULL_END
-

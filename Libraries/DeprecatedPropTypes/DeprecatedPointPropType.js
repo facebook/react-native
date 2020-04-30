@@ -12,7 +12,11 @@
 
 const PropTypes = require('prop-types');
 
-const PointPropType = PropTypes.shape({
+const PointPropType: React$PropType$Primitive<{
+  x?: number,
+  y?: number,
+  ...
+}> = PropTypes.shape({
   x: PropTypes.number,
   y: PropTypes.number,
 });

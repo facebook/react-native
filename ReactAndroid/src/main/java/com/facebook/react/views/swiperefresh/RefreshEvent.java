@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -12,17 +12,17 @@ import com.facebook.react.uimanager.events.RCTEventEmitter;
 
 public class RefreshEvent extends Event<RefreshEvent> {
 
-    protected RefreshEvent(int viewTag) {
-        super(viewTag);
-    }
+  protected RefreshEvent(int viewTag) {
+    super(viewTag);
+  }
 
-    @Override
-    public String getEventName() {
-        return "topRefresh";
-    }
+  @Override
+  public String getEventName() {
+    return "topRefresh";
+  }
 
-    @Override
-    public void dispatch(RCTEventEmitter rctEventEmitter) {
-        rctEventEmitter.receiveEvent(getViewTag(), getEventName(), null);
-    }
+  @Override
+  public void dispatch(RCTEventEmitter rctEventEmitter) {
+    rctEventEmitter.receiveEvent(getViewTag(), getEventName(), null);
+  }
 }

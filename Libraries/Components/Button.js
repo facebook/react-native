@@ -10,17 +10,18 @@
 
 'use strict';
 
-const Platform = require('Platform');
-const React = require('React');
-const StyleSheet = require('StyleSheet');
-const Text = require('Text');
-const TouchableNativeFeedback = require('TouchableNativeFeedback');
-const TouchableOpacity = require('TouchableOpacity');
-const View = require('View');
+const Platform = require('../Utilities/Platform');
+const React = require('react');
+const StyleSheet = require('../StyleSheet/StyleSheet');
+const Text = require('../Text/Text');
+const TouchableNativeFeedback = require('./Touchable/TouchableNativeFeedback');
+const TouchableOpacity = require('./Touchable/TouchableOpacity');
+const View = require('./View/View');
 
 const invariant = require('invariant');
 
-import type {PressEvent} from 'CoreEventTypes';
+import type {PressEvent} from '../Types/CoreEventTypes';
+import type {ColorValue} from '../StyleSheet/StyleSheet';
 
 type ButtonProps = $ReadOnly<{|
   /**
@@ -34,9 +35,14 @@ type ButtonProps = $ReadOnly<{|
   onPress: (event?: PressEvent) => mixed,
 
   /**
+   * If true, doesn't play system sound on touch (Android Only)
+   **/
+  touchSoundDisabled?: ?boolean,
+
+  /**
    * Color of the text (iOS), or background color of the button (Android)
    */
-  color?: ?string,
+  color?: ?ColorValue,
 
   /**
    * TV preferred focus (see documentation for the View component).
@@ -123,11 +129,12 @@ type ButtonProps = $ReadOnly<{|
  */
 
 class Button extends React.Component<ButtonProps> {
-  render() {
+  render(): React.Node {
     const {
       accessibilityLabel,
       color,
       onPress,
+      touchSoundDisabled,
       title,
       hasTVPreferredFocus,
       nextFocusDown,
@@ -147,11 +154,11 @@ class Button extends React.Component<ButtonProps> {
         buttonStyles.push({backgroundColor: color});
       }
     }
-    const accessibilityStates = [];
+    const accessibilityState = {};
     if (disabled) {
       buttonStyles.push(styles.buttonDisabled);
       textStyles.push(styles.textDisabled);
-      accessibilityStates.push('disabled');
+      accessibilityState.disabled = true;
     }
     invariant(
       typeof title === 'string',
@@ -165,7 +172,7 @@ class Button extends React.Component<ButtonProps> {
       <Touchable
         accessibilityLabel={accessibilityLabel}
         accessibilityRole="button"
-        accessibilityStates={accessibilityStates}
+        accessibilityState={accessibilityState}
         hasTVPreferredFocus={hasTVPreferredFocus}
         nextFocusDown={nextFocusDown}
         nextFocusForward={nextFocusForward}
@@ -174,7 +181,8 @@ class Button extends React.Component<ButtonProps> {
         nextFocusUp={nextFocusUp}
         testID={testID}
         disabled={disabled}
-        onPress={onPress}>
+        onPress={onPress}
+        touchSoundDisabled={touchSoundDisabled}>
         <View style={buttonStyles}>
           <Text style={textStyles} disabled={disabled}>
             {formattedTitle}
@@ -197,7 +205,7 @@ const styles = StyleSheet.create({
   }),
   text: {
     textAlign: 'center',
-    padding: 8,
+    margin: 8,
     ...Platform.select({
       ios: {
         // iOS blue from https://developer.apple.com/ios/human-interface-guidelines/visual-design/color/

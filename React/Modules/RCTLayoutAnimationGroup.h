@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -24,7 +24,6 @@
                         deletingLayoutAnimation:(RCTLayoutAnimation *)deletingLayoutAnimation
                                        callback:(RCTResponseSenderBlock)callback;
 
-- (instancetype)initWithConfig:(NSDictionary *)config
-                      callback:(RCTResponseSenderBlock)callback;
+- (instancetype)initWithConfig:(NSDictionary *)config callback:(RCTResponseSenderBlock)callback;
 
 @end

@@ -1,11 +1,11 @@
-// Copyright (c) Facebook, Inc. and its affiliates.
-
-// This source code is licensed under the MIT license found in the
-// LICENSE file in the root directory of this source tree.
+/*
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
 
 package com.facebook.react.views.progressbar;
-
-import javax.annotation.Nullable;
 
 import android.content.Context;
 import android.graphics.PorterDuff;
@@ -14,12 +14,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ProgressBar;
-
+import androidx.annotation.Nullable;
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 
 /**
- * Controls an enclosing ProgressBar. Exists so that the ProgressBar can be recreated if
- * the style would change.
+ * Controls an enclosing ProgressBar. Exists so that the ProgressBar can be recreated if the style
+ * would change.
  */
 /* package */ class ProgressBarContainerView extends FrameLayout {
   private static final int MAX_PROGRESS = 1000;
@@ -42,8 +42,7 @@ import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
     addView(
         mProgressBar,
         new ViewGroup.LayoutParams(
-            ViewGroup.LayoutParams.MATCH_PARENT,
-            ViewGroup.LayoutParams.MATCH_PARENT));
+            ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
   }
 
   public void setColor(@Nullable Integer color) {
@@ -73,7 +72,7 @@ import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
     if (mAnimating) {
       mProgressBar.setVisibility(View.VISIBLE);
     } else {
-      mProgressBar.setVisibility(View.GONE);
+      mProgressBar.setVisibility(View.INVISIBLE);
     }
   }
 

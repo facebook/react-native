@@ -1,7 +1,9 @@
-// Copyright (c) Facebook, Inc. and its affiliates.
-
-// This source code is licensed under the MIT license found in the
-// LICENSE file in the root directory of this source tree.
+/*
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
 
 #include "Transform.h"
 
@@ -145,6 +147,71 @@ Transform Transform::operator*(Transform const &rhs) const {
   result.matrix[13] = rhs0 * lhs01 + rhs1 * lhs11 + rhs2 * lhs21 + rhs3 * lhs31;
   result.matrix[14] = rhs0 * lhs02 + rhs1 * lhs12 + rhs2 * lhs22 + rhs3 * lhs32;
   result.matrix[15] = rhs0 * lhs03 + rhs1 * lhs13 + rhs2 * lhs23 + rhs3 * lhs33;
+
+  return result;
+}
+
+Float &Transform::at(int i, int j) {
+  return matrix[(i * 4) + j];
+}
+
+Float const &Transform::at(int i, int j) const {
+  return matrix[(i * 4) + j];
+}
+
+Point operator*(Point const &point, Transform const &transform) {
+  if (transform == Transform::Identity()) {
+    return point;
+  }
+
+  auto result = transform * Vector{point.x, point.y, 0, 1};
+
+  return {result.x, result.y};
+}
+
+Rect operator*(Rect const &rect, Transform const &transform) {
+  auto centre = rect.getCenter();
+
+  auto a = Point{rect.origin.x, rect.origin.y} - centre;
+  auto b = Point{rect.getMaxX(), rect.origin.y} - centre;
+  auto c = Point{rect.getMaxX(), rect.getMaxY()} - centre;
+  auto d = Point{rect.origin.x, rect.getMaxY()} - centre;
+
+  auto vectorA = transform * Vector{a.x, a.y, 0, 1};
+  auto vectorB = transform * Vector{b.x, b.y, 0, 1};
+  auto vectorC = transform * Vector{c.x, c.y, 0, 1};
+  auto vectorD = transform * Vector{d.x, d.y, 0, 1};
+
+  Point transformedA{vectorA.x + centre.x, vectorA.y + centre.y};
+  Point transformedB{vectorB.x + centre.x, vectorB.y + centre.y};
+  Point transformedC{vectorC.x + centre.x, vectorC.y + centre.y};
+  Point transformedD{vectorD.x + centre.x, vectorD.y + centre.y};
+
+  return Rect::boundingRect(
+      transformedA, transformedB, transformedC, transformedD);
+}
+
+Vector operator*(Transform const &transform, Vector const &vector) {
+  return {
+      vector.x * transform.at(0, 0) + vector.y * transform.at(1, 0) +
+          vector.z * transform.at(2, 0) + vector.w * transform.at(3, 0),
+      vector.x * transform.at(0, 1) + vector.y * transform.at(1, 1) +
+          vector.z * transform.at(2, 1) + vector.w * transform.at(3, 1),
+      vector.x * transform.at(0, 2) + vector.y * transform.at(1, 2) +
+          vector.z * transform.at(2, 2) + vector.w * transform.at(3, 2),
+      vector.x * transform.at(0, 3) + vector.y * transform.at(1, 3) +
+          vector.z * transform.at(2, 3) + vector.w * transform.at(3, 3),
+  };
+}
+
+Size operator*(Size const &size, Transform const &transform) {
+  if (transform == Transform::Identity()) {
+    return size;
+  }
+
+  auto result = Size{};
+  result.width = transform.at(0, 0) * size.width;
+  result.height = transform.at(1, 1) * size.height;
 
   return result;
 }

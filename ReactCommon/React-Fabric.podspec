@@ -1,4 +1,3 @@
-# coding: utf-8
 # Copyright (c) Facebook, Inc. and its affiliates.
 #
 # This source code is licensed under the MIT license found in the
@@ -18,7 +17,7 @@ else
 end
 
 folly_compiler_flags = '-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -Wno-comma -Wno-shorten-64-to-32'
-folly_version = '2018.10.22.00'
+folly_version = '2020.01.13.00'
 folly_dep_name = 'Folly/Fabric'
 boost_compiler_flags = '-Wno-documentation'
 
@@ -26,10 +25,10 @@ Pod::Spec.new do |s|
   s.name                   = "React-Fabric"
   s.version                = version
   s.summary                = "Fabric for React Native."
-  s.homepage               = "http://facebook.github.io/react-native/"
+  s.homepage               = "https://reactnative.dev/"
   s.license                = package["license"]
   s.author                 = "Facebook, Inc. and its affiliates"
-  s.platforms              = { :ios => "9.0", :tvos => "9.2" }
+  s.platforms              = { :ios => "10.0", :tvos => "10.0" }
   s.source                 = source
   s.prepare_command        = File.read("../scripts/generate-rncore.sh")
   s.source_files           = "dummyFile.cpp"
@@ -40,6 +39,10 @@ Pod::Spec.new do |s|
   s.dependency folly_dep_name, folly_version
   s.dependency "React-graphics", version
   s.dependency "React-jsiexecutor", version
+  s.dependency "RCTRequired", version
+  s.dependency "RCTTypeSafety", version
+  s.dependency "ReactCommon/turbomodule/core", version
+  s.dependency "React-jsi", version
 
   s.subspec "attributedstring" do |ss|
     ss.dependency             folly_dep_name, folly_version
@@ -69,7 +72,7 @@ Pod::Spec.new do |s|
     ss.dependency             folly_dep_name, folly_version
     ss.compiler_flags       = folly_compiler_flags + ' ' + boost_compiler_flags
     ss.source_files         = "fabric/core/**/*.{m,mm,cpp,h}"
-    ss.exclude_files        = "**/tests/*"
+    ss.exclude_files        = "**/tests/**/*"
     ss.header_dir           = "react/core"
     ss.pod_target_xcconfig  = { "HEADER_SEARCH_PATHS" => "\"$(PODS_ROOT)/boost-for-react-native\" \"$(PODS_TARGET_SRCROOT)/ReactCommon\" \"$(PODS_ROOT)/Folly\"" }
   end
@@ -93,11 +96,20 @@ Pod::Spec.new do |s|
       sss.pod_target_xcconfig  = { "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)/ReactCommon\" \"$(PODS_ROOT)/Folly\"" }
     end
 
+    ss.subspec "modal" do |sss|
+      sss.dependency             folly_dep_name, folly_version
+      sss.compiler_flags       = folly_compiler_flags
+      sss.source_files         = "fabric/components/modal/**/*.{m,mm,cpp,h}"
+      sss.exclude_files        = "**/tests/*"
+      sss.header_dir           = "react/components/modal"
+      sss.pod_target_xcconfig  = { "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)/ReactCommon\" \"$(PODS_ROOT)/Folly\"" }
+    end
+
     ss.subspec "rncore" do |sss|
       sss.dependency             folly_dep_name, folly_version
       sss.compiler_flags       = folly_compiler_flags
       sss.source_files         = "fabric/components/rncore/*.{m,mm,cpp,h}"
-      sss.exclude_files        = "**/tests/*"
+      sss.exclude_files        = "**/tests/*", "fabric/components/rncore/*Tests.{h,cpp}"
       sss.header_dir           = "react/components/rncore"
       sss.pod_target_xcconfig  = { "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)/ReactCommon\" \"$(PODS_ROOT)/Folly\"" }
     end
@@ -141,7 +153,7 @@ Pod::Spec.new do |s|
 
     ss.subspec "view" do |sss|
       sss.dependency             folly_dep_name, folly_version
-      sss.dependency             "yoga",  "#{version}.React"
+      sss.dependency             "Yoga"
       sss.compiler_flags       = folly_compiler_flags
       sss.source_files         = "fabric/components/view/**/*.{m,mm,cpp,h}"
       sss.exclude_files        = "**/tests/*"
@@ -165,7 +177,8 @@ Pod::Spec.new do |s|
     ss.compiler_flags       = folly_compiler_flags
     ss.source_files         = "fabric/imagemanager/**/*.{m,mm,cpp,h}"
     ss.exclude_files        = "**/tests/*",
-                              "**/android/*"
+                              "**/android/*",
+                              "**/cxx/*"
     ss.header_dir           = "react/imagemanager"
     ss.pod_target_xcconfig  = { "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)/ReactCommon\" \"$(PODS_ROOT)/Folly\"" }
   end
@@ -184,7 +197,8 @@ Pod::Spec.new do |s|
     ss.compiler_flags       = folly_compiler_flags
     ss.source_files         = "fabric/textlayoutmanager/**/*.{m,mm,cpp,h}"
     ss.exclude_files        = "**/tests/*",
-                              "**/android/*"
+                              "**/android/*",
+                              "**/cxx/*"
     ss.header_dir           = "react/textlayoutmanager"
     ss.pod_target_xcconfig  = { "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)/ReactCommon\" \"$(PODS_ROOT)/Folly\"" }
   end

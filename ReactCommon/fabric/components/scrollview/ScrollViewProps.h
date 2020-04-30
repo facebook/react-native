@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -44,7 +44,7 @@ class ScrollViewProps final : public ViewProps {
   const Float zoomScale{1.0};
   const EdgeInsets contentInset{};
   const EdgeInsets scrollIndicatorInsets{};
-  const int snapToInterval{};
+  const Float snapToInterval{};
   const ScrollViewSnapToAlignment snapToAlignment{};
 
 #pragma mark - DebugStringConvertible

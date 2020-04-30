@@ -4,8 +4,9 @@
 :: LICENSE file in the root directory of this source tree.
 
 @echo off
-title Metro Bundler
+title Metro
 call .packager.bat
-node "%~dp0..\cli.js" --reactNativePath ../ --projectRoot ../../../ start
+cd ../../../
+node "%~dp0..\cli.js" start
 pause
 exit

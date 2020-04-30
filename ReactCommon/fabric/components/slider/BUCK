@@ -1,8 +1,10 @@
-load("@fbsource//tools/build_defs/apple:flag_defs.bzl", "get_debug_preprocessor_flags")
+load("@fbsource//tools/build_defs/apple:flag_defs.bzl", "get_preprocessor_flags_for_build_mode")
 load(
     "//tools/build_defs/oss:rn_defs.bzl",
     "ANDROID",
     "APPLE",
+    "CXX",
+    "YOGA_CXX_TARGET",
     "fb_xplat_cxx_test",
     "get_apple_compiler_flags",
     "get_apple_inspector_flags",
@@ -37,6 +39,7 @@ rn_xplat_cxx_library(
         "-std=c++14",
         "-Wall",
     ],
+    cxx_tests = [":tests"],
     fbandroid_deps = [
         react_native_target("jni/react/jni:jni"),
     ],
@@ -54,7 +57,8 @@ rn_xplat_cxx_library(
         ["platform/android/*.cpp"],
     ),
     fbobjc_compiler_flags = APPLE_COMPILER_FLAGS,
-    fbobjc_preprocessor_flags = get_debug_preprocessor_flags() + get_apple_inspector_flags(),
+    fbobjc_labels = ["supermodule:ios/default/public.react_native.infra"],
+    fbobjc_preprocessor_flags = get_preprocessor_flags_for_build_mode() + get_apple_inspector_flags(),
     force_static = True,
     ios_exported_headers = subdir_glob(
         [
@@ -69,21 +73,19 @@ rn_xplat_cxx_library(
     ios_srcs = glob(
         ["platform/ios/*.cpp"],
     ),
-    macosx_tests_override = [],
-    platforms = (ANDROID, APPLE),
+    platforms = (ANDROID, APPLE, CXX),
     preprocessor_flags = [
         "-DLOG_TAG=\"ReactNative\"",
         "-DWITH_FBSYSTRACE=1",
     ],
-    tests = [":tests"],
     visibility = ["PUBLIC"],
     deps = [
-        "fbsource//xplat/fbsystrace:fbsystrace",
-        "fbsource//xplat/folly:headers_only",
-        "fbsource//xplat/folly:memory",
-        "fbsource//xplat/folly:molly",
-        "fbsource//xplat/third-party/glog:glog",
-        "fbsource//xplat/yoga:yoga",
+        "//xplat/fbsystrace:fbsystrace",
+        "//xplat/folly:headers_only",
+        "//xplat/folly:memory",
+        "//xplat/folly:molly",
+        "//xplat/third-party/glog:glog",
+        YOGA_CXX_TARGET,
         react_native_xplat_target("fabric/debug:debug"),
         react_native_xplat_target("fabric/core:core"),
         react_native_xplat_target("fabric/components/image:image"),
@@ -91,7 +93,8 @@ rn_xplat_cxx_library(
         react_native_xplat_target("fabric/graphics:graphics"),
         react_native_xplat_target("fabric/imagemanager:imagemanager"),
         react_native_xplat_target("fabric/uimanager:uimanager"),
-        "fbsource//xplat/js/react-native-github:generated_components-rncore",
+        react_native_xplat_target("fabric/componentregistry:componentregistry"),
+        "//xplat/js/react-native-github:generated_components-rncore",
     ],
 )
 
@@ -106,10 +109,15 @@ fb_xplat_cxx_test(
         "-Wall",
     ],
     contacts = ["oncall+react_native@xmail.facebook.com"],
-    platforms = (ANDROID, APPLE),
+    platforms = (
+        # `Apple` and `Android` flavors are disabled because the module (built with those flavors) requires Emulator/Simulator (which is expensive and slow). At the same time, we don't really have tests here.
+        # ANDROID,
+        # APPLE,
+        CXX,
+    ),
     deps = [
-        "fbsource//xplat/folly:molly",
-        "fbsource//xplat/third-party/gmock:gtest",
         ":slider",
+        "//xplat/folly:molly",
+        "//xplat/third-party/gmock:gtest",
     ],
 )

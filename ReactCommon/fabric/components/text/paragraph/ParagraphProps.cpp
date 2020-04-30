@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -8,50 +8,27 @@
 #include "ParagraphProps.h"
 
 #include <react/attributedstring/conversions.h>
+#include <react/attributedstring/primitives.h>
 #include <react/core/propsConversions.h>
 #include <react/debug/debugStringConvertibleUtils.h>
+
+#include <glog/logging.h>
 
 namespace facebook {
 namespace react {
 
-static ParagraphAttributes convertRawProp(
-    const RawProps &rawProps,
-    const ParagraphAttributes &defaultParagraphAttributes) {
-  auto paragraphAttributes = ParagraphAttributes{};
-
-  paragraphAttributes.maximumNumberOfLines = convertRawProp(
-      rawProps,
-      "numberOfLines",
-      defaultParagraphAttributes.maximumNumberOfLines);
-  paragraphAttributes.ellipsizeMode = convertRawProp(
-      rawProps, "ellipsizeMode", defaultParagraphAttributes.ellipsizeMode);
-  paragraphAttributes.adjustsFontSizeToFit = convertRawProp(
-      rawProps,
-      "adjustsFontSizeToFit",
-      defaultParagraphAttributes.adjustsFontSizeToFit);
-  paragraphAttributes.minimumFontSize = convertRawProp(
-      rawProps,
-      "minimumFontSize",
-      defaultParagraphAttributes.minimumFontSize,
-      std::numeric_limits<Float>::quiet_NaN());
-  paragraphAttributes.maximumFontSize = convertRawProp(
-      rawProps,
-      "maximumFontSize",
-      defaultParagraphAttributes.maximumFontSize,
-      std::numeric_limits<Float>::quiet_NaN());
-
-  return paragraphAttributes;
-}
-
 ParagraphProps::ParagraphProps(
-    const ParagraphProps &sourceProps,
-    const RawProps &rawProps)
+    ParagraphProps const &sourceProps,
+    RawProps const &rawProps)
     : ViewProps(sourceProps, rawProps),
       BaseTextProps(sourceProps, rawProps),
       paragraphAttributes(
-          convertRawProp(rawProps, sourceProps.paragraphAttributes)),
-      isSelectable(
-          convertRawProp(rawProps, "selectable", sourceProps.isSelectable)){};
+          convertRawProp(rawProps, sourceProps.paragraphAttributes, {})),
+      isSelectable(convertRawProp(
+          rawProps,
+          "selectable",
+          sourceProps.isSelectable,
+          {})){};
 
 #pragma mark - DebugStringConvertible
 

@@ -15,6 +15,7 @@ type Inset = {
   left: ?number,
   right: ?number,
   bottom: ?number,
+  ...
 };
 
 const dummyInsets = {
@@ -24,7 +25,7 @@ const dummyInsets = {
   bottom: undefined,
 };
 
-const insetsDiffer = function(one: ?Inset, two: ?Inset): boolean {
+const insetsDiffer = function(one: Inset, two: Inset): boolean {
   one = one || dummyInsets;
   two = two || dummyInsets;
   return (

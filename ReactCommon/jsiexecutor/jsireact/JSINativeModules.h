@@ -1,7 +1,9 @@
-//  Copyright (c) Facebook, Inc. and its affiliates.
-//
-// This source code is licensed under the MIT license found in the
- // LICENSE file in the root directory of this source tree.
+/*
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
 
 #pragma once
 
@@ -21,7 +23,7 @@ namespace react {
 class JSINativeModules {
  public:
   explicit JSINativeModules(std::shared_ptr<ModuleRegistry> moduleRegistry);
-  jsi::Value getModule(jsi::Runtime& rt, const jsi::PropNameID& name);
+  jsi::Value getModule(jsi::Runtime &rt, const jsi::PropNameID &name);
   void reset();
 
  private:
@@ -30,8 +32,8 @@ class JSINativeModules {
   std::unordered_map<std::string, jsi::Object> m_objects;
 
   folly::Optional<jsi::Object> createModule(
-      jsi::Runtime& rt,
-      const std::string& name);
+      jsi::Runtime &rt,
+      const std::string &name);
 };
 
 } // namespace react

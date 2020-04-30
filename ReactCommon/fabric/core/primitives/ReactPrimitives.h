@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -12,7 +12,6 @@
 #include <react/core/RawValue.h>
 #include <memory>
 #include <string>
-#include <unordered_map>
 
 namespace facebook {
 namespace react {
@@ -41,7 +40,7 @@ using ComponentHandle = int64_t;
  * String identifier for components used for addressing them from
  * JavaScript side.
  */
-using ComponentName = std::string;
+using ComponentName = char const *;
 
 } // namespace react
 } // namespace facebook

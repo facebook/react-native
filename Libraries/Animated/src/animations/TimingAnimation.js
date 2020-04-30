@@ -7,25 +7,38 @@
  * @flow
  * @format
  */
+
 'use strict';
 
 const AnimatedValue = require('../nodes/AnimatedValue');
 const AnimatedValueXY = require('../nodes/AnimatedValueXY');
+const AnimatedInterpolation = require('../nodes/AnimatedInterpolation');
 const Animation = require('./Animation');
 
 const {shouldUseNativeDriver} = require('../NativeAnimatedHelper');
 
 import type {AnimationConfig, EndCallback} from './Animation';
 
-export type TimingAnimationConfig = AnimationConfig & {
-  toValue: number | AnimatedValue | {x: number, y: number} | AnimatedValueXY,
+export type TimingAnimationConfig = {
+  ...AnimationConfig,
+  toValue:
+    | number
+    | AnimatedValue
+    | {
+        x: number,
+        y: number,
+        ...
+      }
+    | AnimatedValueXY
+    | AnimatedInterpolation,
   easing?: (value: number) => number,
   duration?: number,
   delay?: number,
 };
 
-export type TimingAnimationConfigSingle = AnimationConfig & {
-  toValue: number | AnimatedValue,
+export type TimingAnimationConfigSingle = {
+  ...AnimationConfig,
+  toValue: number | AnimatedValue | AnimatedInterpolation,
   easing?: (value: number) => number,
   duration?: number,
   delay?: number,
@@ -34,7 +47,7 @@ export type TimingAnimationConfigSingle = AnimationConfig & {
 let _easeInOut;
 function easeInOut() {
   if (!_easeInOut) {
-    const Easing = require('Easing');
+    const Easing = require('../Easing');
     _easeInOut = Easing.inOut(Easing.ease);
   }
   return _easeInOut;
@@ -55,20 +68,20 @@ class TimingAnimation extends Animation {
   constructor(config: TimingAnimationConfigSingle) {
     super();
     this._toValue = config.toValue;
-    this._easing = config.easing !== undefined ? config.easing : easeInOut();
-    this._duration = config.duration !== undefined ? config.duration : 500;
-    this._delay = config.delay !== undefined ? config.delay : 0;
-    this.__iterations = config.iterations !== undefined ? config.iterations : 1;
-    this.__isInteraction =
-      config.isInteraction !== undefined ? config.isInteraction : true;
+    this._easing = config.easing ?? easeInOut();
+    this._duration = config.duration ?? 500;
+    this._delay = config.delay ?? 0;
+    this.__iterations = config.iterations ?? 1;
     this._useNativeDriver = shouldUseNativeDriver(config);
+    this.__isInteraction = config.isInteraction ?? !this._useNativeDriver;
   }
 
   __getNativeAnimationConfig(): any {
     const frameDuration = 1000.0 / 60.0;
     const frames = [];
-    for (let dt = 0.0; dt < this._duration; dt += frameDuration) {
-      frames.push(this._easing(dt / this._duration));
+    const numFrames = Math.round(this._duration / frameDuration);
+    for (let frame = 0; frame < numFrames; frame++) {
+      frames.push(this._easing(frame / numFrames));
     }
     frames.push(this._easing(1));
     return {

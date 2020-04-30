@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -12,7 +12,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 /**
- * UIView class for root <ShimmeringView> component.
+ * UIView class for root <ActivityIndicator> component.
  */
 @interface RCTActivityIndicatorViewComponentView : RCTViewComponentView
 

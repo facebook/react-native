@@ -1,14 +1,16 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Portions Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * BezierEasing - use bezier curve for transition easing function
- * https://github.com/gre/bezier-easing
- *
  * @flow strict
  * @format
+ */
+
+/**
+ * BezierEasing - use bezier curve for transition easing function
+ * https://github.com/gre/bezier-easing
  * @copyright 2014-2015 Gaëtan Renaudeau. MIT License.
  */
 
@@ -84,7 +86,7 @@ module.exports = function bezier(
   mY1: number,
   mX2: number,
   mY2: number,
-) {
+): (x: number) => number {
   if (!(mX1 >= 0 && mX1 <= 1 && mX2 >= 0 && mX2 <= 1)) {
     throw new Error('bezier x values must be in [0, 1] range');
   }

@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -7,25 +7,21 @@
 
 package com.facebook.react.tests;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import android.app.TimePickerDialog;
 import android.content.DialogInterface;
 import androidx.fragment.app.DialogFragment;
-
 import com.facebook.react.bridge.BaseJavaModule;
-import com.facebook.react.testing.ReactInstanceSpecForTest;
-import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.JavaScriptModule;
+import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.bridge.WritableNativeMap;
 import com.facebook.react.modules.timepicker.TimePickerDialogModule;
 import com.facebook.react.testing.ReactAppInstrumentationTestCase;
+import com.facebook.react.testing.ReactInstanceSpecForTest;
+import java.util.ArrayList;
+import java.util.List;
 
-/**
- * Test case for {@link TimePickerDialogModule} options and callbacks.
- */
+/** Test case for {@link TimePickerDialogModule} options and callbacks. */
 public class TimePickerDialogTestCase extends ReactAppInstrumentationTestCase {
 
   private static interface TimePickerDialogTestModule extends JavaScriptModule {
@@ -75,8 +71,7 @@ public class TimePickerDialogTestCase extends ReactAppInstrumentationTestCase {
 
   @Override
   protected ReactInstanceSpecForTest createReactInstanceSpecForTest() {
-    return super.createReactInstanceSpecForTest()
-        .addNativeModule(mRecordingModule);
+    return super.createReactInstanceSpecForTest().addNativeModule(mRecordingModule);
   }
 
   @Override
@@ -94,8 +89,10 @@ public class TimePickerDialogTestCase extends ReactAppInstrumentationTestCase {
     waitForBridgeAndUIIdle();
     getInstrumentation().waitForIdleSync();
 
-    return (DialogFragment) getActivity().getSupportFragmentManager()
-        .findFragmentByTag(TimePickerDialogModule.FRAGMENT_TAG);
+    return (DialogFragment)
+        getActivity()
+            .getSupportFragmentManager()
+            .findFragmentByTag(TimePickerDialogModule.FRAGMENT_TAG);
   }
 
   public void testShowBasicTimePicker() {
@@ -119,7 +116,8 @@ public class TimePickerDialogTestCase extends ReactAppInstrumentationTestCase {
           @Override
           public void run() {
             ((TimePickerDialog) fragment.getDialog())
-                .getButton(DialogInterface.BUTTON_POSITIVE).performClick();
+                .getButton(DialogInterface.BUTTON_POSITIVE)
+                .performClick();
           }
         });
 
@@ -155,5 +153,4 @@ public class TimePickerDialogTestCase extends ReactAppInstrumentationTestCase {
     assertEquals(0, mRecordingModule.getTimes().size());
     assertEquals(1, mRecordingModule.getDismissed());
   }
-
 }

@@ -10,8 +10,16 @@
 
 'use strict';
 
-const Text = require('Text');
+import * as React from 'react';
 
-const createAnimatedComponent = require('createAnimatedComponent');
+const Text = require('../../../Text/Text');
+const createAnimatedComponent = require('../createAnimatedComponent');
 
-module.exports = createAnimatedComponent(Text);
+import type {AnimatedComponentType} from '../createAnimatedComponent';
+
+module.exports = (createAnimatedComponent(
+  (Text: $FlowFixMe),
+): AnimatedComponentType<
+  React.ElementConfig<typeof Text>,
+  React.ElementRef<typeof Text>,
+>);

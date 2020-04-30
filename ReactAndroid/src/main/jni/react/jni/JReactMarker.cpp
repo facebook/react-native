@@ -1,44 +1,56 @@
-// Copyright (c) Facebook, Inc. and its affiliates.
-
-// This source code is licensed under the MIT license found in the
-// LICENSE file in the root directory of this source tree.
+/*
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
 
 #include "JReactMarker.h"
-#include <mutex>
 #include <cxxreact/ReactMarker.h>
-#include <fb/fbjni.h>
+#include <fbjni/fbjni.h>
+#include <glog/logging.h>
+#include <mutex>
 
 namespace facebook {
 namespace react {
 
 void JReactMarker::setLogPerfMarkerIfNeeded() {
-  static std::once_flag flag {};
-  std::call_once(flag, [](){
+  static std::once_flag flag{};
+  std::call_once(flag, []() {
     ReactMarker::logTaggedMarker = JReactMarker::logPerfMarker;
   });
 }
 
-void JReactMarker::logMarker(const std::string& marker) {
+void JReactMarker::logMarker(const std::string &marker) {
   static auto cls = javaClassStatic();
   static auto meth = cls->getStaticMethod<void(std::string)>("logMarker");
   meth(cls, marker);
 }
 
-void JReactMarker::logMarker(const std::string& marker, const std::string& tag) {
+void JReactMarker::logMarker(
+    const std::string &marker,
+    const std::string &tag) {
   static auto cls = javaClassStatic();
-  static auto meth = cls->getStaticMethod<void(std::string, std::string)>("logMarker");
+  static auto meth =
+      cls->getStaticMethod<void(std::string, std::string)>("logMarker");
   meth(cls, marker, tag);
 }
 
-void JReactMarker::logPerfMarker(const ReactMarker::ReactMarkerId markerId, const char* tag) {
+void JReactMarker::logPerfMarker(
+    const ReactMarker::ReactMarkerId markerId,
+    const char *tag) {
   switch (markerId) {
     case ReactMarker::RUN_JS_BUNDLE_START:
+      LOG(ERROR) << "logMarker RUN_JS_BUNDLE_START"; // TODO T62192299: delete
       JReactMarker::logMarker("RUN_JS_BUNDLE_START", tag);
       break;
     case ReactMarker::RUN_JS_BUNDLE_STOP:
+      LOG(ERROR) << "logMarker RUN_JS_BUNDLE_END"; // TODO T62192299: delete
       JReactMarker::logMarker("RUN_JS_BUNDLE_END", tag);
       break;
     case ReactMarker::CREATE_REACT_CONTEXT_STOP:
+      LOG(ERROR)
+          << "logMarker CREATE_REACT_CONTEXT_END"; // TODO T62192299: delete
       JReactMarker::logMarker("CREATE_REACT_CONTEXT_END");
       break;
     case ReactMarker::JS_BUNDLE_STRING_CONVERT_START:
@@ -66,5 +78,5 @@ void JReactMarker::logPerfMarker(const ReactMarker::ReactMarkerId markerId, cons
   }
 }
 
-}
-}
+} // namespace react
+} // namespace facebook
