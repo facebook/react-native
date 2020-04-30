@@ -30,6 +30,7 @@ const ActionSheetIOS = {
    * - `destructiveButtonIndex` (int or array of ints) - index or indices of destructive buttons in `options`
    * - `title` (string) - a title to show above the action sheet
    * - `message` (string) - a message to show below the title
+   * - `disabledButtonIndices` (array of numbers) - a list of button indices which should be disabled
    *
    * The 'callback' function takes one parameter, the zero-based index
    * of the selected item.
@@ -45,6 +46,7 @@ const ActionSheetIOS = {
       +cancelButtonIndex?: ?number,
       +anchor?: ?number,
       +tintColor?: number | string,
+      +disabledButtonIndices?: Array<number>,
     |},
     callback: (buttonIndex: number) => void,
   ) {
