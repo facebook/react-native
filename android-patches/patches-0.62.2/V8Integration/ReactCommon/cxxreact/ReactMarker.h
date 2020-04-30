@@ -1,0 +1,14 @@
+--- "D:\\code\\work\\rn-62-db\\ReactCommon\\cxxreact\\ReactMarker.h"	2020-04-30 15:18:42.344526600 -0700
++++ "D:\\code\\work\\rn-62-d\\ReactCommon\\cxxreact\\ReactMarker.h"	2020-04-30 15:39:14.077688800 -0700
+@@ -26,7 +26,10 @@
+   NATIVE_MODULE_SETUP_START,
+   NATIVE_MODULE_SETUP_STOP,
+   REGISTER_JS_SEGMENT_START,
+-  REGISTER_JS_SEGMENT_STOP
++  REGISTER_JS_SEGMENT_STOP,
++  BYTECODE_CREATION_FAILED,
++  BYTECODE_READ_FAILED,
++  BYTECODE_WRITE_FAILED
+ };
+ 
+ #ifdef __APPLE__
