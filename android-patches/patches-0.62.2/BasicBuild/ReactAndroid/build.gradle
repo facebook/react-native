@@ -1,0 +1,23 @@
+--- "D:\\code\\work\\react-native-v0.62.2\\ReactAndroid\\build.gradle"	2020-04-29 20:21:46.256667100 -0700
++++ "D:\\code\\work\\react-native-fb62merge\\ReactAndroid\\build.gradle"	2020-04-30 14:33:50.998735500 -0700
+@@ -333,10 +333,16 @@
+ 
+ def packageReactNdkLibs = tasks.register("packageReactNdkLibs", Copy) {
+     dependsOn(buildReactNdkLib)
+-    from("$buildDir/react-ndk/all")
+-    into("$buildDir/react-ndk/exported")
+-    exclude("**/libjsc.so")
+-    exclude("**/libhermes.so")
++    from "$buildDir/react-ndk/all"
++    from("$thirdPartyNdkDir/jsc/jni")
++    into "$buildDir/react-ndk/exported"
++
++    if(project.hasProperty('param') ? project.property('param').equals("excludeLibs") : false) {
++        exclude '**/*.so'
++    } else {
++        exclude '**/libjsc.so'
++        exclude("**/libhermes.so")
++    }
+ }
+ 
+ def packageReactNdkLibsForBuck = tasks.register("packageReactNdkLibsForBuck", Copy) {
