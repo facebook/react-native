@@ -217,11 +217,7 @@ YOGA_EXPORT void YGNodeMarkDirtyAndPropogateToDescendants(
 
 int32_t gConfigInstanceCount = 0;
 
-<<<<<<< HEAD
-WIN_EXPORT YGNodeRef YGNodeNewWithConfig(const YGConfigRef config) {
-=======
 YOGA_EXPORT WIN_EXPORT YGNodeRef YGNodeNewWithConfig(const YGConfigRef config) {
->>>>>>> fb/0.62-stable
   const YGNodeRef node = new YGNode{config};
   YGAssertWithConfig(
       config, node != nullptr, "Could not allocate memory for node");
@@ -997,12 +993,8 @@ YG_NODE_LAYOUT_RESOLVED_PROPERTY_IMPL(float, Margin, margin);
 YG_NODE_LAYOUT_RESOLVED_PROPERTY_IMPL(float, Border, border);
 YG_NODE_LAYOUT_RESOLVED_PROPERTY_IMPL(float, Padding, padding);
 
-<<<<<<< HEAD
-bool YGNodeLayoutGetDidLegacyStretchFlagAffectLayout(const YGNodeRef node) {
-=======
 YOGA_EXPORT bool YGNodeLayoutGetDidLegacyStretchFlagAffectLayout(
     const YGNodeRef node) {
->>>>>>> fb/0.62-stable
   return node->getLayout().doesLegacyStretchFlagAffectsLayout();
 }
 
@@ -1929,11 +1921,7 @@ static float YGNodeComputeFlexBasisForChildren(
     const uint32_t generationCount) {
   float totalOuterFlexBasis = 0.0f;
   YGNodeRef singleFlexChild = nullptr;
-<<<<<<< HEAD
-  const YGVector &children = node->getChildren();
-=======
   const YGVector& children = node->getChildren();
->>>>>>> fb/0.62-stable
   YGMeasureMode measureModeMainDim =
       YGFlexDirectionIsRow(mainAxis) ? widthMeasureMode : heightMeasureMode;
   // If there is only one child with flexGrow + flexShrink it means we can set
@@ -4153,11 +4141,7 @@ static void unsetUseLegacyFlagRecursively(YGNodeRef node) {
   }
 }
 
-<<<<<<< HEAD
-void YGNodeCalculateLayoutWithContext(
-=======
 YOGA_EXPORT void YGNodeCalculateLayoutWithContext(
->>>>>>> fb/0.62-stable
     const YGNodeRef node,
     const float ownerWidth,
     const float ownerHeight,
@@ -4227,11 +4211,7 @@ YOGA_EXPORT void YGNodeCalculateLayoutWithContext(
           markerData,
           layoutContext,
           0, // tree root
-<<<<<<< HEAD
-          gCurrentGenerationCount)) {
-=======
           gCurrentGenerationCount.load(std::memory_order_relaxed))) {
->>>>>>> fb/0.62-stable
     node->setPosition(
         node->getLayout().direction(), ownerWidth, ownerHeight, ownerWidth);
     YGRoundToPixelGrid(node, node->getConfig()->pointScaleFactor, 0.0f, 0.0f);
@@ -4262,11 +4242,7 @@ YOGA_EXPORT void YGNodeCalculateLayoutWithContext(
     nodeWithoutLegacyFlag->resolveDimension();
     // Recursively mark nodes as dirty
     nodeWithoutLegacyFlag->markDirtyAndPropogateDownwards();
-<<<<<<< HEAD
-    gCurrentGenerationCount++;
-=======
     gCurrentGenerationCount.fetch_add(1, std::memory_order_relaxed);
->>>>>>> fb/0.62-stable
     // Rerun the layout, and calculate the diff
     unsetUseLegacyFlagRecursively(nodeWithoutLegacyFlag);
     LayoutData layoutMarkerData = {};
@@ -4285,11 +4261,7 @@ YOGA_EXPORT void YGNodeCalculateLayoutWithContext(
             layoutMarkerData,
             layoutContext,
             0, // tree root
-<<<<<<< HEAD
-            gCurrentGenerationCount)) {
-=======
             gCurrentGenerationCount.load(std::memory_order_relaxed))) {
->>>>>>> fb/0.62-stable
       nodeWithoutLegacyFlag->setPosition(
           nodeWithoutLegacyFlag->getLayout().direction(),
           ownerWidth,

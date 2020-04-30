@@ -10,7 +10,6 @@
 #include <array>
 #include <cstdint>
 #include <type_traits>
-#include "Bitfield.h"
 #include "CompactValue.h"
 #include "YGEnums.h"
 #include "YGFloatOptional.h"
@@ -18,11 +17,7 @@
 #include "Yoga.h"
 #include "BitUtils.h"
 
-<<<<<<< HEAD
-class YGStyle {
-=======
 class YOGA_EXPORT YGStyle {
->>>>>>> fb/0.62-stable
   template <typename Enum>
   using Values =
       facebook::yoga::detail::Values<facebook::yoga::enums::count<Enum>()>;
@@ -32,8 +27,6 @@ public:
   using Dimensions = Values<YGDimension>;
   using Edges = Values<YGEdge>;
 
-<<<<<<< HEAD
-=======
   template <typename T>
   struct BitfieldRef {
     YGStyle& style;
@@ -47,7 +40,6 @@ public:
     }
   };
 
->>>>>>> fb/0.62-stable
   template <typename T, T YGStyle::*Prop>
   struct Ref {
     YGStyle& style;
@@ -81,45 +73,6 @@ public:
     CompactValue operator[](Idx idx) const { return (style.*Prop)[idx]; }
   };
 
-<<<<<<< HEAD
-  YGStyle() = default;
-  ~YGStyle() = default;
-
-private:
-  static constexpr size_t directionIdx = 0;
-  static constexpr size_t flexDirectionIdx = 1;
-  static constexpr size_t justifyContentIdx = 2;
-  static constexpr size_t alignContentIdx = 3;
-  static constexpr size_t alignItemsIdx = 4;
-  static constexpr size_t alignSelfIdx = 5;
-  static constexpr size_t positionTypeIdx = 6;
-  static constexpr size_t flexWrapIdx = 7;
-  static constexpr size_t overflowIdx = 8;
-  static constexpr size_t displayIdx = 9;
-  using Flags = facebook::yoga::Bitfield<
-      uint32_t,
-      YGDirection,
-      YGFlexDirection,
-      YGJustify,
-      YGAlign,
-      YGAlign,
-      YGAlign,
-      YGPositionType,
-      YGWrap,
-      YGOverflow,
-      YGDisplay>;
-
-  Flags flags_ = {YGDirectionInherit,
-                  YGFlexDirectionColumn,
-                  YGJustifyFlexStart,
-                  YGAlignFlexStart,
-                  YGAlignStretch,
-                  YGAlignAuto,
-                  YGPositionTypeRelative,
-                  YGWrapNoWrap,
-                  YGOverflowVisible,
-                  YGDisplayFlex};
-=======
   YGStyle() {
     alignContent() = YGAlignFlexStart;
     alignItems() = YGAlignStretch;
@@ -149,7 +102,6 @@ private:
 
   uint32_t flags = 0;
 
->>>>>>> fb/0.62-stable
   YGFloatOptional flex_ = {};
   YGFloatOptional flexGrow_ = {};
   YGFloatOptional flexShrink_ = {};
@@ -168,47 +120,6 @@ public:
   // for library users needing a type
   using ValueRepr = std::remove_reference<decltype(margin_[0])>::type;
 
-<<<<<<< HEAD
-  YGDirection direction() const { return flags_.at<directionIdx>(); }
-  Flags::Ref<directionIdx> direction() { return flags_.at<directionIdx>(); }
-
-  YGFlexDirection flexDirection() const {
-    return flags_.at<flexDirectionIdx>();
-  }
-  Flags::Ref<flexDirectionIdx> flexDirection() {
-    return flags_.at<flexDirectionIdx>();
-  }
-
-  YGJustify justifyContent() const { return flags_.at<justifyContentIdx>(); }
-  Flags::Ref<justifyContentIdx> justifyContent() {
-    return flags_.at<justifyContentIdx>();
-  }
-
-  YGAlign alignContent() const { return flags_.at<alignContentIdx>(); }
-  Flags::Ref<alignContentIdx> alignContent() {
-    return flags_.at<alignContentIdx>();
-  }
-
-  YGAlign alignItems() const { return flags_.at<alignItemsIdx>(); }
-  Flags::Ref<alignItemsIdx> alignItems() { return flags_.at<alignItemsIdx>(); }
-
-  YGAlign alignSelf() const { return flags_.at<alignSelfIdx>(); }
-  Flags::Ref<alignSelfIdx> alignSelf() { return flags_.at<alignSelfIdx>(); }
-
-  YGPositionType positionType() const { return flags_.at<positionTypeIdx>(); }
-  Flags::Ref<positionTypeIdx> positionType() {
-    return flags_.at<positionTypeIdx>();
-  }
-
-  YGWrap flexWrap() const { return flags_.at<flexWrapIdx>(); }
-  Flags::Ref<flexWrapIdx> flexWrap() { return flags_.at<flexWrapIdx>(); }
-
-  YGOverflow overflow() const { return flags_.at<overflowIdx>(); }
-  Flags::Ref<overflowIdx> overflow() { return flags_.at<overflowIdx>(); }
-
-  YGDisplay display() const { return flags_.at<displayIdx>(); }
-  Flags::Ref<displayIdx> display() { return flags_.at<displayIdx>(); }
-=======
   YGDirection direction() const {
     return facebook::yoga::detail::getEnumData<YGDirection>(
         flags, directionOffset);
@@ -271,7 +182,6 @@ public:
     return facebook::yoga::detail::getEnumData<YGDisplay>(flags, displayOffset);
   }
   BitfieldRef<YGDisplay> display() { return {*this, displayOffset}; }
->>>>>>> fb/0.62-stable
 
   YGFloatOptional flex() const { return flex_; }
   Ref<YGFloatOptional, &YGStyle::flex_> flex() { return {*this}; }

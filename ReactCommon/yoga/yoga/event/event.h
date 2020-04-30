@@ -50,11 +50,7 @@ struct LayoutData {
 
 const char* LayoutPassReasonToString(const LayoutPassReason value);
 
-<<<<<<< HEAD
-struct Event {
-=======
 struct YOGA_EXPORT Event {
->>>>>>> fb/0.62-stable
   enum Type {
     NodeAllocation,
     NodeDeallocation,
