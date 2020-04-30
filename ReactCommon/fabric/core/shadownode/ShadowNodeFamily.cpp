@@ -119,6 +119,15 @@ void ShadowNodeFamily::setMostRecentState(State::Shared const &state) const {
   mostRecentState_ = state;
 }
 
+std::shared_ptr<State const> ShadowNodeFamily::getMostRecentStateIfObsolete(
+    State const &state) const {
+  std::unique_lock<better::shared_mutex> lock(mutex_);
+  if (!state.isObsolete_) {
+    return {};
+  }
+  return mostRecentState_;
+}
+
 void ShadowNodeFamily::dispatchRawState(
     StateUpdate &&stateUpdate,
     EventPriority priority) const {

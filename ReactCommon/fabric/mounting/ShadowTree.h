@@ -88,6 +88,7 @@ class ShadowTree final {
   mutable ShadowTreeRevision::Number revisionNumber_{
       0}; // Protected by `commitMutex_`.
   MountingCoordinator::Shared mountingCoordinator_;
+  bool useNewApproachToStateReconciliation_{true};
 };
 
 } // namespace react

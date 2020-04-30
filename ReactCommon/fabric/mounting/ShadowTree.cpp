@@ -22,6 +22,141 @@
 namespace facebook {
 namespace react {
 
+/*
+ * Generates (possibly) a new tree where all nodes with non-obsolete `State`
+ * objects. If all `State` objects in the tree are not obsolete for the moment
+ * of calling, the function returns `nullptr` (as an indication that no
+ * additional work is required).
+ */
+static ShadowNode::Unshared progressState(ShadowNode const &shadowNode) {
+  auto isStateChanged = false;
+  auto areChildrenChanged = false;
+
+  auto newState = shadowNode.getState();
+  if (newState) {
+    newState = newState->getMostRecentStateIfObsolete();
+    if (newState) {
+      isStateChanged = true;
+    }
+  }
+
+  auto newChildren = ShadowNode::ListOfShared{};
+  if (shadowNode.getChildren().size() > 0) {
+    auto index = size_t{0};
+    for (auto const &childNode : shadowNode.getChildren()) {
+      auto newChildNode = progressState(*childNode);
+      if (newChildNode) {
+        if (!areChildrenChanged) {
+          // Making a copy before the first mutation.
+          newChildren = shadowNode.getChildren();
+        }
+        newChildren[index] = newChildNode;
+        areChildrenChanged = true;
+      }
+      index++;
+    }
+  }
+
+  if (!areChildrenChanged && !isStateChanged) {
+    return nullptr;
+  }
+
+  return shadowNode.clone({
+      ShadowNodeFragment::propsPlaceholder(),
+      areChildrenChanged ? std::make_shared<ShadowNode::ListOfShared const>(
+                               std::move(newChildren))
+                         : ShadowNodeFragment::childrenPlaceholder(),
+      isStateChanged ? newState : ShadowNodeFragment::statePlaceholder(),
+  });
+}
+
+/*
+ * An optimized version of the previous function (and relies on it).
+ * The function uses a given base tree to exclude unchanged (equal) parts
+ * of the three from the traversing.
+ */
+static ShadowNode::Unshared progressState(
+    ShadowNode const &shadowNode,
+    ShadowNode const &baseShadowNode) {
+  // The intuition behind the complexity:
+  // - A very few nodes have associated state, therefore it's mostly reading and
+  //   it only writes when state objects were found obsolete;
+  // - Most before-after trees are aligned, therefore most tree branches will be
+  //   skipped;
+  // - If trees are significantly different, any other algorithm will have
+  //   close to linear complexity.
+
+  auto isStateChanged = false;
+  auto areChildrenChanged = false;
+
+  auto newState = shadowNode.getState();
+  if (newState) {
+    newState = newState->getMostRecentStateIfObsolete();
+    if (newState) {
+      isStateChanged = true;
+    }
+  }
+
+  auto &children = shadowNode.getChildren();
+  auto &baseChildren = baseShadowNode.getChildren();
+  auto newChildren = ShadowNode::ListOfShared{};
+
+  auto childrenSize = children.size();
+  auto baseChildrenSize = baseChildren.size();
+  auto index = size_t{0};
+
+  // Stage 1: Aligned part.
+  for (index = 0; index < childrenSize && index < baseChildrenSize; index++) {
+    const auto &childNode = *children.at(index);
+    const auto &baseChildNode = *baseChildren.at(index);
+
+    if (&childNode == &baseChildNode) {
+      // Nodes are identical, skipping.
+      continue;
+    }
+
+    if (!ShadowNode::sameFamily(childNode, baseChildNode)) {
+      // Totally different nodes, updating is impossible.
+      break;
+    }
+
+    auto newChildNode = progressState(childNode, baseChildNode);
+    if (newChildNode) {
+      if (!areChildrenChanged) {
+        // Making a copy before the first mutation.
+        newChildren = children;
+      }
+      newChildren[index] = newChildNode;
+      areChildrenChanged = true;
+    }
+  }
+
+  // Stage 2: Misaligned part.
+  for (; index < childrenSize; index++) {
+    auto newChildNode = progressState(*children.at(index));
+    if (newChildNode) {
+      if (!areChildrenChanged) {
+        // Making a copy before the first mutation.
+        newChildren = children;
+      }
+      newChildren[index] = newChildNode;
+      areChildrenChanged = true;
+    }
+  }
+
+  if (!areChildrenChanged && !isStateChanged) {
+    return nullptr;
+  }
+
+  return shadowNode.clone({
+      ShadowNodeFragment::propsPlaceholder(),
+      areChildrenChanged ? std::make_shared<ShadowNode::ListOfShared const>(
+                               std::move(newChildren))
+                         : ShadowNodeFragment::childrenPlaceholder(),
+      isStateChanged ? newState : ShadowNodeFragment::statePlaceholder(),
+  });
+}
+
 static void updateMountedFlag(
     const SharedShadowNodeList &oldChildren,
     const SharedShadowNodeList &newChildren) {
@@ -161,14 +296,23 @@ bool ShadowTree::tryCommit(
     return false;
   }
 
-  // Compare state revisions of old and new root
-  // Children of the root node may be mutated in-place
   if (enableStateReconciliation) {
-    UnsharedShadowNode reconciledNode =
-        reconcileStateWithTree(newRootShadowNode.get(), oldRootShadowNode);
-    if (reconciledNode != nullptr) {
-      newRootShadowNode = std::make_shared<RootShadowNode>(
-          *reconciledNode, ShadowNodeFragment{});
+    if (useNewApproachToStateReconciliation_) {
+      auto updatedNewRootShadowNode =
+          progressState(*newRootShadowNode, *oldRootShadowNode);
+      if (updatedNewRootShadowNode) {
+        newRootShadowNode =
+            std::static_pointer_cast<RootShadowNode>(updatedNewRootShadowNode);
+      }
+    } else {
+      // Compare state revisions of old and new root
+      // Children of the root node may be mutated in-place
+      UnsharedShadowNode reconciledNode =
+          reconcileStateWithTree(newRootShadowNode.get(), oldRootShadowNode);
+      if (reconciledNode != nullptr) {
+        newRootShadowNode = std::make_shared<RootShadowNode>(
+            *reconciledNode, ShadowNodeFragment{});
+      }
     }
   }
 
