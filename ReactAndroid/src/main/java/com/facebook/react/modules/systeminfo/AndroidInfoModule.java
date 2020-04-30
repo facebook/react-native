@@ -12,12 +12,10 @@ import static android.content.Context.UI_MODE_SERVICE;
 import android.annotation.SuppressLint;
 import android.app.UiModeManager;
 import android.content.res.Configuration;
-import android.content.res.Resources;
 import android.os.Build;
 import android.provider.Settings.Secure;
 import androidx.annotation.Nullable;
 import com.facebook.fbreact.specs.NativePlatformConstantsAndroidSpec;
-import com.facebook.react.R;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.common.build.ReactBuildConfig;
 import com.facebook.react.module.annotations.ReactModule;
@@ -73,7 +71,9 @@ public class AndroidInfoModule extends NativePlatformConstantsAndroidSpec implem
     constants.put("Fingerprint", Build.FINGERPRINT);
     constants.put("Model", Build.MODEL);
     if (ReactBuildConfig.DEBUG) {
-      constants.put("ServerHost", AndroidInfoHelpers.getServerHost(getReactApplicationContext().getApplicationContext()));
+      constants.put(
+          "ServerHost",
+          AndroidInfoHelpers.getServerHost(getReactApplicationContext().getApplicationContext()));
     }
     constants.put(
         "isTesting", "true".equals(System.getProperty(IS_TESTING)) || isRunningScreenshotTest());
