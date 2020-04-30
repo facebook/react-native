@@ -18,11 +18,7 @@
 #import <React/RCTManagedPointer.h>
 #import <React/RCTModuleMethod.h>
 #import <React/RCTUtils.h>
-<<<<<<< HEAD
-#import <ReactCommon/JSCallInvoker.h>
-=======
 #import <ReactCommon/CallInvoker.h>
->>>>>>> fb/0.62-stable
 #import <ReactCommon/LongLivedObject.h>
 #import <ReactCommon/TurboModule.h>
 #import <ReactCommon/TurboModuleUtils.h>
@@ -97,25 +93,14 @@ static jsi::Value convertObjCObjectToJSIValue(jsi::Runtime &runtime, id value)
 static id convertJSIValueToObjCObject(
     jsi::Runtime &runtime,
     const jsi::Value &value,
-<<<<<<< HEAD
-    std::shared_ptr<react::JSCallInvoker> jsInvoker);
-=======
     std::shared_ptr<react::CallInvoker> jsInvoker);
->>>>>>> fb/0.62-stable
 static NSString *convertJSIStringToNSString(jsi::Runtime &runtime, const jsi::String &value)
 {
   return [NSString stringWithUTF8String:value.utf8(runtime).c_str()];
 }
 
-<<<<<<< HEAD
-static NSArray *convertJSIArrayToNSArray(
-    jsi::Runtime &runtime,
-    const jsi::Array &value,
-    std::shared_ptr<react::JSCallInvoker> jsInvoker)
-=======
 static NSArray *
 convertJSIArrayToNSArray(jsi::Runtime &runtime, const jsi::Array &value, std::shared_ptr<react::CallInvoker> jsInvoker)
->>>>>>> fb/0.62-stable
 {
   size_t size = value.size(runtime);
   NSMutableArray *result = [NSMutableArray new];
@@ -130,11 +115,7 @@ convertJSIArrayToNSArray(jsi::Runtime &runtime, const jsi::Array &value, std::sh
 static NSDictionary *convertJSIObjectToNSDictionary(
     jsi::Runtime &runtime,
     const jsi::Object &value,
-<<<<<<< HEAD
-    std::shared_ptr<react::JSCallInvoker> jsInvoker)
-=======
     std::shared_ptr<react::CallInvoker> jsInvoker)
->>>>>>> fb/0.62-stable
 {
   jsi::Array propertyNames = value.getPropertyNames(runtime);
   size_t size = propertyNames.size(runtime);
@@ -153,19 +134,11 @@ static NSDictionary *convertJSIObjectToNSDictionary(
 static RCTResponseSenderBlock convertJSIFunctionToCallback(
     jsi::Runtime &runtime,
     const jsi::Function &value,
-<<<<<<< HEAD
-    std::shared_ptr<react::JSCallInvoker> jsInvoker);
-static id convertJSIValueToObjCObject(
-    jsi::Runtime &runtime,
-    const jsi::Value &value,
-    std::shared_ptr<react::JSCallInvoker> jsInvoker)
-=======
     std::shared_ptr<react::CallInvoker> jsInvoker);
 static id convertJSIValueToObjCObject(
     jsi::Runtime &runtime,
     const jsi::Value &value,
     std::shared_ptr<react::CallInvoker> jsInvoker)
->>>>>>> fb/0.62-stable
 {
   if (value.isUndefined() || value.isNull()) {
     return nil;
@@ -196,100 +169,15 @@ static id convertJSIValueToObjCObject(
 static RCTResponseSenderBlock convertJSIFunctionToCallback(
     jsi::Runtime &runtime,
     const jsi::Function &value,
-<<<<<<< HEAD
-    std::shared_ptr<react::JSCallInvoker> jsInvoker)
-{
-  __block auto wrapper = std::make_shared<react::CallbackWrapper>(value.getFunction(runtime), runtime, jsInvoker);
-=======
     std::shared_ptr<react::CallInvoker> jsInvoker)
 {
   auto weakWrapper = react::CallbackWrapper::createWeak(value.getFunction(runtime), runtime, jsInvoker);
   BOOL __block wrapperWasCalled = NO;
->>>>>>> fb/0.62-stable
   return ^(NSArray *responses) {
     if (wrapperWasCalled) {
       throw std::runtime_error("callback arg cannot be called more than once");
     }
 
-<<<<<<< HEAD
-    std::shared_ptr<react::CallbackWrapper> rw = wrapper;
-    wrapper->jsInvoker().invokeAsync([rw, responses]() {
-      std::vector<jsi::Value> args = convertNSArrayToStdVector(rw->runtime(), responses);
-      rw->callback().call(rw->runtime(), (const jsi::Value *)args.data(), args.size());
-    });
-
-    // The callback is single-use, so force release it here.
-    // Doing this also releases the jsi::jsi::Function early, since this block may not get released by ARC for a while,
-    // because the method invocation isn't guarded with @autoreleasepool.
-    wrapper = nullptr;
-  };
-}
-
-// Helper for creating Promise object.
-struct PromiseWrapper : public react::LongLivedObject {
-  static std::shared_ptr<PromiseWrapper> create(
-      jsi::Function resolve,
-      jsi::Function reject,
-      jsi::Runtime &runtime,
-      std::shared_ptr<react::JSCallInvoker> jsInvoker)
-  {
-    auto instance = std::make_shared<PromiseWrapper>(std::move(resolve), std::move(reject), runtime, jsInvoker);
-    // This instance needs to live longer than the caller's scope, since the resolve/reject functions may not
-    // be called immediately. Doing so keeps it alive at least until resolve/reject is called, or when the
-    // collection is cleared (e.g. when JS reloads).
-    react::LongLivedObjectCollection::get().add(instance);
-    return instance;
-  }
-
-  PromiseWrapper(
-      jsi::Function resolve,
-      jsi::Function reject,
-      jsi::Runtime &runtime,
-      std::shared_ptr<react::JSCallInvoker> jsInvoker)
-      : resolveWrapper(std::make_shared<react::CallbackWrapper>(std::move(resolve), runtime, jsInvoker)),
-        rejectWrapper(std::make_shared<react::CallbackWrapper>(std::move(reject), runtime, jsInvoker)),
-        runtime(runtime),
-        jsInvoker(jsInvoker)
-  {
-  }
-
-  RCTPromiseResolveBlock resolveBlock()
-  {
-    return ^(id result) {
-      if (resolveWrapper == nullptr) {
-        throw std::runtime_error("Promise resolve arg cannot be called more than once");
-      }
-
-      // Retain the resolveWrapper so that it stays alive inside the lambda.
-      std::shared_ptr<react::CallbackWrapper> retainedWrapper = resolveWrapper;
-      jsInvoker->invokeAsync([retainedWrapper, result]() {
-        jsi::Runtime &rt = retainedWrapper->runtime();
-        jsi::Value arg = convertObjCObjectToJSIValue(rt, result);
-        retainedWrapper->callback().call(rt, arg);
-      });
-
-      // Prevent future invocation of the same resolve() function.
-      cleanup();
-    };
-  }
-
-  RCTPromiseRejectBlock rejectBlock()
-  {
-    return ^(NSString *code, NSString *message, NSError *error) {
-      // TODO: There is a chance `this` is no longer valid when this block executes.
-      if (rejectWrapper == nullptr) {
-        throw std::runtime_error("Promise reject arg cannot be called more than once");
-      }
-
-      // Retain the resolveWrapper so that it stays alive inside the lambda.
-      std::shared_ptr<react::CallbackWrapper> retainedWrapper = rejectWrapper;
-      NSDictionary *jsError = RCTJSErrorFromCodeMessageAndNSError(code, message, error);
-      jsInvoker->invokeAsync([retainedWrapper, jsError]() {
-        jsi::Runtime &rt = retainedWrapper->runtime();
-        jsi::Value arg = convertNSDictionaryToJSIObject(rt, jsError);
-        retainedWrapper->callback().call(rt, arg);
-      });
-=======
     auto strongWrapper = weakWrapper.lock();
     if (!strongWrapper) {
       return;
@@ -305,33 +193,11 @@ struct PromiseWrapper : public react::LongLivedObject {
       strongWrapper2->callback().call(strongWrapper2->runtime(), (const jsi::Value *)args.data(), args.size());
       strongWrapper2->destroy();
     });
->>>>>>> fb/0.62-stable
 
     wrapperWasCalled = YES;
   };
 }
 
-<<<<<<< HEAD
-  void cleanup()
-  {
-    resolveWrapper = nullptr;
-    rejectWrapper = nullptr;
-    allowRelease();
-  }
-
-  // CallbackWrapper is used here instead of just holding on the jsi jsi::Function in order to force release it after
-  // either the resolve() or the reject() is called. jsi jsi::Function does not support explicit releasing, so we need
-  // an extra mechanism to control that lifecycle.
-  std::shared_ptr<react::CallbackWrapper> resolveWrapper;
-  std::shared_ptr<react::CallbackWrapper> rejectWrapper;
-  jsi::Runtime &runtime;
-  std::shared_ptr<react::JSCallInvoker> jsInvoker;
-};
-
-using PromiseInvocationBlock = void (^)(jsi::Runtime &rt, std::shared_ptr<PromiseWrapper> wrapper);
-static jsi::Value
-createPromise(jsi::Runtime &runtime, std::shared_ptr<react::JSCallInvoker> jsInvoker, PromiseInvocationBlock invoke)
-=======
 namespace facebook {
 namespace react {
 
@@ -339,7 +205,6 @@ jsi::Value ObjCTurboModule::createPromise(
     jsi::Runtime &runtime,
     std::shared_ptr<react::CallInvoker> jsInvoker,
     PromiseInvocationBlock invoke)
->>>>>>> fb/0.62-stable
 {
   if (!invoke) {
     return jsi::Value::undefined();
@@ -461,11 +326,7 @@ jsi::Value performMethodInvocation(
     NSInvocation *inv,
     TurboModuleMethodValueKind valueKind,
     const id<RCTTurboModule> module,
-<<<<<<< HEAD
-    std::shared_ptr<JSCallInvoker> jsInvoker,
-=======
     std::shared_ptr<CallInvoker> jsInvoker,
->>>>>>> fb/0.62-stable
     NSMutableArray *retainedObjectsForInvocation)
 {
   __block id result;
@@ -601,11 +462,7 @@ NSInvocation *ObjCTurboModule::getMethodInvocation(
     jsi::Runtime &runtime,
     TurboModuleMethodValueKind valueKind,
     const id<RCTTurboModule> module,
-<<<<<<< HEAD
-    std::shared_ptr<JSCallInvoker> jsInvoker,
-=======
     std::shared_ptr<CallInvoker> jsInvoker,
->>>>>>> fb/0.62-stable
     const std::string &methodName,
     SEL selector,
     const jsi::Value *args,
@@ -647,29 +504,6 @@ NSInvocation *ObjCTurboModule::getMethodInvocation(
        */
       if (objCArgType == @encode(id)) {
         id objCArg = [NSNumber numberWithDouble:v];
-        NSString *methodNameNSString = @(methodName.c_str());
-
-        /**
-         * Convert numbers using RCTConvert if possible.
-         */
-        NSString *argumentType = getArgumentTypeName(methodNameNSString, i);
-        if (argumentType != nil) {
-          NSString *rctConvertMethodName = [NSString stringWithFormat:@"%@:", argumentType];
-          SEL rctConvertSelector = NSSelectorFromString(rctConvertMethodName);
-
-          if ([RCTConvert respondsToSelector:rctConvertSelector]) {
-            // Message dispatch logic from old infra
-            id (*convert)(id, SEL, id) = (__typeof__(convert))objc_msgSend;
-            id convertedObjCArg = convert([RCTConvert class], rctConvertSelector, objCArg);
-
-            [inv setArgument:(void *)&convertedObjCArg atIndex:i + 2];
-            if (convertedObjCArg) {
-              [retainedObjectsForInvocation addObject:convertedObjCArg];
-            }
-            continue;
-          }
-        }
-
         [inv setArgument:(void *)&objCArg atIndex:i + 2];
         [retainedObjectsForInvocation addObject:objCArg];
       } else {
@@ -690,11 +524,7 @@ NSInvocation *ObjCTurboModule::getMethodInvocation(
       /**
        * Convert objects using RCTConvert.
        */
-<<<<<<< HEAD
-      if (objCArgType[0] == _C_ID) {
-=======
       if (objCArgType == @encode(id)) {
->>>>>>> fb/0.62-stable
         NSString *argumentType = getArgumentTypeName(methodNameNSString, i);
         if (argumentType != nil) {
           NSString *rctConvertMethodName = [NSString stringWithFormat:@"%@:", argumentType];
@@ -746,11 +576,7 @@ NSInvocation *ObjCTurboModule::getMethodInvocation(
 ObjCTurboModule::ObjCTurboModule(
     const std::string &name,
     id<RCTTurboModule> instance,
-<<<<<<< HEAD
-    std::shared_ptr<JSCallInvoker> jsInvoker)
-=======
     std::shared_ptr<CallInvoker> jsInvoker)
->>>>>>> fb/0.62-stable
     : TurboModule(name, jsInvoker), instance_(instance)
 {
 }
@@ -770,18 +596,6 @@ jsi::Value ObjCTurboModule::invokeObjCMethod(
   if (valueKind == PromiseKind) {
     // Promise return type is special cased today, i.e. it needs extra 2 function args for resolve() and reject(), to
     // be passed to the actual ObjC++ class method.
-<<<<<<< HEAD
-    return createPromise(runtime, jsInvoker_, ^(jsi::Runtime &rt, std::shared_ptr<PromiseWrapper> wrapper) {
-      RCTPromiseResolveBlock resolveBlock = wrapper->resolveBlock();
-      RCTPromiseRejectBlock rejectBlock = wrapper->rejectBlock();
-      [inv setArgument:(void *)&resolveBlock atIndex:count + 2];
-      [inv setArgument:(void *)&rejectBlock atIndex:count + 3];
-      [retainedObjectsForInvocation addObject:resolveBlock];
-      [retainedObjectsForInvocation addObject:rejectBlock];
-      // The return type becomes void in the ObjC side.
-      performMethodInvocation(rt, inv, VoidKind, instance_, jsInvoker_, retainedObjectsForInvocation);
-    });
-=======
     return createPromise(
         runtime,
         jsInvoker_,
@@ -793,7 +607,6 @@ jsi::Value ObjCTurboModule::invokeObjCMethod(
           // The return type becomes void in the ObjC side.
           performMethodInvocation(rt, inv, VoidKind, instance_, jsInvoker_, retainedObjectsForInvocation);
         });
->>>>>>> fb/0.62-stable
   }
 
   return performMethodInvocation(runtime, inv, valueKind, instance_, jsInvoker_, retainedObjectsForInvocation);

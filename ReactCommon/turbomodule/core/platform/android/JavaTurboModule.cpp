@@ -26,16 +26,11 @@ namespace react {
 JavaTurboModule::JavaTurboModule(
     const std::string &name,
     jni::alias_ref<JTurboModule> instance,
-<<<<<<< HEAD
-    std::shared_ptr<JSCallInvoker> jsInvoker)
-    : TurboModule(name, jsInvoker), instance_(jni::make_global(instance)) {}
-=======
     std::shared_ptr<CallInvoker> jsInvoker,
     std::shared_ptr<CallInvoker> nativeInvoker)
     : TurboModule(name, jsInvoker),
       instance_(jni::make_global(instance)),
       nativeInvoker_(nativeInvoker) {}
->>>>>>> fb/0.62-stable
 
 jni::local_ref<JCxxCallbackImpl::JavaPart>
 JavaTurboModule::createJavaCallbackFromJSIFunction(
@@ -224,11 +219,7 @@ std::vector<std::string> getMethodArgTypesFromSignature(
 // needs to be done again
 // TODO (axe) Reuse existing implementation as needed - the exist in
 // MethodInvoker.cpp
-<<<<<<< HEAD
-std::vector<jvalue> JavaTurboModule::convertJSIArgsToJNIArgs(
-=======
 JNIArgs JavaTurboModule::convertJSIArgsToJNIArgs(
->>>>>>> fb/0.62-stable
     JNIEnv *env,
     jsi::Runtime &rt,
     std::string methodName,
@@ -246,10 +237,6 @@ JNIArgs JavaTurboModule::convertJSIArgsToJNIArgs(
         methodName, count, expectedArgumentCount);
   }
 
-<<<<<<< HEAD
-  auto jargs =
-      std::vector<jvalue>(valueKind == PromiseKind ? count + 1 : count);
-=======
   JNIArgs jniArgs(valueKind == PromiseKind ? count + 1 : count);
   auto &jargs = jniArgs.args_;
   auto &globalRefs = jniArgs.globalRefs_;
@@ -268,7 +255,6 @@ JNIArgs JavaTurboModule::convertJSIArgsToJNIArgs(
 
   jclass booleanClass = nullptr;
   jclass doubleClass = nullptr;
->>>>>>> fb/0.62-stable
 
   for (unsigned int argIndex = 0; argIndex < count; argIndex += 1) {
     std::string type = methodArgTypes.at(argIndex);
@@ -316,13 +302,6 @@ JNIArgs JavaTurboModule::convertJSIArgsToJNIArgs(
             "number", argIndex, methodName, arg, &rt);
       }
 
-<<<<<<< HEAD
-      jclass doubleClass = env->FindClass("java/lang/Double");
-      jmethodID doubleConstructor =
-          env->GetMethodID(doubleClass, "<init>", "(D)V");
-      jarg->l =
-          env->NewObject(doubleClass, doubleConstructor, arg->getNumber());
-=======
       if (doubleClass == nullptr) {
         doubleClass = env->FindClass("java/lang/Double");
       }
@@ -331,7 +310,6 @@ JNIArgs JavaTurboModule::convertJSIArgsToJNIArgs(
           env->GetMethodID(doubleClass, "<init>", "(D)V");
       jarg->l = makeGlobalIfNecessary(
           env->NewObject(doubleClass, doubleConstructor, arg->getNumber()));
->>>>>>> fb/0.62-stable
       continue;
     }
 
@@ -341,13 +319,6 @@ JNIArgs JavaTurboModule::convertJSIArgsToJNIArgs(
             "boolean", argIndex, methodName, arg, &rt);
       }
 
-<<<<<<< HEAD
-      jclass booleanClass = env->FindClass("java/lang/Boolean");
-      jmethodID booleanConstructor =
-          env->GetMethodID(booleanClass, "<init>", "(Z)V");
-      jarg->l =
-          env->NewObject(booleanClass, booleanConstructor, arg->getBool());
-=======
       if (booleanClass == nullptr) {
         booleanClass = env->FindClass("java/lang/Boolean");
       }
@@ -356,7 +327,6 @@ JNIArgs JavaTurboModule::convertJSIArgsToJNIArgs(
           env->GetMethodID(booleanClass, "<init>", "(Z)V");
       jarg->l = makeGlobalIfNecessary(
           env->NewObject(booleanClass, booleanConstructor, arg->getBool()));
->>>>>>> fb/0.62-stable
       continue;
     }
 
@@ -366,12 +336,8 @@ JNIArgs JavaTurboModule::convertJSIArgsToJNIArgs(
             "string", argIndex, methodName, arg, &rt);
       }
 
-<<<<<<< HEAD
-      jarg->l = env->NewStringUTF(arg->getString(rt).utf8(rt).c_str());
-=======
       jarg->l = makeGlobalIfNecessary(
           env->NewStringUTF(arg->getString(rt).utf8(rt).c_str()));
->>>>>>> fb/0.62-stable
       continue;
     }
 
@@ -384,11 +350,7 @@ JNIArgs JavaTurboModule::convertJSIArgsToJNIArgs(
       auto dynamicFromValue = jsi::dynamicFromValue(rt, *arg);
       auto jParams =
           ReadableNativeArray::newObjectCxxArgs(std::move(dynamicFromValue));
-<<<<<<< HEAD
-      jarg->l = jParams.release();
-=======
       jarg->l = makeGlobalIfNecessary(jParams.release());
->>>>>>> fb/0.62-stable
       continue;
     }
 
@@ -399,12 +361,8 @@ JNIArgs JavaTurboModule::convertJSIArgsToJNIArgs(
       }
 
       jsi::Function fn = arg->getObject(rt).getFunction(rt);
-<<<<<<< HEAD
-      jarg->l = createJavaCallbackFromJSIFunction(fn, rt, jsInvoker).release();
-=======
       jarg->l = makeGlobalIfNecessary(
           createJavaCallbackFromJSIFunction(fn, rt, jsInvoker).release());
->>>>>>> fb/0.62-stable
       continue;
     }
 
@@ -417,20 +375,12 @@ JNIArgs JavaTurboModule::convertJSIArgsToJNIArgs(
       auto dynamicFromValue = jsi::dynamicFromValue(rt, *arg);
       auto jParams =
           ReadableNativeMap::createWithContents(std::move(dynamicFromValue));
-<<<<<<< HEAD
-      jarg->l = jParams.release();
-=======
       jarg->l = makeGlobalIfNecessary(jParams.release());
->>>>>>> fb/0.62-stable
       continue;
     }
   }
 
-<<<<<<< HEAD
-  return jargs;
-=======
   return jniArgs;
->>>>>>> fb/0.62-stable
 }
 
 jsi::Value convertFromJMapToValue(JNIEnv *env, jsi::Runtime &rt, jobject arg) {
@@ -514,29 +464,19 @@ jsi::Value JavaTurboModule::invokeJavaMethod(
 
   std::vector<std::string> methodArgTypes =
       getMethodArgTypesFromSignature(methodSignature);
-<<<<<<< HEAD
-  std::vector<jvalue> jargs = convertJSIArgsToJNIArgs(
-=======
 
   JNIArgs jniArgs = convertJSIArgsToJNIArgs(
->>>>>>> fb/0.62-stable
       env,
       runtime,
       methodName,
       methodArgTypes,
       args,
-<<<<<<< HEAD
-      count,
-      jsInvoker_,
-      valueKind);
-=======
       argCount,
       jsInvoker_,
       valueKind);
 
   auto &jargs = jniArgs.args_;
   auto &globalRefs = jniArgs.globalRefs_;
->>>>>>> fb/0.62-stable
 
   switch (valueKind) {
     case VoidKind: {

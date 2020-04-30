@@ -14,11 +14,7 @@ namespace react {
 
 TurboModule::TurboModule(
     const std::string &name,
-<<<<<<< HEAD
-    std::shared_ptr<JSCallInvoker> jsInvoker)
-=======
     std::shared_ptr<CallInvoker> jsInvoker)
->>>>>>> fb/0.62-stable
     : name_(name), jsInvoker_(jsInvoker) {}
 
 TurboModule::~TurboModule() {}

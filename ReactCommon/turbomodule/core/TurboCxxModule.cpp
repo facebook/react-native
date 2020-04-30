@@ -38,11 +38,7 @@ static CxxModule::Callback makeTurboCxxModuleCallback(
 
 TurboCxxModule::TurboCxxModule(
     std::unique_ptr<CxxModule> cxxModule,
-<<<<<<< HEAD
-    std::shared_ptr<JSCallInvoker> jsInvoker)
-=======
     std::shared_ptr<CallInvoker> jsInvoker)
->>>>>>> fb/0.62-stable
     : TurboModule(cxxModule->getName(), jsInvoker),
       cxxMethods_(cxxModule->getMethods()),
       cxxModule_(std::move(cxxModule)) {}

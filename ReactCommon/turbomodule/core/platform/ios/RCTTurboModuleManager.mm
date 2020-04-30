@@ -308,42 +308,6 @@ static Class getFallbackClassFromName(const char *name)
       }
     }
 
-<<<<<<< HEAD
-  /**
-   * Some modules need their own queues, but don't provide any, so we need to create it for them.
-   * These modules typically have the following:
-   *   `@synthesize methodQueue = _methodQueue`
-   */
-  if ([module respondsToSelector:@selector(methodQueue)]) {
-    dispatch_queue_t methodQueue = [module performSelector:@selector(methodQueue)];
-    if (!methodQueue) {
-      NSString *moduleClassName = NSStringFromClass(module.class);
-      NSString *queueName = [NSString stringWithFormat:@"com.facebook.react.%@Queue", moduleClassName];
-      methodQueue = dispatch_queue_create(queueName.UTF8String, DISPATCH_QUEUE_SERIAL);
-      @try {
-        [(id)module setValue:methodQueue forKey:@"methodQueue"];
-      } @catch (NSException *exception) {
-        RCTLogError(
-            @"TM: %@ is returning nil for its methodQueue, which is not "
-             "permitted. You must either return a pre-initialized "
-             "queue, or @synthesize the methodQueue to let the bridge "
-             "create a queue for you.",
-            moduleClassName);
-      }
-    }
-  }
-
-  /**
-   * Broadcast that this TurboModule was created.
-   *
-   * TODO(T41180176): Investigate whether we can get rid of this after all
-   * TurboModules are rolled out
-   */
-  [[NSNotificationCenter defaultCenter]
-      postNotificationName:RCTDidInitializeModuleNotification
-                    object:_bridge
-                  userInfo:@{@"module" : module, @"bridge" : RCTNullIfNil(_bridge.parentBridge)}];
-=======
     /**
      * Some modules need their own queues, but don't provide any, so we need to create it for them.
      * These modules typically have the following:
@@ -402,7 +366,6 @@ static Class getFallbackClassFromName(const char *name)
     setupTurboModule();
   }
 
->>>>>>> fb/0.62-stable
   return module;
 }
 
@@ -482,19 +445,11 @@ static Class getFallbackClassFromName(const char *name)
         if (methodQueue) {
           dispatch_group_enter(moduleInvalidationGroup);
           [bridge
-<<<<<<< HEAD
-              dispatchBlock:^{
-                [((id<RCTInvalidating>)module) invalidate];
-                dispatch_group_leave(moduleInvalidationGroup);
-              }
-                      queue:methodQueue];
-=======
            dispatchBlock:^{
             [((id<RCTInvalidating>)module) invalidate];
             dispatch_group_leave(moduleInvalidationGroup);
           }
            queue:methodQueue];
->>>>>>> fb/0.62-stable
           continue;
         }
       }
@@ -511,8 +466,6 @@ static Class getFallbackClassFromName(const char *name)
     _rctTurboModuleCache.clear();
   }
 
-<<<<<<< HEAD
-=======
   _turboModuleCache.clear();
 
   _binding->invalidate();
@@ -539,7 +492,6 @@ static Class getFallbackClassFromName(const char *name)
     _rctTurboModuleCache.clear();
   }
 
->>>>>>> fb/0.62-stable
   _turboModuleCache.clear();
 
   _binding->invalidate();

@@ -13,11 +13,7 @@
 - (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:(const std::string &)name
                                                        instance:(id<RCTTurboModule>)instance
                                                       jsInvoker:
-<<<<<<< HEAD
-                                                          (std::shared_ptr<facebook::react::JSCallInvoker>)jsInvoker;
-=======
                                                           (std::shared_ptr<facebook::react::CallInvoker>)jsInvoker;
->>>>>>> fb/0.62-stable
 
 @optional
 
@@ -36,11 +32,7 @@
  */
 - (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:(const std::string &)name
                                                       jsInvoker:
-<<<<<<< HEAD
-                                                          (std::shared_ptr<facebook::react::JSCallInvoker>)jsInvoker;
-=======
                                                           (std::shared_ptr<facebook::react::CallInvoker>)jsInvoker;
->>>>>>> fb/0.62-stable
 
 @end
 

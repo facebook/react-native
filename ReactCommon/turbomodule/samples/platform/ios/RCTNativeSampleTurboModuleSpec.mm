@@ -113,11 +113,7 @@ static facebook::jsi::Value __hostFunction_NativeSampleTurboModuleSpecJSI_getCon
 
 NativeSampleTurboModuleSpecJSI::NativeSampleTurboModuleSpecJSI(
     id<RCTTurboModule> instance,
-<<<<<<< HEAD
-    std::shared_ptr<JSCallInvoker> jsInvoker)
-=======
     std::shared_ptr<CallInvoker> jsInvoker)
->>>>>>> fb/0.62-stable
     : ObjCTurboModule("SampleTurboModule", instance, jsInvoker)
 {
   methodMap_["voidFunc"] = MethodMetadata{0, __hostFunction_NativeSampleTurboModuleSpecJSI_voidFunc};

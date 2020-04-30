@@ -12,15 +12,9 @@
 #import <React/RCTBridge.h>
 #import <React/RCTBridgeModule.h>
 #import <React/RCTModuleMethod.h>
-<<<<<<< HEAD
-#import <ReactCommon/JSCallInvoker.h>
-#import <ReactCommon/TurboModule.h>
-#import <cxxreact/MessageQueueThread.h>
-=======
 #import <ReactCommon/CallInvoker.h>
 #import <ReactCommon/TurboModule.h>
 #import <ReactCommon/TurboModuleUtils.h>
->>>>>>> fb/0.62-stable
 #import <string>
 #import <unordered_map>
 
@@ -38,11 +32,7 @@ class Instance;
  */
 class JSI_EXPORT ObjCTurboModule : public TurboModule {
  public:
-<<<<<<< HEAD
-  ObjCTurboModule(const std::string &name, id<RCTTurboModule> instance, std::shared_ptr<JSCallInvoker> jsInvoker);
-=======
   ObjCTurboModule(const std::string &name, id<RCTTurboModule> instance, std::shared_ptr<CallInvoker> jsInvoker);
->>>>>>> fb/0.62-stable
 
   jsi::Value invokeObjCMethod(
       jsi::Runtime &runtime,
@@ -70,11 +60,7 @@ class JSI_EXPORT ObjCTurboModule : public TurboModule {
       jsi::Runtime &runtime,
       TurboModuleMethodValueKind valueKind,
       const id<RCTTurboModule> module,
-<<<<<<< HEAD
-      std::shared_ptr<JSCallInvoker> jsInvoker,
-=======
       std::shared_ptr<CallInvoker> jsInvoker,
->>>>>>> fb/0.62-stable
       const std::string &methodName,
       SEL selector,
       const jsi::Value *args,
@@ -107,11 +93,7 @@ class JSI_EXPORT ObjCTurboModule : public TurboModule {
 @optional
 // This should be required, after migration is done.
 - (std::shared_ptr<facebook::react::TurboModule>)getTurboModuleWithJsInvoker:
-<<<<<<< HEAD
-    (std::shared_ptr<facebook::react::JSCallInvoker>)jsInvoker;
-=======
     (std::shared_ptr<facebook::react::CallInvoker>)jsInvoker;
->>>>>>> fb/0.62-stable
 
 @end
 

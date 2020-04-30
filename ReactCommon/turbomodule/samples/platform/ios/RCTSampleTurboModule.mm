@@ -7,7 +7,7 @@
 
 #import "RCTSampleTurboModule.h"
 
-#import <React/RCTUIKit.h> // TODO(macOS ISS#2323203)
+#import <UIKit/UIKit.h>
 
 using namespace facebook::react;
 
@@ -31,11 +31,7 @@ RCT_EXPORT_MODULE()
 }
 
 - (std::shared_ptr<facebook::react::TurboModule>)getTurboModuleWithJsInvoker:
-<<<<<<< HEAD
-    (std::shared_ptr<facebook::react::JSCallInvoker>)jsInvoker
-=======
     (std::shared_ptr<facebook::react::CallInvoker>)jsInvoker
->>>>>>> fb/0.62-stable
 {
   return std::make_shared<NativeSampleTurboModuleSpecJSI>(self, jsInvoker);
 }
@@ -49,13 +45,8 @@ RCT_EXPORT_MODULE()
 
 - (NSDictionary *)getConstants
 {
-#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
   UIScreen *mainScreen = UIScreen.mainScreen;
   CGSize screenSize = mainScreen.bounds.size;
-#else // [TODO(macOS ISS#2323203)
-  NSScreen *mainScreen = NSScreen.mainScreen;
-  CGSize screenSize = mainScreen.frame.size;
-#endif // ]TODO(macOS ISS#2323203)
 
   return @{
     @"const1" : @YES,

@@ -12,11 +12,7 @@
 
 #include <jsi/jsi.h>
 
-<<<<<<< HEAD
-#include <ReactCommon/JSCallInvoker.h>
-=======
 #include <ReactCommon/CallInvoker.h>
->>>>>>> fb/0.62-stable
 
 namespace facebook {
 namespace react {
@@ -41,13 +37,7 @@ enum TurboModuleMethodValueKind {
  */
 class JSI_EXPORT TurboModule : public facebook::jsi::HostObject {
  public:
-<<<<<<< HEAD
-  TurboModule(
-      const std::string &name,
-      std::shared_ptr<JSCallInvoker> jsInvoker);
-=======
   TurboModule(const std::string &name, std::shared_ptr<CallInvoker> jsInvoker);
->>>>>>> fb/0.62-stable
   virtual ~TurboModule();
 
   virtual facebook::jsi::Value get(
