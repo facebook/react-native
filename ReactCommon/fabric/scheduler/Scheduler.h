@@ -112,6 +112,7 @@ class Scheduler final : public UIManagerDelegate {
   std::shared_ptr<UIManager> uiManager_;
   std::shared_ptr<const ReactNativeConfig> reactNativeConfig_;
   EventDispatcher::Shared eventDispatcher_;
+  bool enableNewStateReconciliation_{false};
 };
 
 } // namespace react

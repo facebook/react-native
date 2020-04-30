@@ -297,7 +297,7 @@ bool ShadowTree::tryCommit(
   }
 
   if (enableStateReconciliation) {
-    if (useNewApproachToStateReconciliation_) {
+    if (enableNewStateReconciliation_) {
       auto updatedNewRootShadowNode =
           progressState(*newRootShadowNode, *oldRootShadowNode);
       if (updatedNewRootShadowNode) {

@@ -80,6 +80,14 @@ Scheduler::Scheduler(
 
   delegate_ = delegate;
   uiManager_ = uiManager;
+
+#ifdef ANDROID
+  enableNewStateReconciliation_ = reactNativeConfig_->getBool(
+      "react_fabric:enable_new_state_reconciliation_android");
+#else
+  enableNewStateReconciliation_ = reactNativeConfig_->getBool(
+      "react_fabric:enable_new_state_reconciliation_ios");
+#endif
 }
 
 Scheduler::~Scheduler() {
@@ -140,6 +148,8 @@ void Scheduler::startSurface(
       layoutContext,
       *rootComponentDescriptor_,
       *uiManager_);
+
+  shadowTree->setEnableNewStateReconciliation(enableNewStateReconciliation_);
 
   auto uiManager = uiManager_;
 
