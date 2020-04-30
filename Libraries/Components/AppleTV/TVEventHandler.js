@@ -14,39 +14,6 @@ const Platform = require('../../Utilities/Platform');
 const NativeEventEmitter = require('../../EventEmitter/NativeEventEmitter');
 
 import NativeTVNavigationEventEmitter from './NativeTVNavigationEventEmitter';
-<<<<<<< HEAD
-
-function TVEventHandler() {
-  this.__nativeTVNavigationEventListener = null;
-  this.__nativeTVNavigationEventEmitter = null;
-}
-
-TVEventHandler.prototype.enable = function(
-  component: ?any,
-  callback: Function,
-) {
-  if (Platform.OS === 'ios' && !NativeTVNavigationEventEmitter) {
-    return;
-  }
-
-  this.__nativeTVNavigationEventEmitter = new NativeEventEmitter(
-    NativeTVNavigationEventEmitter,
-  );
-  this.__nativeTVNavigationEventListener = this.__nativeTVNavigationEventEmitter.addListener(
-    'onHWKeyEvent',
-    data => {
-      if (callback) {
-        callback(component, data);
-      }
-    },
-  );
-};
-
-TVEventHandler.prototype.disable = function() {
-  if (this.__nativeTVNavigationEventListener) {
-    this.__nativeTVNavigationEventListener.remove();
-    delete this.__nativeTVNavigationEventListener;
-=======
 import type EmitterSubscription from '../../vendor/emitter/EmitterSubscription';
 
 class TVEventHandler {
@@ -69,7 +36,6 @@ class TVEventHandler {
         }
       },
     );
->>>>>>> fb/0.62-stable
   }
 
   disable(): void {

@@ -19,11 +19,7 @@ const requireNativeComponent = require('../../ReactNative/requireNativeComponent
 import type {HostComponent} from '../../Renderer/shims/ReactNativeTypes';
 import type {ViewProps} from '../View/ViewPropTypes';
 import type {SyntheticEvent} from '../../Types/CoreEventTypes';
-<<<<<<< HEAD
-import type {NativeComponent} from '../../Renderer/shims/ReactNative';
 import type {NativeOrDynamicColorType} from '../../Color/NativeOrDynamicColorType'; // TODO(macOS ISS#2323203)
-=======
->>>>>>> fb/0.62-stable
 
 type CheckBoxEvent = SyntheticEvent<
   $ReadOnly<{|

@@ -34,21 +34,12 @@ import NativeToastAndroid from './NativeToastAndroid';
 
 const ToastAndroid = {
   // Toast duration constants
-<<<<<<< HEAD
-  SHORT: NativeToastAndroid.getConstants().SHORT,
-  LONG: NativeToastAndroid.getConstants().LONG,
-  // Toast gravity constants
-  TOP: NativeToastAndroid.getConstants().TOP,
-  BOTTOM: NativeToastAndroid.getConstants().BOTTOM,
-  CENTER: NativeToastAndroid.getConstants().CENTER,
-=======
   SHORT: (NativeToastAndroid.getConstants().SHORT: number),
   LONG: (NativeToastAndroid.getConstants().LONG: number),
   // Toast gravity constants
   TOP: (NativeToastAndroid.getConstants().TOP: number),
   BOTTOM: (NativeToastAndroid.getConstants().BOTTOM: number),
   CENTER: (NativeToastAndroid.getConstants().CENTER: number),
->>>>>>> fb/0.62-stable
 
   show: function(message: string, duration: number): void {
     NativeToastAndroid.show(message, duration);

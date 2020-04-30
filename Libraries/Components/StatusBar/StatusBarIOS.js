@@ -12,19 +12,11 @@
 
 const NativeEventEmitter = require('../../EventEmitter/NativeEventEmitter');
 
-<<<<<<< HEAD:Libraries/Components/StatusBar/StatusBarIOS.ios.js
-import NativeStatusBarManager from './NativeStatusBarManager';
-=======
 import NativeStatusBarManagerIOS from './NativeStatusBarManagerIOS';
->>>>>>> fb/0.62-stable:Libraries/Components/StatusBar/StatusBarIOS.js
 
 /**
  * Use `StatusBar` for mutating the status bar.
  */
 class StatusBarIOS extends NativeEventEmitter {}
 
-<<<<<<< HEAD:Libraries/Components/StatusBar/StatusBarIOS.ios.js
-module.exports = (new StatusBarIOS(NativeStatusBarManager): StatusBarIOS);
-=======
 module.exports = (new StatusBarIOS(NativeStatusBarManagerIOS): StatusBarIOS);
->>>>>>> fb/0.62-stable:Libraries/Components/StatusBar/StatusBarIOS.js

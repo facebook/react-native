@@ -152,11 +152,14 @@ class TouchableBounce extends React.Component<Props, State> {
         accessibilityLabel={this.props.accessibilityLabel}
         accessibilityHint={this.props.accessibilityHint}
         accessibilityRole={this.props.accessibilityRole}
-<<<<<<< HEAD
-        accessibilityStates={this.props.accessibilityStates}
         accessibilityState={this.props.accessibilityState}
         accessibilityActions={this.props.accessibilityActions}
         onAccessibilityAction={this.props.onAccessibilityAction}
+        accessibilityValue={this.props.accessibilityValue}
+        importantForAccessibility={this.props.importantForAccessibility}
+        accessibilityLiveRegion={this.props.accessibilityLiveRegion}
+        accessibilityViewIsModal={this.props.accessibilityViewIsModal}
+        accessibilityElementsHidden={this.props.accessibilityElementsHidden}
         acceptsKeyboardFocus={
           (this.props.acceptsKeyboardFocus === undefined ||
             this.props.acceptsKeyboardFocus) &&
@@ -168,16 +171,6 @@ class TouchableBounce extends React.Component<Props, State> {
           !this.props.disabled
         } // TODO(macOS/win ISS#2323203)
         tabIndex={this.props.tabIndex} // TODO(win ISS#2323203)
-=======
-        accessibilityState={this.props.accessibilityState}
-        accessibilityActions={this.props.accessibilityActions}
-        onAccessibilityAction={this.props.onAccessibilityAction}
-        accessibilityValue={this.props.accessibilityValue}
-        importantForAccessibility={this.props.importantForAccessibility}
-        accessibilityLiveRegion={this.props.accessibilityLiveRegion}
-        accessibilityViewIsModal={this.props.accessibilityViewIsModal}
-        accessibilityElementsHidden={this.props.accessibilityElementsHidden}
->>>>>>> fb/0.62-stable
         nativeID={this.props.nativeID}
         testID={this.props.testID}
         hitSlop={this.props.hitSlop}
@@ -186,16 +179,6 @@ class TouchableBounce extends React.Component<Props, State> {
           this.props.onPress !== undefined &&
           !this.props.disabled
         }
-<<<<<<< HEAD
-        onClick={this.touchableHandlePress}
-        onStartShouldSetResponder={this.touchableHandleStartShouldSetResponder}
-        onResponderTerminationRequest={
-          this.touchableHandleResponderTerminationRequest
-        }
-        onResponderGrant={this.touchableHandleResponderGrant}
-        onResponderMove={this.touchableHandleResponderMove}
-        onResponderRelease={this.touchableHandleResponderRelease}
-        onResponderTerminate={this.touchableHandleResponderTerminate}
         tooltip={this.props.tooltip} // TODO(macOS/win ISS#2323203)
         onMouseEnter={this.props.onMouseEnter} // [TODO(macOS ISS#2323203)
         onMouseLeave={this.props.onMouseLeave}
@@ -203,11 +186,8 @@ class TouchableBounce extends React.Component<Props, State> {
         onDragLeave={this.props.onDragLeave}
         onDrop={this.props.onDrop}
         draggedTypes={this.props.draggedTypes} // ]TODO(macOS ISS#2323203)
-      >
-=======
         ref={this.props.hostRef}
         {...eventHandlersWithoutBlurAndFocus}>
->>>>>>> fb/0.62-stable
         {this.props.children}
         {__DEV__ ? (
           <PressabilityDebugView color="orange" hitSlop={this.props.hitSlop} />

@@ -10,28 +10,11 @@
 
 'use strict';
 
-<<<<<<< HEAD
-import {requireNativeComponent} from 'react-native';
-import type {NativeOrDynamicColorType} from '../../Color/NativeOrDynamicColorType'; // TODO(macOS ISS#2323203)
-
-import type {
-  DirectEventHandler,
-  Int32,
-  WithDefault,
-} from '../../Types/CodegenTypes';
-import type {TextStyleProp} from '../../StyleSheet/StyleSheet';
-import type {ColorValue} from '../../StyleSheet/StyleSheetTypes';
-import type {NativeComponent} from '../../Renderer/shims/ReactNative';
-import type {ViewProps} from '../../Components/View/ViewPropTypes';
-
-type PickerItem = $ReadOnly<{|
-  label: string,
-  color?: ?Int32 | ?NativeOrDynamicColorType, // TODO(macOS ISS#2323203)
-=======
 import * as React from 'react';
 
 import codegenNativeCommands from '../../Utilities/codegenNativeCommands';
 import requireNativeComponent from '../../ReactNative/requireNativeComponent';
+import type {NativeOrDynamicColorType} from '../../Color/NativeOrDynamicColorType'; // TODO(macOS ISS#2323203)
 
 import type {
   DirectEventHandler,
@@ -45,8 +28,7 @@ import type {ViewProps} from '../../Components/View/ViewPropTypes';
 
 type PickerItem = $ReadOnly<{|
   label: string,
-  color?: ?Int32,
->>>>>>> fb/0.62-stable
+  color?: ?Int32 | ?NativeOrDynamicColorType, // TODO(macOS ISS#2323203)
 |}>;
 
 type PickerItemSelectEvent = $ReadOnly<{|
@@ -68,9 +50,6 @@ type NativeProps = $ReadOnly<{|
   onSelect?: DirectEventHandler<PickerItemSelectEvent>,
 |}>;
 
-<<<<<<< HEAD
-type ReactPicker = Class<NativeComponent<NativeProps>>;
-=======
 type NativeType = HostComponent<NativeProps>;
 
 interface NativeCommands {
@@ -83,12 +62,7 @@ interface NativeCommands {
 export const Commands: NativeCommands = codegenNativeCommands<NativeCommands>({
   supportedCommands: ['setNativeSelectedPosition'],
 });
->>>>>>> fb/0.62-stable
 
 export default (requireNativeComponent<NativeProps>(
   'AndroidDropdownPicker',
-<<<<<<< HEAD
-): any): ReactPicker);
-=======
 ): NativeType);
->>>>>>> fb/0.62-stable

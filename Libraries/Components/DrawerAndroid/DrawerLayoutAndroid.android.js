@@ -17,11 +17,8 @@ const StyleSheet = require('../../StyleSheet/StyleSheet');
 const View = require('../View/View');
 
 const dismissKeyboard = require('../../Utilities/dismissKeyboard');
-<<<<<<< HEAD
-=======
 const nullthrows = require('nullthrows');
 
->>>>>>> fb/0.62-stable
 import AndroidDrawerLayoutNativeComponent, {
   Commands,
 } from './AndroidDrawerLayoutNativeComponent';
@@ -167,13 +164,6 @@ class DrawerLayoutAndroid extends React.Component<Props, State> {
 
     return {Left: 'left', Right: 'right'};
   }
-<<<<<<< HEAD
-  static defaultProps = {
-    drawerBackgroundColor: 'white',
-  };
-
-  _nativeRef = React.createRef();
-=======
   static defaultProps: {|
     drawerBackgroundColor: 'white',
   |} = {
@@ -183,15 +173,10 @@ class DrawerLayoutAndroid extends React.Component<Props, State> {
   _nativeRef = React.createRef<
     React.ElementRef<typeof AndroidDrawerLayoutNativeComponent>,
   >();
->>>>>>> fb/0.62-stable
 
   state: State = {statusBarBackgroundColor: null};
 
-<<<<<<< HEAD
-  render() {
-=======
   render(): React.Node {
->>>>>>> fb/0.62-stable
     const {
       onDrawerStateChanged,
       renderNavigationView,

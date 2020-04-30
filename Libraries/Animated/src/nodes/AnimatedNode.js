@@ -161,10 +161,6 @@ class AnimatedNode {
       this.__nativeTag ?? NativeAnimatedHelper.generateNewNodeTag();
 
     if (this.__nativeTag == null) {
-<<<<<<< HEAD
-      const nativeTag: ?number = NativeAnimatedHelper.generateNewNodeTag();
-=======
->>>>>>> fb/0.62-stable
       this.__nativeTag = nativeTag;
       NativeAnimatedHelper.API.createAnimatedNode(
         nativeTag,

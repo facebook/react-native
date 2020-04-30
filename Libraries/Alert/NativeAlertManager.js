@@ -16,11 +16,7 @@ import * as TurboModuleRegistry from '../TurboModule/TurboModuleRegistry';
 export type Args = {|
   title?: string,
   message?: string,
-<<<<<<< HEAD
-  buttons?: Object, // TODO: have a better type
-=======
   buttons?: Array<Object>, // TODO: have a better type
->>>>>>> fb/0.62-stable
   type?: string,
   defaultValue?: string,
   cancelButtonKey?: string,

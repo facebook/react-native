@@ -20,31 +20,16 @@ import type {
 } from 'react-native/Libraries/Types/CodegenTypes';
 import codegenNativeCommands from 'react-native/Libraries/Utilities/codegenNativeCommands';
 import codegenNativeComponent from 'react-native/Libraries/Utilities/codegenNativeComponent';
-<<<<<<< HEAD
-=======
 import type {HostComponent} from 'react-native/Libraries/Renderer/shims/ReactNativeTypes';
->>>>>>> fb/0.62-stable
 import * as React from 'react';
 
 type DrawerStateEvent = $ReadOnly<{|
   drawerState: Int32,
 |}>;
-<<<<<<< HEAD
 
 type DrawerSlideEvent = $ReadOnly<{|
   offset: Float,
 |}>;
-
-interface NativeCommands {
-  +openDrawer: (viewRef: React.Ref<'AndroidDrawerLayout'>) => void;
-  +closeDrawer: (viewRef: React.Ref<'AndroidDrawerLayout'>) => void;
-}
-=======
-
-type DrawerSlideEvent = $ReadOnly<{|
-  offset: Float,
-|}>;
->>>>>>> fb/0.62-stable
 
 type NativeProps = $ReadOnly<{|
   ...ViewProps,
@@ -78,11 +63,7 @@ type NativeProps = $ReadOnly<{|
    * from the edge of the window.
    */
 
-<<<<<<< HEAD
-  drawerWidth?: ?Float,
-=======
   drawerWidth?: WithDefault<Float, null>,
->>>>>>> fb/0.62-stable
 
   /**
    * Specifies the lock mode of the drawer. The drawer can be locked in 3 states:
@@ -128,8 +109,6 @@ type NativeProps = $ReadOnly<{|
   statusBarBackgroundColor?: ?ColorValue,
 |}>;
 
-<<<<<<< HEAD
-=======
 type NativeType = HostComponent<NativeProps>;
 
 interface NativeCommands {
@@ -137,15 +116,10 @@ interface NativeCommands {
   +closeDrawer: (viewRef: React.ElementRef<NativeType>) => void;
 }
 
->>>>>>> fb/0.62-stable
 export const Commands: NativeCommands = codegenNativeCommands<NativeCommands>({
   supportedCommands: ['openDrawer', 'closeDrawer'],
 });
 
-<<<<<<< HEAD
-export default codegenNativeComponent<NativeProps>('AndroidDrawerLayout');
-=======
 export default (codegenNativeComponent<NativeProps>(
   'AndroidDrawerLayout',
 ): NativeType);
->>>>>>> fb/0.62-stable

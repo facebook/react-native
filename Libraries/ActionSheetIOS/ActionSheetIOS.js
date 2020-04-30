@@ -57,12 +57,6 @@ const ActionSheetIOS = {
     invariant(typeof callback === 'function', 'Must provide a valid callback');
     invariant(RCTActionSheetManager, "ActionSheetManager does't exist");
 
-<<<<<<< HEAD
-    const {tintColor, ...remainingOptions} = options;
-
-    RCTActionSheetManager.showActionSheetWithOptions(
-      {...remainingOptions, tintColor: processColor(tintColor)},
-=======
     const {tintColor, destructiveButtonIndex, ...remainingOptions} = options;
     let destructiveButtonIndices = null;
 
@@ -78,7 +72,6 @@ const ActionSheetIOS = {
         tintColor: processColor(tintColor),
         destructiveButtonIndices,
       },
->>>>>>> fb/0.62-stable
       callback,
     );
   },

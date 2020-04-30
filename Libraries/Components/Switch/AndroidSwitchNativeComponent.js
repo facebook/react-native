@@ -4,32 +4,14 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
-<<<<<<< HEAD
- * @flow
-=======
  * @flow strict-local
->>>>>>> fb/0.62-stable
  * @format
  */
 
 'use strict';
 
-<<<<<<< HEAD
-const {NativeComponent} = require('../../Renderer/shims/ReactNative');
-
-const requireNativeComponent = require('../../ReactNative/requireNativeComponent');
-
-import type {SyntheticEvent} from '../../Types/CoreEventTypes';
-import type {ViewProps} from '../View/ViewPropTypes';
-import type {NativeOrDynamicColorType} from '../../Color/NativeOrDynamicColorType'; // TODO(macOS ISS#2323203)
-
-type SwitchChangeEvent = SyntheticEvent<
-  $ReadOnly<{|
-    value: boolean,
-  |}>,
->;
-=======
 import * as React from 'react';
+import type {NativeOrDynamicColorType} from '../../Color/NativeOrDynamicColorType'; // TODO(macOS ISS#2323203)
 
 import type {
   WithDefault,
@@ -46,42 +28,20 @@ import type {ViewProps} from '../View/ViewPropTypes';
 type SwitchChangeEvent = $ReadOnly<{|
   value: boolean,
 |}>;
->>>>>>> fb/0.62-stable
 
 type NativeProps = $ReadOnly<{|
   ...ViewProps,
 
   // Props
-<<<<<<< HEAD
-  disabled?: ?boolean,
-  enabled?: ?boolean,
+  disabled?: WithDefault<boolean, false>,
+  enabled?: WithDefault<boolean, true>,
   thumbColor?: ?(string | NativeOrDynamicColorType), // TODO(macOS ISS#2323203)
   trackColorForFalse?: ?(string | NativeOrDynamicColorType), // TODO(macOS ISS#2323203)
   trackColorForTrue?: ?(string | NativeOrDynamicColorType), // TODO(macOS ISS#2323203)
-  value?: ?boolean,
-  on?: ?boolean,
-  thumbTintColor?: ?(string | NativeOrDynamicColorType), // TODO(macOS ISS#2323203)
-  trackTintColor?: ?(string | NativeOrDynamicColorType), // TODO(macOS ISS#2323203)
-
-  // Events
-  onChange?: ?(event: SwitchChangeEvent) => mixed,
-|}>;
-
-type SwitchNativeComponentType = Class<NativeComponent<NativeProps>>;
-
-module.exports = ((requireNativeComponent(
-  'AndroidSwitch',
-): any): SwitchNativeComponentType);
-=======
-  disabled?: WithDefault<boolean, false>,
-  enabled?: WithDefault<boolean, true>,
-  thumbColor?: ?ColorValue,
-  trackColorForFalse?: ?ColorValue,
-  trackColorForTrue?: ?ColorValue,
   value?: WithDefault<boolean, false>,
   on?: WithDefault<boolean, false>,
-  thumbTintColor?: ?ColorValue,
-  trackTintColor?: ?ColorValue,
+  thumbTintColor?: ?(string | NativeOrDynamicColorType), // TODO(macOS ISS#2323203)
+  trackTintColor?: ?(string | NativeOrDynamicColorType), // TODO(macOS ISS#2323203)
 
   // Events
   onChange?: BubblingEventHandler<SwitchChangeEvent>,
@@ -103,4 +63,3 @@ export const Commands: NativeCommands = codegenNativeCommands<NativeCommands>({
 export default (codegenNativeComponent<NativeProps>('AndroidSwitch', {
   interfaceOnly: true,
 }): NativeType);
->>>>>>> fb/0.62-stable

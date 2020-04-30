@@ -46,18 +46,12 @@ function blurField(textFieldID: ?number) {
  * noop if the text field was already focused
  */
 function focusTextInput(textFieldID: ?number) {
-<<<<<<< HEAD
-  if (currentlyFocusedID !== textFieldID && textFieldID !== null) {
-    currentlyFocusedID = textFieldID;
+  if (currentlyFocusedID !== textFieldID && textFieldID != null) {
+    focusField(textFieldID);
     if (
       Platform.OS === 'ios' ||
       Platform.OS === 'macos' /* TODO(macOS ISS#2323203) */
     ) {
-=======
-  if (currentlyFocusedID !== textFieldID && textFieldID != null) {
-    focusField(textFieldID);
-    if (Platform.OS === 'ios') {
->>>>>>> fb/0.62-stable
       UIManager.focus(textFieldID);
     } else if (Platform.OS === 'android') {
       UIManager.dispatchViewManagerCommand(
@@ -76,18 +70,12 @@ function focusTextInput(textFieldID: ?number) {
  * noop if it wasn't focused
  */
 function blurTextInput(textFieldID: ?number) {
-<<<<<<< HEAD
-  if (currentlyFocusedID === textFieldID && textFieldID !== null) {
-    currentlyFocusedID = null;
+  if (currentlyFocusedID === textFieldID && textFieldID != null) {
+    blurField(textFieldID);
     if (
       Platform.OS === 'ios' ||
       Platform.OS === 'macos' /* TODO(macOS ISS#2323203) */
     ) {
-=======
-  if (currentlyFocusedID === textFieldID && textFieldID != null) {
-    blurField(textFieldID);
-    if (Platform.OS === 'ios') {
->>>>>>> fb/0.62-stable
       UIManager.blur(textFieldID);
     } else if (Platform.OS === 'android') {
       UIManager.dispatchViewManagerCommand(

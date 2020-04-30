@@ -26,9 +26,6 @@ import requireNativeComponent from '../../ReactNative/requireNativeComponent';
 import codegenNativeCommands from '../../Utilities/codegenNativeCommands';
 import * as React from 'react';
 
-<<<<<<< HEAD
-const AndroidTextInputNativeComponent: string = requireNativeComponent(
-=======
 export type KeyboardType =
   // Cross Platform
   | 'default'
@@ -567,7 +564,6 @@ export const Commands: NativeCommands = codegenNativeCommands<NativeCommands>({
 });
 
 const AndroidTextInputNativeComponent: HostComponent<NativeProps> = requireNativeComponent<NativeProps>(
->>>>>>> fb/0.62-stable
   'AndroidTextInput',
 );
 

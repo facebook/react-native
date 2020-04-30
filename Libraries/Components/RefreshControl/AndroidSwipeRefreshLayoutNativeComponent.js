@@ -10,18 +10,12 @@
 
 'use strict';
 
-<<<<<<< HEAD
-import codegenNativeComponent from '../../Utilities/codegenNativeComponent';
-import {type NativeComponentType} from '../../Utilities/codegenNativeComponent';
-
-=======
 import * as React from 'react';
 
 import codegenNativeCommands from 'react-native/Libraries/Utilities/codegenNativeCommands';
 import codegenNativeComponent from '../../Utilities/codegenNativeComponent';
 import type {HostComponent} from '../../Renderer/shims/ReactNativeTypes';
 
->>>>>>> fb/0.62-stable
 import type {
   DirectEventHandler,
   Float,
@@ -37,11 +31,7 @@ type NativeProps = $ReadOnly<{|
   /**
    * Whether the pull to refresh functionality is enabled.
    */
-<<<<<<< HEAD
-  enabled?: WithDefault<boolean, false>,
-=======
   enabled?: WithDefault<boolean, true>,
->>>>>>> fb/0.62-stable
   /**
    * The colors (at least one) that will be used to draw the refresh indicator.
    */
@@ -78,11 +68,6 @@ type NativeProps = $ReadOnly<{|
   refreshing: boolean,
 |}>;
 
-<<<<<<< HEAD
-export default (codegenNativeComponent<NativeProps>(
-  'AndroidSwipeRefreshLayout',
-): NativeComponentType<NativeProps>);
-=======
 type NativeType = HostComponent<NativeProps>;
 
 interface NativeCommands {
@@ -99,4 +84,3 @@ export const Commands: NativeCommands = codegenNativeCommands<NativeCommands>({
 export default (codegenNativeComponent<NativeProps>(
   'AndroidSwipeRefreshLayout',
 ): NativeType);
->>>>>>> fb/0.62-stable

@@ -17,13 +17,9 @@ const dismissKeyboard = require('../../Utilities/dismissKeyboard');
 const invariant = require('invariant');
 
 import NativeKeyboardObserver from './NativeKeyboardObserver';
-<<<<<<< HEAD
-const KeyboardEventEmitter = new NativeEventEmitter(NativeKeyboardObserver);
-=======
 const KeyboardEventEmitter: NativeEventEmitter = new NativeEventEmitter(
   NativeKeyboardObserver,
 );
->>>>>>> fb/0.62-stable
 
 export type KeyboardEventName =
   | 'keyboardWillShow'
@@ -115,25 +111,7 @@ type KeyboardEventListener = (e: KeyboardEvent) => void;
  *```
  */
 
-<<<<<<< HEAD
-let Keyboard:
-  | NativeEventEmitter
-  | $TEMPORARY$object<{|
-      addListener: (
-        eventName: KeyboardEventName,
-        callback: KeyboardEventListener,
-      ) => $FlowFixMe,
-      dismiss: () => $FlowFixMe,
-      removeAllListeners: (eventName: KeyboardEventName) => $FlowFixMe,
-      removeListener: (
-        eventName: KeyboardEventName,
-        callback: KeyboardEventListener,
-      ) => $FlowFixMe,
-      scheduleLayoutAnimation: (event: KeyboardEvent) => $FlowFixMe,
-    |}> = {
-=======
 const Keyboard = {
->>>>>>> fb/0.62-stable
   /**
    * The `addListener` function connects a JavaScript function to an identified native
    * keyboard notification event.

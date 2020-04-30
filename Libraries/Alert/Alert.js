@@ -10,10 +10,7 @@
 
 'use strict';
 
-<<<<<<< HEAD
 import AlertMacOS from './AlertMacOS'; // TODO(macOS ISS#2323203)
-=======
->>>>>>> fb/0.62-stable
 import Platform from '../Utilities/Platform';
 import NativeDialogManagerAndroid, {
   type DialogOptions,
@@ -36,10 +33,7 @@ export type Buttons = Array<{
 type Options = {
   cancelable?: ?boolean,
   onDismiss?: ?() => void,
-<<<<<<< HEAD
-=======
   ...
->>>>>>> fb/0.62-stable
 };
 
 /**

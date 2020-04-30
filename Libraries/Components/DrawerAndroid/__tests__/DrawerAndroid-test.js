@@ -21,54 +21,6 @@ const View = require('../../View/View');
 const ReactNativeTestTools = require('../../../Utilities/ReactNativeTestTools');
 
 describe('<DrawerLayoutAndroid />', () => {
-<<<<<<< HEAD
-  it('should render as <DrawerLayoutAndroid> when mocked', () => {
-    const instance = render.create(
-      <DrawerLayoutAndroid
-        drawerWidth={300}
-        drawerPosition="left"
-        renderNavigationView={() => <View />}
-      />,
-    );
-    expect(instance).toMatchSnapshot();
-  });
-
-  it('should shallow render as <DrawerLayoutAndroid> when mocked', () => {
-    const output = render.shallow(
-      <DrawerLayoutAndroid
-        drawerWidth={300}
-        drawerPosition="left"
-        renderNavigationView={() => <View />}
-      />,
-    );
-    expect(output).toMatchSnapshot();
-  });
-
-  it('should shallow render as <DrawerLayoutAndroid> when not mocked', () => {
-    jest.dontMock('../DrawerLayoutAndroid');
-
-    const output = render.shallow(
-      <DrawerLayoutAndroid
-        drawerWidth={300}
-        drawerPosition="left"
-        renderNavigationView={() => <View />}
-      />,
-    );
-    expect(output).toMatchSnapshot();
-  });
-
-  it('should render as <DrawerLayoutAndroid> when not mocked', () => {
-    jest.dontMock('../DrawerLayoutAndroid');
-
-    const instance = render.create(
-      <DrawerLayoutAndroid
-        drawerWidth={300}
-        drawerPosition="left"
-        renderNavigationView={() => <View />}
-      />,
-    );
-    expect(instance).toMatchSnapshot();
-=======
   it('should render as expected', () => {
     ReactNativeTestTools.expectRendersMatchingSnapshot(
       'DrawerLayoutAndroid',
@@ -83,6 +35,5 @@ describe('<DrawerLayoutAndroid />', () => {
         jest.dontMock('../DrawerLayoutAndroid');
       },
     );
->>>>>>> fb/0.62-stable
   });
 });

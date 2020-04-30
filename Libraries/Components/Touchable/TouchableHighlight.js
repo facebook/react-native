@@ -299,11 +299,14 @@ class TouchableHighlight extends React.Component<Props, State> {
         accessibilityLabel={this.props.accessibilityLabel}
         accessibilityHint={this.props.accessibilityHint} // TODO(OSS Candidate ISS#2710739)
         accessibilityRole={this.props.accessibilityRole}
-<<<<<<< HEAD
-        accessibilityStates={this.props.accessibilityStates}
         accessibilityState={this.props.accessibilityState}
+        accessibilityValue={this.props.accessibilityValue}
         accessibilityActions={this.props.accessibilityActions}
         onAccessibilityAction={this.props.onAccessibilityAction}
+        importantForAccessibility={this.props.importantForAccessibility}
+        accessibilityLiveRegion={this.props.accessibilityLiveRegion}
+        accessibilityViewIsModal={this.props.accessibilityViewIsModal}
+        accessibilityElementsHidden={this.props.accessibilityElementsHidden}
         acceptsKeyboardFocus={
           (this.props.acceptsKeyboardFocus === undefined ||
             this.props.acceptsKeyboardFocus) &&
@@ -315,16 +318,6 @@ class TouchableHighlight extends React.Component<Props, State> {
           !this.props.disabled
         } // TODO(macOS/win ISS#2323203)
         tabIndex={this.props.tabIndex} // TODO(win ISS#2323203)
-=======
-        accessibilityState={this.props.accessibilityState}
-        accessibilityValue={this.props.accessibilityValue}
-        accessibilityActions={this.props.accessibilityActions}
-        onAccessibilityAction={this.props.onAccessibilityAction}
-        importantForAccessibility={this.props.importantForAccessibility}
-        accessibilityLiveRegion={this.props.accessibilityLiveRegion}
-        accessibilityViewIsModal={this.props.accessibilityViewIsModal}
-        accessibilityElementsHidden={this.props.accessibilityElementsHidden}
->>>>>>> fb/0.62-stable
         style={StyleSheet.compose(
           this.props.style,
           this.state.extraStyles?.underlay,
@@ -339,17 +332,6 @@ class TouchableHighlight extends React.Component<Props, State> {
         nextFocusUp={this.props.nextFocusUp}
         focusable={
           this.props.focusable !== false && this.props.onPress !== undefined
-<<<<<<< HEAD
-        }
-        onClick={this.touchableHandlePress}
-        onStartShouldSetResponder={this.touchableHandleStartShouldSetResponder}
-        onResponderTerminationRequest={
-          this.touchableHandleResponderTerminationRequest
-        }
-        onResponderGrant={this.touchableHandleResponderGrant}
-        onResponderMove={this.touchableHandleResponderMove}
-        onResponderRelease={this.touchableHandleResponderRelease}
-        onResponderTerminate={this.touchableHandleResponderTerminate}
         tooltip={this.props.tooltip} // TODO(macOS/win ISS#2323203)
         onMouseEnter={this.props.onMouseEnter} // [TODO(macOS/win ISS#2323203)
         onMouseLeave={this.props.onMouseLeave}
@@ -357,9 +339,6 @@ class TouchableHighlight extends React.Component<Props, State> {
         onDragLeave={this.props.onDragLeave}
         onDrop={this.props.onDrop}
         draggedTypes={this.props.draggedTypes} // ]TODO(macOS/win ISS#2323203)
-=======
-        }
->>>>>>> fb/0.62-stable
         nativeID={this.props.nativeID}
         testID={this.props.testID}
         ref={this.props.hostRef}

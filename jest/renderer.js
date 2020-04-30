@@ -23,13 +23,10 @@ export const shallow = (Component: React.Element<any>): any => {
   return renderer.render(<Wrapper />);
 };
 
-<<<<<<< HEAD
-=======
 export const shallowRender = (Component: React.Element<any>): any => {
   return renderer.render(Component);
 };
 
->>>>>>> fb/0.62-stable
 export const create = (Component: React.Element<any>): any => {
   return TestRenderer.create(Component);
 };

@@ -234,13 +234,16 @@ class TouchableOpacity extends React.Component<Props, State> {
       <Animated.View
         accessible={this.props.accessible !== false}
         accessibilityLabel={this.props.accessibilityLabel}
-        accessibilityHint={this.props.accessibilityHint} // TODO(OSS Candidate ISS#2710739)
+        accessibilityHint={this.props.accessibilityHint}
         accessibilityRole={this.props.accessibilityRole}
-<<<<<<< HEAD
-        accessibilityStates={this.props.accessibilityStates}
         accessibilityState={this.props.accessibilityState}
         accessibilityActions={this.props.accessibilityActions}
         onAccessibilityAction={this.props.onAccessibilityAction}
+        accessibilityValue={this.props.accessibilityValue}
+        importantForAccessibility={this.props.importantForAccessibility}
+        accessibilityLiveRegion={this.props.accessibilityLiveRegion}
+        accessibilityViewIsModal={this.props.accessibilityViewIsModal}
+        accessibilityElementsHidden={this.props.accessibilityElementsHidden}
         acceptsKeyboardFocus={
           (this.props.acceptsKeyboardFocus === undefined ||
             this.props.acceptsKeyboardFocus) &&
@@ -252,16 +255,6 @@ class TouchableOpacity extends React.Component<Props, State> {
           !this.props.disabled
         } // TODO(macOS ISS#2323203)
         tabIndex={this.props.tabIndex} // TODO(win ISS#2323203)
-=======
-        accessibilityState={this.props.accessibilityState}
-        accessibilityActions={this.props.accessibilityActions}
-        onAccessibilityAction={this.props.onAccessibilityAction}
-        accessibilityValue={this.props.accessibilityValue}
-        importantForAccessibility={this.props.importantForAccessibility}
-        accessibilityLiveRegion={this.props.accessibilityLiveRegion}
-        accessibilityViewIsModal={this.props.accessibilityViewIsModal}
-        accessibilityElementsHidden={this.props.accessibilityElementsHidden}
->>>>>>> fb/0.62-stable
         style={[this.props.style, {opacity: this.state.anim}]}
         nativeID={this.props.nativeID}
         testID={this.props.testID}
@@ -276,15 +269,6 @@ class TouchableOpacity extends React.Component<Props, State> {
         focusable={
           this.props.focusable !== false && this.props.onPress !== undefined
         }
-<<<<<<< HEAD
-        onClick={this.touchableHandlePress}
-        onStartShouldSetResponder={this.touchableHandleStartShouldSetResponder}
-        onResponderTerminationRequest={
-          this.touchableHandleResponderTerminationRequest
-        }
-        onResponderGrant={this.touchableHandleResponderGrant}
-        onResponderMove={this.touchableHandleResponderMove}
-        onResponderRelease={this.touchableHandleResponderRelease}
         tooltip={this.props.tooltip} // TODO(macOS/win ISS#2323203)
         onMouseEnter={this.props.onMouseEnter} // [TODO(macOS ISS#2323203)
         onMouseLeave={this.props.onMouseLeave}
@@ -292,11 +276,8 @@ class TouchableOpacity extends React.Component<Props, State> {
         onDragLeave={this.props.onDragLeave}
         onDrop={this.props.onDrop}
         draggedTypes={this.props.draggedTypes} // ]TODO(macOS ISS#2323203)
-        onResponderTerminate={this.touchableHandleResponderTerminate}>
-=======
         ref={this.props.hostRef}
         {...eventHandlersWithoutBlurAndFocus}>
->>>>>>> fb/0.62-stable
         {this.props.children}
         {__DEV__ ? (
           <PressabilityDebugView color="cyan" hitSlop={this.props.hitSlop} />

@@ -25,13 +25,13 @@ const {
 // Keep this list in sync with RNTesterIntegrationTests.m
 const TESTS = [
   require('./IntegrationTestHarnessTest'),
-  // require('./TimersTest'),
+  require('./TimersTest'),
   require('./AsyncStorageTest'),
-  // require('./LayoutEventsTest'),
+  require('./LayoutEventsTest'),
   require('./AppEventsTest'),
   require('./SimpleSnapshotTest'),
-  // require('./ImageCachePolicyTest'),
-  // require('./ImageSnapshotTest'),
+  require('./ImageCachePolicyTest'),
+  require('./ImageSnapshotTest'),
   require('./PromiseTest'),
   require('./SyncMethodTest'),
   require('./WebSocketTest'),

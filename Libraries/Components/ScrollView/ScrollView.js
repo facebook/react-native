@@ -28,10 +28,6 @@ const requireNativeComponent = require('../../ReactNative/requireNativeComponent
 const resolveAssetSource = require('../../Image/resolveAssetSource');
 const splitLayoutProps = require('../../StyleSheet/splitLayoutProps');
 
-<<<<<<< HEAD
-import type {NativeMethodsMixinType} from '../../Renderer/shims/ReactNativeTypes';
-=======
->>>>>>> fb/0.62-stable
 import type {EdgeInsetsProp} from '../../StyleSheet/EdgeInsetsPropType';
 import type {PointProp} from '../../StyleSheet/PointPropType';
 import type {ViewStyleProp} from '../../StyleSheet/StyleSheet';
@@ -41,11 +37,6 @@ import type {
   ScrollEvent,
   LayoutEvent,
 } from '../../Types/CoreEventTypes';
-<<<<<<< HEAD
-import type {State as ScrollResponderState} from '../ScrollResponder';
-import type {ViewProps} from '../View/ViewPropTypes';
-import type {Props as ScrollViewStickyHeaderProps} from './ScrollViewStickyHeader';
-=======
 import type {HostComponent} from '../../Renderer/shims/ReactNativeTypes';
 import type {State as ScrollResponderState} from '../ScrollResponder';
 import type {ViewProps} from '../View/ViewPropTypes';
@@ -55,7 +46,6 @@ import ScrollViewNativeComponent from './ScrollViewNativeComponent';
 import ScrollContentViewNativeComponent from './ScrollContentViewNativeComponent';
 import AndroidHorizontalScrollViewNativeComponent from './AndroidHorizontalScrollViewNativeComponent';
 import AndroidHorizontalScrollContentViewNativeComponent from './AndroidHorizontalScrollContentViewNativeComponent';
->>>>>>> fb/0.62-stable
 
 let AndroidScrollView;
 let AndroidHorizontalScrollContentView;
@@ -393,16 +383,10 @@ type VRProps = $ReadOnly<{|
   scrollBarThumbImage?: ?($ReadOnly<{||}> | number), // Opaque type returned by import IMAGE from './image.jpg'
 |}>;
 
-<<<<<<< HEAD
-type StickyHeaderComponentType = React.ComponentType<ScrollViewStickyHeaderProps> & {
-  setNextHeaderY: number => void,
-};
-=======
 type StickyHeaderComponentType = React.AbstractComponent<
   ScrollViewStickyHeaderProps,
   $ReadOnly<{setNextHeaderY: number => void, ...}>,
 >;
->>>>>>> fb/0.62-stable
 
 export type Props = $ReadOnly<{|
   ...ViewProps,
@@ -730,14 +714,6 @@ class ScrollView extends React.Component<Props, State> {
   _scrollAnimatedValue: AnimatedImplementation.Value = new AnimatedImplementation.Value(
     0,
   );
-<<<<<<< HEAD
-  _scrollAnimatedValueAttachment: ?{detach: () => void} = null;
-  _stickyHeaderRefs: Map<string, StickyHeaderComponentType> = new Map();
-  _headerLayoutYs: Map<string, number> = new Map();
-
-  state: State = {
-    contentKey: 1, // TODO(macOS ISS#2323203)
-=======
   _scrollAnimatedValueAttachment: ?{detach: () => void, ...} = null;
   _stickyHeaderRefs: Map<
     string,
@@ -746,7 +722,7 @@ class ScrollView extends React.Component<Props, State> {
   _headerLayoutYs: Map<string, number> = new Map();
 
   state: State = {
->>>>>>> fb/0.62-stable
+    contentKey: 1, // TODO(macOS ISS#2323203)
     layoutHeight: null,
     ...ScrollResponder.Mixin.scrollResponderMixinGetInitialState(),
   };
@@ -911,14 +887,10 @@ class ScrollView extends React.Component<Props, State> {
     }
   }
 
-<<<<<<< HEAD
-  _setStickyHeaderRef(key: string, ref: ?StickyHeaderComponentType) {
-=======
   _setStickyHeaderRef(
     key: string,
     ref: ?React.ElementRef<StickyHeaderComponentType>,
   ) {
->>>>>>> fb/0.62-stable
     if (ref) {
       this._stickyHeaderRefs.set(key, ref);
     } else {
@@ -1151,7 +1123,6 @@ class ScrollView extends React.Component<Props, State> {
           return (
             <StickyHeaderComponent
               key={key}
-              // $FlowFixMe - inexact mixed is incompatible with exact React.Element
               ref={ref => this._setStickyHeaderRef(key, ref)}
               nextHeaderLayoutY={this._headerLayoutYs.get(
                 this._getKeyForIndex(nextIndex, childArray),
@@ -1321,10 +1292,6 @@ class ScrollView extends React.Component<Props, State> {
           <ScrollViewClass
             {...props}
             style={[baseStyle, inner]}
-<<<<<<< HEAD
-            // $FlowFixMe
-=======
->>>>>>> fb/0.62-stable
             ref={this._setScrollViewRef}>
             {contentContainer}
           </ScrollViewClass>,

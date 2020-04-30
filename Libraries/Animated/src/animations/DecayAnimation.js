@@ -54,20 +54,12 @@ class DecayAnimation extends Animation {
     this.__iterations = config.iterations ?? 1;
   }
 
-<<<<<<< HEAD
-  __getNativeAnimationConfig(): $TEMPORARY$object<{|
-=======
   __getNativeAnimationConfig(): {|
->>>>>>> fb/0.62-stable
     deceleration: number,
     iterations: number,
     type: $TEMPORARY$string<'decay'>,
     velocity: number,
-<<<<<<< HEAD
-  |}> {
-=======
   |} {
->>>>>>> fb/0.62-stable
     return {
       type: 'decay',
       deceleration: this._deceleration,

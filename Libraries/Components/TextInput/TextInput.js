@@ -11,11 +11,6 @@
 'use strict';
 
 const DeprecatedTextInputPropTypes = require('../../DeprecatedPropTypes/DeprecatedTextInputPropTypes');
-<<<<<<< HEAD
-const DocumentSelectionState = require('../../vendor/document/selection/DocumentSelectionState');
-const NativeMethodsMixin = require('../../Renderer/shims/NativeMethodsMixin');
-=======
->>>>>>> fb/0.62-stable
 const Platform = require('../../Utilities/Platform');
 const React = require('react');
 const ReactNative = require('../../Renderer/shims/ReactNative');
@@ -46,16 +41,11 @@ let RCTMultilineTextInputView;
 let RCTSinglelineTextInputView;
 
 if (Platform.OS === 'android') {
-<<<<<<< HEAD
-  AndroidTextInput = requireNativeComponent('AndroidTextInput');
+  AndroidTextInput = require('./AndroidTextInputNativeComponent').default;
 } else if (
   Platform.OS === 'ios' ||
   Platform.OS === 'macos' /* TODO(macOS ISS#2323203) */
 ) {
-=======
-  AndroidTextInput = require('./AndroidTextInputNativeComponent').default;
-} else if (Platform.OS === 'ios') {
->>>>>>> fb/0.62-stable
   RCTMultilineTextInputView = requireNativeComponent(
     'RCTMultilineTextInputView',
   );
@@ -246,26 +236,6 @@ type IOSProps = $ReadOnly<{|
   enablesReturnKeyAutomatically?: ?boolean,
 
   /**
-<<<<<<< HEAD
-   * An instance of `DocumentSelectionState`, this is some state that is responsible for
-   * maintaining selection information for a document.
-   *
-   * Some functionality that can be performed with this instance is:
-   *
-   * - `blur()`
-   * - `focus()`
-   * - `update()`
-   *
-   * > You can reference `DocumentSelectionState` in
-   * > [`vendor/document/selection/DocumentSelectionState.js`](https://github.com/facebook/react-native/blob/master/Libraries/vendor/document/selection/DocumentSelectionState.js)
-   *
-   * @platform ios
-   */
-  selectionState?: ?DocumentSelectionState,
-
-  /**
-=======
->>>>>>> fb/0.62-stable
    * When the clear button should appear on the right side of the text view.
    * This property is supported only for single-line TextInput component.
    * @platform ios
@@ -317,14 +287,11 @@ type IOSProps = $ReadOnly<{|
 
   PasswordRules?: ?PasswordRules,
 
-<<<<<<< HEAD
-=======
   /*
    * @platform ios
    */
   rejectResponderTermination?: ?boolean,
 
->>>>>>> fb/0.62-stable
   /**
    * If `false`, scrolling of the text view will be disabled.
    * The default value is `true`. Does only work with 'multiline={true}'.
@@ -598,11 +565,6 @@ export type Props = $ReadOnly<{|
    */
   onContentSizeChange?: ?(e: ContentSizeChangeEvent) => mixed,
 
-<<<<<<< HEAD
-  onTextInput?: ?(e: TextInputEvent) => mixed,
-
-=======
->>>>>>> fb/0.62-stable
   /**
    * Callback that is called when text input ends.
    */
@@ -696,10 +658,6 @@ export type Props = $ReadOnly<{|
    * multiline fields. Note that for multiline fields, setting `blurOnSubmit`
    * to `true` means that pressing return will blur the field and trigger the
    * `onSubmitEditing` event instead of inserting a newline into the field.
-<<<<<<< HEAD
-   * Ignored on Android, if Hardware Keyboard is connected. // TODO(android ISS)
-=======
->>>>>>> fb/0.62-stable
    */
   blurOnSubmit?: ?boolean,
 
@@ -922,60 +880,19 @@ function InternalTextInput(props: Props): React.Node {
     selection,
   );
 
-<<<<<<< HEAD
-const TextInput = createReactClass({
-  displayName: 'TextInput',
-  statics: {
-    State: {
-      currentlyFocusedField: TextInputState.currentlyFocusedField,
-      focusTextInput: TextInputState.focusTextInput,
-      blurTextInput: TextInputState.blurTextInput,
-    },
-  },
-  propTypes: DeprecatedTextInputPropTypes,
-  getDefaultProps() {
-    return {
-      allowFontScaling: true,
-      rejectResponderTermination: true,
-      underlineColorAndroid: 'transparent',
-    };
-  },
-  /**
-   * `NativeMethodsMixin` will look for this when invoking `setNativeProps`. We
-   * make `this` look like an actual native component class.
-   */
-  mixins: [NativeMethodsMixin],
-
-  /**
-   * Returns `true` if the input is currently focused; `false` otherwise.
-   */
-  isFocused: function(): boolean {
-    return (
-      TextInputState.currentlyFocusedField() ===
-      ReactNative.findNodeHandle(this._inputRef)
-    );
-  },
-
   /**
    * Returns the native `TextView` node.
    */
   getTextViewHandle: function(): any {
     // [TODO(OSS Candidate ISS#2710739)
-    return ReactNative.findNodeHandle(this._inputRef);
+    return ReactNative.findNodeHandle(this._setNativeRef);
   }, // ]TODO(OSS Candidate ISS#2710739)
 
-  _inputRef: (undefined: any),
-  _focusSubscription: (undefined: ?Function),
-  _lastNativeText: (undefined: ?string),
-  _lastNativeSelection: (undefined: ?Selection),
-  _rafId: (null: ?AnimationFrameID),
-=======
   // This is necessary in case native updates the text and JS decides
   // that the update should be ignored and we should stick with the value
   // that we have in JS.
   useEffect(() => {
     const nativeUpdate = {};
->>>>>>> fb/0.62-stable
 
     if (lastNativeText !== props.value && typeof props.value === 'string') {
       nativeUpdate.text = props.value;
@@ -1019,21 +936,9 @@ const TextInput = createReactClass({
     };
   }, [inputRef]);
 
-<<<<<<< HEAD
-  render: function() {
-    let textInput;
-    if (Platform.OS === 'ios' || Platform.OS === 'macos') {
-      // TODO(macOS ISS#2323203)
-      textInput = UIManager.getViewManagerConfig('RCTVirtualText')
-        ? this._renderIOS()
-        : this._renderIOSLegacy();
-    } else if (Platform.OS === 'android') {
-      textInput = this._renderAndroid();
-=======
   function clear(): void {
     if (inputRef.current != null) {
       inputRef.current.setNativeProps({text: ''});
->>>>>>> fb/0.62-stable
     }
   }
 
@@ -1120,28 +1025,8 @@ const TextInput = createReactClass({
     setLastNativeText(text);
   };
 
-<<<<<<< HEAD
-    return (
-      <TouchableWithoutFeedback
-        onLayout={props.onLayout}
-        onPress={this._onPress}
-        rejectResponderTermination={true}
-        accessible={props.accessible}
-        accessibilityLabel={props.accessibilityLabel}
-        accessibilityHint={props.accessibilityHint} // TODO(macOS ISS#2323203)
-        accessibilityRole={props.accessibilityRole}
-        accessibilityStates={props.accessibilityStates}
-        accessibilityState={props.accessibilityState}
-        nativeID={this.props.nativeID}
-        testID={props.testID}>
-        {textContainer}
-      </TouchableWithoutFeedback>
-    );
-  },
-=======
   const _onSelectionChange = (event: SelectionChangeEvent) => {
     props.onSelectionChange && props.onSelectionChange(event);
->>>>>>> fb/0.62-stable
 
     if (!inputRef.current) {
       // calling `props.onSelectionChange`
@@ -1179,7 +1064,7 @@ const TextInput = createReactClass({
     // This is a hack to let Flow know we want an exact object
   |} = {...null};
 
-  if (Platform.OS === 'ios') {
+  if (Platform.OS === 'ios' || Platform.OS === 'macos' /* TODO(macOS ISS#2323203) */) {
     const RCTTextInputView = props.multiline
       ? RCTMultilineTextInputView
       : RCTSinglelineTextInputView;
@@ -1208,36 +1093,10 @@ const TextInput = createReactClass({
         text={_getText()}
       />
     );
-<<<<<<< HEAD
-
-    return (
-      <TouchableWithoutFeedback
-        onLayout={props.onLayout}
-        onPress={this._onPress}
-        rejectResponderTermination={props.rejectResponderTermination}
-        accessible={props.accessible}
-        accessibilityLabel={props.accessibilityLabel}
-        accessibilityRole={props.accessibilityRole}
-        accessibilityStates={props.accessibilityStates}
-        accessibilityState={props.accessibilityState}
-        nativeID={this.props.nativeID}
-        testID={props.testID}>
-        {textContainer}
-      </TouchableWithoutFeedback>
-    );
-  },
-
-  _renderAndroid: function() {
-    const props = Object.assign({}, this.props);
-    props.style = [this.props.style];
-    props.autoCapitalize = props.autoCapitalize || 'sentences';
-    let children = this.props.children;
-=======
   } else if (Platform.OS === 'android') {
     const style = [props.style];
     const autoCapitalize = props.autoCapitalize || 'sentences';
     let children = props.children;
->>>>>>> fb/0.62-stable
     let childCount = 0;
     React.Children.forEach(children, () => ++childCount);
     invariant(
@@ -1274,28 +1133,16 @@ const TextInput = createReactClass({
     <TextAncestor.Provider value={true}>
       <TouchableWithoutFeedback
         onLayout={props.onLayout}
-<<<<<<< HEAD
-        onPress={this._onPress}
-        accessible={this.props.accessible}
-        accessibilityLabel={this.props.accessibilityLabel}
-        accessibilityRole={this.props.accessibilityRole}
-        accessibilityHint={this.props.accessibilityHint} // TODO(macOS ISS#2323203)
-        accessibilityStates={this.props.accessibilityStates}
-        accessibilityState={this.props.accessibilityState}
-        nativeID={this.props.nativeID}
-        testID={this.props.testID}>
-        {textContainer}
-=======
         onPress={_onPress}
         accessible={props.accessible}
         accessibilityLabel={props.accessibilityLabel}
         accessibilityRole={props.accessibilityRole}
+        accessibilityHint={this.props.accessibilityHint} // TODO(macOS ISS#2323203)
         accessibilityState={props.accessibilityState}
         nativeID={props.nativeID}
         testID={props.testID}
         {...additionalTouchableProps}>
         {textInput}
->>>>>>> fb/0.62-stable
       </TouchableWithoutFeedback>
     </TextAncestor.Provider>
   );

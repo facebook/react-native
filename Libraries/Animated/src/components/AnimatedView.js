@@ -14,9 +14,6 @@ const View = require('../../../Components/View/View');
 
 const createAnimatedComponent = require('../createAnimatedComponent');
 
-<<<<<<< HEAD
-module.exports = (createAnimatedComponent(View): $FlowFixMe);
-=======
 const React = require('react');
 
 import type {AnimatedComponentType} from '../createAnimatedComponent';
@@ -25,4 +22,3 @@ module.exports = (createAnimatedComponent(View): AnimatedComponentType<
   React.ElementConfig<typeof View>,
   React.ElementRef<typeof View>,
 >);
->>>>>>> fb/0.62-stable

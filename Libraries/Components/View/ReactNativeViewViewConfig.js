@@ -10,22 +10,13 @@
 
 'use strict';
 import ReactNativeViewViewConfigAndroid from './ReactNativeViewViewConfigAndroid';
-<<<<<<< HEAD
-import ReactNativeViewViewConfigMacOS from './ReactNativeViewViewConfigMacOS'; // TODO(macOS ISS#2323203)
-=======
->>>>>>> fb/0.62-stable
 
 const ReactNativeViewConfig = {
   uiViewClassName: 'RCTView',
   baseModuleName: null,
   Manager: 'ViewManager',
-<<<<<<< HEAD
-  Commands: ({}: $TEMPORARY$object<{||}>),
-  Constants: ({}: $TEMPORARY$object<{||}>),
-=======
   Commands: ({}: {...}),
   Constants: ({}: {...}),
->>>>>>> fb/0.62-stable
   bubblingEventTypes: {
     ...ReactNativeViewViewConfigAndroid.bubblingEventTypes,
     topBlur: {
@@ -97,10 +88,6 @@ const ReactNativeViewConfig = {
   },
   directEventTypes: {
     ...ReactNativeViewViewConfigAndroid.directEventTypes,
-<<<<<<< HEAD
-    ...ReactNativeViewViewConfigMacOS.directEventTypes, // TODO(macOS ISS#2323203)
-=======
->>>>>>> fb/0.62-stable
     topAccessibilityAction: {
       registrationName: 'onAccessibilityAction',
     },
@@ -127,10 +114,6 @@ const ReactNativeViewConfig = {
   },
   validAttributes: {
     ...ReactNativeViewViewConfigAndroid.validAttributes,
-<<<<<<< HEAD
-    ...ReactNativeViewViewConfigMacOS.validAttributes, // TODO(macOS ISS#2323203)
-=======
->>>>>>> fb/0.62-stable
     accessibilityActions: true,
     accessibilityElementsHidden: true,
     accessibilityHint: true,
@@ -138,14 +121,9 @@ const ReactNativeViewConfig = {
     accessibilityLabel: true,
     accessibilityLiveRegion: true,
     accessibilityRole: true,
-<<<<<<< HEAD
-    accessibilityStates: true,
-    accessibilityState: true,
-=======
     accessibilityStates: true, // TODO: Can be removed after next release
     accessibilityState: true,
     accessibilityValue: true,
->>>>>>> fb/0.62-stable
     accessibilityViewIsModal: true,
     accessible: true,
     alignContent: true,

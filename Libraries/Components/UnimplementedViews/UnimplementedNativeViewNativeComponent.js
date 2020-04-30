@@ -5,11 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @format
-<<<<<<< HEAD
- * @flow
-=======
  * @flow strict-local
->>>>>>> fb/0.62-stable
  */
 
 'use strict';
@@ -18,11 +14,7 @@ import type {WithDefault} from '../../Types/CodegenTypes';
 import type {ViewProps} from '../View/ViewPropTypes';
 
 import codegenNativeComponent from '../../Utilities/codegenNativeComponent';
-<<<<<<< HEAD
-import {type NativeComponentType} from '../../Utilities/codegenNativeComponent';
-=======
 import type {HostComponent} from '../../Renderer/shims/ReactNativeTypes';
->>>>>>> fb/0.62-stable
 
 type NativeProps = $ReadOnly<{|
   ...ViewProps,
@@ -33,8 +25,4 @@ type NativeProps = $ReadOnly<{|
 // Do not require this file in paper builds
 export default (codegenNativeComponent<NativeProps>(
   'UnimplementedNativeView',
-<<<<<<< HEAD
-): NativeComponentType<NativeProps>);
-=======
 ): HostComponent<NativeProps>);
->>>>>>> fb/0.62-stable

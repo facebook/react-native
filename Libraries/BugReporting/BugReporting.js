@@ -125,10 +125,6 @@ class BugReporting {
     for (const [key, callback] of BugReporting._fileSources) {
       fileData[key] = callback();
     }
-<<<<<<< HEAD
-    infoLog('BugReporting extraData:', extraData);
-=======
->>>>>>> fb/0.62-stable
 
     if (NativeBugReporting != null && NativeBugReporting.setExtraData != null) {
       NativeBugReporting.setExtraData(extraData, fileData);

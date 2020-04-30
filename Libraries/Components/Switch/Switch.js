@@ -11,20 +11,10 @@
 
 'use strict';
 
-<<<<<<< HEAD
-const AndroidSwitchNativeComponent = require('./AndroidSwitchNativeComponent');
-=======
->>>>>>> fb/0.62-stable
 const Platform = require('../../Utilities/Platform');
 const React = require('react');
 const StyleSheet = require('../../StyleSheet/StyleSheet');
 
-<<<<<<< HEAD
-import type {ColorValue} from '../../StyleSheet/StyleSheetTypes';
-import type {SyntheticEvent} from '../../Types/CoreEventTypes';
-import type {ViewProps} from '../View/ViewPropTypes';
-import SwitchNativeComponent from './SwitchNativeComponent';
-=======
 import AndroidSwitchNativeComponent, {
   Commands as AndroidSwitchCommands,
 } from './AndroidSwitchNativeComponent';
@@ -35,7 +25,6 @@ import SwitchNativeComponent, {
 import type {ColorValue} from '../../StyleSheet/StyleSheetTypes';
 import type {SyntheticEvent} from '../../Types/CoreEventTypes';
 import type {ViewProps} from '../View/ViewPropTypes';
->>>>>>> fb/0.62-stable
 
 type SwitchChangeEvent = SyntheticEvent<
   $ReadOnly<{|
@@ -109,10 +98,7 @@ class Switch extends React.Component<Props> {
   _nativeSwitchRef: ?React.ElementRef<
     typeof SwitchNativeComponent | typeof AndroidSwitchNativeComponent,
   >;
-<<<<<<< HEAD
-=======
   _lastNativeValue: ?boolean;
->>>>>>> fb/0.62-stable
 
   render(): React.Node {
     const {
@@ -175,11 +161,7 @@ class Switch extends React.Component<Props> {
         <AndroidSwitchNativeComponent
           {...props}
           {...platformProps}
-<<<<<<< HEAD
-          accessibilityRole={props.accessibilityRole ?? 'button'}
-=======
           accessibilityRole={props.accessibilityRole ?? 'switch'}
->>>>>>> fb/0.62-stable
           onChange={this._handleChange}
           onResponderTerminationRequest={returnsFalse}
           onStartShouldSetResponder={returnsTrue}

@@ -933,10 +933,7 @@ const Touchable = {
   }: {
     color: string | number,
     hitSlop: EdgeInsetsProp,
-<<<<<<< HEAD
-=======
     ...
->>>>>>> fb/0.62-stable
   }): null | React.Node => {
     if (!Touchable.TOUCH_TARGET_DEBUG) {
       return null;

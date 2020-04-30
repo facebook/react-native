@@ -12,11 +12,6 @@
 
 const Platform = require('../../Utilities/Platform');
 const React = require('react');
-<<<<<<< HEAD
-
-const nullthrows = require('nullthrows');
-=======
->>>>>>> fb/0.62-stable
 
 import type {ColorValue} from '../../StyleSheet/StyleSheetTypes';
 import type {ViewProps} from '../View/ViewPropTypes';

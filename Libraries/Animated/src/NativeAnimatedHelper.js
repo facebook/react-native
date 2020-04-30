@@ -7,10 +7,7 @@
  * @flow strict-local
  * @format
  */
-<<<<<<< HEAD
-=======
 
->>>>>>> fb/0.62-stable
 'use strict';
 
 import NativeEventEmitter from '../../EventEmitter/NativeEventEmitter';
@@ -50,21 +47,6 @@ const API = {
     }
     queue.length = 0;
   },
-<<<<<<< HEAD
-  createAnimatedNode: function(tag: ?number, config: AnimatedNodeConfig): void {
-    invariant(NativeAnimatedModule, 'Native animated module is not available');
-    NativeAnimatedModule.createAnimatedNode(tag, config);
-  },
-  startListeningToAnimatedNodeValue: function(tag: ?number) {
-    invariant(NativeAnimatedModule, 'Native animated module is not available');
-    NativeAnimatedModule.startListeningToAnimatedNodeValue(tag);
-  },
-  stopListeningToAnimatedNodeValue: function(tag: ?number) {
-    invariant(NativeAnimatedModule, 'Native animated module is not available');
-    NativeAnimatedModule.stopListeningToAnimatedNodeValue(tag);
-  },
-  connectAnimatedNodes: function(parentTag: ?number, childTag: ?number): void {
-=======
   createAnimatedNode: function(tag: number, config: AnimatedNodeConfig): void {
     invariant(NativeAnimatedModule, 'Native animated module is not available');
     NativeAnimatedModule.createAnimatedNode(tag, config);
@@ -78,7 +60,6 @@ const API = {
     NativeAnimatedModule.stopListeningToAnimatedNodeValue(tag);
   },
   connectAnimatedNodes: function(parentTag: number, childTag: number): void {
->>>>>>> fb/0.62-stable
     invariant(NativeAnimatedModule, 'Native animated module is not available');
     if (queueConnections) {
       queue.push([parentTag, childTag]);
@@ -86,25 +67,13 @@ const API = {
     }
     NativeAnimatedModule.connectAnimatedNodes(parentTag, childTag);
   },
-<<<<<<< HEAD
-  disconnectAnimatedNodes: function(
-    parentTag: ?number,
-    childTag: ?number,
-  ): void {
-=======
   disconnectAnimatedNodes: function(parentTag: number, childTag: number): void {
->>>>>>> fb/0.62-stable
     invariant(NativeAnimatedModule, 'Native animated module is not available');
     NativeAnimatedModule.disconnectAnimatedNodes(parentTag, childTag);
   },
   startAnimatingNode: function(
-<<<<<<< HEAD
-    animationId: ?number,
-    nodeTag: ?number,
-=======
     animationId: number,
     nodeTag: number,
->>>>>>> fb/0.62-stable
     config: AnimatingNodeConfig,
     endCallback: EndCallback,
   ): void {
@@ -116,32 +85,6 @@ const API = {
       endCallback,
     );
   },
-<<<<<<< HEAD
-  stopAnimation: function(animationId: ?number) {
-    invariant(NativeAnimatedModule, 'Native animated module is not available');
-    NativeAnimatedModule.stopAnimation(animationId);
-  },
-  setAnimatedNodeValue: function(nodeTag: ?number, value: ?number): void {
-    invariant(NativeAnimatedModule, 'Native animated module is not available');
-    NativeAnimatedModule.setAnimatedNodeValue(nodeTag, value);
-  },
-  setAnimatedNodeOffset: function(nodeTag: ?number, offset: ?number): void {
-    invariant(NativeAnimatedModule, 'Native animated module is not available');
-    NativeAnimatedModule.setAnimatedNodeOffset(nodeTag, offset);
-  },
-  flattenAnimatedNodeOffset: function(nodeTag: ?number): void {
-    invariant(NativeAnimatedModule, 'Native animated module is not available');
-    NativeAnimatedModule.flattenAnimatedNodeOffset(nodeTag);
-  },
-  extractAnimatedNodeOffset: function(nodeTag: ?number): void {
-    invariant(NativeAnimatedModule, 'Native animated module is not available');
-    NativeAnimatedModule.extractAnimatedNodeOffset(nodeTag);
-  },
-  connectAnimatedNodeToView: function(
-    nodeTag: ?number,
-    viewTag: ?number,
-  ): void {
-=======
   stopAnimation: function(animationId: number) {
     invariant(NativeAnimatedModule, 'Native animated module is not available');
     NativeAnimatedModule.stopAnimation(animationId);
@@ -163,7 +106,6 @@ const API = {
     NativeAnimatedModule.extractAnimatedNodeOffset(nodeTag);
   },
   connectAnimatedNodeToView: function(nodeTag: number, viewTag: number): void {
->>>>>>> fb/0.62-stable
     invariant(NativeAnimatedModule, 'Native animated module is not available');
     NativeAnimatedModule.connectAnimatedNodeToView(nodeTag, viewTag);
   },
@@ -174,9 +116,6 @@ const API = {
     invariant(NativeAnimatedModule, 'Native animated module is not available');
     NativeAnimatedModule.disconnectAnimatedNodeFromView(nodeTag, viewTag);
   },
-<<<<<<< HEAD
-  dropAnimatedNode: function(tag: ?number): void {
-=======
   restoreDefaultValues: function(nodeTag: number): void {
     invariant(NativeAnimatedModule, 'Native animated module is not available');
     // Backwards compat with older native runtimes, can be removed later.
@@ -185,7 +124,6 @@ const API = {
     }
   },
   dropAnimatedNode: function(tag: number): void {
->>>>>>> fb/0.62-stable
     invariant(NativeAnimatedModule, 'Native animated module is not available');
     NativeAnimatedModule.dropAnimatedNode(tag);
   },
@@ -279,10 +217,6 @@ function addWhitelistedInterpolationParam(param: string): void {
 
 function validateTransform(
   configs: Array<
-<<<<<<< HEAD
-    | {type: 'animated', property: string, nodeTag: ?number}
-    | {type: 'static', property: string, value: number | string},
-=======
     | {
         type: 'animated',
         property: string,
@@ -295,7 +229,6 @@ function validateTransform(
         value: number | string,
         ...
       },
->>>>>>> fb/0.62-stable
   >,
 ): void {
   configs.forEach(config => {
@@ -309,11 +242,7 @@ function validateTransform(
   });
 }
 
-<<<<<<< HEAD
-function validateStyles(styles: {[key: string]: ?number}): void {
-=======
 function validateStyles(styles: {[key: string]: ?number, ...}): void {
->>>>>>> fb/0.62-stable
   for (const key in styles) {
     if (!STYLES_WHITELIST.hasOwnProperty(key)) {
       throw new Error(
@@ -348,8 +277,6 @@ function assertNativeAnimatedModule(): void {
 let _warnedMissingNativeAnimated = false;
 
 function shouldUseNativeDriver(config: AnimationConfig | EventConfig): boolean {
-<<<<<<< HEAD
-=======
   if (config.useNativeDriver == null) {
     console.warn(
       'Animated: `useNativeDriver` was not specified. This is a required ' +
@@ -357,7 +284,6 @@ function shouldUseNativeDriver(config: AnimationConfig | EventConfig): boolean {
     );
   }
 
->>>>>>> fb/0.62-stable
   if (config.useNativeDriver === true && !NativeAnimatedModule) {
     if (!_warnedMissingNativeAnimated) {
       console.warn(

@@ -11,14 +11,11 @@
 'use strict';
 
 import type {SyntheticEvent} from '../../Types/CoreEventTypes';
-<<<<<<< HEAD
 
 // [TODO(android ISS)
 export type AccessibilityNodeInfoProp = {
   clickable: boolean,
 }; // ]TODO(android ISS)
-=======
->>>>>>> fb/0.62-stable
 
 // This must be kept in sync with the AccessibilityRolesMask in RCTViewManager.m
 export type AccessibilityRole =
@@ -68,9 +65,6 @@ export type AccessibilityState = {
   checked?: ?boolean | 'mixed',
   busy?: boolean,
   expanded?: boolean,
-<<<<<<< HEAD
-};
-=======
   ...
 };
 
@@ -95,4 +89,3 @@ export type AccessibilityValue = $ReadOnly<{|
    */
   text?: string,
 |}>;
->>>>>>> fb/0.62-stable

@@ -10,12 +10,9 @@
 
 'use strict';
 
-<<<<<<< HEAD
-=======
 import TestRenderer from 'react-test-renderer';
 import * as React from 'react';
 
->>>>>>> fb/0.62-stable
 jest.mock('../../../BatchedBridge/NativeModules', () => ({
   NativeAnimatedModule: {},
   PlatformConstants: {

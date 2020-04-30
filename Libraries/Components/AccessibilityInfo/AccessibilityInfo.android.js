@@ -10,19 +10,11 @@
 
 'use strict';
 
-<<<<<<< HEAD
-import NativeAccessibilityInfo from './NativeAccessibilityInfo';
-
-const RCTDeviceEventEmitter = require('../../EventEmitter/RCTDeviceEventEmitter');
-const UIManager = require('../../ReactNative/UIManager');
-
-=======
 const RCTDeviceEventEmitter = require('../../EventEmitter/RCTDeviceEventEmitter');
 const UIManager = require('../../ReactNative/UIManager');
 
 import NativeAccessibilityInfo from './NativeAccessibilityInfo';
 
->>>>>>> fb/0.62-stable
 const REDUCE_MOTION_EVENT = 'reduceMotionDidChange';
 const TOUCH_EXPLORATION_EVENT = 'touchExplorationDidChange';
 

@@ -14,12 +14,7 @@ const Platform = require('../../Utilities/Platform');
 const React = require('react');
 const StyleSheet = require('../../StyleSheet/StyleSheet');
 const View = require('../View/View');
-<<<<<<< HEAD
-
-import type {NativeComponent} from '../../Renderer/shims/ReactNative';
-=======
 import type {HostComponent} from '../../Renderer/shims/ReactNativeTypes';
->>>>>>> fb/0.62-stable
 import type {ViewProps} from '../View/ViewPropTypes';
 import type {NativeOrDynamicColorType} from '../../Color/NativeOrDynamicColorType'; // ]TODO(macOS ISS#2323203)
 
@@ -114,12 +109,9 @@ const ActivityIndicator = (props: Props, forwardedRef?: any) => {
         // $FlowFixMe Flow doesn't know when this is the android component
         <PlatformActivityIndicator {...nativeProps} {...androidProps} />
       ) : (
-<<<<<<< HEAD
-=======
         /* $FlowFixMe(>=0.106.0 site=react_native_android_fb) This comment
          * suppresses an error found when Flow v0.106 was deployed. To see the
          * error, delete this comment and run Flow. */
->>>>>>> fb/0.62-stable
         <PlatformActivityIndicator {...nativeProps} />
       )}
     </View>

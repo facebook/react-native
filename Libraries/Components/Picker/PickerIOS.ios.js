@@ -12,30 +12,20 @@
 
 'use strict';
 
-const RCTPickerNativeComponent = require('./RCTPickerNativeComponent');
 const React = require('react');
 const StyleSheet = require('../../StyleSheet/StyleSheet');
 const View = require('../View/View');
-<<<<<<< HEAD
-const Platform = require('../../Utilities/Platform'); // TODO(macOS ISS#2323203)
-const processColor = require('../../StyleSheet/processColor');
-
-=======
 
 const processColor = require('../../StyleSheet/processColor');
 
 import RCTPickerNativeComponent, {
   Commands as PickerCommands,
 } from './RCTPickerNativeComponent';
->>>>>>> fb/0.62-stable
 import type {TextStyleProp} from '../../StyleSheet/StyleSheet';
 import type {ColorValue} from '../../StyleSheet/StyleSheetTypes';
 import type {SyntheticEvent} from '../../Types/CoreEventTypes';
 import type {ViewProps} from '../View/ViewPropTypes';
-<<<<<<< HEAD
 import type {NativeOrDynamicColorType} from '../../Color/NativeOrDynamicColorType'; // TODO(macOS ISS#2323203)
-=======
->>>>>>> fb/0.62-stable
 
 type PickerIOSChangeEvent = SyntheticEvent<
   $ReadOnly<{|

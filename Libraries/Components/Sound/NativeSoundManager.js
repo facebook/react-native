@@ -4,11 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
-<<<<<<< HEAD
- * @flow
-=======
  * @flow strict-local
->>>>>>> fb/0.62-stable
  * @format
  */
 
@@ -24,8 +20,4 @@ export interface Spec extends TurboModule {
   +playTouchSound: () => void;
 }
 
-<<<<<<< HEAD
-export default (TurboModuleRegistry.getEnforcing<Spec>('SoundManager'): Spec);
-=======
 export default (TurboModuleRegistry.get<Spec>('SoundManager'): ?Spec);
->>>>>>> fb/0.62-stable

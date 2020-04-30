@@ -5,11 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @format
-<<<<<<< HEAD
- * @flow
-=======
  * @flow strict-local
->>>>>>> fb/0.62-stable
  */
 
 'use strict';
@@ -17,17 +13,11 @@
 import type {DirectEventHandler, WithDefault} from '../../Types/CodegenTypes';
 import type {ColorValue} from '../../StyleSheet/StyleSheetTypes';
 import type {ViewProps} from '../View/ViewPropTypes';
-<<<<<<< HEAD
-
-import codegenNativeComponent from '../../Utilities/codegenNativeComponent';
-import {type NativeComponentType} from '../../Utilities/codegenNativeComponent';
-=======
 import * as React from 'react';
 
 import codegenNativeComponent from '../../Utilities/codegenNativeComponent';
 import type {HostComponent} from '../../Renderer/shims/ReactNativeTypes';
 import codegenNativeCommands from 'react-native/Libraries/Utilities/codegenNativeCommands';
->>>>>>> fb/0.62-stable
 
 type NativeProps = $ReadOnly<{|
   ...ViewProps,
@@ -56,11 +46,6 @@ type NativeProps = $ReadOnly<{|
   refreshing: boolean,
 |}>;
 
-<<<<<<< HEAD
-export default (codegenNativeComponent<NativeProps>('PullToRefreshView', {
-  paperComponentName: 'RCTRefreshControl',
-}): NativeComponentType<NativeProps>);
-=======
 type ComponentType = HostComponent<NativeProps>;
 
 interface NativeCommands {
@@ -77,4 +62,3 @@ export const Commands: NativeCommands = codegenNativeCommands<NativeCommands>({
 export default (codegenNativeComponent<NativeProps>('PullToRefreshView', {
   paperComponentName: 'RCTRefreshControl',
 }): HostComponent<NativeProps>);
->>>>>>> fb/0.62-stable

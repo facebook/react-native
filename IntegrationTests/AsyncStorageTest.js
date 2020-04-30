@@ -137,23 +137,18 @@ function testRemoveItem() {
 }
 
 function testMerge() {
-  if (AsyncStorage.mergeItem) {
-    AsyncStorage.setItem(KEY_MERGE, JSON.stringify(VAL_MERGE_1), err1 => {
-      expectAsyncNoError('testMerge/setItem', err1);
-      AsyncStorage.mergeItem(KEY_MERGE, JSON.stringify(VAL_MERGE_2), err2 => {
-        expectAsyncNoError('testMerge/mergeItem', err2);
-        AsyncStorage.getItem(KEY_MERGE, (err3, result) => {
-          expectAsyncNoError('testMerge/setItem', err3);
-          expectEqual(JSON.parse(result), VAL_MERGE_EXPECT, 'testMerge');
-          updateMessage('objects deeply merged\nDone!');
-          runTestCase('multi set and get', testOptimizedMultiGet);
-        });
+  AsyncStorage.setItem(KEY_MERGE, JSON.stringify(VAL_MERGE_1), err1 => {
+    expectAsyncNoError('testMerge/setItem', err1);
+    AsyncStorage.mergeItem(KEY_MERGE, JSON.stringify(VAL_MERGE_2), err2 => {
+      expectAsyncNoError('testMerge/mergeItem', err2);
+      AsyncStorage.getItem(KEY_MERGE, (err3, result) => {
+        expectAsyncNoError('testMerge/setItem', err3);
+        expectEqual(JSON.parse(result), VAL_MERGE_EXPECT, 'testMerge');
+        updateMessage('objects deeply merged\nDone!');
+        runTestCase('multi set and get', testOptimizedMultiGet);
       });
     });
-  } else {
-    updateMessage('AsyncStorage does not support the mergeItem method');
-    runTestCase('multi set and get', testOptimizedMultiGet);
-  }
+  });
 }
 
 function testOptimizedMultiGet() {
@@ -176,13 +171,8 @@ function testOptimizedMultiGet() {
   });
 }
 
-<<<<<<< HEAD
-class AsyncStorageTest extends React.Component<{}, $FlowFixMeState> {
-  state: any | $TEMPORARY$object<{|done: boolean, messages: string|}> = {
-=======
 class AsyncStorageTest extends React.Component<{...}, $FlowFixMeState> {
   state: any | {|done: boolean, messages: string|} = {
->>>>>>> fb/0.62-stable
     messages: 'Initializing...',
     done: false,
   };

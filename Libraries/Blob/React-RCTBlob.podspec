@@ -26,16 +26,7 @@ Pod::Spec.new do |s|
   s.homepage               = "http://facebook.github.io/react-native/"
   s.license                = package["license"]
   s.author                 = "Facebook, Inc. and its affiliates"
-<<<<<<< HEAD
   s.platforms              = { :ios => "9.0", :tvos => "9.2", :osx => "10.14" } # TODO(macOS GH#214)
-  s.source                 = source
-  # RCTBlobCollector.h is not included in the React module as it has C++ code
-  s.source_files           = "*.{m,mm}", "RCTBlobCollector.h"
-  s.preserve_paths         = "package.json", "LICENSE", "LICENSE-docs"
-  s.header_dir             = "RCTBlob"
-
-=======
-  s.platforms              = { :ios => "9.0", :tvos => "9.2" }
   s.compiler_flags         = folly_compiler_flags + ' -Wno-nullability-completeness'
   s.source                 = source
   s.source_files           = "*.{m,mm}"
@@ -50,7 +41,6 @@ Pod::Spec.new do |s|
   s.dependency "Folly", folly_version
   s.dependency "FBReactNativeSpec", version
   s.dependency "ReactCommon/turbomodule/core", version
->>>>>>> fb/0.62-stable
   s.dependency "React-Core/RCTBlobHeaders", version
   s.dependency "React-Core/RCTWebSocket", version
   s.dependency "React-RCTNetwork", version

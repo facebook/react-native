@@ -16,11 +16,6 @@ const SectionList = require('../../../Lists/SectionList');
 
 const createAnimatedComponent = require('../createAnimatedComponent');
 
-<<<<<<< HEAD
-module.exports = (createAnimatedComponent(SectionList, {
-  scrollEventThrottle: 0.0001,
-}): $FlowFixMe);
-=======
 /**
  * @see https://github.com/facebook/react-native/commit/b8c8562
  */
@@ -31,4 +26,3 @@ const SectionListWithEventThrottle = React.forwardRef((props, ref) => (
 module.exports = (createAnimatedComponent(
   SectionListWithEventThrottle,
 ): $FlowFixMe);
->>>>>>> fb/0.62-stable

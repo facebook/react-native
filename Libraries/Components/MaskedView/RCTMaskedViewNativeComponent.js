@@ -10,11 +10,7 @@
 
 import type {ViewProps} from '../View/ViewPropTypes';
 import codegenNativeComponent from '../../Utilities/codegenNativeComponent';
-<<<<<<< HEAD
-import {type NativeComponentType} from '../../Utilities/codegenNativeComponent';
-=======
 import type {HostComponent} from '../../Renderer/shims/ReactNativeTypes';
->>>>>>> fb/0.62-stable
 
 type NativeProps = $ReadOnly<{|
   ...ViewProps,
@@ -22,8 +18,4 @@ type NativeProps = $ReadOnly<{|
 
 export default (codegenNativeComponent<NativeProps>(
   'RCTMaskedView',
-<<<<<<< HEAD
-): NativeComponentType<NativeProps>);
-=======
 ): HostComponent<NativeProps>);
->>>>>>> fb/0.62-stable

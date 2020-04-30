@@ -12,17 +12,10 @@
 
 import type {ColorValue} from '../../StyleSheet/StyleSheetTypes';
 import type {ViewProps} from '../View/ViewPropTypes';
-<<<<<<< HEAD
-import type {Float, WithDefault} from '../../Types/CodegenTypes';
-
-import codegenNativeComponent from '../../Utilities/codegenNativeComponent';
-import {type NativeComponentType} from '../../Utilities/codegenNativeComponent';
-=======
 import type {Double, WithDefault} from '../../Types/CodegenTypes';
 
 import codegenNativeComponent from '../../Utilities/codegenNativeComponent';
 import type {HostComponent} from '../../Renderer/shims/ReactNativeTypes';
->>>>>>> fb/0.62-stable
 
 type NativeProps = $ReadOnly<{|
   ...ViewProps,
@@ -31,11 +24,7 @@ type NativeProps = $ReadOnly<{|
   styleAttr?: string,
   typeAttr?: string,
   indeterminate: boolean,
-<<<<<<< HEAD
-  progress?: WithDefault<Float, 0>,
-=======
   progress?: WithDefault<Double, 0>,
->>>>>>> fb/0.62-stable
   animating?: WithDefault<boolean, true>,
   color?: ?ColorValue,
   testID?: WithDefault<string, ''>,
@@ -43,8 +32,4 @@ type NativeProps = $ReadOnly<{|
 
 export default (codegenNativeComponent<NativeProps>(
   'AndroidProgressBar',
-<<<<<<< HEAD
-): NativeComponentType<NativeProps>);
-=======
 ): HostComponent<NativeProps>);
->>>>>>> fb/0.62-stable

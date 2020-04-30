@@ -4,13 +4,8 @@ exports[`TouchableHighlight renders correctly 1`] = `
 <View
   acceptsKeyboardFocus={true}
   accessible={true}
-<<<<<<< HEAD
   enableFocusRing={true}
   focusable={false}
-  isTVSelectable={true}
-=======
-  focusable={false}
->>>>>>> fb/0.62-stable
   onClick={[Function]}
   onResponderGrant={[Function]}
   onResponderMove={[Function]}

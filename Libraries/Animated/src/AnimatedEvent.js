@@ -29,11 +29,7 @@ function attachNativeEvent(
   viewRef: any,
   eventName: string,
   argMapping: Array<?Mapping>,
-<<<<<<< HEAD
-): $TEMPORARY$object<{|detach: () => void|}> {
-=======
 ): {|detach: () => void|} {
->>>>>>> fb/0.62-stable
   // Find animated values in `argMapping` and create an array representing their
   // key path inside the `nativeEvent` object. Ex.: ['contentOffset', 'x'].
   const eventMappings = [];

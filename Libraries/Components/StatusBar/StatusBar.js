@@ -15,14 +15,9 @@ const React = require('react');
 
 const processColor = require('../../StyleSheet/processColor');
 
-<<<<<<< HEAD
-import NativeStatusBarManager from './NativeStatusBarManager';
-
-import type {ColorValue} from '../../StyleSheet/StyleSheetTypes'; // TODO(macOS ISS#2323203)
-=======
 import NativeStatusBarManagerAndroid from './NativeStatusBarManagerAndroid';
 import NativeStatusBarManagerIOS from './NativeStatusBarManagerIOS';
->>>>>>> fb/0.62-stable
+import type {ColorValue} from '../../StyleSheet/StyleSheetTypes'; // TODO(macOS ISS#2323203)
 
 /**
  * Status bar style
@@ -39,12 +34,8 @@ export type StatusBarStyle = $Keys<{
   /**
    * Light background, dark texts and icons
    */
-<<<<<<< HEAD
   'dark-content': ColorValue, // TODO(macOS ISS#2323203)
-=======
-  'dark-content': string,
   ...
->>>>>>> fb/0.62-stable
 }>;
 
 /**

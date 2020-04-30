@@ -12,13 +12,9 @@
 
 'use strict';
 
-<<<<<<< HEAD
-const RCTDatePickerNativeComponent = require('./RCTDatePickerNativeComponent');
-=======
 import RCTDatePickerNativeComponent, {
   Commands as DatePickerCommands,
 } from './RCTDatePickerNativeComponent';
->>>>>>> fb/0.62-stable
 const React = require('react');
 const StyleSheet = require('../../StyleSheet/StyleSheet');
 const View = require('../View/View');
@@ -117,13 +113,7 @@ type Props = $ReadOnly<{|
  * source of truth.
  */
 class DatePickerIOS extends React.Component<Props> {
-<<<<<<< HEAD
-  static DefaultProps: $TEMPORARY$object<{|
-    mode: $TEMPORARY$string<'datetime'>,
-  |}> = {
-=======
   static DefaultProps: {|mode: $TEMPORARY$string<'datetime'>|} = {
->>>>>>> fb/0.62-stable
     mode: 'datetime',
   };
 
