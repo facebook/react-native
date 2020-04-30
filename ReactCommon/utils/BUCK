@@ -1,7 +1,3 @@
-<<<<<<< HEAD
-load("@fbsource//tools/build_defs:glob_defs.bzl", "subdir_glob")
-load("//tools/build_defs/oss:rn_defs.bzl", "ANDROID", "APPLE", "CXX", "get_apple_compiler_flags", "react_native_xplat_target", "rn_xplat_cxx_library")
-=======
 load("@fbsource//tools/build_defs/apple:flag_defs.bzl", "get_debug_preprocessor_flags")
 load(
     "//tools/build_defs/oss:rn_defs.bzl",
@@ -14,7 +10,6 @@ load(
     "rn_xplat_cxx_library",
     "subdir_glob",
 )
->>>>>>> fb/0.62-stable
 
 APPLE_COMPILER_FLAGS = get_apple_compiler_flags()
 
@@ -49,17 +44,11 @@ rn_xplat_cxx_library(
     fbobjc_labels = ["supermodule:ios/isolation/infra.react_native"],
     fbobjc_preprocessor_flags = get_debug_preprocessor_flags() + get_apple_inspector_flags(),
     force_static = True,
-<<<<<<< HEAD
-    platforms = (ANDROID, APPLE, CXX),
-    visibility = [
-        "PUBLIC",
-=======
     macosx_tests_override = [],
     platforms = (ANDROID, APPLE, CXX),
     preprocessor_flags = [
         "-DLOG_TAG=\"ReactNative\"",
         "-DWITH_FBSYSTRACE=1",
->>>>>>> fb/0.62-stable
     ],
     tests = [],
     visibility = ["PUBLIC"],
