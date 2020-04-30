@@ -56,6 +56,10 @@ exports[`LogBoxNotification should render log 1`] = `
           }
         }
       />
+      <ChangeLocationButton
+        isOnBottom={true}
+        onPress={[Function]}
+      />
       <DismissButton
         onPress={[Function]}
       />

@@ -1,91 +1,105 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`LogBoxNotificationContainer should render both an error and warning notification 1`] = `
-<View
+<ForwardRef(SafeAreaView)
+  pointerEvents="box-none"
   style={
     Object {
-      "bottom": 20,
+      "bottom": 0,
+      "flex": 1,
+      "justifyContent": "space-between",
       "left": 10,
       "position": "absolute",
       "right": 10,
+      "top": 40,
     }
   }
 >
-  <View
-    style={
-      Object {
-        "borderRadius": 8,
-        "marginBottom": 5,
-        "overflow": "hidden",
-      }
-    }
-  >
-    <LogBoxLogNotification
-      level="warn"
-      log={
-        LogBoxLog {
-          "category": "Some kind of message",
-          "codeFrame": undefined,
-          "componentStack": Array [],
-          "count": 1,
-          "isComponentError": false,
-          "level": "warn",
-          "message": Object {
-            "content": "Some kind of message",
-            "substitutions": Array [],
-          },
-          "stack": Array [],
-          "symbolicated": Object {
-            "error": null,
-            "stack": null,
-            "status": "NONE",
-          },
-          "type": undefined,
+  <View>
+    true
+    true
+  </View>
+  <View>
+    <View
+      style={
+        Object {
+          "borderRadius": 8,
+          "marginBottom": 5,
+          "overflow": "hidden",
         }
       }
-      onPressDismiss={[Function]}
-      onPressOpen={[Function]}
-      totalLogCount={1}
-    />
-  </View>
-  <View
-    style={
-      Object {
-        "borderRadius": 8,
-        "marginBottom": 5,
-        "overflow": "hidden",
-      }
-    }
-  >
-    <LogBoxLogNotification
-      level="error"
-      log={
-        LogBoxLog {
-          "category": "Some kind of message (latest)",
-          "codeFrame": undefined,
-          "componentStack": Array [],
-          "count": 1,
-          "isComponentError": false,
-          "level": "error",
-          "message": Object {
-            "content": "Some kind of message (latest)",
-            "substitutions": Array [],
-          },
-          "stack": Array [],
-          "symbolicated": Object {
-            "error": null,
-            "stack": null,
-            "status": "NONE",
-          },
-          "type": undefined,
+    >
+      <LogBoxLogNotification
+        isOnBottom={true}
+        level="warn"
+        log={
+          LogBoxLog {
+            "category": "Some kind of message",
+            "codeFrame": undefined,
+            "componentStack": Array [],
+            "count": 1,
+            "isComponentError": false,
+            "level": "warn",
+            "message": Object {
+              "content": "Some kind of message",
+              "substitutions": Array [],
+            },
+            "stack": Array [],
+            "symbolicated": Object {
+              "error": null,
+              "stack": null,
+              "status": "NONE",
+            },
+            "type": undefined,
+          }
+        }
+        onPressDismiss={[Function]}
+        onPressOpen={[Function]}
+        togglePosition={[Function]}
+        totalLogCount={1}
+      />
+    </View>
+    <View
+      style={
+        Object {
+          "borderRadius": 8,
+          "marginBottom": 5,
+          "overflow": "hidden",
         }
       }
-      onPressDismiss={[Function]}
-      onPressOpen={[Function]}
-      totalLogCount={1}
-    />
+    >
+      <LogBoxLogNotification
+        isOnBottom={true}
+        level="error"
+        log={
+          LogBoxLog {
+            "category": "Some kind of message (latest)",
+            "codeFrame": undefined,
+            "componentStack": Array [],
+            "count": 1,
+            "isComponentError": false,
+            "level": "error",
+            "message": Object {
+              "content": "Some kind of message (latest)",
+              "substitutions": Array [],
+            },
+            "stack": Array [],
+            "symbolicated": Object {
+              "error": null,
+              "stack": null,
+              "status": "NONE",
+            },
+            "type": undefined,
+          }
+        }
+        onPressDismiss={[Function]}
+        onPressOpen={[Function]}
+        togglePosition={[Function]}
+        totalLogCount={1}
+      />
+    </View>
   </View>
-</View>
+</ForwardRef(SafeAreaView)>
 `;
 
 exports[`LogBoxNotificationContainer should render null with no logs 1`] = `null`;
@@ -97,103 +111,127 @@ exports[`LogBoxNotificationContainer should render selected fatal error even whe
 exports[`LogBoxNotificationContainer should render selected syntax error even when disabled 1`] = `null`;
 
 exports[`LogBoxNotificationContainer should render the latest error notification 1`] = `
-<View
+<ForwardRef(SafeAreaView)
+  pointerEvents="box-none"
   style={
     Object {
-      "bottom": 20,
+      "bottom": 0,
+      "flex": 1,
+      "justifyContent": "space-between",
       "left": 10,
       "position": "absolute",
       "right": 10,
+      "top": 40,
     }
   }
 >
-  <View
-    style={
-      Object {
-        "borderRadius": 8,
-        "marginBottom": 5,
-        "overflow": "hidden",
-      }
-    }
-  >
-    <LogBoxLogNotification
-      level="error"
-      log={
-        LogBoxLog {
-          "category": "Some kind of message (latest)",
-          "codeFrame": undefined,
-          "componentStack": Array [],
-          "count": 1,
-          "isComponentError": false,
-          "level": "error",
-          "message": Object {
-            "content": "Some kind of message (latest)",
-            "substitutions": Array [],
-          },
-          "stack": Array [],
-          "symbolicated": Object {
-            "error": null,
-            "stack": null,
-            "status": "NONE",
-          },
-          "type": undefined,
+  <View>
+    true
+    true
+  </View>
+  <View>
+    <View
+      style={
+        Object {
+          "borderRadius": 8,
+          "marginBottom": 5,
+          "overflow": "hidden",
         }
       }
-      onPressDismiss={[Function]}
-      onPressOpen={[Function]}
-      totalLogCount={2}
-    />
+    >
+      <LogBoxLogNotification
+        isOnBottom={true}
+        level="error"
+        log={
+          LogBoxLog {
+            "category": "Some kind of message (latest)",
+            "codeFrame": undefined,
+            "componentStack": Array [],
+            "count": 1,
+            "isComponentError": false,
+            "level": "error",
+            "message": Object {
+              "content": "Some kind of message (latest)",
+              "substitutions": Array [],
+            },
+            "stack": Array [],
+            "symbolicated": Object {
+              "error": null,
+              "stack": null,
+              "status": "NONE",
+            },
+            "type": undefined,
+          }
+        }
+        onPressDismiss={[Function]}
+        onPressOpen={[Function]}
+        togglePosition={[Function]}
+        totalLogCount={2}
+      />
+    </View>
   </View>
-</View>
+</ForwardRef(SafeAreaView)>
 `;
 
 exports[`LogBoxNotificationContainer should render the latest warning notification 1`] = `
-<View
+<ForwardRef(SafeAreaView)
+  pointerEvents="box-none"
   style={
     Object {
-      "bottom": 20,
+      "bottom": 0,
+      "flex": 1,
+      "justifyContent": "space-between",
       "left": 10,
       "position": "absolute",
       "right": 10,
+      "top": 40,
     }
   }
 >
-  <View
-    style={
-      Object {
-        "borderRadius": 8,
-        "marginBottom": 5,
-        "overflow": "hidden",
-      }
-    }
-  >
-    <LogBoxLogNotification
-      level="warn"
-      log={
-        LogBoxLog {
-          "category": "Some kind of message (latest)",
-          "codeFrame": undefined,
-          "componentStack": Array [],
-          "count": 1,
-          "isComponentError": false,
-          "level": "warn",
-          "message": Object {
-            "content": "Some kind of message (latest)",
-            "substitutions": Array [],
-          },
-          "stack": Array [],
-          "symbolicated": Object {
-            "error": null,
-            "stack": null,
-            "status": "NONE",
-          },
-          "type": undefined,
+  <View>
+    true
+    true
+  </View>
+  <View>
+    <View
+      style={
+        Object {
+          "borderRadius": 8,
+          "marginBottom": 5,
+          "overflow": "hidden",
         }
       }
-      onPressDismiss={[Function]}
-      onPressOpen={[Function]}
-      totalLogCount={2}
-    />
+    >
+      <LogBoxLogNotification
+        isOnBottom={true}
+        level="warn"
+        log={
+          LogBoxLog {
+            "category": "Some kind of message (latest)",
+            "codeFrame": undefined,
+            "componentStack": Array [],
+            "count": 1,
+            "isComponentError": false,
+            "level": "warn",
+            "message": Object {
+              "content": "Some kind of message (latest)",
+              "substitutions": Array [],
+            },
+            "stack": Array [],
+            "symbolicated": Object {
+              "error": null,
+              "stack": null,
+              "status": "NONE",
+            },
+            "type": undefined,
+          }
+        }
+        onPressDismiss={[Function]}
+        onPressOpen={[Function]}
+        togglePosition={[Function]}
+        totalLogCount={2}
+      />
+    </View>
   </View>
-</View>
+</ForwardRef(SafeAreaView)>
 `;
