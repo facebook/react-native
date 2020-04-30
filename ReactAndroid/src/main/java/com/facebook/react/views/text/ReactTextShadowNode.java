@@ -72,70 +72,6 @@ public class ReactTextShadowNode extends ReactBaseTextShadowNode {
                   mPreparedSpannableText,
                   "Spannable element has not been prepared in onBeforeLayout");
 
-<<<<<<< HEAD
-          if (boring == null
-              && (unconstrainedWidth
-                  || (!YogaConstants.isUndefined(desiredWidth) && desiredWidth <= width))) {
-            // Is used when the width is not known and the text is not boring, ie. if it contains
-            // unicode characters.
-
-            int hintWidth = (int) Math.ceil(desiredWidth);
-            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-              layout =
-                  new StaticLayout(
-                      text, textPaint, hintWidth, alignment, 1.f, 0.f, mIncludeFontPadding);
-            } else {
-              StaticLayout.Builder builder =
-                  StaticLayout.Builder.obtain(text, 0, text.length(), textPaint, hintWidth)
-                      .setAlignment(alignment)
-                      .setLineSpacing(0.f, 1.f)
-                      .setIncludePad(mIncludeFontPadding)
-                      .setBreakStrategy(mTextBreakStrategy)
-                      .setHyphenationFrequency(mHyphenationFrequency);
-
-              if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                builder.setJustificationMode(mJustificationMode);
-              }
-              if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-                builder.setUseLineSpacingFromFallbacks(true);
-              }
-              layout = builder.build();
-            }
-
-          } else if (boring != null && (unconstrainedWidth || boring.width <= width)) {
-            // Is used for single-line, boring text when the width is either unknown or bigger
-            // than the width of the text.
-            layout =
-                BoringLayout.make(
-                    text,
-                    textPaint,
-                    boring.width,
-                    alignment,
-                    1.f,
-                    0.f,
-                    boring,
-                    mIncludeFontPadding);
-          } else {
-            // Is used for multiline, boring text and the width is known.
-
-            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-              layout =
-                  new StaticLayout(
-                      text, textPaint, (int) width, alignment, 1.f, 0.f, mIncludeFontPadding);
-            } else {
-              StaticLayout.Builder builder =
-                  StaticLayout.Builder.obtain(text, 0, text.length(), textPaint, (int) width)
-                      .setAlignment(alignment)
-                      .setLineSpacing(0.f, 1.f)
-                      .setIncludePad(mIncludeFontPadding)
-                      .setBreakStrategy(mTextBreakStrategy)
-                      .setHyphenationFrequency(mHyphenationFrequency);
-
-              if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-                builder.setUseLineSpacingFromFallbacks(true);
-              }
-              layout = builder.build();
-=======
           Layout layout = measureSpannedText(text, width, widthMode);
 
           if (mAdjustsFontSizeToFit) {
@@ -165,7 +101,6 @@ public class ReactTextShadowNode extends ReactBaseTextShadowNode {
                 text.removeSpan(span);
               }
               layout = measureSpannedText(text, width, widthMode);
->>>>>>> fb/0.62-stable
             }
           }
 

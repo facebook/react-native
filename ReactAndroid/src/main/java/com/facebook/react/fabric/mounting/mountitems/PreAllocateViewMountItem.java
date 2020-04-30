@@ -27,11 +27,7 @@ public class PreAllocateViewMountItem implements MountItem {
   private final int mReactTag;
   private final @Nullable ReadableMap mProps;
   private final @Nullable StateWrapper mStateWrapper;
-<<<<<<< HEAD
-  private final ThemedReactContext mContext;
-=======
   private final @NonNull ThemedReactContext mContext;
->>>>>>> fb/0.62-stable
   private final boolean mIsLayoutable;
 
   public PreAllocateViewMountItem(
@@ -40,11 +36,7 @@ public class PreAllocateViewMountItem implements MountItem {
       int reactTag,
       @NonNull String component,
       @Nullable ReadableMap props,
-<<<<<<< HEAD
-      StateWrapper stateWrapper,
-=======
       @NonNull StateWrapper stateWrapper,
->>>>>>> fb/0.62-stable
       boolean isLayoutable) {
     mContext = context;
     mComponent = component;

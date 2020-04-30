@@ -8,16 +8,9 @@
 #include <memory>
 #include <string>
 
-<<<<<<< HEAD
-#include <fb/fbjni.h>
-#include <folly/Memory.h>
-#include <ReactCommon/JSCallInvokerHolder.h>
-#include <ReactCommon/BridgeJSCallInvoker.h>
-=======
 #include <ReactCommon/BridgeJSCallInvoker.h>
 #include <ReactCommon/CallInvokerHolder.h>
 #include <fbjni/fbjni.h>
->>>>>>> fb/0.62-stable
 
 #include "CxxModuleWrapper.h"
 #include "JMessageQueueThread.h"

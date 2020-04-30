@@ -1,18 +1,16 @@
 /*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
- * directory of this source tree.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
+
 package com.facebook.react.views.swiperefresh;
 
 import static com.facebook.react.views.swiperefresh.SwipeRefreshLayoutManager.REACT_CLASS;
 
 import android.graphics.Color;
-<<<<<<< HEAD
-=======
 import androidx.annotation.NonNull;
->>>>>>> fb/0.62-stable
 import androidx.annotation.Nullable;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout.OnRefreshListener;
@@ -27,11 +25,8 @@ import com.facebook.react.uimanager.ViewGroupManager;
 import com.facebook.react.uimanager.ViewManagerDelegate;
 import com.facebook.react.uimanager.ViewProps;
 import com.facebook.react.uimanager.annotations.ReactProp;
-<<<<<<< HEAD
-=======
 import com.facebook.react.viewmanagers.AndroidSwipeRefreshLayoutManagerDelegate;
 import com.facebook.react.viewmanagers.AndroidSwipeRefreshLayoutManagerInterface;
->>>>>>> fb/0.62-stable
 import java.util.Map;
 
 /**
@@ -86,15 +81,12 @@ public class SwipeRefreshLayoutManager extends ViewGroupManager<ReactSwipeRefres
     view.setProgressBackgroundColorSchemeColor(color == null ? Color.TRANSPARENT : color);
   }
 
-<<<<<<< HEAD
-=======
   // TODO(T46143833): Remove this method once the 'size' prop has been migrated to String in JS.
   @Override
   public void setSize(ReactSwipeRefreshLayout view, int value) {
     view.setSize(value);
   }
 
->>>>>>> fb/0.62-stable
   // This prop temporarily takes both 0 and 1 as well as 'default' and 'large'.
   // 0 and 1 are deprecated and will be removed in a future release.
   // See T46143833

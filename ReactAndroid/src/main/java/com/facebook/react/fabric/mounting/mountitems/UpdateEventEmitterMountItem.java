@@ -7,10 +7,7 @@
 
 package com.facebook.react.fabric.mounting.mountitems;
 
-<<<<<<< HEAD
-=======
 import androidx.annotation.NonNull;
->>>>>>> fb/0.62-stable
 import com.facebook.react.fabric.events.EventEmitterWrapper;
 import com.facebook.react.fabric.mounting.MountingManager;
 

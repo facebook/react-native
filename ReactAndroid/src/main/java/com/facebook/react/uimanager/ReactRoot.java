@@ -1,9 +1,10 @@
 /*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
- * directory of this source tree.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
+
 package com.facebook.react.uimanager;
 
 import android.os.Bundle;
@@ -17,17 +18,10 @@ public interface ReactRoot {
   /** Return cached launch properties for app */
   @Nullable
   Bundle getAppProperties();
-<<<<<<< HEAD
 
   @Nullable
   String getInitialUITemplate();
 
-=======
-
-  @Nullable
-  String getInitialUITemplate();
-
->>>>>>> fb/0.62-stable
   String getJSModuleName();
 
   /** Fabric or Default UI Manager, see {@link UIManagerType} */
@@ -54,8 +48,6 @@ public interface ReactRoot {
 
   /** Sets a flag that determines whether to log that content appeared on next view added. */
   void setShouldLogContentAppeared(boolean shouldLogContentAppeared);
-<<<<<<< HEAD
-=======
 
   /**
    * @return a {@link String} that represents the root js application that is being rendered with
@@ -65,5 +57,4 @@ public interface ReactRoot {
   @Deprecated
   @Nullable
   String getSurfaceID();
->>>>>>> fb/0.62-stable
 }

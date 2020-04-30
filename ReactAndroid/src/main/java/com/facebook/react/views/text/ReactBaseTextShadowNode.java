@@ -1,8 +1,8 @@
 /*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
- * directory of this source tree.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 package com.facebook.react.views.text;
@@ -34,10 +34,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-<<<<<<< HEAD
-=======
 import java.util.Objects;
->>>>>>> fb/0.62-stable
 
 /**
  * {@link ReactShadowNode} abstract class for spannable text nodes.
@@ -307,26 +304,6 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
     return sb;
   }
 
-<<<<<<< HEAD
-  /**
-   * Return -1 if the input string is not a valid numeric fontWeight (100, 200, ..., 900), otherwise
-   * return the weight.
-   *
-   * <p>This code is duplicated in ReactTextInputManager TODO: Factor into a common place they can
-   * both use
-   */
-  private static int parseNumericFontWeight(String fontWeightString) {
-    // This should be much faster than using regex to verify input and Integer.parseInt
-    return fontWeightString.length() == 3
-            && fontWeightString.endsWith("00")
-            && fontWeightString.charAt(0) <= '9'
-            && fontWeightString.charAt(0) >= '1'
-        ? 100 * (fontWeightString.charAt(0) - '0')
-        : UNSET;
-  }
-
-=======
->>>>>>> fb/0.62-stable
   protected TextAttributes mTextAttributes;
 
   protected boolean mIsColorSet = false;
@@ -342,10 +319,6 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
       (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) ? 0 : Layout.HYPHENATION_FREQUENCY_NONE;
   protected int mJustificationMode =
       (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) ? 0 : Layout.JUSTIFICATION_MODE_NONE;
-<<<<<<< HEAD
-  protected TextTransform mTextTransform = TextTransform.UNSET;
-=======
->>>>>>> fb/0.62-stable
 
   protected float mTextShadowOffsetDx = 0;
   protected float mTextShadowOffsetDy = 0;
@@ -510,37 +483,15 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
     markUpdated();
   }
 
-<<<<<<< HEAD
-  /**
-   * /* This code is duplicated in ReactTextInputManager /* TODO: Factor into a common place they
-   * can both use
-   */
-  @ReactProp(name = ViewProps.FONT_WEIGHT)
-  public void setFontWeight(@Nullable String fontWeightString) {
-    int fontWeightNumeric =
-        fontWeightString != null ? parseNumericFontWeight(fontWeightString) : UNSET;
-    int fontWeight = fontWeightNumeric != UNSET ? fontWeightNumeric : Typeface.NORMAL;
-
-    if (fontWeight == 700 || "bold".equals(fontWeightString)) fontWeight = Typeface.BOLD;
-    else if (fontWeight == 400 || "normal".equals(fontWeightString)) fontWeight = Typeface.NORMAL;
-
-=======
   @ReactProp(name = ViewProps.FONT_WEIGHT)
   public void setFontWeight(@Nullable String fontWeightString) {
     int fontWeight = ReactTypefaceUtils.parseFontWeight(fontWeightString);
->>>>>>> fb/0.62-stable
     if (fontWeight != mFontWeight) {
       mFontWeight = fontWeight;
       markUpdated();
     }
   }
 
-<<<<<<< HEAD
-  /**
-   * /* This code is duplicated in ReactTextInputManager /* TODO: Factor into a common place they
-   * can both use
-   */
-=======
   @ReactProp(name = ViewProps.FONT_VARIANT)
   public void setFontVariant(@Nullable ReadableArray fontVariantArray) {
     String fontFeatureSettings = ReactTypefaceUtils.parseFontVariant(fontVariantArray);
@@ -551,7 +502,6 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
     }
   }
 
->>>>>>> fb/0.62-stable
   @ReactProp(name = ViewProps.FONT_STYLE)
   public void setFontStyle(@Nullable String fontStyleString) {
     int fontStyle = ReactTypefaceUtils.parseFontStyle(fontStyleString);

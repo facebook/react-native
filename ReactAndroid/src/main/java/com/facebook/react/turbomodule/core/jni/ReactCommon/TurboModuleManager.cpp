@@ -1,8 +1,4 @@
-<<<<<<< HEAD
-/**
-=======
 /*
->>>>>>> fb/0.62-stable
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -12,19 +8,11 @@
 #include <memory>
 #include <string>
 
-<<<<<<< HEAD
-#include <fb/fbjni.h>
-#include <jsi/jsi.h>
-
-#include <ReactCommon/TurboModuleBinding.h>
-#include <ReactCommon/TurboCxxModule.h>
-=======
 #include <fbjni/fbjni.h>
 #include <jsi/jsi.h>
 
 #include <ReactCommon/TurboCxxModule.h>
 #include <ReactCommon/TurboModuleBinding.h>
->>>>>>> fb/0.62-stable
 #include <react/jni/JMessageQueueThread.h>
 
 #include "TurboModuleManager.h"
@@ -33,28 +21,6 @@ namespace facebook {
 namespace react {
 
 TurboModuleManager::TurboModuleManager(
-<<<<<<< HEAD
-  jni::alias_ref<TurboModuleManager::javaobject> jThis,
-  jsi::Runtime* rt,
-  std::shared_ptr<JSCallInvoker> jsCallInvoker,
-  jni::alias_ref<TurboModuleManagerDelegate::javaobject> delegate
-):
-  javaPart_(jni::make_global(jThis)),
-  runtime_(rt),
-  jsCallInvoker_(jsCallInvoker),
-  delegate_(jni::make_global(delegate))
-  {}
-
-jni::local_ref<TurboModuleManager::jhybriddata> TurboModuleManager::initHybrid(
-  jni::alias_ref<jhybridobject> jThis,
-  jlong jsContext,
-  jni::alias_ref<JSCallInvokerHolder::javaobject> jsCallInvokerHolder,
-  jni::alias_ref<TurboModuleManagerDelegate::javaobject> delegate
-) {
-  auto jsCallInvoker = jsCallInvokerHolder->cthis()->getJSCallInvoker();
-
-  return makeCxxInstance(jThis, (jsi::Runtime *) jsContext, jsCallInvoker, delegate);
-=======
     jni::alias_ref<TurboModuleManager::javaobject> jThis,
     jsi::Runtime *rt,
     std::shared_ptr<CallInvoker> jsCallInvoker,
@@ -82,19 +48,13 @@ jni::local_ref<TurboModuleManager::jhybriddata> TurboModuleManager::initHybrid(
       jsCallInvoker,
       nativeCallInvoker,
       delegate);
->>>>>>> fb/0.62-stable
 }
 
 void TurboModuleManager::registerNatives() {
   registerHybrid({
-<<<<<<< HEAD
-    makeNativeMethod("initHybrid", TurboModuleManager::initHybrid),
-    makeNativeMethod("installJSIBindings", TurboModuleManager::installJSIBindings),
-=======
       makeNativeMethod("initHybrid", TurboModuleManager::initHybrid),
       makeNativeMethod(
           "installJSIBindings", TurboModuleManager::installJSIBindings),
->>>>>>> fb/0.62-stable
   });
 }
 
@@ -102,42 +62,6 @@ void TurboModuleManager::installJSIBindings() {
   if (!runtime_) {
     return; // Runtime doesn't exist when attached to Chrome debugger.
   }
-<<<<<<< HEAD
-  TurboModuleBinding::install(*runtime_, std::make_shared<TurboModuleBinding>(
-      [this](const std::string &name) -> std::shared_ptr<TurboModule> {
-        auto turboModuleLookup = turboModuleCache_.find(name);
-        if (turboModuleLookup != turboModuleCache_.end()) {
-          return turboModuleLookup->second;
-        }
-
-        auto cxxModule = delegate_->cthis()->getTurboModule(name, jsCallInvoker_);
-        if (cxxModule) {
-          turboModuleCache_.insert({name, cxxModule});
-          return cxxModule;
-        }
-
-        static auto getLegacyCxxModule = delegate_->getClass()->getMethod<jni::alias_ref<CxxModuleWrapper::javaobject>(const std::string&)>("getLegacyCxxModule");
-        auto legacyCxxModule = getLegacyCxxModule(delegate_.get(), name);
-
-        if (legacyCxxModule) {
-          auto turboModule = std::make_shared<react::TurboCxxModule>(legacyCxxModule->cthis()->getModule(), jsCallInvoker_);
-          turboModuleCache_.insert({name, turboModule});
-          return turboModule;
-        }
-
-        static auto getJavaModule = javaClassStatic()->getMethod<jni::alias_ref<JTurboModule>(const std::string&)>("getJavaModule");
-        auto moduleInstance = getJavaModule(javaPart_.get(), name);
-
-        if (moduleInstance) {
-          auto turboModule = delegate_->cthis()->getTurboModule(name, moduleInstance, jsCallInvoker_);
-          turboModuleCache_.insert({name, turboModule});
-          return turboModule;
-        }
-
-        return std::shared_ptr<TurboModule>(nullptr);
-      })
-  );
-=======
 
   TurboModuleBinding::install(
       *runtime_,
@@ -200,7 +124,6 @@ void TurboModuleManager::installJSIBindings() {
 
             return nullptr;
           }));
->>>>>>> fb/0.62-stable
 }
 
 } // namespace react

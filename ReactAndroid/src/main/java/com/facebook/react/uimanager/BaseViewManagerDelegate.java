@@ -1,5 +1,3 @@
-<<<<<<< HEAD
-=======
 /*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
@@ -7,7 +5,6 @@
  * LICENSE file in the root directory of this source tree.
  */
 
->>>>>>> fb/0.62-stable
 package com.facebook.react.uimanager;
 
 import android.view.View;
@@ -20,12 +17,7 @@ import com.facebook.yoga.YogaConstants;
  * This is a base implementation of {@link ViewManagerDelegate} which supports setting properties
  * that every view should support, such as rotation, background color, etc.
  */
-<<<<<<< HEAD
-public abstract class BaseViewManagerDelegate<
-        T extends View, U extends BaseViewManager<T, ? extends LayoutShadowNode>>
-=======
 public abstract class BaseViewManagerDelegate<T extends View, U extends BaseViewManagerInterface<T>>
->>>>>>> fb/0.62-stable
     implements ViewManagerDelegate<T> {
   protected final U mViewManager;
 
@@ -54,12 +46,6 @@ public abstract class BaseViewManagerDelegate<T extends View, U extends BaseView
       case ViewProps.ACCESSIBILITY_STATE:
         mViewManager.setViewState(view, (ReadableMap) value);
         break;
-<<<<<<< HEAD
-      case ViewProps.ACCESSIBILITY_STATES:
-        mViewManager.setViewStates(view, (ReadableArray) value);
-        break;
-=======
->>>>>>> fb/0.62-stable
       case ViewProps.BACKGROUND_COLOR:
         mViewManager.setBackgroundColor(view, value == null ? 0 : ((Double) value).intValue());
         break;

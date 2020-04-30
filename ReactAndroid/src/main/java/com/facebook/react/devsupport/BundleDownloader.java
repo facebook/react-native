@@ -1,16 +1,13 @@
 /*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
- * directory of this source tree.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
+
 package com.facebook.react.devsupport;
 
 import android.util.Log;
-<<<<<<< HEAD
-import android.util.Pair;
-=======
->>>>>>> fb/0.62-stable
 import androidx.annotation.Nullable;
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
@@ -151,12 +148,7 @@ public class BundleDownloader {
             Matcher match = regex.matcher(contentType);
             try (Response r = response) {
               if (match.find()) {
-<<<<<<< HEAD
-                processMultipartResponse(
-                    url, r, match.group(1), outputFile, bundleInfo, clientType, callback);
-=======
                 processMultipartResponse(url, r, match.group(1), outputFile, bundleInfo, callback);
->>>>>>> fb/0.62-stable
               } else {
                 // In case the server doesn't support multipart/mixed responses, fallback to normal
                 // download.
@@ -167,10 +159,6 @@ public class BundleDownloader {
                     Okio.buffer(r.body().source()),
                     outputFile,
                     bundleInfo,
-<<<<<<< HEAD
-                    clientType,
-=======
->>>>>>> fb/0.62-stable
                     callback);
               }
             }
@@ -178,17 +166,8 @@ public class BundleDownloader {
         });
   }
 
-<<<<<<< HEAD
-  private String formatBundleUrl(String bundleURL, BundleDeltaClient.ClientType clientType) {
-    return BundleDeltaClient.isDeltaUrl(bundleURL)
-            && mBundleDeltaClient != null
-            && mBundleDeltaClient.canHandle(clientType)
-        ? mBundleDeltaClient.extendUrlForDelta(bundleURL)
-        : bundleURL;
-=======
   private String formatBundleUrl(String bundleURL) {
     return bundleURL;
->>>>>>> fb/0.62-stable
   }
 
   private void processMultipartResponse(
@@ -220,18 +199,7 @@ public class BundleDownloader {
                     status = Integer.parseInt(headers.get("X-Http-Status"));
                   }
                   processBundleResult(
-<<<<<<< HEAD
-                      url,
-                      status,
-                      Headers.of(headers),
-                      body,
-                      outputFile,
-                      bundleInfo,
-                      clientType,
-                      callback);
-=======
                       url, status, Headers.of(headers), body, outputFile, bundleInfo, callback);
->>>>>>> fb/0.62-stable
                 } else {
                   if (!headers.containsKey("Content-Type")
                       || !headers.get("Content-Type").equals("application/json")) {
@@ -341,14 +309,7 @@ public class BundleDownloader {
     return true;
   }
 
-<<<<<<< HEAD
-  private static void populateBundleInfo(
-      String url, Headers headers, BundleDeltaClient.ClientType clientType, BundleInfo bundleInfo) {
-    bundleInfo.mDeltaClientName =
-        clientType == BundleDeltaClient.ClientType.NONE ? null : clientType.name();
-=======
   private static void populateBundleInfo(String url, Headers headers, BundleInfo bundleInfo) {
->>>>>>> fb/0.62-stable
     bundleInfo.mUrl = url;
 
     String filesChangedCountStr = headers.get("X-Metro-Files-Changed-Count");

@@ -1,5 +1,3 @@
-<<<<<<< HEAD
-=======
 /*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
@@ -7,7 +5,6 @@
  * LICENSE file in the root directory of this source tree.
  */
 
->>>>>>> fb/0.62-stable
 package com.facebook.react.jstasks;
 
 public class NoRetryPolicy implements HeadlessJsTaskRetryPolicy {

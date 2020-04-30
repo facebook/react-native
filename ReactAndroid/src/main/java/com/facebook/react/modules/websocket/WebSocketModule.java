@@ -1,9 +1,10 @@
 /*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
- * directory of this source tree.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
+
 package com.facebook.react.modules.websocket;
 
 import androidx.annotation.Nullable;
@@ -36,13 +37,9 @@ import okhttp3.WebSocketListener;
 import okio.ByteString;
 
 @ReactModule(name = WebSocketModule.NAME, hasConstants = false)
-<<<<<<< HEAD
-public final class WebSocketModule extends ReactContextBaseJavaModule {
-=======
 public final class WebSocketModule extends NativeWebSocketModuleSpec {
   public static final String TAG = WebSocketModule.class.getSimpleName();
 
->>>>>>> fb/0.62-stable
   public static final String NAME = "WebSocketModule";
 
   public interface ContentHandler {
@@ -62,11 +59,6 @@ public final class WebSocketModule extends NativeWebSocketModuleSpec {
   }
 
   private void sendEvent(String eventName, WritableMap params) {
-<<<<<<< HEAD
-    mReactContext
-        .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
-        .emit(eventName, params);
-=======
     ReactApplicationContext reactApplicationContext = getReactApplicationContextIfActiveOrWarn();
 
     if (reactApplicationContext != null) {
@@ -74,7 +66,6 @@ public final class WebSocketModule extends NativeWebSocketModuleSpec {
           .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
           .emit(eventName, params);
     }
->>>>>>> fb/0.62-stable
   }
 
   @Override
@@ -95,12 +86,8 @@ public final class WebSocketModule extends NativeWebSocketModuleSpec {
       final String url,
       @Nullable final ReadableArray protocols,
       @Nullable final ReadableMap options,
-<<<<<<< HEAD
-      final int id) {
-=======
       final double socketID) {
     final int id = (int) socketID;
->>>>>>> fb/0.62-stable
     OkHttpClient client =
         new OkHttpClient.Builder()
             .connectTimeout(10, TimeUnit.SECONDS)

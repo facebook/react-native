@@ -1,13 +1,9 @@
-<<<<<<< HEAD
-// Copyright 2004-present Facebook. All Rights Reserved.
-=======
 /*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
->>>>>>> fb/0.62-stable
 
 package com.facebook.react.turbomodule.core;
 
@@ -19,10 +15,7 @@ import com.facebook.react.TurboReactPackage;
 import com.facebook.react.bridge.CxxModuleWrapper;
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
-<<<<<<< HEAD
-=======
 import com.facebook.react.module.model.ReactModuleInfo;
->>>>>>> fb/0.62-stable
 import com.facebook.react.turbomodule.core.interfaces.TurboModule;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -115,8 +108,6 @@ public abstract class ReactPackageTurboModuleManagerDelegate extends TurboModule
     return mModules.get(moduleName);
   }
 
-<<<<<<< HEAD
-=======
   @Override
   public List<String> getEagerInitModuleNames() {
     List<String> moduleNames = new ArrayList<>();
@@ -132,7 +123,6 @@ public abstract class ReactPackageTurboModuleManagerDelegate extends TurboModule
     return moduleNames;
   }
 
->>>>>>> fb/0.62-stable
   public abstract static class Builder {
     private @Nullable List<ReactPackage> mPackages;
     private @Nullable ReactApplicationContext mContext;

@@ -7,12 +7,9 @@
 
 package com.facebook.react.fabric.mounting.mountitems;
 
-<<<<<<< HEAD
-=======
 import static com.facebook.react.fabric.FabricUIManager.IS_DEVELOPMENT_ENVIRONMENT;
 
 import androidx.annotation.NonNull;
->>>>>>> fb/0.62-stable
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.fabric.mounting.MountingManager;
 

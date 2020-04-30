@@ -1,54 +1,39 @@
 /*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
- * directory of this source tree.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 // switchview because switch is a keyword
 package com.facebook.react.views.switchview;
 
-<<<<<<< HEAD
-import android.view.View;
-import android.widget.CompoundButton;
-=======
 import android.content.Context;
 import android.view.View;
 import android.widget.CompoundButton;
 import androidx.annotation.NonNull;
->>>>>>> fb/0.62-stable
 import androidx.annotation.Nullable;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.uimanager.LayoutShadowNode;
-<<<<<<< HEAD
-=======
 import com.facebook.react.uimanager.PixelUtil;
->>>>>>> fb/0.62-stable
 import com.facebook.react.uimanager.SimpleViewManager;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.ViewManagerDelegate;
 import com.facebook.react.uimanager.ViewProps;
 import com.facebook.react.uimanager.annotations.ReactProp;
-<<<<<<< HEAD
-=======
 import com.facebook.react.viewmanagers.AndroidSwitchManagerDelegate;
 import com.facebook.react.viewmanagers.AndroidSwitchManagerInterface;
->>>>>>> fb/0.62-stable
 import com.facebook.yoga.YogaMeasureFunction;
 import com.facebook.yoga.YogaMeasureMode;
 import com.facebook.yoga.YogaMeasureOutput;
 import com.facebook.yoga.YogaNode;
 
 /** View manager for {@link ReactSwitch} components. */
-<<<<<<< HEAD
-public class ReactSwitchManager extends SimpleViewManager<ReactSwitch> {
-=======
 public class ReactSwitchManager extends SimpleViewManager<ReactSwitch>
     implements AndroidSwitchManagerInterface<ReactSwitch> {
->>>>>>> fb/0.62-stable
 
   public static final String REACT_CLASS = "AndroidSwitch";
 

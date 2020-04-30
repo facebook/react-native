@@ -1,9 +1,10 @@
 /*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
- * directory of this source tree.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
+
 package com.facebook.react.views.slider;
 
 import android.content.Context;
@@ -22,21 +23,15 @@ import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.uimanager.LayoutShadowNode;
-<<<<<<< HEAD
-=======
 import com.facebook.react.uimanager.PixelUtil;
->>>>>>> fb/0.62-stable
 import com.facebook.react.uimanager.SimpleViewManager;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.ViewManagerDelegate;
 import com.facebook.react.uimanager.ViewProps;
 import com.facebook.react.uimanager.annotations.ReactProp;
-<<<<<<< HEAD
-=======
 import com.facebook.react.viewmanagers.SliderManagerDelegate;
 import com.facebook.react.viewmanagers.SliderManagerInterface;
->>>>>>> fb/0.62-stable
 import com.facebook.yoga.YogaMeasureFunction;
 import com.facebook.yoga.YogaMeasureMode;
 import com.facebook.yoga.YogaMeasureOutput;
@@ -262,10 +257,6 @@ public class ReactSliderManager extends SimpleViewManager<ReactSlider>
             ViewGroup.LayoutParams.WRAP_CONTENT, View.MeasureSpec.UNSPECIFIED);
     reactSlider.measure(spec, spec);
 
-<<<<<<< HEAD
-    return YogaMeasureOutput.make(reactSlider.getMeasuredWidth(), reactSlider.getMeasuredHeight());
-  }
-=======
     return YogaMeasureOutput.make(
         PixelUtil.toDIPFromPixel(reactSlider.getMeasuredWidth()),
         PixelUtil.toDIPFromPixel(reactSlider.getMeasuredHeight()));
@@ -298,5 +289,4 @@ public class ReactSliderManager extends SimpleViewManager<ReactSlider>
 
   protected static ReactSliderAccessibilityDelegate sAccessibilityDelegate =
       new ReactSliderAccessibilityDelegate();
->>>>>>> fb/0.62-stable
 }

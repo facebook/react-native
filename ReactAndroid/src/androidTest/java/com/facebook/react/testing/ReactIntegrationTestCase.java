@@ -1,9 +1,10 @@
 /*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
- * directory of this source tree.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
+
 package com.facebook.react.testing;
 
 import static org.mockito.Mockito.mock;
@@ -12,10 +13,7 @@ import android.test.AndroidTestCase;
 import android.view.View;
 import android.view.ViewGroup;
 import androidx.annotation.Nullable;
-<<<<<<< HEAD
-=======
 import androidx.test.InstrumentationRegistry;
->>>>>>> fb/0.62-stable
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.BaseJavaModule;
 import com.facebook.react.bridge.CatalystInstance;
@@ -27,11 +25,7 @@ import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.common.futures.SimpleSettableFuture;
 import com.facebook.react.devsupport.interfaces.DevSupportManager;
 import com.facebook.react.modules.core.ReactChoreographer;
-<<<<<<< HEAD
-import com.facebook.react.modules.core.Timing;
-=======
 import com.facebook.react.modules.core.TimingModule;
->>>>>>> fb/0.62-stable
 import com.facebook.react.testing.idledetection.ReactBridgeIdleSignaler;
 import com.facebook.react.testing.idledetection.ReactIdleDetectionUtil;
 import com.facebook.soloader.SoLoader;
@@ -171,13 +165,7 @@ public abstract class ReactIntegrationTestCase extends AndroidTestCase {
   }
 
   public void waitForIdleSync() {
-<<<<<<< HEAD
-    return;
-    // TODO: re-enable after cleanup of android-x migration
-    // InstrumentationRegistry.getInstrumentation().waitForIdleSync();
-=======
     InstrumentationRegistry.getInstrumentation().waitForIdleSync();
->>>>>>> fb/0.62-stable
   }
 
   public void waitForBridgeAndUIIdle() {

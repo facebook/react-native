@@ -393,13 +393,9 @@ public class UIManagerModule extends ReactContextBaseJavaModule
     if (uiManagerType == FABRIC) {
       UIManager fabricUIManager =
           UIManagerHelper.getUIManager(getReactApplicationContext(), uiManagerType);
-<<<<<<< HEAD
-      fabricUIManager.synchronouslyUpdateViewOnUIThread(tag, props);
-=======
       if (fabricUIManager != null) {
         fabricUIManager.synchronouslyUpdateViewOnUIThread(tag, props);
       }
->>>>>>> fb/0.62-stable
     } else {
       mUIImplementation.synchronouslyUpdateViewOnUIThread(tag, new ReactStylesDiffMap(props));
     }
@@ -483,11 +479,6 @@ public class UIManagerModule extends ReactContextBaseJavaModule
     }
     int uiManagerType = ViewUtil.getUIManagerType(tag);
     if (uiManagerType == FABRIC) {
-<<<<<<< HEAD
-      UIManager fabricUIManager =
-          UIManagerHelper.getUIManager(getReactApplicationContext(), uiManagerType);
-      fabricUIManager.synchronouslyUpdateViewOnUIThread(tag, props);
-=======
       ReactApplicationContext reactApplicationContext = getReactApplicationContext();
       if (reactApplicationContext.hasActiveCatalystInstance()) {
         final UIManager fabricUIManager =
@@ -502,7 +493,6 @@ public class UIManagerModule extends ReactContextBaseJavaModule
               });
         }
       }
->>>>>>> fb/0.62-stable
     } else {
       mUIImplementation.updateView(tag, className, props);
     }
@@ -692,16 +682,6 @@ public class UIManagerModule extends ReactContextBaseJavaModule
     // the dispatchViewManagerCommand() method is supported by Fabric JS API.
     if (commandId.getType() == ReadableType.Number) {
       final int commandIdNum = commandId.asInt();
-<<<<<<< HEAD
-      UIManagerHelper.getUIManager(
-              getReactApplicationContext(), ViewUtil.getUIManagerType(reactTag))
-          .dispatchCommand(reactTag, commandIdNum, commandArgs);
-    } else if (commandId.getType() == ReadableType.String) {
-      final String commandIdStr = commandId.asString();
-      UIManagerHelper.getUIManager(
-              getReactApplicationContext(), ViewUtil.getUIManagerType(reactTag))
-          .dispatchCommand(reactTag, commandIdStr, commandArgs);
-=======
       UIManager uiManager =
           UIManagerHelper.getUIManager(
               getReactApplicationContext(), ViewUtil.getUIManagerType(reactTag));
@@ -716,7 +696,6 @@ public class UIManagerModule extends ReactContextBaseJavaModule
       if (uiManager != null) {
         uiManager.dispatchCommand(reactTag, commandIdStr, commandArgs);
       }
->>>>>>> fb/0.62-stable
     }
   }
 

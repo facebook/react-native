@@ -7,26 +7,13 @@
 
 package com.facebook.react.fabric;
 
-<<<<<<< HEAD
-=======
 import androidx.annotation.NonNull;
->>>>>>> fb/0.62-stable
 import com.facebook.react.bridge.NativeModuleCallExceptionHandler;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.modules.core.ChoreographerCompat;
 
 public abstract class GuardedFrameCallback extends ChoreographerCompat.FrameCallback {
 
-<<<<<<< HEAD
-  private final NativeModuleCallExceptionHandler mExceptionHandler;
-
-  @Deprecated
-  protected GuardedFrameCallback(ReactContext reactContext) {
-    this(reactContext.getExceptionHandler());
-  }
-
-  protected GuardedFrameCallback(NativeModuleCallExceptionHandler exceptionHandler) {
-=======
   @NonNull private final NativeModuleCallExceptionHandler mExceptionHandler;
 
   @Deprecated
@@ -35,7 +22,6 @@ public abstract class GuardedFrameCallback extends ChoreographerCompat.FrameCall
   }
 
   protected GuardedFrameCallback(@NonNull NativeModuleCallExceptionHandler exceptionHandler) {
->>>>>>> fb/0.62-stable
     mExceptionHandler = exceptionHandler;
   }
 

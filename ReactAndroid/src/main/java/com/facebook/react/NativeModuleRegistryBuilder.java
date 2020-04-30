@@ -58,21 +58,6 @@ public class NativeModuleRegistryBuilder {
         }
         mModules.remove(existingNativeModule);
       }
-<<<<<<< HEAD
-      if (ReactFeatureFlags.useTurboModules && moduleHolder.isTurboModule()) {
-        // If this module is a TurboModule, and if TurboModules are enabled, don't add this module
-
-        // This condition is after checking for overrides, since if there is already a module,
-        // and we want to override it with a turbo module, we would need to remove the modules thats
-        // already in the list, and then NOT add the new module, since that will be directly exposed
-
-        // Note that is someone uses {@link NativeModuleRegistry#registerModules}, we will NOT check
-        // for TurboModules - assuming that people wanted to explicitly register native modules
-        // there
-        continue;
-      }
-=======
->>>>>>> fb/0.62-stable
       mModules.put(name, moduleHolder);
     }
   }

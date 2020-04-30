@@ -1,11 +1,3 @@
-<<<<<<< HEAD
-/**
- * Copyright (c) Facebook, Inc. and its affiliates.
- *
- * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
- * directory of this source tree.
- */
-=======
 /*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
@@ -13,15 +5,11 @@
  * LICENSE file in the root directory of this source tree.
  */
 
->>>>>>> fb/0.62-stable
 package com.facebook.react.turbomodule.core.interfaces;
 
 import androidx.annotation.Nullable;
 import java.util.Collection;
-<<<<<<< HEAD
-=======
 import java.util.List;
->>>>>>> fb/0.62-stable
 
 /** Interface to allow for creating and retrieving TurboModules. */
 public interface TurboModuleRegistry {
@@ -39,8 +27,6 @@ public interface TurboModuleRegistry {
 
   /** Has the TurboModule with name `moduleName` been instantiated? */
   boolean hasModule(String moduleName);
-<<<<<<< HEAD
-=======
 
   /**
    * Return the names of all the NativeModules that are supposed to be eagerly initialized. By
@@ -48,5 +34,4 @@ public interface TurboModuleRegistry {
    * NativeModules.
    */
   List<String> getEagerInitModuleNames();
->>>>>>> fb/0.62-stable
 }

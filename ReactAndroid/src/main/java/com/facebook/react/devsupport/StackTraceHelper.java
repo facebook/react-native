@@ -1,9 +1,10 @@
 /*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
- * directory of this source tree.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
+
 package com.facebook.react.devsupport;
 
 import androidx.annotation.Nullable;
@@ -96,13 +97,10 @@ public class StackTraceHelper {
       return mFileName;
     }
 
-<<<<<<< HEAD
-=======
     public boolean isCollapsed() {
       return mIsCollapsed;
     }
 
->>>>>>> fb/0.62-stable
     /** Convert the stack frame to a JSON representation. */
     public JSONObject toJSON() {
       return new JSONObject(

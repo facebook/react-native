@@ -1,15 +1,9 @@
-<<<<<<< HEAD
-// Copyright 2004-present Facebook. All Rights Reserved.
-// This source code is licensed under the MIT license found in the
-// LICENSE file in the root directory of this source tree.
-=======
 /*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
->>>>>>> fb/0.62-stable
 
 #include "Binding.h"
 #include "AsyncEventBeat.h"
@@ -17,15 +11,6 @@
 #include "ReactNativeConfigHolder.h"
 #include "StateWrapperImpl.h"
 
-<<<<<<< HEAD
-#include <fb/fbjni.h>
-#include <jsi/JSIDynamic.h>
-#include <jsi/jsi.h>
-#include <react/components/scrollview/ScrollViewProps.h>
-#include <react/core/conversions.h>
-#include <react/core/EventBeat.h>
-#include <react/core/EventEmitter.h>
-=======
 #import <better/set.h>
 #include <fbjni/fbjni.h>
 #include <jsi/JSIDynamic.h>
@@ -34,7 +19,6 @@
 #include <react/core/EventBeat.h>
 #include <react/core/EventEmitter.h>
 #include <react/core/conversions.h>
->>>>>>> fb/0.62-stable
 #include <react/debug/SystraceSection.h>
 #include <react/uimanager/ComponentDescriptorFactory.h>
 #include <react/uimanager/Scheduler.h>
@@ -62,8 +46,6 @@ struct JMountItem : public JavaClass<JMountItem> {
 static constexpr auto UIManagerJavaDescriptor =
     "com/facebook/react/fabric/FabricUIManager";
 
-<<<<<<< HEAD
-=======
 struct RemoveDeleteMetadata {
   Tag tag;
   Tag parentTag;
@@ -72,7 +54,6 @@ struct RemoveDeleteMetadata {
   bool shouldDelete;
 };
 
->>>>>>> fb/0.62-stable
 } // namespace
 
 jni::local_ref<Binding::jhybriddata> Binding::initHybrid(
@@ -92,10 +73,6 @@ std::shared_ptr<Scheduler> Binding::getScheduler() {
   return scheduler_;
 }
 
-<<<<<<< HEAD
-
-=======
->>>>>>> fb/0.62-stable
 void Binding::startSurface(
     jint surfaceId,
     jni::alias_ref<jstring> moduleName,
@@ -111,15 +88,11 @@ void Binding::startSurface(
   LayoutContext context;
   context.pointScaleFactor = pointScaleFactor_;
   scheduler->startSurface(
-<<<<<<< HEAD
-      surfaceId, moduleName->toStdString(), initialProps->consume(), {}, context);
-=======
       surfaceId,
       moduleName->toStdString(),
       initialProps->consume(),
       {},
       context);
->>>>>>> fb/0.62-stable
 }
 
 void Binding::startSurfaceWithConstraints(
@@ -132,12 +105,9 @@ void Binding::startSurfaceWithConstraints(
     jfloat maxHeight) {
   SystraceSection s("FabricUIManagerBinding::startSurfaceWithConstraints");
 
-<<<<<<< HEAD
-=======
   LOG(WARNING) << "Binding::startSurfaceWithConstraints() was called (address: "
                << this << ", surfaceId: " << surfaceId << ").";
 
->>>>>>> fb/0.62-stable
   std::shared_ptr<Scheduler> scheduler = getScheduler();
   if (!scheduler) {
     LOG(ERROR) << "Binding::startSurfaceWithConstraints: scheduler disappeared";
@@ -181,12 +151,9 @@ void Binding::renderTemplateToSurface(jint surfaceId, jstring uiTemplate) {
 void Binding::stopSurface(jint surfaceId) {
   SystraceSection s("FabricUIManagerBinding::stopSurface");
 
-<<<<<<< HEAD
-=======
   LOG(WARNING) << "Binding::stopSurface() was called (address: " << this
                << ", surfaceId: " << surfaceId << ").";
 
->>>>>>> fb/0.62-stable
   std::shared_ptr<Scheduler> scheduler = getScheduler();
   if (!scheduler) {
     LOG(ERROR) << "Binding::stopSurface: scheduler disappeared";
@@ -233,12 +200,6 @@ void Binding::installFabricUIManager(
     jni::alias_ref<jobject> reactNativeConfig) {
   SystraceSection s("FabricUIManagerBinding::installFabricUIManager");
 
-<<<<<<< HEAD
-  // Use std::lock and std::adopt_lock to prevent deadlocks by locking mutexes at the same time
-  std::lock(schedulerMutex_, javaUIManagerMutex_);
-  std::lock_guard<std::mutex> schedulerLock(schedulerMutex_, std::adopt_lock);
-  std::lock_guard<std::mutex> uiManagerLock(javaUIManagerMutex_, std::adopt_lock);
-=======
   LOG(WARNING) << "Binding::installFabricUIManager() was called (address: "
                << this << ").";
 
@@ -248,7 +209,6 @@ void Binding::installFabricUIManager(
   std::lock_guard<std::mutex> schedulerLock(schedulerMutex_, std::adopt_lock);
   std::lock_guard<std::mutex> uiManagerLock(
       javaUIManagerMutex_, std::adopt_lock);
->>>>>>> fb/0.62-stable
 
   javaUIManager_ = make_global(javaUIManager);
 
@@ -268,22 +228,6 @@ void Binding::installFabricUIManager(
             });
       };
 
-<<<<<<< HEAD
-  eventBeatManager->setRuntimeExecutor(runtimeExecutor);
-
-  // TODO: T31905686 Create synchronous Event Beat
-  jni::global_ref<jobject> localJavaUIManager = javaUIManager_;
-  EventBeatFactory synchronousBeatFactory =
-      [eventBeatManager, runtimeExecutor, localJavaUIManager]() {
-        return std::make_unique<AsyncEventBeat>(
-            eventBeatManager, runtimeExecutor, localJavaUIManager);
-      };
-
-  EventBeatFactory asynchronousBeatFactory =
-      [eventBeatManager, runtimeExecutor, localJavaUIManager]() {
-        return std::make_unique<AsyncEventBeat>(
-            eventBeatManager, runtimeExecutor, localJavaUIManager);
-=======
   // TODO: T31905686 Create synchronous Event Beat
   jni::global_ref<jobject> localJavaUIManager = javaUIManager_;
   EventBeat::Factory synchronousBeatFactory =
@@ -298,7 +242,6 @@ void Binding::installFabricUIManager(
           EventBeat::SharedOwnerBox const &ownerBox) {
         return std::make_unique<AsyncEventBeat>(
             ownerBox, eventBeatManager, runtimeExecutor, localJavaUIManager);
->>>>>>> fb/0.62-stable
       };
 
   std::shared_ptr<const ReactNativeConfig> config =
@@ -306,8 +249,6 @@ void Binding::installFabricUIManager(
   contextContainer->insert("ReactNativeConfig", config);
   contextContainer->insert("FabricUIManager", javaUIManager_);
 
-<<<<<<< HEAD
-=======
   // Keep reference to config object and cache some feature flags here
   reactNativeConfig_ = config;
   shouldCollateRemovesAndDeletes_ = reactNativeConfig_->getBool(
@@ -319,7 +260,6 @@ void Binding::installFabricUIManager(
   disablePreallocateViews_ = reactNativeConfig_->getBool(
       "react_fabric:disabled_view_preallocation_android");
 
->>>>>>> fb/0.62-stable
   auto toolbox = SchedulerToolbox{};
   toolbox.contextContainer = contextContainer;
   toolbox.componentRegistryFactory = componentsRegistry->buildRegistryFunction;
@@ -330,15 +270,6 @@ void Binding::installFabricUIManager(
 }
 
 void Binding::uninstallFabricUIManager() {
-<<<<<<< HEAD
-  // Use std::lock and std::adopt_lock to prevent deadlocks by locking mutexes at the same time
-  std::lock(schedulerMutex_, javaUIManagerMutex_);
-  std::lock_guard<std::mutex> schedulerLock(schedulerMutex_, std::adopt_lock);
-  std::lock_guard<std::mutex> uiManagerLock(javaUIManagerMutex_, std::adopt_lock);
-
-  scheduler_ = nullptr;
-  javaUIManager_ = nullptr;
-=======
   LOG(WARNING) << "Binding::uninstallFabricUIManager() was called (address: "
                << this << ").";
   // Use std::lock and std::adopt_lock to prevent deadlocks by locking mutexes
@@ -351,7 +282,6 @@ void Binding::uninstallFabricUIManager() {
   scheduler_ = nullptr;
   javaUIManager_ = nullptr;
   reactNativeConfig_ = nullptr;
->>>>>>> fb/0.62-stable
 }
 
 inline local_ref<ReadableMap::javaobject> castReadableMap(
@@ -360,14 +290,9 @@ inline local_ref<ReadableMap::javaobject> castReadableMap(
 }
 
 inline local_ref<ReadableArray::javaobject> castReadableArray(
-<<<<<<< HEAD
-  local_ref<ReadableNativeArray::javaobject> nativeArray) {
-  return make_local(reinterpret_cast<ReadableArray::javaobject>(nativeArray.get()));
-=======
     local_ref<ReadableNativeArray::javaobject> nativeArray) {
   return make_local(
       reinterpret_cast<ReadableArray::javaobject>(nativeArray.get()));
->>>>>>> fb/0.62-stable
 }
 
 // TODO: this method will be removed when binding for components are code-gen
@@ -438,13 +363,8 @@ local_ref<JMountItem::javaobject> createUpdateLayoutMountItem(
       oldChildShadowView.layoutMetrics != newChildShadowView.layoutMetrics) {
     static auto updateLayoutInstruction =
         jni::findClassStatic(UIManagerJavaDescriptor)
-<<<<<<< HEAD
-            ->getMethod<alias_ref<JMountItem>(jint, jint, jint, jint, jint, jint)>(
-                "updateLayoutMountItem");
-=======
             ->getMethod<alias_ref<JMountItem>(
                 jint, jint, jint, jint, jint, jint)>("updateLayoutMountItem");
->>>>>>> fb/0.62-stable
     auto layoutMetrics = newChildShadowView.layoutMetrics;
     auto pointScaleFactor = layoutMetrics.pointScaleFactor;
     auto frame = layoutMetrics.frame;
@@ -453,12 +373,8 @@ local_ref<JMountItem::javaobject> createUpdateLayoutMountItem(
     int y = round(frame.origin.y * pointScaleFactor);
     int w = round(frame.size.width * pointScaleFactor);
     int h = round(frame.size.height * pointScaleFactor);
-<<<<<<< HEAD
-    auto layoutDirection = toInt(newChildShadowView.layoutMetrics.layoutDirection);
-=======
     auto layoutDirection =
         toInt(newChildShadowView.layoutMetrics.layoutDirection);
->>>>>>> fb/0.62-stable
     return updateLayoutInstruction(
         javaUIManager, newChildShadowView.tag, x, y, w, h, layoutDirection);
   }
@@ -466,8 +382,6 @@ local_ref<JMountItem::javaobject> createUpdateLayoutMountItem(
   return nullptr;
 }
 
-<<<<<<< HEAD
-=======
 local_ref<JMountItem::javaobject> createUpdatePaddingMountItem(
     const jni::global_ref<jobject> &javaUIManager,
     const ShadowViewMutation &mutation) {
@@ -497,7 +411,6 @@ local_ref<JMountItem::javaobject> createUpdatePaddingMountItem(
       javaUIManager, newChildShadowView.tag, left, top, right, bottom);
 }
 
->>>>>>> fb/0.62-stable
 local_ref<JMountItem::javaobject> createInsertMountItem(
     const jni::global_ref<jobject> &javaUIManager,
     const ShadowViewMutation &mutation) {
@@ -587,10 +500,6 @@ local_ref<JMountItem::javaobject> createDeleteMountItem(
   return deleteInstruction(javaUIManager, mutation.oldChildShadowView.tag);
 }
 
-<<<<<<< HEAD
-// TODO T48019320: because we pass initial props and state to the Create (and preallocate) mount instruction,
-// we technically don't need to pass the first Update to any components. Dedupe?
-=======
 local_ref<JMountItem::javaobject> createRemoveAndDeleteMultiMountItem(
     const jni::global_ref<jobject> &javaUIManager,
     const std::vector<RemoveDeleteMetadata> &metadata) {
@@ -628,19 +537,14 @@ local_ref<JMountItem::javaobject> createRemoveAndDeleteMultiMountItem(
 // TODO T48019320: because we pass initial props and state to the Create (and
 // preallocate) mount instruction, we technically don't need to pass the first
 // Update to any components. Dedupe?
->>>>>>> fb/0.62-stable
 local_ref<JMountItem::javaobject> createCreateMountItem(
     const jni::global_ref<jobject> &javaUIManager,
     const ShadowViewMutation &mutation,
     const Tag surfaceId) {
   static auto createJavaInstruction =
       jni::findClassStatic(UIManagerJavaDescriptor)
-<<<<<<< HEAD
-          ->getMethod<alias_ref<JMountItem>(jstring, ReadableMap::javaobject, jobject, jint, jint, jboolean)>(
-=======
           ->getMethod<alias_ref<JMountItem>(
               jstring, ReadableMap::javaobject, jobject, jint, jint, jboolean)>(
->>>>>>> fb/0.62-stable
               "createMountItem");
 
   auto newChildShadowView = mutation.newChildShadowView;
@@ -652,11 +556,7 @@ local_ref<JMountItem::javaobject> createCreateMountItem(
       newChildShadowView.layoutMetrics != EmptyLayoutMetrics;
 
   local_ref<ReadableMap::javaobject> props = castReadableMap(
-<<<<<<< HEAD
-    ReadableNativeMap::newObjectCxxArgs(newChildShadowView.props->rawProps));
-=======
       ReadableNativeMap::newObjectCxxArgs(newChildShadowView.props->rawProps));
->>>>>>> fb/0.62-stable
 
   // Do not hold onto Java object from C
   // We DO want to hold onto C object from Java, since we don't know the
@@ -683,20 +583,12 @@ void Binding::schedulerDidFinishTransaction(
   std::lock_guard<std::recursive_mutex> lock(commitMutex_);
 
   SystraceSection s("FabricUIManagerBinding::schedulerDidFinishTransaction");
-<<<<<<< HEAD
-  long finishTransactionStartTime = getTime();
-
-  jni::global_ref<jobject> localJavaUIManager = getJavaUIManager();
-  if (!localJavaUIManager) {
-    LOG(ERROR) << "Binding::schedulerDidFinishTransaction: JavaUIManager disappeared";
-=======
   long finishTransactionStartTime = monotonicTimeInMilliseconds();
 
   jni::global_ref<jobject> localJavaUIManager = getJavaUIManager();
   if (!localJavaUIManager) {
     LOG(ERROR)
         << "Binding::schedulerDidFinishTransaction: JavaUIManager disappeared";
->>>>>>> fb/0.62-stable
     return;
   }
 
@@ -710,8 +602,6 @@ void Binding::schedulerDidFinishTransaction(
   auto surfaceId = mountingTransaction->getSurfaceId();
   auto &mutations = mountingTransaction->getMutations();
 
-<<<<<<< HEAD
-=======
   facebook::better::set<Tag> createAndDeleteTagsToProcess;
   // When collapseDeleteCreateMountingInstructions_ is enabled, the
   // createAndDeleteTagsToProcess set will contain all the tags belonging to
@@ -738,7 +628,6 @@ void Binding::schedulerDidFinishTransaction(
       }
     }
   }
->>>>>>> fb/0.62-stable
   int64_t commitNumber = telemetry.getCommitNumber();
 
   std::vector<local_ref<jobject>> queue;
@@ -751,18 +640,13 @@ void Binding::schedulerDidFinishTransaction(
   auto mountItems = *(mountItemsArray);
   std::unordered_set<Tag> deletedViewTags;
 
-<<<<<<< HEAD
-=======
   // Find the set of tags that are removed and deleted in one block
   std::vector<RemoveDeleteMetadata> toRemove;
 
->>>>>>> fb/0.62-stable
   int position = 0;
   for (const auto &mutation : mutations) {
     auto oldChildShadowView = mutation.oldChildShadowView;
     auto newChildShadowView = mutation.newChildShadowView;
-<<<<<<< HEAD
-=======
     auto mutationType = mutation.type;
 
     if (collapseDeleteCreateMountingInstructions_ &&
@@ -780,16 +664,10 @@ void Binding::schedulerDidFinishTransaction(
         continue;
       }
     }
->>>>>>> fb/0.62-stable
 
     bool isVirtual = newChildShadowView.layoutMetrics == EmptyLayoutMetrics &&
         oldChildShadowView.layoutMetrics == EmptyLayoutMetrics;
 
-<<<<<<< HEAD
-    switch (mutation.type) {
-      case ShadowViewMutation::Create: {
-        if (mutation.newChildShadowView.props->revision > 1 ||
-=======
     // Handle accumulated removals/deletions
     if (shouldCollateRemovesAndDeletes_ &&
         mutation.type != ShadowViewMutation::Remove &&
@@ -805,7 +683,6 @@ void Binding::schedulerDidFinishTransaction(
       case ShadowViewMutation::Create: {
         if (disablePreallocateViews_ ||
             mutation.newChildShadowView.props->revision > 1 ||
->>>>>>> fb/0.62-stable
             deletedViewTags.find(mutation.newChildShadowView.tag) !=
                 deletedViewTags.end()) {
           mountItems[position++] =
@@ -815,10 +692,6 @@ void Binding::schedulerDidFinishTransaction(
       }
       case ShadowViewMutation::Remove: {
         if (!isVirtual) {
-<<<<<<< HEAD
-          mountItems[position++] =
-              createRemoveMountItem(localJavaUIManager, mutation);
-=======
           if (shouldCollateRemovesAndDeletes_) {
             toRemove.push_back(
                 RemoveDeleteMetadata{mutation.oldChildShadowView.tag,
@@ -830,15 +703,10 @@ void Binding::schedulerDidFinishTransaction(
             mountItems[position++] =
                 createRemoveMountItem(localJavaUIManager, mutation);
           }
->>>>>>> fb/0.62-stable
         }
         break;
       }
       case ShadowViewMutation::Delete: {
-<<<<<<< HEAD
-        mountItems[position++] =
-          createDeleteMountItem(localJavaUIManager, mutation);
-=======
         if (shouldCollateRemovesAndDeletes_) {
           // It is impossible to delete without removing node first
           const auto &it = std::find_if(
@@ -858,7 +726,6 @@ void Binding::schedulerDidFinishTransaction(
           mountItems[position++] =
               createDeleteMountItem(localJavaUIManager, mutation);
         }
->>>>>>> fb/0.62-stable
 
         deletedViewTags.insert(mutation.oldChildShadowView.tag);
         break;
@@ -886,15 +753,12 @@ void Binding::schedulerDidFinishTransaction(
           if (updateLayoutMountItem) {
             mountItems[position++] = updateLayoutMountItem;
           }
-<<<<<<< HEAD
-=======
 
           auto updatePaddingMountItem =
               createUpdatePaddingMountItem(localJavaUIManager, mutation);
           if (updatePaddingMountItem) {
             mountItems[position++] = updatePaddingMountItem;
           }
->>>>>>> fb/0.62-stable
         }
 
         if (mutation.oldChildShadowView.eventEmitter !=
@@ -913,12 +777,8 @@ void Binding::schedulerDidFinishTransaction(
           mountItems[position++] =
               createInsertMountItem(localJavaUIManager, mutation);
 
-<<<<<<< HEAD
-          if (mutation.newChildShadowView.props->revision > 1 ||
-=======
           if (disablePreallocateViews_ ||
               mutation.newChildShadowView.props->revision > 1 ||
->>>>>>> fb/0.62-stable
               deletedViewTags.find(mutation.newChildShadowView.tag) !=
                   deletedViewTags.end()) {
             mountItems[position++] =
@@ -943,8 +803,6 @@ void Binding::schedulerDidFinishTransaction(
           if (updateLayoutMountItem) {
             mountItems[position++] = updateLayoutMountItem;
           }
-<<<<<<< HEAD
-=======
 
           // Padding
           auto updatePaddingMountItem =
@@ -952,7 +810,6 @@ void Binding::schedulerDidFinishTransaction(
           if (updatePaddingMountItem) {
             mountItems[position++] = updatePaddingMountItem;
           }
->>>>>>> fb/0.62-stable
         }
 
         // EventEmitter
@@ -970,10 +827,6 @@ void Binding::schedulerDidFinishTransaction(
     }
   }
 
-<<<<<<< HEAD
-  if (position <= 0) {
-    // If there are no mountItems to be sent to the platform, then it is not necessary to even call.
-=======
   // Handle remaining removals and deletions
   if (shouldCollateRemovesAndDeletes_ && toRemove.size() > 0) {
     mountItems[position++] =
@@ -984,7 +837,6 @@ void Binding::schedulerDidFinishTransaction(
   if (position <= 0) {
     // If there are no mountItems to be sent to the platform, then it is not
     // necessary to even call.
->>>>>>> fb/0.62-stable
     return;
   }
 
@@ -997,14 +849,6 @@ void Binding::schedulerDidFinishTransaction(
   auto batch = createMountItemsBatchContainer(
       localJavaUIManager, mountItemsArray.get(), position, commitNumber);
 
-<<<<<<< HEAD
-  static auto scheduleMountItem =
-      jni::findClassStatic(UIManagerJavaDescriptor)
-          ->getMethod<void(JMountItem::javaobject, jint, jlong, jlong, jlong, jlong, jlong, jlong, jlong)>(
-              "scheduleMountItem");
-
-  long finishTransactionEndTime = getTime();
-=======
   static auto scheduleMountItem = jni::findClassStatic(UIManagerJavaDescriptor)
                                       ->getMethod<void(
                                           JMountItem::javaobject,
@@ -1018,7 +862,6 @@ void Binding::schedulerDidFinishTransaction(
                                           jlong)>("scheduleMountItem");
 
   long finishTransactionEndTime = monotonicTimeInMilliseconds();
->>>>>>> fb/0.62-stable
 
   scheduleMountItem(
       localJavaUIManager,
@@ -1040,12 +883,6 @@ void Binding::setPixelDensity(float pointScaleFactor) {
 void Binding::schedulerDidRequestPreliminaryViewAllocation(
     const SurfaceId surfaceId,
     const ShadowView &shadowView) {
-<<<<<<< HEAD
-
-  jni::global_ref<jobject> localJavaUIManager = getJavaUIManager();
-  if (!localJavaUIManager) {
-    LOG(ERROR) << "Binding::schedulerDidRequestPreliminaryViewAllocation: JavaUIManager disappeared";
-=======
   if (disablePreallocateViews_) {
     return;
   }
@@ -1054,7 +891,6 @@ void Binding::schedulerDidRequestPreliminaryViewAllocation(
   if (!localJavaUIManager) {
     LOG(ERROR)
         << "Binding::schedulerDidRequestPreliminaryViewAllocation: JavaUIManager disappeared";
->>>>>>> fb/0.62-stable
     return;
   }
 
@@ -1091,15 +927,6 @@ void Binding::schedulerDidRequestPreliminaryViewAllocation(
 }
 
 void Binding::schedulerDidDispatchCommand(
-<<<<<<< HEAD
-  const ShadowView &shadowView,
-  std::string const &commandName,
-  folly::dynamic const args) {
-
-  jni::global_ref<jobject> localJavaUIManager = getJavaUIManager();
-  if (!localJavaUIManager) {
-    LOG(ERROR) << "Binding::schedulerDidDispatchCommand: JavaUIManager disappeared";
-=======
     const ShadowView &shadowView,
     std::string const &commandName,
     folly::dynamic const args) {
@@ -1107,24 +934,10 @@ void Binding::schedulerDidDispatchCommand(
   if (!localJavaUIManager) {
     LOG(ERROR)
         << "Binding::schedulerDidDispatchCommand: JavaUIManager disappeared";
->>>>>>> fb/0.62-stable
     return;
   }
 
   static auto dispatchCommand =
-<<<<<<< HEAD
-    jni::findClassStatic(UIManagerJavaDescriptor)
-      ->getMethod<void(
-        jint, jstring, ReadableArray::javaobject)>(
-        "dispatchCommand");
-
-  local_ref<JString> command = make_jstring(commandName);
-
-  local_ref<ReadableArray::javaobject> argsArray = castReadableArray(
-    ReadableNativeArray::newObjectCxxArgs(args));
-
-  dispatchCommand(localJavaUIManager, shadowView.tag, command.get(), argsArray.get());
-=======
       jni::findClassStatic(UIManagerJavaDescriptor)
           ->getMethod<void(jint, jstring, ReadableArray::javaobject)>(
               "dispatchCommand");
@@ -1136,7 +949,6 @@ void Binding::schedulerDidDispatchCommand(
 
   dispatchCommand(
       localJavaUIManager, shadowView.tag, command.get(), argsArray.get());
->>>>>>> fb/0.62-stable
 }
 
 void Binding::schedulerDidSetJSResponder(
@@ -1144,10 +956,6 @@ void Binding::schedulerDidSetJSResponder(
     const ShadowView &shadowView,
     const ShadowView &initialShadowView,
     bool blockNativeResponder) {
-<<<<<<< HEAD
-
-=======
->>>>>>> fb/0.62-stable
   jni::global_ref<jobject> localJavaUIManager = getJavaUIManager();
   if (!localJavaUIManager) {
     LOG(ERROR) << "Binding::schedulerSetJSResponder: JavaUIManager disappeared";
@@ -1156,13 +964,6 @@ void Binding::schedulerDidSetJSResponder(
 
   static auto setJSResponder =
       jni::findClassStatic(UIManagerJavaDescriptor)
-<<<<<<< HEAD
-          ->getMethod<void(
-              jint, jint, jboolean)>(
-              "setJSResponder");
-
-  setJSResponder(localJavaUIManager, shadowView.tag, initialShadowView.tag, (jboolean) blockNativeResponder);
-=======
           ->getMethod<void(jint, jint, jboolean)>("setJSResponder");
 
   setJSResponder(
@@ -1170,21 +971,11 @@ void Binding::schedulerDidSetJSResponder(
       shadowView.tag,
       initialShadowView.tag,
       (jboolean)blockNativeResponder);
->>>>>>> fb/0.62-stable
 }
 
 void Binding::schedulerDidClearJSResponder() {
   jni::global_ref<jobject> localJavaUIManager = getJavaUIManager();
   if (!localJavaUIManager) {
-<<<<<<< HEAD
-    LOG(ERROR) << "Binding::schedulerClearJSResponder: JavaUIManager disappeared";
-    return;
-  }
-
-  static auto clearJSResponder =
-      jni::findClassStatic(UIManagerJavaDescriptor)
-          ->getMethod<void()>("clearJSResponder");
-=======
     LOG(ERROR)
         << "Binding::schedulerClearJSResponder: JavaUIManager disappeared";
     return;
@@ -1192,7 +983,6 @@ void Binding::schedulerDidClearJSResponder() {
 
   static auto clearJSResponder = jni::findClassStatic(UIManagerJavaDescriptor)
                                      ->getMethod<void()>("clearJSResponder");
->>>>>>> fb/0.62-stable
 
   clearJSResponder(localJavaUIManager);
 }

@@ -1,9 +1,10 @@
 /*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
- * directory of this source tree.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
+
 package com.facebook.react.views.text;
 
 import android.graphics.Typeface;
@@ -210,12 +211,6 @@ public class TextAttributeProps {
 
   public void setLetterSpacing(float letterSpacing) {
     mLetterSpacingInput = letterSpacing;
-<<<<<<< HEAD
-    mLetterSpacing =
-        mAllowFontScaling
-            ? PixelUtil.toPixelFromSP(mLetterSpacingInput)
-            : PixelUtil.toPixelFromDIP(mLetterSpacingInput);
-=======
   }
 
   public float getLetterSpacing() {
@@ -231,7 +226,6 @@ public class TextAttributeProps {
     // `letterSpacingPixels` and `mFontSize` are both in pixels,
     // yielding an accurate em value.
     return letterSpacingPixels / mFontSize;
->>>>>>> fb/0.62-stable
   }
 
   public void setAllowFontScaling(boolean allowFontScaling) {

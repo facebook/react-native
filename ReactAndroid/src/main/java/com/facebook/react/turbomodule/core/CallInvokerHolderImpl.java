@@ -1,17 +1,14 @@
 /*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
- * directory of this source tree.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
+
 package com.facebook.react.turbomodule.core;
 
 import com.facebook.jni.HybridData;
-<<<<<<< HEAD:ReactAndroid/src/main/java/com/facebook/react/turbomodule/core/JSCallInvokerHolderImpl.java
-import com.facebook.react.turbomodule.core.interfaces.JSCallInvokerHolder;
-=======
 import com.facebook.react.turbomodule.core.interfaces.CallInvokerHolder;
->>>>>>> fb/0.62-stable:ReactAndroid/src/main/java/com/facebook/react/turbomodule/core/CallInvokerHolderImpl.java
 import com.facebook.soloader.SoLoader;
 
 /**

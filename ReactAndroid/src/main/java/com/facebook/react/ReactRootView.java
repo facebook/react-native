@@ -1,9 +1,10 @@
 /*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
- * directory of this source tree.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
+
 package com.facebook.react;
 
 import static com.facebook.infer.annotation.ThreadConfined.UI;
@@ -425,8 +426,6 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
     mShouldLogContentAppeared = shouldLogContentAppeared;
   }
 
-<<<<<<< HEAD
-=======
   @Nullable
   @Override
   public String getSurfaceID() {
@@ -434,7 +433,6 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
     return appProperties != null ? appProperties.getString("surfaceID") : null;
   }
 
->>>>>>> fb/0.62-stable
   private void updateRootLayoutSpecs(final int widthMeasureSpec, final int heightMeasureSpec) {
     if (mReactInstanceManager == null) {
       FLog.w(
@@ -447,8 +445,6 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
     if (reactApplicationContext != null) {
       UIManagerHelper.getUIManager(reactApplicationContext, getUIManagerType())
           .updateRootLayoutSpecs(getRootViewTag(), widthMeasureSpec, heightMeasureSpec);
-<<<<<<< HEAD
-=======
     }
   }
 
@@ -472,7 +468,6 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
 
     if (reactInstanceManager == null) {
       return;
->>>>>>> fb/0.62-stable
     }
 
     final ReactContext reactApplicationContext = reactInstanceManager.getCurrentReactContext();

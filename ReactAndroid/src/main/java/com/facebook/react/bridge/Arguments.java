@@ -1,18 +1,15 @@
 /*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
- * directory of this source tree.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 package com.facebook.react.bridge;
 
 import android.os.Bundle;
-<<<<<<< HEAD
-=======
 import android.os.Parcelable;
 
->>>>>>> fb/0.62-stable
 import androidx.annotation.Nullable;
 import java.lang.reflect.Array;
 import java.util.AbstractList;

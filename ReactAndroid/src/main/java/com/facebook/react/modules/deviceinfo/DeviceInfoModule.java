@@ -1,17 +1,14 @@
 /*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
- * directory of this source tree.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
+
 package com.facebook.react.modules.deviceinfo;
 
 import android.content.Context;
 import androidx.annotation.Nullable;
-<<<<<<< HEAD
-import com.facebook.react.bridge.BaseJavaModule;
-=======
->>>>>>> fb/0.62-stable
 import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
@@ -26,11 +23,7 @@ import java.util.Map;
 
 /** Module that exposes Android Constants to JS. */
 @ReactModule(name = DeviceInfoModule.NAME)
-<<<<<<< HEAD
-public class DeviceInfoModule extends BaseJavaModule
-=======
 public class DeviceInfoModule extends ReactContextBaseJavaModule
->>>>>>> fb/0.62-stable
     implements LifecycleEventListener, TurboModule {
 
   public static final String NAME = "DeviceInfo";

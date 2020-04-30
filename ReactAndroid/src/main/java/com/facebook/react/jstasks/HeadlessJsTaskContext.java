@@ -107,11 +107,6 @@ public class HeadlessJsTaskContext {
     }
     mActiveTasks.add(taskId);
     mActiveTaskConfigs.put(taskId, new HeadlessJsTaskConfig(taskConfig));
-<<<<<<< HEAD
-    reactContext
-        .getJSModule(AppRegistry.class)
-        .startHeadlessTask(taskId, taskConfig.getTaskKey(), taskConfig.getData());
-=======
     if (reactContext.hasActiveCatalystInstance()) {
       reactContext
           .getJSModule(AppRegistry.class)
@@ -121,7 +116,6 @@ public class HeadlessJsTaskContext {
           "HeadlessJsTaskContext",
           new RuntimeException("Cannot start headless task, CatalystInstance not available"));
     }
->>>>>>> fb/0.62-stable
     if (taskConfig.getTimeout() > 0) {
       scheduleTaskTimeout(taskId, taskConfig.getTimeout());
     }

@@ -151,39 +151,27 @@ android {
     buildTypes {
         debug {
             signingConfig signingConfigs.release
-        } 
+        }
         release {
             minifyEnabled enableProguardInReleaseBuilds
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             signingConfig signingConfigs.release
         }
-    
     }
-    packagingOptions {
-       pickFirst 'lib/x86/libc++_shared.so'
-       pickFirst 'lib/x86_64/libjsc.so'
-       pickFirst 'lib/arm64-v8a/libjsc.so'
-       pickFirst 'lib/arm64-v8a/libc++_shared.so'
-       pickFirst 'lib/x86_64/libc++_shared.so'
-       pickFirst 'lib/armeabi-v7a/libc++_shared.so'
-   }
 }
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
+
+    // Build React Native from source
     implementation project(':ReactAndroid')
 
-<<<<<<< HEAD
-=======
     implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.0.0"
 
->>>>>>> fb/0.62-stable
     def hermesPath = '$projectDir/../../../../node_modules/hermes-engine/android/'
     debugImplementation files(hermesPath + "hermes-debug.aar")
     releaseImplementation files(hermesPath + "hermes-release.aar")
 
-<<<<<<< HEAD
-=======
     debugImplementation("com.facebook.flipper:flipper:${FLIPPER_VERSION}") {
         exclude group:'com.facebook.fbjni'
     }
@@ -196,7 +184,6 @@ dependencies {
         exclude group:'com.facebook.flipper'
     }
 
->>>>>>> fb/0.62-stable
     if (useIntlJsc) {
         implementation 'org.webkit:android-jsc-intl:+'
     } else {

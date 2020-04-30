@@ -1,18 +1,15 @@
 /*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
- * directory of this source tree.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
+
 package com.facebook.react.modules.core;
 
 import com.facebook.common.logging.FLog;
 import com.facebook.react.bridge.Arguments;
-<<<<<<< HEAD
-import com.facebook.react.bridge.BaseJavaModule;
-=======
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
->>>>>>> fb/0.62-stable
 import com.facebook.react.bridge.JavaOnlyMap;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableArray;
@@ -68,9 +65,6 @@ public class ExceptionsManagerModule extends ReactContextBaseJavaModule {
     boolean isFatal = data.hasKey("isFatal") ? data.getBoolean("isFatal") : false;
 
     if (mDevSupportManager.getDevSupportEnabled()) {
-<<<<<<< HEAD
-      mDevSupportManager.showNewJSError(message, stack, id);
-=======
       boolean suppressRedBox = false;
       if (data.getMap("extraData") != null && data.getMap("extraData").hasKey("suppressRedBox")) {
         suppressRedBox = data.getMap("extraData").getBoolean("suppressRedBox");
@@ -79,7 +73,6 @@ public class ExceptionsManagerModule extends ReactContextBaseJavaModule {
       if (!suppressRedBox) {
         mDevSupportManager.showNewJSError(message, stack, id);
       }
->>>>>>> fb/0.62-stable
     } else {
       String extraDataAsJson = ExceptionDataHelper.getExtraDataAsJson(data);
       if (isFatal) {

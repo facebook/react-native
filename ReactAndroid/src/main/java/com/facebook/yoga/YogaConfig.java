@@ -10,20 +10,6 @@ package com.facebook.yoga;
 public abstract class YogaConfig {
 
   public static int SPACING_TYPE = 1;
-<<<<<<< HEAD
-
-  long mNativePointer;
-  private YogaLogger mLogger;
-  private YogaNodeCloneFunction mYogaNodeCloneFunction;
-
-  public YogaConfig() {
-    mNativePointer = YogaNative.jni_YGConfigNew();
-    if (mNativePointer == 0) {
-      throw new IllegalStateException("Failed to allocate native memory");
-    }
-  }
-=======
->>>>>>> fb/0.62-stable
 
   public abstract void setExperimentalFeatureEnabled(YogaExperimentalFeature feature, boolean enabled);
 

@@ -19,10 +19,7 @@ import static com.facebook.react.uimanager.common.UIManagerType.FABRIC;
 import android.annotation.SuppressLint;
 import android.os.SystemClock;
 import android.view.View;
-<<<<<<< HEAD
-=======
 import androidx.annotation.AnyThread;
->>>>>>> fb/0.62-stable
 import androidx.annotation.GuardedBy;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -38,10 +35,7 @@ import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReactMarker;
 import com.facebook.react.bridge.ReactMarkerConstants;
-<<<<<<< HEAD
-=======
 import com.facebook.react.bridge.ReactSoftException;
->>>>>>> fb/0.62-stable
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.UIManager;
@@ -89,16 +83,11 @@ import java.util.concurrent.ConcurrentHashMap;
 @SuppressLint("MissingNativeLoadLibrary")
 public class FabricUIManager implements UIManager, LifecycleEventListener {
 
-<<<<<<< HEAD
-  public static final String TAG = FabricUIManager.class.getSimpleName();
-  public static final boolean DEBUG =
-=======
   public static final String TAG = "FabricUIManager";
   // The IS_DEVELOPMENT_ENVIRONMENT variable is used to log extra data when running fabric in a
   // development environment. DO NOT ENABLE THIS ON PRODUCTION OR YOU WILL BE FIRED!
   public static final boolean IS_DEVELOPMENT_ENVIRONMENT = false;
   public static final boolean ENABLE_FABRIC_LOGS =
->>>>>>> fb/0.62-stable
       ReactFeatureFlags.enableFabricLogs
           || PrinterHolder.getPrinter()
               .shouldDisplayLogMessage(ReactDebugOverlayTags.FABRIC_UI_MANAGER);
@@ -110,19 +99,12 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
     FabricSoLoader.staticInit();
   }
 
-<<<<<<< HEAD
-  private Binding mBinding;
-  private final ReactApplicationContext mReactApplicationContext;
-  private final MountingManager mMountingManager;
-  private final EventDispatcher mEventDispatcher;
-=======
   @Nullable private Binding mBinding;
   @NonNull private final ReactApplicationContext mReactApplicationContext;
   @NonNull private final MountingManager mMountingManager;
   @NonNull private final EventDispatcher mEventDispatcher;
 
   @NonNull
->>>>>>> fb/0.62-stable
   private final ConcurrentHashMap<Integer, ThemedReactContext> mReactContextForRootTag =
       new ConcurrentHashMap<>();
 
@@ -190,11 +172,8 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
   public <T extends View> int addRootView(
       final T rootView, final WritableMap initialProps, final @Nullable String initialUITemplate) {
     final int rootTag = ReactRootViewTagGenerator.getNextRootViewTag();
-<<<<<<< HEAD
-=======
     ReactRoot reactRootView = (ReactRoot) rootView;
 
->>>>>>> fb/0.62-stable
     // TODO T31905686: Combine with startSurface below
     ThemedReactContext reactContext =
         new ThemedReactContext(
@@ -202,12 +181,7 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
     mMountingManager.addRootView(rootTag, rootView);
     String moduleName = reactRootView.getJSModuleName();
     mReactContextForRootTag.put(rootTag, reactContext);
-<<<<<<< HEAD
-    String moduleName = ((ReactRoot) rootView).getJSModuleName();
-    if (DEBUG) {
-=======
     if (ENABLE_FABRIC_LOGS) {
->>>>>>> fb/0.62-stable
       FLog.d(TAG, "Starting surface for module: %s and reactTag: %d", moduleName, rootTag);
     }
     mBinding.startSurface(rootTag, moduleName, (NativeMap) initialProps);
@@ -217,11 +191,8 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
     return rootTag;
   }
 
-<<<<<<< HEAD
-=======
   @AnyThread
   @ThreadConfined(ANY)
->>>>>>> fb/0.62-stable
   public <T extends View> int startSurface(
       final T rootView,
       final String moduleName,
@@ -230,13 +201,8 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
       int heightMeasureSpec) {
     final int rootTag = ReactRootViewTagGenerator.getNextRootViewTag();
     ThemedReactContext reactContext =
-<<<<<<< HEAD
-        new ThemedReactContext(mReactApplicationContext, rootView.getContext());
-    if (DEBUG) {
-=======
         new ThemedReactContext(mReactApplicationContext, rootView.getContext(), moduleName);
     if (ENABLE_FABRIC_LOGS) {
->>>>>>> fb/0.62-stable
       FLog.d(TAG, "Starting surface for module: %s and reactTag: %d", moduleName, rootTag);
     }
     mMountingManager.addRootView(rootTag, rootView);
@@ -259,11 +225,8 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
     mEventDispatcher.dispatchAllEvents();
   }
 
-<<<<<<< HEAD
-=======
   @AnyThread
   @ThreadConfined(ANY)
->>>>>>> fb/0.62-stable
   public void stopSurface(int surfaceID) {
     mBinding.stopSurface(surfaceID);
   }
@@ -279,11 +242,6 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
   @AnyThread
   @ThreadConfined(ANY)
   public void onCatalystInstanceDestroy() {
-<<<<<<< HEAD
-    if (DEBUG) {
-      FLog.d(TAG, "Destroying Catalyst Instance");
-    }
-=======
     FLog.i(TAG, "FabricUIManager.onCatalystInstanceDestroy");
 
     if (mDestroyed) {
@@ -299,7 +257,6 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
     // memory immediately.
     mDispatchUIFrameCallback.stop();
 
->>>>>>> fb/0.62-stable
     mEventDispatcher.removeBatchEventDispatchedListener(mEventBeatManager);
     mEventDispatcher.unregisterEventEmitter(FABRIC);
 
@@ -322,11 +279,8 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
 
   @DoNotStrip
   @SuppressWarnings("unused")
-<<<<<<< HEAD
-=======
   @AnyThread
   @ThreadConfined(ANY)
->>>>>>> fb/0.62-stable
   private void preallocateView(
       int rootTag,
       int reactTag,
@@ -401,8 +355,6 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
 
   @DoNotStrip
   @SuppressWarnings("unused")
-<<<<<<< HEAD
-=======
   @AnyThread
   @ThreadConfined(ANY)
   private MountItem removeDeleteMultiMountItem(int[] metadata) {
@@ -413,7 +365,6 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
   @SuppressWarnings("unused")
   @AnyThread
   @ThreadConfined(ANY)
->>>>>>> fb/0.62-stable
   private MountItem updateLayoutMountItem(
       int reactTag, int x, int y, int width, int height, int layoutDirection) {
     return new UpdateLayoutMountItem(reactTag, x, y, width, height, layoutDirection);
@@ -461,11 +412,8 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
 
   @DoNotStrip
   @SuppressWarnings("unused")
-<<<<<<< HEAD
-=======
   @AnyThread
   @ThreadConfined(ANY)
->>>>>>> fb/0.62-stable
   private MountItem createBatchMountItem(MountItem[] items, int size, int commitNumber) {
     return new BatchMountItem(items, size, commitNumber);
   }
@@ -527,12 +475,9 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
     try {
       ReactMarker.logFabricMarker(
           ReactMarkerConstants.FABRIC_UPDATE_UI_MAIN_THREAD_START, null, commitNumber);
-<<<<<<< HEAD
-=======
       if (ENABLE_FABRIC_LOGS) {
         FLog.d(TAG, "SynchronouslyUpdateViewOnUIThread for tag %d", reactTag);
       }
->>>>>>> fb/0.62-stable
       scheduleMountItem(
           updatePropsMountItem(reactTag, props), commitNumber, time, 0, 0, 0, 0, 0, 0);
     } catch (Exception ex) {
@@ -561,15 +506,10 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
    */
   @DoNotStrip
   @SuppressWarnings("unused")
-<<<<<<< HEAD
-  private void scheduleMountItem(
-      final MountItem mountItem,
-=======
   @AnyThread
   @ThreadConfined(ANY)
   private void scheduleMountItem(
       @NonNull final MountItem mountItem,
->>>>>>> fb/0.62-stable
       int commitNumber,
       long commitStartTime,
       long diffStartTime,
@@ -594,34 +534,6 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
 
     synchronized (mMountItemsLock) {
       mMountItems.add(mountItem);
-<<<<<<< HEAD
-    }
-
-    // Post markers outside of lock
-    if (isBatchMountItem) {
-      ReactMarker.logFabricMarker(
-          ReactMarkerConstants.FABRIC_COMMIT_START, null, commitNumber, mCommitStartTime);
-      ReactMarker.logFabricMarker(
-          ReactMarkerConstants.FABRIC_FINISH_TRANSACTION_START,
-          null,
-          commitNumber,
-          finishTransactionStartTime);
-      ReactMarker.logFabricMarker(
-          ReactMarkerConstants.FABRIC_FINISH_TRANSACTION_END,
-          null,
-          commitNumber,
-          finishTransactionEndTime);
-      ReactMarker.logFabricMarker(
-          ReactMarkerConstants.FABRIC_DIFF_START, null, commitNumber, diffStartTime);
-      ReactMarker.logFabricMarker(
-          ReactMarkerConstants.FABRIC_DIFF_END, null, commitNumber, diffEndTime);
-      ReactMarker.logFabricMarker(
-          ReactMarkerConstants.FABRIC_LAYOUT_START, null, commitNumber, layoutStartTime);
-      ReactMarker.logFabricMarker(
-          ReactMarkerConstants.FABRIC_LAYOUT_END, null, commitNumber, layoutEndTime);
-      ReactMarker.logFabricMarker(ReactMarkerConstants.FABRIC_COMMIT_END, null, commitNumber);
-=======
->>>>>>> fb/0.62-stable
     }
 
     if (UiThreadUtil.isOnUiThread()) {
@@ -701,10 +613,6 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
 
     long batchedExecutionStartTime = SystemClock.uptimeMillis();
     for (MountItem mountItem : mountItemsToDispatch) {
-<<<<<<< HEAD
-      if (DEBUG) {
-        FLog.d(TAG, "dispatchMountItems: Executing mountItem: " + mountItem);
-=======
       if (ENABLE_FABRIC_LOGS) {
         // If a MountItem description is split across multiple lines, it's because it's a compound
         // MountItem. Log each line separately.
@@ -712,7 +620,6 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
         for (String m : mountItemLines) {
           FLog.d(TAG, "dispatchMountItems: Executing mountItem: " + m);
         }
->>>>>>> fb/0.62-stable
       }
       mountItem.execute(mMountingManager);
     }
@@ -757,11 +664,7 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
   public void updateRootLayoutSpecs(
       final int rootTag, final int widthMeasureSpec, final int heightMeasureSpec) {
 
-<<<<<<< HEAD
-    if (DEBUG) {
-=======
     if (ENABLE_FABRIC_LOGS) {
->>>>>>> fb/0.62-stable
       FLog.d(TAG, "Updating Root Layout Specs");
     }
 
@@ -811,11 +714,8 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
   }
 
   @Override
-<<<<<<< HEAD
-=======
   @AnyThread
   @ThreadConfined(ANY)
->>>>>>> fb/0.62-stable
   public void dispatchCommand(
       final int reactTag, final String commandId, @Nullable final ReadableArray commandArgs) {
     synchronized (mMountItemsLock) {
@@ -823,8 +723,6 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
     }
   }
 
-<<<<<<< HEAD
-=======
   @Override
   @AnyThread
   @ThreadConfined(ANY)
@@ -834,7 +732,6 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
     }
   }
 
->>>>>>> fb/0.62-stable
   /**
    * Set the JS responder for the view associated with the tags received as a parameter.
    *

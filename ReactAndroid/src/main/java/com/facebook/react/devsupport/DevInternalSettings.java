@@ -1,9 +1,10 @@
 /*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
- * directory of this source tree.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
+
 package com.facebook.react.devsupport;
 
 import android.content.Context;
@@ -27,12 +28,6 @@ public class DevInternalSettings
   private static final String PREFS_JS_DEV_MODE_DEBUG_KEY = "js_dev_mode_debug";
   private static final String PREFS_JS_MINIFY_DEBUG_KEY = "js_minify_debug";
   private static final String PREFS_ANIMATIONS_DEBUG_KEY = "animations_debug";
-<<<<<<< HEAD
-  // This option is no longer exposed in the dev menu UI.
-  // It was renamed in D15958697 so it doesn't get stuck with no way to turn it off:
-  private static final String PREFS_RELOAD_ON_JS_CHANGE_KEY = "reload_on_js_change_LEGACY";
-=======
->>>>>>> fb/0.62-stable
   private static final String PREFS_INSPECTOR_DEBUG_KEY = "inspector_debug";
   private static final String PREFS_HOT_MODULE_REPLACEMENT_KEY = "hot_module_replacement";
   private static final String PREFS_REMOTE_JS_DEBUG_KEY = "remote_js_debug";
@@ -42,24 +37,8 @@ public class DevInternalSettings
   private final SharedPreferences mPreferences;
   private final Listener mListener;
   private final PackagerConnectionSettings mPackagerConnectionSettings;
-<<<<<<< HEAD
-  private final boolean mSupportsNativeDeltaClients;
-
-  public static DevInternalSettings withoutNativeDeltaClient(
-      Context applicationContext, Listener listener) {
-    return new DevInternalSettings(applicationContext, listener, false);
-  }
 
   public DevInternalSettings(Context applicationContext, Listener listener) {
-    this(applicationContext, listener, true);
-  }
-
-  private DevInternalSettings(
-      Context applicationContext, Listener listener, boolean supportsNativeDeltaClients) {
-=======
-
-  public DevInternalSettings(Context applicationContext, Listener listener) {
->>>>>>> fb/0.62-stable
     mListener = listener;
     mPreferences = PreferenceManager.getDefaultSharedPreferences(applicationContext);
     mPreferences.registerOnSharedPreferenceChangeListener(this);
@@ -102,11 +81,6 @@ public class DevInternalSettings
     if (mListener != null) {
       if (PREFS_FPS_DEBUG_KEY.equals(key)
           || PREFS_JS_DEV_MODE_DEBUG_KEY.equals(key)
-<<<<<<< HEAD
-          || PREFS_JS_BUNDLE_DELTAS_KEY.equals(key)
-          || PREFS_JS_BUNDLE_DELTAS_CPP_KEY.equals(key)
-=======
->>>>>>> fb/0.62-stable
           || PREFS_START_SAMPLING_PROFILER_ON_INIT.equals(key)
           || PREFS_JS_MINIFY_DEBUG_KEY.equals(key)) {
         mListener.onInternalSettingsChanged();
@@ -130,30 +104,6 @@ public class DevInternalSettings
     mPreferences.edit().putBoolean(PREFS_INSPECTOR_DEBUG_KEY, enabled).apply();
   }
 
-<<<<<<< HEAD
-  @SuppressLint("SharedPreferencesUse")
-  public boolean isBundleDeltasEnabled() {
-    return mPreferences.getBoolean(PREFS_JS_BUNDLE_DELTAS_KEY, false);
-  }
-
-  @SuppressLint("SharedPreferencesUse")
-  public void setBundleDeltasEnabled(boolean enabled) {
-    mPreferences.edit().putBoolean(PREFS_JS_BUNDLE_DELTAS_KEY, enabled).apply();
-  }
-
-  @SuppressLint("SharedPreferencesUse")
-  public boolean isBundleDeltasCppEnabled() {
-    return mSupportsNativeDeltaClients
-        && mPreferences.getBoolean(PREFS_JS_BUNDLE_DELTAS_CPP_KEY, false);
-  }
-
-  @SuppressLint("SharedPreferencesUse")
-  public void setBundleDeltasCppEnabled(boolean enabled) {
-    mPreferences.edit().putBoolean(PREFS_JS_BUNDLE_DELTAS_CPP_KEY, enabled).apply();
-  }
-
-=======
->>>>>>> fb/0.62-stable
   @Override
   public boolean isNuclideJSDebugEnabled() {
     return ReactBuildConfig.IS_INTERNAL_BUILD && ReactBuildConfig.DEBUG;
@@ -174,14 +124,11 @@ public class DevInternalSettings
     return mPreferences.getBoolean(PREFS_START_SAMPLING_PROFILER_ON_INIT, false);
   }
 
-<<<<<<< HEAD
-=======
   @Override
   public void addMenuItem(String title) {
     // Not supported.
   }
 
->>>>>>> fb/0.62-stable
   public interface Listener {
     void onInternalSettingsChanged();
   }

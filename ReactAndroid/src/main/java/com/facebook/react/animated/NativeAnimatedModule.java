@@ -1,16 +1,14 @@
 /*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
- * directory of this source tree.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
+
 package com.facebook.react.animated;
 
 import androidx.annotation.Nullable;
-<<<<<<< HEAD
-=======
 import com.facebook.common.logging.FLog;
->>>>>>> fb/0.62-stable
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Callback;
@@ -40,7 +38,6 @@ import java.util.ArrayList;
  * of the value in one node can affect other nodes.
  *
  * <p>Few examples of the nodes that can be created on the JS side:
-<<<<<<< HEAD
  *
  * <ul>
  *   <li>Animated.Value is a simplest type of node with a numeric value which can be driven by an
@@ -54,21 +51,6 @@ import java.util.ArrayList;
  *       the values by 100)
  * </ul>
  *
-=======
- *
- * <ul>
- *   <li>Animated.Value is a simplest type of node with a numeric value which can be driven by an
- *       animation engine (spring, decay, etc) or by calling setValue on it directly from JS
- *   <li>Animated.add is a type of node that may have two or more input nodes. It outputs the sum of
- *       all the input node values
- *   <li>interpolate - is actually a method you can call on any node and it creates a new node that
- *       takes the parent node as an input and outputs its interpolated value (e.g. if you have
- *       value that can animate from 0 to 1 you can create interpolated node and set output range to
- *       be 0 to 100 and when the input node changes the output of interpolated node will multiply
- *       the values by 100)
- * </ul>
- *
->>>>>>> fb/0.62-stable
  * <p>You can mix and chain nodes however you like and this way create nodes graph with connections
  * between them.
  *
@@ -117,21 +99,6 @@ public class NativeAnimatedModule extends ReactContextBaseJavaModule
         new GuardedFrameCallback(reactContext) {
           @Override
           protected void doFrameGuarded(final long frameTimeNanos) {
-<<<<<<< HEAD
-            NativeAnimatedNodesManager nodesManager = getNodesManager();
-            if (nodesManager.hasActiveAnimations()) {
-              nodesManager.runUpdates(frameTimeNanos);
-            }
-
-            // TODO: Would be great to avoid adding this callback in case there are no active
-            // animations
-            // and no outstanding tasks on the operations queue. Apparently frame callbacks can only
-            // be posted from the UI thread and therefore we cannot schedule them directly from
-            // @ReactMethod methods
-            Assertions.assertNotNull(mReactChoreographer)
-                .postFrameCallback(
-                    ReactChoreographer.CallbackType.NATIVE_ANIMATED_MODULE, mAnimatedFrameCallback);
-=======
             try {
               NativeAnimatedNodesManager nodesManager = getNodesManager();
               if (nodesManager.hasActiveAnimations()) {
@@ -153,7 +120,6 @@ public class NativeAnimatedModule extends ReactContextBaseJavaModule
               FLog.e(ReactConstants.TAG, "Exception while executing animated frame callback.", ex);
               throw new RuntimeException(ex);
             }
->>>>>>> fb/0.62-stable
           }
         };
   }
@@ -222,18 +188,12 @@ public class NativeAnimatedModule extends ReactContextBaseJavaModule
 
   private NativeAnimatedNodesManager getNodesManager() {
     if (mNodesManager == null) {
-<<<<<<< HEAD
-      UIManagerModule uiManager =
-          getReactApplicationContext().getNativeModule(UIManagerModule.class);
-      mNodesManager = new NativeAnimatedNodesManager(uiManager);
-=======
       ReactApplicationContext reactApplicationContext = getReactApplicationContextIfActiveOrWarn();
 
       if (reactApplicationContext != null) {
         UIManagerModule uiManager = reactApplicationContext.getNativeModule(UIManagerModule.class);
         mNodesManager = new NativeAnimatedNodesManager(uiManager);
       }
->>>>>>> fb/0.62-stable
     }
 
     return mNodesManager;
@@ -275,11 +235,6 @@ public class NativeAnimatedModule extends ReactContextBaseJavaModule
             WritableMap onAnimatedValueData = Arguments.createMap();
             onAnimatedValueData.putInt("tag", tag);
             onAnimatedValueData.putDouble("value", value);
-<<<<<<< HEAD
-            getReactApplicationContext()
-                .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
-                .emit("onAnimatedValueUpdate", onAnimatedValueData);
-=======
 
             ReactApplicationContext reactApplicationContext =
                 getReactApplicationContextIfActiveOrWarn();
@@ -288,7 +243,6 @@ public class NativeAnimatedModule extends ReactContextBaseJavaModule
                   .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
                   .emit("onAnimatedValueUpdate", onAnimatedValueData);
             }
->>>>>>> fb/0.62-stable
           }
         };
 
@@ -429,16 +383,6 @@ public class NativeAnimatedModule extends ReactContextBaseJavaModule
 
   @ReactMethod
   public void disconnectAnimatedNodeFromView(final int animatedNodeTag, final int viewTag) {
-<<<<<<< HEAD
-    mPreOperations.add(
-        new UIThreadOperation() {
-          @Override
-          public void execute(NativeAnimatedNodesManager animatedNodesManager) {
-            animatedNodesManager.restoreDefaultValues(animatedNodeTag, viewTag);
-          }
-        });
-=======
->>>>>>> fb/0.62-stable
     mOperations.add(
         new UIThreadOperation() {
           @Override
@@ -449,29 +393,17 @@ public class NativeAnimatedModule extends ReactContextBaseJavaModule
   }
 
   @ReactMethod
-<<<<<<< HEAD
-  public void addAnimatedEventToView(
-      final int viewTag, final String eventName, final ReadableMap eventMapping) {
-    mOperations.add(
-        new UIThreadOperation() {
-          @Override
-          public void execute(NativeAnimatedNodesManager animatedNodesManager) {
-            animatedNodesManager.addAnimatedEventToView(viewTag, eventName, eventMapping);
-=======
   public void restoreDefaultValues(final int animatedNodeTag) {
     mPreOperations.add(
         new UIThreadOperation() {
           @Override
           public void execute(NativeAnimatedNodesManager animatedNodesManager) {
             animatedNodesManager.restoreDefaultValues(animatedNodeTag);
->>>>>>> fb/0.62-stable
           }
         });
   }
 
   @ReactMethod
-<<<<<<< HEAD
-=======
   public void addAnimatedEventToView(
       final int viewTag, final String eventName, final ReadableMap eventMapping) {
     mOperations.add(
@@ -484,7 +416,6 @@ public class NativeAnimatedModule extends ReactContextBaseJavaModule
   }
 
   @ReactMethod
->>>>>>> fb/0.62-stable
   public void removeAnimatedEventFromView(
       final int viewTag, final String eventName, final int animatedValueTag) {
     mOperations.add(

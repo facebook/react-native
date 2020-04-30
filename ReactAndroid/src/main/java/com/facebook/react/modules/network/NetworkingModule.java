@@ -1,8 +1,8 @@
 /*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
- * directory of this source tree.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 package com.facebook.react.modules.network;
@@ -677,11 +677,7 @@ public final class NetworkingModule extends NativeNetworkingAndroidSpec {
 
   private @Nullable MultipartBody.Builder constructMultipartBody(
       ReadableArray body, String contentType, int requestId) {
-<<<<<<< HEAD
-    RCTDeviceEventEmitter eventEmitter = getEventEmitter();
-=======
     RCTDeviceEventEmitter eventEmitter = getEventEmitter("constructMultipartBody");
->>>>>>> fb/0.62-stable
     MultipartBody.Builder multipartBuilder = new MultipartBody.Builder();
     multipartBuilder.setType(MediaType.parse(contentType));
 

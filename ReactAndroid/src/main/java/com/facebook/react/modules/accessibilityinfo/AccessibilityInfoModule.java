@@ -116,28 +116,6 @@ public class AccessibilityInfoModule extends ReactContextBaseJavaModule
 
     if (mReduceMotionEnabled != isReduceMotionEnabled) {
       mReduceMotionEnabled = isReduceMotionEnabled;
-<<<<<<< HEAD
-      getReactApplicationContext()
-          .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
-          .emit(REDUCE_MOTION_EVENT_NAME, mReduceMotionEnabled);
-    }
-  }
-
-  private void updateAndSendTouchExplorationChangeEvent(boolean enabled) {
-    if (mTouchExplorationEnabled != enabled) {
-      mTouchExplorationEnabled = enabled;
-      getReactApplicationContext()
-          .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
-          .emit(TOUCH_EXPLORATION_EVENT_NAME, mTouchExplorationEnabled);
-    }
-  }
-
-  @Override
-  public void onHostResume() {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-      mAccessibilityManager.addTouchExplorationStateChangeListener(
-          mTouchExplorationStateChangeListener);
-=======
 
       ReactApplicationContext reactApplicationContext = getReactApplicationContextIfActiveOrWarn();
       if (reactApplicationContext != null) {
@@ -158,55 +136,9 @@ public class AccessibilityInfoModule extends ReactContextBaseJavaModule
             .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
             .emit(TOUCH_EXPLORATION_EVENT_NAME, mTouchExplorationEnabled);
       }
->>>>>>> fb/0.62-stable
     }
   }
 
-<<<<<<< HEAD
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-      Uri transitionUri = Settings.Global.getUriFor(Settings.Global.TRANSITION_ANIMATION_SCALE);
-      mContentResolver.registerContentObserver(transitionUri, false, animationScaleObserver);
-    }
-
-    updateAndSendTouchExplorationChangeEvent(mAccessibilityManager.isTouchExplorationEnabled());
-    updateAndSendReduceMotionChangeEvent();
-  }
-
-  @Override
-  public void onHostPause() {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-      mAccessibilityManager.removeTouchExplorationStateChangeListener(
-          mTouchExplorationStateChangeListener);
-    }
-
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-      mContentResolver.unregisterContentObserver(animationScaleObserver);
-    }
-  }
-
-  @Override
-  public void initialize() {
-    getReactApplicationContext().addLifecycleEventListener(this);
-    updateAndSendTouchExplorationChangeEvent(mAccessibilityManager.isTouchExplorationEnabled());
-    updateAndSendReduceMotionChangeEvent();
-  }
-
-  @Override
-  public void onCatalystInstanceDestroy() {
-    super.onCatalystInstanceDestroy();
-    getReactApplicationContext().removeLifecycleEventListener(this);
-  }
-
-  @Override
-  public void onHostDestroy() {}
-
-  @ReactMethod
-  public void announceForAccessibility(String message) {
-    if (mAccessibilityManager == null || !mAccessibilityManager.isEnabled()) {
-      return;
-    }
-
-=======
   @Override
   public void onHostResume() {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
@@ -257,7 +189,6 @@ public class AccessibilityInfoModule extends ReactContextBaseJavaModule
       return;
     }
 
->>>>>>> fb/0.62-stable
     AccessibilityEvent event = AccessibilityEvent.obtain(AccessibilityEvent.TYPE_ANNOUNCEMENT);
     event.getText().add(message);
     event.setClassName(AccessibilityInfoModule.class.getName());

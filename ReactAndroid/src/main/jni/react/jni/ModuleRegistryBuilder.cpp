@@ -7,10 +7,7 @@
 
 #include "ModuleRegistryBuilder.h"
 
-<<<<<<< HEAD
-=======
 #include <memory>
->>>>>>> fb/0.62-stable
 #include <string>
 #include <glog/logging.h>
 
@@ -57,11 +54,7 @@ std::vector<std::unique_ptr<NativeModule>> buildNativeModuleList(
   if (cxxModules) {
     for (const auto& cm : *cxxModules) {
       std::string moduleName = cm->getName();
-<<<<<<< HEAD
-      modules.emplace_back(folly::make_unique<CxxNativeModule>(
-=======
       modules.emplace_back(std::make_unique<CxxNativeModule>(
->>>>>>> fb/0.62-stable
                              winstance, moduleName, cm->getProvider(moduleName), moduleMessageQueue));
     }
   }

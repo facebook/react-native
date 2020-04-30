@@ -1,9 +1,10 @@
 /*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
- * directory of this source tree.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
+
 package com.facebook.react.devsupport;
 
 import android.content.Context;
@@ -384,12 +385,7 @@ public class DevServerHelper {
       File outputFile,
       String bundleURL,
       BundleDownloader.BundleInfo bundleInfo) {
-<<<<<<< HEAD
-    mBundleDownloader.downloadBundleFromURL(
-        callback, outputFile, bundleURL, bundleInfo, getDeltaClientType());
-=======
     mBundleDownloader.downloadBundleFromURL(callback, outputFile, bundleURL, bundleInfo);
->>>>>>> fb/0.62-stable
   }
 
   public void downloadBundleFromURL(
@@ -456,11 +452,7 @@ public class DevServerHelper {
   public String getDevServerBundleURL(final String jsModulePath) {
     return createBundleURL(
         jsModulePath,
-<<<<<<< HEAD
-        mSettings.isBundleDeltasEnabled() ? BundleType.DELTA : BundleType.BUNDLE,
-=======
         BundleType.BUNDLE,
->>>>>>> fb/0.62-stable
         mSettings.getPackagerConnectionSettings().getDebugServerHost());
   }
 
@@ -521,93 +513,6 @@ public class DevServerHelper {
     return String.format(Locale.US, "http://%s/status", host);
   }
 
-<<<<<<< HEAD
-  public void stopPollingOnChangeEndpoint() {
-    mOnChangePollingEnabled = false;
-    mRestartOnChangePollingHandler.removeCallbacksAndMessages(null);
-    if (mOnChangePollingClient != null) {
-      OkHttpCallUtil.cancelTag(mOnChangePollingClient, this);
-      mOnChangePollingClient = null;
-    }
-    mOnServerContentChangeListener = null;
-  }
-
-  public void startPollingOnChangeEndpoint(
-      OnServerContentChangeListener onServerContentChangeListener) {
-    if (mOnChangePollingEnabled) {
-      // polling already enabled
-      return;
-    }
-    mOnChangePollingEnabled = true;
-    mOnServerContentChangeListener = onServerContentChangeListener;
-    mOnChangePollingClient =
-        new OkHttpClient.Builder()
-            .connectionPool(
-                new ConnectionPool(1, LONG_POLL_KEEP_ALIVE_DURATION_MS, TimeUnit.MILLISECONDS))
-            .connectTimeout(HTTP_CONNECT_TIMEOUT_MS, TimeUnit.MILLISECONDS)
-            .build();
-    enqueueOnChangeEndpointLongPolling();
-  }
-
-  private void handleOnChangePollingResponse(boolean didServerContentChanged) {
-    if (mOnChangePollingEnabled) {
-      if (didServerContentChanged) {
-        UiThreadUtil.runOnUiThread(
-            new Runnable() {
-              @Override
-              public void run() {
-                if (mOnServerContentChangeListener != null) {
-                  mOnServerContentChangeListener.onServerContentChanged();
-                }
-              }
-            });
-      }
-      enqueueOnChangeEndpointLongPolling();
-    }
-  }
-
-  private void enqueueOnChangeEndpointLongPolling() {
-    Request request = new Request.Builder().url(createOnChangeEndpointUrl()).tag(this).build();
-    Assertions.assertNotNull(mOnChangePollingClient)
-        .newCall(request)
-        .enqueue(
-            new Callback() {
-              @Override
-              public void onFailure(Call call, IOException e) {
-                if (mOnChangePollingEnabled) {
-                  // this runnable is used by onchange endpoint poller to delay subsequent requests
-                  // in case
-                  // of a failure, so that we don't flood network queue with frequent requests in
-                  // case when
-                  // dev server is down
-                  FLog.d(ReactConstants.TAG, "Error while requesting /onchange endpoint", e);
-                  mRestartOnChangePollingHandler.postDelayed(
-                      new Runnable() {
-                        @Override
-                        public void run() {
-                          handleOnChangePollingResponse(false);
-                        }
-                      },
-                      LONG_POLL_FAILURE_DELAY_MS);
-                }
-              }
-
-              @Override
-              public void onResponse(Call call, Response response) throws IOException {
-                handleOnChangePollingResponse(response.code() == 205);
-              }
-            });
-  }
-
-  private String createOnChangeEndpointUrl() {
-    return String.format(
-        Locale.US,
-        "http://%s/onchange",
-        mSettings.getPackagerConnectionSettings().getDebugServerHost());
-  }
-
-=======
->>>>>>> fb/0.62-stable
   private String createLaunchJSDevtoolsCommandUrl() {
     return String.format(
         Locale.US,

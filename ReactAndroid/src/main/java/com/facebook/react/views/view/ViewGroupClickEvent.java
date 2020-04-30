@@ -5,11 +5,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-<<<<<<< HEAD
-=======
 package com.facebook.react.views.view;
 
->>>>>>> fb/0.62-stable
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.uimanager.events.Event;
 import com.facebook.react.uimanager.events.RCTEventEmitter;

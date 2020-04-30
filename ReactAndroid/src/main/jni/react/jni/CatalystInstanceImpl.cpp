@@ -27,13 +27,6 @@
 #include <fb/log.h>
 #include <fbjni/ByteBuffer.h>
 #include <folly/dynamic.h>
-<<<<<<< HEAD
-#include <folly/Memory.h>
-#include <jni/Countable.h>
-#include <jni/LocalReference.h>
-#include <ReactCommon/JSCallInvokerHolder.h>
-=======
->>>>>>> fb/0.62-stable
 
 #include "CxxModuleWrapper.h"
 #include "JNativeRunnable.h"

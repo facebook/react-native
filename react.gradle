@@ -31,7 +31,6 @@ def inputExcludes = config.inputExcludes ?: ["android/**", "ios/**"]
 def bundleConfig = config.bundleConfig ? "${reactRoot}/${config.bundleConfig}" : null ;
 def enableVmCleanup = config.enableVmCleanup == null ? true : config.enableVmCleanup
 def hermesCommand = config.hermesCommand ?: "../../node_modules/hermes-engine/%OS-BIN%/hermes"
-<<<<<<< HEAD
 
 def reactNativeDevServerPort() {
     def value = project.getProperties().get("reactNativeDevServerPort")
@@ -65,41 +64,6 @@ def getHermesCommand = {
             .replace('/' as char, File.separatorChar);
 }
 
-=======
-
-def reactNativeDevServerPort() {
-    def value = project.getProperties().get("reactNativeDevServerPort")
-    return value != null ? value : "8081"
-}
-
-def reactNativeInspectorProxyPort() {
-    def value = project.getProperties().get("reactNativeInspectorProxyPort")
-    return value != null ? value : reactNativeDevServerPort()
-}
-
-def getHermesOSBin() {
-    if (Os.isFamily(Os.FAMILY_WINDOWS)) return "win64-bin";
-    if (Os.isFamily(Os.FAMILY_MAC)) return "osx-bin";
-    if (Os.isOs(null, "linux", "amd64", null)) return "linux64-bin";
-    throw new Exception("OS not recognized. Please set project.ext.react.hermesCommand " +
-                        "to the path of a working Hermes compiler.");
-}
-
-// Make sure not to inspect the Hermes config unless we need it,
-// to avoid breaking any JSC-only setups.
-def getHermesCommand = {
-    // If the project specifies a Hermes command, don't second guess it.
-    if (!hermesCommand.contains("%OS-BIN%")) {
-        return hermesCommand
-    }
-
-    // Execution on Windows fails with / as separator
-    return hermesCommand
-            .replaceAll("%OS-BIN%", getHermesOSBin())
-            .replace('/' as char, File.separatorChar);
-}
-
->>>>>>> fb/0.62-stable
 // Set enableHermesForVariant to a function to configure per variant,
 // or set `enableHermes` to True/False to set all of them
 def enableHermesForVariant = config.enableHermesForVariant ?: {
@@ -207,11 +171,7 @@ afterEvaluate {
                             hermesFlags = config.hermesFlagsDebug
                             if (hermesFlags == null) hermesFlags = []
                         }
-<<<<<<< HEAD
-                        
-=======
 
->>>>>>> fb/0.62-stable
                         if (Os.isFamily(Os.FAMILY_WINDOWS)) {
                             commandLine("cmd", "/c", getHermesCommand(), "-emit-binary", "-out", hbcTempFile, jsBundleFile, *hermesFlags)
                         } else {

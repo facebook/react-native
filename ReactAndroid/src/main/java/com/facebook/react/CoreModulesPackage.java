@@ -7,7 +7,6 @@
 
 package com.facebook.react;
 
-import static com.facebook.react.bridge.ReactMarkerConstants.*;
 import static com.facebook.react.bridge.ReactMarkerConstants.CREATE_UI_MANAGER_MODULE_END;
 import static com.facebook.react.bridge.ReactMarkerConstants.CREATE_UI_MANAGER_MODULE_START;
 import static com.facebook.react.bridge.ReactMarkerConstants.PROCESS_CORE_REACT_PACKAGE_END;
@@ -26,11 +25,7 @@ import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.facebook.react.modules.core.ExceptionsManagerModule;
 import com.facebook.react.modules.core.HeadlessJsTaskSupportModule;
-<<<<<<< HEAD
-import com.facebook.react.modules.core.Timing;
-=======
 import com.facebook.react.modules.core.TimingModule;
->>>>>>> fb/0.62-stable
 import com.facebook.react.modules.debug.DevSettingsModule;
 import com.facebook.react.modules.debug.SourceCodeModule;
 import com.facebook.react.modules.deviceinfo.DeviceInfoModule;

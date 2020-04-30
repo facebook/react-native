@@ -1,9 +1,10 @@
 /*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
- * directory of this source tree.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
+
 package com.facebook.react.modules.camera;
 
 import android.content.ContentResolver;
@@ -229,19 +230,13 @@ public class CameraRollManager extends ReactContextBaseJavaModule {
     String groupName = params.hasKey("groupName") ? params.getString("groupName") : null;
     String assetType =
         params.hasKey("assetType") ? params.getString("assetType") : ASSET_TYPE_PHOTOS;
-<<<<<<< HEAD
-=======
     Integer maxSize = params.hasKey("maxSize") ? params.getInt("maxSize") : null;
->>>>>>> fb/0.62-stable
     ReadableArray mimeTypes = params.hasKey("mimeTypes") ? params.getArray("mimeTypes") : null;
     if (params.hasKey("groupTypes")) {
       throw new JSApplicationIllegalArgumentException("groupTypes is not supported on Android");
     }
 
     new GetMediaTask(
-<<<<<<< HEAD
-            getReactApplicationContext(), first, after, groupName, mimeTypes, assetType, promise)
-=======
             getReactApplicationContext(),
             first,
             after,
@@ -250,7 +245,6 @@ public class CameraRollManager extends ReactContextBaseJavaModule {
             assetType,
             maxSize,
             promise)
->>>>>>> fb/0.62-stable
         .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
   }
 
@@ -296,49 +290,6 @@ public class CameraRollManager extends ReactContextBaseJavaModule {
         selection.append(" AND " + SELECTION_BUCKET);
         selectionArgs.add(mGroupName);
       }
-<<<<<<< HEAD
-
-      switch (mAssetType) {
-        case ASSET_TYPE_PHOTOS:
-          selection.append(
-              " AND "
-                  + MediaStore.Files.FileColumns.MEDIA_TYPE
-                  + " = "
-                  + MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE);
-          break;
-        case ASSET_TYPE_VIDEOS:
-          selection.append(
-              " AND "
-                  + MediaStore.Files.FileColumns.MEDIA_TYPE
-                  + " = "
-                  + MediaStore.Files.FileColumns.MEDIA_TYPE_VIDEO);
-          break;
-        case ASSET_TYPE_ALL:
-          selection.append(
-              " AND "
-                  + MediaStore.Files.FileColumns.MEDIA_TYPE
-                  + " IN ("
-                  + MediaStore.Files.FileColumns.MEDIA_TYPE_VIDEO
-                  + ","
-                  + MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE
-                  + ")");
-          break;
-        default:
-          mPromise.reject(
-              ERROR_UNABLE_TO_FILTER,
-              "Invalid filter option: '"
-                  + mAssetType
-                  + "'. Expected one of '"
-                  + ASSET_TYPE_PHOTOS
-                  + "', '"
-                  + ASSET_TYPE_VIDEOS
-                  + "' or '"
-                  + ASSET_TYPE_ALL
-                  + "'.");
-          return;
-      }
-
-=======
       if (mMaxSize != null) {
         selection.append(" AND " + SELECTION_MEDIA_SIZE);
         selectionArgs.add(mMaxSize.toString());
@@ -384,7 +335,6 @@ public class CameraRollManager extends ReactContextBaseJavaModule {
           return;
       }
 
->>>>>>> fb/0.62-stable
       if (mMimeTypes != null && mMimeTypes.size() > 0) {
         selection.append(" AND " + Images.Media.MIME_TYPE + " IN (");
         for (int i = 0; i < mMimeTypes.size(); i++) {

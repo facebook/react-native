@@ -1,25 +1,17 @@
 /*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
- * directory of this source tree.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
+
 package com.facebook.react.views.drawer;
 
-<<<<<<< HEAD
-import android.os.Build;
-import android.view.Gravity;
-import android.view.View;
-import androidx.annotation.Nullable;
-import androidx.drawerlayout.widget.DrawerLayout;
-import com.facebook.common.logging.FLog;
-=======
 import android.view.Gravity;
 import android.view.View;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.drawerlayout.widget.DrawerLayout;
->>>>>>> fb/0.62-stable
 import com.facebook.react.bridge.Dynamic;
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 import com.facebook.react.bridge.ReadableArray;
@@ -74,8 +66,6 @@ public class ReactDrawerLayoutManager extends ViewGroupManager<ReactDrawerLayout
     return new ReactDrawerLayout(context);
   }
 
-<<<<<<< HEAD
-=======
   @Override
   public void setDrawerPosition(ReactDrawerLayout view, @Nullable String value) {
     if (value == null) {
@@ -85,7 +75,6 @@ public class ReactDrawerLayoutManager extends ViewGroupManager<ReactDrawerLayout
     }
   }
 
->>>>>>> fb/0.62-stable
   @ReactProp(name = "drawerPosition")
   public void setDrawerPosition(ReactDrawerLayout view, Dynamic drawerPosition) {
     if (drawerPosition.isNull()) {
@@ -100,20 +89,6 @@ public class ReactDrawerLayoutManager extends ViewGroupManager<ReactDrawerLayout
             "Unknown drawerPosition " + drawerPositionNum);
       }
     } else if (drawerPosition.getType() == ReadableType.String) {
-<<<<<<< HEAD
-      final String drawerPositionStr = drawerPosition.asString();
-
-      if (drawerPositionStr.equals("left")) {
-        view.setDrawerPosition(Gravity.START);
-      } else if (drawerPositionStr.equals("right")) {
-        view.setDrawerPosition(Gravity.END);
-      } else {
-        throw new JSApplicationIllegalArgumentException(
-            "drawerPosition must be 'left' or 'right', received" + drawerPositionStr);
-      }
-    } else {
-      throw new JSApplicationIllegalArgumentException("drawerPosition must be a string or int");
-=======
       setDrawerPositionInternal(view, drawerPosition.asString());
     } else {
       throw new JSApplicationIllegalArgumentException("drawerPosition must be a string or int");
@@ -128,16 +103,11 @@ public class ReactDrawerLayoutManager extends ViewGroupManager<ReactDrawerLayout
     } else {
       throw new JSApplicationIllegalArgumentException(
           "drawerPosition must be 'left' or 'right', received" + drawerPosition);
->>>>>>> fb/0.62-stable
     }
   }
 
   @ReactProp(name = "drawerWidth", defaultFloat = Float.NaN)
-<<<<<<< HEAD
-  public void getDrawerWidth(ReactDrawerLayout view, float width) {
-=======
   public void setDrawerWidth(ReactDrawerLayout view, float width) {
->>>>>>> fb/0.62-stable
     int widthInPx =
         Float.isNaN(width)
             ? ReactDrawerLayout.DEFAULT_DRAWER_WIDTH
@@ -217,11 +187,7 @@ public class ReactDrawerLayoutManager extends ViewGroupManager<ReactDrawerLayout
 
   @Override
   public void receiveCommand(
-<<<<<<< HEAD
-      ReactDrawerLayout root, String commandId, @Nullable ReadableArray args) {
-=======
       @NonNull ReactDrawerLayout root, String commandId, @Nullable ReadableArray args) {
->>>>>>> fb/0.62-stable
     switch (commandId) {
       case "openDrawer":
         root.openDrawer();
@@ -282,29 +248,17 @@ public class ReactDrawerLayoutManager extends ViewGroupManager<ReactDrawerLayout
     }
 
     @Override
-<<<<<<< HEAD
-    public void onDrawerSlide(View view, float v) {
-=======
     public void onDrawerSlide(@NonNull View view, float v) {
->>>>>>> fb/0.62-stable
       mEventDispatcher.dispatchEvent(new DrawerSlideEvent(mDrawerLayout.getId(), v));
     }
 
     @Override
-<<<<<<< HEAD
-    public void onDrawerOpened(View view) {
-=======
     public void onDrawerOpened(@NonNull View view) {
->>>>>>> fb/0.62-stable
       mEventDispatcher.dispatchEvent(new DrawerOpenedEvent(mDrawerLayout.getId()));
     }
 
     @Override
-<<<<<<< HEAD
-    public void onDrawerClosed(View view) {
-=======
     public void onDrawerClosed(@NonNull View view) {
->>>>>>> fb/0.62-stable
       mEventDispatcher.dispatchEvent(new DrawerClosedEvent(mDrawerLayout.getId()));
     }
 

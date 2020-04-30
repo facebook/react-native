@@ -11,11 +11,7 @@ rn_android_library(
     ],
     deps = [
         react_native_dep("third-party/android/androidx:annotation"),
-<<<<<<< HEAD
-        react_native_dep("java/com/facebook/jni:jni"),
-=======
         react_native_dep("libraries/fbjni:java"),
->>>>>>> fb/0.62-stable
         react_native_dep("java/com/facebook/proguard/annotations:annotations"),
         react_native_dep("libraries/fbcore/src/main/java/com/facebook/common/logging:logging"),
         react_native_dep("libraries/soloader/java/com/facebook/soloader:soloader"),

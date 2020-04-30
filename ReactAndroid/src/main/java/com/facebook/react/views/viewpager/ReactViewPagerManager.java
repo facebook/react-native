@@ -1,9 +1,10 @@
 /*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
- * directory of this source tree.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
+
 package com.facebook.react.views.viewpager;
 
 import android.view.View;
@@ -17,11 +18,8 @@ import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.ViewGroupManager;
 import com.facebook.react.uimanager.ViewManagerDelegate;
 import com.facebook.react.uimanager.annotations.ReactProp;
-<<<<<<< HEAD
-=======
 import com.facebook.react.viewmanagers.AndroidViewPagerManagerDelegate;
 import com.facebook.react.viewmanagers.AndroidViewPagerManagerInterface;
->>>>>>> fb/0.62-stable
 import java.util.Map;
 
 /** Instance of {@link ViewManager} that provides native {@link ViewPager} view. */

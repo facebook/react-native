@@ -1,16 +1,13 @@
 /*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
- * directory of this source tree.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
+
 package com.facebook.react.modules.debug;
 
-<<<<<<< HEAD
-import androidx.annotation.Nullable;
-=======
 import com.facebook.fbreact.specs.NativeSourceCodeSpec;
->>>>>>> fb/0.62-stable
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.module.annotations.ReactModule;
@@ -40,11 +37,7 @@ public class SourceCodeModule extends NativeSourceCodeSpec {
 
     String sourceURL =
         Assertions.assertNotNull(
-<<<<<<< HEAD
-            mReactContext.getCatalystInstance().getSourceURL(),
-=======
             getReactApplicationContext().getCatalystInstance().getSourceURL(),
->>>>>>> fb/0.62-stable
             "No source URL loaded, have you initialised the instance?");
 
     constants.put("scriptURL", sourceURL);

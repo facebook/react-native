@@ -23,11 +23,7 @@ LOCAL_SHARED_LIBRARIES = libfb libfbjni
 LOCAL_MODULE := callinvokerholder
 
 # Compile all local c++ files
-<<<<<<< HEAD
-LOCAL_SRC_FILES := $(LOCAL_PATH)/ReactCommon/JSCallInvokerHolder.cpp
-=======
 LOCAL_SRC_FILES := $(LOCAL_PATH)/ReactCommon/CallInvokerHolder.cpp
->>>>>>> fb/0.62-stable
 
 # Build the files in this directory as a shared library
 include $(BUILD_STATIC_LIBRARY)

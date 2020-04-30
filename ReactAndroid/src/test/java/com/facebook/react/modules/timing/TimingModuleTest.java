@@ -1,9 +1,10 @@
 /*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
- * directory of this source tree.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
+
 package com.facebook.react.modules.timing;
 
 import static org.mockito.Mockito.*;
@@ -17,11 +18,7 @@ import com.facebook.react.devsupport.interfaces.DevSupportManager;
 import com.facebook.react.modules.core.ChoreographerCompat;
 import com.facebook.react.modules.core.JSTimers;
 import com.facebook.react.modules.core.ReactChoreographer;
-<<<<<<< HEAD
-import com.facebook.react.modules.core.Timing;
-=======
 import com.facebook.react.modules.core.TimingModule;
->>>>>>> fb/0.62-stable
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -34,11 +31,7 @@ import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.rule.PowerMockRule;
 import org.robolectric.RobolectricTestRunner;
 
-<<<<<<< HEAD
-/** Tests for {@link Timing}. */
-=======
 /** Tests for {@link TimingModule}. */
->>>>>>> fb/0.62-stable
 // DISABLED, BROKEN https://circleci.com/gh/facebook/react-native/12068
 // t=13905097
 @PrepareForTest({Arguments.class, SystemClock.class, ReactChoreographer.class})
@@ -114,11 +107,7 @@ public class TimingModuleTest {
         .when(reactContext)
         .runOnJSQueueThread(any(Runnable.class));
 
-<<<<<<< HEAD
-    mTiming.initialize();
-=======
     mTimingModule.initialize();
->>>>>>> fb/0.62-stable
   }
 
   private void stepChoreographerFrame() {

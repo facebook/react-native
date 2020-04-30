@@ -1,18 +1,16 @@
 /*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
- * directory of this source tree.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
+
 package com.facebook.react.views.modal;
 
 import android.content.DialogInterface;
 import android.graphics.Point;
-<<<<<<< HEAD
-=======
 import androidx.annotation.Nullable;
 import com.facebook.react.bridge.ReadableArray;
->>>>>>> fb/0.62-stable
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.uimanager.LayoutShadowNode;
@@ -94,8 +92,6 @@ public class ReactModalHostManager extends ViewGroupManager<ReactModalHostView>
   }
 
   @Override
-<<<<<<< HEAD
-=======
   public void setPresentationStyle(ReactModalHostView view, @Nullable String value) {}
 
   @Override
@@ -108,7 +104,6 @@ public class ReactModalHostManager extends ViewGroupManager<ReactModalHostView>
   public void setIdentifier(ReactModalHostView view, int value) {}
 
   @Override
->>>>>>> fb/0.62-stable
   protected void addEventEmitters(ThemedReactContext reactContext, final ReactModalHostView view) {
     final EventDispatcher dispatcher =
         reactContext.getNativeModule(UIManagerModule.class).getEventDispatcher();
@@ -144,12 +139,6 @@ public class ReactModalHostManager extends ViewGroupManager<ReactModalHostView>
 
   @Override
   public Object updateState(
-<<<<<<< HEAD
-      ReactModalHostView view, ReactStylesDiffMap props, StateWrapper stateWrapper) {
-    Point modalSize = ModalHostHelper.getModalHostSize(view.getContext());
-    view.updateState(stateWrapper, modalSize.x, modalSize.y);
-    return null;
-=======
       ReactModalHostView view, ReactStylesDiffMap props, @Nullable StateWrapper stateWrapper) {
     // TODO T55794595: Add support for updating state with null stateWrapper
     Point modalSize = ModalHostHelper.getModalHostSize(view.getContext());
@@ -160,6 +149,5 @@ public class ReactModalHostManager extends ViewGroupManager<ReactModalHostView>
   @Override
   public ViewManagerDelegate<ReactModalHostView> getDelegate() {
     return mDelegate;
->>>>>>> fb/0.62-stable
   }
 }

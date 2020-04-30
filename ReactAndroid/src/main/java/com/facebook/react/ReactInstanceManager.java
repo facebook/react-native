@@ -1,9 +1,10 @@
 /*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
- * directory of this source tree.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
+
 package com.facebook.react;
 
 import static com.facebook.infer.annotation.ThreadConfined.UI;
@@ -303,8 +304,6 @@ public class ReactInstanceManager {
       public JavaScriptExecutorFactory getJavaScriptExecutorFactory() {
         return ReactInstanceManager.this.getJSExecutorFactory();
       }
-<<<<<<< HEAD
-=======
 
       @Override
       public @Nullable View createRootView(String appKey) {
@@ -326,7 +325,6 @@ public class ReactInstanceManager {
           ((ReactRootView) rootView).unmountReactApplication();
         }
       }
->>>>>>> fb/0.62-stable
     };
   }
 
@@ -346,11 +344,7 @@ public class ReactInstanceManager {
     return new ArrayList<>(mPackages);
   }
 
-<<<<<<< HEAD
-  private static void initializeSoLoaderIfNecessary(Context applicationContext) {
-=======
   static void initializeSoLoaderIfNecessary(Context applicationContext) {
->>>>>>> fb/0.62-stable
     // Call SoLoader.initialize here, this is required for apps that does not use exopackage and
     // does not use SoLoader for loading other native code except from the one used by React Native
     // This way we don't need to require others to have additional initialization code and to
@@ -423,11 +417,7 @@ public class ReactInstanceManager {
                               && !devSettings.isRemoteJSDebugEnabled()) {
                             // If there is a up-to-date bundle downloaded from server,
                             // with remote JS debugging disabled, always use that.
-<<<<<<< HEAD
-                            onJSBundleLoadedFromServer(null);
-=======
                             onJSBundleLoadedFromServer();
->>>>>>> fb/0.62-stable
                           } else {
                             // If dev server is down, disable the remote JS debugging.
                             devSettings.setRemoteJSDebugEnabled(false);
@@ -758,8 +748,6 @@ public class ReactInstanceManager {
     }
   }
 
-<<<<<<< HEAD
-=======
   /** Call this from {@link Activity#onConfigurationChanged()}. */
   @ThreadConfined(UI)
   public void onConfigurationChanged(Context updatedContext, @Nullable Configuration newConfig) {
@@ -773,7 +761,6 @@ public class ReactInstanceManager {
     }
   }
 
->>>>>>> fb/0.62-stable
   @ThreadConfined(UI)
   public void showDevOptionsDialog() {
     UiThreadUtil.assertOnUiThread();
@@ -948,16 +935,8 @@ public class ReactInstanceManager {
     Log.d(ReactConstants.TAG, "ReactInstanceManager.onJSBundleLoadedFromServer()");
 
     JSBundleLoader bundleLoader =
-<<<<<<< HEAD
-        nativeDeltaClient == null
-            ? JSBundleLoader.createCachedBundleFromNetworkLoader(
-                mDevSupportManager.getSourceUrl(), mDevSupportManager.getDownloadedJSBundleFile())
-            : JSBundleLoader.createDeltaFromNetworkLoader(
-                mDevSupportManager.getSourceUrl(), nativeDeltaClient);
-=======
         JSBundleLoader.createCachedBundleFromNetworkLoader(
             mDevSupportManager.getSourceUrl(), mDevSupportManager.getDownloadedJSBundleFile());
->>>>>>> fb/0.62-stable
 
     recreateReactContextInBackground(mJavaScriptExecutorFactory, bundleLoader);
   }
@@ -1124,13 +1103,10 @@ public class ReactInstanceManager {
   private void attachRootViewToInstance(final ReactRoot reactRoot) {
     Log.d(ReactConstants.TAG, "ReactInstanceManager.attachRootViewToInstance()");
     Systrace.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "attachRootViewToInstance");
-<<<<<<< HEAD
-=======
 
     // UIManager is technically Nullable here, but if we can't get a UIManager
     // at this point, something has probably gone horribly wrong so it's probably best
     // to throw a NullPointerException.
->>>>>>> fb/0.62-stable
     UIManager uiManager =
         UIManagerHelper.getUIManager(mCurrentReactContext, reactRoot.getUIManagerType());
 
@@ -1242,12 +1218,6 @@ public class ReactInstanceManager {
       catalystInstance.addJSIModules(
           mJSIModulePackage.getJSIModules(
               reactContext, catalystInstance.getJavaScriptContextHolder()));
-<<<<<<< HEAD
-
-      if (ReactFeatureFlags.useTurboModules) {
-        catalystInstance.setTurboModuleManager(
-            catalystInstance.getJSIModule(JSIModuleType.TurboModuleManager));
-=======
 
       if (ReactFeatureFlags.useTurboModules) {
         JSIModule turboModuleManager =
@@ -1260,7 +1230,6 @@ public class ReactInstanceManager {
         for (String moduleName : registry.getEagerInitModuleNames()) {
           registry.getModule(moduleName);
         }
->>>>>>> fb/0.62-stable
       }
     }
     if (mBridgeIdleDebugListener != null) {

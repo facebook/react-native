@@ -12,11 +12,8 @@ import static com.facebook.react.modules.systeminfo.AndroidInfoHelpers.getFriend
 
 import android.app.Activity;
 import android.app.Application;
-<<<<<<< HEAD
-=======
 import android.content.Context;
 
->>>>>>> fb/0.62-stable
 import androidx.annotation.Nullable;
 import com.facebook.hermes.reactexecutor.HermesExecutorFactory;
 import com.facebook.infer.annotation.Assertions;
@@ -271,11 +268,7 @@ public class ReactInstanceManagerBuilder {
         mCurrentActivity,
         mDefaultHardwareBackBtnHandler,
         mJavaScriptExecutorFactory == null
-<<<<<<< HEAD
-            ? getDefaultJSExecutorFactory(appName, deviceName)
-=======
             ? getDefaultJSExecutorFactory(appName, deviceName, mApplication.getApplicationContext())
->>>>>>> fb/0.62-stable
             : mJavaScriptExecutorFactory,
         (mJSBundleLoader == null && mJSBundleAssetUrl != null)
             ? JSBundleLoader.createAssetLoader(
@@ -297,16 +290,6 @@ public class ReactInstanceManagerBuilder {
         mCustomPackagerCommandHandlers);
   }
 
-<<<<<<< HEAD
-  private JavaScriptExecutorFactory getDefaultJSExecutorFactory(String appName, String deviceName) {
-    try {
-      // If JSC is included, use it as normal
-      SoLoader.loadLibrary("jscexecutor");
-      return new JSCExecutorFactory(appName, deviceName);
-    } catch (UnsatisfiedLinkError jscE) {
-      // Otherwise use Hermes
-      return new HermesExecutorFactory();
-=======
   private JavaScriptExecutorFactory getDefaultJSExecutorFactory(String appName, String deviceName, Context applicationContext) {
     try {
       // If JSC is included, use it as normal
@@ -342,7 +325,6 @@ public class ReactInstanceManagerBuilder {
         hermesE.printStackTrace();
         throw jscE;
       }
->>>>>>> fb/0.62-stable
     }
   }
 }

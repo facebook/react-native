@@ -50,26 +50,16 @@ import java.util.concurrent.ConcurrentHashMap;
 public class MountingManager {
   public static final String TAG = MountingManager.class.getSimpleName();
 
-<<<<<<< HEAD
-  private final ConcurrentHashMap<Integer, ViewState> mTagToViewState;
-  private final JSResponderHandler mJSResponderHandler = new JSResponderHandler();
-  private final ViewManagerRegistry mViewManagerRegistry;
-  private final RootViewManager mRootViewManager = new RootViewManager();
-=======
   @NonNull private final ConcurrentHashMap<Integer, ViewState> mTagToViewState;
   @NonNull private final JSResponderHandler mJSResponderHandler = new JSResponderHandler();
   @NonNull private final ViewManagerRegistry mViewManagerRegistry;
   @NonNull private final RootViewManager mRootViewManager = new RootViewManager();
->>>>>>> fb/0.62-stable
 
   public MountingManager(@NonNull ViewManagerRegistry viewManagerRegistry) {
     mTagToViewState = new ConcurrentHashMap<>();
     mViewManagerRegistry = viewManagerRegistry;
   }
 
-<<<<<<< HEAD
-  public void addRootView(int reactRootTag, View rootView) {
-=======
   /**
    * This mutates the rootView, which is an Android View, so this should only be called on the UI
    * thread.
@@ -79,7 +69,6 @@ public class MountingManager {
    */
   @ThreadConfined(UI)
   public void addRootView(int reactRootTag, @NonNull View rootView) {
->>>>>>> fb/0.62-stable
     if (rootView.getId() != View.NO_ID) {
       throw new IllegalViewOperationException(
           "Trying to add a root view with an explicit id already set. React Native uses "
@@ -142,13 +131,10 @@ public class MountingManager {
     return viewState;
   }
 
-<<<<<<< HEAD
-=======
   private @Nullable ViewState getNullableViewState(int tag) {
     return mTagToViewState.get(tag);
   }
 
->>>>>>> fb/0.62-stable
   @Deprecated
   public void receiveCommand(int reactTag, int commandId, @Nullable ReadableArray commandArgs) {
     ViewState viewState = getNullableViewState(reactTag);
@@ -200,11 +186,7 @@ public class MountingManager {
     viewState.mViewManager.receiveCommand(viewState.mView, commandId, commandArgs);
   }
 
-<<<<<<< HEAD
-  public void receiveCommand(int reactTag, String commandId, @Nullable ReadableArray commandArgs) {
-=======
   public void sendAccessibilityEvent(int reactTag, int eventType) {
->>>>>>> fb/0.62-stable
     ViewState viewState = getViewState(reactTag);
 
     if (viewState.mViewManager == null) {
@@ -215,11 +197,7 @@ public class MountingManager {
       throw new IllegalStateException("Unable to find viewState view for tag " + reactTag);
     }
 
-<<<<<<< HEAD
-    viewState.mViewManager.receiveCommand(viewState.mView, commandId, commandArgs);
-=======
     viewState.mView.sendAccessibilityEvent(eventType);
->>>>>>> fb/0.62-stable
   }
 
   @SuppressWarnings("unchecked") // prevents unchecked conversion warn of the <ViewGroup> type
@@ -255,13 +233,8 @@ public class MountingManager {
 
   @UiThread
   public void createView(
-<<<<<<< HEAD
-      ThemedReactContext themedReactContext,
-      String componentName,
-=======
       @NonNull ThemedReactContext themedReactContext,
       @NonNull String componentName,
->>>>>>> fb/0.62-stable
       int reactTag,
       @Nullable ReadableMap props,
       @Nullable StateWrapper stateWrapper,

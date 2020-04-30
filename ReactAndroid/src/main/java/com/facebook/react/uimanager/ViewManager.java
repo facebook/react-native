@@ -1,9 +1,10 @@
 /*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
- * directory of this source tree.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
+
 package com.facebook.react.uimanager;
 
 import android.content.Context;
@@ -80,10 +81,6 @@ public abstract class ViewManager<T extends View, C extends ReactShadowNode>
       @Nullable StateWrapper stateWrapper,
       JSResponderHandler jsResponderHandler) {
     T view = createViewInstance(reactContext, props, stateWrapper);
-<<<<<<< HEAD
-    addEventEmitters(reactContext, view);
-=======
->>>>>>> fb/0.62-stable
     if (view instanceof ReactInterceptingViewGroup) {
       ((ReactInterceptingViewGroup) view).setOnInterceptTouchEventListener(jsResponderHandler);
     }
@@ -286,11 +283,7 @@ public abstract class ViewManager<T extends View, C extends ReactShadowNode>
    * this component type.
    */
   public @Nullable Object updateState(
-<<<<<<< HEAD
-      @NonNull T view, ReactStylesDiffMap props, StateWrapper stateWrapper) {
-=======
       @NonNull T view, ReactStylesDiffMap props, @Nullable StateWrapper stateWrapper) {
->>>>>>> fb/0.62-stable
     return null;
   }
 

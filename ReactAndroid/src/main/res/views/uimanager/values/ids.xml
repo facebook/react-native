@@ -18,9 +18,6 @@
   <!--tag is used to store accessibilityState -->
   <item type="id" name="accessibility_state"/>
 
-  <!--tag is used to store accessibilityState tag-->
-  <item type="id" name="accessibility_state"/>
-
   <!--tag is used to store accessibilityLabel tag-->
   <item type="id" name="accessibility_label"/>
 

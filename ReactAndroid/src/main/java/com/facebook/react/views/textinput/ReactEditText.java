@@ -1,9 +1,10 @@
 /*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
- * directory of this source tree.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
+
 package com.facebook.react.views.textinput;
 
 import android.content.Context;
@@ -70,10 +71,6 @@ public class ReactEditText extends EditText {
   private boolean mShouldAllowFocus;
   private int mDefaultGravityHorizontal;
   private int mDefaultGravityVertical;
-<<<<<<< HEAD
-  protected int mNativeEventCount;
-  protected int mMostRecentEventCount;
-=======
 
   /** A count of events sent to JS or C++. */
   protected int mNativeEventCount;
@@ -81,7 +78,6 @@ public class ReactEditText extends EditText {
   /** The most recent event number acked by JavaScript. Should only be updated from JS, not C++. */
   protected int mMostRecentEventCount;
 
->>>>>>> fb/0.62-stable
   private @Nullable ArrayList<TextWatcher> mListeners;
   private @Nullable TextWatcherDelegator mTextWatcherDelegator;
   private int mStagedInputType;

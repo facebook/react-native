@@ -40,19 +40,11 @@ rn_xplat_cxx_library(
 rn_xplat_cxx_library(
     name = "callinvokerholder",
     srcs = [
-<<<<<<< HEAD
-        "ReactCommon/JSCallInvokerHolder.cpp",
-    ],
-    header_namespace = "",
-    exported_headers = {
-        "ReactCommon/JSCallInvokerHolder.h": "ReactCommon/JSCallInvokerHolder.h",
-=======
         "ReactCommon/CallInvokerHolder.cpp",
     ],
     header_namespace = "",
     exported_headers = {
         "ReactCommon/CallInvokerHolder.h": "ReactCommon/CallInvokerHolder.h",
->>>>>>> fb/0.62-stable
     },
     compiler_flags = [
         "-fexceptions",

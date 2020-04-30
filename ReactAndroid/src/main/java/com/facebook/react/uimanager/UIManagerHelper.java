@@ -1,9 +1,10 @@
 /*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
- * directory of this source tree.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
+
 package com.facebook.react.uimanager;
 
 import static com.facebook.react.uimanager.common.UIManagerType.FABRIC;
@@ -21,19 +22,13 @@ import com.facebook.react.uimanager.common.UIManagerType;
 public class UIManagerHelper {
 
   /** @return a {@link UIManager} that can handle the react tag received by parameter. */
-<<<<<<< HEAD
-=======
   @Nullable
->>>>>>> fb/0.62-stable
   public static UIManager getUIManagerForReactTag(ReactContext context, int reactTag) {
     return getUIManager(context, getUIManagerType(reactTag));
   }
 
   /** @return a {@link UIManager} that can handle the react tag received by parameter. */
-<<<<<<< HEAD
-=======
   @Nullable
->>>>>>> fb/0.62-stable
   public static UIManager getUIManager(ReactContext context, @UIManagerType int uiManagerType) {
     if (!context.hasActiveCatalystInstance()) {
       ReactSoftException.logSoftException(

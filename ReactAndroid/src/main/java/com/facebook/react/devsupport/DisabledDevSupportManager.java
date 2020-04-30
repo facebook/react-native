@@ -1,15 +1,13 @@
 /*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
- * directory of this source tree.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
+
 package com.facebook.react.devsupport;
 
-<<<<<<< HEAD
-=======
 import android.view.View;
->>>>>>> fb/0.62-stable
 import androidx.annotation.Nullable;
 import com.facebook.react.bridge.DefaultNativeModuleCallExceptionHandler;
 import com.facebook.react.bridge.ReactContext;
@@ -44,38 +42,6 @@ public class DisabledDevSupportManager implements DevSupportManager {
   public void showNewJSError(String message, ReadableArray details, int errorCookie) {}
 
   @Override
-<<<<<<< HEAD
-  public void updateJSError(String message, ReadableArray details, int errorCookie) {}
-
-  @Override
-  public void hideRedboxDialog() {}
-
-  @Override
-  public void showDevOptionsDialog() {}
-
-  @Override
-  public void setDevSupportEnabled(boolean isDevSupportEnabled) {}
-
-  @Override
-  public void startInspector() {}
-
-  @Override
-  public void stopInspector() {}
-
-  @Override
-  public void setHotModuleReplacementEnabled(boolean isHotModuleReplacementEnabled) {}
-
-  @Override
-  public void setRemoteJSDebugEnabled(boolean isRemoteJSDebugEnabled) {}
-
-  @Override
-  public void setReloadOnJSChangeEnabled(boolean isReloadOnJSChangeEnabled) {}
-
-  @Override
-  public void setFpsDebugEnabled(boolean isFpsDebugEnabled) {}
-
-  @Override
-=======
   public @Nullable View createRootView(String appKey) {
     return null;
   }
@@ -111,7 +77,6 @@ public class DisabledDevSupportManager implements DevSupportManager {
   public void setFpsDebugEnabled(boolean isFpsDebugEnabled) {}
 
   @Override
->>>>>>> fb/0.62-stable
   public void toggleElementInspector() {}
 
   @Override

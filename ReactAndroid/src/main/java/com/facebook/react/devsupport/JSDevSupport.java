@@ -54,10 +54,6 @@ public class JSDevSupport extends ReactContextBaseJavaModule {
   }
 
   public synchronized void getJSHierarchy(int reactTag, DevSupportCallback callback) {
-<<<<<<< HEAD
-    JSDevSupportModule jsDevSupportModule =
-        getReactApplicationContext().getJSModule(JSDevSupportModule.class);
-=======
     ReactApplicationContext reactApplicationContext = getReactApplicationContextIfActiveOrWarn();
 
     JSDevSupportModule jsDevSupportModule = null;
@@ -65,7 +61,6 @@ public class JSDevSupport extends ReactContextBaseJavaModule {
       jsDevSupportModule = reactApplicationContext.getJSModule(JSDevSupportModule.class);
     }
 
->>>>>>> fb/0.62-stable
     if (jsDevSupportModule == null) {
       callback.onFailure(
           ERROR_CODE_EXCEPTION,

@@ -1,9 +1,10 @@
 /*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
- * directory of this source tree.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
+
 package com.facebook.react.modules.appstate;
 
 import com.facebook.react.bridge.Arguments;
@@ -24,10 +25,7 @@ import javax.annotation.Nullable;
 @ReactModule(name = AppStateModule.NAME)
 public class AppStateModule extends ReactContextBaseJavaModule
     implements LifecycleEventListener, WindowFocusChangeListener {
-<<<<<<< HEAD
-=======
   public static final String TAG = AppStateModule.class.getSimpleName();
->>>>>>> fb/0.62-stable
 
   public static final String NAME = "AppState";
 
@@ -85,13 +83,7 @@ public class AppStateModule extends ReactContextBaseJavaModule
 
   @Override
   public void onWindowFocusChange(boolean hasFocus) {
-<<<<<<< HEAD
-    getReactApplicationContext()
-        .getJSModule(RCTDeviceEventEmitter.class)
-        .emit("appStateFocusChange", hasFocus);
-=======
     sendEvent("appStateFocusChange", hasFocus);
->>>>>>> fb/0.62-stable
   }
 
   private WritableMap createAppStateEventMap() {
@@ -109,12 +101,6 @@ public class AppStateModule extends ReactContextBaseJavaModule
   }
 
   private void sendAppStateChangeEvent() {
-<<<<<<< HEAD
-    getReactApplicationContext()
-        .getJSModule(RCTDeviceEventEmitter.class)
-        .emit("appStateDidChange", createAppStateEventMap());
-=======
     sendEvent("appStateDidChange", createAppStateEventMap());
->>>>>>> fb/0.62-stable
   }
 }

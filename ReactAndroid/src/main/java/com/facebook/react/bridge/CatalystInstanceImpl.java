@@ -1,9 +1,10 @@
 /*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
- * directory of this source tree.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
+
 package com.facebook.react.bridge;
 
 import static com.facebook.infer.annotation.ThreadConfined.UI;
@@ -27,11 +28,7 @@ import com.facebook.react.common.ReactConstants;
 import com.facebook.react.common.annotations.VisibleForTesting;
 import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.react.module.annotations.ReactModule;
-<<<<<<< HEAD
-import com.facebook.react.turbomodule.core.JSCallInvokerHolderImpl;
-=======
 import com.facebook.react.turbomodule.core.CallInvokerHolderImpl;
->>>>>>> fb/0.62-stable
 import com.facebook.react.turbomodule.core.interfaces.TurboModule;
 import com.facebook.react.turbomodule.core.interfaces.TurboModuleRegistry;
 import com.facebook.systrace.Systrace;
@@ -108,25 +105,17 @@ public class CatalystInstanceImpl implements CatalystInstance {
   private @Nullable String mSourceURL;
 
   private JavaScriptContextHolder mJavaScriptContextHolder;
-<<<<<<< HEAD
-  private @Nullable TurboModuleRegistry mTurboModuleRegistry = null;
-=======
   private volatile @Nullable TurboModuleRegistry mTurboModuleRegistry = null;
   private @Nullable JSIModule mTurboModuleManagerJSIModule = null;
->>>>>>> fb/0.62-stable
 
   // C++ parts
   private final HybridData mHybridData;
 
   private static native HybridData initHybrid();
 
-<<<<<<< HEAD
-  public native JSCallInvokerHolderImpl getJSCallInvokerHolder();
-=======
   public native CallInvokerHolderImpl getJSCallInvokerHolder();
 
   public native CallInvokerHolderImpl getNativeCallInvokerHolder();
->>>>>>> fb/0.62-stable
 
   private CatalystInstanceImpl(
       final ReactQueueConfigurationSpec reactQueueConfigurationSpec,
@@ -252,16 +241,6 @@ public class CatalystInstanceImpl implements CatalystInstance {
     jniLoadScriptFromFile(fileName, sourceURL, loadSynchronously);
   }
 
-<<<<<<< HEAD
-  @Override
-  public void loadScriptFromDeltaBundle(
-      String sourceURL, NativeDeltaClient deltaClient, boolean loadSynchronously) {
-    mSourceURL = sourceURL;
-    jniLoadScriptFromDeltaBundle(sourceURL, deltaClient, loadSynchronously);
-  }
-
-=======
->>>>>>> fb/0.62-stable
   private native void jniSetSourceURL(String sourceURL);
 
   private native void jniRegisterSegment(int segmentId, String path);
@@ -271,12 +250,6 @@ public class CatalystInstanceImpl implements CatalystInstance {
 
   private native void jniLoadScriptFromFile(
       String fileName, String sourceURL, boolean loadSynchronously);
-<<<<<<< HEAD
-
-  private native void jniLoadScriptFromDeltaBundle(
-      String sourceURL, NativeDeltaClient deltaClient, boolean loadSynchronously);
-=======
->>>>>>> fb/0.62-stable
 
   @Override
   public void runJSBundle() {
@@ -399,14 +372,6 @@ public class CatalystInstanceImpl implements CatalystInstance {
               }
             }
 
-<<<<<<< HEAD
-            final JSIModule turboModuleManager =
-                ReactFeatureFlags.useTurboModules
-                    ? mJSIModuleRegistry.getModule(JSIModuleType.TurboModuleManager)
-                    : null;
-
-=======
->>>>>>> fb/0.62-stable
             getReactQueueConfiguration()
                 .getJSQueueThread()
                 .runOnQueue(
@@ -414,13 +379,8 @@ public class CatalystInstanceImpl implements CatalystInstance {
                       @Override
                       public void run() {
                         // We need to destroy the TurboModuleManager on the JS Thread
-<<<<<<< HEAD
-                        if (turboModuleManager != null) {
-                          turboModuleManager.onCatalystInstanceDestroy();
-=======
                         if (mTurboModuleManagerJSIModule != null) {
                           mTurboModuleManagerJSIModule.onCatalystInstanceDestroy();
->>>>>>> fb/0.62-stable
                         }
 
                         getReactQueueConfiguration()
@@ -597,11 +557,7 @@ public class CatalystInstanceImpl implements CatalystInstance {
   @Override
   public <T extends NativeModule> boolean hasNativeModule(Class<T> nativeModuleInterface) {
     String moduleName = getNameFromAnnotation(nativeModuleInterface);
-<<<<<<< HEAD
-    return mTurboModuleRegistry != null && mTurboModuleRegistry.hasModule(moduleName)
-=======
     return getTurboModuleRegistry() != null && getTurboModuleRegistry().hasModule(moduleName)
->>>>>>> fb/0.62-stable
         ? true
         : mNativeModuleRegistry.hasModule(moduleName);
   }
@@ -609,8 +565,6 @@ public class CatalystInstanceImpl implements CatalystInstance {
   @Override
   public <T extends NativeModule> T getNativeModule(Class<T> nativeModuleInterface) {
     return (T) getNativeModule(getNameFromAnnotation(nativeModuleInterface));
-<<<<<<< HEAD
-=======
   }
 
   private TurboModuleRegistry getTurboModuleRegistry() {
@@ -621,18 +575,12 @@ public class CatalystInstanceImpl implements CatalystInstance {
     }
 
     return null;
->>>>>>> fb/0.62-stable
   }
 
   @Override
   public NativeModule getNativeModule(String moduleName) {
-<<<<<<< HEAD
-    if (mTurboModuleRegistry != null) {
-      TurboModule turboModule = mTurboModuleRegistry.getModule(moduleName);
-=======
     if (getTurboModuleRegistry() != null) {
       TurboModule turboModule = getTurboModuleRegistry().getModule(moduleName);
->>>>>>> fb/0.62-stable
 
       if (turboModule != null) {
         return (NativeModule) turboModule;
@@ -657,13 +605,8 @@ public class CatalystInstanceImpl implements CatalystInstance {
     Collection<NativeModule> nativeModules = new ArrayList<>();
     nativeModules.addAll(mNativeModuleRegistry.getAllModules());
 
-<<<<<<< HEAD
-    if (mTurboModuleRegistry != null) {
-      for (TurboModule turboModule : mTurboModuleRegistry.getModules()) {
-=======
     if (getTurboModuleRegistry() != null) {
       for (TurboModule turboModule : getTurboModuleRegistry().getModules()) {
->>>>>>> fb/0.62-stable
         nativeModules.add((NativeModule) turboModule);
       }
     }
@@ -739,14 +682,9 @@ public class CatalystInstanceImpl implements CatalystInstance {
     }
   }
 
-<<<<<<< HEAD
-  public void setTurboModuleManager(JSIModule getter) {
-    mTurboModuleRegistry = (TurboModuleRegistry) getter;
-=======
   public void setTurboModuleManager(JSIModule module) {
     mTurboModuleRegistry = (TurboModuleRegistry) module;
     mTurboModuleManagerJSIModule = module;
->>>>>>> fb/0.62-stable
   }
 
   private void decrementPendingJSCalls() {

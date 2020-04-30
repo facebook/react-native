@@ -1,9 +1,10 @@
 /*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
- * directory of this source tree.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
+
 package com.facebook.react.modules.timepicker;
 
 import android.app.Activity;
@@ -92,12 +93,8 @@ public class TimePickerDialogModule extends ReactContextBaseJavaModule {
     Activity raw_activity = getCurrentActivity();
     if (raw_activity == null || !(raw_activity instanceof FragmentActivity)) {
       promise.reject(
-<<<<<<< HEAD
-          ERROR_NO_ACTIVITY, "Tried to open a TimePicker dialog while not attached to an Activity");
-=======
         ERROR_NO_ACTIVITY,
         "Tried to open a DatePicker dialog while not attached to a FragmentActivity");
->>>>>>> fb/0.62-stable
       return;
     }
 

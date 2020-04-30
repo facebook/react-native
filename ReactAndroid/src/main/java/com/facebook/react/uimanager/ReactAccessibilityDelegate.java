@@ -9,28 +9,18 @@ package com.facebook.react.uimanager;
 
 import android.content.Context;
 import android.os.Bundle;
-<<<<<<< HEAD
-import android.text.SpannableString;
-import android.text.style.URLSpan;
-import android.util.Log;
-import android.view.View;
-=======
 import android.os.Handler;
 import android.os.Message;
 import android.text.SpannableString;
 import android.text.style.URLSpan;
 import android.view.View;
 import android.view.accessibility.AccessibilityEvent;
->>>>>>> fb/0.62-stable
 import androidx.annotation.Nullable;
 import androidx.core.view.AccessibilityDelegateCompat;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
 import androidx.core.view.accessibility.AccessibilityNodeInfoCompat.AccessibilityActionCompat;
-<<<<<<< HEAD
-=======
 import androidx.core.view.accessibility.AccessibilityNodeInfoCompat.RangeInfoCompat;
->>>>>>> fb/0.62-stable
 import com.facebook.react.R;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Dynamic;
@@ -58,18 +48,11 @@ public class ReactAccessibilityDelegate extends AccessibilityDelegateCompat {
 
   public static final HashMap<String, Integer> sActionIdMap = new HashMap<>();
 
-<<<<<<< HEAD
-  public static final HashMap<String, Integer> sActionIdMap = new HashMap<>();
-
-=======
->>>>>>> fb/0.62-stable
   static {
     sActionIdMap.put("activate", AccessibilityActionCompat.ACTION_CLICK.getId());
     sActionIdMap.put("longpress", AccessibilityActionCompat.ACTION_LONG_CLICK.getId());
     sActionIdMap.put("increment", AccessibilityActionCompat.ACTION_SCROLL_FORWARD.getId());
     sActionIdMap.put("decrement", AccessibilityActionCompat.ACTION_SCROLL_BACKWARD.getId());
-<<<<<<< HEAD
-=======
   }
 
   private Handler mHandler;
@@ -85,7 +68,6 @@ public class ReactAccessibilityDelegate extends AccessibilityDelegateCompat {
     }
     Message msg = mHandler.obtainMessage(SEND_EVENT, host);
     mHandler.sendMessageDelayed(msg, TIMEOUT_SEND_ACCESSIBILITY_EVENT);
->>>>>>> fb/0.62-stable
   }
 
   /**
@@ -209,24 +191,11 @@ public class ReactAccessibilityDelegate extends AccessibilityDelegateCompat {
       setRole(info, accessibilityRole, host.getContext());
     }
 
-<<<<<<< HEAD
-    // states are changeable.
-    final ReadableArray accessibilityStates =
-        (ReadableArray) host.getTag(R.id.accessibility_states);
-    final ReadableMap accessibilityState = (ReadableMap) host.getTag(R.id.accessibility_state);
-    if (accessibilityStates != null) {
-      setStates(info, accessibilityStates, host.getContext());
-    }
-    if (accessibilityState != null) {
-      setState(info, accessibilityState, host.getContext());
-    }
-=======
     // state is changeable.
     final ReadableMap accessibilityState = (ReadableMap) host.getTag(R.id.accessibility_state);
     if (accessibilityState != null) {
       setState(info, accessibilityState, host.getContext());
     }
->>>>>>> fb/0.62-stable
     final ReadableArray accessibilityActions =
         (ReadableArray) host.getTag(R.id.accessibility_actions);
     if (accessibilityActions != null) {
@@ -311,11 +280,6 @@ public class ReactAccessibilityDelegate extends AccessibilityDelegateCompat {
       final WritableMap event = Arguments.createMap();
       event.putString("actionName", mAccessibilityActionsMap.get(action));
       ReactContext reactContext = (ReactContext) host.getContext();
-<<<<<<< HEAD
-      reactContext
-          .getJSModule(RCTEventEmitter.class)
-          .receiveEvent(host.getId(), "topAccessibilityAction", event);
-=======
       if (reactContext.hasActiveCatalystInstance()) {
         reactContext
             .getJSModule(RCTEventEmitter.class)
@@ -338,67 +302,13 @@ public class ReactAccessibilityDelegate extends AccessibilityDelegateCompat {
         }
         return super.performAccessibilityAction(host, action, args);
       }
->>>>>>> fb/0.62-stable
       return true;
     }
     return super.performAccessibilityAction(host, action, args);
   }
 
-<<<<<<< HEAD
-  private static void setStates(
-      AccessibilityNodeInfoCompat info, ReadableArray accessibilityStates, Context context) {
-    for (int i = 0; i < accessibilityStates.size(); i++) {
-      String state = accessibilityStates.getString(i);
-      switch (state) {
-        case "selected":
-          info.setSelected(true);
-          break;
-        case "disabled":
-          info.setEnabled(false);
-          break;
-        case "checked":
-          info.setCheckable(true);
-          info.setChecked(true);
-          if (info.getClassName().equals(AccessibilityRole.getValue(AccessibilityRole.SWITCH))) {
-            info.setText(context.getString(R.string.state_on_description));
-          }
-          break;
-        case "unchecked":
-          info.setCheckable(true);
-          info.setChecked(false);
-          if (info.getClassName().equals(AccessibilityRole.getValue(AccessibilityRole.SWITCH))) {
-            info.setText(context.getString(R.string.state_off_description));
-          }
-          break;
-=======
   private static void setState(
       AccessibilityNodeInfoCompat info, ReadableMap accessibilityState, Context context) {
-    final ReadableMapKeySetIterator i = accessibilityState.keySetIterator();
-    while (i.hasNextKey()) {
-      final String state = i.nextKey();
-      final Dynamic value = accessibilityState.getDynamic(state);
-      if (state.equals(STATE_SELECTED) && value.getType() == ReadableType.Boolean) {
-        info.setSelected(value.asBoolean());
-      } else if (state.equals(STATE_DISABLED) && value.getType() == ReadableType.Boolean) {
-        info.setEnabled(!value.asBoolean());
-      } else if (state.equals(STATE_CHECKED) && value.getType() == ReadableType.Boolean) {
-        final boolean boolValue = value.asBoolean();
-        info.setCheckable(true);
-        info.setChecked(boolValue);
-        if (info.getClassName().equals(AccessibilityRole.getValue(AccessibilityRole.SWITCH))) {
-          info.setText(
-              context.getString(
-                  boolValue ? R.string.state_on_description : R.string.state_off_description));
-        }
->>>>>>> fb/0.62-stable
-      }
-    }
-  }
-
-<<<<<<< HEAD
-  private static void setState(
-      AccessibilityNodeInfoCompat info, ReadableMap accessibilityState, Context context) {
-    Log.d(TAG, "setState " + accessibilityState);
     final ReadableMapKeySetIterator i = accessibilityState.keySetIterator();
     while (i.hasNextKey()) {
       final String state = i.nextKey();
@@ -420,8 +330,6 @@ public class ReactAccessibilityDelegate extends AccessibilityDelegateCompat {
     }
   }
 
-=======
->>>>>>> fb/0.62-stable
   /** Strings for setting the Role Description in english */
 
   // TODO: Eventually support for other languages on talkback
@@ -498,10 +406,6 @@ public class ReactAccessibilityDelegate extends AccessibilityDelegateCompat {
     // so leave it alone.
     if (!ViewCompat.hasAccessibilityDelegate(view)
         && (view.getTag(R.id.accessibility_role) != null
-<<<<<<< HEAD
-            || view.getTag(R.id.accessibility_states) != null
-=======
->>>>>>> fb/0.62-stable
             || view.getTag(R.id.accessibility_state) != null
             || view.getTag(R.id.accessibility_actions) != null)) {
       ViewCompat.setAccessibilityDelegate(view, new ReactAccessibilityDelegate());

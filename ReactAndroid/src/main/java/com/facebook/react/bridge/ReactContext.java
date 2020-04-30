@@ -1,9 +1,10 @@
 /*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
- * directory of this source tree.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
+
 package com.facebook.react.bridge;
 
 import static com.facebook.infer.annotation.ThreadConfined.UI;
@@ -15,10 +16,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import androidx.annotation.Nullable;
-<<<<<<< HEAD
-=======
 import com.facebook.common.logging.FLog;
->>>>>>> fb/0.62-stable
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.react.bridge.queue.MessageQueueThread;
@@ -256,10 +254,7 @@ public class ReactContext extends ContextWrapper {
   }
 
   /** Should be called by the hosting Fragment in {@link Fragment#onDestroy} */
-<<<<<<< HEAD
-=======
   @ThreadConfined(UI)
->>>>>>> fb/0.62-stable
   public void onHostDestroy() {
     UiThreadUtil.assertOnUiThread();
     mLifecycleState = LifecycleState.BEFORE_CREATE;
@@ -274,10 +269,7 @@ public class ReactContext extends ContextWrapper {
   }
 
   /** Destroy this instance, making it unusable. */
-<<<<<<< HEAD
-=======
   @ThreadConfined(UI)
->>>>>>> fb/0.62-stable
   public void destroy() {
     UiThreadUtil.assertOnUiThread();
 
@@ -300,10 +292,7 @@ public class ReactContext extends ContextWrapper {
     }
   }
 
-<<<<<<< HEAD
-=======
   @ThreadConfined(UI)
->>>>>>> fb/0.62-stable
   public void onWindowFocusChange(boolean hasFocus) {
     UiThreadUtil.assertOnUiThread();
     for (WindowFocusChangeListener listener : mWindowFocusEventListeners) {
@@ -361,18 +350,12 @@ public class ReactContext extends ContextWrapper {
    * otherwise.
    */
   public void handleException(Exception e) {
-<<<<<<< HEAD
-    if (mCatalystInstance != null
-        && !mCatalystInstance.isDestroyed()
-        && mNativeModuleCallExceptionHandler != null) {
-=======
     boolean catalystInstanceVariableExists = mCatalystInstance != null;
     boolean isCatalystInstanceAlive =
         catalystInstanceVariableExists && !mCatalystInstance.isDestroyed();
     boolean hasExceptionHandler = mNativeModuleCallExceptionHandler != null;
 
     if (isCatalystInstanceAlive && hasExceptionHandler) {
->>>>>>> fb/0.62-stable
       mNativeModuleCallExceptionHandler.handleException(e);
     } else {
       FLog.e(

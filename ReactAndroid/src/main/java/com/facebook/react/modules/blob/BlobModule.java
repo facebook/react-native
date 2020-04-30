@@ -1,8 +1,8 @@
 /*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
- * directory of this source tree.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 package com.facebook.react.modules.blob;
@@ -298,13 +298,6 @@ public class BlobModule extends ReactContextBaseJavaModule {
 
   @ReactMethod
   public void addNetworkingHandler() {
-<<<<<<< HEAD
-    NetworkingModule networkingModule =
-        getReactApplicationContext().getNativeModule(NetworkingModule.class);
-    networkingModule.addUriHandler(mNetworkingUriHandler);
-    networkingModule.addRequestBodyHandler(mNetworkingRequestBodyHandler);
-    networkingModule.addResponseHandler(mNetworkingResponseHandler);
-=======
     ReactApplicationContext reactApplicationContext = getReactApplicationContextIfActiveOrWarn();
 
     if (reactApplicationContext != null) {
@@ -314,7 +307,6 @@ public class BlobModule extends ReactContextBaseJavaModule {
       networkingModule.addRequestBodyHandler(mNetworkingRequestBodyHandler);
       networkingModule.addResponseHandler(mNetworkingResponseHandler);
     }
->>>>>>> fb/0.62-stable
   }
 
   @ReactMethod

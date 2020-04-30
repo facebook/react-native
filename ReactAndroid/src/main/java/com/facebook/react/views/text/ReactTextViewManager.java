@@ -76,16 +76,11 @@ public class ReactTextViewManager
 
   @Override
   public Object updateState(
-<<<<<<< HEAD
-      ReactTextView view, ReactStylesDiffMap props, StateWrapper stateWrapper) {
-    ReadableMap attributedString = stateWrapper.getState().getMap("attributedString");
-=======
       ReactTextView view, ReactStylesDiffMap props, @Nullable StateWrapper stateWrapper) {
     // TODO T55794595: Add support for updating state with null stateWrapper
     ReadableNativeMap state = stateWrapper.getState();
     ReadableMap attributedString = state.getMap("attributedString");
     ReadableMap paragraphAttributes = state.getMap("paragraphAttributes");
->>>>>>> fb/0.62-stable
 
     Spannable spanned =
         TextLayoutManager.getOrCreateSpannableForText(view.getContext(), attributedString);
@@ -103,15 +98,6 @@ public class ReactTextViewManager
         spanned,
         state.hasKey("mostRecentEventCount") ? state.getInt("mostRecentEventCount") : -1,
         false, // TODO add this into local Data
-<<<<<<< HEAD
-        textViewProps.getStartPadding(),
-        textViewProps.getTopPadding(),
-        textViewProps.getEndPadding(),
-        textViewProps.getBottomPadding(),
-        0,
-        textBreakStrategy,
-        justificationMode);
-=======
         textViewProps.getTextAlign(),
         textBreakStrategy,
         justificationMode);
@@ -133,7 +119,6 @@ public class ReactTextViewManager
       }
     }
     return androidTextBreakStrategy;
->>>>>>> fb/0.62-stable
   }
 
   @Override

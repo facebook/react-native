@@ -10,17 +10,6 @@ package com.facebook.yoga;
 import javax.annotation.Nullable;
 
 public abstract class YogaNode {
-<<<<<<< HEAD
-  public static YogaNode create() {
-    return new YogaNodeJNIFinalizer();
-  }
-
-  public static YogaNode create(YogaConfig config) {
-    return new YogaNodeJNIFinalizer(config);
-  }
-
-=======
->>>>>>> fb/0.62-stable
   public abstract void reset();
 
   public abstract int getChildCount();

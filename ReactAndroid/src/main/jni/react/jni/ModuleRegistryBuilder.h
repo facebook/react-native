@@ -25,12 +25,8 @@ class ModuleHolder : public jni::JavaClass<ModuleHolder> {
       "Lcom/facebook/react/bridge/ModuleHolder;";
 
   std::string getName() const;
-<<<<<<< HEAD
-  xplat::module::CxxModule::Provider getProvider(const std::string& moduleName) const;
-=======
   xplat::module::CxxModule::Provider getProvider(
       const std::string &moduleName) const;
->>>>>>> fb/0.62-stable
 };
 
 std::vector<std::unique_ptr<NativeModule>> buildNativeModuleList(

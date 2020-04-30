@@ -1,9 +1,10 @@
 /*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
- * directory of this source tree.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
+
 package com.facebook.react.views.text;
 
 import android.content.res.AssetManager;
@@ -74,39 +75,6 @@ public class CustomStyleSpan extends MetricAffectingSpan implements ReactSpan {
   }
 
   private static void apply(
-<<<<<<< HEAD
-      Paint paint, int style, int weight, @Nullable String family, AssetManager assetManager) {
-    int oldStyle;
-    Typeface typeface = paint.getTypeface();
-    if (typeface == null) {
-      oldStyle = 0;
-    } else {
-      oldStyle = typeface.getStyle();
-    }
-
-    int want = 0;
-    if ((weight == Typeface.BOLD)
-        || ((oldStyle & Typeface.BOLD) != 0 && weight == ReactTextShadowNode.UNSET)) {
-      want |= Typeface.BOLD;
-    }
-
-    if ((style == Typeface.ITALIC)
-        || ((oldStyle & Typeface.ITALIC) != 0 && style == ReactTextShadowNode.UNSET)) {
-      want |= Typeface.ITALIC;
-    }
-
-    if (family != null) {
-      typeface = ReactFontManager.getInstance().getTypeface(family, want, weight, assetManager);
-    } else if (typeface != null) {
-      // TODO(t9055065): Fix custom fonts getting applied to text children with different style
-      typeface = Typeface.create(typeface, want);
-    }
-
-    if (typeface != null) {
-      paint.setTypeface(typeface);
-    } else {
-      paint.setTypeface(Typeface.defaultFromStyle(want));
-=======
       Paint paint,
       int style,
       int weight,
@@ -117,7 +85,6 @@ public class CustomStyleSpan extends MetricAffectingSpan implements ReactSpan {
       paint.getTypeface(), style, weight, family, assetManager);
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
       paint.setFontFeatureSettings(fontFeatureSettings);
->>>>>>> fb/0.62-stable
     }
     paint.setTypeface(typeface);
     paint.setSubpixelText(true);

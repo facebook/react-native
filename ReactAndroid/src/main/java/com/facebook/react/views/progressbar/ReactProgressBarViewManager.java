@@ -1,9 +1,10 @@
 /*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
- * directory of this source tree.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
+
 package com.facebook.react.views.progressbar;
 
 import android.content.Context;
@@ -16,11 +17,8 @@ import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.ViewManagerDelegate;
 import com.facebook.react.uimanager.ViewProps;
 import com.facebook.react.uimanager.annotations.ReactProp;
-<<<<<<< HEAD
-=======
 import com.facebook.react.viewmanagers.AndroidProgressBarManagerDelegate;
 import com.facebook.react.viewmanagers.AndroidProgressBarManagerInterface;
->>>>>>> fb/0.62-stable
 
 /**
  * Manages instances of ProgressBar. ProgressBar is wrapped in a ProgressBarContainerView because
@@ -30,12 +28,8 @@ import com.facebook.react.viewmanagers.AndroidProgressBarManagerInterface;
  */
 @ReactModule(name = ReactProgressBarViewManager.REACT_CLASS)
 public class ReactProgressBarViewManager
-<<<<<<< HEAD
-    extends BaseViewManager<ProgressBarContainerView, ProgressBarShadowNode> {
-=======
     extends BaseViewManager<ProgressBarContainerView, ProgressBarShadowNode>
     implements AndroidProgressBarManagerInterface<ProgressBarContainerView> {
->>>>>>> fb/0.62-stable
 
   public static final String REACT_CLASS = "AndroidProgressBar";
 

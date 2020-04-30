@@ -1,16 +1,12 @@
 /*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
- * directory of this source tree.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
+
 package com.facebook.react.bridge;
 
-<<<<<<< HEAD
-import android.app.Activity;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-=======
 import static com.facebook.infer.annotation.ThreadConfined.ANY;
 
 import android.app.Activity;
@@ -20,7 +16,6 @@ import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.react.common.build.ReactBuildConfig;
->>>>>>> fb/0.62-stable
 
 /**
  * Base class for Catalyst native modules that require access to the {@link ReactContext} instance.
@@ -37,11 +32,6 @@ public abstract class ReactContextBaseJavaModule extends BaseJavaModule {
     mReactApplicationContext = reactContext;
   }
 
-<<<<<<< HEAD
-  /** Subclasses can use this method to access catalyst context passed as a constructor */
-  protected final ReactApplicationContext getReactApplicationContext() {
-    return mReactApplicationContext;
-=======
   /** Subclasses can use this method to access catalyst context passed as a constructor. */
   protected final ReactApplicationContext getReactApplicationContext() {
     return Assertions.assertNotNull(
@@ -77,7 +67,6 @@ public abstract class ReactContextBaseJavaModule extends BaseJavaModule {
       ReactSoftException.logSoftException(tag, new RuntimeException(msg));
     }
     return null;
->>>>>>> fb/0.62-stable
   }
 
   /**

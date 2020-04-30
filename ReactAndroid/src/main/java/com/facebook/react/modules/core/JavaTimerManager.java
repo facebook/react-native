@@ -1,9 +1,10 @@
 /*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
- * directory of this source tree.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
+
 package com.facebook.react.modules.core;
 
 import android.util.SparseArray;
@@ -15,23 +16,10 @@ import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.common.SystemClock;
 import com.facebook.react.devsupport.interfaces.DevSupportManager;
 import com.facebook.react.jstasks.HeadlessJsTaskContext;
-<<<<<<< HEAD:ReactAndroid/src/main/java/com/facebook/react/modules/core/Timing.java
-import com.facebook.react.jstasks.HeadlessJsTaskEventListener;
-import com.facebook.react.module.annotations.ReactModule;
-=======
->>>>>>> fb/0.62-stable:ReactAndroid/src/main/java/com/facebook/react/modules/core/JavaTimerManager.java
 import java.util.Comparator;
 import java.util.PriorityQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-<<<<<<< HEAD:ReactAndroid/src/main/java/com/facebook/react/modules/core/Timing.java
-/** Native module for JS timer execution. Timers fire on frame boundaries. */
-@ReactModule(name = Timing.NAME)
-public final class Timing extends ReactContextBaseJavaModule
-    implements LifecycleEventListener, HeadlessJsTaskEventListener {
-
-  public static final String NAME = "Timing";
-=======
 /**
  * This class is the native implementation for JS timer execution on Android. It schedules JS timers
  * to be invoked on frame boundaries using {@link ReactChoreographer}.
@@ -39,7 +27,6 @@ public final class Timing extends ReactContextBaseJavaModule
  * <p>This is used by the NativeModule {@link TimingModule}.
  */
 public class JavaTimerManager {
->>>>>>> fb/0.62-stable:ReactAndroid/src/main/java/com/facebook/react/modules/core/JavaTimerManager.java
 
   // These timing constants should be kept in sync with the ones in `JSTimers.js`.
   // The minimum time in milliseconds left in the frame to call idle callbacks.
@@ -151,13 +138,7 @@ public class JavaTimerManager {
       }
 
       if (sendIdleEvents) {
-<<<<<<< HEAD:ReactAndroid/src/main/java/com/facebook/react/modules/core/Timing.java
-        getReactApplicationContext()
-            .getJSModule(JSTimers.class)
-            .callIdleCallbacks(absoluteFrameStartTime);
-=======
         mJavaScriptTimerManager.callIdleCallbacks(absoluteFrameStartTime);
->>>>>>> fb/0.62-stable:ReactAndroid/src/main/java/com/facebook/react/modules/core/JavaTimerManager.java
       }
 
       mCurrentIdleCallbackRunnable = null;
@@ -213,18 +194,6 @@ public class JavaTimerManager {
               }
             });
     mTimerIdsToTimers = new SparseArray<>();
-<<<<<<< HEAD:ReactAndroid/src/main/java/com/facebook/react/modules/core/Timing.java
-    mReactChoreographer = ReactChoreographer.getInstance();
-  }
-
-  @Override
-  public void initialize() {
-    getReactApplicationContext().addLifecycleEventListener(this);
-    HeadlessJsTaskContext headlessJsTaskContext =
-        HeadlessJsTaskContext.getInstance(getReactApplicationContext());
-    headlessJsTaskContext.addTaskEventListener(this);
-=======
->>>>>>> fb/0.62-stable:ReactAndroid/src/main/java/com/facebook/react/modules/core/JavaTimerManager.java
   }
 
   public void onHostPause() {
@@ -255,11 +224,7 @@ public class JavaTimerManager {
 
   public void onHeadlessJsTaskFinish(int taskId) {
     HeadlessJsTaskContext headlessJsTaskContext =
-<<<<<<< HEAD:ReactAndroid/src/main/java/com/facebook/react/modules/core/Timing.java
-        HeadlessJsTaskContext.getInstance(getReactApplicationContext());
-=======
         HeadlessJsTaskContext.getInstance(mReactApplicationContext);
->>>>>>> fb/0.62-stable:ReactAndroid/src/main/java/com/facebook/react/modules/core/JavaTimerManager.java
     if (!headlessJsTaskContext.hasActiveTasks()) {
       isRunningTasks.set(false);
       clearFrameCallback();
@@ -270,12 +235,6 @@ public class JavaTimerManager {
   public void onInstanceDestroy() {
     clearFrameCallback();
     clearChoreographerIdleCallback();
-<<<<<<< HEAD:ReactAndroid/src/main/java/com/facebook/react/modules/core/Timing.java
-    HeadlessJsTaskContext headlessJsTaskContext =
-        HeadlessJsTaskContext.getInstance(getReactApplicationContext());
-    headlessJsTaskContext.removeTaskEventListener(this);
-=======
->>>>>>> fb/0.62-stable:ReactAndroid/src/main/java/com/facebook/react/modules/core/JavaTimerManager.java
   }
 
   private void maybeSetChoreographerIdleCallback() {
@@ -302,11 +261,7 @@ public class JavaTimerManager {
 
   private void clearFrameCallback() {
     HeadlessJsTaskContext headlessJsTaskContext =
-<<<<<<< HEAD:ReactAndroid/src/main/java/com/facebook/react/modules/core/Timing.java
-        HeadlessJsTaskContext.getInstance(getReactApplicationContext());
-=======
         HeadlessJsTaskContext.getInstance(mReactApplicationContext);
->>>>>>> fb/0.62-stable:ReactAndroid/src/main/java/com/facebook/react/modules/core/JavaTimerManager.java
     if (mFrameCallbackPosted && isPaused.get() && !headlessJsTaskContext.hasActiveTasks()) {
       mReactChoreographer.removeFrameCallback(
           ReactChoreographer.CallbackType.TIMERS_EVENTS, mTimerFrameCallback);
@@ -370,17 +325,9 @@ public class JavaTimerManager {
     if (mDevSupportManager.getDevSupportEnabled()) {
       long driftTime = Math.abs(remoteTime - deviceTime);
       if (driftTime > 60000) {
-<<<<<<< HEAD:ReactAndroid/src/main/java/com/facebook/react/modules/core/Timing.java
-        getReactApplicationContext()
-            .getJSModule(JSTimers.class)
-            .emitTimeDriftWarning(
-                "Debugger and device times have drifted by more than 60s. Please correct this by "
-                    + "running adb shell \"date `date +%m%d%H%M%Y.%S`\" on your debugger machine.");
-=======
         mJavaScriptTimerManager.emitTimeDriftWarning(
             "Debugger and device times have drifted by more than 60s. Please correct this by "
                 + "running adb shell \"date `date +%m%d%H%M%Y.%S`\" on your debugger machine.");
->>>>>>> fb/0.62-stable:ReactAndroid/src/main/java/com/facebook/react/modules/core/JavaTimerManager.java
       }
     }
 
@@ -389,11 +336,7 @@ public class JavaTimerManager {
     if (duration == 0 && !repeat) {
       WritableArray timerToCall = Arguments.createArray();
       timerToCall.pushInt(callbackID);
-<<<<<<< HEAD:ReactAndroid/src/main/java/com/facebook/react/modules/core/Timing.java
-      getReactApplicationContext().getJSModule(JSTimers.class).callTimers(timerToCall);
-=======
       mJavaScriptTimerManager.callTimers(timerToCall);
->>>>>>> fb/0.62-stable:ReactAndroid/src/main/java/com/facebook/react/modules/core/JavaTimerManager.java
       return;
     }
 

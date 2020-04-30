@@ -14,10 +14,7 @@ import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
 
 import androidx.annotation.GuardedBy;
 import androidx.annotation.Nullable;
-<<<<<<< HEAD
-=======
 import com.facebook.common.logging.FLog;
->>>>>>> fb/0.62-stable
 import com.facebook.debug.holder.PrinterHolder;
 import com.facebook.debug.tags.ReactDebugOverlayTags;
 import com.facebook.infer.annotation.Assertions;

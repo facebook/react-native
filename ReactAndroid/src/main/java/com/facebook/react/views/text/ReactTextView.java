@@ -1,9 +1,10 @@
 /*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
- * directory of this source tree.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
+
 package com.facebook.react.views.text;
 
 import static com.facebook.react.views.text.TextAttributeProps.UNSET;
@@ -112,22 +113,14 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
       return;
     }
 
-<<<<<<< HEAD
-    if (!getReactContext().hasCatalystInstance()) {
-=======
     ReactContext reactContext = getReactContext();
     if (!reactContext.hasCatalystInstance()) {
->>>>>>> fb/0.62-stable
       // In bridgeless mode there's no Catalyst instance; in that case, bail.
       // TODO (T45503888): Figure out how to support nested views from JS or cpp.
       return;
     }
 
-<<<<<<< HEAD
-    UIManagerModule uiManager = getReactContext().getNativeModule(UIManagerModule.class);
-=======
     UIManagerModule uiManager = reactContext.getNativeModule(UIManagerModule.class);
->>>>>>> fb/0.62-stable
 
     Spanned text = (Spanned) getText();
     Layout layout = getLayout();
@@ -264,11 +257,7 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
 
       WritableMap event = Arguments.createMap();
       event.putArray("inlineViews", inlineViewInfoArray2);
-<<<<<<< HEAD
-      getReactContext()
-=======
       reactContext
->>>>>>> fb/0.62-stable
           .getJSModule(RCTEventEmitter.class)
           .receiveEvent(getId(), "topInlineViewLayout", event);
     }
@@ -288,13 +277,6 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
       setMovementMethod(LinkMovementMethod.getInstance());
     }
     setText(spannable);
-<<<<<<< HEAD
-    setPadding(
-        (int) Math.floor(update.getPaddingLeft()),
-        (int) Math.floor(update.getPaddingTop()),
-        (int) Math.floor(update.getPaddingRight()),
-        (int) Math.floor(update.getPaddingBottom()));
-=======
     float paddingLeft = update.getPaddingLeft();
     float paddingTop = update.getPaddingTop();
     float paddingRight = update.getPaddingRight();
@@ -314,7 +296,6 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
           (int) Math.floor(paddingRight),
           (int) Math.floor(paddingBottom));
     }
->>>>>>> fb/0.62-stable
 
     int nextTextAlign = update.getTextAlign();
     if (mTextAlign != nextTextAlign) {
@@ -509,13 +490,9 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
   public void updateView() {
     @Nullable
     TextUtils.TruncateAt ellipsizeLocation =
-<<<<<<< HEAD
-        mNumberOfLines == ViewDefaults.NUMBER_OF_LINES ? null : mEllipsizeLocation;
-=======
         mNumberOfLines == ViewDefaults.NUMBER_OF_LINES || mAdjustsFontSizeToFit
             ? null
             : mEllipsizeLocation;
->>>>>>> fb/0.62-stable
     setEllipsize(ellipsizeLocation);
   }
 

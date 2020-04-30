@@ -1,9 +1,10 @@
 /*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
- * directory of this source tree.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
+
 package com.facebook.react.views.text;
 
 import static com.facebook.react.views.text.TextAttributeProps.UNSET;
@@ -93,8 +94,6 @@ public class ReactTextUpdate {
       Spannable text,
       int jsEventCounter,
       boolean containsImages,
-<<<<<<< HEAD
-=======
       int textAlign,
       int textBreakStrategy,
       int justificationMode) {
@@ -117,7 +116,6 @@ public class ReactTextUpdate {
       Spannable text,
       int jsEventCounter,
       boolean containsImages,
->>>>>>> fb/0.62-stable
       float paddingStart,
       float paddingTop,
       float paddingEnd,

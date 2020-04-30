@@ -45,17 +45,10 @@ public class FabricJSIModuleProvider implements JSIModuleProvider<UIManager> {
   @NonNull private final ReactNativeConfig mConfig;
 
   public FabricJSIModuleProvider(
-<<<<<<< HEAD
-      ReactApplicationContext reactApplicationContext,
-      JavaScriptContextHolder jsContext,
-      ComponentFactoryDelegate componentFactoryDelegate,
-      ReactNativeConfig config) {
-=======
       @NonNull ReactApplicationContext reactApplicationContext,
       @NonNull JavaScriptContextHolder jsContext,
       @NonNull ComponentFactoryDelegate componentFactoryDelegate,
       @NonNull ReactNativeConfig config) {
->>>>>>> fb/0.62-stable
     mReactApplicationContext = reactApplicationContext;
     mJSContext = jsContext;
     mComponentFactoryDelegate = componentFactoryDelegate;

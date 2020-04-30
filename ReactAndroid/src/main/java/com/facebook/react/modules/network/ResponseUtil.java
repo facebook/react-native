@@ -1,9 +1,10 @@
 /*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
- * directory of this source tree.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
+
 package com.facebook.react.modules.network;
 
 import androidx.annotation.Nullable;
@@ -16,11 +17,7 @@ import java.net.SocketTimeoutException;
 /** Util methods to send network responses to JS. */
 public class ResponseUtil {
   public static void onDataSend(
-<<<<<<< HEAD
-      RCTDeviceEventEmitter eventEmitter, int requestId, long progress, long total) {
-=======
       @Nullable RCTDeviceEventEmitter eventEmitter, int requestId, long progress, long total) {
->>>>>>> fb/0.62-stable
     WritableArray args = Arguments.createArray();
     args.pushInt(requestId);
     args.pushInt((int) progress);
@@ -31,15 +28,11 @@ public class ResponseUtil {
   }
 
   public static void onIncrementalDataReceived(
-<<<<<<< HEAD
-      RCTDeviceEventEmitter eventEmitter, int requestId, String data, long progress, long total) {
-=======
       @Nullable RCTDeviceEventEmitter eventEmitter,
       int requestId,
       String data,
       long progress,
       long total) {
->>>>>>> fb/0.62-stable
     WritableArray args = Arguments.createArray();
     args.pushInt(requestId);
     args.pushString(data);
@@ -52,11 +45,7 @@ public class ResponseUtil {
   }
 
   public static void onDataReceivedProgress(
-<<<<<<< HEAD
-      RCTDeviceEventEmitter eventEmitter, int requestId, long progress, long total) {
-=======
       @Nullable RCTDeviceEventEmitter eventEmitter, int requestId, long progress, long total) {
->>>>>>> fb/0.62-stable
     WritableArray args = Arguments.createArray();
     args.pushInt(requestId);
     args.pushInt((int) progress);
@@ -68,11 +57,7 @@ public class ResponseUtil {
   }
 
   public static void onDataReceived(
-<<<<<<< HEAD
-      RCTDeviceEventEmitter eventEmitter, int requestId, String data) {
-=======
       @Nullable RCTDeviceEventEmitter eventEmitter, int requestId, String data) {
->>>>>>> fb/0.62-stable
     WritableArray args = Arguments.createArray();
     args.pushInt(requestId);
     args.pushString(data);
@@ -83,11 +68,7 @@ public class ResponseUtil {
   }
 
   public static void onDataReceived(
-<<<<<<< HEAD
-      RCTDeviceEventEmitter eventEmitter, int requestId, WritableMap data) {
-=======
       @Nullable RCTDeviceEventEmitter eventEmitter, int requestId, WritableMap data) {
->>>>>>> fb/0.62-stable
     WritableArray args = Arguments.createArray();
     args.pushInt(requestId);
     args.pushMap(data);
@@ -98,11 +79,7 @@ public class ResponseUtil {
   }
 
   public static void onRequestError(
-<<<<<<< HEAD
-      RCTDeviceEventEmitter eventEmitter, int requestId, String error, Throwable e) {
-=======
       @Nullable RCTDeviceEventEmitter eventEmitter, int requestId, String error, Throwable e) {
->>>>>>> fb/0.62-stable
     WritableArray args = Arguments.createArray();
     args.pushInt(requestId);
     args.pushString(error);
@@ -127,11 +104,7 @@ public class ResponseUtil {
   }
 
   public static void onResponseReceived(
-<<<<<<< HEAD
-      RCTDeviceEventEmitter eventEmitter,
-=======
       @Nullable RCTDeviceEventEmitter eventEmitter,
->>>>>>> fb/0.62-stable
       int requestId,
       int statusCode,
       WritableMap headers,

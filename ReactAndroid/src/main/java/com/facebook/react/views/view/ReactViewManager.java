@@ -1,9 +1,10 @@
 /*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
- * directory of this source tree.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
+
 package com.facebook.react.views.view;
 
 import android.annotation.TargetApi;
@@ -170,15 +171,6 @@ public class ReactViewManager extends ReactClippingViewManager<ReactViewGroup> {
         fg == null
             ? null
             : ReactDrawableHelper.createDrawableFromJSDescription(view.getContext(), fg));
-<<<<<<< HEAD
-  }
-
-  @ReactProp(
-      name = com.facebook.react.uimanager.ReactClippingViewGroupHelper.PROP_REMOVE_CLIPPED_SUBVIEWS)
-  public void setRemoveClippedSubviews(ReactViewGroup view, boolean removeClippedSubviews) {
-    view.setRemoveClippedSubviews(removeClippedSubviews);
-=======
->>>>>>> fb/0.62-stable
   }
 
   @ReactProp(name = ViewProps.NEEDS_OFFSCREEN_ALPHA_COMPOSITING)
@@ -309,55 +301,6 @@ public class ReactViewManager extends ReactClippingViewManager<ReactViewGroup> {
           handleSetPressed(root, args);
           break;
         }
-<<<<<<< HEAD
-    }
-  }
-
-  @Override
-  public void receiveCommand(ReactViewGroup root, String commandId, @Nullable ReadableArray args) {
-    switch (commandId) {
-      case HOTSPOT_UPDATE_KEY:
-        {
-          handleHotspotUpdate(root, args);
-          break;
-        }
-      case "setPressed":
-        {
-          handleSetPressed(root, args);
-          break;
-        }
-    }
-  }
-
-  private void handleSetPressed(ReactViewGroup root, @Nullable ReadableArray args) {
-    if (args == null || args.size() != 1) {
-      throw new JSApplicationIllegalArgumentException(
-          "Illegal number of arguments for 'setPressed' command");
-    }
-    root.setPressed(args.getBoolean(0));
-  }
-
-  private void handleHotspotUpdate(ReactViewGroup root, @Nullable ReadableArray args) {
-    if (args == null || args.size() != 2) {
-      throw new JSApplicationIllegalArgumentException(
-          "Illegal number of arguments for 'updateHotspot' command");
-    }
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      float x = PixelUtil.toPixelFromDIP(args.getDouble(0));
-      float y = PixelUtil.toPixelFromDIP(args.getDouble(1));
-      root.drawableHotspotChanged(x, y);
-    }
-  }
-
-  @Override
-  public void addView(ReactViewGroup parent, View child, int index) {
-    boolean removeClippedSubviews = parent.getRemoveClippedSubviews();
-    if (removeClippedSubviews) {
-      parent.addViewWithSubviewClippingEnabled(child, index);
-    } else {
-      parent.addView(child, index);
-=======
->>>>>>> fb/0.62-stable
     }
   }
 

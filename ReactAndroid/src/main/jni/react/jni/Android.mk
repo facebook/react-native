@@ -68,11 +68,7 @@ $(call import-module,yogajni)
 $(call import-module,cxxreact)
 $(call import-module,jsi)
 $(call import-module,jsiexecutor)
-<<<<<<< HEAD
-$(call import-module,jscallinvoker)
-=======
 $(call import-module,callinvoker)
->>>>>>> fb/0.62-stable
 $(call import-module,hermes)
 
 include $(REACT_SRC_DIR)/turbomodule/core/jni/Android.mk

@@ -7,11 +7,7 @@
 
 package com.facebook.react.fabric.mounting.mountitems;
 
-<<<<<<< HEAD
-import com.facebook.common.logging.FLog;
-=======
 import androidx.annotation.NonNull;
->>>>>>> fb/0.62-stable
 import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.react.bridge.ReactMarker;
 import com.facebook.react.bridge.ReactMarkerConstants;
@@ -33,13 +29,9 @@ public class BatchMountItem implements MountItem {
   @NonNull private final MountItem[] mMountItems;
 
   private final int mSize;
+
   private final int mCommitNumber;
 
-<<<<<<< HEAD
-=======
-  private final int mCommitNumber;
-
->>>>>>> fb/0.62-stable
   public BatchMountItem(MountItem[] items, int size, int commitNumber) {
     if (items == null) {
       throw new NullPointerException();

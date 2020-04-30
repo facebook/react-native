@@ -1,29 +1,24 @@
 /*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
- * directory of this source tree.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
+
 package com.facebook.react.bridge;
 
 import static com.facebook.infer.annotation.ThreadConfined.UI;
 
 import android.view.View;
 import androidx.annotation.Nullable;
-<<<<<<< HEAD
-=======
 import androidx.annotation.UiThread;
 import com.facebook.infer.annotation.ThreadConfined;
->>>>>>> fb/0.62-stable
 
 public interface UIManager extends JSIModule, PerformanceCounter {
 
   /** Registers a new root view. */
-<<<<<<< HEAD
-=======
   @UiThread
   @ThreadConfined(UI)
->>>>>>> fb/0.62-stable
   <T extends View> int addRootView(
       final T rootView, WritableMap initialProps, @Nullable String initialUITemplate);
 
@@ -40,11 +35,8 @@ public interface UIManager extends JSIModule, PerformanceCounter {
    * command will be processed in the UIThread.
    *
    * <p>Receiving commands as ints is deprecated and will be removed in a future release.
-<<<<<<< HEAD
-=======
    *
    * <p>Pre-Fabric, this is only called on the Native Module Thread.
->>>>>>> fb/0.62-stable
    *
    * @param reactTag {@link int} that identifies the view that will receive this command
    * @param commandId {@link int} command id
@@ -56,11 +48,8 @@ public interface UIManager extends JSIModule, PerformanceCounter {
    * Dispatches the commandId received by parameter to the view associated with the reactTag. The
    * command will be processed in the UIThread.
    *
-<<<<<<< HEAD
-=======
    * <p>Pre-Fabric, this is only called on the Native Module Thread.
    *
->>>>>>> fb/0.62-stable
    * @param reactTag {@link int} that identifies the view that will receive this command
    * @param commandId {@link String} command id
    * @param commandArgs {@link ReadableArray} parameters associated with the command
