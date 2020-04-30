@@ -27,6 +27,8 @@ type Props = $ReadOnly<{|
   level: 'warn' | 'error',
   onPressOpen: () => void,
   onPressDismiss: () => void,
+  togglePosition: () => void,
+  isOnBottom: boolean,
 |}>;
 
 function LogBoxLogNotification(props: Props): React.Node {
@@ -49,6 +51,10 @@ function LogBoxLogNotification(props: Props): React.Node {
         <View style={toastStyles.content}>
           <CountBadge count={totalLogCount} level={level} />
           <Message message={log.message} />
+          <ChangeLocationButton
+            onPress={props.togglePosition}
+            isOnBottom={props.isOnBottom}
+          />
           <DismissButton onPress={props.onPressDismiss} />
         </View>
       </LogBoxButton>
@@ -88,7 +94,7 @@ function Message(props) {
 
 function DismissButton(props) {
   return (
-    <View style={dismissStyles.container}>
+    <View style={buttonStyle.container}>
       <LogBoxButton
         backgroundColor={{
           default: LogBoxStyle.getTextColor(0.3),
@@ -101,10 +107,39 @@ function DismissButton(props) {
           left: 10,
         }}
         onPress={props.onPress}
-        style={dismissStyles.press}>
+        style={buttonStyle.press}>
         <Image
           source={require('./LogBoxImages/close.png')}
-          style={dismissStyles.image}
+          style={buttonStyle.image}
+        />
+      </LogBoxButton>
+    </View>
+  );
+}
+
+const chevronTop = require('./LogBoxImages/chevron-top.png');
+const chevronBottom = require('./LogBoxImages/chevron-bottom.png');
+
+function ChangeLocationButton(props) {
+  const {isOnBottom} = props;
+  return (
+    <View style={buttonStyle.container}>
+      <LogBoxButton
+        backgroundColor={{
+          default: LogBoxStyle.getTextColor(0.3),
+          pressed: LogBoxStyle.getTextColor(0.5),
+        }}
+        hitSlop={{
+          top: 12,
+          right: 10,
+          bottom: 12,
+          left: 10,
+        }}
+        onPress={props.onPress}
+        style={buttonStyle.press}>
+        <Image
+          source={isOnBottom ? chevronTop : chevronBottom}
+          style={buttonStyle.image}
         />
       </LogBoxButton>
     </View>
@@ -167,7 +202,7 @@ const messageStyles = StyleSheet.create({
   },
 });
 
-const dismissStyles = StyleSheet.create({
+const buttonStyle = StyleSheet.create({
   container: {
     alignSelf: 'center',
     flexDirection: 'row',
