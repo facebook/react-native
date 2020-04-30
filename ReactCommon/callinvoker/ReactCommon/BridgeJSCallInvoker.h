@@ -1,8 +1,4 @@
-<<<<<<< HEAD
-/**
-=======
 /*
->>>>>>> fb/0.62-stable
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -14,11 +10,7 @@
 #include <functional>
 #include <memory>
 
-<<<<<<< HEAD
-#include <ReactCommon/JSCallInvoker.h>
-=======
 #include <ReactCommon/CallInvoker.h>
->>>>>>> fb/0.62-stable
 
 namespace facebook {
 namespace react {
@@ -35,11 +27,7 @@ class Instance;
  * API to call JS from native, whether synchronously or asynchronously.
  * Also, this class should not depend on `Instance` in the future.
  */
-<<<<<<< HEAD
-class BridgeJSCallInvoker : public JSCallInvoker {
-=======
 class BridgeJSCallInvoker : public CallInvoker {
->>>>>>> fb/0.62-stable
  public:
   BridgeJSCallInvoker(std::weak_ptr<Instance> reactInstance);
 

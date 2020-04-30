@@ -7,13 +7,6 @@
 
 #include "JSBigString.h"
 
-<<<<<<< HEAD
-#include <fcntl.h>
-#include <sys/stat.h>
-#include <unistd.h>
-
-=======
->>>>>>> fb/0.62-stable
 #include <glog/logging.h>
 
 #include <folly/Memory.h>

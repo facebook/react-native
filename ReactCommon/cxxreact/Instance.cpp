@@ -110,42 +110,16 @@ bool Instance::isIndexedRAMBundle(const char *sourcePath) {
   return parseTypeFromHeader(header) == ScriptTag::RAMBundle;
 }
 
-<<<<<<< HEAD
-bool Instance::isIndexedRAMBundle(std::unique_ptr<const JSBigString>* script) {
-  BundleHeader header;
-  strncpy(reinterpret_cast<char *>(&header), script->get()->c_str(), sizeof(header));
-=======
 bool Instance::isIndexedRAMBundle(std::unique_ptr<const JSBigString> *script) {
   BundleHeader header;
   strncpy(
       reinterpret_cast<char *>(&header),
       script->get()->c_str(),
       sizeof(header));
->>>>>>> fb/0.62-stable
 
   return parseTypeFromHeader(header) == ScriptTag::RAMBundle;
 }
 
-<<<<<<< HEAD
-void Instance::loadRAMBundleFromString(std::unique_ptr<const JSBigString> script, const std::string& sourceURL) {
-  auto bundle = folly::make_unique<JSIndexedRAMBundle>(std::move(script));
-  auto startupScript = bundle->getStartupCode();
-  auto registry = RAMBundleRegistry::singleBundleRegistry(std::move(bundle));
-  loadRAMBundle(
-    std::move(registry),
-    std::move(startupScript),
-    sourceURL,
-    true);
-}
-
-void Instance::loadRAMBundleFromFile(const std::string& sourcePath,
-                           const std::string& sourceURL,
-                           bool loadSynchronously) {
-    auto bundle = folly::make_unique<JSIndexedRAMBundle>(sourcePath.c_str());
-    auto startupScript = bundle->getStartupCode();
-    auto registry = RAMBundleRegistry::multipleBundlesRegistry(std::move(bundle), JSIndexedRAMBundle::buildFactory());
-    loadRAMBundle(
-=======
 void Instance::loadRAMBundleFromString(
     std::unique_ptr<const JSBigString> script,
     const std::string &sourceURL) {
@@ -164,7 +138,6 @@ void Instance::loadRAMBundleFromFile(
   auto registry = RAMBundleRegistry::multipleBundlesRegistry(
       std::move(bundle), JSIndexedRAMBundle::buildFactory());
   loadRAMBundle(
->>>>>>> fb/0.62-stable
       std::move(registry),
       std::move(startupScript),
       sourceURL,

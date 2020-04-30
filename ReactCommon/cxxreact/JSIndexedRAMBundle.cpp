@@ -9,13 +9,8 @@
 
 #include <glog/logging.h>
 #include <fstream>
-<<<<<<< HEAD
-#include <sstream>
-#include <folly/Memory.h>
-=======
 #include <memory>
 #include <sstream>
->>>>>>> fb/0.62-stable
 
 namespace facebook {
 namespace react {
@@ -30,27 +25,6 @@ JSIndexedRAMBundle::buildFactory() {
 JSIndexedRAMBundle::JSIndexedRAMBundle(const char *sourcePath) {
   m_bundle = std::make_unique<std::ifstream>(sourcePath, std::ifstream::binary);
   if (!m_bundle) {
-<<<<<<< HEAD
-    throw std::ios_base::failure(
-      folly::to<std::string>("Bundle ", sourcePath,
-                             "cannot be opened: ", m_bundle->rdstate()));
-  }
-  init();
-}
-
-JSIndexedRAMBundle::JSIndexedRAMBundle(std::unique_ptr<const JSBigString> script) {
-  // tmpStream is needed because m_bundle is std::istream type
-  // which has no member 'write'
-  std::unique_ptr<std::stringstream> tmpStream = std::make_unique<std::stringstream>();
-  tmpStream->write(script->c_str(), script->size());
-  m_bundle = std::move(tmpStream);
-  if (!m_bundle) {
-    throw std::ios_base::failure(
-      folly::to<std::string>("Bundle from string cannot be opened: ", m_bundle->rdstate()));
-  }
-  init();
-}
-=======
     throw std::ios_base::failure(folly::to<std::string>(
         "Bundle ", sourcePath, "cannot be opened: ", m_bundle->rdstate()));
   }
@@ -71,7 +45,6 @@ JSIndexedRAMBundle::JSIndexedRAMBundle(
   }
   init();
 }
->>>>>>> fb/0.62-stable
 
 void JSIndexedRAMBundle::init() {
   // read in magic header, number of entries, and length of the startup section
@@ -132,23 +105,14 @@ std::string JSIndexedRAMBundle::getModuleCode(const uint32_t id) const {
   return ret;
 }
 
-<<<<<<< HEAD
-void JSIndexedRAMBundle::readBundle(char *buffer, const std::streamsize bytes) const {
-=======
 void JSIndexedRAMBundle::readBundle(char *buffer, const std::streamsize bytes)
     const {
->>>>>>> fb/0.62-stable
   if (!m_bundle->read(buffer, bytes)) {
     if (m_bundle->rdstate() & std::ios::eofbit) {
       throw std::ios_base::failure("Unexpected end of RAM Bundle file");
     }
-<<<<<<< HEAD
-    throw std::ios_base::failure(
-      folly::to<std::string>("Error reading RAM Bundle: ", m_bundle->rdstate()));
-=======
     throw std::ios_base::failure(folly::to<std::string>(
         "Error reading RAM Bundle: ", m_bundle->rdstate()));
->>>>>>> fb/0.62-stable
   }
 }
 
@@ -156,16 +120,9 @@ void JSIndexedRAMBundle::readBundle(
     char *buffer,
     const std::streamsize bytes,
     const std::ifstream::pos_type position) const {
-<<<<<<< HEAD
-
-  if (!m_bundle->seekg(position)) {
-    throw std::ios_base::failure(
-      folly::to<std::string>("Error reading RAM Bundle: ", m_bundle->rdstate()));
-=======
   if (!m_bundle->seekg(position)) {
     throw std::ios_base::failure(folly::to<std::string>(
         "Error reading RAM Bundle: ", m_bundle->rdstate()));
->>>>>>> fb/0.62-stable
   }
   readBundle(buffer, bytes);
 }

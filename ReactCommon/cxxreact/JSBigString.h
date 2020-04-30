@@ -7,12 +7,6 @@
 
 #pragma once
 
-<<<<<<< HEAD
-#include <fcntl.h>
-#include <sys/mman.h>
-
-=======
->>>>>>> fb/0.62-stable
 #include <folly/Exception.h>
 
 #ifndef RN_EXPORT

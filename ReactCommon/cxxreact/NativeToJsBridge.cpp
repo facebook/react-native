@@ -62,14 +62,9 @@ class JsToNativeBridge : public react::ExecutorDelegate {
     }
     if (isEndOfBatch) {
       // onBatchComplete will be called on the native (module) queue, but
-<<<<<<< HEAD
-      // decrementPendingJSCalls will be called sync. Be aware that the bridge may still
-      // be processing native calls when the bridge idle signaler fires.
-=======
       // decrementPendingJSCalls will be called sync. Be aware that the bridge
       // may still be processing native calls when the bridge idle signaler
       // fires.
->>>>>>> fb/0.62-stable
       if (m_batchHadNativeModuleCalls) {
         m_callback->onBatchComplete();
         m_batchHadNativeModuleCalls = false;
