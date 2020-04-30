@@ -65,7 +65,7 @@ export function _LogBoxNotificationContainer(props: Props): React.Node {
 
   const renderLogBoxLogNotifications = React.useCallback(
     (level, onDismiss, togglePosition, isOnBottom) => {
-      const filteredLogs = logs.filter(log => log.level === 'warn');
+      const filteredLogs = logs.filter(log => log.level === level);
       if (filteredLogs.length === 0) {
         return null;
       }
