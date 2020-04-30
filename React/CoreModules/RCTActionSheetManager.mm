@@ -99,7 +99,7 @@ RCT_EXPORT_METHOD(showActionSheetWithOptions
       @"destructiveButtonIndices" : destructiveButtonIndices,
       @"anchor" : anchor,
       @"tintColor" : tintColor,
-      @"destructiveButtonIndices" : destructiveButtonIndices,
+      @"disabledButtonIndices" : disabledButtonIndices,
     });
     return;
   }
