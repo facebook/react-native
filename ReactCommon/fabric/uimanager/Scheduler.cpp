@@ -53,12 +53,6 @@ Scheduler::Scheduler(
       eventPipe,
       statePipe,
       schedulerToolbox.synchronousEventBeatFactory,
-<<<<<<< HEAD
-      schedulerToolbox.asynchronousEventBeatFactory);
-
-  componentDescriptorRegistry_ = schedulerToolbox.componentRegistryFactory(
-      eventDispatcher, schedulerToolbox.contextContainer);
-=======
       schedulerToolbox.asynchronousEventBeatFactory,
       eventOwnerBox);
 
@@ -66,33 +60,18 @@ Scheduler::Scheduler(
 
   componentDescriptorRegistry_ = schedulerToolbox.componentRegistryFactory(
       eventDispatcher_, schedulerToolbox.contextContainer);
->>>>>>> fb/0.62-stable
 
   rootComponentDescriptor_ =
       std::make_unique<const RootComponentDescriptor>(eventDispatcher_);
 
-<<<<<<< HEAD
-  delegate_ = delegate;
-
-  uiManagerRef.setDelegate(this);
-  uiManagerRef.setShadowTreeRegistry(&shadowTreeRegistry_);
-  uiManagerRef.setComponentDescriptorRegistry(componentDescriptorRegistry_);
-=======
   uiManager->setDelegate(this);
   uiManager->setComponentDescriptorRegistry(componentDescriptorRegistry_);
->>>>>>> fb/0.62-stable
 
   runtimeExecutor_([=](jsi::Runtime &runtime) {
     auto uiManagerBinding = UIManagerBinding::createAndInstallIfNeeded(runtime);
     uiManagerBinding->attach(uiManager);
   });
 
-<<<<<<< HEAD
-  schedulerToolbox.contextContainer->insert(
-      "ComponentDescriptorRegistry_DO_NOT_USE_PRETTY_PLEASE",
-      std::weak_ptr<ComponentDescriptorRegistry const>(
-          componentDescriptorRegistry_));
-=======
   auto componentDescriptorRegistryKey =
       "ComponentDescriptorRegistry_DO_NOT_USE_PRETTY_PLEASE";
   schedulerToolbox.contextContainer->erase(componentDescriptorRegistryKey);
@@ -103,7 +82,6 @@ Scheduler::Scheduler(
 
   delegate_ = delegate;
   uiManager_ = uiManager;
->>>>>>> fb/0.62-stable
 }
 
 Scheduler::~Scheduler() {
@@ -222,26 +200,6 @@ void Scheduler::renderTemplateToSurface(
 void Scheduler::stopSurface(SurfaceId surfaceId) const {
   SystraceSection s("Scheduler::stopSurface");
 
-<<<<<<< HEAD
-  shadowTreeRegistry_.visit(surfaceId, [](const ShadowTree &shadowTree) {
-    // As part of stopping the Surface, we have to commit an empty tree.
-    return shadowTree.tryCommit(
-        [&](const SharedRootShadowNode &oldRootShadowNode) {
-          return std::make_shared<RootShadowNode>(
-              *oldRootShadowNode,
-              ShadowNodeFragment{
-                  /* .tag = */ ShadowNodeFragment::tagPlaceholder(),
-                  /* .surfaceId = */
-                  ShadowNodeFragment::surfaceIdPlaceholder(),
-                  /* .props = */ ShadowNodeFragment::propsPlaceholder(),
-                  /* .eventEmitter = */
-                  ShadowNodeFragment::eventEmitterPlaceholder(),
-                  /* .children = */
-                  ShadowNode::emptySharedShadowNodeSharedList(),
-              });
-        });
-  });
-=======
   // Note, we have to do in inside `visit` function while the Shadow Tree
   // is still being registered.
   uiManager_->getShadowTreeRegistry().visit(
@@ -251,20 +209,16 @@ void Scheduler::stopSurface(SurfaceId surfaceId) const {
         // side-effects that will perform that.
         shadowTree.commitEmptyTree();
       });
->>>>>>> fb/0.62-stable
 
   // Waiting for all concurrent commits to be finished and unregistering the
   // `ShadowTree`.
   uiManager_->getShadowTreeRegistry().remove(surfaceId);
 
-<<<<<<< HEAD
-=======
   // We execute JavaScript/React part of the process at the very end to minimize
   // any visible side-effects of stopping the Surface. Any possible commits from
   // the JavaScript side will not be able to reference a `ShadowTree` and will
   // fail silently.
   auto uiManager = uiManager_;
->>>>>>> fb/0.62-stable
   runtimeExecutor_([=](jsi::Runtime &runtime) {
     uiManager->visitBinding([&](UIManagerBinding const &uiManagerBinding) {
       uiManagerBinding.stopSurface(runtime, surfaceId);
@@ -330,26 +284,9 @@ void Scheduler::uiManagerDidFinishTransaction(
     MountingCoordinator::Shared const &mountingCoordinator) {
   SystraceSection s("Scheduler::uiManagerDidFinishTransaction");
 
-<<<<<<< HEAD
-  shadowTreeRegistry_.visit(surfaceId, [&](const ShadowTree &shadowTree) {
-    shadowTree.commit([&](const SharedRootShadowNode &oldRootShadowNode) {
-      return std::make_shared<RootShadowNode>(
-          *oldRootShadowNode,
-          ShadowNodeFragment{
-              /* .tag = */ ShadowNodeFragment::tagPlaceholder(),
-              /* .surfaceId = */ ShadowNodeFragment::surfaceIdPlaceholder(),
-              /* .props = */ ShadowNodeFragment::propsPlaceholder(),
-              /* .eventEmitter = */
-              ShadowNodeFragment::eventEmitterPlaceholder(),
-              /* .children = */ rootChildNodes,
-          });
-    });
-  });
-=======
   if (delegate_) {
     delegate_->schedulerDidFinishTransaction(mountingCoordinator);
   }
->>>>>>> fb/0.62-stable
 }
 
 void Scheduler::uiManagerDidCreateShadowNode(

@@ -30,11 +30,7 @@ void State::commit(std::shared_ptr<ShadowNode const> const &shadowNode) const {
   stateCoordinator_->setTarget(StateTarget{shadowNode});
 }
 
-<<<<<<< HEAD
-State::Shared State::getCommitedState() const {
-=======
 State::Shared State::getMostRecentState() const {
->>>>>>> fb/0.62-stable
   auto target = stateCoordinator_->getTarget();
   return target ? target.getShadowNode().getState()
                 : ShadowNodeFragment::statePlaceholder();

@@ -1,17 +1,10 @@
-<<<<<<< HEAD
-/**
-=======
 /*
->>>>>>> fb/0.62-stable
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-<<<<<<< HEAD
-=======
 
->>>>>>> fb/0.62-stable
 #pragma once
 
 #include <react/graphics/Geometry.h>
@@ -88,11 +81,7 @@ using Touches = std::unordered_set<Touch, Touch::Hasher, Touch::Comparator>;
 std::string getDebugName(Touch const &touch);
 std::vector<DebugStringConvertibleObject> getDebugProps(
     Touch const &object,
-<<<<<<< HEAD
-    DebugStringConvertibleOptions options = {});
-=======
     DebugStringConvertibleOptions options);
->>>>>>> fb/0.62-stable
 
 #endif
 

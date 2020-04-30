@@ -21,14 +21,10 @@ namespace react {
 class UIManagerBinding : public jsi::HostObject {
  public:
   /*
-<<<<<<< HEAD
-   * Installs UIManagerBinding into JavaScript runtime.
-=======
    * Installs UIManagerBinding into JavaScript runtime if needed.
    * Creates and sets `UIManagerBinding` into the global namespace.
    * In case if the global namespace already has a `UIManagerBinding` installed,
    * returns that.
->>>>>>> fb/0.62-stable
    * Thread synchronization must be enforced externally.
    */
   static std::shared_ptr<UIManagerBinding> createAndInstallIfNeeded(

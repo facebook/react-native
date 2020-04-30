@@ -17,11 +17,7 @@ namespace react {
 void MountingTelemetry::willCommit() {
   assert(commitStartTime_ == kUndefinedTime);
   assert(commitEndTime_ == kUndefinedTime);
-<<<<<<< HEAD
-  commitStartTime_ = getTime();
-=======
   commitStartTime_ = monotonicTimeInMilliseconds();
->>>>>>> fb/0.62-stable
   commitNumber_++;
 }
 
@@ -43,18 +39,6 @@ void MountingTelemetry::didDiff() {
   diffEndTime_ = monotonicTimeInMilliseconds();
 }
 
-void MountingTelemetry::willDiff() {
-  assert(diffStartTime_ == kUndefinedTime);
-  assert(diffEndTime_ == kUndefinedTime);
-  diffStartTime_ = getTime();
-}
-
-void MountingTelemetry::didDiff() {
-  assert(diffStartTime_ != kUndefinedTime);
-  assert(diffEndTime_ == kUndefinedTime);
-  diffEndTime_ = getTime();
-}
-
 void MountingTelemetry::willLayout() {
   assert(layoutStartTime_ == kUndefinedTime);
   assert(layoutEndTime_ == kUndefinedTime);
@@ -64,17 +48,6 @@ void MountingTelemetry::willLayout() {
 void MountingTelemetry::didLayout() {
   assert(layoutStartTime_ != kUndefinedTime);
   assert(layoutEndTime_ == kUndefinedTime);
-<<<<<<< HEAD
-  layoutEndTime_ = getTime();
-}
-
-int64_t MountingTelemetry::getDiffStartTime() const {
-  assert(diffStartTime_ != kUndefinedTime);
-  assert(diffEndTime_ != kUndefinedTime);
-  return diffStartTime_;
-}
-
-=======
   layoutEndTime_ = monotonicTimeInMilliseconds();
 }
 
@@ -96,7 +69,6 @@ int64_t MountingTelemetry::getDiffStartTime() const {
   return diffStartTime_;
 }
 
->>>>>>> fb/0.62-stable
 int64_t MountingTelemetry::getDiffEndTime() const {
   assert(diffStartTime_ != kUndefinedTime);
   assert(diffEndTime_ != kUndefinedTime);
@@ -131,8 +103,6 @@ int64_t MountingTelemetry::getLayoutEndTime() const {
   return layoutEndTime_;
 }
 
-<<<<<<< HEAD
-=======
 int64_t MountingTelemetry::getMountStartTime() const {
   assert(mountStartTime_ != kUndefinedTime);
   assert(mountEndTime_ != kUndefinedTime);
@@ -145,6 +115,5 @@ int64_t MountingTelemetry::getMountEndTime() const {
   return mountEndTime_;
 }
 
->>>>>>> fb/0.62-stable
 } // namespace react
 } // namespace facebook

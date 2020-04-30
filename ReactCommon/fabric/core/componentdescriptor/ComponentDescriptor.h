@@ -45,14 +45,9 @@ class ComponentDescriptor {
   using Flavor = std::shared_ptr<void const>;
 
   ComponentDescriptor(
-<<<<<<< HEAD
-      EventDispatcher::Shared const &eventDispatcher,
-      ContextContainer::Shared const &contextContainer);
-=======
       EventDispatcher::Weak const &eventDispatcher,
       ContextContainer::Shared const &contextContainer,
       ComponentDescriptor::Flavor const &flavor);
->>>>>>> fb/0.62-stable
 
   virtual ~ComponentDescriptor() = default;
 
@@ -136,10 +131,7 @@ class ComponentDescriptor {
   EventDispatcher::Weak eventDispatcher_;
   ContextContainer::Shared contextContainer_;
   RawPropsParser rawPropsParser_{};
-<<<<<<< HEAD
-=======
   Flavor flavor_;
->>>>>>> fb/0.62-stable
 };
 
 } // namespace react

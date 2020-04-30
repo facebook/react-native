@@ -44,17 +44,10 @@ bool operator!=(StubView const &lhs, StubView const &rhs);
 std::string getDebugName(StubView const &stubView);
 std::vector<DebugStringConvertibleObject> getDebugProps(
     StubView const &stubView,
-<<<<<<< HEAD
-    DebugStringConvertibleOptions options = {});
-std::vector<StubView> getDebugChildren(
-    StubView const &stubView,
-    DebugStringConvertibleOptions options = {});
-=======
     DebugStringConvertibleOptions options);
 std::vector<StubView> getDebugChildren(
     StubView const &stubView,
     DebugStringConvertibleOptions options);
->>>>>>> fb/0.62-stable
 
 #endif
 

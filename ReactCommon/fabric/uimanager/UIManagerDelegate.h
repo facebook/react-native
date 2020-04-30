@@ -20,13 +20,8 @@ namespace react {
 class UIManagerDelegate {
  public:
   /*
-<<<<<<< HEAD
-   * Called right after the new/updated Shadow Node tree is constructed.
-   * The tree is not laid out and not sealed at this time.
-=======
    * Called right after a new/updated Shadow Node tree is constructed.
    * For this moment the tree is already laid out and sealed.
->>>>>>> fb/0.62-stable
    */
   virtual void uiManagerDidFinishTransaction(
       MountingCoordinator::Shared const &mountingCoordinator) = 0;

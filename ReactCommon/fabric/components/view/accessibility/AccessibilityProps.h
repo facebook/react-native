@@ -32,14 +32,11 @@ class AccessibilityProps {
   bool const accessibilityViewIsModal{false};
   bool const accessibilityElementsHidden{false};
   bool const accessibilityIgnoresInvertColors{false};
-<<<<<<< HEAD
-=======
   bool const onAccessibilityTap{};
   bool const onAccessibilityMagicTap{};
   bool const onAccessibilityEscape{};
   bool const onAccessibilityAction{};
 
->>>>>>> fb/0.62-stable
   std::string const testId{""};
 
 #pragma mark - DebugStringConvertible

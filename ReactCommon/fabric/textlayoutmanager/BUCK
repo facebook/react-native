@@ -19,15 +19,21 @@ APPLE_COMPILER_FLAGS = get_apple_compiler_flags()
 rn_xplat_cxx_library(
     name = "textlayoutmanager",
     srcs = glob(
-        [],
+        [
+            "*.cpp",
+        ],
     ),
     headers = subdir_glob(
-        [],
+        [
+            ("", "*.h"),
+        ],
         prefix = "",
     ),
     header_namespace = "",
     exported_headers = subdir_glob(
-        [],
+        [
+            ("", "*.h"),
+        ],
         prefix = "react/textlayoutmanager",
     ),
     compiler_flags = [

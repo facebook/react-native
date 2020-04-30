@@ -57,10 +57,6 @@ class ParagraphComponentDescriptor final
 
  private:
   SharedTextLayoutManager textLayoutManager_;
-<<<<<<< HEAD
-  std::unique_ptr<ParagraphMeasurementCache const> measureCache_;
-=======
->>>>>>> fb/0.62-stable
 };
 
 } // namespace react

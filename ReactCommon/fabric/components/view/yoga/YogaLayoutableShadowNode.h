@@ -108,8 +108,6 @@ class YogaLayoutableShadowNode : public LayoutableShadowNode,
    */
   mutable YGNode yogaNode_;
 
-<<<<<<< HEAD
-=======
   /*
    * Forces associated YGNode to be a leaf.
    * Adding a child `ShadowNode` will not add `YGNode` associated with it as a
@@ -117,7 +115,6 @@ class YogaLayoutableShadowNode : public LayoutableShadowNode,
    */
   bool const isLeaf_;
 
->>>>>>> fb/0.62-stable
  private:
   static YGConfig &initializeYogaConfig(YGConfig &config);
   static YGNode *yogaNodeCloneCallbackConnector(

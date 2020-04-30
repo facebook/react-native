@@ -21,15 +21,10 @@
 namespace facebook {
 namespace react {
 
-<<<<<<< HEAD
-YogaLayoutableShadowNode::YogaLayoutableShadowNode()
-    : yogaConfig_(nullptr), yogaNode_(&initializeYogaConfig(yogaConfig_)) {
-=======
 YogaLayoutableShadowNode::YogaLayoutableShadowNode(bool isLeaf)
     : yogaConfig_(nullptr),
       yogaNode_(&initializeYogaConfig(yogaConfig_)),
       isLeaf_(isLeaf) {
->>>>>>> fb/0.62-stable
   yogaNode_.setContext(this);
 }
 
@@ -39,12 +34,8 @@ YogaLayoutableShadowNode::YogaLayoutableShadowNode(
       yogaConfig_(nullptr),
       yogaNode_(
           layoutableShadowNode.yogaNode_,
-<<<<<<< HEAD
-          &initializeYogaConfig(yogaConfig_)) {
-=======
           &initializeYogaConfig(yogaConfig_)),
       isLeaf_(layoutableShadowNode.isLeaf_) {
->>>>>>> fb/0.62-stable
   yogaNode_.setContext(this);
   yogaNode_.setOwner(nullptr);
 

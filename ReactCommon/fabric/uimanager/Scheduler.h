@@ -100,15 +100,6 @@ class Scheduler final : public UIManagerDelegate {
       const SharedShadowNode &shadowView,
       bool blockNativeResponder) override;
   void uiManagerDidClearJSResponder() override;
-<<<<<<< HEAD
-
-#pragma mark - ShadowTreeDelegate
-
-  void shadowTreeDidCommit(
-      ShadowTree const &shadowTree,
-      MountingCoordinator::Shared const &mountingCoordinator) const override;
-=======
->>>>>>> fb/0.62-stable
 
  private:
   SchedulerDelegate *delegate_;

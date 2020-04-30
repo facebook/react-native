@@ -46,16 +46,10 @@ class ConcreteComponentDescriptor : public ComponentDescriptor {
   using ConcreteStateData = typename ShadowNodeT::ConcreteState::Data;
 
   ConcreteComponentDescriptor(
-<<<<<<< HEAD
-      EventDispatcher::Shared const &eventDispatcher,
-      ContextContainer::Shared const &contextContainer = {})
-      : ComponentDescriptor(eventDispatcher, contextContainer) {
-=======
       EventDispatcher::Weak const &eventDispatcher,
       ContextContainer::Shared const &contextContainer = {},
       ComponentDescriptor::Flavor const &flavor = {})
       : ComponentDescriptor(eventDispatcher, contextContainer, flavor) {
->>>>>>> fb/0.62-stable
     rawPropsParser_.prepare<ConcreteProps>();
   }
 
@@ -115,14 +109,11 @@ class ConcreteComponentDescriptor : public ComponentDescriptor {
   virtual SharedProps cloneProps(
       const SharedProps &props,
       const RawProps &rawProps) const override {
-<<<<<<< HEAD
-=======
     assert(
         !props ||
         dynamic_cast<ConcreteProps const *>(props.get()) &&
             "Provided `props` has an incompatible type.");
 
->>>>>>> fb/0.62-stable
     if (rawProps.isEmpty()) {
       return props ? props : ShadowNodeT::defaultSharedProps();
     }

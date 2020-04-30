@@ -296,13 +296,9 @@ std::string getDebugName(std::vector<T, Ts...> const &vector) {
 }
 
 template <typename T, typename... Ts>
-<<<<<<< HEAD
-std::vector<T, Ts...> getDebugChildren(std::vector<T, Ts...> const &vector) {
-=======
 std::vector<T, Ts...> getDebugChildren(
     std::vector<T, Ts...> const &vector,
     DebugStringConvertibleOptions options) {
->>>>>>> fb/0.62-stable
   return vector;
 }
 
@@ -313,13 +309,9 @@ std::string getDebugName(std::unordered_set<T, Ts...> const &set) {
 }
 
 template <typename T, typename... Ts>
-<<<<<<< HEAD
-std::vector<T> getDebugChildren(std::unordered_set<T, Ts...> const &set) {
-=======
 std::vector<T> getDebugChildren(
     std::unordered_set<T, Ts...> const &set,
     DebugStringConvertibleOptions options) {
->>>>>>> fb/0.62-stable
   auto vector = std::vector<T>{};
   vector.insert(vector.end(), set.begin(), set.end());
   return vector;

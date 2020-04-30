@@ -22,11 +22,7 @@ StateTarget::operator bool() const {
 
 const ShadowNode &StateTarget::getShadowNode() const {
   assert(shadowNode_ && "Stored pointer to a ShadowNode must not be null.");
-<<<<<<< HEAD
-  return *std::static_pointer_cast<const ShadowNode>(shadowNode_);
-=======
   return *shadowNode_;
->>>>>>> fb/0.62-stable
 }
 
 } // namespace react

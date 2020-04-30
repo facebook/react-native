@@ -41,11 +41,8 @@ class MountingTelemetry final {
   int64_t getCommitStartTime() const;
   int64_t getCommitEndTime() const;
   int64_t getCommitNumber() const;
-<<<<<<< HEAD
-=======
   int64_t getMountStartTime() const;
   int64_t getMountEndTime() const;
->>>>>>> fb/0.62-stable
 
  private:
   constexpr static int64_t kUndefinedTime = std::numeric_limits<int64_t>::max();

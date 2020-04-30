@@ -54,11 +54,7 @@ class State {
    * To be used by `StateCoordinator` only.
    * Protected by mutex inside `StateCoordinator`.
    */
-<<<<<<< HEAD
-  State::Shared getCommitedState() const;
-=======
   mutable bool isObsolete_{false};
->>>>>>> fb/0.62-stable
 };
 
 } // namespace react

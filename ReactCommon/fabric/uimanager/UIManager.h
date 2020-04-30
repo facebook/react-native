@@ -88,12 +88,6 @@ class UIManager final : public ShadowTreeDelegate {
 
   void clearJSResponder() const;
 
-  void setJSResponder(
-      const SharedShadowNode &shadowNode,
-      const bool blockNativeResponder) const;
-
-  void clearJSResponder() const;
-
   /*
    * Returns layout metrics of given `shadowNode` relative to
    * `ancestorShadowNode` (relative to the root node in case if provided
@@ -126,15 +120,6 @@ class UIManager final : public ShadowTreeDelegate {
 
   ShadowTreeRegistry const &getShadowTreeRegistry() const;
 
-<<<<<<< HEAD
-  void dispatchCommand(
-      const SharedShadowNode &shadowNode,
-      std::string const &commandName,
-      folly::dynamic const args) const;
-
-  ShadowTreeRegistry *shadowTreeRegistry_;
-=======
->>>>>>> fb/0.62-stable
   SharedComponentDescriptorRegistry componentDescriptorRegistry_;
   UIManagerDelegate *delegate_;
   UIManagerBinding *uiManagerBinding_;

@@ -267,40 +267,6 @@ jsi::Value UIManagerBinding::get(
         });
   }
 
-  if (methodName == "setJSResponder") {
-    return jsi::Function::createFromHostFunction(
-        runtime,
-        name,
-        2,
-        [&uiManager](
-            jsi::Runtime &runtime,
-            const jsi::Value &thisValue,
-            const jsi::Value *arguments,
-            size_t count) -> jsi::Value {
-          uiManager.setJSResponder(
-              shadowNodeFromValue(runtime, arguments[0]),
-              arguments[1].getBool());
-
-          return jsi::Value::undefined();
-        });
-  }
-
-  if (methodName == "clearJSResponder") {
-    return jsi::Function::createFromHostFunction(
-        runtime,
-        name,
-        0,
-        [&uiManager](
-            jsi::Runtime &runtime,
-            const jsi::Value &thisValue,
-            const jsi::Value *arguments,
-            size_t count) -> jsi::Value {
-          uiManager.clearJSResponder();
-
-          return jsi::Value::undefined();
-        });
-  }
-
   // Semantic: Clones the node with *same* props and *empty* children.
   if (methodName == "cloneNodeWithNewChildren") {
     return jsi::Function::createFromHostFunction(
@@ -473,20 +439,12 @@ jsi::Value UIManagerBinding::get(
         runtime,
         name,
         3,
-<<<<<<< HEAD
-        [&uiManager](
-=======
         [uiManager](
->>>>>>> fb/0.62-stable
             jsi::Runtime &runtime,
             const jsi::Value &thisValue,
             const jsi::Value *arguments,
             size_t count) -> jsi::Value {
-<<<<<<< HEAD
-          uiManager.dispatchCommand(
-=======
           uiManager->dispatchCommand(
->>>>>>> fb/0.62-stable
               shadowNodeFromValue(runtime, arguments[0]),
               stringFromValue(runtime, arguments[1]),
               commandArgsFromValue(runtime, arguments[2]));
@@ -536,20 +494,12 @@ jsi::Value UIManagerBinding::get(
         runtime,
         name,
         2,
-<<<<<<< HEAD
-        [&uiManager](
-=======
         [uiManager](
->>>>>>> fb/0.62-stable
             jsi::Runtime &runtime,
             const jsi::Value &thisValue,
             const jsi::Value *arguments,
             size_t count) -> jsi::Value {
-<<<<<<< HEAD
-          auto layoutMetrics = uiManager.getRelativeLayoutMetrics(
-=======
           auto layoutMetrics = uiManager->getRelativeLayoutMetrics(
->>>>>>> fb/0.62-stable
               *shadowNodeFromValue(runtime, arguments[0]), nullptr);
           auto frame = layoutMetrics.frame;
           auto onSuccessFunction =

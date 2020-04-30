@@ -142,21 +142,6 @@ void UIManager::clearJSResponder() const {
   }
 }
 
-void UIManager::setJSResponder(
-    const SharedShadowNode &shadowNode,
-    const bool blockNativeResponder) const {
-  if (delegate_) {
-    delegate_->uiManagerDidSetJSResponder(
-        shadowNode->getSurfaceId(), shadowNode, blockNativeResponder);
-  }
-}
-
-void UIManager::clearJSResponder() const {
-  if (delegate_) {
-    delegate_->uiManagerDidClearJSResponder();
-  }
-}
-
 void UIManager::setNativeProps(
     ShadowNode const &shadowNode,
     RawProps const &rawProps) const {
@@ -250,10 +235,6 @@ void UIManager::dispatchCommand(
   }
 }
 
-<<<<<<< HEAD
-void UIManager::setShadowTreeRegistry(ShadowTreeRegistry *shadowTreeRegistry) {
-  shadowTreeRegistry_ = shadowTreeRegistry;
-=======
 static ShadowNode::Shared findShadowNodeByTagRecursively(
     ShadowNode::Shared const &parentShadowNode,
     Tag tag) {
@@ -293,7 +274,6 @@ ShadowNode::Shared UIManager::findShadowNodeByTag_DEPRECATED(Tag tag) const {
   });
 
   return shadowNode;
->>>>>>> fb/0.62-stable
 }
 
 void UIManager::setComponentDescriptorRegistry(

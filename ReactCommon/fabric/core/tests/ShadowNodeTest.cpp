@@ -15,23 +15,6 @@
 
 using namespace facebook::react;
 
-<<<<<<< HEAD
-TEST(ShadowNodeTest, handleProps) {
-  const auto &raw = RawProps(folly::dynamic::object("nativeID", "abc"));
-  auto parser = RawPropsParser();
-  parser.prepare<Props>();
-  raw.parse(parser);
-
-  auto props = std::make_shared<Props>(Props(), raw);
-
-  // Props are not sealed after applying raw props.
-  ASSERT_FALSE(props->getSealed());
-
-  ASSERT_STREQ(props->nativeId.c_str(), "abc");
-}
-
-=======
->>>>>>> fb/0.62-stable
 TEST(ShadowNodeTest, handleShadowNodeCreation) {
   auto eventDispatcher = std::shared_ptr<EventDispatcher const>();
   auto componentDescriptor = TestComponentDescriptor(eventDispatcher);

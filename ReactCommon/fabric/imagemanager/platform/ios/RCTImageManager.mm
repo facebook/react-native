@@ -20,19 +20,11 @@
 using namespace facebook::react;
 
 @implementation RCTImageManager {
-<<<<<<< HEAD
-  RCTImageLoader *_imageLoader;
-  dispatch_queue_t _backgroundSerialQueue;
-}
-
-- (instancetype)initWithImageLoader:(RCTImageLoader *)imageLoader
-=======
   id<RCTImageLoaderWithAttributionProtocol> _imageLoader;
   dispatch_queue_t _backgroundSerialQueue;
 }
 
 - (instancetype)initWithImageLoader:(id<RCTImageLoaderWithAttributionProtocol>)imageLoader
->>>>>>> fb/0.62-stable
 {
   if (self = [super init]) {
     _imageLoader = imageLoader;

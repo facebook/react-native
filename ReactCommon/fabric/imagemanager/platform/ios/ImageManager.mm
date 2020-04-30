@@ -17,14 +17,9 @@ namespace react {
 
 ImageManager::ImageManager(ContextContainer::Shared const &contextContainer)
 {
-<<<<<<< HEAD
-  RCTImageLoader *imageLoader =
-      (RCTImageLoader *)unwrapManagedObject(contextContainer->at<std::shared_ptr<void>>("RCTImageLoader"));
-=======
   id<RCTImageLoaderWithAttributionProtocol> imageLoader =
       (id<RCTImageLoaderWithAttributionProtocol>)unwrapManagedObject(
           contextContainer->at<std::shared_ptr<void>>("RCTImageLoader"));
->>>>>>> fb/0.62-stable
   self_ = (__bridge_retained void *)[[RCTImageManager alloc] initWithImageLoader:imageLoader];
 }
 
@@ -34,11 +29,7 @@ ImageManager::~ImageManager()
   self_ = nullptr;
 }
 
-<<<<<<< HEAD
-ImageRequest ImageManager::requestImage(const ImageSource &imageSource) const
-=======
 ImageRequest ImageManager::requestImage(const ImageSource &imageSource, SurfaceId surfaceId) const
->>>>>>> fb/0.62-stable
 {
   RCTImageManager *imageManager = (__bridge RCTImageManager *)self_;
   return [imageManager requestImage:imageSource surfaceId:surfaceId];

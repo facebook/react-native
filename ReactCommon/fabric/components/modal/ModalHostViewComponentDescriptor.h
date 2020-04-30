@@ -22,17 +22,12 @@ class ModalHostViewComponentDescriptor final
     : public ConcreteComponentDescriptor<ModalHostViewShadowNode> {
  public:
 #ifdef ANDROID
-<<<<<<< HEAD
-  ModalHostViewComponentDescriptor(EventDispatcher::Shared eventDispatcher)
-      : ConcreteComponentDescriptor(eventDispatcher) {}
-=======
   ModalHostViewComponentDescriptor(
       EventDispatcher::Weak eventDispatcher,
       ContextContainer::Shared const &contextContainer,
       ComponentDescriptor::Flavor const &flavor = {})
       : ConcreteComponentDescriptor(eventDispatcher, contextContainer, flavor) {
   }
->>>>>>> fb/0.62-stable
 #else
   using ConcreteComponentDescriptor::ConcreteComponentDescriptor;
 #endif

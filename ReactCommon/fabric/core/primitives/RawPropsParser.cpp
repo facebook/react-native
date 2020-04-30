@@ -1,8 +1,4 @@
-<<<<<<< HEAD
-/**
-=======
 /*
->>>>>>> fb/0.62-stable
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -14,15 +10,6 @@
 #include <folly/Likely.h>
 #include <react/core/RawProps.h>
 
-<<<<<<< HEAD
-namespace facebook {
-namespace react {
-
-RawValue const *RawPropsParser::at(
-    RawProps const &rawProps,
-    RawPropsKey const &key) const {
-  if (UNLIKELY(!ready_)) {
-=======
 #ifndef NDEBUG
 #include <glog/logging.h>
 #endif
@@ -52,7 +39,6 @@ RawValue const *RawPropsParser::at(
         return nullptr;
       }
     }
->>>>>>> fb/0.62-stable
     // This is not thread-safe part; this happens only during initialization of
     // a `ComponentDescriptor` where it is actually safe.
     keys_.push_back(key);
@@ -61,8 +47,6 @@ RawValue const *RawPropsParser::at(
     return nullptr;
   }
 
-<<<<<<< HEAD
-=======
   // Normally, keys are looked up in-order. For performance we can simply
   // increment this key counter, and if the key is equal to the key at the next
   // index, there's no need to do any lookups. However, it's possible for keys
@@ -83,13 +67,10 @@ RawValue const *RawPropsParser::at(
 #ifndef NDEBUG
   bool resetLoop = false;
 #endif
->>>>>>> fb/0.62-stable
   do {
     rawProps.keyIndexCursor_++;
 
     if (UNLIKELY(rawProps.keyIndexCursor_ >= size_)) {
-<<<<<<< HEAD
-=======
 #ifndef NDEBUG
       if (resetLoop) {
         LOG(ERROR) << "Looked up RawProps key that does not exist: "
@@ -98,7 +79,6 @@ RawValue const *RawPropsParser::at(
       }
       resetLoop = true;
 #endif
->>>>>>> fb/0.62-stable
       rawProps.keyIndexCursor_ = 0;
     }
   } while (UNLIKELY(key != keys_[rawProps.keyIndexCursor_]));
@@ -108,20 +88,12 @@ RawValue const *RawPropsParser::at(
                                                 : &rawProps.values_[valueIndex];
 }
 
-<<<<<<< HEAD
-void RawPropsParser::postPrepare() {
-=======
 void RawPropsParser::postPrepare() noexcept {
->>>>>>> fb/0.62-stable
   ready_ = true;
   nameToIndex_.reindex();
 }
 
-<<<<<<< HEAD
-void RawPropsParser::preparse(RawProps const &rawProps) const {
-=======
 void RawPropsParser::preparse(RawProps const &rawProps) const noexcept {
->>>>>>> fb/0.62-stable
   rawProps.keyIndexToValueIndex_.resize(size_, kRawPropsValueIndexEmpty);
 
   // Resetting the cursor, the next increment will give `0`.
