@@ -66,15 +66,6 @@ class Instrumentation {
   /// \return true iff the heap capture succeeded.
   virtual bool createSnapshotToStream(std::ostream& os) = 0;
 
-  /// Captures the heap to an output stream
-  ///
-  /// \param os output stream to write to.
-  ///
-  /// \param compact Whether the JSON should be compact or pretty
-  ///
-  /// \return true iff the heap capture succeeded.
-  virtual bool createSnapshotToStream(std::ostream& os, bool compact) = 0;
-
   /// Write a trace of bridge traffic to the given file name.
   virtual void writeBridgeTrafficTraceToFile(
       const std::string& fileName) const = 0;

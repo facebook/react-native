@@ -335,21 +335,12 @@ class RuntimeDecorator : public Base, private jsi::Instrumentation {
     plain().instrumentation().collectGarbage();
   }
 
-<<<<<<< HEAD
-  bool createSnapshotToFile(const std::string& path, bool compact) override {
-    return plain().instrumentation().createSnapshotToFile(path, compact);
-  }
-
-  bool createSnapshotToStream(std::ostream& os, bool compact) override {
-    return plain().instrumentation().createSnapshotToStream(os, compact);
-=======
   bool createSnapshotToFile(const std::string& path) override {
     return plain().instrumentation().createSnapshotToFile(path);
   }
 
   bool createSnapshotToStream(std::ostream& os) override {
     return plain().instrumentation().createSnapshotToStream(os);
->>>>>>> fb/0.62-stable
   }
 
   void writeBridgeTrafficTraceToFile(
