@@ -808,6 +808,11 @@ static NSString *RCTSemanticColorNames()
   }
   return names;
 }
+
++ (RCTUIColor *)NSColor:(id)json
+{
+  return [RCTConvert UIColor:json];
+}
 // ]TODO(macOS ISS#2323203)
 
 + (RCTUIColor *)UIColor:(id)json // TODO(OSS Candidate ISS#2710739)

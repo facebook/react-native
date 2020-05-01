@@ -26,6 +26,7 @@
 #import <React/RCTRedBox.h>
 #import <React/RCTUtils.h>
 #import <React/RCTFollyConvert.h>
+#import <React/RCTBundleURLProvider.h> // TODO(macOS ISS#2323203)
 #import <cxxreact/CxxNativeModule.h>
 #import <cxxreact/Instance.h>
 #import <cxxreact/JSBundleType.h>
@@ -929,7 +930,7 @@ struct RCTInstanceCallback : public InstanceCallback {
     BOOL isHotLoadingEnabled = devSettings.isHotLoadingEnabled;
     [self enqueueJSCall:@"HMRClient"
                  method:@"setup"
-                   args:@[@"ios", path, host, RCTNullIfNil(port), @(isHotLoadingEnabled)]
+                   args:@[kRCTPlatformName, path, host, RCTNullIfNil(port), @(isHotLoadingEnabled)] // TODO(macOS ISS#2323203)
              completion:NULL];
   }
 #endif

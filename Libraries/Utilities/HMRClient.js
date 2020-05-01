@@ -281,7 +281,8 @@ function registerBundleEntryPoints(client) {
 
 function dismissRedbox() {
   if (
-    Platform.OS === 'ios' &&
+    (Platform.OS === 'ios' ||
+      Platform.OS === 'macos') /* TODO(macOS ISS#2323203) */ &&
     NativeRedBox != null &&
     NativeRedBox.dismiss != null
   ) {

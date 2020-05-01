@@ -101,6 +101,7 @@ typedef NSURL RCTFileURL;
 + (CGAffineTransform)CGAffineTransform:(id)json;
 
 + (RCTUIColor *)UIColor:(id)json; // TODO(OSS Candidate ISS#2710739)
++ (RCTUIColor *)NSColor:(id)json; // TODO(OSS Candidate ISS#2710739)
 + (CGColorRef)CGColor:(id)json CF_RETURNS_NOT_RETAINED;
 
 + (YGValue)YGValue:(id)json;
