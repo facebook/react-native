@@ -20,10 +20,6 @@ import type {
 const invariant = require('invariant');
 
 // Event configs
-<<<<<<< HEAD
-const customBubblingEventTypes: $TEMPORARY$object<{||}> = {};
-const customDirectEventTypes: $TEMPORARY$object<{||}> = {};
-=======
 const customBubblingEventTypes: {
   [eventName: string]: $ReadOnly<{|
     phasedRegistrationNames: $ReadOnly<{|
@@ -39,7 +35,6 @@ const customDirectEventTypes: {
   |}>,
   ...,
 } = {};
->>>>>>> fb/0.62-stable
 
 exports.customBubblingEventTypes = customBubblingEventTypes;
 exports.customDirectEventTypes = customDirectEventTypes;

@@ -44,10 +44,7 @@ const PERMISSIONS = Object.freeze({
   GET_ACCOUNTS: 'android.permission.GET_ACCOUNTS',
   ACCESS_FINE_LOCATION: 'android.permission.ACCESS_FINE_LOCATION',
   ACCESS_COARSE_LOCATION: 'android.permission.ACCESS_COARSE_LOCATION',
-<<<<<<< HEAD
-=======
   ACCESS_BACKGROUND_LOCATION: 'android.permission.ACCESS_BACKGROUND_LOCATION',
->>>>>>> fb/0.62-stable
   RECORD_AUDIO: 'android.permission.RECORD_AUDIO',
   READ_PHONE_STATE: 'android.permission.READ_PHONE_STATE',
   CALL_PHONE: 'android.permission.CALL_PHONE',
@@ -74,10 +71,7 @@ const PERMISSIONS = Object.freeze({
 
 class PermissionsAndroid {
   PERMISSIONS: {|
-<<<<<<< HEAD
-=======
     ACCESS_BACKGROUND_LOCATION: string,
->>>>>>> fb/0.62-stable
     ACCESS_COARSE_LOCATION: string,
     ACCESS_FINE_LOCATION: string,
     ADD_VOICEMAIL: string,
@@ -223,12 +217,9 @@ class PermissionsAndroid {
             ...rationale,
           };
           NativeDialogManagerAndroid.showAlert(
-<<<<<<< HEAD
-=======
             /* $FlowFixMe(>=0.111.0 site=react_native_fb) This comment
              * suppresses an error found when Flow v0.111 was deployed. To see
              * the error, delete this comment and run Flow. */
->>>>>>> fb/0.62-stable
             options,
             () => reject(new Error('Error showing rationale')),
             () =>
@@ -249,11 +240,7 @@ class PermissionsAndroid {
    */
   requestMultiple(
     permissions: Array<PermissionType>,
-<<<<<<< HEAD
-  ): Promise<{[permission: PermissionType]: PermissionStatus}> {
-=======
   ): Promise<{[permission: PermissionType]: PermissionStatus, ...}> {
->>>>>>> fb/0.62-stable
     if (Platform.OS !== 'android') {
       console.warn(
         '"PermissionsAndroid" module works only for Android platform.',

@@ -89,10 +89,6 @@ export type ReactEventResponderInstance<E, C> = {|
   responder: ReactEventResponder<E, C>,
   rootEventTypes: null | Set<string>,
   state: Object,
-<<<<<<< HEAD
-  target: mixed,
-=======
->>>>>>> fb/0.62-stable
 |};
 
 export type ReactEventResponderListener<E, C> = {|
@@ -104,10 +100,7 @@ export type ReactEventResponder<E, C> = {
   $$typeof: Symbol | number,
   displayName: string,
   targetEventTypes: null | Array<string>,
-<<<<<<< HEAD
-=======
   targetPortalPropagation: boolean,
->>>>>>> fb/0.62-stable
   rootEventTypes: null | Array<string>,
   getInitialState: null | ((props: Object) => Object),
   onEvent:
@@ -118,13 +111,7 @@ export type ReactEventResponder<E, C> = {
     | ((event: E, context: C, props: Object, state: Object) => void),
   onMount: null | ((context: C, props: Object, state: Object) => void),
   onUnmount: null | ((context: C, props: Object, state: Object) => void),
-<<<<<<< HEAD
-  onOwnershipChange:
-    | null
-    | ((context: C, props: Object, state: Object) => void),
-=======
   ...
->>>>>>> fb/0.62-stable
 };
 
 export type EventPriority = 0 | 1 | 2;
@@ -171,18 +158,13 @@ export type ReactFundamentalImpl<C, H> = {
   ) => void,
   onHydrate?: (context: C, props: Object, state: Object) => boolean,
   onFocus?: (context: C, props: Object, state: Object) => boolean,
-<<<<<<< HEAD
-=======
   ...
->>>>>>> fb/0.62-stable
 };
 
 export type ReactFundamentalComponent<C, H> = {|
   $$typeof: Symbol | number,
   impl: ReactFundamentalImpl<C, H>,
 |};
-<<<<<<< HEAD
-=======
 
 export type ReactScope = {|
   $$typeof: Symbol | number,
@@ -206,4 +188,3 @@ export type ReactScopeInstance = {|
   fiber: Object,
   methods: null | ReactScopeMethods,
 |};
->>>>>>> fb/0.62-stable

@@ -4,11 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
-<<<<<<< HEAD
- * @flow
-=======
  * @flow strict-local
->>>>>>> fb/0.62-stable
  * @format
  */
 
@@ -31,16 +27,6 @@ import type {
   DirectEventHandler,
   WithDefault,
 } from 'CodegenFlowtypes';
-<<<<<<< HEAD
-
-import type {ViewProps} from 'ViewPropTypes';
-
-interface NativeCommands {
-  +hotspotUpdate: (viewRef: React.Ref<'RCTView'>, x: Int32, y: Int32) => void;
-  +scrollTo: (viewRef: React.Ref<'RCTView'>, y: Int32, animated: boolean) => void;
-}
-
-=======
 import type {NativeComponent} from 'codegenNativeComponent';
 
 import type {ViewProps} from 'ViewPropTypes';
@@ -89,7 +75,6 @@ import type {
 
 import type {ViewProps} from 'ViewPropTypes';
 
->>>>>>> fb/0.62-stable
 type ModuleProps = $ReadOnly<{|
   ...ViewProps,
 
@@ -101,8 +86,6 @@ type ModuleProps = $ReadOnly<{|
   onBubblingEventDefinedInlineNull: BubblingEventHandler<null>,
 |}>;
 
-<<<<<<< HEAD
-=======
 type NativeType = NativeComponent<ModuleProps>;
 
 interface NativeCommands {
@@ -110,29 +93,18 @@ interface NativeCommands {
   +scrollTo: (viewRef: React.ElementRef<NativeType>, y: Int32, animated: boolean) => void;
 }
 
->>>>>>> fb/0.62-stable
 export const Commands = codegenNativeCommands<NativeCommands>({
   supportedCommands: ['hotspotUpdate', 'scrollTo'],
 });
 
-<<<<<<< HEAD
-export default codegenNativeComponent<ModuleProps>('Module', {
-  interfaceOnly: true,
-  paperComponentName: 'RCTModule',
-});
-=======
 export default (codegenNativeComponent<ModuleProps>('Module', {
   interfaceOnly: true,
   paperComponentName: 'RCTModule',
 }): NativeType);
->>>>>>> fb/0.62-stable
 `;
 
 module.exports = {
   'NotANativeComponent.js': NOT_A_NATIVE_COMPONENT,
   'FullNativeComponent.js': FULL_NATIVE_COMPONENT,
-<<<<<<< HEAD
-=======
   'FullTypedNativeComponent.js': FULL_NATIVE_COMPONENT_WITH_TYPE_EXPORT,
->>>>>>> fb/0.62-stable
 };

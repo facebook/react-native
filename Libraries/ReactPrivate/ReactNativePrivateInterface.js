@@ -8,41 +8,6 @@
  * @flow strict-local
  */
 
-<<<<<<< HEAD
-// flowlint unsafe-getters-setters:off
-module.exports = {
-  get BatchedBridge() {
-    return require('../BatchedBridge/BatchedBridge.js');
-  },
-  get ExceptionsManager() {
-    return require('../Core/ExceptionsManager');
-  },
-  get Platform() {
-    return require('../Utilities/Platform');
-  },
-  get RCTEventEmitter() {
-    return require('../EventEmitter/RCTEventEmitter');
-  },
-  get ReactNativeViewConfigRegistry() {
-    return require('../Renderer/shims/ReactNativeViewConfigRegistry');
-  },
-  get TextInputState() {
-    return require('../Components/TextInput/TextInputState');
-  },
-  get UIManager() {
-    return require('../ReactNative/UIManager');
-  },
-  get deepDiffer() {
-    return require('../Utilities/differ/deepDiffer');
-  },
-  get deepFreezeAndThrowOnMutationInDev() {
-    return require('../Utilities/deepFreezeAndThrowOnMutationInDev');
-  },
-  get flattenStyle() {
-    return require('../StyleSheet/flattenStyle');
-  },
-  get ReactFiberErrorDialog() {
-=======
 import typeof BatchedBridge from '../BatchedBridge/BatchedBridge.js';
 import typeof ExceptionsManager from '../Core/ExceptionsManager';
 import typeof Platform from '../Utilities/Platform';
@@ -91,7 +56,6 @@ module.exports = {
     return require('../StyleSheet/flattenStyle');
   },
   get ReactFiberErrorDialog(): ReactFiberErrorDialog {
->>>>>>> fb/0.62-stable
     return require('../Core/ReactFiberErrorDialog');
   },
 };

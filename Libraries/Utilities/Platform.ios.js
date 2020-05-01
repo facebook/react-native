@@ -22,11 +22,7 @@ export type PlatformSelectSpec<D, N, I> = {
 const Platform = {
   __constants: null,
   OS: 'ios',
-<<<<<<< HEAD
-  get Version(): $FlowFixMe {
-=======
   get Version(): string {
->>>>>>> fb/0.62-stable
     return this.constants.osVersion;
   },
   get constants(): {|

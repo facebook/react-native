@@ -8,10 +8,7 @@
 	<true/>
 	<key>com.apple.security.personal-information.photos-library</key>
 	<true/>
-<<<<<<< HEAD
 	<key>com.apple.security.get-task-allow</key>
 	<true/>
-=======
->>>>>>> fb/0.62-stable
 </dict>
 </plist>

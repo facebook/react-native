@@ -16,11 +16,7 @@ const StyleSheet = require('../StyleSheet/StyleSheet');
 const Text = require('../Text/Text');
 const View = require('../Components/View/View');
 
-<<<<<<< HEAD
-class PerformanceOverlay extends React.Component<{}> {
-=======
 class PerformanceOverlay extends React.Component<{...}> {
->>>>>>> fb/0.62-stable
   render(): React.Node {
     const perfLogs = PerformanceLogger.getTimespans();
     const items = [];

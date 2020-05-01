@@ -4,11 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
-<<<<<<< HEAD
- * @flow
-=======
  * @flow strict-local
->>>>>>> fb/0.62-stable
  * @format
  */
 
@@ -30,12 +26,9 @@ function combineSchemas(files: Array<string>): SchemaType {
         const schema = FlowParser.parseFile(filename);
 
         if (schema && schema.modules) {
-<<<<<<< HEAD
-=======
           /* $FlowFixMe(>=0.111.0 site=react_native_fb) This comment suppresses
            * an error found when Flow v0.111 was deployed. To see the error,
            * delete this comment and run Flow. */
->>>>>>> fb/0.62-stable
           merged.modules = {...merged.modules, ...schema.modules};
         }
       }

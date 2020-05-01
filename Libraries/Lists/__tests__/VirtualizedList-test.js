@@ -44,11 +44,7 @@ describe('VirtualizedList', () => {
   });
 
   it('warns if both renderItem or ListItemComponent are specified. Uses ListItemComponent', () => {
-<<<<<<< HEAD
-    jest.spyOn(global.console, 'warn');
-=======
     jest.spyOn(console, 'warn').mockImplementationOnce(() => {});
->>>>>>> fb/0.62-stable
     function ListItemComponent({item}) {
       return <item value={item.key} testID={`${item.key}-ListItemComponent`} />;
     }
@@ -64,24 +60,14 @@ describe('VirtualizedList', () => {
       />,
     );
 
-<<<<<<< HEAD
-    expect(console.warn.mock.calls).toEqual([
-      [
-        'VirtualizedList: Both ListItemComponent and renderItem props are present. ListItemComponent will take precedence over renderItem.',
-      ],
-    ]);
-=======
     expect(console.warn).toBeCalledWith(
       'VirtualizedList: Both ListItemComponent and renderItem props are present. ListItemComponent will take precedence over renderItem.',
     );
->>>>>>> fb/0.62-stable
     expect(component).toMatchSnapshot();
     console.warn.mockRestore();
   });
 
   it('throws if no renderItem or ListItemComponent', () => {
-<<<<<<< HEAD
-=======
     // Silence the React error boundary warning; we expect an uncaught error.
     jest.spyOn(console, 'error').mockImplementation(message => {
       if (message.startsWith('The above error occured in the ')) {
@@ -90,7 +76,6 @@ describe('VirtualizedList', () => {
       console.errorDebug(message);
     });
 
->>>>>>> fb/0.62-stable
     const componentFactory = () =>
       ReactTestRenderer.create(
         <VirtualizedList
@@ -102,11 +87,8 @@ describe('VirtualizedList', () => {
     expect(componentFactory).toThrow(
       'VirtualizedList: Either ListItemComponent or renderItem props are required but none were found.',
     );
-<<<<<<< HEAD
-=======
 
     console.error.mockRestore();
->>>>>>> fb/0.62-stable
   });
 
   it('renders empty list', () => {

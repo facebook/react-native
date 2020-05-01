@@ -5,14 +5,9 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @format
-<<<<<<< HEAD
- * @flow
- */
-=======
  * @flow strict-local
  */
 
->>>>>>> fb/0.62-stable
 'use strict';
 
 import type {HMRClientNativeInterface} from './HMRClient';

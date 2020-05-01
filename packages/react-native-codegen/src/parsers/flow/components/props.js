@@ -10,21 +10,12 @@
 
 'use strict';
 
-<<<<<<< HEAD
-import type {PropTypeShape} from '../../../CodegenSchema.js';
-import type {TypeMap} from '../utils.js';
-
-const {getValueFromTypes} = require('../utils.js');
-
-function getPropProperties(propsTypeName: string, types: TypeMap) {
-=======
 const {getValueFromTypes} = require('../utils.js');
 
 import type {PropTypeShape} from '../../../CodegenSchema.js';
 import type {TypeMap} from '../utils.js';
 
 function getPropProperties(propsTypeName: string, types: TypeMap): $FlowFixMe {
->>>>>>> fb/0.62-stable
   const typeAlias = types[propsTypeName];
   try {
     return typeAlias.right.typeParameters.params[0].properties;
@@ -67,8 +58,6 @@ function getTypeAnnotationForArray(name, typeAnnotation, defaultValue, types) {
           .filter(Boolean),
       };
     }
-<<<<<<< HEAD
-=======
 
     if (objectType.id.name === '$ReadOnlyArray') {
       // We need to go yet another level deeper to resolve
@@ -91,7 +80,6 @@ function getTypeAnnotationForArray(name, typeAnnotation, defaultValue, types) {
         },
       };
     }
->>>>>>> fb/0.62-stable
   }
 
   const type =
@@ -115,14 +103,11 @@ function getTypeAnnotationForArray(name, typeAnnotation, defaultValue, types) {
         type: 'NativePrimitiveTypeAnnotation',
         name: 'PointPrimitive',
       };
-<<<<<<< HEAD
-=======
     case 'EdgeInsetsValue':
       return {
         type: 'NativePrimitiveTypeAnnotation',
         name: 'EdgeInsetsPrimitive',
       };
->>>>>>> fb/0.62-stable
     case 'Stringish':
       return {
         type: 'StringTypeAnnotation',
@@ -148,25 +133,6 @@ function getTypeAnnotationForArray(name, typeAnnotation, defaultValue, types) {
         type: 'StringTypeAnnotation',
       };
     case 'UnionTypeAnnotation':
-<<<<<<< HEAD
-      if (defaultValue == null) {
-        throw new Error(`A default array enum value is required for "${name}"`);
-      }
-      return {
-        type: 'StringEnumTypeAnnotation',
-        default: defaultValue,
-        options: extractedTypeAnnotation.types.map(option => ({
-          name: option.value,
-        })),
-      };
-    default:
-      (type: empty);
-      throw new Error(`Unknown prop type for "${name}"`);
-  }
-}
-
-function getTypeAnnotation(name, annotation, defaultValue, types) {
-=======
       typeAnnotation.types.reduce((lastType, currType) => {
         if (lastType && currType.type !== lastType.type) {
           throw new Error(`Mixed types are not supported (see "${name}")`);
@@ -207,7 +173,6 @@ function getTypeAnnotation(
   withNullDefault,
   types,
 ) {
->>>>>>> fb/0.62-stable
   const typeAnnotation = getValueFromTypes(annotation, types);
 
   if (
@@ -269,14 +234,11 @@ function getTypeAnnotation(
         type: 'NativePrimitiveTypeAnnotation',
         name: 'PointPrimitive',
       };
-<<<<<<< HEAD
-=======
     case 'EdgeInsetsValue':
       return {
         type: 'NativePrimitiveTypeAnnotation',
         name: 'EdgeInsetsPrimitive',
       };
->>>>>>> fb/0.62-stable
     case 'Int32':
       return {
         type: 'Int32TypeAnnotation',
@@ -290,24 +252,16 @@ function getTypeAnnotation(
     case 'Float':
       return {
         type: 'FloatTypeAnnotation',
-<<<<<<< HEAD
-        default: ((defaultValue ? defaultValue : 0): number),
-=======
         default: withNullDefault
           ? (defaultValue: number | null)
           : ((defaultValue ? defaultValue : 0): number),
->>>>>>> fb/0.62-stable
       };
     case 'BooleanTypeAnnotation':
       return {
         type: 'BooleanTypeAnnotation',
-<<<<<<< HEAD
-        default: ((defaultValue == null ? false : defaultValue): boolean),
-=======
         default: withNullDefault
           ? (defaultValue: boolean | null)
           : ((defaultValue == null ? false : defaultValue): boolean),
->>>>>>> fb/0.62-stable
       };
     case 'StringTypeAnnotation':
       if (typeof defaultValue !== 'undefined') {
@@ -326,9 +280,6 @@ function getTypeAnnotation(
       }
       throw new Error(`A default string (or null) is required for "${name}"`);
     case 'UnionTypeAnnotation':
-<<<<<<< HEAD
-      if (defaultValue !== null) {
-=======
       typeAnnotation.types.reduce((lastType, currType) => {
         if (lastType && currType.type !== lastType.type) {
           throw new Error(`Mixed types are not supported (see "${name}")`);
@@ -342,16 +293,11 @@ function getTypeAnnotation(
 
       const unionType = typeAnnotation.types[0].type;
       if (unionType === 'StringLiteralTypeAnnotation') {
->>>>>>> fb/0.62-stable
         return {
           type: 'StringEnumTypeAnnotation',
           default: (defaultValue: string),
           options: typeAnnotation.types.map(option => ({name: option.value})),
         };
-<<<<<<< HEAD
-      }
-      throw new Error(`A default enum value is required for "${name}"`);
-=======
       } else if (unionType === 'NumberLiteralTypeAnnotation') {
         return {
           type: 'Int32EnumTypeAnnotation',
@@ -367,7 +313,6 @@ function getTypeAnnotation(
       throw new Error(
         `Cannot use "${type}" type annotation for "${name}": must use a specific numeric type like Int32, Double, or Float`,
       );
->>>>>>> fb/0.62-stable
     default:
       (type: empty);
       throw new Error(`Unknown prop type for "${name}": "${type}"`);
@@ -424,10 +369,7 @@ function buildPropSchema(property, types: TypeMap): ?PropTypeShape {
   }
 
   let defaultValue = null;
-<<<<<<< HEAD
-=======
   let withNullDefault = false;
->>>>>>> fb/0.62-stable
   if (
     type === 'GenericTypeAnnotation' &&
     typeAnnotation.id.name === 'WithDefault'
@@ -448,18 +390,8 @@ function buildPropSchema(property, types: TypeMap): ?PropTypeShape {
         : typeAnnotation.type;
 
     if (defaultValueType === 'NullLiteralTypeAnnotation') {
-<<<<<<< HEAD
-      if (type !== 'StringTypeAnnotation' && type !== 'Stringish') {
-        throw new Error(
-          `WithDefault can only provide a 'null' default value for string types (see ${name})`,
-        );
-      }
-
-      defaultValue = null;
-=======
       defaultValue = null;
       withNullDefault = true;
->>>>>>> fb/0.62-stable
     }
   }
 
@@ -470,10 +402,7 @@ function buildPropSchema(property, types: TypeMap): ?PropTypeShape {
       name,
       typeAnnotation,
       defaultValue,
-<<<<<<< HEAD
-=======
       withNullDefault,
->>>>>>> fb/0.62-stable
       types,
     ),
   };

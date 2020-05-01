@@ -7,10 +7,6 @@
  * @flow strict-local
  * @format
  */
-<<<<<<< HEAD
-=======
-
->>>>>>> fb/0.62-stable
 'use strict';
 const createPerformanceLogger = require('./createPerformanceLogger');
 

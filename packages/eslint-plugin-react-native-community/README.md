@@ -19,8 +19,6 @@ Add to your eslint config (`.eslintrc`, or `eslintConfig` field in `package.json
     "plugins": ["@react-native-community"]
 }
 ```
-<<<<<<< HEAD
-=======
 
 ## Rules
 
@@ -33,4 +31,3 @@ Enforces that error classes ( = classes with PascalCase names ending with `Error
 ### `no-haste-imports`
 
 Disallows Haste module names in `import` statements and `require()` calls.
->>>>>>> fb/0.62-stable

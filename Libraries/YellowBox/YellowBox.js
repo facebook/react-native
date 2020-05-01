@@ -228,10 +228,7 @@ module.exports = (YellowBox: Class<React.Component<Props, State>> & {
   ignoreWarnings($ReadOnlyArray<IgnorePattern>): void,
   install(): void,
   uninstall(): void,
-<<<<<<< HEAD
-=======
   __unstable_enableLogBox(): void,
   __unstable_isLogBoxEnabled(): boolean,
   ...
->>>>>>> fb/0.62-stable
 });

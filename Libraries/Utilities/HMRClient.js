@@ -16,11 +16,7 @@ const invariant = require('invariant');
 const MetroHMRClient = require('metro/src/lib/bundle-modules/HMRClient');
 
 import NativeRedBox from '../NativeModules/specs/NativeRedBox';
-<<<<<<< HEAD
-
-=======
 import * as LogBoxData from '../LogBox/Data/LogBoxData';
->>>>>>> fb/0.62-stable
 import type {ExtendedError} from '../Core/Devtools/parseErrorStack';
 
 const pendingEntryPoints = [];
@@ -28,10 +24,7 @@ let hmrClient = null;
 let hmrUnavailableReason: string | null = null;
 let currentCompileErrorMessage: string | null = null;
 let didConnect: boolean = false;
-<<<<<<< HEAD
-=======
 let pendingLogs: Array<[LogLevel, Array<mixed>]> = [];
->>>>>>> fb/0.62-stable
 
 type LogLevel =
   | 'trace'
@@ -110,41 +103,6 @@ const HMRClient: HMRClientNativeInterface = {
   },
 
   log(level: LogLevel, data: Array<mixed>) {
-<<<<<<< HEAD
-    try {
-      if (hmrClient) {
-        let message;
-        if (global.Symbol) {
-          message = JSON.stringify({
-            type: 'log',
-            level,
-            data: data.map(item =>
-              typeof item === 'string'
-                ? item
-                : require('pretty-format')(item, {
-                    escapeString: true,
-                    highlight: true,
-                    maxDepth: 3,
-                    min: true,
-                    plugins: [require('pretty-format').plugins.ReactElement],
-                  }),
-            ),
-          });
-        } else {
-          try {
-            message = JSON.stringify({type: 'log', level, data});
-          } catch (error) {
-            message = JSON.stringify({
-              type: 'log',
-              level,
-              data: [error.message],
-            });
-          }
-        }
-
-        hmrClient.send(message);
-      }
-=======
     if (!hmrClient) {
       // Catch a reasonable number of early logs
       // in case hmrClient gets initialized later.
@@ -185,7 +143,6 @@ const HMRClient: HMRClientNativeInterface = {
       }
 
       hmrClient.send(message);
->>>>>>> fb/0.62-stable
     } catch (error) {
       // If sending logs causes any failures we want to silently ignore them
       // to ensure we do not cause infinite-logging loops.
@@ -257,10 +214,7 @@ Error: ${e.message}`;
     client.on('update', ({isInitialUpdate}) => {
       if (client.isEnabled() && !isInitialUpdate) {
         dismissRedbox();
-<<<<<<< HEAD
-=======
         LogBoxData.clear();
->>>>>>> fb/0.62-stable
       }
     });
 
@@ -291,13 +245,7 @@ Error: ${e.message}`;
 
     client.on('close', data => {
       LoadingView.hide();
-<<<<<<< HEAD
-      setHMRUnavailableReason(
-        'Disconnected from the Metro server. Reload to reconnect.',
-      );
-=======
       setHMRUnavailableReason('Disconnected from the Metro server.');
->>>>>>> fb/0.62-stable
     });
 
     if (isEnabled) {
@@ -307,10 +255,7 @@ Error: ${e.message}`;
     }
 
     registerBundleEntryPoints(hmrClient);
-<<<<<<< HEAD
-=======
     flushEarlyLogs(hmrClient);
->>>>>>> fb/0.62-stable
   },
 };
 
@@ -343,8 +288,6 @@ function registerBundleEntryPoints(client) {
   }
 }
 
-<<<<<<< HEAD
-=======
 function flushEarlyLogs(client) {
   try {
     pendingLogs.forEach(([level: LogLevel, data: Array<mixed>]) => {
@@ -355,7 +298,6 @@ function flushEarlyLogs(client) {
   }
 }
 
->>>>>>> fb/0.62-stable
 function dismissRedbox() {
   if (
     Platform.OS === 'ios' &&

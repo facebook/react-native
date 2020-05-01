@@ -5,19 +5,11 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @format
-<<<<<<< HEAD
- * @flow
- */
-
-import * as TurboModuleRegistry from '../TurboModule/TurboModuleRegistry';
-import type {TurboModule} from '../TurboModule/RCTExport';
-=======
  * @flow strict-local
  */
 
 import type {TurboModule} from '../TurboModule/RCTExport';
 import * as TurboModuleRegistry from '../TurboModule/TurboModuleRegistry';
->>>>>>> fb/0.62-stable
 
 export interface Spec extends TurboModule {
   +setGlobalOptions: (options: {|
@@ -29,8 +21,4 @@ export interface Spec extends TurboModule {
   +endScroll: () => void;
 }
 
-<<<<<<< HEAD
-export default TurboModuleRegistry.get<Spec>('FrameRateLogger');
-=======
 export default (TurboModuleRegistry.get<Spec>('FrameRateLogger'): ?Spec);
->>>>>>> fb/0.62-stable

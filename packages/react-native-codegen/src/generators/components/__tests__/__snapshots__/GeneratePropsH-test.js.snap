@@ -102,8 +102,6 @@ static inline void fromRawValue(const RawValue &value, std::vector<ArrayPropsNat
   }
 }
 
-<<<<<<< HEAD
-=======
 
 struct ArrayPropsNativeComponentArrayObjectStruct {
   std::string stringProp;
@@ -189,7 +187,6 @@ static inline void fromRawValue(const RawValue &value, std::vector<std::vector<A
   }
 }
 
->>>>>>> fb/0.62-stable
 class ArrayPropsNativeComponentProps final : public ViewProps {
  public:
   ArrayPropsNativeComponentProps() = default;
@@ -206,8 +203,6 @@ class ArrayPropsNativeComponentProps final : public ViewProps {
   const std::vector<Point> points{};
   const ArrayPropsNativeComponentSizesMask sizes{static_cast<ArrayPropsNativeComponentSizesMask>(ArrayPropsNativeComponentSizes::Small)};
   const std::vector<ArrayPropsNativeComponentObjectStruct> object{};
-<<<<<<< HEAD
-=======
   const std::vector<ArrayPropsNativeComponentArrayStruct> array{};
   const std::vector<std::vector<ArrayPropsNativeComponentArrayOfArrayOfObjectStruct>> arrayOfArrayOfObject{};
 };
@@ -283,7 +278,6 @@ class ArrayPropsNativeComponentProps final : public ViewProps {
 #pragma mark - Props
 
   const std::vector<ArrayPropsNativeComponentNativePrimitivesStruct> nativePrimitives{};
->>>>>>> fb/0.62-stable
 };
 
 } // namespace react
@@ -458,11 +452,7 @@ class DoublePropNativeComponentProps final : public ViewProps {
 }
 `;
 
-<<<<<<< HEAD
-exports[`GeneratePropsH can generate fixture ENUM_PROP 1`] = `
-=======
 exports[`GeneratePropsH can generate fixture EVENT_NESTED_OBJECT_PROPS 1`] = `
->>>>>>> fb/0.62-stable
 Map {
   "Props.h" => "
 /**
@@ -478,34 +468,6 @@ Map {
 namespace facebook {
 namespace react {
 
-<<<<<<< HEAD
-enum class EnumPropsNativeComponentAlignment { Top, Center, BottomRight };
-
-static inline void fromRawValue(const RawValue &value, EnumPropsNativeComponentAlignment &result) {
-  auto string = (std::string)value;
-  if (string == \\"top\\") { result = EnumPropsNativeComponentAlignment::Top; return; }
-  if (string == \\"center\\") { result = EnumPropsNativeComponentAlignment::Center; return; }
-  if (string == \\"bottom-right\\") { result = EnumPropsNativeComponentAlignment::BottomRight; return; }
-  abort();
-}
-
-static inline std::string toString(const EnumPropsNativeComponentAlignment &value) {
-  switch (value) {
-    case EnumPropsNativeComponentAlignment::Top: return \\"top\\";
-    case EnumPropsNativeComponentAlignment::Center: return \\"center\\";
-    case EnumPropsNativeComponentAlignment::BottomRight: return \\"bottom-right\\";
-  }
-}
-
-class EnumPropsNativeComponentProps final : public ViewProps {
- public:
-  EnumPropsNativeComponentProps() = default;
-  EnumPropsNativeComponentProps(const EnumPropsNativeComponentProps &sourceProps, const RawProps &rawProps);
-
-#pragma mark - Props
-
-  const EnumPropsNativeComponentAlignment alignment{EnumPropsNativeComponentAlignment::Center};
-=======
 class EventsNestedObjectNativeComponentProps final : public ViewProps {
  public:
   EventsNestedObjectNativeComponentProps() = default;
@@ -514,7 +476,6 @@ class EventsNestedObjectNativeComponentProps final : public ViewProps {
 #pragma mark - Props
 
   const bool disabled{false};
->>>>>>> fb/0.62-stable
 };
 
 } // namespace react
@@ -523,11 +484,7 @@ class EventsNestedObjectNativeComponentProps final : public ViewProps {
 }
 `;
 
-<<<<<<< HEAD
-exports[`GeneratePropsH can generate fixture EVENT_NESTED_OBJECT_PROPS 1`] = `
-=======
 exports[`GeneratePropsH can generate fixture EVENT_PROPS 1`] = `
->>>>>>> fb/0.62-stable
 Map {
   "Props.h" => "
 /**
@@ -543,17 +500,10 @@ Map {
 namespace facebook {
 namespace react {
 
-<<<<<<< HEAD
-class EventsNestedObjectNativeComponentProps final : public ViewProps {
- public:
-  EventsNestedObjectNativeComponentProps() = default;
-  EventsNestedObjectNativeComponentProps(const EventsNestedObjectNativeComponentProps &sourceProps, const RawProps &rawProps);
-=======
 class EventsNativeComponentProps final : public ViewProps {
  public:
   EventsNativeComponentProps() = default;
   EventsNativeComponentProps(const EventsNativeComponentProps &sourceProps, const RawProps &rawProps);
->>>>>>> fb/0.62-stable
 
 #pragma mark - Props
 
@@ -566,11 +516,7 @@ class EventsNativeComponentProps final : public ViewProps {
 }
 `;
 
-<<<<<<< HEAD
-exports[`GeneratePropsH can generate fixture EVENT_PROPS 1`] = `
-=======
 exports[`GeneratePropsH can generate fixture EVENTS_WITH_PAPER_NAME 1`] = `
->>>>>>> fb/0.62-stable
 Map {
   "Props.h" => "
 /**
@@ -586,16 +532,6 @@ Map {
 namespace facebook {
 namespace react {
 
-<<<<<<< HEAD
-class EventsNativeComponentProps final : public ViewProps {
- public:
-  EventsNativeComponentProps() = default;
-  EventsNativeComponentProps(const EventsNativeComponentProps &sourceProps, const RawProps &rawProps);
-
-#pragma mark - Props
-
-  const bool disabled{false};
-=======
 class InterfaceOnlyComponentProps final : public ViewProps {
  public:
   InterfaceOnlyComponentProps() = default;
@@ -604,7 +540,6 @@ class InterfaceOnlyComponentProps final : public ViewProps {
 #pragma mark - Props
 
   
->>>>>>> fb/0.62-stable
 };
 
 } // namespace react
@@ -613,11 +548,7 @@ class InterfaceOnlyComponentProps final : public ViewProps {
 }
 `;
 
-<<<<<<< HEAD
-exports[`GeneratePropsH can generate fixture EVENTS_WITH_PAPER_NAME 1`] = `
-=======
 exports[`GeneratePropsH can generate fixture EXCLUDE_ANDROID 1`] = `
->>>>>>> fb/0.62-stable
 Map {
   "Props.h" => "
 /**
@@ -633,17 +564,10 @@ Map {
 namespace facebook {
 namespace react {
 
-<<<<<<< HEAD
-class InterfaceOnlyComponentProps final : public ViewProps {
- public:
-  InterfaceOnlyComponentProps() = default;
-  InterfaceOnlyComponentProps(const InterfaceOnlyComponentProps &sourceProps, const RawProps &rawProps);
-=======
 class ExcludedAndroidComponentProps final : public ViewProps {
  public:
   ExcludedAndroidComponentProps() = default;
   ExcludedAndroidComponentProps(const ExcludedAndroidComponentProps &sourceProps, const RawProps &rawProps);
->>>>>>> fb/0.62-stable
 
 #pragma mark - Props
 
@@ -726,8 +650,6 @@ class ImagePropNativeComponentProps final : public ViewProps {
 }
 `;
 
-<<<<<<< HEAD
-=======
 exports[`GeneratePropsH can generate fixture INSETS_PROP 1`] = `
 Map {
   "Props.h" => "
@@ -820,7 +742,6 @@ class Int32EnumPropsNativeComponentProps final : public ViewProps {
 }
 `;
 
->>>>>>> fb/0.62-stable
 exports[`GeneratePropsH can generate fixture INTEGER_PROPS 1`] = `
 Map {
   "Props.h" => "
@@ -971,13 +892,10 @@ Map {
 #include <react/components/image/conversions.h>
 #include <react/components/view/ViewProps.h>
 #include <react/core/propsConversions.h>
-<<<<<<< HEAD
-=======
 #include <react/graphics/Color.h>
 #include <react/graphics/Geometry.h>
 #include <react/imagemanager/primitives.h>
 #include <vector>
->>>>>>> fb/0.62-stable
 
 namespace facebook {
 namespace react {
@@ -995,8 +913,6 @@ static inline std::string toString(const ObjectPropsStringEnumProp &value) {
     case ObjectPropsStringEnumProp::Option1: return \\"option1\\";
   }
 }
-<<<<<<< HEAD
-=======
 enum class ObjectPropsIntEnumProp { IntEnumProp0 = 0 };
 
 static inline void fromRawValue(const RawValue &value, ObjectPropsIntEnumProp &result) {
@@ -1015,7 +931,6 @@ static inline std::string toString(const ObjectPropsIntEnumProp &value) {
     case ObjectPropsIntEnumProp::IntEnumProp0: return \\"0\\";
   }
 }
->>>>>>> fb/0.62-stable
 struct ObjectPropsObjectPropObjectArrayPropStruct {
   std::vector<std::string> array;
 };
@@ -1060,8 +975,6 @@ static inline std::string toString(const ObjectPropsObjectPropObjectPrimitiveReq
   return \\"[Object ObjectPropsObjectPropObjectPrimitiveRequiredPropStruct]\\";
 }
 
-<<<<<<< HEAD
-=======
 struct ObjectPropsObjectPropNestedPropANestedPropBStruct {
   std::string nestedPropC;
 };
@@ -1140,23 +1053,17 @@ static inline std::string toString(const ObjectPropsObjectPropNestedArrayAsPrope
   return \\"[Object ObjectPropsObjectPropNestedArrayAsPropertyStruct]\\";
 }
 
->>>>>>> fb/0.62-stable
 struct ObjectPropsObjectPropStruct {
   std::string stringProp;
   bool booleanProp;
   Float floatProp;
   int intProp;
   ObjectPropsStringEnumProp stringEnumProp;
-<<<<<<< HEAD
-  ObjectPropsObjectArrayPropStruct objectArrayProp;
-  ObjectPropsObjectPrimitiveRequiredPropStruct objectPrimitiveRequiredProp;
-=======
   ObjectPropsIntEnumProp intEnumProp;
   ObjectPropsObjectPropObjectArrayPropStruct objectArrayProp;
   ObjectPropsObjectPropObjectPrimitiveRequiredPropStruct objectPrimitiveRequiredProp;
   ObjectPropsObjectPropNestedPropAStruct nestedPropA;
   ObjectPropsObjectPropNestedArrayAsPropertyStruct nestedArrayAsProperty;
->>>>>>> fb/0.62-stable
 };
 
 static inline void fromRawValue(const RawValue &value, ObjectPropsObjectPropStruct &result) {
@@ -1182,13 +1089,10 @@ static inline void fromRawValue(const RawValue &value, ObjectPropsObjectPropStru
   if (stringEnumProp != map.end()) {
     fromRawValue(stringEnumProp->second, result.stringEnumProp);
   }
-<<<<<<< HEAD
-=======
   auto intEnumProp = map.find(\\"intEnumProp\\");
   if (intEnumProp != map.end()) {
     fromRawValue(intEnumProp->second, result.intEnumProp);
   }
->>>>>>> fb/0.62-stable
   auto objectArrayProp = map.find(\\"objectArrayProp\\");
   if (objectArrayProp != map.end()) {
     fromRawValue(objectArrayProp->second, result.objectArrayProp);
@@ -1197,8 +1101,6 @@ static inline void fromRawValue(const RawValue &value, ObjectPropsObjectPropStru
   if (objectPrimitiveRequiredProp != map.end()) {
     fromRawValue(objectPrimitiveRequiredProp->second, result.objectPrimitiveRequiredProp);
   }
-<<<<<<< HEAD
-=======
   auto nestedPropA = map.find(\\"nestedPropA\\");
   if (nestedPropA != map.end()) {
     fromRawValue(nestedPropA->second, result.nestedPropA);
@@ -1207,7 +1109,6 @@ static inline void fromRawValue(const RawValue &value, ObjectPropsObjectPropStru
   if (nestedArrayAsProperty != map.end()) {
     fromRawValue(nestedArrayAsProperty->second, result.nestedArrayAsProperty);
   }
->>>>>>> fb/0.62-stable
 }
 
 static inline std::string toString(const ObjectPropsObjectPropStruct &value) {
@@ -1262,8 +1163,6 @@ class PointPropNativeComponentProps final : public ViewProps {
 }
 `;
 
-<<<<<<< HEAD
-=======
 exports[`GeneratePropsH can generate fixture STRING_ENUM_PROP 1`] = `
 Map {
   "Props.h" => "
@@ -1314,7 +1213,6 @@ class StringEnumPropsNativeComponentProps final : public ViewProps {
 }
 `;
 
->>>>>>> fb/0.62-stable
 exports[`GeneratePropsH can generate fixture STRING_PROP 1`] = `
 Map {
   "Props.h" => "

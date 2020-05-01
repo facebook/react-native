@@ -37,14 +37,11 @@ source 'https://cdn.cocoapods.org/'
 
 require_relative '../scripts/autolink-ios'
 
-<<<<<<< HEAD
 # TODO(macOS GH#214)
 # Otherwise duplicate UUIDs are being generated between the iOS and macOS targets.
 # FIXME: https://github.com/microsoft/react-native/issues/210
 install! 'cocoapods', :deterministic_uuids => false
 
-=======
->>>>>>> fb/0.62-stable
 if ENV['USE_FRAMEWORKS'] == '1'
   puts "Installing pods with use_frameworks!"
   use_frameworks!
@@ -67,32 +64,6 @@ def pods()
   # use_react_native!(path: "..", fabric_enabled: true)
 end
 
-<<<<<<< HEAD
-target 'RNTester' do
-  platform :ios, '9.0'
-  pods()
-end
-
-target 'RNTester-macOS' do
-  platform :osx, '10.14'
-  pods()
-end
-
-target 'RNTesterUnitTests' do
-  platform :ios, '9.0'
-  pods()
-  pod 'React-RCTTest', :path => "RCTTest"
-end
-
-target 'RNTesterIntegrationTests' do
-  platform :ios, '9.0'
-  pods()
-  pod 'React-RCTTest', :path => "RCTTest"
-end
-
-target 'RNTester-macOSUnitTests' do
-  platform :osx, '10.14'
-=======
   
 def flipper_pods()
   flipperkit_version = '0.30.1'
@@ -140,31 +111,43 @@ def flipper_post_install(installer)
 end
 
 target 'RNTester' do
+  platform :ios, '9.0'
+  pods()
+  flipper_pods()
+end
+
+target 'RNTester-macOS' do
+  platform :osx, '10.14'
   pods()
   flipper_pods()
 end
 
 target 'RNTesterUnitTests' do
->>>>>>> fb/0.62-stable
+  platform :ios, '9.0'
   pods()
   pod 'React-RCTTest', :path => "RCTTest"
 end
 
-<<<<<<< HEAD
+target 'RNTester-macOSUnitTests' do
+  platform :osx, '10.14'
+  pods()
+  pod 'React-RCTTest', :path => "RCTTest"
+end
+
+target 'RNTesterIntegrationTests' do
+  platform :ios, '9.0'
+  pods()
+  pod 'React-RCTTest', :path => "RCTTest"
+end
+
 target 'RNTester-macOSIntegrationTests' do
   platform :osx, '10.14'
-=======
-target 'RNTesterIntegrationTests' do
->>>>>>> fb/0.62-stable
   pods()
   pod 'React-RCTTest', :path => "RCTTest"
 end
 
 post_install do |installer|
-<<<<<<< HEAD
-=======
   flipper_post_install(installer)
->>>>>>> fb/0.62-stable
   installer.pods_project.targets.each do |target|
     puts target.name
   end

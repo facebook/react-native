@@ -13,12 +13,8 @@
 const requireNativeComponent = require('../ReactNative/requireNativeComponent');
 import type {HostComponent} from '../Renderer/shims/ReactNativeTypes';
 
-<<<<<<< HEAD
-const TextInlineImage: string = requireNativeComponent('RCTTextInlineImage');
-=======
 const TextInlineImage: HostComponent<mixed> = requireNativeComponent<mixed>(
   'RCTTextInlineImage',
 );
->>>>>>> fb/0.62-stable
 
 module.exports = TextInlineImage;

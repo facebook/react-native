@@ -12,13 +12,10 @@
 import type {PropTypeShape} from '../../CodegenSchema';
 
 function upperCaseFirst(inString: string): string {
-<<<<<<< HEAD
-=======
   if (inString.length === 0) {
     return inString;
   }
 
->>>>>>> fb/0.62-stable
   return inString[0].toUpperCase() + inString.slice(1);
 }
 
@@ -29,13 +26,10 @@ function toSafeCppString(input: string): string {
     .join('');
 }
 
-<<<<<<< HEAD
-=======
 function toIntEnumValueName(propName: string, value: number): string {
   return `${toSafeCppString(propName)}${value}`;
 }
 
->>>>>>> fb/0.62-stable
 function getCppTypeForAnnotation(
   type:
     | 'BooleanTypeAnnotation'
@@ -70,11 +64,8 @@ function getImports(properties: $ReadOnlyArray<PropTypeShape>): Set<string> {
         return;
       case 'PointPrimitive':
         return;
-<<<<<<< HEAD
-=======
       case 'EdgeInsetsPrimitive':
         return;
->>>>>>> fb/0.62-stable
       case 'ImageSourcePrimitive':
         imports.add('#include <react/components/image/conversions.h>');
         return;
@@ -110,21 +101,11 @@ function getImports(properties: $ReadOnlyArray<PropTypeShape>): Set<string> {
 function generateStructName(
   componentName: string,
   parts: $ReadOnlyArray<string> = [],
-<<<<<<< HEAD
-) {
-=======
 ): string {
->>>>>>> fb/0.62-stable
   const additional = parts.map(toSafeCppString).join('');
   return `${componentName}${additional}Struct`;
 }
 
-<<<<<<< HEAD
-module.exports = {
-  getCppTypeForAnnotation,
-  getImports,
-  toSafeCppString,
-=======
 function getEnumName(componentName: string, propName: string): string {
   const uppercasedPropName = toSafeCppString(propName);
   return `${componentName}${uppercasedPropName}`;
@@ -224,6 +205,5 @@ module.exports = {
   getImports,
   toSafeCppString,
   toIntEnumValueName,
->>>>>>> fb/0.62-stable
   generateStructName,
 };

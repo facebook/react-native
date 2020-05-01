@@ -29,19 +29,11 @@ function buildCommandSchema(property, types: TypeMap) {
       firstParam.id != null &&
       firstParam.id.type === 'QualifiedTypeIdentifier' &&
       firstParam.id.qualification.name === 'React' &&
-<<<<<<< HEAD
-      firstParam.id.id.name === 'Ref'
-    )
-  ) {
-    throw new Error(
-      `The first argument of method ${name} must be of type React.Ref<>`,
-=======
       firstParam.id.id.name === 'ElementRef'
     )
   ) {
     throw new Error(
       `The first argument of method ${name} must be of type React.ElementRef<>`,
->>>>>>> fb/0.62-stable
     );
   }
 

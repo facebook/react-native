@@ -40,11 +40,7 @@ def use_react_native! (options={})
   pod 'React-jsi', :path => "#{prefix}/ReactCommon/jsi"
   pod 'React-jsiexecutor', :path => "#{prefix}/ReactCommon/jsiexecutor"
   pod 'React-jsinspector', :path => "#{prefix}/ReactCommon/jsinspector"
-<<<<<<< HEAD
-  pod 'ReactCommon/jscallinvoker', :path => "#{prefix}/ReactCommon"
-=======
   pod 'ReactCommon/callinvoker', :path => "#{prefix}/ReactCommon"
->>>>>>> fb/0.62-stable
   pod 'ReactCommon/turbomodule/core', :path => "#{prefix}/ReactCommon"
   pod 'Yoga', :path => "#{prefix}/ReactCommon/yoga"
 
@@ -62,10 +58,6 @@ def use_react_native! (options={})
     pod 'React-RCTFabric', :path => "#{prefix}/React"
     pod 'Folly/Fabric', :podspec => "#{prefix}/third-party-podspecs/Folly.podspec"
   end
-<<<<<<< HEAD
-
-=======
->>>>>>> fb/0.62-stable
 end
 
 def add_flipper_pods!(versions = {})

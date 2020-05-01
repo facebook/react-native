@@ -23,8 +23,6 @@ NS_ASSUME_NONNULL_END",
 }
 `;
 
-<<<<<<< HEAD
-=======
 exports[`GenerateComponentHObjCpp can generate fixture ARRAY_PROPS_WITH_NESTED_OBJECT 1`] = `
 Map {
   "RCTComponentViewHelpers.h" => "/**
@@ -48,7 +46,6 @@ NS_ASSUME_NONNULL_END",
 }
 `;
 
->>>>>>> fb/0.62-stable
 exports[`GenerateComponentHObjCpp can generate fixture BOOLEAN_PROP 1`] = `
 Map {
   "RCTComponentViewHelpers.h" => "/**
@@ -116,11 +113,7 @@ NS_ASSUME_NONNULL_BEGIN
 @end
 
 RCT_EXTERN inline void RCTCommandNativeComponentHandleCommand(
-<<<<<<< HEAD
-  id<CommandNativeComponentViewProtocol> componentView,
-=======
   id<RCTCommandNativeComponentViewProtocol> componentView,
->>>>>>> fb/0.62-stable
   NSString const *commandName,
   NSArray const *args)
 {
@@ -132,15 +125,9 @@ RCT_EXTERN inline void RCTCommandNativeComponentHandleCommand(
   }
 #endif
 
-<<<<<<< HEAD
-
-
-  [componentView flashScrollIndicators]
-=======
   
 
   [componentView flashScrollIndicators];
->>>>>>> fb/0.62-stable
   return;
 }
 
@@ -152,76 +139,47 @@ if ([commandName isEqualToString:@\\"allTypes\\"]) {
   }
 #endif
 
-<<<<<<< HEAD
-#if RCT_DEBUG
-  NSObject *arg0 = args[0];
-=======
   NSObject *arg0 = args[0];
 #if RCT_DEBUG
->>>>>>> fb/0.62-stable
   if (!RCTValidateTypeOfViewCommandArgument(arg0, [NSNumber class], @\\"number\\", @\\"CommandNativeComponent\\", commandName, @\\"1st\\")) {
     return;
   }
 #endif
   NSInteger x = [(NSNumber *)arg0 intValue];
 
-<<<<<<< HEAD
-#if RCT_DEBUG
-  NSObject *arg1 = args[1];
-=======
 NSObject *arg1 = args[1];
 #if RCT_DEBUG
->>>>>>> fb/0.62-stable
   if (!RCTValidateTypeOfViewCommandArgument(arg1, [NSNumber class], @\\"float\\", @\\"CommandNativeComponent\\", commandName, @\\"2nd\\")) {
     return;
   }
 #endif
   float y = [(NSNumber *)arg1 floatValue];
 
-<<<<<<< HEAD
-#if RCT_DEBUG
-  NSObject *arg2 = args[2];
-=======
 NSObject *arg2 = args[2];
 #if RCT_DEBUG
->>>>>>> fb/0.62-stable
   if (!RCTValidateTypeOfViewCommandArgument(arg2, [NSNumber class], @\\"double\\", @\\"CommandNativeComponent\\", commandName, @\\"3rd\\")) {
     return;
   }
 #endif
   double z = [(NSNumber *)arg2 doubleValue];
 
-<<<<<<< HEAD
-#if RCT_DEBUG
-  NSObject *arg3 = args[3];
-=======
 NSObject *arg3 = args[3];
 #if RCT_DEBUG
->>>>>>> fb/0.62-stable
   if (!RCTValidateTypeOfViewCommandArgument(arg3, [NSString class], @\\"string\\", @\\"CommandNativeComponent\\", commandName, @\\"4th\\")) {
     return;
   }
 #endif
   NSString * message = (NSString *)arg3;
 
-<<<<<<< HEAD
-#if RCT_DEBUG
-  NSObject *arg4 = args[4];
-=======
 NSObject *arg4 = args[4];
 #if RCT_DEBUG
->>>>>>> fb/0.62-stable
   if (!RCTValidateTypeOfViewCommandArgument(arg4, [NSNumber class], @\\"boolean\\", @\\"CommandNativeComponent\\", commandName, @\\"5th\\")) {
     return;
   }
 #endif
   BOOL animated = [(NSNumber *)arg4 boolValue];
 
-<<<<<<< HEAD
-  [componentView allTypes:x y:y z:z message:message animated:animated]
-=======
   [componentView allTypes:x y:y z:z message:message animated:animated];
->>>>>>> fb/0.62-stable
   return;
 }
 
@@ -254,11 +212,7 @@ NS_ASSUME_NONNULL_BEGIN
 @end
 
 RCT_EXTERN inline void RCTCommandNativeComponentHandleCommand(
-<<<<<<< HEAD
-  id<CommandNativeComponentViewProtocol> componentView,
-=======
   id<RCTCommandNativeComponentViewProtocol> componentView,
->>>>>>> fb/0.62-stable
   NSString const *commandName,
   NSArray const *args)
 {
@@ -270,37 +224,23 @@ RCT_EXTERN inline void RCTCommandNativeComponentHandleCommand(
   }
 #endif
 
-<<<<<<< HEAD
-#if RCT_DEBUG
-  NSObject *arg0 = args[0];
-=======
   NSObject *arg0 = args[0];
 #if RCT_DEBUG
->>>>>>> fb/0.62-stable
   if (!RCTValidateTypeOfViewCommandArgument(arg0, [NSNumber class], @\\"number\\", @\\"CommandNativeComponent\\", commandName, @\\"1st\\")) {
     return;
   }
 #endif
   NSInteger x = [(NSNumber *)arg0 intValue];
 
-<<<<<<< HEAD
-#if RCT_DEBUG
-  NSObject *arg1 = args[1];
-=======
 NSObject *arg1 = args[1];
 #if RCT_DEBUG
->>>>>>> fb/0.62-stable
   if (!RCTValidateTypeOfViewCommandArgument(arg1, [NSNumber class], @\\"number\\", @\\"CommandNativeComponent\\", commandName, @\\"2nd\\")) {
     return;
   }
 #endif
   NSInteger y = [(NSNumber *)arg1 intValue];
 
-<<<<<<< HEAD
-  [componentView hotspotUpdate:x y:y]
-=======
   [componentView hotspotUpdate:x y:y];
->>>>>>> fb/0.62-stable
   return;
 }
 
@@ -336,11 +276,7 @@ NS_ASSUME_NONNULL_END",
 }
 `;
 
-<<<<<<< HEAD
-exports[`GenerateComponentHObjCpp can generate fixture ENUM_PROP 1`] = `
-=======
 exports[`GenerateComponentHObjCpp can generate fixture EVENT_NESTED_OBJECT_PROPS 1`] = `
->>>>>>> fb/0.62-stable
 Map {
   "RCTComponentViewHelpers.h" => "/**
 * Copyright (c) Facebook, Inc. and its affiliates.
@@ -355,11 +291,7 @@ Map {
 
 NS_ASSUME_NONNULL_BEGIN
 
-<<<<<<< HEAD
-@protocol RCTEnumPropsNativeComponentViewProtocol <NSObject>
-=======
 @protocol RCTEventsNestedObjectNativeComponentViewProtocol <NSObject>
->>>>>>> fb/0.62-stable
 
 @end
 
@@ -367,11 +299,7 @@ NS_ASSUME_NONNULL_END",
 }
 `;
 
-<<<<<<< HEAD
-exports[`GenerateComponentHObjCpp can generate fixture EVENT_NESTED_OBJECT_PROPS 1`] = `
-=======
 exports[`GenerateComponentHObjCpp can generate fixture EVENT_PROPS 1`] = `
->>>>>>> fb/0.62-stable
 Map {
   "RCTComponentViewHelpers.h" => "/**
 * Copyright (c) Facebook, Inc. and its affiliates.
@@ -386,11 +314,7 @@ Map {
 
 NS_ASSUME_NONNULL_BEGIN
 
-<<<<<<< HEAD
-@protocol RCTEventsNestedObjectNativeComponentViewProtocol <NSObject>
-=======
 @protocol RCTEventsNativeComponentViewProtocol <NSObject>
->>>>>>> fb/0.62-stable
 
 @end
 
@@ -398,11 +322,7 @@ NS_ASSUME_NONNULL_END",
 }
 `;
 
-<<<<<<< HEAD
-exports[`GenerateComponentHObjCpp can generate fixture EVENT_PROPS 1`] = `
-=======
 exports[`GenerateComponentHObjCpp can generate fixture EVENTS_WITH_PAPER_NAME 1`] = `
->>>>>>> fb/0.62-stable
 Map {
   "RCTComponentViewHelpers.h" => "/**
 * Copyright (c) Facebook, Inc. and its affiliates.
@@ -417,11 +337,7 @@ Map {
 
 NS_ASSUME_NONNULL_BEGIN
 
-<<<<<<< HEAD
-@protocol RCTEventsNativeComponentViewProtocol <NSObject>
-=======
 @protocol RCTInterfaceOnlyComponentViewProtocol <NSObject>
->>>>>>> fb/0.62-stable
 
 @end
 
@@ -429,11 +345,7 @@ NS_ASSUME_NONNULL_END",
 }
 `;
 
-<<<<<<< HEAD
-exports[`GenerateComponentHObjCpp can generate fixture EVENTS_WITH_PAPER_NAME 1`] = `
-=======
 exports[`GenerateComponentHObjCpp can generate fixture EXCLUDE_ANDROID 1`] = `
->>>>>>> fb/0.62-stable
 Map {
   "RCTComponentViewHelpers.h" => "/**
 * Copyright (c) Facebook, Inc. and its affiliates.
@@ -448,11 +360,7 @@ Map {
 
 NS_ASSUME_NONNULL_BEGIN
 
-<<<<<<< HEAD
-@protocol RCTInterfaceOnlyComponentViewProtocol <NSObject>
-=======
 @protocol RCTExcludedAndroidComponentViewProtocol <NSObject>
->>>>>>> fb/0.62-stable
 
 @end
 
@@ -506,8 +414,6 @@ NS_ASSUME_NONNULL_END",
 }
 `;
 
-<<<<<<< HEAD
-=======
 exports[`GenerateComponentHObjCpp can generate fixture INSETS_PROP 1`] = `
 Map {
   "RCTComponentViewHelpers.h" => "/**
@@ -554,7 +460,6 @@ NS_ASSUME_NONNULL_END",
 }
 `;
 
->>>>>>> fb/0.62-stable
 exports[`GenerateComponentHObjCpp can generate fixture INTEGER_PROPS 1`] = `
 Map {
   "RCTComponentViewHelpers.h" => "/**
@@ -693,8 +598,6 @@ NS_ASSUME_NONNULL_END",
 }
 `;
 
-<<<<<<< HEAD
-=======
 exports[`GenerateComponentHObjCpp can generate fixture STRING_ENUM_PROP 1`] = `
 Map {
   "RCTComponentViewHelpers.h" => "/**
@@ -718,7 +621,6 @@ NS_ASSUME_NONNULL_END",
 }
 `;
 
->>>>>>> fb/0.62-stable
 exports[`GenerateComponentHObjCpp can generate fixture STRING_PROP 1`] = `
 Map {
   "RCTComponentViewHelpers.h" => "/**

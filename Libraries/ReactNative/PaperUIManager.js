@@ -7,10 +7,6 @@
  * @flow
  * @format
  */
-<<<<<<< HEAD
-=======
-
->>>>>>> fb/0.62-stable
 'use strict';
 
 const NativeModules = require('../BatchedBridge/NativeModules');
@@ -36,12 +32,9 @@ function getConstants(): Object {
 }
 
 const UIManagerJS = {
-<<<<<<< HEAD
-=======
   /* $FlowFixMe(>=0.111.0 site=react_native_fb) This comment suppresses an
    * error found when Flow v0.111 was deployed. To see the error, delete this
    * comment and run Flow. */
->>>>>>> fb/0.62-stable
   ...NativeUIManager,
   getConstants(): Object {
     return getConstants();
@@ -135,14 +128,10 @@ function lazifyViewManagerConfig(viewName) {
  * only needed for iOS, which puts the constants in the ViewManager
  * namespace instead of UIManager, unlike Android.
  */
-<<<<<<< HEAD
 if (
   Platform.OS === 'ios' ||
   Platform.OS === 'macos' /* TODO(macOS ISS#2323203) */
 ) {
-=======
-if (Platform.OS === 'ios') {
->>>>>>> fb/0.62-stable
   Object.keys(getConstants()).forEach(viewName => {
     lazifyViewManagerConfig(viewName);
   });

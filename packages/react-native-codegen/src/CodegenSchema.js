@@ -96,13 +96,6 @@ type PropTypeTypeAnnotation =
   | $ReadOnly<{|
       type: 'StringTypeAnnotation',
       default: string | null,
-<<<<<<< HEAD
-    |}>
-  | $ReadOnly<{|
-      type: 'DoubleTypeAnnotation',
-      default: number,
-=======
->>>>>>> fb/0.62-stable
     |}>
   | $ReadOnly<{|
       type: 'DoubleTypeAnnotation',
@@ -143,10 +136,6 @@ type PropTypeTypeAnnotation =
       properties: $ReadOnlyArray<PropTypeShape>,
     |}>
   | $ReadOnly<{|
-      type: 'ObjectTypeAnnotation',
-      properties: $ReadOnlyArray<PropTypeShape>,
-    |}>
-  | $ReadOnly<{|
       type: 'ArrayTypeAnnotation',
       elementType:
         | $ReadOnly<{|
@@ -177,9 +166,6 @@ type PropTypeTypeAnnotation =
           |}>
         | $ReadOnly<{|
             type: 'NativePrimitiveTypeAnnotation',
-<<<<<<< HEAD
-            name: 'ColorPrimitive' | 'ImageSourcePrimitive' | 'PointPrimitive',
-=======
             name:
               | 'ColorPrimitive'
               | 'ImageSourcePrimitive'
@@ -192,7 +178,6 @@ type PropTypeTypeAnnotation =
               type: 'ObjectTypeAnnotation',
               properties: $ReadOnlyArray<PropTypeShape>,
             |}>,
->>>>>>> fb/0.62-stable
           |}>,
     |}>;
 
@@ -307,12 +292,9 @@ export type OptionsShape = $ReadOnly<{|
   // Does not check for new name
   paperComponentName?: string,
 
-<<<<<<< HEAD
-=======
   // Use for components that are not used on one or the other platform.
   excludedPlatform?: 'iOS' | 'android',
 
->>>>>>> fb/0.62-stable
   // Use for components currently being renamed in paper
   // Will use new name if it is available and fallback to this name
   paperComponentNameDeprecated?: string,
@@ -338,9 +320,6 @@ export type SchemaType = $ReadOnly<{|
       nativeModules?: $ReadOnly<{
         [nativeModule: string]: NativeModuleShape,
         ...,
-      }>,
-      nativeModules?: $ReadOnly<{
-        [nativeModule: string]: NativeModuleShape,
       }>,
     |}>,
     ...,

@@ -479,8 +479,6 @@ const POINT_PROP: SchemaType = {
   },
 };
 
-<<<<<<< HEAD
-=======
 const INSETS_PROP: SchemaType = {
   modules: {
     ScrollView: {
@@ -510,7 +508,6 @@ const INSETS_PROP: SchemaType = {
   },
 };
 
->>>>>>> fb/0.62-stable
 const ARRAY_PROPS: SchemaType = {
   modules: {
     Slider: {
@@ -636,8 +633,6 @@ const ARRAY_PROPS: SchemaType = {
                 },
               },
             },
-<<<<<<< HEAD
-=======
             {
               name: 'array',
               optional: true,
@@ -762,7 +757,6 @@ const ARRAY_PROPS_WITH_NESTED_OBJECT: SchemaType = {
                 },
               },
             },
->>>>>>> fb/0.62-stable
           ],
           commands: [],
         },
@@ -836,8 +830,6 @@ const OBJECT_PROPS: SchemaType = {
                     },
                   },
                   {
-<<<<<<< HEAD
-=======
                     name: 'intEnumProp',
                     optional: true,
                     typeAnnotation: {
@@ -851,7 +843,6 @@ const OBJECT_PROPS: SchemaType = {
                     },
                   },
                   {
->>>>>>> fb/0.62-stable
                     name: 'objectArrayProp',
                     optional: false,
                     typeAnnotation: {
@@ -903,8 +894,6 @@ const OBJECT_PROPS: SchemaType = {
                       ],
                     },
                   },
-<<<<<<< HEAD
-=======
                   {
                     name: 'nestedPropA',
                     optional: false,
@@ -960,7 +949,6 @@ const OBJECT_PROPS: SchemaType = {
                       ],
                     },
                   },
->>>>>>> fb/0.62-stable
                 ],
               },
             },
@@ -1025,19 +1013,11 @@ const MULTI_NATIVE_PROP: SchemaType = {
   },
 };
 
-<<<<<<< HEAD
-const ENUM_PROP: SchemaType = {
-  modules: {
-    Switch: {
-      components: {
-        EnumPropsNativeComponent: {
-=======
 const STRING_ENUM_PROP: SchemaType = {
   modules: {
     Switch: {
       components: {
         StringEnumPropsNativeComponent: {
->>>>>>> fb/0.62-stable
           extendsProps: [
             {
               type: 'ReactNativeBuiltInType',
@@ -1073,8 +1053,6 @@ const STRING_ENUM_PROP: SchemaType = {
   },
 };
 
-<<<<<<< HEAD
-=======
 const INT32_ENUM_PROP: SchemaType = {
   modules: {
     Switch: {
@@ -1115,7 +1093,6 @@ const INT32_ENUM_PROP: SchemaType = {
   },
 };
 
->>>>>>> fb/0.62-stable
 const EVENT_PROPS: SchemaType = {
   modules: {
     Switch: {
@@ -1526,8 +1503,6 @@ const COMMANDS_AND_PROPS: SchemaType = {
   },
 };
 
-<<<<<<< HEAD
-=======
 const EXCLUDE_ANDROID: SchemaType = {
   modules: {
     ExcludedAndroid: {
@@ -1549,7 +1524,6 @@ const EXCLUDE_ANDROID: SchemaType = {
   },
 };
 
->>>>>>> fb/0.62-stable
 module.exports = {
   NO_PROPS_NO_EVENTS,
   INTERFACE_ONLY,
@@ -1561,12 +1535,6 @@ module.exports = {
   COLOR_PROP,
   IMAGE_PROP,
   POINT_PROP,
-<<<<<<< HEAD
-  ARRAY_PROPS,
-  OBJECT_PROPS,
-  MULTI_NATIVE_PROP,
-  ENUM_PROP,
-=======
   INSETS_PROP,
   ARRAY_PROPS,
   ARRAY_PROPS_WITH_NESTED_OBJECT,
@@ -1574,7 +1542,6 @@ module.exports = {
   MULTI_NATIVE_PROP,
   STRING_ENUM_PROP,
   INT32_ENUM_PROP,
->>>>>>> fb/0.62-stable
   EVENT_PROPS,
   EVENTS_WITH_PAPER_NAME,
   EVENT_NESTED_OBJECT_PROPS,
@@ -1582,8 +1549,5 @@ module.exports = {
   TWO_COMPONENTS_DIFFERENT_FILES,
   COMMANDS,
   COMMANDS_AND_PROPS,
-<<<<<<< HEAD
-=======
   EXCLUDE_ANDROID,
->>>>>>> fb/0.62-stable
 };

@@ -78,10 +78,6 @@ import com.android.build.OutputFile
  */
 
 project.ext.react = [
-<<<<<<< HEAD
-    entryFile: "index.js",
-=======
->>>>>>> fb/0.62-stable
     enableHermes: false,  // clean and rebuild if changing
 ]
 
@@ -196,8 +192,6 @@ dependencies {
     //noinspection GradleDynamicVersion
     implementation "com.facebook.react:react-native:+"  // From node_modules
 
-<<<<<<< HEAD
-=======
     implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.0.0"
 
     debugImplementation("com.facebook.flipper:flipper:${FLIPPER_VERSION}") {
@@ -212,7 +206,6 @@ dependencies {
         exclude group:'com.facebook.flipper'
     }
 
->>>>>>> fb/0.62-stable
     if (enableHermes) {
         def hermesPath = "../../node_modules/hermes-engine/android/";
         debugImplementation files(hermesPath + "hermes-debug.aar")

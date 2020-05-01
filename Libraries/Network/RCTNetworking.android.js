@@ -13,11 +13,6 @@
 // Do not require the native RCTNetworking module directly! Use this wrapper module instead.
 // It will add the necessary requestId, so that you don't have to generate it yourself.
 const NativeEventEmitter = require('../EventEmitter/NativeEventEmitter');
-<<<<<<< HEAD
-import NativeNetworkingAndroid from './NativeNetworkingAndroid';
-=======
-
->>>>>>> fb/0.62-stable
 const convertRequestBody = require('./convertRequestBody');
 
 import NativeNetworkingAndroid from './NativeNetworkingAndroid';

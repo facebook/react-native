@@ -11,19 +11,11 @@
 'use strict';
 
 import codegenNativeComponent from '../Utilities/codegenNativeComponent';
-<<<<<<< HEAD
-import {type NativeComponentType} from '../Utilities/codegenNativeComponent';
-import type {
-  WithDefault,
-  BubblingEventHandler,
-  DirectEventHandler,
-=======
 import type {HostComponent} from '../Renderer/shims/ReactNativeTypes';
 import type {
   WithDefault,
   DirectEventHandler,
   BubblingEventHandler,
->>>>>>> fb/0.62-stable
   Int32,
 } from '../Types/CodegenTypes';
 
@@ -67,8 +59,6 @@ type NativeProps = $ReadOnly<{|
    *
    * See https://facebook.github.io/react-native/docs/modal.html#statusBarTranslucent
    */
-<<<<<<< HEAD
-=======
   statusBarTranslucent?: WithDefault<boolean, false>,
 
   /**
@@ -77,7 +67,6 @@ type NativeProps = $ReadOnly<{|
    *
    * See https://facebook.github.io/react-native/docs/modal.html#hardwareaccelerated
    */
->>>>>>> fb/0.62-stable
   hardwareAccelerated?: WithDefault<boolean, false>,
 
   /**
@@ -143,8 +132,4 @@ type NativeProps = $ReadOnly<{|
 export default (codegenNativeComponent<NativeProps>('ModalHostView', {
   interfaceOnly: true,
   paperComponentName: 'RCTModalHostView',
-<<<<<<< HEAD
-}): NativeComponentType<NativeProps>);
-=======
 }): HostComponent<NativeProps>);
->>>>>>> fb/0.62-stable

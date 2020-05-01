@@ -1,8 +1,3 @@
-<<<<<<< HEAD
-package com.facebook.react.uimanager;
-
-import android.view.ViewGroup;
-=======
 /*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
@@ -14,7 +9,6 @@ package com.facebook.react.uimanager;
 
 import android.view.ViewGroup;
 import androidx.annotation.Nullable;
->>>>>>> fb/0.62-stable
 import com.facebook.react.viewmanagers.BooleanPropNativeComponentViewManagerDelegate;
 import com.facebook.react.viewmanagers.BooleanPropNativeComponentViewManagerInterface;
 
@@ -40,10 +34,7 @@ public class BooleanPropNativeComponentViewManager extends SimpleViewManager<Vie
 
   @Override
   public void setDisabled(ViewGroup view, boolean value) {}
-<<<<<<< HEAD
-=======
 
   @Override
   public void setDisabledNullable(ViewGroup view, @Nullable Boolean value) {}
->>>>>>> fb/0.62-stable
 }

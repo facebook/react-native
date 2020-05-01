@@ -100,14 +100,7 @@ def react_native_dep(path):
 def react_native_xplat_dep(path):
     return "//ReactCommon/" + path
 
-<<<<<<< HEAD
-def rn_debug_flags():
-    return []
-
-def rn_feature_flags():
-=======
 def rn_extra_build_flags():
->>>>>>> fb/0.62-stable
     return []
 
 # React property preprocessor

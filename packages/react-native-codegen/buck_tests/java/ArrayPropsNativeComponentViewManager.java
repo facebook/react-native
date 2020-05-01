@@ -1,5 +1,3 @@
-<<<<<<< HEAD
-=======
 /*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
@@ -7,7 +5,6 @@
  * LICENSE file in the root directory of this source tree.
  */
 
->>>>>>> fb/0.62-stable
 package com.facebook.react.uimanager;
 
 import android.view.ViewGroup;
@@ -57,12 +54,9 @@ public class ArrayPropsNativeComponentViewManager extends SimpleViewManager<View
   public void setPoints(ViewGroup view, ReadableArray value) {}
 
   @Override
-<<<<<<< HEAD
-=======
   public void setEdgeInsets(ViewGroup view, ReadableArray value) {}
 
   @Override
->>>>>>> fb/0.62-stable
   public void setSizes(ViewGroup view, ReadableArray value) {}
 
   @Override

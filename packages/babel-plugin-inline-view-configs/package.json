@@ -1,9 +1,5 @@
 {
-<<<<<<< HEAD
-  "version": "0.0.4",
-=======
   "version": "0.0.5",
->>>>>>> fb/0.62-stable
   "name": "babel-plugin-inline-view-configs",
   "description": "Babel plugin to inline view configs for React Native",
   "repository": {
@@ -16,12 +12,5 @@
   "devDependencies": {
     "@babel/core": "^7.0.0"
   },
-<<<<<<< HEAD
-  "license": "MIT",
-  "beachball": {
-    "shouldPublish": false
-  }  
-=======
   "license": "MIT"
->>>>>>> fb/0.62-stable
 }

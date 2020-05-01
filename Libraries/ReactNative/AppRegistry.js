@@ -181,15 +181,6 @@ const AppRegistry = {
    * See http://facebook.github.io/react-native/docs/appregistry.html#runapplication
    */
   runApplication(appKey: string, appParameters: any): void {
-<<<<<<< HEAD
-    const msg =
-      'Running "' + appKey + '" with ' + JSON.stringify(appParameters);
-    infoLog(msg);
-    BugReporting.addSource(
-      'AppRegistry.runApplication' + runCount++,
-      () => msg,
-    );
-=======
     if (appKey !== 'LogBox') {
       const msg =
         'Running "' + appKey + '" with ' + JSON.stringify(appParameters);
@@ -199,7 +190,6 @@ const AppRegistry = {
         () => msg,
       );
     }
->>>>>>> fb/0.62-stable
     invariant(
       runnables[appKey] && runnables[appKey].run,
       `"${appKey}" has not been registered. This can happen if:\n` +

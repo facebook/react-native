@@ -20,11 +20,7 @@ export interface Spec extends TurboModule {
       url: string,
       data: Object,
       headers: Object,
-<<<<<<< HEAD
-      responseType: Object, // TODO: Use stricter type.
-=======
       responseType: string,
->>>>>>> fb/0.62-stable
       incrementalUpdates: boolean,
       timeout: number,
       withCredentials: boolean,

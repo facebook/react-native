@@ -852,10 +852,6 @@ exports[`VirtualizedList renders simple list using ListItemComponent 1`] = `
   onScroll={[Function]}
   onScrollBeginDrag={[Function]}
   onScrollEndDrag={[Function]}
-<<<<<<< HEAD
-  onScrollKeyDown={null}
-=======
->>>>>>> fb/0.62-stable
   scrollEventThrottle={50}
   stickyHeaderIndices={Array []}
   updateCellsBatchingPeriod={50}
@@ -957,10 +953,6 @@ exports[`VirtualizedList warns if both renderItem or ListItemComponent are speci
   onScroll={[Function]}
   onScrollBeginDrag={[Function]}
   onScrollEndDrag={[Function]}
-<<<<<<< HEAD
-  onScrollKeyDown={null}
-=======
->>>>>>> fb/0.62-stable
   renderItem={[Function]}
   scrollEventThrottle={50}
   stickyHeaderIndices={Array []}

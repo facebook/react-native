@@ -30,11 +30,7 @@ function vibrateByPattern(pattern: Array<number>, repeat: boolean = false) {
   }
   _vibrating = true;
   if (pattern[0] === 0) {
-<<<<<<< HEAD
-    NativeVibration.vibrate();
-=======
     NativeVibration.vibrate(_default_vibration_length);
->>>>>>> fb/0.62-stable
     pattern = pattern.slice(1);
   }
   if (pattern.length === 0) {
@@ -53,11 +49,7 @@ function vibrateScheduler(
   if (!_vibrating || id !== _id) {
     return;
   }
-<<<<<<< HEAD
-  NativeVibration.vibrate();
-=======
   NativeVibration.vibrate(_default_vibration_length);
->>>>>>> fb/0.62-stable
   if (nextIndex >= pattern.length) {
     if (repeat) {
       nextIndex = 0;
@@ -95,11 +87,7 @@ const Vibration = {
         return;
       }
       if (typeof pattern === 'number') {
-<<<<<<< HEAD
-        NativeVibration.vibrate();
-=======
         NativeVibration.vibrate(pattern);
->>>>>>> fb/0.62-stable
       } else if (Array.isArray(pattern)) {
         vibrateByPattern(pattern, repeat);
       } else {

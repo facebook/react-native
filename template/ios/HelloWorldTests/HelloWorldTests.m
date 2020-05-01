@@ -52,11 +52,6 @@
       return NO;
     }];
   }
-<<<<<<< HEAD
-  
-=======
-
->>>>>>> fb/0.62-stable
 #ifdef DEBUG
   RCTSetLogFunction(RCTDefaultLogFunction);
 #endif

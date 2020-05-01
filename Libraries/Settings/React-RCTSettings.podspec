@@ -27,15 +27,7 @@ Pod::Spec.new do |s|
   s.documentation_url      = "https://facebook.github.io/react-native/docs/settings"
   s.license                = package["license"]
   s.author                 = "Facebook, Inc. and its affiliates"
-<<<<<<< HEAD
   s.platforms              = { :ios => "9.0", :tvos => "9.2", :osx => "10.14" } # TODO(macOS GH#214)
-  s.source                 = source
-  s.source_files           = "*.{m}"
-  s.preserve_paths         = "package.json", "LICENSE", "LICENSE-docs"
-  s.header_dir             = "RCTSettings"
-
-=======
-  s.platforms              = { :ios => "9.0", :tvos => "9.2" }
   s.compiler_flags         = folly_compiler_flags + ' -Wno-nullability-completeness'
   s.source                 = source
   s.source_files           = "*.{m,mm}"
@@ -51,6 +43,5 @@ Pod::Spec.new do |s|
   s.dependency "FBReactNativeSpec", version
   s.dependency "RCTTypeSafety", version
   s.dependency "ReactCommon/turbomodule/core", version
->>>>>>> fb/0.62-stable
   s.dependency "React-Core/RCTSettingsHeaders", version
 end

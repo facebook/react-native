@@ -35,25 +35,6 @@ exports[`VirtualizedSectionList handles nested lists 1`] = `
   renderItem={[Function]}
   rowIndex={-1}
   scrollEventThrottle={50}
-<<<<<<< HEAD
-  sectionIndex={0}
-  sections={
-    Array [
-      Object {
-        "data": Array [
-          Object {
-            "key": "outer0",
-          },
-          Object {
-            "key": "outer1",
-          },
-        ],
-        "title": "outer",
-      },
-    ]
-  }
-=======
->>>>>>> fb/0.62-stable
   stickyHeaderIndices={Array []}
   updateCellsBatchingPeriod={50}
   windowSize={21}
@@ -101,25 +82,6 @@ exports[`VirtualizedSectionList handles nested lists 1`] = `
         renderItem={[Function]}
         rowIndex={-1}
         scrollEventThrottle={50}
-<<<<<<< HEAD
-        sectionIndex={0}
-        sections={
-          Array [
-            Object {
-              "data": Array [
-                Object {
-                  "key": "outer0:inner0",
-                },
-                Object {
-                  "key": "outer0:inner1",
-                },
-              ],
-              "title": "inner",
-            },
-          ]
-        }
-=======
->>>>>>> fb/0.62-stable
         stickyHeaderIndices={Array []}
         updateCellsBatchingPeriod={50}
         windowSize={21}
@@ -188,25 +150,6 @@ exports[`VirtualizedSectionList handles nested lists 1`] = `
         renderItem={[Function]}
         rowIndex={-1}
         scrollEventThrottle={50}
-<<<<<<< HEAD
-        sectionIndex={0}
-        sections={
-          Array [
-            Object {
-              "data": Array [
-                Object {
-                  "key": "outer1:inner0",
-                },
-                Object {
-                  "key": "outer1:inner1",
-                },
-              ],
-              "title": "inner",
-            },
-          ]
-        }
-=======
->>>>>>> fb/0.62-stable
         stickyHeaderIndices={Array []}
         updateCellsBatchingPeriod={50}
         windowSize={21}
@@ -313,28 +256,6 @@ exports[`VirtualizedSectionList handles separators correctly 1`] = `
   renderItem={[Function]}
   rowIndex={-1}
   scrollEventThrottle={50}
-<<<<<<< HEAD
-  sectionIndex={0}
-  sections={
-    Array [
-      Object {
-        "data": Array [
-          Object {
-            "key": "i0",
-          },
-          Object {
-            "key": "i1",
-          },
-          Object {
-            "key": "i2",
-          },
-        ],
-        "title": "s0",
-      },
-    ]
-  }
-=======
->>>>>>> fb/0.62-stable
   stickyHeaderIndices={Array []}
   updateCellsBatchingPeriod={50}
   windowSize={21}
@@ -476,28 +397,6 @@ exports[`VirtualizedSectionList handles separators correctly 2`] = `
   renderItem={[Function]}
   rowIndex={-1}
   scrollEventThrottle={50}
-<<<<<<< HEAD
-  sectionIndex={0}
-  sections={
-    Array [
-      Object {
-        "data": Array [
-          Object {
-            "key": "i0",
-          },
-          Object {
-            "key": "i1",
-          },
-          Object {
-            "key": "i2",
-          },
-        ],
-        "title": "s0",
-      },
-    ]
-  }
-=======
->>>>>>> fb/0.62-stable
   stickyHeaderIndices={Array []}
   updateCellsBatchingPeriod={50}
   windowSize={21}
@@ -639,28 +538,6 @@ exports[`VirtualizedSectionList handles separators correctly 3`] = `
   renderItem={[Function]}
   rowIndex={-1}
   scrollEventThrottle={50}
-<<<<<<< HEAD
-  sectionIndex={0}
-  sections={
-    Array [
-      Object {
-        "data": Array [
-          Object {
-            "key": "i0",
-          },
-          Object {
-            "key": "i1",
-          },
-          Object {
-            "key": "i2",
-          },
-        ],
-        "title": "s0",
-      },
-    ]
-  }
-=======
->>>>>>> fb/0.62-stable
   stickyHeaderIndices={Array []}
   updateCellsBatchingPeriod={50}
   windowSize={21}
@@ -823,34 +700,6 @@ exports[`VirtualizedSectionList renders all the bells and whistles 1`] = `
   renderItem={[Function]}
   rowIndex={-1}
   scrollEventThrottle={50}
-<<<<<<< HEAD
-  sectionIndex={0}
-  sections={
-    Array [
-      Object {
-        "data": Array [
-          Object {
-            "id": "0",
-          },
-          Object {
-            "id": "1",
-          },
-          Object {
-            "id": "2",
-          },
-          Object {
-            "id": "3",
-          },
-          Object {
-            "id": "4",
-          },
-        ],
-        "title": "s1",
-      },
-    ]
-  }
-=======
->>>>>>> fb/0.62-stable
   stickyHeaderIndices={Array []}
   style={
     Array [
@@ -1066,11 +915,6 @@ exports[`VirtualizedSectionList renders empty list 1`] = `
   renderItem={[Function]}
   rowIndex={-1}
   scrollEventThrottle={50}
-<<<<<<< HEAD
-  sectionIndex={0}
-  sections={Array []}
-=======
->>>>>>> fb/0.62-stable
   stickyHeaderIndices={Array []}
   updateCellsBatchingPeriod={50}
   windowSize={21}
@@ -1103,11 +947,6 @@ exports[`VirtualizedSectionList renders empty list with empty component 1`] = `
   renderItem={[Function]}
   rowIndex={-1}
   scrollEventThrottle={50}
-<<<<<<< HEAD
-  sectionIndex={0}
-  sections={Array []}
-=======
->>>>>>> fb/0.62-stable
   stickyHeaderIndices={Array []}
   updateCellsBatchingPeriod={50}
   windowSize={21}
@@ -1161,22 +1000,6 @@ exports[`VirtualizedSectionList renders list with empty component 1`] = `
   renderItem={[Function]}
   rowIndex={-1}
   scrollEventThrottle={50}
-<<<<<<< HEAD
-  sectionIndex={0}
-  sections={
-    Array [
-      Object {
-        "data": Array [
-          Object {
-            "key": "hello",
-          },
-        ],
-        "title": "s1",
-      },
-    ]
-  }
-=======
->>>>>>> fb/0.62-stable
   stickyHeaderIndices={Array []}
   updateCellsBatchingPeriod={50}
   windowSize={21}
@@ -1269,28 +1092,6 @@ exports[`VirtualizedSectionList renders simple list 1`] = `
   renderItem={[Function]}
   rowIndex={-1}
   scrollEventThrottle={50}
-<<<<<<< HEAD
-  sectionIndex={0}
-  sections={
-    Array [
-      Object {
-        "data": Array [
-          Object {
-            "key": "i1",
-          },
-          Object {
-            "key": "i2",
-          },
-          Object {
-            "key": "i3",
-          },
-        ],
-        "title": "s1",
-      },
-    ]
-  }
-=======
->>>>>>> fb/0.62-stable
   stickyHeaderIndices={Array []}
   updateCellsBatchingPeriod={50}
   windowSize={21}

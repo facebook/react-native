@@ -29,8 +29,6 @@ const ArrayPropsNativeComponentViewConfig = {
     points: true,
     sizes: true,
     object: true,
-<<<<<<< HEAD
-=======
     array: true,
     arrayOfArrayOfObject: true,
   },
@@ -68,7 +66,6 @@ const ArrayPropsNativeComponentViewConfig = {
 
   validAttributes: {
     nativePrimitives: true,
->>>>>>> fb/0.62-stable
   },
 };
 
@@ -278,44 +275,6 @@ export default nativeComponentName;
 }
 `;
 
-<<<<<<< HEAD
-exports[`GenerateViewConfigJs can generate fixture ENUM_PROP 1`] = `
-Map {
-  "ENUM_PROPNativeViewConfig.js" => "
-/**
- * Copyright (c) Facebook, Inc. and its affiliates.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
- *
- * @flow
- */
-
-'use strict';
-
-const registerGeneratedViewConfig = require('registerGeneratedViewConfig');
-
-const EnumPropsNativeComponentViewConfig = {
-  uiViewClassName: 'EnumPropsNativeComponent',
-
-  validAttributes: {
-    alignment: true,
-  },
-};
-
-let nativeComponentName = 'EnumPropsNativeComponent';
-
-registerGeneratedViewConfig(nativeComponentName, EnumPropsNativeComponentViewConfig);
-
-export const __INTERNAL_VIEW_CONFIG = EnumPropsNativeComponentViewConfig;
-
-export default nativeComponentName;
-",
-}
-`;
-
-=======
->>>>>>> fb/0.62-stable
 exports[`GenerateViewConfigJs can generate fixture EVENT_NESTED_OBJECT_PROPS 1`] = `
 Map {
   "EVENT_NESTED_OBJECT_PROPSNativeViewConfig.js" => "
@@ -488,8 +447,6 @@ export default nativeComponentName;
 }
 `;
 
-<<<<<<< HEAD
-=======
 exports[`GenerateViewConfigJs can generate fixture EXCLUDE_ANDROID 1`] = `
 Map {
   "EXCLUDE_ANDROIDNativeViewConfig.js" => "
@@ -522,7 +479,6 @@ export default nativeComponentName;
 }
 `;
 
->>>>>>> fb/0.62-stable
 exports[`GenerateViewConfigJs can generate fixture FLOAT_PROPS 1`] = `
 Map {
   "FLOAT_PROPSNativeViewConfig.js" => "
@@ -598,8 +554,6 @@ export default nativeComponentName;
 }
 `;
 
-<<<<<<< HEAD
-=======
 exports[`GenerateViewConfigJs can generate fixture INSETS_PROP 1`] = `
 Map {
   "INSETS_PROPNativeViewConfig.js" => "
@@ -670,7 +624,6 @@ export default nativeComponentName;
 }
 `;
 
->>>>>>> fb/0.62-stable
 exports[`GenerateViewConfigJs can generate fixture INTEGER_PROPS 1`] = `
 Map {
   "INTEGER_PROPSNativeViewConfig.js" => "
@@ -893,8 +846,6 @@ export default nativeComponentName;
 }
 `;
 
-<<<<<<< HEAD
-=======
 exports[`GenerateViewConfigJs can generate fixture STRING_ENUM_PROP 1`] = `
 Map {
   "STRING_ENUM_PROPNativeViewConfig.js" => "
@@ -930,7 +881,6 @@ export default nativeComponentName;
 }
 `;
 
->>>>>>> fb/0.62-stable
 exports[`GenerateViewConfigJs can generate fixture STRING_PROP 1`] = `
 Map {
   "STRING_PROPNativeViewConfig.js" => "

@@ -1,7 +1,5 @@
 platform :ios, '9.0'
 require_relative '../node_modules/@react-native-community/cli-platform-ios/native_modules'
-<<<<<<< HEAD
-=======
 
 def add_flipper_pods!(versions = {})
   versions['Flipper'] ||= '~> 0.33.1'
@@ -45,7 +43,6 @@ def flipper_post_install(installer)
     end
   end
 end
->>>>>>> fb/0.62-stable
 
 target 'HelloWorld' do
   # Pods for HelloWorld
@@ -72,15 +69,9 @@ target 'HelloWorld' do
   pod 'React-jsi', :path => '../node_modules/react-native/ReactCommon/jsi'
   pod 'React-jsiexecutor', :path => '../node_modules/react-native/ReactCommon/jsiexecutor'
   pod 'React-jsinspector', :path => '../node_modules/react-native/ReactCommon/jsinspector'
-<<<<<<< HEAD
-  pod 'ReactCommon/jscallinvoker', :path => "../node_modules/react-native/ReactCommon"
-  pod 'ReactCommon/turbomodule/core', :path => "../node_modules/react-native/ReactCommon"
-  pod 'Yoga', :path => '../node_modules/react-native/ReactCommon/yoga'
-=======
   pod 'ReactCommon/callinvoker', :path => "../node_modules/react-native/ReactCommon"
   pod 'ReactCommon/turbomodule/core', :path => "../node_modules/react-native/ReactCommon"
   pod 'Yoga', :path => '../node_modules/react-native/ReactCommon/yoga', :modular_headers => true
->>>>>>> fb/0.62-stable
 
   pod 'DoubleConversion', :podspec => '../node_modules/react-native/third-party-podspecs/DoubleConversion.podspec'
   pod 'glog', :podspec => '../node_modules/react-native/third-party-podspecs/glog.podspec'
@@ -92,8 +83,6 @@ target 'HelloWorld' do
   end
 
   use_native_modules!
-<<<<<<< HEAD
-=======
 
   # Enables Flipper.
   #
@@ -103,7 +92,6 @@ target 'HelloWorld' do
   post_install do |installer|
     flipper_post_install(installer)
   end
->>>>>>> fb/0.62-stable
 end
 
 target 'HelloWorld-tvOS' do

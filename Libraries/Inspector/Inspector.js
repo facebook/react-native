@@ -122,17 +122,10 @@ class Inspector extends React.Component<
     this.setState({inspectedViewTag: newProps.inspectedViewTag});
   }
 
-<<<<<<< HEAD
-  attachToDevtools: (agent: any) => void = (agent: Object) => {
-    let _hideWait = null;
-    const hlSub = agent.sub('highlight', ({node, name, props}) => {
-      clearTimeout(_hideWait);
-=======
   _attachToDevtools = (agent: Object) => {
     agent.addListener('hideNativeHighlight', this._onAgentHideNativeHighlight);
     agent.addListener('showNativeHighlight', this._onAgentShowNativeHighlight);
     agent.addListener('shutdown', this._onAgentShutdown);
->>>>>>> fb/0.62-stable
 
     this.setState({
       devtoolsAgent: agent,

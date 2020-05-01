@@ -143,10 +143,6 @@ export type ReactNativeType = {
   ): ?ElementRef<HostComponent<mixed>>,
   findNodeHandle(componentOrHandle: any): ?number,
   dispatchCommand(handle: any, command: string, args: Array<any>): void,
-<<<<<<< HEAD
-  setNativeProps(handle: any, nativeProps: Object): void,
-=======
->>>>>>> fb/0.62-stable
   render(
     element: React$Element<any>,
     containerTag: any,
@@ -165,10 +161,6 @@ export type ReactFabricType = {
   findHostInstance_DEPRECATED(componentOrHandle: any): ?HostComponent<mixed>,
   findNodeHandle(componentOrHandle: any): ?number,
   dispatchCommand(handle: any, command: string, args: Array<any>): void,
-<<<<<<< HEAD
-  setNativeProps(handle: any, nativeProps: Object): void,
-=======
->>>>>>> fb/0.62-stable
   render(
     element: React$Element<any>,
     containerTag: any,
@@ -220,46 +212,6 @@ export type ReactNativeResponderEvent = {
   ...
 };
 
-<<<<<<< HEAD
-export type ReactNativeEventTarget = {
-  node: Object,
-  canonical: {
-    _nativeTag: number,
-    viewConfig: ReactNativeBaseComponentViewConfig<>,
-    currentProps: Object,
-    _internalInstanceHandle: Object,
-  },
-};
-
-export type ReactFaricEventTouch = {
-  identifier: number,
-  locationX: number,
-  locationY: number,
-  pageX: number,
-  pageY: number,
-  screenX: number,
-  screenY: number,
-  target: number,
-  timestamp: number,
-  force: number,
-};
-
-export type ReactFaricEvent = {
-  touches: Array<ReactFaricEventTouch>,
-  changedTouches: Array<ReactFaricEventTouch>,
-  targetTouches: Array<ReactFaricEventTouch>,
-  target: number,
-};
-
-export type ReactNativeResponderEvent = {
-  nativeEvent: ReactFaricEvent,
-  responderTarget: null | ReactNativeEventTarget,
-  target: null | ReactNativeEventTarget,
-  type: string,
-};
-
-=======
->>>>>>> fb/0.62-stable
 export type ReactNativeResponderContext = {
   dispatchEvent: (
     eventValue: any,
@@ -277,23 +229,14 @@ export type ReactNativeResponderContext = {
       right: number,
       top: number,
       bottom: number,
-<<<<<<< HEAD
-=======
       ...
->>>>>>> fb/0.62-stable
     }) => void,
   ): void,
   addRootEventTypes: (rootEventTypes: Array<string>) => void,
   removeRootEventTypes: (rootEventTypes: Array<string>) => void,
-<<<<<<< HEAD
-  setTimeout: (func: () => void, timeout: number) => number,
-  clearTimeout: (timerId: number) => void,
-  getTimeStamp: () => number,
-=======
   getTimeStamp: () => number,
   getResponderNode(): ReactNativeEventTarget | null,
   ...
->>>>>>> fb/0.62-stable
 };
 
 export type PointerType =

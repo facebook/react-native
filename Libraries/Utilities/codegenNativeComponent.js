@@ -7,39 +7,23 @@
  * @format
  * @flow
  */
-<<<<<<< HEAD
-=======
-
->>>>>>> fb/0.62-stable
 // TODO: move this file to shims/ReactNative (requires React update and sync)
 
 'use strict';
 
-<<<<<<< HEAD
-import type {NativeComponent} from '../../Libraries/Renderer/shims/ReactNative';
-import requireNativeComponent from '../../Libraries/ReactNative/requireNativeComponent';
-import {UIManager} from 'react-native';
-=======
 import requireNativeComponent from '../../Libraries/ReactNative/requireNativeComponent';
 import type {HostComponent} from '../../Libraries/Renderer/shims/ReactNativeTypes';
 import UIManager from '../ReactNative/UIManager';
->>>>>>> fb/0.62-stable
 
 // TODO: import from CodegenSchema once workspaces are enabled
 type Options = $ReadOnly<{|
   interfaceOnly?: boolean,
   paperComponentName?: string,
   paperComponentNameDeprecated?: string,
-<<<<<<< HEAD
-|}>;
-
-export type NativeComponentType<T> = Class<NativeComponent<T>>;
-=======
   excludedPlatform?: 'iOS' | 'android',
 |}>;
 
 export type NativeComponentType<T> = HostComponent<T>;
->>>>>>> fb/0.62-stable
 
 function codegenNativeComponent<Props>(
   componentName: string,
@@ -70,15 +54,9 @@ function codegenNativeComponent<Props>(
   // generated with the view config babel plugin, so we need to require the native component.
   //
   // This will be useful during migration, but eventually this will error.
-<<<<<<< HEAD
-  return ((requireNativeComponent(componentNameInUse): any): Class<
-    NativeComponent<Props>,
-  >);
-=======
   return (requireNativeComponent<Props>(
     componentNameInUse,
   ): HostComponent<Props>);
->>>>>>> fb/0.62-stable
 }
 
 export default codegenNativeComponent;

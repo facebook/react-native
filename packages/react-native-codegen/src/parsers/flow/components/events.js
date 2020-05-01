@@ -198,19 +198,11 @@ function buildEventSchema(
   }
 
   if (argumentProps === null) {
-<<<<<<< HEAD
-    throw new Error(`Unabled to determine event arguments for "${name}"`);
-  }
-
-  if (bubblingType === null) {
-    throw new Error(`Unabled to determine event arguments for "${name}"`);
-=======
     throw new Error(`Unable to determine event arguments for "${name}"`);
   }
 
   if (bubblingType === null) {
     throw new Error(`Unable to determine event arguments for "${name}"`);
->>>>>>> fb/0.62-stable
   }
 }
 
@@ -220,10 +212,7 @@ type EventTypeAST = Object;
 type TypeMap = {
   // $FlowFixMe there's no flowtype for ASTs
   [string]: Object,
-<<<<<<< HEAD
-=======
   ...,
->>>>>>> fb/0.62-stable
 };
 
 function getEvents(

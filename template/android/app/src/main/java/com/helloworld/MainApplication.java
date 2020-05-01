@@ -44,17 +44,6 @@ public class MainApplication extends Application implements ReactApplication {
   public void onCreate() {
     super.onCreate();
     SoLoader.init(this, /* native exopackage */ false);
-<<<<<<< HEAD
-    initializeFlipper(this); // Remove this line if you don't want Flipper enabled
-  }
-
-  /**
-   * Loads Flipper in React Native templates.
-   *
-   * @param context
-   */
-  private static void initializeFlipper(Context context) {
-=======
     initializeFlipper(this, getReactNativeHost().getReactInstanceManager());
   }
 
@@ -67,22 +56,16 @@ public class MainApplication extends Application implements ReactApplication {
    */
   private static void initializeFlipper(
       Context context, ReactInstanceManager reactInstanceManager) {
->>>>>>> fb/0.62-stable
     if (BuildConfig.DEBUG) {
       try {
         /*
          We use reflection here to pick up the class that initializes Flipper,
         since Flipper library is not available in release mode
         */
-<<<<<<< HEAD
-        Class<?> aClass = Class.forName("com.facebook.flipper.ReactNativeFlipper");
-        aClass.getMethod("initializeFlipper", Context.class).invoke(null, context);
-=======
         Class<?> aClass = Class.forName("com.helloworld.ReactNativeFlipper");
         aClass
             .getMethod("initializeFlipper", Context.class, ReactInstanceManager.class)
             .invoke(null, context, reactInstanceManager);
->>>>>>> fb/0.62-stable
       } catch (ClassNotFoundException e) {
         e.printStackTrace();
       } catch (NoSuchMethodException e) {

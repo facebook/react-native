@@ -1,5 +1,3 @@
-<<<<<<< HEAD
-=======
 /*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
@@ -7,7 +5,6 @@
  * LICENSE file in the root directory of this source tree.
  */
 
->>>>>>> fb/0.62-stable
 package com.facebook.react.uimanager;
 
 import android.view.ViewGroup;
@@ -36,10 +33,7 @@ public class EnumPropNativeComponentViewManager extends SimpleViewManager<ViewGr
 
   @Override
   public void setAlignment(ViewGroup view, String value) {}
-<<<<<<< HEAD
-=======
 
   @Override
   public void setIntervals(ViewGroup view, Integer value) {}
->>>>>>> fb/0.62-stable
 }

@@ -27,11 +27,7 @@ type FilesOutput = Map<string, string>;
 const moduleTemplate = `
 class JSI_EXPORT Native::_MODULE_NAME_::SpecJSI : public ObjCTurboModule {
 public:
-<<<<<<< HEAD
-  Native::_MODULE_NAME_::SpecJSI(id<RCTTurboModule> instance, std::shared_ptr<JSCallInvoker> jsInvoker);
-=======
   Native::_MODULE_NAME_::SpecJSI(id<RCTTurboModule> instance, std::shared_ptr<CallInvoker> jsInvoker);
->>>>>>> fb/0.62-stable
 };`;
 
 const protocolTemplate = `

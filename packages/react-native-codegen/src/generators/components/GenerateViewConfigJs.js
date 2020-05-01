@@ -47,10 +47,7 @@ function getReactDiffProcessValue(typeAnnotation) {
     case 'FloatTypeAnnotation':
     case 'ObjectTypeAnnotation':
     case 'StringEnumTypeAnnotation':
-<<<<<<< HEAD
-=======
     case 'Int32EnumTypeAnnotation':
->>>>>>> fb/0.62-stable
       return j.literal(true);
     case 'NativePrimitiveTypeAnnotation':
       switch (typeAnnotation.name) {
@@ -61,11 +58,8 @@ function getReactDiffProcessValue(typeAnnotation) {
             .expression`{ process: require('resolveAssetSource') }`;
         case 'PointPrimitive':
           return j.template.expression`{ diff: require('pointsDiffer') }`;
-<<<<<<< HEAD
-=======
         case 'EdgeInsetsPrimitive':
           return j.template.expression`{ diff: require('insetsDiffer') }`;
->>>>>>> fb/0.62-stable
         default:
           (typeAnnotation.name: empty);
           throw new Error(

@@ -19,11 +19,7 @@ namespace react {
 
 class JSI_EXPORT NativeSampleTurboModuleCxxSpecJSI : public TurboModule {
 protected:
-<<<<<<< HEAD
-  NativeSampleTurboModuleCxxSpecJSI(std::shared_ptr<JSCallInvoker> jsInvoker);
-=======
   NativeSampleTurboModuleCxxSpecJSI(std::shared_ptr<CallInvoker> jsInvoker);
->>>>>>> fb/0.62-stable
 
 public:
 virtual jsi::Object difficult(jsi::Runtime &rt, const jsi::Object &A) = 0;
@@ -55,11 +51,7 @@ namespace react {
 
 class JSI_EXPORT NativeSampleTurboModuleCxxSpecJSI : public TurboModule {
 protected:
-<<<<<<< HEAD
-  NativeSampleTurboModuleCxxSpecJSI(std::shared_ptr<JSCallInvoker> jsInvoker);
-=======
   NativeSampleTurboModuleCxxSpecJSI(std::shared_ptr<CallInvoker> jsInvoker);
->>>>>>> fb/0.62-stable
 
 public:
 
@@ -91,11 +83,7 @@ namespace react {
 
 class JSI_EXPORT NativeSampleTurboModuleCxxSpecJSI : public TurboModule {
 protected:
-<<<<<<< HEAD
-  NativeSampleTurboModuleCxxSpecJSI(std::shared_ptr<JSCallInvoker> jsInvoker);
-=======
   NativeSampleTurboModuleCxxSpecJSI(std::shared_ptr<CallInvoker> jsInvoker);
->>>>>>> fb/0.62-stable
 
 public:
 virtual jsi::Object getConstants(jsi::Runtime &rt) = 0;
@@ -136,11 +124,7 @@ namespace react {
 
 class JSI_EXPORT NativeSampleTurboModuleCxxSpecJSI : public TurboModule {
 protected:
-<<<<<<< HEAD
-  NativeSampleTurboModuleCxxSpecJSI(std::shared_ptr<JSCallInvoker> jsInvoker);
-=======
   NativeSampleTurboModuleCxxSpecJSI(std::shared_ptr<CallInvoker> jsInvoker);
->>>>>>> fb/0.62-stable
 
 public:
 virtual void voidFunc(jsi::Runtime &rt) = 0;
@@ -149,11 +133,7 @@ virtual void voidFunc(jsi::Runtime &rt) = 0;
 
 class JSI_EXPORT NativeSample2TurboModuleCxxSpecJSI : public TurboModule {
 protected:
-<<<<<<< HEAD
-  NativeSample2TurboModuleCxxSpecJSI(std::shared_ptr<JSCallInvoker> jsInvoker);
-=======
   NativeSample2TurboModuleCxxSpecJSI(std::shared_ptr<CallInvoker> jsInvoker);
->>>>>>> fb/0.62-stable
 
 public:
 virtual jsi::Object getConstants(jsi::Runtime &rt) = 0;
@@ -186,11 +166,7 @@ namespace react {
 
 class JSI_EXPORT NativeSampleTurboModuleCxxSpecJSI : public TurboModule {
 protected:
-<<<<<<< HEAD
-  NativeSampleTurboModuleCxxSpecJSI(std::shared_ptr<JSCallInvoker> jsInvoker);
-=======
   NativeSampleTurboModuleCxxSpecJSI(std::shared_ptr<CallInvoker> jsInvoker);
->>>>>>> fb/0.62-stable
 
 public:
 virtual void voidFunc(jsi::Runtime &rt) = 0;
@@ -199,11 +175,7 @@ virtual void voidFunc(jsi::Runtime &rt) = 0;
 
 class JSI_EXPORT NativeSample2TurboModuleCxxSpecJSI : public TurboModule {
 protected:
-<<<<<<< HEAD
-  NativeSample2TurboModuleCxxSpecJSI(std::shared_ptr<JSCallInvoker> jsInvoker);
-=======
   NativeSample2TurboModuleCxxSpecJSI(std::shared_ptr<CallInvoker> jsInvoker);
->>>>>>> fb/0.62-stable
 
 public:
 virtual void voidFunc(jsi::Runtime &rt) = 0;

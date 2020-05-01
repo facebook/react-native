@@ -26,8 +26,6 @@ using ArrayPropsNativeComponentComponentDescriptor = ConcreteComponentDescriptor
 }
 `;
 
-<<<<<<< HEAD
-=======
 exports[`GenerateComponentDescriptorH can generate fixture ARRAY_PROPS_WITH_NESTED_OBJECT 1`] = `
 Map {
   "ComponentDescriptors.h" => "
@@ -54,7 +52,6 @@ using ArrayPropsNativeComponentComponentDescriptor = ConcreteComponentDescriptor
 }
 `;
 
->>>>>>> fb/0.62-stable
 exports[`GenerateComponentDescriptorH can generate fixture BOOLEAN_PROP 1`] = `
 Map {
   "ComponentDescriptors.h" => "
@@ -185,11 +182,7 @@ using DoublePropNativeComponentComponentDescriptor = ConcreteComponentDescriptor
 }
 `;
 
-<<<<<<< HEAD
-exports[`GenerateComponentDescriptorH can generate fixture ENUM_PROP 1`] = `
-=======
 exports[`GenerateComponentDescriptorH can generate fixture EVENT_NESTED_OBJECT_PROPS 1`] = `
->>>>>>> fb/0.62-stable
 Map {
   "ComponentDescriptors.h" => "
 /**
@@ -201,21 +194,13 @@ Map {
 
 #pragma once
 
-<<<<<<< HEAD
-#include <react/components/ENUM_PROP/ShadowNodes.h>
-=======
 #include <react/components/EVENT_NESTED_OBJECT_PROPS/ShadowNodes.h>
->>>>>>> fb/0.62-stable
 #include <react/core/ConcreteComponentDescriptor.h>
 
 namespace facebook {
 namespace react {
 
-<<<<<<< HEAD
-using EnumPropsNativeComponentComponentDescriptor = ConcreteComponentDescriptor<EnumPropsNativeComponentShadowNode>;
-=======
 using EventsNestedObjectNativeComponentComponentDescriptor = ConcreteComponentDescriptor<EventsNestedObjectNativeComponentShadowNode>;
->>>>>>> fb/0.62-stable
 
 } // namespace react
 } // namespace facebook
@@ -223,11 +208,7 @@ using EventsNestedObjectNativeComponentComponentDescriptor = ConcreteComponentDe
 }
 `;
 
-<<<<<<< HEAD
-exports[`GenerateComponentDescriptorH can generate fixture EVENT_NESTED_OBJECT_PROPS 1`] = `
-=======
 exports[`GenerateComponentDescriptorH can generate fixture EVENT_PROPS 1`] = `
->>>>>>> fb/0.62-stable
 Map {
   "ComponentDescriptors.h" => "
 /**
@@ -239,21 +220,13 @@ Map {
 
 #pragma once
 
-<<<<<<< HEAD
-#include <react/components/EVENT_NESTED_OBJECT_PROPS/ShadowNodes.h>
-=======
 #include <react/components/EVENT_PROPS/ShadowNodes.h>
->>>>>>> fb/0.62-stable
 #include <react/core/ConcreteComponentDescriptor.h>
 
 namespace facebook {
 namespace react {
 
-<<<<<<< HEAD
-using EventsNestedObjectNativeComponentComponentDescriptor = ConcreteComponentDescriptor<EventsNestedObjectNativeComponentShadowNode>;
-=======
 using EventsNativeComponentComponentDescriptor = ConcreteComponentDescriptor<EventsNativeComponentShadowNode>;
->>>>>>> fb/0.62-stable
 
 } // namespace react
 } // namespace facebook
@@ -261,11 +234,7 @@ using EventsNativeComponentComponentDescriptor = ConcreteComponentDescriptor<Eve
 }
 `;
 
-<<<<<<< HEAD
-exports[`GenerateComponentDescriptorH can generate fixture EVENT_PROPS 1`] = `
-=======
 exports[`GenerateComponentDescriptorH can generate fixture EVENTS_WITH_PAPER_NAME 1`] = `
->>>>>>> fb/0.62-stable
 Map {
   "ComponentDescriptors.h" => "
 /**
@@ -277,21 +246,13 @@ Map {
 
 #pragma once
 
-<<<<<<< HEAD
-#include <react/components/EVENT_PROPS/ShadowNodes.h>
-=======
 #include <react/components/EVENTS_WITH_PAPER_NAME/ShadowNodes.h>
->>>>>>> fb/0.62-stable
 #include <react/core/ConcreteComponentDescriptor.h>
 
 namespace facebook {
 namespace react {
 
-<<<<<<< HEAD
-using EventsNativeComponentComponentDescriptor = ConcreteComponentDescriptor<EventsNativeComponentShadowNode>;
-=======
 
->>>>>>> fb/0.62-stable
 
 } // namespace react
 } // namespace facebook
@@ -299,11 +260,7 @@ using EventsNativeComponentComponentDescriptor = ConcreteComponentDescriptor<Eve
 }
 `;
 
-<<<<<<< HEAD
-exports[`GenerateComponentDescriptorH can generate fixture EVENTS_WITH_PAPER_NAME 1`] = `
-=======
 exports[`GenerateComponentDescriptorH can generate fixture EXCLUDE_ANDROID 1`] = `
->>>>>>> fb/0.62-stable
 Map {
   "ComponentDescriptors.h" => "
 /**
@@ -315,21 +272,13 @@ Map {
 
 #pragma once
 
-<<<<<<< HEAD
-#include <react/components/EVENTS_WITH_PAPER_NAME/ShadowNodes.h>
-=======
 #include <react/components/EXCLUDE_ANDROID/ShadowNodes.h>
->>>>>>> fb/0.62-stable
 #include <react/core/ConcreteComponentDescriptor.h>
 
 namespace facebook {
 namespace react {
 
-<<<<<<< HEAD
-
-=======
 using ExcludedAndroidComponentComponentDescriptor = ConcreteComponentDescriptor<ExcludedAndroidComponentShadowNode>;
->>>>>>> fb/0.62-stable
 
 } // namespace react
 } // namespace facebook
@@ -389,8 +338,6 @@ using ImagePropNativeComponentComponentDescriptor = ConcreteComponentDescriptor<
 }
 `;
 
-<<<<<<< HEAD
-=======
 exports[`GenerateComponentDescriptorH can generate fixture INSETS_PROP 1`] = `
 Map {
   "ComponentDescriptors.h" => "
@@ -443,7 +390,6 @@ using Int32EnumPropsNativeComponentComponentDescriptor = ConcreteComponentDescri
 }
 `;
 
->>>>>>> fb/0.62-stable
 exports[`GenerateComponentDescriptorH can generate fixture INTEGER_PROPS 1`] = `
 Map {
   "ComponentDescriptors.h" => "
@@ -600,8 +546,6 @@ using PointPropNativeComponentComponentDescriptor = ConcreteComponentDescriptor<
 }
 `;
 
-<<<<<<< HEAD
-=======
 exports[`GenerateComponentDescriptorH can generate fixture STRING_ENUM_PROP 1`] = `
 Map {
   "ComponentDescriptors.h" => "
@@ -628,7 +572,6 @@ using StringEnumPropsNativeComponentComponentDescriptor = ConcreteComponentDescr
 }
 `;
 
->>>>>>> fb/0.62-stable
 exports[`GenerateComponentDescriptorH can generate fixture STRING_PROP 1`] = `
 Map {
   "ComponentDescriptors.h" => "

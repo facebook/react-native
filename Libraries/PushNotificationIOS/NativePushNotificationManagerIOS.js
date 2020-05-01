@@ -32,11 +32,7 @@ type Notification = {|
 |};
 
 export interface Spec extends TurboModule {
-<<<<<<< HEAD
-  +getConstants: () => {};
-=======
   +getConstants: () => {...};
->>>>>>> fb/0.62-stable
   +onFinishRemoteNotification: (
     notificationId: string,
     /**
@@ -50,15 +46,9 @@ export interface Spec extends TurboModule {
   +setApplicationIconBadgeNumber: (num: number) => void;
   +getApplicationIconBadgeNumber: (callback: (num: number) => void) => void;
   +requestPermissions: (permission: {|
-<<<<<<< HEAD
-    +alert?: ?boolean,
-    +badge?: ?boolean,
-    +sound?: ?boolean,
-=======
     +alert: boolean,
     +badge: boolean,
     +sound: boolean,
->>>>>>> fb/0.62-stable
   |}) => Promise<Permissions>;
   +abandonPermissions: () => void;
   +checkPermissions: (callback: (permissions: Permissions) => void) => void;

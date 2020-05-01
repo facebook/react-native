@@ -26,15 +26,7 @@ Pod::Spec.new do |s|
   s.homepage               = "http://facebook.github.io/react-native/"
   s.license                = package["license"]
   s.author                 = "Facebook, Inc. and its affiliates"
-<<<<<<< HEAD
   s.platforms              = { :ios => "9.0", :tvos => "9.2", :osx => "10.14" } # TODO(macOS GH#214)
-  s.source                 = source
-  s.source_files           = "{Drivers/*,Nodes/*,*}.{m}"
-  s.preserve_paths         = "package.json", "LICENSE", "LICENSE-docs"
-  s.header_dir             = "RCTAnimation"
-
-=======
-  s.platforms              = { :ios => "9.0", :tvos => "9.2" }
   s.compiler_flags         = folly_compiler_flags + ' -Wno-nullability-completeness'
   s.source                 = source
   s.source_files           = "{Drivers/*,Nodes/*,*}.{m,mm}"
@@ -50,6 +42,5 @@ Pod::Spec.new do |s|
   s.dependency "RCTTypeSafety", version
   s.dependency "ReactCommon/turbomodule/core", version
   s.dependency "FBReactNativeSpec", version
->>>>>>> fb/0.62-stable
   s.dependency "React-Core/RCTAnimationHeaders", version
 end

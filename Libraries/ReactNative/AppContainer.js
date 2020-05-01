@@ -45,17 +45,11 @@ class AppContainer extends React.Component<Props, State> {
   _mainRef: ?React.ElementRef<typeof View>;
   _subscription: ?EmitterSubscription = null;
 
-<<<<<<< HEAD
-  static childContextTypes:
-    | any
-    | $TEMPORARY$object<{|rootTag: React$PropType$Primitive<number>|}> = {
-=======
   static getDerivedStateFromError: any = undefined;
 
   static childContextTypes:
     | any
     | {|rootTag: React$PropType$Primitive<number>|} = {
->>>>>>> fb/0.62-stable
     rootTag: PropTypes.number,
   };
 
@@ -139,15 +133,9 @@ class AppContainer extends React.Component<Props, State> {
     return (
       <RootTagContext.Provider value={this.props.rootTag}>
         <View style={styles.appContainer} pointerEvents="box-none">
-<<<<<<< HEAD
-          {innerView}
-          {yellowBox}
-          {this.state.inspector}
-=======
           {!this.state.hasError && innerView}
           {this.state.inspector}
           {yellowBox}
->>>>>>> fb/0.62-stable
         </View>
       </RootTagContext.Provider>
     );

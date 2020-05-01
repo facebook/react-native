@@ -13,10 +13,7 @@
 const symbolicateStackTrace = require('../../Core/Devtools/symbolicateStackTrace');
 
 import type {StackFrame} from '../../Core/NativeExceptionsManager';
-<<<<<<< HEAD
-=======
 import type {SymbolicatedStackTrace} from '../../Core/Devtools/symbolicateStackTrace';
->>>>>>> fb/0.62-stable
 
 type CacheKey = string;
 

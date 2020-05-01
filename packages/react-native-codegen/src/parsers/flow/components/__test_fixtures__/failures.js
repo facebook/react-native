@@ -4,11 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
-<<<<<<< HEAD
- * @flow
-=======
  * @flow strict-local
->>>>>>> fb/0.62-stable
  * @format
  */
 
@@ -22,11 +18,7 @@ const COMMANDS_DEFINED_INLINE = `
  * LICENSE file in the root directory of this source tree.
  *
  * @format
-<<<<<<< HEAD
- * @flow
-=======
  * @flow strict-local
->>>>>>> fb/0.62-stable
  */
 
 'use strict';
@@ -36,11 +28,7 @@ const codegenNativeComponent = require('codegenNativeComponent');
 
 import type {Int32} from 'CodegenTypes';
 import type {ViewProps} from 'ViewPropTypes';
-<<<<<<< HEAD
-import type {NativeComponent} from 'codegenNativeComponent';
-=======
 import type {HostComponent} from 'react-native';
->>>>>>> fb/0.62-stable
 
 export type ModuleProps = $ReadOnly<{|
   ...ViewProps,
@@ -55,11 +43,7 @@ export const Commands = codegenNativeCommands<{
 
 export default (codegenNativeComponent<ModuleProps>(
   'Module',
-<<<<<<< HEAD
-): NativeComponent<ModuleProps>);
-=======
 ): HostComponent<ModuleProps>);
->>>>>>> fb/0.62-stable
 `;
 
 const COMMANDS_DEFINED_MULTIPLE_TIMES = `
@@ -70,11 +54,7 @@ const COMMANDS_DEFINED_MULTIPLE_TIMES = `
  * LICENSE file in the root directory of this source tree.
  *
  * @format
-<<<<<<< HEAD
- * @flow
-=======
  * @flow strict-local
->>>>>>> fb/0.62-stable
  */
 
 'use strict';
@@ -84,11 +64,7 @@ const codegenNativeComponent = require('codegenNativeComponent');
 
 import type {Int32} from 'CodegenTypes';
 import type {ViewProps} from 'ViewPropTypes';
-<<<<<<< HEAD
-import type {NativeComponent} from 'codegenNativeComponent';
-=======
 import type {HostComponent} from 'react-native';
->>>>>>> fb/0.62-stable
 
 interface NativeCommands {
   +hotspotUpdate: (viewRef: React.Ref<'RCTView'>, x: Int32, y: Int32) => void;
@@ -108,11 +84,7 @@ export const Commands2 = codegenNativeCommands<NativeCommands>({
 
 export default (codegenNativeComponent<ModuleProps>(
   'Module',
-<<<<<<< HEAD
-): NativeComponent<ModuleProps>);
-=======
 ): HostComponent<ModuleProps>);
->>>>>>> fb/0.62-stable
 `;
 
 const COMMANDS_DEFINED_WITHOUT_REF = `
@@ -123,11 +95,7 @@ const COMMANDS_DEFINED_WITHOUT_REF = `
  * LICENSE file in the root directory of this source tree.
  *
  * @format
-<<<<<<< HEAD
- * @flow
-=======
  * @flow strict-local
->>>>>>> fb/0.62-stable
  */
 
 'use strict';
@@ -137,11 +105,7 @@ const codegenNativeComponent = require('codegenNativeComponent');
 
 import type {Int32} from 'CodegenTypes';
 import type {ViewProps} from 'ViewPropTypes';
-<<<<<<< HEAD
-import type {NativeComponent} from 'codegenNativeComponent';
-=======
 import type {HostComponent} from 'react-native';
->>>>>>> fb/0.62-stable
 
 interface NativeCommands {
   +hotspotUpdate: (x: Int32, y: Int32) => void;
@@ -158,11 +122,7 @@ export const Commands = codegenNativeCommands<NativeCommands>({
 
 export default (codegenNativeComponent<ModuleProps>(
   'Module',
-<<<<<<< HEAD
-): NativeComponent<ModuleProps>);
-=======
 ): HostComponent<ModuleProps>);
->>>>>>> fb/0.62-stable
 `;
 
 const COMMANDS_DEFINED_WITH_NULLABLE_REF = `
@@ -173,11 +133,7 @@ const COMMANDS_DEFINED_WITH_NULLABLE_REF = `
  * LICENSE file in the root directory of this source tree.
  *
  * @format
-<<<<<<< HEAD
- * @flow
-=======
  * @flow strict-local
->>>>>>> fb/0.62-stable
  */
 
 'use strict';
@@ -187,11 +143,7 @@ const codegenNativeComponent = require('codegenNativeComponent');
 
 import type {Int32} from 'CodegenTypes';
 import type {ViewProps} from 'ViewPropTypes';
-<<<<<<< HEAD
-import type {NativeComponent} from 'codegenNativeComponent';
-=======
 import type {HostComponent} from 'react-native';
->>>>>>> fb/0.62-stable
 
 interface NativeCommands {
   +hotspotUpdate: (viewRef: ?React.Ref<'RCTView'>, x: Int32, y: Int32) => void;
@@ -208,11 +160,7 @@ export const Commands = codegenNativeCommands<NativeCommands>({
 
 export default (codegenNativeComponent<ModuleProps>(
   'Module',
-<<<<<<< HEAD
-): NativeComponent<ModuleProps>);
-=======
 ): HostComponent<ModuleProps>);
->>>>>>> fb/0.62-stable
 `;
 
 const COMMANDS_DEFINED_WITH_MISMATCHED_METHOD_NAMES = `
@@ -223,11 +171,7 @@ const COMMANDS_DEFINED_WITH_MISMATCHED_METHOD_NAMES = `
  * LICENSE file in the root directory of this source tree.
  *
  * @format
-<<<<<<< HEAD
- * @flow
-=======
  * @flow strict-local
->>>>>>> fb/0.62-stable
  */
 
 'use strict';
@@ -237,11 +181,7 @@ const codegenNativeComponent = require('codegenNativeComponent');
 
 import type {Int32} from 'CodegenTypes';
 import type {ViewProps} from 'ViewPropTypes';
-<<<<<<< HEAD
-import type {NativeComponent} from 'codegenNativeComponent';
-=======
 import type {HostComponent} from 'react-native';
->>>>>>> fb/0.62-stable
 
 interface NativeCommands {
   +hotspotUpdate: (viewRef: React.Ref<'RCTView'>, x: Int32, y: Int32) => void;
@@ -263,11 +203,7 @@ export const Commands = codegenNativeCommands<NativeCommands>({
 
 export default (codegenNativeComponent<ModuleProps>(
   'Module',
-<<<<<<< HEAD
-): NativeComponent<ModuleProps>);
-=======
 ): HostComponent<ModuleProps>);
->>>>>>> fb/0.62-stable
 `;
 
 const COMMANDS_DEFINED_WITHOUT_METHOD_NAMES = `
@@ -278,11 +214,7 @@ const COMMANDS_DEFINED_WITHOUT_METHOD_NAMES = `
  * LICENSE file in the root directory of this source tree.
  *
  * @format
-<<<<<<< HEAD
- * @flow
-=======
  * @flow strict-local
->>>>>>> fb/0.62-stable
  */
 
 'use strict';
@@ -292,11 +224,7 @@ const codegenNativeComponent = require('codegenNativeComponent');
 
 import type {Int32} from 'CodegenTypes';
 import type {ViewProps} from 'ViewPropTypes';
-<<<<<<< HEAD
-import type {NativeComponent} from 'codegenNativeComponent';
-=======
 import type {HostComponent} from 'react-native';
->>>>>>> fb/0.62-stable
 
 interface NativeCommands {
   +hotspotUpdate: (viewRef: React.Ref<'RCTView'>, x: Int32, y: Int32) => void;
@@ -316,11 +244,7 @@ export const Commands = codegenNativeCommands<NativeCommands>();
 
 export default (codegenNativeComponent<ModuleProps>(
   'Module',
-<<<<<<< HEAD
-): NativeComponent<ModuleProps>);
-=======
 ): HostComponent<ModuleProps>);
->>>>>>> fb/0.62-stable
 `;
 
 const NULLABLE_WITH_DEFAULT = `
@@ -331,11 +255,7 @@ const NULLABLE_WITH_DEFAULT = `
  * LICENSE file in the root directory of this source tree.
  *
  * @format
-<<<<<<< HEAD
- * @flow
-=======
  * @flow strict-local
->>>>>>> fb/0.62-stable
  */
 
 'use strict';
@@ -344,11 +264,7 @@ const codegenNativeComponent = require('codegenNativeComponent');
 
 import type {WithDefault, Float} from 'CodegenTypes';
 import type {ViewProps} from 'ViewPropTypes';
-<<<<<<< HEAD
-import type {NativeComponent} from 'codegenNativeComponent';
-=======
 import type {HostComponent} from 'react-native';
->>>>>>> fb/0.62-stable
 
 export type ModuleProps = $ReadOnly<{|
   ...ViewProps,
@@ -357,11 +273,7 @@ export type ModuleProps = $ReadOnly<{|
 
 export default (codegenNativeComponent<ModuleProps>(
   'Module',
-<<<<<<< HEAD
-): NativeComponent<ModuleProps>);
-=======
 ): HostComponent<ModuleProps>);
->>>>>>> fb/0.62-stable
 `;
 
 const NON_OPTIONAL_KEY_WITH_DEFAULT_VALUE = `
@@ -372,11 +284,7 @@ const NON_OPTIONAL_KEY_WITH_DEFAULT_VALUE = `
  * LICENSE file in the root directory of this source tree.
  *
  * @format
-<<<<<<< HEAD
- * @flow
-=======
  * @flow strict-local
->>>>>>> fb/0.62-stable
  */
 
 'use strict';
@@ -385,11 +293,7 @@ const codegenNativeComponent = require('codegenNativeComponent');
 
 import type {WithDefault, Float} from 'CodegenTypes';
 import type {ViewProps} from 'ViewPropTypes';
-<<<<<<< HEAD
-import type {NativeComponent} from 'codegenNativeComponent';
-=======
 import type {HostComponent} from 'react-native';
->>>>>>> fb/0.62-stable
 
 export type ModuleProps = $ReadOnly<{|
   ...ViewProps,
@@ -398,11 +302,7 @@ export type ModuleProps = $ReadOnly<{|
 
 export default (codegenNativeComponent<ModuleProps>(
   'Module',
-<<<<<<< HEAD
-): NativeComponent<ModuleProps>);
-=======
 ): HostComponent<ModuleProps>);
->>>>>>> fb/0.62-stable
 `;
 
 const PROPS_CONFLICT_NAMES = `
@@ -413,21 +313,13 @@ const PROPS_CONFLICT_NAMES = `
  * LICENSE file in the root directory of this source tree.
  *
  * @format
-<<<<<<< HEAD
- * @flow
-=======
  * @flow strict-local
->>>>>>> fb/0.62-stable
  */
 
 'use strict';
 
 import type {ViewProps} from 'ViewPropTypes';
-<<<<<<< HEAD
-import type {NativeComponent} from 'codegenNativeComponent';
-=======
 import type {HostComponent} from 'react-native';
->>>>>>> fb/0.62-stable
 
 const codegenNativeComponent = require('codegenNativeComponent');
 
@@ -440,11 +332,7 @@ export type ModuleProps = $ReadOnly<{|
 
 export default (codegenNativeComponent<ModuleProps>(
   'Module',
-<<<<<<< HEAD
-): NativeComponent<ModuleProps>);
-=======
 ): HostComponent<ModuleProps>);
->>>>>>> fb/0.62-stable
 `;
 
 const PROPS_CONFLICT_WITH_SPREAD_PROPS = `
@@ -455,21 +343,13 @@ const PROPS_CONFLICT_WITH_SPREAD_PROPS = `
  * LICENSE file in the root directory of this source tree.
  *
  * @format
-<<<<<<< HEAD
- * @flow
-=======
  * @flow strict-local
->>>>>>> fb/0.62-stable
  */
 
 'use strict';
 
 import type {ViewProps} from 'ViewPropTypes';
-<<<<<<< HEAD
-import type {NativeComponent} from 'codegenNativeComponent';
-=======
 import type {HostComponent} from 'react-native';
->>>>>>> fb/0.62-stable
 
 const codegenNativeComponent = require('codegenNativeComponent');
 
@@ -486,11 +366,7 @@ export type ModuleProps = $ReadOnly<{|
 
 export default (codegenNativeComponent<ModuleProps>(
   'Module',
-<<<<<<< HEAD
-): NativeComponent<ModuleProps>);
-=======
 ): HostComponent<ModuleProps>);
->>>>>>> fb/0.62-stable
 `;
 
 const PROPS_SPREAD_CONFLICTS_WITH_PROPS = `
@@ -501,21 +377,13 @@ const PROPS_SPREAD_CONFLICTS_WITH_PROPS = `
  * LICENSE file in the root directory of this source tree.
  *
  * @format
-<<<<<<< HEAD
- * @flow
-=======
  * @flow strict-local
->>>>>>> fb/0.62-stable
  */
 
 'use strict';
 
 import type {ViewProps} from 'ViewPropTypes';
-<<<<<<< HEAD
-import type {NativeComponent} from 'codegenNativeComponent';
-=======
 import type {HostComponent} from 'react-native';
->>>>>>> fb/0.62-stable
 
 const codegenNativeComponent = require('codegenNativeComponent');
 
@@ -532,9 +400,6 @@ export type ModuleProps = $ReadOnly<{|
 
 export default (codegenNativeComponent<ModuleProps>(
   'Module',
-<<<<<<< HEAD
-): NativeComponent<ModuleProps>);
-=======
 ): HostComponent<ModuleProps>);
 `;
 
@@ -710,7 +575,6 @@ export type ModuleProps = $ReadOnly<{|
 export default (codegenNativeComponent<ModuleProps>(
   'Module',
 ): HostComponent<ModuleProps>);
->>>>>>> fb/0.62-stable
 `;
 
 module.exports = {
@@ -725,13 +589,10 @@ module.exports = {
   PROPS_CONFLICT_NAMES,
   PROPS_CONFLICT_WITH_SPREAD_PROPS,
   PROPS_SPREAD_CONFLICTS_WITH_PROPS,
-<<<<<<< HEAD
-=======
   PROP_NUMBER_TYPE,
   PROP_MIXED_ENUM,
   PROP_ENUM_BOOLEAN,
   PROP_ARRAY_MIXED_ENUM,
   PROP_ARRAY_ENUM_BOOLEAN,
   PROP_ARRAY_ENUM_INT,
->>>>>>> fb/0.62-stable
 };

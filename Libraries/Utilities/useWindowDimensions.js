@@ -12,27 +12,6 @@
 
 import Dimensions from './Dimensions';
 import {type DisplayMetrics} from './NativeDeviceInfo';
-<<<<<<< HEAD
-import * as React from 'react';
-
-export default function useWindowDimensions(): DisplayMetrics {
-  const dims = Dimensions.get('window'); // always read the latest value
-  const forceUpdate = React.useState(false)[1].bind(null, v => !v);
-  const initialDims = React.useState(dims)[0];
-  React.useEffect(() => {
-    Dimensions.addEventListener('change', forceUpdate);
-
-    const latestDims = Dimensions.get('window');
-    if (latestDims !== initialDims) {
-      // We missed an update between calling `get` in render and
-      // `addEventListener` in this handler...
-      forceUpdate();
-    }
-    return () => {
-      Dimensions.removeEventListener('change', forceUpdate);
-    };
-  }, [forceUpdate, initialDims]);
-=======
 import {useEffect, useState} from 'react';
 
 export default function useWindowDimensions(): DisplayMetrics {
@@ -50,6 +29,5 @@ export default function useWindowDimensions(): DisplayMetrics {
       Dimensions.removeEventListener('change', handleChange);
     };
   }, []);
->>>>>>> fb/0.62-stable
   return dims;
 }

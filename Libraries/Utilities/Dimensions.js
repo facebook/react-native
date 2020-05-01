@@ -18,15 +18,11 @@ import NativeDeviceInfo, {
 } from './NativeDeviceInfo';
 import invariant from 'invariant';
 
-<<<<<<< HEAD
-type DimensionsValue = {window?: DisplayMetrics, screen?: DisplayMetrics};
-=======
 type DimensionsValue = {
   window?: DisplayMetrics,
   screen?: DisplayMetrics,
   ...
 };
->>>>>>> fb/0.62-stable
 
 const eventEmitter = new EventEmitter();
 let dimensionsInitialized = false;
@@ -61,11 +57,7 @@ class Dimensions {
    *
    * @param {object} dims Simple string-keyed object of dimensions to set
    */
-<<<<<<< HEAD
-  static set(dims: $ReadOnly<{[key: string]: any}>): void {
-=======
   static set(dims: $ReadOnly<{[key: string]: any, ...}>): void {
->>>>>>> fb/0.62-stable
     // We calculate the window dimensions in JS so that we don't encounter loss of
     // precision in transferring the dimensions (which could be non-integers) over
     // the bridge.
@@ -130,11 +122,7 @@ class Dimensions {
   }
 }
 
-<<<<<<< HEAD
-let initialDims: ?$ReadOnly<{[key: string]: any}> =
-=======
 let initialDims: ?$ReadOnly<{[key: string]: any, ...}> =
->>>>>>> fb/0.62-stable
   global.nativeExtensions &&
   global.nativeExtensions.DeviceInfo &&
   global.nativeExtensions.DeviceInfo.Dimensions;

@@ -16,15 +16,11 @@ const invariant = require('invariant');
 
 import NativeSettingsManager from './NativeSettingsManager';
 
-<<<<<<< HEAD
-const subscriptions: Array<{keys: Array<string>, callback: ?Function}> = [];
-=======
 const subscriptions: Array<{
   keys: Array<string>,
   callback: ?Function,
   ...
 }> = [];
->>>>>>> fb/0.62-stable
 
 const Settings = {
   _settings: (NativeSettingsManager &&
