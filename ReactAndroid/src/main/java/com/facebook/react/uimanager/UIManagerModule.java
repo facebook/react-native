@@ -425,6 +425,16 @@ public class UIManagerModule extends ReactContextBaseJavaModule
     return tag;
   }
 
+  @Override
+  public <T extends View> int startSurface(
+      final T rootView,
+      final String moduleName,
+      final WritableMap initialProps,
+      int widthMeasureSpec,
+      int heightMeasureSpec) {
+    throw new UnsupportedOperationException();
+  }
+
   /** Unregisters a new root view. */
   @ReactMethod
   public void removeRootView(int rootViewTag) {

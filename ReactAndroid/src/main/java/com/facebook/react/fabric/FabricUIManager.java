@@ -17,6 +17,7 @@ import static com.facebook.react.fabric.mounting.LayoutMetricsConversions.getYog
 import static com.facebook.react.uimanager.common.UIManagerType.FABRIC;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.os.SystemClock;
 import android.view.View;
 import androidx.annotation.AnyThread;
@@ -195,6 +196,7 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
     return rootTag;
   }
 
+  @Override
   @AnyThread
   @ThreadConfined(ANY)
   public <T extends View> int startSurface(
@@ -204,8 +206,9 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
       int widthMeasureSpec,
       int heightMeasureSpec) {
     final int rootTag = ReactRootViewTagGenerator.getNextRootViewTag();
+    Context context = rootView.getContext();
     ThemedReactContext reactContext =
-        new ThemedReactContext(mReactApplicationContext, rootView.getContext(), moduleName);
+        new ThemedReactContext(mReactApplicationContext, context, moduleName);
     if (ENABLE_FABRIC_LOGS) {
       FLog.d(TAG, "Starting surface for module: %s and reactTag: %d", moduleName, rootTag);
     }
@@ -219,8 +222,8 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
         getMaxSize(widthMeasureSpec),
         getMinSize(heightMeasureSpec),
         getMaxSize(heightMeasureSpec),
-        I18nUtil.getInstance().isRTL(rootView.getContext()),
-        I18nUtil.getInstance().doLeftAndRightSwapInRTL(rootView.getContext()));
+        I18nUtil.getInstance().isRTL(context),
+        I18nUtil.getInstance().doLeftAndRightSwapInRTL(context));
     return rootTag;
   }
 

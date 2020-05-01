@@ -1150,21 +1150,29 @@ public class ReactInstanceManager {
 
     @Nullable Bundle initialProperties = reactRoot.getAppProperties();
 
-    final int rootTag =
-        uiManager.addRootView(
-            reactRoot.getRootViewGroup(),
-            initialProperties == null
-                ? new WritableNativeMap()
-                : Arguments.fromBundle(initialProperties),
-            reactRoot.getInitialUITemplate());
-    reactRoot.setRootViewTag(rootTag);
+    final int rootTag;
+
     if (reactRoot.getUIManagerType() == FABRIC) {
-      // Fabric requires to call updateRootLayoutSpecs before starting JS Application,
-      // this ensures the root will hace the correct pointScaleFactor.
-      uiManager.updateRootLayoutSpecs(
-          rootTag, reactRoot.getWidthMeasureSpec(), reactRoot.getHeightMeasureSpec());
+      rootTag =
+          uiManager.startSurface(
+              reactRoot.getRootViewGroup(),
+              reactRoot.getJSModuleName(),
+              initialProperties == null
+                  ? new WritableNativeMap()
+                  : Arguments.fromBundle(initialProperties),
+              reactRoot.getWidthMeasureSpec(),
+              reactRoot.getHeightMeasureSpec());
+      reactRoot.setRootViewTag(rootTag);
       reactRoot.setShouldLogContentAppeared(true);
     } else {
+      rootTag =
+          uiManager.addRootView(
+              reactRoot.getRootViewGroup(),
+              initialProperties == null
+                  ? new WritableNativeMap()
+                  : Arguments.fromBundle(initialProperties),
+              reactRoot.getInitialUITemplate());
+      reactRoot.setRootViewTag(rootTag);
       reactRoot.runApplication();
     }
     Systrace.beginAsyncSection(
