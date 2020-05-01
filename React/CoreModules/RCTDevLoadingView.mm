@@ -29,7 +29,6 @@ using namespace facebook::react;
 @implementation RCTDevLoadingView {
   UIWindow *_window;
   UILabel *_label;
-  UILabel *_host;
   NSDate *_showDate;
   BOOL _hiding;
   dispatch_block_t _initialMessageBlock;
@@ -120,23 +119,14 @@ RCT_EXPORT_MODULE()
       if (@available(iOS 11.0, *)) {
         UIWindow *window = RCTSharedApplication().keyWindow;
         self->_window =
-            [[UIWindow alloc] initWithFrame:CGRectMake(0, 0, screenSize.width, window.safeAreaInsets.top + 52)];
-        self->_label = [[UILabel alloc] initWithFrame:CGRectMake(0, window.safeAreaInsets.top, screenSize.width, 22)];
-        self->_host =
-            [[UILabel alloc] initWithFrame:CGRectMake(0, window.safeAreaInsets.top + 20, screenSize.width, 22)];
-        self->_host.font = [UIFont monospacedDigitSystemFontOfSize:10.0 weight:UIFontWeightRegular];
-        self->_host.textAlignment = NSTextAlignmentCenter;
-
-        [self->_window addSubview:self->_label];
-        [self->_window addSubview:self->_host];
-
+            [[UIWindow alloc] initWithFrame:CGRectMake(0, 0, screenSize.width, window.safeAreaInsets.top + 10)];
+        self->_label =
+            [[UILabel alloc] initWithFrame:CGRectMake(0, window.safeAreaInsets.top - 10, screenSize.width, 20)];
       } else {
-        self->_window = [[UIWindow alloc] initWithFrame:CGRectMake(0, 0, screenSize.width, 22)];
+        self->_window = [[UIWindow alloc] initWithFrame:CGRectMake(0, 0, screenSize.width, 20)];
         self->_label = [[UILabel alloc] initWithFrame:self->_window.bounds];
-
-        [self->_window addSubview:self->_label];
-        // TODO: Add host to iOS < 11.0
       }
+      [self->_window addSubview:self->_label];
 
       self->_window.windowLevel = UIWindowLevelStatusBar + 1;
       // set a root VC so rotation is supported
@@ -148,11 +138,6 @@ RCT_EXPORT_MODULE()
 
     self->_label.text = message;
     self->_label.textColor = color;
-
-    if (self->_host != nil) {
-      self->_host.text = [self getTextForHost];
-      self->_host.textColor = [self dimColor:color];
-    }
 
     self->_window.backgroundColor = backgroundColor;
     self->_window.hidden = NO;
@@ -186,11 +171,11 @@ RCT_EXPORT_METHOD(hide)
 
   dispatch_async(dispatch_get_main_queue(), ^{
     self->_hiding = true;
-    const NSTimeInterval MIN_PRESENTED_TIME = 0.5;
+    const NSTimeInterval MIN_PRESENTED_TIME = 0.6;
     NSTimeInterval presentedTime = [[NSDate date] timeIntervalSinceDate:self->_showDate];
     NSTimeInterval delay = MAX(0, MIN_PRESENTED_TIME - presentedTime);
     CGRect windowFrame = self->_window.frame;
-    [UIView animateWithDuration:0.1
+    [UIView animateWithDuration:0.25
         delay:delay
         options:0
         animations:^{
@@ -216,7 +201,7 @@ RCT_EXPORT_METHOD(hide)
     return;
 #endif
     color = [UIColor whiteColor];
-    backgroundColor = [UIColor colorWithHue:105 saturation:0 brightness:.25 alpha:1];
+    backgroundColor = [UIColor blackColor];
     message = [NSString stringWithFormat:@"Connect to %@ to develop JavaScript.", RCT_PACKAGER_NAME];
     [self showMessage:message color:color backgroundColor:backgroundColor];
   } else {
