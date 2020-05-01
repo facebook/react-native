@@ -78,12 +78,10 @@ inline static void executeSynchronouslyOnSameThread_CAN_DEADLOCK(
     std::function<void(jsi::Runtime &runtime)> &&callback) noexcept {
   // Note: We need the third mutex to get back to the main thread before
   // the lambda is finished (because all mutexes are allocated on the stack).
-  // We use `recursive_mutex` here to not deadlock in case if a
-  // `RuntimeExecutor` executes the callback synchronously.
 
-  std::recursive_mutex mutex1;
-  std::recursive_mutex mutex2;
-  std::recursive_mutex mutex3;
+  std::mutex mutex1;
+  std::mutex mutex2;
+  std::mutex mutex3;
 
   mutex1.lock();
   mutex2.lock();
