@@ -76,7 +76,9 @@ RCT_EXPORT_METHOD(showActionSheetWithOptions
   NSInteger cancelButtonIndex =
       options.cancelButtonIndex() ? [RCTConvert NSInteger:@(*options.cancelButtonIndex())] : -1;
   NSArray<NSNumber *> *destructiveButtonIndices;
-  NSArray<NSNumber *> *disabledButtonIndices = [RCTConvert NSArray:options[@"disabledButtonIndices"]];
+  NSArray<NSNumber *> *disabledButtonIndices = RCTConvertVecToArray(*options.disabledButtonIndices(), ^id(double element) {
+      return @(element);
+  });
   if (options.destructiveButtonIndices()) {
     destructiveButtonIndices = RCTConvertVecToArray(*options.destructiveButtonIndices(), ^id(double element) {
       return @(element);
@@ -130,7 +132,6 @@ RCT_EXPORT_METHOD(showActionSheetWithOptions
                                                       handler:^(__unused UIAlertAction *action) {
                                                         callback(@[ @(localIndex) ]);
                                                       }]];
-    
     if ([disabledButtonIndices containsObject:@(localIndex)]) {
       [alertController.actions[localIndex] setEnabled:false];
     }                                    

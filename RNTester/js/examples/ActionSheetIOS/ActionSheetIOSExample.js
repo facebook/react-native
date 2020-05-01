@@ -348,6 +348,12 @@ exports.examples = [
     },
   },
   {
+    title: 'Show Action Sheet with disabled buttons',
+    render(): React.Element<any> {
+      return <ActionSheetDisabledExample />;
+    },
+  },
+  {
     title: 'Show Share Action Sheet',
     render(): React.Element<any> {
       return <ShareActionSheetExample url="https://code.facebook.com" />;
