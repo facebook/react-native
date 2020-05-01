@@ -522,7 +522,6 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
       long layoutEndTime,
       long finishTransactionStartTime,
       long finishTransactionEndTime) {
-    // TODO T31905686: support multithreading
     // When Binding.cpp calls scheduleMountItems during a commit phase, it always calls with
     // a BatchMountItem. No other sites call into this with a BatchMountItem, and Binding.cpp only
     // calls scheduleMountItems with a BatchMountItem.
