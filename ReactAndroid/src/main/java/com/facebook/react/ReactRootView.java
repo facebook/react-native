@@ -94,29 +94,19 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
   private int mLastWidth = 0;
   private int mLastHeight = 0;
   private @UIManagerType int mUIManagerType = DEFAULT;
-  private final boolean mUseSurface;
 
   public ReactRootView(Context context) {
     super(context);
-    mUseSurface = false;
-    init();
-  }
-
-  public ReactRootView(Context context, boolean useSurface) {
-    super(context);
-    mUseSurface = useSurface;
     init();
   }
 
   public ReactRootView(Context context, AttributeSet attrs) {
     super(context, attrs);
-    mUseSurface = false;
     init();
   }
 
   public ReactRootView(Context context, AttributeSet attrs, int defStyle) {
     super(context, attrs, defStyle);
-    mUseSurface = false;
     init();
   }
 
@@ -126,13 +116,6 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
 
   @Override
   protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-    // TODO: T60453649 - Add test automation to verify behavior of onMeasure
-
-    if (mUseSurface) {
-      super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-      return;
-    }
-
     Systrace.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "ReactRootView.onMeasure");
     try {
       boolean measureSpecsUpdated =
@@ -307,9 +290,6 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
 
   @Override
   protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
-    if (mUseSurface) {
-      super.onLayout(changed, left, top, right, bottom);
-    }
     // No-op since UIManagerModule handles actually laying out children.
   }
 
@@ -392,10 +372,6 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
       mJSModuleName = moduleName;
       mAppProperties = initialProperties;
       mInitialUITemplate = initialUITemplate;
-
-      if (mUseSurface) {
-        // TODO initialize surface here
-      }
 
       mReactInstanceManager.createReactContextInBackground();
 
@@ -534,26 +510,22 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
       CatalystInstance catalystInstance = reactContext.getCatalystInstance();
       String jsAppModuleName = getJSModuleName();
 
-      if (mUseSurface) {
-        // TODO call surface's runApplication
-      } else {
-        if (mWasMeasured) {
-          updateRootLayoutSpecs(mWidthMeasureSpec, mHeightMeasureSpec);
-        }
-
-        WritableNativeMap appParams = new WritableNativeMap();
-        appParams.putDouble("rootTag", getRootViewTag());
-        @Nullable Bundle appProperties = getAppProperties();
-        if (appProperties != null) {
-          appParams.putMap("initialProps", Arguments.fromBundle(appProperties));
-        }
-
-        mShouldLogContentAppeared = true;
-
-        // TODO T62192299: remove this
-        FLog.e(TAG, "runApplication: call AppRegistry.runApplication");
-        catalystInstance.getJSModule(AppRegistry.class).runApplication(jsAppModuleName, appParams);
+      if (mWasMeasured) {
+        updateRootLayoutSpecs(mWidthMeasureSpec, mHeightMeasureSpec);
       }
+
+      WritableNativeMap appParams = new WritableNativeMap();
+      appParams.putDouble("rootTag", getRootViewTag());
+      @Nullable Bundle appProperties = getAppProperties();
+      if (appProperties != null) {
+        appParams.putMap("initialProps", Arguments.fromBundle(appProperties));
+      }
+
+      mShouldLogContentAppeared = true;
+
+      // TODO T62192299: remove this
+      FLog.e(TAG, "runApplication: call AppRegistry.runApplication");
+      catalystInstance.getJSModule(AppRegistry.class).runApplication(jsAppModuleName, appParams);
     } finally {
       Systrace.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
     }
