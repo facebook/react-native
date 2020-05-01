@@ -807,6 +807,7 @@ public class UIManagerModule extends ReactContextBaseJavaModule
     mUIImplementation.setViewHierarchyUpdateDebugListener(listener);
   }
 
+  @Override
   public EventDispatcher getEventDispatcher() {
     return mEventDispatcher;
   }
