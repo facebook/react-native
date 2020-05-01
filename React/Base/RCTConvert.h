@@ -14,6 +14,7 @@
 #import <React/RCTLog.h>
 #import <React/RCTPointerEvents.h>
 #import <React/RCTTextDecorationLineType.h>
+#import <React/RCTFontSmoothing.h> // TODO(OSS Candidate ISS#2710739)
 #import <yoga/Yoga.h>
 #if TARGET_OS_IPHONE && WEBKIT_IOS_10_APIS_AVAILABLE
 #import <WebKit/WebKit.h>
@@ -140,6 +141,7 @@ typedef BOOL css_backface_visibility_t;
 + (RCTAnimationType)RCTAnimationType:(id)json;
 + (RCTBorderStyle)RCTBorderStyle:(id)json;
 + (RCTTextDecorationLineType)RCTTextDecorationLineType:(id)json;
++ (RCTFontSmoothing)RCTFontSmoothing:(id)json; // TODO(OSS Candidate ISS#2710739)
 
 #if TARGET_OS_OSX // [TODO(macOS ISS#2323203)
 + (NSString *)accessibilityRoleFromTraits:(id)json;

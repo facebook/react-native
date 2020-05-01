@@ -8,12 +8,14 @@
 #import <React/RCTUIKit.h> // TODO(macOS ISS#2323203)
 
 #import <React/RCTTextDecorationLineType.h>
+#import <React/RCTFontSmoothing.h> // TODO(OSS Candidate ISS#2710739)
 
 #import "RCTTextTransform.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
 extern NSString *const RCTTextAttributesIsHighlightedAttributeName;
+extern NSString *const RCTTextAttributesFontSmoothingAttributeName;  // TODO(OSS Candidate ISS#2710739)
 extern NSString *const RCTTextAttributesTagAttributeName;
 
 /**
@@ -37,6 +39,8 @@ extern NSString *const RCTTextAttributesTagAttributeName;
 @property (nonatomic, copy, nullable) NSArray<NSString *> *fontVariant;
 @property (nonatomic, assign) BOOL allowFontScaling;
 @property (nonatomic, assign) CGFloat letterSpacing;
+@property (nonatomic, assign) RCTFontSmoothing fontSmoothing; // TODO(OSS Candidate ISS#2710739)
+@property (class, nonatomic, assign) RCTFontSmoothing fontSmoothingDefault; // TODO(OSS Candidate ISS#2710739)
 // Paragraph Styles
 @property (nonatomic, assign) CGFloat lineHeight;
 @property (nonatomic, assign) NSTextAlignment alignment;
