@@ -5,29 +5,18 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @format
-<<<<<<< HEAD
- * @flow
-=======
  * @flow strict-local
->>>>>>> fb/0.62-stable
  */
 
 export type CapturedError = {
   +componentName: ?string,
   +componentStack: string,
   +error: mixed,
-<<<<<<< HEAD
-  +errorBoundary: ?{},
-  +errorBoundaryFound: boolean,
-  +errorBoundaryName: string | null,
-  +willRetry: boolean,
-=======
   +errorBoundary: ?{...},
   +errorBoundaryFound: boolean,
   +errorBoundaryName: string | null,
   +willRetry: boolean,
   ...
->>>>>>> fb/0.62-stable
 };
 
 import type {ExtendedError} from './Devtools/parseErrorStack';
@@ -53,10 +42,7 @@ function showErrorDialog(capturedError: CapturedError): boolean {
   }
   try {
     errorToHandle.componentStack = componentStack;
-<<<<<<< HEAD
-=======
     errorToHandle.isComponentError = true;
->>>>>>> fb/0.62-stable
   } catch (e) {}
   handleException(errorToHandle, false);
 

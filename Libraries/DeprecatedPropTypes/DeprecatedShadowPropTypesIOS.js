@@ -18,15 +18,11 @@ const DeprecatedShadowPropTypesIOS = {
   shadowOffset: (ReactPropTypes.shape({
     width: ReactPropTypes.number,
     height: ReactPropTypes.number,
-<<<<<<< HEAD
-  }): React$PropType$Primitive<{height?: number, width?: number}>),
-=======
   }): React$PropType$Primitive<{
     height?: number,
     width?: number,
     ...
   }>),
->>>>>>> fb/0.62-stable
   shadowOpacity: ReactPropTypes.number,
   shadowRadius: ReactPropTypes.number,
 };

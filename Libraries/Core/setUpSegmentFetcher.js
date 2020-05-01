@@ -69,9 +69,6 @@ function __getSegment(
   SegmentFetcher.getSegment(
     segmentId,
     options,
-<<<<<<< HEAD
-    (errorObject: ?{message: string, code: string}, path: ?string) => {
-=======
     (
       errorObject: ?{
         message: string,
@@ -80,7 +77,6 @@ function __getSegment(
       },
       path: ?string,
     ) => {
->>>>>>> fb/0.62-stable
       if (errorObject) {
         const error = new Error(errorObject.message);
         (error: any).code = errorObject.code; // flowlint-line unclear-type: off

@@ -13,21 +13,6 @@
 ; Ignore "BUCK" generated dirs
 <PROJECT_ROOT>/\.buckd/
 
-<<<<<<< HEAD
-; TODO(macOS ISS#2323203): Ignore metro.config.js
-<PROJECT_ROOT>/metro.config.js
-
-; Ignore files that have a base platform file and an android file
-<PROJECT_ROOT>/Libraries/Image/Image.js
-<PROJECT_ROOT>/Libraries/Network/RCTNetworking.js
-<PROJECT_ROOT>/Libraries/Utilities/HMRLoadingView.js
-<PROJECT_ROOT>/Libraries/Components/Touchable/TouchableNativeFeedback.js
-
-; Ignore rn-cli.config.js
-<PROJECT_ROOT>/rn-cli.config.js
-
-=======
->>>>>>> fb/0.62-stable
 ; These should not be required directly
 ; require from fbjs/lib instead: require('fbjs/lib/warning')
 .*/node_modules/warning/.*
@@ -59,21 +44,14 @@ module.file_ext=.js
 module.file_ext=.json
 module.file_ext=.android.js
 
-<<<<<<< HEAD
 # TODO(macOS ISS#2323203):
 module.system.haste.name_reducers='^\(.*\)\.macos$' -> '\1'
-munge_underscores=true
 
-module.name_mapper='^react-native$' -> '<PROJECT_ROOT>/Libraries/react-native/react-native-implementation'
-module.name_mapper='^react-native/\(.*\)$' -> '<PROJECT_ROOT>/\1'
-module.name_mapper='^[./a-zA-Z0-9$_-]+\.\(bmp\|gif\|jpg\|jpeg\|png\|psd\|svg\|webp\|m4v\|mov\|mp4\|mpeg\|mpg\|webm\|aac\|aiff\|caf\|m4a\|mp3\|wav\|html\|pdf\)$' -> '<PROJECT_ROOT>/Libraries/Image/RelativeImageStub'
-=======
 munge_underscores=true
 
 module.name_mapper='^react-native$' -> '<PROJECT_ROOT>/index.js'
 module.name_mapper='^react-native/\(.*\)$' -> '<PROJECT_ROOT>/\1'
 module.name_mapper='^@?[./a-zA-Z0-9$_-]+\.\(bmp\|gif\|jpg\|jpeg\|png\|psd\|svg\|webp\|m4v\|mov\|mp4\|mpeg\|mpg\|webm\|aac\|aiff\|caf\|m4a\|mp3\|wav\|html\|pdf\)$' -> '<PROJECT_ROOT>/Libraries/Image/RelativeImageStub'
->>>>>>> fb/0.62-stable
 
 suppress_type=$FlowIssue
 suppress_type=$FlowFixMe
@@ -112,8 +90,4 @@ untyped-import
 untyped-type-import
 
 [version]
-<<<<<<< HEAD
-^0.105.0
-=======
 ^0.113.0
->>>>>>> fb/0.62-stable

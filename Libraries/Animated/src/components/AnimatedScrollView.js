@@ -16,11 +16,6 @@ const ScrollView = require('../../../Components/ScrollView/ScrollView');
 
 const createAnimatedComponent = require('../createAnimatedComponent');
 
-<<<<<<< HEAD
-module.exports = (createAnimatedComponent(ScrollView, {
-  scrollEventThrottle: 0.0001,
-}): $FlowFixMe);
-=======
 /**
  * @see https://github.com/facebook/react-native/commit/b8c8562
  */
@@ -31,4 +26,3 @@ const ScrollViewWithEventThrottle = React.forwardRef((props, ref) => (
 module.exports = (createAnimatedComponent(
   ScrollViewWithEventThrottle,
 ): $FlowFixMe);
->>>>>>> fb/0.62-stable

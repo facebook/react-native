@@ -102,27 +102,16 @@ class Incremental extends React.Component<Props, State> {
   _mounted: boolean;
   _rendered: boolean;
 
-<<<<<<< HEAD
-  static defaultProps: $TEMPORARY$object<{|name: string|}> = {
-=======
   static defaultProps: {|name: string|} = {
->>>>>>> fb/0.62-stable
     name: '',
   };
 
   static contextTypes:
     | any
-<<<<<<< HEAD
-    | $TEMPORARY$object<{|
-        incrementalGroup: React$PropType$Primitive<any>,
-        incrementalGroupEnabled: React$PropType$Primitive<boolean>,
-      |}> = {
-=======
     | {|
         incrementalGroup: React$PropType$Primitive<any>,
         incrementalGroupEnabled: React$PropType$Primitive<boolean>,
       |} = {
->>>>>>> fb/0.62-stable
     incrementalGroup: PropTypes.object,
     incrementalGroupEnabled: PropTypes.bool,
   };

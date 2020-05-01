@@ -16,10 +16,6 @@ const Systrace = require('../../Performance/Systrace');
 
 const invariant = require('invariant');
 
-<<<<<<< HEAD
-import type {ExtendedError} from '../Devtools/parseErrorStack';
-=======
->>>>>>> fb/0.62-stable
 import NativeTiming from './NativeTiming';
 
 let _performanceNow = null;
@@ -489,11 +485,7 @@ function setSendIdleEvents(sendIdleEvents: boolean): void {
   NativeTiming.setSendIdleEvents(sendIdleEvents);
 }
 
-<<<<<<< HEAD
-let ExportedJSTimers: $TEMPORARY$object<{|
-=======
 let ExportedJSTimers: {|
->>>>>>> fb/0.62-stable
   callIdleCallbacks: (frameTime: number) => any | void,
   callImmediates: () => void,
   callTimers: (timersToCall: Array<number>) => any | void,
@@ -508,11 +500,7 @@ let ExportedJSTimers: {|
   setImmediate: (func: any, ...args: any) => number,
   setInterval: (func: any, duration: number, ...args: any) => number,
   setTimeout: (func: any, duration: number, ...args: any) => number,
-<<<<<<< HEAD
-|}>;
-=======
 |};
->>>>>>> fb/0.62-stable
 if (!NativeTiming) {
   console.warn("Timing native module is not available, can't set timers.");
   // $FlowFixMe: we can assume timers are generally available

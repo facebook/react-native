@@ -30,9 +30,6 @@ module.exports = {
     }),
     PropTypes.number,
   ]): React$PropType$Primitive<
-<<<<<<< HEAD
-    {height?: number, scale?: number, uri?: string, width?: number} | number,
-=======
     | {
         height?: number,
         scale?: number,
@@ -41,7 +38,6 @@ module.exports = {
         ...
       }
     | number,
->>>>>>> fb/0.62-stable
   >),
 
   accessible: PropTypes.bool,

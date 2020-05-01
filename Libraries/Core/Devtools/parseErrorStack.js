@@ -11,23 +11,17 @@
 'use strict';
 
 import type {StackFrame} from '../NativeExceptionsManager';
-<<<<<<< HEAD
-=======
 import type {HermesParsedStack} from './parseHermesStack';
 
 const parseHermesStack = require('./parseHermesStack');
->>>>>>> fb/0.62-stable
 
 export type ExtendedError = Error & {
   jsEngine?: string,
   preventSymbolication?: boolean,
   componentStack?: string,
-<<<<<<< HEAD
-=======
   forceRedbox?: boolean,
   isComponentError?: boolean,
   ...
->>>>>>> fb/0.62-stable
 };
 
 function convertHermesStack(stack: HermesParsedStack): Array<StackFrame> {

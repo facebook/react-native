@@ -13,10 +13,6 @@
 const DeprecatedEdgeInsetsPropType = require('./DeprecatedEdgeInsetsPropType');
 const DeprecatedStyleSheetPropType = require('./DeprecatedStyleSheetPropType');
 const DeprecatedViewStylePropTypes = require('./DeprecatedViewStylePropTypes');
-<<<<<<< HEAD
-const PlatformViewPropTypes = require('../Components/View/PlatformViewPropTypes');
-=======
->>>>>>> fb/0.62-stable
 const PropTypes = require('prop-types');
 
 const {DeprecatedAccessibilityRoles} = require('./DeprecatedViewAccessibility');
@@ -104,29 +100,8 @@ module.exports = {
     | 'toolbar',
   >),
 
-<<<<<<< HEAD
-  /**
-   * Indicates to accessibility services that UI Component is in a specific State.
-   */
-  accessibilityStates: (PropTypes.arrayOf(
-    PropTypes.oneOf(DeprecatedAccessibilityStates),
-  ): React$PropType$Primitive<
-    Array<
-      | 'selected'
-      | 'disabled'
-      | 'checked'
-      | 'unchecked'
-      | 'busy'
-      | 'expanded'
-      | 'collapsed'
-      | 'hasPopup',
-    >,
-  >),
-  accessibilityState: PropTypes.object,
-=======
   accessibilityState: PropTypes.object,
   accessibilityValue: PropTypes.object,
->>>>>>> fb/0.62-stable
   /**
    * Indicates to accessibility services whether the user should be notified
    * when this view changes. Works for Android API >= 19 only.

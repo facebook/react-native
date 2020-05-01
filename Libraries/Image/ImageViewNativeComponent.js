@@ -12,11 +12,7 @@
 
 const requireNativeComponent = require('../ReactNative/requireNativeComponent');
 
-<<<<<<< HEAD
-const ImageViewNativeComponent: string = requireNativeComponent('RCTImageView');
-=======
 import codegenNativeComponent from '../Utilities/codegenNativeComponent';
->>>>>>> fb/0.62-stable
 
 import type {DangerouslyImpreciseStyle} from '../StyleSheet/StyleSheet';
 import type {ResolvedAssetSource} from './AssetSourceResolver';

@@ -31,10 +31,7 @@ export type ExceptionData = {
   isFatal: boolean,
   // flowlint-next-line unclear-type:off
   extraData?: Object,
-<<<<<<< HEAD
-=======
   ...
->>>>>>> fb/0.62-stable
 };
 
 export interface Spec extends TurboModule {
@@ -90,30 +87,17 @@ const ExceptionsManager = {
     NativeModule.updateExceptionMessage(message, stack, exceptionId);
   },
   dismissRedbox(): void {
-<<<<<<< HEAD
     if (
       Platform.OS !== 'ios' &&
       Platform.OS !== 'macos' /* TODO(macOS ISS#2323203) */ &&
       NativeModule.dismissRedbox
     ) {
-=======
-    if (Platform.OS !== 'ios' && NativeModule.dismissRedbox) {
->>>>>>> fb/0.62-stable
       // TODO(T53311281): This is a noop on iOS now. Implement it.
       NativeModule.dismissRedbox();
     }
   },
   reportException(data: ExceptionData): void {
-<<<<<<< HEAD
-    if (
-      Platform.OS !== 'ios' &&
-      Platform.OS !== 'macos' /* TODO(macOS ISS#2323203) */ &&
-      NativeModule.reportException
-    ) {
-      // TODO(T53311281): This is a noop on iOS now. Implement it.
-=======
     if (NativeModule.reportException) {
->>>>>>> fb/0.62-stable
       NativeModule.reportException(data);
       return;
     }

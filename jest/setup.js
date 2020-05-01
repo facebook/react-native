@@ -130,30 +130,6 @@ jest
       '../Libraries/Components/ActivityIndicator/ActivityIndicator',
     ),
   )
-<<<<<<< HEAD
-  .mock('../Libraries/Animated/src/Animated', () => {
-    const Animated = jest.requireActual('../Libraries/Animated/src/Animated');
-    Animated.Text.__skipSetNativeProps_FOR_TESTS_ONLY = true;
-    Animated.View.__skipSetNativeProps_FOR_TESTS_ONLY = true;
-    return Animated;
-  })
-  .mock('../Libraries/Animated/src/AnimatedImplementation', () => {
-    const AnimatedImplementation = jest.requireActual(
-      '../Libraries/Animated/src/AnimatedImplementation',
-    );
-    const oldCreate = AnimatedImplementation.createAnimatedComponent;
-    AnimatedImplementation.createAnimatedComponent = function(
-      Component,
-      defaultProps,
-    ) {
-      const Wrapped = oldCreate(Component, defaultProps);
-      Wrapped.__skipSetNativeProps_FOR_TESTS_ONLY = true;
-      return Wrapped;
-    };
-    return AnimatedImplementation;
-  })
-=======
->>>>>>> fb/0.62-stable
   .mock('../Libraries/AppState/AppState', () => ({
     addEventListener: jest.fn(),
     removeEventListener: jest.fn(),
@@ -335,14 +311,6 @@ jest
   }))
   .mock('../Libraries/ReactNative/requireNativeComponent', () => {
     const React = require('react');
-<<<<<<< HEAD
-
-    return viewName => {
-      const Component = class extends React.Component {
-        render() {
-          return React.createElement(viewName, this.props, this.props.children);
-        }
-=======
 
     return viewName => {
       const Component = class extends React.Component {
@@ -357,7 +325,6 @@ jest
         measureInWindow = jest.fn();
         measureLayout = jest.fn();
         setNativeProps = jest.fn();
->>>>>>> fb/0.62-stable
       };
 
       if (viewName === 'RCTView') {

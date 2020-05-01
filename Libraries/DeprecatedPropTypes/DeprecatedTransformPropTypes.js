@@ -58,20 +58,6 @@ const DeprecatedTransformPropTypes = {
     ]),
   ): React$PropType$Primitive<
     Array<
-<<<<<<< HEAD
-      | {perspective?: number}
-      | {rotate?: string}
-      | {rotateX?: string}
-      | {rotateY?: string}
-      | {rotateZ?: string}
-      | {scale?: number}
-      | {scaleX?: number}
-      | {scaleY?: number}
-      | {translateX?: number}
-      | {translateY?: number}
-      | {skewX?: string}
-      | {skewY?: string},
-=======
       | {perspective?: number, ...}
       | {rotate?: string, ...}
       | {rotateX?: string, ...}
@@ -84,7 +70,6 @@ const DeprecatedTransformPropTypes = {
       | {translateY?: number, ...}
       | {skewX?: string, ...}
       | {skewY?: string, ...},
->>>>>>> fb/0.62-stable
     >,
   >),
   transformMatrix: TransformMatrixPropType,

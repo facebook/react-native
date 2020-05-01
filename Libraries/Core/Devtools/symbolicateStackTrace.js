@@ -18,8 +18,6 @@ import NativeSourceCode from '../../NativeModules/specs/NativeSourceCode';
 let fetch;
 
 import type {StackFrame} from '../NativeExceptionsManager';
-<<<<<<< HEAD
-=======
 
 export type CodeFrame = $ReadOnly<{|
   content: string,
@@ -35,7 +33,6 @@ export type SymbolicatedStackTrace = $ReadOnly<{|
   stack: Array<StackFrame>,
   codeFrame: ?CodeFrame,
 |}>;
->>>>>>> fb/0.62-stable
 
 function isSourcedFromDisk(sourcePath: string): boolean {
   return !/^http/.test(sourcePath) && /[\\/]/.test(sourcePath);

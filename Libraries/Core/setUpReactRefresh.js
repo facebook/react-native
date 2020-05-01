@@ -7,15 +7,6 @@
  * @flow
  * @format
  */
-<<<<<<< HEAD
-'use strict';
-
-if (__DEV__) {
-  const NativeDevSettings = require('../NativeModules/specs/NativeDevSettings')
-    .default;
-
-  if (typeof NativeDevSettings.reload !== 'function') {
-=======
 
 'use strict';
 
@@ -23,7 +14,6 @@ if (__DEV__) {
   const DevSettings = require('../Utilities/DevSettings');
 
   if (typeof DevSettings.reload !== 'function') {
->>>>>>> fb/0.62-stable
     throw new Error('Could not find the reload() implementation.');
   }
 
@@ -32,13 +22,8 @@ if (__DEV__) {
   ReactRefreshRuntime.injectIntoGlobalHook(global);
 
   const Refresh = {
-<<<<<<< HEAD
-    performFullRefresh() {
-      NativeDevSettings.reload();
-=======
     performFullRefresh(reason: string) {
       DevSettings.reload(reason);
->>>>>>> fb/0.62-stable
     },
 
     createSignatureFunctionForTransform:
@@ -52,18 +37,11 @@ if (__DEV__) {
 
     performReactRefresh() {
       if (ReactRefreshRuntime.hasUnrecoverableErrors()) {
-<<<<<<< HEAD
-        NativeDevSettings.reload();
-        return;
-      }
-      ReactRefreshRuntime.performReactRefresh();
-=======
         DevSettings.reload('Fast Refresh - Unrecoverable');
         return;
       }
       ReactRefreshRuntime.performReactRefresh();
       DevSettings.onFastRefresh();
->>>>>>> fb/0.62-stable
     },
   };
 

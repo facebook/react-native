@@ -17,8 +17,6 @@ import type {ExceptionData} from './NativeExceptionsManager';
 class SyntheticError extends Error {
   name: string = '';
 }
-<<<<<<< HEAD
-=======
 
 type ExceptionDecorator = ExceptionData => ExceptionData;
 
@@ -49,7 +47,6 @@ function preprocessException(data: ExceptionData): ExceptionData {
   }
   return data;
 }
->>>>>>> fb/0.62-stable
 
 /**
  * Handles the developer-visible aspect of errors and exceptions
@@ -65,28 +62,6 @@ function reportException(e: ExtendedError, isFatal: boolean) {
     let message = originalMessage;
     if (e.componentStack != null) {
       message += `\n\nThis error is located at:${e.componentStack}`;
-<<<<<<< HEAD
-    }
-    const namePrefix = e.name == null || e.name === '' ? '' : `${e.name}: `;
-    const isFromConsoleError = e.name === 'console.error';
-
-    if (!message.startsWith(namePrefix)) {
-      message = namePrefix + message;
-    }
-
-    // Errors created by `console.error` have already been printed.
-    if (!isFromConsoleError) {
-      if (console._errorOriginal) {
-        console._errorOriginal(message);
-      } else {
-        console.error(message);
-      }
-    }
-
-    message =
-      e.jsEngine == null ? message : `${message}, js engine: ${e.jsEngine}`;
-    NativeExceptionsManager.reportException({
-=======
     }
     const namePrefix = e.name == null || e.name === '' ? '' : `${e.name}: `;
     const isFromConsoleError = e.name === 'console.error';
@@ -111,7 +86,6 @@ function reportException(e: ExtendedError, isFatal: boolean) {
       e.forceRedbox !== true && global.__unstable_isLogBoxEnabled === true;
 
     const data = preprocessException({
->>>>>>> fb/0.62-stable
       message,
       originalMessage: message === originalMessage ? null : originalMessage,
       name: e.name == null || e.name === '' ? null : e.name,
@@ -123,11 +97,6 @@ function reportException(e: ExtendedError, isFatal: boolean) {
       extraData: {
         jsEngine: e.jsEngine,
         rawStack: e.stack,
-<<<<<<< HEAD
-        framesPopped: e.framesToPop,
-      },
-    });
-=======
 
         // Hack to hide native redboxes when in the LogBox experiment.
         // This is intentionally untyped and stuffed here, because it is temporary.
@@ -144,7 +113,6 @@ function reportException(e: ExtendedError, isFatal: boolean) {
 
     NativeExceptionsManager.reportException(data);
 
->>>>>>> fb/0.62-stable
     if (__DEV__) {
       if (e.preventSymbolication === true) {
         return;
@@ -153,18 +121,9 @@ function reportException(e: ExtendedError, isFatal: boolean) {
       symbolicateStackTrace(stack)
         .then(({stack: prettyStack}) => {
           if (prettyStack) {
-<<<<<<< HEAD
-            const stackWithoutCollapsedFrames = prettyStack.filter(
-              frame => !frame.collapse,
-            );
-            NativeExceptionsManager.updateExceptionMessage(
-              message,
-              stackWithoutCollapsedFrames,
-=======
             NativeExceptionsManager.updateExceptionMessage(
               data.message,
               prettyStack,
->>>>>>> fb/0.62-stable
               currentExceptionID,
             );
           } else {
@@ -227,10 +186,6 @@ function reactConsoleErrorHandler() {
     }
     const error: ExtendedError = new SyntheticError(str);
     error.name = 'console.error';
-<<<<<<< HEAD
-    error.framesToPop = (error.framesToPop || 0) + 1;
-=======
->>>>>>> fb/0.62-stable
     reportException(error, /* isFatal */ false);
   }
 }
@@ -254,13 +209,9 @@ function installConsoleErrorReporter() {
   }
 }
 
-<<<<<<< HEAD
-module.exports = {handleException, installConsoleErrorReporter, SyntheticError};
-=======
 module.exports = {
   handleException,
   installConsoleErrorReporter,
   SyntheticError,
   unstable_setExceptionDecorator,
 };
->>>>>>> fb/0.62-stable

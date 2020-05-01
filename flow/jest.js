@@ -970,13 +970,8 @@ declare var describe: {
    *
    * @param {table} table of Test
    */
-<<<<<<< HEAD
-  each(
-    table: $ReadOnlyArray<mixed | $ReadOnlyArray<mixed>>,
-=======
   each<TArguments: Array<mixed> | mixed>(
     table: $ReadOnlyArray<TArguments>,
->>>>>>> fb/0.62-stable
   ): (
     name: JestTestName,
     fn?: (...args: TArguments) => ?Promise<mixed>,
@@ -1003,13 +998,8 @@ declare var it: {
    *
    * @param {table} table of Test
    */
-<<<<<<< HEAD
-  each(
-    table: $ReadOnlyArray<mixed | $ReadOnlyArray<mixed>>,
-=======
   each<TArguments: Array<mixed> | mixed>(
     table: $ReadOnlyArray<TArguments>,
->>>>>>> fb/0.62-stable
   ): (
     name: JestTestName,
     fn?: (...args: TArguments) => ?Promise<mixed>,
@@ -1026,13 +1016,8 @@ declare var it: {
     fn?: (done: () => void) => ?Promise<mixed>,
     timeout?: number,
   ): {
-<<<<<<< HEAD
-    each(
-      table: $ReadOnlyArray<mixed | $ReadOnlyArray<mixed>>,
-=======
     each<TArguments: Array<mixed> | mixed>(
       table: $ReadOnlyArray<TArguments>,
->>>>>>> fb/0.62-stable
     ): (
       name: JestTestName,
       fn?: (...args: TArguments) => ?Promise<mixed>,
@@ -1063,21 +1048,7 @@ declare var it: {
     fn?: (done: () => void) => ?Promise<mixed>,
     timeout?: number,
   ): void,
-<<<<<<< HEAD
-  /**
-   * each runs this test against array of argument arrays per each run
-   *
-   * @param {table} table of Test
-   */
-  each(
-    table: $ReadOnlyArray<mixed | $ReadOnlyArray<mixed>>,
-  ): (
-    name: JestTestName,
-    fn?: (...args: Array<any>) => ?Promise<mixed>,
-  ) => void,
-=======
   ...
->>>>>>> fb/0.62-stable
 };
 declare function fit(
   name: JestTestName,

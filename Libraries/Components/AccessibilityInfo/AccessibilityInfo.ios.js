@@ -166,12 +166,9 @@ const AccessibilityInfo = {
    * Same as `isScreenReaderEnabled`
    */
   get fetch(): $FlowFixMe {
-<<<<<<< HEAD
-=======
     console.warn(
       'AccessibilityInfo.fetch is deprecated, call Accessibility.isScreenReaderEnabled instead',
     );
->>>>>>> fb/0.62-stable
     return this.isScreenReaderEnabled;
   },
 

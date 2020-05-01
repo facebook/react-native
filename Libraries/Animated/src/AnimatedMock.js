@@ -110,15 +110,11 @@ const stagger = function(
   return emptyAnimation;
 };
 
-<<<<<<< HEAD
-type LoopAnimationConfig = {iterations: number, resetBeforeIteration?: boolean};
-=======
 type LoopAnimationConfig = {
   iterations: number,
   resetBeforeIteration?: boolean,
   ...
 };
->>>>>>> fb/0.62-stable
 
 const loop = function(
   animation: CompositeAnimation,

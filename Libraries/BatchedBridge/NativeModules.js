@@ -98,16 +98,9 @@ function loadModule(name: string, moduleID: number): ?Object {
 function genMethod(moduleID: number, methodID: number, type: MethodType) {
   let fn = null;
   if (type === 'promise') {
-<<<<<<< HEAD
-    fn = function(...args: Array<any>) {
-      // In case we reject, capture a useful stack trace here.
-      const enqueueingFrameError: ExtendedError = new Error();
-      enqueueingFrameError.framesToPop = 1;
-=======
     fn = function promiseMethodWrapper(...args: Array<any>) {
       // In case we reject, capture a useful stack trace here.
       const enqueueingFrameError: ExtendedError = new Error();
->>>>>>> fb/0.62-stable
       return new Promise((resolve, reject) => {
         BatchedBridge.enqueueNativeCall(
           moduleID,
@@ -162,11 +155,7 @@ function arrayContains<T>(array: $ReadOnlyArray<T>, value: T): boolean {
 }
 
 function updateErrorWithErrorData(
-<<<<<<< HEAD
-  errorData: {message: string},
-=======
   errorData: {message: string, ...},
->>>>>>> fb/0.62-stable
   error: ExtendedError,
 ): ExtendedError {
   return Object.assign(error, errorData || {});

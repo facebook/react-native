@@ -11,12 +11,7 @@
 
 exports.version = {
   major: 0,
-<<<<<<< HEAD
-  minor: 61,
-  patch: 5,
-=======
   minor: 62,
   patch: 2,
->>>>>>> fb/0.62-stable
   prerelease: null,
 };

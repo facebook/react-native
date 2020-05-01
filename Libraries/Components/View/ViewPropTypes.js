@@ -11,32 +11,21 @@
 'use strict';
 
 import type {
-<<<<<<< HEAD
-  PressEvent,
-  Layout,
-  LayoutEvent,
-  ScrollEvent, // TODO(macOS ISS#2323203)
-=======
   BlurEvent,
   FocusEvent,
   MouseEvent,
   PressEvent,
   Layout,
   LayoutEvent,
->>>>>>> fb/0.62-stable
+  ScrollEvent, // TODO(macOS ISS#2323203)
 } from '../../Types/CoreEventTypes';
 import type {EdgeInsetsProp} from '../../StyleSheet/EdgeInsetsPropType';
 import type {Node} from 'react';
 import type {ViewStyleProp} from '../../StyleSheet/StyleSheet';
 import type {
   AccessibilityRole,
-<<<<<<< HEAD
-  AccessibilityStates,
-  AccessibilityState,
-=======
   AccessibilityState,
   AccessibilityValue,
->>>>>>> fb/0.62-stable
   AccessibilityActionEvent,
   AccessibilityActionInfo,
   AccessibilityNodeInfoProp, // TODO(android ISS)
@@ -398,14 +387,6 @@ type AndroidViewProps = $ReadOnly<{|
 
   /**
    * Whether this `View` should be focusable with a non-touch input device, eg. receive focus with a hardware keyboard.
-<<<<<<< HEAD
-   * when the user performs a click.
-  focusable?: boolean,
-   *
-   * @platform android
-   */
-  onClick?: ?(event: PressEvent) => mixed, // TODO(android ISS)
-=======
    *
    * @platform android
    */
@@ -417,7 +398,6 @@ type AndroidViewProps = $ReadOnly<{|
    * @platform android
    */
   onClick?: ?(event: PressEvent) => mixed,
->>>>>>> fb/0.62-stable
 |}>;
 
 type IOSViewProps = $ReadOnly<{|
@@ -515,13 +495,8 @@ export type ViewProps = $ReadOnly<{|
   /**
    * Indicates to accessibility services that UI Component is in a specific State.
    */
-<<<<<<< HEAD
-  accessibilityStates?: ?AccessibilityStates,
-  accessibilityState?: ?AccessibilityState,
-=======
   accessibilityState?: ?AccessibilityState,
   accessibilityValue?: ?AccessibilityValue,
->>>>>>> fb/0.62-stable
 
   /**
    * Provides an array of custom actions available for accessibility.

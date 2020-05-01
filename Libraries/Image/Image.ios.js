@@ -46,11 +46,7 @@ function getSizeWithHeaders(
   success: (width: number, height: number) => void,
   failure?: (error: any) => void,
 ): any {
-<<<<<<< HEAD
-  return ImageViewManager.getSizeWithHeaders({uri, headers})
-=======
   return NativeImageLoaderIOS.getSizeWithHeaders(uri, headers)
->>>>>>> fb/0.62-stable
     .then(function(sizes) {
       success(sizes.width, sizes.height);
     })
@@ -63,11 +59,7 @@ function getSizeWithHeaders(
 }
 
 function prefetch(url: string): any {
-<<<<<<< HEAD
-  return ImageViewManager.prefetchImage(url);
-=======
   return NativeImageLoaderIOS.prefetchImage(url);
->>>>>>> fb/0.62-stable
 }
 
 async function queryCache(

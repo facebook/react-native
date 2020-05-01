@@ -7,17 +7,11 @@
  * @format
  * @emails oncall+react_native
  */
-<<<<<<< HEAD
-'use strict';
-
-const fs = require('fs');
-=======
 
 'use strict';
 
 const fs = require('fs');
 const path = require('path');
->>>>>>> fb/0.62-stable
 
 const capturedErrorDefaults = {
   componentName: 'A',
@@ -45,13 +39,6 @@ describe('ExceptionsManager', () => {
       };
     });
     // Make symbolication a no-op.
-<<<<<<< HEAD
-    jest.mock('../Devtools/symbolicateStackTrace', () => {
-      return async function symbolicateStackTrace(stack) {
-        return stack;
-      };
-    });
-=======
     jest.mock(
       '../Devtools/symbolicateStackTrace',
       () =>
@@ -59,7 +46,6 @@ describe('ExceptionsManager', () => {
           return {stack};
         },
     );
->>>>>>> fb/0.62-stable
     jest.spyOn(console, 'error').mockImplementation(() => {});
     ReactFiberErrorDialog = require('../ReactFiberErrorDialog');
     NativeExceptionsManager = require('../NativeExceptionsManager').default;
@@ -104,11 +90,7 @@ describe('ExceptionsManager', () => {
       expect(console.error).toBeCalledWith(formattedMessage);
     });
 
-<<<<<<< HEAD
-    test('pops frames off the stack with framesToPop', () => {
-=======
     test('does not pop frames off the stack with framesToPop', () => {
->>>>>>> fb/0.62-stable
       function createError() {
         const error = new Error('Some error happened');
         error.framesToPop = 1;
@@ -124,11 +106,7 @@ describe('ExceptionsManager', () => {
       expect(nativeReportException.mock.calls.length).toBe(1);
       const exceptionData = nativeReportException.mock.calls[0][0];
       expect(getLineFromFrame(exceptionData.stack[0])).toBe(
-<<<<<<< HEAD
-        'const error = createError();',
-=======
         "const error = new Error('Some error happened');",
->>>>>>> fb/0.62-stable
       );
     });
 
@@ -325,23 +303,12 @@ describe('ExceptionsManager', () => {
 
       expect(nativeReportException.mock.calls.length).toBe(1);
       const exceptionData = nativeReportException.mock.calls[0][0];
-<<<<<<< HEAD
-      expect(exceptionData.message).toBe(
-        'console.error: "Some error happened"',
-      );
-      expect(exceptionData.originalMessage).toBe('"Some error happened"');
-      expect(exceptionData.name).toBe('console.error');
-      expect(getLineFromFrame(exceptionData.stack[0])).toBe(
-        'console.error(message);',
-      );
-=======
       expect(exceptionData.message).toBe('console.error: Some error happened');
       expect(exceptionData.originalMessage).toBe('Some error happened');
       expect(exceptionData.name).toBe('console.error');
       expect(
         getLineFromFrame(getFirstFrameInThisFile(exceptionData.stack)),
       ).toBe('console.error(message);');
->>>>>>> fb/0.62-stable
       expect(exceptionData.isFatal).toBe(false);
       expect(mockError.mock.calls[0]).toEqual([message]);
     });
@@ -354,17 +321,6 @@ describe('ExceptionsManager', () => {
       expect(nativeReportException.mock.calls.length).toBe(1);
       const exceptionData = nativeReportException.mock.calls[0][0];
       expect(exceptionData.message).toBe(
-<<<<<<< HEAD
-        'console.error: 42, true, ["symbol" failed to stringify], {"y":null}',
-      );
-      expect(exceptionData.originalMessage).toBe(
-        '42, true, ["symbol" failed to stringify], {"y":null}',
-      );
-      expect(exceptionData.name).toBe('console.error');
-      expect(getLineFromFrame(exceptionData.stack[0])).toBe(
-        'console.error(...args);',
-      );
-=======
         'console.error: 42 true ["symbol" failed to stringify] {"y":null}',
       );
       expect(exceptionData.originalMessage).toBe(
@@ -374,7 +330,6 @@ describe('ExceptionsManager', () => {
       expect(
         getLineFromFrame(getFirstFrameInThisFile(exceptionData.stack)),
       ).toBe('console.error(...args);');
->>>>>>> fb/0.62-stable
       expect(exceptionData.isFatal).toBe(false);
 
       expect(mockError).toHaveBeenCalledTimes(1);
@@ -413,11 +368,7 @@ describe('ExceptionsManager', () => {
       expect(mockError.mock.calls[0]).toEqual([message]);
     });
 
-<<<<<<< HEAD
-    test('pops frames off the stack with framesToPop', () => {
-=======
     test('does not pop frames off the stack with framesToPop', () => {
->>>>>>> fb/0.62-stable
       function createError() {
         const error = new Error('Some error happened');
         error.framesToPop = 1;
@@ -430,11 +381,7 @@ describe('ExceptionsManager', () => {
       expect(nativeReportException.mock.calls.length).toBe(1);
       const exceptionData = nativeReportException.mock.calls[0][0];
       expect(getLineFromFrame(exceptionData.stack[0])).toBe(
-<<<<<<< HEAD
-        'const error = createError();',
-=======
         "const error = new Error('Some error happened');",
->>>>>>> fb/0.62-stable
       );
     });
   });
@@ -495,11 +442,7 @@ describe('ExceptionsManager', () => {
       expect(console.error.mock.calls[0]).toEqual([message]);
     });
 
-<<<<<<< HEAD
-    test('pops frames off the stack with framesToPop', () => {
-=======
     test('does not pop frames off the stack with framesToPop', () => {
->>>>>>> fb/0.62-stable
       function createError() {
         const error = new Error('Some error happened');
         error.framesToPop = 1;
@@ -512,9 +455,6 @@ describe('ExceptionsManager', () => {
       expect(nativeReportException.mock.calls.length).toBe(1);
       const exceptionData = nativeReportException.mock.calls[0][0];
       expect(getLineFromFrame(exceptionData.stack[0])).toBe(
-<<<<<<< HEAD
-        'const error = createError();',
-=======
         "const error = new Error('Some error happened');",
       );
     });
@@ -590,7 +530,6 @@ describe('ExceptionsManager', () => {
       );
       expect(nativeReportException.mock.calls[1][0].message).toMatch(
         /decorated: .*Some error happened/,
->>>>>>> fb/0.62-stable
       );
     });
   });
@@ -612,13 +551,10 @@ function getLineFromFrame({lineNumber /* 1-based */, file}) {
   return (lines[lineNumber - 1] || '').trim();
 }
 
-<<<<<<< HEAD
-=======
 function getFirstFrameInThisFile(stack) {
   return stack.find(({file}) => file.endsWith(path.basename(module.filename)));
 }
 
->>>>>>> fb/0.62-stable
 // Works around a parseErrorStack bug involving `new X` stack frames.
 function cleanFileName(file) {
   return file.replace(/^.+? \((?=\/)/, '');

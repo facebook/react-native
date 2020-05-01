@@ -99,23 +99,6 @@ RNTester/build
 RNTester/Pods/*
 !RNTester/Pods/__offline_mirrors
 
-<<<<<<< HEAD
-# NuGet
-*.nupkg
-
-#vscode
-.vscode/*
-
-# Javadocs and copy of third party ndks created by build.
-ReactAndroid/bin/
-
-# Projects files created by build
-**/.project
-
-# binary files generated during ReactAndroid build.
-RNTester/android/app/bin/
-processor/bin/
-=======
 # react-native-codegen
 /ReactCommon/fabric/components/rncore/
 /schema-rncore.json
@@ -123,4 +106,3 @@ processor/bin/
 # Visual studio
 .vscode
 .vs
->>>>>>> fb/0.62-stable

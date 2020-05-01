@@ -155,11 +155,7 @@ class SpringAnimation extends Animation {
     invariant(this._mass > 0, 'Mass value must be greater than 0');
   }
 
-<<<<<<< HEAD
-  __getNativeAnimationConfig(): $TEMPORARY$object<{|
-=======
   __getNativeAnimationConfig(): {|
->>>>>>> fb/0.62-stable
     damping: number,
     initialVelocity: number,
     iterations: number,
@@ -170,11 +166,7 @@ class SpringAnimation extends Animation {
     stiffness: number,
     toValue: any,
     type: $TEMPORARY$string<'spring'>,
-<<<<<<< HEAD
-  |}> {
-=======
   |} {
->>>>>>> fb/0.62-stable
     return {
       type: 'spring',
       overshootClamping: this._overshootClamping,

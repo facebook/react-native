@@ -225,20 +225,11 @@ class StatusBar extends React.Component<Props> {
   static _defaultProps = createStackEntry({
     animated: false,
     showHideTransition: 'fade',
-<<<<<<< HEAD
-    backgroundColor: Platform.select({
-      android:
-        NativeStatusBarManager.getConstants().DEFAULT_BACKGROUND_COLOR ??
-        'black',
-      ios: 'black',
-    }),
-=======
     backgroundColor:
       Platform.OS === 'android'
         ? NativeStatusBarManagerAndroid.getConstants()
             .DEFAULT_BACKGROUND_COLOR ?? 'black'
         : 'black',
->>>>>>> fb/0.62-stable
     barStyle: 'default',
     translucent: false,
     hidden: false,
@@ -258,14 +249,10 @@ class StatusBar extends React.Component<Props> {
    *
    * @platform android
    */
-<<<<<<< HEAD
-  static currentHeight: number = NativeStatusBarManager.getConstants().HEIGHT;
-=======
   static currentHeight: ?number =
     Platform.OS === 'android'
       ? NativeStatusBarManagerAndroid.getConstants().HEIGHT
       : null;
->>>>>>> fb/0.62-stable
 
   // Provide an imperative API as static functions of the component.
   // See the corresponding prop for more detail.
@@ -280,15 +267,9 @@ class StatusBar extends React.Component<Props> {
     animation = animation || 'none';
     StatusBar._defaultProps.hidden.value = hidden;
     if (Platform.OS === 'ios') {
-<<<<<<< HEAD
-      NativeStatusBarManager.setHidden(hidden, animation);
-    } else if (Platform.OS === 'android') {
-      NativeStatusBarManager.setHidden(hidden);
-=======
       NativeStatusBarManagerIOS.setHidden(hidden, animation);
     } else if (Platform.OS === 'android') {
       NativeStatusBarManagerAndroid.setHidden(hidden);
->>>>>>> fb/0.62-stable
     }
   }
 
@@ -301,15 +282,9 @@ class StatusBar extends React.Component<Props> {
     animated = animated || false;
     StatusBar._defaultProps.barStyle.value = style;
     if (Platform.OS === 'ios') {
-<<<<<<< HEAD
-      NativeStatusBarManager.setStyle(style, animated);
-    } else if (Platform.OS === 'android') {
-      NativeStatusBarManager.setStyle(style);
-=======
       NativeStatusBarManagerIOS.setStyle(style, animated);
     } else if (Platform.OS === 'android') {
       NativeStatusBarManagerAndroid.setStyle(style);
->>>>>>> fb/0.62-stable
     }
   }
 
@@ -325,11 +300,7 @@ class StatusBar extends React.Component<Props> {
       return;
     }
     StatusBar._defaultProps.networkActivityIndicatorVisible = visible;
-<<<<<<< HEAD
-    NativeStatusBarManager.setNetworkActivityIndicatorVisible(visible);
-=======
     NativeStatusBarManagerIOS.setNetworkActivityIndicatorVisible(visible);
->>>>>>> fb/0.62-stable
   }
 
   /**
@@ -353,11 +324,7 @@ class StatusBar extends React.Component<Props> {
       return;
     }
 
-<<<<<<< HEAD
-    NativeStatusBarManager.setColor(processedColor, animated);
-=======
     NativeStatusBarManagerAndroid.setColor(processedColor, animated);
->>>>>>> fb/0.62-stable
   }
 
   /**
@@ -370,11 +337,7 @@ class StatusBar extends React.Component<Props> {
       return;
     }
     StatusBar._defaultProps.translucent = translucent;
-<<<<<<< HEAD
-    NativeStatusBarManager.setTranslucent(translucent);
-=======
     NativeStatusBarManagerAndroid.setTranslucent(translucent);
->>>>>>> fb/0.62-stable
   }
 
   /**
@@ -419,17 +382,10 @@ class StatusBar extends React.Component<Props> {
     return newEntry;
   }
 
-<<<<<<< HEAD
-  static defaultProps: $TEMPORARY$object<{|
-    animated: boolean,
-    showHideTransition: $TEMPORARY$string<'fade'>,
-  |}> = {
-=======
   static defaultProps: {|
     animated: boolean,
     showHideTransition: $TEMPORARY$string<'fade'>,
   |} = {
->>>>>>> fb/0.62-stable
     animated: false,
     showHideTransition: 'fade',
   };
@@ -476,21 +432,13 @@ class StatusBar extends React.Component<Props> {
           !oldProps ||
           oldProps.barStyle.value !== mergedProps.barStyle.value
         ) {
-<<<<<<< HEAD
-          NativeStatusBarManager.setStyle(
-=======
           NativeStatusBarManagerIOS.setStyle(
->>>>>>> fb/0.62-stable
             mergedProps.barStyle.value,
             mergedProps.barStyle.animated || false,
           );
         }
         if (!oldProps || oldProps.hidden.value !== mergedProps.hidden.value) {
-<<<<<<< HEAD
-          NativeStatusBarManager.setHidden(
-=======
           NativeStatusBarManagerIOS.setHidden(
->>>>>>> fb/0.62-stable
             mergedProps.hidden.value,
             mergedProps.hidden.animated
               ? mergedProps.hidden.transition
@@ -503,11 +451,7 @@ class StatusBar extends React.Component<Props> {
           oldProps.networkActivityIndicatorVisible !==
             mergedProps.networkActivityIndicatorVisible
         ) {
-<<<<<<< HEAD
-          NativeStatusBarManager.setNetworkActivityIndicatorVisible(
-=======
           NativeStatusBarManagerIOS.setNetworkActivityIndicatorVisible(
->>>>>>> fb/0.62-stable
             mergedProps.networkActivityIndicatorVisible,
           );
         }
@@ -516,11 +460,7 @@ class StatusBar extends React.Component<Props> {
           !oldProps ||
           oldProps.barStyle.value !== mergedProps.barStyle.value
         ) {
-<<<<<<< HEAD
-          NativeStatusBarManager.setStyle(mergedProps.barStyle.value);
-=======
           NativeStatusBarManagerAndroid.setStyle(mergedProps.barStyle.value);
->>>>>>> fb/0.62-stable
         }
         if (
           !oldProps ||
@@ -536,28 +476,17 @@ class StatusBar extends React.Component<Props> {
               } parsed to null or undefined`,
             );
           } else {
-<<<<<<< HEAD
-            NativeStatusBarManager.setColor(
-=======
             NativeStatusBarManagerAndroid.setColor(
->>>>>>> fb/0.62-stable
               processedColor,
               mergedProps.backgroundColor.animated,
             );
           }
         }
         if (!oldProps || oldProps.hidden.value !== mergedProps.hidden.value) {
-<<<<<<< HEAD
-          NativeStatusBarManager.setHidden(mergedProps.hidden.value);
-        }
-        if (!oldProps || oldProps.translucent !== mergedProps.translucent) {
-          NativeStatusBarManager.setTranslucent(mergedProps.translucent);
-=======
           NativeStatusBarManagerAndroid.setHidden(mergedProps.hidden.value);
         }
         if (!oldProps || oldProps.translucent !== mergedProps.translucent) {
           NativeStatusBarManagerAndroid.setTranslucent(mergedProps.translucent);
->>>>>>> fb/0.62-stable
         }
       }
       // Update the current prop values.

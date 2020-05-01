@@ -17,11 +17,7 @@ const {View} = ReactNative;
 
 const {TestModule} = ReactNative.NativeModules;
 
-<<<<<<< HEAD
-class GlobalEvalWithSourceUrlTest extends React.Component<{}> {
-=======
 class GlobalEvalWithSourceUrlTest extends React.Component<{...}> {
->>>>>>> fb/0.62-stable
   componentDidMount() {
     if (typeof global.globalEvalWithSourceUrl !== 'function') {
       throw new Error(

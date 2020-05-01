@@ -14,18 +14,11 @@ import Platform from '../Utilities/Platform';
 
 import type {ImageURISource} from './ImageSource';
 
-<<<<<<< HEAD
-type NativeImageSourceSpec = {|
-  +android?: string,
-  +ios?: string,
-  +macos?: string, // TODO(macOS ISS#2323203)
-  +default?: string,
-=======
 type NativeImageSourceSpec = $ReadOnly<{|
   android?: string,
   ios?: string,
+  macos?: string, // TODO(macOS ISS#2323203)
   default?: string,
->>>>>>> fb/0.62-stable
 
   // For more details on width and height, see
   // http://facebook.github.io/react-native/docs/images.html#why-not-automatically-size-everything

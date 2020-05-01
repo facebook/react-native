@@ -50,21 +50,11 @@ if (!global.RN$Bridgeless) {
   );
 
   if (__DEV__ && !global.__RCTProfileIsProfiling) {
-<<<<<<< HEAD
-    BatchedBridge.registerCallableModule(
-      'HMRClient',
-      require('../Utilities/HMRClient'),
-    );
-  } else {
-    BatchedBridge.registerCallableModule(
-      'HMRClient',
-=======
     BatchedBridge.registerLazyCallableModule('HMRClient', () =>
       require('../Utilities/HMRClient'),
     );
   } else {
     BatchedBridge.registerLazyCallableModule('HMRClient', () =>
->>>>>>> fb/0.62-stable
       require('../Utilities/HMRClientProdShim'),
     );
   }

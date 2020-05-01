@@ -12,16 +12,6 @@
 
 jest
   .clearAllMocks()
-<<<<<<< HEAD
-  .setMock('../../../Text/Text', ClassComponentMock)
-  .setMock('../../../Components/View/View', ClassComponentMock)
-  .setMock('../../../Image/Image', ClassComponentMock)
-  .setMock('../../../Components/ScrollView/ScrollView', ClassComponentMock)
-  .setMock('../../../Lists/FlatList', ClassComponentMock)
-  .setMock('../../../Lists/SectionList', ClassComponentMock)
-  .setMock('react', {Component: class {}})
-=======
->>>>>>> fb/0.62-stable
   .mock('../../../BatchedBridge/NativeModules', () => ({
     NativeAnimatedModule: {},
     PlatformConstants: {
@@ -42,11 +32,7 @@ const Animated = require('../Animated');
 const NativeAnimatedHelper = require('../NativeAnimatedHelper');
 
 describe('Native Animated', () => {
-<<<<<<< HEAD
-  const nativeAnimatedModule = require('../NativeAnimatedModule').default;
-=======
   const NativeAnimatedModule = require('../NativeAnimatedModule').default;
->>>>>>> fb/0.62-stable
 
   beforeEach(() => {
     Object.assign(NativeAnimatedModule, {
