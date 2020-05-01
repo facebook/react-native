@@ -37,7 +37,6 @@ Class<RCTComponentViewProtocol> RCTSliderCls(void) __attribute__((used));
 Class<RCTComponentViewProtocol> RCTSwitchCls(void) __attribute__((used));
 Class<RCTComponentViewProtocol> RCTUnimplementedNativeViewCls(void) __attribute__((used));
 Class<RCTComponentViewProtocol> RCTModalHostViewCls(void) __attribute__((used));
-Class<RCTComponentViewProtocol> RCTARTSurfaceViewCls(void) __attribute__((used));
 Class<RCTComponentViewProtocol> RCTImageCls(void) __attribute__((used));
 
 #ifdef __cplusplus

@@ -11,13 +11,19 @@
 
 - (void)renderLayerTo:(CGContextRef)context
 {
-
   if (!CGRectIsEmpty(self.clipping)) {
     CGContextClipToRect(context, self.clipping);
   }
 
-  for (ARTNode *node in self.subviews) {
-    [node renderTo:context];
+  for (UIView *subview in self.subviews) {
+    if ([subview respondsToSelector:@selector(renderTo:)]) {
+      [(ARTNode *)subview renderTo:context];
+    } else {
+      // This is needed for legacy interop layer. Legacy interop layer
+      // is superview of the view that it is bridging, that's why we need
+      // to grab its first subview.
+      [(ARTNode *)subview.subviews.firstObject renderTo:context];
+    }
   }
 }
 
