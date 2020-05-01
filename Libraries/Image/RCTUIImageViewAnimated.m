@@ -183,7 +183,21 @@ static NSUInteger RCTDeviceFreeMemory() {
   // TODO: `displayLink.frameInterval` is not available on UIKitForMac
   NSTimeInterval duration = displayLink.duration;
 #else
-  NSTimeInterval duration = displayLink.duration * displayLink.preferredFramesPerSecond;
+  NSTimeInterval duration = displayLink.duration;
+  if (@available(iOS 10.0, *)) {
+    // Per https://developer.apple.com/documentation/quartzcore/cadisplaylink
+    // displayLink.duration provides the amount of time between frames at the maximumFramesPerSecond
+    // Thus we need to calculate true duration based on preferredFramesPerSecond
+    if (displayLink.preferredFramesPerSecond != 0) {
+      double maxFrameRate = 60.0; // default to 60 fps
+      if (@available(iOS 10.3, tvOS 10.3, *)) {
+        maxFrameRate = self.window.screen.maximumFramesPerSecond;
+      }
+      duration = duration * displayLink.preferredFramesPerSecond / maxFrameRate;
+    } // else respect maximumFramesPerSecond
+  } else { // version < (ios 10)
+    duration = duration * displayLink.frameInterval;
+  }
 #endif
   NSUInteger totalFrameCount = self.totalFrameCount;
   NSUInteger currentFrameIndex = self.currentFrameIndex;
