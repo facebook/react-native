@@ -51,7 +51,7 @@ if ENV['USE_FRAMEWORKS'] == '1'
     installer.pod_targets.each do |pod|
         if static_frameworks.include?(pod.name)
           def pod.build_type
-            Pod::BuildType.static_library
+            Pod::Target::BuildType.static_library
           end
         end
       end
