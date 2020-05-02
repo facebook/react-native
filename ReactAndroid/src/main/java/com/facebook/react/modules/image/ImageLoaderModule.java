@@ -33,6 +33,7 @@ import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.modules.fresco.ReactNetworkImageRequest;
+import com.facebook.react.views.image.ReactCallerContextFactory;
 import com.facebook.react.views.imagehelper.ImageSource;
 
 @ReactModule(name = ImageLoaderModule.NAME)
@@ -43,26 +44,38 @@ public class ImageLoaderModule extends NativeImageLoaderAndroidSpec
   private static final String ERROR_PREFETCH_FAILURE = "E_PREFETCH_FAILURE";
   private static final String ERROR_GET_SIZE_FAILURE = "E_GET_SIZE_FAILURE";
   public static final String NAME = "ImageLoader";
+  private static final Object DEFAULT_CALLER_CONTEXT = new Object();
 
   private @Nullable final Object mCallerContext;
   private final Object mEnqueuedRequestMonitor = new Object();
   private final SparseArray<DataSource<Void>> mEnqueuedRequests = new SparseArray<>();
-  private ImagePipeline mImagePipeline;
+  private final ImagePipeline mImagePipeline;
+  private @Nullable ReactCallerContextFactory mCallerContextFactory;
 
   public ImageLoaderModule(ReactApplicationContext reactContext) {
-    this(reactContext, null);
-  }
-
-  public ImageLoaderModule(ReactApplicationContext reactContext, ImagePipeline imagePipeline) {
-    super(reactContext);
-    mCallerContext = Fresco.getImagePipeline();
-    mImagePipeline = imagePipeline;
+    this(reactContext, DEFAULT_CALLER_CONTEXT);
   }
 
   public ImageLoaderModule(ReactApplicationContext reactContext, Object callerContext) {
     super(reactContext);
     mCallerContext = callerContext;
     mImagePipeline = Fresco.getImagePipeline();
+  }
+
+  public ImageLoaderModule(
+      ReactApplicationContext reactContext,
+      ImagePipeline imagePipeline,
+      ReactCallerContextFactory callerContextFactory) {
+    super(reactContext);
+    mCallerContextFactory = callerContextFactory;
+    mImagePipeline = imagePipeline;
+    mCallerContext = null;
+  }
+
+  private @Nullable Object getCallerContext() {
+    return mCallerContextFactory != null
+        ? mCallerContextFactory.getOrCreateCallerContext("", "")
+        : mCallerContext;
   }
 
   @Override
@@ -89,7 +102,7 @@ public class ImageLoaderModule extends NativeImageLoaderAndroidSpec
     ImageRequest request = ImageRequestBuilder.newBuilderWithSource(source.getUri()).build();
 
     DataSource<CloseableReference<CloseableImage>> dataSource =
-        Fresco.getImagePipeline().fetchDecodedImage(request, mCallerContext);
+        mImagePipeline.fetchDecodedImage(request, getCallerContext());
 
     DataSubscriber<CloseableReference<CloseableImage>> dataSubscriber =
         new BaseDataSubscriber<CloseableReference<CloseableImage>>() {
@@ -150,7 +163,7 @@ public class ImageLoaderModule extends NativeImageLoaderAndroidSpec
         ReactNetworkImageRequest.fromBuilderWithHeaders(imageRequestBuilder, headers);
 
     DataSource<CloseableReference<CloseableImage>> dataSource =
-        Fresco.getImagePipeline().fetchDecodedImage(request, mCallerContext);
+        mImagePipeline.fetchDecodedImage(request, getCallerContext());
 
     DataSubscriber<CloseableReference<CloseableImage>> dataSubscriber =
         new BaseDataSubscriber<CloseableReference<CloseableImage>>() {
@@ -210,7 +223,7 @@ public class ImageLoaderModule extends NativeImageLoaderAndroidSpec
     ImageRequest request = ImageRequestBuilder.newBuilderWithSource(uri).build();
 
     DataSource<Void> prefetchSource =
-        Fresco.getImagePipeline().prefetchToDiskCache(request, mCallerContext);
+        mImagePipeline.prefetchToDiskCache(request, getCallerContext());
     DataSubscriber<Void> prefetchSubscriber =
         new BaseDataSubscriber<Void>() {
           @Override
@@ -257,7 +270,7 @@ public class ImageLoaderModule extends NativeImageLoaderAndroidSpec
       @Override
       protected void doInBackgroundGuarded(Void... params) {
         WritableMap result = Arguments.createMap();
-        ImagePipeline imagePipeline = Fresco.getImagePipeline();
+        ImagePipeline imagePipeline = mImagePipeline;
         for (int i = 0; i < uris.size(); i++) {
           String uriString = uris.getString(i);
           final Uri uri = Uri.parse(uriString);
