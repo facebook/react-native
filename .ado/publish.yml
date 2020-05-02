@@ -38,11 +38,6 @@ jobs:
         inputs:
           script: node .ado/bumpFileVersions.js
 
-      - task: CmdLine@2
-        displayName: "Prepare package.json for npm publishing as react-native-macos"
-        inputs:
-          script: node .ado/renamePackageToMac.js
-
       - task: Npm@1
         displayName: "Publish react-native-macos to npmjs.org"
         inputs:
@@ -110,6 +105,11 @@ jobs:
           versionSpec: '>=4.6.4'
 
       - task: CmdLine@2
+        displayName: "Rename package to react-native"
+        inputs:
+          script: node .ado/renamePackageForOffice.js
+
+      - task: CmdLine@2
         displayName: npm install
         inputs:
           script: npm install
@@ -117,7 +117,7 @@ jobs:
       - task: CmdLine@2
         displayName: Bump package version
         inputs:
-          script: node .ado/bumpFileVersions.js
+          script: node .ado/bumpOfficeFileVersions.js
 
       - task: NuGetCommand@2
         displayName: NuGet restore

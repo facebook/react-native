@@ -45,9 +45,6 @@ if (
   });
 } else {
   module.exports = {
-    extraNodeModules: {
-      'react-native': __dirname,
-    },
     serializer: {
       getModulesRunBeforeMainModule: () => [
         require.resolve('./Libraries/Core/InitializeCore'),
@@ -56,6 +53,9 @@ if (
     },
     resolver: {
       platforms: ['ios', 'macos', 'android'],
+      extraNodeModules: {
+        'react-native': __dirname,
+      },
     },
     transformer: {
       assetRegistryPath: require.resolve('./Libraries/Image/AssetRegistry'),

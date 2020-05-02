@@ -1,6 +1,6 @@
 {
-  "name": "react-native",
-  "version": "0.61.0-microsoft.4",
+  "name": "react-native-macos",
+  "version": "0.61.4",
   "description": "[Microsoft Fork] A framework for building native apps using React",
   "license": "MIT",
   "repository": {

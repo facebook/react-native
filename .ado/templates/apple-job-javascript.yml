@@ -14,12 +14,19 @@ steps:
     parameters:
       apply_office_patches: $(apply_office_patches)
 
+  - task: CmdLine@2
+    displayName: "Rename package to react-native"
+    inputs:
+      script: node .ado/renamePackageForOffice.js
+
   - script: 'yarn install'
     displayName: 'yarn install'
 
-  - script: 'yarn test-ci'
-    displayName: 'yarn test-ci'
-
+  - task: CmdLine@2
+    displayName: yarn test-ci
+    inputs:
+      script: 'yarn test-ci'
+  
   - script: 'yarn flow-check-ios'
     displayName: 'yarn flow-check-ios'
 

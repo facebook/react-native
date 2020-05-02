@@ -36,6 +36,11 @@ jobs:
           versionSpec: '>=4.6.4'
 
       - task: CmdLine@2
+        displayName: "Rename package to react-native"
+        inputs:
+          script: node .ado/renamePackageForOffice.js
+
+      - task: CmdLine@2
         displayName: npm install
         inputs:
           script: npm install

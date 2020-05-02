@@ -1,3 +1,3 @@
 // @ts-check
 const {updatePackageName} = require('./versionUtils');
-updatePackageName('react-native-macos');
+updatePackageName('react-native');

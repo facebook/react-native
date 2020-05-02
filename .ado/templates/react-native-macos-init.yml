@@ -65,11 +65,6 @@ steps:
     inputs:
       script: node .ado/bumpFileVersions.js
 
-  - task: CmdLine@2
-    displayName: "Prepare package.json for npm publishing as react-native-macos"
-    inputs:
-      script: node .ado/renamePackageToMac.js
-
   - script: |
       npm publish --registry http://localhost:4873
     displayName: Publish react-native-macos to verdaccio
