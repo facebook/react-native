@@ -72,6 +72,10 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
   if ([textAttributes valueForKey:NSForegroundColorAttributeName] == nil) {
       [textAttributes setValue:[UIColor blackColor] forKey:NSForegroundColorAttributeName];
   }
+  // We need to add check here.See https://github.com/facebook/react-native/issues/28488
+  if ([backedTextInputView.defaultTextAttributes isEqualToDictionary:textAttributes]) {
+    return;
+  }
 
   backedTextInputView.defaultTextAttributes = textAttributes;
 }
