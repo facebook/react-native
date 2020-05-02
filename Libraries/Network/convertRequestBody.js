@@ -21,8 +21,8 @@ export type RequestBody =
   | FormData
   | {uri: string, ...}
   | ArrayBuffer
-  | $ArrayBufferView;
-  | URLSearchParams
+  | $ArrayBufferView
+  | URLSearchParams;
 
 function convertRequestBody(body: RequestBody): Object {
   if (typeof body === 'string') {
