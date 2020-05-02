@@ -44,18 +44,25 @@ public class ImageLoaderModule extends NativeImageLoaderAndroidSpec
   private static final String ERROR_GET_SIZE_FAILURE = "E_GET_SIZE_FAILURE";
   public static final String NAME = "ImageLoader";
 
-  private final Object mCallerContext;
+  private @Nullable final Object mCallerContext;
   private final Object mEnqueuedRequestMonitor = new Object();
   private final SparseArray<DataSource<Void>> mEnqueuedRequests = new SparseArray<>();
+  private ImagePipeline mImagePipeline;
 
   public ImageLoaderModule(ReactApplicationContext reactContext) {
+    this(reactContext, null);
+  }
+
+  public ImageLoaderModule(ReactApplicationContext reactContext, ImagePipeline imagePipeline) {
     super(reactContext);
-    mCallerContext = this;
+    mCallerContext = Fresco.getImagePipeline();
+    mImagePipeline = imagePipeline;
   }
 
   public ImageLoaderModule(ReactApplicationContext reactContext, Object callerContext) {
     super(reactContext);
     mCallerContext = callerContext;
+    mImagePipeline = Fresco.getImagePipeline();
   }
 
   @Override
