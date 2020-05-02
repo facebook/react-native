@@ -347,6 +347,8 @@ RCT_EXPORT_MODULE()
  *
  * - {"blob": {...}}: an object representing a blob
  *
+ * - {"urlSearchParams": "..."}: a JS string that is the serialized query string of a urlSearchParams object
+ *
  * If successful, the callback be called with a result dictionary containing the following (optional) keys:
  *
  * - @"body" (NSData): the body of the request
@@ -379,6 +381,10 @@ RCT_EXPORT_MODULE()
   if (base64String) {
     NSData *data = [[NSData alloc] initWithBase64EncodedString:base64String options:0];
     return callback(nil, @{@"body": data});
+  }
+  NSString *urlSearchParamsString = [RCTConvert NSString:query[@"urlSearchParams"]];
+  if (urlSearchParamsString) {
+    return callback(nil, @{@"body": urlSearchParamsString, @"contentType": @"application/x-www-form-urlencoded"});
   }
   NSURLRequest *request = [RCTConvert NSURLRequest:query[@"uri"]];
   if (request) {

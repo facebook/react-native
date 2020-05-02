@@ -22,6 +22,7 @@ export type RequestBody =
   | {uri: string, ...}
   | ArrayBuffer
   | $ArrayBufferView;
+  | URLSearchParams
 
 function convertRequestBody(body: RequestBody): Object {
   if (typeof body === 'string') {
@@ -36,6 +37,9 @@ function convertRequestBody(body: RequestBody): Object {
   if (body instanceof ArrayBuffer || ArrayBuffer.isView(body)) {
     // $FlowFixMe: no way to assert that 'body' is indeed an ArrayBufferView
     return {base64: binaryToBase64(body)};
+  }
+  if (body instanceof URLSearchParams) {
+    return {urlSearchParams: body.toString()};
   }
   return body;
 }
