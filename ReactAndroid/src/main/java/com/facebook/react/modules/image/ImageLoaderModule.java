@@ -44,22 +44,21 @@ public class ImageLoaderModule extends NativeImageLoaderAndroidSpec
   private static final String ERROR_PREFETCH_FAILURE = "E_PREFETCH_FAILURE";
   private static final String ERROR_GET_SIZE_FAILURE = "E_GET_SIZE_FAILURE";
   public static final String NAME = "ImageLoader";
-  private static final Object DEFAULT_CALLER_CONTEXT = new Object();
 
   private @Nullable final Object mCallerContext;
   private final Object mEnqueuedRequestMonitor = new Object();
   private final SparseArray<DataSource<Void>> mEnqueuedRequests = new SparseArray<>();
-  private final ImagePipeline mImagePipeline;
+  private @Nullable ImagePipeline mImagePipeline = null;
   private @Nullable ReactCallerContextFactory mCallerContextFactory;
 
   public ImageLoaderModule(ReactApplicationContext reactContext) {
-    this(reactContext, DEFAULT_CALLER_CONTEXT);
+    super(reactContext);
+    mCallerContext = this;
   }
 
   public ImageLoaderModule(ReactApplicationContext reactContext, Object callerContext) {
     super(reactContext);
     mCallerContext = callerContext;
-    mImagePipeline = Fresco.getImagePipeline();
   }
 
   public ImageLoaderModule(
@@ -84,6 +83,10 @@ public class ImageLoaderModule extends NativeImageLoaderAndroidSpec
     return NAME;
   }
 
+  private ImagePipeline getImagePipeline() {
+    return mImagePipeline != null ? mImagePipeline : Fresco.getImagePipeline();
+  }
+
   /**
    * Fetch the width and height of the given image.
    *
@@ -102,7 +105,7 @@ public class ImageLoaderModule extends NativeImageLoaderAndroidSpec
     ImageRequest request = ImageRequestBuilder.newBuilderWithSource(source.getUri()).build();
 
     DataSource<CloseableReference<CloseableImage>> dataSource =
-        mImagePipeline.fetchDecodedImage(request, getCallerContext());
+        getImagePipeline().fetchDecodedImage(request, getCallerContext());
 
     DataSubscriber<CloseableReference<CloseableImage>> dataSubscriber =
         new BaseDataSubscriber<CloseableReference<CloseableImage>>() {
@@ -163,7 +166,7 @@ public class ImageLoaderModule extends NativeImageLoaderAndroidSpec
         ReactNetworkImageRequest.fromBuilderWithHeaders(imageRequestBuilder, headers);
 
     DataSource<CloseableReference<CloseableImage>> dataSource =
-        mImagePipeline.fetchDecodedImage(request, getCallerContext());
+        getImagePipeline().fetchDecodedImage(request, getCallerContext());
 
     DataSubscriber<CloseableReference<CloseableImage>> dataSubscriber =
         new BaseDataSubscriber<CloseableReference<CloseableImage>>() {
@@ -223,7 +226,7 @@ public class ImageLoaderModule extends NativeImageLoaderAndroidSpec
     ImageRequest request = ImageRequestBuilder.newBuilderWithSource(uri).build();
 
     DataSource<Void> prefetchSource =
-        mImagePipeline.prefetchToDiskCache(request, getCallerContext());
+        getImagePipeline().prefetchToDiskCache(request, getCallerContext());
     DataSubscriber<Void> prefetchSubscriber =
         new BaseDataSubscriber<Void>() {
           @Override
@@ -270,7 +273,7 @@ public class ImageLoaderModule extends NativeImageLoaderAndroidSpec
       @Override
       protected void doInBackgroundGuarded(Void... params) {
         WritableMap result = Arguments.createMap();
-        ImagePipeline imagePipeline = mImagePipeline;
+        ImagePipeline imagePipeline = getImagePipeline();
         for (int i = 0; i < uris.size(); i++) {
           String uriString = uris.getString(i);
           final Uri uri = Uri.parse(uriString);
