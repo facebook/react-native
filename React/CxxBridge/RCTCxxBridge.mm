@@ -488,6 +488,11 @@ struct RCTInstanceCallback : public InstanceCallback {
   }
 
   // Module may not be loaded yet, so attempt to force load it here.
+  // Do this only if the bridge is still valid.
+  if (_didInvalidate) {
+    return nil;
+  }
+
   const BOOL result = [self.delegate respondsToSelector:@selector(bridge:didNotFindModule:)] &&
       [self.delegate bridge:self didNotFindModule:moduleName];
   if (result) {
