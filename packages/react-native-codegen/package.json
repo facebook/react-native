@@ -13,7 +13,7 @@
   ],
   "dependencies": {
     "flow-parser": "^0.121.0",
-    "jscodeshift": "^0.7.0",
+    "jscodeshift": "^0.7.1",
     "nullthrows": "^1.1.1"
   }
 }
