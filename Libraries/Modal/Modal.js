@@ -22,6 +22,8 @@ import type {ViewProps} from '../Components/View/ViewPropTypes';
 import type {DirectEventHandler} from '../Types/CodegenTypes';
 import type EmitterSubscription from '../vendor/emitter/EmitterSubscription';
 import RCTModalHostView from './RCTModalHostViewNativeComponent';
+import {VirtualizedListContextResetter} from '../Lists/VirtualizedListContext.js';
+
 /**
  * The Modal component is a simple way to present content above an enclosing view.
  *
@@ -159,20 +161,6 @@ class Modal extends React.Component<Props> {
     this._identifier = uniqueModalIdentifier++;
   }
 
-  static childContextTypes:
-    | any
-    | {|virtualizedList: React$PropType$Primitive<any>|} = {
-    virtualizedList: PropTypes.object,
-  };
-
-  getChildContext(): {|virtualizedList: null|} {
-    // Reset the context so VirtualizedList doesn't get confused by nesting
-    // in the React tree that doesn't reflect the native component hierarchy.
-    return {
-      virtualizedList: null,
-    };
-  }
-
   componentWillUnmount() {
     if (this.props.onDismiss != null) {
       this.props.onDismiss();
@@ -236,11 +224,15 @@ class Modal extends React.Component<Props> {
         onStartShouldSetResponder={this._shouldSetResponder}
         supportedOrientations={this.props.supportedOrientations}
         onOrientationChange={this.props.onOrientationChange}>
-        <ScrollView.Context.Provider value={null}>
-          <View style={[styles.container, containerStyles]} collapsable={false}>
-            {innerChildren}
-          </View>
-        </ScrollView.Context.Provider>
+        <VirtualizedListContextResetter>
+          <ScrollView.Context.Provider value={null}>
+            <View
+              style={[styles.container, containerStyles]}
+              collapsable={false}>
+              {innerChildren}
+            </View>
+          </ScrollView.Context.Provider>
+        </VirtualizedListContextResetter>
       </RCTModalHostView>
     );
   }
