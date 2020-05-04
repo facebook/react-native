@@ -68,10 +68,10 @@
 
 - (void)setDefaultTextAttributes:(NSDictionary<NSAttributedStringKey, id> *)defaultTextAttributes
 {
-  // We need to add check here.See https://github.com/facebook/react-native/issues/28488
   if ([_defaultTextAttributes isEqualToDictionary:defaultTextAttributes]) {
     return;
   }
+
   _defaultTextAttributes = defaultTextAttributes;
   [super setDefaultTextAttributes:defaultTextAttributes];
   [self _updatePlaceholder];
