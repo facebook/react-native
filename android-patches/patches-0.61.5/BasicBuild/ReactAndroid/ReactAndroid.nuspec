@@ -5,11 +5,11 @@
 +<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
 +  <metadata>
 +    <id>OfficeReact.Android</id>
-+    <version>0.60.0-microsoft.63.mine</version>
++    <version>$buildNumber$</version>
 +    <description>Contains Android Implementation of React-Native</description>
 +    <authors>Microsoft</authors>
 +    <projectUrl>https://github.com/microsoft/react-native</projectUrl>
-+    <repository type="git" url="https://github.com/microsoft/react-native.git"/>
++    <repository type="git" url="https://github.com/microsoft/react-native.git" commit="$commitId$" />
 +    <requireLicenseAcceptance>false</requireLicenseAcceptance>
 +  </metadata>
 +
