@@ -132,13 +132,14 @@ RCT_EXPORT_METHOD(showActionSheetWithOptions
                                                       handler:^(__unused UIAlertAction *action) {
                                                         callback(@[ @(localIndex) ]);
                                                       }]];
-    if ([disabledButtonIndices containsObject:@(localIndex)]) {
-      [alertController.actions[localIndex] setEnabled:false];
-    }                                    
 
     index++;
   }
 
+  for (NSNumber *disabledButtonIndex in disabledButtonIndices) {
+    [alertController.actions[[disabledButtonIndex integerValue]] setEnabled:false];
+  }
+    
   alertController.view.tintColor = tintColor;
 #if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && defined(__IPHONE_13_0) && \
     __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_13_0
