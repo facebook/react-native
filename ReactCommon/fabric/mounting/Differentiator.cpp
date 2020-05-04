@@ -655,6 +655,12 @@ static void calculateShadowViewMutationsOptimizedMoves(
     // Final step: generate Create instructions for new nodes
     for (auto it = newInsertedPairs.begin(); it != newInsertedPairs.end();
          it++) {
+      // Erased elements of a TinyMap will have a Tag/key of 0 - skip those
+      // These *should* be removed by the map, but are not always.
+      if (it->first == 0) {
+        continue;
+      }
+
       auto const &newChildPair = *it->second;
       createMutations.push_back(
           ShadowViewMutation::CreateMutation(newChildPair.shadowView));
