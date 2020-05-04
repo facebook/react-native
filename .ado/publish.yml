@@ -44,6 +44,17 @@ jobs:
           command: 'publish'
           publishEndpoint: 'npmjs'
 
+      - task: CmdLine@2
+        displayName: Do Publish
+        inputs:
+          script: node .ado/publish.js
+        env:
+          BUILD_STAGINGDIRECTORY: $(Build.StagingDirectory)
+          BUILD_SOURCEBRANCH: $(Build.SourceBranch)
+          SYSTEM_ACCESSTOKEN: $(System.AccessToken)
+          githubApiToken: $(githubApiToken)
+
+
   - job: RNMacOSInitNpmJSPublish
     displayName: react-native-macos-init Publish to npmjs.org
     pool:
@@ -199,16 +210,6 @@ jobs:
           packagesToPack: 'ReactAndroid/ReactAndroid.nuspec'
           packDestination: '$(Build.StagingDirectory)\final'
           buildProperties: buildNumber=$(buildNumber);commitId=$(Build.SourceVersion)
-
-      - task: CmdLine@2
-        displayName: Do Publish
-        inputs:
-          script: node .ado/publish.js
-        env:
-          BUILD_STAGINGDIRECTORY: $(Build.StagingDirectory)
-          BUILD_SOURCEBRANCH: $(Build.SourceBranch)
-          SYSTEM_ACCESSTOKEN: $(System.AccessToken)
-          githubApiToken: $(githubApiToken)
 
       - task: PublishBuildArtifacts@1
         displayName: 'Publish final artifacts'
