@@ -107,6 +107,7 @@ static UIColor *defaultPlaceholderColor()
   if ([_defaultTextAttributes isEqualToDictionary:defaultTextAttributes]) {
     return;
   }
+
   _defaultTextAttributes = defaultTextAttributes;
   self.typingAttributes = defaultTextAttributes;
   [self _updatePlaceholder];
