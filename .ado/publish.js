@@ -49,13 +49,13 @@ function doPublish() {
   // Push tar to GitHub releases
   exec(`npm pack`);
 
-  const npmTarFileName = `react-native-${releaseVersion}.tgz`;
+  const npmTarFileName = `react-native-macos-${releaseVersion}.tgz`;
   const npmTarPath = path.resolve(__dirname, '..', npmTarFileName);
   const finalTarPath = path.join(process.env.BUILD_STAGINGDIRECTORY, 'final', npmTarFileName);
   console.log(`Copying tar file ${npmTarPath} to: ${finalTarPath}`)
   fs.copyFileSync(npmTarPath, finalTarPath);
 
-  const assetUpdateUrl = `https://uploads.github.com/repos/microsoft/react-native/releases/{id}/assets?name=react-native-${releaseVersion}.tgz`;
+  const assetUpdateUrl = `https://uploads.github.com/repos/microsoft/react-native/releases/{id}/assets?name=react-native-macos-${releaseVersion}.tgz`;
   const authHeader =
     "Basic " + new Buffer(":" + process.env.githubApiToken).toString("base64");
   const userAgent = "Microsoft-React-Native-Release-Agent";
