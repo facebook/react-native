@@ -16,7 +16,6 @@ import androidx.annotation.Nullable;
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.touch.ReactHitSlopView;
-import com.facebook.react.views.view.ReactViewGroup;
 
 /**
  * Class responsible for identifying which react view should handle a given {@link MotionEvent}. It
@@ -116,8 +115,8 @@ public class TouchTargetHelper {
     // Consider z-index when determining the touch target.
     ReactZIndexedViewGroup zIndexedViewGroup =
             viewGroup instanceof ReactZIndexedViewGroup ? (ReactZIndexedViewGroup) viewGroup : null;
-    String overflow = viewGroup instanceof ReactViewGroup
-            ? ((ReactViewGroup) viewGroup).getOverflow()
+    String overflow = viewGroup instanceof ReactClippingViewGroup
+            ? ((ReactClippingViewGroup) viewGroup).getOverflow()
             : null;
     boolean allowOverflow = overflow == null || overflow.equals(ViewProps.VISIBLE);
 

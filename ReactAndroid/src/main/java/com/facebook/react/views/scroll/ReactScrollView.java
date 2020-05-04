@@ -199,9 +199,15 @@ public class ReactScrollView extends ScrollView
     awakenScrollBars();
   }
 
+  @Override
   public void setOverflow(String overflow) {
     mOverflow = overflow;
     invalidate();
+  }
+
+  @Override
+  public @Nullable String getOverflow() {
+    return mOverflow;
   }
 
   @Override
