@@ -137,7 +137,12 @@ RCT_EXPORT_METHOD(showActionSheetWithOptions
   }
 
   for (NSNumber *disabledButtonIndex in disabledButtonIndices) {
-    [alertController.actions[[disabledButtonIndex integerValue]] setEnabled:false];
+    if ([disabledButtonIndex integerValue] < buttons.count) {
+      [alertController.actions[[disabledButtonIndex integerValue]] setEnabled:false];
+    } else {
+        RCTLogError(@"Index %li is out of bounds. Maximum index value is %lu.", (long)[disabledButtonIndex integerValue], buttons.count - 1);
+        return;
+    }
   }
     
   alertController.view.tintColor = tintColor;
