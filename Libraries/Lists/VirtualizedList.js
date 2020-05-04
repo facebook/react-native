@@ -12,7 +12,6 @@
 
 const Batchinator = require('../Interaction/Batchinator');
 const FillRateHelper = require('./FillRateHelper');
-const PropTypes = require('prop-types');
 const ReactNative = require('../Renderer/shims/ReactNative');
 const RefreshControl = require('../Components/RefreshControl/RefreshControl');
 const ScrollView = require('../Components/ScrollView/ScrollView');
@@ -1786,19 +1785,6 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     if (!frame || frame.index !== index) {
       if (getItemLayout) {
         frame = getItemLayout(data, index);
-        if (__DEV__) {
-          const frameType = PropTypes.shape({
-            length: PropTypes.number.isRequired,
-            offset: PropTypes.number.isRequired,
-            index: PropTypes.number.isRequired,
-          }).isRequired;
-          PropTypes.checkPropTypes(
-            {frame: frameType},
-            {frame},
-            'frame',
-            'VirtualizedList.getItemLayout',
-          );
-        }
       }
     }
     /* $FlowFixMe(>=0.63.0 site=react_native_fb) This comment suppresses an
