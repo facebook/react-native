@@ -713,10 +713,7 @@ exports.examples = ([
       return (
         <View>
           <WithLabel label="showSoftInputOnFocus: false">
-            <TextInput
-              showSoftInputOnFocus={false}
-              style={[styles.default]}
-            />
+            <TextInput showSoftInputOnFocus={false} style={[styles.default]} />
           </WithLabel>
         </View>
       );
