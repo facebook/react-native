@@ -259,6 +259,10 @@ void UIManager::dispatchCommand(
   }
 }
 
+void UIManager::configureNextLayoutAnimation(
+    const folly::dynamic config,
+    SharedEventTarget successCallback,
+    SharedEventTarget errorCallback) const {}
 void UIManager::setComponentDescriptorRegistry(
     const SharedComponentDescriptorRegistry &componentDescriptorRegistry) {
   componentDescriptorRegistry_ = componentDescriptorRegistry;

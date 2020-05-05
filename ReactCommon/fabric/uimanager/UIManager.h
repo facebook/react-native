@@ -116,6 +116,14 @@ class UIManager final : public ShadowTreeDelegate {
       std::string const &commandName,
       folly::dynamic const args) const;
 
+  /**
+   * Configure a LayoutAnimation to happen on the next commit.
+   * This API configures a global LayoutAnimation starting from the root node.
+   */
+  void configureNextLayoutAnimation(
+      const folly::dynamic config,
+      SharedEventTarget successCallback,
+      SharedEventTarget errorCallback) const;
   ShadowTreeRegistry const &getShadowTreeRegistry() const;
 
   SharedComponentDescriptorRegistry componentDescriptorRegistry_;

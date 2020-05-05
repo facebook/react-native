@@ -598,6 +598,27 @@ jsi::Value UIManagerBinding::get(
         });
   }
 
+  if (methodName == "configureNextLayoutAnimation") {
+    return jsi::Function::createFromHostFunction(
+        runtime,
+        name,
+        3,
+        [uiManager](
+            jsi::Runtime &runtime,
+            const jsi::Value &thisValue,
+            const jsi::Value *arguments,
+            size_t count) -> jsi::Value {
+          uiManager->configureNextLayoutAnimation(
+              commandArgsFromValue(
+                  runtime,
+                  arguments[0]), // TODO T66507273: do a better job of parsing
+                                 // these arguments into a real struct / use a
+                                 // C++ typed object instead of folly::dynamic
+              eventTargetFromValue(runtime, arguments[1], -1),
+              eventTargetFromValue(runtime, arguments[2], -1));
+          return jsi::Value::undefined();
+        });
+  }
   return jsi::Value::undefined();
 }
 
