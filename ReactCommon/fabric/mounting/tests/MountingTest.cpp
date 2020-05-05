@@ -77,6 +77,11 @@ TEST(MountingTest, testMinimalInstructionGeneration) {
   auto childD = makeNode(viewComponentDescriptor, 103, {});
   auto childE = makeNode(viewComponentDescriptor, 104, {});
   auto childF = makeNode(viewComponentDescriptor, 105, {});
+  auto childG = makeNode(viewComponentDescriptor, 106, {});
+  auto childH = makeNode(viewComponentDescriptor, 107, {});
+  auto childI = makeNode(viewComponentDescriptor, 108, {});
+  auto childJ = makeNode(viewComponentDescriptor, 109, {});
+  auto childK = makeNode(viewComponentDescriptor, 110, {});
 
   auto family = viewComponentDescriptor.createFamily(
       {10, SurfaceId(1), nullptr}, nullptr);
@@ -107,6 +112,17 @@ TEST(MountingTest, testMinimalInstructionGeneration) {
       generateDefaultProps(viewComponentDescriptor),
       std::make_shared<SharedShadowNodeList>(SharedShadowNodeList{
           childB, childA, childD, childF, childE, childC})});
+  auto shadowNodeV7 = shadowNodeV6->clone(ShadowNodeFragment{
+      generateDefaultProps(viewComponentDescriptor),
+      std::make_shared<SharedShadowNodeList>(SharedShadowNodeList{childF,
+                                                                  childE,
+                                                                  childC,
+                                                                  childD,
+                                                                  childG,
+                                                                  childH,
+                                                                  childI,
+                                                                  childJ,
+                                                                  childK})});
 
   // Injecting a tree into the root node.
   auto rootNodeV1 = std::static_pointer_cast<RootShadowNode const>(
@@ -139,6 +155,11 @@ TEST(MountingTest, testMinimalInstructionGeneration) {
           ShadowNodeFragment{ShadowNodeFragment::propsPlaceholder(),
                              std::make_shared<SharedShadowNodeList>(
                                  SharedShadowNodeList{shadowNodeV6})}));
+  auto rootNodeV7 = std::static_pointer_cast<RootShadowNode const>(
+      rootNodeV6->ShadowNode::clone(
+          ShadowNodeFragment{ShadowNodeFragment::propsPlaceholder(),
+                             std::make_shared<SharedShadowNodeList>(
+                                 SharedShadowNodeList{shadowNodeV7})}));
 
   // Layout and diff
   std::vector<LayoutableShadowNode const *> affectedLayoutableNodesV1{};
@@ -307,6 +328,23 @@ TEST(MountingTest, testMinimalInstructionGeneration) {
   assert(mutations5[3].type == ShadowViewMutation::Insert);
   assert(mutations5[3].newChildShadowView.tag == 105);
   assert(mutations5[3].index == 3);
+
+  auto mutations6 = calculateShadowViewMutations(
+      DifferentiatorMode::OptimizedMoves, *rootNodeV6, *rootNodeV7);
+
+  // The order and exact mutation instructions here may change at any time.
+  // This test just ensures that any changes are intentional.
+  // This test, in particular, ensures that a bug has been fixed: that with
+  // a particular sequence of inserts/removes/moves, we don't unintentionally
+  // create more "CREATE" mutations than necessary.
+  // The actual nodes that should be created in this transaction have a tag >
+  // 105.
+  assert(mutations6.size() == 25);
+  for (int i = 0; i < mutations6.size(); i++) {
+    if (mutations6[i].type == ShadowViewMutation::Create) {
+      assert(mutations6[i].newChildShadowView.tag > 105);
+    }
+  }
 }
 
 } // namespace react

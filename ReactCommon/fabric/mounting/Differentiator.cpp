@@ -54,7 +54,13 @@ class TinyMap final {
     // then we don't need to clean.
     cleanVector(erasedAtFront_ != numErased_);
 
-    return begin_();
+    Iterator it = begin_();
+
+    if (it != nullptr) {
+      return it + erasedAtFront_;
+    }
+
+    return nullptr;
   }
 
   inline Iterator end() {
@@ -71,6 +77,10 @@ class TinyMap final {
 
     assert(key != 0);
 
+    if (begin_() == nullptr) {
+      return end();
+    }
+
     for (auto it = begin_() + erasedAtFront_; it != end(); it++) {
       if (it->first == key) {
         return it;
@@ -86,14 +96,14 @@ class TinyMap final {
   }
 
   inline void erase(Iterator iterator) {
-    numErased_++;
-
     // Invalidate tag.
     iterator->first = 0;
 
     if (iterator == begin_() + erasedAtFront_) {
       erasedAtFront_++;
     }
+
+    numErased_++;
   }
 
  private:
@@ -643,7 +653,7 @@ static void calculateShadowViewMutationsOptimizedMoves(
       }
 
       // At this point, oldTag is -1 or is in the new list, and hasn't been
-      // inserted or matched yet We're not sure yet if the new node is in the
+      // inserted or matched yet. We're not sure yet if the new node is in the
       // old list - generate an insert instruction for the new node.
       auto const &newChildPair = newChildPairs[newIndex];
       insertMutations.push_back(ShadowViewMutation::InsertMutation(
@@ -656,7 +666,9 @@ static void calculateShadowViewMutationsOptimizedMoves(
     for (auto it = newInsertedPairs.begin(); it != newInsertedPairs.end();
          it++) {
       // Erased elements of a TinyMap will have a Tag/key of 0 - skip those
-      // These *should* be removed by the map, but are not always.
+      // These *should* be removed by the map; there are currently no KNOWN
+      // cases where TinyMap will do the wrong thing, but there are not yet
+      // any unit tests explicitly for TinyMap, so this is safer for now.
       if (it->first == 0) {
         continue;
       }

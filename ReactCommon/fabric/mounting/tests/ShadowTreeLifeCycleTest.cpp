@@ -169,7 +169,7 @@ TEST(MountingTest, stableSmallerTreeMoreIterationsClassic) {
 TEST(MountingTest, stableBiggerTreeFewerIterationsOptimizedMoves) {
   testShadowNodeTreeLifeCycle(
       DifferentiatorMode::OptimizedMoves,
-      /* seed */ 1,
+      /* seed */ 0,
       /* size */ 512,
       /* repeats */ 32,
       /* stages */ 32);
@@ -178,7 +178,7 @@ TEST(MountingTest, stableBiggerTreeFewerIterationsOptimizedMoves) {
 TEST(MountingTest, stableSmallerTreeMoreIterationsOptimizedMoves) {
   testShadowNodeTreeLifeCycle(
       DifferentiatorMode::OptimizedMoves,
-      /* seed */ 1,
+      /* seed */ 0,
       /* size */ 16,
       /* repeats */ 512,
       /* stages */ 32);
