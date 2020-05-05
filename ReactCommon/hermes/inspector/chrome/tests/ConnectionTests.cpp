@@ -748,6 +748,46 @@ TEST(ConnectionTests, testSetBreakpointById) {
   expectNotification<m::debugger::ResumedNotification>(conn);
 }
 
+TEST(ConnectionTests, testSetBreakpointByIdWithColumnInIndenting) {
+  TestContext context;
+  AsyncHermesRuntime &asyncRuntime = context.runtime();
+  SyncConnection &conn = context.conn();
+  int msgId = 1;
+
+  asyncRuntime.executeScriptAsync(R"(
+    debugger;      // line 1
+    Math.random(); //      2
+  )");
+
+  send<m::debugger::EnableRequest>(conn, ++msgId);
+  expectExecutionContextCreated(conn);
+  auto script = expectNotification<m::debugger::ScriptParsedNotification>(conn);
+
+  expectPaused(conn, "other", {{"global", 1, 1}});
+
+  m::debugger::SetBreakpointRequest req;
+  req.id = ++msgId;
+  req.location.scriptId = script.scriptId;
+  req.location.lineNumber = 2;
+  // Specify a column location *before* rather than *on* the actual location
+  req.location.columnNumber = 0;
+
+  conn.send(req.toJson());
+  auto resp = expectResponse<m::debugger::SetBreakpointResponse>(conn, req.id);
+  EXPECT_EQ(resp.actualLocation.scriptId, script.scriptId);
+  EXPECT_EQ(resp.actualLocation.lineNumber, 2);
+  // Check that we resolved the column to the first available location
+  EXPECT_EQ(resp.actualLocation.columnNumber.value(), 4);
+
+  send<m::debugger::ResumeRequest>(conn, ++msgId);
+  expectNotification<m::debugger::ResumedNotification>(conn);
+
+  expectPaused(conn, "other", {{"global", 2, 1}});
+
+  send<m::debugger::ResumeRequest>(conn, ++msgId);
+  expectNotification<m::debugger::ResumedNotification>(conn);
+}
+
 TEST(ConnectionTests, testSetLazyBreakpoint) {
   TestContext context;
   AsyncHermesRuntime &asyncRuntime = context.runtime();
