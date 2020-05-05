@@ -114,6 +114,9 @@ static void testShadowNodeTreeLifeCycle(
 
         LOG(ERROR) << "Entropy seed: " << entropy.getSeed() << "\n";
 
+        // There are some issues getting `getDebugDescription` to compile
+        // under test on Android for now.
+#ifndef ANDROID
         LOG(ERROR) << "Shadow Tree before: \n"
                    << currentRootNode->getDebugDescription();
         LOG(ERROR) << "Shadow Tree after: \n"
@@ -128,6 +131,7 @@ static void testShadowNodeTreeLifeCycle(
         LOG(ERROR) << "Mutations:"
                    << "\n"
                    << getDebugDescription(mutations, {});
+#endif
 
         FAIL();
       }

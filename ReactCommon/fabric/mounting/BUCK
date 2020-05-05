@@ -76,6 +76,7 @@ fb_xplat_cxx_test(
         "-Wall",
     ],
     contacts = ["oncall+react_native@xmail.facebook.com"],
+    fbandroid_use_instrumentation_test = True,
     platforms = (ANDROID, APPLE, CXX),
     deps = [
         ":mounting",
