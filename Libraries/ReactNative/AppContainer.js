@@ -24,6 +24,7 @@ type Props = $ReadOnly<{|
   children?: React.Node,
   fabric?: boolean,
   rootTag: number,
+  initialProps?: {...},
   showArchitectureIndicator?: boolean,
   WrapperComponent?: ?React.ComponentType<any>,
   internal_excludeLogBox?: ?boolean,
@@ -119,6 +120,7 @@ class AppContainer extends React.Component<Props, State> {
     if (Wrapper != null) {
       innerView = (
         <Wrapper
+          initialProps={this.props.initialProps}
           fabric={this.props.fabric === true}
           showArchitectureIndicator={
             this.props.showArchitectureIndicator === true
