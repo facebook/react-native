@@ -314,7 +314,7 @@ We had code to add custom typefaces to react native text controls.
 
 We had moved the changes to patch fiels as part of v60 merge.
 
-We had applied the patches to *fb6merge* branch.
+We had applied the patches to *fb62merge* branch.
 
   
 
@@ -329,8 +329,24 @@ There were some experimental changes still lingering around.
 **Minimal instance for UI-less features**
 There was an attemp to be able to create non-UI react native instances for features such as Augmentation loop in Office. 
 
+*Deforking Status*
+
+We had moved the changes to patch fiels as part of v60 merge.
+We haven't applied these patches to *fb62merge* branch.
+
 **Synchronously create instance**
+
+There was an attempt to be able to create non-UI light react native instances synchronously created on Stack for features such as Augmentation loop in Office. 
+
+*Deforking Status*
+
+We had moved the changes to patch fiels as part of v60 merge.
+We haven't applied these patches to *fb62merge* branch.
 
 **Some experiments on layouts**
 
-## Path to complete deforking
+We attempted to fix some of the layout issues early in the react-native days.
+
+*Deforking Status*
+
+We cleaned all these at the start of v60 merge.
