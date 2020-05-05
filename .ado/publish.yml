@@ -45,7 +45,7 @@ jobs:
           publishEndpoint: 'npmjs'
 
       - task: CmdLine@2
-        displayName: Do Publish
+        displayName: Tag published release
         inputs:
           script: node .ado/publish.js
         env:
