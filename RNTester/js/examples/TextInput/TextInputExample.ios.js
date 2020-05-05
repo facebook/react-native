@@ -707,4 +707,19 @@ exports.examples = ([
       );
     },
   },
+  {
+    title: 'showSoftInputOnFocus',
+    render: function(): React.Node {
+      return (
+        <View>
+          <WithLabel label="showSoftInputOnFocus: false">
+            <TextInput
+              showSoftInputOnFocus={false}
+              style={[styles.default]}
+            />
+          </WithLabel>
+        </View>
+      );
+    },
+  },
 ]: Array<RNTesterExampleModuleItem>);
