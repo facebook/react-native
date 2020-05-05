@@ -7,13 +7,28 @@
     "type": "git",
     "url": "git@github.com:facebook/react-native.git"
   },
+  "scripts": {
+    "build": "yarn clean && node scripts/build.js --verbose",
+    "clean": "rm -rf lib",
+    "prepublish": "yarn run build"
+  },
   "license": "MIT",
   "files": [
-    "src"
+    "lib"
   ],
   "dependencies": {
     "flow-parser": "^0.121.0",
     "jscodeshift": "^0.9.0",
     "nullthrows": "^1.1.1"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.2.0",
+    "@babel/preset-env": "^7.2.0",
+    "@babel/preset-flow": "^7.2.0",
+    "chalk": "^2.4.1",
+    "glob": "^7.1.1",
+    "micromatch": "^2.3.11",
+    "mkdirp": "^0.5.1",
+    "prettier": "1.19.1"
   }
 }

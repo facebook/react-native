@@ -10,3 +10,4 @@ Libraries/vendor/**/*
 packages/*/node_modules
 pr-inactivity-bookmarklet.js
 question-bookmarklet.js
+packages/react-native-codegen/lib
