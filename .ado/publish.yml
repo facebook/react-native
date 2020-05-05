@@ -45,9 +45,9 @@ jobs:
           publishEndpoint: 'npmjs'
 
       - task: CmdLine@2
-        displayName: Tag published release
+        displayName: 'Tag published release'
         inputs:
-          script: node .ado/publish.js
+          script: node .ado/gitTagRelease.js
         env:
           BUILD_STAGINGDIRECTORY: $(Build.StagingDirectory)
           BUILD_SOURCEBRANCH: $(Build.SourceBranch)
@@ -210,6 +210,16 @@ jobs:
           packagesToPack: 'ReactAndroid/ReactAndroid.nuspec'
           packDestination: '$(Build.StagingDirectory)\final'
           buildProperties: buildNumber=$(buildNumber);commitId=$(Build.SourceVersion)
+
+      - task: CmdLine@2
+        displayName: 'Npm pack'
+        inputs:
+          script: node .ado/npmOfficePack.js
+        env:
+          BUILD_STAGINGDIRECTORY: $(Build.StagingDirectory)
+          BUILD_SOURCEBRANCH: $(Build.SourceBranch)
+          SYSTEM_ACCESSTOKEN: $(System.AccessToken)
+          githubApiToken: $(githubApiToken)
 
       - task: PublishBuildArtifacts@1
         displayName: 'Publish final artifacts'
