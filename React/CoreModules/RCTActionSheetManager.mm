@@ -140,11 +140,11 @@ RCT_EXPORT_METHOD(showActionSheetWithOptions
     if ([disabledButtonIndex integerValue] < buttons.count) {
       [alertController.actions[[disabledButtonIndex integerValue]] setEnabled:false];
     } else {
-        RCTLogError(@"Index %li is out of bounds. Maximum index value is %lu.", (long)[disabledButtonIndex integerValue], buttons.count - 1);
-        return;
+      RCTLogError(@"Index %li from `disabledButtonIndices` is out of bounds. Maximum index value is %lu.", (long)[disabledButtonIndex integerValue], buttons.count - 1);
+      return;
     }
   }
-    
+
   alertController.view.tintColor = tintColor;
 #if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && defined(__IPHONE_13_0) && \
     __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_13_0
