@@ -485,7 +485,7 @@ public class NativeAnimatedModule extends NativeAnimatedModuleSpec
   }
 
   @Override
-  public void getValue(final double animatedValueNodeTagDouble, Callback callback) {
+  public void getValue(final double animatedValueNodeTagDouble, final Callback callback) {
     final int animatedValueNodeTag = (int) animatedValueNodeTagDouble;
     mOperations.add(
       new UIThreadOperation() {
