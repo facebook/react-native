@@ -12,7 +12,6 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyInt;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.atMost;
-import static org.mockito.Mockito.calls;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
@@ -814,7 +813,7 @@ public class NativeAnimatedNodeTraversalTest {
 
    mNativeAnimatedNodesManager.getValue(tag, saveValueCallbackMock);
 
-   verify(saveValueCallbackMock, calls(1)).invoke(1d);
+   verify(saveValueCallbackMock, times(1)).invoke(1d);
   }
 
   @Test
