@@ -305,8 +305,9 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
 - (void)setShowSoftInputOnFocus:(BOOL)showSoftInputOnFocus
 {
   if (!showSoftInputOnFocus) {
-    UIView *tempView = [[UIView alloc] initWithFrame:CGRectZero];
-    self.backedTextInputView.inputView = tempView; // Hide keyboard, but show blinking cursor
+    self.backedTextInputView.inputView = [[UIView alloc] initWithFrame:CGRectZero]; // Hide keyboard, but show blinking cursor
+  } else {
+    self.backedTextInputView.inputView = nil; // Reset to default keyboard
   }
 }
 
