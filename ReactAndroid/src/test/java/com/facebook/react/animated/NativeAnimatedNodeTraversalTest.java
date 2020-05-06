@@ -809,11 +809,12 @@ public class NativeAnimatedNodeTraversalTest {
     mNativeAnimatedNodesManager.createAnimatedNode(
       tag, JavaOnlyMap.of("type", "value", "value", 1d, "offset", 0d)
     );
-//    Callback saveValueCallbackMock = mock(Callback.class);
 
-//    mNativeAnimatedNodesManager.getValue(tag, saveValueCallbackMock);
-//
-//    verify(saveValueCallbackMock, calls(1)).invoke(1d);
+   Callback saveValueCallbackMock = mock(Callback.class);
+
+   mNativeAnimatedNodesManager.getValue(tag, saveValueCallbackMock);
+
+   verify(saveValueCallbackMock, calls(1)).invoke(1d);
   }
 
   @Test
