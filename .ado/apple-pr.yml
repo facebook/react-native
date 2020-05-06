@@ -7,8 +7,13 @@ variables:
 trigger: none # will disable CI builds entirely
 
 pr:
-- master
-- 0.59-stable
+  branches:
+    include:
+      - master
+      - 0.59-stable
+  paths:
+    exclude:
+      - '*.md'
 
 jobs:
   - job: JavaScriptRNPR
