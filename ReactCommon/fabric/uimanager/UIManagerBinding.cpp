@@ -535,10 +535,15 @@ jsi::Value UIManagerBinding::get(
               *shadowNodeFromValue(runtime, arguments[0]),
               nullptr,
               {/* .includeTransform = */ true});
-          auto frame = layoutMetrics.frame;
           auto onSuccessFunction =
               arguments[1].getObject(runtime).getFunction(runtime);
 
+          if (layoutMetrics == EmptyLayoutMetrics) {
+            onSuccessFunction.call(runtime, {0, 0, 0, 0, 0, 0});
+            return jsi::Value::undefined();
+          }
+
+          auto frame = layoutMetrics.frame;
           onSuccessFunction.call(
               runtime,
               {0,
@@ -568,8 +573,13 @@ jsi::Value UIManagerBinding::get(
 
           auto onSuccessFunction =
               arguments[1].getObject(runtime).getFunction(runtime);
-          auto frame = layoutMetrics.frame;
 
+          if (layoutMetrics == EmptyLayoutMetrics) {
+            onSuccessFunction.call(runtime, {0, 0, 0, 0});
+            return jsi::Value::undefined();
+          }
+
+          auto frame = layoutMetrics.frame;
           onSuccessFunction.call(
               runtime,
               {jsi::Value{runtime, (double)frame.origin.x},
