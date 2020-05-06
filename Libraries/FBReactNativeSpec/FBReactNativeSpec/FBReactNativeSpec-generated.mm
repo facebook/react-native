@@ -737,10 +737,10 @@ namespace facebook {
 
   } // namespace react
 } // namespace facebook
-@implementation RCTCxxConvert (NativeCameraRollManager_PhotoIdentifierNodeImage)
-+ (RCTManagedPointer *)JS_NativeCameraRollManager_PhotoIdentifierNodeImage:(id)json
+@implementation RCTCxxConvert (NativeCameraRollManager_PhotoIdentifierImage)
++ (RCTManagedPointer *)JS_NativeCameraRollManager_PhotoIdentifierImage:(id)json
 {
-  return facebook::react::managedPointer<JS::NativeCameraRollManager::PhotoIdentifierNodeImage>(json);
+  return facebook::react::managedPointer<JS::NativeCameraRollManager::PhotoIdentifierImage>(json);
 }
 @end
 @implementation RCTCxxConvert (NativeCameraRollManager_PhotoIdentifierNodeLocation)

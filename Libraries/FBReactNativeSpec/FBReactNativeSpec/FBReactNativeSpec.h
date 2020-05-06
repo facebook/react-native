@@ -698,7 +698,7 @@ namespace facebook {
 
 namespace JS {
   namespace NativeCameraRollManager {
-    struct PhotoIdentifierNodeImage {
+    struct PhotoIdentifierImage {
       NSString *uri() const;
       double playableDuration() const;
       double width() const;
@@ -706,15 +706,15 @@ namespace JS {
       folly::Optional<bool> isStored() const;
       NSString *filename() const;
 
-      PhotoIdentifierNodeImage(NSDictionary *const v) : _v(v) {}
+      PhotoIdentifierImage(NSDictionary *const v) : _v(v) {}
     private:
       NSDictionary *_v;
     };
   }
 }
 
-@interface RCTCxxConvert (NativeCameraRollManager_PhotoIdentifierNodeImage)
-+ (RCTManagedPointer *)JS_NativeCameraRollManager_PhotoIdentifierNodeImage:(id)json;
+@interface RCTCxxConvert (NativeCameraRollManager_PhotoIdentifierImage)
++ (RCTManagedPointer *)JS_NativeCameraRollManager_PhotoIdentifierImage:(id)json;
 @end
 
 namespace JS {
@@ -740,7 +740,7 @@ namespace JS {
 namespace JS {
   namespace NativeCameraRollManager {
     struct PhotoIdentifierNode {
-      JS::NativeCameraRollManager::PhotoIdentifierNodeImage image() const;
+      JS::NativeCameraRollManager::PhotoIdentifierImage image() const;
       NSString *type() const;
       NSString *group_name() const;
       double timestamp() const;
@@ -3147,32 +3147,32 @@ inline folly::Optional<facebook::react::LazyVector<NSString *>> JS::NativeCamera
   id const p = _v[@"mimeTypes"];
   return RCTBridgingToOptionalVec(p, ^NSString *(id itemValue_0) { return RCTBridgingToString(itemValue_0); });
 }
-inline NSString *JS::NativeCameraRollManager::PhotoIdentifierNodeImage::uri() const
+inline NSString *JS::NativeCameraRollManager::PhotoIdentifierImage::uri() const
 {
   id const p = _v[@"uri"];
   return RCTBridgingToString(p);
 }
-inline double JS::NativeCameraRollManager::PhotoIdentifierNodeImage::playableDuration() const
+inline double JS::NativeCameraRollManager::PhotoIdentifierImage::playableDuration() const
 {
   id const p = _v[@"playableDuration"];
   return RCTBridgingToDouble(p);
 }
-inline double JS::NativeCameraRollManager::PhotoIdentifierNodeImage::width() const
+inline double JS::NativeCameraRollManager::PhotoIdentifierImage::width() const
 {
   id const p = _v[@"width"];
   return RCTBridgingToDouble(p);
 }
-inline double JS::NativeCameraRollManager::PhotoIdentifierNodeImage::height() const
+inline double JS::NativeCameraRollManager::PhotoIdentifierImage::height() const
 {
   id const p = _v[@"height"];
   return RCTBridgingToDouble(p);
 }
-inline folly::Optional<bool> JS::NativeCameraRollManager::PhotoIdentifierNodeImage::isStored() const
+inline folly::Optional<bool> JS::NativeCameraRollManager::PhotoIdentifierImage::isStored() const
 {
   id const p = _v[@"isStored"];
   return RCTBridgingToOptionalBool(p);
 }
-inline NSString *JS::NativeCameraRollManager::PhotoIdentifierNodeImage::filename() const
+inline NSString *JS::NativeCameraRollManager::PhotoIdentifierImage::filename() const
 {
   id const p = _v[@"filename"];
   return RCTBridgingToString(p);
@@ -3202,10 +3202,10 @@ inline folly::Optional<double> JS::NativeCameraRollManager::PhotoIdentifierNodeL
   id const p = _v[@"speed"];
   return RCTBridgingToOptionalDouble(p);
 }
-inline JS::NativeCameraRollManager::PhotoIdentifierNodeImage JS::NativeCameraRollManager::PhotoIdentifierNode::image() const
+inline JS::NativeCameraRollManager::PhotoIdentifierImage JS::NativeCameraRollManager::PhotoIdentifierNode::image() const
 {
   id const p = _v[@"image"];
-  return JS::NativeCameraRollManager::PhotoIdentifierNodeImage(p);
+  return JS::NativeCameraRollManager::PhotoIdentifierImage(p);
 }
 inline NSString *JS::NativeCameraRollManager::PhotoIdentifierNode::type() const
 {
