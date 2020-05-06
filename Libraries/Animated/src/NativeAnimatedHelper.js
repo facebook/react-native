@@ -42,6 +42,7 @@ const API = {
     tag: number,
     saveValueCallback: (value: number) => void,
   ): void {
+    invariant(NativeAnimatedModule, 'Native animated module is not available');
     NativeAnimatedModule.getValue(tag, saveValueCallback);
   },
   disableQueue: function(): void {
