@@ -7,8 +7,10 @@
 
 package com.facebook.react.views.scroll;
 
+import android.content.Context;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.OverScroller;
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.uimanager.UIManagerHelper;
@@ -20,6 +22,12 @@ public class ReactScrollViewHelper {
   public static final String OVER_SCROLL_ALWAYS = "always";
   public static final String AUTO = "auto";
   public static final String OVER_SCROLL_NEVER = "never";
+
+  // If all else fails, this is the hardcoded value in OverScroller.java, in AOSP.
+  // The default is defined here (as of this diff):
+  // https://android.googlesource.com/platform/frameworks/base/+/ae5bcf23b5f0875e455790d6af387184dbd009c1/core/java/android/widget/OverScroller.java#44
+  private static int SMOOTH_SCROLL_DURATION = 250;
+  private static boolean mSmoothScrollDurationInitialized = false;
 
   /** Shared by {@link ReactScrollView} and {@link ReactHorizontalScrollView}. */
   public static void emitScrollEvent(ViewGroup scrollView, float xVelocity, float yVelocity) {
@@ -81,6 +89,45 @@ public class ReactScrollViewHelper {
       return View.OVER_SCROLL_NEVER;
     } else {
       throw new JSApplicationIllegalArgumentException("wrong overScrollMode: " + jsOverScrollMode);
+    }
+  }
+
+  public static int getDefaultScrollAnimationDuration(Context context) {
+    if (!mSmoothScrollDurationInitialized) {
+      mSmoothScrollDurationInitialized = true;
+
+      try {
+        OverScrollerDurationGetter overScrollerDurationGetter =
+            new OverScrollerDurationGetter(context);
+        SMOOTH_SCROLL_DURATION = overScrollerDurationGetter.getScrollAnimationDuration();
+      } catch (Throwable e) {
+      }
+    }
+
+    return SMOOTH_SCROLL_DURATION;
+  }
+
+  private static class OverScrollerDurationGetter extends OverScroller {
+    // This is the default in AOSP, hardcoded in OverScroller.java.
+    private int mScrollAnimationDuration = 250;
+
+    OverScrollerDurationGetter(Context context) {
+      // We call with a null context because OverScroller does not use the context
+      // in the execution path we're interested in, unless heavily modified in an AOSP fork.
+      super(context);
+    }
+
+    public int getScrollAnimationDuration() {
+      // If startScroll is called without a duration, OverScroller will call `startScroll(x, y, dx,
+      // dy, duration)` with the default duration.
+      super.startScroll(0, 0, 0, 0);
+
+      return mScrollAnimationDuration;
+    }
+
+    @Override
+    public void startScroll(int startX, int startY, int dx, int dy, int duration) {
+      mScrollAnimationDuration = duration;
     }
   }
 }
