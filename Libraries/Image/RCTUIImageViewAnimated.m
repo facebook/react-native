@@ -181,22 +181,17 @@ static NSUInteger RCTDeviceFreeMemory() {
 {
 #if TARGET_OS_UIKITFORMAC
   // TODO: `displayLink.frameInterval` is not available on UIKitForMac
-  NSTimeInterval duration = displayLink.duration;
+  NSTimeInterval durationToNextRefresh = displayLink.duration;
 #else
-  NSTimeInterval duration = displayLink.duration;
+  // displaylink.duration -- time interval between frames, assuming maximumFramesPerSecond
+  // displayLink.preferredFramesPerSecond (>= iOS 10) -- Set to 30 for displayDidRefresh to be called at 30 fps
+  // displayLink.frameInterval (< iOS 10) -- # of frames that must pass before each displayDidRefresh. After iOS 10, when this is set to 2, preferredFramesPerSecond becomes 30 fps.
+  // durationToNextRefresh -- Time interval to the next time displayDidRefresh is called
+  NSTimeInterval durationToNextRefresh;
   if (@available(iOS 10.0, *)) {
-    // Per https://developer.apple.com/documentation/quartzcore/cadisplaylink
-    // displayLink.duration provides the amount of time between frames at the maximumFramesPerSecond
-    // Thus we need to calculate true duration based on preferredFramesPerSecond
-    if (displayLink.preferredFramesPerSecond != 0) {
-      double maxFrameRate = 60.0; // default to 60 fps
-      if (@available(iOS 10.3, tvOS 10.3, *)) {
-        maxFrameRate = self.window.screen.maximumFramesPerSecond;
-      }
-      duration = duration * displayLink.preferredFramesPerSecond / maxFrameRate;
-    } // else respect maximumFramesPerSecond
-  } else { // version < (ios 10)
-    duration = duration * displayLink.frameInterval;
+    durationToNextRefresh = displayLink.targetTimestamp - displayLink.timestamp;
+  } else {
+    durationToNextRefresh = displayLink.duration * displayLink.frameInterval;
   }
 #endif
   NSUInteger totalFrameCount = self.totalFrameCount;
@@ -206,13 +201,14 @@ static NSUInteger RCTDeviceFreeMemory() {
   // Check if we have the frame buffer firstly to improve performance
   if (!self.bufferMiss) {
     // Then check if timestamp is reached
-    self.currentTime += duration;
+    self.currentTime += durationToNextRefresh;
     NSTimeInterval currentDuration = [self.animatedImage animatedImageDurationAtIndex:currentFrameIndex];
     if (self.currentTime < currentDuration) {
       // Current frame timestamp not reached, return
       return;
     }
     self.currentTime -= currentDuration;
+    // nextDuration - duration to wait before displaying next image
     NSTimeInterval nextDuration = [self.animatedImage animatedImageDurationAtIndex:nextFrameIndex];
     if (self.currentTime > nextDuration) {
       // Do not skip frame
