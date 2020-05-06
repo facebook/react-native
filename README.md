@@ -1,163 +1,74 @@
-# Working fork for Microsoft internal usage
-### **It is not our goal to have a long term fork of facebook/react-native/**
-
-The reasons for this fork to exist currently are 3 fold.
-
-1. Provide a staging ground for changes that Microsoft is submitting back to the main Facebook repo, such that our internal apps can share and validate these changes while the PRs go through the standard merge process with Facebook.
-1. A holding ground for our implementation of react-native for macOS. -- The eventual plan is to refactor a bunch of code within facebook/react-native to allow the macOS code to be implemented as an out of tree platform that works with the core react-native package.  But currently the implementation shares so much logic with the iOS platform that it would involve a lot of code duplication to move it out.  This process will take a while to work through but is the eventual goal.
-1. Hold various changes that we have made internally to support our apps, which we hope to revert as we update our internal code.  But we are putting it all out here since other projects require this changes exist for now.
-
-The eventual goal is for this fork to stop existing, or certainly have a much smaller delta between this fork and facebook/react-native.
-
-# [React Native](https://facebook.github.io/react-native/) &middot;  [![Circle CI Status](https://circleci.com/gh/facebook/react-native.svg?style=shield)](https://circleci.com/gh/facebook/react-native) [![Build status](https://ci.appveyor.com/api/projects/status/g8d58ipi3auqdtrk/branch/master?svg=true)](https://ci.appveyor.com/project/facebook/react-native/branch/master) [![npm version](https://badge.fury.io/js/react-native.svg)](https://badge.fury.io/js/react-native) [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md#pull-requests)
-
-<h1 align="center">
-  <a href="https://facebook.github.io/react-native/">
-    React Native
-  </a>
-</h1>
+<h1 align="center"> React Native for macOS </h1>
 
 <p align="center">
-  <strong>Learn once, write anywhere:</strong><br>
-  Build mobile apps with React.
+  Build native macOS apps with React.
 </p>
 
 <p align="center">
-  <a href="https://github.com/facebook/react-native/blob/master/LICENSE">
-    <img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="React Native is released under the MIT license." />
+  <a href="https://github.com/microsoft/react-native-macos/blob/master/LICENSE">
+    <img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="React Native for macOS is released under the MIT license." />
   </a>
-  <a href="https://circleci.com/gh/facebook/react-native">
-    <img src="https://circleci.com/gh/facebook/react-native.svg?style=shield" alt="Current CircleCI build status." />
+  <a href="https://www.npmjs.org/package/react-native-macos">
+    <img src="https://img.shields.io/npm/v/react-native-macos?color=e80441&label=react-native-macos" alt="Current npm package version." />
   </a>
-  <a href="https://ci.appveyor.com/project/facebook/react-native/branch/master">
-    <img src="https://ci.appveyor.com/api/projects/status/g8d58ipi3auqdtrk/branch/master?svg=true" alt="Current Appveyor build status." />
-  </a>
-  <a href="https://www.npmjs.org/package/react-native">
-    <img src="https://badge.fury.io/js/react-native.svg" alt="Current npm package version." />
-  </a>
-  <a href="https://facebook.github.io/react-native/docs/contributing">
+  <a href="https://github.com/microsoft/react-native-macos/blob/master/CONTRIBUTING.md">
     <img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg" alt="PRs welcome!" />
   </a>
-  <a href="https://twitter.com/intent/follow?screen_name=reactnative">
-    <img src="https://img.shields.io/twitter/follow/reactnative.svg?label=Follow%20@reactnative" alt="Follow @reactnative" />
-  </a>
 </p>
 
-<h3 align="center">
-  <a href="https://facebook.github.io/react-native/docs/getting-started">Getting Started</a>
-  <span> · </span>
-  <a href="https://facebook.github.io/react-native/docs/tutorial">Learn the Basics</a>
-  <span> · </span>
-  <a href="https://facebook.github.io/react-native/showcase.html">Showcase</a>
-  <span> · </span>
-  <a href="https://facebook.github.io/react-native/docs/contributing">Contribute</a>
-  <span> · </span>
-  <a href="https://facebook.github.io/react-native/en/help">Community</a>
-  <span> · </span>
-  <a href="https://github.com/facebook/react-native/blob/master/.github/SUPPORT">Support</a>
-</h3>
+> See the official [React Native website](https://reactnative.dev/) for an introduction to React Native. 
 
-React Native brings [**React**'s][r] declarative UI framework to iOS and Android. With React Native, you use native UI controls and have full access to the native platform.
+[React Native](https://reactnative.dev) is a framework developed by Facebook that enables you to build world-class application experiences on native platforms using a consistent developer experience based on JavaScript and [React](https://reactjs.org/). The focus of React Native is on developer efficiency across all the platforms you care about - learn once, write anywhere.
 
-- **Declarative.** React makes it painless to create interactive UIs. Declarative views make your code more predictable and easier to debug.
-- **Component-Based.** Build encapsulated components that manage their own state, then compose them to make complex UIs.
-- **Developer Velocity.** See local changes in seconds. Changes to JavaScript code can be live reloaded without rebuilding the native app.
-- **Portability.** Reuse code across iOS, Android, and [other platforms][p].
+This repository is a working fork of **facebook/react-native** that adds support for the official React Native for macOS implementation from Microsoft. 
 
-React Native is developed and supported by many companies and individual core contributors. Find out more in our [ecosystem overview][e].
-
-[r]: https://reactjs.org/
-[p]: https://facebook.github.io/react-native/docs/out-of-tree-platforms
-[e]: https://github.com/facebook/react-native/blob/master/ECOSYSTEM.md
+You can read more about the macOS implementation in our website - [React Native for Windows and Mac](https://microsoft.github.io/react-native-windows/)
 
 ## Contents
 
-- [Requirements](#-requirements)
-- [Building your first React Native app](#-building-your-first-react-native-app)
-- [Documentation](#-documentation)
-- [Upgrading](#-upgrading)
-- [How to Contribute](#-how-to-contribute)
+- [Requirements](#requirements)
+- [Getting Started](#getting-started)
+- [Contributing](#contributing)
+- [Documentation](#documentation)
+- [License](#license)
 - [Code of Conduct](#code-of-conduct)
-- [License](#-license)
 
+## Requirements
 
-## 📋 Requirements
+You can run React Native for macOS apps on Mac devices with versions [Mojave (10.14.6)](https://support.apple.com/en-us/HT209149#macos10146) or newer.
 
-React Native apps may target iOS 9.0 and Android 4.1 (API 16) or newer. You may use Windows, macOS, or Linux as your development operating system, though building and running iOS apps is limited to macOS. Tools like [Expo](https://expo.io) can be used to work around this.
+For a full and detailed list of the system requirements and how to set up your development platform, see our [System Requirements](https://microsoft.github.io/react-native-windows/docs/rnm-dependencies) documentation on our website.
 
-## 🎉 Building your first React Native app
+## Getting Started
+See the [Getting Started Guide](https://microsoft.github.io/react-native-windows/docs/rnm-getting-started) on our React Native for Windows and Mac website to build your first React Native for macOS app.
 
-Follow the [Getting Started guide](https://facebook.github.io/react-native/docs/getting-started.html). The recommended way to install React Native depends on your project. Here you can find short guides for the most common scenarios:
+### Logging Issues
+Search the [existing issues](https://github.com/microsoft/react-native-macos/issues) and try to make sure your problem doesn’t already exist before opening a new issue. If your issue doesn't exist yet, try to make sure you provide as much information as possible to us so we can help you sooner. It’s helpful if you include information like:
 
-- [Trying out React Native][hello-world]
-- [Creating a New Application][new-app]
-- [Adding React Native to an Existing Application][existing]
+- The version of macOS, React Native, React Native macOS extension where you ran into the issue.
+- A stack trace and reduced repro case when possible.
+- Ensure the [appropriate template](https://github.com/microsoft/react-native-macos/issues/new/choose) is used when filing your issue(s).
 
-[hello-world]: https://snack.expo.io/@hramos/hello,-world!
-[new-app]: https://facebook.github.io/react-native/docs/getting-started.html
-[existing]: https://facebook.github.io/react-native/docs/integration-with-existing-apps.html
+##  Contributing
+See [Contributing guidelines](https://github.com/microsoft/react-native-macos/blob/master/CONTRIBUTING.md) for how to setup your fork of the repo and start a PR to contribute to React Native for macOS.
 
-## 📖 Documentation
+[Good First Issue](https://github.com/microsoft/react-native-macos/labels/good%20first%20issue) and [help wanted](https://github.com/microsoft/react-native-macos/labels/help%20wanted) are great starting points for PRs.
 
-The full documentation for React Native can be found on our [website][docs].
+## Documentation
+[React Native already has great documentation](https://reactnative.dev/docs/getting-started.html) and we're working to ensure the React Native for Windows and Mac are part of that documentation story.
 
-The React Native documentation discusses components, APIs, and topics that are specific to React Native. For further documentation on the React API that is shared between React Native and React DOM, refer to the [React documentation][r-docs].
+[React Native for Windows and Mac](https://microsoft.github.io/react-native-windows/) has it's own separate documentation site where Windows and Mac specific information, like API docs and blog updates live. We are bootstrapping documentation for macOS at this time, tune in for updates.
 
-The source for the React Native documentation and website is hosted on a separate repo, [**@facebook/react-native-website**][repo-website].
+### Examples
 
-[docs]: https://facebook.github.io/react-native/docs/getting-started.html
-[r-docs]: https://reactjs.org/docs/getting-started.html
-[repo-website]: https://github.com/facebook/react-native-website
+- Using the CLI in the [Getting Started](https://microsoft.github.io/react-native-windows/docs/rnm-getting-started) guide will set you up with a sample React Native for macOS app that you can begin editing right away.
+- If you're looking for sample code, just browse the [RNTester folder](https://github.com/microsoft/react-native-macos/tree/master/RNTester) for examples
 
-## 🚀 Upgrading
+## License
 
-Upgrading to new versions of React Native may give you access to more APIs, views, developer tools and other goodies. See the [Upgrading Guide][u] for instructions.
+The React Native for macOS extension, including modifications to the original Facebook source code, and all newly contributed code is provided under the [MIT License](LICENSE). Portions of the React Native for macOS extension derived from React Native are copyright Facebook.
 
-React Native releases are discussed in the React Native Community, [**@react-native-community/react-native-releases**][repo-releases].
+## Code of Conduct
 
-[u]: https://facebook.github.io/react-native/docs/upgrading
-[repo-releases]: https://github.com/react-native-community/react-native-releases
+This project has adopted the [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct/). For more information see the [Code of Conduct FAQ](https://opensource.microsoft.com/codeofconduct/faq/) or contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additional questions or comments.
 
-## 👏 How to Contribute
-
-The main purpose of this repository is to continue evolving React Native core. We want to make contributing to this project as easy and transparent as possible, and we are grateful to the community for contributing bugfixes and improvements. Read below to learn how you can take part in improving React Native.
-
-### [Code of Conduct][code]
-
-Facebook has adopted a Code of Conduct that we expect project participants to adhere to.
-Please read the [full text][code] so that you can understand what actions will and will not be tolerated.
-
-[code]: https://code.fb.com/codeofconduct/
-
-### [Contributing Guide][contribute]
-
-Read our [**Contributing Guide**][contribute] to learn about our development process, how to propose bugfixes and improvements, and how to build and test your changes to React Native.
-
-[contribute]: https://facebook.github.io/react-native/docs/contributing
-
-### [Open Source Roadmap][roadmap]
-
-You can learn more about our vision for React Native in the [**Roadmap**][roadmap].
-
-[roadmap]: https://github.com/facebook/react-native/wiki/Roadmap
-
-### Good First Issues
-
-We have a list of [good first issues][gfi] that contain bugs which have a relatively limited scope. This is a great place to get started, gain experience, and get familiar with our contribution process.
-
-[gfi]: https://github.com/facebook/react-native/labels/good%20first%20issue
-
-### Discussions
-
-Larger discussions and proposals are discussed in [**@react-native-community/discussions-and-proposals**][repo-meta].
-
-[repo-meta]: https://github.com/react-native-community/discussions-and-proposals
-
-## 📄 License
-
-React Native is MIT licensed, as found in the [LICENSE][l] file.
-
-React Native documentation is Creative Commons licensed, as found in the [LICENSE-docs][ld] file.
-
-[l]: https://github.com/facebook/react-native/blob/master/LICENSE
-[ld]: https://github.com/facebook/react-native/blob/master/LICENSE-docs
