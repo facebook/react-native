@@ -41,7 +41,7 @@ function renderApplication<Props: Object>(
         fabric={fabric}
         showArchitectureIndicator={showArchitectureIndicator}
         WrapperComponent={WrapperComponent}
-        initialProps={initialProps}
+        initialProps={initialProps ?? Object.freeze({})}
         internal_excludeLogBox={isLogBox}>
         <RootComponent {...initialProps} rootTag={rootTag} />
       </AppContainer>
