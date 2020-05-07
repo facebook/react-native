@@ -450,5 +450,11 @@ void JSError::setValue(Runtime& rt, Value&& value) {
   }
 }
 
+JSIException::~JSIException() {}
+
+JSINativeException::~JSINativeException() {}
+
+JSError::~JSError() {}
+
 } // namespace jsi
 } // namespace facebook
