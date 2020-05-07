@@ -25,10 +25,10 @@ module StripMSVersion
 
   private
 
-  VERSION_REGEXP = /\d+\.\d+\.\d+-microsoft\.\d+/
+  CURRENT_VERSION = JSON.parse(File.read('../package.json'))['version']
 
   def self.strip(version)
-    version && version.sub(VERSION_REGEXP, '1000.0.0')
+    version && (version == CURRENT_VERSION ? '1000.0.0' : version)
   end
 end
 # ]TODO(macOS GH#214)
