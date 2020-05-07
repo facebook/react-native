@@ -130,8 +130,8 @@
 <pre><code class="hljs css language-jsx"><span class="token keyword">var</span> styles <span class="token operator">=</span> StyleSheet<span class="token punctuation">.</span><span class="token function">create</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
   separator<span class="token punctuation">:</span> <span class="token punctuation">{</span>
     borderBottomColor<span class="token punctuation">:</span> <span class="token string">'#bbb'</span><span class="token punctuation">,</span>
-    borderBottomWidth<span class="token punctuation">:</span> StyleSheet<span class="token punctuation">.</span>hairlineWidth<span class="token punctuation">,</span>
-  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+    borderBottomWidth<span class="token punctuation">:</span> StyleSheet<span class="token punctuation">.</span>hairlineWidth
+  <span class="token punctuation">}</span>
 <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
 </code></pre>
 <p>This constant will always be a round number of pixels (so a line defined by it look crisp) and will try to match the standard width of a thin line on the underlying platform. However, you should not rely on it being a constant size, because on different platforms and screen densities its value may be calculated differently.</p>
@@ -146,8 +146,8 @@
   wrapper<span class="token punctuation">:</span> <span class="token punctuation">{</span>
     <span class="token operator">...</span>StyleSheet<span class="token punctuation">.</span>absoluteFillObject<span class="token punctuation">,</span>
     top<span class="token punctuation">:</span> <span class="token number">10</span><span class="token punctuation">,</span>
-    backgroundColor<span class="token punctuation">:</span> <span class="token string">'transparent'</span><span class="token punctuation">,</span>
-  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+    backgroundColor<span class="token punctuation">:</span> <span class="token string">'transparent'</span>
+  <span class="token punctuation">}</span>
 <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
 </code></pre>
 <hr>
@@ -161,11 +161,11 @@
   listItem<span class="token punctuation">:</span> <span class="token punctuation">{</span>
     flex<span class="token punctuation">:</span> <span class="token number">1</span><span class="token punctuation">,</span>
     fontSize<span class="token punctuation">:</span> <span class="token number">16</span><span class="token punctuation">,</span>
-    color<span class="token punctuation">:</span> <span class="token string">'white'</span><span class="token punctuation">,</span>
+    color<span class="token punctuation">:</span> <span class="token string">'white'</span>
   <span class="token punctuation">}</span><span class="token punctuation">,</span>
   selectedListItem<span class="token punctuation">:</span> <span class="token punctuation">{</span>
-    color<span class="token punctuation">:</span> <span class="token string">'green'</span><span class="token punctuation">,</span>
-  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+    color<span class="token punctuation">:</span> <span class="token string">'green'</span>
+  <span class="token punctuation">}</span>
 <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
 
 StyleSheet<span class="token punctuation">.</span><span class="token function">flatten</span><span class="token punctuation">(</span><span class="token punctuation">[</span>styles<span class="token punctuation">.</span>listItem<span class="token punctuation">,</span> styles<span class="token punctuation">.</span>selectedListItem<span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
@@ -176,11 +176,11 @@ StyleSheet<span class="token punctuation">.</span><span class="token function">f
   listItem<span class="token punctuation">:</span> <span class="token punctuation">{</span>
     flex<span class="token punctuation">:</span> <span class="token number">1</span><span class="token punctuation">,</span>
     fontSize<span class="token punctuation">:</span> <span class="token number">16</span><span class="token punctuation">,</span>
-    color<span class="token punctuation">:</span> <span class="token string">'white'</span><span class="token punctuation">,</span>
+    color<span class="token punctuation">:</span> <span class="token string">'white'</span>
   <span class="token punctuation">}</span><span class="token punctuation">,</span>
   selectedListItem<span class="token punctuation">:</span> <span class="token punctuation">{</span>
-    color<span class="token punctuation">:</span> <span class="token string">'green'</span><span class="token punctuation">,</span>
-  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+    color<span class="token punctuation">:</span> <span class="token string">'green'</span>
+  <span class="token punctuation">}</span>
 <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
 
 StyleSheet<span class="token punctuation">.</span><span class="token function">flatten</span><span class="token punctuation">(</span>styles<span class="token punctuation">.</span>listItem<span class="token punctuation">)</span><span class="token punctuation">;</span>

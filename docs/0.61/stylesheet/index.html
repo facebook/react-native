@@ -74,20 +74,25 @@
   container<span class="token punctuation">:</span> <span class="token punctuation">{</span>
     borderRadius<span class="token punctuation">:</span> <span class="token number">4</span><span class="token punctuation">,</span>
     borderWidth<span class="token punctuation">:</span> <span class="token number">0.5</span><span class="token punctuation">,</span>
-    borderColor<span class="token punctuation">:</span> <span class="token string">'#d6d7da'</span><span class="token punctuation">,</span>
+    borderColor<span class="token punctuation">:</span> <span class="token string">'#d6d7da'</span>
   <span class="token punctuation">}</span><span class="token punctuation">,</span>
   title<span class="token punctuation">:</span> <span class="token punctuation">{</span>
     fontSize<span class="token punctuation">:</span> <span class="token number">19</span><span class="token punctuation">,</span>
-    fontWeight<span class="token punctuation">:</span> <span class="token string">'bold'</span><span class="token punctuation">,</span>
+    fontWeight<span class="token punctuation">:</span> <span class="token string">'bold'</span>
   <span class="token punctuation">}</span><span class="token punctuation">,</span>
   activeTitle<span class="token punctuation">:</span> <span class="token punctuation">{</span>
-    color<span class="token punctuation">:</span> <span class="token string">'red'</span><span class="token punctuation">,</span>
-  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+    color<span class="token punctuation">:</span> <span class="token string">'red'</span>
+  <span class="token punctuation">}</span>
 <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
 </code></pre>
 <p>Use a StyleSheet:</p>
 <pre><code class="hljs css language-jsx"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span><span class="token class-name">View</span></span> <span class="token attr-name">style</span><span class="token script language-javascript"><span class="token script-punctuation punctuation">=</span><span class="token punctuation">{</span>styles<span class="token punctuation">.</span>container<span class="token punctuation">}</span></span><span class="token punctuation">></span></span><span class="token plain-text">
-  </span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span><span class="token class-name">Text</span></span> <span class="token attr-name">style</span><span class="token script language-javascript"><span class="token script-punctuation punctuation">=</span><span class="token punctuation">{</span><span class="token punctuation">[</span>styles<span class="token punctuation">.</span>title<span class="token punctuation">,</span> <span class="token keyword">this</span><span class="token punctuation">.</span>props<span class="token punctuation">.</span>isActive <span class="token operator">&amp;&amp;</span> styles<span class="token punctuation">.</span>activeTitle<span class="token punctuation">]</span><span class="token punctuation">}</span></span> <span class="token punctuation">/></span></span><span class="token plain-text">
+  </span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span><span class="token class-name">Text</span></span>
+    <span class="token attr-name">style</span><span class="token script language-javascript"><span class="token script-punctuation punctuation">=</span><span class="token punctuation">{</span><span class="token punctuation">[</span>
+      styles<span class="token punctuation">.</span>title<span class="token punctuation">,</span>
+      <span class="token keyword">this</span><span class="token punctuation">.</span>props<span class="token punctuation">.</span>isActive <span class="token operator">&amp;&amp;</span> styles<span class="token punctuation">.</span>activeTitle
+    <span class="token punctuation">]</span><span class="token punctuation">}</span></span>
+  <span class="token punctuation">/></span></span><span class="token plain-text">
 </span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span><span class="token class-name">View</span></span><span class="token punctuation">></span></span>
 </code></pre>
 <p>Code quality:</p>
@@ -121,11 +126,11 @@
   listItem<span class="token punctuation">:</span> <span class="token punctuation">{</span>
     flex<span class="token punctuation">:</span> <span class="token number">1</span><span class="token punctuation">,</span>
     fontSize<span class="token punctuation">:</span> <span class="token number">16</span><span class="token punctuation">,</span>
-    color<span class="token punctuation">:</span> <span class="token string">'white'</span><span class="token punctuation">,</span>
+    color<span class="token punctuation">:</span> <span class="token string">'white'</span>
   <span class="token punctuation">}</span><span class="token punctuation">,</span>
   selectedListItem<span class="token punctuation">:</span> <span class="token punctuation">{</span>
-    color<span class="token punctuation">:</span> <span class="token string">'green'</span><span class="token punctuation">,</span>
-  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+    color<span class="token punctuation">:</span> <span class="token string">'green'</span>
+  <span class="token punctuation">}</span>
 <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
 
 StyleSheet<span class="token punctuation">.</span><span class="token function">flatten</span><span class="token punctuation">(</span><span class="token punctuation">[</span>styles<span class="token punctuation">.</span>listItem<span class="token punctuation">,</span> styles<span class="token punctuation">.</span>selectedListItem<span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
@@ -136,11 +141,11 @@ StyleSheet<span class="token punctuation">.</span><span class="token function">f
   listItem<span class="token punctuation">:</span> <span class="token punctuation">{</span>
     flex<span class="token punctuation">:</span> <span class="token number">1</span><span class="token punctuation">,</span>
     fontSize<span class="token punctuation">:</span> <span class="token number">16</span><span class="token punctuation">,</span>
-    color<span class="token punctuation">:</span> <span class="token string">'white'</span><span class="token punctuation">,</span>
+    color<span class="token punctuation">:</span> <span class="token string">'white'</span>
   <span class="token punctuation">}</span><span class="token punctuation">,</span>
   selectedListItem<span class="token punctuation">:</span> <span class="token punctuation">{</span>
-    color<span class="token punctuation">:</span> <span class="token string">'green'</span><span class="token punctuation">,</span>
-  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+    color<span class="token punctuation">:</span> <span class="token string">'green'</span>
+  <span class="token punctuation">}</span>
 <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
 
 StyleSheet<span class="token punctuation">.</span><span class="token function">flatten</span><span class="token punctuation">(</span>styles<span class="token punctuation">.</span>listItem<span class="token punctuation">)</span><span class="token punctuation">;</span>
@@ -159,8 +164,8 @@ StyleSheet<span class="token punctuation">.</span><span class="token function">f
 <pre><code class="hljs css language-jsx"><span class="token keyword">var</span> styles <span class="token operator">=</span> StyleSheet<span class="token punctuation">.</span><span class="token function">create</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
   separator<span class="token punctuation">:</span> <span class="token punctuation">{</span>
     borderBottomColor<span class="token punctuation">:</span> <span class="token string">'#bbb'</span><span class="token punctuation">,</span>
-    borderBottomWidth<span class="token punctuation">:</span> StyleSheet<span class="token punctuation">.</span>hairlineWidth<span class="token punctuation">,</span>
-  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+    borderBottomWidth<span class="token punctuation">:</span> StyleSheet<span class="token punctuation">.</span>hairlineWidth
+  <span class="token punctuation">}</span>
 <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
 </code></pre>
 <p>This constant will always be a round number of pixels (so a line defined by it can look crisp) and will try to match the standard width of a thin line on the underlying platform. However, you should not rely on it being a constant size, because on different platforms and screen densities its value may be calculated differently.</p>
@@ -170,8 +175,8 @@ StyleSheet<span class="token punctuation">.</span><span class="token function">f
 <p>A very common pattern is to create overlays with position absolute and zero positioning (<code>position: 'absolute', left: 0, right: 0, top: 0, bottom: 0</code>), so <code>absoluteFill</code> can be used for convenience and to reduce duplication of these repeated styles. If you want, absoluteFill can be used to create a customized entry in a StyleSheet, e.g.:</p>
 <pre><code class="hljs css language-jsx"><span class="token keyword">const</span> styles <span class="token operator">=</span> StyleSheet<span class="token punctuation">.</span><span class="token function">create</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
   wrapper<span class="token punctuation">:</span> <span class="token punctuation">{</span>
-    <span class="token operator">...</span>StyleSheet<span class="token punctuation">.</span>absoluteFill<span class="token punctuation">,</span>
-  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+    <span class="token operator">...</span>StyleSheet<span class="token punctuation">.</span>absoluteFill
+  <span class="token punctuation">}</span>
 <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
 </code></pre>
 <hr>
@@ -181,8 +186,8 @@ StyleSheet<span class="token punctuation">.</span><span class="token function">f
   wrapper<span class="token punctuation">:</span> <span class="token punctuation">{</span>
     <span class="token operator">...</span>StyleSheet<span class="token punctuation">.</span>absoluteFillObject<span class="token punctuation">,</span>
     top<span class="token punctuation">:</span> <span class="token number">10</span><span class="token punctuation">,</span>
-    backgroundColor<span class="token punctuation">:</span> <span class="token string">'transparent'</span><span class="token punctuation">,</span>
-  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+    backgroundColor<span class="token punctuation">:</span> <span class="token string">'transparent'</span>
+  <span class="token punctuation">}</span>
 <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
 </code></pre>
 <hr>

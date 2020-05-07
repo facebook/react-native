@@ -121,7 +121,7 @@ ignite new MyTSProject
 </ol>
 <pre><code class="hljs css language-js">module<span class="token punctuation">.</span>exports <span class="token operator">=</span> <span class="token punctuation">{</span>
   preset<span class="token punctuation">:</span> <span class="token string">'react-native'</span><span class="token punctuation">,</span>
-  moduleFileExtensions<span class="token punctuation">:</span> <span class="token punctuation">[</span><span class="token string">'ts'</span><span class="token punctuation">,</span> <span class="token string">'tsx'</span><span class="token punctuation">,</span> <span class="token string">'js'</span><span class="token punctuation">,</span> <span class="token string">'jsx'</span><span class="token punctuation">,</span> <span class="token string">'json'</span><span class="token punctuation">,</span> <span class="token string">'node'</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
+  moduleFileExtensions<span class="token punctuation">:</span> <span class="token punctuation">[</span><span class="token string">'ts'</span><span class="token punctuation">,</span> <span class="token string">'tsx'</span><span class="token punctuation">,</span> <span class="token string">'js'</span><span class="token punctuation">,</span> <span class="token string">'jsx'</span><span class="token punctuation">,</span> <span class="token string">'json'</span><span class="token punctuation">,</span> <span class="token string">'node'</span><span class="token punctuation">]</span>
 <span class="token punctuation">}</span><span class="token punctuation">;</span>
 </code></pre>
 <ol start="4">
@@ -139,7 +139,7 @@ ignite new MyTSProject
 <p>You can provide an interface for a React Component's <a href="/docs/props.html">Props</a> and <a href="/docs/state.html">State</a> via <code>React.Component&lt;Props, State&gt;</code> which will provide type-checking and editor auto-completing when working with that component in JSX.</p>
 <pre><code class="hljs css language-tsx"><span class="token comment">// components/Hello.tsx</span>
 <span class="token keyword">import</span> React <span class="token keyword">from</span> <span class="token string">'react'</span><span class="token punctuation">;</span>
-<span class="token keyword">import</span> <span class="token punctuation">{</span>Button<span class="token punctuation">,</span> StyleSheet<span class="token punctuation">,</span> Text<span class="token punctuation">,</span> View<span class="token punctuation">}</span> <span class="token keyword">from</span> <span class="token string">'react-native'</span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token punctuation">{</span> Button<span class="token punctuation">,</span> StyleSheet<span class="token punctuation">,</span> Text<span class="token punctuation">,</span> View <span class="token punctuation">}</span> <span class="token keyword">from</span> <span class="token string">'react-native'</span><span class="token punctuation">;</span>
 
 <span class="token keyword">export</span> <span class="token keyword">interface</span> <span class="token class-name">Props</span> <span class="token punctuation">{</span>
   name<span class="token punctuation">:</span> <span class="token builtin">string</span><span class="token punctuation">;</span>
@@ -148,18 +148,21 @@ ignite new MyTSProject
 
 <span class="token keyword">const</span> Hello<span class="token punctuation">:</span> React<span class="token punctuation">.</span><span class="token constant">FC</span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span><span class="token class-name">Props</span></span><span class="token punctuation">></span></span><span class="token plain-text"> = (props) => </span><span class="token punctuation">{</span>
   <span class="token keyword">const</span> <span class="token punctuation">[</span>enthusiasmLevel<span class="token punctuation">,</span> setEnthusiasmLevel<span class="token punctuation">]</span> <span class="token operator">=</span> React<span class="token punctuation">.</span><span class="token function">useState</span><span class="token punctuation">(</span>
-    props<span class="token punctuation">.</span>enthusiasmLevel<span class="token punctuation">,</span>
+    props<span class="token punctuation">.</span>enthusiasmLevel
   <span class="token punctuation">)</span><span class="token punctuation">;</span>
 
-  <span class="token keyword">const</span> <span class="token function-variable function">onIncrement</span> <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token function">setEnthusiasmLevel</span><span class="token punctuation">(</span><span class="token punctuation">(</span>enthusiasmLevel <span class="token operator">||</span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token operator">+</span> <span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-  <span class="token keyword">const</span> <span class="token function-variable function">onDecrement</span> <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token function">setEnthusiasmLevel</span><span class="token punctuation">(</span><span class="token punctuation">(</span>enthusiasmLevel <span class="token operator">||</span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token operator">-</span> <span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token keyword">const</span> <span class="token function-variable function">onIncrement</span> <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=></span>
+    <span class="token function">setEnthusiasmLevel</span><span class="token punctuation">(</span><span class="token punctuation">(</span>enthusiasmLevel <span class="token operator">||</span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token operator">+</span> <span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token keyword">const</span> <span class="token function-variable function">onDecrement</span> <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=></span>
+    <span class="token function">setEnthusiasmLevel</span><span class="token punctuation">(</span><span class="token punctuation">(</span>enthusiasmLevel <span class="token operator">||</span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token operator">-</span> <span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
 
   <span class="token keyword">const</span> <span class="token function-variable function">getExclamationMarks</span> <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token parameter">numChars<span class="token punctuation">:</span> <span class="token builtin">number</span></span><span class="token punctuation">)</span> <span class="token operator">=></span>
     <span class="token function">Array</span><span class="token punctuation">(</span>numChars <span class="token operator">+</span> <span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">join</span><span class="token punctuation">(</span><span class="token string">'!'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
   <span class="token keyword">return</span> <span class="token punctuation">(</span>
     <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span><span class="token class-name">View</span></span> <span class="token attr-name">style</span><span class="token script language-javascript"><span class="token script-punctuation punctuation">=</span><span class="token punctuation">{</span>styles<span class="token punctuation">.</span>root<span class="token punctuation">}</span></span><span class="token punctuation">></span></span><span class="token plain-text">
       </span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span><span class="token class-name">Text</span></span> <span class="token attr-name">style</span><span class="token script language-javascript"><span class="token script-punctuation punctuation">=</span><span class="token punctuation">{</span>styles<span class="token punctuation">.</span>greeting<span class="token punctuation">}</span></span><span class="token punctuation">></span></span><span class="token plain-text">
-        Hello </span><span class="token punctuation">{</span>props<span class="token punctuation">.</span>name <span class="token operator">+</span> <span class="token function">getExclamationMarks</span><span class="token punctuation">(</span>enthusiasmLevel <span class="token operator">||</span> <span class="token number">0</span><span class="token punctuation">)</span><span class="token punctuation">}</span><span class="token plain-text">
+        Hello</span><span class="token punctuation">{</span><span class="token string">' '</span><span class="token punctuation">}</span><span class="token plain-text">
+        </span><span class="token punctuation">{</span>props<span class="token punctuation">.</span>name <span class="token operator">+</span> <span class="token function">getExclamationMarks</span><span class="token punctuation">(</span>enthusiasmLevel <span class="token operator">||</span> <span class="token number">0</span><span class="token punctuation">)</span><span class="token punctuation">}</span><span class="token plain-text">
       </span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span><span class="token class-name">Text</span></span><span class="token punctuation">></span></span><span class="token plain-text">
 
       </span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span><span class="token class-name">View</span></span> <span class="token attr-name">style</span><span class="token script language-javascript"><span class="token script-punctuation punctuation">=</span><span class="token punctuation">{</span>styles<span class="token punctuation">.</span>buttons<span class="token punctuation">}</span></span><span class="token punctuation">></span></span><span class="token plain-text">
@@ -189,23 +192,23 @@ ignite new MyTSProject
 const styles = StyleSheet.create(</span><span class="token punctuation">{</span>
   root<span class="token punctuation">:</span> <span class="token punctuation">{</span>
     alignItems<span class="token punctuation">:</span> <span class="token string">'center'</span><span class="token punctuation">,</span>
-    alignSelf<span class="token punctuation">:</span> <span class="token string">'center'</span><span class="token punctuation">,</span>
+    alignSelf<span class="token punctuation">:</span> <span class="token string">'center'</span>
   <span class="token punctuation">}</span><span class="token punctuation">,</span>
   buttons<span class="token punctuation">:</span> <span class="token punctuation">{</span>
     flexDirection<span class="token punctuation">:</span> <span class="token string">'row'</span><span class="token punctuation">,</span>
     minHeight<span class="token punctuation">:</span> <span class="token number">70</span><span class="token punctuation">,</span>
     alignItems<span class="token punctuation">:</span> <span class="token string">'stretch'</span><span class="token punctuation">,</span>
     alignSelf<span class="token punctuation">:</span> <span class="token string">'center'</span><span class="token punctuation">,</span>
-    borderWidth<span class="token punctuation">:</span> <span class="token number">5</span><span class="token punctuation">,</span>
+    borderWidth<span class="token punctuation">:</span> <span class="token number">5</span>
   <span class="token punctuation">}</span><span class="token punctuation">,</span>
   button<span class="token punctuation">:</span> <span class="token punctuation">{</span>
     flex<span class="token punctuation">:</span> <span class="token number">1</span><span class="token punctuation">,</span>
-    paddingVertical<span class="token punctuation">:</span> <span class="token number">0</span><span class="token punctuation">,</span>
+    paddingVertical<span class="token punctuation">:</span> <span class="token number">0</span>
   <span class="token punctuation">}</span><span class="token punctuation">,</span>
   greeting<span class="token punctuation">:</span> <span class="token punctuation">{</span>
     color<span class="token punctuation">:</span> <span class="token string">'#999'</span><span class="token punctuation">,</span>
-    fontWeight<span class="token punctuation">:</span> <span class="token string">'bold'</span><span class="token punctuation">,</span>
-  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+    fontWeight<span class="token punctuation">:</span> <span class="token string">'bold'</span>
+  <span class="token punctuation">}</span>
 <span class="token punctuation">}</span><span class="token plain-text">);
 
 export default Hello;

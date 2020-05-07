@@ -68,7 +68,7 @@
                 };
               }
             });
-        </script></nav></div><div class="container mainContainer docsContainer"><div class="wrapper"><div class="post"><header class="postHeader"><a class="edit-page-link button" href="https://github.com/facebook/react-native-website/blob/master/docs/usecolorscheme.md" target="_blank" rel="noreferrer noopener">Edit</a><h1 id="__docusaurus" class="postHeaderTitle">useColorScheme</h1></header><article><div><span><pre><code class="hljs css language-jsx"><span class="token keyword">import</span> <span class="token punctuation">{</span>useColorScheme<span class="token punctuation">}</span> <span class="token keyword">from</span> <span class="token string">'react-native'</span><span class="token punctuation">;</span>
+        </script></nav></div><div class="container mainContainer docsContainer"><div class="wrapper"><div class="post"><header class="postHeader"><a class="edit-page-link button" href="https://github.com/facebook/react-native-website/blob/master/docs/usecolorscheme.md" target="_blank" rel="noreferrer noopener">Edit</a><h1 id="__docusaurus" class="postHeaderTitle">useColorScheme</h1></header><article><div><span><pre><code class="hljs css language-jsx"><span class="token keyword">import</span> <span class="token punctuation">{</span> useColorScheme <span class="token punctuation">}</span> <span class="token keyword">from</span> <span class="token string">'react-native'</span><span class="token punctuation">;</span>
 </code></pre>
 <p>The <code>useColorScheme</code> React hook provides and subscribes to color scheme updates from the <a href="appearance"><code>Appearance</code></a> module. The return value indicates the current user preferred color scheme. The value may be updated later, either through direct user action (e.g. theme selection in device settings) or on a schedule (e.g. light and dark themes that follow the day/night cycle).</p>
 <p>Supported color schemes:</p>
@@ -77,7 +77,7 @@
 <li><code>dark</code>: The user prefers a dark color theme.</li>
 <li>null: The user has not indicated a preferred color theme.</li>
 </ul>
-<pre><code class="hljs css language-jsx"><span class="token keyword">import</span> <span class="token punctuation">{</span>Text<span class="token punctuation">,</span> useColorScheme<span class="token punctuation">}</span> <span class="token keyword">from</span> <span class="token string">'react-native'</span><span class="token punctuation">;</span>
+<pre><code class="hljs css language-jsx"><span class="token keyword">import</span> <span class="token punctuation">{</span> Text<span class="token punctuation">,</span> useColorScheme <span class="token punctuation">}</span> <span class="token keyword">from</span> <span class="token string">'react-native'</span><span class="token punctuation">;</span>
 
 <span class="token keyword">const</span> <span class="token function-variable function">MyComponent</span> <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">{</span>
   <span class="token keyword">const</span> colorScheme <span class="token operator">=</span> <span class="token function">useColorScheme</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>

@@ -199,7 +199,7 @@ ReadableArray -> Array
  * 2. int duration: The duration of the toast. May be ToastExample.SHORT or
  *    ToastExample.LONG
  */</span>
-<span class="token keyword">import</span> <span class="token punctuation">{</span>NativeModules<span class="token punctuation">}</span> <span class="token keyword">from</span> <span class="token string">'react-native'</span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token punctuation">{</span> NativeModules <span class="token punctuation">}</span> <span class="token keyword">from</span> <span class="token string">'react-native'</span><span class="token punctuation">;</span>
 module<span class="token punctuation">.</span>exports <span class="token operator">=</span> NativeModules<span class="token punctuation">.</span>ToastExample<span class="token punctuation">;</span>
 </code></pre>
 <p>Now, from your other JavaScript file you can call the method like this:</p>
@@ -246,7 +246,7 @@ ToastExample<span class="token punctuation">.</span><span class="token function"
   <span class="token punctuation">}</span><span class="token punctuation">,</span>
   <span class="token punctuation">(</span><span class="token parameter">x<span class="token punctuation">,</span> y<span class="token punctuation">,</span> width<span class="token punctuation">,</span> height</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">{</span>
     console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>x <span class="token operator">+</span> <span class="token string">':'</span> <span class="token operator">+</span> y <span class="token operator">+</span> <span class="token string">':'</span> <span class="token operator">+</span> width <span class="token operator">+</span> <span class="token string">':'</span> <span class="token operator">+</span> height<span class="token punctuation">)</span><span class="token punctuation">;</span>
-  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">}</span>
 <span class="token punctuation">)</span><span class="token punctuation">;</span>
 </code></pre>
 <p>A native module is supposed to invoke its callback only once. It can, however, store the callback and invoke it later.</p>
@@ -286,12 +286,16 @@ ToastExample<span class="token punctuation">.</span><span class="token function"
 <p>The JavaScript counterpart of this method returns a Promise. This means you can use the <code>await</code> keyword within an async function to call it and wait for its result:</p>
 <pre><code class="hljs css language-jsx"><span class="token keyword">async</span> <span class="token keyword">function</span> <span class="token function">measureLayout</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
   <span class="token keyword">try</span> <span class="token punctuation">{</span>
-    <span class="token keyword">var</span> <span class="token punctuation">{</span>relativeX<span class="token punctuation">,</span> relativeY<span class="token punctuation">,</span> width<span class="token punctuation">,</span> height<span class="token punctuation">}</span> <span class="token operator">=</span> <span class="token keyword">await</span> UIManager<span class="token punctuation">.</span><span class="token function">measureLayout</span><span class="token punctuation">(</span>
-      <span class="token number">100</span><span class="token punctuation">,</span>
-      <span class="token number">100</span><span class="token punctuation">,</span>
-    <span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">var</span> <span class="token punctuation">{</span>
+      relativeX<span class="token punctuation">,</span>
+      relativeY<span class="token punctuation">,</span>
+      width<span class="token punctuation">,</span>
+      height
+    <span class="token punctuation">}</span> <span class="token operator">=</span> <span class="token keyword">await</span> UIManager<span class="token punctuation">.</span><span class="token function">measureLayout</span><span class="token punctuation">(</span><span class="token number">100</span><span class="token punctuation">,</span> <span class="token number">100</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
 
-    console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>relativeX <span class="token operator">+</span> <span class="token string">':'</span> <span class="token operator">+</span> relativeY <span class="token operator">+</span> <span class="token string">':'</span> <span class="token operator">+</span> width <span class="token operator">+</span> <span class="token string">':'</span> <span class="token operator">+</span> height<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>
+      relativeX <span class="token operator">+</span> <span class="token string">':'</span> <span class="token operator">+</span> relativeY <span class="token operator">+</span> <span class="token string">':'</span> <span class="token operator">+</span> width <span class="token operator">+</span> <span class="token string">':'</span> <span class="token operator">+</span> height
+    <span class="token punctuation">)</span><span class="token punctuation">;</span>
   <span class="token punctuation">}</span> <span class="token keyword">catch</span> <span class="token punctuation">(</span>e<span class="token punctuation">)</span> <span class="token punctuation">{</span>
     console<span class="token punctuation">.</span><span class="token function">error</span><span class="token punctuation">(</span>e<span class="token punctuation">)</span><span class="token punctuation">;</span>
   <span class="token punctuation">}</span>

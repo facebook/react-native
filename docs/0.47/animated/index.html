@@ -74,8 +74,8 @@
   <span class="token comment">// Animate value over time</span>
   <span class="token keyword">this</span><span class="token punctuation">.</span>state<span class="token punctuation">.</span>fadeAnim<span class="token punctuation">,</span> <span class="token comment">// The value to drive</span>
   <span class="token punctuation">{</span>
-    toValue<span class="token punctuation">:</span> <span class="token number">1</span><span class="token punctuation">,</span> <span class="token comment">// Animate to final value of 1</span>
-  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+    toValue<span class="token punctuation">:</span> <span class="token number">1</span> <span class="token comment">// Animate to final value of 1</span>
+  <span class="token punctuation">}</span>
 <span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">start</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment">// Start the animation</span>
 </code></pre>
 <p>Refer to the <a href="/docs/0.47/animations#animated-api">Animations</a> guide to see additional examples of <code>Animated</code> in action.</p>
@@ -398,7 +398,7 @@
   <span class="token function">constructor</span><span class="token punctuation">(</span><span class="token parameter">props</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
     <span class="token keyword">super</span><span class="token punctuation">(</span>props<span class="token punctuation">)</span><span class="token punctuation">;</span>
     <span class="token keyword">this</span><span class="token punctuation">.</span>state <span class="token operator">=</span> <span class="token punctuation">{</span>
-      pan<span class="token punctuation">:</span> <span class="token keyword">new</span> <span class="token class-name">Animated<span class="token punctuation">.</span>ValueXY</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token comment">// inits to zero</span>
+      pan<span class="token punctuation">:</span> <span class="token keyword">new</span> <span class="token class-name">Animated<span class="token punctuation">.</span>ValueXY</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token comment">// inits to zero</span>
     <span class="token punctuation">}</span><span class="token punctuation">;</span>
     <span class="token keyword">this</span><span class="token punctuation">.</span>state<span class="token punctuation">.</span>panResponder <span class="token operator">=</span> PanResponder<span class="token punctuation">.</span><span class="token function">create</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
       <span class="token function-variable function">onStartShouldSetPanResponder</span><span class="token punctuation">:</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token boolean">true</span><span class="token punctuation">,</span>
@@ -406,15 +406,15 @@
         <span class="token keyword">null</span><span class="token punctuation">,</span>
         <span class="token punctuation">{</span>
           dx<span class="token punctuation">:</span> <span class="token keyword">this</span><span class="token punctuation">.</span>state<span class="token punctuation">.</span>pan<span class="token punctuation">.</span>x<span class="token punctuation">,</span> <span class="token comment">// x,y are Animated.Value</span>
-          dy<span class="token punctuation">:</span> <span class="token keyword">this</span><span class="token punctuation">.</span>state<span class="token punctuation">.</span>pan<span class="token punctuation">.</span>y<span class="token punctuation">,</span>
-        <span class="token punctuation">}</span><span class="token punctuation">,</span>
+          dy<span class="token punctuation">:</span> <span class="token keyword">this</span><span class="token punctuation">.</span>state<span class="token punctuation">.</span>pan<span class="token punctuation">.</span>y
+        <span class="token punctuation">}</span>
       <span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
       <span class="token function-variable function">onPanResponderRelease</span><span class="token punctuation">:</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">{</span>
         Animated<span class="token punctuation">.</span><span class="token function">spring</span><span class="token punctuation">(</span>
           <span class="token keyword">this</span><span class="token punctuation">.</span>state<span class="token punctuation">.</span>pan<span class="token punctuation">,</span> <span class="token comment">// Auto-multiplexed</span>
-          <span class="token punctuation">{</span>toValue<span class="token punctuation">:</span> <span class="token punctuation">{</span>x<span class="token punctuation">:</span> <span class="token number">0</span><span class="token punctuation">,</span> y<span class="token punctuation">:</span> <span class="token number">0</span><span class="token punctuation">}</span><span class="token punctuation">}</span><span class="token punctuation">,</span> <span class="token comment">// Back to zero</span>
+          <span class="token punctuation">{</span> toValue<span class="token punctuation">:</span> <span class="token punctuation">{</span> x<span class="token punctuation">:</span> <span class="token number">0</span><span class="token punctuation">,</span> y<span class="token punctuation">:</span> <span class="token number">0</span> <span class="token punctuation">}</span> <span class="token punctuation">}</span> <span class="token comment">// Back to zero</span>
         <span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">start</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-      <span class="token punctuation">}</span><span class="token punctuation">,</span>
+      <span class="token punctuation">}</span>
     <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
   <span class="token punctuation">}</span>
   <span class="token function">render</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>

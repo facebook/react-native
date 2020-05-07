@@ -112,9 +112,12 @@ RCT_EXPORT_METHOD(addEvent:(<span class="hljs-built_in">NSString</span> *)name l
 <span class="hljs-keyword">@end</span>
 </code></pre>
 <p>Now, from your JavaScript file you can call the method like this:</p>
-<pre><code class="hljs css language-jsx"><span class="token keyword">import</span> <span class="token punctuation">{</span>NativeModules<span class="token punctuation">}</span> <span class="token keyword">from</span> <span class="token string">'react-native'</span><span class="token punctuation">;</span>
+<pre><code class="hljs css language-jsx"><span class="token keyword">import</span> <span class="token punctuation">{</span> NativeModules <span class="token punctuation">}</span> <span class="token keyword">from</span> <span class="token string">'react-native'</span><span class="token punctuation">;</span>
 <span class="token keyword">var</span> CalendarManager <span class="token operator">=</span> NativeModules<span class="token punctuation">.</span>CalendarManager<span class="token punctuation">;</span>
-CalendarManager<span class="token punctuation">.</span><span class="token function">addEvent</span><span class="token punctuation">(</span><span class="token string">'Birthday Party'</span><span class="token punctuation">,</span> <span class="token string">'4 Privet Drive, Surrey'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+CalendarManager<span class="token punctuation">.</span><span class="token function">addEvent</span><span class="token punctuation">(</span>
+  <span class="token string">'Birthday Party'</span><span class="token punctuation">,</span>
+  <span class="token string">'4 Privet Drive, Surrey'</span>
+<span class="token punctuation">)</span><span class="token punctuation">;</span>
 </code></pre>
 <blockquote>
 <p><strong>NOTE</strong>: JavaScript method names</p>
@@ -154,14 +157,14 @@ CalendarManager<span class="token punctuation">.</span><span class="token functi
 <pre><code class="hljs css language-jsx">CalendarManager<span class="token punctuation">.</span><span class="token function">addEvent</span><span class="token punctuation">(</span>
   <span class="token string">'Birthday Party'</span><span class="token punctuation">,</span>
   <span class="token string">'4 Privet Drive, Surrey'</span><span class="token punctuation">,</span>
-  date<span class="token punctuation">.</span><span class="token function">getTime</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+  date<span class="token punctuation">.</span><span class="token function">getTime</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
 <span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment">// passing date as number of milliseconds since Unix epoch</span>
 </code></pre>
 <p>or</p>
 <pre><code class="hljs css language-jsx">CalendarManager<span class="token punctuation">.</span><span class="token function">addEvent</span><span class="token punctuation">(</span>
   <span class="token string">'Birthday Party'</span><span class="token punctuation">,</span>
   <span class="token string">'4 Privet Drive, Surrey'</span><span class="token punctuation">,</span>
-  date<span class="token punctuation">.</span><span class="token function">toISOString</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+  date<span class="token punctuation">.</span><span class="token function">toISOString</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
 <span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment">// passing date as ISO-8601 string</span>
 </code></pre>
 <p>And both values would get converted correctly to the native <code>NSDate</code>. A bad value, like an <code>Array</code>, would generate a helpful &quot;RedBox&quot; error message.</p>
@@ -179,7 +182,7 @@ RCT_EXPORT_METHOD(addEvent:(<span class="hljs-built_in">NSString</span> *)name d
 <pre><code class="hljs css language-jsx">CalendarManager<span class="token punctuation">.</span><span class="token function">addEvent</span><span class="token punctuation">(</span><span class="token string">'Birthday Party'</span><span class="token punctuation">,</span> <span class="token punctuation">{</span>
   location<span class="token punctuation">:</span> <span class="token string">'4 Privet Drive, Surrey'</span><span class="token punctuation">,</span>
   time<span class="token punctuation">:</span> date<span class="token punctuation">.</span><span class="token function">getTime</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
-  description<span class="token punctuation">:</span> <span class="token string">'...'</span><span class="token punctuation">,</span>
+  description<span class="token punctuation">:</span> <span class="token string">'...'</span>
 <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
 </code></pre>
 <blockquote>
@@ -203,7 +206,7 @@ RCT_EXPORT_METHOD(addEvent:(<span class="hljs-built_in">NSString</span> *)name d
   <span class="token keyword">if</span> <span class="token punctuation">(</span>error<span class="token punctuation">)</span> <span class="token punctuation">{</span>
     console<span class="token punctuation">.</span><span class="token function">error</span><span class="token punctuation">(</span>error<span class="token punctuation">)</span><span class="token punctuation">;</span>
   <span class="token punctuation">}</span> <span class="token keyword">else</span> <span class="token punctuation">{</span>
-    <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">setState</span><span class="token punctuation">(</span><span class="token punctuation">{</span>events<span class="token punctuation">:</span> events<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">setState</span><span class="token punctuation">(</span><span class="token punctuation">{</span> events<span class="token punctuation">:</span> events <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
   <span class="token punctuation">}</span>
 <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
 </code></pre>
@@ -230,7 +233,7 @@ RCT_EXPORT_METHOD(addEvent:(<span class="hljs-built_in">NSString</span> *)name d
   <span class="token keyword">try</span> <span class="token punctuation">{</span>
     <span class="token keyword">var</span> events <span class="token operator">=</span> <span class="token keyword">await</span> CalendarManager<span class="token punctuation">.</span><span class="token function">findEvents</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
 
-    <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">setState</span><span class="token punctuation">(</span><span class="token punctuation">{</span>events<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">setState</span><span class="token punctuation">(</span><span class="token punctuation">{</span> events <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
   <span class="token punctuation">}</span> <span class="token keyword">catch</span> <span class="token punctuation">(</span>e<span class="token punctuation">)</span> <span class="token punctuation">{</span>
     console<span class="token punctuation">.</span><span class="token function">error</span><span class="token punctuation">(</span>e<span class="token punctuation">)</span><span class="token punctuation">;</span>
   <span class="token punctuation">}</span>

@@ -108,9 +108,11 @@
     <span class="token keyword">this</span><span class="token punctuation">.</span>_panResponder <span class="token operator">=</span> PanResponder<span class="token punctuation">.</span><span class="token function">create</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
       <span class="token comment">// Ask to be the responder:</span>
       <span class="token function-variable function">onStartShouldSetPanResponder</span><span class="token punctuation">:</span> <span class="token punctuation">(</span><span class="token parameter">evt<span class="token punctuation">,</span> gestureState</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token boolean">true</span><span class="token punctuation">,</span>
-      <span class="token function-variable function">onStartShouldSetPanResponderCapture</span><span class="token punctuation">:</span> <span class="token punctuation">(</span><span class="token parameter">evt<span class="token punctuation">,</span> gestureState</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token boolean">true</span><span class="token punctuation">,</span>
+      <span class="token function-variable function">onStartShouldSetPanResponderCapture</span><span class="token punctuation">:</span> <span class="token punctuation">(</span><span class="token parameter">evt<span class="token punctuation">,</span> gestureState</span><span class="token punctuation">)</span> <span class="token operator">=></span>
+        <span class="token boolean">true</span><span class="token punctuation">,</span>
       <span class="token function-variable function">onMoveShouldSetPanResponder</span><span class="token punctuation">:</span> <span class="token punctuation">(</span><span class="token parameter">evt<span class="token punctuation">,</span> gestureState</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token boolean">true</span><span class="token punctuation">,</span>
-      <span class="token function-variable function">onMoveShouldSetPanResponderCapture</span><span class="token punctuation">:</span> <span class="token punctuation">(</span><span class="token parameter">evt<span class="token punctuation">,</span> gestureState</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token boolean">true</span><span class="token punctuation">,</span>
+      <span class="token function-variable function">onMoveShouldSetPanResponderCapture</span><span class="token punctuation">:</span> <span class="token punctuation">(</span><span class="token parameter">evt<span class="token punctuation">,</span> gestureState</span><span class="token punctuation">)</span> <span class="token operator">=></span>
+        <span class="token boolean">true</span><span class="token punctuation">,</span>
 
       <span class="token function-variable function">onPanResponderGrant</span><span class="token punctuation">:</span> <span class="token punctuation">(</span><span class="token parameter">evt<span class="token punctuation">,</span> gestureState</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">{</span>
         <span class="token comment">// The gesture has started. Show visual feedback so the user knows</span>
@@ -122,7 +124,8 @@
         <span class="token comment">// The accumulated gesture distance since becoming responder is</span>
         <span class="token comment">// gestureState.d{x,y}</span>
       <span class="token punctuation">}</span><span class="token punctuation">,</span>
-      <span class="token function-variable function">onPanResponderTerminationRequest</span><span class="token punctuation">:</span> <span class="token punctuation">(</span><span class="token parameter">evt<span class="token punctuation">,</span> gestureState</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token boolean">true</span><span class="token punctuation">,</span>
+      <span class="token function-variable function">onPanResponderTerminationRequest</span><span class="token punctuation">:</span> <span class="token punctuation">(</span><span class="token parameter">evt<span class="token punctuation">,</span> gestureState</span><span class="token punctuation">)</span> <span class="token operator">=></span>
+        <span class="token boolean">true</span><span class="token punctuation">,</span>
       <span class="token function-variable function">onPanResponderRelease</span><span class="token punctuation">:</span> <span class="token punctuation">(</span><span class="token parameter">evt<span class="token punctuation">,</span> gestureState</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">{</span>
         <span class="token comment">// The user has released all touches while this view is the</span>
         <span class="token comment">// responder. This typically means a gesture has succeeded</span>
@@ -135,7 +138,7 @@
         <span class="token comment">// Returns whether this component should block native components from becoming the JS</span>
         <span class="token comment">// responder. Returns true by default. Is currently only supported on android.</span>
         <span class="token keyword">return</span> <span class="token boolean">true</span><span class="token punctuation">;</span>
-      <span class="token punctuation">}</span><span class="token punctuation">,</span>
+      <span class="token punctuation">}</span>
     <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
   <span class="token punctuation">}</span>
 

@@ -18,7 +18,10 @@
 <p>The <code>AsyncStorage</code> JavaScript code is a facade that provides a clear JavaScript API, real <code>Error</code> objects, and non-multi functions. Each method in the API returns a <code>Promise</code> object.</p>
 <p>Persisting data:</p>
 <pre><code class="hljs css language-jsx"><span class="token keyword">try</span> <span class="token punctuation">{</span>
-  <span class="token keyword">await</span> AsyncStorage<span class="token punctuation">.</span><span class="token function">setItem</span><span class="token punctuation">(</span><span class="token string">'@MySuperStore:key'</span><span class="token punctuation">,</span> <span class="token string">'I like to save it.'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token keyword">await</span> AsyncStorage<span class="token punctuation">.</span><span class="token function">setItem</span><span class="token punctuation">(</span>
+    <span class="token string">'@MySuperStore:key'</span><span class="token punctuation">,</span>
+    <span class="token string">'I like to save it.'</span>
+  <span class="token punctuation">)</span><span class="token punctuation">;</span>
 <span class="token punctuation">}</span> <span class="token keyword">catch</span> <span class="token punctuation">(</span>error<span class="token punctuation">)</span> <span class="token punctuation">{</span>
   <span class="token comment">// Error saving data</span>
 <span class="token punctuation">}</span>
@@ -38,21 +41,29 @@
 <pre><code class="hljs css language-jsx"><span class="token keyword">let</span> UID123_object <span class="token operator">=</span> <span class="token punctuation">{</span>
   name<span class="token punctuation">:</span> <span class="token string">'Chris'</span><span class="token punctuation">,</span>
   age<span class="token punctuation">:</span> <span class="token number">30</span><span class="token punctuation">,</span>
-  traits<span class="token punctuation">:</span> <span class="token punctuation">{</span>hair<span class="token punctuation">:</span> <span class="token string">'brown'</span><span class="token punctuation">,</span> eyes<span class="token punctuation">:</span> <span class="token string">'brown'</span><span class="token punctuation">}</span><span class="token punctuation">,</span>
+  traits<span class="token punctuation">:</span> <span class="token punctuation">{</span> hair<span class="token punctuation">:</span> <span class="token string">'brown'</span><span class="token punctuation">,</span> eyes<span class="token punctuation">:</span> <span class="token string">'brown'</span> <span class="token punctuation">}</span>
 <span class="token punctuation">}</span><span class="token punctuation">;</span>
 <span class="token comment">// You only need to define what will be added or updated</span>
 <span class="token keyword">let</span> UID123_delta <span class="token operator">=</span> <span class="token punctuation">{</span>
   age<span class="token punctuation">:</span> <span class="token number">31</span><span class="token punctuation">,</span>
-  traits<span class="token punctuation">:</span> <span class="token punctuation">{</span>eyes<span class="token punctuation">:</span> <span class="token string">'blue'</span><span class="token punctuation">,</span> shoe_size<span class="token punctuation">:</span> <span class="token number">10</span><span class="token punctuation">}</span><span class="token punctuation">,</span>
+  traits<span class="token punctuation">:</span> <span class="token punctuation">{</span> eyes<span class="token punctuation">:</span> <span class="token string">'blue'</span><span class="token punctuation">,</span> shoe_size<span class="token punctuation">:</span> <span class="token number">10</span> <span class="token punctuation">}</span>
 <span class="token punctuation">}</span><span class="token punctuation">;</span>
 
-AsyncStorage<span class="token punctuation">.</span><span class="token function">setItem</span><span class="token punctuation">(</span><span class="token string">'UID123'</span><span class="token punctuation">,</span> <span class="token constant">JSON</span><span class="token punctuation">.</span><span class="token function">stringify</span><span class="token punctuation">(</span>UID123_object<span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">{</span>
-  AsyncStorage<span class="token punctuation">.</span><span class="token function">mergeItem</span><span class="token punctuation">(</span><span class="token string">'UID123'</span><span class="token punctuation">,</span> <span class="token constant">JSON</span><span class="token punctuation">.</span><span class="token function">stringify</span><span class="token punctuation">(</span>UID123_delta<span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">{</span>
-    AsyncStorage<span class="token punctuation">.</span><span class="token function">getItem</span><span class="token punctuation">(</span><span class="token string">'UID123'</span><span class="token punctuation">,</span> <span class="token punctuation">(</span><span class="token parameter">err<span class="token punctuation">,</span> result</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">{</span>
-      console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>result<span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-  <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+AsyncStorage<span class="token punctuation">.</span><span class="token function">setItem</span><span class="token punctuation">(</span>
+  <span class="token string">'UID123'</span><span class="token punctuation">,</span>
+  <span class="token constant">JSON</span><span class="token punctuation">.</span><span class="token function">stringify</span><span class="token punctuation">(</span>UID123_object<span class="token punctuation">)</span><span class="token punctuation">,</span>
+  <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">{</span>
+    AsyncStorage<span class="token punctuation">.</span><span class="token function">mergeItem</span><span class="token punctuation">(</span>
+      <span class="token string">'UID123'</span><span class="token punctuation">,</span>
+      <span class="token constant">JSON</span><span class="token punctuation">.</span><span class="token function">stringify</span><span class="token punctuation">(</span>UID123_delta<span class="token punctuation">)</span><span class="token punctuation">,</span>
+      <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">{</span>
+        AsyncStorage<span class="token punctuation">.</span><span class="token function">getItem</span><span class="token punctuation">(</span><span class="token string">'UID123'</span><span class="token punctuation">,</span> <span class="token punctuation">(</span><span class="token parameter">err<span class="token punctuation">,</span> result</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">{</span>
+          console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>result<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+      <span class="token punctuation">}</span>
+    <span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">)</span><span class="token punctuation">;</span>
 
 <span class="token comment">// Console log result:</span>
 <span class="token comment">// => {'name':'Chris','age':31,'traits':</span>
@@ -63,35 +74,35 @@ AsyncStorage<span class="token punctuation">.</span><span class="token function"
 <span class="token keyword">let</span> UID234_object <span class="token operator">=</span> <span class="token punctuation">{</span>
   name<span class="token punctuation">:</span> <span class="token string">'Chris'</span><span class="token punctuation">,</span>
   age<span class="token punctuation">:</span> <span class="token number">30</span><span class="token punctuation">,</span>
-  traits<span class="token punctuation">:</span> <span class="token punctuation">{</span>hair<span class="token punctuation">:</span> <span class="token string">'brown'</span><span class="token punctuation">,</span> eyes<span class="token punctuation">:</span> <span class="token string">'brown'</span><span class="token punctuation">}</span><span class="token punctuation">,</span>
+  traits<span class="token punctuation">:</span> <span class="token punctuation">{</span> hair<span class="token punctuation">:</span> <span class="token string">'brown'</span><span class="token punctuation">,</span> eyes<span class="token punctuation">:</span> <span class="token string">'brown'</span> <span class="token punctuation">}</span>
 <span class="token punctuation">}</span><span class="token punctuation">;</span>
 
 <span class="token comment">// first user, delta values</span>
 <span class="token keyword">let</span> UID234_delta <span class="token operator">=</span> <span class="token punctuation">{</span>
   age<span class="token punctuation">:</span> <span class="token number">31</span><span class="token punctuation">,</span>
-  traits<span class="token punctuation">:</span> <span class="token punctuation">{</span>eyes<span class="token punctuation">:</span> <span class="token string">'blue'</span><span class="token punctuation">,</span> shoe_size<span class="token punctuation">:</span> <span class="token number">10</span><span class="token punctuation">}</span><span class="token punctuation">,</span>
+  traits<span class="token punctuation">:</span> <span class="token punctuation">{</span> eyes<span class="token punctuation">:</span> <span class="token string">'blue'</span><span class="token punctuation">,</span> shoe_size<span class="token punctuation">:</span> <span class="token number">10</span> <span class="token punctuation">}</span>
 <span class="token punctuation">}</span><span class="token punctuation">;</span>
 
 <span class="token comment">// second user, initial values</span>
 <span class="token keyword">let</span> UID345_object <span class="token operator">=</span> <span class="token punctuation">{</span>
   name<span class="token punctuation">:</span> <span class="token string">'Marge'</span><span class="token punctuation">,</span>
   age<span class="token punctuation">:</span> <span class="token number">25</span><span class="token punctuation">,</span>
-  traits<span class="token punctuation">:</span> <span class="token punctuation">{</span>hair<span class="token punctuation">:</span> <span class="token string">'blonde'</span><span class="token punctuation">,</span> eyes<span class="token punctuation">:</span> <span class="token string">'blue'</span><span class="token punctuation">}</span><span class="token punctuation">,</span>
+  traits<span class="token punctuation">:</span> <span class="token punctuation">{</span> hair<span class="token punctuation">:</span> <span class="token string">'blonde'</span><span class="token punctuation">,</span> eyes<span class="token punctuation">:</span> <span class="token string">'blue'</span> <span class="token punctuation">}</span>
 <span class="token punctuation">}</span><span class="token punctuation">;</span>
 
 <span class="token comment">// second user, delta values</span>
 <span class="token keyword">let</span> UID345_delta <span class="token operator">=</span> <span class="token punctuation">{</span>
   age<span class="token punctuation">:</span> <span class="token number">26</span><span class="token punctuation">,</span>
-  traits<span class="token punctuation">:</span> <span class="token punctuation">{</span>eyes<span class="token punctuation">:</span> <span class="token string">'green'</span><span class="token punctuation">,</span> shoe_size<span class="token punctuation">:</span> <span class="token number">6</span><span class="token punctuation">}</span><span class="token punctuation">,</span>
+  traits<span class="token punctuation">:</span> <span class="token punctuation">{</span> eyes<span class="token punctuation">:</span> <span class="token string">'green'</span><span class="token punctuation">,</span> shoe_size<span class="token punctuation">:</span> <span class="token number">6</span> <span class="token punctuation">}</span>
 <span class="token punctuation">}</span><span class="token punctuation">;</span>
 
 <span class="token keyword">let</span> multi_set_pairs <span class="token operator">=</span> <span class="token punctuation">[</span>
   <span class="token punctuation">[</span><span class="token string">'UID234'</span><span class="token punctuation">,</span> <span class="token constant">JSON</span><span class="token punctuation">.</span><span class="token function">stringify</span><span class="token punctuation">(</span>UID234_object<span class="token punctuation">)</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
-  <span class="token punctuation">[</span><span class="token string">'UID345'</span><span class="token punctuation">,</span> <span class="token constant">JSON</span><span class="token punctuation">.</span><span class="token function">stringify</span><span class="token punctuation">(</span>UID345_object<span class="token punctuation">)</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
+  <span class="token punctuation">[</span><span class="token string">'UID345'</span><span class="token punctuation">,</span> <span class="token constant">JSON</span><span class="token punctuation">.</span><span class="token function">stringify</span><span class="token punctuation">(</span>UID345_object<span class="token punctuation">)</span><span class="token punctuation">]</span>
 <span class="token punctuation">]</span><span class="token punctuation">;</span>
 <span class="token keyword">let</span> multi_merge_pairs <span class="token operator">=</span> <span class="token punctuation">[</span>
   <span class="token punctuation">[</span><span class="token string">'UID234'</span><span class="token punctuation">,</span> <span class="token constant">JSON</span><span class="token punctuation">.</span><span class="token function">stringify</span><span class="token punctuation">(</span>UID234_delta<span class="token punctuation">)</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
-  <span class="token punctuation">[</span><span class="token string">'UID345'</span><span class="token punctuation">,</span> <span class="token constant">JSON</span><span class="token punctuation">.</span><span class="token function">stringify</span><span class="token punctuation">(</span>UID345_delta<span class="token punctuation">)</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
+  <span class="token punctuation">[</span><span class="token string">'UID345'</span><span class="token punctuation">,</span> <span class="token constant">JSON</span><span class="token punctuation">.</span><span class="token function">stringify</span><span class="token punctuation">(</span>UID345_delta<span class="token punctuation">)</span><span class="token punctuation">]</span>
 <span class="token punctuation">]</span><span class="token punctuation">;</span>
 
 AsyncStorage<span class="token punctuation">.</span><span class="token function">multiSet</span><span class="token punctuation">(</span>multi_set_pairs<span class="token punctuation">,</span> <span class="token punctuation">(</span><span class="token parameter">err</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">{</span>

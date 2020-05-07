@@ -127,9 +127,13 @@ RCT_EXPORT_VIEW_PROPERTY(finalUrl, <span class="hljs-built_in">NSString</span>)
 <li>Return a <code>WebView</code> component with the prop <code>nativeConfig.component</code> set to your native component (see below)</li>
 </ul>
 <p>To get your native component, you must use <code>requireNativeComponent</code>: the same as for regular custom components. However, you must pass in an extra third argument, <code>WebView.extraNativeComponentConfig</code>. This third argument contains prop types that are only required for native code.</p>
-<pre><code class="hljs css language-jsx"><span class="token keyword">import</span> React<span class="token punctuation">,</span> <span class="token punctuation">{</span>Component<span class="token punctuation">,</span> PropTypes<span class="token punctuation">}</span> <span class="token keyword">from</span> <span class="token string">'react'</span><span class="token punctuation">;</span>
-<span class="token keyword">import</span> <span class="token punctuation">{</span>WebView<span class="token punctuation">,</span> requireNativeComponent<span class="token punctuation">,</span> NativeModules<span class="token punctuation">}</span> <span class="token keyword">from</span> <span class="token string">'react-native'</span><span class="token punctuation">;</span>
-<span class="token keyword">const</span> <span class="token punctuation">{</span>CustomWebViewManager<span class="token punctuation">}</span> <span class="token operator">=</span> NativeModules<span class="token punctuation">;</span>
+<pre><code class="hljs css language-jsx"><span class="token keyword">import</span> React<span class="token punctuation">,</span> <span class="token punctuation">{</span> Component<span class="token punctuation">,</span> PropTypes <span class="token punctuation">}</span> <span class="token keyword">from</span> <span class="token string">'react'</span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token punctuation">{</span>
+  WebView<span class="token punctuation">,</span>
+  requireNativeComponent<span class="token punctuation">,</span>
+  NativeModules
+<span class="token punctuation">}</span> <span class="token keyword">from</span> <span class="token string">'react-native'</span><span class="token punctuation">;</span>
+<span class="token keyword">const</span> <span class="token punctuation">{</span> CustomWebViewManager <span class="token punctuation">}</span> <span class="token operator">=</span> NativeModules<span class="token punctuation">;</span>
 
 <span class="token keyword">export</span> <span class="token keyword">default</span> <span class="token keyword">class</span> <span class="token class-name">CustomWebView</span> <span class="token keyword">extends</span> <span class="token class-name">Component</span> <span class="token punctuation">{</span>
   <span class="token keyword">static</span> propTypes <span class="token operator">=</span> WebView<span class="token punctuation">.</span>propTypes<span class="token punctuation">;</span>
@@ -140,7 +144,7 @@ RCT_EXPORT_VIEW_PROPERTY(finalUrl, <span class="hljs-built_in">NSString</span>)
         <span class="token spread"><span class="token punctuation">{</span><span class="token punctuation">...</span><span class="token attr-value">this</span><span class="token punctuation">.</span><span class="token attr-value">props</span><span class="token punctuation">}</span></span>
         <span class="token attr-name">nativeConfig</span><span class="token script language-javascript"><span class="token script-punctuation punctuation">=</span><span class="token punctuation">{</span><span class="token punctuation">{</span>
           component<span class="token punctuation">:</span> RCTCustomWebView<span class="token punctuation">,</span>
-          viewManager<span class="token punctuation">:</span> CustomWebViewManager<span class="token punctuation">,</span>
+          viewManager<span class="token punctuation">:</span> CustomWebViewManager
         <span class="token punctuation">}</span><span class="token punctuation">}</span></span>
       <span class="token punctuation">/></span></span>
     <span class="token punctuation">)</span><span class="token punctuation">;</span>
@@ -150,7 +154,7 @@ RCT_EXPORT_VIEW_PROPERTY(finalUrl, <span class="hljs-built_in">NSString</span>)
 <span class="token keyword">const</span> RCTCustomWebView <span class="token operator">=</span> <span class="token function">requireNativeComponent</span><span class="token punctuation">(</span>
   <span class="token string">'RCTCustomWebView'</span><span class="token punctuation">,</span>
   CustomWebView<span class="token punctuation">,</span>
-  WebView<span class="token punctuation">.</span>extraNativeComponentConfig<span class="token punctuation">,</span>
+  WebView<span class="token punctuation">.</span>extraNativeComponentConfig
 <span class="token punctuation">)</span><span class="token punctuation">;</span>
 </code></pre>
 <p>If you want to add custom props to your native component, you can use <code>nativeConfig.props</code> on the web view. For iOS, you should also set the <code>nativeConfig.viewManager</code> prop with your custom WebView ViewManager as in the example above.</p>
@@ -160,15 +164,15 @@ RCT_EXPORT_VIEW_PROPERTY(finalUrl, <span class="hljs-built_in">NSString</span>)
   <span class="token keyword">static</span> propTypes <span class="token operator">=</span> <span class="token punctuation">{</span>
     <span class="token operator">...</span>WebView<span class="token punctuation">.</span>propTypes<span class="token punctuation">,</span>
     finalUrl<span class="token punctuation">:</span> PropTypes<span class="token punctuation">.</span>string<span class="token punctuation">,</span>
-    onNavigationCompleted<span class="token punctuation">:</span> PropTypes<span class="token punctuation">.</span>func<span class="token punctuation">,</span>
+    onNavigationCompleted<span class="token punctuation">:</span> PropTypes<span class="token punctuation">.</span>func
   <span class="token punctuation">}</span><span class="token punctuation">;</span>
 
   <span class="token keyword">static</span> defaultProps <span class="token operator">=</span> <span class="token punctuation">{</span>
-    finalUrl<span class="token punctuation">:</span> <span class="token string">'about:blank'</span><span class="token punctuation">,</span>
+    finalUrl<span class="token punctuation">:</span> <span class="token string">'about:blank'</span>
   <span class="token punctuation">}</span><span class="token punctuation">;</span>
 
   <span class="token function-variable function">_onNavigationCompleted</span> <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token parameter">event</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">{</span>
-    <span class="token keyword">const</span> <span class="token punctuation">{</span>onNavigationCompleted<span class="token punctuation">}</span> <span class="token operator">=</span> <span class="token keyword">this</span><span class="token punctuation">.</span>props<span class="token punctuation">;</span>
+    <span class="token keyword">const</span> <span class="token punctuation">{</span> onNavigationCompleted <span class="token punctuation">}</span> <span class="token operator">=</span> <span class="token keyword">this</span><span class="token punctuation">.</span>props<span class="token punctuation">;</span>
     onNavigationCompleted <span class="token operator">&amp;&amp;</span> <span class="token function">onNavigationCompleted</span><span class="token punctuation">(</span>event<span class="token punctuation">)</span><span class="token punctuation">;</span>
   <span class="token punctuation">}</span><span class="token punctuation">;</span>
 
@@ -180,9 +184,9 @@ RCT_EXPORT_VIEW_PROPERTY(finalUrl, <span class="hljs-built_in">NSString</span>)
           component<span class="token punctuation">:</span> RCTCustomWebView<span class="token punctuation">,</span>
           props<span class="token punctuation">:</span> <span class="token punctuation">{</span>
             finalUrl<span class="token punctuation">:</span> <span class="token keyword">this</span><span class="token punctuation">.</span>props<span class="token punctuation">.</span>finalUrl<span class="token punctuation">,</span>
-            onNavigationCompleted<span class="token punctuation">:</span> <span class="token keyword">this</span><span class="token punctuation">.</span>_onNavigationCompleted<span class="token punctuation">,</span>
+            onNavigationCompleted<span class="token punctuation">:</span> <span class="token keyword">this</span><span class="token punctuation">.</span>_onNavigationCompleted
           <span class="token punctuation">}</span><span class="token punctuation">,</span>
-          viewManager<span class="token punctuation">:</span> CustomWebViewManager<span class="token punctuation">,</span>
+          viewManager<span class="token punctuation">:</span> CustomWebViewManager
         <span class="token punctuation">}</span><span class="token punctuation">}</span></span>
       <span class="token punctuation">/></span></span>
     <span class="token punctuation">)</span><span class="token punctuation">;</span>
@@ -198,9 +202,9 @@ RCT_EXPORT_VIEW_PROPERTY(finalUrl, <span class="hljs-built_in">NSString</span>)
     <span class="token operator">...</span>WebView<span class="token punctuation">.</span>extraNativeComponentConfig<span class="token punctuation">,</span>
     nativeOnly<span class="token punctuation">:</span> <span class="token punctuation">{</span>
       <span class="token operator">...</span>WebView<span class="token punctuation">.</span>extraNativeComponentConfig<span class="token punctuation">.</span>nativeOnly<span class="token punctuation">,</span>
-      onScrollToBottom<span class="token punctuation">:</span> <span class="token boolean">true</span><span class="token punctuation">,</span>
-    <span class="token punctuation">}</span><span class="token punctuation">,</span>
-  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+      onScrollToBottom<span class="token punctuation">:</span> <span class="token boolean">true</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span>
 <span class="token punctuation">)</span><span class="token punctuation">;</span>
 </code></pre>
 </span></div></article></div><div class="docs-prevnext"></div></div></div><nav class="onPageNav"><ul class="toc-headings"><li><a href="#native-code">Native Code</a><ul class="toc-headings"><li><a href="#adding-new-events-and-properties">Adding New Events and Properties</a></li><li><a href="#extending-existing-events">Extending Existing Events</a></li></ul></li><li><a href="#javascript-interface">JavaScript Interface</a></li></ul></nav></div><footer class="nav-footer" id="footer"><section class="sitemap"><div><h5>Docs</h5><a href="/docs/getting-started.html">Getting Started</a><a href="/docs/tutorial.html">Tutorial</a><a href="/docs/components-and-apis.html">Components and APIs</a><a href="/docs/more-resources.html">More Resources</a></div><div><h5>Community</h5><a href="/help.html">The React Native Community</a><a href="/showcase.html">Who&#x27;s using React Native?</a><a href="http://stackoverflow.com/questions/tagged/react-native" target="_blank">Ask Questions on Stack Overflow</a><a href="https://github.com/facebook/react-native/blob/master/CONTRIBUTING.md">Contributor Guide</a><a href="https://dev.to/t/reactnative" target="_blank">DEV Community</a></div><div><h5>More Resources</h5><a href="/blog/">Blog</a><a href="https://twitter.com/reactnative" target="_blank">Twitter</a><a href="https://github.com/facebook/react-native" target="_blank">GitHub</a><a href="https://reactjs.org" target="_blank">React</a></div></section><a href="https://code.facebook.com/projects/" target="_blank" class="fbOpenSource"><img src="/img/oss_logo.png" alt="Facebook Open Source" width="170" height="45"/></a><section class="copyright">Copyright © 2020 Facebook Inc.</section></footer></div><script type="text/javascript" src="https://cdn.jsdelivr.net/docsearch.js/1/docsearch.min.js"></script><script>window.fbAsyncInit = function() {FB.init({appId:'1677033832619985',xfbml:true,version:'v2.7'});};(function(d, s, id){var js, fjs = d.getElementsByTagName(s)[0];if (d.getElementById(id)) {return;}js = d.createElement(s); js.id = id;js.src = '//connect.facebook.net/en_US/sdk.js';fjs.parentNode.insertBefore(js, fjs);}(document, 'script','facebook-jssdk'));

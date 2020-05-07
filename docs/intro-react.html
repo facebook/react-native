@@ -115,7 +115,7 @@
         "
       ></div></div></div><p>Here is how you do it: To define your <code>Cat</code> component, first use JavaScript’s <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/import"><code>import</code></a> to import React and React Native’s <a href="/docs/next/text"><code>Text</code></a> Core Component:</p>
 <pre><code class="hljs css language-jsx"><span class="token keyword">import</span> React <span class="token keyword">from</span> <span class="token string">'react'</span><span class="token punctuation">;</span>
-<span class="token keyword">import</span> <span class="token punctuation">{</span>Text<span class="token punctuation">}</span> <span class="token keyword">from</span> <span class="token string">'react-native'</span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token punctuation">{</span> Text <span class="token punctuation">}</span> <span class="token keyword">from</span> <span class="token string">'react-native'</span><span class="token punctuation">;</span>
 </code></pre>
 <p>Your component starts as a function:</p>
 <pre><code class="hljs css language-jsx"><span class="token keyword">function</span> <span class="token function">Cat</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span><span class="token punctuation">}</span>
@@ -159,7 +159,7 @@
           width: 100%;
         "
       ></div></div></div><p>You additionally import <code>Component</code> from React:</p>
-<pre><code class="hljs css language-jsx"><span class="token keyword">import</span> React<span class="token punctuation">,</span> <span class="token punctuation">{</span>Component<span class="token punctuation">}</span> <span class="token keyword">from</span> <span class="token string">'react'</span><span class="token punctuation">;</span>
+<pre><code class="hljs css language-jsx"><span class="token keyword">import</span> React<span class="token punctuation">,</span> <span class="token punctuation">{</span> Component <span class="token punctuation">}</span> <span class="token keyword">from</span> <span class="token string">'react'</span><span class="token punctuation">;</span>
 </code></pre>
 <p>Your component starts as a class extending <code>Component</code> instead of as a function:</p>
 <pre><code class="hljs css language-jsx"><span class="token keyword">class</span> <span class="token class-name">Cat</span> <span class="token keyword">extends</span> <span class="token class-name">Component</span> <span class="token punctuation">{</span><span class="token punctuation">}</span>
@@ -470,7 +470,7 @@ export default function Cafe() {
           width: 100%;
         "
       ></div></div></div><p>First, you will want to import <code>useState</code> from React like so:</p>
-<pre><code class="hljs css language-jsx"><span class="token keyword">import</span> React<span class="token punctuation">,</span> <span class="token punctuation">{</span>useState<span class="token punctuation">}</span> <span class="token keyword">from</span> <span class="token string">'react'</span><span class="token punctuation">;</span>
+<pre><code class="hljs css language-jsx"><span class="token keyword">import</span> React<span class="token punctuation">,</span> <span class="token punctuation">{</span> useState <span class="token punctuation">}</span> <span class="token keyword">from</span> <span class="token string">'react'</span><span class="token punctuation">;</span>
 </code></pre>
 <p>Then you declare the component’s state by calling <code>useState</code> inside its function. In this example, <code>useState</code> creates an <code>isHungry</code> state variable:</p>
 <pre><code class="hljs css language-jsx"><span class="token keyword">function</span> <span class="token function">Cat</span><span class="token punctuation">(</span><span class="token parameter">props</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
@@ -570,11 +570,11 @@ export default class Cafe extends Component {
           width: 100%;
         "
       ></div></div></div><p>As always with class components, you must import the <code>Component</code> class from React:</p>
-<pre><code class="hljs css language-jsx"><span class="token keyword">import</span> React<span class="token punctuation">,</span> <span class="token punctuation">{</span>Component<span class="token punctuation">}</span> <span class="token keyword">from</span> <span class="token string">'react'</span><span class="token punctuation">;</span>
+<pre><code class="hljs css language-jsx"><span class="token keyword">import</span> React<span class="token punctuation">,</span> <span class="token punctuation">{</span> Component <span class="token punctuation">}</span> <span class="token keyword">from</span> <span class="token string">'react'</span><span class="token punctuation">;</span>
 </code></pre>
 <p>In class components, state is stored in a state object:</p>
 <pre><code class="hljs css language-jsx"><span class="token keyword">export</span> <span class="token keyword">class</span> <span class="token class-name">Cat</span> <span class="token keyword">extends</span> <span class="token class-name">Component</span> <span class="token punctuation">{</span>
-  state <span class="token operator">=</span> <span class="token punctuation">{</span>isHungry<span class="token punctuation">:</span> <span class="token boolean">true</span><span class="token punctuation">}</span><span class="token punctuation">;</span>
+  state <span class="token operator">=</span> <span class="token punctuation">{</span> isHungry<span class="token punctuation">:</span> <span class="token boolean">true</span> <span class="token punctuation">}</span><span class="token punctuation">;</span>
   <span class="token comment">//..</span>
 <span class="token punctuation">}</span>
 </code></pre>
@@ -599,7 +599,11 @@ export default class Cafe extends Component {
 <pre><code class="hljs css language-jsx"><span class="token operator">&lt;</span>Button
   <span class="token comment">// ..</span>
   disabled<span class="token operator">=</span><span class="token punctuation">{</span><span class="token operator">!</span><span class="token keyword">this</span><span class="token punctuation">.</span>state<span class="token punctuation">.</span>isHungry<span class="token punctuation">}</span>
-  title<span class="token operator">=</span><span class="token punctuation">{</span><span class="token keyword">this</span><span class="token punctuation">.</span>state<span class="token punctuation">.</span>isHungry <span class="token operator">?</span> <span class="token string">'Pour me some milk, please!'</span> <span class="token punctuation">:</span> <span class="token string">'Thank you!'</span><span class="token punctuation">}</span>
+  title<span class="token operator">=</span><span class="token punctuation">{</span>
+    <span class="token keyword">this</span><span class="token punctuation">.</span>state<span class="token punctuation">.</span>isHungry
+      <span class="token operator">?</span> <span class="token string">'Pour me some milk, please!'</span>
+      <span class="token punctuation">:</span> <span class="token string">'Thank you!'</span>
+  <span class="token punctuation">}</span>
 <span class="token operator">/</span><span class="token operator">></span>
 </code></pre>
 <p>Finally, put your cats inside a <code>Cafe</code> component:</p>

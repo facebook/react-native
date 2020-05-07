@@ -73,8 +73,12 @@
 </blockquote>
 <p>Android-only React component used to indicate that the app is loading or there is some activity in the app.</p>
 <p>Example:</p>
-<pre><code class="hljs css language-jsx"><span class="token keyword">import</span> React<span class="token punctuation">,</span> <span class="token punctuation">{</span>Component<span class="token punctuation">}</span> <span class="token keyword">from</span> <span class="token string">'react'</span><span class="token punctuation">;</span>
-<span class="token keyword">import</span> <span class="token punctuation">{</span>ProgressBarAndroid<span class="token punctuation">,</span> StyleSheet<span class="token punctuation">,</span> View<span class="token punctuation">}</span> <span class="token keyword">from</span> <span class="token string">'react-native'</span><span class="token punctuation">;</span>
+<pre><code class="hljs css language-jsx"><span class="token keyword">import</span> React<span class="token punctuation">,</span> <span class="token punctuation">{</span> Component <span class="token punctuation">}</span> <span class="token keyword">from</span> <span class="token string">'react'</span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token punctuation">{</span>
+  ProgressBarAndroid<span class="token punctuation">,</span>
+  StyleSheet<span class="token punctuation">,</span>
+  View
+<span class="token punctuation">}</span> <span class="token keyword">from</span> <span class="token string">'react-native'</span><span class="token punctuation">;</span>
 
 <span class="token keyword">export</span> <span class="token keyword">default</span> <span class="token keyword">class</span> <span class="token class-name">App</span> <span class="token keyword">extends</span> <span class="token class-name">Component</span> <span class="token punctuation">{</span>
   <span class="token function">render</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
@@ -82,7 +86,10 @@
       <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span><span class="token class-name">View</span></span> <span class="token attr-name">style</span><span class="token script language-javascript"><span class="token script-punctuation punctuation">=</span><span class="token punctuation">{</span>styles<span class="token punctuation">.</span>container<span class="token punctuation">}</span></span><span class="token punctuation">></span></span><span class="token plain-text">
         </span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span><span class="token class-name">ProgressBarAndroid</span></span> <span class="token punctuation">/></span></span><span class="token plain-text">
         </span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span><span class="token class-name">ProgressBarAndroid</span></span> <span class="token attr-name">styleAttr</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>Horizontal<span class="token punctuation">"</span></span> <span class="token punctuation">/></span></span><span class="token plain-text">
-        </span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span><span class="token class-name">ProgressBarAndroid</span></span> <span class="token attr-name">styleAttr</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>Horizontal<span class="token punctuation">"</span></span> <span class="token attr-name">color</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>#2196F3<span class="token punctuation">"</span></span> <span class="token punctuation">/></span></span><span class="token plain-text">
+        </span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span><span class="token class-name">ProgressBarAndroid</span></span>
+          <span class="token attr-name">styleAttr</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>Horizontal<span class="token punctuation">"</span></span>
+          <span class="token attr-name">color</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>#2196F3<span class="token punctuation">"</span></span>
+        <span class="token punctuation">/></span></span><span class="token plain-text">
         </span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span><span class="token class-name">ProgressBarAndroid</span></span>
           <span class="token attr-name">styleAttr</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>Horizontal<span class="token punctuation">"</span></span>
           <span class="token attr-name">indeterminate</span><span class="token script language-javascript"><span class="token script-punctuation punctuation">=</span><span class="token punctuation">{</span><span class="token boolean">false</span><span class="token punctuation">}</span></span>
@@ -97,8 +104,8 @@
   container<span class="token punctuation">:</span> <span class="token punctuation">{</span>
     flex<span class="token punctuation">:</span> <span class="token number">1</span><span class="token punctuation">,</span>
     justifyContent<span class="token punctuation">:</span> <span class="token string">'space-evenly'</span><span class="token punctuation">,</span>
-    padding<span class="token punctuation">:</span> <span class="token number">10</span><span class="token punctuation">,</span>
-  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+    padding<span class="token punctuation">:</span> <span class="token number">10</span>
+  <span class="token punctuation">}</span>
 <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
 </code></pre>
 <hr>

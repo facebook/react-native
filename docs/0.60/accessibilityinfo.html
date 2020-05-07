@@ -73,45 +73,49 @@
 <pre><code class="hljs css language-jsx"><span class="token keyword">class</span> <span class="token class-name">AccessibilityStatusExample</span> <span class="token keyword">extends</span> <span class="token class-name">React<span class="token punctuation">.</span>Component</span> <span class="token punctuation">{</span>
   state <span class="token operator">=</span> <span class="token punctuation">{</span>
     reduceMotionEnabled<span class="token punctuation">:</span> <span class="token boolean">false</span><span class="token punctuation">,</span>
-    screenReaderEnabled<span class="token punctuation">:</span> <span class="token boolean">false</span><span class="token punctuation">,</span>
+    screenReaderEnabled<span class="token punctuation">:</span> <span class="token boolean">false</span>
   <span class="token punctuation">}</span><span class="token punctuation">;</span>
 
   <span class="token function">componentDidMount</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
     AccessibilityInfo<span class="token punctuation">.</span><span class="token function">addEventListener</span><span class="token punctuation">(</span>
       <span class="token string">'reduceMotionChanged'</span><span class="token punctuation">,</span>
-      <span class="token keyword">this</span><span class="token punctuation">.</span>_handleReduceMotionToggled<span class="token punctuation">,</span>
+      <span class="token keyword">this</span><span class="token punctuation">.</span>_handleReduceMotionToggled
     <span class="token punctuation">)</span><span class="token punctuation">;</span>
     AccessibilityInfo<span class="token punctuation">.</span><span class="token function">addEventListener</span><span class="token punctuation">(</span>
       <span class="token string">'screenReaderChanged'</span><span class="token punctuation">,</span>
-      <span class="token keyword">this</span><span class="token punctuation">.</span>_handleScreenReaderToggled<span class="token punctuation">,</span>
+      <span class="token keyword">this</span><span class="token punctuation">.</span>_handleScreenReaderToggled
     <span class="token punctuation">)</span><span class="token punctuation">;</span>
 
-    AccessibilityInfo<span class="token punctuation">.</span><span class="token function">isReduceMotionEnabled</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">then</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token parameter">reduceMotionEnabled</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">{</span>
-      <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">setState</span><span class="token punctuation">(</span><span class="token punctuation">{</span>reduceMotionEnabled<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-    AccessibilityInfo<span class="token punctuation">.</span><span class="token function">isScreenReaderEnabled</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">then</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token parameter">screenReaderEnabled</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">{</span>
-      <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">setState</span><span class="token punctuation">(</span><span class="token punctuation">{</span>screenReaderEnabled<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    AccessibilityInfo<span class="token punctuation">.</span><span class="token function">isReduceMotionEnabled</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">then</span><span class="token punctuation">(</span>
+      <span class="token punctuation">(</span><span class="token parameter">reduceMotionEnabled</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">{</span>
+        <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">setState</span><span class="token punctuation">(</span><span class="token punctuation">{</span> reduceMotionEnabled <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+      <span class="token punctuation">}</span>
+    <span class="token punctuation">)</span><span class="token punctuation">;</span>
+    AccessibilityInfo<span class="token punctuation">.</span><span class="token function">isScreenReaderEnabled</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">then</span><span class="token punctuation">(</span>
+      <span class="token punctuation">(</span><span class="token parameter">screenReaderEnabled</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">{</span>
+        <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">setState</span><span class="token punctuation">(</span><span class="token punctuation">{</span> screenReaderEnabled <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+      <span class="token punctuation">}</span>
+    <span class="token punctuation">)</span><span class="token punctuation">;</span>
   <span class="token punctuation">}</span>
 
   <span class="token function">componentWillUnmount</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
     AccessibilityInfo<span class="token punctuation">.</span><span class="token function">removeEventListener</span><span class="token punctuation">(</span>
       <span class="token string">'reduceMotionChanged'</span><span class="token punctuation">,</span>
-      <span class="token keyword">this</span><span class="token punctuation">.</span>_handleReduceMotionToggled<span class="token punctuation">,</span>
+      <span class="token keyword">this</span><span class="token punctuation">.</span>_handleReduceMotionToggled
     <span class="token punctuation">)</span><span class="token punctuation">;</span>
 
     AccessibilityInfo<span class="token punctuation">.</span><span class="token function">removeEventListener</span><span class="token punctuation">(</span>
       <span class="token string">'screenReaderChanged'</span><span class="token punctuation">,</span>
-      <span class="token keyword">this</span><span class="token punctuation">.</span>_handleScreenReaderToggled<span class="token punctuation">,</span>
+      <span class="token keyword">this</span><span class="token punctuation">.</span>_handleScreenReaderToggled
     <span class="token punctuation">)</span><span class="token punctuation">;</span>
   <span class="token punctuation">}</span>
 
   <span class="token function-variable function">_handleReduceMotionToggled</span> <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token parameter">reduceMotionEnabled</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">{</span>
-    <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">setState</span><span class="token punctuation">(</span><span class="token punctuation">{</span>reduceMotionEnabled<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">setState</span><span class="token punctuation">(</span><span class="token punctuation">{</span> reduceMotionEnabled <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
   <span class="token punctuation">}</span><span class="token punctuation">;</span>
 
   <span class="token function-variable function">_handleScreenReaderToggled</span> <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token parameter">screenReaderEnabled</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">{</span>
-    <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">setState</span><span class="token punctuation">(</span><span class="token punctuation">{</span>screenReaderEnabled<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">setState</span><span class="token punctuation">(</span><span class="token punctuation">{</span> screenReaderEnabled <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
   <span class="token punctuation">}</span><span class="token punctuation">;</span>
 
   <span class="token function">render</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
@@ -119,11 +123,17 @@
       <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span><span class="token class-name">View</span></span><span class="token punctuation">></span></span><span class="token plain-text">
         </span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span><span class="token class-name">Text</span></span><span class="token punctuation">></span></span><span class="token plain-text">
           The reduce motion is</span><span class="token punctuation">{</span><span class="token string">' '</span><span class="token punctuation">}</span><span class="token plain-text">
-          </span><span class="token punctuation">{</span><span class="token keyword">this</span><span class="token punctuation">.</span>state<span class="token punctuation">.</span>reduceMotionEnabled <span class="token operator">?</span> <span class="token string">'enabled'</span> <span class="token punctuation">:</span> <span class="token string">'disabled'</span><span class="token punctuation">}</span><span class="token plain-text">.
+          </span><span class="token punctuation">{</span><span class="token keyword">this</span><span class="token punctuation">.</span>state<span class="token punctuation">.</span>reduceMotionEnabled
+            <span class="token operator">?</span> <span class="token string">'enabled'</span>
+            <span class="token punctuation">:</span> <span class="token string">'disabled'</span><span class="token punctuation">}</span><span class="token plain-text">
+          .
         </span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span><span class="token class-name">Text</span></span><span class="token punctuation">></span></span><span class="token plain-text">
         </span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span><span class="token class-name">Text</span></span><span class="token punctuation">></span></span><span class="token plain-text">
           The screen reader is</span><span class="token punctuation">{</span><span class="token string">' '</span><span class="token punctuation">}</span><span class="token plain-text">
-          </span><span class="token punctuation">{</span><span class="token keyword">this</span><span class="token punctuation">.</span>state<span class="token punctuation">.</span>screenReaderEnabled <span class="token operator">?</span> <span class="token string">'enabled'</span> <span class="token punctuation">:</span> <span class="token string">'disabled'</span><span class="token punctuation">}</span><span class="token plain-text">.
+          </span><span class="token punctuation">{</span><span class="token keyword">this</span><span class="token punctuation">.</span>state<span class="token punctuation">.</span>screenReaderEnabled
+            <span class="token operator">?</span> <span class="token string">'enabled'</span>
+            <span class="token punctuation">:</span> <span class="token string">'disabled'</span><span class="token punctuation">}</span><span class="token plain-text">
+          .
         </span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span><span class="token class-name">Text</span></span><span class="token punctuation">></span></span><span class="token plain-text">
       </span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span><span class="token class-name">View</span></span><span class="token punctuation">></span></span>
     <span class="token punctuation">)</span><span class="token punctuation">;</span>

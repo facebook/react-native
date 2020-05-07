@@ -80,12 +80,12 @@
   method<span class="token punctuation">:</span> <span class="token string">'POST'</span><span class="token punctuation">,</span>
   headers<span class="token punctuation">:</span> <span class="token punctuation">{</span>
     Accept<span class="token punctuation">:</span> <span class="token string">'application/json'</span><span class="token punctuation">,</span>
-    <span class="token string">'Content-Type'</span><span class="token punctuation">:</span> <span class="token string">'application/json'</span><span class="token punctuation">,</span>
+    <span class="token string">'Content-Type'</span><span class="token punctuation">:</span> <span class="token string">'application/json'</span>
   <span class="token punctuation">}</span><span class="token punctuation">,</span>
   body<span class="token punctuation">:</span> <span class="token constant">JSON</span><span class="token punctuation">.</span><span class="token function">stringify</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
     firstParam<span class="token punctuation">:</span> <span class="token string">'yourValue'</span><span class="token punctuation">,</span>
-    secondParam<span class="token punctuation">:</span> <span class="token string">'yourOtherValue'</span><span class="token punctuation">,</span>
-  <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+    secondParam<span class="token punctuation">:</span> <span class="token string">'yourOtherValue'</span>
+  <span class="token punctuation">}</span><span class="token punctuation">)</span>
 <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
 </code></pre>
 <p>Take a look at the <a href="https://developer.mozilla.org/en-US/docs/Web/API/Request">Fetch Request docs</a> for a full list of properties.</p>
@@ -106,7 +106,9 @@
 <p>You can also use the <code>async</code> / <code>await</code> syntax in a React Native app:</p>
 <pre><code class="hljs css language-jsx"><span class="token keyword">async</span> <span class="token keyword">function</span> <span class="token function">getMoviesFromApiAsync</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
   <span class="token keyword">try</span> <span class="token punctuation">{</span>
-    <span class="token keyword">let</span> response <span class="token operator">=</span> <span class="token keyword">await</span> <span class="token function">fetch</span><span class="token punctuation">(</span><span class="token string">'https://reactnative.dev/movies.json'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">let</span> response <span class="token operator">=</span> <span class="token keyword">await</span> <span class="token function">fetch</span><span class="token punctuation">(</span>
+      <span class="token string">'https://reactnative.dev/movies.json'</span>
+    <span class="token punctuation">)</span><span class="token punctuation">;</span>
     <span class="token keyword">let</span> json <span class="token operator">=</span> <span class="token keyword">await</span> response<span class="token punctuation">.</span><span class="token function">json</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
     <span class="token keyword">return</span> json<span class="token punctuation">.</span>movies<span class="token punctuation">;</span>
   <span class="token punctuation">}</span> <span class="token keyword">catch</span> <span class="token punctuation">(</span>error<span class="token punctuation">)</span> <span class="token punctuation">{</span>

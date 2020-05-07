@@ -199,12 +199,12 @@
 
 <span class="token function-variable function">_onDirectionChange</span> <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">{</span>
   I18nManager<span class="token punctuation">.</span><span class="token function">forceRTL</span><span class="token punctuation">(</span><span class="token operator">!</span><span class="token keyword">this</span><span class="token punctuation">.</span>state<span class="token punctuation">.</span>isRTL<span class="token punctuation">)</span><span class="token punctuation">;</span>
-  <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">setState</span><span class="token punctuation">(</span><span class="token punctuation">{</span>isRTL<span class="token punctuation">:</span> <span class="token operator">!</span><span class="token keyword">this</span><span class="token punctuation">.</span>state<span class="token punctuation">.</span>isRTL<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">setState</span><span class="token punctuation">(</span><span class="token punctuation">{</span> isRTL<span class="token punctuation">:</span> <span class="token operator">!</span><span class="token keyword">this</span><span class="token punctuation">.</span>state<span class="token punctuation">.</span>isRTL <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
   Alert<span class="token punctuation">.</span><span class="token function">alert</span><span class="token punctuation">(</span>
     <span class="token string">'Reload this page'</span><span class="token punctuation">,</span>
     <span class="token string">'Please reload this page to change the UI direction! '</span> <span class="token operator">+</span>
       <span class="token string">'All examples in this app will be affected. '</span> <span class="token operator">+</span>
-      <span class="token string">'Check them out to see what they look like in RTL layout.'</span><span class="token punctuation">,</span>
+      <span class="token string">'Check them out to see what they look like in RTL layout.'</span>
   <span class="token punctuation">)</span><span class="token punctuation">;</span>
 <span class="token punctuation">}</span><span class="token punctuation">;</span>
 </code></pre>

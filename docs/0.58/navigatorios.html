@@ -72,8 +72,13 @@
 <p>As the name implies, it is only available on iOS. Take a look at <a href="https://reactnavigation.org/"><code>React Navigation</code></a> for a cross-platform solution in JavaScript, or check out either of these components for native solutions: <a href="http://airbnb.io/native-navigation/">native-navigation</a>, <a href="https://github.com/wix/react-native-navigation">react-native-navigation</a>.</p>
 <p>To set up the navigator, provide the <code>initialRoute</code> prop with a route object. A route object is used to describe each scene that your app navigates to. <code>initialRoute</code> represents the first route in your navigator.</p>
 <pre><code class="hljs css language-jsx"><span class="token keyword">import</span> PropTypes <span class="token keyword">from</span> <span class="token string">'prop-types'</span><span class="token punctuation">;</span>
-<span class="token keyword">import</span> React<span class="token punctuation">,</span> <span class="token punctuation">{</span>Component<span class="token punctuation">}</span> <span class="token keyword">from</span> <span class="token string">'react'</span><span class="token punctuation">;</span>
-<span class="token keyword">import</span> <span class="token punctuation">{</span>NavigatorIOS<span class="token punctuation">,</span> Text<span class="token punctuation">,</span> TouchableHighlight<span class="token punctuation">,</span> View<span class="token punctuation">}</span> <span class="token keyword">from</span> <span class="token string">'react-native'</span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> React<span class="token punctuation">,</span> <span class="token punctuation">{</span> Component <span class="token punctuation">}</span> <span class="token keyword">from</span> <span class="token string">'react'</span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token punctuation">{</span>
+  NavigatorIOS<span class="token punctuation">,</span>
+  Text<span class="token punctuation">,</span>
+  TouchableHighlight<span class="token punctuation">,</span>
+  View
+<span class="token punctuation">}</span> <span class="token keyword">from</span> <span class="token string">'react-native'</span><span class="token punctuation">;</span>
 
 <span class="token keyword">export</span> <span class="token keyword">default</span> <span class="token keyword">class</span> <span class="token class-name">NavigatorIOSApp</span> <span class="token keyword">extends</span> <span class="token class-name">Component</span> <span class="token punctuation">{</span>
   <span class="token function">render</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
@@ -81,9 +86,9 @@
       <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span><span class="token class-name">NavigatorIOS</span></span>
         <span class="token attr-name">initialRoute</span><span class="token script language-javascript"><span class="token script-punctuation punctuation">=</span><span class="token punctuation">{</span><span class="token punctuation">{</span>
           component<span class="token punctuation">:</span> MyScene<span class="token punctuation">,</span>
-          title<span class="token punctuation">:</span> <span class="token string">'My Initial Scene'</span><span class="token punctuation">,</span>
+          title<span class="token punctuation">:</span> <span class="token string">'My Initial Scene'</span>
         <span class="token punctuation">}</span><span class="token punctuation">}</span></span>
-        <span class="token attr-name">style</span><span class="token script language-javascript"><span class="token script-punctuation punctuation">=</span><span class="token punctuation">{</span><span class="token punctuation">{</span>flex<span class="token punctuation">:</span> <span class="token number">1</span><span class="token punctuation">}</span><span class="token punctuation">}</span></span>
+        <span class="token attr-name">style</span><span class="token script language-javascript"><span class="token script-punctuation punctuation">=</span><span class="token punctuation">{</span><span class="token punctuation">{</span> flex<span class="token punctuation">:</span> <span class="token number">1</span> <span class="token punctuation">}</span><span class="token punctuation">}</span></span>
       <span class="token punctuation">/></span></span>
     <span class="token punctuation">)</span><span class="token punctuation">;</span>
   <span class="token punctuation">}</span>
@@ -92,12 +97,12 @@
 <span class="token keyword">class</span> <span class="token class-name">MyScene</span> <span class="token keyword">extends</span> <span class="token class-name">Component</span> <span class="token punctuation">{</span>
   <span class="token keyword">static</span> propTypes <span class="token operator">=</span> <span class="token punctuation">{</span>
     title<span class="token punctuation">:</span> PropTypes<span class="token punctuation">.</span>string<span class="token punctuation">.</span>isRequired<span class="token punctuation">,</span>
-    navigator<span class="token punctuation">:</span> PropTypes<span class="token punctuation">.</span>object<span class="token punctuation">.</span>isRequired<span class="token punctuation">,</span>
+    navigator<span class="token punctuation">:</span> PropTypes<span class="token punctuation">.</span>object<span class="token punctuation">.</span>isRequired
   <span class="token punctuation">}</span><span class="token punctuation">;</span>
 
   <span class="token function-variable function">_onForward</span> <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">{</span>
     <span class="token keyword">this</span><span class="token punctuation">.</span>props<span class="token punctuation">.</span>navigator<span class="token punctuation">.</span><span class="token function">push</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
-      title<span class="token punctuation">:</span> <span class="token string">'Scene'</span><span class="token punctuation">,</span>
+      title<span class="token punctuation">:</span> <span class="token string">'Scene'</span>
     <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
   <span class="token punctuation">}</span><span class="token punctuation">;</span>
 
@@ -137,11 +142,12 @@
     <span class="token keyword">const</span> nextRoute <span class="token operator">=</span> <span class="token punctuation">{</span>
       component<span class="token punctuation">:</span> MyView<span class="token punctuation">,</span>
       title<span class="token punctuation">:</span> <span class="token string">'Bar That'</span><span class="token punctuation">,</span>
-      passProps<span class="token punctuation">:</span> <span class="token punctuation">{</span>myProp<span class="token punctuation">:</span> <span class="token string">'bar'</span><span class="token punctuation">}</span><span class="token punctuation">,</span>
+      passProps<span class="token punctuation">:</span> <span class="token punctuation">{</span> myProp<span class="token punctuation">:</span> <span class="token string">'bar'</span> <span class="token punctuation">}</span>
     <span class="token punctuation">}</span><span class="token punctuation">;</span>
     <span class="token keyword">return</span> <span class="token punctuation">(</span>
-      <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span><span class="token class-name">TouchableHighlight</span></span> <span class="token attr-name">onPress</span><span class="token script language-javascript"><span class="token script-punctuation punctuation">=</span><span class="token punctuation">{</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">_handleNextPress</span><span class="token punctuation">(</span>nextRoute<span class="token punctuation">)</span><span class="token punctuation">}</span></span><span class="token punctuation">></span></span><span class="token plain-text">
-        </span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span><span class="token class-name">Text</span></span> <span class="token attr-name">style</span><span class="token script language-javascript"><span class="token script-punctuation punctuation">=</span><span class="token punctuation">{</span><span class="token punctuation">{</span>marginTop<span class="token punctuation">:</span> <span class="token number">200</span><span class="token punctuation">,</span> alignSelf<span class="token punctuation">:</span> <span class="token string">'center'</span><span class="token punctuation">}</span><span class="token punctuation">}</span></span><span class="token punctuation">></span></span><span class="token plain-text">
+      <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span><span class="token class-name">TouchableHighlight</span></span>
+        <span class="token attr-name">onPress</span><span class="token script language-javascript"><span class="token script-punctuation punctuation">=</span><span class="token punctuation">{</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">_handleNextPress</span><span class="token punctuation">(</span>nextRoute<span class="token punctuation">)</span><span class="token punctuation">}</span></span><span class="token punctuation">></span></span><span class="token plain-text">
+        </span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span><span class="token class-name">Text</span></span> <span class="token attr-name">style</span><span class="token script language-javascript"><span class="token script-punctuation punctuation">=</span><span class="token punctuation">{</span><span class="token punctuation">{</span> marginTop<span class="token punctuation">:</span> <span class="token number">200</span><span class="token punctuation">,</span> alignSelf<span class="token punctuation">:</span> <span class="token string">'center'</span> <span class="token punctuation">}</span><span class="token punctuation">}</span></span><span class="token punctuation">></span></span><span class="token plain-text">
           See you on the other nav </span><span class="token punctuation">{</span><span class="token keyword">this</span><span class="token punctuation">.</span>props<span class="token punctuation">.</span>myProp<span class="token punctuation">}</span><span class="token plain-text">!
         </span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span><span class="token class-name">Text</span></span><span class="token punctuation">></span></span><span class="token plain-text">
       </span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span><span class="token class-name">TouchableHighlight</span></span><span class="token punctuation">></span></span>
@@ -155,7 +161,7 @@
     <span class="token keyword">this</span><span class="token punctuation">.</span>refs<span class="token punctuation">.</span>nav<span class="token punctuation">.</span><span class="token function">push</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
       component<span class="token punctuation">:</span> MyView<span class="token punctuation">,</span>
       title<span class="token punctuation">:</span> <span class="token string">'Genius'</span><span class="token punctuation">,</span>
-      passProps<span class="token punctuation">:</span> <span class="token punctuation">{</span>myProp<span class="token punctuation">:</span> <span class="token string">'genius'</span><span class="token punctuation">}</span><span class="token punctuation">,</span>
+      passProps<span class="token punctuation">:</span> <span class="token punctuation">{</span> myProp<span class="token punctuation">:</span> <span class="token string">'genius'</span> <span class="token punctuation">}</span>
     <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
   <span class="token punctuation">}</span>
 
@@ -166,11 +172,12 @@
         <span class="token attr-name">initialRoute</span><span class="token script language-javascript"><span class="token script-punctuation punctuation">=</span><span class="token punctuation">{</span><span class="token punctuation">{</span>
           component<span class="token punctuation">:</span> MyView<span class="token punctuation">,</span>
           title<span class="token punctuation">:</span> <span class="token string">'Foo This'</span><span class="token punctuation">,</span>
-          passProps<span class="token punctuation">:</span> <span class="token punctuation">{</span>myProp<span class="token punctuation">:</span> <span class="token string">'foo'</span><span class="token punctuation">}</span><span class="token punctuation">,</span>
+          passProps<span class="token punctuation">:</span> <span class="token punctuation">{</span> myProp<span class="token punctuation">:</span> <span class="token string">'foo'</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
           rightButtonTitle<span class="token punctuation">:</span> <span class="token string">'Add'</span><span class="token punctuation">,</span>
-          <span class="token function-variable function">onRightButtonPress</span><span class="token punctuation">:</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">_handleNavigationRequest</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+          <span class="token function-variable function">onRightButtonPress</span><span class="token punctuation">:</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=></span>
+            <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">_handleNavigationRequest</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
         <span class="token punctuation">}</span><span class="token punctuation">}</span></span>
-        <span class="token attr-name">style</span><span class="token script language-javascript"><span class="token script-punctuation punctuation">=</span><span class="token punctuation">{</span><span class="token punctuation">{</span>flex<span class="token punctuation">:</span> <span class="token number">1</span><span class="token punctuation">}</span><span class="token punctuation">}</span></span>
+        <span class="token attr-name">style</span><span class="token script language-javascript"><span class="token script-punctuation punctuation">=</span><span class="token punctuation">{</span><span class="token punctuation">{</span> flex<span class="token punctuation">:</span> <span class="token number">1</span> <span class="token punctuation">}</span><span class="token punctuation">}</span></span>
       <span class="token punctuation">/></span></span>
     <span class="token punctuation">)</span><span class="token punctuation">;</span>
   <span class="token punctuation">}</span>
