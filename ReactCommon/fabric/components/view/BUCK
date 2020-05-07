@@ -54,11 +54,11 @@ rn_xplat_cxx_library(
     tests = [":tests"],
     visibility = ["PUBLIC"],
     deps = [
+        "//third-party/glog:glog",
         "//xplat/fbsystrace:fbsystrace",
         "//xplat/folly:headers_only",
         "//xplat/folly:memory",
         "//xplat/folly:molly",
-        "//xplat/third-party/glog:glog",
         YOGA_CXX_TARGET,
         react_native_xplat_target("fabric/core:core"),
         react_native_xplat_target("fabric/debug:debug"),

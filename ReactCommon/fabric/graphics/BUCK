@@ -95,11 +95,11 @@ rn_xplat_cxx_library(
     tests = [":tests"],
     visibility = ["PUBLIC"],
     deps = [
+        "//third-party/glog:glog",
         "//xplat/fbsystrace:fbsystrace",
         "//xplat/folly:headers_only",
         "//xplat/folly:memory",
         "//xplat/folly:molly",
-        "//xplat/third-party/glog:glog",
     ],
 )
 

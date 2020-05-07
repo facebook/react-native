@@ -75,9 +75,9 @@ rn_xplat_cxx_library(
     ],
     deps = [
         ":module",
+        "//third-party/glog:glog",
         "//xplat/folly:memory",
         "//xplat/folly:molly",
-        "//xplat/third-party/glog:glog",
     ],
 )
 
@@ -151,7 +151,7 @@ rn_xplat_cxx_library(
         react_native_xplat_target("callinvoker:callinvoker"),
         react_native_xplat_target("jsinspector:jsinspector"),
         react_native_xplat_target("microprofiler:microprofiler"),
+        "//third-party/glog:glog",
         "//xplat/folly:optional",
-        "//xplat/third-party/glog:glog",
     ],
 )

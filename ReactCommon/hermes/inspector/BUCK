@@ -61,12 +61,12 @@ fb_xplat_cxx_library(
         react_native_xplat_target("jsinspector:jsinspector"),
         ":detail",
         ":inspectorlib",
+        "//third-party/glog:glog",
         "//xplat/folly:futures",
         "//xplat/folly:molly",
         "//xplat/hermes/API:HermesAPI",
         "//xplat/jsi:JSIDynamic",
         "//xplat/jsi:jsi",
-        "//xplat/third-party/glog:glog",
     ],
 )
 
@@ -196,11 +196,11 @@ fb_xplat_cxx_library(
     xcode_public_headers_symlinks = True,
     deps = [
         ":detail",
+        "//third-party/glog:glog",
         "//xplat/folly:futures",
         "//xplat/folly:molly",
         "//xplat/hermes/API:HermesAPI",
         "//xplat/jsi:jsi",
-        "//xplat/third-party/glog:glog",
     ],
 )
 

@@ -54,12 +54,12 @@ rn_xplat_cxx_library(
     ],
     visibility = ["PUBLIC"],
     deps = [
+        "//third-party/glog:glog",
         "//xplat/fbsystrace:fbsystrace",
         "//xplat/folly:container_evicting_cache_map",
         "//xplat/folly:headers_only",
         "//xplat/folly:memory",
         "//xplat/folly:molly",
-        "//xplat/third-party/glog:glog",
         YOGA_CXX_TARGET,
         react_native_xplat_target("utils:utils"),
         react_native_xplat_target("fabric/attributedstring:attributedstring"),
