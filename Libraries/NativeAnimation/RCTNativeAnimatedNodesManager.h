@@ -22,7 +22,7 @@
 - (BOOL)isNodeManagedByFabric:(nonnull NSNumber *)tag;
 
 - (void)getValue:(nonnull NSNumber *)nodeTag
-        callback:(nullable RCTResponseSenderBlock) callback;
+        saveCallback:(nullable RCTResponseSenderBlock)saveCallback;
 
 // graph
 

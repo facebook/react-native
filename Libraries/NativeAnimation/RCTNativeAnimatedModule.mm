@@ -219,10 +219,9 @@ RCT_EXPORT_METHOD(removeAnimatedEventFromView:(double)viewTag
   }];
 }
 
-RCT_EXPORT_METHOD(getValue:(nonnull NSNumber *)nodeTag
-                  callback:(RCTResponseSenderBlock)callback) {
+RCT_EXPORT_METHOD(getValue:(double)nodeTag saveCallback:(RCTResponseSenderBlock)saveCallback) {
   [self addOperationBlock:^(RCTNativeAnimatedNodesManager *nodesManager) {
-      [nodesManager getValue:nodeTag callback:(RCTResponseSenderBlock)callback];
+      [nodesManager getValue:[NSNumber numberWithDouble:nodeTag] saveCallback:saveCallback];
   }];
 }
 
@@ -310,7 +309,7 @@ RCT_EXPORT_METHOD(getValue:(nonnull NSNumber *)nodeTag
       operation(self->_nodesManager);
     }
   }];
-
+ 
   [uiManager addUIBlock:^(__unused RCTUIManager *manager, __unused NSDictionary<NSNumber *, UIView *> *viewRegistry) {
     for (AnimatedOperation operation in operations) {
       operation(self->_nodesManager);

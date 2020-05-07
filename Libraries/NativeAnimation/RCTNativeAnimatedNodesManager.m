@@ -242,7 +242,7 @@ static NSString *RCTNormalizeAnimatedEventName(NSString *eventName)
   [valueNode extractOffset];
 }
 
-- (void)getValue:(NSNumber *)nodeTag callback:(RCTResponseSenderBlock)callback
+- (void)getValue:(NSNumber *)nodeTag saveCallback:(RCTResponseSenderBlock)saveCallback
 {
      RCTAnimatedNode *node = _animationNodes[nodeTag];
      if (![node isKindOfClass:[RCTValueAnimatedNode class]]) {
@@ -250,7 +250,7 @@ static NSString *RCTNormalizeAnimatedEventName(NSString *eventName)
        return;
      }
     RCTValueAnimatedNode *valueNode = (RCTValueAnimatedNode *)node;;
-    callback(@[@(valueNode.value)]);
+    saveCallback(@[@(valueNode.value)]);
 }
 
 #pragma mark -- Drivers

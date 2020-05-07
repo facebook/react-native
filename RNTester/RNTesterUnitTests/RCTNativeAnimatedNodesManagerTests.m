@@ -877,7 +877,7 @@ static id RCTPropChecker(NSString *prop, NSNumber *value)
   
   XCTAssertEqual(saveValueCallbackCalls, 0);
   
-  [_nodesManager getValue:nodeTag callback: saveValueCallback];
+  [_nodesManager getValue:nodeTag saveCallback:saveValueCallback];
   XCTAssertEqual(saveValueCallbackCalls, 1);
 }
 
