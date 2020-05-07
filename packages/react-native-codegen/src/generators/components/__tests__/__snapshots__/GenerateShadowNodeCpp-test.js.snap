@@ -253,6 +253,29 @@ extern const char ExcludedAndroidComponentComponentName[] = \\"ExcludedAndroidCo
 }
 `;
 
+exports[`GenerateShadowNodeCpp can generate fixture EXCLUDE_ANDROID_IOS 1`] = `
+Map {
+  "ShadowNodes.cpp" => "
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+#include <react/components/EXCLUDE_ANDROID_IOS/ShadowNodes.h>
+
+namespace facebook {
+namespace react {
+
+extern const char ExcludedAndroidIosComponentComponentName[] = \\"ExcludedAndroidIosComponent\\";
+
+} // namespace react
+} // namespace facebook
+",
+}
+`;
+
 exports[`GenerateShadowNodeCpp can generate fixture FLOAT_PROPS 1`] = `
 Map {
   "ShadowNodes.cpp" => "

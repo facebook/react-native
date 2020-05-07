@@ -337,7 +337,10 @@ module.exports = {
         return Object.keys(components)
           .filter(componentName => {
             const component = components[componentName];
-            return component.excludedPlatform !== 'iOS';
+            return !(
+              component.excludedPlatforms &&
+              component.excludedPlatforms.includes('iOS')
+            );
           })
           .map(componentName => {
             return [

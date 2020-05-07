@@ -274,7 +274,10 @@ module.exports = {
       return Object.keys(components)
         .filter(componentName => {
           const component = components[componentName];
-          return component.excludedPlatform !== 'android';
+          return !(
+            component.excludedPlatforms &&
+            component.excludedPlatforms.includes('android')
+          );
         })
         .forEach(componentName => {
           const component = components[componentName];
