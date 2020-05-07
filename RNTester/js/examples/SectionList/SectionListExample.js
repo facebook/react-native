@@ -77,6 +77,7 @@ class SectionListExample extends React.PureComponent<{...}, $FlowFixMeState> {
         inverted: boolean,
         logViewable: boolean,
         virtualized: boolean,
+        removeClippedSubviews: boolean,
       |} = {
     data: genItemData(1000),
     debug: false,
@@ -84,6 +85,7 @@ class SectionListExample extends React.PureComponent<{...}, $FlowFixMeState> {
     logViewable: false,
     virtualized: true,
     inverted: false,
+    removeClippedSubviews: false,
   };
 
   _scrollPos = new Animated.Value(0);
@@ -134,6 +136,7 @@ class SectionListExample extends React.PureComponent<{...}, $FlowFixMeState> {
             {renderSmallSwitchOption(this, 'logViewable')}
             {renderSmallSwitchOption(this, 'debug')}
             {renderSmallSwitchOption(this, 'inverted')}
+            {renderSmallSwitchOption(this, 'removeClippedSubviews')}
             <Spindicator value={this._scrollPos} />
           </View>
           <View style={styles.scrollToRow}>
@@ -211,6 +214,8 @@ class SectionListExample extends React.PureComponent<{...}, $FlowFixMeState> {
           ]}
           style={styles.list}
           viewabilityConfig={VIEWABILITY_CONFIG}
+          removeClippedSubviews={this.state.removeClippedSubviews}
+          key={this.state.removeClippedSubviews ? 'r' : 's'}
         />
       </RNTesterPage>
     );
@@ -292,6 +297,7 @@ const styles = StyleSheet.create({
 
 exports.title = '<SectionList>';
 exports.description = 'Performant, scrollable list of data.';
+exports.simpleExampleContainer = true;
 exports.examples = [
   {
     title: 'Simple scrollable list',

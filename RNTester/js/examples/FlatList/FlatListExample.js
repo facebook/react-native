@@ -56,6 +56,7 @@ type State = {|
   fixedHeight: boolean,
   logViewable: boolean,
   virtualized: boolean,
+  removeClippedSubviews: boolean,
   empty: boolean,
   useFlatListItemComponent: boolean,
   fadingEdgeLength: number,
@@ -71,6 +72,7 @@ class FlatListExample extends React.PureComponent<Props, State> {
     fixedHeight: true,
     logViewable: false,
     virtualized: true,
+    removeClippedSubviews: false,
     empty: false,
     useFlatListItemComponent: false,
     fadingEdgeLength: 0,
@@ -131,6 +133,7 @@ class FlatListExample extends React.PureComponent<Props, State> {
               {renderSmallSwitchOption(this, 'empty')}
               {renderSmallSwitchOption(this, 'debug')}
               {renderSmallSwitchOption(this, 'useFlatListItemComponent')}
+              {renderSmallSwitchOption(this, 'removeClippedSubviews')}
               {Platform.OS === 'android' && (
                 <View>
                   <TextInput
@@ -165,7 +168,8 @@ class FlatListExample extends React.PureComponent<Props, State> {
             inverted={this.state.inverted}
             key={
               (this.state.horizontal ? 'h' : 'v') +
-              (this.state.fixedHeight ? 'f' : 'd')
+              (this.state.fixedHeight ? 'f' : 'd') +
+              (this.state.removeClippedSubviews ? 'r' : 's')
             }
             keyboardShouldPersistTaps="always"
             keyboardDismissMode="on-drag"
@@ -180,6 +184,7 @@ class FlatListExample extends React.PureComponent<Props, State> {
             refreshing={false}
             contentContainerStyle={styles.list}
             viewabilityConfig={VIEWABILITY_CONFIG}
+            removeClippedSubviews={this.state.removeClippedSubviews}
             {...flatListItemRendererProps}
           />
         </View>

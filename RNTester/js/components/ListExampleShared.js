@@ -123,6 +123,12 @@ class HeaderComponent extends React.PureComponent<{...}> {
         <View style={styles.headerFooter}>
           <Text>LIST HEADER</Text>
         </View>
+        <View style={styles.headerInputContainer}>
+          <TextInput
+            defaultValue="Use this input to test text selection"
+            style={styles.headerInput}
+          />
+        </View>
         <SeparatorComponent />
       </View>
     );
@@ -280,6 +286,15 @@ const styles = StyleSheet.create({
   },
   headerFooterContainer: {
     backgroundColor: 'rgb(239, 239, 244)',
+  },
+  headerInputContainer: {
+    backgroundColor: 'white',
+    margin: 5,
+    borderWidth: 1,
+    borderColor: '#cccccc',
+  },
+  headerInput: {
+    padding: 2,
   },
   listEmpty: {
     alignItems: 'center',
