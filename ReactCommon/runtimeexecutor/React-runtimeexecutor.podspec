@@ -21,7 +21,7 @@ folly_version = '2020.01.13.00'
 boost_compiler_flags = '-Wno-documentation'
 
 Pod::Spec.new do |s|
-  s.name                   = "React-cxxreact"
+  s.name                   = "React-runtimeexecutor"
   s.version                = version
   s.summary                = "-"  # TODO
   s.homepage               = "https://reactnative.dev/"
@@ -29,17 +29,8 @@ Pod::Spec.new do |s|
   s.author                 = "Facebook, Inc. and its affiliates"
   s.platforms              = { :ios => "10.0", :tvos => "10.0" }
   s.source                 = source
-  s.source_files           = "*.{cpp,h}"
-  s.exclude_files          = "SampleCxxModule.*"
-  s.compiler_flags         = folly_compiler_flags + ' ' + boost_compiler_flags
-  s.pod_target_xcconfig    = { "HEADER_SEARCH_PATHS" => "\"$(PODS_ROOT)/boost-for-react-native\" \"$(PODS_ROOT)/Folly\" \"$(PODS_ROOT)/DoubleConversion\"" }
-  s.header_dir             = "cxxreact"
+  s.source_files           = "**/*.{cpp,h}"
+  s.header_dir             = "ReactCommon"
 
-  s.dependency "boost-for-react-native", "1.63.0"
-  s.dependency "DoubleConversion"
-  s.dependency "Folly", folly_version
-  s.dependency "glog"
-  s.dependency "React-jsinspector", version
-  s.dependency "React-callinvoker", version
-  s.dependency "React-runtimeexecutor", version
+  s.dependency "React-jsi", version
 end

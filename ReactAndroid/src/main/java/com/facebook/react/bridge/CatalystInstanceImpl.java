@@ -665,6 +665,9 @@ public class CatalystInstanceImpl implements CatalystInstance {
   }
 
   @Override
+  public native RuntimeExecutor getRuntimeExecutor();
+
+  @Override
   public void addJSIModules(List<JSIModuleSpec> jsiModules) {
     mJSIModuleRegistry.registerModules(jsiModules);
   }

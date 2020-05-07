@@ -19,7 +19,7 @@ LOCAL_CFLAGS := \
 
 LOCAL_CFLAGS += -fexceptions -frtti -Wno-unused-lambda-capture
 
-LOCAL_STATIC_LIBRARIES := boost jsi callinvoker
+LOCAL_STATIC_LIBRARIES := boost jsi callinvoker runtimeexecutor
 LOCAL_SHARED_LIBRARIES := jsinspector libfolly_json glog
 
 include $(BUILD_STATIC_LIBRARY)
