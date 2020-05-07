@@ -91,16 +91,10 @@ RCT_EXPORT_METHOD(alertWithArgs:(NSDictionary *)args
     }
   }
 
-  CGSize screenSize = [UIScreen mainScreen].bounds.size;
-  self->_window = [[UIWindow alloc] initWithFrame:CGRectMake(0, 0, screenSize.width, screenSize.height)];
-#if TARGET_OS_TV
-  self->_window.windowLevel = UIWindowLevelNormal + 1;
-#else
-  self->_window.windowLevel = UIWindowLevelStatusBar + 1;
-#endif
+  _window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
+  _window.windowLevel = UIWindowLevelStatusBar + 1;
   UIViewController *presentingController = [UIViewController new];
-  self->_window.rootViewController = presentingController;
-  self->_window.hidden = NO;
+  _window.rootViewController = presentingController;
 
   UIAlertController *alertController = [UIAlertController
                                         alertControllerWithTitle:title
