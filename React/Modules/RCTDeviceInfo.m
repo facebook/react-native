@@ -10,9 +10,7 @@
 #import "RCTAccessibilityManager.h"
 #import "RCTAssert.h"
 #import "RCTEventDispatcher.h"
-#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
 #import "RCTUIUtils.h"
-#endif // TODO(macOS ISS#2323203)
 #import "RCTUtils.h"
 #import <React/RCTUIKit.h> // TODO(macOS ISS#2323203)
 #import "UIView+React.h" // TODO(macOS ISS#2323203)
@@ -98,6 +96,10 @@ NSDictionary *RCTExportedDimensions(RCTPlatformView *rootView)
 
 #if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
   RCTDimensions dimensions = RCTGetDimensions(bridge.accessibilityManager.multiplier);
+#else // [TODO(macOS ISS#2323203)
+  RCTDimensions dimensions = RCTGetDimensions(rootView);
+#endif // ]TODO(macOS ISS#2323203)
+
   typeof (dimensions.window) window = dimensions.window;
   NSDictionary<NSString *, NSNumber *> *dimsWindow = @{
       @"width": @(window.width),
@@ -116,32 +118,6 @@ NSDictionary *RCTExportedDimensions(RCTPlatformView *rootView)
       @"window": dimsWindow,
       @"screen": dimsScreen
   };
-#else // [TODO(macOS ISS#2323203)
-	if (rootView != nil) {
-		NSWindow *window = rootView.window;
-		if (window != nil) {
-			NSSize size = rootView.bounds.size;
-			return @{
-				@"window": @{
-					@"width": @(size.width),
-					@"height": @(size.height),
-					@"scale": @(window.backingScaleFactor),
-				},
-        @"rootTag" : rootView.reactTag,
-			};
-		}
-	}
-
-  // We don't have a root view or window yet so make something up
-  NSScreen *screen = [NSScreen screens].firstObject;
-  return @{
-      @"window": @{
-        @"width": @(screen.frame.size.width),
-        @"height": @(screen.frame.size.height),
-        @"scale": @(screen.backingScaleFactor),
-      },
-  };
-#endif // ]TODO(macOS ISS#2323203)
 }
 
 - (void)dealloc
