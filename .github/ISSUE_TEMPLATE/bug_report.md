@@ -59,7 +59,11 @@ labels: 'Bug'
 
 <!--
   Please share a project that reproduces the issue.
-  There are two ways to do it:
+  There are three ways to do it:
+
+    * See if the issue is already reproducable within the RNTester app.
+      If the issue pertains to a particular Component or API, try the corresponding
+      test page in RNTester. 
 
     * Create a new app using https://snack.expo.io/ and try to reproduce the issue in it.
       This is useful if you roughly know where the problem is, or can’t share the real code.

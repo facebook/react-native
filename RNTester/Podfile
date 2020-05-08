@@ -98,7 +98,7 @@ target 'RNTester-macOSIntegrationTests' do
   pod 'React-RCTTest', :path => "RCTTest"
 end
 
-# [TODO(macOS GH#217): these are special targets used by the internal Microsoft build pipeline
+# [TODO(macOS ISS#2323203): these are special targets used by the internal Microsoft build pipeline
 target 'iosDeviceBuild' do
   platform :ios, '9.0'
   pods()
@@ -113,23 +113,18 @@ target 'macOSBuild' do
   platform :osx, '10.14'
   pods()
 end
-# ]TODO(macOS GH#217)
+# ]TODO(macOS ISS#2323203)
 
 post_install do |installer|
   installer.pods_project.targets.each do |target|
     puts target.name
-    # [TODO(macOS GH#217): the internal Microsoft build pipeline needs iOS arm64e slices
+    # [TODO(macOS ISS#2323203): the internal Microsoft build pipeline needs iOS arm64e slices
     if target.platform_name == :ios
       target.build_configurations.each do |config|
-        archs = config.build_settings['ARCHS'];
-        if archs.nil?
-          archs = ['$(ARCHS_STANDARD)']
-        end
-        archs.push('arm64e');
-        config.build_settings['ARCHS'] = archs;
-        puts '  adding to ' + config.name + " ARCHS=" + archs.inspect
+        (config.build_settings['ARCHS'] ||= ['$(ARCHS_STANDARD)']) << 'arm64e'
+        puts '  adding arm64e to ' + config.name
       end
     end
-    # ]TODO(macOS GH#217)
+    # ]TODO(macOS ISS#2323203)
   end
 end
