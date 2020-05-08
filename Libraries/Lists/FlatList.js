@@ -653,6 +653,11 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
 
 const styles = StyleSheet.create({
   row: {flexDirection: 'row'},
+  invertedScrollContainerStyle: {
+    flexDirection: 'row',
+    alignSelf: 'flex-end',
+    flexGrow: 1
+  }
 });
 
 module.exports = FlatList;
