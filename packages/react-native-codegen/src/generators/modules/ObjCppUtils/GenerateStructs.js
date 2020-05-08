@@ -44,6 +44,13 @@ inline ::_RETURN_TYPE_::JS::Native::_MODULE_NAME_::::Spec::_STRUCT_NAME_::::::_P
 }
 `;
 
+function getSafePropertyName(name: string) {
+  if (name === 'id') {
+    return `${name}_`;
+  }
+  return name;
+}
+
 function getInlineMethodSignature(
   property: ObjectParamTypeAnnotation,
   name: string,
@@ -59,39 +66,43 @@ function getInlineMethodSignature(
     case 'ReservedFunctionValueTypeAnnotation':
       switch (typeAnnotation.name) {
         case 'RootTag':
-          return `double ${property.name}() const;`;
+          return `double ${getSafePropertyName(property.name)}() const;`;
         default:
           (typeAnnotation.name: empty);
           throw new Error(`Unknown prop type, found: ${typeAnnotation.name}"`);
       }
     case 'StringTypeAnnotation':
-      return `NSString *${property.name}() const;`;
+      return `NSString *${getSafePropertyName(property.name)}() const;`;
     case 'NumberTypeAnnotation':
     case 'FloatTypeAnnotation':
     case 'Int32TypeAnnotation':
-      return `${markOptionalTypeIfNecessary('double')} ${
-        property.name
-      }() const;`;
+      return `${markOptionalTypeIfNecessary('double')} ${getSafePropertyName(
+        property.name,
+      )}() const;`;
     case 'BooleanTypeAnnotation':
-      return `bool ${property.name}() const;`;
+      return `${markOptionalTypeIfNecessary('bool')} ${getSafePropertyName(
+        property.name,
+      )}() const;`;
     case 'ObjectTypeAnnotation':
       return (
         markOptionalTypeIfNecessary(
           `JS::Native::_MODULE_NAME_::::Spec${name}${capitalizeFirstLetter(
-            property.name,
+            getSafePropertyName(property.name),
           )}`,
-        ) + ` ${property.name}() const;`
+        ) + ` ${getSafePropertyName(property.name)}() const;`
       );
     case 'GenericObjectTypeAnnotation':
     case 'AnyTypeAnnotation':
       if (property.optional) {
-        return `id<NSObject> _Nullable ${property.name}() const;`;
+        return `id<NSObject> _Nullable ${getSafePropertyName(
+          property.name,
+        )}() const;`;
       }
-      return `id<NSObject> ${property.name}() const;`;
+      return `id<NSObject> ${getSafePropertyName(property.name)}() const;`;
     case 'ArrayTypeAnnotation':
       return `${markOptionalTypeIfNecessary(
         'facebook::react::LazyVector<id<NSObject>>',
-      )} ${property.name}() const;`;
+      )} ${getSafePropertyName(property.name)}() const;`;
     case 'FunctionTypeAnnotation':
     default:
       throw new Error(`Unknown prop type, found: ${typeAnnotation.type}"`);
@@ -161,7 +172,7 @@ function getInlineMethodImplementation(
           /::_RETURN_TYPE_::/,
           markOptionalTypeIfNecessary(
             `JS::Native::_MODULE_NAME_::::Spec${name}${capitalizeFirstLetter(
-              property.name,
+              getSafePropertyName(property.name),
             )}`,
           ),
         )
@@ -169,10 +180,10 @@ function getInlineMethodImplementation(
           /::_RETURN_VALUE_::/,
           property.optional
             ? `(p == nil ? folly::none : folly::make_optional(JS::Native::_MODULE_NAME_::::Spec${name}${capitalizeFirstLetter(
-                property.name,
+                getSafePropertyName(property.name),
               )}(p)))`
             : `JS::Native::_MODULE_NAME_::::Spec${name}${capitalizeFirstLetter(
-                property.name,
+                getSafePropertyName(property.name),
               )}(p)`,
         );
     case 'ArrayTypeAnnotation':
@@ -214,7 +225,10 @@ function translateObjectsForStructs(
         acc.concat(
           object.properties.map(property =>
             getInlineMethodImplementation(property, object.name)
-              .replace(/::_PROPERTY_NAME_::/g, property.name)
+              .replace(
+                /::_PROPERTY_NAME_::/g,
+                getSafePropertyName(property.name),
+              )
               .replace(/::_STRUCT_NAME_::/g, object.name),
           ),
         ),

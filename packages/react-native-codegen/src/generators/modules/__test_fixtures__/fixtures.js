@@ -463,6 +463,13 @@ const COMPLEX_OBJECTS: SchemaType = {
                                   type: 'StringTypeAnnotation',
                                 },
                               },
+                              {
+                                optional: false,
+                                name: 'id',
+                                typeAnnotation: {
+                                  type: 'NumberTypeAnnotation',
+                                },
+                              },
                             ],
                           },
                         },
@@ -540,6 +547,13 @@ const COMPLEX_OBJECTS: SchemaType = {
                           name: 'optionalGenericObjectProperty',
                           typeAnnotation: {
                             type: 'GenericObjectTypeAnnotation',
+                          },
+                        },
+                        {
+                          optional: true,
+                          name: 'optionalBooleanTypeProperty',
+                          typeAnnotation: {
+                            type: 'BooleanTypeAnnotation',
                           },
                         },
                       ],

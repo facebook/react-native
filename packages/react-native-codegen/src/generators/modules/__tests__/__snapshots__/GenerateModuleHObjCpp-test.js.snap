@@ -58,6 +58,7 @@ namespace JS {
       bool D() const;
       double E() const;
       NSString *F() const;
+      double id_() const;
 
       SpecDifficultAE(NSDictionary *const v) : _v(v) {}
     private:
@@ -78,6 +79,7 @@ namespace JS {
       folly::Optional<facebook::react::LazyVector<id<NSObject>>> optionalArrayProperty() const;
       folly::Optional<JS::NativeSampleTurboModule::SpecOptionalsAOptionalObjectProperty> optionalObjectProperty() const;
       id<NSObject> _Nullable optionalGenericObjectProperty() const;
+      folly::Optional<bool> optionalBooleanTypeProperty() const;
 
       SpecOptionalsA(NSDictionary *const v) : _v(v) {}
     private:
@@ -198,6 +200,13 @@ inline id<NSObject> _Nullable JS::NativeSampleTurboModule::SpecOptionalsA::optio
 }
 
 
+inline folly::Optional<bool> JS::NativeSampleTurboModule::SpecOptionalsA::optionalBooleanTypeProperty() const
+{
+  id const p = _v[@\\"optionalBooleanTypeProperty\\"];
+  return RCTBridgingToOptionalBool(p);
+}
+
+
 inline bool JS::NativeSampleTurboModule::SpecDifficultAE::D() const
 {
   id const p = _v[@\\"D\\"];
@@ -216,6 +225,13 @@ inline NSString *JS::NativeSampleTurboModule::SpecDifficultAE::F() const
 {
   id const p = _v[@\\"F\\"];
   return RCTBridgingToString(p);
+}
+
+
+inline double JS::NativeSampleTurboModule::SpecDifficultAE::id_() const
+{
+  id const p = _v[@\\"id_\\"];
+  return RCTBridgingToDouble(p);
 }
 
 
