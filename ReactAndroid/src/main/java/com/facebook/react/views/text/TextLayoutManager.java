@@ -47,6 +47,9 @@ public class TextLayoutManager {
 
   private static final Object sSpannableCacheLock = new Object();
   private static final boolean DEFAULT_INCLUDE_FONT_PADDING = true;
+  private static final String INCLUDE_FONT_PADDING_KEY = "includeFontPadding";
+  private static final String TEXT_BREAK_STRATEGY_KEY = "textBreakStrategy";
+  private static final String MAXIMUM_NUMBER_OF_LINES_KEY = "maximumNumberOfLines";
   private static LruCache<String, Spannable> sSpannableCache = new LruCache<>(spannableCacheSize);
 
   public static boolean isRTL(ReadableMap attributedString) {
@@ -217,20 +220,20 @@ public class TextLayoutManager {
 
     // TODO(5578671): Handle text direction (see View#getTextDirectionHeuristic)
     TextPaint textPaint = sTextPaintInstance;
-    Spannable preparedSpannableText =
+    Spannable text =
         getOrCreateSpannableForText(context, attributedString, reactTextViewManagerCallback);
 
     int textBreakStrategy =
-        TextAttributeProps.getTextBreakStrategy(paragraphAttributes.getString("textBreakStrategy"));
+        TextAttributeProps.getTextBreakStrategy(
+            paragraphAttributes.getString(TEXT_BREAK_STRATEGY_KEY));
     boolean includeFontPadding =
-        paragraphAttributes.hasKey("includeFontPadding")
-            ? paragraphAttributes.getBoolean("includeFontPadding")
+        paragraphAttributes.hasKey(INCLUDE_FONT_PADDING_KEY)
+            ? paragraphAttributes.getBoolean(INCLUDE_FONT_PADDING_KEY)
             : DEFAULT_INCLUDE_FONT_PADDING;
 
-    if (preparedSpannableText == null) {
+    if (text == null) {
       throw new IllegalStateException("Spannable element has not been prepared in onBeforeLayout");
     }
-    Spanned text = preparedSpannableText;
     BoringLayout.Metrics boring = BoringLayout.isBoring(text, textPaint);
     float desiredWidth = boring == null ? Layout.getDesiredWidth(text, textPaint) : Float.NaN;
 
@@ -306,8 +309,8 @@ public class TextLayoutManager {
     }
 
     int maximumNumberOfLines =
-        paragraphAttributes.hasKey("maximumNumberOfLines")
-            ? paragraphAttributes.getInt("maximumNumberOfLines")
+        paragraphAttributes.hasKey(MAXIMUM_NUMBER_OF_LINES_KEY)
+            ? paragraphAttributes.getInt(MAXIMUM_NUMBER_OF_LINES_KEY)
             : UNSET;
 
     int calculatedLineCount =
