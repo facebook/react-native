@@ -53,6 +53,7 @@ rn_xplat_cxx_library(
     fbandroid_headers = glob(
         ["platform/android/*.h"],
     ),
+    fbandroid_labels = ["supermodule:android/default/public.react_native.infra"],
     fbandroid_srcs = glob(
         ["platform/android/*.cpp"],
     ),

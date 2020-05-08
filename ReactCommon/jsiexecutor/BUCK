@@ -20,6 +20,7 @@ cxx_library(
         "//xplat/folly:molly",
         "//xplat/third-party/linker_lib:atomic",
     ],
+    fbandroid_labels = ["supermodule:android/default/public.react_native.infra"],
     fbobjc_force_static = True,
     fbobjc_header_path_prefix = "",
     fbobjc_labels = ["supermodule:ios/default/public.react_native.infra"],

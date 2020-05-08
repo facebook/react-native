@@ -56,6 +56,7 @@ rn_xplat_cxx_library(
         ],
         prefix = "react/graphics",
     ),
+    fbandroid_labels = ["supermodule:android/default/public.react_native.infra"],
     fbandroid_srcs = glob(
         [
             "platform/cxx/**/*.cpp",
