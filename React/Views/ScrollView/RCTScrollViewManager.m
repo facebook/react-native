@@ -147,7 +147,6 @@ RCT_EXPORT_METHOD(calculateChildFrames : (nonnull NSNumber *)reactTag callback :
       addUIBlock:^(__unused RCTUIManager *uiManager, NSDictionary<NSNumber *, RCTScrollView *> *viewRegistry) {
         RCTScrollView *view = viewRegistry[reactTag];
         if (!view || ![view isKindOfClass:[RCTScrollView class]]) {
-          RCTLogError(@"Cannot find RCTScrollView with tag #%@", reactTag);
           return;
         }
 
