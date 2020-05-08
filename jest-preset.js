@@ -25,7 +25,4 @@ module.exports = {
   ],
   setupFiles: [require.resolve('./jest/setup.js')],
   testEnvironment: 'node',
-  moduleNameMapper: {
-    'react-native': '<rootDir>',
-  },
 };
