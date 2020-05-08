@@ -31,7 +31,6 @@
     "lib",
     "Libraries",
     "LICENSE",
-    "local-cli",
     "packager",
     "React-Core.podspec",
     "react-native.config.js",
