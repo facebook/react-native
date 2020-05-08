@@ -16,6 +16,8 @@ const React = require('react');
 const View = require('../Components/View/View');
 const VirtualizedList = require('./VirtualizedList');
 const StyleSheet = require('../StyleSheet/StyleSheet');
+const ScrollView = require('../Components/ScrollView/ScrollView');
+const RefreshControl = require('../Components/RefreshControl/RefreshControl');
 
 const invariant = require('invariant');
 
@@ -615,7 +617,26 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
 
   render(): React.Node {
     const {numColumns, columnWrapperStyle, ...restProps} = this.props;
-
+    let {inverted, invertedRefreshControlUp,onRefresh} = this.props;
+    if(inverted && invertedRefreshControlUp && onRefresh){
+      let {numColumns, columnWrapperStyle, onRefresh, refreshing, ...restProps} = this.props;
+      return (
+        <ScrollView
+          contentContainerStyle={styles.invertedScrollContainerStyle}
+          refreshControl={<RefreshControl refreshing={this.props.refreshing} onRefresh={this.props.onRefresh} />}
+          >
+          <VirtualizedList
+            {...restProps}
+            getItem={this._getItem}
+            getItemCount={this._getItemCount}
+            keyExtractor={this._keyExtractor}
+            ref={this._captureRef}
+            viewabilityConfigCallbackPairs={this._virtualizedListPairs}
+            {...this._renderer()}
+          />
+        </ScrollView>
+      )
+    }
     return (
       <VirtualizedList
         {...restProps}
