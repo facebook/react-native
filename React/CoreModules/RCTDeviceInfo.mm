@@ -7,32 +7,13 @@
 
 #import "RCTDeviceInfo.h"
 
-<<<<<<< HEAD:React/Modules/RCTDeviceInfo.m
 #import "RCTAccessibilityManager.h"
 #import "RCTAssert.h"
 #import "RCTEventDispatcher.h"
-#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
 #import "RCTUIUtils.h"
-#endif // TODO(macOS ISS#2323203)
 #import "RCTUtils.h"
 #import <React/RCTUIKit.h> // TODO(macOS ISS#2323203)
 #import "UIView+React.h" // TODO(macOS ISS#2323203)
-=======
-#import <FBReactNativeSpec/FBReactNativeSpec.h>
-#import <React/RCTAccessibilityManager.h>
-#import <React/RCTAssert.h>
-#import <React/RCTConstants.h>
-#import <React/RCTEventDispatcher.h>
-#import <React/RCTUIUtils.h>
-#import <React/RCTUtils.h>
-
-#import "CoreModulesPlugins.h"
-
-using namespace facebook::react;
-
-@interface RCTDeviceInfo () <NativeDeviceInfoSpec>
-@end
->>>>>>> fb/0.62-stable:React/CoreModules/RCTDeviceInfo.mm
 
 @implementation RCTDeviceInfo {
 #if !TARGET_OS_TV && !TARGET_OS_OSX // TODO(macOS ISS#2323203)
@@ -118,13 +99,14 @@ NSDictionary *RCTExportedDimensions(RCTPlatformView *rootView)
 #endif // ]TODO(macOS ISS#2323203)
 {
   RCTAssertMainQueue();
-<<<<<<< HEAD:React/Modules/RCTDeviceInfo.m
 
 #if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
-=======
->>>>>>> fb/0.62-stable:React/CoreModules/RCTDeviceInfo.mm
   RCTDimensions dimensions = RCTGetDimensions(bridge.accessibilityManager.multiplier);
-  __typeof (dimensions.window) window = dimensions.window;
+#else // [TODO(macOS ISS#2323203)
+  RCTDimensions dimensions = RCTGetDimensions(rootView);
+#endif // ]TODO(macOS ISS#2323203)
+
+  typeof (dimensions.window) window = dimensions.window;
   NSDictionary<NSString *, NSNumber *> *dimsWindow = @{
       @"width": @(window.width),
       @"height": @(window.height),
@@ -142,32 +124,6 @@ NSDictionary *RCTExportedDimensions(RCTPlatformView *rootView)
       @"window": dimsWindow,
       @"screen": dimsScreen
   };
-#else // [TODO(macOS ISS#2323203)
-	if (rootView != nil) {
-		NSWindow *window = rootView.window;
-		if (window != nil) {
-			NSSize size = rootView.bounds.size;
-			return @{
-				@"window": @{
-					@"width": @(size.width),
-					@"height": @(size.height),
-					@"scale": @(window.backingScaleFactor),
-				},
-        @"rootTag" : rootView.reactTag,
-			};
-		}
-	}
-
-  // We don't have a root view or window yet so make something up
-  NSScreen *screen = [NSScreen screens].firstObject;
-  return @{
-      @"window": @{
-        @"width": @(screen.frame.size.width),
-        @"height": @(screen.frame.size.height),
-        @"scale": @(screen.backingScaleFactor),
-      },
-  };
-#endif // ]TODO(macOS ISS#2323203)
 }
 
 - (NSDictionary<NSString *, id> *)constantsToExport

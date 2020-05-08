@@ -618,6 +618,11 @@ export type ____TextStyle_Internal = $ReadOnly<{|
     | 'tabular-nums'
     | 'proportional-nums',
   >,
+  apple_fontSmoothing?:
+    | 'auto'
+    | 'none'
+    | 'antialiased'
+    | 'subpixel-antialiased', // TODO(OSS Candidate ISS#2710739)
   textShadowOffset?: $ReadOnly<{|
     width: number,
     height: number,

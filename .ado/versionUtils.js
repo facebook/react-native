@@ -17,21 +17,17 @@ function gatherVersionInfo() {
     return {pkgJson, releaseVersion, branchVersionSuffix};
 }
 
-function updateVersionsInFiles() {
+function updateVersionsInFiles(patchVersionPrefix) {
 
     let {pkgJson, releaseVersion, branchVersionSuffix} = gatherVersionInfo();
   
-    const versionStringRegEx = new RegExp(`(.*-microsoft)(-${publishBranchName})?\\.([0-9]*)`);
+    const versionStringRegEx = new RegExp(`(.*)(-${publishBranchName})?\\.([0-9]*)`);
     const versionGroups = versionStringRegEx.exec(releaseVersion);
     if (versionGroups) {
-      releaseVersion = versionGroups[1] + branchVersionSuffix + '.' + (parseInt(versionGroups[3]) + 1);
+      releaseVersion = versionGroups[1] + patchVersionPrefix + branchVersionSuffix + '.' + (parseInt(versionGroups[3]) + 1);
     } else {
-      if (releaseVersion.indexOf("-") === -1) {
-        releaseVersion = releaseVersion + `-microsoft${branchVersionSuffix}.0`;
-      } else {
-        console.log("Invalid version to publish");
-        process.exit(1);
-      }
+      console.log("Invalid version to publish");
+      process.exit(1);
     }
   
     pkgJson.version = releaseVersion;

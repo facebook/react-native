@@ -42,7 +42,7 @@ Pod::Spec.new do |s|
   s.homepage               = "http://facebook.github.io/react-native/"
   s.license                = package["license"]
   s.author                 = "Facebook, Inc. and its affiliates"
-  s.platforms              = { :ios => "9.0", :tvos => "9.2", :osx => "10.14" } # TODO(macOS GH#214)
+  s.platforms              = { :ios => "9.0", :tvos => "9.2", :osx => "10.14" } # TODO(macOS ISS#2323203)
   s.source                 = source
   s.compiler_flags         = folly_compiler_flags + ' ' + boost_compiler_flags
   s.header_dir             = "React"
@@ -60,10 +60,9 @@ Pod::Spec.new do |s|
                                 "React/Inspector/**/*"
     ss.ios.exclude_files      = "React/**/RCTTV*.*",
 
-    # TODO(macOS GH#214)
+    # [TODO(macOS ISS#2323203)
                                 "**/MacOS/*"
     ss.osx.exclude_files      = "React/Modules/RCTRedBoxExtraDataViewController.{h,m}",
-                                "React/UIUtils/*",
                                 "React/Profiler/{RCTFPSGraph,RCTPerfMonitor}.*",
                                 "React/Profiler/RCTProfileTrampoline-{arm,arm64,i386}.S",
                                 "React/Base/RCTKeyCommands.*",
@@ -71,6 +70,7 @@ Pod::Spec.new do |s|
                                 "React/Base/RCTReloadCommand.*",
                                 "React/Views/{RCTModal*,RCTMasked*,RCTTV*,RCTRefreshControl*,RCTWrapperViewController}.*",
                                 "React/Views/SafeAreaView/*"
+    # ]TODO(macOS ISS#2323203)
 
     ss.tvos.exclude_files     = "React/Modules/RCTClipboard*",
                                 "React/Views/RCTDatePicker*",

@@ -327,6 +327,15 @@ RCT_ENUM_CONVERTER(RCTTextDecorationLineType, (@{
   @"underline line-through": @(RCTTextDecorationLineTypeUnderlineStrikethrough),
 }), RCTTextDecorationLineTypeNone, integerValue)
 
+// [TODO(OSS Candidate ISS#2710739)
+RCT_ENUM_CONVERTER(RCTFontSmoothing, (@{
+  @"auto": @(RCTFontSmoothingAuto),
+  @"none": @(RCTFontSmoothingNone),
+  @"antialiased": @(RCTFontSmoothingAntialiased),
+  @"subpixel-antialiased": @(RCTFontSmoothingSubpixelAntialiased),
+}), RCTFontSmoothingAuto, integerValue)
+// ]TODO(OSS Candidate ISS#2710739)
+
 RCT_ENUM_CONVERTER(NSWritingDirection, (@{
   @"auto": @(NSWritingDirectionNatural),
   @"ltr": @(NSWritingDirectionLeftToRight),
@@ -812,6 +821,11 @@ static NSString *RCTSemanticColorNames()
     [names appendString:key];
   }
   return names;
+}
+
++ (RCTUIColor *)NSColor:(id)json
+{
+  return [RCTConvert UIColor:json];
 }
 // ]TODO(macOS ISS#2323203)
 

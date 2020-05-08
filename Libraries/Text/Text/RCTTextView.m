@@ -162,12 +162,40 @@
   NSTextContainer *textContainer = layoutManager.textContainers.firstObject;
 
   NSRange glyphRange = [layoutManager glyphRangeForTextContainer:textContainer];
-  [layoutManager drawBackgroundForGlyphRange:glyphRange atPoint:_contentFrame.origin];
-  [layoutManager drawGlyphsForGlyphRange:glyphRange atPoint:_contentFrame.origin];
-
-  __block UIBezierPath *highlightPath = nil;
   NSRange characterRange = [layoutManager characterRangeForGlyphRange:glyphRange
                                                      actualGlyphRange:NULL];
+  // [TODO(OSS Candidate ISS#2710739)
+  [_textStorage enumerateAttribute:RCTTextAttributesFontSmoothingAttributeName
+                           inRange:characterRange
+                           options:0
+                        usingBlock:
+    ^(NSNumber *value, NSRange range, __unused BOOL *stop) {
+    RCTFontSmoothing smoothing = value.integerValue;
+    if (smoothing == RCTFontSmoothingAuto) {
+      smoothing = [RCTTextAttributes fontSmoothingDefault];
+    }
+    CGContextRef context = UIGraphicsGetCurrentContext();
+    CGContextSaveGState(context);
+    switch (smoothing) {
+      case RCTFontSmoothingNone:
+        CGContextSetShouldAntialias(context, false);
+        break;
+      case RCTFontSmoothingAntialiased:
+        CGContextSetAllowsFontSmoothing(context, false);
+        CGContextSetShouldSmoothFonts(context, false);
+        break;
+      case RCTFontSmoothingAuto:
+      case RCTFontSmoothingSubpixelAntialiased:
+        break;
+    }
+    NSRange subGlyphRange = [layoutManager glyphRangeForCharacterRange:range actualCharacterRange:nil];
+    [layoutManager drawBackgroundForGlyphRange:subGlyphRange atPoint:_contentFrame.origin];
+    [layoutManager drawGlyphsForGlyphRange:subGlyphRange atPoint:_contentFrame.origin];
+    CGContextRestoreGState(context);
+  }];
+  // ]TODO(OSS Candidate ISS#2710739)
+
+  __block UIBezierPath *highlightPath = nil;
   [_textStorage enumerateAttribute:RCTTextAttributesIsHighlightedAttributeName
                            inRange:characterRange
                            options:0

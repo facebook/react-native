@@ -613,7 +613,8 @@ workflows:
           executor: reactnativeandroid
           filters:
             branches:
-              ignore: gh-pages
+              # TODO(macOS ISS#2323203): disable this test which is redundant to Azure Devops test and it requires a CCI plan with resource-class:large.
+              ignore: /.*/
       - test_js:
           requires:
             - setup_js
@@ -621,6 +622,11 @@ workflows:
           requires:
             - setup_js
             - test_js
+          # [TODO(macOS ISS#2323203): disable this test which is redundant to Azure Devops test and it fails in the fork because it tries to 'npm install' the template.
+          filters:
+            branches:
+              ignore: /.*/
+          # ]TODO(macOS ISS#2323203)
       - test_android:
           requires:
             - setup_android
@@ -644,7 +650,8 @@ workflows:
       - test_docker:
           filters:
             branches:
-              ignore: gh-pages
+              # TODO(macOS ISS#2323203): disable this test which is redundant to Azure Devops test and in the fork it fails because of Microsoft's V8 upgrade to Android
+              ignore: /.*/
   releases:
     jobs:
       - setup:
@@ -657,8 +664,9 @@ workflows:
             branches:
               ignore: /.*/
             # Only act on version tags.
-            tags:
-              only: /v[0-9]+(\.[0-9]+)*(\-rc(\.[0-9]+)?)?/
+            # TODO(macOS ISS#2323203): disable this release.  We never want to release anything from this fork via CCI.
+            # tags:
+            #   only: /v[0-9]+(\.[0-9]+)*(\-rc(\.[0-9]+)?)?/
       - publish_npm_package:
           requires:
             - setup_android
@@ -694,3 +702,8 @@ workflows:
       - js_coverage:
           requires:
             - setup
+          # [TODO(macOS ISS#2323203): disable this test, it fails in the fork due to not being set up for coveralls
+          filters:
+            branches:
+              ignore: /.*/
+          # ]TODO(macOS ISS#2323203)

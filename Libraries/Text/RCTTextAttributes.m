@@ -12,6 +12,7 @@
 #import <React/RCTLog.h>
 
 NSString *const RCTTextAttributesIsHighlightedAttributeName = @"RCTTextAttributesIsHighlightedAttributeName";
+NSString *const RCTTextAttributesFontSmoothingAttributeName = @"RCTTextAttributesFontSmoothingAttributeName"; // TODO(OSS Candidate ISS#2710739)
 NSString *const RCTTextAttributesTagAttributeName = @"RCTTextAttributesTagAttributeName";
 
 @implementation RCTTextAttributes
@@ -56,6 +57,7 @@ NSString *const RCTTextAttributesTagAttributeName = @"RCTTextAttributesTagAttrib
   _fontVariant = textAttributes->_fontVariant ?: _fontVariant;
   _allowFontScaling = textAttributes->_allowFontScaling || _allowFontScaling;  // *
   _letterSpacing = !isnan(textAttributes->_letterSpacing) ? textAttributes->_letterSpacing : _letterSpacing;
+  _fontSmoothing = textAttributes->_fontSmoothing != RCTFontSmoothingAuto ? textAttributes->_fontSmoothing : _fontSmoothing; // TODO(OSS Candidate ISS#2710739)
 
   // Paragraph Styles
   _lineHeight = !isnan(textAttributes->_lineHeight) ? textAttributes->_lineHeight : _lineHeight;
@@ -183,6 +185,12 @@ NSString *const RCTTextAttributesTagAttributeName = @"RCTTextAttributesTagAttrib
     attributes[RCTTextAttributesIsHighlightedAttributeName] = @YES;
   }
 
+  // [TODO(macOS ISS#2323203)
+  if (_fontSmoothing != RCTFontSmoothingAuto) {
+    attributes[RCTTextAttributesFontSmoothingAttributeName] = @(_fontSmoothing);
+  }
+  // ]TODO(macOS ISS#2323203)
+
   if (_tag) {
     attributes[RCTTextAttributesTagAttributeName] = _tag;
   }
@@ -290,6 +298,7 @@ NSString *const RCTTextAttributesTagAttributeName = @"RCTTextAttributesTagAttrib
     RCTTextAttributesCompareObjects(_fontVariant) &&
     RCTTextAttributesCompareOthers(_allowFontScaling) &&
     RCTTextAttributesCompareFloats(_letterSpacing) &&
+    RCTTextAttributesCompareOthers(_fontSmoothing) && // TODO(OSS Candidate ISS#2710739)
     // Paragraph Styles
     RCTTextAttributesCompareFloats(_lineHeight) &&
     RCTTextAttributesCompareFloats(_alignment) &&
@@ -308,5 +317,17 @@ NSString *const RCTTextAttributesTagAttributeName = @"RCTTextAttributesTagAttrib
     RCTTextAttributesCompareOthers(_layoutDirection) &&
     RCTTextAttributesCompareOthers(_textTransform);
 }
+
+// [TODO(OSS Candidate ISS#2710739)
+static RCTFontSmoothing _fontSmoothingDefault = RCTFontSmoothingAuto;
+
++ (RCTFontSmoothing)fontSmoothingDefault {
+  return _fontSmoothingDefault;
+}
+
++ (void)setFontSmoothingDefault:(RCTFontSmoothing)fontSmoothingDefault {
+  _fontSmoothingDefault = fontSmoothingDefault;
+}
+// ]TODO(OSS Candidate ISS#2710739)
 
 @end

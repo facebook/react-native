@@ -71,6 +71,17 @@ const DeprecatedTextStylePropTypes = {
       | 'proportional-nums',
     >,
   >),
+  /** [TODO(OSS Candidate ISS#2710739)
+   * @platform ios, macos
+   */
+  apple_fontSmoothing: (ReactPropTypes.oneOf([
+    'auto' /*default*/,
+    'none',
+    'antialiased',
+    'subpixel-antialiased',
+  ]): React$PropType$Primitive<
+    'auto' | 'none' | 'antialiased' | 'subpixel-antialiased',
+  >), // ]TODO(OSS Candidate ISS#2710739)
   textShadowOffset: (ReactPropTypes.shape({
     width: ReactPropTypes.number,
     height: ReactPropTypes.number,

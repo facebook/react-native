@@ -38,16 +38,22 @@ jobs:
         inputs:
           script: node .ado/bumpFileVersions.js
 
-      - task: CmdLine@2
-        displayName: "Prepare package.json for npm publishing as react-native-macos"
-        inputs:
-          script: node .ado/renamePackageToMac.js
-
       - task: Npm@1
         displayName: "Publish react-native-macos to npmjs.org"
         inputs:
           command: 'publish'
           publishEndpoint: 'npmjs'
+
+      - task: CmdLine@2
+        displayName: 'Tag published release'
+        inputs:
+          script: node .ado/gitTagRelease.js
+        env:
+          BUILD_STAGINGDIRECTORY: $(Build.StagingDirectory)
+          BUILD_SOURCEBRANCH: $(Build.SourceBranch)
+          SYSTEM_ACCESSTOKEN: $(System.AccessToken)
+          githubApiToken: $(githubApiToken)
+
 
   - job: RNMacOSInitNpmJSPublish
     displayName: react-native-macos-init Publish to npmjs.org
@@ -110,6 +116,11 @@ jobs:
           versionSpec: '>=4.6.4'
 
       - task: CmdLine@2
+        displayName: "Rename package to react-native"
+        inputs:
+          script: node .ado/renamePackageForOffice.js
+
+      - task: CmdLine@2
         displayName: npm install
         inputs:
           script: npm install
@@ -117,7 +128,7 @@ jobs:
       - task: CmdLine@2
         displayName: Bump package version
         inputs:
-          script: node .ado/bumpFileVersions.js
+          script: node .ado/bumpOfficeFileVersions.js
 
       - task: NuGetCommand@2
         displayName: NuGet restore
@@ -201,9 +212,9 @@ jobs:
           buildProperties: buildNumber=$(buildNumber);commitId=$(Build.SourceVersion)
 
       - task: CmdLine@2
-        displayName: Do Publish
+        displayName: 'Npm pack'
         inputs:
-          script: node .ado/publish.js
+          script: node .ado/npmOfficePack.js
         env:
           BUILD_STAGINGDIRECTORY: $(Build.StagingDirectory)
           BUILD_SOURCEBRANCH: $(Build.SourceBranch)

@@ -4,8 +4,13 @@ name: $(Date:yyyyMMdd).$(Rev:.r)
 trigger: none # will disable CI builds entirely
 
 pr:
-- master
-- 0.59-stable
+  branches:
+    include:
+      - master
+      - 0.59-stable
+  paths:
+    exclude:
+      - '*.md'
 
 jobs:
   - job: AndroidRNPR
@@ -34,6 +39,11 @@ jobs:
       - task: NuGetToolInstaller@1
         inputs:
           versionSpec: '>=4.6.4'
+
+      - task: CmdLine@2
+        displayName: "Rename package to react-native"
+        inputs:
+          script: node .ado/renamePackageForOffice.js
 
       - task: CmdLine@2
         displayName: npm install

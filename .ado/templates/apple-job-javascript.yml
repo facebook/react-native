@@ -17,9 +17,11 @@ steps:
   - script: 'yarn install'
     displayName: 'yarn install'
 
-  - script: 'yarn test-ci'
-    displayName: 'yarn test-ci'
-
+  - task: CmdLine@2
+    displayName: yarn test-ci
+    inputs:
+      script: 'yarn test-ci'
+  
   - script: 'yarn flow-check-ios'
     displayName: 'yarn flow-check-ios'
 

@@ -25,10 +25,10 @@ module StripMSVersion
 
   private
 
-  VERSION_REGEXP = /\d+\.\d+\.\d+-microsoft\.\d+/
+  CURRENT_VERSION = JSON.parse(File.read('../package.json'))['version']
 
   def self.strip(version)
-    version && version.sub(VERSION_REGEXP, '1000.0.0')
+    version && (version == CURRENT_VERSION ? '1000.0.0' : version)
   end
 end
 # ]TODO(macOS GH#214)
@@ -146,9 +146,34 @@ target 'RNTester-macOSIntegrationTests' do
   pod 'React-RCTTest', :path => "RCTTest"
 end
 
+# [TODO(macOS ISS#2323203): these are special targets used by the internal Microsoft build pipeline
+target 'iosDeviceBuild' do
+  platform :ios, '9.0'
+  pods()
+end
+
+target 'iosSimulatorBuild' do
+  platform :ios, '9.0'
+  pods()
+end
+
+target 'macOSBuild' do
+  platform :osx, '10.14'
+  pods()
+end
+# ]TODO(macOS ISS#2323203)
+
 post_install do |installer|
   flipper_post_install(installer)
   installer.pods_project.targets.each do |target|
     puts target.name
+    # [TODO(macOS ISS#2323203): the internal Microsoft build pipeline needs iOS arm64e slices
+    if target.platform_name == :ios
+      target.build_configurations.each do |config|
+        (config.build_settings['ARCHS'] ||= ['$(ARCHS_STANDARD)']) << 'arm64e'
+        puts '  adding arm64e to ' + config.name
+      end
+    end
+    # ]TODO(macOS ISS#2323203)
   end
 end

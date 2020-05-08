@@ -32,7 +32,7 @@ fi
 
 case "$CONFIGURATION" in
   *Debug*)
-    if [[ "$PLATFORM_NAME" == *simulator ]]; then
+    if [[ "$PLATFORM_NAME" == *simulator || "$PLATFORM_NAME" == macosx ]]; then
       if [[ "$FORCE_BUNDLING" ]]; then
         echo "FORCE_BUNDLING enabled; continuing to bundle."
       else

@@ -12,6 +12,7 @@
 #import <React/RCTBundleURLProvider.h>
 #import <React/RCTLinkingManager.h>
 #import <React/RCTPushNotificationManager.h>
+#import <React/RCTTextAttributes.h>
 
 const NSString *kBundleNameJS = @"RNTesterApp";
 
@@ -30,6 +31,10 @@ const NSString *kBundleNameJS = @"RNTesterApp";
 
 	_bridge = [[RCTBridge alloc] initWithDelegate:self
 																	launchOptions:nil];
+
+  // Optionally set the global `fontSmoothing` setting.
+  // If not explicitly set, the default is subpixel-antialiased
+  [RCTTextAttributes setFontSmoothingDefault:RCTFontSmoothingSubpixelAntialiased];
 }
 
 - (void)applicationWillFinishLaunching:(NSNotification *)__unused aNotification
