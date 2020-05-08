@@ -6,12 +6,9 @@
  */
 
 #import <React/RCTBackedTextInputDelegateAdapter.h>
-<<<<<<< HEAD
 #import "RCTBackedTextInputViewProtocol.h" // TODO(OSS Candidate ISS#2710739)
 #import "RCTBackedTextInputDelegate.h" // TODO(OSS Candidate ISS#2710739)
 #import "../RCTTextUIKit.h" // TODO(macOS ISS#2323203)
-=======
->>>>>>> fb/0.62-stable
 
 #pragma mark - RCTBackedTextFieldDelegateAdapter (for UITextField)
 

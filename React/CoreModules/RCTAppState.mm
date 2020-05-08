@@ -7,13 +7,7 @@
 
 #import "RCTAppState.h"
 
-<<<<<<< HEAD:React/Modules/RCTAppState.m
 #import <React/RCTUIKit.h> // TODO(macOS ISS#2323203)
-#import "RCTAssert.h"
-#import "RCTBridge.h"
-#import "RCTEventDispatcher.h"
-#import "RCTUtils.h"
-=======
 #import <FBReactNativeSpec/FBReactNativeSpec.h>
 #import <React/RCTAssert.h>
 #import <React/RCTBridge.h>
@@ -21,7 +15,6 @@
 #import <React/RCTUtils.h>
 
 #import "CoreModulesPlugins.h"
->>>>>>> fb/0.62-stable:React/CoreModules/RCTAppState.mm
 
 static NSString *RCTCurrentAppState()
 {

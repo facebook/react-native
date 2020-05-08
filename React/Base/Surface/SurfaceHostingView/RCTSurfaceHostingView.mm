@@ -81,15 +81,8 @@ RCT_NOT_IMPLEMENTED(- (nullable instancetype)initWithCoder:(NSCoder *)coder)
     &maximumSize
   );
 
-<<<<<<< HEAD
-  if (RCTSurfaceStageIsRunning(_stage)) {
     [_surface setMinimumSize:minimumSize
                  maximumSize:maximumSize];
-  }
-=======
-    [_surface setMinimumSize:minimumSize
-                 maximumSize:maximumSize];
->>>>>>> fb/0.62-stable
 }
 
 - (CGSize)intrinsicContentSize

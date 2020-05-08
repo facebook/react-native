@@ -14,11 +14,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 /*
  * `UIScrollView` subclass which has some improvements and tweaks
-<<<<<<< HEAD
- * which are not directly related to React.
-=======
  * which are not directly related to React Native.
->>>>>>> fb/0.62-stable
  */
 @interface RCTEnhancedScrollView : UIScrollView
 

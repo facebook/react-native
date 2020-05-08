@@ -56,11 +56,7 @@ RCT_EXPORT_METHOD(getSize:(NSURLRequest *)request
                   successBlock:(RCTResponseSenderBlock)successBlock
                   errorBlock:(RCTResponseErrorBlock)errorBlock)
 {
-<<<<<<< HEAD:Libraries/Image/RCTImageViewManager.m
-  [[self.bridge moduleForName:@"ImageLoader"]
-=======
   [[self.bridge moduleForName:@"ImageLoader" lazilyLoadIfNecessary:YES]
->>>>>>> fb/0.62-stable:Libraries/Image/RCTImageViewManager.mm
    getImageSizeForURLRequest:request
    block:^(NSError *error, CGSize size) {
      if (error) {
@@ -75,11 +71,7 @@ RCT_EXPORT_METHOD(getSizeWithHeaders:(RCTImageSource *)source
                   resolve:(RCTPromiseResolveBlock)resolve
                   reject:(RCTPromiseRejectBlock)reject)
 {
-<<<<<<< HEAD:Libraries/Image/RCTImageViewManager.m
-  [[self.bridge moduleForName:@"ImageLoader"]
-=======
   [[self.bridge moduleForName:@"ImageLoader" lazilyLoadIfNecessary:YES]
->>>>>>> fb/0.62-stable:Libraries/Image/RCTImageViewManager.mm
    getImageSizeForURLRequest:source.request
    block:^(NSError *error, CGSize size) {
      if (error) {
@@ -99,11 +91,7 @@ RCT_EXPORT_METHOD(prefetchImage:(NSURLRequest *)request
     return;
   }
 
-<<<<<<< HEAD:Libraries/Image/RCTImageViewManager.m
-  [[self.bridge moduleForName:@"ImageLoader"]
-=======
   [[self.bridge moduleForName:@"ImageLoader" lazilyLoadIfNecessary:YES]
->>>>>>> fb/0.62-stable:Libraries/Image/RCTImageViewManager.mm
    loadImageWithURLRequest:request
    callback:^(NSError *error, UIImage *image) {
      if (error) {

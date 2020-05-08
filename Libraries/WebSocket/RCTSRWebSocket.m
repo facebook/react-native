@@ -14,20 +14,12 @@
 //   limitations under the License.
 //
 
-<<<<<<< HEAD
-#if !TARGET_OS_UIKITFORMAC
-
-#import <React/RCTSRWebSocket.h>
-
-#import <Availability.h>
 #if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
 #import <Endian.h>
 #endif // TODO(macOS ISS#2323203)b
-=======
 #import <React/RCTSRWebSocket.h>
 
 #import <Availability.h>
->>>>>>> fb/0.62-stable
 
 #import <Security/SecRandom.h>
 

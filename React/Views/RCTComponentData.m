@@ -66,22 +66,14 @@ static SEL selectorForType(NSString *type)
 
 RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
-<<<<<<< HEAD
-- (RCTPlatformView *)createViewWithTag:(NSNumber *)tag // TODO(macOS ISS#2323203)
-=======
-- (UIView *)createViewWithTag:(NSNumber *)tag rootTag:(NSNumber *)rootTag
->>>>>>> fb/0.62-stable
+- (RCTPlatformView *)createViewWithTag:(NSNumber *)tag rootTag:(NSNumber *)rootTag // TODO(macOS ISS#2323203)
 {
   RCTAssertMainQueue();
 
   RCTPlatformView *view = [self.manager view]; // TODO(macOS ISS#2323203)
   view.reactTag = tag;
-<<<<<<< HEAD
-#if !TARGET_OS_OSX && !TARGET_OS_TV // TODO(macOS ISS#2323203)
-=======
   view.rootTag = rootTag;
-#if !TARGET_OS_TV
->>>>>>> fb/0.62-stable
+#if !TARGET_OS_OSX && !TARGET_OS_TV // TODO(macOS ISS#2323203)
   view.multipleTouchEnabled = YES;
 #endif
 #if !TARGET_OS_OSX // TODO(macOS ISS#2323203)

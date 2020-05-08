@@ -239,25 +239,6 @@ static void RNPerformMountInstructions(
 }
 
 - (void)dispatchCommand:(ReactTag)reactTag commandName:(NSString *)commandName args:(NSArray *)args
-<<<<<<< HEAD
-{
-  if (RCTIsMainQueue()) {
-    // Already on the proper thread, so:
-    // * No need to do a thread jump;
-    // * No need to allocate a block.
-    [self synchronouslyDispatchCommandOnUIThread:reactTag commandName:commandName args:args];
-    return;
-  }
-
-  RCTExecuteOnMainQueue(^{
-    RCTAssertMainQueue();
-    [self synchronouslyDispatchCommandOnUIThread:reactTag commandName:commandName args:args];
-  });
-}
-
-- (void)mountMutations:(MountingCoordinator::Shared const &)mountingCoordinator
-=======
->>>>>>> fb/0.62-stable
 {
   if (RCTIsMainQueue()) {
     // Already on the proper thread, so:
@@ -336,11 +317,7 @@ static void RNPerformMountInstructions(
                                           args:(NSArray *)args
 {
   RCTAssertMainQueue();
-<<<<<<< HEAD
-  UIView<RCTComponentViewProtocol> *componentView = [_componentViewRegistry componentViewByTag:reactTag];
-=======
   UIView<RCTComponentViewProtocol> *componentView = [_componentViewRegistry findComponentViewWithTag:reactTag];
->>>>>>> fb/0.62-stable
   [componentView handleCommand:commandName args:args];
 }
 

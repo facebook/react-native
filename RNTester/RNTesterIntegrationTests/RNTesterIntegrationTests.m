@@ -75,10 +75,7 @@ RCT_TEST(PromiseTest)
 RCT_TEST_ONLY_WITH_PACKAGER(WebSocketTest) // Requires a WebSocket test server, see scripts/objc-test.sh
 #if !TARGET_OS_OSX // ios specific
 RCT_TEST(AccessibilityManagerTest)
-<<<<<<< HEAD
 #endif
-=======
->>>>>>> fb/0.62-stable
 RCT_TEST(GlobalEvalWithSourceUrlTest)
 
 @end

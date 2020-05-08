@@ -18,11 +18,8 @@
 #import <React/UIView+React.h>
 
 #import <React/RCTTextShadowView.h>
-<<<<<<< HEAD
 
 #import <QuartzCore/QuartzCore.h> // TODO(macOS ISS#2323203)
-=======
->>>>>>> fb/0.62-stable
 
 @implementation RCTTextView
 {

@@ -9,12 +9,8 @@
 
 #if RCT_DEV && !TARGET_OS_UIKITFORMAC
 
-<<<<<<< HEAD
-#import <React/RCTUIKit.h> // TODO(macOS ISS#2323203)
-=======
->>>>>>> fb/0.62-stable
 #import <React/RCTLog.h>
-#import <UIKit/UIKit.h>
+#import <React/RCTUIKit.h> // TODO(macOS ISS#2323203)
 
 #import <React/RCTDefines.h>
 #import <React/RCTInspectorPackagerConnection.h>
@@ -43,19 +39,14 @@ static NSURL *getInspectorDeviceUrl(NSURL *bundleURL)
   if (inspectorProxyPortStr && [inspectorProxyPortStr length] > 0) {
     inspectorProxyPort = [NSNumber numberWithInt:[inspectorProxyPortStr intValue]];
   }
-<<<<<<< HEAD
 #if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
-  NSString *escapedDeviceName = [[[UIDevice currentDevice] name] stringByAddingPercentEncodingWithAllowedCharacters:NSCharacterSet.URLQueryAllowedCharacterSet];
+  NSString *escapedDeviceName = [[[UIDevice currentDevice] name]
+      stringByAddingPercentEncodingWithAllowedCharacters:NSCharacterSet.URLQueryAllowedCharacterSet];
 #else // [TODO(macOS ISS#2323203)
   NSString *escapedDeviceName = @"";
 #endif // ]TODO(macOS ISS#2323203)
-  NSString *escapedAppName = [[[NSBundle mainBundle] bundleIdentifier] stringByAddingPercentEncodingWithAllowedCharacters:NSCharacterSet.URLQueryAllowedCharacterSet];
-=======
-  NSString *escapedDeviceName = [[[UIDevice currentDevice] name]
-      stringByAddingPercentEncodingWithAllowedCharacters:NSCharacterSet.URLQueryAllowedCharacterSet];
   NSString *escapedAppName = [[[NSBundle mainBundle] bundleIdentifier]
       stringByAddingPercentEncodingWithAllowedCharacters:NSCharacterSet.URLQueryAllowedCharacterSet];
->>>>>>> fb/0.62-stable
   return [NSURL URLWithString:[NSString stringWithFormat:@"http://%@/inspector/device?name=%@&app=%@",
                                                          getServerHost(bundleURL, inspectorProxyPort),
                                                          escapedDeviceName,
@@ -69,19 +60,14 @@ static NSURL *getAttachDeviceUrl(NSURL *bundleURL, NSString *title)
   if (metroBundlerPortStr && [metroBundlerPortStr length] > 0) {
     metroBundlerPort = [NSNumber numberWithInt:[metroBundlerPortStr intValue]];
   }
-<<<<<<< HEAD
 #if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
-  NSString *escapedDeviceName = [[[UIDevice currentDevice] name] stringByAddingPercentEncodingWithAllowedCharacters:NSCharacterSet.URLHostAllowedCharacterSet];
+  NSString *escapedDeviceName = [[[UIDevice currentDevice] name]
+      stringByAddingPercentEncodingWithAllowedCharacters:NSCharacterSet.URLHostAllowedCharacterSet];
 #else // [TODO(macOS ISS#2323203)
   NSString *escapedDeviceName = @"";
 #endif // ]TODO(macOS ISS#2323203)
-  NSString *escapedAppName = [[[NSBundle mainBundle] bundleIdentifier] stringByAddingPercentEncodingWithAllowedCharacters:NSCharacterSet.URLHostAllowedCharacterSet];
-=======
-  NSString *escapedDeviceName = [[[UIDevice currentDevice] name]
-      stringByAddingPercentEncodingWithAllowedCharacters:NSCharacterSet.URLHostAllowedCharacterSet];
   NSString *escapedAppName = [[[NSBundle mainBundle] bundleIdentifier]
       stringByAddingPercentEncodingWithAllowedCharacters:NSCharacterSet.URLHostAllowedCharacterSet];
->>>>>>> fb/0.62-stable
   return [NSURL URLWithString:[NSString stringWithFormat:@"http://%@/attach-debugger-nuclide?title=%@&device=%@&app=%@",
                                                          getServerHost(bundleURL, metroBundlerPort),
                                                          title,
@@ -102,20 +88,16 @@ static void sendEventToAllConnections(NSString *event)
   }
 }
 
-<<<<<<< HEAD
-static void displayErrorAlert(UIViewController *view, NSString *message) {
+static void displayErrorAlert(UIViewController *view, NSString *message)
+{
 #if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
-  UIAlertController *alert =
-      [UIAlertController alertControllerWithTitle:nil
-                                          message:message
-                                   preferredStyle:UIAlertControllerStyleAlert];
+  UIAlertController *alert = [UIAlertController alertControllerWithTitle:nil
+                                                                 message:message
+                                                          preferredStyle:UIAlertControllerStyleAlert];
   [view presentViewController:alert animated:YES completion:nil];
-  dispatch_after(
-      dispatch_time(DISPATCH_TIME_NOW, NSEC_PER_SEC * 2.5),
-      dispatch_get_main_queue(),
-      ^{
-        [alert dismissViewControllerAnimated:YES completion:nil];
-      });
+  dispatch_after(dispatch_time(DISPATCH_TIME_NOW, NSEC_PER_SEC * 2.5), dispatch_get_main_queue(), ^{
+    [alert dismissViewControllerAnimated:YES completion:nil];
+  });
 #else // [TODO(macOS ISS#2323203)
   NSAlert *alert = [[NSAlert alloc] init];
   [alert setMessageText:message];
@@ -130,17 +112,6 @@ static void displayErrorAlert(UIViewController *view, NSString *message) {
         [[NSApp keyWindow] endSheet:[alert window]];
       });
 #endif // ]TODO(macOS ISS#2323203)
-=======
-static void displayErrorAlert(UIViewController *view, NSString *message)
-{
-  UIAlertController *alert = [UIAlertController alertControllerWithTitle:nil
-                                                                 message:message
-                                                          preferredStyle:UIAlertControllerStyleAlert];
-  [view presentViewController:alert animated:YES completion:nil];
-  dispatch_after(dispatch_time(DISPATCH_TIME_NOW, NSEC_PER_SEC * 2.5), dispatch_get_main_queue(), ^{
-    [alert dismissViewControllerAnimated:YES completion:nil];
-  });
->>>>>>> fb/0.62-stable
 }
 
 + (void)attachDebugger:(NSString *)owner withBundleURL:(NSURL *)bundleURL withView:(UIViewController *)view

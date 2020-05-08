@@ -6,12 +6,9 @@
  */
 
 #import <React/RCTImageBlurUtils.h>
-<<<<<<< HEAD
 
 #import <React/RCTUIKit.h> // TODO(macOS ISS#2323203)
 #import <React/RCTUtils.h> // TODO(macOS ISS#2323203)
-=======
->>>>>>> fb/0.62-stable
 
 UIImage *RCTBlurredImageWithRadius(UIImage *inputImage, CGFloat radius)
 {

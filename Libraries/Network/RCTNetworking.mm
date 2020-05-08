@@ -18,11 +18,8 @@
 #import <React/RCTUtils.h>
 
 #import <React/RCTHTTPRequestHandler.h>
-<<<<<<< HEAD
-=======
 
 #import "RCTNetworkPlugins.h"
->>>>>>> fb/0.62-stable
 
 typedef RCTURLRequestCancellationBlock (^RCTHTTPQueryResult)(NSError *error, NSDictionary<NSString *, id> *result);
 

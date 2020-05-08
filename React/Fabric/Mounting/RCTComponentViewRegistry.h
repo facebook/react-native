@@ -44,12 +44,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (RCTComponentViewDescriptor const &)componentViewDescriptorWithTag:(facebook::react::Tag)tag;
 
 /**
-<<<<<<< HEAD
- * Returns `tag` associated with given `componentView`.
-=======
  * Finds a native component view by given `tag`.
  * Returns `nil` if there is no registered component with the `tag`.
->>>>>>> fb/0.62-stable
  */
 - (nullable UIView<RCTComponentViewProtocol> *)findComponentViewWithTag:(facebook::react::Tag)tag;
 

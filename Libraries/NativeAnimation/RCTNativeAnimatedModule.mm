@@ -4,11 +4,6 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-<<<<<<< HEAD:Libraries/NativeAnimation/RCTNativeAnimatedModule.m
-#import <React/RCTNativeAnimatedModule.h>
-
-#import <React/RCTNativeAnimatedNodesManager.h>
-=======
 
 #import <FBReactNativeSpec/FBReactNativeSpec.h>
 #import <React/RCTNativeAnimatedModule.h>
@@ -17,7 +12,6 @@
 #import <RCTTypeSafety/RCTConvertHelpers.h>
 
 #import "RCTAnimationPlugins.h"
->>>>>>> fb/0.62-stable:Libraries/NativeAnimation/RCTNativeAnimatedModule.mm
 
 typedef void (^AnimatedOperation)(RCTNativeAnimatedNodesManager *nodesManager);
 
@@ -98,15 +92,6 @@ RCT_EXPORT_METHOD(startAnimatingNode:(double)animationId
   [self addOperationBlock:^(RCTNativeAnimatedNodesManager *nodesManager) {
     [nodesManager startAnimatingNode:[NSNumber numberWithDouble:animationId] nodeTag:[NSNumber numberWithDouble:nodeTag] config:config endCallback:callBack];
   }];
-<<<<<<< HEAD:Libraries/NativeAnimation/RCTNativeAnimatedModule.m
-  __weak RCTNativeAnimatedModule *weakSelf = self;
-  RCTExecuteOnMainQueue(^{
-      __strong RCTNativeAnimatedModule *strongSelf = weakSelf;
-      if (strongSelf && [strongSelf->_nodesManager isNodeManagedByFabric:nodeTag]) {
-          strongSelf->_animIdIsManagedByFabric[animationId] = @YES;
-          [strongSelf flushOperationQueues];
-      }
-=======
 
   RCTExecuteOnMainQueue(^{
     if (![self->_nodesManager isNodeManagedByFabric:[NSNumber numberWithDouble:nodeTag]]) {
@@ -117,7 +102,6 @@ RCT_EXPORT_METHOD(startAnimatingNode:(double)animationId
       self->_animIdIsManagedByFabric[[NSNumber numberWithDouble:animationId]] = @YES;
       [self flushOperationQueues];
     });
->>>>>>> fb/0.62-stable:Libraries/NativeAnimation/RCTNativeAnimatedModule.mm
   });
 }
 

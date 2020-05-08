@@ -64,11 +64,7 @@
 #endif
 
 #ifndef ENABLE_PACKAGER_CONNECTION
-<<<<<<< HEAD
-#if RCT_DEV && (__has_include("RCTPackagerConnection.h") || __has_include(<React/RCTPackagerConnection.h>)) && !TARGET_OS_UIKITFORMAC
-=======
 #if RCT_DEV && (__has_include("RCTPackagerConnection.h") || __has_include(<React/RCTPackagerConnection.h>))
->>>>>>> fb/0.62-stable
 #define ENABLE_PACKAGER_CONNECTION 1
 #else
 #define ENABLE_PACKAGER_CONNECTION 0

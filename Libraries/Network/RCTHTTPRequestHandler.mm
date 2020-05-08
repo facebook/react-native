@@ -10,10 +10,7 @@
 #import <mutex>
 
 #import <React/RCTNetworking.h>
-<<<<<<< HEAD
-=======
 #import <ReactCommon/RCTTurboModule.h>
->>>>>>> fb/0.62-stable
 
 #import "RCTNetworkPlugins.h"
 

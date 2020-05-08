@@ -18,14 +18,6 @@
 #import <React/RCTUtils.h>
 #import <React/UIView+React.h>
 
-<<<<<<< HEAD:Libraries/Image/RCTImageView.m
-#import <React/RCTUIImageViewAnimated.h>
-#import <React/RCTImageBlurUtils.h>
-#import <React/RCTImageUtils.h>
-#import <React/RCTImageLoaderProtocol.h>
-
-=======
->>>>>>> fb/0.62-stable:Libraries/Image/RCTImageView.mm
 /**
  * Determines whether an image of `currentSize` should be reloaded for display
  * at `idealSize`.
@@ -136,14 +128,11 @@ static NSDictionary *onLoadParamsForSource(RCTImageSource *source)
   BOOL _needsReload;
 
   RCTUIImageViewAnimated *_imageView;
-<<<<<<< HEAD:Libraries/Image/RCTImageView.m
 
 #if TARGET_OS_OSX // [TODO(macOS ISS#2323203)
   // Whether observing changes to the window's backing scale
   BOOL _subscribedToWindowBackingNotifications;
 #endif // [TODO(macOS ISS#2323203)
-=======
->>>>>>> fb/0.62-stable:Libraries/Image/RCTImageView.mm
 }
 
 - (instancetype)initWithBridge:(RCTBridge *)bridge
@@ -154,13 +143,10 @@ static NSDictionary *onLoadParamsForSource(RCTImageSource *source)
   if ((self = [super initWithFrame:NSZeroRect])) {
 #endif // ]TODO(macOS ISS#2323203)
     _bridge = bridge;
-<<<<<<< HEAD:Libraries/Image/RCTImageView.m
 #if TARGET_OS_OSX // [TODO(macOS ISS#2323203)
     self.wantsLayer = YES;
 #endif
 #if !TARGET_OS_OSX
-=======
->>>>>>> fb/0.62-stable:Libraries/Image/RCTImageView.mm
     NSNotificationCenter *center = [NSNotificationCenter defaultCenter];
     [center addObserver:self
                selector:@selector(clearImageIfDetached)
@@ -170,10 +156,7 @@ static NSDictionary *onLoadParamsForSource(RCTImageSource *source)
                selector:@selector(clearImageIfDetached)
                    name:UIApplicationDidEnterBackgroundNotification
                  object:nil];
-<<<<<<< HEAD:Libraries/Image/RCTImageView.m
 #endif
-=======
->>>>>>> fb/0.62-stable:Libraries/Image/RCTImageView.mm
     _imageView = [[RCTUIImageViewAnimated alloc] init];
     _imageView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     [self addSubview:_imageView];
@@ -445,17 +428,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
       [weakSelf imageLoaderLoadedImage:loadedImage error:error forImageSource:source partial:NO];
     };
 
-<<<<<<< HEAD:Libraries/Image/RCTImageView.m
-    _reloadImageCancellationBlock =
-    [[_bridge moduleForName:@"ImageLoader"] loadImageWithURLRequest:source.request
-                                                                        size:imageSize
-                                                                       scale:imageScale
-                                                                     clipped:NO
-                                                                  resizeMode:_resizeMode
-                                                               progressBlock:progressHandler
-                                                            partialLoadBlock:partialLoadHandler
-                                                             completionBlock:completionHandler];
-=======
     id<RCTImageLoaderWithAttributionProtocol> imageLoader = [_bridge moduleForName:@"ImageLoader"
                                                              lazilyLoadIfNecessary:YES];
     _reloadImageCancellationBlock = [imageLoader loadImageWithURLRequest:source.request
@@ -470,7 +442,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
                                                            progressBlock:progressHandler
                                                         partialLoadBlock:partialLoadHandler
                                                          completionBlock:completionHandler];
->>>>>>> fb/0.62-stable:Libraries/Image/RCTImageView.mm
   } else {
     [self clearImage];
   }

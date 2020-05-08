@@ -52,10 +52,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, copy) RCTTextSelection *selection;
 @property (nonatomic, strong, nullable) NSNumber *maxLength;
 @property (nonatomic, copy, nullable) NSAttributedString *attributedText;
-<<<<<<< HEAD
 @property (nonatomic, copy) NSString *predictedText; // TODO(OSS Candidate ISS#2710739)
-=======
->>>>>>> fb/0.62-stable
 @property (nonatomic, copy) NSString *inputAccessoryViewID;
 #if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
 @property (nonatomic, assign) UIKeyboardType keyboardType;

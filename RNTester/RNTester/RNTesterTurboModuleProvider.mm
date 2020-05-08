@@ -20,11 +20,7 @@ Class RNTesterTurboModuleClassProvider(const char *name) {
   return RCTCoreModulesClassProvider(name);
 }
 
-<<<<<<< HEAD
-std::shared_ptr<TurboModule> RNTesterTurboModuleProvider(const std::string &name, std::shared_ptr<JSCallInvoker> jsInvoker) {
-=======
 std::shared_ptr<TurboModule> RNTesterTurboModuleProvider(const std::string &name, std::shared_ptr<CallInvoker> jsInvoker) {
->>>>>>> fb/0.62-stable
   if (name == "SampleTurboCxxModule") {
     return std::make_shared<SampleTurboCxxModule>(jsInvoker);
   }

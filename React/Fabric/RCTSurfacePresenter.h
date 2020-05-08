@@ -9,12 +9,8 @@
 
 #import <React/RCTPrimitives.h>
 #import <React/RCTSurfacePresenterStub.h>
-<<<<<<< HEAD
-#import <react/config/ReactNativeConfig.h>
-=======
 
 #import <React/RCTComponentViewFactory.h>
->>>>>>> fb/0.62-stable
 #import <react/utils/ContextContainer.h>
 #import <react/utils/RuntimeExecutor.h>
 
@@ -30,15 +26,8 @@ NS_ASSUME_NONNULL_BEGIN
  */
 @interface RCTSurfacePresenter : NSObject
 
-<<<<<<< HEAD
-- (instancetype)initWithBridge:(RCTBridge *)bridge
-                        config:(std::shared_ptr<const facebook::react::ReactNativeConfig>)config
-                   imageLoader:(RCTImageLoader *)imageLoader
-               runtimeExecutor:(facebook::react::RuntimeExecutor)runtimeExecutor;
-=======
 - (instancetype)initWithContextContainer:(facebook::react::ContextContainer::Shared)contextContainer
                          runtimeExecutor:(facebook::react::RuntimeExecutor)runtimeExecutor;
->>>>>>> fb/0.62-stable
 
 @property (nonatomic, readonly) RCTComponentViewFactory *componentViewFactory;
 
@@ -64,10 +53,6 @@ NS_ASSUME_NONNULL_BEGIN
  */
 - (void)registerSurface:(RCTFabricSurface *)surface;
 - (void)unregisterSurface:(RCTFabricSurface *)surface;
-<<<<<<< HEAD
-=======
-
->>>>>>> fb/0.62-stable
 - (void)setProps:(NSDictionary *)props surface:(RCTFabricSurface *)surface;
 
 - (nullable RCTFabricSurface *)surfaceForRootTag:(ReactTag)rootTag;

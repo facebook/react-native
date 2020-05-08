@@ -344,17 +344,6 @@ static RCTBorderColors RCTBorderColorsFromBorderColors(BorderColors borderColors
                          .top = RCTCGColorRefUnretainedFromSharedColor(borderColors.top),
                          .bottom = RCTCGColorRefUnretainedFromSharedColor(borderColors.bottom),
                          .right = RCTCGColorRefUnretainedFromSharedColor(borderColors.right)};
-<<<<<<< HEAD
-}
-
-static UIEdgeInsets UIEdgeInsetsFromBorderInsets(EdgeInsets edgeInsets)
-{
-  return UIEdgeInsets{.left = (CGFloat)edgeInsets.left,
-                      .top = (CGFloat)edgeInsets.top,
-                      .bottom = (CGFloat)edgeInsets.bottom,
-                      .right = (CGFloat)edgeInsets.right};
-=======
->>>>>>> fb/0.62-stable
 }
 
 static RCTBorderStyle RCTBorderStyleFromBorderStyle(BorderStyle borderStyle)

@@ -33,8 +33,6 @@
 #import <React/RCTFabricSurfaceHostingProxyRootView.h>
 #endif
 
-<<<<<<< HEAD
-=======
   
 #if DEBUG
 #ifdef FB_SONARKIT_ENABLED
@@ -48,7 +46,6 @@
 #endif
 #endif
 
->>>>>>> fb/0.62-stable
 #import <ReactCommon/RCTTurboModuleManager.h>
 #import <React/RCTTextAttributes.h> // TODO(OSS Candidate ISS#2710739)
 
@@ -162,10 +159,6 @@
     }
     __typeof(self) strongSelf = weakSelf;
     if (strongSelf) {
-<<<<<<< HEAD
-      strongSelf->_turboModuleManager = [[RCTTurboModuleManager alloc] initWithBridge:bridge delegate:strongSelf];
-=======
->>>>>>> fb/0.62-stable
       [strongSelf->_turboModuleManager installJSBindingWithRuntime:&runtime];
     }
   });

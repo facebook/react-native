@@ -6,15 +6,12 @@
  */
 
 #import <React/RCTDataRequestHandler.h>
-<<<<<<< HEAD:Libraries/Network/RCTDataRequestHandler.m
-=======
 #import <ReactCommon/RCTTurboModule.h>
 
 #import "RCTNetworkPlugins.h"
 
 @interface RCTDataRequestHandler() <RCTTurboModule>
 @end
->>>>>>> fb/0.62-stable:Libraries/Network/RCTDataRequestHandler.mm
 
 @implementation RCTDataRequestHandler
 {

@@ -77,32 +77,20 @@ RCT_EXPORT_MODULE()
 RCT_EXPORT_METHOD(alertWithArgs:(JS::NativeAlertManager::Args &)args
                   callback:(RCTResponseSenderBlock)callback)
 {
-<<<<<<< HEAD:React/Modules/RCTAlertManager.m
-  NSString *title = [RCTConvert NSString:args[@"title"]];
-  NSString *message = [RCTConvert NSString:args[@"message"]];
-  RCTAlertViewStyle type = [RCTConvert RCTAlertViewStyle:args[@"type"]];
-  NSArray<NSDictionary *> *buttons = [RCTConvert NSDictionaryArray:args[@"buttons"]];
-	
+  NSString *title = [RCTConvert NSString:args.title()];
+  NSString *message = [RCTConvert NSString:args.message()];
+  RCTAlertViewStyle type = [RCTConvert RCTAlertViewStyle:args.type()];
+  NSArray<NSDictionary *> *buttons = [RCTConvert NSDictionaryArray:RCTConvertOptionalVecToArray(args.buttons(), ^id(id<NSObject> element) { return element; })];
 #if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
-  NSString *defaultValue = [RCTConvert NSString:args[@"defaultValue"]];
-  NSString *cancelButtonKey = [RCTConvert NSString:args[@"cancelButtonKey"]];
-  NSString *destructiveButtonKey = [RCTConvert NSString:args[@"destructiveButtonKey"]];
-  UIKeyboardType keyboardType = [RCTConvert UIKeyboardType:args[@"keyboardType"]];
+  NSString *defaultValue = [RCTConvert NSString:args.defaultValue()];
+  NSString *cancelButtonKey = [RCTConvert NSString:args.cancelButtonKey()];
+  NSString *destructiveButtonKey = [RCTConvert NSString:args.destructiveButtonKey()];
+  UIKeyboardType keyboardType = [RCTConvert UIKeyboardType:args.keyboardType()];
 #else // [TODO(macOS ISS#2323203)
   BOOL critical = [RCTConvert BOOL:args[@"critical"]];
   BOOL modal = [RCTConvert BOOL:args[@"modal"]];
   NSArray<NSDictionary *> *defaultInputs = [RCTConvert NSDictionaryArray:args[@"defaultInputs"]];
 #endif // ]TODO(macOS ISS#2323203)
-=======
-  NSString *title = [RCTConvert NSString:args.title()];
-  NSString *message = [RCTConvert NSString:args.message()];
-  RCTAlertViewStyle type = [RCTConvert RCTAlertViewStyle:args.type()];
-  NSArray<NSDictionary *> *buttons = [RCTConvert NSDictionaryArray:RCTConvertOptionalVecToArray(args.buttons(), ^id(id<NSObject> element) { return element; })];
-  NSString *defaultValue = [RCTConvert NSString:args.defaultValue()];
-  NSString *cancelButtonKey = [RCTConvert NSString:args.cancelButtonKey()];
-  NSString *destructiveButtonKey = [RCTConvert NSString:args.destructiveButtonKey()];
-  UIKeyboardType keyboardType = [RCTConvert UIKeyboardType:args.keyboardType()];
->>>>>>> fb/0.62-stable:React/CoreModules/RCTAlertManager.mm
 
   if (!title && !message) {
     RCTLogError(@"Must specify either an alert title, or message, or both");

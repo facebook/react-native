@@ -7,12 +7,8 @@
 
 #import "RCTClipboard.h"
 
-<<<<<<< HEAD:React/Modules/RCTClipboard.m
-#import <React/RCTUIKit.h> // TODO(macOS ISS#2323203)
-=======
 #import <FBReactNativeSpec/FBReactNativeSpec.h>
-#import <UIKit/UIKit.h>
->>>>>>> fb/0.62-stable:React/CoreModules/RCTClipboard.mm
+#import <React/RCTUIKit.h> // TODO(macOS ISS#2323203)
 
 #import "CoreModulesPlugins.h"
 

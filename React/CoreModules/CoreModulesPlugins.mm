@@ -16,15 +16,6 @@
 #import <string>
 #import <unordered_map>
 
-<<<<<<< HEAD
-static std::unordered_map<std::string, Class (*)(void)> sCoreModuleClassMap = {
-  {"ExceptionsManager", RCTExceptionsManagerCls},
-{"ImageLoader", RCTImageLoaderCls},
-{"PlatformConstants", RCTPlatformCls},
-};
-
-Class RCTCoreModulesClassProvider(const char *name) {
-=======
 Class RCTCoreModulesClassProvider(const char *name) {
   static std::unordered_map<std::string, Class (*)(void)> sCoreModuleClassMap = {
     {"AccessibilityManager", RCTAccessibilityManagerCls},
@@ -52,7 +43,6 @@ Class RCTCoreModulesClassProvider(const char *name) {
     {"WebSocketModule", RCTWebSocketModuleCls},
   };
 
->>>>>>> fb/0.62-stable
   auto p = sCoreModuleClassMap.find(name);
   if (p != sCoreModuleClassMap.end()) {
     auto classFunc = p->second;
