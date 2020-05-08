@@ -35,6 +35,10 @@ namespace debugger = ::facebook::hermes::debugger;
 namespace inspector = ::facebook::hermes::inspector;
 namespace m = ::facebook::hermes::inspector::chrome::message;
 
+static const char *const kVirtualBreakpointPrefix = "virtualbreakpoint-";
+static const char *const kBeforeScriptWithSourceMapExecution =
+    "beforeScriptWithSourceMapExecution";
+
 /*
  * Connection::Impl
  */
@@ -77,6 +81,8 @@ class Connection::Impl : public inspector::InspectorObserver,
   void handle(const m::debugger::ResumeRequest &req) override;
   void handle(const m::debugger::SetBreakpointRequest &req) override;
   void handle(const m::debugger::SetBreakpointByUrlRequest &req) override;
+  void handle(
+      const m::debugger::SetInstrumentationBreakpointRequest &req) override;
   void handle(const m::debugger::SetPauseOnExceptionsRequest &req) override;
   void handle(const m::debugger::StepIntoRequest &req) override;
   void handle(const m::debugger::StepOutRequest &req) override;
@@ -110,6 +116,7 @@ class Connection::Impl : public inspector::InspectorObserver,
   folly::Function<void(const std::exception &)> sendErrorToClient(int id);
   void sendResponseToClientViaExecutor(int id);
   void sendResponseToClientViaExecutor(folly::Future<Unit> future, int id);
+  void sendResponseToClientViaExecutor(const m::Response &resp);
   void sendNotificationToClientViaExecutor(const m::Notification &note);
   void sendErrorToClientViaExecutor(int id, const std::string &error);
 
@@ -129,6 +136,19 @@ class Connection::Impl : public inspector::InspectorObserver,
   // Access is protected by parsedScriptsMutex_.
   std::mutex parsedScriptsMutex_;
   std::vector<std::string> parsedScripts_;
+
+  // Some events are represented as a mode in Hermes but a breakpoint in CDP,
+  // e.g. "beforeScriptExecution" and "beforeScriptWithSourceMapExecution".
+  // Keep track of these separately. The caller should lock the
+  // virtualBreakpointMutex_.
+  std::mutex virtualBreakpointMutex_;
+  uint32_t nextVirtualBreakpoint_ = 1;
+  const std::string &createVirtualBreakpoint(const std::string &category);
+  bool isVirtualBreakpointId(const std::string &id);
+  bool hasVirtualBreakpoint(const std::string &category);
+  bool removeVirtualBreakpoint(const std::string &id);
+  std::unordered_map<std::string, std::unordered_set<std::string>>
+      virtualBreakpoints_;
 
   // The rest of these member variables are only accessed via executor_.
   std::unique_ptr<folly::Executor> executor_;
@@ -271,6 +291,7 @@ void Connection::Impl::onContextCreated(Inspector &inspector) {
 void Connection::Impl::onPause(
     Inspector &inspector,
     const debugger::ProgramState &state) {
+  bool sendNotification = true;
   m::debugger::PausedNotification note;
   note.callFrames = m::debugger::makeCallFrames(state, objTable_, getRuntime());
 
@@ -290,15 +311,37 @@ void Connection::Impl::onPause(
     case debugger::PauseReason::Exception:
       note.reason = "exception";
       break;
-    case debugger::PauseReason::ScriptLoaded:
-      note.reason = "load";
+    case debugger::PauseReason::ScriptLoaded: {
+      note.reason = "other";
+      note.hitBreakpoints = std::vector<m::debugger::BreakpointId>();
+
+      std::lock_guard<std::mutex> lock(virtualBreakpointMutex_);
+      for (auto &bp :
+           virtualBreakpoints_[kBeforeScriptWithSourceMapExecution]) {
+        note.hitBreakpoints->emplace_back(bp);
+      }
+
+      // Debuggers don't tend to ever remove these kinds of breakpoints, but
+      // in the extremely unlikely event that it did *and* did it exactly
+      // between us 1. checking that we should stop, and 2. adding the stop
+      // reason here, then just resume and skip sending a pause notification.
+      if (note.hitBreakpoints->empty()) {
+        sendNotification = false;
+        inspector_->resume();
+      }
+    };
+      // This will be toggled back on in the next onScriptParsed if applicable
+      // Locking is handled by didPause in the inspector
+      inspector_->setPauseOnLoads(PauseOnLoadMode::None);
       break;
     default:
       note.reason = "other";
       break;
   }
 
-  sendNotificationToClientViaExecutor(note);
+  if (sendNotification) {
+    sendNotificationToClientViaExecutor(note);
+  }
 }
 
 void Connection::Impl::onResume(Inspector &inspector) {
@@ -317,6 +360,15 @@ void Connection::Impl::onScriptParsed(
 
   if (!info.sourceMappingUrl.empty()) {
     note.sourceMapURL = info.sourceMappingUrl;
+
+    std::lock_guard<std::mutex> lock(virtualBreakpointMutex_);
+    if (hasVirtualBreakpoint(kBeforeScriptWithSourceMapExecution)) {
+      // We are precariously relying on the fact that onScriptParsed
+      // is invoked immediately before the pause load mode is checked.
+      // That means that we can check for breakpoints and toggle the
+      // mode here, and then immediately turn it off in onPause.
+      inspector_->setPauseOnLoads(PauseOnLoadMode::All);
+    }
   }
 
   {
@@ -524,9 +576,18 @@ void Connection::Impl::handle(const m::debugger::PauseRequest &req) {
 }
 
 void Connection::Impl::handle(const m::debugger::RemoveBreakpointRequest &req) {
-  auto breakpointId = folly::to<debugger::BreakpointID>(req.breakpointId);
-  sendResponseToClientViaExecutor(
-      inspector_->removeBreakpoint(breakpointId), req.id);
+  if (isVirtualBreakpointId(req.breakpointId)) {
+    std::lock_guard<std::mutex> lock(virtualBreakpointMutex_);
+    if (!removeVirtualBreakpoint(req.breakpointId)) {
+      sendErrorToClientViaExecutor(
+          req.id, "Unknown breakpoint ID: " + req.breakpointId);
+    }
+    sendResponseToClientViaExecutor(req.id);
+  } else {
+    auto breakpointId = folly::to<debugger::BreakpointID>(req.breakpointId);
+    sendResponseToClientViaExecutor(
+        inspector_->removeBreakpoint(breakpointId), req.id);
+  }
 }
 
 void Connection::Impl::handle(const m::debugger::ResumeRequest &req) {
@@ -591,6 +652,51 @@ void Connection::Impl::handle(
         sendResponseToClient(resp);
       })
       .thenError<std::exception>(sendErrorToClient(req.id));
+}
+
+bool Connection::Impl::isVirtualBreakpointId(const std::string &id) {
+  return id.rfind(kVirtualBreakpointPrefix, 0) == 0;
+}
+
+const std::string &Connection::Impl::createVirtualBreakpoint(
+    const std::string &category) {
+  auto ret = virtualBreakpoints_[category].insert(folly::to<std::string>(
+      kVirtualBreakpointPrefix, nextVirtualBreakpoint_++));
+  return *ret.first;
+}
+
+bool Connection::Impl::hasVirtualBreakpoint(const std::string &category) {
+  auto pos = virtualBreakpoints_.find(category);
+  if (pos == virtualBreakpoints_.end())
+    return false;
+  return !pos->second.empty();
+}
+
+bool Connection::Impl::removeVirtualBreakpoint(const std::string &id) {
+  // We expect roughly 1 category, so just iterate over all the sets
+  for (auto &kv : virtualBreakpoints_) {
+    if (kv.second.erase(id) > 0) {
+      return true;
+    }
+  }
+  return false;
+}
+
+void Connection::Impl::handle(
+    const m::debugger::SetInstrumentationBreakpointRequest &req) {
+  if (req.instrumentation != kBeforeScriptWithSourceMapExecution) {
+    sendErrorToClientViaExecutor(
+        req.id, "Unknown instrumentation breakpoint: " + req.instrumentation);
+    return;
+  }
+
+  // The act of creating and registering the breakpoint ID is enough
+  // to "set" it. We merely check for the existence of them later.
+  std::lock_guard<std::mutex> lock(virtualBreakpointMutex_);
+  m::debugger::SetInstrumentationBreakpointResponse resp;
+  resp.id = req.id;
+  resp.breakpointId = createVirtualBreakpoint(req.instrumentation);
+  sendResponseToClientViaExecutor(resp);
 }
 
 void Connection::Impl::handle(
@@ -788,6 +894,15 @@ Connection::Impl::sendErrorToClient(int id) {
 
 void Connection::Impl::sendResponseToClientViaExecutor(int id) {
   sendResponseToClientViaExecutor(folly::makeFuture(), id);
+}
+
+void Connection::Impl::sendResponseToClientViaExecutor(
+    const m::Response &resp) {
+  std::string json = resp.toJson();
+
+  folly::makeFuture()
+      .via(executor_.get())
+      .thenValue([this, json](const Unit &unit) { sendToClient(json); });
 }
 
 void Connection::Impl::sendResponseToClientViaExecutor(

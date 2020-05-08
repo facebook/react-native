@@ -1,5 +1,5 @@
 // Copyright 2004-present Facebook. All Rights Reserved.
-// @generated SignedSource<<0a1a011902fd18d4eebd2fe12fafb8b1>>
+// @generated SignedSource<<d3d8ca811a2e56cf4794f5dc4171bbdb>>
 
 #pragma once
 
@@ -38,6 +38,8 @@ struct SetBreakpointByUrlRequest;
 struct SetBreakpointByUrlResponse;
 struct SetBreakpointRequest;
 struct SetBreakpointResponse;
+struct SetInstrumentationBreakpointRequest;
+struct SetInstrumentationBreakpointResponse;
 struct SetPauseOnExceptionsRequest;
 struct StepIntoRequest;
 struct StepOutRequest;
@@ -86,6 +88,8 @@ struct RequestHandler {
   virtual void handle(const debugger::ResumeRequest &req) = 0;
   virtual void handle(const debugger::SetBreakpointRequest &req) = 0;
   virtual void handle(const debugger::SetBreakpointByUrlRequest &req) = 0;
+  virtual void handle(
+      const debugger::SetInstrumentationBreakpointRequest &req) = 0;
   virtual void handle(const debugger::SetPauseOnExceptionsRequest &req) = 0;
   virtual void handle(const debugger::StepIntoRequest &req) = 0;
   virtual void handle(const debugger::StepOutRequest &req) = 0;
@@ -110,6 +114,8 @@ struct NoopRequestHandler : public RequestHandler {
   void handle(const debugger::ResumeRequest &req) override {}
   void handle(const debugger::SetBreakpointRequest &req) override {}
   void handle(const debugger::SetBreakpointByUrlRequest &req) override {}
+  void handle(
+      const debugger::SetInstrumentationBreakpointRequest &req) override {}
   void handle(const debugger::SetPauseOnExceptionsRequest &req) override {}
   void handle(const debugger::StepIntoRequest &req) override {}
   void handle(const debugger::StepOutRequest &req) override {}
@@ -345,6 +351,16 @@ struct debugger::SetBreakpointByUrlRequest : public Request {
   folly::Optional<std::string> condition;
 };
 
+struct debugger::SetInstrumentationBreakpointRequest : public Request {
+  SetInstrumentationBreakpointRequest();
+  explicit SetInstrumentationBreakpointRequest(const folly::dynamic &obj);
+
+  folly::dynamic toDynamic() const override;
+  void accept(RequestHandler &handler) const override;
+
+  std::string instrumentation;
+};
+
 struct debugger::SetPauseOnExceptionsRequest : public Request {
   SetPauseOnExceptionsRequest();
   explicit SetPauseOnExceptionsRequest(const folly::dynamic &obj);
@@ -481,6 +497,14 @@ struct debugger::SetBreakpointByUrlResponse : public Response {
 
   debugger::BreakpointId breakpointId{};
   std::vector<debugger::Location> locations;
+};
+
+struct debugger::SetInstrumentationBreakpointResponse : public Response {
+  SetInstrumentationBreakpointResponse() = default;
+  explicit SetInstrumentationBreakpointResponse(const folly::dynamic &obj);
+  folly::dynamic toDynamic() const override;
+
+  debugger::BreakpointId breakpointId{};
 };
 
 struct runtime::EvaluateResponse : public Response {

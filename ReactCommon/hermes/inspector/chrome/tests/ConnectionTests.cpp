@@ -2271,6 +2271,84 @@ function foo(){x=1}debugger;foo();
   expectNotification<m::debugger::ResumedNotification>(conn);
 }
 
+TEST(ConnectionTests, canBreakOnScriptsWithSourceMap) {
+  TestContext context;
+  AsyncHermesRuntime &asyncRuntime = context.runtime();
+  SyncConnection &conn = context.conn();
+  int msgId = 1;
+
+  send<m::debugger::EnableRequest>(conn, msgId++);
+  expectExecutionContextCreated(conn);
+
+  m::debugger::SetInstrumentationBreakpointRequest req;
+  req.id = msgId++;
+  req.instrumentation = "beforeScriptWithSourceMapExecution";
+
+  conn.send(req.toJson());
+  auto bpId = expectResponse<m::debugger::SetInstrumentationBreakpointResponse>(
+                  conn, req.id)
+                  .breakpointId;
+
+  asyncRuntime.executeScriptAsync(R"(
+      storeValue(42); debugger;
+      //# sourceURL=http://example.com/source.js
+      //# sourceMappingURL=http://example.com/source.map
+    )");
+  expectNotification<m::debugger::ScriptParsedNotification>(conn);
+
+  // We should get a pause before the first statement
+  auto note = expectNotification<m::debugger::PausedNotification>(conn);
+  ASSERT_FALSE(asyncRuntime.hasStoredValue());
+  EXPECT_EQ(note.reason, "other");
+  ASSERT_TRUE(note.hitBreakpoints.hasValue());
+  ASSERT_EQ(note.hitBreakpoints->size(), 1);
+  EXPECT_EQ(note.hitBreakpoints->at(0), bpId);
+
+  // Continue and verify that the JS code has now executed
+  send<m::debugger::ResumeRequest>(conn, msgId++);
+  expectNotification<m::debugger::ResumedNotification>(conn);
+  expectNotification<m::debugger::PausedNotification>(conn);
+  EXPECT_EQ(asyncRuntime.awaitStoredValue().asNumber(), 42);
+
+  // Resume and exit
+  send<m::debugger::ResumeRequest>(conn, msgId++);
+  expectNotification<m::debugger::ResumedNotification>(conn);
+}
+
+TEST(ConnectionTests, wontStopOnFilesWithoutSourceMaps) {
+  TestContext context;
+  AsyncHermesRuntime &asyncRuntime = context.runtime();
+  SyncConnection &conn = context.conn();
+  int msgId = 1;
+
+  send<m::debugger::EnableRequest>(conn, msgId++);
+  expectExecutionContextCreated(conn);
+
+  m::debugger::SetInstrumentationBreakpointRequest req;
+  req.id = msgId++;
+  req.instrumentation = "beforeScriptWithSourceMapExecution";
+
+  conn.send(req.toJson());
+  expectResponse<m::debugger::SetInstrumentationBreakpointResponse>(
+      conn, req.id);
+
+  // This script has no source map, so it should not trigger a break
+  asyncRuntime.executeScriptAsync(R"(
+      storeValue(42); debugger;
+      //# sourceURL=http://example.com/source.js
+    )");
+  expectNotification<m::debugger::ScriptParsedNotification>(conn);
+
+  // Continue and verify that the JS code has now executed without first
+  // pausing on the script load.
+  expectNotification<m::debugger::PausedNotification>(conn);
+  EXPECT_EQ(asyncRuntime.awaitStoredValue().asNumber(), 42);
+
+  // Resume and exit
+  send<m::debugger::ResumeRequest>(conn, msgId++);
+  expectNotification<m::debugger::ResumedNotification>(conn);
+}
+
 } // namespace chrome
 } // namespace inspector
 } // namespace hermes

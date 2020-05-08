@@ -1,5 +1,5 @@
 // Copyright 2004-present Facebook. All Rights Reserved.
-// @generated SignedSource<<4ab81efd6f767bd583d00c806b7d1d9b>>
+// @generated SignedSource<<575de63c36edd2a9a0f191501fd4f662>>
 
 #include "MessageTypes.h"
 
@@ -35,6 +35,8 @@ std::unique_ptr<Request> Request::fromJsonThrowOnError(const std::string &str) {
       {"Debugger.setBreakpoint", makeUnique<debugger::SetBreakpointRequest>},
       {"Debugger.setBreakpointByUrl",
        makeUnique<debugger::SetBreakpointByUrlRequest>},
+      {"Debugger.setInstrumentationBreakpoint",
+       makeUnique<debugger::SetInstrumentationBreakpointRequest>},
       {"Debugger.setPauseOnExceptions",
        makeUnique<debugger::SetPauseOnExceptionsRequest>},
       {"Debugger.stepInto", makeUnique<debugger::StepIntoRequest>},
@@ -505,6 +507,36 @@ void debugger::SetBreakpointByUrlRequest::accept(
   handler.handle(*this);
 }
 
+debugger::SetInstrumentationBreakpointRequest::
+    SetInstrumentationBreakpointRequest()
+    : Request("Debugger.setInstrumentationBreakpoint") {}
+
+debugger::SetInstrumentationBreakpointRequest::
+    SetInstrumentationBreakpointRequest(const dynamic &obj)
+    : Request("Debugger.setInstrumentationBreakpoint") {
+  assign(id, obj, "id");
+  assign(method, obj, "method");
+
+  dynamic params = obj.at("params");
+  assign(instrumentation, params, "instrumentation");
+}
+
+dynamic debugger::SetInstrumentationBreakpointRequest::toDynamic() const {
+  dynamic params = dynamic::object;
+  put(params, "instrumentation", instrumentation);
+
+  dynamic obj = dynamic::object;
+  put(obj, "id", id);
+  put(obj, "method", method);
+  put(obj, "params", std::move(params));
+  return obj;
+}
+
+void debugger::SetInstrumentationBreakpointRequest::accept(
+    RequestHandler &handler) const {
+  handler.handle(*this);
+}
+
 debugger::SetPauseOnExceptionsRequest::SetPauseOnExceptionsRequest()
     : Request("Debugger.setPauseOnExceptions") {}
 
@@ -838,6 +870,24 @@ dynamic debugger::SetBreakpointByUrlResponse::toDynamic() const {
   dynamic res = dynamic::object;
   put(res, "breakpointId", breakpointId);
   put(res, "locations", locations);
+
+  dynamic obj = dynamic::object;
+  put(obj, "id", id);
+  put(obj, "result", std::move(res));
+  return obj;
+}
+
+debugger::SetInstrumentationBreakpointResponse::
+    SetInstrumentationBreakpointResponse(const dynamic &obj) {
+  assign(id, obj, "id");
+
+  dynamic res = obj.at("result");
+  assign(breakpointId, res, "breakpointId");
+}
+
+dynamic debugger::SetInstrumentationBreakpointResponse::toDynamic() const {
+  dynamic res = dynamic::object;
+  put(res, "breakpointId", breakpointId);
 
   dynamic obj = dynamic::object;
   put(obj, "id", id);
