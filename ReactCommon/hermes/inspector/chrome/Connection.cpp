@@ -88,7 +88,6 @@ class Connection::Impl : public inspector::InspectorObserver,
       const m::heapProfiler::StopTrackingHeapObjectsRequest &req) override;
   void handle(const m::runtime::EvaluateRequest &req) override;
   void handle(const m::runtime::GetPropertiesRequest &req) override;
-  void handle(const m::hermes::SetPauseOnLoadRequest &req) override;
 
  private:
   std::vector<m::runtime::PropertyDescriptor> makePropsFromScope(
@@ -759,21 +758,6 @@ void Connection::Impl::handle(const m::runtime::GetPropertiesRequest &req) {
       .via(executor_.get())
       .thenValue([this, resp](auto &&) { sendResponseToClient(*resp); })
       .thenError<std::exception>(sendErrorToClient(req.id));
-}
-
-void Connection::Impl::handle(const m::hermes::SetPauseOnLoadRequest &req) {
-  PauseOnLoadMode mode;
-  if (req.state == "none") {
-    mode = PauseOnLoadMode::None;
-  } else if (req.state == "all") {
-    mode = PauseOnLoadMode::All;
-  } else if (req.state == "smart") {
-    mode = PauseOnLoadMode::Smart;
-  } else {
-    sendErrorToClientViaExecutor(req.id, "Unrecognized pause on load mode");
-    return;
-  }
-  sendResponseToClientViaExecutor(inspector_->setPauseOnLoads(mode), req.id);
 }
 
 /*

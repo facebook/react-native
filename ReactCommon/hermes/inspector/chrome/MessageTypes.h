@@ -1,5 +1,5 @@
 // Copyright 2004-present Facebook. All Rights Reserved.
-// @generated SignedSource<<08b66e22784e225b926d36131b9a7693>>
+// @generated SignedSource<<0a1a011902fd18d4eebd2fe12fafb8b1>>
 
 #pragma once
 
@@ -73,10 +73,6 @@ struct StopTrackingHeapObjectsRequest;
 struct TakeHeapSnapshotRequest;
 } // namespace heapProfiler
 
-namespace hermes {
-struct SetPauseOnLoadRequest;
-} // namespace hermes
-
 /// RequestHandler handles requests via the visitor pattern.
 struct RequestHandler {
   virtual ~RequestHandler() = default;
@@ -99,7 +95,6 @@ struct RequestHandler {
   virtual void handle(
       const heapProfiler::StopTrackingHeapObjectsRequest &req) = 0;
   virtual void handle(const heapProfiler::TakeHeapSnapshotRequest &req) = 0;
-  virtual void handle(const hermes::SetPauseOnLoadRequest &req) = 0;
   virtual void handle(const runtime::EvaluateRequest &req) = 0;
   virtual void handle(const runtime::GetPropertiesRequest &req) = 0;
 };
@@ -124,7 +119,6 @@ struct NoopRequestHandler : public RequestHandler {
   void handle(
       const heapProfiler::StopTrackingHeapObjectsRequest &req) override {}
   void handle(const heapProfiler::TakeHeapSnapshotRequest &req) override {}
-  void handle(const hermes::SetPauseOnLoadRequest &req) override {}
   void handle(const runtime::EvaluateRequest &req) override {}
   void handle(const runtime::GetPropertiesRequest &req) override {}
 };
@@ -415,16 +409,6 @@ struct heapProfiler::TakeHeapSnapshotRequest : public Request {
 
   folly::Optional<bool> reportProgress;
   folly::Optional<bool> treatGlobalObjectsAsRoots;
-};
-
-struct hermes::SetPauseOnLoadRequest : public Request {
-  SetPauseOnLoadRequest();
-  explicit SetPauseOnLoadRequest(const folly::dynamic &obj);
-
-  folly::dynamic toDynamic() const override;
-  void accept(RequestHandler &handler) const override;
-
-  std::string state;
 };
 
 struct runtime::EvaluateRequest : public Request {

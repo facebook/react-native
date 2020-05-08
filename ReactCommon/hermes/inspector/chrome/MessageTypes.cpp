@@ -1,5 +1,5 @@
 // Copyright 2004-present Facebook. All Rights Reserved.
-// @generated SignedSource<<0d7691362d081e7bc44d2b7a0ed24371>>
+// @generated SignedSource<<4ab81efd6f767bd583d00c806b7d1d9b>>
 
 #include "MessageTypes.h"
 
@@ -46,7 +46,6 @@ std::unique_ptr<Request> Request::fromJsonThrowOnError(const std::string &str) {
        makeUnique<heapProfiler::StopTrackingHeapObjectsRequest>},
       {"HeapProfiler.takeHeapSnapshot",
        makeUnique<heapProfiler::TakeHeapSnapshotRequest>},
-      {"Hermes.setPauseOnLoad", makeUnique<hermes::SetPauseOnLoadRequest>},
       {"Runtime.evaluate", makeUnique<runtime::EvaluateRequest>},
       {"Runtime.getProperties", makeUnique<runtime::GetPropertiesRequest>},
   };
@@ -680,33 +679,6 @@ dynamic heapProfiler::TakeHeapSnapshotRequest::toDynamic() const {
 
 void heapProfiler::TakeHeapSnapshotRequest::accept(
     RequestHandler &handler) const {
-  handler.handle(*this);
-}
-
-hermes::SetPauseOnLoadRequest::SetPauseOnLoadRequest()
-    : Request("Hermes.setPauseOnLoad") {}
-
-hermes::SetPauseOnLoadRequest::SetPauseOnLoadRequest(const dynamic &obj)
-    : Request("Hermes.setPauseOnLoad") {
-  assign(id, obj, "id");
-  assign(method, obj, "method");
-
-  dynamic params = obj.at("params");
-  assign(state, params, "state");
-}
-
-dynamic hermes::SetPauseOnLoadRequest::toDynamic() const {
-  dynamic params = dynamic::object;
-  put(params, "state", state);
-
-  dynamic obj = dynamic::object;
-  put(obj, "id", id);
-  put(obj, "method", method);
-  put(obj, "params", std::move(params));
-  return obj;
-}
-
-void hermes::SetPauseOnLoadRequest::accept(RequestHandler &handler) const {
   handler.handle(*this);
 }
 
