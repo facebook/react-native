@@ -49,6 +49,12 @@ function getInlineMethodSignature(
   name: string,
 ): string {
   const {typeAnnotation} = property;
+  function markOptionalTypeIfNecessary(type) {
+    if (property.optional) {
+      return `folly::Optional<${type}>`;
+    }
+    return type;
+  }
   switch (typeAnnotation.type) {
     case 'ReservedFunctionValueTypeAnnotation':
       switch (typeAnnotation.name) {
@@ -63,18 +69,29 @@ function getInlineMethodSignature(
     case 'NumberTypeAnnotation':
     case 'FloatTypeAnnotation':
     case 'Int32TypeAnnotation':
-      return `double ${property.name}() const;`;
+      return `${markOptionalTypeIfNecessary('double')} ${
+        property.name
+      }() const;`;
     case 'BooleanTypeAnnotation':
       return `bool ${property.name}() const;`;
     case 'ObjectTypeAnnotation':
-      return `JS::Native::_MODULE_NAME_::::Spec${name}${capitalizeFirstLetter(
-        property.name,
-      )} ${property.name}() const;`;
+      return (
+        markOptionalTypeIfNecessary(
+          `JS::Native::_MODULE_NAME_::::Spec${name}${capitalizeFirstLetter(
+            property.name,
+          )}`,
+        ) + ` ${property.name}() const;`
+      );
     case 'GenericObjectTypeAnnotation':
     case 'AnyTypeAnnotation':
+      if (property.optional) {
+        return `id<NSObject> _Nullable ${property.name}() const;`;
+      }
       return `id<NSObject> ${property.name}() const;`;
     case 'ArrayTypeAnnotation':
-      return `facebook::react::LazyVector<id<NSObject>> ${property.name}() const;`;
+      return `${markOptionalTypeIfNecessary(
+        'facebook::react::LazyVector<id<NSObject>>',
+      )} ${property.name}() const;`;
     case 'FunctionTypeAnnotation':
     default:
       throw new Error(`Unknown prop type, found: ${typeAnnotation.type}"`);
@@ -86,6 +103,19 @@ function getInlineMethodImplementation(
   name: string,
 ): string {
   const {typeAnnotation} = property;
+  function markOptionalTypeIfNecessary(type) {
+    if (property.optional) {
+      return `folly::Optional<${type}> `;
+    }
+    return `${type} `;
+  }
+  function markOptionalValueIfNecessary(value) {
+    if (property.optional) {
+      return `RCTBridgingToOptional${capitalizeFirstLetter(value)}`;
+    }
+    return `RCTBridgingTo${capitalizeFirstLetter(value)}`;
+  }
+
   switch (typeAnnotation.type) {
     case 'ReservedFunctionValueTypeAnnotation':
       switch (typeAnnotation.name) {
@@ -105,40 +135,59 @@ function getInlineMethodImplementation(
     case 'FloatTypeAnnotation':
     case 'Int32TypeAnnotation':
       return inlineTemplate
-        .replace(/::_RETURN_TYPE_::/, 'double ')
-        .replace(/::_RETURN_VALUE_::/, 'RCTBridgingToDouble(p)');
+        .replace(/::_RETURN_TYPE_::/, markOptionalTypeIfNecessary('double'))
+        .replace(
+          /::_RETURN_VALUE_::/,
+          `${markOptionalValueIfNecessary('double')}(p)`,
+        );
     case 'BooleanTypeAnnotation':
       return inlineTemplate
-        .replace(/::_RETURN_TYPE_::/, 'bool ')
-        .replace(/::_RETURN_VALUE_::/, 'RCTBridgingToBool(p)');
+        .replace(/::_RETURN_TYPE_::/, markOptionalTypeIfNecessary('bool'))
+        .replace(
+          /::_RETURN_VALUE_::/,
+          `${markOptionalValueIfNecessary('bool')}(p)`,
+        );
     case 'GenericObjectTypeAnnotation':
     case 'AnyTypeAnnotation':
       return inlineTemplate
-        .replace(/::_RETURN_TYPE_::/, 'id<NSObject> ')
+        .replace(
+          /::_RETURN_TYPE_::/,
+          property.optional ? 'id<NSObject> _Nullable ' : 'id<NSObject> ',
+        )
         .replace(/::_RETURN_VALUE_::/, 'p');
     case 'ObjectTypeAnnotation':
       return inlineTemplate
         .replace(
           /::_RETURN_TYPE_::/,
-          `JS::Native::_MODULE_NAME_::::Spec${name}${capitalizeFirstLetter(
-            property.name,
-          )} `,
+          markOptionalTypeIfNecessary(
+            `JS::Native::_MODULE_NAME_::::Spec${name}${capitalizeFirstLetter(
+              property.name,
+            )}`,
+          ),
         )
         .replace(
           /::_RETURN_VALUE_::/,
-          `JS::Native::_MODULE_NAME_::::Spec${name}${capitalizeFirstLetter(
-            property.name,
-          )}(p)`,
+          property.optional
+            ? `(p == nil ? folly::none : folly::make_optional(JS::Native::_MODULE_NAME_::::Spec${name}${capitalizeFirstLetter(
+                property.name,
+              )}(p)))`
+            : `JS::Native::_MODULE_NAME_::::Spec${name}${capitalizeFirstLetter(
+                property.name,
+              )}(p)`,
         );
     case 'ArrayTypeAnnotation':
       return inlineTemplate
         .replace(
           /::_RETURN_TYPE_::/,
-          'facebook::react::LazyVector<id<NSObject>> ',
+          markOptionalTypeIfNecessary(
+            'facebook::react::LazyVector<id<NSObject>>',
+          ),
         )
         .replace(
           /::_RETURN_VALUE_::/,
-          'RCTBridgingToVec(p, ^id<NSObject>(id itemValue_0) { return itemValue_0; })',
+          `${markOptionalValueIfNecessary(
+            'vec',
+          )}(p, ^id<NSObject>(id itemValue_0) { return itemValue_0; })`,
         );
     case 'FunctionTypeAnnotation':
     default:

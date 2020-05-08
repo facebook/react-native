@@ -36,6 +36,24 @@ Map {
 
 namespace JS {
   namespace NativeSampleTurboModule {
+    struct SpecOptionalsAOptionalObjectProperty {
+      double x() const;
+      double y() const;
+
+      SpecOptionalsAOptionalObjectProperty(NSDictionary *const v) : _v(v) {}
+    private:
+      NSDictionary *_v;
+    };
+  }
+}
+
+@interface RCTCxxConvert (NativeSampleTurboModule_SpecOptionalsAOptionalObjectProperty)
++ (RCTManagedPointer *)JS_NativeSampleTurboModule_SpecOptionalsAOptionalObjectProperty:(id)json;
+@end
+
+
+namespace JS {
+  namespace NativeSampleTurboModule {
     struct SpecDifficultAE {
       bool D() const;
       double E() const;
@@ -50,6 +68,26 @@ namespace JS {
 
 @interface RCTCxxConvert (NativeSampleTurboModule_SpecDifficultAE)
 + (RCTManagedPointer *)JS_NativeSampleTurboModule_SpecDifficultAE:(id)json;
+@end
+
+
+namespace JS {
+  namespace NativeSampleTurboModule {
+    struct SpecOptionalsA {
+      folly::Optional<double> optionalNumberProperty() const;
+      folly::Optional<facebook::react::LazyVector<id<NSObject>>> optionalArrayProperty() const;
+      folly::Optional<JS::NativeSampleTurboModule::SpecOptionalsAOptionalObjectProperty> optionalObjectProperty() const;
+      id<NSObject> _Nullable optionalGenericObjectProperty() const;
+
+      SpecOptionalsA(NSDictionary *const v) : _v(v) {}
+    private:
+      NSDictionary *_v;
+    };
+  }
+}
+
+@interface RCTCxxConvert (NativeSampleTurboModule_SpecOptionalsA)
++ (RCTManagedPointer *)JS_NativeSampleTurboModule_SpecOptionalsA:(id)json;
 @end
 
 
@@ -132,6 +170,34 @@ inline NSString *JS::NativeSampleTurboModule::SpecDifficultReturnType::F() const
 }
 
 
+inline folly::Optional<double> JS::NativeSampleTurboModule::SpecOptionalsA::optionalNumberProperty() const
+{
+  id const p = _v[@\\"optionalNumberProperty\\"];
+  return RCTBridgingToOptionalDouble(p);
+}
+
+
+inline folly::Optional<facebook::react::LazyVector<id<NSObject>>> JS::NativeSampleTurboModule::SpecOptionalsA::optionalArrayProperty() const
+{
+  id const p = _v[@\\"optionalArrayProperty\\"];
+  return RCTBridgingToOptionalVec(p, ^id<NSObject>(id itemValue_0) { return itemValue_0; });
+}
+
+
+inline folly::Optional<JS::NativeSampleTurboModule::SpecOptionalsAOptionalObjectProperty> JS::NativeSampleTurboModule::SpecOptionalsA::optionalObjectProperty() const
+{
+  id const p = _v[@\\"optionalObjectProperty\\"];
+  return (p == nil ? folly::none : folly::make_optional(JS::NativeSampleTurboModule::SpecOptionalsAOptionalObjectProperty(p)));
+}
+
+
+inline id<NSObject> _Nullable JS::NativeSampleTurboModule::SpecOptionalsA::optionalGenericObjectProperty() const
+{
+  id const p = _v[@\\"optionalGenericObjectProperty\\"];
+  return p;
+}
+
+
 inline bool JS::NativeSampleTurboModule::SpecDifficultAE::D() const
 {
   id const p = _v[@\\"D\\"];
@@ -153,9 +219,27 @@ inline NSString *JS::NativeSampleTurboModule::SpecDifficultAE::F() const
 }
 
 
+inline double JS::NativeSampleTurboModule::SpecOptionalsAOptionalObjectProperty::x() const
+{
+  id const p = _v[@\\"x\\"];
+  return RCTBridgingToDouble(p);
+}
+
+
+inline double JS::NativeSampleTurboModule::SpecOptionalsAOptionalObjectProperty::y() const
+{
+  id const p = _v[@\\"y\\"];
+  return RCTBridgingToDouble(p);
+}
+
+
 
 @protocol NativeSampleTurboModuleSpec <RCTBridgeModule, RCTTurboModule>
 - (NSDictionary *) difficult:(JS::NativeSampleTurboModule::SpecDifficultA&)A;
+- (void) optionals:(JS::NativeSampleTurboModule::SpecOptionalsA&)A;
+- (void) optionalMethod:(NSDictionary *)options
+   callback:(RCTResponseSenderBlock)callback
+   extras:(NSArray * _Nullable)extras;
 @end
 
 

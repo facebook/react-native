@@ -480,6 +480,121 @@ const COMPLEX_OBJECTS: SchemaType = {
                 optional: false,
               },
             },
+            {
+              name: 'optionals',
+              typeAnnotation: {
+                type: 'FunctionTypeAnnotation',
+                returnTypeAnnotation: {
+                  nullable: false,
+                  type: 'VoidTypeAnnotation',
+                },
+                params: [
+                  {
+                    nullable: false,
+                    name: 'A',
+                    typeAnnotation: {
+                      type: 'ObjectTypeAnnotation',
+                      properties: [
+                        {
+                          optional: true,
+                          name: 'optionalNumberProperty',
+                          typeAnnotation: {
+                            type: 'NumberTypeAnnotation',
+                          },
+                        },
+                        {
+                          optional: true,
+                          name: 'optionalArrayProperty',
+                          typeAnnotation: {
+                            type: 'ArrayTypeAnnotation',
+                            elementType: {
+                              type: 'NumberTypeAnnotation',
+                            },
+                          },
+                        },
+                        {
+                          optional: true,
+                          name: 'optionalObjectProperty',
+                          typeAnnotation: {
+                            type: 'ObjectTypeAnnotation',
+                            properties: [
+                              {
+                                optional: false,
+                                name: 'x',
+                                typeAnnotation: {
+                                  type: 'NumberTypeAnnotation',
+                                },
+                              },
+                              {
+                                optional: false,
+                                name: 'y',
+                                typeAnnotation: {
+                                  type: 'NumberTypeAnnotation',
+                                },
+                              },
+                            ],
+                          },
+                        },
+                        {
+                          optional: true,
+                          name: 'optionalGenericObjectProperty',
+                          typeAnnotation: {
+                            type: 'GenericObjectTypeAnnotation',
+                          },
+                        },
+                      ],
+                    },
+                  },
+                ],
+                optional: false,
+              },
+            },
+            {
+              name: 'optionalMethod',
+              typeAnnotation: {
+                type: 'FunctionTypeAnnotation',
+                returnTypeAnnotation: {
+                  nullable: false,
+                  type: 'VoidTypeAnnotation',
+                },
+                params: [
+                  {
+                    nullable: false,
+                    name: 'options',
+                    typeAnnotation: {
+                      type: 'GenericObjectTypeAnnotation',
+                    },
+                  },
+                  {
+                    name: 'callback',
+                    nullable: false,
+                    typeAnnotation: {
+                      type: 'FunctionTypeAnnotation',
+                    },
+                  },
+                  {
+                    name: 'extras',
+                    nullable: true,
+                    typeAnnotation: {
+                      type: 'ArrayTypeAnnotation',
+                      elementType: {
+                        type: 'ObjectTypeAnnotation',
+                        properties: [
+                          {
+                            optional: false,
+                            name: 'key',
+                            typeAnnotation: {
+                              type: 'StringTypeAnnotation',
+                            },
+                          },
+                        ],
+                      },
+                    },
+                  },
+                ],
+                optional: true,
+              },
+            },
           ],
         },
       },
