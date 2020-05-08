@@ -154,6 +154,7 @@ rn_xplat_cxx_library(
         react_native_xplat_target("callinvoker:callinvoker"),
         react_native_xplat_target("jsinspector:jsinspector"),
         react_native_xplat_target("microprofiler:microprofiler"),
+        react_native_xplat_target("runtimeexecutor:runtimeexecutor"),
         "//third-party/glog:glog",
         "//xplat/folly:optional",
     ],

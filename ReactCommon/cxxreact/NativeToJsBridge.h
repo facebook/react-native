@@ -13,6 +13,7 @@
 #include <vector>
 
 #include <ReactCommon/CallInvoker.h>
+#include <ReactCommon/RuntimeExecutor.h>
 #include <cxxreact/JSExecutor.h>
 
 namespace folly {
@@ -105,6 +106,12 @@ class NativeToJsBridge {
    */
   std::shared_ptr<CallInvoker> getDecoratedNativeCallInvoker(
       std::shared_ptr<CallInvoker> nativeInvoker);
+
+  /**
+   * RuntimeExecutor is used on Android to access the jsi::Runtime from Fabric
+   * and TurboModules
+   */
+  RuntimeExecutor getRuntimeExecutor();
 
  private:
   // This is used to avoid a race condition where a proxyCallback gets queued

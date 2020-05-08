@@ -236,6 +236,7 @@ PODS:
     - glog
     - React-callinvoker (= 1000.0.0)
     - React-jsinspector (= 1000.0.0)
+    - React-runtimeexecutor (= 1000.0.0)
   - React-jsi (1000.0.0):
     - boost-for-react-native (= 1.63.0)
     - DoubleConversion
@@ -318,6 +319,8 @@ PODS:
     - React-Core/RCTVibrationHeaders (= 1000.0.0)
     - React-jsi (= 1000.0.0)
     - ReactCommon/turbomodule/core (= 1000.0.0)
+  - React-runtimeexecutor (1000.0.0):
+    - React-jsi (= 1000.0.0)
   - ReactCommon/turbomodule/core (1000.0.0):
     - DoubleConversion
     - Folly (= 2020.01.13.00)
@@ -388,6 +391,7 @@ DEPENDENCIES:
   - React-RCTTest (from `./RCTTest`)
   - React-RCTText (from `../Libraries/Text`)
   - React-RCTVibration (from `../Libraries/Vibration`)
+  - React-runtimeexecutor (from `../ReactCommon/runtimeexecutor`)
   - ReactCommon/turbomodule/core (from `../ReactCommon`)
   - ReactCommon/turbomodule/samples (from `../ReactCommon`)
   - Yoga (from `../ReactCommon/yoga`)
@@ -462,6 +466,8 @@ EXTERNAL SOURCES:
     :path: "../Libraries/Text"
   React-RCTVibration:
     :path: "../Libraries/Vibration"
+  React-runtimeexecutor:
+    :path: "../ReactCommon/runtimeexecutor"
   ReactCommon:
     :path: "../ReactCommon"
   Yoga:
@@ -491,7 +497,7 @@ SPEC CHECKSUMS:
   React-callinvoker: 0dada022d38b73e6e15b33e2a96476153f79bbf6
   React-Core: 08c69f013e6fd654ea8f9fd84bbd66780a54d886
   React-CoreModules: d13d148c851af5780f864be74bc2165140923dc7
-  React-cxxreact: 091da030e879ed93d970e95dd74fcbacb2a1d661
+  React-cxxreact: b43a94e679b307660de530a3af872ab4c7d9925d
   React-jsi: fe94132da767bfc4801968c2a12abae43e9a833e
   React-jsiexecutor: 55eff40b2e0696e7a979016e321793ec8b28a2ac
   React-jsinspector: 7fbf9b42b58b02943a0d89b0ba9fff0070f2de98
@@ -506,6 +512,7 @@ SPEC CHECKSUMS:
   React-RCTTest: cfe25fcf70b04a747dba4326105db398250caa9a
   React-RCTText: 6c01963d3e562109f5548262b09b1b2bc260dd60
   React-RCTVibration: d42d73dafd9f63cf758656ee743aa80c566798ff
+  React-runtimeexecutor: 60dd6204a13f68a1aa1118870edcc604a791df2b
   ReactCommon: 39e00b754f5e1628804fab28f44146d06280f700
   Yoga: f7fa200d8c49f97b54c9421079e781fb900b5cae
   YogaKit: f782866e155069a2cca2517aafea43200b01fd5a

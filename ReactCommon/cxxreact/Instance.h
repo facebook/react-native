@@ -12,6 +12,7 @@
 #include <memory>
 #include <mutex>
 
+#include <ReactCommon/RuntimeExecutor.h>
 #include <cxxreact/NativeToJsBridge.h>
 
 #ifndef RN_EXPORT
@@ -128,6 +129,11 @@ class RN_EXPORT Instance {
    */
   std::shared_ptr<CallInvoker> getDecoratedNativeCallInvoker(
       std::shared_ptr<CallInvoker> nativeInvoker);
+
+  /**
+   * RuntimeExecutor is used by Fabric to access the jsi::Runtime.
+   */
+  RuntimeExecutor getRuntimeExecutor();
 
  private:
   void callNativeModules(folly::dynamic &&calls, bool isEndOfBatch);
