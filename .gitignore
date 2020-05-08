@@ -96,6 +96,7 @@ RNTester/Pods/*
 # react-native-codegen
 /ReactCommon/fabric/components/rncore/
 /schema-rncore.json
+/schema-native-modules.json
 
 # Visual studio
 .vscode
