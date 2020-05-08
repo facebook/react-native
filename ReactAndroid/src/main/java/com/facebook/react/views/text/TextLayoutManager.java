@@ -46,6 +46,7 @@ public class TextLayoutManager {
   private static final String INLINE_VIEW_PLACEHOLDER = "0";
 
   private static final Object sSpannableCacheLock = new Object();
+  private static final boolean DEFAULT_INCLUDE_FONT_PADDING = true;
   private static LruCache<String, Spannable> sSpannableCache = new LruCache<>(spannableCacheSize);
 
   public static boolean isRTL(ReadableMap attributedString) {
@@ -221,7 +222,10 @@ public class TextLayoutManager {
 
     int textBreakStrategy =
         TextAttributeProps.getTextBreakStrategy(paragraphAttributes.getString("textBreakStrategy"));
-    boolean includeFontPadding = true;
+    boolean includeFontPadding =
+        paragraphAttributes.hasKey("includeFontPadding")
+            ? paragraphAttributes.getBoolean("includeFontPadding")
+            : DEFAULT_INCLUDE_FONT_PADDING;
 
     if (preparedSpannableText == null) {
       throw new IllegalStateException("Spannable element has not been prepared in onBeforeLayout");

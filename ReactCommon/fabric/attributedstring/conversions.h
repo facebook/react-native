@@ -448,6 +448,11 @@ inline ParagraphAttributes convertRawProp(
       "maximumFontSize",
       sourceParagraphAttributes.maximumFontSize,
       defaultParagraphAttributes.maximumFontSize);
+  paragraphAttributes.includeFontPadding = convertRawProp(
+      rawProps,
+      "includeFontPadding",
+      sourceParagraphAttributes.includeFontPadding,
+      defaultParagraphAttributes.includeFontPadding);
 
   return paragraphAttributes;
 }
@@ -481,6 +486,8 @@ inline folly::dynamic toDynamic(
   values("ellipsizeMode", toString(paragraphAttributes.ellipsizeMode));
   values("textBreakStrategy", toString(paragraphAttributes.textBreakStrategy));
   values("adjustsFontSizeToFit", paragraphAttributes.adjustsFontSizeToFit);
+  values("includeFontPadding", paragraphAttributes.includeFontPadding);
+
   return values;
 }
 
