@@ -55,6 +55,7 @@ type State = {|
   filterText: string,
   fixedHeight: boolean,
   logViewable: boolean,
+  invertedRefreshControlUp:boolean,
   virtualized: boolean,
   empty: boolean,
   useFlatListItemComponent: boolean,
@@ -67,6 +68,7 @@ class FlatListExample extends React.PureComponent<Props, State> {
     debug: false,
     horizontal: false,
     inverted: false,
+    invertedRefreshControlUp: false,
     filterText: '',
     fixedHeight: true,
     logViewable: false,
@@ -130,6 +132,7 @@ class FlatListExample extends React.PureComponent<Props, State> {
               {renderSmallSwitchOption(this, 'fixedHeight')}
               {renderSmallSwitchOption(this, 'log')}
               {renderSmallSwitchOption(this, 'inverted')}
+              {renderSmallSwitchOption(this, 'invertedRefreshControlUp')}
               {renderSmallSwitchOption(this, 'empty')}
               {renderSmallSwitchOption(this, 'debug')}
               {renderSmallSwitchOption(this, 'useFlatListItemComponent')}
@@ -165,6 +168,7 @@ class FlatListExample extends React.PureComponent<Props, State> {
             }
             horizontal={this.state.horizontal}
             inverted={this.state.inverted}
+            invertedRefreshControlUp={this.state.invertedRefreshControlUp}
             key={
               (this.state.horizontal ? 'h' : 'v') +
               (this.state.fixedHeight ? 'f' : 'd')
