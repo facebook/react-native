@@ -659,8 +659,9 @@ workflows:
             branches:
               ignore: /.*/
             # Only act on version tags.
-            tags:
-              only: /v[0-9]+(\.[0-9]+)*(\-rc(\.[0-9]+)?)?/
+            # TODO(macOS ISS#2323203): disable this release.  We never want to release anything from this fork via CCI.
+            # tags:
+            #   only: /v[0-9]+(\.[0-9]+)*(\-rc(\.[0-9]+)?)?/
       - publish_npm_package:
           requires:
             - setup_android
