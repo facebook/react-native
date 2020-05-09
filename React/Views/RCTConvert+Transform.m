@@ -74,10 +74,13 @@ static const NSUInteger kMatrixArrayLength = 4 * 4;
     id value = transformConfig[property];
 
     if ([property isEqualToString:@"matrix"]) {
-      transform = [self CATransform3DFromMatrix:value];
+      next = [self CATransform3DFromMatrix:value];
+      transform = CATransform3DConcat(next, transform);
 
     } else if ([property isEqualToString:@"perspective"]) {
-      transform.m34 = -1 / [value floatValue];
+      next = CATransform3DIdentity;
+      next.m34 = -1 / [value floatValue];
+      transform = CATransform3DConcat(next, transform);
 
     } else if ([property isEqualToString:@"rotateX"]) {
       CGFloat rotate = [self convertToRadians:value];
@@ -123,11 +126,15 @@ static const NSUInteger kMatrixArrayLength = 4 * 4;
 
     } else if ([property isEqualToString:@"skewX"]) {
       CGFloat skew = [self convertToRadians:value];
-      transform.m21 = tanf(skew);
+      next = CATransform3DIdentity;
+      next.m21 = tanf(skew);
+      transform = CATransform3DConcat(next, transform);
 
     } else if ([property isEqualToString:@"skewY"]) {
       CGFloat skew = [self convertToRadians:value];
-      transform.m12 = tanf(skew);
+      next = CATransform3DIdentity;
+      next.m12 = tanf(skew);
+      transform = CATransform3DConcat(next, transform);
 
     } else {
       RCTLogError(@"Unsupported transform type for a CATransform3D: %@.", property);
