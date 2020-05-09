@@ -120,6 +120,12 @@ type OptionalProps<ItemT> = {|
    */
   inverted?: ?boolean,
   /**
+  * When refreshControl is enabled and list is inverted, default behavior is that, you'll have
+  * to swipe from bottom to enable refreshing and refresh control shows at the botton.
+  * This moves refresh control to the top and lets you swipe from the top enable refreshing.
+  */
+  invertedRefreshControlUp?: boolean,
+  /**
    * Used to extract a unique key for a given item at the specified index. Key is used for caching
    * and as the react key to track item re-ordering. The default extractor checks `item.key`, then
    * falls back to using the index, like React does.
@@ -623,7 +629,7 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
       return (
         <ScrollView
           contentContainerStyle={styles.invertedScrollContainerStyle}
-          refreshControl={<RefreshControl refreshing={this.props.refreshing} onRefresh={this.props.onRefresh} />}
+          refreshControl={<RefreshControl refreshing={this.props.refreshing || false} onRefresh={this.props.onRefresh} />}
           >
           <VirtualizedList
             {...restProps}
