@@ -120,10 +120,10 @@ type OptionalProps<ItemT> = {|
    */
   inverted?: ?boolean,
   /**
-  * When refreshControl is enabled and list is inverted, default behavior is that, you'll have
-  * to swipe from bottom to enable refreshing and refresh control shows at the botton.
-  * This moves refresh control to the top and lets you swipe from the top enable refreshing.
-  */
+   * When refreshControl is enabled and list is inverted, default behavior is that, you'll have
+   * to swipe from bottom to enable refreshing and refresh control shows at the botton.
+   * This moves refresh control to the top and lets you swipe from the top enable refreshing.
+   */
   invertedRefreshControlUp?: boolean,
   /**
    * Used to extract a unique key for a given item at the specified index. Key is used for caching
@@ -623,14 +623,24 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
 
   render(): React.Node {
     const {numColumns, columnWrapperStyle, ...restProps} = this.props;
-    let {inverted, invertedRefreshControlUp,onRefresh} = this.props;
-    if(inverted && invertedRefreshControlUp && onRefresh){
-      let {numColumns, columnWrapperStyle, onRefresh, refreshing, ...restProps} = this.props;
+    let {inverted, invertedRefreshControlUp, onRefresh} = this.props;
+    if (inverted && invertedRefreshControlUp && onRefresh) {
+      let {
+        numColumns,
+        columnWrapperStyle,
+        onRefresh,
+        refreshing,
+        ...restProps
+      } = this.props;
       return (
         <ScrollView
           contentContainerStyle={styles.invertedScrollContainerStyle}
-          refreshControl={<RefreshControl refreshing={this.props.refreshing || false} onRefresh={this.props.onRefresh} />}
-          >
+          refreshControl={
+            <RefreshControl
+              refreshing={this.props.refreshing || false}
+              onRefresh={this.props.onRefresh}
+            />
+          }>
           <VirtualizedList
             {...restProps}
             getItem={this._getItem}
@@ -641,7 +651,7 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
             {...this._renderer()}
           />
         </ScrollView>
-      )
+      );
     }
     return (
       <VirtualizedList
@@ -662,8 +672,8 @@ const styles = StyleSheet.create({
   invertedScrollContainerStyle: {
     flexDirection: 'row',
     alignSelf: 'flex-end',
-    flexGrow: 1
-  }
+    flexGrow: 1,
+  },
 });
 
 module.exports = FlatList;

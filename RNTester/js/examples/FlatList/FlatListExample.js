@@ -55,7 +55,7 @@ type State = {|
   filterText: string,
   fixedHeight: boolean,
   logViewable: boolean,
-  invertedRefreshControlUp:boolean,
+  invertedRefreshControlUp: boolean,
   virtualized: boolean,
   empty: boolean,
   useFlatListItemComponent: boolean,
