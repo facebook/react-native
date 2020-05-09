@@ -65,6 +65,7 @@ static const NSUInteger kMatrixArrayLength = 4 * 4;
 
   CGFloat zeroScaleThreshold = FLT_EPSILON;
 
+  CATransform3D next;
   for (NSDictionary *transformConfig in (NSArray<NSDictionary *> *)json) {
     if (transformConfig.count != 1) {
       RCTLogConvertError(json, @"a CATransform3D. You must specify exactly one property per transform object.");
