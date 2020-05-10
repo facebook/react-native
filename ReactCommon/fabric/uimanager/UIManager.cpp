@@ -124,13 +124,13 @@ void UIManager::clearJSResponder() const {
   }
 }
 
-ShadowNode::Shared const *UIManager::getNewestCloneOfShadowNode(
+ShadowNode::Shared UIManager::getNewestCloneOfShadowNode(
     ShadowNode const &shadowNode) const {
   auto findNewestChildInParent =
-      [&](auto const &parentNode) -> ShadowNode::Shared const * {
+      [&](auto const &parentNode) -> ShadowNode::Shared {
     for (auto const &child : parentNode.getChildren()) {
       if (ShadowNode::sameFamily(*child, shadowNode)) {
-        return &child;
+        return child;
       }
     }
     return nullptr;
@@ -156,7 +156,7 @@ ShadowNode::Shared UIManager::findNodeAtPoint(
     ShadowNode::Shared const &node,
     Point point) const {
   return LayoutableShadowNode::findNodeAtPoint(
-      *getNewestCloneOfShadowNode(*node), point);
+      getNewestCloneOfShadowNode(*node), point);
 }
 
 void UIManager::setNativeProps(
@@ -201,7 +201,7 @@ LayoutMetrics UIManager::getRelativeLayoutMetrics(
               true);
         });
   } else {
-    ancestorShadowNode = getNewestCloneOfShadowNode(*ancestorShadowNode)->get();
+    ancestorShadowNode = getNewestCloneOfShadowNode(*ancestorShadowNode).get();
   }
 
   // Get latest version of both the ShadowNode and its ancestor.
@@ -211,7 +211,7 @@ LayoutMetrics UIManager::getRelativeLayoutMetrics(
   auto newestShadowNode = getNewestCloneOfShadowNode(shadowNode);
 
   auto layoutableShadowNode =
-      traitCast<LayoutableShadowNode const *>(newestShadowNode->get());
+      traitCast<LayoutableShadowNode const *>(newestShadowNode.get());
   auto layoutableAncestorShadowNode =
       traitCast<LayoutableShadowNode const *>(ancestorShadowNode);
 

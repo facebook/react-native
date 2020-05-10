@@ -92,7 +92,7 @@ class UIManager final : public ShadowTreeDelegate {
       ShadowNode::Shared const &shadowNode,
       Point point) const;
 
-  ShadowNode::Shared const *getNewestCloneOfShadowNode(
+  ShadowNode::Shared getNewestCloneOfShadowNode(
       ShadowNode const &shadowNode) const;
 
   /*
