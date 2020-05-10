@@ -46,6 +46,7 @@ import com.facebook.react.views.text.ReactTextUpdate;
 import com.facebook.react.views.text.ReactTypefaceUtils;
 import com.facebook.react.views.text.TextAttributes;
 import com.facebook.react.views.text.TextInlineImageSpan;
+import com.facebook.react.views.text.ReactTextShadowNode;
 import com.facebook.react.views.view.ReactViewBackgroundManager;
 import java.util.ArrayList;
 
@@ -412,6 +413,12 @@ public class ReactEditText extends AppCompatEditText {
 
   public void setFontWeight(String fontWeightString) {
     int fontWeight = ReactTypefaceUtils.parseFontWeight(fontWeightString);
+    if (fontWeight == ReactTypefaceUtils.UNSET) {
+      // If a user removes a `fontWeight: 'bold'`, they would get UNSET as the
+      // fontWeight. ReactTypefaceUtils doesn't remove the bold style. We
+      // explicitly set it to NORMAL to ensure it resets as expected
+      fontWeight = Typeface.NORMAL;
+    }
     if (fontWeight != mFontWeight) {
       mFontWeight = fontWeight;
       mTypefaceDirty = true;
@@ -420,6 +427,12 @@ public class ReactEditText extends AppCompatEditText {
 
   public void setFontStyle(String fontStyleString) {
     int fontStyle = ReactTypefaceUtils.parseFontStyle(fontStyleString);
+    if (fontStyle == ReactTypefaceUtils.UNSET) {
+      // If a user removes a `fontStyle: 'italic'`, they would get UNSET as the
+      // fontStyle. ReactTypefaceUtils doesn't remove the italic style. We
+      // explicitly set it to NORMAL to ensure it resets as expected
+      fontStyle = Typeface.NORMAL;
+    }
     if (fontStyle != mFontStyle) {
       mFontStyle = fontStyle;
       mTypefaceDirty = true;

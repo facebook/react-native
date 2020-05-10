@@ -19,6 +19,7 @@ const {
   TextInput,
   View,
   StyleSheet,
+  Switch,
 } = require('react-native');
 
 import type {RNTesterExampleModuleItem} from '../../types/RNTesterTypes';
@@ -443,6 +444,40 @@ class SelectionExample extends React.Component<
   }
 }
 
+type FontWeightStyleToggleExampleState = {
+  bold: boolean,
+  italic: boolean,
+};
+
+class FontWeightStyleToggleExample extends React.Component<
+  {},
+  FontWeightStyleToggleExampleState,
+> {
+  state: FontWeightStyleToggleExampleState = {bold: false, italic: false};
+
+  render() {
+    return (
+      <View>
+        {Object.entries(this.state).map(([stateKey, value]) => (
+          <WithLabel label={stateKey} key={stateKey}>
+            <Switch
+              value={value}
+              onValueChange={newValue => this.setState({[stateKey]: newValue})}
+            />
+          </WithLabel>
+        ))}
+        <TextInput
+          defaultValue="Some text that can be formatted"
+          style={[
+            this.state.bold && {fontWeight: 'bold'},
+            this.state.italic && {fontStyle: 'italic'},
+          ]}
+        />
+      </View>
+    );
+  }
+}
+
 module.exports = ([
   {
     title: 'Auto-focus',
@@ -589,6 +624,12 @@ module.exports = ([
           />
         </View>
       );
+    },
+  },
+  {
+    title: 'fontFamily and fontWeight',
+    render: function(): React.Node {
+      return <FontWeightStyleToggleExample />;
     },
   },
   {
