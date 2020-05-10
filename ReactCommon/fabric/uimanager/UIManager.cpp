@@ -147,7 +147,15 @@ ShadowNode::Shared UIManager::getNewestCloneOfShadowNode(
             true);
       });
 
+  if (!ancestorShadowNode) {
+    return nullptr;
+  }
+
   auto ancestors = shadowNode.getFamily().getAncestors(*ancestorShadowNode);
+
+  if (ancestors.size() == 0) {
+    return nullptr;
+  }
 
   return findNewestChildInParent(ancestors.rbegin()->first.get());
 }
