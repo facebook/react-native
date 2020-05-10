@@ -627,7 +627,7 @@ module.exports = ([
     },
   },
   {
-    title: 'fontFamily and fontWeight',
+    title: 'fontWeight and fontStyle with toggles',
     render: function(): React.Node {
       return <FontWeightStyleToggleExample />;
     },

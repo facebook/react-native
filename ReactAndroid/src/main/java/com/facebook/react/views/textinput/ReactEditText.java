@@ -46,7 +46,6 @@ import com.facebook.react.views.text.ReactTextUpdate;
 import com.facebook.react.views.text.ReactTypefaceUtils;
 import com.facebook.react.views.text.TextAttributes;
 import com.facebook.react.views.text.TextInlineImageSpan;
-import com.facebook.react.views.text.ReactTextShadowNode;
 import com.facebook.react.views.view.ReactViewBackgroundManager;
 import java.util.ArrayList;
 
