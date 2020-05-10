@@ -30,7 +30,6 @@ RCT_ENUM_CONVERTER(RCTAlertViewStyle, (@{
 @implementation RCTAlertManager
 {
   NSHashTable *_alertControllers;
-  UIWindow *_window;
 }
 
 RCT_EXPORT_MODULE()
@@ -91,10 +90,11 @@ RCT_EXPORT_METHOD(alertWithArgs:(NSDictionary *)args
     }
   }
 
-  _window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
-  _window.windowLevel = UIWindowLevelStatusBar + 1;
+  __block UIWindow *window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
+  window.windowLevel = UIWindowLevelStatusBar + 1;
   UIViewController *presentingController = [UIViewController new];
-  _window.rootViewController = presentingController;
+  window.rootViewController = presentingController;
+  window.hidden = NO;
 
   UIAlertController *alertController = [UIAlertController
                                         alertControllerWithTitle:title
@@ -152,7 +152,7 @@ RCT_EXPORT_METHOD(alertWithArgs:(NSDictionary *)args
     [alertController addAction:[UIAlertAction actionWithTitle:buttonTitle
                                                         style:buttonStyle
                                                       handler:^(__unused UIAlertAction *action) {
-      self->_window = nil;
+      window = nil;
       switch (type) {
         case RCTAlertViewStylePlainTextInput:
         case RCTAlertViewStyleSecureTextInput:
