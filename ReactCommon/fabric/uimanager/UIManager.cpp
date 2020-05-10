@@ -190,6 +190,10 @@ LayoutMetrics UIManager::getRelativeLayoutMetrics(
     LayoutableShadowNode::LayoutInspectingPolicy policy) const {
   SystraceSection s("UIManager::getRelativeLayoutMetrics");
 
+  // We might store here an owning pointer to `ancestorShadowNode` to ensure
+  // that the node is not deallocated during method execution lifetime.
+  auto owningAncestorShadowNode = ShadowNode::Shared{};
+
   if (!ancestorShadowNode) {
     shadowTreeRegistry_.visit(
         shadowNode.getSurfaceId(), [&](ShadowTree const &shadowTree) {
@@ -201,7 +205,8 @@ LayoutMetrics UIManager::getRelativeLayoutMetrics(
               true);
         });
   } else {
-    ancestorShadowNode = getNewestCloneOfShadowNode(*ancestorShadowNode).get();
+    owningAncestorShadowNode = getNewestCloneOfShadowNode(*ancestorShadowNode);
+    ancestorShadowNode = owningAncestorShadowNode.get();
   }
 
   // Get latest version of both the ShadowNode and its ancestor.
