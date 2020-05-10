@@ -136,12 +136,12 @@ ShadowNode::Shared UIManager::getNewestCloneOfShadowNode(
     return nullptr;
   };
 
-  ShadowNode const *ancestorShadowNode;
+  auto ancestorShadowNode = ShadowNode::Shared{};
   shadowTreeRegistry_.visit(
       shadowNode.getSurfaceId(), [&](ShadowTree const &shadowTree) {
         shadowTree.tryCommit(
             [&](RootShadowNode::Shared const &oldRootShadowNode) {
-              ancestorShadowNode = oldRootShadowNode.get();
+              ancestorShadowNode = oldRootShadowNode;
               return nullptr;
             },
             true);
