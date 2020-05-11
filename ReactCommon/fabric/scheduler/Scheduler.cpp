@@ -32,6 +32,11 @@ Scheduler::Scheduler(
   auto uiManager = std::make_shared<UIManager>();
   auto eventOwnerBox = std::make_shared<EventBeat::OwnerBox>();
 
+  // A dummy pointer to share a control block (and life-time) with
+  // an actual `owner` later.
+  auto owner = std::make_shared<bool const>(false);
+  eventOwnerBox->owner = owner;
+
   auto eventPipe = [uiManager](
                        jsi::Runtime &runtime,
                        const EventTarget *eventTarget,
@@ -47,14 +52,15 @@ Scheduler::Scheduler(
     uiManager->updateState(stateUpdate);
   };
 
-  eventDispatcher_ = std::make_shared<EventDispatcher>(
+  auto eventDispatcher = std::make_unique<EventDispatcher const>(
       eventPipe,
       statePipe,
       schedulerToolbox.synchronousEventBeatFactory,
       schedulerToolbox.asynchronousEventBeatFactory,
       eventOwnerBox);
 
-  eventOwnerBox->owner = eventDispatcher_;
+  eventDispatcher_ =
+      std::shared_ptr<EventDispatcher const>(owner, eventDispatcher.release());
 
   componentDescriptorRegistry_ = schedulerToolbox.componentRegistryFactory(
       eventDispatcher_, schedulerToolbox.contextContainer);
