@@ -12,7 +12,9 @@
 
 #import <FBReactNativeSpec/FBReactNativeSpec.h>
 #import <ImageIO/ImageIO.h>
+#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
 #import <MobileCoreServices/UTType.h>
+#endif // TODO(macOS ISS#2323203)
 #import <React/RCTAssert.h>
 #import <React/RCTLog.h>
 #import <React/RCTUtils.h>

@@ -78,7 +78,7 @@ NSString *const RCTUIManagerWillUpdateViewsDueToContentSizeMultiplierChangeNotif
 
   NSMutableDictionary<NSNumber *, RCTShadowView *> *_shadowViewRegistry; // RCT thread only
   NSMutableDictionary<NSNumber *, RCTPlatformView *> *_viewRegistry; // Main thread only // TODO(macOS ISS#2323203)
-  NSMapTable<NSString *, UIView *> *_nativeIDRegistry;
+  NSMapTable<NSString *, RCTPlatformView *> *_nativeIDRegistry; // TODO(macOS ISS#2323203)
 
   NSMapTable<RCTShadowView *, NSArray<NSString *> *> *_shadowViewsWithUpdatedProps; // UIManager queue only.
   NSHashTable<RCTShadowView *> *_shadowViewsWithUpdatedChildren; // UIManager queue only.
@@ -349,7 +349,7 @@ static NSDictionary *deviceOrientationEventBody(UIDeviceOrientation orientation)
     return name;
   }
 
-  __block UIView *view;
+  __block RCTPlatformView *view; // TODO(macOS ISS#2323203)
   RCTUnsafeExecuteOnMainQueueSync(^{
     view = self->_viewRegistry[reactTag];
   });
@@ -365,7 +365,7 @@ static NSDictionary *deviceOrientationEventBody(UIDeviceOrientation orientation)
   return nil;
 }
 
-- (UIView *)viewForReactTag:(NSNumber *)reactTag
+- (RCTPlatformView *)viewForReactTag:(NSNumber *)reactTag // TODO(macOS ISS#2323203)
 {
   RCTAssertMainQueue();
   return _viewRegistry[reactTag];
@@ -1011,7 +1011,7 @@ RCT_EXPORT_METHOD(createView:(nonnull NSNumber *)reactTag
 
   // Dispatch view creation directly to the main thread instead of adding to
   // UIBlocks array. This way, it doesn't get deferred until after layout.
-  __block UIView *preliminaryCreatedView = nil;
+  __block RCTPlatformView *preliminaryCreatedView = nil; // TODO(macOS ISS#2323203)
 
   void (^createViewBlock)(void) = ^{
     // Do nothing on the second run.
@@ -1035,7 +1035,7 @@ RCT_EXPORT_METHOD(createView:(nonnull NSNumber *)reactTag
 
   RCTExecuteOnMainQueue(createViewBlock);
 
-  [self addUIBlock:^(__unused RCTUIManager *uiManager, __unused NSDictionary<NSNumber *, UIView *> *viewRegistry) {
+  [self addUIBlock:^(__unused RCTUIManager *uiManager, __unused NSDictionary<NSNumber *, RCTPlatformView *> *viewRegistry) { // TODO(macOS ISS#2323203)
     createViewBlock();
 
     if (preliminaryCreatedView) {
@@ -1612,7 +1612,7 @@ RCT_EXPORT_METHOD(configureNextLayoutAnimation:(NSDictionary *)config
   }];
 }
 
-- (void)rootViewForReactTag:(NSNumber *)reactTag withCompletion:(void (^)(UIView *view))completion
+- (void)rootViewForReactTag:(NSNumber *)reactTag withCompletion:(void (^)(RCTPlatformView *view))completion // TODO(macOS ISS#2323203)
 {
   RCTAssertMainQueue();
   RCTAssert(completion != nil, @"Attempted to resolve rootView for tag %@ without a completion block", reactTag);

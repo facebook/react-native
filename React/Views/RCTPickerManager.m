@@ -45,13 +45,13 @@ RCT_CUSTOM_VIEW_PROPERTY(fontFamily, NSString, RCTPicker)
 
 RCT_EXPORT_METHOD(setNativeSelectedIndex : (nonnull NSNumber *)viewTag toIndex : (nonnull NSNumber *)index)
 {
-  [self.bridge.uiManager addUIBlock:^(RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry) {
-    UIView *view = viewRegistry[viewTag];
+  [self.bridge.uiManager addUIBlock:^(RCTUIManager *uiManager, NSDictionary<NSNumber *, RCTUIView *> *viewRegistry) { // TODO(macOS ISS#2323203)
+    RCTPlatformView *view = viewRegistry[viewTag]; // TODO(macOS ISS#2323203)
     
     if ([view isKindOfClass:[RCTPicker class]]) {
       [(RCTPicker *)view setSelectedIndex:index.integerValue];
     } else {
-      UIView *subview = view.subviews.firstObject;
+      RCTPlatformView *subview = view.subviews.firstObject; // TODO(macOS ISS#2323203)
       if ([subview isKindOfClass:[RCTPicker class]]) {
         [(RCTPicker *)subview setSelectedIndex:index.integerValue];
       } else {

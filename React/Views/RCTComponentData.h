@@ -13,7 +13,7 @@
 
 @class RCTBridge;
 @class RCTShadowView;
-@class UIView;
+@class RCTUIView; // TODO(macOS ISS#2323203)
 
 @interface RCTComponentData : NSObject
 

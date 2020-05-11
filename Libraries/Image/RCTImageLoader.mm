@@ -50,7 +50,7 @@ void RCTEnableImageLoadingPerfInstrumentation(BOOL enabled)
 
 static NSInteger RCTImageBytesForImage(UIImage *image)
 {
-  NSInteger singleImageBytes = image.size.width * image.size.height * image.scale * image.scale * 4;
+  NSInteger singleImageBytes = image.size.width * image.size.height * UIImageGetScale(image) * UIImageGetScale(image) * 4; // TODO(macOS ISS#2323203)
   return image.images ? image.images.count * singleImageBytes : singleImageBytes;
 }
 
@@ -808,7 +808,7 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
           UIImage *image = RCTDecodeImageWithData(data, size, scale, resizeMode);
 
 #if RCT_DEV
-          CGSize imagePixelSize = RCTSizeInPixels(image.size, image.scale);
+          CGSize imagePixelSize = RCTSizeInPixels(image.size, UIImageGetScale(image)); // TODO(macOS ISS#2323203)
           CGSize screenPixelSize = RCTSizeInPixels(RCTScreenSize(), RCTScreenScale());
           if (imagePixelSize.width * imagePixelSize.height >
               screenPixelSize.width * screenPixelSize.height) {
@@ -898,8 +898,8 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
     } else {
       UIImage *image = imageOrData;
       size = (CGSize){
-        image.size.width * image.scale,
-        image.size.height * image.scale,
+        image.size.width * UIImageGetScale(image), // TODO(macOS ISS#2323203)
+        image.size.height * UIImageGetScale(image), // TODO(macOS ISS#2323203)
       };
     }
     callback(error, size);

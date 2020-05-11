@@ -52,7 +52,7 @@
   self.selectedSegmentIndex = selectedIndex; // TODO(macOS ISS#2323203)
 }
 
-- (void)setTintColor:(UIColor *)tintColor
+- (void)setTintColor:(RCTUIColor *)tintColor // TODO(macOS ISS#2323203)
 {
   [super setTintColor:tintColor];
 #if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && defined(__IPHONE_13_0) && \

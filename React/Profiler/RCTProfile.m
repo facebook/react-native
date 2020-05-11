@@ -211,10 +211,10 @@ void RCTProfileTrampolineEnd(void)
   RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"objc_call,modules,auto");
 }
 
-static UIView *(*originalCreateView)(RCTComponentData *, SEL, NSNumber *, NSNumber *);
-static UIView *RCTProfileCreateView(RCTComponentData *self, SEL _cmd, NSNumber *tag, NSNumber *rootTag)
+static RCTUIView *(*originalCreateView)(RCTComponentData *, SEL, NSNumber *, NSNumber *); // TODO(macOS ISS#2323203)
+static RCTUIView *RCTProfileCreateView(RCTComponentData *self, SEL _cmd, NSNumber *tag, NSNumber *rootTag) // TODO(macOS ISS#2323203)
 {
-  UIView *view = originalCreateView(self, _cmd, tag, rootTag);
+  RCTUIView *view = originalCreateView(self, _cmd, tag, rootTag); // TODO(macOS ISS#2323203)
   RCTProfileHookInstance(view);
   return view;
 }

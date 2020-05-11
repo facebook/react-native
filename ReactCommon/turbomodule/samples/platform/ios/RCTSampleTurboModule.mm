@@ -7,7 +7,7 @@
 
 #import "RCTSampleTurboModule.h"
 
-#import <UIKit/UIKit.h>
+#import <React/RCTUIKit.h> // TODO(macOS ISS#2323203)
 
 using namespace facebook::react;
 

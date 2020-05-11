@@ -67,15 +67,23 @@ RCT_REMAP_VIEW_PROPERTY(pickerStyle, datePickerStyle, NSDatePickerStyle)
 
 RCT_EXPORT_METHOD(setNativeDate : (nonnull NSNumber *)viewTag toDate : (NSDate *)date)
 {
-  [self.bridge.uiManager addUIBlock:^(RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry) {
-    UIView *view = viewRegistry[viewTag];
-    
+  [self.bridge.uiManager addUIBlock:^(RCTUIManager *uiManager, NSDictionary<NSNumber *, RCTPlatformView *> *viewRegistry) { // TODO(macOS ISS#2323203)
+    RCTPlatformView *view = viewRegistry[viewTag]; // TODO(macOS ISS#2323203)
+
     if ([view isKindOfClass:[RCTDatePicker class]]) {
+#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
       [(RCTDatePicker *)view setDate:date];
+#else // [TODO(macOS ISS#2323203)
+      [(RCTDatePicker *)view setDateValue:date];
+#endif // ]TODO(macOS ISS#2323203)
     } else {
-      UIView *subview = view.subviews.firstObject;
+      RCTPlatformView *subview = view.subviews.firstObject; // TODO(macOS ISS#2323203)
       if ([subview isKindOfClass:[RCTDatePicker class]]) {
+#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
         [(RCTDatePicker *)subview setDate:date];
+#else // [TODO(macOS ISS#2323203)
+        [(RCTDatePicker *)subview setDateValue:date];
+#endif // ]TODO(macOS ISS#2323203)
       } else {
         RCTLogError(@"view type must be RCTPicker");
       }

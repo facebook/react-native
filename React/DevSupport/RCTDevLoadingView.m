@@ -166,8 +166,8 @@ RCT_EXPORT_METHOD(hide)
 
 - (void)showWithURL:(NSURL *)URL
 {
-  UIColor *color;
-  UIColor *backgroundColor;
+  RCTUIColor *color; // TODO(macOS ISS#2323203)
+  RCTUIColor *backgroundColor; // TODO(macOS ISS#2323203)
   NSString *message;
   if (URL.fileURL) {
     // If dev mode is not enabled, we don't want to show this kind of notification
