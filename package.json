@@ -1,6 +1,6 @@
 {
   "name": "react-native-macos",
-  "version": "0.61.19",
+  "version": "0.61.20",
   "bin": "./cli.js",
   "description": "[Microsoft Fork] A framework for building native apps using React",
   "license": "MIT",
