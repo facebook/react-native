@@ -192,15 +192,21 @@ TEST_F(LayoutableShadowNodeTest, relativeLayourMetricsOnClonedNode) {
   EXPECT_EQ(newRelativeLayoutMetrics.frame.size.height, 600);
 }
 
-TEST_F(LayoutableShadowNodeTest, relativeLayoutMetricsOnSameNode2) {
+TEST_F(
+    LayoutableShadowNodeTest,
+    relativeLayoutMetricsOnNodesCrossingRootKindNode) {
   auto layoutMetrics = EmptyLayoutMetrics;
   nodeA_->setLayoutMetrics(layoutMetrics);
   layoutMetrics.frame.origin = {10, 10};
+  // nodeAA_ is a RootKindNode. Please check
+  // ShadowNodeTraits::Traits::RootNodeKind for details.
   nodeAA_->setLayoutMetrics(layoutMetrics);
   nodeAAA_->setLayoutMetrics(layoutMetrics);
 
   auto relativeLayoutMetrics = nodeAAA_->getRelativeLayoutMetrics(*nodeA_, {});
 
+  // relativeLayoutMetrics do not include offsset of nodeAA_ because it is a
+  // RootKindNode.
   EXPECT_EQ(relativeLayoutMetrics.frame.origin.x, 10);
   EXPECT_EQ(relativeLayoutMetrics.frame.origin.y, 10);
 }
