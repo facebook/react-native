@@ -43,7 +43,9 @@ RCT_TEST(ViewExample)
 RCT_TEST(LayoutExample)
 RCT_TEST(ARTExample)
 RCT_TEST(ScrollViewExample)
+#if !TARGET_OS_OSX // Reason: Intermittent failure: crash deallocating NSTextStorage of a TextView: tracked by https://github.com/microsoft/react-native-macos/issues/357
 RCT_TEST(TextExample)
+#endif
 #if !TARGET_OS_TV
 // No switch or slider available on tvOS
 RCT_TEST(SwitchExample)

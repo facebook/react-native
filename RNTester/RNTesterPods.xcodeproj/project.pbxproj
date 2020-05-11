@@ -54,6 +54,8 @@
 		38B2630C2444F628006AB4D5 /* FlexibleSizeExampleView.m in Sources */ = {isa = PBXBuildFile; fileRef = 27F441E81BEBE5030039B79C /* FlexibleSizeExampleView.m */; };
 		38BB7CD524455EDD00803CDE /* OCMock.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 38A93816244532460025DABB /* OCMock.framework */; };
 		38BB7CFD244560CC00803CDE /* RNTesterUnitTests_macOS.m in Sources */ = {isa = PBXBuildFile; fileRef = 9F153471233AB2C7006DFE44 /* RNTesterUnitTests_macOS.m */; };
+		38C8AC1F246611E500BA7FAA /* RNTesterLoadAllPages.m in Sources */ = {isa = PBXBuildFile; fileRef = 38C8AC1E246611E500BA7FAA /* RNTesterLoadAllPages.m */; };
+		38C8AC20246611E500BA7FAA /* RNTesterLoadAllPages.m in Sources */ = {isa = PBXBuildFile; fileRef = 38C8AC1E246611E500BA7FAA /* RNTesterLoadAllPages.m */; };
 		38CB64352445042D009035CC /* RNTesterTurboModuleProvider.mm in Sources */ = {isa = PBXBuildFile; fileRef = 5CB07C99226467E60039471C /* RNTesterTurboModuleProvider.mm */; };
 		3D2AFAF51D646CF80089D1A3 /* legacy_image@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 3D2AFAF41D646CF80089D1A3 /* legacy_image@2x.png */; };
 		413F654822EE16AED0DF2540 /* libPods-RNTester.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F94084777080D7B374FB4783 /* libPods-RNTester.a */; };
@@ -192,6 +194,7 @@
 		38A93816244532460025DABB /* OCMock.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = OCMock.framework; sourceTree = "<group>"; };
 		38A9381B244532460025DABB /* libOCMock.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libOCMock.a; sourceTree = "<group>"; };
 		38BB7CB524455C4100803CDE /* libPods-RNTester-macOSTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = "libPods-RNTester-macOSTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		38C8AC1E246611E500BA7FAA /* RNTesterLoadAllPages.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNTesterLoadAllPages.m; sourceTree = "<group>"; };
 		3CCA44B8467CB06ACED8E0E9 /* Pods-RNTester-macOSIntegrationTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RNTester-macOSIntegrationTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-RNTester-macOSIntegrationTests/Pods-RNTester-macOSIntegrationTests.debug.xcconfig"; sourceTree = "<group>"; };
 		3D2AFAF41D646CF80089D1A3 /* legacy_image@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "legacy_image@2x.png"; path = "RNTester/legacy_image@2x.png"; sourceTree = "<group>"; };
 		406E6935B300A29BA57EE1B0 /* Pods-RNTester-macOSUnitTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RNTester-macOSUnitTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-RNTester-macOSUnitTests/Pods-RNTester-macOSUnitTests.debug.xcconfig"; sourceTree = "<group>"; };
@@ -631,6 +634,7 @@
 			isa = PBXGroup;
 			children = (
 				E7C1241922BEC44B00DA25C0 /* RNTesterIntegrationTests.m */,
+				38C8AC1E246611E500BA7FAA /* RNTesterLoadAllPages.m */,
 				E7DB215E22B2F3EC005AC45F /* RCTLoggingTests.m */,
 				E7DB216122B2F3EC005AC45F /* RCTRootViewIntegrationTests.m */,
 				E7DB215F22B2F3EC005AC45F /* RCTUIManagerScenarioTests.m */,
@@ -1300,6 +1304,7 @@
 				383838E0244BC5A0005FAC75 /* RCTUIManagerScenarioTests.m in Sources */,
 				383838E2244BC5A8005FAC75 /* RNTesterTestModule.m in Sources */,
 				383838E1244BC5A4005FAC75 /* RNTesterSnapshotTests.m in Sources */,
+				38C8AC20246611E500BA7FAA /* RNTesterLoadAllPages.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1347,6 +1352,7 @@
 				E7DB216622B2F3EC005AC45F /* RCTRootViewIntegrationTests.m in Sources */,
 				E7DB216422B2F3EC005AC45F /* RCTUIManagerScenarioTests.m in Sources */,
 				E7DB216522B2F3EC005AC45F /* RNTesterSnapshotTests.m in Sources */,
+				38C8AC1F246611E500BA7FAA /* RNTesterLoadAllPages.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

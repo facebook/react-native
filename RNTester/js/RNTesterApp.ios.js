@@ -25,12 +25,17 @@ const {
   BackHandler,
   Button,
   Linking,
+  NativeModules, // TODO(OSS Candidate ISS#2710739)
+  Platform, // TODO(OSS Candidate ISS#2710739)
   SafeAreaView,
   StyleSheet,
   Text,
   View,
   YellowBox,
 } = require('react-native');
+
+const {TestModule} = NativeModules; // TODO(OSS Candidate ISS#2710739)
+const requestAnimationFrame = require('fbjs/lib/requestAnimationFrame'); // TODO(OSS Candidate ISS#2710739)
 
 import type {RNTesterExample} from './types/RNTesterTypes';
 import type {RNTesterAction} from './utils/RNTesterActions';
@@ -143,7 +148,16 @@ const styles = StyleSheet.create({
   headerContainer: {
     borderBottomWidth: StyleSheet.hairlineWidth,
     borderBottomColor: {semantic: 'separatorColor'}, // TODO(OSS Candidate ISS#2710739)
-    backgroundColor: {semantic: 'tertiarySystemBackgroundColor'}, // TODO(OSS Candidate ISS#2710739)
+    ...Platform.select({
+      // [TODO(macOS ISS#2323203)
+      ios: {
+        backgroundColor: {semantic: 'tertiarySystemBackgroundColor'},
+      },
+      macos: {
+        backgroundColor: {semantic: 'windowBackgroundColor'},
+      },
+    }),
+    // ]TODO(macOS ISS#2323203)
   },
   header: {
     height: 40,
@@ -197,7 +211,54 @@ RNTesterList.ComponentExamples.concat(RNTesterList.APIExamples).forEach(
         () => Snapshotter,
       );
     }
+
+    // [TODO(OSS Candidate ISS#2710739)
+    class LoadPageTest extends React.Component<{}> {
+      componentDidMount() {
+        requestAnimationFrame(() => {
+          TestModule.markTestCompleted();
+        });
+      }
+
+      render() {
+        return <RNTesterExampleContainer module={ExampleModule} />;
+      }
+    }
+
+    AppRegistry.registerComponent(
+      'LoadPageTest_' + Example.key,
+      () => LoadPageTest,
+    );
+    // ]TODO(OSS Candidate ISS#2710739)
   },
 );
+
+// [TODO(OSS Candidate ISS#2710739)
+class EnumerateExamplePages extends React.Component<{}> {
+  render() {
+    RNTesterList.ComponentExamples.concat(RNTesterList.APIExamples).forEach(
+      (Example: RNTesterExample) => {
+        let skipTest = false;
+        if ('skipTest' in Example) {
+          const platforms = Example.skipTest;
+          skipTest =
+            platforms !== undefined &&
+            (Platform.OS in platforms || 'default' in platforms);
+        }
+        if (!skipTest) {
+          console.trace(Example.key);
+        }
+      },
+    );
+    TestModule.markTestCompleted();
+    return <View />;
+  }
+}
+
+AppRegistry.registerComponent(
+  'EnumerateExamplePages',
+  () => EnumerateExamplePages,
+);
+// ]TODO(OSS Candidate ISS#2710739)
 
 module.exports = RNTesterApp;
