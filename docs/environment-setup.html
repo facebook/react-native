@@ -350,15 +350,15 @@ brew <span class="token function">install</span> watchman
 <p>Click &quot;Next&quot; then &quot;Finish&quot; to create your AVD. At this point you should be able to click on the green triangle button next to your AVD to launch it, then proceed to the next step.</p>
 <p><block class="native mac ios" /></p>
 <p><h2>Running your React Native application</h2></p>
-<p>Run <code>react-native start</code> inside your React Native project folder:</p>
-<pre><code class="hljs css language-sh"><span class="token builtin class-name">cd</span> AwesomeProject
-npx react-native start
-</code></pre>
 <blockquote>
 <p>If you use the Yarn package manager, you can use <code>yarn</code> instead of <code>npx</code> when running React Native commands inside an existing project.</p>
 </blockquote>
+<p>Run <code>npx react-native start</code> inside your React Native project folder:</p>
+<pre><code class="hljs css language-sh"><span class="token builtin class-name">cd</span> AwesomeProject
+npx react-native start
+</code></pre>
 <p><code>react-native start</code> starts Metro Bundler, which you can read more about <a href="https://facebook.github.io/metro/">here</a>.</p>
-<p>Run <code>react-native run-ios</code> inside your React Native project folder:</p>
+<p>To start the application run <code>npx react-native run-ios</code> inside your React Native project folder:</p>
 <pre><code class="hljs css language-sh">npx react-native run-ios
 </code></pre>
 <p>You should see your new app running in the iOS Simulator shortly.</p>
@@ -371,19 +371,15 @@ npx react-native start
 <p>The above command will automatically run your app on the iOS Simulator by default. If you want to run the app on an actual physical iOS device, please follow the instructions <a href="/docs/running-on-device">here</a>.</p>
 <p><block class="native mac windows linux android" /></p>
 <p><h2>Running your React Native application</h2></p>
-<p>Run <code>react-native start</code> inside your React Native project folder:</p>
-<pre><code class="hljs css language-sh"><span class="token builtin class-name">cd</span> AwesomeProject
-npx react-native start
-</code></pre>
 <blockquote>
 <p>If you use the Yarn package manager, you can use <code>yarn</code> instead of <code>npx</code> when running React Native commands inside an existing project.</p>
 </blockquote>
-<p>On another terminal, run <code>npx react-native run-android</code>:</p>
+<p>Run <code>npx react-native start</code> inside your React Native project folder:</p>
 <pre><code class="hljs css language-sh"><span class="token builtin class-name">cd</span> AwesomeProject
 npx react-native start
 </code></pre>
-<p><code>react-native start</code> starts Metro Bundler, which you can read more about <a href="https://facebook.github.io/metro/">here</a>.</p>
-<p>Run <code>react-native run-android</code> inside your React Native project folder:</p>
+<p>The command above starts Metro Bundler, which you can read more about <a href="https://facebook.github.io/metro/">here</a>.</p>
+<p>To start the application run <code>npx react-native run-android</code> inside your React Native project folder:</p>
 <pre><code class="hljs css language-sh">npx react-native run-android
 </code></pre>
 <p>If everything is set up correctly, you should see your new app running in your Android emulator shortly.</p>
