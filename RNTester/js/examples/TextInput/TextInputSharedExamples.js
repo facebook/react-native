@@ -458,18 +458,18 @@ class FontWeightStyleToggleExample extends React.Component<
   render() {
     return (
       <View>
-        {Object.entries(this.state).map(
-          ([stateKey, value]: [string, boolean]) => (
-            <WithLabel label={stateKey} key={stateKey}>
-              <Switch
-                value={value}
-                onValueChange={newValue =>
-                  this.setState({[stateKey]: newValue})
-                }
-              />
-            </WithLabel>
-          ),
-        )}
+        <WithLabel label="bold">
+          <Switch
+            value={this.state.bold}
+            onValueChange={newValue => this.setState({bold: newValue})}
+          />
+        </WithLabel>
+        <WithLabel label="italic">
+          <Switch
+            value={this.state.italic}
+            onValueChange={newValue => this.setState({italic: newValue})}
+          />
+        </WithLabel>
         <TextInput
           defaultValue="Some text that can be formatted"
           style={[
