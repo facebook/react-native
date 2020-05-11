@@ -309,7 +309,6 @@ RCT_EXPORT_METHOD(getValue:(double)nodeTag saveCallback:(RCTResponseSenderBlock)
       operation(self->_nodesManager);
     }
   }];
- 
   [uiManager addUIBlock:^(__unused RCTUIManager *manager, __unused NSDictionary<NSNumber *, UIView *> *viewRegistry) {
     for (AnimatedOperation operation in operations) {
       operation(self->_nodesManager);
