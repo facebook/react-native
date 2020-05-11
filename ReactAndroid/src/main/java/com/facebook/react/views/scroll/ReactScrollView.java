@@ -494,16 +494,9 @@ public class ReactScrollView extends ScrollView
    * runnable that checks if we scrolled in the last frame and if so assumes we are still scrolling.
    */
   private void handlePostTouchScrolling(int velocityX, int velocityY) {
-    // If we aren't going to do anything (send events or snap to page), we can early exit out.
-    if (!mSendMomentumEvents && !mPagingEnabled && !isScrollPerfLoggingEnabled()) {
-      updateStateOnScroll();
-      return;
-    }
-
     // Check if we are already handling this which may occur if this is called by both the touch up
     // and a fling call
     if (mPostTouchRunnable != null) {
-      updateStateOnScroll();
       return;
     }
 
