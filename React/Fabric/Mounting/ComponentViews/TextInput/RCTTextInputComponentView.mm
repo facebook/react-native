@@ -20,6 +20,8 @@
 #import "RCTTextInputNativeCommands.h"
 #import "RCTTextInputUtils.h"
 
+#import "RCTFabricComponentsPlugins.h"
+
 using namespace facebook::react;
 
 @interface RCTTextInputComponentView () <RCTBackedTextInputDelegate, RCTTextInputViewProtocol>
@@ -459,3 +461,8 @@ using namespace facebook::react;
 }
 
 @end
+
+Class<RCTComponentViewProtocol> RCTTextInputCls(void)
+{
+  return RCTTextInputComponentView.class;
+}

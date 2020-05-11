@@ -39,6 +39,7 @@ Class<RCTComponentViewProtocol> RCTUnimplementedNativeViewCls(void) __attribute_
 Class<RCTComponentViewProtocol> RCTModalHostViewCls(void) __attribute__((used));
 Class<RCTComponentViewProtocol> RCTImageCls(void) __attribute__((used));
 Class<RCTComponentViewProtocol> RCTParagraphCls(void) __attribute__((used));
+Class<RCTComponentViewProtocol> RCTTextInputCls(void) __attribute__((used));
 
 #ifdef __cplusplus
 }

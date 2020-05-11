@@ -28,6 +28,7 @@ Class<RCTComponentViewProtocol> RCTFabricComponentsProvider(const char *name) {
     {"ModalHostView", RCTModalHostViewCls},
     {"Image", RCTImageCls},
     {"Paragraph", RCTParagraphCls},
+    {"TextInput", RCTTextInputCls},
   };
 
   auto p = sFabricComponentsClassMap.find(name);
