@@ -15,6 +15,7 @@
 #import <react/components/view/ViewProps.h>
 
 #import "RCTConversions.h"
+#import "RCTFabricComponentsPlugins.h"
 
 using namespace facebook::react;
 
@@ -584,3 +585,8 @@ static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
 }
 
 @end
+
+Class<RCTComponentViewProtocol> RCTViewCls(void)
+{
+  return RCTViewComponentView.class;
+}
