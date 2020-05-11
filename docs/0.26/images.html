@@ -72,7 +72,7 @@
 <p>React Native provides a unified way of managing images and other media assets in your Android and iOS apps. To add a static image to your app, place it somewhere in your source code tree and reference it like this:</p>
 <pre><code class="hljs css language-jsx"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span><span class="token class-name">Image</span></span> <span class="token attr-name">source</span><span class="token script language-javascript"><span class="token script-punctuation punctuation">=</span><span class="token punctuation">{</span><span class="token function">require</span><span class="token punctuation">(</span><span class="token string">'./my-icon.png'</span><span class="token punctuation">)</span><span class="token punctuation">}</span></span> <span class="token punctuation">/></span></span>
 </code></pre>
-<p>The image name is resolved the same way JS modules are resolved. In the example above, the packager will look for <code>my-icon.png</code> in the same folder as the component that requires it. Also, if you have <code>my-icon.ios.png</code> and <code>my-icon.android.png</code>, the packager will pick the correct file for the platform.</p>
+<p>The image name is resolved the same way JS modules are resolved. In the example above, the bundler will look for <code>my-icon.png</code> in the same folder as the component that requires it. Also, if you have <code>my-icon.ios.png</code> and <code>my-icon.android.png</code>, the bundler will pick the correct file for the platform.</p>
 <p>You can also use the <code>@2x</code> and <code>@3x</code> suffixes to provide images for different screen densities. If you have the following file structure:</p>
 <pre><code class="hljs">.
 ├── <span class="hljs-selector-tag">button</span><span class="hljs-selector-class">.js</span>
@@ -84,8 +84,8 @@
 <p>...and <code>button.js</code> code contains:</p>
 <pre><code class="hljs css language-jsx"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span><span class="token class-name">Image</span></span> <span class="token attr-name">source</span><span class="token script language-javascript"><span class="token script-punctuation punctuation">=</span><span class="token punctuation">{</span><span class="token function">require</span><span class="token punctuation">(</span><span class="token string">'./img/check.png'</span><span class="token punctuation">)</span><span class="token punctuation">}</span></span> <span class="token punctuation">/></span></span>
 </code></pre>
-<p>...the packager will bundle and serve the image corresponding to device's screen density. For example, <code>check@2x.png</code>, will be used on an iPhone 7, while<code>check@3x.png</code> will be used on an iPhone 7 Plus or a Nexus 5. If there is no image matching the screen density, the closest best option will be selected.</p>
-<p>On Windows, you might need to restart the packager if you add new images to your project.</p>
+<p>...the bundler will bundle and serve the image corresponding to device's screen density. For example, <code>check@2x.png</code>, will be used on an iPhone 7, while<code>check@3x.png</code> will be used on an iPhone 7 Plus or a Nexus 5. If there is no image matching the screen density, the closest best option will be selected.</p>
+<p>On Windows, you might need to restart the bundler if you add new images to your project.</p>
 <p>Here are some benefits that you get:</p>
 <ol>
 <li>Same system on Android and iOS.</li>
@@ -93,7 +93,7 @@
 <li>No global namespace, i.e. you don't have to worry about name collisions.</li>
 <li>Only the images that are actually used will be packaged into your app.</li>
 <li>Adding and changing images doesn't require app recompilation, you can refresh the simulator as you normally do.</li>
-<li>The packager knows the image dimensions, no need to duplicate it in the code.</li>
+<li>The bundler knows the image dimensions, no need to duplicate it in the code.</li>
 <li>Images can be distributed via <a href="https://www.npmjs.com/">npm</a> packages.</li>
 </ol>
 <p>In order for this to work, the image name in <code>require</code> has to be known statically.</p>
@@ -114,7 +114,7 @@
 </code></pre>
 <p>Note that image sources required this way include size (width, height) info for the Image. If you need to scale the image dynamically (i.e. via flex), you may need to manually set <code>{ width: undefined, height: undefined }</code> on the style attribute.</p>
 <h2><a class="anchor" aria-hidden="true" id="static-non-image-resources"></a><a href="#static-non-image-resources" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Static Non-Image Resources</h2>
-<p>The <code>require</code> syntax described above can be used to statically include audio, video or document files in your project as well. Most common file types are supported including <code>.mp3</code>, <code>.wav</code>, <code>.mp4</code>, <code>.mov</code>, <code>.html</code> and <code>.pdf</code>. See <a href="https://github.com/facebook/metro/blob/master/packages/metro-config/src/defaults/defaults.js#L14-L44">packager defaults</a> for the full list.</p>
+<p>The <code>require</code> syntax described above can be used to statically include audio, video or document files in your project as well. Most common file types are supported including <code>.mp3</code>, <code>.wav</code>, <code>.mp4</code>, <code>.mov</code>, <code>.html</code> and <code>.pdf</code>. See <a href="https://github.com/facebook/metro/blob/master/packages/metro-config/src/defaults/defaults.js#L14-L44">bundler defaults</a> for the full list.</p>
 <p>You can add support for other types by adding an <a href="https://facebook.github.io/metro/docs/en/configuration#assetexts"><code>assetExts</code> resolver option</a> in your <a href="https://facebook.github.io/metro/docs/en/configuration">Metro configuration</a>.</p>
 <p>A caveat is that videos must use absolute positioning instead of <code>flexGrow</code>, since size info is not currently passed for non-image assets. This limitation doesn't occur for videos that are linked directly into Xcode or the Assets folder for Android.</p>
 <h2><a class="anchor" aria-hidden="true" id="images-from-hybrid-apps-resources"></a><a href="#images-from-hybrid-apps-resources" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Images From Hybrid App's Resources</h2>
