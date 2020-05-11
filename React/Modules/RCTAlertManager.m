@@ -263,21 +263,21 @@ RCT_EXPORT_METHOD(alertWithArgs:(NSDictionary *)args
   }
   
   void (^callbacksHandlers)(NSModalResponse response) = ^void(NSModalResponse response) {
-    
+    NSString *buttonKey = @"0";
     if (response >= NSAlertFirstButtonReturn) {
-      NSString *buttonKey = buttons[response - NSAlertFirstButtonReturn].allKeys.firstObject;
-      NSArray<NSTextField*> *textfields = [accessoryView isKindOfClass:NSTextField.class] ? @[accessoryView] : accessoryView.subviews;
-      if (textfields.count == 2) {
-        NSDictionary<NSString *, NSString *> *loginCredentials = @{
-                                                                   @"login": textfields.firstObject.stringValue,
-                                                                   @"password": textfields.lastObject.stringValue
-                                                                   };
-        callback(@[buttonKey, loginCredentials]);
-      } else if (textfields.count == 1) {
-        callback(@[buttonKey, textfields.firstObject.stringValue]);
-      } else {
-        callback(@[buttonKey]);
-      }
+      buttonKey = buttons[response - NSAlertFirstButtonReturn].allKeys.firstObject;
+    }
+    NSArray<NSTextField*> *textfields = [accessoryView isKindOfClass:NSTextField.class] ? @[accessoryView] : accessoryView.subviews;
+    if (textfields.count == 2) {
+      NSDictionary<NSString *, NSString *> *loginCredentials = @{
+                                                                 @"login": textfields.firstObject.stringValue,
+                                                                 @"password": textfields.lastObject.stringValue
+                                                                 };
+      callback(@[buttonKey, loginCredentials]);
+    } else if (textfields.count == 1) {
+      callback(@[buttonKey, textfields.firstObject.stringValue]);
+    } else {
+      callback(@[buttonKey]);
     }
   };
   

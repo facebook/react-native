@@ -249,6 +249,12 @@ const APIExamples: Array<RNTesterExample> = [
     module: require('../examples/Alert/AlertIOSExample'),
     supportsTVOS: true,
   },
+  // [TODO(macOS ISS#2323203)
+  {
+    key: 'AlertMacOSExample',
+    module: require('../examples/Alert/AlertMacOSExample'),
+    supportsTVOS: true,
+  }, // ]TODO(macOS ISS#2323203)
   {
     key: 'AnimatedExample',
     module: require('../examples/Animated/AnimatedExample'),
