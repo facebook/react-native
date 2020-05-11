@@ -27,6 +27,7 @@ Class<RCTComponentViewProtocol> RCTFabricComponentsProvider(const char *name) {
     {"UnimplementedNativeView", RCTUnimplementedNativeViewCls},
     {"ModalHostView", RCTModalHostViewCls},
     {"Image", RCTImageCls},
+    {"Paragraph", RCTParagraphCls},
   };
 
   auto p = sFabricComponentsClassMap.find(name);
