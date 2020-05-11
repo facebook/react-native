@@ -95,11 +95,11 @@
   </ul>
 </div>
 <p><block class="functional syntax" /></p>
-<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React, { useEffect, useState } <span class="hljs-keyword">from</span> <span class="hljs-string">"react"</span>;
+<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React, { useEffect, useRef } <span class="hljs-keyword">from</span> <span class="hljs-string">"react"</span>;
 <span class="hljs-keyword">import</span> { AppState, StyleSheet, Text, View } <span class="hljs-keyword">from</span> <span class="hljs-string">"react-native"</span>;
 
 <span class="hljs-keyword">const</span> AppStateExample = <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
-  <span class="hljs-keyword">const</span> [appState, setAppState] = useState(AppState.currentState);
+  <span class="hljs-keyword">const</span> appState = useRef(AppState.currentState);
 
   useEffect(<span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
     AppState.addEventListener(<span class="hljs-string">"change"</span>, _handleAppStateChange);
@@ -109,16 +109,16 @@
     };
   }, []);
 
-  <span class="hljs-keyword">const</span> _handleAppStateChange = <span class="hljs-function"><span class="hljs-params">nextAppState</span> =&gt;</span> {
-    <span class="hljs-keyword">if</span> (appState.match(<span class="hljs-regexp">/inactive|background/</span>) &amp;&amp; nextAppState === <span class="hljs-string">"active"</span>) {
+  <span class="hljs-keyword">const</span> _handleAppStateChange = <span class="hljs-function">(<span class="hljs-params">nextAppState</span>) =&gt;</span> {
+    <span class="hljs-keyword">if</span> (appState.current.match(<span class="hljs-regexp">/inactive|background/</span>) &amp;&amp; nextAppState === <span class="hljs-string">"active"</span>) {
       <span class="hljs-built_in">console</span>.log(<span class="hljs-string">"App has come to the foreground!"</span>);
     }
-    setAppState(nextAppState);
+    appState.current = nextAppState;
   };
 
   <span class="hljs-keyword">return</span> (
     <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">View</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.container}</span>&gt;</span>
-      <span class="hljs-tag">&lt;<span class="hljs-name">Text</span>&gt;</span>Current state is: {appState}<span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">Text</span>&gt;</span>Current state is: {appState.current}<span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span>
     <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span></span>
   );
 };
@@ -135,7 +135,7 @@
 </code></pre></div><div class="desktop-friendly-snack" style="margin-top: 15px; margin-bottom: 15px"><div
         data-snack-name="AppState Function Component Example"
         data-snack-description="Example usage"
-        data-snack-code="import%20React%2C%20%7B%20useEffect%2C%20useState%20%7D%20from%20%22react%22%3B%0Aimport%20%7B%20AppState%2C%20StyleSheet%2C%20Text%2C%20View%20%7D%20from%20%22react-native%22%3B%0A%0Aconst%20AppStateExample%20%3D%20()%20%3D%3E%20%7B%0A%20%20const%20%5BappState%2C%20setAppState%5D%20%3D%20useState(AppState.currentState)%3B%0A%0A%20%20useEffect(()%20%3D%3E%20%7B%0A%20%20%20%20AppState.addEventListener(%22change%22%2C%20_handleAppStateChange)%3B%0A%0A%20%20%20%20return%20()%20%3D%3E%20%7B%0A%20%20%20%20%20%20AppState.removeEventListener(%22change%22%2C%20_handleAppStateChange)%3B%0A%20%20%20%20%7D%3B%0A%20%20%7D%2C%20%5B%5D)%3B%0A%0A%20%20const%20_handleAppStateChange%20%3D%20nextAppState%20%3D%3E%20%7B%0A%20%20%20%20if%20(appState.match(%2Finactive%7Cbackground%2F)%20%26%26%20nextAppState%20%3D%3D%3D%20%22active%22)%20%7B%0A%20%20%20%20%20%20console.log(%22App%20has%20come%20to%20the%20foreground!%22)%3B%0A%20%20%20%20%7D%0A%20%20%20%20setAppState(nextAppState)%3B%0A%20%20%7D%3B%0A%0A%20%20return%20(%0A%20%20%20%20%3CView%20style%3D%7Bstyles.container%7D%3E%0A%20%20%20%20%20%20%3CText%3ECurrent%20state%20is%3A%20%7BappState%7D%3C%2FText%3E%0A%20%20%20%20%3C%2FView%3E%0A%20%20)%3B%0A%7D%3B%0A%0Aconst%20styles%20%3D%20StyleSheet.create(%7B%0A%20%20container%3A%20%7B%0A%20%20%20%20flex%3A%201%2C%0A%20%20%20%20justifyContent%3A%20%22center%22%2C%0A%20%20%20%20alignItems%3A%20%22center%22%0A%20%20%7D%0A%7D)%3B%0A%0Aexport%20default%20AppStateExample%3B%0A"
+        data-snack-code="import%20React%2C%20%7B%20useEffect%2C%20useRef%20%7D%20from%20%22react%22%3B%0Aimport%20%7B%20AppState%2C%20StyleSheet%2C%20Text%2C%20View%20%7D%20from%20%22react-native%22%3B%0A%0Aconst%20AppStateExample%20%3D%20()%20%3D%3E%20%7B%0A%20%20const%20appState%20%3D%20useRef(AppState.currentState)%3B%0A%0A%20%20useEffect(()%20%3D%3E%20%7B%0A%20%20%20%20AppState.addEventListener(%22change%22%2C%20_handleAppStateChange)%3B%0A%0A%20%20%20%20return%20()%20%3D%3E%20%7B%0A%20%20%20%20%20%20AppState.removeEventListener(%22change%22%2C%20_handleAppStateChange)%3B%0A%20%20%20%20%7D%3B%0A%20%20%7D%2C%20%5B%5D)%3B%0A%0A%20%20const%20_handleAppStateChange%20%3D%20(nextAppState)%20%3D%3E%20%7B%0A%20%20%20%20if%20(appState.current.match(%2Finactive%7Cbackground%2F)%20%26%26%20nextAppState%20%3D%3D%3D%20%22active%22)%20%7B%0A%20%20%20%20%20%20console.log(%22App%20has%20come%20to%20the%20foreground!%22)%3B%0A%20%20%20%20%7D%0A%20%20%20%20appState.current%20%3D%20nextAppState%3B%0A%20%20%7D%3B%0A%0A%20%20return%20(%0A%20%20%20%20%3CView%20style%3D%7Bstyles.container%7D%3E%0A%20%20%20%20%20%20%3CText%3ECurrent%20state%20is%3A%20%7BappState.current%7D%3C%2FText%3E%0A%20%20%20%20%3C%2FView%3E%0A%20%20)%3B%0A%7D%3B%0A%0Aconst%20styles%20%3D%20StyleSheet.create(%7B%0A%20%20container%3A%20%7B%0A%20%20%20%20flex%3A%201%2C%0A%20%20%20%20justifyContent%3A%20%22center%22%2C%0A%20%20%20%20alignItems%3A%20%22center%22%0A%20%20%7D%0A%7D)%3B%0A%0Aexport%20default%20AppStateExample%3B%0A"
         data-snack-platform="web"
         data-snack-supported-platforms=ios,android,web
         data-snack-preview="true"
