@@ -45,12 +45,8 @@ RCT_ENUM_CONVERTER(NSCalendarUnit,
 
 @end
 
-<<<<<<< HEAD:Libraries/PushNotificationIOS/RCTPushNotificationManager.m
 #if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
-@interface RCTPushNotificationManager ()
-=======
 @interface RCTPushNotificationManager () <NativePushNotificationManagerIOSSpec>
->>>>>>> fb/0.62-stable:Libraries/PushNotificationIOS/RCTPushNotificationManager.mm
 @property (nonatomic, strong) NSMutableDictionary *remoteNotificationCallbacks;
 @end
 #endif // TODO(macOS ISS#2323203)
@@ -124,12 +120,9 @@ RCT_ENUM_CONVERTER(UIBackgroundFetchResult, (@{
 #endif // TODO(macOS ISS#2323203)
 
 @end
-<<<<<<< HEAD:Libraries/PushNotificationIOS/RCTPushNotificationManager.m
-=======
 #else
 @interface RCTPushNotificationManager () <NativePushNotificationManagerIOS>
 @end
->>>>>>> fb/0.62-stable:Libraries/PushNotificationIOS/RCTPushNotificationManager.mm
 #endif //TARGET_OS_TV / TARGET_OS_UIKITFORMAC
 
 @implementation RCTPushNotificationManager
@@ -137,11 +130,7 @@ RCT_ENUM_CONVERTER(UIBackgroundFetchResult, (@{
   RCTPromiseResolveBlock _requestPermissionsResolveBlock;
 }
 
-<<<<<<< HEAD:Libraries/PushNotificationIOS/RCTPushNotificationManager.m
 #if !TARGET_OS_TV && !TARGET_OS_UIKITFORMAC && !TARGET_OS_OSX
-=======
-#if !TARGET_OS_TV && !TARGET_OS_UIKITFORMAC
->>>>>>> fb/0.62-stable:Libraries/PushNotificationIOS/RCTPushNotificationManager.mm
 
 static NSDictionary *RCTFormatLocalNotification(UILocalNotification *notification)
 {
@@ -187,7 +176,6 @@ static NSDictionary *RCTFormatUNNotification(UNNotification *notification)
 }
 
 #endif //TARGET_OS_TV / TARGET_OS_UIKITFORMAC
-<<<<<<< HEAD:Libraries/PushNotificationIOS/RCTPushNotificationManager.m
 #if TARGET_OS_OSX // [TODO(macOS ISS#2323203)
 
 static NSDictionary *RCTFormatUserNotification(NSUserNotification *notification)
@@ -208,8 +196,6 @@ static NSDictionary *RCTFormatUserNotification(NSUserNotification *notification)
   return formattedUserNotification;
 }
 #endif // ]TODO(macOS ISS#2323203)
-=======
->>>>>>> fb/0.62-stable:Libraries/PushNotificationIOS/RCTPushNotificationManager.mm
 
 RCT_EXPORT_MODULE()
 
@@ -403,13 +389,9 @@ RCT_EXPORT_MODULE()
   _requestPermissionsResolveBlock = nil;
 }
 
-<<<<<<< HEAD:Libraries/PushNotificationIOS/RCTPushNotificationManager.m
 #if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
-RCT_EXPORT_METHOD(onFinishRemoteNotification:(NSString *)notificationId fetchResult:(UIBackgroundFetchResult)result) {
-=======
 RCT_EXPORT_METHOD(onFinishRemoteNotification:(NSString *)notificationId fetchResult:(NSString *)fetchResult) {
   UIBackgroundFetchResult result = [RCTConvert UIBackgroundFetchResult:fetchResult];
->>>>>>> fb/0.62-stable:Libraries/PushNotificationIOS/RCTPushNotificationManager.mm
   RCTRemoteNotificationCallback completionHandler = self.remoteNotificationCallbacks[notificationId];
   if (!completionHandler) {
     RCTLogError(@"There is no completion handler with notification id: %@", notificationId);
@@ -532,12 +514,8 @@ RCT_EXPORT_METHOD(checkPermissions:(RCTResponseSenderBlock)callback)
 #endif // ]TODO(macOS ISS#2323203)
 }
 
-<<<<<<< HEAD:Libraries/PushNotificationIOS/RCTPushNotificationManager.m
 #if !TARGET_OS_OSX
-RCT_EXPORT_METHOD(presentLocalNotification:(UILocalNotification *)notification)
-=======
 RCT_EXPORT_METHOD(presentLocalNotification:(JS::NativePushNotificationManagerIOS::Notification &)notification)
->>>>>>> fb/0.62-stable:Libraries/PushNotificationIOS/RCTPushNotificationManager.mm
 {
   NSMutableDictionary *notificationDict = [NSMutableDictionary new];
   notificationDict[@"alertTitle"] = notification.alertTitle();
@@ -564,12 +542,8 @@ RCT_EXPORT_METHOD(presentLocalNotification:(NSUserNotification *)notification)
 }
 #endif // ]TODO(macOS ISS#2323203)
 
-<<<<<<< HEAD:Libraries/PushNotificationIOS/RCTPushNotificationManager.m
 #if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
-RCT_EXPORT_METHOD(scheduleLocalNotification:(UILocalNotification *)notification)
-=======
 RCT_EXPORT_METHOD(scheduleLocalNotification:(JS::NativePushNotificationManagerIOS::Notification &)notification)
->>>>>>> fb/0.62-stable:Libraries/PushNotificationIOS/RCTPushNotificationManager.mm
 {
   NSMutableDictionary *notificationDict = [NSMutableDictionary new];
   notificationDict[@"alertTitle"] = notification.alertTitle();
@@ -686,13 +660,9 @@ RCT_EXPORT_METHOD(getScheduledLocalNotifications:(RCTResponseSenderBlock)callbac
 
 RCT_EXPORT_METHOD(removeAllDeliveredNotifications)
 {
-<<<<<<< HEAD:Libraries/PushNotificationIOS/RCTPushNotificationManager.m
 #if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
-  if ([UNUserNotificationCenter class]) {
-=======
   // TODO: T56867629
   if (@available(iOS 10.0, tvOS 10.0, *)) {
->>>>>>> fb/0.62-stable:Libraries/PushNotificationIOS/RCTPushNotificationManager.mm
     UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
     [center removeAllDeliveredNotifications];
   }
@@ -703,13 +673,9 @@ RCT_EXPORT_METHOD(removeAllDeliveredNotifications)
 
 RCT_EXPORT_METHOD(removeDeliveredNotifications:(NSArray<NSString *> *)identifiers)
 {
-<<<<<<< HEAD:Libraries/PushNotificationIOS/RCTPushNotificationManager.m
 #if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
-  if ([UNUserNotificationCenter class]) {
-=======
   // TODO: T56867629
   if (@available(iOS 10.0, tvOS 10.0, *)) {
->>>>>>> fb/0.62-stable:Libraries/PushNotificationIOS/RCTPushNotificationManager.mm
     UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
     [center removeDeliveredNotificationsWithIdentifiers:identifiers];
   }
@@ -725,13 +691,9 @@ RCT_EXPORT_METHOD(removeDeliveredNotifications:(NSArray<NSString *> *)identifier
 
 RCT_EXPORT_METHOD(getDeliveredNotifications:(RCTResponseSenderBlock)callback)
 {
-<<<<<<< HEAD:Libraries/PushNotificationIOS/RCTPushNotificationManager.m
 #if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
-  if ([UNUserNotificationCenter class]) {
-=======
   // TODO: T56867629
   if (@available(iOS 10.0, tvOS 10.0, *)) {
->>>>>>> fb/0.62-stable:Libraries/PushNotificationIOS/RCTPushNotificationManager.mm
     UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
     [center getDeliveredNotificationsWithCompletionHandler:^(NSArray<UNNotification *> *_Nonnull notifications) {
       NSMutableArray<NSDictionary *> *formattedNotifications = [NSMutableArray new];
@@ -752,8 +714,6 @@ RCT_EXPORT_METHOD(getDeliveredNotifications:(RCTResponseSenderBlock)callback)
 }
 
 #else //TARGET_OS_TV / TARGET_OS_UIKITFORMAC
-<<<<<<< HEAD:Libraries/PushNotificationIOS/RCTPushNotificationManager.m
-=======
 
 RCT_EXPORT_METHOD(onFinishRemoteNotification:(NSString *)notificationId fetchResult:(NSString *)fetchResult)
 {
@@ -832,7 +792,6 @@ RCT_EXPORT_METHOD(getDeliveredNotifications:(RCTResponseSenderBlock)callback)
 {
   RCTLogError(@"Not implemented: %@", NSStringFromSelector(_cmd));
 }
->>>>>>> fb/0.62-stable:Libraries/PushNotificationIOS/RCTPushNotificationManager.mm
 
 - (NSArray<NSString *> *)supportedEvents
 {
@@ -840,14 +799,11 @@ RCT_EXPORT_METHOD(getDeliveredNotifications:(RCTResponseSenderBlock)callback)
 }
 
 #endif //TARGET_OS_TV / TARGET_OS_UIKITFORMAC
-<<<<<<< HEAD:Libraries/PushNotificationIOS/RCTPushNotificationManager.m
-=======
 
 - (std::shared_ptr<facebook::react::TurboModule>)getTurboModuleWithJsInvoker:(std::shared_ptr<facebook::react::CallInvoker>)jsInvoker
 {
   return std::make_shared<facebook::react::NativePushNotificationManagerIOSSpecJSI>(self, jsInvoker);
 }
->>>>>>> fb/0.62-stable:Libraries/PushNotificationIOS/RCTPushNotificationManager.mm
 
 @end
 

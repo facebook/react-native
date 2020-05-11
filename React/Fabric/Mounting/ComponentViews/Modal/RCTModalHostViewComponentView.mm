@@ -1,8 +1,4 @@
-<<<<<<< HEAD
-/**
-=======
 /*
->>>>>>> fb/0.62-stable
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -133,10 +129,6 @@ static ModalHostViewOnOrientationChangeStruct onOrientationChangeStruct(CGRect r
         presentViewController:_viewController
                      animated:_shouldAnimatePresentation
                    completion:^{
-<<<<<<< HEAD
-                     ModalHostViewOnShowStruct onShow;
-                     std::dynamic_pointer_cast<const ModalHostViewEventEmitter>(self->_eventEmitter)->onShow(onShow);
-=======
                      if (!self->_eventEmitter) {
                        return;
                      }
@@ -144,7 +136,6 @@ static ModalHostViewOnOrientationChangeStruct onOrientationChangeStruct(CGRect r
                      assert(std::dynamic_pointer_cast<ModalHostViewEventEmitter const>(self->_eventEmitter));
                      auto eventEmitter = std::static_pointer_cast<ModalHostViewEventEmitter const>(self->_eventEmitter);
                      eventEmitter->onShow(ModalHostViewOnShowStruct{});
->>>>>>> fb/0.62-stable
                    }];
   }
 
@@ -170,17 +161,12 @@ static ModalHostViewOnOrientationChangeStruct onOrientationChangeStruct(CGRect r
 
 - (void)boundsDidChange:(CGRect)newBounds
 {
-<<<<<<< HEAD
-  std::dynamic_pointer_cast<const ModalHostViewEventEmitter>(_eventEmitter)
-      ->onOrientationChange(onOrientationChangeStruct(newBounds));
-=======
   if (_eventEmitter) {
     assert(std::dynamic_pointer_cast<ModalHostViewEventEmitter const>(_eventEmitter));
 
     auto eventEmitter = std::static_pointer_cast<ModalHostViewEventEmitter const>(_eventEmitter);
     eventEmitter->onOrientationChange(onOrientationChangeStruct(newBounds));
   }
->>>>>>> fb/0.62-stable
 
   if (_state != nullptr) {
     auto newState = ModalHostViewState{RCTSizeFromCGSize(newBounds.size)};

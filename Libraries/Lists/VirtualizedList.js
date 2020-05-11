@@ -44,22 +44,15 @@ export type Separators = {
   highlight: () => void,
   unhighlight: () => void,
   updateProps: (select: 'leading' | 'trailing', newProps: Object) => void,
-<<<<<<< HEAD
-=======
   ...
->>>>>>> fb/0.62-stable
 };
 
 export type RenderItemProps<ItemT> = {
   item: ItemT,
   index: number,
-<<<<<<< HEAD
   isSelected: boolean, // TODO(macOS ISS#2323203)
   separators: Separators,
-=======
-  separators: Separators,
   ...
->>>>>>> fb/0.62-stable
 };
 
 export type RenderItemType<ItemT> = (
@@ -76,17 +69,13 @@ type ViewabilityHelperCallbackTuple = {
   ...
 };
 
-<<<<<<< HEAD
 // [TODO(macOS ISS#2323203)
 export type SelectedRowIndexPathType = {
   sectionIndex: number,
   rowIndex: number,
 }; // ]TODO(macOS ISS#2323203)
 
-type RequiredProps = {
-=======
 type RequiredProps = {|
->>>>>>> fb/0.62-stable
   /**
    * The default accessor functions assume this is an Array<{key: string} | {id: string}> but you can override
    * getItem, getItemCount, and keyExtractor to handle any type of index-based data.
@@ -100,17 +89,9 @@ type RequiredProps = {|
    * Determines how many items are in the data blob.
    */
   getItemCount: (data: any) => number,
-<<<<<<< HEAD
-};
-type OptionalProps = {
-  // TODO: Conflicts with the optional `renderItem` in
-  // `VirtualizedSectionList`'s props.
-  renderItem?: $FlowFixMe<?RenderItemType<Item>>,
-=======
 |};
 type OptionalProps = {|
   renderItem?: ?RenderItemType<Item>,
->>>>>>> fb/0.62-stable
   /**
    * `debug` will turn on extra logging and visual overlays to aid with debugging both usage and
    * implementation, but with a significant perf hit.
@@ -169,12 +150,6 @@ type OptionalProps = {|
    */
   CellRendererComponent?: ?React.ComponentType<any>,
   /**
-<<<<<<< HEAD
-   * Each data item is rendered using this element. Can be a React Component Class,
-   * or a render function.
-   */
-  ListItemComponent?: ?React.ComponentType<any>,
-=======
    * Rendered in between each item, but not at the top or bottom. By default, `highlighted` and
    * `leadingItem` props are provided. `renderItem` provides `separators.highlight`/`unhighlight`
    * which will update the `highlighted` prop, but you can also add custom props with
@@ -208,7 +183,6 @@ type OptionalProps = {|
    * your use-case.
    */
   ListItemComponent?: ?(React.ComponentType<any> | React.Element<any>),
->>>>>>> fb/0.62-stable
   /**
    * Rendered when the list is empty. Can be a React Component Class, a render function, or
    * a rendered element.
@@ -399,11 +373,8 @@ type ChildListState = {
 type State = {
   first: number,
   last: number,
-<<<<<<< HEAD
   selectedRowIndex: number, // TODO(macOS ISS#2323203)
-=======
   ...
->>>>>>> fb/0.62-stable
 };
 
 /**
@@ -595,21 +566,13 @@ class VirtualizedList extends React.PureComponent<Props, State> {
    * Note that `this._scrollRef` might not be a `ScrollView`, so we
    * need to check that it responds to `getScrollResponder` before calling it.
    */
-<<<<<<< HEAD
-  getScrollResponder(): any {
-=======
   getScrollResponder(): ?ScrollResponderType {
->>>>>>> fb/0.62-stable
     if (this._scrollRef && this._scrollRef.getScrollResponder) {
       return this._scrollRef.getScrollResponder();
     }
   }
 
-<<<<<<< HEAD
-  getScrollableNode(): any {
-=======
   getScrollableNode(): ?number {
->>>>>>> fb/0.62-stable
     if (this._scrollRef && this._scrollRef.getScrollableNode) {
       return this._scrollRef.getScrollableNode();
     } else {
@@ -617,13 +580,9 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     }
   }
 
-<<<<<<< HEAD
-  getScrollRef(): any {
-=======
   getScrollRef():
     | ?React.ElementRef<typeof ScrollView>
     | ?React.ElementRef<typeof View> {
->>>>>>> fb/0.62-stable
     if (this._scrollRef && this._scrollRef.getScrollRef) {
       return this._scrollRef.getScrollRef();
     } else {
@@ -719,10 +678,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
         timestamp: number,
         velocity: number,
         visibleLength: number,
-<<<<<<< HEAD
-=======
         ...
->>>>>>> fb/0.62-stable
       },
       horizontal: ?boolean,
       getOutermostParentListRef: Function,
@@ -731,21 +687,14 @@ class VirtualizedList extends React.PureComponent<Props, State> {
         cellKey: string,
         key: string,
         ref: VirtualizedList,
-<<<<<<< HEAD
-=======
         ...
->>>>>>> fb/0.62-stable
       }) => ?ChildListState,
       unregisterAsNestedChild: ({
         key: string,
         state: ChildListState,
-<<<<<<< HEAD
-      }) => void,
-=======
         ...
       }) => void,
       ...
->>>>>>> fb/0.62-stable
     },
   |} {
     return {
@@ -2086,19 +2035,7 @@ type CellRendererProps = {
   horizontal: ?boolean,
   index: number,
   inversionStyle: ViewStyleProp,
-<<<<<<< HEAD
   isSelected: ?boolean, // TODO(macOS ISS#2323203)
-  item: Item,
-  onLayout: (event: Object) => void, // This is extracted by ScrollViewStickyHeader
-  onUnmount: (cellKey: string) => void,
-  onUpdateSeparators: (cellKeys: Array<?string>, props: Object) => void,
-  parentProps: {
-    getItemLayout?: ?Function,
-    renderItem?: ?RenderItemType<Item>,
-    ListItemComponent?: ?(React.ComponentType<any> | React.Element<any>),
-  },
-  prevCellKey: ?string,
-=======
   item: Item,
   // This is extracted by ScrollViewStickyHeader
   onLayout: (event: Object) => void,
@@ -2121,7 +2058,6 @@ type CellRendererProps = {
   },
   prevCellKey: ?string,
   ...
->>>>>>> fb/0.62-stable
 };
 
 type CellRendererState = {
@@ -2129,10 +2065,7 @@ type CellRendererState = {
     highlighted: boolean,
     leadingItem: ?Item,
   |}>,
-<<<<<<< HEAD
-=======
   ...
->>>>>>> fb/0.62-stable
 };
 
 class CellRenderer extends React.Component<
@@ -2206,12 +2139,8 @@ class CellRenderer extends React.Component<
     this.props.onUnmount(this.props.cellKey);
   }
 
-<<<<<<< HEAD
   _renderElement(renderItem, ListItemComponent, item, index, isSelected) {
     // TODO(macOS ISS#2323203)
-=======
-  _renderElement(renderItem, ListItemComponent, item, index) {
->>>>>>> fb/0.62-stable
     if (renderItem && ListItemComponent) {
       console.warn(
         'VirtualizedList: Both ListItemComponent and renderItem props are present. ListItemComponent will take' +
@@ -2220,12 +2149,9 @@ class CellRenderer extends React.Component<
     }
 
     if (ListItemComponent) {
-<<<<<<< HEAD
-=======
       /* $FlowFixMe(>=0.108.0 site=react_native_fb) This comment suppresses an
        * error found when Flow v0.108 was deployed. To see the error, delete
        * this comment and run Flow. */
->>>>>>> fb/0.62-stable
       return React.createElement(ListItemComponent, {
         item,
         index,
@@ -2265,10 +2191,7 @@ class CellRenderer extends React.Component<
       ListItemComponent,
       item,
       index,
-<<<<<<< HEAD
       isSelected, // TODO(macOS ISS#2323203)
-=======
->>>>>>> fb/0.62-stable
     );
 
     const onLayout =

@@ -13,11 +13,8 @@
 const React = require('react');
 
 const {StyleSheet, Text, View} = require('react-native');
-<<<<<<< HEAD
 import {Platform} from 'react-native'; // TODO(macOS ISS#2323203)
-=======
 import {RNTesterThemeContext} from './RNTesterTheme';
->>>>>>> fb/0.62-stable
 
 type Props = $ReadOnly<{|
   children?: React.Node,
@@ -34,19 +31,6 @@ class RNTesterBlock extends React.Component<Props, State> {
 
   render(): React.Node {
     const description = this.props.description ? (
-<<<<<<< HEAD
-      <Text style={styles.descriptionText}>{this.props.description}</Text>
-    ) : null;
-
-    return (
-      <View style={styles.container}>
-        <View style={styles.titleContainer}>
-          <Text style={styles.titleText}>{this.props.title}</Text>
-          {description}
-        </View>
-        <View style={styles.children}>{this.props.children}</View>
-      </View>
-=======
       <RNTesterThemeContext.Consumer>
         {theme => {
           return (
@@ -88,7 +72,6 @@ class RNTesterBlock extends React.Component<Props, State> {
           );
         }}
       </RNTesterThemeContext.Consumer>
->>>>>>> fb/0.62-stable
     );
   }
 }
@@ -97,7 +80,6 @@ const styles = StyleSheet.create({
   container: {
     borderRadius: 3,
     borderWidth: 0.5,
-<<<<<<< HEAD
     ...Platform.select({
       macos: {
         borderColor: {semantic: 'separatorColor'},
@@ -112,8 +94,6 @@ const styles = StyleSheet.create({
         backgroundColor: '#ffffff',
       },
     }),
-=======
->>>>>>> fb/0.62-stable
     margin: 10,
     marginVertical: 5,
     overflow: 'hidden',
@@ -122,7 +102,6 @@ const styles = StyleSheet.create({
     borderBottomWidth: 0.5,
     borderTopLeftRadius: 3,
     borderTopRightRadius: 2.5,
-<<<<<<< HEAD
     ...Platform.select({
       macos: {
         borderBottomColor: {semantic: 'separatorColor'},
@@ -137,13 +116,10 @@ const styles = StyleSheet.create({
         backgroundColor: '#f6f7f8',
       },
     }),
-=======
->>>>>>> fb/0.62-stable
     paddingHorizontal: 10,
     paddingVertical: 5,
   },
   titleText: {
-<<<<<<< HEAD
     ...Platform.select({
       macos: {
         color: {semantic: 'labelColor'},
@@ -153,8 +129,6 @@ const styles = StyleSheet.create({
       },
       default: undefined,
     }),
-=======
->>>>>>> fb/0.62-stable
     fontSize: 14,
     fontWeight: '500',
   },

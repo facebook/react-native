@@ -22,12 +22,6 @@ export type PlatformSelectSpec<A, N, D> = {
 const Platform = {
   __constants: null,
   OS: 'android',
-<<<<<<< HEAD
-  get Version() {
-    return this.constants.Version;
-  },
-  get constants() {
-=======
   get Version(): number {
     return this.constants.Version;
   },
@@ -47,7 +41,6 @@ const Platform = {
     ServerHost: string,
     uiMode: string,
   |} {
->>>>>>> fb/0.62-stable
     if (this.__constants == null) {
       this.__constants = NativePlatformConstantsAndroid.getConstants();
     }

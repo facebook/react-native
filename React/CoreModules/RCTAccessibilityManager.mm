@@ -16,32 +16,9 @@
 
 #import "CoreModulesPlugins.h"
 
-<<<<<<< HEAD:React/Modules/RCTAccessibilityManager.m
 #if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
 
-static NSString *UIKitCategoryFromJSCategory(NSString *JSCategory)
-{
-  static NSDictionary *map = nil;
-  static dispatch_once_t onceToken;
-  dispatch_once(&onceToken, ^{
-    map = @{@"extraSmall": UIContentSizeCategoryExtraSmall,
-            @"small": UIContentSizeCategorySmall,
-            @"medium": UIContentSizeCategoryMedium,
-            @"large": UIContentSizeCategoryLarge,
-            @"extraLarge": UIContentSizeCategoryExtraLarge,
-            @"extraExtraLarge": UIContentSizeCategoryExtraExtraLarge,
-            @"extraExtraExtraLarge": UIContentSizeCategoryExtraExtraExtraLarge,
-            @"accessibilityMedium": UIContentSizeCategoryAccessibilityMedium,
-            @"accessibilityLarge": UIContentSizeCategoryAccessibilityLarge,
-            @"accessibilityExtraLarge": UIContentSizeCategoryAccessibilityExtraLarge,
-            @"accessibilityExtraExtraLarge": UIContentSizeCategoryAccessibilityExtraExtraLarge,
-            @"accessibilityExtraExtraExtraLarge": UIContentSizeCategoryAccessibilityExtraExtraExtraLarge};
-  });
-  return map[JSCategory];
-}
-=======
 NSString *const RCTAccessibilityManagerDidUpdateMultiplierNotification = @"RCTAccessibilityManagerDidUpdateMultiplierNotification";
->>>>>>> fb/0.62-stable:React/CoreModules/RCTAccessibilityManager.mm
 
 @interface RCTAccessibilityManager () <NativeAccessibilityManagerSpec>
 
@@ -370,11 +347,8 @@ RCT_EXPORT_METHOD(getCurrentVoiceOverState:(RCTResponseSenderBlock)onSuccess
 
 @end
 
-<<<<<<< HEAD:React/Modules/RCTAccessibilityManager.m
-#endif // TODO(macOS ISS#2323203)
-=======
 Class RCTAccessibilityManagerCls(void)
 {
   return RCTAccessibilityManager.class;
 }
->>>>>>> fb/0.62-stable:React/CoreModules/RCTAccessibilityManager.mm
+#endif // TODO(macOS ISS#2323203)

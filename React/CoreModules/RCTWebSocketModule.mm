@@ -14,11 +14,7 @@
 #import <React/RCTUtils.h>
 #import <React/RCTSRWebSocket.h>
 
-<<<<<<< HEAD:Libraries/WebSocket/RCTWebSocketModule.m
-#import <React/RCTSRWebSocket.h>
-=======
 #import "CoreModulesPlugins.h"
->>>>>>> fb/0.62-stable:React/CoreModules/RCTWebSocketModule.mm
 
 @implementation RCTSRWebSocket (React)
 

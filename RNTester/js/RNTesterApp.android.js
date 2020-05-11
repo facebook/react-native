@@ -36,35 +36,16 @@ const {
   useColorScheme,
   View,
 } = require('react-native');
-<<<<<<< HEAD
-const RNTesterActions = require('./utils/RNTesterActions');
-const RNTesterExampleContainer = require('./components/RNTesterExampleContainer');
-const RNTesterExampleList = require('./components/RNTesterExampleList');
-const RNTesterList = require('./utils/RNTesterList');
-const RNTesterNavigationReducer = require('./utils/RNTesterNavigationReducer');
-const URIActionMap = require('./utils/URIActionMap');
-
-const nativeImageSource = require('../../Libraries/Image/nativeImageSource');
-
-import type {RNTesterNavigationState} from './utils/RNTesterNavigationReducer';
-=======
 
 import type {RNTesterExample} from './types/RNTesterTypes';
 import type {RNTesterNavigationState} from './utils/RNTesterNavigationReducer';
 import {RNTesterThemeContext, themes} from './components/RNTesterTheme';
->>>>>>> fb/0.62-stable
 
 UIManager.setLayoutAnimationEnabledExperimental(true);
 
 const DRAWER_WIDTH_LEFT = 56;
 
-<<<<<<< HEAD
-type Props = {
-  exampleFromAppetizeParams?: ?string,
-};
-=======
 type Props = {exampleFromAppetizeParams?: ?string, ...};
->>>>>>> fb/0.62-stable
 
 const APP_STATE_KEY = 'RNTesterAppState.v2';
 
@@ -74,20 +55,6 @@ const HEADER_NAV_ICON = nativeImageSource({
   height: 48,
 });
 
-<<<<<<< HEAD
-const Header = ({title, onPressDrawer}) => {
-  return (
-    <View style={styles.toolbar}>
-      <View style={styles.toolbarCenter}>
-        <Text style={styles.title}>{title}</Text>
-      </View>
-      <View style={styles.toolbarLeft}>
-        <TouchableWithoutFeedback onPress={onPressDrawer}>
-          <Image source={HEADER_NAV_ICON} />
-        </TouchableWithoutFeedback>
-      </View>
-    </View>
-=======
 const Header = ({
   onPressDrawer,
   title,
@@ -197,7 +164,6 @@ const RNTesterExampleListViaHook = ({
         <RNTesterExampleList onNavigate={onNavigate} list={list} />
       </View>
     </RNTesterThemeContext.Provider>
->>>>>>> fb/0.62-stable
   );
 };
 
@@ -292,24 +258,6 @@ class RNTesterApp extends React.Component<Props, RNTesterNavigationState> {
         );
       } else if (ExampleModule) {
         return (
-<<<<<<< HEAD
-          <View style={styles.container}>
-            <Header
-              title={ExampleModule.title}
-              /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue
-               * was found when making Flow check .android.js files. */
-              onPressDrawer={() => this.drawer.openDrawer()}
-            />
-            <RNTesterExampleContainer
-              module={ExampleModule}
-              ref={example => {
-                /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue
-                 * was found when making Flow check .android.js files. */
-                this._exampleRef = example;
-              }}
-            />
-          </View>
-=======
           <RNTesterExampleContainerViaHook
             /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was found
              * when making Flow check .android.js files. */
@@ -322,26 +270,11 @@ class RNTesterApp extends React.Component<Props, RNTesterNavigationState> {
               this._exampleRef = example;
             }}
           />
->>>>>>> fb/0.62-stable
         );
       }
     }
 
     return (
-<<<<<<< HEAD
-      <View style={styles.container}>
-        <Header
-          title="RNTester"
-          /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue
-           * was found when making Flow check .android.js files. */
-          onPressDrawer={() => this.drawer.openDrawer()}
-        />
-        <RNTesterExampleList
-          onNavigate={this._handleAction}
-          list={RNTesterList}
-        />
-      </View>
-=======
       <RNTesterExampleListViaHook
         title={'RNTester'}
         /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was found
@@ -350,7 +283,6 @@ class RNTesterApp extends React.Component<Props, RNTesterNavigationState> {
         onNavigate={this._handleAction}
         list={RNTesterList}
       />
->>>>>>> fb/0.62-stable
     );
   }
 

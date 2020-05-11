@@ -18,13 +18,9 @@
 
 #import <React/RCTBaseTextInputShadowView.h>
 #import <React/RCTBaseTextInputView.h>
-<<<<<<< HEAD
 #if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
 #import <React/RCTConvert+Text.h>
 #endif // TODO(macOS ISS#2323203)
-=======
-#import <React/RCTConvert+Text.h>
->>>>>>> fb/0.62-stable
 
 @interface RCTBaseTextInputViewManager () <RCTUIManagerObserver>
 
@@ -57,11 +53,7 @@ RCT_REMAP_OSX_VIEW_PROPERTY(spellCheck, backedTextInputView.automaticSpellingCor
 RCT_REMAP_NOT_OSX_VIEW_PROPERTY(caretHidden, backedTextInputView.caretHidden, BOOL) // TODO(macOS ISS#2323203)
 RCT_REMAP_NOT_OSX_VIEW_PROPERTY(clearButtonMode, backedTextInputView.clearButtonMode, UITextFieldViewMode) // TODO(macOS ISS#2323203)
 RCT_REMAP_VIEW_PROPERTY(scrollEnabled, backedTextInputView.scrollEnabled, BOOL)
-<<<<<<< HEAD
-=======
-RCT_REMAP_VIEW_PROPERTY(secureTextEntry, backedTextInputView.secureTextEntry, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(autoFocus, BOOL)
->>>>>>> fb/0.62-stable
 RCT_EXPORT_VIEW_PROPERTY(blurOnSubmit, BOOL)
 RCT_EXPORT_NOT_OSX_VIEW_PROPERTY(clearTextOnFocus, BOOL) // TODO(macOS ISS#2323203)
 RCT_REMAP_NOT_OSX_VIEW_PROPERTY(keyboardType, backedTextInputView.keyboardType, UIKeyboardType) // TODO(macOS ISS#2323203)
@@ -87,15 +79,11 @@ RCT_EXPORT_SHADOW_PROPERTY(onContentSizeChange, RCTBubblingEventBlock)
 - (RCTShadowView *)shadowView
 {
   RCTBaseTextInputShadowView *shadowView = [[RCTBaseTextInputShadowView alloc] initWithBridge:self.bridge];
-<<<<<<< HEAD
 #if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
-  shadowView.textAttributes.fontSizeMultiplier = self.bridge.accessibilityManager.multiplier;
-#endif // TODO(macOS ISS#2323203)
-=======
   shadowView.textAttributes.fontSizeMultiplier = [[[self.bridge
                                                     moduleForName:@"AccessibilityManager"
                                                     lazilyLoadIfNecessary:YES] valueForKey:@"multiplier"] floatValue];
->>>>>>> fb/0.62-stable
+#endif // TODO(macOS ISS#2323203)
   [_shadowViews addObject:shadowView];
   return shadowView;
 }
@@ -111,20 +99,10 @@ RCT_EXPORT_SHADOW_PROPERTY(onContentSizeChange, RCTBubblingEventBlock)
 #if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
   [[NSNotificationCenter defaultCenter] addObserver:self
                                            selector:@selector(handleDidUpdateMultiplierNotification)
-<<<<<<< HEAD
-                                               name:RCTAccessibilityManagerDidUpdateMultiplierNotification
-                                             object:bridge.accessibilityManager];
-#endif // TODO(macOS ISS#2323203)
-}
-
-- (void)dealloc
-{
-  [[NSNotificationCenter defaultCenter] removeObserver:self];
-=======
                                                name:@"RCTAccessibilityManagerDidUpdateMultiplierNotification"
                                              object:[bridge moduleForName:@"AccessibilityManager"
                                                     lazilyLoadIfNecessary:YES]];
->>>>>>> fb/0.62-stable
+#endif // TODO(macOS ISS#2323203)
 }
 
 #pragma mark - RCTUIManagerObserver

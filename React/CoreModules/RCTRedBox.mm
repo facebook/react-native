@@ -71,8 +71,7 @@
 @end
 
 #if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
-@interface RCTRedBoxWindow : NSObject <UITableViewDelegate, UITableViewDataSource>
-@property (nonatomic, strong) UIViewController *rootViewController;
+@interface RCTRedBoxWindow : UIWindow <UITableViewDelegate, UITableViewDataSource>
 @property (nonatomic, weak) id<RCTRedBoxWindowActionDelegate> actionDelegate;
 @end
 
@@ -86,13 +85,6 @@
 
 - (instancetype)initWithFrame:(CGRect)frame customButtonTitles:(NSArray<NSString *>*)customButtonTitles customButtonHandlers:(NSArray<RCTRedBoxButtonPressHandler> *)customButtonHandlers
 {
-<<<<<<< HEAD:React/Modules/RCTRedBox.m
-    if ((self = [super init])) {
-        _rootViewController = [UIViewController new];
-        UIView *rootView = _rootViewController.view;
-        rootView.frame = frame;
-        rootView.backgroundColor = [UIColor blackColor];
-=======
     _lastErrorCookie = -1;
     if ((self = [super initWithFrame:frame])) {
 #if TARGET_OS_TV
@@ -107,7 +99,6 @@
         self.rootViewController = rootController;
         UIView *rootView = rootController.view;
         rootView.backgroundColor = [UIColor clearColor];
->>>>>>> fb/0.62-stable:React/CoreModules/RCTRedBox.mm
 
         const CGFloat buttonHeight = 60;
 
@@ -138,63 +129,10 @@
         NSString *extraText = @"Extra Info";
 #endif
 
-<<<<<<< HEAD:React/Modules/RCTRedBox.m
-        UIButton *dismissButton = [UIButton buttonWithType:UIButtonTypeCustom];
-        dismissButton.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleRightMargin;
-        dismissButton.accessibilityIdentifier = @"redbox-dismiss";
-        dismissButton.titleLabel.font = [UIFont systemFontOfSize:13];
-        dismissButton.titleLabel.lineBreakMode = NSLineBreakByWordWrapping;
-        dismissButton.titleLabel.textAlignment = NSTextAlignmentCenter;
-        dismissButton.backgroundColor = [UIColor colorWithRed:0.1 green:0.1 blue:0.1 alpha:1];
-        [dismissButton setTitle:dismissText forState:UIControlStateNormal];
-        [dismissButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-        [dismissButton setTitleColor:[UIColor colorWithWhite:1 alpha:0.5] forState:UIControlStateHighlighted];
-        [dismissButton addTarget:self action:@selector(dismiss) forControlEvents:UIControlEventTouchUpInside];
-
-        UIButton *reloadButton = [UIButton buttonWithType:UIButtonTypeCustom];
-        reloadButton.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleLeftMargin;
-        reloadButton.accessibilityIdentifier = @"redbox-reload";
-        reloadButton.titleLabel.font = [UIFont systemFontOfSize:13];
-        reloadButton.titleLabel.lineBreakMode = NSLineBreakByWordWrapping;
-        reloadButton.titleLabel.textAlignment = NSTextAlignmentCenter;
-        reloadButton.backgroundColor = [UIColor colorWithRed:0.1 green:0.1 blue:0.1 alpha:1];
-        [reloadButton setTitle:reloadText forState:UIControlStateNormal];
-        [reloadButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-        [reloadButton setTitleColor:[UIColor colorWithWhite:1 alpha:0.5] forState:UIControlStateHighlighted];
-        [reloadButton addTarget:self action:@selector(reload) forControlEvents:UIControlEventTouchUpInside];
-
-        UIButton *copyButton = [UIButton buttonWithType:UIButtonTypeCustom];
-        copyButton.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleLeftMargin;
-        copyButton.accessibilityIdentifier = @"redbox-copy";
-        copyButton.titleLabel.font = [UIFont systemFontOfSize:13];
-        copyButton.titleLabel.lineBreakMode = NSLineBreakByWordWrapping;
-        copyButton.titleLabel.textAlignment = NSTextAlignmentCenter;
-        copyButton.backgroundColor = [UIColor colorWithRed:0.1 green:0.1 blue:0.1 alpha:1];
-        [copyButton setTitle:copyText forState:UIControlStateNormal];
-        [copyButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-        [copyButton setTitleColor:[UIColor colorWithWhite:1 alpha:0.5] forState:UIControlStateHighlighted];
-        [copyButton addTarget:self action:@selector(copyStack) forControlEvents:UIControlEventTouchUpInside];
-
-        UIButton *extraButton = [UIButton buttonWithType:UIButtonTypeCustom];
-        extraButton.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleLeftMargin;
-        extraButton.accessibilityIdentifier = @"redbox-extra";
-        extraButton.titleLabel.font = [UIFont systemFontOfSize:13];
-        extraButton.titleLabel.lineBreakMode = NSLineBreakByWordWrapping;
-        extraButton.titleLabel.textAlignment = NSTextAlignmentCenter;
-        extraButton.backgroundColor = [UIColor colorWithRed:0.1 green:0.1 blue:0.1 alpha:1];
-        [extraButton setTitle:extraText forState:UIControlStateNormal];
-        [extraButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-        [extraButton setTitleColor:[UIColor colorWithWhite:1 alpha:0.5] forState:UIControlStateHighlighted];
-        [extraButton addTarget:self action:@selector(showExtraDataViewController) forControlEvents:UIControlEventTouchUpInside];
-
-        CGFloat buttonWidth = frame.size.width / 4;
-        CGFloat bottomButtonHeight = frame.size.height - buttonHeight - [self bottomSafeViewHeight];
-=======
         UIButton *dismissButton = [self redBoxButton:dismissText accessibilityIdentifier:@"redbox-dismiss" selector:@selector(dismiss) block:nil];
         UIButton *reloadButton = [self redBoxButton:reloadText accessibilityIdentifier:@"redbox-reload" selector:@selector(reload) block:nil];
         UIButton *copyButton = [self redBoxButton:copyText accessibilityIdentifier:@"redbox-copy" selector:@selector(copyStack) block:nil];
         UIButton *extraButton = [self redBoxButton:extraText accessibilityIdentifier:@"redbox-extra" selector:@selector(showExtraDataViewController) block:nil];
->>>>>>> fb/0.62-stable:React/CoreModules/RCTRedBox.mm
 
         CGFloat buttonWidth = self.bounds.size.width / (4 + [customButtonTitles count]);
         CGFloat bottomButtonHeight = self.bounds.size.height - buttonHeight - [self bottomSafeViewHeight];
@@ -278,10 +216,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
     NSString *messageWithoutAnsi = [self stripAnsi:message];
 
     // Show if this is a new message, or if we're updating the previous message
-<<<<<<< HEAD:React/Modules/RCTRedBox.m
-    BOOL hidden = !self.rootViewController.isBeingPresented;
-    if ((hidden && !isUpdate) || (!hidden && isUpdate && [_lastErrorMessage isEqualToString:messageWithoutAnsi])) {
-=======
     BOOL isNew = self.hidden && !isUpdate;
     BOOL isUpdateForSameMessage = !isNew && (
       !self.hidden && isUpdate && (
@@ -290,7 +224,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
       )
     );
     if (isNew || isUpdateForSameMessage) {
->>>>>>> fb/0.62-stable:React/CoreModules/RCTRedBox.mm
         _lastStackTrace = stack;
         // message is displayed using UILabel, which is unable to render text of
         // unlimited length, so we truncate it
@@ -299,7 +232,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 
         [_stackTraceTableView reloadData];
 
-        if (hidden) {
+        if (self.hidden) {
             [_stackTraceTableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]
                                         atScrollPosition:UITableViewScrollPositionTop
                                                 animated:NO];
@@ -968,15 +901,11 @@ RCT_EXPORT_MODULE()
 #pragma clang diagnostic pop
 
         if (!self->_window) {
-<<<<<<< HEAD:React/Modules/RCTRedBox.m
 #if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
-            self->_window = [[RCTRedBoxWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
+            self->_window = [[RCTRedBoxWindow alloc] initWithFrame:[UIScreen mainScreen].bounds customButtonTitles:self->_customButtonTitles customButtonHandlers:self->_customButtonHandlers];
 #else // [TODO(macOS ISS#2323203)
             self->_window = [RCTRedBoxWindow new];
 #endif // ]TODO(macOS ISS#2323203)
-=======
-            self->_window = [[RCTRedBoxWindow alloc] initWithFrame:[UIScreen mainScreen].bounds customButtonTitles:self->_customButtonTitles customButtonHandlers:self->_customButtonHandlers];
->>>>>>> fb/0.62-stable:React/CoreModules/RCTRedBox.mm
             self->_window.actionDelegate = self;
         }
 

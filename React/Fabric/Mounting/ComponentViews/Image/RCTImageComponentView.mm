@@ -55,13 +55,8 @@
 
 - (void)updateProps:(Props::Shared const &)props oldProps:(Props::Shared const &)oldProps
 {
-<<<<<<< HEAD
-  const auto &oldImageProps = *std::static_pointer_cast<const ImageProps>(_props);
-  const auto &newImageProps = *std::static_pointer_cast<const ImageProps>(props);
-=======
   auto const &oldImageProps = *std::static_pointer_cast<ImageProps const>(_props);
   auto const &newImageProps = *std::static_pointer_cast<ImageProps const>(props);
->>>>>>> fb/0.62-stable
 
   // `resizeMode`
   if (oldImageProps.resizeMode != newImageProps.resizeMode) {
@@ -84,11 +79,7 @@
 
 - (void)updateLocalData:(SharedLocalData)localData oldLocalData:(SharedLocalData)oldLocalData
 {
-<<<<<<< HEAD
-  auto imageLocalData = std::static_pointer_cast<const ImageLocalData>(localData);
-=======
   auto imageLocalData = std::static_pointer_cast<ImageLocalData const>(localData);
->>>>>>> fb/0.62-stable
 
   // This call (setting `coordinator`) must be unconditional (at the same block as setting `LocalData`)
   // because the setter stores a raw pointer to object that `LocalData` owns.
@@ -146,11 +137,6 @@
     // See for more info: T46311063.
     return;
   }
-<<<<<<< HEAD
-
-  std::static_pointer_cast<const ImageEventEmitter>(_eventEmitter)->onLoad();
-=======
->>>>>>> fb/0.62-stable
 
   std::static_pointer_cast<ImageEventEmitter const>(_eventEmitter)->onLoad();
   std::static_pointer_cast<ImageEventEmitter const>(_eventEmitter)->onLoadEnd();
@@ -183,32 +169,19 @@
     return;
   }
 
-<<<<<<< HEAD
-  std::static_pointer_cast<const ImageEventEmitter>(_eventEmitter)->onProgress(progress);
-=======
   std::static_pointer_cast<ImageEventEmitter const>(_eventEmitter)->onProgress(progress);
->>>>>>> fb/0.62-stable
 }
 
 - (void)didReceiveFailureFromObserver:(void const *)observer
 {
-<<<<<<< HEAD
-=======
   _imageView.image = nil;
 
->>>>>>> fb/0.62-stable
   if (!_eventEmitter) {
     return;
   }
 
-<<<<<<< HEAD
-  _imageView.image = nil;
-
-  std::static_pointer_cast<const ImageEventEmitter>(_eventEmitter)->onError();
-=======
   std::static_pointer_cast<ImageEventEmitter const>(_eventEmitter)->onError();
   std::static_pointer_cast<ImageEventEmitter const>(_eventEmitter)->onLoadEnd();
->>>>>>> fb/0.62-stable
 }
 
 @end

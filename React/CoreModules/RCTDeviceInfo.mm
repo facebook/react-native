@@ -7,13 +7,22 @@
 
 #import "RCTDeviceInfo.h"
 
-#import "RCTAccessibilityManager.h"
-#import "RCTAssert.h"
-#import "RCTEventDispatcher.h"
-#import "RCTUIUtils.h"
-#import "RCTUtils.h"
+#import <FBReactNativeSpec/FBReactNativeSpec.h>
+#import <React/RCTAccessibilityManager.h>
+#import <React/RCTAssert.h>
+#import <React/RCTConstants.h>
+#import <React/RCTEventDispatcher.h>
 #import <React/RCTUIKit.h> // TODO(macOS ISS#2323203)
+#import <React/RCTUIUtils.h>
+#import <React/RCTUtils.h>
 #import "UIView+React.h" // TODO(macOS ISS#2323203)
+
+#import "CoreModulesPlugins.h"
+
+using namespace facebook::react;
+
+@interface RCTDeviceInfo () <NativeDeviceInfoSpec>
+@end
 
 @implementation RCTDeviceInfo {
 #if !TARGET_OS_TV && !TARGET_OS_OSX // TODO(macOS ISS#2323203)
@@ -106,7 +115,7 @@ NSDictionary *RCTExportedDimensions(RCTPlatformView *rootView)
   RCTDimensions dimensions = RCTGetDimensions(rootView);
 #endif // ]TODO(macOS ISS#2323203)
 
-  typeof (dimensions.window) window = dimensions.window;
+  __typeof (dimensions.window) window = dimensions.window;
   NSDictionary<NSString *, NSNumber *> *dimsWindow = @{
       @"width": @(window.width),
       @"height": @(window.height),

@@ -117,7 +117,6 @@ RCT_EXPORT_METHOD(deleteValues:(NSArray<NSString *> *)keys)
   _ignoringUpdates = NO;
 }
 
-<<<<<<< HEAD:Libraries/Settings/RCTSettingsManager.m
 #if TARGET_OS_OSX // [TODO(macOS ISS#2323203)
 /**
  * Enable or disable monitoring of changes to NSUserDefaults
@@ -142,13 +141,11 @@ RCT_EXPORT_METHOD(setIsMonitoringEnabled:(BOOL)isEnabled)
   }
 }
 #endif // ]TODO(macOS ISS#2323203)
-=======
 - (std::shared_ptr<facebook::react::TurboModule>)getTurboModuleWithJsInvoker:
   (std::shared_ptr<facebook::react::CallInvoker>)jsInvoker
 {
   return std::make_shared<facebook::react::NativeSettingsManagerSpecJSI>(self, jsInvoker);
 }
->>>>>>> fb/0.62-stable:Libraries/Settings/RCTSettingsManager.mm
 
 @end
 

@@ -131,18 +131,12 @@ RCT_EXPORT_MODULE()
   _timers = [NSMutableDictionary new];
   _inBackground = NO;
 
-<<<<<<< HEAD:React/Modules/RCTTiming.m
 #if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
-  for (NSString *name in @[UIApplicationWillResignActiveNotification,
-                           UIApplicationDidEnterBackgroundNotification,
-                           UIApplicationWillTerminateNotification]) {
-=======
   for (NSString *name in @[
          UIApplicationWillResignActiveNotification,
          UIApplicationDidEnterBackgroundNotification,
          UIApplicationWillTerminateNotification
        ]) {
->>>>>>> fb/0.62-stable:React/CoreModules/RCTTiming.mm
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(appDidMoveToBackground)
                                                  name:name
@@ -155,12 +149,7 @@ RCT_EXPORT_MODULE()
                                                  name:name
                                                object:nil];
   }
-<<<<<<< HEAD:React/Modules/RCTTiming.m
 #endif // TODO(macOS ISS#2323203)
-
-  _bridge = bridge;
-=======
->>>>>>> fb/0.62-stable:React/CoreModules/RCTTiming.mm
 }
 
 - (void)dealloc

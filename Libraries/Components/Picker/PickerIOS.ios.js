@@ -15,7 +15,7 @@
 const React = require('react');
 const StyleSheet = require('../../StyleSheet/StyleSheet');
 const View = require('../View/View');
-
+const Platform = require('../../Utilities/Platform'); // TODO(macOS ISS#2323203)
 const processColor = require('../../StyleSheet/processColor');
 
 import RCTPickerNativeComponent, {
@@ -25,7 +25,7 @@ import type {TextStyleProp} from '../../StyleSheet/StyleSheet';
 import type {ColorValue} from '../../StyleSheet/StyleSheetTypes';
 import type {SyntheticEvent} from '../../Types/CoreEventTypes';
 import type {ViewProps} from '../View/ViewPropTypes';
-import type {NativeOrDynamicColorType} from '../../Color/NativeOrDynamicColorType'; // TODO(macOS ISS#2323203)
+import type {NativeOrDynamicColorType} from '../../StyleSheet/NativeOrDynamicColorType'; // TODO(macOS ISS#2323203)
 
 type PickerIOSChangeEvent = SyntheticEvent<
   $ReadOnly<{|

@@ -880,14 +880,6 @@ function InternalTextInput(props: Props): React.Node {
     selection,
   );
 
-  /**
-   * Returns the native `TextView` node.
-   */
-  getTextViewHandle: function(): any {
-    // [TODO(OSS Candidate ISS#2710739)
-    return ReactNative.findNodeHandle(this._setNativeRef);
-  }, // ]TODO(OSS Candidate ISS#2710739)
-
   // This is necessary in case native updates the text and JS decides
   // that the update should be ignored and we should stick with the value
   // that we have in JS.
@@ -1064,7 +1056,10 @@ function InternalTextInput(props: Props): React.Node {
     // This is a hack to let Flow know we want an exact object
   |} = {...null};
 
-  if (Platform.OS === 'ios' || Platform.OS === 'macos' /* TODO(macOS ISS#2323203) */) {
+  if (
+    Platform.OS === 'ios' ||
+    Platform.OS === 'macos' /* TODO(macOS ISS#2323203) */
+  ) {
     const RCTTextInputView = props.multiline
       ? RCTMultilineTextInputView
       : RCTSinglelineTextInputView;

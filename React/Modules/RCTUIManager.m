@@ -9,14 +9,8 @@
 
 #import <AVFoundation/AVFoundation.h>
 
-<<<<<<< HEAD
 #import <yoga/Yoga.h> // TODO(macOS ISS#2323203)
 
-#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
-#import "RCTAccessibilityManager.h"
-#endif // TODO(macOS ISS#2323203)
-=======
->>>>>>> fb/0.62-stable
 #import "RCTAssert.h"
 #import "RCTBridge+Private.h"
 #import "RCTBridge.h"
@@ -102,16 +96,6 @@ RCT_EXPORT_MODULE()
   return NO;
 }
 
-<<<<<<< HEAD
-#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
-- (void)dealloc
-{
-  [NSNotificationCenter.defaultCenter removeObserver:self];
-}
-#endif // TODO(macOS ISS#2323203)
-
-=======
->>>>>>> fb/0.62-stable
 - (void)invalidate
 {
   /**
@@ -1139,11 +1123,7 @@ RCT_EXPORT_METHOD(dispatchViewManagerCommand:(nonnull NSNumber *)reactTag
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wundeclared-selector"
   if (!componentData) {
-<<<<<<< HEAD
-      __block RCTPlatformView *view; // TODO(macOS ISS#2323203)
-=======
-    __block UIView *view;
->>>>>>> fb/0.62-stable
+    __block RCTPlatformView *view; // TODO(macOS ISS#2323203)
     RCTUnsafeExecuteOnMainQueueSync(^{
       view = self->_viewRegistry[reactTag];
     });

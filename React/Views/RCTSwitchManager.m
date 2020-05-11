@@ -45,9 +45,7 @@ RCT_EXPORT_MODULE()
 #endif // ]TODO(macOS ISS#2323203)
 }
 
-<<<<<<< HEAD
 #if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
-=======
 RCT_EXPORT_METHOD(setValue : (nonnull NSNumber *)viewTag toValue : (BOOL)value)
 {
   [self.bridge.uiManager addUIBlock:^(RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry) {
@@ -66,7 +64,6 @@ RCT_EXPORT_METHOD(setValue : (nonnull NSNumber *)viewTag toValue : (BOOL)value)
   }];
 }
 
->>>>>>> fb/0.62-stable
 RCT_EXPORT_VIEW_PROPERTY(onTintColor, UIColor);
 RCT_EXPORT_VIEW_PROPERTY(tintColor, UIColor);
 RCT_EXPORT_VIEW_PROPERTY(thumbTintColor, UIColor);

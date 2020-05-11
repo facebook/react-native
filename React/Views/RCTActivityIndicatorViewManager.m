@@ -33,30 +33,18 @@ RCT_EXPORT_MODULE()
 
 RCT_EXPORT_VIEW_PROPERTY(color, UIColor)
 RCT_EXPORT_VIEW_PROPERTY(hidesWhenStopped, BOOL)
-<<<<<<< HEAD
 RCT_CUSTOM_VIEW_PROPERTY(size, UIActivityIndicatorViewStyle, RCTActivityIndicatorView) // TODO(macOS ISS#2323203)
-=======
-RCT_CUSTOM_VIEW_PROPERTY(size, UIActivityIndicatorViewStyle, UIActivityIndicatorView)
->>>>>>> fb/0.62-stable
 {
   /*
     Setting activityIndicatorViewStyle overrides the color, so restore the original color
     after setting the indicator style.
   */
-<<<<<<< HEAD
   RCTUIColor *oldColor = view.color; // TODO(macOS ISS#2323203)
-=======
-  UIColor *oldColor = view.color;
->>>>>>> fb/0.62-stable
   view.activityIndicatorViewStyle = json ? [RCTConvert UIActivityIndicatorViewStyle: json] : defaultView.activityIndicatorViewStyle;
   view.color = oldColor;
 }
 
-<<<<<<< HEAD
 RCT_CUSTOM_VIEW_PROPERTY(animating, BOOL, RCTActivityIndicatorView) // TODO(macOS ISS#2323203)
-=======
-RCT_CUSTOM_VIEW_PROPERTY(animating, BOOL, UIActivityIndicatorView)
->>>>>>> fb/0.62-stable
 {
   BOOL animating = json ? [RCTConvert BOOL:json] : [defaultView isAnimating];
   if (animating != [view isAnimating]) {

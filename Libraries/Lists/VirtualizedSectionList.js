@@ -18,14 +18,11 @@ const Platform = require('../Utilities/Platform'); // TODO(macOS ISS#2323203)
 const invariant = require('invariant');
 
 import type {ViewToken} from './ViewabilityHelper';
-<<<<<<< HEAD
 import type {
   Props as VirtualizedListProps,
   SelectedRowIndexPathType, // TODO(macOS ISS#2323203)
 } from './VirtualizedList';
 import type {ScrollEvent} from '../Types/CoreEventTypes'; // TODO(macOS ISS#2323203)
-=======
->>>>>>> fb/0.62-stable
 
 type Item = any;
 
@@ -62,25 +59,13 @@ type RequiredProps<SectionT: SectionBase<any>> = {|
   sections: $ReadOnlyArray<SectionT>,
 |};
 
-<<<<<<< HEAD
-type OptionalProps<SectionT: SectionBase<any>> = {
+type OptionalProps<SectionT: SectionBase<any>> = {|
   /**
    * Handles key down events and updates selection based on the key event
    *
    * @platform macos
    */
   enableSelectionOnKeyPress?: ?boolean, // TODO(macOS ISS#2323203)
-  /**
-   * Rendered after the last item in the last section.
-   */
-  ListFooterComponent?: ?(React.ComponentType<any> | React.Element<any>),
-  /**
-   * Rendered at the very beginning of the list.
-   */
-  ListHeaderComponent?: ?(React.ComponentType<any> | React.Element<any>),
-=======
-type OptionalProps<SectionT: SectionBase<any>> = {|
->>>>>>> fb/0.62-stable
   /**
    * Default renderer for every item in every section.
    */
@@ -124,15 +109,8 @@ type OptionalProps<SectionT: SectionBase<any>> = {|
    * Makes section headers stick to the top of the screen until the next one pushes it off. Only
    * enabled by default on iOS because that is the platform standard there.
    */
-<<<<<<< HEAD
-  disableVirtualization?: ?boolean,
-  keyExtractor: (item: Item, index: number) => string,
-  onEndReached?: ?({distanceFromEnd: number}) => void,
-  /**
-   * If provided, a standard RefreshControl will be added for "Pull to Refresh" functionality. Make
-   * sure to also set the `refreshing` prop correctly.
-   */
-  onRefresh?: ?() => void,
+  stickySectionHeadersEnabled?: boolean,
+  onEndReached?: ?({distanceFromEnd: number, ...}) => void,
   /**
    * If provided, processes key press and mouse click events to update selection state
    * and invokes the provided function to notify of selection state changes.
@@ -146,26 +124,6 @@ type OptionalProps<SectionT: SectionBase<any>> = {|
    * @platform macos
    */
   onSelectionEntered?: ?Function, // TODO(macOS ISS#2323203)
-  /**
-   * Called when the viewability of rows changes, as defined by the
-   * `viewabilityConfig` prop.
-   */
-  onViewableItemsChanged?: ?({
-    viewableItems: Array<ViewToken>,
-    changed: Array<ViewToken>,
-  }) => void,
-  /**
-   * Set this true while waiting for new data from a refresh.
-   */
-  refreshing?: ?boolean,
-};
-
-export type Props<SectionT> = RequiredProps<SectionT> &
-  OptionalProps<SectionT> &
-  VirtualizedListProps;
-=======
-  stickySectionHeadersEnabled?: boolean,
-  onEndReached?: ?({distanceFromEnd: number, ...}) => void,
 |};
 
 type VirtualizedListProps = React.ElementProps<typeof VirtualizedList>;
@@ -178,7 +136,6 @@ export type Props<SectionT> = {|
     {renderItem: $PropertyType<VirtualizedListProps, 'renderItem'>, ...},
   >,
 |};
->>>>>>> fb/0.62-stable
 export type ScrollToLocationParamsType = {|
   animated?: ?boolean,
   itemIndex: number,
@@ -192,14 +149,11 @@ type DefaultProps = {|
   data: $ReadOnlyArray<Item>,
 |};
 
-<<<<<<< HEAD
 type State = {
   childProps: VirtualizedListProps,
   selectedRowIndexPath: SelectedRowIndexPathType, // TODO(macOS ISS#2323203)
+  ...
 };
-=======
-type State = {childProps: VirtualizedListProps, ...};
->>>>>>> fb/0.62-stable
 
 /**
  * Right now this just flattens everything into one list and uses VirtualizedList under the
@@ -295,7 +249,6 @@ class VirtualizedSectionList<
       return rowIndexPath;
     }
 
-<<<<<<< HEAD
     let row = rowIndexPath.rowIndex;
     let rowAbove = row - 1;
 
@@ -401,9 +354,6 @@ class VirtualizedSectionList<
     }
     const preferredScrollerStyleDidChangeHandler = this.props
       .onPreferredScrollerStyleDidChange; // ]TODO(macOS ISS#2323203)
-=======
-  render(): React.Node {
->>>>>>> fb/0.62-stable
     return (
       <VirtualizedList
         {...this.state.childProps}
@@ -544,7 +494,6 @@ class VirtualizedSectionList<
     }
   };
 
-<<<<<<< HEAD
   // [TODO(macOS ISS#2323203)
   _isItemSelected = (item: Item): boolean => {
     let isSelected = false;
@@ -563,10 +512,7 @@ class VirtualizedSectionList<
   };
   // ]TODO(macOS ISS#2323203)
 
-  _renderItem = ({item, index}: {item: Item, index: number}) => {
-=======
   _renderItem = ({item, index}: {item: Item, index: number, ...}) => {
->>>>>>> fb/0.62-stable
     const info = this._subExtractor(index);
     if (!info) {
       return null;

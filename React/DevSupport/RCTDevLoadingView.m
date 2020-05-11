@@ -11,14 +11,10 @@
 
 #import <React/RCTBridge.h>
 #import <React/RCTDefines.h>
-<<<<<<< HEAD
 #import <React/RCTDevSettings.h> // TODO(OSS Candidate ISS#2710739)
 #if !TARGET_OS_OSX
 #import <React/RCTModalHostViewController.h>
 #endif // !TARGET_OS_OSX
-=======
-#import <React/RCTModalHostViewController.h>
->>>>>>> fb/0.62-stable
 #import <React/RCTUtils.h>
 
 #if RCT_DEV | RCT_ENABLE_LOADING_VIEW
@@ -170,34 +166,20 @@ RCT_EXPORT_METHOD(hide)
 
 - (void)showWithURL:(NSURL *)URL
 {
-<<<<<<< HEAD
-  RCTUIColor *color; // TODO(OSS Candidate ISS#2710739)
-  RCTUIColor *backgroundColor; // TODO(OSS Candidate ISS#2710739)
-=======
   UIColor *color;
   UIColor *backgroundColor;
->>>>>>> fb/0.62-stable
   NSString *message;
   if (URL.fileURL) {
     // If dev mode is not enabled, we don't want to show this kind of notification
 #if !RCT_DEV
     return;
 #endif
-<<<<<<< HEAD
     color = [RCTUIColor whiteColor]; //TODO(OSS Candidate ISS#2710739) UIColor -> RCTUIColor
     backgroundColor = [RCTUIColor blackColor]; // TODO(OSS Candidate ISS#2710739)
-      message = [NSString stringWithFormat:@"Connect to %@ to develop JavaScript.", RCT_PACKAGER_NAME];
+    message = [NSString stringWithFormat:@"Connect to %@ to develop JavaScript.", RCT_PACKAGER_NAME];
   } else {
     color = [RCTUIColor whiteColor]; // TODO(OSS Candidate ISS#2710739)
     backgroundColor = [RCTUIColor colorWithHue:1./3 saturation:1 brightness:.35 alpha:1]; // TODO(OSS Candidate ISS#2710739)
-=======
-    color = [UIColor whiteColor];
-    backgroundColor = [UIColor blackColor];
-      message = [NSString stringWithFormat:@"Connect to %@ to develop JavaScript.", RCT_PACKAGER_NAME];
-  } else {
-    color = [UIColor whiteColor];
-    backgroundColor = [UIColor colorWithHue:1./3 saturation:1 brightness:.35 alpha:1];
->>>>>>> fb/0.62-stable
     message = [NSString stringWithFormat:@"Loading from %@:%@...", URL.host, URL.port];
   }
 

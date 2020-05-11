@@ -11,7 +11,6 @@
 #import <React/UIView+React.h>
 
 #import <React/RCTBackedTextInputDelegateAdapter.h>
-<<<<<<< HEAD
 #import <React/RCTBackedTextInputDelegate.h> // TODO(OSS Candidate ISS#2710739)
 #import <React/RCTTextAttributes.h>
 
@@ -75,16 +74,12 @@
 
 @end
 #endif // ]TODO(macOS ISS#2323203)
-=======
-#import <React/RCTTextAttributes.h>
->>>>>>> fb/0.62-stable
 
 @implementation RCTUITextField {
   RCTBackedTextFieldDelegateAdapter *_textInputDelegateAdapter;
   NSDictionary<NSAttributedStringKey, id> *_defaultTextAttributes;
 }
 
-<<<<<<< HEAD
 #if TARGET_OS_OSX // [TODO(macOS ISS#2323203)
 @dynamic delegate;
 
@@ -101,10 +96,6 @@ static RCTUIColor *defaultPlaceholderTextColor()
 
 #endif // ]TODO(macOS ISS#2323203)
 
-@synthesize reactTextAttributes = _reactTextAttributes;
-
-=======
->>>>>>> fb/0.62-stable
 - (instancetype)initWithFrame:(CGRect)frame
 {
   if (self = [super initWithFrame:frame]) {
@@ -236,31 +227,10 @@ static RCTUIColor *defaultPlaceholderTextColor()
   [self _updatePlaceholder];
 }
 
-<<<<<<< HEAD
-- (NSString*)placeholder // [TODO(macOS ISS#2323203)
-{
-#if !TARGET_OS_OSX 
-  return super.placeholder;
-#else
-  return self.placeholderAttributedString.string ?: self.placeholderString;
-#endif
-} // ]TODO(macOS ISS#2323203)
-
-- (void)setReactTextAttributes:(RCTTextAttributes *)reactTextAttributes
-{
-  if ([reactTextAttributes isEqual:_reactTextAttributes]) {
-    return;
-  }
-#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
-  self.defaultTextAttributes = reactTextAttributes.effectiveTextAttributes;
-#endif // TODO(macOS ISS#2323203)
-  _reactTextAttributes = reactTextAttributes;
-=======
 - (void)setDefaultTextAttributes:(NSDictionary<NSAttributedStringKey, id> *)defaultTextAttributes
 {
   _defaultTextAttributes = defaultTextAttributes;
   [super setDefaultTextAttributes:defaultTextAttributes];
->>>>>>> fb/0.62-stable
   [self _updatePlaceholder];
 }
 
@@ -271,30 +241,8 @@ static RCTUIColor *defaultPlaceholderTextColor()
 
 - (void)_updatePlaceholder
 {
-<<<<<<< HEAD
-  if (self.placeholder == nil) {
-    return;
-  }
-
-  NSMutableDictionary *attributes = [NSMutableDictionary new];
-#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
-  if (_placeholderColor) {
-    [attributes setObject:_placeholderColor forKey:NSForegroundColorAttributeName];
-  }
-
-  self.attributedPlaceholder = [[NSAttributedString alloc] initWithString:self.placeholder
-                                                               attributes:attributes];
-#else // [TODO(macOS ISS#2323203)
-  attributes[NSForegroundColorAttributeName] = _placeholderColor ?: defaultPlaceholderTextColor();
-  attributes[NSFontAttributeName] = self.font ?: defaultPlaceholderFont();
-  
-  self.placeholderAttributedString = [[NSAttributedString alloc] initWithString:self.placeholder
-                                                                     attributes:attributes];
-#endif // ]TODO(macOS ISS#2323203)
-=======
   self.attributedPlaceholder = [[NSAttributedString alloc] initWithString:self.placeholder ?: @""
                                                                attributes:[self _placeholderTextAttributes]];
->>>>>>> fb/0.62-stable
 }
 
 - (BOOL)isEditable
@@ -345,11 +293,16 @@ static RCTUIColor *defaultPlaceholderTextColor()
 {
   NSMutableDictionary<NSAttributedStringKey, id> *textAttributes = [_defaultTextAttributes mutableCopy] ?: [NSMutableDictionary new];
 
+#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
   if (self.placeholderColor) {
     [textAttributes setValue:self.placeholderColor forKey:NSForegroundColorAttributeName];
   } else {
     [textAttributes removeObjectForKey:NSForegroundColorAttributeName];
   }
+#else // [TODO(macOS ISS#2323203)
+  textAttributes[NSForegroundColorAttributeName] = _placeholderColor ?: defaultPlaceholderTextColor();
+  textAttributes[NSFontAttributeName] = self.font ?: defaultPlaceholderFont();
+#endif // ]TODO(macOS ISS#2323203)
 
   return textAttributes;
 }
@@ -441,10 +394,7 @@ static RCTUIColor *defaultPlaceholderTextColor()
 
 #pragma mark - Overrides
 
-<<<<<<< HEAD
 #if !TARGET_OS_OSX
-=======
->>>>>>> fb/0.62-stable
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-implementations"
 // Overrides selectedTextRange setter to get notify when selectedTextRange changed.
@@ -454,7 +404,6 @@ static RCTUIColor *defaultPlaceholderTextColor()
   [_textInputDelegateAdapter selectedTextRangeWasSet];
 }
 #pragma clang diagnostic pop
-<<<<<<< HEAD
 #endif // !TARGET_OS_OSX
 
 #if TARGET_OS_OSX // [TODO(macOS ISS#2323203)
@@ -482,9 +431,6 @@ static RCTUIColor *defaultPlaceholderTextColor()
 #endif // ]TODO(macOS ISS#2323203)
 	
 #if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
-=======
-
->>>>>>> fb/0.62-stable
 - (void)setSelectedTextRange:(UITextRange *)selectedTextRange notifyDelegate:(BOOL)notifyDelegate
 {
   if (!notifyDelegate) {
@@ -531,13 +477,8 @@ static RCTUIColor *defaultPlaceholderTextColor()
 {
   // Note: `placeholder` defines intrinsic size for `<TextInput>`.
   NSString *text = self.placeholder ?: @"";
-<<<<<<< HEAD
-  
 #if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
-  CGSize size = [text sizeWithAttributes:[self placeholderEffectiveTextAttributes]];
-=======
   CGSize size = [text sizeWithAttributes:[self _placeholderTextAttributes]];
->>>>>>> fb/0.62-stable
   size = CGSizeMake(RCTCeilPixelValue(size.width), RCTCeilPixelValue(size.height));
 #else // [TODO(macOS ISS#2323203)
   CGSize size = [text sizeWithAttributes:@{NSFontAttributeName: self.font}];

@@ -21,13 +21,9 @@
 #import "RCTComponentViewClassDescriptor.h"
 #import "RCTFabricComponentsPlugins.h"
 #import "RCTImageComponentView.h"
-<<<<<<< HEAD
-#import "RCTModalHostViewComponentView.h"
-=======
 #import "RCTLegacyViewManagerInteropComponentView.h"
 #import "RCTModalHostViewComponentView.h"
 #import "RCTMountingTransactionObserving.h"
->>>>>>> fb/0.62-stable
 #import "RCTParagraphComponentView.h"
 #import "RCTPullToRefreshViewComponentView.h"
 #import "RCTRootComponentView.h"
@@ -36,11 +32,8 @@
 #import "RCTUnimplementedNativeComponentView.h"
 #import "RCTUnimplementedViewComponentView.h"
 #import "RCTViewComponentView.h"
-<<<<<<< HEAD
-=======
 
 #import <objc/runtime.h>
->>>>>>> fb/0.62-stable
 
 using namespace facebook::react;
 
@@ -56,10 +49,6 @@ using namespace facebook::react;
 
   [componentViewFactory registerComponentViewClass:[RCTViewComponentView class]];
   [componentViewFactory registerComponentViewClass:[RCTRootComponentView class]];
-<<<<<<< HEAD
-  [componentViewFactory registerComponentViewClass:[RCTScrollViewComponentView class]];
-=======
->>>>>>> fb/0.62-stable
   [componentViewFactory registerComponentViewClass:[RCTPullToRefreshViewComponentView class]];
   [componentViewFactory registerComponentViewClass:[RCTImageComponentView class]];
   [componentViewFactory registerComponentViewClass:[RCTParagraphComponentView class]];
@@ -68,8 +57,6 @@ using namespace facebook::react;
   [componentViewFactory registerComponentViewClass:[RCTSwitchComponentView class]];
   [componentViewFactory registerComponentViewClass:[RCTUnimplementedNativeComponentView class]];
   [componentViewFactory registerComponentViewClass:[RCTModalHostViewComponentView class]];
-<<<<<<< HEAD
-=======
   [componentViewFactory registerComponentViewClass:[RCTARTSurfaceViewComponentView class]];
 
   auto providerRegistry = &componentViewFactory->_providerRegistry;
@@ -111,7 +98,6 @@ using namespace facebook::react;
     componentViewFactory->_componentViewClasses[componentHandle] =
         [componentViewFactory _componentViewClassDescriptorFromClass:[RCTUnimplementedViewComponentView class]];
   });
->>>>>>> fb/0.62-stable
 
   return componentViewFactory;
 }

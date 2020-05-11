@@ -18,10 +18,7 @@
 #import <React/RCTInputAccessoryViewContent.h>
 #import <React/RCTTextAttributes.h>
 #import <React/RCTTextSelection.h>
-<<<<<<< HEAD
 #import "../RCTTextUIKit.h" // TODO(macOS ISS#2323203)
-=======
->>>>>>> fb/0.62-stable
 
 @implementation RCTBaseTextInputView {
   __weak RCTBridge *_bridge;
@@ -71,19 +68,10 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
 
 - (void)enforceTextAttributesIfNeeded
 {
-<<<<<<< HEAD
   if (![self ignoresTextAttributes]) { // TODO(OSS Candidate ISS#2710739)
     id<RCTBackedTextInputViewProtocol> backedTextInputView = self.backedTextInputView;
-    if (backedTextInputView.attributedText.string.length != 0) {
-      return;
-    }
-
-    backedTextInputView.reactTextAttributes = _textAttributes;
+    backedTextInputView.defaultTextAttributes = [_textAttributes effectiveTextAttributes];
   } // TODO(OSS Candidate ISS#2710739)
-=======
-  id<RCTBackedTextInputViewProtocol> backedTextInputView = self.backedTextInputView;
-  backedTextInputView.defaultTextAttributes = [_textAttributes effectiveTextAttributes];
->>>>>>> fb/0.62-stable
 }
 
 - (void)setReactPaddingInsets:(UIEdgeInsets)reactPaddingInsets
@@ -312,10 +300,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
   #endif
 }
 
-<<<<<<< HEAD
 #if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
-=======
->>>>>>> fb/0.62-stable
 
 - (void)setPasswordRules:(NSString *)descriptor
 {
@@ -344,32 +329,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
 }
 #endif // TODO(macOS ISS#2323203)
 
-<<<<<<< HEAD
-- (BOOL)secureTextEntry {
-#if !TARGET_OS_OSX // TODO(macOS ISS#2323203) // On Mac, this can be achieved by using an NSSecureTextField instead of an NSTextField
-  return self.backedTextInputView.secureTextEntry;
-#else // TODO(macOS ISS#2323203)
-  return NO; // TODO(macOS ISS#2323203)
-#endif // TODO(macOS ISS#2323203)
-}
-
-- (void)setSecureTextEntry:(BOOL)secureTextEntry {
-#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
-  UIView<RCTBackedTextInputViewProtocol> *textInputView = self.backedTextInputView;
-    
-  if (textInputView.secureTextEntry != secureTextEntry) {
-    textInputView.secureTextEntry = secureTextEntry;
-      
-    // Fix #5859, see https://stackoverflow.com/questions/14220187/uitextfield-has-trailing-whitespace-after-securetextentry-toggle/22537788#22537788
-    NSAttributedString *originalText = [textInputView.attributedText copy];
-    self.backedTextInputView.attributedText = [NSAttributedString new];
-    self.backedTextInputView.attributedText = originalText;
-  }
-#endif // TODO(macOS ISS#2323203)
-}
-
-=======
->>>>>>> fb/0.62-stable
 #pragma mark - RCTBackedTextInputDelegate
 
 - (BOOL)textInputShouldBeginEditing

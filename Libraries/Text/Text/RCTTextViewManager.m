@@ -46,20 +46,10 @@ RCT_EXPORT_VIEW_PROPERTY(selectable, BOOL)
 #if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
   [[NSNotificationCenter defaultCenter] addObserver:self
                                            selector:@selector(handleDidUpdateMultiplierNotification)
-<<<<<<< HEAD
-                                               name:RCTAccessibilityManagerDidUpdateMultiplierNotification
-                                             object:bridge.accessibilityManager];
-#endif // TODO(macOS ISS#2323203)
-}
-
-- (void)dealloc
-{
-  [[NSNotificationCenter defaultCenter] removeObserver:self];
-=======
                                                name:@"RCTAccessibilityManagerDidUpdateMultiplierNotification"
                                              object:[bridge moduleForName:@"AccessibilityManager"
                                                     lazilyLoadIfNecessary:YES]];
->>>>>>> fb/0.62-stable
+#endif // TODO(macOS ISS#2323203)
 }
 
 - (RCTUIView *)view // TODO(macOS ISS#3536887)
@@ -70,14 +60,10 @@ RCT_EXPORT_VIEW_PROPERTY(selectable, BOOL)
 - (RCTShadowView *)shadowView
 {
   RCTTextShadowView *shadowView = [[RCTTextShadowView alloc] initWithBridge:self.bridge];
-<<<<<<< HEAD
 #if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
-  shadowView.textAttributes.fontSizeMultiplier = self.bridge.accessibilityManager.multiplier;
-#endif // TODO(macOS ISS#2323203)
-=======
   shadowView.textAttributes.fontSizeMultiplier = [[[self.bridge moduleForName:@"AccessibilityManager"]
                                                    valueForKey:@"multiplier"] floatValue];
->>>>>>> fb/0.62-stable
+#endif // TODO(macOS ISS#2323203)
   [_shadowViews addObject:shadowView];
   return shadowView;
 }

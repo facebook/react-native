@@ -179,10 +179,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:unused)
   return RCTRecursiveAccessibilityLabel(self);
 }
 
-<<<<<<< HEAD
 #if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
-=======
->>>>>>> fb/0.62-stable
 - (NSArray <UIAccessibilityCustomAction *> *)accessibilityCustomActions
 {
   if (!self.accessibilityActions.count) {
@@ -327,29 +324,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:unused)
       [valueComponents addObject:[NSString stringWithFormat:@"%d percent", val]];
     }
   }
-<<<<<<< HEAD
-  for (NSString *state in self.accessibilityState) {
-    id val = self.accessibilityState[state];
-    if (!val) {
-      continue;
-    }
-    if ([state isEqualToString:@"checked"]) {
-      if ([val isKindOfClass:[NSNumber class]]) {
-        [valueComponents addObject:stateDescriptions[[val boolValue] ? @"checked" : @"unchecked"]];
-      } else if ([val isKindOfClass:[NSString class]] && [val isEqualToString:@"mixed"]) {
-        [valueComponents addObject:stateDescriptions[@"mixed"]];
-      }
-    }
-    if ([state isEqualToString:@"expanded"] && [val isKindOfClass:[NSNumber class]]) {
-      [valueComponents addObject:stateDescriptions[[val boolValue] ? @"expanded" : @"collapsed"]];
-    }
-    if ([state isEqualToString:@"busy"] && [val isKindOfClass:[NSNumber class]] && [val boolValue]) {
-      [valueComponents addObject:stateDescriptions[@"busy"]];
-    }
-  }
-=======
-
->>>>>>> fb/0.62-stable
   if (valueComponents.count > 0) {
     return [valueComponents componentsJoinedByString:@", "];
   }

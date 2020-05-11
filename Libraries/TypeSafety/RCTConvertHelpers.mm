@@ -1,8 +1,4 @@
-<<<<<<< HEAD
-/**
-=======
 /*
->>>>>>> fb/0.62-stable
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -20,11 +16,7 @@ bool RCTBridgingToBool(id value)
 
 folly::Optional<bool> RCTBridgingToOptionalBool(id value)
 {
-<<<<<<< HEAD
-  if (!value) {
-=======
   if (!RCTNilIfNull(value)) {
->>>>>>> fb/0.62-stable
     return {};
   }
   return RCTBridgingToBool(value);
@@ -37,11 +29,7 @@ NSString *RCTBridgingToString(id value)
 
 folly::Optional<double> RCTBridgingToOptionalDouble(id value)
 {
-<<<<<<< HEAD
-  if (!value) {
-=======
   if (!RCTNilIfNull(value)) {
->>>>>>> fb/0.62-stable
     return {};
   }
   return RCTBridgingToDouble(value);

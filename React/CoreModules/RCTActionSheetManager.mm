@@ -13,14 +13,6 @@
 #import <React/RCTUIManager.h>
 #import <React/RCTUtils.h>
 
-<<<<<<< HEAD:Libraries/ActionSheetIOS/RCTActionSheetManager.m
-@interface RCTActionSheetManager ()
-#if !TARGET_OS_OSX // [TODO(macOS ISS#2323203)
-<UIActionSheetDelegate>
-#else
-<NSSharingServicePickerDelegate>
-#endif // ]TODO(macOS ISS#2323203)
-=======
 #import <FBReactNativeSpec/FBReactNativeSpec.h>
 #import <RCTTypeSafety/RCTConvertHelpers.h>
 
@@ -28,8 +20,13 @@
 
 using namespace facebook::react;
 
-@interface RCTActionSheetManager () <UIActionSheetDelegate, NativeActionSheetManagerSpec>
->>>>>>> fb/0.62-stable:React/CoreModules/RCTActionSheetManager.mm
+@interface RCTActionSheetManager () <
+#if !TARGET_OS_OSX // [TODO(macOS ISS#2323203)
+UIActionSheetDelegate
+#else
+NSSharingServicePickerDelegate
+#endif // ]TODO(macOS ISS#2323203)
+, NativeActionSheetManagerSpec>
 @end
 
 @implementation RCTActionSheetManager
@@ -87,29 +84,18 @@ RCT_EXPORT_METHOD(showActionSheetWithOptions:(JS::NativeActionSheetManager::Spec
     _callbacks = [NSMapTable strongToStrongObjectsMapTable];
   }
 
-<<<<<<< HEAD:Libraries/ActionSheetIOS/RCTActionSheetManager.m
-  NSString *title = [RCTConvert NSString:options[@"title"]];
-#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
-  NSString *message = [RCTConvert NSString:options[@"message"]];
-#endif // TODO(macOS ISS#2323203)
-  NSArray<NSString *> *buttons = [RCTConvert NSStringArray:options[@"options"]];
-  NSInteger cancelButtonIndex = options[@"cancelButtonIndex"] ? [RCTConvert NSInteger:options[@"cancelButtonIndex"]] : -1;
-=======
   NSString *title = options.title();
+#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
   NSString *message = options.message();
+#endif // TODO(macOS ISS#2323203)
   NSArray<NSString *> *buttons = RCTConvertOptionalVecToArray(options.options(), ^id(NSString *element) { return element; });
   NSInteger cancelButtonIndex = options.cancelButtonIndex() ? [RCTConvert NSInteger:@(*options.cancelButtonIndex())] : -1;
->>>>>>> fb/0.62-stable:React/CoreModules/RCTActionSheetManager.mm
   NSArray<NSNumber *> *destructiveButtonIndices;
   if (options.destructiveButtonIndices()) {
     destructiveButtonIndices = RCTConvertVecToArray(*options.destructiveButtonIndices(), ^id(double element) { return @(element); });
   } else {
-<<<<<<< HEAD:Libraries/ActionSheetIOS/RCTActionSheetManager.m
 #if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
-    NSNumber *destructiveButtonIndex = options[@"destructiveButtonIndex"] ? [RCTConvert NSNumber:options[@"destructiveButtonIndex"]] : @-1;
-=======
     NSNumber *destructiveButtonIndex = @-1;
->>>>>>> fb/0.62-stable:React/CoreModules/RCTActionSheetManager.mm
     destructiveButtonIndices = @[destructiveButtonIndex];
 #endif // TODO(macOS ISS#2323203)
   }
@@ -136,14 +122,9 @@ RCT_EXPORT_METHOD(showActionSheetWithOptions:(JS::NativeActionSheetManager::Spec
    * popup to point to, on iPads running iOS 8. If it is not passed, it
    * defaults to centering the share popup on screen without any arrows.
    */
-<<<<<<< HEAD:Libraries/ActionSheetIOS/RCTActionSheetManager.m
-  NSNumber *anchorViewTag = [RCTConvert NSNumber:options[@"anchor"]];
-
-#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
-=======
   NSNumber *anchorViewTag = anchor;
 
->>>>>>> fb/0.62-stable:React/CoreModules/RCTActionSheetManager.mm
+#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
   UIAlertController *alertController =
   [UIAlertController alertControllerWithTitle:title
                                       message:message
@@ -269,25 +250,15 @@ RCT_EXPORT_METHOD(showShareActionSheetWithOptions:(JS::NativeActionSheetManager:
   UIViewController *controller = RCTPresentedViewController();
   shareController.completionWithItemsHandler = ^(NSString *activityType, BOOL completed, __unused NSArray *returnedItems, NSError *activityError) {
     if (activityError) {
-<<<<<<< HEAD:Libraries/ActionSheetIOS/RCTActionSheetManager.m
-      failureCallback(activityError);
-    } else if (completed) {
-=======
       failureCallback(@[RCTJSErrorFromNSError(activityError)]);
     } else if (completed || activityType == nil) {
->>>>>>> fb/0.62-stable:React/CoreModules/RCTActionSheetManager.mm
       successCallback(@[@(completed), RCTNullIfNil(activityType)]);
     }
   };
 
-<<<<<<< HEAD:Libraries/ActionSheetIOS/RCTActionSheetManager.m
-  NSNumber *anchorViewTag = [RCTConvert NSNumber:options[@"anchor"]];
-  shareController.view.tintColor = [RCTConvert UIColor:options[@"tintColor"]];
-=======
   NSNumber *anchorViewTag = [RCTConvert NSNumber:options.anchor() ? @(*options.anchor()) : nil];
   shareController.view.tintColor = [RCTConvert UIColor:options.tintColor() ? @(*options.tintColor()) : nil];
 
->>>>>>> fb/0.62-stable:React/CoreModules/RCTActionSheetManager.mm
   [self presentViewController:shareController onParentViewController:controller anchorViewTag:anchorViewTag];
 #else // [TODO(macOS ISS#2323203)
   NSMutableArray<NSSharingService*> *excludedTypes = [NSMutableArray array];
@@ -342,7 +313,6 @@ RCT_EXPORT_METHOD(showShareActionSheetWithOptions:(JS::NativeActionSheetManager:
   _failureCallback(error);
 }
 
-<<<<<<< HEAD:Libraries/ActionSheetIOS/RCTActionSheetManager.m
 - (void)sharingService:(NSSharingService *)sharingService didShareItems:(NSArray *)items
 {
   NSRange range = [sharingService.description rangeOfString:@"\\[com.apple.share.*\\]" options:NSRegularExpressionSearch];
@@ -365,13 +335,11 @@ RCT_EXPORT_METHOD(showShareActionSheetWithOptions:(JS::NativeActionSheetManager:
   
 #endif // ]TODO(macOS ISS#2323203)
   
-=======
 - (std::shared_ptr<TurboModule>)getTurboModuleWithJsInvoker:(std::shared_ptr<CallInvoker>)jsInvoker
 {
   return std::make_shared<NativeActionSheetManagerSpecJSI>(self, jsInvoker);
 }
 
->>>>>>> fb/0.62-stable:React/CoreModules/RCTActionSheetManager.mm
 @end
 
 Class RCTActionSheetManagerCls(void) {

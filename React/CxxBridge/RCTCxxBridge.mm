@@ -46,11 +46,7 @@
 #import <React/RCTFBSystrace.h>
 #endif
 
-<<<<<<< HEAD
-#if RCT_DEV && __has_include(<React/RCTDevLoadingView.h>)
-=======
 #if (RCT_DEV | RCT_ENABLE_LOADING_VIEW) && __has_include(<React/RCTDevLoadingView.h>)
->>>>>>> fb/0.62-stable
 #import <React/RCTDevLoadingView.h>
 #endif
 
@@ -381,21 +377,13 @@ struct RCTInstanceCallback : public InstanceCallback {
     sourceCode = source.data;
     dispatch_group_leave(prepareBridge);
   } onProgress:^(RCTLoadingProgress *progressData) {
-<<<<<<< HEAD
-#if RCT_DEV && __has_include(<React/RCTDevLoadingView.h>)
+#if (RCT_DEV | RCT_ENABLE_LOADING_VIEW) && __has_include(<React/RCTDevLoadingView.h>)
     if ([[self devSettings] isDevModeEnabled]) { // TODO(OSS Candidate ISS#2710739)
       // Note: RCTDevLoadingView should have been loaded at this point, so no need to allow lazy loading.
       RCTDevLoadingView *loadingView = [weakSelf moduleForName:RCTBridgeModuleNameForClass([RCTDevLoadingView class])
                                         lazilyLoadIfNecessary:NO];
       [loadingView updateProgress:progressData];
     } // TODO(OSS Candidate ISS#2710739)
-=======
-#if (RCT_DEV | RCT_ENABLE_LOADING_VIEW) && __has_include(<React/RCTDevLoadingView.h>)
-    // Note: RCTDevLoadingView should have been loaded at this point, so no need to allow lazy loading.
-    RCTDevLoadingView *loadingView = [weakSelf moduleForName:RCTBridgeModuleNameForClass([RCTDevLoadingView class])
-                                       lazilyLoadIfNecessary:NO];
-    [loadingView updateProgress:progressData];
->>>>>>> fb/0.62-stable
 #endif
   }];
 
@@ -504,8 +492,6 @@ struct RCTInstanceCallback : public InstanceCallback {
     return moduleData.instance;
   }
   
-  static NSSet<NSString *> *ignoredModuleLoadFailures = [NSSet setWithArray: @[@"UIManager"]];
-
   static NSSet<NSString *> *ignoredModuleLoadFailures = [NSSet setWithArray: @[@"UIManager"]];
 
   // Module may not be loaded yet, so attempt to force load it here.
@@ -936,30 +922,17 @@ struct RCTInstanceCallback : public InstanceCallback {
     [self enqueueApplicationScript:sourceCode url:self.bundleURL onComplete:completion];
   }
 
-<<<<<<< HEAD
-#if RCT_DEV
   RCTDevSettings *devSettings = [self devSettings]; // TODO(OSS Candidate ISS#2710739)
   if ([devSettings isDevModeEnabled] && devSettings.isHotLoadingAvailable) {
     NSString *path = [self.bundleURL.path substringFromIndex:1]; // strip initial slash
     NSString *host = self.bundleURL.host;
     NSNumber *port = self.bundleURL.port;
-    BOOL isHotLoadingEnabled = devSettings.isHotLoadingEnabled;
-=======
-  if (self.devSettings.isHotLoadingAvailable) {
-    NSString *path = [self.bundleURL.path substringFromIndex:1]; // strip initial slash
-    NSString *host = self.bundleURL.host;
-    NSNumber *port = self.bundleURL.port;
     BOOL isHotLoadingEnabled = self.devSettings.isHotLoadingEnabled;
->>>>>>> fb/0.62-stable
     [self enqueueJSCall:@"HMRClient"
                  method:@"setup"
                    args:@[kRCTPlatformName, path, host, RCTNullIfNil(port), @(isHotLoadingEnabled)] // TODO(macOS ISS#2323203)
              completion:NULL];
   }
-<<<<<<< HEAD
-#endif
-=======
->>>>>>> fb/0.62-stable
 }
 
 - (void)handleError:(NSError *)error

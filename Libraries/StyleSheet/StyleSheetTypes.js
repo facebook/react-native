@@ -11,28 +11,21 @@
 'use strict';
 
 const AnimatedNode = require('../Animated/src/nodes/AnimatedNode');
-<<<<<<< HEAD
-import type {NativeOrDynamicColorType} from '../Color/NativeOrDynamicColorType'; // TODO(macOS ISS#2323203)
+import type {NativeOrDynamicColorType} from '../StyleSheet/NativeOrDynamicColorType'; // TODO(macOS ISS#2323203)
 
 export type ColorValue = null | string | NativeOrDynamicColorType; // TODO(macOS ISS#2323203)
-=======
 
-export type ColorValue = null | string;
->>>>>>> fb/0.62-stable
 export type ColorArrayValue = null | $ReadOnlyArray<ColorValue>;
 export type PointValue = {|
   x: number,
   y: number,
 |};
-<<<<<<< HEAD
-=======
 export type EdgeInsetsValue = {|
   top: number,
   left: number,
   right: number,
   bottom: number,
 |};
->>>>>>> fb/0.62-stable
 export type DimensionValue = null | number | string | AnimatedNode;
 
 /**

@@ -11,7 +11,7 @@
 'use strict';
 
 import * as React from 'react';
-import type {NativeOrDynamicColorType} from '../../Color/NativeOrDynamicColorType'; // TODO(macOS ISS#2323203)
+import type {NativeOrDynamicColorType} from '../../StyleSheet/NativeOrDynamicColorType'; // TODO(macOS ISS#2323203)
 
 import type {
   WithDefault,

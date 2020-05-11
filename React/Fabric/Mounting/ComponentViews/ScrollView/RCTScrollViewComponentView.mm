@@ -72,14 +72,7 @@ static void RCTSendPaperScrollEvent_DEPRECATED(UIScrollView *scrollView, NSInteg
     _containerView = [[UIView alloc] initWithFrame:CGRectZero];
     [_scrollView addSubview:_containerView];
 
-<<<<<<< HEAD
-    __weak __typeof(self) weakSelf = self;
-    _scrollViewDelegateSplitter = [[RCTGenericDelegateSplitter alloc] initWithDelegateUpdateBlock:^(id delegate) {
-      weakSelf.scrollView.delegate = delegate;
-    }];
-=======
     [self.scrollViewDelegateSplitter addDelegate:self];
->>>>>>> fb/0.62-stable
 
     _scrollEventThrottle = INFINITY;
   }
@@ -238,9 +231,6 @@ static void RCTSendPaperScrollEvent_DEPRECATED(UIScrollView *scrollView, NSInteg
     return;
   }
 
-<<<<<<< HEAD
-  std::static_pointer_cast<const ScrollViewEventEmitter>(_eventEmitter)->onScroll([self _scrollViewMetrics]);
-=======
   NSTimeInterval now = CACurrentMediaTime();
   if ((_lastScrollEventDispatchTime == 0) || (now - _lastScrollEventDispatchTime > _scrollEventThrottle)) {
     _lastScrollEventDispatchTime = now;
@@ -249,150 +239,92 @@ static void RCTSendPaperScrollEvent_DEPRECATED(UIScrollView *scrollView, NSInteg
     // This is just a workaround to allow animations based on onScroll event.
     RCTSendPaperScrollEvent_DEPRECATED(scrollView, self.tag);
   }
->>>>>>> fb/0.62-stable
 }
 
 - (void)scrollViewDidZoom:(UIScrollView *)scrollView
 {
-<<<<<<< HEAD
-  if (!_eventEmitter) {
-    return;
-  }
-
-  std::static_pointer_cast<const ScrollViewEventEmitter>(_eventEmitter)->onScroll([self _scrollViewMetrics]);
-=======
   [self scrollViewDidScroll:scrollView];
->>>>>>> fb/0.62-stable
 }
 
 - (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView
 {
-<<<<<<< HEAD
-=======
   [self _forceDispatchNextScrollEvent];
 
->>>>>>> fb/0.62-stable
   if (!_eventEmitter) {
     return;
   }
 
-<<<<<<< HEAD
-  std::static_pointer_cast<const ScrollViewEventEmitter>(_eventEmitter)->onScrollBeginDrag([self _scrollViewMetrics]);
-=======
   std::static_pointer_cast<ScrollViewEventEmitter const>(_eventEmitter)->onScrollBeginDrag([self _scrollViewMetrics]);
->>>>>>> fb/0.62-stable
 }
 
 - (void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate
 {
-<<<<<<< HEAD
-=======
   [self _forceDispatchNextScrollEvent];
 
->>>>>>> fb/0.62-stable
   if (!_eventEmitter) {
     return;
   }
 
-<<<<<<< HEAD
-  std::static_pointer_cast<const ScrollViewEventEmitter>(_eventEmitter)->onScrollEndDrag([self _scrollViewMetrics]);
-=======
   std::static_pointer_cast<ScrollViewEventEmitter const>(_eventEmitter)->onScrollEndDrag([self _scrollViewMetrics]);
   [self _updateStateWithContentOffset];
->>>>>>> fb/0.62-stable
 }
 
 - (void)scrollViewWillBeginDecelerating:(UIScrollView *)scrollView
 {
-<<<<<<< HEAD
-=======
   [self _forceDispatchNextScrollEvent];
 
->>>>>>> fb/0.62-stable
   if (!_eventEmitter) {
     return;
   }
 
-<<<<<<< HEAD
-  std::static_pointer_cast<const ScrollViewEventEmitter>(_eventEmitter)
-=======
   std::static_pointer_cast<ScrollViewEventEmitter const>(_eventEmitter)
->>>>>>> fb/0.62-stable
       ->onMomentumScrollBegin([self _scrollViewMetrics]);
 }
 
 - (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView
 {
-<<<<<<< HEAD
-=======
   [self _forceDispatchNextScrollEvent];
 
->>>>>>> fb/0.62-stable
   if (!_eventEmitter) {
     return;
   }
 
-<<<<<<< HEAD
-  std::static_pointer_cast<const ScrollViewEventEmitter>(_eventEmitter)->onMomentumScrollEnd([self _scrollViewMetrics]);
-=======
   std::static_pointer_cast<ScrollViewEventEmitter const>(_eventEmitter)->onMomentumScrollEnd([self _scrollViewMetrics]);
->>>>>>> fb/0.62-stable
   [self _updateStateWithContentOffset];
 }
 
 - (void)scrollViewDidEndScrollingAnimation:(UIScrollView *)scrollView
 {
-<<<<<<< HEAD
-=======
   [self _forceDispatchNextScrollEvent];
 
->>>>>>> fb/0.62-stable
   if (!_eventEmitter) {
     return;
   }
 
-<<<<<<< HEAD
-  std::static_pointer_cast<const ScrollViewEventEmitter>(_eventEmitter)->onMomentumScrollEnd([self _scrollViewMetrics]);
-=======
   std::static_pointer_cast<ScrollViewEventEmitter const>(_eventEmitter)->onMomentumScrollEnd([self _scrollViewMetrics]);
->>>>>>> fb/0.62-stable
   [self _updateStateWithContentOffset];
 }
 
 - (void)scrollViewWillBeginZooming:(UIScrollView *)scrollView withView:(nullable UIView *)view
 {
-<<<<<<< HEAD
-=======
   [self _forceDispatchNextScrollEvent];
 
->>>>>>> fb/0.62-stable
   if (!_eventEmitter) {
     return;
   }
 
-<<<<<<< HEAD
-  std::static_pointer_cast<const ScrollViewEventEmitter>(_eventEmitter)->onScrollBeginDrag([self _scrollViewMetrics]);
-=======
   std::static_pointer_cast<ScrollViewEventEmitter const>(_eventEmitter)->onScrollBeginDrag([self _scrollViewMetrics]);
->>>>>>> fb/0.62-stable
 }
 
 - (void)scrollViewDidEndZooming:(UIScrollView *)scrollView withView:(nullable UIView *)view atScale:(CGFloat)scale
 {
-<<<<<<< HEAD
-=======
   [self _forceDispatchNextScrollEvent];
 
->>>>>>> fb/0.62-stable
   if (!_eventEmitter) {
     return;
   }
 
-<<<<<<< HEAD
-  std::static_pointer_cast<const ScrollViewEventEmitter>(_eventEmitter)->onScrollEndDrag([self _scrollViewMetrics]);
-=======
   std::static_pointer_cast<ScrollViewEventEmitter const>(_eventEmitter)->onScrollEndDrag([self _scrollViewMetrics]);
->>>>>>> fb/0.62-stable
   [self _updateStateWithContentOffset];
 }
 
@@ -471,48 +403,7 @@ static void RCTSendPaperScrollEvent_DEPRECATED(UIScrollView *scrollView, NSInteg
 
 @end
 
-<<<<<<< HEAD
-@implementation RCTScrollViewComponentView (ScrollableProtocol)
-
-- (CGSize)contentSize
-{
-  return _contentSize;
-}
-
-- (void)scrollToOffset:(CGPoint)offset
-{
-  [self scrollToOffset:offset animated:YES];
-}
-
-- (void)scrollToOffset:(CGPoint)offset animated:(BOOL)animated
-{
-  [self.scrollView setContentOffset:offset animated:animated];
-}
-
-- (void)scrollToEnd:(BOOL)animated
-{
-  // Not implemented.
-}
-
-- (void)zoomToRect:(CGRect)rect animated:(BOOL)animated
-{
-  // Not implemented.
-}
-
-- (void)addScrollListener:(NSObject<UIScrollViewDelegate> *)scrollListener
-{
-  [self.scrollViewDelegateSplitter addDelegate:scrollListener];
-}
-
-- (void)removeScrollListener:(NSObject<UIScrollViewDelegate> *)scrollListener
-{
-  [self.scrollViewDelegateSplitter removeDelegate:scrollListener];
-}
-
-@end
-=======
 Class<RCTComponentViewProtocol> RCTScrollViewCls(void)
 {
   return RCTScrollViewComponentView.class;
 }
->>>>>>> fb/0.62-stable

@@ -37,17 +37,10 @@ const {
 import type {RNTesterExample} from './types/RNTesterTypes';
 import type {RNTesterAction} from './utils/RNTesterActions';
 import type {RNTesterNavigationState} from './utils/RNTesterNavigationReducer';
-<<<<<<< HEAD
-
-type Props = {
-  exampleFromAppetizeParams?: ?string,
-};
-=======
 import {RNTesterThemeContext, themes} from './components/RNTesterTheme';
 import type {ColorSchemeName} from '../../Libraries/Utilities/NativeAppearance';
 
 type Props = {exampleFromAppetizeParams?: ?string, ...};
->>>>>>> fb/0.62-stable
 
 YellowBox.ignoreWarnings([
   'Module RCTImagePickerManager requires main queue setup',
@@ -224,11 +217,8 @@ class RNTesterApp extends React.Component<Props, RNTesterNavigationState> {
 const styles = StyleSheet.create({
   headerContainer: {
     borderBottomWidth: StyleSheet.hairlineWidth,
-<<<<<<< HEAD
     borderBottomColor: {semantic: 'separatorColor'}, // TODO(OSS Candidate ISS#2710739)
     backgroundColor: {semantic: 'tertiarySystemBackgroundColor'}, // TODO(OSS Candidate ISS#2710739)
-=======
->>>>>>> fb/0.62-stable
   },
   header: {
     height: 40,

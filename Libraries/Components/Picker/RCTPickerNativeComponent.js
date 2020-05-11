@@ -17,7 +17,7 @@ import type {SyntheticEvent} from '../../Types/CoreEventTypes';
 import type {TextStyleProp} from '../../StyleSheet/StyleSheet';
 import codegenNativeCommands from '../../Utilities/codegenNativeCommands';
 import * as React from 'react';
-import type {NativeOrDynamicColorType} from '../../Color/NativeOrDynamicColorType'; // ]TODO(macOS ISS#2323203)
+import type {NativeOrDynamicColorType} from '../../StyleSheet/NativeOrDynamicColorType'; // ]TODO(macOS ISS#2323203)
 
 type PickerIOSChangeEvent = SyntheticEvent<
   $ReadOnly<{|

@@ -135,10 +135,8 @@ export type ScrollEvent = SyntheticEvent<
     |}>,
     zoomScale?: number,
     responderIgnoreScroll?: boolean,
-<<<<<<< HEAD
     key?: string, // TODO(macOS ISS#2323203)
     preferredScrollerStyle?: string, // TODO(macOS ISS#2323203)
-=======
   |}>,
 >;
 
@@ -161,6 +159,5 @@ export type MouseEvent = SyntheticEvent<
     pageX: number,
     pageY: number,
     timestamp: number,
->>>>>>> fb/0.62-stable
   |}>,
 >;

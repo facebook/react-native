@@ -119,7 +119,6 @@ end
 target 'RNTester-macOS' do
   platform :osx, '10.14'
   pods()
-  flipper_pods()
 end
 
 target 'RNTesterUnitTests' do
@@ -164,7 +163,8 @@ end
 # ]TODO(macOS ISS#2323203)
 
 post_install do |installer|
-  flipper_post_install(installer)
+  # TODO(macOS): How do we reconcile flipper on macOS? For now disabling to unblock merge
+  # flipper_post_install(installer)
   installer.pods_project.targets.each do |target|
     puts target.name
     # [TODO(macOS ISS#2323203): the internal Microsoft build pipeline needs iOS arm64e slices

@@ -100,27 +100,13 @@ static RCTUIColor *defaultPlaceholderColor() // TODO(OSS Candidate ISS#2710739)
 - (void)setPlaceholder:(NSString *)placeholder
 {
   _placeholder = placeholder;
-<<<<<<< HEAD
-#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
-  _placeholderView.text = _placeholder;
-  _placeholderView.attributedText = [[NSAttributedString alloc] initWithString:_placeholder ?: @"" attributes:[self placeholderEffectiveTextAttributes]];
-#else // [TODO(macOS ISS#2323203)
-  [self setNeedsDisplay:YES];
-#endif // ]TODO(macOS ISS#2323203)
-=======
   [self _updatePlaceholder];
->>>>>>> fb/0.62-stable
 }
 
 - (void)setPlaceholderColor:(RCTUIColor *)placeholderColor // TODO(OSS Candidate ISS#2710739)
 {
   _placeholderColor = placeholderColor;
-<<<<<<< HEAD
-#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
-  _placeholderView.textColor = _placeholderColor ?: defaultPlaceholderColor();
-#else // [TODO(macOS ISS#2323203)
-  [self setNeedsDisplay:YES];
-#endif // ]TODO(macOS ISS#2323203)
+  [self _updatePlaceholder];
 }
 
 #if TARGET_OS_OSX // [TODO(macOS ISS#2323203)
@@ -175,9 +161,6 @@ static RCTUIColor *defaultPlaceholderColor() // TODO(OSS Candidate ISS#2710739)
   }
 
   return success;
-=======
-  [self _updatePlaceholder];
->>>>>>> fb/0.62-stable
 }
 #endif // ]TODO(macOS ISS#2323203)
 
@@ -204,15 +187,7 @@ static RCTUIColor *defaultPlaceholderColor() // TODO(OSS Candidate ISS#2710739)
 - (void)setFont:(UIFont *)font
 {
   [super setFont:font];
-<<<<<<< HEAD
-#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
-  _placeholderView.font = font ?: defaultPlaceholderFont();
-#else // [TODO(macOS ISS#2323203)
-  [self setNeedsDisplay:YES];
-#endif // ]TODO(macOS ISS#2323203)
-=======
   [self _updatePlaceholder];
->>>>>>> fb/0.62-stable
 }
 
 - (void)setTextAlignment:(NSTextAlignment)textAlignment
@@ -465,7 +440,11 @@ static RCTUIColor *defaultPlaceholderColor() // TODO(OSS Candidate ISS#2710739)
 
 - (void)_updatePlaceholder
 {
+#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
   _placeholderView.attributedText = [[NSAttributedString alloc] initWithString:_placeholder ?: @"" attributes:[self _placeholderTextAttributes]];
+#else // [TODO(macOS ISS#2323203)
+  [self setNeedsDisplay:YES];
+#endif // ]TODO(macOS ISS#2323203)
 }
 
 - (NSDictionary<NSAttributedStringKey, id> *)_placeholderTextAttributes

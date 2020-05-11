@@ -25,12 +25,6 @@
 static NSString *const kRCTDevSettingDevModeEnabled = @"devModeEnabled"; // TODO(OSS Candidate ISS#2710739)
 static NSString *const kRCTDevSettingProfilingEnabled = @"profilingEnabled";
 static NSString *const kRCTDevSettingHotLoadingEnabled = @"hotLoadingEnabled";
-<<<<<<< HEAD:React/Modules/RCTDevSettings.mm
-// This option is no longer exposed in the dev menu UI.
-// It was renamed in D15958697 so it doesn't get stuck with no way to turn it off:
-static NSString *const kRCTDevSettingLiveReloadEnabled = @"liveReloadEnabled_LEGACY";
-=======
->>>>>>> fb/0.62-stable:React/CoreModules/RCTDevSettings.mm
 static NSString *const kRCTDevSettingIsInspectorShown = @"showInspector";
 static NSString *const kRCTDevSettingIsDebuggingRemotely = @"isDebuggingRemotely";
 static NSString *const kRCTDevSettingExecutorOverrideClass = @"executor-override";
@@ -145,16 +139,11 @@ RCT_EXPORT_MODULE()
 {
   // default behavior is to use NSUserDefaults
   NSDictionary *defaultValues = @{
-<<<<<<< HEAD:React/Modules/RCTDevSettings.mm
 #if DEBUG // [TODO(OSS Candidate ISS#2710739)
     kRCTDevSettingDevModeEnabled: @YES,
 #endif // ]TODO(OSS Candidate ISS#2710739)
-    kRCTDevSettingShakeToShowDevMenu: @YES,
-    kRCTDevSettingHotLoadingEnabled: @YES,
-=======
     kRCTDevSettingShakeToShowDevMenu : @YES,
     kRCTDevSettingHotLoadingEnabled : @YES,
->>>>>>> fb/0.62-stable:React/CoreModules/RCTDevSettings.mm
   };
   RCTDevSettingsUserDefaultsDataSource *dataSource =
       [[RCTDevSettingsUserDefaultsDataSource alloc] initWithDefaultValues:defaultValues];
@@ -352,22 +341,6 @@ RCT_EXPORT_METHOD(setHotLoadingEnabled : (BOOL)enabled)
   if (self.isHotLoadingEnabled != enabled) {
     [self _updateSettingWithValue:@(enabled) forKey:kRCTDevSettingHotLoadingEnabled];
     if (_isJSLoaded) {
-<<<<<<< HEAD:React/Modules/RCTDevSettings.mm
-  #pragma clang diagnostic push
-  #pragma clang diagnostic ignored "-Wdeprecated-declarations"
-      if (enabled) {
-        [_bridge enqueueJSCall:@"HMRClient"
-                        method:@"enable"
-                        args:@[]
-                        completion:NULL];
-      } else {
-        [_bridge enqueueJSCall:@"HMRClient"
-                        method:@"disable"
-                        args:@[]
-                        completion:NULL];
-      }
-  #pragma clang diagnostic pop
-=======
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
       if (enabled) {
@@ -376,7 +349,6 @@ RCT_EXPORT_METHOD(setHotLoadingEnabled : (BOOL)enabled)
         [self.bridge enqueueJSCall:@"HMRClient" method:@"disable" args:@[] completion:NULL];
       }
 #pragma clang diagnostic pop
->>>>>>> fb/0.62-stable:React/CoreModules/RCTDevSettings.mm
     }
   }
 }
@@ -541,18 +513,8 @@ RCT_EXPORT_METHOD(addMenuItem:(NSString *)title)
 
 - (RCTDevSettings *)devSettings
 {
-<<<<<<< HEAD:React/Modules/RCTDevSettings.mm
-#if RCT_DEV
-  RCTDevSettings *devSettings = nil; // [TODO(OSS Candidate ISS#2710739)
-  Class devSettingsClass = [RCTDevSettings class];
-  if ([self moduleIsInitialized:devSettingsClass]) {
-    devSettings = [self moduleForClass:devSettingsClass];
-  }
-  return devSettings; // ]TODO(OSS Candidate ISS#2710739)
-=======
 #if RCT_DEV_MENU
   return devSettingsMenuEnabled ? [self moduleForClass:[RCTDevSettings class]] : nil;
->>>>>>> fb/0.62-stable:React/CoreModules/RCTDevSettings.mm
 #else
   return nil;
 #endif

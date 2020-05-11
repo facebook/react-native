@@ -129,8 +129,6 @@ const APIExamples: Array<RNTesterExample> = [
     module: require('../examples/Animated/AnimatedExample'),
   },
   {
-<<<<<<< HEAD
-=======
     key: 'Animation - GratuitousAnimation',
     module: require('../examples/Animated/AnimatedGratuitousApp/AnExApp'),
   },
@@ -139,7 +137,6 @@ const APIExamples: Array<RNTesterExample> = [
     module: require('../examples/Appearance/AppearanceExample'),
   },
   {
->>>>>>> fb/0.62-stable
     key: 'AppStateExample',
     module: require('../examples/AppState/AppStateExample'),
   },
@@ -160,13 +157,10 @@ const APIExamples: Array<RNTesterExample> = [
     module: require('../examples/DatePicker/DatePickerAndroidExample'),
   },
   {
-<<<<<<< HEAD
-=======
     key: 'DevSettings',
     module: require('../examples/DevSettings/DevSettingsExample'),
   },
   {
->>>>>>> fb/0.62-stable
     key: 'Dimensions',
     module: require('../examples/Dimensions/DimensionsExample'),
   },
@@ -215,13 +209,6 @@ const APIExamples: Array<RNTesterExample> = [
     module: require('../examples/Share/ShareExample'),
   },
   {
-<<<<<<< HEAD
-    key: 'TimePickerAndroidExample',
-    module: require('../examples/TimePicker/TimePickerAndroidExample'),
-  },
-  {
-=======
->>>>>>> fb/0.62-stable
     key: 'TimerExample',
     module: require('../examples/Timer/TimerExample'),
   },
@@ -247,11 +234,7 @@ const APIExamples: Array<RNTesterExample> = [
   },
 ];
 
-<<<<<<< HEAD
-const Modules = {};
-=======
 const Modules: any = {};
->>>>>>> fb/0.62-stable
 
 APIExamples.concat(ComponentExamples).forEach(Example => {
   Modules[Example.key] = Example.module;

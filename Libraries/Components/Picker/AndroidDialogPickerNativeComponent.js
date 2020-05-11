@@ -14,7 +14,7 @@ import * as React from 'react';
 
 import codegenNativeCommands from '../../Utilities/codegenNativeCommands';
 import requireNativeComponent from '../../ReactNative/requireNativeComponent';
-import type {NativeOrDynamicColorType} from '../../Color/NativeOrDynamicColorType'; // TODO(macOS ISS#2323203)
+import type {NativeOrDynamicColorType} from '../../StyleSheet/NativeOrDynamicColorType'; // TODO(macOS ISS#2323203)
 
 import type {
   DirectEventHandler,

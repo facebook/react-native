@@ -13,10 +13,7 @@
 const React = require('react');
 
 const {Alert, Button, View, StyleSheet} = require('react-native');
-<<<<<<< HEAD
-=======
 import {RNTesterThemeContext} from '../../components/RNTesterTheme';
->>>>>>> fb/0.62-stable
 
 function onButtonPress(buttonName) {
   Alert.alert(`${buttonName} has been pressed!`);
@@ -35,14 +32,6 @@ exports.examples = [
       'everyone.': string),
     render: function(): React.Node {
       return (
-<<<<<<< HEAD
-        <Button
-          onPress={() => onButtonPress('Simple')}
-          testID="simple_button"
-          title="Press Me"
-          accessibilityLabel="See an informative alert"
-        />
-=======
         <RNTesterThemeContext.Consumer>
           {theme => {
             return (
@@ -56,7 +45,6 @@ exports.examples = [
             );
           }}
         </RNTesterThemeContext.Consumer>
->>>>>>> fb/0.62-stable
       );
     },
   },
@@ -67,15 +55,6 @@ exports.examples = [
       'Android, the color adjusts the background color of the button.': string),
     render: function(): React.Node {
       return (
-<<<<<<< HEAD
-        <Button
-          onPress={() => onButtonPress('Purple')}
-          testID="purple_button"
-          title="Press Purple"
-          color="#841584"
-          accessibilityLabel="Learn more about purple"
-        />
-=======
         <RNTesterThemeContext.Consumer>
           {theme => {
             return (
@@ -89,7 +68,6 @@ exports.examples = [
             );
           }}
         </RNTesterThemeContext.Consumer>
->>>>>>> fb/0.62-stable
       );
     },
   },
@@ -99,23 +77,6 @@ exports.examples = [
       'the button': string),
     render: function(): React.Node {
       return (
-<<<<<<< HEAD
-        <View style={styles.container}>
-          <Button
-            onPress={() => onButtonPress('Left')}
-            testID="left_button"
-            title="This looks great!"
-            accessibilityLabel="This sounds great!"
-          />
-          <Button
-            onPress={() => onButtonPress('Right')}
-            testID="right_button"
-            title="Ok!"
-            color="#841584"
-            accessibilityLabel="Ok, Great!"
-          />
-        </View>
-=======
         <RNTesterThemeContext.Consumer>
           {theme => {
             return (
@@ -138,7 +99,6 @@ exports.examples = [
             );
           }}
         </RNTesterThemeContext.Consumer>
->>>>>>> fb/0.62-stable
       );
     },
   },

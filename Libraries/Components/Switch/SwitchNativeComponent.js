@@ -18,7 +18,7 @@ import * as React from 'react';
 import codegenNativeComponent from '../../Utilities/codegenNativeComponent';
 import codegenNativeCommands from 'react-native/Libraries/Utilities/codegenNativeCommands';
 import type {HostComponent} from '../../Renderer/shims/ReactNativeTypes';
-import type {NativeOrDynamicColorType} from '../../Color/NativeOrDynamicColorType'; // TODO(macOS ISS#2323203)
+import type {NativeOrDynamicColorType} from '../../StyleSheet/NativeOrDynamicColorType'; // TODO(macOS ISS#2323203)
 
 type SwitchChangeEvent = $ReadOnly<{|
   value: boolean,

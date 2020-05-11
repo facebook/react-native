@@ -15,13 +15,9 @@
 #import <React/RCTUtils.h>
 #import <React/RCTSRWebSocket.h>
 
-<<<<<<< HEAD:Libraries/WebSocket/RCTWebSocketExecutor.m
-#import <React/RCTSRWebSocket.h>
-=======
 #import <ReactCommon/RCTTurboModule.h>
 
 #import "CoreModulesPlugins.h"
->>>>>>> fb/0.62-stable:React/CoreModules/RCTWebSocketExecutor.mm
 
 #if RCT_DEV // Debug executors are only supported in dev mode
 

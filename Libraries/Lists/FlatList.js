@@ -28,15 +28,7 @@ import type {
   ViewToken,
   ViewabilityConfigCallbackPair,
 } from './ViewabilityHelper';
-<<<<<<< HEAD
-import type {
-  Props as VirtualizedListProps,
-  RenderItemType,
-  RenderItemProps,
-} from './VirtualizedList';
-=======
 import type {RenderItemType, RenderItemProps} from './VirtualizedList';
->>>>>>> fb/0.62-stable
 
 type RequiredProps<ItemT> = {|
   /**
@@ -46,13 +38,6 @@ type RequiredProps<ItemT> = {|
   data: ?$ReadOnlyArray<ItemT>,
 |};
 type OptionalProps<ItemT> = {|
-  /**
-   * For simplicity, data is just a plain array. If you want to use something else, like an
-   * immutable list, use the underlying `VirtualizedList` directly.
-   */
-  data: ?$ReadOnlyArray<ItemT>,
-};
-type OptionalProps<ItemT> = {
   /**
    * Takes an item from `data` and renders it into the list. Example usage:
    *
@@ -80,67 +65,6 @@ type OptionalProps<ItemT> = {
    * your use-case.
    */
   renderItem?: ?RenderItemType<ItemT>,
-<<<<<<< HEAD
-  /**
-   * Rendered in between each item, but not at the top or bottom. By default, `highlighted` and
-   * `leadingItem` props are provided. `renderItem` provides `separators.highlight`/`unhighlight`
-   * which will update the `highlighted` prop, but you can also add custom props with
-   * `separators.updateProps`.
-   */
-  ItemSeparatorComponent?: ?React.ComponentType<any>,
-  /**
-   * Takes an item from `data` and renders it into the list. Example usage:
-   *
-   *     <FlatList
-   *       ItemSeparatorComponent={Platform.OS !== 'android' && ({highlighted}) => (
-   *         <View style={[style.separator, highlighted && {marginLeft: 0}]} />
-   *       )}
-   *       data={[{title: 'Title Text', key: 'item1'}]}
-   *       ListItemComponent={({item, separators}) => (
-   *         <TouchableHighlight
-   *           onPress={() => this._onPress(item)}
-   *           onShowUnderlay={separators.highlight}
-   *           onHideUnderlay={separators.unhighlight}>
-   *           <View style={{backgroundColor: 'white'}}>
-   *             <Text>{item.title}</Text>
-   *           </View>
-   *         </TouchableHighlight>
-   *       )}
-   *     />
-   *
-   * Provides additional metadata like `index` if you need it, as well as a more generic
-   * `separators.updateProps` function which let's you set whatever props you want to change the
-   * rendering of either the leading separator or trailing separator in case the more common
-   * `highlight` and `unhighlight` (which set the `highlighted: boolean` prop) are insufficient for
-   * your use-case.
-   */
-  ListItemComponent?: ?React.ComponentType<any>,
-  /**
-   * Rendered when the list is empty. Can be a React Component Class, a render function, or
-   * a rendered element.
-   */
-  ListEmptyComponent?: ?(React.ComponentType<any> | React.Element<any>),
-  /**
-   * Rendered at the bottom of all the items. Can be a React Component Class, a render function, or
-   * a rendered element.
-   */
-  ListFooterComponent?: ?(React.ComponentType<any> | React.Element<any>),
-  /**
-   * Styling for internal View for ListFooterComponent
-   */
-  ListFooterComponentStyle?: ViewStyleProp,
-  /**
-   * Rendered at the top of all the items. Can be a React Component Class, a render function, or
-   * a rendered element.
-   */
-  ListHeaderComponent?: ?(React.ComponentType<any> | React.Element<any>),
-  /**
-   * Styling for internal View for ListHeaderComponent
-   */
-  ListHeaderComponentStyle?: ViewStyleProp,
-=======
-
->>>>>>> fb/0.62-stable
   /**
    * Optional custom style for multi-item rows generated when numColumns > 1.
    */
@@ -439,18 +363,12 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
   /**
    * Provides a handle to the underlying scroll responder.
    */
-<<<<<<< HEAD
-  getScrollResponder(): any {
-=======
   getScrollResponder(): ?ScrollResponderType {
->>>>>>> fb/0.62-stable
     if (this._listRef) {
       return this._listRef.getScrollResponder();
     }
   }
 
-<<<<<<< HEAD
-=======
   /**
    * Provides a reference to the underlying host component
    */
@@ -469,7 +387,6 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
     }
   }
 
->>>>>>> fb/0.62-stable
   getScrollableNode(): any {
     if (this._listRef) {
       return this._listRef.getScrollableNode();
@@ -606,10 +523,7 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
         .map((it, kk) => keyExtractor(it, index * numColumns + kk))
         .join(':');
     } else {
-<<<<<<< HEAD
-=======
       // $FlowFixMe Can't call keyExtractor with an array
->>>>>>> fb/0.62-stable
       return keyExtractor(items, index);
     }
   };
@@ -664,14 +578,9 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
       ? 'ListItemComponent'
       : 'renderItem';
 
-<<<<<<< HEAD
-    const renderer = props => {
-      if (ListItemComponent) {
-=======
     const renderer = (props): React.Node => {
       if (ListItemComponent) {
         // $FlowFixMe Component isn't valid
->>>>>>> fb/0.62-stable
         return <ListItemComponent {...props} />;
       } else if (renderItem) {
         return renderItem(props);
@@ -681,12 +590,9 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
     };
 
     return {
-<<<<<<< HEAD
-=======
       /* $FlowFixMe(>=0.111.0 site=react_native_fb) This comment suppresses an
        * error found when Flow v0.111 was deployed. To see the error, delete
        * this comment and run Flow. */
->>>>>>> fb/0.62-stable
       [virtualizedListRenderKey]: (info: RenderItemProps<ItemT>) => {
         if (numColumns > 1) {
           const {item, index} = info;
@@ -704,10 +610,7 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
                 const element = renderer({
                   item: it,
                   index: index * numColumns + kk,
-<<<<<<< HEAD
                   isSelected: info.isSelected, // TODO(macOS ISS#2323203)
-=======
->>>>>>> fb/0.62-stable
                   separators: info.separators,
                 });
                 return element != null ? (
@@ -724,17 +627,11 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
   };
 
   render(): React.Node {
-<<<<<<< HEAD
-    return (
-      <VirtualizedList
-        {...this.props}
-=======
     const {numColumns, columnWrapperStyle, ...restProps} = this.props;
 
     return (
       <VirtualizedList
         {...restProps}
->>>>>>> fb/0.62-stable
         getItem={this._getItem}
         getItemCount={this._getItemCount}
         keyExtractor={this._keyExtractor}

@@ -129,24 +129,16 @@ RCT_EXPORT_VIEW_PROPERTY(tvParallaxProperties, NSDictionary)
 #endif
 
 // Accessibility related properties
-<<<<<<< HEAD
 #if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
-=======
->>>>>>> fb/0.62-stable
 RCT_REMAP_VIEW_PROPERTY(accessible, reactAccessibilityElement.isAccessibilityElement, BOOL)
 #else // [TODO(macOS ISS#2323203)
 RCT_REMAP_VIEW_PROPERTY(accessible, reactAccessibilityElement.accessibilityElement, BOOL)
 #endif // ]TODO(macOS ISS#2323203)
 RCT_REMAP_VIEW_PROPERTY(accessibilityActions, reactAccessibilityElement.accessibilityActions, NSDictionaryArray)
 RCT_REMAP_VIEW_PROPERTY(accessibilityLabel, reactAccessibilityElement.accessibilityLabel, NSString)
-<<<<<<< HEAD
 #if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
-RCT_REMAP_VIEW_PROPERTY(accessibilityHint, reactAccessibilityElement.accessibilityHint, NSString) // TODO(macOS ISS#2323203)
-RCT_REMAP_VIEW_PROPERTY(accessibilityTraits, reactAccessibilityElement.accessibilityTraits, UIAccessibilityTraits) // TODO(macOS ISS#2323203)
-=======
 RCT_REMAP_VIEW_PROPERTY(accessibilityHint, reactAccessibilityElement.accessibilityHint, NSString)
 RCT_REMAP_VIEW_PROPERTY(accessibilityValue, reactAccessibilityElement.accessibilityValueInternal, NSDictionary)
->>>>>>> fb/0.62-stable
 RCT_REMAP_VIEW_PROPERTY(accessibilityViewIsModal, reactAccessibilityElement.accessibilityViewIsModal, BOOL)
 RCT_REMAP_VIEW_PROPERTY(accessibilityElementsHidden, reactAccessibilityElement.accessibilityElementsHidden, BOOL)
 RCT_REMAP_VIEW_PROPERTY(accessibilityIgnoresInvertColors, reactAccessibilityElement.shouldAccessibilityIgnoresInvertColors, BOOL)
@@ -235,49 +227,7 @@ RCT_CUSTOM_VIEW_PROPERTY(accessibilityRole, UIAccessibilityTraits, RCTView)
 
 RCT_CUSTOM_VIEW_PROPERTY(accessibilityState, NSDictionary, RCTView)
 {
-<<<<<<< HEAD
 #if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
-  // This mask must be kept in sync with the AccessibilityStates enum defined in ViewAccessibility.js and DeprecatedViewAccessibility.js
-  NSArray<NSString *> *states = json ? [RCTConvert NSStringArray:json] : nil;
-  NSMutableArray *newStates = [NSMutableArray new];
-=======
-  NSDictionary<NSString *, id> *state = json ? [RCTConvert NSDictionary:json] : nil;
-  NSMutableDictionary<NSString *, id> *newState = [[NSMutableDictionary<NSString *, id> alloc] init];
->>>>>>> fb/0.62-stable
-
-  if (!state) {
-    return;
-  }
-
-  const UIAccessibilityTraits AccessibilityStatesMask = UIAccessibilityTraitNotEnabled | UIAccessibilityTraitSelected;
-  view.reactAccessibilityElement.accessibilityTraits = view.reactAccessibilityElement.accessibilityTraits & ~AccessibilityStatesMask;
-
-  for (NSString *s in state) {
-    id val = [state objectForKey:s];
-    if (!val) {
-      continue;
-    }
-    if ([s isEqualToString:@"selected"] && [val isKindOfClass:[NSNumber class]] && [val boolValue]) {
-      view.reactAccessibilityElement.accessibilityTraits |= UIAccessibilityTraitSelected;
-    } else if ([s isEqualToString:@"disabled"] && [val isKindOfClass:[NSNumber class]] && [val boolValue]) {
-      view.reactAccessibilityElement.accessibilityTraits |= UIAccessibilityTraitNotEnabled;
-    } else {
-      newState[s] = val;
-    }
-  }
-  if (newState.count > 0) {
-    view.reactAccessibilityElement.accessibilityState = newState;
-    // Post a layout change notification to make sure VoiceOver get notified for the state
-    // changes that don't happen upon users' click.
-    UIAccessibilityPostNotification(UIAccessibilityLayoutChangedNotification, nil);
-  } else {
-    view.reactAccessibilityElement.accessibilityState = nil;
-  }
-
-}
-
-RCT_CUSTOM_VIEW_PROPERTY(accessibilityState, NSDictionary, RCTView)
-{
   NSDictionary<NSString *, id> *state = json ? [RCTConvert NSDictionary:json] : nil;
   NSMutableDictionary<NSString *, id> *newState = [[NSMutableDictionary<NSString *, id> alloc] init];
 

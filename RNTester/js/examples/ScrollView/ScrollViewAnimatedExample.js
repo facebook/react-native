@@ -5,11 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @format
-<<<<<<< HEAD
- * @flow
-=======
  * @flow strict-local
->>>>>>> fb/0.62-stable
  */
 
 'use strict';
@@ -27,11 +23,7 @@ const {
   Dimensions,
 } = ReactNative;
 
-<<<<<<< HEAD
-class ScrollViewAnimatedExample extends Component<{}> {
-=======
 class ScrollViewAnimatedExample extends Component<{...}> {
->>>>>>> fb/0.62-stable
   _scrollViewPos = new Animated.Value(0);
 
   startAnimation: () => void = () => {

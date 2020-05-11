@@ -14,7 +14,7 @@ import RCTActionSheetManager from './NativeActionSheetManager';
 
 const invariant = require('invariant');
 const processColor = require('../StyleSheet/processColor');
-import type {NativeOrDynamicColorType} from '../Color/NativeOrDynamicColorType'; // TODO(macOS ISS#2323203)
+import type {NativeOrDynamicColorType} from '../StyleSheet/NativeOrDynamicColorType'; // TODO(macOS ISS#2323203)
 
 /**
  * Display action sheets and share sheets on iOS.

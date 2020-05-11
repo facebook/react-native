@@ -1637,5 +1637,3 @@ static NSRunLoop *networkRunLoop = nil;
 }
 
 @end
-
-#endif

@@ -162,7 +162,7 @@ class TouchableBounce extends React.Component<Props, State> {
         accessibilityElementsHidden={this.props.accessibilityElementsHidden}
         acceptsKeyboardFocus={
           (this.props.acceptsKeyboardFocus === undefined ||
-            this.props.acceptsKeyboardFocus) &&
+            this.props.acceptsKeyboardFocus === true) &&
           !this.props.disabled
         } // TODO(macOS/win ISS#2323203)
         enableFocusRing={

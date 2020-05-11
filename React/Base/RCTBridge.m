@@ -298,9 +298,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
  */
 - (void)reload
 {
-<<<<<<< HEAD
-  #if RCT_ENABLE_INSPECTOR && !TARGET_OS_UIKITFORMAC
-=======
    [self reloadWithReason:@"Unknown from bridge"];
 }
 
@@ -310,7 +307,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 - (void)reloadWithReason:(NSString *)reason
 {
   #if RCT_ENABLE_INSPECTOR
->>>>>>> fb/0.62-stable
   // Disable debugger to resume the JsVM & avoid thread locks while reloading
   [RCTInspectorDevServerHelper disableDebugger];
   #endif
@@ -360,17 +356,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
   Class bridgeClass = self.bridgeClass;
 
-<<<<<<< HEAD
-  #if RCT_DEV && !TARGET_OS_OSX // [TODO(OSS Candidate ISS#2710739)
-  if ([[self devSettings] isDevModeEnabled]) {
-    RCTExecuteOnMainQueue(^{
-      RCTRegisterReloadCommandListener(self);
-    });
-  } // ]TODO(OSS Candidate ISS#2710739)
-  #endif
-
-=======
->>>>>>> fb/0.62-stable
   // Only update bundleURL from delegate if delegate bundleURL has changed
   NSURL *previousDelegateURL = _delegateBundleURL;
   _delegateBundleURL = [self.delegate sourceURLForBridge:self];

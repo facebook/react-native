@@ -983,22 +983,6 @@ NSString  *RCTHumanReadableType(NSObject *obj)
   }
 }
 
-NSString  *RCTHumanReadableType(NSObject *obj)
-{
-  if ([obj isKindOfClass:[NSString class]]) {
-    return @"string";
-  } else if ([obj isKindOfClass:[NSNumber class]]) {
-    int intVal = [(NSNumber *)obj intValue];
-    if(intVal == 0 || intVal == 1) {
-      return @"boolean or number";
-    }
-
-    return @"number";
-  } else {
-    return NSStringFromClass([obj class]);
-  }
-}
-
 NSString *__nullable RCTGetURLQueryParam(NSURL *__nullable URL, NSString *param)
 {
   RCTAssertParam(param);
