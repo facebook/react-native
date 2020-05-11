@@ -25,6 +25,7 @@ const {
   BackHandler,
   Button,
   Linking,
+  NativeModules,
   Platform,
   SafeAreaView,
   StyleSheet,
@@ -33,6 +34,9 @@ const {
   View,
   LogBox,
 } = require('react-native');
+
+const {TestModule} = NativeModules;
+const requestAnimationFrame = require('fbjs/lib/requestAnimationFrame');
 
 import type {RNTesterExample} from './types/RNTesterTypes';
 import type {RNTesterAction} from './utils/RNTesterActions';
@@ -266,7 +270,50 @@ RNTesterList.ComponentExamples.concat(RNTesterList.APIExamples).forEach(
         () => Snapshotter,
       );
     }
+
+    class LoadPageTest extends React.Component<{}> {
+      componentDidMount() {
+        requestAnimationFrame(() => {
+          TestModule.markTestCompleted();
+        });
+      }
+
+      render() {
+        return <RNTesterExampleContainer module={ExampleModule} />;
+      }
+    }
+
+    AppRegistry.registerComponent(
+      'LoadPageTest_' + Example.key,
+      () => LoadPageTest,
+    );
   },
+);
+
+class EnumerateExamplePages extends React.Component<{}> {
+  render() {
+    RNTesterList.ComponentExamples.concat(RNTesterList.APIExamples).forEach(
+      (Example: RNTesterExample) => {
+        let skipTest = false;
+        if ('skipTest' in Example) {
+          const platforms = Example.skipTest;
+          skipTest =
+            platforms !== undefined &&
+            (Platform.OS in platforms || 'default' in platforms);
+        }
+        if (!skipTest) {
+          console.trace(Example.key);
+        }
+      },
+    );
+    TestModule.markTestCompleted();
+    return <View />;
+  }
+}
+
+AppRegistry.registerComponent(
+  'EnumerateExamplePages',
+  () => EnumerateExamplePages,
 );
 
 module.exports = RNTesterApp;

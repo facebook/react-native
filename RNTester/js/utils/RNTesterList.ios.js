@@ -71,6 +71,10 @@ const ComponentExamples: Array<RNTesterExample> = [
     key: 'MultiColumnExample',
     module: require('../examples/MultiColumn/MultiColumnExample'),
     supportsTVOS: true,
+    skipTest: {
+      default:
+        'Reason: Intermittent failure: Terminating app due to uncaught exception: Application tried to present modally an active controller: Missing request token for request:  http://localhost:8081/assets/RNTester/js/assets/like.png...',
+    },
   },
   {
     key: 'NewAppScreenExample',
@@ -126,6 +130,10 @@ const ComponentExamples: Array<RNTesterExample> = [
     key: 'SectionListExample',
     module: require('../examples/SectionList/SectionListExample'),
     supportsTVOS: true,
+    skipTest: {
+      default:
+        'Reason: Intermittent failure: Terminating app due to uncaught exception: Application tried to present modally an active controller: Missing request token for request:  http://localhost:8081/assets/RNTester/js/assets/like.png...',
+    },
   },
   {
     key: 'SegmentedControlIOSExample',
@@ -293,11 +301,19 @@ const APIExamples: Array<RNTesterExample> = [
     key: 'PushNotificationIOSExample',
     module: require('../examples/PushNotificationIOS/PushNotificationIOSExample'),
     supportsTVOS: false,
+    skipTest: {
+      ios:
+        'Reason: Requires remote notifications which are not supported in iOS Simulator.',
+    },
   },
   {
     key: 'RCTRootViewIOSExample',
     module: require('../examples/RCTRootView/RCTRootViewIOSExample'),
     supportsTVOS: true,
+    skipTest: {
+      default:
+        'Reason: requires native components and is convered by RCTRootViewIntegrationTests',
+    },
   },
   {
     key: 'RTLExample',
@@ -323,11 +339,17 @@ const APIExamples: Array<RNTesterExample> = [
     key: 'TransformExample',
     module: require('../examples/Transform/TransformExample'),
     supportsTVOS: true,
+    skipTest: {
+      default: 'Reason: Stack overflow in jsi.',
+    },
   },
   {
     key: 'TurboModuleExample',
     module: require('../examples/TurboModule/TurboModuleExample'),
     supportsTVOS: false,
+    skipTest: {
+      default: 'Reason: requires TurboModule to be configured in host app.',
+    },
   },
   {
     key: 'TVEventHandlerExample',
