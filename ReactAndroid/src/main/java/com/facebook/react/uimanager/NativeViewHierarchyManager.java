@@ -29,6 +29,7 @@ import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.RetryableMountingLayerException;
 import com.facebook.react.bridge.SoftAssertions;
 import com.facebook.react.bridge.UiThreadUtil;
+import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.react.touch.JSResponderHandler;
 import com.facebook.react.uimanager.layoutanimation.LayoutAnimationController;
 import com.facebook.react.uimanager.layoutanimation.LayoutAnimationListener;
@@ -784,7 +785,13 @@ public class NativeViewHierarchyManager {
               + commandId);
     }
     ViewManager viewManager = resolveViewManager(reactTag);
-    viewManager.receiveCommand(view, commandId, args);
+    ViewManagerDelegate delegate;
+    if (ReactFeatureFlags.useViewManagerDelegatesForCommands
+        && (delegate = viewManager.getDelegate()) != null) {
+      delegate.receiveCommand(view, commandId, args);
+    } else {
+      viewManager.receiveCommand(view, commandId, args);
+    }
   }
 
   /**

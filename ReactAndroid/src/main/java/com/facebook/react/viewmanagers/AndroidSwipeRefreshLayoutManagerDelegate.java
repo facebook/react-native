@@ -47,10 +47,11 @@ public class AndroidSwipeRefreshLayoutManagerDelegate<T extends View, U extends 
     }
   }
 
-  public void receiveCommand(AndroidSwipeRefreshLayoutManagerInterface<T> viewManager, T view, String commandName, ReadableArray args) {
+  @Override
+  public void receiveCommand(T view, String commandName, ReadableArray args) {
     switch (commandName) {
       case "setNativeRefreshing":
-        viewManager.setNativeRefreshing(view, args.getBoolean(0));
+        mViewManager.setNativeRefreshing(view, args.getBoolean(0));
         break;
     }
   }
