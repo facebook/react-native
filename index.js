@@ -496,7 +496,7 @@ module.exports = {
   },
   get ImagePropTypes(): DeprecatedImagePropTypes {
     return require('./Libraries/DeprecatedPropTypes/DeprecatedImagePropType');
-  }
+  },
 };
 
 if (__DEV__) {
