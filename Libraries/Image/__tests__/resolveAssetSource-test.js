@@ -186,14 +186,14 @@ describe('resolveAssetSource', () => {
           height: 200,
           scales: [1],
           hash: '5b6f00f',
-          name: '!@Logo#1_\u20ac', // Invalid chars shouldn't get passed to native
+          name: 'ファイル', // Invalid chars shouldn't get passed to native
           type: 'png',
         },
         {
           __packager_asset: true,
           width: 100,
           height: 200,
-          uri: 'awesomemodule_subdir_logo1_',
+          uri: 'awesomemodule_subdir_5b6f00f',
           scale: 1,
         },
       );
@@ -216,7 +216,7 @@ describe('resolveAssetSource', () => {
           __packager_asset: true,
           width: 100,
           height: 200,
-          uri: '__module_a_logo',
+          uri: '__module_a_5b6f00f',
           scale: 1,
         },
       );
@@ -249,7 +249,7 @@ describe('resolveAssetSource', () => {
           width: 100,
           height: 200,
           uri:
-            'file:///sdcard/Path/To/Simulator/drawable-mdpi/awesomemodule_subdir_logo1_.png',
+            'file:///sdcard/Path/To/Simulator/drawable-mdpi/awesomemodule_subdir_5b6f00f.png',
           scale: 1,
         },
       );
@@ -282,7 +282,7 @@ describe('resolveAssetSource', () => {
           width: 100,
           height: 200,
           uri:
-            'file:///sdcard/Path/To/Simulator/drawable-mdpi/awesomemodule_subdir_logo1_.png',
+            'file:///sdcard/Path/To/Simulator/drawable-mdpi/awesomemodule_subdir_5b6f00f.png',
           scale: 1,
         },
       );
@@ -317,7 +317,7 @@ describe('resolveAssetSource', () => {
           __packager_asset: true,
           width: 100,
           height: 200,
-          uri: 'awesomemodule_subdir_logo1_',
+          uri: 'awesomemodule_subdir_5b6f00f',
           scale: 1,
         },
       );
