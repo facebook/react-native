@@ -111,7 +111,7 @@ RCT_EXPORT_METHOD(addEvent:(<span class="hljs-built_in">NSString</span> *)name l
 
 <span class="hljs-keyword">@end</span>
 </code></pre>
-<p>Now, from your JavaScript file you can call the method like this:</p>
+<p>Now, from your JavaScript file you can call the method like this (after making sure to rebuild):</p>
 <pre><code class="hljs css language-jsx"><span class="token keyword">import</span> <span class="token punctuation">{</span> NativeModules <span class="token punctuation">}</span> <span class="token keyword">from</span> <span class="token string">'react-native'</span><span class="token punctuation">;</span>
 <span class="token keyword">var</span> CalendarManager <span class="token operator">=</span> NativeModules<span class="token punctuation">.</span>CalendarManager<span class="token punctuation">;</span>
 CalendarManager<span class="token punctuation">.</span><span class="token function">addEvent</span><span class="token punctuation">(</span>
@@ -194,7 +194,7 @@ RCT_EXPORT_METHOD(addEvent:(<span class="hljs-built_in">NSString</span> *)name d
 <p><strong>WARNING</strong></p>
 <p>This section is more experimental than others because we don't have a solid set of best practices around callbacks yet.</p>
 </blockquote>
-<p>Native modules also supports a unique kind of argument- a callback. In most cases it is used to provide the function call result to JavaScript.</p>
+<p>Native modules also supports a unique type of argument- a callback. In most cases it is used to provide the function call result to JavaScript.</p>
 <pre><code class="hljs css language-objectivec">RCT_EXPORT_METHOD(findEvents:(RCTResponseSenderBlock)callback)
 {
   <span class="hljs-built_in">NSArray</span> *events = ...
@@ -299,6 +299,21 @@ RCTRootView *rootView = [[RCTRootView alloc]
   <span class="hljs-keyword">return</span> <span class="hljs-literal">YES</span>;  <span class="hljs-comment">// only do this if your module initialization relies on calling UIKit!</span>
 }
 </code></pre>
+<pre><code class="hljs css language-Swift"><span class="hljs-comment">//Swift</span>
+
+<span class="hljs-comment">// CalendarManager.swift</span>
+
+<span class="hljs-meta">@objc</span>(<span class="hljs-type">CalendarManager</span>)
+<span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">CalendarManager</span>: <span class="hljs-title">NSObject</span>, <span class="hljs-title">RCTBridgeModule</span> </span>{
+
+<span class="hljs-keyword">static</span> <span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">moduleName</span><span class="hljs-params">()</span></span> -&gt; <span class="hljs-type">String!</span> {
+      <span class="hljs-keyword">return</span> <span class="hljs-string">"CalendarManager"</span>;
+}
+
+<span class="hljs-keyword">static</span> <span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">requiresMainQueueSetup</span><span class="hljs-params">()</span></span> -&gt; <span class="hljs-type">Bool</span> {
+    <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span>
+}
+</code></pre>
 <p>If your module does not require access to UIKit, then you should respond to <code>+ requiresMainQueueSetup</code> with <code>NO</code>.</p>
 <h3><a class="anchor" aria-hidden="true" id="enum-constants"></a><a href="#enum-constants" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Enum Constants</h3>
 <p>Enums that are defined via <code>NS_ENUM</code> cannot be used as method arguments without first extending RCTConvert.</p>
@@ -373,7 +388,6 @@ RCT_EXPORT_MODULE();
 <span class="token comment">// Don't forget to unsubscribe, typically in componentWillUnmount</span>
 subscription<span class="token punctuation">.</span><span class="token function">remove</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
 </code></pre>
-<p>For more examples of sending events to JavaScript, see <a href="https://github.com/facebook/react-native/blob/master/Libraries/Geolocation/RCTLocationObserver.m"><code>RCTLocationObserver</code></a>.</p>
 <h3><a class="anchor" aria-hidden="true" id="optimizing-for-zero-listeners"></a><a href="#optimizing-for-zero-listeners" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Optimizing for zero listeners</h3>
 <p>You will receive a warning if you expend resources unnecessarily by emitting an event while there are no listeners. To avoid this, and to optimize your module's workload (e.g. by unsubscribing from upstream notifications or pausing background tasks), you can override <code>startObserving</code> and <code>stopObserving</code> in your <code>RCTEventEmitter</code> subclass.</p>
 <pre><code class="hljs css language-objectivec"><span class="hljs-class"><span class="hljs-keyword">@implementation</span> <span class="hljs-title">CalendarManager</span></span>
