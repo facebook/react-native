@@ -122,19 +122,41 @@ const styles = StyleSheet.create({
     height: 500,
   },
   box1: {
-    left: 0,
-    backgroundColor: 'green',
-    height: 50,
-    position: 'absolute',
-    top: 0,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 60,
+    width: 200,
+    height: 200,
+    backgroundColor: 'grey',
     transform: [
       {translateX: 100},
       {translateY: 50},
       {rotate: '30deg'},
-      {scaleX: 2},
-      {scaleY: 2},
+      {scaleX: 1.2},
+      {scaleY: 1.2},
     ],
-    width: 50,
+    borderRadius: 10,
+    borderWidth: 5,
+  },
+  box1container: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    margin: 10,
+    padding: 10,
+    borderWidth: 2,
+    borderColor: 'red',
+    backgroundColor: 'white',
+    height: 100,
+    borderRadius: 10,
+    overflow: 'hidden',
+  },
+  box1child: {
+    width: 40,
+    height: 440,
+    borderWidth: 4,
+    borderColor: 'green',
+    backgroundColor: 'yellow',
   },
   box2: {
     left: 0,
@@ -247,13 +269,18 @@ exports.examples = [
     },
   },
   {
-    title: 'Translate, Rotate, Scale',
+    title: 'Translate, Rotate, Scale. Children is set to overflow hidden.',
     description:
-      "translateX: 100, translateY: 50, rotate: '30deg', scaleX: 2, scaleY: 2",
+      "overflow: hidden, translateX: 100, translateY: 50, rotate: '30deg', scaleX: 1.2, scaleY: 1.2",
     render(): Node {
       return (
         <View style={styles.container}>
-          <View style={styles.box1} />
+          <View style={styles.box1}>
+            <View style={styles.box1container}>
+              <Text>ROUD</Text>
+              <View style={styles.box1child} />
+            </View>
+          </View>
         </View>
       );
     },
