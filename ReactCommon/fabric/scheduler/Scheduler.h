@@ -111,7 +111,16 @@ class Scheduler final : public UIManagerDelegate {
   RuntimeExecutor runtimeExecutor_;
   std::shared_ptr<UIManager> uiManager_;
   std::shared_ptr<const ReactNativeConfig> reactNativeConfig_;
-  EventDispatcher::Shared eventDispatcher_;
+
+  /*
+   * At some point, we have to have an owning shared pointer to something that
+   * will become an `EventDispatcher` a moment later. That's why we have it as a
+   * pointer to an optional: we construct the pointer first, share that with
+   * parts that need to have ownership (and only ownership) of that, and then
+   * fill the optional.
+   */
+  std::shared_ptr<better::optional<EventDispatcher const>> eventDispatcher_;
+
   bool enableNewStateReconciliation_{false};
 };
 

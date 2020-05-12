@@ -29,13 +29,13 @@ Scheduler::Scheduler(
       schedulerToolbox.contextContainer
           ->at<std::shared_ptr<const ReactNativeConfig>>("ReactNativeConfig");
 
+  // Creating a container for future `EventDispatcher` instance.
+  eventDispatcher_ =
+      std::make_shared<better::optional<EventDispatcher const>>();
+
   auto uiManager = std::make_shared<UIManager>();
   auto eventOwnerBox = std::make_shared<EventBeat::OwnerBox>();
-
-  // A dummy pointer to share a control block (and life-time) with
-  // an actual `owner` later.
-  auto owner = std::make_shared<bool const>(false);
-  eventOwnerBox->owner = owner;
+  eventOwnerBox->owner = eventDispatcher_;
 
   auto eventPipe = [uiManager](
                        jsi::Runtime &runtime,
@@ -52,21 +52,24 @@ Scheduler::Scheduler(
     uiManager->updateState(stateUpdate);
   };
 
-  auto eventDispatcher = std::make_unique<EventDispatcher const>(
+  // Creating an `EventDispatcher` instance inside the already allocated
+  // container (inside the optional).
+  eventDispatcher_->emplace(
       eventPipe,
       statePipe,
       schedulerToolbox.synchronousEventBeatFactory,
       schedulerToolbox.asynchronousEventBeatFactory,
       eventOwnerBox);
 
-  eventDispatcher_ =
-      std::shared_ptr<EventDispatcher const>(owner, eventDispatcher.release());
+  // Casting to `std::shared_ptr<EventDispatcher const>`.
+  auto eventDispatcher =
+      EventDispatcher::Shared{eventDispatcher_, &eventDispatcher_->value()};
 
   componentDescriptorRegistry_ = schedulerToolbox.componentRegistryFactory(
-      eventDispatcher_, schedulerToolbox.contextContainer);
+      eventDispatcher, schedulerToolbox.contextContainer);
 
   rootComponentDescriptor_ = std::make_unique<const RootComponentDescriptor>(
-      ComponentDescriptorParameters{eventDispatcher_, nullptr, nullptr});
+      ComponentDescriptorParameters{eventDispatcher, nullptr, nullptr});
 
   uiManager->setDelegate(this);
   uiManager->setComponentDescriptorRegistry(componentDescriptorRegistry_);
