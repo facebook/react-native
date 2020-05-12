@@ -418,7 +418,8 @@ exports.examples = [
   {
     title: 'Plain Static Image',
     description: ('Static assets should be placed in the source code tree, and ' +
-      'required in the same way as JavaScript modules.': string),
+      "required in the same way as JavaScript modules. And assets' filename " +
+      'can be any characters.': string),
     render: function(): React.Node {
       return (
         <View style={styles.horizontal}>
@@ -436,6 +437,14 @@ exports.examples = [
           />
           <Image
             source={require('../../assets/uie_comment_highlighted.png')}
+            style={styles.icon}
+          />
+          <Image
+            source={require('../../assets/ファイル.png')}
+            style={styles.icon}
+          />
+          <Image
+            source={require('../../assets/ユーザー.png')}
             style={styles.icon}
           />
         </View>
