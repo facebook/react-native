@@ -216,7 +216,7 @@ describe('resolveAssetSource', () => {
           __packager_asset: true,
           width: 100,
           height: 200,
-          uri: '__module_a_5b6f00f',
+          uri: '__module_a_logo',
           scale: 1,
         },
       );
