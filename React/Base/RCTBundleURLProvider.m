@@ -187,6 +187,10 @@ static NSURL *serverRootWithHostPort(NSString *hostPort)
   NSString *query = [NSString stringWithFormat:@"platform=ios&dev=%@&minify=%@",
                                                enableDev ? @"true" : @"false",
                                                enableMinification ? @"true" : @"false"];
+  NSString *bundleID = [[NSBundle mainBundle] objectForInfoDictionaryKey:(NSString *)kCFBundleIdentifierKey];
+  if (bundleID) {
+    query = [NSString stringWithFormat:@"%@&app=%@", query, bundleID];
+  }
   return [[self class] resourceURLForResourcePath:path packagerHost:packagerHost query:query];
 }
 

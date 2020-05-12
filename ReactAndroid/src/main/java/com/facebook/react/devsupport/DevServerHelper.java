@@ -421,12 +421,13 @@ public class DevServerHelper {
   private String createBundleURL(String mainModuleID, BundleType type, String host) {
     return String.format(
         Locale.US,
-        "http://%s/%s.%s?platform=android&dev=%s&minify=%s",
+        "http://%s/%s.%s?platform=android&dev=%s&minify=%s&app=%s",
         host,
         mainModuleID,
         type.typeID(),
         getDevMode(),
-        getJSMinifyMode());
+        getJSMinifyMode(),
+        mPackageName);
   }
 
   private String createBundleURL(String mainModuleID, BundleType type) {
