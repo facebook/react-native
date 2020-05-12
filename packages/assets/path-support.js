@@ -67,7 +67,7 @@ function getAndroidResourceFolderName(
 
 function getAndroidResourceIdentifier(asset: PackagerAsset): string {
   var folderPath = getBasePath(asset);
-  var name = asset.name;
+  var name = asset.name.toLowerCase();
   if (!name.match(/^[a-z0-9_]+$/)) {
     // filename contains illegal characters, use file hash.
     name = asset.hash;
