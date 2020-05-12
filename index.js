@@ -100,6 +100,8 @@ import typeof DeprecatedColorPropType from './Libraries/DeprecatedPropTypes/Depr
 import typeof DeprecatedEdgeInsetsPropType from './Libraries/DeprecatedPropTypes/DeprecatedEdgeInsetsPropType';
 import typeof DeprecatedPointPropType from './Libraries/DeprecatedPropTypes/DeprecatedPointPropType';
 import typeof DeprecatedViewPropTypes from './Libraries/DeprecatedPropTypes/DeprecatedViewPropTypes';
+import typeof DeprecatedTextPropTypes from './Libraries/DeprecatedPropTypes/DeprecatedTextPropTypes';
+import typeof DeprecatedImagePropTypes from './Libraries/DeprecatedPropTypes/DeprecatedImagePropType';
 
 import type {HostComponent as _HostComponentInternal} from './Libraries/Renderer/shims/ReactNativeTypes';
 
@@ -489,6 +491,12 @@ module.exports = {
   get ViewPropTypes(): DeprecatedViewPropTypes {
     return require('./Libraries/DeprecatedPropTypes/DeprecatedViewPropTypes');
   },
+  get TextPropTypes(): DeprecatedTextPropTypes {
+    return require('./Libraries/DeprecatedPropTypes/DeprecatedTextPropTypes');
+  },
+  get ImagePropTypes(): DeprecatedImagePropTypes {
+    return require('./Libraries/DeprecatedPropTypes/DeprecatedImagePropType');
+  }
 };
 
 if (__DEV__) {
