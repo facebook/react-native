@@ -14,6 +14,8 @@
 #import <React/RCTRootView.h>
 #import <React/RCTUIManager.h>
 #import <React/RCTUtils.h>
+#import <React/RCTBundleURLProvider.h>
+#import <React/RCTImageLoader.h>
 
 #import "FBSnapshotTestController.h"
 #import "RCTTestModule.h"
@@ -199,8 +201,10 @@ expectErrorBlock:(BOOL(^)(NSString *error))expectErrorBlock
         configurationBlock(rootView);
       }
 
+      RCTImageLoader *imageLoader = [bridge moduleForClass:[RCTImageLoader class]];
+
       NSDate *date = [NSDate dateWithTimeIntervalSinceNow:kTestTimeoutSeconds];
-      while (date.timeIntervalSinceNow > 0 && testModule.status == RCTTestStatusPending && errors == nil) {
+      while (date.timeIntervalSinceNow > 0 && (testModule.status == RCTTestStatusPending || [imageLoader activeTasks] > 0) && errors == nil) {
         [[NSRunLoop mainRunLoop] runMode:NSDefaultRunLoopMode beforeDate:[NSDate dateWithTimeIntervalSinceNow:0.1]];
         [[NSRunLoop mainRunLoop] runMode:NSRunLoopCommonModes beforeDate:[NSDate dateWithTimeIntervalSinceNow:0.1]];
       }

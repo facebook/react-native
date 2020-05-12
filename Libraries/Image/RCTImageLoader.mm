@@ -406,6 +406,10 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
   });
 }
 
+- (NSInteger)activeTasks {
+  return _activeTasks;
+}
+
 /**
  * This returns either an image, or raw image data, depending on the loading
  * path taken. This is useful if you want to skip decoding, e.g. when preloading

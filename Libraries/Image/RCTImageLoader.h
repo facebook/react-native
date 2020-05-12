@@ -22,6 +22,7 @@
 - (instancetype)initWithRedirectDelegate:(id<RCTImageRedirectProtocol>)redirectDelegate
                               loadersProvider:(NSArray<id<RCTImageURLLoader>> * (^)(void))getLoaders
                              decodersProvider:(NSArray<id<RCTImageDataDecoder>> * (^)(void))getDecoders;
+- (NSInteger)activeTasks;
 @end
 
 /**

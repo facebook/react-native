@@ -502,8 +502,8 @@ SPEC CHECKSUMS:
   CocoaAsyncSocket: 694058e7c0ed05a9e217d1b3c7ded962f4180845
   CocoaLibEvent: 2fab71b8bd46dd33ddb959f7928ec5909f838e3f
   DoubleConversion: cde416483dac037923206447da6e1454df403714
-  FBLazyVector: f4770b2c41e050486153014b382a0ef4e1873ba1
-  FBReactNativeSpec: 4c75510a37f97c849ad9d36e8818613b375997da
+  FBLazyVector: 555a6c1f198849a2eda493c93fe58e952c0cf4eb
+  FBReactNativeSpec: c38cae163dc178cf07393aaf3639834123ea3ad5
   Flipper: 33585e2d9810fe5528346be33bcf71b37bb7ae13
   Flipper-DoubleConversion: 38631e41ef4f9b12861c67d17cb5518d06badc41
   Flipper-Folly: c12092ea368353b58e992843a990a3225d4533c3
@@ -514,32 +514,32 @@ SPEC CHECKSUMS:
   Folly: b73c3869541e86821df3c387eb0af5f65addfab4
   glog: 40a13f7840415b9a77023fbcae0f1e6f43192af3
   OpenSSL-Universal: 8b48cc0d10c1b2923617dfe5c178aa9ed2689355
-  RCTRequired: 7e902f87bfc578dd6a182d994ab8d6e4d1396bd2
-  RCTTypeSafety: 2f03f70aa2201577705494f1f76ad3a7c1063613
-  React: 32c36d9cd712a89f583e8d0a8237084aa14d2011
-  React-ART: 68099b91de835b6915a0ebdd2f431cd0dfd77a71
-  React-callinvoker: 33c27951352d371319a74fc064f12b7616877a59
-  React-Core: daf3dd8b9353db66b059bca6ff0121c8a79f09d5
-  React-CoreModules: 3fa2204802fcf7ccd31e7e70c1a0e682b81fce1f
-  React-cxxreact: bb109f2d73d52e1ace7a3a27292687e271e31e78
-  React-jsi: f3a8201012cec06baa04a0cb60d1da06cfffa416
-  React-jsiexecutor: 61c71e33b4934f25fcff38c43a981c9e2a315ca3
-  React-jsinspector: f6fbcd926d897cef0fc995a9f842ff4f95a6691c
-  React-perflogger: fe56955052443d4f9cc551efb4d05da9564eb060
-  React-RCTActionSheet: 19b61ce66e57aaa82c3a2c79e102bbb49087a556
-  React-RCTAnimation: 8fcc66cd729431162dafdeb443ad91be9e3301e6
-  React-RCTBlob: 70d98b88a40b1d1d8211691f122fbe0e249ec4b0
-  React-RCTImage: 1b1709bff6275aa2fb2d53b68ee8db1b0b693e27
-  React-RCTLinking: e630e69ca412cadc8b1436a30cb8117d49476c43
-  React-RCTNetwork: 7d92f0075226f1c09776e0b87fcb5ff65a21dddc
-  React-RCTPushNotification: 84b1ce7d1b14d96778a840e4d437b1384ba0817e
-  React-RCTSettings: 643839777475f1bd168a80a2e92d531055b697e4
-  React-RCTTest: 68b2a36a83cb7f3b8f18067c259dec4c24a027ab
-  React-RCTText: d1243dfd69c6d0848cfd122c13918de856582a64
-  React-RCTVibration: 468fbe27e26d4a32a741bda491244e402d1ff24e
-  React-runtimeexecutor: 56f253eef3f86aba1afbc16f8ee48c797ec67056
-  ReactCommon: 07c5748cd28fd85ada71cfdf099d85fcf0270ef3
-  Yoga: 4dc04b0c1b81b0920b08b0a2b8c7502c80ffc3b3
+  RCTRequired: b9c4ac0afd0c7a80b2da4eb28cb4446d9ceea548
+  RCTTypeSafety: 27100d715a173724c7087f55a49f60f9f8634dd8
+  React: a93b385f85efd6584b9e9ef35aaa2ba32eef56cb
+  React-ART: 574b92a992ccea0f8c5e7f670d293da75c38ceab
+  React-callinvoker: ae17f1667892d78aef6a2f54684b8970bc251cfe
+  React-Core: 4707441a7e7118c25042d48927637fb2b0c8a82e
+  React-CoreModules: 2551a49feb5d7f5bc0fb43cfb13ddc5428bc2eff
+  React-cxxreact: 4cda5a8a17189571c0c5d48628e9c34b2395e5e4
+  React-jsi: 2f7d1a6d11f2f455215c04b752931e02c7e94d84
+  React-jsiexecutor: 20b4ae4fe459de519ec28cca022bee26ca7cc913
+  React-jsinspector: 2934010979c83fbcd86472ee685f92438e61dd7d
+  React-perflogger: 5ac5d60753392844c169b466b46cd0ceb53245fc
+  React-RCTActionSheet: a329becbfa712628aa2d06ee980076d25e7f89b6
+  React-RCTAnimation: d52775a3f908e78d9ac21d97a0831547d119dddc
+  React-RCTBlob: d3ea9258a8ef701322cb869978239d11f7203359
+  React-RCTImage: 7c823881b77cdf919ab1654107e4a9a722e94520
+  React-RCTLinking: 080e50eafafc3277386311937f5856d519cf5403
+  React-RCTNetwork: aed61a6f60a9419129466783b94d9a2122c260b0
+  React-RCTPushNotification: 11492403752d70771b303f8b3b6385af3d8cb625
+  React-RCTSettings: 69917713340d613895d8847eba254d15168b77c2
+  React-RCTTest: a9efe663b73ee2681d24b229d70f0c996440d6ab
+  React-RCTText: 796488183a4f6d4625fe1c6d00a858f1ec485edc
+  React-RCTVibration: 311f791375fd354f48994dac9ba7a737ae1726ed
+  React-runtimeexecutor: fddee0e1d827ef782386cd8ae3d33c7947d31696
+  ReactCommon: 28057c47ad3fc5c7f0eada74aa738abeaa6ebbbb
+  Yoga: fac11ca4ccf722fd20752423ea3d6e248d24d1fd
   YogaKit: f782866e155069a2cca2517aafea43200b01fd5a
 
 PODFILE CHECKSUM: 5f0be4be03d6934478b9dd621bfbab4383b8c85d
