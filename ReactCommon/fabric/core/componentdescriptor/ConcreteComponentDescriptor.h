@@ -122,6 +122,14 @@ class ConcreteComponentDescriptor : public ComponentDescriptor {
     return ShadowNodeT::Props(rawProps, props);
   };
 
+  virtual SharedProps interpolateProps(
+      float animationProgress,
+      const SharedProps &props,
+      const SharedProps &newProps) const override {
+    // By default, this does nothing.
+    return cloneProps(newProps, {});
+  };
+
   virtual State::Shared createInitialState(
       ShadowNodeFragment const &fragment,
       ShadowNodeFamily::Shared const &family) const override {
