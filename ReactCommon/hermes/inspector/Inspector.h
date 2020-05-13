@@ -292,6 +292,7 @@ class Inspector : public facebook::hermes::debugger::EventObserver,
 
   void installConsoleFunction(
       jsi::Object &console,
+      std::shared_ptr<jsi::Object> &originalConsole,
       const std::string &name,
       const std::string &chromeType);
 
