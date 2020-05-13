@@ -287,6 +287,23 @@ if (Platform.OS === 'ios') {
       return <AppendingList />;
     },
   });
+  exports.examples.push({
+    title: '<ScrollView> (centerContent = true)\n',
+    description:
+      'ScrollView puts its content in the center if the content is smaller than scroll view',
+    render: function(): React.Node {
+      function CenterContentList(): React.Node {
+        return (
+          <View>
+            <ScrollView style={styles.scrollView} centerContent={true}>
+              <Text>This should be in center.</Text>
+            </ScrollView>
+          </View>
+        );
+      }
+      return <CenterContentList />;
+    },
+  });
 }
 
 class Item extends React.PureComponent<{|
