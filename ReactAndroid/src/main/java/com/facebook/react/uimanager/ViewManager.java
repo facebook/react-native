@@ -318,7 +318,7 @@ public abstract class ViewManager<T extends View, C extends ReactShadowNode>
       YogaMeasureMode widthMode,
       float height,
       YogaMeasureMode heightMode,
-      @Nullable int[] attachmentsPositions) {
+      @Nullable float[] attachmentsPositions) {
     return 0;
   }
 

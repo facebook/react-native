@@ -519,7 +519,7 @@ public class MountingManager {
       @NonNull YogaMeasureMode widthMode,
       float height,
       @NonNull YogaMeasureMode heightMode,
-      @Nullable int[] attachmentsPositions) {
+      @Nullable float[] attachmentsPositions) {
 
     return mViewManagerRegistry
         .get(componentName)

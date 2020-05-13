@@ -464,7 +464,7 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
       float maxWidth,
       float minHeight,
       float maxHeight,
-      @Nullable int[] attachmentsPositions) {
+      @Nullable float[] attachmentsPositions) {
     ReactContext context =
         rootTag < 0 ? mReactApplicationContext : mReactContextForRootTag.get(rootTag);
     return mMountingManager.measure(

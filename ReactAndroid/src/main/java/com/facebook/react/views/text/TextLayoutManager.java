@@ -216,7 +216,7 @@ public class TextLayoutManager {
       float height,
       YogaMeasureMode heightYogaMeasureMode,
       ReactTextViewManagerCallback reactTextViewManagerCallback,
-      @Nullable int[] attachmentsPositions) {
+      @Nullable float[] attachmentsPositions) {
 
     // TODO(5578671): Handle text direction (see View#getTextDirectionHeuristic)
     TextPaint textPaint = sTextPaintInstance;
@@ -234,6 +234,7 @@ public class TextLayoutManager {
     if (text == null) {
       throw new IllegalStateException("Spannable element has not been prepared in onBeforeLayout");
     }
+
     BoringLayout.Metrics boring = BoringLayout.isBoring(text, textPaint);
     float desiredWidth = boring == null ? Layout.getDesiredWidth(text, textPaint) : Float.NaN;
 
@@ -412,9 +413,9 @@ public class TextLayoutManager {
 
           // The attachment array returns the positions of each of the attachments as
           attachmentsPositions[attachmentPosition] =
-              (int) Math.ceil(PixelUtil.toSPFromPixel(placeholderTopPosition));
+              PixelUtil.toSPFromPixel(placeholderTopPosition);
           attachmentsPositions[attachmentPosition + 1] =
-              (int) Math.ceil(PixelUtil.toSPFromPixel(placeholderLeftPosition));
+              PixelUtil.toSPFromPixel(placeholderLeftPosition);
           attachmentIndex++;
         }
       }
