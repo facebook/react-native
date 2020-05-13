@@ -10,7 +10,7 @@
 
 'use strict';
 
-const AnimatedImplementation = require('../../Animated/src/AnimatedImplementation');
+const AnimatedImplementation = require('react-animated/dist/AnimatedImplementation');
 const React = require('react');
 const StyleSheet = require('../../StyleSheet/StyleSheet');
 const View = require('../View/View');

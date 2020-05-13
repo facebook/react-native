@@ -7,8 +7,11 @@
     "animated",
     "animation"
   ],
+  "files": [
+    "dist"
+  ],
   "license": "MIT",
-  "main": "Animated.js",
+  "main": "dist/Animated.js",
   "dependencies": {
     "fbjs": "^1.0.0"
   },
