@@ -77,7 +77,7 @@ type Props = $ReadOnly<{|
    * Additional distance outside of this view in which a touch is considered a
    * press before `onPressOut` is triggered.
    */
-  pressRectOffset?: ?RectOrSize,
+  pressRetentionOffset?: ?RectOrSize,
 
   /**
    * Called when this view's layout changes.
@@ -148,7 +148,7 @@ function Pressable(props: Props, forwardedRef): React.Node {
     onPress,
     onPressIn,
     onPressOut,
-    pressRectOffset,
+    pressRetentionOffset,
     style,
     testOnly_pressed,
     ...restProps
@@ -167,7 +167,7 @@ function Pressable(props: Props, forwardedRef): React.Node {
     () => ({
       disabled,
       hitSlop,
-      pressRectOffset,
+      pressRectOffset: pressRetentionOffset,
       android_disableSound,
       delayLongPress,
       onLongPress,
@@ -202,7 +202,7 @@ function Pressable(props: Props, forwardedRef): React.Node {
       onPress,
       onPressIn,
       onPressOut,
-      pressRectOffset,
+      pressRetentionOffset,
       setPressed,
     ],
   );
