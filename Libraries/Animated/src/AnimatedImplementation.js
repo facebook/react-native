@@ -29,6 +29,7 @@ const SpringAnimation = require('./animations/SpringAnimation');
 const TimingAnimation = require('./animations/TimingAnimation');
 
 const createAnimatedComponent = require('./createAnimatedComponent');
+const useValue = require('./useValue');
 
 import type {
   AnimationConfig,
@@ -707,6 +708,12 @@ module.exports = {
    * Expose Event class, so it can be used as a type for type checkers.
    */
   Event: AnimatedEvent,
+
+  /**
+   * React hook for keeping the same instance of AnimatedValue in functional
+   * components
+   */
+  useValue,
 
   __PropsOnlyForTests: AnimatedProps,
 };

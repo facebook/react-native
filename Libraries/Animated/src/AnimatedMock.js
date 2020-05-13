@@ -19,6 +19,7 @@ const AnimatedValue = require('./nodes/AnimatedValue');
 const AnimatedValueXY = require('./nodes/AnimatedValueXY');
 
 const createAnimatedComponent = require('./createAnimatedComponent');
+const useValue = require('./useValue');
 
 import type {EndCallback} from './animations/Animation';
 import type {TimingAnimationConfig} from './animations/TimingAnimation';
@@ -152,5 +153,6 @@ module.exports = {
   forkEvent: AnimatedImplementation.forkEvent,
   unforkEvent: AnimatedImplementation.unforkEvent,
   Event: AnimatedEvent,
+  useValue,
   __PropsOnlyForTests: AnimatedProps,
 };
