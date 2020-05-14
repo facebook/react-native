@@ -259,7 +259,7 @@ public class RedBoxContentView extends LinearLayout implements AdapterView.OnIte
         new View.OnClickListener() {
           @Override
           public void onClick(View v) {
-            Assertions.assertNotNull(mDevSupportManager).handleReloadJS();
+            Assertions.assertNotNull(mDevSupportManager).reloadExpoApp();
           }
         });
     mDismissButton = (Button) findViewById(R.id.rn_redbox_dismiss_button);

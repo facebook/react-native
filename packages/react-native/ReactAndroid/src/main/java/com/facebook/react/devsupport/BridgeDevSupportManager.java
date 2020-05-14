@@ -99,7 +99,7 @@ public final class BridgeDevSupportManager extends DevSupportManagerBase {
       }
     }
 
-    addCustomDevOption(
+    expo_transformer_remove: addCustomDevOption(
         mIsSamplingProfilerEnabled ? "Disable Sampling Profiler" : "Enable Sampling Profiler",
         new DevOptionHandler() {
           @Override
