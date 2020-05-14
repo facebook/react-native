@@ -5,6 +5,10 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+#pragma once
+
+#import <memory>
+
 #import "RCTTurboModule.h"
 
 @protocol RCTTurboModuleManagerDelegate <NSObject>
@@ -40,11 +44,6 @@
 - (instancetype)initWithBridge:(RCTBridge *)bridge
                       delegate:(id<RCTTurboModuleManagerDelegate>)delegate
                      jsInvoker:(std::shared_ptr<facebook::react::CallInvoker>)jsInvoker;
-
-- (instancetype)initWithBridge:(RCTBridge *)bridge
-                      delegate:(id<RCTTurboModuleManagerDelegate>)delegate
-                     jsInvoker:(std::shared_ptr<facebook::react::CallInvoker>)jsInvoker
-             performanceLogger:(id<RCTTurboModulePerformanceLogger>)performanceLogger;
 
 - (void)installJSBindingWithRuntime:(facebook::jsi::Runtime *)runtime;
 
