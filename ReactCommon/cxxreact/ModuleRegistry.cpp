@@ -195,6 +195,26 @@ folly::Optional<ModuleConfig> ModuleRegistry::getConfig(
   }
 }
 
+std::string ModuleRegistry::getModuleName(unsigned int moduleId) {
+  if (moduleId >= modules_.size()) {
+    throw std::runtime_error(folly::to<std::string>(
+        "moduleId ", moduleId, " out of range [0..", modules_.size(), ")"));
+  }
+
+  return modules_[moduleId]->getName();
+}
+
+std::string ModuleRegistry::getModuleSyncMethodName(
+    unsigned int moduleId,
+    unsigned int methodId) {
+  if (moduleId >= modules_.size()) {
+    throw std::runtime_error(folly::to<std::string>(
+        "moduleId ", moduleId, " out of range [0..", modules_.size(), ")"));
+  }
+
+  return modules_[moduleId]->getSyncMethodName(methodId);
+}
+
 void ModuleRegistry::callNativeMethod(
     unsigned int moduleId,
     unsigned int methodId,

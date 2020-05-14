@@ -72,6 +72,7 @@ JSIExecutor::JSIExecutor(
       delegate_(delegate),
       nativeModules_(std::make_shared<JSINativeModules>(
           delegate ? delegate->getModuleRegistry() : nullptr)),
+      moduleRegistry_(delegate ? delegate->getModuleRegistry() : nullptr),
       scopedTimeoutInvoker_(scopedTimeoutInvoker),
       runtimeInstaller_(runtimeInstaller) {
   runtime_->global().setProperty(
@@ -443,16 +444,54 @@ Value JSIExecutor::nativeCallSyncHook(const Value *args, size_t count) {
         folly::to<std::string>("method parameters should be array"));
   }
 
+  unsigned int moduleId = static_cast<unsigned int>(args[0].getNumber());
+  unsigned int methodId = static_cast<unsigned int>(args[1].getNumber());
+  std::string moduleName;
+  std::string methodName;
+
+  if (moduleRegistry_) {
+    moduleName = moduleRegistry_->getModuleName(moduleId);
+    methodName = moduleRegistry_->getModuleSyncMethodName(moduleId, methodId);
+
+    NativeModulePerfLogger::getInstance().syncMethodCallStart(
+        moduleName.c_str(), methodName.c_str());
+
+    NativeModulePerfLogger::getInstance().syncMethodCallArgConversionStart(
+        moduleName.c_str(), methodName.c_str());
+  }
+
   MethodCallResult result = delegate_->callSerializableNativeHook(
-      *this,
-      static_cast<unsigned int>(args[0].getNumber()), // moduleId
-      static_cast<unsigned int>(args[1].getNumber()), // methodId
-      dynamicFromValue(*runtime_, args[2])); // args
+      *this, moduleId, methodId, dynamicFromValue(*runtime_, args[2]));
+
+  /**
+   * Note:
+   * In RCTNativeModule, folly::none is returned from callSerializableNativeHook
+   * when executing a NativeModule method fails. Therefore, it's safe to not
+   * terminate the syncMethodCall when folly::none is returned.
+   *
+   * TODO: In JavaNativeModule, folly::none is returned when the synchronous
+   * NativeModule method has the void return type. Change this to return
+   * folly::dynamic(nullptr) instead, so that folly::none is reserved for
+   * exceptional scenarios.
+   *
+   * TODO: Investigate CxxModule infra to see if folly::none is used for
+   * returns in exceptional scenarios.
+   **/
 
   if (!result.hasValue()) {
     return Value::undefined();
   }
-  return valueFromDynamic(*runtime_, result.value());
+
+  Value returnValue = valueFromDynamic(*runtime_, result.value());
+
+  if (moduleRegistry_) {
+    NativeModulePerfLogger::getInstance().syncMethodCallReturnConversionEnd(
+        moduleName.c_str(), methodName.c_str());
+    NativeModulePerfLogger::getInstance().syncMethodCallEnd(
+        moduleName.c_str(), methodName.c_str());
+  }
+
+  return returnValue;
 }
 
 #if DEBUG
