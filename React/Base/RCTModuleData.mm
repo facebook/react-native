@@ -373,10 +373,22 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init);
 
 - (void)gatherConstants
 {
+  NSString *moduleName = [self name];
+
   if (_hasConstantsToExport && !_constantsToExport) {
     RCT_PROFILE_BEGIN_EVENT(
         RCTProfileTagAlways, ([NSString stringWithFormat:@"[RCTModuleData gatherConstants] %@", _moduleClass]), nil);
     (void)[self instance];
+
+    /**
+     * Why do we instrument moduleJSRequireEndingStart here?
+     *  - NativeModule requires from JS go through ModuleRegistry::getConfig().
+     *  - ModuleRegistry::getConfig() calls NativeModule::getConstants() first.
+     *  - This delegates to RCTNativeModule::getConstants(), which calls RCTModuleData gatherConstants().
+     *  - Therefore, this is the first statement that executes after the NativeModule is created/initialized in a JS
+     *    require.
+     */
+    NativeModulePerfLogger::getInstance().moduleJSRequireEndingStart([moduleName UTF8String]);
     if (_requiresMainQueueSetup) {
       if (!RCTIsMainQueue()) {
         RCTLogWarn(@"Required dispatch_sync to load constants for %@. This may lead to deadlocks", _moduleClass);
@@ -389,6 +401,12 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init);
       _constantsToExport = [_instance constantsToExport] ?: @{};
     }
     RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"");
+  } else {
+    /**
+     * If a NativeModule doesn't have constants, it isn't eagerly loaded until its methods are first invoked.
+     * Therefore, we should immediately start JSRequireEnding
+     */
+    NativeModulePerfLogger::getInstance().moduleJSRequireEndingStart([moduleName UTF8String]);
   }
 }
 

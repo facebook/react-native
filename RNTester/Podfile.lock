@@ -252,6 +252,7 @@ PODS:
     - glog
     - React-callinvoker (= 1000.0.0)
     - React-jsinspector (= 1000.0.0)
+    - React-perflogger (= 1000.0.0)
     - React-runtimeexecutor (= 1000.0.0)
   - React-jsi (1000.0.0):
     - boost-for-react-native (= 1.63.0)
@@ -270,6 +271,7 @@ PODS:
     - glog
     - React-cxxreact (= 1000.0.0)
     - React-jsi (= 1000.0.0)
+    - React-perflogger (= 1000.0.0)
   - React-jsinspector (1000.0.0)
   - React-perflogger (1000.0.0)
   - React-RCTActionSheet (1000.0.0):
@@ -519,9 +521,9 @@ SPEC CHECKSUMS:
   React-callinvoker: 0dada022d38b73e6e15b33e2a96476153f79bbf6
   React-Core: d85e4563acbfbb6e6be7414a813ad55d05d675df
   React-CoreModules: d13d148c851af5780f864be74bc2165140923dc7
-  React-cxxreact: b43a94e679b307660de530a3af872ab4c7d9925d
+  React-cxxreact: bb64d8c5798d75565870ff1a7a8ac57a09bd9ff8
   React-jsi: fe94132da767bfc4801968c2a12abae43e9a833e
-  React-jsiexecutor: 55eff40b2e0696e7a979016e321793ec8b28a2ac
+  React-jsiexecutor: 959bb48c75a3bfc1b1d2b991087a6d8df721cbcf
   React-jsinspector: 7fbf9b42b58b02943a0d89b0ba9fff0070f2de98
   React-perflogger: d32d3423e466a825ef2e9934fe9d62b149e5d9f8
   React-RCTActionSheet: 51c43beeb74ef41189e87fe9823e53ebf6210359
