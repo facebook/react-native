@@ -271,9 +271,6 @@ void Binding::installFabricUIManager(
   disablePreallocateViews_ = reactNativeConfig_->getBool(
       "react_fabric:disabled_view_preallocation_android");
 
-  enableOptimizedMovesDiffer_ = reactNativeConfig_->getBool(
-      "react_fabric:enabled_optimized_moves_differ_android");
-
   auto toolbox = SchedulerToolbox{};
   toolbox.contextContainer = contextContainer;
   toolbox.componentRegistryFactory = componentsRegistry->buildRegistryFunction;
@@ -583,9 +580,7 @@ void Binding::schedulerDidFinishTransaction(
     return;
   }
 
-  auto mountingTransaction = mountingCoordinator->pullTransaction(
-      enableOptimizedMovesDiffer_ ? DifferentiatorMode::OptimizedMoves
-                                  : DifferentiatorMode::Classic);
+  auto mountingTransaction = mountingCoordinator->pullTransaction();
 
   if (!mountingTransaction.has_value()) {
     return;

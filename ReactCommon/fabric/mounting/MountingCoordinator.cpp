@@ -66,8 +66,8 @@ bool MountingCoordinator::waitForTransaction(
       lock, timeout, [this]() { return lastRevision_.has_value(); });
 }
 
-better::optional<MountingTransaction> MountingCoordinator::pullTransaction(
-    DifferentiatorMode differentiatorMode) const {
+better::optional<MountingTransaction> MountingCoordinator::pullTransaction()
+    const {
   std::lock_guard<std::mutex> lock(mutex_);
 
   if (!lastRevision_.has_value()) {
@@ -80,9 +80,7 @@ better::optional<MountingTransaction> MountingCoordinator::pullTransaction(
   telemetry.willDiff();
 
   auto mutations = calculateShadowViewMutations(
-      differentiatorMode,
-      baseRevision_.getRootShadowNode(),
-      lastRevision_->getRootShadowNode());
+      baseRevision_.getRootShadowNode(), lastRevision_->getRootShadowNode());
 
   telemetry.didDiff();
 

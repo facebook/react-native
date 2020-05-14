@@ -52,8 +52,7 @@ class MountingCoordinator final {
    * However, a consumer should always call it on the same thread (e.g. on the
    * main thread) or ensure sequentiality of mount transactions separately.
    */
-  better::optional<MountingTransaction> pullTransaction(
-      DifferentiatorMode differentiatorMode) const;
+  better::optional<MountingTransaction> pullTransaction() const;
 
   /*
    * Blocks the current thread until a new mounting transaction is available or

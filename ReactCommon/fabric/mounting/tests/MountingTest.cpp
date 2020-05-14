@@ -227,8 +227,7 @@ TEST(MountingTest, testMinimalInstructionGeneration) {
     }*/
 
   // Calculating mutations.
-  auto mutations1 = calculateShadowViewMutations(
-      DifferentiatorMode::OptimizedMoves, *rootNodeV1, *rootNodeV2);
+  auto mutations1 = calculateShadowViewMutations(*rootNodeV1, *rootNodeV2);
 
   // The order and exact mutation instructions here may change at any time.
   // This test just ensures that any changes are intentional.
@@ -244,8 +243,7 @@ TEST(MountingTest, testMinimalInstructionGeneration) {
   assert(mutations1[1].index == 0);
 
   // Calculating mutations.
-  auto mutations2 = calculateShadowViewMutations(
-      DifferentiatorMode::OptimizedMoves, *rootNodeV2, *rootNodeV3);
+  auto mutations2 = calculateShadowViewMutations(*rootNodeV2, *rootNodeV3);
 
   // The order and exact mutation instructions here may change at any time.
   // This test just ensures that any changes are intentional.
@@ -261,8 +259,7 @@ TEST(MountingTest, testMinimalInstructionGeneration) {
   assert(mutations2[1].oldChildShadowView.tag == 100);
 
   // Calculating mutations.
-  auto mutations3 = calculateShadowViewMutations(
-      DifferentiatorMode::OptimizedMoves, *rootNodeV3, *rootNodeV4);
+  auto mutations3 = calculateShadowViewMutations(*rootNodeV3, *rootNodeV4);
 
   // The order and exact mutation instructions here may change at any time.
   // This test just ensures that any changes are intentional.
@@ -283,8 +280,7 @@ TEST(MountingTest, testMinimalInstructionGeneration) {
   assert(mutations3[3].index == 2);
 
   // Calculating mutations.
-  auto mutations4 = calculateShadowViewMutations(
-      DifferentiatorMode::OptimizedMoves, *rootNodeV4, *rootNodeV5);
+  auto mutations4 = calculateShadowViewMutations(*rootNodeV4, *rootNodeV5);
 
   // The order and exact mutation instructions here may change at any time.
   // This test just ensures that any changes are intentional.
@@ -309,8 +305,7 @@ TEST(MountingTest, testMinimalInstructionGeneration) {
   assert(mutations4[5].newChildShadowView.tag == 102);
   assert(mutations4[5].index == 3);
 
-  auto mutations5 = calculateShadowViewMutations(
-      DifferentiatorMode::OptimizedMoves, *rootNodeV5, *rootNodeV6);
+  auto mutations5 = calculateShadowViewMutations(*rootNodeV5, *rootNodeV6);
 
   // The order and exact mutation instructions here may change at any time.
   // This test just ensures that any changes are intentional.
@@ -329,8 +324,7 @@ TEST(MountingTest, testMinimalInstructionGeneration) {
   assert(mutations5[3].newChildShadowView.tag == 105);
   assert(mutations5[3].index == 3);
 
-  auto mutations6 = calculateShadowViewMutations(
-      DifferentiatorMode::OptimizedMoves, *rootNodeV6, *rootNodeV7);
+  auto mutations6 = calculateShadowViewMutations(*rootNodeV6, *rootNodeV7);
 
   // The order and exact mutation instructions here may change at any time.
   // This test just ensures that any changes are intentional.

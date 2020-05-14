@@ -323,11 +323,6 @@ static inline LayoutContext RCTGetLayoutContext()
   RCTScheduler *scheduler = [[RCTScheduler alloc] initWithToolbox:toolbox];
   scheduler.delegate = self;
 
-  if (reactNativeConfig) {
-    _mountingManager.useModernDifferentiatorMode =
-        reactNativeConfig->getBool("react_fabric:enabled_optimized_moves_differ_ios");
-  }
-
   return scheduler;
 }
 
