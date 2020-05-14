@@ -8,7 +8,10 @@
 #import "RCTModuleData.h"
 
 #import <objc/runtime.h>
-#include <mutex>
+#import <atomic>
+#import <mutex>
+
+#import <ReactCommon/NativeModulePerfLogger.h>
 
 #import "RCTBridge+Private.h"
 #import "RCTBridge.h"
@@ -16,6 +19,16 @@
 #import "RCTModuleMethod.h"
 #import "RCTProfile.h"
 #import "RCTUtils.h"
+
+using namespace facebook::react;
+
+namespace {
+int32_t getUniqueId()
+{
+  static std::atomic<int32_t> counter{0};
+  return counter++;
+}
+}
 
 @implementation RCTModuleData {
   NSDictionary<NSString *, id> *_constantsToExport;
@@ -110,22 +123,29 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init);
 
 #pragma mark - private setup methods
 
-- (void)setUpInstanceAndBridge
+- (void)setUpInstanceAndBridge:(int32_t)requestId
 {
+  NSString *moduleName = [self name];
+
   RCT_PROFILE_BEGIN_EVENT(
       RCTProfileTagAlways,
       @"[RCTModuleData setUpInstanceAndBridge]",
       @{@"moduleClass" : NSStringFromClass(_moduleClass)});
   {
     std::unique_lock<std::mutex> lock(_instanceLock);
+    BOOL shouldSetup = !_setupComplete && _bridge.valid;
 
-    if (!_setupComplete && _bridge.valid) {
+    if (shouldSetup) {
       if (!_instance) {
         if (RCT_DEBUG && _requiresMainQueueSetup) {
           RCTAssertMainQueue();
         }
         RCT_PROFILE_BEGIN_EVENT(RCTProfileTagAlways, @"[RCTModuleData setUpInstanceAndBridge] Create module", nil);
+
+        NativeModulePerfLogger::getInstance().moduleCreateConstructStart([moduleName UTF8String], requestId);
         _instance = _moduleProvider ? _moduleProvider() : nil;
+        NativeModulePerfLogger::getInstance().moduleCreateConstructEnd([moduleName UTF8String], requestId);
+
         RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"");
         if (!_instance) {
           // Module init returned nil, probably because automatic instantiation
@@ -143,7 +163,13 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init);
       if (_instance && RCTProfileIsProfiling()) {
         RCTProfileHookInstance(_instance);
       }
+    }
 
+    if (_instance) {
+      NativeModulePerfLogger::getInstance().moduleCreateSetUpStart([moduleName UTF8String], requestId);
+    }
+
+    if (shouldSetup) {
       // Bridge must be set before methodQueue is set up, as methodQueue
       // initialization requires it (View Managers get their queue by calling
       // self.bridge.uiManager.methodQueue)
@@ -170,6 +196,10 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init);
     // nothing in finishSetupForInstance needs to be run on the main
     // thread.
     _requiresMainQueueSetup = NO;
+  }
+
+  if (_instance) {
+    NativeModulePerfLogger::getInstance().moduleCreateSetUpEnd([moduleName UTF8String], requestId);
   }
 }
 
@@ -286,6 +316,10 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init);
 
 - (id<RCTBridgeModule>)instance
 {
+  NSString *moduleName = [self name];
+  int32_t requestId = getUniqueId();
+  NativeModulePerfLogger::getInstance().moduleCreateStart([moduleName UTF8String], requestId);
+
   if (!_setupComplete) {
     RCT_PROFILE_BEGIN_EVENT(
         RCTProfileTagAlways, ([NSString stringWithFormat:@"[RCTModuleData instanceForClass:%@]", _moduleClass]), nil);
@@ -301,13 +335,21 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init);
       }
 
       RCTUnsafeExecuteOnMainQueueSync(^{
-        [self setUpInstanceAndBridge];
+        [self setUpInstanceAndBridge:requestId];
       });
       RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"");
     } else {
-      [self setUpInstanceAndBridge];
+      [self setUpInstanceAndBridge:requestId];
     }
     RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"");
+  } else {
+    NativeModulePerfLogger::getInstance().moduleCreateCacheHit([moduleName UTF8String], requestId);
+  }
+
+  if (_instance) {
+    NativeModulePerfLogger::getInstance().moduleCreateEnd([moduleName UTF8String], requestId);
+  } else {
+    NativeModulePerfLogger::getInstance().moduleCreateFail([moduleName UTF8String], requestId);
   }
   return _instance;
 }
