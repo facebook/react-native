@@ -16,6 +16,7 @@
 #include <glog/logging.h>
 #include <jsi/JSIDynamic.h>
 #include <jsi/instrumentation.h>
+#include <ReactCommon/NativeModulePerfLogger.h>
 
 #include <sstream>
 #include <stdexcept>
@@ -383,6 +384,8 @@ void JSIExecutor::callNativeModules(const Value &queue, bool isEndOfBatch) {
     .getPropertyAsFunction(*runtime_, "stringify").call(*runtime_, queue)
     .getString(*runtime_).utf8(*runtime_);
 #endif
+  NativeModulePerfLogger::getInstance().asyncMethodCallBatchPreprocessStart();
+
   delegate_->callNativeModules(
       *this, dynamicFromValue(*runtime_, queue), isEndOfBatch);
 }
