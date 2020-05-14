@@ -7,6 +7,7 @@
 
 #include "jsireact/JSIExecutor.h"
 
+#include <ReactCommon/NativeModulePerfLogger.h>
 #include <cxxreact/JSBigString.h>
 #include <cxxreact/ModuleRegistry.h>
 #include <cxxreact/ReactMarker.h>
@@ -383,6 +384,8 @@ void JSIExecutor::callNativeModules(const Value &queue, bool isEndOfBatch) {
     .getPropertyAsFunction(*runtime_, "stringify").call(*runtime_, queue)
     .getString(*runtime_).utf8(*runtime_);
 #endif
+  NativeModulePerfLogger::getInstance().asyncMethodCallBatchPreprocessStart();
+
   delegate_->callNativeModules(
       *this, dynamicFromValue(*runtime_, queue), isEndOfBatch);
 }
