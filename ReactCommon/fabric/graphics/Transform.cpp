@@ -86,6 +86,18 @@ Transform Transform::Rotate(Float x, Float y, Float z) {
   return transform;
 }
 
+Transform Transform::Interpolate(
+    float animationProgress,
+    Transform const &lhs,
+    Transform const &rhs) {
+  auto result = Transform{};
+  for (size_t i = 0; i < 16; i++) {
+    result.matrix[i] =
+        lhs.matrix[i] + (rhs.matrix[i] - lhs.matrix[i]) * animationProgress;
+  }
+  return result;
+}
+
 bool Transform::operator==(Transform const &rhs) const {
   for (auto i = 0; i < 16; i++) {
     if (matrix[i] != rhs.matrix[i]) {

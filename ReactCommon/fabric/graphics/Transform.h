@@ -13,6 +13,10 @@
 #include <react/graphics/Float.h>
 #include <react/graphics/Geometry.h>
 
+#ifdef ANDROID
+#include <folly/dynamic.h>
+#endif
+
 namespace facebook {
 namespace react {
 
@@ -56,6 +60,22 @@ struct Transform {
   static Transform RotateZ(Float angle);
   static Transform Rotate(Float angleX, Float angleY, Float angleZ);
 
+  /**
+   * Perform a simple interpolation between lhs and rhs, given "progress"
+   * between the two assuming that we are "moving" from lhs to rhs. This is a
+   * simple linear interpolation between each matrix index and will only work
+   * for simple scaling or translation; this will not work for rotation.
+   *
+   * @param progress
+   * @param lhs
+   * @param rhs
+   * @return
+   */
+  static Transform Interpolate(
+      float animationProgress,
+      Transform const &lhs,
+      Transform const &rhs);
+
   /*
    * Equality operators.
    */
@@ -72,6 +92,31 @@ struct Transform {
    * Concatenates (multiplies) transform matrices.
    */
   Transform operator*(Transform const &rhs) const;
+
+  /**
+   * Convert to folly::dynamic.
+   */
+#ifdef ANDROID
+  operator folly::dynamic() const {
+    return folly::dynamic::array(
+        matrix[0],
+        matrix[1],
+        matrix[2],
+        matrix[3],
+        matrix[4],
+        matrix[5],
+        matrix[6],
+        matrix[7],
+        matrix[8],
+        matrix[9],
+        matrix[10],
+        matrix[11],
+        matrix[12],
+        matrix[13],
+        matrix[14],
+        matrix[15]);
+  }
+#endif
 };
 
 /*

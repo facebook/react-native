@@ -28,13 +28,16 @@ class ViewComponentDescriptor
         dynamic_cast<ViewProps const *>(props.get());
     ViewProps const *newViewProps =
         dynamic_cast<ViewProps const *>(newProps.get());
-    float opacity = oldViewProps->opacity +
-        (newViewProps->opacity - oldViewProps->opacity) * animationProgress;
 
     SharedProps interpolatedPropsShared = cloneProps(newProps, {});
     ViewProps *interpolatedProps = const_cast<ViewProps *>(
         dynamic_cast<ViewProps const *>(interpolatedPropsShared.get()));
-    interpolatedProps->opacity = opacity;
+
+    interpolatedProps->opacity = oldViewProps->opacity +
+        (newViewProps->opacity - oldViewProps->opacity) * animationProgress;
+
+    interpolatedProps->transform = Transform::Interpolate(
+        animationProgress, oldViewProps->transform, newViewProps->transform);
 
     // Android uses RawProps, not props, to update props on the platform...
     // Since interpolated props don't interpolate at all using RawProps, we need
@@ -44,7 +47,10 @@ class ViewComponentDescriptor
     // mounting layer. Once we can remove this, we should change `rawProps` to
     // be const again.
 #ifdef ANDROID
-    interpolatedProps->rawProps["opacity"] = opacity;
+    interpolatedProps->rawProps["opacity"] = interpolatedProps->opacity;
+
+    interpolatedProps->rawProps["transform"] =
+        (folly::dynamic)interpolatedProps->transform;
 #endif
 
     return interpolatedPropsShared;
