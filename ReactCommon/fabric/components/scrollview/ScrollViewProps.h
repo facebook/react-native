@@ -43,6 +43,7 @@ class ScrollViewProps final : public ViewProps {
   const Float scrollEventThrottle{};
   const Float zoomScale{1.0};
   const EdgeInsets contentInset{};
+  Point const contentOffset{};
   const EdgeInsets scrollIndicatorInsets{};
   const Float snapToInterval{};
   const ScrollViewSnapToAlignment snapToAlignment{};

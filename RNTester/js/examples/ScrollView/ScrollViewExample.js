@@ -294,11 +294,26 @@ if (Platform.OS === 'ios') {
     render: function(): React.Node {
       function CenterContentList(): React.Node {
         return (
-          <View>
-            <ScrollView style={styles.scrollView} centerContent={true}>
-              <Text>This should be in center.</Text>
-            </ScrollView>
-          </View>
+          <ScrollView style={styles.scrollView} centerContent={true}>
+            <Text>This should be in center.</Text>
+          </ScrollView>
+        );
+      }
+      return <CenterContentList />;
+    },
+  });
+  exports.examples.push({
+    title: '<ScrollView> (contentOffset = {x: 100, y: 0})\n',
+    description: 'Initial contentOffset can be set on ScrollView.',
+    render: function(): React.Node {
+      function CenterContentList(): React.Node {
+        return (
+          <ScrollView
+            style={[styles.scrollView, {height: 100}]}
+            horizontal={true}
+            contentOffset={{x: 100, y: 0}}>
+            {ITEMS.map(createItemRow)}
+          </ScrollView>
         );
       }
       return <CenterContentList />;
