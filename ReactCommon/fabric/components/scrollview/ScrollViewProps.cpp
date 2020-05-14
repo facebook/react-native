@@ -17,8 +17,8 @@ namespace facebook {
 namespace react {
 
 ScrollViewProps::ScrollViewProps(
-    const ScrollViewProps &sourceProps,
-    const RawProps &rawProps)
+    ScrollViewProps const &sourceProps,
+    RawProps const &rawProps)
     : ViewProps(sourceProps, rawProps),
       alwaysBounceHorizontal(convertRawProp(
           rawProps,
