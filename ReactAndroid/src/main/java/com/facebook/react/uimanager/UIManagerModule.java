@@ -13,9 +13,7 @@ import static com.facebook.react.uimanager.common.UIManagerType.DEFAULT;
 import static com.facebook.react.uimanager.common.UIManagerType.FABRIC;
 
 import android.content.ComponentCallbacks2;
-import android.content.Context;
 import android.content.res.Configuration;
-import android.media.AudioManager;
 import android.view.View;
 import androidx.annotation.Nullable;
 import androidx.collection.ArrayMap;
@@ -715,17 +713,6 @@ public class UIManagerModule extends ReactContextBaseJavaModule
   @Override
   public void dispatchCommand(int reactTag, String commandId, @Nullable ReadableArray commandArgs) {
     mUIImplementation.dispatchViewManagerCommand(reactTag, commandId, commandArgs);
-  }
-
-  /** @deprecated use {@link SoundManager#playTouchSound()} instead. */
-  @ReactMethod
-  @Deprecated
-  public void playTouchSound() {
-    AudioManager audioManager =
-        (AudioManager) getReactApplicationContext().getSystemService(Context.AUDIO_SERVICE);
-    if (audioManager != null) {
-      audioManager.playSoundEffect(AudioManager.FX_KEY_CLICK);
-    }
   }
 
   /**

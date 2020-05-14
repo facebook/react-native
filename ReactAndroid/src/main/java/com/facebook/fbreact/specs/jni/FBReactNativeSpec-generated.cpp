@@ -2204,10 +2204,6 @@ namespace facebook {
       return static_cast<JavaTurboModule&>(turboModule).invokeJavaMethod(rt, ArrayKind, "getDefaultEventTypes", "()Lcom/facebook/react/bridge/WritableArray;", args, count);
     }
 
-    static facebook::jsi::Value __hostFunction_NativeUIManagerSpecJSI_playTouchSound(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
-      return static_cast<JavaTurboModule&>(turboModule).invokeJavaMethod(rt, VoidKind, "playTouchSound", "()V", args, count);
-    }
-
     static facebook::jsi::Value __hostFunction_NativeUIManagerSpecJSI_lazilyLoadView(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
       return static_cast<JavaTurboModule&>(turboModule).invokeJavaMethod(rt, ObjectKind, "lazilyLoadView", "(Ljava/lang/String;)Lcom/facebook/react/bridge/WritableMap;", args, count);
     }
@@ -2312,9 +2308,6 @@ namespace facebook {
         
         
         methodMap_["getDefaultEventTypes"] = MethodMetadata {0, __hostFunction_NativeUIManagerSpecJSI_getDefaultEventTypes};
-        
-        
-        methodMap_["playTouchSound"] = MethodMetadata {0, __hostFunction_NativeUIManagerSpecJSI_playTouchSound};
         
         
         methodMap_["lazilyLoadView"] = MethodMetadata {1, __hostFunction_NativeUIManagerSpecJSI_lazilyLoadView};
