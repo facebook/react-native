@@ -121,7 +121,7 @@ LayoutMetrics LayoutableShadowNode::getRelativeLayoutMetrics(
 
   auto ancestors = shadowNode.getFamily().getAncestors(ancestorShadowNode);
 
-  if (ancestors.size() == 0) {
+  if (ancestors.empty()) {
     return EmptyLayoutMetrics;
   }
 

@@ -153,7 +153,7 @@ ShadowNode::Shared UIManager::getNewestCloneOfShadowNode(
 
   auto ancestors = shadowNode.getFamily().getAncestors(*ancestorShadowNode);
 
-  if (ancestors.size() == 0) {
+  if (ancestors.empty()) {
     return nullptr;
   }
 

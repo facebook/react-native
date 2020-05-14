@@ -41,7 +41,7 @@ static ShadowNode::Unshared progressState(ShadowNode const &shadowNode) {
   }
 
   auto newChildren = ShadowNode::ListOfShared{};
-  if (shadowNode.getChildren().size() > 0) {
+  if (!shadowNode.getChildren().empty()) {
     auto index = size_t{0};
     for (auto const &childNode : shadowNode.getChildren()) {
       auto newChildNode = progressState(*childNode);
@@ -170,7 +170,7 @@ static void updateMountedFlag(
     return;
   }
 
-  if (oldChildren.size() == 0 && newChildren.size() == 0) {
+  if (oldChildren.empty() && newChildren.empty()) {
     // Both lists are empty, nothing to do.
     return;
   }

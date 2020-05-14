@@ -45,7 +45,7 @@ void ImageShadowNode::updateStateIfNeeded() {
 ImageSource ImageShadowNode::getImageSource() const {
   auto sources = getConcreteProps().sources;
 
-  if (sources.size() == 0) {
+  if (sources.empty()) {
     return {
         /* .type = */ ImageSource::Type::Invalid,
     };

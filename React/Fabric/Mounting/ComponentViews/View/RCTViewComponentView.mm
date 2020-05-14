@@ -519,7 +519,7 @@ static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
 {
   auto const &accessibilityActions = _props->accessibilityActions;
 
-  if (accessibilityActions.size() == 0) {
+  if (accessibilityActions.empty()) {
     return nil;
   }
 

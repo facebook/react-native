@@ -254,7 +254,7 @@ ShadowNode::Unshared ShadowNode::cloneTree(
         callback) const {
   auto ancestors = shadowNodeFamily.getAncestors(*this);
 
-  if (ancestors.size() == 0) {
+  if (ancestors.empty()) {
     return ShadowNode::Unshared{nullptr};
   }
 

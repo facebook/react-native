@@ -274,7 +274,7 @@ static void RNPerformMountInstructions(
   auto surfaceId = transaction->getSurfaceId();
   auto &mutations = transaction->getMutations();
 
-  if (mutations.size() == 0) {
+  if (mutations.empty()) {
     return;
   }
 

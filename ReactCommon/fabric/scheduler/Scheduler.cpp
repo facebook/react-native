@@ -118,10 +118,10 @@ Scheduler::~Scheduler() {
       });
 
   assert(
-      surfaceIds.size() == 0 &&
+      surfaceIds.empty() &&
       "Scheduler was destroyed with outstanding Surfaces.");
 
-  if (surfaceIds.size() == 0) {
+  if (surfaceIds.empty()) {
     return;
   }
 
@@ -177,7 +177,7 @@ void Scheduler::renderTemplateToSurface(
     const std::string &uiTemplate) {
   SystraceSection s("Scheduler::renderTemplateToSurface");
   try {
-    if (uiTemplate.size() == 0) {
+    if (uiTemplate.empty()) {
       return;
     }
     NativeModuleRegistry nMR;

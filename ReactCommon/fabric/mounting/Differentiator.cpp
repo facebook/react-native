@@ -65,7 +65,7 @@ class TinyMap final {
 
   inline Iterator end() {
     // `back()` asserts on the vector being non-empty
-    if (vector_.size() == 0 || numErased_ == vector_.size()) {
+    if (vector_.empty() || numErased_ == vector_.size()) {
       return nullptr;
     }
 
@@ -112,7 +112,7 @@ class TinyMap final {
    */
   inline Iterator begin_() {
     // `front()` asserts on the vector being non-empty
-    if (vector_.size() == 0 || vector_.size() == numErased_) {
+    if (vector_.empty() || vector_.size() == numErased_) {
       return nullptr;
     }
 
@@ -125,9 +125,8 @@ class TinyMap final {
    * vector.
    */
   inline void cleanVector(bool forceClean = false) {
-    if ((numErased_ < (vector_.size() / 2) && !forceClean) ||
-        vector_.size() == 0 || numErased_ == 0 ||
-        numErased_ == erasedAtFront_) {
+    if ((numErased_ < (vector_.size() / 2) && !forceClean) || vector_.empty() ||
+        numErased_ == 0 || numErased_ == erasedAtFront_) {
       return;
     }
 
@@ -259,7 +258,7 @@ static void calculateShadowViewMutations(
     ShadowView const &parentShadowView,
     ShadowViewNodePair::List &&oldChildPairs,
     ShadowViewNodePair::List &&newChildPairs) {
-  if (oldChildPairs.size() == 0 && newChildPairs.size() == 0) {
+  if (oldChildPairs.empty() && newChildPairs.empty()) {
     return;
   }
 

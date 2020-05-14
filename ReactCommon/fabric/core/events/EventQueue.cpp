@@ -96,7 +96,7 @@ void EventQueue::flushStateUpdates() const {
   {
     std::lock_guard<std::mutex> lock(queueMutex_);
 
-    if (stateUpdateQueue_.size() == 0) {
+    if (stateUpdateQueue_.empty()) {
       return;
     }
 
