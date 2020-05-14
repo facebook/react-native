@@ -1,3 +1,4 @@
+# coding: utf-8
 # Copyright (c) Facebook, Inc. and its affiliates.
 #
 # This source code is licensed under the MIT license found in the
@@ -42,4 +43,5 @@ Pod::Spec.new do |s|
   s.dependency "React-jsinspector", version
   s.dependency "React-callinvoker", version
   s.dependency "React-runtimeexecutor", version
+  s.dependency "React-perflogger", version
 end
