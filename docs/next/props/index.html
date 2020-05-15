@@ -17,7 +17,7 @@
 <div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React <span class="hljs-keyword">from</span> <span class="hljs-string">'react'</span>;
 <span class="hljs-keyword">import</span> { Image } <span class="hljs-keyword">from</span> <span class="hljs-string">'react-native'</span>;
 
-<span class="hljs-keyword">const</span> Bananas = <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Bananas</span>(<span class="hljs-params"></span>) </span>{
     <span class="hljs-keyword">let</span> pic = {
       <span class="hljs-attr">uri</span>: <span class="hljs-string">'https://upload.wikimedia.org/wikipedia/commons/d/de/Bananavarieties.jpg'</span>
     };
@@ -25,12 +25,10 @@
       <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">Image</span> <span class="hljs-attr">source</span>=<span class="hljs-string">{pic}</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{{width:</span> <span class="hljs-attr">193</span>, <span class="hljs-attr">height:</span> <span class="hljs-attr">110</span>, <span class="hljs-attr">marginTop:50</span>}}/&gt;</span>
     );
 }
-
-export default Bananas;
 </span></code></pre></div><div class="desktop-friendly-snack" style="margin-top: 15px; margin-bottom: 15px"><div
         data-snack-name="Props"
         data-snack-description="Example usage"
-        data-snack-code="import%20React%20from%20'react'%3B%0Aimport%20%7B%20Image%20%7D%20from%20'react-native'%3B%0A%0Aconst%20Bananas%20%3D%20()%20%3D%3E%20%7B%0A%20%20%20%20let%20pic%20%3D%20%7B%0A%20%20%20%20%20%20uri%3A%20'https%3A%2F%2Fupload.wikimedia.org%2Fwikipedia%2Fcommons%2Fd%2Fde%2FBananavarieties.jpg'%0A%20%20%20%20%7D%3B%0A%20%20%20%20return%20(%0A%20%20%20%20%20%20%3CImage%20source%3D%7Bpic%7D%20style%3D%7B%7Bwidth%3A%20193%2C%20height%3A%20110%2C%20marginTop%3A50%7D%7D%2F%3E%0A%20%20%20%20)%3B%0A%7D%0A%0Aexport%20default%20Bananas%3B%0A"
+        data-snack-code="import%20React%20from%20'react'%3B%0Aimport%20%7B%20Image%20%7D%20from%20'react-native'%3B%0A%0Aexport%20default%20function%20Bananas()%20%7B%0A%20%20%20%20let%20pic%20%3D%20%7B%0A%20%20%20%20%20%20uri%3A%20'https%3A%2F%2Fupload.wikimedia.org%2Fwikipedia%2Fcommons%2Fd%2Fde%2FBananavarieties.jpg'%0A%20%20%20%20%7D%3B%0A%20%20%20%20return%20(%0A%20%20%20%20%20%20%3CImage%20source%3D%7Bpic%7D%20style%3D%7B%7Bwidth%3A%20193%2C%20height%3A%20110%2C%20marginTop%3A50%7D%7D%2F%3E%0A%20%20%20%20)%3B%0A%7D%0A"
         data-snack-platform="web"
         data-snack-supported-platforms=ios,android,web
         data-snack-preview="true"

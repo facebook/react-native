@@ -19,7 +19,7 @@
 <div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React <span class="hljs-keyword">from</span> <span class="hljs-string">'react'</span>;
 <span class="hljs-keyword">import</span> { Text, View } <span class="hljs-keyword">from</span> <span class="hljs-string">'react-native'</span>;
 
-<span class="hljs-keyword">const</span> HelloWorldApp = <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">HelloWorldApp</span>(<span class="hljs-params"></span>) </span>{
   <span class="hljs-keyword">return</span> (
     <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">View</span>
       <span class="hljs-attr">style</span>=<span class="hljs-string">{{</span>
@@ -35,7 +35,7 @@
 </code></pre></div><div class="desktop-friendly-snack" style="margin-top: 15px; margin-bottom: 15px"><div
         data-snack-name="Hello World"
         data-snack-description="Example usage"
-        data-snack-code="import%20React%20from%20'react'%3B%0Aimport%20%7B%20Text%2C%20View%20%7D%20from%20'react-native'%3B%0A%0Aconst%20HelloWorldApp%20%3D%20()%20%3D%3E%20%7B%0A%20%20return%20(%0A%20%20%20%20%3CView%0A%20%20%20%20%20%20style%3D%7B%7B%0A%20%20%20%20%20%20%20%20flex%3A%201%2C%0A%20%20%20%20%20%20%20%20justifyContent%3A%20%22center%22%2C%0A%20%20%20%20%20%20%20%20alignItems%3A%20%22center%22%0A%20%20%20%20%20%20%7D%7D%3E%0A%20%20%20%20%20%20%3CText%3EHello%2C%20world!%3C%2FText%3E%0A%20%20%20%20%3C%2FView%3E%0A%20%20)%0A%7D%0Aexport%20default%20HelloWorldApp%3B%0A"
+        data-snack-code="import%20React%20from%20'react'%3B%0Aimport%20%7B%20Text%2C%20View%20%7D%20from%20'react-native'%3B%0A%0Afunction%20HelloWorldApp()%20%7B%0A%20%20return%20(%0A%20%20%20%20%3CView%0A%20%20%20%20%20%20style%3D%7B%7B%0A%20%20%20%20%20%20%20%20flex%3A%201%2C%0A%20%20%20%20%20%20%20%20justifyContent%3A%20%22center%22%2C%0A%20%20%20%20%20%20%20%20alignItems%3A%20%22center%22%0A%20%20%20%20%20%20%7D%7D%3E%0A%20%20%20%20%20%20%3CText%3EHello%2C%20world!%3C%2FText%3E%0A%20%20%20%20%3C%2FView%3E%0A%20%20)%0A%7D%0Aexport%20default%20HelloWorldApp%3B%0A"
         data-snack-platform="web"
         data-snack-supported-platforms=ios,android,web
         data-snack-preview="true"
@@ -74,7 +74,7 @@
   }
 })
 
-<span class="hljs-keyword">const</span> Greeting = <span class="hljs-function">(<span class="hljs-params">props</span>) =&gt;</span> {
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Greeting</span>(<span class="hljs-params">props</span>) </span>{
   <span class="hljs-keyword">return</span> (
     <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">View</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.center}</span>&gt;</span>
       <span class="hljs-tag">&lt;<span class="hljs-name">Text</span>&gt;</span>Hello {props.name}!<span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span>
@@ -82,7 +82,7 @@
   );
 }
 
-<span class="hljs-keyword">const</span> LotsOfGreetings = <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">LotsOfGreetings</span>(<span class="hljs-params"></span>) </span>{
   <span class="hljs-keyword">return</span> (
     &lt;View style={[styles.center, {top: 50}]}&gt;
       &lt;Greeting name='Rexxar' /&gt;
@@ -96,7 +96,7 @@ export default LotsOfGreetings;
 </code></pre></div><div class="desktop-friendly-snack" style="margin-top: 15px; margin-bottom: 15px"><div
         data-snack-name="Hello Props"
         data-snack-description="Example usage"
-        data-snack-code="import%20React%20from%20'react'%3B%0Aimport%20%7B%20Text%2C%20View%2C%20StyleSheet%20%7D%20from%20'react-native'%3B%0A%0Aconst%20styles%20%3D%20StyleSheet.create(%7B%0A%20%20center%3A%20%7B%0A%20%20%20%20alignItems%3A%20'center'%0A%20%20%7D%0A%7D)%0A%0Aconst%20Greeting%20%3D%20(props)%20%3D%3E%20%7B%0A%20%20return%20(%0A%20%20%20%20%3CView%20style%3D%7Bstyles.center%7D%3E%0A%20%20%20%20%20%20%3CText%3EHello%20%7Bprops.name%7D!%3C%2FText%3E%0A%20%20%20%20%3C%2FView%3E%0A%20%20)%3B%0A%7D%0A%0Aconst%20LotsOfGreetings%20%3D%20()%20%3D%3E%20%7B%0A%20%20return%20(%0A%20%20%20%20%3CView%20style%3D%7B%5Bstyles.center%2C%20%7Btop%3A%2050%7D%5D%7D%3E%0A%20%20%20%20%20%20%3CGreeting%20name%3D'Rexxar'%20%2F%3E%0A%20%20%20%20%20%20%3CGreeting%20name%3D'Jaina'%20%2F%3E%0A%20%20%20%20%20%20%3CGreeting%20name%3D'Valeera'%20%2F%3E%0A%20%20%20%20%3C%2FView%3E%0A%20%20)%3B%0A%7D%0A%0Aexport%20default%20LotsOfGreetings%3B%0A"
+        data-snack-code="import%20React%20from%20'react'%3B%0Aimport%20%7B%20Text%2C%20View%2C%20StyleSheet%20%7D%20from%20'react-native'%3B%0A%0Aconst%20styles%20%3D%20StyleSheet.create(%7B%0A%20%20center%3A%20%7B%0A%20%20%20%20alignItems%3A%20'center'%0A%20%20%7D%0A%7D)%0A%0Afunction%20Greeting(props)%20%7B%0A%20%20return%20(%0A%20%20%20%20%3CView%20style%3D%7Bstyles.center%7D%3E%0A%20%20%20%20%20%20%3CText%3EHello%20%7Bprops.name%7D!%3C%2FText%3E%0A%20%20%20%20%3C%2FView%3E%0A%20%20)%3B%0A%7D%0A%0Afunction%20LotsOfGreetings()%20%7B%0A%20%20return%20(%0A%20%20%20%20%3CView%20style%3D%7B%5Bstyles.center%2C%20%7Btop%3A%2050%7D%5D%7D%3E%0A%20%20%20%20%20%20%3CGreeting%20name%3D'Rexxar'%20%2F%3E%0A%20%20%20%20%20%20%3CGreeting%20name%3D'Jaina'%20%2F%3E%0A%20%20%20%20%20%20%3CGreeting%20name%3D'Valeera'%20%2F%3E%0A%20%20%20%20%3C%2FView%3E%0A%20%20)%3B%0A%7D%0A%0Aexport%20default%20LotsOfGreetings%3B%0A"
         data-snack-platform="web"
         data-snack-supported-platforms=ios,android,web
         data-snack-preview="true"

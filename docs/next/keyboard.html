@@ -86,7 +86,7 @@
 <span class="hljs-keyword">import</span> React, { useEffect } <span class="hljs-keyword">from</span> <span class="hljs-string">"react"</span>;
 <span class="hljs-keyword">import</span> { Keyboard, TextInput, StyleSheet } <span class="hljs-keyword">from</span> <span class="hljs-string">"react-native"</span>;
 
-<span class="hljs-keyword">const</span> Example = <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Example</span>(<span class="hljs-params"></span>) </span>{
 
   useEffect(<span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
     Keyboard.addListener(<span class="hljs-string">"keyboardDidShow"</span>, _keyboardDidShow);
@@ -120,11 +120,10 @@ const s = StyleSheet.create({
    }
 })
 
-export default Example;
 </span></code></pre></div><div class="desktop-friendly-snack" style="margin-top: 15px; margin-bottom: 15px"><div
         data-snack-name="Keyboard Function Component Example"
         data-snack-description="Example usage"
-        data-snack-code="%0Aimport%20React%2C%20%7B%20useEffect%20%7D%20from%20%22react%22%3B%0Aimport%20%7B%20Keyboard%2C%20TextInput%2C%20StyleSheet%20%7D%20from%20%22react-native%22%3B%0A%0Aconst%20Example%20%3D%20()%20%3D%3E%20%7B%0A%0A%20%20useEffect(()%20%3D%3E%20%7B%0A%20%20%20%20Keyboard.addListener(%22keyboardDidShow%22%2C%20_keyboardDidShow)%3B%0A%20%20%20%20Keyboard.addListener(%22keyboardDidHide%22%2C%20_keyboardDidHide)%3B%0A%0A%20%20%20%20%2F%2F%20cleanup%20function%0A%20%20%20%20return%20()%20%3D%3E%20%7B%0A%20%20%20%20%20%20Keyboard.removeListener(%22keyboardDidShow%22%2C%20_keyboardDidShow)%3B%0A%20%20%20%20%20%20Keyboard.removeListener(%22keyboardDidHide%22%2C%20_keyboardDidHide)%3B%0A%20%20%20%20%7D%3B%0A%20%20%7D%2C%20%5B%5D)%3B%0A%0A%20%20const%20_keyboardDidShow%20%3D%20()%20%3D%3E%20%7B%0A%20%20%20%20alert(%22Keyboard%20Shown%22)%3B%0A%20%20%7D%3B%0A%0A%20%20const%20_keyboardDidHide%20%3D%20()%20%3D%3E%20%7B%0A%20%20%20%20alert(%22Keyboard%20Hidden%22)%3B%0A%20%20%7D%3B%0A%0A%20%20return%20%3CTextInput%20style%3D%7Bs.input%7D%20placeholder%3D'Click%20here%20...'%20onSubmitEditing%3D%7BKeyboard.dismiss%7D%20%2F%3E%3B%0A%7D%0A%0Aconst%20s%20%3D%20StyleSheet.create(%7B%0A%20%20%20input%3A%7B%0A%20%20%20%20margin%3A60%2C%0A%20%20%20%20padding%3A%2010%2C%0A%20%20%20%20borderWidth%3A%200.5%2C%0A%20%20%20%20borderRadius%3A%204%2C%0A%20%20%20%20backgroundColor%3A%20%22%23fff%22%0A%20%20%20%7D%0A%7D)%0A%0Aexport%20default%20Example%3B%0A"
+        data-snack-code="%0Aimport%20React%2C%20%7B%20useEffect%20%7D%20from%20%22react%22%3B%0Aimport%20%7B%20Keyboard%2C%20TextInput%2C%20StyleSheet%20%7D%20from%20%22react-native%22%3B%0A%0Aexport%20default%20function%20Example()%20%7B%0A%0A%20%20useEffect(()%20%3D%3E%20%7B%0A%20%20%20%20Keyboard.addListener(%22keyboardDidShow%22%2C%20_keyboardDidShow)%3B%0A%20%20%20%20Keyboard.addListener(%22keyboardDidHide%22%2C%20_keyboardDidHide)%3B%0A%0A%20%20%20%20%2F%2F%20cleanup%20function%0A%20%20%20%20return%20()%20%3D%3E%20%7B%0A%20%20%20%20%20%20Keyboard.removeListener(%22keyboardDidShow%22%2C%20_keyboardDidShow)%3B%0A%20%20%20%20%20%20Keyboard.removeListener(%22keyboardDidHide%22%2C%20_keyboardDidHide)%3B%0A%20%20%20%20%7D%3B%0A%20%20%7D%2C%20%5B%5D)%3B%0A%0A%20%20const%20_keyboardDidShow%20%3D%20()%20%3D%3E%20%7B%0A%20%20%20%20alert(%22Keyboard%20Shown%22)%3B%0A%20%20%7D%3B%0A%0A%20%20const%20_keyboardDidHide%20%3D%20()%20%3D%3E%20%7B%0A%20%20%20%20alert(%22Keyboard%20Hidden%22)%3B%0A%20%20%7D%3B%0A%0A%20%20return%20%3CTextInput%20style%3D%7Bs.input%7D%20placeholder%3D'Click%20here%20...'%20onSubmitEditing%3D%7BKeyboard.dismiss%7D%20%2F%3E%3B%0A%7D%0A%0Aconst%20s%20%3D%20StyleSheet.create(%7B%0A%20%20%20input%3A%7B%0A%20%20%20%20margin%3A60%2C%0A%20%20%20%20padding%3A%2010%2C%0A%20%20%20%20borderWidth%3A%200.5%2C%0A%20%20%20%20borderRadius%3A%204%2C%0A%20%20%20%20backgroundColor%3A%20%22%23fff%22%0A%20%20%20%7D%0A%7D)%0A%0A"
         data-snack-platform="web"
         data-snack-supported-platforms=ios,android,web
         data-snack-preview="true"
@@ -140,7 +139,7 @@ export default Example;
 <div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React, {Component} <span class="hljs-keyword">from</span> <span class="hljs-string">'react'</span>;
 <span class="hljs-keyword">import</span> {Keyboard, TextInput , StyleSheet} <span class="hljs-keyword">from</span> <span class="hljs-string">'react-native'</span>;
 
-<span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Example</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">Component</span> </span>{
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Example</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">Component</span> </span>{
   componentDidMount() {
     <span class="hljs-keyword">this</span>.keyboardDidShowListener = Keyboard.addListener(
       <span class="hljs-string">'keyboardDidShow'</span>,
@@ -179,12 +178,10 @@ const s = StyleSheet.create({
     backgroundColor: "#fff"
    }
 })
-
-export default Example;
 </span></code></pre></div><div class="desktop-friendly-snack" style="margin-top: 15px; margin-bottom: 15px"><div
         data-snack-name="Keyboard Class Component Example"
         data-snack-description="Example usage"
-        data-snack-code="import%20React%2C%20%7BComponent%7D%20from%20'react'%3B%0Aimport%20%7BKeyboard%2C%20TextInput%20%2C%20StyleSheet%7D%20from%20'react-native'%3B%0A%0Aclass%20Example%20extends%20Component%20%7B%0A%20%20componentDidMount()%20%7B%0A%20%20%20%20this.keyboardDidShowListener%20%3D%20Keyboard.addListener(%0A%20%20%20%20%20%20'keyboardDidShow'%2C%0A%20%20%20%20%20%20this._keyboardDidShow%2C%0A%20%20%20%20)%3B%0A%20%20%20%20this.keyboardDidHideListener%20%3D%20Keyboard.addListener(%0A%20%20%20%20%20%20'keyboardDidHide'%2C%0A%20%20%20%20%20%20this._keyboardDidHide%2C%0A%20%20%20%20)%3B%0A%20%20%7D%0A%0A%20%20componentWillUnmount()%20%7B%0A%20%20%20%20this.keyboardDidShowListener.remove()%3B%0A%20%20%20%20this.keyboardDidHideListener.remove()%3B%0A%20%20%7D%0A%0A%20%20_keyboardDidShow()%20%7B%0A%20%20%20%20alert('Keyboard%20Shown')%3B%0A%20%20%7D%0A%0A%20%20_keyboardDidHide()%20%7B%0A%20%20%20%20alert('Keyboard%20Hidden')%3B%0A%20%20%7D%0A%0A%20%20render()%20%7B%0A%20%20%20%20return%20%3CTextInput%20style%3D%7Bs.input%7D%20placeholder%3D'Click%20here%20...'%20onSubmitEditing%3D%7BKeyboard.dismiss%7D%20%2F%3E%3B%0A%20%20%7D%0A%7D%0A%0Aconst%20s%20%3D%20StyleSheet.create(%7B%0A%20%20%20input%3A%7B%0A%20%20%20%20margin%3A60%2C%0A%20%20%20%20padding%3A%2010%2C%0A%20%20%20%20borderWidth%3A%200.5%2C%0A%20%20%20%20borderRadius%3A%204%2C%0A%20%20%20%20backgroundColor%3A%20%22%23fff%22%0A%20%20%20%7D%0A%7D)%0A%0Aexport%20default%20Example%3B%0A"
+        data-snack-code="import%20React%2C%20%7BComponent%7D%20from%20'react'%3B%0Aimport%20%7BKeyboard%2C%20TextInput%20%2C%20StyleSheet%7D%20from%20'react-native'%3B%0A%0Aexport%20default%20class%20Example%20extends%20Component%20%7B%0A%20%20componentDidMount()%20%7B%0A%20%20%20%20this.keyboardDidShowListener%20%3D%20Keyboard.addListener(%0A%20%20%20%20%20%20'keyboardDidShow'%2C%0A%20%20%20%20%20%20this._keyboardDidShow%2C%0A%20%20%20%20)%3B%0A%20%20%20%20this.keyboardDidHideListener%20%3D%20Keyboard.addListener(%0A%20%20%20%20%20%20'keyboardDidHide'%2C%0A%20%20%20%20%20%20this._keyboardDidHide%2C%0A%20%20%20%20)%3B%0A%20%20%7D%0A%0A%20%20componentWillUnmount()%20%7B%0A%20%20%20%20this.keyboardDidShowListener.remove()%3B%0A%20%20%20%20this.keyboardDidHideListener.remove()%3B%0A%20%20%7D%0A%0A%20%20_keyboardDidShow()%20%7B%0A%20%20%20%20alert('Keyboard%20Shown')%3B%0A%20%20%7D%0A%0A%20%20_keyboardDidHide()%20%7B%0A%20%20%20%20alert('Keyboard%20Hidden')%3B%0A%20%20%7D%0A%0A%20%20render()%20%7B%0A%20%20%20%20return%20%3CTextInput%20style%3D%7Bs.input%7D%20placeholder%3D'Click%20here%20...'%20onSubmitEditing%3D%7BKeyboard.dismiss%7D%20%2F%3E%3B%0A%20%20%7D%0A%7D%0A%0Aconst%20s%20%3D%20StyleSheet.create(%7B%0A%20%20%20input%3A%7B%0A%20%20%20%20margin%3A60%2C%0A%20%20%20%20padding%3A%2010%2C%0A%20%20%20%20borderWidth%3A%200.5%2C%0A%20%20%20%20borderRadius%3A%204%2C%0A%20%20%20%20backgroundColor%3A%20%22%23fff%22%0A%20%20%20%7D%0A%7D)%0A"
         data-snack-platform="web"
         data-snack-supported-platforms=ios,android,web
         data-snack-preview="true"

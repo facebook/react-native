@@ -284,7 +284,7 @@ ToastExample<span class="token punctuation">.</span><span class="token function"
 <span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span>
 </code></pre>
 <p>The JavaScript counterpart of this method returns a Promise. This means you can use the <code>await</code> keyword within an async function to call it and wait for its result:</p>
-<pre><code class="hljs css language-jsx"><span class="token keyword">const</span> <span class="token function-variable function">measureLayout</span> <span class="token operator">=</span> <span class="token keyword">async</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">{</span>
+<pre><code class="hljs css language-jsx"><span class="token keyword">async</span> <span class="token keyword">function</span> <span class="token function">measureLayout</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
   <span class="token keyword">try</span> <span class="token punctuation">{</span>
     <span class="token keyword">var</span> <span class="token punctuation">{</span>
       relativeX<span class="token punctuation">,</span>
