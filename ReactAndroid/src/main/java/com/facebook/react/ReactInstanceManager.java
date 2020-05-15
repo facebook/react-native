@@ -1303,6 +1303,9 @@ public class ReactInstanceManager {
         }
       }
     }
+    if (ReactFeatureFlags.eagerInitializeFabric) {
+      catalystInstance.getJSIModule(JSIModuleType.UIManager);
+    }
     if (mBridgeIdleDebugListener != null) {
       catalystInstance.addBridgeIdleDebugListener(mBridgeIdleDebugListener);
     }
