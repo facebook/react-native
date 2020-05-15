@@ -164,7 +164,7 @@ end
 
 post_install do |installer|
   # TODO(macOS): How do we reconcile flipper on macOS? For now disabling to unblock merge
-  # flipper_post_install(installer)
+  flipper_post_install(installer)
   installer.pods_project.targets.each do |target|
     puts target.name
     # [TODO(macOS ISS#2323203): the internal Microsoft build pipeline needs iOS arm64e slices

@@ -389,7 +389,11 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   }
 
   [self invalidateIntrinsicContentSize];
-  [self.superview setNeedsLayout];
+  #if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
+	[self.superview setNeedsLayout];
+  #else // [TODO(macOS ISS#2323203)
+	  [self.superview setNeedsLayout:YES];
+  #endif // ]TODO(macOS ISS#2323203)
 
   [_delegate rootViewDidChangeIntrinsicSize:self];
 }
@@ -406,6 +410,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   [self showLoadingView];
 }
 
+#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
 - (void)traitCollectionDidChange:(UITraitCollection *)previousTraitCollection
 {
   [super traitCollectionDidChange:previousTraitCollection];
@@ -416,6 +421,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
                                                       RCTUserInterfaceStyleDidChangeNotificationTraitCollectionKey: self.traitCollection,
                                                     }];
 }
+#endif // TODO(macOS ISS#2323203)
 
 
 #if TARGET_OS_OSX // [TODO(macOS ISS#2323203)
