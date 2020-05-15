@@ -83,4 +83,7 @@ public class ReactFeatureFlags {
    * remove this when bug is fixed
    */
   public static boolean enableTransitionLayoutOnlyViewCleanup = false;
+
+  /** Feature flag to configure eager initialization of Fabric */
+  public static boolean eagerInitializeFabric = false;
 }
