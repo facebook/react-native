@@ -229,7 +229,7 @@ RCT_EXPORT_METHOD(addEvent:(<span class="hljs-built_in">NSString</span> *)name d
 }
 </code></pre>
 <p>The JavaScript counterpart of this method returns a Promise. This means you can use the <code>await</code> keyword within an async function to call it and wait for its result:</p>
-<pre><code class="hljs css language-jsx"><span class="token keyword">async</span> <span class="token keyword">function</span> <span class="token function">updateEvents</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+<pre><code class="hljs css language-jsx"><span class="token keyword">const</span> <span class="token function-variable function">updateEvents</span> <span class="token operator">=</span> <span class="token keyword">async</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">{</span>
   <span class="token keyword">try</span> <span class="token punctuation">{</span>
     <span class="token keyword">var</span> events <span class="token operator">=</span> <span class="token keyword">await</span> CalendarManager<span class="token punctuation">.</span><span class="token function">findEvents</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
 

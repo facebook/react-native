@@ -20,7 +20,7 @@
 <div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React, { useState } <span class="hljs-keyword">from</span> <span class="hljs-string">"react"</span>;
 <span class="hljs-keyword">import</span> { View, Picker, StyleSheet } <span class="hljs-keyword">from</span> <span class="hljs-string">"react-native"</span>;
 
-<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">App</span>(<span class="hljs-params"></span>) </span>{
+<span class="hljs-keyword">const</span> App = <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
   <span class="hljs-keyword">const</span> [selectedValue, setSelectedValue] = useState(<span class="hljs-string">"java"</span>);
   <span class="hljs-keyword">return</span> (
     &lt;View style={styles.container}&gt;
@@ -43,10 +43,12 @@ const styles = StyleSheet.create({
     alignItems: "center"
   }
 });
+
+export default App;
 </code></pre></div><div class="desktop-friendly-snack" style="margin-top: 15px; margin-bottom: 15px"><div
         data-snack-name="picker"
         data-snack-description="Example usage"
-        data-snack-code="import%20React%2C%20%7B%20useState%20%7D%20from%20%22react%22%3B%0Aimport%20%7B%20View%2C%20Picker%2C%20StyleSheet%20%7D%20from%20%22react-native%22%3B%0A%0Aexport%20default%20function%20App()%20%7B%0A%20%20const%20%5BselectedValue%2C%20setSelectedValue%5D%20%3D%20useState(%22java%22)%3B%0A%20%20return%20(%0A%20%20%20%20%3CView%20style%3D%7Bstyles.container%7D%3E%0A%20%20%20%20%20%20%3CPicker%0A%20%20%20%20%20%20%20%20selectedValue%3D%7BselectedValue%7D%0A%20%20%20%20%20%20%20%20style%3D%7B%7B%20height%3A%2050%2C%20width%3A%20150%20%7D%7D%0A%20%20%20%20%20%20%20%20onValueChange%3D%7B(itemValue%2C%20itemIndex)%20%3D%3E%20setSelectedValue(itemValue)%7D%0A%20%20%20%20%20%20%3E%0A%20%20%20%20%20%20%20%20%3CPicker.Item%20label%3D%22Java%22%20value%3D%22java%22%20%2F%3E%0A%20%20%20%20%20%20%20%20%3CPicker.Item%20label%3D%22JavaScript%22%20value%3D%22js%22%20%2F%3E%0A%20%20%20%20%20%20%3C%2FPicker%3E%0A%20%20%20%20%3C%2FView%3E%0A%20%20)%3B%0A%7D%0A%0Aconst%20styles%20%3D%20StyleSheet.create(%7B%0A%20%20container%3A%20%7B%0A%20%20%20%20flex%3A%201%2C%0A%20%20%20%20paddingTop%3A%2040%2C%0A%20%20%20%20alignItems%3A%20%22center%22%0A%20%20%7D%0A%7D)%3B%0A"
+        data-snack-code="import%20React%2C%20%7B%20useState%20%7D%20from%20%22react%22%3B%0Aimport%20%7B%20View%2C%20Picker%2C%20StyleSheet%20%7D%20from%20%22react-native%22%3B%0A%0Aconst%20App%20%3D%20()%20%3D%3E%20%7B%0A%20%20const%20%5BselectedValue%2C%20setSelectedValue%5D%20%3D%20useState(%22java%22)%3B%0A%20%20return%20(%0A%20%20%20%20%3CView%20style%3D%7Bstyles.container%7D%3E%0A%20%20%20%20%20%20%3CPicker%0A%20%20%20%20%20%20%20%20selectedValue%3D%7BselectedValue%7D%0A%20%20%20%20%20%20%20%20style%3D%7B%7B%20height%3A%2050%2C%20width%3A%20150%20%7D%7D%0A%20%20%20%20%20%20%20%20onValueChange%3D%7B(itemValue%2C%20itemIndex)%20%3D%3E%20setSelectedValue(itemValue)%7D%0A%20%20%20%20%20%20%3E%0A%20%20%20%20%20%20%20%20%3CPicker.Item%20label%3D%22Java%22%20value%3D%22java%22%20%2F%3E%0A%20%20%20%20%20%20%20%20%3CPicker.Item%20label%3D%22JavaScript%22%20value%3D%22js%22%20%2F%3E%0A%20%20%20%20%20%20%3C%2FPicker%3E%0A%20%20%20%20%3C%2FView%3E%0A%20%20)%3B%0A%7D%0A%0Aconst%20styles%20%3D%20StyleSheet.create(%7B%0A%20%20container%3A%20%7B%0A%20%20%20%20flex%3A%201%2C%0A%20%20%20%20paddingTop%3A%2040%2C%0A%20%20%20%20alignItems%3A%20%22center%22%0A%20%20%7D%0A%7D)%3B%0A%0Aexport%20default%20App%3B%0A"
         data-snack-platform="web"
         data-snack-supported-platforms=ios,android,web
         data-snack-preview="true"

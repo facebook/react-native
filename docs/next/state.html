@@ -36,7 +36,7 @@
   <span class="hljs-keyword">return</span> <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">Text</span>&gt;</span>{props.text}<span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span></span>;
 }
 
-<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">BlinkApp</span>(<span class="hljs-params"></span>) </span>{
+<span class="hljs-keyword">const</span> BlinkApp = <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
   <span class="hljs-keyword">return</span> (
     &lt;View style={{marginTop: 50}}&gt;
       &lt;Blink text='I love to blink' /&gt;
@@ -46,10 +46,12 @@
     &lt;/View&gt;
   );
 }
+
+export default BlinkApp;
 </code></pre></div><div class="desktop-friendly-snack" style="margin-top: 15px; margin-bottom: 15px"><div
         data-snack-name="State"
         data-snack-description="Example usage"
-        data-snack-code="import%20React%2C%20%7B%20useState%2C%20useEffect%20%7D%20from%20'react'%3B%0Aimport%20%7B%20Text%2C%20View%20%7D%20from%20'react-native'%3B%0A%0Aconst%20Blink%20%3D%20(props)%20%3D%3E%20%7B%0A%20%20const%20%5BisShowingText%2C%20setIsShowingText%5D%20%3D%20useState(true)%3B%0A%0A%20%20%20useEffect(()%20%3D%3E%20%7B%0A%20%20%20%20%20const%20toggle%20%3D%20setInterval(()%20%3D%3E%20%7B%0A%20%20%20%20%20%20%20setIsShowingText(!isShowingText)%3B%0A%20%20%20%20%20%7D%2C%201000)%3B%0A%0A%20%20%20%20%20return%20()%20%3D%3E%20clearInterval(toggle)%3B%0A%20%20%7D)%0A%0A%20%20if%20(!isShowingText)%20%7B%0A%20%20%20%20return%20null%3B%0A%20%20%7D%0A%0A%20%20return%20%3CText%3E%7Bprops.text%7D%3C%2FText%3E%3B%0A%7D%0A%0Aexport%20default%20function%20BlinkApp()%20%7B%0A%20%20return%20(%0A%20%20%20%20%3CView%20style%3D%7B%7BmarginTop%3A%2050%7D%7D%3E%0A%20%20%20%20%20%20%3CBlink%20text%3D'I%20love%20to%20blink'%20%2F%3E%0A%20%20%20%20%20%20%3CBlink%20text%3D'Yes%20blinking%20is%20so%20great'%20%2F%3E%0A%20%20%20%20%20%20%3CBlink%20text%3D'Why%20did%20they%20ever%20take%20this%20out%20of%20HTML'%20%2F%3E%0A%20%20%20%20%20%20%3CBlink%20text%3D'Look%20at%20me%20look%20at%20me%20look%20at%20me'%20%2F%3E%0A%20%20%20%20%3C%2FView%3E%0A%20%20)%3B%0A%7D%0A"
+        data-snack-code="import%20React%2C%20%7B%20useState%2C%20useEffect%20%7D%20from%20'react'%3B%0Aimport%20%7B%20Text%2C%20View%20%7D%20from%20'react-native'%3B%0A%0Aconst%20Blink%20%3D%20(props)%20%3D%3E%20%7B%0A%20%20const%20%5BisShowingText%2C%20setIsShowingText%5D%20%3D%20useState(true)%3B%0A%0A%20%20%20useEffect(()%20%3D%3E%20%7B%0A%20%20%20%20%20const%20toggle%20%3D%20setInterval(()%20%3D%3E%20%7B%0A%20%20%20%20%20%20%20setIsShowingText(!isShowingText)%3B%0A%20%20%20%20%20%7D%2C%201000)%3B%0A%0A%20%20%20%20%20return%20()%20%3D%3E%20clearInterval(toggle)%3B%0A%20%20%7D)%0A%0A%20%20if%20(!isShowingText)%20%7B%0A%20%20%20%20return%20null%3B%0A%20%20%7D%0A%0A%20%20return%20%3CText%3E%7Bprops.text%7D%3C%2FText%3E%3B%0A%7D%0A%0Aconst%20BlinkApp%20%3D%20()%20%3D%3E%20%7B%0A%20%20return%20(%0A%20%20%20%20%3CView%20style%3D%7B%7BmarginTop%3A%2050%7D%7D%3E%0A%20%20%20%20%20%20%3CBlink%20text%3D'I%20love%20to%20blink'%20%2F%3E%0A%20%20%20%20%20%20%3CBlink%20text%3D'Yes%20blinking%20is%20so%20great'%20%2F%3E%0A%20%20%20%20%20%20%3CBlink%20text%3D'Why%20did%20they%20ever%20take%20this%20out%20of%20HTML'%20%2F%3E%0A%20%20%20%20%20%20%3CBlink%20text%3D'Look%20at%20me%20look%20at%20me%20look%20at%20me'%20%2F%3E%0A%20%20%20%20%3C%2FView%3E%0A%20%20)%3B%0A%7D%0A%0Aexport%20default%20BlinkApp%3B%0A"
         data-snack-platform="web"
         data-snack-supported-platforms=ios,android,web
         data-snack-preview="true"
