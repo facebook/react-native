@@ -17,6 +17,7 @@ rn_apple_library(
     compiler_flags = [
         "-Wno-error=unguarded-availability-new",
         "-Wno-unknown-warning-option",
+        "-Wno-unused-property-ivar",
     ],
     contacts = ["oncall+react_native@xmail.facebook.com"],
     enable_exceptions = True,

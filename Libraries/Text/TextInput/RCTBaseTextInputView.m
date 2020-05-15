@@ -304,6 +304,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
 
 - (void)setShowSoftInputOnFocus:(BOOL)showSoftInputOnFocus
 {
+  (void)_showSoftInputOnFocus;
   if (showSoftInputOnFocus) {
     // Resets to default keyboard.
     self.backedTextInputView.inputView = nil;
