@@ -189,7 +189,9 @@ static void sliceChildShadowNodeViewPairsRecursively(
   for (auto const &sharedChildShadowNode : shadowNode.getChildren()) {
     auto &childShadowNode = *sharedChildShadowNode;
     auto shadowView = ShadowView(childShadowNode);
+    auto origin = layoutOffset;
     if (shadowView.layoutMetrics != EmptyLayoutMetrics) {
+      origin += shadowView.layoutMetrics.frame.origin;
       shadowView.layoutMetrics.frame.origin += layoutOffset;
     }
 
@@ -203,7 +205,7 @@ static void sliceChildShadowNodeViewPairsRecursively(
       }
 
       sliceChildShadowNodeViewPairsRecursively(
-          pairList, shadowView.layoutMetrics.frame.origin, childShadowNode);
+          pairList, origin, childShadowNode);
     }
   }
 }
