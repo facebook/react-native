@@ -34,6 +34,12 @@ const ComponentExamples: Array<RNTesterExample> = [
     module: require('../examples/DatePicker/DatePickerIOSExample'),
     supportsTVOS: false,
   },
+  // [TODO(macOS ISS#2323203)
+  {
+    key: 'DatePickerMacOSExample',
+    module: require('../examples/DatePicker/DatePickerMacOSExample'),
+    supportsTVOS: false,
+  }, // ]TODO(macOS ISS#2323203)
   {
     key: 'FlatListExample',
     module: require('../examples/FlatList/FlatListExample'),
@@ -156,11 +162,18 @@ const ComponentExamples: Array<RNTesterExample> = [
   },
   {
     key: 'TextExample',
+    /* $FlowFixMe TODO(macOS ISS#2323203): allow macOS to share iOS test */
     module: require('../examples/Text/TextExample.ios'),
     supportsTVOS: true,
+    // [TODO(macOS ISS#2323203)
+    skipTest: {
+      macos:
+        'Reason: Intermittent failure: crash deallocating NSTextStorage of a TextView: tracked by https://github.com/microsoft/react-native-macos/issues/357',
+    }, // ]TODO(macOS ISS#2323203)
   },
   {
     key: 'TextInputExample',
+    /* $FlowFixMe TODO(macOS ISS#2323203): allow macOS to share iOS test */
     module: require('../examples/TextInput/TextInputExample.ios'),
     supportsTVOS: true,
   },
@@ -202,6 +215,12 @@ const APIExamples: Array<RNTesterExample> = [
     module: require('../examples/Alert/AlertIOSExample'),
     supportsTVOS: true,
   },
+  // [TODO(macOS ISS#2323203)
+  {
+    key: 'AlertMacOSExample',
+    module: require('../examples/Alert/AlertMacOSExample'),
+    supportsTVOS: true,
+  }, // ]TODO(macOS ISS#2323203)
   {
     key: 'AnimatedExample',
     module: require('../examples/Animated/AnimatedExample'),
@@ -295,16 +314,31 @@ const APIExamples: Array<RNTesterExample> = [
     key: 'PushNotificationIOSExample',
     module: require('../examples/PushNotificationIOS/PushNotificationIOSExample'),
     supportsTVOS: false,
+    // [TODO(OSS Candidate ISS#2710739)
+    skipTest: {
+      ios:
+        'Reason: Requires remote notifications which are not supported in iOS Simulator.',
+    }, // ]TODO(OSS Candidate ISS#2710739)
   },
   {
     key: 'RCTRootViewIOSExample',
     module: require('../examples/RCTRootView/RCTRootViewIOSExample'),
     supportsTVOS: true,
+    // [TODO(OSS Candidate ISS#2710739)
+    skipTest: {
+      default:
+        'Reason: requires native components and is convered by RCTRootViewIntegrationTests',
+    }, // ]TODO(OSS Candidate ISS#2710739)
   },
   {
     key: 'RTLExample',
     module: require('../examples/RTL/RTLExample'),
     supportsTVOS: true,
+    // [TODO(macOS ISS#2323203)
+    skipTest: {
+      macos:
+        'Reason: Intermittent failure: crash deallocating NSTextStorage of a TextView: tracked by https://github.com/microsoft/react-native-macos/issues/357',
+    }, // ]TODO(macOS ISS#2323203)
   },
   {
     key: 'ShareExample',
@@ -325,11 +359,19 @@ const APIExamples: Array<RNTesterExample> = [
     key: 'TransformExample',
     module: require('../examples/Transform/TransformExample'),
     supportsTVOS: true,
+    // [TODO(OSS Candidate ISS#2710739)
+    skipTest: {
+      default: 'Reason: Stack overflow in jsi, upstream issue.',
+    }, // ]TODO(OSS Candidate ISS#2710739)
   },
   {
     key: 'TurboModuleExample',
     module: require('../examples/TurboModule/TurboModuleExample'),
     supportsTVOS: false,
+    // [TODO(OSS Candidate ISS#2710739)
+    skipTest: {
+      default: 'Reason: requires TurboModule to be configured in host app.',
+    }, // ]TODO(OSS Candidate ISS#2710739)
   },
   {
     key: 'TVEventHandlerExample',
