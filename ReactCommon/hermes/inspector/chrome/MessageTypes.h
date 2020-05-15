@@ -1,5 +1,5 @@
 // Copyright 2004-present Facebook. All Rights Reserved.
-// @generated SignedSource<<d3d8ca811a2e56cf4794f5dc4171bbdb>>
+// @generated SignedSource<<356df52df2a053b5254f0e039cc36a7b>>
 
 #pragma once
 
@@ -61,6 +61,7 @@ struct InternalPropertyDescriptor;
 struct PropertyDescriptor;
 struct RemoteObject;
 using RemoteObjectId = std::string;
+struct RunIfWaitingForDebuggerRequest;
 using ScriptId = std::string;
 struct StackTrace;
 using Timestamp = double;
@@ -101,6 +102,7 @@ struct RequestHandler {
   virtual void handle(const heapProfiler::TakeHeapSnapshotRequest &req) = 0;
   virtual void handle(const runtime::EvaluateRequest &req) = 0;
   virtual void handle(const runtime::GetPropertiesRequest &req) = 0;
+  virtual void handle(const runtime::RunIfWaitingForDebuggerRequest &req) = 0;
 };
 
 /// NoopRequestHandler can be subclassed to only handle some requests.
@@ -127,6 +129,7 @@ struct NoopRequestHandler : public RequestHandler {
   void handle(const heapProfiler::TakeHeapSnapshotRequest &req) override {}
   void handle(const runtime::EvaluateRequest &req) override {}
   void handle(const runtime::GetPropertiesRequest &req) override {}
+  void handle(const runtime::RunIfWaitingForDebuggerRequest &req) override {}
 };
 
 /// Types
@@ -453,6 +456,14 @@ struct runtime::GetPropertiesRequest : public Request {
 
   runtime::RemoteObjectId objectId{};
   folly::Optional<bool> ownProperties;
+};
+
+struct runtime::RunIfWaitingForDebuggerRequest : public Request {
+  RunIfWaitingForDebuggerRequest();
+  explicit RunIfWaitingForDebuggerRequest(const folly::dynamic &obj);
+
+  folly::dynamic toDynamic() const override;
+  void accept(RequestHandler &handler) const override;
 };
 
 /// Responses

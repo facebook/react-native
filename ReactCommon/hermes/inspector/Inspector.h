@@ -229,6 +229,16 @@ class Inspector : public facebook::hermes::debugger::EventObserver,
       facebook::hermes::debugger::Debugger &debugger,
       facebook::hermes::debugger::BreakpointID breakpointId) override;
 
+  /**
+   * Get whether we started with pauseOnFirstStatement, and have not yet had a
+   * debugger attach and ask to resume from that point. This matches the
+   * semantics of when CDP Debugger.runIfWaitingForDebugger should resume.
+   *
+   * It's not named "isPausedOnStart" because the VM and inspector is not
+   * necessarily paused; we could be in a RunningWaitPause state.
+   */
+  bool isAwaitingDebuggerOnStart();
+
  private:
   friend class InspectorState;
 
@@ -334,6 +344,10 @@ class Inspector : public facebook::hermes::debugger::EventObserver,
 
   // Trigger a fake console.log if we're currently in a superseded file.
   void alertIfPausedInSupersededFile();
+
+  // Are we currently waiting for a debugger to attach, because we
+  // requested 'pauseOnFirstStatement'?
+  bool awaitingDebuggerOnStart_;
 };
 
 } // namespace inspector

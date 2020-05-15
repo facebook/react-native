@@ -51,6 +51,10 @@ std::pair<NextStatePtr, CommandPtr> InspectorState::RunningDetached::didPause(
       nullptr, makeContinueCommand());
 }
 
+void InspectorState::RunningDetached::onEnter(InspectorState *previous) {
+  inspector_.awaitingDebuggerOnStart_ = false;
+}
+
 std::pair<NextStatePtr, bool> InspectorState::RunningDetached::enable() {
   return std::make_pair<NextStatePtr, bool>(
       InspectorState::Running::make(inspector_), true);
@@ -172,6 +176,8 @@ void InspectorState::Running::onEnter(InspectorState *prevState) {
       inspector_.notifyScriptsLoaded();
     }
   }
+
+  inspector_.awaitingDebuggerOnStart_ = false;
 }
 
 void InspectorState::Running::detach(

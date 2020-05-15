@@ -44,7 +44,8 @@ namespace {
 // the already-deallocated connection.
 class TestContext {
  public:
-  TestContext() : conn_(runtime_.runtime()) {}
+  TestContext(bool waitForDebugger = false)
+      : conn_(runtime_.runtime(), waitForDebugger) {}
   ~TestContext() {
     runtime_.wait();
   }
@@ -85,6 +86,7 @@ NotificationType expectNotification(SyncConnection &conn) {
       note = NotificationType(folly::parseJson(str));
     } catch (const std::exception &e) {
       parseError = e.what();
+      parseError += " (json: " + str + ")";
     }
 
     EXPECT_EQ(parseError, "");
@@ -2345,6 +2347,44 @@ TEST(ConnectionTests, wontStopOnFilesWithoutSourceMaps) {
   EXPECT_EQ(asyncRuntime.awaitStoredValue().asNumber(), 42);
 
   // Resume and exit
+  send<m::debugger::ResumeRequest>(conn, msgId++);
+  expectNotification<m::debugger::ResumedNotification>(conn);
+}
+
+TEST(ConnectionTests, runIfWaitingForDebugger) {
+  TestContext context(true);
+  AsyncHermesRuntime &asyncRuntime = context.runtime();
+  SyncConnection &conn = context.conn();
+  int msgId = 0;
+
+  asyncRuntime.executeScriptAsync(R"(
+      storeValue(1); debugger;
+    )");
+
+  send<m::debugger::EnableRequest>(conn, ++msgId);
+  expectExecutionContextCreated(conn);
+  expectNotification<m::debugger::ScriptParsedNotification>(conn);
+  expectNotification<m::debugger::PausedNotification>(conn);
+
+  // We should now be paused on load. Verify that we didn't run code.
+  ASSERT_FALSE(asyncRuntime.hasStoredValue());
+
+  // RunIfWaitingForDebugger should cause us to resume
+  send<m::runtime::RunIfWaitingForDebuggerRequest>(conn, ++msgId);
+  expectNotification<m::debugger::ResumedNotification>(conn);
+
+  // We should immediately hit the 'debugger;' statement
+  expectNotification<m::debugger::PausedNotification>(conn);
+  EXPECT_EQ(1, asyncRuntime.awaitStoredValue().asNumber());
+
+  // RunIfWaitingForDebuggerResponse should be accepted but have no effect
+  send<m::runtime::RunIfWaitingForDebuggerRequest>(conn, ++msgId);
+
+  // Do a dummy call so we can expect something other than a ResumeRequest
+  sendRuntimeEvalRequest(conn, ++msgId, "true");
+  expectEvalResponse(conn, msgId, true);
+
+  // Finally explicitly continue and exit
   send<m::debugger::ResumeRequest>(conn, msgId++);
   expectNotification<m::debugger::ResumedNotification>(conn);
 }

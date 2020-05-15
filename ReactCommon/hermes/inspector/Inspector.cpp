@@ -120,6 +120,7 @@ Inspector::Inspector(
     std::lock_guard<std::mutex> lock(mutex_);
 
     if (pauseOnFirstStatement) {
+      awaitingDebuggerOnStart_ = true;
       TRANSITION(std::make_unique<InspectorState::RunningWaitEnable>(*this));
     } else {
       TRANSITION(std::make_unique<InspectorState::RunningDetached>(*this));
@@ -677,6 +678,10 @@ bool Inspector::isExecutingSupersededFile() {
     return it->second > info.fileId;
   }
   return false;
+}
+
+bool Inspector::isAwaitingDebuggerOnStart() {
+  return awaitingDebuggerOnStart_;
 }
 
 } // namespace inspector
