@@ -15,7 +15,7 @@
 #import <React/RCTLog.h>
 #import <React/RCTProfile.h>
 #import <React/RCTUtils.h>
-#import <reactperflogger/NativeModulePerfLogger.h>
+#import <ReactCommon/NativeModulePerfLogger.h>
 
 #ifdef WITH_FBSYSTRACE
 #include <fbsystrace.h>

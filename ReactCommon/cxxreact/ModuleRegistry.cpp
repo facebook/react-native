@@ -7,8 +7,8 @@
 
 #include "ModuleRegistry.h"
 
+#include <ReactCommon/NativeModulePerfLogger.h>
 #include <glog/logging.h>
-#include <reactperflogger/NativeModulePerfLogger.h>
 
 #include "NativeModule.h"
 #include "SystraceSection.h"

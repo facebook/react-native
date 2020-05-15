@@ -39,6 +39,6 @@ cxx_library(
         react_native_xplat_dep("jsi:JSIDynamic"),
         react_native_xplat_target("cxxreact:bridge"),
         react_native_xplat_target("cxxreact:jsbigstring"),
-        react_native_xplat_target("reactperflogger:reactperflogger"),
+        react_native_xplat_target("perflogger:perflogger"),
     ],
 )
