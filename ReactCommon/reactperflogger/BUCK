@@ -1,15 +1,12 @@
-load("//tools/build_defs/oss:rn_defs.bzl", "ANDROID", "APPLE", "rn_xplat_cxx_library", "subdir_glob")
+load("//tools/build_defs/oss:rn_defs.bzl", "ANDROID", "APPLE", "rn_xplat_cxx_library")
 
 rn_xplat_cxx_library(
-    name = "perflogger",
+    name = "reactperflogger",
     srcs = glob(["**/*.cpp"]),
     header_namespace = "",
-    exported_headers = subdir_glob(
-        [
-            ("ReactCommon", "*.h"),
-        ],
-        prefix = "ReactCommon",
-    ),
+    exported_headers = {
+        "reactperflogger/NativeModulePerfLogger.h": "reactperflogger/NativeModulePerfLogger.h",
+    },
     compiler_flags = [
         "-fexceptions",
         "-frtti",

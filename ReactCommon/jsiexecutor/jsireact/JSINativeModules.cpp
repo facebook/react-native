@@ -6,7 +6,7 @@
  */
 
 #include "jsireact/JSINativeModules.h"
-#include <ReactCommon/NativeModulePerfLogger.h>
+#include <reactperflogger/NativeModulePerfLogger.h>
 
 #include <glog/logging.h>
 
