@@ -72,7 +72,7 @@
 <div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React <span class="hljs-keyword">from</span> <span class="hljs-string">"react"</span>;
 <span class="hljs-keyword">import</span> { View, StyleSheet } <span class="hljs-keyword">from</span> <span class="hljs-string">"react-native"</span>;
 
-<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> ViewStyleProps = <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
+<span class="hljs-keyword">const</span> ViewStyleProps = <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
     <span class="hljs-keyword">return</span> (
       &lt;View style={styles.container}&gt;
         &lt;View style={styles.top} /&gt;
@@ -110,10 +110,12 @@ const styles = StyleSheet.create({
     borderBottomRightRadius: 20,
   },
 });
+
+export default ViewStyleProps;
 </code></pre></div><div class="desktop-friendly-snack" style="margin-top: 15px; margin-bottom: 15px"><div
         data-snack-name="ViewStyleProps"
         data-snack-description="Example usage"
-        data-snack-code="import%20React%20from%20%22react%22%3B%0Aimport%20%7B%20View%2C%20StyleSheet%20%7D%20from%20%22react-native%22%3B%0A%0Aexport%20default%20ViewStyleProps%20%3D%20()%20%3D%3E%20%7B%0A%20%20%20%20return%20(%0A%20%20%20%20%20%20%3CView%20style%3D%7Bstyles.container%7D%3E%0A%20%20%20%20%20%20%20%20%3CView%20style%3D%7Bstyles.top%7D%20%2F%3E%0A%20%20%20%20%20%20%20%20%3CView%20style%3D%7Bstyles.middle%7D%20%2F%3E%0A%20%20%20%20%20%20%20%20%3CView%20style%3D%7Bstyles.bottom%7D%20%2F%3E%0A%20%20%20%20%20%20%3C%2FView%3E%0A%20%20%20%20)%3B%0A%7D%0A%0Aconst%20styles%20%3D%20StyleSheet.create(%7B%0A%20%20container%3A%20%7B%0A%20%20%20%20flex%3A%201%2C%0A%20%20%20%20justifyContent%3A%20%22space-between%22%2C%0A%20%20%20%20backgroundColor%3A%20%22%23fff%22%2C%0A%20%20%20%20padding%3A%2020%2C%0A%20%20%20%20margin%3A%2010%2C%0A%20%20%7D%2C%0A%20%20top%3A%20%7B%0A%20%20%20%20flex%3A%200.3%2C%0A%20%20%20%20backgroundColor%3A%20%22grey%22%2C%0A%20%20%20%20borderWidth%3A%205%2C%0A%20%20%20%20borderTopLeftRadius%3A%2020%2C%0A%20%20%20%20borderTopRightRadius%3A%2020%2C%0A%20%20%7D%2C%0A%20%20middle%3A%20%7B%0A%20%20%20%20flex%3A%200.3%2C%0A%20%20%20%20backgroundColor%3A%20%22beige%22%2C%0A%20%20%20%20borderWidth%3A%205%2C%0A%20%20%7D%2C%0A%20%20bottom%3A%20%7B%0A%20%20%20%20flex%3A%200.3%2C%0A%20%20%20%20backgroundColor%3A%20%22pink%22%2C%0A%20%20%20%20borderWidth%3A%205%2C%0A%20%20%20%20borderBottomLeftRadius%3A%2020%2C%0A%20%20%20%20borderBottomRightRadius%3A%2020%2C%0A%20%20%7D%2C%0A%7D)%3B%0A"
+        data-snack-code="import%20React%20from%20%22react%22%3B%0Aimport%20%7B%20View%2C%20StyleSheet%20%7D%20from%20%22react-native%22%3B%0A%0Aconst%20ViewStyleProps%20%3D%20()%20%3D%3E%20%7B%0A%20%20%20%20return%20(%0A%20%20%20%20%20%20%3CView%20style%3D%7Bstyles.container%7D%3E%0A%20%20%20%20%20%20%20%20%3CView%20style%3D%7Bstyles.top%7D%20%2F%3E%0A%20%20%20%20%20%20%20%20%3CView%20style%3D%7Bstyles.middle%7D%20%2F%3E%0A%20%20%20%20%20%20%20%20%3CView%20style%3D%7Bstyles.bottom%7D%20%2F%3E%0A%20%20%20%20%20%20%3C%2FView%3E%0A%20%20%20%20)%3B%0A%7D%0A%0Aconst%20styles%20%3D%20StyleSheet.create(%7B%0A%20%20container%3A%20%7B%0A%20%20%20%20flex%3A%201%2C%0A%20%20%20%20justifyContent%3A%20%22space-between%22%2C%0A%20%20%20%20backgroundColor%3A%20%22%23fff%22%2C%0A%20%20%20%20padding%3A%2020%2C%0A%20%20%20%20margin%3A%2010%2C%0A%20%20%7D%2C%0A%20%20top%3A%20%7B%0A%20%20%20%20flex%3A%200.3%2C%0A%20%20%20%20backgroundColor%3A%20%22grey%22%2C%0A%20%20%20%20borderWidth%3A%205%2C%0A%20%20%20%20borderTopLeftRadius%3A%2020%2C%0A%20%20%20%20borderTopRightRadius%3A%2020%2C%0A%20%20%7D%2C%0A%20%20middle%3A%20%7B%0A%20%20%20%20flex%3A%200.3%2C%0A%20%20%20%20backgroundColor%3A%20%22beige%22%2C%0A%20%20%20%20borderWidth%3A%205%2C%0A%20%20%7D%2C%0A%20%20bottom%3A%20%7B%0A%20%20%20%20flex%3A%200.3%2C%0A%20%20%20%20backgroundColor%3A%20%22pink%22%2C%0A%20%20%20%20borderWidth%3A%205%2C%0A%20%20%20%20borderBottomLeftRadius%3A%2020%2C%0A%20%20%20%20borderBottomRightRadius%3A%2020%2C%0A%20%20%7D%2C%0A%7D)%3B%0A%0Aexport%20default%20ViewStyleProps%3B%0A"
         data-snack-platform="web"
         data-snack-supported-platforms=ios,android,web
         data-snack-preview="true"
