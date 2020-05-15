@@ -66,6 +66,11 @@ struct ImageURLLoaderAttribution {
 - (void)trackURLImageVisibilityForRequest:(RCTImageURLLoaderRequest *)loaderRequest imageView:(UIView *)imageView;
 
 /**
+ * Image instrumentation - notify that the request was cancelled.
+ */
+- (void)trackURLImageRequestDidCancel:(RCTImageURLLoaderRequest *)loaderRequest;
+
+/**
  * Image instrumentation - notify that the native image view was destroyed.
  */
 - (void)trackURLImageDidDestroy:(RCTImageURLLoaderRequest *)loaderRequest;

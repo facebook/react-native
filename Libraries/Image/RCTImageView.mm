@@ -218,9 +218,8 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
 
 - (void)cancelImageLoad
 {
-  if (_loaderRequest.cancellationBlock) {
-    _loaderRequest.cancellationBlock();
-  }
+  [_loaderRequest cancel];
+  [_imageLoader trackURLImageRequestDidCancel:_loaderRequest];
 
   _loaderRequest = nil;
   _pendingImageSource = nil;
