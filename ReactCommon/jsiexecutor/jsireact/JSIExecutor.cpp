@@ -7,7 +7,6 @@
 
 #include "jsireact/JSIExecutor.h"
 
-#include <ReactCommon/NativeModulePerfLogger.h>
 #include <cxxreact/JSBigString.h>
 #include <cxxreact/ModuleRegistry.h>
 #include <cxxreact/ReactMarker.h>
@@ -17,6 +16,7 @@
 #include <glog/logging.h>
 #include <jsi/JSIDynamic.h>
 #include <jsi/instrumentation.h>
+#include <reactperflogger/NativeModulePerfLogger.h>
 
 #include <sstream>
 #include <stdexcept>

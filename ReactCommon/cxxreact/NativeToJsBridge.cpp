@@ -8,10 +8,10 @@
 #include "NativeToJsBridge.h"
 
 #include <ReactCommon/CallInvoker.h>
-#include <ReactCommon/NativeModulePerfLogger.h>
 #include <folly/MoveWrapper.h>
 #include <folly/json.h>
 #include <glog/logging.h>
+#include <reactperflogger/NativeModulePerfLogger.h>
 
 #include "Instance.h"
 #include "JSBigString.h"

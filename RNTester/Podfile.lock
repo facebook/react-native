@@ -401,7 +401,7 @@ DEPENDENCIES:
   - React-jsi (from `../ReactCommon/jsi`)
   - React-jsiexecutor (from `../ReactCommon/jsiexecutor`)
   - React-jsinspector (from `../ReactCommon/jsinspector`)
-  - React-perflogger (from `../ReactCommon/perflogger`)
+  - React-perflogger (from `../ReactCommon/reactperflogger`)
   - React-RCTActionSheet (from `../Libraries/ActionSheetIOS`)
   - React-RCTAnimation (from `../Libraries/NativeAnimation`)
   - React-RCTBlob (from `../Libraries/Blob`)
@@ -467,7 +467,7 @@ EXTERNAL SOURCES:
   React-jsinspector:
     :path: "../ReactCommon/jsinspector"
   React-perflogger:
-    :path: "../ReactCommon/perflogger"
+    :path: "../ReactCommon/reactperflogger"
   React-RCTActionSheet:
     :path: "../Libraries/ActionSheetIOS"
   React-RCTAnimation:
@@ -525,7 +525,7 @@ SPEC CHECKSUMS:
   React-jsi: fe94132da767bfc4801968c2a12abae43e9a833e
   React-jsiexecutor: 959bb48c75a3bfc1b1d2b991087a6d8df721cbcf
   React-jsinspector: 7fbf9b42b58b02943a0d89b0ba9fff0070f2de98
-  React-perflogger: d32d3423e466a825ef2e9934fe9d62b149e5d9f8
+  React-perflogger: 1f668f3e4d1adef1fafb3b95e7d6cf922113fe31
   React-RCTActionSheet: 51c43beeb74ef41189e87fe9823e53ebf6210359
   React-RCTAnimation: 9d09196c641c1ebfef3a4e9ae670bcda5fadb420
   React-RCTBlob: 715489626cf44d28ee51e5277a4d559167351696
