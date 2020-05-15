@@ -106,8 +106,11 @@ void Binding::startSurfaceWithConstraints(
     jboolean doLeftAndRightSwapInRTL) {
   SystraceSection s("FabricUIManagerBinding::startSurfaceWithConstraints");
 
-  LOG(WARNING) << "Binding::startSurfaceWithConstraints() was called (address: "
-               << this << ", surfaceId: " << surfaceId << ").";
+  if (enableFabricLogs_) {
+    LOG(WARNING)
+        << "Binding::startSurfaceWithConstraints() was called (address: "
+        << this << ", surfaceId: " << surfaceId << ").";
+  }
 
   std::shared_ptr<Scheduler> scheduler = getScheduler();
   if (!scheduler) {
@@ -155,8 +158,10 @@ void Binding::renderTemplateToSurface(jint surfaceId, jstring uiTemplate) {
 void Binding::stopSurface(jint surfaceId) {
   SystraceSection s("FabricUIManagerBinding::stopSurface");
 
-  LOG(WARNING) << "Binding::stopSurface() was called (address: " << this
-               << ", surfaceId: " << surfaceId << ").";
+  if (enableFabricLogs_) {
+    LOG(WARNING) << "Binding::stopSurface() was called (address: " << this
+                 << ", surfaceId: " << surfaceId << ").";
+  }
 
   std::shared_ptr<Scheduler> scheduler = getScheduler();
   if (!scheduler) {
@@ -209,8 +214,16 @@ void Binding::installFabricUIManager(
     jni::alias_ref<jobject> reactNativeConfig) {
   SystraceSection s("FabricUIManagerBinding::installFabricUIManager");
 
-  LOG(WARNING) << "Binding::installFabricUIManager() was called (address: "
-               << this << ").";
+  std::shared_ptr<const ReactNativeConfig> config =
+      std::make_shared<const ReactNativeConfigHolder>(reactNativeConfig);
+
+  enableFabricLogs_ =
+      config->getBool("react_fabric:enabled_android_fabric_logs");
+
+  if (enableFabricLogs_) {
+    LOG(WARNING) << "Binding::installFabricUIManager() was called (address: "
+                 << this << ").";
+  }
 
   // Use std::lock and std::adopt_lock to prevent deadlocks by locking mutexes
   // at the same time
@@ -253,8 +266,6 @@ void Binding::installFabricUIManager(
             ownerBox, eventBeatManager, runtimeExecutor, localJavaUIManager);
       };
 
-  std::shared_ptr<const ReactNativeConfig> config =
-      std::make_shared<const ReactNativeConfigHolder>(reactNativeConfig);
   contextContainer->insert("ReactNativeConfig", config);
   contextContainer->insert("FabricUIManager", javaUIManager_);
 
@@ -281,8 +292,10 @@ void Binding::installFabricUIManager(
 }
 
 void Binding::uninstallFabricUIManager() {
-  LOG(WARNING) << "Binding::uninstallFabricUIManager() was called (address: "
-               << this << ").";
+  if (enableFabricLogs_) {
+    LOG(WARNING) << "Binding::uninstallFabricUIManager() was called (address: "
+                 << this << ").";
+  }
   // Use std::lock and std::adopt_lock to prevent deadlocks by locking mutexes
   // at the same time
   std::lock(schedulerMutex_, javaUIManagerMutex_);
