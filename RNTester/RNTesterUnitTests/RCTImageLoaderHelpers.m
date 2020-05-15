@@ -19,6 +19,11 @@
   return nil;
 }
 
++ (BOOL)requiresMainQueueSetup
+{
+  return NO;
+}
+
 - (instancetype)init
 {
   return nil;
@@ -68,6 +73,11 @@
 + (NSString *)moduleName
 {
   return nil;
+}
+
++ (BOOL)requiresMainQueueSetup
+{
+  return NO;
 }
 
 - (instancetype)init

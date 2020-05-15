@@ -41,6 +41,11 @@ RCT_EXPORT_MODULE()
 
 RCT_EXPORT_MODULE()
 
++ (BOOL)requiresMainQueueSetup
+{
+  return NO;
+}
+
 - (id)init
 {
   if ((self = [super init])) {
@@ -87,6 +92,11 @@ RCT_EXPORT_MODULE()
 @synthesize methodQueue = _methodQueue;
 
 RCT_EXPORT_MODULE()
+
++ (BOOL)requiresMainQueueSetup
+{
+  return NO;
+}
 
 - (NSDictionary<NSString *, id> *)constantsToExport
 {
