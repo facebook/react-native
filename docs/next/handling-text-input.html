@@ -73,7 +73,7 @@
 <div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React, { useState } <span class="hljs-keyword">from</span> <span class="hljs-string">'react'</span>;
 <span class="hljs-keyword">import</span> { Text, TextInput, View } <span class="hljs-keyword">from</span> <span class="hljs-string">'react-native'</span>;
 
-<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">PizzaTranslator</span>(<span class="hljs-params"></span>) </span>{
+<span class="hljs-keyword">const</span> PizzaTranslator = <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
   <span class="hljs-keyword">const</span> [text, setText] = useState(<span class="hljs-string">''</span>);
   <span class="hljs-keyword">return</span> (
     <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">View</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{{padding:</span> <span class="hljs-attr">10</span>}}&gt;</span>
@@ -89,10 +89,12 @@
     <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span>
   );
 }
+
+export default PizzaTranslator;
 </span></code></pre></div><div class="desktop-friendly-snack" style="margin-top: 15px; margin-bottom: 15px"><div
         data-snack-name="Handling Text Input"
         data-snack-description="Example usage"
-        data-snack-code="import%20React%2C%20%7B%20useState%20%7D%20from%20'react'%3B%0Aimport%20%7B%20Text%2C%20TextInput%2C%20View%20%7D%20from%20'react-native'%3B%0A%0Aexport%20default%20function%20PizzaTranslator()%20%7B%0A%20%20const%20%5Btext%2C%20setText%5D%20%3D%20useState('')%3B%0A%20%20return%20(%0A%20%20%20%20%3CView%20style%3D%7B%7Bpadding%3A%2010%7D%7D%3E%0A%20%20%20%20%20%20%3CTextInput%0A%20%20%20%20%20%20%20%20style%3D%7B%7Bheight%3A%2040%7D%7D%0A%20%20%20%20%20%20%20%20placeholder%3D%22Type%20here%20to%20translate!%22%0A%20%20%20%20%20%20%20%20onChangeText%3D%7Btext%20%3D%3E%20setText(text)%7D%0A%20%20%20%20%20%20%20%20defaultValue%3D%7Btext%7D%0A%20%20%20%20%20%20%2F%3E%0A%20%20%20%20%20%20%3CText%20style%3D%7B%7Bpadding%3A%2010%2C%20fontSize%3A%2042%7D%7D%3E%0A%20%20%20%20%20%20%20%20%7Btext.split('%20').map((word)%20%3D%3E%20word%20%26%26%20'%F0%9F%8D%95').join('%20')%7D%0A%20%20%20%20%20%20%3C%2FText%3E%0A%20%20%20%20%3C%2FView%3E%0A%20%20)%3B%0A%7D%0A"
+        data-snack-code="import%20React%2C%20%7B%20useState%20%7D%20from%20'react'%3B%0Aimport%20%7B%20Text%2C%20TextInput%2C%20View%20%7D%20from%20'react-native'%3B%0A%0Aconst%20PizzaTranslator%20%3D%20()%20%3D%3E%20%7B%0A%20%20const%20%5Btext%2C%20setText%5D%20%3D%20useState('')%3B%0A%20%20return%20(%0A%20%20%20%20%3CView%20style%3D%7B%7Bpadding%3A%2010%7D%7D%3E%0A%20%20%20%20%20%20%3CTextInput%0A%20%20%20%20%20%20%20%20style%3D%7B%7Bheight%3A%2040%7D%7D%0A%20%20%20%20%20%20%20%20placeholder%3D%22Type%20here%20to%20translate!%22%0A%20%20%20%20%20%20%20%20onChangeText%3D%7Btext%20%3D%3E%20setText(text)%7D%0A%20%20%20%20%20%20%20%20defaultValue%3D%7Btext%7D%0A%20%20%20%20%20%20%2F%3E%0A%20%20%20%20%20%20%3CText%20style%3D%7B%7Bpadding%3A%2010%2C%20fontSize%3A%2042%7D%7D%3E%0A%20%20%20%20%20%20%20%20%7Btext.split('%20').map((word)%20%3D%3E%20word%20%26%26%20'%F0%9F%8D%95').join('%20')%7D%0A%20%20%20%20%20%20%3C%2FText%3E%0A%20%20%20%20%3C%2FView%3E%0A%20%20)%3B%0A%7D%0A%0Aexport%20default%20PizzaTranslator%3B%0A"
         data-snack-platform="web"
         data-snack-supported-platforms=ios,android,web
         data-snack-preview="true"

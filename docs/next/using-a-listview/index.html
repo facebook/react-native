@@ -75,43 +75,45 @@
 <div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React <span class="hljs-keyword">from</span> <span class="hljs-string">'react'</span>;
 <span class="hljs-keyword">import</span> { FlatList, StyleSheet, Text, View } <span class="hljs-keyword">from</span> <span class="hljs-string">'react-native'</span>;
 
-<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> FlatListBasics = <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
-    <span class="hljs-keyword">return</span> (
-      <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">View</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.container}</span>&gt;</span>
-        <span class="hljs-tag">&lt;<span class="hljs-name">FlatList</span>
-          <span class="hljs-attr">data</span>=<span class="hljs-string">{[</span>
-            {<span class="hljs-attr">key:</span> '<span class="hljs-attr">Devin</span>'},
-            {<span class="hljs-attr">key:</span> '<span class="hljs-attr">Dan</span>'},
-            {<span class="hljs-attr">key:</span> '<span class="hljs-attr">Dominic</span>'},
-            {<span class="hljs-attr">key:</span> '<span class="hljs-attr">Jackson</span>'},
-            {<span class="hljs-attr">key:</span> '<span class="hljs-attr">James</span>'},
-            {<span class="hljs-attr">key:</span> '<span class="hljs-attr">Joel</span>'},
-            {<span class="hljs-attr">key:</span> '<span class="hljs-attr">John</span>'},
-            {<span class="hljs-attr">key:</span> '<span class="hljs-attr">Jillian</span>'},
-            {<span class="hljs-attr">key:</span> '<span class="hljs-attr">Jimmy</span>'},
-            {<span class="hljs-attr">key:</span> '<span class="hljs-attr">Julie</span>'},
-          ]}
-          <span class="hljs-attr">renderItem</span>=<span class="hljs-string">{({item})</span> =&gt;</span> <span class="hljs-tag">&lt;<span class="hljs-name">Text</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.item}</span>&gt;</span>{item.key}<span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span>}
-        /&gt;
-      <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span>
-    );
+<span class="hljs-keyword">const</span> styles = StyleSheet.create({
+  <span class="hljs-attr">container</span>: {
+   <span class="hljs-attr">flex</span>: <span class="hljs-number">1</span>,
+   <span class="hljs-attr">paddingTop</span>: <span class="hljs-number">22</span>
+  },
+  <span class="hljs-attr">item</span>: {
+    <span class="hljs-attr">padding</span>: <span class="hljs-number">10</span>,
+    <span class="hljs-attr">fontSize</span>: <span class="hljs-number">18</span>,
+    <span class="hljs-attr">height</span>: <span class="hljs-number">44</span>,
+  },
+});
+
+<span class="hljs-keyword">const</span> FlatListBasics = <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
+  <span class="hljs-keyword">return</span> (
+    <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">View</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.container}</span>&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">FlatList</span>
+        <span class="hljs-attr">data</span>=<span class="hljs-string">{[</span>
+          {<span class="hljs-attr">key:</span> '<span class="hljs-attr">Devin</span>'},
+          {<span class="hljs-attr">key:</span> '<span class="hljs-attr">Dan</span>'},
+          {<span class="hljs-attr">key:</span> '<span class="hljs-attr">Dominic</span>'},
+          {<span class="hljs-attr">key:</span> '<span class="hljs-attr">Jackson</span>'},
+          {<span class="hljs-attr">key:</span> '<span class="hljs-attr">James</span>'},
+          {<span class="hljs-attr">key:</span> '<span class="hljs-attr">Joel</span>'},
+          {<span class="hljs-attr">key:</span> '<span class="hljs-attr">John</span>'},
+          {<span class="hljs-attr">key:</span> '<span class="hljs-attr">Jillian</span>'},
+          {<span class="hljs-attr">key:</span> '<span class="hljs-attr">Jimmy</span>'},
+          {<span class="hljs-attr">key:</span> '<span class="hljs-attr">Julie</span>'},
+        ]}
+        <span class="hljs-attr">renderItem</span>=<span class="hljs-string">{({item})</span> =&gt;</span> <span class="hljs-tag">&lt;<span class="hljs-name">Text</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.item}</span>&gt;</span>{item.key}<span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span>}
+      /&gt;
+    <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span>
+  );
 }
 
-const styles = StyleSheet.create({
-  container: {
-   flex: 1,
-   paddingTop: 22
-  },
-  item: {
-    padding: 10,
-    fontSize: 18,
-    height: 44,
-  },
-})
+export default FlatListBasics;
 </span></code></pre></div><div class="desktop-friendly-snack" style="margin-top: 15px; margin-bottom: 15px"><div
         data-snack-name="FlatList Basics"
         data-snack-description="Example usage"
-        data-snack-code="import%20React%20from%20'react'%3B%0Aimport%20%7B%20FlatList%2C%20StyleSheet%2C%20Text%2C%20View%20%7D%20from%20'react-native'%3B%0A%0Aexport%20default%20FlatListBasics%20%3D%20()%20%3D%3E%20%7B%0A%20%20%20%20return%20(%0A%20%20%20%20%20%20%3CView%20style%3D%7Bstyles.container%7D%3E%0A%20%20%20%20%20%20%20%20%3CFlatList%0A%20%20%20%20%20%20%20%20%20%20data%3D%7B%5B%0A%20%20%20%20%20%20%20%20%20%20%20%20%7Bkey%3A%20'Devin'%7D%2C%0A%20%20%20%20%20%20%20%20%20%20%20%20%7Bkey%3A%20'Dan'%7D%2C%0A%20%20%20%20%20%20%20%20%20%20%20%20%7Bkey%3A%20'Dominic'%7D%2C%0A%20%20%20%20%20%20%20%20%20%20%20%20%7Bkey%3A%20'Jackson'%7D%2C%0A%20%20%20%20%20%20%20%20%20%20%20%20%7Bkey%3A%20'James'%7D%2C%0A%20%20%20%20%20%20%20%20%20%20%20%20%7Bkey%3A%20'Joel'%7D%2C%0A%20%20%20%20%20%20%20%20%20%20%20%20%7Bkey%3A%20'John'%7D%2C%0A%20%20%20%20%20%20%20%20%20%20%20%20%7Bkey%3A%20'Jillian'%7D%2C%0A%20%20%20%20%20%20%20%20%20%20%20%20%7Bkey%3A%20'Jimmy'%7D%2C%0A%20%20%20%20%20%20%20%20%20%20%20%20%7Bkey%3A%20'Julie'%7D%2C%0A%20%20%20%20%20%20%20%20%20%20%5D%7D%0A%20%20%20%20%20%20%20%20%20%20renderItem%3D%7B(%7Bitem%7D)%20%3D%3E%20%3CText%20style%3D%7Bstyles.item%7D%3E%7Bitem.key%7D%3C%2FText%3E%7D%0A%20%20%20%20%20%20%20%20%2F%3E%0A%20%20%20%20%20%20%3C%2FView%3E%0A%20%20%20%20)%3B%0A%7D%0A%0Aconst%20styles%20%3D%20StyleSheet.create(%7B%0A%20%20container%3A%20%7B%0A%20%20%20flex%3A%201%2C%0A%20%20%20paddingTop%3A%2022%0A%20%20%7D%2C%0A%20%20item%3A%20%7B%0A%20%20%20%20padding%3A%2010%2C%0A%20%20%20%20fontSize%3A%2018%2C%0A%20%20%20%20height%3A%2044%2C%0A%20%20%7D%2C%0A%7D)%0A"
+        data-snack-code="import%20React%20from%20'react'%3B%0Aimport%20%7B%20FlatList%2C%20StyleSheet%2C%20Text%2C%20View%20%7D%20from%20'react-native'%3B%0A%0Aconst%20styles%20%3D%20StyleSheet.create(%7B%0A%20%20container%3A%20%7B%0A%20%20%20flex%3A%201%2C%0A%20%20%20paddingTop%3A%2022%0A%20%20%7D%2C%0A%20%20item%3A%20%7B%0A%20%20%20%20padding%3A%2010%2C%0A%20%20%20%20fontSize%3A%2018%2C%0A%20%20%20%20height%3A%2044%2C%0A%20%20%7D%2C%0A%7D)%3B%0A%0Aconst%20FlatListBasics%20%3D%20()%20%3D%3E%20%7B%0A%20%20return%20(%0A%20%20%20%20%3CView%20style%3D%7Bstyles.container%7D%3E%0A%20%20%20%20%20%20%3CFlatList%0A%20%20%20%20%20%20%20%20data%3D%7B%5B%0A%20%20%20%20%20%20%20%20%20%20%7Bkey%3A%20'Devin'%7D%2C%0A%20%20%20%20%20%20%20%20%20%20%7Bkey%3A%20'Dan'%7D%2C%0A%20%20%20%20%20%20%20%20%20%20%7Bkey%3A%20'Dominic'%7D%2C%0A%20%20%20%20%20%20%20%20%20%20%7Bkey%3A%20'Jackson'%7D%2C%0A%20%20%20%20%20%20%20%20%20%20%7Bkey%3A%20'James'%7D%2C%0A%20%20%20%20%20%20%20%20%20%20%7Bkey%3A%20'Joel'%7D%2C%0A%20%20%20%20%20%20%20%20%20%20%7Bkey%3A%20'John'%7D%2C%0A%20%20%20%20%20%20%20%20%20%20%7Bkey%3A%20'Jillian'%7D%2C%0A%20%20%20%20%20%20%20%20%20%20%7Bkey%3A%20'Jimmy'%7D%2C%0A%20%20%20%20%20%20%20%20%20%20%7Bkey%3A%20'Julie'%7D%2C%0A%20%20%20%20%20%20%20%20%5D%7D%0A%20%20%20%20%20%20%20%20renderItem%3D%7B(%7Bitem%7D)%20%3D%3E%20%3CText%20style%3D%7Bstyles.item%7D%3E%7Bitem.key%7D%3C%2FText%3E%7D%0A%20%20%20%20%20%20%2F%3E%0A%20%20%20%20%3C%2FView%3E%0A%20%20)%3B%0A%7D%0A%0Aexport%20default%20FlatListBasics%3B%0A"
         data-snack-platform="web"
         data-snack-supported-platforms=ios,android,web
         data-snack-preview="true"
@@ -127,7 +129,28 @@ const styles = StyleSheet.create({
 <div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React <span class="hljs-keyword">from</span> <span class="hljs-string">'react'</span>;
 <span class="hljs-keyword">import</span> { SectionList, StyleSheet, Text, View } <span class="hljs-keyword">from</span> <span class="hljs-string">'react-native'</span>;
 
-<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> SectionListBasics = <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
+<span class="hljs-keyword">const</span> styles = StyleSheet.create({
+  <span class="hljs-attr">container</span>: {
+   <span class="hljs-attr">flex</span>: <span class="hljs-number">1</span>,
+   <span class="hljs-attr">paddingTop</span>: <span class="hljs-number">22</span>
+  },
+  <span class="hljs-attr">sectionHeader</span>: {
+    <span class="hljs-attr">paddingTop</span>: <span class="hljs-number">2</span>,
+    <span class="hljs-attr">paddingLeft</span>: <span class="hljs-number">10</span>,
+    <span class="hljs-attr">paddingRight</span>: <span class="hljs-number">10</span>,
+    <span class="hljs-attr">paddingBottom</span>: <span class="hljs-number">2</span>,
+    <span class="hljs-attr">fontSize</span>: <span class="hljs-number">14</span>,
+    <span class="hljs-attr">fontWeight</span>: <span class="hljs-string">'bold'</span>,
+    <span class="hljs-attr">backgroundColor</span>: <span class="hljs-string">'rgba(247,247,247,1.0)'</span>,
+  },
+  <span class="hljs-attr">item</span>: {
+    <span class="hljs-attr">padding</span>: <span class="hljs-number">10</span>,
+    <span class="hljs-attr">fontSize</span>: <span class="hljs-number">18</span>,
+    <span class="hljs-attr">height</span>: <span class="hljs-number">44</span>,
+  },
+})
+
+<span class="hljs-keyword">const</span> SectionListBasics = <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
     <span class="hljs-keyword">return</span> (
       <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">View</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.container}</span>&gt;</span>
         <span class="hljs-tag">&lt;<span class="hljs-name">SectionList</span>
@@ -143,30 +166,11 @@ const styles = StyleSheet.create({
     );
 }
 
-const styles = StyleSheet.create({
-  container: {
-   flex: 1,
-   paddingTop: 22
-  },
-  sectionHeader: {
-    paddingTop: 2,
-    paddingLeft: 10,
-    paddingRight: 10,
-    paddingBottom: 2,
-    fontSize: 14,
-    fontWeight: 'bold',
-    backgroundColor: 'rgba(247,247,247,1.0)',
-  },
-  item: {
-    padding: 10,
-    fontSize: 18,
-    height: 44,
-  },
-})
+export default SectionListBasics;
 </span></code></pre></div><div class="desktop-friendly-snack" style="margin-top: 15px; margin-bottom: 15px"><div
         data-snack-name="SectionList Basics"
         data-snack-description="Example usage"
-        data-snack-code="import%20React%20from%20'react'%3B%0Aimport%20%7B%20SectionList%2C%20StyleSheet%2C%20Text%2C%20View%20%7D%20from%20'react-native'%3B%0A%0Aexport%20default%20SectionListBasics%20%3D%20()%20%3D%3E%20%7B%0A%20%20%20%20return%20(%0A%20%20%20%20%20%20%3CView%20style%3D%7Bstyles.container%7D%3E%0A%20%20%20%20%20%20%20%20%3CSectionList%0A%20%20%20%20%20%20%20%20%20%20sections%3D%7B%5B%0A%20%20%20%20%20%20%20%20%20%20%20%20%7Btitle%3A%20'D'%2C%20data%3A%20%5B'Devin'%2C%20'Dan'%2C%20'Dominic'%5D%7D%2C%0A%20%20%20%20%20%20%20%20%20%20%20%20%7Btitle%3A%20'J'%2C%20data%3A%20%5B'Jackson'%2C%20'James'%2C%20'Jillian'%2C%20'Jimmy'%2C%20'Joel'%2C%20'John'%2C%20'Julie'%5D%7D%2C%0A%20%20%20%20%20%20%20%20%20%20%5D%7D%0A%20%20%20%20%20%20%20%20%20%20renderItem%3D%7B(%7Bitem%7D)%20%3D%3E%20%3CText%20style%3D%7Bstyles.item%7D%3E%7Bitem%7D%3C%2FText%3E%7D%0A%20%20%20%20%20%20%20%20%20%20renderSectionHeader%3D%7B(%7Bsection%7D)%20%3D%3E%20%3CText%20style%3D%7Bstyles.sectionHeader%7D%3E%7Bsection.title%7D%3C%2FText%3E%7D%0A%20%20%20%20%20%20%20%20%20%20keyExtractor%3D%7B(item%2C%20index)%20%3D%3E%20index%7D%0A%20%20%20%20%20%20%20%20%2F%3E%0A%20%20%20%20%20%20%3C%2FView%3E%0A%20%20%20%20)%3B%0A%7D%0A%0Aconst%20styles%20%3D%20StyleSheet.create(%7B%0A%20%20container%3A%20%7B%0A%20%20%20flex%3A%201%2C%0A%20%20%20paddingTop%3A%2022%0A%20%20%7D%2C%0A%20%20sectionHeader%3A%20%7B%0A%20%20%20%20paddingTop%3A%202%2C%0A%20%20%20%20paddingLeft%3A%2010%2C%0A%20%20%20%20paddingRight%3A%2010%2C%0A%20%20%20%20paddingBottom%3A%202%2C%0A%20%20%20%20fontSize%3A%2014%2C%0A%20%20%20%20fontWeight%3A%20'bold'%2C%0A%20%20%20%20backgroundColor%3A%20'rgba(247%2C247%2C247%2C1.0)'%2C%0A%20%20%7D%2C%0A%20%20item%3A%20%7B%0A%20%20%20%20padding%3A%2010%2C%0A%20%20%20%20fontSize%3A%2018%2C%0A%20%20%20%20height%3A%2044%2C%0A%20%20%7D%2C%0A%7D)%0A"
+        data-snack-code="import%20React%20from%20'react'%3B%0Aimport%20%7B%20SectionList%2C%20StyleSheet%2C%20Text%2C%20View%20%7D%20from%20'react-native'%3B%0A%0Aconst%20styles%20%3D%20StyleSheet.create(%7B%0A%20%20container%3A%20%7B%0A%20%20%20flex%3A%201%2C%0A%20%20%20paddingTop%3A%2022%0A%20%20%7D%2C%0A%20%20sectionHeader%3A%20%7B%0A%20%20%20%20paddingTop%3A%202%2C%0A%20%20%20%20paddingLeft%3A%2010%2C%0A%20%20%20%20paddingRight%3A%2010%2C%0A%20%20%20%20paddingBottom%3A%202%2C%0A%20%20%20%20fontSize%3A%2014%2C%0A%20%20%20%20fontWeight%3A%20'bold'%2C%0A%20%20%20%20backgroundColor%3A%20'rgba(247%2C247%2C247%2C1.0)'%2C%0A%20%20%7D%2C%0A%20%20item%3A%20%7B%0A%20%20%20%20padding%3A%2010%2C%0A%20%20%20%20fontSize%3A%2018%2C%0A%20%20%20%20height%3A%2044%2C%0A%20%20%7D%2C%0A%7D)%0A%0Aconst%20SectionListBasics%20%3D%20()%20%3D%3E%20%7B%0A%20%20%20%20return%20(%0A%20%20%20%20%20%20%3CView%20style%3D%7Bstyles.container%7D%3E%0A%20%20%20%20%20%20%20%20%3CSectionList%0A%20%20%20%20%20%20%20%20%20%20sections%3D%7B%5B%0A%20%20%20%20%20%20%20%20%20%20%20%20%7Btitle%3A%20'D'%2C%20data%3A%20%5B'Devin'%2C%20'Dan'%2C%20'Dominic'%5D%7D%2C%0A%20%20%20%20%20%20%20%20%20%20%20%20%7Btitle%3A%20'J'%2C%20data%3A%20%5B'Jackson'%2C%20'James'%2C%20'Jillian'%2C%20'Jimmy'%2C%20'Joel'%2C%20'John'%2C%20'Julie'%5D%7D%2C%0A%20%20%20%20%20%20%20%20%20%20%5D%7D%0A%20%20%20%20%20%20%20%20%20%20renderItem%3D%7B(%7Bitem%7D)%20%3D%3E%20%3CText%20style%3D%7Bstyles.item%7D%3E%7Bitem%7D%3C%2FText%3E%7D%0A%20%20%20%20%20%20%20%20%20%20renderSectionHeader%3D%7B(%7Bsection%7D)%20%3D%3E%20%3CText%20style%3D%7Bstyles.sectionHeader%7D%3E%7Bsection.title%7D%3C%2FText%3E%7D%0A%20%20%20%20%20%20%20%20%20%20keyExtractor%3D%7B(item%2C%20index)%20%3D%3E%20index%7D%0A%20%20%20%20%20%20%20%20%2F%3E%0A%20%20%20%20%20%20%3C%2FView%3E%0A%20%20%20%20)%3B%0A%7D%0A%0Aexport%20default%20SectionListBasics%3B%0A"
         data-snack-platform="web"
         data-snack-supported-platforms=ios,android,web
         data-snack-preview="true"
