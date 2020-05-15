@@ -136,7 +136,7 @@
 <div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React, { Component } <span class="hljs-keyword">from</span> <span class="hljs-string">"react"</span>;
 <span class="hljs-keyword">import</span> { Text, StyleSheet } <span class="hljs-keyword">from</span> <span class="hljs-string">"react-native"</span>;
 
-<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">TextInANest</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">Component</span> </span>{
+<span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">TextInANest</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">Component</span> </span>{
   <span class="hljs-keyword">constructor</span>(props) {
     <span class="hljs-keyword">super</span>(props);
     <span class="hljs-keyword">this</span>.state = {
@@ -168,10 +168,12 @@
     <span class="hljs-attr">fontWeight</span>: <span class="hljs-string">"bold"</span>
   }
 });
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> TextInANest;
 </code></pre></div><div class="desktop-friendly-snack" style="margin-top: 15px; margin-bottom: 15px"><div
         data-snack-name="Text Class Component Example"
         data-snack-description="Example usage"
-        data-snack-code="import%20React%2C%20%7B%20Component%20%7D%20from%20%22react%22%3B%0Aimport%20%7B%20Text%2C%20StyleSheet%20%7D%20from%20%22react-native%22%3B%0A%0Aexport%20default%20class%20TextInANest%20extends%20Component%20%7B%0A%20%20constructor(props)%20%7B%0A%20%20%20%20super(props)%3B%0A%20%20%20%20this.state%20%3D%20%7B%0A%20%20%20%20%20%20titleText%3A%20%22Bird's%20Nest%22%2C%0A%20%20%20%20%20%20bodyText%3A%20%22This%20is%20not%20really%20a%20bird%20nest.%22%0A%20%20%20%20%7D%3B%0A%20%20%7D%0A%0A%20%20render()%20%7B%0A%20%20%20%20return%20(%0A%20%20%20%20%20%20%3CText%20style%3D%7Bstyles.baseText%7D%3E%0A%20%20%20%20%20%20%20%20%3CText%20style%3D%7Bstyles.titleText%7D%20onPress%3D%7Bthis.onPressTitle%7D%3E%0A%20%20%20%20%20%20%20%20%20%20%7Bthis.state.titleText%7D%0A%20%20%20%20%20%20%20%20%20%20%7B%22%5Cn%22%7D%0A%20%20%20%20%20%20%20%20%20%20%7B%22%5Cn%22%7D%0A%20%20%20%20%20%20%20%20%3C%2FText%3E%0A%20%20%20%20%20%20%20%20%3CText%20numberOfLines%3D%7B5%7D%3E%7Bthis.state.bodyText%7D%3C%2FText%3E%0A%20%20%20%20%20%20%3C%2FText%3E%0A%20%20%20%20)%3B%0A%20%20%7D%0A%7D%0A%0Aconst%20styles%20%3D%20StyleSheet.create(%7B%0A%20%20baseText%3A%20%7B%0A%20%20%20%20fontFamily%3A%20%22Cochin%22%0A%20%20%7D%2C%0A%20%20titleText%3A%20%7B%0A%20%20%20%20fontSize%3A%2020%2C%0A%20%20%20%20fontWeight%3A%20%22bold%22%0A%20%20%7D%0A%7D)%3B%0A"
+        data-snack-code="import%20React%2C%20%7B%20Component%20%7D%20from%20%22react%22%3B%0Aimport%20%7B%20Text%2C%20StyleSheet%20%7D%20from%20%22react-native%22%3B%0A%0Aclass%20TextInANest%20extends%20Component%20%7B%0A%20%20constructor(props)%20%7B%0A%20%20%20%20super(props)%3B%0A%20%20%20%20this.state%20%3D%20%7B%0A%20%20%20%20%20%20titleText%3A%20%22Bird's%20Nest%22%2C%0A%20%20%20%20%20%20bodyText%3A%20%22This%20is%20not%20really%20a%20bird%20nest.%22%0A%20%20%20%20%7D%3B%0A%20%20%7D%0A%0A%20%20render()%20%7B%0A%20%20%20%20return%20(%0A%20%20%20%20%20%20%3CText%20style%3D%7Bstyles.baseText%7D%3E%0A%20%20%20%20%20%20%20%20%3CText%20style%3D%7Bstyles.titleText%7D%20onPress%3D%7Bthis.onPressTitle%7D%3E%0A%20%20%20%20%20%20%20%20%20%20%7Bthis.state.titleText%7D%0A%20%20%20%20%20%20%20%20%20%20%7B%22%5Cn%22%7D%0A%20%20%20%20%20%20%20%20%20%20%7B%22%5Cn%22%7D%0A%20%20%20%20%20%20%20%20%3C%2FText%3E%0A%20%20%20%20%20%20%20%20%3CText%20numberOfLines%3D%7B5%7D%3E%7Bthis.state.bodyText%7D%3C%2FText%3E%0A%20%20%20%20%20%20%3C%2FText%3E%0A%20%20%20%20)%3B%0A%20%20%7D%0A%7D%0A%0Aconst%20styles%20%3D%20StyleSheet.create(%7B%0A%20%20baseText%3A%20%7B%0A%20%20%20%20fontFamily%3A%20%22Cochin%22%0A%20%20%7D%2C%0A%20%20titleText%3A%20%7B%0A%20%20%20%20fontSize%3A%2020%2C%0A%20%20%20%20fontWeight%3A%20%22bold%22%0A%20%20%7D%0A%7D)%3B%0A%0Aexport%20default%20TextInANest%3B%0A"
         data-snack-platform="web"
         data-snack-supported-platforms=ios,android,web
         data-snack-preview="true"

@@ -162,7 +162,7 @@ export default DisplayAnImage;
   },
 });
 
-<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">DisplayAnImage</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">Component</span> </span>{
+<span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">DisplayAnImage</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">Component</span> </span>{
   render() {
     <span class="hljs-keyword">return</span> (
       &lt;View style={styles.container}&gt;
@@ -183,10 +183,11 @@ export default DisplayAnImage;
   }
 }
 
+export default DisplayAnImage;
 </code></pre></div><div class="desktop-friendly-snack" style="margin-top: 15px; margin-bottom: 15px"><div
         data-snack-name="Class Component Example"
         data-snack-description="Example usage"
-        data-snack-code="%0Aimport%20React%2C%20%7B%20Component%20%7D%20from%20'react'%3B%0Aimport%20%7B%20AppRegistry%2C%20View%2C%20Image%2C%20StyleSheet%20%7D%20from%20'react-native'%3B%0A%0Aconst%20styles%20%3D%20StyleSheet.create(%7B%0A%20%20container%3A%20%7B%0A%20%20%20%20paddingTop%3A%2050%2C%0A%20%20%7D%2C%0A%20%20tinyLogo%3A%20%7B%0A%20%20%20%20width%3A%2050%2C%0A%20%20%20%20height%3A%2050%2C%0A%20%20%7D%2C%0A%20%20logo%3A%20%7B%0A%20%20%20%20width%3A%2066%2C%0A%20%20%20%20height%3A%2058%2C%0A%20%20%7D%2C%0A%7D)%3B%0A%0Aexport%20default%20class%20DisplayAnImage%20extends%20Component%20%7B%0A%20%20render()%20%7B%0A%20%20%20%20return%20(%0A%20%20%20%20%20%20%3CView%20style%3D%7Bstyles.container%7D%3E%0A%20%20%20%20%20%20%20%20%3CImage%0A%20%20%20%20%20%20%20%20%20%20style%3D%7Bstyles.tinyLogo%7D%0A%20%20%20%20%20%20%20%20%20%20source%3D%7Brequire('%40expo%2Fsnack-static%2Freact-native-logo.png')%7D%0A%20%20%20%20%20%20%20%20%2F%3E%0A%20%20%20%20%20%20%20%20%3CImage%0A%20%20%20%20%20%20%20%20%20%20style%3D%7Bstyles.tinyLogo%7D%0A%20%20%20%20%20%20%20%20%20%20source%3D%7B%7Buri%3A%20'https%3A%2F%2Freactnative.dev%2Fimg%2Ftiny_logo.png'%7D%7D%0A%20%20%20%20%20%20%20%20%2F%3E%0A%20%20%20%20%20%20%20%20%3CImage%0A%20%20%20%20%20%20%20%20%20%20style%3D%7Bstyles.logo%7D%0A%20%20%20%20%20%20%20%20%20%20source%3D%7B%7Buri%3A%20'data%3Aimage%2Fpng%3Bbase64%2CiVBORw0KGgoAAAANSUhEUgAAADMAAAAzCAYAAAA6oTAqAAAAEXRFWHRTb2Z0d2FyZQBwbmdjcnVzaEB1SfMAAABQSURBVGje7dSxCQBACARB%2B2%2Fab8BEeQNhFi6WSYzYLYudDQYGBgYGBgYGBgYGBgYGBgZmcvDqYGBgmhivGQYGBgYGBgYGBgYGBgYGBgbmQw%2BP%2FeMrC5UTVAAAAABJRU5ErkJggg%3D%3D'%7D%7D%0A%20%20%20%20%20%20%20%20%2F%3E%0A%20%20%20%20%20%20%3C%2FView%3E%0A%20%20%20%20)%3B%0A%20%20%7D%0A%7D%0A%0A"
+        data-snack-code="%0Aimport%20React%2C%20%7B%20Component%20%7D%20from%20'react'%3B%0Aimport%20%7B%20AppRegistry%2C%20View%2C%20Image%2C%20StyleSheet%20%7D%20from%20'react-native'%3B%0A%0Aconst%20styles%20%3D%20StyleSheet.create(%7B%0A%20%20container%3A%20%7B%0A%20%20%20%20paddingTop%3A%2050%2C%0A%20%20%7D%2C%0A%20%20tinyLogo%3A%20%7B%0A%20%20%20%20width%3A%2050%2C%0A%20%20%20%20height%3A%2050%2C%0A%20%20%7D%2C%0A%20%20logo%3A%20%7B%0A%20%20%20%20width%3A%2066%2C%0A%20%20%20%20height%3A%2058%2C%0A%20%20%7D%2C%0A%7D)%3B%0A%0Aclass%20DisplayAnImage%20extends%20Component%20%7B%0A%20%20render()%20%7B%0A%20%20%20%20return%20(%0A%20%20%20%20%20%20%3CView%20style%3D%7Bstyles.container%7D%3E%0A%20%20%20%20%20%20%20%20%3CImage%0A%20%20%20%20%20%20%20%20%20%20style%3D%7Bstyles.tinyLogo%7D%0A%20%20%20%20%20%20%20%20%20%20source%3D%7Brequire('%40expo%2Fsnack-static%2Freact-native-logo.png')%7D%0A%20%20%20%20%20%20%20%20%2F%3E%0A%20%20%20%20%20%20%20%20%3CImage%0A%20%20%20%20%20%20%20%20%20%20style%3D%7Bstyles.tinyLogo%7D%0A%20%20%20%20%20%20%20%20%20%20source%3D%7B%7Buri%3A%20'https%3A%2F%2Freactnative.dev%2Fimg%2Ftiny_logo.png'%7D%7D%0A%20%20%20%20%20%20%20%20%2F%3E%0A%20%20%20%20%20%20%20%20%3CImage%0A%20%20%20%20%20%20%20%20%20%20style%3D%7Bstyles.logo%7D%0A%20%20%20%20%20%20%20%20%20%20source%3D%7B%7Buri%3A%20'data%3Aimage%2Fpng%3Bbase64%2CiVBORw0KGgoAAAANSUhEUgAAADMAAAAzCAYAAAA6oTAqAAAAEXRFWHRTb2Z0d2FyZQBwbmdjcnVzaEB1SfMAAABQSURBVGje7dSxCQBACARB%2B2%2Fab8BEeQNhFi6WSYzYLYudDQYGBgYGBgYGBgYGBgYGBgZmcvDqYGBgmhivGQYGBgYGBgYGBgYGBgYGBgbmQw%2BP%2FeMrC5UTVAAAAABJRU5ErkJggg%3D%3D'%7D%7D%0A%20%20%20%20%20%20%20%20%2F%3E%0A%20%20%20%20%20%20%3C%2FView%3E%0A%20%20%20%20)%3B%0A%20%20%7D%0A%7D%0A%0Aexport%20default%20DisplayAnImage%3B%0A"
         data-snack-platform="web"
         data-snack-supported-platforms=ios,android,web
         data-snack-preview="true"
@@ -266,7 +267,7 @@ export default DisplayAnImageWithStyle;
   }
 });
 
-<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">DisplayAnImageWithStyle</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">Component</span> </span>{
+<span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">DisplayAnImageWithStyle</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">Component</span> </span>{
   render() {
     <span class="hljs-keyword">return</span> (
       <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">View</span>&gt;</span>
@@ -279,10 +280,11 @@ export default DisplayAnImageWithStyle;
   }
 }
 
+export default DisplayAnImageWithStyle;
 </span></code></pre></div><div class="desktop-friendly-snack" style="margin-top: 15px; margin-bottom: 15px"><div
         data-snack-name="Class Component Example"
         data-snack-description="Example usage"
-        data-snack-code="%0Aimport%20React%2C%20%7B%20Component%20%7D%20from%20'react'%3B%0Aimport%20%7B%20View%2C%20Image%2C%20StyleSheet%20%7D%20from%20'react-native'%3B%0A%0Aconst%20styles%20%3D%20StyleSheet.create(%7B%0A%20%20stretch%3A%20%7B%0A%20%20%20%20width%3A%2050%2C%0A%20%20%20%20height%3A%20200%2C%0A%20%20%20%20resizeMode%3A%20'stretch'%0A%20%20%7D%0A%7D)%3B%0A%0Aexport%20default%20class%20DisplayAnImageWithStyle%20extends%20Component%20%7B%0A%20%20render()%20%7B%0A%20%20%20%20return%20(%0A%20%20%20%20%20%20%3CView%3E%0A%20%20%20%20%20%20%20%20%3CImage%0A%20%20%20%20%20%20%20%20%20%20style%3D%7Bstyles.stretch%7D%0A%20%20%20%20%20%20%20%20%20%20source%3D%7Brequire('%40expo%2Fsnack-static%2Freact-native-logo.png')%7D%0A%20%20%20%20%20%20%20%20%2F%3E%0A%20%20%20%20%20%20%3C%2FView%3E%0A%20%20%20%20)%3B%0A%20%20%7D%0A%7D%0A%0A"
+        data-snack-code="%0Aimport%20React%2C%20%7B%20Component%20%7D%20from%20'react'%3B%0Aimport%20%7B%20View%2C%20Image%2C%20StyleSheet%20%7D%20from%20'react-native'%3B%0A%0Aconst%20styles%20%3D%20StyleSheet.create(%7B%0A%20%20stretch%3A%20%7B%0A%20%20%20%20width%3A%2050%2C%0A%20%20%20%20height%3A%20200%2C%0A%20%20%20%20resizeMode%3A%20'stretch'%0A%20%20%7D%0A%7D)%3B%0A%0Aclass%20DisplayAnImageWithStyle%20extends%20Component%20%7B%0A%20%20render()%20%7B%0A%20%20%20%20return%20(%0A%20%20%20%20%20%20%3CView%3E%0A%20%20%20%20%20%20%20%20%3CImage%0A%20%20%20%20%20%20%20%20%20%20style%3D%7Bstyles.stretch%7D%0A%20%20%20%20%20%20%20%20%20%20source%3D%7Brequire('%40expo%2Fsnack-static%2Freact-native-logo.png')%7D%0A%20%20%20%20%20%20%20%20%2F%3E%0A%20%20%20%20%20%20%3C%2FView%3E%0A%20%20%20%20)%3B%0A%20%20%7D%0A%7D%0A%0Aexport%20default%20DisplayAnImageWithStyle%3B%0A"
         data-snack-platform="web"
         data-snack-supported-platforms=ios,android,web
         data-snack-preview="true"

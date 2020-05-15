@@ -121,7 +121,7 @@ export default ViewBoxesWithColorAndText;
 <div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React, { Component } <span class="hljs-keyword">from</span> <span class="hljs-string">"react"</span>;
 <span class="hljs-keyword">import</span> { View, Text } <span class="hljs-keyword">from</span> <span class="hljs-string">"react-native"</span>;
 
-<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">App</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">Component</span> </span>{
+<span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">App</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">Component</span> </span>{
   render() {
     <span class="hljs-keyword">return</span> (
       &lt;View
@@ -138,10 +138,12 @@ export default ViewBoxesWithColorAndText;
     );
   }
 }
+
+export default App;
 </code></pre></div><div class="desktop-friendly-snack" style="margin-top: 15px; margin-bottom: 15px"><div
         data-snack-name="View Class Component Example"
         data-snack-description="Example usage"
-        data-snack-code="import%20React%2C%20%7B%20Component%20%7D%20from%20%22react%22%3B%0Aimport%20%7B%20View%2C%20Text%20%7D%20from%20%22react-native%22%3B%0A%0Aexport%20default%20class%20App%20extends%20Component%20%7B%0A%20%20render()%20%7B%0A%20%20%20%20return%20(%0A%20%20%20%20%20%20%3CView%0A%20%20%20%20%20%20%20%20style%3D%7B%7B%0A%20%20%20%20%20%20%20%20%20%20flexDirection%3A%20%22row%22%2C%0A%20%20%20%20%20%20%20%20%20%20height%3A%20100%2C%0A%20%20%20%20%20%20%20%20%20%20padding%3A%2020%0A%20%20%20%20%20%20%20%20%7D%7D%0A%20%20%20%20%20%20%3E%0A%20%20%20%20%20%20%20%20%3CView%20style%3D%7B%7B%20backgroundColor%3A%20%22blue%22%2C%20flex%3A%200.3%20%7D%7D%20%2F%3E%0A%20%20%20%20%20%20%20%20%3CView%20style%3D%7B%7B%20backgroundColor%3A%20%22red%22%2C%20flex%3A%200.5%20%7D%7D%20%2F%3E%0A%20%20%20%20%20%20%20%20%3CText%3EHello%20World!%3C%2FText%3E%0A%20%20%20%20%20%20%3C%2FView%3E%0A%20%20%20%20)%3B%0A%20%20%7D%0A%7D%0A"
+        data-snack-code="import%20React%2C%20%7B%20Component%20%7D%20from%20%22react%22%3B%0Aimport%20%7B%20View%2C%20Text%20%7D%20from%20%22react-native%22%3B%0A%0Aclass%20App%20extends%20Component%20%7B%0A%20%20render()%20%7B%0A%20%20%20%20return%20(%0A%20%20%20%20%20%20%3CView%0A%20%20%20%20%20%20%20%20style%3D%7B%7B%0A%20%20%20%20%20%20%20%20%20%20flexDirection%3A%20%22row%22%2C%0A%20%20%20%20%20%20%20%20%20%20height%3A%20100%2C%0A%20%20%20%20%20%20%20%20%20%20padding%3A%2020%0A%20%20%20%20%20%20%20%20%7D%7D%0A%20%20%20%20%20%20%3E%0A%20%20%20%20%20%20%20%20%3CView%20style%3D%7B%7B%20backgroundColor%3A%20%22blue%22%2C%20flex%3A%200.3%20%7D%7D%20%2F%3E%0A%20%20%20%20%20%20%20%20%3CView%20style%3D%7B%7B%20backgroundColor%3A%20%22red%22%2C%20flex%3A%200.5%20%7D%7D%20%2F%3E%0A%20%20%20%20%20%20%20%20%3CText%3EHello%20World!%3C%2FText%3E%0A%20%20%20%20%20%20%3C%2FView%3E%0A%20%20%20%20)%3B%0A%20%20%7D%0A%7D%0A%0Aexport%20default%20App%3B%0A"
         data-snack-platform="web"
         data-snack-supported-platforms=ios,android,web
         data-snack-preview="true"
