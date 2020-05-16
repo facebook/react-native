@@ -138,7 +138,7 @@ public class MountingManager {
   private @NonNull ViewState getViewState(int tag) {
     ViewState viewState = mTagToViewState.get(tag);
     if (viewState == null) {
-      throw new IllegalStateException("Unable to find viewState view for tag " + tag);
+      throw new RetryableMountingLayerException("Unable to find viewState view for tag " + tag);
     }
     return viewState;
   }
@@ -202,11 +202,13 @@ public class MountingManager {
     ViewState viewState = getViewState(reactTag);
 
     if (viewState.mViewManager == null) {
-      throw new IllegalStateException("Unable to find viewState manager for tag " + reactTag);
+      throw new RetryableMountingLayerException(
+          "Unable to find viewState manager for tag " + reactTag);
     }
 
     if (viewState.mView == null) {
-      throw new IllegalStateException("Unable to find viewState view for tag " + reactTag);
+      throw new RetryableMountingLayerException(
+          "Unable to find viewState view for tag " + reactTag);
     }
 
     viewState.mView.sendAccessibilityEvent(eventType);
