@@ -773,12 +773,16 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
           // exception but never crash in debug.
           // It's not clear that logging this is even useful, because these events are very
           // common, mundane, and there's not much we can do about them currently.
-          ReactSoftException.logSoftException(
-              TAG,
-              new ReactNoCrashSoftException(
-                  "Caught exception executing retryable mounting layer instruction: "
-                      + mountItem.toString(),
-                  e));
+          if (mountItem instanceof DispatchCommandMountItem) {
+            ReactSoftException.logSoftException(
+                TAG,
+                new ReactNoCrashSoftException(
+                    "Caught exception executing retryable mounting layer instruction: "
+                        + mountItem.toString(),
+                    e));
+          } else {
+            throw e;
+          }
         }
       }
       mBatchedExecutionTime += SystemClock.uptimeMillis() - batchedExecutionStartTime;
