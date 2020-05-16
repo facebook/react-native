@@ -52,7 +52,7 @@ public class TransformHelper {
     // copy that directly. This is for Fabric LayoutAnimations support.
     // All of the stuff this Java helper does is already done in C++ in Fabric, so we
     // can just use that matrix directly.
-    if (transforms.getType(0) == ReadableType.Number && transforms.size() == 16) {
+    if (transforms.size() == 16 && transforms.getType(0) == ReadableType.Number) {
       for (int i = 0; i < transforms.size(); i++) {
         result[i] = transforms.getDouble(i);
       }
