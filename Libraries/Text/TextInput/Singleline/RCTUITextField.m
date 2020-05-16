@@ -230,7 +230,9 @@ static RCTUIColor *defaultPlaceholderTextColor()
 - (void)setDefaultTextAttributes:(NSDictionary<NSAttributedStringKey, id> *)defaultTextAttributes
 {
   _defaultTextAttributes = defaultTextAttributes;
+#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
   [super setDefaultTextAttributes:defaultTextAttributes];
+#endif // TODO(macOS ISS#2323203)
   [self _updatePlaceholder];
 }
 
@@ -241,8 +243,13 @@ static RCTUIColor *defaultPlaceholderTextColor()
 
 - (void)_updatePlaceholder
 {
+#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
   self.attributedPlaceholder = [[NSAttributedString alloc] initWithString:self.placeholder ?: @""
                                                                attributes:[self _placeholderTextAttributes]];
+#else // [TODO(macOS ISS#2323203)
+  self.placeholderAttributedString = [[NSAttributedString alloc] initWithString:self.placeholder ?: @""
+																	 attributes:[self _placeholderTextAttributes]];
+#endif // ]TODO(macOS ISS#2323203)
 }
 
 - (BOOL)isEditable
@@ -287,6 +294,9 @@ static RCTUIColor *defaultPlaceholderTextColor()
   self.attributedText = originalText;
 }
 
+#endif // ]TODO(macOS ISS#2323203)
+
+
 #pragma mark - Placeholder
 
 - (NSDictionary<NSAttributedStringKey, id> *)_placeholderTextAttributes
@@ -308,6 +318,8 @@ static RCTUIColor *defaultPlaceholderTextColor()
 }
 
 #pragma mark - Context Menu
+
+#if !TARGET_OS_OSX // [TODO(macOS ISS#2323203)
 
 - (BOOL)canPerformAction:(SEL)action withSender:(id)sender
 {

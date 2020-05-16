@@ -211,6 +211,7 @@ RCT_NOT_IMPLEMENTED(- (nullable instancetype)initWithCoder:(NSCoder *)coder)
 
 #pragma mark - UITraitCollection updates
 
+#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
 - (void)traitCollectionDidChange:(UITraitCollection *)previousTraitCollection
 {
   [super traitCollectionDidChange:previousTraitCollection];
@@ -220,6 +221,7 @@ RCT_NOT_IMPLEMENTED(- (nullable instancetype)initWithCoder:(NSCoder *)coder)
                                                       RCTUserInterfaceStyleDidChangeNotificationTraitCollectionKey: self.traitCollection,
                                                     }];
 }
+#endif // TODO(macOS ISS#2323203)
 
 #pragma mark - Private stuff
 

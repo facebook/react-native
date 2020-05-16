@@ -37,7 +37,7 @@ NSSharingServicePickerDelegate
 #if TARGET_OS_OSX // [TODO(macOS ISS#2323203)
   NSArray<NSSharingService*> *_excludedActivities;
   NSString *_sharingSubject;
-  RCTResponseErrorBlock _failureCallback;
+  RCTResponseSenderBlock _failureCallback;
   RCTResponseSenderBlock _successCallback;
 #endif // ]TODO(macOS ISS#2323203)
 }
@@ -99,9 +99,11 @@ RCT_EXPORT_METHOD(showActionSheetWithOptions:(JS::NativeActionSheetManager::Spec
     destructiveButtonIndices = @[destructiveButtonIndex];
 #endif // TODO(macOS ISS#2323203)
   }
+
+  NSNumber *anchor = [RCTConvert NSNumber:options.anchor() ? @(*options.anchor()) : nil];
+
 #if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
   UIViewController *controller = RCTPresentedViewController();
-  NSNumber *anchor = [RCTConvert NSNumber:options.anchor() ? @(*options.anchor()) : nil];
   UIColor *tintColor = [RCTConvert UIColor:options.tintColor() ? @(*options.tintColor()) : nil];
 
   if (controller == nil) {
@@ -261,26 +263,27 @@ RCT_EXPORT_METHOD(showShareActionSheetWithOptions:(JS::NativeActionSheetManager:
 
   [self presentViewController:shareController onParentViewController:controller anchorViewTag:anchorViewTag];
 #else // [TODO(macOS ISS#2323203)
+  NSArray *excludedActivityTypes = RCTConvertOptionalVecToArray(options.excludedActivityTypes(), ^id(NSString *element) { return element; });
   NSMutableArray<NSSharingService*> *excludedTypes = [NSMutableArray array];
-  for (NSString *excludeActivityType in [RCTConvert NSStringArray:options[@"excludedActivityTypes"]]) {
+  for (NSString *excludeActivityType in excludedActivityTypes) {
     NSSharingService *sharingService = [NSSharingService sharingServiceNamed:excludeActivityType];
     if (sharingService) {
       [excludedTypes addObject:sharingService];
     }
   }
   _excludedActivities = excludedTypes.copy;
-  _sharingSubject = [RCTConvert NSString:options[@"subject"]];
+  _sharingSubject = options.subject();
   _failureCallback = failureCallback;
   _successCallback = successCallback;
   RCTPlatformView *view = nil;
-  NSNumber *anchorViewTag = [RCTConvert NSNumber:options[@"anchor"]];
+  NSNumber *anchorViewTag = [RCTConvert NSNumber:options.anchor() ? @(*options.anchor()) : nil];
   if (anchorViewTag) {
     view = [self.bridge.uiManager viewForReactTag:anchorViewTag];
   }
   NSView *contentView = view ?: NSApp.keyWindow.contentView;
   NSSharingServicePicker *picker = [[NSSharingServicePicker alloc] initWithItems:items];
   picker.delegate = self;
-  [picker showRelativeToRect:contentView.bounds ofView:contentView preferredEdge:0];
+  [picker showRelativeToRect:contentView.bounds ofView:contentView preferredEdge:NSRectEdgeMinX];
 #endif // ]TODO(macOS ISS#2323203)
 }
 
@@ -310,7 +313,7 @@ RCT_EXPORT_METHOD(showShareActionSheetWithOptions:(JS::NativeActionSheetManager:
   
 - (void)sharingService:(NSSharingService *)sharingService didFailToShareItems:(NSArray *)items error:(NSError *)error
 {
-  _failureCallback(error);
+  _failureCallback(@[RCTJSErrorFromNSError(error)]);
 }
 
 - (void)sharingService:(NSSharingService *)sharingService didShareItems:(NSArray *)items

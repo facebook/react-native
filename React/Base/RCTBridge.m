@@ -366,10 +366,12 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   // Sanitize the bundle URL
   _bundleURL = [RCTConvert NSURL:_bundleURL.absoluteString];
 
+#if !TARGET_OS_OSX
   RCTExecuteOnMainQueue(^{
     RCTRegisterReloadCommandListener(self);
     RCTReloadCommandSetBundleURL(self->_bundleURL);
   });
+#endif // !TARGET_OS_OSX
 
   self.batchedBridge = [[bridgeClass alloc] initWithParentBridge:self];
   [self.batchedBridge start];

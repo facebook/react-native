@@ -103,6 +103,7 @@ static void *TextFieldSelectionObservingContext = &TextFieldSelectionObservingCo
   [attributedString replaceCharactersInRange:range withString:newText];
   [_backedTextInputView setAttributedText:[attributedString copy]];
 
+#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
   // Setting selection to the end of the replaced text.
   UITextPosition *position =
     [_backedTextInputView positionFromPosition:_backedTextInputView.beginningOfDocument
@@ -110,6 +111,7 @@ static void *TextFieldSelectionObservingContext = &TextFieldSelectionObservingCo
   [_backedTextInputView setSelectedTextRange:[_backedTextInputView textRangeFromPosition:position toPosition:position]
                               notifyDelegate:YES];
 
+#endif // TODO(macOS ISS#2323203)
   [self textFieldDidChange];
 
   return NO;
@@ -325,12 +327,14 @@ static void *TextFieldSelectionObservingContext = &TextFieldSelectionObservingCo
   [attributedString replaceCharactersInRange:range withString:newText];
   [_backedTextInputView setAttributedText:[attributedString copy]];
 
+#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
   // Setting selection to the end of the replaced text.
   UITextPosition *position =
     [_backedTextInputView positionFromPosition:_backedTextInputView.beginningOfDocument
                                         offset:(range.location + newText.length)];
   [_backedTextInputView setSelectedTextRange:[_backedTextInputView textRangeFromPosition:position toPosition:position]
                               notifyDelegate:YES];
+#endif // TODO(macOS ISS#2323203)
 
   [self textViewDidChange:_backedTextInputView];
 

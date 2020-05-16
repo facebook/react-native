@@ -267,7 +267,6 @@ RCT_EXPORT_MODULE()
                                       [RCTPresentedViewController() presentViewController:alertController
                                                                                  animated:YES
                                                                                completion:NULL];
-                                    }]];
 #else // [TODO(macOS ISS#2323203)
                                       NSAlert *alert = [[NSAlert alloc] init];
                                       [alert setMessageText:@"Remote JS Debugger Unavailable"];
@@ -276,6 +275,7 @@ RCT_EXPORT_MODULE()
                                       [alert setAlertStyle:NSWarningAlertStyle];
                                       [alert beginSheetModalForWindow:[NSApp keyWindow] completionHandler:nil];
 #endif // ]TODO(macOS ISS#2323203)
+                                    }]];
     } else {
       [items addObject:[RCTDevMenuItem
                            buttonItemWithTitleBlock:^NSString * {
@@ -293,7 +293,7 @@ RCT_EXPORT_MODULE()
     if (devSettings.isNuclideDebuggingAvailable && !devSettings.isDebuggingRemotely) {
       [items addObject:[RCTDevMenuItem buttonItemWithTitle:@"Debug with Nuclide"
                                                    handler:^{
-#if RCT_ENABLE_INSPECTOR
+#if RCT_ENABLE_INSPECTOR && !TARGET_OS_OSX // TODO(macOS ISS#2323203) - No RCTPresentedViewController on macOS
                                                      [RCTInspectorDevServerHelper
                                                          attachDebugger:@"ReactNative"
                                                           withBundleURL:bridge.bundleURL

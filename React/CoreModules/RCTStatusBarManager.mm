@@ -12,7 +12,7 @@
 #import <React/RCTLog.h>
 #import <React/RCTUtils.h>
 
-#if !TARGET_OS_TV
+#if !TARGET_OS_TV && !TARGET_OS_OSX // TODO(macOS ISS#2323203)
 #import <FBReactNativeSpec/FBReactNativeSpec.h>
 
 @implementation RCTConvert (UIStatusBar)
@@ -59,7 +59,7 @@ RCT_ENUM_CONVERTER(
 @end
 #endif
 
-#if !TARGET_OS_TV
+#if !TARGET_OS_TV && !TARGET_OS_OSX // TODO(macOS ISS#2323203)
 
 @interface RCTStatusBarManager() <NativeStatusBarManagerIOSSpec>
 @end
@@ -93,7 +93,7 @@ RCT_EXPORT_MODULE()
   return @[ @"statusBarFrameDidChange", @"statusBarFrameWillChange" ];
 }
 
-#if !TARGET_OS_TV
+#if !TARGET_OS_TV && !TARGET_OS_OSX // TODO(macOS ISS#2323203)
 
 - (void)startObserving
 {

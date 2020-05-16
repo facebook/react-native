@@ -27,6 +27,7 @@
 
 @class RCTRedBoxWindow;
 
+#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
 @interface UIButton (RCTRedBox)
 
 @property (nonatomic) RCTRedBoxButtonPressHandler rct_handler;
@@ -61,6 +62,7 @@
 }
 
 @end
+#endif // TODO(macOS ISS#2323203)
 
 @protocol RCTRedBoxWindowActionDelegate <NSObject>
 
@@ -571,7 +573,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   });
 }
 
-- (void)showErrorMessage:(NSString *)message withStack:(NSArray<RCTJSStackFrame *> *)stack isUpdate:(BOOL)isUpdate
+- (void)showErrorMessage:(NSString *)message withStack:(NSArray<RCTJSStackFrame *> *)stack isUpdate:(BOOL)isUpdate errorCookie:(int)errorCookie
 {
   // Show if this is a new message, or if we're updating the previous message
   if ((!_visible && !isUpdate) || (_visible && isUpdate && [_lastErrorMessage isEqualToString:message])) {

@@ -322,6 +322,9 @@ NS_INLINE NSEdgeInsets UIEdgeInsetsMake(CGFloat top, CGFloat left, CGFloat botto
 // UIImage
 @compatibility_alias UIImage NSImage;
 
+#ifdef __cplusplus
+extern "C"
+#endif
 CGFloat UIImageGetScale(NSImage *image);
 
 CGImageRef UIImageGetCGImageRef(NSImage *image);

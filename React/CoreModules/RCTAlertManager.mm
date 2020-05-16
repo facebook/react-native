@@ -87,9 +87,9 @@ RCT_EXPORT_METHOD(alertWithArgs:(JS::NativeAlertManager::Args &)args
   NSString *destructiveButtonKey = [RCTConvert NSString:args.destructiveButtonKey()];
   UIKeyboardType keyboardType = [RCTConvert UIKeyboardType:args.keyboardType()];
 #else // [TODO(macOS ISS#2323203)
-  BOOL critical = [RCTConvert BOOL:args[@"critical"]];
-  BOOL modal = [RCTConvert BOOL:args[@"modal"]];
-  NSArray<NSDictionary *> *defaultInputs = [RCTConvert NSDictionaryArray:args[@"defaultInputs"]];
+  BOOL critical = args.critical();
+  BOOL modal = args.modal();
+  NSArray<NSDictionary *> *defaultInputs = [RCTConvert NSDictionaryArray:RCTConvertOptionalVecToArray(args.defaultInputs(), ^id(id<NSObject> element) { return element; })];
 #endif // ]TODO(macOS ISS#2323203)
 
   if (!title && !message) {

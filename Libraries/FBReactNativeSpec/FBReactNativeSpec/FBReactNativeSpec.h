@@ -202,6 +202,11 @@ namespace JS {
       NSString *cancelButtonKey() const;
       NSString *destructiveButtonKey() const;
       NSString *keyboardType() const;
+#if TARGET_OS_OSX // [TODO(macOS ISS#2323203)
+      bool critical() const;
+      bool modal() const;
+     folly::Optional<facebook::react::LazyVector<id<NSObject>>> defaultInputs() const;
+#endif // ]TODO(macOS ISS#2323203)b
 
       Args(NSDictionary *const v) : _v(v) {}
     private:
@@ -3040,6 +3045,23 @@ inline NSString *JS::NativeAlertManager::Args::keyboardType() const
   id const p = _v[@"keyboardType"];
   return RCTBridgingToString(p);
 }
+#if TARGET_OS_OSX // [TODO(macOS ISS#2323203)
+inline bool JS::NativeAlertManager::Args::critical() const
+{
+  id const p = _v[@"critical"];
+  return RCTBridgingToBool(p);
+}
+inline bool JS::NativeAlertManager::Args::modal() const
+{
+  id const p = _v[@"modal"];
+  return RCTBridgingToBool(p);
+}
+inline folly::Optional<facebook::react::LazyVector<id<NSObject>>> JS::NativeAlertManager::Args::defaultInputs() const
+{
+  id const p = _v[@"defaultInputs"];
+  return RCTBridgingToOptionalVec(p, ^id<NSObject>(id itemValue_0) { return itemValue_0; });
+}
+#endif // ]TODO(macOS ISS#2323203)b
 inline bool JS::NativeAnimatedModule::EndResult::finished() const
 {
   id const p = _v[@"finished"];

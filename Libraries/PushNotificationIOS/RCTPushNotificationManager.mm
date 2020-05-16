@@ -45,11 +45,9 @@ RCT_ENUM_CONVERTER(NSCalendarUnit,
 
 @end
 
-#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
 @interface RCTPushNotificationManager () <NativePushNotificationManagerIOSSpec>
 @property (nonatomic, strong) NSMutableDictionary *remoteNotificationCallbacks;
 @end
-#endif // TODO(macOS ISS#2323203)
 
 @implementation RCTConvert (UILocalNotification)
 
@@ -466,18 +464,14 @@ RCT_EXPORT_METHOD(requestPermissions:(JS::NativePushNotificationManagerIOS::Spec
   [RCTSharedApplication() registerUserNotificationSettings:notificationSettings];
 #else // [TODO(macOS ISS#2323203)
   NSRemoteNotificationType types = NSRemoteNotificationTypeNone;
-  if (permissions) {
-    if ([RCTConvert BOOL:permissions[@"alert"]]) {
-      types |= NSRemoteNotificationTypeAlert;
-    }
-    if ([RCTConvert BOOL:permissions[@"badge"]]) {
-      types |= NSRemoteNotificationTypeBadge;
-    }
-    if ([RCTConvert BOOL:permissions[@"sound"]]) {
-      types |= NSRemoteNotificationTypeSound;
-    }
-  } else {
-    types = NSRemoteNotificationTypeAlert | NSRemoteNotificationTypeBadge | NSRemoteNotificationTypeSound;
+  if (permissions.alert()) {
+    types |= NSRemoteNotificationTypeAlert;
+  }
+  if (permissions.badge()) {
+    types |= NSRemoteNotificationTypeBadge;
+  }
+  if (permissions.badge()) {
+    types |= NSRemoteNotificationTypeSound;
   }
   [RCTSharedApplication() registerForRemoteNotificationTypes:types];
 #endif // ]TODO(macOS ISS#2323203)

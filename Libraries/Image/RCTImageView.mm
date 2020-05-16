@@ -187,8 +187,8 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
     image = [image imageWithRenderingMode:_renderingMode];
   }
 #else // [TODO(macOS ISS#2323203)
-  if ((_renderingMode == UIImageRenderingModeAlwaysTemplate) != image.template) {
-    image.template = (_renderingMode == UIImageRenderingModeAlwaysTemplate);
+  if ((_renderingMode == UIImageRenderingModeAlwaysTemplate) != [image isTemplate]) {
+    [image setTemplate:(_renderingMode == UIImageRenderingModeAlwaysTemplate)];
   }
 #endif // ]TODO(macOS ISS#2323203)
 

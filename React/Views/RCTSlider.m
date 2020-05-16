@@ -327,6 +327,7 @@
 #endif // ]TODO(macOS ISS#2323203)
 }
 
+#if !TARGET_OS_OSX // TODO(macOS ISS#2323203) - accessibility on macOS is on the NSCell rather than the NSControl
 - (void)accessibilityIncrement
 {
   [super accessibilityIncrement];
@@ -346,5 +347,6 @@
     });
   }
 }
+#endif // TODO(macOS ISS#2323203)
 
 @end

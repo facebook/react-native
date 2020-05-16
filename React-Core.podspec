@@ -63,12 +63,11 @@ Pod::Spec.new do |s|
     # [TODO(macOS ISS#2323203)
                                 "**/MacOS/*"
     ss.osx.exclude_files      = "React/Modules/RCTRedBoxExtraDataViewController.{h,m}",
-                                "React/Profiler/{RCTFPSGraph,RCTPerfMonitor}.*",
                                 "React/Profiler/RCTProfileTrampoline-{arm,arm64,i386}.S",
                                 "React/Base/RCTKeyCommands.*",
                                 "React/Base/RCTTV*.*",
-                                "React/Base/RCTReloadCommand.*",
-                                "React/Views/{RCTModal*,RCTMasked*,RCTTV*,RCTRefreshControl*,RCTWrapperViewController}.*",
+                                "React/Views/{RCTModal*,RCTMasked*,RCTTV*,RCTWrapperViewController}.*",
+                                "React/Views/RefreshControl/*",
                                 "React/Views/SafeAreaView/*"
     # ]TODO(macOS ISS#2323203)
 

@@ -30,6 +30,10 @@ Pod::Spec.new do |s|
   s.compiler_flags         = folly_compiler_flags + ' -Wno-nullability-completeness'
   s.source                 = source
   s.source_files           = "**/*.{c,m,mm,cpp}"
+  # [TODO(macOS ISS#2323203)
+                             "**/MacOS/*"
+  s.osx.exclude_files     =  "{RCTAppearance,RCTLogBox,RCTFPSGraph,RCTPerfMonitor,RCTPlatform}.*"
+  # ]TODO(macOS ISS#2323203)
   s.header_dir             = "CoreModules"
   s.pod_target_xcconfig    = {
                                "USE_HEADERMAP" => "YES",

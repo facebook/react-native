@@ -52,7 +52,8 @@
   self.selectedSegmentIndex = selectedIndex; // TODO(macOS ISS#2323203)
 }
 
-- (void)setTintColor:(RCTUIColor *)tintColor // TODO(macOS ISS#2323203)
+#if !TARGET_OS_OSX // TODO(macOS ISS#2323203) - no concept of tintColor on macOS
+- (void)setTintColor:(UIColor *)tintColor // TODO(macOS ISS#2323203)
 {
   [super setTintColor:tintColor];
 #if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && defined(__IPHONE_13_0) && \
@@ -66,6 +67,7 @@
   }
 #endif
 }
+#endif // TODO(macOS ISS#2323203)
 
 - (void)didChange
 {

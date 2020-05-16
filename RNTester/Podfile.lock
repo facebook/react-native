@@ -466,8 +466,8 @@ SPEC CHECKSUMS:
   RCTTypeSafety: ede90b8a90e0dd629d19984788d434ae23828a64
   React: b8f3da30d525b068a54ac964abe933c8ca617dce
   React-ART: d45ff8a3eb41b11513259371573fe77100d64b79
-  React-Core: bd1d31a06447d4fad4e657c6c2d99e006e6ae92e
-  React-CoreModules: 23c507e49f1c010f776e7e2b7f258b73835bde41
+  React-Core: 33a4fc04428a5b8cb2dd73bd9ffed77e09f9fad2
+  React-CoreModules: 03d31048f14293cca7076cfa5bc4ca474c128a5d
   React-cxxreact: c190cf3bfc4cf67f5578bd7d1875b1e027d218c7
   React-jsi: 1e2cdb8a09f8dac172b58882e11229af86d4f708
   React-jsiexecutor: 3d3137d20b4b1df8d2f23fc51315922fd46d13d3
@@ -476,8 +476,8 @@ SPEC CHECKSUMS:
   React-RCTAnimation: b65edfef9cfd54789b7ab5aab9974425dc67a983
   React-RCTBlob: 01d56c23e12074993ef274a55d2c7f9d0e39dc2a
   React-RCTImage: 4515f301f1812f7bda3a7e0b5473be237c8cec60
-  React-RCTLinking: dad12f504ec7f0539384514ecb8b83ab837acda4
-  React-RCTNetwork: c5e806d73a29181a210d92f3772b255474404aa3
+  React-RCTLinking: 0b6246bfbc4e6e01ebe5cca631ea2917e2ad66d2
+  React-RCTNetwork: 14c6996d9c4695bd03ff94bf1aee8d2dd4eb9000
   React-RCTPushNotification: 8006d2b1b0d3e1972cae2c97e6708f17ff8479d8
   React-RCTSettings: 0bc4c586dd2841e6764092ff67081d1047bef8ce
   React-RCTTest: 537fa13cbf082a64b29fa815dde8a1e03b0e9b9b
