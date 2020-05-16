@@ -45,14 +45,12 @@ rn_xplat_cxx_library(
         ],
         prefix = "",
     ),
-    fbandroid_labels = ["supermodule:android/default/public.react_native.infra"],
     fbandroid_srcs = glob(
         [
             "platform/cxx/**/*.cpp",
         ],
     ),
     fbobjc_compiler_flags = APPLE_COMPILER_FLAGS,
-    fbobjc_labels = ["supermodule:ios/default/public.react_native.infra"],
     fbobjc_preprocessor_flags = get_preprocessor_flags_for_build_mode() + get_apple_inspector_flags() + [
         "-DLOG_TAG=\"ReactNative\"",
         "-DWITH_FBSYSTRACE=1",
@@ -88,6 +86,7 @@ rn_xplat_cxx_library(
             "platform/ios/**/*.mm",
         ],
     ),
+    labels = ["supermodule:xplat/default/public.react_native.infra"],
     macosx_tests_override = [],
     platforms = (ANDROID, APPLE, CXX),
     preprocessor_flags = [

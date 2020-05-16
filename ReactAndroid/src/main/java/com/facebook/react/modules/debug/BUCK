@@ -4,7 +4,7 @@ rn_android_library(
     name = "debug",
     srcs = glob(["*.java"]),
     is_androidx = True,
-    labels = ["supermodule:android/default/public.react_native.infra"],
+    labels = ["supermodule:xplat/default/public.react_native.infra"],
     visibility = [
         "PUBLIC",
     ],
@@ -30,7 +30,7 @@ rn_android_library(
 rn_android_library(
     name = "interfaces",
     srcs = glob(["interfaces/*.java"]),
-    labels = ["supermodule:android/default/public.react_native.infra"],
+    labels = ["supermodule:xplat/default/public.react_native.infra"],
     visibility = [
         "PUBLIC",
     ],

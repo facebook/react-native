@@ -53,12 +53,10 @@ rn_xplat_cxx_library(
     fbandroid_headers = glob(
         ["platform/android/*.h"],
     ),
-    fbandroid_labels = ["supermodule:android/default/public.react_native.infra"],
     fbandroid_srcs = glob(
         ["platform/android/*.cpp"],
     ),
     fbobjc_compiler_flags = APPLE_COMPILER_FLAGS,
-    fbobjc_labels = ["supermodule:ios/default/public.react_native.infra"],
     fbobjc_preprocessor_flags = get_preprocessor_flags_for_build_mode() + get_apple_inspector_flags(),
     force_static = True,
     ios_exported_headers = subdir_glob(
@@ -74,6 +72,7 @@ rn_xplat_cxx_library(
     ios_srcs = glob(
         ["platform/ios/*.cpp"],
     ),
+    labels = ["supermodule:xplat/default/public.react_native.infra"],
     platforms = (ANDROID, APPLE, CXX),
     preprocessor_flags = [
         "-DLOG_TAG=\"ReactNative\"",

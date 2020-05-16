@@ -14,12 +14,7 @@ rn_xplat_cxx_library(
         "-Wall",
         "-Wno-global-constructors",
     ],
-    fbandroid_labels = [
-        "supermodule:android/default/public.react_native.infra",
-    ],
-    fbobjc_labels = [
-        "supermodule:ios/default/public.react_native.infra",
-    ],
+    labels = ["supermodule:xplat/default/public.react_native.infra"],
     platforms = (ANDROID, APPLE),
     preferred_linkage = "static",
     preprocessor_flags = [
