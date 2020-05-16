@@ -86,4 +86,7 @@ public class ReactFeatureFlags {
 
   /** Feature flag to configure eager initialization of Fabric */
   public static boolean eagerInitializeFabric = false;
+
+  /** Feature flag to configure initialization of Fabric surfaces. */
+  public static boolean enableFabricStartSurfaceWithLayoutMetrics = true;
 }
