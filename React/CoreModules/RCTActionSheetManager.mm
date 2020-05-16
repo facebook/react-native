@@ -169,33 +169,23 @@ RCT_EXPORT_METHOD(showActionSheetWithOptions:(JS::NativeActionSheetManager::Spec
     item.target = self;
     [menu addItem:item];
   }
-  
-  NSPoint origin = NSZeroPoint;
-  NSEvent *event = nil;
+
   RCTPlatformView *view = nil;
   if (anchorViewTag) {
     view = [self.bridge.uiManager viewForReactTag:anchorViewTag];
-    event = [view.window currentEvent];
   }
-  NSView *superview = [view superview];
-  if (event && view) {
-    // On a macOS trackpad, soft taps are received as sysDefined event types. SysDefined event locations are relative to the screen so we have to convert those separately.
-    NSPoint eventLocationRelativeToWindow = NSZeroPoint;
-    CGPoint eventLocationInWindow = [event locationInWindow];
-    if ([event type] == NSEventTypeSystemDefined) { // light tap event relative to screen
-      eventLocationRelativeToWindow = [[view window] convertRectFromScreen:NSMakeRect(eventLocationInWindow.x, eventLocationInWindow.y, 0, 0)].origin;
-    } else { // full click events are relative to the window
-      eventLocationRelativeToWindow = eventLocationInWindow;
-    }
-    origin = [view convertPoint:eventLocationRelativeToWindow fromView:nil];
-  } else if (view) {
-    CGRect superviewFrame = [superview frame];
-    origin = NSMakePoint(NSMidX(superviewFrame), NSMidY(superviewFrame));
+  NSPoint location = CGPointZero;
+  if (view != nil) {
+    // Display under the anchorview
+    CGRect bounds = [view bounds];
+
+    CGFloat originX = [view userInterfaceLayoutDirection] == NSUserInterfaceLayoutDirectionRightToLeft ? NSMaxX(bounds) : NSMinX(bounds);
+    location = NSMakePoint(originX, NSMaxY(bounds));
   } else {
-    origin = [NSEvent mouseLocation];
+    // Display at mouse location if no anchorView provided
+    location = [NSEvent mouseLocation];
   }
-  
-  [menu popUpMenuPositioningItem:menu.itemArray.firstObject atLocation:origin inView:superview];
+  [menu popUpMenuPositioningItem:menu.itemArray.firstObject atLocation:location inView:view];
 #endif // ]TODO(macOS ISS#2323203)
 }
 

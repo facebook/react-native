@@ -66,16 +66,6 @@ function copyProjectTemplateAndReplace(
   [
     { from: path.join(srcRootPath, 'metro.config.macos.js'), to: 'metro.config.macos.js' },
   ].forEach((mapping) => copyAndReplaceWithChangedCallback(mapping.from, destPath, mapping.to, templateVars, options.overwrite));
-
-  console.log(`
-  ${chalk.blue(`Run instructions for ${chalk.bold('macOS')}`)}:
-    • cd macos && pod install && cd ..
-    • npx react-native run-macos
-    ${chalk.dim('- or -')}
-    • Open ${xcworkspacePath(newProjectName)} in Xcode or run "xed -b ${macOSDir}"
-    • yarn start:macos
-    • Hit the Run button
-`);
 }
 
 /**
@@ -153,7 +143,26 @@ function installDependencies(options) {
   childProcess.execSync(isYarn ? 'yarn' : 'npm i', execOptions);
 }
 
+function installPods(options) {
+  const cwd = path.join(process.cwd(), macOSDir);
+  const quietFlag = options && options.verbose ? '' : '--quiet';
+  childProcess.execSync(`npx pod-install --non-interactive ${quietFlag}`, { stdio: 'inherit', cwd });
+}
+
+function printFinishMessage(newProjectName) {
+  console.log(`
+  ${chalk.blue(`Run instructions for ${chalk.bold('macOS')}`)}:
+    • npx react-native run-macos
+    ${chalk.dim('- or -')}
+    • Open ${xcworkspacePath(newProjectName)} in Xcode or run "xed -b ${macOSDir}"
+    • yarn start:macos
+    • Hit the Run button
+`);
+}
+
 module.exports = {
   copyProjectTemplateAndReplace,
   installDependencies,
+  installPods,
+  printFinishMessage,
 };

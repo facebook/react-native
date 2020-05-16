@@ -27,6 +27,7 @@ RCT_EXTERN void RCTEnableImageLoadingPerfInstrumentation(BOOL enabled);
 - (instancetype)initWithRedirectDelegate:(id<RCTImageRedirectProtocol>)redirectDelegate
                               loadersProvider:(NSArray<id<RCTImageURLLoader>> * (^)(void))getLoaders
                              decodersProvider:(NSArray<id<RCTImageDataDecoder>> * (^)(void))getDecoders;
+- (NSInteger)activeTasks; // TODO(OSS Candidate ISS#2710739)
 @end
 
 /**

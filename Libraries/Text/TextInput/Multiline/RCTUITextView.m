@@ -203,13 +203,13 @@ static RCTUIColor *defaultPlaceholderColor() // TODO(OSS Candidate ISS#2710739)
 
 - (void)setAttributedText:(NSAttributedString *)attributedText
 {
-#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
   // Using `setAttributedString:` while user is typing breaks some internal mechanics
   // when entering complex input languages such as Chinese, Korean or Japanese.
   // see: https://github.com/facebook/react-native/issues/19339
 
   // We try to avoid calling this method as much as we can.
   // If the text has changed, there is nothing we can do.
+#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
   if (![super.attributedText.string isEqualToString:attributedText.string]) {
     [super setAttributedText:attributedText];
   } else {
@@ -218,11 +218,22 @@ static RCTUIColor *defaultPlaceholderColor() // TODO(OSS Candidate ISS#2710739)
       [self copyTextAttributesFrom:attributedText];
     }
   }
-
-  [self textDidChange];
 #else // [TODO(macOS ISS#2323203)
-  [self.textStorage setAttributedString:attributedText];
+  if (![self.textStorage isEqualTo:attributedText.string]) {
+    if (attributedText != nil) {
+      [self.textStorage setAttributedString:attributedText];
+    } else {
+      // Avoid Exception thrown while executing UI block: *** -[NSBigMutableString replaceCharactersInRange:withString:]: nil argument
+      [self.textStorage setAttributedString:[NSAttributedString new]];
+    }
+  } else {
+  // But if the text is preserved, we just copying the attributes from the source string.
+    if (![self.textStorage isEqualToAttributedString:attributedText]) {
+      [self copyTextAttributesFrom:attributedText];
+    }
+  }
 #endif // ]TODO(macOS ISS#2323203)
+  [self textDidChange];
 }
 
 #pragma mark - Overrides

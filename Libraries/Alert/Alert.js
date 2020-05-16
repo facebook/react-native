@@ -48,10 +48,11 @@ class Alert {
     buttons?: Buttons,
     options?: Options,
   ): void {
-    if (Platform.OS === 'ios') {
+    if (
+      Platform.OS === 'ios' ||
+      Platform.OS === 'macos' /* TODO(macOS ISS#2323203) */
+    ) {
       Alert.prompt(title, message, buttons, 'default');
-    } else if (Platform.OS === 'macos' /* TODO[(macOS ISS#2323203) */) {
-      AlertMacOS.prompt(title, message, buttons); // TODO](macOS ISS#2323203)
     } else if (Platform.OS === 'android') {
       if (!NativeDialogManagerAndroid) {
         return;
@@ -174,7 +175,12 @@ class Alert {
           cb && cb(value);
         },
       );
+      // [TODO(macOS ISS#2323203)
+    } else if (Platform.OS === 'macos') {
+      const defaultInputs = [{default: defaultValue}];
+      AlertMacOS.prompt(title, message, callbackOrButtons, type, defaultInputs);
     }
+    // ]TODO(macOS ISS#2323203)
   }
 }
 

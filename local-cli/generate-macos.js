@@ -5,7 +5,9 @@ const path = require('path');
 const {
   copyProjectTemplateAndReplace,
   installDependencies,
- } = require('./generator-macos');
+  installPods,
+  printFinishMessage,
+} = require('./generator-macos');
 
 /**
  * Simple utility for running the macOS generator.
@@ -27,6 +29,10 @@ function generateMacOS (projectDir, name, options) {
     name,
     { overwrite: options.overwrite }
   );
+
+  installPods(options);
+
+  printFinishMessage(name);
 }
 
 module.exports = generateMacOS;
