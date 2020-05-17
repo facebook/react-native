@@ -108,7 +108,7 @@ describe('MessageQueue', function() {
     const unknownModule = 'UnknownModule',
       unknownMethod = 'UnknownMethod';
     expect(() => queue.__callFunction(unknownModule, unknownMethod)).toThrow(
-      `Module ${unknownModule} is not a registered callable module (calling ${unknownMethod})`,
+      `Module ${unknownModule} is not a registered callable module (calling ${unknownMethod}). This can happen when the application entry file path is incorrect.`,
     );
   });
 
