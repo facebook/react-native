@@ -121,7 +121,11 @@ class Scheduler final : public UIManagerDelegate {
    */
   std::shared_ptr<better::optional<EventDispatcher const>> eventDispatcher_;
 
+  /*
+   * Temporary flags.
+   */
   bool enableNewStateReconciliation_{false};
+  bool removeOutstandingSurfacesOnDestruction_{false};
 };
 
 } // namespace react

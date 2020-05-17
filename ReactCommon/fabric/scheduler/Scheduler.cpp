@@ -93,9 +93,13 @@ Scheduler::Scheduler(
 #ifdef ANDROID
   enableNewStateReconciliation_ = reactNativeConfig_->getBool(
       "react_fabric:enable_new_state_reconciliation_android");
+  removeOutstandingSurfacesOnDestruction_ = reactNativeConfig_->getBool(
+      "react_fabric:remove_outstanding_surfaces_on_destruction_android");
 #else
   enableNewStateReconciliation_ = reactNativeConfig_->getBool(
       "react_fabric:enable_new_state_reconciliation_ios");
+  removeOutstandingSurfacesOnDestruction_ = reactNativeConfig_->getBool(
+      "react_fabric:remove_outstanding_surfaces_on_destruction_ios");
 #endif
 }
 
@@ -140,6 +144,12 @@ Scheduler::~Scheduler() {
     uiManager_->getShadowTreeRegistry().visit(
         surfaceId,
         [](ShadowTree const &shadowTree) { shadowTree.commitEmptyTree(); });
+
+    // Removing surfaces is gated because it acquires mutex waiting for commits
+    // in flight; in theory, it can deadlock.
+    if (removeOutstandingSurfacesOnDestruction_) {
+      uiManager_->getShadowTreeRegistry().remove(surfaceId);
+    }
   }
 }
 
