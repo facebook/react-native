@@ -89,8 +89,7 @@ jobs:
         displayName: "Publish react-native-macos-init to npmjs.org"
         inputs:
           script: |
-            cd packages/react-native-macos-init
-            npx --no-install beachball publish --branch origin/$(Build.SourceBranchName) -n $(npmAuthToken) -yes -m "applying package updates ***NO_CI***" --access public
+            npx beachball publish --branch origin/$(Build.SourceBranchName) -n $(npmAuthToken) -yes -m "applying package updates ***NO_CI***" --access public
 
   - job: RNGithubOfficePublish
     displayName: React-Native GitHub Publish to Office
