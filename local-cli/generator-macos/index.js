@@ -143,12 +143,18 @@ function installDependencies(options) {
   childProcess.execSync(isYarn ? 'yarn' : 'npm i', execOptions);
 }
 
+/**
+ * @param {{ verbose?: boolean }=} options
+ */
 function installPods(options) {
   const cwd = path.join(process.cwd(), macOSDir);
   const quietFlag = options && options.verbose ? '' : '--quiet';
-  childProcess.execSync(`npx pod-install --non-interactive ${quietFlag}`, { stdio: 'inherit', cwd });
+  childProcess.execSync(`npx ${quietFlag} pod-install --non-interactive ${quietFlag}`, { stdio: 'inherit', cwd });
 }
 
+/**
+ * @param {string} newProjectName
+ */
 function printFinishMessage(newProjectName) {
   console.log(`
   ${chalk.blue(`Run instructions for ${chalk.bold('macOS')}`)}:
