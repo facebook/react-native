@@ -213,27 +213,22 @@ LayoutMetrics UIManager::getRelativeLayoutMetrics(
               true);
         });
   } else {
+    // It is possible for JavaScript (or other callers) to have a reference
+    // to a previous version of ShadowNodes, but we enforce that
+    // metrics are only calculated on most recently committed versions.
     owningAncestorShadowNode = getNewestCloneOfShadowNode(*ancestorShadowNode);
     ancestorShadowNode = owningAncestorShadowNode.get();
   }
 
-  // Get latest version of both the ShadowNode and its ancestor.
-  // It is possible for JS (or other callers) to have a reference
-  // to a previous version of ShadowNodes, but we enforce that
-  // metrics are only calculated on most recently committed versions.
-  auto newestShadowNode = getNewestCloneOfShadowNode(shadowNode);
-
-  auto layoutableShadowNode =
-      traitCast<LayoutableShadowNode const *>(newestShadowNode.get());
   auto layoutableAncestorShadowNode =
       traitCast<LayoutableShadowNode const *>(ancestorShadowNode);
 
-  if (!layoutableShadowNode || !layoutableAncestorShadowNode) {
+  if (!layoutableAncestorShadowNode) {
     return EmptyLayoutMetrics;
   }
 
-  return layoutableShadowNode->getRelativeLayoutMetrics(
-      *layoutableAncestorShadowNode, policy);
+  return LayoutableShadowNode::computeRelativeLayoutMetrics(
+      shadowNode.getFamily(), *layoutableAncestorShadowNode, policy);
 }
 
 void UIManager::updateState(StateUpdate const &stateUpdate) const {
