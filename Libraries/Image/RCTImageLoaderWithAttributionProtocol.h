@@ -47,7 +47,7 @@ RCT_EXTERN void RCTEnableImageLoadingPerfInstrumentation(BOOL enabled);
 /**
  * Image instrumentation - notify that the request was cancelled.
  */
-- (void)trackURLImageRequestDidCancel:(RCTImageURLLoaderRequest *)loaderRequest;
+- (void)trackURLImageRequestDidDestroy:(RCTImageURLLoaderRequest *)loaderRequest;
 
 /**
  * Image instrumentation - notify that the native image view was destroyed.

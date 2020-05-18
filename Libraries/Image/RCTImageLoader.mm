@@ -801,15 +801,15 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
   }
 }
 
-- (void)trackURLImageRequestDidCancel:(RCTImageURLLoaderRequest *)loaderRequest
+- (void)trackURLImageRequestDidDestroy:(RCTImageURLLoaderRequest *)loaderRequest
 {
   if (!loaderRequest) {
     return;
   }
 
   id<RCTImageURLLoader> loadHandler = [self imageURLLoaderForURL:loaderRequest.imageURL];
-  if ([loadHandler respondsToSelector:@selector(trackURLImageRequestDidCancel:)]) {
-    [(id<RCTImageURLLoaderWithAttribution>)loadHandler trackURLImageRequestDidCancel:loaderRequest];
+  if ([loadHandler respondsToSelector:@selector(trackURLImageRequestDidDestroy:)]) {
+    [(id<RCTImageURLLoaderWithAttribution>)loadHandler trackURLImageRequestDidDestroy:loaderRequest];
   }
 }
 
