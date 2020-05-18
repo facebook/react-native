@@ -1,8 +1,0 @@
-{
-  "type": "minor",
-  "comment": "check the currently installed version of RNmacOS + CLI display tweaks",
-  "packageName": "react-native-macos-init",
-  "email": "gosimek@gmail.com",
-  "dependentChangeType": "patch",
-  "date": "2020-05-18T17:18:39.367Z"
-}
