@@ -52,6 +52,17 @@ class LayoutableShadowNode : public ShadowNode {
       small_vector<LayoutableShadowNode *, kShadowNodeChildrenSmallVectorSize>;
 
   /*
+   * Returns layout metrics of a node represented as `descendantNodeFamily`
+   * computed relatively to given `ancestorNode`. Returns `EmptyLayoutMetrics`
+   * if the nodes don't form an ancestor-descender relationship in the same
+   * tree.
+   */
+  static LayoutMetrics computeRelativeLayoutMetrics(
+      ShadowNodeFamily const &descendantNodeFamily,
+      LayoutableShadowNode const &ancestorNode,
+      LayoutInspectingPolicy policy);
+
+  /*
    * Performs layout of the tree starting from this node. Usually is being
    * called on the root node.
    * Default implementation does nothing.
@@ -98,6 +109,14 @@ class LayoutableShadowNode : public ShadowNode {
    * Default implementation returns `Identity` transform.
    */
   virtual Transform getTransform() const;
+
+  /*
+   * Returns layout metrics relatively to the given ancestor node.
+   * Uses `computeRelativeLayoutMetrics()` under the hood.
+   */
+  LayoutMetrics getRelativeLayoutMetrics(
+      ShadowNodeFamily const &descendantNodeFamily,
+      LayoutInspectingPolicy policy) const;
 
   /*
    * Returns layout metrics relatively to the given ancestor node.
