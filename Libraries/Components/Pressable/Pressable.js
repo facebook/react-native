@@ -22,6 +22,7 @@ import type {
   AccessibilityState,
   AccessibilityValue,
 } from '../View/ViewAccessibility';
+import {PressabilityDebugView} from '../../Pressability/PressabilityDebug';
 import usePressability from '../../Pressability/usePressability';
 import {normalizeRect, type RectOrSize} from '../../StyleSheet/Rect';
 import type {LayoutEvent, PressEvent} from '../../Types/CoreEventTypes';
@@ -219,6 +220,7 @@ function Pressable(props: Props, forwardedRef): React.Node {
       ref={viewRef}
       style={typeof style === 'function' ? style({pressed}) : style}>
       {typeof children === 'function' ? children({pressed}) : children}
+      {__DEV__ ? <PressabilityDebugView color="red" hitSlop={hitSlop} /> : null}
     </View>
   );
 }
