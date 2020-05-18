@@ -10,6 +10,7 @@
 
 'use strict';
 import ReactNativeViewViewConfigAndroid from './ReactNativeViewViewConfigAndroid';
+import ReactNativeViewViewConfigMacOS from './ReactNativeViewViewConfigMacOS'; // TODO(macOS ISS#2323203)
 
 const ReactNativeViewConfig = {
   uiViewClassName: 'RCTView',
@@ -88,6 +89,7 @@ const ReactNativeViewConfig = {
   },
   directEventTypes: {
     ...ReactNativeViewViewConfigAndroid.directEventTypes,
+    ...ReactNativeViewViewConfigMacOS.directEventTypes, // TODO(macOS ISS#2323203)
     topAccessibilityAction: {
       registrationName: 'onAccessibilityAction',
     },
@@ -114,6 +116,7 @@ const ReactNativeViewConfig = {
   },
   validAttributes: {
     ...ReactNativeViewViewConfigAndroid.validAttributes,
+    ...ReactNativeViewViewConfigMacOS.validAttributes, // TODO(macOS ISS#2323203)
     accessibilityActions: true,
     accessibilityElementsHidden: true,
     accessibilityHint: true,

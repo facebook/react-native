@@ -57,7 +57,10 @@ if (Platform.OS === 'android') {
   AndroidScrollView = ScrollViewNativeComponent;
   AndroidHorizontalScrollView = AndroidHorizontalScrollViewNativeComponent;
   AndroidHorizontalScrollContentView = AndroidHorizontalScrollContentViewNativeComponent;
-} else if (Platform.OS === 'ios') {
+} else if (
+  Platform.OS === 'ios' ||
+  Platform.OS === 'macos' /*TODO(macOS ISS#2323203)*/
+) {
   RCTScrollView = ScrollViewNativeComponent;
   RCTScrollContentView = ScrollContentViewNativeComponent;
 } else {

@@ -34,7 +34,8 @@ let exported: React.AbstractComponent<
  * limitation of the screen, such as rounded corners or camera notches (aka
  * sensor housing area on iPhone X).
  */
-if (Platform.OS === 'android') {
+if (Platform.OS !== 'ios') {
+  // TODO(macOS ISS#2323203)
   exported = React.forwardRef<Props, React.ElementRef<HostComponent<mixed>>>(
     function SafeAreaView(props, forwardedRef) {
       const {emulateUnlessSupported, ...localProps} = props;

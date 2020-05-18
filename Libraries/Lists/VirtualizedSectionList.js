@@ -18,10 +18,7 @@ const Platform = require('../Utilities/Platform'); // TODO(macOS ISS#2323203)
 const invariant = require('invariant');
 
 import type {ViewToken} from './ViewabilityHelper';
-import type {
-  Props as VirtualizedListProps,
-  SelectedRowIndexPathType, // TODO(macOS ISS#2323203)
-} from './VirtualizedList';
+import type {SelectedRowIndexPathType} from './VirtualList'; // TODO(macOS ISS#2323203)
 import type {ScrollEvent} from '../Types/CoreEventTypes'; // TODO(macOS ISS#2323203)
 
 type Item = any;

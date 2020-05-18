@@ -1132,7 +1132,7 @@ function InternalTextInput(props: Props): React.Node {
         accessible={props.accessible}
         accessibilityLabel={props.accessibilityLabel}
         accessibilityRole={props.accessibilityRole}
-        accessibilityHint={this.props.accessibilityHint} // TODO(macOS ISS#2323203)
+        accessibilityHint={props.accessibilityHint} // TODO(macOS ISS#2323203)
         accessibilityState={props.accessibilityState}
         nativeID={props.nativeID}
         testID={props.testID}

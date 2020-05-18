@@ -221,6 +221,15 @@ static RCTUIColor *defaultPlaceholderTextColor()
   [self _updatePlaceholder];
 }
 
+- (NSString*)placeholder // [TODO(macOS ISS#2323203)
+{
+#if !TARGET_OS_OSX
+  return super.placeholder;
+#else
+  return self.placeholderAttributedString.string ?: self.placeholderString;
+#endif
+} // ]TODO(macOS ISS#2323203)
+
 - (void)setPlaceholderColor:(RCTUIColor *)placeholderColor // TODO(OSS Candidate ISS#2710739)
 {
   _placeholderColor = placeholderColor;
