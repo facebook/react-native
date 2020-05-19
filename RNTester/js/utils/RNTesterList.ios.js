@@ -71,10 +71,6 @@ const ComponentExamples: Array<RNTesterExample> = [
     key: 'MultiColumnExample',
     module: require('../examples/MultiColumn/MultiColumnExample'),
     supportsTVOS: true,
-    skipTest: {
-      default:
-        'Reason: Intermittent failure: Terminating app due to uncaught exception: Application tried to present modally an active controller: Missing request token for request:  http://localhost:8081/assets/RNTester/js/assets/like.png...',
-    },
   },
   {
     key: 'NewAppScreenExample',
@@ -130,10 +126,6 @@ const ComponentExamples: Array<RNTesterExample> = [
     key: 'SectionListExample',
     module: require('../examples/SectionList/SectionListExample'),
     supportsTVOS: true,
-    skipTest: {
-      default:
-        'Reason: Intermittent failure: Terminating app due to uncaught exception: Application tried to present modally an active controller: Missing request token for request:  http://localhost:8081/assets/RNTester/js/assets/like.png...',
-    },
   },
   {
     key: 'SegmentedControlIOSExample',
