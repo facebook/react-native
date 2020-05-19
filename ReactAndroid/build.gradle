@@ -98,12 +98,12 @@ task prepareFolly(dependsOn: dependenciesPath ? [] : [downloadFolly], type: Copy
 task prepareHermes() {
     def hermesPackagePath = findNodeModulePath(projectDir, "hermes-engine")
     if (!hermesPackagePath) {
-        throw new GradleScriptException("Could not find the hermes-engine npm package")
+        throw new GradleScriptException("Could not find the hermes-engine npm package", null)
     }
 
     def hermesAAR = file("$hermesPackagePath/android/hermes-debug.aar")
     if (!hermesAAR.exists()) {
-        throw new GradleScriptException("The hermes-engine npm package is missing \"android/hermes-debug.aar\"")
+        throw new GradleScriptException("The hermes-engine npm package is missing \"android/hermes-debug.aar\"", null)
     }
 
     def soFiles = zipTree(hermesAAR).matching({ it.include "**/*.so" })
@@ -165,12 +165,12 @@ task prepareJSC {
     doLast {
         def jscPackagePath = findNodeModulePath(projectDir, "jsc-android")
         if (!jscPackagePath) {
-            throw new GradleScriptException("Could not find the jsc-android npm package")
+            throw new GradleScriptException("Could not find the jsc-android npm package", null)
         } 
 
         def jscDist = file("$jscPackagePath/dist")
         if (!jscDist.exists()) {
-            throw new GradleScriptException("The jsc-android npm package is missing its \"dist\" directory")
+            throw new GradleScriptException("The jsc-android npm package is missing its \"dist\" directory", null)
         }
 
         def jscAAR = fileTree(jscDist).matching({ it.include "**/android-jsc/**/*.aar" }).singleFile
