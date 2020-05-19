@@ -63,7 +63,6 @@ import com.facebook.react.fabric.mounting.mountitems.RemoveMountItem;
 import com.facebook.react.fabric.mounting.mountitems.SendAccessibilityEvent;
 import com.facebook.react.fabric.mounting.mountitems.UpdateEventEmitterMountItem;
 import com.facebook.react.fabric.mounting.mountitems.UpdateLayoutMountItem;
-import com.facebook.react.fabric.mounting.mountitems.UpdateLocalDataMountItem;
 import com.facebook.react.fabric.mounting.mountitems.UpdatePaddingMountItem;
 import com.facebook.react.fabric.mounting.mountitems.UpdatePropsMountItem;
 import com.facebook.react.fabric.mounting.mountitems.UpdateStateMountItem;
@@ -393,14 +392,6 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
   @ThreadConfined(ANY)
   private MountItem updatePropsMountItem(int reactTag, ReadableMap map) {
     return new UpdatePropsMountItem(reactTag, map);
-  }
-
-  @DoNotStrip
-  @SuppressWarnings("unused")
-  @AnyThread
-  @ThreadConfined(ANY)
-  private MountItem updateLocalDataMountItem(int reactTag, ReadableMap newLocalData) {
-    return new UpdateLocalDataMountItem(reactTag, newLocalData);
   }
 
   @DoNotStrip

@@ -374,37 +374,6 @@ public class MountingManager {
   }
 
   @UiThread
-  public void updateLocalData(int reactTag, @NonNull ReadableMap newLocalData) {
-    UiThreadUtil.assertOnUiThread();
-    ViewState viewState = getViewState(reactTag);
-    if (viewState.mCurrentProps == null) {
-      throw new IllegalStateException(
-          "Can not update local data to view without props: " + reactTag);
-    }
-    if (viewState.mCurrentLocalData != null
-        && newLocalData.hasKey("hash")
-        && viewState.mCurrentLocalData.getDouble("hash") == newLocalData.getDouble("hash")
-        && viewState.mCurrentLocalData.equals(newLocalData)) {
-      return;
-    }
-    viewState.mCurrentLocalData = newLocalData;
-
-    ViewManager viewManager = viewState.mViewManager;
-
-    if (viewManager == null) {
-      throw new IllegalStateException("Unable to find ViewManager for view: " + viewState);
-    }
-    Object extraData =
-        viewManager.updateLocalData(
-            viewState.mView,
-            viewState.mCurrentProps,
-            new ReactStylesDiffMap(viewState.mCurrentLocalData));
-    if (extraData != null) {
-      viewManager.updateExtraData(viewState.mView, extraData);
-    }
-  }
-
-  @UiThread
   public void updateState(final int reactTag, @Nullable StateWrapper stateWrapper) {
     UiThreadUtil.assertOnUiThread();
     ViewState viewState = getViewState(reactTag);

@@ -273,11 +273,6 @@ public abstract class ViewManager<T extends View, C extends ReactShadowNode>
     return ViewManagerPropertyUpdater.getNativeProps(getClass(), getShadowNodeClass());
   }
 
-  public @Nullable Object updateLocalData(
-      @NonNull T view, ReactStylesDiffMap props, ReactStylesDiffMap localData) {
-    return null;
-  }
-
   /**
    * Subclasses can implement this method to receive state updates shared between all instances of
    * this component type.
