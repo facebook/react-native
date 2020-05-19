@@ -12,11 +12,8 @@
 'use strict';
 
 import type {PressEvent} from '../../Types/CoreEventTypes';
-import * as HoverState from '../HoverState';
 import Pressability from '../Pressability';
-import invariant from 'invariant';
 import nullthrows from 'nullthrows';
-import Platform from '../../Utilities/Platform';
 import UIManager from '../../ReactNative/UIManager';
 
 // TODO: Move this util to a shared location.
@@ -35,15 +32,11 @@ const createMockPressability = overrides => {
     disabled: null,
     hitSlop: null,
     pressRectOffset: null,
-    delayHoverIn: null,
-    delayHoverOut: null,
     delayLongPress: null,
     delayPressIn: null,
     delayPressOut: null,
     onBlur: jest.fn(),
     onFocus: jest.fn(),
-    onHoverIn: jest.fn(),
-    onHoverOut: jest.fn(),
     onLongPress: jest.fn(),
     onPress: jest.fn(),
     onPressIn: jest.fn(),
@@ -109,37 +102,6 @@ const mockUIManagerMeasure = (options?: {|delay: number|}) => {
 const createMockTargetEvent = registrationName => {
   const nativeEvent = {
     target: 42,
-  };
-
-  return {
-    bubbles: null,
-    cancelable: null,
-    currentTarget: 42,
-    defaultPrevented: null,
-    dispatchConfig: {
-      registrationName,
-    },
-    eventPhase: null,
-    preventDefault: jest.fn(() => undefined),
-    isDefaultPrevented: jest.fn(() => false),
-    stopPropagation: jest.fn(() => undefined),
-    isPropagationStopped: jest.fn(() => false),
-    isTrusted: null,
-    nativeEvent,
-    persist: jest.fn(),
-    target: null,
-    timeStamp: 1075881600000,
-    type: null,
-  };
-};
-
-const createMockMouseEvent = registrationName => {
-  const nativeEvent = {
-    clientX: 0,
-    clientY: 0,
-    pageX: 0,
-    pageY: 0,
-    timestamp: 1075881600000,
   };
 
   return {
@@ -232,7 +194,6 @@ const createMockPressEvent = (
 describe('Pressability', () => {
   beforeEach(() => {
     jest.resetModules();
-    jest.spyOn(HoverState, 'isHoverEnabled');
   });
 
   describe('onBlur', () => {
@@ -250,95 +211,6 @@ describe('Pressability', () => {
       expect(config.onFocus).toBeCalled();
     });
   });
-
-  describe('onHoverIn', () => {
-    let originalPlatform;
-
-    beforeEach(() => {
-      originalPlatform = Platform.OS;
-      Platform.OS = 'web';
-      // $FlowExpectedError
-      HoverState.isHoverEnabled.mockReturnValue(true);
-    });
-
-    afterEach(() => {
-      Platform.OS = originalPlatform;
-    });
-
-    it('is ignored on unsupported platforms`', () => {
-      Platform.OS = 'ios';
-      const {handlers} = createMockPressability();
-      expect(handlers.onMouseEnter).toBeUndefined();
-    });
-
-    it('is called after `onMouseEnter`', () => {
-      const {config, handlers} = createMockPressability();
-      invariant(
-        typeof handlers.onMouseEnter === 'function',
-        'Expected to find "onMouseEnter" function',
-      );
-      // $FlowExpectedError
-      handlers.onMouseEnter(createMockMouseEvent('onMouseEnter'));
-      expect(config.onHoverIn).toBeCalled();
-    });
-
-    it('is called after no delay by default', () => {
-      const {config, handlers} = createMockPressability({
-        delayHoverIn: null,
-      });
-      invariant(
-        typeof handlers.onMouseEnter === 'function',
-        'Expected to find "onMouseEnter" function',
-      );
-      // $FlowExpectedError
-      handlers.onMouseEnter(createMockMouseEvent('onMouseEnter'));
-      expect(config.onHoverIn).toBeCalled();
-    });
-
-    it('falls back to no delay if `delayHoverIn` is omitted', () => {
-      const {config, handlers} = createMockPressability({
-        delayHoverIn: null,
-      });
-      invariant(
-        typeof handlers.onMouseEnter === 'function',
-        'Expected to find "onMouseEnter" function',
-      );
-      // $FlowExpectedError
-      handlers.onMouseEnter(createMockMouseEvent('onMouseEnter'));
-      expect(config.onHoverIn).toBeCalled();
-    });
-
-    it('is called after a configured delay', () => {
-      const {config, handlers} = createMockPressability({
-        delayHoverIn: 500,
-      });
-      invariant(
-        typeof handlers.onMouseEnter === 'function',
-        'Expected to find "onMouseEnter" function',
-      );
-      // $FlowExpectedError
-      handlers.onMouseEnter(createMockMouseEvent('onMouseEnter'));
-      jest.advanceTimersByTime(499);
-      expect(config.onHoverIn).not.toBeCalled();
-      jest.advanceTimersByTime(1);
-      expect(config.onHoverIn).toBeCalled();
-    });
-
-    it('is called synchronously if delay is 0ms', () => {
-      const {config, handlers} = createMockPressability({
-        delayHoverIn: 0,
-      });
-      invariant(
-        typeof handlers.onMouseEnter === 'function',
-        'Expected to find "onMouseEnter" function',
-      );
-      // $FlowExpectedError
-      handlers.onMouseEnter(createMockMouseEvent('onMouseEnter'));
-      expect(config.onHoverIn).toBeCalled();
-    });
-  });
-
-  // TODO: onHoverOut tests
 
   describe('onLongPress', () => {
     it('is called if pressed for 500ms', () => {

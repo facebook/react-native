@@ -13,7 +13,6 @@
 import type {
   BlurEvent,
   FocusEvent,
-  MouseEvent,
   PressEvent,
   Layout,
   LayoutEvent,
@@ -81,11 +80,6 @@ type DirectEventProps = $ReadOnly<{|
    * See https://reactnative.dev/docs/view.html#onaccessibilityescape
    */
   onAccessibilityEscape?: ?() => mixed,
-|}>;
-
-type MouseEventProps = $ReadOnly<{|
-  onMouseEnter?: (event: MouseEvent) => void,
-  onMouseLeave?: (event: MouseEvent) => void,
 |}>;
 
 type TouchEventProps = $ReadOnly<{|
@@ -392,7 +386,6 @@ export type ViewProps = $ReadOnly<{|
   ...BubblingEventProps,
   ...DirectEventProps,
   ...GestureResponderEventProps,
-  ...MouseEventProps,
   ...TouchEventProps,
   ...AndroidViewProps,
   ...IOSViewProps,

@@ -77,16 +77,18 @@ Code-level contributions to React Native generally come in the form of [pull req
 The process of proposing a change to React Native can be summarized as follows:
 
 1. Fork the React Native repository and create your branch from `master`.
-2. Make the desired changes to React Native sources. Use the `RNTester` app to test them out.
-3. If you've added code that should be tested, add tests.
-4. If you've changed APIs, update the documentation, which lives in [another repo](https://github.com/facebook/react-native-website/).
-5. Ensure the test suite passes, either locally or on CI once you opened a pull request.
-6. Make sure your code lints (for example via `yarn lint --fix`).
-7. Push the changes to your fork.
-8. Create a pull request to the React Native repository.
-9. Review and address comments on your pull request.
+2. Run `yarn` to install dependencies.
+3. Make the desired changes to React Native sources. Use the `RNTester` app to test them out.
+4. If you've added code that should be tested, add tests.
+5. If you've changed APIs, update the documentation, which lives in [another repo](https://github.com/facebook/react-native-website/).
+6. Ensure the test suite passes, either locally or on CI once you opened a pull request.
+7. Make sure your code lints (for example via `yarn lint --fix`).
+8. Make sure your code is correctly formatted (for example via `yarn prettier`).
+9. Push the changes to your fork.
+10. Create a pull request to the React Native repository.
+11. Review and address comments on your pull request.
     1. A bot may comment with suggestions. Generally we ask you to resolve these first before a maintainer will review your code.
-10. If you haven't already, please complete the [Contributor License Agreement](https://github.com/facebook/react-native/wiki/Contributor-License-Agreement) ("CLA"). **[Complete your CLA here.](https://code.facebook.com/cla)**
+12. If you haven't already, please complete the [Contributor License Agreement](https://github.com/facebook/react-native/wiki/Contributor-License-Agreement) ("CLA"). **[Complete your CLA here.](https://code.facebook.com/cla)**
 
 If all goes well, your pull request will be merged. If it is not merged, maintainers will do their best to explain the reason why.
 
