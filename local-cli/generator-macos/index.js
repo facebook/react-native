@@ -52,6 +52,7 @@ function copyProjectTemplateAndReplace(
 
   [
     { from: path.join(srcRootPath, macOSDir, 'Podfile'), to: path.join(macOSDir, 'Podfile') },
+    { from: path.join(srcRootPath, macOSDir, '_gitignore'), to: path.join(macOSDir, '.gitignore') },
     { from: path.join(srcRootPath, srcDirPath(oldProjectName, 'iOS')), to: srcDirPath(newProjectName, 'iOS') },
     { from: path.join(srcRootPath, srcDirPath(oldProjectName, 'macOS')), to: srcDirPath(newProjectName, 'macOS') },
     { from: path.join(srcRootPath, pbxprojPath(oldProjectName)), to: pbxprojPath(newProjectName) },
