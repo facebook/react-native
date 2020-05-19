@@ -50,5 +50,5 @@ export type RNTesterExample = $ReadOnly<{|
   key: string,
   module: RNTesterExampleModule,
   supportsTVOS?: boolean,
-  skipTest?: RNSkipTests, 
+  skipTest?: RNSkipTests,
 |}>;
