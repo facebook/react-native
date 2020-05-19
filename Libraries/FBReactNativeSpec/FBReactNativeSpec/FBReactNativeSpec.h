@@ -118,7 +118,6 @@ namespace JS {
       folly::Optional<double> anchor() const;
       folly::Optional<double> tintColor() const;
       NSString *userInterfaceStyle() const;
-      folly::Optional<facebook::react::LazyVector<double>> disabledButtonIndices() const;
 
       SpecShowActionSheetWithOptionsOptions(NSDictionary *const v) : _v(v) {}
     private:
@@ -2941,11 +2940,6 @@ inline NSString *JS::NativeActionSheetManager::SpecShowActionSheetWithOptionsOpt
 {
   id const p = _v[@"userInterfaceStyle"];
   return RCTBridgingToString(p);
-}
-inline folly::Optional<facebook::react::LazyVector<double>> JS::NativeActionSheetManager::SpecShowActionSheetWithOptionsOptions::disabledButtonIndices() const
-{
-  id const p = _v[@"disabledButtonIndices"];
-  return RCTBridgingToOptionalVec(p, ^double(id itemValue_0) { return RCTBridgingToDouble(itemValue_0); });
 }
 inline NSString *JS::NativeActionSheetManager::SpecShowShareActionSheetWithOptionsOptions::message() const
 {

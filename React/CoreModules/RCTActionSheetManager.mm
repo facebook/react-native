@@ -76,10 +76,6 @@ RCT_EXPORT_METHOD(showActionSheetWithOptions
   NSInteger cancelButtonIndex =
       options.cancelButtonIndex() ? [RCTConvert NSInteger:@(*options.cancelButtonIndex())] : -1;
   NSArray<NSNumber *> *destructiveButtonIndices;
-  NSArray<NSNumber *> *disabledButtonIndices =
-      RCTConvertVecToArray(*options.disabledButtonIndices(), ^id(double element) {
-        return @(element);
-      });
   if (options.destructiveButtonIndices()) {
     destructiveButtonIndices = RCTConvertVecToArray(*options.destructiveButtonIndices(), ^id(double element) {
       return @(element);
@@ -102,7 +98,6 @@ RCT_EXPORT_METHOD(showActionSheetWithOptions
       @"destructiveButtonIndices" : destructiveButtonIndices,
       @"anchor" : anchor,
       @"tintColor" : tintColor,
-      @"disabledButtonIndices" : disabledButtonIndices,
     });
     return;
   }
@@ -135,18 +130,6 @@ RCT_EXPORT_METHOD(showActionSheetWithOptions
                                                       }]];
 
     index++;
-  }
-
-  for (NSNumber *disabledButtonIndex in disabledButtonIndices) {
-    if ([disabledButtonIndex integerValue] < buttons.count) {
-      [alertController.actions[[disabledButtonIndex integerValue]] setEnabled:false];
-    } else {
-      RCTLogError(
-          @"Index %@ from `disabledButtonIndices` is out of bounds. Maximum index value is %@.",
-          @([disabledButtonIndex integerValue]),
-          @(buttons.count - 1));
-      return;
-    }
   }
 
   alertController.view.tintColor = tintColor;
