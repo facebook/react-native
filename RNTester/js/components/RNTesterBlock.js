@@ -103,6 +103,15 @@ const styles = StyleSheet.create({
   },
   descriptionText: {
     fontSize: 14,
+    ...Platform.select({
+      macos: {
+        color: {semantic: 'secondaryLabelColor'},
+      },
+      ios: {
+        color: {semantic: 'secondaryLabelColor'},
+      },
+      default: undefined,
+    }),
   },
   children: {
     margin: 10,
