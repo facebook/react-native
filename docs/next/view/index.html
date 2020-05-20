@@ -160,27 +160,13 @@ export default App;
 <p><code>View</code>s are designed to be used with <a href="/docs/next/style"><code>StyleSheet</code></a> for clarity and performance, although inline styles are also supported.</p>
 </blockquote>
 <h3><a class="anchor" aria-hidden="true" id="synthetic-touch-events"></a><a href="#synthetic-touch-events" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Synthetic Touch Events</h3>
-<p>For <code>View</code> responder props (e.g., <code>onResponderMove</code>), the synthetic touch event passed to them are of the following form:</p>
-<ul>
-<li><code>nativeEvent</code>
-<ul>
-<li><code>changedTouches</code> - Array of all touch events that have changed since the last event.</li>
-<li><code>identifier</code> - The ID of the touch.</li>
-<li><code>locationX</code> - The X position of the touch, relative to the element.</li>
-<li><code>locationY</code> - The Y position of the touch, relative to the element.</li>
-<li><code>pageX</code> - The X position of the touch, relative to the root element.</li>
-<li><code>pageY</code> - The Y position of the touch, relative to the root element.</li>
-<li><code>target</code> - The node id of the element receiving the touch event.</li>
-<li><code>timestamp</code> - A time identifier for the touch, useful for velocity calculation.</li>
-<li><code>touches</code> - Array of all current touches on the screen.</li>
-</ul></li>
-</ul>
+<p>For <code>View</code> responder props (e.g., <code>onResponderMove</code>), the synthetic touch event passed to them are in form of <a href="pressevent">PressEvent</a>.</p>
 <hr>
 <h1><a class="anchor" aria-hidden="true" id="reference"></a><a href="#reference" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Reference</h1>
 <h2><a class="anchor" aria-hidden="true" id="props"></a><a href="#props" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Props</h2>
 <h3><a class="anchor" aria-hidden="true" id="onstartshouldsetresponder"></a><a href="#onstartshouldsetresponder" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>onStartShouldSetResponder</code></h3>
 <p>Does this view want to become responder on the start of a touch?</p>
-<p><code>View.props.onStartShouldSetResponder: (event) =&gt; [true | false]</code>, where <code>event</code> is a synthetic touch event as described above.</p>
+<p><code>View.props.onStartShouldSetResponder: (event) =&gt; [true | false]</code>, where <code>event</code> is a <a href="pressevent">PressEvent</a>.</p>
 <table>
 <thead>
 <tr><th>Type</th><th>Required</th></tr>
@@ -461,7 +447,7 @@ export default App;
 <hr>
 <h3><a class="anchor" aria-hidden="true" id="onmoveshouldsetresponder"></a><a href="#onmoveshouldsetresponder" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>onMoveShouldSetResponder</code></h3>
 <p>Does this view want to &quot;claim&quot; touch responsiveness? This is called for every touch move on the <code>View</code> when it is not the responder.</p>
-<p><code>View.props.onMoveShouldSetResponder: (event) =&gt; [true | false]</code>, where <code>event</code> is a synthetic touch event as described above.</p>
+<p><code>View.props.onMoveShouldSetResponder: (event) =&gt; [true | false]</code>, where <code>event</code> is a <a href="pressevent">PressEvent</a>.</p>
 <table>
 <thead>
 <tr><th>Type</th><th>Required</th></tr>
@@ -473,7 +459,7 @@ export default App;
 <hr>
 <h3><a class="anchor" aria-hidden="true" id="onmoveshouldsetrespondercapture"></a><a href="#onmoveshouldsetrespondercapture" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>onMoveShouldSetResponderCapture</code></h3>
 <p>If a parent <code>View</code> wants to prevent a child <code>View</code> from becoming responder on a move, it should have this handler which returns <code>true</code>.</p>
-<p><code>View.props.onMoveShouldSetResponderCapture: (event) =&gt; [true | false]</code>, where <code>event</code> is a synthetic touch event as described above.</p>
+<p><code>View.props.onMoveShouldSetResponderCapture: (event) =&gt; [true | false]</code>, where <code>event</code> is a <a href="pressevent">PressEvent</a>.</p>
 <table>
 <thead>
 <tr><th>Type</th><th>Required</th></tr>
@@ -485,7 +471,7 @@ export default App;
 <hr>
 <h3><a class="anchor" aria-hidden="true" id="onrespondergrant"></a><a href="#onrespondergrant" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>onResponderGrant</code></h3>
 <p>The View is now responding for touch events. This is the time to highlight and show the user what is happening.</p>
-<p><code>View.props.onResponderGrant: (event) =&gt; {}</code>, where <code>event</code> is a synthetic touch event as described above.</p>
+<p><code>View.props.onResponderGrant: (event) =&gt; {}</code>, where <code>event</code> is a <a href="pressevent">PressEvent</a>.</p>
 <table>
 <thead>
 <tr><th>Type</th><th>Required</th></tr>
@@ -497,7 +483,7 @@ export default App;
 <hr>
 <h3><a class="anchor" aria-hidden="true" id="onrespondermove"></a><a href="#onrespondermove" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>onResponderMove</code></h3>
 <p>The user is moving their finger.</p>
-<p><code>View.props.onResponderMove: (event) =&gt; {}</code>, where <code>event</code> is a synthetic touch event as described above.</p>
+<p><code>View.props.onResponderMove: (event) =&gt; {}</code>, where <code>event</code> is a <a href="pressevent">PressEvent</a>.</p>
 <table>
 <thead>
 <tr><th>Type</th><th>Required</th></tr>
@@ -509,7 +495,7 @@ export default App;
 <hr>
 <h3><a class="anchor" aria-hidden="true" id="onresponderreject"></a><a href="#onresponderreject" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>onResponderReject</code></h3>
 <p>Another responder is already active and will not release it to that <code>View</code> asking to be the responder.</p>
-<p><code>View.props.onResponderReject: (event) =&gt; {}</code>, where <code>event</code> is a synthetic touch event as described above.</p>
+<p><code>View.props.onResponderReject: (event) =&gt; {}</code>, where <code>event</code> is a <a href="pressevent">PressEvent</a>.</p>
 <table>
 <thead>
 <tr><th>Type</th><th>Required</th></tr>
@@ -521,7 +507,7 @@ export default App;
 <hr>
 <h3><a class="anchor" aria-hidden="true" id="onresponderrelease"></a><a href="#onresponderrelease" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>onResponderRelease</code></h3>
 <p>Fired at the end of the touch.</p>
-<p><code>View.props.onResponderRelease: (event) =&gt; {}</code>, where <code>event</code> is a synthetic touch event as described above.</p>
+<p><code>View.props.onResponderRelease: (event) =&gt; {}</code>, where <code>event</code> is a <a href="pressevent">PressEvent</a>.</p>
 <table>
 <thead>
 <tr><th>Type</th><th>Required</th></tr>
@@ -533,7 +519,7 @@ export default App;
 <hr>
 <h3><a class="anchor" aria-hidden="true" id="onresponderterminate"></a><a href="#onresponderterminate" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>onResponderTerminate</code></h3>
 <p>The responder has been taken from the <code>View</code>. Might be taken by other views after a call to <code>onResponderTerminationRequest</code>, or might be taken by the OS without asking (e.g., happens with control center/ notification center on iOS)</p>
-<p><code>View.props.onResponderTerminate: (event) =&gt; {}</code>, where <code>event</code> is a synthetic touch event as described above.</p>
+<p><code>View.props.onResponderTerminate: (event) =&gt; {}</code>, where <code>event</code> is a <a href="pressevent">PressEvent</a>.</p>
 <table>
 <thead>
 <tr><th>Type</th><th>Required</th></tr>
@@ -545,7 +531,7 @@ export default App;
 <hr>
 <h3><a class="anchor" aria-hidden="true" id="onresponderterminationrequest"></a><a href="#onresponderterminationrequest" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>onResponderTerminationRequest</code></h3>
 <p>Some other <code>View</code> wants to become responder and is asking this <code>View</code> to release its responder. Returning <code>true</code> allows its release.</p>
-<p><code>View.props.onResponderTerminationRequest: (event) =&gt; {}</code>, where <code>event</code> is a synthetic touch event as described above.</p>
+<p><code>View.props.onResponderTerminationRequest: (event) =&gt; {}</code>, where <code>event</code> is a <a href="pressevent">PressEvent</a>.</p>
 <table>
 <thead>
 <tr><th>Type</th><th>Required</th></tr>
@@ -557,7 +543,7 @@ export default App;
 <hr>
 <h3><a class="anchor" aria-hidden="true" id="onstartshouldsetrespondercapture"></a><a href="#onstartshouldsetrespondercapture" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>onStartShouldSetResponderCapture</code></h3>
 <p>If a parent <code>View</code> wants to prevent a child <code>View</code> from becoming responder on a touch start, it should have this handler which returns <code>true</code>.</p>
-<p><code>View.props.onStartShouldSetResponderCapture: (event) =&gt; [true | false]</code>, where <code>event</code> is a synthetic touch event as described above.</p>
+<p><code>View.props.onStartShouldSetResponderCapture: (event) =&gt; [true | false]</code>, where <code>event</code> is a <a href="pressevent">PressEvent</a>.</p>
 <table>
 <thead>
 <tr><th>Type</th><th>Required</th></tr>

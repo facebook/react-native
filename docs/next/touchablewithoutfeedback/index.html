@@ -283,7 +283,7 @@
 </table>
 <hr>
 <h3><a class="anchor" aria-hidden="true" id="delaylongpress"></a><a href="#delaylongpress" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>delayLongPress</code></h3>
-<p>Delay in ms, from onPressIn, before onLongPress is called.</p>
+<p>Duration (in milliseconds) from <code>onPressIn</code> before <code>onLongPress</code> is called.</p>
 <table>
 <thead>
 <tr><th>Type</th><th>Required</th></tr>
@@ -294,7 +294,7 @@
 </table>
 <hr>
 <h3><a class="anchor" aria-hidden="true" id="delaypressin"></a><a href="#delaypressin" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>delayPressIn</code></h3>
-<p>Delay in ms, from the start of the touch, before onPressIn is called.</p>
+<p>Duration (in milliseconds), from the start of the touch, before <code>onPressIn</code> is called.</p>
 <table>
 <thead>
 <tr><th>Type</th><th>Required</th></tr>
@@ -305,7 +305,7 @@
 </table>
 <hr>
 <h3><a class="anchor" aria-hidden="true" id="delaypressout"></a><a href="#delaypressout" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>delayPressOut</code></h3>
-<p>Delay in ms, from the release of the touch, before onPressOut is called.</p>
+<p>Duration (in milliseconds), from the release of the touch, before <code>onPressOut</code> is called.</p>
 <table>
 <thead>
 <tr><th>Type</th><th>Required</th></tr>
@@ -327,13 +327,16 @@
 </table>
 <hr>
 <h3><a class="anchor" aria-hidden="true" id="hitslop"></a><a href="#hitslop" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>hitSlop</code></h3>
-<p>This defines how far your touch can start away from the button. This is added to <code>pressRetentionOffset</code> when moving off of the button. ** NOTE ** The touch area never extends past the parent view bounds and the Z-index of sibling views always takes precedence if a touch hits two overlapping views.</p>
+<p>This defines how far your touch can start away from the button. This is added to <code>pressRetentionOffset</code> when moving off of the button.</p>
+<blockquote>
+<p>The touch area never extends past the parent view bounds and the Z-index of sibling views always takes precedence if a touch hits two overlapping views.</p>
+</blockquote>
 <table>
 <thead>
 <tr><th>Type</th><th>Required</th></tr>
 </thead>
 <tbody>
-<tr><td>object: {top: number, left: number, bottom: number, right: number}</td><td>No</td></tr>
+<tr><td><a href="rect">Rect</a> or number</td><td>No</td></tr>
 </tbody>
 </table>
 <h3><a class="anchor" aria-hidden="true" id="onblur"></a><a href="#onblur" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>onBlur</code></h3>
@@ -371,6 +374,7 @@
 </table>
 <hr>
 <h3><a class="anchor" aria-hidden="true" id="onlongpress"></a><a href="#onlongpress" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>onLongPress</code></h3>
+<p>Called if the time after <code>onPressIn</code> lasts longer than 370 milliseconds. This time period can be customized with <a href="#delaylongpress"><code>delayLongPress</code></a>.</p>
 <table>
 <thead>
 <tr><th>Type</th><th>Required</th></tr>
@@ -381,7 +385,7 @@
 </table>
 <hr>
 <h3><a class="anchor" aria-hidden="true" id="onpress"></a><a href="#onpress" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>onPress</code></h3>
-<p>Called when the touch is released, but not if cancelled (e.g. by a scroll that steals the responder lock).</p>
+<p>Called when the touch is released, but not if cancelled (e.g. by a scroll that steals the responder lock). The first function argument is an event in form of <a href="pressevent">PressEvent</a>.</p>
 <table>
 <thead>
 <tr><th>Type</th><th>Required</th></tr>
@@ -392,7 +396,7 @@
 </table>
 <hr>
 <h3><a class="anchor" aria-hidden="true" id="onpressin"></a><a href="#onpressin" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>onPressIn</code></h3>
-<p>Called as soon as the touchable element is pressed and invoked even before onPress. This can be useful when making network requests.</p>
+<p>Called as soon as the touchable element is pressed and invoked even before onPress. This can be useful when making network requests. The first function argument is an event in form of <a href="pressevent">PressEvent</a>.</p>
 <table>
 <thead>
 <tr><th>Type</th><th>Required</th></tr>
@@ -403,7 +407,7 @@
 </table>
 <hr>
 <h3><a class="anchor" aria-hidden="true" id="onpressout"></a><a href="#onpressout" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>onPressOut</code></h3>
-<p>Called as soon as the touch is released even before onPress.</p>
+<p>Called as soon as the touch is released even before onPress. The first function argument is an event in form of <a href="pressevent">PressEvent</a>.</p>
 <table>
 <thead>
 <tr><th>Type</th><th>Required</th></tr>
@@ -420,7 +424,7 @@
 <tr><th>Type</th><th>Required</th></tr>
 </thead>
 <tbody>
-<tr><td>object: {top: number, left: number, bottom: number, right: number}</td><td>No</td></tr>
+<tr><td><a href="rect">Rect</a> or number</td><td>No</td></tr>
 </tbody>
 </table>
 <hr>
@@ -455,18 +459,7 @@
 <tr><td>Boolean</td><td>No</td><td>Android</td></tr>
 </tbody>
 </table>
-<hr>
-<h2><a class="anchor" aria-hidden="true" id="type-definitions"></a><a href="#type-definitions" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Type Definitions</h2>
-<h3><a class="anchor" aria-hidden="true" id="event"></a><a href="#event" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Event</h3>
-<table>
-<thead>
-<tr><th>Type</th></tr>
-</thead>
-<tbody>
-<tr><td>Object</td></tr>
-</tbody>
-</table>
-</span></div></article></div><div class="docs-prevnext"><a class="docs-prev button" href="/docs/next/touchableopacity"><span class="arrow-prev">← </span><span class="function-name-prevnext">TouchableOpacity</span></a><a class="docs-next button" href="/docs/next/view"><span>View</span><span class="arrow-next"> →</span></a></div></div></div><nav class="onPageNav"><ul class="toc-headings"><li><a href="#usage-pattern">Usage Pattern</a></li><li><a href="#example">Example</a></li><li><a href="#props">Props</a><ul class="toc-headings"><li><a href="#accessibilityignoresinvertcolors"><code>accessibilityIgnoresInvertColors</code></a></li><li><a href="#accessible"><code>accessible</code></a></li><li><a href="#accessibilitylabel"><code>accessibilityLabel</code></a></li><li><a href="#accessibilityhint"><code>accessibilityHint</code></a></li><li><a href="#accessibilityrole"><code>accessibilityRole</code></a></li><li><a href="#accessibilitystate"><code>accessibilityState</code></a></li><li><a href="#accessibilityactions"><code>accessibilityActions</code></a></li><li><a href="#onaccessibilityaction"><code>onAccessibilityAction</code></a></li><li><a href="#accessibilityvalue"><code>accessibilityValue</code></a></li><li><a href="#delaylongpress"><code>delayLongPress</code></a></li><li><a href="#delaypressin"><code>delayPressIn</code></a></li><li><a href="#delaypressout"><code>delayPressOut</code></a></li><li><a href="#disabled"><code>disabled</code></a></li><li><a href="#hitslop"><code>hitSlop</code></a></li><li><a href="#onblur"><code>onBlur</code></a></li><li><a href="#onfocus"><code>onFocus</code></a></li><li><a href="#onlayout"><code>onLayout</code></a></li><li><a href="#onlongpress"><code>onLongPress</code></a></li><li><a href="#onpress"><code>onPress</code></a></li><li><a href="#onpressin"><code>onPressIn</code></a></li><li><a href="#onpressout"><code>onPressOut</code></a></li><li><a href="#pressretentionoffset"><code>pressRetentionOffset</code></a></li><li><a href="#nativeid"><code>nativeID</code></a></li><li><a href="#testid"><code>testID</code></a></li><li><a href="#touchsounddisabled"><code>touchSoundDisabled</code></a></li></ul></li><li><a href="#type-definitions">Type Definitions</a><ul class="toc-headings"><li><a href="#event">Event</a></li></ul></li></ul></nav></div><footer class="nav-footer" id="footer"><section class="sitemap"><div><h5>Docs</h5><a href="/docs/getting-started.html">Getting Started</a><a href="/docs/tutorial.html">Tutorial</a><a href="/docs/components-and-apis.html">Components and APIs</a><a href="/docs/more-resources.html">More Resources</a></div><div><h5>Community</h5><a href="/help.html">The React Native Community</a><a href="/showcase.html">Who&#x27;s using React Native?</a><a href="http://stackoverflow.com/questions/tagged/react-native" target="_blank">Ask Questions on Stack Overflow</a><a href="https://github.com/facebook/react-native/blob/master/CONTRIBUTING.md">Contributor Guide</a><a href="https://dev.to/t/reactnative" target="_blank">DEV Community</a></div><div><h5>More Resources</h5><a href="/blog/">Blog</a><a href="https://twitter.com/reactnative" target="_blank">Twitter</a><a href="https://github.com/facebook/react-native" target="_blank">GitHub</a><a href="https://reactjs.org" target="_blank">React</a></div></section><a href="https://code.facebook.com/projects/" target="_blank" class="fbOpenSource"><img src="/img/oss_logo.png" alt="Facebook Open Source" width="170" height="45"/></a><section class="copyright">Copyright © 2020 Facebook Inc.</section></footer></div><script type="text/javascript" src="https://cdn.jsdelivr.net/docsearch.js/1/docsearch.min.js"></script><script>window.fbAsyncInit = function() {FB.init({appId:'1677033832619985',xfbml:true,version:'v2.7'});};(function(d, s, id){var js, fjs = d.getElementsByTagName(s)[0];if (d.getElementById(id)) {return;}js = d.createElement(s); js.id = id;js.src = '//connect.facebook.net/en_US/sdk.js';fjs.parentNode.insertBefore(js, fjs);}(document, 'script','facebook-jssdk'));
+</span></div></article></div><div class="docs-prevnext"><a class="docs-prev button" href="/docs/next/touchableopacity"><span class="arrow-prev">← </span><span class="function-name-prevnext">TouchableOpacity</span></a><a class="docs-next button" href="/docs/next/view"><span>View</span><span class="arrow-next"> →</span></a></div></div></div><nav class="onPageNav"><ul class="toc-headings"><li><a href="#usage-pattern">Usage Pattern</a></li><li><a href="#example">Example</a></li><li><a href="#props">Props</a><ul class="toc-headings"><li><a href="#accessibilityignoresinvertcolors"><code>accessibilityIgnoresInvertColors</code></a></li><li><a href="#accessible"><code>accessible</code></a></li><li><a href="#accessibilitylabel"><code>accessibilityLabel</code></a></li><li><a href="#accessibilityhint"><code>accessibilityHint</code></a></li><li><a href="#accessibilityrole"><code>accessibilityRole</code></a></li><li><a href="#accessibilitystate"><code>accessibilityState</code></a></li><li><a href="#accessibilityactions"><code>accessibilityActions</code></a></li><li><a href="#onaccessibilityaction"><code>onAccessibilityAction</code></a></li><li><a href="#accessibilityvalue"><code>accessibilityValue</code></a></li><li><a href="#delaylongpress"><code>delayLongPress</code></a></li><li><a href="#delaypressin"><code>delayPressIn</code></a></li><li><a href="#delaypressout"><code>delayPressOut</code></a></li><li><a href="#disabled"><code>disabled</code></a></li><li><a href="#hitslop"><code>hitSlop</code></a></li><li><a href="#onblur"><code>onBlur</code></a></li><li><a href="#onfocus"><code>onFocus</code></a></li><li><a href="#onlayout"><code>onLayout</code></a></li><li><a href="#onlongpress"><code>onLongPress</code></a></li><li><a href="#onpress"><code>onPress</code></a></li><li><a href="#onpressin"><code>onPressIn</code></a></li><li><a href="#onpressout"><code>onPressOut</code></a></li><li><a href="#pressretentionoffset"><code>pressRetentionOffset</code></a></li><li><a href="#nativeid"><code>nativeID</code></a></li><li><a href="#testid"><code>testID</code></a></li><li><a href="#touchsounddisabled"><code>touchSoundDisabled</code></a></li></ul></li></ul></nav></div><footer class="nav-footer" id="footer"><section class="sitemap"><div><h5>Docs</h5><a href="/docs/getting-started.html">Getting Started</a><a href="/docs/tutorial.html">Tutorial</a><a href="/docs/components-and-apis.html">Components and APIs</a><a href="/docs/more-resources.html">More Resources</a></div><div><h5>Community</h5><a href="/help.html">The React Native Community</a><a href="/showcase.html">Who&#x27;s using React Native?</a><a href="http://stackoverflow.com/questions/tagged/react-native" target="_blank">Ask Questions on Stack Overflow</a><a href="https://github.com/facebook/react-native/blob/master/CONTRIBUTING.md">Contributor Guide</a><a href="https://dev.to/t/reactnative" target="_blank">DEV Community</a></div><div><h5>More Resources</h5><a href="/blog/">Blog</a><a href="https://twitter.com/reactnative" target="_blank">Twitter</a><a href="https://github.com/facebook/react-native" target="_blank">GitHub</a><a href="https://reactjs.org" target="_blank">React</a></div></section><a href="https://code.facebook.com/projects/" target="_blank" class="fbOpenSource"><img src="/img/oss_logo.png" alt="Facebook Open Source" width="170" height="45"/></a><section class="copyright">Copyright © 2020 Facebook Inc.</section></footer></div><script type="text/javascript" src="https://cdn.jsdelivr.net/docsearch.js/1/docsearch.min.js"></script><script>window.fbAsyncInit = function() {FB.init({appId:'1677033832619985',xfbml:true,version:'v2.7'});};(function(d, s, id){var js, fjs = d.getElementsByTagName(s)[0];if (d.getElementById(id)) {return;}js = d.createElement(s); js.id = id;js.src = '//connect.facebook.net/en_US/sdk.js';fjs.parentNode.insertBefore(js, fjs);}(document, 'script','facebook-jssdk'));
                 </script><script>window.twttr=(function(d,s, id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return t;js=d.createElement(s);js.id=id;js.src='https://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js, fjs);t._e = [];t.ready = function(f) {t._e.push(f);};return t;}(document, 'script', 'twitter-wjs'));</script><script>
                 document.addEventListener('keyup', function(e) {
                   if (e.target !== document.body) {
