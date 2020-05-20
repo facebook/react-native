@@ -29,6 +29,7 @@ rn_xplat_cxx_library(
     deps = [
         react_native_xplat_target("better:better"),
         react_native_xplat_target("config:config"),
+        react_native_xplat_target("fabric/animations:animations"),
         react_native_xplat_target("fabric/uimanager:uimanager"),
         react_native_xplat_target("fabric/scheduler:scheduler"),
         react_native_xplat_target("fabric/componentregistry:componentregistry"),
