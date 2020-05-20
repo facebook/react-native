@@ -16,22 +16,22 @@ const ReactNativeViewViewConfigMacOS = {
   uiViewClassName: 'RCTView',
   directEventTypes: {
     topDoubleClick: {
-      registrationName: 'topDoubleClick',
+      registrationName: 'onDoubleClick',
     },
     topDragEnter: {
-      registrationName: 'topDragEnter',
+      registrationName: 'onDragEnter',
     },
     topDragLeave: {
-      registrationName: 'topDragLeave',
+      registrationName: 'onDragLeave',
     },
     topDrop: {
-      registrationName: 'topDrop',
+      registrationName: 'onDrop',
     },
     topMouseEnter: {
-      registrationName: 'topMouseEnter',
+      registrationName: 'onMouseEnter',
     },
     topMouseLeave: {
-      registrationName: 'topMouseLeave',
+      registrationName: 'onMouseLeave',
     },
   },
   validAttributes: {

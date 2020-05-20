@@ -440,7 +440,15 @@ class TouchableMouseEvents extends React.Component<{}, $FlowFixMeState> {
             testID="touchable_feedback_mouse_events_button"
             accessibilityLabel="touchable feedback mouse events"
             onPressIn={e => this._appendEvent('MouseIn', e.nativeEvent)}
-            onPressOut={e => this._appendEvent('MouseOut', e.nativeEvent)}>
+            onPressOut={e => this._appendEvent('MouseOut', e.nativeEvent)}
+            draggedTypes={'fileUrl'}
+            onDragEnter={e =>
+              this._appendEvent('MouseDragEnter', e.nativeEvent)
+            }
+            onDragLeave={e =>
+              this._appendEvent('MouseDragLeave', e.nativeEvent)
+            }
+            onDrop={e => this._appendEvent('MouseDrop', e.nativeEvent)}>
             <Text style={styles.button}>Click Me</Text>
           </TouchableOpacity>
         </View>
@@ -666,8 +674,8 @@ exports.examples = [
     // [TODO(macOS ISS#2323203)
     title: 'Touchable Hover',
     description:
-      '<Touchable*> components reacts to mouse enter ' +
-      'and mouse exit events',
+      '<Touchable*> components reacts to mouse events ' +
+      'onMouseEnter and onMouseLeave',
     render: function(): React.Element<any> {
       return <TouchableHover />;
     },
@@ -677,7 +685,7 @@ exports.examples = [
     title: 'Touchable feedback mouse events',
     description:
       '<Touchable*> components reacts to mouse events ' +
-      'and mouse exit events',
+      'onPressIn, onPressOut, onDragEnter, onDragLeave, and onDrop',
     render: function(): React.Element<any> {
       return <TouchableMouseEvents />;
     },
