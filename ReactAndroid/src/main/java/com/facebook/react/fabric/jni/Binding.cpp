@@ -15,7 +15,6 @@
 #include <fbjni/fbjni.h>
 #include <jsi/JSIDynamic.h>
 #include <jsi/jsi.h>
-#include <react/animations/LayoutAnimationDriver.h>
 #include <react/componentregistry/ComponentDescriptorFactory.h>
 #include <react/components/scrollview/ScrollViewProps.h>
 #include <react/core/EventBeat.h>
@@ -73,10 +72,6 @@ std::shared_ptr<Scheduler> Binding::getScheduler() {
   return scheduler_;
 }
 
-LayoutAnimationDriver *Binding::getAnimationDriver() {
-  return (animationDriver_ ? animationDriver_.get() : nullptr);
-}
-
 void Binding::startSurface(
     jint surfaceId,
     jni::alias_ref<jstring> moduleName,
@@ -96,8 +91,7 @@ void Binding::startSurface(
       moduleName->toStdString(),
       initialProps->consume(),
       {},
-      context,
-      getAnimationDriver());
+      context);
 }
 
 void Binding::startSurfaceWithConstraints(
@@ -143,8 +137,7 @@ void Binding::startSurfaceWithConstraints(
       moduleName->toStdString(),
       initialProps->consume(),
       constraints,
-      context,
-      getAnimationDriver());
+      context);
 }
 
 void Binding::renderTemplateToSurface(jint surfaceId, jstring uiTemplate) {
@@ -283,11 +276,11 @@ void Binding::installFabricUIManager(
   collapseDeleteCreateMountingInstructions_ = reactNativeConfig_->getBool(
       "react_fabric:enabled_collapse_delete_create_mounting_instructions");
 
+  disableVirtualNodePreallocation_ = reactNativeConfig_->getBool(
+      "react_fabric:disable_virtual_node_preallocation");
+
   disablePreallocateViews_ = reactNativeConfig_->getBool(
       "react_fabric:disabled_view_preallocation_android");
-
-  bool enableLayoutAnimations_ = reactNativeConfig_->getBool(
-      "react_fabric:enabled_layout_animations_android");
 
   auto toolbox = SchedulerToolbox{};
   toolbox.contextContainer = contextContainer;
@@ -295,11 +288,7 @@ void Binding::installFabricUIManager(
   toolbox.runtimeExecutor = runtimeExecutor;
   toolbox.synchronousEventBeatFactory = synchronousBeatFactory;
   toolbox.asynchronousEventBeatFactory = asynchronousBeatFactory;
-
-  if (enableLayoutAnimations_) {
-    animationDriver_ = std::make_unique<LayoutAnimationDriver>(this);
-  }
-  scheduler_ = std::make_shared<Scheduler>(toolbox, getAnimationDriver(), this);
+  scheduler_ = std::make_shared<Scheduler>(toolbox, nullptr, this);
 }
 
 void Binding::uninstallFabricUIManager() {
@@ -881,37 +870,6 @@ void Binding::setPixelDensity(float pointScaleFactor) {
   pointScaleFactor_ = pointScaleFactor;
 }
 
-void Binding::onAnimationStarted() {
-  jni::global_ref<jobject> localJavaUIManager = getJavaUIManager();
-  if (!localJavaUIManager) {
-    LOG(ERROR) << "Binding::animationsStarted: JavaUIManager disappeared";
-    return;
-  }
-
-  static auto layoutAnimationsStartedJNI =
-      jni::findClassStatic(UIManagerJavaDescriptor)
-          ->getMethod<void()>("onAnimationStarted");
-
-  layoutAnimationsStartedJNI(localJavaUIManager);
-}
-void Binding::onAllAnimationsComplete() {
-  jni::global_ref<jobject> localJavaUIManager = getJavaUIManager();
-  if (!localJavaUIManager) {
-    LOG(ERROR) << "Binding::allAnimationsComplete: JavaUIManager disappeared";
-    return;
-  }
-
-  static auto allAnimationsCompleteJNI =
-      jni::findClassStatic(UIManagerJavaDescriptor)
-          ->getMethod<void()>("onAllAnimationsComplete");
-
-  allAnimationsCompleteJNI(localJavaUIManager);
-}
-
-void Binding::driveCxxAnimations() {
-  scheduler_->animationTick();
-}
-
 void Binding::schedulerDidRequestPreliminaryViewAllocation(
     const SurfaceId surfaceId,
     const ShadowView &shadowView) {
@@ -1036,7 +994,6 @@ void Binding::registerNatives() {
        makeNativeMethod("stopSurface", Binding::stopSurface),
        makeNativeMethod("setConstraints", Binding::setConstraints),
        makeNativeMethod("setPixelDensity", Binding::setPixelDensity),
-       makeNativeMethod("driveCxxAnimations", Binding::driveCxxAnimations),
        makeNativeMethod(
            "uninstallFabricUIManager", Binding::uninstallFabricUIManager)});
 }

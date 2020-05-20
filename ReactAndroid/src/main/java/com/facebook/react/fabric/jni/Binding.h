@@ -8,12 +8,10 @@
 #pragma once
 
 #include <fbjni/fbjni.h>
-#include <react/animations/LayoutAnimationDriver.h>
 #include <react/jni/JMessageQueueThread.h>
 #include <react/jni/ReadableNativeMap.h>
 #include <react/scheduler/Scheduler.h>
 #include <react/scheduler/SchedulerDelegate.h>
-#include <react/uimanager/LayoutAnimationStatusDelegate.h>
 #include <memory>
 #include <mutex>
 #include "ComponentFactoryDelegate.h"
@@ -24,9 +22,7 @@ namespace react {
 
 class Instance;
 
-class Binding : public jni::HybridClass<Binding>,
-                public SchedulerDelegate,
-                public LayoutAnimationStatusDelegate {
+class Binding : public jni::HybridClass<Binding>, public SchedulerDelegate {
  public:
   constexpr static const char *const kJavaDescriptor =
       "Lcom/facebook/react/fabric/Binding;";
@@ -77,40 +73,32 @@ class Binding : public jni::HybridClass<Binding>,
   void stopSurface(jint surfaceId);
 
   void schedulerDidFinishTransaction(
-      MountingCoordinator::Shared const &mountingCoordinator) override;
+      MountingCoordinator::Shared const &mountingCoordinator);
 
   void schedulerDidRequestPreliminaryViewAllocation(
       const SurfaceId surfaceId,
-      const ShadowView &shadowView) override;
+      const ShadowView &shadowView);
 
   void schedulerDidDispatchCommand(
       const ShadowView &shadowView,
       std::string const &commandName,
-      folly::dynamic const args) override;
+      folly::dynamic const args);
+
+  void setPixelDensity(float pointScaleFactor);
 
   void schedulerDidSetJSResponder(
       SurfaceId surfaceId,
       const ShadowView &shadowView,
       const ShadowView &initialShadowView,
-      bool blockNativeResponder) override;
+      bool blockNativeResponder);
 
-  void schedulerDidClearJSResponder() override;
-
-  void setPixelDensity(float pointScaleFactor);
-
-  void driveCxxAnimations();
+  void schedulerDidClearJSResponder();
 
   void uninstallFabricUIManager();
 
   // Private member variables
   jni::global_ref<jobject> javaUIManager_;
   std::mutex javaUIManagerMutex_;
-
-  // LayoutAnimations
-  virtual void onAnimationStarted() override;
-  virtual void onAllAnimationsComplete() override;
-  LayoutAnimationDriver *getAnimationDriver();
-  std::unique_ptr<LayoutAnimationDriver> animationDriver_;
 
   std::shared_ptr<Scheduler> scheduler_;
   std::mutex schedulerMutex_;

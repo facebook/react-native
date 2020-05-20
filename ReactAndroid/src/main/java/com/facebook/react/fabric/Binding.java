@@ -70,8 +70,6 @@ public class Binding {
       boolean isRTL,
       boolean doLeftAndRightSwapInRTL);
 
-  public native void driveCxxAnimations();
-
   public void register(
       @NonNull JavaScriptContextHolder jsContext,
       @NonNull FabricUIManager fabricUIManager,

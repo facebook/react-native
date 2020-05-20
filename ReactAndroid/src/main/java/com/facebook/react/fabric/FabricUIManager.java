@@ -142,8 +142,6 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
    */
   private volatile boolean mDestroyed = false;
 
-  private boolean mDriveCxxAnimations = false;
-
   private long mRunStartTime = 0l;
   private long mBatchedExecutionTime = 0l;
   private long mDispatchViewUpdatesTime = 0l;
@@ -969,20 +967,6 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
     // TODO T31905686: Remove this method and add support for multi-threading performance counters
   }
 
-  // Called from Binding.cpp
-  @DoNotStrip
-  @AnyThread
-  public void onAnimationStarted() {
-    mDriveCxxAnimations = true;
-  }
-
-  // Called from Binding.cpp
-  @DoNotStrip
-  @AnyThread
-  public void onAllAnimationsComplete() {
-    mDriveCxxAnimations = false;
-  }
-
   @Override
   public Map<String, Long> getPerformanceCounters() {
     HashMap<String, Long> performanceCounters = new HashMap<>();
@@ -1018,18 +1002,11 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
         return;
       }
 
-      // Drive any animations from C++.
-      // There is a race condition here between getting/setting
-      // `mDriveCxxAnimations` which shouldn't matter; it's safe to call
-      // the mBinding method, unless mBinding has gone away.
-      if (mDriveCxxAnimations && mBinding != null) {
-        mBinding.driveCxxAnimations();
-      }
-
       try {
         dispatchPreMountItems(frameTimeNanos);
 
         tryDispatchMountItems();
+
       } catch (Exception ex) {
         FLog.e(TAG, "Exception thrown when executing UIFrameGuarded", ex);
         stop();
