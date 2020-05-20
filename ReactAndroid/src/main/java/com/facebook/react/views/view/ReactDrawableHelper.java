@@ -17,7 +17,6 @@ import android.graphics.drawable.RippleDrawable;
 import android.os.Build;
 import android.util.TypedValue;
 import androidx.annotation.Nullable;
-
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.SoftAssertions;
