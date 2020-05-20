@@ -180,7 +180,10 @@ using namespace facebook::react;
 
   // `hitSlop`
   if (oldViewProps.hitSlop != newViewProps.hitSlop) {
-    self.hitTestEdgeInsets = RCTUIEdgeInsetsFromEdgeInsets(newViewProps.hitSlop);
+    self.hitTestEdgeInsets = {-newViewProps.hitSlop.top,
+                              -newViewProps.hitSlop.left,
+                              -newViewProps.hitSlop.bottom,
+                              -newViewProps.hitSlop.right};
   }
 
   // `overflow`
