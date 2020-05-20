@@ -64,6 +64,7 @@ class RawValue {
  private:
   friend class RawProps;
   friend class RawPropsParser;
+  friend class UIManagerBinding;
 
   /*
    * Arbitrary constructors are private only for RawProps and internal usage.
@@ -73,9 +74,9 @@ class RawValue {
   RawValue(folly::dynamic &&dynamic) noexcept : dynamic_(std::move(dynamic)){};
 
   /*
-   * Copy constructor and copy assignment operator are private and only for
-   * internal use. Basically, it's implementation details. Other particular
-   * implementations of the `RawValue` interface may not have them.
+   * Copy constructor and copy assignment operator would be private and only for
+   * internal use, but it's needed for user-code that does `auto val =
+   * (better::map<std::string, RawValue>)rawVal;`
    */
   RawValue(RawValue const &other) noexcept : dynamic_(other.dynamic_) {}
 
