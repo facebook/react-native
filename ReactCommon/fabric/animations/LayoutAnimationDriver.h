@@ -23,9 +23,6 @@ namespace react {
 
 class LayoutAnimationDriver : public LayoutAnimationKeyFrameManager {
  public:
-  LayoutAnimationDriver(LayoutAnimationStatusDelegate *delegate)
-      : LayoutAnimationKeyFrameManager(delegate) {}
-
   virtual ~LayoutAnimationDriver() {}
 
  protected:
