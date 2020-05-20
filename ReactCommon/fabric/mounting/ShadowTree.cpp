@@ -221,8 +221,7 @@ ShadowTree::ShadowTree(
     LayoutConstraints const &layoutConstraints,
     LayoutContext const &layoutContext,
     RootComponentDescriptor const &rootComponentDescriptor,
-    ShadowTreeDelegate const &delegate,
-    MountingOverrideDelegate *mountingOverrideDelegate)
+    ShadowTreeDelegate const &delegate)
     : surfaceId_(surfaceId), delegate_(delegate) {
   const auto noopEventEmitter = std::make_shared<const ViewEventEmitter>(
       nullptr, -1, std::shared_ptr<const EventDispatcher>());
@@ -241,7 +240,7 @@ ShadowTree::ShadowTree(
           family));
 
   mountingCoordinator_ = std::make_shared<MountingCoordinator const>(
-      ShadowTreeRevision{rootShadowNode_, 0, {}}, mountingOverrideDelegate);
+      ShadowTreeRevision{rootShadowNode_, 0, {}});
 }
 
 ShadowTree::~ShadowTree() {
@@ -358,7 +357,7 @@ bool ShadowTree::tryCommit(
   mountingCoordinator_->push(
       ShadowTreeRevision{newRootShadowNode, revisionNumber, telemetry});
 
-  notifyDelegatesOfUpdates();
+  delegate_.shadowTreeDidFinishTransaction(*this, mountingCoordinator_);
 
   return true;
 }
@@ -397,10 +396,6 @@ void ShadowTree::emitLayoutEvents(
 
     viewEventEmitter.onLayout(layoutableNode->getLayoutMetrics());
   }
-}
-
-void ShadowTree::notifyDelegatesOfUpdates() const {
-  delegate_.shadowTreeDidFinishTransaction(*this, mountingCoordinator_);
 }
 
 } // namespace react

@@ -288,7 +288,7 @@ void Binding::installFabricUIManager(
   toolbox.runtimeExecutor = runtimeExecutor;
   toolbox.synchronousEventBeatFactory = synchronousBeatFactory;
   toolbox.asynchronousEventBeatFactory = asynchronousBeatFactory;
-  scheduler_ = std::make_shared<Scheduler>(toolbox, nullptr, this);
+  scheduler_ = std::make_shared<Scheduler>(toolbox, this);
 }
 
 void Binding::uninstallFabricUIManager() {

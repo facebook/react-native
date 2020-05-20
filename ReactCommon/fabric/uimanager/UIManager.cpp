@@ -268,15 +268,9 @@ void UIManager::dispatchCommand(
 }
 
 void UIManager::configureNextLayoutAnimation(
-    RawValue const &config,
+    const folly::dynamic config,
     SharedEventTarget successCallback,
-    SharedEventTarget errorCallback) const {
-  if (animationDelegate_) {
-    animationDelegate_->uiManagerDidConfigureNextLayoutAnimation(
-        config, successCallback, errorCallback);
-  }
-}
-
+    SharedEventTarget errorCallback) const {}
 void UIManager::setComponentDescriptorRegistry(
     const SharedComponentDescriptorRegistry &componentDescriptorRegistry) {
   componentDescriptorRegistry_ = componentDescriptorRegistry;
@@ -313,23 +307,6 @@ void UIManager::shadowTreeDidFinishTransaction(
 
   if (delegate_) {
     delegate_->uiManagerDidFinishTransaction(mountingCoordinator);
-  }
-}
-
-#pragma mark - UIManagerAnimationDelegate
-
-void UIManager::setAnimationDelegate(
-    UIManagerAnimationDelegate *delegate) const {
-  animationDelegate_ = delegate;
-}
-
-void UIManager::animationTick() {
-  if (animationDelegate_ != nullptr &&
-      animationDelegate_->shouldAnimateFrame()) {
-    shadowTreeRegistry_.enumerate(
-        [&](ShadowTree const &shadowTree, bool &stop) {
-          shadowTree.notifyDelegatesOfUpdates();
-        });
   }
 }
 

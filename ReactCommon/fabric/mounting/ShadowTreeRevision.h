@@ -9,7 +9,6 @@
 
 #include <better/optional.h>
 
-#include <react/mounting/MountingOverrideDelegate.h>
 #include <react/mounting/MountingTelemetry.h>
 #include <react/mounting/MountingTransaction.h>
 #include <react/mounting/ShadowViewMutation.h>
@@ -43,21 +42,14 @@ class ShadowTreeRevision final {
    */
   MountingTelemetry const &getTelemetry() const;
 
-  /*
-   * Methods from this section are meant to be used by
-   * `MountingOverrideDelegate` only.
-   */
- public:
-  ShadowNode const &getRootShadowNode();
-  ShadowNode::Shared getSharedRootShadowNode();
+ private:
+  friend class MountingCoordinator;
 
   /*
    * Methods from this section are meant to be used by `MountingCoordinator`
    * only.
    */
- private:
-  friend class MountingCoordinator;
-
+  ShadowNode const &getRootShadowNode();
   Number getNumber() const;
 
  private:

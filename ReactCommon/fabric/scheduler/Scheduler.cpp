@@ -13,23 +13,15 @@
 #include <react/componentregistry/ComponentDescriptorRegistry.h>
 #include <react/core/LayoutContext.h>
 #include <react/debug/SystraceSection.h>
-#include <react/mounting/MountingOverrideDelegate.h>
-#include <react/mounting/ShadowViewMutation.h>
 #include <react/templateprocessor/UITemplateProcessor.h>
 #include <react/uimanager/UIManager.h>
 #include <react/uimanager/UIManagerBinding.h>
-
-#ifdef RN_SHADOW_TREE_INTROSPECTION
-#include <react/mounting/stubs.h>
-#include <iostream>
-#endif
 
 namespace facebook {
 namespace react {
 
 Scheduler::Scheduler(
     SchedulerToolbox schedulerToolbox,
-    UIManagerAnimationDelegate *animationDelegate,
     SchedulerDelegate *delegate) {
   runtimeExecutor_ = schedulerToolbox.runtimeExecutor;
 
@@ -97,12 +89,6 @@ Scheduler::Scheduler(
 
   delegate_ = delegate;
   uiManager_ = uiManager;
-
-  if (animationDelegate != nullptr) {
-    animationDelegate->setComponentDescriptorRegistry(
-        componentDescriptorRegistry_);
-  }
-  uiManager_->setAnimationDelegate(animationDelegate);
 
 #ifdef ANDROID
   enableNewStateReconciliation_ = reactNativeConfig_->getBool(
@@ -172,8 +158,7 @@ void Scheduler::startSurface(
     const std::string &moduleName,
     const folly::dynamic &initialProps,
     const LayoutConstraints &layoutConstraints,
-    const LayoutContext &layoutContext,
-    MountingOverrideDelegate *mountingOverrideDelegate) const {
+    const LayoutContext &layoutContext) const {
   SystraceSection s("Scheduler::startSurface");
 
   auto shadowTree = std::make_unique<ShadowTree>(
@@ -181,8 +166,7 @@ void Scheduler::startSurface(
       layoutConstraints,
       layoutContext,
       *rootComponentDescriptor_,
-      *uiManager_,
-      mountingOverrideDelegate);
+      *uiManager_);
 
   shadowTree->setEnableNewStateReconciliation(enableNewStateReconciliation_);
 
@@ -326,12 +310,6 @@ SchedulerDelegate *Scheduler::getDelegate() const {
   return delegate_;
 }
 
-#pragma mark - UIManagerAnimationDelegate
-
-void Scheduler::animationTick() const {
-  uiManager_->animationTick();
-}
-
 #pragma mark - UIManagerDelegate
 
 void Scheduler::uiManagerDidFinishTransaction(
@@ -342,6 +320,7 @@ void Scheduler::uiManagerDidFinishTransaction(
     delegate_->schedulerDidFinishTransaction(mountingCoordinator);
   }
 }
+
 void Scheduler::uiManagerDidCreateShadowNode(
     const ShadowNode::Shared &shadowNode) {
   SystraceSection s("Scheduler::uiManagerDidCreateShadowNode");

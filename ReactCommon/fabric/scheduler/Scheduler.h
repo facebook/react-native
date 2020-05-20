@@ -12,14 +12,13 @@
 
 #include <ReactCommon/RuntimeExecutor.h>
 #include <react/componentregistry/ComponentDescriptorFactory.h>
+#include <react/componentregistry/ComponentDescriptorRegistry.h>
 #include <react/components/root/RootComponentDescriptor.h>
 #include <react/config/ReactNativeConfig.h>
 #include <react/core/ComponentDescriptor.h>
 #include <react/core/LayoutConstraints.h>
-#include <react/mounting/MountingOverrideDelegate.h>
 #include <react/scheduler/SchedulerDelegate.h>
 #include <react/scheduler/SchedulerToolbox.h>
-#include <react/uimanager/UIManagerAnimationDelegate.h>
 #include <react/uimanager/UIManagerBinding.h>
 #include <react/uimanager/UIManagerDelegate.h>
 #include <react/utils/ContextContainer.h>
@@ -32,10 +31,7 @@ namespace react {
  */
 class Scheduler final : public UIManagerDelegate {
  public:
-  Scheduler(
-      SchedulerToolbox schedulerToolbox,
-      UIManagerAnimationDelegate *animationDelegate,
-      SchedulerDelegate *delegate);
+  Scheduler(SchedulerToolbox schedulerToolbox, SchedulerDelegate *delegate);
   ~Scheduler();
 
 #pragma mark - Surface Management
@@ -45,8 +41,7 @@ class Scheduler final : public UIManagerDelegate {
       const std::string &moduleName,
       const folly::dynamic &initialProps,
       const LayoutConstraints &layoutConstraints = {},
-      const LayoutContext &layoutContext = {},
-      MountingOverrideDelegate *mountingOverrideDelegate = nullptr) const;
+      const LayoutContext &layoutContext = {}) const;
 
   void renderTemplateToSurface(
       SurfaceId surfaceId,
@@ -92,13 +87,6 @@ class Scheduler final : public UIManagerDelegate {
    */
   void setDelegate(SchedulerDelegate *delegate);
   SchedulerDelegate *getDelegate() const;
-
-#pragma mark - UIManagerAnimationDelegate
-  // This is not needed on iOS or any platform that has a "pull" instead of
-  // "push" MountingCoordinator model. This just tells the delegate an update
-  // is available and that it should `pullTransaction`; we may want to rename
-  // this to be more generic and not animation-specific.
-  void animationTick() const;
 
 #pragma mark - UIManagerDelegate
 

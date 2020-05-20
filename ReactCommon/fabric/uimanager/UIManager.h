@@ -12,13 +12,11 @@
 #include <jsi/jsi.h>
 
 #include <react/componentregistry/ComponentDescriptorRegistry.h>
-#include <react/core/RawValue.h>
 #include <react/core/ShadowNode.h>
 #include <react/core/StateData.h>
 #include <react/mounting/ShadowTree.h>
 #include <react/mounting/ShadowTreeDelegate.h>
 #include <react/mounting/ShadowTreeRegistry.h>
-#include <react/uimanager/UIManagerAnimationDelegate.h>
 #include <react/uimanager/UIManagerDelegate.h>
 
 namespace facebook {
@@ -40,15 +38,6 @@ class UIManager final : public ShadowTreeDelegate {
    */
   void setDelegate(UIManagerDelegate *delegate);
   UIManagerDelegate *getDelegate();
-
-  /**
-   * Sets and gets the UIManager's Animation APIs delegate.
-   * The delegate is stored as a raw pointer, so the owner must null
-   * the pointer before being destroyed.
-   */
-  void setAnimationDelegate(UIManagerAnimationDelegate *delegate) const;
-
-  void animationTick();
 
   /*
    * Provides access to a UIManagerBindging.
@@ -132,15 +121,13 @@ class UIManager final : public ShadowTreeDelegate {
    * This API configures a global LayoutAnimation starting from the root node.
    */
   void configureNextLayoutAnimation(
-      RawValue const &config,
+      const folly::dynamic config,
       SharedEventTarget successCallback,
       SharedEventTarget errorCallback) const;
-
   ShadowTreeRegistry const &getShadowTreeRegistry() const;
 
   SharedComponentDescriptorRegistry componentDescriptorRegistry_;
   UIManagerDelegate *delegate_;
-  mutable UIManagerAnimationDelegate *animationDelegate_{nullptr};
   UIManagerBinding *uiManagerBinding_;
   ShadowTreeRegistry shadowTreeRegistry_{};
 };

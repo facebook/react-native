@@ -9,7 +9,6 @@
 
 #include <folly/dynamic.h>
 #include <jsi/jsi.h>
-#include <react/core/RawValue.h>
 #include <react/uimanager/UIManager.h>
 #include <react/uimanager/primitives.h>
 
