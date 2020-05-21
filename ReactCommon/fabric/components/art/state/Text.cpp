@@ -7,13 +7,14 @@
 
 #include <react/components/art/Text.h>
 #include <react/components/art/Element.h>
+#include <react/components/art/conversions.h>
 
 namespace facebook {
 namespace react {
 
 #ifdef ANDROID
 folly::dynamic Shape::getDynamic() const {
-  return folly::dynamic::object();
+  return toDynamic(*this);
 }
 #endif
 

@@ -6,6 +6,7 @@
  */
 
 #include <react/components/art/ARTSurfaceViewState.h>
+#include <react/components/art/conversions.h>
 #include <react/debug/debugStringConvertibleUtils.h>
 
 namespace facebook {
@@ -13,7 +14,7 @@ namespace react {
 
 #ifdef ANDROID
 folly::dynamic ARTSurfaceViewState::getDynamic() const {
-  return folly::dynamic::object();
+  return toDynamic(*this);
 }
 #endif
 
