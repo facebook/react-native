@@ -73,6 +73,7 @@ YogaLayoutableShadowNode::YogaLayoutableShadowNode(
           &initializeYogaConfig(yogaConfig_)) {
   yogaNode_.setContext(this);
   yogaNode_.setOwner(nullptr);
+  updateYogaChildrenOwnersIfNeeded();
 
   // Yoga node must inherit dirty flag.
   assert(
@@ -221,6 +222,14 @@ void YogaLayoutableShadowNode::appendChild(
 bool YogaLayoutableShadowNode::doesOwn(
     YogaLayoutableShadowNode const &child) const {
   return child.yogaNode_.getOwner() == &yogaNode_;
+}
+
+void YogaLayoutableShadowNode::updateYogaChildrenOwnersIfNeeded() {
+  for (auto &childYogaNode : yogaNode_.getChildren()) {
+    if (childYogaNode->getOwner() == &yogaNode_) {
+      childYogaNode->setOwner(reinterpret_cast<YGNodeRef>(0xBADC0FFEE0DDF00D));
+    }
+  }
 }
 
 void YogaLayoutableShadowNode::updateYogaChildren() {

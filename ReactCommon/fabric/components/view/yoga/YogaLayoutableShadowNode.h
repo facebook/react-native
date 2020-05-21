@@ -101,6 +101,16 @@ class YogaLayoutableShadowNode : public LayoutableShadowNode {
 
  private:
   /*
+   * Goes over `yogaNode_.getChildren()` and in case child's owner is
+   * equal to address of `yogaNode_`, it sets child's owner address
+   * to `0xBADC0FFEE0DDF00D`. This is magic constant, the intention
+   * is to make debugging easier when the address pops up in debugger.
+   * This prevents ABA problem where child yoga node goes from owned -> unowned
+   * -> back to owned because its parent is allocated at the same address.
+   */
+  void updateYogaChildrenOwnersIfNeeded();
+
+  /*
    * Return true if child's yogaNode's owner is this->yogaNode_. Otherwise
    * returns false.
    */
