@@ -14,6 +14,7 @@
 #include <react/mounting/MountingOverrideDelegate.h>
 #include <react/mounting/MountingTransaction.h>
 #include <react/mounting/ShadowViewMutation.h>
+#include <react/uimanager/LayoutAnimationStatusDelegate.h>
 #include <react/uimanager/UIManagerAnimationDelegate.h>
 
 namespace facebook {
@@ -37,7 +38,7 @@ enum class AnimationProperty {
 };
 enum class AnimationConfigurationType {
   Noop, // for animation placeholders that are not animated, and should be
-        // executed once other animations have completed
+  // executed once other animations have completed
   Create,
   Update,
   Delete
@@ -97,6 +98,13 @@ struct LayoutAnimation {
 class LayoutAnimationKeyFrameManager : public UIManagerAnimationDelegate,
                                        public MountingOverrideDelegate {
  public:
+  LayoutAnimationKeyFrameManager(LayoutAnimationStatusDelegate *delegate)
+      : layoutAnimationStatusDelegate_(delegate) {
+    // This is the ONLY place where we set or access
+    // layoutAnimationStatusDelegate_ without a mutex.
+  }
+  ~LayoutAnimationKeyFrameManager() {}
+
   void uiManagerDidConfigureNextLayoutAnimation(
       RawValue const &config,
       std::shared_ptr<EventTarget const> successCallback,
@@ -118,7 +126,19 @@ class LayoutAnimationKeyFrameManager : public UIManagerAnimationDelegate,
       MountingTelemetry const &telemetry,
       ShadowViewMutationList mutations) const override;
 
+  // LayoutAnimationStatusDelegate - this is for the platform to get
+  // signal when animations start and complete. Setting and resetting this
+  // delegate is protected by a mutex; ALL method calls into this delegate are
+  // also protected by the mutex! The only way to set this without a mutex is
+  // via a constructor.
+ public:
+  void setLayoutAnimationStatusDelegate(
+      LayoutAnimationStatusDelegate *delegate) const;
+
  private:
+  mutable std::mutex layoutAnimationStatusDelegateMutex_;
+  mutable LayoutAnimationStatusDelegate *layoutAnimationStatusDelegate_{};
+
   void adjustDelayedMutationIndicesForMutation(
       SurfaceId surfaceId,
       ShadowViewMutation const &mutation) const;

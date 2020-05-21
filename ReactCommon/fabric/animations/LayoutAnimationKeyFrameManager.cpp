@@ -212,6 +212,12 @@ void LayoutAnimationKeyFrameManager::uiManagerDidConfigureNextLayoutAnimation(
   }
 }
 
+void LayoutAnimationKeyFrameManager::setLayoutAnimationStatusDelegate(
+    LayoutAnimationStatusDelegate *delegate) const {
+  std::lock_guard<std::mutex> lock(layoutAnimationStatusDelegateMutex_);
+  layoutAnimationStatusDelegate_ = delegate;
+}
+
 bool LayoutAnimationKeyFrameManager::shouldOverridePullTransaction() const {
   return shouldAnimateFrame();
 }
@@ -340,6 +346,8 @@ LayoutAnimationKeyFrameManager::pullTransaction(
       std::chrono::duration_cast<std::chrono::milliseconds>(
           std::chrono::high_resolution_clock::now().time_since_epoch())
           .count();
+
+  bool inflightAnimationsExistInitially = !inflightAnimations_.empty();
 
   if (!mutations.empty()) {
 #ifdef RN_SHADOW_TREE_INTROSPECTION
@@ -816,6 +824,21 @@ LayoutAnimationKeyFrameManager::pullTransaction(
       mutations.end(),
       mutationsForAnimation.begin(),
       mutationsForAnimation.end());
+
+  // Signal to delegate if all animations are complete, or if we were not
+  // animating anything and now some animation exists.
+  if (inflightAnimationsExistInitially && inflightAnimations_.empty()) {
+    std::lock_guard<std::mutex> lock(layoutAnimationStatusDelegateMutex_);
+    if (layoutAnimationStatusDelegate_ != nullptr) {
+      layoutAnimationStatusDelegate_->onAllAnimationsComplete();
+    }
+  } else if (
+      !inflightAnimationsExistInitially && !inflightAnimations_.empty()) {
+    std::lock_guard<std::mutex> lock(layoutAnimationStatusDelegateMutex_);
+    if (layoutAnimationStatusDelegate_ != nullptr) {
+      layoutAnimationStatusDelegate_->onAnimationStarted();
+    }
+  }
 
   // TODO: fill in telemetry
   return MountingTransaction{
