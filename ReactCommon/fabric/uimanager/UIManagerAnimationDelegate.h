@@ -16,7 +16,7 @@ namespace react {
 
 class UIManagerAnimationDelegate {
  public:
-  virtual ~UIManagerAnimationDelegate() {};
+  virtual ~UIManagerAnimationDelegate(){};
 
   /*
    * Configure a LayoutAnimation.
