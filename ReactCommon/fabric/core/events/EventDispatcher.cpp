@@ -51,6 +51,10 @@ void EventDispatcher::dispatchStateUpdate(
   getEventQueue(priority).enqueueStateUpdate(std::move(stateUpdate));
 }
 
+void EventDispatcher::dispatchUniqueEvent(RawEvent const &rawEvent) const {
+  asynchronousBatchedQueue_->enqueueUniqueEvent(rawEvent);
+}
+
 const EventQueue &EventDispatcher::getEventQueue(EventPriority priority) const {
   switch (priority) {
     case EventPriority::SynchronousUnbatched:
