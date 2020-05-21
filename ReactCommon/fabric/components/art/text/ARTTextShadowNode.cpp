@@ -5,12 +5,19 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#include <react/components/art/ARTTextShadowNode.h>
+#include "ARTTextShadowNode.h"
+#include <Glog/logging.h>
+#include <react/components/art/Text.h>
 
 namespace facebook {
 namespace react {
 
 extern const char ARTTextComponentName[] = "ARTText";
+
+Element::Shared ARTTextShadowNode::getElement() const {
+  // TODO add support for Text
+  return std::make_shared<Shape>();
+}
 
 } // namespace react
 } // namespace facebook

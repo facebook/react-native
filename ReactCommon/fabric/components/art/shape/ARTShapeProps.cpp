@@ -6,6 +6,7 @@
  */
 
 #include <react/components/art/ARTShapeProps.h>
+#include <Glog/logging.h>
 #include <react/core/propsConversions.h>
 
 namespace facebook {
@@ -31,11 +32,10 @@ ARTShapeProps::ARTShapeProps(
           {1.0})),
       strokeCap(
           convertRawProp(rawProps, "strokeCap", sourceProps.strokeCap, {1})),
-      strokeJoin(convertRawProp(
-          rawProps,
-          "strokeJoin",
-          sourceProps.strokeJoin,
-          {1})){};
+      strokeJoin(
+          convertRawProp(rawProps, "strokeJoin", sourceProps.strokeJoin, {1})){
+
+      };
 
 #pragma mark - DebugStringConvertible
 

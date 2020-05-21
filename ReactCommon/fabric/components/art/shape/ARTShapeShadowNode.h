@@ -7,7 +7,9 @@
 
 #pragma once
 
+#include <react/components/art/ARTBaseShadowNode.h>
 #include <react/components/art/ARTShapeProps.h>
+#include <react/components/art/Element.h>
 #include <react/core/ConcreteShadowNode.h>
 
 namespace facebook {
@@ -18,8 +20,16 @@ extern const char ARTShapeComponentName[];
 /*
  * `ShadowNode` for <ARTShape> component.
  */
-using ARTShapeShadowNode =
-    ConcreteShadowNode<ARTShapeComponentName, ShadowNode, ARTShapeProps>;
+class ARTShapeShadowNode : public ConcreteShadowNode<
+                               ARTShapeComponentName,
+                               ShadowNode,
+                               ARTShapeProps>,
+                           public ARTBaseShadowNode {
+ public:
+  using ConcreteShadowNode::ConcreteShadowNode;
+
+  virtual Element::Shared getElement() const override;
+};
 
 } // namespace react
 } // namespace facebook

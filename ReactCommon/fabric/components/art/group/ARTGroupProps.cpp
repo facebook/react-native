@@ -15,7 +15,6 @@ ARTGroupProps::ARTGroupProps(
     const ARTGroupProps &sourceProps,
     const RawProps &rawProps)
     : Props(sourceProps, rawProps),
-
       opacity(convertRawProp(rawProps, "opacity", sourceProps.opacity, {1.0})),
       transform(
           convertRawProp(rawProps, "transform", sourceProps.transform, {})),

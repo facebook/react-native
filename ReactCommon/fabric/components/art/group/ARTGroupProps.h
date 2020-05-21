@@ -7,11 +7,12 @@
 
 #pragma once
 
-#include <react/graphics/Geometry.h>
-#include <memory>
-
+#include <react/components/art/Element.h>
+#include <react/components/art/Group.h>
 #include <react/core/Props.h>
 #include <react/debug/DebugStringConvertible.h>
+#include <react/graphics/Geometry.h>
+#include <memory>
 
 namespace facebook {
 namespace react {
@@ -30,10 +31,6 @@ class ARTGroupProps : public Props {
   std::vector<Float> clipping{};
 
 #pragma mark - DebugStringConvertible
-
-#if RN_DEBUG_STRING_CONVERTIBLE
-  SharedDebugStringConvertibleList getDebugProps() const override;
-#endif
 };
 
 } // namespace react
