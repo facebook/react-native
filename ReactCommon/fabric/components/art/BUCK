@@ -31,6 +31,7 @@ rn_xplat_cxx_library(
             ("", "*.h"),
             ("group", "*.h"),
             ("shape", "*.h"),
+            ("state", "*.h"),
             ("surfaceview", "*.h"),
             ("text", "*.h"),
         ],
