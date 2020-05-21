@@ -6,13 +6,13 @@
  */
 
 #pragma once
-
-#include <reactperflogger/NativeModulePerfLogger.h>
 #include <memory>
+#include "NativeModulePerfLogger.h"
 
 namespace facebook {
 namespace react {
-namespace TurboModulePerfLogger {
+
+namespace BridgeNativeModulePerfLogger {
 void enableLogging(std::unique_ptr<NativeModulePerfLogger> &&logger);
 
 void moduleDataCreateStart(const char *moduleName, int32_t id);
@@ -105,6 +105,7 @@ void asyncMethodCallExecutionFail(
     const char *methodName,
     int32_t id);
 
-} // namespace TurboModulePerfLogger
+} // namespace BridgeNativeModulePerfLogger
+
 } // namespace react
 } // namespace facebook

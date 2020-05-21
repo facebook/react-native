@@ -8,7 +8,7 @@
 #include "ModuleRegistry.h"
 
 #include <glog/logging.h>
-#include <reactperflogger/NativeModulePerfLogger.h>
+#include <reactperflogger/BridgeNativeModulePerfLogger.h>
 
 #include "NativeModule.h"
 #include "SystraceSection.h"
@@ -100,24 +100,19 @@ folly::Optional<ModuleConfig> ModuleRegistry::getConfig(
 
   if (it == modulesByName_.end()) {
     if (unknownModules_.find(name) != unknownModules_.end()) {
-      NativeModulePerfLogger::getInstance().moduleJSRequireBeginningFail(
-          name.c_str());
-      NativeModulePerfLogger::getInstance().moduleJSRequireEndingStart(
-          name.c_str());
+      BridgeNativeModulePerfLogger::moduleJSRequireBeginningFail(name.c_str());
+      BridgeNativeModulePerfLogger::moduleJSRequireEndingStart(name.c_str());
       return folly::none;
     }
 
     if (!moduleNotFoundCallback_) {
       unknownModules_.insert(name);
-      NativeModulePerfLogger::getInstance().moduleJSRequireBeginningFail(
-          name.c_str());
-      NativeModulePerfLogger::getInstance().moduleJSRequireEndingStart(
-          name.c_str());
+      BridgeNativeModulePerfLogger::moduleJSRequireBeginningFail(name.c_str());
+      BridgeNativeModulePerfLogger::moduleJSRequireEndingStart(name.c_str());
       return folly::none;
     }
 
-    NativeModulePerfLogger::getInstance().moduleJSRequireBeginningEnd(
-        name.c_str());
+    BridgeNativeModulePerfLogger::moduleJSRequireBeginningEnd(name.c_str());
 
     bool wasModuleLazilyLoaded = moduleNotFoundCallback_(name);
     it = modulesByName_.find(name);
@@ -126,14 +121,12 @@ folly::Optional<ModuleConfig> ModuleRegistry::getConfig(
         wasModuleLazilyLoaded && it != modulesByName_.end();
 
     if (!wasModuleRegisteredWithRegistry) {
-      NativeModulePerfLogger::getInstance().moduleJSRequireEndingStart(
-          name.c_str());
+      BridgeNativeModulePerfLogger::moduleJSRequireEndingStart(name.c_str());
       unknownModules_.insert(name);
       return folly::none;
     }
   } else {
-    NativeModulePerfLogger::getInstance().moduleJSRequireBeginningEnd(
-        name.c_str());
+    BridgeNativeModulePerfLogger::moduleJSRequireBeginningEnd(name.c_str());
   }
 
   // If we've gotten this far, then we've signaled moduleJSRequireBeginningEnd

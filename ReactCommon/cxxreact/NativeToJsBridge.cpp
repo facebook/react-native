@@ -11,7 +11,7 @@
 #include <folly/MoveWrapper.h>
 #include <folly/json.h>
 #include <glog/logging.h>
-#include <reactperflogger/NativeModulePerfLogger.h>
+#include <reactperflogger/BridgeNativeModulePerfLogger.h>
 
 #include "Instance.h"
 #include "JSBigString.h"
@@ -57,7 +57,7 @@ class JsToNativeBridge : public react::ExecutorDelegate {
         m_batchHadNativeModuleOrTurboModuleCalls || !calls.empty();
 
     std::vector<MethodCall> methodCalls = parseMethodCalls(std::move(calls));
-    NativeModulePerfLogger::getInstance().asyncMethodCallBatchPreprocessEnd(
+    BridgeNativeModulePerfLogger::asyncMethodCallBatchPreprocessEnd(
         (int)methodCalls.size());
 
     // An exception anywhere in here stops processing of the batch.  This

@@ -338,10 +338,9 @@ jsi::Value ObjCTurboModule::performMethodInvocation(
     id<RCTTurboModule> strongModule = weakModule;
 
     if (wasMethodSync) {
-      TurboModulePerfLogger::getInstance().syncMethodCallExecutionStart(moduleName, methodNameStr.c_str());
+      TurboModulePerfLogger::syncMethodCallExecutionStart(moduleName, methodNameStr.c_str());
     } else {
-      TurboModulePerfLogger::getInstance().asyncMethodCallExecutionStart(
-          moduleName, methodNameStr.c_str(), asyncCallCounter);
+      TurboModulePerfLogger::asyncMethodCallExecutionStart(moduleName, methodNameStr.c_str(), asyncCallCounter);
     }
 
     // TODO(T66699874) Should we guard this with a try/catch?
@@ -349,13 +348,12 @@ jsi::Value ObjCTurboModule::performMethodInvocation(
     [retainedObjectsForInvocation removeAllObjects];
 
     if (!wasMethodSync) {
-      TurboModulePerfLogger::getInstance().asyncMethodCallExecutionEnd(
-          moduleName, methodNameStr.c_str(), asyncCallCounter);
+      TurboModulePerfLogger::asyncMethodCallExecutionEnd(moduleName, methodNameStr.c_str(), asyncCallCounter);
       return;
     }
 
-    TurboModulePerfLogger::getInstance().syncMethodCallExecutionEnd(moduleName, methodNameStr.c_str());
-    TurboModulePerfLogger::getInstance().syncMethodCallReturnConversionStart(moduleName, methodNameStr.c_str());
+    TurboModulePerfLogger::syncMethodCallExecutionEnd(moduleName, methodNameStr.c_str());
+    TurboModulePerfLogger::syncMethodCallReturnConversionStart(moduleName, methodNameStr.c_str());
 
     void *rawResult;
     [inv getReturnValue:&rawResult];
@@ -366,7 +364,7 @@ jsi::Value ObjCTurboModule::performMethodInvocation(
     nativeInvoker_->invokeSync([block]() -> void { block(); });
   } else {
     asyncCallCounter = getUniqueId();
-    TurboModulePerfLogger::getInstance().asyncMethodCallDispatch(moduleName, methodName);
+    TurboModulePerfLogger::asyncMethodCallDispatch(moduleName, methodName);
     nativeInvoker_->invokeAsync([block]() -> void { block(); });
     return jsi::Value::undefined();
   }
@@ -408,7 +406,7 @@ jsi::Value ObjCTurboModule::performMethodInvocation(
       throw std::runtime_error("convertInvocationResultToJSIValue: PromiseKind wasn't handled properly.");
   }
 
-  TurboModulePerfLogger::getInstance().syncMethodCallReturnConversionEnd(moduleName, methodName);
+  TurboModulePerfLogger::syncMethodCallReturnConversionEnd(moduleName, methodName);
   return returnValue;
 }
 
@@ -483,9 +481,9 @@ NSInvocation *ObjCTurboModule::getMethodInvocation(
   const id<RCTTurboModule> module = instance_;
 
   if (isMethodSync(returnType)) {
-    TurboModulePerfLogger::getInstance().syncMethodCallArgConversionStart(moduleName, methodName);
+    TurboModulePerfLogger::syncMethodCallArgConversionStart(moduleName, methodName);
   } else {
-    TurboModulePerfLogger::getInstance().asyncMethodCallArgConversionStart(moduleName, methodName);
+    TurboModulePerfLogger::asyncMethodCallArgConversionStart(moduleName, methodName);
   }
 
   NSInvocation *inv =
@@ -590,9 +588,9 @@ NSInvocation *ObjCTurboModule::getMethodInvocation(
   }
 
   if (isMethodSync(returnType)) {
-    TurboModulePerfLogger::getInstance().syncMethodCallArgConversionEnd(moduleName, methodName);
+    TurboModulePerfLogger::syncMethodCallArgConversionEnd(moduleName, methodName);
   } else {
-    TurboModulePerfLogger::getInstance().asyncMethodCallArgConversionEnd(moduleName, methodName);
+    TurboModulePerfLogger::asyncMethodCallArgConversionEnd(moduleName, methodName);
   }
 
   return inv;
@@ -623,9 +621,9 @@ jsi::Value ObjCTurboModule::invokeObjCMethod(
   const char *methodName = methodNameStr.c_str();
 
   if (isMethodSync(returnType)) {
-    TurboModulePerfLogger::getInstance().syncMethodCallStart(moduleName, methodName);
+    TurboModulePerfLogger::syncMethodCallStart(moduleName, methodName);
   } else {
-    TurboModulePerfLogger::getInstance().asyncMethodCallStart(moduleName, methodName);
+    TurboModulePerfLogger::asyncMethodCallStart(moduleName, methodName);
   }
 
   NSMutableArray *retainedObjectsForInvocation = [NSMutableArray arrayWithCapacity:count + 2];
@@ -647,9 +645,9 @@ jsi::Value ObjCTurboModule::invokeObjCMethod(
       : performMethodInvocation(runtime, returnType, methodName, inv, retainedObjectsForInvocation);
 
   if (isMethodSync(returnType)) {
-    TurboModulePerfLogger::getInstance().syncMethodCallEnd(moduleName, methodName);
+    TurboModulePerfLogger::syncMethodCallEnd(moduleName, methodName);
   } else {
-    TurboModulePerfLogger::getInstance().asyncMethodCallEnd(moduleName, methodName);
+    TurboModulePerfLogger::asyncMethodCallEnd(moduleName, methodName);
   }
 
   return returnValue;

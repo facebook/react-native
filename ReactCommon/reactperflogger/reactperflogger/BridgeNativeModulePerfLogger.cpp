@@ -5,11 +5,11 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#include "TurboModulePerfLogger.h"
+#include "BridgeNativeModulePerfLogger.h"
 
 namespace facebook {
 namespace react {
-namespace TurboModulePerfLogger {
+namespace BridgeNativeModulePerfLogger {
 
 std::unique_ptr<NativeModulePerfLogger> g_perfLogger = nullptr;
 
@@ -315,6 +315,6 @@ void asyncMethodCallExecutionFail(
   }
 }
 
-} // namespace TurboModulePerfLogger
+} // namespace BridgeNativeModulePerfLogger
 } // namespace react
 } // namespace facebook

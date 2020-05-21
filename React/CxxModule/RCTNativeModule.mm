@@ -15,7 +15,7 @@
 #import <React/RCTLog.h>
 #import <React/RCTProfile.h>
 #import <React/RCTUtils.h>
-#import <reactperflogger/NativeModulePerfLogger.h>
+#import <reactperflogger/BridgeNativeModulePerfLogger.h>
 
 #ifdef WITH_FBSYSTRACE
 #include <fbsystrace.h>
@@ -80,10 +80,10 @@ void RCTNativeModule::invoke(unsigned int methodId, folly::dynamic &&params, int
   const bool isSyncModule = queue == RCTJSThread;
 
   if (isSyncModule) {
-    NativeModulePerfLogger::getInstance().syncMethodCallStart(moduleName, methodName);
-    NativeModulePerfLogger::getInstance().syncMethodCallArgConversionStart(moduleName, methodName);
+    BridgeNativeModulePerfLogger::syncMethodCallStart(moduleName, methodName);
+    BridgeNativeModulePerfLogger::syncMethodCallArgConversionStart(moduleName, methodName);
   } else {
-    NativeModulePerfLogger::getInstance().asyncMethodCallStart(moduleName, methodName);
+    BridgeNativeModulePerfLogger::asyncMethodCallStart(moduleName, methodName);
   }
 
   // capture by weak pointer so that we can safely use these variables in a callback
@@ -105,9 +105,9 @@ void RCTNativeModule::invoke(unsigned int methodId, folly::dynamic &&params, int
 
   if (isSyncModule) {
     block();
-    NativeModulePerfLogger::getInstance().syncMethodCallReturnConversionEnd(moduleName, methodName);
+    BridgeNativeModulePerfLogger::syncMethodCallReturnConversionEnd(moduleName, methodName);
   } else if (queue) {
-    NativeModulePerfLogger::getInstance().asyncMethodCallDispatch(moduleName, methodName);
+    BridgeNativeModulePerfLogger::asyncMethodCallDispatch(moduleName, methodName);
     dispatch_async(queue, block);
   }
 
@@ -121,9 +121,9 @@ void RCTNativeModule::invoke(unsigned int methodId, folly::dynamic &&params, int
 #endif
 
   if (isSyncModule) {
-    NativeModulePerfLogger::getInstance().syncMethodCallEnd(moduleName, methodName);
+    BridgeNativeModulePerfLogger::syncMethodCallEnd(moduleName, methodName);
   } else {
-    NativeModulePerfLogger::getInstance().asyncMethodCallEnd(moduleName, methodName);
+    BridgeNativeModulePerfLogger::asyncMethodCallEnd(moduleName, methodName);
   }
 }
 
@@ -147,7 +147,7 @@ static MethodCallResult invokeInner(
        * call at a time, and when we call syncMethodCallFail, that one call should terminate. This is also an
        * exceptional scenario, so it shouldn't occur often.
        */
-      NativeModulePerfLogger::getInstance().syncMethodCallFail("N/A", "N/A");
+      BridgeNativeModulePerfLogger::syncMethodCallFail("N/A", "N/A");
     }
     return folly::none;
   }
@@ -161,40 +161,38 @@ static MethodCallResult invokeInner(
   const char *methodName = moduleData.methods[methodId].JSMethodName;
 
   if (context == Async) {
-    NativeModulePerfLogger::getInstance().asyncMethodCallExecutionStart(moduleName, methodName, (int32_t)callId);
-    NativeModulePerfLogger::getInstance().asyncMethodCallExecutionArgConversionStart(
-        moduleName, methodName, (int32_t)callId);
+    BridgeNativeModulePerfLogger::asyncMethodCallExecutionStart(moduleName, methodName, (int32_t)callId);
+    BridgeNativeModulePerfLogger::asyncMethodCallExecutionArgConversionStart(moduleName, methodName, (int32_t)callId);
   }
 
   NSArray *objcParams = convertFollyDynamicToId(params);
 
   if (context == Sync) {
-    NativeModulePerfLogger::getInstance().syncMethodCallArgConversionEnd(moduleName, methodName);
+    BridgeNativeModulePerfLogger::syncMethodCallArgConversionEnd(moduleName, methodName);
   }
 
   @try {
     if (context == Sync) {
-      NativeModulePerfLogger::getInstance().syncMethodCallExecutionStart(moduleName, methodName);
+      BridgeNativeModulePerfLogger::syncMethodCallExecutionStart(moduleName, methodName);
     } else {
-      NativeModulePerfLogger::getInstance().asyncMethodCallExecutionArgConversionEnd(
-          moduleName, methodName, (int32_t)callId);
+      BridgeNativeModulePerfLogger::asyncMethodCallExecutionArgConversionEnd(moduleName, methodName, (int32_t)callId);
     }
 
     id result = [method invokeWithBridge:bridge module:moduleData.instance arguments:objcParams];
 
     if (context == Sync) {
-      NativeModulePerfLogger::getInstance().syncMethodCallExecutionEnd(moduleName, methodName);
-      NativeModulePerfLogger::getInstance().syncMethodCallReturnConversionStart(moduleName, methodName);
+      BridgeNativeModulePerfLogger::syncMethodCallExecutionEnd(moduleName, methodName);
+      BridgeNativeModulePerfLogger::syncMethodCallReturnConversionStart(moduleName, methodName);
     } else {
-      NativeModulePerfLogger::getInstance().asyncMethodCallExecutionEnd(moduleName, methodName, (int32_t)callId);
+      BridgeNativeModulePerfLogger::asyncMethodCallExecutionEnd(moduleName, methodName, (int32_t)callId);
     }
 
     return convertIdToFollyDynamic(result);
   } @catch (NSException *exception) {
     if (context == Sync) {
-      NativeModulePerfLogger::getInstance().syncMethodCallFail(moduleName, methodName);
+      BridgeNativeModulePerfLogger::syncMethodCallFail(moduleName, methodName);
     } else {
-      NativeModulePerfLogger::getInstance().asyncMethodCallExecutionFail(moduleName, methodName, (int32_t)callId);
+      BridgeNativeModulePerfLogger::asyncMethodCallExecutionFail(moduleName, methodName, (int32_t)callId);
     }
 
     // Pass on JS exceptions

@@ -224,12 +224,12 @@ static Class getFallbackClassFromName(const char *name)
 {
   auto turboModuleLookup = _turboModuleCache.find(moduleName);
   if (turboModuleLookup != _turboModuleCache.end()) {
-    TurboModulePerfLogger::getInstance().moduleJSRequireBeginningCacheHit(moduleName);
-    TurboModulePerfLogger::getInstance().moduleJSRequireBeginningEnd(moduleName);
+    TurboModulePerfLogger::moduleJSRequireBeginningCacheHit(moduleName);
+    TurboModulePerfLogger::moduleJSRequireBeginningEnd(moduleName);
     return turboModuleLookup->second;
   }
 
-  TurboModulePerfLogger::getInstance().moduleJSRequireBeginningEnd(moduleName);
+  TurboModulePerfLogger::moduleJSRequireBeginningEnd(moduleName);
 
   /**
    * Step 1: Look for pure C++ modules.
@@ -237,15 +237,15 @@ static Class getFallbackClassFromName(const char *name)
    */
   if ([_delegate respondsToSelector:@selector(getTurboModule:jsInvoker:)]) {
     int32_t moduleId = getUniqueId();
-    TurboModulePerfLogger::getInstance().moduleCreateStart(moduleName, moduleId);
+    TurboModulePerfLogger::moduleCreateStart(moduleName, moduleId);
     auto turboModule = [_delegate getTurboModule:moduleName jsInvoker:_jsInvoker];
     if (turboModule != nullptr) {
       _turboModuleCache.insert({moduleName, turboModule});
-      TurboModulePerfLogger::getInstance().moduleCreateEnd(moduleName, moduleId);
+      TurboModulePerfLogger::moduleCreateEnd(moduleName, moduleId);
       return turboModule;
     }
 
-    TurboModulePerfLogger::getInstance().moduleCreateFail(moduleName, moduleId);
+    TurboModulePerfLogger::moduleCreateFail(moduleName, moduleId);
   }
 
   /**
@@ -253,7 +253,7 @@ static Class getFallbackClassFromName(const char *name)
    */
   id<RCTTurboModule> module = [self provideRCTTurboModule:moduleName];
 
-  TurboModulePerfLogger::getInstance().moduleJSRequireEndingStart(moduleName);
+  TurboModulePerfLogger::moduleJSRequireEndingStart(moduleName);
 
   // If we request that a TurboModule be created, its respective ObjC class must exist
   // If the class doesn't exist, then provideRCTTurboModule returns nil
@@ -338,13 +338,13 @@ static Class getFallbackClassFromName(const char *name)
     moduleHolder = &_turboModuleHolders[moduleName];
   }
 
-  TurboModulePerfLogger::getInstance().moduleCreateStart(moduleName, moduleHolder->getModuleId());
+  TurboModulePerfLogger::moduleCreateStart(moduleName, moduleHolder->getModuleId());
   id<RCTTurboModule> module = [self _provideRCTTurboModule:moduleName moduleHolder:moduleHolder shouldPerfLog:YES];
 
   if (module) {
-    TurboModulePerfLogger::getInstance().moduleCreateEnd(moduleName, moduleHolder->getModuleId());
+    TurboModulePerfLogger::moduleCreateEnd(moduleName, moduleHolder->getModuleId());
   } else {
-    TurboModulePerfLogger::getInstance().moduleCreateFail(moduleName, moduleHolder->getModuleId());
+    TurboModulePerfLogger::moduleCreateFail(moduleName, moduleHolder->getModuleId());
   }
 
   return module;
@@ -361,7 +361,7 @@ static Class getFallbackClassFromName(const char *name)
 
     if (moduleHolder->isDoneCreatingModule()) {
       if (shouldPerfLog) {
-        TurboModulePerfLogger::getInstance().moduleCreateCacheHit(moduleName, moduleHolder->getModuleId());
+        TurboModulePerfLogger::moduleCreateCacheHit(moduleName, moduleHolder->getModuleId());
       }
       return moduleHolder->getModule();
     }
@@ -451,7 +451,7 @@ static Class getFallbackClassFromName(const char *name)
    * Step 2b: Ask hosting application/delegate to instantiate this class
    */
 
-  TurboModulePerfLogger::getInstance().moduleCreateConstructStart(moduleName, moduleId);
+  TurboModulePerfLogger::moduleCreateConstructStart(moduleName, moduleId);
   if ([_delegate respondsToSelector:@selector(getModuleInstanceFromClass:)]) {
     std::lock_guard<std::mutex> delegateGuard(_turboModuleManagerDelegateMutex);
 
@@ -459,9 +459,9 @@ static Class getFallbackClassFromName(const char *name)
   } else {
     module = [moduleClass new];
   }
-  TurboModulePerfLogger::getInstance().moduleCreateConstructEnd(moduleName, moduleId);
+  TurboModulePerfLogger::moduleCreateConstructEnd(moduleName, moduleId);
 
-  TurboModulePerfLogger::getInstance().moduleCreateSetUpStart(moduleName, moduleId);
+  TurboModulePerfLogger::moduleCreateSetUpStart(moduleName, moduleId);
 
   if ([module respondsToSelector:@selector(setTurboModuleLookupDelegate:)]) {
     [module setTurboModuleLookupDelegate:self];
@@ -578,7 +578,7 @@ static Class getFallbackClassFromName(const char *name)
                     object:_bridge
                   userInfo:@{@"module" : module, @"bridge" : RCTNullIfNil([_bridge parentBridge])}];
 
-  TurboModulePerfLogger::getInstance().moduleCreateSetUpEnd(moduleName, moduleId);
+  TurboModulePerfLogger::moduleCreateSetUpEnd(moduleName, moduleId);
 
   return module;
 }
@@ -658,7 +658,7 @@ static Class getFallbackClassFromName(const char *name)
 
     auto moduleName = name.c_str();
 
-    TurboModulePerfLogger::getInstance().moduleJSRequireBeginningStart(moduleName);
+    TurboModulePerfLogger::moduleJSRequireBeginningStart(moduleName);
 
     __strong __typeof(self) strongSelf = weakSelf;
 
@@ -680,9 +680,9 @@ static Class getFallbackClassFromName(const char *name)
     }
 
     if (turboModule) {
-      TurboModulePerfLogger::getInstance().moduleJSRequireEndingEnd(moduleName);
+      TurboModulePerfLogger::moduleJSRequireEndingEnd(moduleName);
     } else {
-      TurboModulePerfLogger::getInstance().moduleJSRequireEndingFail(moduleName);
+      TurboModulePerfLogger::moduleJSRequireEndingFail(moduleName);
     }
 
     return turboModule;

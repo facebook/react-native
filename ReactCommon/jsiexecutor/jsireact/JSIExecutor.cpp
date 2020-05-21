@@ -16,7 +16,7 @@
 #include <glog/logging.h>
 #include <jsi/JSIDynamic.h>
 #include <jsi/instrumentation.h>
-#include <reactperflogger/NativeModulePerfLogger.h>
+#include <reactperflogger/BridgeNativeModulePerfLogger.h>
 
 #include <sstream>
 #include <stdexcept>
@@ -385,7 +385,7 @@ void JSIExecutor::callNativeModules(const Value &queue, bool isEndOfBatch) {
     .getPropertyAsFunction(*runtime_, "stringify").call(*runtime_, queue)
     .getString(*runtime_).utf8(*runtime_);
 #endif
-  NativeModulePerfLogger::getInstance().asyncMethodCallBatchPreprocessStart();
+  BridgeNativeModulePerfLogger::asyncMethodCallBatchPreprocessStart();
 
   delegate_->callNativeModules(
       *this, dynamicFromValue(*runtime_, queue), isEndOfBatch);
@@ -453,10 +453,10 @@ Value JSIExecutor::nativeCallSyncHook(const Value *args, size_t count) {
     moduleName = moduleRegistry_->getModuleName(moduleId);
     methodName = moduleRegistry_->getModuleSyncMethodName(moduleId, methodId);
 
-    NativeModulePerfLogger::getInstance().syncMethodCallStart(
+    BridgeNativeModulePerfLogger::syncMethodCallStart(
         moduleName.c_str(), methodName.c_str());
 
-    NativeModulePerfLogger::getInstance().syncMethodCallArgConversionStart(
+    BridgeNativeModulePerfLogger::syncMethodCallArgConversionStart(
         moduleName.c_str(), methodName.c_str());
   }
 
@@ -485,9 +485,9 @@ Value JSIExecutor::nativeCallSyncHook(const Value *args, size_t count) {
   Value returnValue = valueFromDynamic(*runtime_, result.value());
 
   if (moduleRegistry_) {
-    NativeModulePerfLogger::getInstance().syncMethodCallReturnConversionEnd(
+    BridgeNativeModulePerfLogger::syncMethodCallReturnConversionEnd(
         moduleName.c_str(), methodName.c_str());
-    NativeModulePerfLogger::getInstance().syncMethodCallEnd(
+    BridgeNativeModulePerfLogger::syncMethodCallEnd(
         moduleName.c_str(), methodName.c_str());
   }
 

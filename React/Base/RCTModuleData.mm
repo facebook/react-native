@@ -11,7 +11,7 @@
 #import <atomic>
 #import <mutex>
 
-#import <reactperflogger/NativeModulePerfLogger.h>
+#import <reactperflogger/BridgeNativeModulePerfLogger.h>
 
 #import "RCTBridge+Private.h"
 #import "RCTBridge.h"
@@ -142,9 +142,9 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init);
         }
         RCT_PROFILE_BEGIN_EVENT(RCTProfileTagAlways, @"[RCTModuleData setUpInstanceAndBridge] Create module", nil);
 
-        NativeModulePerfLogger::getInstance().moduleCreateConstructStart([moduleName UTF8String], requestId);
+        BridgeNativeModulePerfLogger::moduleCreateConstructStart([moduleName UTF8String], requestId);
         _instance = _moduleProvider ? _moduleProvider() : nil;
-        NativeModulePerfLogger::getInstance().moduleCreateConstructEnd([moduleName UTF8String], requestId);
+        BridgeNativeModulePerfLogger::moduleCreateConstructEnd([moduleName UTF8String], requestId);
 
         RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"");
         if (!_instance) {
@@ -166,7 +166,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init);
     }
 
     if (_instance) {
-      NativeModulePerfLogger::getInstance().moduleCreateSetUpStart([moduleName UTF8String], requestId);
+      BridgeNativeModulePerfLogger::moduleCreateSetUpStart([moduleName UTF8String], requestId);
     }
 
     if (shouldSetup) {
@@ -199,7 +199,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init);
   }
 
   if (_instance) {
-    NativeModulePerfLogger::getInstance().moduleCreateSetUpEnd([moduleName UTF8String], requestId);
+    BridgeNativeModulePerfLogger::moduleCreateSetUpEnd([moduleName UTF8String], requestId);
   }
 }
 
@@ -318,7 +318,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init);
 {
   NSString *moduleName = [self name];
   int32_t requestId = getUniqueId();
-  NativeModulePerfLogger::getInstance().moduleCreateStart([moduleName UTF8String], requestId);
+  BridgeNativeModulePerfLogger::moduleCreateStart([moduleName UTF8String], requestId);
 
   if (!_setupComplete) {
     RCT_PROFILE_BEGIN_EVENT(
@@ -343,13 +343,13 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init);
     }
     RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"");
   } else {
-    NativeModulePerfLogger::getInstance().moduleCreateCacheHit([moduleName UTF8String], requestId);
+    BridgeNativeModulePerfLogger::moduleCreateCacheHit([moduleName UTF8String], requestId);
   }
 
   if (_instance) {
-    NativeModulePerfLogger::getInstance().moduleCreateEnd([moduleName UTF8String], requestId);
+    BridgeNativeModulePerfLogger::moduleCreateEnd([moduleName UTF8String], requestId);
   } else {
-    NativeModulePerfLogger::getInstance().moduleCreateFail([moduleName UTF8String], requestId);
+    BridgeNativeModulePerfLogger::moduleCreateFail([moduleName UTF8String], requestId);
   }
   return _instance;
 }
@@ -388,7 +388,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init);
      *  - Therefore, this is the first statement that executes after the NativeModule is created/initialized in a JS
      *    require.
      */
-    NativeModulePerfLogger::getInstance().moduleJSRequireEndingStart([moduleName UTF8String]);
+    BridgeNativeModulePerfLogger::moduleJSRequireEndingStart([moduleName UTF8String]);
     if (_requiresMainQueueSetup) {
       if (!RCTIsMainQueue()) {
         RCTLogWarn(@"Required dispatch_sync to load constants for %@. This may lead to deadlocks", _moduleClass);
@@ -406,7 +406,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init);
      * If a NativeModule doesn't have constants, it isn't eagerly loaded until its methods are first invoked.
      * Therefore, we should immediately start JSRequireEnding
      */
-    NativeModulePerfLogger::getInstance().moduleJSRequireEndingStart([moduleName UTF8String]);
+    BridgeNativeModulePerfLogger::moduleJSRequireEndingStart([moduleName UTF8String]);
   }
 }
 

@@ -6,7 +6,7 @@
  */
 
 #include "jsireact/JSINativeModules.h"
-#include <reactperflogger/NativeModulePerfLogger.h>
+#include <reactperflogger/BridgeNativeModulePerfLogger.h>
 
 #include <glog/logging.h>
 
@@ -32,22 +32,21 @@ Value JSINativeModules::getModule(Runtime &rt, const PropNameID &name) {
 
   std::string moduleName = name.utf8(rt);
 
-  NativeModulePerfLogger::getInstance().moduleJSRequireBeginningStart(
+  BridgeNativeModulePerfLogger::moduleJSRequireBeginningStart(
       moduleName.c_str());
 
   const auto it = m_objects.find(moduleName);
   if (it != m_objects.end()) {
-    NativeModulePerfLogger::getInstance().moduleJSRequireBeginningCacheHit(
+    BridgeNativeModulePerfLogger::moduleJSRequireBeginningCacheHit(
         moduleName.c_str());
-    NativeModulePerfLogger::getInstance().moduleJSRequireBeginningEnd(
+    BridgeNativeModulePerfLogger::moduleJSRequireBeginningEnd(
         moduleName.c_str());
     return Value(rt, it->second);
   }
 
   auto module = createModule(rt, moduleName);
   if (!module.hasValue()) {
-    NativeModulePerfLogger::getInstance().moduleJSRequireEndingFail(
-        moduleName.c_str());
+    BridgeNativeModulePerfLogger::moduleJSRequireEndingFail(moduleName.c_str());
     // Allow lookup to continue in the objects own properties, which allows for
     // overrides of NativeModules
     return nullptr;
@@ -57,8 +56,7 @@ Value JSINativeModules::getModule(Runtime &rt, const PropNameID &name) {
       m_objects.emplace(std::move(moduleName), std::move(*module)).first;
 
   Value ret = Value(rt, result->second);
-  NativeModulePerfLogger::getInstance().moduleJSRequireEndingEnd(
-      moduleName.c_str());
+  BridgeNativeModulePerfLogger::moduleJSRequireEndingEnd(moduleName.c_str());
   return ret;
 }
 

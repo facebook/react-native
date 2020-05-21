@@ -5,6 +5,7 @@ rn_xplat_cxx_library(
     srcs = glob(["**/*.cpp"]),
     header_namespace = "",
     exported_headers = {
+        "reactperflogger/BridgeNativeModulePerfLogger.h": "reactperflogger/BridgeNativeModulePerfLogger.h",
         "reactperflogger/NativeModulePerfLogger.h": "reactperflogger/NativeModulePerfLogger.h",
     },
     compiler_flags = [
