@@ -8,6 +8,7 @@
 #pragma once
 
 #include <react/components/art/Element.h>
+#include <react/components/art/primitives.h>
 #include <react/graphics/Geometry.h>
 #include <functional>
 #include <memory>
@@ -31,7 +32,7 @@ class Shape : public Element {
       Float strokeWidth,
       int strokeCap,
       int strokeJoin)
-      : Element(2, opacity, transform),
+      : Element(ARTElement::Shape, opacity, transform),
         d(d),
         stroke(stroke),
         strokeDash(strokeDash),

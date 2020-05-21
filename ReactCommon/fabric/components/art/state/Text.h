@@ -9,8 +9,10 @@
 
 #include <react/components/art/Element.h>
 #include <react/components/art/Shape.h>
+#include <react/components/art/primitives.h>
 #include <react/graphics/Geometry.h>
 #include <functional>
+
 #include <memory>
 
 namespace facebook {
@@ -22,7 +24,7 @@ namespace react {
 class Text : public Shape {
  public:
   using Shared = std::shared_ptr<const Text>;
-  Text(int elementType) : Shape(){};
+  Text(ARTElement elementType) : Shape(){};
   Text() = default;
   virtual ~Text(){};
 

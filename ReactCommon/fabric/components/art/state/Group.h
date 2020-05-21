@@ -8,6 +8,7 @@
 #pragma once
 
 #include <react/components/art/Element.h>
+#include <react/components/art/primitives.h>
 #include <react/graphics/Geometry.h>
 #include <functional>
 #include <memory>
@@ -26,7 +27,7 @@ class Group : public Element {
       std::vector<Float> transform,
       Element::ListOfShared elements,
       std::vector<Float> clipping)
-      : Element(1, opacity, transform),
+      : Element(ARTElement::Group, opacity, transform),
         elements(elements),
         clipping(clipping){};
   Group() = default;

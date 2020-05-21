@@ -9,7 +9,7 @@
 
 #include <folly/Hash.h>
 #include <folly/Optional.h>
-#include <react/components/art/Primitives.h>
+#include <react/components/art/primitives.h>
 #include <react/core/Sealable.h>
 #include <react/core/ShadowNode.h>
 #include <react/debug/DebugStringConvertible.h>
@@ -30,11 +30,11 @@ class Element {
   using ListOfShared = better::small_vector<Element::Shared, 0>;
 
   Element() = default;
-  Element(int elementType, Float opacity, std::vector<Float> transform)
+  Element(ARTElement elementType, Float opacity, std::vector<Float> transform)
       : elementType(elementType), opacity(opacity), transform(transform){};
   virtual ~Element(){};
 
-  int elementType;
+  ARTElement elementType;
   Float opacity;
   std::vector<Float> transform;
 

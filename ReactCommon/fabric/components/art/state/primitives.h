@@ -13,7 +13,7 @@
 namespace facebook {
 namespace react {
 
-enum class ElementType { Shape, Text, Group };
+enum class ARTElement { Shape, Text, Group };
 
 } // namespace react
 } // namespace facebook
