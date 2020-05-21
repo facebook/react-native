@@ -1741,7 +1741,7 @@ namespace facebook {
 
     
     static facebook::jsi::Value __hostFunction_NativeNetworkingAndroidSpecJSI_sendRequest(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
-      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, VoidKind, "sendRequest", @selector(sendRequest:url:requestId:headers:data:responseType:useIncrementalUpdates:timeout:withCredentials:), args, count);
+      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, VoidKind, "sendRequest", @selector(sendRequest:url:requestId:headers:data:responseType:useIncrementalUpdates:timeout:withCredentials:useImprovedEvent:), args, count);
     }
 
     static facebook::jsi::Value __hostFunction_NativeNetworkingAndroidSpecJSI_abortRequest(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {

@@ -38,7 +38,7 @@ public abstract class NativeNetworkingAndroidSpec extends ReactContextBaseJavaMo
   @ReactMethod
   public abstract void sendRequest(String method, String url, double requestId,
       ReadableArray headers, ReadableMap data, String responseType, boolean useIncrementalUpdates,
-      double timeout, boolean withCredentials);
+      double timeout, boolean withCredentials, boolean useImprovedEvent);
 
   @ReactMethod
   public abstract void addListener(String eventName);

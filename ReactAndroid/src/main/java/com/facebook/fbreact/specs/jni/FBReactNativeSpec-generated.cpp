@@ -1501,7 +1501,7 @@ namespace facebook {
 
     
     static facebook::jsi::Value __hostFunction_NativeNetworkingAndroidSpecJSI_sendRequest(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
-      return static_cast<JavaTurboModule&>(turboModule).invokeJavaMethod(rt, VoidKind, "sendRequest", "(Ljava/lang/String;Ljava/lang/String;DLcom/facebook/react/bridge/ReadableArray;Lcom/facebook/react/bridge/ReadableMap;Ljava/lang/String;ZDZ)V", args, count);
+      return static_cast<JavaTurboModule&>(turboModule).invokeJavaMethod(rt, VoidKind, "sendRequest", "(Ljava/lang/String;Ljava/lang/String;DLcom/facebook/react/bridge/ReadableArray;Lcom/facebook/react/bridge/ReadableMap;Ljava/lang/String;ZDZZ)V", args, count);
     }
 
     static facebook::jsi::Value __hostFunction_NativeNetworkingAndroidSpecJSI_abortRequest(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {

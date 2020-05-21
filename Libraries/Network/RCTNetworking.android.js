@@ -56,6 +56,7 @@ class RCTNetworking extends NativeEventEmitter {
     timeout: number,
     callback: (requestId: number) => mixed,
     withCredentials: boolean,
+    improvedEvent?: boolean = false,
   ) {
     const body = convertRequestBody(data);
     if (body && body.formData) {
@@ -75,6 +76,7 @@ class RCTNetworking extends NativeEventEmitter {
       incrementalUpdates,
       timeout,
       withCredentials,
+      improvedEvent,
     );
     callback(requestId);
   }

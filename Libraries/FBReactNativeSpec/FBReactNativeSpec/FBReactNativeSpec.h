@@ -1823,7 +1823,8 @@ namespace facebook {
        responseType:(NSString *)responseType
 useIncrementalUpdates:(BOOL)useIncrementalUpdates
             timeout:(double)timeout
-    withCredentials:(BOOL)withCredentials;
+    withCredentials:(BOOL)withCredentials
+   useImprovedEvent:(BOOL)useImprovedEvent;
 - (void)abortRequest:(double)requestId;
 - (void)clearCookies:(RCTResponseSenderBlock)callback;
 - (void)addListener:(NSString *)eventName;
@@ -1855,6 +1856,7 @@ namespace JS {
       bool incrementalUpdates() const;
       double timeout() const;
       bool withCredentials() const;
+      bool improvedEvent() const;
 
       SpecSendRequestQuery(NSDictionary *const v) : _v(v) {}
     private:
@@ -3591,6 +3593,11 @@ inline double JS::NativeNetworkingIOS::SpecSendRequestQuery::timeout() const
 inline bool JS::NativeNetworkingIOS::SpecSendRequestQuery::withCredentials() const
 {
   id const p = _v[@"withCredentials"];
+  return RCTBridgingToBool(p);
+}
+inline bool JS::NativeNetworkingIOS::SpecSendRequestQuery::improvedEvent() const
+{
+  id const p = _v[@"improvedEvent"];
   return RCTBridgingToBool(p);
 }
 inline JS::NativePlatformConstantsAndroid::ConstantsReactNativeVersion::Builder::Builder(const Input i) : _factory(^{
