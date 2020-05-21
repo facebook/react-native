@@ -7,8 +7,9 @@
 
 #pragma once
 
-#include <folly/Optional.h>
 #include <react/components/art/ARTSurfaceViewProps.h>
+#include <react/components/art/ARTSurfaceViewState.h>
+#include <react/components/art/Element.h>
 #include <react/components/view/ConcreteViewShadowNode.h>
 #include <react/core/ConcreteShadowNode.h>
 #include <react/core/LayoutContext.h>
@@ -19,16 +20,17 @@ namespace react {
 
 extern const char ARTSurfaceViewComponentName[];
 
-using ParagraphEventEmitter = ViewEventEmitter;
+using ARTSurfaceViewEventEmitter = ViewEventEmitter;
 
 /*
- * `ShadowNode` for <Paragraph> component, represents <View>-like component
- * containing and displaying text. Text content is represented as nested <Text>
- * and <RawText> components.
+ * `ShadowNode` for <ARTSurfaceViewState> component, represents <View>-like
+ * component containing that will be used to display ARTElements.
  */
 class ARTSurfaceViewShadowNode : public ConcreteViewShadowNode<
                                      ARTSurfaceViewComponentName,
-                                     ARTSurfaceViewProps> {
+                                     ARTSurfaceViewProps,
+                                     ARTSurfaceViewEventEmitter,
+                                     ARTSurfaceViewState> {
  public:
   using ConcreteViewShadowNode::ConcreteViewShadowNode;
 
@@ -37,6 +39,23 @@ class ARTSurfaceViewShadowNode : public ConcreteViewShadowNode<
     traits.set(ShadowNodeTraits::Trait::LeafYogaNode);
     return traits;
   }
+
+  class Content final {
+   public:
+    Element::ListOfShared elements{};
+  };
+
+  void layout(LayoutContext layoutContext) override;
+
+ private:
+  Content const &getContent() const;
+
+  void updateStateIfNeeded(Content const &content);
+
+  /*
+   * Cached content of the subtree started from the node.
+   */
+  mutable better::optional<Content> content_{};
 };
 
 } // namespace react
