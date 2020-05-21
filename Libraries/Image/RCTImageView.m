@@ -289,17 +289,17 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
 #if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
       _imageView.contentMode = UIViewContentModeScaleToFill;
 #else // [TODO(macOS ISS#2323203)
-      self.imageScaling = NSImageScaleAxesIndependently;
+      _imageView.imageScaling = NSImageScaleAxesIndependently;
 #endif // ]TODO(macOS ISS#2323203)
     } else {
 #if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
       _imageView.contentMode = (UIViewContentMode)resizeMode;
 #else // [TODO(macOS ISS#2323203)
-      // This relies on having previously resampled the image to a size that exceeds the iamge view.
+      // This relies on having previously resampled the image to a size that exceeds the image view.
       if (resizeMode == RCTResizeModeCover) {
         resizeMode = RCTResizeModeCenter;
       }
-      self.imageScaling = (NSImageScaling)resizeMode;
+      _imageView.imageScaling = (NSImageScaling)resizeMode;
 #endif // ]TODO(macOS ISS#2323203)
     }
 
