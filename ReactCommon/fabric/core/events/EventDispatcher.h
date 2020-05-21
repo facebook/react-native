@@ -10,12 +10,13 @@
 #include <array>
 #include <memory>
 
+#include <react/core/BatchedEventQueue.h>
 #include <react/core/EventBeat.h>
 #include <react/core/EventPipe.h>
 #include <react/core/EventPriority.h>
-#include <react/core/EventQueue.h>
 #include <react/core/StatePipe.h>
 #include <react/core/StateUpdate.h>
+#include <react/core/UnbatchedEventQueue.h>
 
 namespace facebook {
 namespace react {
@@ -52,7 +53,10 @@ class EventDispatcher {
  private:
   EventQueue const &getEventQueue(EventPriority priority) const;
 
-  std::array<std::unique_ptr<EventQueue>, 4> eventQueues_;
+  std::unique_ptr<UnbatchedEventQueue> synchronousUnbatchedQueue_;
+  std::unique_ptr<BatchedEventQueue> synchronousBatchedQueue_;
+  std::unique_ptr<UnbatchedEventQueue> asynchronousUnbatchedQueue_;
+  std::unique_ptr<BatchedEventQueue> asynchronousBatchedQueue_;
 };
 
 } // namespace react
