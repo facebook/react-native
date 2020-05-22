@@ -12,6 +12,24 @@
 namespace facebook {
 namespace react {
 
+bool ARTGroup::operator==(const ARTElement &rhs) const {
+  if (rhs.elementType != ARTElementType::Group) {
+    return false;
+  }
+  auto group = (const ARTGroup &)(rhs);
+  return std::tie(elementType, opacity, transform, clipping) ==
+      std::tie(
+             group.elementType,
+             group.opacity,
+             group.transform,
+             group.clipping) &&
+      elements == group.elements;
+}
+
+bool ARTGroup::operator!=(const ARTElement &rhs) const {
+  return !(*this == rhs);
+}
+
 #ifdef ANDROID
 folly::dynamic ARTGroup::getDynamic() const {
   return toDynamic(*this);

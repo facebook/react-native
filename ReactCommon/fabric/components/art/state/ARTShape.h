@@ -51,6 +51,9 @@ class ARTShape : public ARTElement {
   int strokeCap{1};
   int strokeJoin{1};
 
+  bool operator==(const ARTElement &rhs) const override;
+  bool operator!=(const ARTElement &rhs) const override;
+
 #ifdef ANDROID
   folly::dynamic getDynamic() const override;
 #endif

@@ -21,11 +21,11 @@ namespace react {
  */
 class ARTGroup : public ARTElement {
  public:
-  using Shared = std::shared_ptr<const ARTGroup>;
+  using Shared = std::shared_ptr<const ARTElement>;
   ARTGroup(
       Float opacity,
       std::vector<Float> transform,
-      ARTElement::ListOfShared elements,
+      ARTGroup::ListOfShared elements,
       std::vector<Float> clipping)
       : ARTElement(ARTElementType::Group, opacity, transform),
         elements(elements),
@@ -36,6 +36,9 @@ class ARTGroup : public ARTElement {
   ARTElement::ListOfShared elements{};
 
   std::vector<Float> clipping{};
+
+  bool operator==(const ARTElement &rhs) const override;
+  bool operator!=(const ARTElement &rhs) const override;
 
 #ifdef ANDROID
   folly::dynamic getDynamic() const override;

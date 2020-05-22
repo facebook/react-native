@@ -47,11 +47,14 @@ class ARTText : public ARTShape {
             strokeCap,
             strokeJoin),
         alignment(alignment),
-        frame(frame){
-            // elementType = ARTElementType::Text;
-        };
+        frame(frame) {
+    elementType = ARTElementType::Text;
+  };
   ARTText() = default;
   virtual ~ARTText(){};
+
+  bool operator==(const ARTElement &rhs) const override;
+  bool operator!=(const ARTElement &rhs) const override;
 
   ARTTextAlignment alignment{ARTTextAlignment::Default};
   ARTTextFrame frame{};
