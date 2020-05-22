@@ -74,6 +74,8 @@ class FlatListExample extends React.PureComponent<Props, State> {
     empty: false,
     useFlatListItemComponent: false,
     fadingEdgeLength: 0,
+    onPressDisabled: false,
+    textSelectable: true,
   };
 
   _onChangeFilterText = filterText => {
@@ -131,6 +133,8 @@ class FlatListExample extends React.PureComponent<Props, State> {
               {renderSmallSwitchOption(this, 'empty')}
               {renderSmallSwitchOption(this, 'debug')}
               {renderSmallSwitchOption(this, 'useFlatListItemComponent')}
+              {renderSmallSwitchOption(this, 'onPressDisabled')}
+              {renderSmallSwitchOption(this, 'textSelectable')}
               {Platform.OS === 'android' && (
                 <View>
                   <TextInput
@@ -200,6 +204,12 @@ class FlatListExample extends React.PureComponent<Props, State> {
       data: state.data.concat(genItemData(100, state.data.length)),
     }));
   };
+  _onPressCallback = () => {
+    const { onPressDisabled } = this.state;
+    const warning = () => console.log("onPress disabled");
+    const onPressAction = onPressDisabled ? warning : this._pressItem;
+    return onPressAction;
+  }
   _onRefresh = () => Alert.alert('onRefresh: nothing to refresh :P');
   _renderItemComponent = () => {
     const flatListPropKey = this.state.useFlatListItemComponent
@@ -217,9 +227,10 @@ class FlatListExample extends React.PureComponent<Props, State> {
             item={item}
             horizontal={this.state.horizontal}
             fixedHeight={this.state.fixedHeight}
-            onPress={this._pressItem}
+            onPress={this._onPressCallback()}
             onShowUnderlay={separators.highlight}
             onHideUnderlay={separators.unhighlight}
+            textSelectable={this.state.textSelectable}
           />
         );
       },
