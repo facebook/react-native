@@ -59,6 +59,8 @@ type State = {|
   empty: boolean,
   useFlatListItemComponent: boolean,
   fadingEdgeLength: number,
+  onPressDisabled: boolean,
+  textSelectable: boolean,
 |};
 
 class FlatListExample extends React.PureComponent<Props, State> {
@@ -205,11 +207,11 @@ class FlatListExample extends React.PureComponent<Props, State> {
     }));
   };
   _onPressCallback = () => {
-    const { onPressDisabled } = this.state;
-    const warning = () => console.log("onPress disabled");
+    const {onPressDisabled} = this.state;
+    const warning = () => console.log('onPress disabled');
     const onPressAction = onPressDisabled ? warning : this._pressItem;
     return onPressAction;
-  }
+  };
   _onRefresh = () => Alert.alert('onRefresh: nothing to refresh :P');
   _renderItemComponent = () => {
     const flatListPropKey = this.state.useFlatListItemComponent
