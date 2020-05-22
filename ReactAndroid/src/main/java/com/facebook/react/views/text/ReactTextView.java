@@ -24,6 +24,7 @@ import android.view.ViewGroup;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatTextView;
 import androidx.appcompat.widget.TintContextWrapper;
+import android.graphics.Canvas;
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.Arguments;
@@ -57,6 +58,7 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
   private boolean mAdjustsFontSizeToFit = false;
   private int mLinkifyMaskType = 0;
   private boolean mNotifyOnInlineViewLayout;
+  private boolean mSelectableText = false;
 
   private ReactViewBackgroundManager mReactBackgroundManager;
   private Spannable mSpanned;
@@ -422,6 +424,11 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
     }
   }
 
+  public void setSelectableText(boolean value) {
+    mSelectableText = value;
+    invalidate();
+  }
+
   @Override
   public void onAttachedToWindow() {
     super.onAttachedToWindow();
@@ -444,6 +451,12 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
         span.onFinishTemporaryDetach();
       }
     }
+  }
+
+  @Override 
+  public void onDraw(Canvas canvas) {
+    super.onDraw(canvas);
+    setTextIsSelectable(mSelectableText);
   }
 
   @Override

@@ -83,7 +83,7 @@ public abstract class ReactTextAnchorViewManager<T extends View, C extends React
 
   @ReactProp(name = "selectable")
   public void setSelectable(ReactTextView view, boolean isSelectable) {
-    view.setTextIsSelectable(isSelectable);
+    view.setSelectableText(isSelectable);
   }
 
   @ReactProp(name = "selectionColor", customType = "Color")
