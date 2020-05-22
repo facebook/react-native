@@ -7,6 +7,7 @@
 
 #pragma once
 
+#include <react/components/art/primitives.h>
 #include <react/components/view/ViewProps.h>
 #include <react/core/propsConversions.h>
 #include <react/graphics/Color.h>
@@ -15,48 +16,34 @@
 namespace facebook {
 namespace react {
 
-struct ARTTextFrameFontStruct {
-  Float fontSize;
-  std::string fontStyle;
-  std::string fontFamily;
-  std::string fontWeight;
-};
-
 static inline void fromRawValue(
     const RawValue &value,
-    ARTTextFrameFontStruct &result) {
+    ARTTextFrameFont &result) {
   auto map = (better::map<std::string, RawValue>)value;
-
-  auto fontSize = map.find("fontSize");
-  if (fontSize != map.end()) {
-    fromRawValue(fontSize->second, result.fontSize);
-  }
-  auto fontStyle = map.find("fontStyle");
-  if (fontStyle != map.end()) {
-    fromRawValue(fontStyle->second, result.fontStyle);
-  }
-  auto fontFamily = map.find("fontFamily");
-  if (fontFamily != map.end()) {
-    fromRawValue(fontFamily->second, result.fontFamily);
-  }
-  auto fontWeight = map.find("fontWeight");
-  if (fontWeight != map.end()) {
-    fromRawValue(fontWeight->second, result.fontWeight);
-  }
 }
-
-static inline std::string toString(const ARTTextFrameFontStruct &value) {
-  return "[Object ARTTextFrameFontStruct]";
-}
-
-struct ARTTextFrameStruct {
-  std::vector<std::string> lines;
-  ARTTextFrameFontStruct font;
-};
 
 static inline void fromRawValue(
     const RawValue &value,
-    ARTTextFrameStruct &result) {
+    ARTTextAlignment &result) {
+  auto alignment = (int)value;
+  switch (alignment) {
+    case 1:
+      result = ARTTextAlignment::Right;
+      break;
+    case 2:
+      result = ARTTextAlignment::Center;
+      break;
+    default:
+      result = ARTTextAlignment::Default;
+      break;
+  }
+}
+
+static inline std::string toString(const ARTTextFrameFont &value) {
+  return "[Object ARTTextFrameFont]";
+}
+
+static inline void fromRawValue(const RawValue &value, ARTTextFrame &result) {
   auto map = (better::map<std::string, RawValue>)value;
 
   auto lines = map.find("lines");
@@ -69,8 +56,8 @@ static inline void fromRawValue(
   }
 }
 
-static inline std::string toString(const ARTTextFrameStruct &value) {
-  return "[Object ARTTextFrameStruct]";
+static inline std::string toString(const ARTTextFrame &value) {
+  return "[Object ARTTextFrame]";
 }
 
 class ARTTextProps;
@@ -93,8 +80,8 @@ class ARTTextProps : public Props {
   Float strokeWidth{1.0};
   int strokeCap{1};
   int strokeJoin{1};
-  int aligment{0};
-  ARTTextFrameStruct frame{};
+  ARTTextAlignment aligment{ARTTextAlignment::Default};
+  ARTTextFrame frame{};
 
 #pragma mark - DebugStringConvertible
 

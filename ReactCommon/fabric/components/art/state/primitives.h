@@ -7,6 +7,8 @@
 
 #pragma once
 
+#include <react/graphics/Geometry.h>
+#include <vector>
 #include <functional>
 #include <limits>
 
@@ -14,6 +16,20 @@ namespace facebook {
 namespace react {
 
 enum class ARTElement { Shape, Text, Group };
+
+enum class ARTTextAlignment { Default, Right, Center };
+
+struct ARTTextFrameFont {
+  Float fontSize;
+  std::string fontStyle;
+  std::string fontFamily;
+  std::string fontWeight;
+};
+
+struct ARTTextFrame {
+  std::vector<std::string> lines;
+  ARTTextFrameFont font;
+};
 
 } // namespace react
 } // namespace facebook

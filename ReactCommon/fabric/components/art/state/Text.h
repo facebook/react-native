@@ -31,7 +31,7 @@ class Text : public Shape {
   int aligment{0};
 
   // TODO T64130144: add frame data
-  // ARTTextFrameStruct frame{}
+  // ARTTextFrame  frame{}
 
 #ifdef ANDROID
   folly::dynamic getDynamic() const override;

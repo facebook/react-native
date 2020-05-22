@@ -30,6 +30,7 @@ inline folly::dynamic toDynamic(std::vector<Float> const &elements) {
   }
   return result;
 }
+
 inline folly::dynamic toDynamic(Element::ListOfShared const &elements) {
   folly::dynamic children = folly::dynamic::array();
   for (auto const &element : elements) {
