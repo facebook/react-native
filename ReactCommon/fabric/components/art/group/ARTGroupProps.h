@@ -7,8 +7,8 @@
 
 #pragma once
 
-#include <react/components/art/Element.h>
-#include <react/components/art/Group.h>
+#include <react/components/art/ARTElement.h>
+#include <react/components/art/ARTGroup.h>
 #include <react/core/Props.h>
 #include <react/debug/DebugStringConvertible.h>
 #include <react/graphics/Geometry.h>

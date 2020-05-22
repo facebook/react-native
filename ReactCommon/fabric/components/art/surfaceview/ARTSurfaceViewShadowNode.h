@@ -7,9 +7,9 @@
 
 #pragma once
 
+#include <react/components/art/ARTElement.h>
 #include <react/components/art/ARTSurfaceViewProps.h>
 #include <react/components/art/ARTSurfaceViewState.h>
-#include <react/components/art/Element.h>
 #include <react/components/view/ConcreteViewShadowNode.h>
 #include <react/core/ConcreteShadowNode.h>
 #include <react/core/LayoutContext.h>
@@ -42,7 +42,7 @@ class ARTSurfaceViewShadowNode : public ConcreteViewShadowNode<
 
   class Content final {
    public:
-    Element::ListOfShared elements{};
+    ARTElement::ListOfShared elements{};
   };
 
   void layout(LayoutContext layoutContext) override;

@@ -15,7 +15,7 @@
 namespace facebook {
 namespace react {
 
-enum class ARTElement { Shape, Text, Group };
+enum class ARTElementType { Shape, Text, Group };
 
 enum class ARTTextAlignment { Default, Right, Center };
 

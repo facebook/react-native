@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#include <react/components/art/Element.h>
+#include <react/components/art/ARTElement.h>
 
 namespace facebook {
 namespace react {} // namespace react

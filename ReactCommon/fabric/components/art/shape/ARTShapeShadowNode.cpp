@@ -7,15 +7,15 @@
 
 #include "ARTShapeShadowNode.h"
 #include <Glog/logging.h>
-#include <react/components/art/Shape.h>
+#include <react/components/art/ARTShape.h>
 namespace facebook {
 namespace react {
 
 extern const char ARTShapeComponentName[] = "ARTShape";
 
-Element::Shared ARTShapeShadowNode::getElement() const {
+ARTElement::Shared ARTShapeShadowNode::getARTElement() const {
   auto props = getConcreteProps();
-  return std::make_shared<Shape>(
+  return std::make_shared<ARTShape>(
       props.opacity,
       props.transform,
       props.d,

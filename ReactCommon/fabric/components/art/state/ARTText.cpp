@@ -5,15 +5,15 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#include <react/components/art/Text.h>
-#include <react/components/art/Element.h>
+#include <react/components/art/ARTText.h>
+#include <react/components/art/ARTElement.h>
 #include <react/components/art/conversions.h>
 
 namespace facebook {
 namespace react {
 
 #ifdef ANDROID
-folly::dynamic Text::getDynamic() const {
+folly::dynamic ARTText::getDynamic() const {
   return toDynamic(*this);
 }
 #endif

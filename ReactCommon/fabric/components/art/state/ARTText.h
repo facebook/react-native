@@ -7,8 +7,8 @@
 
 #pragma once
 
-#include <react/components/art/Element.h>
-#include <react/components/art/Shape.h>
+#include <react/components/art/ARTElement.h>
+#include <react/components/art/ARTShape.h>
 #include <react/components/art/primitives.h>
 #include <react/graphics/Geometry.h>
 #include <functional>
@@ -21,10 +21,10 @@ namespace react {
 /*
  * Simple, cross-platfrom, React-specific implementation of ART Text Element
  */
-class Text : public Shape {
+class ARTText : public ARTShape {
  public:
-  using Shared = std::shared_ptr<const Text>;
-  Text(
+  using ARTShared = std::shared_ptr<const ARTText>;
+  ARTText(
       Float opacity,
       std::vector<Float> transform,
       std::vector<Float> d,
@@ -36,7 +36,7 @@ class Text : public Shape {
       int strokeJoin,
       ARTTextAlignment alignment,
       ARTTextFrame frame)
-      : Shape(
+      : ARTShape(
             opacity,
             transform,
             d,
@@ -47,9 +47,11 @@ class Text : public Shape {
             strokeCap,
             strokeJoin),
         alignment(alignment),
-        frame(frame){};
-  Text() = default;
-  virtual ~Text(){};
+        frame(frame){
+            // elementType = ARTElementType::Text;
+        };
+  ARTText() = default;
+  virtual ~ARTText(){};
 
   ARTTextAlignment alignment{ARTTextAlignment::Default};
   ARTTextFrame frame{};

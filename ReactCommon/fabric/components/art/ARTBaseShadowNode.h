@@ -7,8 +7,8 @@
 
 #pragma once
 
+#include <react/components/art/ARTElement.h>
 #include <react/components/art/ARTShapeProps.h>
-#include <react/components/art/Element.h>
 #include <react/core/ConcreteShadowNode.h>
 
 namespace facebook {
@@ -17,16 +17,16 @@ namespace react {
 class ARTBaseShadowNode {
  public:
   int test;
-  virtual Element::Shared getElement() const = 0;
+  virtual ARTElement::Shared getARTElement() const = 0;
 
   static void buildElements(
       ShadowNode const &parentNode,
-      Element::ListOfShared &outNodes) {
+      ARTElement::ListOfShared &outNodes) {
     for (auto const &child : parentNode.getChildren()) {
       auto baseShadowNode =
           std::dynamic_pointer_cast<ARTBaseShadowNode const>(child);
       if (baseShadowNode) {
-        outNodes.push_back(baseShadowNode->getElement());
+        outNodes.push_back(baseShadowNode->getARTElement());
       }
     }
   }

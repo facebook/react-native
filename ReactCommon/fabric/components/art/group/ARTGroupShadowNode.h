@@ -8,9 +8,9 @@
 #pragma once
 
 #include <react/components/art/ARTBaseShadowNode.h>
+#include <react/components/art/ARTElement.h>
+#include <react/components/art/ARTGroup.h>
 #include <react/components/art/ARTGroupProps.h>
-#include <react/components/art/Element.h>
-#include <react/components/art/Group.h>
 #include <react/core/ConcreteShadowNode.h>
 
 namespace facebook {
@@ -29,7 +29,7 @@ class ARTGroupShadowNode : public ConcreteShadowNode<
  public:
   using ConcreteShadowNode::ConcreteShadowNode;
 
-  virtual Element::Shared getElement() const override;
+  virtual ARTElement::Shared getARTElement() const override;
 };
 
 } // namespace react

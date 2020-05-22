@@ -24,17 +24,20 @@ namespace react {
 /*
  * Simple, cross-platfrom, React-specific implementation of base ART Element
  */
-class Element {
+class ARTElement {
  public:
-  using Shared = std::shared_ptr<const Element>;
-  using ListOfShared = better::small_vector<Element::Shared, 0>;
+  using Shared = std::shared_ptr<const ARTElement>;
+  using ListOfShared = better::small_vector<ARTElement::Shared, 0>;
 
-  Element() = default;
-  Element(ARTElement elementType, Float opacity, std::vector<Float> transform)
+  ARTElement() = default;
+  ARTElement(
+      ARTElementType elementType,
+      Float opacity,
+      std::vector<Float> transform)
       : elementType(elementType), opacity(opacity), transform(transform){};
-  virtual ~Element(){};
+  virtual ~ARTElement(){};
 
-  ARTElement elementType;
+  ARTElementType elementType;
   Float opacity;
   std::vector<Float> transform;
 

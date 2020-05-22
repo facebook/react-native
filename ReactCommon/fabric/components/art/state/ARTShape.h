@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include <react/components/art/Element.h>
+#include <react/components/art/ARTElement.h>
 #include <react/components/art/primitives.h>
 #include <react/graphics/Geometry.h>
 #include <functional>
@@ -19,10 +19,10 @@ namespace react {
 /*
  * Simple, cross-platfrom, React-specific implementation of ART Shape Element
  */
-class Shape : public Element {
+class ARTShape : public ARTElement {
  public:
-  using Shared = std::shared_ptr<const Shape>;
-  Shape(
+  using Shared = std::shared_ptr<const ARTShape>;
+  ARTShape(
       Float opacity,
       std::vector<Float> transform,
       std::vector<Float> d,
@@ -32,7 +32,7 @@ class Shape : public Element {
       Float strokeWidth,
       int strokeCap,
       int strokeJoin)
-      : Element(ARTElement::Shape, opacity, transform),
+      : ARTElement(ARTElementType::Shape, opacity, transform),
         d(d),
         stroke(stroke),
         strokeDash(strokeDash),
@@ -40,8 +40,8 @@ class Shape : public Element {
         strokeWidth(strokeWidth),
         strokeCap(strokeCap),
         strokeJoin(strokeJoin){};
-  Shape() = default;
-  virtual ~Shape(){};
+  ARTShape() = default;
+  virtual ~ARTShape(){};
 
   std::vector<Float> d{};
   std::vector<Float> stroke{};

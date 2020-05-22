@@ -8,8 +8,8 @@
 #pragma once
 
 #include <react/components/art/ARTBaseShadowNode.h>
+#include <react/components/art/ARTElement.h>
 #include <react/components/art/ARTShapeProps.h>
-#include <react/components/art/Element.h>
 #include <react/core/ConcreteShadowNode.h>
 
 namespace facebook {
@@ -28,7 +28,7 @@ class ARTShapeShadowNode : public ConcreteShadowNode<
  public:
   using ConcreteShadowNode::ConcreteShadowNode;
 
-  virtual Element::Shared getElement() const override;
+  virtual ARTElement::Shared getARTElement() const override;
 };
 
 } // namespace react

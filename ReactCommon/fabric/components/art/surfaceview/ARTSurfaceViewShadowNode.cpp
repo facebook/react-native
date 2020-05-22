@@ -28,7 +28,7 @@ Content const &ARTSurfaceViewShadowNode::getContent() const {
     return content_.value();
   }
   ensureUnsealed();
-  auto elements = Element::ListOfShared{};
+  auto elements = ARTElement::ListOfShared{};
   ARTBaseShadowNode::buildElements(*this, elements);
   content_ = Content{elements};
   return content_.value();

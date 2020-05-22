@@ -6,7 +6,7 @@
  */
 
 #pragma once
-#include <react/components/art/Element.h>
+#include <react/components/art/ARTElement.h>
 
 #ifdef ANDROID
 #include <folly/dynamic.h>
@@ -21,10 +21,10 @@ namespace react {
  */
 class ARTSurfaceViewState final {
  public:
-  Element::ListOfShared elements{};
+  ARTElement::ListOfShared elements{};
 
 #ifdef ANDROID
-  ARTSurfaceViewState(Element::ListOfShared const &elements)
+  ARTSurfaceViewState(ARTElement::ListOfShared const &elements)
       : elements(elements) {}
   ARTSurfaceViewState() = default;
   ARTSurfaceViewState(

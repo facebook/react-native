@@ -7,10 +7,10 @@
 
 #include <Glog/logging.h>
 #include <folly/dynamic.h>
+#include <react/components/art/ARTGroup.h>
+#include <react/components/art/ARTShape.h>
 #include <react/components/art/ARTSurfaceViewState.h>
-#include <react/components/art/Group.h>
-#include <react/components/art/Shape.h>
-#include <react/components/art/Text.h>
+#include <react/components/art/ARTText.h>
 #include <react/components/art/primitives.h>
 
 namespace facebook {
@@ -18,10 +18,10 @@ namespace react {
 
 #ifdef ANDROID
 
-inline folly::dynamic toDynamic(Group const &group);
-inline folly::dynamic toDynamic(Shape const &shape);
-inline folly::dynamic toDynamic(Text const &text);
-inline folly::dynamic toDynamic(Element const &element);
+inline folly::dynamic toDynamic(ARTGroup const &group);
+inline folly::dynamic toDynamic(ARTShape const &shape);
+inline folly::dynamic toDynamic(ARTText const &text);
+inline folly::dynamic toDynamic(ARTElement const &element);
 
 inline folly::dynamic toDynamic(std::vector<Float> const &elements) {
   folly::dynamic result = folly::dynamic::array();
@@ -40,7 +40,7 @@ inline void addOptionalKey(
   }
 }
 
-inline folly::dynamic toDynamic(Element::ListOfShared const &elements) {
+inline folly::dynamic toDynamic(ARTElement::ListOfShared const &elements) {
   folly::dynamic children = folly::dynamic::array();
   for (auto const &element : elements) {
     children.push_back(element->getDynamic());
@@ -48,7 +48,7 @@ inline folly::dynamic toDynamic(Element::ListOfShared const &elements) {
   return children;
 }
 
-inline folly::dynamic toDynamic(Group const &group) {
+inline folly::dynamic toDynamic(ARTGroup const &group) {
   folly::dynamic result = folly::dynamic::object();
   result["opacity"] = group.opacity;
   result["type"] = 1;
@@ -60,7 +60,7 @@ inline folly::dynamic toDynamic(Group const &group) {
   return result;
 }
 
-inline folly::dynamic toDynamic(Shape const &shape) {
+inline folly::dynamic toDynamic(ARTShape const &shape) {
   folly::dynamic result = folly::dynamic::object();
   result["type"] = 2;
   result["opacity"] = shape.opacity;
@@ -109,7 +109,7 @@ inline folly::dynamic toDynamic(ARTTextFrame const &frame) {
   return result;
 }
 
-inline folly::dynamic toDynamic(Text const &text) {
+inline folly::dynamic toDynamic(ARTText const &text) {
   folly::dynamic result = folly::dynamic::object();
   result["type"] = 3;
   result["opacity"] = text.opacity;

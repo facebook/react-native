@@ -5,15 +5,15 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#include <react/components/art/Group.h>
-#include <react/components/art/Element.h>
+#include <react/components/art/ARTShape.h>
+#include <react/components/art/ARTElement.h>
 #include <react/components/art/conversions.h>
 
 namespace facebook {
 namespace react {
 
 #ifdef ANDROID
-folly::dynamic Group::getDynamic() const {
+folly::dynamic ARTShape::getDynamic() const {
   return toDynamic(*this);
 }
 #endif
