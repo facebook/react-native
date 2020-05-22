@@ -31,6 +31,15 @@ inline folly::dynamic toDynamic(std::vector<Float> const &elements) {
   return result;
 }
 
+inline void addOptionalKey(
+    folly::dynamic &map,
+    std::string const &key,
+    std::vector<Float> const &values) {
+  if (values.size() > 0) {
+    map[key] = toDynamic(values);
+  }
+}
+
 inline folly::dynamic toDynamic(Element::ListOfShared const &elements) {
   folly::dynamic children = folly::dynamic::array();
   for (auto const &element : elements) {
@@ -46,6 +55,7 @@ inline folly::dynamic toDynamic(Group const &group) {
   if (group.elements.size() > 0) {
     result["elements"] = toDynamic(group.elements);
   }
+  addOptionalKey(result, "clipping", group.clipping);
   result["transform"] = toDynamic(group.transform);
   return result;
 }
@@ -55,10 +65,10 @@ inline folly::dynamic toDynamic(Shape const &shape) {
   result["type"] = 2;
   result["opacity"] = shape.opacity;
   result["transform"] = toDynamic(shape.transform);
-  result["d"] = toDynamic(shape.d);
-  result["stroke"] = toDynamic(shape.stroke);
-  result["strokeDash"] = toDynamic(shape.strokeDash);
-  result["fill"] = toDynamic(shape.fill);
+  addOptionalKey(result, "d", shape.d);
+  addOptionalKey(result, "stroke", shape.stroke);
+  addOptionalKey(result, "strokeDash", shape.strokeDash);
+  addOptionalKey(result, "fill", shape.fill);
   result["strokeWidth"] = shape.strokeWidth;
   result["strokeCap"] = shape.strokeCap;
   result["strokeJoin"] = shape.strokeJoin;
@@ -82,10 +92,12 @@ inline folly::dynamic toDynamic(ARTTextAlignment const &aligment) {
 
 inline folly::dynamic toDynamic(ARTTextFrame const &frame) {
   folly::dynamic result = folly::dynamic::object();
-  result["fontSize"] = frame.font.fontSize;
-  result["fontStyle"] = frame.font.fontStyle;
-  result["fontFamily"] = frame.font.fontFamily;
-  result["fontWeight"] = frame.font.fontWeight;
+  folly::dynamic font = folly::dynamic::object();
+  font["fontSize"] = frame.font.fontSize;
+  font["fontStyle"] = frame.font.fontStyle;
+  font["fontFamily"] = frame.font.fontFamily;
+  font["fontWeight"] = frame.font.fontWeight;
+  result["font"] = font;
   auto lines = frame.lines;
   if (lines.size() > 0) {
     folly::dynamic serializedLines = folly::dynamic::array();
@@ -102,10 +114,10 @@ inline folly::dynamic toDynamic(Text const &text) {
   result["type"] = 3;
   result["opacity"] = text.opacity;
   result["transform"] = toDynamic(text.transform);
-  result["d"] = toDynamic(text.d);
-  result["stroke"] = toDynamic(text.stroke);
-  result["strokeDash"] = toDynamic(text.strokeDash);
-  result["fill"] = toDynamic(text.fill);
+  addOptionalKey(result, "d", text.d);
+  addOptionalKey(result, "stroke", text.stroke);
+  addOptionalKey(result, "strokeDash", text.strokeDash);
+  addOptionalKey(result, "fill", text.fill);
   result["strokeWidth"] = text.strokeWidth;
   result["strokeCap"] = text.strokeCap;
   result["strokeJoin"] = text.strokeJoin;
