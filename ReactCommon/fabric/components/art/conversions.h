@@ -65,6 +65,38 @@ inline folly::dynamic toDynamic(Shape const &shape) {
   return result;
 }
 
+inline folly::dynamic toDynamic(ARTTextAlignment const &aligment) {
+  switch (aligment) {
+    case ARTTextAlignment::Right:
+      return 1;
+      break;
+    case ARTTextAlignment::Center:
+      return 2;
+      break;
+    case ARTTextAlignment::Default:
+    default:
+      return 0;
+      break;
+  }
+}
+
+inline folly::dynamic toDynamic(ARTTextFrame const &frame) {
+  folly::dynamic result = folly::dynamic::object();
+  result["fontSize"] = frame.font.fontSize;
+  result["fontStyle"] = frame.font.fontStyle;
+  result["fontFamily"] = frame.font.fontFamily;
+  result["fontWeight"] = frame.font.fontWeight;
+  auto lines = frame.lines;
+  if (lines.size() > 0) {
+    folly::dynamic serializedLines = folly::dynamic::array();
+    for (int i = 0; i < lines.size(); i++) {
+      serializedLines.push_back(lines[i]);
+    }
+    result["lines"] = serializedLines;
+  }
+  return result;
+}
+
 inline folly::dynamic toDynamic(Text const &text) {
   folly::dynamic result = folly::dynamic::object();
   result["type"] = 3;
@@ -77,9 +109,8 @@ inline folly::dynamic toDynamic(Text const &text) {
   result["strokeWidth"] = text.strokeWidth;
   result["strokeCap"] = text.strokeCap;
   result["strokeJoin"] = text.strokeJoin;
-  result["aligment"] = text.aligment;
-  // TODO T64130144: add serialization of Frame
-  // result["aligment"] = toDynamic(text.frame);
+  result["alignment"] = toDynamic(text.alignment);
+  result["frame"] = toDynamic(text.frame);
   return result;
 }
 

@@ -24,14 +24,35 @@ namespace react {
 class Text : public Shape {
  public:
   using Shared = std::shared_ptr<const Text>;
-  Text(ARTElement elementType) : Shape(){};
+  Text(
+      Float opacity,
+      std::vector<Float> transform,
+      std::vector<Float> d,
+      std::vector<Float> stroke,
+      std::vector<Float> strokeDash,
+      std::vector<Float> fill,
+      Float strokeWidth,
+      int strokeCap,
+      int strokeJoin,
+      ARTTextAlignment alignment,
+      ARTTextFrame frame)
+      : Shape(
+            opacity,
+            transform,
+            d,
+            stroke,
+            strokeDash,
+            fill,
+            strokeWidth,
+            strokeCap,
+            strokeJoin),
+        alignment(alignment),
+        frame(frame){};
   Text() = default;
   virtual ~Text(){};
 
-  int aligment{0};
-
-  // TODO T64130144: add frame data
-  // ARTTextFrame  frame{}
+  ARTTextAlignment alignment{ARTTextAlignment::Default};
+  ARTTextFrame frame{};
 
 #ifdef ANDROID
   folly::dynamic getDynamic() const override;

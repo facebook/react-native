@@ -15,8 +15,19 @@ namespace react {
 extern const char ARTTextComponentName[] = "ARTText";
 
 Element::Shared ARTTextShadowNode::getElement() const {
-  // TODO add support for Text
-  return std::make_shared<Shape>();
+  auto props = getConcreteProps();
+  return std::make_shared<Text>(
+      props.opacity,
+      props.transform,
+      props.d,
+      props.stroke,
+      props.strokeDash,
+      props.fill,
+      props.strokeWidth,
+      props.strokeCap,
+      props.strokeJoin,
+      props.alignment,
+      props.frame);
 }
 
 } // namespace react

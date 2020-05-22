@@ -20,6 +20,22 @@ static inline void fromRawValue(
     const RawValue &value,
     ARTTextFrameFont &result) {
   auto map = (better::map<std::string, RawValue>)value;
+  auto fontSize = map.find("fontSize");
+  if (fontSize != map.end()) {
+    fromRawValue(fontSize->second, result.fontSize);
+  }
+  auto fontStyle = map.find("fontStyle");
+  if (fontStyle != map.end()) {
+    fromRawValue(fontStyle->second, result.fontStyle);
+  }
+  auto fontFamily = map.find("fontFamily");
+  if (fontFamily != map.end()) {
+    fromRawValue(fontFamily->second, result.fontFamily);
+  }
+  auto fontWeight = map.find("fontWeight");
+  if (fontWeight != map.end()) {
+    fromRawValue(fontWeight->second, result.fontWeight);
+  }
 }
 
 static inline void fromRawValue(
@@ -80,7 +96,7 @@ class ARTTextProps : public Props {
   Float strokeWidth{1.0};
   int strokeCap{1};
   int strokeJoin{1};
-  ARTTextAlignment aligment{ARTTextAlignment::Default};
+  ARTTextAlignment alignment{ARTTextAlignment::Default};
   ARTTextFrame frame{};
 
 #pragma mark - DebugStringConvertible

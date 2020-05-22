@@ -13,7 +13,7 @@ namespace facebook {
 namespace react {
 
 #ifdef ANDROID
-folly::dynamic Shape::getDynamic() const {
+folly::dynamic Text::getDynamic() const {
   return toDynamic(*this);
 }
 #endif

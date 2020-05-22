@@ -8,9 +8,9 @@
 #pragma once
 
 #include <react/graphics/Geometry.h>
-#include <vector>
 #include <functional>
 #include <limits>
+#include <vector>
 
 namespace facebook {
 namespace react {
