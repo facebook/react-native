@@ -231,6 +231,13 @@ public class ReactViewGroup extends ViewGroup
     return true;
   }
 
+  /** Basically this is onTouchEvent replacement for JSTouchDispatcher
+   * Overriding it and returning "false" will lead to pass JSTouchDispatcher underneath the view
+   * */
+  public boolean onJSTouchEvent(float x, float y) {
+    return true;
+  }
+
   /**
    * We override this to allow developers to determine whether they need offscreen alpha compositing
    * or not. See the documentation of needsOffscreenAlphaCompositing in View.js.
