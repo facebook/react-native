@@ -12,6 +12,7 @@ exports[`<Image /> should render as <Image> when mocked 1`] = `
 
 exports[`<Image /> should render as <RCTImageView> when not mocked 1`] = `
 <RCTImageView
+  internal_analyticTag={null}
   resizeMode="cover"
   source={
     Array [
