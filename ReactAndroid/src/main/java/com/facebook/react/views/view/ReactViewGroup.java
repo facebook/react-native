@@ -33,6 +33,7 @@ import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.common.annotations.VisibleForTesting;
 import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.react.modules.i18nmanager.I18nUtil;
+import com.facebook.react.touch.JSResponderView;
 import com.facebook.react.touch.OnInterceptTouchEventListener;
 import com.facebook.react.touch.ReactHitSlopView;
 import com.facebook.react.touch.ReactInterceptingViewGroup;
@@ -58,7 +59,8 @@ public class ReactViewGroup extends ViewGroup
         ReactClippingViewGroup,
         ReactPointerEventsView,
         ReactHitSlopView,
-        ReactZIndexedViewGroup {
+        ReactZIndexedViewGroup,
+        JSResponderView {
 
   private static final int ARRAY_CAPACITY_INCREMENT = 12;
   private static final int DEFAULT_BACKGROUND_COLOR = Color.TRANSPARENT;
@@ -231,9 +233,10 @@ public class ReactViewGroup extends ViewGroup
     return true;
   }
 
-  /** Basically this is onTouchEvent replacement for JSTouchDispatcher
-   * Overriding it and returning "false" will lead to pass JSTouchDispatcher underneath the view
-   * */
+  /**
+   * We override this to allow developers to determine whether they need to pass click through view
+   */
+  @Override
   public boolean onJSTouchEvent(float x, float y) {
     return true;
   }

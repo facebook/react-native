@@ -16,8 +16,8 @@ import android.view.ViewGroup;
 import androidx.annotation.Nullable;
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 import com.facebook.react.bridge.UiThreadUtil;
+import com.facebook.react.touch.JSResponderView;
 import com.facebook.react.touch.ReactHitSlopView;
-import com.facebook.react.views.view.ReactViewGroup;
 
 /**
  * Class responsible for identifying which react view should handle a given {@link MotionEvent}. It
@@ -163,7 +163,7 @@ public class TouchTargetHelper {
       localX = localXY[0];
       localY = localXY[1];
     }
-    if (child instanceof ReactViewGroup && !((ReactViewGroup) child).onJSTouchEvent(localX, localY)){
+    if (child instanceof JSResponderView && !((JSResponderView) child).onJSTouchEvent(localX, localY)){
       return false;
 
     }
