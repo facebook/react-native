@@ -89,8 +89,7 @@ static UIFont *defaultPlaceholderFont()
 
 static RCTUIColor *defaultPlaceholderTextColor()
 {
-  // Default placeholder color from UITextField.
-  return [RCTUIColor colorWithRed:0 green:0 blue:0.0980392 alpha:0.22];
+  return [NSColor placeholderTextColor];
 }
 
 #endif // ]TODO(macOS ISS#2323203)
