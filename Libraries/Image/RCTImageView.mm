@@ -216,6 +216,13 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
   }
 }
 
+- (void)setInternal_analyticTag:(NSString *)internal_analyticTag {
+    if (_internal_analyticTag != internal_analyticTag) {
+        _internal_analyticTag = internal_analyticTag;
+        _needsReload = YES;
+    }
+}
+
 - (void)cancelImageLoad
 {
   [_loaderRequest cancel];
@@ -341,6 +348,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
                                                                        attribution:{
                                                                                    .nativeViewTag = [self.reactTag intValue],
                                                                                    .surfaceId = [self.rootTag intValue],
+                                                                                   .analyticTag = self.internal_analyticTag
                                                                                    }
                                                                      progressBlock:progressHandler
                                                                   partialLoadBlock:partialLoadHandler

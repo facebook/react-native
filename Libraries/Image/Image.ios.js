@@ -15,6 +15,7 @@ const React = require('react');
 const ReactNative = require('../Renderer/shims/ReactNative'); // eslint-disable-line no-unused-vars
 const StyleSheet = require('../StyleSheet/StyleSheet');
 
+const ImageAnalyticsTagContext = require('./ImageAnalyticsTagContext').default;
 const flattenStyle = require('../StyleSheet/flattenStyle');
 const resolveAssetSource = require('./resolveAssetSource');
 
@@ -124,14 +125,21 @@ let Image = (props: ImagePropsType, forwardedRef) => {
   }
 
   return (
-    <ImageViewNativeComponent
-      {...props}
-      ref={forwardedRef}
-      style={style}
-      resizeMode={resizeMode}
-      tintColor={tintColor}
-      source={sources}
-    />
+    <ImageAnalyticsTagContext.Consumer>
+      {analyticTag => {
+        return (
+          <ImageViewNativeComponent
+            {...props}
+            ref={forwardedRef}
+            style={style}
+            resizeMode={resizeMode}
+            tintColor={tintColor}
+            source={sources}
+            internal_analyticTag={analyticTag}
+          />
+        );
+      }}
+    </ImageAnalyticsTagContext.Consumer>
   );
 };
 
