@@ -280,7 +280,7 @@ class Runtime {
   virtual Array getPropertyNames(const Object&) = 0;
 
   virtual WeakObject createWeakObject(const Object&) = 0;
-  virtual Value lockWeakObject(const WeakObject&) = 0;
+  virtual Value lockWeakObject(WeakObject&) = 0;
 
   virtual Array createArray(size_t length) = 0;
   virtual size_t size(const Array&) = 0;
@@ -316,6 +316,7 @@ class Runtime {
   // Value, Symbol, String, and Object, which are all friends of Runtime.
   template <typename T>
   static T make(PointerValue* pv);
+  static PointerValue* getPointerValue(Pointer& pointer);
   static const PointerValue* getPointerValue(const Pointer& pointer);
   static const PointerValue* getPointerValue(const Value& value);
 

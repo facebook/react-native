@@ -65,6 +65,10 @@ inline T Runtime::make(Runtime::PointerValue* pv) {
   return T(pv);
 }
 
+inline Runtime::PointerValue* Runtime::getPointerValue(jsi::Pointer& pointer) {
+  return pointer.ptr_;
+}
+
 inline const Runtime::PointerValue* Runtime::getPointerValue(
     const jsi::Pointer& pointer) {
   return pointer.ptr_;
