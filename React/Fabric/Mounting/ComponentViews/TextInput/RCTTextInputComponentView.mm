@@ -64,7 +64,6 @@ using namespace facebook::react;
     auto &props = *defaultProps;
 
     _backedTextInputView = props.traits.multiline ? [[RCTUITextView alloc] init] : [[RCTUITextField alloc] init];
-    _backedTextInputView.frame = self.bounds;
     _backedTextInputView.textInputDelegate = self;
     _ignoreNextTextInputCall = NO;
     _comingFromJS = NO;
@@ -232,7 +231,7 @@ using namespace facebook::react;
 - (void)prepareForRecycle
 {
   [super prepareForRecycle];
-  _backedTextInputView.attributedText = [[NSAttributedString alloc] init];
+  _backedTextInputView.attributedText = nil;
   _mostRecentEventCount = 0;
   _state.reset();
   _comingFromJS = NO;
@@ -265,7 +264,7 @@ using namespace facebook::react;
   auto const &props = *std::static_pointer_cast<TextInputProps const>(_props);
 
   if (props.traits.clearTextOnFocus) {
-    _backedTextInputView.attributedText = [NSAttributedString new];
+    _backedTextInputView.attributedText = nil;
     [self textInputDidChange];
   }
 
@@ -390,11 +389,10 @@ using namespace facebook::react;
 
 - (void)_updateState
 {
-  NSAttributedString *attributedString = _backedTextInputView.attributedText;
-
   if (!_state) {
     return;
   }
+  NSAttributedString *attributedString = _backedTextInputView.attributedText;
   auto data = _state->getData();
   _lastStringStateWasUpdatedWith = attributedString;
   data.attributedStringBox = RCTAttributedStringBoxFromNSAttributedString(attributedString);
