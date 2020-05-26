@@ -311,6 +311,10 @@ void LayoutAnimationKeyFrameManager::adjustDelayedMutationIndicesForMutation(
   bool isInsertMutation = mutation.type == ShadowViewMutation::Type::Insert;
   assert(isRemoveMutation || isInsertMutation);
 
+  if (mutatedViewIsVirtual(mutation)) {
+    return;
+  }
+
   for (auto &inflightAnimation : inflightAnimations_) {
     if (inflightAnimation.surfaceId != surfaceId) {
       continue;
@@ -691,7 +695,8 @@ LayoutAnimationKeyFrameManager::pullTransaction(
               for (const auto &otherMutation : mutations) {
                 if (otherMutation.type == ShadowViewMutation::Type::Insert &&
                     otherMutation.parentShadowView.tag == parentTag) {
-                  if (otherMutation.index <= adjustedIndex) {
+                  if (otherMutation.index <= adjustedIndex &&
+                      !mutatedViewIsVirtual(otherMutation)) {
                     adjustedIndex++;
                   }
                 }
@@ -859,6 +864,22 @@ LayoutAnimationKeyFrameManager::pullTransaction(
   // TODO: fill in telemetry
   return MountingTransaction{
       surfaceId, transactionNumber, std::move(mutations), {}};
+}
+
+bool LayoutAnimationKeyFrameManager::mutatedViewIsVirtual(
+    ShadowViewMutation const &mutation) const {
+  bool viewIsVirtual = false;
+
+  // TODO: extract this into an Android platform-specific class
+  // Explanation: for "Insert" mutations, oldChildShadowView is always empty.
+  //              for "Remove" mutations, newChildShadowView is always empty.
+#ifdef ANDROID
+  viewIsVirtual =
+      mutation.newChildShadowView.layoutMetrics == EmptyLayoutMetrics &&
+      mutation.oldChildShadowView.layoutMetrics == EmptyLayoutMetrics;
+#endif
+
+  return viewIsVirtual;
 }
 
 ComponentDescriptor const &
