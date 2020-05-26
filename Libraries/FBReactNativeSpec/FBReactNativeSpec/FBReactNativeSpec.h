@@ -114,6 +114,7 @@ namespace JS {
       NSString *message() const;
       folly::Optional<facebook::react::LazyVector<NSString *>> options() const;
       folly::Optional<facebook::react::LazyVector<double>> destructiveButtonIndices() const;
+      folly::Optional<facebook::react::LazyVector<double>> disabledButtonIndices() const;
       folly::Optional<double> cancelButtonIndex() const;
       folly::Optional<double> anchor() const;
       folly::Optional<double> tintColor() const;
@@ -2919,6 +2920,11 @@ inline folly::Optional<facebook::react::LazyVector<NSString *>> JS::NativeAction
 inline folly::Optional<facebook::react::LazyVector<double>> JS::NativeActionSheetManager::SpecShowActionSheetWithOptionsOptions::destructiveButtonIndices() const
 {
   id const p = _v[@"destructiveButtonIndices"];
+  return RCTBridgingToOptionalVec(p, ^double(id itemValue_0) { return RCTBridgingToDouble(itemValue_0); });
+}
+inline folly::Optional<facebook::react::LazyVector<double>> JS::NativeActionSheetManager::SpecShowActionSheetWithOptionsOptions::disabledButtonIndices() const
+{
+  id const p = _v[@"disabledButtonIndices"];
   return RCTBridgingToOptionalVec(p, ^double(id itemValue_0) { return RCTBridgingToDouble(itemValue_0); });
 }
 inline folly::Optional<double> JS::NativeActionSheetManager::SpecShowActionSheetWithOptionsOptions::cancelButtonIndex() const
