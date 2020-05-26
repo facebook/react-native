@@ -8,6 +8,7 @@
 package com.facebook.react.animated;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.UiThread;
 import com.facebook.common.logging.FLog;
 import com.facebook.fbreact.specs.NativeAnimatedModuleSpec;
 import com.facebook.infer.annotation.Assertions;
@@ -16,6 +17,8 @@ import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.bridge.UIManager;
+import com.facebook.react.bridge.UIManagerListener;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.common.annotations.VisibleForTesting;
@@ -26,7 +29,6 @@ import com.facebook.react.uimanager.GuardedFrameCallback;
 import com.facebook.react.uimanager.NativeViewHierarchyManager;
 import com.facebook.react.uimanager.UIBlock;
 import com.facebook.react.uimanager.UIManagerModule;
-import com.facebook.react.uimanager.UIManagerModuleListener;
 import java.util.ArrayList;
 
 /**
@@ -75,7 +77,7 @@ import java.util.ArrayList;
  */
 @ReactModule(name = NativeAnimatedModule.NAME)
 public class NativeAnimatedModule extends NativeAnimatedModuleSpec
-    implements LifecycleEventListener, UIManagerModuleListener {
+    implements LifecycleEventListener, UIManagerListener {
 
   public static final String NAME = "NativeAnimatedModule";
 
@@ -132,7 +134,7 @@ public class NativeAnimatedModule extends NativeAnimatedModuleSpec
       reactApplicationContext.addLifecycleEventListener(this);
       UIManagerModule uiManager =
           Assertions.assertNotNull(reactApplicationContext.getNativeModule(UIManagerModule.class));
-      uiManager.addUIManagerListener(this);
+      uiManager.addUIManagerEventListener(this);
     }
   }
 
@@ -141,8 +143,19 @@ public class NativeAnimatedModule extends NativeAnimatedModuleSpec
     enqueueFrameCallback();
   }
 
+  // For FabricUIManager
   @Override
-  public void willDispatchViewUpdates(final UIManagerModule uiManager) {
+  public void willDispatchPreMountItems() {}
+
+  // For FabricUIManager
+  @Override
+  @UiThread
+  public void willDispatchMountItems() {}
+
+  // For non-FabricUIManager
+  @Override
+  @UiThread
+  public void willDispatchViewUpdates(final UIManager uiManager) {
     if (mOperations.isEmpty() && mPreOperations.isEmpty()) {
       return;
     }
@@ -150,7 +163,15 @@ public class NativeAnimatedModule extends NativeAnimatedModuleSpec
     final ArrayList<UIThreadOperation> operations = mOperations;
     mPreOperations = new ArrayList<>();
     mOperations = new ArrayList<>();
-    uiManager.prependUIBlock(
+
+    // This is kind of a hack. Basically UIManagerListener cannot import UIManagerModule
+    // (that would cause an import cycle) and they're not in the same package. But,
+    // UIManagerModule is the only thing that calls `willDispatchViewUpdates` so we
+    // know this is safe.
+    // This goes away entirely in Fabric/Venice.
+    UIManagerModule uiManagerModule = (UIManagerModule) uiManager;
+
+    uiManagerModule.prependUIBlock(
         new UIBlock() {
           @Override
           public void execute(NativeViewHierarchyManager nativeViewHierarchyManager) {
@@ -160,7 +181,7 @@ public class NativeAnimatedModule extends NativeAnimatedModuleSpec
             }
           }
         });
-    uiManager.addUIBlock(
+    uiManagerModule.addUIBlock(
         new UIBlock() {
           @Override
           public void execute(NativeViewHierarchyManager nativeViewHierarchyManager) {

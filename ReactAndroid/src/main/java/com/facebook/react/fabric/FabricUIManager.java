@@ -42,6 +42,7 @@ import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.RetryableMountingLayerException;
 import com.facebook.react.bridge.UIManager;
+import com.facebook.react.bridge.UIManagerListener;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.config.ReactFeatureFlags;
@@ -82,6 +83,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 @SuppressLint("MissingNativeLoadLibrary")
 public class FabricUIManager implements UIManager, LifecycleEventListener {
@@ -122,6 +124,9 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
   @GuardedBy("mViewCommandMountItemsLock")
   @NonNull
   private List<DispatchCommandMountItem> mViewCommandMountItems = new ArrayList<>();
+
+  @NonNull
+  private final CopyOnWriteArrayList<UIManagerListener> mListeners = new CopyOnWriteArrayList<>();
 
   @GuardedBy("mMountItemsLock")
   @NonNull
@@ -500,6 +505,14 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
     }
   }
 
+  public void addUIManagerEventListener(UIManagerListener listener) {
+    mListeners.add(listener);
+  }
+
+  public void removeUIManagerEventListener(UIManagerListener listener) {
+    mListeners.remove(listener);
+  }
+
   /**
    * This method enqueues UI operations directly to the UI thread. This might change in the future
    * to enforce execution order using {@link ReactChoreographer#CallbackType}.
@@ -579,6 +592,10 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
     // to execute anything out-of-order.
     if (mInDispatch) {
       return;
+    }
+
+    for (UIManagerListener listener : mListeners) {
+      listener.willDispatchMountItems();
     }
 
     final boolean didDispatchItems;
@@ -793,6 +810,10 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
     // dispatchPreMountItems cannot be reentrant, but we want to prevent dispatchMountItems from
     // reentering during dispatchPreMountItems
     mInDispatch = true;
+
+    for (UIManagerListener listener : mListeners) {
+      listener.willDispatchPreMountItems();
+    }
 
     try {
       while (true) {

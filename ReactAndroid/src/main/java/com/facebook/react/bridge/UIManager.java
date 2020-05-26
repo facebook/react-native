@@ -91,4 +91,19 @@ public interface UIManager extends JSIModule, PerformanceCounter {
    * @param eventType
    */
   void sendAccessibilityEvent(int reactTag, int eventType);
+
+  /**
+   * Register a {@link UIManagerListener} with this UIManager to receive lifecycle callbacks.
+   *
+   * @param listener
+   */
+  void addUIManagerEventListener(UIManagerListener listener);
+
+  /**
+   * Unregister a {@link UIManagerListener} from this UIManager to stop receiving lifecycle
+   * callbacks.
+   *
+   * @param listener
+   */
+  void removeUIManagerEventListener(UIManagerListener listener);
 }
