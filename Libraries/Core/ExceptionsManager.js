@@ -11,7 +11,6 @@
 'use strict';
 
 import type {ExtendedError} from './Devtools/parseErrorStack';
-import * as LogBoxData from '../LogBox/Data/LogBoxData';
 import type {ExceptionData} from './NativeExceptionsManager';
 
 class SyntheticError extends Error {
@@ -104,7 +103,8 @@ function reportException(
       console.error(data.message);
     }
 
-    if (isHandledByLogBox) {
+    if (__DEV__ && isHandledByLogBox) {
+      const LogBoxData = require('../LogBox/Data/LogBoxData');
       LogBoxData.addException({
         ...data,
         isComponentError: !!e.isComponentError,
