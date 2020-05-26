@@ -73,7 +73,8 @@ static better::optional<AnimationProperty> parseAnimationProperty(
 
 static better::optional<AnimationConfig> parseAnimationConfig(
     folly::dynamic const &config,
-    double defaultDuration) {
+    double defaultDuration,
+    bool parsePropertyType) {
   if (config.empty() || !config.isObject()) {
     return better::optional<AnimationConfig>(
         AnimationConfig{AnimationType::Linear,
@@ -84,7 +85,11 @@ static better::optional<AnimationConfig> parseAnimationConfig(
                         0});
   }
 
-  folly::dynamic const &animationTypeParam = config["type"];
+  auto const typeIt = config.find("type");
+  if (typeIt == config.items().end()) {
+    return {};
+  }
+  auto const animationTypeParam = typeIt->second;
   if (animationTypeParam.empty() || !animationTypeParam.isString()) {
     return {};
   }
@@ -93,14 +98,22 @@ static better::optional<AnimationConfig> parseAnimationConfig(
     return {};
   }
 
-  folly::dynamic const &animationPropertyParam = config["property"];
-  if (animationPropertyParam.empty() || !animationPropertyParam.isString()) {
-    return {};
-  }
-  const auto animationProperty =
-      parseAnimationProperty(animationPropertyParam.asString());
-  if (!animationProperty) {
-    return {};
+  AnimationProperty animationProperty = AnimationProperty::NotApplicable;
+  if (parsePropertyType) {
+    auto const propertyIt = config.find("property");
+    if (propertyIt == config.items().end()) {
+      return {};
+    }
+    auto const animationPropertyParam = propertyIt->second;
+    if (animationPropertyParam.empty() || !animationPropertyParam.isString()) {
+      return {};
+    }
+    const auto animationPropertyParsed =
+        parseAnimationProperty(animationPropertyParam.asString());
+    if (!animationPropertyParsed) {
+      return {};
+    }
+    animationProperty = *animationPropertyParsed;
   }
 
   double duration = defaultDuration;
@@ -146,7 +159,7 @@ static better::optional<AnimationConfig> parseAnimationConfig(
   }
 
   return better::optional<AnimationConfig>(AnimationConfig{*animationType,
-                                                           *animationProperty,
+                                                           animationProperty,
                                                            duration,
                                                            delay,
                                                            springDamping,
@@ -166,17 +179,20 @@ static better::optional<LayoutAnimationConfig> parseLayoutAnimationConfig(
   }
   const double duration = durationIt->second.asDouble();
 
-  const auto createConfig = parseAnimationConfig(config["create"], duration);
+  const auto createConfig =
+      parseAnimationConfig(config["create"], duration, true);
   if (!createConfig) {
     return {};
   }
 
-  const auto updateConfig = parseAnimationConfig(config["update"], duration);
+  const auto updateConfig =
+      parseAnimationConfig(config["update"], duration, false);
   if (!updateConfig) {
     return {};
   }
 
-  const auto deleteConfig = parseAnimationConfig(config["delete"], duration);
+  const auto deleteConfig =
+      parseAnimationConfig(config["delete"], duration, true);
   if (!deleteConfig) {
     return {};
   }
