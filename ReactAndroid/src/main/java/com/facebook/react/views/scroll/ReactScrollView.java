@@ -23,6 +23,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.OverScroller;
 import android.widget.ScrollView;
+import android.webkit.WebView;
 import androidx.annotation.Nullable;
 import androidx.core.view.ViewCompat;
 import com.facebook.common.logging.FLog;
@@ -250,7 +251,8 @@ public class ReactScrollView extends ScrollView
    */
   @Override
   public void requestChildFocus(View child, View focused) {
-    if (focused != null) {
+    Boolean isWebView = focused instanceof WebView;
+    if (focused != null && !isWebView) {
       scrollToChild(focused);
     }
     super.requestChildFocus(child, focused);
