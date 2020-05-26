@@ -251,7 +251,7 @@ public class ReactScrollView extends ScrollView
    */
   @Override
   public void requestChildFocus(View child, View focused) {
-    Boolean isWebView = focused instanceof WebView;
+    boolean isWebView = focused instanceof WebView;
     if (focused != null && !isWebView) {
       scrollToChild(focused);
     }
