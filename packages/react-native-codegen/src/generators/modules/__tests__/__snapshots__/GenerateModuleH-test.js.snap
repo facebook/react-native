@@ -25,6 +25,7 @@ public:
 virtual jsi::Object difficult(jsi::Runtime &rt, const jsi::Object &A) = 0;
 virtual void optionals(jsi::Runtime &rt, const jsi::Object &A) = 0;
 virtual void optionalMethod(jsi::Runtime &rt, const jsi::Object &options, const jsi::Function &callback, const jsi::Array &extras) = 0;
+virtual void getArrays(jsi::Runtime &rt, const jsi::Object &options) = 0;
 
 };
 
