@@ -36,7 +36,7 @@ import org.powermock.modules.junit4.rule.PowerMockRule;
 import org.robolectric.Robolectric;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.RuntimeEnvironment;
-import org.robolectric.util.concurrent.RoboExecutorService;
+import org.robolectric.android.util.concurrent.RoboExecutorService;
 
 /** Tests for {@link com.facebook.react.modules.storage.AsyncStorageModule}. */
 @PrepareForTest({Arguments.class})

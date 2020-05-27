@@ -76,7 +76,7 @@ public class JSDebuggerWebSocketClientTest {
 
     client.onMessage(null, ByteString.encodeUtf8("{\"replyID\":0, \"result\":\"OK\"}"));
     PowerMockito.verifyPrivate(client, never())
-        .invoke("triggerRequestSuccess", anyInt(), anyString());
+        .invoke("triggerRequestSuccess", anyInt(), nullable(String.class));
     PowerMockito.verifyPrivate(client, never()).invoke("triggerRequestFailure", anyInt(), any());
   }
 
@@ -86,7 +86,7 @@ public class JSDebuggerWebSocketClientTest {
 
     client.onMessage(null, "{\"result\":\"OK\"}");
     PowerMockito.verifyPrivate(client, never())
-        .invoke("triggerRequestSuccess", anyInt(), anyString());
+        .invoke("triggerRequestSuccess", anyInt(), nullable(String.class));
     PowerMockito.verifyPrivate(client, never()).invoke("triggerRequestFailure", anyInt(), any());
   }
 
@@ -96,7 +96,7 @@ public class JSDebuggerWebSocketClientTest {
 
     client.onMessage(null, "{\"replyID\":null, \"result\":\"OK\"}");
     PowerMockito.verifyPrivate(client, never())
-        .invoke("triggerRequestSuccess", anyInt(), anyString());
+        .invoke("triggerRequestSuccess", anyInt(), nullable(String.class));
     PowerMockito.verifyPrivate(client, never()).invoke("triggerRequestFailure", anyInt(), any());
   }
 
@@ -131,6 +131,7 @@ public class JSDebuggerWebSocketClientTest {
     JSDebuggerWebSocketClient client = PowerMockito.spy(new JSDebuggerWebSocketClient());
 
     client.onMessage(null, "{\"replyID\":0, \"error\":null}");
-    PowerMockito.verifyPrivate(client).invoke("triggerRequestSuccess", anyInt(), anyString());
+    PowerMockito.verifyPrivate(client)
+        .invoke("triggerRequestSuccess", anyInt(), nullable(String.class));
   }
 }

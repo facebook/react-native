@@ -282,6 +282,15 @@ fb_native.android_library(
 )
 
 fb_native.android_library(
+    name = "test-monitor",
+    visibility = ["PUBLIC"],
+    exported_deps = [
+        ":annotation",
+        ":test-monitor-binary",
+    ],
+)
+
+fb_native.android_library(
     name = "vectordrawable",
     visibility = ["PUBLIC"],
     exported_deps = [
@@ -446,6 +455,11 @@ fb_native.android_prebuilt_aar(
 fb_native.android_prebuilt_aar(
     name = "swiperefreshlayout-binary",
     aar = ":swiperefreshlayout-binary-aar",
+)
+
+fb_native.android_prebuilt_aar(
+    name = "test-monitor-binary",
+    aar = ":test-monitor-binary-aar",
 )
 
 fb_native.android_prebuilt_aar(
@@ -623,6 +637,12 @@ fb_native.remote_file(
     name = "swiperefreshlayout-binary-aar",
     sha1 = "4fd265b80a2b0fbeb062ab2bc4b1487521507762",
     url = "mvn:androidx.swiperefreshlayout:swiperefreshlayout:aar:1.0.0",
+)
+
+fb_native.remote_file(
+    name = "test-monitor-binary-aar",
+    sha1 = "d2f75d117c055f35c8ebbd4f96fabc2137df9e4d",
+    url = "mvn:androidx.test:monitor:aar:1.2.0",
 )
 
 fb_native.remote_file(
