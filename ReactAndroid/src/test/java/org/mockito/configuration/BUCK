@@ -1,4 +1,4 @@
-load("//tools/build_defs/oss:rn_defs.bzl", "react_native_dep", "rn_android_library")
+load("//tools/build_defs/oss:rn_defs.bzl", "react_native_android_toplevel_dep", "rn_android_library")
 
 rn_android_library(
     name = "configuration",
@@ -7,6 +7,6 @@ rn_android_library(
         "PUBLIC",
     ],
     deps = [
-        react_native_dep("third-party/java/mockito:mockito"),
+        react_native_android_toplevel_dep("third-party/java/mockito2:mockito2"),
     ],
 )

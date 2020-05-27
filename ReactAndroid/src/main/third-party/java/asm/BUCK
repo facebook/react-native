@@ -21,8 +21,8 @@ rn_prebuilt_jar(
 
 fb_native.remote_file(
     name = "download-asm.jar",
-    sha1 = "2fd56467a018aafe6ec6a73ccba520be4a7e1565",
-    url = "mvn:org.ow2.asm:asm:jar:5.0.1",
+    sha1 = "d74d4ba0dee443f68fb2dcb7fcdb945a2cd89912",
+    url = "mvn:org.ow2.asm:asm:jar:7.0",
 )
 
 rn_prebuilt_jar(
@@ -33,8 +33,8 @@ rn_prebuilt_jar(
 
 fb_native.remote_file(
     name = "download-asm-commons.jar",
-    sha1 = "7b7147a390a93a14d2edfdcf3f7b0e87a0939c3e",
-    url = "mvn:org.ow2.asm:asm-commons:jar:5.0.1",
+    sha1 = "478006d07b7c561ae3a92ddc1829bca81ae0cdd1",
+    url = "mvn:org.ow2.asm:asm-commons:jar:7.0",
 )
 
 rn_prebuilt_jar(
@@ -45,8 +45,8 @@ rn_prebuilt_jar(
 
 fb_native.remote_file(
     name = "download-asm-tree.jar",
-    sha1 = "1b1e6e9d869acd704056d0a4223071a511c619e6",
-    url = "mvn:org.ow2.asm:asm-tree:jar:5.0.1",
+    sha1 = "29bc62dcb85573af6e62e5b2d735ef65966c4180",
+    url = "mvn:org.ow2.asm:asm-tree:jar:7.0",
 )
 
 rn_prebuilt_jar(
@@ -57,8 +57,8 @@ rn_prebuilt_jar(
 
 fb_native.remote_file(
     name = "download-asm-util.jar",
-    sha1 = "7c8caddfbd0b2d7b844f8fcc75175b9cb9cf4724",
-    url = "mvn:org.ow2.asm:asm-util:jar:5.0.1",
+    sha1 = "18d4d07010c24405129a6dbb0e92057f8779fb9d",
+    url = "mvn:org.ow2.asm:asm-util:jar:7.0",
 )
 
 rn_prebuilt_jar(
@@ -69,6 +69,6 @@ rn_prebuilt_jar(
 
 fb_native.remote_file(
     name = "download-asm-analysis.jar",
-    sha1 = "e286fbee48efacb4e7c175f7948d9d8b2ab52352",
-    url = "mvn:org.ow2.asm:asm-analysis:jar:5.0.1",
+    sha1 = "4b310d20d6f1c6b7197a75f1b5d69f169bc8ac1f",
+    url = "mvn:org.ow2.asm:asm-analysis:jar:7.0",
 )
