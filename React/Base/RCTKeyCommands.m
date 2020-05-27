@@ -128,54 +128,6 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init)
   }
 }
 
-/**
- * Double Press Key Command Response
- * Double KeyEvent (Double R, etc.)
- */
-- (void)RCT_handleDoublePressKeyCommand:(UIKeyCommand *)key
-{
-  static BOOL firstPress = YES;
-  static NSTimeInterval lastCommand = 0;
-  static NSTimeInterval lastDoubleCommand = 0;
-  static NSString *lastInput = nil;
-  static UIKeyModifierFlags lastModifierFlags = 0;
-
-  if (firstPress) {
-    for (RCTKeyCommand *command in [RCTKeyCommands sharedInstance].commands) {
-      if ([command.keyCommand.input isEqualToString:key.input] &&
-          command.keyCommand.modifierFlags == key.modifierFlags && command.block) {
-        firstPress = NO;
-        lastCommand = CACurrentMediaTime();
-        lastInput = key.input;
-        lastModifierFlags = key.modifierFlags;
-        return;
-      }
-    }
-  } else {
-    // Second keyevent within 0.2 second,
-    // with the same key as the first one.
-    if (CACurrentMediaTime() - lastCommand < 0.2 && lastInput == key.input && lastModifierFlags == key.modifierFlags) {
-      for (RCTKeyCommand *command in [RCTKeyCommands sharedInstance].commands) {
-        if ([command.keyCommand.input isEqualToString:key.input] &&
-            command.keyCommand.modifierFlags == key.modifierFlags && command.block) {
-          // NOTE: throttle the key handler because on iOS 9 the handleKeyCommand:
-          // method gets called repeatedly if the command key is held down.
-          if (CACurrentMediaTime() - lastDoubleCommand > 0.5) {
-            command.block(key);
-            lastDoubleCommand = CACurrentMediaTime();
-          }
-          firstPress = YES;
-          return;
-        }
-      }
-    }
-
-    lastCommand = CACurrentMediaTime();
-    lastInput = key.input;
-    lastModifierFlags = key.modifierFlags;
-  }
-}
-
 @end
 
 @implementation RCTKeyCommands
@@ -244,45 +196,6 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init)
   return NO;
 }
 
-- (void)registerDoublePressKeyCommandWithInput:(NSString *)input
-                                 modifierFlags:(UIKeyModifierFlags)flags
-                                        action:(void (^)(UIKeyCommand *))block
-{
-  RCTAssertMainQueue();
-
-  UIKeyCommand *command = [UIKeyCommand keyCommandWithInput:input
-                                              modifierFlags:flags
-                                                     action:@selector(RCT_handleDoublePressKeyCommand:)];
-
-  RCTKeyCommand *keyCommand = [[RCTKeyCommand alloc] initWithKeyCommand:command block:block];
-  [_commands removeObject:keyCommand];
-  [_commands addObject:keyCommand];
-}
-
-- (void)unregisterDoublePressKeyCommandWithInput:(NSString *)input modifierFlags:(UIKeyModifierFlags)flags
-{
-  RCTAssertMainQueue();
-
-  for (RCTKeyCommand *command in _commands.allObjects) {
-    if ([command matchesInput:input flags:flags]) {
-      [_commands removeObject:command];
-      break;
-    }
-  }
-}
-
-- (BOOL)isDoublePressKeyCommandRegisteredForInput:(NSString *)input modifierFlags:(UIKeyModifierFlags)flags
-{
-  RCTAssertMainQueue();
-
-  for (RCTKeyCommand *command in _commands) {
-    if ([command matchesInput:input flags:flags]) {
-      return YES;
-    }
-  }
-  return NO;
-}
-
 @end
 
 #else
@@ -305,21 +218,6 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init)
 }
 
 - (BOOL)isKeyCommandRegisteredForInput:(NSString *)input modifierFlags:(UIKeyModifierFlags)flags
-{
-  return NO;
-}
-
-- (void)registerDoublePressKeyCommandWithInput:(NSString *)input
-                                 modifierFlags:(UIKeyModifierFlags)flags
-                                        action:(void (^)(UIKeyCommand *))block
-{
-}
-
-- (void)unregisterDoublePressKeyCommandWithInput:(NSString *)input modifierFlags:(UIKeyModifierFlags)flags
-{
-}
-
-- (BOOL)isDoublePressKeyCommandRegisteredForInput:(NSString *)input modifierFlags:(UIKeyModifierFlags)flags
 {
   return NO;
 }
