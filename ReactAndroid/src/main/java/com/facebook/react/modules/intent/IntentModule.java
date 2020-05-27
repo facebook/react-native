@@ -128,7 +128,7 @@ public class IntentModule extends NativeLinkingSpec {
     }
 
     try {
-      Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+      Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url).normalizeScheme());
       // We need Intent.FLAG_ACTIVITY_NEW_TASK since getReactApplicationContext() returns
       // the ApplicationContext instead of the Activity context.
       intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
