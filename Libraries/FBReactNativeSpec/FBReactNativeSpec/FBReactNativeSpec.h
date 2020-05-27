@@ -2525,63 +2525,6 @@ namespace facebook {
     };
   } // namespace react
 } // namespace facebook
-
-namespace JS {
-  namespace NativeTimePickerAndroid {
-    struct TimePickerOptions {
-      folly::Optional<double> hour() const;
-      folly::Optional<double> minute() const;
-      folly::Optional<bool> is24Hour() const;
-      NSString *mode() const;
-
-      TimePickerOptions(NSDictionary *const v) : _v(v) {}
-    private:
-      NSDictionary *_v;
-    };
-  }
-}
-
-@interface RCTCxxConvert (NativeTimePickerAndroid_TimePickerOptions)
-+ (RCTManagedPointer *)JS_NativeTimePickerAndroid_TimePickerOptions:(id)json;
-@end
-@protocol NativeTimePickerAndroidSpec <RCTBridgeModule, RCTTurboModule>
-
-- (void)open:(JS::NativeTimePickerAndroid::TimePickerOptions &)options
-     resolve:(RCTPromiseResolveBlock)resolve
-      reject:(RCTPromiseRejectBlock)reject;
-
-@end
-namespace facebook {
-  namespace react {
-    /**
-     * ObjC++ class for module 'TimePickerAndroid'
-     */
-
-    class JSI_EXPORT NativeTimePickerAndroidSpecJSI : public ObjCTurboModule {
-    public:
-      NativeTimePickerAndroidSpecJSI(const ObjCTurboModule::InitParams &params);
-
-    };
-  } // namespace react
-} // namespace facebook
-
-namespace JS {
-  namespace NativeTimePickerAndroid {
-    struct TimePickerResult {
-      NSString *action() const;
-      double hour() const;
-      double minute() const;
-
-      TimePickerResult(NSDictionary *const v) : _v(v) {}
-    private:
-      NSDictionary *_v;
-    };
-  }
-}
-
-@interface RCTCxxConvert (NativeTimePickerAndroid_TimePickerResult)
-+ (RCTManagedPointer *)JS_NativeTimePickerAndroid_TimePickerResult:(id)json;
-@end
 @protocol NativeTimingSpec <RCTBridgeModule, RCTTurboModule>
 
 - (void)createTimer:(double)callbackID
@@ -3797,41 +3740,6 @@ inline JS::NativeStatusBarManagerIOS::Constants::Builder::Builder(const Input i)
 inline JS::NativeStatusBarManagerIOS::Constants::Builder::Builder(Constants i) : _factory(^{
   return i.unsafeRawValue();
 }) {}
-inline folly::Optional<double> JS::NativeTimePickerAndroid::TimePickerOptions::hour() const
-{
-  id const p = _v[@"hour"];
-  return RCTBridgingToOptionalDouble(p);
-}
-inline folly::Optional<double> JS::NativeTimePickerAndroid::TimePickerOptions::minute() const
-{
-  id const p = _v[@"minute"];
-  return RCTBridgingToOptionalDouble(p);
-}
-inline folly::Optional<bool> JS::NativeTimePickerAndroid::TimePickerOptions::is24Hour() const
-{
-  id const p = _v[@"is24Hour"];
-  return RCTBridgingToOptionalBool(p);
-}
-inline NSString *JS::NativeTimePickerAndroid::TimePickerOptions::mode() const
-{
-  id const p = _v[@"mode"];
-  return RCTBridgingToString(p);
-}
-inline NSString *JS::NativeTimePickerAndroid::TimePickerResult::action() const
-{
-  id const p = _v[@"action"];
-  return RCTBridgingToString(p);
-}
-inline double JS::NativeTimePickerAndroid::TimePickerResult::hour() const
-{
-  id const p = _v[@"hour"];
-  return RCTBridgingToDouble(p);
-}
-inline double JS::NativeTimePickerAndroid::TimePickerResult::minute() const
-{
-  id const p = _v[@"minute"];
-  return RCTBridgingToDouble(p);
-}
 inline JS::NativeToastAndroid::Constants::Builder::Builder(const Input i) : _factory(^{
   NSMutableDictionary *d = [NSMutableDictionary new];
   auto SHORT = i.SHORT.get();

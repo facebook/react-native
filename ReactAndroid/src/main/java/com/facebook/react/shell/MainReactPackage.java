@@ -37,7 +37,6 @@ import com.facebook.react.modules.share.ShareModule;
 import com.facebook.react.modules.sound.SoundManagerModule;
 import com.facebook.react.modules.statusbar.StatusBarModule;
 import com.facebook.react.modules.storage.AsyncStorageModule;
-import com.facebook.react.modules.timepicker.TimePickerDialogModule;
 import com.facebook.react.modules.toast.ToastModule;
 import com.facebook.react.modules.vibration.VibrationModule;
 import com.facebook.react.modules.websocket.WebSocketModule;
@@ -92,7 +91,6 @@ import java.util.Map;
       ShareModule.class,
       SoundManagerModule.class,
       StatusBarModule.class,
-      TimePickerDialogModule.class,
       ToastModule.class,
       VibrationModule.class,
       WebSocketModule.class,
@@ -155,8 +153,6 @@ public class MainReactPackage extends TurboReactPackage {
         return new StatusBarModule(context);
       case SoundManagerModule.NAME:
         return new SoundManagerModule(context);
-      case TimePickerDialogModule.FRAGMENT_TAG:
-        return new TimePickerDialogModule(context);
       case ToastModule.NAME:
         return new ToastModule(context);
       case VibrationModule.NAME:
@@ -229,7 +225,6 @@ public class MainReactPackage extends TurboReactPackage {
             ShareModule.class,
             StatusBarModule.class,
             SoundManagerModule.class,
-            TimePickerDialogModule.class,
             ToastModule.class,
             VibrationModule.class,
             WebSocketModule.class

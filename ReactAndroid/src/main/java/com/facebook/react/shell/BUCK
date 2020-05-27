@@ -46,7 +46,6 @@ rn_android_library(
         react_native_target("java/com/facebook/react/modules/statusbar:statusbar"),
         react_native_target("java/com/facebook/react/modules/storage:storage"),
         react_native_target("java/com/facebook/react/modules/sound:sound"),
-        react_native_target("java/com/facebook/react/modules/timepicker:timepicker"),
         react_native_target("java/com/facebook/react/modules/toast:toast"),
         react_native_target("java/com/facebook/react/modules/vibration:vibration"),
         react_native_target("java/com/facebook/react/modules/websocket:websocket"),
