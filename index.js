@@ -492,160 +492,89 @@ module.exports = {
 };
 
 if (__DEV__) {
-  // $FlowFixMe This is intentional: Flow will error when attempting to access ART.
-  Object.defineProperty(module.exports, 'ART', {
-    configurable: true,
-    get() {
-      invariant(
-        false,
-        'ART has been removed from React Native. ' +
-          "It can now be installed and imported from '@react-native-community/art' instead of 'react-native'. " +
-          'See https://github.com/react-native-community/art',
-      );
-    },
-  });
+  const errorOnAccess = (moduleName, message) => {
+    // $FlowFixMe This is intentional: Flow will error when attempting to access removed component.
+    Object.defineProperty(module.exports, moduleName, {
+      configurable: true,
+      get() {
+        invariant(
+          false,
+          moduleName + ' has been removed from React Native.\n' + message,
+        );
+      },
+    });
+  };
 
-  // $FlowFixMe This is intentional: Flow will error when attempting to access ListView.
-  Object.defineProperty(module.exports, 'ListView', {
-    configurable: true,
-    get() {
-      invariant(
-        false,
-        'ListView has been removed from React Native. ' +
-          'See https://fb.me/nolistview for more information or use ' +
-          '`deprecated-react-native-listview`.',
-      );
-    },
-  });
+  errorOnAccess(
+    'ART',
+    "It can now be installed and imported from '@react-native-community/art' instead of 'react-native'. " +
+      'See https://github.com/react-native-community/art',
+  );
 
-  // $FlowFixMe This is intentional: Flow will error when attempting to access SwipeableListView.
-  Object.defineProperty(module.exports, 'SwipeableListView', {
-    configurable: true,
-    get() {
-      invariant(
-        false,
-        'SwipeableListView has been removed from React Native. ' +
-          'See https://fb.me/nolistview for more information or use ' +
-          '`deprecated-react-native-swipeable-listview`.',
-      );
-    },
-  });
+  errorOnAccess(
+    'ListView',
+    'See https://fb.me/nolistview for more information or use ' +
+      '`deprecated-react-native-listview`.',
+  );
 
-  // $FlowFixMe This is intentional: Flow will error when attempting to access WebView.
-  Object.defineProperty(module.exports, 'WebView', {
-    configurable: true,
-    get() {
-      invariant(
-        false,
-        'WebView has been removed from React Native. ' +
-          "It can now be installed and imported from 'react-native-webview' instead of 'react-native'. " +
-          'See https://github.com/react-native-community/react-native-webview',
-      );
-    },
-  });
+  errorOnAccess(
+    'SwipeableListView',
+    'See https://fb.me/nolistview for more information or use ' +
+      '`deprecated-react-native-swipeable-listview`.',
+  );
 
-  // $FlowFixMe This is intentional: Flow will error when attempting to access NetInfo.
-  Object.defineProperty(module.exports, 'NetInfo', {
-    configurable: true,
-    get() {
-      invariant(
-        false,
-        'NetInfo has been removed from React Native. ' +
-          "It can now be installed and imported from '@react-native-community/netinfo' instead of 'react-native'. " +
-          'See https://github.com/react-native-community/react-native-netinfo',
-      );
-    },
-  });
+  errorOnAccess(
+    'WebView',
+    "It can now be installed and imported from 'react-native-webview' instead of 'react-native'. " +
+      'See https://github.com/react-native-community/react-native-webview',
+  );
 
-  // $FlowFixMe This is intentional: Flow will error when attempting to access CameraRoll.
-  Object.defineProperty(module.exports, 'CameraRoll', {
-    configurable: true,
-    get() {
-      invariant(
-        false,
-        'CameraRoll has been removed from React Native. ' +
-          "It can now be installed and imported from '@react-native-community/cameraroll' instead of 'react-native'. " +
-          'See https://github.com/react-native-community/react-native-cameraroll',
-      );
-    },
-  });
+  errorOnAccess(
+    'NetInfo',
+    "It can now be installed and imported from '@react-native-community/netinfo' instead of 'react-native'. " +
+      'See https://github.com/react-native-community/react-native-netinfo',
+  );
 
-  // $FlowFixMe This is intentional: Flow will error when attempting to access ImageStore.
-  Object.defineProperty(module.exports, 'ImageStore', {
-    configurable: true,
-    get() {
-      invariant(
-        false,
-        'ImageStore has been removed from React Native. ' +
-          'To get a base64-encoded string from a local image use either of the following third-party libraries:' +
-          "* expo-file-system: `readAsStringAsync(filepath, 'base64')`" +
-          "* react-native-fs: `readFile(filepath, 'base64')`",
-      );
-    },
-  });
+  errorOnAccess(
+    'CameraRoll',
+    "It can now be installed and imported from '@react-native-community/cameraroll' instead of 'react-native'. " +
+      'See https://github.com/react-native-community/react-native-cameraroll',
+  );
 
-  // $FlowFixMe This is intentional: Flow will error when attempting to access ImageEditor.
-  Object.defineProperty(module.exports, 'ImageEditor', {
-    configurable: true,
-    get() {
-      invariant(
-        false,
-        'ImageEditor has been removed from React Native. ' +
-          "It can now be installed and imported from '@react-native-community/image-editor' instead of 'react-native'. " +
-          'See https://github.com/react-native-community/react-native-image-editor',
-      );
-    },
-  });
+  errorOnAccess(
+    'ImageStore',
+    'To get a base64-encoded string from a local image use either of the following third-party libraries:' +
+      "* expo-file-system: `readAsStringAsync(filepath, 'base64')`" +
+      "* react-native-fs: `readFile(filepath, 'base64')`",
+  );
 
-  // $FlowFixMe This is intentional: Flow will error when attempting to access TimePickerAndroid.
-  Object.defineProperty(module.exports, 'TimePickerAndroid', {
-    configurable: true,
-    get() {
-      invariant(
-        false,
-        'TimePickerAndroid has been removed from React Native. ' +
-          "It can now be installed and imported from '@react-native-community/datetimepicker' instead of 'react-native'. " +
-          'See https://github.com/react-native-community/datetimepicker',
-      );
-    },
-  });
+  errorOnAccess(
+    'ImageEditor',
+    "It can now be installed and imported from '@react-native-community/image-editor' instead of 'react-native'. " +
+      'See https://github.com/react-native-community/react-native-image-editor',
+  );
 
-  // $FlowFixMe This is intentional: Flow will error when attempting to access ToolbarAndroid.
-  Object.defineProperty(module.exports, 'ToolbarAndroid', {
-    configurable: true,
-    get() {
-      invariant(
-        false,
-        'ToolbarAndroid has been removed from React Native. ' +
-          "It can now be installed and imported from '@react-native-community/toolbar-android' instead of 'react-native'. " +
-          'See https://github.com/react-native-community/toolbar-android',
-      );
-    },
-  });
+  errorOnAccess(
+    'TimePickerAndroid',
+    "It can now be installed and imported from '@react-native-community/datetimepicker' instead of 'react-native'. " +
+      'See https://github.com/react-native-community/datetimepicker',
+  );
 
-  // $FlowFixMe This is intentional: Flow will error when attempting to access ViewPagerAndroid.
-  Object.defineProperty(module.exports, 'ViewPagerAndroid', {
-    configurable: true,
-    get() {
-      invariant(
-        false,
-        'ViewPagerAndroid has been removed from React Native. ' +
-          "It can now be installed and imported from '@react-native-community/viewpager' instead of 'react-native'. " +
-          'See https://github.com/react-native-community/react-native-viewpager',
-      );
-    },
-  });
+  errorOnAccess(
+    'ToolbarAndroid',
+    "It can now be installed and imported from '@react-native-community/toolbar-android' instead of 'react-native'. " +
+      'See https://github.com/react-native-community/toolbar-android',
+  );
 
-  // $FlowFixMe This is intentional: Flow will error when attempting to access CheckBox.
-  Object.defineProperty(module.exports, 'CheckBox', {
-    configurable: true,
-    get() {
-      invariant(
-        false,
-        'CheckBox has been removed from React Native. ' +
-          "It can now be installed and imported from '@react-native-community/checkbox' instead of 'react-native'. " +
-          'See https://github.com/react-native-community/react-native-checkbox',
-      );
-    },
-  });
+  errorOnAccess(
+    'ViewPagerAndroid',
+    "It can now be installed and imported from '@react-native-community/viewpager' instead of 'react-native'. " +
+      'See https://github.com/react-native-community/react-native-viewpager',
+  );
+
+  errorOnAccess(
+    'CheckBox',
+    "It can now be installed and imported from '@react-native-community/checkbox' instead of 'react-native'. " +
+      'See https://github.com/react-native-community/react-native-checkbox',
+  );
 }
