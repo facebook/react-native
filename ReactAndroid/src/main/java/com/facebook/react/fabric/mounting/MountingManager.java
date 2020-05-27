@@ -242,7 +242,9 @@ public class MountingManager {
       throw new IllegalStateException("Unable to find view for tag " + parentTag);
     }
 
-    if (parentView.getChildCount() <= index) {
+    ViewGroupManager<ViewGroup> viewGroupManager = getViewGroupManager(viewState);
+
+    if (viewGroupManager.getChildCount(parentView) <= index) {
       throw new IllegalStateException(
           "Cannot remove child at index "
               + index
@@ -253,7 +255,7 @@ public class MountingManager {
               + " children in parent");
     }
 
-    getViewGroupManager(viewState).removeViewAt(parentView, index);
+    viewGroupManager.removeViewAt(parentView, index);
   }
 
   @UiThread
