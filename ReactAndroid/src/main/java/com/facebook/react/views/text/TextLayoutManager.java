@@ -20,6 +20,7 @@ import android.text.StaticLayout;
 import android.text.TextPaint;
 import android.util.LayoutDirection;
 import android.util.LruCache;
+import android.view.View;
 import androidx.annotation.Nullable;
 import com.facebook.common.logging.FLog;
 import com.facebook.react.bridge.ReadableArray;
@@ -86,7 +87,7 @@ public class TextLayoutManager {
       sb.append(TextTransform.apply(fragment.getString("string"), textAttributes.mTextTransform));
 
       int end = sb.length();
-      int reactTag = fragment.getInt("reactTag");
+      int reactTag = fragment.hasKey("reactTag") ? fragment.getInt("reactTag") : View.NO_ID;
       if (fragment.hasKey(ViewProps.IS_ATTACHMENT)
           && fragment.getBoolean(ViewProps.IS_ATTACHMENT)) {
         float width = PixelUtil.toPixelFromSP(fragment.getDouble(ViewProps.WIDTH));

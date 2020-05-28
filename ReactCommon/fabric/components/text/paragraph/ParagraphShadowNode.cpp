@@ -120,13 +120,21 @@ Size ParagraphShadowNode::measure(LayoutConstraints layoutConstraints) const {
   auto content =
       getContentWithMeasuredAttachments(LayoutContext{}, layoutConstraints);
 
-  if (content.attributedString.isEmpty()) {
-    return layoutConstraints.clamp({0, 0});
+  auto attributedString = content.attributedString;
+  if (attributedString.isEmpty()) {
+    // Note: `zero-width space` is insufficient in some cases (e.g. when we need
+    // to measure the "height" of the font).
+    // TODO T67606511: We will redefine the measurement of empty strings as part
+    // of T67606511
+    auto string = BaseTextShadowNode::getEmptyPlaceholder();
+    auto textAttributes = TextAttributes::defaultTextAttributes();
+    textAttributes.apply(getConcreteProps().textAttributes);
+    attributedString.appendFragment({string, textAttributes, {}});
   }
 
   return textLayoutManager_
       ->measure(
-          AttributedStringBox{content.attributedString},
+          AttributedStringBox{attributedString},
           content.paragraphAttributes,
           layoutConstraints)
       .size;

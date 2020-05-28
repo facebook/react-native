@@ -57,6 +57,13 @@ class BaseTextShadowNode {
       ShadowNode const &parentNode,
       AttributedString &outAttributedString,
       Attachments &outAttachments);
+
+  /**
+   * Returns a character used to measure empty strings in native platforms.
+   */
+  inline static std::string getEmptyPlaceholder() {
+    return "I";
+  }
 };
 
 } // namespace react
