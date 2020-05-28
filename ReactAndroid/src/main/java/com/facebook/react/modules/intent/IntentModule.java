@@ -86,25 +86,8 @@ public class IntentModule extends NativeLinkingSpec {
     }
 
     try {
-      Activity currentActivity = getCurrentActivity();
       Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url).normalizeScheme());
-
-      String selfPackageName = getReactApplicationContext().getPackageName();
-      ComponentName componentName =
-          intent.resolveActivity(getReactApplicationContext().getPackageManager());
-      String otherPackageName = (componentName != null ? componentName.getPackageName() : "");
-
-      // If there is no currentActivity or we are launching to a different package we need to set
-      // the FLAG_ACTIVITY_NEW_TASK flag
-      if (currentActivity == null || !selfPackageName.equals(otherPackageName)) {
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-      }
-
-      if (currentActivity != null) {
-        currentActivity.startActivity(intent);
-      } else {
-        getReactApplicationContext().startActivity(intent);
-      }
+      sendOSIntent(intent, false);
 
       promise.resolve(true);
     } catch (Exception e) {
@@ -235,7 +218,29 @@ public class IntentModule extends NativeLinkingSpec {
       }
     }
 
-    getReactApplicationContext().startActivity(intent);
+    sendOSIntent(intent, true);
+  }
+
+
+  private void sendOSIntent(Intent intent, Boolean useNewTaskFlag) {
+    Activity currentActivity = getCurrentActivity();
+
+    String selfPackageName = getReactApplicationContext().getPackageName();
+    ComponentName componentName =
+      intent.resolveActivity(getReactApplicationContext().getPackageManager());
+    String otherPackageName = (componentName != null ? componentName.getPackageName() : "");
+
+    // If there is no currentActivity or we are launching to a different package we need to set
+    // the FLAG_ACTIVITY_NEW_TASK flag
+    if (useNewTaskFlag || currentActivity == null || !selfPackageName.equals(otherPackageName)) {
+      intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+    }
+
+    if (currentActivity != null) {
+      currentActivity.startActivity(intent);
+    } else {
+      getReactApplicationContext().startActivity(intent);
+    }
   }
 
   @Override
