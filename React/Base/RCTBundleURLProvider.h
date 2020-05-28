@@ -37,9 +37,7 @@ extern const NSUInteger kRCTBundleURLProviderDefaultPort;
  */
 - (NSString *)packagerServerHost;
 
-#if RCT_DEV_MENU
 + (BOOL)isPackagerRunning:(NSString *)host;
-#endif
 
 /**
  * Returns the jsBundleURL for a given bundle entrypoint and

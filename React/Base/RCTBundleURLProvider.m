@@ -110,6 +110,11 @@ static NSURL *serverRootWithHostPort(NSString *hostPort)
   }
   return nil;
 }
+#else
++ (BOOL)isPackagerRunning:(NSString *)host
+{
+  return false;
+}
 #endif
 
 - (NSString *)packagerServerHost
