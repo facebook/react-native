@@ -163,7 +163,7 @@ class WebSocket extends (EventTarget(...WEBSOCKET_EVENTS): any) {
   }
 
   send(data: string | ArrayBuffer | ArrayBufferView | Blob): void {
-    if (this.readyState === this.CONNECTING) {
+    if (this.readyState !== this.CONNECTED) {
       throw new Error('INVALID_STATE_ERR');
     }
 
