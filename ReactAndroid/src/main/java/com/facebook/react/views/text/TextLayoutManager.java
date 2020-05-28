@@ -21,6 +21,7 @@ import android.text.TextPaint;
 import android.util.LayoutDirection;
 import android.util.LruCache;
 import androidx.annotation.Nullable;
+import com.facebook.common.logging.FLog;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.uimanager.PixelUtil;
@@ -34,6 +35,11 @@ import java.util.List;
 
 /** Class responsible of creating {@link Spanned} object for the JS representation of Text */
 public class TextLayoutManager {
+
+  // TODO T67606397: Refactor configuration of fabric logs
+  private static final boolean ENABLE_MEASURE_LOGGING = false;
+
+  private static final String TAG = "TextLayoutManager";
 
   // It's important to pass the ANTI_ALIAS_FLAG flag to the constructor rather than setting it
   // later by calling setFlags. This is because the latter approach triggers a bug on Android 4.4.2.
@@ -421,8 +427,26 @@ public class TextLayoutManager {
       }
     }
 
-    return YogaMeasureOutput.make(
-        PixelUtil.toSPFromPixel(calculatedWidth), PixelUtil.toSPFromPixel(calculatedHeight));
+    float widthInSP = PixelUtil.toSPFromPixel(calculatedWidth);
+    float heightInSP = PixelUtil.toSPFromPixel(calculatedHeight);
+
+    if (ENABLE_MEASURE_LOGGING) {
+      FLog.e(
+          TAG,
+          "TextMeasure call ('"
+              + text
+              + "'): w: "
+              + calculatedWidth
+              + " px - h: "
+              + calculatedHeight
+              + " px - w : "
+              + widthInSP
+              + " sp - h: "
+              + heightInSP
+              + " sp");
+    }
+
+    return YogaMeasureOutput.make(widthInSP, heightInSP);
   }
 
   // TODO T31905686: This class should be private
