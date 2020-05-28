@@ -840,9 +840,6 @@ public class ReactInstanceManager {
           detachViewFromInstance(reactRoot, currentContext.getCatalystInstance());
         }
       }
-
-      // Reset reactRoot content in case it's reused
-      clearReactRoot(reactRoot);
     }
   }
 
