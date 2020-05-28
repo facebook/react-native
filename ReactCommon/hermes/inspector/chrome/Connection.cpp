@@ -533,7 +533,7 @@ void Connection::Impl::handle(
     const m::heapProfiler::StopTrackingHeapObjectsRequest &req) {
   sendSnapshot(
       req.id,
-      "HeapSnapshot.takeHeapSnapshot",
+      "HeapSnapshot.stopTrackingHeapObjects",
       req.reportProgress && *req.reportProgress,
       /* stopStackTraceCapture */ true);
 }
