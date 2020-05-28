@@ -755,16 +755,7 @@ export default class Pressability {
   }
 
   _measureCallback = (left, top, width, height, pageX, pageY) => {
-    if (
-      !(
-        left > 0 ||
-        top > 0 ||
-        width > 0 ||
-        height > 0 ||
-        pageX > 0 ||
-        pageY > 0
-      )
-    ) {
+    if (!left && !top && !width && !height && !pageX && !pageY) {
       return;
     }
     this._responderRegion = {
