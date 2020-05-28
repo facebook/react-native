@@ -61,7 +61,6 @@ export type GetPhotosParams = {|
 
 export interface Spec extends TurboModule {
   +getConstants: () => {||};
-  // eslint-disable-next-line lint/react-native-modules
   +getPhotos: (params: GetPhotosParams) => Promise<PhotoIdentifiersPage>;
   +saveToCameraRoll: (uri: string, type: string) => Promise<string>;
 
