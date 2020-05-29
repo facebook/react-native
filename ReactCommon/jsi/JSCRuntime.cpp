@@ -932,7 +932,8 @@ bool JSCRuntime::isArrayBuffer(const jsi::Object &obj) const {
 #if defined(_JSC_NO_ARRAY_BUFFERS)
   throw std::runtime_error("Unsupported");
 #else
-  auto typedArrayType = JSValueGetTypedArrayType(ctx_, objectRef(obj), nullptr);
+  auto typedArrayType = JSValueGetTypedArrayType(ctx_, objectRef(obj),
+    nullptr);
   return typedArrayType == kJSTypedArrayTypeArrayBuffer;
 #endif
 }
@@ -941,7 +942,8 @@ uint8_t *JSCRuntime::data(const jsi::ArrayBuffer &obj) {
 #if defined(_JSC_NO_ARRAY_BUFFERS)
   throw std::runtime_error("Unsupported");
 #else
-  return static_cast<uint8_t*>(JSObjectGetArrayBufferBytesPtr(ctx_, objectRef(obj), nullptr));
+  return static_cast<uint8_t*>(
+    JSObjectGetArrayBufferBytesPtr(ctx_, objectRef(obj), nullptr));
 #endif
 }
 
