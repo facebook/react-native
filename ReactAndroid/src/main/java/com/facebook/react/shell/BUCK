@@ -64,7 +64,6 @@ rn_android_library(
         react_native_target("java/com/facebook/react/views/text/frescosupport:frescosupport"),
         react_native_target("java/com/facebook/react/views/textinput:textinput"),
         react_native_target("java/com/facebook/react/views/view:view"),
-        react_native_target("java/com/facebook/react/views/viewpager:viewpager"),
         react_native_target("java/com/facebook/react/module/annotations:annotations"),
         react_native_target("res:shell"),
     ],
