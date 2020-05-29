@@ -724,9 +724,6 @@ public class CatalystInstanceImpl implements CatalystInstance {
   }
 
   private void onNativeException(Exception e) {
-    // TODO T62192299: remove this after investigation
-    FLog.e(ReactConstants.TAG, "CatalystInstanceImpl caught native exception", e);
-
     mNativeModuleCallExceptionHandler.handleException(e);
     mReactQueueConfiguration
         .getUIQueueThread()

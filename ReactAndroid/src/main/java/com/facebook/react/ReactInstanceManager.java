@@ -655,9 +655,9 @@ public class ReactInstanceManager {
     }
   }
 
-  /** Temporary: due to T62192299, log sources of destroy calls. TODO T62192299: delete */
+  /** Temporary: due to T67035147, log sources of destroy calls. TODO T67035147: delete */
   private void logOnDestroy() {
-    FLog.e(
+    FLog.d(
         TAG,
         "ReactInstanceManager.destroy called",
         new RuntimeException("ReactInstanceManager.destroy called"));
@@ -669,7 +669,6 @@ public class ReactInstanceManager {
     UiThreadUtil.assertOnUiThread();
     PrinterHolder.getPrinter().logMessage(ReactDebugOverlayTags.RN_CORE, "RNCore: Destroy");
 
-    // TODO T62192299: remove when investigation is complete
     logOnDestroy();
 
     if (mHasStartedDestroying) {
@@ -1134,8 +1133,7 @@ public class ReactInstanceManager {
   }
 
   private void attachRootViewToInstance(final ReactRoot reactRoot) {
-    // TODO: downgrade back to FLog.d once T62192299 is resolved.
-    FLog.e(ReactConstants.TAG, "ReactInstanceManager.attachRootViewToInstance()");
+    FLog.d(ReactConstants.TAG, "ReactInstanceManager.attachRootViewToInstance()");
     Systrace.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "attachRootViewToInstance");
 
     @Nullable
