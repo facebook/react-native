@@ -10,7 +10,6 @@ package com.facebook.react.animated;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
-import com.facebook.common.logging.FLog;
 import com.facebook.fbreact.specs.NativeAnimatedModuleSpec;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.Arguments;
@@ -21,7 +20,6 @@ import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.UIManager;
 import com.facebook.react.bridge.UIManagerListener;
 import com.facebook.react.bridge.WritableMap;
-import com.facebook.react.common.ReactConstants;
 import com.facebook.react.common.annotations.VisibleForTesting;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
@@ -108,23 +106,23 @@ public class NativeAnimatedModule extends NativeAnimatedModuleSpec
           protected void doFrameGuarded(final long frameTimeNanos) {
             try {
               NativeAnimatedNodesManager nodesManager = getNodesManager();
-              if (nodesManager.hasActiveAnimations()) {
+              if (nodesManager != null && nodesManager.hasActiveAnimations()) {
                 nodesManager.runUpdates(frameTimeNanos);
+              }
+              // This is very unlikely to ever be hit.
+              if (nodesManager == null && mReactChoreographer == null) {
+                return;
               }
 
               // TODO: Would be great to avoid adding this callback in case there are no active
-              // animations
-              // and no outstanding tasks on the operations queue. Apparently frame callbacks can
-              // only
-              // be posted from the UI thread and therefore we cannot schedule them directly from
-              // @Override
+              // animations and no outstanding tasks on the operations queue. Apparently frame
+              // callbacks can only be posted from the UI thread and therefore we cannot schedule
+              // them directly from other threads.
               Assertions.assertNotNull(mReactChoreographer)
                   .postFrameCallback(
                       ReactChoreographer.CallbackType.NATIVE_ANIMATED_MODULE,
                       mAnimatedFrameCallback);
             } catch (Exception ex) {
-              // TODO T57341690 remove this when T57341690 is resolved
-              FLog.e(ReactConstants.TAG, "Exception while executing animated frame callback.", ex);
               throw new RuntimeException(ex);
             }
           }
@@ -246,7 +244,8 @@ public class NativeAnimatedModule extends NativeAnimatedModuleSpec
 
   @Override
   public void onHostDestroy() {
-    // do nothing
+    // Is it possible for onHostDestroy to be called without a corresponding onHostPause?
+    clearFrameCallback();
   }
 
   @Override
@@ -254,6 +253,13 @@ public class NativeAnimatedModule extends NativeAnimatedModuleSpec
     return NAME;
   }
 
+  /**
+   * Returns a {@link NativeAnimatedNodesManager}, either the existing instance or a new one. Will
+   * return null if and only if the {@link ReactApplicationContext} is also null.
+   *
+   * @return {@link NativeAnimatedNodesManager}
+   */
+  @Nullable
   private NativeAnimatedNodesManager getNodesManager() {
     if (mNodesManager == null) {
       ReactApplicationContext reactApplicationContext = getReactApplicationContextIfActiveOrWarn();
