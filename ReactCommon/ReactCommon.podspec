@@ -47,7 +47,7 @@ Pod::Spec.new do |s|
     ss.dependency "glog"
 
     ss.subspec "core" do |sss|
-      sss.source_files = "turbomodule/core/*.{cpp,h}",
+      sss.source_files = "turbomodule/core/ReactCommon/*.{cpp,h}",
                          "turbomodule/core/platform/ios/*.{mm,cpp,h}"
     end
 

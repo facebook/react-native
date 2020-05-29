@@ -166,7 +166,7 @@ task prepareJSC {
         def jscPackagePath = findNodeModulePath(projectDir, "jsc-android")
         if (!jscPackagePath) {
             throw new GradleScriptException("Could not find the jsc-android npm package", null)
-        } 
+        }
 
         def jscDist = file("$jscPackagePath/dist")
         if (!jscDist.exists()) {
@@ -223,7 +223,7 @@ task downloadNdkBuildDependencies {
 def findNodeModulePath(baseDir, packageName) {
     def basePath = baseDir.toPath().normalize()
     // Node's module resolution algorithm searches up to the root directory,
-    // after which the base path will be null 
+    // after which the base path will be null
     while (basePath) {
         def candidatePath = Paths.get(basePath.toString(), "node_modules", packageName)
         if (candidatePath.toFile().exists()) {
@@ -300,7 +300,8 @@ def buildReactNdkLib = tasks.register("buildReactNdkLib", Exec) {
 
     inputs.dir("$projectDir/../ReactCommon")
     inputs.dir("src/main/jni")
-    inputs.dir("src/main/java/com/facebook/react/modules/blob")
+    inputs.dir("src/main/java/com/facebook/react/modules/blob/jni")
+    inputs.dir("src/main/java/com/facebook/react/turbomodule/core/jni")
     outputs.dir("$buildDir/react-ndk/all")
     commandLine(getNdkBuildFullPath(),
             "NDK_DEBUG=" + (nativeBuildType.equalsIgnoreCase("debug") ? "1" : "0"),

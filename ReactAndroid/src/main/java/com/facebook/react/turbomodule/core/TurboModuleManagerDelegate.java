@@ -16,16 +16,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 public abstract class TurboModuleManagerDelegate {
-  private final HybridData mHybridData;
-
   private static volatile boolean sIsSoLibraryLoaded;
-
-  protected abstract HybridData initHybrid();
 
   protected TurboModuleManagerDelegate() {
     maybeLoadOtherSoLibraries();
     maybeLoadSoLibrary();
-    mHybridData = initHybrid();
   }
 
   /**
