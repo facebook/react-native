@@ -11,6 +11,8 @@
 
 #import "RCTTurboModule.h"
 
+#import <ReactCommon/RuntimeExecutor.h>
+
 @protocol RCTTurboModuleManagerDelegate <NSObject>
 
 // TODO: Move to xplat codegen.
@@ -45,7 +47,7 @@
                       delegate:(id<RCTTurboModuleManagerDelegate>)delegate
                      jsInvoker:(std::shared_ptr<facebook::react::CallInvoker>)jsInvoker;
 
-- (void)installJSBindingWithRuntime:(facebook::jsi::Runtime *)runtime;
+- (void)installJSBindingWithRuntimeExecutor:(facebook::react::RuntimeExecutor)runtimeExecutor;
 
 - (void)invalidate;
 
