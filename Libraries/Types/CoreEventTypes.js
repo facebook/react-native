@@ -88,13 +88,13 @@ export type TextLayoutEvent = SyntheticEvent<
 export type PressEvent = ResponderSyntheticEvent<
   $ReadOnly<{|
     changedTouches: $ReadOnlyArray<$PropertyType<PressEvent, 'nativeEvent'>>,
-    force: ?number,
+    force?: number,
     identifier: number,
     locationX: number,
     locationY: number,
     pageX: number,
     pageY: number,
-    target: ?number,
+    target?: number,
     timestamp: number,
     touches: $ReadOnlyArray<$PropertyType<PressEvent, 'nativeEvent'>>,
   |}>,
