@@ -89,4 +89,7 @@ public class ReactFeatureFlags {
 
   /** Feature flag to configure initialization of Fabric surfaces. */
   public static boolean enableFabricStartSurfaceWithLayoutMetrics = true;
+
+  /** Feature flag to have FabricUIManager teardown stop all active surfaces. */
+  public static boolean enableFabricStopAllSurfacesOnTeardown = false;
 }
