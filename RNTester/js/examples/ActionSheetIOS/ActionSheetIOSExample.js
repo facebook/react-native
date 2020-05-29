@@ -25,7 +25,7 @@ const ScreenshotManager = NativeModules.ScreenshotManager;
 const BUTTONS = ['Option 0', 'Option 1', 'Option 2', 'Delete', 'Cancel'];
 const DESTRUCTIVE_INDEX = 3;
 const CANCEL_INDEX = 4;
-const DISABLED_BUTTON_INDICES = [1.0, 2.0];
+const DISABLED_BUTTON_INDICES = [1, 2];
 
 type Props = $ReadOnly<{||}>;
 type State = {|clicked: string|};
