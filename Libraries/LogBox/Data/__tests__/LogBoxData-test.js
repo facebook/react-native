@@ -137,7 +137,6 @@ beforeEach(() => {
 });
 
 const flushLogs = () => {
-  jest.runAllImmediates();
   jest.runAllTimers();
 };
 
@@ -240,7 +239,7 @@ describe('LogBoxData', () => {
     expect(logs[3].category).toEqual('D');
 
     addLogs(['A']);
-    jest.runAllImmediates();
+    flushLogs();
 
     // Expect `A` to be added to the end of the registry.
     logs = registry();
@@ -280,7 +279,6 @@ describe('LogBoxData', () => {
 
     // Order maters for symbolication before timeout.
     flushLogs();
-    jest.runAllTimers();
 
     expect(selectedLogIndex()).toBe(0);
 
@@ -289,7 +287,6 @@ describe('LogBoxData', () => {
 
     // Order maters for symbolication before timeout.
     flushLogs();
-    jest.runAllTimers();
 
     // This should still be 0 (the first fatal exception)
     // becuase it is the most likely source of the error.
@@ -302,7 +299,6 @@ describe('LogBoxData', () => {
     addFatalErrors(['A']);
 
     // Order maters for timeout before symbolication.
-    jest.runAllTimers();
     flushLogs();
 
     expect(selectedLogIndex()).toBe(0);
@@ -311,7 +307,6 @@ describe('LogBoxData', () => {
     addFatalErrors(['C']);
 
     // Order maters for timeout before symbolication.
-    jest.runAllTimers();
     flushLogs();
 
     // This should still be 0 (the first fatal exception)
@@ -546,12 +541,12 @@ describe('LogBoxData', () => {
 
     const lastLog = Array.from(observer.mock.calls[1][0].logs)[0];
     LogBoxData.dismiss(lastLog);
-    jest.runAllImmediates();
+    flushLogs();
     expect(observer.mock.calls.length).toBe(3);
 
     // Does nothing when category does not exist.
     LogBoxData.dismiss(lastLog);
-    jest.runAllImmediates();
+    flushLogs();
     expect(observer.mock.calls.length).toBe(3);
   });
 
@@ -564,12 +559,12 @@ describe('LogBoxData', () => {
     expect(observer.mock.calls.length).toBe(2);
 
     LogBoxData.clear();
-    jest.runAllImmediates();
+    flushLogs();
     expect(observer.mock.calls.length).toBe(3);
 
     // Does nothing when already empty.
     LogBoxData.clear();
-    jest.runAllImmediates();
+    flushLogs();
     expect(observer.mock.calls.length).toBe(3);
   });
 
@@ -581,17 +576,17 @@ describe('LogBoxData', () => {
     addSoftErrors(['B']);
     addFatalErrors(['C']);
     addSyntaxError();
-    jest.runAllImmediates();
-    expect(observer.mock.calls.length).toBe(2);
+    flushLogs();
+    expect(observer.mock.calls.length).toBe(3);
 
     LogBoxData.clearWarnings();
-    jest.runAllImmediates();
-    expect(observer.mock.calls.length).toBe(3);
+    flushLogs();
+    expect(observer.mock.calls.length).toBe(4);
 
     // Does nothing when already empty.
     LogBoxData.clearWarnings();
-    jest.runAllImmediates();
-    expect(observer.mock.calls.length).toBe(3);
+    flushLogs();
+    expect(observer.mock.calls.length).toBe(4);
   });
 
   it('updates observers when errors cleared', () => {
@@ -602,17 +597,17 @@ describe('LogBoxData', () => {
     addSoftErrors(['B']);
     addFatalErrors(['C']);
     addSyntaxError();
-    jest.runAllImmediates();
-    expect(observer.mock.calls.length).toBe(2);
+    flushLogs();
+    expect(observer.mock.calls.length).toBe(3);
 
     LogBoxData.clearErrors();
-    jest.runAllImmediates();
-    expect(observer.mock.calls.length).toBe(3);
+    flushLogs();
+    expect(observer.mock.calls.length).toBe(4);
 
     // Does nothing when already empty.
     LogBoxData.clearErrors();
-    jest.runAllImmediates();
-    expect(observer.mock.calls.length).toBe(3);
+    flushLogs();
+    expect(observer.mock.calls.length).toBe(4);
   });
 
   it('updates observers when an ignore pattern is added', () => {
@@ -620,16 +615,16 @@ describe('LogBoxData', () => {
     expect(observer.mock.calls.length).toBe(1);
 
     LogBoxData.addIgnorePatterns(['?']);
-    jest.runAllImmediates();
+    flushLogs();
     expect(observer.mock.calls.length).toBe(2);
 
     LogBoxData.addIgnorePatterns(['!']);
-    jest.runAllImmediates();
+    flushLogs();
     expect(observer.mock.calls.length).toBe(3);
 
     // Does nothing for an existing ignore pattern.
     LogBoxData.addIgnorePatterns(['!']);
-    jest.runAllImmediates();
+    flushLogs();
     expect(observer.mock.calls.length).toBe(3);
   });
 
@@ -638,21 +633,21 @@ describe('LogBoxData', () => {
     expect(observer.mock.calls.length).toBe(1);
 
     LogBoxData.setDisabled(true);
-    jest.runAllImmediates();
+    flushLogs();
     expect(observer.mock.calls.length).toBe(2);
 
     // Does nothing when already disabled.
     LogBoxData.setDisabled(true);
-    jest.runAllImmediates();
+    flushLogs();
     expect(observer.mock.calls.length).toBe(2);
 
     LogBoxData.setDisabled(false);
-    jest.runAllImmediates();
+    flushLogs();
     expect(observer.mock.calls.length).toBe(3);
 
     // Does nothing when already enabled.
     LogBoxData.setDisabled(false);
-    jest.runAllImmediates();
+    flushLogs();
     expect(observer.mock.calls.length).toBe(3);
   });
 
