@@ -48,6 +48,7 @@ import com.facebook.react.views.text.TextAttributes;
 import com.facebook.react.views.text.TextInlineImageSpan;
 import com.facebook.react.views.view.ReactViewBackgroundManager;
 import java.util.ArrayList;
+import java.lang.Math;
 
 /**
  * A wrapper around the EditText that lets us better control what happens when an EditText gets
@@ -96,6 +97,10 @@ public class ReactEditText extends AppCompatEditText {
   private int mFontStyle = ReactTypefaceUtils.UNSET;
   private boolean mAutoFocus = false;
   private boolean mDidAttachToWindow = false;
+  private float mPreviousYCoordinates;
+  private float mPreviousXCoordinates;
+  private boolean mMultiLine = false;
+
 
   private ReactViewBackgroundManager mReactBackgroundManager;
 
@@ -171,22 +176,37 @@ public class ReactEditText extends AppCompatEditText {
   public boolean onTouchEvent(MotionEvent ev) {
     switch (ev.getAction()) {
       case MotionEvent.ACTION_DOWN:
+        mPreviousYCoordinates = ev.getY();
+        mPreviousXCoordinates = ev.getX();
         mDetectScrollMovement = true;
         // Disallow parent views to intercept touch events, until we can detect if we should be
         // capturing these touches or not.
         this.getParent().requestDisallowInterceptTouchEvent(true);
         break;
       case MotionEvent.ACTION_MOVE:
-        if (mDetectScrollMovement) {
-          if (!canScrollVertically(-1)
-              && !canScrollVertically(1)
-              && !canScrollHorizontally(-1)
-              && !canScrollHorizontally(1)) {
-            // We cannot scroll, let parent views take care of these touches.
-            this.getParent().requestDisallowInterceptTouchEvent(false);
-          }
+        float horizontalScroll = mPreviousXCoordinates - ev.getX();
+        float verticalScroll = mPreviousYCoordinates - ev.getY();
+        boolean resetGravity = getGravity() == Gravity.CENTER &&
+          mMultiLine == false;
+        boolean enableParentScroll = false;
+        boolean isSwipeVertical = Math.abs(verticalScroll) > Math.abs(horizontalScroll);
+        if(isSwipeVertical) {
+          boolean scrollDirectionUp = verticalScroll > 0;
+          boolean enableParentScrollUp = scrollDirectionUp && !canScrollVertically(1);
+          boolean enableParentScrollDown = !scrollDirectionUp && !canScrollVertically(-1);
+          enableParentScroll = enableParentScrollDown || enableParentScrollUp;
+        } else {
+          if(resetGravity) { setGravity(19); };
+          boolean scrollDirectionRight = horizontalScroll > 0;
+          boolean enableParentScrollRight = scrollDirectionRight && !canScrollHorizontally(1);
+          boolean enableParentScrollLeft = !scrollDirectionRight && !canScrollHorizontally(-1);
+          enableParentScroll = enableParentScrollRight || enableParentScrollLeft;
+        }
+        if(mDetectScrollMovement && enableParentScroll) {
+          this.getParent().requestDisallowInterceptTouchEvent(false);
           mDetectScrollMovement = false;
         }
+        if(resetGravity) { setGravity(Gravity.CENTER); };
         break;
     }
     return super.onTouchEvent(ev);
