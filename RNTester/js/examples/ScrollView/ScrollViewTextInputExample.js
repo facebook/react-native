@@ -13,8 +13,6 @@
 const React = require('react');
 const {ScrollView, Text, TextInput} = require('react-native');
 
-import type {ViewStyleProp} from '../../../../Libraries/StyleSheet/StyleSheet';
-
 exports.title = 'ScrollView with TextInputs';
 exports.description = 'Displays a list of TextInputs in a ScrollView';
 exports.examples = [
@@ -23,14 +21,15 @@ exports.examples = [
     description:
       'Displays a list of scrollable TextInputs in a vertical ScrollView',
     render: function(): React.Node {
+      const text = "WORD1 \nWORD2 \nWORD3 \nWORD4 \nWORD5";
       return (
-        <ScrollView 
-          style={{height:50}}>
-          <TextInput 
-            style={{height:50, width: 450, textAlign: 'center' }}
-            multiline 
-            scrollEnabled 
-            value={"WORD1 \nWORD2 \nWORD3 \nWORD4 \nWORD5"} />
+        <ScrollView style={{height: 50}}>
+          <TextInput
+            style={{height: 50, width: 450, textAlign: 'center'}}
+            multiline
+            scrollEnabled
+            value={text}
+          />
           <Text>Normal Text</Text>
           <Text>Normal Text</Text>
           <Text>Normal Text</Text>
@@ -46,9 +45,10 @@ exports.examples = [
     render(): React.Element<any> {
       return (
         <ScrollView horizontal>
-          <TextInput 
-            style={{ height:100, width: 200, textAlign: 'center'}} 
-            value='WORD1 WORD2 WORD3 WORD4 WORD5' />
+          <TextInput
+            style={{height: 100, width: 200, textAlign: 'center'}}
+            value="WORD1 WORD2 WORD3 WORD4 WORD5"
+          />
           <Text>Normal Text</Text>
           <Text>Normal Text</Text>
           <Text>Normal Text</Text>
