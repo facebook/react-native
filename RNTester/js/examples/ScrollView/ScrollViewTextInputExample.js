@@ -21,7 +21,7 @@ exports.examples = [
     description:
       'Displays a list of scrollable TextInputs in a vertical ScrollView',
     render: function(): React.Node {
-      const text = "WORD1 WORD2 WORD3 WORD4 WORD5";
+      const text = 'WORD1 WORD2 WORD3 WORD4 WORD5';
       return (
         <ScrollView style={{height: 50}}>
           <TextInput
