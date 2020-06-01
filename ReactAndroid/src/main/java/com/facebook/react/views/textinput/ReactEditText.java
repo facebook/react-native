@@ -196,7 +196,7 @@ public class ReactEditText extends AppCompatEditText {
           boolean enableParentScrollDown = !scrollDirectionUp && !canScrollVertically(-1);
           enableParentScroll = enableParentScrollDown || enableParentScrollUp;
         } else {
-          if(resetGravity) { setGravity(19); };
+          if(resetGravity) { setGravity(Gravity.LEFT); };
           boolean scrollDirectionRight = horizontalScroll > 0;
           boolean enableParentScrollRight = scrollDirectionRight && !canScrollHorizontally(1);
           boolean enableParentScrollLeft = !scrollDirectionRight && !canScrollHorizontally(-1);
