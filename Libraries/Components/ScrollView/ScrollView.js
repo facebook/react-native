@@ -10,7 +10,7 @@
 
 'use strict';
 
-const AnimatedImplementation = require('../../Animated/src/AnimatedImplementation');
+const AnimatedImplementation = require('react-animated/dist/AnimatedImplementation');
 const Platform = require('../../Utilities/Platform');
 const React = require('react');
 const ReactNative = require('../../Renderer/shims/ReactNative');

@@ -24,7 +24,7 @@ React/CxxBridge/* @mhorowitz
 
 # Components and APIs
 ReactAndroid/src/main/java/com/facebook/react/animated/* @janicduplessis
-Libraries/Animated/* @janicduplessis
+packages/react-animated/* @janicduplessis
 Libraries/NativeAnimation/* @janicduplessis
 Libraries/Image/* @shergin
 Libraries/Text/* @shergin
