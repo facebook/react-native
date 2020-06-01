@@ -21,11 +21,11 @@ exports.examples = [
     description:
       'Displays a list of scrollable TextInputs in a vertical ScrollView',
     render: function(): React.Node {
-      const text = "WORD1 \nWORD2 \nWORD3 \nWORD4 \nWORD5";
+      const text = "WORD1 WORD2 WORD3 WORD4 WORD5";
       return (
         <ScrollView style={{height: 50}}>
           <TextInput
-            style={{height: 50, width: 450, textAlign: 'center'}}
+            style={{height: 50, width: 150, textAlign: 'center'}}
             multiline
             scrollEnabled
             value={text}
