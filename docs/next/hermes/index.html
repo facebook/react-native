@@ -103,7 +103,7 @@
 <p>If you've recently created a new app from scratch, you should see if Hermes is enabled in the welcome view:</p>
 <p><img src="/docs/assets/HermesApp.jpg" alt="Where to find JS engine status in AwesomeProject"></p>
 <p>A <code>HermesInternal</code> global variable will be available in JavaScript that can be used to verify that Hermes is in use:</p>
-<pre><code class="hljs css language-jsx"><span class="token keyword">const</span> <span class="token function-variable function">isHermes</span> <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=></span> global<span class="token punctuation">.</span>HermesInternal <span class="token operator">!==</span> <span class="token keyword">null</span><span class="token punctuation">;</span>
+<pre><code class="hljs css language-jsx"><span class="token keyword">const</span> <span class="token function-variable function">isHermes</span> <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token operator">!</span><span class="token operator">!</span>global<span class="token punctuation">.</span>HermesInternal<span class="token punctuation">;</span>
 </code></pre>
 <p>To see the benefits of Hermes, try making a release build/deployment of your app to compare. For example:</p>
 <pre><code class="hljs css language-sh">$ npx react-native run-android --variant release
