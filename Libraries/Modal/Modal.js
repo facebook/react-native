@@ -11,13 +11,14 @@
 'use strict';
 
 const AppContainer = require('../ReactNative/AppContainer');
+const {RootTagContext} = require('../ReactNative/RootTag');
 const I18nManager = require('../ReactNative/I18nManager');
-const PropTypes = require('prop-types');
 const React = require('react');
 const ScrollView = require('../Components/ScrollView/ScrollView');
 const StyleSheet = require('../StyleSheet/StyleSheet');
 const View = require('../Components/View/View');
 
+import type {RootTag} from '../ReactNative/RootTag';
 import type {ViewProps} from '../Components/View/ViewPropTypes';
 import type {DirectEventHandler} from '../Types/CodegenTypes';
 import type EmitterSubscription from '../vendor/emitter/EmitterSubscription';
@@ -148,9 +149,7 @@ class Modal extends React.Component<Props> {
     hardwareAccelerated: false,
   };
 
-  static contextTypes: any | {|rootTag: React$PropType$Primitive<number>|} = {
-    rootTag: PropTypes.number,
-  };
+  static contextType: React.Context<RootTag> = RootTagContext;
 
   _identifier: number;
   _eventSubscription: ?EmitterSubscription;
@@ -203,9 +202,7 @@ class Modal extends React.Component<Props> {
     }
 
     const innerChildren = __DEV__ ? (
-      <AppContainer rootTag={this.context.rootTag}>
-        {this.props.children}
-      </AppContainer>
+      <AppContainer rootTag={this.context}>{this.props.children}</AppContainer>
     ) : (
       this.props.children
     );
