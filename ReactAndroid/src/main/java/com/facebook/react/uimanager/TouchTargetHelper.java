@@ -140,7 +140,8 @@ public class TouchTargetHelper {
         int childIndex =
           zIndexedViewGroup != null ? zIndexedViewGroup.getZIndexMappedChildIndex(i) : i;
         View child = viewGroup.getChildAt(childIndex);
-        PointF childPoint = getChildPoint(eventCoords[0], eventCoords[1], viewGroup, child);
+        PointF childPoint = mTempPoint;
+        getChildPoint(eventCoords[0], eventCoords[1], viewGroup, child, childPoint);
         // If it is contained within the child View, the childPoint value will contain the view
         // coordinates relative to the child
         // We need to store the existing X,Y for the viewGroup away as it is possible this child
@@ -179,8 +180,11 @@ public class TouchTargetHelper {
     return null;
   }
 
-  private static boolean isTouchPointInView(
-      float x, float y, View view) {
+  /**
+   * Checks whether a touch at {@code x} and {@code y} are within the bounds of the View. Both
+   * {@code x} and {@code y} must be relative to the top-left corner of the view.
+   */
+  private static boolean isTouchPointInView(float x, float y, View view) {
     if (view instanceof ReactHitSlopView && ((ReactHitSlopView) view).getHitSlopRect() != null) {
       Rect hitSlopRect = ((ReactHitSlopView) view).getHitSlopRect();
       if ((x >= -hitSlopRect.left
@@ -206,8 +210,8 @@ public class TouchTargetHelper {
    * the transform Matrix to find the true local points This code is taken from {@link
    * ViewGroup#isTransformedTouchPointInView()}
    */
-  private static PointF getChildPoint(
-      float x, float y, ViewGroup parent, View child) {
+  private static void getChildPoint(
+      float x, float y, ViewGroup parent, View child, PointF outLocalPoint) {
     float localX = x + parent.getScrollX() - child.getLeft();
     float localY = y + parent.getScrollY() - child.getTop();
     Matrix matrix = child.getMatrix();
@@ -221,9 +225,7 @@ public class TouchTargetHelper {
       localX = localXY[0];
       localY = localXY[1];
     }
-    PointF childPoint = new PointF();
-    childPoint.set(localX, localY);
-    return childPoint;
+    outLocalPoint.set(localX, localY);
   }
 
   /**
