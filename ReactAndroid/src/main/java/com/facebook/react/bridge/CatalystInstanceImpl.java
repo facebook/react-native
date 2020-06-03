@@ -582,16 +582,6 @@ public class CatalystInstanceImpl implements CatalystInstance {
   public NativeModule getNativeModule(String moduleName) {
     if (getTurboModuleRegistry() != null) {
       TurboModule turboModule = getTurboModuleRegistry().getModule(moduleName);
-
-      if (ReactFeatureFlags.enableTurboModuleDebugLogs) {
-        // TODO(T46487253): Remove after task is closed
-        FLog.e(
-            ReactConstants.TAG,
-            "CatalystInstanceImpl.getNativeModule: TurboModule "
-                + moduleName
-                + (turboModule == null ? " not" : "")
-                + " found");
-      }
       if (turboModule != null) {
         return (NativeModule) turboModule;
       }

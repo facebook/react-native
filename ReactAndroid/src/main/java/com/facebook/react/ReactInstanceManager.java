@@ -1279,38 +1279,14 @@ public class ReactInstanceManager {
 
     reactContext.initializeWithInstance(catalystInstance);
 
-    if (ReactFeatureFlags.enableTurboModuleDebugLogs) {
-      // TODO(T46487253): Remove after task is closed
-      FLog.e(
-          ReactConstants.TAG,
-          "ReactInstanceManager.createReactContext: mJSIModulePackage "
-              + (mJSIModulePackage != null ? "not null" : "null"));
-    }
-
     if (mJSIModulePackage != null) {
       catalystInstance.addJSIModules(
           mJSIModulePackage.getJSIModules(
               reactContext, catalystInstance.getJavaScriptContextHolder()));
 
-      if (ReactFeatureFlags.enableTurboModuleDebugLogs) {
-        // TODO(T46487253): Remove after task is closed
-        FLog.e(
-            ReactConstants.TAG,
-            "ReactInstanceManager.createReactContext: ReactFeatureFlags.useTurboModules == "
-                + (ReactFeatureFlags.useTurboModules == false ? "false" : "true"));
-      }
-
       if (ReactFeatureFlags.useTurboModules) {
         JSIModule turboModuleManager =
             catalystInstance.getJSIModule(JSIModuleType.TurboModuleManager);
-
-        if (ReactFeatureFlags.enableTurboModuleDebugLogs) {
-          // TODO(T46487253): Remove after task is closed
-          FLog.e(
-              ReactConstants.TAG,
-              "ReactInstanceManager.createReactContext: TurboModuleManager "
-                  + (turboModuleManager == null ? "not created" : "created"));
-        }
 
         catalystInstance.setTurboModuleManager(turboModuleManager);
 
