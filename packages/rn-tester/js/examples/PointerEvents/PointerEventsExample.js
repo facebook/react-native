@@ -195,6 +195,11 @@ class OverflowExample extends React.Component<OverflowExampleProps> {
           style={[styles.box, styles.boxOverflowing]}>
           <DemoText style={styles.text}>B: overflowing</DemoText>
         </View>
+        <View
+          onTouchStart={() => this.props.onLog('C fully outside touched')}
+          style={[styles.box, styles.boxFullyOutside]}>
+          <DemoText style={styles.text}>C: fully outside</DemoText>
+        </View>
       </View>
     );
   }
@@ -288,6 +293,11 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: 30,
     paddingBottom: 40,
+  },
+  boxFullyOutside: {
+    position: 'absolute',
+    left: 200,
+    top: 65,
   },
   logText: {
     fontSize: 9,
