@@ -272,7 +272,8 @@ public class TouchTargetHelper {
       // Note that this currently only applies to Nodes/FlatViewGroup as it's the only class that
       // is both a ViewGroup and ReactCompoundView (ReactTextView is a ReactCompoundView but not a
       // ViewGroup).
-      if (view instanceof ReactCompoundView) {
+      if (view instanceof ReactCompoundView
+        && isTouchPointInView(eventCoords[0], eventCoords[1], view)) {
         int reactTag =
             ((ReactCompoundView) view).reactTagForTouch(eventCoords[0], eventCoords[1]);
         if (reactTag != view.getId()) {
@@ -285,10 +286,10 @@ public class TouchTargetHelper {
 
     } else if (pointerEvents == PointerEvents.AUTO) {
       // Either this view or one of its children is the target
-      if (view instanceof ReactCompoundViewGroup) {
-        if (((ReactCompoundViewGroup) view).interceptsTouchEvent(eventCoords[0], eventCoords[1])) {
-          return view;
-        }
+      if (view instanceof ReactCompoundViewGroup
+        && isTouchPointInView(eventCoords[0], eventCoords[1], view)
+        && ((ReactCompoundViewGroup) view).interceptsTouchEvent(eventCoords[0], eventCoords[1])) {
+        return view;
       }
       return findTouchTargetView(eventCoords, view,
         EnumSet.of(TouchTargetReturnType.SELF, TouchTargetReturnType.CHILD));
