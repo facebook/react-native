@@ -44,10 +44,11 @@ class ExampleBox extends React.Component<ExampleBoxProps, ExampleBoxState> {
   };
 
   render() {
+    const {Component} = this.props;
     return (
       <View>
         <View onTouchEndCapture={this.handleTouchCapture}>
-          <this.props.Component onLog={this.handleLog} />
+          <Component onLog={this.handleLog} />
         </View>
         <View style={styles.logBox}>
           <DemoText style={styles.logText}>
