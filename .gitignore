@@ -39,9 +39,10 @@ buck-out
 /ReactAndroid/src/main/gen
 
 # Android Studio
+.build
+.classpath
 .project
 .settings
-.classpath
 
 # Watchman
 .watchmanconfig
