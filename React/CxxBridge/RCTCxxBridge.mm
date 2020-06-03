@@ -907,7 +907,9 @@ struct RCTInstanceCallback : public InstanceCallback {
         if (self.valid && ![moduleData.moduleClass isSubclassOfClass:[RCTCxxModule class]]) {
           [self->_performanceLogger appendStartForTag:RCTPLNativeModuleMainThread];
           (void)[moduleData instance];
-          [moduleData gatherConstants];
+          if (!RCTIsMainQueueExecutionOfConstantsToExportDisabled()) {
+            [moduleData gatherConstants];
+          }
           [self->_performanceLogger appendStopForTag:RCTPLNativeModuleMainThread];
         }
       };
