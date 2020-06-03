@@ -361,7 +361,7 @@ jsi::Value ObjCTurboModule::performMethodInvocation(
   };
 
   if (wasMethodSync) {
-    nativeInvoker_->invokeSync([block]() -> void { block(); });
+    block();
   } else {
     asyncCallCounter = getUniqueId();
     TurboModulePerfLogger::asyncMethodCallDispatch(moduleName, methodName);

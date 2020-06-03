@@ -40,7 +40,6 @@ class JSI_EXPORT ObjCTurboModule : public TurboModule {
     id<RCTTurboModule> instance;
     std::shared_ptr<CallInvoker> jsInvoker;
     std::shared_ptr<CallInvoker> nativeInvoker;
-    // Does the NativeModule dispatch async methods to the JS thread?
     bool isSyncModule;
   };
 
@@ -61,16 +60,20 @@ class JSI_EXPORT ObjCTurboModule : public TurboModule {
   void setMethodArgConversionSelector(NSString *methodName, int argIndex, NSString *fnName);
 
  private:
+  // Does the NativeModule dispatch async methods to the JS thread?
+  const bool isSyncModule_;
+
   /**
    * TODO(ramanpreet):
    * Investigate an optimization that'll let us get rid of this NSMutableDictionary.
    */
   NSMutableDictionary<NSString *, NSMutableArray *> *methodArgConversionSelectors_;
   NSDictionary<NSString *, NSArray<NSString *> *> *methodArgumentTypeNames_;
-  const bool isSyncModule_;
-  bool isMethodSync(TurboModuleMethodValueKind returnType);
-  NSString *getArgumentTypeName(NSString *methodName, int argIndex);
 
+  bool isMethodSync(TurboModuleMethodValueKind returnType);
+  BOOL hasMethodArgConversionSelector(NSString *methodName, int argIndex);
+  SEL getMethodArgConversionSelector(NSString *methodName, int argIndex);
+  NSString *getArgumentTypeName(NSString *methodName, int argIndex);
   NSInvocation *getMethodInvocation(
       jsi::Runtime &runtime,
       TurboModuleMethodValueKind returnType,
@@ -85,9 +88,6 @@ class JSI_EXPORT ObjCTurboModule : public TurboModule {
       const char *methodName,
       NSInvocation *inv,
       NSMutableArray *retainedObjectsForInvocation);
-
-  BOOL hasMethodArgConversionSelector(NSString *methodName, int argIndex);
-  SEL getMethodArgConversionSelector(NSString *methodName, int argIndex);
 
   using PromiseInvocationBlock = void (^)(RCTPromiseResolveBlock resolveWrapper, RCTPromiseRejectBlock rejectWrapper);
   jsi::Value
