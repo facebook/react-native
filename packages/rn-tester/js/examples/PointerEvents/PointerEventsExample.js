@@ -31,12 +31,8 @@ class ExampleBox extends React.Component<ExampleBoxProps, ExampleBoxState> {
     log: [],
   };
 
-  handleLog = msg => {
-    this.state.log = this.state.log.concat([msg]);
-  };
-
-  flushReactChanges = () => {
-    this.forceUpdate();
+  handleLog = (msg: string) => {
+    this.setState({log: this.state.log.concat([msg])});
   };
 
   /**
@@ -44,18 +40,13 @@ class ExampleBox extends React.Component<ExampleBoxProps, ExampleBoxState> {
    * happens.
    */
   handleTouchCapture = () => {
-    this.state.log = this.state.log.concat(['---']);
+    this.setState({log: this.state.log.concat(['---'])});
   };
 
   render() {
     return (
       <View>
-        <View
-          onTouchEndCapture={this.handleTouchCapture}
-          onTouchStart={this.flushReactChanges}>
-          {/* $FlowFixMe(>=0.53.0 site=react_native_fb,react_native_oss) This
-           * comment suppresses an error when upgrading Flow's support for
-           * React. To see the error delete this comment and run Flow. */}
+        <View onTouchEndCapture={this.handleTouchCapture}>
           <this.props.Component onLog={this.handleLog} />
         </View>
         <View style={styles.logBox}>
