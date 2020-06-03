@@ -158,7 +158,7 @@ public class TouchTargetHelper {
           boolean inOverflowBounds = true;
           if (viewGroup instanceof ReactOverflowView) {
             @Nullable String overflow = ((ReactOverflowView) viewGroup).getOverflow();
-            if (ViewProps.HIDDEN.equals(overflow)
+            if ((ViewProps.HIDDEN.equals(overflow) || ViewProps.SCROLL.equals(overflow))
               && !isTouchPointInView(restoreX, restoreY, view)) {
               inOverflowBounds = false;
             }
