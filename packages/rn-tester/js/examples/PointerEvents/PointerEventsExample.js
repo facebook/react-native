@@ -14,7 +14,15 @@ const React = require('react');
 
 const {StyleSheet, Text, View} = require('react-native');
 
-class ExampleBox extends React.Component<$FlowFixMeProps, $FlowFixMeState> {
+type ExampleBoxComponentProps = $ReadOnly<{|
+  onLog: (msg: string) => void,
+|}>;
+
+type ExampleBoxProps = $ReadOnly<{|
+  Component: React.ComponentType<ExampleBoxComponentProps>,
+|}>;
+
+class ExampleBox extends React.Component<ExampleBoxProps, $FlowFixMeState> {
   state = {
     log: [],
   };
@@ -165,6 +173,45 @@ class BoxOnlyExample extends React.Component<$FlowFixMeProps> {
   }
 }
 
+type OverflowExampleProps = $ReadOnly<{|
+  overflow: 'hidden' | 'visible',
+  onLog: (msg: string) => void,
+|}>;
+
+class OverflowExample extends React.Component<OverflowExampleProps> {
+  render() {
+    const {overflow} = this.props;
+    return (
+      <View
+        onTouchStart={() => this.props.onLog(`A overflow ${overflow} touched`)}
+        style={[
+          styles.box,
+          styles.boxWithOverflowSet,
+          {overflow: this.props.overflow},
+        ]}>
+        <DemoText style={styles.text}>A: overflow: {overflow}</DemoText>
+        <View
+          onTouchStart={() => this.props.onLog('B overflowing touched')}
+          style={[styles.box, styles.boxOverflowing]}>
+          <DemoText style={styles.text}>B: overflowing</DemoText>
+        </View>
+      </View>
+    );
+  }
+}
+
+class OverflowVisibleExample extends React.Component<ExampleBoxComponentProps> {
+  render() {
+    return <OverflowExample {...this.props} overflow="visible" />;
+  }
+}
+
+class OverflowHiddenExample extends React.Component<ExampleBoxComponentProps> {
+  render() {
+    return <OverflowExample {...this.props} overflow="hidden" />;
+  }
+}
+
 type ExampleClass = {
   Component: React.ComponentType<any>,
   title: string,
@@ -190,6 +237,18 @@ const exampleClasses: Array<ExampleClass> = [
     title: '`box-only`',
     description:
       "`box-only` causes touch events on the container's child components to pass through and will only detect touch events on the container itself.",
+  },
+  {
+    Component: OverflowVisibleExample,
+    title: '`overflow: visible`',
+    description:
+      '`overflow: visible` style should allow subelements that are outside of the parent box to be touchable.',
+  },
+  {
+    Component: OverflowHiddenExample,
+    title: '`overflow: hidden`',
+    description:
+      '`overflow: hidden` style should only allow subelements within the parent box to be touchable. The part of the `position: absolute` extending outside its parent should not trigger touch events.',
   },
 ];
 
@@ -220,6 +279,15 @@ const styles = StyleSheet.create({
   },
   boxPassedThrough: {
     borderColor: '#99bbee',
+  },
+  boxWithOverflowSet: {
+    paddingBottom: 40,
+    marginBottom: 50,
+  },
+  boxOverflowing: {
+    position: 'absolute',
+    top: 30,
+    paddingBottom: 40,
   },
   logText: {
     fontSize: 9,

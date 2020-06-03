@@ -18,6 +18,8 @@ import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.touch.ReactHitSlopView;
 
+import java.util.EnumSet;
+
 /**
  * Class responsible for identifying which react view should handle a given {@link MotionEvent}. It
  * uses the event coordinates to traverse the view hierarchy and return a suitable view.
@@ -80,7 +82,7 @@ public class TouchTargetHelper {
     // Store eventCoords in array so that they are modified to be relative to the targetView found.
     viewCoords[0] = eventX;
     viewCoords[1] = eventY;
-    View nativeTargetView = findTouchTargetView(viewCoords, viewGroup);
+    View nativeTargetView = findTouchTargetViewWithPointerEvents(viewCoords, viewGroup);
     if (nativeTargetView != null) {
       View reactTargetView = findClosestReactAncestor(nativeTargetView);
       if (reactTargetView != null) {
@@ -101,6 +103,20 @@ public class TouchTargetHelper {
   }
 
   /**
+   * Types of allowed return values from {@link #findTouchTargetView}.
+   */
+  private enum TouchTargetReturnType {
+    /**
+     * Allow returning the view passed in through the parameters.
+     */
+    SELF,
+    /**
+     * Allow returning children of the view passed in through parameters.
+     */
+    CHILD,
+  }
+
+  /**
    * Returns the touch target View that is either viewGroup or one if its descendants. This is a
    * recursive DFS since view the entire tree must be parsed until the target is found. If the
    * search does not backtrack, it is possible to follow a branch that cannot be a target (because
@@ -111,18 +127,20 @@ public class TouchTargetHelper {
    * be relative to the current viewGroup. When the method returns, it will contain the eventCoords
    * relative to the targetView found.
    */
-  private static View findTouchTargetView(float[] eventCoords, ViewGroup viewGroup) {
-    int childrenCount = viewGroup.getChildCount();
-    // Consider z-index when determining the touch target.
-    ReactZIndexedViewGroup zIndexedViewGroup =
+  private static View findTouchTargetView(
+      float[] eventCoords, View view, EnumSet<TouchTargetReturnType> allowReturnTouchTargetTypes) {
+    if (allowReturnTouchTargetTypes.contains(TouchTargetReturnType.CHILD)
+      && view instanceof ViewGroup) {
+      ViewGroup viewGroup = (ViewGroup) view;
+      int childrenCount = viewGroup.getChildCount();
+      // Consider z-index when determining the touch target.
+      ReactZIndexedViewGroup zIndexedViewGroup =
         viewGroup instanceof ReactZIndexedViewGroup ? (ReactZIndexedViewGroup) viewGroup : null;
-    for (int i = childrenCount - 1; i >= 0; i--) {
-      int childIndex =
+      for (int i = childrenCount - 1; i >= 0; i--) {
+        int childIndex =
           zIndexedViewGroup != null ? zIndexedViewGroup.getZIndexMappedChildIndex(i) : i;
-      View child = viewGroup.getChildAt(childIndex);
-      PointF childPoint = mTempPoint;
-      if (isTransformedTouchPointInView(
-          eventCoords[0], eventCoords[1], viewGroup, child, childPoint)) {
+        View child = viewGroup.getChildAt(childIndex);
+        PointF childPoint = getChildPoint(eventCoords[0], eventCoords[1], viewGroup, child);
         // If it is contained within the child View, the childPoint value will contain the view
         // coordinates relative to the child
         // We need to store the existing X,Y for the viewGroup away as it is possible this child
@@ -132,23 +150,64 @@ public class TouchTargetHelper {
         eventCoords[0] = childPoint.x;
         eventCoords[1] = childPoint.y;
         View targetView = findTouchTargetViewWithPointerEvents(eventCoords, child);
+
         if (targetView != null) {
-          return targetView;
+          // We don't allow touches on views that are outside the bounds of an `overflow: hidden`
+          // View
+          boolean inOverflowBounds = true;
+          if (viewGroup instanceof ReactOverflowView) {
+            @Nullable String overflow = ((ReactOverflowView) viewGroup).getOverflow();
+            if (ViewProps.HIDDEN.equals(overflow)
+              && !isTouchPointInView(restoreX, restoreY, view)) {
+              inOverflowBounds = false;
+            }
+          }
+          if (inOverflowBounds) {
+            return targetView;
+          }
         }
         eventCoords[0] = restoreX;
         eventCoords[1] = restoreY;
       }
     }
-    return viewGroup;
+
+    if (allowReturnTouchTargetTypes.contains(TouchTargetReturnType.SELF)
+      && isTouchPointInView(eventCoords[0], eventCoords[1], view)) {
+      return view;
+    }
+
+    return null;
+  }
+
+  private static boolean isTouchPointInView(
+      float x, float y, View view) {
+    if (view instanceof ReactHitSlopView && ((ReactHitSlopView) view).getHitSlopRect() != null) {
+      Rect hitSlopRect = ((ReactHitSlopView) view).getHitSlopRect();
+      if ((x >= -hitSlopRect.left
+        && x < (view.getRight() - view.getLeft()) + hitSlopRect.right)
+        && (y >= -hitSlopRect.top
+        && y < (view.getBottom() - view.getTop()) + hitSlopRect.bottom)) {
+        return true;
+      }
+
+      return false;
+    } else {
+      if ((x >= 0 && x < (view.getRight() - view.getLeft()))
+        && (y >= 0 && y < (view.getBottom() - view.getTop()))) {
+        return true;
+      }
+
+      return false;
+    }
   }
 
   /**
-   * Returns whether the touch point is within the child View It is transform aware and will invert
+   * Returns the coordinates of a touch in the child View. It is transform aware and will invert
    * the transform Matrix to find the true local points This code is taken from {@link
    * ViewGroup#isTransformedTouchPointInView()}
    */
-  private static boolean isTransformedTouchPointInView(
-      float x, float y, ViewGroup parent, View child, PointF outLocalPoint) {
+  private static PointF getChildPoint(
+      float x, float y, ViewGroup parent, View child) {
     float localX = x + parent.getScrollX() - child.getLeft();
     float localY = y + parent.getScrollY() - child.getTop();
     Matrix matrix = child.getMatrix();
@@ -162,26 +221,9 @@ public class TouchTargetHelper {
       localX = localXY[0];
       localY = localXY[1];
     }
-    if (child instanceof ReactHitSlopView && ((ReactHitSlopView) child).getHitSlopRect() != null) {
-      Rect hitSlopRect = ((ReactHitSlopView) child).getHitSlopRect();
-      if ((localX >= -hitSlopRect.left
-              && localX < (child.getRight() - child.getLeft()) + hitSlopRect.right)
-          && (localY >= -hitSlopRect.top
-              && localY < (child.getBottom() - child.getTop()) + hitSlopRect.bottom)) {
-        outLocalPoint.set(localX, localY);
-        return true;
-      }
-
-      return false;
-    } else {
-      if ((localX >= 0 && localX < (child.getRight() - child.getLeft()))
-          && (localY >= 0 && localY < (child.getBottom() - child.getTop()))) {
-        outLocalPoint.set(localX, localY);
-        return true;
-      }
-
-      return false;
-    }
+    PointF childPoint = new PointF();
+    childPoint.set(localX, localY);
+    return childPoint;
   }
 
   /**
@@ -211,32 +253,32 @@ public class TouchTargetHelper {
       return null;
 
     } else if (pointerEvents == PointerEvents.BOX_ONLY) {
-      // This view is the target, its children don't matter
-      return view;
+      // This view may be the target, its children don't matter
+      return findTouchTargetView(eventCoords, view, EnumSet.of(TouchTargetReturnType.SELF));
 
     } else if (pointerEvents == PointerEvents.BOX_NONE) {
       // This view can't be the target, but its children might.
-      if (view instanceof ViewGroup) {
-        View targetView = findTouchTargetView(eventCoords, (ViewGroup) view);
-        if (targetView != view) {
-          return targetView;
-        }
+      View targetView =
+        findTouchTargetView(eventCoords, view, EnumSet.of(TouchTargetReturnType.CHILD));
+      if (targetView != null) {
+        return targetView;
+      }
 
-        // PointerEvents.BOX_NONE means that this react element cannot receive pointer events.
-        // However, there might be virtual children that can receive pointer events, in which case
-        // we still want to return this View and dispatch a pointer event to the virtual element.
-        // Note that this currently only applies to Nodes/FlatViewGroup as it's the only class that
-        // is both a ViewGroup and ReactCompoundView (ReactTextView is a ReactCompoundView but not a
-        // ViewGroup).
-        if (view instanceof ReactCompoundView) {
-          int reactTag =
-              ((ReactCompoundView) view).reactTagForTouch(eventCoords[0], eventCoords[1]);
-          if (reactTag != view.getId()) {
-            // make sure we exclude the View itself because of the PointerEvents.BOX_NONE
-            return view;
-          }
+      // PointerEvents.BOX_NONE means that this react element cannot receive pointer events.
+      // However, there might be virtual children that can receive pointer events, in which case
+      // we still want to return this View and dispatch a pointer event to the virtual element.
+      // Note that this currently only applies to Nodes/FlatViewGroup as it's the only class that
+      // is both a ViewGroup and ReactCompoundView (ReactTextView is a ReactCompoundView but not a
+      // ViewGroup).
+      if (view instanceof ReactCompoundView) {
+        int reactTag =
+            ((ReactCompoundView) view).reactTagForTouch(eventCoords[0], eventCoords[1]);
+        if (reactTag != view.getId()) {
+          // make sure we exclude the View itself because of the PointerEvents.BOX_NONE
+          return view;
         }
       }
+
       return null;
 
     } else if (pointerEvents == PointerEvents.AUTO) {
@@ -246,10 +288,8 @@ public class TouchTargetHelper {
           return view;
         }
       }
-      if (view instanceof ViewGroup) {
-        return findTouchTargetView(eventCoords, (ViewGroup) view);
-      }
-      return view;
+      return findTouchTargetView(eventCoords, view,
+        EnumSet.of(TouchTargetReturnType.SELF, TouchTargetReturnType.CHILD));
 
     } else {
       throw new JSApplicationIllegalArgumentException(
