@@ -22,7 +22,11 @@ type ExampleBoxProps = $ReadOnly<{|
   Component: React.ComponentType<ExampleBoxComponentProps>,
 |}>;
 
-class ExampleBox extends React.Component<ExampleBoxProps, $FlowFixMeState> {
+type ExampleBoxState = $ReadOnly<{|
+  log: string[],
+|}>;
+
+class ExampleBox extends React.Component<ExampleBoxProps, ExampleBoxState> {
   state = {
     log: [],
   };
@@ -247,13 +251,13 @@ const exampleClasses: Array<ExampleClass> = [
     Component: OverflowVisibleExample,
     title: '`overflow: visible`',
     description:
-      '`overflow: visible` style should allow subelements that are outside of the parent box to be touchable.',
+      '`overflow: visible` style should allow subelements that are outside of the parent box to be touchable. Tapping the parts of Box B outside Box A should print "B touched" and "A touched", and tapping Box C should also print "C touched" and "A touched.',
   },
   {
     Component: OverflowHiddenExample,
     title: '`overflow: hidden`',
     description:
-      '`overflow: hidden` style should only allow subelements within the parent box to be touchable. The part of the `position: absolute` extending outside its parent should not trigger touch events.',
+      "`overflow: hidden` style should only allow subelements within the parent box to be touchable. Tapping just below Box A (where Box B would otherwise extend if it weren't cut off) should not trigger any touches or messages.",
   },
 ];
 

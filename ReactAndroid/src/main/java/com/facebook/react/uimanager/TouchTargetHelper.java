@@ -129,6 +129,7 @@ public class TouchTargetHelper {
    */
   private static View findTouchTargetView(
       float[] eventCoords, View view, EnumSet<TouchTargetReturnType> allowReturnTouchTargetTypes) {
+    // We prefer returning a child, so we check for a child that can handle the touch first
     if (allowReturnTouchTargetTypes.contains(TouchTargetReturnType.CHILD)
       && view instanceof ViewGroup) {
       ViewGroup viewGroup = (ViewGroup) view;
@@ -142,8 +143,7 @@ public class TouchTargetHelper {
         View child = viewGroup.getChildAt(childIndex);
         PointF childPoint = mTempPoint;
         getChildPoint(eventCoords[0], eventCoords[1], viewGroup, child, childPoint);
-        // If it is contained within the child View, the childPoint value will contain the view
-        // coordinates relative to the child
+        // The childPoint value will contain the view coordinates relative to the child.
         // We need to store the existing X,Y for the viewGroup away as it is possible this child
         // will not actually be the target and so we restore them if not
         float restoreX = eventCoords[0];
@@ -172,6 +172,7 @@ public class TouchTargetHelper {
       }
     }
 
+    // Check if parent can handle the touch after the children
     if (allowReturnTouchTargetTypes.contains(TouchTargetReturnType.SELF)
       && isTouchPointInView(eventCoords[0], eventCoords[1], view)) {
       return view;
