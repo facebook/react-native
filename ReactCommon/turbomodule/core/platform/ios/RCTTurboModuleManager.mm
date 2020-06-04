@@ -21,6 +21,7 @@
 #import <React/RCTModuleData.h>
 #import <React/RCTPerformanceLogger.h>
 #import <React/RCTUtils.h>
+#import <ReactCommon/RuntimeExecutor.h>
 #import <ReactCommon/TurboCxxModule.h>
 #import <ReactCommon/TurboModuleBinding.h>
 #import <ReactCommon/TurboModulePerfLogger.h>
@@ -147,7 +148,6 @@ static Class getFallbackClassFromName(const char *name)
 }
 
 @implementation RCTTurboModuleManager {
-  jsi::Runtime *_runtime;
   std::shared_ptr<CallInvoker> _jsInvoker;
   __weak id<RCTTurboModuleManagerDelegate> _delegate;
   __weak RCTBridge *_bridge;
@@ -640,18 +640,15 @@ static Class getFallbackClassFromName(const char *name)
   return requiresMainQueueSetup;
 }
 
-- (void)installJSBindingWithRuntime:(jsi::Runtime *)runtime
+- (void)installJSBindingWithRuntimeExecutor:(facebook::react::RuntimeExecutor)runtimeExecutor
 {
-  _runtime = runtime;
-
-  if (!_runtime) {
+  if (!runtimeExecutor) {
     // jsi::Runtime doesn't exist when attached to Chrome debugger.
     return;
   }
 
   __weak __typeof(self) weakSelf = self;
-
-  TurboModuleBinding::install(*_runtime, [weakSelf](const std::string &name) -> std::shared_ptr<TurboModule> {
+  auto turboModuleProvider = [weakSelf](const std::string &name) -> std::shared_ptr<react::TurboModule> {
     if (!weakSelf) {
       return nullptr;
     }
@@ -686,6 +683,10 @@ static Class getFallbackClassFromName(const char *name)
     }
 
     return turboModule;
+  };
+
+  runtimeExecutor([turboModuleProvider = std::move(turboModuleProvider)](jsi::Runtime &runtime) {
+    react::TurboModuleBinding::install(runtime, std::move(turboModuleProvider));
   });
 }
 
