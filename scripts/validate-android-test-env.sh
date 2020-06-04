@@ -44,7 +44,7 @@ if [ -z "$(buck --version)" ]; then
   fi
   exit 1
 else
-  BUCK_EXPECTED_VERSION="buck version d743d2d0229852ce7c029ec257532d8916f6b2b7"
+  BUCK_EXPECTED_VERSION="buck version 2020.05.14.01"
   if [ "$(buck --version)" != "$BUCK_EXPECTED_VERSION" ]; then
     if [ ! -d "/opt/facebook" ]; then
       echo "Warning: The test suite expects ${BUCK_EXPECTED_VERSION} to be installed"
@@ -109,9 +109,9 @@ if [ -n "$(which csrutil)" ]; then
   fi
 fi
 
-if [ -z "$JAVA_HOME" ]; then
-  echo "Error: \$JAVA_HOME is not configured."
-  echo "Try adding export JAVA_HOME=\$(/usr/libexec/java_home) to your .bashrc or equivalent."
-  echo "You will also want to add \$JAVA_HOME/bin to your path."
-  exit 1
-fi
+# if [ -z "$JAVA_HOME" ]; then
+#   echo "Error: \$JAVA_HOME is not configured."
+#   echo "Try adding export JAVA_HOME=\$(/usr/libexec/java_home) to your .bashrc or equivalent."
+#   echo "You will also want to add \$JAVA_HOME/bin to your path."
+#   exit 1
+# fi
