@@ -175,6 +175,12 @@ public class ReactSwitchManager extends SimpleViewManager<ReactSwitch>
     view.setTrackColor(color);
   }
 
+  @ReactProp(name = "androidMinWidth")
+  public void setSwitchMinWidth(ReactSwitch view, Integer pixels) {
+    Integer width = pixels == null ? view.getSwitchMinWidth() : pixels;
+    view.setSwitchMinWidth(width);
+  }
+
   @Override
   public void setNativeValue(ReactSwitch view, boolean value) {
     setValueInternal(view, value);
