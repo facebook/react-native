@@ -32,7 +32,12 @@ class ExampleBox extends React.Component<ExampleBoxProps, ExampleBoxState> {
   };
 
   handleLog = (msg: string) => {
-    this.setState({log: this.state.log.concat([msg])});
+    // $FlowFixMe
+    this.state.log = this.state.log.concat([msg]);
+  };
+
+  flushReactChanges = () => {
+    this.forceUpdate();
   };
 
   /**
@@ -40,14 +45,17 @@ class ExampleBox extends React.Component<ExampleBoxProps, ExampleBoxState> {
    * happens.
    */
   handleTouchCapture = () => {
-    this.setState({log: this.state.log.concat(['---'])});
+    // $FlowFixMe
+    this.state.log = this.state.log.concat(['---']);
   };
 
   render() {
     const {Component} = this.props;
     return (
       <View>
-        <View onTouchEndCapture={this.handleTouchCapture}>
+        <View
+          onTouchEndCapture={this.handleTouchCapture}
+          onTouchStart={this.flushReactChanges}>
           <Component onLog={this.handleLog} />
         </View>
         <View style={styles.logBox}>
@@ -195,6 +203,13 @@ class OverflowExample extends React.Component<OverflowExampleProps> {
           onTouchStart={() => this.props.onLog('C fully outside touched')}
           style={[styles.box, styles.boxFullyOutside]}>
           <DemoText style={styles.text}>C: fully outside</DemoText>
+          <View
+            onTouchStart={() =>
+              this.props.onLog('D fully outside child touched')
+            }
+            style={[styles.box, styles.boxFullyOutsideChild]}>
+            <DemoText style={styles.text}>D: child of fully outside</DemoText>
+          </View>
         </View>
       </View>
     );
@@ -243,13 +258,13 @@ const exampleClasses: Array<ExampleClass> = [
     Component: OverflowVisibleExample,
     title: '`overflow: visible`',
     description:
-      '`overflow: visible` style should allow subelements that are outside of the parent box to be touchable. Tapping the parts of Box B outside Box A should print "B touched" and "A touched", and tapping Box C should also print "C touched" and "A touched.',
+      '`overflow: visible` style should allow subelements that are outside of the parent box to be touchable. Tapping the parts of Box B outside Box A should print "B touched" and "A touched", and tapping Box C should also print "C touched" and "A touched".',
   },
   {
     Component: OverflowHiddenExample,
     title: '`overflow: hidden`',
     description:
-      "`overflow: hidden` style should only allow subelements within the parent box to be touchable. Tapping just below Box A (where Box B would otherwise extend if it weren't cut off) should not trigger any touches or messages.",
+      '`overflow: hidden` style should only allow subelements within the parent box to be touchable. Tapping just below Box A (where Box B would otherwise extend if it weren\'t cut off) should not trigger any touches or messages. Touching Box D (inside the bounds) should print "D touched" and "A touched".',
   },
 ];
 
@@ -294,6 +309,12 @@ const styles = StyleSheet.create({
     position: 'absolute',
     left: 200,
     top: 65,
+  },
+  boxFullyOutsideChild: {
+    position: 'absolute',
+    left: 0,
+    top: -65,
+    width: 100,
   },
   logText: {
     fontSize: 9,
