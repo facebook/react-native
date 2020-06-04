@@ -202,9 +202,15 @@ class EventSwitchExample extends React.Component<{...}, $FlowFixMeState> {
   }
 }
 
+type CustomSizeSwitchExampleState = $ReadOnly<{|
+  trueSwitchIsOn: boolean,
+  falseSwitchIsOn: boolean,
+  width: number,
+|}>;
+
 class CustomSizeSwitchExample extends React.Component<
   {||},
-  SimpleSwitchExampleState,
+  CustomSizeSwitchExampleState,
 > {
   state = {
     trueSwitchIsOn: true,
@@ -213,13 +219,13 @@ class CustomSizeSwitchExample extends React.Component<
   };
 
   render() {
-    const { width } = this.state;
+    const {width} = this.state;
     return (
       <>
         <View
           style={{
-            display: "flex",
-            alignItems: "flex-end",
+            display: 'flex',
+            alignItems: 'flex-end',
           }}>
           <Switch
             testID="on-off-initial-off"
@@ -229,16 +235,18 @@ class CustomSizeSwitchExample extends React.Component<
               false: 'purple',
             }}
             value={this.state.falseSwitchIsOn}
-            switchMinWidth={width}
-            style={{width: width}}
+            androidMinWidth={width}
+            style={{width}}
           />
         </View>
-        <Button 
+        <Button
           title="increase width"
-          onPress={() => this.setState({width: width+50})} />
-        <Button 
+          onPress={() => this.setState({width: width + 50})}
+        />
+        <Button
           title="decrease width"
-          onPress={() => this.setState({width: width-50})} />
+          onPress={() => this.setState({width: width - 50})}
+        />
       </>
     );
   }
