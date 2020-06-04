@@ -41,6 +41,7 @@ type NativeProps = $ReadOnly<{|
   on?: WithDefault<boolean, false>,
   thumbTintColor?: ?ColorValue,
   trackTintColor?: ?ColorValue,
+  androidMinWidth?: number,
 
   // Events
   onChange?: BubblingEventHandler<SwitchChangeEvent>,
