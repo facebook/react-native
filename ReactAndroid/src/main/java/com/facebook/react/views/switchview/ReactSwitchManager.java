@@ -176,9 +176,9 @@ public class ReactSwitchManager extends SimpleViewManager<ReactSwitch>
   }
 
   @ReactProp(name = "androidMinWidth")
-  public void setSwitchMinWidth(ReactSwitch view, Integer pixels) {
-    Integer width = pixels == null ? view.getSwitchMinWidth() : pixels;
-    view.setSwitchMinWidth(width);
+  public void setSwitchMinWidth(ReactSwitch view, float dp) {
+    Integer pixels = Math.round(PixelUtil.toPixelFromDIP(dp));
+    view.setSwitchMinWidth(pixels);
   }
 
   @Override
