@@ -73,10 +73,6 @@ std::shared_ptr<Scheduler> Binding::getScheduler() {
   return scheduler_;
 }
 
-LayoutAnimationDriver *Binding::getAnimationDriver() {
-  return (animationDriver_ ? animationDriver_.get() : nullptr);
-}
-
 void Binding::startSurface(
     jint surfaceId,
     jni::alias_ref<jstring> moduleName,
@@ -97,7 +93,7 @@ void Binding::startSurface(
       initialProps->consume(),
       {},
       context,
-      getAnimationDriver());
+      animationDriver_);
 }
 
 void Binding::startSurfaceWithConstraints(
@@ -144,7 +140,7 @@ void Binding::startSurfaceWithConstraints(
       initialProps->consume(),
       constraints,
       context,
-      getAnimationDriver());
+      animationDriver_);
 }
 
 void Binding::renderTemplateToSurface(jint surfaceId, jstring uiTemplate) {
@@ -297,9 +293,10 @@ void Binding::installFabricUIManager(
   toolbox.asynchronousEventBeatFactory = asynchronousBeatFactory;
 
   if (enableLayoutAnimations_) {
-    animationDriver_ = std::make_unique<LayoutAnimationDriver>(this);
+    animationDriver_ = std::make_shared<LayoutAnimationDriver>(this);
   }
-  scheduler_ = std::make_shared<Scheduler>(toolbox, getAnimationDriver(), this);
+  scheduler_ = std::make_shared<Scheduler>(
+      toolbox, (animationDriver_ ? animationDriver_.get() : nullptr), this);
 }
 
 void Binding::uninstallFabricUIManager() {

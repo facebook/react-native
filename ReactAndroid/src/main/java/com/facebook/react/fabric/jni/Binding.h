@@ -110,7 +110,7 @@ class Binding : public jni::HybridClass<Binding>,
   virtual void onAnimationStarted() override;
   virtual void onAllAnimationsComplete() override;
   LayoutAnimationDriver *getAnimationDriver();
-  std::unique_ptr<LayoutAnimationDriver> animationDriver_;
+  std::shared_ptr<LayoutAnimationDriver> animationDriver_;
 
   std::shared_ptr<Scheduler> scheduler_;
   std::mutex schedulerMutex_;

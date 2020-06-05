@@ -21,7 +21,7 @@ namespace react {
 
 MountingCoordinator::MountingCoordinator(
     ShadowTreeRevision baseRevision,
-    MountingOverrideDelegate *delegate)
+    std::weak_ptr<MountingOverrideDelegate const> delegate)
     : surfaceId_(baseRevision.getRootShadowNode().getSurfaceId()),
       baseRevision_(baseRevision),
       mountingOverrideDelegate_(delegate) {
@@ -115,8 +115,10 @@ better::optional<MountingTransaction> MountingCoordinator::pullTransaction()
     const {
   std::lock_guard<std::mutex> lock(mutex_);
 
-  bool shouldOverridePullTransaction = mountingOverrideDelegate_ != nullptr &&
-      mountingOverrideDelegate_->shouldOverridePullTransaction();
+  auto mountingOverrideDelegate = mountingOverrideDelegate_.lock();
+
+  bool shouldOverridePullTransaction = mountingOverrideDelegate &&
+      mountingOverrideDelegate->shouldOverridePullTransaction();
 
   if (!shouldOverridePullTransaction && !lastRevision_.has_value()) {
     return {};
@@ -143,7 +145,7 @@ better::optional<MountingTransaction> MountingCoordinator::pullTransaction()
   // even if there's no `lastRevision_`. Consider cases of animation frames
   // in between React tree updates.
   if (shouldOverridePullTransaction) {
-    transaction = mountingOverrideDelegate_->pullTransaction(
+    transaction = mountingOverrideDelegate->pullTransaction(
         surfaceId_, number_, telemetry, std::move(diffMutations));
   } else if (lastRevision_.hasValue()) {
     transaction = MountingTransaction{

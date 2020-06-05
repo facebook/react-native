@@ -104,7 +104,7 @@ TEST(StateReconciliationTest, testStateReconciliation) {
                         LayoutContext{},
                         rootComponentDescriptor,
                         shadowTreeDelegate,
-                        nullptr};
+                        {}};
 
   shadowTree.commit(
       [&](RootShadowNode::Shared const &oldRootShadowNode) {

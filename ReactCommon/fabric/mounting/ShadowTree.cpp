@@ -222,7 +222,7 @@ ShadowTree::ShadowTree(
     LayoutContext const &layoutContext,
     RootComponentDescriptor const &rootComponentDescriptor,
     ShadowTreeDelegate const &delegate,
-    MountingOverrideDelegate *mountingOverrideDelegate)
+    std::weak_ptr<MountingOverrideDelegate const> mountingOverrideDelegate)
     : surfaceId_(surfaceId), delegate_(delegate) {
   const auto noopEventEmitter = std::make_shared<const ViewEventEmitter>(
       nullptr, -1, std::shared_ptr<const EventDispatcher>());

@@ -46,7 +46,8 @@ class Scheduler final : public UIManagerDelegate {
       const folly::dynamic &initialProps,
       const LayoutConstraints &layoutConstraints = {},
       const LayoutContext &layoutContext = {},
-      MountingOverrideDelegate *mountingOverrideDelegate = nullptr) const;
+      std::weak_ptr<MountingOverrideDelegate const> mountingOverrideDelegate =
+          {}) const;
 
   void renderTemplateToSurface(
       SurfaceId surfaceId,
