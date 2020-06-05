@@ -59,34 +59,34 @@ def use_react_native! (options={})
   end
 end
 
-def use_flipper!(versions = {})
+def use_flipper!(versions = {}, configurations: ['Debug'])
   versions['Flipper'] ||= '~> 0.41.1'
   versions['Flipper-DoubleConversion'] ||= '1.1.7'
   versions['Flipper-Folly'] ||= '~> 2.2'
   versions['Flipper-Glog'] ||= '0.3.6'
   versions['Flipper-PeerTalk'] ||= '~> 0.0.4'
   versions['Flipper-RSocket'] ||= '~> 1.1'
-  pod 'FlipperKit', versions['Flipper'], :configuration => 'Debug'
-  pod 'FlipperKit/FlipperKitLayoutPlugin', versions['Flipper'], :configuration => 'Debug'
-  pod 'FlipperKit/SKIOSNetworkPlugin', versions['Flipper'], :configuration => 'Debug'
-  pod 'FlipperKit/FlipperKitUserDefaultsPlugin', versions['Flipper'], :configuration => 'Debug'
-  pod 'FlipperKit/FlipperKitReactPlugin', versions['Flipper'], :configuration => 'Debug'
+  pod 'FlipperKit', versions['Flipper'], :configurations => configurations
+  pod 'FlipperKit/FlipperKitLayoutPlugin', versions['Flipper'], :configurations => configurations
+  pod 'FlipperKit/SKIOSNetworkPlugin', versions['Flipper'], :configurations => configurations
+  pod 'FlipperKit/FlipperKitUserDefaultsPlugin', versions['Flipper'], :configurations => configurations
+  pod 'FlipperKit/FlipperKitReactPlugin', versions['Flipper'], :configurations => configurations
   # List all transitive dependencies for FlipperKit pods
   # to avoid them being linked in Release builds
-  pod 'Flipper', versions['Flipper'], :configuration => 'Debug'
-  pod 'Flipper-DoubleConversion', versions['Flipper-DoubleConversion'], :configuration => 'Debug'
-  pod 'Flipper-Folly', versions['Flipper-Folly'], :configuration => 'Debug'
-  pod 'Flipper-Glog', versions['Flipper-Glog'], :configuration => 'Debug'
-  pod 'Flipper-PeerTalk', versions['Flipper-PeerTalk'], :configuration => 'Debug'
-  pod 'Flipper-RSocket', versions['Flipper-RSocket'], :configuration => 'Debug'
-  pod 'FlipperKit/Core', versions['Flipper'], :configuration => 'Debug'
-  pod 'FlipperKit/CppBridge', versions['Flipper'], :configuration => 'Debug'
-  pod 'FlipperKit/FBCxxFollyDynamicConvert', versions['Flipper'], :configuration => 'Debug'
-  pod 'FlipperKit/FBDefines', versions['Flipper'], :configuration => 'Debug'
-  pod 'FlipperKit/FKPortForwarding', versions['Flipper'], :configuration => 'Debug'
-  pod 'FlipperKit/FlipperKitHighlightOverlay', versions['Flipper'], :configuration => 'Debug'
-  pod 'FlipperKit/FlipperKitLayoutTextSearchable', versions['Flipper'], :configuration => 'Debug'
-  pod 'FlipperKit/FlipperKitNetworkPlugin', versions['Flipper'], :configuration => 'Debug'
+  pod 'Flipper', versions['Flipper'], :configurations => configurations
+  pod 'Flipper-DoubleConversion', versions['Flipper-DoubleConversion'], :configurations => configurations
+  pod 'Flipper-Folly', versions['Flipper-Folly'], :configurations => configurations
+  pod 'Flipper-Glog', versions['Flipper-Glog'], :configurations => configurations
+  pod 'Flipper-PeerTalk', versions['Flipper-PeerTalk'], :configurations => configurations
+  pod 'Flipper-RSocket', versions['Flipper-RSocket'], :configurations => configurations
+  pod 'FlipperKit/Core', versions['Flipper'], :configurations => configurations
+  pod 'FlipperKit/CppBridge', versions['Flipper'], :configurations => configurations
+  pod 'FlipperKit/FBCxxFollyDynamicConvert', versions['Flipper'], :configurations => configurations
+  pod 'FlipperKit/FBDefines', versions['Flipper'], :configurations => configurations
+  pod 'FlipperKit/FKPortForwarding', versions['Flipper'], :configurations => configurations
+  pod 'FlipperKit/FlipperKitHighlightOverlay', versions['Flipper'], :configurations => configurations
+  pod 'FlipperKit/FlipperKitLayoutTextSearchable', versions['Flipper'], :configurations => configurations
+  pod 'FlipperKit/FlipperKitNetworkPlugin', versions['Flipper'], :configurations => configurations
 end
 
 # Post Install processing for Flipper
