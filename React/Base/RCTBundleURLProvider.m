@@ -145,6 +145,16 @@ static NSURL *serverRootWithHostPort(NSString *hostPort)
   }
 }
 
+- (NSURL *)jsBundleURLForSplitBundleRoot:(NSString *)bundleRoot
+{
+  return [RCTBundleURLProvider jsBundleURLForBundleRoot:bundleRoot
+                                           packagerHost:[self packagerServerHost]
+                                              enableDev:[self enableDev]
+                                     enableMinification:[self enableMinification]
+                                            modulesOnly:YES
+                                              runModule:NO];
+}
+
 - (NSURL *)jsBundleURLForBundleRoot:(NSString *)bundleRoot
                    fallbackResource:(NSString *)resourceName
                   fallbackExtension:(NSString *)extension
@@ -186,12 +196,30 @@ static NSURL *serverRootWithHostPort(NSString *hostPort)
                        packagerHost:(NSString *)packagerHost
                           enableDev:(BOOL)enableDev
                  enableMinification:(BOOL)enableMinification
+
+{
+  return [self jsBundleURLForBundleRoot:bundleRoot
+                           packagerHost:packagerHost
+                              enableDev:enableDev
+                     enableMinification:enableMinification
+                            modulesOnly:NO
+                              runModule:YES];
+}
+
++ (NSURL *)jsBundleURLForBundleRoot:(NSString *)bundleRoot
+                       packagerHost:(NSString *)packagerHost
+                          enableDev:(BOOL)enableDev
+                 enableMinification:(BOOL)enableMinification
+                        modulesOnly:(BOOL)modulesOnly
+                          runModule:(BOOL)runModule
 {
   NSString *path = [NSString stringWithFormat:@"/%@.bundle", bundleRoot];
   // When we support only iOS 8 and above, use queryItems for a better API.
-  NSString *query = [NSString stringWithFormat:@"platform=ios&dev=%@&minify=%@",
+  NSString *query = [NSString stringWithFormat:@"platform=ios&dev=%@&minify=%@&modulesOnly=%@&runMdoule=%@",
                                                enableDev ? @"true" : @"false",
-                                               enableMinification ? @"true" : @"false"];
+                                               enableMinification ? @"true" : @"false",
+                                               modulesOnly ? @"true" : @"false",
+                                               runModule ? @"true" : @"false"];
   NSString *bundleID = [[NSBundle mainBundle] objectForInfoDictionaryKey:(NSString *)kCFBundleIdentifierKey];
   if (bundleID) {
     query = [NSString stringWithFormat:@"%@&app=%@", query, bundleID];
