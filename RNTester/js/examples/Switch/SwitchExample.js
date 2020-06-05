@@ -215,7 +215,7 @@ class CustomSizeSwitchExample extends React.Component<
   state = {
     trueSwitchIsOn: true,
     falseSwitchIsOn: false,
-    width: 200,
+    width: 50,
   };
 
   render() {
