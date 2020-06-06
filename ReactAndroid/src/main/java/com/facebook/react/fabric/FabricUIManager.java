@@ -431,8 +431,9 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
   @SuppressWarnings("unused")
   @AnyThread
   @ThreadConfined(ANY)
-  private MountItem createBatchMountItem(MountItem[] items, int size, int commitNumber) {
-    return new BatchMountItem(items, size, commitNumber);
+  private MountItem createBatchMountItem(
+      int rootTag, MountItem[] items, int size, int commitNumber) {
+    return new BatchMountItem(rootTag, items, size, commitNumber);
   }
 
   @DoNotStrip
@@ -783,6 +784,22 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
           String[] mountItemLines = mountItem.toString().split("\n");
           for (String m : mountItemLines) {
             FLog.d(TAG, "dispatchMountItems: Executing mountItem: " + m);
+          }
+        }
+
+        // Make sure surface associated with this MountItem has been started, and not stopped.
+        // TODO T68118357: clean up this logic and simplify this method overall
+        if (mountItem instanceof BatchMountItem) {
+          BatchMountItem batchMountItem = (BatchMountItem) mountItem;
+          int rootTag = batchMountItem.getRootTag();
+          if (mReactContextForRootTag.get(rootTag) == null) {
+            ReactSoftException.logSoftException(
+                TAG,
+                new ReactNoCrashSoftException(
+                    "dispatchMountItems: skipping batched item: surface not available ["
+                        + rootTag
+                        + "]"));
+            continue;
           }
         }
 

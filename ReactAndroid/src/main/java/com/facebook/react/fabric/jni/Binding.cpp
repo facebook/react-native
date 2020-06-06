@@ -841,11 +841,15 @@ void Binding::schedulerDidFinishTransaction(
   static auto createMountItemsBatchContainer =
       jni::findClassStatic(UIManagerJavaDescriptor)
           ->getMethod<alias_ref<JMountItem>(
-              jtypeArray<JMountItem::javaobject>, jint, jint)>(
+              jint, jtypeArray<JMountItem::javaobject>, jint, jint)>(
               "createBatchMountItem");
 
   auto batch = createMountItemsBatchContainer(
-      localJavaUIManager, mountItemsArray.get(), position, commitNumber);
+      localJavaUIManager,
+      surfaceId,
+      mountItemsArray.get(),
+      position,
+      commitNumber);
 
   static auto scheduleMountItem = jni::findClassStatic(UIManagerJavaDescriptor)
                                       ->getMethod<void(

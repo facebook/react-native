@@ -26,13 +26,14 @@ import com.facebook.systrace.Systrace;
 @DoNotStrip
 public class BatchMountItem implements MountItem {
 
+  private final int mRootTag;
   @NonNull private final MountItem[] mMountItems;
 
   private final int mSize;
 
   private final int mCommitNumber;
 
-  public BatchMountItem(MountItem[] items, int size, int commitNumber) {
+  public BatchMountItem(int rootTag, MountItem[] items, int size, int commitNumber) {
     if (items == null) {
       throw new NullPointerException();
     }
@@ -40,6 +41,7 @@ public class BatchMountItem implements MountItem {
       throw new IllegalArgumentException(
           "Invalid size received by parameter size: " + size + " items.size = " + items.length);
     }
+    mRootTag = rootTag;
     mMountItems = items;
     mSize = size;
     mCommitNumber = commitNumber;
@@ -66,6 +68,10 @@ public class BatchMountItem implements MountItem {
     }
 
     Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
+  }
+
+  public int getRootTag() {
+    return mRootTag;
   }
 
   @Override
