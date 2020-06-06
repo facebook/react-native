@@ -492,16 +492,21 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
   @ThreadConfined(UI)
   public void synchronouslyUpdateViewOnUIThread(int reactTag, @NonNull ReadableMap props) {
     UiThreadUtil.assertOnUiThread();
-    long time = SystemClock.uptimeMillis();
+
     int commitNumber = mCurrentSynchronousCommitNumber++;
+
+    // We are on the UI thread so this is safe to call. We try to flush any existing
+    // mount instructions that are queued.
+    tryDispatchMountItems();
+
     try {
       ReactMarker.logFabricMarker(
           ReactMarkerConstants.FABRIC_UPDATE_UI_MAIN_THREAD_START, null, commitNumber);
       if (ENABLE_FABRIC_LOGS) {
         FLog.d(TAG, "SynchronouslyUpdateViewOnUIThread for tag %d", reactTag);
       }
-      scheduleMountItem(
-          updatePropsMountItem(reactTag, props), commitNumber, time, 0, 0, 0, 0, 0, 0);
+
+      updatePropsMountItem(reactTag, props).execute(mMountingManager);
     } catch (Exception ex) {
       // TODO T42943890: Fix animations in Fabric and remove this try/catch
       ReactSoftException.logSoftException(
