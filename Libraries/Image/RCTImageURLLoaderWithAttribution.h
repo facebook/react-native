@@ -6,6 +6,7 @@
  */
 
 #import <React/RCTImageURLLoader.h>
+#import <React/RCTImageLoaderProtocol.h>
 
 // TODO (T61325135): Remove C++ checks
 #ifdef __cplusplus
@@ -49,6 +50,7 @@ struct ImageURLLoaderAttribution {
                                         scale:(CGFloat)scale
                                    resizeMode:(RCTResizeMode)resizeMode
                                     requestId:(NSString *)requestId
+                                    priority: (RCTImageLoaderPriority)priority
                                   attribution:(const facebook::react::ImageURLLoaderAttribution &)attribution
                               progressHandler:(RCTImageLoaderProgressBlock)progressHandler
                            partialLoadHandler:(RCTImageLoaderPartialLoadBlock)partialLoadHandler
