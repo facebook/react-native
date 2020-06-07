@@ -11,6 +11,7 @@
 #include <folly/MoveWrapper.h>
 #include <folly/json.h>
 #include <glog/logging.h>
+#include <jsi/jsi.h>
 #include <reactperflogger/BridgeNativeModulePerfLogger.h>
 
 #include "Instance.h"
