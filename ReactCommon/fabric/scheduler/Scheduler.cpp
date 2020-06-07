@@ -127,6 +127,7 @@ Scheduler::~Scheduler() {
 
   // The thread-safety of this operation is guaranteed by this requirement.
   uiManager_->setDelegate(nullptr);
+  uiManager_->setAnimationDelegate(nullptr);
 
   // Then, let's verify that the requirement was satisfied.
   auto surfaceIds = std::vector<SurfaceId>{};

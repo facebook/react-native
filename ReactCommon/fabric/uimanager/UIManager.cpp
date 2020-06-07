@@ -318,8 +318,7 @@ void UIManager::shadowTreeDidFinishTransaction(
 
 #pragma mark - UIManagerAnimationDelegate
 
-void UIManager::setAnimationDelegate(
-    UIManagerAnimationDelegate *delegate) const {
+void UIManager::setAnimationDelegate(UIManagerAnimationDelegate *delegate) {
   animationDelegate_ = delegate;
 }
 
