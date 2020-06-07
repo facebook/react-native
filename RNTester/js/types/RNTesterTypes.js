@@ -40,8 +40,15 @@ export type RNTesterExampleModule = $ReadOnly<{|
   simpleExampleContainer?: ?boolean,
 |}>;
 
+export type RNSkipTests = $ReadOnly<{|
+  default?: string,
+  ios?: string,
+  android?: string,
+|}>;
+
 export type RNTesterExample = $ReadOnly<{|
   key: string,
   module: RNTesterExampleModule,
   supportsTVOS?: boolean,
+  skipTest?: RNSkipTests,
 |}>;
