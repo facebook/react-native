@@ -34,6 +34,11 @@ RCT_EXTERN NSString *const RCTJavaScriptWillStartExecutingNotification;
 RCT_EXTERN NSString *const RCTJavaScriptDidLoadNotification;
 
 /**
+ * This notification fires every time the bridge has finished loading an additional JS bundle.
+ */
+RCT_EXTERN NSString *const RCTAdditionalJavaScriptDidLoadNotification;
+
+/**
  * This notification fires when the bridge failed to load the JS bundle. The
  * `error` key can be used to determine the error that occurred.
  */
@@ -134,6 +139,12 @@ RCT_EXTERN NSString *const RCTBridgeDidDownloadScriptNotificationBridgeDescripti
  * module instances should not be shared between bridges.
  */
 typedef NSArray<id<RCTBridgeModule>> * (^RCTBridgeModuleListProvider)(void);
+
+/**
+ * These blocks are used to report whether an additional bundle
+ * fails or succeeds loading.
+ */
+typedef void (^RCTLoadAndExecuteErrorBlock)(NSError *error);
 
 /**
  * This function returns the module name for a given class.
@@ -290,8 +301,15 @@ RCT_EXTERN void RCTEnableTurboModule(BOOL enabled);
 - (void)requestReload __deprecated_msg("Use RCTReloadCommand instead");
 
 /**
- * Says whether bridge has started receiving calls from javascript.
+ * Says whether bridge has started receiving calls from JavaScript.
  */
 - (BOOL)isBatchActive;
+
+/**
+ * Loads and executes additional bundles in the VM for development.
+ */
+- (void)loadAndExecuteSplitBundleURL:(NSURL *)bundleURL
+                             onError:(RCTLoadAndExecuteErrorBlock)onError
+                          onComplete:(dispatch_block_t)onComplete;
 
 @end
