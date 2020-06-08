@@ -251,6 +251,7 @@ PODS:
     - Folly (= 2020.01.13.00)
     - glog
     - React-callinvoker (= 1000.0.0)
+    - React-jsi (= 1000.0.0)
     - React-jsinspector (= 1000.0.0)
     - React-perflogger (= 1000.0.0)
     - React-runtimeexecutor (= 1000.0.0)
@@ -521,7 +522,7 @@ SPEC CHECKSUMS:
   React-callinvoker: 0dada022d38b73e6e15b33e2a96476153f79bbf6
   React-Core: d85e4563acbfbb6e6be7414a813ad55d05d675df
   React-CoreModules: d13d148c851af5780f864be74bc2165140923dc7
-  React-cxxreact: bb64d8c5798d75565870ff1a7a8ac57a09bd9ff8
+  React-cxxreact: 4661b3295e62c6eaada084e2f826c70c71ef11ea
   React-jsi: fe94132da767bfc4801968c2a12abae43e9a833e
   React-jsiexecutor: 959bb48c75a3bfc1b1d2b991087a6d8df721cbcf
   React-jsinspector: 7fbf9b42b58b02943a0d89b0ba9fff0070f2de98
