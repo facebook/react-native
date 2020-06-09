@@ -14,7 +14,6 @@ exports[`<ScrollView /> should render as expected: should deep render when mocke
 
 exports[`<ScrollView /> should render as expected: should deep render when not mocked (please verify output manually) 1`] = `
 <RCTScrollView
-  DEPRECATED_sendUpdatedChildFrames={false}
   alwaysBounceVertical={true}
   onContentSizeChange={null}
   onLayout={[Function]}
