@@ -23,6 +23,7 @@ const styles = StyleSheet.create({
   border1: {
     borderWidth: 10,
     borderColor: 'brown',
+    borderStyle: 'dotted',
   },
   borderRadius: {
     borderWidth: 10,
@@ -38,10 +39,10 @@ const styles = StyleSheet.create({
   },
   border3: {
     borderColor: 'purple',
-    borderTopWidth: 10,
+    borderTopWidth: 7,
     borderRightWidth: 20,
-    borderBottomWidth: 30,
-    borderLeftWidth: 40,
+    borderBottomWidth: 10,
+    borderLeftWidth: 5,
   },
   border4: {
     borderTopWidth: 10,
@@ -99,12 +100,14 @@ const styles = StyleSheet.create({
   },
   border8Left: {
     borderLeftWidth: 5,
+    borderStyle: 'dotted',
   },
   border8Bottom: {
     borderBottomWidth: 5,
   },
   border8Right: {
     borderRightWidth: 5,
+    borderStyle: 'dashed',
   },
   border9: {
     borderWidth: 10,
