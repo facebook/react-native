@@ -21,6 +21,27 @@
 namespace facebook {
 namespace react {
 
+namespace detail {
+
+/*
+ * A custom deleter used for the deallocation of Objective-C managed objects.
+ * To be used only by `wrapManagedObject`.
+ */
+static void wrappedManagedObjectDeleter(void *cfPointer) noexcept
+{
+  // A shared pointer does call custom deleter on `nullptr`s.
+  // This is somewhat counter-intuitively but makes sense considering the type-erasured nature of shared pointer and an
+  // aliasing constructor feature. `CFRelease` crashes on null pointer though. Therefore we must check for this case
+  // explicitly.
+  if (cfPointer == NULL) {
+    return;
+  }
+
+  CFRelease(cfPointer);
+}
+
+}
+
 /*
  * `wrapManagedObject` and `unwrapManagedObject` are wrapper functions that
  * convert ARC-managed objects into `std::shared_ptr<void>` and vice-versa. It's
@@ -35,24 +56,24 @@ namespace react {
  * represented as multiple bumps of C++ counter, so we can have multiple
  * counters for the same object that form some kind of counters tree.
  */
-inline std::shared_ptr<void> wrapManagedObject(id object)
+inline std::shared_ptr<void> wrapManagedObject(id object) noexcept
 {
-  return std::shared_ptr<void>((__bridge_retained void *)object, CFRelease);
+  return std::shared_ptr<void>((__bridge_retained void *)object, detail::wrappedManagedObjectDeleter);
 }
 
-inline id unwrapManagedObject(std::shared_ptr<void> const &object)
+inline id unwrapManagedObject(std::shared_ptr<void> const &object) noexcept
 {
   return (__bridge id)object.get();
 }
 
-inline std::shared_ptr<void> wrapManagedObjectWeakly(id object)
+inline std::shared_ptr<void> wrapManagedObjectWeakly(id object) noexcept
 {
   RCTInternalGenericWeakWrapper *weakWrapper = [RCTInternalGenericWeakWrapper new];
   weakWrapper.object = object;
   return wrapManagedObject(weakWrapper);
 }
 
-inline id unwrapManagedObjectWeakly(std::shared_ptr<void> const &object)
+inline id unwrapManagedObjectWeakly(std::shared_ptr<void> const &object) noexcept
 {
   RCTInternalGenericWeakWrapper *weakWrapper = (RCTInternalGenericWeakWrapper *)unwrapManagedObject(object);
   assert(weakWrapper && "`RCTInternalGenericWeakWrapper` instance must not be `nil`.");
