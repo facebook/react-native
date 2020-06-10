@@ -33,6 +33,13 @@ public interface UIManager extends JSIModule, PerformanceCounter {
       int heightMeasureSpec);
 
   /**
+   * Stop a surface from running in JS and clears up native memory usage. Assumes that the native
+   * View hierarchy has already been cleaned up. Fabric-only.
+   */
+  @AnyThread
+  void stopSurface(final int surfaceId);
+
+  /**
    * Updates the layout specs of the RootShadowNode based on the Measure specs received by
    * parameters.
    */

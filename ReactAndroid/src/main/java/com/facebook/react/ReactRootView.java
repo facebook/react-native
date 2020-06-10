@@ -431,6 +431,23 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
   @ThreadConfined(UI)
   public void unmountReactApplication() {
     UiThreadUtil.assertOnUiThread();
+    // Stop surface in Fabric.
+    // Calling FabricUIManager.stopSurface causes the C++ Binding.stopSurface
+    // to be called synchronously over the JNI, which causes an empty tree
+    // to be committed via the Scheduler, which will cause mounting instructions
+    // to be queued up and synchronously executed to delete and remove
+    // all the views in the hierarchy.
+    if (mReactInstanceManager != null) {
+      final ReactContext reactApplicationContext = mReactInstanceManager.getCurrentReactContext();
+      if (reactApplicationContext != null && getUIManagerType() == FABRIC) {
+        @Nullable
+        UIManager uiManager =
+            UIManagerHelper.getUIManager(reactApplicationContext, getUIManagerType());
+        if (uiManager != null) {
+          uiManager.stopSurface(this.getId());
+        }
+      }
+    }
 
     if (mReactInstanceManager != null && mIsAttachedToInstance) {
       mReactInstanceManager.detachRootView(this);

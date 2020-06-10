@@ -242,6 +242,7 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
 
   @AnyThread
   @ThreadConfined(ANY)
+  @Override
   public void stopSurface(int surfaceID) {
     mBinding.stopSurface(surfaceID);
     mReactContextForRootTag.remove(surfaceID);
