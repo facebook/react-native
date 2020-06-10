@@ -9,6 +9,7 @@ package com.facebook.react;
 
 import android.annotation.TargetApi;
 import android.app.Activity;
+import android.content.res.Configuration;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
@@ -151,6 +152,12 @@ public class ReactActivityDelegate {
   public void onWindowFocusChanged(boolean hasFocus) {
     if (getReactNativeHost().hasInstance()) {
       getReactNativeHost().getReactInstanceManager().onWindowFocusChange(hasFocus);
+    }
+  }
+
+  public void onConfigurationChanged(Configuration newConfig) {
+    if (getReactNativeHost().hasInstance()) {
+      getReactInstanceManager().onConfigurationChanged(getContext(), newConfig);
     }
   }
 

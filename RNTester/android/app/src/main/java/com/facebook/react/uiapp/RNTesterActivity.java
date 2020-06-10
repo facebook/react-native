@@ -7,7 +7,6 @@
 
 package com.facebook.react.uiapp;
 
-import android.content.res.Configuration;
 import android.os.Bundle;
 import androidx.annotation.Nullable;
 import com.facebook.react.ReactActivity;
@@ -55,15 +54,5 @@ public class RNTesterActivity extends ReactActivity {
   @Override
   protected String getMainComponentName() {
     return "RNTesterApp";
-  }
-
-  @Override
-  public void onConfigurationChanged(Configuration newConfig) {
-    super.onConfigurationChanged(newConfig);
-    ReactInstanceManager instanceManager = getReactInstanceManager();
-
-    if (instanceManager != null) {
-      instanceManager.onConfigurationChanged(this, newConfig);
-    }
   }
 }
