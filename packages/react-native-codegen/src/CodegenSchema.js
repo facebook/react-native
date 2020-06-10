@@ -235,7 +235,7 @@ export type FunctionTypeAnnotationReturnArrayElementType = FunctionTypeAnnotatio
 export type ObjectParamTypeAnnotation = $ReadOnly<{|
   optional: boolean,
   name: string,
-  typeAnnotation: FunctionTypeAnnotationParamTypeAnnotation,
+  typeAnnotation?: FunctionTypeAnnotationParamTypeAnnotation, // TODO (T67898313): Workaround for NativeLinking's use of union type, typeAnnotations should not be optional
 |}>;
 
 export type FunctionTypeAnnotationReturn =

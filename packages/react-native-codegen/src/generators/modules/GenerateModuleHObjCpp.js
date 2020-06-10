@@ -181,6 +181,31 @@ function translatePrimitiveJSTypeToObjCTypeForReturn(
   }
 }
 
+function handleArrayOfObjects(
+  objectForGeneratingStructs: Array<ObjectForGeneratingStructs>,
+  param: FunctionTypeAnnotationParam,
+  name: string,
+) {
+  if (
+    param.typeAnnotation.type === 'ArrayTypeAnnotation' &&
+    param.typeAnnotation.elementType &&
+    param.typeAnnotation.elementType.type === 'ObjectTypeAnnotation' &&
+    param.typeAnnotation.elementType.properties
+  ) {
+    const {elementType} = param.typeAnnotation;
+    const {properties} = elementType;
+    if (properties && properties.length > 0) {
+      objectForGeneratingStructs.push({
+        name,
+        object: {
+          type: 'ObjectTypeAnnotation',
+          properties,
+        },
+      });
+    }
+  }
+}
+
 const methodImplementationTemplate =
   '- (::_RETURN_VALUE_::) ::_PROPERTY_NAME_::::_ARGS_::;';
 
@@ -232,11 +257,30 @@ module.exports = {
                     },
                   });
                   paramObjCType = `JS::Native::_MODULE_NAME_::::Spec${variableName}&`;
+
+                  param.typeAnnotation.properties.map(aProp =>
+                    handleArrayOfObjects(
+                      objectForGeneratingStructs,
+                      aProp,
+                      capitalizeFirstLetter(prop.name) +
+                        capitalizeFirstLetter(param.name) +
+                        capitalizeFirstLetter(aProp.name) +
+                        'Element',
+                    ),
+                  );
                 } else {
                   paramObjCType = translatePrimitiveJSTypeToObjCType(
                     param,
                     typeName =>
                       `Unsupported type for param "${param.name}" in ${prop.name}. Found: ${typeName}`,
+                  );
+
+                  handleArrayOfObjects(
+                    objectForGeneratingStructs,
+                    param,
+                    capitalizeFirstLetter(prop.name) +
+                      capitalizeFirstLetter(param.name) +
+                      'Element',
                   );
                 }
                 return `${i === 0 ? '' : param.name}:(${paramObjCType})${
@@ -285,7 +329,7 @@ module.exports = {
         return protocolTemplate
           .replace(
             /::_STRUCTS_::/g,
-            translateObjectsForStructs(objectForGeneratingStructs),
+            translateObjectsForStructs(objectForGeneratingStructs, name),
           )
           .replace(/::_MODULE_PROPERTIES_::/g, implementations)
           .replace(/::_MODULE_NAME_::/g, name)

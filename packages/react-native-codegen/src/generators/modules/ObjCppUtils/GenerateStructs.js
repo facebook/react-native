@@ -60,8 +60,17 @@ function getNamespacedStructName(structName: string, propertyName: string) {
 function getElementTypeForArray(
   property: ObjectParamTypeAnnotation,
   name: string,
+  moduleName: string,
 ): string {
   const {typeAnnotation} = property;
+
+  // TODO(T67898313): Workaround for NativeLinking's use of union type. This check may be removed once typeAnnotation is non-optional.
+  if (!typeAnnotation) {
+    throw new Error(
+      `Cannot get array element type, property ${property.name} does not contain a type annotation`,
+    );
+  }
+
   if (typeAnnotation.type !== 'ArrayTypeAnnotation') {
     throw new Error(
       `Cannot get array element type for non-array type ${typeAnnotation.type}`,
@@ -82,9 +91,12 @@ function getElementTypeForArray(
     case 'Int32TypeAnnotation':
       return 'double';
     case 'ObjectTypeAnnotation':
-      return getNamespacedStructName(name, property.name);
+      return getNamespacedStructName(name, property.name) + 'Element';
     case 'GenericObjectTypeAnnotation':
-      // TODO T67565166: Generic objects are not type safe and should be disallowed in the schema.
+      // TODO(T67565166): Generic objects are not type safe and should be disallowed in the schema. This case should throw an error once it is disallowed in schema.
+      console.error(
+        `Warning: Generic objects are not type safe and should be avoided whenever possible (see '${property.name}' in ${moduleName}'s ${name})`,
+      );
       return 'id<NSObject>';
     case 'BooleanTypeAnnotation':
     case 'AnyObjectTypeAnnotation':
@@ -104,6 +116,7 @@ function getElementTypeForArray(
 function getInlineMethodSignature(
   property: ObjectParamTypeAnnotation,
   name: string,
+  moduleName: string,
 ): string {
   const {typeAnnotation} = property;
   function markOptionalTypeIfNecessary(type: string) {
@@ -112,6 +125,15 @@ function getInlineMethodSignature(
     }
     return type;
   }
+
+  // TODO(T67672788): Workaround for values key in NativeLinking which lacks a typeAnnotation. id<NSObject> is not type safe!
+  if (!typeAnnotation) {
+    console.error(
+      `Warning: Unsafe type found (see '${property.name}' in ${moduleName}'s ${name})`,
+    );
+    return `id<NSObject> ${getSafePropertyName(property.name)}() const;`;
+  }
+
   switch (typeAnnotation.type) {
     case 'ReservedFunctionValueTypeAnnotation':
       switch (typeAnnotation.name) {
@@ -149,6 +171,7 @@ function getInlineMethodSignature(
         `facebook::react::LazyVector<${getElementTypeForArray(
           property,
           name,
+          moduleName,
         )}>`,
       )} ${getSafePropertyName(property.name)}() const;`;
     case 'FunctionTypeAnnotation':
@@ -160,6 +183,7 @@ function getInlineMethodSignature(
 function getInlineMethodImplementation(
   property: ObjectParamTypeAnnotation,
   name: string,
+  moduleName: string,
 ): string {
   const {typeAnnotation} = property;
   function markOptionalTypeIfNecessary(type: string): string {
@@ -175,6 +199,13 @@ function getInlineMethodImplementation(
     return `RCTBridgingTo${capitalizeFirstLetter(value)}`;
   }
   function bridgeArrayElementValueIfNecessary(element: string): string {
+    // TODO(T67898313): Workaround for NativeLinking's use of union type
+    if (!typeAnnotation) {
+      throw new Error(
+        `Cannot get array element type, property ${property.name} does not contain a type annotation`,
+      );
+    }
+
     if (typeAnnotation.type !== 'ArrayTypeAnnotation') {
       throw new Error(
         `Cannot get array element type for non-array type ${typeAnnotation.type}`,
@@ -197,7 +228,10 @@ function getInlineMethodImplementation(
       case 'BooleanTypeAnnotation':
         return `RCTBridgingToBool(${element})`;
       case 'ObjectTypeAnnotation':
-        return `${getNamespacedStructName(name, property.name)}(${element})`;
+        return `${getNamespacedStructName(
+          name,
+          property.name,
+        )}Element(${element})`;
       case 'GenericObjectTypeAnnotation':
         return element;
       case 'AnyObjectTypeAnnotation':
@@ -213,6 +247,19 @@ function getInlineMethodImplementation(
         (type: empty);
         throw new Error(`Unknown array element type, found: ${type}"`);
     }
+  }
+
+  // TODO(T67672788): Workaround for values key in NativeLinking which lacks a typeAnnotation. id<NSObject> is not type safe!
+  if (!typeAnnotation) {
+    console.error(
+      `Warning: Unsafe type found (see '${property.name}' in ${moduleName}'s ${name})`,
+    );
+    return inlineTemplate
+      .replace(
+        /::_RETURN_TYPE_::/,
+        property.optional ? 'id<NSObject> _Nullable ' : 'id<NSObject> ',
+      )
+      .replace(/::_RETURN_VALUE_::/, 'p');
   }
 
   switch (typeAnnotation.type) {
@@ -279,6 +326,7 @@ function getInlineMethodImplementation(
             `facebook::react::LazyVector<${getElementTypeForArray(
               property,
               name,
+              moduleName,
             )}>`,
           ),
         )
@@ -287,6 +335,7 @@ function getInlineMethodImplementation(
           `${markOptionalValueIfNecessary('vec')}(p, ^${getElementTypeForArray(
             property,
             name,
+            moduleName,
           )}(id itemValue_0) { return ${bridgeArrayElementValueIfNecessary(
             'itemValue_0',
           )}; })`,
@@ -307,6 +356,7 @@ function translateObjectsForStructs(
       |}>,
     |}>,
   >,
+  moduleName: string,
 ): string {
   const flattenObjects = flatObjects(annotations);
 
@@ -315,7 +365,7 @@ function translateObjectsForStructs(
       (acc, object) =>
         acc.concat(
           object.properties.map(property =>
-            getInlineMethodImplementation(property, object.name)
+            getInlineMethodImplementation(property, object.name, moduleName)
               .replace(
                 /::_PROPERTY_NAME_::/g,
                 getSafePropertyName(property.name),
@@ -333,7 +383,9 @@ function translateObjectsForStructs(
         .replace(
           /::_STRUCT_PROPERTIES_::/g,
           object.properties
-            .map(property => getInlineMethodSignature(property, object.name))
+            .map(property =>
+              getInlineMethodSignature(property, object.name, moduleName),
+            )
             .join('\n      '),
         )
         .replace(/::_STRUCT_NAME_::/g, object.name),

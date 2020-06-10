@@ -62,6 +62,14 @@ function getBuilderInputFieldDeclaration(
     return 'folly::Optional<' + annotation + '> ' + property.name + ';';
   }
   const {typeAnnotation} = property;
+
+  // TODO(T67898313): Workaround for NativeLinking's use of union type. This check may be removed once typeAnnotation is non-optional.
+  if (!typeAnnotation) {
+    throw new Error(
+      `Cannot get array element type, property ${property.name} does not contain a type annotation`,
+    );
+  }
+
   switch (typeAnnotation.type) {
     case 'ReservedFunctionValueTypeAnnotation':
       switch (typeAnnotation.name) {
@@ -153,6 +161,14 @@ function unsafeGetter(name: string, optional: boolean) {
 
 function getObjectProperty(property: ObjectParamTypeAnnotation): string {
   const {typeAnnotation} = property;
+
+  // TODO(T67898313): Workaround for NativeLinking's use of union type. This check may be removed once typeAnnotation is non-optional.
+  if (!typeAnnotation) {
+    throw new Error(
+      `Cannot get array element type, property ${property.name} does not contain a type annotation`,
+    );
+  }
+
   switch (typeAnnotation.type) {
     case 'ReservedFunctionValueTypeAnnotation':
       switch (typeAnnotation.name) {

@@ -16,7 +16,7 @@ import * as TurboModuleRegistry from '../TurboModule/TurboModuleRegistry';
 export type Args = {|
   title?: string,
   message?: string,
-  buttons?: Array<Object>, // TODO: have a better type
+  buttons?: Array<Object>, // TODO(T67565166): have a better type
   type?: string,
   defaultValue?: string,
   cancelButtonKey?: string,

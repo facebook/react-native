@@ -74,12 +74,29 @@ namespace JS {
 
 namespace JS {
   namespace NativeSampleTurboModule {
+    struct SpecGetArraysOptionsArrayOfObjectsElement {
+      double numberProperty() const;
+
+      SpecGetArraysOptionsArrayOfObjectsElement(NSDictionary *const v) : _v(v) {}
+    private:
+      NSDictionary *_v;
+    };
+  }
+}
+
+@interface RCTCxxConvert (NativeSampleTurboModule_SpecGetArraysOptionsArrayOfObjectsElement)
++ (RCTManagedPointer *)JS_NativeSampleTurboModule_SpecGetArraysOptionsArrayOfObjectsElement:(id)json;
+@end
+
+
+namespace JS {
+  namespace NativeSampleTurboModule {
     struct SpecGetArraysOptions {
       facebook::react::LazyVector<double> arrayOfNumbers() const;
       folly::Optional<facebook::react::LazyVector<double>> optionalArrayOfNumbers() const;
       facebook::react::LazyVector<NSString *> arrayOfStrings() const;
       folly::Optional<facebook::react::LazyVector<NSString *>> optionalArrayOfStrings() const;
-      facebook::react::LazyVector<JS::NativeSampleTurboModule::SpecGetArraysOptionsArrayOfObjects> arrayOfObjects() const;
+      facebook::react::LazyVector<JS::NativeSampleTurboModule::SpecGetArraysOptionsArrayOfObjectsElement> arrayOfObjects() const;
 
       SpecGetArraysOptions(NSDictionary *const v) : _v(v) {}
     private:
@@ -90,6 +107,24 @@ namespace JS {
 
 @interface RCTCxxConvert (NativeSampleTurboModule_SpecGetArraysOptions)
 + (RCTManagedPointer *)JS_NativeSampleTurboModule_SpecGetArraysOptions:(id)json;
+@end
+
+
+namespace JS {
+  namespace NativeSampleTurboModule {
+    struct SpecOptionalMethodExtrasElement {
+      NSString *key() const;
+      id<NSObject> value() const;
+
+      SpecOptionalMethodExtrasElement(NSDictionary *const v) : _v(v) {}
+    private:
+      NSDictionary *_v;
+    };
+  }
+}
+
+@interface RCTCxxConvert (NativeSampleTurboModule_SpecOptionalMethodExtrasElement)
++ (RCTManagedPointer *)JS_NativeSampleTurboModule_SpecOptionalMethodExtrasElement:(id)json;
 @end
 
 
@@ -228,6 +263,20 @@ inline folly::Optional<bool> JS::NativeSampleTurboModule::SpecOptionalsA::option
 }
 
 
+inline NSString *JS::NativeSampleTurboModule::SpecOptionalMethodExtrasElement::key() const
+{
+  id const p = _v[@\\"key\\"];
+  return RCTBridgingToString(p);
+}
+
+
+inline id<NSObject> JS::NativeSampleTurboModule::SpecOptionalMethodExtrasElement::value() const
+{
+  id const p = _v[@\\"value\\"];
+  return p;
+}
+
+
 inline facebook::react::LazyVector<double> JS::NativeSampleTurboModule::SpecGetArraysOptions::arrayOfNumbers() const
 {
   id const p = _v[@\\"arrayOfNumbers\\"];
@@ -256,10 +305,17 @@ inline folly::Optional<facebook::react::LazyVector<NSString *>> JS::NativeSample
 }
 
 
-inline facebook::react::LazyVector<JS::NativeSampleTurboModule::SpecGetArraysOptionsArrayOfObjects> JS::NativeSampleTurboModule::SpecGetArraysOptions::arrayOfObjects() const
+inline facebook::react::LazyVector<JS::NativeSampleTurboModule::SpecGetArraysOptionsArrayOfObjectsElement> JS::NativeSampleTurboModule::SpecGetArraysOptions::arrayOfObjects() const
 {
   id const p = _v[@\\"arrayOfObjects\\"];
-  return RCTBridgingToVec(p, ^JS::NativeSampleTurboModule::SpecGetArraysOptionsArrayOfObjects(id itemValue_0) { return JS::NativeSampleTurboModule::SpecGetArraysOptionsArrayOfObjects(itemValue_0); });
+  return RCTBridgingToVec(p, ^JS::NativeSampleTurboModule::SpecGetArraysOptionsArrayOfObjectsElement(id itemValue_0) { return JS::NativeSampleTurboModule::SpecGetArraysOptionsArrayOfObjectsElement(itemValue_0); });
+}
+
+
+inline double JS::NativeSampleTurboModule::SpecGetArraysOptionsArrayOfObjectsElement::numberProperty() const
+{
+  id const p = _v[@\\"numberProperty\\"];
+  return RCTBridgingToDouble(p);
 }
 
 
