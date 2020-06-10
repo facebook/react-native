@@ -81,7 +81,7 @@ public class BatchMountItem implements MountItem {
       if (s.length() > 0) {
         s.append("\n");
       }
-      s.append("BatchMountItem (")
+      s.append("BatchMountItem [S:" + mRootTag + "] (")
           .append(i + 1)
           .append("/")
           .append(mSize)
