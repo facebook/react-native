@@ -23,8 +23,8 @@ public class ReactTypefaceUtils {
         fontWeightString != null ? parseNumericFontWeight(fontWeightString) : UNSET;
     int fontWeight = fontWeightNumeric != UNSET ? fontWeightNumeric : Typeface.NORMAL;
 
-    if (fontWeight == 700 || "bold".equals(fontWeightString)) fontWeight = Typeface.BOLD;
-    else if (fontWeight == 400 || "normal".equals(fontWeightString)) fontWeight = Typeface.NORMAL;
+    if ("bold".equals(fontWeightString)) fontWeight = Typeface.BOLD;
+    else if ("normal".equals(fontWeightString)) fontWeight = 400;
 
     return fontWeight;
   }
@@ -86,28 +86,36 @@ public class ReactTypefaceUtils {
       oldStyle = typeface.getStyle();
     }
 
+    if(weight < 0) { 
+      weight = 400; 
+    };
     int want = 0;
+    boolean italic = false;
     if ((weight == Typeface.BOLD)
         || ((oldStyle & Typeface.BOLD) != 0 && weight == ReactTextShadowNode.UNSET)) {
-      want |= Typeface.BOLD;
+      weight = 700;
     }
 
     if ((style == Typeface.ITALIC)
         || ((oldStyle & Typeface.ITALIC) != 0 && style == ReactTextShadowNode.UNSET)) {
-      want |= Typeface.ITALIC;
+      italic = true;
     }
 
     if (family != null) {
       typeface = ReactFontManager.getInstance().getTypeface(family, want, weight, assetManager);
     } else if (typeface != null) {
       // TODO(t9055065): Fix custom fonts getting applied to text children with different style
-      typeface = Typeface.create(typeface, want);
+      boolean bold = (weight == Typeface.BOLD)
+        || ((oldStyle & Typeface.BOLD) != 0 && weight == ReactTextShadowNode.UNSET);
+      Log.w("TESTING::", "is bold: " + bold + " with weight: " + weight); 
+      typeface = Typeface.create(typeface, weight, italic);
     }
 
     if (typeface != null) {
       return typeface;
     } else {
-      return Typeface.defaultFromStyle(want);
+      return Typeface.create(Typeface.DEFAULT, weight, italic);
+      // return Typeface.defaultFromStyle(weight);
     }
   }
 
