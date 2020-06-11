@@ -12,10 +12,23 @@
 
 'use strict';
 
+const Promise = require('../../Promise');
+const RCTDeviceEventEmitter = require('../../EventEmitter/RCTDeviceEventEmitter');
+
+import NativeAccessibilityManager from './NativeAccessibilityManager';
+
 const warning = require('fbjs/lib/warning');
 
-type ChangeEventName = $Keys<{}>;
+const CHANGE_EVENT_NAME = {
+  screenReaderChanged: 'screenReaderChanged',
+};
 
+type ChangeEventName = $Keys<{
+  change: string,
+  screenReaderChanged: string,
+}>;
+
+const _subscriptions = new Map();
 const AccessibilityInfo = {
   /**
    * iOS only
@@ -53,10 +66,21 @@ const AccessibilityInfo = {
   },
 
   /**
-   * Android and iOS only
+   * Query whether a screen reader is currently enabled.
+   *
+   * Returns a promise which resolves to a boolean.
+   * The result is `true` when a screen reader is enabled and `false` otherwise.
+   *
+   * See http://facebook.github.io/react-native/docs/accessibilityinfo.html#isScreenReaderEnabled
    */
   isScreenReaderEnabled: function(): Promise<boolean> {
-    return Promise.resolve(false);
+    return new Promise((resolve, reject) => {
+      if (NativeAccessibilityManager) {
+        NativeAccessibilityManager.getCurrentVoiceOverState(resolve, reject);
+      } else {
+        reject(reject);
+      }
+    });
   },
 
   /**
@@ -71,15 +95,38 @@ const AccessibilityInfo = {
   addEventListener: function(
     eventName: ChangeEventName,
     handler: Function,
-  ): void {
-    warning(false, 'AccessibilityInfo is not supported on this platform.');
+  ): Object {
+    let listener;
+
+    if (eventName === 'change') {
+      listener = RCTDeviceEventEmitter.addListener(
+        CHANGE_EVENT_NAME.screenReaderChanged,
+        handler,
+      );
+    } else if (CHANGE_EVENT_NAME[eventName]) {
+      listener = RCTDeviceEventEmitter.addListener(eventName, handler);
+    }
+
+    _subscriptions.set(handler, listener);
+    return {
+      remove: AccessibilityInfo.removeEventListener.bind(
+        null,
+        eventName,
+        handler,
+      ),
+    };
   },
 
   removeEventListener: function(
     eventName: ChangeEventName,
     handler: Function,
   ): void {
-    warning(false, 'AccessibilityInfo is not supported on this platform.');
+    const listener = _subscriptions.get(handler);
+    if (!listener) {
+      return;
+    }
+    listener.remove();
+    _subscriptions.delete(handler);
   },
 
   /**
