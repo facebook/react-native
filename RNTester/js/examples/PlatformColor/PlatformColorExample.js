@@ -199,7 +199,10 @@ function FallbackColorsExample() {
       color: PlatformColor('bogus', '@color/catalyst_redbox_background'),
     };
   } else {
-    throw 'Unexpected Platform.OS: ' + Platform.OS;
+    color = {
+      label: 'Unexpected Platform.OS: ' + Platform.OS,
+      color: 'red',
+    };
   }
 
   return (
@@ -261,9 +264,11 @@ function VariantColorsExample() {
     <View style={styles.column}>
       <View style={styles.row}>
         <Text style={styles.labelCell}>
-          {Platform.OS === 'ios'
-            ? "DynamicColorIOS({light: 'red', dark: 'blue'})"
-            : "PlatformColor('?attr/colorAccent')"}
+          {Platform.select({
+            ios: "DynamicColorIOS({light: 'red', dark: 'blue'})",
+            android: "PlatformColor('?attr/colorAccent')",
+            default: 'Unexpected Platform.OS: ' + Platform.OS,
+          })}
         </Text>
         <View
           style={{
@@ -271,7 +276,9 @@ function VariantColorsExample() {
             backgroundColor:
               Platform.OS === 'ios'
                 ? DynamicColorIOS({light: 'red', dark: 'blue'})
-                : PlatformColor('?attr/colorAccent'),
+                : Platform.OS === 'android'
+                ? PlatformColor('?attr/colorAccent')
+                : 'red',
           }}
         />
       </View>
