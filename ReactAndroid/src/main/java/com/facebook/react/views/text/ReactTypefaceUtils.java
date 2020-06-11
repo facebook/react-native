@@ -115,7 +115,6 @@ public class ReactTypefaceUtils {
       return typeface;
     } else {
       return Typeface.create(Typeface.DEFAULT, weight, italic);
-      // return Typeface.defaultFromStyle(weight);
     }
   }
 
