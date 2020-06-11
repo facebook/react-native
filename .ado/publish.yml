@@ -181,9 +181,15 @@ jobs:
 #        inputs:
 #          script: .ado\setup_droid_deps.bat
 
+      - task: CmdLine@2
+        displayName: Workaround for NDK path containing spaces in it
+        inputs:
+          script: .ado\android_symlink_ndk.bat
+
       - task: Gradle@1
         displayName: gradlew installArchives
-#        env:
+        env:
+          ANDROID_NDK: c:\android_ndk_symlink__
 #          REACT_NATIVE_DEPENDENCIES: $(System.DefaultWorkingDirectory)\build_deps
         inputs:
           gradleWrapperFile: gradlew
