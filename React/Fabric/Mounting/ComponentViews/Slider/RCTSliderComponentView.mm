@@ -29,10 +29,10 @@ using namespace facebook::react;
   UIImage *_maximumTrackImage;
   UIImage *_thumbImage;
 
-  const ImageResponseObserverCoordinator *_trackImageCoordinator;
-  const ImageResponseObserverCoordinator *_minimumTrackImageCoordinator;
-  const ImageResponseObserverCoordinator *_maximumTrackImageCoordinator;
-  const ImageResponseObserverCoordinator *_thumbImageCoordinator;
+  ImageResponseObserverCoordinator const *_trackImageCoordinator;
+  ImageResponseObserverCoordinator const *_minimumTrackImageCoordinator;
+  ImageResponseObserverCoordinator const *_maximumTrackImageCoordinator;
+  ImageResponseObserverCoordinator const *_thumbImageCoordinator;
 
   RCTImageResponseObserverProxy _trackImageResponseObserverProxy;
   RCTImageResponseObserverProxy _minimumTrackImageResponseObserverProxy;
@@ -94,14 +94,6 @@ using namespace facebook::react;
   const auto &props = *std::static_pointer_cast<const SliderProps>(_props);
   _sliderView.value = props.value;
   _previousValue = props.value;
-}
-
-- (void)dealloc
-{
-  self.trackImageCoordinator = nullptr;
-  self.minimumTrackImageCoordinator = nullptr;
-  self.maximumTrackImageCoordinator = nullptr;
-  self.thumbImageCoordinator = nullptr;
 }
 
 #pragma mark - RCTComponentViewProtocol
