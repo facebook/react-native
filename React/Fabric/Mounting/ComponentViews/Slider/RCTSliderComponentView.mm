@@ -81,7 +81,10 @@ using namespace facebook::react;
   // need to make sure that image properties are reset here
   [_sliderView setMinimumTrackImage:nil forState:UIControlStateNormal];
   [_sliderView setMaximumTrackImage:nil forState:UIControlStateNormal];
-  [_sliderView setThumbImage:nil forState:UIControlStateNormal];
+
+  if (_thumbImage) {
+    [_sliderView setThumbImage:nil forState:UIControlStateNormal];
+  }
 
   _trackImage = nil;
   _minimumTrackImage = nil;
