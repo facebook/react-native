@@ -113,4 +113,14 @@ public interface UIManager extends JSIModule, PerformanceCounter {
    * @param listener
    */
   void removeUIManagerEventListener(UIManagerListener listener);
+
+  /**
+   * This method dispatches events from RN Android code to JS. The delivery of this event will not
+   * be queued in EventDispatcher class.
+   *
+   * @param reactTag tag
+   * @param eventName name of the event
+   * @param event parameters
+   */
+  void receiveEvent(int reactTag, String eventName, @Nullable WritableMap event);
 }

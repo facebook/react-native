@@ -946,6 +946,7 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
         doLeftAndRightSwapInRTL);
   }
 
+  @Override
   public void receiveEvent(int reactTag, String eventName, @Nullable WritableMap params) {
     EventEmitterWrapper eventEmitter = mMountingManager.getEventEmitter(reactTag);
     if (eventEmitter == null) {

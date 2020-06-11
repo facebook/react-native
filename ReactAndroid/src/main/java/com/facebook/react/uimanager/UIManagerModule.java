@@ -950,4 +950,11 @@ public class UIManagerModule extends ReactContextBaseJavaModule
         .getNativeViewHierarchyManager()
         .resolveView(tag);
   }
+
+  @Override
+  public void receiveEvent(int targetTag, String eventName, @Nullable WritableMap event) {
+    getReactApplicationContext()
+        .getJSModule(RCTEventEmitter.class)
+        .receiveEvent(targetTag, eventName, event);
+  }
 }
