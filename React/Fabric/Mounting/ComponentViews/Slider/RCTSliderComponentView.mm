@@ -87,6 +87,10 @@ using namespace facebook::react;
   _minimumTrackImage = nil;
   _maximumTrackImage = nil;
   _thumbImage = nil;
+
+  const auto &props = *std::static_pointer_cast<const SliderProps>(_props);
+  _sliderView.value = props.value;
+  _previousValue = props.value;
 }
 
 - (void)dealloc
