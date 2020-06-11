@@ -61,9 +61,9 @@ static NSString *const RCTDarkAquaColor = @"darkAquaColor";
   NSColor *effectiveColor = _aquaColor;
   if (@available(macOS 10.14, *)) {
     NSAppearance *appearance = [NSAppearance currentAppearance] ?: [NSApp effectiveAppearance];
-    
+
     NSAppearanceName appearanceName = [appearance bestMatchFromAppearancesWithNames:@[NSAppearanceNameAqua, NSAppearanceNameDarkAqua]];
-    
+
     if (_darkAquaColor != nil && [appearanceName isEqualToString:NSAppearanceNameDarkAqua]) {
       effectiveColor = _darkAquaColor;
     }
@@ -179,6 +179,39 @@ RCT_FORWARD_PROPERTY(localizedColorNameComponent, NSString *)
 - (NSColor *)colorWithSystemEffect:(NSColorSystemEffect)systemEffect NS_AVAILABLE_MAC(10_14)
 {
   return [[self effectiveColor] colorWithSystemEffect:systemEffect];
+}
+
+- (NSUInteger)hash
+{
+  const NSUInteger prime = 31;
+  NSUInteger result = 1;
+  result = prime * result + [_aquaColor hash];
+  result = prime * result + [_darkAquaColor hash];
+  return result;
+}
+
+- (BOOL)isEqual:(id)other {
+  if (other == self) {
+    return YES;
+  }
+
+  return other != nil && [other isKindOfClass:[self class]] && [self isEqualToDynamicColor:other];
+}
+
+- (BOOL)isEqualToDynamicColor:(RCTDynamicColor *)other {
+  if (self == other) {
+    return YES;
+  }
+
+  if ([_aquaColor isNotEqualTo:other->_aquaColor]) {
+    return NO;
+  }
+
+  if ([_darkAquaColor isNotEqualTo:other->_darkAquaColor]) {
+    return NO;
+  }
+
+  return YES;
 }
 
 @end
