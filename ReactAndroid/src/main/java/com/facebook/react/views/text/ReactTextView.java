@@ -37,7 +37,6 @@ import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.ViewDefaults;
 import com.facebook.react.uimanager.common.UIManagerType;
 import com.facebook.react.uimanager.common.ViewUtil;
-import com.facebook.react.uimanager.events.RCTEventEmitter;
 import com.facebook.react.views.view.ReactViewBackgroundManager;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -100,8 +99,9 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
   protected void onLayout(
       boolean changed, int textViewLeft, int textViewTop, int textViewRight, int textViewBottom) {
     // TODO T62882314: Delete this method when Fabric is fully released in OSS
+    int reactTag = getId();
     if (!(getText() instanceof Spanned)
-        || ViewUtil.getUIManagerType(getId()) == UIManagerType.FABRIC) {
+        || ViewUtil.getUIManagerType(reactTag) == UIManagerType.FABRIC) {
       /**
        * In general, {@link #setText} is called via {@link ReactTextViewManager#updateExtraData}
        * before we are laid out. This ordering is a requirement because we utilize the data from
@@ -257,9 +257,9 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
 
       WritableMap event = Arguments.createMap();
       event.putArray("inlineViews", inlineViewInfoArray2);
-      reactContext
-          .getJSModule(RCTEventEmitter.class)
-          .receiveEvent(getId(), "topInlineViewLayout", event);
+      if (uiManager != null) {
+        uiManager.receiveEvent(reactTag, "topInlineViewLayout", event);
+      }
     }
   }
 
