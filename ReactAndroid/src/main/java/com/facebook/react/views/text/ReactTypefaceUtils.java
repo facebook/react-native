@@ -107,7 +107,6 @@ public class ReactTypefaceUtils {
       // TODO(t9055065): Fix custom fonts getting applied to text children with different style
       boolean bold = (weight == Typeface.BOLD)
         || ((oldStyle & Typeface.BOLD) != 0 && weight == ReactTextShadowNode.UNSET);
-      Log.w("TESTING::", "is bold: " + bold + " with weight: " + weight); 
       typeface = Typeface.create(typeface, weight, italic);
     }
 
