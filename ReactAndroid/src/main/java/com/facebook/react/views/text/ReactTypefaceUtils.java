@@ -17,16 +17,14 @@ import java.util.List;
 
 public class ReactTypefaceUtils {
   public static final int UNSET = -1;
-  public static final int BOLD = 700;
-  public static final int NORMAL = 400;
 
   public static int parseFontWeight(@Nullable String fontWeightString) {
     int fontWeightNumeric =
         fontWeightString != null ? parseNumericFontWeight(fontWeightString) : UNSET;
-    int fontWeight = fontWeightNumeric != UNSET ? fontWeightNumeric : NORMAL;
+    int fontWeight = fontWeightNumeric != UNSET ? fontWeightNumeric : Typeface.NORMAL;
 
-    if ("bold".equals(fontWeightString)) fontWeight = BOLD;
-    else if ("normal".equals(fontWeightString)) fontWeight = NORMAL;
+    if ("bold".equals(fontWeightString)) fontWeight = Typeface.BOLD;
+    else if ("normal".equals(fontWeightString)) fontWeight = Typeface.NORMAL;
 
     return fontWeight;
   }
@@ -83,33 +81,33 @@ public class ReactTypefaceUtils {
       AssetManager assetManager) {
     int oldStyle;
     if (typeface == null) {
-      oldStyle = 0;
+      oldStyle = Typeface.NORMAL;
     } else {
       oldStyle = typeface.getStyle();
     }
 
-    int want = 0;
+    int newStyle = oldStyle;
     boolean italic = false;
-    if ((weight == Typeface.BOLD)
-        || ((oldStyle & Typeface.BOLD) != 0 && weight == ReactTextShadowNode.UNSET)) {
-      typeface = Typeface.create(typeface, Typeface.BOLD);
-      want |= Typeface.BOLD;
-    } 
-    if(weight == UNSET) weight = NORMAL;
+    if(weight == UNSET) weight = 400;
     if(style == Typeface.ITALIC) italic = true;
-    if ((style == Typeface.ITALIC)
-        || ((oldStyle & Typeface.ITALIC) != 0 && style == ReactTextShadowNode.UNSET)) {
-      typeface = Typeface.create(typeface, Typeface.ITALIC);
-      want |= Typeface.ITALIC;
+    if (weight == Typeface.BOLD) {
+      newStyle = (newStyle == Typeface.ITALIC) ? Typeface.BOLD_ITALIC : Typeface.BOLD;
+      typeface = Typeface.create(typeface, newStyle);
+    } 
+    if (weight == Typeface.NORMAL) {
+      typeface = Typeface.create(typeface, Typeface.NORMAL);
+      newStyle = Typeface.NORMAL;
     }
-
-    if (family != null) {
-      typeface = ReactFontManager.getInstance().getTypeface(family, want, weight, assetManager);
-    } else if (typeface != null) {
-      // TODO(t9055065): Fix custom fonts getting applied to text children with different style
+    if (style == Typeface.ITALIC) {
+      newStyle = (newStyle == Typeface.BOLD) ? Typeface.BOLD_ITALIC : Typeface.ITALIC;
+      typeface = Typeface.create(typeface, newStyle);
+    }
+    if(weight > Typeface.BOLD_ITALIC) {
       typeface = Typeface.create(typeface, weight, italic);
     }
-
+    if (family != null) {
+      typeface = ReactFontManager.getInstance().getTypeface(family, newStyle, weight, assetManager);
+    }
     return typeface;
   }
 
