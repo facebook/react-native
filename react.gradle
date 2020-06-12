@@ -298,6 +298,7 @@ afterEvaluate {
 
             // mergeAssets must run first, as it clears the intermediates directory
             dependsOn(variant.mergeAssetsProvider.get())
+            dependsOn(currentBundleTask)
 
             enabled(currentBundleTask.enabled)
         }
