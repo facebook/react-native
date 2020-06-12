@@ -136,7 +136,7 @@ import java.util.Queue;
     AnimatedNode node = mAnimatedNodes.get(tag);
     if (node == null || !(node instanceof ValueAnimatedNode)) {
       throw new JSApplicationIllegalArgumentException(
-          "Animated node with tag " + tag + " does not exists or is not a 'value' node");
+          "Animated node with tag " + tag + " does not exist, or is not a 'value' node");
     }
     ((ValueAnimatedNode) node).setValueListener(listener);
   }
@@ -145,7 +145,7 @@ import java.util.Queue;
     AnimatedNode node = mAnimatedNodes.get(tag);
     if (node == null || !(node instanceof ValueAnimatedNode)) {
       throw new JSApplicationIllegalArgumentException(
-          "Animated node with tag " + tag + " does not exists or is not a 'value' node");
+          "Animated node with tag " + tag + " does not exist, or is not a 'value' node");
     }
     ((ValueAnimatedNode) node).setValueListener(null);
   }
@@ -154,7 +154,7 @@ import java.util.Queue;
     AnimatedNode node = mAnimatedNodes.get(tag);
     if (node == null || !(node instanceof ValueAnimatedNode)) {
       throw new JSApplicationIllegalArgumentException(
-          "Animated node with tag " + tag + " does not exists or is not a 'value' node");
+          "Animated node with tag " + tag + " does not exist, or is not a 'value' node");
     }
     stopAnimationsForNode(node);
     ((ValueAnimatedNode) node).mValue = value;
@@ -165,7 +165,7 @@ import java.util.Queue;
     AnimatedNode node = mAnimatedNodes.get(tag);
     if (node == null || !(node instanceof ValueAnimatedNode)) {
       throw new JSApplicationIllegalArgumentException(
-          "Animated node with tag " + tag + " does not exists or is not a 'value' node");
+          "Animated node with tag " + tag + " does not exist, or is not a 'value' node");
     }
     ((ValueAnimatedNode) node).mOffset = offset;
     mUpdatedNodes.put(tag, node);
@@ -175,7 +175,7 @@ import java.util.Queue;
     AnimatedNode node = mAnimatedNodes.get(tag);
     if (node == null || !(node instanceof ValueAnimatedNode)) {
       throw new JSApplicationIllegalArgumentException(
-          "Animated node with tag " + tag + " does not exists or is not a 'value' node");
+          "Animated node with tag " + tag + " does not exist, or is not a 'value' node");
     }
     ((ValueAnimatedNode) node).flattenOffset();
   }
@@ -184,7 +184,7 @@ import java.util.Queue;
     AnimatedNode node = mAnimatedNodes.get(tag);
     if (node == null || !(node instanceof ValueAnimatedNode)) {
       throw new JSApplicationIllegalArgumentException(
-          "Animated node with tag " + tag + " does not exists or is not a 'value' node");
+          "Animated node with tag " + tag + " does not exist, or is not a 'value' node");
     }
     ((ValueAnimatedNode) node).extractOffset();
   }
@@ -194,7 +194,7 @@ import java.util.Queue;
     AnimatedNode node = mAnimatedNodes.get(animatedNodeTag);
     if (node == null) {
       throw new JSApplicationIllegalArgumentException(
-          "Animated node with tag " + animatedNodeTag + " does not exists");
+          "Animated node with tag " + animatedNodeTag + " does not exist");
     }
     if (!(node instanceof ValueAnimatedNode)) {
       throw new JSApplicationIllegalArgumentException(
