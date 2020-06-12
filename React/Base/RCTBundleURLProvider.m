@@ -56,6 +56,7 @@ static NSString *const kRCTEnableMinificationKey = @"RCT_enableMinification";
   for (NSString *key in [[self defaults] allKeys]) {
     [[NSUserDefaults standardUserDefaults] removeObjectForKey:key];
   }
+  [[NSUserDefaults standardUserDefaults] removeObjectForKey:kRCTJsLocationKey];
   [self setDefaults];
   [self settingsUpdated];
 }
