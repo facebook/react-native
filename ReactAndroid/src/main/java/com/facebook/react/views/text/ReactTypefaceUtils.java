@@ -7,7 +7,6 @@
 
 package com.facebook.react.views.text;
 
-import android.util.Log;
 import android.content.res.AssetManager;
 import android.graphics.Typeface;
 import android.text.TextUtils;
