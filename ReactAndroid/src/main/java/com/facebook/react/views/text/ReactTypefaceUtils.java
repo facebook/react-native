@@ -88,7 +88,7 @@ public class ReactTypefaceUtils {
 
     int newStyle = oldStyle;
     boolean italic = false;
-    if(weight == UNSET) weight = 400;
+    if(weight == UNSET) weight = Typeface.NORMAL;
     if(style == Typeface.ITALIC) italic = true;
     if (weight == Typeface.BOLD) {
       newStyle = (newStyle == Typeface.ITALIC) ? Typeface.BOLD_ITALIC : Typeface.BOLD;
