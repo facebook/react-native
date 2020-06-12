@@ -7,6 +7,7 @@
 
 package com.facebook.react.views.text;
 
+import android.util.Log;
 import android.content.res.AssetManager;
 import android.graphics.Typeface;
 import android.text.TextUtils;
@@ -17,14 +18,16 @@ import java.util.List;
 
 public class ReactTypefaceUtils {
   public static final int UNSET = -1;
+  public static final int BOLD = 900;
+  public static final int NORMAL = 400;
 
   public static int parseFontWeight(@Nullable String fontWeightString) {
     int fontWeightNumeric =
         fontWeightString != null ? parseNumericFontWeight(fontWeightString) : UNSET;
-    int fontWeight = fontWeightNumeric != UNSET ? fontWeightNumeric : Typeface.NORMAL;
+    int fontWeight = fontWeightNumeric != UNSET ? fontWeightNumeric : NORMAL;
 
-    if ("bold".equals(fontWeightString)) fontWeight = Typeface.BOLD;
-    else if ("normal".equals(fontWeightString)) fontWeight = 400;
+    if ("bold".equals(fontWeightString)) fontWeight = BOLD;
+    else if ("normal".equals(fontWeightString)) fontWeight = NORMAL;
 
     return fontWeight;
   }
@@ -86,19 +89,19 @@ public class ReactTypefaceUtils {
       oldStyle = typeface.getStyle();
     }
 
-    if(weight < 0) { 
-      weight = 400; 
-    };
     int want = 0;
     boolean italic = false;
     if ((weight == Typeface.BOLD)
         || ((oldStyle & Typeface.BOLD) != 0 && weight == ReactTextShadowNode.UNSET)) {
-      weight = 700;
-    }
-
+      typeface = Typeface.create(typeface, Typeface.BOLD);
+      want |= Typeface.BOLD;
+    } 
+    if(weight == UNSET) weight = NORMAL;
+    if(style == Typeface.ITALIC) italic = true;
     if ((style == Typeface.ITALIC)
         || ((oldStyle & Typeface.ITALIC) != 0 && style == ReactTextShadowNode.UNSET)) {
-      italic = true;
+      typeface = Typeface.create(typeface, Typeface.ITALIC);
+      want |= Typeface.ITALIC;
     }
 
     if (family != null) {
@@ -108,11 +111,7 @@ public class ReactTypefaceUtils {
       typeface = Typeface.create(typeface, weight, italic);
     }
 
-    if (typeface != null) {
-      return typeface;
-    } else {
-      return Typeface.create(Typeface.DEFAULT, weight, italic);
-    }
+    return typeface;
   }
 
   /**
