@@ -542,7 +542,8 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
 
   /**
    * This method enqueues UI operations directly to the UI thread. This might change in the future
-   * to enforce execution order using {@link ReactChoreographer#CallbackType}.
+   * to enforce execution order using {@link ReactChoreographer#CallbackType}. This method should
+   * only be called as the result of a new tree being committed.
    */
   @DoNotStrip
   @SuppressWarnings("unused")
@@ -562,6 +563,13 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
     // a BatchMountItem. No other sites call into this with a BatchMountItem, and Binding.cpp only
     // calls scheduleMountItems with a BatchMountItem.
     boolean isBatchMountItem = mountItem instanceof BatchMountItem;
+    boolean shouldSchedule = !(isBatchMountItem && ((BatchMountItem) mountItem).getSize() == 0);
+
+    // In case of sync rendering, this could be called on the UI thread. Otherwise,
+    // it should ~always be called on the JS thread.
+    for (UIManagerListener listener : mListeners) {
+      listener.didScheduleMountItems(this);
+    }
 
     if (isBatchMountItem) {
       mCommitStartTime = commitStartTime;
@@ -571,13 +579,15 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
       mDispatchViewUpdatesTime = SystemClock.uptimeMillis();
     }
 
-    synchronized (mMountItemsLock) {
-      mMountItems.add(mountItem);
-    }
+    if (shouldSchedule) {
+      synchronized (mMountItemsLock) {
+        mMountItems.add(mountItem);
+      }
 
-    if (UiThreadUtil.isOnUiThread()) {
-      // We only read these flags on the UI thread.
-      tryDispatchMountItems();
+      if (UiThreadUtil.isOnUiThread()) {
+        // We only read these flags on the UI thread.
+        tryDispatchMountItems();
+      }
     }
 
     // Post markers outside of lock and after sync mounting finishes its execution

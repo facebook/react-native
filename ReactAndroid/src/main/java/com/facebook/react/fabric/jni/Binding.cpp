@@ -842,22 +842,18 @@ void Binding::schedulerDidFinishTransaction(
     toRemove.clear();
   }
 
-  if (position <= 0) {
-    // If there are no mountItems to be sent to the platform, then it is not
-    // necessary to even call.
-    return;
-  }
-
   static auto createMountItemsBatchContainer =
       jni::findClassStatic(UIManagerJavaDescriptor)
           ->getMethod<alias_ref<JMountItem>(
               jint, jtypeArray<JMountItem::javaobject>, jint, jint)>(
               "createBatchMountItem");
 
+  // If there are no items, we pass a nullptr instead of passing the object
+  // through the JNI
   auto batch = createMountItemsBatchContainer(
       localJavaUIManager,
       surfaceId,
-      mountItemsArray.get(),
+      position == 0 ? nullptr : mountItemsArray.get(),
       position,
       commitNumber);
 
