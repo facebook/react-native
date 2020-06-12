@@ -36,10 +36,15 @@ class ActionSheetExample extends React.Component<Props, State> {
   render() {
     return (
       <View>
-        <Text onPress={this.showActionSheet} style={style.button}>
+        <Text
+          testID="normal-action-sheet"
+          onPress={this.showActionSheet}
+          style={style.button}>
           Click to show the ActionSheet
         </Text>
-        <Text>Clicked button: {this.state.clicked}</Text>
+        <Text testID="normal-action-sheet-button-status">
+          Clicked button: {this.state.clicked}
+        </Text>
       </View>
     );
   }
@@ -149,10 +154,13 @@ class ShareActionSheetExample extends React.Component<
   render() {
     return (
       <View>
-        <Text onPress={this.showShareActionSheet} style={style.button}>
+        <Text
+          testID="share-action-sheet"
+          onPress={this.showShareActionSheet}
+          style={style.button}>
           Click to show the Share ActionSheet
         </Text>
-        <Text>{this.state.text}</Text>
+        <Text testID="share-action-sheet-button-status">{this.state.text}</Text>
       </View>
     );
   }
@@ -298,7 +306,7 @@ exports.title = 'ActionSheetIOS';
 exports.description = "Interface to show iOS' action sheets";
 exports.examples = [
   {
-    title: 'Show Action Sheet',
+    title: 'Show Standard Action Sheet',
     render(): React.Element<any> {
       return <ActionSheetExample />;
     },
