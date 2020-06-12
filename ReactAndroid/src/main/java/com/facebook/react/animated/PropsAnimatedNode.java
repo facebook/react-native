@@ -25,14 +25,11 @@ import java.util.Map;
 
   private int mConnectedViewTag = -1;
   private final NativeAnimatedNodesManager mNativeAnimatedNodesManager;
-  private final UIManager mUIManager;
   private final Map<String, Integer> mPropNodeMapping;
   private final JavaOnlyMap mPropMap;
+  @Nullable private UIManager mUIManager;
 
-  PropsAnimatedNode(
-      ReadableMap config,
-      NativeAnimatedNodesManager nativeAnimatedNodesManager,
-      UIManager uiManager) {
+  PropsAnimatedNode(ReadableMap config, NativeAnimatedNodesManager nativeAnimatedNodesManager) {
     ReadableMap props = config.getMap("props");
     ReadableMapKeySetIterator iter = props.keySetIterator();
     mPropNodeMapping = new HashMap<>();
@@ -43,15 +40,15 @@ import java.util.Map;
     }
     mPropMap = new JavaOnlyMap();
     mNativeAnimatedNodesManager = nativeAnimatedNodesManager;
-    mUIManager = uiManager;
   }
 
-  public void connectToView(int viewTag) {
+  public void connectToView(int viewTag, UIManager uiManager) {
     if (mConnectedViewTag != -1) {
       throw new JSApplicationIllegalArgumentException(
           "Animated node " + mTag + " is " + "already attached to a view");
     }
     mConnectedViewTag = viewTag;
+    mUIManager = uiManager;
   }
 
   public void disconnectFromView(int viewTag) {
@@ -65,6 +62,11 @@ import java.util.Map;
   }
 
   public void restoreDefaultValues() {
+    // Cannot restore default values if this view has already been disconnected.
+    if (mConnectedViewTag == -1) {
+      return;
+    }
+
     ReadableMapKeySetIterator it = mPropMap.keySetIterator();
     while (it.hasNextKey()) {
       mPropMap.putNull(it.nextKey());

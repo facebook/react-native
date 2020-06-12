@@ -512,7 +512,11 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
       ReactMarker.logFabricMarker(
           ReactMarkerConstants.FABRIC_UPDATE_UI_MAIN_THREAD_START, null, commitNumber);
       if (ENABLE_FABRIC_LOGS) {
-        FLog.d(TAG, "SynchronouslyUpdateViewOnUIThread for tag %d", reactTag);
+        FLog.d(
+            TAG,
+            "SynchronouslyUpdateViewOnUIThread for tag %d: %s",
+            reactTag,
+            (IS_DEVELOPMENT_ENVIRONMENT ? props.toHashMap().toString() : "<hidden>"));
       }
 
       updatePropsMountItem(reactTag, props).execute(mMountingManager);
@@ -617,10 +621,6 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
       return;
     }
 
-    for (UIManagerListener listener : mListeners) {
-      listener.willDispatchMountItems();
-    }
-
     final boolean didDispatchItems;
     try {
       didDispatchItems = dispatchMountItems();
@@ -630,6 +630,10 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
     } finally {
       // Clean up after running dispatchMountItems - even if an exception was thrown
       mInDispatch = false;
+    }
+
+    for (UIManagerListener listener : mListeners) {
+      listener.didDispatchMountItems(this);
     }
 
     // Decide if we want to try reentering
@@ -879,10 +883,6 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
     // dispatchPreMountItems cannot be reentrant, but we want to prevent dispatchMountItems from
     // reentering during dispatchPreMountItems
     mInDispatch = true;
-
-    for (UIManagerListener listener : mListeners) {
-      listener.willDispatchPreMountItems();
-    }
 
     try {
       while (true) {
