@@ -17,7 +17,7 @@ import java.util.List;
 
 public class ReactTypefaceUtils {
   public static final int UNSET = -1;
-  public static final int BOLD = 900;
+  public static final int BOLD = 700;
   public static final int NORMAL = 400;
 
   public static int parseFontWeight(@Nullable String fontWeightString) {
