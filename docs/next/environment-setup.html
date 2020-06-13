@@ -244,7 +244,7 @@ brew <span class="token function">install</span> watchman
 <p><h4>3. Configure the ANDROID_HOME environment variable</h4></p>
 <p>The React Native tools require some environment variables to be set up in order to build apps with native code.</p>
 <p><block class="native mac linux android" /></p>
-<p>Add the following lines to your <code>$HOME/.bash_profile</code> or <code>$HOME/.bashrc</code> config file:</p>
+<p>Add the following lines to your <code>$HOME/.bash_profile</code> or <code>$HOME/.bashrc</code> (if you are using <code>zsh</code> then <code>~/.zprofile</code> or <code>~/.zshrc</code>) config file:</p>
 <p><block class="native mac android" /></p>
 <pre><code class="hljs css language-sh"><span class="token builtin class-name">export</span> <span class="token assign-left variable">ANDROID_HOME</span><span class="token operator">=</span><span class="token environment constant">$HOME</span>/Library/Android/sdk
 <span class="token builtin class-name">export</span> <span class="token assign-left variable"><span class="token environment constant">PATH</span></span><span class="token operator">=</span><span class="token environment constant">$PATH</span><span class="token builtin class-name">:</span><span class="token variable">$ANDROID_HOME</span>/emulator
