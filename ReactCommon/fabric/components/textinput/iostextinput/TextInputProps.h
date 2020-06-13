@@ -53,6 +53,8 @@ class TextInputProps final : public ViewProps, public BaseTextProps {
   std::string const text{};
   int const mostRecentEventCount{0};
 
+  bool autoFocus{false};
+
   /*
    * Accessors
    */

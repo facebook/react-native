@@ -54,7 +54,9 @@ TextInputProps::TextInputProps(
           rawProps,
           "mostRecentEventCount",
           sourceProps.mostRecentEventCount,
-          {})){};
+          {})),
+      autoFocus(
+          convertRawProp(rawProps, "autoFocus", sourceProps.autoFocus, {})){};
 
 TextAttributes TextInputProps::getEffectiveTextAttributes() const {
   auto result = TextAttributes::defaultTextAttributes();
