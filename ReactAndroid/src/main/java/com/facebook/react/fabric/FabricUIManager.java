@@ -14,6 +14,10 @@ import static com.facebook.react.fabric.mounting.LayoutMetricsConversions.getMax
 import static com.facebook.react.fabric.mounting.LayoutMetricsConversions.getMinSize;
 import static com.facebook.react.fabric.mounting.LayoutMetricsConversions.getYogaMeasureMode;
 import static com.facebook.react.fabric.mounting.LayoutMetricsConversions.getYogaSize;
+import static com.facebook.react.uimanager.UIManagerHelper.PADDING_BOTTOM_INDEX;
+import static com.facebook.react.uimanager.UIManagerHelper.PADDING_END_INDEX;
+import static com.facebook.react.uimanager.UIManagerHelper.PADDING_START_INDEX;
+import static com.facebook.react.uimanager.UIManagerHelper.PADDING_TOP_INDEX;
 import static com.facebook.react.uimanager.common.UIManagerType.FABRIC;
 
 import android.annotation.SuppressLint;
@@ -73,6 +77,7 @@ import com.facebook.react.uimanager.ReactRoot;
 import com.facebook.react.uimanager.ReactRootViewTagGenerator;
 import com.facebook.react.uimanager.StateWrapper;
 import com.facebook.react.uimanager.ThemedReactContext;
+import com.facebook.react.uimanager.UIManagerHelper;
 import com.facebook.react.uimanager.ViewManagerPropertyUpdater;
 import com.facebook.react.uimanager.ViewManagerRegistry;
 import com.facebook.react.uimanager.events.EventDispatcher;
@@ -494,6 +499,32 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
         getYogaSize(minHeight, maxHeight),
         getYogaMeasureMode(minHeight, maxHeight),
         attachmentsPositions);
+  }
+
+  /**
+   * @param surfaceID {@link int} surface ID
+   * @param defaultTextInputPadding {@link float[]} output parameter will contain the default theme
+   *     padding used by RN Android TextInput.
+   * @return if theme data is available in the output parameters.
+   */
+  @DoNotStrip
+  public boolean getThemeData(int surfaceID, float[] defaultTextInputPadding) {
+    ThemedReactContext themedReactContext = mReactContextForRootTag.get(surfaceID);
+    if (themedReactContext == null) {
+      // TODO T68526882: Review if this should cause a crash instead.
+      ReactSoftException.logSoftException(
+          TAG,
+          new ReactNoCrashSoftException(
+              "Unable to find ThemedReactContext associated to surfaceID: " + surfaceID));
+      return false;
+    }
+    float[] defaultTextInputPaddingForTheme =
+        UIManagerHelper.getDefaultTextInputPadding(themedReactContext);
+    defaultTextInputPadding[0] = defaultTextInputPaddingForTheme[PADDING_START_INDEX];
+    defaultTextInputPadding[1] = defaultTextInputPaddingForTheme[PADDING_END_INDEX];
+    defaultTextInputPadding[2] = defaultTextInputPaddingForTheme[PADDING_TOP_INDEX];
+    defaultTextInputPadding[3] = defaultTextInputPaddingForTheme[PADDING_BOTTOM_INDEX];
+    return true;
   }
 
   @Override

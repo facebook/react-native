@@ -7,6 +7,7 @@
 
 #pragma once
 
+#include <fbjni/fbjni.h>
 #include <react/core/ConcreteComponentDescriptor.h>
 #include "AndroidTextInputShadowNode.h"
 
@@ -48,6 +49,26 @@ class AndroidTextInputComponentDescriptor final
       defaultThemePaddingEnd = ((YGValue)theme[YGEdgeEnd]).value;
       defaultThemePaddingTop = ((YGValue)theme[YGEdgeTop]).value;
       defaultThemePaddingBottom = ((YGValue)theme[YGEdgeBottom]).value;
+    } else {
+      const jni::global_ref<jobject> &fabricUIManager =
+          contextContainer_->at<jni::global_ref<jobject>>("FabricUIManager");
+
+      auto env = jni::Environment::current();
+      auto defaultTextInputPaddingArray = env->NewFloatArray(4);
+      static auto getThemeData =
+          jni::findClassStatic(UIManagerJavaDescriptor)
+              ->getMethod<jboolean(jint, jfloatArray)>("getThemeData");
+
+      if (getThemeData(
+              fabricUIManager, surfaceId, defaultTextInputPaddingArray)) {
+        jfloat *defaultTextInputPadding =
+            env->GetFloatArrayElements(defaultTextInputPaddingArray, 0);
+        defaultThemePaddingStart = defaultTextInputPadding[0];
+        defaultThemePaddingEnd = defaultTextInputPadding[1];
+        defaultThemePaddingTop = defaultTextInputPadding[2];
+        defaultThemePaddingBottom = defaultTextInputPadding[3];
+      }
+      env->DeleteLocalRef(defaultTextInputPaddingArray);
     }
 
     return std::make_shared<AndroidTextInputShadowNode::ConcreteState>(
@@ -177,6 +198,10 @@ class AndroidTextInputComponentDescriptor final
   }
 
  private:
+  // TODO T68526882: Unify with Binding::UIManagerJavaDescriptor
+  constexpr static auto UIManagerJavaDescriptor =
+      "com/facebook/react/fabric/FabricUIManager";
+
   SharedTextLayoutManager textLayoutManager_;
   mutable better::map<int, YGStyle::Edges> surfaceIdToThemePaddingMap_;
 };
