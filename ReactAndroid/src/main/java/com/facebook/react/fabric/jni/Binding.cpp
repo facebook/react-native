@@ -762,16 +762,20 @@ void Binding::schedulerDidFinishTransaction(
                 createUpdateStateMountItem(localJavaUIManager, mutation);
           }
 
-          auto updateLayoutMountItem =
-              createUpdateLayoutMountItem(localJavaUIManager, mutation);
-          if (updateLayoutMountItem) {
-            mountItems[position++] = updateLayoutMountItem;
-          }
-
+          // Padding: padding mountItems must be executed before layout props
+          // are updated in the view. This is necessary to ensure that events
+          // (resulting from layout changes) are dispatched with the correct
+          // padding information.
           auto updatePaddingMountItem =
               createUpdatePaddingMountItem(localJavaUIManager, mutation);
           if (updatePaddingMountItem) {
             mountItems[position++] = updatePaddingMountItem;
+          }
+
+          auto updateLayoutMountItem =
+              createUpdateLayoutMountItem(localJavaUIManager, mutation);
+          if (updateLayoutMountItem) {
+            mountItems[position++] = updateLayoutMountItem;
           }
         }
 
@@ -805,18 +809,21 @@ void Binding::schedulerDidFinishTransaction(
                 createUpdateStateMountItem(localJavaUIManager, mutation);
           }
 
+          // Padding: padding mountItems must be executed before layout props
+          // are updated in the view. This is necessary to ensure that events
+          // (resulting from layout changes) are dispatched with the correct
+          // padding information.
+          auto updatePaddingMountItem =
+              createUpdatePaddingMountItem(localJavaUIManager, mutation);
+          if (updatePaddingMountItem) {
+            mountItems[position++] = updatePaddingMountItem;
+          }
+
           // Layout
           auto updateLayoutMountItem =
               createUpdateLayoutMountItem(localJavaUIManager, mutation);
           if (updateLayoutMountItem) {
             mountItems[position++] = updateLayoutMountItem;
-          }
-
-          // Padding
-          auto updatePaddingMountItem =
-              createUpdatePaddingMountItem(localJavaUIManager, mutation);
-          if (updatePaddingMountItem) {
-            mountItems[position++] = updatePaddingMountItem;
           }
         }
 
