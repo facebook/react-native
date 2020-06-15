@@ -211,9 +211,10 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : unused)
   BOOL result = NO;
   if (UIEdgeInsetsEqualToEdgeInsets(self.hitTestEdgeInsets, UIEdgeInsetsZero)) {
     result = [super pointInside:point withEvent:event];
+  } else {
+    CGRect hitFrame = UIEdgeInsetsInsetRect(self.bounds, self.hitTestEdgeInsets);
+    result = CGRectContainsPoint(hitFrame, point);
   }
-  CGRect hitFrame = UIEdgeInsetsInsetRect(self.bounds, self.hitTestEdgeInsets);
-  result = CGRectContainsPoint(hitFrame, point);
     
   if (result && self.accessibilitySplitFocus) {
     NSArray<UIView *> *sortedSubviews = [self reactZIndexSortedSubviews];
@@ -224,8 +225,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : unused)
       if (hitSubview != nil) {
         break;
       }
-  }
-      
+    }
     _shouldAbandonAccessibilityFocus = hitSubview != nil;
   }
 

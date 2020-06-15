@@ -55,9 +55,10 @@ class AccessibilityIOSExample extends React.Component<Props> {
             This view's children are hidden from the accessibility tree
           </Text>
         </View>
-        <View style={{paddingVertical: 10, backgroundColor: 'green'}}
-              accessible={true}
-              accessibilitySplitFocus={true}>
+        <View
+          style={{paddingVertical: 10, backgroundColor: 'green'}}
+          accessible={true}
+          accessibilitySplitFocus={true}>
           <Text>Outer Element</Text>
           <TouchableWithoutFeedback>
             <View style={{ paddingVertical: 10, backgroundColor: 'red'}}>

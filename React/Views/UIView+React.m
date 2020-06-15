@@ -354,7 +354,7 @@
       self, @selector(accessibilityValueInternal), accessibilityValue, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 }
 
-- (BOOL) accessibilitySplitFocus
+- (BOOL)accessibilitySplitFocus
 {
   return [objc_getAssociatedObject(self, _cmd) boolValue];
 }
