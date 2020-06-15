@@ -228,9 +228,21 @@ using namespace facebook::react;
     self.accessibilityElement.accessibilityElementsHidden = newViewProps.accessibilityElementsHidden;
   }
 
+  // `accessibilityTraits`
   if (oldViewProps.accessibilityTraits != newViewProps.accessibilityTraits) {
     self.accessibilityElement.accessibilityTraits =
         RCTUIAccessibilityTraitsFromAccessibilityTraits(newViewProps.accessibilityTraits);
+  }
+
+  // `accessibilityState`
+  if (oldViewProps.accessibilityState != newViewProps.accessibilityState) {
+    self.accessibilityTraits &= ~(UIAccessibilityTraitNotEnabled | UIAccessibilityTraitSelected);
+    if (newViewProps.accessibilityState.selected) {
+      self.accessibilityTraits |= UIAccessibilityTraitSelected;
+    }
+    if (newViewProps.accessibilityState.disabled) {
+      self.accessibilityTraits |= UIAccessibilityTraitNotEnabled;
+    }
   }
 
   // `accessibilityIgnoresInvertColors`

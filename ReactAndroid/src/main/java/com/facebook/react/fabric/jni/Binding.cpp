@@ -43,9 +43,6 @@ struct JMountItem : public JavaClass<JMountItem> {
       "Lcom/facebook/react/fabric/mounting/mountitems/MountItem;";
 };
 
-static constexpr auto UIManagerJavaDescriptor =
-    "com/facebook/react/fabric/FabricUIManager";
-
 struct RemoveDeleteMetadata {
   Tag tag;
   Tag parentTag;
@@ -366,7 +363,7 @@ local_ref<JMountItem::javaobject> createUpdateEventEmitterMountItem(
   cEventEmitter->eventEmitter = eventEmitter;
 
   static auto updateEventEmitterInstruction =
-      jni::findClassStatic(UIManagerJavaDescriptor)
+      jni::findClassStatic(Binding::UIManagerJavaDescriptor)
           ->getMethod<alias_ref<JMountItem>(jint, jobject)>(
               "updateEventEmitterMountItem");
 
@@ -387,7 +384,7 @@ local_ref<JMountItem::javaobject> createUpdatePropsMountItem(
   local_ref<ReadableMap::javaobject> readableMap =
       castReadableMap(ReadableNativeMap::newObjectCxxArgs(newProps));
   static auto updatePropsInstruction =
-      jni::findClassStatic(UIManagerJavaDescriptor)
+      jni::findClassStatic(Binding::UIManagerJavaDescriptor)
           ->getMethod<alias_ref<JMountItem>(jint, ReadableMap::javaobject)>(
               "updatePropsMountItem");
 
@@ -404,7 +401,7 @@ local_ref<JMountItem::javaobject> createUpdateLayoutMountItem(
   if (newChildShadowView.layoutMetrics != EmptyLayoutMetrics &&
       oldChildShadowView.layoutMetrics != newChildShadowView.layoutMetrics) {
     static auto updateLayoutInstruction =
-        jni::findClassStatic(UIManagerJavaDescriptor)
+        jni::findClassStatic(Binding::UIManagerJavaDescriptor)
             ->getMethod<alias_ref<JMountItem>(
                 jint, jint, jint, jint, jint, jint)>("updateLayoutMountItem");
     auto layoutMetrics = newChildShadowView.layoutMetrics;
@@ -436,7 +433,7 @@ local_ref<JMountItem::javaobject> createUpdatePaddingMountItem(
   }
 
   static auto updateLayoutInstruction =
-      jni::findClassStatic(UIManagerJavaDescriptor)
+      jni::findClassStatic(Binding::UIManagerJavaDescriptor)
           ->getMethod<alias_ref<JMountItem>(jint, jint, jint, jint, jint)>(
               "updatePaddingMountItem");
 
@@ -457,7 +454,7 @@ local_ref<JMountItem::javaobject> createInsertMountItem(
     const jni::global_ref<jobject> &javaUIManager,
     const ShadowViewMutation &mutation) {
   static auto insertInstruction =
-      jni::findClassStatic(UIManagerJavaDescriptor)
+      jni::findClassStatic(Binding::UIManagerJavaDescriptor)
           ->getMethod<alias_ref<JMountItem>(jint, jint, jint)>(
               "insertMountItem");
 
@@ -472,7 +469,7 @@ local_ref<JMountItem::javaobject> createUpdateStateMountItem(
     const jni::global_ref<jobject> &javaUIManager,
     const ShadowViewMutation &mutation) {
   static auto updateStateInstruction =
-      jni::findClassStatic(UIManagerJavaDescriptor)
+      jni::findClassStatic(Binding::UIManagerJavaDescriptor)
           ->getMethod<alias_ref<JMountItem>(jint, jobject)>(
               "updateStateMountItem");
 
@@ -498,7 +495,7 @@ local_ref<JMountItem::javaobject> createRemoveMountItem(
     const jni::global_ref<jobject> &javaUIManager,
     const ShadowViewMutation &mutation) {
   static auto removeInstruction =
-      jni::findClassStatic(UIManagerJavaDescriptor)
+      jni::findClassStatic(Binding::UIManagerJavaDescriptor)
           ->getMethod<alias_ref<JMountItem>(jint, jint, jint)>(
               "removeMountItem");
 
@@ -513,7 +510,7 @@ local_ref<JMountItem::javaobject> createDeleteMountItem(
     const jni::global_ref<jobject> &javaUIManager,
     const ShadowViewMutation &mutation) {
   static auto deleteInstruction =
-      jni::findClassStatic(UIManagerJavaDescriptor)
+      jni::findClassStatic(Binding::UIManagerJavaDescriptor)
           ->getMethod<alias_ref<JMountItem>(jint)>("deleteMountItem");
 
   return deleteInstruction(javaUIManager, mutation.oldChildShadowView.tag);
@@ -536,7 +533,7 @@ local_ref<JMountItem::javaobject> createRemoveAndDeleteMultiMountItem(
   }
 
   static auto removeDeleteMultiInstruction =
-      jni::findClassStatic(UIManagerJavaDescriptor)
+      jni::findClassStatic(Binding::UIManagerJavaDescriptor)
           ->getMethod<alias_ref<JMountItem>(jintArray)>(
               "removeDeleteMultiMountItem");
 
@@ -561,7 +558,7 @@ local_ref<JMountItem::javaobject> createCreateMountItem(
     const ShadowViewMutation &mutation,
     const Tag surfaceId) {
   static auto createJavaInstruction =
-      jni::findClassStatic(UIManagerJavaDescriptor)
+      jni::findClassStatic(Binding::UIManagerJavaDescriptor)
           ->getMethod<alias_ref<JMountItem>(
               jstring, ReadableMap::javaobject, jobject, jint, jint, jboolean)>(
               "createMountItem");
@@ -762,16 +759,20 @@ void Binding::schedulerDidFinishTransaction(
                 createUpdateStateMountItem(localJavaUIManager, mutation);
           }
 
-          auto updateLayoutMountItem =
-              createUpdateLayoutMountItem(localJavaUIManager, mutation);
-          if (updateLayoutMountItem) {
-            mountItems[position++] = updateLayoutMountItem;
-          }
-
+          // Padding: padding mountItems must be executed before layout props
+          // are updated in the view. This is necessary to ensure that events
+          // (resulting from layout changes) are dispatched with the correct
+          // padding information.
           auto updatePaddingMountItem =
               createUpdatePaddingMountItem(localJavaUIManager, mutation);
           if (updatePaddingMountItem) {
             mountItems[position++] = updatePaddingMountItem;
+          }
+
+          auto updateLayoutMountItem =
+              createUpdateLayoutMountItem(localJavaUIManager, mutation);
+          if (updateLayoutMountItem) {
+            mountItems[position++] = updateLayoutMountItem;
           }
         }
 
@@ -805,18 +806,21 @@ void Binding::schedulerDidFinishTransaction(
                 createUpdateStateMountItem(localJavaUIManager, mutation);
           }
 
+          // Padding: padding mountItems must be executed before layout props
+          // are updated in the view. This is necessary to ensure that events
+          // (resulting from layout changes) are dispatched with the correct
+          // padding information.
+          auto updatePaddingMountItem =
+              createUpdatePaddingMountItem(localJavaUIManager, mutation);
+          if (updatePaddingMountItem) {
+            mountItems[position++] = updatePaddingMountItem;
+          }
+
           // Layout
           auto updateLayoutMountItem =
               createUpdateLayoutMountItem(localJavaUIManager, mutation);
           if (updateLayoutMountItem) {
             mountItems[position++] = updateLayoutMountItem;
-          }
-
-          // Padding
-          auto updatePaddingMountItem =
-              createUpdatePaddingMountItem(localJavaUIManager, mutation);
-          if (updatePaddingMountItem) {
-            mountItems[position++] = updatePaddingMountItem;
           }
         }
 
@@ -842,36 +846,33 @@ void Binding::schedulerDidFinishTransaction(
     toRemove.clear();
   }
 
-  if (position <= 0) {
-    // If there are no mountItems to be sent to the platform, then it is not
-    // necessary to even call.
-    return;
-  }
-
   static auto createMountItemsBatchContainer =
-      jni::findClassStatic(UIManagerJavaDescriptor)
+      jni::findClassStatic(Binding::UIManagerJavaDescriptor)
           ->getMethod<alias_ref<JMountItem>(
               jint, jtypeArray<JMountItem::javaobject>, jint, jint)>(
               "createBatchMountItem");
 
+  // If there are no items, we pass a nullptr instead of passing the object
+  // through the JNI
   auto batch = createMountItemsBatchContainer(
       localJavaUIManager,
       surfaceId,
-      mountItemsArray.get(),
+      position == 0 ? nullptr : mountItemsArray.get(),
       position,
       commitNumber);
 
-  static auto scheduleMountItem = jni::findClassStatic(UIManagerJavaDescriptor)
-                                      ->getMethod<void(
-                                          JMountItem::javaobject,
-                                          jint,
-                                          jlong,
-                                          jlong,
-                                          jlong,
-                                          jlong,
-                                          jlong,
-                                          jlong,
-                                          jlong)>("scheduleMountItem");
+  static auto scheduleMountItem =
+      jni::findClassStatic(Binding::UIManagerJavaDescriptor)
+          ->getMethod<void(
+              JMountItem::javaobject,
+              jint,
+              jlong,
+              jlong,
+              jlong,
+              jlong,
+              jlong,
+              jlong,
+              jlong)>("scheduleMountItem");
 
   auto finishTransactionEndTime = telemetryTimePointNow();
 
@@ -900,7 +901,7 @@ void Binding::onAnimationStarted() {
   }
 
   static auto layoutAnimationsStartedJNI =
-      jni::findClassStatic(UIManagerJavaDescriptor)
+      jni::findClassStatic(Binding::UIManagerJavaDescriptor)
           ->getMethod<void()>("onAnimationStarted");
 
   layoutAnimationsStartedJNI(localJavaUIManager);
@@ -913,7 +914,7 @@ void Binding::onAllAnimationsComplete() {
   }
 
   static auto allAnimationsCompleteJNI =
-      jni::findClassStatic(UIManagerJavaDescriptor)
+      jni::findClassStatic(Binding::UIManagerJavaDescriptor)
           ->getMethod<void()>("onAllAnimationsComplete");
 
   allAnimationsCompleteJNI(localJavaUIManager);
@@ -944,7 +945,7 @@ void Binding::schedulerDidRequestPreliminaryViewAllocation(
   }
 
   static auto preallocateView =
-      jni::findClassStatic(UIManagerJavaDescriptor)
+      jni::findClassStatic(Binding::UIManagerJavaDescriptor)
           ->getMethod<void(
               jint, jint, jstring, ReadableMap::javaobject, jobject, jboolean)>(
               "preallocateView");
@@ -985,7 +986,7 @@ void Binding::schedulerDidDispatchCommand(
   }
 
   static auto dispatchCommand =
-      jni::findClassStatic(UIManagerJavaDescriptor)
+      jni::findClassStatic(Binding::UIManagerJavaDescriptor)
           ->getMethod<void(jint, jstring, ReadableArray::javaobject)>(
               "dispatchCommand");
 
@@ -1010,7 +1011,7 @@ void Binding::schedulerDidSetJSResponder(
   }
 
   static auto setJSResponder =
-      jni::findClassStatic(UIManagerJavaDescriptor)
+      jni::findClassStatic(Binding::UIManagerJavaDescriptor)
           ->getMethod<void(jint, jint, jboolean)>("setJSResponder");
 
   setJSResponder(
@@ -1028,8 +1029,9 @@ void Binding::schedulerDidClearJSResponder() {
     return;
   }
 
-  static auto clearJSResponder = jni::findClassStatic(UIManagerJavaDescriptor)
-                                     ->getMethod<void()>("clearJSResponder");
+  static auto clearJSResponder =
+      jni::findClassStatic(Binding::UIManagerJavaDescriptor)
+          ->getMethod<void()>("clearJSResponder");
 
   clearJSResponder(localJavaUIManager);
 }

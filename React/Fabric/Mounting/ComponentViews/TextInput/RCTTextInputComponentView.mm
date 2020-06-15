@@ -54,6 +54,7 @@ using namespace facebook::react;
    * In multiline text input this is undesirable as we don't want to be sending events for changes that JS triggered.
    */
   BOOL _comingFromJS;
+  BOOL _didMoveToWindow;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame
@@ -67,10 +68,24 @@ using namespace facebook::react;
     _backedTextInputView.textInputDelegate = self;
     _ignoreNextTextInputCall = NO;
     _comingFromJS = NO;
+    _didMoveToWindow = NO;
     [self addSubview:_backedTextInputView];
   }
 
   return self;
+}
+
+- (void)didMoveToWindow
+{
+  [super didMoveToWindow];
+
+  if (self.window && !_didMoveToWindow) {
+    auto const &props = *std::static_pointer_cast<TextInputProps const>(_props);
+    if (props.autoFocus) {
+      [_backedTextInputView becomeFirstResponder];
+    }
+    _didMoveToWindow = YES;
+  }
 }
 
 #pragma mark - RCTComponentViewProtocol
@@ -237,6 +252,7 @@ using namespace facebook::react;
   _comingFromJS = NO;
   _lastStringStateWasUpdatedWith = nil;
   _ignoreNextTextInputCall = NO;
+  _didMoveToWindow = NO;
 }
 
 #pragma mark - RCTComponentViewProtocol
