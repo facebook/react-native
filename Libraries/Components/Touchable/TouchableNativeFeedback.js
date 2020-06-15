@@ -281,6 +281,7 @@ class TouchableNativeFeedback extends React.Component<Props, State> {
         accessibilityLiveRegion: this.props.accessibilityLiveRegion,
         accessibilityViewIsModal: this.props.accessibilityViewIsModal,
         accessibilityElementsHidden: this.props.accessibilityElementsHidden,
+        accessibilitySplitFocus: this.props.accessibilitySplitFocus,
         hasTVPreferredFocus: this.props.hasTVPreferredFocus,
         hitSlop: this.props.hitSlop,
         focusable:

@@ -367,6 +367,15 @@ type IOSViewProps = $ReadOnly<{|
   accessibilityElementsHidden?: ?boolean,
 
   /**
+   * A value indicating whether the focus of a group of nested accessibility elements
+   * can be captured separately from their parent element.
+   *
+   * @platform ios
+   *
+   */
+  accessibilitySplitFocus?: ?boolean,
+
+  /**
    * Whether this `View` should be rendered as a bitmap before compositing.
    *
    * @platform ios

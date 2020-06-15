@@ -11,7 +11,7 @@
 'use strict';
 
 const React = require('react');
-const {Text, View, Alert} = require('react-native');
+const {Text, View, Alert, TouchableWithoutFeedback} = require('react-native');
 
 const RNTesterBlock = require('../../components/RNTesterBlock');
 
@@ -54,6 +54,21 @@ class AccessibilityIOSExample extends React.Component<Props> {
           <Text>
             This view's children are hidden from the accessibility tree
           </Text>
+        </View>
+        <View style={{paddingVertical: 10, backgroundColor: 'green'}}
+              accessible={true}
+              accessibilitySplitFocus={true}>
+          <Text>Outer Element</Text>
+          <TouchableWithoutFeedback>
+            <View style={{ paddingVertical: 10, backgroundColor: 'red'}}>
+              <Text>First Inner Element</Text>
+            </View>
+          </TouchableWithoutFeedback>
+          <TouchableWithoutFeedback>
+            <View style={{ paddingVertical: 10, marginTop: 10, backgroundColor: 'red'}}>
+              <Text>Second Inner Element</Text>
+            </View>
+          </TouchableWithoutFeedback>
         </View>
       </RNTesterBlock>
     );
