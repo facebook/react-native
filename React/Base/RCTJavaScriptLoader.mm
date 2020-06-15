@@ -21,6 +21,20 @@ NSString *const RCTJavaScriptLoaderErrorDomain = @"RCTJavaScriptLoaderErrorDomai
 
 static const int32_t JSNoBytecodeFileFormatVersion = -1;
 
+const UInt32 RCT_BYTECODE_ALIGNMENT = 4;
+UInt32 RCTReadUInt32LE(NSData *script, UInt32 offset)
+{
+  return [script length] < offset + 4 ? 0 : CFSwapInt32LittleToHost(*(((uint32_t *)[script bytes]) + offset / 4));
+}
+
+bool RCTIsBytecodeBundle(NSData *script)
+{
+  static const UInt32 BYTECODE_BUNDLE_MAGIC_NUMBER = 0xffe7c3c3;
+  return (
+      [script length] > 8 && RCTReadUInt32LE(script, 0) == BYTECODE_BUNDLE_MAGIC_NUMBER &&
+      RCTReadUInt32LE(script, 4) > 0);
+}
+
 @interface RCTSource () {
  @public
   NSURL *_url;
@@ -37,7 +51,10 @@ static RCTSource *RCTSourceCreate(NSURL *url, NSData *data, int64_t length) NS_R
 {
   RCTSource *source = [RCTSource new];
   source->_url = url;
-  source->_data = data;
+  // Multipart responses may give us an unaligned view into the buffer. This ensures memory is aligned.
+  source->_data = (RCTIsBytecodeBundle(data) && ((long)[data bytes] % RCT_BYTECODE_ALIGNMENT))
+      ? [[NSData alloc] initWithData:data]
+      : data;
   source->_length = length;
   source->_filesChangedCount = RCTSourceFilesChangedCountNotBuiltByBundler;
   return source;
@@ -300,7 +317,8 @@ static void attemptAsynchronousLoadOfBundleAtURL(
         // Validate that the packager actually returned javascript.
         NSString *contentType = headers[@"Content-Type"];
         NSString *mimeType = [[contentType componentsSeparatedByString:@";"] firstObject];
-        if (![mimeType isEqualToString:@"application/javascript"] && ![mimeType isEqualToString:@"text/javascript"]) {
+        if (![mimeType isEqualToString:@"application/javascript"] && ![mimeType isEqualToString:@"text/javascript"] &&
+            ![mimeType isEqualToString:@"application/x-metro-bytecode-bundle"]) {
           NSString *description;
           if ([mimeType isEqualToString:@"application/json"]) {
             NSError *parseError;
@@ -332,7 +350,8 @@ static void attemptAsynchronousLoadOfBundleAtURL(
       }
       progressHandler:^(NSDictionary *headers, NSNumber *loaded, NSNumber *total) {
         // Only care about download progress events for the javascript bundle part.
-        if ([headers[@"Content-Type"] isEqualToString:@"application/javascript"]) {
+        if ([headers[@"Content-Type"] isEqualToString:@"application/javascript"] ||
+            [headers[@"Content-Type"] isEqualToString:@"application/x-metro-bytecode-bundle"]) {
           onProgress(progressEventFromDownloadProgress(loaded, total));
         }
       }];
