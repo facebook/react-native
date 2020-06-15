@@ -70,7 +70,7 @@ class AccessibilityIOSExample extends React.Component<Props> {
               style={{
                 paddingVertical: 10,
                 marginTop: 10,
-                backgroundColor: 'red'
+                backgroundColor: 'red',
               }}>
               <Text>Second Inner Element</Text>
             </View>
