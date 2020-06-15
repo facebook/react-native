@@ -61,12 +61,17 @@ class AccessibilityIOSExample extends React.Component<Props> {
           accessibilitySplitFocus={true}>
           <Text>Outer Element</Text>
           <TouchableWithoutFeedback>
-            <View style={{ paddingVertical: 10, backgroundColor: 'red'}}>
+            <View style={{paddingVertical: 10, backgroundColor: 'red'}}>
               <Text>First Inner Element</Text>
             </View>
           </TouchableWithoutFeedback>
           <TouchableWithoutFeedback>
-            <View style={{ paddingVertical: 10, marginTop: 10, backgroundColor: 'red'}}>
+            <View
+              style={{
+                paddingVertical: 10,
+                marginTop: 10,
+                backgroundColor: 'red'
+              }}>
               <Text>Second Inner Element</Text>
             </View>
           </TouchableWithoutFeedback>
