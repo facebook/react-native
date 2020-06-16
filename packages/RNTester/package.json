@@ -10,6 +10,7 @@
     "lint": "eslint ."
   },
   "dependencies": {
+    "@react-native-community/progress-view": "^1.0.3",
     "react": "16.11.0",
     "react-native": "^0.62.2"
   },

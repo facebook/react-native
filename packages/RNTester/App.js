@@ -11,11 +11,13 @@
 'use strict';
 
 import React from 'react';
-import {StyleSheet, View} from 'react-native';
-
-import RNTesterApp from './js/RNTesterApp.android';
+import {StyleSheet, View, Platform} from 'react-native';
 
 const App: () => React$Node = () => {
+  const RNTesterApp = Platform.select({
+    ios: () => require('./js/RNTesterApp.ios'),
+    android: () => require('./js/RNTesterApp.android'),
+  })();
   return (
     <View style={styles.container}>
       <RNTesterApp />
