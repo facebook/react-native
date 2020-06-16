@@ -1140,6 +1140,11 @@
   resolved "https://registry.yarnpkg.com/@react-native-community/progress-view/-/progress-view-1.0.3.tgz#6aaafd2d885771de6ef3a15e04f988af824dfa8b"
   integrity sha512-zpOop2VvkPHtomWtKbs62hhUhxzzpZsuo8tybxwaF6J+qY77rvYG9esDMOb0twXpa0i1jD+8nGyoiMS/Rx8Vtg==
 
+"@react-native-community/slider@^3.0.0":
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/@react-native-community/slider/-/slider-3.0.0.tgz#ffbf78689fc0572fb5c1e2ccb61b2ef074d3dcd2"
+  integrity sha512-deNc3JHBHz24YN+0DTAocXfrYFIFc1DvsIriMJSsJlR/MvsLzoq2+qwaEN+0/LJ37pstv85wZWY0pNugk4e41g==
+
 "@sinonjs/commons@^1.7.0":
   version "1.8.0"
   resolved "https://registry.yarnpkg.com/@sinonjs/commons/-/commons-1.8.0.tgz#c8d68821a854c555bba172f3b06959a0039b236d"

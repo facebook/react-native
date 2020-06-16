@@ -11,7 +11,8 @@
 'use strict';
 
 const React = require('react');
-const {Slider, Text, StyleSheet, View} = require('react-native');
+const {Text, StyleSheet, View} = require('react-native');
+const {Slider} = require('@react-native-community/slider');
 
 function SliderExample(props: React.ElementConfig<typeof Slider>) {
   const [value, setValue] = React.useState(0);
@@ -19,7 +20,7 @@ function SliderExample(props: React.ElementConfig<typeof Slider>) {
   return (
     <View>
       <Text style={styles.text}>{value.toFixed(3)}</Text>
-      <Slider {...props} onValueChange={newValue => setValue(newValue)} />
+      <Slider {...props} onValueChange={(newValue) => setValue(newValue)} />
     </View>
   );
 }
@@ -32,9 +33,9 @@ function SlidingCompleteExample(props: React.ElementConfig<typeof Slider>) {
     <View>
       <SliderExample
         {...props}
-        onSlidingComplete={value => {
+        onSlidingComplete={(value) => {
           setSlideCompletionValue(value);
-          setSlideCompletionCount(count => count + 1);
+          setSlideCompletionCount((count) => count + 1);
         }}
       />
       <Text>
