@@ -226,7 +226,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : unused)
         break;
       }
     }
-    _shouldAbandonAccessibilityFocus = hitSubview != nil;
+    _shouldAbandonAccessibilityFocus = hitSubview != nil && [hitSubview isAccessibilityElement];
   }
 
   return result;
