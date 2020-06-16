@@ -22,6 +22,7 @@ namespace react {
 
 // This corresponds exactly with JS.
 enum class AnimationType {
+  None,
   Spring,
   Linear,
   EaseInEaseOut,
@@ -46,13 +47,14 @@ enum class AnimationConfigurationType {
 
 // This corresponds exactly with JS.
 struct AnimationConfig {
-  AnimationType animationType;
-  AnimationProperty animationProperty;
-  double duration; // these are perhaps better represented as uint64_t, but they
+  AnimationType animationType = AnimationType::None;
+  AnimationProperty animationProperty = AnimationProperty::NotApplicable;
+  double duration =
+      0; // these are perhaps better represented as uint64_t, but they
   // come from JS as doubles
-  double delay;
-  double springDamping;
-  double initialVelocity;
+  double delay = 0;
+  double springDamping = 0;
+  double initialVelocity = 0;
 };
 
 // This corresponds exactly with JS.
