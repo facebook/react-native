@@ -10,8 +10,8 @@
 
 'use strict';
 
-import NativeSampleTurboModule from '../../../../Libraries/TurboModule/samples/NativeSampleTurboModule';
-import type {RootTag} from '../../../../Libraries/ReactNative/RootTag';
+import NativeSampleTurboModule from 'node_modules/react-native/Libraries/TurboModule/samples/NativeSampleTurboModule';
+import type {RootTag} from 'node_modules/react-native/Libraries/ReactNative/RootTag';
 import {
   StyleSheet,
   Text,

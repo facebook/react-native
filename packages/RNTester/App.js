@@ -13,7 +13,7 @@
 import React from 'react';
 import {StyleSheet, View} from 'react-native';
 
-import RNTesterApp from './js/RNTesterApp.android';
+import RNTesterApp from './js/RNTesterApp.ios';
 
 const App: () => React$Node = () => {
   return (
