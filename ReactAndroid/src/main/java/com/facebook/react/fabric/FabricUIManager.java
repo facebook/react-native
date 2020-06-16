@@ -326,6 +326,7 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
       @Nullable Object stateWrapper,
       boolean isLayoutable) {
     ThemedReactContext context = mReactContextForRootTag.get(rootTag);
+
     String component = getFabricComponentName(componentName);
     synchronized (mPreMountItemsLock) {
       mPreMountItems.add(
@@ -667,6 +668,7 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
       didDispatchItems = dispatchMountItems();
     } catch (Throwable e) {
       mReDispatchCounter = 0;
+      mLastExecutedMountItemSurfaceId = -1;
       throw e;
     } finally {
       // Clean up after running dispatchMountItems - even if an exception was thrown
@@ -693,6 +695,7 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
       tryDispatchMountItems();
     }
     mReDispatchCounter = 0;
+    mLastExecutedMountItemSurfaceId = -1;
   }
 
   @UiThread
@@ -947,6 +950,7 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
       }
     } finally {
       mInDispatch = false;
+      mLastExecutedMountItemSurfaceId = -1;
     }
 
     Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
