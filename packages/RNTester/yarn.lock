@@ -1135,6 +1135,11 @@
   resolved "https://registry.yarnpkg.com/@react-native-community/eslint-plugin/-/eslint-plugin-1.1.0.tgz#e42b1bef12d2415411519fd528e64b593b1363dc"
   integrity sha512-W/J0fNYVO01tioHjvYWQ9m6RgndVtbElzYozBq1ZPrHO/iCzlqoySHl4gO/fpCl9QEFjvJfjPgtPMTMlsoq5DQ==
 
+"@react-native-community/progress-bar-android@^1.0.3":
+  version "1.0.3"
+  resolved "https://registry.yarnpkg.com/@react-native-community/progress-bar-android/-/progress-bar-android-1.0.3.tgz#a6adc7be7a531269869d653ad9e0cd3d093d7c1c"
+  integrity sha512-Xy+nTCibCLQ6Jy0YNlVwrO+m/j2el6PN8nVQcdgVqp+Jm1XTguq7xjxUV5spzYmVDIVx+zW7WKfkeSbhUk91Tg==
+
 "@react-native-community/progress-view@^1.0.3":
   version "1.0.3"
   resolved "https://registry.yarnpkg.com/@react-native-community/progress-view/-/progress-view-1.0.3.tgz#6aaafd2d885771de6ef3a15e04f988af824dfa8b"
