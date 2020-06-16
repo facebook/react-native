@@ -1,6 +1,6 @@
---- "D:\\code\\work\\rn-62-db\\ReactAndroid\\src\\main\\java\\com\\facebook\\react\\v8executor\\V8ExecutorFactory.cpp"	1969-12-31 16:00:00.000000000 -0800
-+++ "D:\\code\\work\\rn-62-d\\ReactAndroid\\src\\main\\java\\com\\facebook\\react\\v8executor\\V8ExecutorFactory.cpp"	2020-04-30 15:36:09.257835900 -0700
-@@ -0,0 +1,41 @@
+--- /home/mganandraj/code/react-native-0.62.2/ReactAndroid/src/main/java/com/facebook/react/v8executor/V8ExecutorFactory.cpp	1969-12-31 16:00:00.000000000 -0800
++++ /home/mganandraj/code/react-native-macos/ReactAndroid/src/main/java/com/facebook/react/v8executor/V8ExecutorFactory.cpp	2020-06-15 23:05:18.681783438 -0700
+@@ -0,0 +1,35 @@
 +#include <jsi/jsi.h>
 +#include <jsi/V8Runtime.h>
 +#include <jsireact/JSIExecutor.h>
@@ -14,7 +14,7 @@
 +V8ExecutorFactory::V8ExecutorFactory(folly::dynamic&& v8Config) :
 +    m_v8Config(std::move(v8Config)) {}
 +
-+std::unique_ptr<JSExecutor> V8ExecutorFactory::createJSExecutor(
++    std::unique_ptr<JSExecutor> V8ExecutorFactory::createJSExecutor(
 +      std::shared_ptr<ExecutorDelegate> delegate,
 +      std::shared_ptr<MessageQueueThread> jsQueue) {
 +
@@ -29,14 +29,8 @@
 +      react::bindNativeLogger(runtime, androidLogger);
 +    };
 +
-+                  try {
-+                      throw std::runtime_error("Error");
-+                    } catch(...) {
-+                      std::string what = "abcd";
-+                    }
-+
 +    return folly::make_unique<JSIExecutor>(
-+      facebook::v8runtime::makeV8Runtime(m_v8Config, logger),
++      facebook::v8runtime::makeV8Runtime(m_v8Config.getDefault("CacheDirectory", "").getString(), logger),
 +      delegate,
 +      JSIExecutor::defaultTimeoutInvoker,
 +      installBindings);

@@ -1,14 +1,11 @@
---- "E:\\github\\react-native-v62.2\\ReactAndroid\\src\\main\\java\\com\\facebook\\react\\bridge\\ReactBridge.java"	2020-05-20 22:59:32.771815400 -0700
-+++ "E:\\github\\msrn-62\\ReactAndroid\\src\\main\\java\\com\\facebook\\react\\bridge\\ReactBridge.java"	2020-05-20 21:13:47.826449500 -0700
-@@ -31,6 +31,16 @@
+--- /home/mganandraj/code/react-native-0.62.2/ReactAndroid/src/main/java/com/facebook/react/bridge/ReactBridge.java	2020-06-15 22:45:58.585487954 -0700
++++ /home/mganandraj/code/react-native-macos/ReactAndroid/src/main/java/com/facebook/react/bridge/ReactBridge.java	2020-06-15 23:32:29.375721209 -0700
+@@ -31,6 +31,13 @@
      Systrace.beginSection(
          TRACE_TAG_REACT_JAVA_BRIDGE, "ReactBridge.staticInit::load:reactnativejni");
      ReactMarker.logMarker(ReactMarkerConstants.LOAD_REACT_NATIVE_SO_FILE_START);
 +
-+    SoLoader.loadLibrary("v8_libbase.cr");
-+    SoLoader.loadLibrary("v8_libplatform.cr");
-+    SoLoader.loadLibrary("v8.cr");
-+
++    SoLoader.loadLibrary("v8jsi");
 +    SoLoader.loadLibrary("glog_init");
 +    SoLoader.loadLibrary("fb");
 +    SoLoader.loadLibrary("fbjni");

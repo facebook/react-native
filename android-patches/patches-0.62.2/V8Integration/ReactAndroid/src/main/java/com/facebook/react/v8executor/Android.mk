@@ -1,5 +1,5 @@
---- "D:\\code\\work\\rn-62-db\\ReactAndroid\\src\\main\\java\\com\\facebook\\react\\v8executor\\Android.mk"	1969-12-31 16:00:00.000000000 -0800
-+++ "D:\\code\\work\\rn-62-d\\ReactAndroid\\src\\main\\java\\com\\facebook\\react\\v8executor\\Android.mk"	2020-04-30 15:50:47.729741400 -0700
+--- /home/mganandraj/code/react-native-0.62.2/ReactAndroid/src/main/java/com/facebook/react/v8executor/Android.mk	1969-12-31 16:00:00.000000000 -0800
++++ /home/mganandraj/code/react-native-macos/ReactAndroid/src/main/java/com/facebook/react/v8executor/Android.mk	2020-06-15 23:10:08.993805851 -0700
 @@ -0,0 +1,21 @@
 +# Copyright (c) Facebook, Inc. and its affiliates.
 +#
@@ -18,7 +18,7 @@
 +
 +LOCAL_CFLAGS += -fvisibility=hidden -fexceptions -frtti
 +
-+LOCAL_STATIC_LIBRARIES := libjsi libjsireact v8runtime
-+LOCAL_SHARED_LIBRARIES := libfolly_json libfb libfbjni libreactnativejni
++LOCAL_STATIC_LIBRARIES := libjsi libjsireact
++LOCAL_SHARED_LIBRARIES := libfolly_json libfb libfbjni libreactnativejni v8jsi
 +
 +include $(BUILD_SHARED_LIBRARY)

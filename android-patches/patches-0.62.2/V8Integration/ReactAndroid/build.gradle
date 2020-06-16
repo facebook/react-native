@@ -1,40 +1,30 @@
---- "D:\\code\\work\\rn-62-db\\ReactAndroid\\build.gradle"	2020-04-30 15:19:53.257623000 -0700
-+++ "D:\\code\\work\\rn-62-d\\ReactAndroid\\build.gradle"	2020-04-30 15:24:42.641656500 -0700
+--- /home/mganandraj/code/react-native-0.62.2/ReactAndroid/build.gradle	2020-06-15 22:46:29.897863521 -0700
++++ /home/mganandraj/code/react-native-macos/ReactAndroid/build.gradle	2020-06-15 22:18:38.761190767 -0700
 @@ -37,6 +37,8 @@
  // and the build will use that.
  def boostPath = dependenciesPath ?: System.getenv("REACT_NATIVE_BOOST_PATH")
  
-+def V8Path = 'packages/ReactNative.V8.Android.7.0.276.32-v1'
++def V8Path = 'packages/ReactNative.V8JSI.Android.7.0.276.32-v1'
 +
  // Setup build type for NDK, supported values: {debug, release}
  def nativeBuildType = System.getenv("NATIVE_BUILD_TYPE") ?: "release"
  
-@@ -115,6 +117,24 @@
+@@ -115,6 +117,14 @@
      }
  }
  
 +task prepareV8() {
 +    copy {
-+        from "src/main/jni/third-party/v8/"
++        from "src/main/jni/third-party/v8jsi/"
 +        include("*.mk")
-+        into "$thirdPartyNdkDir/v8"
-+    }
-+    copy {
-+        from "src/main/jni/third-party/v8base/"
-+        include("*.mk")
-+        into "$thirdPartyNdkDir/v8base"
-+    }
-+    copy {
-+        from "src/main/jni/third-party/v8platform/"
-+        include("*.mk")
-+        into "$thirdPartyNdkDir/v8platform"
++        into "$thirdPartyNdkDir/v8jsi"
 +    }
 +}
 +
  task downloadGlog(dependsOn: createNativeDepsDirectories, type: Download) {
      src("https://github.com/google/glog/archive/v${GLOG_VERSION}.tar.gz")
      onlyIfNewer(true)
-@@ -296,7 +316,7 @@
+@@ -296,7 +306,7 @@
  }
  
  def buildReactNdkLib = tasks.register("buildReactNdkLib", Exec) {
@@ -43,7 +33,7 @@
  
      inputs.dir("$projectDir/../ReactCommon")
      inputs.dir("src/main/jni")
-@@ -309,6 +329,7 @@
+@@ -309,6 +319,7 @@
              "NDK_OUT=" + temporaryDir,
              "NDK_LIBS_OUT=$buildDir/react-ndk/all",
              "THIRD_PARTY_NDK_DIR=$buildDir/third-party-ndk",
@@ -51,7 +41,7 @@
              "REACT_COMMON_DIR=$projectDir/../ReactCommon",
              "REACT_SRC_DIR=$projectDir/src/main/java/com/facebook/react",
              "-C", file("src/main/jni/react/jni").absolutePath,
-@@ -322,6 +343,7 @@
+@@ -322,6 +333,7 @@
      commandLine(getNdkBuildFullPath(),
              "NDK_APPLICATION_MK=$projectDir/src/main/jni/Application.mk",
              "THIRD_PARTY_NDK_DIR=$buildDir/third-party-ndk",
