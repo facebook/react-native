@@ -16,6 +16,10 @@ import {StyleSheet, View} from 'react-native';
 import RNTesterApp from './js/RNTesterApp.ios';
 
 const App: () => React$Node = () => {
+  const RNTesterApp = Platform.select({
+    ios: () => require('./js/RNTesterApp.ios'),
+    android: () => require('./js/RNTesterApp.android'),
+  })();
   return (
     <View style={styles.container}>
       <RNTesterApp />

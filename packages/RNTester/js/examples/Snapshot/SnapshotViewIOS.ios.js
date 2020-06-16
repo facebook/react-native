@@ -16,8 +16,7 @@ const {NativeModules, StyleSheet, UIManager, View} = require('react-native');
 
 const {TestModule} = NativeModules;
 
-import type {SyntheticEvent} from '../../../../Libraries/Types/CoreEventTypes';
-import type {ViewProps} from '../../../../Libraries/Components/View/ViewPropTypes';
+import type {SyntheticEvent, ViewProps} from 'react-native';
 
 // Verify that RCTSnapshot is part of the UIManager since it is only loaded
 // if you have linked against RCTTest like in tests, otherwise we will have
