@@ -13,7 +13,6 @@ const React = require('react');
 const {
   KeyboardAvoidingView,
   Modal,
-  SegmentedControlIOS,
   StyleSheet,
   Text,
   TextInput,
@@ -21,6 +20,7 @@ const {
   View,
 } = require('react-native');
 
+const {SegmentedControl} = require('@react-native-community/segmented-control');
 const RNTesterBlock = require('../../components/RNTesterBlock');
 const RNTesterPage = require('../../components/RNTesterPage');
 
@@ -47,7 +47,7 @@ class KeyboardAvoidingViewExample extends React.Component<Props, State> {
           <KeyboardAvoidingView
             behavior={this.state.behavior}
             style={styles.container}>
-            <SegmentedControlIOS
+            <SegmentedControl
               onValueChange={this.onSegmentChange}
               selectedIndex={this.state.behavior === 'padding' ? 0 : 1}
               style={styles.segment}
@@ -113,7 +113,7 @@ exports.description =
 exports.examples = [
   {
     title: 'Simple keyboard view',
-    render: function(): React.Element<typeof KeyboardAvoidingViewExample> {
+    render: function (): React.Element<typeof KeyboardAvoidingViewExample> {
       return <KeyboardAvoidingViewExample />;
     },
   },

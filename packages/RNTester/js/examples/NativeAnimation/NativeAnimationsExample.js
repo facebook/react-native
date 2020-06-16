@@ -18,8 +18,8 @@ const {
   Animated,
   StyleSheet,
   TouchableWithoutFeedback,
-  Slider,
 } = require('react-native');
+const {Slider} = require('@react-native-community/slider');
 
 const AnimatedSlider = Animated.createAnimatedComponent(Slider);
 

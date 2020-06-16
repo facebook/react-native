@@ -11,9 +11,7 @@
 'use strict';
 
 import React from 'react';
-import {StyleSheet, View} from 'react-native';
-
-import RNTesterApp from './js/RNTesterApp.ios';
+import {StyleSheet, View, Platform} from 'react-native';
 
 const App: () => React$Node = () => {
   const RNTesterApp = Platform.select({

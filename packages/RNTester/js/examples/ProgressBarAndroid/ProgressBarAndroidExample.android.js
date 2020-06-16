@@ -14,9 +14,9 @@ const RNTesterBlock = require('../../components/RNTesterBlock');
 const RNTesterPage = require('../../components/RNTesterPage');
 const React = require('react');
 
-const {ProgressBarAndroid: ProgressBar} = require('react-native');
+const {ProgressBar} = require('@react-native-community/progress-bar-android');
 
-import type {ProgressBarAndroidProps} from '../../../../Libraries/Components/ProgressBarAndroid/ProgressBarAndroid';
+import type {ProgressBarAndroidProps} from '@react-native-community/progress-bar-android';
 
 type MovingBarProps = $ReadOnly<{|
   ...$Diff<ProgressBarAndroidProps, {progress: ?number, ...}>,
@@ -87,7 +87,7 @@ exports.description = 'Horizontal bar to show the progress of some operation.';
 exports.examples = [
   {
     title: 'Simple progress bar',
-    render: function(): React.Element<typeof ProgressBarAndroidExample> {
+    render: function (): React.Element<typeof ProgressBarAndroidExample> {
       return <ProgressBarAndroidExample />;
     },
   },

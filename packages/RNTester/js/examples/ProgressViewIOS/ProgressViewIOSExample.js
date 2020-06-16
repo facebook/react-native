@@ -12,7 +12,8 @@
 
 const React = require('react');
 
-const {ProgressViewIOS, StyleSheet, View} = require('react-native');
+const {StyleSheet, View} = require('react-native');
+const {ProgressView} = require('@react-native-community/progress-view');
 
 type Props = {||};
 type State = {|
@@ -42,7 +43,7 @@ class ProgressViewExample extends React.Component<Props, State> {
     this._rafId = requestAnimationFrame(() => this.updateProgress());
   };
 
-  getProgress = offset => {
+  getProgress = (offset) => {
     const progress = this.state.progress + offset;
     return Math.sin(progress % Math.PI) % 1;
   };
@@ -50,26 +51,26 @@ class ProgressViewExample extends React.Component<Props, State> {
   render() {
     return (
       <View style={styles.container}>
-        <ProgressViewIOS
+        <ProgressView
           style={styles.progressView}
           progress={this.getProgress(0)}
         />
-        <ProgressViewIOS
+        <ProgressView
           style={styles.progressView}
           progressTintColor="purple"
           progress={this.getProgress(0.2)}
         />
-        <ProgressViewIOS
+        <ProgressView
           style={styles.progressView}
           progressTintColor="red"
           progress={this.getProgress(0.4)}
         />
-        <ProgressViewIOS
+        <ProgressView
           style={styles.progressView}
           progressTintColor="orange"
           progress={this.getProgress(0.6)}
         />
-        <ProgressViewIOS
+        <ProgressView
           style={styles.progressView}
           progressTintColor="yellow"
           progress={this.getProgress(0.8)}

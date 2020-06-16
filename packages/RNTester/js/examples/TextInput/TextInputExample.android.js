@@ -12,14 +12,8 @@
 
 const React = require('react');
 
-const {
-  Text,
-  TextInput,
-  View,
-  StyleSheet,
-  Slider,
-  Switch,
-} = require('react-native');
+const {Text, TextInput, View, StyleSheet, Switch} = require('react-native');
+const {Slider} = require('@react-native-community/slider');
 
 const TextInputSharedExamples = require('./TextInputSharedExamples.js');
 
@@ -87,7 +81,7 @@ class AutogrowingTextInputExample extends React.Component<{...}> {
           step={10}
           /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was
            * found when making Flow check .android.js files. */
-          onValueChange={value => this.setState({width: value})}
+          onValueChange={(value) => this.setState({width: value})}
         />
         <Text>Multiline:</Text>
         <Switch
@@ -96,7 +90,7 @@ class AutogrowingTextInputExample extends React.Component<{...}> {
           value={this.state.multiline}
           /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was
            * found when making Flow check .android.js files. */
-          onValueChange={value => this.setState({multiline: value})}
+          onValueChange={(value) => this.setState({multiline: value})}
         />
         <Text>TextInput:</Text>
         {/* $FlowFixMe(>=0.122.0 site=react_native_android_fb) This comment
@@ -111,8 +105,8 @@ class AutogrowingTextInputExample extends React.Component<{...}> {
           style={[style, {width: this.state.width + '%'}]}
           /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was
            * found when making Flow check .android.js files. */
-          onChangeText={value => this.setState({text: value})}
-          onContentSizeChange={event =>
+          onChangeText={(value) => this.setState({text: value})}
+          onContentSizeChange={(event) =>
             /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was
              * found when making Flow check .android.js files. */
             this.setState({contentSize: event.nativeEvent.contentSize})
@@ -150,7 +144,7 @@ exports.examples = ([
   ...TextInputSharedExamples,
   {
     title: 'Colors and text inputs',
-    render: function(): React.Node {
+    render: function (): React.Node {
       return (
         <View>
           <TextInput
@@ -200,7 +194,7 @@ exports.examples = ([
   },
   {
     title: 'Text input, themes and heights',
-    render: function(): React.Node {
+    render: function (): React.Node {
       return (
         <TextInput
           placeholder="If you set height, beware of padding set from themes"
@@ -211,7 +205,7 @@ exports.examples = ([
   },
   {
     title: 'letterSpacing',
-    render: function(): React.Node {
+    render: function (): React.Node {
       return (
         <View>
           <TextInput
@@ -236,7 +230,7 @@ exports.examples = ([
   },
   {
     title: 'Passwords',
-    render: function(): React.Node {
+    render: function (): React.Node {
       return (
         <View>
           <TextInput
@@ -256,7 +250,7 @@ exports.examples = ([
   },
   {
     title: 'Editable',
-    render: function(): React.Node {
+    render: function (): React.Node {
       return (
         <TextInput
           defaultValue="Can't touch this! (>'-')> ^(' - ')^ <('-'<) (>'-')> ^(' - ')^"
@@ -268,7 +262,7 @@ exports.examples = ([
   },
   {
     title: 'Multiline',
-    render: function(): React.Node {
+    render: function (): React.Node {
       return (
         <View>
           <TextInput
@@ -310,7 +304,7 @@ exports.examples = ([
   {
     title: 'Fixed number of lines',
     platform: 'android',
-    render: function(): React.Node {
+    render: function (): React.Node {
       return (
         <View>
           <TextInput
@@ -329,7 +323,7 @@ exports.examples = ([
   },
   {
     title: 'Auto-expanding',
-    render: function(): React.Node {
+    render: function (): React.Node {
       return (
         <View>
           <AutogrowingTextInputExample
@@ -353,7 +347,7 @@ exports.examples = ([
   },
   {
     title: 'Return key',
-    render: function(): React.Node {
+    render: function (): React.Node {
       const returnKeyTypes = [
         'none',
         'go',
@@ -364,7 +358,7 @@ exports.examples = ([
         'next',
       ];
       const returnKeyLabels = ['Compile', 'React Native'];
-      const examples = returnKeyTypes.map(type => {
+      const examples = returnKeyTypes.map((type) => {
         return (
           <TextInput
             key={type}
@@ -374,7 +368,7 @@ exports.examples = ([
           />
         );
       });
-      const types = returnKeyLabels.map(type => {
+      const types = returnKeyLabels.map((type) => {
         return (
           <TextInput
             key={type}
@@ -394,7 +388,7 @@ exports.examples = ([
   },
   {
     title: 'Inline Images',
-    render: function(): React.Node {
+    render: function (): React.Node {
       return (
         <View>
           <TextInput
@@ -418,7 +412,7 @@ exports.examples = ([
   },
   {
     title: 'Toggle Default Padding',
-    render: function(): React.Node {
+    render: function (): React.Node {
       return <ToggleDefaultPaddingExample />;
     },
   },
