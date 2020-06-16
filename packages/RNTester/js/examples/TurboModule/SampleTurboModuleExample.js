@@ -10,7 +10,8 @@
 
 'use strict';
 
-import type {RootTag} from 'react-native';
+import NativeSampleTurboModule from 'node_modules/react-native/Libraries/TurboModule/samples/NativeSampleTurboModule';
+import type {RootTag} from 'node_modules/react-native/Libraries/ReactNative/RootTag';
 import {
   StyleSheet,
   Text,
@@ -29,7 +30,7 @@ type State = {|
       value: mixed,
       ...
     },
-    ...
+    ...,
   },
 |};
 
@@ -43,17 +44,17 @@ class SampleTurboModuleExample extends React.Component<{||}, State> {
   // Add calls to methods in TurboModule here
   _tests = {
     callback: () =>
-      NativeSampleTurboModule.getValueWithCallback((callbackValue) =>
+      NativeSampleTurboModule.getValueWithCallback(callbackValue =>
         this._setResult('callback', callbackValue),
       ),
     promise: () =>
-      NativeSampleTurboModule.getValueWithPromise(false).then((valuePromise) =>
+      NativeSampleTurboModule.getValueWithPromise(false).then(valuePromise =>
         this._setResult('promise', valuePromise),
       ),
     rejectPromise: () =>
       NativeSampleTurboModule.getValueWithPromise(true)
         .then(() => {})
-        .catch((e) => this._setResult('rejectPromise', e.message)),
+        .catch(e => this._setResult('rejectPromise', e.message)),
     getConstants: () => NativeSampleTurboModule.getConstants(),
     voidFunc: () => NativeSampleTurboModule.voidFunc(),
     getBool: () => NativeSampleTurboModule.getBool(true),
@@ -105,7 +106,7 @@ class SampleTurboModuleExample extends React.Component<{||}, State> {
     }
     if (Platform.OS === 'ios') {
       // iOS is fully implemented, so show all results immediately.
-      Object.keys(this._tests).forEach((item) =>
+      Object.keys(this._tests).forEach(item =>
         this._setResult(item, this._tests[item]()),
       );
     }
@@ -118,7 +119,7 @@ class SampleTurboModuleExample extends React.Component<{||}, State> {
           <TouchableOpacity
             style={[styles.column, styles.button]}
             onPress={() =>
-              Object.keys(this._tests).forEach((item) =>
+              Object.keys(this._tests).forEach(item =>
                 this._setResult(item, this._tests[item]()),
               )
             }>
@@ -132,12 +133,12 @@ class SampleTurboModuleExample extends React.Component<{||}, State> {
         </View>
         <FlatList
           data={Object.keys(this._tests)}
-          keyExtractor={(item) => item}
+          keyExtractor={item => item}
           renderItem={({item}) => (
             <View style={styles.item}>
               <TouchableOpacity
                 style={[styles.column, styles.button]}
-                onPress={(e) => this._setResult(item, this._tests[item]())}>
+                onPress={e => this._setResult(item, this._tests[item]())}>
                 <Text style={styles.buttonText}>{item}</Text>
               </TouchableOpacity>
               <View style={[styles.column]}>{this._renderResult(item)}</View>
