@@ -89,4 +89,7 @@ public class ReactFeatureFlags {
 
   /** Feature flag to have FabricUIManager teardown stop all active surfaces. */
   public static boolean enableFabricStopAllSurfacesOnTeardown = false;
+
+  /** Feature flag to use stopSurface when ReactRootView is unmounted. */
+  public static boolean enableStopSurfaceOnRootViewUnmount = false;
 }
