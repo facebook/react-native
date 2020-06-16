@@ -54,6 +54,14 @@ RCT_EXPORT_METHOD(getCurrentVoiceOverState:(RCTResponseSenderBlock)callback
   callback(@[ @(isVoiceOverEnabled) ]);
 }
 
+RCT_EXPORT_METHOD(setAccessibilityFocus:(nonnull NSNumber *)reactTag)
+{
+   dispatch_async(dispatch_get_main_queue(), ^{
+    NSView *view = [self.bridge.uiManager viewForReactTag:reactTag];
+    [[view window] makeFirstResponder:view];
+  });
+}
+
 - (void)observeValueForKeyPath:(NSString *)keyPath
                       ofObject:(id)object
                         change:(NSDictionary *)change

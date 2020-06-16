@@ -570,6 +570,26 @@ class AnnounceForAccessibility extends React.Component<{}> {
   }
 }
 
+class SetAccessibilityFocus extends React.Component<{}> {
+  _handleOnPress = () => {
+    if (findNodeHandle(this.focusRef.current)) {
+      const reactTag = findNodeHandle(this.focusRef.current);
+      AccessibilityInfo.setAccessibilityFocus(reactTag);
+    }
+  };
+  render() {
+    this.focusRef = React.createRef();
+    return (
+      <View>
+        <Button onPress={this._handleOnPress} title="Set Accessibility Focus" />
+        <Text ref={this.focusRef} accessible={true}>
+          Move focus here on button press.
+        </Text>
+      </View>
+    );
+  }
+}
+
 exports.title = 'Accessibility';
 exports.description = 'Examples of using Accessibility APIs.';
 exports.examples = [
@@ -601,6 +621,12 @@ exports.examples = [
     title: 'Check if the screen reader announces',
     render(): React.Element<typeof AnnounceForAccessibility> {
       return <AnnounceForAccessibility />;
+    },
+  },
+  {
+    title: 'Check if the screen reader focus sets ',
+    render(): React.Element<typeof SetAccessibilityFocus> {
+      return <SetAccessibilityFocus />;
     },
   },
 ];

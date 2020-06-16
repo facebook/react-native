@@ -135,7 +135,9 @@ const AccessibilityInfo = {
    * See http://facebook.github.io/react-native/docs/accessibilityinfo.html#setaccessibilityfocus
    */
   setAccessibilityFocus: function(reactTag: number): void {
-    warning(false, 'AccessibilityInfo is not supported on this platform.');
+    if (NativeAccessibilityManager) {
+      NativeAccessibilityManager.setAccessibilityFocus(reactTag);
+    }
   },
 
   /**
