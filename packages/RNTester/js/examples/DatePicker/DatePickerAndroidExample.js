@@ -10,12 +10,8 @@
 'use strict';
 
 const React = require('react');
-const {
-  DatePickerAndroid,
-  StyleSheet,
-  Text,
-  TouchableWithoutFeedback,
-} = require('react-native');
+const {StyleSheet, Text, TouchableWithoutFeedback} = require('react-native');
+const DateTimePicker = require('@react-native-community/datetimepicker');
 
 const RNTesterBlock = require('../../components/RNTesterBlock');
 const RNTesterPage = require('../../components/RNTesterPage');
@@ -59,8 +55,8 @@ class DatePickerAndroidExample extends React.Component<Props, State> {
   showPicker = async (stateKey, options) => {
     try {
       const newState = {};
-      const {action, year, month, day} = await DatePickerAndroid.open(options);
-      if (action === DatePickerAndroid.dismissedAction) {
+      const {action, year, month, day} = await DateTimePicker.open(options);
+      if (action === DateTimePicker.dismissedAction) {
         newState[stateKey + 'Text'] = 'dismissed';
       } else {
         const date = new Date(year, month, day);
@@ -163,7 +159,7 @@ exports.description = 'Standard Android date picker dialog';
 exports.examples = [
   {
     title: 'Simple date picker',
-    render: function(): React.Element<typeof DatePickerAndroidExample> {
+    render: function (): React.Element<typeof DatePickerAndroidExample> {
       return <DatePickerAndroidExample />;
     },
   },
