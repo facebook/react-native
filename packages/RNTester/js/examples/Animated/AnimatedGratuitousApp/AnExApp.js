@@ -43,7 +43,8 @@ class Circle extends React.Component<any, any> {
     };
 
     if (Platform.OS === 'android') {
-      UIManager.setLayoutAnimationEnabledExperimental(true);
+      UIManager.setLayoutAnimationEnabledExperimental &&
+        UIManager.setLayoutAnimationEnabledExperimental(true);
     }
   }
 

@@ -13,12 +13,12 @@
 const React = require('react');
 const {View} = require('react-native');
 const {
+  Colors,
   Header,
   LearnMoreLinks,
-  Colors,
   DebugInstructions,
   ReloadInstructions,
-} = require('react-native');
+} = require('react-native/Libraries/NewAppScreen');
 
 exports.title = 'New App Screen';
 exports.description = 'Displays the content of the new app screen';
