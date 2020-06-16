@@ -284,7 +284,13 @@
 }
 
 - (void)reactBlur {
+#if TARGET_OS_OSX // TODO(macOS ISS#2323203)
+  if (self == [[self window] firstResponder]) {
+    [[self window] makeFirstResponder:[[self window] nextResponder]];
+  }
+#else
   [self resignFirstResponder];
+#endif
 }
 
 #pragma mark - Layout
