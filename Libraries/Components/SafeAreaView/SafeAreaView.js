@@ -9,7 +9,7 @@
  */
 
 import Platform from '../../Utilities/Platform';
-import React from 'react';
+import * as React from 'react';
 import View from '../View/View';
 
 import type {HostComponent} from '../../Renderer/shims/ReactNativeTypes';
