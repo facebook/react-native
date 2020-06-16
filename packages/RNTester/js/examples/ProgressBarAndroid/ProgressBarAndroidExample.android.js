@@ -16,7 +16,7 @@ const React = require('react');
 
 const {ProgressBar} = require('@react-native-community/progress-bar-android');
 
-import type {ProgressBarAndroidProps} from 'react-native';
+import type {ProgressBarAndroidProps} from '@react-native-community/progress-bar-android';
 
 type MovingBarProps = $ReadOnly<{|
   ...$Diff<ProgressBarAndroidProps, {progress: ?number, ...}>,

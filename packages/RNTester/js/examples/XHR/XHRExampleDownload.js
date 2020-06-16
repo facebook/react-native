@@ -15,7 +15,6 @@ const React = require('react');
 const {
   Alert,
   Platform,
-  ProgressBarAndroid,
   StyleSheet,
   Switch,
   Text,
@@ -23,6 +22,7 @@ const {
   View,
 } = require('react-native');
 
+const {ProgressBar} = require('@react-native-community/progress-bar-android');
 const {ProgressView} = require('@react-native-community/progress-view');
 
 /**
@@ -32,11 +32,11 @@ function roundKilo(value: number): number {
   return Math.round(value / 1000);
 }
 
-class ProgressBar extends React.Component<$FlowFixMeProps> {
+class ProgressBarAndroid extends React.Component<$FlowFixMeProps> {
   render() {
     if (Platform.OS === 'android') {
       return (
-        <ProgressBarAndroid
+        <ProgressBar
           progress={this.props.progress}
           styleAttr="Horizontal"
           indeterminate={false}
@@ -165,7 +165,7 @@ class XHRExampleDownload extends React.Component<{...}, Object> {
             responseText: {roundKilo(responseLength)}/{roundKilo(contentLength)}
             k chars
           </Text>
-          <ProgressBar progress={responseLength / contentLength} />
+          <ProgressBarAndroid progress={responseLength / contentLength} />
         </View>
       );
     }
@@ -177,7 +177,7 @@ class XHRExampleDownload extends React.Component<{...}, Object> {
             onprogress: {roundKilo(progressLoaded)}/{roundKilo(progressTotal)}{' '}
             KB
           </Text>
-          <ProgressBar progress={progressLoaded / progressTotal} />
+          <ProgressBarAndroid progress={progressLoaded / progressTotal} />
         </View>
       );
     }
