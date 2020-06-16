@@ -37,9 +37,10 @@ NS_ASSUME_NONNULL_BEGIN
 @property (assign, getter=isEditable) BOOL editable;
 #endif
 #if TARGET_OS_OSX
-@property (nonatomic, assign) NSTextAlignment textAlignment;
-@property (nonatomic, copy, nullable) NSAttributedString *attributedText;
 @property (nonatomic, copy, nullable) NSString *text;
+@property (nonatomic, copy, nullable) NSAttributedString *attributedText;
+@property (nonatomic, copy) NSDictionary<NSAttributedStringKey, id> *defaultTextAttributes;
+@property (nonatomic, assign) NSTextAlignment textAlignment;
 @property (nonatomic, getter=isAutomaticTextReplacementEnabled) BOOL automaticTextReplacementEnabled;
 @property (nonatomic, getter=isAutomaticSpellingCorrectionEnabled) BOOL automaticSpellingCorrectionEnabled;
 @property (nonatomic, strong, nullable) RCTUIColor *selectionColor;

@@ -82,11 +82,6 @@
 #if TARGET_OS_OSX // [TODO(macOS ISS#2323203)
 @dynamic delegate;
 
-static UIFont *defaultPlaceholderFont()
-{
-  return [UIFont systemFontOfSize:17];
-}
-
 static RCTUIColor *defaultPlaceholderTextColor()
 {
   return [NSColor placeholderTextColor];
@@ -106,8 +101,9 @@ static RCTUIColor *defaultPlaceholderTextColor()
                                                object:self];
 
 #if TARGET_OS_OSX // [TODO(macOS ISS#2323203)
-    self.bordered = NO;
-    self.accessibilityRole = NSAccessibilityTextFieldRole;
+    [self setBordered:NO];
+    [self setAllowsEditingTextAttributes:YES];
+    [self setAccessibilityRole:NSAccessibilityTextFieldRole];
 #endif // ]TODO(macOS ISS#2323203)
 
     _textInputDelegateAdapter = [[RCTBackedTextFieldDelegateAdapter alloc] initWithTextField:self];
@@ -124,6 +120,10 @@ static RCTUIColor *defaultPlaceholderTextColor()
 - (void)_textDidChange
 {
   _textWasPasted = NO;
+#if TARGET_OS_OSX // [TODO(macOS ISS#2323203)
+  [self setAttributedText:[[NSAttributedString alloc] initWithString:[self text]
+                                                          attributes:[self defaultTextAttributes]]];
+#endif // ]TODO(macOS ISS#2323203)
 }
 
 #pragma mark - Accessibility
@@ -246,11 +246,14 @@ static RCTUIColor *defaultPlaceholderTextColor()
   if ([reactTextAttributes isEqual:_reactTextAttributes]) {
     return;
   }
-#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
   self.defaultTextAttributes = reactTextAttributes.effectiveTextAttributes;
-#endif // TODO(macOS ISS#2323203)
   _reactTextAttributes = reactTextAttributes;
   [self _updatePlaceholder];
+
+#if TARGET_OS_OSX // [TODO(macOS ISS#2323203)
+  [self setAttributedText:[[NSAttributedString alloc] initWithString:[self text]
+                                                          attributes:[self defaultTextAttributes]]];
+#endif // ]TODO(macOS ISS#2323203)
 }
 
 - (RCTTextAttributes *)reactTextAttributes
@@ -264,8 +267,8 @@ static RCTUIColor *defaultPlaceholderTextColor()
     return;
   }
 
-  NSMutableDictionary *attributes = [NSMutableDictionary new];
 #if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
+  NSMutableDictionary *attributes = [NSMutableDictionary new];
   if (_placeholderColor) {
     [attributes setObject:_placeholderColor forKey:NSForegroundColorAttributeName];
   }
@@ -273,9 +276,8 @@ static RCTUIColor *defaultPlaceholderTextColor()
   self.attributedPlaceholder = [[NSAttributedString alloc] initWithString:self.placeholder
                                                                attributes:attributes];
 #else // [TODO(macOS ISS#2323203)
+  NSMutableDictionary *attributes = [[self defaultTextAttributes] mutableCopy];
   attributes[NSForegroundColorAttributeName] = _placeholderColor ?: defaultPlaceholderTextColor();
-  attributes[NSFontAttributeName] = self.font ?: defaultPlaceholderFont();
-  
   self.placeholderAttributedString = [[NSAttributedString alloc] initWithString:self.placeholder
                                                                      attributes:attributes];
 #endif // ]TODO(macOS ISS#2323203)
