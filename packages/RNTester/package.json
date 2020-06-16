@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@react-native-community/progress-view": "^1.0.3",
+    "@react-native-community/push-notification-ios": "^1.2.2",
     "react": "16.11.0",
     "react-native": "^0.62.2"
   },

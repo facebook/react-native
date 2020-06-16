@@ -11,7 +11,7 @@
 'use strict';
 
 const React = require('react');
-const TextAncestor = require('node_modules/react-native/Libraries/Text/TextAncestor');
+const TextAncestor = require('react-native/Libraries/Text/TextAncestor.js');
 const TextInlineView = require('../../components/TextInlineView');
 const TextLegend = require('../../components/TextLegend');
 
@@ -29,9 +29,9 @@ const {
 //   TextAncestor is not public.
 function InlineView(props) {
   return (
-    <TextAncestor.Provider value={false}>
-      <View {...props} />
-    </TextAncestor.Provider>
+    // <TextAncestor.Provider value={false}>
+    <View {...props} />
+    // </TextAncestor.Provider>
   );
 }
 

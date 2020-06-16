@@ -11,7 +11,8 @@
 'use strict';
 
 const React = require('react');
-const SampleTurboModuleExample = require('./SampleTurboModuleExample');
+const {View} = require('react-native');
+// const SampleTurboModuleExample = require('./SampleTurboModuleExample');
 
 exports.displayName = (undefined: ?string);
 exports.title = 'TurboModule';
@@ -20,7 +21,7 @@ exports.examples = [
   {
     title: 'SampleTurboModule',
     render: function(): React.Element<any> {
-      return <SampleTurboModuleExample />;
+      return <View></View>;
     },
   },
 ];

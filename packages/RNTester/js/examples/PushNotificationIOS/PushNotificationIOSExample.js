@@ -14,12 +14,13 @@ const React = require('react');
 const {
   Alert,
   DeviceEventEmitter,
-  PushNotificationIOS,
   StyleSheet,
   Text,
   TouchableHighlight,
   View,
 } = require('react-native');
+
+const PushNotificationIOS = require('@react-native-community/push-notification-ios');
 
 class Button extends React.Component<$FlowFixMeProps> {
   render() {
