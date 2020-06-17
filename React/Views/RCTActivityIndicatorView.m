@@ -30,6 +30,9 @@
 
 - (void)startAnimating
 {
+  // `wantsLayer` gets reset after the animation is stopped. We have to
+  // reset it in order for CALayer filters to take effect.
+  [self setWantsLayer:YES];
   [self startAnimation:self];
 }
 
@@ -66,7 +69,7 @@
   }
 }
 
-- (void)setColor: (RCTUIColor*)color
+- (void)setColor:(RCTUIColor*)color
 {
   if (_color != color) {
     _color = color;
@@ -77,19 +80,23 @@
 - (void)updateLayer
 {
   [super updateLayer];
-  if (_color) {
+  if (_color != nil) {
     CGFloat r, g, b, a;
     [[_color colorUsingColorSpaceName:NSCalibratedRGBColorSpace] getRed:&r green:&g blue:&b alpha:&a];
 
     CIFilter *colorPoly = [CIFilter filterWithName:@"CIColorPolynomial"];
     [colorPoly setDefaults];
+
     CIVector *redVector = [CIVector vectorWithX:r Y:0 Z:0 W:0];
     CIVector *greenVector = [CIVector vectorWithX:g Y:0 Z:0 W:0];
     CIVector *blueVector = [CIVector vectorWithX:b Y:0 Z:0 W:0];
     [colorPoly setValue:redVector forKey:@"inputRedCoefficients"];
     [colorPoly setValue:greenVector forKey:@"inputGreenCoefficients"];
     [colorPoly setValue:blueVector forKey:@"inputBlueCoefficients"];
-    self.contentFilters = @[colorPoly];
+
+    [[self layer] setFilters:@[colorPoly]];
+  } else {
+    [[self layer] setFilters:nil];
   }
 }
 
