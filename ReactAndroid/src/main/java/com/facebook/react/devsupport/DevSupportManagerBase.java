@@ -217,8 +217,7 @@ public abstract class DevSupportManagerBase
     setDevSupportEnabled(enableOnCreate);
 
     mRedBoxHandler = redBoxHandler;
-    mDevLoadingViewController =
-        new DevLoadingViewController(applicationContext, reactInstanceManagerHelper);
+    mDevLoadingViewController = new DevLoadingViewController(reactInstanceManagerHelper);
 
     mExceptionLoggers.add(new JSExceptionLogger());
 

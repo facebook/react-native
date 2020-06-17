@@ -200,10 +200,8 @@ public class BundleDownloader {
 
                   try {
                     JSONObject progress = new JSONObject(body.readUtf8());
-                    String status = null;
-                    if (progress.has("status")) {
-                      status = progress.getString("status");
-                    }
+                    String status =
+                        progress.has("status") ? progress.getString("status") : "Bundling";
                     Integer done = null;
                     if (progress.has("done")) {
                       done = progress.getInt("done");
@@ -220,11 +218,9 @@ public class BundleDownloader {
               }
 
               @Override
-              public void onChunkProgress(Map<String, String> headers, long loaded, long total)
-                  throws IOException {
+              public void onChunkProgress(Map<String, String> headers, long loaded, long total) {
                 if ("application/javascript".equals(headers.get("Content-Type"))) {
-                  callback.onProgress(
-                      "Downloading JavaScript bundle", (int) (loaded / 1024), (int) (total / 1024));
+                  callback.onProgress("Downloading", (int) (loaded / 1024), (int) (total / 1024));
                 }
               }
             });
