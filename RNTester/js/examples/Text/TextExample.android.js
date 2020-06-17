@@ -210,23 +210,23 @@ class TextExample extends React.Component<{...}> {
         </RNTesterBlock>
         <RNTesterBlock title="Hyphenation">
           <Text androidHyphenationFrequency="normal">
-            <Text style={{color: 'red'}}>Normal:</Text>
+            <Text style={{color: 'red'}}>Normal: </Text>
             WillHaveAnHyphenWhenBreakingForNewLine
           </Text>
           <Text androidHyphenationFrequency="none">
-            <Text style={{color: 'red'}}>None:</Text>
+            <Text style={{color: 'red'}}>None: </Text>
             WillNotHaveAnHyphenWhenBreakingForNewLine
           </Text>
           <Text androidHyphenationFrequency="full">
-            <Text style={{color: 'red'}}>Full:</Text>
+            <Text style={{color: 'red'}}>Full: </Text>
             WillHaveAnHyphenWhenBreakingForNewLine
           </Text>
           <Text androidHyphenationFrequency="high">
-            <Text style={{color: 'red'}}>High:</Text>
+            <Text style={{color: 'red'}}>High: </Text>
             WillHaveAnHyphenWhenBreakingForNewLine
           </Text>
           <Text androidHyphenationFrequency="balanced">
-            <Text style={{color: 'red'}}>Balanced:</Text>
+            <Text style={{color: 'red'}}>Balanced: </Text>
             WillHaveAnHyphenWhenBreakingForNewLine
           </Text>
         </RNTesterBlock>

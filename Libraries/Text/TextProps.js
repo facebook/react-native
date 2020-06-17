@@ -62,7 +62,13 @@ export type TextProps = $ReadOnly<{|
    * Set hyphenation strategy on Android.
    *
    */
-  androidHyphenationFrequency?: ?('normal' | 'none' | 'full' | 'high' | 'balanced'),
+  androidHyphenationFrequency?: ?(
+    | 'normal'
+    | 'none'
+    | 'full'
+    | 'high'
+    | 'balanced'
+  ),
   children?: ?Node,
 
   /**
