@@ -58,7 +58,7 @@ class TextInputProps final : public ViewProps, public BaseTextProps {
   /*
    * Accessors
    */
-  TextAttributes getEffectiveTextAttributes() const;
+  TextAttributes getEffectiveTextAttributes(Float fontSizeMultiplier) const;
   ParagraphAttributes getEffectiveParagraphAttributes() const;
 
 #ifdef ANDROID

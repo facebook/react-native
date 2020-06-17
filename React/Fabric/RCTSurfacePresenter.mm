@@ -54,7 +54,8 @@ static inline LayoutContext RCTGetLayoutContext()
 {
   return {.pointScaleFactor = RCTScreenScale(),
           .swapLeftAndRightInRTL =
-              [[RCTI18nUtil sharedInstance] isRTL] && [[RCTI18nUtil sharedInstance] doLeftAndRightSwapInRTL]};
+              [[RCTI18nUtil sharedInstance] isRTL] && [[RCTI18nUtil sharedInstance] doLeftAndRightSwapInRTL],
+          .fontSizeMultiplier = RCTFontSizeMultiplier()};
 }
 
 @interface RCTSurfacePresenter () <RCTSchedulerDelegate, RCTMountingManagerDelegate>

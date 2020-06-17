@@ -15,6 +15,7 @@
 #import <React/RCTBackedTextInputViewProtocol.h>
 #import <React/RCTUITextField.h>
 #import <React/RCTUITextView.h>
+#import <React/RCTUtils.h>
 
 #import "RCTConversions.h"
 #import "RCTTextInputNativeCommands.h"
@@ -190,7 +191,7 @@ using namespace facebook::react;
 
   if (newTextInputProps.textAttributes != oldTextInputProps.textAttributes) {
     _backedTextInputView.defaultTextAttributes =
-        RCTNSTextAttributesFromTextAttributes(newTextInputProps.getEffectiveTextAttributes());
+        RCTNSTextAttributesFromTextAttributes(newTextInputProps.getEffectiveTextAttributes(RCTFontSizeMultiplier()));
   }
 
   if (newTextInputProps.selectionColor != oldTextInputProps.selectionColor) {

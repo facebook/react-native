@@ -81,7 +81,7 @@ class ParagraphShadowNode : public ConcreteViewShadowNode<
   /*
    * Builds (if needed) and returns a reference to a `Content` object.
    */
-  Content const &getContent() const;
+  Content const &getContent(LayoutContext const &layoutContext) const;
 
   /*
    * Builds and returns a `Content` object with given `layoutConstraints`.
