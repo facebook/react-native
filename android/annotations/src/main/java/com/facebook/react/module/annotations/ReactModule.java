@@ -8,7 +8,6 @@
 package com.facebook.react.module.annotations;
 
 import static java.lang.annotation.ElementType.TYPE;
-import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
@@ -17,7 +16,6 @@ import java.lang.annotation.Target;
  * Annotation for use on {@link com.facebook.react.bridge.BaseJavaModule}s to describe properties
  * for that module.
  */
-@Retention(RUNTIME)
 @Target(TYPE)
 public @interface ReactModule {
   /** Name used to {@code require()} this module from JavaScript. */

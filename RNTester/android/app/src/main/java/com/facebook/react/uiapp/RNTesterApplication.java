@@ -9,12 +9,18 @@ package com.facebook.react.uiapp;
 
 import android.app.Application;
 import android.content.Context;
+
+import androidx.annotation.Nullable;
+
 import com.facebook.react.BuildConfig;
 import com.facebook.react.ReactApplication;
 import com.facebook.react.ReactInstanceManager;
 import com.facebook.react.ReactNativeHost;
 import com.facebook.react.ReactPackage;
+import com.facebook.react.bridge.JSIModulePackage;
+import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.react.shell.MainReactPackage;
+import com.facebook.react.turbomodule.core.TurboModuleManagerJSIModuleSpec;
 import com.facebook.react.views.text.ReactFontManager;
 import com.facebook.soloader.SoLoader;
 import java.lang.reflect.InvocationTargetException;
@@ -22,6 +28,10 @@ import java.util.Arrays;
 import java.util.List;
 
 public class RNTesterApplication extends Application implements ReactApplication {
+  static {
+    ReactFeatureFlags.useTurboModules = true;
+  }
+
   private final ReactNativeHost mReactNativeHost =
       new ReactNativeHost(this) {
         @Override
@@ -42,6 +52,12 @@ public class RNTesterApplication extends Application implements ReactApplication
         @Override
         public List<ReactPackage> getPackages() {
           return Arrays.<ReactPackage>asList(new MainReactPackage());
+        }
+
+        @Override
+        protected JSIModulePackage getJSIModulePackage() {
+          return (reactApplicationContext, jsContext) ->
+            Arrays.asList(new TurboModuleManagerJSIModuleSpec(mReactNativeHost, reactApplicationContext, jsContext));
         }
       };
 

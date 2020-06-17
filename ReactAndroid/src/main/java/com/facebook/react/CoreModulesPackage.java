@@ -7,19 +7,13 @@
 
 package com.facebook.react;
 
-import static com.facebook.react.bridge.ReactMarkerConstants.CREATE_UI_MANAGER_MODULE_END;
-import static com.facebook.react.bridge.ReactMarkerConstants.CREATE_UI_MANAGER_MODULE_START;
-import static com.facebook.react.bridge.ReactMarkerConstants.PROCESS_CORE_REACT_PACKAGE_END;
-import static com.facebook.react.bridge.ReactMarkerConstants.PROCESS_CORE_REACT_PACKAGE_START;
-
 import androidx.annotation.Nullable;
+
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactMarker;
 import com.facebook.react.devsupport.LogBoxModule;
-import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.module.annotations.ReactModuleList;
-import com.facebook.react.module.model.ReactModuleInfo;
 import com.facebook.react.module.model.ReactModuleInfoProvider;
 import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
@@ -30,21 +24,22 @@ import com.facebook.react.modules.debug.DevSettingsModule;
 import com.facebook.react.modules.debug.SourceCodeModule;
 import com.facebook.react.modules.deviceinfo.DeviceInfoModule;
 import com.facebook.react.modules.systeminfo.AndroidInfoModule;
-import com.facebook.react.turbomodule.core.interfaces.TurboModule;
 import com.facebook.react.uimanager.UIImplementationProvider;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.ViewManager;
 import com.facebook.systrace.Systrace;
-import java.util.HashMap;
+
 import java.util.List;
-import java.util.Map;
+
+import static com.facebook.react.bridge.ReactMarkerConstants.CREATE_UI_MANAGER_MODULE_END;
+import static com.facebook.react.bridge.ReactMarkerConstants.CREATE_UI_MANAGER_MODULE_START;
+import static com.facebook.react.bridge.ReactMarkerConstants.PROCESS_CORE_REACT_PACKAGE_END;
+import static com.facebook.react.bridge.ReactMarkerConstants.PROCESS_CORE_REACT_PACKAGE_START;
 
 /**
  * This is the basic module to support React Native. The debug modules are now in DebugCorePackage.
  */
 @ReactModuleList(
-    // WARNING: If you modify this list, ensure that the list below in method
-    // getReactModuleInfoByInitialization is also updated
     nativeModules = {
       AndroidInfoModule.class,
       DeviceEventManagerModule.class,
@@ -76,63 +71,9 @@ public class CoreModulesPackage extends TurboReactPackage implements ReactPackag
     mMinTimeLeftInFrameForNonBatchedOperationMs = minTimeLeftInFrameForNonBatchedOperationMs;
   }
 
-  /**
-   * This method is overridden, since OSS does not run the annotation processor to generate {@link
-   * CoreModulesPackage$$ReactModuleInfoProvider} class. Here we check if it exists. If it does not
-   * exist, we generate one manually in {@link
-   * CoreModulesPackage#getReactModuleInfoByInitialization()} and return that instead.
-   */
   @Override
   public ReactModuleInfoProvider getReactModuleInfoProvider() {
-    try {
-      Class<?> reactModuleInfoProviderClass =
-          Class.forName("com.facebook.react.CoreModulesPackage$$ReactModuleInfoProvider");
-      return (ReactModuleInfoProvider) reactModuleInfoProviderClass.newInstance();
-    } catch (ClassNotFoundException e) {
-      // In OSS case, the annotation processor does not run. We fall back on creating this byhand
-      Class<? extends NativeModule>[] moduleList =
-          new Class[] {
-            AndroidInfoModule.class,
-            DeviceEventManagerModule.class,
-            DeviceInfoModule.class,
-            DevSettingsModule.class,
-            ExceptionsManagerModule.class,
-            LogBoxModule.class,
-            HeadlessJsTaskSupportModule.class,
-            SourceCodeModule.class,
-            TimingModule.class,
-            UIManagerModule.class
-          };
-
-      final Map<String, ReactModuleInfo> reactModuleInfoMap = new HashMap<>();
-      for (Class<? extends NativeModule> moduleClass : moduleList) {
-        ReactModule reactModule = moduleClass.getAnnotation(ReactModule.class);
-
-        reactModuleInfoMap.put(
-            reactModule.name(),
-            new ReactModuleInfo(
-                reactModule.name(),
-                moduleClass.getName(),
-                reactModule.canOverrideExistingModule(),
-                reactModule.needsEagerInit(),
-                reactModule.hasConstants(),
-                reactModule.isCxxModule(),
-                TurboModule.class.isAssignableFrom(moduleClass)));
-      }
-
-      return new ReactModuleInfoProvider() {
-        @Override
-        public Map<String, ReactModuleInfo> getReactModuleInfos() {
-          return reactModuleInfoMap;
-        }
-      };
-    } catch (InstantiationException e) {
-      throw new RuntimeException(
-          "No ReactModuleInfoProvider for CoreModulesPackage$$ReactModuleInfoProvider", e);
-    } catch (IllegalAccessException e) {
-      throw new RuntimeException(
-          "No ReactModuleInfoProvider for CoreModulesPackage$$ReactModuleInfoProvider", e);
-    }
+    return new CoreModulesPackage$$ReactModuleInfoProvider();
   }
 
   @Override

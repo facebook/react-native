@@ -1,0 +1,13 @@
+load("//tools/build_defs/oss:rn_defs.bzl", "react_native_dep", "rn_android_library")
+
+rn_android_library(
+    name = "model",
+    srcs = glob(["**/*.java"]),
+    labels = ["supermodule:xplat/default/public.react_native.infra"],
+    visibility = [
+        "PUBLIC",
+    ],
+    deps = [
+        react_native_dep("third-party/java/jsr-305:jsr-305"),
+    ],
+)

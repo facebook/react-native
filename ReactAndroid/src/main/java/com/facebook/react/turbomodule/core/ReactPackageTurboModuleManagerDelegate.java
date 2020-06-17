@@ -20,7 +20,7 @@ import com.facebook.react.turbomodule.core.interfaces.TurboModule;
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class ReactPackageTurboModuleManagerDelegate extends TurboModuleManagerDelegate {
+public class ReactPackageTurboModuleManagerDelegate extends TurboModuleManagerDelegate {
   private final List<TurboReactPackage> mPackages = new ArrayList<>();
   private final ReactApplicationContext mReactApplicationContext;
 
@@ -107,7 +107,7 @@ public abstract class ReactPackageTurboModuleManagerDelegate extends TurboModule
     return moduleNames;
   }
 
-  public abstract static class Builder {
+  public static class Builder {
     private @Nullable List<ReactPackage> mPackages;
     private @Nullable ReactApplicationContext mContext;
 
@@ -121,8 +121,10 @@ public abstract class ReactPackageTurboModuleManagerDelegate extends TurboModule
       return this;
     }
 
-    protected abstract ReactPackageTurboModuleManagerDelegate build(
-        ReactApplicationContext context, List<ReactPackage> packages);
+    protected ReactPackageTurboModuleManagerDelegate build(
+        ReactApplicationContext context, List<ReactPackage> packages) {
+      return new ReactPackageTurboModuleManagerDelegate(context, packages);
+    }
 
     public ReactPackageTurboModuleManagerDelegate build() {
       Assertions.assertNotNull(

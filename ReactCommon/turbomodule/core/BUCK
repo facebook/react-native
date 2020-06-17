@@ -3,15 +3,16 @@ load("//tools/build_defs/oss:rn_defs.bzl", "ANDROID", "APPLE", "react_native_tar
 
 rn_xplat_cxx_library(
     name = "core",
-    srcs = glob(
-        ["*.cpp"],
+    srcs = subdir_glob(
+        [
+            ("ReactCommon", "*.cpp"),
+        ],
     ),
     header_namespace = "",
     exported_headers = subdir_glob(
         [
-            ("", "*.h"),
+            ("ReactCommon", "*.h"),
         ],
-        prefix = "ReactCommon",
     ),
     compiler_flags = [
         "-fexceptions",
@@ -25,13 +26,12 @@ rn_xplat_cxx_library(
     ],
     fbandroid_exported_headers = subdir_glob(
         [
-            ("platform/android", "*.h"),
+            ("platform/android", "**/*.h"),
         ],
-        prefix = "ReactCommon",
     ),
-    fbandroid_srcs = glob(
+    fbandroid_srcs = subdir_glob(
         [
-            "platform/android/**/*.cpp",
+            ("platform/android/ReactCommon", "**/*.cpp"),
         ],
     ),
     fbobjc_compiler_flags = [

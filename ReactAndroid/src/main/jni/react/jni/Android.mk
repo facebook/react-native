@@ -72,6 +72,7 @@ $(call import-module,callinvoker)
 $(call import-module,reactperflogger)
 $(call import-module,hermes)
 $(call import-module,runtimeexecutor)
+$(call import-module,turbomodule)
 
 include $(REACT_SRC_DIR)/turbomodule/core/jni/Android.mk
 
