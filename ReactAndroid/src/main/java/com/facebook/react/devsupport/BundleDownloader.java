@@ -107,10 +107,7 @@ public class BundleDownloader {
       Request.Builder requestBuilder) {
 
     final Request request =
-        requestBuilder
-            .url(formatBundleUrl(bundleURL))
-            .addHeader("Accept", "multipart/mixed")
-            .build();
+        requestBuilder.url(bundleURL).addHeader("Accept", "multipart/mixed").build();
     mDownloadBundleFromURLCall = Assertions.assertNotNull(mClient.newCall(request));
     mDownloadBundleFromURLCall.enqueue(
         new Callback() {
@@ -163,10 +160,6 @@ public class BundleDownloader {
             }
           }
         });
-  }
-
-  private String formatBundleUrl(String bundleURL) {
-    return bundleURL;
   }
 
   private void processMultipartResponse(
