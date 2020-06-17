@@ -209,35 +209,25 @@ class TextExample extends React.Component<{...}> {
           </Text>
         </RNTesterBlock>
         <RNTesterBlock title="Hyphenation">
-          <Text
-            androidHyphenationFrequency="normal">
-            <Text style={{color: 'red'}}>
-              Normal:
-            </Text> WillHaveAnHyphenWhenBreakingForNewLine
+          <Text androidHyphenationFrequency="normal">
+            <Text style={{color: 'red'}}>Normal:</Text>
+            WillHaveAnHyphenWhenBreakingForNewLine
           </Text>
-          <Text
-            androidHyphenationFrequency="none">
-            <Text style={{color: 'red'}}>
-              None:
-            </Text> WillNotHaveAnHyphenWhenBreakingForNewLine
+          <Text androidHyphenationFrequency="none">
+            <Text style={{color: 'red'}}>None:</Text>
+            WillNotHaveAnHyphenWhenBreakingForNewLine
           </Text>
-          <Text
-            androidHyphenationFrequency="full">
-            <Text style={{color: 'red'}}>
-              Full:
-            </Text> WillHaveAnHyphenWhenBreakingForNewLine
+          <Text androidHyphenationFrequency="full">
+            <Text style={{color: 'red'}}>Full:</Text>
+            WillHaveAnHyphenWhenBreakingForNewLine
           </Text>
-          <Text
-            androidHyphenationFrequency="high">
-            <Text style={{color: 'red'}}>
-            High:
-            </Text> WillHaveAnHyphenWhenBreakingForNewLine
+          <Text androidHyphenationFrequency="high">
+            <Text style={{color: 'red'}}>High:</Text>
+            WillHaveAnHyphenWhenBreakingForNewLine
           </Text>
-          <Text
-            androidHyphenationFrequency="balanced">
-            <Text style={{color: 'red'}}>
-              Balanced: 
-            </Text> WillHaveAnHyphenWhenBreakingForNewLine
+          <Text androidHyphenationFrequency="balanced">
+            <Text style={{color: 'red'}}>Balanced:</Text>
+            WillHaveAnHyphenWhenBreakingForNewLine
           </Text>
         </RNTesterBlock>
         <RNTesterBlock title="Padding">
