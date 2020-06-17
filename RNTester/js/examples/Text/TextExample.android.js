@@ -146,6 +146,7 @@ class AdjustingFontSize extends React.Component<
         <Text
           adjustsFontSizeToFit={true}
           numberOfLines={4}
+          androidHyphenationFrequency="normal"
           style={{fontSize: 20, marginVertical: 6}}>
           {'Multiline text component shrinking is supported, watch as this reeeeaaaally loooooong teeeeeeext grooooows and then shriiiinks as you add text to me! ioahsdia soady auydoa aoisyd aosdy ' +
             ' ' +
@@ -194,6 +195,7 @@ class AdjustingFontSize extends React.Component<
   }
 }
 
+const testString = 'sup\u00ADer\u00ADfrag\u00ADilis\u00ADtice\u00ADxpial\u00ADidocious'
 class TextExample extends React.Component<{...}> {
   render(): React.Node {
     return (
@@ -205,6 +207,38 @@ class TextExample extends React.Component<{...}> {
           <Text>
             The text should wrap if it goes on multiple lines. See, this is
             going to the next line.
+          </Text>
+        </RNTesterBlock>
+        <RNTesterBlock title="Hyphenation">
+          <Text
+            androidHyphenationFrequency="normal">
+            <Text style={{color: 'red'}}>
+              Normal:
+            </Text> WillHaveAnHyphenWhenBreakingForNewLine
+          </Text>
+          <Text
+            androidHyphenationFrequency="none">
+            <Text style={{color: 'red'}}>
+              None:
+            </Text> WillNotHaveAnHyphenWhenBreakingForNewLine
+          </Text>
+          <Text
+            androidHyphenationFrequency="full">
+            <Text style={{color: 'red'}}>
+              Full:
+            </Text> WillHaveAnHyphenWhenBreakingForNewLine
+          </Text>
+          <Text
+            androidHyphenationFrequency="high">
+            <Text style={{color: 'red'}}>
+            High:
+            </Text> WillHaveAnHyphenWhenBreakingForNewLine
+          </Text>
+          <Text
+            androidHyphenationFrequency="balanced">
+            <Text style={{color: 'red'}}>
+              Balanced: 
+            </Text> WillHaveAnHyphenWhenBreakingForNewLine
           </Text>
         </RNTesterBlock>
         <RNTesterBlock title="Padding">
