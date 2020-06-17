@@ -11,8 +11,9 @@
 'use strict';
 
 const React = require('react');
-const {AsyncStorage, PickerIOS, Text, View} = require('react-native');
+const {PickerIOS, Text, View} = require('react-native');
 const PickerItemIOS = PickerIOS.Item;
+import AsyncStorage from '@react-native-community/async-storage';
 
 const STORAGE_KEY = '@AsyncStorageExample:key';
 const COLORS = ['red', 'orange', 'yellow', 'green', 'blue'];

@@ -21,7 +21,6 @@ const URIActionMap = require('./utils/URIActionMap');
 
 const {
   AppRegistry,
-  AsyncStorage,
   BackHandler,
   Button,
   Linking,
@@ -34,6 +33,7 @@ const {
   LogBox,
 } = require('react-native');
 
+import AsyncStorage from '@react-native-community/async-storage';
 import type {RNTesterExample} from './types/RNTesterTypes';
 import type {RNTesterAction} from './utils/RNTesterActions';
 import type {RNTesterNavigationState} from './utils/RNTesterNavigationReducer';
@@ -55,7 +55,7 @@ const Header = ({
   ...
 }) => (
   <RNTesterThemeContext.Consumer>
-    {theme => {
+    {(theme) => {
       return (
         <SafeAreaView
           style={[
@@ -145,7 +145,7 @@ class RNTesterApp extends React.Component<Props, RNTesterNavigationState> {
 
   componentDidMount() {
     this._mounted = true;
-    Linking.getInitialURL().then(url => {
+    Linking.getInitialURL().then((url) => {
       AsyncStorage.getItem(APP_STATE_KEY, (err, storedString) => {
         if (!this._mounted) {
           return;
@@ -160,7 +160,7 @@ class RNTesterApp extends React.Component<Props, RNTesterNavigationState> {
       });
     });
 
-    Linking.addEventListener('url', url => {
+    Linking.addEventListener('url', (url) => {
       this._handleAction(URIActionMap(url));
     });
   }

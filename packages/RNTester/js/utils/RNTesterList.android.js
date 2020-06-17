@@ -25,10 +25,10 @@ const ComponentExamples: Array<RNTesterExample> = [
     key: 'FlatListExample',
     module: require('../examples/FlatList/FlatListExample'),
   },
-  // {
-  //   key: 'ImageExample',
-  //   module: require('../examples/Image/ImageExample'),
-  // },
+  {
+    key: 'ImageExample',
+    module: require('../examples/Image/ImageExample'),
+  },
   {
     key: 'JSResponderHandlerExample',
     module: require('../examples/JSResponderHandlerExample/JSResponderHandlerExample'),
