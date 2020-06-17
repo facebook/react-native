@@ -14,6 +14,13 @@
 
 static void *TextFieldSelectionObservingContext = &TextFieldSelectionObservingContext;
 
+#if TARGET_OS_OSX // [TODO(macOS ISS#2323203)
+BOOL RCTEventIsCommandEnterEvent(NSEvent *event) {
+  NSEventModifierFlags modifierFlags = event.modifierFlags & NSEventModifierFlagDeviceIndependentFlagsMask;
+  return (modifierFlags & NSEventModifierFlagCommand) == NSEventModifierFlagCommand && event.keyCode == 0x24;
+}
+#endif // ]TODO(macOS ISS#2323203)
+
 @interface RCTBackedTextFieldDelegateAdapter ()
 #if !TARGET_OS_OSX // [TODO(macOS ISS#2323203)
 <UITextFieldDelegate>
@@ -275,18 +282,16 @@ static void *TextFieldSelectionObservingContext = &TextFieldSelectionObservingCo
 
 - (BOOL)textView:(__unused UITextView *)textView shouldChangeTextInRange:(NSRange)range replacementText:(NSString *)text
 {
+#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
   // Custom implementation of `textInputShouldReturn` and `textInputDidReturn` pair for `UITextView`.
   if (!_backedTextInputView.textWasPasted && [text isEqualToString:@"\n"]) {
     if ([_backedTextInputView.textInputDelegate textInputShouldReturn]) {
       [_backedTextInputView.textInputDelegate textInputDidReturn];
-#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
       [_backedTextInputView endEditing:NO];
-#else // [TODO(macOS ISS#2323203)
-      [[_backedTextInputView window] endEditingFor:nil];
-#endif // ]TODO(macOS ISS#2323203)
       return NO;
     }
   }
+#endif // ]TODO(macOS ISS#2323203)
 
   BOOL result = [_backedTextInputView.textInputDelegate textInputShouldChangeTextInRange:range replacementText:text];
   if (result) {
@@ -352,9 +357,11 @@ static void *TextFieldSelectionObservingContext = &TextFieldSelectionObservingCo
 {
   BOOL commandHandled = NO;
   id<RCTBackedTextInputDelegate> textInputDelegate = [_backedTextInputView textInputDelegate];
-  // enter/return
-  if (textInputDelegate.textInputShouldReturn && (commandSelector == @selector(insertNewline:) || commandSelector == @selector(insertNewlineIgnoringFieldEditor:))) {
-    [_backedTextInputView.window makeFirstResponder:nil];
+  // cmd + enter/return
+  if (commandSelector == @selector(noop:) && RCTEventIsCommandEnterEvent(NSApp.currentEvent)) {
+    if (textInputDelegate.textInputShouldReturn) {
+      [_backedTextInputView.window makeFirstResponder:nil];
+    }
     commandHandled = YES;
     //backspace
   } else if (commandSelector == @selector(deleteBackward:)) {
