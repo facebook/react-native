@@ -20,7 +20,7 @@ const {
   View,
 } = require('react-native');
 
-const {SegmentedControl} = require('@react-native-community/segmented-control');
+import SegmentedControl from '@react-native-community/segmented-control';
 const RNTesterBlock = require('../../components/RNTesterBlock');
 const RNTesterPage = require('../../components/RNTesterPage');
 
