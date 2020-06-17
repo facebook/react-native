@@ -478,10 +478,10 @@ SPEC CHECKSUMS:
   React-jsi: b6dc94a6a12ff98e8877287a0b7620d365201161
   React-jsiexecutor: 1540d1c01bb493ae3124ed83351b1b6a155db7da
   React-jsinspector: 512e560d0e985d0e8c479a54a4e5c147a9c83493
-  react-native-progress-bar-android: d1ec460350b7c0d27418b0c0b9ebf073646db016
-  react-native-progress-view: d6127184789afb752faae9acdbe7fa320632a662
-  react-native-segmented-control: 450c563d38339ba50ae8303fb12b1fe7ec01f7bd
-  react-native-slider: 12bd76d3d568c9c5500825db54123d44b48e4ad4
+  react-native-progress-bar-android: d1b109b86c699d36f6a7099dab1a117dc1d66d3c
+  react-native-progress-view: c3aea3f38ec17ded9712f071cbdba5c8a9e47daf
+  react-native-segmented-control: 85df1f1d040184024d45c8e0592d0b1f4ffd6523
+  react-native-slider: 05f11678260cb27c3d00a2dd1558b623be3ec8d2
   React-RCTActionSheet: f41ea8a811aac770e0cc6e0ad6b270c644ea8b7c
   React-RCTAnimation: 49ab98b1c1ff4445148b72a3d61554138565bad0
   React-RCTBlob: a332773f0ebc413a0ce85942a55b064471587a71
@@ -492,10 +492,10 @@ SPEC CHECKSUMS:
   React-RCTText: fae545b10cfdb3d247c36c56f61a94cfd6dba41d
   React-RCTVibration: 4356114dbcba4ce66991096e51a66e61eda51256
   ReactCommon: ed4e11d27609d571e7eee8b65548efc191116eb3
-  RNCAsyncStorage: d059c3ee71738c39834a627476322a5a8cd5bf36
-  RNCClipboard: 8148e21ac347c51fd6cd4b683389094c216bb543
-  RNCPushNotificationIOS: 4c97a36dbec42dba411cc35e6dac25e34a805fde
-  RNDateTimePicker: bacbf754c3298b061c7eaa0a5352cbb2ede8d5a2
+  RNCAsyncStorage: db711e29e5e0500d9bd21aa0c2e397efa45302b1
+  RNCClipboard: a254f6e568bc713b7ef49646e216661369882030
+  RNCPushNotificationIOS: 375feee5b89ad4aeee8a971f63fe4848902380b7
+  RNDateTimePicker: aae6a45c4ddb5125f3c7a39683e21c34c25cda45
   Yoga: 3ebccbdd559724312790e7742142d062476b698e
   YogaKit: f782866e155069a2cca2517aafea43200b01fd5a
 
