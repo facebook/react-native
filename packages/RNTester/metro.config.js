@@ -5,6 +5,11 @@
  * @format
  */
 
+const path = require('path');
+const reactNativePath = path.resolve('../../');
+
+console.log({reactNativePath});
+
 module.exports = {
   transformer: {
     getTransformOptions: async () => ({
@@ -13,5 +18,10 @@ module.exports = {
         inlineRequires: false,
       },
     }),
+  },
+  resolver: {
+    extraNodeModules: {
+      'react-native': reactNativePath,
+    },
   },
 };
