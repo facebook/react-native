@@ -13,7 +13,7 @@
 const React = require('react');
 
 const {Text, TextInput, View, StyleSheet, Switch} = require('react-native');
-const {Slider} = require('@react-native-community/slider');
+import Slider from '@react-native-community/slider';
 
 const TextInputSharedExamples = require('./TextInputSharedExamples.js');
 

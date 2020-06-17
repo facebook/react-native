@@ -12,7 +12,7 @@
 
 const React = require('react');
 const {Text, StyleSheet, View} = require('react-native');
-const Slider = require('@react-native-community/slider');
+import Slider from '@react-native-community/slider';
 
 function SliderExample(props: React.ElementConfig<typeof Slider>) {
   const [value, setValue] = React.useState(0);
