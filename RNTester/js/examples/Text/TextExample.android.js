@@ -195,7 +195,6 @@ class AdjustingFontSize extends React.Component<
   }
 }
 
-const testString = 'sup\u00ADer\u00ADfrag\u00ADilis\u00ADtice\u00ADxpial\u00ADidocious'
 class TextExample extends React.Component<{...}> {
   render(): React.Node {
     return (
