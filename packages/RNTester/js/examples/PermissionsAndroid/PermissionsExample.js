@@ -14,12 +14,12 @@ const React = require('react');
 
 const {
   PermissionsAndroid,
-  Picker,
   StyleSheet,
   Text,
   TouchableWithoutFeedback,
   View,
 } = require('react-native');
+import {Picker} from '@react-native-community/picker';
 
 const Item = Picker.Item;
 

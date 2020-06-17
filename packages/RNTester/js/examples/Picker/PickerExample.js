@@ -12,7 +12,8 @@
 
 const React = require('react');
 
-const {Picker, StyleSheet, Text} = require('react-native');
+const {StyleSheet, Text} = require('react-native');
+import {Picker} from '@react-native-community/picker';
 
 const Item = Picker.Item;
 
@@ -29,7 +30,7 @@ class BasicPickerExample extends React.Component<{...}, State> {
         testID="basic-picker"
         style={styles.picker}
         selectedValue={this.state.value}
-        onValueChange={v => this.setState({value: v})}>
+        onValueChange={(v) => this.setState({value: v})}>
         <Item label="hello" value="key0" />
         <Item label="world" value="key1" />
       </Picker>
@@ -65,7 +66,7 @@ class DropdownPickerExample extends React.Component<{...}, State> {
       <Picker
         style={styles.picker}
         selectedValue={this.state.value}
-        onValueChange={v => this.setState({value: v})}
+        onValueChange={(v) => this.setState({value: v})}
         mode="dropdown">
         <Item label="hello" value="key0" />
         <Item label="world" value="key1" />
@@ -84,7 +85,7 @@ class PromptPickerExample extends React.Component<{...}, State> {
       <Picker
         style={styles.picker}
         selectedValue={this.state.value}
-        onValueChange={v => this.setState({value: v})}
+        onValueChange={(v) => this.setState({value: v})}
         prompt="Pick one, just one">
         <Item label="hello" value="key0" />
         <Item label="world" value="key1" />
@@ -106,7 +107,7 @@ class ColorPickerExample extends React.Component<{...}, ColorState> {
         <Picker
           style={[styles.picker, {color: 'white', backgroundColor: '#333'}]}
           selectedValue={this.state.color}
-          onValueChange={v => this.setState({color: v})}
+          onValueChange={(v) => this.setState({color: v})}
           mode="dropdown">
           <Item label="red" color="red" value="red" />
           <Item label="green" color="green" value="green" />
@@ -115,7 +116,7 @@ class ColorPickerExample extends React.Component<{...}, ColorState> {
         <Picker
           style={styles.picker}
           selectedValue={this.state.color}
-          onValueChange={v => this.setState({color: v})}
+          onValueChange={(v) => this.setState({color: v})}
           mode="dialog">
           <Item label="red" color="red" value="red" />
           <Item label="green" color="green" value="green" />
@@ -136,7 +137,7 @@ class AccessibilityLabelPickerExample extends React.Component<{||}, State> {
         accessibilityLabel={this.state.value + 'Hours'}
         style={styles.picker}
         selectedValue={this.state.value}
-        onValueChange={v => this.setState({value: v})}>
+        onValueChange={(v) => this.setState({value: v})}>
         <Item label="1" value="1" />
         <Item label="2" value="2" />
         <Item label="3" value="3" />
@@ -157,37 +158,37 @@ exports.description =
 exports.examples = [
   {
     title: 'Basic Picker',
-    render: function(): React.Element<typeof BasicPickerExample> {
+    render: function (): React.Element<typeof BasicPickerExample> {
       return <BasicPickerExample />;
     },
   },
   {
     title: 'Disabled Picker',
-    render: function(): React.Element<typeof DisabledPickerExample> {
+    render: function (): React.Element<typeof DisabledPickerExample> {
       return <DisabledPickerExample />;
     },
   },
   {
     title: 'Dropdown Picker',
-    render: function(): React.Element<typeof DropdownPickerExample> {
+    render: function (): React.Element<typeof DropdownPickerExample> {
       return <DropdownPickerExample />;
     },
   },
   {
     title: 'Picker with prompt message',
-    render: function(): React.Element<typeof PromptPickerExample> {
+    render: function (): React.Element<typeof PromptPickerExample> {
       return <PromptPickerExample />;
     },
   },
   {
     title: 'Accessibility Label pickers',
-    render: function(): React.Element<typeof AccessibilityLabelPickerExample> {
+    render: function (): React.Element<typeof AccessibilityLabelPickerExample> {
       return <AccessibilityLabelPickerExample />;
     },
   },
   {
     title: 'Picker with no listener',
-    render: function(): React.Element<typeof PromptPickerExample> {
+    render: function (): React.Element<typeof PromptPickerExample> {
       return (
         /* $FlowFixMe(>=0.99.0 site=react_native_fb) This comment suppresses an
          * error found when Flow v0.99 was deployed. To see the error, delete
@@ -207,13 +208,13 @@ exports.examples = [
   },
   {
     title: 'Colorful pickers',
-    render: function(): React.Element<typeof ColorPickerExample> {
+    render: function (): React.Element<typeof ColorPickerExample> {
       return <ColorPickerExample />;
     },
   },
   {
     title: 'AccessibilityLabel pickers',
-    render: function(): React.Element<typeof AccessibilityLabelPickerExample> {
+    render: function (): React.Element<typeof AccessibilityLabelPickerExample> {
       return <AccessibilityLabelPickerExample />;
     },
   },
