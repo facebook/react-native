@@ -97,7 +97,9 @@ void TextInputShadowNode::updateStateIfNeeded() {
 
 #pragma mark - LayoutableShadowNode
 
-Size TextInputShadowNode::measure(LayoutConstraints layoutConstraints) const {
+Size TextInputShadowNode::measureContent(
+    LayoutContext const &layoutContext,
+    LayoutConstraints const &layoutConstraints) const {
   return textLayoutManager_
       ->measure(
           attributedStringBoxToMeasure(),

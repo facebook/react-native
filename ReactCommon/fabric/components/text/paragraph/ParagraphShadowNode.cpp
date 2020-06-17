@@ -116,9 +116,11 @@ void ParagraphShadowNode::updateStateIfNeeded(Content const &content) {
 
 #pragma mark - LayoutableShadowNode
 
-Size ParagraphShadowNode::measure(LayoutConstraints layoutConstraints) const {
+Size ParagraphShadowNode::measureContent(
+    LayoutContext const &layoutContext,
+    LayoutConstraints const &layoutConstraints) const {
   auto content =
-      getContentWithMeasuredAttachments(LayoutContext{}, layoutConstraints);
+      getContentWithMeasuredAttachments(layoutContext, layoutConstraints);
 
   auto attributedString = content.attributedString;
   if (attributedString.isEmpty()) {
