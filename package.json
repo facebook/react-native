@@ -139,7 +139,7 @@
     "eslint-plugin-react-hooks": "^3.0.0",
     "eslint-plugin-react-native": "3.8.1",
     "eslint-plugin-relay": "1.7.1",
-    "flow-bin": "^0.126.1",
+    "flow-bin": "^0.127.0",
     "jest": "^26.0.1",
     "jest-junit": "^10.0.0",
     "jscodeshift": "^0.9.0",
