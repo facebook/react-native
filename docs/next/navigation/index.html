@@ -108,7 +108,7 @@ pod <span class="token function">install</span>
       </span><span class="token punctuation">{</span><span class="token comment">/* Rest of your app code */</span><span class="token punctuation">}</span><span class="token plain-text">
     </span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span><span class="token class-name">NavigationContainer</span></span><span class="token punctuation">></span></span>
   <span class="token punctuation">)</span><span class="token punctuation">;</span>
-<span class="token punctuation">}</span>
+<span class="token punctuation">}</span><span class="token punctuation">;</span>
 
 <span class="token keyword">export</span> <span class="token keyword">default</span> App<span class="token punctuation">;</span>
 </code></pre>
@@ -134,7 +134,7 @@ pod <span class="token function">install</span>
       </span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span><span class="token class-name">Stack.Navigator</span></span><span class="token punctuation">></span></span><span class="token plain-text">
     </span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span><span class="token class-name">NavigationContainer</span></span><span class="token punctuation">></span></span>
   <span class="token punctuation">)</span><span class="token punctuation">;</span>
-<span class="token punctuation">}</span>
+<span class="token punctuation">}</span><span class="token punctuation">;</span>
 </code></pre>
 <p>In this example, there are 2 screens (<code>Home</code> and <code>Profile</code>) defined using the <code>Stack.Screen</code> component. Similarly, you can define as many screens as you like.</p>
 <p>You can set options such as the screen title for each screen in the <code>options</code> prop of <code>Stack.Screen</code>.</p>
@@ -148,10 +148,10 @@ pod <span class="token function">install</span>
       <span class="token punctuation">}</span></span>
     <span class="token punctuation">/></span></span>
   <span class="token punctuation">)</span><span class="token punctuation">;</span>
-<span class="token punctuation">}</span>
+<span class="token punctuation">}</span><span class="token punctuation">;</span>
 <span class="token keyword">const</span> <span class="token function-variable function">ProfileScreen</span> <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">{</span>
   <span class="token keyword">return</span> <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span><span class="token class-name">Text</span></span><span class="token punctuation">></span></span><span class="token plain-text">This is Jane's profile</span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span><span class="token class-name">Text</span></span><span class="token punctuation">></span></span><span class="token punctuation">;</span>
-<span class="token punctuation">}</span>
+<span class="token punctuation">}</span><span class="token punctuation">;</span>
 </code></pre>
 <p>The views in the stack navigator use native components and the <a href="/docs/next/animated"><code>Animated</code></a> library to deliver 60fps animations that are run on the native thread. Plus, the animations and gestures can be customized.</p>
 <p>React Navigation also has packages for different kind of navigators such as tabs and drawer. You can use them to implement various patterns in your app.</p>
