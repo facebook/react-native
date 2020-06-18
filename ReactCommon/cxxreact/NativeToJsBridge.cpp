@@ -354,7 +354,7 @@ RuntimeExecutor NativeToJsBridge::getRuntimeExecutor() {
               try {
                 callback(*runtime);
               } catch (jsi::JSError &originalError) {
-                handleJSError(*runtime, originalError);
+                handleJSError(*runtime, originalError, true);
               }
             });
       };
