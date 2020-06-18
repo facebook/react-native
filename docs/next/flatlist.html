@@ -84,8 +84,7 @@
 <p>If you need section support, use <a href="/docs/next/sectionlist"><code>&lt;SectionList&gt;</code></a>.</p>
 <h2><a class="anchor" aria-hidden="true" id="example"></a><a href="#example" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Example</h2>
 <div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React <span class="hljs-keyword">from</span> <span class="hljs-string">'react'</span>;
-<span class="hljs-keyword">import</span> { SafeAreaView, View, FlatList, StyleSheet, Text } <span class="hljs-keyword">from</span> <span class="hljs-string">'react-native'</span>;
-<span class="hljs-keyword">import</span> Constants <span class="hljs-keyword">from</span> <span class="hljs-string">'expo-constants'</span>;
+<span class="hljs-keyword">import</span> { SafeAreaView, View, FlatList, StyleSheet, Text, StatusBar } <span class="hljs-keyword">from</span> <span class="hljs-string">'react-native'</span>;
 
 <span class="hljs-keyword">const</span> DATA = [
   {
@@ -102,13 +101,11 @@
   },
 ];
 
-<span class="hljs-keyword">const</span> Item = <span class="hljs-function">(<span class="hljs-params">{ title }</span>) =&gt;</span> {
-  <span class="hljs-keyword">return</span> (
-    <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">View</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.item}</span>&gt;</span>
-      <span class="hljs-tag">&lt;<span class="hljs-name">Text</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.title}</span>&gt;</span>{title}<span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span>
-    <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span></span>
-  );
-}
+<span class="hljs-keyword">const</span> Item = <span class="hljs-function">(<span class="hljs-params">{ title }</span>) =&gt;</span> (
+  <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">View</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.item}</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">Text</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.title}</span>&gt;</span>{title}<span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span>
+  <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span></span>
+);
 
 <span class="hljs-keyword">const</span> App = <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
   <span class="hljs-keyword">const</span> renderItem = <span class="hljs-function">(<span class="hljs-params">{ item }</span>) =&gt;</span> (
@@ -129,7 +126,7 @@
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    marginTop: Constants.statusBarHeight,
+    marginTop: StatusBar.currentHeight || 0,
   },
   item: {
     backgroundColor: '#f9c2ff',
@@ -146,7 +143,7 @@ export default App;
 </code></pre></div><div class="desktop-friendly-snack" style="margin-top: 15px; margin-bottom: 15px"><div
         data-snack-name="flatlist-simple"
         data-snack-description="Example usage"
-        data-snack-code="import%20React%20from%20'react'%3B%0Aimport%20%7B%20SafeAreaView%2C%20View%2C%20FlatList%2C%20StyleSheet%2C%20Text%20%7D%20from%20'react-native'%3B%0Aimport%20Constants%20from%20'expo-constants'%3B%0A%0Aconst%20DATA%20%3D%20%5B%0A%20%20%7B%0A%20%20%20%20id%3A%20'bd7acbea-c1b1-46c2-aed5-3ad53abb28ba'%2C%0A%20%20%20%20title%3A%20'First%20Item'%2C%0A%20%20%7D%2C%0A%20%20%7B%0A%20%20%20%20id%3A%20'3ac68afc-c605-48d3-a4f8-fbd91aa97f63'%2C%0A%20%20%20%20title%3A%20'Second%20Item'%2C%0A%20%20%7D%2C%0A%20%20%7B%0A%20%20%20%20id%3A%20'58694a0f-3da1-471f-bd96-145571e29d72'%2C%0A%20%20%20%20title%3A%20'Third%20Item'%2C%0A%20%20%7D%2C%0A%5D%3B%0A%0Aconst%20Item%20%3D%20(%7B%20title%20%7D)%20%3D%3E%20%7B%0A%20%20return%20(%0A%20%20%20%20%3CView%20style%3D%7Bstyles.item%7D%3E%0A%20%20%20%20%20%20%3CText%20style%3D%7Bstyles.title%7D%3E%7Btitle%7D%3C%2FText%3E%0A%20%20%20%20%3C%2FView%3E%0A%20%20)%3B%0A%7D%0A%0Aconst%20App%20%3D%20()%20%3D%3E%20%7B%0A%20%20const%20renderItem%20%3D%20(%7B%20item%20%7D)%20%3D%3E%20(%0A%20%20%20%20%3CItem%20title%3D%7Bitem.title%7D%20%2F%3E%0A%20%20)%3B%0A%0A%20%20return%20(%0A%20%20%20%20%3CSafeAreaView%20style%3D%7Bstyles.container%7D%3E%0A%20%20%20%20%20%20%3CFlatList%0A%20%20%20%20%20%20%20%20data%3D%7BDATA%7D%0A%20%20%20%20%20%20%20%20renderItem%3D%7BrenderItem%7D%0A%20%20%20%20%20%20%20%20keyExtractor%3D%7Bitem%20%3D%3E%20item.id%7D%0A%20%20%20%20%20%20%2F%3E%0A%20%20%20%20%3C%2FSafeAreaView%3E%0A%20%20)%3B%0A%7D%0A%0Aconst%20styles%20%3D%20StyleSheet.create(%7B%0A%20%20container%3A%20%7B%0A%20%20%20%20flex%3A%201%2C%0A%20%20%20%20marginTop%3A%20Constants.statusBarHeight%2C%0A%20%20%7D%2C%0A%20%20item%3A%20%7B%0A%20%20%20%20backgroundColor%3A%20'%23f9c2ff'%2C%0A%20%20%20%20padding%3A%2020%2C%0A%20%20%20%20marginVertical%3A%208%2C%0A%20%20%20%20marginHorizontal%3A%2016%2C%0A%20%20%7D%2C%0A%20%20title%3A%20%7B%0A%20%20%20%20fontSize%3A%2032%2C%0A%20%20%7D%2C%0A%7D)%3B%0A%0Aexport%20default%20App%3B%0A"
+        data-snack-code="import%20React%20from%20'react'%3B%0Aimport%20%7B%20SafeAreaView%2C%20View%2C%20FlatList%2C%20StyleSheet%2C%20Text%2C%20StatusBar%20%7D%20from%20'react-native'%3B%0A%0Aconst%20DATA%20%3D%20%5B%0A%20%20%7B%0A%20%20%20%20id%3A%20'bd7acbea-c1b1-46c2-aed5-3ad53abb28ba'%2C%0A%20%20%20%20title%3A%20'First%20Item'%2C%0A%20%20%7D%2C%0A%20%20%7B%0A%20%20%20%20id%3A%20'3ac68afc-c605-48d3-a4f8-fbd91aa97f63'%2C%0A%20%20%20%20title%3A%20'Second%20Item'%2C%0A%20%20%7D%2C%0A%20%20%7B%0A%20%20%20%20id%3A%20'58694a0f-3da1-471f-bd96-145571e29d72'%2C%0A%20%20%20%20title%3A%20'Third%20Item'%2C%0A%20%20%7D%2C%0A%5D%3B%0A%0Aconst%20Item%20%3D%20(%7B%20title%20%7D)%20%3D%3E%20(%0A%20%20%3CView%20style%3D%7Bstyles.item%7D%3E%0A%20%20%20%20%3CText%20style%3D%7Bstyles.title%7D%3E%7Btitle%7D%3C%2FText%3E%0A%20%20%3C%2FView%3E%0A)%3B%0A%0Aconst%20App%20%3D%20()%20%3D%3E%20%7B%0A%20%20const%20renderItem%20%3D%20(%7B%20item%20%7D)%20%3D%3E%20(%0A%20%20%20%20%3CItem%20title%3D%7Bitem.title%7D%20%2F%3E%0A%20%20)%3B%0A%0A%20%20return%20(%0A%20%20%20%20%3CSafeAreaView%20style%3D%7Bstyles.container%7D%3E%0A%20%20%20%20%20%20%3CFlatList%0A%20%20%20%20%20%20%20%20data%3D%7BDATA%7D%0A%20%20%20%20%20%20%20%20renderItem%3D%7BrenderItem%7D%0A%20%20%20%20%20%20%20%20keyExtractor%3D%7Bitem%20%3D%3E%20item.id%7D%0A%20%20%20%20%20%20%2F%3E%0A%20%20%20%20%3C%2FSafeAreaView%3E%0A%20%20)%3B%0A%7D%0A%0Aconst%20styles%20%3D%20StyleSheet.create(%7B%0A%20%20container%3A%20%7B%0A%20%20%20%20flex%3A%201%2C%0A%20%20%20%20marginTop%3A%20StatusBar.currentHeight%20%7C%7C%200%2C%0A%20%20%7D%2C%0A%20%20item%3A%20%7B%0A%20%20%20%20backgroundColor%3A%20'%23f9c2ff'%2C%0A%20%20%20%20padding%3A%2020%2C%0A%20%20%20%20marginVertical%3A%208%2C%0A%20%20%20%20marginHorizontal%3A%2016%2C%0A%20%20%7D%2C%0A%20%20title%3A%20%7B%0A%20%20%20%20fontSize%3A%2032%2C%0A%20%20%7D%2C%0A%7D)%3B%0A%0Aexport%20default%20App%3B%0A"
         data-snack-platform="web"
         data-snack-supported-platforms=ios,android,web
         data-snack-preview="true"
@@ -164,86 +161,63 @@ export default App;
 <li>By passing <code>extraData={selected}</code> to <code>FlatList</code> we make sure <code>FlatList</code> itself will re-render when the state changes. Without setting this prop, <code>FlatList</code> would not know it needs to re-render any items because it is a <code>PureComponent</code> and the prop comparison will not show any changes.</li>
 <li><code>keyExtractor</code> tells the list to use the <code>id</code>s for the react keys instead of the default <code>key</code> property.</li>
 </ul>
-<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React <span class="hljs-keyword">from</span> <span class="hljs-string">'react'</span>;
-<span class="hljs-keyword">import</span> {
-  SafeAreaView,
-  TouchableOpacity,
-  FlatList,
-  StyleSheet,
-  Text,
-} <span class="hljs-keyword">from</span> <span class="hljs-string">'react-native'</span>;
-<span class="hljs-keyword">import</span> Constants <span class="hljs-keyword">from</span> <span class="hljs-string">'expo-constants'</span>;
+<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React, { useState } <span class="hljs-keyword">from</span> <span class="hljs-string">"react"</span>;
+<span class="hljs-keyword">import</span> { FlatList, SafeAreaView, StatusBar, StyleSheet, Text, TouchableOpacity } <span class="hljs-keyword">from</span> <span class="hljs-string">"react-native"</span>;
 
 <span class="hljs-keyword">const</span> DATA = [
   {
-    <span class="hljs-attr">id</span>: <span class="hljs-string">'bd7acbea-c1b1-46c2-aed5-3ad53abb28ba'</span>,
-    <span class="hljs-attr">title</span>: <span class="hljs-string">'First Item'</span>,
+    <span class="hljs-attr">id</span>: <span class="hljs-string">"bd7acbea-c1b1-46c2-aed5-3ad53abb28ba"</span>,
+    <span class="hljs-attr">title</span>: <span class="hljs-string">"First Item"</span>,
   },
   {
-    <span class="hljs-attr">id</span>: <span class="hljs-string">'3ac68afc-c605-48d3-a4f8-fbd91aa97f63'</span>,
-    <span class="hljs-attr">title</span>: <span class="hljs-string">'Second Item'</span>,
+    <span class="hljs-attr">id</span>: <span class="hljs-string">"3ac68afc-c605-48d3-a4f8-fbd91aa97f63"</span>,
+    <span class="hljs-attr">title</span>: <span class="hljs-string">"Second Item"</span>,
   },
   {
-    <span class="hljs-attr">id</span>: <span class="hljs-string">'58694a0f-3da1-471f-bd96-145571e29d72'</span>,
-    <span class="hljs-attr">title</span>: <span class="hljs-string">'Third Item'</span>,
+    <span class="hljs-attr">id</span>: <span class="hljs-string">"58694a0f-3da1-471f-bd96-145571e29d72"</span>,
+    <span class="hljs-attr">title</span>: <span class="hljs-string">"Third Item"</span>,
   },
 ];
 
-<span class="hljs-keyword">const</span> Item = <span class="hljs-function">(<span class="hljs-params">{ id, title, selected, onSelect }</span>) =&gt;</span> {
-  <span class="hljs-keyword">return</span> (
-    <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">TouchableOpacity</span>
-      <span class="hljs-attr">onPress</span>=<span class="hljs-string">{()</span> =&gt;</span> onSelect(id)}
-      style={[
-        styles.item,
-        { backgroundColor: selected ? '#6e3b6e' : '#f9c2ff' },
-      ]}
-    &gt;
-      <span class="hljs-tag">&lt;<span class="hljs-name">Text</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.title}</span>&gt;</span>{title}<span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span>
-    <span class="hljs-tag">&lt;/<span class="hljs-name">TouchableOpacity</span>&gt;</span></span>
-  );
-}
+<span class="hljs-keyword">const</span> Item = <span class="hljs-function">(<span class="hljs-params">{ item, onPress, style }</span>) =&gt;</span> (
+  <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">TouchableOpacity</span> <span class="hljs-attr">onPress</span>=<span class="hljs-string">{onPress}</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{[styles.item,</span> <span class="hljs-attr">style</span>]}&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">Text</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.title}</span>&gt;</span>{item.title}<span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span>
+  <span class="hljs-tag">&lt;/<span class="hljs-name">TouchableOpacity</span>&gt;</span></span>
+);
 
 <span class="hljs-keyword">const</span> App = <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
-  <span class="hljs-keyword">const</span> [selected, setSelected] = React.useState(<span class="hljs-keyword">new</span> <span class="hljs-built_in">Map</span>());
+  <span class="hljs-keyword">const</span> [selectedId, setSelectedId] = useState(<span class="hljs-literal">null</span>);
 
-  <span class="hljs-keyword">const</span> onSelect = React.useCallback(
-    <span class="hljs-function"><span class="hljs-params">id</span> =&gt;</span> {
-      <span class="hljs-keyword">const</span> newSelected = <span class="hljs-keyword">new</span> <span class="hljs-built_in">Map</span>(selected);
-      newSelected.set(id, !selected.get(id));
+  <span class="hljs-keyword">const</span> renderItem = <span class="hljs-function">(<span class="hljs-params">{ item }</span>) =&gt;</span> {
+    <span class="hljs-keyword">const</span> backgroundColor = item.id === selectedId ? <span class="hljs-string">"#6e3b6e"</span> : <span class="hljs-string">"#f9c2ff"</span>;
 
-      setSelected(newSelected);
-    },
-    [selected],
-  );
-
-  <span class="hljs-keyword">const</span> renderItem = <span class="hljs-function">(<span class="hljs-params">{ item }</span>) =&gt;</span> (
-    &lt;Item
-      id={item.id}
-      title={item.title}
-      selected={!!selected.get(item.id)}
-      onSelect={onSelect}
-    /&gt;
-  );
+    <span class="hljs-keyword">return</span> (
+      &lt;Item
+        item={item}
+        onPress={() =&gt; setSelectedId(item.id)}
+        style={{ backgroundColor }}
+      /&gt;
+    );
+  };
 
   return (
     &lt;SafeAreaView style={styles.container}&gt;
       &lt;FlatList
         data={DATA}
         renderItem={renderItem}
-        keyExtractor={item =&gt; item.id}
-        extraData={selected}
+        keyExtractor={(item) =&gt; item.id}
+        extraData={selectedId}
       /&gt;
     &lt;/SafeAreaView&gt;
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    marginTop: Constants.statusBarHeight,
+    marginTop: StatusBar.currentHeight || 0,
   },
   item: {
-    backgroundColor: '#f9c2ff',
     padding: 20,
     marginVertical: 8,
     marginHorizontal: 16,
@@ -257,7 +231,7 @@ export default App;
 </code></pre></div><div class="desktop-friendly-snack" style="margin-top: 15px; margin-bottom: 15px"><div
         data-snack-name="flatlist-selectable"
         data-snack-description="Example usage"
-        data-snack-code="import%20React%20from%20'react'%3B%0Aimport%20%7B%0A%20%20SafeAreaView%2C%0A%20%20TouchableOpacity%2C%0A%20%20FlatList%2C%0A%20%20StyleSheet%2C%0A%20%20Text%2C%0A%7D%20from%20'react-native'%3B%0Aimport%20Constants%20from%20'expo-constants'%3B%0A%0Aconst%20DATA%20%3D%20%5B%0A%20%20%7B%0A%20%20%20%20id%3A%20'bd7acbea-c1b1-46c2-aed5-3ad53abb28ba'%2C%0A%20%20%20%20title%3A%20'First%20Item'%2C%0A%20%20%7D%2C%0A%20%20%7B%0A%20%20%20%20id%3A%20'3ac68afc-c605-48d3-a4f8-fbd91aa97f63'%2C%0A%20%20%20%20title%3A%20'Second%20Item'%2C%0A%20%20%7D%2C%0A%20%20%7B%0A%20%20%20%20id%3A%20'58694a0f-3da1-471f-bd96-145571e29d72'%2C%0A%20%20%20%20title%3A%20'Third%20Item'%2C%0A%20%20%7D%2C%0A%5D%3B%0A%0Aconst%20Item%20%3D%20(%7B%20id%2C%20title%2C%20selected%2C%20onSelect%20%7D)%20%3D%3E%20%7B%0A%20%20return%20(%0A%20%20%20%20%3CTouchableOpacity%0A%20%20%20%20%20%20onPress%3D%7B()%20%3D%3E%20onSelect(id)%7D%0A%20%20%20%20%20%20style%3D%7B%5B%0A%20%20%20%20%20%20%20%20styles.item%2C%0A%20%20%20%20%20%20%20%20%7B%20backgroundColor%3A%20selected%20%3F%20'%236e3b6e'%20%3A%20'%23f9c2ff'%20%7D%2C%0A%20%20%20%20%20%20%5D%7D%0A%20%20%20%20%3E%0A%20%20%20%20%20%20%3CText%20style%3D%7Bstyles.title%7D%3E%7Btitle%7D%3C%2FText%3E%0A%20%20%20%20%3C%2FTouchableOpacity%3E%0A%20%20)%3B%0A%7D%0A%0Aconst%20App%20%3D%20()%20%3D%3E%20%7B%0A%20%20const%20%5Bselected%2C%20setSelected%5D%20%3D%20React.useState(new%20Map())%3B%0A%0A%20%20const%20onSelect%20%3D%20React.useCallback(%0A%20%20%20%20id%20%3D%3E%20%7B%0A%20%20%20%20%20%20const%20newSelected%20%3D%20new%20Map(selected)%3B%0A%20%20%20%20%20%20newSelected.set(id%2C%20!selected.get(id))%3B%0A%0A%20%20%20%20%20%20setSelected(newSelected)%3B%0A%20%20%20%20%7D%2C%0A%20%20%20%20%5Bselected%5D%2C%0A%20%20)%3B%0A%0A%20%20const%20renderItem%20%3D%20(%7B%20item%20%7D)%20%3D%3E%20(%0A%20%20%20%20%3CItem%0A%20%20%20%20%20%20id%3D%7Bitem.id%7D%0A%20%20%20%20%20%20title%3D%7Bitem.title%7D%0A%20%20%20%20%20%20selected%3D%7B!!selected.get(item.id)%7D%0A%20%20%20%20%20%20onSelect%3D%7BonSelect%7D%0A%20%20%20%20%2F%3E%0A%20%20)%3B%0A%0A%20%20return%20(%0A%20%20%20%20%3CSafeAreaView%20style%3D%7Bstyles.container%7D%3E%0A%20%20%20%20%20%20%3CFlatList%0A%20%20%20%20%20%20%20%20data%3D%7BDATA%7D%0A%20%20%20%20%20%20%20%20renderItem%3D%7BrenderItem%7D%0A%20%20%20%20%20%20%20%20keyExtractor%3D%7Bitem%20%3D%3E%20item.id%7D%0A%20%20%20%20%20%20%20%20extraData%3D%7Bselected%7D%0A%20%20%20%20%20%20%2F%3E%0A%20%20%20%20%3C%2FSafeAreaView%3E%0A%20%20)%3B%0A%7D%0A%0Aconst%20styles%20%3D%20StyleSheet.create(%7B%0A%20%20container%3A%20%7B%0A%20%20%20%20flex%3A%201%2C%0A%20%20%20%20marginTop%3A%20Constants.statusBarHeight%2C%0A%20%20%7D%2C%0A%20%20item%3A%20%7B%0A%20%20%20%20backgroundColor%3A%20'%23f9c2ff'%2C%0A%20%20%20%20padding%3A%2020%2C%0A%20%20%20%20marginVertical%3A%208%2C%0A%20%20%20%20marginHorizontal%3A%2016%2C%0A%20%20%7D%2C%0A%20%20title%3A%20%7B%0A%20%20%20%20fontSize%3A%2032%2C%0A%20%20%7D%2C%0A%7D)%3B%0A%0Aexport%20default%20App%3B%0A"
+        data-snack-code="import%20React%2C%20%7B%20useState%20%7D%20from%20%22react%22%3B%0Aimport%20%7B%20FlatList%2C%20SafeAreaView%2C%20StatusBar%2C%20StyleSheet%2C%20Text%2C%20TouchableOpacity%20%7D%20from%20%22react-native%22%3B%0A%0Aconst%20DATA%20%3D%20%5B%0A%20%20%7B%0A%20%20%20%20id%3A%20%22bd7acbea-c1b1-46c2-aed5-3ad53abb28ba%22%2C%0A%20%20%20%20title%3A%20%22First%20Item%22%2C%0A%20%20%7D%2C%0A%20%20%7B%0A%20%20%20%20id%3A%20%223ac68afc-c605-48d3-a4f8-fbd91aa97f63%22%2C%0A%20%20%20%20title%3A%20%22Second%20Item%22%2C%0A%20%20%7D%2C%0A%20%20%7B%0A%20%20%20%20id%3A%20%2258694a0f-3da1-471f-bd96-145571e29d72%22%2C%0A%20%20%20%20title%3A%20%22Third%20Item%22%2C%0A%20%20%7D%2C%0A%5D%3B%0A%0Aconst%20Item%20%3D%20(%7B%20item%2C%20onPress%2C%20style%20%7D)%20%3D%3E%20(%0A%20%20%3CTouchableOpacity%20onPress%3D%7BonPress%7D%20style%3D%7B%5Bstyles.item%2C%20style%5D%7D%3E%0A%20%20%20%20%3CText%20style%3D%7Bstyles.title%7D%3E%7Bitem.title%7D%3C%2FText%3E%0A%20%20%3C%2FTouchableOpacity%3E%0A)%3B%0A%0Aconst%20App%20%3D%20()%20%3D%3E%20%7B%0A%20%20const%20%5BselectedId%2C%20setSelectedId%5D%20%3D%20useState(null)%3B%0A%0A%20%20const%20renderItem%20%3D%20(%7B%20item%20%7D)%20%3D%3E%20%7B%0A%20%20%20%20const%20backgroundColor%20%3D%20item.id%20%3D%3D%3D%20selectedId%20%3F%20%22%236e3b6e%22%20%3A%20%22%23f9c2ff%22%3B%0A%0A%20%20%20%20return%20(%0A%20%20%20%20%20%20%3CItem%0A%20%20%20%20%20%20%20%20item%3D%7Bitem%7D%0A%20%20%20%20%20%20%20%20onPress%3D%7B()%20%3D%3E%20setSelectedId(item.id)%7D%0A%20%20%20%20%20%20%20%20style%3D%7B%7B%20backgroundColor%20%7D%7D%0A%20%20%20%20%20%20%2F%3E%0A%20%20%20%20)%3B%0A%20%20%7D%3B%0A%0A%20%20return%20(%0A%20%20%20%20%3CSafeAreaView%20style%3D%7Bstyles.container%7D%3E%0A%20%20%20%20%20%20%3CFlatList%0A%20%20%20%20%20%20%20%20data%3D%7BDATA%7D%0A%20%20%20%20%20%20%20%20renderItem%3D%7BrenderItem%7D%0A%20%20%20%20%20%20%20%20keyExtractor%3D%7B(item)%20%3D%3E%20item.id%7D%0A%20%20%20%20%20%20%20%20extraData%3D%7BselectedId%7D%0A%20%20%20%20%20%20%2F%3E%0A%20%20%20%20%3C%2FSafeAreaView%3E%0A%20%20)%3B%0A%7D%3B%0A%0Aconst%20styles%20%3D%20StyleSheet.create(%7B%0A%20%20container%3A%20%7B%0A%20%20%20%20flex%3A%201%2C%0A%20%20%20%20marginTop%3A%20StatusBar.currentHeight%20%7C%7C%200%2C%0A%20%20%7D%2C%0A%20%20item%3A%20%7B%0A%20%20%20%20padding%3A%2020%2C%0A%20%20%20%20marginVertical%3A%208%2C%0A%20%20%20%20marginHorizontal%3A%2016%2C%0A%20%20%7D%2C%0A%20%20title%3A%20%7B%0A%20%20%20%20fontSize%3A%2032%2C%0A%20%20%7D%2C%0A%7D)%3B%0A%0Aexport%20default%20App%3B%0A"
         data-snack-platform="web"
         data-snack-supported-platforms=ios,android,web
         data-snack-preview="true"
