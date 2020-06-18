@@ -74,6 +74,7 @@ target 'RNTester' do
   pod 'React-perflogger', :path => "../node_modules/react-native/ReactCommon/reactperflogger"
   pod 'ReactCommon/turbomodule/core', :path => "../node_modules/react-native/ReactCommon"
   pod 'ReactCommon/turbomodule/samples', :path => "../node_modules/react-native/ReactCommon"
+  pod 'React-RCTPushNotification', :path => '../node_modules/react-native/Libraries/PushNotificationIOS'
 
   pod 'Yoga', :path => '../node_modules/react-native/ReactCommon/yoga', :modular_headers => true
 

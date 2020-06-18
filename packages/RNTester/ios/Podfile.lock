@@ -181,6 +181,15 @@ PODS:
     - React-jsiexecutor (= 1000.0.0)
     - React-perflogger (= 1000.0.0)
     - Yoga
+  - React-Core/RCTPushNotificationHeaders (1000.0.0):
+    - Folly (= 2020.01.13.00)
+    - glog
+    - React-Core/Default
+    - React-cxxreact (= 1000.0.0)
+    - React-jsi (= 1000.0.0)
+    - React-jsiexecutor (= 1000.0.0)
+    - React-perflogger (= 1000.0.0)
+    - Yoga
   - React-Core/RCTSettingsHeaders (1000.0.0):
     - Folly (= 2020.01.13.00)
     - glog
@@ -300,6 +309,12 @@ PODS:
     - React-Core/RCTNetworkHeaders (= 1000.0.0)
     - React-jsi (= 1000.0.0)
     - ReactCommon/turbomodule/core (= 1000.0.0)
+  - React-RCTPushNotification (1000.0.0):
+    - FBReactNativeSpec (= 1000.0.0)
+    - RCTTypeSafety (= 1000.0.0)
+    - React-Core/RCTPushNotificationHeaders (= 1000.0.0)
+    - React-jsi (= 1000.0.0)
+    - ReactCommon/turbomodule/core (= 1000.0.0)
   - React-RCTSettings (1000.0.0):
     - FBReactNativeSpec (= 1000.0.0)
     - Folly (= 2020.01.13.00)
@@ -396,6 +411,7 @@ DEPENDENCIES:
   - React-RCTImage (from `../node_modules/react-native/Libraries/Image`)
   - React-RCTLinking (from `../node_modules/react-native/Libraries/LinkingIOS`)
   - React-RCTNetwork (from `../node_modules/react-native/Libraries/Network`)
+  - React-RCTPushNotification (from `../node_modules/react-native/Libraries/PushNotificationIOS`)
   - React-RCTSettings (from `../node_modules/react-native/Libraries/Settings`)
   - React-RCTText (from `../node_modules/react-native/Libraries/Text`)
   - React-RCTVibration (from `../node_modules/react-native/Libraries/Vibration`)
@@ -476,6 +492,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/Libraries/LinkingIOS"
   React-RCTNetwork:
     :path: "../node_modules/react-native/Libraries/Network"
+  React-RCTPushNotification:
+    :path: "../node_modules/react-native/Libraries/PushNotificationIOS"
   React-RCTSettings:
     :path: "../node_modules/react-native/Libraries/Settings"
   React-RCTText:
@@ -502,8 +520,8 @@ SPEC CHECKSUMS:
   CocoaAsyncSocket: 694058e7c0ed05a9e217d1b3c7ded962f4180845
   CocoaLibEvent: 2fab71b8bd46dd33ddb959f7928ec5909f838e3f
   DoubleConversion: cde416483dac037923206447da6e1454df403714
-  FBLazyVector: 125e8269a96dd1e395133cadc3a32202c19ae577
-  FBReactNativeSpec: 357172148ed06ce2c6101a20b1005945c0b5fba6
+  FBLazyVector: 14e8c229d56405c3dc26839ce3bc3b1a93bdb0f2
+  FBReactNativeSpec: f913770b35295171191581debc2c0497513b619b
   Flipper: 6c1f484f9a88d30ab3e272800d53688439e50f69
   Flipper-DoubleConversion: 38631e41ef4f9b12861c67d17cb5518d06badc41
   Flipper-Folly: c12092ea368353b58e992843a990a3225d4533c3
@@ -514,39 +532,40 @@ SPEC CHECKSUMS:
   Folly: b73c3869541e86821df3c387eb0af5f65addfab4
   glog: 40a13f7840415b9a77023fbcae0f1e6f43192af3
   OpenSSL-Universal: 8b48cc0d10c1b2923617dfe5c178aa9ed2689355
-  RCTRequired: 06f0ae1848921f3f2526bde0e5d9de6e3093cb09
-  RCTTypeSafety: 4facb041801980182f9bb044075b41e237f4595a
-  React: 9bfca27bbe0f8dfdc225d1e96f7c04f528f62e34
-  React-callinvoker: ac73e6c79b34dc6ee0232af3d5b6fa28a97bcef1
-  React-Core: 32c30ce64d2509759bf643a2d5a023945e2c3225
-  React-CoreModules: 5abb07f8ba8465b1d7f686de47e4734a3a156741
-  React-cxxreact: 65a2cbe5c077b213015267bc9ceca91577910b43
-  React-jsi: a139f9d461e9e1edb641e7e763d2db1ef4e2ef96
-  React-jsiexecutor: 3256a0ecdaaa3251201fb3072ca4ce1000bf3047
-  React-jsinspector: a449059517cb9c2d06faf9c0d6eec1dec7348748
+  RCTRequired: a68abe98acd18608ca08f10430730e0cd86bc3bd
+  RCTTypeSafety: 1f81687a7b76d8e5f80c4a1d7cb56b2e312f9ec5
+  React: e30edf386dd51e9ea61b493060c41b5037c6b0bd
+  React-callinvoker: 47d7dd2cd19734cf0313cd68077f61c0f65c0d8d
+  React-Core: 14368cfe4a12b419193870d49449d152a30e5d12
+  React-CoreModules: 160be1aadab90d160edd5aa8bf255a20183d5f91
+  React-cxxreact: 29ebd289d83dea4351066f298ded4e9f5b250367
+  React-jsi: c2e8a8f22de20401be24f660a9a32e715d68e587
+  React-jsiexecutor: 25a9249cc1c769dc209617a0b88e56879ee7cf90
+  React-jsinspector: d81aa1ccc99d2f516a60b56d7a18bec29ff3f8b4
   react-native-progress-bar-android: d1b109b86c699d36f6a7099dab1a117dc1d66d3c
   react-native-progress-view: c3aea3f38ec17ded9712f071cbdba5c8a9e47daf
   react-native-segmented-control: 85df1f1d040184024d45c8e0592d0b1f4ffd6523
   react-native-slider: 05f11678260cb27c3d00a2dd1558b623be3ec8d2
-  React-perflogger: 1fb116c81cff9f9c755739a1c067f059df1ea59e
-  React-RCTActionSheet: 59e5a4709f531c9b519bcca3f1341c188c946b1b
-  React-RCTAnimation: e7f54f286fa5bb9e3df3dc555f043a089f8944b2
-  React-RCTBlob: 55ef9e65224bdd7c9b557cbb78b0bafeb75d5e4a
-  React-RCTImage: 8c78aff62ce63521f1f6bddb80da06946dec1ef5
-  React-RCTLinking: c4e4b75dba58afd402bca1a980de0583da62ced5
-  React-RCTNetwork: c8656b8c59a076bdc7aee72b22a0846fd1361934
-  React-RCTSettings: aa474617bf6a50f019c227ffaa8ed898845f6705
-  React-RCTText: 3adabe6d32f6e69cc3a4bb1ca536263040e1abe2
-  React-RCTVibration: bb3ee8eb2c850abfe4794382a12e7ea09d8178a4
-  React-runtimeexecutor: dba17c459a2419f733c4a48ccfbc41a2269b2afb
-  ReactCommon: 1d6b4426bbfd77689ffea67de348853c88d20a18
+  React-perflogger: a385b02108f891477c819a9c322af281975c7be3
+  React-RCTActionSheet: 65b123996579692488d716e9239ae5500945f313
+  React-RCTAnimation: 772994c50ab5f699fe82141e219e3df45766283c
+  React-RCTBlob: 3d0cdcffc5d030de913c1ac2ab720179358c2df4
+  React-RCTImage: 3219021cc6c70ef22529d4a97d0ab3a17203a23c
+  React-RCTLinking: 06b7ff9b21aa4c2fa8dcbc732f78f6e46f968e7b
+  React-RCTNetwork: ec56e18b6b2bcb9cab49e122083bab413d90759a
+  React-RCTPushNotification: 8034be5fcec638eed3d3e142c43de719c320cafb
+  React-RCTSettings: f9fdd493c06a0e6b0e7f0b54023c5cb9f33f8d06
+  React-RCTText: 5ede9917cc9bdaf43e6bc3d5bf44b8d847a7dc14
+  React-RCTVibration: c0723cada5fb6528b01b725e73c88cc7352a578d
+  React-runtimeexecutor: 044a620ff18b2d68cd0560fc11e1c7a52e65f55a
+  ReactCommon: e4fcb8c325c4a3ae1aa11074afe16bf0275d5446
   RNCAsyncStorage: db711e29e5e0500d9bd21aa0c2e397efa45302b1
   RNCClipboard: a254f6e568bc713b7ef49646e216661369882030
   RNCPushNotificationIOS: 375feee5b89ad4aeee8a971f63fe4848902380b7
   RNDateTimePicker: aae6a45c4ddb5125f3c7a39683e21c34c25cda45
-  Yoga: b59e9274a84eb0372ffca05c63c843a1453b1234
+  Yoga: 397c5452da12f8359cbe2b60ecf0756c2e478c6e
   YogaKit: f782866e155069a2cca2517aafea43200b01fd5a
 
-PODFILE CHECKSUM: 8255b89fcda5a5d585285809e71094604e867edb
+PODFILE CHECKSUM: b19ae193812a37b48dbb5f50de01ee0b884a5600
 
 COCOAPODS: 1.9.2
