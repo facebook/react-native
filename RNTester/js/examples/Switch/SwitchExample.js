@@ -235,7 +235,7 @@ class CustomSizeSwitchExample extends React.Component<
               false: 'purple',
             }}
             value={this.state.falseSwitchIsOn}
-            androidMinWidth={width}
+            android_minWidth={width}
             style={{width}}
           />
         </View>

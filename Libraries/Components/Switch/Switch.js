@@ -73,7 +73,7 @@ export type Props = $ReadOnly<{|
    * Only Android, custom switch minimum width size.
    * Switch width should be also separately specified in the style prop.
    **/
-  androidMinWidth?: number,
+  android_minWidth?: number,
 
   /**
    * Called when the user tries to change the value of the switch.
@@ -116,7 +116,7 @@ class Switch extends React.Component<Props> {
       thumbColor,
       trackColor,
       value,
-      androidMinWidth,
+      android_minWidth,
       ...props
     } = this.props;
 
@@ -131,7 +131,7 @@ class Switch extends React.Component<Props> {
         thumbTintColor: thumbColor,
         trackColorForFalse: trackColorForFalse,
         trackColorForTrue: trackColorForTrue,
-        androidMinWidth,
+        android_minWidth,
         trackTintColor: value === true ? trackColorForTrue : trackColorForFalse,
       };
 
