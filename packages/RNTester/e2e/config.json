@@ -1,8 +1,6 @@
 {
-    "testEnvironment": "./environment",
-    "testRunner": "jest-circus/runner",
-    "testTimeout": 120000,
-    "testRegex": "\\.e2e\\.js$",
-    "reporters": ["detox/runners/jest/streamlineReporter"],
-    "verbose": true
+  "setupFilesAfterEnv" : ["./test-init.js"],
+  "testEnvironment": "node",
+  "bail": true,
+  "verbose": true
 }

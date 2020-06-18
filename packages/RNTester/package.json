@@ -43,7 +43,9 @@
         "binaryPath": "android/app/build/outputs/apk/debug/app-debug.apk",
         "build": "cd android && ./gradlew assembleDebug assembleAndroidTest -DtestBuildType=debug && cd ..",
         "type": "android.attached",
-        "name":"60d19472"
+        "device": {
+          "avdName": "testAVD"
+        }
       },
       "android.emu.release": {
         "binaryPath": "android/app/build/outputs/apk/release/app-release.apk",
