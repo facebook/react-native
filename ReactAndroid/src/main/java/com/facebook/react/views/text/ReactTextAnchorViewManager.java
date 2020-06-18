@@ -97,7 +97,7 @@ public abstract class ReactTextAnchorViewManager<T extends View, C extends React
     }
   }
 
-  @ReactProp(name = "androidHyphenationFrequency")
+  @ReactProp(name = "android_hyphenationFrequency")
   public void setAndroidHyphenationFrequency(ReactTextView view, @Nullable String frequency) {
     if (frequency == null || frequency.equals("none")) {
       view.setHyphenationFrequency(Layout.HYPHENATION_FREQUENCY_NONE);
@@ -110,7 +110,7 @@ public abstract class ReactTextAnchorViewManager<T extends View, C extends React
     } else if (frequency.equals("normal")) {
       view.setHyphenationFrequency(Layout.HYPHENATION_FREQUENCY_NORMAL);
     } else {
-      throw new JSApplicationIllegalArgumentException("Invalid androidHyphenationFrequency: " + frequency);
+      throw new JSApplicationIllegalArgumentException("Invalid android_hyphenationFrequency: " + frequency);
     }
   }
 

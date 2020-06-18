@@ -146,7 +146,7 @@ class AdjustingFontSize extends React.Component<
         <Text
           adjustsFontSizeToFit={true}
           numberOfLines={4}
-          androidHyphenationFrequency="normal"
+          android_hyphenationFrequency="normal"
           style={{fontSize: 20, marginVertical: 6}}>
           {'Multiline text component shrinking is supported, watch as this reeeeaaaally loooooong teeeeeeext grooooows and then shriiiinks as you add text to me! ioahsdia soady auydoa aoisyd aosdy ' +
             ' ' +
@@ -209,23 +209,23 @@ class TextExample extends React.Component<{...}> {
           </Text>
         </RNTesterBlock>
         <RNTesterBlock title="Hyphenation">
-          <Text androidHyphenationFrequency="normal">
+          <Text android_hyphenationFrequency="normal">
             <Text style={{color: 'red'}}>Normal: </Text>
             WillHaveAnHyphenWhenBreakingForNewLine
           </Text>
-          <Text androidHyphenationFrequency="none">
+          <Text android_hyphenationFrequency="none">
             <Text style={{color: 'red'}}>None: </Text>
             WillNotHaveAnHyphenWhenBreakingForNewLine
           </Text>
-          <Text androidHyphenationFrequency="full">
+          <Text android_hyphenationFrequency="full">
             <Text style={{color: 'red'}}>Full: </Text>
             WillHaveAnHyphenWhenBreakingForNewLine
           </Text>
-          <Text androidHyphenationFrequency="high">
+          <Text android_hyphenationFrequency="high">
             <Text style={{color: 'red'}}>High: </Text>
             WillHaveAnHyphenWhenBreakingForNewLine
           </Text>
-          <Text androidHyphenationFrequency="balanced">
+          <Text android_hyphenationFrequency="balanced">
             <Text style={{color: 'red'}}>Balanced: </Text>
             WillHaveAnHyphenWhenBreakingForNewLine
           </Text>
