@@ -13,7 +13,7 @@
 const React = require('react');
 
 const {View, Text, StyleSheet} = require('react-native');
-const {Clipboard} = require('@react-native-community/clipboard');
+const Clipboard = require('@react-native-community/clipboard');
 
 type Props = $ReadOnly<{||}>;
 type State = {|
