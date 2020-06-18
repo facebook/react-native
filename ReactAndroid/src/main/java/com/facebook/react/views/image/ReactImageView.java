@@ -275,11 +275,12 @@ public class ReactImageView extends GenericDraweeView {
   }
 
   public void setBlurRadius(float blurRadius) {
-    int pixelBlurRadius = (int) PixelUtil.toPixelFromDIP(blurRadius);
+    // Divide `blurRadius` by 2 to more closely match other platforms.
+    int pixelBlurRadius = (int) PixelUtil.toPixelFromDIP(blurRadius) / 2;
     if (pixelBlurRadius == 0) {
       mIterativeBoxBlurPostProcessor = null;
     } else {
-      mIterativeBoxBlurPostProcessor = new IterativeBoxBlurPostProcessor(pixelBlurRadius);
+      mIterativeBoxBlurPostProcessor = new IterativeBoxBlurPostProcessor(2, pixelBlurRadius);
     }
     mIsDirty = true;
   }
