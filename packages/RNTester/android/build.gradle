@@ -3,7 +3,7 @@
 buildscript {
     ext {
         buildToolsVersion = "28.0.3"
-        minSdkVersion = 16
+        minSdkVersion = 18
         compileSdkVersion = 28
         targetSdkVersion = 28
         kotlinVersion = "1.3.70"
@@ -26,7 +26,10 @@ allprojects {
         maven {
             // All of React Native (JS, Obj-C sources, Android binaries) is installed from npm
             url("$rootDir/../node_modules/react-native/android")
-            url("$rootDir/../node_modules/detox/Detox-android")
+        }
+        maven {
+            // All of Detox' artifacts are provided via the npm module
+            url "$rootDir/../node_modules/detox/Detox-android"
         }
         maven {
             // Android JSC is installed from npm
