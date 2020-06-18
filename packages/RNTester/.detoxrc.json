@@ -1,0 +1,21 @@
+{
+  "testRunner": "jest",
+  "runnerConfig": "e2e/config.json",
+  "configurations": {
+    "ios": {
+      "type": "ios.simulator",
+      "binaryPath": "SPECIFY_PATH_TO_YOUR_APP_BINARY",
+      "device": {
+        "type": "iPhone 11"
+      }
+    },
+    "android.emu.debug": {
+      "type": "android.emulator",
+      "binaryPath": "android/app/build/outputs/apk/debug/app-debug.apk",
+      "build": "cd android && ./gradlew assembleDebug assembleAndroidTest -DtestBuildType=debug && cd ..",
+      "device": {
+        "avdName": "testAVD"
+      }
+    }
+  }
+}
