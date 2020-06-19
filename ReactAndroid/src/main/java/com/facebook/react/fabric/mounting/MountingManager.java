@@ -224,7 +224,7 @@ public class MountingManager {
   }
 
   @UiThread
-  public void removeViewAt(int parentTag, int index) {
+  public void removeViewAt(int tag, int parentTag, int index) {
     UiThreadUtil.assertOnUiThread();
     ViewState viewState = getNullableViewState(parentTag);
 
@@ -243,6 +243,22 @@ public class MountingManager {
     }
 
     ViewGroupManager<ViewGroup> viewGroupManager = getViewGroupManager(viewState);
+
+    // Verify that the view we're about to remove has the same tag we expect
+    if (tag != -1) {
+      View view = viewGroupManager.getChildAt(parentView, index);
+      if (view != null && view.getId() != tag) {
+        throw new IllegalStateException(
+            "Tried to delete view ["
+                + tag
+                + "] of parent ["
+                + parentTag
+                + "] at index "
+                + index
+                + ", but got view tag "
+                + view.getId());
+      }
+    }
 
     try {
       viewGroupManager.removeViewAt(parentView, index);
@@ -397,6 +413,13 @@ public class MountingManager {
     }
 
     View view = viewState.mView;
+    ViewParent parentView = view.getParent();
+
+    if (parentView != null) {
+      throw new IllegalStateException(
+          "Cannot delete view that is still attached to parent: [" + reactTag + "]");
+    }
+
     if (view != null) {
       dropView(view);
     } else {
