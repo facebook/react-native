@@ -61,7 +61,6 @@ import com.facebook.react.uimanager.Spacing;
 import com.facebook.react.uimanager.StateWrapper;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.UIManagerHelper;
-import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.ViewDefaults;
 import com.facebook.react.uimanager.ViewProps;
 import com.facebook.react.uimanager.annotations.ReactProp;
@@ -1100,8 +1099,7 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
     public ReactContentSizeWatcher(ReactEditText editText) {
       mEditText = editText;
       ReactContext reactContext = getReactContext(editText);
-      UIManagerModule uiManager = reactContext.getNativeModule(UIManagerModule.class);
-      mEventDispatcher = uiManager != null ? uiManager.getEventDispatcher() : null;
+      mEventDispatcher = getEventDispatcher(reactContext, editText);
     }
 
     @Override
