@@ -802,12 +802,17 @@ LayoutAnimationKeyFrameManager::pullTransaction(
       }
 
       {
-        std::stringstream ss(getDebugDescription(mutationsToAnimate, {}));
-        std::string to;
-        while (std::getline(ss, to, '\n')) {
-          LOG(ERROR)
-              << "LayoutAnimationKeyFrameManager.cpp: got FINAL list: Line: "
-              << to;
+        for (const auto &keyframe : keyFramesToAnimate) {
+          if (keyframe.finalMutationForKeyFrame) {
+            std::stringstream ss(
+                getDebugDescription(*keyframe.finalMutationForKeyFrame, {}));
+            std::string to;
+            while (std::getline(ss, to, '\n')) {
+              LOG(ERROR)
+                  << "LayoutAnimationKeyFrameManager.cpp: got FINAL list: Line: "
+                  << to;
+            }
+          }
         }
       }
 #endif
