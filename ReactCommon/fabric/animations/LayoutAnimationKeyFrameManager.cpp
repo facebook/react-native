@@ -716,14 +716,23 @@ LayoutAnimationKeyFrameManager::pullTransaction(
             // instruction will be delayed and therefore may execute outside of
             // otherwise-expected order, other views may be inserted before the
             // Remove is executed, requiring index adjustment.
+            // To be clear: when executed synchronously, REMOVE operations
+            // always come before INSERT operations (at the same level of the
+            // tree hierarchy).
             {
               int adjustedIndex = mutation.index;
-              for (const auto &otherMutation : mutations) {
+              for (auto &otherMutation : mutations) {
                 if (otherMutation.type == ShadowViewMutation::Type::Insert &&
                     otherMutation.parentShadowView.tag == parentTag) {
                   if (otherMutation.index <= adjustedIndex &&
                       !mutatedViewIsVirtual(otherMutation)) {
                     adjustedIndex++;
+                  } else {
+                    // If we are delaying this remove instruction, conversely,
+                    // we must adjust upward the insertion index of any INSERT
+                    // instructions if the View is insert *after* this view in
+                    // the hierarchy.
+                    otherMutation.index++;
                   }
                 }
               }
