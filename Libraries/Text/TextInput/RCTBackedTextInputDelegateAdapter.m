@@ -14,13 +14,6 @@
 
 static void *TextFieldSelectionObservingContext = &TextFieldSelectionObservingContext;
 
-#if TARGET_OS_OSX // [TODO(macOS ISS#2323203)
-BOOL RCTEventIsCommandEnterEvent(NSEvent *event) {
-  NSEventModifierFlags modifierFlags = event.modifierFlags & NSEventModifierFlagDeviceIndependentFlagsMask;
-  return (modifierFlags & NSEventModifierFlagCommand) == NSEventModifierFlagCommand && event.keyCode == 0x24;
-}
-#endif // ]TODO(macOS ISS#2323203)
-
 @interface RCTBackedTextFieldDelegateAdapter ()
 #if !TARGET_OS_OSX // [TODO(macOS ISS#2323203)
 <UITextFieldDelegate>
@@ -360,12 +353,12 @@ BOOL RCTEventIsCommandEnterEvent(NSEvent *event) {
 {
   BOOL commandHandled = NO;
   id<RCTBackedTextInputDelegate> textInputDelegate = [_backedTextInputView textInputDelegate];
-  // cmd + enter/return
-  if (commandSelector == @selector(noop:) && RCTEventIsCommandEnterEvent(NSApp.currentEvent)) {
+  // enter/return
+  if ((commandSelector == @selector(insertNewline:) || commandSelector == @selector(insertNewlineIgnoringFieldEditor:))) {
     if (textInputDelegate.textInputShouldReturn) {
       [_backedTextInputView.window makeFirstResponder:nil];
+      commandHandled = YES;
     }
-    commandHandled = YES;
     //backspace
   } else if (commandSelector == @selector(deleteBackward:)) {
     commandHandled = textInputDelegate != nil && ![textInputDelegate textInputShouldHandleDeleteBackward:_backedTextInputView];
