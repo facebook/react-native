@@ -20,11 +20,17 @@ import NativeAccessibilityManager from './NativeAccessibilityManager';
 const warning = require('fbjs/lib/warning');
 
 const CHANGE_EVENT_NAME = {
+  invertColorsChanged: 'invertColorsChanged',
+  reduceMotionChanged: 'reduceMotionChanged',
+  reduceTransparencyChanged: 'reduceTransparencyChanged',
   screenReaderChanged: 'screenReaderChanged',
 };
 
 type ChangeEventName = $Keys<{
   change: string,
+  invertColorsChanged: string,
+  reduceMotionChanged: string,
+  reduceTransparencyChanged: string,
   screenReaderChanged: string,
 }>;
 
@@ -45,24 +51,60 @@ const AccessibilityInfo = {
   },
 
   /**
-   * iOS only
+   * Query whether inverted colors are currently enabled.
+   *
+   * Returns a promise which resolves to a boolean.
+   * The result is `true` when invert color is enabled and `false` otherwise.
+   *
+   * See http://facebook.github.io/react-native/docs/accessibilityinfo.html#isInvertColorsEnabled
    */
   isInvertColorsEnabled: function(): Promise<boolean> {
-    return Promise.resolve(false);
+    return new Promise((resolve, reject) => {
+      if (NativeAccessibilityManager) {
+        NativeAccessibilityManager.getCurrentInvertColorsState(resolve, reject);
+      } else {
+        reject(reject);
+      }
+    });
   },
 
   /**
-   * Android and iOS only
+   * Query whether reduced motion is currently enabled.
+   *
+   * Returns a promise which resolves to a boolean.
+   * The result is `true` when a reduce motion is enabled and `false` otherwise.
+   *
+   * See http://facebook.github.io/react-native/docs/accessibilityinfo.html#isReduceMotionEnabled
    */
   isReduceMotionEnabled: function(): Promise<boolean> {
-    return Promise.resolve(false);
+    return new Promise((resolve, reject) => {
+      if (NativeAccessibilityManager) {
+        NativeAccessibilityManager.getCurrentReduceMotionState(resolve, reject);
+      } else {
+        reject(reject);
+      }
+    });
   },
 
   /**
-   * iOS only
+   * Query whether reduced transparency is currently enabled.
+   *
+   * Returns a promise which resolves to a boolean.
+   * The result is `true` when a reduce transparency is enabled and `false` otherwise.
+   *
+   * See http://facebook.github.io/react-native/docs/accessibilityinfo.html#isReduceTransparencyEnabled
    */
   isReduceTransparencyEnabled: function(): Promise<boolean> {
-    return Promise.resolve(false);
+    return new Promise((resolve, reject) => {
+      if (NativeAccessibilityManager) {
+        NativeAccessibilityManager.getCurrentReduceTransparencyState(
+          resolve,
+          reject,
+        );
+      } else {
+        reject(reject);
+      }
+    });
   },
 
   /**

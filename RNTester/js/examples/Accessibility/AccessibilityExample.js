@@ -553,7 +553,101 @@ class ScreenReaderStatusExample extends React.Component<{}> {
     );
   }
 }
+// [TODO(OSS Candidate ISS#2710739)
+class DisplayOptionsStatusExample extends React.Component<{}> {
+  state = {};
 
+  componentDidMount() {
+    AccessibilityInfo.addEventListener(
+      'invertColorsChanged',
+      this._handleInvertColorsToggled,
+    );
+    AccessibilityInfo.isInvertColorsEnabled().done(isEnabled => {
+      this.setState({
+        invertColorsEnabled: isEnabled,
+      });
+    });
+
+    AccessibilityInfo.addEventListener(
+      'reduceMotionChanged',
+      this._handleReduceMotionToggled,
+    );
+    AccessibilityInfo.isReduceMotionEnabled().done(isEnabled => {
+      this.setState({
+        reduceMotionEnabled: isEnabled,
+      });
+    });
+
+    AccessibilityInfo.addEventListener(
+      'reduceTransparencyChanged',
+      this._handleReduceTransparencyToggled,
+    );
+    AccessibilityInfo.isReduceTransparencyEnabled().done(isEnabled => {
+      this.setState({
+        reduceTransparencyEnabled: isEnabled,
+      });
+    });
+  }
+
+  componentWillUnmount() {
+    AccessibilityInfo.removeEventListener(
+      'invertColorsChanged',
+      this._handleInvertColorsToggled,
+    );
+    AccessibilityInfo.removeEventListener(
+      'reduceMotionChanged',
+      this._handleReduceMotionToggled,
+    );
+    AccessibilityInfo.removeEventListener(
+      'reduceTransparencyChanged',
+      this._handleReduceTransparencyToggled,
+    );
+  }
+
+  _handleInvertColorsToggled = isEnabled => {
+    this.setState({
+      invertColorsEnabled: isEnabled,
+    });
+  };
+
+  _handleReduceMotionToggled = isEnabled => {
+    this.setState({
+      reduceMotionEnabled: isEnabled,
+    });
+  };
+
+  _handleReduceTransparencyToggled = isEnabled => {
+    this.setState({
+      reduceTransparencyEnabled: isEnabled,
+    });
+  };
+
+  render() {
+    return (
+      <View>
+        <View>
+          <Text>
+            Invert colors is{' '}
+            {this.state.invertColorsEnabled ? 'enabled' : 'disabled'}.
+          </Text>
+        </View>
+        <View>
+          <Text>
+            Reduce motion is{' '}
+            {this.state.reduceMotionEnabled ? 'enabled' : 'disabled'}.
+          </Text>
+        </View>
+        <View>
+          <Text>
+            Reduce transparency is{' '}
+            {this.state.reduceTransparencyEnabled ? 'enabled' : 'disabled'}.
+          </Text>
+        </View>
+      </View>
+    );
+  }
+}
+// ]TODO(OSS Candidate ISS#2710739)
 class AnnounceForAccessibility extends React.Component<{}> {
   _handleOnPress = () =>
     AccessibilityInfo.announceForAccessibility('Announcement Test');
@@ -617,6 +711,14 @@ exports.examples = [
       return <ScreenReaderStatusExample />;
     },
   },
+  // [TODO(OSS Candidate ISS#2710739)
+  {
+    title: 'Check if the display options are enabled',
+    render(): React.Element<typeof DisplayOptionsStatusExample> {
+      return <DisplayOptionsStatusExample />;
+    },
+  },
+  // ]TODO(OSS Candidate ISS#2710739)
   {
     title: 'Check if the screen reader announces',
     render(): React.Element<typeof AnnounceForAccessibility> {
