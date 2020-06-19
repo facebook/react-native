@@ -661,6 +661,7 @@
 				CLANG_ENABLE_MODULES = YES;
 				CURRENT_PROJECT_VERSION = 1;
 				ENABLE_BITCODE = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"$(inherited)",
 					"FB_SONARKIT_ENABLED=1",
@@ -685,7 +686,6 @@
 					"\"${PODS_ROOT}/Headers/Public/RCTTypeSafety\"",
 					"\"${PODS_ROOT}/Headers/Public/RNCAsyncStorage\"",
 					"\"${PODS_ROOT}/Headers/Public/RNCClipboard\"",
-					"\"${PODS_ROOT}/Headers/Public/RNCPushNotificationIOS\"",
 					"\"${PODS_ROOT}/Headers/Public/RNDateTimePicker\"",
 					"\"${PODS_ROOT}/Headers/Public/React-Core\"",
 					"\"${PODS_ROOT}/Headers/Public/React-RCTText\"",
@@ -723,7 +723,6 @@
 					"\"${PODS_CONFIGURATION_BUILD_DIR}/RCTTypeSafety\"",
 					"\"${PODS_CONFIGURATION_BUILD_DIR}/RNCAsyncStorage\"",
 					"\"${PODS_CONFIGURATION_BUILD_DIR}/RNCClipboard\"",
-					"\"${PODS_CONFIGURATION_BUILD_DIR}/RNCPushNotificationIOS\"",
 					"\"${PODS_CONFIGURATION_BUILD_DIR}/RNDateTimePicker\"",
 					"\"${PODS_CONFIGURATION_BUILD_DIR}/React-Core\"",
 					"\"${PODS_CONFIGURATION_BUILD_DIR}/React-CoreModules\"",
@@ -760,10 +759,10 @@
 				);
 				OTHER_LDFLAGS = (
 					"$(inherited)",
-					"-ObjC",
 					"-l\"stdc++\"",
 					"-framework",
 					"\"JavaScriptCore\"",
+					"-ObjC",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "org.reactjs.native.example.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = RNTester;
@@ -781,6 +780,7 @@
 				CLANG_CXX_LANGUAGE_STANDARD = "c++14";
 				CLANG_ENABLE_MODULES = YES;
 				CURRENT_PROJECT_VERSION = 1;
+				GCC_NO_COMMON_BLOCKS = YES;
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"${PODS_ROOT}/Headers/Public\"",
@@ -801,7 +801,6 @@
 					"\"${PODS_ROOT}/Headers/Public/RCTTypeSafety\"",
 					"\"${PODS_ROOT}/Headers/Public/RNCAsyncStorage\"",
 					"\"${PODS_ROOT}/Headers/Public/RNCClipboard\"",
-					"\"${PODS_ROOT}/Headers/Public/RNCPushNotificationIOS\"",
 					"\"${PODS_ROOT}/Headers/Public/RNDateTimePicker\"",
 					"\"${PODS_ROOT}/Headers/Public/React-Core\"",
 					"\"${PODS_ROOT}/Headers/Public/React-RCTText\"",
@@ -832,7 +831,6 @@
 					"\"${PODS_CONFIGURATION_BUILD_DIR}/RCTTypeSafety\"",
 					"\"${PODS_CONFIGURATION_BUILD_DIR}/RNCAsyncStorage\"",
 					"\"${PODS_CONFIGURATION_BUILD_DIR}/RNCClipboard\"",
-					"\"${PODS_CONFIGURATION_BUILD_DIR}/RNCPushNotificationIOS\"",
 					"\"${PODS_CONFIGURATION_BUILD_DIR}/RNDateTimePicker\"",
 					"\"${PODS_CONFIGURATION_BUILD_DIR}/React-Core\"",
 					"\"${PODS_CONFIGURATION_BUILD_DIR}/React-CoreModules\"",
@@ -869,10 +867,10 @@
 				);
 				OTHER_LDFLAGS = (
 					"$(inherited)",
-					"-ObjC",
 					"-l\"stdc++\"",
 					"-framework",
 					"\"JavaScriptCore\"",
+					"-ObjC",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "org.reactjs.native.example.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = RNTester;

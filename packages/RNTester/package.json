@@ -15,7 +15,6 @@
     "@react-native-community/datetimepicker": "^2.4.2",
     "@react-native-community/progress-bar-android": "^1.0.3",
     "@react-native-community/progress-view": "^1.0.3",
-    "@react-native-community/push-notification-ios": "^1.2.2",
     "@react-native-community/segmented-control": "^2.0.0",
     "@react-native-community/slider": "^3.0.0",
     "react": "16.11.0",
