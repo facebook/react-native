@@ -175,6 +175,9 @@ BOOL RCTEventIsCommandEnterEvent(NSEvent *event) {
   // enter/return
   if (commandSelector == @selector(insertNewline:) || commandSelector == @selector(insertNewlineIgnoringFieldEditor:)) {
     [self textFieldDidEndEditingOnExit];
+    if ([[_backedTextInputView textInputDelegate] textInputShouldReturn]) {
+      [[_backedTextInputView window] makeFirstResponder:nil];
+    }
     commandHandled = YES;
     //backspace
   } else if (commandSelector == @selector(deleteBackward:)) {
