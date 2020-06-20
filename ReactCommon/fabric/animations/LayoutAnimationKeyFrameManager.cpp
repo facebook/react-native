@@ -371,11 +371,14 @@ void LayoutAnimationKeyFrameManager::adjustDelayedMutationIndicesForMutation(
       }
 
       // Do we need to adjust the index of this operation?
-      if (isRemoveMutation && mutation.index <= finalAnimationMutation.index) {
-        finalAnimationMutation.index--;
-      } else if (
-          isInsertMutation && mutation.index <= finalAnimationMutation.index) {
-        finalAnimationMutation.index++;
+      if (isRemoveMutation) {
+        if (mutation.index <= finalAnimationMutation.index) {
+          finalAnimationMutation.index--;
+        }
+      } else if (isInsertMutation) {
+        if (mutation.index <= finalAnimationMutation.index) {
+          finalAnimationMutation.index++;
+        }
       }
     }
   }
@@ -595,6 +598,38 @@ LayoutAnimationKeyFrameManager::pullTransaction(
         if (isRemoveReinserted || !haveConfiguration || isReparented ||
             mutation.type == ShadowViewMutation::Type::Create ||
             mutation.type == ShadowViewMutation::Type::Insert) {
+          // Indices for immediate INSERT mutations must be adjusted to insert
+          // at higher indices if previous animations have deferred removals
+          // before the insertion indect
+          // TODO: refactor to reduce code duplication
+          if (mutation.type == ShadowViewMutation::Type::Insert) {
+            int adjustedIndex = mutation.index;
+            for (const auto &inflightAnimation : inflightAnimations_) {
+              if (inflightAnimation.surfaceId != surfaceId) {
+                continue;
+              }
+              for (auto it = inflightAnimation.keyFrames.begin();
+                   it != inflightAnimation.keyFrames.end();
+                   it++) {
+                const auto &animatedKeyFrame = *it;
+                if (!animatedKeyFrame.finalMutationForKeyFrame.has_value() ||
+                    animatedKeyFrame.parentView.tag !=
+                        mutation.parentShadowView.tag ||
+                    animatedKeyFrame.type != AnimationConfigurationType::Noop) {
+                  continue;
+                }
+                const auto &delayedFinalMutation =
+                    *animatedKeyFrame.finalMutationForKeyFrame;
+                if (delayedFinalMutation.type ==
+                        ShadowViewMutation::Type::Remove &&
+                    delayedFinalMutation.index <= adjustedIndex) {
+                  adjustedIndex++;
+                }
+              }
+            }
+            mutation.index = adjustedIndex;
+          }
+
           immediateMutations.push_back(mutation);
 
           // Adjust indices for any non-directly-conflicting animations that
@@ -737,6 +772,34 @@ LayoutAnimationKeyFrameManager::pullTransaction(
                 }
               }
 
+              // We also need to account for delayed mutations that have already
+              // been queued, such that their ShadowNodes are not accounted for
+              // in mutation instructions, but they are still in the platform's
+              // View hierarchy.
+              for (const auto &inflightAnimation : inflightAnimations_) {
+                if (inflightAnimation.surfaceId != surfaceId) {
+                  continue;
+                }
+                for (auto it = inflightAnimation.keyFrames.begin();
+                     it != inflightAnimation.keyFrames.end();
+                     it++) {
+                  const auto &animatedKeyFrame = *it;
+                  if (!animatedKeyFrame.finalMutationForKeyFrame.has_value() ||
+                      animatedKeyFrame.parentView.tag != parentTag ||
+                      animatedKeyFrame.type !=
+                          AnimationConfigurationType::Noop) {
+                    continue;
+                  }
+                  const auto &delayedFinalMutation =
+                      *animatedKeyFrame.finalMutationForKeyFrame;
+                  if (delayedFinalMutation.type ==
+                          ShadowViewMutation::Type::Remove &&
+                      delayedFinalMutation.index <= adjustedIndex) {
+                    adjustedIndex++;
+                  }
+                }
+              }
+
               mutation = ShadowViewMutation::RemoveMutation(
                   mutation.parentShadowView,
                   mutation.oldChildShadowView,
@@ -875,8 +938,7 @@ LayoutAnimationKeyFrameManager::pullTransaction(
   // another that has not yet been executed because it is a part of an ongoing
   // animation, its index may need to be adjusted.
   for (auto const &animatedMutation : mutationsForAnimation) {
-    if (animatedMutation.type == ShadowViewMutation::Type::Insert ||
-        animatedMutation.type == ShadowViewMutation::Type::Remove) {
+    if (animatedMutation.type == ShadowViewMutation::Type::Remove) {
       adjustDelayedMutationIndicesForMutation(surfaceId, animatedMutation);
     }
   }
