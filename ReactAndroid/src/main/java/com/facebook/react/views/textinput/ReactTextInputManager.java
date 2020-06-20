@@ -7,10 +7,6 @@
 
 package com.facebook.react.views.textinput;
 
-import static com.facebook.react.uimanager.UIManagerHelper.PADDING_BOTTOM_INDEX;
-import static com.facebook.react.uimanager.UIManagerHelper.PADDING_END_INDEX;
-import static com.facebook.react.uimanager.UIManagerHelper.PADDING_START_INDEX;
-import static com.facebook.react.uimanager.UIManagerHelper.PADDING_TOP_INDEX;
 import static com.facebook.react.uimanager.UIManagerHelper.getReactContext;
 
 import android.content.Context;
@@ -1240,38 +1236,6 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
   public Object updateState(
       ReactEditText view, ReactStylesDiffMap props, @Nullable StateWrapper stateWrapper) {
     ReadableNativeMap state = stateWrapper.getState();
-
-    // Do we need to communicate theme back to C++?
-    // If so, this should only need to be done once per surface.
-    if (!state.getBoolean("hasThemeData")) {
-      WritableNativeMap update = new WritableNativeMap();
-
-      ReactContext reactContext = UIManagerHelper.getReactContext(view);
-      if (reactContext instanceof ThemedReactContext) {
-        ThemedReactContext themedReactContext = (ThemedReactContext) reactContext;
-
-        // Even though we check `data["textChanged"].empty()` before using the value in C++,
-        // state updates crash without this value on key exception. It's unintuitive why
-        // folly::dynamic is crashing there and if there's any way to fix on the native side,
-        // so leave this here until we can figure out a better way of key-existence-checking in C++.
-        update.putNull("textChanged");
-
-        // TODO T68526882 review is themePadding can be removed from TextInput
-        float[] padding = UIManagerHelper.getDefaultTextInputPadding(themedReactContext);
-        update.putDouble("themePaddingStart", padding[PADDING_START_INDEX]);
-        update.putDouble("themePaddingEnd", padding[PADDING_END_INDEX]);
-        update.putDouble("themePaddingTop", padding[PADDING_TOP_INDEX]);
-        update.putDouble("themePaddingBottom", padding[PADDING_BOTTOM_INDEX]);
-
-        stateWrapper.updateState(update);
-      } else {
-        ReactSoftException.logSoftException(
-            TAG,
-            new IllegalStateException(
-                "ReactContext is not a ThemedReactContent: "
-                    + (reactContext != null ? reactContext.getClass().getName() : "null")));
-      }
-    }
 
     ReadableMap attributedString = state.getMap("attributedString");
     ReadableMap paragraphAttributes = state.getMap("paragraphAttributes");
