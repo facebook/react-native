@@ -1225,7 +1225,7 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
   }
 
   /**
-   * May be overriden by subclasses that would like to provide their own instance of the internal
+   * May be overridden by subclasses that would like to provide their own instance of the internal
    * {@code EditText} this class uses to determine the expected size of the view.
    */
   protected EditText createInternalEditText(ThemedReactContext themedReactContext) {
