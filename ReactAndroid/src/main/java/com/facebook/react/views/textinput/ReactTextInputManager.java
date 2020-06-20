@@ -1086,7 +1086,7 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
         });
   }
 
-  private class ReactContentSizeWatcher implements ContentSizeWatcher {
+  private static class ReactContentSizeWatcher implements ContentSizeWatcher {
     private ReactEditText mEditText;
     private @Nullable EventDispatcher mEventDispatcher;
     private int mPreviousContentWidth = 0;
@@ -1167,7 +1167,7 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
     }
   }
 
-  private class ReactScrollWatcher implements ScrollWatcher {
+  private static class ReactScrollWatcher implements ScrollWatcher {
 
     private ReactEditText mReactEditText;
     private EventDispatcher mEventDispatcher;
@@ -1235,10 +1235,17 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
   @Override
   public Object updateState(
       ReactEditText view, ReactStylesDiffMap props, @Nullable StateWrapper stateWrapper) {
+    if (stateWrapper == null) {
+      throw new IllegalArgumentException("Unable to update a NULL state.");
+    }
     ReadableNativeMap state = stateWrapper.getState();
 
     ReadableMap attributedString = state.getMap("attributedString");
     ReadableMap paragraphAttributes = state.getMap("paragraphAttributes");
+
+    if (attributedString == null || paragraphAttributes == null) {
+      throw new IllegalArgumentException("Invalid TextInput State was received as a parameters");
+    }
 
     Spannable spanned =
         TextLayoutManager.getOrCreateSpannableForText(
@@ -1248,11 +1255,9 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
         TextAttributeProps.getTextBreakStrategy(paragraphAttributes.getString("textBreakStrategy"));
 
     view.mStateWrapper = stateWrapper;
-
     return ReactTextUpdate.buildReactTextUpdateFromState(
         spanned,
         state.getInt("mostRecentEventCount"),
-        false, // TODO add this into local Data
         TextAttributeProps.getTextAlignment(props, TextLayoutManager.isRTL(attributedString)),
         textBreakStrategy,
         TextAttributeProps.getJustificationMode(props),
