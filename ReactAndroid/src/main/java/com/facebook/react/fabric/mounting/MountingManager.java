@@ -455,14 +455,17 @@ public class MountingManager {
     }
 
     View view = viewState.mView;
-    ViewParent parentView = view.getParent();
-
-    if (parentView != null) {
-      throw new IllegalStateException(
-          "Cannot delete view that is still attached to parent: [" + reactTag + "]");
-    }
 
     if (view != null) {
+      ViewParent parentView = view.getParent();
+
+      if (parentView != null) {
+        ReactSoftException.logSoftException(
+            TAG,
+            new IllegalStateException(
+                "Warning: Deleting view that is still attached to parent: [" + reactTag + "]"));
+      }
+
       dropView(view);
     } else {
       mTagToViewState.remove(reactTag);
