@@ -12,5 +12,13 @@ namespace react {
 
 extern const char SafeAreaViewComponentName[] = "SafeAreaView";
 
+SafeAreaViewShadowNode::SafeAreaViewShadowNode(
+    ShadowNode const &sourceShadowNode,
+    ShadowNodeFragment const &fragment)
+    : ConcreteViewShadowNode(sourceShadowNode, fragment),
+      alreadyAppliedPadding(
+          static_cast<SafeAreaViewShadowNode const &>(sourceShadowNode)
+              .alreadyAppliedPadding) {}
+
 } // namespace react
 } // namespace facebook

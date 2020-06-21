@@ -158,6 +158,7 @@ public class ReactContext extends ContextWrapper {
   }
 
   /** @return the instance of the specified module interface associated with this ReactContext. */
+  @Nullable
   public <T extends NativeModule> T getNativeModule(Class<T> nativeModuleInterface) {
     if (mCatalystInstance == null) {
       raiseCatalystInstanceMissingException();

@@ -35,7 +35,9 @@ class AndroidSwitchShadowNode final : public ConcreteViewShadowNode<
 
 #pragma mark - LayoutableShadowNode
 
-  Size measure(LayoutConstraints layoutConstraints) const override;
+  Size measureContent(
+      LayoutContext const &layoutContext,
+      LayoutConstraints const &layoutConstraints) const override;
 
  private:
   std::shared_ptr<AndroidSwitchMeasurementsManager> measurementsManager_;

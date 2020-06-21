@@ -698,7 +698,7 @@ namespace facebook {
 
 namespace JS {
   namespace NativeCameraRollManager {
-    struct PhotoIdentifierNodeImage {
+    struct PhotoIdentifierImage {
       NSString *uri() const;
       double playableDuration() const;
       double width() const;
@@ -706,15 +706,15 @@ namespace JS {
       folly::Optional<bool> isStored() const;
       NSString *filename() const;
 
-      PhotoIdentifierNodeImage(NSDictionary *const v) : _v(v) {}
+      PhotoIdentifierImage(NSDictionary *const v) : _v(v) {}
     private:
       NSDictionary *_v;
     };
   }
 }
 
-@interface RCTCxxConvert (NativeCameraRollManager_PhotoIdentifierNodeImage)
-+ (RCTManagedPointer *)JS_NativeCameraRollManager_PhotoIdentifierNodeImage:(id)json;
+@interface RCTCxxConvert (NativeCameraRollManager_PhotoIdentifierImage)
++ (RCTManagedPointer *)JS_NativeCameraRollManager_PhotoIdentifierImage:(id)json;
 @end
 
 namespace JS {
@@ -740,7 +740,7 @@ namespace JS {
 namespace JS {
   namespace NativeCameraRollManager {
     struct PhotoIdentifierNode {
-      JS::NativeCameraRollManager::PhotoIdentifierNodeImage image() const;
+      JS::NativeCameraRollManager::PhotoIdentifierImage image() const;
       NSString *type() const;
       NSString *group_name() const;
       double timestamp() const;
@@ -914,6 +914,26 @@ namespace facebook {
     class JSI_EXPORT NativeDevSettingsSpecJSI : public ObjCTurboModule {
     public:
       NativeDevSettingsSpecJSI(const ObjCTurboModule::InitParams &params);
+
+    };
+  } // namespace react
+} // namespace facebook
+@protocol NativeDevSplitBundleLoaderSpec <RCTBridgeModule, RCTTurboModule>
+
+- (void)loadBundle:(NSString *)bundlePath
+           resolve:(RCTPromiseResolveBlock)resolve
+            reject:(RCTPromiseRejectBlock)reject;
+
+@end
+namespace facebook {
+  namespace react {
+    /**
+     * ObjC++ class for module 'DevSplitBundleLoader'
+     */
+
+    class JSI_EXPORT NativeDevSplitBundleLoaderSpecJSI : public ObjCTurboModule {
+    public:
+      NativeDevSplitBundleLoaderSpecJSI(const ObjCTurboModule::InitParams &params);
 
     };
   } // namespace react
@@ -2525,63 +2545,6 @@ namespace facebook {
     };
   } // namespace react
 } // namespace facebook
-
-namespace JS {
-  namespace NativeTimePickerAndroid {
-    struct TimePickerOptions {
-      folly::Optional<double> hour() const;
-      folly::Optional<double> minute() const;
-      folly::Optional<bool> is24Hour() const;
-      NSString *mode() const;
-
-      TimePickerOptions(NSDictionary *const v) : _v(v) {}
-    private:
-      NSDictionary *_v;
-    };
-  }
-}
-
-@interface RCTCxxConvert (NativeTimePickerAndroid_TimePickerOptions)
-+ (RCTManagedPointer *)JS_NativeTimePickerAndroid_TimePickerOptions:(id)json;
-@end
-@protocol NativeTimePickerAndroidSpec <RCTBridgeModule, RCTTurboModule>
-
-- (void)open:(JS::NativeTimePickerAndroid::TimePickerOptions &)options
-     resolve:(RCTPromiseResolveBlock)resolve
-      reject:(RCTPromiseRejectBlock)reject;
-
-@end
-namespace facebook {
-  namespace react {
-    /**
-     * ObjC++ class for module 'TimePickerAndroid'
-     */
-
-    class JSI_EXPORT NativeTimePickerAndroidSpecJSI : public ObjCTurboModule {
-    public:
-      NativeTimePickerAndroidSpecJSI(const ObjCTurboModule::InitParams &params);
-
-    };
-  } // namespace react
-} // namespace facebook
-
-namespace JS {
-  namespace NativeTimePickerAndroid {
-    struct TimePickerResult {
-      NSString *action() const;
-      double hour() const;
-      double minute() const;
-
-      TimePickerResult(NSDictionary *const v) : _v(v) {}
-    private:
-      NSDictionary *_v;
-    };
-  }
-}
-
-@interface RCTCxxConvert (NativeTimePickerAndroid_TimePickerResult)
-+ (RCTManagedPointer *)JS_NativeTimePickerAndroid_TimePickerResult:(id)json;
-@end
 @protocol NativeTimingSpec <RCTBridgeModule, RCTTurboModule>
 
 - (void)createTimer:(double)callbackID
@@ -2697,7 +2660,6 @@ namespace JS {
 
 - (NSDictionary *)getConstantsForViewManager:(NSString *)viewManagerName;
 - (NSArray<NSString *> *)getDefaultEventTypes;
-- (void)playTouchSound;
 - (NSDictionary *)lazilyLoadView:(NSString *)name;
 - (void)createView:(NSNumber *)reactTag
           viewName:(NSString *)viewName
@@ -3147,32 +3109,32 @@ inline folly::Optional<facebook::react::LazyVector<NSString *>> JS::NativeCamera
   id const p = _v[@"mimeTypes"];
   return RCTBridgingToOptionalVec(p, ^NSString *(id itemValue_0) { return RCTBridgingToString(itemValue_0); });
 }
-inline NSString *JS::NativeCameraRollManager::PhotoIdentifierNodeImage::uri() const
+inline NSString *JS::NativeCameraRollManager::PhotoIdentifierImage::uri() const
 {
   id const p = _v[@"uri"];
   return RCTBridgingToString(p);
 }
-inline double JS::NativeCameraRollManager::PhotoIdentifierNodeImage::playableDuration() const
+inline double JS::NativeCameraRollManager::PhotoIdentifierImage::playableDuration() const
 {
   id const p = _v[@"playableDuration"];
   return RCTBridgingToDouble(p);
 }
-inline double JS::NativeCameraRollManager::PhotoIdentifierNodeImage::width() const
+inline double JS::NativeCameraRollManager::PhotoIdentifierImage::width() const
 {
   id const p = _v[@"width"];
   return RCTBridgingToDouble(p);
 }
-inline double JS::NativeCameraRollManager::PhotoIdentifierNodeImage::height() const
+inline double JS::NativeCameraRollManager::PhotoIdentifierImage::height() const
 {
   id const p = _v[@"height"];
   return RCTBridgingToDouble(p);
 }
-inline folly::Optional<bool> JS::NativeCameraRollManager::PhotoIdentifierNodeImage::isStored() const
+inline folly::Optional<bool> JS::NativeCameraRollManager::PhotoIdentifierImage::isStored() const
 {
   id const p = _v[@"isStored"];
   return RCTBridgingToOptionalBool(p);
 }
-inline NSString *JS::NativeCameraRollManager::PhotoIdentifierNodeImage::filename() const
+inline NSString *JS::NativeCameraRollManager::PhotoIdentifierImage::filename() const
 {
   id const p = _v[@"filename"];
   return RCTBridgingToString(p);
@@ -3202,10 +3164,10 @@ inline folly::Optional<double> JS::NativeCameraRollManager::PhotoIdentifierNodeL
   id const p = _v[@"speed"];
   return RCTBridgingToOptionalDouble(p);
 }
-inline JS::NativeCameraRollManager::PhotoIdentifierNodeImage JS::NativeCameraRollManager::PhotoIdentifierNode::image() const
+inline JS::NativeCameraRollManager::PhotoIdentifierImage JS::NativeCameraRollManager::PhotoIdentifierNode::image() const
 {
   id const p = _v[@"image"];
-  return JS::NativeCameraRollManager::PhotoIdentifierNodeImage(p);
+  return JS::NativeCameraRollManager::PhotoIdentifierImage(p);
 }
 inline NSString *JS::NativeCameraRollManager::PhotoIdentifierNode::type() const
 {
@@ -3798,41 +3760,6 @@ inline JS::NativeStatusBarManagerIOS::Constants::Builder::Builder(const Input i)
 inline JS::NativeStatusBarManagerIOS::Constants::Builder::Builder(Constants i) : _factory(^{
   return i.unsafeRawValue();
 }) {}
-inline folly::Optional<double> JS::NativeTimePickerAndroid::TimePickerOptions::hour() const
-{
-  id const p = _v[@"hour"];
-  return RCTBridgingToOptionalDouble(p);
-}
-inline folly::Optional<double> JS::NativeTimePickerAndroid::TimePickerOptions::minute() const
-{
-  id const p = _v[@"minute"];
-  return RCTBridgingToOptionalDouble(p);
-}
-inline folly::Optional<bool> JS::NativeTimePickerAndroid::TimePickerOptions::is24Hour() const
-{
-  id const p = _v[@"is24Hour"];
-  return RCTBridgingToOptionalBool(p);
-}
-inline NSString *JS::NativeTimePickerAndroid::TimePickerOptions::mode() const
-{
-  id const p = _v[@"mode"];
-  return RCTBridgingToString(p);
-}
-inline NSString *JS::NativeTimePickerAndroid::TimePickerResult::action() const
-{
-  id const p = _v[@"action"];
-  return RCTBridgingToString(p);
-}
-inline double JS::NativeTimePickerAndroid::TimePickerResult::hour() const
-{
-  id const p = _v[@"hour"];
-  return RCTBridgingToDouble(p);
-}
-inline double JS::NativeTimePickerAndroid::TimePickerResult::minute() const
-{
-  id const p = _v[@"minute"];
-  return RCTBridgingToDouble(p);
-}
 inline JS::NativeToastAndroid::Constants::Builder::Builder(const Input i) : _factory(^{
   NSMutableDictionary *d = [NSMutableDictionary new];
   auto SHORT = i.SHORT.get();

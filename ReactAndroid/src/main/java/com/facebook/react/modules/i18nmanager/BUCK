@@ -4,6 +4,7 @@ rn_android_library(
     name = "i18nmanager",
     srcs = glob(["*.java"]),
     is_androidx = True,
+    labels = ["supermodule:xplat/default/public.react_native.infra"],
     provided_deps = [
         react_native_dep("third-party/android/androidx:annotation"),
         react_native_dep("third-party/android/androidx:core"),

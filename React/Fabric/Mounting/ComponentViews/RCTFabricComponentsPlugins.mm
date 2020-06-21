@@ -26,8 +26,10 @@ Class<RCTComponentViewProtocol> RCTFabricComponentsProvider(const char *name) {
     {"Switch", RCTSwitchCls},
     {"UnimplementedNativeView", RCTUnimplementedNativeViewCls},
     {"ModalHostView", RCTModalHostViewCls},
-    {"ARTSurfaceView", RCTARTSurfaceViewCls},
     {"Image", RCTImageCls},
+    {"Paragraph", RCTParagraphCls},
+    {"TextInput", RCTTextInputCls},
+    {"View", RCTViewCls},
   };
 
   auto p = sFabricComponentsClassMap.find(name);

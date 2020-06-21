@@ -42,6 +42,7 @@ RCT_EXTERN void RCTUnsafeExecuteOnMainQueueSync(dispatch_block_t block);
 
 // Get screen metrics in a thread-safe way
 RCT_EXTERN CGFloat RCTScreenScale(void);
+RCT_EXTERN CGFloat RCTFontSizeMultiplier(void);
 RCT_EXTERN CGSize RCTScreenSize(void);
 
 // Round float coordinates to nearest whole screen pixel (not point)
@@ -55,6 +56,7 @@ RCT_EXTERN CGSize RCTSizeInPixels(CGSize pointSize, CGFloat scale);
 // Method swizzling
 RCT_EXTERN void RCTSwapClassMethods(Class cls, SEL original, SEL replacement);
 RCT_EXTERN void RCTSwapInstanceMethods(Class cls, SEL original, SEL replacement);
+RCT_EXTERN void RCTSwapInstanceMethodWithBlock(Class cls, SEL original, id replacementBlock, SEL replacementSelector);
 
 // Module subclass support
 RCT_EXTERN BOOL RCTClassOverridesClassMethod(Class cls, SEL selector);

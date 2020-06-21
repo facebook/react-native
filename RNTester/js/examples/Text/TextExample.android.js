@@ -664,6 +664,9 @@ class TextExample extends React.Component<{...}> {
         <RNTesterBlock title="Inline views">
           <TextInlineView.Basic />
         </RNTesterBlock>
+        <RNTesterBlock title="Inline views with multiple nested texts">
+          <TextInlineView.NestedTexts />
+        </RNTesterBlock>
         <RNTesterBlock title="Inline image/view clipped by <Text>">
           <TextInlineView.ClippedByText />
         </RNTesterBlock>

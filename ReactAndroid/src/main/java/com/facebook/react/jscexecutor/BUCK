@@ -3,6 +3,7 @@ load("//tools/build_defs/oss:rn_defs.bzl", "ANDROID", "FBJNI_TARGET", "react_nat
 rn_android_library(
     name = "jscexecutor",
     srcs = glob(["*.java"]),
+    labels = ["supermodule:xplat/default/public.react_native.infra"],
     visibility = [
         "PUBLIC",
     ],

@@ -54,12 +54,18 @@ class TinyMap final {
     // then we don't need to clean.
     cleanVector(erasedAtFront_ != numErased_);
 
-    return begin_();
+    Iterator it = begin_();
+
+    if (it != nullptr) {
+      return it + erasedAtFront_;
+    }
+
+    return nullptr;
   }
 
   inline Iterator end() {
     // `back()` asserts on the vector being non-empty
-    if (vector_.size() == 0 || numErased_ == vector_.size()) {
+    if (vector_.empty() || numErased_ == vector_.size()) {
       return nullptr;
     }
 
@@ -70,6 +76,10 @@ class TinyMap final {
     cleanVector();
 
     assert(key != 0);
+
+    if (begin_() == nullptr) {
+      return end();
+    }
 
     for (auto it = begin_() + erasedAtFront_; it != end(); it++) {
       if (it->first == key) {
@@ -86,14 +96,14 @@ class TinyMap final {
   }
 
   inline void erase(Iterator iterator) {
-    numErased_++;
-
     // Invalidate tag.
     iterator->first = 0;
 
     if (iterator == begin_() + erasedAtFront_) {
       erasedAtFront_++;
     }
+
+    numErased_++;
   }
 
  private:
@@ -102,7 +112,7 @@ class TinyMap final {
    */
   inline Iterator begin_() {
     // `front()` asserts on the vector being non-empty
-    if (vector_.size() == 0 || vector_.size() == numErased_) {
+    if (vector_.empty() || vector_.size() == numErased_) {
       return nullptr;
     }
 
@@ -115,9 +125,8 @@ class TinyMap final {
    * vector.
    */
   inline void cleanVector(bool forceClean = false) {
-    if ((numErased_ < (vector_.size() / 2) && !forceClean) ||
-        vector_.size() == 0 || numErased_ == 0 ||
-        numErased_ == erasedAtFront_) {
+    if ((numErased_ < (vector_.size() / 2) && !forceClean) || vector_.empty() ||
+        numErased_ == 0 || numErased_ == erasedAtFront_) {
       return;
     }
 
@@ -180,7 +189,9 @@ static void sliceChildShadowNodeViewPairsRecursively(
   for (auto const &sharedChildShadowNode : shadowNode.getChildren()) {
     auto &childShadowNode = *sharedChildShadowNode;
     auto shadowView = ShadowView(childShadowNode);
+    auto origin = layoutOffset;
     if (shadowView.layoutMetrics != EmptyLayoutMetrics) {
+      origin += shadowView.layoutMetrics.frame.origin;
       shadowView.layoutMetrics.frame.origin += layoutOffset;
     }
 
@@ -194,7 +205,7 @@ static void sliceChildShadowNodeViewPairsRecursively(
       }
 
       sliceChildShadowNodeViewPairsRecursively(
-          pairList, shadowView.layoutMetrics.frame.origin, childShadowNode);
+          pairList, origin, childShadowNode);
     }
   }
 }
@@ -244,190 +255,12 @@ static_assert(
     std::is_move_assignable<ShadowViewNodePair::List>::value,
     "`ShadowViewNodePair::List` must be `move assignable`.");
 
-static void calculateShadowViewMutationsClassic(
+static void calculateShadowViewMutations(
     ShadowViewMutation::List &mutations,
     ShadowView const &parentShadowView,
     ShadowViewNodePair::List &&oldChildPairs,
     ShadowViewNodePair::List &&newChildPairs) {
-  // This version of the algorithm is optimized for simplicity,
-  // not for performance or optimal result.
-
-  if (oldChildPairs.size() == 0 && newChildPairs.size() == 0) {
-    return;
-  }
-
-  // Sorting pairs based on `orderIndex` if needed.
-  reorderInPlaceIfNeeded(oldChildPairs);
-  reorderInPlaceIfNeeded(newChildPairs);
-
-  auto index = int{0};
-
-  // Maps inserted node tags to pointers to them in `newChildPairs`.
-  auto insertedPairs = TinyMap<Tag, ShadowViewNodePair const *>{};
-
-  // Lists of mutations
-  auto createMutations = ShadowViewMutation::List{};
-  auto deleteMutations = ShadowViewMutation::List{};
-  auto insertMutations = ShadowViewMutation::List{};
-  auto removeMutations = ShadowViewMutation::List{};
-  auto updateMutations = ShadowViewMutation::List{};
-  auto downwardMutations = ShadowViewMutation::List{};
-  auto destructiveDownwardMutations = ShadowViewMutation::List{};
-
-  // Stage 1: Collecting `Update` mutations
-  for (index = 0; index < oldChildPairs.size() && index < newChildPairs.size();
-       index++) {
-    auto const &oldChildPair = oldChildPairs[index];
-    auto const &newChildPair = newChildPairs[index];
-
-    if (oldChildPair.shadowView.tag != newChildPair.shadowView.tag) {
-      // Totally different nodes, updating is impossible.
-      break;
-    }
-
-    if (oldChildPair.shadowView != newChildPair.shadowView) {
-      updateMutations.push_back(ShadowViewMutation::UpdateMutation(
-          parentShadowView,
-          oldChildPair.shadowView,
-          newChildPair.shadowView,
-          index));
-    }
-
-    auto oldGrandChildPairs =
-        sliceChildShadowNodeViewPairs(*oldChildPair.shadowNode);
-    auto newGrandChildPairs =
-        sliceChildShadowNodeViewPairs(*newChildPair.shadowNode);
-    calculateShadowViewMutationsClassic(
-        *(newGrandChildPairs.size() ? &downwardMutations
-                                    : &destructiveDownwardMutations),
-        oldChildPair.shadowView,
-        std::move(oldGrandChildPairs),
-        std::move(newGrandChildPairs));
-  }
-
-  int lastIndexAfterFirstStage = index;
-
-  // Stage 2: Collecting `Insert` mutations
-  for (; index < newChildPairs.size(); index++) {
-    auto const &newChildPair = newChildPairs[index];
-
-    insertMutations.push_back(ShadowViewMutation::InsertMutation(
-        parentShadowView, newChildPair.shadowView, index));
-
-    insertedPairs.insert({newChildPair.shadowView.tag, &newChildPair});
-  }
-
-  // Stage 3: Collecting `Delete` and `Remove` mutations
-  for (index = lastIndexAfterFirstStage; index < oldChildPairs.size();
-       index++) {
-    auto const &oldChildPair = oldChildPairs[index];
-
-    // Even if the old view was (re)inserted, we have to generate `remove`
-    // mutation.
-    removeMutations.push_back(ShadowViewMutation::RemoveMutation(
-        parentShadowView, oldChildPair.shadowView, index));
-
-    auto const it = insertedPairs.find(oldChildPair.shadowView.tag);
-
-    if (it == insertedPairs.end()) {
-      // The old view was *not* (re)inserted.
-      // We have to generate `delete` mutation and apply the algorithm
-      // recursively.
-      deleteMutations.push_back(
-          ShadowViewMutation::DeleteMutation(oldChildPair.shadowView));
-
-      // We also have to call the algorithm recursively to clean up the entire
-      // subtree starting from the removed view.
-      calculateShadowViewMutationsClassic(
-          destructiveDownwardMutations,
-          oldChildPair.shadowView,
-          sliceChildShadowNodeViewPairs(*oldChildPair.shadowNode),
-          {});
-    } else {
-      // The old view *was* (re)inserted.
-      // We have to call the algorithm recursively if the inserted view
-      // is *not* the same as removed one.
-      auto const &newChildPair = *it->second;
-
-      if (newChildPair != oldChildPair) {
-        auto oldGrandChildPairs =
-            sliceChildShadowNodeViewPairs(*oldChildPair.shadowNode);
-        auto newGrandChildPairs =
-            sliceChildShadowNodeViewPairs(*newChildPair.shadowNode);
-        calculateShadowViewMutationsClassic(
-            *(newGrandChildPairs.size() ? &downwardMutations
-                                        : &destructiveDownwardMutations),
-            newChildPair.shadowView,
-            std::move(oldGrandChildPairs),
-            std::move(newGrandChildPairs));
-      }
-
-      // In any case we have to remove the view from `insertedPairs` as
-      // indication that the view was actually removed (which means that
-      // the view existed before), hence we don't have to generate
-      // `create` mutation.
-      insertedPairs.erase(it);
-    }
-  }
-
-  // Stage 4: Collecting `Create` mutations
-  for (index = lastIndexAfterFirstStage; index < newChildPairs.size();
-       index++) {
-    auto const &newChildPair = newChildPairs[index];
-
-    if (insertedPairs.find(newChildPair.shadowView.tag) ==
-        insertedPairs.end()) {
-      // The new view was (re)inserted, so there is no need to create it.
-      continue;
-    }
-
-    createMutations.push_back(
-        ShadowViewMutation::CreateMutation(newChildPair.shadowView));
-
-    calculateShadowViewMutationsClassic(
-        downwardMutations,
-        newChildPair.shadowView,
-        {},
-        sliceChildShadowNodeViewPairs(*newChildPair.shadowNode));
-  }
-
-  // All mutations in an optimal order:
-  std::move(
-      destructiveDownwardMutations.begin(),
-      destructiveDownwardMutations.end(),
-      std::back_inserter(mutations));
-  std::move(
-      updateMutations.begin(),
-      updateMutations.end(),
-      std::back_inserter(mutations));
-  std::move(
-      removeMutations.rbegin(),
-      removeMutations.rend(),
-      std::back_inserter(mutations));
-  std::move(
-      deleteMutations.begin(),
-      deleteMutations.end(),
-      std::back_inserter(mutations));
-  std::move(
-      createMutations.begin(),
-      createMutations.end(),
-      std::back_inserter(mutations));
-  std::move(
-      downwardMutations.begin(),
-      downwardMutations.end(),
-      std::back_inserter(mutations));
-  std::move(
-      insertMutations.begin(),
-      insertMutations.end(),
-      std::back_inserter(mutations));
-}
-
-static void calculateShadowViewMutationsOptimizedMoves(
-    ShadowViewMutation::List &mutations,
-    ShadowView const &parentShadowView,
-    ShadowViewNodePair::List &&oldChildPairs,
-    ShadowViewNodePair::List &&newChildPairs) {
-  if (oldChildPairs.size() == 0 && newChildPairs.size() == 0) {
+  if (oldChildPairs.empty() && newChildPairs.empty()) {
     return;
   }
 
@@ -469,7 +302,7 @@ static void calculateShadowViewMutationsOptimizedMoves(
         sliceChildShadowNodeViewPairs(*oldChildPair.shadowNode);
     auto newGrandChildPairs =
         sliceChildShadowNodeViewPairs(*newChildPair.shadowNode);
-    calculateShadowViewMutationsOptimizedMoves(
+    calculateShadowViewMutations(
         *(newGrandChildPairs.size() ? &downwardMutations
                                     : &destructiveDownwardMutations),
         oldChildPair.shadowView,
@@ -492,7 +325,7 @@ static void calculateShadowViewMutationsOptimizedMoves(
 
       // We also have to call the algorithm recursively to clean up the entire
       // subtree starting from the removed view.
-      calculateShadowViewMutationsOptimizedMoves(
+      calculateShadowViewMutations(
           destructiveDownwardMutations,
           oldChildPair.shadowView,
           sliceChildShadowNodeViewPairs(*oldChildPair.shadowNode),
@@ -509,7 +342,7 @@ static void calculateShadowViewMutationsOptimizedMoves(
       createMutations.push_back(
           ShadowViewMutation::CreateMutation(newChildPair.shadowView));
 
-      calculateShadowViewMutationsOptimizedMoves(
+      calculateShadowViewMutations(
           downwardMutations,
           newChildPair.shadowView,
           {},
@@ -566,7 +399,7 @@ static void calculateShadowViewMutationsOptimizedMoves(
               sliceChildShadowNodeViewPairs(*oldChildPair.shadowNode);
           auto newGrandChildPairs =
               sliceChildShadowNodeViewPairs(*newChildPair.shadowNode);
-          calculateShadowViewMutationsOptimizedMoves(
+          calculateShadowViewMutations(
               *(newGrandChildPairs.size() ? &downwardMutations
                                           : &destructiveDownwardMutations),
               oldChildPair.shadowView,
@@ -607,7 +440,7 @@ static void calculateShadowViewMutationsOptimizedMoves(
               sliceChildShadowNodeViewPairs(*oldChildPair.shadowNode);
           auto newGrandChildPairs =
               sliceChildShadowNodeViewPairs(*newChildPair.shadowNode);
-          calculateShadowViewMutationsOptimizedMoves(
+          calculateShadowViewMutations(
               *(newGrandChildPairs.size() ? &downwardMutations
                                           : &destructiveDownwardMutations),
               oldChildPair.shadowView,
@@ -631,7 +464,7 @@ static void calculateShadowViewMutationsOptimizedMoves(
 
           // We also have to call the algorithm recursively to clean up the
           // entire subtree starting from the removed view.
-          calculateShadowViewMutationsOptimizedMoves(
+          calculateShadowViewMutations(
               destructiveDownwardMutations,
               oldChildPair.shadowView,
               sliceChildShadowNodeViewPairs(*oldChildPair.shadowNode),
@@ -643,7 +476,7 @@ static void calculateShadowViewMutationsOptimizedMoves(
       }
 
       // At this point, oldTag is -1 or is in the new list, and hasn't been
-      // inserted or matched yet We're not sure yet if the new node is in the
+      // inserted or matched yet. We're not sure yet if the new node is in the
       // old list - generate an insert instruction for the new node.
       auto const &newChildPair = newChildPairs[newIndex];
       insertMutations.push_back(ShadowViewMutation::InsertMutation(
@@ -655,11 +488,19 @@ static void calculateShadowViewMutationsOptimizedMoves(
     // Final step: generate Create instructions for new nodes
     for (auto it = newInsertedPairs.begin(); it != newInsertedPairs.end();
          it++) {
+      // Erased elements of a TinyMap will have a Tag/key of 0 - skip those
+      // These *should* be removed by the map; there are currently no KNOWN
+      // cases where TinyMap will do the wrong thing, but there are not yet
+      // any unit tests explicitly for TinyMap, so this is safer for now.
+      if (it->first == 0) {
+        continue;
+      }
+
       auto const &newChildPair = *it->second;
       createMutations.push_back(
           ShadowViewMutation::CreateMutation(newChildPair.shadowView));
 
-      calculateShadowViewMutationsOptimizedMoves(
+      calculateShadowViewMutations(
           downwardMutations,
           newChildPair.shadowView,
           {},
@@ -699,7 +540,6 @@ static void calculateShadowViewMutationsOptimizedMoves(
 }
 
 ShadowViewMutation::List calculateShadowViewMutations(
-    DifferentiatorMode differentiatorMode,
     ShadowNode const &oldRootShadowNode,
     ShadowNode const &newRootShadowNode) {
   SystraceSection s("calculateShadowViewMutations");
@@ -718,19 +558,11 @@ ShadowViewMutation::List calculateShadowViewMutations(
         ShadowView(), oldRootShadowView, newRootShadowView, -1));
   }
 
-  if (differentiatorMode == DifferentiatorMode::Classic) {
-    calculateShadowViewMutationsClassic(
-        mutations,
-        ShadowView(oldRootShadowNode),
-        sliceChildShadowNodeViewPairs(oldRootShadowNode),
-        sliceChildShadowNodeViewPairs(newRootShadowNode));
-  } else {
-    calculateShadowViewMutationsOptimizedMoves(
-        mutations,
-        ShadowView(oldRootShadowNode),
-        sliceChildShadowNodeViewPairs(oldRootShadowNode),
-        sliceChildShadowNodeViewPairs(newRootShadowNode));
-  }
+  calculateShadowViewMutations(
+      mutations,
+      ShadowView(oldRootShadowNode),
+      sliceChildShadowNodeViewPairs(oldRootShadowNode),
+      sliceChildShadowNodeViewPairs(newRootShadowNode));
 
   return mutations;
 }

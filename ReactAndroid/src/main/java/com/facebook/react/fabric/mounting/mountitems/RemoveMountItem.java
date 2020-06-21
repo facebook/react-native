@@ -24,7 +24,7 @@ public class RemoveMountItem implements MountItem {
 
   @Override
   public void execute(@NonNull MountingManager mountingManager) {
-    mountingManager.removeViewAt(mParentReactTag, mIndex);
+    mountingManager.removeViewAt(-1, mParentReactTag, mIndex);
   }
 
   public int getParentReactTag() {

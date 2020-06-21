@@ -78,6 +78,7 @@ using namespace facebook::react;
                                             scale:imageSource.scale
                                           clipped:YES
                                        resizeMode:RCTResizeModeStretch
+                                         priority:RCTImageLoaderPriorityImmediate
                                       attribution:{
                                                       .surfaceId = surfaceId,
                                                   }

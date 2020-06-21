@@ -4,7 +4,7 @@
   xmlns:android="http://schemas.android.com/apk/res/android"
   android:layout_width="match_parent"
   android:layout_height="wrap_content"
-  android:background="#035900"
+  android:background="#404040"
   android:ellipsize="end"
   android:gravity="center"
   android:paddingTop="5dp"

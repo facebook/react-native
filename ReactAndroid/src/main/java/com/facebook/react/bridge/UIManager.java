@@ -10,6 +10,7 @@ package com.facebook.react.bridge;
 import static com.facebook.infer.annotation.ThreadConfined.UI;
 
 import android.view.View;
+import androidx.annotation.AnyThread;
 import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
 import com.facebook.infer.annotation.ThreadConfined;
@@ -21,6 +22,22 @@ public interface UIManager extends JSIModule, PerformanceCounter {
   @ThreadConfined(UI)
   <T extends View> int addRootView(
       final T rootView, WritableMap initialProps, @Nullable String initialUITemplate);
+
+  /** Registers a new root view with width and height. */
+  @AnyThread
+  <T extends View> int startSurface(
+      final T rootView,
+      final String moduleName,
+      final WritableMap initialProps,
+      int widthMeasureSpec,
+      int heightMeasureSpec);
+
+  /**
+   * Stop a surface from running in JS and clears up native memory usage. Assumes that the native
+   * View hierarchy has already been cleaned up. Fabric-only.
+   */
+  @AnyThread
+  void stopSurface(final int surfaceId);
 
   /**
    * Updates the layout specs of the RootShadowNode based on the Measure specs received by
@@ -81,4 +98,29 @@ public interface UIManager extends JSIModule, PerformanceCounter {
    * @param eventType
    */
   void sendAccessibilityEvent(int reactTag, int eventType);
+
+  /**
+   * Register a {@link UIManagerListener} with this UIManager to receive lifecycle callbacks.
+   *
+   * @param listener
+   */
+  void addUIManagerEventListener(UIManagerListener listener);
+
+  /**
+   * Unregister a {@link UIManagerListener} from this UIManager to stop receiving lifecycle
+   * callbacks.
+   *
+   * @param listener
+   */
+  void removeUIManagerEventListener(UIManagerListener listener);
+
+  /**
+   * This method dispatches events from RN Android code to JS. The delivery of this event will not
+   * be queued in EventDispatcher class.
+   *
+   * @param reactTag tag
+   * @param eventName name of the event
+   * @param event parameters
+   */
+  void receiveEvent(int reactTag, String eventName, @Nullable WritableMap event);
 }

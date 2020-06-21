@@ -18,5 +18,9 @@ ImageRequest const &ImageState::getImageRequest() const {
   return *imageRequest_;
 }
 
+Float ImageState::getBlurRadius() const {
+  return blurRadius_;
+}
+
 } // namespace react
 } // namespace facebook

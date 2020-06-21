@@ -12,7 +12,7 @@
 
 import type {
   EventTypeShape,
-  ObjectPropertyType,
+  EventObjectPropertyType,
 } from '../../../CodegenSchema.js';
 
 function getPropertyType(name, optional, typeAnnotation) {
@@ -52,6 +52,12 @@ function getPropertyType(name, optional, typeAnnotation) {
         name,
         optional,
       };
+    case '$ReadOnly':
+      return getPropertyType(
+        name,
+        optional,
+        typeAnnotation.typeParameters.params[0],
+      );
     case 'ObjectTypeAnnotation':
       return {
         type: 'ObjectTypeAnnotation',
@@ -126,7 +132,7 @@ function findEventArgumentsAndType(
   }
 }
 
-function buildPropertiesForEvent(property): ObjectPropertyType {
+function buildPropertiesForEvent(property): EventObjectPropertyType {
   const name = property.key.name;
   const optional =
     property.value.type === 'NullableTypeAnnotation' || property.optional;

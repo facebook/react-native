@@ -249,9 +249,6 @@ YOGA_EXPORT YGNodeRef YGNodeClone(YGNodeRef oldNode) {
 static YGConfigRef YGConfigClone(const YGConfig& oldConfig) {
   const YGConfigRef config = new YGConfig(oldConfig);
   YGAssert(config != nullptr, "Could not allocate memory for config");
-  if (config == nullptr) {
-    abort();
-  }
   gConfigInstanceCount++;
   return config;
 }
@@ -3664,14 +3661,14 @@ static inline bool YGMeasureModeNewMeasureSizeIsStricterAndStillValid(
 }
 
 YOGA_EXPORT float YGRoundValueToPixelGrid(
-    const float value,
-    const float pointScaleFactor,
+    const double value,
+    const double pointScaleFactor,
     const bool forceCeil,
     const bool forceFloor) {
   double scaledValue = ((double) value) * pointScaleFactor;
   // We want to calculate `fractial` such that `floor(scaledValue) = scaledValue
   // - fractial`.
-  float fractial = fmodf(scaledValue, 1.0f);
+  double fractial = fmod(scaledValue, 1.0f);
   if (fractial < 0) {
     // This branch is for handling negative numbers for `value`.
     //
@@ -3690,10 +3687,10 @@ YOGA_EXPORT float YGRoundValueToPixelGrid(
     //   - Finding the `floor`: -2.2 - fractial2 = -2.2 - 0.8 = -3
     ++fractial;
   }
-  if (YGFloatsEqual(fractial, 0)) {
+  if (YGDoubleEqual(fractial, 0)) {
     // First we check if the value is already rounded
     scaledValue = scaledValue - fractial;
-  } else if (YGFloatsEqual(fractial, 1.0f)) {
+  } else if (YGDoubleEqual(fractial, 1.0f)) {
     scaledValue = scaledValue - fractial + 1.0f;
   } else if (forceCeil) {
     // Next we check if we need to use forced rounding
@@ -3704,7 +3701,7 @@ YOGA_EXPORT float YGRoundValueToPixelGrid(
     // Finally we just round the value
     scaledValue = scaledValue - fractial +
         (!YGFloatIsUndefined(fractial) &&
-                 (fractial > 0.5f || YGFloatsEqual(fractial, 0.5f))
+                 (fractial > 0.5f || YGDoubleEqual(fractial, 0.5f))
              ? 1.0f
              : 0.0f);
   }
@@ -4081,24 +4078,24 @@ YOGA_EXPORT void YGConfigSetPointScaleFactor(
 
 static void YGRoundToPixelGrid(
     const YGNodeRef node,
-    const float pointScaleFactor,
-    const float absoluteLeft,
-    const float absoluteTop) {
+    const double pointScaleFactor,
+    const double absoluteLeft,
+    const double absoluteTop) {
   if (pointScaleFactor == 0.0f) {
     return;
   }
 
-  const float nodeLeft = node->getLayout().position[YGEdgeLeft];
-  const float nodeTop = node->getLayout().position[YGEdgeTop];
+  const double nodeLeft = node->getLayout().position[YGEdgeLeft];
+  const double nodeTop = node->getLayout().position[YGEdgeTop];
 
-  const float nodeWidth = node->getLayout().dimensions[YGDimensionWidth];
-  const float nodeHeight = node->getLayout().dimensions[YGDimensionHeight];
+  const double nodeWidth = node->getLayout().dimensions[YGDimensionWidth];
+  const double nodeHeight = node->getLayout().dimensions[YGDimensionHeight];
 
-  const float absoluteNodeLeft = absoluteLeft + nodeLeft;
-  const float absoluteNodeTop = absoluteTop + nodeTop;
+  const double absoluteNodeLeft = absoluteLeft + nodeLeft;
+  const double absoluteNodeTop = absoluteTop + nodeTop;
 
-  const float absoluteNodeRight = absoluteNodeLeft + nodeWidth;
-  const float absoluteNodeBottom = absoluteNodeTop + nodeHeight;
+  const double absoluteNodeRight = absoluteNodeLeft + nodeWidth;
+  const double absoluteNodeBottom = absoluteNodeTop + nodeHeight;
 
   // If a node has a custom measure function we never want to round down its
   // size as this could lead to unwanted text truncation.
@@ -4116,11 +4113,11 @@ static void YGRoundToPixelGrid(
   // whole number, we don't have any fraction To verify if the result is close
   // to whole number we want to check both floor and ceil numbers
   const bool hasFractionalWidth =
-      !YGFloatsEqual(fmodf(nodeWidth * pointScaleFactor, 1.0), 0) &&
-      !YGFloatsEqual(fmodf(nodeWidth * pointScaleFactor, 1.0), 1.0);
+      !YGDoubleEqual(fmod(nodeWidth * pointScaleFactor, 1.0), 0) &&
+      !YGDoubleEqual(fmod(nodeWidth * pointScaleFactor, 1.0), 1.0);
   const bool hasFractionalHeight =
-      !YGFloatsEqual(fmodf(nodeHeight * pointScaleFactor, 1.0), 0) &&
-      !YGFloatsEqual(fmodf(nodeHeight * pointScaleFactor, 1.0), 1.0);
+      !YGDoubleEqual(fmod(nodeHeight * pointScaleFactor, 1.0), 0) &&
+      !YGDoubleEqual(fmod(nodeHeight * pointScaleFactor, 1.0), 1.0);
 
   node->setLayoutDimension(
       YGRoundValueToPixelGrid(
@@ -4341,6 +4338,7 @@ YOGA_EXPORT void YGConfigSetShouldDiffLayoutWithoutLegacyStretchBehaviour(
 void YGAssert(const bool condition, const char* message) {
   if (!condition) {
     Log::log(YGNodeRef{nullptr}, YGLogLevelFatal, nullptr, "%s\n", message);
+    throwLogicalErrorWithMessage(message);
   }
 }
 
@@ -4350,6 +4348,7 @@ void YGAssertWithNode(
     const char* message) {
   if (!condition) {
     Log::log(node, YGLogLevelFatal, nullptr, "%s\n", message);
+    throwLogicalErrorWithMessage(message);
   }
 }
 
@@ -4359,6 +4358,7 @@ void YGAssertWithConfig(
     const char* message) {
   if (!condition) {
     Log::log(config, YGLogLevelFatal, nullptr, "%s\n", message);
+    throwLogicalErrorWithMessage(message);
   }
 }
 

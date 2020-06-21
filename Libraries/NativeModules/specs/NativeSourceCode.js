@@ -19,4 +19,19 @@ export interface Spec extends TurboModule {
   |};
 }
 
-export default (TurboModuleRegistry.getEnforcing<Spec>('SourceCode'): Spec);
+const NativeModule = TurboModuleRegistry.getEnforcing<Spec>('SourceCode');
+let constants = null;
+
+const NativeSourceCode = {
+  getConstants(): {|
+    scriptURL: string,
+  |} {
+    if (constants == null) {
+      constants = NativeModule.getConstants();
+    }
+
+    return constants;
+  },
+};
+
+export default NativeSourceCode;

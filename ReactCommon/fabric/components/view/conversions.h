@@ -261,7 +261,7 @@ inline void fromRawValue(const RawValue &value, YGAlign &result) {
     result = YGAlignBaseline;
     return;
   }
-  if (stringValue == "between") {
+  if (stringValue == "space-between") {
     result = YGAlignSpaceBetween;
     return;
   }

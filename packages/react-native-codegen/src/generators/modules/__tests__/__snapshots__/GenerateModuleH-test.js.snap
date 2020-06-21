@@ -23,6 +23,9 @@ protected:
 
 public:
 virtual jsi::Object difficult(jsi::Runtime &rt, const jsi::Object &A) = 0;
+virtual void optionals(jsi::Runtime &rt, const jsi::Object &A) = 0;
+virtual void optionalMethod(jsi::Runtime &rt, const jsi::Object &options, const jsi::Function &callback, const jsi::Array &extras) = 0;
+virtual void getArrays(jsi::Runtime &rt, const jsi::Object &options) = 0;
 
 };
 
@@ -93,6 +96,7 @@ virtual double getNumber(jsi::Runtime &rt, double arg) = 0;
 virtual jsi::String getString(jsi::Runtime &rt, const jsi::String &arg) = 0;
 virtual jsi::Array getArray(jsi::Runtime &rt, const jsi::Array &arg) = 0;
 virtual jsi::Object getObject(jsi::Runtime &rt, const jsi::Object &arg) = 0;
+virtual double getRootTag(jsi::Runtime &rt, double arg) = 0;
 virtual jsi::Object getValue(jsi::Runtime &rt, double x, const jsi::String &y, const jsi::Object &z) = 0;
 virtual void getValueWithCallback(jsi::Runtime &rt, const jsi::Function &callback) = 0;
 virtual jsi::Value getValueWithPromise(jsi::Runtime &rt, bool error) = 0;

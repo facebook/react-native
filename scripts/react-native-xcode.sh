@@ -14,10 +14,12 @@ DEST=$CONFIGURATION_BUILD_DIR/$UNLOCALIZED_RESOURCES_FOLDER_PATH
 
 # Enables iOS devices to get the IP address of the machine running Metro
 if [[ "$CONFIGURATION" = *Debug* && ! "$PLATFORM_NAME" == *simulator ]]; then
-  IP=$(ipconfig getifaddr en0)
-  if [[ -z "$IP" || -n "`ifconfig $value | grep 'baseT'`" ]]; then
-    IP=$(ipconfig getifaddr en1)
-  fi
+  for num in 0 1 2 3 4 5 6 7 8; do
+    IP=$(ipconfig getifaddr en${num})
+    if [ ! -z "$IP" ]; then
+      break
+    fi
+  done
   if [ -z "$IP" ]; then
     IP=$(ifconfig | grep 'inet ' | grep -v ' 127.' | grep -v ' 169.254.' |cut -d\   -f2  | awk 'NR==1{print $1}')
   fi
@@ -76,9 +78,14 @@ if [[ "$ENTRY_FILE" ]]; then
   # Use ENTRY_FILE defined by user
   :
 elif [[ -s "index.ios.js" ]]; then
-   ENTRY_FILE=${1:-index.ios.js}
- else
-   ENTRY_FILE=${1:-index.js}
+  ENTRY_FILE=${1:-index.ios.js}
+else
+  ENTRY_FILE=${1:-index.js}
+fi
+
+if [[ $DEV != true && ! -f "$ENTRY_FILE" ]]; then
+  echo "error: Entry file $ENTRY_FILE does not exist. If you use another file as your entry point, pass ENTRY_FILE=myindex.js" >&2
+  exit 2
 fi
 
 if [[ -s "$HOME/.nvm/nvm.sh" ]]; then

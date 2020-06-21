@@ -12,8 +12,6 @@
 
 import Platform from '../Utilities/Platform';
 import RCTLog from '../Utilities/RCTLog';
-import * as LogBoxData from './Data/LogBoxData';
-import {parseLogBoxLog, parseInterpolation} from './Data/parseLogBoxLog';
 
 import type {IgnorePattern} from './Data/LogBoxData';
 
@@ -23,6 +21,9 @@ let LogBox;
  * LogBox displays logs in the app.
  */
 if (__DEV__) {
+  const LogBoxData = require('./Data/LogBoxData');
+  const {parseLogBoxLog, parseInterpolation} = require('./Data/parseLogBoxLog');
+
   // LogBox needs to insert itself early,
   // in order to access the component stacks appended by React DevTools.
   const {error, warn} = console;

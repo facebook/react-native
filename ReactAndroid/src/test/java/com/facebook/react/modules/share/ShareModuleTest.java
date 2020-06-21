@@ -9,6 +9,7 @@ package com.facebook.react.modules.share;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.robolectric.Shadows.shadowOf;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -17,6 +18,7 @@ import androidx.annotation.Nullable;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.JavaOnlyMap;
 import com.facebook.react.bridge.Promise;
+import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactTestHelper;
 import com.facebook.react.bridge.WritableMap;
 import org.junit.After;
@@ -31,14 +33,23 @@ import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.rule.PowerMockRule;
+import org.robolectric.Robolectric;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.RuntimeEnvironment;
-import org.robolectric.internal.ShadowExtractor;
-import org.robolectric.shadows.ShadowApplication;
 
 @PrepareForTest({Arguments.class})
 @RunWith(RobolectricTestRunner.class)
-@PowerMockIgnore({"org.mockito.*", "org.robolectric.*", "androidx.*", "android.*"})
+@PowerMockIgnore({
+  "org.mockito.*",
+  "org.robolectric.*",
+  "androidx.*",
+  "android.*",
+  "javax.xml.*",
+  "org.xml.sax.*",
+  "org.w3c.dom.*",
+  "org.springframework.context.*",
+  "org.apache.log4j.*"
+})
 public class ShareModuleTest {
 
   private Activity mActivity;
@@ -58,7 +69,11 @@ public class ShareModuleTest {
               }
             });
 
-    mShareModule = new ShareModule(ReactTestHelper.createCatalystContextForTest());
+    mActivity = Robolectric.setupActivity(Activity.class);
+
+    ReactApplicationContext applicationContext = ReactTestHelper.createCatalystContextForTest();
+    applicationContext.onNewIntent(mActivity, new Intent());
+    mShareModule = new ShareModule(applicationContext);
   }
 
   @After
@@ -81,9 +96,7 @@ public class ShareModuleTest {
 
     mShareModule.share(content, dialogTitle, promise);
 
-    final Intent chooserIntent =
-        ((ShadowApplication) ShadowExtractor.extract(RuntimeEnvironment.application))
-            .getNextStartedActivity();
+    final Intent chooserIntent = shadowOf(RuntimeEnvironment.application).getNextStartedActivity();
     assertNotNull("Dialog was not displayed", chooserIntent);
     assertEquals(Intent.ACTION_CHOOSER, chooserIntent.getAction());
     assertEquals(dialogTitle, chooserIntent.getExtras().get(Intent.EXTRA_TITLE));

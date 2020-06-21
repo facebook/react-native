@@ -53,6 +53,8 @@ struct ConsoleMessageInfo {
         args(std::move(args)) {}
 };
 
+enum PauseOnLoadMode { None, Smart, All };
+
 /**
  * InspectorObserver notifies the observer of events that occur in the VM.
  */
@@ -201,6 +203,19 @@ class Inspector : public facebook::hermes::debugger::EventObserver,
       const facebook::hermes::debugger::PauseOnThrowMode &mode);
 
   /**
+   * Set whether to pause on loads. This does not require runtime modifications,
+   * but returns a future for consistency.
+   */
+  folly::Future<folly::Unit> setPauseOnLoads(const PauseOnLoadMode mode);
+
+  /**
+   * If called during a script load event, return true if we should pause.
+   * Assumed to be called from a script load event where we already hold
+   * `mutex_`.
+   */
+  bool shouldPauseOnThisScriptLoad();
+
+  /**
    * didPause implements the pause callback from Hermes. This callback arrives
    * on the JS thread.
    */
@@ -213,6 +228,16 @@ class Inspector : public facebook::hermes::debugger::EventObserver,
   void breakpointResolved(
       facebook::hermes::debugger::Debugger &debugger,
       facebook::hermes::debugger::BreakpointID breakpointId) override;
+
+  /**
+   * Get whether we started with pauseOnFirstStatement, and have not yet had a
+   * debugger attach and ask to resume from that point. This matches the
+   * semantics of when CDP Debugger.runIfWaitingForDebugger should resume.
+   *
+   * It's not named "isPausedOnStart" because the VM and inspector is not
+   * necessarily paused; we could be in a RunningWaitPause state.
+   */
+  bool isAwaitingDebuggerOnStart();
 
  private:
   friend class InspectorState;
@@ -277,6 +302,7 @@ class Inspector : public facebook::hermes::debugger::EventObserver,
 
   void installConsoleFunction(
       jsi::Object &console,
+      std::shared_ptr<jsi::Object> &originalConsole,
       const std::string &name,
       const std::string &chromeType);
 
@@ -297,6 +323,9 @@ class Inspector : public facebook::hermes::debugger::EventObserver,
   // this state is here rather than in the Running class.
   AsyncPauseState pendingPauseState_ = AsyncPauseState::None;
 
+  // Whether we should enter a paused state when a script loads.
+  PauseOnLoadMode pauseOnLoadMode_ = PauseOnLoadMode::None;
+
   // All scripts loaded in to the VM, along with whether we've notified the
   // client about the script yet.
   struct LoadedScriptInfo {
@@ -315,6 +344,10 @@ class Inspector : public facebook::hermes::debugger::EventObserver,
 
   // Trigger a fake console.log if we're currently in a superseded file.
   void alertIfPausedInSupersededFile();
+
+  // Are we currently waiting for a debugger to attach, because we
+  // requested 'pauseOnFirstStatement'?
+  bool awaitingDebuggerOnStart_;
 };
 
 } // namespace inspector

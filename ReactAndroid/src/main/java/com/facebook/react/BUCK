@@ -4,7 +4,7 @@ rn_android_library(
     name = "react",
     srcs = glob(["*.java"]),
     is_androidx = True,
-    labels = ["supermodule:android/default/public.react_native.infra"],
+    labels = ["supermodule:xplat/default/public.react_native.infra"],
     provided_deps = [
         react_native_dep("third-party/android/androidx:annotation"),
         react_native_dep("third-party/android/androidx:appcompat"),
@@ -35,6 +35,7 @@ rn_android_library(
         react_native_target("java/com/facebook/react/module/model:model"),
         react_native_target("java/com/facebook/react/modules/appregistry:appregistry"),
         react_native_target("java/com/facebook/react/modules/appearance:appearance"),
+        react_native_target("java/com/facebook/react/modules/bundleloader:bundleloader"),
         react_native_target("java/com/facebook/react/modules/debug:debug"),
         react_native_target("java/com/facebook/react/modules/fabric:fabric"),
         react_native_target("java/com/facebook/react/modules/debug:interfaces"),

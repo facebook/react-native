@@ -26,20 +26,20 @@ import com.facebook.systrace.Systrace;
 @DoNotStrip
 public class BatchMountItem implements MountItem {
 
+  private final int mRootTag;
   @NonNull private final MountItem[] mMountItems;
 
   private final int mSize;
 
   private final int mCommitNumber;
 
-  public BatchMountItem(MountItem[] items, int size, int commitNumber) {
-    if (items == null) {
-      throw new NullPointerException();
-    }
-    if (size < 0 || size > items.length) {
+  public BatchMountItem(int rootTag, MountItem[] items, int size, int commitNumber) {
+    int itemsLength = (items == null ? 0 : items.length);
+    if (size < 0 || size > itemsLength) {
       throw new IllegalArgumentException(
-          "Invalid size received by parameter size: " + size + " items.size = " + items.length);
+          "Invalid size received by parameter size: " + size + " items.size = " + itemsLength);
     }
+    mRootTag = rootTag;
     mMountItems = items;
     mSize = size;
     mCommitNumber = commitNumber;
@@ -68,6 +68,14 @@ public class BatchMountItem implements MountItem {
     Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
   }
 
+  public int getRootTag() {
+    return mRootTag;
+  }
+
+  public int getSize() {
+    return mSize;
+  }
+
   @Override
   public String toString() {
     StringBuilder s = new StringBuilder();
@@ -75,7 +83,7 @@ public class BatchMountItem implements MountItem {
       if (s.length() > 0) {
         s.append("\n");
       }
-      s.append("BatchMountItem (")
+      s.append("BatchMountItem [S:" + mRootTag + "] (")
           .append(i + 1)
           .append("/")
           .append(mSize)

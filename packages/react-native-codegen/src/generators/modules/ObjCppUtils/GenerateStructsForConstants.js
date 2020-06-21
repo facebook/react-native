@@ -62,7 +62,23 @@ function getBuilderInputFieldDeclaration(
     return 'folly::Optional<' + annotation + '> ' + property.name + ';';
   }
   const {typeAnnotation} = property;
+
+  // TODO(T67898313): Workaround for NativeLinking's use of union type. This check may be removed once typeAnnotation is non-optional.
+  if (!typeAnnotation) {
+    throw new Error(
+      `Cannot get array element type, property ${property.name} does not contain a type annotation`,
+    );
+  }
+
   switch (typeAnnotation.type) {
+    case 'ReservedFunctionValueTypeAnnotation':
+      switch (typeAnnotation.name) {
+        case 'RootTag':
+          return markRequiredIfNecessary('double');
+        default:
+          (typeAnnotation.name: empty);
+          throw new Error(`Unknown prop type, found: ${typeAnnotation.name}"`);
+      }
     case 'StringTypeAnnotation':
       if (property.optional) {
         return 'NSString *' + property.name + ';';
@@ -145,7 +161,23 @@ function unsafeGetter(name: string, optional: boolean) {
 
 function getObjectProperty(property: ObjectParamTypeAnnotation): string {
   const {typeAnnotation} = property;
+
+  // TODO(T67898313): Workaround for NativeLinking's use of union type. This check may be removed once typeAnnotation is non-optional.
+  if (!typeAnnotation) {
+    throw new Error(
+      `Cannot get array element type, property ${property.name} does not contain a type annotation`,
+    );
+  }
+
   switch (typeAnnotation.type) {
+    case 'ReservedFunctionValueTypeAnnotation':
+      switch (typeAnnotation.name) {
+        case 'RootTag':
+          return numberGetter(property.name, property.optional);
+        default:
+          (typeAnnotation.name: empty);
+          throw new Error(`Unknown prop type, found: ${typeAnnotation.name}"`);
+      }
     case 'NumberTypeAnnotation':
     case 'FloatTypeAnnotation':
     case 'Int32TypeAnnotation':

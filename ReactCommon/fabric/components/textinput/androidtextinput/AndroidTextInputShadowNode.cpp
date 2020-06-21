@@ -62,6 +62,8 @@ AttributedString AndroidTextInputShadowNode::getAttributedString() const {
 // single character in the string so that the measured height is greater
 // than zero. Otherwise, empty TextInputs with no placeholder don't
 // display at all.
+// TODO T67606511: We will redefine the measurement of empty strings as part
+// of T67606511
 AttributedString AndroidTextInputShadowNode::getPlaceholderAttributedString()
     const {
   // Return placeholder text, since text and children are empty.
@@ -70,7 +72,7 @@ AttributedString AndroidTextInputShadowNode::getPlaceholderAttributedString()
   fragment.string = getConcreteProps().placeholder;
 
   if (fragment.string.empty()) {
-    fragment.string = " ";
+    fragment.string = BaseTextShadowNode::getEmptyPlaceholder();
   }
 
   auto textAttributes = TextAttributes::defaultTextAttributes();
@@ -163,8 +165,9 @@ void AndroidTextInputShadowNode::updateStateIfNeeded() {
 
 #pragma mark - LayoutableShadowNode
 
-Size AndroidTextInputShadowNode::measure(
-    LayoutConstraints layoutConstraints) const {
+Size AndroidTextInputShadowNode::measureContent(
+    LayoutContext const &layoutContext,
+    LayoutConstraints const &layoutConstraints) const {
   // Layout is called right after measure.
   // Measure is marked as `const`, and `layout` is not; so State can be updated
   // during layout, but not during `measure`. If State is out-of-date in layout,

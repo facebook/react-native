@@ -53,10 +53,12 @@ class TextInputProps final : public ViewProps, public BaseTextProps {
   std::string const text{};
   int const mostRecentEventCount{0};
 
+  bool autoFocus{false};
+
   /*
    * Accessors
    */
-  TextAttributes getEffectiveTextAttributes() const;
+  TextAttributes getEffectiveTextAttributes(Float fontSizeMultiplier) const;
   ParagraphAttributes getEffectiveParagraphAttributes() const;
 
 #ifdef ANDROID

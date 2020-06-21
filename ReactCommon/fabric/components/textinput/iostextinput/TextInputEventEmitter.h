@@ -25,6 +25,12 @@ class TextInputMetrics {
   int eventCount;
 };
 
+class KeyPressMetrics {
+ public:
+  std::string text;
+  int eventCount;
+};
+
 class TextInputEventEmitter : public ViewEventEmitter {
  public:
   using ViewEventEmitter::ViewEventEmitter;
@@ -37,7 +43,7 @@ class TextInputEventEmitter : public ViewEventEmitter {
   void onSelectionChange(TextInputMetrics const &textInputMetrics) const;
   void onEndEditing(TextInputMetrics const &textInputMetrics) const;
   void onSubmitEditing(TextInputMetrics const &textInputMetrics) const;
-  void onKeyPress(TextInputMetrics const &textInputMetrics) const;
+  void onKeyPress(KeyPressMetrics const &textInputMetrics) const;
 
  private:
   void dispatchTextInputEvent(

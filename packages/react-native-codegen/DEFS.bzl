@@ -166,6 +166,7 @@ def rn_codegen_components(
         srcs = [":{}".format(copy_generated_java_files)],
         out = "{}.src.zip".format(zip_generated_java_files),
         visibility = ["PUBLIC"],
+        labels = ["codegen_rule"],
     )
 
     fb_native.genrule(
@@ -219,7 +220,6 @@ def rn_codegen_components(
         ],
         fbobjc_compiler_flags = get_apple_compiler_flags(),
         fbobjc_preprocessor_flags = get_preprocessor_flags_for_build_mode() + get_apple_inspector_flags(),
-        fbobjc_labels = ["supermodule:ios/default/public.react_native.infra"],
         platforms = (ANDROID, APPLE, CXX),
         preprocessor_flags = [
             "-DLOG_TAG=\"ReactNative\"",
@@ -231,7 +231,7 @@ def rn_codegen_components(
             "//xplat/folly:headers_only",
             "//xplat/folly:memory",
             "//xplat/folly:molly",
-            "//xplat/third-party/glog:glog",
+            "//third-party/glog:glog",
             YOGA_CXX_TARGET,
             react_native_xplat_target("fabric/debug:debug"),
             react_native_xplat_target("fabric/core:core"),

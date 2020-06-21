@@ -7,10 +7,11 @@
 
 #pragma once
 
+#include <ReactCommon/RuntimeExecutor.h>
 #include <react/componentregistry/ComponentDescriptorFactory.h>
 #include <react/core/EventBeat.h>
 #include <react/utils/ContextContainer.h>
-#include <react/utils/RuntimeExecutor.h>
+#include <react/utils/RunLoopObserver.h>
 
 namespace facebook {
 namespace react {
@@ -35,6 +36,11 @@ struct SchedulerToolbox final {
    * Represents running JavaScript VM and associated execution queue.
    */
   RuntimeExecutor runtimeExecutor;
+
+  /*
+   * Represent connections with a platform-specific UI run loops.
+   */
+  RunLoopObserver::Factory mainRunLoopObserverFactory;
 
   /*
    * Asynchronous & synchronous event beats.

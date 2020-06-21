@@ -43,10 +43,10 @@ class ImageShadowNode final : public ConcreteViewShadowNode<
 
   static ImageState initialStateData(
       ShadowNodeFragment const &fragment,
-      SurfaceId const surfaceId,
+      ShadowNodeFamilyFragment const &familyFragment,
       ComponentDescriptor const &componentDescriptor) {
     auto imageSource = ImageSource{ImageSource::Type::Invalid};
-    return {imageSource, {imageSource, nullptr}};
+    return {imageSource, {imageSource, nullptr}, 0};
   }
 
 #pragma mark - LayoutableShadowNode

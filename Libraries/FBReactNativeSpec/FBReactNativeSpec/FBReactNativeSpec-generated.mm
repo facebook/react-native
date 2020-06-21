@@ -737,10 +737,10 @@ namespace facebook {
 
   } // namespace react
 } // namespace facebook
-@implementation RCTCxxConvert (NativeCameraRollManager_PhotoIdentifierNodeImage)
-+ (RCTManagedPointer *)JS_NativeCameraRollManager_PhotoIdentifierNodeImage:(id)json
+@implementation RCTCxxConvert (NativeCameraRollManager_PhotoIdentifierImage)
++ (RCTManagedPointer *)JS_NativeCameraRollManager_PhotoIdentifierImage:(id)json
 {
-  return facebook::react::managedPointer<JS::NativeCameraRollManager::PhotoIdentifierNodeImage>(json);
+  return facebook::react::managedPointer<JS::NativeCameraRollManager::PhotoIdentifierImage>(json);
 }
 @end
 @implementation RCTCxxConvert (NativeCameraRollManager_PhotoIdentifierNodeLocation)
@@ -978,6 +978,26 @@ namespace facebook {
         
         
         methodMap_["setIsShakeToShowDevMenuEnabled"] = MethodMetadata {1, __hostFunction_NativeDevSettingsSpecJSI_setIsShakeToShowDevMenuEnabled};
+        
+        
+
+    }
+
+  } // namespace react
+} // namespace facebook
+namespace facebook {
+  namespace react {
+
+    
+    static facebook::jsi::Value __hostFunction_NativeDevSplitBundleLoaderSpecJSI_loadBundle(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, PromiseKind, "loadBundle", @selector(loadBundle:resolve:reject:), args, count);
+    }
+
+
+    NativeDevSplitBundleLoaderSpecJSI::NativeDevSplitBundleLoaderSpecJSI(const ObjCTurboModule::InitParams &params)
+      : ObjCTurboModule(params) {
+        
+        methodMap_["loadBundle"] = MethodMetadata {1, __hostFunction_NativeDevSplitBundleLoaderSpecJSI_loadBundle};
         
         
 
@@ -2378,39 +2398,6 @@ namespace facebook {
 
   } // namespace react
 } // namespace facebook
-@implementation RCTCxxConvert (NativeTimePickerAndroid_TimePickerOptions)
-+ (RCTManagedPointer *)JS_NativeTimePickerAndroid_TimePickerOptions:(id)json
-{
-  return facebook::react::managedPointer<JS::NativeTimePickerAndroid::TimePickerOptions>(json);
-}
-@end
-namespace facebook {
-  namespace react {
-
-    
-    static facebook::jsi::Value __hostFunction_NativeTimePickerAndroidSpecJSI_open(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
-      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, PromiseKind, "open", @selector(open:resolve:reject:), args, count);
-    }
-
-
-    NativeTimePickerAndroidSpecJSI::NativeTimePickerAndroidSpecJSI(const ObjCTurboModule::InitParams &params)
-      : ObjCTurboModule(params) {
-        
-        methodMap_["open"] = MethodMetadata {1, __hostFunction_NativeTimePickerAndroidSpecJSI_open};
-        
-        setMethodArgConversionSelector(@"open", 0, @"JS_NativeTimePickerAndroid_TimePickerOptions:");
-        
-
-    }
-
-  } // namespace react
-} // namespace facebook
-@implementation RCTCxxConvert (NativeTimePickerAndroid_TimePickerResult)
-+ (RCTManagedPointer *)JS_NativeTimePickerAndroid_TimePickerResult:(id)json
-{
-  return facebook::react::managedPointer<JS::NativeTimePickerAndroid::TimePickerResult>(json);
-}
-@end
 namespace facebook {
   namespace react {
 
@@ -2496,10 +2483,6 @@ namespace facebook {
 
     static facebook::jsi::Value __hostFunction_NativeUIManagerSpecJSI_getDefaultEventTypes(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
       return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, ArrayKind, "getDefaultEventTypes", @selector(getDefaultEventTypes), args, count);
-    }
-
-    static facebook::jsi::Value __hostFunction_NativeUIManagerSpecJSI_playTouchSound(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
-      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, VoidKind, "playTouchSound", @selector(playTouchSound), args, count);
     }
 
     static facebook::jsi::Value __hostFunction_NativeUIManagerSpecJSI_lazilyLoadView(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
@@ -2606,9 +2589,6 @@ namespace facebook {
         
         
         methodMap_["getDefaultEventTypes"] = MethodMetadata {0, __hostFunction_NativeUIManagerSpecJSI_getDefaultEventTypes};
-        
-        
-        methodMap_["playTouchSound"] = MethodMetadata {0, __hostFunction_NativeUIManagerSpecJSI_playTouchSound};
         
         
         methodMap_["lazilyLoadView"] = MethodMetadata {1, __hostFunction_NativeUIManagerSpecJSI_lazilyLoadView};

@@ -15,9 +15,6 @@
 
 typedef void (^AnimatedOperation)(RCTNativeAnimatedNodesManager *nodesManager);
 
-@interface RCTNativeAnimatedModule() <NativeAnimatedModuleSpec>
-@end
-
 @implementation RCTNativeAnimatedModule
 {
   RCTNativeAnimatedNodesManager *_nodesManager;
@@ -96,16 +93,16 @@ RCT_EXPORT_METHOD(startAnimatingNode:(double)animationId
     [nodesManager startAnimatingNode:[NSNumber numberWithDouble:animationId] nodeTag:[NSNumber numberWithDouble:nodeTag] config:config endCallback:callBack];
   }];
 
-  RCTExecuteOnMainQueue(^{
-    if (![self->_nodesManager isNodeManagedByFabric:[NSNumber numberWithDouble:nodeTag]]) {
-      return;
-    }
+ RCTExecuteOnMainQueue(^{
+   if (![self->_nodesManager isNodeManagedByFabric:[NSNumber numberWithDouble:nodeTag]]) {
+     return;
+   }
 
-    RCTExecuteOnUIManagerQueue(^{
-      self->_animIdIsManagedByFabric[[NSNumber numberWithDouble:animationId]] = @YES;
-      [self flushOperationQueues];
-    });
-  });
+   RCTExecuteOnUIManagerQueue(^{
+     self->_animIdIsManagedByFabric[[NSNumber numberWithDouble:animationId]] = @YES;
+     [self flushOperationQueues];
+   });
+ });
 }
 
 RCT_EXPORT_METHOD(stopAnimation:(double)animationId)
@@ -333,11 +330,6 @@ RCT_EXPORT_METHOD(removeAnimatedEventFromView:(double)viewTag
   RCTExecuteOnMainQueue(^{
     [self->_nodesManager handleAnimatedEvent:event];
   });
-}
-
-- (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:(const facebook::react::ObjCTurboModule::InitParams &)params
-{
-  return std::make_shared<facebook::react::NativeAnimatedModuleSpecJSI>(params);
 }
 
 @end

@@ -37,6 +37,29 @@ static jsi::Value textInputMetricsPayload(
   return payload;
 };
 
+static jsi::Value keyPressMetricsPayload(
+    jsi::Runtime &runtime,
+    KeyPressMetrics const &keyPressMetrics) {
+  auto payload = jsi::Object(runtime);
+  payload.setProperty(runtime, "eventCount", keyPressMetrics.eventCount);
+
+  std::string key;
+  if (keyPressMetrics.text.empty()) {
+    key = "Backspace";
+  } else {
+    if (keyPressMetrics.text.front() == '\n') {
+      key = "Enter";
+    } else if (keyPressMetrics.text.front() == '\t') {
+      key = "Tab";
+    } else {
+      key = keyPressMetrics.text.front();
+    }
+  }
+  payload.setProperty(
+      runtime, "key", jsi::String::createFromUtf8(runtime, key));
+  return payload;
+};
+
 void TextInputEventEmitter::onFocus(
     TextInputMetrics const &textInputMetrics) const {
   dispatchTextInputEvent("focus", textInputMetrics);
@@ -78,8 +101,13 @@ void TextInputEventEmitter::onSubmitEditing(
 }
 
 void TextInputEventEmitter::onKeyPress(
-    TextInputMetrics const &textInputMetrics) const {
-  dispatchTextInputEvent("keyPress", textInputMetrics);
+    KeyPressMetrics const &keyPressMetrics) const {
+  dispatchEvent(
+      "keyPress",
+      [keyPressMetrics](jsi::Runtime &runtime) {
+        return keyPressMetricsPayload(runtime, keyPressMetrics);
+      },
+      EventPriority::AsynchronousBatched);
 }
 
 void TextInputEventEmitter::dispatchTextInputEvent(

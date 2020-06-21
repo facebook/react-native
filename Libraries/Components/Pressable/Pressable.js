@@ -22,6 +22,7 @@ import type {
   AccessibilityState,
   AccessibilityValue,
 } from '../View/ViewAccessibility';
+import {PressabilityDebugView} from '../../Pressability/PressabilityDebug';
 import usePressability from '../../Pressability/usePressability';
 import {normalizeRect, type RectOrSize} from '../../StyleSheet/Rect';
 import type {LayoutEvent, PressEvent} from '../../Types/CoreEventTypes';
@@ -77,7 +78,7 @@ type Props = $ReadOnly<{|
    * Additional distance outside of this view in which a touch is considered a
    * press before `onPressOut` is triggered.
    */
-  pressRectOffset?: ?RectOrSize,
+  pressRetentionOffset?: ?RectOrSize,
 
   /**
    * Called when this view's layout changes.
@@ -148,7 +149,7 @@ function Pressable(props: Props, forwardedRef): React.Node {
     onPress,
     onPressIn,
     onPressOut,
-    pressRectOffset,
+    pressRetentionOffset,
     style,
     testOnly_pressed,
     ...restProps
@@ -167,7 +168,7 @@ function Pressable(props: Props, forwardedRef): React.Node {
     () => ({
       disabled,
       hitSlop,
-      pressRectOffset,
+      pressRectOffset: pressRetentionOffset,
       android_disableSound,
       delayLongPress,
       onLongPress,
@@ -202,7 +203,7 @@ function Pressable(props: Props, forwardedRef): React.Node {
       onPress,
       onPressIn,
       onPressOut,
-      pressRectOffset,
+      pressRetentionOffset,
       setPressed,
     ],
   );
@@ -219,6 +220,7 @@ function Pressable(props: Props, forwardedRef): React.Node {
       ref={viewRef}
       style={typeof style === 'function' ? style({pressed}) : style}>
       {typeof children === 'function' ? children({pressed}) : children}
+      {__DEV__ ? <PressabilityDebugView color="red" hitSlop={hitSlop} /> : null}
     </View>
   );
 }

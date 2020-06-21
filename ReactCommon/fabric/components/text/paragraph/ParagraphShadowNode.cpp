@@ -23,7 +23,8 @@ using Content = ParagraphShadowNode::Content;
 
 char const ParagraphComponentName[] = "Paragraph";
 
-Content const &ParagraphShadowNode::getContent() const {
+Content const &ParagraphShadowNode::getContent(
+    LayoutContext const &layoutContext) const {
   if (content_.has_value()) {
     return content_.value();
   }
@@ -31,6 +32,7 @@ Content const &ParagraphShadowNode::getContent() const {
   ensureUnsealed();
 
   auto textAttributes = TextAttributes::defaultTextAttributes();
+  textAttributes.fontSizeMultiplier = layoutContext.fontSizeMultiplier;
   textAttributes.apply(getConcreteProps().textAttributes);
   textAttributes.layoutDirection =
       YGNodeLayoutGetDirection(&yogaNode_) == YGDirectionRTL
@@ -49,7 +51,7 @@ Content const &ParagraphShadowNode::getContent() const {
 Content ParagraphShadowNode::getContentWithMeasuredAttachments(
     LayoutContext const &layoutContext,
     LayoutConstraints const &layoutConstraints) const {
-  auto content = getContent();
+  auto content = getContent(layoutContext);
 
   if (content.attachments.empty()) {
     // Base case: No attachments, nothing to do.
@@ -116,17 +118,28 @@ void ParagraphShadowNode::updateStateIfNeeded(Content const &content) {
 
 #pragma mark - LayoutableShadowNode
 
-Size ParagraphShadowNode::measure(LayoutConstraints layoutConstraints) const {
+Size ParagraphShadowNode::measureContent(
+    LayoutContext const &layoutContext,
+    LayoutConstraints const &layoutConstraints) const {
   auto content =
-      getContentWithMeasuredAttachments(LayoutContext{}, layoutConstraints);
+      getContentWithMeasuredAttachments(layoutContext, layoutConstraints);
 
-  if (content.attributedString.isEmpty()) {
-    return layoutConstraints.clamp({0, 0});
+  auto attributedString = content.attributedString;
+  if (attributedString.isEmpty()) {
+    // Note: `zero-width space` is insufficient in some cases (e.g. when we need
+    // to measure the "height" of the font).
+    // TODO T67606511: We will redefine the measurement of empty strings as part
+    // of T67606511
+    auto string = BaseTextShadowNode::getEmptyPlaceholder();
+    auto textAttributes = TextAttributes::defaultTextAttributes();
+    textAttributes.fontSizeMultiplier = layoutContext.fontSizeMultiplier;
+    textAttributes.apply(getConcreteProps().textAttributes);
+    attributedString.appendFragment({string, textAttributes, {}});
   }
 
   return textLayoutManager_
       ->measure(
-          AttributedStringBox{content.attributedString},
+          AttributedStringBox{attributedString},
           content.paragraphAttributes,
           layoutConstraints)
       .size;

@@ -24,11 +24,25 @@ static std::string moduleNameFromComponentName(const std::string &componentName)
   if (componentName == "StickerInputView") {
     return "FBStickerInputViewManager";
   }
+
+  if (componentName == "FDSTooltipView") {
+    return "FBReactFDSTooltipViewManager";
+  }
+
+  if (componentName == "FBRotatablePhotoPlayer") {
+    return "FBRotatablePhotoPlayerViewManager";
+  }
   std::string fbPrefix("FB");
   if (std::mismatch(fbPrefix.begin(), fbPrefix.end(), componentName.begin()).first == fbPrefix.end()) {
     // If `moduleName` has "FB" prefix.
     return componentName + "Manager";
   }
+
+  std::string artPrefix("ART");
+  if (std::mismatch(artPrefix.begin(), artPrefix.end(), componentName.begin()).first == artPrefix.end()) {
+    return componentName + "Manager";
+  }
+
   return "RCT" + componentName + "Manager";
 }
 

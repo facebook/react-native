@@ -7,8 +7,8 @@
 
 package com.facebook.react.uimanager;
 
-import android.content.res.Resources;
 import android.graphics.Matrix;
+import android.graphics.Rect;
 import android.graphics.RectF;
 import android.util.SparseArray;
 import android.util.SparseBooleanArray;
@@ -29,6 +29,7 @@ import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.RetryableMountingLayerException;
 import com.facebook.react.bridge.SoftAssertions;
 import com.facebook.react.bridge.UiThreadUtil;
+import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.react.touch.JSResponderHandler;
 import com.facebook.react.uimanager.layoutanimation.LayoutAnimationController;
 import com.facebook.react.uimanager.layoutanimation.LayoutAnimationListener;
@@ -283,11 +284,16 @@ public class NativeViewHierarchyManager {
     StringBuilder stringBuilder = new StringBuilder();
 
     if (null != viewToManage) {
-      stringBuilder.append("View tag:" + viewToManage.getId() + "\n");
+      stringBuilder.append(
+          "View tag:"
+              + viewToManage.getId()
+              + " View Type:"
+              + viewToManage.getClass().toString()
+              + "\n");
       stringBuilder.append("  children(" + viewManager.getChildCount(viewToManage) + "): [\n");
-      for (int index = 0; index < viewManager.getChildCount(viewToManage); index += 16) {
+      for (int index = 0; viewManager.getChildAt(viewToManage, index) != null; index += 16) {
         for (int innerOffset = 0;
-            ((index + innerOffset) < viewManager.getChildCount(viewToManage)) && innerOffset < 16;
+            viewManager.getChildAt(viewToManage, index + innerOffset) != null && innerOffset < 16;
             innerOffset++) {
           stringBuilder.append(
               viewManager.getChildAt(viewToManage, index + innerOffset).getId() + ",");
@@ -395,7 +401,7 @@ public class NativeViewHierarchyManager {
                   + constructManageChildrenErrorMessage(
                       viewToManage, viewManager, indicesToRemove, viewsToAdd, tagsToDelete));
         }
-        if (indexToRemove >= viewManager.getChildCount(viewToManage)) {
+        if (viewManager.getChildAt(viewToManage, indexToRemove) == null) {
           if (mRootTags.get(tag) && viewManager.getChildCount(viewToManage) == 0) {
             // This root node has already been removed (likely due to a threading issue caused by
             // async js execution). Ignore this root removal.
@@ -701,14 +707,12 @@ public class NativeViewHierarchyManager {
 
     v.getLocationOnScreen(outputBuffer);
 
-    // We need to remove the status bar from the height.  getLocationOnScreen will include the
-    // status bar.
-    Resources resources = v.getContext().getResources();
-    int statusBarId = resources.getIdentifier("status_bar_height", "dimen", "android");
-    if (statusBarId > 0) {
-      int height = (int) resources.getDimension(statusBarId);
-      outputBuffer[1] -= height;
-    }
+    // we need to subtract visibleWindowCoords - to subtract possible window insets, split screen or
+    // multi window
+    Rect visibleWindowFrame = new Rect();
+    v.getWindowVisibleDisplayFrame(visibleWindowFrame);
+    outputBuffer[0] = outputBuffer[0] - visibleWindowFrame.left;
+    outputBuffer[1] = outputBuffer[1] - visibleWindowFrame.top;
 
     // outputBuffer[0,1] already contain what we want
     outputBuffer[2] = v.getWidth();
@@ -786,7 +790,13 @@ public class NativeViewHierarchyManager {
               + commandId);
     }
     ViewManager viewManager = resolveViewManager(reactTag);
-    viewManager.receiveCommand(view, commandId, args);
+    ViewManagerDelegate delegate;
+    if (ReactFeatureFlags.useViewManagerDelegatesForCommands
+        && (delegate = viewManager.getDelegate()) != null) {
+      delegate.receiveCommand(view, commandId, args);
+    } else {
+      viewManager.receiveCommand(view, commandId, args);
+    }
   }
 
   /**

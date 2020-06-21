@@ -19,10 +19,13 @@ namespace react {
  */
 class ImageState final {
  public:
-  ImageState(ImageSource const &imageSource, ImageRequest imageRequest)
+  ImageState(
+      ImageSource const &imageSource,
+      ImageRequest imageRequest,
+      Float const blurRadius)
       : imageSource_(imageSource),
-        imageRequest_(
-            std::make_shared<ImageRequest>(std::move(imageRequest))){};
+        imageRequest_(std::make_shared<ImageRequest>(std::move(imageRequest))),
+        blurRadius_(blurRadius){};
 
   /*
    * Returns stored ImageSource object.
@@ -35,8 +38,11 @@ class ImageState final {
    */
   ImageRequest const &getImageRequest() const;
 
+  Float getBlurRadius() const;
+
 #ifdef ANDROID
-  ImageState(ImageState const &previousState, folly::dynamic data){};
+  ImageState(ImageState const &previousState, folly::dynamic data)
+      : blurRadius_{0} {};
 
   /*
    * Empty implementation for Android because it doesn't use this class.
@@ -49,6 +55,7 @@ class ImageState final {
  private:
   ImageSource imageSource_;
   std::shared_ptr<ImageRequest> imageRequest_;
+  Float const blurRadius_;
 };
 
 } // namespace react

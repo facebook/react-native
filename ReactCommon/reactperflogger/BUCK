@@ -1,0 +1,28 @@
+load("//tools/build_defs/oss:rn_defs.bzl", "ANDROID", "APPLE", "rn_xplat_cxx_library")
+
+rn_xplat_cxx_library(
+    name = "reactperflogger",
+    srcs = glob(["**/*.cpp"]),
+    header_namespace = "",
+    exported_headers = {
+        "reactperflogger/BridgeNativeModulePerfLogger.h": "reactperflogger/BridgeNativeModulePerfLogger.h",
+        "reactperflogger/NativeModulePerfLogger.h": "reactperflogger/NativeModulePerfLogger.h",
+    },
+    compiler_flags = [
+        "-fexceptions",
+        "-frtti",
+        "-std=c++14",
+        "-Wall",
+        "-Wno-global-constructors",
+    ],
+    labels = ["supermodule:xplat/default/public.react_native.infra"],
+    platforms = (ANDROID, APPLE),
+    preferred_linkage = "static",
+    preprocessor_flags = [
+        "-DLOG_TAG=\"ReactNative\"",
+        "-DWITH_FBSYSTRACE=1",
+    ],
+    visibility = [
+        "PUBLIC",
+    ],
+)

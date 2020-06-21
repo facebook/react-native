@@ -107,7 +107,7 @@ public class ReactImageManager extends SimpleViewManager<ReactImageView> {
   public ReactImageView createViewInstance(ThemedReactContext context) {
     Object callerContext =
         mCallerContextFactory != null
-            ? mCallerContextFactory.getOrCreateCallerContext(context, null)
+            ? mCallerContextFactory.getOrCreateCallerContext(context.getSurfaceID(), null)
             : getCallerContext();
     return new ReactImageView(
         context, getDraweeControllerBuilder(), mGlobalImageLoadListener, callerContext);
@@ -129,7 +129,7 @@ public class ReactImageManager extends SimpleViewManager<ReactImageView> {
     if (mCallerContextFactory != null) {
       view.updateCallerContext(
           mCallerContextFactory.getOrCreateCallerContext(
-              (ThemedReactContext) view.getContext(), analyticTag));
+              ((ThemedReactContext) view.getContext()).getSurfaceID(), analyticTag));
     }
   }
 
@@ -242,13 +242,15 @@ public class ReactImageManager extends SimpleViewManager<ReactImageView> {
   public @Nullable Map getExportedCustomDirectEventTypeConstants() {
     return MapBuilder.of(
         ImageLoadEvent.eventNameForType(ImageLoadEvent.ON_LOAD_START),
-            MapBuilder.of("registrationName", "onLoadStart"),
+        MapBuilder.of("registrationName", "onLoadStart"),
+        ImageLoadEvent.eventNameForType(ImageLoadEvent.ON_PROGRESS),
+        MapBuilder.of("registrationName", "onProgress"),
         ImageLoadEvent.eventNameForType(ImageLoadEvent.ON_LOAD),
-            MapBuilder.of("registrationName", "onLoad"),
+        MapBuilder.of("registrationName", "onLoad"),
         ImageLoadEvent.eventNameForType(ImageLoadEvent.ON_ERROR),
-            MapBuilder.of("registrationName", "onError"),
+        MapBuilder.of("registrationName", "onError"),
         ImageLoadEvent.eventNameForType(ImageLoadEvent.ON_LOAD_END),
-            MapBuilder.of("registrationName", "onLoadEnd"));
+        MapBuilder.of("registrationName", "onLoadEnd"));
   }
 
   @Override

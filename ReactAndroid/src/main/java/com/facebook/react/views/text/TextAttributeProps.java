@@ -10,6 +10,7 @@ package com.facebook.react.views.text;
 import android.graphics.Typeface;
 import android.os.Build;
 import android.text.Layout;
+import android.util.LayoutDirection;
 import android.view.Gravity;
 import androidx.annotation.Nullable;
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
@@ -56,6 +57,9 @@ public class TextAttributeProps {
   protected float mLineHeightInput = UNSET;
   protected float mLetterSpacingInput = Float.NaN;
   protected int mTextAlign = Gravity.NO_GRAVITY;
+
+  // `UNSET` is -1 and is the same as `LayoutDirection.UNDEFINED` but the symbol isn't available.
+  protected int mLayoutDirection = UNSET;
 
   protected TextTransform mTextTransform = TextTransform.UNSET;
 
@@ -129,10 +133,10 @@ public class TextAttributeProps {
     setTextShadowRadius(getIntProp(PROP_SHADOW_RADIUS, 1));
     setTextShadowColor(getIntProp(PROP_SHADOW_COLOR, DEFAULT_TEXT_SHADOW_COLOR));
     setTextTransform(getStringProp(PROP_TEXT_TRANSFORM));
+    setLayoutDirection(getStringProp(ViewProps.LAYOUT_DIRECTION));
   }
 
-  // TODO T63645393 add support for RTL
-  public static int getTextAlignment(ReactStylesDiffMap props) {
+  public static int getTextAlignment(ReactStylesDiffMap props, boolean isRTL) {
     @Nullable
     String textAlignPropValue =
         props.hasKey(ViewProps.TEXT_ALIGN) ? props.getString(ViewProps.TEXT_ALIGN) : null;
@@ -144,9 +148,9 @@ public class TextAttributeProps {
       if (textAlignPropValue == null || "auto".equals(textAlignPropValue)) {
         textAlignment = Gravity.NO_GRAVITY;
       } else if ("left".equals(textAlignPropValue)) {
-        textAlignment = Gravity.LEFT;
+        textAlignment = isRTL ? Gravity.RIGHT : Gravity.LEFT;
       } else if ("right".equals(textAlignPropValue)) {
-        textAlignment = Gravity.RIGHT;
+        textAlignment = isRTL ? Gravity.LEFT : Gravity.RIGHT;
       } else if ("center".equals(textAlignPropValue)) {
         textAlignment = Gravity.CENTER_HORIZONTAL;
       } else {
@@ -366,6 +370,19 @@ public class TextAttributeProps {
         mTextShadowOffsetDy =
             PixelUtil.toPixelFromDIP(offsetMap.getDouble(PROP_SHADOW_OFFSET_HEIGHT));
       }
+    }
+  }
+
+  public void setLayoutDirection(@Nullable String layoutDirection) {
+    if (layoutDirection == null || "undefined".equals(layoutDirection)) {
+      mLayoutDirection = UNSET;
+    } else if ("rtl".equals(layoutDirection)) {
+      mLayoutDirection = LayoutDirection.RTL;
+    } else if ("ltr".equals(layoutDirection)) {
+      mLayoutDirection = LayoutDirection.LTR;
+    } else {
+      throw new JSApplicationIllegalArgumentException(
+          "Invalid layoutDirection: " + layoutDirection);
     }
   }
 

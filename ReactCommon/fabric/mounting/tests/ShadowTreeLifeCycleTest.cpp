@@ -20,7 +20,6 @@ namespace facebook {
 namespace react {
 
 static void testShadowNodeTreeLifeCycle(
-    DifferentiatorMode differentiatorMode,
     uint_fast32_t seed,
     int treeSize,
     int repeats,
@@ -72,8 +71,8 @@ static void testShadowNodeTreeLifeCycle(
 
     // Building an initial view hierarchy.
     auto viewTree = stubViewTreeFromShadowNode(*emptyRootNode);
-    viewTree.mutate(calculateShadowViewMutations(
-        differentiatorMode, *emptyRootNode, *currentRootNode));
+    viewTree.mutate(
+        calculateShadowViewMutations(*emptyRootNode, *currentRootNode));
 
     for (int j = 0; j < stages; j++) {
       auto nextRootNode = currentRootNode;
@@ -99,8 +98,8 @@ static void testShadowNodeTreeLifeCycle(
       allNodes.push_back(nextRootNode);
 
       // Calculating mutations.
-      auto mutations = calculateShadowViewMutations(
-          differentiatorMode, *currentRootNode, *nextRootNode);
+      auto mutations =
+          calculateShadowViewMutations(*currentRootNode, *nextRootNode);
 
       // Mutating the view tree.
       viewTree.mutate(mutations);
@@ -114,6 +113,9 @@ static void testShadowNodeTreeLifeCycle(
 
         LOG(ERROR) << "Entropy seed: " << entropy.getSeed() << "\n";
 
+        // There are some issues getting `getDebugDescription` to compile
+        // under test on Android for now.
+#ifndef ANDROID
         LOG(ERROR) << "Shadow Tree before: \n"
                    << currentRootNode->getDebugDescription();
         LOG(ERROR) << "Shadow Tree after: \n"
@@ -128,6 +130,7 @@ static void testShadowNodeTreeLifeCycle(
         LOG(ERROR) << "Mutations:"
                    << "\n"
                    << getDebugDescription(mutations, {});
+#endif
 
         FAIL();
       }
@@ -144,28 +147,9 @@ static void testShadowNodeTreeLifeCycle(
 
 using namespace facebook::react;
 
-TEST(MountingTest, stableBiggerTreeFewerIterationsClassic) {
-  testShadowNodeTreeLifeCycle(
-      DifferentiatorMode::Classic,
-      /* seed */ 1,
-      /* size */ 512,
-      /* repeats */ 32,
-      /* stages */ 32);
-}
-
-TEST(MountingTest, stableSmallerTreeMoreIterationsClassic) {
-  testShadowNodeTreeLifeCycle(
-      DifferentiatorMode::Classic,
-      /* seed */ 1,
-      /* size */ 16,
-      /* repeats */ 512,
-      /* stages */ 32);
-}
-
 TEST(MountingTest, stableBiggerTreeFewerIterationsOptimizedMoves) {
   testShadowNodeTreeLifeCycle(
-      DifferentiatorMode::OptimizedMoves,
-      /* seed */ 1,
+      /* seed */ 0,
       /* size */ 512,
       /* repeats */ 32,
       /* stages */ 32);
@@ -173,8 +157,7 @@ TEST(MountingTest, stableBiggerTreeFewerIterationsOptimizedMoves) {
 
 TEST(MountingTest, stableSmallerTreeMoreIterationsOptimizedMoves) {
   testShadowNodeTreeLifeCycle(
-      DifferentiatorMode::OptimizedMoves,
-      /* seed */ 1,
+      /* seed */ 0,
       /* size */ 16,
       /* repeats */ 512,
       /* stages */ 32);

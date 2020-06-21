@@ -18,7 +18,7 @@ namespace react {
  * particularly list of mutations and meta-data associated with the commit.
  * Movable and copyable, but moving is strongly encouraged.
  * Beware: A moved-from object of this type has unspecified value and accessing
- * that is UB.
+ * that is UB (Undefined Behaviour).
  */
 class MountingTransaction final {
  public:

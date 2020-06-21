@@ -104,8 +104,8 @@ public class DisplayMetricsHolder {
   }
 
   public static Map<String, Map<String, Object>> getDisplayMetricsMap(double fontScale) {
-    Assertions.assertNotNull(
-        sWindowDisplayMetrics != null || sScreenDisplayMetrics != null,
+    Assertions.assertCondition(
+        sWindowDisplayMetrics != null && sScreenDisplayMetrics != null,
         "DisplayMetricsHolder must be initialized with initDisplayMetricsIfNotInitialized or initDisplayMetrics");
     final Map<String, Map<String, Object>> result = new HashMap<>();
     result.put("windowPhysicalPixels", getPhysicalPixelsMap(sWindowDisplayMetrics, fontScale));
@@ -114,8 +114,8 @@ public class DisplayMetricsHolder {
   }
 
   public static WritableNativeMap getDisplayMetricsNativeMap(double fontScale) {
-    Assertions.assertNotNull(
-        sWindowDisplayMetrics != null || sScreenDisplayMetrics != null,
+    Assertions.assertCondition(
+        sWindowDisplayMetrics != null && sScreenDisplayMetrics != null,
         "DisplayMetricsHolder must be initialized with initDisplayMetricsIfNotInitialized or initDisplayMetrics");
     final WritableNativeMap result = new WritableNativeMap();
     result.putMap(

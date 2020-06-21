@@ -17,35 +17,36 @@ namespace react {
 class ScrollViewProps final : public ViewProps {
  public:
   ScrollViewProps() = default;
-  ScrollViewProps(const ScrollViewProps &sourceProps, const RawProps &rawProps);
+  ScrollViewProps(ScrollViewProps const &sourceProps, RawProps const &rawProps);
 
 #pragma mark - Props
 
-  const bool alwaysBounceHorizontal{};
-  const bool alwaysBounceVertical{};
-  const bool bounces{true};
-  const bool bouncesZoom{true};
-  const bool canCancelContentTouches{true};
-  const bool centerContent{};
-  const bool automaticallyAdjustContentInsets{};
-  const Float decelerationRate{0.998};
-  const bool directionalLockEnabled{};
-  const ScrollViewIndicatorStyle indicatorStyle{};
-  const ScrollViewKeyboardDismissMode keyboardDismissMode{};
-  const Float maximumZoomScale{1.0};
-  const Float minimumZoomScale{1.0};
-  const bool scrollEnabled{true};
-  const bool pagingEnabled{};
-  const bool pinchGestureEnabled{true};
-  const bool scrollsToTop{true};
-  const bool showsHorizontalScrollIndicator{true};
-  const bool showsVerticalScrollIndicator{true};
-  const Float scrollEventThrottle{};
-  const Float zoomScale{1.0};
-  const EdgeInsets contentInset{};
-  const EdgeInsets scrollIndicatorInsets{};
-  const Float snapToInterval{};
-  const ScrollViewSnapToAlignment snapToAlignment{};
+  bool const alwaysBounceHorizontal{};
+  bool const alwaysBounceVertical{};
+  bool const bounces{true};
+  bool const bouncesZoom{true};
+  bool const canCancelContentTouches{true};
+  bool const centerContent{};
+  bool const automaticallyAdjustContentInsets{};
+  Float const decelerationRate{0.998};
+  bool const directionalLockEnabled{};
+  ScrollViewIndicatorStyle const indicatorStyle{};
+  ScrollViewKeyboardDismissMode const keyboardDismissMode{};
+  Float const maximumZoomScale{1.0};
+  Float const minimumZoomScale{1.0};
+  bool const scrollEnabled{true};
+  bool const pagingEnabled{};
+  bool const pinchGestureEnabled{true};
+  bool const scrollsToTop{true};
+  bool const showsHorizontalScrollIndicator{true};
+  bool const showsVerticalScrollIndicator{true};
+  Float const scrollEventThrottle{};
+  Float const zoomScale{1.0};
+  EdgeInsets const contentInset{};
+  Point const contentOffset{};
+  EdgeInsets const scrollIndicatorInsets{};
+  Float const snapToInterval{};
+  ScrollViewSnapToAlignment const snapToAlignment{};
 
 #pragma mark - DebugStringConvertible
 

@@ -145,6 +145,7 @@ import androidx.annotation.Nullable;
 
 public interface CommandNativeComponentManagerInterface<T extends View> {
   void setAccessibilityHint(T view, @Nullable String value);
+  void handleRootTag(T view, double rootTag);
   void hotspotUpdate(T view, int x, int y);
 }
 ",
@@ -245,6 +246,8 @@ public interface InterfaceOnlyComponentManagerInterface<T extends View> {
 `;
 
 exports[`GeneratePropsJavaInterface can generate fixture EXCLUDE_ANDROID 1`] = `Map {}`;
+
+exports[`GeneratePropsJavaInterface can generate fixture EXCLUDE_ANDROID_IOS 1`] = `Map {}`;
 
 exports[`GeneratePropsJavaInterface can generate fixture FLOAT_PROPS 1`] = `
 Map {

@@ -26,6 +26,17 @@
 
 @end
 
+/**
+ * Image Downloading priority.
+ * Use PriorityImmediate to download images at the highest priority.
+ * Use PriorityPrefetch to prefetch images at a lower priority.
+ * The priority logic is up to each @RCTImageLoaderProtocol implementation
+ */
+typedef NS_ENUM(NSUInteger, RCTImageLoaderPriority) {
+  RCTImageLoaderPriorityImmediate,
+  RCTImageLoaderPriorityPrefetch
+};
+
 @protocol RCTImageLoaderProtocol<RCTURLRequestHandler>
 
 /**
@@ -59,16 +70,22 @@
  */
 - (RCTImageLoaderCancellationBlock)loadImageWithURLRequest:(NSURLRequest *)imageURLRequest
                                                   callback:(RCTImageLoaderCompletionBlock)callback;
+/**
+ * As above, but includes download `priority`.
+ */
+- (RCTImageLoaderCancellationBlock)loadImageWithURLRequest:(NSURLRequest *)imageURLRequest
+                                                  priority:(RCTImageLoaderPriority)priority
+                                                  callback:(RCTImageLoaderCompletionBlock)callback;
 
 /**
- * As above, but includes target `size`, `scale` and `resizeMode`, which are used to
- * select the optimal dimensions for the loaded image. The `clipped` option
- * controls whether the image will be clipped to fit the specified size exactly,
- * or if the original aspect ratio should be retained.
- * `partialLoadBlock` is meant for custom image loaders that do not ship with the core RN library.
- * It is meant to be called repeatedly while loading the image as higher quality versions are decoded,
- * for instance with progressive JPEGs.
- */
+* As above, but includes target `size`, `scale` and `resizeMode`, which are used to
+* select the optimal dimensions for the loaded image. The `clipped` option
+* controls whether the image will be clipped to fit the specified size exactly,
+* or if the original aspect ratio should be retained.
+* `partialLoadBlock` is meant for custom image loaders that do not ship with the core RN library.
+* It is meant to be called repeatedly while loading the image as higher quality versions are decoded,
+* for instance with progressive JPEGs.
+*/
 - (RCTImageLoaderCancellationBlock)loadImageWithURLRequest:(NSURLRequest *)imageURLRequest
                                                       size:(CGSize)size
                                                      scale:(CGFloat)scale

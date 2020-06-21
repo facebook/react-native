@@ -19,6 +19,7 @@ EXPORTED_HEADERS = [
     "NativeMap.h",
     "ReadableNativeArray.h",
     "ReadableNativeMap.h",
+    "JRuntimeExecutor.h",
     "WritableNativeArray.h",
     "WritableNativeMap.h",
 ]
@@ -42,6 +43,7 @@ rn_xplat_cxx_library(
         "-Wno-inconsistent-missing-override",
     ],
     fbandroid_allow_jni_merging = True,
+    labels = ["supermodule:xplat/default/public.react_native.infra"],
     platforms = ANDROID,
     preprocessor_flags = [
         "-DLOG_TAG=\"ReactNativeJNI\"",
@@ -55,7 +57,7 @@ rn_xplat_cxx_library(
     deps = ([
         "//xplat/third-party/linker_lib:android",
         "//xplat/third-party/linker_lib:atomic",
-        "//xplat/third-party/glog:glog",
+        "//third-party/glog:glog",
         "//xplat/folly:molly",
         "//fbandroid/xplat/fbgloginit:fbgloginit",
         "//xplat/fbsystrace:fbsystrace",
@@ -64,6 +66,7 @@ rn_xplat_cxx_library(
         react_native_xplat_target("cxxreact:jsbigstring"),
         react_native_xplat_target("cxxreact:module"),
         react_native_xplat_target("jsinspector:jsinspector"),
+        react_native_xplat_target("runtimeexecutor:runtimeexecutor"),
         react_native_xplat_dep("jsi:jsi"),
         FBJNI_TARGET,
     ]) if not IS_OSS_BUILD else [],

@@ -25,7 +25,7 @@ LOCAL_LDLIBS += -landroid
 LOCAL_SHARED_LIBRARIES := libfolly_json libfb libfbjni libglog_init libyoga
 
 # The static libraries (.a files) that this module depends on.
-LOCAL_STATIC_LIBRARIES := libreactnative libcallinvokerholder
+LOCAL_STATIC_LIBRARIES := libreactnative libcallinvokerholder libruntimeexecutor
 
 # Name of this module.
 #
@@ -69,7 +69,9 @@ $(call import-module,cxxreact)
 $(call import-module,jsi)
 $(call import-module,jsiexecutor)
 $(call import-module,callinvoker)
+$(call import-module,reactperflogger)
 $(call import-module,hermes)
+$(call import-module,runtimeexecutor)
 
 include $(REACT_SRC_DIR)/turbomodule/core/jni/Android.mk
 

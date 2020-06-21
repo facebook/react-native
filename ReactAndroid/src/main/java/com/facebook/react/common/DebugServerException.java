@@ -40,16 +40,25 @@ public class DebugServerException extends RuntimeException {
     return new DebugServerException(reason + message + extra, t);
   }
 
+  private final String mOriginalMessage;
+
   private DebugServerException(String description, String fileName, int lineNumber, int column) {
     super(description + "\n  at " + fileName + ":" + lineNumber + ":" + column);
+    mOriginalMessage = description;
   }
 
   public DebugServerException(String description) {
     super(description);
+    mOriginalMessage = description;
   }
 
   public DebugServerException(String detailMessage, Throwable throwable) {
     super(detailMessage, throwable);
+    mOriginalMessage = detailMessage;
+  }
+
+  public String getOriginalMessage() {
+    return mOriginalMessage;
   }
 
   /**

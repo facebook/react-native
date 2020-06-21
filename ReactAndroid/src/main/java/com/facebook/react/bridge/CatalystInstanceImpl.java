@@ -240,6 +240,11 @@ public class CatalystInstanceImpl implements CatalystInstance {
     jniLoadScriptFromFile(fileName, sourceURL, loadSynchronously);
   }
 
+  @Override
+  public void loadSplitBundleFromFile(String fileName, String sourceURL) {
+    jniLoadScriptFromFile(fileName, sourceURL, false);
+  }
+
   private native void jniSetSourceURL(String sourceURL);
 
   private native void jniRegisterSegment(int segmentId, String path);
@@ -562,6 +567,7 @@ public class CatalystInstanceImpl implements CatalystInstance {
   }
 
   @Override
+  @Nullable
   public <T extends NativeModule> T getNativeModule(Class<T> nativeModuleInterface) {
     return (T) getNativeModule(getNameFromAnnotation(nativeModuleInterface));
   }
@@ -577,23 +583,18 @@ public class CatalystInstanceImpl implements CatalystInstance {
   }
 
   @Override
+  @Nullable
   public NativeModule getNativeModule(String moduleName) {
     if (getTurboModuleRegistry() != null) {
       TurboModule turboModule = getTurboModuleRegistry().getModule(moduleName);
-
-      // TODO(T46487253): Remove after task is closed
-      FLog.e(
-          ReactConstants.TAG,
-          "CatalystInstanceImpl.getNativeModule: TurboModule "
-              + moduleName
-              + (turboModule == null ? " not" : "")
-              + " found");
       if (turboModule != null) {
         return (NativeModule) turboModule;
       }
     }
 
-    return mNativeModuleRegistry.getModule(moduleName);
+    return mNativeModuleRegistry.hasModule(moduleName)
+        ? mNativeModuleRegistry.getModule(moduleName)
+        : null;
   }
 
   private <T extends NativeModule> String getNameFromAnnotation(Class<T> nativeModuleInterface) {
@@ -659,6 +660,9 @@ public class CatalystInstanceImpl implements CatalystInstance {
   }
 
   @Override
+  public native RuntimeExecutor getRuntimeExecutor();
+
+  @Override
   public void addJSIModules(List<JSIModuleSpec> jsiModules) {
     mJSIModuleRegistry.registerModules(jsiModules);
   }
@@ -715,9 +719,6 @@ public class CatalystInstanceImpl implements CatalystInstance {
   }
 
   private void onNativeException(Exception e) {
-    // TODO T62192299: remove this after investigation
-    FLog.e(ReactConstants.TAG, "CatalystInstanceImpl caught native exception", e);
-
     mNativeModuleCallExceptionHandler.handleException(e);
     mReactQueueConfiguration
         .getUIQueueThread()

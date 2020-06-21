@@ -10,6 +10,8 @@
 
 'use strict';
 
+export type PlatformType = 'iOS' | 'android';
+
 export type CommandsFunctionTypeAnnotation = $ReadOnly<{|
   type: 'FunctionTypeAnnotation',
   params: $ReadOnlyArray<CommandsFunctionTypeParamAnnotation>,
@@ -21,11 +23,17 @@ export type CommandsFunctionTypeParamAnnotation = $ReadOnly<{|
 |}>;
 
 export type CommandsTypeAnnotation =
+  | ReservedFunctionValueTypeAnnotation
   | BooleanTypeAnnotation
   | Int32TypeAnnotation
   | DoubleTypeAnnotation
   | FloatTypeAnnotation
   | StringTypeAnnotation;
+
+type ReservedFunctionValueTypeAnnotation = $ReadOnly<{|
+  type: 'ReservedFunctionValueTypeAnnotation',
+  name: ReservedFunctionValueTypeName,
+|}>;
 
 export type DoubleTypeAnnotation = $ReadOnly<{|
   type: 'DoubleTypeAnnotation',
@@ -47,7 +55,7 @@ export type StringTypeAnnotation = $ReadOnly<{|
   type: 'StringTypeAnnotation',
 |}>;
 
-export type ObjectPropertyType =
+export type EventObjectPropertyType =
   | $ReadOnly<{|
       type: 'BooleanTypeAnnotation',
       name: string,
@@ -85,7 +93,7 @@ export type ObjectPropertyType =
       type: 'ObjectTypeAnnotation',
       name: string,
       optional: boolean,
-      properties: $ReadOnlyArray<ObjectPropertyType>,
+      properties: $ReadOnlyArray<EventObjectPropertyType>,
     |}>;
 
 type PropTypeTypeAnnotation =
@@ -124,7 +132,7 @@ type PropTypeTypeAnnotation =
       |}>,
     |}>
   | $ReadOnly<{|
-      type: 'NativePrimitiveTypeAnnotation',
+      type: 'ReservedPropTypeAnnotation',
       name:
         | 'ColorPrimitive'
         | 'ImageSourcePrimitive'
@@ -165,7 +173,7 @@ type PropTypeTypeAnnotation =
             properties: $ReadOnlyArray<PropTypeShape>,
           |}>
         | $ReadOnly<{|
-            type: 'NativePrimitiveTypeAnnotation',
+            type: 'ReservedPropTypeAnnotation',
             name:
               | 'ColorPrimitive'
               | 'ImageSourcePrimitive'
@@ -200,12 +208,18 @@ export type PrimitiveTypeAnnotation = $ReadOnly<{|
   type: PrimitiveTypeAnnotationType,
 |}>;
 
+export type ReservedFunctionValueTypeName = 'RootTag'; // Union with more custom types.
+
 export type FunctionTypeAnnotationParamTypeAnnotation =
   | $ReadOnly<{|
       type:
         | 'AnyTypeAnnotation'
         | 'FunctionTypeAnnotation'
         | PrimitiveTypeAnnotationType,
+    |}>
+  | $ReadOnly<{|
+      type: 'ReservedFunctionValueTypeAnnotation',
+      name: ReservedFunctionValueTypeName,
     |}>
   | $ReadOnly<{|
       type: 'ArrayTypeAnnotation',
@@ -221,16 +235,21 @@ export type FunctionTypeAnnotationReturnArrayElementType = FunctionTypeAnnotatio
 export type ObjectParamTypeAnnotation = $ReadOnly<{|
   optional: boolean,
   name: string,
-  typeAnnotation: FunctionTypeAnnotationParamTypeAnnotation,
+  typeAnnotation?: FunctionTypeAnnotationParamTypeAnnotation, // TODO (T67898313): Workaround for NativeLinking's use of union type, typeAnnotations should not be optional
 |}>;
 
 export type FunctionTypeAnnotationReturn =
   | $ReadOnly<{|
       nullable: boolean,
       type:
-        | PrimitiveTypeAnnotationType
+        | 'GenericPromiseTypeAnnotation'
         | 'VoidTypeAnnotation'
-        | 'GenericPromiseTypeAnnotation',
+        | PrimitiveTypeAnnotationType,
+    |}>
+  | $ReadOnly<{|
+      nullable: boolean,
+      type: 'ReservedFunctionValueTypeAnnotation',
+      name: ReservedFunctionValueTypeName,
     |}>
   | $ReadOnly<{|
       nullable: boolean,
@@ -256,13 +275,13 @@ export type FunctionTypeAnnotation = $ReadOnly<{|
   optional: boolean,
 |}>;
 
-export type MethodTypeShape = $ReadOnly<{|
+export type NativeModuleMethodTypeShape = $ReadOnly<{|
   name: string,
   typeAnnotation: FunctionTypeAnnotation,
 |}>;
 
 export type NativeModuleShape = $ReadOnly<{|
-  properties: $ReadOnlyArray<MethodTypeShape>,
+  properties: $ReadOnlyArray<NativeModuleMethodTypeShape>,
 |}>;
 
 export type EventTypeShape = $ReadOnly<{|
@@ -274,7 +293,7 @@ export type EventTypeShape = $ReadOnly<{|
     type: 'EventTypeAnnotation',
     argument?: $ReadOnly<{|
       type: 'ObjectTypeAnnotation',
-      properties: $ReadOnlyArray<ObjectPropertyType>,
+      properties: $ReadOnlyArray<EventObjectPropertyType>,
     |}>,
   |}>,
 |}>;
@@ -292,8 +311,8 @@ export type OptionsShape = $ReadOnly<{|
   // Does not check for new name
   paperComponentName?: string,
 
-  // Use for components that are not used on one or the other platform.
-  excludedPlatform?: 'iOS' | 'android',
+  // Use for components that are not used on other platforms.
+  excludedPlatforms?: $ReadOnlyArray<PlatformType>,
 
   // Use for components currently being renamed in paper
   // Will use new name if it is available and fallback to this name

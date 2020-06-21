@@ -101,21 +101,33 @@ class YogaLayoutableShadowNode : public LayoutableShadowNode {
 
  private:
   /*
+   * Goes over `yogaNode_.getChildren()` and in case child's owner is
+   * equal to address of `yogaNode_`, it sets child's owner address
+   * to `0xBADC0FFEE0DDF00D`. This is magic constant, the intention
+   * is to make debugging easier when the address pops up in debugger.
+   * This prevents ABA problem where child yoga node goes from owned -> unowned
+   * -> back to owned because its parent is allocated at the same address.
+   */
+  void updateYogaChildrenOwnersIfNeeded();
+
+  /*
    * Return true if child's yogaNode's owner is this->yogaNode_. Otherwise
    * returns false.
    */
   bool doesOwn(YogaLayoutableShadowNode const &child) const;
 
   /*
-   * Appends `child`'s Yoga node to the own Yoga node.
-   * Complements `ShadowNode::appendChild(...)` functionality from Yoga
-   * perspective.
+   * Appends a Yoga node to the Yoga node associated with this node.
+   * The method does *not* do anything besides that (no cloning or `owner` field
+   * adjustment).
    */
-  void appendChildYogaNode(YogaLayoutableShadowNode const &child);
+  void appendYogaChild(ShadowNode const &childNode);
 
-  YogaLayoutableShadowNode &cloneAndReplaceChild(
-      YogaLayoutableShadowNode &child,
-      int suggestedIndex);
+  /*
+   * Makes the child node with a given `index` (and Yoga node associated with) a
+   * valid child node satisfied requirements of the Concurrent Layout approach.
+   */
+  void adoptYogaChild(size_t index);
 
   static YGConfig &initializeYogaConfig(YGConfig &config);
   static YGNode *yogaNodeCloneCallbackConnector(
@@ -128,6 +140,8 @@ class YogaLayoutableShadowNode : public LayoutableShadowNode {
       YGMeasureMode widthMode,
       float height,
       YGMeasureMode heightMode);
+
+#pragma mark - RTL Legacy Autoflip
 
   /*
    * Walks though shadow node hierarchy and reassign following values:
@@ -160,6 +174,13 @@ class YogaLayoutableShadowNode : public LayoutableShadowNode {
    */
   static void swapLeftAndRightInYogaStyleProps(
       YogaLayoutableShadowNode const &shadowNode);
+
+#pragma mark - Consistency Ensuring Helpers
+
+  void ensureConsistency() const;
+  void ensureYogaChildrenAlighment() const;
+  void ensureYogaChildrenOwnersConsistency() const;
+  void ensureYogaChildrenLookFine() const;
 };
 
 template <>

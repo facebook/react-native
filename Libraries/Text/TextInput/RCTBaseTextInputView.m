@@ -24,7 +24,6 @@
   __weak RCTEventDispatcher *_eventDispatcher;
   BOOL _hasInputAccesoryView;
   NSString *_Nullable _predictedText;
-  NSInteger _nativeEventCount;
   BOOL _didMoveToWindow;
 }
 
@@ -68,7 +67,13 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
 - (void)enforceTextAttributesIfNeeded
 {
   id<RCTBackedTextInputViewProtocol> backedTextInputView = self.backedTextInputView;
-  backedTextInputView.defaultTextAttributes = [_textAttributes effectiveTextAttributes];
+
+  NSDictionary<NSAttributedStringKey,id> *textAttributes = [[_textAttributes effectiveTextAttributes] mutableCopy];
+  if ([textAttributes valueForKey:NSForegroundColorAttributeName] == nil) {
+      [textAttributes setValue:[UIColor blackColor] forKey:NSForegroundColorAttributeName];
+  }
+
+  backedTextInputView.defaultTextAttributes = textAttributes;
 }
 
 - (void)setReactPaddingInsets:(UIEdgeInsets)reactPaddingInsets
@@ -193,17 +198,9 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
   }
 }
 
-- (void)setText:(NSString *__nullable)text
- selectionStart:(NSInteger)start
-   selectionEnd:(NSInteger)end
+- (void)setSelectionStart:(NSInteger)start
+             selectionEnd:(NSInteger)end
 {
-  if (text) {
-    NSMutableAttributedString *mutableString =
-    [[NSMutableAttributedString alloc] initWithAttributedString:self.backedTextInputView.attributedText];
-    [mutableString replaceCharactersInRange:NSMakeRange(0, mutableString.string.length) withString:text];
-    self.backedTextInputView.attributedText = mutableString;
-  }
-
   UITextPosition *startPosition = [self.backedTextInputView positionFromPosition:self.backedTextInputView.beginningOfDocument
                                                                           offset:start];
   UITextPosition *endPosition = [self.backedTextInputView positionFromPosition:self.backedTextInputView.beginningOfDocument
@@ -302,6 +299,18 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
     if (textInputView.isFirstResponder) {
       [textInputView reloadInputViews];
     }
+  }
+}
+
+- (void)setShowSoftInputOnFocus:(BOOL)showSoftInputOnFocus
+{
+  (void)_showSoftInputOnFocus;
+  if (showSoftInputOnFocus) {
+    // Resets to default keyboard.
+    self.backedTextInputView.inputView = nil;
+  } else {
+    // Hides keyboard, but keeps blinking cursor.
+    self.backedTextInputView.inputView = [[UIView alloc] init];
   }
 }
 

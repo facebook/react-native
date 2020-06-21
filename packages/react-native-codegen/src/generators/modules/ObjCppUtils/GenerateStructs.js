@@ -44,29 +44,136 @@ inline ::_RETURN_TYPE_::JS::Native::_MODULE_NAME_::::Spec::_STRUCT_NAME_::::::_P
 }
 `;
 
-function getInlineMethodSignature(
+function getSafePropertyName(name: string) {
+  if (name === 'id') {
+    return `${name}_`;
+  }
+  return name;
+}
+
+function getNamespacedStructName(structName: string, propertyName: string) {
+  return `JS::Native::_MODULE_NAME_::::Spec${structName}${capitalizeFirstLetter(
+    getSafePropertyName(propertyName),
+  )}`;
+}
+
+function getElementTypeForArray(
   property: ObjectParamTypeAnnotation,
   name: string,
+  moduleName: string,
 ): string {
   const {typeAnnotation} = property;
-  switch (typeAnnotation.type) {
+
+  // TODO(T67898313): Workaround for NativeLinking's use of union type. This check may be removed once typeAnnotation is non-optional.
+  if (!typeAnnotation) {
+    throw new Error(
+      `Cannot get array element type, property ${property.name} does not contain a type annotation`,
+    );
+  }
+
+  if (typeAnnotation.type !== 'ArrayTypeAnnotation') {
+    throw new Error(
+      `Cannot get array element type for non-array type ${typeAnnotation.type}`,
+    );
+  }
+
+  if (!typeAnnotation.elementType) {
+    return 'id<NSObject>';
+  }
+
+  const {type} = typeAnnotation.elementType;
+  switch (type) {
     case 'StringTypeAnnotation':
-      return `NSString *${property.name}() const;`;
+      return 'NSString *';
+    case 'DoubleTypeAnnotation':
     case 'NumberTypeAnnotation':
     case 'FloatTypeAnnotation':
     case 'Int32TypeAnnotation':
-      return `double ${property.name}() const;`;
-    case 'BooleanTypeAnnotation':
-      return `bool ${property.name}() const;`;
+      return 'double';
     case 'ObjectTypeAnnotation':
-      return `JS::Native::_MODULE_NAME_::::Spec${name}${capitalizeFirstLetter(
+      return getNamespacedStructName(name, property.name) + 'Element';
+    case 'GenericObjectTypeAnnotation':
+      // TODO(T67565166): Generic objects are not type safe and should be disallowed in the schema. This case should throw an error once it is disallowed in schema.
+      console.error(
+        `Warning: Generic objects are not type safe and should be avoided whenever possible (see '${property.name}' in ${moduleName}'s ${name})`,
+      );
+      return 'id<NSObject>';
+    case 'BooleanTypeAnnotation':
+    case 'AnyObjectTypeAnnotation':
+    case 'AnyTypeAnnotation':
+    case 'ArrayTypeAnnotation':
+    case 'FunctionTypeAnnotation':
+    case 'ReservedFunctionValueTypeAnnotation':
+    case 'ReservedPropTypeAnnotation':
+    case 'StringEnumTypeAnnotation':
+      throw new Error(`Unsupported array element type, found: ${type}"`);
+    default:
+      (type: empty);
+      throw new Error(`Unknown array element type, found: ${type}"`);
+  }
+}
+
+function getInlineMethodSignature(
+  property: ObjectParamTypeAnnotation,
+  name: string,
+  moduleName: string,
+): string {
+  const {typeAnnotation} = property;
+  function markOptionalTypeIfNecessary(type: string) {
+    if (property.optional) {
+      return `folly::Optional<${type}>`;
+    }
+    return type;
+  }
+
+  // TODO(T67672788): Workaround for values key in NativeLinking which lacks a typeAnnotation. id<NSObject> is not type safe!
+  if (!typeAnnotation) {
+    console.error(
+      `Warning: Unsafe type found (see '${property.name}' in ${moduleName}'s ${name})`,
+    );
+    return `id<NSObject> ${getSafePropertyName(property.name)}() const;`;
+  }
+
+  switch (typeAnnotation.type) {
+    case 'ReservedFunctionValueTypeAnnotation':
+      switch (typeAnnotation.name) {
+        case 'RootTag':
+          return `double ${getSafePropertyName(property.name)}() const;`;
+        default:
+          (typeAnnotation.name: empty);
+          throw new Error(`Unknown prop type, found: ${typeAnnotation.name}"`);
+      }
+    case 'StringTypeAnnotation':
+      return `NSString *${getSafePropertyName(property.name)}() const;`;
+    case 'NumberTypeAnnotation':
+    case 'FloatTypeAnnotation':
+    case 'Int32TypeAnnotation':
+      return `${markOptionalTypeIfNecessary('double')} ${getSafePropertyName(
         property.name,
-      )} ${property.name}() const;`;
+      )}() const;`;
+    case 'BooleanTypeAnnotation':
+      return `${markOptionalTypeIfNecessary('bool')} ${getSafePropertyName(
+        property.name,
+      )}() const;`;
+    case 'ObjectTypeAnnotation':
+      return (
+        markOptionalTypeIfNecessary(
+          getNamespacedStructName(name, property.name),
+        ) + ` ${getSafePropertyName(property.name)}() const;`
+      );
     case 'GenericObjectTypeAnnotation':
     case 'AnyTypeAnnotation':
-      return `id<NSObject> ${property.name}() const;`;
+      return `id<NSObject> ${
+        property.optional ? '_Nullable ' : ' '
+      }${getSafePropertyName(property.name)}() const;`;
     case 'ArrayTypeAnnotation':
-      return `facebook::react::LazyVector<id<NSObject>> ${property.name}() const;`;
+      return `${markOptionalTypeIfNecessary(
+        `facebook::react::LazyVector<${getElementTypeForArray(
+          property,
+          name,
+          moduleName,
+        )}>`,
+      )} ${getSafePropertyName(property.name)}() const;`;
     case 'FunctionTypeAnnotation':
     default:
       throw new Error(`Unknown prop type, found: ${typeAnnotation.type}"`);
@@ -76,9 +183,96 @@ function getInlineMethodSignature(
 function getInlineMethodImplementation(
   property: ObjectParamTypeAnnotation,
   name: string,
+  moduleName: string,
 ): string {
   const {typeAnnotation} = property;
+  function markOptionalTypeIfNecessary(type: string): string {
+    if (property.optional) {
+      return `folly::Optional<${type}> `;
+    }
+    return `${type} `;
+  }
+  function markOptionalValueIfNecessary(value: string): string {
+    if (property.optional) {
+      return `RCTBridgingToOptional${capitalizeFirstLetter(value)}`;
+    }
+    return `RCTBridgingTo${capitalizeFirstLetter(value)}`;
+  }
+  function bridgeArrayElementValueIfNecessary(element: string): string {
+    // TODO(T67898313): Workaround for NativeLinking's use of union type
+    if (!typeAnnotation) {
+      throw new Error(
+        `Cannot get array element type, property ${property.name} does not contain a type annotation`,
+      );
+    }
+
+    if (typeAnnotation.type !== 'ArrayTypeAnnotation') {
+      throw new Error(
+        `Cannot get array element type for non-array type ${typeAnnotation.type}`,
+      );
+    }
+
+    if (!typeAnnotation.elementType) {
+      throw new Error(`Cannot get array element type for ${name}`);
+    }
+
+    const {type} = typeAnnotation.elementType;
+    switch (type) {
+      case 'StringTypeAnnotation':
+        return `RCTBridgingToString(${element})`;
+      case 'DoubleTypeAnnotation':
+      case 'NumberTypeAnnotation':
+      case 'FloatTypeAnnotation':
+      case 'Int32TypeAnnotation':
+        return `RCTBridgingToDouble(${element})`;
+      case 'BooleanTypeAnnotation':
+        return `RCTBridgingToBool(${element})`;
+      case 'ObjectTypeAnnotation':
+        return `${getNamespacedStructName(
+          name,
+          property.name,
+        )}Element(${element})`;
+      case 'GenericObjectTypeAnnotation':
+        return element;
+      case 'AnyObjectTypeAnnotation':
+      case 'AnyTypeAnnotation':
+      case 'ArrayTypeAnnotation':
+      case 'FunctionTypeAnnotation':
+      case 'ReservedFunctionValueTypeAnnotation':
+      case 'ReservedPropTypeAnnotation':
+      case 'StringEnumTypeAnnotation':
+      case 'TupleTypeAnnotation':
+        throw new Error(`Unsupported array element type, found: ${type}"`);
+      default:
+        (type: empty);
+        throw new Error(`Unknown array element type, found: ${type}"`);
+    }
+  }
+
+  // TODO(T67672788): Workaround for values key in NativeLinking which lacks a typeAnnotation. id<NSObject> is not type safe!
+  if (!typeAnnotation) {
+    console.error(
+      `Warning: Unsafe type found (see '${property.name}' in ${moduleName}'s ${name})`,
+    );
+    return inlineTemplate
+      .replace(
+        /::_RETURN_TYPE_::/,
+        property.optional ? 'id<NSObject> _Nullable ' : 'id<NSObject> ',
+      )
+      .replace(/::_RETURN_VALUE_::/, 'p');
+  }
+
   switch (typeAnnotation.type) {
+    case 'ReservedFunctionValueTypeAnnotation':
+      switch (typeAnnotation.name) {
+        case 'RootTag':
+          return inlineTemplate
+            .replace(/::_RETURN_TYPE_::/, 'double ')
+            .replace(/::_RETURN_VALUE_::/, 'RCTBridgingToDouble(p)');
+        default:
+          (typeAnnotation.name: empty);
+          throw new Error(`Unknown prop type, found: ${typeAnnotation.name}"`);
+      }
     case 'StringTypeAnnotation':
       return inlineTemplate
         .replace(/::_RETURN_TYPE_::/, 'NSString *')
@@ -87,40 +281,64 @@ function getInlineMethodImplementation(
     case 'FloatTypeAnnotation':
     case 'Int32TypeAnnotation':
       return inlineTemplate
-        .replace(/::_RETURN_TYPE_::/, 'double ')
-        .replace(/::_RETURN_VALUE_::/, 'RCTBridgingToDouble(p)');
+        .replace(/::_RETURN_TYPE_::/, markOptionalTypeIfNecessary('double'))
+        .replace(
+          /::_RETURN_VALUE_::/,
+          `${markOptionalValueIfNecessary('double')}(p)`,
+        );
     case 'BooleanTypeAnnotation':
       return inlineTemplate
-        .replace(/::_RETURN_TYPE_::/, 'bool ')
-        .replace(/::_RETURN_VALUE_::/, 'RCTBridgingToBool(p)');
+        .replace(/::_RETURN_TYPE_::/, markOptionalTypeIfNecessary('bool'))
+        .replace(
+          /::_RETURN_VALUE_::/,
+          `${markOptionalValueIfNecessary('bool')}(p)`,
+        );
     case 'GenericObjectTypeAnnotation':
     case 'AnyTypeAnnotation':
       return inlineTemplate
-        .replace(/::_RETURN_TYPE_::/, 'id<NSObject> ')
+        .replace(
+          /::_RETURN_TYPE_::/,
+          property.optional ? 'id<NSObject> _Nullable ' : 'id<NSObject> ',
+        )
         .replace(/::_RETURN_VALUE_::/, 'p');
     case 'ObjectTypeAnnotation':
       return inlineTemplate
         .replace(
           /::_RETURN_TYPE_::/,
-          `JS::Native::_MODULE_NAME_::::Spec${name}${capitalizeFirstLetter(
-            property.name,
-          )} `,
+          markOptionalTypeIfNecessary(
+            getNamespacedStructName(name, property.name),
+          ),
         )
         .replace(
           /::_RETURN_VALUE_::/,
-          `JS::Native::_MODULE_NAME_::::Spec${name}${capitalizeFirstLetter(
-            property.name,
-          )}(p)`,
+          property.optional
+            ? `(p == nil ? folly::none : folly::make_optional(${getNamespacedStructName(
+                name,
+                property.name,
+              )}(p)))`
+            : `${getNamespacedStructName(name, property.name)}(p)`,
         );
     case 'ArrayTypeAnnotation':
       return inlineTemplate
         .replace(
           /::_RETURN_TYPE_::/,
-          'facebook::react::LazyVector<id<NSObject>> ',
+          markOptionalTypeIfNecessary(
+            `facebook::react::LazyVector<${getElementTypeForArray(
+              property,
+              name,
+              moduleName,
+            )}>`,
+          ),
         )
         .replace(
           /::_RETURN_VALUE_::/,
-          'RCTBridgingToVec(p, ^id<NSObject>(id itemValue_0) { return itemValue_0; })',
+          `${markOptionalValueIfNecessary('vec')}(p, ^${getElementTypeForArray(
+            property,
+            name,
+            moduleName,
+          )}(id itemValue_0) { return ${bridgeArrayElementValueIfNecessary(
+            'itemValue_0',
+          )}; })`,
         );
     case 'FunctionTypeAnnotation':
     default:
@@ -138,6 +356,7 @@ function translateObjectsForStructs(
       |}>,
     |}>,
   >,
+  moduleName: string,
 ): string {
   const flattenObjects = flatObjects(annotations);
 
@@ -146,8 +365,11 @@ function translateObjectsForStructs(
       (acc, object) =>
         acc.concat(
           object.properties.map(property =>
-            getInlineMethodImplementation(property, object.name)
-              .replace(/::_PROPERTY_NAME_::/g, property.name)
+            getInlineMethodImplementation(property, object.name, moduleName)
+              .replace(
+                /::_PROPERTY_NAME_::/g,
+                getSafePropertyName(property.name),
+              )
               .replace(/::_STRUCT_NAME_::/g, object.name),
           ),
         ),
@@ -161,7 +383,9 @@ function translateObjectsForStructs(
         .replace(
           /::_STRUCT_PROPERTIES_::/g,
           object.properties
-            .map(property => getInlineMethodSignature(property, object.name))
+            .map(property =>
+              getInlineMethodSignature(property, object.name, moduleName),
+            )
             .join('\n      '),
         )
         .replace(/::_STRUCT_NAME_::/g, object.name),

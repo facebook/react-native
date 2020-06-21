@@ -66,7 +66,7 @@ struct ShadowViewNodePair final {
   ShadowNode const *shadowNode;
 
   /*
-   * The stored pointer to `ShadowNode` represents an indentity of the pair.
+   * The stored pointer to `ShadowNode` represents an identity of the pair.
    */
   bool operator==(const ShadowViewNodePair &rhs) const;
   bool operator!=(const ShadowViewNodePair &rhs) const;

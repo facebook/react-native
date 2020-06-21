@@ -37,14 +37,11 @@ import com.facebook.react.modules.share.ShareModule;
 import com.facebook.react.modules.sound.SoundManagerModule;
 import com.facebook.react.modules.statusbar.StatusBarModule;
 import com.facebook.react.modules.storage.AsyncStorageModule;
-import com.facebook.react.modules.timepicker.TimePickerDialogModule;
 import com.facebook.react.modules.toast.ToastModule;
 import com.facebook.react.modules.vibration.VibrationModule;
 import com.facebook.react.modules.websocket.WebSocketModule;
 import com.facebook.react.turbomodule.core.interfaces.TurboModule;
 import com.facebook.react.uimanager.ViewManager;
-import com.facebook.react.views.art.ARTRenderableViewManager;
-import com.facebook.react.views.art.ARTSurfaceViewManager;
 import com.facebook.react.views.drawer.ReactDrawerLayoutManager;
 import com.facebook.react.views.image.ReactImageManager;
 import com.facebook.react.views.modal.ReactModalHostManager;
@@ -63,7 +60,6 @@ import com.facebook.react.views.text.ReactVirtualTextViewManager;
 import com.facebook.react.views.text.frescosupport.FrescoBasedReactTextInlineImageViewManager;
 import com.facebook.react.views.textinput.ReactTextInputManager;
 import com.facebook.react.views.view.ReactViewManager;
-import com.facebook.react.views.viewpager.ReactViewPagerManager;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -94,7 +90,6 @@ import java.util.Map;
       ShareModule.class,
       SoundManagerModule.class,
       StatusBarModule.class,
-      TimePickerDialogModule.class,
       ToastModule.class,
       VibrationModule.class,
       WebSocketModule.class,
@@ -157,8 +152,6 @@ public class MainReactPackage extends TurboReactPackage {
         return new StatusBarModule(context);
       case SoundManagerModule.NAME:
         return new SoundManagerModule(context);
-      case TimePickerDialogModule.FRAGMENT_TAG:
-        return new TimePickerDialogModule(context);
       case ToastModule.NAME:
         return new ToastModule(context);
       case VibrationModule.NAME:
@@ -174,9 +167,6 @@ public class MainReactPackage extends TurboReactPackage {
   public List<ViewManager> createViewManagers(ReactApplicationContext reactContext) {
     List<ViewManager> viewManagers = new ArrayList<>();
 
-    viewManagers.add(ARTRenderableViewManager.createARTGroupViewManager());
-    viewManagers.add(ARTRenderableViewManager.createARTShapeViewManager());
-    viewManagers.add(ARTRenderableViewManager.createARTTextViewManager());
     viewManagers.add(new ReactDialogPickerManager());
     viewManagers.add(new ReactDrawerLayoutManager());
     viewManagers.add(new ReactDropdownPickerManager());
@@ -189,7 +179,6 @@ public class MainReactPackage extends TurboReactPackage {
     viewManagers.add(new SwipeRefreshLayoutManager());
 
     // Native equivalents
-    viewManagers.add(new ARTSurfaceViewManager());
     viewManagers.add(new FrescoBasedReactTextInlineImageViewManager());
     viewManagers.add(new ReactImageManager());
     viewManagers.add(new ReactModalHostManager());
@@ -197,7 +186,6 @@ public class MainReactPackage extends TurboReactPackage {
     viewManagers.add(new ReactTextInputManager());
     viewManagers.add(new ReactTextViewManager());
     viewManagers.add(new ReactViewManager());
-    viewManagers.add(new ReactViewPagerManager());
     viewManagers.add(new ReactVirtualTextViewManager());
 
     return viewManagers;
@@ -235,7 +223,6 @@ public class MainReactPackage extends TurboReactPackage {
             ShareModule.class,
             StatusBarModule.class,
             SoundManagerModule.class,
-            TimePickerDialogModule.class,
             ToastModule.class,
             VibrationModule.class,
             WebSocketModule.class

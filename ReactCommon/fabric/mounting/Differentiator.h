@@ -21,7 +21,6 @@ enum class DifferentiatorMode { Classic, OptimizedMoves };
  * The list of mutations might be and might not be optimal.
  */
 ShadowViewMutationList calculateShadowViewMutations(
-    DifferentiatorMode differentiatorMode,
     ShadowNode const &oldRootShadowNode,
     ShadowNode const &newRootShadowNode);
 

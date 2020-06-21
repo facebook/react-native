@@ -266,10 +266,7 @@ static void RNPerformMountInstructions(
   SystraceSection s("-[RCTMountingManager performTransaction:]");
   RCTAssertMainQueue();
 
-  auto differentiatorMode =
-      self.useModernDifferentiatorMode ? DifferentiatorMode::OptimizedMoves : DifferentiatorMode::Classic;
-
-  auto transaction = mountingCoordinator->pullTransaction(differentiatorMode);
+  auto transaction = mountingCoordinator->pullTransaction();
   if (!transaction.has_value()) {
     return;
   }
@@ -277,7 +274,7 @@ static void RNPerformMountInstructions(
   auto surfaceId = transaction->getSurfaceId();
   auto &mutations = transaction->getMutations();
 
-  if (mutations.size() == 0) {
+  if (mutations.empty()) {
     return;
   }
 

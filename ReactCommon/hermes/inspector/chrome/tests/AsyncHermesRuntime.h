@@ -53,6 +53,11 @@ class AsyncHermesRuntime {
   folly::Future<jsi::Value> getStoredValue();
 
   /**
+   * hasStoredValue returns whether or not a value has been stored yet
+   */
+  bool hasStoredValue();
+
+  /**
    * awaitStoredValue is a helper for getStoredValue that returns the value
    * synchronously rather than in a future.
    */

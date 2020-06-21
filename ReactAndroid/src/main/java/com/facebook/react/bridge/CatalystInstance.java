@@ -62,8 +62,10 @@ public interface CatalystInstance
 
   <T extends NativeModule> boolean hasNativeModule(Class<T> nativeModuleInterface);
 
+  @Nullable
   <T extends NativeModule> T getNativeModule(Class<T> nativeModuleInterface);
 
+  @Nullable
   NativeModule getNativeModule(String moduleName);
 
   JSIModule getJSIModule(JSIModuleType moduleType);
@@ -97,13 +99,17 @@ public interface CatalystInstance
   void setGlobalVariable(String propName, String jsonValue);
 
   /**
-   * Get the C pointer (as a long) to the JavaScriptCore context associated with this instance.
+   * Do not use this anymore. Use {@link #getRuntimeExecutor()} instead. Get the C pointer (as a
+   * long) to the JavaScriptCore context associated with this instance.
    *
    * <p>Use the following pattern to ensure that the JS context is not cleared while you are using
    * it: JavaScriptContextHolder jsContext = reactContext.getJavaScriptContextHolder()
    * synchronized(jsContext) { nativeThingNeedingJsContext(jsContext.get()); }
    */
+  @Deprecated
   JavaScriptContextHolder getJavaScriptContextHolder();
+
+  RuntimeExecutor getRuntimeExecutor();
 
   void addJSIModules(List<JSIModuleSpec> jsiModules);
 

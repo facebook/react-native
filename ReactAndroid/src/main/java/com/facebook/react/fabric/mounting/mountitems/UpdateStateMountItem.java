@@ -35,7 +35,7 @@ public class UpdateStateMountItem implements MountItem {
         new StringBuilder("UpdateStateMountItem [").append(mReactTag).append("]");
 
     if (IS_DEVELOPMENT_ENVIRONMENT) {
-      result.append(" state: ").append(mStateWrapper != null ? mStateWrapper : "<null>");
+      result.append(" state: ").append(mStateWrapper != null ? mStateWrapper.getState() : "<null>");
     }
 
     return result.toString();

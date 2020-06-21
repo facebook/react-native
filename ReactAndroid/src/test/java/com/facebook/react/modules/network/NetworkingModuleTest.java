@@ -518,9 +518,9 @@ public class NetworkingModuleTest {
         /* withCredentials */ false);
 
     // verify RequestBodyPart for image
-    PowerMockito.verifyStatic(times(1));
+    PowerMockito.verifyStatic(RequestBodyUtil.class, times(1));
     RequestBodyUtil.getFileInputStream(any(ReactContext.class), eq("imageUri"));
-    PowerMockito.verifyStatic(times(1));
+    PowerMockito.verifyStatic(RequestBodyUtil.class, times(1));
     RequestBodyUtil.create(MediaType.parse("image/jpg"), inputStream);
 
     // verify body
@@ -579,7 +579,7 @@ public class NetworkingModuleTest {
     verify(mHttpClient, times(3)).newCall(any(Request.class));
 
     mNetworkingModule.onCatalystInstanceDestroy();
-    PowerMockito.verifyStatic(times(3));
+    PowerMockito.verifyStatic(OkHttpCallUtil.class, times(3));
     ArgumentCaptor<OkHttpClient> clientArguments = ArgumentCaptor.forClass(OkHttpClient.class);
     ArgumentCaptor<Integer> requestIdArguments = ArgumentCaptor.forClass(Integer.class);
     OkHttpCallUtil.cancelTag(clientArguments.capture(), requestIdArguments.capture());
@@ -624,7 +624,7 @@ public class NetworkingModuleTest {
     verify(mHttpClient, times(3)).newCall(any(Request.class));
 
     mNetworkingModule.abortRequest(requests);
-    PowerMockito.verifyStatic(times(1));
+    PowerMockito.verifyStatic(OkHttpCallUtil.class, times(1));
     ArgumentCaptor<OkHttpClient> clientArguments = ArgumentCaptor.forClass(OkHttpClient.class);
     ArgumentCaptor<Integer> requestIdArguments = ArgumentCaptor.forClass(Integer.class);
     OkHttpCallUtil.cancelTag(clientArguments.capture(), requestIdArguments.capture());
@@ -635,7 +635,7 @@ public class NetworkingModuleTest {
     // If `cancelTag` would've been called again for the aborted call, we would have had
     // `requests + 1` calls.
     mNetworkingModule.onCatalystInstanceDestroy();
-    PowerMockito.verifyStatic(times(requests));
+    PowerMockito.verifyStatic(OkHttpCallUtil.class, times(requests));
     clientArguments = ArgumentCaptor.forClass(OkHttpClient.class);
     requestIdArguments = ArgumentCaptor.forClass(Integer.class);
     OkHttpCallUtil.cancelTag(clientArguments.capture(), requestIdArguments.capture());

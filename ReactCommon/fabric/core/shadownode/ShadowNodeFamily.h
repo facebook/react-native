@@ -87,6 +87,16 @@ class ShadowNodeFamily {
 
  private:
   friend ShadowNode;
+  friend ShadowNodeFamilyFragment;
+  friend State;
+
+  /*
+   * Returns the most recent state if the given `state` is obsolete,
+   * otherwise returns `nullptr`.
+   * To be used by `State` only.
+   */
+  std::shared_ptr<State const> getMostRecentStateIfObsolete(
+      State const &state) const;
 
   EventDispatcher::Weak eventDispatcher_;
   mutable std::shared_ptr<State const> mostRecentState_;

@@ -258,6 +258,20 @@ namespace facebook {
 namespace facebook {
   namespace react {
     /**
+     * C++ class for module 'DevSplitBundleLoader'
+     */
+
+    class JSI_EXPORT NativeDevSplitBundleLoaderSpecJSI : public JavaTurboModule {
+    public:
+      NativeDevSplitBundleLoaderSpecJSI(const JavaTurboModule::InitParams &params);
+
+    };
+  } // namespace react
+} // namespace facebook
+
+namespace facebook {
+  namespace react {
+    /**
      * C++ class for module 'DeviceEventManager'
      */
 
@@ -740,20 +754,6 @@ namespace facebook {
     class JSI_EXPORT NativeTVNavigationEventEmitterSpecJSI : public JavaTurboModule {
     public:
       NativeTVNavigationEventEmitterSpecJSI(const JavaTurboModule::InitParams &params);
-
-    };
-  } // namespace react
-} // namespace facebook
-
-namespace facebook {
-  namespace react {
-    /**
-     * C++ class for module 'TimePickerAndroid'
-     */
-
-    class JSI_EXPORT NativeTimePickerAndroidSpecJSI : public JavaTurboModule {
-    public:
-      NativeTimePickerAndroidSpecJSI(const JavaTurboModule::InitParams &params);
 
     };
   } // namespace react

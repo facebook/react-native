@@ -280,7 +280,7 @@ class Runtime {
   virtual Array getPropertyNames(const Object&) = 0;
 
   virtual WeakObject createWeakObject(const Object&) = 0;
-  virtual Value lockWeakObject(const WeakObject&) = 0;
+  virtual Value lockWeakObject(WeakObject&) = 0;
 
   virtual Array createArray(size_t length) = 0;
   virtual size_t size(const Array&) = 0;
@@ -316,6 +316,7 @@ class Runtime {
   // Value, Symbol, String, and Object, which are all friends of Runtime.
   template <typename T>
   static T make(PointerValue* pv);
+  static PointerValue* getPointerValue(Pointer& pointer);
   static const PointerValue* getPointerValue(const Pointer& pointer);
   static const PointerValue* getPointerValue(const Value& value);
 
@@ -1212,6 +1213,8 @@ class JSI_EXPORT JSIException : public std::exception {
     return what_.c_str();
   }
 
+  virtual ~JSIException();
+
  protected:
   std::string what_;
 };
@@ -1221,6 +1224,8 @@ class JSI_EXPORT JSIException : public std::exception {
 class JSI_EXPORT JSINativeException : public JSIException {
  public:
   JSINativeException(std::string what) : JSIException(std::move(what)) {}
+
+  virtual ~JSINativeException();
 };
 
 /// This exception will be thrown by API functions whenever a JS
@@ -1248,6 +1253,8 @@ class JSI_EXPORT JSError : public JSIException {
   /// set to provided message.  This argument order is a bit weird,
   /// but necessary to avoid ambiguity with the above.
   JSError(std::string what, Runtime& rt, Value&& value);
+
+  virtual ~JSError();
 
   const std::string& getStack() const {
     return stack_;

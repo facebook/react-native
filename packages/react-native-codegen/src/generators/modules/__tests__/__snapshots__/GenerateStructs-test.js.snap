@@ -101,6 +101,7 @@ namespace JS {
           RCTRequired<double> b;
           RCTRequired<NSString *> c;
           RCTRequired<JS::NativeSampleTurboModule::ConstantsD::Builder> d;
+          RCTRequired<double> k;
         };
 
         /** Initialize with a set of values */
@@ -132,6 +133,8 @@ auto c = i.c.get();
   d[@\\"c\\"] = c;
 auto d = i.d.get();
   d[@\\"d\\"] = d.buildUnsafeRawValue();
+auto k = i.k.get();
+  d[@\\"k\\"] = @(k);
   return d;
 }) {}
 inline JS::NativeSampleTurboModule::Constants::Builder::Builder(Constants i) : _factory(^{
@@ -188,6 +191,7 @@ namespace JS {
       double b() const;
       NSString *c() const;
       JS::NativeSampleTurboModule::SpecSampleFuncReturnTypeD d() const;
+      double k() const;
 
       SpecSampleFuncReturnType(NSDictionary *const v) : _v(v) {}
     private:
@@ -225,6 +229,13 @@ inline JS::NativeSampleTurboModule::SpecSampleFuncReturnTypeD JS::NativeSampleTu
 {
   id const p = _v[@\\"d\\"];
   return JS::NativeSampleTurboModule::SpecSampleFuncReturnTypeD(p);
+}
+
+
+inline double JS::NativeSampleTurboModule::SpecSampleFuncReturnType::k() const
+{
+  id const p = _v[@\\"k\\"];
+  return RCTBridgingToDouble(p);
 }
 
 

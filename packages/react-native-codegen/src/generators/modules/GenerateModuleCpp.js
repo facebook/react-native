@@ -66,8 +66,18 @@ function traverseArg(arg, index): string {
   function wrap(suffix) {
     return `args[${index}]${suffix}`;
   }
-  const type = arg.typeAnnotation.type;
-  switch (type) {
+  const {typeAnnotation} = arg;
+  switch (typeAnnotation.type) {
+    case 'ReservedFunctionValueTypeAnnotation':
+      switch (typeAnnotation.name) {
+        case 'RootTag':
+          return wrap('.getNumber()');
+        default:
+          (typeAnnotation.name: empty);
+          throw new Error(
+            `Unknown prop type for "${arg.name}, found: ${typeAnnotation.name}"`,
+          );
+      }
     case 'StringTypeAnnotation':
       return wrap('.getString(rt)');
     case 'BooleanTypeAnnotation':
@@ -85,14 +95,16 @@ function traverseArg(arg, index): string {
       return wrap('.getObject(rt)');
     case 'AnyTypeAnnotation':
       throw new Error(`Any type is not allowed in params for "${arg.name}"`);
-
     default:
-      (type: empty);
-      throw new Error(`Unknown prop type for "${arg.name}, found: ${type}"`);
+      // TODO (T65847278): Figure out why this does not work.
+      // (typeAnnotation.type: empty);
+      throw new Error(
+        `Unknown prop type for "${arg.name}, found: ${typeAnnotation.type}"`,
+      );
   }
 }
 
-function traverseProprety(property): string {
+function traverseProperty(property): string {
   const propertyTemplate =
     property.typeAnnotation.returnTypeAnnotation.type === 'VoidTypeAnnotation'
       ? voidPropertyTemplate
@@ -127,7 +139,7 @@ module.exports = {
       .map(name => {
         const {properties} = nativeModules[name];
         const traversedProperties = properties
-          .map(property => traverseProprety(property))
+          .map(property => traverseProperty(property))
           .join('\n');
         return moduleTemplate
           .replace(/::_MODULE_PROPERTIES_::/g, traversedProperties)

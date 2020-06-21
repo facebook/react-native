@@ -254,7 +254,7 @@ ShadowNode::Unshared ShadowNode::cloneTree(
         callback) const {
   auto ancestors = shadowNodeFamily.getAncestors(*this);
 
-  if (ancestors.size() == 0) {
+  if (ancestors.empty()) {
     return ShadowNode::Unshared{nullptr};
   }
 
@@ -262,6 +262,10 @@ ShadowNode::Unshared ShadowNode::cloneTree(
   auto &oldShadowNode = parent.first.get().getChildren().at(parent.second);
 
   auto newShadowNode = callback(*oldShadowNode);
+
+  assert(
+      newShadowNode &&
+      "`callback` returned `nullptr` which is not allowed value.");
 
   auto childNode = newShadowNode;
 
