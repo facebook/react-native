@@ -32,7 +32,7 @@
 
 @property (nonatomic, assign) BOOL centerContent;
 #if !TARGET_OS_TV
-@property (nonatomic, strong) UIRefreshControl<RCTCustomRefreshContolProtocol> *customRefreshControl;
+@property (nonatomic, strong) UIView<RCTCustomRefreshContolProtocol> *customRefreshControl;
 @property (nonatomic, assign) BOOL pinchGestureEnabled;
 #endif
 
@@ -224,13 +224,17 @@
 }
 
 #if !TARGET_OS_TV
-- (void)setCustomRefreshControl:(UIRefreshControl<RCTCustomRefreshContolProtocol> *)refreshControl
+- (void)setCustomRefreshControl:(UIView<RCTCustomRefreshContolProtocol> *)refreshControl
 {
   if (_customRefreshControl) {
     [_customRefreshControl removeFromSuperview];
   }
   _customRefreshControl = refreshControl;
-  self.refreshControl = refreshControl;
+  if ([refreshControl isKindOfClass:UIRefreshControl.class]) {
+    self.refreshControl = (UIRefreshControl *)refreshControl;
+  } else {
+    [self addSubview:_customRefreshControl];
+  }
 }
 
 - (void)setPinchGestureEnabled:(BOOL)pinchGestureEnabled
@@ -417,6 +421,16 @@ static inline void RCTApplyTransformationAccordingLayoutDirection(
   [super layoutSubviews];
   RCTAssert(self.subviews.count == 1, @"we should only have exactly one subview");
   RCTAssert([self.subviews lastObject] == _scrollView, @"our only subview should be a scrollview");
+
+#if !TARGET_OS_TV
+  // Adjust the refresh control frame if the scrollview layout changes.
+  UIView<RCTCustomRefreshContolProtocol> *refreshControl = _scrollView.customRefreshControl;
+  if (refreshControl && refreshControl.isRefreshing && ![refreshControl isKindOfClass:UIRefreshControl.class]) {
+    refreshControl.frame =
+        (CGRect){_scrollView.contentOffset, {_scrollView.frame.size.width, refreshControl.frame.size.height}};
+  }
+#endif
+
   [self updateClippedSubviews];
 }
 
