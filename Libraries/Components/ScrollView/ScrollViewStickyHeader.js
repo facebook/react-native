@@ -10,11 +10,11 @@
 
 'use strict';
 
-const AnimatedImplementation = require('../../Animated/src/AnimatedImplementation');
-const React = require('react');
-const StyleSheet = require('../../StyleSheet/StyleSheet');
-const View = require('../View/View');
-const Platform = require('../../Utilities/Platform');
+import AnimatedImplementation from '../../Animated/src/AnimatedImplementation';
+import * as React from 'react';
+import StyleSheet from '../../StyleSheet/StyleSheet';
+import View from '../View/View';
+import Platform from '../../Utilities/Platform';
 
 import type {LayoutEvent} from '../../Types/CoreEventTypes';
 
