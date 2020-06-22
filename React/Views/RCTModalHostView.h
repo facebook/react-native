@@ -22,7 +22,7 @@
 @property (nonatomic, copy) NSString *animationType;
 @property (nonatomic, assign) UIModalPresentationStyle presentationStyle;
 @property (nonatomic, assign, getter=isTransparent) BOOL transparent;
-
+@property(nonatomic, getter=isModalInPresentation) BOOL modalInPresentation;
 @property (nonatomic, copy) RCTDirectEventBlock onShow;
 
 @property (nonatomic, copy) NSNumber *identifier;
