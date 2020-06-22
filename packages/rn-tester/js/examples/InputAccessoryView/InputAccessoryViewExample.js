@@ -19,6 +19,7 @@ const {
   StyleSheet,
   Text,
   TextInput,
+  useWindowDimensions,
   View,
 } = require('react-native');
 
@@ -33,32 +34,26 @@ class Message extends React.PureComponent<MessageProps> {
   }
 }
 
-type TextInputProps = $ReadOnly<{||}>;
-type TextInputState = {|text: string|};
-class TextInputBar extends React.PureComponent<TextInputProps, TextInputState> {
-  state: TextInputState = {text: ''};
-
-  render(): React.Node {
-    return (
-      <View style={styles.textInputContainer}>
-        <TextInput
-          style={styles.textInput}
-          onChangeText={text => {
-            this.setState({text});
-          }}
-          value={this.state.text}
-          placeholder={'Type a message...'}
-        />
-        <Button
-          onPress={() => {
-            Alert.alert('You tapped the button!');
-          }}
-          title="Send"
-        />
-      </View>
-    );
-  }
-}
+const TextInputBar = (): React.Node => {
+  const [text, setText] = React.useState('');
+  const {width} = useWindowDimensions();
+  return (
+    <View style={[styles.textInputContainer, {width}]}>
+      <TextInput
+        style={styles.textInput}
+        onChangeText={setText}
+        value={text}
+        placeholder={'Type a message...'}
+      />
+      <Button
+        onPress={() => {
+          Alert.alert('You tapped the button!');
+        }}
+        title="Send"
+      />
+    </View>
+  );
+};
 
 const BAR_HEIGHT = 44;
 type InputAccessoryProps = $ReadOnly<{||}>;
