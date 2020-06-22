@@ -51,14 +51,16 @@ class StyleSheetValidation {
     if (!__DEV__ || global.__RCTProfileIsProfiling) {
       return;
     }
-    for (const prop in styles[name]) {
-      if (styles[name].hasOwnProperty(prop)) {
-        StyleSheetValidation.validateStyleProp(
-          prop,
-          styles[name],
-          'StyleSheet ' + name,
-        );
-      }
+    if (!styles[name]) {
+      return;
+    }
+    const styleProps = Object.keys(styles[name]);
+    for (const prop of styleProps) {
+      StyleSheetValidation.validateStyleProp(
+        prop,
+        styles[name],
+        'StyleSheet ' + name,
+      );
     }
   }
 
