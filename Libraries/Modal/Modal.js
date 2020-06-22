@@ -70,6 +70,12 @@ export type Props = $ReadOnly<{|
    * See https://reactnative.dev/docs/modal.html#transparent
    */
   transparent?: ?boolean,
+                               
+  /**
+   * The `isModalInPresentation` prop determines whether whether the view controller
+   * enforces a modal behavior.
+   */
+  isModalInPresentation?: ?boolean,
 
   /**
    * The `statusBarTranslucent` prop determines whether your modal should go under
