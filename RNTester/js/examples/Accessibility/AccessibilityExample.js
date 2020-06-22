@@ -751,17 +751,19 @@ class AnnounceForAccessibility extends React.Component<{}> {
   }
 }
 
-
-function SetAccessibilityFocus(){
+function SetAccessibilityFocus() {
   var focusRef = React.createRef();
   return (
     <View>
-      <Button onPress={() => {
+      <Button
+        onPress={() => {
           if (findNodeHandle(focusRef.current)) {
             const reactTag = findNodeHandle(focusRef.current);
             AccessibilityInfo.setAccessibilityFocus(reactTag);
           }
-      }} title="Set Accessibility Focus" />
+        }}
+        title="Set Accessibility Focus"
+      />
       <Text ref={focusRef} accessible={true}>
         Move focus here on button press.
       </Text>
