@@ -15,7 +15,7 @@ import {StyleSheet, View, Platform} from 'react-native';
 
 const App: () => React$Node = () => {
   const RNTesterApp = Platform.select({
-    ios: () => require('./js/RNTesterApp.ios'),
+    ios: () => require('./js/RNTesterApp.ios.js'),
     android: () => require('./js/RNTesterApp.android'),
   })();
   return (
