@@ -347,7 +347,7 @@ static inline void RCTApplyTransformationAccordingLayoutDirection(
   [super insertReactSubview:view atIndex:atIndex];
 #if !TARGET_OS_TV
   if ([view conformsToProtocol:@protocol(RCTCustomRefreshContolProtocol)]) {
-    [_scrollView setCustomRefreshControl:(UIRefreshControl<RCTCustomRefreshContolProtocol> *)view];
+    [_scrollView setCustomRefreshControl:(UIView<RCTCustomRefreshContolProtocol> *)view];
     if (![view isKindOfClass:[UIRefreshControl class]] && [view conformsToProtocol:@protocol(UIScrollViewDelegate)]) {
       [self addScrollListener:(UIView<UIScrollViewDelegate> *)view];
     }
