@@ -8,8 +8,6 @@
 const path = require('path');
 const reactNativePath = path.resolve('./node_modules/react-native');
 
-console.log({reactNativePath});
-
 module.exports = {
   transformer: {
     getTransformOptions: async () => ({
