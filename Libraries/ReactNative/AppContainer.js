@@ -16,7 +16,7 @@ const React = require('react');
 const StyleSheet = require('../StyleSheet/StyleSheet');
 const View = require('../Components/View/View');
 
-import EmitterSubscription from '../vendor/emitter/EmitterSubscription';
+import {type EventSubscription} from '../vendor/emitter/EventEmitter';
 import {RootTagContext, createRootTag} from './RootTag';
 
 type Context = {rootTag: number, ...};
@@ -44,7 +44,7 @@ class AppContainer extends React.Component<Props, State> {
     hasError: false,
   };
   _mainRef: ?React.ElementRef<typeof View>;
-  _subscription: ?EmitterSubscription = null;
+  _subscription: ?EventSubscription = null;
 
   static getDerivedStateFromError: any = undefined;
 
