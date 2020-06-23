@@ -27,7 +27,7 @@ function doPublish() {
   const onlyTagSource = !!branchVersionSuffix;
   if (!onlyTagSource) {
     // -------- Generating Android Artifacts with JavaDoc
-    exec("gradlew installArchives");
+    exec(path.join(process.env.BUILD_STAGINGDIRECTORY,"gradlew") + " installArchives");
 
     // undo uncommenting javadoc setting
     exec("git checkout ReactAndroid/gradle.properties");
