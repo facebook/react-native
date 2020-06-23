@@ -11,8 +11,8 @@
 'use strict';
 
 import EventEmitter from '../vendor/emitter/EventEmitter';
-import type EmitterSubscription from '../vendor/emitter/EmitterSubscription';
-import EventSubscriptionVendor from '../vendor/emitter/EventSubscriptionVendor';
+import type EmitterSubscription from '../vendor/emitter/_EmitterSubscription';
+import EventSubscriptionVendor from '../vendor/emitter/_EventSubscriptionVendor';
 
 function checkNativeEventModule(eventType: ?string) {
   if (eventType) {
