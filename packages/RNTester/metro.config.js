@@ -6,7 +6,7 @@
  */
 
 const path = require('path');
-const reactNativePath = path.resolve('../../');
+const reactNativePath = path.resolve('./node_modules/react-native');
 
 console.log({reactNativePath});
 
