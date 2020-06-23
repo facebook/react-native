@@ -11,10 +11,10 @@
 
 'use strict';
 
-const EmitterSubscription = require('./EmitterSubscription');
-const EventSubscriptionVendor = require('./EventSubscriptionVendor');
-
 const invariant = require('invariant');
+
+import EmitterSubscription from './EmitterSubscription';
+import EventSubscriptionVendor from './EventSubscriptionVendor';
 
 const sparseFilterPredicate = () => true;
 
