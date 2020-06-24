@@ -1,0 +1,34 @@
+{
+  "testRunner": "jest",
+  "runnerConfig": "e2e/config.json",
+  "configurations": {
+    "android.emu.debug": {
+      "binaryPath": "android/app/build/outputs/apk/debug/app-debug.apk",
+      "build": "cd android && ./gradlew assembleDebug assembleAndroidTest -DtestBuildType=debug && cd ..",
+      "type": "android.emulator",
+      "device": {
+        "avdName": "testAVD"
+      }
+    },
+    "android.emu.release": {
+      "binaryPath": "android/app/build/outputs/apk/release/app-release.apk",
+      "build": "cd android && ./gradlew assembleRelease assembleAndroidTest -DtestBuildType=release && cd ..",
+      "type": "android.emulator",
+      "device": {
+        "avdName": "Pixel_API_28"
+      }
+    },
+    "ios.sim.release": {
+      "binaryPath": "ios/build/Build/Products/Release-iphonesimulator/RNTester.app/",
+      "build": "xcodebuild -workspace ios/RNTesterPods.xcworkspace -scheme RNTester -configuration Release -sdk iphonesimulator -derivedDataPath ios/build -UseModernBuildSystem=NO -quiet",
+      "type": "ios.simulator",
+      "name": "iPhone 8"
+    },
+    "ios.sim.debug": {
+      "binaryPath": "ios/build/Build/Products/Debug-iphonesimulator/RNTester.app/",
+      "build": "xcodebuild -workspace ios/RNTesterPods.xcworkspace -scheme RNTester -configuration Debug -sdk iphonesimulator -derivedDataPath ios/build -UseModernBuildSystem=NO -quiet",
+      "type": "ios.simulator",
+      "name": "iPhone 8"
+    }
+  }
+}

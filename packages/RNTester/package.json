@@ -19,6 +19,8 @@
     "@react-native-community/push-notification-ios": "^1.2.2",
     "@react-native-community/segmented-control": "^2.0.0",
     "@react-native-community/slider": "^3.0.0",
+    "detox": "^16.8.2",
+    "jest-circus": "^26.0.1",
     "react": "16.11.0",
     "react-native": "^0.62.2"
   },
