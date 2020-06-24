@@ -53,5 +53,7 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
+	<key>RN_BUNDLE_PREFIX</key>
+	<string>$(RN_BUNDLE_PREFIX)</string>
 </dict>
 </plist>
