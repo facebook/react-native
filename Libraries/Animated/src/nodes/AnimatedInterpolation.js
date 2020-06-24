@@ -28,6 +28,7 @@ export type InterpolationConfigType = {
   extrapolate?: ExtrapolateType,
   extrapolateLeft?: ExtrapolateType,
   extrapolateRight?: ExtrapolateType,
+  immutable?: boolean,
 };
 
 const linear = t => t;
@@ -75,6 +76,8 @@ function createInterpolation(
     extrapolateRight = config.extrapolate;
   }
 
+  const immutable = config.immutable || false;
+
   return input => {
     invariant(
       typeof input === 'number',
@@ -91,6 +94,7 @@ function createInterpolation(
       easing,
       extrapolateLeft,
       extrapolateRight,
+      immutable,
     );
   };
 }
@@ -104,7 +108,12 @@ function interpolate(
   easing: (input: number) => number,
   extrapolateLeft: ExtrapolateType,
   extrapolateRight: ExtrapolateType,
+  immutable: boolean,
 ) {
+  if (immutable) {
+    return outputMax;
+  }
+
   let result = input;
 
   // Extrapolate
