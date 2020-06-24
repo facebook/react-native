@@ -10,15 +10,17 @@
     "lint": "eslint ."
   },
   "dependencies": {
+    "@react-native-community/cli-platform-android": "^4.10.1",
     "@react-native-community/async-storage": "^1.11.0",
-    "@react-native-community/clipboard": "^1.2.2",
     "@react-native-community/datetimepicker": "^2.4.2",
+    "@react-native-community/picker": "^1.6.3",
     "@react-native-community/progress-bar-android": "^1.0.3",
     "@react-native-community/progress-view": "^1.0.3",
+    "@react-native-community/push-notification-ios": "^1.2.2",
     "@react-native-community/segmented-control": "^2.0.0",
     "@react-native-community/slider": "^3.0.0",
     "react": "16.11.0",
-    "react-native": "0.63.0-rc.1"
+    "react-native": "^0.62.2"
   },
   "devDependencies": {
     "@babel/core": "^7.10.2",

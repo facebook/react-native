@@ -6,9 +6,10 @@
  */
 
 const path = require('path');
-const reactNativePath = path.resolve('./node_modules/react-native');
+const reactNativePath = path.resolve('../..');
 
 module.exports = {
+  watchFolders: [path.resolve(__dirname, 'node_modules'), reactNativePath],
   transformer: {
     getTransformOptions: async () => ({
       transform: {
