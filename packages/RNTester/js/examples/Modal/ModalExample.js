@@ -14,7 +14,6 @@ const React = require('react');
 
 const {
   Modal,
-  Picker,
   Platform,
   StyleSheet,
   Switch,
@@ -22,9 +21,9 @@ const {
   TouchableHighlight,
   View,
 } = require('react-native');
+import {Picker} from '@react-native-community/picker';
 
 const Item = Picker.Item;
-
 exports.displayName = (undefined: ?string);
 exports.framework = 'React';
 exports.title = '<Modal>';

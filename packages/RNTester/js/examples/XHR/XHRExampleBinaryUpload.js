@@ -15,12 +15,13 @@ const React = require('react');
 const {
   Alert,
   Linking,
-  Picker,
   StyleSheet,
   Text,
   TouchableHighlight,
   View,
 } = require('react-native');
+
+import {Picker} from '@react-native-community/picker';
 
 const BINARY_TYPES = {
   String,

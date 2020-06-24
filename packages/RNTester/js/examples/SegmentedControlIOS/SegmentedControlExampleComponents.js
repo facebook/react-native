@@ -12,7 +12,7 @@
 
 import * as React from 'react';
 import {Text, View, StyleSheet} from 'react-native';
-import {SegmentedControl} from '@react-native-community/segmented-control';
+import SegmentedControl from '@react-native-community/segmented-control';
 
 export function BasicSegmentedControlExample(): React.Node {
   return (

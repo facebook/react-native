@@ -11,8 +11,12 @@
 'use strict';
 
 const React = require('react');
-const {AsyncStorage, PickerIOS, Text, View} = require('react-native');
-const PickerItemIOS = PickerIOS.Item;
+const {Text, View} = require('react-native');
+import {Picker} from '@react-native-community/picker';
+
+const PickerItem = Picker.Item;
+
+import AsyncStorage from '@react-native-community/async-storage';
 
 const STORAGE_KEY = '@AsyncStorageExample:key';
 const COLORS = ['red', 'orange', 'yellow', 'green', 'blue'];
@@ -45,11 +49,11 @@ class BasicStorageExample extends React.Component<{...}, $FlowFixMeState> {
     const color = this.state.selectedValue;
     return (
       <View>
-        <PickerIOS selectedValue={color} onValueChange={this._onValueChange}>
+        <Picker selectedValue={color} onValueChange={this._onValueChange}>
           {COLORS.map((value) => (
             <PickerItemIOS key={value} value={value} label={value} />
           ))}
-        </PickerIOS>
+        </Picker>
         <Text>
           {'Selected: '}
           <Text style={{color}}>{this.state.selectedValue}</Text>

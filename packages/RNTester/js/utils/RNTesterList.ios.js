@@ -33,11 +33,11 @@ const ComponentExamples: Array<RNTesterExample> = [
     module: require('../examples/FlatList/FlatListExample'),
     supportsTVOS: true,
   },
-  // {
-  //   key: 'ImageExample',
-  //   module: require('../examples/Image/ImageExample'),
-  //   supportsTVOS: true,
-  // },
+  {
+    key: 'ImageExample',
+    module: require('../examples/Image/ImageExample'),
+    supportsTVOS: true,
+  },
   {
     key: 'JSResponderHandlerExample',
     module: require('../examples/JSResponderHandlerExample/JSResponderHandlerExample'),

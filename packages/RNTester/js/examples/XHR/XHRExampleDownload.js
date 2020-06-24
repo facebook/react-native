@@ -22,8 +22,8 @@ const {
   View,
 } = require('react-native');
 
-const {ProgressBar} = require('@react-native-community/progress-bar-android');
-const {ProgressView} = require('@react-native-community/progress-view');
+const ProgressBar = require('@react-native-community/progress-bar-android');
+const ProgressView = require('@react-native-community/progress-view');
 
 /**
  * Convert number of bytes to MB and round to the nearest 0.1 MB.
