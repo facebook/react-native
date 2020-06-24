@@ -57,6 +57,9 @@ const ReactNativeViewViewConfigAndroid = {
     topSelectionChange: {
       registrationName: 'onSelectionChange',
     },
+    onAssetDidLoad: {
+      registrationName: 'onAssetDidLoad',
+    },
   },
   validAttributes: {
     hasTVPreferredFocus: true,
