@@ -13,6 +13,7 @@
 #import <ReactCommon/RCTTurboModule.h>
 
 #import "RCTNetworkPlugins.h"
+#import "RCTNetworkConfiguration.h"
 
 @interface RCTHTTPRequestHandler () <NSURLSessionDataDelegate, RCTTurboModule>
 
@@ -83,6 +84,10 @@ RCT_EXPORT_MODULE()
     [configuration setHTTPShouldSetCookies:YES];
     [configuration setHTTPCookieAcceptPolicy:NSHTTPCookieAcceptPolicyAlways];
     [configuration setHTTPCookieStorage:[NSHTTPCookieStorage sharedHTTPCookieStorage]];
+    if ([RCTNetworkConfiguration customizeProtocolClasses].count > 0) {
+        NSArray *defaultProtocols = configuration.protocolClasses;
+        configuration.protocolClasses = [[RCTNetworkConfiguration customizeProtocolClasses] arrayByAddingObjectsFromArray:defaultProtocols];
+    }
     _session = [NSURLSession sessionWithConfiguration:configuration
                                              delegate:self
                                         delegateQueue:callbackQueue];
