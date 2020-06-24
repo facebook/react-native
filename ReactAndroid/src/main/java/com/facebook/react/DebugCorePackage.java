@@ -52,7 +52,7 @@ public class DebugCorePackage extends TurboReactPackage {
       // In OSS case, the annotation processor does not run. We fall back on creating this by hand
       Class<? extends NativeModule>[] moduleList =
           new Class[] {
-            JSCHeapCapture.class, JSDevSupport.class,
+            JSCHeapCapture.class
           };
 
       final Map<String, ReactModuleInfo> reactModuleInfoMap = new HashMap<>();
