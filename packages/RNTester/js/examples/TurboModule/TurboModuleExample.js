@@ -12,7 +12,7 @@
 
 const React = require('react');
 const {View} = require('react-native');
-// const SampleTurboModuleExample = require('./SampleTurboModuleExample');
+const SampleTurboModuleExample = require('./SampleTurboModuleExample');
 
 exports.displayName = (undefined: ?string);
 exports.title = 'TurboModule';
