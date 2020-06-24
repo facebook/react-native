@@ -29,7 +29,7 @@ module.exports = {
   /**
    * Used when running RNTester (with React Native from source)
    */
-  reactNativePath: '../../',
+  reactNativePath: './node_modules/react-native',
   project: {
     ios: {
       project: './ios/RNTesterPods.xcworkspace',
