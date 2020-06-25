@@ -25,7 +25,7 @@ allprojects {
         mavenLocal()
         maven {
             // All of React Native (JS, Obj-C sources, Android binaries) is installed from npm
-            url("$rootDir/../node_modules/react-native/android")
+            url("$rootDir/../node_modules/react-native/ReactAndroid")
         }
         maven {
             // All of Detox' artifacts are provided via the npm module
@@ -39,5 +39,12 @@ allprojects {
         google()
         jcenter()
         maven { url 'https://www.jitpack.io' }
+    }
+    configurations.all {
+        resolutionStrategy {
+            dependencySubstitution {
+                substitute module("com.facebook.react:react-native:+") with project(":ReactAndroid")
+            }
+        }
     }
 }
