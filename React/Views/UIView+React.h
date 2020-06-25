@@ -83,9 +83,9 @@
 
 /**
  * This method attaches the specified controller as a child of the
- * the owning view controller of this view. Returns NO if no view
- * controller is found (which may happen if the view is not currently
- * attached to the view hierarchy).
+ * the owning view controller of this view. If host view controller not found,
+ * `controller` will not be added to the parent
+ * (which may happen if the view is not currently attached to the view hierarchy).
  */
 - (void)reactAddControllerToClosestParent:(UIViewController *)controller;
 
