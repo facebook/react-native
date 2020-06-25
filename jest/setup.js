@@ -212,7 +212,7 @@ jest
       },
     },
     DevSettings: {
-      addMenuItem: jest.fn((_, cb) => cb()),
+      addMenuItem: jest.fn(),
       reload: jest.fn(),
     },
     ImageLoader: {
