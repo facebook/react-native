@@ -123,7 +123,7 @@ module.exports = function(context) {
           if (this.defaultExport) {
             const viewConfig = generateViewConfig(this.filename, this.code);
             this.defaultExport.replaceWithMultiple(
-              context.parse(viewConfig).program.body,
+              context.parse(viewConfig, {filename: this.filename}).program.body,
             );
             if (this.commandsExport != null) {
               this.commandsExport.remove();
