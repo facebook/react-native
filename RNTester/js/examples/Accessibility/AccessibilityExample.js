@@ -750,6 +750,62 @@ class AnnounceForAccessibility extends React.Component<{}> {
   }
 }
 
+class DisplayOptionsStatusExample extends React.Component<{}> {
+  render() {
+    return (
+      <View>
+        <DisplayOptionStatusExample
+          optionName={'Bold Text'}
+          optionChecker={AccessibilityInfo.isBoldTextEnabled}
+          notification={'boldTextChanged'}
+        />
+        <DisplayOptionStatusExample
+          optionName={'Grayscale'}
+          optionChecker={AccessibilityInfo.isGrayscaleEnabled}
+          notification={'grayscaleChanged'}
+        />
+        <DisplayOptionStatusExample
+          optionName={'Invert Colors'}
+          optionChecker={AccessibilityInfo.isInvertColorsEnabled}
+          notification={'invertColorsChanged'}
+        />
+        <DisplayOptionStatusExample
+          optionName={'Reduce Motion'}
+          optionChecker={AccessibilityInfo.isReduceMotionEnabled}
+          notification={'reduceMotionChanged'}
+        />
+        <DisplayOptionStatusExample
+          optionName={'Reduce Transparency'}
+          optionChecker={AccessibilityInfo.isReduceTransparencyEnabled}
+          notification={'reduceTransparencyChanged'}
+        />
+      </View>
+    );
+  }
+}
+
+function DisplayOptionStatusExample({optionName, optionChecker, notification}) {
+  const [statusEnabled, setStatusEnabled] = React.useState(false);
+  React.useEffect(() => {
+    AccessibilityInfo.addEventListener(notification, setStatusEnabled);
+    optionChecker().then(isEnabled => {
+      setStatusEnabled(isEnabled);
+    });
+    return function cleanup() {
+      AccessibilityInfo.removeEventListener(notification, setStatusEnabled);
+    };
+  }, []);
+  return (
+    <View>
+      <Text>
+        {optionName}
+        {' is '}
+        {statusEnabled ? 'enabled' : 'disabled'}.
+      </Text>
+    </View>
+  );
+}
+
 exports.title = 'Accessibility';
 exports.description = 'Examples of using Accessibility APIs.';
 exports.examples = [
@@ -781,6 +837,12 @@ exports.examples = [
     title: 'Check if the screen reader is enabled',
     render(): React.Element<typeof ScreenReaderStatusExample> {
       return <ScreenReaderStatusExample />;
+    },
+  },
+  {
+    title: 'Check if the display options are enabled',
+    render(): React.Element<typeof DisplayOptionsStatusExample> {
+      return <DisplayOptionsStatusExample />;
     },
   },
   {
