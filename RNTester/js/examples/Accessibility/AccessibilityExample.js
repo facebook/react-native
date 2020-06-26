@@ -794,7 +794,7 @@ function DisplayOptionStatusExample({optionName, optionChecker, notification}) {
     return function cleanup() {
       AccessibilityInfo.removeEventListener(notification, setStatusEnabled);
     };
-  }, []);
+  }, [optionChecker, notification]);
   return (
     <View>
       <Text>
