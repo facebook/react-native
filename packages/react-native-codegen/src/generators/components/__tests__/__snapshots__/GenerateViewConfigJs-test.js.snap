@@ -14,7 +14,7 @@ Map {
 
 'use strict';
 
-const registerGeneratedViewConfig = require('registerGeneratedViewConfig');
+const registerGeneratedViewConfig = require('react-native/Libraries/Utilities/registerGeneratedViewConfig');
 
 const ArrayPropsNativeComponentViewConfig = {
   uiViewClassName: 'ArrayPropsNativeComponent',
@@ -24,7 +24,7 @@ const ArrayPropsNativeComponentViewConfig = {
     disableds: true,
     progress: true,
     radii: true,
-    colors: { process: require('processColorArray') },
+    colors: { process: require('react-native/Libraries/StyleSheet/processColorArray') },
     srcs: true,
     points: true,
     sizes: true,
@@ -59,7 +59,7 @@ Map {
 
 'use strict';
 
-const registerGeneratedViewConfig = require('registerGeneratedViewConfig');
+const registerGeneratedViewConfig = require('react-native/Libraries/Utilities/registerGeneratedViewConfig');
 
 const ArrayPropsNativeComponentViewConfig = {
   uiViewClassName: 'ArrayPropsNativeComponent',
@@ -94,7 +94,7 @@ Map {
 
 'use strict';
 
-const registerGeneratedViewConfig = require('registerGeneratedViewConfig');
+const registerGeneratedViewConfig = require('react-native/Libraries/Utilities/registerGeneratedViewConfig');
 
 const BooleanPropNativeComponentViewConfig = {
   uiViewClassName: 'BooleanPropNativeComponent',
@@ -129,13 +129,13 @@ Map {
 
 'use strict';
 
-const registerGeneratedViewConfig = require('registerGeneratedViewConfig');
+const registerGeneratedViewConfig = require('react-native/Libraries/Utilities/registerGeneratedViewConfig');
 
 const ColorPropNativeComponentViewConfig = {
   uiViewClassName: 'ColorPropNativeComponent',
 
   validAttributes: {
-    tintColor: { process: require('processColor') },
+    tintColor: { process: require('react-native/Libraries/StyleSheet/processColor') },
   },
 };
 
@@ -164,7 +164,7 @@ Map {
 
 'use strict';
 
-const registerGeneratedViewConfig = require('registerGeneratedViewConfig');
+const registerGeneratedViewConfig = require('react-native/Libraries/Utilities/registerGeneratedViewConfig');
 const {dispatchCommand} = require(\\"react-native/Libraries/Renderer/shims/ReactNative\\");
 
 const CommandNativeComponentViewConfig = {
@@ -207,7 +207,7 @@ Map {
 
 'use strict';
 
-const registerGeneratedViewConfig = require('registerGeneratedViewConfig');
+const registerGeneratedViewConfig = require('react-native/Libraries/Utilities/registerGeneratedViewConfig');
 const {dispatchCommand} = require(\\"react-native/Libraries/Renderer/shims/ReactNative\\");
 
 const CommandNativeComponentViewConfig = {
@@ -253,7 +253,7 @@ Map {
 
 'use strict';
 
-const registerGeneratedViewConfig = require('registerGeneratedViewConfig');
+const registerGeneratedViewConfig = require('react-native/Libraries/Utilities/registerGeneratedViewConfig');
 
 const DoublePropNativeComponentViewConfig = {
   uiViewClassName: 'DoublePropNativeComponent',
@@ -293,7 +293,7 @@ Map {
 
 'use strict';
 
-const registerGeneratedViewConfig = require('registerGeneratedViewConfig');
+const registerGeneratedViewConfig = require('react-native/Libraries/Utilities/registerGeneratedViewConfig');
 
 const EventsNestedObjectNativeComponentViewConfig = {
   uiViewClassName: 'EventsNestedObjectNativeComponent',
@@ -338,7 +338,7 @@ Map {
 
 'use strict';
 
-const registerGeneratedViewConfig = require('registerGeneratedViewConfig');
+const registerGeneratedViewConfig = require('react-native/Libraries/Utilities/registerGeneratedViewConfig');
 
 const EventsNativeComponentViewConfig = {
   uiViewClassName: 'EventsNativeComponent',
@@ -403,7 +403,7 @@ Map {
 
 'use strict';
 
-const registerGeneratedViewConfig = require('registerGeneratedViewConfig');
+const registerGeneratedViewConfig = require('react-native/Libraries/Utilities/registerGeneratedViewConfig');
 
 const InterfaceOnlyComponentViewConfig = {
   uiViewClassName: 'RCTInterfaceOnlyComponent',
@@ -465,7 +465,7 @@ Map {
 
 'use strict';
 
-const registerGeneratedViewConfig = require('registerGeneratedViewConfig');
+const registerGeneratedViewConfig = require('react-native/Libraries/Utilities/registerGeneratedViewConfig');
 
 const ExcludedAndroidComponentViewConfig = {
   uiViewClassName: 'ExcludedAndroidComponent',
@@ -497,7 +497,7 @@ Map {
 
 'use strict';
 
-const registerGeneratedViewConfig = require('registerGeneratedViewConfig');
+const registerGeneratedViewConfig = require('react-native/Libraries/Utilities/registerGeneratedViewConfig');
 
 const ExcludedAndroidIosComponentViewConfig = {
   uiViewClassName: 'ExcludedAndroidIosComponent',
@@ -529,7 +529,7 @@ Map {
 
 'use strict';
 
-const registerGeneratedViewConfig = require('registerGeneratedViewConfig');
+const registerGeneratedViewConfig = require('react-native/Libraries/Utilities/registerGeneratedViewConfig');
 
 const FloatPropNativeComponentViewConfig = {
   uiViewClassName: 'FloatPropNativeComponent',
@@ -569,13 +569,13 @@ Map {
 
 'use strict';
 
-const registerGeneratedViewConfig = require('registerGeneratedViewConfig');
+const registerGeneratedViewConfig = require('react-native/Libraries/Utilities/registerGeneratedViewConfig');
 
 const ImagePropNativeComponentViewConfig = {
   uiViewClassName: 'ImagePropNativeComponent',
 
   validAttributes: {
-    thumbImage: { process: require('resolveAssetSource') },
+    thumbImage: { process: require('react-native/Libraries/Image/resolveAssetSource') },
   },
 };
 
@@ -604,13 +604,13 @@ Map {
 
 'use strict';
 
-const registerGeneratedViewConfig = require('registerGeneratedViewConfig');
+const registerGeneratedViewConfig = require('react-native/Libraries/Utilities/registerGeneratedViewConfig');
 
 const InsetsPropNativeComponentViewConfig = {
   uiViewClassName: 'InsetsPropNativeComponent',
 
   validAttributes: {
-    contentInset: { diff: require('insetsDiffer') },
+    contentInset: { diff: require('react-native/Libraries/Utilities/differ/insetsDiffer') },
   },
 };
 
@@ -639,7 +639,7 @@ Map {
 
 'use strict';
 
-const registerGeneratedViewConfig = require('registerGeneratedViewConfig');
+const registerGeneratedViewConfig = require('react-native/Libraries/Utilities/registerGeneratedViewConfig');
 
 const Int32EnumPropsNativeComponentViewConfig = {
   uiViewClassName: 'Int32EnumPropsNativeComponent',
@@ -674,7 +674,7 @@ Map {
 
 'use strict';
 
-const registerGeneratedViewConfig = require('registerGeneratedViewConfig');
+const registerGeneratedViewConfig = require('react-native/Libraries/Utilities/registerGeneratedViewConfig');
 
 const IntegerPropNativeComponentViewConfig = {
   uiViewClassName: 'IntegerPropNativeComponent',
@@ -711,7 +711,7 @@ Map {
 
 'use strict';
 
-const registerGeneratedViewConfig = require('registerGeneratedViewConfig');
+const registerGeneratedViewConfig = require('react-native/Libraries/Utilities/registerGeneratedViewConfig');
 
 const InterfaceOnlyComponentViewConfig = {
   uiViewClassName: 'RCTInterfaceOnlyComponent',
@@ -756,16 +756,16 @@ Map {
 
 'use strict';
 
-const registerGeneratedViewConfig = require('registerGeneratedViewConfig');
+const registerGeneratedViewConfig = require('react-native/Libraries/Utilities/registerGeneratedViewConfig');
 
 const ImageColorPropNativeComponentViewConfig = {
   uiViewClassName: 'ImageColorPropNativeComponent',
 
   validAttributes: {
-    thumbImage: { process: require('resolveAssetSource') },
-    color: { process: require('processColor') },
-    thumbTintColor: { process: require('processColor') },
-    point: { diff: require('pointsDiffer') },
+    thumbImage: { process: require('react-native/Libraries/Image/resolveAssetSource') },
+    color: { process: require('react-native/Libraries/StyleSheet/processColor') },
+    thumbTintColor: { process: require('react-native/Libraries/StyleSheet/processColor') },
+    point: { diff: require('react-native/Libraries/Utilities/differ/pointsDiffer') },
   },
 };
 
@@ -794,7 +794,7 @@ Map {
 
 'use strict';
 
-const registerGeneratedViewConfig = require('registerGeneratedViewConfig');
+const registerGeneratedViewConfig = require('react-native/Libraries/Utilities/registerGeneratedViewConfig');
 
 const NoPropsNoEventsComponentViewConfig = {
   uiViewClassName: 'NoPropsNoEventsComponent',
@@ -826,7 +826,7 @@ Map {
 
 'use strict';
 
-const registerGeneratedViewConfig = require('registerGeneratedViewConfig');
+const registerGeneratedViewConfig = require('react-native/Libraries/Utilities/registerGeneratedViewConfig');
 
 const ObjectPropsViewConfig = {
   uiViewClassName: 'ObjectProps',
@@ -861,13 +861,13 @@ Map {
 
 'use strict';
 
-const registerGeneratedViewConfig = require('registerGeneratedViewConfig');
+const registerGeneratedViewConfig = require('react-native/Libraries/Utilities/registerGeneratedViewConfig');
 
 const PointPropNativeComponentViewConfig = {
   uiViewClassName: 'PointPropNativeComponent',
 
   validAttributes: {
-    startPoint: { diff: require('pointsDiffer') },
+    startPoint: { diff: require('react-native/Libraries/Utilities/differ/pointsDiffer') },
   },
 };
 
@@ -896,7 +896,7 @@ Map {
 
 'use strict';
 
-const registerGeneratedViewConfig = require('registerGeneratedViewConfig');
+const registerGeneratedViewConfig = require('react-native/Libraries/Utilities/registerGeneratedViewConfig');
 
 const StringEnumPropsNativeComponentViewConfig = {
   uiViewClassName: 'StringEnumPropsNativeComponent',
@@ -931,7 +931,7 @@ Map {
 
 'use strict';
 
-const registerGeneratedViewConfig = require('registerGeneratedViewConfig');
+const registerGeneratedViewConfig = require('react-native/Libraries/Utilities/registerGeneratedViewConfig');
 
 const StringPropComponentViewConfig = {
   uiViewClassName: 'StringPropComponent',
@@ -967,7 +967,7 @@ Map {
 
 'use strict';
 
-const registerGeneratedViewConfig = require('registerGeneratedViewConfig');
+const registerGeneratedViewConfig = require('react-native/Libraries/Utilities/registerGeneratedViewConfig');
 
 const MultiFile1NativeComponentViewConfig = {
   uiViewClassName: 'MultiFile1NativeComponent',
@@ -1018,7 +1018,7 @@ Map {
 
 'use strict';
 
-const registerGeneratedViewConfig = require('registerGeneratedViewConfig');
+const registerGeneratedViewConfig = require('react-native/Libraries/Utilities/registerGeneratedViewConfig');
 
 const MultiComponent1NativeComponentViewConfig = {
   uiViewClassName: 'MultiComponent1NativeComponent',
@@ -1069,7 +1069,7 @@ Map {
 
 'use strict';
 
-const registerGeneratedViewConfig = require('registerGeneratedViewConfig');
+const registerGeneratedViewConfig = require('react-native/Libraries/Utilities/registerGeneratedViewConfig');
 const {UIManager} = require(\\"react-native\\")
 
 const NativeComponentNameViewConfig = {

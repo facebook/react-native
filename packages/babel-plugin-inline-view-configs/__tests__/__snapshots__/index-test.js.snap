@@ -22,7 +22,7 @@ interface NativeCommands {
   +scrollTo: (viewRef: React.ElementRef<NativeType>, y: Int32, animated: boolean) => void,
 }
 
-const registerGeneratedViewConfig = require('registerGeneratedViewConfig');
+const registerGeneratedViewConfig = require('react-native/Libraries/Utilities/registerGeneratedViewConfig');
 
 const {
   dispatchCommand
@@ -87,7 +87,7 @@ interface NativeCommands {
   +scrollTo: (viewRef: React.ElementRef<NativeType>, y: Int32, animated: boolean) => void,
 }
 
-const registerGeneratedViewConfig = require('registerGeneratedViewConfig');
+const registerGeneratedViewConfig = require('react-native/Libraries/Utilities/registerGeneratedViewConfig');
 
 const {
   dispatchCommand
