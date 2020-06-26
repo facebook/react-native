@@ -7,6 +7,7 @@
 
 package com.facebook.react.views.text;
 
+import android.os.Build;
 import android.text.Layout;
 import android.text.Spannable;
 import android.text.TextUtils;
@@ -99,6 +100,9 @@ public abstract class ReactTextAnchorViewManager<T extends View, C extends React
 
   @ReactProp(name = "android_hyphenationFrequency")
   public void setAndroidHyphenationFrequency(ReactTextView view, @Nullable String frequency) {
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+      return;
+    }
     if (frequency == null || frequency.equals("none")) {
       view.setHyphenationFrequency(Layout.HYPHENATION_FREQUENCY_NONE);
     } else if (frequency.equals("full")) {
