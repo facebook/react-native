@@ -56,10 +56,9 @@ struct ShadowNodeFragment {
      */
     explicit operator ShadowNodeFragment() const;
 
-   private:
-    Props::Shared const props_;
-    ShadowNode::SharedListOfShared const children_;
-    State::Shared const state_;
+    Props::Shared props;
+    ShadowNode::SharedListOfShared children;
+    State::Shared state;
   };
 };
 

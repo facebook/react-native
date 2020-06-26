@@ -14,6 +14,10 @@ import static com.facebook.react.fabric.mounting.LayoutMetricsConversions.getMax
 import static com.facebook.react.fabric.mounting.LayoutMetricsConversions.getMinSize;
 import static com.facebook.react.fabric.mounting.LayoutMetricsConversions.getYogaMeasureMode;
 import static com.facebook.react.fabric.mounting.LayoutMetricsConversions.getYogaSize;
+import static com.facebook.react.uimanager.UIManagerHelper.PADDING_BOTTOM_INDEX;
+import static com.facebook.react.uimanager.UIManagerHelper.PADDING_END_INDEX;
+import static com.facebook.react.uimanager.UIManagerHelper.PADDING_START_INDEX;
+import static com.facebook.react.uimanager.UIManagerHelper.PADDING_TOP_INDEX;
 import static com.facebook.react.uimanager.common.UIManagerType.FABRIC;
 
 import android.annotation.SuppressLint;
@@ -73,6 +77,7 @@ import com.facebook.react.uimanager.ReactRoot;
 import com.facebook.react.uimanager.ReactRootViewTagGenerator;
 import com.facebook.react.uimanager.StateWrapper;
 import com.facebook.react.uimanager.ThemedReactContext;
+import com.facebook.react.uimanager.UIManagerHelper;
 import com.facebook.react.uimanager.ViewManagerPropertyUpdater;
 import com.facebook.react.uimanager.ViewManagerRegistry;
 import com.facebook.react.uimanager.events.EventDispatcher;
@@ -321,6 +326,7 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
       @Nullable Object stateWrapper,
       boolean isLayoutable) {
     ThemedReactContext context = mReactContextForRootTag.get(rootTag);
+
     String component = getFabricComponentName(componentName);
     synchronized (mPreMountItemsLock) {
       mPreMountItems.add(
@@ -496,6 +502,32 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
         attachmentsPositions);
   }
 
+  /**
+   * @param surfaceID {@link int} surface ID
+   * @param defaultTextInputPadding {@link float[]} output parameter will contain the default theme
+   *     padding used by RN Android TextInput.
+   * @return if theme data is available in the output parameters.
+   */
+  @DoNotStrip
+  public boolean getThemeData(int surfaceID, float[] defaultTextInputPadding) {
+    ThemedReactContext themedReactContext = mReactContextForRootTag.get(surfaceID);
+    if (themedReactContext == null) {
+      // TODO T68526882: Review if this should cause a crash instead.
+      ReactSoftException.logSoftException(
+          TAG,
+          new ReactNoCrashSoftException(
+              "Unable to find ThemedReactContext associated to surfaceID: " + surfaceID));
+      return false;
+    }
+    float[] defaultTextInputPaddingForTheme =
+        UIManagerHelper.getDefaultTextInputPadding(themedReactContext);
+    defaultTextInputPadding[0] = defaultTextInputPaddingForTheme[PADDING_START_INDEX];
+    defaultTextInputPadding[1] = defaultTextInputPaddingForTheme[PADDING_END_INDEX];
+    defaultTextInputPadding[2] = defaultTextInputPaddingForTheme[PADDING_TOP_INDEX];
+    defaultTextInputPadding[3] = defaultTextInputPaddingForTheme[PADDING_BOTTOM_INDEX];
+    return true;
+  }
+
   @Override
   @UiThread
   @ThreadConfined(UI)
@@ -512,7 +544,11 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
       ReactMarker.logFabricMarker(
           ReactMarkerConstants.FABRIC_UPDATE_UI_MAIN_THREAD_START, null, commitNumber);
       if (ENABLE_FABRIC_LOGS) {
-        FLog.d(TAG, "SynchronouslyUpdateViewOnUIThread for tag %d", reactTag);
+        FLog.d(
+            TAG,
+            "SynchronouslyUpdateViewOnUIThread for tag %d: %s",
+            reactTag,
+            (IS_DEVELOPMENT_ENVIRONMENT ? props.toHashMap().toString() : "<hidden>"));
       }
 
       updatePropsMountItem(reactTag, props).execute(mMountingManager);
@@ -538,7 +574,8 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
 
   /**
    * This method enqueues UI operations directly to the UI thread. This might change in the future
-   * to enforce execution order using {@link ReactChoreographer#CallbackType}.
+   * to enforce execution order using {@link ReactChoreographer#CallbackType}. This method should
+   * only be called as the result of a new tree being committed.
    */
   @DoNotStrip
   @SuppressWarnings("unused")
@@ -558,6 +595,13 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
     // a BatchMountItem. No other sites call into this with a BatchMountItem, and Binding.cpp only
     // calls scheduleMountItems with a BatchMountItem.
     boolean isBatchMountItem = mountItem instanceof BatchMountItem;
+    boolean shouldSchedule = !(isBatchMountItem && ((BatchMountItem) mountItem).getSize() == 0);
+
+    // In case of sync rendering, this could be called on the UI thread. Otherwise,
+    // it should ~always be called on the JS thread.
+    for (UIManagerListener listener : mListeners) {
+      listener.didScheduleMountItems(this);
+    }
 
     if (isBatchMountItem) {
       mCommitStartTime = commitStartTime;
@@ -567,13 +611,15 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
       mDispatchViewUpdatesTime = SystemClock.uptimeMillis();
     }
 
-    synchronized (mMountItemsLock) {
-      mMountItems.add(mountItem);
-    }
+    if (shouldSchedule) {
+      synchronized (mMountItemsLock) {
+        mMountItems.add(mountItem);
+      }
 
-    if (UiThreadUtil.isOnUiThread()) {
-      // We only read these flags on the UI thread.
-      tryDispatchMountItems();
+      if (UiThreadUtil.isOnUiThread()) {
+        // We only read these flags on the UI thread.
+        tryDispatchMountItems();
+      }
     }
 
     // Post markers outside of lock and after sync mounting finishes its execution
@@ -617,19 +663,20 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
       return;
     }
 
-    for (UIManagerListener listener : mListeners) {
-      listener.willDispatchMountItems();
-    }
-
     final boolean didDispatchItems;
     try {
       didDispatchItems = dispatchMountItems();
     } catch (Throwable e) {
       mReDispatchCounter = 0;
+      mLastExecutedMountItemSurfaceId = -1;
       throw e;
     } finally {
       // Clean up after running dispatchMountItems - even if an exception was thrown
       mInDispatch = false;
+    }
+
+    for (UIManagerListener listener : mListeners) {
+      listener.didDispatchMountItems(this);
     }
 
     // Decide if we want to try reentering
@@ -648,6 +695,7 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
       tryDispatchMountItems();
     }
     mReDispatchCounter = 0;
+    mLastExecutedMountItemSurfaceId = -1;
   }
 
   @UiThread
@@ -880,10 +928,6 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
     // reentering during dispatchPreMountItems
     mInDispatch = true;
 
-    for (UIManagerListener listener : mListeners) {
-      listener.willDispatchPreMountItems();
-    }
-
     try {
       while (true) {
         long timeLeftInFrame = FRAME_TIME_MS - ((System.nanoTime() - frameTimeNanos) / 1000000);
@@ -906,6 +950,7 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
       }
     } finally {
       mInDispatch = false;
+      mLastExecutedMountItemSurfaceId = -1;
     }
 
     Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);

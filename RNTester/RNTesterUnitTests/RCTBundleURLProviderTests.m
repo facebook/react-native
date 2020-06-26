@@ -24,7 +24,7 @@ static NSURL *localhostBundleURL()
       URLWithString:
           [NSString
               stringWithFormat:
-                  @"http://localhost:8081/%@.bundle?platform=ios&dev=true&minify=false&modulesOnly=false&runMdoule=true&app=com.apple.dt.xctest.tool",
+                  @"http://localhost:8081/%@.bundle?platform=ios&dev=true&minify=false&modulesOnly=false&runModule=true&app=com.apple.dt.xctest.tool",
                   testFile]];
 }
 
@@ -34,7 +34,7 @@ static NSURL *ipBundleURL()
       URLWithString:
           [NSString
               stringWithFormat:
-                  @"http://192.168.1.1:8081/%@.bundle?platform=ios&dev=true&minify=false&modulesOnly=false&runMdoule=true&app=com.apple.dt.xctest.tool",
+                  @"http://192.168.1.1:8081/%@.bundle?platform=ios&dev=true&minify=false&modulesOnly=false&runModule=true&app=com.apple.dt.xctest.tool",
                   testFile]];
 }
 

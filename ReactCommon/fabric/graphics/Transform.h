@@ -8,11 +8,11 @@
 #pragma once
 
 #include <array>
+#include <vector>
 
 #include <folly/Hash.h>
 #include <react/graphics/Float.h>
 #include <react/graphics/Geometry.h>
-#include <react/graphics/Quaternion.h>
 
 #ifdef ANDROID
 #include <folly/dynamic.h>
@@ -21,21 +21,38 @@
 namespace facebook {
 namespace react {
 
-struct ScaleRotationTranslation {
-  Float translationX;
-  Float translationY;
-  Float translationZ;
-  Float scaleX;
-  Float scaleY;
-  Float scaleZ;
-  Quaternion<Float> rotation;
+inline bool isZero(Float n) {
+  // We use this ternary expression instead of abs, fabsf, etc, because
+  // Float can be double or float depending on compilation target.
+  return (n < 0 ? n * (-1) : n) < 0.00001;
+}
+
+/**
+ * Defines operations used to construct a transform matrix.
+ * An "Arbitrary" operation means that the transform was seeded with some
+ * arbitrary initial result.
+ */
+enum class TransformOperationType {
+  Arbitrary,
+  Identity,
+  Perspective,
+  Scale,
+  Translate,
+  Rotate,
+  Skew
+};
+struct TransformOperation {
+  TransformOperationType type;
+  Float x;
+  Float y;
+  Float z;
 };
 
 /*
  * Defines transform matrix to apply affine transformations.
  */
 struct Transform {
-  using SRT = ScaleRotationTranslation;
+  std::vector<TransformOperation> operations{};
 
   std::array<Float, 16> matrix{
       {1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1}};
@@ -46,6 +63,14 @@ struct Transform {
 #ifdef RN_DEBUG_STRING_CONVERTIBLE
   static void print(Transform const &t, std::string prefix);
 #endif
+
+  /*
+   * Given a TransformOperation, return the proper transform.
+   */
+  static Transform FromTransformOperation(
+      TransformOperation transformOperation);
+  static TransformOperation DefaultTransformOperation(
+      TransformOperationType type);
 
   /*
    * Returns the identity transform (`[1 0 0 0; 0 1 0 0; 0 0 1 0; 0 0 0 1]`).
@@ -79,25 +104,6 @@ struct Transform {
   static Transform RotateY(Float angle);
   static Transform RotateZ(Float angle);
   static Transform Rotate(Float angleX, Float angleY, Float angleZ);
-
-  /**
-   * Extract SRT (scale, rotation, transformation) from a Transform matrix.
-   *
-   * CAVEATS:
-   *   1. The input matrix must not have Skew applied.
-   *   2. Scaling factors must be non-negative. Scaling by a negative factor is
-   *      equivalent to a rotation, and though it is possible to detect if 1 or
-   *      3 of the scale signs are flipped (but not two), it is not possible
-   *      to detect WHICH of the scales are flipped. Thus, any animation
-   *      that involves a negative scale factor will not crash but will
-   *      interpolate over nonsensical values.
-   *   3. Another caveat is that if the animation interpolates TO a 90º
-   *      rotation in the X, Y, or Z axis, the View will appear to suddenly
-   * explode in size. Interpolating THROUGH 90º is fine as long as you don't end
-   * up at 90º or close to it (89.99). The same is true for 0±90 and 360n+90,
-   * etc.
-   */
-  static SRT ExtractSRT(Transform const &transform);
 
   /**
    * Perform an interpolation between lhs and rhs, given progress.

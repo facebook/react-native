@@ -19,7 +19,19 @@
 
 NSString *const RCTJavaScriptLoaderErrorDomain = @"RCTJavaScriptLoaderErrorDomain";
 
-static const int32_t JSNoBytecodeFileFormatVersion = -1;
+const UInt32 RCT_BYTECODE_ALIGNMENT = 4;
+UInt32 RCTReadUInt32LE(NSData *script, UInt32 offset)
+{
+  return [script length] < offset + 4 ? 0 : CFSwapInt32LittleToHost(*(((uint32_t *)[script bytes]) + offset / 4));
+}
+
+bool RCTIsBytecodeBundle(NSData *script)
+{
+  static const UInt32 BYTECODE_BUNDLE_MAGIC_NUMBER = 0xffe7c3c3;
+  return (
+      [script length] > 8 && RCTReadUInt32LE(script, 0) == BYTECODE_BUNDLE_MAGIC_NUMBER &&
+      RCTReadUInt32LE(script, 4) > 0);
+}
 
 @interface RCTSource () {
  @public
@@ -37,7 +49,10 @@ static RCTSource *RCTSourceCreate(NSURL *url, NSData *data, int64_t length) NS_R
 {
   RCTSource *source = [RCTSource new];
   source->_url = url;
-  source->_data = data;
+  // Multipart responses may give us an unaligned view into the buffer. This ensures memory is aligned.
+  source->_data = (RCTIsBytecodeBundle(data) && ((long)[data bytes] % RCT_BYTECODE_ALIGNMENT))
+      ? [[NSData alloc] initWithData:data]
+      : data;
   source->_length = length;
   source->_filesChangedCount = RCTSourceFilesChangedCountNotBuiltByBundler;
   return source;
@@ -75,10 +90,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init)
 {
   int64_t sourceLength;
   NSError *error;
-  NSData *data = [self attemptSynchronousLoadOfBundleAtURL:scriptURL
-                                          runtimeBCVersion:JSNoBytecodeFileFormatVersion
-                                              sourceLength:&sourceLength
-                                                     error:&error];
+  NSData *data = [self attemptSynchronousLoadOfBundleAtURL:scriptURL sourceLength:&sourceLength error:&error];
   if (data) {
     onComplete(nil, RCTSourceCreate(scriptURL, data, sourceLength));
     return;
@@ -95,7 +107,6 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init)
 }
 
 + (NSData *)attemptSynchronousLoadOfBundleAtURL:(NSURL *)scriptURL
-                               runtimeBCVersion:(int32_t)runtimeBCVersion
                                    sourceLength:(int64_t *)sourceLength
                                           error:(NSError **)error
 {
@@ -186,27 +197,6 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init)
       return nil;
 #endif
     }
-    case facebook::react::ScriptTag::BCBundle:
-      if (runtimeBCVersion == JSNoBytecodeFileFormatVersion || runtimeBCVersion < 0) {
-        if (error) {
-          *error = [NSError
-              errorWithDomain:RCTJavaScriptLoaderErrorDomain
-                         code:RCTJavaScriptLoaderErrorBCNotSupported
-                     userInfo:@{NSLocalizedDescriptionKey : @"Bytecode bundles are not supported by this runtime."}];
-        }
-        return nil;
-      } else if ((uint32_t)runtimeBCVersion != header.version) {
-        if (error) {
-          NSString *errDesc = [NSString
-              stringWithFormat:@"BC Version Mismatch. Expect: %d, Actual: %u", runtimeBCVersion, header.version];
-
-          *error = [NSError errorWithDomain:RCTJavaScriptLoaderErrorDomain
-                                       code:RCTJavaScriptLoaderErrorBCVersion
-                                   userInfo:@{NSLocalizedDescriptionKey : errDesc}];
-        }
-        return nil;
-      }
-      break;
   }
 
   struct stat statInfo;
@@ -300,7 +290,8 @@ static void attemptAsynchronousLoadOfBundleAtURL(
         // Validate that the packager actually returned javascript.
         NSString *contentType = headers[@"Content-Type"];
         NSString *mimeType = [[contentType componentsSeparatedByString:@";"] firstObject];
-        if (![mimeType isEqualToString:@"application/javascript"] && ![mimeType isEqualToString:@"text/javascript"]) {
+        if (![mimeType isEqualToString:@"application/javascript"] && ![mimeType isEqualToString:@"text/javascript"] &&
+            ![mimeType isEqualToString:@"application/x-metro-bytecode-bundle"]) {
           NSString *description;
           if ([mimeType isEqualToString:@"application/json"]) {
             NSError *parseError;
@@ -332,7 +323,8 @@ static void attemptAsynchronousLoadOfBundleAtURL(
       }
       progressHandler:^(NSDictionary *headers, NSNumber *loaded, NSNumber *total) {
         // Only care about download progress events for the javascript bundle part.
-        if ([headers[@"Content-Type"] isEqualToString:@"application/javascript"]) {
+        if ([headers[@"Content-Type"] isEqualToString:@"application/javascript"] ||
+            [headers[@"Content-Type"] isEqualToString:@"application/x-metro-bytecode-bundle"]) {
           onProgress(progressEventFromDownloadProgress(loaded, total));
         }
       }];

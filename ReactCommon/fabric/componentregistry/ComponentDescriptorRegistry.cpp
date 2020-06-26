@@ -168,6 +168,18 @@ ComponentDescriptor const &ComponentDescriptorRegistry::at(
   return *_registryByHandle.at(componentHandle);
 }
 
+bool ComponentDescriptorRegistry::hasComponentDescriptorAt(
+    ComponentHandle componentHandle) const {
+  std::shared_lock<better::shared_mutex> lock(mutex_);
+
+  auto iterator = _registryByHandle.find(componentHandle);
+  if (iterator == _registryByHandle.end()) {
+    return false;
+  }
+
+  return true;
+}
+
 SharedShadowNode ComponentDescriptorRegistry::createNode(
     Tag tag,
     std::string const &viewName,

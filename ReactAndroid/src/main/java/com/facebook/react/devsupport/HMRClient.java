@@ -29,6 +29,9 @@ public interface HMRClient extends JavaScriptModule {
    */
   void setup(String platform, String bundleEntry, String host, int port, boolean isEnabled);
 
+  /** Registers an additional JS bundle with HMRClient. */
+  void registerBundle(String bundleUrl);
+
   /**
    * Sets up a connection to the packager when called the first time. Ensures code updates received
    * from the packager are applied.

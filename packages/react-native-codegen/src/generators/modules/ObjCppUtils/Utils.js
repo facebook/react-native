@@ -86,7 +86,16 @@ function flatObjects(
 
   return flattenObjects;
 }
+
+function getSafePropertyName(property: ObjectParamTypeAnnotation): string {
+  if (property.name === 'id') {
+    return `${property.name}_`;
+  }
+  return property.name;
+}
+
 module.exports = {
   flatObjects,
   capitalizeFirstLetter,
+  getSafePropertyName,
 };

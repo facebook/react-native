@@ -20,7 +20,7 @@ const base64 = require('base64-js');
 const binaryToBase64 = require('../Utilities/binaryToBase64');
 const invariant = require('invariant');
 
-import type EventSubscription from '../vendor/emitter/EventSubscription';
+import {type EventSubscription} from '../vendor/emitter/EventEmitter';
 import NativeWebSocketModule from './NativeWebSocketModule';
 
 type ArrayBufferView =

@@ -1414,7 +1414,15 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithBundleURL
     // hold a local reference to reactInstance in case a parallel thread
     // resets it between null check and usage
     auto reactInstance = self->_reactInstance;
-    if (isRAMBundle(script)) {
+    if (reactInstance && RCTIsBytecodeBundle(script)) {
+      UInt32 offset = 8;
+      while (offset < script.length) {
+        UInt32 fileLength = RCTReadUInt32LE(script, offset);
+        NSData *unit = [script subdataWithRange:NSMakeRange(offset + 4, fileLength)];
+        reactInstance->loadScriptFromString(std::make_unique<NSDataBigString>(unit), sourceUrlStr.UTF8String, false);
+        offset += ((fileLength + RCT_BYTECODE_ALIGNMENT - 1) & ~(RCT_BYTECODE_ALIGNMENT - 1)) + 4;
+      }
+    } else if (isRAMBundle(script)) {
       [self->_performanceLogger markStartForTag:RCTPLRAMBundleLoad];
       auto ramBundle = std::make_unique<JSIndexedRAMBundle>(sourceUrlStr.UTF8String);
       std::unique_ptr<const JSBigString> scriptStr = ramBundle->getStartupCode();
