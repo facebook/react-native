@@ -10,8 +10,7 @@
 
 'use strict';
 
-const RCTDeviceEventEmitter = require('../EventEmitter/RCTDeviceEventEmitter');
-
+import RCTDeviceEventEmitter from '../EventEmitter/RCTDeviceEventEmitter';
 import NativeRedBox from '../NativeModules/specs/NativeRedBox';
 import {type EventSubscription} from '../vendor/emitter/EventEmitter';
 import NativeBugReporting from './NativeBugReporting';
