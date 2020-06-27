@@ -33,7 +33,6 @@ const sparseFilterPredicate = () => true;
  */
 class EventEmitter {
   _subscriber: EventSubscriptionVendor;
-  _currentSubscription: ?EmitterSubscription;
 
   /**
    * @constructor
@@ -71,27 +70,6 @@ class EventEmitter {
   }
 
   /**
-   * Similar to addListener, except that the listener is removed after it is
-   * invoked once.
-   *
-   * @param {string} eventType - Name of the event to listen to
-   * @param {function} listener - Function to invoke only once when the
-   *   specified event is emitted
-   * @param {*} context - Optional context object to use when invoking the
-   *   listener
-   */
-  once(
-    eventType: string,
-    listener: Function,
-    context: ?Object,
-  ): EmitterSubscription {
-    return this.addListener(eventType, (...args) => {
-      this.removeCurrentListener();
-      listener.apply(context, args);
-    });
-  }
-
-  /**
    * Removes all of the registered listeners, including those registered as
    * listener maps.
    *
@@ -100,35 +78,6 @@ class EventEmitter {
    */
   removeAllListeners(eventType: ?string) {
     this._subscriber.removeAllSubscriptions(eventType);
-  }
-
-  /**
-   * Provides an API that can be called during an eventing cycle to remove the
-   * last listener that was invoked. This allows a developer to provide an event
-   * object that can remove the listener (or listener map) during the
-   * invocation.
-   *
-   * If it is called when not inside of an emitting cycle it will throw.
-   *
-   * @throws {Error} When called not during an eventing cycle
-   *
-   * @example
-   *   var subscription = emitter.addListenerMap({
-   *     someEvent: function(data, event) {
-   *       console.log(data);
-   *       emitter.removeCurrentListener();
-   *     }
-   *   });
-   *
-   *   emitter.emit('someEvent', 'abc'); // logs 'abc'
-   *   emitter.emit('someEvent', 'def'); // does not log anything
-   */
-  removeCurrentListener() {
-    invariant(
-      !!this._currentSubscription,
-      'Not in an emitting cycle; there is no current subscription',
-    );
-    this.removeSubscription(this._currentSubscription);
   }
 
   /**
@@ -185,14 +134,12 @@ class EventEmitter {
 
         // The subscription may have been removed during this event loop.
         if (subscription && subscription.listener) {
-          this._currentSubscription = subscription;
           subscription.listener.apply(
             subscription.context,
             Array.prototype.slice.call(arguments, 1),
           );
         }
       }
-      this._currentSubscription = null;
     }
   }
 
