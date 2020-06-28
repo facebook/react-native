@@ -58,6 +58,8 @@ using namespace facebook::react;
   BOOL _didMoveToWindow;
 }
 
+#pragma mark - UIView overrides
+
 - (instancetype)initWithFrame:(CGRect)frame
 {
   if (self = [super initWithFrame:frame]) {
@@ -88,6 +90,8 @@ using namespace facebook::react;
     _didMoveToWindow = YES;
   }
 }
+
+#pragma mark - RCTViewComponentView overrides
 
 - (NSObject *)accessibilityElement
 {
@@ -235,20 +239,6 @@ using namespace facebook::react;
       RCTUIEdgeInsetsFromEdgeInsets(layoutMetrics.contentInsets - layoutMetrics.borderWidth);
 }
 
-- (void)_setAttributedString:(NSAttributedString *)attributedString
-{
-  UITextRange *selectedRange = [_backedTextInputView selectedTextRange];
-  _backedTextInputView.attributedText = attributedString;
-  if (_lastStringStateWasUpdatedWith.length == attributedString.length) {
-    // Calling `[_backedTextInputView setAttributedText]` moves caret
-    // to the end of text input field. This cancels any selection as well
-    // as position in the text input field. In case the length of string
-    // doesn't change, selection and caret position is maintained.
-    [_backedTextInputView setSelectedTextRange:selectedRange notifyDelegate:NO];
-  }
-  _lastStringStateWasUpdatedWith = attributedString;
-}
-
 - (void)prepareForRecycle
 {
   [super prepareForRecycle];
@@ -259,19 +249,6 @@ using namespace facebook::react;
   _lastStringStateWasUpdatedWith = nil;
   _ignoreNextTextInputCall = NO;
   _didMoveToWindow = NO;
-}
-
-#pragma mark - RCTComponentViewProtocol
-
-- (void)_setMultiline:(BOOL)multiline
-{
-  [_backedTextInputView removeFromSuperview];
-  UIView<RCTBackedTextInputViewProtocol> *backedTextInputView =
-      multiline ? [[RCTUITextView alloc] init] : [[RCTUITextField alloc] init];
-  backedTextInputView.frame = _backedTextInputView.frame;
-  RCTCopyBackedTextInput(_backedTextInputView, backedTextInputView);
-  _backedTextInputView = backedTextInputView;
-  [self addSubview:_backedTextInputView];
 }
 
 #pragma mark - RCTBackedTextInputDelegate
@@ -398,41 +375,6 @@ using namespace facebook::react;
   }
 }
 
-#pragma mark - Other
-
-- (TextInputMetrics)_textInputMetrics
-{
-  TextInputMetrics metrics;
-  metrics.text = RCTStringFromNSString(_backedTextInputView.attributedText.string);
-  metrics.selectionRange = [self _selectionRange];
-  metrics.eventCount = _mostRecentEventCount;
-  return metrics;
-}
-
-- (void)_updateState
-{
-  if (!_state) {
-    return;
-  }
-  NSAttributedString *attributedString = _backedTextInputView.attributedText;
-  auto data = _state->getData();
-  _lastStringStateWasUpdatedWith = attributedString;
-  data.attributedStringBox = RCTAttributedStringBoxFromNSAttributedString(attributedString);
-  _mostRecentEventCount += _comingFromJS ? 0 : 1;
-  data.mostRecentEventCount = _mostRecentEventCount;
-  _state->updateState(std::move(data));
-}
-
-- (AttributedString::Range)_selectionRange
-{
-  UITextRange *selectedTextRange = _backedTextInputView.selectedTextRange;
-  NSInteger start = [_backedTextInputView offsetFromPosition:_backedTextInputView.beginningOfDocument
-                                                  toPosition:selectedTextRange.start];
-  NSInteger end = [_backedTextInputView offsetFromPosition:_backedTextInputView.beginningOfDocument
-                                                toPosition:selectedTextRange.end];
-  return AttributedString::Range{(int)start, (int)(end - start)};
-}
-
 #pragma mark - Native Commands
 
 - (void)handleCommand:(const NSString *)commandName args:(const NSArray *)args
@@ -478,6 +420,66 @@ using namespace facebook::react;
     [_backedTextInputView setSelectedTextRange:range notifyDelegate:NO];
   }
   _comingFromJS = NO;
+}
+
+#pragma mark - Other
+
+- (TextInputMetrics)_textInputMetrics
+{
+  TextInputMetrics metrics;
+  metrics.text = RCTStringFromNSString(_backedTextInputView.attributedText.string);
+  metrics.selectionRange = [self _selectionRange];
+  metrics.eventCount = _mostRecentEventCount;
+  return metrics;
+}
+
+- (void)_updateState
+{
+  if (!_state) {
+    return;
+  }
+  NSAttributedString *attributedString = _backedTextInputView.attributedText;
+  auto data = _state->getData();
+  _lastStringStateWasUpdatedWith = attributedString;
+  data.attributedStringBox = RCTAttributedStringBoxFromNSAttributedString(attributedString);
+  _mostRecentEventCount += _comingFromJS ? 0 : 1;
+  data.mostRecentEventCount = _mostRecentEventCount;
+  _state->updateState(std::move(data));
+}
+
+- (AttributedString::Range)_selectionRange
+{
+  UITextRange *selectedTextRange = _backedTextInputView.selectedTextRange;
+  NSInteger start = [_backedTextInputView offsetFromPosition:_backedTextInputView.beginningOfDocument
+                                                  toPosition:selectedTextRange.start];
+  NSInteger end = [_backedTextInputView offsetFromPosition:_backedTextInputView.beginningOfDocument
+                                                toPosition:selectedTextRange.end];
+  return AttributedString::Range{(int)start, (int)(end - start)};
+}
+
+- (void)_setAttributedString:(NSAttributedString *)attributedString
+{
+  UITextRange *selectedRange = [_backedTextInputView selectedTextRange];
+  _backedTextInputView.attributedText = attributedString;
+  if (_lastStringStateWasUpdatedWith.length == attributedString.length) {
+    // Calling `[_backedTextInputView setAttributedText]` moves caret
+    // to the end of text input field. This cancels any selection as well
+    // as position in the text input field. In case the length of string
+    // doesn't change, selection and caret position is maintained.
+    [_backedTextInputView setSelectedTextRange:selectedRange notifyDelegate:NO];
+  }
+  _lastStringStateWasUpdatedWith = attributedString;
+}
+
+- (void)_setMultiline:(BOOL)multiline
+{
+  [_backedTextInputView removeFromSuperview];
+  UIView<RCTBackedTextInputViewProtocol> *backedTextInputView =
+      multiline ? [[RCTUITextView alloc] init] : [[RCTUITextField alloc] init];
+  backedTextInputView.frame = _backedTextInputView.frame;
+  RCTCopyBackedTextInput(_backedTextInputView, backedTextInputView);
+  _backedTextInputView = backedTextInputView;
+  [self addSubview:_backedTextInputView];
 }
 
 @end
