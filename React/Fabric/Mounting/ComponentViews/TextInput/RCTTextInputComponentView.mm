@@ -89,6 +89,11 @@ using namespace facebook::react;
   }
 }
 
+- (NSObject *)accessibilityElement
+{
+  return _backedTextInputView;
+}
+
 #pragma mark - RCTComponentViewProtocol
 
 + (ComponentDescriptorProvider)componentDescriptorProvider
