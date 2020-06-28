@@ -24,6 +24,8 @@ const {
 const RNTesterBlock = require('../../components/RNTesterBlock');
 const RNTesterPage = require('../../components/RNTesterPage');
 
+const behaviorOptions = ['padding', 'position', 'height'];
+
 type Props = $ReadOnly<{||}>;
 type State = {|
   behavior: string,
@@ -49,9 +51,9 @@ class KeyboardAvoidingViewExample extends React.Component<Props, State> {
             style={styles.container}>
             <SegmentedControlIOS
               onValueChange={this.onSegmentChange}
-              selectedIndex={this.state.behavior === 'padding' ? 0 : 1}
+              selectedIndex={behaviorOptions.indexOf(this.state.behavior)}
               style={styles.segment}
-              values={['Padding', 'Position']}
+              values={behaviorOptions}
             />
             <TextInput placeholder="<TextInput />" style={styles.textInput} />
           </KeyboardAvoidingView>

@@ -87,7 +87,7 @@ class KeyboardAvoidingView extends React.Component<Props, State> {
 
     // Calculate the displacement needed for the view such that it
     // no longer overlaps with the keyboard
-    return Math.max(frame.y + frame.height - keyboardY, 0);
+    return Math.max(frame.y + this._initialFrameHeight - keyboardY, 0);
   }
 
   _onKeyboardChange = (event: ?KeyboardEvent) => {
