@@ -23,13 +23,14 @@ Both macOS and Xcode are required.
 
 ### Running on Android
 
-You'll need to have all the [prerequisites](https://github.com/facebook/react-native/tree/master/ReactAndroid#prerequisites) (SDK, NDK) for Building React Native installed.
+You'll need to have all the [prerequisites](https://github.com/facebook/react-native/tree/master/ReactAndroid#prerequisites) (SDK, NDK) for Building React Native installed. In the root `react-native` directory, run `yarn link`. Make sure you do `yarn install` in `react-native/packages/RNTester` and then run `yarn link react-native`.
 
 Start an Android emulator.
 
-    cd react-native
-    ./gradlew :RNTester:android:app:installJscDebug
-    ./scripts/packager.sh
+    cd android
+    ./gradlew :app:installDebug
+    cd ..
+    yarn start
 
 _Note: Building for the first time can take a while._
 
@@ -51,6 +52,24 @@ Run the following commands from the react-native folder:
     ./scripts/packager.sh
 
 _Note: The native libs are still built using gradle. Full build with buck is coming soon(tm)._
+
+## Running Detox Tests on Android (Note: Detox tests aren't completely configured yet.)
+
+To run the e2e tests locally, run the following commands from the react-native folder:
+
+    detox build -c android.emu.release
+    detox test -c android.emu.release --cleanup
+
+These build the app in Release mode, so the production code is bundled and included in the built app.
+
+When developing E2E tests, you may want to run in development mode, so that changes to the production code show up immediately. To do this, run:
+
+    detox build -c android.emu.debug
+    detox test -c android.emu.debug
+
+You will also need to have Metro running in another terminal. Note that if you've previously run the E2E tests in release mode, you may need to delete the `RNTester/build` folder before rerunning `detox build`.
+
+For step by step instructions, please have a look at this [wiki](https://github.com/MLH-Fellowship/react-native/wiki/RNTester-Detox-Android-Setup)
 
 ## Running Detox Tests on iOS (Note: Detox tests aren't completely configured yet.)
 
