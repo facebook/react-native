@@ -218,6 +218,7 @@ class Modal extends React.Component<Props> {
         animationType={animationType}
         presentationStyle={presentationStyle}
         transparent={this.props.transparent}
+        isModalInPresentation={this.props.isModalInPresentation}
         hardwareAccelerated={this.props.hardwareAccelerated}
         onRequestClose={this.props.onRequestClose}
         onShow={this.props.onShow}
