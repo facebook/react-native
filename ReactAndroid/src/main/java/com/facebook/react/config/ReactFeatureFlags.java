@@ -58,12 +58,6 @@ public class ReactFeatureFlags {
   public static boolean nullifyCatalystInstanceOnDestroy = false;
 
   /**
-   * Temporary flag. See UIImplementation: if this flag is enabled, ViewCommands will be queued and
-   * executed before any other types of UI operations.
-   */
-  public static boolean allowEarlyViewCommandExecution = false;
-
-  /**
    * This react flag enables a custom algorithm for the getChildVisibleRect() method in the classes
    * ReactViewGroup, ReactHorizontalScrollView and ReactScrollView.
    *
