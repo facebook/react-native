@@ -219,9 +219,6 @@ void LayoutableShadowNode::layout(LayoutContext layoutContext) {
       continue;
     }
 
-    auto childLayoutContext = LayoutContext(layoutContext);
-    childLayoutContext.absolutePosition += childLayoutMetrics.frame.origin;
-
     child->layout(layoutContext);
   }
 }
