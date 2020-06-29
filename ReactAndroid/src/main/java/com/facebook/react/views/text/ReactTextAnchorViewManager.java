@@ -7,6 +7,7 @@
 
 package com.facebook.react.views.text;
 
+import android.text.Layout;
 import android.text.Spannable;
 import android.text.TextUtils;
 import android.text.util.Linkify;
@@ -93,6 +94,24 @@ public abstract class ReactTextAnchorViewManager<T extends View, C extends React
           DefaultStyleValuesUtil.getDefaultTextColorHighlight(view.getContext()));
     } else {
       view.setHighlightColor(color);
+    }
+  }
+
+  @ReactProp(name = "android_hyphenationFrequency")
+  public void setAndroidHyphenationFrequency(ReactTextView view, @Nullable String frequency) {
+    if (frequency == null || frequency.equals("none")) {
+      view.setHyphenationFrequency(Layout.HYPHENATION_FREQUENCY_NONE);
+    } else if (frequency.equals("full")) {
+      view.setHyphenationFrequency(Layout.HYPHENATION_FREQUENCY_FULL);
+    } else if (frequency.equals("balanced")) {
+      view.setHyphenationFrequency(Layout.BREAK_STRATEGY_BALANCED);
+    } else if (frequency.equals("high")) {
+      view.setHyphenationFrequency(Layout.BREAK_STRATEGY_HIGH_QUALITY);
+    } else if (frequency.equals("normal")) {
+      view.setHyphenationFrequency(Layout.HYPHENATION_FREQUENCY_NORMAL);
+    } else {
+      throw new JSApplicationIllegalArgumentException(
+          "Invalid android_hyphenationFrequency: " + frequency);
     }
   }
 
