@@ -281,19 +281,17 @@ public class MountingManager {
     ViewGroupManager<ViewGroup> viewGroupManager = getViewGroupManager(viewState);
 
     // Verify that the view we're about to remove has the same tag we expect
-    if (tag != -1) {
-      View view = viewGroupManager.getChildAt(parentView, index);
-      if (view != null && view.getId() != tag) {
-        throw new IllegalStateException(
-            "Tried to delete view ["
-                + tag
-                + "] of parent ["
-                + parentTag
-                + "] at index "
-                + index
-                + ", but got view tag "
-                + view.getId());
-      }
+    View view = viewGroupManager.getChildAt(parentView, index);
+    if (view != null && view.getId() != tag) {
+      throw new IllegalStateException(
+          "Tried to delete view ["
+              + tag
+              + "] of parent ["
+              + parentTag
+              + "] at index "
+              + index
+              + ", but got view tag "
+              + view.getId());
     }
 
     try {
