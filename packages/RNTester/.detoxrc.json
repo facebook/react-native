@@ -20,13 +20,13 @@
     },
     "ios.sim.release": {
       "binaryPath": "ios/build/Build/Products/Release-iphonesimulator/RNTester.app/",
-      "build": "xcodebuild -workspace ios/RNTesterPods.xcworkspace -scheme RNTester -configuration Release -sdk iphonesimulator -derivedDataPath ios/build -UseModernBuildSystem=NO -quiet",
+      "build": "xcodebuild -workspace ios/RNTester.xcworkspace -scheme RNTester -configuration Release -sdk iphonesimulator -derivedDataPath ios/build -UseModernBuildSystem=NO -quiet",
       "type": "ios.simulator",
       "name": "iPhone 8"
     },
     "ios.sim.debug": {
       "binaryPath": "ios/build/Build/Products/Debug-iphonesimulator/RNTester.app/",
-      "build": "xcodebuild -workspace ios/RNTesterPods.xcworkspace -scheme RNTester -configuration Debug -sdk iphonesimulator -derivedDataPath ios/build -UseModernBuildSystem=NO -quiet",
+      "build": "xcodebuild -workspace ios/RNTester.xcworkspace -scheme RNTester -configuration Debug -sdk iphonesimulator -derivedDataPath ios/build -UseModernBuildSystem=NO -quiet",
       "type": "ios.simulator",
       "name": "iPhone 8"
     }

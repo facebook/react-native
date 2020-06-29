@@ -1,5 +1,4 @@
 platform :ios, '10.0'
-require_relative '../node_modules/@react-native-community/cli-platform-ios/native_modules'
 
 def add_flipper_pods!(versions = {})
   versions['Flipper'] ||= '~> 0.33.1'
@@ -88,8 +87,6 @@ target 'RNTester' do
     inherit! :complete
     # Pods for testing
   end
-
-  use_native_modules!
 
   # Enables Flipper.
   #
