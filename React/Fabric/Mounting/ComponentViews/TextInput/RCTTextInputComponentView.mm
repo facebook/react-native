@@ -207,6 +207,10 @@ using namespace facebook::react;
     _backedTextInputView.tintColor = RCTUIColorFromSharedColor(newTextInputProps.selectionColor);
   }
 
+  if (newTextInputProps.inputAccessoryViewID != oldTextInputProps.inputAccessoryViewID) {
+    _backedTextInputView.inputAccessoryViewID = RCTNSStringFromString(newTextInputProps.inputAccessoryViewID);
+  }
+
   [super updateProps:props oldProps:oldProps];
 }
 
