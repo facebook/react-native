@@ -144,7 +144,6 @@ class LayoutableShadowNode : public ShadowNode {
       ShadowNode::Shared node,
       Point point);
 
- protected:
   /*
    * Clean or Dirty layout state:
    * Indicates whether all nodes (and possibly their subtrees) along the path

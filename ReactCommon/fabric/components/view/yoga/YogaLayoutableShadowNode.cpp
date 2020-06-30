@@ -352,9 +352,25 @@ void YogaLayoutableShadowNode::layoutTree(
   layout(layoutContext);
 }
 
+static EdgeInsets calculateOverflowInset(
+    Rect containerFrame,
+    Rect contentFrame) {
+  auto size = containerFrame.size;
+  auto overflowInset = EdgeInsets{};
+  overflowInset.left = std::min(contentFrame.getMinX(), Float{0.0});
+  overflowInset.top = std::min(contentFrame.getMinY(), Float{0.0});
+  overflowInset.right =
+      -std::max(contentFrame.getMaxX() - size.width, Float{0.0});
+  overflowInset.bottom =
+      -std::max(contentFrame.getMaxY() - size.height, Float{0.0});
+  return overflowInset;
+}
+
 void YogaLayoutableShadowNode::layout(LayoutContext layoutContext) {
   // Reading data from a dirtied node does not make sense.
   assert(!yogaNode_.isDirty());
+
+  auto contentFrame = Rect{};
 
   for (auto childYogaNode : yogaNode_.getChildren()) {
     auto &childNode =
@@ -391,6 +407,20 @@ void YogaLayoutableShadowNode::layout(LayoutContext layoutContext) {
         childNode.layout(layoutContext);
       }
     }
+
+    auto layoutMetricsWithOverflowInset = childNode.getLayoutMetrics();
+    if (layoutMetricsWithOverflowInset.displayType != DisplayType::None) {
+      contentFrame.unionInPlace(insetBy(
+          layoutMetricsWithOverflowInset.frame,
+          layoutMetricsWithOverflowInset.overflowInset));
+    }
+  }
+
+  if (yogaNode_.getStyle().overflow() == YGOverflowVisible) {
+    layoutMetrics_.overflowInset =
+        calculateOverflowInset(layoutMetrics_.frame, contentFrame);
+  } else {
+    layoutMetrics_.overflowInset = {};
   }
 }
 
