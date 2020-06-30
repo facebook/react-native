@@ -188,7 +188,9 @@ const AccessibilityInfo = {
    * See http://facebook.github.io/react-native/docs/accessibilityinfo.html#announceforaccessibility
    */
   announceForAccessibility: function(announcement: string): void {
-    warning(false, 'AccessibilityInfo is not supported on this platform.');
+    if (NativeAccessibilityManager) {
+      NativeAccessibilityManager.announceForAccessibility(announcement);
+    }
   },
 };
 
