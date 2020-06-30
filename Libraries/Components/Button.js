@@ -25,12 +25,14 @@ import type {ColorValue} from '../StyleSheet/StyleSheet';
 
 type ButtonProps = $ReadOnly<{|
   /**
-    Text to display inside the button. On Android the given title will be converted to the uppercased form.
+    Text to display inside the button. On Android the given title will be
+    converted to the uppercased form.
    */
   title: string,
 
   /**
-    Handler to be called when the user taps the button. The first function argument is an event in form of [PressEvent](pressevent).
+    Handler to be called when the user taps the button. The first function
+    argument is an event in form of [PressEvent](pressevent).
    */
   onPress: (event?: PressEvent) => mixed,
 
@@ -61,35 +63,45 @@ type ButtonProps = $ReadOnly<{|
   hasTVPreferredFocus?: ?boolean,
 
   /**
-    Designates the next view to receive focus when the user navigates down. See the [Android documentation](https://developer.android.com/reference/android/view/View.html#attr_android:nextFocusDown).
+    Designates the next view to receive focus when the user navigates down. See
+    the [Android
+    documentation](https://developer.android.com/reference/android/view/View.html#attr_android:nextFocusDown).
 
     @platform android, tv
    */
   nextFocusDown?: ?number,
 
   /**
-    Designates the next view to receive focus when the user navigates forward. See the [Android documentation](https://developer.android.com/reference/android/view/View.html#attr_android:nextFocusForward).
+    Designates the next view to receive focus when the user navigates forward.
+    See the [Android
+    documentation](https://developer.android.com/reference/android/view/View.html#attr_android:nextFocusForward).
 
     @platform android, tv
    */
   nextFocusForward?: ?number,
 
   /**
-    Designates the next view to receive focus when the user navigates left. See the [Android documentation](https://developer.android.com/reference/android/view/View.html#attr_android:nextFocusLeft).
+    Designates the next view to receive focus when the user navigates left. See
+    the [Android
+    documentation](https://developer.android.com/reference/android/view/View.html#attr_android:nextFocusLeft).
 
     @platform android, tv
    */
   nextFocusLeft?: ?number,
 
   /**
-    Designates the next view to receive focus when the user navigates right. See the [Android documentation](https://developer.android.com/reference/android/view/View.html#attr_android:nextFocusRight).
+    Designates the next view to receive focus when the user navigates right. See
+    the [Android
+    documentation](https://developer.android.com/reference/android/view/View.html#attr_android:nextFocusRight).
 
     @platform android, tv
    */
   nextFocusRight?: ?number,
 
   /**
-    Designates the next view to receive focus when the user navigates up. See the [Android documentation](https://developer.android.com/reference/android/view/View.html#attr_android:nextFocusUp).
+    Designates the next view to receive focus when the user navigates up. See
+    the [Android
+    documentation](https://developer.android.com/reference/android/view/View.html#attr_android:nextFocusUp).
 
     @platform android, tv
    */
@@ -114,12 +126,16 @@ type ButtonProps = $ReadOnly<{|
 |}>;
 
 /**
-  A basic button component that should render nicely on any platform. Supports a minimal level of customization.
+  A basic button component that should render nicely on any platform. Supports a
+  minimal level of customization.
 
-  If this button doesn't look right for your app, you can build your own button using
-  [TouchableOpacity](touchableopacity) or [TouchableWithoutFeedback](touchablewithoutfeedback).
-  For inspiration, look at the [source code for this button component](https://github.com/facebook/react-native/blob/master/Libraries/Components/Button.js).
-  Or, take a look at the [wide variety of button components built by the community](https://js.coach/?menu%5Bcollections%5D=React%20Native&page=1&query=button).
+  If this button doesn't look right for your app, you can build your own button
+  using [TouchableOpacity](touchableopacity) or
+  [TouchableWithoutFeedback](touchablewithoutfeedback). For inspiration, look at
+  the [source code for this button
+  component](https://github.com/facebook/react-native/blob/master/Libraries/Components/Button.js).
+  Or, take a look at the [wide variety of button components built by the
+  community](https://js.coach/?menu%5Bcollections%5D=React%20Native&page=1&query=button).
 
   ```jsx
   <Button
