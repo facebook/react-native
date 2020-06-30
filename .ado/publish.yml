@@ -170,6 +170,7 @@ jobs:
           script: node .ado/npmOfficePack.js
         env:
           BUILD_STAGINGDIRECTORY: $(Build.StagingDirectory)
+          BUILD_SOURCESDIRECTORY: $(Build.SourcesDirectory)
           BUILD_SOURCEBRANCH: $(Build.SourceBranch)
           SYSTEM_ACCESSTOKEN: $(System.AccessToken)
           githubApiToken: $(githubApiToken)

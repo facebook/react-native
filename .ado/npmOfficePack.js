@@ -19,7 +19,7 @@ function exec(command) {
   }
 }
 
-function doPublish() {
+function doPublish(fakeMode) {
   console.log(`Target branch to publish to: ${publishBranchName}`);
 
   const {releaseVersion, branchVersionSuffix} = gatherVersionInfo()
@@ -27,7 +27,7 @@ function doPublish() {
   const onlyTagSource = !!branchVersionSuffix;
   if (!onlyTagSource) {
     // -------- Generating Android Artifacts with JavaDoc
-    exec(path.join(process.env.BUILD_STAGINGDIRECTORY,"gradlew") + " installArchives");
+    exec(path.join(process.env.BUILD_SOURCESDIRECTORY, "gradlew") + " installArchives");
 
     // undo uncommenting javadoc setting
     exec("git checkout ReactAndroid/gradle.properties");
@@ -40,7 +40,19 @@ function doPublish() {
   const npmTarPath = path.resolve(__dirname, '..', npmTarFileName);
   const finalTarPath = path.join(process.env.BUILD_STAGINGDIRECTORY, 'final', npmTarFileName);
   console.log(`Copying tar file ${npmTarPath} to: ${finalTarPath}`)
-  fs.copyFileSync(npmTarPath, finalTarPath);
+  
+  if(fakeMode) {
+    if (!fs.existsSync(npmTarPath))
+      throw "The final artefact to be published is missing.";
+  } else {
+    fs.copyFileSync(npmTarPath, finalTarPath);
+  }
 }
 
-doPublish();
+var args = process.argv.slice(2);
+
+let fakeMode = false;
+if (args.length > 0 && args[0] === '--fake')
+  fakeMode = true;
+
+doPublish(fakeMode);
