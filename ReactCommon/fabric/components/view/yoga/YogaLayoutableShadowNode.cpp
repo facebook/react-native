@@ -104,14 +104,6 @@ bool YogaLayoutableShadowNode::getIsLayoutClean() const {
   return !yogaNode_.isDirty();
 }
 
-bool YogaLayoutableShadowNode::getHasNewLayout() const {
-  return yogaNode_.getHasNewLayout();
-}
-
-void YogaLayoutableShadowNode::setHasNewLayout(bool hasNewLayout) {
-  yogaNode_.setHasNewLayout(hasNewLayout);
-}
-
 #pragma mark - Mutating Methods
 
 void YogaLayoutableShadowNode::enableMeasurement() {
@@ -342,11 +334,11 @@ void YogaLayoutableShadowNode::layoutTree(
         &yogaNode_, YGUndefined, YGUndefined, YGDirectionInherit);
   }
 
-  if (getHasNewLayout()) {
+  if (yogaNode_.getHasNewLayout()) {
     auto layoutMetrics = layoutMetricsFromYogaNode(yogaNode_);
     layoutMetrics.pointScaleFactor = layoutContext.pointScaleFactor;
     setLayoutMetrics(layoutMetrics);
-    setHasNewLayout(false);
+    yogaNode_.setHasNewLayout(false);
   }
 
   layout(layoutContext);

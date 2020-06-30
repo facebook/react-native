@@ -154,13 +154,6 @@ class LayoutableShadowNode : public ShadowNode {
   virtual bool getIsLayoutClean() const = 0;
 
   /*
-   * Indicates does the shadow node (or any descendand node of the node)
-   * get a new layout metrics during a previous layout pass.
-   */
-  virtual void setHasNewLayout(bool hasNewLayout) = 0;
-  virtual bool getHasNewLayout() const = 0;
-
-  /*
    * Unifed methods to access text layout metrics.
    */
   virtual Float firstBaseline(Size size) const;

@@ -238,11 +238,6 @@ ShadowNode::Shared LayoutableShadowNode::findNodeAtPoint(
 SharedDebugStringConvertibleList LayoutableShadowNode::getDebugProps() const {
   auto list = SharedDebugStringConvertibleList{};
 
-  if (getHasNewLayout()) {
-    list.push_back(
-        std::make_shared<DebugStringConvertibleItem>("hasNewLayout"));
-  }
-
   if (!getIsLayoutClean()) {
     list.push_back(std::make_shared<DebugStringConvertibleItem>("dirty"));
   }
