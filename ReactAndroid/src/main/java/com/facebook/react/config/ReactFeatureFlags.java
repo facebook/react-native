@@ -41,22 +41,7 @@ public class ReactFeatureFlags {
    * inside view manager will be called instead.
    */
   public static boolean useViewManagerDelegatesForCommands = false;
-
-  /**
-   * Should this application use Catalyst Teardown V2? This is an experiment to use a V2 of the
-   * CatalystInstanceImpl `destroy` method.
-   */
-  public static boolean useCatalystTeardownV2 = false;
-
-  /**
-   * When the ReactContext is destroyed, should the CatalystInstance immediately be nullified? This
-   * is the safest thing to do since the CatalystInstance shouldn't be used, and should be
-   * garbage-collected after it's destroyed, but this is a breaking change in that many native
-   * modules assume that a ReactContext will always have a CatalystInstance. This will be deleted
-   * and the CatalystInstance will always be destroyed in some future release.
-   */
-  public static boolean nullifyCatalystInstanceOnDestroy = false;
-
+  
   /**
    * This react flag enables a custom algorithm for the getChildVisibleRect() method in the classes
    * ReactViewGroup, ReactHorizontalScrollView and ReactScrollView.
