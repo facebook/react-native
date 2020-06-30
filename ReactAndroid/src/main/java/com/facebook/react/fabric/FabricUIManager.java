@@ -297,15 +297,6 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
     // memory immediately.
     mDispatchUIFrameCallback.stop();
 
-    // Stop all attached surfaces
-    if (ReactFeatureFlags.enableFabricStopAllSurfacesOnTeardown) {
-      FLog.e(TAG, "stop all attached surfaces");
-      for (int surfaceId : mReactContextForRootTag.keySet()) {
-        FLog.e(TAG, "stop attached surface: " + surfaceId);
-        stopSurface(surfaceId);
-      }
-    }
-
     mBinding.unregister();
     mBinding = null;
 
