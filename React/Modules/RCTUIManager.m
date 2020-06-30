@@ -1444,7 +1444,8 @@ RCT_EXPORT_METHOD(setJSResponder
 {
   [self addUIBlock:^(__unused RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry) {
     _jsResponder = viewRegistry[reactTag];
-    if (!_jsResponder) {
+    // Fabric view's are not stored in viewRegistry. We avoid logging a warning in that case.
+    if (!_jsResponder && !RCTUIManagerTypeForTagIsFabric(reactTag)) {
       RCTLogWarn(@"Invalid view set to be the JS responder - tag %@", reactTag);
     }
   }];
