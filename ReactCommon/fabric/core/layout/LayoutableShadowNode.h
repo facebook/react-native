@@ -93,9 +93,12 @@ class LayoutableShadowNode : public ShadowNode {
    * Computes layout recursively.
    * Additional environmental constraints might be provided via `layoutContext`
    * argument.
-   * Default implementation basically calls `layoutChildren()` and then
-   * `layout()` (recursively), and provides some obvious performance
-   * optimization.
+   *
+   * The typical concrete-layout-specific implementation of this method should:
+   * - Measure children with `LayoutConstraints` calculated from its size using
+   *   a particular layout approach;
+   * - Calculate and assign `LayoutMetrics` for the children;
+   * - Call itself recursively on every child if needed.
    */
   virtual void layout(LayoutContext layoutContext);
 
@@ -159,12 +162,6 @@ class LayoutableShadowNode : public ShadowNode {
   virtual bool getHasNewLayout() const = 0;
 
   /*
-   * Applies layout for all children;
-   * does not call anything in recursive manner *by desing*.
-   */
-  virtual void layoutChildren(LayoutContext layoutContext);
-
-  /*
    * Unifed methods to access text layout metrics.
    */
   virtual Float firstBaseline(Size size) const;
@@ -181,7 +178,6 @@ class LayoutableShadowNode : public ShadowNode {
   SharedDebugStringConvertibleList getDebugProps() const;
 #endif
 
- private:
   LayoutMetrics layoutMetrics_;
 };
 

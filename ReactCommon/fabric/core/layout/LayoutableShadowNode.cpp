@@ -204,23 +204,7 @@ void LayoutableShadowNode::layoutTree(
 }
 
 void LayoutableShadowNode::layout(LayoutContext layoutContext) {
-  layoutChildren(layoutContext);
-
-  for (auto child : getLayoutableChildNodes()) {
-    if (!child->getHasNewLayout()) {
-      continue;
-    }
-
-    child->ensureUnsealed();
-    child->setHasNewLayout(false);
-
-    auto childLayoutMetrics = child->getLayoutMetrics();
-    if (childLayoutMetrics.displayType == DisplayType::None) {
-      continue;
-    }
-
-    child->layout(layoutContext);
-  }
+  // Default implementation does nothing.
 }
 
 ShadowNode::Shared LayoutableShadowNode::findNodeAtPoint(
@@ -248,10 +232,6 @@ ShadowNode::Shared LayoutableShadowNode::findNodeAtPoint(
     }
   }
   return isPointInside ? node : nullptr;
-}
-
-void LayoutableShadowNode::layoutChildren(LayoutContext layoutContext) {
-  // Default implementation does nothing.
 }
 
 #if RN_DEBUG_STRING_CONVERTIBLE

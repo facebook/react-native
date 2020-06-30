@@ -84,7 +84,7 @@ class YogaLayoutableShadowNode : public LayoutableShadowNode {
       LayoutContext layoutContext,
       LayoutConstraints layoutConstraints) override;
 
-  void layoutChildren(LayoutContext layoutContext) override;
+  void layout(LayoutContext layoutContext) override;
 
  protected:
   /*

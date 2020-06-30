@@ -352,35 +352,44 @@ void YogaLayoutableShadowNode::layoutTree(
   layout(layoutContext);
 }
 
-void YogaLayoutableShadowNode::layoutChildren(LayoutContext layoutContext) {
+void YogaLayoutableShadowNode::layout(LayoutContext layoutContext) {
+  // Reading data from a dirtied node does not make sense.
   assert(!yogaNode_.isDirty());
 
-  for (const auto &childYogaNode : yogaNode_.getChildren()) {
-    if (!childYogaNode->getHasNewLayout()) {
-      continue;
-    }
-
-    assert(!childYogaNode->isDirty());
-
-    auto childNode =
-        static_cast<YogaLayoutableShadowNode *>(childYogaNode->getContext());
+  for (auto childYogaNode : yogaNode_.getChildren()) {
+    auto &childNode =
+        *static_cast<YogaLayoutableShadowNode *>(childYogaNode->getContext());
 
     // Verifying that the Yoga node belongs to the ShadowNode.
-    assert(&childNode->yogaNode_ == childYogaNode);
+    assert(&childNode.yogaNode_ == childYogaNode);
 
-    LayoutMetrics childLayoutMetrics =
-        layoutMetricsFromYogaNode(childNode->yogaNode_);
-    childLayoutMetrics.pointScaleFactor = layoutContext.pointScaleFactor;
+    if (childYogaNode->getHasNewLayout()) {
+      childYogaNode->setHasNewLayout(false);
 
-    // We must copy layout metrics from Yoga node only once (when the parent
-    // node exclusively ownes the child node).
-    assert(childYogaNode->getOwner() == &yogaNode_);
+      // Reading data from a dirtied node does not make sense.
+      assert(!childYogaNode->isDirty());
 
-    childNode->ensureUnsealed();
-    auto affected = childNode->setLayoutMetrics(childLayoutMetrics);
+      // We must copy layout metrics from Yoga node only once (when the parent
+      // node exclusively ownes the child node).
+      assert(childYogaNode->getOwner() == &yogaNode_);
 
-    if (affected && layoutContext.affectedNodes) {
-      layoutContext.affectedNodes->push_back(childNode);
+      // We are about to mutate layout metrics of the node.
+      childNode.ensureUnsealed();
+
+      auto newLayoutMetrics = layoutMetricsFromYogaNode(*childYogaNode);
+      newLayoutMetrics.pointScaleFactor = layoutContext.pointScaleFactor;
+
+      // Adding the node to `affectedNodes` if the node's `frame` was changed.
+      if (layoutContext.affectedNodes &&
+          newLayoutMetrics.frame != childNode.getLayoutMetrics().frame) {
+        layoutContext.affectedNodes->push_back(&childNode);
+      }
+
+      childNode.setLayoutMetrics(newLayoutMetrics);
+
+      if (newLayoutMetrics.displayType != DisplayType::None) {
+        childNode.layout(layoutContext);
+      }
     }
   }
 }
