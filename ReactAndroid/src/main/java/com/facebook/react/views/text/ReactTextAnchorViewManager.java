@@ -7,6 +7,7 @@
 
 package com.facebook.react.views.text;
 
+import android.os.Build;
 import android.text.Layout;
 import android.text.Spannable;
 import android.text.TextUtils;
@@ -23,6 +24,7 @@ import com.facebook.react.uimanager.ViewProps;
 import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.annotations.ReactPropGroup;
 import com.facebook.yoga.YogaConstants;
+import com.facebook.common.logging.FLog;
 
 /**
  * Abstract class for anchor {@code <Text>}-ish spannable views, such as {@link TextView} or {@link
@@ -39,6 +41,7 @@ public abstract class ReactTextAnchorViewManager<T extends View, C extends React
   private static final int[] SPACING_TYPES = {
     Spacing.ALL, Spacing.LEFT, Spacing.RIGHT, Spacing.TOP, Spacing.BOTTOM,
   };
+  private static final String TAG = "ReactTextAnchorViewManager";
 
   // maxLines can only be set in master view (block), doesn't really make sense to set in a span
   @ReactProp(name = ViewProps.NUMBER_OF_LINES, defaultInt = ViewDefaults.NUMBER_OF_LINES)
@@ -99,6 +102,10 @@ public abstract class ReactTextAnchorViewManager<T extends View, C extends React
 
   @ReactProp(name = "android_hyphenationFrequency")
   public void setAndroidHyphenationFrequency(ReactTextView view, @Nullable String frequency) {
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+      FLog.w(TAG, "android_hyphenationFrequency only available since android 23");
+      return;
+    }
     if (frequency == null || frequency.equals("none")) {
       view.setHyphenationFrequency(Layout.HYPHENATION_FREQUENCY_NONE);
     } else if (frequency.equals("full")) {
