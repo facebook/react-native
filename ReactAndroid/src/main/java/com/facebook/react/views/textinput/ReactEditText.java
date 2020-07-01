@@ -507,8 +507,7 @@ public class ReactEditText extends AppCompatEditText {
       // try to update state if the wrapper is available. Temporarily disable
       // to prevent an infinite loop.
       Integer startPosition = getSelectionStart();
-      getText().clear();
-      append(spannableStringBuilder);
+      setText(spannableStringBuilder);
       setSelection(startPosition);
     }
     mDisableTextDiffing = false;
