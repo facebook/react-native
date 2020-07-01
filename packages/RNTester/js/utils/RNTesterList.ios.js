@@ -289,11 +289,11 @@ const APIExamples: Array<RNTesterExample> = [
     module: require('../examples/PointerEvents/PointerEventsExample'),
     supportsTVOS: false,
   },
-  {
-    key: 'PushNotificationIOSExample',
-    module: require('../examples/PushNotificationIOS/PushNotificationIOSExample'),
-    supportsTVOS: false,
-  },
+  // {
+  //   key: 'PushNotificationIOSExample',
+  //   module: require('../examples/PushNotificationIOS/PushNotificationIOSExample'),
+  //   supportsTVOS: false,
+  // },
   {
     key: 'RCTRootViewIOSExample',
     module: require('../examples/RCTRootView/RCTRootViewIOSExample'),
@@ -353,7 +353,7 @@ const APIExamples: Array<RNTesterExample> = [
 
 const Modules: {...} = {};
 
-APIExamples.concat(ComponentExamples).forEach((Example) => {
+APIExamples.concat(ComponentExamples).forEach(Example => {
   Modules[Example.key] = Example.module;
 });
 

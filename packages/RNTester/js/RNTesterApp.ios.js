@@ -74,7 +74,7 @@ const Header = ({
             {onBack && (
               <View>
                 <Button
-                  title="Back"
+                  title="BackBOO"
                   onPress={onBack}
                   color={Platform.select({
                     ios: theme.LinkColor,
@@ -244,7 +244,7 @@ AppRegistry.registerComponent('SetPropertiesExampleApp', () =>
 AppRegistry.registerComponent('RootViewSizeFlexibilityExampleApp', () =>
   require('./examples/RootViewSizeFlexibilityExample/RootViewSizeFlexibilityExampleApp'),
 );
-AppRegistry.registerComponent('RNTesterApp', () => RNTesterApp);
+AppRegistry.registerComponent('RNTester', () => RNTesterApp);
 
 // Register suitable examples for snapshot tests
 RNTesterList.ComponentExamples.concat(RNTesterList.APIExamples).forEach(
