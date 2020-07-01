@@ -91,18 +91,16 @@ class RewriteExample extends React.Component<$FlowFixMeProps, any> {
     this.state = {text: ''};
   }
   render() {
-    const limit = 20;
+    const limit = 100;
     const remainder = limit - this.state.text.length;
     const remainderColor = remainder > 5 ? 'blue' : 'red';
     return (
       <View style={styles.rewriteContainer}>
         <TextInput
           testID="rewrite_sp_underscore_input"
-          autoCorrect={false}
-          multiline={false}
           maxLength={limit}
           onChangeText={text => {
-            text = text.replace(/ /g, '_');
+            text = text.replace(/ /g, '_').toUpperCase();
             this.setState({text});
           }}
           style={styles.default}
@@ -457,7 +455,7 @@ module.exports = ([
     },
   },
   {
-    title: "Live Re-Write (<sp>  ->  '_') + maxLength",
+    title: "Live Re-Write (<sp>  ->  '_' -> toUpperCase) + maxLength",
     render: function(): React.Node {
       return <RewriteExample />;
     },
