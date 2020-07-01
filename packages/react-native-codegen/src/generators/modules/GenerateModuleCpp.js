@@ -75,7 +75,7 @@ function traverseArg(arg, index): string {
         default:
           (typeAnnotation.name: empty);
           throw new Error(
-            `Unknown prop type for "${arg.name}, found: ${typeAnnotation.name}"`,
+            `Unknown prop type for "${arg.name}", found: "${typeAnnotation.name}"`,
           );
       }
     case 'StringTypeAnnotation':
@@ -91,6 +91,7 @@ function traverseArg(arg, index): string {
     case 'FunctionTypeAnnotation':
       return `std::move(${wrap('.getObject(rt).getFunction(rt)')})`;
     case 'GenericObjectTypeAnnotation':
+    case 'TypeAliasTypeAnnotation': // TODO: Handle aliases
     case 'ObjectTypeAnnotation':
       return wrap('.getObject(rt)');
     case 'AnyTypeAnnotation':
@@ -99,7 +100,7 @@ function traverseArg(arg, index): string {
       // TODO (T65847278): Figure out why this does not work.
       // (typeAnnotation.type: empty);
       throw new Error(
-        `Unknown prop type for "${arg.name}, found: ${typeAnnotation.type}"`,
+        `Unknown prop type for "${arg.name}", found: "${typeAnnotation.type}"`,
       );
   }
 }

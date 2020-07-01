@@ -92,6 +92,7 @@ function getElementTypeForArray(
       return 'double';
     case 'ObjectTypeAnnotation':
       return getNamespacedStructName(name, property) + 'Element';
+    case 'TypeAliasTypeAnnotation': // TODO: Handle aliases
     case 'GenericObjectTypeAnnotation':
       // TODO(T67565166): Generic objects are not type safe and should be disallowed in the schema. This case should throw an error once it is disallowed in schema.
       console.error(
@@ -228,6 +229,7 @@ function getInlineMethodImplementation(
         return `RCTBridgingToBool(${element})`;
       case 'ObjectTypeAnnotation':
         return `${getNamespacedStructName(name, property)}Element(${element})`;
+      case 'TypeAliasTypeAnnotation': // TODO: Handle aliases
       case 'GenericObjectTypeAnnotation':
         return element;
       case 'AnyObjectTypeAnnotation':

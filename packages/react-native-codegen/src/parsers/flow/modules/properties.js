@@ -13,6 +13,7 @@
 import type {
   FunctionTypeAnnotationParamTypeAnnotation,
   ObjectParamTypeAnnotation,
+  TypeAliasTypeAnnotation,
 } from '../../../CodegenSchema.js';
 
 import type {ASTNode, TypeMap} from '../utils.js';
@@ -53,7 +54,10 @@ function getElementTypeForArrayOrObject(
   arrayParam: ASTNode,
   paramName: string,
   types: TypeMap,
-): FunctionTypeAnnotationParamTypeAnnotation | typeof undefined {
+):
+  | FunctionTypeAnnotationParamTypeAnnotation
+  | TypeAliasTypeAnnotation
+  | typeof undefined {
   const typeAnnotation = getValueFromTypes(arrayParam, types);
   const type =
     typeAnnotation.type === 'GenericTypeAnnotation'
@@ -83,10 +87,16 @@ function getElementTypeForArrayOrObject(
         };
       } else {
         throw new Error(
-          `Unsupported type for ${name}, param: "${paramName}": expected to find annotation for type of nested array contents`,
+          `Unsupported type for "${name}", param: "${paramName}": expected to find annotation for type of nested array contents`,
         );
       }
     case 'ObjectTypeAnnotation':
+      if (arrayParam.id) {
+        return {
+          type: 'TypeAliasTypeAnnotation',
+          name: arrayParam.id.name,
+        };
+      }
       return {
         type: 'ObjectTypeAnnotation',
         properties: getObjectProperties(name, typeAnnotation, paramName, types),

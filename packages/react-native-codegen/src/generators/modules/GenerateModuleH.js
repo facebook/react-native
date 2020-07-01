@@ -74,6 +74,7 @@ function translatePrimitiveJSTypeToCpp(
       return 'int';
     case 'BooleanTypeAnnotation':
       return 'bool';
+    // case 'TypeAliasTypeAnnotation': // TODO: Handle aliases
     case 'GenericObjectTypeAnnotation':
     case 'ObjectTypeAnnotation':
       return 'jsi::Object';

@@ -85,6 +85,16 @@ function getTypeAnnotationForParam(
         );
       }
     case 'ObjectTypeAnnotation':
+      if (param.typeAnnotation.type === 'GenericTypeAnnotation') {
+        return {
+          nullable,
+          name: paramName,
+          typeAnnotation: {
+            type: 'TypeAliasTypeAnnotation',
+            name: param.typeAnnotation.id.name,
+          },
+        };
+      }
       return {
         nullable,
         name: paramName,
