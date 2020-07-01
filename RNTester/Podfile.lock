@@ -66,7 +66,18 @@ PODS:
     - boost-for-react-native
     - DoubleConversion
     - glog
+  - Folly/Futures (2018.10.22.00):
+    - boost-for-react-native
+    - DoubleConversion
+    - glog
+    - libevent
   - glog (0.3.5)
+  - hermes (0.4.1)
+  - libevent (2.1.11):
+    - libevent/core (= 2.1.11)
+  - libevent/core (2.1.11):
+    - libevent/event2-headers
+  - libevent/event2-headers (2.1.11)
   - OpenSSL-Universal (1.0.2.19):
     - OpenSSL-Universal/Static (= 1.0.2.19)
   - OpenSSL-Universal/Static (1.0.2.19)
@@ -131,6 +142,15 @@ PODS:
     - React-jsi (= 1000.0.0)
     - React-jsiexecutor (= 1000.0.0)
     - React-jsinspector (= 1000.0.0)
+    - Yoga
+  - React-Core/Hermes (1000.0.0):
+    - Folly (= 2018.10.22.00)
+    - Folly/Futures
+    - glog
+    - hermes (~> 0.4.1)
+    - React-cxxreact (= 1000.0.0)
+    - React-jsi (= 1000.0.0)
+    - React-jsiexecutor (= 1000.0.0)
     - Yoga
   - React-Core/RCTActionSheetHeaders (1000.0.0):
     - Folly (= 2018.10.22.00)
@@ -343,12 +363,15 @@ DEPENDENCIES:
   - FlipperKit/SKIOSNetworkPlugin (~> 0.30.1)
   - Folly (from `../third-party-podspecs/Folly.podspec`)
   - glog (from `../third-party-podspecs/glog.podspec`)
+  - "hermes (from `{:http=>\"https://github.com/alloy/hermes/releases/download/v0.4.1-macOS/hermes-v0.4.1.zip\", :sha256=>\"d33c7eafded94d8113a3bb74f56aef3ec1cd3df513e99df7fa3c7c34b867d379\"}`)"
+  - libevent (from `../third-party-podspecs/libevent.podspec`)
   - RCTRequired (from `../Libraries/RCTRequired`)
   - RCTTypeSafety (from `../Libraries/TypeSafety`)
   - React (from `../`)
   - React-ART (from `../Libraries/ART`)
   - React-Core (from `../`)
   - React-Core/DevSupport (from `../`)
+  - React-Core/Hermes (from `../`)
   - React-Core/RCTWebSocket (from `../`)
   - React-CoreModules (from `../React/CoreModules`)
   - React-cxxreact (from `../ReactCommon/cxxreact`)
@@ -372,7 +395,7 @@ DEPENDENCIES:
   - Yoga (from `../ReactCommon/yoga`)
 
 SPEC REPOS:
-  trunk:
+  https://cdn.cocoapods.org/:
     - CocoaAsyncSocket
     - CocoaLibEvent
     - Flipper
@@ -398,6 +421,11 @@ EXTERNAL SOURCES:
     :podspec: "../third-party-podspecs/Folly.podspec"
   glog:
     :podspec: "../third-party-podspecs/glog.podspec"
+  hermes:
+    :http: https://github.com/alloy/hermes/releases/download/v0.4.1-macOS/hermes-v0.4.1.zip
+    :sha256: d33c7eafded94d8113a3bb74f56aef3ec1cd3df513e99df7fa3c7c34b867d379
+  libevent:
+    :podspec: "../third-party-podspecs/libevent.podspec"
   RCTRequired:
     :path: "../Libraries/RCTRequired"
   RCTTypeSafety:
@@ -445,6 +473,11 @@ EXTERNAL SOURCES:
   Yoga:
     :path: "../ReactCommon/yoga"
 
+CHECKOUT OPTIONS:
+  hermes:
+    :http: https://github.com/alloy/hermes/releases/download/v0.4.1-macOS/hermes-v0.4.1.zip
+    :sha256: d33c7eafded94d8113a3bb74f56aef3ec1cd3df513e99df7fa3c7c34b867d379
+
 SPEC CHECKSUMS:
   boost-for-react-native: a110407d9db2642fd2e1bcd7c5a51c81f2521dc9
   CocoaAsyncSocket: eafaa68a7e0ec99ead0a7b35015e0bf25d2c8987
@@ -459,14 +492,16 @@ SPEC CHECKSUMS:
   Flipper-PeerTalk: 116d8f857dc6ef55c7a5a75ea3ceaafe878aadc9
   Flipper-RSocket: 64e7431a55835eb953b0bf984ef3b90ae9fdddd7
   FlipperKit: 88b7f0d0cf907ddc2137b85eeb7f3d4d8d9395c8
-  Folly: feff29ba9d0b7c2e4f793a94942831d6cc5bbad7
+  Folly: ae1e11fb7b57cac65fa994a5c9da9b6f652d934b
   glog: b3f6d74f3e2d33396addc0ee724d2b2b79fc3e00
+  hermes: ea5308401c53c1352fcb566548f2a45605c36f15
+  libevent: c2d56c8554ac18101d9c5f4c66ef762798209682
   OpenSSL-Universal: 8b48cc0d10c1b2923617dfe5c178aa9ed2689355
   RCTRequired: 66250bf27479214eb5c530ca2d8c772ebe4d7e71
   RCTTypeSafety: 2bf56caee198adc4adc63a5d18e8ffff8b92fbbb
   React: bacecd5320c8bb453aa396179b93061ebd9d34bf
   React-ART: 2f0eb928d7bc51e6262da595955b0e8fcf6c0a9e
-  React-Core: 8a9c0454b0540cfcca1261e8e084a324976bb6c2
+  React-Core: 0fb3a932eb28dcb299eceb7fb4e359b547557528
   React-CoreModules: fbe1e42d49cb14db5c9bf02dee33a18d281331f7
   React-cxxreact: 7ff40ab26e02c3f8b2fec2f5ea3d9f4774ef2523
   React-jsi: b23bf7e79fb2149f3bb9bd4e25e570bff9c03d10
@@ -487,6 +522,6 @@ SPEC CHECKSUMS:
   Yoga: 3ed3c35bb7c41fa8f5056b767bc048539f6526ad
   YogaKit: f782866e155069a2cca2517aafea43200b01fd5a
 
-PODFILE CHECKSUM: 524ab13b924fd82bc5c4393c133fcd02eb70efa4
+PODFILE CHECKSUM: 9f7ce884d267d41098ed0c95a51abea8c184a0ea
 
 COCOAPODS: 1.9.1

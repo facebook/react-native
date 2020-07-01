@@ -70,6 +70,40 @@ Pod::Spec.new do |spec|
                             'folly/system/ThreadId.h'
   end
 
+  # [TODO(macOS GH#214)
+  spec.subspec 'Futures' do |futures|
+    futures.dependency 'libevent'
+    futures.pod_target_xcconfig = { "HEADER_SEARCH_PATHS" => ["$(inherited)", "$(PODS_ROOT)/Headers/Public/libevent/event"] }
+    futures.source_files = 'folly/futures/*.{h,cpp}',
+                           'folly/futures/detail/*.{h,cpp}',
+                           'folly/executors/*.{h,cpp}',
+                           'folly/executors/thread_factory/{NamedThreadFactory,ThreadFactory}.{h,cpp}',
+                           'folly/executors/task_queue/{BlockingQueue,LifoSemMPMCQueue,PriorityLifoSemMPMCQueue}.{h,cpp}',
+                           'folly/concurrency/*.{h,cpp}',
+                           'folly/system/{ThreadId,ThreadName}.{h,cpp}',
+                           'folly/synchronization/*.{h,cpp}',
+                           'folly/synchronization/detail/*.{h,cpp}',
+                           'folly/experimental/{ExecutionObserver,ReadMostlySharedPtr,TLRefCount}.{h,cpp}',
+                           'folly/io/async/{AsyncTimeout,DelayedDestruction,DelayedDestructionBase,EventBase,EventBaseManager,EventHandler,EventUtil,HHWheelTimer,NotificationQueue,Request,TimeoutManager,VirtualEventBase}.{h,cpp}',
+                           'folly/io/{Cursor,Cursor-inl,IOBuf,IOBufQueue}.{h,cpp}',
+                           'folly/tracing/StaticTracepoint.{h,cpp}',
+                           'folly/{Executor,ExceptionWrapper,ExceptionWrapper-inl,FileUtil,Singleton,SharedMutex}.{h,cpp}',
+                           'folly/detail/{AtFork,Futex,Futex-inl,MemoryIdler,StaticSingletonManager,ThreadLocalDetail}.{h,cpp}',
+                           'folly/lang/SafeAssert.{h,cpp}',
+                           'folly/memory/MallctlHelper.{h,cpp}',
+                           'folly/portability/SysUio.{h,cpp}'
+                          # TODO: Perhaps some of the wildcards above can be further trimmed down with some of these:
+                          #
+                          #  'folly/executors/{DrivableExecutor,InlineExecutor,QueuedImmediateExecutor,TimedDrivableExecutor}.{h,cpp}',
+                          #  'folly/concurrency/{CacheLocality,UnboundedQueue}.{h,cpp}',
+                          #  'folly/system/ThreadId.h',
+                          #  'folly/synchronization/Hazptr{,-fwd,Domain,Holder,Obj,ObjLinked,Rec,ThrLocal}.{h,cpp}',
+                          #  'folly/synchronization/{AsymmetricMemoryBarrier,AtomicStruct,Baton,MicroSpinLock,ParkingLot,RWSpinLock,SanitizeThread,SaturatingSemaphore,WaitOptions}.{h,cpp}',
+                          #  'folly/synchronization/detail/{AtomicUtils,Sleeper,Spin}.{h,cpp}',
+                          #  'folly/experimental/{ReadMostlySharedPtr,TLRefCount}.h',
+  end
+  # ]TODO(macOS GH#214)
+
   # Pinning to the same version as React.podspec.
   spec.platforms = { :ios => "9.0", :tvos => "9.2", :osx => "10.14" } # TODO(macOS GH#214)
 end

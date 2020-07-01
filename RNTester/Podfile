@@ -47,11 +47,10 @@ if ENV['USE_FRAMEWORKS'] == '1'
   use_frameworks!
 end
 
-def pods()
+def pods(options = {})
   project 'RNTesterPods.xcodeproj'
 
-  # Enable TurboModule
-  use_react_native!(path: "..")
+  use_react_native!(options.merge(path: ".."))
   pod 'ReactCommon/turbomodule/samples', :path => '../ReactCommon'
 
   # Additional Pods which aren't included in the default Podfile
@@ -118,7 +117,7 @@ end
 
 target 'RNTester-macOS' do
   platform :osx, '10.14'
-  pods()
+  pods(:hermes_enabled => true)
 end
 
 target 'RNTesterUnitTests' do

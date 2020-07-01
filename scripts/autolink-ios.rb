@@ -13,6 +13,8 @@ def use_react_native! (options={})
   # Include DevSupport dependency
   production = options[:production] ||= false
 
+  hermes_enabled = options[:hermes_enabled] ||= false
+
   # The Pods which should be included in all projects
   pod 'FBLazyVector', :path => "#{prefix}/Libraries/FBLazyVector"
   pod 'FBReactNativeSpec', :path => "#{prefix}/Libraries/FBReactNativeSpec"
@@ -57,6 +59,13 @@ def use_react_native! (options={})
     pod 'React-jsi/Fabric', :path => "#{prefix}/ReactCommon/jsi"
     pod 'React-RCTFabric', :path => "#{prefix}/React"
     pod 'Folly/Fabric', :podspec => "#{prefix}/third-party-podspecs/Folly.podspec"
+  end
+
+  if hermes_enabled
+    pod 'React-Core/Hermes', :path => "#{prefix}/"
+    pod 'hermes', :http => 'https://github.com/alloy/hermes/releases/download/v0.4.1-macOS/hermes-v0.4.1.zip',
+                  :sha256 => 'd33c7eafded94d8113a3bb74f56aef3ec1cd3df513e99df7fa3c7c34b867d379'
+    pod 'libevent', :podspec => "#{prefix}/third-party-podspecs/libevent.podspec"
   end
 end
 
