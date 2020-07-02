@@ -18,7 +18,11 @@ const App: () => React$Node = () => {
     ios: () => require('./js/RNTesterApp.ios.js'),
     android: () => require('./js/RNTesterApp.android'),
   })();
-  return <View style={styles.container}>{/* <RNTesterApp /> */}</View>;
+  return (
+    <View style={styles.container}>
+      <RNTesterApp />
+    </View>
+  );
 };
 
 const styles = StyleSheet.create({
