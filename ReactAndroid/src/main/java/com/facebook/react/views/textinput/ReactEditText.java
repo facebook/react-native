@@ -75,6 +75,10 @@ public class ReactEditText extends AppCompatEditText {
   protected int mNativeEventCount;
 
   private static final int UNSET = -1;
+  private static final int LEFT = -1;
+  private static final int UP = -1;
+  private static final int RIGHT = 1;
+  private static final int DOWN = 1;
 
   private @Nullable ArrayList<TextWatcher> mListeners;
   private @Nullable TextWatcherDelegator mTextWatcherDelegator;
@@ -99,7 +103,6 @@ public class ReactEditText extends AppCompatEditText {
   private float mPreviousYCoordinates;
   private float mPreviousXCoordinates;
   private boolean mMultiLine = false;
-
   private boolean mGravityReset = false;
 
   private ReactViewBackgroundManager mReactBackgroundManager;
@@ -186,23 +189,17 @@ public class ReactEditText extends AppCompatEditText {
       case MotionEvent.ACTION_MOVE:
         float horizontalScroll = mPreviousXCoordinates - ev.getX();
         float verticalScroll = mPreviousYCoordinates - ev.getY();
-        boolean resetGravity = getGravity() == Gravity.CENTER &&
-          mMultiLine == false;
         boolean enableParentScroll = false;
         boolean isSwipeVertical = Math.abs(verticalScroll) > Math.abs(horizontalScroll);
         if(isSwipeVertical) {
           boolean scrollDirectionUp = verticalScroll > 0;
-          boolean enableParentScrollUp = scrollDirectionUp && !canScrollVertically(1);
-          boolean enableParentScrollDown = !scrollDirectionUp && !canScrollVertically(-1);
+          boolean enableParentScrollUp = scrollDirectionUp && !canScrollVertically(UP);
+          boolean enableParentScrollDown = !scrollDirectionUp && !canScrollVertically(DOWN);
           enableParentScroll = enableParentScrollDown || enableParentScrollUp;
         } else {
-          if(resetGravity) {
-            setGravity(Gravity.LEFT);
-            mGravityReset = true;
-          };
           boolean scrollDirectionRight = horizontalScroll > 0;
-          boolean enableParentScrollRight = scrollDirectionRight && !canScrollHorizontally(1);
-          boolean enableParentScrollLeft = !scrollDirectionRight && !canScrollHorizontally(-1);
+          boolean enableParentScrollRight = scrollDirectionRight && !canScrollHorizontally(RIGHT);
+          boolean enableParentScrollLeft = !scrollDirectionRight && !canScrollHorizontally(LEFT);
           enableParentScroll = enableParentScrollRight || enableParentScrollLeft;
         }
         if(mDetectScrollMovement && enableParentScroll) {
@@ -343,6 +340,12 @@ public class ReactEditText extends AppCompatEditText {
     if (focused && mSelectionWatcher != null) {
       mSelectionWatcher.onSelectionChanged(getSelectionStart(), getSelectionEnd());
     }
+    boolean resetGravity = getGravity() == Gravity.CENTER &&
+      mMultiLine == false;
+    if(focused && resetGravity) {
+      setGravity(Gravity.LEFT);
+      mGravityReset = true;
+    };
     if(!focused && mGravityReset) {
       setGravity(Gravity.CENTER);
       mGravityReset = false;
