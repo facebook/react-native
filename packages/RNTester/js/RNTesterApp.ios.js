@@ -55,7 +55,7 @@ const Header = ({
   ...
 }) => (
   <RNTesterThemeContext.Consumer>
-    {(theme) => {
+    {theme => {
       return (
         <SafeAreaView
           style={[
@@ -145,7 +145,7 @@ class RNTesterApp extends React.Component<Props, RNTesterNavigationState> {
 
   componentDidMount() {
     this._mounted = true;
-    Linking.getInitialURL().then((url) => {
+    Linking.getInitialURL().then(url => {
       AsyncStorage.getItem(APP_STATE_KEY, (err, storedString) => {
         if (!this._mounted) {
           return;
@@ -160,7 +160,7 @@ class RNTesterApp extends React.Component<Props, RNTesterNavigationState> {
       });
     });
 
-    Linking.addEventListener('url', (url) => {
+    Linking.addEventListener('url', url => {
       this._handleAction(URIActionMap(url));
     });
   }
@@ -244,7 +244,7 @@ AppRegistry.registerComponent('SetPropertiesExampleApp', () =>
 AppRegistry.registerComponent('RootViewSizeFlexibilityExampleApp', () =>
   require('./examples/RootViewSizeFlexibilityExample/RootViewSizeFlexibilityExampleApp'),
 );
-AppRegistry.registerComponent('RNTesterApp', () => RNTesterApp);
+AppRegistry.registerComponent('RNTester', () => RNTesterApp);
 
 // Register suitable examples for snapshot tests
 RNTesterList.ComponentExamples.concat(RNTesterList.APIExamples).forEach(

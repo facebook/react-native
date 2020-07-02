@@ -92,9 +92,9 @@
   
   _bridge.surfacePresenter = _bridgeAdapter.surfacePresenter;
   
-  UIView *rootView = [[RCTFabricSurfaceHostingProxyRootView alloc] initWithBridge:_bridge moduleName:@"RNTesterApp" initialProperties:initProps];
+  UIView *rootView = [[RCTFabricSurfaceHostingProxyRootView alloc] initWithBridge:_bridge moduleName:@"RNTester" initialProperties:initProps];
 #else
-  UIView *rootView = [[RCTRootView alloc] initWithBridge:_bridge moduleName:@"RNTesterApp" initialProperties:initProps];
+  UIView *rootView = [[RCTRootView alloc] initWithBridge:_bridge moduleName:@"RNTester" initialProperties:initProps];
 #endif
   
   self.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
@@ -109,7 +109,7 @@
 - (NSURL *)sourceURLForBridge:(__unused RCTBridge *)bridge
 {
   NSString *bundlePrefix = [[[NSBundle mainBundle] infoDictionary] valueForKey:@"RN_BUNDLE_PREFIX"];
-  NSString *bundleRoot = [NSString stringWithFormat:@"%@RNTester/js/RNTesterApp.ios", bundlePrefix];
+  NSString *bundleRoot = [NSString stringWithFormat:@"%@js/RNTesterApp.ios.js", bundlePrefix];
   return [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:bundleRoot
                                                         fallbackResource:nil];
 }
