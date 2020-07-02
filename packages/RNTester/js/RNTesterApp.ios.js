@@ -74,7 +74,7 @@ const Header = ({
             {onBack && (
               <View>
                 <Button
-                  title="BackBOO"
+                  title="Back"
                   onPress={onBack}
                   color={Platform.select({
                     ios: theme.LinkColor,
