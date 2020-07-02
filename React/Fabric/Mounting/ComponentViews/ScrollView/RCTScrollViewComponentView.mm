@@ -475,8 +475,13 @@ void RCTSetEnableOnDemandViewMounting(BOOL value)
 
     // It's simpler and faster to not mess with views that are not `RCTViewComponentView` subclasses.
     if ([componentView isKindOfClass:[RCTViewComponentView class]]) {
-      CGRect viewFrameWithLeeway = CGRectInset(componentView.frame, -kClippingLeeway, -kClippingLeeway);
-      shouldBeMounted = CGRectIntersectsRect(containerFrame, viewFrameWithLeeway);
+      RCTViewComponentView *viewComponentView = (RCTViewComponentView *)componentView;
+      auto layoutMetrics = viewComponentView->_layoutMetrics;
+
+      if (layoutMetrics.overflowInset == EdgeInsets{}) {
+        CGRect viewFrameWithLeeway = CGRectInset(componentView.frame, -kClippingLeeway, -kClippingLeeway);
+        shouldBeMounted = CGRectIntersectsRect(containerFrame, viewFrameWithLeeway);
+      }
     }
 
     if (shouldBeMounted != isMounted) {
