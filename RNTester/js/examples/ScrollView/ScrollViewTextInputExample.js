@@ -13,7 +13,7 @@
 const React = require('react');
 const {ScrollView, Text, TextInput} = require('react-native');
 
-exports.title = 'ScrollView with TextInputs';
+exports.title = '<ScrollView with TextInputs>';
 exports.description = 'Displays a list of TextInputs in a ScrollView';
 exports.examples = [
   {
