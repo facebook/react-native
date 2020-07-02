@@ -192,7 +192,7 @@ public class ReactEditText extends AppCompatEditText {
         boolean enableParentScroll = false;
         boolean isSwipeVertical = Math.abs(verticalScroll) > Math.abs(horizontalScroll);
         if(isSwipeVertical) {
-          boolean scrollDirectionUp = verticalScroll > 0;
+          boolean scrollDirectionUp = verticalScroll < 0;
           boolean enableParentScrollUp = scrollDirectionUp && !canScrollVertically(UP);
           boolean enableParentScrollDown = !scrollDirectionUp && !canScrollVertically(DOWN);
           enableParentScroll = enableParentScrollDown || enableParentScrollUp;
