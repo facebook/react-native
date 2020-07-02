@@ -21,15 +21,26 @@ exports.examples = [
     description:
       'Displays a list of scrollable TextInputs in a vertical ScrollView',
     render: function(): React.Node {
-      const text = 'WORD1 WORD2 WORD3 WORD4 WORD5';
       return (
-        <ScrollView style={{height: 50}}>
+        <ScrollView nestedScrollEnabled style={{height: 150}}>
           <TextInput
-            style={{height: 50, width: 150, textAlign: 'center'}}
+            style={{
+              marginTop: 100,
+              height: 150,
+              width: 200,
+              textAlign: 'center',
+              fontSize: 50,
+              backgroundColor: 'yellow',
+            }}
             multiline
             scrollEnabled
-            value={text}
+            value="WORD1 WORD2 WORD3"
           />
+          <Text>Normal Text</Text>
+          <Text>Normal Text</Text>
+          <Text>Normal Text</Text>
+          <Text>Normal Text</Text>
+          <Text>Normal Text</Text>
           <Text>Normal Text</Text>
           <Text>Normal Text</Text>
           <Text>Normal Text</Text>
@@ -44,16 +55,17 @@ exports.examples = [
       'Displays a list of scrollable TextInputs in a horizontal ScrollView',
     render(): React.Element<any> {
       return (
-        <ScrollView horizontal style={{height: 800}}>
+        <ScrollView horizontal style={{height: 90}}>
           <TextInput
             style={{
-              height: 200,
-              width: 400,
+              marginLeft: 300,
+              height: 90,
+              width: 200,
               textAlign: 'center',
+              fontSize: 50,
               backgroundColor: 'red',
-              fontSize: 170,
             }}
-            value="WORD1 WORD2 WORD3 WORD4 WORD5"
+            value="WORD1 WORD2 WORD3"
           />
           <Text>Normal Text</Text>
           <Text>Normal Text</Text>
