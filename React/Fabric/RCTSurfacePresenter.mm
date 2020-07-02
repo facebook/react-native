@@ -365,6 +365,7 @@ static inline LayoutContext RCTGetLayoutContext()
 
   RCTMountingManager *mountingManager = _mountingManager;
   RCTExecuteOnMainQueue(^{
+    surface.view.rootView = nil;
     RCTComponentViewDescriptor rootViewDescriptor =
         [mountingManager.componentViewRegistry componentViewDescriptorWithTag:surface.rootTag];
     [mountingManager.componentViewRegistry enqueueComponentViewWithComponentHandle:RootShadowNode::Handle()
