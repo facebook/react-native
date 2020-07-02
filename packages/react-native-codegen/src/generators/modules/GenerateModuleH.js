@@ -14,7 +14,11 @@ import type {
   SchemaType,
   FunctionTypeAnnotationParamTypeAnnotation,
   FunctionTypeAnnotationReturn,
+  TypeAliasTypeAnnotation,
+  ObjectTypeAliasTypeShape,
 } from '../../CodegenSchema';
+
+const {getTypeAliasTypeAnnotation} = require('./ObjCppUtils/Utils');
 
 type FilesOutput = Map<string, string>;
 
@@ -51,17 +55,23 @@ namespace react {
 function translatePrimitiveJSTypeToCpp(
   typeAnnotation:
     | FunctionTypeAnnotationParamTypeAnnotation
-    | FunctionTypeAnnotationReturn,
+    | FunctionTypeAnnotationReturn
+    | TypeAliasTypeAnnotation,
   createErrorMessage: (typeName: string) => string,
+  aliases: $ReadOnly<{[aliasName: string]: ObjectTypeAliasTypeShape, ...}>,
 ) {
-  switch (typeAnnotation.type) {
+  const realTypeAnnotation =
+    typeAnnotation.type === 'TypeAliasTypeAnnotation'
+      ? getTypeAliasTypeAnnotation(typeAnnotation.name, aliases)
+      : typeAnnotation;
+  switch (realTypeAnnotation.type) {
     case 'ReservedFunctionValueTypeAnnotation':
-      switch (typeAnnotation.name) {
+      switch (realTypeAnnotation.name) {
         case 'RootTag':
           return 'double';
         default:
-          (typeAnnotation.name: empty);
-          throw new Error(createErrorMessage(typeAnnotation.name));
+          (realTypeAnnotation.name: empty);
+          throw new Error(createErrorMessage(realTypeAnnotation.name));
       }
     case 'VoidTypeAnnotation':
       return 'void';
@@ -74,7 +84,6 @@ function translatePrimitiveJSTypeToCpp(
       return 'int';
     case 'BooleanTypeAnnotation':
       return 'bool';
-    // case 'TypeAliasTypeAnnotation': // TODO: Handle aliases
     case 'GenericObjectTypeAnnotation':
     case 'ObjectTypeAnnotation':
       return 'jsi::Object';
@@ -86,8 +95,8 @@ function translatePrimitiveJSTypeToCpp(
       return 'jsi::Value';
     default:
       // TODO (T65847278): Figure out why this does not work.
-      // (typeAnnotation.type: empty);
-      throw new Error(createErrorMessage(typeAnnotation.type));
+      // (type: empty);
+      throw new Error(createErrorMessage(realTypeAnnotation.type));
   }
 }
 
@@ -114,7 +123,7 @@ module.exports = {
 
     const modules = Object.keys(nativeModules)
       .map(name => {
-        const {properties} = nativeModules[name];
+        const {aliases, properties} = nativeModules[name];
         const traversedProperties = properties
           .map(prop => {
             const traversedArgs = prop.typeAnnotation.params
@@ -123,6 +132,7 @@ module.exports = {
                   param.typeAnnotation,
                   typeName =>
                     `Unsupported type for param "${param.name}" in ${prop.name}. Found: ${typeName}`,
+                  aliases,
                 );
                 const isObject = translatedParam.startsWith('jsi::');
                 return (
@@ -140,6 +150,7 @@ module.exports = {
                   prop.typeAnnotation.returnTypeAnnotation,
                   typeName =>
                     `Unsupported return type for ${prop.name}. Found: ${typeName}`,
+                  aliases,
                 ),
               )
               .replace(

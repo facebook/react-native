@@ -15,12 +15,16 @@ import type {
   FunctionTypeAnnotationParam,
   FunctionTypeAnnotationReturn,
   ObjectParamTypeAnnotation,
+  ObjectTypeAliasTypeShape,
 } from '../../CodegenSchema';
 
 const {
   translateObjectsForStructs,
   capitalizeFirstLetter,
+  getNamespacedStructName,
 } = require('./ObjCppUtils/GenerateStructs');
+
+const {getTypeAliasTypeAnnotation} = require('./ObjCppUtils/Utils');
 
 type FilesOutput = Map<string, string>;
 
@@ -101,20 +105,26 @@ const constants = `- (facebook::react::ModuleConstants<JS::Native::_MODULE_NAME_
 function translatePrimitiveJSTypeToObjCType(
   param: FunctionTypeAnnotationParam,
   createErrorMessage: (typeName: string) => string,
+  aliases: $ReadOnly<{[aliasName: string]: ObjectTypeAliasTypeShape, ...}>,
 ) {
   const {nullable, typeAnnotation} = param;
 
   function wrapIntoNullableIfNeeded(generatedType: string) {
     return nullable ? `${generatedType} _Nullable` : generatedType;
   }
-  switch (typeAnnotation.type) {
+
+  const realTypeAnnotation =
+    typeAnnotation.type === 'TypeAliasTypeAnnotation'
+      ? getTypeAliasTypeAnnotation(typeAnnotation.name, aliases)
+      : typeAnnotation;
+  switch (realTypeAnnotation.type) {
     case 'ReservedFunctionValueTypeAnnotation':
-      switch (typeAnnotation.name) {
+      switch (realTypeAnnotation.name) {
         case 'RootTag':
           return nullable ? 'NSNumber *' : 'double';
         default:
-          (typeAnnotation.name: empty);
-          throw new Error(createErrorMessage(typeAnnotation.name));
+          (realTypeAnnotation.name: empty);
+          throw new Error(createErrorMessage(realTypeAnnotation.name));
       }
     case 'StringTypeAnnotation':
       return wrapIntoNullableIfNeeded('NSString *');
@@ -124,19 +134,21 @@ function translatePrimitiveJSTypeToObjCType(
       return nullable ? 'NSNumber *' : 'double';
     case 'BooleanTypeAnnotation':
       return nullable ? 'NSNumber * _Nullable' : 'BOOL';
-    case 'TypeAliasTypeAnnotation': // TODO: Handle aliases
+    case 'ObjectTypeAnnotation':
+      if (typeAnnotation.type === 'TypeAliasTypeAnnotation') {
+        return getNamespacedStructName(typeAnnotation.name) + ' &';
+      }
+      return wrapIntoNullableIfNeeded('NSDictionary *');
     case 'GenericObjectTypeAnnotation':
       return wrapIntoNullableIfNeeded('NSDictionary *');
     case 'ArrayTypeAnnotation':
       return wrapIntoNullableIfNeeded('NSArray *');
     case 'FunctionTypeAnnotation':
       return 'RCTResponseSenderBlock';
-    case 'ObjectTypeAnnotation':
-      return wrapIntoNullableIfNeeded('NSDictionary *');
     default:
       // TODO (T65847278): Figure out why this does not work.
-      // (typeAnnotation.type: empty);
-      throw new Error(createErrorMessage(typeAnnotation.type));
+      // (type: empty);
+      throw new Error(createErrorMessage(realTypeAnnotation.type));
   }
 }
 
@@ -184,23 +196,26 @@ function translatePrimitiveJSTypeToObjCTypeForReturn(
 
 function handleArrayOfObjects(
   objectForGeneratingStructs: Array<ObjectForGeneratingStructs>,
-  param: FunctionTypeAnnotationParam,
+  propOrParam: FunctionTypeAnnotationParam,
   name: string,
 ) {
   if (
-    param.typeAnnotation.type === 'ArrayTypeAnnotation' &&
-    param.typeAnnotation.elementType &&
-    param.typeAnnotation.elementType.type === 'ObjectTypeAnnotation' &&
-    param.typeAnnotation.elementType.properties
+    propOrParam.typeAnnotation.type === 'ArrayTypeAnnotation' &&
+    propOrParam.typeAnnotation.elementType
   ) {
-    const {elementType} = param.typeAnnotation;
-    const {properties} = elementType;
-    if (properties && properties.length > 0) {
+    const typeAnnotation = propOrParam.typeAnnotation.elementType;
+    const type = typeAnnotation.type;
+
+    if (
+      type === 'ObjectTypeAnnotation' &&
+      typeAnnotation.properties &&
+      typeAnnotation.properties.length > 0
+    ) {
       objectForGeneratingStructs.push({
         name,
         object: {
           type: 'ObjectTypeAnnotation',
-          properties,
+          properties: typeAnnotation.properties,
         },
       });
     }
@@ -237,7 +252,7 @@ module.exports = {
       .sort()
       .map(name => {
         const objectForGeneratingStructs: Array<ObjectForGeneratingStructs> = [];
-        const {properties} = nativeModules[name];
+        const {aliases, properties} = nativeModules[name];
         const implementations = properties
           .map(prop => {
             const nativeArgs = prop.typeAnnotation.params
@@ -250,36 +265,55 @@ module.exports = {
                   const variableName =
                     capitalizeFirstLetter(prop.name) +
                     capitalizeFirstLetter(param.name);
+                  const structName = 'Spec' + variableName;
                   objectForGeneratingStructs.push({
-                    name: variableName,
+                    name: structName,
                     object: {
                       type: 'ObjectTypeAnnotation',
                       properties: param.typeAnnotation.properties,
                     },
                   });
-                  paramObjCType = `JS::Native::_MODULE_NAME_::::Spec${variableName}&`;
+                  paramObjCType = getNamespacedStructName(structName) + ' &';
 
-                  param.typeAnnotation.properties.map(aProp =>
-                    handleArrayOfObjects(
+                  param.typeAnnotation.properties.map(aProp => {
+                    return handleArrayOfObjects(
                       objectForGeneratingStructs,
                       aProp,
-                      capitalizeFirstLetter(prop.name) +
+                      'Spec' +
+                        capitalizeFirstLetter(prop.name) +
                         capitalizeFirstLetter(param.name) +
                         capitalizeFirstLetter(aProp.name) +
                         'Element',
-                    ),
+                    );
+                  });
+                } else if (
+                  param.typeAnnotation.type === 'TypeAliasTypeAnnotation'
+                ) {
+                  const typeAnnotation = getTypeAliasTypeAnnotation(
+                    param.typeAnnotation.name,
+                    aliases,
                   );
+                  if (typeAnnotation.type === 'ObjectTypeAnnotation') {
+                    paramObjCType =
+                      getNamespacedStructName(param.typeAnnotation.name) + ' &';
+                  } else {
+                    throw Error(
+                      `Unsupported type for "${param.typeAnnotation.name}". Found: ${typeAnnotation.type}`,
+                    );
+                  }
                 } else {
                   paramObjCType = translatePrimitiveJSTypeToObjCType(
                     param,
                     typeName =>
                       `Unsupported type for param "${param.name}" in ${prop.name}. Found: ${typeName}`,
+                    aliases,
                   );
 
                   handleArrayOfObjects(
                     objectForGeneratingStructs,
                     param,
-                    capitalizeFirstLetter(prop.name) +
+                    'Spec' +
+                      capitalizeFirstLetter(prop.name) +
                       capitalizeFirstLetter(param.name) +
                       'Element',
                   );
@@ -296,8 +330,7 @@ module.exports = {
               returnTypeAnnotation.properties
             ) {
               objectForGeneratingStructs.push({
-                name: capitalizeFirstLetter(prop.name) + 'ReturnType',
-
+                name: 'Spec' + capitalizeFirstLetter(prop.name) + 'ReturnType',
                 object: {
                   type: 'ObjectTypeAnnotation',
                   properties: returnTypeAnnotation.properties,
@@ -327,10 +360,44 @@ module.exports = {
             return implementation;
           })
           .join('\n');
+
+        Object.keys(aliases)
+          .reverse()
+          .map((aliasName, i) => {
+            const alias = aliases[aliasName];
+
+            let paramObjCType = '';
+
+            switch (alias.type) {
+              case 'ObjectTypeAnnotation':
+                if (alias.properties) {
+                  objectForGeneratingStructs.push({
+                    name: aliasName,
+                    object: {
+                      type: 'ObjectTypeAnnotation',
+                      properties: alias.properties,
+                    },
+                  });
+                  paramObjCType = getNamespacedStructName(alias.name) + ' &';
+                }
+                break;
+              default:
+                throw Error(
+                  `Unsupported type for "${aliasName}". Found: ${alias.type}`,
+                );
+            }
+            return `${i === 0 ? '' : aliasName}:(${paramObjCType})${aliasName}`;
+          })
+          .join('\n');
+
         return protocolTemplate
           .replace(
             /::_STRUCTS_::/g,
-            translateObjectsForStructs(objectForGeneratingStructs, name),
+            translateObjectsForStructs(
+              objectForGeneratingStructs,
+              name,
+              aliases,
+            ),
           )
           .replace(/::_MODULE_PROPERTIES_::/g, implementations)
           .replace(/::_MODULE_NAME_::/g, name)
