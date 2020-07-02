@@ -44,9 +44,15 @@ exports.examples = [
       'Displays a list of scrollable TextInputs in a horizontal ScrollView',
     render(): React.Element<any> {
       return (
-        <ScrollView horizontal>
+        <ScrollView horizontal style={{height: 800}}>
           <TextInput
-            style={{height: 100, width: 200, textAlign: 'center'}}
+            style={{
+              height: 200,
+              width: 400,
+              textAlign: 'center',
+              backgroundColor: 'red',
+              fontSize: 170,
+            }}
             value="WORD1 WORD2 WORD3 WORD4 WORD5"
           />
           <Text>Normal Text</Text>
