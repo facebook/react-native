@@ -100,6 +100,7 @@ public class ReactEditText extends AppCompatEditText {
   private float mPreviousXCoordinates;
   private boolean mMultiLine = false;
 
+  private boolean mGravityReset = false;
 
   private ReactViewBackgroundManager mReactBackgroundManager;
 
@@ -195,7 +196,10 @@ public class ReactEditText extends AppCompatEditText {
           boolean enableParentScrollDown = !scrollDirectionUp && !canScrollVertically(-1);
           enableParentScroll = enableParentScrollDown || enableParentScrollUp;
         } else {
-          if(resetGravity) { setGravity(Gravity.LEFT); };
+          if(resetGravity) {
+            setGravity(Gravity.LEFT);
+            mGravityReset = true;
+          };
           boolean scrollDirectionRight = horizontalScroll > 0;
           boolean enableParentScrollRight = scrollDirectionRight && !canScrollHorizontally(1);
           boolean enableParentScrollLeft = !scrollDirectionRight && !canScrollHorizontally(-1);
@@ -205,7 +209,6 @@ public class ReactEditText extends AppCompatEditText {
           this.getParent().requestDisallowInterceptTouchEvent(false);
           mDetectScrollMovement = false;
         }
-        if(resetGravity) { setGravity(Gravity.CENTER); };
         break;
     }
     return super.onTouchEvent(ev);
@@ -225,7 +228,6 @@ public class ReactEditText extends AppCompatEditText {
   @Override
   protected void onScrollChanged(int horiz, int vert, int oldHoriz, int oldVert) {
     super.onScrollChanged(horiz, vert, oldHoriz, oldVert);
-
     if (mScrollWatcher != null) {
       mScrollWatcher.onScrollChanged(horiz, vert, oldHoriz, oldVert);
     }
@@ -341,6 +343,10 @@ public class ReactEditText extends AppCompatEditText {
     if (focused && mSelectionWatcher != null) {
       mSelectionWatcher.onSelectionChanged(getSelectionStart(), getSelectionEnd());
     }
+    if(!focused && mGravityReset) {
+      setGravity(Gravity.CENTER);
+      mGravityReset = false;
+    };
   }
 
   public void setSelectionWatcher(SelectionWatcher selectionWatcher) {
