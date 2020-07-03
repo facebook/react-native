@@ -503,8 +503,8 @@ SPEC CHECKSUMS:
   CocoaAsyncSocket: 694058e7c0ed05a9e217d1b3c7ded962f4180845
   CocoaLibEvent: 2fab71b8bd46dd33ddb959f7928ec5909f838e3f
   DoubleConversion: cde416483dac037923206447da6e1454df403714
-  FBLazyVector: 8ea0285646adaf7fa725c20ed737c49ee5ea680a
-  FBReactNativeSpec: e8f07c749b9cf184c819f5a8ca44b91ab61fca12
+  FBLazyVector: c083a101c06f02aab0d4eea453800d344b357322
+  FBReactNativeSpec: dba5aaaf796303b0bea788f5be6413f8ddfafb33
   Flipper: 33585e2d9810fe5528346be33bcf71b37bb7ae13
   Flipper-DoubleConversion: 38631e41ef4f9b12861c67d17cb5518d06badc41
   Flipper-Folly: c12092ea368353b58e992843a990a3225d4533c3
@@ -515,32 +515,32 @@ SPEC CHECKSUMS:
   Folly: b73c3869541e86821df3c387eb0af5f65addfab4
   glog: 40a13f7840415b9a77023fbcae0f1e6f43192af3
   OpenSSL-Universal: 8b48cc0d10c1b2923617dfe5c178aa9ed2689355
-  RCTRequired: 34582e9b3ebe69f244e091f37218d318406d5c4a
-  RCTTypeSafety: 1ade47a69b092cddf1e4ea21e0c5bdc65cc950b4
-  React: cafb3c2321f7df55ce90dbf29d513799a79e4418
-  React-ART: df0460bdff42ef039e28ee3ffd41f50b75644788
-  React-callinvoker: 0dada022d38b73e6e15b33e2a96476153f79bbf6
-  React-Core: d85e4563acbfbb6e6be7414a813ad55d05d675df
-  React-CoreModules: d13d148c851af5780f864be74bc2165140923dc7
-  React-cxxreact: 4661b3295e62c6eaada084e2f826c70c71ef11ea
-  React-jsi: fe94132da767bfc4801968c2a12abae43e9a833e
-  React-jsiexecutor: 959bb48c75a3bfc1b1d2b991087a6d8df721cbcf
-  React-jsinspector: 7fbf9b42b58b02943a0d89b0ba9fff0070f2de98
-  React-perflogger: 1f668f3e4d1adef1fafb3b95e7d6cf922113fe31
-  React-RCTActionSheet: 51c43beeb74ef41189e87fe9823e53ebf6210359
-  React-RCTAnimation: 9d09196c641c1ebfef3a4e9ae670bcda5fadb420
-  React-RCTBlob: 715489626cf44d28ee51e5277a4d559167351696
-  React-RCTImage: 19151d2d071b05c3832a0b212473cafa4ea8948f
-  React-RCTLinking: 7c94c0f2fcc658cb4043dacb4f6621dca2f8f8b5
-  React-RCTNetwork: 7596e84acacd5d0674e9743b55c5bf61a626af69
-  React-RCTPushNotification: 88c9f47ff0d4391d5136d70745f15713cdc5f6bb
-  React-RCTSettings: a29c61f85f535ba2eff54d80bef2ea3cdb6e5fba
-  React-RCTTest: cfe25fcf70b04a747dba4326105db398250caa9a
-  React-RCTText: 6c01963d3e562109f5548262b09b1b2bc260dd60
-  React-RCTVibration: d42d73dafd9f63cf758656ee743aa80c566798ff
-  React-runtimeexecutor: 60dd6204a13f68a1aa1118870edcc604a791df2b
-  ReactCommon: 511b4a9ea129c129c6dbc982942007d195903a9a
-  Yoga: f7fa200d8c49f97b54c9421079e781fb900b5cae
+  RCTRequired: 5bb579bc36b089b94bd1a60f0528a1d0d1e82df2
+  RCTTypeSafety: da60f92d95bdd71559fb73f9fc7cb62c1beccf5b
+  React: 50835ef8c2d21498181e91d77f6d1025e8ac704f
+  React-ART: 865ddbb23d9faec61413399f9a1f57b7241ccf67
+  React-callinvoker: 1f49b9b2caf56a0894306de2859aced6c04ce526
+  React-Core: 5127d971dcf11cef74fee8749d79e447961e1ea2
+  React-CoreModules: a7fda1a0d0c1cf0cac4f02d52174da820e5bb407
+  React-cxxreact: fe25e1985fe05017522d37c77229f9dd16411362
+  React-jsi: 72a3ade6665bb091b166a2634cb3bee38895f221
+  React-jsiexecutor: b0cdb606ccceae77d2c56a045c96a11d65f397bb
+  React-jsinspector: 915df32f4bfb2b74b1d3fdc10413a201be49b886
+  React-perflogger: 87df7d060d6c8b819071d33c06505528704addcf
+  React-RCTActionSheet: 1a110e4c2939544ddd3e87dbb87bc7052d3084a3
+  React-RCTAnimation: 5bd65f375fcba849680c3eb3b6e5025645269d63
+  React-RCTBlob: 8899aa77f8570be962a2786d813a9c49820b691d
+  React-RCTImage: 2cd80166dd65cc5489705ed83b2a6604d4e5bfdf
+  React-RCTLinking: 830930674687e863315083a93efdd6f2c9c3edce
+  React-RCTNetwork: 113f78b77605823b49af1109c22c77968b22748d
+  React-RCTPushNotification: b4406b008eccb782c028d2e813e7519bf6897e31
+  React-RCTSettings: e1d3c27de9080c15ecdd3726f76a5528959c4b17
+  React-RCTTest: 64bd12ca582f086b4a0ed8a498f671228becdaa7
+  React-RCTText: c707e964d3b77100cb005606805426a40c2adba0
+  React-RCTVibration: 553537c6a5b920e6164535137d996b0c39dfee49
+  React-runtimeexecutor: 7687444a80209b361334b3ef2918fddafc3342af
+  ReactCommon: f4a11ed3990f42334d856270d8dd4b4a4cb77f7f
+  Yoga: 456d331f0cd8345d5229a34a21ffc9005ed9b586
   YogaKit: f782866e155069a2cca2517aafea43200b01fd5a
 
 PODFILE CHECKSUM: ef7626b12bd0cbe95ba1b7a1f3dc7e2d562ab9d2
