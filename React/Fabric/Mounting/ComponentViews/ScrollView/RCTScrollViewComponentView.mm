@@ -201,8 +201,14 @@ void RCTSetEnableOnDemandViewMounting(BOOL value)
 {
   assert(std::dynamic_pointer_cast<ScrollViewShadowNode::ConcreteState const>(state));
   _state = std::static_pointer_cast<ScrollViewShadowNode::ConcreteState const>(state);
+  auto &data = _state->getData();
 
-  CGSize contentSize = RCTCGSizeFromSize(_state->getData().getContentSize());
+  auto contentOffset = RCTCGPointFromPoint(data.contentOffset);
+  if (!oldState && !CGPointEqualToPoint(contentOffset, CGPointZero)) {
+    _scrollView.contentOffset = contentOffset;
+  }
+
+  CGSize contentSize = RCTCGSizeFromSize(data.getContentSize());
 
   if (CGSizeEqualToSize(_contentSize, contentSize)) {
     return;
