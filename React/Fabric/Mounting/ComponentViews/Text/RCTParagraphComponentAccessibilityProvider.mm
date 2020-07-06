@@ -9,6 +9,7 @@
 
 #import <Foundation/Foundation.h>
 #import <react/components/text/ParagraphProps.h>
+#import <react/textlayoutmanager/RCTAttributedTextUtils.h>
 #import <react/textlayoutmanager/RCTTextLayoutManager.h>
 #import <react/textlayoutmanager/TextLayoutManager.h>
 
@@ -20,13 +21,23 @@ using namespace facebook::react;
 @implementation RCTParagraphComponentAccessibilityProvider {
   NSMutableArray<UIAccessibilityElement *> *_accessibilityElements;
   AttributedString _attributedString;
+  RCTTextLayoutManager *_layoutManager;
+  ParagraphAttributes _paragraphAttributes;
+  CGRect _frame;
   __weak UIView *_view;
 }
 
-- (instancetype)initWithString:(AttributedString)attributedString view:(UIView *)view
+- (instancetype)initWithString:(facebook::react::AttributedString)attributedString
+                 layoutManager:(RCTTextLayoutManager *)layoutManager
+           paragraphAttributes:(ParagraphAttributes)paragraphAttributes
+                         frame:(CGRect)frame
+                          view:(UIView *)view
 {
   if (self = [super init]) {
     _attributedString = attributedString;
+    _layoutManager = layoutManager;
+    _paragraphAttributes = paragraphAttributes;
+    _frame = frame;
     _view = view;
   }
   return self;
@@ -37,8 +48,10 @@ using namespace facebook::react;
   if (_accessibilityElements) {
     return _accessibilityElements;
   }
+
+  __block NSInteger numOfLink = 0;
   // build an array of the accessibleElements
-  NSMutableArray *elements = [NSMutableArray new];
+  NSMutableArray<UIAccessibilityElement *> *elements = [NSMutableArray new];
 
   NSString *accessibilityLabel = [_view valueForKey:@"accessibilityLabel"];
   if (!accessibilityLabel.length) {
@@ -53,6 +66,35 @@ using namespace facebook::react;
   [elements addObject:firstElement];
 
   // add additional elements for those parts of text with embedded link so VoiceOver could specially recognize links
+
+  [_layoutManager getRectWithAttributedString:_attributedString
+                          paragraphAttributes:_paragraphAttributes
+                           enumerateAttribute:RCTTextAttributesAccessibilityRoleAttributeName
+                                        frame:_frame
+                                   usingBlock:^(CGRect fragmentRect, NSString *_Nonnull fragmentText, NSString *value) {
+                                     UIAccessibilityElement *element =
+                                         [[UIAccessibilityElement alloc] initWithAccessibilityContainer:self->_view];
+                                     element.isAccessibilityElement = YES;
+                                     if ([value isEqualToString:@"link"]) {
+                                       element.accessibilityTraits = UIAccessibilityTraitLink;
+                                       numOfLink++;
+                                     }
+                                     element.accessibilityLabel = fragmentText;
+                                     element.accessibilityFrameInContainerSpace = fragmentRect;
+                                     [elements addObject:element];
+                                   }];
+
+  if (numOfLink > 0) {
+    [elements enumerateObjectsUsingBlock:^(UIAccessibilityElement *element, NSUInteger idx, BOOL *_Nonnull stop) {
+      element.accessibilityHint = [NSString stringWithFormat:@"Link %ld of %ld.", (unsigned long)idx, (long)numOfLink];
+    }];
+
+    NSString *firstElementHint = (numOfLink == 1)
+        ? @"One link found, swipe right to move to the link."
+        : [NSString stringWithFormat:@"%ld links found, swipe right to move to the first link.", (long)numOfLink];
+
+    firstElement.accessibilityHint = firstElementHint;
+  }
 
   // add accessible element for truncation attributed string for automation purposes only
   _accessibilityElements = elements;

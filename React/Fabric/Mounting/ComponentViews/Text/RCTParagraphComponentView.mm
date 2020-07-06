@@ -142,8 +142,14 @@ using namespace facebook::react;
 - (NSArray *)accessibilityElements
 {
   if (![_accessibilityProvider isUpToDate:_state->getData().attributedString]) {
+    RCTTextLayoutManager *textLayoutManager =
+        (RCTTextLayoutManager *)unwrapManagedObject(_state->getData().layoutManager->getNativeTextLayoutManager());
+    CGRect frame = RCTCGRectFromRect(_layoutMetrics.getContentFrame());
     _accessibilityProvider =
         [[RCTParagraphComponentAccessibilityProvider alloc] initWithString:_state->getData().attributedString
+                                                             layoutManager:textLayoutManager
+                                                       paragraphAttributes:_state->getData().paragraphAttributes
+                                                                     frame:frame
                                                                       view:self];
   }
 
