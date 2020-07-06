@@ -77,7 +77,7 @@
     }
   }
 
-  function showModal(e) {
+  function showModal() {
     var backdrop = document.querySelector('.modal-backdrop');
     if (!backdrop) {
       return;
@@ -89,7 +89,7 @@
     modal.classList.add('modal-open');
   }
 
-  function hideModal(e) {
+  function hideModal() {
     var backdrop = document.querySelector('.modal-backdrop');
     if (!backdrop) {
       return;
