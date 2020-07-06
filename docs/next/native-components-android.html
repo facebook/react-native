@@ -135,7 +135,7 @@
   <span class="token keyword">public</span> <span class="token class-name">List</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token class-name">ViewManager</span><span class="token punctuation">></span></span> <span class="token function">createViewManagers</span><span class="token punctuation">(</span>
                             <span class="token class-name">ReactApplicationContext</span> reactContext<span class="token punctuation">)</span> <span class="token punctuation">{</span>
     <span class="token keyword">return</span> <span class="token class-name">Arrays</span><span class="token punctuation">.</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token class-name">ViewManager</span><span class="token punctuation">></span></span><span class="token function">asList</span><span class="token punctuation">(</span>
-      <span class="token keyword">new</span> <span class="token class-name">ReactImageManager</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+      <span class="token keyword">new</span> <span class="token class-name">ReactImageManager</span><span class="token punctuation">(</span>reactContext<span class="token punctuation">)</span>
     <span class="token punctuation">)</span><span class="token punctuation">;</span>
   <span class="token punctuation">}</span>
 </code></pre>
