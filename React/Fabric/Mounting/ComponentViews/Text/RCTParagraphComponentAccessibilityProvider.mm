@@ -34,13 +34,34 @@ using namespace facebook::react;
 
 - (NSArray<UIAccessibilityElement *> *)accessibilityElements
 {
-  // verify if accessibleElements are exist
+  if (_accessibilityElements) {
+    return _accessibilityElements;
+  }
   // build an array of the accessibleElements
+  NSMutableArray *elements = [NSMutableArray new];
+
+  NSString *accessibilityLabel = [_view valueForKey:@"accessibilityLabel"];
+  if (!accessibilityLabel.length) {
+    accessibilityLabel = RCTNSStringFromString(_attributedString.getString());
+  }
   // add first element has the text for the whole textview in order to read out the whole text
+  UIAccessibilityElement *firstElement = [[UIAccessibilityElement alloc] initWithAccessibilityContainer:_view];
+  firstElement.isAccessibilityElement = YES;
+  firstElement.accessibilityTraits = UIAccessibilityTraitStaticText;
+  firstElement.accessibilityLabel = accessibilityLabel;
+  firstElement.accessibilityFrameInContainerSpace = _view.bounds;
+  [elements addObject:firstElement];
+
   // add additional elements for those parts of text with embedded link so VoiceOver could specially recognize links
+
   // add accessible element for truncation attributed string for automation purposes only
-  _accessibilityElements = [NSMutableArray new];
+  _accessibilityElements = elements;
   return _accessibilityElements;
+}
+
+- (BOOL)isUpToDate:(facebook::react::AttributedString)currentAttributedString
+{
+  return currentAttributedString == _attributedString;
 }
 
 @end

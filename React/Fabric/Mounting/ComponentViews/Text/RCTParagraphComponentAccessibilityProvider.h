@@ -15,9 +15,14 @@
 
 - (instancetype)initWithString:(facebook::react::AttributedString)attributedString view:(UIView *)view;
 
-/**
- @abstract Array of accessibleElements for use in UIAccessibilityContainer implementation.
-*/
+/*
+ * Returns an array of `UIAccessibilityElement`s to be used for `UIAccessibilityContainer` implementation.
+ */
 - (NSArray<UIAccessibilityElement *> *)accessibilityElements;
+
+/**
+ @abstract To make sure the provider is up to date.
+*/
+- (BOOL)isUpToDate:(facebook::react::AttributedString)currentAttributedString;
 
 @end
