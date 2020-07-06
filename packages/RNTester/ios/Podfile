@@ -43,8 +43,7 @@ def flipper_post_install(installer)
   end
 end
 
-target 'RNTester' do
-  # Pods for RNTester
+def pods()
   pod 'FBLazyVector', :path => "../node_modules/react-native/Libraries/FBLazyVector"
   pod 'FBReactNativeSpec', :path => "../node_modules/react-native/Libraries/FBReactNativeSpec"
   pod 'RCTRequired', :path => "../node_modules/react-native/Libraries/RCTRequired"
@@ -83,19 +82,19 @@ target 'RNTester' do
 
   pod 'RNCAsyncStorage', :path => '../node_modules/@react-native-community/async-storage'
 
-  target 'RNTesterTests' do
-    inherit! :complete
-    # Pods for testing
-  end
-
   # Enables Flipper.
   #
   # Note that if you have use_frameworks! enabled, Flipper will not work and
   # you should disable these next few lines.
-  add_flipper_pods!
-  post_install do |installer|
-    flipper_post_install(installer)
-  end
+  #add_flipper_pods!
+  # post_install do |installer|
+  #  flipper_post_install(installer)
+  #end
+end
+
+target 'RNTester' do
+  # Pods for RNTester
+  pods()
 end
 
 target 'RNTester-tvOS' do
@@ -105,4 +104,14 @@ target 'RNTester-tvOS' do
     inherit! :search_paths
     # Pods for testing
   end
+end
+
+target 'RNTesterUnitTests' do
+  pods()
+  pod 'React-RCTTest', :path => "../RCTTest"
+end
+
+target 'RNTesterIntegrationTests' do
+  pods()
+  pod 'React-RCTTest', :path => "../RCTTest"
 end

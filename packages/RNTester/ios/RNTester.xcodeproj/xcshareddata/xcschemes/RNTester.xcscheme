@@ -38,7 +38,38 @@
                ReferencedContainer = "container:RNTester.xcodeproj">
             </BuildableReference>
          </TestableReference>
+         <TestableReference
+            skipped = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "EE3C19EF24B3454E00B4EB0E"
+               BuildableName = "RNTesterUnitTests.xctest"
+               BlueprintName = "RNTesterUnitTests"
+               ReferencedContainer = "container:RNTester.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
+         <TestableReference
+            skipped = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "EE3C19FD24B345C400B4EB0E"
+               BuildableName = "RNTesterIntegrationTests.xctest"
+               BlueprintName = "RNTesterIntegrationTests"
+               ReferencedContainer = "container:RNTester.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
       </Testables>
+      <MacroExpansion>
+         <BuildableReference
+            BuildableIdentifier = "primary"
+            BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
+            BuildableName = "RNTester.app"
+            BlueprintName = "RNTester"
+            ReferencedContainer = "container:RNTester.xcodeproj">
+         </BuildableReference>
+      </MacroExpansion>
+      <AdditionalOptions>
+      </AdditionalOptions>
    </TestAction>
    <LaunchAction
       buildConfiguration = "Debug"
@@ -60,6 +91,8 @@
             ReferencedContainer = "container:RNTester.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
+      <AdditionalOptions>
+      </AdditionalOptions>
    </LaunchAction>
    <ProfileAction
       buildConfiguration = "Release"
