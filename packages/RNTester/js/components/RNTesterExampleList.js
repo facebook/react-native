@@ -63,6 +63,9 @@ class RowComponent extends React.PureComponent<{
             <TouchableHighlight
               onShowUnderlay={this.props.onShowUnderlay}
               onHideUnderlay={this.props.onHideUnderlay}
+              accessibilityLabel={
+                item.module.title + ' ' + item.module.description
+              }
               onPress={this._onPress}>
               <View
                 style={[
