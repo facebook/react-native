@@ -19,6 +19,9 @@
 - (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:(const std::string &)name
                                                      initParams:
                                                          (const facebook::react::ObjCTurboModule::InitParams &)params;
+@optional
+- (NSArray<NSString *> *)getEagerInitModuleNames;
+- (NSArray<NSString *> *)getEagerInitMainQueueModuleNames;
 
 @optional
 

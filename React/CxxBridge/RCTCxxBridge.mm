@@ -381,6 +381,27 @@ struct RCTInstanceCallback : public InstanceCallback {
     }));
   }
 
+  /**
+   * id<RCTCxxBridgeDelegate> jsExecutorFactory may create and assign an id<RCTTurboModuleLookupDelegate> object to
+   * RCTCxxBridge If id<RCTTurboModuleLookupDelegate> is assigned by this time, eagerly initialize all TurboModules
+   */
+  if (_turboModuleLookupDelegate) {
+    for (NSString *moduleName in [_turboModuleLookupDelegate eagerInitModuleNames]) {
+      [_turboModuleLookupDelegate moduleForName:[moduleName UTF8String]];
+    }
+
+    for (NSString *moduleName in [_turboModuleLookupDelegate eagerInitMainQueueModuleNames]) {
+      if (RCTIsMainQueue()) {
+        [_turboModuleLookupDelegate moduleForName:[moduleName UTF8String]];
+      } else {
+        id<RCTTurboModuleLookupDelegate> turboModuleLookupDelegate = _turboModuleLookupDelegate;
+        dispatch_group_async(prepareBridge, dispatch_get_main_queue(), ^{
+          [turboModuleLookupDelegate moduleForName:[moduleName UTF8String]];
+        });
+      }
+    }
+  }
+
   // Dispatch the instance initialization as soon as the initial module metadata has
   // been collected (see initModules)
   dispatch_group_enter(prepareBridge);

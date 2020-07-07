@@ -714,6 +714,24 @@ static Class getFallbackClassFromName(const char *name)
   return _turboModuleHolders.find(moduleName) != _turboModuleHolders.end();
 }
 
+- (NSArray<NSString *> *)eagerInitModuleNames
+{
+  if ([_delegate respondsToSelector:@selector(getEagerInitModuleNames)]) {
+    return [_delegate getEagerInitModuleNames];
+  }
+
+  return @[];
+}
+
+- (NSArray<NSString *> *)eagerInitMainQueueModuleNames
+{
+  if ([_delegate respondsToSelector:@selector(getEagerInitMainQueueModuleNames)]) {
+    return [_delegate getEagerInitMainQueueModuleNames];
+  }
+
+  return @[];
+}
+
 #pragma mark Invalidation logic
 
 - (void)bridgeWillInvalidateModules:(NSNotification *)notification
