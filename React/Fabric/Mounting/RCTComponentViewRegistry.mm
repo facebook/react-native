@@ -66,7 +66,8 @@ const NSInteger RCTComponentViewRegistryRecyclePoolMaxSize = 1024;
   }
 }
 
-- (RCTComponentViewDescriptor)dequeueComponentViewWithComponentHandle:(ComponentHandle)componentHandle tag:(Tag)tag
+- (RCTComponentViewDescriptor const &)dequeueComponentViewWithComponentHandle:(ComponentHandle)componentHandle
+                                                                          tag:(Tag)tag
 {
   RCTAssertMainQueue();
 
@@ -76,10 +77,8 @@ const NSInteger RCTComponentViewRegistryRecyclePoolMaxSize = 1024;
 
   auto componentViewDescriptor = [self _dequeueComponentViewWithComponentHandle:componentHandle];
   componentViewDescriptor.view.tag = tag;
-
-  _registry.insert({tag, componentViewDescriptor});
-
-  return componentViewDescriptor;
+  auto it = _registry.insert({tag, componentViewDescriptor});
+  return it.first->second;
 }
 
 - (void)enqueueComponentViewWithComponentHandle:(ComponentHandle)componentHandle
