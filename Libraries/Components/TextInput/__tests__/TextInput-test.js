@@ -57,7 +57,7 @@ describe('TextInput tests', () => {
   it('has expected instance functions', () => {
     expect(inputRef.current.isFocused).toBeInstanceOf(Function); // Would have prevented S168585
     expect(inputRef.current.clear).toBeInstanceOf(Function);
-    expect(inputRef.current.focus).toBeInstanceOf(jest.fn().constructor);
+    expect(inputRef.current.focus).toBeInstanceOf(Function);
     expect(inputRef.current.blur).toBeInstanceOf(jest.fn().constructor);
     expect(inputRef.current.setNativeProps).toBeInstanceOf(
       jest.fn().constructor,

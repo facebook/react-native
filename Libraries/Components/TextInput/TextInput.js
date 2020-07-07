@@ -945,6 +945,15 @@ function InternalTextInput(props: Props): React.Node {
     }
   }
 
+  function focus(): void {
+    const {current} = inputRef;
+    if (props.editable === false || current === null) {
+      return;
+    }
+    // $FlowFixMe - `focus` is missing in `$ReadOnly`
+    Object.getPrototypeOf(current)?.focus?.call(current);
+  }
+
   // TODO: Fix this returning true on null === null, when no input is focused
   function isFocused(): boolean {
     return TextInputState.currentlyFocusedInput() === inputRef.current;
@@ -983,6 +992,7 @@ function InternalTextInput(props: Props): React.Node {
         */
       if (ref) {
         ref.clear = clear;
+        ref.focus = focus;
         ref.isFocused = isFocused;
         ref.getNativeRef = getNativeRef;
       }
