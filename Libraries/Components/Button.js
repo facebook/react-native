@@ -6,6 +6,7 @@
  *
  * @format
  * @flow
+ * @generate-docs
  */
 
 'use strict';
@@ -64,8 +65,10 @@ type ButtonProps = $ReadOnly<{|
 
   /**
     Designates the next view to receive focus when the user navigates down. See
-    the [Android
-    documentation](https://developer.android.com/reference/android/view/View.html#attr_android:nextFocusDown).
+    the [Android documentation][android:nextFocusDown].
+
+    [android:nextFocusDown]:
+    https://developer.android.com/reference/android/view/View.html#attr_android:nextFocusDown
 
     @platform android, tv
    */
@@ -73,8 +76,10 @@ type ButtonProps = $ReadOnly<{|
 
   /**
     Designates the next view to receive focus when the user navigates forward.
-    See the [Android
-    documentation](https://developer.android.com/reference/android/view/View.html#attr_android:nextFocusForward).
+    See the [Android documentation][android:nextFocusForward].
+
+    [android:nextFocusForward]:
+    https://developer.android.com/reference/android/view/View.html#attr_android:nextFocusForward
 
     @platform android, tv
    */
@@ -82,8 +87,10 @@ type ButtonProps = $ReadOnly<{|
 
   /**
     Designates the next view to receive focus when the user navigates left. See
-    the [Android
-    documentation](https://developer.android.com/reference/android/view/View.html#attr_android:nextFocusLeft).
+    the [Android documentation][android:nextFocusLeft].
+
+    [android:nextFocusLeft]:
+    https://developer.android.com/reference/android/view/View.html#attr_android:nextFocusLeft
 
     @platform android, tv
    */
@@ -91,8 +98,10 @@ type ButtonProps = $ReadOnly<{|
 
   /**
     Designates the next view to receive focus when the user navigates right. See
-    the [Android
-    documentation](https://developer.android.com/reference/android/view/View.html#attr_android:nextFocusRight).
+    the [Android documentation][android:nextFocusRight].
+
+    [android:nextFocusRight]:
+    https://developer.android.com/reference/android/view/View.html#attr_android:nextFocusRight
 
     @platform android, tv
    */
@@ -100,8 +109,10 @@ type ButtonProps = $ReadOnly<{|
 
   /**
     Designates the next view to receive focus when the user navigates up. See
-    the [Android
-    documentation](https://developer.android.com/reference/android/view/View.html#attr_android:nextFocusUp).
+    the [Android documentation][android:nextFocusUp].
+
+    [android:nextFocusUp]:
+    https://developer.android.com/reference/android/view/View.html#attr_android:nextFocusUp
 
     @platform android, tv
    */
@@ -132,10 +143,15 @@ type ButtonProps = $ReadOnly<{|
   If this button doesn't look right for your app, you can build your own button
   using [TouchableOpacity](touchableopacity) or
   [TouchableWithoutFeedback](touchablewithoutfeedback). For inspiration, look at
-  the [source code for this button
-  component](https://github.com/facebook/react-native/blob/master/Libraries/Components/Button.js).
-  Or, take a look at the [wide variety of button components built by the
-  community](https://js.coach/?menu%5Bcollections%5D=React%20Native&page=1&query=button).
+  the [source code for this button component][button:source]. Or, take a look at
+  the [wide variety of button components built by the community]
+  [button:examples].
+
+  [button:source]:
+  https://github.com/facebook/react-native/blob/master/Libraries/Components/Button.js
+
+  [button:examples]:
+  https://js.coach/?menu%5Bcollections%5D=React%20Native&page=1&query=button
 
   ```jsx
   <Button
@@ -146,7 +162,7 @@ type ButtonProps = $ReadOnly<{|
   />
   ```
 
-  @example ```SnackPlayer name=Button%20Example
+  ```SnackPlayer name=Button%20Example
   import React from 'react';
   import { StyleSheet, Button, View, SafeAreaView, Text, Alert } from 'react-native';
 
