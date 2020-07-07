@@ -1,6 +1,6 @@
 {
   "name": "RNTester",
-  "version": "0.0.1",
+  "version": "1000.0.0",
   "private": true,
   "scripts": {
     "android": "react-native run-android",
