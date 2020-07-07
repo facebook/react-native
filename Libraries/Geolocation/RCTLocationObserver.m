@@ -352,6 +352,11 @@ RCT_EXPORT_METHOD(getCurrentPosition:(RCTLocationOptions)options
       [_locationManager stopMonitoringSignificantLocationChanges] :
       [_locationManager stopUpdatingLocation];
   }
+  // Reset location accuracy if desiredAccuracy is changed.
+  // Otherwise update accuracy will force triggering didUpdateLocations, watchPosition would keeping receiving location updates, even there's no location changes.
+  if (ABS(_locationManager.desiredAccuracy - RCT_DEFAULT_LOCATION_ACCURACY) > 0.000001) {
+    _locationManager.desiredAccuracy = RCT_DEFAULT_LOCATION_ACCURACY;
+  }
 
 }
 
@@ -384,6 +389,11 @@ RCT_EXPORT_METHOD(getCurrentPosition:(RCTLocationOptions)options
   }
   [_pendingRequests removeAllObjects];
 
+  // Reset location accuracy if desiredAccuracy is changed.
+  // Otherwise update accuracy will force triggering didUpdateLocations, watchPosition would keeping receiving location updates, even there's no location changes.
+  if (ABS(_locationManager.desiredAccuracy - RCT_DEFAULT_LOCATION_ACCURACY) > 0.000001) {
+    _locationManager.desiredAccuracy = RCT_DEFAULT_LOCATION_ACCURACY;
+  }
 }
 
 static void checkLocationConfig()
