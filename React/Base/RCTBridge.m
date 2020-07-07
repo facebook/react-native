@@ -190,9 +190,9 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init)
   [self invalidate];
 }
 
-- (void)setRCTTurboModuleLookupDelegate:(id<RCTTurboModuleLookupDelegate>)turboModuleLookupDelegate
+- (void)setRCTTurboModuleRegistry:(id<RCTTurboModuleRegistry>)turboModuleRegistry
 {
-  [self.batchedBridge setRCTTurboModuleLookupDelegate:turboModuleLookupDelegate];
+  [self.batchedBridge setRCTTurboModuleRegistry:turboModuleRegistry];
 }
 
 - (void)didReceiveReloadCommand

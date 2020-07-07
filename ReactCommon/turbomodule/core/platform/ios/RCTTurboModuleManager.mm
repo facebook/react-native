@@ -183,7 +183,7 @@ static Class getFallbackClassFromName(const char *name)
     _invalidating = false;
 
     // Necessary to allow NativeModules to lookup TurboModules
-    [bridge setRCTTurboModuleLookupDelegate:self];
+    [bridge setRCTTurboModuleRegistry:self];
 
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(bridgeWillInvalidateModules:)
@@ -463,8 +463,8 @@ static Class getFallbackClassFromName(const char *name)
 
   TurboModulePerfLogger::moduleCreateSetUpStart(moduleName, moduleId);
 
-  if ([module respondsToSelector:@selector(setTurboModuleLookupDelegate:)]) {
-    [module setTurboModuleLookupDelegate:self];
+  if ([module respondsToSelector:@selector(setTurboModuleRegistry:)]) {
+    [module setTurboModuleRegistry:self];
   }
 
   /**
@@ -690,7 +690,7 @@ static Class getFallbackClassFromName(const char *name)
   });
 }
 
-#pragma mark RCTTurboModuleLookupDelegate
+#pragma mark RCTTurboModuleRegistry
 
 - (id)moduleForName:(const char *)moduleName
 {

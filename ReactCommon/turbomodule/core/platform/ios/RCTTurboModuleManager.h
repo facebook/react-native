@@ -44,7 +44,7 @@
 
 @end
 
-@interface RCTTurboModuleManager : NSObject <RCTTurboModuleLookupDelegate>
+@interface RCTTurboModuleManager : NSObject <RCTTurboModuleRegistry>
 
 - (instancetype)initWithBridge:(RCTBridge *)bridge
                       delegate:(id<RCTTurboModuleManagerDelegate>)delegate
