@@ -140,6 +140,7 @@ public class ViewProps {
 
   public static final String TRANSFORM = "transform";
   public static final String ELEVATION = "elevation";
+  public static final String SHADOW_COLOR = "shadowColor";
   public static final String Z_INDEX = "zIndex";
   public static final String RENDER_TO_HARDWARE_TEXTURE = "renderToHardwareTextureAndroid";
   public static final String ACCESSIBILITY_LABEL = "accessibilityLabel";
