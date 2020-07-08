@@ -396,6 +396,12 @@ static Class getFallbackClassFromName(const char *name)
       };
 
       if ([self _requiresMainQueueSetup:moduleClass]) {
+        if (!RCTIsMainQueue()) {
+          RCTLogWarn(
+              @"TurboModule \"%@\" requires synchronous dispatch onto the main queue to be initialized. This may lead to deadlock.",
+              moduleClass);
+        }
+
         RCTUnsafeExecuteOnMainQueueSync(work);
       } else {
         work();
