@@ -6,7 +6,7 @@
  */
 
 const path = require('path');
-const reactNativePath = path.resolve('../..');
+const reactNativePath = path.resolve(__dirname, 'node_modules', 'react-native');
 
 module.exports = {
   watchFolders: [path.resolve(__dirname, 'node_modules'), reactNativePath],

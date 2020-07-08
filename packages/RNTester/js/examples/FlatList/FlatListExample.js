@@ -61,8 +61,8 @@ type State = {|
   fadingEdgeLength: number,
 |};
 
-class FlatListExample extends React.PureComponent<Props, State> {
-  state: State = {
+const FlatListExample = () => {
+  const [state, setState] = React.useState({
     data: genItemData(100),
     debug: false,
     horizontal: false,
@@ -74,135 +74,59 @@ class FlatListExample extends React.PureComponent<Props, State> {
     empty: false,
     useFlatListItemComponent: false,
     fadingEdgeLength: 0,
+    numColumns: 1,
+    multiColumn: true,
+    header: false,
+    footer: false,
+  });
+
+  const _onChangeFilterText = (filterText) => {
+    setState({filterText});
   };
 
-  _onChangeFilterText = (filterText) => {
-    this.setState({filterText});
+  const _onChangeScrollToIndex = (text) => {
+    _listRef.scrollToIndex({viewPosition: 0.5, index: Number(text)});
   };
 
-  _onChangeScrollToIndex = (text) => {
-    this._listRef.scrollToIndex({viewPosition: 0.5, index: Number(text)});
-  };
-
-  _scrollPos = new Animated.Value(0);
-  _scrollSinkX = Animated.event(
-    [{nativeEvent: {contentOffset: {x: this._scrollPos}}}],
+  const _scrollPos = new Animated.Value(0);
+  const _scrollSinkX = Animated.event(
+    [{nativeEvent: {contentOffset: {x: _scrollPos}}}],
     {useNativeDriver: true},
   );
-  _scrollSinkY = Animated.event(
-    [{nativeEvent: {contentOffset: {y: this._scrollPos}}}],
+  const _scrollSinkY = Animated.event(
+    [{nativeEvent: {contentOffset: {y: _scrollPos}}}],
     {useNativeDriver: true},
   );
 
-  componentDidUpdate() {
-    this._listRef.recordInteraction(); // e.g. flipping logViewable switch
-  }
+  let _listRef: React.ElementRef<typeof Animated.FlatList>;
 
-  render(): React.Node {
-    const filterRegex = new RegExp(String(this.state.filterText), 'i');
-    const filter = (item) =>
-      filterRegex.test(item.text) || filterRegex.test(item.title);
-    const filteredData = this.state.data.filter(filter);
-    const flatListItemRendererProps = this._renderItemComponent();
-    return (
-      <RNTesterPage
-        noSpacer={true}
-        noScroll={true}
-        title="Simple list of items">
-        <View style={styles.container}>
-          <View style={styles.searchRow}>
-            <View style={styles.options}>
-              <PlainInput
-                onChangeText={this._onChangeFilterText}
-                placeholder="Search..."
-                value={this.state.filterText}
-              />
-              <PlainInput
-                onChangeText={this._onChangeScrollToIndex}
-                placeholder="scrollToIndex..."
-              />
-            </View>
-            <View style={styles.options}>
-              {renderSmallSwitchOption(this, 'virtualized')}
-              {renderSmallSwitchOption(this, 'horizontal')}
-              {renderSmallSwitchOption(this, 'fixedHeight')}
-              {renderSmallSwitchOption(this, 'log')}
-              {renderSmallSwitchOption(this, 'inverted')}
-              {renderSmallSwitchOption(this, 'empty')}
-              {renderSmallSwitchOption(this, 'debug')}
-              {renderSmallSwitchOption(this, 'useFlatListItemComponent')}
-              {Platform.OS === 'android' && (
-                <View>
-                  <TextInput
-                    placeholder="Fading edge length"
-                    underlineColorAndroid="black"
-                    keyboardType={'numeric'}
-                    onChange={(event) =>
-                      this.setState({
-                        fadingEdgeLength: Number(event.nativeEvent.text),
-                      })
-                    }
-                  />
-                </View>
-              )}
-              <Spindicator value={this._scrollPos} />
-            </View>
-          </View>
-          <SeparatorComponent />
-          <Animated.FlatList
-            fadingEdgeLength={this.state.fadingEdgeLength}
-            ItemSeparatorComponent={ItemSeparatorComponent}
-            ListHeaderComponent={<HeaderComponent />}
-            ListFooterComponent={FooterComponent}
-            ListEmptyComponent={ListEmptyComponent}
-            data={this.state.empty ? [] : filteredData}
-            debug={this.state.debug}
-            disableVirtualization={!this.state.virtualized}
-            getItemLayout={
-              this.state.fixedHeight ? this._getItemLayout : undefined
-            }
-            horizontal={this.state.horizontal}
-            inverted={this.state.inverted}
-            key={
-              (this.state.horizontal ? 'h' : 'v') +
-              (this.state.fixedHeight ? 'f' : 'd')
-            }
-            keyboardShouldPersistTaps="always"
-            keyboardDismissMode="on-drag"
-            numColumns={1}
-            onEndReached={this._onEndReached}
-            onRefresh={this._onRefresh}
-            onScroll={
-              this.state.horizontal ? this._scrollSinkX : this._scrollSinkY
-            }
-            onViewableItemsChanged={this._onViewableItemsChanged}
-            ref={this._captureRef}
-            refreshing={false}
-            contentContainerStyle={styles.list}
-            viewabilityConfig={VIEWABILITY_CONFIG}
-            {...flatListItemRendererProps}
-          />
-        </View>
-      </RNTesterPage>
-    );
-  }
-  _captureRef = (ref) => {
-    this._listRef = ref;
+  React.useEffect(() => {
+    _listRef.recordInteraction();
+  });
+
+  const filterRegex = new RegExp(String(state.filterText), 'i');
+  const filter = (item) =>
+    filterRegex.test(item.text) || filterRegex.test(item.title);
+  const filteredData = state.data.filter(filter);
+
+  const _captureRef = (ref) => {
+    _listRef = ref;
   };
-  _getItemLayout = (data: any, index: number) => {
-    return getItemLayout(data, index, this.state.horizontal);
+  const _getItemLayout = (data: any, index: number) => {
+    return getItemLayout(data, index, state.horizontal);
   };
-  _onEndReached = () => {
-    if (this.state.data.length >= 1000) {
+  const _onEndReached = () => {
+    if (state.data.length >= 1000) {
       return;
     }
-    this.setState((state) => ({
+    setState((state) => ({
       data: state.data.concat(genItemData(100, state.data.length)),
     }));
   };
-  _onRefresh = () => Alert.alert('onRefresh: nothing to refresh :P');
-  _renderItemComponent = () => {
-    const flatListPropKey = this.state.useFlatListItemComponent
+
+  const _onRefresh = () => Alert.alert('onRefresh: nothing to refresh :P');
+  const _renderItemComponent = () => {
+    const flatListPropKey = state.useFlatListItemComponent
       ? 'ListItemComponent'
       : 'renderItem';
 
@@ -215,9 +139,9 @@ class FlatListExample extends React.PureComponent<Props, State> {
         return (
           <ItemComponent
             item={item}
-            horizontal={this.state.horizontal}
-            fixedHeight={this.state.fixedHeight}
-            onPress={this._pressItem}
+            horizontal={state.horizontal}
+            fixedHeight={state.fixedHeight}
+            onPress={_pressItem}
             onShowUnderlay={separators.highlight}
             onHideUnderlay={separators.unhighlight}
           />
@@ -225,9 +149,10 @@ class FlatListExample extends React.PureComponent<Props, State> {
       },
     };
   };
+  const flatListItemRendererProps = _renderItemComponent();
   // This is called when items change viewability by scrolling into or out of
   // the viewable area.
-  _onViewableItemsChanged = (info: {
+  const _onViewableItemsChanged = (info: {
     changed: Array<{
       key: string,
       isViewable: boolean,
@@ -239,19 +164,98 @@ class FlatListExample extends React.PureComponent<Props, State> {
     ...
   }) => {
     // Impressions can be logged here
-    if (this.state.logViewable) {
+    if (state.logViewable) {
       infoLog(
         'onViewableItemsChanged: ',
         info.changed.map((v) => ({...v, item: '...'})),
       );
     }
   };
-  _pressItem = (key: string) => {
-    this._listRef && this._listRef.recordInteraction();
+  const _pressItem = (key: string) => {
+    _listRef && _listRef.recordInteraction();
     pressItem(this, key);
   };
-  _listRef: React.ElementRef<typeof Animated.FlatList>;
-}
+
+  return (
+    <RNTesterPage noSpacer={true} noScroll={true} title="Simple list of items">
+      <View style={styles.container}>
+        <View style={styles.searchRow}>
+          <View style={styles.options}>
+            <PlainInput
+              onChangeText={_onChangeFilterText}
+              placeholder="Search..."
+              value={state.filterText}
+            />
+            <PlainInput
+              onChangeText={_onChangeScrollToIndex}
+              placeholder="scrollToIndex..."
+            />
+          </View>
+          <View style={styles.options}>
+            {renderSmallSwitchOption(state, 'virtualized', setState)}
+            {renderSmallSwitchOption(state, 'horizontal', setState)}
+            {renderSmallSwitchOption(state, 'fixedHeight', setState)}
+            {renderSmallSwitchOption(state, 'log', setState)}
+            {renderSmallSwitchOption(state, 'inverted', setState)}
+            {renderSmallSwitchOption(state, 'empty', setState)}
+            {renderSmallSwitchOption(state, 'debug', setState)}
+            {renderSmallSwitchOption(
+              state,
+              'useFlatListItemComponent',
+              setState,
+            )}
+            {renderSmallSwitchOption(state, 'header', setState)}
+            {renderSmallSwitchOption(state, 'footer', setState)}
+            {renderSmallSwitchOption(state, 'seperator', setState)}
+            {renderSmallSwitchOption(state, 'multiColumn', setState)}
+            {Platform.OS === 'android' && (
+              <View>
+                <TextInput
+                  placeholder="Fading edge length"
+                  underlineColorAndroid="black"
+                  keyboardType={'numeric'}
+                  onChange={(event) =>
+                    setState({
+                      fadingEdgeLength: Number(event.nativeEvent.text),
+                    })
+                  }
+                />
+              </View>
+            )}
+            <Spindicator value={_scrollPos} />
+          </View>
+        </View>
+        <SeparatorComponent />
+        <Animated.FlatList
+          fadingEdgeLength={state.fadingEdgeLength}
+          ItemSeparatorComponent={ItemSeparatorComponent}
+          ListHeaderComponent={<HeaderComponent />}
+          ListFooterComponent={FooterComponent}
+          ListEmptyComponent={ListEmptyComponent}
+          data={state.empty ? [] : filteredData}
+          debug={state.debug}
+          disableVirtualization={!state.virtualized}
+          getItemLayout={state.fixedHeight ? _getItemLayout : undefined}
+          horizontal={state.horizontal}
+          inverted={state.inverted}
+          key={(state.horizontal ? 'h' : 'v') + (state.fixedHeight ? 'f' : 'd')}
+          keyboardShouldPersistTaps="always"
+          keyboardDismissMode="on-drag"
+          numColumns={1}
+          onEndReached={_onEndReached}
+          onRefresh={_onRefresh}
+          onScroll={state.horizontal ? _scrollSinkX : _scrollSinkY}
+          onViewableItemsChanged={_onViewableItemsChanged}
+          ref={_captureRef}
+          refreshing={false}
+          contentContainerStyle={styles.list}
+          viewabilityConfig={VIEWABILITY_CONFIG}
+          {...flatListItemRendererProps}
+        />
+      </View>
+    </RNTesterPage>
+  );
+};
 
 const styles = StyleSheet.create({
   container: {

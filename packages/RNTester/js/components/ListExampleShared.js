@@ -240,8 +240,9 @@ function pressItem(context: Object, key: string) {
 }
 
 function renderSmallSwitchOption(
-  context: Object,
+  state: Object,
   key: string,
+  setState: function,
 ): null | React.Node {
   if (Platform.isTV) {
     return null;
@@ -251,8 +252,8 @@ function renderSmallSwitchOption(
       <Text>{key}:</Text>
       <Switch
         style={styles.smallSwitch}
-        value={context.state[key]}
-        onValueChange={value => context.setState({[key]: value})}
+        value={state[key]}
+        onValueChange={(value) => setState({[key]: value})}
       />
     </View>
   );
