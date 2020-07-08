@@ -1,0 +1,170 @@
+<!DOCTYPE html><html lang="en"><head><meta charSet="utf-8"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><title>🚧 CameraRoll · React Native</title><meta name="viewport" content="width=device-width"/><meta name="generator" content="Docusaurus"/><meta name="description" content="&gt; **Deprecated.** Use [@react-native-community/cameraroll](https://github.com/react-native-community/react-native-cameraroll) instead."/><meta name="docsearch:version" content="0.62"/><meta name="docsearch:language" content="en"/><meta property="og:title" content="🚧 CameraRoll · React Native"/><meta property="og:type" content="website"/><meta property="og:url" content="https://reactnative.dev/"/><meta property="og:description" content="&gt; **Deprecated.** Use [@react-native-community/cameraroll](https://github.com/react-native-community/react-native-cameraroll) instead."/><meta property="og:image" content="https://reactnative.dev/img/logo-og.png"/><meta name="twitter:card" content="summary"/><meta name="twitter:image" content="https://reactnative.dev/img/logo-og.png"/><link rel="shortcut icon" href="/img/favicon.ico"/><link rel="stylesheet" href="https://cdn.jsdelivr.net/docsearch.js/1/docsearch.min.css"/><link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/solarized-dark.min.css"/><link rel="alternate" type="application/atom+xml" href="https://reactnative.dev/blog/atom.xml" title="React Native Blog ATOM Feed"/><link rel="alternate" type="application/rss+xml" href="https://reactnative.dev/blog/feed.xml" title="React Native Blog RSS Feed"/><script>
+              (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+              (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+              m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+              })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+              ga('create', 'UA-41298772-2', 'auto');
+              ga('send', 'pageview');
+            </script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/focus-visible@5.0.2/dist/focus-visible.min.js"></script><script type="text/javascript" src="https://snack.expo.io/embed.js"></script><script type="text/javascript" src="https://platform.twitter.com/widgets.js"></script><script type="text/javascript" src="https://buttons.github.io/buttons.js"></script><script type="text/javascript" src="/js/codeblocks.js"></script><script type="text/javascript" src="/js/tabs.js"></script><script type="text/javascript" src="/js/docs-rating.js"></script><script type="text/javascript" src="/js/announcement.js"></script><script src="https://unpkg.com/vanilla-back-to-top@7.1.14/dist/vanilla-back-to-top.min.js"></script><script>
+        document.addEventListener('DOMContentLoaded', function() {
+          addBackToTop(
+            {"zIndex":100}
+          )
+        });
+        </script><script src="/js/scrollSpy.js"></script><link rel="stylesheet" href="/css/prism.css"/><link rel="stylesheet" href="/css/main.css"/><script src="/js/codetabs.js"></script></head><body class="sideNavVisible separateOnPageNav"><div class="fixedHeaderContainer"><div class="headerWrapper wrapper"><header><a href="/"><img class="logo" src="/img/header_logo.svg" alt="React Native"/><h2 class="headerTitleWithLogo">React Native</h2></a><a href="/versions"><h3>0.62</h3></a><div class="navigationWrapper navigationSlider"><nav class="slidingNav"><ul class="nav-site nav-site-internal"><li class=""><a href="/docs/0.62/getting-started" target="_self">Docs</a></li><li class=""><a href="/docs/0.62/components-and-apis" target="_self">Components</a></li><li class=""><a href="/docs/0.62/accessibilityinfo" target="_self">API</a></li><li class=""><a href="/help" target="_self">Community</a></li><li class=""><a href="/blog/" target="_self">Blog</a></li><li class="navSearchWrapper reactNavSearchWrapper"><input type="text" id="search_input_react" placeholder="Search" title="Search"/></li><li class=""><a href="https://github.com/facebook/react-native" target="_self">GitHub</a></li></ul></nav></div></header></div></div><div class="navPusher"><div class="docMainWrapper wrapper"><div class="container mainContainer docsContainer"><div class="wrapper"><div class="post"><header class="postHeader"><a class="edit-page-link button" href="https://github.com/facebook/react-native-website/blob/master/docs/cameraroll.md" target="_blank" rel="noreferrer noopener">Edit</a><h1 id="__docusaurus" class="postHeaderTitle">🚧 CameraRoll</h1></header><article><div><span><blockquote>
+<p><strong>Deprecated.</strong> Use <a href="https://github.com/react-native-community/react-native-cameraroll">@react-native-community/cameraroll</a> instead.</p>
+</blockquote>
+<p><code>CameraRoll</code> provides access to the local camera roll or photo library.</p>
+<p>On iOS, the <code>CameraRoll</code> API requires the <code>RCTCameraRoll</code> library to be linked. You can refer to <a href="/docs/0.62/linking-libraries-ios">Linking Libraries (iOS)</a> to learn more.</p>
+<h3><a class="anchor" aria-hidden="true" id="permissions"></a><a href="#permissions" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Permissions</h3>
+<p>The user's permission is required in order to access the Camera Roll on devices running iOS 10 or later. Add the <code>NSPhotoLibraryUsageDescription</code> key in your <code>Info.plist</code> with a string that describes how your app will use this data. This key will appear as <code>Privacy - Photo Library Usage Description</code> in Xcode.</p>
+<p>If you are targeting devices running iOS 11 or later, you will also need to add the <code>NSPhotoLibraryAddUsageDescription</code> key in your <code>Info.plist</code>. Use this key to define a string that describes how your app will use this data. By adding this key to your <code>Info.plist</code>, you will be able to request write-only access permission from the user. If you try to save to the camera roll without this permission, your app will exit.</p>
+<hr>
+<h1><a class="anchor" aria-hidden="true" id="reference"></a><a href="#reference" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Reference</h1>
+<h2><a class="anchor" aria-hidden="true" id="methods"></a><a href="#methods" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Methods</h2>
+<h3><a class="anchor" aria-hidden="true" id="savetocameraroll"></a><a href="#savetocameraroll" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>saveToCameraRoll()</code></h3>
+<pre><code class="hljs css language-jsx">CameraRoll<span class="token punctuation">.</span><span class="token function">saveToCameraRoll</span><span class="token punctuation">(</span>tag<span class="token punctuation">,</span> <span class="token punctuation">[</span>type<span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre>
+<p>Saves the photo or video to the camera roll or photo library.</p>
+<p>On Android, the tag must be a local image or video URI, such as <code>&quot;file:///sdcard/img.png&quot;</code>.</p>
+<p>On iOS, the tag can be any image URI (including local, remote asset-library and base64 data URIs) or a local video file URI (remote or data URIs are not supported for saving video at this time).</p>
+<p>If the tag has a file extension of .mov or .mp4, it will be inferred as a video. Otherwise it will be treated as a photo. To override the automatic choice, you can pass an optional <code>type</code> parameter that must be one of 'photo' or 'video'.</p>
+<p>Returns a Promise which will resolve with the new URI.</p>
+<p><strong>Parameters:</strong></p>
+<table>
+<thead>
+<tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td>tag</td><td>string</td><td>Yes</td><td>See above.</td></tr>
+<tr><td>type</td><td>enum('photo', 'video')</td><td>No</td><td>Overrides automatic detection based on the file extension.</td></tr>
+</tbody>
+</table>
+<hr>
+<h3><a class="anchor" aria-hidden="true" id="getphotos"></a><a href="#getphotos" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>getPhotos()</code></h3>
+<pre><code class="hljs css language-jsx">CameraRoll<span class="token punctuation">.</span><span class="token function">getPhotos</span><span class="token punctuation">(</span>params<span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre>
+<p>Returns a Promise with photo identifier objects from the local camera roll of the device matching shape defined by <code>getPhotosReturnChecker</code>.</p>
+<p><strong>Parameters:</strong></p>
+<table>
+<thead>
+<tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td>params</td><td>object</td><td>Yes</td><td>Expects a params with the shape described below.</td></tr>
+</tbody>
+</table>
+<ul>
+<li><code>first</code> : {number} : The number of photos wanted in reverse order of the photo application (i.e. most recent first for SavedPhotos).</li>
+<li><code>after</code> : {string} : A cursor that matches <code>page_info { end_cursor }</code> returned from a previous call to <code>getPhotos</code>.</li>
+<li><code>groupTypes</code> : {string} : Specifies which group types to filter the results to. Valid values are:
+<ul>
+<li><code>Album</code></li>
+<li><code>All</code></li>
+<li><code>Event</code></li>
+<li><code>Faces</code></li>
+<li><code>Library</code></li>
+<li><code>PhotoStream</code></li>
+<li><code>SavedPhotos</code> // default</li>
+</ul></li>
+<li><code>groupName</code> : {string} : Specifies filter on group names, like 'Recent Photos' or custom album titles.</li>
+<li><code>assetType</code> : {string} : Specifies filter on asset type. Valid values are:
+<ul>
+<li><code>All</code></li>
+<li><code>Videos</code></li>
+<li><code>Photos</code> // default</li>
+</ul></li>
+<li><code>mimeTypes</code> : {Array} : Filter by mimetype (e.g. image/jpeg).</li>
+</ul>
+<p>Returns a Promise which when resolved will be of the following shape:</p>
+<ul>
+<li><code>edges</code> : {Array<node>} An array of node objects
+<ul>
+<li><code>node</code>: {object} An object with the following shape:
+<ul>
+<li><code>type</code>: {string}</li>
+<li><code>group_name</code>: {string}</li>
+<li><code>image</code>: {object} : An object with the following shape:
+<ul>
+<li><code>uri</code>: {string}</li>
+<li><code>height</code>: {number}</li>
+<li><code>width</code>: {number}</li>
+<li><code>isStored</code>: {boolean}</li>
+<li><code>playableDuration</code>: {number}</li>
+</ul></li>
+<li><code>timestamp</code>: {number}</li>
+<li><code>location</code>: {object} : An object with the following shape:
+<ul>
+<li><code>latitude</code>: {number}</li>
+<li><code>longitude</code>: {number}</li>
+<li><code>altitude</code>: {number}</li>
+<li><code>heading</code>: {number}</li>
+<li><code>speed</code>: {number}</li>
+</ul></li>
+</ul></li>
+</ul></li>
+<li><code>page_info</code> : {object} : An object with the following shape:
+<ul>
+<li><code>has_next_page</code>: {boolean}</li>
+<li><code>start_cursor</code>: {string}</li>
+<li><code>end_cursor</code>: {string}</li>
+</ul></li>
+</ul>
+<h4><a class="anchor" aria-hidden="true" id="example"></a><a href="#example" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Example</h4>
+<p>Loading images:</p>
+<pre><code class="hljs css language-jsx"><span class="token function-variable function">_handleButtonPress</span> <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">{</span>
+   CameraRoll<span class="token punctuation">.</span><span class="token function">getPhotos</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
+       first<span class="token punctuation">:</span> <span class="token number">20</span><span class="token punctuation">,</span>
+       assetType<span class="token punctuation">:</span> <span class="token string">'Photos'</span><span class="token punctuation">,</span>
+     <span class="token punctuation">}</span><span class="token punctuation">)</span>
+     <span class="token punctuation">.</span><span class="token function">then</span><span class="token punctuation">(</span><span class="token parameter">r</span> <span class="token operator">=></span> <span class="token punctuation">{</span>
+       <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">setState</span><span class="token punctuation">(</span><span class="token punctuation">{</span> photos<span class="token punctuation">:</span> r<span class="token punctuation">.</span>edges <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+     <span class="token punctuation">}</span><span class="token punctuation">)</span>
+     <span class="token punctuation">.</span><span class="token function">catch</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token parameter">err</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">{</span>
+        <span class="token comment">//Error Loading Images</span>
+     <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+   <span class="token punctuation">}</span><span class="token punctuation">;</span>
+<span class="token function">render</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+ <span class="token keyword">return</span> <span class="token punctuation">(</span>
+   <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span><span class="token class-name">View</span></span><span class="token punctuation">></span></span><span class="token plain-text">
+     </span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span><span class="token class-name">Button</span></span> <span class="token attr-name">title</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>Load Images<span class="token punctuation">"</span></span> <span class="token attr-name">onPress</span><span class="token script language-javascript"><span class="token script-punctuation punctuation">=</span><span class="token punctuation">{</span><span class="token keyword">this</span><span class="token punctuation">.</span>_handleButtonPress<span class="token punctuation">}</span></span> <span class="token punctuation">/></span></span><span class="token plain-text">
+     </span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span><span class="token class-name">ScrollView</span></span><span class="token punctuation">></span></span><span class="token plain-text">
+       </span><span class="token punctuation">{</span><span class="token keyword">this</span><span class="token punctuation">.</span>state<span class="token punctuation">.</span>photos<span class="token punctuation">.</span><span class="token function">map</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token parameter">p<span class="token punctuation">,</span> i</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">{</span>
+       <span class="token keyword">return</span> <span class="token punctuation">(</span>
+         <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span><span class="token class-name">Image</span></span>
+           <span class="token attr-name">key</span><span class="token script language-javascript"><span class="token script-punctuation punctuation">=</span><span class="token punctuation">{</span>i<span class="token punctuation">}</span></span>
+           <span class="token attr-name">style</span><span class="token script language-javascript"><span class="token script-punctuation punctuation">=</span><span class="token punctuation">{</span><span class="token punctuation">{</span>
+             width<span class="token punctuation">:</span> <span class="token number">300</span><span class="token punctuation">,</span>
+             height<span class="token punctuation">:</span> <span class="token number">100</span><span class="token punctuation">,</span>
+           <span class="token punctuation">}</span><span class="token punctuation">}</span></span>
+           <span class="token attr-name">source</span><span class="token script language-javascript"><span class="token script-punctuation punctuation">=</span><span class="token punctuation">{</span><span class="token punctuation">{</span> uri<span class="token punctuation">:</span> p<span class="token punctuation">.</span>node<span class="token punctuation">.</span>image<span class="token punctuation">.</span>uri <span class="token punctuation">}</span><span class="token punctuation">}</span></span>
+         <span class="token punctuation">/></span></span>
+       <span class="token punctuation">)</span><span class="token punctuation">;</span>
+     <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">}</span><span class="token plain-text">
+     </span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span><span class="token class-name">ScrollView</span></span><span class="token punctuation">></span></span><span class="token plain-text">
+   </span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span><span class="token class-name">View</span></span><span class="token punctuation">></span></span>
+ <span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+</code></pre>
+</span></div></article></div><div class="docs-prevnext"></div></div></div><nav class="onPageNav"><ul class="toc-headings"><li><a href="#methods">Methods</a><ul class="toc-headings"><li><a href="#savetocameraroll"><code>saveToCameraRoll()</code></a></li><li><a href="#getphotos"><code>getPhotos()</code></a></li></ul></li></ul></nav></div><footer class="nav-footer" id="footer"><section class="sitemap"><div><h5>Docs</h5><a href="/docs/getting-started">Getting Started</a><a href="/docs/tutorial">Tutorial</a><a href="/docs/components-and-apis">Components and APIs</a><a href="/docs/more-resources">More Resources</a></div><div><h5>Community</h5><a href="/help">The React Native Community</a><a href="/showcase">Who&#x27;s using React Native?</a><a href="https://stackoverflow.com/questions/tagged/react-native" target="_blank">Ask Questions on Stack Overflow</a><a href="https://github.com/facebook/react-native/blob/master/CONTRIBUTING.md">Contributor Guide</a><a href="https://dev.to/t/reactnative" target="_blank">DEV Community</a></div><div><h5>More Resources</h5><a href="/blog">Blog</a><a href="https://twitter.com/reactnative" target="_blank">Twitter</a><a href="https://github.com/facebook/react-native" target="_blank">GitHub</a><a href="https://reactjs.org" target="_blank">React</a></div></section><a href="https://code.facebook.com/projects/" target="_blank" class="fbOpenSource"><img src="/img/oss_logo.png" alt="Facebook Open Source" width="170" height="45"/></a><section class="copyright">Copyright © 2020 Facebook Inc.</section></footer></div><script type="text/javascript" src="https://cdn.jsdelivr.net/docsearch.js/1/docsearch.min.js"></script><script>window.fbAsyncInit = function() {FB.init({appId:'1677033832619985',xfbml:true,version:'v2.7'});};(function(d, s, id){var js, fjs = d.getElementsByTagName(s)[0];if (d.getElementById(id)) {return;}js = d.createElement(s); js.id = id;js.src = '//connect.facebook.net/en_US/sdk.js';fjs.parentNode.insertBefore(js, fjs);}(document, 'script','facebook-jssdk'));
+                </script><script>window.twttr=(function(d,s, id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return t;js=d.createElement(s);js.id=id;js.src='https://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js, fjs);t._e = [];t.ready = function(f) {t._e.push(f);};return t;}(document, 'script', 'twitter-wjs'));</script><script>
+                document.addEventListener('keyup', function(e) {
+                  if (e.target !== document.body) {
+                    return;
+                  }
+                  // keyCode for '/' (slash)
+                  if (e.keyCode === 191) {
+                    const search = document.getElementById('search_input_react');
+                    search && search.focus();
+                  }
+                });
+              </script><script>
+              var search = docsearch({
+                
+                apiKey: '2c98749b4a1e588efec53b2acec13025',
+                indexName: 'react-native-versions',
+                inputSelector: '#search_input_react',
+                algoliaOptions: {"facetFilters":["tags:0.62"],"hitsPerPage":5}
+              });
+            </script></body></html>

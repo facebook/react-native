@@ -1,0 +1,640 @@
+<!DOCTYPE html><html lang="en"><head><meta charSet="utf-8"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><title>Text Style Props · React Native</title><meta name="viewport" content="width=device-width"/><meta name="generator" content="Docusaurus"/><meta name="description" content="### Example"/><meta name="docsearch:version" content="0.62"/><meta name="docsearch:language" content="en"/><meta property="og:title" content="Text Style Props · React Native"/><meta property="og:type" content="website"/><meta property="og:url" content="https://reactnative.dev/"/><meta property="og:description" content="### Example"/><meta property="og:image" content="https://reactnative.dev/img/logo-og.png"/><meta name="twitter:card" content="summary"/><meta name="twitter:image" content="https://reactnative.dev/img/logo-og.png"/><link rel="shortcut icon" href="/img/favicon.ico"/><link rel="stylesheet" href="https://cdn.jsdelivr.net/docsearch.js/1/docsearch.min.css"/><link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/solarized-dark.min.css"/><link rel="alternate" type="application/atom+xml" href="https://reactnative.dev/blog/atom.xml" title="React Native Blog ATOM Feed"/><link rel="alternate" type="application/rss+xml" href="https://reactnative.dev/blog/feed.xml" title="React Native Blog RSS Feed"/><script>
+              (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+              (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+              m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+              })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+              ga('create', 'UA-41298772-2', 'auto');
+              ga('send', 'pageview');
+            </script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/focus-visible@5.0.2/dist/focus-visible.min.js"></script><script type="text/javascript" src="https://snack.expo.io/embed.js"></script><script type="text/javascript" src="https://platform.twitter.com/widgets.js"></script><script type="text/javascript" src="https://buttons.github.io/buttons.js"></script><script type="text/javascript" src="/js/codeblocks.js"></script><script type="text/javascript" src="/js/tabs.js"></script><script type="text/javascript" src="/js/docs-rating.js"></script><script type="text/javascript" src="/js/announcement.js"></script><script src="https://unpkg.com/vanilla-back-to-top@7.1.14/dist/vanilla-back-to-top.min.js"></script><script>
+        document.addEventListener('DOMContentLoaded', function() {
+          addBackToTop(
+            {"zIndex":100}
+          )
+        });
+        </script><script src="/js/scrollSpy.js"></script><link rel="stylesheet" href="/css/prism.css"/><link rel="stylesheet" href="/css/main.css"/><script src="/js/codetabs.js"></script></head><body class="sideNavVisible separateOnPageNav"><div class="fixedHeaderContainer"><div class="headerWrapper wrapper"><header><a href="/"><img class="logo" src="/img/header_logo.svg" alt="React Native"/><h2 class="headerTitleWithLogo">React Native</h2></a><a href="/versions"><h3>0.62</h3></a><div class="navigationWrapper navigationSlider"><nav class="slidingNav"><ul class="nav-site nav-site-internal"><li class=""><a href="/docs/0.62/getting-started" target="_self">Docs</a></li><li class="siteNavGroupActive"><a href="/docs/0.62/components-and-apis" target="_self">Components</a></li><li class=""><a href="/docs/0.62/accessibilityinfo" target="_self">API</a></li><li class=""><a href="/help" target="_self">Community</a></li><li class=""><a href="/blog/" target="_self">Blog</a></li><li class="navSearchWrapper reactNavSearchWrapper"><input type="text" id="search_input_react" placeholder="Search" title="Search"/></li><li class=""><a href="https://github.com/facebook/react-native" target="_self">GitHub</a></li></ul></nav></div></header></div></div><div class="navPusher"><div class="docMainWrapper wrapper"><div class="docsNavContainer" id="docsNav"><nav class="toc"><div class="toggleNav"><section class="navWrapper wrapper"><div class="navBreadcrumb wrapper"><div class="navToggle" id="navToggler"><div class="hamburger-menu"><div class="line1"></div><div class="line2"></div><div class="line3"></div></div></div><h2><i>›</i><span>Props</span></h2><div class="tocToggler" id="tocToggler"><i class="icon-toc"></i></div></div><div class="navGroups"><div class="navGroup"><h3 class="navGroupCategoryTitle collapsible">Core Components<span class="arrow"><svg width="24" height="24" viewBox="0 0 24 24"><path fill="#565656" d="M7.41 15.41L12 10.83l4.59 4.58L18 14l-6-6-6 6z"></path><path d="M0 0h24v24H0z" fill="none"></path></svg></span></h3><ul class="hide"><li class="navListItem"><a class="navItem" href="/docs/0.62/components-and-apis">Core Components and APIs</a></li><li class="navListItem"><a class="navItem" href="/docs/0.62/activityindicator">ActivityIndicator</a></li><li class="navListItem"><a class="navItem" href="/docs/0.62/button">Button</a></li><li class="navListItem"><a class="navItem" href="/docs/0.62/flatlist">FlatList</a></li><li class="navListItem"><a class="navItem" href="/docs/0.62/image">Image</a></li><li class="navListItem"><a class="navItem" href="/docs/0.62/imagebackground">ImageBackground</a></li><li class="navListItem"><a class="navItem" href="/docs/0.62/keyboardavoidingview">KeyboardAvoidingView</a></li><li class="navListItem"><a class="navItem" href="/docs/0.62/modal">Modal</a></li><li class="navListItem"><a class="navItem" href="/docs/0.62/refreshcontrol">RefreshControl</a></li><li class="navListItem"><a class="navItem" href="/docs/0.62/safeareaview">SafeAreaView</a></li><li class="navListItem"><a class="navItem" href="/docs/0.62/scrollview">ScrollView</a></li><li class="navListItem"><a class="navItem" href="/docs/0.62/sectionlist">SectionList</a></li><li class="navListItem"><a class="navItem" href="/docs/0.62/statusbar">StatusBar</a></li><li class="navListItem"><a class="navItem" href="/docs/0.62/switch">Switch</a></li><li class="navListItem"><a class="navItem" href="/docs/0.62/text">Text</a></li><li class="navListItem"><a class="navItem" href="/docs/0.62/textinput">TextInput</a></li><li class="navListItem"><a class="navItem" href="/docs/0.62/touchablehighlight">TouchableHighlight</a></li><li class="navListItem"><a class="navItem" href="/docs/0.62/touchableopacity">TouchableOpacity</a></li><li class="navListItem"><a class="navItem" href="/docs/0.62/touchablewithoutfeedback">TouchableWithoutFeedback</a></li><li class="navListItem"><a class="navItem" href="/docs/0.62/view">View</a></li><li class="navListItem"><a class="navItem" href="/docs/0.62/virtualizedlist">VirtualizedList</a></li><div class="navGroup subNavGroup"><h4 class="navGroupSubcategoryTitle">Android Components</h4><ul><li class="navListItem"><a class="navItem" href="/docs/0.62/drawerlayoutandroid">DrawerLayoutAndroid</a></li><li class="navListItem"><a class="navItem" href="/docs/0.62/touchablenativefeedback">TouchableNativeFeedback</a></li></ul></div><div class="navGroup subNavGroup"><h4 class="navGroupSubcategoryTitle">iOS Components</h4><ul><li class="navListItem"><a class="navItem" href="/docs/0.62/inputaccessoryview">InputAccessoryView</a></li></ul></div></ul></div><div class="navGroup"><h3 class="navGroupCategoryTitle collapsible">Props<span class="arrow"><svg width="24" height="24" viewBox="0 0 24 24"><path fill="#565656" d="M7.41 15.41L12 10.83l4.59 4.58L18 14l-6-6-6 6z"></path><path d="M0 0h24v24H0z" fill="none"></path></svg></span></h3><ul class="hide"><li class="navListItem"><a class="navItem" href="/docs/0.62/image-style-props">Image Style Props</a></li><li class="navListItem"><a class="navItem" href="/docs/0.62/layout-props">Layout Props</a></li><li class="navListItem"><a class="navItem" href="/docs/0.62/shadow-props">Shadow Props</a></li><li class="navListItem navListItemActive"><a class="navItem" href="/docs/0.62/text-style-props">Text Style Props</a></li><li class="navListItem"><a class="navItem" href="/docs/0.62/view-style-props">View Style Props</a></li></ul></div></div></section></div><script>
+            var coll = document.getElementsByClassName('collapsible');
+            var checkActiveCategory = true;
+            for (var i = 0; i < coll.length; i++) {
+              var links = coll[i].nextElementSibling.getElementsByTagName('*');
+              if (checkActiveCategory){
+                for (var j = 0; j < links.length; j++) {
+                  if (links[j].classList.contains('navListItemActive')){
+                    coll[i].nextElementSibling.classList.toggle('hide');
+                    coll[i].childNodes[1].classList.toggle('rotate');
+                    checkActiveCategory = false;
+                    break;
+                  }
+                }
+              }
+
+              coll[i].addEventListener('click', function() {
+                var arrow = this.childNodes[1];
+                arrow.classList.toggle('rotate');
+                var content = this.nextElementSibling;
+                content.classList.toggle('hide');
+              });
+            }
+
+            document.addEventListener('DOMContentLoaded', function() {
+              createToggler('#navToggler', '#docsNav', 'docsSliderActive');
+              createToggler('#tocToggler', 'body', 'tocActive');
+
+              var headings = document.querySelector('.toc-headings');
+              headings && headings.addEventListener('click', function(event) {
+                var el = event.target;
+                while(el !== headings){
+                  if (el.tagName === 'A') {
+                    document.body.classList.remove('tocActive');
+                    break;
+                  } else{
+                    el = el.parentNode;
+                  }
+                }
+              }, false);
+
+              function createToggler(togglerSelector, targetSelector, className) {
+                var toggler = document.querySelector(togglerSelector);
+                var target = document.querySelector(targetSelector);
+
+                if (!toggler) {
+                  return;
+                }
+
+                toggler.onclick = function(event) {
+                  event.preventDefault();
+
+                  target.classList.toggle(className);
+                };
+              }
+            });
+        </script></nav></div><div class="container mainContainer docsContainer"><div class="wrapper"><div class="post"><header class="postHeader"><a class="edit-page-link button" href="https://github.com/facebook/react-native-website/blob/master/docs/text-style-props.md" target="_blank" rel="noreferrer noopener">Edit</a><h1 id="__docusaurus" class="postHeaderTitle">Text Style Props</h1></header><article><div><span><h3><a class="anchor" aria-hidden="true" id="example"></a><a href="#example" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Example</h3>
+<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React, { useState } <span class="hljs-keyword">from</span> <span class="hljs-string">"react"</span>;
+<span class="hljs-keyword">import</span> { FlatList, Platform, ScrollView, Slider, StyleSheet, Switch, Text, TouchableWithoutFeedback, View } <span class="hljs-keyword">from</span> <span class="hljs-string">"react-native"</span>;
+<span class="hljs-keyword">import</span> Constants <span class="hljs-keyword">from</span> <span class="hljs-string">"expo-constants"</span>;
+
+<span class="hljs-keyword">const</span> fontStyles = [<span class="hljs-string">"normal"</span>, <span class="hljs-string">"italic"</span>];
+<span class="hljs-keyword">const</span> fontVariants = [
+  <span class="hljs-literal">undefined</span>,
+  <span class="hljs-string">"small-caps"</span>,
+  <span class="hljs-string">"oldstyle-nums"</span>,
+  <span class="hljs-string">"lining-nums"</span>,
+  <span class="hljs-string">"tabular-nums"</span>,
+  <span class="hljs-string">"proportional-nums"</span>
+];
+<span class="hljs-keyword">const</span> fontWeights = [
+  <span class="hljs-string">"normal"</span>,
+  <span class="hljs-string">"bold"</span>,
+  <span class="hljs-string">"100"</span>,
+  <span class="hljs-string">"200"</span>,
+  <span class="hljs-string">"300"</span>,
+  <span class="hljs-string">"400"</span>,
+  <span class="hljs-string">"500"</span>,
+  <span class="hljs-string">"600"</span>,
+  <span class="hljs-string">"700"</span>,
+  <span class="hljs-string">"800"</span>,
+  <span class="hljs-string">"900"</span>
+];
+<span class="hljs-keyword">const</span> textAlignments = [<span class="hljs-string">"auto"</span>, <span class="hljs-string">"left"</span>, <span class="hljs-string">"right"</span>, <span class="hljs-string">"center"</span>, <span class="hljs-string">"justify"</span>];
+<span class="hljs-keyword">const</span> textDecorationLines = [
+  <span class="hljs-string">"none"</span>,
+  <span class="hljs-string">"underline"</span>,
+  <span class="hljs-string">"line-through"</span>,
+  <span class="hljs-string">"underline line-through"</span>
+];
+<span class="hljs-keyword">const</span> textDecorationStyles = [<span class="hljs-string">"solid"</span>, <span class="hljs-string">"double"</span>, <span class="hljs-string">"dotted"</span>, <span class="hljs-string">"dashed"</span>];
+<span class="hljs-keyword">const</span> textTransformations = [<span class="hljs-string">"none"</span>, <span class="hljs-string">"uppercase"</span>, <span class="hljs-string">"lowercase"</span>, <span class="hljs-string">"capitalize"</span>];
+<span class="hljs-keyword">const</span> textAlignmentsVertical = [<span class="hljs-string">"auto"</span>, <span class="hljs-string">"top"</span>, <span class="hljs-string">"bottom"</span>, <span class="hljs-string">"center"</span>];
+<span class="hljs-keyword">const</span> writingDirections = [<span class="hljs-string">"auto"</span>, <span class="hljs-string">"ltr"</span>, <span class="hljs-string">"rtl"</span>];
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">App</span>(<span class="hljs-params"></span>) </span>{
+  <span class="hljs-keyword">const</span> [fontSize, setFontSize] = useState(<span class="hljs-number">10</span>);
+  <span class="hljs-keyword">const</span> [fontStyleIdx, setFontStyleIdx] = useState(<span class="hljs-number">0</span>);
+  <span class="hljs-keyword">const</span> [fontWeightIdx, setFontWeightIdx] = useState(<span class="hljs-number">0</span>);
+  <span class="hljs-keyword">const</span> [lineHeight, setLineHeight] = useState(<span class="hljs-number">10</span>);
+  <span class="hljs-keyword">const</span> [textAlignIdx, setTextAlignIdx] = useState(<span class="hljs-number">0</span>);
+  <span class="hljs-keyword">const</span> [textDecorationLineIdx, setTextDecorationLineIdx] = useState(<span class="hljs-number">0</span>);
+  <span class="hljs-keyword">const</span> [includeFontPadding, setIncludeFontPadding] = useState(<span class="hljs-literal">false</span>);
+  <span class="hljs-keyword">const</span> [textVerticalAlignIdx, setTextVerticalAlignIdx] = useState(<span class="hljs-number">0</span>);
+  <span class="hljs-keyword">const</span> [fontVariantIdx, setFontVariantIdx] = useState(<span class="hljs-number">0</span>);
+  <span class="hljs-keyword">const</span> [letterSpacing, setLetterSpacing] = useState(<span class="hljs-number">0</span>);
+  <span class="hljs-keyword">const</span> [textDecorationStyleIdx, setTextDecorationStyleIdx] = useState(<span class="hljs-number">0</span>);
+  <span class="hljs-keyword">const</span> [textTransformIdx, setTextTransformIdx] = useState(<span class="hljs-number">0</span>);
+  <span class="hljs-keyword">const</span> [writingDirectionIdx, setWritingDirectionIdx] = useState(<span class="hljs-number">0</span>);
+  <span class="hljs-keyword">const</span> [textShadowRadius, setTextShadowRadius] = useState(<span class="hljs-number">0</span>);
+  <span class="hljs-keyword">const</span> [textShadowOffset, setTextShadowOffset] = useState({
+    <span class="hljs-attr">height</span>: <span class="hljs-number">0</span>,
+    <span class="hljs-attr">width</span>: <span class="hljs-number">0</span>
+  });
+
+  <span class="hljs-keyword">return</span> (
+    &lt;View style={styles.container}&gt;
+      &lt;Text
+        style={[
+          styles.paragraph,
+          {
+            fontSize,
+            fontStyle: fontStyles[fontStyleIdx],
+            fontWeight: fontWeights[fontWeightIdx],
+            lineHeight,
+            textAlign: textAlignments[textAlignIdx],
+            textDecorationLine: textDecorationLines[textDecorationLineIdx],
+            textTransform: textTransformations[textTransformIdx],
+            textAlignVertical: textAlignmentsVertical[textVerticalAlignIdx],
+            fontVariant: [fontVariants[fontVariantIdx]],
+            letterSpacing,
+            includeFontPadding,
+            textDecorationStyle: textDecorationStyles[textDecorationStyleIdx],
+            writingDirection: writingDirections[writingDirectionIdx],
+            textShadowOffset,
+            textShadowRadius
+          }
+        ]}
+      &gt;
+        Lorem Ipsum is simply dummy text of the printing and typesetting
+        industry. 112 Likes
+      &lt;/Text&gt;
+      &lt;ScrollView&gt;
+        &lt;View&gt;
+          &lt;Text&gt;Common platform properties&lt;/Text&gt;
+          &lt;CustomSlider
+            label="Text Shadow Offset - Height"
+            value={textShadowOffset.height}
+            minimumValue={-40}
+            maximumValue={40}
+            handleValueChange={val =&gt;
+              setTextShadowOffset(prev =&gt; ({ ...prev, height: val }))
+            }
+          /&gt;
+          &lt;CustomSlider
+            label="Text Shadow Offset - Width"
+            value={textShadowOffset.width}
+            minimumValue={-40}
+            maximumValue={40}
+            handleValueChange={val =&gt;
+              setTextShadowOffset(prev =&gt; ({ ...prev, width: val }))
+            }
+          /&gt;
+          &lt;CustomSlider
+            label="Font Size"
+            value={fontSize}
+            maximumValue={40}
+            handleValueChange={setFontSize}
+          /&gt;
+          &lt;CustomPicker
+            label="Font Style"
+            data={fontStyles}
+            currentIndex={fontStyleIdx}
+            onSelected={setFontStyleIdx}
+          /&gt;
+          &lt;CustomPicker
+            label="Font Weight"
+            data={fontWeights}
+            currentIndex={fontWeightIdx}
+            onSelected={setFontWeightIdx}
+          /&gt;
+          &lt;CustomSlider
+            label="Line Height"
+            value={lineHeight}
+            minimumValue={10}
+            maximumValue={50}
+            handleValueChange={setLineHeight}
+          /&gt;
+          &lt;CustomPicker
+            label="Text Align"
+            data={textAlignments}
+            currentIndex={textAlignIdx}
+            onSelected={setTextAlignIdx}
+          /&gt;
+          &lt;CustomPicker
+            label="Text Decoration Line"
+            data={textDecorationLines}
+            currentIndex={textDecorationLineIdx}
+            onSelected={setTextDecorationLineIdx}
+          /&gt;
+          &lt;CustomSlider
+            label="Text Shadow Radius"
+            value={textShadowRadius}
+            handleValueChange={setTextShadowRadius}
+          /&gt;
+          &lt;CustomPicker
+            label="Font Variant"
+            data={fontVariants}
+            currentIndex={fontVariantIdx}
+            onSelected={setFontVariantIdx}
+          /&gt;
+          &lt;CustomSlider
+            label="Letter Spacing"
+            step={0.1}
+            value={letterSpacing}
+            handleValueChange={setLetterSpacing}
+          /&gt;
+          &lt;CustomPicker
+            label="Text Transform"
+            data={textTransformations}
+            currentIndex={textTransformIdx}
+            onSelected={setTextTransformIdx}
+          /&gt;
+        &lt;/View&gt;
+        {Platform.OS === "android" &amp;&amp; (
+          &lt;View style={styles.platformContainer}&gt;
+            &lt;Text style={styles.platformContainerTitle}&gt;
+              Android only properties
+            &lt;/Text&gt;
+            &lt;CustomPicker
+              label="Text Vertical Align"
+              data={textAlignmentsVertical}
+              currentIndex={textVerticalAlignIdx}
+              onSelected={setTextVerticalAlignIdx}
+            /&gt;
+            &lt;CustomSwitch
+              label="Include Font Padding"
+              handleValueChange={setIncludeFontPadding}
+              value={includeFontPadding}
+            /&gt;
+          &lt;/View&gt;
+        )}
+        {Platform.OS === "ios" &amp;&amp; (
+          &lt;View style={styles.platformContainer}&gt;
+            &lt;Text style={styles.platformContainerTitle}&gt;
+              iOS only properties
+            &lt;/Text&gt;
+            &lt;CustomPicker
+              label="Text Decoration Style"
+              data={textDecorationStyles}
+              currentIndex={textDecorationStyleIdx}
+              onSelected={setTextDecorationStyleIdx}
+            /&gt;
+            &lt;CustomPicker
+              label="Writing Direction"
+              data={writingDirections}
+              currentIndex={writingDirectionIdx}
+              onSelected={setWritingDirectionIdx}
+            /&gt;
+          &lt;/View&gt;
+        )}
+      &lt;/ScrollView&gt;
+    &lt;/View&gt;
+  );
+}
+
+function CustomSwitch({ label, handleValueChange, value }) {
+  return (
+    &lt;&gt;
+      &lt;Text style={styles.title}&gt;{label}&lt;/Text&gt;
+      &lt;View style={{ alignItems: "flex-start" }}&gt;
+        &lt;Switch
+          trackColor={{ false: "#767577", true: "#DAA520" }}
+          thumbColor={value ? "#DAA520" : "#f4f3f4"}
+          onValueChange={handleValueChange}
+          value={value}
+        /&gt;
+      &lt;/View&gt;
+    &lt;/&gt;
+  );
+}
+
+function CustomSlider({
+  label,
+  handleValueChange,
+  step = 1,
+  minimumValue = 0,
+  maximumValue = 10,
+  value
+}) {
+  return (
+    &lt;&gt;
+      {label &amp;&amp; (
+        &lt;Text style={styles.title}&gt;{`${label} (${value.toFixed(2)})`}&lt;/Text&gt;
+      )}
+      &lt;View style={styles.wrapperHorizontal}&gt;
+        &lt;Slider
+          thumbTintColor="#DAA520"
+          minimumTrackTintColor="#DAA520"
+          minimumValue={minimumValue}
+          maximumValue={maximumValue}
+          step={step}
+          onValueChange={handleValueChange}
+          value={value}
+        /&gt;
+      &lt;/View&gt;
+    &lt;/&gt;
+  );
+}
+
+function CustomPicker({ label, data, currentIndex, onSelected }) {
+  return (
+    &lt;&gt;
+      &lt;Text style={styles.title}&gt;{label}&lt;/Text&gt;
+      &lt;View style={styles.wrapperHorizontal}&gt;
+        &lt;FlatList
+          bounces
+          horizontal
+          data={data}
+          keyExtractor={(item, idx) =&gt; String(item)}
+          renderItem={({ item, index }) =&gt; {
+            const selected = index === currentIndex;
+            return (
+              &lt;TouchableWithoutFeedback onPress={() =&gt; onSelected(index)}&gt;
+                &lt;View
+                  style={[
+                    styles.itemStyleHorizontal,
+                    selected &amp;&amp; styles.itemSelectedStyleHorizontal
+                  ]}
+                &gt;
+                  &lt;Text
+                    style={{
+                      textAlign: "center",
+                      color: selected ? "black" : "grey",
+                      fontWeight: selected ? "bold" : "normal"
+                    }}
+                  &gt;
+                    {item + ""}
+                  &lt;/Text&gt;
+                &lt;/View&gt;
+              &lt;/TouchableWithoutFeedback&gt;
+            );
+          }}
+        /&gt;
+      &lt;/View&gt;
+    &lt;/&gt;
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    paddingTop: Constants.statusBarHeight,
+    backgroundColor: "#ecf0f1",
+    padding: 8
+  },
+  paragraph: {
+    color: "black",
+    textDecorationColor: "yellow",
+    textShadowColor: "red",
+    textShadowRadius: 1,
+    margin: 24
+  },
+  wrapperHorizontal: {
+    height: 54,
+    justifyContent: "center",
+    color: "black",
+    marginBottom: 12
+  },
+  itemStyleHorizontal: {
+    marginRight: 10,
+    height: 50,
+    padding: 8,
+    borderWidth: 1,
+    borderColor: "grey",
+    borderRadius: 25,
+    textAlign: "center",
+    justifyContent: "center"
+  },
+  itemSelectedStyleHorizontal: {
+    borderWidth: 2,
+    borderColor: "#DAA520"
+  },
+  platformContainer: {
+    marginTop: 8,
+    borderTopWidth: 1
+  },
+  platformContainerTitle: {
+    marginTop: 8
+  },
+  title: {
+    fontWeight: "bold",
+    marginVertical: 4
+  }
+});
+
+</code></pre></div><div class="desktop-friendly-snack" style="margin-top: 15px; margin-bottom: 15px"><div
+        data-snack-name="TextStyleProps"
+        data-snack-description="Example usage"
+        data-snack-code="import%20React%2C%20%7B%20useState%20%7D%20from%20%22react%22%3B%0Aimport%20%7B%20FlatList%2C%20Platform%2C%20ScrollView%2C%20Slider%2C%20StyleSheet%2C%20Switch%2C%20Text%2C%20TouchableWithoutFeedback%2C%20View%20%7D%20from%20%22react-native%22%3B%0Aimport%20Constants%20from%20%22expo-constants%22%3B%0A%0Aconst%20fontStyles%20%3D%20%5B%22normal%22%2C%20%22italic%22%5D%3B%0Aconst%20fontVariants%20%3D%20%5B%0A%20%20undefined%2C%0A%20%20%22small-caps%22%2C%0A%20%20%22oldstyle-nums%22%2C%0A%20%20%22lining-nums%22%2C%0A%20%20%22tabular-nums%22%2C%0A%20%20%22proportional-nums%22%0A%5D%3B%0Aconst%20fontWeights%20%3D%20%5B%0A%20%20%22normal%22%2C%0A%20%20%22bold%22%2C%0A%20%20%22100%22%2C%0A%20%20%22200%22%2C%0A%20%20%22300%22%2C%0A%20%20%22400%22%2C%0A%20%20%22500%22%2C%0A%20%20%22600%22%2C%0A%20%20%22700%22%2C%0A%20%20%22800%22%2C%0A%20%20%22900%22%0A%5D%3B%0Aconst%20textAlignments%20%3D%20%5B%22auto%22%2C%20%22left%22%2C%20%22right%22%2C%20%22center%22%2C%20%22justify%22%5D%3B%0Aconst%20textDecorationLines%20%3D%20%5B%0A%20%20%22none%22%2C%0A%20%20%22underline%22%2C%0A%20%20%22line-through%22%2C%0A%20%20%22underline%20line-through%22%0A%5D%3B%0Aconst%20textDecorationStyles%20%3D%20%5B%22solid%22%2C%20%22double%22%2C%20%22dotted%22%2C%20%22dashed%22%5D%3B%0Aconst%20textTransformations%20%3D%20%5B%22none%22%2C%20%22uppercase%22%2C%20%22lowercase%22%2C%20%22capitalize%22%5D%3B%0Aconst%20textAlignmentsVertical%20%3D%20%5B%22auto%22%2C%20%22top%22%2C%20%22bottom%22%2C%20%22center%22%5D%3B%0Aconst%20writingDirections%20%3D%20%5B%22auto%22%2C%20%22ltr%22%2C%20%22rtl%22%5D%3B%0A%0Aexport%20default%20function%20App()%20%7B%0A%20%20const%20%5BfontSize%2C%20setFontSize%5D%20%3D%20useState(10)%3B%0A%20%20const%20%5BfontStyleIdx%2C%20setFontStyleIdx%5D%20%3D%20useState(0)%3B%0A%20%20const%20%5BfontWeightIdx%2C%20setFontWeightIdx%5D%20%3D%20useState(0)%3B%0A%20%20const%20%5BlineHeight%2C%20setLineHeight%5D%20%3D%20useState(10)%3B%0A%20%20const%20%5BtextAlignIdx%2C%20setTextAlignIdx%5D%20%3D%20useState(0)%3B%0A%20%20const%20%5BtextDecorationLineIdx%2C%20setTextDecorationLineIdx%5D%20%3D%20useState(0)%3B%0A%20%20const%20%5BincludeFontPadding%2C%20setIncludeFontPadding%5D%20%3D%20useState(false)%3B%0A%20%20const%20%5BtextVerticalAlignIdx%2C%20setTextVerticalAlignIdx%5D%20%3D%20useState(0)%3B%0A%20%20const%20%5BfontVariantIdx%2C%20setFontVariantIdx%5D%20%3D%20useState(0)%3B%0A%20%20const%20%5BletterSpacing%2C%20setLetterSpacing%5D%20%3D%20useState(0)%3B%0A%20%20const%20%5BtextDecorationStyleIdx%2C%20setTextDecorationStyleIdx%5D%20%3D%20useState(0)%3B%0A%20%20const%20%5BtextTransformIdx%2C%20setTextTransformIdx%5D%20%3D%20useState(0)%3B%0A%20%20const%20%5BwritingDirectionIdx%2C%20setWritingDirectionIdx%5D%20%3D%20useState(0)%3B%0A%20%20const%20%5BtextShadowRadius%2C%20setTextShadowRadius%5D%20%3D%20useState(0)%3B%0A%20%20const%20%5BtextShadowOffset%2C%20setTextShadowOffset%5D%20%3D%20useState(%7B%0A%20%20%20%20height%3A%200%2C%0A%20%20%20%20width%3A%200%0A%20%20%7D)%3B%0A%0A%20%20return%20(%0A%20%20%20%20%3CView%20style%3D%7Bstyles.container%7D%3E%0A%20%20%20%20%20%20%3CText%0A%20%20%20%20%20%20%20%20style%3D%7B%5B%0A%20%20%20%20%20%20%20%20%20%20styles.paragraph%2C%0A%20%20%20%20%20%20%20%20%20%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20fontSize%2C%0A%20%20%20%20%20%20%20%20%20%20%20%20fontStyle%3A%20fontStyles%5BfontStyleIdx%5D%2C%0A%20%20%20%20%20%20%20%20%20%20%20%20fontWeight%3A%20fontWeights%5BfontWeightIdx%5D%2C%0A%20%20%20%20%20%20%20%20%20%20%20%20lineHeight%2C%0A%20%20%20%20%20%20%20%20%20%20%20%20textAlign%3A%20textAlignments%5BtextAlignIdx%5D%2C%0A%20%20%20%20%20%20%20%20%20%20%20%20textDecorationLine%3A%20textDecorationLines%5BtextDecorationLineIdx%5D%2C%0A%20%20%20%20%20%20%20%20%20%20%20%20textTransform%3A%20textTransformations%5BtextTransformIdx%5D%2C%0A%20%20%20%20%20%20%20%20%20%20%20%20textAlignVertical%3A%20textAlignmentsVertical%5BtextVerticalAlignIdx%5D%2C%0A%20%20%20%20%20%20%20%20%20%20%20%20fontVariant%3A%20%5BfontVariants%5BfontVariantIdx%5D%5D%2C%0A%20%20%20%20%20%20%20%20%20%20%20%20letterSpacing%2C%0A%20%20%20%20%20%20%20%20%20%20%20%20includeFontPadding%2C%0A%20%20%20%20%20%20%20%20%20%20%20%20textDecorationStyle%3A%20textDecorationStyles%5BtextDecorationStyleIdx%5D%2C%0A%20%20%20%20%20%20%20%20%20%20%20%20writingDirection%3A%20writingDirections%5BwritingDirectionIdx%5D%2C%0A%20%20%20%20%20%20%20%20%20%20%20%20textShadowOffset%2C%0A%20%20%20%20%20%20%20%20%20%20%20%20textShadowRadius%0A%20%20%20%20%20%20%20%20%20%20%7D%0A%20%20%20%20%20%20%20%20%5D%7D%0A%20%20%20%20%20%20%3E%0A%20%20%20%20%20%20%20%20Lorem%20Ipsum%20is%20simply%20dummy%20text%20of%20the%20printing%20and%20typesetting%0A%20%20%20%20%20%20%20%20industry.%20112%20Likes%0A%20%20%20%20%20%20%3C%2FText%3E%0A%20%20%20%20%20%20%3CScrollView%3E%0A%20%20%20%20%20%20%20%20%3CView%3E%0A%20%20%20%20%20%20%20%20%20%20%3CText%3ECommon%20platform%20properties%3C%2FText%3E%0A%20%20%20%20%20%20%20%20%20%20%3CCustomSlider%0A%20%20%20%20%20%20%20%20%20%20%20%20label%3D%22Text%20Shadow%20Offset%20-%20Height%22%0A%20%20%20%20%20%20%20%20%20%20%20%20value%3D%7BtextShadowOffset.height%7D%0A%20%20%20%20%20%20%20%20%20%20%20%20minimumValue%3D%7B-40%7D%0A%20%20%20%20%20%20%20%20%20%20%20%20maximumValue%3D%7B40%7D%0A%20%20%20%20%20%20%20%20%20%20%20%20handleValueChange%3D%7Bval%20%3D%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20setTextShadowOffset(prev%20%3D%3E%20(%7B%20...prev%2C%20height%3A%20val%20%7D))%0A%20%20%20%20%20%20%20%20%20%20%20%20%7D%0A%20%20%20%20%20%20%20%20%20%20%2F%3E%0A%20%20%20%20%20%20%20%20%20%20%3CCustomSlider%0A%20%20%20%20%20%20%20%20%20%20%20%20label%3D%22Text%20Shadow%20Offset%20-%20Width%22%0A%20%20%20%20%20%20%20%20%20%20%20%20value%3D%7BtextShadowOffset.width%7D%0A%20%20%20%20%20%20%20%20%20%20%20%20minimumValue%3D%7B-40%7D%0A%20%20%20%20%20%20%20%20%20%20%20%20maximumValue%3D%7B40%7D%0A%20%20%20%20%20%20%20%20%20%20%20%20handleValueChange%3D%7Bval%20%3D%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20setTextShadowOffset(prev%20%3D%3E%20(%7B%20...prev%2C%20width%3A%20val%20%7D))%0A%20%20%20%20%20%20%20%20%20%20%20%20%7D%0A%20%20%20%20%20%20%20%20%20%20%2F%3E%0A%20%20%20%20%20%20%20%20%20%20%3CCustomSlider%0A%20%20%20%20%20%20%20%20%20%20%20%20label%3D%22Font%20Size%22%0A%20%20%20%20%20%20%20%20%20%20%20%20value%3D%7BfontSize%7D%0A%20%20%20%20%20%20%20%20%20%20%20%20maximumValue%3D%7B40%7D%0A%20%20%20%20%20%20%20%20%20%20%20%20handleValueChange%3D%7BsetFontSize%7D%0A%20%20%20%20%20%20%20%20%20%20%2F%3E%0A%20%20%20%20%20%20%20%20%20%20%3CCustomPicker%0A%20%20%20%20%20%20%20%20%20%20%20%20label%3D%22Font%20Style%22%0A%20%20%20%20%20%20%20%20%20%20%20%20data%3D%7BfontStyles%7D%0A%20%20%20%20%20%20%20%20%20%20%20%20currentIndex%3D%7BfontStyleIdx%7D%0A%20%20%20%20%20%20%20%20%20%20%20%20onSelected%3D%7BsetFontStyleIdx%7D%0A%20%20%20%20%20%20%20%20%20%20%2F%3E%0A%20%20%20%20%20%20%20%20%20%20%3CCustomPicker%0A%20%20%20%20%20%20%20%20%20%20%20%20label%3D%22Font%20Weight%22%0A%20%20%20%20%20%20%20%20%20%20%20%20data%3D%7BfontWeights%7D%0A%20%20%20%20%20%20%20%20%20%20%20%20currentIndex%3D%7BfontWeightIdx%7D%0A%20%20%20%20%20%20%20%20%20%20%20%20onSelected%3D%7BsetFontWeightIdx%7D%0A%20%20%20%20%20%20%20%20%20%20%2F%3E%0A%20%20%20%20%20%20%20%20%20%20%3CCustomSlider%0A%20%20%20%20%20%20%20%20%20%20%20%20label%3D%22Line%20Height%22%0A%20%20%20%20%20%20%20%20%20%20%20%20value%3D%7BlineHeight%7D%0A%20%20%20%20%20%20%20%20%20%20%20%20minimumValue%3D%7B10%7D%0A%20%20%20%20%20%20%20%20%20%20%20%20maximumValue%3D%7B50%7D%0A%20%20%20%20%20%20%20%20%20%20%20%20handleValueChange%3D%7BsetLineHeight%7D%0A%20%20%20%20%20%20%20%20%20%20%2F%3E%0A%20%20%20%20%20%20%20%20%20%20%3CCustomPicker%0A%20%20%20%20%20%20%20%20%20%20%20%20label%3D%22Text%20Align%22%0A%20%20%20%20%20%20%20%20%20%20%20%20data%3D%7BtextAlignments%7D%0A%20%20%20%20%20%20%20%20%20%20%20%20currentIndex%3D%7BtextAlignIdx%7D%0A%20%20%20%20%20%20%20%20%20%20%20%20onSelected%3D%7BsetTextAlignIdx%7D%0A%20%20%20%20%20%20%20%20%20%20%2F%3E%0A%20%20%20%20%20%20%20%20%20%20%3CCustomPicker%0A%20%20%20%20%20%20%20%20%20%20%20%20label%3D%22Text%20Decoration%20Line%22%0A%20%20%20%20%20%20%20%20%20%20%20%20data%3D%7BtextDecorationLines%7D%0A%20%20%20%20%20%20%20%20%20%20%20%20currentIndex%3D%7BtextDecorationLineIdx%7D%0A%20%20%20%20%20%20%20%20%20%20%20%20onSelected%3D%7BsetTextDecorationLineIdx%7D%0A%20%20%20%20%20%20%20%20%20%20%2F%3E%0A%20%20%20%20%20%20%20%20%20%20%3CCustomSlider%0A%20%20%20%20%20%20%20%20%20%20%20%20label%3D%22Text%20Shadow%20Radius%22%0A%20%20%20%20%20%20%20%20%20%20%20%20value%3D%7BtextShadowRadius%7D%0A%20%20%20%20%20%20%20%20%20%20%20%20handleValueChange%3D%7BsetTextShadowRadius%7D%0A%20%20%20%20%20%20%20%20%20%20%2F%3E%0A%20%20%20%20%20%20%20%20%20%20%3CCustomPicker%0A%20%20%20%20%20%20%20%20%20%20%20%20label%3D%22Font%20Variant%22%0A%20%20%20%20%20%20%20%20%20%20%20%20data%3D%7BfontVariants%7D%0A%20%20%20%20%20%20%20%20%20%20%20%20currentIndex%3D%7BfontVariantIdx%7D%0A%20%20%20%20%20%20%20%20%20%20%20%20onSelected%3D%7BsetFontVariantIdx%7D%0A%20%20%20%20%20%20%20%20%20%20%2F%3E%0A%20%20%20%20%20%20%20%20%20%20%3CCustomSlider%0A%20%20%20%20%20%20%20%20%20%20%20%20label%3D%22Letter%20Spacing%22%0A%20%20%20%20%20%20%20%20%20%20%20%20step%3D%7B0.1%7D%0A%20%20%20%20%20%20%20%20%20%20%20%20value%3D%7BletterSpacing%7D%0A%20%20%20%20%20%20%20%20%20%20%20%20handleValueChange%3D%7BsetLetterSpacing%7D%0A%20%20%20%20%20%20%20%20%20%20%2F%3E%0A%20%20%20%20%20%20%20%20%20%20%3CCustomPicker%0A%20%20%20%20%20%20%20%20%20%20%20%20label%3D%22Text%20Transform%22%0A%20%20%20%20%20%20%20%20%20%20%20%20data%3D%7BtextTransformations%7D%0A%20%20%20%20%20%20%20%20%20%20%20%20currentIndex%3D%7BtextTransformIdx%7D%0A%20%20%20%20%20%20%20%20%20%20%20%20onSelected%3D%7BsetTextTransformIdx%7D%0A%20%20%20%20%20%20%20%20%20%20%2F%3E%0A%20%20%20%20%20%20%20%20%3C%2FView%3E%0A%20%20%20%20%20%20%20%20%7BPlatform.OS%20%3D%3D%3D%20%22android%22%20%26%26%20(%0A%20%20%20%20%20%20%20%20%20%20%3CView%20style%3D%7Bstyles.platformContainer%7D%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%3CText%20style%3D%7Bstyles.platformContainerTitle%7D%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20Android%20only%20properties%0A%20%20%20%20%20%20%20%20%20%20%20%20%3C%2FText%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%3CCustomPicker%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20label%3D%22Text%20Vertical%20Align%22%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20data%3D%7BtextAlignmentsVertical%7D%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20currentIndex%3D%7BtextVerticalAlignIdx%7D%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20onSelected%3D%7BsetTextVerticalAlignIdx%7D%0A%20%20%20%20%20%20%20%20%20%20%20%20%2F%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%3CCustomSwitch%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20label%3D%22Include%20Font%20Padding%22%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20handleValueChange%3D%7BsetIncludeFontPadding%7D%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20value%3D%7BincludeFontPadding%7D%0A%20%20%20%20%20%20%20%20%20%20%20%20%2F%3E%0A%20%20%20%20%20%20%20%20%20%20%3C%2FView%3E%0A%20%20%20%20%20%20%20%20)%7D%0A%20%20%20%20%20%20%20%20%7BPlatform.OS%20%3D%3D%3D%20%22ios%22%20%26%26%20(%0A%20%20%20%20%20%20%20%20%20%20%3CView%20style%3D%7Bstyles.platformContainer%7D%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%3CText%20style%3D%7Bstyles.platformContainerTitle%7D%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20iOS%20only%20properties%0A%20%20%20%20%20%20%20%20%20%20%20%20%3C%2FText%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%3CCustomPicker%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20label%3D%22Text%20Decoration%20Style%22%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20data%3D%7BtextDecorationStyles%7D%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20currentIndex%3D%7BtextDecorationStyleIdx%7D%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20onSelected%3D%7BsetTextDecorationStyleIdx%7D%0A%20%20%20%20%20%20%20%20%20%20%20%20%2F%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%3CCustomPicker%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20label%3D%22Writing%20Direction%22%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20data%3D%7BwritingDirections%7D%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20currentIndex%3D%7BwritingDirectionIdx%7D%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20onSelected%3D%7BsetWritingDirectionIdx%7D%0A%20%20%20%20%20%20%20%20%20%20%20%20%2F%3E%0A%20%20%20%20%20%20%20%20%20%20%3C%2FView%3E%0A%20%20%20%20%20%20%20%20)%7D%0A%20%20%20%20%20%20%3C%2FScrollView%3E%0A%20%20%20%20%3C%2FView%3E%0A%20%20)%3B%0A%7D%0A%0Afunction%20CustomSwitch(%7B%20label%2C%20handleValueChange%2C%20value%20%7D)%20%7B%0A%20%20return%20(%0A%20%20%20%20%3C%3E%0A%20%20%20%20%20%20%3CText%20style%3D%7Bstyles.title%7D%3E%7Blabel%7D%3C%2FText%3E%0A%20%20%20%20%20%20%3CView%20style%3D%7B%7B%20alignItems%3A%20%22flex-start%22%20%7D%7D%3E%0A%20%20%20%20%20%20%20%20%3CSwitch%0A%20%20%20%20%20%20%20%20%20%20trackColor%3D%7B%7B%20false%3A%20%22%23767577%22%2C%20true%3A%20%22%23DAA520%22%20%7D%7D%0A%20%20%20%20%20%20%20%20%20%20thumbColor%3D%7Bvalue%20%3F%20%22%23DAA520%22%20%3A%20%22%23f4f3f4%22%7D%0A%20%20%20%20%20%20%20%20%20%20onValueChange%3D%7BhandleValueChange%7D%0A%20%20%20%20%20%20%20%20%20%20value%3D%7Bvalue%7D%0A%20%20%20%20%20%20%20%20%2F%3E%0A%20%20%20%20%20%20%3C%2FView%3E%0A%20%20%20%20%3C%2F%3E%0A%20%20)%3B%0A%7D%0A%0Afunction%20CustomSlider(%7B%0A%20%20label%2C%0A%20%20handleValueChange%2C%0A%20%20step%20%3D%201%2C%0A%20%20minimumValue%20%3D%200%2C%0A%20%20maximumValue%20%3D%2010%2C%0A%20%20value%0A%7D)%20%7B%0A%20%20return%20(%0A%20%20%20%20%3C%3E%0A%20%20%20%20%20%20%7Blabel%20%26%26%20(%0A%20%20%20%20%20%20%20%20%3CText%20style%3D%7Bstyles.title%7D%3E%7B%60%24%7Blabel%7D%20(%24%7Bvalue.toFixed(2)%7D)%60%7D%3C%2FText%3E%0A%20%20%20%20%20%20)%7D%0A%20%20%20%20%20%20%3CView%20style%3D%7Bstyles.wrapperHorizontal%7D%3E%0A%20%20%20%20%20%20%20%20%3CSlider%0A%20%20%20%20%20%20%20%20%20%20thumbTintColor%3D%22%23DAA520%22%0A%20%20%20%20%20%20%20%20%20%20minimumTrackTintColor%3D%22%23DAA520%22%0A%20%20%20%20%20%20%20%20%20%20minimumValue%3D%7BminimumValue%7D%0A%20%20%20%20%20%20%20%20%20%20maximumValue%3D%7BmaximumValue%7D%0A%20%20%20%20%20%20%20%20%20%20step%3D%7Bstep%7D%0A%20%20%20%20%20%20%20%20%20%20onValueChange%3D%7BhandleValueChange%7D%0A%20%20%20%20%20%20%20%20%20%20value%3D%7Bvalue%7D%0A%20%20%20%20%20%20%20%20%2F%3E%0A%20%20%20%20%20%20%3C%2FView%3E%0A%20%20%20%20%3C%2F%3E%0A%20%20)%3B%0A%7D%0A%0Afunction%20CustomPicker(%7B%20label%2C%20data%2C%20currentIndex%2C%20onSelected%20%7D)%20%7B%0A%20%20return%20(%0A%20%20%20%20%3C%3E%0A%20%20%20%20%20%20%3CText%20style%3D%7Bstyles.title%7D%3E%7Blabel%7D%3C%2FText%3E%0A%20%20%20%20%20%20%3CView%20style%3D%7Bstyles.wrapperHorizontal%7D%3E%0A%20%20%20%20%20%20%20%20%3CFlatList%0A%20%20%20%20%20%20%20%20%20%20bounces%0A%20%20%20%20%20%20%20%20%20%20horizontal%0A%20%20%20%20%20%20%20%20%20%20data%3D%7Bdata%7D%0A%20%20%20%20%20%20%20%20%20%20keyExtractor%3D%7B(item%2C%20idx)%20%3D%3E%20String(item)%7D%0A%20%20%20%20%20%20%20%20%20%20renderItem%3D%7B(%7B%20item%2C%20index%20%7D)%20%3D%3E%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20const%20selected%20%3D%20index%20%3D%3D%3D%20currentIndex%3B%0A%20%20%20%20%20%20%20%20%20%20%20%20return%20(%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3CTouchableWithoutFeedback%20onPress%3D%7B()%20%3D%3E%20onSelected(index)%7D%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3CView%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20style%3D%7B%5B%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20styles.itemStyleHorizontal%2C%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20selected%20%26%26%20styles.itemSelectedStyleHorizontal%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%5D%7D%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3CText%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20style%3D%7B%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20textAlign%3A%20%22center%22%2C%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20color%3A%20selected%20%3F%20%22black%22%20%3A%20%22grey%22%2C%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20fontWeight%3A%20selected%20%3F%20%22bold%22%20%3A%20%22normal%22%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%7D%7D%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%7Bitem%20%2B%20%22%22%7D%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3C%2FText%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3C%2FView%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3C%2FTouchableWithoutFeedback%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20)%3B%0A%20%20%20%20%20%20%20%20%20%20%7D%7D%0A%20%20%20%20%20%20%20%20%2F%3E%0A%20%20%20%20%20%20%3C%2FView%3E%0A%20%20%20%20%3C%2F%3E%0A%20%20)%3B%0A%7D%0A%0Aconst%20styles%20%3D%20StyleSheet.create(%7B%0A%20%20container%3A%20%7B%0A%20%20%20%20flex%3A%201%2C%0A%20%20%20%20paddingTop%3A%20Constants.statusBarHeight%2C%0A%20%20%20%20backgroundColor%3A%20%22%23ecf0f1%22%2C%0A%20%20%20%20padding%3A%208%0A%20%20%7D%2C%0A%20%20paragraph%3A%20%7B%0A%20%20%20%20color%3A%20%22black%22%2C%0A%20%20%20%20textDecorationColor%3A%20%22yellow%22%2C%0A%20%20%20%20textShadowColor%3A%20%22red%22%2C%0A%20%20%20%20textShadowRadius%3A%201%2C%0A%20%20%20%20margin%3A%2024%0A%20%20%7D%2C%0A%20%20wrapperHorizontal%3A%20%7B%0A%20%20%20%20height%3A%2054%2C%0A%20%20%20%20justifyContent%3A%20%22center%22%2C%0A%20%20%20%20color%3A%20%22black%22%2C%0A%20%20%20%20marginBottom%3A%2012%0A%20%20%7D%2C%0A%20%20itemStyleHorizontal%3A%20%7B%0A%20%20%20%20marginRight%3A%2010%2C%0A%20%20%20%20height%3A%2050%2C%0A%20%20%20%20padding%3A%208%2C%0A%20%20%20%20borderWidth%3A%201%2C%0A%20%20%20%20borderColor%3A%20%22grey%22%2C%0A%20%20%20%20borderRadius%3A%2025%2C%0A%20%20%20%20textAlign%3A%20%22center%22%2C%0A%20%20%20%20justifyContent%3A%20%22center%22%0A%20%20%7D%2C%0A%20%20itemSelectedStyleHorizontal%3A%20%7B%0A%20%20%20%20borderWidth%3A%202%2C%0A%20%20%20%20borderColor%3A%20%22%23DAA520%22%0A%20%20%7D%2C%0A%20%20platformContainer%3A%20%7B%0A%20%20%20%20marginTop%3A%208%2C%0A%20%20%20%20borderTopWidth%3A%201%0A%20%20%7D%2C%0A%20%20platformContainerTitle%3A%20%7B%0A%20%20%20%20marginTop%3A%208%0A%20%20%7D%2C%0A%20%20title%3A%20%7B%0A%20%20%20%20fontWeight%3A%20%22bold%22%2C%0A%20%20%20%20marginVertical%3A%204%0A%20%20%7D%0A%7D)%3B%0A%0A"
+        data-snack-platform="web"
+        data-snack-supported-platforms=android,ios
+        data-snack-preview="true"
+        style="
+          overflow: hidden;
+          background: #fafafa;
+          border: 1px solid rgba(0,0,0,.16);
+          border-radius: 4px;
+          height: 514px;
+          width: 100%;
+        "
+      ></div></div></div><h1><a class="anchor" aria-hidden="true" id="reference"></a><a href="#reference" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Reference</h1>
+<h2><a class="anchor" aria-hidden="true" id="props"></a><a href="#props" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Props</h2>
+<h3><a class="anchor" aria-hidden="true" id="textshadowoffset"></a><a href="#textshadowoffset" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>textShadowOffset</code></h3>
+<table>
+<thead>
+<tr><th>Type</th><th>Required</th></tr>
+</thead>
+<tbody>
+<tr><td>object: {width: number,height: number}</td><td>No</td></tr>
+</tbody>
+</table>
+<hr>
+<h3><a class="anchor" aria-hidden="true" id="color"></a><a href="#color" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>color</code></h3>
+<table>
+<thead>
+<tr><th>Type</th><th>Required</th></tr>
+</thead>
+<tbody>
+<tr><td><a href="/docs/0.62/colors">color</a></td><td>No</td></tr>
+</tbody>
+</table>
+<hr>
+<h3><a class="anchor" aria-hidden="true" id="fontsize"></a><a href="#fontsize" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>fontSize</code></h3>
+<table>
+<thead>
+<tr><th>Type</th><th>Required</th></tr>
+</thead>
+<tbody>
+<tr><td>number</td><td>No</td></tr>
+</tbody>
+</table>
+<hr>
+<h3><a class="anchor" aria-hidden="true" id="fontstyle"></a><a href="#fontstyle" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>fontStyle</code></h3>
+<table>
+<thead>
+<tr><th>Type</th><th>Required</th></tr>
+</thead>
+<tbody>
+<tr><td>enum('normal', 'italic')</td><td>No</td></tr>
+</tbody>
+</table>
+<hr>
+<h3><a class="anchor" aria-hidden="true" id="fontweight"></a><a href="#fontweight" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>fontWeight</code></h3>
+<p>Specifies font weight. The values 'normal' and 'bold' are supported for most fonts. Not all fonts have a variant for each of the numeric values, in that case the closest one is chosen.</p>
+<table>
+<thead>
+<tr><th>Type</th><th>Required</th></tr>
+</thead>
+<tbody>
+<tr><td>enum('normal', 'bold', '100', '200', '300', '400', '500', '600', '700', '800', '900')</td><td>No</td></tr>
+</tbody>
+</table>
+<hr>
+<h3><a class="anchor" aria-hidden="true" id="lineheight"></a><a href="#lineheight" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>lineHeight</code></h3>
+<table>
+<thead>
+<tr><th>Type</th><th>Required</th></tr>
+</thead>
+<tbody>
+<tr><td>number</td><td>No</td></tr>
+</tbody>
+</table>
+<hr>
+<h3><a class="anchor" aria-hidden="true" id="textalign"></a><a href="#textalign" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>textAlign</code></h3>
+<p>Specifies text alignment. The value 'justify' is only supported on iOS and fallbacks to <code>left</code> on Android.</p>
+<table>
+<thead>
+<tr><th>Type</th><th>Required</th></tr>
+</thead>
+<tbody>
+<tr><td>enum('auto', 'left', 'right', 'center', 'justify')</td><td>No</td></tr>
+</tbody>
+</table>
+<hr>
+<h3><a class="anchor" aria-hidden="true" id="textdecorationline"></a><a href="#textdecorationline" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>textDecorationLine</code></h3>
+<table>
+<thead>
+<tr><th>Type</th><th>Required</th></tr>
+</thead>
+<tbody>
+<tr><td>enum('none', 'underline', 'line-through', 'underline line-through')</td><td>No</td></tr>
+</tbody>
+</table>
+<hr>
+<h3><a class="anchor" aria-hidden="true" id="textshadowcolor"></a><a href="#textshadowcolor" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>textShadowColor</code></h3>
+<table>
+<thead>
+<tr><th>Type</th><th>Required</th></tr>
+</thead>
+<tbody>
+<tr><td><a href="/docs/0.62/colors">color</a></td><td>No</td></tr>
+</tbody>
+</table>
+<hr>
+<h3><a class="anchor" aria-hidden="true" id="fontfamily"></a><a href="#fontfamily" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>fontFamily</code></h3>
+<table>
+<thead>
+<tr><th>Type</th><th>Required</th></tr>
+</thead>
+<tbody>
+<tr><td>string</td><td>No</td></tr>
+</tbody>
+</table>
+<hr>
+<h3><a class="anchor" aria-hidden="true" id="textshadowradius"></a><a href="#textshadowradius" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>textShadowRadius</code></h3>
+<table>
+<thead>
+<tr><th>Type</th><th>Required</th></tr>
+</thead>
+<tbody>
+<tr><td>number</td><td>No</td></tr>
+</tbody>
+</table>
+<hr>
+<h3><a class="anchor" aria-hidden="true" id="includefontpadding"></a><a href="#includefontpadding" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>includeFontPadding</code></h3>
+<p>Set to <code>false</code> to remove extra font padding intended to make space for certain ascenders / descenders. With some fonts, this padding can make text look slightly misaligned when centered vertically. For best results also set <code>textAlignVertical</code> to <code>center</code>. Default is true.</p>
+<table>
+<thead>
+<tr><th>Type</th><th>Required</th><th>Platform</th></tr>
+</thead>
+<tbody>
+<tr><td>bool</td><td>No</td><td>Android</td></tr>
+</tbody>
+</table>
+<hr>
+<h3><a class="anchor" aria-hidden="true" id="textalignvertical"></a><a href="#textalignvertical" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>textAlignVertical</code></h3>
+<table>
+<thead>
+<tr><th>Type</th><th>Required</th><th>Platform</th></tr>
+</thead>
+<tbody>
+<tr><td>enum('auto', 'top', 'bottom', 'center')</td><td>No</td><td>Android</td></tr>
+</tbody>
+</table>
+<hr>
+<h3><a class="anchor" aria-hidden="true" id="fontvariant"></a><a href="#fontvariant" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>fontVariant</code></h3>
+<table>
+<thead>
+<tr><th>Type</th><th>Required</th><th>Platform</th></tr>
+</thead>
+<tbody>
+<tr><td>array of enum('small-caps', 'oldstyle-nums', 'lining-nums', 'tabular-nums', 'proportional-nums')</td><td>No</td><td>iOS, Android &gt;= 5.0</td></tr>
+</tbody>
+</table>
+<hr>
+<h3><a class="anchor" aria-hidden="true" id="letterspacing"></a><a href="#letterspacing" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>letterSpacing</code></h3>
+<table>
+<thead>
+<tr><th>Type</th><th>Required</th><th>Platform</th></tr>
+</thead>
+<tbody>
+<tr><td>number</td><td>No</td><td>iOS, Android &gt;= 5.0</td></tr>
+</tbody>
+</table>
+<hr>
+<h3><a class="anchor" aria-hidden="true" id="textdecorationcolor"></a><a href="#textdecorationcolor" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>textDecorationColor</code></h3>
+<table>
+<thead>
+<tr><th>Type</th><th>Required</th><th>Platform</th></tr>
+</thead>
+<tbody>
+<tr><td><a href="/docs/0.62/colors">color</a></td><td>No</td><td>iOS</td></tr>
+</tbody>
+</table>
+<hr>
+<h3><a class="anchor" aria-hidden="true" id="textdecorationstyle"></a><a href="#textdecorationstyle" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>textDecorationStyle</code></h3>
+<table>
+<thead>
+<tr><th>Type</th><th>Required</th><th>Platform</th></tr>
+</thead>
+<tbody>
+<tr><td>enum('solid', 'double', 'dotted', 'dashed')</td><td>No</td><td>iOS</td></tr>
+</tbody>
+</table>
+<hr>
+<h3><a class="anchor" aria-hidden="true" id="texttransform"></a><a href="#texttransform" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>textTransform</code></h3>
+<table>
+<thead>
+<tr><th>Type</th><th>Required</th></tr>
+</thead>
+<tbody>
+<tr><td>enum('none', 'uppercase', 'lowercase', 'capitalize')</td><td>No</td></tr>
+</tbody>
+</table>
+<hr>
+<h3><a class="anchor" aria-hidden="true" id="writingdirection"></a><a href="#writingdirection" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>writingDirection</code></h3>
+<table>
+<thead>
+<tr><th>Type</th><th>Required</th><th>Platform</th></tr>
+</thead>
+<tbody>
+<tr><td>enum('auto', 'ltr', 'rtl')</td><td>No</td><td>iOS</td></tr>
+</tbody>
+</table>
+</span></div></article></div><div class="docs-prevnext"><a class="docs-prev button" href="/docs/0.62/shadow-props"><span class="arrow-prev">← </span><span>Shadow Props</span></a><a class="docs-next button" href="/docs/0.62/view-style-props"><span>View Style Props</span><span class="arrow-next"> →</span></a></div></div></div><nav class="onPageNav"><ul class="toc-headings"><li><a href="#props">Props</a><ul class="toc-headings"><li><a href="#textshadowoffset"><code>textShadowOffset</code></a></li><li><a href="#color"><code>color</code></a></li><li><a href="#fontsize"><code>fontSize</code></a></li><li><a href="#fontstyle"><code>fontStyle</code></a></li><li><a href="#fontweight"><code>fontWeight</code></a></li><li><a href="#lineheight"><code>lineHeight</code></a></li><li><a href="#textalign"><code>textAlign</code></a></li><li><a href="#textdecorationline"><code>textDecorationLine</code></a></li><li><a href="#textshadowcolor"><code>textShadowColor</code></a></li><li><a href="#fontfamily"><code>fontFamily</code></a></li><li><a href="#textshadowradius"><code>textShadowRadius</code></a></li><li><a href="#includefontpadding"><code>includeFontPadding</code></a></li><li><a href="#textalignvertical"><code>textAlignVertical</code></a></li><li><a href="#fontvariant"><code>fontVariant</code></a></li><li><a href="#letterspacing"><code>letterSpacing</code></a></li><li><a href="#textdecorationcolor"><code>textDecorationColor</code></a></li><li><a href="#textdecorationstyle"><code>textDecorationStyle</code></a></li><li><a href="#texttransform"><code>textTransform</code></a></li><li><a href="#writingdirection"><code>writingDirection</code></a></li></ul></li></ul></nav></div><footer class="nav-footer" id="footer"><section class="sitemap"><div><h5>Docs</h5><a href="/docs/getting-started">Getting Started</a><a href="/docs/tutorial">Tutorial</a><a href="/docs/components-and-apis">Components and APIs</a><a href="/docs/more-resources">More Resources</a></div><div><h5>Community</h5><a href="/help">The React Native Community</a><a href="/showcase">Who&#x27;s using React Native?</a><a href="https://stackoverflow.com/questions/tagged/react-native" target="_blank">Ask Questions on Stack Overflow</a><a href="https://github.com/facebook/react-native/blob/master/CONTRIBUTING.md">Contributor Guide</a><a href="https://dev.to/t/reactnative" target="_blank">DEV Community</a></div><div><h5>More Resources</h5><a href="/blog">Blog</a><a href="https://twitter.com/reactnative" target="_blank">Twitter</a><a href="https://github.com/facebook/react-native" target="_blank">GitHub</a><a href="https://reactjs.org" target="_blank">React</a></div></section><a href="https://code.facebook.com/projects/" target="_blank" class="fbOpenSource"><img src="/img/oss_logo.png" alt="Facebook Open Source" width="170" height="45"/></a><section class="copyright">Copyright © 2020 Facebook Inc.</section></footer></div><script type="text/javascript" src="https://cdn.jsdelivr.net/docsearch.js/1/docsearch.min.js"></script><script>window.fbAsyncInit = function() {FB.init({appId:'1677033832619985',xfbml:true,version:'v2.7'});};(function(d, s, id){var js, fjs = d.getElementsByTagName(s)[0];if (d.getElementById(id)) {return;}js = d.createElement(s); js.id = id;js.src = '//connect.facebook.net/en_US/sdk.js';fjs.parentNode.insertBefore(js, fjs);}(document, 'script','facebook-jssdk'));
+                </script><script>window.twttr=(function(d,s, id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return t;js=d.createElement(s);js.id=id;js.src='https://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js, fjs);t._e = [];t.ready = function(f) {t._e.push(f);};return t;}(document, 'script', 'twitter-wjs'));</script><script>
+                document.addEventListener('keyup', function(e) {
+                  if (e.target !== document.body) {
+                    return;
+                  }
+                  // keyCode for '/' (slash)
+                  if (e.keyCode === 191) {
+                    const search = document.getElementById('search_input_react');
+                    search && search.focus();
+                  }
+                });
+              </script><script>
+              var search = docsearch({
+                
+                apiKey: '2c98749b4a1e588efec53b2acec13025',
+                indexName: 'react-native-versions',
+                inputSelector: '#search_input_react',
+                algoliaOptions: {"facetFilters":["tags:0.62"],"hitsPerPage":5}
+              });
+            </script></body></html>

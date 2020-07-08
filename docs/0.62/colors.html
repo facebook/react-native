@@ -1,0 +1,273 @@
+<!DOCTYPE html><html lang="en"><head><meta charSet="utf-8"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><title>Color Reference · React Native</title><meta name="viewport" content="width=device-width"/><meta name="generator" content="Docusaurus"/><meta name="description" content="Components in React Native are [styled using JavaScript](style). Color properties usually match how [CSS works on the web](https://developer.mozilla.org/en-US/docs/Web/CSS/color_value)."/><meta name="docsearch:version" content="0.62"/><meta name="docsearch:language" content="en"/><meta property="og:title" content="Color Reference · React Native"/><meta property="og:type" content="website"/><meta property="og:url" content="https://reactnative.dev/"/><meta property="og:description" content="Components in React Native are [styled using JavaScript](style). Color properties usually match how [CSS works on the web](https://developer.mozilla.org/en-US/docs/Web/CSS/color_value)."/><meta property="og:image" content="https://reactnative.dev/img/logo-og.png"/><meta name="twitter:card" content="summary"/><meta name="twitter:image" content="https://reactnative.dev/img/logo-og.png"/><link rel="shortcut icon" href="/img/favicon.ico"/><link rel="stylesheet" href="https://cdn.jsdelivr.net/docsearch.js/1/docsearch.min.css"/><link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/solarized-dark.min.css"/><link rel="alternate" type="application/atom+xml" href="https://reactnative.dev/blog/atom.xml" title="React Native Blog ATOM Feed"/><link rel="alternate" type="application/rss+xml" href="https://reactnative.dev/blog/feed.xml" title="React Native Blog RSS Feed"/><script>
+              (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+              (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+              m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+              })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+              ga('create', 'UA-41298772-2', 'auto');
+              ga('send', 'pageview');
+            </script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/focus-visible@5.0.2/dist/focus-visible.min.js"></script><script type="text/javascript" src="https://snack.expo.io/embed.js"></script><script type="text/javascript" src="https://platform.twitter.com/widgets.js"></script><script type="text/javascript" src="https://buttons.github.io/buttons.js"></script><script type="text/javascript" src="/js/codeblocks.js"></script><script type="text/javascript" src="/js/tabs.js"></script><script type="text/javascript" src="/js/docs-rating.js"></script><script type="text/javascript" src="/js/announcement.js"></script><script src="https://unpkg.com/vanilla-back-to-top@7.1.14/dist/vanilla-back-to-top.min.js"></script><script>
+        document.addEventListener('DOMContentLoaded', function() {
+          addBackToTop(
+            {"zIndex":100}
+          )
+        });
+        </script><script src="/js/scrollSpy.js"></script><link rel="stylesheet" href="/css/prism.css"/><link rel="stylesheet" href="/css/main.css"/><script src="/js/codetabs.js"></script></head><body class="sideNavVisible separateOnPageNav"><div class="fixedHeaderContainer"><div class="headerWrapper wrapper"><header><a href="/"><img class="logo" src="/img/header_logo.svg" alt="React Native"/><h2 class="headerTitleWithLogo">React Native</h2></a><a href="/versions"><h3>0.62</h3></a><div class="navigationWrapper navigationSlider"><nav class="slidingNav"><ul class="nav-site nav-site-internal"><li class="siteNavGroupActive"><a href="/docs/0.62/getting-started" target="_self">Docs</a></li><li class=""><a href="/docs/0.62/components-and-apis" target="_self">Components</a></li><li class=""><a href="/docs/0.62/accessibilityinfo" target="_self">API</a></li><li class=""><a href="/help" target="_self">Community</a></li><li class=""><a href="/blog/" target="_self">Blog</a></li><li class="navSearchWrapper reactNavSearchWrapper"><input type="text" id="search_input_react" placeholder="Search" title="Search"/></li><li class=""><a href="https://github.com/facebook/react-native" target="_self">GitHub</a></li></ul></nav></div></header></div></div><div class="navPusher"><div class="docMainWrapper wrapper"><div class="docsNavContainer" id="docsNav"><nav class="toc"><div class="toggleNav"><section class="navWrapper wrapper"><div class="navBreadcrumb wrapper"><div class="navToggle" id="navToggler"><div class="hamburger-menu"><div class="line1"></div><div class="line2"></div><div class="line3"></div></div></div><h2><i>›</i><span>Design</span></h2><div class="tocToggler" id="tocToggler"><i class="icon-toc"></i></div></div><div class="navGroups"><div class="navGroup"><h3 class="navGroupCategoryTitle collapsible">The Basics<span class="arrow"><svg width="24" height="24" viewBox="0 0 24 24"><path fill="#565656" d="M7.41 15.41L12 10.83l4.59 4.58L18 14l-6-6-6 6z"></path><path d="M0 0h24v24H0z" fill="none"></path></svg></span></h3><ul class="hide"><li class="navListItem"><a class="navItem" href="/docs/0.62/getting-started">Introduction</a></li><li class="navListItem"><a class="navItem" href="/docs/0.62/intro-react-native-components">Core Components and Native Components</a></li><li class="navListItem"><a class="navItem" href="/docs/0.62/intro-react">React Fundamentals</a></li><li class="navListItem"><a class="navItem" href="/docs/0.62/handling-text-input">Handling Text Input</a></li><li class="navListItem"><a class="navItem" href="/docs/0.62/using-a-scrollview">Using a ScrollView</a></li><li class="navListItem"><a class="navItem" href="/docs/0.62/using-a-listview">Using List Views</a></li><li class="navListItem"><a class="navItem" href="/docs/0.62/troubleshooting">Troubleshooting</a></li><li class="navListItem"><a class="navItem" href="/docs/0.62/platform-specific-code">Platform Specific Code</a></li><li class="navListItem"><a class="navItem" href="/docs/0.62/more-resources">More Resources</a></li></ul></div><div class="navGroup"><h3 class="navGroupCategoryTitle collapsible">Environment setup<span class="arrow"><svg width="24" height="24" viewBox="0 0 24 24"><path fill="#565656" d="M7.41 15.41L12 10.83l4.59 4.58L18 14l-6-6-6 6z"></path><path d="M0 0h24v24H0z" fill="none"></path></svg></span></h3><ul class="hide"><li class="navListItem"><a class="navItem" href="/docs/0.62/environment-setup">Setting up the development environment</a></li><li class="navListItem"><a class="navItem" href="/docs/0.62/integration-with-existing-apps">Integration with Existing Apps</a></li><li class="navListItem"><a class="navItem" href="/docs/0.62/building-for-tv">Building For TV Devices</a></li><li class="navListItem"><a class="navItem" href="/docs/0.62/out-of-tree-platforms">Out-of-Tree Platforms</a></li></ul></div><div class="navGroup"><h3 class="navGroupCategoryTitle collapsible">Workflow<span class="arrow"><svg width="24" height="24" viewBox="0 0 24 24"><path fill="#565656" d="M7.41 15.41L12 10.83l4.59 4.58L18 14l-6-6-6 6z"></path><path d="M0 0h24v24H0z" fill="none"></path></svg></span></h3><ul class="hide"><li class="navListItem"><a class="navItem" href="/docs/0.62/running-on-device">Running On Device</a></li><li class="navListItem"><a class="navItem" href="/docs/0.62/fast-refresh">Fast Refresh</a></li><li class="navListItem"><a class="navItem" href="/docs/0.62/debugging">Debugging</a></li><li class="navListItem"><a class="navItem" href="/docs/0.62/testing-overview">Testing</a></li><li class="navListItem"><a class="navItem" href="/docs/0.62/libraries">Using Libraries</a></li><li class="navListItem"><a class="navItem" href="/docs/0.62/typescript">Using TypeScript with React Native</a></li><li class="navListItem"><a class="navItem" href="/docs/0.62/upgrading">Upgrading to new React Native versions</a></li></ul></div><div class="navGroup"><h3 class="navGroupCategoryTitle collapsible">Design<span class="arrow"><svg width="24" height="24" viewBox="0 0 24 24"><path fill="#565656" d="M7.41 15.41L12 10.83l4.59 4.58L18 14l-6-6-6 6z"></path><path d="M0 0h24v24H0z" fill="none"></path></svg></span></h3><ul class="hide"><li class="navListItem"><a class="navItem" href="/docs/0.62/style">Style</a></li><li class="navListItem"><a class="navItem" href="/docs/0.62/height-and-width">Height and Width</a></li><li class="navListItem"><a class="navItem" href="/docs/0.62/flexbox">Layout with Flexbox</a></li><li class="navListItem"><a class="navItem" href="/docs/0.62/images">Images</a></li><li class="navListItem navListItemActive"><a class="navItem" href="/docs/0.62/colors">Color Reference</a></li></ul></div><div class="navGroup"><h3 class="navGroupCategoryTitle collapsible">Interaction<span class="arrow"><svg width="24" height="24" viewBox="0 0 24 24"><path fill="#565656" d="M7.41 15.41L12 10.83l4.59 4.58L18 14l-6-6-6 6z"></path><path d="M0 0h24v24H0z" fill="none"></path></svg></span></h3><ul class="hide"><li class="navListItem"><a class="navItem" href="/docs/0.62/handling-touches">Handling Touches</a></li><li class="navListItem"><a class="navItem" href="/docs/0.62/navigation">Navigating Between Screens</a></li><li class="navListItem"><a class="navItem" href="/docs/0.62/animations">Animations</a></li><li class="navListItem"><a class="navItem" href="/docs/0.62/gesture-responder-system">Gesture Responder System</a></li></ul></div><div class="navGroup"><h3 class="navGroupCategoryTitle collapsible">Inclusion<span class="arrow"><svg width="24" height="24" viewBox="0 0 24 24"><path fill="#565656" d="M7.41 15.41L12 10.83l4.59 4.58L18 14l-6-6-6 6z"></path><path d="M0 0h24v24H0z" fill="none"></path></svg></span></h3><ul class="hide"><li class="navListItem"><a class="navItem" href="/docs/0.62/accessibility">Accessibility</a></li></ul></div><div class="navGroup"><h3 class="navGroupCategoryTitle collapsible">Performance<span class="arrow"><svg width="24" height="24" viewBox="0 0 24 24"><path fill="#565656" d="M7.41 15.41L12 10.83l4.59 4.58L18 14l-6-6-6 6z"></path><path d="M0 0h24v24H0z" fill="none"></path></svg></span></h3><ul class="hide"><li class="navListItem"><a class="navItem" href="/docs/0.62/performance">Performance Overview</a></li><li class="navListItem"><a class="navItem" href="/docs/0.62/optimizing-flatlist-configuration">Optimizing Flatlist Configuration</a></li><li class="navListItem"><a class="navItem" href="/docs/0.62/ram-bundles-inline-requires">RAM Bundles and Inline Requires</a></li><li class="navListItem"><a class="navItem" href="/docs/0.62/profiling">Profiling</a></li></ul></div><div class="navGroup"><h3 class="navGroupCategoryTitle collapsible">JavaScript Runtime<span class="arrow"><svg width="24" height="24" viewBox="0 0 24 24"><path fill="#565656" d="M7.41 15.41L12 10.83l4.59 4.58L18 14l-6-6-6 6z"></path><path d="M0 0h24v24H0z" fill="none"></path></svg></span></h3><ul class="hide"><li class="navListItem"><a class="navItem" href="/docs/0.62/javascript-environment">JavaScript Environment</a></li><li class="navListItem"><a class="navItem" href="/docs/0.62/timers">Timers</a></li><li class="navListItem"><a class="navItem" href="/docs/0.62/hermes">Using Hermes</a></li></ul></div><div class="navGroup"><h3 class="navGroupCategoryTitle collapsible">Connectivity<span class="arrow"><svg width="24" height="24" viewBox="0 0 24 24"><path fill="#565656" d="M7.41 15.41L12 10.83l4.59 4.58L18 14l-6-6-6 6z"></path><path d="M0 0h24v24H0z" fill="none"></path></svg></span></h3><ul class="hide"><li class="navListItem"><a class="navItem" href="/docs/0.62/network">Networking</a></li><li class="navListItem"><a class="navItem" href="/docs/0.62/security">Security</a></li></ul></div><div class="navGroup"><h3 class="navGroupCategoryTitle collapsible">Native Components and Modules<span class="arrow"><svg width="24" height="24" viewBox="0 0 24 24"><path fill="#565656" d="M7.41 15.41L12 10.83l4.59 4.58L18 14l-6-6-6 6z"></path><path d="M0 0h24v24H0z" fill="none"></path></svg></span></h3><ul class="hide"><li class="navListItem"><a class="navItem" href="/docs/0.62/native-modules-setup">Native Modules Setup</a></li><li class="navListItem"><a class="navItem" href="/docs/0.62/direct-manipulation">Direct Manipulation</a></li></ul></div><div class="navGroup"><h3 class="navGroupCategoryTitle collapsible">Guides (Android)<span class="arrow"><svg width="24" height="24" viewBox="0 0 24 24"><path fill="#565656" d="M7.41 15.41L12 10.83l4.59 4.58L18 14l-6-6-6 6z"></path><path d="M0 0h24v24H0z" fill="none"></path></svg></span></h3><ul class="hide"><li class="navListItem"><a class="navItem" href="/docs/0.62/native-modules-android">Native Modules</a></li><li class="navListItem"><a class="navItem" href="/docs/0.62/native-components-android">Native UI Components</a></li><li class="navListItem"><a class="navItem" href="/docs/0.62/headless-js-android">Headless JS</a></li><li class="navListItem"><a class="navItem" href="/docs/0.62/signed-apk-android">Publishing to Google Play Store</a></li><li class="navListItem"><a class="navItem" href="/docs/0.62/removing-default-permissions">Removing Default Permissions</a></li></ul></div><div class="navGroup"><h3 class="navGroupCategoryTitle collapsible">Guides (iOS)<span class="arrow"><svg width="24" height="24" viewBox="0 0 24 24"><path fill="#565656" d="M7.41 15.41L12 10.83l4.59 4.58L18 14l-6-6-6 6z"></path><path d="M0 0h24v24H0z" fill="none"></path></svg></span></h3><ul class="hide"><li class="navListItem"><a class="navItem" href="/docs/0.62/native-modules-ios">Native Modules</a></li><li class="navListItem"><a class="navItem" href="/docs/0.62/native-components-ios">Native UI Components</a></li><li class="navListItem"><a class="navItem" href="/docs/0.62/linking-libraries-ios">Linking Libraries</a></li><li class="navListItem"><a class="navItem" href="/docs/0.62/running-on-simulator-ios">Running On Simulator</a></li><li class="navListItem"><a class="navItem" href="/docs/0.62/communication-ios">Communication between native and React Native</a></li><li class="navListItem"><a class="navItem" href="/docs/0.62/app-extensions">App Extensions</a></li></ul></div></div></section></div><script>
+            var coll = document.getElementsByClassName('collapsible');
+            var checkActiveCategory = true;
+            for (var i = 0; i < coll.length; i++) {
+              var links = coll[i].nextElementSibling.getElementsByTagName('*');
+              if (checkActiveCategory){
+                for (var j = 0; j < links.length; j++) {
+                  if (links[j].classList.contains('navListItemActive')){
+                    coll[i].nextElementSibling.classList.toggle('hide');
+                    coll[i].childNodes[1].classList.toggle('rotate');
+                    checkActiveCategory = false;
+                    break;
+                  }
+                }
+              }
+
+              coll[i].addEventListener('click', function() {
+                var arrow = this.childNodes[1];
+                arrow.classList.toggle('rotate');
+                var content = this.nextElementSibling;
+                content.classList.toggle('hide');
+              });
+            }
+
+            document.addEventListener('DOMContentLoaded', function() {
+              createToggler('#navToggler', '#docsNav', 'docsSliderActive');
+              createToggler('#tocToggler', 'body', 'tocActive');
+
+              var headings = document.querySelector('.toc-headings');
+              headings && headings.addEventListener('click', function(event) {
+                var el = event.target;
+                while(el !== headings){
+                  if (el.tagName === 'A') {
+                    document.body.classList.remove('tocActive');
+                    break;
+                  } else{
+                    el = el.parentNode;
+                  }
+                }
+              }, false);
+
+              function createToggler(togglerSelector, targetSelector, className) {
+                var toggler = document.querySelector(togglerSelector);
+                var target = document.querySelector(targetSelector);
+
+                if (!toggler) {
+                  return;
+                }
+
+                toggler.onclick = function(event) {
+                  event.preventDefault();
+
+                  target.classList.toggle(className);
+                };
+              }
+            });
+        </script></nav></div><div class="container mainContainer docsContainer"><div class="wrapper"><div class="post"><header class="postHeader"><a class="edit-page-link button" href="https://github.com/facebook/react-native-website/blob/master/docs/colors.md" target="_blank" rel="noreferrer noopener">Edit</a><h1 id="__docusaurus" class="postHeaderTitle">Color Reference</h1></header><article><div><span><p>Components in React Native are <a href="style">styled using JavaScript</a>. Color properties usually match how <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/color_value">CSS works on the web</a>.</p>
+<h2><a class="anchor" aria-hidden="true" id="red-green-blue-rgb"></a><a href="#red-green-blue-rgb" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Red Green Blue (RGB)</h2>
+<p>React Native supports <code>rgb()</code> and <code>rgba()</code> in both hexadecimal and functional notation:</p>
+<ul>
+<li><code>'#f0f'</code> (#rgb)</li>
+<li><code>'#ff00ff'</code> (#rrggbb)</li>
+<li><code>'#f0ff'</code> (#rgba)</li>
+<li><code>'#ff00ff00'</code> (#rrggbbaa)</li>
+<li><code>'rgb(255, 0, 255)'</code></li>
+<li><code>'rgba(255, 0, 255, 1.0)'</code></li>
+</ul>
+<h2><a class="anchor" aria-hidden="true" id="hue-saturation-lightness-hsl"></a><a href="#hue-saturation-lightness-hsl" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Hue Saturation Lightness (HSL)</h2>
+<p>React Native supports <code>hsl()</code> and <code>hsla()</code> in functional notation:</p>
+<ul>
+<li><code>'hsl(360, 100%, 100%)'</code></li>
+<li><code>'hsla(360, 100%, 100%, 1.0)'</code></li>
+</ul>
+<h2><a class="anchor" aria-hidden="true" id="color-ints"></a><a href="#color-ints" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Color ints</h2>
+<p>React Native supports also colors as an <code>int</code> values (in RGB color mode):</p>
+<ul>
+<li><code>0xff00ff00</code> (0xrrggbbaa)</li>
+</ul>
+<blockquote>
+<p><strong><em>Note:</em></strong> This might appear similar to the Android <a href="https://developer.android.com/reference/android/graphics/Color">Color</a> ints representation but on Android values are stored in SRGB color mode (0xaarrggbb).</p>
+</blockquote>
+<h2><a class="anchor" aria-hidden="true" id="named-colors"></a><a href="#named-colors" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Named colors</h2>
+<p>In React Native you can also use color name strings as values.</p>
+<blockquote>
+<p><strong><em>Note:</em></strong> React Native only supports lowercase color names. Uppercase color names are not supported.</p>
+</blockquote>
+<h3><a class="anchor" aria-hidden="true" id="transparent"></a><a href="#transparent" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>transparent</code></h3>
+<p>This is a shortcut for <code>rgba(0,0,0,0)</code>, same like in <a href="https://www.w3.org/TR/css-color-3/#transparent">CSS3</a>.</p>
+<h3><a class="anchor" aria-hidden="true" id="color-keywords"></a><a href="#color-keywords" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Color keywords</h3>
+<p>Named colors implementation follows the <a href="https://www.w3.org/TR/css-color-3/#svg-color">CSS3/SVG specification</a>:</p>
+<!-- alex ignore black white -->
+<ul>
+<li><ins style="background: #f0f8ff" class="color-box"></ins> aliceblue (<code>#f0f8ff</code>)</li>
+<li><ins style="background: #faebd7" class="color-box"></ins> antiquewhite (<code>#faebd7</code>)</li>
+<li><ins style="background: #00ffff" class="color-box"></ins> aqua (<code>#00ffff</code>)</li>
+<li><ins style="background: #7fffd4" class="color-box"></ins> aquamarine (<code>#7fffd4</code>)</li>
+<li><ins style="background: #f0ffff" class="color-box"></ins> azure (<code>#f0ffff</code>)</li>
+<li><ins style="background: #f5f5dc" class="color-box"></ins> beige (<code>#f5f5dc</code>)</li>
+<li><ins style="background: #ffe4c4" class="color-box"></ins> bisque (<code>#ffe4c4</code>)</li>
+<li><ins style="background: #000000" class="color-box"></ins> black (<code>#000000</code>)</li>
+<li><ins style="background: #ffebcd" class="color-box"></ins> blanchedalmond (<code>#ffebcd</code>)</li>
+<li><ins style="background: #0000ff" class="color-box"></ins> blue (<code>#0000ff</code>)</li>
+<li><ins style="background: #8a2be2" class="color-box"></ins> blueviolet (<code>#8a2be2</code>)</li>
+<li><ins style="background: #a52a2a" class="color-box"></ins> brown (<code>#a52a2a</code>)</li>
+<li><ins style="background: #deb887" class="color-box"></ins> burlywood (<code>#deb887</code>)</li>
+<li><ins style="background: #5f9ea0" class="color-box"></ins> cadetblue (<code>#5f9ea0</code>)</li>
+<li><ins style="background: #7fff00" class="color-box"></ins> chartreuse (<code>#7fff00</code>)</li>
+<li><ins style="background: #d2691e" class="color-box"></ins> chocolate (<code>#d2691e</code>)</li>
+<li><ins style="background: #ff7f50" class="color-box"></ins> coral (<code>#ff7f50</code>)</li>
+<li><ins style="background: #6495ed" class="color-box"></ins> cornflowerblue (<code>#6495ed</code>)</li>
+<li><ins style="background: #fff8dc" class="color-box"></ins> cornsilk (<code>#fff8dc</code>)</li>
+<li><ins style="background: #dc143c" class="color-box"></ins> crimson (<code>#dc143c</code>)</li>
+<li><ins style="background: #00ffff" class="color-box"></ins> cyan (<code>#00ffff</code>)</li>
+<li><ins style="background: #00008b" class="color-box"></ins> darkblue (<code>#00008b</code>)</li>
+<li><ins style="background: #008b8b" class="color-box"></ins> darkcyan (<code>#008b8b</code>)</li>
+<li><ins style="background: #b8860b" class="color-box"></ins> darkgoldenrod (<code>#b8860b</code>)</li>
+<li><ins style="background: #a9a9a9" class="color-box"></ins> darkgray (<code>#a9a9a9</code>)</li>
+<li><ins style="background: #006400" class="color-box"></ins> darkgreen (<code>#006400</code>)</li>
+<li><ins style="background: #a9a9a9" class="color-box"></ins> darkgrey (<code>#a9a9a9</code>)</li>
+<li><ins style="background: #bdb76b" class="color-box"></ins> darkkhaki (<code>#bdb76b</code>)</li>
+<li><ins style="background: #8b008b" class="color-box"></ins> darkmagenta (<code>#8b008b</code>)</li>
+<li><ins style="background: #556b2f" class="color-box"></ins> darkolivegreen (<code>#556b2f</code>)</li>
+<li><ins style="background: #ff8c00" class="color-box"></ins> darkorange (<code>#ff8c00</code>)</li>
+<li><ins style="background: #9932cc" class="color-box"></ins> darkorchid (<code>#9932cc</code>)</li>
+<li><ins style="background: #8b0000" class="color-box"></ins> darkred (<code>#8b0000</code>)</li>
+<li><ins style="background: #e9967a" class="color-box"></ins> darksalmon (<code>#e9967a</code>)</li>
+<li><ins style="background: #8fbc8f" class="color-box"></ins> darkseagreen (<code>#8fbc8f</code>)</li>
+<li><ins style="background: #483d8b" class="color-box"></ins> darkslateblue (<code>#483d8b</code>)</li>
+<li><ins style="background: #2f4f4f" class="color-box"></ins> darkslategrey (<code>#2f4f4f</code>)</li>
+<li><ins style="background: #00ced1" class="color-box"></ins> darkturquoise (<code>#00ced1</code>)</li>
+<li><ins style="background: #9400d3" class="color-box"></ins> darkviolet (<code>#9400d3</code>)</li>
+<li><ins style="background: #ff1493" class="color-box"></ins> deeppink (<code>#ff1493</code>)</li>
+<li><ins style="background: #00bfff" class="color-box"></ins> deepskyblue (<code>#00bfff</code>)</li>
+<li><ins style="background: #696969" class="color-box"></ins> dimgray (<code>#696969</code>)</li>
+<li><ins style="background: #696969" class="color-box"></ins> dimgrey (<code>#696969</code>)</li>
+<li><ins style="background: #1e90ff" class="color-box"></ins> dodgerblue (<code>#1e90ff</code>)</li>
+<li><ins style="background: #b22222" class="color-box"></ins> firebrick (<code>#b22222</code>)</li>
+<li><ins style="background: #fffaf0" class="color-box"></ins> floralwhite (<code>#fffaf0</code>)</li>
+<li><ins style="background: #228b22" class="color-box"></ins> forestgreen (<code>#228b22</code>)</li>
+<li><ins style="background: #ff00ff" class="color-box"></ins> fuchsia (<code>#ff00ff</code>)</li>
+<li><ins style="background: #dcdcdc" class="color-box"></ins> gainsboro (<code>#dcdcdc</code>)</li>
+<li><ins style="background: #f8f8ff" class="color-box"></ins> ghostwhite (<code>#f8f8ff</code>)</li>
+<li><ins style="background: #ffd700" class="color-box"></ins> gold (<code>#ffd700</code>)</li>
+<li><ins style="background: #daa520" class="color-box"></ins> goldenrod (<code>#daa520</code>)</li>
+<li><ins style="background: #808080" class="color-box"></ins> gray (<code>#808080</code>)</li>
+<li><ins style="background: #008000" class="color-box"></ins> green (<code>#008000</code>)</li>
+<li><ins style="background: #adff2f" class="color-box"></ins> greenyellow (<code>#adff2f</code>)</li>
+<li><ins style="background: #808080" class="color-box"></ins> grey (<code>#808080</code>)</li>
+<li><ins style="background: #f0fff0" class="color-box"></ins> honeydew (<code>#f0fff0</code>)</li>
+<li><ins style="background: #ff69b4" class="color-box"></ins> hotpink (<code>#ff69b4</code>)</li>
+<li><ins style="background: #cd5c5c" class="color-box"></ins> indianred (<code>#cd5c5c</code>)</li>
+<li><ins style="background: #4b0082" class="color-box"></ins> indigo (<code>#4b0082</code>)</li>
+<li><ins style="background: #fffff0" class="color-box"></ins> ivory (<code>#fffff0</code>)</li>
+<li><ins style="background: #f0e68c" class="color-box"></ins> khaki (<code>#f0e68c</code>)</li>
+<li><ins style="background: #e6e6fa" class="color-box"></ins> lavender (<code>#e6e6fa</code>)</li>
+<li><ins style="background: #fff0f5" class="color-box"></ins> lavenderblush (<code>#fff0f5</code>)</li>
+<li><ins style="background: #7cfc00" class="color-box"></ins> lawngreen (<code>#7cfc00</code>)</li>
+<li><ins style="background: #fffacd" class="color-box"></ins> lemonchiffon (<code>#fffacd</code>)</li>
+<li><ins style="background: #add8e6" class="color-box"></ins> lightblue (<code>#add8e6</code>)</li>
+<li><ins style="background: #f08080" class="color-box"></ins> lightcoral (<code>#f08080</code>)</li>
+<li><ins style="background: #e0ffff" class="color-box"></ins> lightcyan (<code>#e0ffff</code>)</li>
+<li><ins style="background: #fafad2" class="color-box"></ins> lightgoldenrodyellow (<code>#fafad2</code>)</li>
+<li><ins style="background: #d3d3d3" class="color-box"></ins> lightgray (<code>#d3d3d3</code>)</li>
+<li><ins style="background: #90ee90" class="color-box"></ins> lightgreen (<code>#90ee90</code>)</li>
+<li><ins style="background: #d3d3d3" class="color-box"></ins> lightgrey (<code>#d3d3d3</code>)</li>
+<li><ins style="background: #ffb6c1" class="color-box"></ins> lightpink (<code>#ffb6c1</code>)</li>
+<li><ins style="background: #ffa07a" class="color-box"></ins> lightsalmon (<code>#ffa07a</code>)</li>
+<li><ins style="background: #20b2aa" class="color-box"></ins> lightseagreen (<code>#20b2aa</code>)</li>
+<li><ins style="background: #87cefa" class="color-box"></ins> lightskyblue (<code>#87cefa</code>)</li>
+<li><ins style="background: #778899" class="color-box"></ins> lightslategrey (<code>#778899</code>)</li>
+<li><ins style="background: #b0c4de" class="color-box"></ins> lightsteelblue (<code>#b0c4de</code>)</li>
+<li><ins style="background: #ffffe0" class="color-box"></ins> lightyellow (<code>#ffffe0</code>)</li>
+<li><ins style="background: #00ff00" class="color-box"></ins> lime (<code>#00ff00</code>)</li>
+<li><ins style="background: #32cd32" class="color-box"></ins> limegreen (<code>#32cd32</code>)</li>
+<li><ins style="background: #faf0e6" class="color-box"></ins> linen (<code>#faf0e6</code>)</li>
+<li><ins style="background: #ff00ff" class="color-box"></ins> magenta (<code>#ff00ff</code>)</li>
+<li><ins style="background: #800000" class="color-box"></ins> maroon (<code>#800000</code>)</li>
+<li><ins style="background: #66cdaa" class="color-box"></ins> mediumaquamarine (<code>#66cdaa</code>)</li>
+<li><ins style="background: #0000cd" class="color-box"></ins> mediumblue (<code>#0000cd</code>)</li>
+<li><ins style="background: #ba55d3" class="color-box"></ins> mediumorchid (<code>#ba55d3</code>)</li>
+<li><ins style="background: #9370db" class="color-box"></ins> mediumpurple (<code>#9370db</code>)</li>
+<li><ins style="background: #3cb371" class="color-box"></ins> mediumseagreen (<code>#3cb371</code>)</li>
+<li><ins style="background: #7b68ee" class="color-box"></ins> mediumslateblue (<code>#7b68ee</code>)</li>
+<li><ins style="background: #00fa9a" class="color-box"></ins> mediumspringgreen (<code>#00fa9a</code>)</li>
+<li><ins style="background: #48d1cc" class="color-box"></ins> mediumturquoise (<code>#48d1cc</code>)</li>
+<li><ins style="background: #c71585" class="color-box"></ins> mediumvioletred (<code>#c71585</code>)</li>
+<li><ins style="background: #191970" class="color-box"></ins> midnightblue (<code>#191970</code>)</li>
+<li><ins style="background: #f5fffa" class="color-box"></ins> mintcream (<code>#f5fffa</code>)</li>
+<li><ins style="background: #ffe4e1" class="color-box"></ins> mistyrose (<code>#ffe4e1</code>)</li>
+<li><ins style="background: #ffe4b5" class="color-box"></ins> moccasin (<code>#ffe4b5</code>)</li>
+<li><ins style="background: #ffdead" class="color-box"></ins> navajowhite (<code>#ffdead</code>)</li>
+<li><ins style="background: #000080" class="color-box"></ins> navy (<code>#000080</code>)</li>
+<li><ins style="background: #fdf5e6" class="color-box"></ins> oldlace (<code>#fdf5e6</code>)</li>
+<li><ins style="background: #808000" class="color-box"></ins> olive (<code>#808000</code>)</li>
+<li><ins style="background: #6b8e23" class="color-box"></ins> olivedrab (<code>#6b8e23</code>)</li>
+<li><ins style="background: #ffa500" class="color-box"></ins> orange (<code>#ffa500</code>)</li>
+<li><ins style="background: #ff4500" class="color-box"></ins> orangered (<code>#ff4500</code>)</li>
+<li><ins style="background: #da70d6" class="color-box"></ins> orchid (<code>#da70d6</code>)</li>
+<li><ins style="background: #eee8aa" class="color-box"></ins> palegoldenrod (<code>#eee8aa</code>)</li>
+<li><ins style="background: #98fb98" class="color-box"></ins> palegreen (<code>#98fb98</code>)</li>
+<li><ins style="background: #afeeee" class="color-box"></ins> paleturquoise (<code>#afeeee</code>)</li>
+<li><ins style="background: #db7093" class="color-box"></ins> palevioletred (<code>#db7093</code>)</li>
+<li><ins style="background: #ffefd5" class="color-box"></ins> papayawhip (<code>#ffefd5</code>)</li>
+<li><ins style="background: #ffdab9" class="color-box"></ins> peachpuff (<code>#ffdab9</code>)</li>
+<li><ins style="background: #cd853f" class="color-box"></ins> peru (<code>#cd853f</code>)</li>
+<li><ins style="background: #ffc0cb" class="color-box"></ins> pink (<code>#ffc0cb</code>)</li>
+<li><ins style="background: #dda0dd" class="color-box"></ins> plum (<code>#dda0dd</code>)</li>
+<li><ins style="background: #b0e0e6" class="color-box"></ins> powderblue (<code>#b0e0e6</code>)</li>
+<li><ins style="background: #800080" class="color-box"></ins> purple (<code>#800080</code>)</li>
+<li><ins style="background: #663399" class="color-box"></ins> rebeccapurple (<code>#663399</code>)</li>
+<li><ins style="background: #ff0000" class="color-box"></ins> red (<code>#ff0000</code>)</li>
+<li><ins style="background: #bc8f8f" class="color-box"></ins> rosybrown (<code>#bc8f8f</code>)</li>
+<li><ins style="background: #4169e1" class="color-box"></ins> royalblue (<code>#4169e1</code>)</li>
+<li><ins style="background: #8b4513" class="color-box"></ins> saddlebrown (<code>#8b4513</code>)</li>
+<li><ins style="background: #fa8072" class="color-box"></ins> salmon (<code>#fa8072</code>)</li>
+<li><ins style="background: #f4a460" class="color-box"></ins> sandybrown (<code>#f4a460</code>)</li>
+<li><ins style="background: #2e8b57" class="color-box"></ins> seagreen (<code>#2e8b57</code>)</li>
+<li><ins style="background: #fff5ee" class="color-box"></ins> seashell (<code>#fff5ee</code>)</li>
+<li><ins style="background: #a0522d" class="color-box"></ins> sienna (<code>#a0522d</code>)</li>
+<li><ins style="background: #c0c0c0" class="color-box"></ins> silver (<code>#c0c0c0</code>)</li>
+<li><ins style="background: #87ceeb" class="color-box"></ins> skyblue (<code>#87ceeb</code>)</li>
+<li><ins style="background: #6a5acd" class="color-box"></ins> slateblue (<code>#6a5acd</code>)</li>
+<li><ins style="background: #708090" class="color-box"></ins> slategray (<code>#708090</code>)</li>
+<li><ins style="background: #fffafa" class="color-box"></ins> snow (<code>#fffafa</code>)</li>
+<li><ins style="background: #00ff7f" class="color-box"></ins> springgreen (<code>#00ff7f</code>)</li>
+<li><ins style="background: #4682b4" class="color-box"></ins> steelblue (<code>#4682b4</code>)</li>
+<li><ins style="background: #d2b48c" class="color-box"></ins> tan (<code>#d2b48c</code>)</li>
+<li><ins style="background: #008080" class="color-box"></ins> teal (<code>#008080</code>)</li>
+<li><ins style="background: #d8bfd8" class="color-box"></ins> thistle (<code>#d8bfd8</code>)</li>
+<li><ins style="background: #ff6347" class="color-box"></ins> tomato (<code>#ff6347</code>)</li>
+<li><ins style="background: #40e0d0" class="color-box"></ins> turquoise (<code>#40e0d0</code>)</li>
+<li><ins style="background: #ee82ee" class="color-box"></ins> violet (<code>#ee82ee</code>)</li>
+<li><ins style="background: #f5deb3" class="color-box"></ins> wheat (<code>#f5deb3</code>)</li>
+<li><ins style="background: #ffffff" class="color-box"></ins> white (<code>#ffffff</code>)</li>
+<li><ins style="background: #f5f5f5" class="color-box"></ins> whitesmoke (<code>#f5f5f5</code>)</li>
+<li><ins style="background: #ffff00" class="color-box"></ins> yellow (<code>#ffff00</code>)</li>
+<li><ins style="background: #9acd32" class="color-box"></ins> yellowgreen (<code>#9acd32</code>)</li>
+</ul>
+</span></div></article></div><div class="docs-prevnext"><a class="docs-prev button" href="/docs/0.62/images"><span class="arrow-prev">← </span><span>Images</span></a><a class="docs-next button" href="/docs/0.62/handling-touches"><span>Handling Touches</span><span class="arrow-next"> →</span></a></div></div></div><nav class="onPageNav"><ul class="toc-headings"><li><a href="#red-green-blue-rgb">Red Green Blue (RGB)</a></li><li><a href="#hue-saturation-lightness-hsl">Hue Saturation Lightness (HSL)</a></li><li><a href="#color-ints">Color ints</a></li><li><a href="#named-colors">Named colors</a><ul class="toc-headings"><li><a href="#transparent"><code>transparent</code></a></li><li><a href="#color-keywords">Color keywords</a></li></ul></li></ul></nav></div><footer class="nav-footer" id="footer"><section class="sitemap"><div><h5>Docs</h5><a href="/docs/getting-started">Getting Started</a><a href="/docs/tutorial">Tutorial</a><a href="/docs/components-and-apis">Components and APIs</a><a href="/docs/more-resources">More Resources</a></div><div><h5>Community</h5><a href="/help">The React Native Community</a><a href="/showcase">Who&#x27;s using React Native?</a><a href="https://stackoverflow.com/questions/tagged/react-native" target="_blank">Ask Questions on Stack Overflow</a><a href="https://github.com/facebook/react-native/blob/master/CONTRIBUTING.md">Contributor Guide</a><a href="https://dev.to/t/reactnative" target="_blank">DEV Community</a></div><div><h5>More Resources</h5><a href="/blog">Blog</a><a href="https://twitter.com/reactnative" target="_blank">Twitter</a><a href="https://github.com/facebook/react-native" target="_blank">GitHub</a><a href="https://reactjs.org" target="_blank">React</a></div></section><a href="https://code.facebook.com/projects/" target="_blank" class="fbOpenSource"><img src="/img/oss_logo.png" alt="Facebook Open Source" width="170" height="45"/></a><section class="copyright">Copyright © 2020 Facebook Inc.</section></footer></div><script type="text/javascript" src="https://cdn.jsdelivr.net/docsearch.js/1/docsearch.min.js"></script><script>window.fbAsyncInit = function() {FB.init({appId:'1677033832619985',xfbml:true,version:'v2.7'});};(function(d, s, id){var js, fjs = d.getElementsByTagName(s)[0];if (d.getElementById(id)) {return;}js = d.createElement(s); js.id = id;js.src = '//connect.facebook.net/en_US/sdk.js';fjs.parentNode.insertBefore(js, fjs);}(document, 'script','facebook-jssdk'));
+                </script><script>window.twttr=(function(d,s, id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return t;js=d.createElement(s);js.id=id;js.src='https://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js, fjs);t._e = [];t.ready = function(f) {t._e.push(f);};return t;}(document, 'script', 'twitter-wjs'));</script><script>
+                document.addEventListener('keyup', function(e) {
+                  if (e.target !== document.body) {
+                    return;
+                  }
+                  // keyCode for '/' (slash)
+                  if (e.keyCode === 191) {
+                    const search = document.getElementById('search_input_react');
+                    search && search.focus();
+                  }
+                });
+              </script><script>
+              var search = docsearch({
+                
+                apiKey: '2c98749b4a1e588efec53b2acec13025',
+                indexName: 'react-native-versions',
+                inputSelector: '#search_input_react',
+                algoliaOptions: {"facetFilters":["tags:0.62"],"hitsPerPage":5}
+              });
+            </script></body></html>
