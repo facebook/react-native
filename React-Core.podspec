@@ -59,10 +59,10 @@ Pod::Spec.new do |s|
                                 "React/Fabric/**/*",
                                 "React/Inspector/**/*",
                                 "React/CxxBridge/HermesExecutorFactory.*" # TODO(macOS GH#214)
-    ss.ios.exclude_files      = "React/**/RCTTV*.*"
+    ss.ios.exclude_files      = "React/**/RCTTV*.*",
 
     # [TODO(macOS ISS#2323203)
-                                "**/MacOS/*"
+                                "**/macOS/*"
     ss.osx.exclude_files      = "React/Modules/RCTRedBoxExtraDataViewController.{h,m}",
                                 "React/Profiler/RCTProfileTrampoline-{arm,arm64,i386}.S",
                                 "React/Base/RCTKeyCommands.*",

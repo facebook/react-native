@@ -501,7 +501,7 @@ SPEC CHECKSUMS:
   RCTTypeSafety: 2bf56caee198adc4adc63a5d18e8ffff8b92fbbb
   React: bacecd5320c8bb453aa396179b93061ebd9d34bf
   React-ART: 2f0eb928d7bc51e6262da595955b0e8fcf6c0a9e
-  React-Core: 0fb3a932eb28dcb299eceb7fb4e359b547557528
+  React-Core: 4260fbc7e94e276d40dca9347d9bea0b6002c0b4
   React-CoreModules: fbe1e42d49cb14db5c9bf02dee33a18d281331f7
   React-cxxreact: 7ff40ab26e02c3f8b2fec2f5ea3d9f4774ef2523
   React-jsi: b23bf7e79fb2149f3bb9bd4e25e570bff9c03d10
@@ -522,6 +522,6 @@ SPEC CHECKSUMS:
   Yoga: 3ed3c35bb7c41fa8f5056b767bc048539f6526ad
   YogaKit: f782866e155069a2cca2517aafea43200b01fd5a
 
-PODFILE CHECKSUM: 9f7ce884d267d41098ed0c95a51abea8c184a0ea
+PODFILE CHECKSUM: 3cfdde26e08d043498daa8442c611eb479f77fb0
 
-COCOAPODS: 1.9.1
+COCOAPODS: 1.9.3
