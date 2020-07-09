@@ -396,7 +396,12 @@ static Class getFallbackClassFromName(const char *name)
       };
 
       if ([self _requiresMainQueueSetup:moduleClass]) {
-        if (!RCTIsMainQueue()) {
+        /**
+         * When TurboModule eager initialization is disabled, we expect TurboModules requiring main queue setup to be
+         * required on background threads.
+         * TODO(T69449176) Roll out TurboModule eager initialization, and remove this check.
+         */
+        if (!RCTIsMainQueue() && !RCTTurboModuleEagerInitEnabled()) {
           RCTLogWarn(
               @"TurboModule \"%@\" requires synchronous dispatch onto the main queue to be initialized. This may lead to deadlock.",
               moduleClass);
