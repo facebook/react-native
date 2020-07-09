@@ -179,6 +179,12 @@ public class Arguments {
         arguments.pushMap((WritableNativeMap) argument);
       } else if (argumentClass == WritableNativeArray.class) {
         arguments.pushArray((WritableNativeArray) argument);
+      } else if (argumentClass == Bundle.class) {
+        arguments.pushMap(fromBundle((Bundle) argument));
+      } else if (argumentClass.isArray()) {
+        arguments.pushArray(fromArray(argument));
+      } else if (argument instanceof List) {
+        arguments.pushArray(fromList((List) argument));
       } else {
         throw new RuntimeException("Cannot convert argument of type " + argumentClass);
       }
