@@ -20,7 +20,6 @@ const TextInputState = require('./TextInput/TextInputState');
 const UIManager = require('../ReactNative/UIManager');
 
 const invariant = require('invariant');
-const performanceNow = require('fbjs/lib/performanceNow');
 
 import type {HostComponent} from '../Renderer/shims/ReactNativeTypes';
 import type {PressEvent, ScrollEvent} from '../Types/CoreEventTypes';
@@ -385,7 +384,7 @@ const ScrollResponderMixin = {
    * Invoke this from an `onMomentumScrollBegin` event.
    */
   scrollResponderHandleMomentumScrollBegin: function(e: ScrollEvent) {
-    this.state.lastMomentumScrollBeginTime = performanceNow();
+    this.state.lastMomentumScrollBeginTime = global.performance.now();
     this.props.onMomentumScrollBegin && this.props.onMomentumScrollBegin(e);
   },
 
@@ -394,7 +393,7 @@ const ScrollResponderMixin = {
    */
   scrollResponderHandleMomentumScrollEnd: function(e: ScrollEvent) {
     FrameRateLogger.endScroll();
-    this.state.lastMomentumScrollEndTime = performanceNow();
+    this.state.lastMomentumScrollEndTime = global.performance.now();
     this.props.onMomentumScrollEnd && this.props.onMomentumScrollEnd(e);
   },
 
@@ -435,7 +434,7 @@ const ScrollResponderMixin = {
    * a touch has just started or ended.
    */
   scrollResponderIsAnimating: function(): boolean {
-    const now = performanceNow();
+    const now = global.performance.now();
     const timeSinceLastMomentumScrollEnd =
       now - this.state.lastMomentumScrollEndTime;
     const isAnimating =
