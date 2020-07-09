@@ -89,6 +89,7 @@ public class ReactViewBackgroundDrawable extends Drawable {
   private @Nullable Path mOuterClipPathForBorderRadius;
   private @Nullable Path mPathForBorderRadiusOutline;
   private @Nullable Path mPathForBorder;
+  private Path mPathForSingleBorder = new Path();
   private @Nullable Path mCenterDrawPath;
   private @Nullable RectF mInnerClipTempRectForBorderRadius;
   private @Nullable RectF mOuterClipTempRectForBorderRadius;
@@ -1100,6 +1101,7 @@ public class ReactViewBackgroundDrawable extends Drawable {
               colorTop,
               colorRight,
               colorBottom);
+
       if (fastBorderColor != 0) {
         if (Color.alpha(fastBorderColor) != 0) {
           // Border color is not transparent.
@@ -1109,41 +1111,40 @@ public class ReactViewBackgroundDrawable extends Drawable {
           mPaint.setColor(fastBorderColor);
           mPaint.setStyle(Paint.Style.STROKE);
           if (borderLeft > 0) {
-            int leftInset = left + borderLeft;
-            Path path = new Path();
+            mPathForSingleBorder.reset();
             int width = Math.round(borderWidth.left);
             updatePathEffect(width);
             mPaint.setStrokeWidth(width);
-            path.moveTo(left, top - borderWidth.top/2);
-            path.lineTo(left, bottom + borderWidth.bottom/2);
-            canvas.drawPath(path, mPaint);
+            mPathForSingleBorder.moveTo(left, top - borderWidth.top/2);
+            mPathForSingleBorder.lineTo(left, bottom + borderWidth.bottom/2);
+            canvas.drawPath(mPathForSingleBorder, mPaint);
           }
           if (borderTop > 0) {
-            Path path = new Path();
+            mPathForSingleBorder.reset();
             int width = Math.round(borderWidth.top);
             updatePathEffect(width);
             mPaint.setStrokeWidth(width);
-            path.moveTo(left, top);
-            path.lineTo(right, top);
-            canvas.drawPath(path, mPaint);
+            mPathForSingleBorder.moveTo(left, top);
+            mPathForSingleBorder.lineTo(right, top);
+            canvas.drawPath(mPathForSingleBorder, mPaint);
           }
           if (borderRight > 0) {
-            Path path = new Path();
+            mPathForSingleBorder.reset();
             int width = Math.round(borderWidth.right);
             updatePathEffect(width);
             mPaint.setStrokeWidth(width);
-            path.moveTo(right, top - borderWidth.top/2);
-            path.lineTo(right, bottom + borderWidth.bottom/2);
-            canvas.drawPath(path, mPaint);
+            mPathForSingleBorder.moveTo(right, top - borderWidth.top/2);
+            mPathForSingleBorder.lineTo(right, bottom + borderWidth.bottom/2);
+            canvas.drawPath(mPathForSingleBorder, mPaint);
           }
           if (borderBottom > 0) {
-            Path path = new Path();
+            mPathForSingleBorder.reset();
             int width = Math.round(borderWidth.bottom);
             updatePathEffect(width);
             mPaint.setStrokeWidth(width);
-            path.moveTo(left, bottom);
-            path.lineTo(right, bottom);
-            canvas.drawPath(path, mPaint);
+            mPathForSingleBorder.moveTo(left, bottom);
+            mPathForSingleBorder.lineTo(right, bottom);
+            canvas.drawPath(mPathForSingleBorder, mPaint);
           }
         }
       } else {
