@@ -41,6 +41,9 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : coder)
   if ((self = [super initWithFrame:CGRectZero])) {
     _bridge = bridge;
     _modalViewController = [RCTModalHostViewController new];
+    if (@available(iOS 13.0, *)) {
+      _modalViewController.presentationController.delegate = self;
+    }
     UIView *containerView = [UIView new];
     containerView.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
     _modalViewController.view = containerView;
@@ -62,6 +65,22 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : coder)
   return self;
 }
 
+- (UIModalPresentationStyle)adaptivePresentationStyleForPresentationController:(UIPresentationController *)controller traitCollection:(UITraitCollection *)traitCollection
+{
+  if (self.presentationStyle == UIModalPresentationFullScreen && self.isTransparent) {
+    return UIModalPresentationOverFullScreen;
+  }
+  return self.presentationStyle;
+}
+
+- (UIModalPresentationStyle)adaptivePresentationStyleForPresentationController:(UIPresentationController *)controller
+{
+  if (self.presentationStyle == UIModalPresentationFullScreen && self.isTransparent) {
+    return UIModalPresentationOverFullScreen;
+  }
+  return self.presentationStyle;
+}
+
 #if TARGET_OS_TV
 - (void)menuButtonPressed:(__unused UIGestureRecognizer *)gestureRecognizer
 {
@@ -69,10 +88,12 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : coder)
     _onRequestClose(nil);
   }
 }
+#endif
 
 - (void)setOnRequestClose:(RCTDirectEventBlock)onRequestClose
 {
   _onRequestClose = onRequestClose;
+  #if TARGET_OS_TV
   if (_reactSubview) {
     if (_onRequestClose && _menuButtonGestureRecognizer) {
       [_reactSubview addGestureRecognizer:_menuButtonGestureRecognizer];
@@ -80,8 +101,8 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : coder)
       [_reactSubview removeGestureRecognizer:_menuButtonGestureRecognizer];
     }
   }
+  #endif
 }
-#endif
 
 - (void)notifyForBoundsChange:(CGRect)newBounds
 {
@@ -153,6 +174,13 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : coder)
 - (void)didUpdateReactSubviews
 {
   // Do nothing, as subview (singular) is managed by `insertReactSubview:atIndex:`
+}
+
+- (void)presentationControllerDidDismiss:(UIPresentationController *)presentationController
+{
+  if (_onRequestClose) {
+    _onRequestClose(nil);
+  }
 }
 
 - (void)dismissModalViewController
