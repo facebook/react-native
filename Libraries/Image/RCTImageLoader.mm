@@ -1163,7 +1163,11 @@ RCT_EXPORT_METHOD(getSizeWithHeaders:(NSString *)uri
                   resolve:(RCTPromiseResolveBlock)resolve
                   reject:(RCTPromiseRejectBlock)reject)
 {
-  NSURLRequest *request = [RCTConvert NSURLRequest:uri];
+  NSURL *URL = [RCTConvert NSURL:uri];
+  NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:URL];
+  [headers enumerateKeysAndObjectsUsingBlock:^(NSString *key, id value, BOOL *stop) {
+    [request addValue:[RCTConvert NSString:value] forHTTPHeaderField:key];
+  }];
   [self getImageSizeForURLRequest:request
    block:^(NSError *error, CGSize size) {
      if (error) {
