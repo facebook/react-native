@@ -68,11 +68,6 @@ class WebSocket extends (EventTarget(...WEBSOCKET_EVENTS): any) {
   _subscriptions: Array<EventSubscription>;
   _binaryType: ?BinaryType;
 
-  onclose: ?Function;
-  onerror: ?Function;
-  onmessage: ?Function;
-  onopen: ?Function;
-
   bufferedAmount: number;
   extension: ?string;
   protocol: ?string;
