@@ -314,7 +314,11 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
       @Nullable ReadableMap props,
       @Nullable Object stateWrapper,
       boolean isLayoutable) {
-    ThemedReactContext context = mReactContextForRootTag.get(rootTag);
+
+    // This could be null if teardown/navigation away from a surface on the main thread happens
+    // while a commit is being processed in a different thread. By contract we expect this to be
+    // possible at teardown, but this race should *never* happen at startup.
+    @Nullable ThemedReactContext context = mReactContextForRootTag.get(rootTag);
 
     String component = getFabricComponentName(componentName);
     synchronized (mPreMountItemsLock) {
@@ -342,10 +346,12 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
       int reactTag,
       boolean isLayoutable) {
     String component = getFabricComponentName(componentName);
-    ThemedReactContext reactContext = mReactContextForRootTag.get(reactRootTag);
-    if (reactContext == null) {
-      throw new IllegalArgumentException("Unable to find ReactContext for root: " + reactRootTag);
-    }
+
+    // This could be null if teardown/navigation away from a surface on the main thread happens
+    // while a commit is being processed in a different thread. By contract we expect this to be
+    // possible at teardown, but this race should *never* happen at startup.
+    @Nullable ThemedReactContext reactContext = mReactContextForRootTag.get(reactRootTag);
+
     return new CreateMountItem(
         reactContext,
         reactRootTag,
