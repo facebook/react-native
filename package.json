@@ -146,6 +146,7 @@
     "prettier": "1.19.1",
     "react": "16.13.1",
     "react-test-renderer": "16.13.1",
+    "react-shallow-renderer": "16.13.1",
     "shelljs": "^0.7.8",
     "signedsource": "^1.0.0",
     "ws": "^6.1.4",
