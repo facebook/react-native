@@ -499,7 +499,7 @@ if (__DEV__) {
       get() {
         invariant(
           false,
-          moduleName + ' has been removed from React Native.\n' + message,
+          moduleName + ' has been removed from React Native.\n\n' + message,
         );
       },
     });
