@@ -51,6 +51,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * Native module to allow JS to create and update native Views.
@@ -119,7 +120,8 @@ public class UIManagerModule extends ReactContextBaseJavaModule
   private final UIImplementation mUIImplementation;
   private final MemoryTrimCallback mMemoryTrimCallback = new MemoryTrimCallback();
   private final List<UIManagerModuleListener> mListeners = new ArrayList<>();
-  private final List<UIManagerListener> mUIManagerListeners = new ArrayList<>();
+  private final CopyOnWriteArrayList<UIManagerListener> mUIManagerListeners =
+      new CopyOnWriteArrayList<>();
   private @Nullable Map<String, WritableMap> mViewManagerConstantsCache;
   private volatile int mViewManagerConstantsCacheSize;
 
