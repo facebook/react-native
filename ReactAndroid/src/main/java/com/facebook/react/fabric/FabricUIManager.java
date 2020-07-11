@@ -1056,6 +1056,19 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
     // TODO T31905686: Remove this method and add support for multi-threading performance counters
   }
 
+  @Override
+  @Deprecated
+  @Nullable
+  public String resolveCustomDirectEventName(@Nullable String eventName) {
+    if (eventName == null) {
+      return null;
+    }
+    if (eventName.substring(0, 3).equals("top")) {
+      return "on" + eventName.substring(3);
+    }
+    return eventName;
+  }
+
   // Called from Binding.cpp
   @DoNotStrip
   @AnyThread

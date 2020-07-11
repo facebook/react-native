@@ -304,6 +304,10 @@ public class NativeAnimatedModule extends NativeAnimatedModuleSpec
       mNumNonFabricAnimations++;
     }
 
+    if (mNodesManager != null) {
+      mNodesManager.initializeEventListenerForUIManagerType(mUIManagerType);
+    }
+
     // Subscribe to UIManager (Fabric or non-Fabric) lifecycle events if we haven't yet
     if ((mInitializedForFabric && mUIManagerType == UIManagerType.FABRIC)
         || (mInitializedForNonFabric && mUIManagerType == UIManagerType.DEFAULT)) {
