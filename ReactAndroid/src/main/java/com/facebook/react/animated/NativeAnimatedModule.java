@@ -103,6 +103,7 @@ public class NativeAnimatedModule extends NativeAnimatedModuleSpec
   private @Nullable NativeAnimatedNodesManager mNodesManager;
 
   private volatile boolean mFabricBatchCompleted = false;
+  private int mFabricFramesSkipped = 0;
   private boolean mInitializedForFabric = false;
   private boolean mInitializedForNonFabric = false;
   private @UIManagerType int mUIManagerType = UIManagerType.DEFAULT;
@@ -174,17 +175,29 @@ public class NativeAnimatedModule extends NativeAnimatedModuleSpec
       return;
     }
 
-    if (mFabricBatchCompleted) {
-      // This will execute all operations and preOperations queued
-      // since the last time this was run, and will race with anything
-      // being queued from the JS thread. That is, if the JS thread
-      // is still queuing operations, we might execute some of them
-      // at the very end until we exhaust the queue faster than the
-      // JS thread can queue up new items.
-      executeAllOperations(mPreOperations);
-      executeAllOperations(mOperations);
-      mFabricBatchCompleted = false;
+    // The problem we're trying to solve here: we could be in the middle of queueing
+    // a batch of related animation operations when Fabric flushes a batch of MountItems.
+    // It's visually bad if we execute half of the animation ops and then wait another frame
+    // (or more) to execute the rest.
+    // Therefore, we wait until either `didScheduleMountItems` has been called, or a certain
+    // number of frames have been skipped.
+    // We wait a max of 2 frames or about 32ms before flushing.
+    // The reason to execute in some cases without a Fabric commit is that there might be
+    // animations that are triggered without any Fabric commits.
+    if (!mFabricBatchCompleted && mFabricFramesSkipped < 3) {
+      mFabricFramesSkipped++;
     }
+
+    // This will execute all operations and preOperations queued
+    // since the last time this was run, and will race with anything
+    // being queued from the JS thread. That is, if the JS thread
+    // is still queuing operations, we might execute some of them
+    // at the very end until we exhaust the queue faster than the
+    // JS thread can queue up new items.
+    executeAllOperations(mPreOperations);
+    executeAllOperations(mOperations);
+    mFabricBatchCompleted = false;
+    mFabricFramesSkipped = 0;
   }
 
   private void executeAllOperations(Queue<UIThreadOperation> operationQueue) {
