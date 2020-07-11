@@ -961,6 +961,15 @@ function InternalTextInput(props: Props): React.Node {
     return TextInputState.currentlyFocusedInput() === inputRef.current;
   }
 
+  function focus(): void {
+    const {current} = inputRef;
+    if (props.editable === false || current === null) {
+      return;
+    }
+    // $FlowFixMe - `focus` is missing in `$ReadOnly`
+    Object.getPrototypeOf(current)?.focus?.call(current);
+  }
+
   function getNativeRef(): ?React.ElementRef<HostComponent<mixed>> {
     return inputRef.current;
   }
@@ -994,6 +1003,7 @@ function InternalTextInput(props: Props): React.Node {
         */
       if (ref) {
         ref.clear = clear;
+        ref.focus = focus;
         ref.isFocused = isFocused;
         ref.getNativeRef = getNativeRef;
       }
