@@ -85,7 +85,7 @@
 <li>If the person leaves their finger longer than 370 milliseconds before removing it, <a href="#onlongpress"><code>onLongPress</code></a> is triggered. (<a href="#onpressout"><code>onPressOut</code></a> will still fire when they remove their finger.)</li>
 </ol>
 <p><img src="/docs/assets/d_pressable_pressing.svg" width="1000" alt="Diagram of the onPress events in sequence."></p>
-<p>Fingers are not the most precise instruments, and it is common for users to accidentally activate the wrong element or miss the activation area. To help, <code>Pressable</code> has an optional <code>HitRect</code> you can use to define how far a touch can register away from the wrapped element. Presses can start anywhere within a <code>HitRect</code>.</p>
+<p>Fingers are not the most precise instruments, and it is common for users to accidentally activate the wrong element or miss the activation area. To help, <code>Pressable</code> has an optional <code>HitRect</code> you can use to define how far a touch can register away from the the wrapped element. Presses can start anywhere within a <code>HitRect</code>.</p>
 <p><code>PressRect</code> allows presses to move beyond the element and its <code>HitRect</code> while maintaining activation and being eligible for a &quot;press&quot;—think of sliding your finger slowly away from a button you're pressing down on.</p>
 <blockquote>
 <p>The touch area never extends past the parent view bounds and the Z-index of sibling views always takes precedence if a touch hits two overlapping views.</p>
