@@ -234,12 +234,12 @@ brew <span class="token function">install</span> watchman
 <blockquote>
 <p>The SDK Manager can also be found within the Android Studio &quot;Preferences&quot; dialog, under <strong>Appearance &amp; Behavior</strong> → <strong>System Settings</strong> → <strong>Android SDK</strong>.</p>
 </blockquote>
-<p>Select the &quot;SDK Platforms&quot; tab from within the SDK Manager, then check the box next to &quot;Show Package Details&quot; in the bottom right corner. Look for and expand the <code>Android 9 (Pie)</code> entry, then make sure the following items are checked:</p>
+<p>Select the &quot;SDK Platforms&quot; tab from within the SDK Manager, then check the box next to &quot;Show Package Details&quot; in the bottom right corner. Look for and expand the <code>Android 10 (Q)</code> entry, then make sure the following items are checked:</p>
 <ul>
-<li><code>Android SDK Platform 28</code></li>
+<li><code>Android SDK Platform 29</code></li>
 <li><code>Intel x86 Atom_64 System Image</code> or <code>Google APIs Intel x86 Atom System Image</code></li>
 </ul>
-<p>Next, select the &quot;SDK Tools&quot; tab and check the box next to &quot;Show Package Details&quot; here as well. Look for and expand the &quot;Android SDK Build-Tools&quot; entry, then make sure that <code>28.0.3</code> is selected.</p>
+<p>Next, select the &quot;SDK Tools&quot; tab and check the box next to &quot;Show Package Details&quot; here as well. Look for and expand the &quot;Android SDK Build-Tools&quot; entry, then make sure that <code>29.0.2</code> is selected.</p>
 <p>Finally, click &quot;Apply&quot; to download and install the Android SDK and related build tools.</p>
 <p><h4>3. Configure the ANDROID_HOME environment variable</h4></p>
 <p>The React Native tools require some environment variables to be set up in order to build apps with native code.</p>
@@ -350,7 +350,7 @@ brew <span class="token function">install</span> watchman
 <p><h3>Using a virtual device</h3></p>
 <p>If you use Android Studio to open <code>./AwesomeProject/android</code>, you can see the list of available Android Virtual Devices (AVDs) by opening the &quot;AVD Manager&quot; from within Android Studio. Look for an icon that looks like this:</p>
 <p><img src="/docs/assets/GettingStartedAndroidStudioAVD.png" alt="Android Studio AVD Manager"></p>
-<p>If you have recently installed Android Studio, you will likely need to <a href="https://developer.android.com/studio/run/managing-avds.html">create a new AVD</a>. Select &quot;Create Virtual Device...&quot;, then pick any Phone from the list and click &quot;Next&quot;, then select the <strong>Pie</strong> API Level 28 image.</p>
+<p>If you have recently installed Android Studio, you will likely need to <a href="https://developer.android.com/studio/run/managing-avds.html">create a new AVD</a>. Select &quot;Create Virtual Device...&quot;, then pick any Phone from the list and click &quot;Next&quot;, then select the <strong>Q</strong> API Level 29 image.</p>
 <p><block class="native linux android" /></p>
 <blockquote>
 <p>We recommend configuring <a href="https://developer.android.com/studio/run/emulator-acceleration.html#vm-linux">VM acceleration</a> on your system to improve performance. Once you've followed those instructions, go back to the AVD Manager.</p>
