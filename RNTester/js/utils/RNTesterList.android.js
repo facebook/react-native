@@ -122,7 +122,7 @@ const APIExamples: Array<RNTesterExample> = [
   },
   {
     key: 'AlertExample',
-    module: require('../examples/Alert/AlertExample').AlertExample,
+    module: require('../examples/Alert/AlertExample'),
   },
   {
     key: 'AnimatedExample',
