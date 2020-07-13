@@ -32,6 +32,8 @@ trap cleanup EXIT
 
 cp -R ./package.json "$REACT_NATIVE_TEMP_DIR"
 cp -R ./yarn.lock "$REACT_NATIVE_TEMP_DIR"
+mkdir -p "$REACT_NATIVE_TEMP_DIR/packages/eslint-plugin-react-native-community"
+cp -R ./packages/eslint-plugin-react-native-community "$REACT_NATIVE_TEMP_DIR/packages/eslint-plugin-react-native-community"
 pushd "$REACT_NATIVE_TEMP_DIR" >/dev/null
 
 if ! $YARN_BINARY --ignore-scripts --silent --non-interactive --mutex network --frozen-lockfile; then
