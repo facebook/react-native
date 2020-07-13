@@ -130,6 +130,20 @@ TEST_F(LayoutableShadowNodeTest, relativeLayoutMetrics) {
   EXPECT_EQ(relativeLayoutMetrics.frame.origin.y, 20);
 }
 
+TEST_F(LayoutableShadowNodeTest, contentOriginOffset) {
+  auto layoutMetrics = EmptyLayoutMetrics;
+  layoutMetrics.frame.origin = {10, 20};
+  layoutMetrics.frame.size = {100, 200};
+  nodeA_->_contentOriginOffset = {10, 10};
+  nodeA_->setLayoutMetrics(layoutMetrics);
+  nodeAA_->setLayoutMetrics(layoutMetrics);
+
+  auto relativeLayoutMetrics = nodeAA_->getRelativeLayoutMetrics(*nodeA_, {});
+
+  EXPECT_EQ(relativeLayoutMetrics.frame.origin.x, 20);
+  EXPECT_EQ(relativeLayoutMetrics.frame.origin.y, 30);
+}
+
 /*
  * ┌────────────────────────┐
  * │nodeA_                  │
@@ -148,6 +162,10 @@ TEST_F(LayoutableShadowNodeTest, relativeLayoutMetricsOnTransformedNode) {
   layoutMetrics.frame.size = {100, 200};
   nodeAA_->_transform = Transform::Scale(0.5, 0.5, 1);
   nodeAA_->setLayoutMetrics(layoutMetrics);
+
+  layoutMetrics.frame.origin = {10, 20};
+  layoutMetrics.frame.size = {50, 100};
+  nodeAAA_->setLayoutMetrics(layoutMetrics);
 
   auto relativeLayoutMetrics = nodeAA_->getRelativeLayoutMetrics(*nodeA_, {});
 
