@@ -38,7 +38,7 @@ RCT_EXPORT_MODULE(BlobModule)
 
 @synthesize bridge = _bridge;
 @synthesize methodQueue = _methodQueue;
-@synthesize turboModuleLookupDelegate = _turboModuleLookupDelegate;
+@synthesize turboModuleRegistry = _turboModuleRegistry;
 
 - (void)setBridge:(RCTBridge *)bridge
 {
@@ -140,7 +140,7 @@ RCT_EXPORT_MODULE(BlobModule)
 
 RCT_EXPORT_METHOD(addNetworkingHandler)
 {
-  RCTNetworking *const networking = _bridge ? _bridge.networking : [_turboModuleLookupDelegate moduleForName:"RCTNetworking"];
+  RCTNetworking *const networking = _bridge ? _bridge.networking : [_turboModuleRegistry moduleForName:"RCTNetworking"];
 
   // TODO(T63516227): Why can methodQueue be nil here? 
   // We don't want to do anything when methodQueue is nil.

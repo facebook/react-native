@@ -307,6 +307,8 @@ public class ReactHorizontalScrollViewManager extends ViewGroupManager<ReactHori
       double x = value.hasKey("x") ? value.getDouble("x") : 0;
       double y = value.hasKey("y") ? value.getDouble("y") : 0;
       view.reactScrollTo((int) PixelUtil.toPixelFromDIP(x), (int) PixelUtil.toPixelFromDIP(y));
+    } else {
+      view.reactScrollTo(0, 0);
     }
   }
 }

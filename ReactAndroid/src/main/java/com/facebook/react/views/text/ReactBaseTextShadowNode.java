@@ -14,6 +14,7 @@ import android.os.Build;
 import android.text.Layout;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
+import android.text.TextUtils;
 import android.view.Gravity;
 import androidx.annotation.Nullable;
 import com.facebook.infer.annotation.Assertions;
@@ -34,7 +35,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 /**
  * {@link ReactShadowNode} abstract class for spannable text nodes.
@@ -512,7 +512,7 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
   public void setFontVariant(@Nullable ReadableArray fontVariantArray) {
     String fontFeatureSettings = ReactTypefaceUtils.parseFontVariant(fontVariantArray);
 
-    if (!Objects.equals(fontFeatureSettings, mFontFeatureSettings)) {
+    if (!TextUtils.equals(fontFeatureSettings, mFontFeatureSettings)) {
       mFontFeatureSettings = fontFeatureSettings;
       markUpdated();
     }

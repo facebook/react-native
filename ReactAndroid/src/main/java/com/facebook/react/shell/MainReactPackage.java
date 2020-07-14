@@ -21,8 +21,6 @@ import com.facebook.react.modules.appearance.AppearanceModule;
 import com.facebook.react.modules.appstate.AppStateModule;
 import com.facebook.react.modules.blob.BlobModule;
 import com.facebook.react.modules.blob.FileReaderModule;
-import com.facebook.react.modules.camera.CameraRollManager;
-import com.facebook.react.modules.camera.ImageEditingManager;
 import com.facebook.react.modules.camera.ImageStoreManager;
 import com.facebook.react.modules.clipboard.ClipboardModule;
 import com.facebook.react.modules.datepicker.DatePickerDialogModule;
@@ -74,13 +72,11 @@ import java.util.Map;
       BlobModule.class,
       FileReaderModule.class,
       AsyncStorageModule.class,
-      CameraRollManager.class,
       ClipboardModule.class,
       DatePickerDialogModule.class,
       DialogModule.class,
       FrescoModule.class,
       I18nManagerModule.class,
-      ImageEditingManager.class,
       ImageLoaderModule.class,
       ImageStoreManager.class,
       IntentModule.class,
@@ -120,8 +116,6 @@ public class MainReactPackage extends TurboReactPackage {
         return new FileReaderModule(context);
       case AsyncStorageModule.NAME:
         return new AsyncStorageModule(context);
-      case CameraRollManager.NAME:
-        return new CameraRollManager(context);
       case ClipboardModule.NAME:
         return new ClipboardModule(context);
       case DatePickerDialogModule.FRAGMENT_TAG:
@@ -132,8 +126,6 @@ public class MainReactPackage extends TurboReactPackage {
         return new FrescoModule(context, true, mConfig != null ? mConfig.getFrescoConfig() : null);
       case I18nManagerModule.NAME:
         return new I18nManagerModule(context);
-      case ImageEditingManager.NAME:
-        return new ImageEditingManager(context);
       case ImageLoaderModule.NAME:
         return new ImageLoaderModule(context);
       case ImageStoreManager.NAME:
@@ -207,13 +199,11 @@ public class MainReactPackage extends TurboReactPackage {
             BlobModule.class,
             FileReaderModule.class,
             AsyncStorageModule.class,
-            CameraRollManager.class,
             ClipboardModule.class,
             DatePickerDialogModule.class,
             DialogModule.class,
             FrescoModule.class,
             I18nManagerModule.class,
-            ImageEditingManager.class,
             ImageLoaderModule.class,
             ImageStoreManager.class,
             IntentModule.class,

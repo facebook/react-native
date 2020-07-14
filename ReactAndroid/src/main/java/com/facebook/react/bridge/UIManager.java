@@ -123,4 +123,9 @@ public interface UIManager extends JSIModule, PerformanceCounter {
    * @param event parameters
    */
   void receiveEvent(int reactTag, String eventName, @Nullable WritableMap event);
+
+  /** Resolves Direct Event name exposed to JS from the one known to the Native side. */
+  @Deprecated
+  @Nullable
+  String resolveCustomDirectEventName(@Nullable String eventName);
 }

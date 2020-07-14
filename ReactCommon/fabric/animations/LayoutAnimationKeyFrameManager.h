@@ -148,6 +148,7 @@ class LayoutAnimationKeyFrameManager : public UIManagerAnimationDelegate,
  protected:
   bool mutatedViewIsVirtual(ShadowViewMutation const &mutation) const;
 
+  bool hasComponentDescriptorForShadowView(ShadowView const &shadowView) const;
   ComponentDescriptor const &getComponentDescriptorForShadowView(
       ShadowView const &shadowView) const;
   std::pair<double, double> calculateAnimationProgress(

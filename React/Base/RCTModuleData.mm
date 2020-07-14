@@ -384,6 +384,11 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init);
 
 - (void)gatherConstants
 {
+  return [self gatherConstantsAndSignalJSRequireEnding:NO];
+}
+
+- (void)gatherConstantsAndSignalJSRequireEnding:(BOOL)startMarkers
+{
   NSString *moduleName = [self name];
 
   if (_hasConstantsToExport && !_constantsToExport) {
@@ -391,15 +396,17 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init);
         RCTProfileTagAlways, ([NSString stringWithFormat:@"[RCTModuleData gatherConstants] %@", _moduleClass]), nil);
     (void)[self instance];
 
-    /**
-     * Why do we instrument moduleJSRequireEndingStart here?
-     *  - NativeModule requires from JS go through ModuleRegistry::getConfig().
-     *  - ModuleRegistry::getConfig() calls NativeModule::getConstants() first.
-     *  - This delegates to RCTNativeModule::getConstants(), which calls RCTModuleData gatherConstants().
-     *  - Therefore, this is the first statement that executes after the NativeModule is created/initialized in a JS
-     *    require.
-     */
-    BridgeNativeModulePerfLogger::moduleJSRequireEndingStart([moduleName UTF8String]);
+    if (startMarkers) {
+      /**
+       * Why do we instrument moduleJSRequireEndingStart here?
+       *  - NativeModule requires from JS go through ModuleRegistry::getConfig().
+       *  - ModuleRegistry::getConfig() calls NativeModule::getConstants() first.
+       *  - This delegates to RCTNativeModule::getConstants(), which calls RCTModuleData gatherConstants().
+       *  - Therefore, this is the first statement that executes after the NativeModule is created/initialized in a JS
+       *    require.
+       */
+      BridgeNativeModulePerfLogger::moduleJSRequireEndingStart([moduleName UTF8String]);
+    }
 
     if (!RCTIsMainQueueExecutionOfConstantsToExportDisabled() && _requiresMainQueueSetup) {
       if (!RCTIsMainQueue()) {
@@ -414,7 +421,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init);
     }
 
     RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"");
-  } else {
+  } else if (startMarkers) {
     /**
      * If a NativeModule doesn't have constants, it isn't eagerly loaded until its methods are first invoked.
      * Therefore, we should immediately start JSRequireEnding
@@ -425,7 +432,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init);
 
 - (NSDictionary<NSString *, id> *)exportedConstants
 {
-  [self gatherConstants];
+  [self gatherConstantsAndSignalJSRequireEnding:YES];
   NSDictionary<NSString *, id> *constants = _constantsToExport;
   _constantsToExport = nil; // Not needed anymore
   return constants;

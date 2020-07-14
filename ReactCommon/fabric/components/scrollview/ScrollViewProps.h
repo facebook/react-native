@@ -21,32 +21,32 @@ class ScrollViewProps final : public ViewProps {
 
 #pragma mark - Props
 
-  bool const alwaysBounceHorizontal{};
-  bool const alwaysBounceVertical{};
-  bool const bounces{true};
-  bool const bouncesZoom{true};
-  bool const canCancelContentTouches{true};
-  bool const centerContent{};
-  bool const automaticallyAdjustContentInsets{};
-  Float const decelerationRate{0.998};
-  bool const directionalLockEnabled{};
-  ScrollViewIndicatorStyle const indicatorStyle{};
-  ScrollViewKeyboardDismissMode const keyboardDismissMode{};
-  Float const maximumZoomScale{1.0};
-  Float const minimumZoomScale{1.0};
-  bool const scrollEnabled{true};
-  bool const pagingEnabled{};
-  bool const pinchGestureEnabled{true};
-  bool const scrollsToTop{true};
-  bool const showsHorizontalScrollIndicator{true};
-  bool const showsVerticalScrollIndicator{true};
-  Float const scrollEventThrottle{};
-  Float const zoomScale{1.0};
-  EdgeInsets const contentInset{};
-  Point const contentOffset{};
-  EdgeInsets const scrollIndicatorInsets{};
-  Float const snapToInterval{};
-  ScrollViewSnapToAlignment const snapToAlignment{};
+  bool alwaysBounceHorizontal{};
+  bool alwaysBounceVertical{};
+  bool bounces{true};
+  bool bouncesZoom{true};
+  bool canCancelContentTouches{true};
+  bool centerContent{};
+  bool automaticallyAdjustContentInsets{};
+  Float decelerationRate{0.998};
+  bool directionalLockEnabled{};
+  ScrollViewIndicatorStyle indicatorStyle{};
+  ScrollViewKeyboardDismissMode keyboardDismissMode{};
+  Float maximumZoomScale{1.0};
+  Float minimumZoomScale{1.0};
+  bool scrollEnabled{true};
+  bool pagingEnabled{};
+  bool pinchGestureEnabled{true};
+  bool scrollsToTop{true};
+  bool showsHorizontalScrollIndicator{true};
+  bool showsVerticalScrollIndicator{true};
+  Float scrollEventThrottle{};
+  Float zoomScale{1.0};
+  EdgeInsets contentInset{};
+  Point contentOffset{};
+  EdgeInsets scrollIndicatorInsets{};
+  Float snapToInterval{};
+  ScrollViewSnapToAlignment snapToAlignment{};
 
 #pragma mark - DebugStringConvertible
 

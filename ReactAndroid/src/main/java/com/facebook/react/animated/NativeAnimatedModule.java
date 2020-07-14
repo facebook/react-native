@@ -103,7 +103,9 @@ public class NativeAnimatedModule extends NativeAnimatedModuleSpec
   private @Nullable NativeAnimatedNodesManager mNodesManager;
 
   private volatile boolean mFabricBatchCompleted = false;
+  private int mFabricFramesSkipped = 0;
   private boolean mInitializedForFabric = false;
+  private boolean mInitializedForNonFabric = false;
   private @UIManagerType int mUIManagerType = UIManagerType.DEFAULT;
   private int mNumFabricAnimations = 0;
   private int mNumNonFabricAnimations = 0;
@@ -145,12 +147,8 @@ public class NativeAnimatedModule extends NativeAnimatedModuleSpec
   public void initialize() {
     ReactApplicationContext reactApplicationContext = getReactApplicationContextIfActiveOrWarn();
 
-    // TODO T59412313 Implement this API on FabricUIManager to use in bridgeless mode
-    if (reactApplicationContext != null && !reactApplicationContext.isBridgeless()) {
+    if (reactApplicationContext != null) {
       reactApplicationContext.addLifecycleEventListener(this);
-      UIManagerModule uiManager =
-          Assertions.assertNotNull(reactApplicationContext.getNativeModule(UIManagerModule.class));
-      uiManager.addUIManagerEventListener(this);
     }
   }
 
@@ -177,17 +175,29 @@ public class NativeAnimatedModule extends NativeAnimatedModuleSpec
       return;
     }
 
-    if (mFabricBatchCompleted) {
-      // This will execute all operations and preOperations queued
-      // since the last time this was run, and will race with anything
-      // being queued from the JS thread. That is, if the JS thread
-      // is still queuing operations, we might execute some of them
-      // at the very end until we exhaust the queue faster than the
-      // JS thread can queue up new items.
-      executeAllOperations(mPreOperations);
-      executeAllOperations(mOperations);
-      mFabricBatchCompleted = false;
+    // The problem we're trying to solve here: we could be in the middle of queueing
+    // a batch of related animation operations when Fabric flushes a batch of MountItems.
+    // It's visually bad if we execute half of the animation ops and then wait another frame
+    // (or more) to execute the rest.
+    // Therefore, we wait until either `didScheduleMountItems` has been called, or a certain
+    // number of frames have been skipped.
+    // We wait a max of 2 frames or about 32ms before flushing.
+    // The reason to execute in some cases without a Fabric commit is that there might be
+    // animations that are triggered without any Fabric commits.
+    if (!mFabricBatchCompleted && mFabricFramesSkipped < 3) {
+      mFabricFramesSkipped++;
     }
+
+    // This will execute all operations and preOperations queued
+    // since the last time this was run, and will race with anything
+    // being queued from the JS thread. That is, if the JS thread
+    // is still queuing operations, we might execute some of them
+    // at the very end until we exhaust the queue faster than the
+    // JS thread can queue up new items.
+    executeAllOperations(mPreOperations);
+    executeAllOperations(mOperations);
+    mFabricBatchCompleted = false;
+    mFabricFramesSkipped = 0;
   }
 
   private void executeAllOperations(Queue<UIThreadOperation> operationQueue) {
@@ -290,6 +300,77 @@ public class NativeAnimatedModule extends NativeAnimatedModuleSpec
   @VisibleForTesting
   public void setNodesManager(NativeAnimatedNodesManager nodesManager) {
     mNodesManager = nodesManager;
+  }
+
+  /**
+   * Given a viewTag, detect if we're running in Fabric or non-Fabric and attach an event listener
+   * to the correct UIManager, if necessary. This is expected to only be called from the JS thread,
+   * and not concurrently.
+   *
+   * @param viewTag
+   */
+  private void initializeLifecycleEventListenersForViewTag(final int viewTag) {
+    mUIManagerType = ViewUtil.getUIManagerType(viewTag);
+    if (mUIManagerType == UIManagerType.FABRIC) {
+      mNumFabricAnimations++;
+    } else {
+      mNumNonFabricAnimations++;
+    }
+
+    if (mNodesManager != null) {
+      mNodesManager.initializeEventListenerForUIManagerType(mUIManagerType);
+    }
+
+    // Subscribe to UIManager (Fabric or non-Fabric) lifecycle events if we haven't yet
+    if ((mInitializedForFabric && mUIManagerType == UIManagerType.FABRIC)
+        || (mInitializedForNonFabric && mUIManagerType == UIManagerType.DEFAULT)) {
+      return;
+    }
+
+    ReactApplicationContext reactApplicationContext = getReactApplicationContext();
+    if (reactApplicationContext != null) {
+      @Nullable
+      UIManager uiManager = UIManagerHelper.getUIManager(reactApplicationContext, mUIManagerType);
+      if (uiManager != null) {
+        uiManager.addUIManagerEventListener(this);
+        if (mUIManagerType == UIManagerType.FABRIC) {
+          mInitializedForFabric = true;
+        } else {
+          mInitializedForNonFabric = true;
+        }
+      }
+    }
+  }
+
+  /**
+   * Given a viewTag and the knowledge that a "disconnect" or "stop"-type imperative command is
+   * being executed, decrement the number of inflight animations and possibly switch UIManager
+   * modes.
+   *
+   * @param viewTag
+   */
+  private void decrementInFlightAnimationsForViewTag(final int viewTag) {
+    @UIManagerType int animationManagerType = ViewUtil.getUIManagerType(viewTag);
+    if (animationManagerType == UIManagerType.FABRIC) {
+      mNumFabricAnimations--;
+    } else {
+      mNumNonFabricAnimations--;
+    }
+
+    // Should we switch to a different animation mode?
+    // This can be useful when navigating between Fabric and non-Fabric screens:
+    // If there are ongoing Fabric animations from a previous screen,
+    // and we tear down the current non-Fabric screen, we should expect
+    // the animation mode to switch back - and vice-versa.
+    if (mNumNonFabricAnimations == 0
+        && mNumFabricAnimations > 0
+        && mUIManagerType != UIManagerType.FABRIC) {
+      mUIManagerType = UIManagerType.FABRIC;
+    } else if (mNumFabricAnimations == 0
+        && mNumNonFabricAnimations > 0
+        && mUIManagerType != UIManagerType.DEFAULT) {
+      mUIManagerType = UIManagerType.DEFAULT;
+    }
   }
 
   @Override
@@ -582,6 +663,8 @@ public class NativeAnimatedModule extends NativeAnimatedModuleSpec
               + viewTag);
     }
 
+    initializeLifecycleEventListenersForViewTag(viewTag);
+
     mOperations.add(
         new UIThreadOperation() {
           @Override
@@ -612,6 +695,8 @@ public class NativeAnimatedModule extends NativeAnimatedModuleSpec
               + " viewTag: "
               + viewTag);
     }
+
+    decrementInFlightAnimationsForViewTag(viewTag);
 
     mOperations.add(
         new UIThreadOperation() {
@@ -668,26 +753,7 @@ public class NativeAnimatedModule extends NativeAnimatedModuleSpec
               + eventMapping.toHashMap().toString());
     }
 
-    mUIManagerType = ViewUtil.getUIManagerType(viewTag);
-    if (mUIManagerType == UIManagerType.FABRIC) {
-      mNumFabricAnimations++;
-    } else {
-      mNumNonFabricAnimations++;
-    }
-
-    // Subscribe to FabricUIManager lifecycle events if we haven't yet
-    if (!mInitializedForFabric && mUIManagerType == UIManagerType.FABRIC) {
-      ReactApplicationContext reactApplicationContext = getReactApplicationContext();
-      if (reactApplicationContext != null) {
-        @Nullable
-        UIManager uiManager =
-            UIManagerHelper.getUIManager(reactApplicationContext, UIManagerType.FABRIC);
-        if (uiManager != null) {
-          uiManager.addUIManagerEventListener(this);
-          mInitializedForFabric = true;
-        }
-      }
-    }
+    initializeLifecycleEventListenersForViewTag(viewTag);
 
     mOperations.add(
         new UIThreadOperation() {
@@ -724,27 +790,7 @@ public class NativeAnimatedModule extends NativeAnimatedModuleSpec
               + animatedValueTag);
     }
 
-    @UIManagerType int animationManagerType = ViewUtil.getUIManagerType(viewTag);
-    if (animationManagerType == UIManagerType.FABRIC) {
-      mNumFabricAnimations--;
-    } else {
-      mNumNonFabricAnimations--;
-    }
-
-    // Should we switch to a different animation mode?
-    // This can be useful when navigating between Fabric and non-Fabric screens:
-    // If there are ongoing Fabric animations from a previous screen,
-    // and we tear down the current non-Fabric screen, we should expect
-    // the animation mode to switch back - and vice-versa.
-    if (mNumNonFabricAnimations == 0
-        && mNumFabricAnimations > 0
-        && mUIManagerType != UIManagerType.FABRIC) {
-      mUIManagerType = UIManagerType.FABRIC;
-    } else if (mNumFabricAnimations == 0
-        && mNumNonFabricAnimations > 0
-        && mUIManagerType != UIManagerType.DEFAULT) {
-      mUIManagerType = UIManagerType.DEFAULT;
-    }
+    decrementInFlightAnimationsForViewTag(viewTag);
 
     mOperations.add(
         new UIThreadOperation() {
@@ -773,5 +819,17 @@ public class NativeAnimatedModule extends NativeAnimatedModuleSpec
   @Override
   public void removeListeners(double count) {
     // iOS only
+  }
+
+  @Override
+  public void getValue(final double animatedValueNodeTagDouble, final Callback callback) {
+    final int animatedValueNodeTag = (int) animatedValueNodeTagDouble;
+    mOperations.add(
+        new UIThreadOperation() {
+          @Override
+          public void execute(NativeAnimatedNodesManager animatedNodesManager) {
+            animatedNodesManager.getValue(animatedValueNodeTag, callback);
+          }
+        });
   }
 }

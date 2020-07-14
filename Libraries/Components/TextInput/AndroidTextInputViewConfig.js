@@ -16,6 +16,36 @@ import type {ReactNativeBaseComponentViewConfig} from '../../Renderer/shims/Reac
 const AndroidTextInputViewConfig = {
   uiViewClassName: 'AndroidTextInput',
   bubblingEventTypes: {
+    topBlur: {
+      phasedRegistrationNames: {
+        bubbled: 'onBlur',
+        captured: 'onBlurCapture',
+      },
+    },
+    topEndEditing: {
+      phasedRegistrationNames: {
+        bubbled: 'onEndEditing',
+        captured: 'onEndEditingCapture',
+      },
+    },
+    topFocus: {
+      phasedRegistrationNames: {
+        bubbled: 'onFocus',
+        captured: 'onFocusCapture',
+      },
+    },
+    topKeyPress: {
+      phasedRegistrationNames: {
+        bubbled: 'onKeyPress',
+        captured: 'onKeyPressCapture',
+      },
+    },
+    topSubmitEditing: {
+      phasedRegistrationNames: {
+        bubbled: 'onSubmitEditing',
+        captured: 'onSubmitEditingCapture',
+      },
+    },
     topTextInput: {
       phasedRegistrationNames: {
         bubbled: 'onTextInput',

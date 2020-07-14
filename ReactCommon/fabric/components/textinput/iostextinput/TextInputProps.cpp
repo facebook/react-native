@@ -56,7 +56,12 @@ TextInputProps::TextInputProps(
           sourceProps.mostRecentEventCount,
           {})),
       autoFocus(
-          convertRawProp(rawProps, "autoFocus", sourceProps.autoFocus, {})){};
+          convertRawProp(rawProps, "autoFocus", sourceProps.autoFocus, {})),
+      inputAccessoryViewID(convertRawProp(
+          rawProps,
+          "inputAccessoryViewID",
+          sourceProps.inputAccessoryViewID,
+          {})){};
 
 TextAttributes TextInputProps::getEffectiveTextAttributes(
     Float fontSizeMultiplier) const {

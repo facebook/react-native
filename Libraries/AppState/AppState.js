@@ -10,13 +10,11 @@
 
 'use strict';
 
-const EventEmitter = require('../vendor/emitter/EventEmitter');
-const NativeEventEmitter = require('../EventEmitter/NativeEventEmitter');
-
-const invariant = require('invariant');
-const logError = require('../Utilities/logError');
-
+import NativeEventEmitter from '../EventEmitter/NativeEventEmitter';
+import logError from '../Utilities/logError';
+import EventEmitter from '../vendor/emitter/EventEmitter';
 import NativeAppState from './NativeAppState';
+import invariant from 'invariant';
 
 /**
  * `AppState` can tell you if the app is in the foreground or background,

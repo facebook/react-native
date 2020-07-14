@@ -103,10 +103,10 @@ class JSI_EXPORT ObjCTurboModule : public TurboModule {
  * Used by TurboModules to get access to other TurboModules.
  *
  * Usage:
- * Place `@synthesize turboModuleLookupDelegate = _turboModuleLookupDelegate`
+ * Place `@synthesize turboModuleRegistry = _turboModuleRegistry`
  * in the @implementation section of your TurboModule.
  */
-@property (nonatomic, weak) id<RCTTurboModuleLookupDelegate> turboModuleLookupDelegate;
+@property (nonatomic, weak) id<RCTTurboModuleRegistry> turboModuleRegistry;
 
 @optional
 // This should be required, after migration is done.
