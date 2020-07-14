@@ -115,10 +115,6 @@ public class TouchTargetHelper {
     // Consider z-index when determining the touch target.
     ReactZIndexedViewGroup zIndexedViewGroup =
             viewGroup instanceof ReactZIndexedViewGroup ? (ReactZIndexedViewGroup) viewGroup : null;
-    String overflow = viewGroup instanceof ReactClippingViewGroup
-            ? ((ReactClippingViewGroup) viewGroup).getOverflow()
-            : null;
-    boolean allowOverflow = overflow == null || overflow.equals(ViewProps.VISIBLE);
 
     for (int i = childrenCount - 1; i >= 0; i--) {
       int childIndex =
@@ -127,7 +123,7 @@ public class TouchTargetHelper {
       TouchTestResult touchTestData = mTouchTestData;
 
       if (isTransformedTouchPointInView(
-          eventCoords[0], eventCoords[1], viewGroup, child, touchTestData, allowOverflow)) {
+          eventCoords[0], eventCoords[1], viewGroup, child, touchTestData)) {
         // If it is contained within the child View, the childPoint value will contain the view
         // coordinates relative to the child
         // We need to store the existing X,Y for the viewGroup away as it is possible this child
@@ -150,13 +146,11 @@ public class TouchTargetHelper {
 
   /**
    * Returns whether the touch point is within the child View It is transform aware and will invert
-   * the transform Matrix to find the true local points This code is taken from {@link
-   * ViewGroup#isTransformedTouchPointInView()}
+   * the transform Matrix to find the true local points
    */
   private static boolean isTransformedTouchPointInView(
           float x, float y, ViewGroup parent, View child,
-          TouchTestResult outTestData,
-          boolean allowOverflow) {
+          TouchTestResult outTestData) {
     float localX = x + parent.getScrollX() - child.getLeft();
     float localY = y + parent.getScrollY() - child.getTop();
     Matrix matrix = child.getMatrix();
@@ -173,7 +167,11 @@ public class TouchTargetHelper {
 
     boolean hittest = isLocalCoordinateInView(localX, localY, child);
 
-    if (allowOverflow || hittest) {
+    String overflow = child instanceof ReactClippingViewGroup
+      ? ((ReactClippingViewGroup) child).getOverflow()
+      : null;
+
+    if (hittest || (overflow == null || overflow.equals(ViewProps.VISIBLE))) {
       outTestData.set(localX, localY, hittest);
       return true;
     }
