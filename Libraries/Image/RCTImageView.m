@@ -619,6 +619,11 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
   [self reloadImage];
 }
   
+- (RCTPlatformView *)reactAccessibilityElement
+{
+  return (RCTPlatformView *)_imageView.cell;
+}
+
 - (NSColor *)tintColor
 {
   NSColor *tintColor = nil;
