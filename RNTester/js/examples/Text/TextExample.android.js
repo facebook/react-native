@@ -146,6 +146,7 @@ class AdjustingFontSize extends React.Component<
         <Text
           adjustsFontSizeToFit={true}
           numberOfLines={4}
+          android_hyphenationFrequency="normal"
           style={{fontSize: 20, marginVertical: 6}}>
           {'Multiline text component shrinking is supported, watch as this reeeeaaaally loooooong teeeeeeext grooooows and then shriiiinks as you add text to me! ioahsdia soady auydoa aoisyd aosdy ' +
             ' ' +
@@ -205,6 +206,28 @@ class TextExample extends React.Component<{...}> {
           <Text>
             The text should wrap if it goes on multiple lines. See, this is
             going to the next line.
+          </Text>
+        </RNTesterBlock>
+        <RNTesterBlock title="Hyphenation">
+          <Text android_hyphenationFrequency="normal">
+            <Text style={{color: 'red'}}>Normal: </Text>
+            WillHaveAnHyphenWhenBreakingForNewLine
+          </Text>
+          <Text android_hyphenationFrequency="none">
+            <Text style={{color: 'red'}}>None: </Text>
+            WillNotHaveAnHyphenWhenBreakingForNewLine
+          </Text>
+          <Text android_hyphenationFrequency="full">
+            <Text style={{color: 'red'}}>Full: </Text>
+            WillHaveAnHyphenWhenBreakingForNewLine
+          </Text>
+          <Text android_hyphenationFrequency="high">
+            <Text style={{color: 'red'}}>High: </Text>
+            WillHaveAnHyphenWhenBreakingForNewLine
+          </Text>
+          <Text android_hyphenationFrequency="balanced">
+            <Text style={{color: 'red'}}>Balanced: </Text>
+            WillHaveAnHyphenWhenBreakingForNewLine
           </Text>
         </RNTesterBlock>
         <RNTesterBlock title="Padding">

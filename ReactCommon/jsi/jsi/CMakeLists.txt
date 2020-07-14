@@ -22,3 +22,7 @@ elseif ("${CMAKE_CXX_COMPILER_ID}" MATCHES "MSVC")
   list(APPEND jsi_compile_flags "/EHsc")
 endif()
 target_compile_options(jsi PUBLIC ${jsi_compile_flags})
+
+install(DIRECTORY "${PROJECT_SOURCE_DIR}/API/jsi/" DESTINATION include
+  FILES_MATCHING PATTERN "*.h"
+  PATTERN "test" EXCLUDE)

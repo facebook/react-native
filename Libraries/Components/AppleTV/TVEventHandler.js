@@ -10,14 +10,13 @@
 
 'use strict';
 
-const Platform = require('../../Utilities/Platform');
-const NativeEventEmitter = require('../../EventEmitter/NativeEventEmitter');
-
+import NativeEventEmitter from '../../EventEmitter/NativeEventEmitter';
+import Platform from '../../Utilities/Platform';
+import {type EventSubscription} from '../../vendor/emitter/EventEmitter';
 import NativeTVNavigationEventEmitter from './NativeTVNavigationEventEmitter';
-import type EmitterSubscription from '../../vendor/emitter/EmitterSubscription';
 
 class TVEventHandler {
-  __nativeTVNavigationEventListener: ?EmitterSubscription = null;
+  __nativeTVNavigationEventListener: ?EventSubscription = null;
   __nativeTVNavigationEventEmitter: ?NativeEventEmitter = null;
 
   enable(component: ?any, callback: Function): void {

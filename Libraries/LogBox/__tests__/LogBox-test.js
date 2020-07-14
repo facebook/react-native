@@ -69,6 +69,30 @@ describe('LogBox', () => {
     expect(LogBoxData.isDisabled()).toBe(true);
   });
 
+  it('will not ignore logs for `ignoreAllLogs(false)`', () => {
+    expect(LogBoxData.isDisabled()).toBe(false);
+
+    LogBox.install();
+
+    expect(LogBoxData.isDisabled()).toBe(false);
+
+    LogBox.ignoreAllLogs(false);
+
+    expect(LogBoxData.isDisabled()).toBe(false);
+  });
+
+  it('will ignore logs for `ignoreAllLogs()`', () => {
+    expect(LogBoxData.isDisabled()).toBe(false);
+
+    LogBox.install();
+
+    expect(LogBoxData.isDisabled()).toBe(false);
+
+    LogBox.ignoreAllLogs();
+
+    expect(LogBoxData.isDisabled()).toBe(true);
+  });
+
   it('registers warnings', () => {
     jest.mock('../Data/LogBoxData');
 

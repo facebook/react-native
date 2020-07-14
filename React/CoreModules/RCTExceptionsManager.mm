@@ -24,7 +24,7 @@
 @implementation RCTExceptionsManager
 
 @synthesize bridge = _bridge;
-@synthesize turboModuleLookupDelegate = _turboModuleLookupDelegate;
+@synthesize turboModuleRegistry = _turboModuleRegistry;
 
 RCT_EXPORT_MODULE()
 
@@ -46,7 +46,7 @@ RCT_EXPORT_MODULE()
     if (_bridge) {
       [_bridge.redBox showErrorMessage:message withStack:stack errorCookie:((int)exceptionId)];
     } else {
-      RCTRedBox *redbox = [_turboModuleLookupDelegate moduleForName:"RCTRedBox"];
+      RCTRedBox *redbox = [_turboModuleRegistry moduleForName:"RCTRedBox"];
       [redbox showErrorMessage:message withStack:stack errorCookie:(int)exceptionId];
     }
   }
@@ -68,7 +68,7 @@ RCT_EXPORT_MODULE()
     if (_bridge) {
       [_bridge.redBox showErrorMessage:message withStack:stack errorCookie:((int)exceptionId)];
     } else {
-      RCTRedBox *redbox = [_turboModuleLookupDelegate moduleForName:"RCTRedBox"];
+      RCTRedBox *redbox = [_turboModuleRegistry moduleForName:"RCTRedBox"];
       [redbox showErrorMessage:message withStack:stack errorCookie:(int)exceptionId];
     }
   }
@@ -115,7 +115,7 @@ RCT_EXPORT_METHOD(updateExceptionMessage
   if (_bridge) {
     [_bridge.redBox updateErrorMessage:message withStack:stack errorCookie:((int)exceptionId)];
   } else {
-    RCTRedBox *redbox = [_turboModuleLookupDelegate moduleForName:"RCTRedBox"];
+    RCTRedBox *redbox = [_turboModuleRegistry moduleForName:"RCTRedBox"];
     [redbox updateErrorMessage:message withStack:stack errorCookie:(int)exceptionId];
   }
 

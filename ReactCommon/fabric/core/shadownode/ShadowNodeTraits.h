@@ -50,6 +50,10 @@ class ShadowNodeTraits {
     // `ViewShadowNode` (exact!) class.
     View = 1 << 5,
 
+    // The node is hidden.
+    // Nodes with this trait (and all their descendants) will not produce views.
+    Hidden = 1 << 6,
+
     // Inherits `YogaLayoutableShadowNode` and enforces that the `YGNode` is a
     // leaf.
     LeafYogaNode = 1 << 10,

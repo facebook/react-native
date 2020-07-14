@@ -16,7 +16,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface RCTSurfaceView (Internal)
 
-@property (nonatomic, strong) RCTSurfaceRootView *rootView;
+@property (nonatomic, nullable, strong) RCTSurfaceRootView *rootView;
 @property (nonatomic, assign) RCTSurfaceStage stage;
 
 @end

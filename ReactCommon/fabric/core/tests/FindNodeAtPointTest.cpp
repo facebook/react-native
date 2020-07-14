@@ -10,6 +10,25 @@
 
 using namespace facebook::react;
 
+/*
+ *┌─────────────────────────┐
+ *│nodeA_                   │
+ *│                         │
+ *│                         │
+ *│                         │
+ *│                         │
+ *│                         │
+ *│                         │
+ *│      ┌────────────────┐ │
+ *│      │nodeAA_         │ │
+ *│      │                │ │
+ *│      │     ┌───────┐  │ │
+ *│      │     │nodeAA_│  │ │
+ *│      │     │       │  │ │
+ *│      │     └───────┘  │ │
+ *│      └────────────────┘ │
+ *└─────────────────────────┘
+ */
 class FindNodeAtPointTest : public ::testing::Test {
  protected:
   FindNodeAtPointTest()
@@ -103,8 +122,7 @@ TEST_F(FindNodeAtPointTest, withoutTransform) {
 }
 
 TEST_F(FindNodeAtPointTest, viewIsTranslated) {
-  nodeA_->_transform =
-      Transform::Identity() * Transform::Translate(-100, -100, 0);
+  nodeA_->_contentOriginOffset = {-100, -100};
 
   EXPECT_EQ(
       LayoutableShadowNode::findNodeAtPoint(nodeA_, {15, 15})->getTag(),
@@ -115,5 +133,7 @@ TEST_F(FindNodeAtPointTest, viewIsTranslated) {
 TEST_F(FindNodeAtPointTest, viewIsScaled) {
   nodeAAA_->_transform = Transform::Identity() * Transform::Scale(0.5, 0.5, 0);
 
-  EXPECT_EQ(LayoutableShadowNode::findNodeAtPoint(nodeA_, {119, 119}), nodeAA_);
+  EXPECT_EQ(
+      LayoutableShadowNode::findNodeAtPoint(nodeA_, {119, 119})->getTag(),
+      nodeAA_->getTag());
 }
