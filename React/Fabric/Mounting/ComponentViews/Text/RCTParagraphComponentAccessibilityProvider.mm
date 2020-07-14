@@ -116,19 +116,18 @@ using namespace facebook::react;
   }
 
   if (numberOfLinks > 0 && numberOfButtons > 0) {
-    firstElement.accessibilityHint = @"Links and buttons are found, swipe right to move to them.";
+    firstElement.accessibilityHint = @"Links and buttons are found, swipe to move to them.";
 
   } else if (numberOfLinks > 0) {
     NSString *firstElementHint = (numberOfLinks == 1)
-        ? @"One link found, swipe right to move to the link."
-        : [NSString stringWithFormat:@"%ld links found, swipe right to move to the first link.", (long)numberOfLinks];
+        ? @"One link found, swipe to move to the link."
+        : [NSString stringWithFormat:@"%ld links found, swipe to move to the first link.", (long)numberOfLinks];
     firstElement.accessibilityHint = firstElementHint;
 
   } else if (numberOfButtons > 0) {
     NSString *firstElementHint = (numberOfButtons == 1)
-        ? @"One button found, swipe right to move to the button."
-        : [NSString
-              stringWithFormat:@"%ld buttons found, swipe right to move to the first button.", (long)numberOfButtons];
+        ? @"One button found, swipe to move to the button."
+        : [NSString stringWithFormat:@"%ld buttons found, swipe to move to the first button.", (long)numberOfButtons];
     firstElement.accessibilityHint = firstElementHint;
   }
 
