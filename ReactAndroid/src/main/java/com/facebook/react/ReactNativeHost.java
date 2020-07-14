@@ -118,9 +118,9 @@ public abstract class ReactNativeHost {
   }
 
   /**
-   * Returns the name of the main module. Determines the URL used to fetch the JS bundle from the
-   * packager server. It is only used when dev support is enabled. This is the first file to be
-   * executed once the {@link ReactInstanceManager} is created. e.g. "index.android"
+   * Returns the name of the main module. Determines the URL used to fetch the JS bundle from Metro.
+   * It is only used when dev support is enabled. This is the first file to be executed once the
+   * {@link ReactInstanceManager} is created. e.g. "index.android"
    */
   protected String getJSMainModuleName() {
     return "index.android";
@@ -138,7 +138,7 @@ public abstract class ReactNativeHost {
   /**
    * Returns the name of the bundle in assets. If this is null, and no file path is specified for
    * the bundle, the app will only work with {@code getUseDeveloperSupport} enabled and will always
-   * try to load the JS bundle from the packager server. e.g. "index.android.bundle"
+   * try to load the JS bundle from Metro. e.g. "index.android.bundle"
    */
   protected @Nullable String getBundleAssetName() {
     return "index.android.bundle";

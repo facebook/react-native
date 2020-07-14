@@ -13,13 +13,11 @@
 const RNTesterButton = require('../../components/RNTesterButton');
 const React = require('react');
 
-const performanceNow = require('fbjs/lib/performanceNow');
-
 const {Alert, Platform, ToastAndroid, Text, View} = require('react-native');
 
 function burnCPU(milliseconds) {
-  const start = performanceNow();
-  while (performanceNow() < start + milliseconds) {}
+  const start = global.performance.now();
+  while (global.performance.now() < start + milliseconds) {}
 }
 
 type RequestIdleCallbackTesterProps = $ReadOnly<{||}>;

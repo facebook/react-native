@@ -15,7 +15,6 @@ const TaskQueue = require('./TaskQueue');
 
 const infoLog = require('../Utilities/infoLog');
 const invariant = require('invariant');
-const keyMirror = require('fbjs/lib/keyMirror');
 
 import EventEmitter from '../vendor/emitter/EventEmitter';
 
@@ -77,10 +76,10 @@ const DEBUG: false = false;
  * from executing, making apps more responsive.
  */
 const InteractionManager = {
-  Events: keyMirror({
-    interactionStart: true,
-    interactionComplete: true,
-  }),
+  Events: {
+    interactionStart: 'interactionStart',
+    interactionComplete: 'interactionComplete',
+  },
 
   /**
    * Schedule a function to run after all interactions have completed. Returns a cancellable

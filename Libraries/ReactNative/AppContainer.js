@@ -10,14 +10,13 @@
 
 'use strict';
 
-const PropTypes = require('prop-types');
-const RCTDeviceEventEmitter = require('../EventEmitter/RCTDeviceEventEmitter');
-const React = require('react');
-const StyleSheet = require('../StyleSheet/StyleSheet');
-const View = require('../Components/View/View');
-
+import View from '../Components/View/View';
+import RCTDeviceEventEmitter from '../EventEmitter/RCTDeviceEventEmitter';
+import StyleSheet from '../StyleSheet/StyleSheet';
 import {type EventSubscription} from '../vendor/emitter/EventEmitter';
 import {RootTagContext, createRootTag} from './RootTag';
+import PropTypes from 'prop-types';
+import * as React from 'react';
 
 type Context = {rootTag: number, ...};
 

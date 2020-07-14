@@ -10,9 +10,9 @@
 
 'use strict';
 
-const NativeEventEmitter = require('../EventEmitter/NativeEventEmitter');
+import NativeEventEmitter from '../EventEmitter/NativeEventEmitter';
 import NativePushNotificationManagerIOS from './NativePushNotificationManagerIOS';
-const invariant = require('invariant');
+import invariant from 'invariant';
 
 const PushNotificationEmitter = new NativeEventEmitter(
   NativePushNotificationManagerIOS,

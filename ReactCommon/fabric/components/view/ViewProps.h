@@ -59,7 +59,7 @@ class ViewProps : public YogaStylableProps, public AccessibilityProps {
 
   bool collapsable{true};
 
-  int elevation{};
+  Float elevation{}; /* Android-only */
 
 #pragma mark - Convenience Methods
 

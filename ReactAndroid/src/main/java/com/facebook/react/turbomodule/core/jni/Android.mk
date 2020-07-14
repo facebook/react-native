@@ -15,7 +15,7 @@ LOCAL_EXPORT_C_INCLUDES := $(LOCAL_PATH)
 
 LOCAL_CFLAGS += -fexceptions -frtti -std=c++14 -Wall
 
-LOCAL_STATIC_LIBRARIES = libcallinvoker
+LOCAL_STATIC_LIBRARIES = libcallinvoker libreactperfloggerjni
 
 LOCAL_SHARED_LIBRARIES = libfb libfbjni
 

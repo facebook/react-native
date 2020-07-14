@@ -18,14 +18,6 @@ const invariant = require('invariant');
 
 import NativeTiming from './NativeTiming';
 
-let _performanceNow = null;
-function performanceNow() {
-  if (!_performanceNow) {
-    _performanceNow = require('fbjs/lib/performanceNow');
-  }
-  return _performanceNow();
-}
-
 /**
  * JS implementation of timer functions. Must be completely driven by an
  * external clock signal, all that's stored here is timerID, timer type, and
@@ -129,14 +121,17 @@ function _callTimer(timerID: number, frameTime: number, didTimeout: ?boolean) {
     ) {
       callback();
     } else if (type === 'requestAnimationFrame') {
-      callback(performanceNow());
+      callback(global.performance.now());
     } else if (type === 'requestIdleCallback') {
       callback({
         timeRemaining: function() {
           // TODO: Optimisation: allow running for longer than one frame if
           // there are no pending JS calls on the bridge from native. This
           // would require a way to check the bridge queue synchronously.
-          return Math.max(0, FRAME_DURATION - (performanceNow() - frameTime));
+          return Math.max(
+            0,
+            FRAME_DURATION - (global.performance.now() - frameTime),
+          );
         },
         didTimeout: !!didTimeout,
       });
@@ -318,7 +313,7 @@ const JSTimers = {
         const index = requestIdleCallbacks.indexOf(id);
         if (index > -1) {
           requestIdleCallbacks.splice(index, 1);
-          _callTimer(id, performanceNow(), true);
+          _callTimer(id, global.performance.now(), true);
         }
         delete requestIdleCallbackTimeouts[id];
         if (requestIdleCallbacks.length === 0) {
@@ -403,7 +398,7 @@ const JSTimers = {
 
   callIdleCallbacks: function(frameTime: number) {
     if (
-      FRAME_DURATION - (performanceNow() - frameTime) <
+      FRAME_DURATION - (global.performance.now() - frameTime) <
       IDLE_CALLBACK_FRAME_DEADLINE
     ) {
       return;
