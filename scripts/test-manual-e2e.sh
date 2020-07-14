@@ -35,28 +35,28 @@ success "Preparing version $PACKAGE_VERSION"
 
 repo_root=$(pwd)
 
-# rm -rf android
-# ./gradlew :ReactAndroid:installArchives || error "Couldn't generate artifacts"
+rm -rf android
+./gradlew :ReactAndroid:installArchives || error "Couldn't generate artifacts"
 
-# success "Generated artifacts for Maven"
+success "Generated artifacts for Maven"
 
-# npm install
+npm install
 
-# success "Killing any running packagers"
-# lsof -i :8081 | grep LISTEN
-# lsof -i :8081 | grep LISTEN | /usr/bin/awk '{print $2}' | xargs kill
+success "Killing any running packagers"
+lsof -i :8081 | grep LISTEN
+lsof -i :8081 | grep LISTEN | /usr/bin/awk '{print $2}' | xargs kill
 
-# info "Start the packager in another terminal by running 'npm start' from the root"
-# info "and then press any key."
-# info ""
-# read -n 1
+info "Start the packager in another terminal by running 'npm start' from the root"
+info "and then press any key."
+info ""
+read -n 1
 
-# ./gradlew :RNTester:android:app:installJscDebug || error "Couldn't build RNTester Android"
+./gradlew :RNTester:android:app:installJscDebug || error "Couldn't build RNTester Android"
 
-# info "Press any key to run RNTester in an already running Android emulator/device"
-# info ""
-# read -n 1
-# adb shell am start -n com.facebook.react.uiapp/.RNTesterActivity
+info "Press any key to run RNTester in an already running Android emulator/device"
+info ""
+read -n 1
+adb shell am start -n com.facebook.react.uiapp/.RNTesterActivity
 
 
 success "Installing CocoaPods dependencies"
