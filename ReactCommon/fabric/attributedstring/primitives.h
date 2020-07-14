@@ -87,6 +87,12 @@ enum class TextDecorationLinePattern {
   DashDotDot,
 };
 
+enum class AccessibilityRole {
+  Link,
+  Button,
+  Image,
+};
+
 } // namespace react
 } // namespace facebook
 
@@ -160,4 +166,12 @@ struct hash<facebook::react::TextBreakStrategy> {
     return hash<int>()(static_cast<int>(v));
   }
 };
+
+template <>
+struct hash<facebook::react::AccessibilityRole> {
+  size_t operator()(const facebook::react::AccessibilityRole &v) const {
+    return hash<int>()(static_cast<int>(v));
+  }
+};
+
 } // namespace std

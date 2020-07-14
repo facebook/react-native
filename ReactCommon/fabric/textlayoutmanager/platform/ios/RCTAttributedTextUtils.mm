@@ -212,9 +212,19 @@ NSDictionary<NSAttributedStringKey, id> *RCTNSTextAttributesFromTextAttributes(T
     attributes[RCTAttributedStringIsHighlightedAttributeName] = @YES;
   }
 
-  if (!textAttributes.accessibilityRole.empty()) {
-    attributes[RCTTextAttributesAccessibilityRoleAttributeName] =
-        [NSString stringWithCString:textAttributes.accessibilityRole.c_str() encoding:NSUTF8StringEncoding];
+  if (textAttributes.accessibilityRole.hasValue()) {
+    auto accessibilityRole = textAttributes.accessibilityRole.value();
+    switch (accessibilityRole) {
+      case AccessibilityRole::Link:
+        attributes[RCTTextAttributesAccessibilityRoleAttributeName] = @("link");
+        break;
+      case AccessibilityRole::Button:
+        attributes[RCTTextAttributesAccessibilityRoleAttributeName] = @("button");
+        break;
+      case AccessibilityRole::Image:
+        attributes[RCTTextAttributesAccessibilityRoleAttributeName] = @("image");
+        break;
+    };
   }
 
   return [attributes copy];
