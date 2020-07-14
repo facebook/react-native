@@ -83,6 +83,11 @@ AccessibilityProps::AccessibilityProps(
           "onAccessibilityAction",
           sourceProps.onAccessibilityAction,
           {})),
+      importantForAccessibility(convertRawProp(
+          rawProps,
+          "importantForAccessibility",
+          sourceProps.importantForAccessibility,
+          ImportantForAccessibility::Auto)),
       testId(convertRawProp(rawProps, "testId", sourceProps.testId, "")) {}
 
 #pragma mark - DebugStringConvertible
