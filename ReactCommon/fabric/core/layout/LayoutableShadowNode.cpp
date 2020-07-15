@@ -104,10 +104,6 @@ LayoutMetrics LayoutableShadowNode::computeRelativeLayoutMetrics(
     }
 
     resultFrame.origin += currentFrame.origin;
-
-    if (i != 0) {
-      resultFrame.origin += currentShadowNode->getContentOriginOffset();
-    }
   }
 
   return layoutMetrics;
@@ -149,10 +145,6 @@ bool LayoutableShadowNode::setLayoutMetrics(LayoutMetrics layoutMetrics) {
 
 Transform LayoutableShadowNode::getTransform() const {
   return Transform::Identity();
-}
-
-Point LayoutableShadowNode::getContentOriginOffset() const {
-  return {0, 0};
 }
 
 LayoutMetrics LayoutableShadowNode::getRelativeLayoutMetrics(
@@ -225,15 +217,13 @@ ShadowNode::Shared LayoutableShadowNode::findNodeAtPoint(
     return nullptr;
   }
   auto frame = layoutableShadowNode->getLayoutMetrics().frame;
-  auto transformedFrame = frame * layoutableShadowNode->getTransform();
-  auto isPointInside = transformedFrame.containsPoint(point);
+  auto isPointInside = frame.containsPoint(point);
 
   if (!isPointInside) {
     return nullptr;
   }
 
-  auto newPoint = point - transformedFrame.origin -
-      layoutableShadowNode->getContentOriginOffset();
+  auto newPoint = point - frame.origin * layoutableShadowNode->getTransform();
   for (const auto &childShadowNode : node->getChildren()) {
     auto hitView = findNodeAtPoint(childShadowNode, newPoint);
     if (hitView) {

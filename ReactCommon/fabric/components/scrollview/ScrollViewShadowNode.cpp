@@ -37,9 +37,11 @@ void ScrollViewShadowNode::layout(LayoutContext layoutContext) {
   updateStateIfNeeded();
 }
 
-Point ScrollViewShadowNode::getContentOriginOffset() const {
+Transform ScrollViewShadowNode::getTransform() const {
+  auto transform = ConcreteViewShadowNode::getTransform();
   auto contentOffset = getStateData().contentOffset;
-  return {-contentOffset.x, -contentOffset.y};
+  return transform *
+      Transform::Translate(-contentOffset.x, -contentOffset.y, 0);
 }
 
 } // namespace react
