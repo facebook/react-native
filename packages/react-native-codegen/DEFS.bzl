@@ -49,17 +49,8 @@ def rn_codegen_modules(
 
     rn_xplat_cxx_library(
         name = "generated_objcpp_modules-{}".format(name),
-        ios_srcs = [
-            ":{}".format(generate_module_mm_name),
-        ],
-        ios_headers = [
-            ":{}".format(generate_module_hobjcpp_name),
-        ],
-        ios_exported_headers = {
-            "{}.h".format(native_module_spec_name): ":{}".format(generate_module_hobjcpp_name),
-            "{}-generated.mm".format(native_module_spec_name): ":{}".format(generate_module_mm_name),
-        },
         header_namespace = native_module_spec_name,
+        apple_sdks = (IOS),
         compiler_flags = [
             "-fexceptions",
             "-frtti",
@@ -68,8 +59,18 @@ def rn_codegen_modules(
         ],
         fbobjc_compiler_flags = get_apple_compiler_flags(),
         fbobjc_preprocessor_flags = get_preprocessor_flags_for_build_mode() + get_apple_inspector_flags(),
+        ios_exported_headers = {
+            "{}.h".format(native_module_spec_name): ":{}".format(generate_module_hobjcpp_name),
+            "{}-generated.mm".format(native_module_spec_name): ":{}".format(generate_module_mm_name),
+        },
+        ios_headers = [
+            ":{}".format(generate_module_hobjcpp_name),
+        ],
+        ios_srcs = [
+            ":{}".format(generate_module_mm_name),
+        ],
+        labels = ["codegen_rule"],
         platforms = (APPLE),
-        apple_sdks = (IOS),
         preprocessor_flags = [
             "-DLOG_TAG=\"ReactNative\"",
             "-DWITH_FBSYSTRACE=1",
@@ -78,7 +79,6 @@ def rn_codegen_modules(
         deps = [
             "//xplat/js:React",
         ],
-        labels = ["codegen_rule"],
     )
 
 def rn_codegen_components(
@@ -186,7 +186,6 @@ def rn_codegen_components(
     # libs
     rn_xplat_cxx_library(
         name = "generated_components-{}".format(name),
-        tests = [":generated_tests-{}".format(name)],
         srcs = [
             ":{}".format(generate_event_emitter_cpp_name),
             ":{}".format(generate_props_cpp_name),
@@ -198,9 +197,7 @@ def rn_codegen_components(
             ":{}".format(generate_props_h_name),
             ":{}".format(generate_shadow_node_h_name),
         ],
-        ios_headers = [
-            ":{}".format(generate_component_hobjcpp_name),
-        ],
+        header_namespace = "react/components/{}".format(name),
         exported_headers = {
             "ComponentDescriptors.h": ":{}".format(generate_component_descriptor_h_name),
             "EventEmitters.h": ":{}".format(generate_event_emitter_h_name),
@@ -208,10 +205,6 @@ def rn_codegen_components(
             "RCTComponentViewHelpers.h": ":{}".format(generate_component_hobjcpp_name),
             "ShadowNodes.h": ":{}".format(generate_shadow_node_h_name),
         },
-        ios_exported_headers = {
-            "ComponentViewHelpers.h": ":{}".format(generate_component_hobjcpp_name),
-        },
-        header_namespace = "react/components/{}".format(name),
         compiler_flags = [
             "-fexceptions",
             "-frtti",
@@ -220,18 +213,26 @@ def rn_codegen_components(
         ],
         fbobjc_compiler_flags = get_apple_compiler_flags(),
         fbobjc_preprocessor_flags = get_preprocessor_flags_for_build_mode() + get_apple_inspector_flags(),
+        ios_exported_headers = {
+            "ComponentViewHelpers.h": ":{}".format(generate_component_hobjcpp_name),
+        },
+        ios_headers = [
+            ":{}".format(generate_component_hobjcpp_name),
+        ],
+        labels = ["codegen_rule"],
         platforms = (ANDROID, APPLE, CXX),
         preprocessor_flags = [
             "-DLOG_TAG=\"ReactNative\"",
             "-DWITH_FBSYSTRACE=1",
         ],
+        tests = [":generated_tests-{}".format(name)],
         visibility = ["PUBLIC"],
         deps = [
+            "//third-party/glog:glog",
             "//xplat/fbsystrace:fbsystrace",
             "//xplat/folly:headers_only",
             "//xplat/folly:memory",
             "//xplat/folly:molly",
-            "//third-party/glog:glog",
             YOGA_CXX_TARGET,
             react_native_xplat_target("fabric/debug:debug"),
             react_native_xplat_target("fabric/core:core"),
@@ -240,7 +241,6 @@ def rn_codegen_components(
             react_native_xplat_target("fabric/imagemanager:imagemanager"),
             react_native_xplat_target("fabric/components/view:view"),
         ],
-        labels = ["codegen_rule"],
     )
 
     rn_android_library(
@@ -248,13 +248,13 @@ def rn_codegen_components(
         srcs = [
             ":{}".format(zip_generated_java_files),
         ],
+        labels = ["codegen_rule"],
         visibility = ["PUBLIC"],
         deps = [
             react_native_dep("third-party/android/androidx:annotation"),
             react_native_target("java/com/facebook/react/bridge:bridge"),
             react_native_target("java/com/facebook/react/uimanager:uimanager"),
         ],
-        labels = ["codegen_rule"],
     )
 
     # Tests
@@ -263,6 +263,7 @@ def rn_codegen_components(
         srcs = [
             ":{}".format(generate_tests_cpp_name),
         ],
+        apple_sdks = (IOS, MACOSX),
         compiler_flags = [
             "-fexceptions",
             "-frtti",
@@ -270,13 +271,12 @@ def rn_codegen_components(
             "-Wall",
         ],
         contacts = ["oncall+react_native@xmail.facebook.com"],
-        apple_sdks = (IOS, MACOSX),
+        labels = ["codegen_rule"],
         platforms = (ANDROID, APPLE, CXX),
         deps = [
             "//xplat/third-party/gmock:gtest",
             ":generated_components-{}".format(name),
         ],
-        labels = ["codegen_rule"],
     )
 
 def rn_codegen_cxx_modules(
@@ -316,11 +316,11 @@ def rn_codegen_cxx_modules(
         headers = [
             ":{}".format(generate_module_h_name),
         ],
+        header_namespace = "react/modules/{}".format(name),
         exported_headers = {
             "NativeModules.cpp": ":{}".format(generate_module_cpp_name),
             "NativeModules.h": ":{}".format(generate_module_h_name),
         },
-        header_namespace = "react/modules/{}".format(name),
         compiler_flags = [
             "-fexceptions",
             "-frtti",
@@ -329,6 +329,7 @@ def rn_codegen_cxx_modules(
         ],
         fbobjc_compiler_flags = get_apple_compiler_flags(),
         fbobjc_preprocessor_flags = get_preprocessor_flags_for_build_mode() + get_apple_inspector_flags(),
+        labels = ["codegen_rule"],
         platforms = (ANDROID, APPLE),
         preprocessor_flags = [
             "-DLOG_TAG=\"ReactNative\"",
@@ -338,5 +339,4 @@ def rn_codegen_cxx_modules(
         exported_deps = [
             react_native_xplat_target("turbomodule/core:core"),
         ],
-        labels = ["codegen_rule"],
     )
