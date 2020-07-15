@@ -412,34 +412,6 @@ inline std::string toString(
   }
 }
 
-inline std::string toString(const AccessibilityRole &accessibilityRole) {
-  switch (accessibilityRole) {
-    case AccessibilityRole::Link:
-      return "link";
-    case AccessibilityRole::Button:
-      return "button";
-    case AccessibilityRole::Image:
-      return "image";
-  }
-}
-
-inline void fromRawValue(const RawValue &value, AccessibilityRole &result) {
-  auto string = (std::string)value;
-  if (string == "link") {
-    result = AccessibilityRole::Link;
-    return;
-  }
-  if (string == "button") {
-    result = AccessibilityRole::Button;
-    return;
-  }
-  if (string == "image") {
-    result = AccessibilityRole::Image;
-    return;
-  }
-  abort();
-}
-
 inline ParagraphAttributes convertRawProp(
     RawProps const &rawProps,
     ParagraphAttributes const &sourceParagraphAttributes,
