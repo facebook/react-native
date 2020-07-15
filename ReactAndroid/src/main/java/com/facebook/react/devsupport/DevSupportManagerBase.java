@@ -70,6 +70,12 @@ import java.util.concurrent.TimeoutException;
 public abstract class DevSupportManagerBase
     implements DevSupportManager, PackagerCommandListener, DevInternalSettings.Listener {
 
+  public interface CallbackWithBundleLoader {
+    void onSuccess(JSBundleLoader bundleLoader);
+
+    void onError(String url, Throwable cause);
+  }
+
   private static final int JAVA_ERROR_COOKIE = -1;
   private static final int JSEXCEPTION_ERROR_COOKIE = -1;
   private static final String JS_BUNDLE_FILE_NAME = "ReactNativeDevBundle.js";
@@ -863,7 +869,29 @@ public abstract class DevSupportManagerBase
   }
 
   @Override
-  public void loadSplitBundleFromServer(String bundlePath, final DevSplitBundleCallback callback) {
+  public void loadSplitBundleFromServer(
+      final String bundlePath, final DevSplitBundleCallback callback) {
+    fetchSplitBundleAndCreateBundleLoader(
+        bundlePath,
+        new CallbackWithBundleLoader() {
+          @Override
+          public void onSuccess(JSBundleLoader bundleLoader) {
+            bundleLoader.loadScript(mCurrentContext.getCatalystInstance());
+            mCurrentContext
+                .getJSModule(HMRClient.class)
+                .registerBundle(mDevServerHelper.getDevServerSplitBundleURL(bundlePath));
+            callback.onSuccess();
+          }
+
+          @Override
+          public void onError(String url, Throwable cause) {
+            callback.onError(url, cause);
+          }
+        });
+  }
+
+  public void fetchSplitBundleAndCreateBundleLoader(
+      String bundlePath, final CallbackWithBundleLoader callback) {
     final String bundleUrl = mDevServerHelper.getDevServerSplitBundleURL(bundlePath);
     // The bundle path may contain the '/' character, which is not allowed in file names.
     final File bundleFile =
@@ -886,16 +914,16 @@ public abstract class DevSupportManagerBase
                         });
 
                     @Nullable ReactContext context = mCurrentContext;
-                    if (context == null || !context.hasActiveCatalystInstance()) {
+                    if (context == null
+                        || (!context.isBridgeless() && !context.hasActiveCatalystInstance())) {
                       return;
                     }
 
-                    JSBundleLoader.createCachedSplitBundleFromNetworkLoader(
-                            bundleUrl, bundleFile.getAbsolutePath())
-                        .loadScript(context.getCatalystInstance());
-                    context.getJSModule(HMRClient.class).registerBundle(bundleUrl);
+                    JSBundleLoader bundleLoader =
+                        JSBundleLoader.createCachedSplitBundleFromNetworkLoader(
+                            bundleUrl, bundleFile.getAbsolutePath());
 
-                    callback.onSuccess();
+                    callback.onSuccess(bundleLoader);
                   }
 
                   @Override
