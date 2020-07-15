@@ -72,11 +72,20 @@ class JavaModuleWrapper {
     Class<? extends NativeModule> superClass =
         (Class<? extends NativeModule>) classForMethods.getSuperclass();
     if (TurboModule.class.isAssignableFrom(superClass)) {
-      // For java module that is based on generated flow-type spec, inspect the
-      // spec abstract class instead, which is the super class of the given java
-      // module.
-      classForMethods = superClass;
+      // Check if the parent class also conforms to ReactModuleWithSpec
+      // this accounts for cases when a module is extended i.e. Expo's sandbox AsyncStorage and Intent module.
+      Class<? extends NativeModule> superSuperClass =
+        (Class<? extends NativeModule>) superClass.getSuperclass();
+      if (TurboModule.class.isAssignableFrom(superSuperClass)) {
+        classForMethods = superSuperClass;
+      } else {
+        // For java module that is based on generated flow-type spec, inspect the
+        // spec abstract class instead, which is the super class of the given java
+        // module.
+        classForMethods = superClass;
+      }
     }
+
     Method[] targetMethods = classForMethods.getDeclaredMethods();
 
     for (Method targetMethod : targetMethods) {
