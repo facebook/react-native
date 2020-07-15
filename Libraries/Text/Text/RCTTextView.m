@@ -26,7 +26,9 @@
   CAShapeLayer *_highlightLayer;
 #if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
   UILongPressGestureRecognizer *_longPressGestureRecognizer;
-#endif // TODO(macOS ISS#2323203)
+#else // [TODO(macOS ISS#2323203)
+  NSString * _accessibilityLabel;
+#endif // ]TODO(macOS ISS#2323203)
 
   NSArray<RCTUIView *> *_Nullable _descendantViews; // TODO(macOS ISS#3536887)
   NSTextStorage *_Nullable _textStorage;
@@ -273,6 +275,28 @@
 
 #pragma mark - Accessibility
 
+#if TARGET_OS_OSX // [TODO(macOS ISS#2323203)
+
+// This code is here to cover for a mismatch in the what accessibilityLabels and accessibilityValues mean in iOS versus macOS.
+// In macOS a text element will always read its accessibilityValue, but will only read it's accessibilityLabel if it's value is set.
+// In iOS a text element will only read it's accessibilityValue if it has no accessibilityLabel, and will always read its accessibilityLabel.
+// This code replicates the expected behavior in macOS by:
+// 1) Setting the accessibilityValue = the react-native accessibilityLabel prop if one exists and setting it equal to the text's contents otherwise.
+// 2) Making sure that its accessibilityLabel is always nil, so that it doesn't read out the label twice.
+
+- (void)setAccessibilityLabel:(NSString *)label
+{
+  _accessibilityLabel = [label copy];
+}
+
+- (NSString *)accessibilityValue
+{
+  if (_accessibilityLabel) {
+    return _accessibilityLabel;
+  }
+  return _textStorage.string;
+}
+#else // ]TODO(macOS ISS#2323203)
 - (NSString *)accessibilityLabel
 {
   NSString *superAccessibilityLabel = [super accessibilityLabel];
@@ -281,6 +305,7 @@
   }
   return _textStorage.string;
 }
+#endif // TODO(macOS ISS#2323203)
 
 #pragma mark - Context Menu
 
