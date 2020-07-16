@@ -15,6 +15,7 @@
 #import <react/core/LayoutableShadowNode.h>
 #import <react/core/RawProps.h>
 #import <react/debug/SystraceSection.h>
+#import <react/mounting/TelemetryController.h>
 
 #import "RCTComponentViewProtocol.h"
 #import "RCTComponentViewRegistry.h"
@@ -197,28 +198,20 @@ static void RCTPerformMountInstructions(
   SystraceSection s("-[RCTMountingManager performTransaction:]");
   RCTAssertMainQueue();
 
-  auto transaction = mountingCoordinator->pullTransaction();
-  if (!transaction.has_value()) {
-    return;
-  }
+  auto surfaceId = mountingCoordinator->getSurfaceId();
 
-  auto surfaceId = transaction->getSurfaceId();
-  auto &mutations = transaction->getMutations();
-
-  if (mutations.empty()) {
-    return;
-  }
-
-  auto telemetry = transaction->getTelemetry();
-  auto number = transaction->getNumber();
-
-  [self.delegate mountingManager:self willMountComponentsWithRootTag:surfaceId];
-  _observerCoordinator.notifyObserversMountingTransactionWillMount({surfaceId, number, telemetry});
-  telemetry.willMount();
-  RCTPerformMountInstructions(mutations, self.componentViewRegistry, _observerCoordinator, surfaceId);
-  telemetry.didMount();
-  _observerCoordinator.notifyObserversMountingTransactionDidMount({surfaceId, number, telemetry});
-  [self.delegate mountingManager:self didMountComponentsWithRootTag:surfaceId];
+  mountingCoordinator->getTelemetryController().pullTransaction(
+      [&](MountingTransactionMetadata metadata) {
+        [self.delegate mountingManager:self willMountComponentsWithRootTag:surfaceId];
+        _observerCoordinator.notifyObserversMountingTransactionWillMount(metadata);
+      },
+      [&](ShadowViewMutationList const &mutations) {
+        RCTPerformMountInstructions(mutations, _componentViewRegistry, _observerCoordinator, surfaceId);
+      },
+      [&](MountingTransactionMetadata metadata) {
+        _observerCoordinator.notifyObserversMountingTransactionDidMount(metadata);
+        [self.delegate mountingManager:self didMountComponentsWithRootTag:surfaceId];
+      });
 }
 
 - (void)synchronouslyUpdateViewOnUIThread:(ReactTag)reactTag
