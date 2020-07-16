@@ -183,7 +183,7 @@ public class ReactContext extends ContextWrapper {
 
   public void addLifecycleEventListener(final LifecycleEventListener listener) {
     mLifecycleEventListeners.add(listener);
-    if (hasActiveCatalystInstance()) {
+    if (hasActiveCatalystInstance() || isBridgeless()) {
       switch (mLifecycleState) {
         case BEFORE_CREATE:
         case BEFORE_RESUME:
