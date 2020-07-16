@@ -125,6 +125,13 @@ post_install do |installer|
         puts '  adding arm64e to ' + config.name
       end
     end
+    # TODO(macOS ISS#2323203): the internal Microsoft build pipeline needs macOS arm64 slices
+    if target.platform_name == :osx
+      target.build_configurations.each do |config|
+        (config.build_settings['ARCHS'] ||= ['$(ARCHS_STANDARD)']) << 'arm64'
+        puts '  adding arm64 to ' + config.name
+      end
+    end
     # ]TODO(macOS ISS#2323203)
   end
 end
