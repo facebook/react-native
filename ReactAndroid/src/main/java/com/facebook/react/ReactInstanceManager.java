@@ -706,6 +706,7 @@ public class ReactInstanceManager {
     synchronized (mHasStartedDestroying) {
       mHasStartedDestroying.notifyAll();
     }
+    FLog.d(ReactConstants.TAG, "ReactInstanceManager has been destroyed");
   }
 
   private synchronized void moveToResumedLifecycleState(boolean force) {
