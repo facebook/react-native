@@ -316,6 +316,11 @@ public class ReactScrollViewManager extends ViewGroupManager<ReactScrollView>
     }
   }
 
+  @ReactProp(name = "maintainVisibleContentPosition")
+  public void setMaintainVisibleContentPosition(ReactScrollView view, MaintainVisibleContentPositionData value) {
+    view.setMaintainVisibleContentPosition(value);
+  }
+
   @Override
   public Object updateState(
       ReactScrollView view, ReactStylesDiffMap props, @Nullable StateWrapper stateWrapper) {
@@ -346,5 +351,17 @@ public class ReactScrollViewManager extends ViewGroupManager<ReactScrollView>
             ScrollEventType.getJSEventName(ScrollEventType.MOMENTUM_END),
             MapBuilder.of("registrationName", "onMomentumScrollEnd"))
         .build();
+  }
+
+  public static class MaintainVisibleContentPositionData {
+    @Nullable
+    public final int minIndexForVisible;
+    @Nullable
+    public final int autoscrollToTopThreshold;
+
+    MaintainVisibleContentPositionData(int minIndexForVisible, int autoscrollToTopThreshold) {
+      this.minIndexForVisible = minIndexForVisible;
+      this.autoscrollToTopThreshold = destautoscrollToTopThresholdY;
+    }
   }
 }

@@ -91,6 +91,7 @@ public class ReactScrollView extends ScrollView
   private int pendingContentOffsetX = UNSET_CONTENT_OFFSET;
   private int pendingContentOffsetY = UNSET_CONTENT_OFFSET;
   private @Nullable StateWrapper mStateWrapper;
+  private @Nullable MaintainVisibleContentPositionData mMaintainVisibleContentPositionData;
 
   private @Nullable ValueAnimator mScrollAnimator;
   private int mFinalAnimatedPositionScrollX;
@@ -203,6 +204,11 @@ public class ReactScrollView extends ScrollView
   public void setOverflow(String overflow) {
     mOverflow = overflow;
     invalidate();
+  }
+
+  public void setMaintainVisibleContentPosition(MaintainVisibleContentPositionData maintainVisibleContentPosition) {
+    FLog.d(TAG, "maintainVisibleContentPosition.ctor()");
+    mMaintainVisibleContentPosition = maintainVisibleContentPosition;
   }
 
   @Override
