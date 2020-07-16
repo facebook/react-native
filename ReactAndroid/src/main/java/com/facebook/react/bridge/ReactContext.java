@@ -445,7 +445,7 @@ public class ReactContext extends ContextWrapper {
     return mCatalystInstance.getJavaScriptContextHolder();
   }
 
-  public JSIModule getJSIModule(JSIModuleType moduleType) {
+  public @Nullable JSIModule getJSIModule(JSIModuleType moduleType) {
     if (!hasActiveCatalystInstance()) {
       throw new IllegalStateException(
           "Unable to retrieve a JSIModule if CatalystInstance is not active.");
