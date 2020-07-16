@@ -25,6 +25,7 @@ class MountingTransactionMetadata final {
   SurfaceId surfaceId;
   MountingTransaction::Number number;
   MountingTelemetry telemetry;
+  SurfaceTelemetry surfaceTelemetry;
 };
 
 } // namespace react

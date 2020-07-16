@@ -9,6 +9,7 @@
 
 #include <react/mounting/MountingTelemetry.h>
 #include <react/mounting/ShadowViewMutation.h>
+#include <react/mounting/SurfaceTelemetry.h>
 
 namespace facebook {
 namespace react {
