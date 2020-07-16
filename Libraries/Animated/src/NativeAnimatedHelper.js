@@ -168,7 +168,7 @@ const API = {
  * In general native animated implementation should support any numeric property that doesn't need
  * to be updated through the shadow view hierarchy (all non-layout properties).
  */
-const STYLES_WHITELIST = {
+const SUPPORTED_STYLES = {
   opacity: true,
   transform: true,
   borderRadius: true,
@@ -192,7 +192,7 @@ const STYLES_WHITELIST = {
   translateY: true,
 };
 
-const TRANSFORM_WHITELIST = {
+const SUPPORTED_TRANSFORMS = {
   translateX: true,
   translateY: true,
   scale: true,
@@ -214,11 +214,11 @@ const SUPPORTED_INTERPOLATION_PARAMS = {
 };
 
 function addWhitelistedStyleProp(prop: string): void {
-  STYLES_WHITELIST[prop] = true;
+  SUPPORTED_STYLES[prop] = true;
 }
 
 function addWhitelistedTransformProp(prop: string): void {
-  TRANSFORM_WHITELIST[prop] = true;
+  SUPPORTED_TRANSFORMS[prop] = true;
 }
 
 function addWhitelistedInterpolationParam(param: string): void {
@@ -242,7 +242,7 @@ function validateTransform(
   >,
 ): void {
   configs.forEach(config => {
-    if (!TRANSFORM_WHITELIST.hasOwnProperty(config.property)) {
+    if (!SUPPORTED_TRANSFORMS.hasOwnProperty(config.property)) {
       throw new Error(
         `Property '${config.property}' is not supported by native animated module`,
       );
@@ -252,7 +252,7 @@ function validateTransform(
 
 function validateStyles(styles: {[key: string]: ?number, ...}): void {
   for (const key in styles) {
-    if (!STYLES_WHITELIST.hasOwnProperty(key)) {
+    if (!SUPPORTED_STYLES.hasOwnProperty(key)) {
       throw new Error(
         `Style property '${key}' is not supported by native animated module`,
       );
