@@ -65,6 +65,11 @@ type Props = $ReadOnly<{|
   delayLongPress?: ?number,
 
   /**
+   * Duration to wait after press down before calling `onPressIn`.
+   */
+  delayPressIn?: ?number,
+
+  /**
    * Whether the press behavior is disabled.
    */
   disabled?: ?boolean,
@@ -143,6 +148,7 @@ function Pressable(props: Props, forwardedRef): React.Node {
     android_ripple,
     children,
     delayLongPress,
+    delayPressIn,
     disabled,
     focusable,
     onLongPress,
@@ -171,6 +177,7 @@ function Pressable(props: Props, forwardedRef): React.Node {
       pressRectOffset: pressRetentionOffset,
       android_disableSound,
       delayLongPress,
+      delayPressIn,
       onLongPress,
       onPress,
       onPressIn(event: PressEvent): void {
@@ -197,6 +204,7 @@ function Pressable(props: Props, forwardedRef): React.Node {
       android_disableSound,
       android_rippleConfig,
       delayLongPress,
+      delayPressIn,
       disabled,
       hitSlop,
       onLongPress,
