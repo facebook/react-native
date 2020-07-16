@@ -77,6 +77,9 @@ using namespace facebook::react;
                            enumerateAttribute:RCTTextAttributesAccessibilityRoleAttributeName
                                         frame:_frame
                                    usingBlock:^(CGRect fragmentRect, NSString *_Nonnull fragmentText, NSString *value) {
+                                     if (![value isEqualToString:@"button"] && ![value isEqualToString:@"link"]) {
+                                       return;
+                                     }
                                      if ([value isEqualToString:@"button"] &&
                                          ([fragmentText isEqualToString:@"See Less"] ||
                                           [fragmentText isEqualToString:@"See More"])) {
