@@ -466,8 +466,19 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
       float minHeight,
       float maxHeight,
       @Nullable float[] attachmentsPositions) {
+
+    // This could be null if teardown/navigation away from a surface on the main thread happens
+    // while a commit is being processed in a different thread. By contract we expect this to be
+    // possible at teardown, but this race should *never* happen at startup.
+    @Nullable
     ReactContext context =
         rootTag < 0 ? mReactApplicationContext : mReactContextForRootTag.get(rootTag);
+
+    // Don't both measuring if we can't get a context.
+    if (context == null) {
+      return 0;
+    }
+
     return mMountingManager.measure(
         context,
         componentName,
