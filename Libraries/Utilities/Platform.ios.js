@@ -46,12 +46,6 @@ const Platform = {
   get isPad(): boolean {
     return this.constants.interfaceIdiom === 'pad';
   },
-  /**
-   * Deprecated, use `isTV` instead.
-   */
-  get isTVOS(): boolean {
-    return Platform.isTV;
-  },
   get isTV(): boolean {
     return this.constants.interfaceIdiom === 'tv';
   },

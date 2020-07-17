@@ -23,7 +23,7 @@ Pod::Spec.new do |s|
   s.homepage               = "https://reactnative.dev/"
   s.license                = package["license"]
   s.author                 = "Facebook, Inc. and its affiliates"
-  s.platforms              = { :ios => "10.0", :tvos => "10.0" }
+  s.platforms              = { :ios => "10.0" }
   s.source                 = source
   s.source_files           = "*.{cpp,h}"
   s.header_dir             = 'jsinspector'
