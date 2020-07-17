@@ -104,10 +104,12 @@ public class NativeAnimatedModule extends NativeAnimatedModuleSpec
   private final ReactChoreographer mReactChoreographer;
 
   @NonNull
-  private ConcurrentLinkedQueue<UIThreadOperation> mOperations = new ConcurrentLinkedQueue<>();
+  private final ConcurrentLinkedQueue<UIThreadOperation> mOperations =
+      new ConcurrentLinkedQueue<>();
 
   @NonNull
-  private ConcurrentLinkedQueue<UIThreadOperation> mPreOperations = new ConcurrentLinkedQueue<>();
+  private final ConcurrentLinkedQueue<UIThreadOperation> mPreOperations =
+      new ConcurrentLinkedQueue<>();
 
   private @Nullable NativeAnimatedNodesManager mNodesManager;
 
@@ -226,8 +228,34 @@ public class NativeAnimatedModule extends NativeAnimatedModuleSpec
 
   private void executeAllOperations(Queue<UIThreadOperation> operationQueue, long maxFrameNumber) {
     NativeAnimatedNodesManager nodesManager = getNodesManager();
-    while (!operationQueue.isEmpty() && operationQueue.peek().getFrameNumber() <= maxFrameNumber) {
-      operationQueue.poll().execute(nodesManager);
+    while (true) {
+      // There is a race condition where `peek` may return a non-null value and isEmpty() is false,
+      // but `poll` returns a null value - it's not clear why since we only peek and poll on the UI
+      // thread, but it might be something that happens during teardown or a crash. Regardless, the
+      // root cause is not currently known so we're extra cautious here.
+      // It happens equally in Fabric and non-Fabric.
+      UIThreadOperation peekedOperation = operationQueue.peek();
+
+      // This is the same as operationQueue.isEmpty()
+      if (peekedOperation == null) {
+        return;
+      }
+      // The rest of the operations are for the next frame.
+      if (peekedOperation.getFrameNumber() > maxFrameNumber) {
+        return;
+      }
+
+      // Since we apparently can't guarantee that there is still an operation on the queue,
+      // much less the same operation, we do a poll and another null check. If this isn't
+      // the same operation as the peeked operation, we can't do anything about it - we still
+      // need to execute it, we have no mechanism to put it at the front of the queue, and it
+      // won't cause any errors to execute it earlier than expected (just a bit of UI jank at worst)
+      // so we just continue happily along.
+      UIThreadOperation polledOperation = operationQueue.poll();
+      if (polledOperation == null) {
+        return;
+      }
+      polledOperation.execute(nodesManager);
     }
   }
 
