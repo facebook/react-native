@@ -207,7 +207,7 @@ public class ReactScrollView extends ScrollView
   }
 
   public void setMaintainVisibleContentPosition(MaintainVisibleContentPositionData maintainVisibleContentPosition) {
-    FLog.d(TAG, "maintainVisibleContentPosition.ctor()");
+    FLog.d("ReactScrollView", "setMaintainVisibleContentPosition");
     mMaintainVisibleContentPosition = maintainVisibleContentPosition;
   }
 
