@@ -8,7 +8,7 @@
 package com.facebook.react.config;
 
 /**
- * Hi there, traveller! This configuration class is not meant to be used by end-users of RN. It
+ * Hi there, traveler! This configuration class is not meant to be used by end-users of RN. It
  * contains mainly flags for features that are either under active development and not ready for
  * public consumption, or for use in experiments.
  *

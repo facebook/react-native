@@ -133,14 +133,14 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : unused)
   CGFloat const shiftDistanceX = [self.tvParallaxProperties[@"shiftDistanceX"] floatValue];
   CGFloat const shiftDistanceY = [self.tvParallaxProperties[@"shiftDistanceY"] floatValue];
 
-  // Make horizontal movements shift the centre left and right
+  // Make horizontal movements shift the center left and right
   UIInterpolatingMotionEffect *xShift =
       [[UIInterpolatingMotionEffect alloc] initWithKeyPath:@"center.x"
                                                       type:UIInterpolatingMotionEffectTypeTiltAlongHorizontalAxis];
   xShift.minimumRelativeValue = @(shiftDistanceX * -1.0f);
   xShift.maximumRelativeValue = @(shiftDistanceX);
 
-  // Make vertical movements shift the centre up and down
+  // Make vertical movements shift the center up and down
   UIInterpolatingMotionEffect *yShift =
       [[UIInterpolatingMotionEffect alloc] initWithKeyPath:@"center.y"
                                                       type:UIInterpolatingMotionEffectTypeTiltAlongVerticalAxis];

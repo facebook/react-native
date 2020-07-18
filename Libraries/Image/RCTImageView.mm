@@ -473,7 +473,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
 
   if (!self.window) {
     // Cancel loading the image if we've moved offscreen. In addition to helping
-    // prioritise image requests that are actually on-screen, this removes
+    // prioritize image requests that are actually on-screen, this removes
     // requests that have gotten "stuck" from the queue, unblocking other images
     // from loading.
     // Do not clear _loaderRequest because this component can be visible again without changing image source

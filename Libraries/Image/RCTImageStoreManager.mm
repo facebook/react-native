@@ -145,14 +145,14 @@ RCT_EXPORT_METHOD(addImageFromBase64:(NSString *)base64String
 
 - (id)sendRequest:(NSURLRequest *)request withDelegate:(id<RCTURLRequestDelegate>)delegate
 {
-  __block auto cancelled = std::make_shared<std::atomic<bool>>(false);
+  __block auto canceled = std::make_shared<std::atomic<bool>>(false);
   void (^cancellationBlock)(void) = ^{
-    cancelled->store(true);
+    canceled->store(true);
   };
 
   // Dispatch async to give caller time to cancel the request
   dispatch_async(_methodQueue, ^{
-    if (cancelled->load()) {
+    if (canceled->load()) {
       return;
     }
 

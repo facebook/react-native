@@ -24,10 +24,10 @@
 //   the remaining space left for the flexible children.
 //
 // - totalFlexGrowFactors: total flex grow factors of flex items which are to be
-//   layed in the current line
+//   laid in the current line
 //
 // - totalFlexShrinkFactors: total flex shrink factors of flex items which are
-//   to be layed in the current line
+//   to be laid in the current line
 //
 // - endOfLineIndex: Its the end index of the last flex item which was examined
 //   and it may or may not be part of the current line(as it may be absolutely

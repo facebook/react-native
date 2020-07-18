@@ -108,7 +108,7 @@
  * The (sub)view which represents this view in terms of accessibility.
  * ViewManager will apply all accessibility properties directly to this view.
  * May be overridden in view subclass which needs to be accessiblitywise
- * transparent in favour of some subview.
+ * transparent in favor of some subview.
  * Defaults to `self`.
  */
 @property (nonatomic, readonly) UIView *reactAccessibilityElement;

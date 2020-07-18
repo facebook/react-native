@@ -28,7 +28,7 @@ import java.util.Arrays;
 import java.util.List;
 import org.junit.Ignore;
 
-/** Test marshalling arguments from Java to JS to appropriate native classes. */
+/** Test marshaling arguments from Java to JS to appropriate native classes. */
 @Ignore("Fix prop types and view managers.")
 public class CatalystNativeJavaToJSArgumentsTestCase extends ReactIntegrationTestCase {
 

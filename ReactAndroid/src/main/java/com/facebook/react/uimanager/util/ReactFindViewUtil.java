@@ -44,7 +44,7 @@ public class ReactFindViewUtil {
 
     void onViewFound(View view, String nativeId);
     /**
-     * Called when all teh views have been found
+     * Called when all the views have been found
      *
      * @param map
      */

@@ -498,7 +498,7 @@ RCT_EXPORT_MODULE()
       // No carry storage is required here because the entire data has been loaded.
       responseData = [RCTNetworking decodeTextData:data fromResponse:task.response withCarryData:nil];
       if (!responseData) {
-        RCTLogWarn(@"Received data was not a string, or was not a recognised encoding.");
+        RCTLogWarn(@"Received data was not a string, or was not a recognized encoding.");
         return;
       }
     } else if ([responseType isEqualToString:@"base64"]) {
@@ -561,7 +561,7 @@ RCT_EXPORT_MODULE()
                                                     fromResponse:task.response
                                                    withCarryData:incrementalDataCarry];
         if (!responseString) {
-          RCTLogWarn(@"Received data was not a string, or was not a recognised encoding.");
+          RCTLogWarn(@"Received data was not a string, or was not a recognized encoding.");
           return;
         }
 
@@ -682,7 +682,7 @@ RCT_EXPORT_METHOD(sendRequest:(JS::NativeNetworkingIOS::SpecSendRequestQuery &)q
   };
   
   // TODO: buildRequest returns a cancellation block, but there's currently
-  // no way to invoke it, if, for example the request is cancelled while
+  // no way to invoke it, if, for example the request is canceled while
   // loading a large file to build the request body
   [self buildRequest:queryDict completionBlock:^(NSURLRequest *request) {
     NSString *responseType = [RCTConvert NSString:queryDict[@"responseType"]];

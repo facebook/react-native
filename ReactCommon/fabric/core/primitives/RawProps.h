@@ -102,7 +102,7 @@ class RawProps final {
   mutable RawPropsParser const *parser_{nullptr};
 
   /*
-   * Source artefacts:
+   * Source artifacts:
    */
   // Mode
   mutable Mode mode_;
@@ -121,7 +121,7 @@ class RawProps final {
   mutable int keyIndexCursor_{0};
 
   /*
-   * Parsed artefacts:
+   * Parsed artifacts:
    * To be used by `RawPropParser`.
    */
   mutable better::

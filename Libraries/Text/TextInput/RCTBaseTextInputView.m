@@ -270,7 +270,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
     });
 
     // Setting textContentType to an empty string will disable any
-    // default behaviour, like the autofill bar for password inputs
+    // default behavior, like the autofill bar for password inputs
     self.backedTextInputView.textContentType = contentTypeMap[type] ?: type;
   #endif
 }

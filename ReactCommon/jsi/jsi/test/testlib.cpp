@@ -932,13 +932,13 @@ TEST_P(JSITest, PreparedJavaScriptURLInBacktrace) {
 namespace {
 
 unsigned countOccurences(const std::string& of, const std::string& in) {
-  unsigned occurences = 0;
+  unsigned occurrences = 0;
   std::string::size_type lastOccurence = -1;
   while ((lastOccurence = in.find(of, lastOccurence + 1)) !=
          std::string::npos) {
-    occurences++;
+    occurrences++;
   }
-  return occurences;
+  return occurrences;
 }
 
 } // namespace

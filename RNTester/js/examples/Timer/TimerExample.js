@@ -315,7 +315,7 @@ exports.examples = [
   },
   {
     title: 'this.setInterval(fn, t)',
-    description: ('Execute function fn every t milliseconds until cancelled ' +
+    description: ('Execute function fn every t milliseconds until canceled ' +
       'or component is unmounted.': string),
     render: function(): React.Node {
       type IntervalExampleProps = $ReadOnly<{||}>;

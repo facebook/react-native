@@ -21,7 +21,7 @@ namespace react {
 
 /*
  * Template for all <View>-like classes (classes which have all same props
- * as <View> and similar basic behaviour).
+ * as <View> and similar basic behavior).
  * For example: <Paragraph>, <Image>, but not <Text>, <RawText>.
  */
 template <

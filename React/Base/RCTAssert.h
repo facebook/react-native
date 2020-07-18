@@ -16,7 +16,7 @@ RCT_EXTERN BOOL RCTIsMainQueue(void);
 
 /**
  * This is the main assert macro that you should use. Asserts should be compiled out
- * in production builds. You can customize the assert behaviour by setting a custom
+ * in production builds. You can customize the assert behavior by setting a custom
  * assert handler through `RCTSetAssertFunction`.
  */
 #ifndef NS_BLOCK_ASSERTIONS
@@ -42,7 +42,7 @@ RCT_EXTERN void _RCTAssertFormat(const char *, const char *, int, const char *, 
 
 /**
  * Report a fatal condition when executing. These calls will _NOT_ be compiled out
- * in production, and crash the app by default. You can customize the fatal behaviour
+ * in production, and crash the app by default. You can customize the fatal behavior
  * by setting a custom fatal handler through `RCTSetFatalHandler` and
  * `RCTSetFatalExceptionHandler`.
  */

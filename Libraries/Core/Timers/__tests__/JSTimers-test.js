@@ -271,7 +271,7 @@ describe('JSTimers', function() {
     JSTimers.callTimers.bind(null, [timerID]);
   });
 
-  it('should not warn if callback is called on cancelled timer', function() {
+  it('should not warn if callback is called on canceled timer', function() {
     const callback = jest.fn();
     const timerID = JSTimers.setTimeout(callback, 10);
     JSTimers.clearTimeout(timerID);

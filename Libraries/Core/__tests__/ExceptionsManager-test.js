@@ -262,7 +262,7 @@ describe('ExceptionsManager', () => {
   describe('console.error handler', () => {
     let mockError;
     beforeEach(() => {
-      // NOTE: We initialise a fresh mock every time using spyOn, above.
+      // NOTE: We initialize a fresh mock every time using spyOn, above.
       // We can't use `console._errorOriginal` for this, because that's a bound
       // (=wrapped) version of the mock and Jest does not approve.
       mockError = console.error;
@@ -465,7 +465,7 @@ describe('ExceptionsManager', () => {
   describe('unstable_setExceptionDecorator', () => {
     let mockError;
     beforeEach(() => {
-      // NOTE: We initialise a fresh mock every time using spyOn, above.
+      // NOTE: We initialize a fresh mock every time using spyOn, above.
       // We can't use `console._errorOriginal` for this, because that's a bound
       // (=wrapped) version of the mock and Jest does not approve.
       mockError = console.error;

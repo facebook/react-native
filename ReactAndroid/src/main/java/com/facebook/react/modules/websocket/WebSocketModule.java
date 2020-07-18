@@ -219,7 +219,7 @@ public final class WebSocketModule extends NativeWebSocketModuleSpec {
     WebSocket client = mWebSocketConnections.get(id);
     if (client == null) {
       // WebSocket is already closed
-      // Don't do anything, mirror the behaviour on web
+      // Don't do anything, mirror the behavior on web
       return;
     }
     try {

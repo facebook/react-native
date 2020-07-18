@@ -158,7 +158,7 @@ function getTypeAnnotationForArray(name, typeAnnotation, defaultValue, types) {
         );
       } else {
         throw new Error(
-          `Unsupported union type for "${name}", recieved "${unionType}"`,
+          `Unsupported union type for "${name}", received "${unionType}"`,
         );
       }
     default:

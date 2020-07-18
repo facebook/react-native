@@ -72,7 +72,7 @@ const userTimingPolyfill = __DEV__
             return;
           }
           if (markName === _markStack[_markStackIndex]) {
-            // React uses this for "cancelling" started measurements.
+            // React uses this for "canceling" started measurements.
             // Systrace doesn't support deleting measurements, so we just stop them.
             if (userTimingPolyfill != null) {
               userTimingPolyfill.measure(markName, markName);

@@ -34,7 +34,7 @@
 @optional
 
 /**
- * Not all request types can be cancelled, but this method can be implemented
+ * Not all request types can be canceled, but this method can be implemented
  * for ones that can. It should be used to free up any resources on ongoing
  * processes associated with the request.
  */

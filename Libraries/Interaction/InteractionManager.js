@@ -47,7 +47,7 @@ const DEBUG: false = false;
  *
  * The touch handling system considers one or more active touches to be an
  * 'interaction' and will delay `runAfterInteractions()` callbacks until all
- * touches have ended or been cancelled.
+ * touches have ended or been canceled.
  *
  * InteractionManager also allows applications to register animations by
  * creating an interaction 'handle' on animation start, and clearing it upon

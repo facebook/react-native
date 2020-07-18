@@ -58,7 +58,7 @@ NS_ASSUME_NONNULL_BEGIN
  * component view in terms of accessibility.
  * All accessibility properties will be applied to this object.
  * May be overridden in subclass which needs to be accessiblitywise
- * transparent in favour of some subview.
+ * transparent in favor of some subview.
  * Defaults to `self`.
  */
 @property (nonatomic, strong, nullable, readonly) NSObject *accessibilityElement;

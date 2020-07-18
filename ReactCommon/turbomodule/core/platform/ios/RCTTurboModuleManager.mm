@@ -431,7 +431,7 @@ static Class getFallbackClassFromName(const char *name)
     /**
      * TODO(T65905574):
      * If the thread responsible for creating and initializing the NativeModule stalls, we'll wait here indefinitely.
-     * This is the behaviour in legacy NativeModuels. Changing this now could lead to more crashes/problems in
+     * This is the behavior in legacy NativeModuels. Changing this now could lead to more crashes/problems in
      * TurboModules than in NativeModules, which'll make it more difficult to test the TurboModules infra. Therefore,
      * we should consider making it post TurboModule 100% rollout.
      */

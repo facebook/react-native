@@ -280,7 +280,7 @@ void NativeToJsBridge::handleMemoryPressure(int pressureLevel) {
 void NativeToJsBridge::destroy() {
   // All calls made through runOnExecutorQueue have an early exit if
   // m_destroyed is true. Setting this before the runOnQueueSync will cause
-  // pending work to be cancelled and we won't have to wait for it.
+  // pending work to be canceled and we won't have to wait for it.
   *m_destroyed = true;
   m_executorMessageQueueThread->runOnQueueSync([this] {
     m_executor->destroy();

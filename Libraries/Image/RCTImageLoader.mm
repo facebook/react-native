@@ -486,7 +486,7 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
   BOOL cacheResult = [loadHandler respondsToSelector:@selector(shouldCacheLoadedImages)] ?
   [loadHandler shouldCacheLoadedImages] : YES;
 
-  auto cancelled = std::make_shared<std::atomic<int>>(0);
+  auto canceled = std::make_shared<std::atomic<int>>(0);
   __block dispatch_block_t cancelLoad = nil;
   __block NSLock *cancelLoadLock = [NSLock new];
   NSString *requestId = [NSString stringWithFormat:@"%@-%llu",[[NSUUID UUID] UUIDString], monotonicTimeGetCurrentNanoseconds()];
@@ -748,7 +748,7 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
                                      partialLoadBlock:(RCTImageLoaderPartialLoadBlock)partialLoadBlock
                                       completionBlock:(RCTImageLoaderCompletionBlock)completionBlock
 {
-  auto cancelled = std::make_shared<std::atomic<int>>(0);
+  auto canceled = std::make_shared<std::atomic<int>>(0);
   __block dispatch_block_t cancelLoad = nil;
   __block NSLock *cancelLoadLock = [NSLock new];
   dispatch_block_t cancellationBlock = ^{
@@ -882,7 +882,7 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
     return ^{};
   }
 
-  auto cancelled = std::make_shared<std::atomic<int>>(0);
+  auto canceled = std::make_shared<std::atomic<int>>(0);
   void (^completionHandler)(NSError *, UIImage *) = ^(NSError *error, UIImage *image) {
     if (RCTIsMainQueue()) {
       // Most loaders do not return on the main thread, so caller is probably not

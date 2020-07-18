@@ -15,7 +15,7 @@ const {StyleSheet, Text, TouchableHighlight, View} = require('react-native');
 
 class XHRExampleHeaders extends React.Component {
   xhr: XMLHttpRequest;
-  cancelled: boolean;
+  canceled: boolean;
 
   constructor(props) {
     super(props);

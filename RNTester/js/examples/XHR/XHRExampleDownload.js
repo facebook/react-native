@@ -62,7 +62,7 @@ class XHRExampleDownload extends React.Component<{...}, Object> {
   };
 
   xhr: ?XMLHttpRequest = null;
-  cancelled: boolean = false;
+  canceled: boolean = false;
 
   _download = () => {
     let xhr;

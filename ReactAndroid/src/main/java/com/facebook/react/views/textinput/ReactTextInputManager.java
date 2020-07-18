@@ -1047,12 +1047,12 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
               boolean isMultiline = editText.isMultiline();
 
               // Motivation:
-              // * blurOnSubmit && isMultiline => Clear focus; prevent default behaviour (return
+              // * blurOnSubmit && isMultiline => Clear focus; prevent default behavior (return
               // true);
-              // * blurOnSubmit && !isMultiline => Clear focus; prevent default behaviour (return
+              // * blurOnSubmit && !isMultiline => Clear focus; prevent default behavior (return
               // true);
-              // * !blurOnSubmit && isMultiline => Perform default behaviour (return false);
-              // * !blurOnSubmit && !isMultiline => Prevent default behaviour (return true).
+              // * !blurOnSubmit && isMultiline => Perform default behavior (return false);
+              // * !blurOnSubmit && !isMultiline => Prevent default behavior (return true).
               // Additionally we always generate a `submit` event.
 
               EventDispatcher eventDispatcher = getEventDispatcher(reactContext, editText);

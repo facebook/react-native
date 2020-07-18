@@ -295,7 +295,7 @@ static void YGTransferLayoutOutputsRecursive(
   int fieldFlags = edgesSet.get();
   fieldFlags |= HAS_NEW_LAYOUT;
   if (YGNodeLayoutGetDidLegacyStretchFlagAffectLayout(root)) {
-    fieldFlags |= DOES_LEGACY_STRETCH_BEHAVIOUR;
+    fieldFlags |= DOES_LEGACY_STRETCH_BEHAVIOR;
   }
 
   const int arrSize = 6 + (marginFieldSet ? 4 : 0) + (paddingFieldSet ? 4 : 0) +

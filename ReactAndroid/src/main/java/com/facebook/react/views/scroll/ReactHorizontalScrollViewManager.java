@@ -159,7 +159,7 @@ public class ReactHorizontalScrollViewManager extends ViewGroupManager<ReactHori
     view.setPagingEnabled(pagingEnabled);
   }
 
-  /** Controls overScroll behaviour */
+  /** Controls overScroll behavior */
   @ReactProp(name = "overScrollMode")
   public void setOverScrollMode(ReactHorizontalScrollView view, String value) {
     view.setOverScrollMode(ReactScrollViewHelper.parseOverScrollMode(value));

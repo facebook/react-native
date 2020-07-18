@@ -85,7 +85,7 @@ void RCTUnsafeExecuteOnUIManagerQueueSync(dispatch_block_t block)
       // `block` execution while UIManager queue is blocked by semaphore.
       block();
       pseudoUIManagerQueueFlag = NO;
-      // Signalling UIManager block.
+      // Signaling UIManager block.
       dispatch_semaphore_signal(uiManagerQueueBlockingSemaphore);
     } else {
       dispatch_sync(RCTGetUIManagerQueue(), ^{

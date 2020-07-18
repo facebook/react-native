@@ -338,12 +338,12 @@ Point operator*(Point const &point, Transform const &transform) {
 }
 
 Rect operator*(Rect const &rect, Transform const &transform) {
-  auto centre = rect.getCenter();
+  auto center = rect.getCenter();
 
-  auto a = Point{rect.origin.x, rect.origin.y} - centre;
-  auto b = Point{rect.getMaxX(), rect.origin.y} - centre;
-  auto c = Point{rect.getMaxX(), rect.getMaxY()} - centre;
-  auto d = Point{rect.origin.x, rect.getMaxY()} - centre;
+  auto a = Point{rect.origin.x, rect.origin.y} - center;
+  auto b = Point{rect.getMaxX(), rect.origin.y} - center;
+  auto c = Point{rect.getMaxX(), rect.getMaxY()} - center;
+  auto d = Point{rect.origin.x, rect.getMaxY()} - center;
 
   auto vectorA = transform * Vector{a.x, a.y, 0, 1};
   auto vectorB = transform * Vector{b.x, b.y, 0, 1};

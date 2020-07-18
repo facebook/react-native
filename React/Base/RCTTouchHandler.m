@@ -336,7 +336,7 @@ static BOOL RCTAnyTouchesChanged(NSSet<UITouch *> *touches)
 
 - (BOOL)canBePreventedByGestureRecognizer:(UIGestureRecognizer *)preventingGestureRecognizer
 {
-  // We fail in favour of other external gesture recognizers.
+  // We fail in favor of other external gesture recognizers.
   // iOS will ask `delegate`'s opinion about this gesture recognizer little bit later.
   return ![preventingGestureRecognizer.view isDescendantOfView:self.view];
 }

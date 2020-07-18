@@ -32,7 +32,7 @@ class Instrumentation {
   /// format.
   ///
   /// \pre This call can only be made on the instrumentation instance of a
-  ///   runtime initialised to collect GC statistics.
+  ///   runtime initialized to collect GC statistics.
   ///
   /// \post All cumulative measurements mentioned in the output are accumulated
   ///   across the entire lifetime of the Runtime.

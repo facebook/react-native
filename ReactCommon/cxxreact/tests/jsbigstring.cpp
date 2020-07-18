@@ -37,7 +37,7 @@ TEST(JSBigFileString, MapWholeFileTest) {
   std::string data{"Hello, world"};
   const auto size = data.length() + 1;
 
-  // Initialise Big String
+  // Initialize Big String
   int fd = tempFileFromString("Hello, world");
   JSBigFileString bigStr{fd, size};
 
@@ -52,7 +52,7 @@ TEST(JSBigFileString, MapPartTest) {
   std::string needle{"or"};
   off_t offset = data.find(needle);
 
-  // Initialise Big String
+  // Initialize Big String
   int fd = tempFileFromString(data);
   JSBigFileString bigStr{fd, needle.size(), offset};
 

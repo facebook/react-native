@@ -27,7 +27,7 @@ import com.facebook.react.uimanager.ViewManager;
 import java.util.ArrayList;
 import org.junit.Ignore;
 
-/** Test marshalling return values from Java to JS */
+/** Test marshaling return values from Java to JS */
 @Ignore("Fix prop types and view managers.")
 public class CatalystNativeJavaToJSReturnValuesTestCase extends ReactIntegrationTestCase {
 

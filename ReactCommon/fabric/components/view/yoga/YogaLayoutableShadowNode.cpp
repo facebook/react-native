@@ -53,7 +53,7 @@ YogaLayoutableShadowNode::YogaLayoutableShadowNode(
       yogaNode_(&initializeYogaConfig(yogaConfig_)) {
   yogaNode_.setContext(this);
 
-  // Newly created node must be `dirty` just becasue it is new.
+  // Newly created node must be `dirty` just because it is new.
   // This is not a default for `YGNode`.
   yogaNode_.setDirty(true);
 

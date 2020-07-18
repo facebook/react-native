@@ -86,7 +86,7 @@ function getConfigType(ast, types): 'module' | 'component' {
     return 'component';
   } else {
     throw new Error(
-      `Default export for module specified incorrectly. It should containts
+      `Default export for module specified incorrectly. It should contains
     either type extending "TurboModule" or "codegenNativeComponent".`,
     );
   }

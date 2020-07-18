@@ -100,7 +100,7 @@ const currentCentroidY = TouchHistoryMath.currentCentroidY;
  *       },
  *       onPanResponderTerminate: (evt, gestureState) => {
  *         // Another component has become the responder, so this gesture
- *         // should be cancelled
+ *         // should be canceled
  *       },
  *       onShouldBlockNativeResponder: (evt, gestureState) => {
  *         // Returns whether this component should block native components from becoming the JS

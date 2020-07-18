@@ -174,7 +174,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : unused)
     // Take z-index into account when calculating the touch target.
     NSArray<UIView *> *sortedSubviews = [self reactZIndexSortedSubviews];
 
-    // The default behaviour of UIKit is that if a view does not contain a point,
+    // The default behavior of UIKit is that if a view does not contain a point,
     // then no subviews will be returned from hit testing, even if they contain
     // the hit point. By doing hit testing directly on the subviews, we bypass
     // the strict containment policy (i.e., UIKit guarantees that every ancestor

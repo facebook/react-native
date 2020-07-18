@@ -30,11 +30,11 @@ typedef NS_OPTIONS(NSInteger, RCTTextSizeComparisonOptions) {
   while (true) {
     [self scaleFontSizeWithRatio:ratio minimumFontSize:minimumFontSize maximumFontSize:maximumFontSize];
 
-    RCTTextSizeComparisonOptions comparsion = [self compareToSize:size thresholdRatio:0.01];
+    RCTTextSizeComparisonOptions comparison = [self compareToSize:size thresholdRatio:0.01];
 
-    if ((comparsion & RCTTextSizeComparisonWithinRange) && (comparsion & RCTTextSizeComparisonSmaller)) {
+    if ((comparison & RCTTextSizeComparisonWithinRange) && (comparison & RCTTextSizeComparisonSmaller)) {
       return;
-    } else if (comparsion & RCTTextSizeComparisonSmaller) {
+    } else if (comparison & RCTTextSizeComparisonSmaller) {
       bottomRatio = ratio;
       lastRatioWhichFits = ratio;
     } else {

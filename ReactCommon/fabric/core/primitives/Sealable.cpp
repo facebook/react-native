@@ -17,7 +17,7 @@ namespace react {
  * We must explicitly implement all *the rule of five* methods because:
  *   1. Using `std::atomic` behind `sealed_` implicitly deletes default
  *      constructors;
- *   2. We have to establish behaviour where any new cloned or moved instances
+ *   2. We have to establish behavior where any new cloned or moved instances
  *      of the object lose `sealed` flag.
  *
  * See more about the rule of three/five/zero:

@@ -322,7 +322,7 @@ RCT_EXTERN_C_END
  * values such as session keys, that are regenerated only as part of a reload of the entire React application.
  *
  * If you implement this method and do not implement `requiresMainQueueSetup`, you will trigger deprecated logic
- * that eagerly initializes your module on bridge startup. In the future, this behaviour will be changed to default
+ * that eagerly initializes your module on bridge startup. In the future, this behavior will be changed to default
  * to initializing lazily, and even modules with constants will be initialized lazily.
  */
 - (NSDictionary *)constantsToExport;

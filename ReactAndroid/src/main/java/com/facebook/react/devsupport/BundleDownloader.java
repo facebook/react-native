@@ -113,7 +113,7 @@ public class BundleDownloader {
         new Callback() {
           @Override
           public void onFailure(Call call, IOException e) {
-            // ignore callback if call was cancelled
+            // ignore callback if call was canceled
             if (mDownloadBundleFromURLCall == null || mDownloadBundleFromURLCall.isCanceled()) {
               mDownloadBundleFromURLCall = null;
               return;
@@ -129,7 +129,7 @@ public class BundleDownloader {
 
           @Override
           public void onResponse(Call call, final Response response) throws IOException {
-            // ignore callback if call was cancelled
+            // ignore callback if call was canceled
             if (mDownloadBundleFromURLCall == null || mDownloadBundleFromURLCall.isCanceled()) {
               mDownloadBundleFromURLCall = null;
               return;

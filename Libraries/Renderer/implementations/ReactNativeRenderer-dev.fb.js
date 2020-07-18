@@ -1081,7 +1081,7 @@ Object.assign(SyntheticEvent.prototype, {
       event.stopPropagation();
     } else if (typeof event.cancelBubble !== "unknown") {
       // The ChangeEventPlugin registers a "propertychange" event for
-      // IE. This event does not support bubbling or cancelling, and
+      // IE. This event does not support bubbling or canceling, and
       // any references to cancelBubble throw "Member not found".  A
       // typeof check of "unknown" circumvents this issue (and is also
       // IE specific).
@@ -2728,7 +2728,7 @@ function receiveEvent(rootNodeID, topLevelType, nativeEventParam) {
  * TODO: Dispatch multiple changed touches in one event. The bubble path
  * could be the first common ancestor of all the `changedTouches`.
  *
- * One difference between this behavior and W3C spec: cancelled touches will
+ * One difference between this behavior and W3C spec: canceled touches will
  * not appear in `.touches`, or in any future `.touches`, though they may
  * still be "actively touching the surface".
  *
@@ -3796,7 +3796,7 @@ function diff(prevProps, nextProps, validAttributes) {
 }
 
 /**
- * In the future, we should cleanup callbacks by cancelling them instead of
+ * In the future, we should cleanup callbacks by canceling them instead of
  * using this.
  */
 function mountSafeCallback_NOT_REALLY_SAFE(context, callback) {
@@ -13934,7 +13934,7 @@ function updateContextConsumer(current, workInProgress, renderExpirationTime) {
   var context = workInProgress.type; // The logic below for Context differs depending on PROD or DEV mode. In
   // DEV mode, we create a separate object for Context.Consumer that acts
   // like a proxy to Context. This proxy object adds unnecessary code in PROD
-  // so we use the old behaviour (Context.Consumer references Context) to
+  // so we use the old behavior (Context.Consumer references Context) to
   // reduce size and overhead. The separate object references context via
   // a property called "_context", which also gives us the ability to check
   // in DEV mode if this property exists or not and warn if it does not.
@@ -19434,7 +19434,7 @@ function warnIfUnmockedScheduler(fiber) {
 
         error(
           'In Concurrent or Sync modes, the "scheduler" module needs to be mocked ' +
-          "to guarantee consistent behaviour across tests and browsers. " +
+          "to guarantee consistent behavior across tests and browsers. " +
           "For example, with jest: \n" + // Break up requires to avoid accidentally parsing them as dependencies.
             "jest.mock('scheduler', () => require" +
             "('scheduler/unstable_mock'));\n\n" +
@@ -19445,7 +19445,7 @@ function warnIfUnmockedScheduler(fiber) {
 
         error(
           'Starting from React v17, the "scheduler" module will need to be mocked ' +
-          "to guarantee consistent behaviour across tests and browsers. " +
+          "to guarantee consistent behavior across tests and browsers. " +
           "For example, with jest: \n" + // Break up requires to avoid accidentally parsing them as dependencies.
             "jest.mock('scheduler', () => require" +
             "('scheduler/unstable_mock'));\n\n" +

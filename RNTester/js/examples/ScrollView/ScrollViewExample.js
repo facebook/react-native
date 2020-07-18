@@ -126,7 +126,7 @@ exports.examples = [
   },
   {
     title: '<ScrollView> enable & disable\n',
-    description: 'ScrollView scrolling behaviour can be disabled and enabled',
+    description: 'ScrollView scrolling behavior can be disabled and enabled',
     render: function(): React.Node {
       class EnableDisableList extends React.Component<{...}, *> {
         state = {

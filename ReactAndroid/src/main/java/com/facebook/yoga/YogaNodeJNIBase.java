@@ -19,7 +19,7 @@ public abstract class YogaNodeJNIBase extends YogaNode implements Cloneable {
   private static final byte MARGIN = 1;
   private static final byte PADDING = 2;
   private static final byte BORDER = 4;
-  private static final byte DOES_LEGACY_STRETCH_BEHAVIOUR = 8;
+  private static final byte DOES_LEGACY_STRETCH_BEHAVIOR = 8;
   private static final byte HAS_NEW_LAYOUT = 16;
 
   private static final byte LAYOUT_EDGE_SET_FLAG_INDEX = 0;
@@ -583,8 +583,8 @@ public abstract class YogaNodeJNIBase extends YogaNode implements Cloneable {
 
   public boolean getDoesLegacyStretchFlagAffectsLayout() {
     return arr != null
-        && (((int) arr[LAYOUT_EDGE_SET_FLAG_INDEX] & DOES_LEGACY_STRETCH_BEHAVIOUR)
-            == DOES_LEGACY_STRETCH_BEHAVIOUR);
+        && (((int) arr[LAYOUT_EDGE_SET_FLAG_INDEX] & DOES_LEGACY_STRETCH_BEHAVIOR)
+            == DOES_LEGACY_STRETCH_BEHAVIOR);
   }
 
   @Override

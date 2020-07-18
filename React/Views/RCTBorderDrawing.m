@@ -392,10 +392,10 @@ static UIImage *RCTGetSolidBorderImage(
   return image;
 }
 
-// Currently, the dashed / dotted implementation only supports a single colour +
+// Currently, the dashed / dotted implementation only supports a single color +
 // single width, as that's currently required and supported on Android.
 //
-// Supporting individual widths + colours on each side is possible by modifying
+// Supporting individual widths + colors on each side is possible by modifying
 // the current implementation. The idea is that we will draw four different lines
 // and clip appropriately for each side (might require adjustment of phase so that
 // they line up but even browsers don't do a good job at that).
@@ -447,7 +447,7 @@ static UIImage *RCTGetSolidBorderImage(
 //         +------------------+
 //
 //
-// Note that this approach will produce discontinuous colour changes at the edge
+// Note that this approach will produce discontinuous color changes at the edge
 // (which is okay). The reason is that Quartz does not currently support drawing
 // of gradients _along_ a path (NB: clipping a path and drawing a linear gradient
 // is _not_ equivalent).

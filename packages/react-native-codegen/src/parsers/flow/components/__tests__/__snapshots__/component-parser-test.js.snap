@@ -16,7 +16,7 @@ exports[`RN Codegen Flow Parser Fails with error message NON_OPTIONAL_KEY_WITH_D
 
 exports[`RN Codegen Flow Parser Fails with error message NULLABLE_WITH_DEFAULT 1`] = `"WithDefault<> is optional and does not need to be marked as optional. Please remove the ? annotation in front of it."`;
 
-exports[`RN Codegen Flow Parser Fails with error message PROP_ARRAY_ENUM_BOOLEAN 1`] = `"Unsupported union type for \\"someProp\\", recieved \\"BooleanLiteralTypeAnnotation\\""`;
+exports[`RN Codegen Flow Parser Fails with error message PROP_ARRAY_ENUM_BOOLEAN 1`] = `"Unsupported union type for \\"someProp\\", received \\"BooleanLiteralTypeAnnotation\\""`;
 
 exports[`RN Codegen Flow Parser Fails with error message PROP_ARRAY_ENUM_INT 1`] = `"Arrays of int enums are not supported (see: \\"someProp\\")"`;
 

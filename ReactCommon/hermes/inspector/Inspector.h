@@ -171,7 +171,7 @@ class Inspector : public facebook::hermes::debugger::EventObserver,
 
   /**
    * resume and step methods are only valid when the VM is currently paused. The
-   * returned future suceeds when the VM resumes execution, or fails with an
+   * returned future succeeds when the VM resumes execution, or fails with an
    * InvalidStateException otherwise.
    */
   folly::Future<folly::Unit> resume();
@@ -181,7 +181,7 @@ class Inspector : public facebook::hermes::debugger::EventObserver,
 
   /**
    * pause can be issued at any time while the inspector is enabled. It requests
-   * the VM to asynchronously break execution. The returned future suceeds if
+   * the VM to asynchronously break execution. The returned future succeeds if
    * the VM can be paused in this state and fails with InvalidStateException if
    * otherwise.
    */
