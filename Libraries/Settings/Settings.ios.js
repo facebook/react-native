@@ -55,18 +55,32 @@ const Settings = {
   },
 
   _sendObservations(body: Object) {
+    const changedKeys: Set<string> = new Set();
+
     Object.keys(body).forEach(key => {
       const newValue = body[key];
       const didChange = this._settings[key] !== newValue;
-      this._settings[key] = newValue;
 
       if (didChange) {
-        subscriptions.forEach(sub => {
-          if (sub.keys.indexOf(key) !== -1 && sub.callback) {
-            sub.callback();
-          }
-        });
+        changedKeys.add(key);
       }
+    });
+
+    Object.keys(this._settings).forEach(key => {
+      if (typeof body[key] === 'undefined') {
+        // Setting was removed from user defaults
+        changedKeys.add(key);
+      }
+    });
+
+    this._settings = body;
+
+    changedKeys.forEach(key => {
+      subscriptions.forEach(sub => {
+        if (sub.keys.indexOf(key) !== -1 && sub.callback) {
+          sub.callback();
+        }
+      });
     });
   },
 };
