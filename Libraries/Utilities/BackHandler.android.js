@@ -78,7 +78,7 @@ const BackHandler: TBackHandler = {
   /**
    * Adds an event handler. Supported events:
    *
-   * - `hardwareBackPress`: Fires when the Android hardware back button is pressed..
+   * - `hardwareBackPress`: Fires when the Android hardware back button is pressed.
    */
   addEventListener: function(
     eventName: BackPressEventName,
