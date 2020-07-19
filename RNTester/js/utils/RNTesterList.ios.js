@@ -269,10 +269,6 @@ const APIExamples: Array<RNTesterExample> = [
     module: require('../examples/TurboModule/TurboModuleExample'),
   },
   {
-    key: 'TVEventHandlerExample',
-    module: require('../examples/TVEventHandler/TVEventHandlerExample'),
-  },
-  {
     key: 'VibrationExample',
     module: require('../examples/Vibration/VibrationExample'),
   },

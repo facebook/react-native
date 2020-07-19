@@ -22,7 +22,6 @@ const URIActionMap = require('./utils/URIActionMap');
 const {
   AppRegistry,
   AsyncStorage,
-  BackHandler,
   Button,
   Linking,
   Platform,
@@ -138,10 +137,6 @@ const RNTesterExampleListViaHook = ({
 
 class RNTesterApp extends React.Component<Props, RNTesterNavigationState> {
   _mounted: boolean;
-
-  UNSAFE_componentWillMount() {
-    BackHandler.addEventListener('hardwareBackPress', this._handleBack);
-  }
 
   componentDidMount() {
     this._mounted = true;
