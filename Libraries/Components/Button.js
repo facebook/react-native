@@ -46,6 +46,8 @@ type ButtonProps = $ReadOnly<{|
 
   /**
    * TV preferred focus (see documentation for the View component).
+   *
+   * @platform android
    */
   hasTVPreferredFocus?: ?boolean,
 

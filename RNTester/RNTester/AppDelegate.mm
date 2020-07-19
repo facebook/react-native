@@ -24,7 +24,7 @@
 
 #import <cxxreact/JSExecutor.h>
 
-#if !TARGET_OS_TV && !TARGET_OS_UIKITFORMAC
+#if !TARGET_OS_UIKITFORMAC
 #import <React/RCTPushNotificationManager.h>
 #endif
 
@@ -36,7 +36,7 @@
 #import <react/config/ReactNativeConfig.h>
 #endif
 
-  
+
 #if DEBUG
 #ifdef FB_SONARKIT_ENABLED
 #import <FlipperKit/FlipperClient.h>
@@ -219,7 +219,7 @@
 
 # pragma mark - Push Notifications
 
-#if !TARGET_OS_TV && !TARGET_OS_UIKITFORMAC
+#if !TARGET_OS_UIKITFORMAC
 
 // Required to register for notifications
 - (void)application:(__unused UIApplication *)application didRegisterUserNotificationSettings:(UIUserNotificationSettings *)notificationSettings

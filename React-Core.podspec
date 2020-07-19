@@ -59,7 +59,6 @@ Pod::Spec.new do |s|
                                 "React/DevSupport/**/*",
                                 "React/Fabric/**/*",
                                 "React/Inspector/**/*"
-    ss.ios.exclude_files      = "React/**/RCTTV*.*"
     ss.private_header_files   = "React/Cxx*/*.h"
   end
 
