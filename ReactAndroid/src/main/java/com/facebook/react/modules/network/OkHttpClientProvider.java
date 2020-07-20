@@ -47,14 +47,14 @@ public class OkHttpClientProvider {
 
   public static OkHttpClient createClient() {
     if (sFactory != null) {
-      return sFactory.createNewNetworkModuleClient();
+      return sFactory.createNewNetworkModuleClient(null);
     }
     return createClientBuilder().build();
   }
 
   public static OkHttpClient createClient(Context context) {
     if (sFactory != null) {
-      return sFactory.createNewNetworkModuleClient();
+      return sFactory.createNewNetworkModuleClient(context);
     }
     return createClientBuilder(context).build();
   }

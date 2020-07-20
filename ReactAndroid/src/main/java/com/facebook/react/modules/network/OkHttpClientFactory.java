@@ -7,8 +7,10 @@
 
 package com.facebook.react.modules.network;
 
+import android.content.Context;
+
 import okhttp3.OkHttpClient;
 
 public interface OkHttpClientFactory {
-  OkHttpClient createNewNetworkModuleClient();
+  OkHttpClient createNewNetworkModuleClient(Context context);
 };
