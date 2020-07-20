@@ -59,7 +59,7 @@ RCT_EXPORT_VIEW_PROPERTY(selectable, BOOL)
 
 - (RCTUIView *)view // TODO(macOS ISS#3536887)
 {
-  return [RCTTextView new];
+  return [[RCTTextView alloc] initWithEventDispatcher:self.bridge.eventDispatcher]; // TODO(OSS Candidate ISS#2710739)
 }
 
 - (RCTShadowView *)shadowView

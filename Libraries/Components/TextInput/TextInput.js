@@ -1025,6 +1025,8 @@ const TextInput = createReactClass({
       <TouchableWithoutFeedback
         onLayout={props.onLayout}
         onPress={this._onPress}
+        onFocus={this._onFocus} // TODO(macOS ISS#2323203)
+        onBlur={this._onBlur} // TODO(macOS ISS#2323203)
         rejectResponderTermination={true}
         accessible={props.accessible}
         accessibilityLabel={props.accessibilityLabel}
@@ -1079,6 +1081,8 @@ const TextInput = createReactClass({
       <TouchableWithoutFeedback
         onLayout={props.onLayout}
         onPress={this._onPress}
+        onFocus={this._onFocus} // TODO(macOS ISS#2323203)
+        onBlur={this._onBlur} // TODO(macOS ISS#2323203)
         rejectResponderTermination={props.rejectResponderTermination}
         accessible={props.accessible}
         accessibilityLabel={props.accessibilityLabel}
@@ -1136,6 +1140,8 @@ const TextInput = createReactClass({
       <TouchableWithoutFeedback
         onLayout={props.onLayout}
         onPress={this._onPress}
+        onFocus={this._onFocus} // TODO(macOS ISS#2323203)
+        onBlur={this._onBlur} // TODO(macOS ISS#2323203)
         accessible={this.props.accessible}
         accessibilityLabel={this.props.accessibilityLabel}
         accessibilityRole={this.props.accessibilityRole}

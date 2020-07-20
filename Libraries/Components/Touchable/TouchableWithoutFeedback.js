@@ -351,6 +351,8 @@ const TouchableWithoutFeedback = ((createReactClass({
       onDragEnter: this.props.onDragEnter,
       onDragLeave: this.props.onDragLeave,
       onDrop: this.props.onDrop,
+      onFocus: this.props.onFocus,
+      onBlur: this.props.onBlur,
       draggedTypes: this.props.draggedTypes, // ]TODO(macOS ISS#2323203)
       children,
     });

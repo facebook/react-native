@@ -9,6 +9,7 @@
 
 #import <React/RCTBorderStyle.h>
 #import <React/RCTComponent.h>
+#import <React/RCTEventDispatcher.h> // TODO(OSS Candidate ISS#2710739)
 #import <React/RCTPointerEvents.h>
 
 #if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
@@ -22,6 +23,8 @@ extern const UIAccessibilityTraits SwitchAccessibilityTrait;
 @interface RCTView : RCTUIView // TODO(macOS ISS#3536887)
 
 // [TODO(OSS Candidate ISS#2710739)
+- (instancetype)initWithEventDispatcher:(RCTEventDispatcher *)eventDispatcher;
+
 - (BOOL)becomeFirstResponder;
 - (BOOL)resignFirstResponder;
 // ]TODO(OSS Candidate ISS#2710739)
