@@ -757,6 +757,15 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
     return mLastExecutedMountItemSurfaceIdActive;
   }
 
+  private static void printMountItem(MountItem mountItem, String prefix) {
+    // If a MountItem description is split across multiple lines, it's because it's a
+    // compound MountItem. Log each line separately.
+    String[] mountItemLines = mountItem.toString().split("\n");
+    for (String m : mountItemLines) {
+      FLog.e(TAG, prefix + ": " + m);
+    }
+  }
+
   @UiThread
   @ThreadConfined(UI)
   /** Nothing should call this directly except for `tryDispatchMountItems`. */
@@ -792,7 +801,7 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
               + viewCommandMountItemsToDispatch.size());
       for (DispatchCommandMountItem command : viewCommandMountItemsToDispatch) {
         if (ENABLE_FABRIC_LOGS) {
-          FLog.d(TAG, "dispatchMountItems: Executing viewCommandMountItem: " + command.toString());
+          printMountItem(command, "dispatchMountItems: Executing viewCommandMountItem");
         }
         try {
           command.execute(mMountingManager);
@@ -854,30 +863,37 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
 
       long batchedExecutionStartTime = SystemClock.uptimeMillis();
 
-      for (MountItem mountItem : mountItemsToDispatch) {
-        if (ENABLE_FABRIC_LOGS) {
-          // If a MountItem description is split across multiple lines, it's because it's a compound
-          // MountItem. Log each line separately.
-          String[] mountItemLines = mountItem.toString().split("\n");
-          for (String m : mountItemLines) {
-            FLog.d(TAG, "dispatchMountItems: Executing mountItem: " + m);
+      try {
+        for (MountItem mountItem : mountItemsToDispatch) {
+          if (ENABLE_FABRIC_LOGS) {
+            printMountItem(mountItem, "dispatchMountItems: Executing mountItem");
           }
+
+          // Make sure surface associated with this MountItem has been started, and not stopped.
+          // TODO T68118357: clean up this logic and simplify this method overall
+          if (mountItem instanceof BatchMountItem) {
+            BatchMountItem batchMountItem = (BatchMountItem) mountItem;
+            if (!surfaceActiveForExecution(
+                batchMountItem.getRootTag(), "dispatchMountItems BatchMountItem")) {
+              batchMountItem.executeDeletes(mMountingManager);
+              continue;
+            }
+          }
+
+          mountItem.execute(mMountingManager);
+        }
+        mBatchedExecutionTime += SystemClock.uptimeMillis() - batchedExecutionStartTime;
+      } catch (Throwable e) {
+        // If there's an exception, we want to log diagnostics in prod and rethrow
+        // If a MountItem description is split across multiple lines, it's because it's a compound
+        // MountItem. Log each line separately.
+        FLog.e(TAG, "dispatchMountItems: caught exception, displaying all MountItems");
+        for (MountItem mountItem : mountItemsToDispatch) {
+          printMountItem(mountItem, "dispatchMountItems: mountItem");
         }
 
-        // Make sure surface associated with this MountItem has been started, and not stopped.
-        // TODO T68118357: clean up this logic and simplify this method overall
-        if (mountItem instanceof BatchMountItem) {
-          BatchMountItem batchMountItem = (BatchMountItem) mountItem;
-          if (!surfaceActiveForExecution(
-              batchMountItem.getRootTag(), "dispatchMountItems BatchMountItem")) {
-            batchMountItem.executeDeletes(mMountingManager);
-            continue;
-          }
-        }
-
-        mountItem.execute(mMountingManager);
+        throw e;
       }
-      mBatchedExecutionTime += SystemClock.uptimeMillis() - batchedExecutionStartTime;
     }
     Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
 
