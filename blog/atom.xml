@@ -2,11 +2,23 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://reactnative.dev/blog</id>
     <title>React Native Blog</title>
-    <updated>2020-07-06T06:00:00.000Z</updated>
+    <updated>2020-07-17T06:00:00.000Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://reactnative.dev/blog"/>
     <subtitle>The best place to stay up-to-date with the latest React Native news and events.</subtitle>
     <logo>https://reactnative.dev/img/header_logo.svg</logo>
+    <entry>
+        <title type="html"><![CDATA[React Native Team Principles]]></title>
+        <id>https://reactnative.dev/blog/2020/07/17/react-native-principles.html</id>
+        <link href="https://reactnative.dev/blog/2020/07/17/react-native-principles.html"/>
+        <updated>2020-07-17T06:00:00.000Z</updated>
+        <summary type="html"><![CDATA[<p>The React Native team at Facebook is guided by principles that help determine how we prioritize our work on React Native. These principles represent our team specifically and do not necessarily represent every stakeholder in the React Native communit...</p>]]></summary>
+        <author>
+            <name>Eli White</name>
+            <email/>
+            <uri>https://twitter.com/Eli_White</uri>
+        </author>
+    </entry>
     <entry>
         <title type="html"><![CDATA[Announcing React Native 0.63 with LogBox]]></title>
         <id>https://reactnative.dev/blog/2020/07/06/version-0.63.html</id>
@@ -356,18 +368,6 @@
         </author>
     </entry>
     <entry>
-        <title type="html"><![CDATA[idx: The Existential Function]]></title>
-        <id>https://reactnative.dev/blog/2017/03/13/idx-the-existential-function.html</id>
-        <link href="https://reactnative.dev/blog/2017/03/13/idx-the-existential-function.html"/>
-        <updated>2017-03-13T06:00:00.000Z</updated>
-        <summary type="html"><![CDATA[<p>At Facebook, we often need to access deeply nested values in data structures fetched with GraphQL. On the way to accessing these deeply nested values, it is common for one or more intermediate fields to be nullable. These intermediate fields may be n...</p>]]></summary>
-        <author>
-            <name>Timothy Yung</name>
-            <email/>
-            <uri>https://github.com/yungsters</uri>
-        </author>
-    </entry>
-    <entry>
         <title type="html"><![CDATA[Better List Views in React Native]]></title>
         <id>https://reactnative.dev/blog/2017/03/13/better-list-views.html</id>
         <link href="https://reactnative.dev/blog/2017/03/13/better-list-views.html"/>
@@ -377,6 +377,18 @@
             <name>Spencer Ahrens</name>
             <email/>
             <uri>https://github.com/sahrens</uri>
+        </author>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[idx: The Existential Function]]></title>
+        <id>https://reactnative.dev/blog/2017/03/13/idx-the-existential-function.html</id>
+        <link href="https://reactnative.dev/blog/2017/03/13/idx-the-existential-function.html"/>
+        <updated>2017-03-13T06:00:00.000Z</updated>
+        <summary type="html"><![CDATA[<p>At Facebook, we often need to access deeply nested values in data structures fetched with GraphQL. On the way to accessing these deeply nested values, it is common for one or more intermediate fields to be nullable. These intermediate fields may be n...</p>]]></summary>
+        <author>
+            <name>Timothy Yung</name>
+            <email/>
+            <uri>https://github.com/yungsters</uri>
         </author>
     </entry>
     <entry>
