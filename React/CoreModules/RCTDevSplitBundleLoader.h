@@ -6,7 +6,8 @@
  */
 
 #import <React/RCTBridgeModule.h>
+#import <React/RCTJSScriptLoaderModule.h>
 #import <UIKit/UIKit.h>
 
-@interface RCTDevSplitBundleLoader : NSObject <RCTBridgeModule>
+@interface RCTDevSplitBundleLoader : NSObject <RCTBridgeModule, RCTJSScriptLoaderModule>
 @end
