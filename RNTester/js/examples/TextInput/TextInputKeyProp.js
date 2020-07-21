@@ -31,8 +31,6 @@ function TextInputKeyProp() {
   const textInputs = [];
   for (let i = 0; i < 1000; i++) {
     const key = (startKey + i).toString();
-    console.log("key", key);
-    // REMOVE KEY PROP TO FIX THIS
     textInputs.push(
       <TextInput 
         style={{ height: 40, borderColor: 'gray', borderWidth: 1 }}
