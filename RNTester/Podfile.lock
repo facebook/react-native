@@ -58,12 +58,8 @@ PODS:
     - FlipperKit/Core
     - FlipperKit/FlipperKitNetworkPlugin
   - glog (0.3.5)
-  - hermes (0.4.1)
-  - libevent (2.1.11):
-    - libevent/core (= 2.1.11)
-  - libevent/core (2.1.11):
-    - libevent/event2-headers
-  - libevent/event2-headers (2.1.11)
+  - hermes (0.4.3)
+  - libevent (2.1.11)
   - OpenSSL-Universal (1.0.2.19):
     - OpenSSL-Universal/Static (= 1.0.2.19)
   - OpenSSL-Universal/Static (1.0.2.19)
@@ -362,7 +358,7 @@ DEPENDENCIES:
   - FlipperKit/FlipperKitUserDefaultsPlugin (~> 0.30.1)
   - FlipperKit/SKIOSNetworkPlugin (~> 0.30.1)
   - glog (from `../third-party-podspecs/glog.podspec`)
-  - "hermes (from `{:http=>\"https://github.com/alloy/hermes/releases/download/v0.4.1-macOS/hermes-v0.4.1.zip\", :sha256=>\"d33c7eafded94d8113a3bb74f56aef3ec1cd3df513e99df7fa3c7c34b867d379\"}`)"
+  - hermes (from `../node_modules/hermes-engine-darwin`)
   - libevent (from `../third-party-podspecs/libevent.podspec`)
   - RCT-Folly (from `../third-party-podspecs/RCT-Folly.podspec`)
   - RCTRequired (from `../Libraries/RCTRequired`)
@@ -420,8 +416,7 @@ EXTERNAL SOURCES:
   glog:
     :podspec: "../third-party-podspecs/glog.podspec"
   hermes:
-    :http: https://github.com/alloy/hermes/releases/download/v0.4.1-macOS/hermes-v0.4.1.zip
-    :sha256: d33c7eafded94d8113a3bb74f56aef3ec1cd3df513e99df7fa3c7c34b867d379
+    :path: "../node_modules/hermes-engine-darwin"
   libevent:
     :podspec: "../third-party-podspecs/libevent.podspec"
   RCT-Folly:
@@ -473,11 +468,6 @@ EXTERNAL SOURCES:
   Yoga:
     :path: "../ReactCommon/yoga"
 
-CHECKOUT OPTIONS:
-  hermes:
-    :http: https://github.com/alloy/hermes/releases/download/v0.4.1-macOS/hermes-v0.4.1.zip
-    :sha256: d33c7eafded94d8113a3bb74f56aef3ec1cd3df513e99df7fa3c7c34b867d379
-
 SPEC CHECKSUMS:
   boost-for-react-native: a110407d9db2642fd2e1bcd7c5a51c81f2521dc9
   CocoaAsyncSocket: eafaa68a7e0ec99ead0a7b35015e0bf25d2c8987
@@ -493,8 +483,8 @@ SPEC CHECKSUMS:
   Flipper-RSocket: 64e7431a55835eb953b0bf984ef3b90ae9fdddd7
   FlipperKit: 88b7f0d0cf907ddc2137b85eeb7f3d4d8d9395c8
   glog: b3f6d74f3e2d33396addc0ee724d2b2b79fc3e00
-  hermes: ea5308401c53c1352fcb566548f2a45605c36f15
-  libevent: c2d56c8554ac18101d9c5f4c66ef762798209682
+  hermes: e6c81c75290bb87d1d62d594c269fba09b84e216
+  libevent: 52af31075d5ade81f97298a56c0656a5618ccc23
   OpenSSL-Universal: 8b48cc0d10c1b2923617dfe5c178aa9ed2689355
   RCT-Folly: 73721d08b1a712fffa7afbfb96f1d43453d76075
   RCTRequired: 66250bf27479214eb5c530ca2d8c772ebe4d7e71
@@ -524,4 +514,4 @@ SPEC CHECKSUMS:
 
 PODFILE CHECKSUM: 0e2c0cafaedd257c0e62d6125ab016426ed6da18
 
-COCOAPODS: 1.9.3
+COCOAPODS: 1.9.1
