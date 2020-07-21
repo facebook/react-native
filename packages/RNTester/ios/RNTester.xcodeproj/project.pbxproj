@@ -17,38 +17,7 @@
 		EE3C195F24B33F7C00B4EB0E /* OtherImages.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = EE3C195C24B33F7C00B4EB0E /* OtherImages.xcassets */; };
 		EE3C196624B33F8F00B4EB0E /* FlexibleSizeExampleView.m in Sources */ = {isa = PBXBuildFile; fileRef = EE3C196224B33F8F00B4EB0E /* FlexibleSizeExampleView.m */; };
 		EE3C196724B33F8F00B4EB0E /* UpdatePropertiesExampleView.m in Sources */ = {isa = PBXBuildFile; fileRef = EE3C196524B33F8F00B4EB0E /* UpdatePropertiesExampleView.m */; };
-		EE3C198624B33FA800B4EB0E /* RNTesterIntegrationTests.m in Sources */ = {isa = PBXBuildFile; fileRef = EE3C196924B33FA800B4EB0E /* RNTesterIntegrationTests.m */; };
-		EE3C198724B33FA800B4EB0E /* RCTRootViewIntegrationTests.m in Sources */ = {isa = PBXBuildFile; fileRef = EE3C196A24B33FA800B4EB0E /* RCTRootViewIntegrationTests.m */; };
-		EE3C199924B33FA800B4EB0E /* RCTLoggingTests.m in Sources */ = {isa = PBXBuildFile; fileRef = EE3C197F24B33FA800B4EB0E /* RCTLoggingTests.m */; };
-		EE3C199B24B33FA800B4EB0E /* RNTesterSnapshotTests.m in Sources */ = {isa = PBXBuildFile; fileRef = EE3C198124B33FA800B4EB0E /* RNTesterSnapshotTests.m */; };
-		EE3C199D24B33FA800B4EB0E /* RCTUIManagerScenarioTests.m in Sources */ = {isa = PBXBuildFile; fileRef = EE3C198324B33FA800B4EB0E /* RCTUIManagerScenarioTests.m */; };
-		EE3C199E24B33FA800B4EB0E /* RNTesterTestModule.m in Sources */ = {isa = PBXBuildFile; fileRef = EE3C198424B33FA800B4EB0E /* RNTesterTestModule.m */; };
-		EE3C19CC24B33FD500B4EB0E /* RCTBundleURLProviderTests.m in Sources */ = {isa = PBXBuildFile; fileRef = EE3C19A124B33FD500B4EB0E /* RCTBundleURLProviderTests.m */; };
-		EE3C19CE24B33FD500B4EB0E /* RCTURLUtilsTests.m in Sources */ = {isa = PBXBuildFile; fileRef = EE3C19A324B33FD500B4EB0E /* RCTURLUtilsTests.m */; };
-		EE3C19D024B33FD500B4EB0E /* RCTComponentPropsTests.m in Sources */ = {isa = PBXBuildFile; fileRef = EE3C19A524B33FD500B4EB0E /* RCTComponentPropsTests.m */; };
-		EE3C19D124B33FD500B4EB0E /* RCTModuleMethodTests.mm in Sources */ = {isa = PBXBuildFile; fileRef = EE3C19A624B33FD500B4EB0E /* RCTModuleMethodTests.mm */; };
-		EE3C19D224B33FD500B4EB0E /* RCTMethodArgumentTests.m in Sources */ = {isa = PBXBuildFile; fileRef = EE3C19A724B33FD500B4EB0E /* RCTMethodArgumentTests.m */; };
-		EE3C19D324B33FD500B4EB0E /* RCTAnimationUtilsTests.m in Sources */ = {isa = PBXBuildFile; fileRef = EE3C19A824B33FD500B4EB0E /* RCTAnimationUtilsTests.m */; };
-		EE3C19D424B33FD500B4EB0E /* RCTJSONTests.m in Sources */ = {isa = PBXBuildFile; fileRef = EE3C19A924B33FD500B4EB0E /* RCTJSONTests.m */; };
-		EE3C19D524B33FD500B4EB0E /* RCTConvert_UIColorTests.m in Sources */ = {isa = PBXBuildFile; fileRef = EE3C19AA24B33FD500B4EB0E /* RCTConvert_UIColorTests.m */; };
-		EE3C19D824B33FD500B4EB0E /* RCTMultipartStreamReaderTests.m in Sources */ = {isa = PBXBuildFile; fileRef = EE3C19AE24B33FD500B4EB0E /* RCTMultipartStreamReaderTests.m */; };
-		EE3C19D924B33FD500B4EB0E /* RCTImageLoaderTests.m in Sources */ = {isa = PBXBuildFile; fileRef = EE3C19AF24B33FD500B4EB0E /* RCTImageLoaderTests.m */; };
 		EE3C19DA24B33FD500B4EB0E /* libOCMock.a in Frameworks */ = {isa = PBXBuildFile; fileRef = EE3C19B024B33FD500B4EB0E /* libOCMock.a */; };
-		EE3C19DB24B33FD500B4EB0E /* RCTShadowViewTests.m in Sources */ = {isa = PBXBuildFile; fileRef = EE3C19B124B33FD500B4EB0E /* RCTShadowViewTests.m */; };
-		EE3C19DD24B33FD500B4EB0E /* RCTAllocationTests.m in Sources */ = {isa = PBXBuildFile; fileRef = EE3C19B324B33FD500B4EB0E /* RCTAllocationTests.m */; };
-		EE3C19DE24B33FD500B4EB0E /* RCTGzipTests.m in Sources */ = {isa = PBXBuildFile; fileRef = EE3C19B424B33FD500B4EB0E /* RCTGzipTests.m */; };
-		EE3C19DF24B33FD500B4EB0E /* RCTModuleInitNotificationRaceTests.m in Sources */ = {isa = PBXBuildFile; fileRef = EE3C19B524B33FD500B4EB0E /* RCTModuleInitNotificationRaceTests.m */; };
-		EE3C19E024B33FD500B4EB0E /* RCTFormatErrorTests.m in Sources */ = {isa = PBXBuildFile; fileRef = EE3C19B624B33FD500B4EB0E /* RCTFormatErrorTests.m */; };
-		EE3C19E124B33FD500B4EB0E /* RCTConvert_YGValueTests.m in Sources */ = {isa = PBXBuildFile; fileRef = EE3C19B724B33FD500B4EB0E /* RCTConvert_YGValueTests.m */; };
-		EE3C19E224B33FD500B4EB0E /* RCTImageUtilTests.m in Sources */ = {isa = PBXBuildFile; fileRef = EE3C19B824B33FD500B4EB0E /* RCTImageUtilTests.m */; };
-		EE3C19E324B33FD500B4EB0E /* RCTDevMenuTests.m in Sources */ = {isa = PBXBuildFile; fileRef = EE3C19B924B33FD500B4EB0E /* RCTDevMenuTests.m */; };
-		EE3C19E424B33FD500B4EB0E /* RCTEventDispatcherTests.m in Sources */ = {isa = PBXBuildFile; fileRef = EE3C19BA24B33FD500B4EB0E /* RCTEventDispatcherTests.m */; };
-		EE3C19E524B33FD500B4EB0E /* RCTImageLoaderHelpers.m in Sources */ = {isa = PBXBuildFile; fileRef = EE3C19BB24B33FD500B4EB0E /* RCTImageLoaderHelpers.m */; };
-		EE3C19E624B33FD500B4EB0E /* RCTNativeAnimatedNodesManagerTests.m in Sources */ = {isa = PBXBuildFile; fileRef = EE3C19C624B33FD500B4EB0E /* RCTNativeAnimatedNodesManagerTests.m */; };
-		EE3C19E724B33FD500B4EB0E /* RCTFontTests.m in Sources */ = {isa = PBXBuildFile; fileRef = EE3C19C724B33FD500B4EB0E /* RCTFontTests.m */; };
-		EE3C19E924B33FD500B4EB0E /* RCTBlobManagerTests.m in Sources */ = {isa = PBXBuildFile; fileRef = EE3C19C924B33FD500B4EB0E /* RCTBlobManagerTests.m */; };
-		EE3C19EA24B33FD500B4EB0E /* RCTPerformanceLoggerTests.m in Sources */ = {isa = PBXBuildFile; fileRef = EE3C19CA24B33FD500B4EB0E /* RCTPerformanceLoggerTests.m */; };
-		EE3C19EB24B33FD500B4EB0E /* RCTConvert_NSURLTests.m in Sources */ = {isa = PBXBuildFile; fileRef = EE3C19CB24B33FD500B4EB0E /* RCTConvert_NSURLTests.m */; };
 		EE3C1A3424B4772600B4EB0E /* RCTBundleURLProviderTests.m in Sources */ = {isa = PBXBuildFile; fileRef = EE3C19A124B33FD500B4EB0E /* RCTBundleURLProviderTests.m */; };
 		EE3C1A3524B4772600B4EB0E /* RCTURLUtilsTests.m in Sources */ = {isa = PBXBuildFile; fileRef = EE3C19A324B33FD500B4EB0E /* RCTURLUtilsTests.m */; };
 		EE3C1A3624B4772600B4EB0E /* RCTModuleInitTests.m in Sources */ = {isa = PBXBuildFile; fileRef = EE3C19A424B33FD500B4EB0E /* RCTModuleInitTests.m */; };
@@ -80,8 +49,12 @@
 		EE3C1A5124B4776500B4EB0E /* libPods-RNTesterUnitTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = EE3C1A5024B4776500B4EB0E /* libPods-RNTesterUnitTests.a */; };
 		EE3C1A5424B4794F00B4EB0E /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EE3C1A5224B4792B00B4EB0E /* XCTest.framework */; };
 		EE3C1A5524B4795B00B4EB0E /* JavaScriptCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = ED297162215061F000B7C4FE /* JavaScriptCore.framework */; };
-		EE3C1A5824B47C3800B4EB0E /* RCTModuleInitTests.m in Sources */ = {isa = PBXBuildFile; fileRef = EE3C19A424B33FD500B4EB0E /* RCTModuleInitTests.m */; };
-		EE3C1A5924B47C4B00B4EB0E /* RCTUnicodeDecodeTests.m in Sources */ = {isa = PBXBuildFile; fileRef = EE3C19B224B33FD500B4EB0E /* RCTUnicodeDecodeTests.m */; };
+		EEEBD49E24C73981004A7A04 /* RNTesterIntegrationTests.m in Sources */ = {isa = PBXBuildFile; fileRef = EE3C196924B33FA800B4EB0E /* RNTesterIntegrationTests.m */; };
+		EEEBD49F24C73983004A7A04 /* RCTRootViewIntegrationTests.m in Sources */ = {isa = PBXBuildFile; fileRef = EE3C196A24B33FA800B4EB0E /* RCTRootViewIntegrationTests.m */; };
+		EEEBD4A024C73987004A7A04 /* RCTLoggingTests.m in Sources */ = {isa = PBXBuildFile; fileRef = EE3C197F24B33FA800B4EB0E /* RCTLoggingTests.m */; };
+		EEEBD4A124C73994004A7A04 /* RNTesterSnapshotTests.m in Sources */ = {isa = PBXBuildFile; fileRef = EE3C198124B33FA800B4EB0E /* RNTesterSnapshotTests.m */; };
+		EEEBD4A224C73998004A7A04 /* RCTUIManagerScenarioTests.m in Sources */ = {isa = PBXBuildFile; fileRef = EE3C198324B33FA800B4EB0E /* RCTUIManagerScenarioTests.m */; };
+		EEEBD4A324C7399B004A7A04 /* RNTesterTestModule.m in Sources */ = {isa = PBXBuildFile; fileRef = EE3C198424B33FA800B4EB0E /* RNTesterTestModule.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -495,9 +468,11 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = EE3C1A3124B4762600B4EB0E /* Build configuration list for PBXNativeTarget "RNTesterUnitTests" */;
 			buildPhases = (
+				C248A39FE631F433AB4BC98A /* [CP] Check Pods Manifest.lock */,
 				EE3C1A2624B4762500B4EB0E /* Sources */,
 				EE3C1A2724B4762500B4EB0E /* Frameworks */,
 				EE3C1A2824B4762500B4EB0E /* Resources */,
+				D9E146A2DC3F606DA0103177 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -675,6 +650,46 @@
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-RNTester/Pods-RNTester-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
+		C248A39FE631F433AB4BC98A /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-RNTesterUnitTests-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		D9E146A2DC3F606DA0103177 /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-RNTesterUnitTests/Pods-RNTesterUnitTests-resources.sh",
+				"${PODS_CONFIGURATION_BUILD_DIR}/React-Core/AccessibilityResources.bundle",
+			);
+			name = "[CP] Copy Pods Resources";
+			outputPaths = (
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/AccessibilityResources.bundle",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-RNTesterUnitTests/Pods-RNTesterUnitTests-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
 		FD10A7F022414F080027D42C /* Start Packager */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -701,44 +716,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				EE3C19DD24B33FD500B4EB0E /* RCTAllocationTests.m in Sources */,
-				EE3C199B24B33FA800B4EB0E /* RNTesterSnapshotTests.m in Sources */,
-				EE3C19D824B33FD500B4EB0E /* RCTMultipartStreamReaderTests.m in Sources */,
-				EE3C19DB24B33FD500B4EB0E /* RCTShadowViewTests.m in Sources */,
 				EE3C196724B33F8F00B4EB0E /* UpdatePropertiesExampleView.m in Sources */,
-				EE3C1A5924B47C4B00B4EB0E /* RCTUnicodeDecodeTests.m in Sources */,
-				EE3C198724B33FA800B4EB0E /* RCTRootViewIntegrationTests.m in Sources */,
-				EE3C198624B33FA800B4EB0E /* RNTesterIntegrationTests.m in Sources */,
-				EE3C19D124B33FD500B4EB0E /* RCTModuleMethodTests.mm in Sources */,
-				EE3C19EB24B33FD500B4EB0E /* RCTConvert_NSURLTests.m in Sources */,
-				EE3C19DF24B33FD500B4EB0E /* RCTModuleInitNotificationRaceTests.m in Sources */,
-				EE3C19E224B33FD500B4EB0E /* RCTImageUtilTests.m in Sources */,
-				EE3C19D524B33FD500B4EB0E /* RCTConvert_UIColorTests.m in Sources */,
-				EE3C19DE24B33FD500B4EB0E /* RCTGzipTests.m in Sources */,
-				EE3C19E924B33FD500B4EB0E /* RCTBlobManagerTests.m in Sources */,
-				EE3C19E024B33FD500B4EB0E /* RCTFormatErrorTests.m in Sources */,
-				EE3C19E324B33FD500B4EB0E /* RCTDevMenuTests.m in Sources */,
-				EE3C1A5824B47C3800B4EB0E /* RCTModuleInitTests.m in Sources */,
 				13B07FBC1A68108700A75B9A /* AppDelegate.mm in Sources */,
-				EE3C19E624B33FD500B4EB0E /* RCTNativeAnimatedNodesManagerTests.m in Sources */,
-				EE3C19E724B33FD500B4EB0E /* RCTFontTests.m in Sources */,
-				EE3C19D424B33FD500B4EB0E /* RCTJSONTests.m in Sources */,
-				EE3C19E424B33FD500B4EB0E /* RCTEventDispatcherTests.m in Sources */,
-				EE3C19D024B33FD500B4EB0E /* RCTComponentPropsTests.m in Sources */,
 				EE3C196624B33F8F00B4EB0E /* FlexibleSizeExampleView.m in Sources */,
-				EE3C199E24B33FA800B4EB0E /* RNTesterTestModule.m in Sources */,
 				13B07FC11A68108700A75B9A /* main.m in Sources */,
-				EE3C19EA24B33FD500B4EB0E /* RCTPerformanceLoggerTests.m in Sources */,
-				EE3C19E524B33FD500B4EB0E /* RCTImageLoaderHelpers.m in Sources */,
-				EE3C19E124B33FD500B4EB0E /* RCTConvert_YGValueTests.m in Sources */,
-				EE3C19CE24B33FD500B4EB0E /* RCTURLUtilsTests.m in Sources */,
-				EE3C199D24B33FA800B4EB0E /* RCTUIManagerScenarioTests.m in Sources */,
 				28E11BDA249A6B9C00293E3B /* RNTesterTurboModuleProvider.mm in Sources */,
-				EE3C19CC24B33FD500B4EB0E /* RCTBundleURLProviderTests.m in Sources */,
-				EE3C199924B33FA800B4EB0E /* RCTLoggingTests.m in Sources */,
-				EE3C19D224B33FD500B4EB0E /* RCTMethodArgumentTests.m in Sources */,
-				EE3C19D924B33FD500B4EB0E /* RCTImageLoaderTests.m in Sources */,
-				EE3C19D324B33FD500B4EB0E /* RCTAnimationUtilsTests.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -746,6 +728,12 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				EEEBD4A124C73994004A7A04 /* RNTesterSnapshotTests.m in Sources */,
+				EEEBD49E24C73981004A7A04 /* RNTesterIntegrationTests.m in Sources */,
+				EEEBD4A224C73998004A7A04 /* RCTUIManagerScenarioTests.m in Sources */,
+				EEEBD4A024C73987004A7A04 /* RCTLoggingTests.m in Sources */,
+				EEEBD4A324C7399B004A7A04 /* RNTesterTestModule.m in Sources */,
+				EEEBD49F24C73983004A7A04 /* RCTRootViewIntegrationTests.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1217,6 +1205,7 @@
 		};
 		EE3C1A3224B4762600B4EB0E /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 04AB06A3A577946C264F3D3D /* Pods-RNTesterUnitTests.debug.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CLANG_ANALYZER_NONNULL = YES;
@@ -1246,6 +1235,7 @@
 		};
 		EE3C1A3324B4762600B4EB0E /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 324505D8A0C57D869CD6057F /* Pods-RNTesterUnitTests.release.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CLANG_ANALYZER_NONNULL = YES;
