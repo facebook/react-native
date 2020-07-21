@@ -20,6 +20,8 @@ const URIActionMap = require('./utils/URIActionMap');
 
 const nativeImageSource = require('../../Libraries/Image/nativeImageSource');
 
+const {ScrollViewExpandingExample} = require('./examples/ScrollView/ScrollViewExpandingExample');
+
 const {
   AppRegistry,
   AsyncStorage,
@@ -202,6 +204,9 @@ class RNTesterApp extends React.Component<Props, RNTesterNavigationState> {
     if (!this.state) {
       return null;
     }
+
+    return <ScrollViewExpandingExample />
+
     return (
       <DrawerLayoutAndroid
         drawerPosition="left"

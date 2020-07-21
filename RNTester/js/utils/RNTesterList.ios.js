@@ -102,6 +102,10 @@ const ComponentExamples: Array<RNTesterExample> = [
     module: require('../examples/ScrollView/ScrollViewAnimatedExample'),
   },
   {
+    key: 'ScrollViewExpandingExample',
+    module: require('../examples/ScrollView/ScrollViewExpandingExample'),
+  },
+  {
     key: 'SectionListExample',
     module: require('../examples/SectionList/SectionListExample'),
   },
