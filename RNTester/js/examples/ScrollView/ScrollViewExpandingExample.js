@@ -132,11 +132,11 @@ const styles = StyleSheet.create({
 
 exports.title = '<ScrollViewExpandingExample>';
 exports.description =
-  'Component that enables scrolling through child components.';
-
+  'Component that enables keeps scroll position through layout changes.';
+exports.simpleExampleContainer = true;
 exports.examples = [
   {
-    title: 'Simple scroll view',
+    title: 'Expanding scroll view',
     render: function(): React.Element<typeof ScrollViewExpandingExample> {
       return <ScrollViewExpandingExample />;
     },

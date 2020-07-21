@@ -51,7 +51,6 @@ class ScrollViewSimpleExample extends React.Component<{...}> {
     items.push(
       <ScrollView
         key={'scrollViewSnap'}
-        maintainVisibleContentPosition={{minIndexForVisible: 0}}
         horizontal
         snapToInterval={210.0}
         pagingEnabled>
