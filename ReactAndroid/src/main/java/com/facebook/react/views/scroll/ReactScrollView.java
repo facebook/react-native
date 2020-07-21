@@ -296,6 +296,8 @@ public class ReactScrollView extends ScrollView
     }
 
     if (mMaintainVisibleContentPositionData != null) {
+      // We don't want to compute the first visible view everytime onScrollChanged gets called (can be multiple times per second).
+      // The following logic debounces the computation by 100ms (arbitrary value).
       mHandler.removeCallbacks(mComputeFirstVisibleViewRunnable);
       mHandler.postDelayed(mComputeFirstVisibleViewRunnable, 100);
     }
