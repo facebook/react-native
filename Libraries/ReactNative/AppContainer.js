@@ -10,13 +10,13 @@
 
 'use strict';
 
-const EmitterSubscription = require('../vendor/emitter/EmitterSubscription');
-const PropTypes = require('prop-types');
-const RCTDeviceEventEmitter = require('../EventEmitter/RCTDeviceEventEmitter');
-const React = require('react');
+import View from '../Components/View/View';
+import RCTDeviceEventEmitter from '../EventEmitter/RCTDeviceEventEmitter';
+import StyleSheet from '../StyleSheet/StyleSheet';
+import {type EventSubscription} from '../vendor/emitter/EventEmitter';
 import {RootTagContext, createRootTag} from './RootTag';
-const StyleSheet = require('../StyleSheet/StyleSheet');
-const View = require('../Components/View/View');
+import PropTypes from 'prop-types';
+import * as React from 'react';
 
 type Context = {rootTag: number, ...};
 
@@ -43,7 +43,7 @@ class AppContainer extends React.Component<Props, State> {
     hasError: false,
   };
   _mainRef: ?React.ElementRef<typeof View>;
-  _subscription: ?EmitterSubscription = null;
+  _subscription: ?EventSubscription = null;
 
   static getDerivedStateFromError: any = undefined;
 

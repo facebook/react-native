@@ -21,11 +21,6 @@ namespace react {
  */
 struct LayoutContext {
   /*
-   * Compound absolute position of the node relative to the root node.
-   */
-  Point absolutePosition{0, 0};
-
-  /*
    * Reflects the scale factor needed to convert from the logical coordinate
    * space into the device coordinate space of the physical screen.
    * Some layout systems *might* use this to round layout metric values
@@ -55,6 +50,11 @@ struct LayoutContext {
    * - border(Left|Right)Color → border(Start|End)Color
    */
   bool swapLeftAndRightInRTL{false};
+
+  /*
+   * Multiplier used to change size of the font in surface.
+   */
+  Float fontSizeMultiplier{1.0};
 };
 
 } // namespace react

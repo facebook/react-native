@@ -26,7 +26,7 @@ class RawTextProps : public Props {
 
 #pragma mark - Props
 
-  const std::string text{};
+  std::string text{};
 
 #pragma mark - DebugStringConvertible
 

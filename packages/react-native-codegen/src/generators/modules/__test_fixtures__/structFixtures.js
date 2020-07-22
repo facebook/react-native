@@ -21,7 +21,7 @@ const SIMPLE_STRUCT: $ReadOnlyArray<
   |}>,
 > = [
   {
-    name: 'SampleFuncReturnType',
+    name: 'SpecSampleFuncReturnType',
     object: {
       type: 'ObjectTypeAnnotation',
       properties: [
@@ -122,7 +122,7 @@ const SIMPLE_CONSTANTS: $ReadOnlyArray<
   |}>,
 > = [
   {
-    name: 'GetConstantsReturnType',
+    name: 'SpecGetConstantsReturnType',
     object: {
       type: 'ObjectTypeAnnotation',
       properties: [

@@ -1119,7 +1119,11 @@ RCT_ENUM_CONVERTER(
 
 RCT_ENUM_CONVERTER(
     YGPositionType,
-    (@{@"absolute" : @(YGPositionTypeAbsolute), @"relative" : @(YGPositionTypeRelative)}),
+    (@{
+      @"static" : @(YGPositionTypeStatic),
+      @"absolute" : @(YGPositionTypeAbsolute),
+      @"relative" : @(YGPositionTypeRelative)
+    }),
     YGPositionTypeRelative,
     intValue)
 

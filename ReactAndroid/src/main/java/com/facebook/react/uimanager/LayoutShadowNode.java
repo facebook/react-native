@@ -779,6 +779,11 @@ public class LayoutShadowNode extends ReactShadowNodeImpl {
     }
 
     switch (position) {
+      case "static":
+        {
+          setPositionType(YogaPositionType.STATIC);
+          break;
+        }
       case "relative":
         {
           setPositionType(YogaPositionType.RELATIVE);

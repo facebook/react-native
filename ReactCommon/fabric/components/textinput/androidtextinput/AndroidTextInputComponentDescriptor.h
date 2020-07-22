@@ -7,6 +7,7 @@
 
 #pragma once
 
+#include <fbjni/fbjni.h>
 #include <react/core/ConcreteComponentDescriptor.h>
 #include "AndroidTextInputShadowNode.h"
 
@@ -36,18 +37,33 @@ class AndroidTextInputComponentDescriptor final
       ShadowNodeFamily::Shared const &family) const override {
     int surfaceId = family->getSurfaceId();
 
-    float defaultThemePaddingStart = NAN;
-    float defaultThemePaddingEnd = NAN;
-    float defaultThemePaddingTop = NAN;
-    float defaultThemePaddingBottom = NAN;
-
+    YGStyle::Edges theme;
+    // TODO: figure out RTL/start/end/left/right stuff here
     if (surfaceIdToThemePaddingMap_.find(surfaceId) !=
         surfaceIdToThemePaddingMap_.end()) {
-      YGStyle::Edges theme = surfaceIdToThemePaddingMap_[surfaceId];
-      defaultThemePaddingStart = ((YGValue)theme[YGEdgeStart]).value;
-      defaultThemePaddingEnd = ((YGValue)theme[YGEdgeEnd]).value;
-      defaultThemePaddingTop = ((YGValue)theme[YGEdgeTop]).value;
-      defaultThemePaddingBottom = ((YGValue)theme[YGEdgeBottom]).value;
+      theme = surfaceIdToThemePaddingMap_[surfaceId];
+    } else {
+      const jni::global_ref<jobject> &fabricUIManager =
+          contextContainer_->at<jni::global_ref<jobject>>("FabricUIManager");
+
+      auto env = jni::Environment::current();
+      auto defaultTextInputPaddingArray = env->NewFloatArray(4);
+      static auto getThemeData =
+          jni::findClassStatic(UIManagerJavaDescriptor)
+              ->getMethod<jboolean(jint, jfloatArray)>("getThemeData");
+
+      if (getThemeData(
+              fabricUIManager, surfaceId, defaultTextInputPaddingArray)) {
+        jfloat *defaultTextInputPadding =
+            env->GetFloatArrayElements(defaultTextInputPaddingArray, 0);
+        theme[YGEdgeStart] = (YGValue){defaultTextInputPadding[0], YGUnitPoint};
+        theme[YGEdgeEnd] = (YGValue){defaultTextInputPadding[1], YGUnitPoint};
+        theme[YGEdgeTop] = (YGValue){defaultTextInputPadding[2], YGUnitPoint};
+        theme[YGEdgeBottom] =
+            (YGValue){defaultTextInputPadding[3], YGUnitPoint};
+        surfaceIdToThemePaddingMap_.emplace(std::make_pair(surfaceId, theme));
+      }
+      env->DeleteLocalRef(defaultTextInputPaddingArray);
     }
 
     return std::make_shared<AndroidTextInputShadowNode::ConcreteState>(
@@ -59,10 +75,10 @@ class AndroidTextInputComponentDescriptor final
             {},
             {},
             textLayoutManager_,
-            defaultThemePaddingStart,
-            defaultThemePaddingEnd,
-            defaultThemePaddingTop,
-            defaultThemePaddingBottom)),
+            ((YGValue)theme[YGEdgeStart]).value,
+            ((YGValue)theme[YGEdgeEnd]).value,
+            ((YGValue)theme[YGEdgeTop]).value,
+            ((YGValue)theme[YGEdgeBottom]).value)),
         family);
   }
 
@@ -79,27 +95,7 @@ class AndroidTextInputComponentDescriptor final
     textInputShadowNode->setContextContainer(
         const_cast<ContextContainer *>(getContextContainer().get()));
 
-    // Get theme padding from cache, or set it from State.
-    // In theory, the Java ViewManager for TextInput should need to set state
-    // *exactly once* per surface to communicate the correct default padding,
-    // which will be cached here in C++.
-    // TODO T63008435: can this feature be removed entirely?
-    // TODO: figure out RTL/start/end/left/right stuff here
     int surfaceId = textInputShadowNode->getSurfaceId();
-    const AndroidTextInputState &state = textInputShadowNode->getStateData();
-    if (surfaceIdToThemePaddingMap_.find(surfaceId) ==
-            surfaceIdToThemePaddingMap_.end() &&
-        !isnan(state.defaultThemePaddingStart)) {
-      YGStyle::Edges result;
-      result[YGEdgeStart] =
-          (YGValue){state.defaultThemePaddingStart, YGUnitPoint};
-      result[YGEdgeEnd] = (YGValue){state.defaultThemePaddingEnd, YGUnitPoint};
-      result[YGEdgeTop] = (YGValue){state.defaultThemePaddingTop, YGUnitPoint};
-      result[YGEdgeBottom] =
-          (YGValue){state.defaultThemePaddingBottom, YGUnitPoint};
-      surfaceIdToThemePaddingMap_.emplace(std::make_pair(surfaceId, result));
-    }
-
     if (surfaceIdToThemePaddingMap_.find(surfaceId) !=
         surfaceIdToThemePaddingMap_.end()) {
       YGStyle::Edges theme = surfaceIdToThemePaddingMap_[surfaceId];
@@ -177,6 +173,10 @@ class AndroidTextInputComponentDescriptor final
   }
 
  private:
+  // TODO T68526882: Unify with Binding::UIManagerJavaDescriptor
+  constexpr static auto UIManagerJavaDescriptor =
+      "com/facebook/react/fabric/FabricUIManager";
+
   SharedTextLayoutManager textLayoutManager_;
   mutable better::map<int, YGStyle::Edges> surfaceIdToThemePaddingMap_;
 };

@@ -14,6 +14,7 @@
 #include <react/mounting/MountingOverrideDelegate.h>
 #include <react/mounting/MountingTransaction.h>
 #include <react/mounting/ShadowTreeRevision.h>
+#include <react/mounting/TelemetryController.h>
 #include "ShadowTreeRevision.h"
 
 #ifdef RN_SHADOW_TREE_INTROSPECTION
@@ -69,6 +70,8 @@ class MountingCoordinator final {
    */
   bool waitForTransaction(std::chrono::duration<double> timeout) const;
 
+  TelemetryController const &getTelemetryController() const;
+
   /*
    * Methods from this section are meant to be used by
    * `MountingOverrideDelegate` only.
@@ -103,6 +106,8 @@ class MountingCoordinator final {
   mutable MountingTransaction::Number number_{0};
   mutable std::condition_variable signal_;
   std::weak_ptr<MountingOverrideDelegate const> mountingOverrideDelegate_;
+
+  TelemetryController telemetryController_;
 
 #ifdef RN_SHADOW_TREE_INTROSPECTION
   void validateTransactionAgainstStubViewTree(

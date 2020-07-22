@@ -10,18 +10,16 @@
 
 'use strict';
 
-const Blob = require('../Blob/Blob');
-const BlobManager = require('../Blob/BlobManager');
-const EventTarget = require('event-target-shim');
-const NativeEventEmitter = require('../EventEmitter/NativeEventEmitter');
-const WebSocketEvent = require('./WebSocketEvent');
-
-const base64 = require('base64-js');
-const binaryToBase64 = require('../Utilities/binaryToBase64');
-const invariant = require('invariant');
-
-import type EventSubscription from '../vendor/emitter/EventSubscription';
+import Blob from '../Blob/Blob';
+import BlobManager from '../Blob/BlobManager';
+import NativeEventEmitter from '../EventEmitter/NativeEventEmitter';
+import binaryToBase64 from '../Utilities/binaryToBase64';
+import {type EventSubscription} from '../vendor/emitter/EventEmitter';
 import NativeWebSocketModule from './NativeWebSocketModule';
+import WebSocketEvent from './WebSocketEvent';
+import base64 from 'base64-js';
+import EventTarget from 'event-target-shim';
+import invariant from 'invariant';
 
 type ArrayBufferView =
   | Int8Array

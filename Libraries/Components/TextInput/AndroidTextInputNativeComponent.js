@@ -25,7 +25,6 @@ import type {ColorValue} from '../../StyleSheet/StyleSheet';
 import requireNativeComponent from '../../ReactNative/requireNativeComponent';
 import codegenNativeCommands from '../../Utilities/codegenNativeCommands';
 import type {TextInputNativeCommands} from './TextInputNativeCommands';
-import * as React from 'react';
 import AndroidTextInputViewConfig from './AndroidTextInputViewConfig';
 const ReactNativeViewConfigRegistry = require('../../Renderer/shims/ReactNativeViewConfigRegistry');
 

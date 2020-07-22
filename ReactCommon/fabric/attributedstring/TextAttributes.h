@@ -77,6 +77,7 @@ class TextAttributes : public DebugStringConvertible {
   // Currently, it is intentionally *not* being set as part of BaseTextProps
   // construction.
   folly::Optional<LayoutDirection> layoutDirection{};
+  folly::Optional<AccessibilityRole> accessibilityRole{};
 
 #pragma mark - Operations
 
@@ -127,7 +128,8 @@ struct hash<facebook::react::TextAttributes> {
         textAttributes.textShadowRadius,
         textAttributes.textShadowColor,
         textAttributes.isHighlighted,
-        textAttributes.layoutDirection);
+        textAttributes.layoutDirection,
+        textAttributes.accessibilityRole);
   }
 };
 } // namespace std

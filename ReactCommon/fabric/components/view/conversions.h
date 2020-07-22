@@ -276,6 +276,10 @@ inline void fromRawValue(const RawValue &value, YGAlign &result) {
 inline void fromRawValue(const RawValue &value, YGPositionType &result) {
   assert(value.hasType<std::string>());
   auto stringValue = (std::string)value;
+  if (stringValue == "static") {
+    result = YGPositionTypeStatic;
+    return;
+  }
   if (stringValue == "relative") {
     result = YGPositionTypeRelative;
     return;
@@ -422,6 +426,8 @@ inline void fromRawValue(const RawValue &value, Transform &result) {
       for (auto number : numbers) {
         transformMatrix.matrix[i++] = number;
       }
+      transformMatrix.operations.push_back(
+          TransformOperation{TransformOperationType::Arbitrary, 0, 0, 0});
     } else if (operation == "perspective") {
       transformMatrix =
           transformMatrix * Transform::Perspective((Float)parameters);
@@ -613,6 +619,8 @@ inline std::string toString(const YGAlign &value) {
 
 inline std::string toString(const YGPositionType &value) {
   switch (value) {
+    case YGPositionTypeStatic:
+      return "static";
     case YGPositionTypeRelative:
       return "relative";
     case YGPositionTypeAbsolute:

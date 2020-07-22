@@ -48,7 +48,8 @@ void ViewShadowNode::initialize() noexcept {
        viewProps.yogaStyle.positionType() == YGPositionTypeAbsolute) ||
       viewProps.yogaStyle.display() == YGDisplayNone ||
       viewProps.getClipsContentToBounds() ||
-      isColorMeaningful(viewProps.shadowColor);
+      isColorMeaningful(viewProps.shadowColor) ||
+      viewProps.importantForAccessibility != ImportantForAccessibility::Auto;
 
   bool formsView = isColorMeaningful(viewProps.backgroundColor) ||
       isColorMeaningful(viewProps.foregroundColor) ||

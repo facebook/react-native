@@ -196,7 +196,7 @@ static void jni_YGConfigSetLoggerJNI(
       delete context;
       YGConfigSetContext(config, nullptr);
     }
-    config->setLogger(nullptr);
+    YGConfigSetLogger(config, nullptr);
   }
 }
 

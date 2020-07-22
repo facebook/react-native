@@ -20,8 +20,11 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Callback;
+import com.facebook.react.bridge.CatalystInstance;
+import com.facebook.react.bridge.JSIModuleType;
 import com.facebook.react.bridge.JavaOnlyArray;
 import com.facebook.react.bridge.JavaOnlyMap;
+import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.uimanager.UIManagerModule;
@@ -54,6 +57,8 @@ public class NativeAnimatedNodeTraversalTest {
   @Rule public PowerMockRule rule = new PowerMockRule();
 
   private long mFrameTimeNanos;
+  private ReactApplicationContext mReactApplicationContextMock;
+  private CatalystInstance mCatalystInstanceMock;
   private UIManagerModule mUIManagerMock;
   private EventDispatcher mEventDispatcherMock;
   private NativeAnimatedNodesManager mNativeAnimatedNodesManager;
@@ -83,6 +88,59 @@ public class NativeAnimatedNodeTraversalTest {
             });
 
     mFrameTimeNanos = INITIAL_FRAME_TIME_NANOS;
+
+    mReactApplicationContextMock = mock(ReactApplicationContext.class);
+    PowerMockito.when(mReactApplicationContextMock.hasActiveCatalystInstance())
+        .thenAnswer(
+            new Answer<Boolean>() {
+              @Override
+              public Boolean answer(InvocationOnMock invocationOnMock) throws Throwable {
+                return true;
+              }
+            });
+    PowerMockito.when(mReactApplicationContextMock.hasCatalystInstance())
+        .thenAnswer(
+            new Answer<Boolean>() {
+              @Override
+              public Boolean answer(InvocationOnMock invocationOnMock) throws Throwable {
+                return true;
+              }
+            });
+    PowerMockito.when(mReactApplicationContextMock.getCatalystInstance())
+        .thenAnswer(
+            new Answer<CatalystInstance>() {
+              @Override
+              public CatalystInstance answer(InvocationOnMock invocationOnMock) throws Throwable {
+                return mCatalystInstanceMock;
+              }
+            });
+    PowerMockito.when(mReactApplicationContextMock.getNativeModule(any(Class.class)))
+        .thenAnswer(
+            new Answer<UIManagerModule>() {
+              @Override
+              public UIManagerModule answer(InvocationOnMock invocationOnMock) throws Throwable {
+                return mUIManagerMock;
+              }
+            });
+
+    mCatalystInstanceMock = mock(CatalystInstance.class);
+    PowerMockito.when(mCatalystInstanceMock.getJSIModule(any(JSIModuleType.class)))
+        .thenAnswer(
+            new Answer<UIManagerModule>() {
+              @Override
+              public UIManagerModule answer(InvocationOnMock invocationOnMock) throws Throwable {
+                return mUIManagerMock;
+              }
+            });
+    PowerMockito.when(mCatalystInstanceMock.getNativeModule(any(Class.class)))
+        .thenAnswer(
+            new Answer<UIManagerModule>() {
+              @Override
+              public UIManagerModule answer(InvocationOnMock invocationOnMock) throws Throwable {
+                return mUIManagerMock;
+              }
+            });
+
     mUIManagerMock = mock(UIManagerModule.class);
     mEventDispatcherMock = mock(EventDispatcher.class);
     PowerMockito.when(mUIManagerMock.getEventDispatcher())
@@ -125,7 +183,16 @@ public class NativeAnimatedNodeTraversalTest {
                 };
               }
             });
-    mNativeAnimatedNodesManager = new NativeAnimatedNodesManager(mUIManagerMock);
+    PowerMockito.when(mUIManagerMock.resolveCustomDirectEventName(any(String.class)))
+        .thenAnswer(
+            new Answer<String>() {
+              @Override
+              public String answer(InvocationOnMock invocation) throws Throwable {
+                String arg = invocation.getArguments()[0].toString();
+                return "on" + arg.substring(3);
+              }
+            });
+    mNativeAnimatedNodesManager = new NativeAnimatedNodesManager(mReactApplicationContextMock);
   }
 
   /**
@@ -803,6 +870,19 @@ public class NativeAnimatedNodeTraversalTest {
   }
 
   @Test
+  public void testGetValue() {
+    int tag = 1;
+    mNativeAnimatedNodesManager.createAnimatedNode(
+        tag, JavaOnlyMap.of("type", "value", "value", 1d, "offset", 0d));
+
+    Callback saveValueCallbackMock = mock(Callback.class);
+
+    mNativeAnimatedNodesManager.getValue(tag, saveValueCallbackMock);
+
+    verify(saveValueCallbackMock, times(1)).invoke(1d);
+  }
+
+  @Test
   public void testInterpolationNode() {
     mNativeAnimatedNodesManager.createAnimatedNode(
         1, JavaOnlyMap.of("type", "value", "value", 10d, "offset", 0d));
@@ -875,7 +955,7 @@ public class NativeAnimatedNodeTraversalTest {
 
     mNativeAnimatedNodesManager.addAnimatedEventToView(
         viewTag,
-        "topScroll",
+        "onScroll",
         JavaOnlyMap.of(
             "animatedValueTag", 1, "nativeEventPath", JavaOnlyArray.of("contentOffset", "y")));
 
@@ -928,10 +1008,10 @@ public class NativeAnimatedNodeTraversalTest {
               public Object answer(InvocationOnMock invocation) throws Throwable {
                 return MapBuilder.of(
                     "customDirectEventTypes",
-                    MapBuilder.of("topScroll", MapBuilder.of("registrationName", "onScroll")));
+                    MapBuilder.of("onScroll", MapBuilder.of("registrationName", "onScroll")));
               }
             });
-    mNativeAnimatedNodesManager = new NativeAnimatedNodesManager(mUIManagerMock);
+    mNativeAnimatedNodesManager = new NativeAnimatedNodesManager(mReactApplicationContextMock);
 
     createSimpleAnimatedViewWithOpacity(viewTag, 0d);
 
@@ -953,7 +1033,7 @@ public class NativeAnimatedNodeTraversalTest {
 
   @Test
   public void testRestoreDefaultProps() {
-    int viewTag = 1000;
+    int viewTag = 1001; // restoreDefaultProps not called in Fabric, make sure it's a non-Fabric tag
     int propsNodeTag = 3;
     mNativeAnimatedNodesManager.createAnimatedNode(
         1, JavaOnlyMap.of("type", "value", "value", 1d, "offset", 0d));
