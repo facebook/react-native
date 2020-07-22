@@ -18,6 +18,10 @@
   comment: >
     We are using GitHub issues exclusively to track bugs in the core React Native library. Please try asking over on [Stack Overflow](http://stackoverflow.com/questions/tagged/react-native) as it is better suited for this type of question.
   close: true
+"Resolution: Community Repo":
+  comment: >
+    This issue can be better addressed in a different community repository. Please check out the list of [maintainers in the RNCommunity](https://github.com/react-native-community/.github/blob/master/MAINTAINERS.md) to find the best place to create this issue.
+  close: true
 "Needs: Issue Template":
   comment: >
     <table><tbody><tr><th width="50">:warning:</th><th width="100%">
