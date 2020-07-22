@@ -17,9 +17,9 @@ const {
   StyleSheet,
   Text,
   TouchableOpacity,
+  Switch,
+  View,
 } = require('react-native');
-
-const NUM_ITEMS = 20;
 
 const LOREM = `
 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse laoreet lorem at molestie accumsan. Mauris blandit purus sapien, ac faucibus lorem elementum a. Fusce sed odio eget arcu varius sodales vel et elit. Etiam scelerisque nunc eu aliquet cursus. Aliquam erat volutpat. Praesent fringilla tellus at neque scelerisque, sed egestas lorem lacinia. In hac habitasse platea dictumst. Mauris sed ex ut felis ultricies scelerisque a ac erat. Suspendisse sapien mauris, sodales ac mollis ac, gravida at velit. Nam dapibus a nisl in aliquam. Quisque eu velit velit. In iaculis nisi purus, non tristique erat posuere eget. Aenean bibendum massa ac turpis scelerisque ultrices. Morbi nulla erat, commodo sit amet ultrices ac, faucibus vel mi.
@@ -69,8 +69,9 @@ class ScrollViewExpandingExample extends React.Component<Props, State> {
     super(props);
 
     this.state = {
-      count: NUM_ITEMS,
-      isExpanded: {}
+      count: 20,
+      isExpanded: {},
+      horizontal: false
     };
   }
 
@@ -80,15 +81,20 @@ class ScrollViewExpandingExample extends React.Component<Props, State> {
   ): Array<any> => {
     const items = [];
     for (let i = 0; i < nItems; i++) {
+
+      const onPress = () => {
+        this.state.isExpanded[i] = !this.state.isExpanded[i];
+        this.setState(this.state);
+      };
+
+      const onLongPress = () => {
+        this.state.count = this.state.count + 100;
+        this.setState(this.state);
+      };
+
       items[i] = (
-        <TouchableOpacity key={i} style={styles} onPress={() => {
-          this.state.isExpanded[i] = !this.state.isExpanded[i];
-          this.setState(this.state);
-        }} onLongPress={() => {
-          this.state.count = this.state.count + 100;
-          this.setState(this.state);
-        }}>
-          <Text>{'Item ' + i + (this.state.isExpanded[i] ? LOREM : '')}</Text>
+        <TouchableOpacity key={i} style={styles} onPress={onPress} onLongPress={onLongPress}>
+          <Text>{this.state.isExpanded[i] ? LOREM : `Item ${i}`}</Text>
         </TouchableOpacity>
       );
     }
@@ -99,12 +105,39 @@ class ScrollViewExpandingExample extends React.Component<Props, State> {
     // One of the items is a horizontal scroll view
     const items = this.makeItems(this.state.count, styles.itemWrapper);
 
+    const onMaintainVisibleContentPositionSwitchChange = () => {
+      this.state.maintainVisibleContentPosition = this.state.maintainVisibleContentPosition ? null : {minIndexForVisible: 0};
+      this.setState(this.state);
+    }
+
+    const onHorizontalSwitchChange = () => {
+      this.state.horizontal = !this.state.horizontal;
+      this.setState(this.state);
+    }
+
     return (
-      <ScrollView
-        maintainVisibleContentPosition={{minIndexForVisible: 2}}
-        style={styles.verticalScrollView}>
-        {items}
-      </ScrollView>
+      <>
+        <View style={{flexDirection: 'row'}}>
+          <Text>Maintain visible content position (index: 0)</Text>
+          <Switch
+            value={this.state.maintainVisibleContentPosition != null}
+            onValueChange={onMaintainVisibleContentPositionSwitchChange}
+          />
+        </View>
+        <View style={{flexDirection: 'row'}}>
+          <Text>Horizontal ScrollView?</Text>
+          <Switch
+            value={this.state.horizontal}
+            onValueChange={onHorizontalSwitchChange}
+          />
+        </View>
+        <ScrollView
+          horizontal={this.state.horizontal}
+          maintainVisibleContentPosition={this.state.maintainVisibleContentPosition}
+          style={styles.verticalScrollView}>
+          {items}
+        </ScrollView>
+      </>
     );
   }
 }
@@ -136,7 +169,6 @@ exports.description =
 exports.simpleExampleContainer = true;
 exports.examples = [
   {
-    title: 'Expanding scroll view',
     render: function(): React.Element<typeof ScrollViewExpandingExample> {
       return <ScrollViewExpandingExample />;
     },

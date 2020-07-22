@@ -88,8 +88,7 @@ public class ReactScrollView extends ScrollView
   private int pendingContentOffsetX = UNSET_CONTENT_OFFSET;
   private int pendingContentOffsetY = UNSET_CONTENT_OFFSET;
   private @Nullable StateWrapper mStateWrapper;
-  private @Nullable
-  ReactScrollViewMaintainVisibleContentPositionData mMaintainVisibleContentPositionData;
+  private @Nullable ReactScrollViewMaintainVisibleContentPositionData mMaintainVisibleContentPositionData;
   private @Nullable WeakReference<View> firstVisibleViewForMaintainVisibleContentPosition = null;
   private @Nullable Rect prevFirstVisibleFrameForMaintainVisibleContentPosition = null;
 
@@ -211,6 +210,9 @@ public class ReactScrollView extends ScrollView
 
   public void setMaintainVisibleContentPosition(ReactScrollViewMaintainVisibleContentPositionData maintainVisibleContentPositionData) {
     mMaintainVisibleContentPositionData = maintainVisibleContentPositionData;
+    if (maintainVisibleContentPositionData != null) {
+      computeFirstVisibleItemForMaintainVisibleContentPosition();
+    }
   }
 
   @Override
@@ -967,12 +969,13 @@ public class ReactScrollView extends ScrollView
     int minIdx = maintainVisibleContentPositionData.minIndexForVisible;
 
     ReactViewGroup contentView = (ReactViewGroup) mContentView;
+    if (contentView == null) return;
 
     for (int i = minIdx; i < contentView.getChildCount(); i++) {
       // Find the first entirely visible view. This must be done after we update the content offset
       // or it will tend to grab rows that were made visible by the shift in position
       View child = contentView.getChildAt(i);
-      if (child.getY() >= currentScrollY) {
+      if (child.getY() >= currentScrollY || i == contentView.getChildCount() - 1) {
         firstVisibleViewForMaintainVisibleContentPosition = new WeakReference<>(child);
         Rect frame = new Rect();
         child.getHitRect(frame);
@@ -999,10 +1002,10 @@ public class ReactScrollView extends ScrollView
 
     Rect newFrame = new Rect();
     firstVisibleView.getHitRect(newFrame);
-    float deltaY = newFrame.top - prevFirstVisibleFrame.top;
+    int deltaY = newFrame.top - prevFirstVisibleFrame.top;
 
     if (Math.abs(deltaY) > 1) {
-      int scrollYTo = (int) (getScrollY() + deltaY);
+      int scrollYTo = getScrollY() + deltaY;
 
       reactScrollTo(getScrollX(), scrollYTo);
 

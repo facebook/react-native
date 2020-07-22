@@ -202,7 +202,6 @@ class RNTesterApp extends React.Component<Props, RNTesterNavigationState> {
     if (!this.state) {
       return null;
     }
-
     return (
       <DrawerLayoutAndroid
         drawerPosition="left"
